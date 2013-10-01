@@ -1,0 +1,9 @@
+[submodule "chibi-core"]
+	path = chibi-core
+	url = https://github.com/rr-/chibi-core.git
+[submodule "php-markdown"]
+	path = php-markdown
+	url = https://github.com/michelf/php-markdown.git
+[submodule "redbean"]
+	path = redbean
+	url = https://github.com/gabordemooij/redbean.git
