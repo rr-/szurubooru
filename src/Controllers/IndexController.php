@@ -7,6 +7,7 @@ class IndexController
 	*/
 	public function indexAction()
 	{
+		$this->context->activeSection = 'home';
 		$this->context->subTitle = 'home';
 	}
 }

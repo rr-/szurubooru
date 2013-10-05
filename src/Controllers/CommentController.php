@@ -6,6 +6,7 @@ class CommentController
 	*/
 	public function listAction()
 	{
+		$this->context->activeSection = 'comments';
 		$this->context->subTitle = 'comments';
 		throw new Exception('Not implemented');
 	}

@@ -28,6 +28,8 @@ class Bootstrap
 		session_start();
 
 		$this->context->title = $this->config->main->title;
+		$this->context->stylesheets = ['core.css'];
+
 		$this->context->layoutName = isset($_GET['json'])
 			? 'layout-json'
 			: 'layout-normal';
