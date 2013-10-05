@@ -47,6 +47,12 @@ class Bootstrap
 		{
 			$workCallback();
 		}
+		catch (SimpleException $e)
+		{
+			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
+			$this->context->transport->exception = $e;
+			$this->context->transport->success = false;
+		}
 		catch (Exception $e)
 		{
 			$this->context->exception = $e;

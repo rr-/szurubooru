@@ -1,5 +1,5 @@
 <?php
-class IndexController extends AbstractController
+class IndexController
 {
 	/**
 	* @route /

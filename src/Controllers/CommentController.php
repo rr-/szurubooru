@@ -1,5 +1,5 @@
 <?php
-class CommentController extends AbstractController
+class CommentController
 {
 	/**
 	* @route /comments

@@ -1,5 +1,5 @@
 <?php
-class UserController extends AbstractController
+class UserController
 {
 	/**
 	* @route /users

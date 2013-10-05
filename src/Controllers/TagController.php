@@ -1,5 +1,5 @@
 <?php
-class TagController extends AbstractController
+class TagController
 {
 	/**
 	* @route /tags

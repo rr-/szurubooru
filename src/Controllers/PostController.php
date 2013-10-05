@@ -1,5 +1,5 @@
 <?php
-class PostController extends AbstractController
+class PostController
 {
 	/**
 	* @route /posts

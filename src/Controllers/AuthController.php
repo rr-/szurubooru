@@ -1,5 +1,5 @@
 <?php
-class AuthController extends AbstractController
+class AuthController
 {
 	private static function hashPassword($pass, $salt2)
 	{
