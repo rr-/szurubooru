@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>no title yet...</title>
+	</head>
+
+	<body>
+		<div>
+			<?php if (empty($this->context->user)): ?>
+				<a href="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>">
+					login
+				</a>
+				&nbsp;or&nbsp;
+				<a href="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>">
+					register
+				</a>
+			<?php else: ?>
+				logged in as <?php echo $this->context->user->name ?>
+				&nbsp;
+				<a href="<?php echo \Chibi\UrlHelper::route('auth', 'logout') ?>">
+					logout
+				</a>
+			<?php endif ?>
+		</div>
+
+		<?php echo $this->renderView() ?>
+	</body>
+</html>

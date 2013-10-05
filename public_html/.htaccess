@@ -1,0 +1,12 @@
+DirectorySlash Off
+Options -Indexes
+
+RewriteEngine On
+ErrorDocument 403 /dispatch.php?request=error/http&code=403
+ErrorDocument 404 /dispatch.php?request=error/http&code=404
+ErrorDocument 500 /dispatch.php?request=error/http&code=500
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ /dispatch.php
+RewriteRule ^/?$ /dispatch.php

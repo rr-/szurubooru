@@ -1,0 +1,39 @@
+<?php if ($this->context->transport->success === true): ?>
+	<p>Congratulations, you are registered.</p>
+	<?php if ($this->context->transport->emailActivation): ?>
+		<p>Please wait for activation e-mail.</p>
+	<?php endif ?>
+	<?php if ($this->context->transport->adminActivation): ?>
+		<p>After this, an admin will have to confirm your registration.</p>
+	<?php endif ?>
+<?php else: ?>
+	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" method="post">
+		<div>
+			<label for="user">User:</label>
+			<input id="user" name="user" value="<?php echo $this->context->suppliedUser ?>"/ placeholder="e.g. darth_vader" autocomplete="off">
+		</div>
+
+		<div>
+			<label for="pass">E-mail address<?php if ($this->context->transport->emailActivation) echo ' (required)' ?>:</label>
+			<input id="email" name="email" value="<?php echo $this->context->suppliedEmail ?>" placeholder="e.g. vader@empire.gov"/ autocomplete="off">
+		</div>
+
+		<div>
+			<label for="pass">Password:</label>
+			<input type="password" id="pass" name="pass1" value="<?php echo $this->context->suppliedPass1 ?>" placeholder="e.g. <?php echo str_repeat('&#x25cf;', 8) ?>"/ autocomplete="off">
+		</div>
+
+		<div>
+			<label for="pass">Password (repeat):</label>
+			<input type="password" id="pass" name="pass2" value="<?php echo $this->context->suppliedPass2 ?>" placeholder="e.g. <?php echo str_repeat('&#x25cf;', 8) ?>"/ autocomplete="off">
+		</div>
+
+		<div>
+			<input type="submit" value="Register">
+		</div>
+	</form>
+
+	<?php if (isset($this->context->transport->errorMessage)): ?>
+		<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
+	<?php endif ?>
+<?php endif ?>

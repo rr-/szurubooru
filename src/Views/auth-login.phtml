@@ -1,0 +1,19 @@
+<form action="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>" method="post">
+	<div>
+		<label for="user">User:</label>
+		<input id="user" name="user"/>
+	</div>
+
+	<div>
+		<label for="pass">Password:</label>
+		<input type="password" id="pass" name="pass"/>
+	</div>
+
+	<div>
+		<input type="submit" value="Login">
+	</div>
+</form>
+
+<?php if (isset($this->context->transport->errorMessage)): ?>
+	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
+<?php endif ?>
