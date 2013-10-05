@@ -21,7 +21,7 @@
 					</form>
 				</li>
 				<li>
-					<?php if (empty($this->context->user)): ?>
+					<?php if (!$this->context->loggedIn): ?>
 						<a href="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>">Login</a>
 						&nbsp;or&nbsp;
 						<a href="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>">register</a>

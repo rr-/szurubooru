@@ -14,8 +14,10 @@ class Bootstrap
 		}
 		if (empty($this->context->user))
 		{
-			#todo: construct anonymous user
-			$this->context->user = null;
+			$dummy = R::dispense('user');
+			$dummy->name = 'Anonymous';
+			$dummy->access_rank = AccessRank::Anonymous;
+			$this->context->user = $dummy;
 		}
 	}
 
