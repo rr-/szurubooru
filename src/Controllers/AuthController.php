@@ -130,12 +130,20 @@ class AuthController extends AbstractController
 			$dbUser->email = $suppliedEmail;
 			$dbUser->admin_confirmed = $adminActivation ? false : true;
 			$dbUser->email_confirmed = $emailActivation ? false : true;
-			$dbUser->email_token = md5(mt_rand() . uniqid());
 			$dbUser->access_rank = R::findOne('user') === null ? AccessRank::Admin : AccessRank::Registered;
+
+			//prepare unique registration token
+			do
+			{
+				$emailToken =  md5(mt_rand() . uniqid());
+			}
+			while (R::findOne('user', 'email_token = ?', [$emailToken]) !== null);
+			$dbUser->email_token = $emailToken;
 
 			//send the e-mail
 			if ($emailActivation)
 			{
+
 				$tokens = [];
 				$tokens['host'] = $_SERVER['HTTP_HOST'];
 				$tokens['link'] = \Chibi\UrlHelper::route('auth', 'activation', ['token' => $dbUser->email_token]);
