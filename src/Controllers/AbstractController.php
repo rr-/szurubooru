@@ -21,13 +21,6 @@ abstract class AbstractController
 
 	public function workWrapper($workCallback)
 	{
-		session_start();
-		$this->context->layoutName = isset($_GET['json'])
-			? 'layout-json'
-			: 'layout-normal';
-		$this->context->transport = new StdClass;
-		$this->context->transport->success = null;
-
 		$this->attachUser();
 
 		try
@@ -39,11 +32,6 @@ abstract class AbstractController
 			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
 			$this->context->transport->exception = $e;
 			$this->context->transport->success = false;
-		}
-		catch (Exception $e)
-		{
-			$this->context->exception = $e;
-			$this->context->viewName = 'error-exception';
 		}
 	}
 }
