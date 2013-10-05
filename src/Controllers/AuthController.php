@@ -15,7 +15,7 @@ class AuthController extends AbstractController
 		//check if already logged in
 		if ($this->context->loggedIn)
 		{
-			\Chibi\HeadersHelper::set('Location', \Chibi\UrlHelper::route('post', 'search'));
+			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 			return;
 		}
 
@@ -38,7 +38,7 @@ class AuthController extends AbstractController
 				throw new SimpleException('You haven\'t confirmed your e-mail address yet');
 
 			$_SESSION['user-id'] = $dbUser->id;
-			\Chibi\HeadersHelper::set('Location', \Chibi\UrlHelper::route('post', 'search'));
+			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 			$this->context->transport->success = true;
 		}
 	}
@@ -51,7 +51,7 @@ class AuthController extends AbstractController
 		$this->context->viewName = null;
 		$this->context->viewName = null;
 		unset($_SESSION['user-id']);
-		\Chibi\HeadersHelper::set('Location', \Chibi\UrlHelper::route('post', 'search'));
+		\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 	}
 
 	/**
@@ -62,7 +62,7 @@ class AuthController extends AbstractController
 		//check if already logged in
 		if ($this->context->loggedIn)
 		{
-			\Chibi\HeadersHelper::set('Location', \Chibi\UrlHelper::route('post', 'search'));
+			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 			return;
 		}
 
@@ -167,7 +167,7 @@ class AuthController extends AbstractController
 			if (!$emailActivation and !$adminActivation)
 			{
 				$_SESSION['user-id'] = $dbUser->id;
-				$this->attachUser();
+				\Chibi\Registry::getBootstrap()->attachUser();
 			}
 		}
 	}
@@ -180,7 +180,7 @@ class AuthController extends AbstractController
 		//check if already logged in
 		if ($this->context->loggedIn)
 		{
-			\Chibi\HeadersHelper::set('Location', \Chibi\UrlHelper::route('post', 'search'));
+			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 			return;
 		}
 
@@ -203,7 +203,7 @@ class AuthController extends AbstractController
 		if (!$adminActivation)
 		{
 			$_SESSION['user-id'] = $dbUser->id;
-			$this->attachUser();
+			\Chibi\Registry::getBootstrap()->attachUser();
 		}
 	}
 }

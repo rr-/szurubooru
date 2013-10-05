@@ -6,24 +6,38 @@
 	</head>
 
 	<body>
-		<div>
-			<?php if (empty($this->context->user)): ?>
-				<a href="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>">
-					login
-				</a>
-				&nbsp;or&nbsp;
-				<a href="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>">
-					register
-				</a>
-			<?php else: ?>
-				logged in as <?php echo $this->context->user->name ?>
-				&nbsp;
-				<a href="<?php echo \Chibi\UrlHelper::route('auth', 'logout') ?>">
-					logout
-				</a>
-			<?php endif ?>
-		</div>
+		<nav>
+			<ul>
+				<li><a href="<?php echo \Chibi\UrlHelper::route('index', 'index') ?>">Home</a></li>
+				<li><a href="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">Browse</a></li>
+				<li><a href="<?php echo \Chibi\UrlHelper::route('comment', 'list') ?>">Comments</a></li>
+				<li><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'favmin:1']) ?>">Favorites</a></li>
+				<li><a href="<?php echo \Chibi\UrlHelper::route('user', 'show', ['name' => $this->context->user->name]) ?>">Account</a></li>
+				<li><a href="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>">Upload</a></li>
+				<li>
+					<form action="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
+						<input type="search" name="query" placeholder="search&hellip;">
+						<input type="submit" name="submit" value="Go">
+					</form>
+				</li>
+				<li>
+					<?php if (empty($this->context->user)): ?>
+						<a href="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>">Login</a>
+						&nbsp;or&nbsp;
+						<a href="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>">register</a>
+					<?php else: ?>
+						<?php echo $this->context->user->name ?>
+						&nbsp;
+						<a href="<?php echo \Chibi\UrlHelper::route('auth', 'logout') ?>">
+							Logout
+						</a>
+					<?php endif ?>
+				</li>
+			</ul>
+		</nav>
 
-		<?php echo $this->renderView() ?>
+		<section>
+			<?php echo $this->renderView() ?>
+		</section>
 	</body>
 </html>

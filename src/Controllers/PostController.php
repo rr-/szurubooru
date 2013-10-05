@@ -2,15 +2,28 @@
 class PostController extends AbstractController
 {
 	/**
-	* @route /
-	* @route /index
+	* @route /posts
+	* @route /posts/{query}
+	* @validate query .*
 	*/
-	public function searchAction()
+	public function listAction($query = null)
 	{
-		$tp = new StdClass;
-		$tp->posts = [];
-		$tp->posts []= 1;
-		$tp->posts []= 2;
-		$this->context->transport = $tp;
+		throw new Exception('Not implemented');
+	}
+
+	/**
+	* @route /post/upload
+	*/
+	public function uploadAction()
+	{
+		throw new Exception('Not implemented');
+	}
+
+	/**
+	* @route /post/{id}
+	*/
+	public function showAction($id)
+	{
+		throw new Exception('Not implemented');
 	}
 }

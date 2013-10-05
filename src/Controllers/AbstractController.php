@@ -1,28 +1,8 @@
 <?php
 abstract class AbstractController
 {
-	protected function attachUser()
-	{
-		$this->context->loggedIn = false;
-		if (isset($_SESSION['user-id']))
-		{
-			$this->context->user = R::findOne('user', 'id = ?', [$_SESSION['user-id']]);
-			if (!empty($this->context->user))
-			{
-				$this->context->loggedIn = true;
-			}
-		}
-		if (empty($this->context->user))
-		{
-			#todo: construct anonymous user
-			$this->context->user = null;
-		}
-	}
-
 	public function workWrapper($workCallback)
 	{
-		$this->attachUser();
-
 		try
 		{
 			$workCallback();
