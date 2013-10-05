@@ -5,7 +5,8 @@ class IndexController extends AbstractController
 	* @route /
 	* @route /index
 	*/
-	public static function indexAction()
+	public function indexAction()
 	{
+		$this->context->subTitle = 'home';
 	}
 }

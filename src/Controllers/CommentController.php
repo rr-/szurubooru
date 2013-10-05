@@ -6,6 +6,7 @@ class CommentController extends AbstractController
 	*/
 	public function listAction()
 	{
+		$this->context->subTitle = 'comments';
 		throw new Exception('Not implemented');
 	}
 }

@@ -2,7 +2,11 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>no title yet...</title>
+		<?php if (isset($this->context->subTitle)): ?>
+			<title><?php printf('%s&nbsp;&ndash;&nbsp;%s', $this->context->title, $this->context->subTitle) ?></title>
+		<?php else: ?>
+			<title><?php echo $this->context->title ?></title>
+		<?php endif ?>
 	</head>
 
 	<body>

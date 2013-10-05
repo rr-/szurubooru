@@ -12,6 +12,8 @@ class AuthController extends AbstractController
 	*/
 	public function loginAction()
 	{
+		$this->context->subTitle = 'login form';
+
 		//check if already logged in
 		if ($this->context->loggedIn)
 		{
@@ -59,6 +61,8 @@ class AuthController extends AbstractController
 	*/
 	public function registerAction()
 	{
+		$this->context->subTitle = 'registration form';
+
 		//check if already logged in
 		if ($this->context->loggedIn)
 		{
@@ -177,6 +181,8 @@ class AuthController extends AbstractController
 	*/
 	public function activationAction($token)
 	{
+		$this->context->subTitle = 'account activation';
+
 		//check if already logged in
 		if ($this->context->loggedIn)
 		{

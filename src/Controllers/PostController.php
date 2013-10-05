@@ -8,6 +8,7 @@ class PostController extends AbstractController
 	*/
 	public function listAction($query = null)
 	{
+		$this->context->subTitle = 'browsing posts';
 		throw new Exception('Not implemented');
 	}
 
@@ -16,6 +17,7 @@ class PostController extends AbstractController
 	*/
 	public function uploadAction()
 	{
+		$this->context->subTitle = 'upload';
 		throw new Exception('Not implemented');
 	}
 
@@ -24,6 +26,7 @@ class PostController extends AbstractController
 	*/
 	public function showAction($id)
 	{
+		$this->context->subTitle = 'showing @' . $id;
 		throw new Exception('Not implemented');
 	}
 }

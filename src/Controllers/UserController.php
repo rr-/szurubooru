@@ -6,6 +6,7 @@ class UserController extends AbstractController
 	*/
 	public function listAction()
 	{
+		$this->context->subTitle = 'users';
 		throw new Exception('Not implemented');
 	}
 
@@ -15,6 +16,7 @@ class UserController extends AbstractController
 	*/
 	public function showAction($name)
 	{
+		$this->context->subTitle = $name;
 		throw new Exception('Not implemented');
 	}
 }

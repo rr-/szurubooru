@@ -27,6 +27,7 @@ class Bootstrap
 		R::setup('sqlite:' . $this->config->main->dbPath);
 		session_start();
 
+		$this->context->title = $this->config->main->title;
 		$this->context->layoutName = isset($_GET['json'])
 			? 'layout-json'
 			: 'layout-normal';
