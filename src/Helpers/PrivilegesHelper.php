@@ -17,9 +17,9 @@ class PrivilegesHelper
 	public static function confirm($user, $privilege)
 	{
 		$minAccessRank = isset(self::$privileges[$privilege])
-			? AccessRank::Admin
-			: self::$privileges[$privilege];
-		return $user->access_rank >= $minAccessRank;
+			? self::$privileges[$privilege]
+			: AccessRank::Admin;
+		return intval($user->access_rank) >= $minAccessRank;
 	}
 
 	public static function confirmWithException($user, $privilege)
