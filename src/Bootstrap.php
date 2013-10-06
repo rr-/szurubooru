@@ -58,7 +58,9 @@ class Bootstrap
 		}
 		catch (Exception $e)
 		{
-			$this->context->exception = $e;
+			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
+			$this->context->transport->exception = $e;
+			$this->context->transport->success = false;
 			$this->context->viewName = 'error-exception';
 			(new \Chibi\View())->renderFile($this->context->layoutName);
 		}
