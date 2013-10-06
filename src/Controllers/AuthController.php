@@ -12,7 +12,7 @@ class AuthController
 	*/
 	public function loginAction()
 	{
-		$this->context->subTitle = 'login form';
+		$this->context->subTitle = 'authentication form';
 
 		//check if already logged in
 		if ($this->context->loggedIn)

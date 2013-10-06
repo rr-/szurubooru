@@ -30,13 +30,13 @@
 
 						if (!$this->context->loggedIn)
 						{
-							$postNav []= ['Login', \Chibi\UrlHelper::route('auth', 'login')];
+							$postNav []= ['Log in', \Chibi\UrlHelper::route('auth', 'login')];
 							$postNav []= ['Register', \Chibi\UrlHelper::route('auth', 'register')];
 						}
 						else
 						{
 							$postNav []= ['Account', \Chibi\UrlHelper::route('user', 'show', ['name' => $this->context->user->name])];
-							$postNav []= ['Logout', \Chibi\UrlHelper::route('auth', 'logout')];
+							$postNav []= ['Log out', \Chibi\UrlHelper::route('auth', 'logout')];
 						}
 
 						function printNav($nav)
