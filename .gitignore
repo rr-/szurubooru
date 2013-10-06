@@ -1,3 +1,5 @@
 local.ini
 db.sqlite
 db.sqlite-journal
+public_html/media/js/jquery.tagit.js
+public_html/media/css/jquery.tagit.css

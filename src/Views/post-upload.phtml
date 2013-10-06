@@ -1,0 +1,67 @@
+<?php if ($this->context->transport->success === true): ?>
+	<p>Post created!</p>
+<?php elseif (isset($this->context->transport->errorMessage)): ?>
+	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
+<?php else: ?>
+
+	<div id="sidebar">
+		<h1>file upload</h1>
+		<p>Use tags to describe uploaded images. Try to specify characters, their look and shows they are from.</p>
+		<p>Set proper visibility setting if the image isn&rsquo;t safe for work or you&rsquo;re not sure it&rsquo;s 100% <span class="safety-sfw">safe</span>.</p>
+		<p>Only registered users can view <span class="safety-sketchy">sketchy</span> or <span class="safety-nsfw">NSFW</span> content.</p>
+		<p>Click submit when you&rsquo;re done.</p>
+	</div>
+
+	<div id="inner-content">
+		<div id="upload-step1">
+			<input type=file multiple style="display: none"/>
+			<div id="file-handler-wrapper">
+				<div id="file-handler">
+					Drop files here!<br>
+					Or just click on this box.
+				</div>
+			</div>
+
+			<div class="clear"></div>
+		</div>
+
+		<div id="upload-step2">
+			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
+				<div class="posts">
+				</div>
+
+				<div class="submit-wrapper">
+					<input type="submit" value="Submit" class="submit btn"/>
+				</div>
+			</form>
+		</div>
+
+		<div id="post-template" class="post">
+			<a class="remove-trigger">
+				remove <span>&times;</span>
+			</a>
+
+			<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+			<div>
+				<div class="file-name">
+					<label class="left">File:</label>
+					<strong>filename.jpg</strong>
+				</div>
+
+				<div class="safety">
+					<label class="left">Safety:</label>
+					<label><input type="radio" name="safety" value="<?php echo PostSafety::Safe ?>" checked="checked"/> Safe for work</label>
+					<label><input type="radio" name="safety" value="<?php echo PostSafety::Sketchy ?>"/> Sketchy</label>
+					<label><input type="radio" name="safety" value="<?php echo PostSafety::Unsafe ?>"/> Not safe for work</label>
+				</div>
+
+				<div class="tags">
+					<label class="left">Tags:</label>
+					<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+
+<?php endif ?>

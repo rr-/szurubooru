@@ -3,7 +3,7 @@ body {
 	color: black;
 	margin: 0;
 	padding: 0;
-	font-family: sans-serif;
+	font-family: 'Droid Sans', sans-serif;
 	font-size: 12pt;
 }
 
@@ -76,4 +76,20 @@ nav li.search input {
 
 .clear {
 	clear: both;
+}
+
+#sidebar {
+	float: left;
+	width: 25%;
+	margin-right: 1em;
+}
+
+#sidebar h1 {
+	margin-top: 0;
+	text-align: center;
+	font-weight: normal;
+}
+
+#inner-content {
+	overflow: hidden;
 }

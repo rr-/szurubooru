@@ -1,0 +1,110 @@
+.items .item {
+	width: 30%;
+	float: left;
+}
+
+.items .sep {
+	width: 3%;
+	float: left;
+}
+
+#file-handler-wrapper {
+	display: table;
+	width: 100%;
+}
+#file-handler {
+	cursor: pointer;
+	font-size: 150%;
+	text-align: center;
+	vertical-align: middle;
+	height: 200px;
+	width: 100%;
+	display: table-cell;
+	border: 3px dashed #eee;
+}
+#file-handler.active {
+	background: #eee;
+	border-color: firebrick;
+}
+
+.post .thumbnail {
+	width: 100px;
+	height: 100px;
+	line-height: 100px;
+	background-image: url('../img/thumb-unavailable.png');
+	border: 1px solid black;
+	vertical-align: middle;
+	text-align: center;
+	display: block;
+	float: left;
+	margin-right: 1em;
+}
+
+#post-template {
+	display: none;
+}
+
+.post {
+	margin-bottom: 4em;
+}
+
+.post .remove-trigger {
+	cursor: pointer;
+	float: right;
+	color: rgba(128, 0, 0, 0.25);
+	vertical-align: middle;
+}
+.post .remove-trigger span {
+	margin-left: 0.25em;
+	vertical-align: middle;
+	color: rgba(128, 0, 0, 1);
+	font-size: 130%;
+}
+
+.post label {
+	line-height: 33px;
+}
+.post label.left {
+	display: inline-block;
+	width: 4em;
+}
+.post .safety label:not(.left) {
+	margin-right: 0.75em;
+}
+
+.post .file-name strong {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 50%;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.safety-sfw {
+	color: #63ca63;
+}
+.safety-sketchy {
+	color: #f4c657;
+}
+.safety-nsfw {
+	color: #df4b0d;
+}
+
+ul.tagit {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0;
+	font-size: 1em;
+}
+
+.submit-wrapper {
+	text-align: center;
+}
+input.submit {
+	margin: 0 auto;
+	font-size: 115%;
+	padding: 0.2em 0.7em;
+	color: white;
+	background: cornflowerblue;
+	border: 0;
+}
