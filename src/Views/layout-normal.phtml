@@ -10,6 +10,7 @@
 		<?php foreach ($this->context->stylesheets as $name): ?>
 			<link rel="stylesheet" type="text/css" href="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/css/' . $name) ?>" />
 		<?php endforeach ?>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	</head>
 
 	<body>
@@ -24,7 +25,9 @@
 						$preNav []= ['Browse', \Chibi\UrlHelper::route('post', 'list')];
 						$preNav []= ['Comments', \Chibi\UrlHelper::route('comment', 'list')];
 						$preNav []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
-						$preNav []= ['Upload', \Chibi\UrlHelper::route('post', 'upload')];
+						if (PrivilegesHelper::confirm($this->context->user, Privilege::UploadPost))
+							$preNav []= ['Upload', \Chibi\UrlHelper::route('post', 'upload')];
+
 						if (!$this->context->loggedIn)
 						{
 							$postNav []= ['Login', \Chibi\UrlHelper::route('auth', 'login')];

@@ -16,4 +16,22 @@ class TextHelper
 		}
 		return $text;
 	}
+
+	public static function resolveConstant($constantName, $className = null)
+	{
+		//convert from kebab-case to CamelCase
+		$constantName = preg_split('/-/', $constantName);
+		$constantName = array_map('trim', $constantName);
+		$constantName = array_map('ucfirst', $constantName);
+		$constantName = join('', $constantName);
+		if ($className !== null)
+		{
+			$constantName = $className . '::' . $constantName;
+		}
+		if (!defined($constantName))
+		{
+			throw new Exception('Undefined constant: ' . $constantName);
+		}
+		return constant($constantName);
+	}
 }
