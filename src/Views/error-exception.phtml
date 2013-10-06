@@ -2,15 +2,15 @@
 echo '<h1>Unhandled exception</h1>';
 echo '<p>';
 printf('%s &bdquo;%s&rdquo; thrown at %s:%d',
-	get_class($this->context->exception),
-	$this->context->exception->getMessage(),
-	$this->context->exception->getFile(),
-	$this->context->exception->getLine());
+	get_class($this->context->transport->exception),
+	$this->context->transport->exception->getMessage(),
+	$this->context->transport->exception->getFile(),
+	$this->context->transport->exception->getLine());
 echo '</p>';
 
 echo '<ul>';
 $count = 0;
-foreach ($this->context->exception->getTrace() as $frame)
+foreach ($this->context->transport->exception->getTrace() as $frame)
 {
 	$args = '';
 	if (isset($frame['args']))
