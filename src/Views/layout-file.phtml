@@ -1,0 +1,12 @@
+<?php
+if (!empty($this->context->transport->errorMessage))
+{
+	\Chibi\HeadersHelper::set('Content-Type', 'text/plain; charset=utf-8');
+	echo $this->context->transport->errorMessage;
+}
+else
+{
+	\Chibi\HeadersHelper::set('Content-Type', $this->context->transport->mimeType);
+	readfile($this->context->transport->filePath);
+	flush();
+}

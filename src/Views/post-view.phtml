@@ -1,0 +1,5 @@
+<?php if (!empty($this->context->transport->errorMessage)): ?>
+	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
+<?php else: ?>
+	<img src="<?php echo \Chibi\UrlHelper::route('post', 'send', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
+<?php endif ?>
