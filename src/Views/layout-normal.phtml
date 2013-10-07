@@ -45,14 +45,17 @@
 							$postNav []= ['Log out', \Chibi\UrlHelper::route('auth', 'logout')];
 						}
 
-						function printNav($nav)
+						if (!function_exists('printNav'))
 						{
-							foreach ($nav as $navItem)
+							function printNav($nav)
 							{
-								list ($text, $link) = $navItem;
-								echo '<li>';
-								echo '<a href="' . $link . '">' . $text . '</a>';
-								echo '</li>';
+								foreach ($nav as $navItem)
+								{
+									list ($text, $link) = $navItem;
+									echo '<li>';
+									echo '<a href="' . $link . '">' . $text . '</a>';
+									echo '</li>';
+								}
 							}
 						}
 					?>
