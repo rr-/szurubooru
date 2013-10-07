@@ -63,7 +63,7 @@ $(function()
 			var postDom = $(this);
 			var file = postDom.data('file');
 			var tags = postDom.find('[name=tags]').val();
-			var safety = postDom.find('[name=safety]').val();
+			var safety = postDom.find('[name=safety]:checked').val();
 			var fd = new FormData();
 			fd.append('file', file);
 			fd.append('tags', tags);
