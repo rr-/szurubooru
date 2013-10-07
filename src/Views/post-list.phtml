@@ -1,1 +1,5 @@
-Todo: view posts
+<?php foreach ($this->context->transport->posts as $post): ?>
+	<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $post->id]) ?>">
+		Post&nbsp;<?php echo $post->id; ?>
+	</a>
+<?php endforeach ?>

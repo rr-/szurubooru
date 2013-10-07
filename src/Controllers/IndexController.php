@@ -7,7 +7,14 @@ class IndexController
 	*/
 	public function indexAction()
 	{
-		$this->context->activeSection = 'home';
 		$this->context->subTitle = 'home';
+	}
+
+	/**
+	* @route /help
+	*/
+	public function helpAction()
+	{
+		$this->context->subTitle = 'help';
 	}
 }

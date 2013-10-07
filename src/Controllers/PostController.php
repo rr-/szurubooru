@@ -26,7 +26,25 @@ class PostController
 
 		$this->context->subTitle = 'browsing posts';
 		$this->context->searchQuery = $query;
-		throw new Exception('Not implemented');
+
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListPosts);
+
+		$page = 1;
+		$params = [];
+		$params[':limit'] = 20;
+		$params[':offset'] = ($page - 1) * $params[':limit'];
+
+		//todo safety
+		//todo construct WHERE based on filters
+		$whereSql = '';
+
+		//todo construct ORDER based on filers
+		$orderSql = 'ORDER BY upload_date DESC';
+
+		$limitSql = 'LIMIT :limit OFFSET :offset';
+
+		$posts = R::findAll('post', sprintf('%s %s %s', $whereSql, $orderSql, $limitSql), $params);
+		$this->context->transport->posts = $posts;
 	}
 
 	/**
@@ -51,7 +69,7 @@ class PostController
 			$suppliedTags = array_filter($suppliedTags);
 			$suppliedTags = array_unique($suppliedTags);
 			foreach ($suppliedTags as $tag)
-				if (!preg_match('/^\w+$/i', $tag))
+				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
 					throw new SimpleException('Invalid tag "' . $tag . '"');
 
 			$suppliedFile = $_FILES['file'];
@@ -95,9 +113,11 @@ class PostController
 			$dbPost = R::dispense('post');
 			$dbPost->type = $postType;
 			$dbPost->name = $name;
-			$dbPost->mimeType = $suppliedFile['type'];
+			$dbPost->mime_type = $suppliedFile['type'];
 			$dbPost->safety = $suppliedSafety;
+			$dbPost->upload_date = time();
 			$dbPost->sharedTag = $dbTags;
+			$dbPost->ownUser = $this->context->user;
 
 			move_uploaded_file($suppliedFile['tmp_name'], $path);
 			R::store($dbPost);
@@ -109,12 +129,47 @@ class PostController
 	}
 
 	/**
+	* Action that decorates the page containing the post.
 	* @route /post/{id}
 	*/
-	public function showAction($id)
+	public function viewAction($id)
 	{
-		$this->context->subTitle = 'showing @' . $id;
-		throw new Exception('Not implemented');
+		$post = R::findOne('post', 'id = ?', [$id]);
+		if (!$post)
+			throw new SimpleException('Invalid post ID "' . $id . '"');
+
+		//todo: verify access rank...?
+		//todo: verify sketchy, nsfw, sfw
+
+		$this->context->subTitle = 'showing @' . $post->id;
+		$this->context->transport->post = $post;
+	}
+
+	/**
+	* Action that renders the requested file itself and sends it to user.
+	* @route /post/send/{name}
+	*/
+	public function sendAction($name)
+	{
+		$this->context->layoutName = 'layout-file';
+
+		$post = R::findOne('post', 'name = ?', [$name]);
+		if (!$post)
+			throw new SimpleException('Invalid post name "' . $name . '"');
+
+		//I guess access rank shouldn't be verified here. If someone arrives
+		//here, they already know the full name of the post (not just the ID)
+		//either by visiting the HTML container page or by having hotlink.
+		//Such users should be trusted.
+
+		$path = $this->config->main->filesPath . DIRECTORY_SEPARATOR . $post->name;
+		if (!file_exists($path))
+			throw new SimpleException('Post file does not exist');
+		if (!is_readable($path))
+			throw new SimpleException('Post file is not readable');
+
+		$this->context->transport->mimeType = $post->mimeType;
+		$this->context->transport->filePath = $path;
 	}
 
 	/**
@@ -123,5 +178,6 @@ class PostController
 	public function favoritesAction()
 	{
 		$this->listAction('favmin:1');
+		$this->context->viewName = 'post-list';
 	}
 }
