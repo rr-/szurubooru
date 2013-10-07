@@ -114,12 +114,12 @@ $(function()
 					continue;
 				}
 
+				var img = postDom.find('img')
 				var reader = new FileReader();
-				reader.onload = (function(theFile)
+				reader.onload = (function(theFile, img)
 				{
 					return function(e)
 					{
-						var img = postDom.find('img')
 						/*img.css('max-width', img.css('width'));
 						img.css('max-height', img.css('height'));
 						img.css('width', 'auto');
@@ -127,7 +127,7 @@ $(function()
 						img.css('background-image', 'none');
 						img.attr('src', e.target.result);
 					};
-				})(file);
+				})(file, img);
 				reader.readAsDataURL(file);
 			}
 			$('#upload-step2').fadeIn(function()
