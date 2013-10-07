@@ -5,26 +5,45 @@ class PrivilegesHelper
 
 	public static function init()
 	{
-		$privileges = \Chibi\Registry::getConfig()->privileges;
-		foreach ($privileges as $privilegeName => $minAccessRankName)
+		self::$privileges = [];
+		foreach (\Chibi\Registry::getConfig()->privileges as $key => $minAccessRankName)
 		{
-			$privilege = TextHelper::resolveConstant($privilegeName, 'Privilege');
+			if (strpos($key, '.') === false)
+				$key .= '.';
+			list ($privilegeName, $flag) = explode('.', $key);
+			$privilegeName = TextHelper::camelCaseToKebabCase($privilegeName);
+			$flag = TextHelper::camelCaseToKebabCase($flag);
+			$key = rtrim($privilegeName . '.' . $flag, '.');
+
 			$minAccessRank = TextHelper::resolveConstant($minAccessRankName, 'AccessRank');
-			self::$privileges[$privilege] = $minAccessRank;
+			self::$privileges[$key] = $minAccessRank;
 		}
 	}
 
-	public static function confirm($user, $privilege)
+	public static function confirm($user, $privilege, $flag = null)
 	{
-		$minAccessRank = isset(self::$privileges[$privilege])
-			? self::$privileges[$privilege]
-			: AccessRank::Admin;
+		$minAccessRank = AccessRank::Admin;
+
+		$key = TextHelper::camelCaseToKebabCase(Privilege::toString($privilege));
+		if (isset(self::$privileges[$key]))
+		{
+			$minAccessRank = self::$privileges[$key];
+		}
+		if ($flag != null)
+		{
+			$key2 = $key . '.' . strtolower($flag);
+			if (isset(self::$privileges[$key2]))
+			{
+				$minAccessRank = self::$privileges[$key2];
+			}
+		}
+
 		return intval($user->access_rank) >= $minAccessRank;
 	}
 
-	public static function confirmWithException($user, $privilege)
+	public static function confirmWithException($user, $privilege, $flag = null)
 	{
-		if (!self::confirm($user, $privilege))
+		if (!self::confirm($user, $privilege, $flag))
 		{
 			throw new SimpleException('Insufficient privileges');
 		}

@@ -1,7 +1,10 @@
 <?php
-class Privilege
+class Privilege extends Enum
 {
-	const UploadPost = 1;
-	const ListPosts = 2;
-	const ListUsers = 3;
+	const ListPosts = 1;
+	const UploadPost = 2;
+	const ViewPost = 3;
+	const RetrievePost = 4;
+	const ListUsers = 5;
+	const ListComments = 6;
 }

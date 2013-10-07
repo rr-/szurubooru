@@ -34,7 +34,8 @@ class PostController
 		$params[':limit'] = 20;
 		$params[':offset'] = ($page - 1) * $params[':limit'];
 
-		//todo safety
+		//todo safety [user choice]
+		//todo safety [user privileges]
 		//todo construct WHERE based on filters
 		$whereSql = '';
 
@@ -138,8 +139,8 @@ class PostController
 		if (!$post)
 			throw new SimpleException('Invalid post ID "' . $id . '"');
 
-		//todo: verify access rank...?
-		//todo: verify sketchy, nsfw, sfw
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
 
 		$this->context->subTitle = 'showing @' . $post->id;
 		$this->context->transport->post = $post;
@@ -147,9 +148,9 @@ class PostController
 
 	/**
 	* Action that renders the requested file itself and sends it to user.
-	* @route /post/send/{name}
+	* @route /post/retrieve/{name}
 	*/
-	public function sendAction($name)
+	public function retrieveAction($name)
 	{
 		$this->context->layoutName = 'layout-file';
 
@@ -157,10 +158,8 @@ class PostController
 		if (!$post)
 			throw new SimpleException('Invalid post name "' . $name . '"');
 
-		//I guess access rank shouldn't be verified here. If someone arrives
-		//here, they already know the full name of the post (not just the ID)
-		//either by visiting the HTML container page or by having hotlink.
-		//Such users should be trusted.
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost);
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost, PostSafety::toString($post->safety));
 
 		$path = $this->config->main->filesPath . DIRECTORY_SEPARATOR . $post->name;
 		if (!file_exists($path))

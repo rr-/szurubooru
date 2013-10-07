@@ -1,5 +1,5 @@
 <?php
-class PostSafety
+class PostSafety extends Enum
 {
 	const Safe = 1;
 	const Sketchy = 2;

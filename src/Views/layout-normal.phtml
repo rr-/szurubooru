@@ -27,13 +27,14 @@
 						$nav = [];
 
 						$nav []= ['Home', \Chibi\UrlHelper::route('index', 'index')];
-						$nav []= ['Browse', \Chibi\UrlHelper::route('post', 'list')];
+						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts))
+							$nav []= ['Browse', \Chibi\UrlHelper::route('post', 'list')];
+
+						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListComments))
+							$nav []= ['Comments', \Chibi\UrlHelper::route('comment', 'list')];
 
 						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts))
-						{
-							$nav []= ['Comments', \Chibi\UrlHelper::route('comment', 'list')];
 							$nav []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
-						}
 
 						if (PrivilegesHelper::confirm($this->context->user, Privilege::UploadPost))
 							$nav []= ['Upload', \Chibi\UrlHelper::route('post', 'upload')];

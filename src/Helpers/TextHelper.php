@@ -17,13 +17,29 @@ class TextHelper
 		return $text;
 	}
 
+	public static function kebabCaseToCamelCase($string)
+	{
+		$string = preg_split('/-/', $string);
+		$string = array_map('trim', $string);
+		$string = array_map('ucfirst', $string);
+		$string = join('', $string);
+		return $string;
+	}
+
+	public static function camelCaseToKebabCase($string)
+	{
+		$string = preg_replace_callback('/[A-Z]/', function($x)
+		{
+			return '-' . strtolower($x[0]);
+		}, $string);
+		$string = trim($string, '-');
+		return $string;
+	}
+
 	public static function resolveConstant($constantName, $className = null)
 	{
+		$constantName = self::kebabCaseToCamelCase($constantName);
 		//convert from kebab-case to CamelCase
-		$constantName = preg_split('/-/', $constantName);
-		$constantName = array_map('trim', $constantName);
-		$constantName = array_map('ucfirst', $constantName);
-		$constantName = join('', $constantName);
 		if ($className !== null)
 		{
 			$constantName = $className . '::' . $constantName;
