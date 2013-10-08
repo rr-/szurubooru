@@ -87,8 +87,33 @@ class PostController
 				throw new SimpleException('No tags set');
 
 			$suppliedFile = $_FILES['file'];
+			switch ($suppliedFile['error'])
+			{
+				case UPLOAD_ERR_OK:
+					break;
+				case UPLOAD_ERR_INI_SIZE:
+					throw new SimpleException('File is too big (maximum size allowed: ' . ini_get('upload_max_filesize') . ')');
+				case UPLOAD_ERR_FORM_SIZE:
+					throw new SimpleException('File is too big than it was allowed in HTML form');
+				case UPLOAD_ERR_PARTIAL:
+					throw new SimpleException('File transfer was interrupted');
+				case UPLOAD_ERR_NO_FILE:
+					throw new SimpleException('No file was uploaded');
+				case UPLOAD_ERR_NO_TMP_DIR:
+					throw new SimpleException('Server misconfiguration error: missing temporary folder');
+				case UPLOAD_ERR_CANT_WRITE:
+					throw new SimpleException('Server misconfiguration error: cannot write to disk');
+				case UPLOAD_ERR_EXTENSION:
+					throw new SimpleException('Server misconfiguration error: upload was canceled by an extension');
+				default:
+					throw new SimpleException('Generic file upload error (id: ' . $suppliedFile['error'] . ')');
+			}
+			if (!is_uploaded_file($suppliedFile['tmp_name']))
+				throw new SimpleException('Generic file upload error');
 
-			switch ($suppliedFile['type'])
+			#$mimeType = $suppliedFile['type'];
+			$mimeType = mime_content_type($suppliedFile['tmp_name']);
+			switch ($mimeType)
 			{
 				case 'image/gif':
 				case 'image/png':
@@ -99,7 +124,7 @@ class PostController
 					$postType = PostType::Flash;
 					break;
 				default:
-					throw new SimpleException('Invalid file type "' . $suppliedFile['type'] . '"');
+					throw new SimpleException('Invalid file type "' . $mimeType . '"');
 			}
 
 			//todo: find out duplicate files
@@ -127,7 +152,7 @@ class PostController
 			$dbPost = R::dispense('post');
 			$dbPost->type = $postType;
 			$dbPost->name = $name;
-			$dbPost->mime_type = $suppliedFile['type'];
+			$dbPost->mime_type = $mimeType;
 			$dbPost->safety = $suppliedSafety;
 			$dbPost->upload_date = time();
 			$dbPost->sharedTag = $dbTags;
