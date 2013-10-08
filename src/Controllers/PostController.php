@@ -8,6 +8,8 @@ class PostController
 		$callback();
 	}
 
+
+
 	/**
 	* @route /posts
 	* @route /posts/{query}
@@ -31,22 +33,31 @@ class PostController
 
 		$page = 1;
 		$params = [];
-		$params[':limit'] = 20;
-		$params[':offset'] = ($page - 1) * $params[':limit'];
 
+		$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
+		{
+			return PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety));
+		});
 		//todo safety [user choice]
-		//todo safety [user privileges]
+
+		$whereSql = 'WHERE safety IN (' . R::genSlots($allowedSafety) . ')';
+		$params = array_merge($params, $allowedSafety);
+
 		//todo construct WHERE based on filters
-		$whereSql = '';
 
 		//todo construct ORDER based on filers
 		$orderSql = 'ORDER BY upload_date DESC';
 
-		$limitSql = 'LIMIT :limit OFFSET :offset';
+		$limitSql = 'LIMIT ? OFFSET ?';
+		$postsPerPage = intval($this->config->browsing->postsPerPage);
+		$params[] = $postsPerPage;
+		$params[] = ($page - 1) * $postsPerPage;
 
 		$posts = R::findAll('post', sprintf('%s %s %s', $whereSql, $orderSql, $limitSql), $params);
 		$this->context->transport->posts = $posts;
 	}
+
+
 
 	/**
 	* @route /post/upload
@@ -123,11 +134,11 @@ class PostController
 			move_uploaded_file($suppliedFile['tmp_name'], $path);
 			R::store($dbPost);
 
-			//todo: generate thumbnail
-
 			$this->context->transport->success = true;
 		}
 	}
+
+
 
 	/**
 	* Action that decorates the page containing the post.
@@ -145,6 +156,82 @@ class PostController
 		$this->context->subTitle = 'showing @' . $post->id;
 		$this->context->transport->post = $post;
 	}
+
+
+
+	/**
+	* Action that renders the thumbnail of the requested file and sends it to user.
+	* @route /post/thumb/{id}
+	*/
+	public function thumbAction($id)
+	{
+		$this->context->layoutName = 'layout-file';
+
+		$post = R::findOne('post', 'id = ?', [$id]);
+		if (!$post)
+			throw new SimpleException('Invalid post ID "' . $id . '"');
+
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
+
+		$path = $this->config->main->thumbsPath . DIRECTORY_SEPARATOR . $post->name . '.png';
+		if (!file_exists($path))
+		{
+			$srcPath = $this->config->main->thumbsPath . DIRECTORY_SEPARATOR . $post->name;
+			$dstPath = $path;
+			$dstWidth = $this->config->browsing->thumbWidth;
+			$dstHeight = $this->config->browsing->thumbHeight;
+
+			switch($post->mime_type)
+			{
+				case 'image/jpeg':
+					$srcImage = imagecreatefromjpeg($srcPath);
+					break;
+				case 'image/png':
+					$srcImage = imagecreatefrompng($srcPath);
+					break;
+				case 'image/gif':
+					$srcImage = imagecreatefromgif($srcPath);
+					break;
+				case 'application/x-shockwave-flash':
+					$path = $this->config->main->mediaPath . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'thumb-swf.png';
+					break;
+				default:
+					$path = $this->config->main->mediaPath . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'thumb.png';
+					break;
+			}
+
+			if (isset($srcImage))
+			{
+				switch ($this->config->browsing->thumbStyle)
+				{
+					case 'outside':
+						$dstImage = ThumbnailHelper::cropOutside($srcImage, $dstWidth, $dstHeight);
+						break;
+					case 'inside':
+						$dstImage = ThumbnailHelper::cropInside($srcImage, $dstWidth, $dstHeight);
+						break;
+					default:
+						throw new SimpleException('Unknown thumbnail crop style');
+				}
+
+				imagepng($dstImage, $dstPath);
+				imagedestroy($srcImage);
+				imagedestroy($dstImage);
+			}
+		}
+		if (!is_readable($path))
+			throw new SimpleException('Thumbnail file is not readable');
+
+		\Chibi\HeadersHelper::set('Pragma', 'public');
+		\Chibi\HeadersHelper::set('Cache-Control', 'max-age=86400');
+		\Chibi\HeadersHelper::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + 86400));
+
+		$this->context->transport->mimeType = 'image/png';
+		$this->context->transport->filePath = $path;
+	}
+
+
 
 	/**
 	* Action that renders the requested file itself and sends it to user.
@@ -170,6 +257,8 @@ class PostController
 		$this->context->transport->mimeType = $post->mimeType;
 		$this->context->transport->filePath = $path;
 	}
+
+
 
 	/**
 	* @route /favorites
