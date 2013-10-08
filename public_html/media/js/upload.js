@@ -3,8 +3,6 @@ $(function()
 	var handler = $('#file-handler');
 	var tags = []; //todo: retrieve tags
 
-	$('#upload-step2').hide();
-
 	handler.on('dragenter', function(e)
 	{
 		$(this).addClass('active');
@@ -43,24 +41,33 @@ $(function()
 		{
 			$(this).remove();
 		});
+		if ($('#upload-step2 .post').length == 1)
+		{
+			$('#upload-step2').slideUp();
+			$('#upload-no-posts').slideDown();
+		}
 	});
 
 
-	$('#upload-step2 form').submit(function(e)
+	$('#the-submit').click(function(e)
 	{
-		var url = $(this).attr('action') + '?json';
 		e.preventDefault();
-		var posts = $('.post', $(this));
+		var theSubmit = $(this);
+		theSubmit.addClass('inactive');
+		var posts = $('#upload-step2 .post');
 
 		if (posts.length == 0)
 		{
+			//shouldn't happen
 			alert('No posts to upload!');
 			return;
 		}
 
+		var ajaxCalls = [];
 		posts.each(function()
 		{
 			var postDom = $(this);
+			var url = postDom.find('form').attr('action') + '?json';
 			var file = postDom.data('file');
 			var tags = postDom.find('[name=tags]').val();
 			var safety = postDom.find('[name=safety]:checked').val();
@@ -69,29 +76,61 @@ $(function()
 			fd.append('tags', tags);
 			fd.append('safety', safety);
 
-			var ajax =
+			postDom.find(':input').attr('readonly', true);
+			postDom.addClass('inactive');
+
+			var ajaxData =
 			{
 				url: url,
 				data: fd,
 				processData: false,
 				contentType: false,
 				type: 'POST',
-				success: function(data)
-				{
-					//todo: do this nice
-					if (data['success'])
-					{
-						postDom.slideUp();
-						//alert(file.name + ': success!');
-					}
-					else
-					{
-						alert(data['errorMessage']);
-					}
-				}
+				context: postDom
 			};
 
-			$.ajax(ajax);
+			var defer = $.ajax(ajaxData)
+				.then(function(data)
+				{
+					data.postDom = $(this);
+					return data;
+				}).promise();
+
+			ajaxCalls.push(defer);
+		});
+
+
+		$.when.all(ajaxCalls).then(function(allData)
+		{
+			var errors = false;
+			for (var i in allData)
+			{
+				var data = allData[i];
+				var postDom = data.postDom;
+				if (data['success'])
+				{
+					postDom.slideUp(function()
+					{
+						$(this).remove();
+					});
+				}
+				else
+				{
+					postDom.removeClass('inactive');
+					postDom.find(':input').attr('readonly', false);
+					postDom.find('.alert').text(data['errorMessage']).slideDown();
+					errors = true;
+				}
+			}
+
+			if (errors)
+			{
+				theSubmit.removeClass('inactive');
+			}
+			else
+			{
+				window.location.href = $('#upload-step2').attr('data-redirect-url');
+			}
 		});
 	});
 
@@ -103,6 +142,7 @@ $(function()
 			{
 				var file = files[i];
 				var postDom = $('#post-template').clone(true);
+				postDom.find('form').submit(false);
 				postDom.removeAttr('id');
 				postDom.data('file', file);
 				$('.file-name strong', postDom).text(file.name);

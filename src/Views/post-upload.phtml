@@ -25,42 +25,49 @@
 			<div class="clear"></div>
 		</div>
 
-		<div id="upload-step2">
-			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
-				<div class="posts">
-				</div>
+		<div id="upload-step2" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
+			<div class="posts">
+			</div>
 
-				<div class="submit-wrapper">
-					<input type="submit" value="Submit" class="submit btn"/>
-				</div>
-			</form>
+			<div class="submit-wrapper">
+				<input id="the-submit" type="submit" value="Submit" class="submit btn"/>
+			</div>
 		</div>
 
 		<div id="post-template" class="post">
-			<a class="remove-trigger">
-				remove <span>&times;</span>
-			</a>
+			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
+				<p class="alert alert-error">Some kind of error</p>
 
-			<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
-			<div>
-				<div class="file-name">
-					<label class="left">File:</label>
-					<strong>filename.jpg</strong>
-				</div>
+				<a class="remove-trigger">
+					remove <span>&times;</span>
+				</a>
 
-				<div class="safety">
-					<label class="left">Safety:</label>
-					<label><input type="radio" name="safety" value="<?php echo PostSafety::Safe ?>" checked="checked"/> Safe for work</label>
-					<label><input type="radio" name="safety" value="<?php echo PostSafety::Sketchy ?>"/> Sketchy</label>
-					<label><input type="radio" name="safety" value="<?php echo PostSafety::Unsafe ?>"/> Not safe for work</label>
-				</div>
+				<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+				<div>
+					<div class="file-name">
+						<label class="left">File:</label>
+						<strong>filename.jpg</strong>
+					</div>
 
-				<div class="tags">
-					<label class="left">Tags:</label>
-					<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
+					<div class="safety">
+						<label class="left">Safety:</label>
+						<label><input type="radio" name="safety" value="<?php echo PostSafety::Safe ?>" checked="checked"/> Safe for work</label>
+						<label><input type="radio" name="safety" value="<?php echo PostSafety::Sketchy ?>"/> Sketchy</label>
+						<label><input type="radio" name="safety" value="<?php echo PostSafety::Unsafe ?>"/> Not safe for work</label>
+					</div>
+
+					<div class="tags">
+						<label class="left">Tags:</label>
+						<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
+					</div>
 				</div>
-			</div>
-			<div class="clear"></div>
+				<div class="clear"></div>
+			</form>
+		</div>
+
+		<div id="upload-no-posts">
+			<p class="alert alert-warning">Well, that&rsquo;s disappointing&hellip;</p>
+			<p><a href="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">Back to post list</a> or <a href="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>">try uploading again</a>.</p>
 		</div>
 	</div>
 

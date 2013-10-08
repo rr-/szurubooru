@@ -83,6 +83,8 @@ class PostController
 			foreach ($suppliedTags as $tag)
 				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
 					throw new SimpleException('Invalid tag "' . $tag . '"');
+			if (empty($suppliedTags))
+				throw new SimpleException('No tags set');
 
 			$suppliedFile = $_FILES['file'];
 

@@ -29,7 +29,7 @@ class Bootstrap
 
 		$this->context->title = $this->config->main->title;
 		$this->context->stylesheets = ['core.css'];
-		$this->context->scripts = [];
+		$this->context->scripts = ['core.js'];
 
 		$this->context->layoutName = isset($_GET['json'])
 			? 'layout-json'

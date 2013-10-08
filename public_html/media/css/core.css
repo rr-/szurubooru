@@ -93,3 +93,8 @@ nav li.search input {
 #inner-content {
 	overflow: hidden;
 }
+
+p:first-child,
+h1:first-child {
+	margin-top: 0;
+}
