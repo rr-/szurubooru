@@ -1,27 +1,53 @@
 <?php
 require_once 'src/core.php';
+$config = configFactory();
+$fontsPath = $config->main->mediaPath . DS . 'fonts' . DS;
+$libPath = $config->main->mediaPath . DS . 'lib' . DS;
 
-function download($source, $destination)
+
+
+function download($source, $destination = null)
 {
+	echo 'Downloading: ' . $source . '...' . PHP_EOL;
+	flush();
+
+	if ($destination !== null and file_exists($destination))
+		return file_get_contents($destination);
+
 	$content = file_get_contents($source);
-	if (substr($destination, -1, 1) == '/')
-		$destination .= basename($source);
-	file_put_contents($destination, $content);
+	if ($destination !== null)
+	{
+		$dir = dirname($destination);
+		if (!file_exists($dir))
+			mkdir($dir, 0755, true);
+
+		file_put_contents($destination, $content);
+	}
+	return $content;
 }
 
-$config = configFactory();
-$cssPath = $config->main->mediaPath . DS . 'css' . DS;
-$jsPath = $config->main->mediaPath . DS . 'js' . DS;
-$fontsPath = $config->main->mediaPath . DS . 'fonts' . DS;
+
 
 //jQuery
-download('http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', $jsPath . 'jquery.min.js');
-download('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js', $jsPath . 'jquery-ui.min.js');
-download('http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css', $cssPath . 'jquery-ui.css');
+download('http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', $libPath . 'jquery' . DS . 'jquery.min.js');
+
+//jQuery UI
+download('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js', $libPath . 'jquery-ui' . DS . 'jquery-ui.min.js');
+$manifest = download('http://ajax.googleapis.com/ajax/libs/jqueryui/1/MANIFEST');
+$lines = explode("\n", str_replace("\r", '', $manifest));
+foreach ($lines as $line)
+{
+	if (preg_match('/themes\/flick\/(.*?) /', $line, $matches))
+	{
+		$srcUrl = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/' . $matches[0];
+		$dstUrl = $libPath . 'jquery-ui' . DS . $matches[1];
+		download($srcUrl, $dstUrl);
+	}
+}
 
 //jQuery Tag-it!
-download('http://raw.github.com/aehlke/tag-it/master/css/jquery.tagit.css', $cssPath . 'jquery.tagit.css');
-download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $jsPath . 'jquery.tagit.js');
+download('http://raw.github.com/aehlke/tag-it/master/css/jquery.tagit.css', $libPath . 'tagit' . DS . 'jquery.tagit.css');
+download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $libPath . 'tagit' . DS . 'jquery.tagit.js');
 
 //fonts
 download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans.ttf', $fontsPath . 'DroidSans.ttf');

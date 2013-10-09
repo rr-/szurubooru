@@ -3,8 +3,8 @@ class PostController
 {
 	public function workWrapper($callback)
 	{
-		$this->context->stylesheets []= 'jquery.tagit.css';
-		$this->context->scripts []= 'jquery.tagit.js';
+		$this->context->stylesheets []= '../lib/tagit/jquery.tagit.css';
+		$this->context->scripts []= '../lib/tagit/jquery.tagit.js';
 		$callback();
 	}
 
