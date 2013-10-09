@@ -28,8 +28,8 @@ class Bootstrap
 		session_start();
 
 		$this->context->title = $this->config->main->title;
-		$this->context->stylesheets = ['core.css', 'jquery-ui.css', 'jquery.tagit.css'];
-		$this->context->scripts = ['core.js','jquery.min.js','jquery-ui.min.js','jquery.tagit.js'];
+		$this->context->stylesheets = ['core.css', 'jquery-ui.css'];
+		$this->context->scripts = ['core.js','jquery.min.js','jquery-ui.min.js'];
 
 		$this->context->layoutName = isset($_GET['json'])
 			? 'layout-json'
