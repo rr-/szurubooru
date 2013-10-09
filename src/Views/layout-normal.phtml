@@ -10,10 +10,6 @@
 		<?php foreach ($this->context->stylesheets as $name): ?>
 			<link rel="stylesheet" type="text/css" href="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/css/' . $name) ?>"/>
 		<?php endforeach ?>
-		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700">
-		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
-		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 		<?php foreach ($this->context->scripts as $name): ?>
 			<script type="text/javascript" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/js/' . $name) ?>"></script>
 		<?php endforeach ?>
