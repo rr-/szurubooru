@@ -1,0 +1,13 @@
+<?php if (isset($this->context->transport->errorMessage)): ?>
+	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
+<?php else: ?>
+	<ul>
+		<?php foreach ($this->context->transport->tagDistribution as $tagName => $count): ?>
+			<li>
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tagName]) ?>">
+					<?php echo $tagName . ' (' . $count . ')' ?>
+				</a>
+			</li>
+		<?php endforeach ?>
+	</ul>
+<?php endif ?>

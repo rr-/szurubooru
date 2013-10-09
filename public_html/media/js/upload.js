@@ -1,8 +1,12 @@
 $(function()
 {
-	var handler = $('#file-handler');
-	var tags = []; //todo: retrieve tags
+	var tags = [];
+	$.getJSON('/tags?json', function(data)
+	{
+		tags = data['tags'];
+	});
 
+	var handler = $('#file-handler');
 	handler.on('dragenter', function(e)
 	{
 		$(this).addClass('active');
@@ -146,8 +150,15 @@ $(function()
 				postDom.removeAttr('id');
 				postDom.data('file', file);
 				$('.file-name strong', postDom).text(file.name);
-				$('.tags input', postDom).tagit({caseSensitive: true, availableTags: tags, placeholderText: $('.tags input').attr('placeholder')});
 				$('.posts').append(postDom);
+
+				postDom.show();
+				var tagItOptions =
+				{	caseSensitive: true,
+					availableTags: tags,
+					placeholderText: $('.tags input').attr('placeholder')
+				};
+				$('.tags input', postDom).tagit(tagItOptions);
 
 				if (!file.type.match('image.*'))
 				{

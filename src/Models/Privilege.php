@@ -7,4 +7,5 @@ class Privilege extends Enum
 	const RetrievePost = 4;
 	const ListUsers = 5;
 	const ListComments = 6;
+	const ListTags = 7;
 }
