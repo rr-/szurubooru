@@ -74,6 +74,7 @@
 .post label.left {
 	display: inline-block;
 	width: 4em;
+	float: left;
 }
 .post .safety label:not(.left) {
 	margin-right: 0.75em;
@@ -85,6 +86,7 @@
 	max-width: 50%;
 	display: inline-block;
 	vertical-align: middle;
+	line-height: 33px;
 }
 
 .safety-sfw {
@@ -98,7 +100,7 @@
 }
 
 ul.tagit {
-	display: inline-block;
+	display: block;
 	vertical-align: middle;
 	margin: 0;
 	font-size: 1em;
