@@ -6,4 +6,5 @@ class AccessRank extends Enum
 	const PowerUser = 2;
 	const Moderator = 3;
 	const Admin = 4;
+	const Nobody = 5;
 }
