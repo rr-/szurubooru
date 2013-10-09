@@ -2,8 +2,74 @@
 	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
 <?php else: ?>
 	<?php foreach ($this->context->transport->posts as $post): ?>
-		<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $post->id]) ?>">
-			<img src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['id' => $post->id]) ?>" alt="@<?php echo $post->id ?>"/>
+		<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $post['id']]) ?>">
+			<img src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['id' => $post['id']]) ?>" alt="@<?php echo $post['id'] ?>"/>
 		</a>
 	<?php endforeach ?>
 <?php endif ?>
+
+<?php
+if (!function_exists('pageUrl'))
+{
+	function pageUrl($page)
+	{
+		$context = \Chibi\Registry::getContext();
+		$page = max(1, $page);
+		$page = min($context->transport->pageCount, $page);
+		$params = [];
+		$params['page'] = $page;
+		if (!empty($context->transport->searchQuery))
+		{
+			$params['query'] = $context->transport->searchQuery;
+		}
+		return \Chibi\UrlHelper::route('post', 'list', $params);
+	}
+}
+?>
+
+<nav class="paginator-wrapper">
+	<ul class="paginator">
+		<?php if ($this->context->transport->page > 1): ?>
+			<li>
+		<?php else: ?>
+			<li class="inactive">
+		<?php endif ?>
+			<a href="<?php echo pageUrl($this->context->transport->page - 1) ?>">
+				&laquo;
+			</a>
+		</li>
+
+		<?php
+			$pagesVisible = [];
+			$pagesVisible []= 1;
+			$pagesVisible []= $this->context->transport->pageCount;
+			$delta = 3;
+			$pagesVisible = array_merge($pagesVisible, range($this->context->transport->page - $delta, $this->context->transport->page + $delta));
+			$pagesVisible = array_filter($pagesVisible, function($x) { return $x >= 1 and $x <= $this->context->transport->pageCount; });
+			$pagesVisible = array_unique($pagesVisible);
+			sort($pagesVisible, SORT_NUMERIC);
+		?>
+
+		<?php foreach ($pagesVisible as $page): ?>
+			<?php if ($page == $this->context->transport->page): ?>
+				<li class="active">
+			<?php else: ?>
+				<li>
+			<?php endif ?>
+				<a href="<?php echo pageUrl($page) ?>">
+					<?php echo $page ?>
+				</a>
+			</li>
+		<?php endforeach ?>
+
+		<?php if ($this->context->transport->page < $this->context->transport->pageCount): ?>
+			<li>
+		<?php else: ?>
+			<li class="inactive">
+		<?php endif ?>
+			<a href="<?php echo pageUrl($this->context->transport->page + 1) ?>">
+				&raquo;
+			</a>
+		</li>
+	</ul>
+</nav>

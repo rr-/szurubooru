@@ -12,48 +12,48 @@ body {
 	margin: 1.5em 0.75em;
 }
 
-nav {
+#top-nav {
 	background: #eee;
 	color: black;
 }
 
-nav ul {
+#top-nav ul {
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
 }
 
-nav li {
+#top-nav li {
 	display: inline-block;
 }
 
-nav li input,
-nav li a {
+#top-nav li input,
+#top-nav li a {
 	color: black;
 	display: inline-block;
 	margin-bottom: 3px;
 	text-decoration: none;
 }
 
-nav li a {
+#top-nav li a {
 	padding: 0.2em 0.75em;
 	outline: 0;
 }
 
-nav li.search {
+#top-nav li.search {
 	background: white;
 	margin: 0 0.25em;
 	padding: 0.2em 0.5em;
 }
 
-nav li a:focus,
-nav li a:hover {
+#top-nav li a:focus,
+#top-nav li a:hover {
 	color: firebrick;
 	border-bottom: 3px solid firebrick;
 	margin-bottom: 0;
 }
 
-nav li.search input {
+#top-nav li.search input {
 	border: 0;
 }
 

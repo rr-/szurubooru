@@ -12,11 +12,16 @@ class PostController
 
 	/**
 	* @route /posts
+	* @route /posts/{page}
 	* @route /posts/{query}
-	* @validate query .*
+	* @route /posts/{query}/{page}
+	* @validate page \d*
+	* @validate query [^\/]*
 	*/
-	public function listAction($query = null)
+	public function listAction($page = 1, $query = null)
 	{
+		$this->context->stylesheets []= 'post-list.css';
+
 		#redirect requests in form of /posts/?query=... to canonical address
 		$formQuery = InputHelper::get('query');
 		if (!empty($formQuery))
@@ -27,33 +32,48 @@ class PostController
 		}
 
 		$this->context->subTitle = 'browsing posts';
-		$this->context->searchQuery = $query;
+		$page = intval($page);
+		$postsPerPage = intval($this->config->browsing->postsPerPage);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListPosts);
 
-		$page = 1;
-		$params = [];
-
-		$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
+		$buildDbQuery = function($dbQuery)
 		{
-			return PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety));
-		});
-		//todo safety [user choice]
+			$dbQuery->from('post');
 
-		$whereSql = 'WHERE safety IN (' . R::genSlots($allowedSafety) . ')';
-		$params = array_merge($params, $allowedSafety);
+			$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
+			{
+				return PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety));
+			});
+			//todo safety [user choice]
 
-		//todo construct WHERE based on filters
+			$dbQuery->where('safety IN (' . R::genSlots($allowedSafety) . ')');
+			foreach ($allowedSafety as $s)
+				$dbQuery->put($s);
 
-		//todo construct ORDER based on filers
-		$orderSql = 'ORDER BY upload_date DESC';
+			//todo construct WHERE based on filters
 
-		$limitSql = 'LIMIT ? OFFSET ?';
-		$postsPerPage = intval($this->config->browsing->postsPerPage);
-		$params[] = $postsPerPage;
-		$params[] = ($page - 1) * $postsPerPage;
+			//todo construct ORDER based on filers
+		};
 
-		$posts = R::findAll('post', sprintf('%s %s %s', $whereSql, $orderSql, $limitSql), $params);
+		$countDbQuery = R::$f->begin();
+		$countDbQuery->select('COUNT(1) AS count');
+		$buildDbQuery($countDbQuery);
+		$postCount = intval($countDbQuery->get('row')['count']);
+		$pageCount = ceil($postCount / $postsPerPage);
+
+		$searchDbQuery = R::$f->begin();
+		$searchDbQuery->select('*');
+		$buildDbQuery($searchDbQuery);
+		$searchDbQuery->orderBy('upload_date DESC');
+		$searchDbQuery->limit('?')->put($postsPerPage);
+		$searchDbQuery->offset('?')->put(($page - 1) * $postsPerPage);
+
+		$posts = $searchDbQuery->get();
+		$this->context->transport->searchQuery = $query;
+		$this->context->transport->page = $page;
+		$this->context->transport->postCount = $postCount;
+		$this->context->transport->pageCount = $pageCount;
 		$this->context->transport->posts = $posts;
 	}
 
