@@ -1,10 +1,3 @@
 local.ini
 db.sqlite
 db.sqlite-journal
-public_html/media/js/jquery.tagit.js
-public_html/media/css/jquery.tagit.css
-public_html/media/js/jquery.min.js
-public_html/media/js/jquery-ui.min.js
-public_html/media/css/jquery-ui.css
-public_html/media/fonts/DroidSans-Bold.ttf
-public_html/media/fonts/DroidSans.ttf
