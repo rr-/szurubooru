@@ -149,7 +149,10 @@ class PostController
 					throw new SimpleException('Invalid file type "' . $mimeType . '"');
 			}
 
-			//todo: find out duplicate files
+			$fileHash = md5_file($suppliedFile['tmp_name']);
+			$duplicatedPost = R::findOne('post', 'file_hash = ?', [$fileHash]);
+			if ($duplicatedPost !== null)
+				throw new SimpleException('Duplicate upload');
 
 			do
 			{
@@ -174,6 +177,8 @@ class PostController
 			$dbPost = R::dispense('post');
 			$dbPost->type = $postType;
 			$dbPost->name = $name;
+			$dbPost->orig_name = basename($suppliedFile['name']);
+			$dbPost->file_hash = $fileHash;
 			$dbPost->mime_type = $mimeType;
 			$dbPost->safety = $suppliedSafety;
 			$dbPost->upload_date = time();
