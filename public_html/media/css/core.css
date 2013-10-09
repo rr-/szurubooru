@@ -23,7 +23,7 @@ body {
 
 #content {
 	padding: 0;
-	margin: 1.5em 0.75em;
+	margin: 1.5em 0;
 }
 
 #top-nav {
@@ -32,7 +32,7 @@ body {
 }
 
 #top-nav ul {
-	margin: 0;
+	margin: 0 -0.75em;
 	padding: 0;
 	list-style-type: none;
 }

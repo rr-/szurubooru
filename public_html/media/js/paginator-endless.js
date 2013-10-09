@@ -17,8 +17,7 @@ function scrolled()
 				var dom = $(response);
 				var nextPage = dom.find('.paginator .next:not(.inactive) a').attr('href');
 				$(document).data('page-next', nextPage);
-				$('.posts').append($(response).find('.posts').children().fadeIn('slow'));
-				$('body').trigger('postsLoaded');
+				$('.paginator-content').append($(response).find('.paginator-content').children().fadeIn('slow'));
 			});
 		}
 	}
