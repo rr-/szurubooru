@@ -7,10 +7,10 @@
 		<?php else: ?>
 			<title><?php echo $this->context->title ?></title>
 		<?php endif ?>
-		<?php foreach ($this->context->stylesheets as $name): ?>
+		<?php foreach (array_unique($this->context->stylesheets) as $name): ?>
 			<link rel="stylesheet" type="text/css" href="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/css/' . $name) ?>"/>
 		<?php endforeach ?>
-		<?php foreach ($this->context->scripts as $name): ?>
+		<?php foreach (array_unique($this->context->scripts) as $name): ?>
 			<script type="text/javascript" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/js/' . $name) ?>"></script>
 		<?php endforeach ?>
 	</head>
