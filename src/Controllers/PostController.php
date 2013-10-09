@@ -232,7 +232,7 @@ class PostController
 		$path = $this->config->main->thumbsPath . DS . $post->name . '.png';
 		if (!file_exists($path))
 		{
-			$srcPath = $this->config->main->thumbsPath . DS . $post->name;
+			$srcPath = $this->config->main->filesPath . DS . $post->name;
 			$dstPath = $path;
 			$dstWidth = $this->config->browsing->thumbWidth;
 			$dstHeight = $this->config->browsing->thumbHeight;
