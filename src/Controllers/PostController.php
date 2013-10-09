@@ -18,7 +18,7 @@ class PostController
 	* @validate page \d*
 	* @validate query [^\/]*
 	*/
-	public function listAction($page = 1, $query = null)
+	public function listAction($query = null, $page = 1)
 	{
 		$this->context->stylesheets []= 'post-list.css';
 		if ($this->config->browsing->endlessScrolling)
@@ -311,10 +311,12 @@ class PostController
 
 	/**
 	* @route /favorites
+	* @route /favorites/{page}
+	* @validate page \d*
 	*/
-	public function favoritesAction()
+	public function favoritesAction($page = 1)
 	{
-		$this->listAction('favmin:1');
+		$this->listAction('favmin:1', $page);
 		$this->context->viewName = 'post-list';
 	}
 }

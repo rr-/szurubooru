@@ -18,6 +18,8 @@ if (!function_exists('pageUrl'))
 	function pageUrl($page)
 	{
 		$context = \Chibi\Registry::getContext();
+		$controller = $context->route->simpleControllerName;
+		$action = $context->route->simpleActionName;
 		$page = max(1, $page);
 		$page = min($context->transport->pageCount, $page);
 		$params = [];
@@ -26,7 +28,7 @@ if (!function_exists('pageUrl'))
 		{
 			$params['query'] = $context->transport->searchQuery;
 		}
-		return \Chibi\UrlHelper::route('post', 'list', $params);
+		return \Chibi\UrlHelper::route($controller, $action, $params);
 	}
 }
 ?>
