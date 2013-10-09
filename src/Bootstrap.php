@@ -30,14 +30,14 @@ class Bootstrap
 		$this->context->title = $this->config->main->title;
 		$this->context->stylesheets =
 		[
+			'../lib/jquery-ui/jquery-ui.css',
 			'core.css',
-			'../lib/jquery-ui/jquery-ui.css'
 		];
 		$this->context->scripts =
 		[
-			'core.js',
 			'../lib/jquery/jquery.min.js',
-			'../lib/jquery-ui/jquery-ui.min.js'
+			'../lib/jquery-ui/jquery-ui.min.js',
+			'core.js',
 		];
 
 		$this->context->layoutName = isset($_GET['json'])
