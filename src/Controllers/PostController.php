@@ -157,7 +157,7 @@ class PostController
 			do
 			{
 				$name = md5(mt_rand() . uniqid());
-				$path = $this->config->main->filesPath . DIRECTORY_SEPARATOR . $name;
+				$path = $this->config->main->filesPath . DS . $name;
 			}
 			while (file_exists($path));
 
@@ -228,10 +228,10 @@ class PostController
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
 
-		$path = $this->config->main->thumbsPath . DIRECTORY_SEPARATOR . $post->name . '.png';
+		$path = $this->config->main->thumbsPath . DS . $post->name . '.png';
 		if (!file_exists($path))
 		{
-			$srcPath = $this->config->main->thumbsPath . DIRECTORY_SEPARATOR . $post->name;
+			$srcPath = $this->config->main->thumbsPath . DS . $post->name;
 			$dstPath = $path;
 			$dstWidth = $this->config->browsing->thumbWidth;
 			$dstHeight = $this->config->browsing->thumbHeight;
@@ -248,10 +248,10 @@ class PostController
 					$srcImage = imagecreatefromgif($srcPath);
 					break;
 				case 'application/x-shockwave-flash':
-					$path = $this->config->main->mediaPath . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'thumb-swf.png';
+					$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb-swf.png';
 					break;
 				default:
-					$path = $this->config->main->mediaPath . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'thumb.png';
+					$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.png';
 					break;
 			}
 
@@ -302,7 +302,7 @@ class PostController
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost, PostSafety::toString($post->safety));
 
-		$path = $this->config->main->filesPath . DIRECTORY_SEPARATOR . $post->name;
+		$path = $this->config->main->filesPath . DS . $post->name;
 		if (!file_exists($path))
 			throw new SimpleException('Post file does not exist');
 		if (!is_readable($path))
