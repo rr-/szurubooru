@@ -207,6 +207,7 @@ class PostController
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
 
+		$this->context->stylesheets []= 'post-view.css';
 		$this->context->subTitle = 'showing @' . $post->id;
 		$this->context->transport->post = $post;
 	}

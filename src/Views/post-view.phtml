@@ -1,5 +1,11 @@
 <?php if (!empty($this->context->transport->errorMessage)): ?>
 	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
 <?php else: ?>
-	<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
+	<div class="post-wrapper">
+		<?php if ($this->context->transport->post->type == PostType::Image): ?>
+			<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
+		<?php elseif ($this->context->transport->post->type == PostType::Flash): ?>
+			<embed type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>"/>
+		<?php endif ?>
+	</div>
 <?php endif ?>
