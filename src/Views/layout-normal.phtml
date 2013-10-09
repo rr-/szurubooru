@@ -13,7 +13,7 @@
 		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700">
 		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 		<?php foreach ($this->context->scripts as $name): ?>
 			<script type="text/javascript" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/js/' . $name) ?>"></script>
 		<?php endforeach ?>
@@ -35,6 +35,9 @@
 
 						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts))
 							$nav []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
+
+						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListTags))
+							$nav []= ['Tags', \Chibi\UrlHelper::route('tag', 'list')];
 
 						if (PrivilegesHelper::confirm($this->context->user, Privilege::UploadPost))
 							$nav []= ['Upload', \Chibi\UrlHelper::route('post', 'upload')];
