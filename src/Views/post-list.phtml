@@ -1,11 +1,13 @@
 <?php if (!empty($this->context->transport->errorMessage)): ?>
 	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
 <?php else: ?>
-	<?php foreach ($this->context->transport->posts as $post): ?>
-		<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $post['id']]) ?>">
-			<img src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['id' => $post['id']]) ?>" alt="@<?php echo $post['id'] ?>"/>
-		</a>
-	<?php endforeach ?>
+	<div class="posts">
+		<?php foreach ($this->context->transport->posts as $post): ?>
+			<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $post['id']]) ?>">
+				<img src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['id' => $post['id']]) ?>" alt="@<?php echo $post['id'] ?>"/>
+			</a>
+		<?php endforeach ?>
+	</div>
 <?php endif ?>
 
 <?php
@@ -30,9 +32,9 @@ if (!function_exists('pageUrl'))
 <nav class="paginator-wrapper">
 	<ul class="paginator">
 		<?php if ($this->context->transport->page > 1): ?>
-			<li>
+			<li class="prev">
 		<?php else: ?>
-			<li class="inactive">
+			<li class="prev inactive">
 		<?php endif ?>
 			<a href="<?php echo pageUrl($this->context->transport->page - 1) ?>">
 				&laquo;
@@ -63,9 +65,9 @@ if (!function_exists('pageUrl'))
 		<?php endforeach ?>
 
 		<?php if ($this->context->transport->page < $this->context->transport->pageCount): ?>
-			<li>
+			<li class="next">
 		<?php else: ?>
-			<li class="inactive">
+			<li class="next inactive">
 		<?php endif ?>
 			<a href="<?php echo pageUrl($this->context->transport->page + 1) ?>">
 				&raquo;

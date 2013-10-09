@@ -21,6 +21,8 @@ class PostController
 	public function listAction($page = 1, $query = null)
 	{
 		$this->context->stylesheets []= 'post-list.css';
+		if ($this->config->browsing->endlessScrolling)
+			$this->context->scripts []= 'post-list-endless.js';
 
 		#redirect requests in form of /posts/?query=... to canonical address
 		$formQuery = InputHelper::get('query');
