@@ -184,7 +184,8 @@ class PostController
 			$dbPost->safety = $suppliedSafety;
 			$dbPost->upload_date = time();
 			$dbPost->sharedTag = $dbTags;
-			$dbPost->ownUser = $this->context->user;
+			$dbPost->user = $this->context->user;
+			$dbPost->size = filesize($suppliedFile['tmp_name']);
 
 			move_uploaded_file($suppliedFile['tmp_name'], $path);
 			R::store($dbPost);
