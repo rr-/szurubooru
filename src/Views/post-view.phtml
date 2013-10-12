@@ -1,183 +1,177 @@
-<?php if (!empty($this->context->transport->errorMessage)): ?>
-	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
-<?php else: ?>
+<div id="sidebar">
+	<nav>
+		<div class="left">
+			<?php if ($this->context->transport->nextPostId): ?>
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->nextPostId]) ?>">
+			<?php else: ?>
+				<a class="inactive">
+			<?php endif ?>
+				<i class="icon-next"></i>
+				<span>next post</span>
+			</a>
+		</div>
 
-	<div id="sidebar">
-		<nav>
-			<div class="left">
-				<?php if ($this->context->transport->nextPostId): ?>
-					<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->nextPostId]) ?>">
-				<?php else: ?>
-					<a class="inactive">
-				<?php endif ?>
-					<i class="icon-next"></i>
-					<span>next post</span>
+		<div class="right">
+			<?php if ($this->context->transport->prevPostId): ?>
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->prevPostId]) ?>">
+			<?php else: ?>
+				<a class="inactive">
+			<?php endif ?>
+				<span>prev post</span>
+				<i class="icon-prev"></i>
+			</a>
+		</div>
+
+		<div class="clear"></div>
+	</nav>
+
+	<div class="sidebar-unit tags">
+		<h1>tags (<?php echo count($this->context->transport->post->sharedTag) ?>)</h1>
+		<!-- todo: edit tags -->
+		<ul>
+			<?php foreach ($this->context->transport->post->sharedTag as $tag): ?>
+				<li>
+					<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
+						<?php echo $tag->name ?>
+					</a>
+					<span class="count">
+						<?php echo TextHelper::useDecimalUnits($this->context->transport->tagDistribution[$tag->name]) ?>
+					</span>
+				</li>
+			<?php endforeach ?>
+		</ul>
+	</div>
+
+	<div class="sidebar-unit details">
+		<h1>details</h1>
+
+		<div class="safety">
+			<span class="key">Safety:</span>
+			<span class="value"><?php echo PostSafety::toString($this->context->transport->post->safety) ?></span>
+		</div>
+
+		<div class="uploader">
+			<span class="key">Uploader:</span>
+			<span class="value">
+				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->id]) ?>">
+					<?php echo $this->context->transport->post->uploader->name ?>
 				</a>
+			</span>
+		</div>
+
+		<div class="date">
+			<span class="key">Date:</span>
+			<span class="value"><?php echo date('Y-m-d H:i', $this->context->transport->post->upload_date) ?></span>
+		</div>
+
+		<?php if ($this->context->transport->post->image_width > 0): ?>
+			<div class="dim">
+				<span class="key">Dimensions:</span>
+				<span class="value"><?php printf('%dx%d',
+					$this->context->transport->post->image_width,
+					$this->context->transport->post->image_height) ?></span>
 			</div>
+		<?php endif ?>
 
-			<div class="right">
-				<?php if ($this->context->transport->prevPostId): ?>
-					<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->prevPostId]) ?>">
-				<?php else: ?>
-					<a class="inactive">
-				<?php endif ?>
-					<span>prev post</span>
-					<i class="icon-prev"></i>
-				</a>
-			</div>
+		<div class="permalink">
+			<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>">
+				<i class="icon-dl"></i>
+				<span class="ext">
+					<?php echo strtoupper(substr($this->context->transport->post->orig_name, strrpos($this->context->transport->post->orig_name, '.') + 1)) ?>
+				</span>
+				<span class="size">
+					<?php echo TextHelper::useBytesUnits($this->context->transport->post->file_size) ?>
+				</span>
+			</a>
+		</div>
+	</div>
 
-			<div class="clear"></div>
-		</nav>
-
-		<div class="sidebar-unit tags">
-			<h1>tags (<?php echo count($this->context->transport->post->sharedTag) ?>)</h1>
-			<!-- todo: edit tags -->
+	<div class="sidebar-unit favorites">
+		<?php if (count($this->context->transport->post->ownFavoritee) == 0): ?>
+			<h1>favorites</h1>
+			<p>None yet.</p>
+		<?php else: ?>
+			<h1>favorites (<?php echo count($this->context->transport->post->ownFavoritee) ?>)</h1>
 			<ul>
-				<?php foreach ($this->context->transport->post->sharedTag as $tag): ?>
+				<?php foreach ($this->context->transport->post->via('favoritee')->sharedUser as $user): ?>
 					<li>
-						<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
-							<?php echo $tag->name ?>
+						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+							<img src="<?php echo $user->avatarUrl() ?>" alt="<?php echo $user->name ?>">
 						</a>
-						<span class="count">
-							<?php echo TextHelper::useDecimalUnits($this->context->transport->tagDistribution[$tag->name]) ?>
-						</span>
 					</li>
 				<?php endforeach ?>
 			</ul>
-		</div>
+		<?php endif ?>
+	</div>
 
-		<div class="sidebar-unit details">
-			<h1>details</h1>
+	<div class="sidebar-unit options">
+		<h1>options</h1>
 
-			<div class="safety">
-				<span class="key">Safety:</span>
-				<span class="value"><?php echo PostSafety::toString($this->context->transport->post->safety) ?></span>
-			</div>
-
-			<div class="uploader">
-				<span class="key">Uploader:</span>
-				<span class="value">
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->id]) ?>">
-						<?php echo $this->context->transport->post->uploader->name ?>
-					</a>
-				</span>
-			</div>
-
-			<div class="date">
-				<span class="key">Date:</span>
-				<span class="value"><?php echo date('Y-m-d H:i', $this->context->transport->post->upload_date) ?></span>
-			</div>
-
-			<?php if ($this->context->transport->post->image_width > 0): ?>
-				<div class="dim">
-					<span class="key">Dimensions:</span>
-					<span class="value"><?php printf('%dx%d',
-						$this->context->transport->post->image_width,
-						$this->context->transport->post->image_height) ?></span>
-				</div>
-			<?php endif ?>
-
-			<div class="permalink">
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>">
-					<i class="icon-dl"></i>
-					<span class="ext">
-						<?php echo strtoupper(substr($this->context->transport->post->orig_name, strrpos($this->context->transport->post->orig_name, '.') + 1)) ?>
-					</span>
-					<span class="size">
-						<?php echo TextHelper::useBytesUnits($this->context->transport->post->file_size) ?>
-					</span>
-				</a>
-			</div>
-		</div>
-
-		<div class="sidebar-unit favorites">
-			<?php if (count($this->context->transport->post->ownFavoritee) == 0): ?>
-				<h1>favorites</h1>
-				<p>None yet.</p>
-			<?php else: ?>
-				<h1>favorites (<?php echo count($this->context->transport->post->ownFavoritee) ?>)</h1>
-				<ul>
-					<?php foreach ($this->context->transport->post->via('favoritee')->sharedUser as $user): ?>
-						<li>
-							<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
-								<img src="<?php echo $user->avatarUrl() ?>" alt="<?php echo $user->name ?>">
+		<nav>
+			<ul>
+				<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::FavoritePost)): ?>
+					<?php if (!$this->context->favorite): ?>
+						<li class="add-fav">
+							<a href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
+								Add to favorites
 							</a>
 						</li>
-					<?php endforeach ?>
-				</ul>
-			<?php endif ?>
-		</div>
-
-		<div class="sidebar-unit options">
-			<h1>options</h1>
-
-			<nav>
-				<ul>
-					<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::FavoritePost)): ?>
-						<?php if (!$this->context->favorite): ?>
-							<li class="add-fav">
-								<a href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
-									Add to favorites
-								</a>
-							</li>
-						<?php else: ?>
-							<li class="rem-fav">
-								<a href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
-									Remove from favorites
-								</a>
-							</li>
-						<?php endif ?>
+					<?php else: ?>
+						<li class="rem-fav">
+							<a href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
+								Remove from favorites
+							</a>
+						</li>
 					<?php endif ?>
+				<?php endif ?>
 
-					<!--
-					<li>
-						<a href="#">
-							Edit tags
-						</a>
-					</li>
+				<!--
+				<li>
+					<a href="#">
+						Edit tags
+					</a>
+				</li>
 
-					<li>
-						<a href="#">
-							Change safety
-						</a>
-					</li>
+				<li>
+					<a href="#">
+						Change safety
+					</a>
+				</li>
 
-					<li>
-						<a href="#">
-							Show on main page
-						</a>
-					</li>
+				<li>
+					<a href="#">
+						Show on main page
+					</a>
+				</li>
 
-					<li>
-						<a href="#">
-							Hide from main page
-						</a>
-					</li>
+				<li>
+					<a href="#">
+						Hide from main page
+					</a>
+				</li>
 
-					<li>
-						<a href="#">
-							Remove
-						</a>
-					</li>
-					-->
-				</ul>
-			</nav>
+				<li>
+					<a href="#">
+						Remove
+					</a>
+				</li>
+				-->
+			</ul>
+		</nav>
 
-			<script type="text/javascript">
-				if (!$('.options ul li').length)
-					$('.options').hide();
-			</script>
-		</div>
+		<script type="text/javascript">
+			if (!$('.options ul li').length)
+				$('.options').hide();
+		</script>
 	</div>
+</div>
 
-	<div id="inner-content">
-		<div class="post-wrapper">
-			<?php if ($this->context->transport->post->type == PostType::Image): ?>
-				<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
-			<?php elseif ($this->context->transport->post->type == PostType::Flash): ?>
-				<embed width="<?php echo $this->context->transport->post->image_width ?>" height="<?php echo $this->context->transport->post->image_height  ?>" type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>"/>
-			<?php endif ?>
-		</div>
+<div id="inner-content">
+	<div class="post-wrapper">
+		<?php if ($this->context->transport->post->type == PostType::Image): ?>
+			<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
+		<?php elseif ($this->context->transport->post->type == PostType::Flash): ?>
+			<embed width="<?php echo $this->context->transport->post->image_width ?>" height="<?php echo $this->context->transport->post->image_height  ?>" type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>"/>
+		<?php endif ?>
 	</div>
-
-<?php endif ?>
+</div>

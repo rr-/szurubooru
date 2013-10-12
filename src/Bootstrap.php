@@ -26,6 +26,7 @@ class Bootstrap
 		$this->config->chibi->baseUrl = 'http://' . rtrim($_SERVER['HTTP_HOST'], '/') . '/';
 		session_start();
 
+		$this->context->handleExceptions = false;
 		$this->context->title = $this->config->main->title;
 		$this->context->stylesheets =
 		[
@@ -63,6 +64,8 @@ class Bootstrap
 			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
 			$this->context->transport->exception = $e;
 			$this->context->transport->success = false;
+			if (!$this->context->handleExceptions)
+				$this->context->viewName = 'error-simple';
 			(new \Chibi\View())->renderFile($this->context->layoutName);
 		}
 		catch (Exception $e)

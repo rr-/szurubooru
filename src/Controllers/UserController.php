@@ -7,7 +7,7 @@ class UserController
 	public function listAction()
 	{
 		$this->context->subTitle = 'users';
-		throw new Exception('Not implemented');
+		throw new SimpleException('Not implemented');
 	}
 
 	/**
@@ -17,6 +17,6 @@ class UserController
 	public function viewAction($name)
 	{
 		$this->context->subTitle = $name;
-		throw new Exception('Not implemented');
+		throw new SimpleException('Not implemented');
 	}
 }

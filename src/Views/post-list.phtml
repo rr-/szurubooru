@@ -1,6 +1,4 @@
-<?php if (!empty($this->context->transport->errorMessage)): ?>
-	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
-<?php elseif (empty($this->context->transport->posts)): ?>
+<?php if (empty($this->context->transport->posts)): ?>
 	<p class="alert alert-warning">No posts to show.</p>
 <?php else: ?>
 	<div class="posts paginator-content">

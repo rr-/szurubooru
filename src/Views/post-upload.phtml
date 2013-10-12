@@ -1,7 +1,5 @@
 <?php if ($this->context->transport->success === true): ?>
 	<p>Post created!</p>
-<?php elseif (isset($this->context->transport->errorMessage)): ?>
-	<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
 <?php else: ?>
 
 	<div id="sidebar">

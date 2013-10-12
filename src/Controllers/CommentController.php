@@ -8,6 +8,6 @@ class CommentController
 	{
 		$this->context->activeSection = 'comments';
 		$this->context->subTitle = 'comments';
-		throw new Exception('Not implemented');
+		throw new SimpleException('Not implemented');
 	}
 }

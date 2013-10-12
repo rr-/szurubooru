@@ -12,6 +12,7 @@ class AuthController
 	*/
 	public function loginAction()
 	{
+		$this->context->handleExceptions = true;
 		$this->context->stylesheets []= 'auth.css';
 		$this->context->subTitle = 'authentication form';
 
@@ -62,6 +63,7 @@ class AuthController
 	*/
 	public function registerAction()
 	{
+		$this->context->handleExceptions = true;
 		$this->context->stylesheets []= 'auth.css';
 		$this->context->subTitle = 'registration form';
 
