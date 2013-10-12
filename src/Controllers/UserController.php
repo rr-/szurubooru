@@ -14,7 +14,7 @@ class UserController
 	* @route /user/{name}
 	* @validate name [^\/]+
 	*/
-	public function showAction($name)
+	public function viewAction($name)
 	{
 		$this->context->subTitle = $name;
 		throw new Exception('Not implemented');

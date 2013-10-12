@@ -50,4 +50,30 @@ class TextHelper
 		}
 		return constant($constantName);
 	}
+
+	private static function useUnits($number, $base, $suffixes)
+	{
+		$suffix = array_shift($suffixes);
+		if ($number < $base)
+		{
+			return sprintf('%d%s', $number, $suffix);
+		}
+		do
+		{
+			$suffix = array_shift($suffixes);
+			$number /= (float) $base;
+		}
+		while ($number >= $base and !empty($suffixes));
+		return sprintf('%.01f%s', $number, $suffix);
+	}
+
+	public static function useBytesUnits($number)
+	{
+		return self::useUnits($number, 1024, ['B', 'K', 'M', 'G']);
+	}
+
+	public static function useDecimalUnits($number)
+	{
+		return self::useUnits($number, 1000, ['', 'K', 'M']);
+	}
 }

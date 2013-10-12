@@ -100,7 +100,6 @@ body {
 
 #sidebar h1 {
 	margin-top: 0;
-	text-align: center;
 	font-weight: normal;
 }
 
@@ -111,4 +110,27 @@ body {
 p:first-child,
 h1:first-child {
 	margin-top: 0;
+}
+
+a {
+	color: firebrick;
+	text-decoration: none;
+	outline: 0;
+}
+a:focus,
+a:hover {
+	color: red;
+}
+
+i[class*='icon-'] {
+	background-image: url('../img/icons.png');
+	background-repeat: no-repeat;
+	display: inline-block;
+}
+a i[class*='icon-'] {
+	background-color: firebrick;
+}
+a:focus i[class*='icon-'],
+a:hover i[class*='icon-'] {
+	background-color: red;
 }

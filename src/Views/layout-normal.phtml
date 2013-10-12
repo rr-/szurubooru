@@ -48,7 +48,7 @@
 						}
 						else
 						{
-							$nav []= ['My account', \Chibi\UrlHelper::route('user', 'show', ['name' => $this->context->user->name])];
+							$nav []= ['My account', \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->user->name])];
 							$nav []= ['Log out', \Chibi\UrlHelper::route('auth', 'logout')];
 						}
 
@@ -62,6 +62,11 @@
 							echo '</li>';
 						}
 					?>
+					<li>
+						<form name="search" action="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
+							<input type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? $this->context->transport->searchQuery : '' ?>">
+						</form>
+					</i>
 				</ul>
 				<div class="clear"></div>
 			</div>

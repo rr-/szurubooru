@@ -68,7 +68,7 @@ class PostController
 		$searchDbQuery = R::$f->begin();
 		$searchDbQuery->select('*');
 		$buildDbQuery($searchDbQuery);
-		$searchDbQuery->orderBy('upload_date DESC');
+		$searchDbQuery->orderBy('id DESC');
 		$searchDbQuery->limit('?')->put($postsPerPage);
 		$searchDbQuery->offset('?')->put(($page - 1) * $postsPerPage);
 
@@ -205,13 +205,34 @@ class PostController
 		$post = R::findOne('post', 'id = ?', [$id]);
 		if (!$post)
 			throw new SimpleException('Invalid post ID "' . $id . '"');
+		R::preload($post, ['user', 'tag']);
+
+		$prevPost = R::findOne('post', 'id < ? ORDER BY id DESC LIMIT 1', [$id]);
+		$nextPost = R::findOne('post', 'id > ? ORDER BY id ASC LIMIT 1', [$id]);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
 
+		$dbQuery = R::$f->begin();
+		$dbQuery->select('tag.name, COUNT(1) AS count');
+		$dbQuery->from('tag');
+		$dbQuery->innerJoin('post_tag');
+		$dbQuery->on('tag.id = post_tag.tag_id');
+		$dbQuery->where('tag.id IN (' . R::genSlots($post->sharedTag) . ')');
+		foreach ($post->sharedTag as $tag)
+			$dbQuery->put($tag->id);
+		$dbQuery->groupBy('tag.id');
+		$rows = $dbQuery->get();
+		$this->context->transport->tagDistribution = [];
+		foreach ($rows as $row)
+			$this->context->transport->tagDistribution[$row['name']] = $row['count'];
+
 		$this->context->stylesheets []= 'post-view.css';
 		$this->context->subTitle = 'showing @' . $post->id;
 		$this->context->transport->post = $post;
+		$this->context->transport->uploader = R::load('user', $post->user_id);
+		$this->context->transport->prevPostId = $prevPost ? $prevPost->id : null;
+		$this->context->transport->nextPostId = $nextPost ? $nextPost->id : null;
 	}
 
 
