@@ -75,7 +75,14 @@
 		<section id="content">
 			<div class="main-wrapper">
 				<?php echo $this->renderView() ?>
+				<div class="clear"></div>
 			</div>
 		</section>
+
+		<footer>
+			<div class="main-wrapper">
+				Load: <?php echo sprintf('%.05f', microtime(true) - trueStartTime()) ?>s
+			</div>
+		</footer>
 	</body>
 </html>

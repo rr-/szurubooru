@@ -1,4 +1,13 @@
 <?php
+function trueStartTime()
+{
+	static $time = null;
+	if ($time === null)
+		$time = microtime(true);
+	return $time;
+}
+trueStartTime();
+
 require_once 'lib/redbean/RedBean/redbean.inc.php';
 require_once 'lib/chibi-core/Facade.php';
 

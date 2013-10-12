@@ -149,3 +149,12 @@ a:hover i[class*='icon-'] {
 	border-color: #ffa;
 	background-color: #ffd;
 }
+
+footer {
+	text-align: center;
+	margin-top: 1em;
+	padding-top: 0.5em;
+	border-top: 1px solid #eee;
+	font-size: small;
+	color: silver;
+}
