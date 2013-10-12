@@ -108,11 +108,6 @@ ul.tagit {
 .submit-wrapper {
 	text-align: center;
 }
-input.submit {
+#theSubmit {
 	margin: 0 auto;
-	font-size: 115%;
-	padding: 0.2em 0.7em;
-	color: white;
-	background: cornflowerblue;
-	border: 0;
 }

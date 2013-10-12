@@ -18,30 +18,18 @@ form.auth label {
 }
 
 form.auth input {
-	display: table-cell;
-	font-family: inherit;
 	display: block;
 }
 
-form.auth input:not([type="submit"]) {
+form.auth input {
 	width: 156px;
 	padding: 5px;
-	border-width: 2px;
 	margin: 0;
 }
 
-form.auth input[type="submit"] {
+form.auth button {
+	display: block;
 	margin: 0 auto;
-	background-color: #77f;
-	border: 0;
-	color: white;
-	font-weight: bold;
-	font-size: 1em;
-	padding: 8px 16px;
-}
-
-form.auth input[type="submit"]:hover {
-	background-color: #55f;
 }
 
 form.auth p {

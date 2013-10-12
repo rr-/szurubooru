@@ -131,6 +131,27 @@ a:hover i[class*='icon-'] {
 	background-color: red;
 }
 
+input,
+button {
+	font-family: inherit;
+}
+
+input:not([type=radio]):not([type=checkbox]) {
+	border: 1px solid #ccc;
+}
+button {
+	font-size: 115%;
+	padding: 0.2em 0.7em;
+	color: white;
+	background: cornflowerblue;
+	border: 0;
+}
+button:hover {
+	background-color: royalblue;
+	cursor: pointer;
+}
+
+
 .alert {
 	text-align: center;
 	padding: 10px;
