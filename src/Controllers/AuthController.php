@@ -12,6 +12,7 @@ class AuthController
 	*/
 	public function loginAction()
 	{
+		$this->context->stylesheets []= 'auth.css';
 		$this->context->subTitle = 'authentication form';
 
 		//check if already logged in
@@ -61,6 +62,7 @@ class AuthController
 	*/
 	public function registerAction()
 	{
+		$this->context->stylesheets []= 'auth.css';
 		$this->context->subTitle = 'registration form';
 
 		//check if already logged in

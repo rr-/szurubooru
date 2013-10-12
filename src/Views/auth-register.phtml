@@ -7,15 +7,14 @@
 		<p>After this, an admin will have to confirm your registration.</p>
 	<?php endif ?>
 <?php else: ?>
-	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" method="post">
+	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth" method="post">
 		<div>
-			<label for="user">User:</label>
-			<input id="user" name="user" value="<?php echo $this->context->suppliedUser ?>"/ placeholder="e.g. darth_vader" autocomplete="off">
+			<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>
 		</div>
 
 		<div>
-			<label for="pass">E-mail address<?php if ($this->context->transport->emailActivation) echo ' (required)' ?>:</label>
-			<input id="email" name="email" value="<?php echo $this->context->suppliedEmail ?>" placeholder="e.g. vader@empire.gov"/ autocomplete="off">
+			<label for="user">User name:</label>
+			<input id="user" name="user" value="<?php echo $this->context->suppliedUser ?>"/ placeholder="e.g. darth_vader" autocomplete="off">
 		</div>
 
 		<div>
@@ -29,11 +28,22 @@
 		</div>
 
 		<div>
+			<label for="email">E-mail address<?php if ($this->context->transport->emailActivation) echo ' (required)' ?>:</label>
+			<input id="email" name="email" value="<?php echo $this->context->suppliedEmail ?>" placeholder="e.g. vader@empire.gov"/ autocomplete="off">
+		</div>
+
+		<div>
+			<p id="email-info" name="email-info">Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>Leave blank for random Gravatar.</p>
+		</div>
+
+		<?php if (isset($this->context->transport->errorMessage)): ?>
+		<div>
+			<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
+		</div>
+		<?php endif ?>
+
+		<div>
 			<input type="submit" value="Register">
 		</div>
 	</form>
-
-	<?php if (isset($this->context->transport->errorMessage)): ?>
-		<p class="alert alert-error"><?php echo $this->context->transport->errorMessage ?></p>
-	<?php endif ?>
 <?php endif ?>

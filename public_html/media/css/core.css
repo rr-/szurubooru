@@ -130,3 +130,20 @@ a:focus i[class*='icon-'],
 a:hover i[class*='icon-'] {
 	background-color: red;
 }
+
+.alert {
+	text-align: center;
+	padding: 10px;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.alert-error {
+	border-color: #faa;
+	background-color: #fdd;
+}
+
+.alert-warning {
+	border-color: #ffa;
+	background-color: #ffd;
+}
