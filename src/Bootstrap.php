@@ -24,7 +24,6 @@ class Bootstrap
 	public function workWrapper($workCallback)
 	{
 		$this->config->chibi->baseUrl = 'http://' . rtrim($_SERVER['HTTP_HOST'], '/') . '/';
-		R::setup('sqlite:' . $this->config->main->dbPath);
 		session_start();
 
 		$this->context->title = $this->config->main->title;

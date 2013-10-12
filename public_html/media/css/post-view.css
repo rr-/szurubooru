@@ -1,5 +1,7 @@
 #sidebar {
 	width: 200px;
+	line-height: 1.33em;
+	font-size: 90%;
 }
 
 .post-wrapper {
@@ -71,9 +73,24 @@ i.icon-dl {
 	content: ', ';
 }
 
-.details {
-	line-height: 1.33em;
-}
 .details .key {
 	margin-right: 0.5em;
+}
+
+.options nav ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.favorites ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+.favorites li {
+	display: inline-block;
+}
+.favorites a {
+	margin: 2px;
 }

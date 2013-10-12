@@ -30,7 +30,7 @@
 		</nav>
 
 		<div class="sidebar-unit tags">
-			<h1>tags</h1>
+			<h1>tags (<?php echo count($this->context->transport->post->sharedTag) ?>)</h1>
 			<!-- todo: edit tags -->
 			<ul>
 				<?php foreach ($this->context->transport->post->sharedTag as $tag): ?>
@@ -57,8 +57,8 @@
 			<div class="uploader">
 				<span class="key">Uploader:</span>
 				<span class="value">
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['id' => $this->context->transport->post->user->id]) ?>">
-						<?php echo $this->context->transport->post->user->name ?>
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->id]) ?>">
+						<?php echo $this->context->transport->post->uploader->name ?>
 					</a>
 				</span>
 			</div>
@@ -90,9 +90,84 @@
 			</div>
 		</div>
 
-		<!-- todo: favorites -->
+		<div class="sidebar-unit favorites">
+			<?php if (count($this->context->transport->post->ownFavoritee) == 0): ?>
+				<h1>favorites</h1>
+				<p>None yet.</p>
+			<?php else: ?>
+				<h1>favorites (<?php echo count($this->context->transport->post->ownFavoritee) ?>)</h1>
+				<ul>
+					<?php foreach ($this->context->transport->post->via('favoritee')->sharedUser as $user): ?>
+						<li>
+							<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+								<img src="<?php echo $user->avatarUrl() ?>" alt="<?php echo $user->name ?>">
+							</a>
+						</li>
+					<?php endforeach ?>
+				</ul>
+			<?php endif ?>
+		</div>
 
-		<!-- todo: control -->
+		<div class="sidebar-unit options">
+			<h1>options</h1>
+
+			<nav>
+				<ul>
+					<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::FavoritePost)): ?>
+						<?php if (!$this->context->favorite): ?>
+							<li class="add-fav">
+								<a href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
+									Add to favorites
+								</a>
+							</li>
+						<?php else: ?>
+							<li class="rem-fav">
+								<a href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
+									Remove from favorites
+								</a>
+							</li>
+						<?php endif ?>
+					<?php endif ?>
+
+					<!--
+					<li>
+						<a href="#">
+							Edit tags
+						</a>
+					</li>
+
+					<li>
+						<a href="#">
+							Change safety
+						</a>
+					</li>
+
+					<li>
+						<a href="#">
+							Show on main page
+						</a>
+					</li>
+
+					<li>
+						<a href="#">
+							Hide from main page
+						</a>
+					</li>
+
+					<li>
+						<a href="#">
+							Remove
+						</a>
+					</li>
+					-->
+				</ul>
+			</nav>
+
+			<script type="text/javascript">
+				if (!$('.options ul li').length)
+					$('.options').hide();
+			</script>
+		</div>
 	</div>
 
 	<div id="inner-content">

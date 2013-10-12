@@ -188,16 +188,65 @@ class PostController
 			$dbPost->mime_type = $mimeType;
 			$dbPost->safety = $suppliedSafety;
 			$dbPost->upload_date = time();
-			$dbPost->sharedTag = $dbTags;
-			$dbPost->user = $this->context->user;
 			$dbPost->image_width = $imageWidth;
 			$dbPost->image_height = $imageHeight;
+			$dbPost->uploader = $this->context->user;
+			$dbPost->ownFavoritee = [];
+			$dbPost->sharedTag = $dbTags;
 
 			move_uploaded_file($suppliedFile['tmp_name'], $path);
 			R::store($dbPost);
 
 			$this->context->transport->success = true;
 		}
+	}
+
+	/**
+	* @route /post/add-fav/{id}
+	* @route /post/fav-add/{id}
+	*/
+	public function addFavoriteAction($id)
+	{
+		$post = self::locatePost($id);
+		R::preload($post, ['favoritee' => 'user']);
+
+		if (!$this->context->loggedIn)
+			throw new SimpleException('Not logged in');
+
+		foreach ($post->via('favoritee')->sharedUser as $fav)
+			if ($fav->id == $this->context->user->id)
+				throw new SimpleException('Already in favorites');
+
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::FavoritePost);
+		$post->link('favoritee')->user = $this->context->user;
+		R::store($post);
+		$this->context->transport->success = true;
+	}
+
+	/**
+	* @route /post/rem-fav/{id}
+	* @route /post/fav-rem/{id}
+	*/
+	public function remFavoriteAction($id)
+	{
+		$post = self::locatePost($id);
+		R::preload($post, ['favoritee' => 'user']);
+
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::FavoritePost);
+		if (!$this->context->loggedIn)
+			throw new SimpleException('Not logged in');
+
+		$finalKey = null;
+		foreach ($post->ownFavoritee as $key => $fav)
+			if ($fav->user->id == $this->context->user->id)
+				$finalKey = $key;
+
+		if ($finalKey === null)
+			throw new SimpleException('Not in favorites');
+
+		unset ($post->ownFavoritee[$key]);
+		R::store($post);
+		$this->context->transport->success = true;
 	}
 
 
@@ -208,16 +257,20 @@ class PostController
 	*/
 	public function viewAction($id)
 	{
-		$post = R::findOne('post', 'id = ?', [$id]);
-		if (!$post)
-			throw new SimpleException('Invalid post ID "' . $id . '"');
-		R::preload($post, ['user', 'tag']);
+		$post = self::locatePost($id);
+		R::preload($post, ['favoritee' => 'user', 'uploader' => 'user', 'tag']);
 
 		$prevPost = R::findOne('post', 'id < ? ORDER BY id DESC LIMIT 1', [$id]);
 		$nextPost = R::findOne('post', 'id > ? ORDER BY id ASC LIMIT 1', [$id]);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
+
+		$favorite = false;
+		if ($this->context->loggedIn)
+			foreach ($post->ownFavoritee as $fav)
+				if ($fav->user->id == $this->context->user->id)
+					$favorite = true;
 
 		$dbQuery = R::$f->begin();
 		$dbQuery->select('tag.name, COUNT(1) AS count');
@@ -234,9 +287,10 @@ class PostController
 			$this->context->transport->tagDistribution[$row['name']] = $row['count'];
 
 		$this->context->stylesheets []= 'post-view.css';
+		$this->context->scripts []= 'post-view.js';
 		$this->context->subTitle = 'showing @' . $post->id;
+		$this->context->favorite = $favorite;
 		$this->context->transport->post = $post;
-		$this->context->transport->uploader = R::load('user', $post->user_id);
 		$this->context->transport->prevPostId = $prevPost ? $prevPost->id : null;
 		$this->context->transport->nextPostId = $nextPost ? $nextPost->id : null;
 	}
@@ -250,10 +304,7 @@ class PostController
 	public function thumbAction($id)
 	{
 		$this->context->layoutName = 'layout-file';
-
-		$post = R::findOne('post', 'id = ?', [$id]);
-		if (!$post)
-			throw new SimpleException('Invalid post ID "' . $id . '"');
+		$post = self::locatePost($id);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
@@ -324,10 +375,7 @@ class PostController
 	public function retrieveAction($name)
 	{
 		$this->context->layoutName = 'layout-file';
-
-		$post = R::findOne('post', 'name = ?', [$name]);
-		if (!$post)
-			throw new SimpleException('Invalid post name "' . $name . '"');
+		$post = self::locatePost($name);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost, PostSafety::toString($post->safety));
@@ -353,5 +401,22 @@ class PostController
 	{
 		$this->listAction('favmin:1', $page);
 		$this->context->viewName = 'post-list';
+	}
+
+	public static function locatePost($key)
+	{
+		if (is_numeric($key))
+		{
+			$post = R::findOne('post', 'id = ?', [$key]);
+			if (!$post)
+				throw new SimpleException('Invalid post ID "' . $key . '"');
+		}
+		else
+		{
+			$post = R::findOne('post', 'name = ?', [$key]);
+			if (!$post)
+				throw new SimpleException('Invalid post name "' . $key . '"');
+		}
+		return $post;
 	}
 }

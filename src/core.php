@@ -8,18 +8,32 @@ define('DS', DIRECTORY_SEPARATOR);
 
 function configFactory()
 {
-	$config = new \Chibi\Config();
-	$configPaths =
-	[
-		__DIR__ . DS . '../config.ini',
-		__DIR__ . DS . '../local.ini'
-	];
-	$configPaths = array_filter($configPaths, 'file_exists');
+	static $config = null;
 
-	foreach ($configPaths as $path)
+	if ($config === null)
 	{
-		$config->loadIni($path);
-	}
+		$config = new \Chibi\Config();
+		$configPaths =
+		[
+			__DIR__ . DS . '../config.ini',
+			__DIR__ . DS . '../local.ini'
+		];
+		$configPaths = array_filter($configPaths, 'file_exists');
 
+		foreach ($configPaths as $path)
+		{
+			$config->loadIni($path);
+		}
+
+	}
 	return $config;
 }
+
+$config = configFactory();
+R::setup('sqlite:' . $config->main->dbPath);
+
+//wire models
+\Chibi\AutoLoader::init([$config->chibi->userCodeDir, __DIR__]);
+foreach (\Chibi\AutoLoader::getAllIncludablePaths() as $path)
+	if (preg_match('/Model/', $path))
+		\Chibi\AutoLoader::safeInclude($path);

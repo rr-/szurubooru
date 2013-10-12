@@ -87,8 +87,8 @@ body {
 }
 
 #sidebar .sidebar-unit {
-	margin: 0 0 2em 0;
-	padding: 1em;
+	margin: 0 0 1.5em 0;
+	padding: 0.75em;
 	border: 1px solid #eee;
 	padding-left: 0;
 	border-left: 0;
