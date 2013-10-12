@@ -37,6 +37,10 @@ body {
 	list-style-type: none;
 }
 
+.main-wrapper {
+	margin: 0 1.5em;
+}
+
 #top-nav li {
 	display: inline-block;
 }
@@ -71,31 +75,23 @@ body {
 	border: 0;
 }
 
-.main-wrapper {
-	margin: 0 auto;
-	min-width: 700px;
-	width: 80%;
-	max-width: 1000px;
-}
-
-/* small screens */
-@media (max-width: 699px), (max-device-width: 699px) {
-	.main-wrapper {
-		min-width: 0;
-		width: 95%;
-		max-width: 700px;
-	}
-}
-
-
 .clear {
+	display: block;
 	clear: both;
 }
 
 #sidebar {
 	float: left;
-	width: 25%;
-	margin-right: 1em;
+	width: 256px;
+	margin-right: 2em;
+}
+
+#sidebar .sidebar-unit {
+	margin: 0 0 2em 0;
+	padding: 1em;
+	border: 1px solid #eee;
+	padding-left: 0;
+	border-left: 0;
 }
 
 #sidebar h1 {

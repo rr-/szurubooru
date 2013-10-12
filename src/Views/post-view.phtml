@@ -29,45 +29,7 @@
 			<div class="clear"></div>
 		</nav>
 
-		<div class="details">
-			<h1>details</h1>
-			<div class="dl-box">
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>">
-					<span class="permalink">
-						<i class="icon-dl"></i>
-					</span>
-					<span class="ext">
-						<?php echo substr($this->context->transport->post->orig_name, strrpos($this->context->transport->post->orig_name, '.') + 1) ?>
-					</span>
-					<span class="size">
-						<?php echo TextHelper::useBytesUnits($this->context->transport->post->size) ?>
-					</span>
-				</a>
-			</div>
-
-			<div class="details-box">
-				<div class="uploader">
-					<span class="key">Uploader:</span>
-					<span class="value">
-						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['id' => $this->context->transport->post->user->id]) ?>">
-							<?php echo $this->context->transport->post->user->name ?>
-						</a>
-					</span>
-				</div>
-
-				<div class="date">
-					<span class="key">Date:</span>
-					<span class="value"><?php echo date('Y-m-d H:i', $this->context->transport->post->upload_date) ?></span>
-				</div>
-
-				<div class="safety">
-					<span class="key">Safety:</span>
-					<span class="value"><?php echo PostSafety::toString($this->context->transport->post->safety) ?></span>
-				</div>
-			</div>
-		</div>
-
-		<div class="tags">
+		<div class="sidebar-unit tags">
 			<h1>tags</h1>
 			<!-- todo: edit tags -->
 			<ul>
@@ -84,6 +46,50 @@
 			</ul>
 		</div>
 
+		<div class="sidebar-unit details">
+			<h1>details</h1>
+
+			<div class="safety">
+				<span class="key">Safety:</span>
+				<span class="value"><?php echo PostSafety::toString($this->context->transport->post->safety) ?></span>
+			</div>
+
+			<div class="uploader">
+				<span class="key">Uploader:</span>
+				<span class="value">
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['id' => $this->context->transport->post->user->id]) ?>">
+						<?php echo $this->context->transport->post->user->name ?>
+					</a>
+				</span>
+			</div>
+
+			<div class="date">
+				<span class="key">Date:</span>
+				<span class="value"><?php echo date('Y-m-d H:i', $this->context->transport->post->upload_date) ?></span>
+			</div>
+
+			<?php if ($this->context->transport->post->image_width > 0): ?>
+				<div class="dim">
+					<span class="key">Dimensions:</span>
+					<span class="value"><?php printf('%dx%d',
+						$this->context->transport->post->image_width,
+						$this->context->transport->post->image_height) ?></span>
+				</div>
+			<?php endif ?>
+
+			<div class="permalink">
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>">
+					<i class="icon-dl"></i>
+					<span class="ext">
+						<?php echo strtoupper(substr($this->context->transport->post->orig_name, strrpos($this->context->transport->post->orig_name, '.') + 1)) ?>
+					</span>
+					<span class="size">
+						<?php echo TextHelper::useBytesUnits($this->context->transport->post->file_size) ?>
+					</span>
+				</a>
+			</div>
+		</div>
+
 		<!-- todo: favorites -->
 
 		<!-- todo: control -->
@@ -94,7 +100,7 @@
 			<?php if ($this->context->transport->post->type == PostType::Image): ?>
 				<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
 			<?php elseif ($this->context->transport->post->type == PostType::Flash): ?>
-				<embed type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>"/>
+				<embed width="<?php echo $this->context->transport->post->image_width ?>" height="<?php echo $this->context->transport->post->image_height  ?>" type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>"/>
 			<?php endif ?>
 		</div>
 	</div>

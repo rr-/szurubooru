@@ -26,17 +26,17 @@
 						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts))
 							$nav []= ['Browse', \Chibi\UrlHelper::route('post', 'list')];
 
-						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListComments))
-							$nav []= ['Comments', \Chibi\UrlHelper::route('comment', 'list')];
-
 						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts))
 							$nav []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
 
-						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListTags))
-							$nav []= ['Tags', \Chibi\UrlHelper::route('tag', 'list')];
-
 						if (PrivilegesHelper::confirm($this->context->user, Privilege::UploadPost))
 							$nav []= ['Upload', \Chibi\UrlHelper::route('post', 'upload')];
+
+						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListComments))
+							$nav []= ['Comments', \Chibi\UrlHelper::route('comment', 'list')];
+
+						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListTags))
+							$nav []= ['Tags', \Chibi\UrlHelper::route('tag', 'list')];
 
 						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListUsers))
 							$nav []= ['Users', \Chibi\UrlHelper::route('user', 'list')];

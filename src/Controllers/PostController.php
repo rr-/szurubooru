@@ -136,15 +136,19 @@ class PostController
 
 			#$mimeType = $suppliedFile['type'];
 			$mimeType = mime_content_type($suppliedFile['tmp_name']);
+			$imageWidth = null;
+			$imageHeight = null;
 			switch ($mimeType)
 			{
 				case 'image/gif':
 				case 'image/png':
 				case 'image/jpeg':
 					$postType = PostType::Image;
+					list ($imageWidth, $imageHeight) = getimagesize($suppliedFile['tmp_name']);
 					break;
 				case 'application/x-shockwave-flash':
 					$postType = PostType::Flash;
+					list ($imageWidth, $imageHeight) = getimagesize($suppliedFile['tmp_name']);
 					break;
 				default:
 					throw new SimpleException('Invalid file type "' . $mimeType . '"');
@@ -180,12 +184,14 @@ class PostController
 			$dbPost->name = $name;
 			$dbPost->orig_name = basename($suppliedFile['name']);
 			$dbPost->file_hash = $fileHash;
+			$dbPost->file_size = filesize($suppliedFile['tmp_name']);
 			$dbPost->mime_type = $mimeType;
 			$dbPost->safety = $suppliedSafety;
 			$dbPost->upload_date = time();
 			$dbPost->sharedTag = $dbTags;
 			$dbPost->user = $this->context->user;
-			$dbPost->size = filesize($suppliedFile['tmp_name']);
+			$dbPost->image_width = $imageWidth;
+			$dbPost->image_height = $imageHeight;
 
 			move_uploaded_file($suppliedFile['tmp_name'], $path);
 			R::store($dbPost);
