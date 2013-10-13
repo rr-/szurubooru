@@ -13,6 +13,7 @@ require_once 'lib/chibi-core/Facade.php';
 
 date_default_timezone_set('UTC');
 setlocale(LC_CTYPE, 'en_US.UTF-8');
+ini_set('memory_limit', '128M');
 define('DS', DIRECTORY_SEPARATOR);
 
 function configFactory()
