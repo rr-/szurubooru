@@ -18,6 +18,7 @@ function scrolled()
 				var nextPage = dom.find('.paginator .next:not(.inactive) a').attr('href');
 				$(document).data('page-next', nextPage);
 				$('.paginator-content').append($(response).find('.paginator-content').children().fadeIn('slow'));
+				scrolled();
 			});
 		}
 	}
