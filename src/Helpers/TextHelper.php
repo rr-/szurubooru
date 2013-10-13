@@ -76,4 +76,57 @@ class TextHelper
 	{
 		return self::useUnits($number, 1000, ['', 'K', 'M']);
 	}
+
+	public static function removeUnsafeKeys(&$input, $regex)
+	{
+		if (is_array($input))
+		{
+			foreach ($input as $key => $val)
+			{
+				if (preg_match($regex, $key))
+					unset($input[$key]);
+				else
+					self::removeUnsafeKeys($input[$key], $regex);
+			}
+		}
+		elseif (is_object($input))
+		{
+			foreach ($input as $key => $val)
+			{
+				if (preg_match($regex, $key))
+					unset($input->$key);
+				else
+					self::removeUnsafeKeys($input->$key, $regex);
+			}
+		}
+	}
+
+	public static function jsonEncode($obj, $illegalKeysRegex = '')
+	{
+		if (is_array($obj))
+		{
+			foreach ($obj as $key => $val)
+			{
+				if ($val instanceof RedBean_OODBBean)
+				{
+					$obj[$key] = R::exportAll($val);
+				}
+			}
+		}
+		elseif (is_object($obj))
+		{
+			foreach ($obj as $key => $val)
+			{
+				if ($val instanceof RedBean_OODBBean)
+				{
+					$obj->$key = R::exportAll($val);
+				}
+			}
+		}
+
+		if (!empty($illegalKeysRegex))
+			self::removeUnsafeKeys($obj, $illegalKeysRegex);
+
+		return json_encode($obj, true);
+	}
 }
