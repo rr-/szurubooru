@@ -18,7 +18,7 @@
 	<body>
 		<nav id="top-nav">
 			<div class="main-wrapper">
-				<ul>
+				<ul class="main-nav">
 					<?php
 						$nav = [];
 
@@ -57,12 +57,29 @@
 						foreach ($nav as $navItem)
 						{
 							list ($text, $link) = $navItem;
-							echo '<li>';
+							echo '<li class="main-nav-item">';
 							echo '<a href="' . $link . '">' . $text . '</a>';
 							echo '</li>';
 						}
 					?>
-					<li>
+
+					<?php if ($this->context->loggedIn): ?>
+						<li class="safety">
+							<ul>
+								<?php foreach (PostSafety::getAll() as $safety): ?>
+									<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety))): ?>
+										<li class="safety-<?php echo strtolower(PostSafety::toString($safety)) ?>">
+											<a href="<?php echo \Chibi\UrlHelper::route('user', 'toggle-safety', ['safety' => $safety]) ?>" class="<?php echo $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
+												<span><?php echo PostSafety::toString($safety) ?></span>
+											</a>
+										</li>
+									<?php endif ?>
+								<?php endforeach ?>
+							</ul>
+						</li>
+					<?php endif ?>
+
+					<li class="search">
 						<form name="search" action="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
 							<input type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>">
 						</form>

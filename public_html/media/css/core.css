@@ -31,7 +31,7 @@ body {
 	color: black;
 }
 
-#top-nav ul {
+#top-nav ul.main-nav {
 	margin: 0 -0.75em;
 	padding: 0;
 	list-style-type: none;
@@ -41,36 +41,63 @@ body {
 	margin: 0 1.5em;
 }
 
-#top-nav li {
+#top-nav li.main-nav-item {
 	display: inline-block;
 }
 
 #top-nav li input,
-#top-nav li a {
+#top-nav li.main-nav-item a {
 	color: black;
 	display: inline-block;
 	margin-bottom: 3px;
 	text-decoration: none;
 }
 
-#top-nav li a {
+#top-nav li.main-nav-item a {
 	padding: 0.2em 0.75em;
 	outline: 0;
 }
 
-#top-nav li.search {
-	background: white;
-	margin: 0 0.25em;
-	padding: 0.2em 0.5em;
-}
-
-#top-nav li a:focus,
-#top-nav li a:hover {
+#top-nav li.main-nav-item a:focus,
+#top-nav li.main-nav-item a:hover {
 	color: firebrick;
 	border-bottom: 3px solid firebrick;
 	margin-bottom: 0;
 }
 
+#top-nav li.safety {
+	float: right;
+}
+#top-nav li.safety ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+#top-nav li.safety li {
+	display: inline-block;
+}
+#top-nav li.safety a {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border: 1px solid black;
+}
+#top-nav li.safety span {
+	display: none;
+}
+#top-nav li.safety .safety-safe .enabled { background: lime; }
+#top-nav li.safety .safety-safe .disabled { background: green; }
+#top-nav li.safety .safety-sketchy .enabled { background: yellow; }
+#top-nav li.safety .safety-sketchy .disabled { background: olive; }
+#top-nav li.safety .safety-unsafe .enabled { background: red; }
+#top-nav li.safety .safety-unsafe .disabled { background: maroon; }
+
+#top-nav li.search {
+	float: right;
+	background: white;
+	margin: 0 0.25em;
+	padding: 0.2em 0.5em;
+}
 #top-nav li.search input {
 	border: 0;
 }

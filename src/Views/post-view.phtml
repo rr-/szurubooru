@@ -95,7 +95,7 @@
 				<?php foreach ($this->context->transport->post->via('favoritee')->sharedUser as $user): ?>
 					<li>
 						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
-							<img src="<?php echo $user->avatarUrl() ?>" alt="<?php echo $user->name ?>">
+							<img src="<?php echo $user->getAvatarUrl() ?>" alt="<?php echo $user->name ?>">
 						</a>
 					</li>
 				<?php endforeach ?>

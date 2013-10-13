@@ -79,13 +79,13 @@ class PostController
 		if ($this->config->browsing->endlessScrolling)
 			$this->context->scripts []= 'paginator-endless.js';
 
-		#redirect requests in form of /posts/?query=... to canonical address
+		//redirect requests in form of /posts/?query=... to canonical address
 		$formQuery = InputHelper::get('query');
 		if ($formQuery !== null)
 		{
 			$this->context->transport->searchQuery = $formQuery;
 			if (strpos($formQuery, '/') !== false)
-				throw new SimpleException('Search query contains invalid characters.');
+				throw new SimpleException('Search query contains invalid characters');
 			$url = \Chibi\UrlHelper::route('post', 'list', ['query' => urlencode($formQuery)]);
 			\Chibi\UrlHelper::forward($url);
 			return;
@@ -102,19 +102,24 @@ class PostController
 		{
 			$dbQuery->from('post');
 
+
+			/* safety */
 			$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
 			{
-				return PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety));
+				return PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety)) and
+					$this->context->user->hasEnabledSafety($safety);
 			});
-			//todo safety [user choice]
-
 			$dbQuery->where('safety IN (' . R::genSlots($allowedSafety) . ')');
 			foreach ($allowedSafety as $s)
 				$dbQuery->put($s);
 
+
+			/* hidden */
 			if (!PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, 'hidden'))
 				$dbQuery->andNot('hidden');
 
+
+			/* search tokens */
 			$tokens = array_filter(array_unique(explode(' ', $query)), function($x) { return $x != ''; });
 			if (count($tokens) > $this->config->browsing->maxSearchTokens)
 				throw new SimpleException('Too many search tokens (maximum: ' . $this->config->browsing->maxSearchTokens . ')');
