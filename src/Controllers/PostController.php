@@ -703,9 +703,10 @@ class PostController
 		if (!is_readable($path))
 			throw new SimpleException('Thumbnail file is not readable');
 
+		$ttl = 60 * 60 * 24 * 3;
 		\Chibi\HeadersHelper::set('Pragma', 'public');
-		\Chibi\HeadersHelper::set('Cache-Control', 'max-age=86400');
-		\Chibi\HeadersHelper::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + 86400));
+		\Chibi\HeadersHelper::set('Cache-Control', 'public, max-age=' . $ttl);
+		\Chibi\HeadersHelper::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $ttl));
 
 		$this->context->transport->mimeType = 'image/png';
 		$this->context->transport->filePath = $path;
@@ -740,6 +741,11 @@ class PostController
 			$post->id, join(',', array_map(function($tag) { return $tag->name; }, $post->sharedTag)),
 			$ext);
 		$fn = preg_replace('/[[:^print:]]/', '', $fn);
+
+		$ttl = 60 * 60 * 24;
+		\Chibi\HeadersHelper::set('Pragma', 'public');
+		\Chibi\HeadersHelper::set('Cache-Control', 'public, max-age=' . $ttl);
+		\Chibi\HeadersHelper::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $ttl));
 
 		$this->context->transport->customFileName = $fn;
 		$this->context->transport->mimeType = $post->mimeType;
