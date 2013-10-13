@@ -64,7 +64,7 @@
 					?>
 					<li>
 						<form name="search" action="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
-							<input type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? $this->context->transport->searchQuery : '' ?>">
+							<input type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>">
 						</form>
 					</li>
 				</ul>
