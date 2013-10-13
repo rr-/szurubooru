@@ -127,6 +127,6 @@ class TextHelper
 		if (!empty($illegalKeysRegex))
 			self::removeUnsafeKeys($obj, $illegalKeysRegex);
 
-		return json_encode($obj, true);
+		return json_encode($obj);
 	}
 }
