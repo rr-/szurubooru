@@ -8,9 +8,9 @@ class PostController
 		$callback();
 	}
 
-	private static function locatePost($key)
+	private static function locatePost($key, $disallowNumeric = false)
 	{
-		if (is_numeric($key))
+		if (is_numeric($key) and !$disallowNumeric)
 		{
 			$post = R::findOne('post', 'id = ?', [$key]);
 			if (!$post)
@@ -720,7 +720,7 @@ class PostController
 	public function retrieveAction($name)
 	{
 		$this->context->layoutName = 'layout-file';
-		$post = self::locatePost($name);
+		$post = self::locatePost($name, true);
 		R::preload($post, ['tag']);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost);
