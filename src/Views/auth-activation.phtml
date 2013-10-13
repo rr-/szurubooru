@@ -1,6 +1,6 @@
 <?php if ($this->context->transport->success === true): ?>
 	<p>Activation completed successfully.</p>
-	<?php if ($this->context->transport->adminActivation): ?>
-		<p>However, you still need to be approved by admin.</p>
+	<?php if ($this->context->transport->staffActivation): ?>
+		<p>However, your account still must be confirmed by staff.</p>
 	<?php endif ?>
 <?php endif ?>

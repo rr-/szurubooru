@@ -1,10 +1,12 @@
 <?php if ($this->context->transport->success === true): ?>
-	<p>Congratulations, you are registered.</p>
+	<p>Congratulations, your account was created.</p>
 	<?php if ($this->context->transport->emailActivation): ?>
 		<p>Please wait for activation e-mail.</p>
-	<?php endif ?>
-	<?php if ($this->context->transport->adminActivation): ?>
-		<p>After this, an admin will have to confirm your registration.</p>
+		<?php if ($this->context->transport->staffActivation): ?>
+			<p>After this, your registration must be confirmed by staff.</p>
+		<?php endif ?>
+	<?php elseif ($this->context->transport->staffActivation): ?>
+		<p>Your registration must be confirmed by staff.</p>
 	<?php endif ?>
 <?php else: ?>
 	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth" method="post">

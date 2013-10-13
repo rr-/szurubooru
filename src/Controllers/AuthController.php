@@ -35,10 +35,10 @@ class AuthController
 			if ($suppliedPassHash != $dbUser->pass_hash)
 				throw new SimpleException('Invalid password');
 
-			if (!$dbUser->admin_confirmed)
-				throw new SimpleException('An admin hasn\'t confirmed your registration yet');
+			if (!$dbUser->staff_confirmed and $this->config->registration->staffActivation)
+				throw new SimpleException('Staff hasn\'t confirmed your registration yet');
 
-			if (!$dbUser->email_confirmed)
+			if (!$dbUser->email_confirmed and $this->config->registration->emailActivation)
 				throw new SimpleException('You haven\'t confirmed your e-mail address yet');
 
 			$_SESSION['user-id'] = $dbUser->id;
@@ -89,9 +89,9 @@ class AuthController
 		$userNameMinLength = intval($regConfig->userNameMinLength);
 		$userNameRegex = $regConfig->userNameRegex;
 		$emailActivation = $regConfig->emailActivation;
-		$adminActivation = $regConfig->adminActivation;
+		$staffActivation = $regConfig->staffActivation;
 
-		$this->context->transport->adminActivation = $adminActivation;
+		$this->context->transport->staffActivation = $staffActivation;
 		$this->context->transport->emailActivation = $emailActivation;
 
 		if ($suppliedUser !== null)
@@ -102,11 +102,17 @@ class AuthController
 				if (!$dbUser->email_confirmed)
 					throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
 
-				if (!$dbUser->admin_confirmed)
+				if (!$dbUser->staff_confirmed)
 					throw new SimpleException('User with this name is already registered and awaits admin confirmation');
 
 				throw new SimpleException('User with this name is already registered');
 			}
+
+			if (strlen($suppliedUser) < $userNameMinLength)
+				throw new SimpleException(sprintf('User name must have at least %d characters', $userNameMinLength));
+
+			if (!preg_match($userNameRegex, $suppliedUser))
+				throw new SimpleException('User name contains invalid characters');
 
 			if ($suppliedPass1 != $suppliedPass2)
 				throw new SimpleException('Specified passwords must be the same');
@@ -116,12 +122,6 @@ class AuthController
 
 			if (!preg_match($passRegex, $suppliedPass1))
 				throw new SimpleException('Password contains invalid characters');
-
-			if (strlen($suppliedUser) < $userNameMinLength)
-				throw new SimpleException(sprintf('User name must have at least %d characters', $userNameMinLength));
-
-			if (!preg_match($userNameRegex, $suppliedUser))
-				throw new SimpleException('User name contains invalid characters');
 
 			if (empty($suppliedEmail) and $emailActivation)
 				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
@@ -136,7 +136,7 @@ class AuthController
 			$dbUser->pass_salt = md5(mt_rand() . uniqid());
 			$dbUser->pass_hash = self::hashPassword($suppliedPass1, $dbUser->pass_salt);
 			$dbUser->email = $suppliedEmail;
-			$dbUser->admin_confirmed = $adminActivation ? false : true;
+			$dbUser->staff_confirmed = $staffActivation ? false : true;
 			$dbUser->email_confirmed = $emailActivation ? false : true;
 			$dbUser->access_rank = R::findOne('user') === null ? AccessRank::Admin : AccessRank::Registered;
 
@@ -151,7 +151,6 @@ class AuthController
 			//send the e-mail
 			if ($emailActivation)
 			{
-
 				$tokens = [];
 				$tokens['host'] = $_SERVER['HTTP_HOST'];
 				$tokens['link'] = \Chibi\UrlHelper::route('auth', 'activation', ['token' => $dbUser->email_token]);
@@ -172,7 +171,7 @@ class AuthController
 			R::store($dbUser);
 			$this->context->transport->success = true;
 
-			if (!$emailActivation and !$adminActivation)
+			if (!$emailActivation and !$staffActivation)
 			{
 				$_SESSION['user-id'] = $dbUser->id;
 				\Chibi\Registry::getBootstrap()->attachUser();
@@ -208,9 +207,9 @@ class AuthController
 		R::store($dbUser);
 		$this->context->transport->success = true;
 
-		$adminActivation = $this->config->registration->adminActivation;
-		$this->context->transport->adminActivation = $adminActivation;
-		if (!$adminActivation)
+		$staffActivation = $this->config->registration->staffActivation;
+		$this->context->transport->staffActivation = $staffActivation;
+		if (!$staffActivation)
 		{
 			$_SESSION['user-id'] = $dbUser->id;
 			\Chibi\Registry::getBootstrap()->attachUser();
