@@ -6,7 +6,13 @@ class Privilege extends Enum
 	const ViewPost = 3;
 	const RetrievePost = 4;
 	const FavoritePost = 5;
-	const ListUsers = 6;
-	const ListComments = 7;
-	const ListTags = 8;
+	const EditPostSafety = 6;
+	const EditPostTags = 7;
+	const EditPostThumb = 8;
+	const HidePost = 9;
+	const DeletePost = 10;
+
+	const ListUsers = 11;
+	const ListComments = 12;
+	const ListTags = 13;
 }

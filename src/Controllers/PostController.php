@@ -8,6 +8,60 @@ class PostController
 		$callback();
 	}
 
+	private static function locatePost($key)
+	{
+		if (is_numeric($key))
+		{
+			$post = R::findOne('post', 'id = ?', [$key]);
+			if (!$post)
+				throw new SimpleException('Invalid post ID "' . $key . '"');
+		}
+		else
+		{
+			$post = R::findOne('post', 'name = ?', [$key]);
+			if (!$post)
+				throw new SimpleException('Invalid post name "' . $key . '"');
+		}
+		return $post;
+	}
+
+	private static function serializeTags($post)
+	{
+		$x = [];
+		foreach ($post->sharedTag as $tag)
+			$x []= $tag->name;
+		natcasesort($x);
+		$x = join('', $x);
+		return md5($x);
+	}
+
+	private static function handleUploadErrors($file)
+	{
+		switch ($file['error'])
+		{
+			case UPLOAD_ERR_OK:
+				break;
+			case UPLOAD_ERR_INI_SIZE:
+				throw new SimpleException('File is too big (maximum size allowed: ' . ini_get('upload_max_filesize') . ')');
+			case UPLOAD_ERR_FORM_SIZE:
+				throw new SimpleException('File is too big than it was allowed in HTML form');
+			case UPLOAD_ERR_PARTIAL:
+				throw new SimpleException('File transfer was interrupted');
+			case UPLOAD_ERR_NO_FILE:
+				throw new SimpleException('No file was uploaded');
+			case UPLOAD_ERR_NO_TMP_DIR:
+				throw new SimpleException('Server misconfiguration error: missing temporary folder');
+			case UPLOAD_ERR_CANT_WRITE:
+				throw new SimpleException('Server misconfiguration error: cannot write to disk');
+			case UPLOAD_ERR_EXTENSION:
+				throw new SimpleException('Server misconfiguration error: upload was canceled by an extension');
+			default:
+				throw new SimpleException('Generic file upload error (id: ' . $file['error'] . ')');
+		}
+		if (!is_uploaded_file($file['tmp_name']))
+			throw new SimpleException('Generic file upload error');
+	}
+
 
 
 	/**
@@ -37,7 +91,6 @@ class PostController
 		$this->context->subTitle = 'browsing posts';
 		$page = intval($page);
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
-
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListPosts);
 
 		$buildDbQuery = function($dbQuery)
@@ -53,6 +106,9 @@ class PostController
 			$dbQuery->where('safety IN (' . R::genSlots($allowedSafety) . ')');
 			foreach ($allowedSafety as $s)
 				$dbQuery->put($s);
+
+			if (!PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, 'hidden'))
+				$dbQuery->andNot('hidden');
 
 			//todo construct WHERE based on filters
 
@@ -83,6 +139,19 @@ class PostController
 
 
 	/**
+	* @route /favorites
+	* @route /favorites/{page}
+	* @validate page \d*
+	*/
+	public function favoritesAction($page = 1)
+	{
+		$this->listAction('favmin:1', $page);
+		$this->context->viewName = 'post-list';
+	}
+
+
+
+	/**
 	* @route /post/upload
 	*/
 	public function uploadAction()
@@ -90,15 +159,17 @@ class PostController
 		$this->context->stylesheets []= 'upload.css';
 		$this->context->scripts []= 'upload.js';
 		$this->context->subTitle = 'upload';
-
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::UploadPost);
 
 		if (isset($_FILES['file']))
 		{
+			/* safety */
 			$suppliedSafety = intval(InputHelper::get('safety'));
 			if (!in_array($suppliedSafety, PostSafety::getAll()))
 				throw new SimpleException('Invalid safety type "' . $suppliedSafety . '"');
 
+
+			/* tags */
 			$suppliedTags = InputHelper::get('tags');
 			$suppliedTags = preg_split('/[,;\s+]/', $suppliedTags);
 			$suppliedTags = array_filter($suppliedTags);
@@ -109,32 +180,26 @@ class PostController
 			if (empty($suppliedTags))
 				throw new SimpleException('No tags set');
 
-			$suppliedFile = $_FILES['file'];
-			switch ($suppliedFile['error'])
+			$dbTags = [];
+			foreach ($suppliedTags as $tag)
 			{
-				case UPLOAD_ERR_OK:
-					break;
-				case UPLOAD_ERR_INI_SIZE:
-					throw new SimpleException('File is too big (maximum size allowed: ' . ini_get('upload_max_filesize') . ')');
-				case UPLOAD_ERR_FORM_SIZE:
-					throw new SimpleException('File is too big than it was allowed in HTML form');
-				case UPLOAD_ERR_PARTIAL:
-					throw new SimpleException('File transfer was interrupted');
-				case UPLOAD_ERR_NO_FILE:
-					throw new SimpleException('No file was uploaded');
-				case UPLOAD_ERR_NO_TMP_DIR:
-					throw new SimpleException('Server misconfiguration error: missing temporary folder');
-				case UPLOAD_ERR_CANT_WRITE:
-					throw new SimpleException('Server misconfiguration error: cannot write to disk');
-				case UPLOAD_ERR_EXTENSION:
-					throw new SimpleException('Server misconfiguration error: upload was canceled by an extension');
-				default:
-					throw new SimpleException('Generic file upload error (id: ' . $suppliedFile['error'] . ')');
+				$dbTag = R::findOne('tag', 'name = ?', [$tag]);
+				if (!$dbTag)
+				{
+					$dbTag = R::dispense('tag');
+					$dbTag->name = $tag;
+					R::store($dbTag);
+				}
+				$dbTags []= $dbTag;
 			}
-			if (!is_uploaded_file($suppliedFile['tmp_name']))
-				throw new SimpleException('Generic file upload error');
 
-			#$mimeType = $suppliedFile['type'];
+
+			/* file contents */
+			$suppliedFile = $_FILES['file'];
+			self::handleUploadErrors($suppliedFile);
+
+
+			/* file details */
 			$mimeType = mime_content_type($suppliedFile['tmp_name']);
 			$imageWidth = null;
 			$imageHeight = null;
@@ -166,19 +231,8 @@ class PostController
 			}
 			while (file_exists($path));
 
-			$dbTags = [];
-			foreach ($suppliedTags as $tag)
-			{
-				$dbTag = R::findOne('tag', 'name = ?', [$tag]);
-				if (!$dbTag)
-				{
-					$dbTag = R::dispense('tag');
-					$dbTag->name = $tag;
-					R::store($dbTag);
-				}
-				$dbTags []= $dbTag;
-			}
 
+			/* db storage */
 			$dbPost = R::dispense('post');
 			$dbPost->type = $postType;
 			$dbPost->name = $name;
@@ -187,6 +241,7 @@ class PostController
 			$dbPost->file_size = filesize($suppliedFile['tmp_name']);
 			$dbPost->mime_type = $mimeType;
 			$dbPost->safety = $suppliedSafety;
+			$dbPost->hidden = false;
 			$dbPost->upload_date = time();
 			$dbPost->image_width = $imageWidth;
 			$dbPost->image_height = $imageHeight;
@@ -200,6 +255,141 @@ class PostController
 			$this->context->transport->success = true;
 		}
 	}
+
+
+
+	/**
+	* @route /post/edit/{id}
+	*/
+	public function editAction($id)
+	{
+		$post = self::locatePost($id);
+		R::preload($post, ['uploader' => 'user']);
+		$edited = false;
+		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
+
+
+		/* safety */
+		$suppliedSafety = InputHelper::get('safety');
+		if ($suppliedSafety !== null)
+		{
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostSafety, $secondary);
+			$suppliedSafety = intval($suppliedSafety);
+			if (!in_array($suppliedSafety, PostSafety::getAll()))
+				throw new SimpleException('Invalid safety type "' . $suppliedSafety . '"');
+			$post->safety = $suppliedSafety;
+			$edited = true;
+		}
+
+
+		/* tags */
+		$suppliedTags = InputHelper::get('tags');
+		if ($suppliedTags !== null)
+		{
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostTags, $secondary);
+			$currentToken = self::serializeTags($post);
+			if (InputHelper::get('tags-token') != $currentToken)
+				throw new SimpleException('Someone else has changed the tags in the meantime');
+
+			$suppliedTags = preg_split('/[,;\s+]/', $suppliedTags);
+			$suppliedTags = array_filter($suppliedTags);
+			$suppliedTags = array_unique($suppliedTags);
+			foreach ($suppliedTags as $tag)
+				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
+					throw new SimpleException('Invalid tag "' . $tag . '"');
+			if (empty($suppliedTags))
+				throw new SimpleException('No tags set');
+
+			$dbTags = [];
+			foreach ($suppliedTags as $tag)
+			{
+				$dbTag = R::findOne('tag', 'name = ?', [$tag]);
+				if (!$dbTag)
+				{
+					$dbTag = R::dispense('tag');
+					$dbTag->name = $tag;
+					R::store($dbTag);
+				}
+				$dbTags []= $dbTag;
+			}
+
+			$post->sharedTag = $dbTags;
+			$edited = true;
+		}
+
+
+		/* thumbnail */
+		if (isset($_FILES['thumb']))
+		{
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostThumb, $secondary);
+			$suppliedFile = $_FILES['thumb'];
+			self::handleUploadErrors($suppliedFile);
+
+			$mimeType = mime_content_type($suppliedFile['tmp_name']);
+			if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
+				throw new SimpleException('Invalid thumbnail type "' . $mimeType . '"');
+			list ($imageWidth, $imageHeight) = getimagesize($suppliedFile['tmp_name']);
+			if ($imageWidth != $this->config->browsing->thumbWidth)
+				throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbWidth . ')');
+			if ($imageWidth != $this->config->browsing->thumbHeight)
+				throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbHeight . ')');
+
+			$path = $this->config->main->thumbsPath . DS . $post->name;
+			move_uploaded_file($suppliedFile['tmp_name'], $path);
+		}
+
+
+		/* db storage */
+		if ($edited)
+			R::store($post);
+		$this->context->transport->success = true;
+	}
+
+
+
+	/**
+	* @route /post/hide/{id}
+	*/
+	public function hideAction($id)
+	{
+		$post = self::locatePost($id);
+		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::HidePost, $secondary);
+		$post->hidden = true;
+		R::store($post);
+		$this->context->transport->success = true;
+	}
+
+	/**
+	* @route /post/unhide/{id}
+	*/
+	public function unhideAction($id)
+	{
+		$post = self::locatePost($id);
+		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::HidePost, $secondary);
+		$post->hidden = false;
+		R::store($post);
+		$this->context->transport->success = true;
+	}
+
+	/**
+	* @route /post/delete/{id}
+	*/
+	public function deleteAction($id)
+	{
+		$post = self::locatePost($id);
+		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::DeletePost, $secondary);
+		//remove stuff from auxiliary tables
+		$post->ownFavoritee = [];
+		$post->sharedTag = [];
+		R::store($post);
+		R::trash($post);
+		$this->context->transport->success = true;
+	}
+
+
 
 	/**
 	* @route /post/add-fav/{id}
@@ -260,11 +450,30 @@ class PostController
 		$post = self::locatePost($id);
 		R::preload($post, ['favoritee' => 'user', 'uploader' => 'user', 'tag']);
 
-		$prevPost = R::findOne('post', 'id < ? ORDER BY id DESC LIMIT 1', [$id]);
-		$nextPost = R::findOne('post', 'id > ? ORDER BY id ASC LIMIT 1', [$id]);
-
+		if ($post->hidden)
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, 'hidden');
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
+
+		$buildNextPostQuery = function($dbQuery, $id, $next)
+		{
+			$dbQuery->select('id')
+				->from('post')
+				->where($next ? 'id > ?' : 'id < ?')
+				->put($id);
+			if (!PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, 'hidden'))
+				$dbQuery->andNot('hidden');
+			$dbQuery->orderBy($next ? 'id asc' : 'id desc')
+				->limit(1);
+		};
+
+		$prevPostQuery = R::$f->begin();
+		$buildNextPostQuery($prevPostQuery, $id, false);
+		$prevPost = $prevPostQuery->get('row');
+
+		$nextPostQuery = R::$f->begin();
+		$buildNextPostQuery($nextPostQuery, $id, true);
+		$nextPost = $nextPostQuery->get('row');
 
 		$favorite = false;
 		if ($this->context->loggedIn)
@@ -291,8 +500,9 @@ class PostController
 		$this->context->subTitle = 'showing @' . $post->id;
 		$this->context->favorite = $favorite;
 		$this->context->transport->post = $post;
-		$this->context->transport->prevPostId = $prevPost ? $prevPost->id : null;
-		$this->context->transport->nextPostId = $nextPost ? $nextPost->id : null;
+		$this->context->transport->prevPostId = $prevPost ? $prevPost['id'] : null;
+		$this->context->transport->nextPostId = $nextPost ? $nextPost['id'] : null;
+		$this->context->transport->tagsToken = self::serializeTags($post);
 	}
 
 
@@ -309,7 +519,7 @@ class PostController
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
 
-		$path = $this->config->main->thumbsPath . DS . $post->name . '.png';
+		$path = $this->config->main->thumbsPath . DS . $post->name;
 		if (!file_exists($path))
 		{
 			$srcPath = $this->config->main->filesPath . DS . $post->name;
@@ -317,7 +527,7 @@ class PostController
 			$dstWidth = $this->config->browsing->thumbWidth;
 			$dstHeight = $this->config->browsing->thumbHeight;
 
-			switch($post->mime_type)
+			switch ($post->mime_type)
 			{
 				case 'image/jpeg':
 					$srcImage = imagecreatefromjpeg($srcPath);
@@ -388,35 +598,5 @@ class PostController
 
 		$this->context->transport->mimeType = $post->mimeType;
 		$this->context->transport->filePath = $path;
-	}
-
-
-
-	/**
-	* @route /favorites
-	* @route /favorites/{page}
-	* @validate page \d*
-	*/
-	public function favoritesAction($page = 1)
-	{
-		$this->listAction('favmin:1', $page);
-		$this->context->viewName = 'post-list';
-	}
-
-	public static function locatePost($key)
-	{
-		if (is_numeric($key))
-		{
-			$post = R::findOne('post', 'id = ?', [$key]);
-			if (!$post)
-				throw new SimpleException('Invalid post ID "' . $key . '"');
-		}
-		else
-		{
-			$post = R::findOne('post', 'name = ?', [$key]);
-			if (!$post)
-				throw new SimpleException('Invalid post name "' . $key . '"');
-		}
-		return $post;
 	}
 }

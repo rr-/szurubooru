@@ -154,7 +154,8 @@ $(function()
 
 				postDom.show();
 				var tagItOptions =
-				{	caseSensitive: true,
+				{
+					caseSensitive: true,
 					availableTags: tags,
 					placeholderText: $('.tags input').attr('placeholder')
 				};

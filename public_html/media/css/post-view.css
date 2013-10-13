@@ -73,12 +73,15 @@ i.icon-dl {
 	margin-right: 0.5em;
 }
 
-.options nav ul {
+.options ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 }
 
+.favorites p {
+	margin: 0;
+}
 .favorites ul {
 	list-style-type: none;
 	margin: 0;
@@ -89,4 +92,43 @@ i.icon-dl {
 }
 .favorites a {
 	margin: 2px;
+}
+
+.inactive {
+	opacity: .5;
+}
+
+form.edit {
+	display: none;
+	padding: 0.5em 1em;
+	border: 1px solid #eee;
+	border-bottom: 0;
+	padding-bottom: 0;
+	margin: 1em 0;
+}
+
+form.edit>div {
+	margin-bottom: 0.5em;
+}
+form.edit input[type=checkbox],
+form.edit label {
+	vertical-align: middle;
+	line-height: 33px;
+}
+form.edit label.left {
+	display: inline-block;
+	width: 5em;
+	float: left;
+}
+form.edit .safety label:not(.left) {
+	margin-right: 0.75em;
+}
+form.edit>div {
+	clear: left;
+}
+ul.tagit {
+	display: block;
+	vertical-align: middle;
+	margin: 0;
+	font-size: 1em;
 }

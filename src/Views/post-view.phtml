@@ -27,7 +27,6 @@
 
 	<div class="sidebar-unit tags">
 		<h1>tags (<?php echo count($this->context->transport->post->sharedTag) ?>)</h1>
-		<!-- todo: edit tags -->
 		<ul>
 			<?php foreach ($this->context->transport->post->sharedTag as $tag): ?>
 				<li>
@@ -107,57 +106,71 @@
 	<div class="sidebar-unit options">
 		<h1>options</h1>
 
-		<nav>
-			<ul>
-				<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::FavoritePost)): ?>
-					<?php if (!$this->context->favorite): ?>
-						<li class="add-fav">
-							<a href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
-								Add to favorites
-							</a>
-						</li>
-					<?php else: ?>
-						<li class="rem-fav">
-							<a href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
-								Remove from favorites
-							</a>
-						</li>
-					<?php endif ?>
+		<ul>
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::FavoritePost)): ?>
+				<?php if (!$this->context->favorite): ?>
+					<li class="add-fav">
+						<a href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
+							Add to favorites
+						</a>
+					</li>
+				<?php else: ?>
+					<li class="rem-fav">
+						<a href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
+							Remove from favorites
+						</a>
+					</li>
 				<?php endif ?>
+			<?php endif ?>
 
-				<!--
-				<li>
+			<?php
+				$secondary = $this->context->transport->post->uploader->id == $this->context->user->id ? 'own' : 'all';
+				$editPostPrivileges = [
+					Privilege::EditPostSafety,
+					Privilege::EditPostTags,
+					Privilege::EditPostThumb,
+				];
+				$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
+				foreach (array_keys($editPostPrivileges) as $privilege)
+				{
+					if (PrivilegesHelper::confirm($this->context->user, $privilege, $secondary))
+						$editPostPrivileges[$privilege] = true;
+				}
+				$canEditAnything = count(array_filter($editPostPrivileges)) > 0;
+			?>
+
+			<?php if ($canEditAnything): ?>
+				<li class="edit">
 					<a href="#">
-						Edit tags
+						Edit
 					</a>
 				</li>
+			<?php endif ?>
 
-				<li>
-					<a href="#">
-						Change safety
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::HidePost, $secondary)): ?>
+				<?php if ($this->context->transport->post->hidden): ?>
+					<li class="unhide">
+						<a href="<?php echo \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]) ?>">
+							Unhide
+						</a>
+					</li>
+				<?php else: ?>
+					<li class="hide">
+						<a href="<?php echo \Chibi\UrlHelper::route('post', 'hide', ['id' => $this->context->transport->post->id]) ?>">
+							Hide
+						</a>
+					</li>
+				<?php endif ?>
+			<?php endif ?>
+
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::DeletePost, $secondary)): ?>
+				<li class="delete">
+					<a href="<?php echo \Chibi\UrlHelper::route('post', 'delete', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure?" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
+						Delete
 					</a>
 				</li>
-
-				<li>
-					<a href="#">
-						Show on main page
-					</a>
-				</li>
-
-				<li>
-					<a href="#">
-						Hide from main page
-					</a>
-				</li>
-
-				<li>
-					<a href="#">
-						Remove
-					</a>
-				</li>
-				-->
-			</ul>
-		</nav>
+			<?php endif ?>
+		</ul>
 
 		<script type="text/javascript">
 			if (!$('.options ul li').length)
@@ -174,4 +187,41 @@
 			<embed width="<?php echo $this->context->transport->post->image_width ?>" height="<?php echo $this->context->transport->post->image_height  ?>" type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>"/>
 		<?php endif ?>
 	</div>
+
+	<?php if ($canEditAnything): ?>
+		<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multiplart/form-data" class="edit">
+			<h1>edit post</h1>
+			<?php if ($editPostPrivileges[Privilege::EditPostSafety]): ?>
+				<div class="safety">
+					<label class="left">Safety:</label>
+					<?php foreach (PostSafety::getAll() as $safety): ?>
+						<label>
+							<input type="radio" name="safety" value="<?php echo $safety ?>" <?php if ($this->context->transport->post->safety == $safety) echo 'checked="checked"' ?>/>
+							&nbsp;<?php echo PostSafety::toString($safety) ?>
+						</label>
+					<?php endforeach ?>
+				</div>
+			<?php endif ?>
+
+			<?php if ($editPostPrivileges[Privilege::EditPostTags]): ?>
+				<div class="tags">
+					<label class="left" for="tags">Tags:</label>
+					<input type="text" name="tags" id="tags" placeholder="enter some tags&hellip;" value="<?php echo join(',', array_map(function($tag) { return $tag->name; }, $this->context->transport->post->sharedTag)) ?>"/>
+				</div>
+				<input type="hidden" name="tags-token" id="tags-token" value="<?php echo $this->context->transport->tagsToken ?>"/>
+			<?php endif ?>
+
+			<?php if ($editPostPrivileges[Privilege::EditPostThumb]): ?>
+				<div class="thumb">
+					<label class="left" for="thumb">Thumb:</label>
+					<input type="file" name="thumb" id="thumb"/>
+				</div>
+			<?php endif ?>
+
+			<div>
+				<label class="left">&nbsp;</label>
+				<button type="submit">Submit</button>
+			</div>
+		</form>
+	<?php endif ?>
 </div>
