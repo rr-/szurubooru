@@ -88,12 +88,14 @@ class PostController
 			return;
 		}
 
-		$this->context->subTitle = 'browsing posts';
+		$query = urldecode($query);
 		$page = intval($page);
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
+		$this->context->subTitle = 'browsing posts';
+		$this->context->transport->searchQuery = $query;
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListPosts);
 
-		$buildDbQuery = function($dbQuery)
+		$buildDbQuery = function($dbQuery, $query)
 		{
 			$dbQuery->from('post');
 
@@ -110,26 +112,159 @@ class PostController
 			if (!PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, 'hidden'))
 				$dbQuery->andNot('hidden');
 
-			//todo construct WHERE based on filters
+			$tokens = array_filter(array_unique(explode(' ', $query)));
+			if (count($tokens) > $this->config->browsing->maxSearchTokens)
+				throw new SimpleException('Too many search tokens (maximum: ' . $this->config->browsing->maxSearchTokens . ')');
+			foreach ($tokens as $token)
+			{
+				if ($token{0} == '-')
+				{
+					$dbQuery->andNot();
+					$token = substr($token, 1);
+				}
+				else
+					$dbQuery->and();
+
+				$pos = strpos($token, ':');
+				if ($pos !== false)
+				{
+					$key = substr($token, 0, $pos);
+					$val = substr($token, $pos + 1);
+
+					switch ($key)
+					{
+						case 'favmin':
+							$dbQuery
+								->open()
+								->select('COUNT(1)')
+								->from('favoritee')
+								->where('post_id = post.id')
+								->close()
+								->addSql('>= ?')->put(intval($val));
+							break;
+
+						case 'type':
+							switch ($val)
+							{
+								case 'swf':
+									$type = PostType::Flash;
+									break;
+								case 'img':
+									$type = PostType::Image;
+									break;
+								default:
+									throw new SimpleException('Unknown type "' . $val . '"');
+							}
+							$dbQuery
+								->addSql('type = ?')
+								->put($type);
+							break;
+
+						case 'date':
+						case 'datemin':
+						case 'datemax':
+							list ($year, $month, $day) = explode('-', $val . '-0-0');
+							$yearMin = $yearMax = intval($year);
+							$monthMin = $monthMax = intval($month);
+							$monthMin = $monthMin ?: 1;
+							$monthMax = $monthMax ?: 12;
+							$dayMin = $dayMax = intval($day);
+							$dayMin = $dayMin ?: 1;
+							$dayMax = $dayMax ?: intval(date('t', mktime(0, 0, 0, $monthMax, 1, $year)));
+							$timeMin = mktime(0, 0, 0, $monthMin, $dayMin, $yearMin);
+							$timeMax = mktime(0, 0, -1, $monthMax, $dayMax+1, $yearMax);
+
+							if ($key == 'date')
+							{
+								$dbQuery
+									->addSql('upload_date >= ?')
+									->and('upload_date <= ?')
+									->put($timeMin)
+									->put($timeMax);
+							}
+							elseif ($key == 'datemin')
+							{
+								$dbQuery
+									->addSql('upload_date >= ?')
+									->put($timeMin);
+							}
+							elseif ($key == 'datemax')
+							{
+								$dbQuery
+									->addSql('upload_date <= ?')
+									->put($timeMax);
+							}
+							else
+							{
+								throw new Exception('Invalid key');
+							}
+
+							break;
+
+						case 'fav':
+						case 'favs':
+						case 'favoritee':
+						case 'favoriter':
+							$dbQuery
+								->exists()
+								->open()
+								->select('1')
+								->from('favoritee')
+								->innerJoin('user')
+								->on('favoritee.user_id = user.id')
+								->where('post_id = post.id')
+								->and('user.name = ?')->put($val)
+								->close();
+							break;
+
+						case 'uploader':
+						case 'uploaded':
+							$dbQuery
+								->addSql('uploader_id = ')
+								->open()
+								->select('user.id')
+								->from('user')
+								->where('name = ?')->put($val)
+								->close();
+							break;
+
+						default:
+							throw new SimpleException('Unknown key "' . $key . '"');
+					}
+				}
+				else
+				{
+					$val = $token;
+					$dbQuery
+						->exists()
+						->open()
+						->select('1')
+						->from('post_tag')
+						->innerJoin('tag')
+						->on('post_tag.tag_id = tag.id')
+						->where('post_id = post.id')
+						->and('tag.name = ?')->put($val)
+						->close();
+				}
+			}
 
 			//todo construct ORDER based on filers
 		};
 
 		$countDbQuery = R::$f->begin();
 		$countDbQuery->select('COUNT(1) AS count');
-		$buildDbQuery($countDbQuery);
+		$buildDbQuery($countDbQuery, $query);
 		$postCount = intval($countDbQuery->get('row')['count']);
 		$pageCount = ceil($postCount / $postsPerPage);
 
 		$searchDbQuery = R::$f->begin();
 		$searchDbQuery->select('*');
-		$buildDbQuery($searchDbQuery);
+		$buildDbQuery($searchDbQuery, $query);
 		$searchDbQuery->orderBy('id DESC');
 		$searchDbQuery->limit('?')->put($postsPerPage);
 		$searchDbQuery->offset('?')->put(($page - 1) * $postsPerPage);
 
 		$posts = $searchDbQuery->get();
-		$this->context->transport->searchQuery = $query;
 		$this->context->transport->page = $page;
 		$this->context->transport->postCount = $postCount;
 		$this->context->transport->pageCount = $pageCount;
