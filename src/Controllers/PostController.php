@@ -721,6 +721,7 @@ class PostController
 	{
 		$this->context->layoutName = 'layout-file';
 		$post = self::locatePost($name);
+		R::preload($post, ['tag']);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost, PostSafety::toString($post->safety));
@@ -731,6 +732,16 @@ class PostController
 		if (!is_readable($path))
 			throw new SimpleException('Post file is not readable');
 
+		$ext = substr($post->orig_name, strrpos($post->orig_name, '.') + 1);
+		if (strpos($post->orig_name, '.') === false)
+			$ext = '.dat';
+		$fn = sprintf('%s_%s_%s.%s',
+			$this->config->main->title,
+			$post->id, join(',', array_map(function($tag) { return $tag->name; }, $post->sharedTag)),
+			$ext);
+		$fn = preg_replace('/[[:^print:]]/', '', $fn);
+
+		$this->context->transport->customFileName = $fn;
 		$this->context->transport->mimeType = $post->mimeType;
 		$this->context->transport->filePath = $path;
 	}
