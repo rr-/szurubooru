@@ -67,7 +67,7 @@ class PostController
 	/**
 	* @route /posts
 	* @route /posts/{page}
-	* @route /posts/{query}
+	* @route /posts/{query}/
 	* @route /posts/{query}/{page}
 	* @validate page \d*
 	* @validate query [^\/]*
@@ -81,14 +81,17 @@ class PostController
 
 		#redirect requests in form of /posts/?query=... to canonical address
 		$formQuery = InputHelper::get('query');
-		if (!empty($formQuery))
+		if ($formQuery !== null)
 		{
-			$url = \Chibi\UrlHelper::route('post', 'list', ['query' => $formQuery]);
+			$this->context->transport->searchQuery = $formQuery;
+			if (strpos($formQuery, '/') !== false)
+				throw new SimpleException('Search query contains invalid characters.');
+			$url = \Chibi\UrlHelper::route('post', 'list', ['query' => urlencode($formQuery)]);
 			\Chibi\UrlHelper::forward($url);
 			return;
 		}
 
-		$query = urldecode($query);
+		$query = trim(urldecode($query));
 		$page = intval($page);
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
 		$this->context->subTitle = 'browsing posts';
@@ -112,7 +115,7 @@ class PostController
 			if (!PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, 'hidden'))
 				$dbQuery->andNot('hidden');
 
-			$tokens = array_filter(array_unique(explode(' ', $query)));
+			$tokens = array_filter(array_unique(explode(' ', $query)), function($x) { return $x != ''; });
 			if (count($tokens) > $this->config->browsing->maxSearchTokens)
 				throw new SimpleException('Too many search tokens (maximum: ' . $this->config->browsing->maxSearchTokens . ')');
 			foreach ($tokens as $token)
@@ -258,6 +261,7 @@ class PostController
 		$buildDbQuery($countDbQuery, $query);
 		$postCount = intval($countDbQuery->get('row')['count']);
 		$pageCount = ceil($postCount / $postsPerPage);
+		$page = max(1, min($pageCount, $page));
 
 		$searchDbQuery = R::$f->begin();
 		$searchDbQuery->select('*');
@@ -345,9 +349,9 @@ class PostController
 
 
 			/* tags */
-			$suppliedTags = InputHelper::get('tags');
-			$suppliedTags = preg_split('/[,;\s+]/', $suppliedTags);
-			$suppliedTags = array_filter($suppliedTags);
+			$suppliedTags = trim(InputHelper::get('tags'));
+			$suppliedTags = preg_split('/[,;\s]+/', $suppliedTags);
+			$suppliedTags = array_filter($suppliedTags, function($x) { return $x != ''; });
 			$suppliedTags = array_unique($suppliedTags);
 			foreach ($suppliedTags as $tag)
 				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
@@ -420,7 +424,7 @@ class PostController
 
 
 		/* tags */
-		$suppliedTags = InputHelper::get('tags');
+		$suppliedTags = trim(InputHelper::get('tags'));
 		if ($suppliedTags !== null)
 		{
 			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostTags, $secondary);
@@ -428,8 +432,8 @@ class PostController
 			if (InputHelper::get('tags-token') != $currentToken)
 				throw new SimpleException('Someone else has changed the tags in the meantime');
 
-			$suppliedTags = preg_split('/[,;\s+]/', $suppliedTags);
-			$suppliedTags = array_filter($suppliedTags);
+			$suppliedTags = preg_split('/[,;\s]+/', $suppliedTags);
+			$suppliedTags = array_filter($suppliedTags, function($x) { return $x != ''; });
 			$suppliedTags = array_unique($suppliedTags);
 			foreach ($suppliedTags as $tag)
 				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))

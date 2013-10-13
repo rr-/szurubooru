@@ -22,7 +22,7 @@ if (!function_exists('pageUrl'))
 		$page = min($context->transport->pageCount, $page);
 		$params = [];
 		$params['page'] = $page;
-		if (!empty($context->transport->searchQuery))
+		if ($context->transport->searchQuery != '')
 		{
 			$params['query'] = $context->transport->searchQuery;
 		}
