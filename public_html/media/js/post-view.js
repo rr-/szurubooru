@@ -58,6 +58,8 @@ $(function()
 
 	$('li.edit a').click(function(e)
 	{
+		e.preventDefault();
+
 		var aDom = $(this);
 		if (aDom.hasClass('inactive'))
 			return;
