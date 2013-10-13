@@ -298,37 +298,6 @@ class PostController
 
 		if (!empty($_FILES['file']['name']))
 		{
-			/* safety */
-			$suppliedSafety = intval(InputHelper::get('safety'));
-			if (!in_array($suppliedSafety, PostSafety::getAll()))
-				throw new SimpleException('Invalid safety type "' . $suppliedSafety . '"');
-
-
-			/* tags */
-			$suppliedTags = InputHelper::get('tags');
-			$suppliedTags = preg_split('/[,;\s+]/', $suppliedTags);
-			$suppliedTags = array_filter($suppliedTags);
-			$suppliedTags = array_unique($suppliedTags);
-			foreach ($suppliedTags as $tag)
-				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
-					throw new SimpleException('Invalid tag "' . $tag . '"');
-			if (empty($suppliedTags))
-				throw new SimpleException('No tags set');
-
-			$dbTags = [];
-			foreach ($suppliedTags as $tag)
-			{
-				$dbTag = R::findOne('tag', 'name = ?', [$tag]);
-				if (!$dbTag)
-				{
-					$dbTag = R::dispense('tag');
-					$dbTag->name = $tag;
-					R::store($dbTag);
-				}
-				$dbTags []= $dbTag;
-			}
-
-
 			/* file contents */
 			$suppliedFile = $_FILES['file'];
 			self::handleUploadErrors($suppliedFile);
@@ -365,6 +334,37 @@ class PostController
 				$path = $this->config->main->filesPath . DS . $name;
 			}
 			while (file_exists($path));
+
+
+			/* safety */
+			$suppliedSafety = intval(InputHelper::get('safety'));
+			if (!in_array($suppliedSafety, PostSafety::getAll()))
+				throw new SimpleException('Invalid safety type "' . $suppliedSafety . '"');
+
+
+			/* tags */
+			$suppliedTags = InputHelper::get('tags');
+			$suppliedTags = preg_split('/[,;\s+]/', $suppliedTags);
+			$suppliedTags = array_filter($suppliedTags);
+			$suppliedTags = array_unique($suppliedTags);
+			foreach ($suppliedTags as $tag)
+				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
+					throw new SimpleException('Invalid tag "' . $tag . '"');
+			if (empty($suppliedTags))
+				throw new SimpleException('No tags set');
+
+			$dbTags = [];
+			foreach ($suppliedTags as $tag)
+			{
+				$dbTag = R::findOne('tag', 'name = ?', [$tag]);
+				if (!$dbTag)
+				{
+					$dbTag = R::dispense('tag');
+					$dbTag->name = $tag;
+					R::store($dbTag);
+				}
+				$dbTags []= $dbTag;
+			}
 
 
 			/* db storage */
