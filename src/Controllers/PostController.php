@@ -217,6 +217,8 @@ class PostController
 								->close();
 							break;
 
+						case 'submit':
+						case 'upload':
 						case 'uploader':
 						case 'uploaded':
 							$dbQuery
