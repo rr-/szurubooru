@@ -296,7 +296,7 @@ class PostController
 		$this->context->subTitle = 'upload';
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::UploadPost);
 
-		if (isset($_FILES['file']))
+		if (!empty($_FILES['file']['name']))
 		{
 			/* safety */
 			$suppliedSafety = intval(InputHelper::get('safety'));
@@ -454,7 +454,7 @@ class PostController
 
 
 		/* thumbnail */
-		if (isset($_FILES['thumb']))
+		if (!empty($_FILES['thumb']['name']))
 		{
 			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostThumb, $secondary);
 			$suppliedFile = $_FILES['thumb'];
