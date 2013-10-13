@@ -10,7 +10,7 @@ else
 	{
 		\Chibi\HeadersHelper::set(
 			'Content-Disposition',
-			'inline; filename=' . $this->context->transport->customFileName);
+			'inline; filename="' . $this->context->transport->customFileName . '"');
 	}
 
 	\Chibi\HeadersHelper::set(
