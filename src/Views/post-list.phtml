@@ -31,49 +31,51 @@ if (!function_exists('pageUrl'))
 }
 ?>
 
-<nav class="paginator-wrapper">
-	<ul class="paginator">
-		<?php if ($this->context->transport->page > 1): ?>
-			<li class="prev">
-		<?php else: ?>
-			<li class="prev inactive">
-		<?php endif ?>
-			<a href="<?php echo pageUrl($this->context->transport->page - 1) ?>">
-				&laquo;
-			</a>
-		</li>
+<?php
+	$pagesVisible = [];
+	$pagesVisible []= 1;
+	$pagesVisible []= $this->context->transport->pageCount;
+	$delta = 3;
+	$pagesVisible = array_merge($pagesVisible, range($this->context->transport->page - $delta, $this->context->transport->page + $delta));
+	$pagesVisible = array_filter($pagesVisible, function($x) { return $x >= 1 and $x <= $this->context->transport->pageCount; });
+	$pagesVisible = array_unique($pagesVisible);
+	sort($pagesVisible, SORT_NUMERIC);
+?>
 
-		<?php
-			$pagesVisible = [];
-			$pagesVisible []= 1;
-			$pagesVisible []= $this->context->transport->pageCount;
-			$delta = 3;
-			$pagesVisible = array_merge($pagesVisible, range($this->context->transport->page - $delta, $this->context->transport->page + $delta));
-			$pagesVisible = array_filter($pagesVisible, function($x) { return $x >= 1 and $x <= $this->context->transport->pageCount; });
-			$pagesVisible = array_unique($pagesVisible);
-			sort($pagesVisible, SORT_NUMERIC);
-		?>
-
-		<?php foreach ($pagesVisible as $page): ?>
-			<?php if ($page == $this->context->transport->page): ?>
-				<li class="active">
+<?php if (!empty($pagesVisible)): ?>
+	<nav class="paginator-wrapper">
+		<ul class="paginator">
+			<?php if ($this->context->transport->page > 1): ?>
+				<li class="prev">
 			<?php else: ?>
-				<li>
+				<li class="prev inactive">
 			<?php endif ?>
-				<a href="<?php echo pageUrl($page) ?>">
-					<?php echo $page ?>
+				<a href="<?php echo pageUrl($this->context->transport->page - 1) ?>">
+					&laquo;
 				</a>
 			</li>
-		<?php endforeach ?>
 
-		<?php if ($this->context->transport->page < $this->context->transport->pageCount): ?>
-			<li class="next">
-		<?php else: ?>
-			<li class="next inactive">
-		<?php endif ?>
-			<a href="<?php echo pageUrl($this->context->transport->page + 1) ?>">
-				&raquo;
-			</a>
-		</li>
-	</ul>
-</nav>
+			<?php foreach ($pagesVisible as $page): ?>
+				<?php if ($page == $this->context->transport->page): ?>
+					<li class="active">
+				<?php else: ?>
+					<li>
+				<?php endif ?>
+					<a href="<?php echo pageUrl($page) ?>">
+						<?php echo $page ?>
+					</a>
+				</li>
+			<?php endforeach ?>
+
+			<?php if ($this->context->transport->page < $this->context->transport->pageCount): ?>
+				<li class="next">
+			<?php else: ?>
+				<li class="next inactive">
+			<?php endif ?>
+				<a href="<?php echo pageUrl($this->context->transport->page + 1) ?>">
+					&raquo;
+				</a>
+			</li>
+		</ul>
+	</nav>
+<?php endif ?>
