@@ -580,7 +580,7 @@ class PostController
 		if ($finalKey === null)
 			throw new SimpleException('Not in favorites');
 
-		unset ($post->ownFavoritee[$key]);
+		unset ($post->ownFavoritee[$finalKey]);
 		R::store($post);
 		$this->context->transport->success = true;
 	}
