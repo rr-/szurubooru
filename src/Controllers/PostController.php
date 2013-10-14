@@ -262,7 +262,7 @@ class PostController
 		};
 
 		$countDbQuery = R::$f->begin();
-		$countDbQuery->select('COUNT(1) AS count');
+		$countDbQuery->select('COUNT(1)')->as('count');
 		$buildDbQuery($countDbQuery, $query);
 		$postCount = intval($countDbQuery->get('row')['count']);
 		$pageCount = ceil($postCount / $postsPerPage);

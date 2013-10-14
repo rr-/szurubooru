@@ -1,0 +1,67 @@
+<div id="sidebar">
+	<div class="avatar-wrapper">
+		<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name]) ?>">
+			<img src="<?php echo $this->context->transport->user->getAvatarUrl(140) ?>" alt="<?php echo $this->context->transport->user->name ?>">
+		</a>
+		<h1><?php echo $this->context->transport->user->name ?></h1>
+	</div>
+
+	<div class="sidebar-unit details">
+		<div class="join-date">
+			<span class="key">Joined:</span>
+			<span class="value"><?php echo date('Y-m-d', $this->context->transport->user->join_date) ?></span>
+		</div>
+
+		<div class="access-rank">
+			<span class="key">Access rank:</span>
+			<span class="value"><?php echo strtolower(AccessRank::toString($this->context->transport->user->access_rank)) ?></span>
+		</div>
+	</div>
+</div>
+
+<div id="inner-content">
+	<div class="tabs">
+		<nav>
+			<ul>
+				<?php if ($this->context->transport->tab == 'favs'): ?>
+					<li class="active">
+				<?php else: ?>
+					<li class="inactive">
+				<?php endif ?>
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'favs', 'page' => 1]) ?>">
+						Favs
+					</a>
+				</li>
+
+				<?php if ($this->context->transport->tab == 'uploads'): ?>
+					<li class="active">
+				<?php else: ?>
+					<li class="inactive">
+				<?php endif ?>
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'uploads', 'page' => 1]) ?>">
+						Uploads
+					</a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+
+	<?php
+		/* heh, what a stupid hack */
+		function pageUrl($page)
+		{
+			$context = \Chibi\Registry::getContext();
+			$controller = $context->route->simpleControllerName;
+			$action = $context->route->simpleActionName;
+			$page = max(1, $page);
+			$page = min($context->transport->pageCount, $page);
+			$params = [];
+			$params['page'] = $page;
+			$params['tab'] = $context->transport->tab;
+			$params['name'] = $context->transport->user->name;
+			return \Chibi\UrlHelper::route($controller, $action, $params);
+		}
+	?>
+
+	<?php $this->renderFile('post-list') ?>
+</div>

@@ -136,6 +136,7 @@ class AuthController
 			$dbUser->pass_salt = md5(mt_rand() . uniqid());
 			$dbUser->pass_hash = self::hashPassword($suppliedPass1, $dbUser->pass_salt);
 			$dbUser->email = $suppliedEmail;
+			$dbUser->join_date = time();
 			$dbUser->staff_confirmed = $staffActivation ? false : true;
 			$dbUser->email_confirmed = $emailActivation ? false : true;
 			$dbUser->access_rank = R::findOne('user') === null ? AccessRank::Admin : AccessRank::Registered;

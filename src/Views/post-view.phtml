@@ -52,7 +52,7 @@
 		<div class="uploader">
 			<span class="key">Uploader:</span>
 			<span class="value">
-				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->id]) ?>">
+				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->name]) ?>">
 					<?php echo $this->context->transport->post->uploader->name ?>
 				</a>
 			</span>
