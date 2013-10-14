@@ -46,10 +46,6 @@
 	display: none;
 }
 
-.inactive {
-	opacity: .5;
-}
-
 .post {
 	margin-bottom: 4em;
 }

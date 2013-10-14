@@ -1,12 +1,14 @@
 <div id="sidebar">
 	<div class="avatar-wrapper">
 		<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name]) ?>">
-			<img src="<?php echo $this->context->transport->user->getAvatarUrl(140) ?>" alt="<?php echo $this->context->transport->user->name ?>">
+			<img src="<?php echo htmlspecialchars($this->context->transport->user->getAvatarUrl(140)) ?>" alt="<?php echo $this->context->transport->user->name ?>">
 		</a>
 		<h1><?php echo $this->context->transport->user->name ?></h1>
 	</div>
 
 	<div class="sidebar-unit details">
+		<h1>details</h1>
+
 		<div class="join-date">
 			<span class="key">Joined:</span>
 			<span class="value"><?php echo date('Y-m-d', $this->context->transport->user->join_date) ?></span>
@@ -17,6 +19,44 @@
 			<span class="value"><?php echo strtolower(AccessRank::toString($this->context->transport->user->access_rank)) ?></span>
 		</div>
 	</div>
+
+	<div class="sidebar-unit options">
+		<h1>options</h1>
+
+		<ul>
+			<?php
+				$secondary = $this->context->transport->user->id == $this->context->user->id ? 'own' : 'all';
+				$userModificationPrivileges = [
+					Privilege::ChangeUserName,
+					Privilege::ChangeUserEmail,
+					Privilege::ChangeUserPassword,
+					Privilege::ChangeUserAccessRank,
+				];
+				$userModificationPrivileges = array_fill_keys($userModificationPrivileges, false);
+				foreach (array_keys($userModificationPrivileges) as $privilege)
+				{
+
+					if (PrivilegesHelper::confirm($this->context->user, $privilege, $secondary))
+						$userModificationPrivileges[$privilege] = true;
+				}
+				$canModifyAnything = count(array_filter($userModificationPrivileges)) > 0;
+			?>
+
+			<?php if ($canModifyAnything): ?>
+				<li class="edit">
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name, 'tab' => 'edit']) ?>">
+						Edit account settings
+					</a>
+				</li>
+			<?php endif ?>
+
+		</ul>
+
+		<script type="text/javascript">
+			if (!$('.options ul li').length)
+				$('.options').hide();
+		</script>
+	</div>
 </div>
 
 <div id="inner-content">
@@ -24,9 +64,9 @@
 		<nav>
 			<ul>
 				<?php if ($this->context->transport->tab == 'favs'): ?>
-					<li class="active">
+					<li class="selected favs">
 				<?php else: ?>
-					<li class="inactive">
+					<li class="favs">
 				<?php endif ?>
 					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'favs', 'page' => 1]) ?>">
 						Favs
@@ -34,34 +74,107 @@
 				</li>
 
 				<?php if ($this->context->transport->tab == 'uploads'): ?>
-					<li class="active">
+					<li class="selected uploads">
 				<?php else: ?>
-					<li class="inactive">
+					<li class="uploads">
 				<?php endif ?>
 					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'uploads', 'page' => 1]) ?>">
 						Uploads
 					</a>
 				</li>
+
+				<?php if ($canModifyAnything): ?>
+					<?php if ($this->context->transport->tab == 'edit'): ?>
+						<li class="selected edit">
+					<?php else: ?>
+						<li class="edit">
+					<?php endif ?>
+						<a href="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name, 'tab' => 'edit']) ?>">
+							Account settings
+						</a>
+					</li>
+				<?php endif ?>
 			</ul>
 		</nav>
 	</div>
 
-	<?php
-		/* heh, what a stupid hack */
-		function pageUrl($page)
-		{
-			$context = \Chibi\Registry::getContext();
-			$controller = $context->route->simpleControllerName;
-			$action = $context->route->simpleActionName;
-			$page = max(1, $page);
-			$page = min($context->transport->pageCount, $page);
-			$params = [];
-			$params['page'] = $page;
-			$params['tab'] = $context->transport->tab;
-			$params['name'] = $context->transport->user->name;
-			return \Chibi\UrlHelper::route($controller, $action, $params);
-		}
-	?>
+	<?php if (isset($this->context->transport->posts)): ?>
+		<?php
+			/* heh, what a stupid hack */
+			function pageUrl($page)
+			{
+				$context = \Chibi\Registry::getContext();
+				$controller = $context->route->simpleControllerName;
+				$action = $context->route->simpleActionName;
+				$page = max(1, $page);
+				$page = min($context->transport->pageCount, $page);
+				$params = [];
+				$params['page'] = $page;
+				$params['tab'] = $context->transport->tab;
+				$params['name'] = $context->transport->user->name;
+				return \Chibi\UrlHelper::route($controller, $action, $params);
+			}
+			$this->renderFile('post-list')
+		?>
+	<?php endif ?>
 
-	<?php $this->renderFile('post-list') ?>
+	<?php if ($this->context->transport->tab == 'edit'): ?>
+		<form action="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['id' => $this->context->transport->user->id]) ?>" method="post" class="edit aligned" autocomplete="off">
+			<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
+				<div class="old-password">
+					<label class="left" for="old-password">Old password:</label>
+					<input type="password" name="old-password" id="old-password" placeholder="Old password"/>
+				</div>
+				<hr>
+			<?php endif ?>
+
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ChangeUserName, $secondary)): ?>
+				<div class="nickname">
+					<label class="left" for="name">Name:</label>
+					<input type="text" name="name" id="name" placeholder="New name&hellip;"/>
+				</div>
+			<?php endif ?>
+
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ChangeUserEmail, $secondary)): ?>
+				<div class="email">
+					<label class="left" for="name">E-mail:</label>
+					<input type="text" name="email" id="email" placeholder="New e-mail&hellip;"/>
+				</div>
+			<?php endif ?>
+
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ChangeUserPassword, $secondary)): ?>
+				<div class="password1">
+					<label class="left" for="password1">New password:</label>
+					<input type="password" name="password1" id="password1" placeholder="New password&hellip;"/>
+				</div>
+				<div class="password2">
+					<label class="left" for="password2"></label>
+					<input type="password" name="password2" id="password2" placeholder="New password&hellip; (repeat)"/>
+				</div>
+			<?php endif ?>
+
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ChangeUserAccessRank, $secondary)): ?>
+				<div class="access-rank">
+					<label class="left" for="access-rank">Access rank:</label>
+					<select name="access-rank" id="access-rank">
+						<?php foreach (AccessRank::getAll() as $rank): ?>
+							<?php if ($rank == $this->context->transport->user->access_rank): ?>
+								<option value="<?php echo $rank ?>" selected="selected">
+							<?php else: ?>
+								<option value="<?php echo $rank ?>">
+							<?php endif ?>
+								<?php echo AccessRank::toString($rank) ?>
+							</option>
+						<?php endforeach ?>
+					</select>
+				</div>
+			<?php endif ?>
+
+			<div>
+				<label class="left">&nbsp;</label>
+				<button type="submit">Submit</button>
+			</div>
+		</form>
+	<?php endif ?>
+
 </div>

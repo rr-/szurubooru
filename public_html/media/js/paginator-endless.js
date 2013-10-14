@@ -7,7 +7,7 @@ function scrolled()
 		var pageDone = $(document).data('page-done');
 		if (pageNext == null)
 		{
-			pageNext = $('.paginator .next:not(.inactive) a').attr('href');
+			pageNext = $('.paginator .next:not(.disabled) a').attr('href');
 		}
 		if (pageNext != null && pageNext != pageDone)
 		{
@@ -15,7 +15,7 @@ function scrolled()
 			$.get(pageNext, [], function(response)
 			{
 				var dom = $(response);
-				var nextPage = dom.find('.paginator .next:not(.inactive) a').attr('href');
+				var nextPage = dom.find('.paginator .next:not(.disabled) a').attr('href');
 				$(document).data('page-next', nextPage);
 				$('.paginator-content').append($(response).find('.paginator-content').children().fadeIn('slow'));
 				scrolled();

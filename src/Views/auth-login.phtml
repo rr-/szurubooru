@@ -1,16 +1,16 @@
-<form action="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth" method="post">
+<form action="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth aligned" method="post">
 
 	<div>
 		<p>If you don't have an account yet,<br/><a href="<?php echo \Chibi\UrlHelper::route('auth', 'register'); ?>">click here</a> to create a new one.</p>
 	</div>
 
 	<div>
-		<label for="user">User name:</label>
+		<label class="left" for="user">User name:</label>
 		<input id="user" name="user"/>
 	</div>
 
 	<div>
-		<label for="pass">Password:</label>
+		<label class="left" for="pass">Password:</label>
 		<input type="password" id="pass" name="pass"/>
 	</div>
 
@@ -19,6 +19,7 @@
 	<?php endif ?>
 
 	<div>
+		<label class="left"></label>
 		<button type="submit">Log in</button>
 	</div>
 </form>

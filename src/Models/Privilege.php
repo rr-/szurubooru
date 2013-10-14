@@ -14,7 +14,13 @@ class Privilege extends Enum
 
 	const ListUsers = 11;
 	const ViewUser = 12;
+	const BanUser = 13;
+	const AcceptUserRegistration = 14;
+	const ChangeUserPassword = 15;
+	const ChangeUserAccessRank = 16;
+	const ChangeUserEmail = 17;
+	const ChangeUserName = 18;
 
-	const ListComments = 13;
-	const ListTags = 14;
+	const ListComments = 19;
+	const ListTags = 20;
 }

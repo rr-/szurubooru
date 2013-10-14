@@ -9,33 +9,33 @@
 		<p>Your registration must be confirmed by staff.</p>
 	<?php endif ?>
 <?php else: ?>
-	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth" method="post">
+	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth aligned" method="post">
 		<div>
 			<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>
 		</div>
 
 		<div>
-			<label for="user">User name:</label>
-			<input id="user" name="user" value="<?php echo $this->context->suppliedUser ?>"/ placeholder="e.g. darth_vader" autocomplete="off">
+			<label class="left" for="user">User name:</label>
+			<input id="user" name="user" value="<?php echo $this->context->suppliedUser ?>" placeholder="e.g. darth_vader" autocomplete="off"/>
 		</div>
 
 		<div>
-			<label for="pass">Password:</label>
-			<input type="password" id="pass" name="pass1" value="<?php echo $this->context->suppliedPass1 ?>" placeholder="e.g. <?php echo str_repeat('&#x25cf;', 8) ?>"/ autocomplete="off">
+			<label class="left" for="pass1">Password:</label>
+			<input type="password" id="pass1" name="pass1" value="<?php echo $this->context->suppliedPass1 ?>" placeholder="e.g. <?php echo str_repeat('&#x25cf;', 8) ?>" autocomplete="off"/>
 		</div>
 
 		<div>
-			<label for="pass">Password (repeat):</label>
-			<input type="password" id="pass" name="pass2" value="<?php echo $this->context->suppliedPass2 ?>" placeholder="e.g. <?php echo str_repeat('&#x25cf;', 8) ?>"/ autocomplete="off">
+			<label class="left" for="pass2">Password (repeat):</label>
+			<input type="password" id="pass2" name="pass2" value="<?php echo $this->context->suppliedPass2 ?>" placeholder="e.g. <?php echo str_repeat('&#x25cf;', 8) ?>" autocomplete="off"/>
 		</div>
 
 		<div>
-			<label for="email">E-mail address<?php if ($this->context->transport->emailActivation) echo ' (required)' ?>:</label>
-			<input id="email" name="email" value="<?php echo $this->context->suppliedEmail ?>" placeholder="e.g. vader@empire.gov"/ autocomplete="off">
+			<label class="left" for="email">E-mail address<?php if ($this->context->transport->emailActivation) echo ' (required)' ?>:</label>
+			<input id="email" name="email" value="<?php echo $this->context->suppliedEmail ?>" placeholder="e.g. vader@empire.gov" autocomplete="off"/>
 		</div>
 
 		<div>
-			<p id="email-info" name="email-info">Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>Leave blank for random Gravatar.</p>
+			<p id="email-info">Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>Leave blank for random Gravatar.</p>
 		</div>
 
 		<?php if (isset($this->context->transport->errorMessage)): ?>
@@ -45,6 +45,7 @@
 		<?php endif ?>
 
 		<div>
+			<label class="left"></label>
 			<button type="submit">Register</button>
 		</div>
 	</form>

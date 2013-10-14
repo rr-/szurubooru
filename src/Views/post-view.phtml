@@ -4,7 +4,7 @@
 			<?php if ($this->context->transport->nextPostId): ?>
 				<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->nextPostId]) ?>">
 			<?php else: ?>
-				<a class="inactive">
+				<a class="disabled">
 			<?php endif ?>
 				<i class="icon-next"></i>
 				<span>next post</span>
@@ -15,7 +15,7 @@
 			<?php if ($this->context->transport->prevPostId): ?>
 				<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->prevPostId]) ?>">
 			<?php else: ?>
-				<a class="inactive">
+				<a class="disabled">
 			<?php endif ?>
 				<span>prev post</span>
 				<i class="icon-prev"></i>
@@ -73,7 +73,7 @@
 		<?php endif ?>
 
 		<div class="permalink">
-			<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>">
+			<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
 				<i class="icon-dl"></i>
 				<span class="ext">
 					<?php echo strtoupper(substr($this->context->transport->post->orig_name, strrpos($this->context->transport->post->orig_name, '.') + 1)) ?>
@@ -94,8 +94,8 @@
 			<ul>
 				<?php foreach ($this->context->transport->post->via('favoritee')->sharedUser as $user): ?>
 					<li>
-						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
-							<img src="<?php echo $user->getAvatarUrl() ?>" alt="<?php echo $user->name ?>">
+						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>" title="<?php echo $user->name ?>">
+							<img src="<?php echo htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?php echo $user->name ?>">
 						</a>
 					</li>
 				<?php endforeach ?>
@@ -189,7 +189,7 @@
 	</div>
 
 	<?php if ($canEditAnything): ?>
-		<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multiplart/form-data" class="edit">
+		<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit aligned">
 			<h1>edit post</h1>
 			<?php if ($editPostPrivileges[Privilege::EditPostSafety]): ?>
 				<div class="safety">

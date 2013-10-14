@@ -28,6 +28,6 @@
 	border-color: red;
 }
 
-.paginator li.inactive a {
+.paginator li.disabled a {
 	color: gray;
 }

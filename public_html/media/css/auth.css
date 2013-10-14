@@ -10,12 +10,10 @@ form.auth div {
 	display: table-row;
 }
 
-form.auth label {
+form.auth label.left {
 	display: table-cell;
-	text-align: right;
 	float: left;
 	width: 144px;
-	margin: 5px 16px 0 0;
 }
 
 form.auth input {
@@ -30,7 +28,6 @@ form.auth input {
 
 form.auth button {
 	display: block;
-	margin: 0 auto;
 }
 
 form.auth p {

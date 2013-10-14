@@ -23,6 +23,24 @@ class UserController
 
 
 	/**
+	* @route /user/{name}/edit
+	* @validate name [^\/]+
+	*/
+	public function editAction($name)
+	{
+		$this->context->viewName = 'user-view';
+		$this->context->stylesheets []= 'user-view.css';
+		$this->context->subTitle = $name;
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser);
+
+		$user = self::locateUser($name);
+		$this->context->transport->user = $user;
+		$this->context->transport->tab = 'edit';
+	}
+
+
+
+	/**
 	* @route /user/{name}
 	* @route /user/{name}/{tab}/{page}
 	* @validate name [^\/]+

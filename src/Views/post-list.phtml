@@ -48,7 +48,7 @@ if (!function_exists('pageUrl'))
 			<?php if ($this->context->transport->page > 1): ?>
 				<li class="prev">
 			<?php else: ?>
-				<li class="prev inactive">
+				<li class="prev disabled">
 			<?php endif ?>
 				<a href="<?php echo pageUrl($this->context->transport->page - 1) ?>">
 					&laquo;
@@ -70,7 +70,7 @@ if (!function_exists('pageUrl'))
 			<?php if ($this->context->transport->page < $this->context->transport->pageCount): ?>
 				<li class="next">
 			<?php else: ?>
-				<li class="next inactive">
+				<li class="next disabled">
 			<?php endif ?>
 				<a href="<?php echo pageUrl($this->context->transport->page + 1) ?>">
 					&raquo;

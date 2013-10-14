@@ -9,12 +9,12 @@ embed {
 	max-width: 100%;
 }
 
-.tags ul {
+#sidebar .tags ul {
 	list-style-type: none;
 	margin: 0 0 0 1em;
 	padding: 0;
 }
-.tags li .count {
+#sidebar .tags li .count {
 	padding-left: 0.5em;
 	color: silver;
 }
@@ -28,10 +28,10 @@ nav .left {
 nav .right {
 	float: right;
 }
-nav a.inactive {
+nav a.disabled {
 	color: silver;
 }
-nav a.inactive i[class*='icon-'] {
+nav a.disabled i[class*='icon-'] {
 	background-color: silver;
 }
 
@@ -94,10 +94,6 @@ i.icon-dl {
 	margin: 2px;
 }
 
-.inactive {
-	opacity: .5;
-}
-
 form.edit {
 	display: none;
 	padding: 0.5em 1em;
@@ -106,25 +102,8 @@ form.edit {
 	padding-bottom: 0;
 	margin: 1em 0;
 }
-
-form.edit>div {
-	margin-bottom: 0.5em;
-}
-form.edit input[type=checkbox],
-form.edit label {
-	vertical-align: middle;
-	line-height: 33px;
-}
-form.edit label.left {
-	display: inline-block;
-	width: 5em;
-	float: left;
-}
 form.edit .safety label:not(.left) {
 	margin-right: 0.75em;
-}
-form.edit>div {
-	clear: left;
 }
 ul.tagit {
 	display: block;

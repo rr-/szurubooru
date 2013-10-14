@@ -22,12 +22,27 @@
 	margin-bottom: -1px;
 }
 
-.tabs li.active a {
-	border: 1px solid #eee;
-	border-bottom: 1px solid white;
-}
-.tabs li.inactive a {
+.tabs li a {
 	border: 1px solid white;
 	border-bottom: 1px solid #eee;
 	color: silver;
+}
+.tabs li.selected a {
+	border: 1px solid #eee;
+	border-bottom: 1px solid white;
+	color: inherit;
+}
+
+.avatar-wrapper {
+	text-align: center;
+}
+
+.options ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+form.aligned label.left {
+	width: 10em;
 }

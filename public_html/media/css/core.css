@@ -96,7 +96,6 @@ body {
 	float: right;
 	background: white;
 	margin: 0 0.25em;
-	padding: 0.2em 0.5em;
 }
 #top-nav li.search input {
 	border: 0;
@@ -161,12 +160,57 @@ a:hover i[class*='icon-'] {
 	background-color: red;
 }
 
-input,
-button {
-	font-family: inherit;
+form.aligned input,
+form.aligned button {
+	vertical-align: text-top;
+}
+form.aligned label {
+	text-align: right;
+	vertical-align: middle;
+}
+form.aligned label.left {
+	display: inline-block;
+	padding-right: 1em;
+	width: 5em;
+	min-height: 1em;
+	float: left;
+}
+form.aligned>div {
+	margin-bottom: 0.5em;
+	clear: left;
+}
+form.aligned label,
+form.aligned input,
+form.aligned select,
+form.aligned button {
+	vertical-align: middle;
+	line-height: 20px;
+}
+form.aligned label,
+form.aligned input,
+form.aligned select {
+	padding: 5px;
+}
+form.aligned input[type=file] {
+	padding: 5px 0;
+}
+form.aligned input[type=radio],
+form.aligned input[type=checkbox] {
+	vertical-align: text-top;
 }
 
-input:not([type=radio]):not([type=checkbox]) {
+label {
+	display: inline-block;
+}
+
+label,
+input,
+select,
+button {
+	font-family: inherit;
+	font-size: 11pt;
+}
+input:not([type=radio], [type=checkbox], [type=file]) {
 	border: 1px solid #ccc;
 }
 button {
@@ -208,4 +252,14 @@ footer {
 	border-top: 1px solid #eee;
 	font-size: small;
 	color: silver;
+}
+
+.inactive {
+	opacity: .5;
+}
+
+hr {
+	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAIElEQVQYlWNgQAPv3r37j4wHXBJdATY5BnyScAX4TAUAdfp5IbOdz/YAAAAASUVORK5CYII=');
+	border: 0;
+	height: 4px;
 }
