@@ -110,70 +110,80 @@ class UserController
 	*/
 	public function editAction($name)
 	{
-		$user = self::locateUser($name);
-		$edited = false;
-		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
-
-		$this->context->handleExceptions = true;
-		$this->context->transport->user = $user;
-		$this->context->transport->tab = 'edit';
-		$this->context->viewName = 'user-view';
-		$this->context->stylesheets []= 'user-view.css';
-		$this->context->subTitle = $name;
-
-		$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
-		$this->context->suppliedName = $suppliedName = InputHelper::get('name');
-		$this->context->suppliedPassword1 = $suppliedPassword1 = InputHelper::get('password1');
-		$this->context->suppliedPassword2 = $suppliedPassword2 = InputHelper::get('password2');
-		$this->context->suppliedEmail = $suppliedEmail = InputHelper::get('email');
-		$this->context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
-		$currentPasswordHash = $user->pass_hash;
-
-		if ($suppliedName != '' and $suppliedName != $user->name)
+		try
 		{
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserName, $secondary);
-			$suppliedName = Model_User::validateUserName($suppliedName);
-			$user->name = $suppliedName;
-			$edited = true;
-		}
 
-		if ($suppliedPassword1 != '')
-		{
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserPassword, $secondary);
-			if ($suppliedPassword1 != $suppliedPassword2)
-				throw new SimpleException('Specified passwords must be the same');
-			$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
-			$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
-			$edited = true;
-		}
+			$user = self::locateUser($name);
+			$edited = false;
+			$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
 
-		if ($suppliedEmail != '' and $suppliedEmail != $user->email)
-		{
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserEmail, $secondary);
-			$suppliedEmail = Model_User::validateEmail($suppliedEmail);
-			$user->email = $suppliedEmail;
-			$edited = true;
-		}
+			$this->context->handleExceptions = true;
+			$this->context->transport->user = $user;
+			$this->context->transport->tab = 'edit';
+			$this->context->viewName = 'user-view';
+			$this->context->stylesheets []= 'user-view.css';
+			$this->context->subTitle = $name;
 
-		if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->access_rank)
-		{
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserAccessRank, $secondary);
-			$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
-			$user->access_rank = $suppliedAccessRank;
-			$edited = true;
-		}
+			$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
+			$this->context->suppliedName = $suppliedName = InputHelper::get('name');
+			$this->context->suppliedPassword1 = $suppliedPassword1 = InputHelper::get('password1');
+			$this->context->suppliedPassword2 = $suppliedPassword2 = InputHelper::get('password2');
+			$this->context->suppliedEmail = $suppliedEmail = InputHelper::get('email');
+			$this->context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
+			$currentPasswordHash = $user->pass_hash;
 
-		if ($edited)
-		{
-			if ($this->context->user->id == $user->id)
+			if ($suppliedName != '' and $suppliedName != $user->name)
 			{
-				$suppliedPasswordHash = Model_User::hashPassword($suppliedCurrentPassword, $user->pass_salt);
-				if ($suppliedPasswordHash != $currentPasswordHash)
-					throw new SimpleException('Must supply valid current password');
+				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserName, $secondary);
+				$suppliedName = Model_User::validateUserName($suppliedName);
+				$user->name = $suppliedName;
+				$edited = true;
 			}
-			R::store($user);
-			$this->context->transport->success = true;
+
+			if ($suppliedPassword1 != '')
+			{
+				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserPassword, $secondary);
+				if ($suppliedPassword1 != $suppliedPassword2)
+					throw new SimpleException('Specified passwords must be the same');
+				$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
+				$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
+				$edited = true;
+			}
+
+			if ($suppliedEmail != '' and $suppliedEmail != $user->email)
+			{
+				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserEmail, $secondary);
+				$suppliedEmail = Model_User::validateEmail($suppliedEmail);
+				$user->email = $suppliedEmail;
+				$edited = true;
+			}
+
+			if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->access_rank)
+			{
+				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserAccessRank, $secondary);
+				$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
+				$user->access_rank = $suppliedAccessRank;
+				$edited = true;
+			}
+
+			if ($edited)
+			{
+				if ($this->context->user->id == $user->id)
+				{
+					$suppliedPasswordHash = Model_User::hashPassword($suppliedCurrentPassword, $user->pass_salt);
+					if ($suppliedPasswordHash != $currentPasswordHash)
+						throw new SimpleException('Must supply valid current password');
+				}
+				R::store($user);
+				$this->context->transport->success = true;
+			}
+
+		}
+		catch (Exception $e)
+		{
+			$this->context->transport->user = self::locateUser($name);
+			throw $e;
 		}
 	}
 
