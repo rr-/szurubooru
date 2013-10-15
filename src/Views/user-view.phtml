@@ -164,9 +164,9 @@
 	<?php if ($this->context->transport->tab == 'edit'): ?>
 		<form action="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name]) ?>" method="post" class="edit aligned" autocomplete="off">
 			<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
-				<div class="old-password">
-					<label class="left" for="old-password">Old password:</label>
-					<input type="password" name="old-password" id="old-password" placeholder="Old password"/>
+				<div class="current-password">
+					<label class="left" for="current-password">Current password:</label>
+					<input type="password" name="current-password" id="current-password" placeholder="Current password"/>
 				</div>
 				<hr>
 			<?php endif ?>
@@ -229,9 +229,9 @@
 
 		<form action="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>" method="post" class="edit aligned" autocomplete="off" data-confirm-text="Are you sure you want to delete your account?">
 			<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
-				<div class="old-password">
-					<label class="left" for="old-password">Old password:</label>
-					<input type="password" name="old-password" id="old-password" placeholder="Old password"/>
+				<div class="current-password">
+					<label class="left" for="current-password">Current password:</label>
+					<input type="password" name="current-password" id="current-password" placeholder="Current password"/>
 				</div>
 			<?php endif ?>
 

@@ -84,19 +84,18 @@ class UserController
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->subTitle = $name;
 
-		$this->context->suppliedOldPassword = $suppliedOldPassword = InputHelper::get('old-password');
+		$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
 
 		if (InputHelper::get('remove'))
 		{
 			if ($this->context->user->id == $user->id)
 			{
-				$suppliedPasswordHash = Model_User::hashPassword($suppliedOldPassword, $user->pass_salt);
+				$suppliedPasswordHash = Model_User::hashPassword($suppliedCurrentPassword, $user->pass_salt);
 				if ($suppliedPasswordHash != $user->pass_hash)
 					throw new SimpleException('Must supply valid password');
 			}
 			$user->ownFavoritee = [];
 			R::store($user);
-			#R::trashAll(R::findAll('favoritee', 'user_id = ?', [$user->id]));
 			R::trash($user);
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 			$this->context->transport->success = true;
@@ -123,13 +122,13 @@ class UserController
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->subTitle = $name;
 
-		$this->context->suppliedOldPassword = $suppliedOldPassword = InputHelper::get('old-password');
+		$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
 		$this->context->suppliedName = $suppliedName = InputHelper::get('name');
 		$this->context->suppliedPassword1 = $suppliedPassword1 = InputHelper::get('password1');
 		$this->context->suppliedPassword2 = $suppliedPassword2 = InputHelper::get('password2');
 		$this->context->suppliedEmail = $suppliedEmail = InputHelper::get('email');
 		$this->context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
-		$oldPasswordHash = $user->pass_hash;
+		$currentPasswordHash = $user->pass_hash;
 
 		if ($suppliedName != '' and $suppliedName != $user->name)
 		{
@@ -169,9 +168,9 @@ class UserController
 		{
 			if ($this->context->user->id == $user->id)
 			{
-				$suppliedPasswordHash = Model_User::hashPassword($suppliedOldPassword, $user->pass_salt);
-				if ($suppliedPasswordHash != $oldPasswordHash)
-					throw new SimpleException('Must supply valid old password');
+				$suppliedPasswordHash = Model_User::hashPassword($suppliedCurrentPassword, $user->pass_salt);
+				if ($suppliedPasswordHash != $currentPasswordHash)
+					throw new SimpleException('Must supply valid current password');
 			}
 			R::store($user);
 			$this->context->transport->success = true;
