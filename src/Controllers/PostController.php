@@ -119,146 +119,14 @@ class PostController
 				$dbQuery->andNot('hidden');
 
 
-			/* search tokens */
+			/* query tokens */
 			$tokens = array_filter(array_unique(explode(' ', $query)), function($x) { return $x != ''; });
 			if (count($tokens) > $this->config->browsing->maxSearchTokens)
 				throw new SimpleException('Too many search tokens (maximum: ' . $this->config->browsing->maxSearchTokens . ')');
-			foreach ($tokens as $token)
-			{
-				if ($token{0} == '-')
-				{
-					$dbQuery->andNot();
-					$token = substr($token, 1);
-				}
-				else
-					$dbQuery->and();
 
-				$pos = strpos($token, ':');
-				if ($pos !== false)
-				{
-					$key = substr($token, 0, $pos);
-					$val = substr($token, $pos + 1);
 
-					switch ($key)
-					{
-						case 'favmin':
-							$dbQuery
-								->open()
-								->select('COUNT(1)')
-								->from('favoritee')
-								->where('post_id = post.id')
-								->close()
-								->addSql('>= ?')->put(intval($val));
-							break;
-
-						case 'type':
-							switch ($val)
-							{
-								case 'swf':
-									$type = PostType::Flash;
-									break;
-								case 'img':
-									$type = PostType::Image;
-									break;
-								default:
-									throw new SimpleException('Unknown type "' . $val . '"');
-							}
-							$dbQuery
-								->addSql('type = ?')
-								->put($type);
-							break;
-
-						case 'date':
-						case 'datemin':
-						case 'datemax':
-							list ($year, $month, $day) = explode('-', $val . '-0-0');
-							$yearMin = $yearMax = intval($year);
-							$monthMin = $monthMax = intval($month);
-							$monthMin = $monthMin ?: 1;
-							$monthMax = $monthMax ?: 12;
-							$dayMin = $dayMax = intval($day);
-							$dayMin = $dayMin ?: 1;
-							$dayMax = $dayMax ?: intval(date('t', mktime(0, 0, 0, $monthMax, 1, $year)));
-							$timeMin = mktime(0, 0, 0, $monthMin, $dayMin, $yearMin);
-							$timeMax = mktime(0, 0, -1, $monthMax, $dayMax+1, $yearMax);
-
-							if ($key == 'date')
-							{
-								$dbQuery
-									->addSql('upload_date >= ?')
-									->and('upload_date <= ?')
-									->put($timeMin)
-									->put($timeMax);
-							}
-							elseif ($key == 'datemin')
-							{
-								$dbQuery
-									->addSql('upload_date >= ?')
-									->put($timeMin);
-							}
-							elseif ($key == 'datemax')
-							{
-								$dbQuery
-									->addSql('upload_date <= ?')
-									->put($timeMax);
-							}
-							else
-							{
-								throw new Exception('Invalid key');
-							}
-
-							break;
-
-						case 'fav':
-						case 'favs':
-						case 'favoritee':
-						case 'favoriter':
-							$dbQuery
-								->exists()
-								->open()
-								->select('1')
-								->from('favoritee')
-								->innerJoin('user')
-								->on('favoritee.user_id = user.id')
-								->where('post_id = post.id')
-								->and('user.name = ?')->put($val)
-								->close();
-							break;
-
-						case 'submit':
-						case 'upload':
-						case 'uploader':
-						case 'uploaded':
-							$dbQuery
-								->addSql('uploader_id = ')
-								->open()
-								->select('user.id')
-								->from('user')
-								->where('name = ?')->put($val)
-								->close();
-							break;
-
-						default:
-							throw new SimpleException('Unknown key "' . $key . '"');
-					}
-				}
-				else
-				{
-					$val = $token;
-					$dbQuery
-						->exists()
-						->open()
-						->select('1')
-						->from('post_tag')
-						->innerJoin('tag')
-						->on('post_tag.tag_id = tag.id')
-						->where('post_id = post.id')
-						->and('tag.name = ?')->put($val)
-						->close();
-				}
-			}
-
-			//todo construct ORDER based on filers
+			/* tokens */
+			$this->decorateSearchQuery($dbQuery, $tokens);
 		};
 
 		$countDbQuery = R::$f->begin();
@@ -271,7 +139,6 @@ class PostController
 		$searchDbQuery = R::$f->begin();
 		$searchDbQuery->select('*');
 		$buildDbQuery($searchDbQuery, $query);
-		$searchDbQuery->orderBy('id DESC');
 		$searchDbQuery->limit('?')->put($postsPerPage);
 		$searchDbQuery->offset('?')->put(($page - 1) * $postsPerPage);
 
@@ -719,5 +586,200 @@ class PostController
 		$this->context->transport->customFileName = $fn;
 		$this->context->transport->mimeType = $post->mimeType;
 		$this->context->transport->filePath = $path;
+	}
+
+
+
+	private function decorateSearchQuery($dbQuery, $tokens)
+	{
+		$orderColumn = 'id';
+		$orderDir = 'DESC';
+		$randomReset = true;
+
+		foreach ($tokens as $token)
+		{
+			if ($token{0} == '-')
+			{
+				$dbQuery->andNot();
+				$token = substr($token, 1);
+			}
+			else
+			{
+				$dbQuery->and();
+			}
+
+			$pos = strpos($token, ':');
+			if ($pos === false)
+			{
+				$val = $token;
+				$dbQuery
+					->exists()
+					->open()
+					->select('1')
+					->from('post_tag')
+					->innerJoin('tag')
+					->on('post_tag.tag_id = tag.id')
+					->where('post_id = post.id')
+					->and('tag.name = ?')->put($val)
+					->close();
+				continue;
+			}
+
+			$key = substr($token, 0, $pos);
+			$val = substr($token, $pos + 1);
+
+			switch ($key)
+			{
+				case 'favmin':
+					$dbQuery
+						->open()
+						->select('COUNT(1)')
+						->from('favoritee')
+						->where('post_id = post.id')
+						->close()
+						->addSql('>= ?')->put(intval($val));
+					break;
+
+				case 'type':
+					switch ($val)
+					{
+						case 'swf':
+							$type = PostType::Flash;
+							break;
+						case 'img':
+							$type = PostType::Image;
+							break;
+						default:
+							throw new SimpleException('Unknown type "' . $val . '"');
+					}
+					$dbQuery
+						->addSql('type = ?')
+						->put($type);
+					break;
+
+				case 'date':
+				case 'datemin':
+				case 'datemax':
+					list ($year, $month, $day) = explode('-', $val . '-0-0');
+					$yearMin = $yearMax = intval($year);
+					$monthMin = $monthMax = intval($month);
+					$monthMin = $monthMin ?: 1;
+					$monthMax = $monthMax ?: 12;
+					$dayMin = $dayMax = intval($day);
+					$dayMin = $dayMin ?: 1;
+					$dayMax = $dayMax ?: intval(date('t', mktime(0, 0, 0, $monthMax, 1, $year)));
+					$timeMin = mktime(0, 0, 0, $monthMin, $dayMin, $yearMin);
+					$timeMax = mktime(0, 0, -1, $monthMax, $dayMax+1, $yearMax);
+
+					if ($key == 'date')
+					{
+						$dbQuery
+							->addSql('upload_date >= ?')
+							->and('upload_date <= ?')
+							->put($timeMin)
+							->put($timeMax);
+					}
+					elseif ($key == 'datemin')
+					{
+						$dbQuery
+							->addSql('upload_date >= ?')
+							->put($timeMin);
+					}
+					elseif ($key == 'datemax')
+					{
+						$dbQuery
+							->addSql('upload_date <= ?')
+							->put($timeMax);
+					}
+					else
+					{
+						throw new Exception('Invalid key');
+					}
+
+					break;
+
+				case 'fav':
+				case 'favs':
+				case 'favoritee':
+				case 'favoriter':
+					$dbQuery
+						->exists()
+						->open()
+						->select('1')
+						->from('favoritee')
+						->innerJoin('user')
+						->on('favoritee.user_id = user.id')
+						->where('post_id = post.id')
+						->and('user.name = ?')->put($val)
+						->close();
+					break;
+
+				case 'submit':
+				case 'upload':
+				case 'uploader':
+				case 'uploaded':
+					$dbQuery
+						->addSql('uploader_id = ')
+						->open()
+						->select('user.id')
+						->from('user')
+						->where('name = ?')->put($val)
+						->close();
+					break;
+
+				case 'order':
+					$dbQuery->addSql('1');
+					$orderDir = 'DESC';
+					if ($val{0} == '-')
+					{
+						$orderDir = 'ASC';
+						$val = substr($val, 1);
+					}
+
+					switch ($val)
+					{
+						case 'date':
+							$orderColumn = 'upload_date';
+							break;
+						case 'comment':
+						case 'comments':
+						case 'commentcount':
+							$orderColumn = '(SELECT COUNT(1) FROM comment WHERE post_id = post.id)';
+							break;
+						case 'fav':
+						case 'favs':
+						case 'favcount':
+							$orderColumn = '(SELECT COUNT(1) FROM favoritee WHERE post_id = post.id)';
+							break;
+						case 'tag':
+						case 'tags':
+						case 'tagcount':
+							$orderColumn = '(SELECT COUNT(1) FROM post_tag WHERE post_id = post.id)';
+							break;
+						case 'random':
+							//seeding works like this: if you visit anything
+							//that triggers order other than random, the seed
+							//is going to reset. however, it stays the same as
+							//long as you keep visiting pages with order:random
+							//specified.
+							$randomReset = false;
+							if (!isset($_SESSION['browsing-seed']))
+								$_SESSION['browsing-seed'] = mt_rand();
+							$seed = $_SESSION['browsing-seed'];
+							$orderColumn = 'SUBSTR(id * ' . $seed .', LENGTH(id) + 2)';
+							break;
+						default:
+							throw new SimpleException('Unknown key "' . $val . '"');
+					}
+					break;
+
+				default:
+					throw new SimpleException('Unknown key "' . $key . '"');
+			}
+		}
+
+		if ($randomReset)
+			unset($_SESSION['browsing-seed']);
+		$dbQuery->orderBy($orderColumn . ' ' . $orderDir);
 	}
 }
