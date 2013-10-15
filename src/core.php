@@ -41,7 +41,7 @@ function configFactory()
 
 $config = configFactory();
 R::setup('sqlite:' . $config->main->dbPath);
-#R::dependencies(['tag' => ['post'], 'post' => ['user']]);
+R::dependencies(['tag' => ['post'], 'favoritee' => ['post', 'user']]);
 
 //wire models
 \Chibi\AutoLoader::init([$config->chibi->userCodeDir, __DIR__]);

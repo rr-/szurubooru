@@ -1,16 +1,13 @@
 #sidebar {
 	width: 200px;
-}
-
-.details .key {
-	margin-right: 0.5em;
+	font-size: 90%;
 }
 
 .tabs ul {
 	list-style-type: none;
 	margin: 0 0 1em 0;
 	padding: 0;
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid #ccc;
 }
 .tabs li {
 	display: inline-block;
@@ -24,11 +21,11 @@
 
 .tabs li a {
 	border: 1px solid white;
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid #ccc;
 	color: silver;
 }
 .tabs li.selected a {
-	border: 1px solid #eee;
+	border: 1px solid #ccc;
 	border-bottom: 1px solid white;
 	color: inherit;
 }
@@ -45,4 +42,8 @@
 
 form.aligned label.left {
 	width: 10em;
+}
+
+form.edit .alert {
+	margin: 1em 0;
 }

@@ -9,15 +9,23 @@
 	<div class="sidebar-unit details">
 		<h1>details</h1>
 
-		<div class="join-date">
+		<div class="key-value join-date">
 			<span class="key">Joined:</span>
-			<span class="value"><?php echo date('Y-m-d', $this->context->transport->user->join_date) ?></span>
+			<span class="value" title="<?php echo $val = date('Y-m-d', $this->context->transport->user->join_date) ?>"><?php echo $val ?></span>
 		</div>
 
-		<div class="access-rank">
+		<div class="key-value access-rank">
 			<span class="key">Access rank:</span>
-			<span class="value"><?php echo strtolower(AccessRank::toString($this->context->transport->user->access_rank)) ?></span>
+			<span class="value" title="<?php echo $val = strtolower(AccessRank::toString($this->context->transport->user->access_rank)) ?>"><?php echo $val ?></span>
 		</div>
+
+		<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
+			<div class="key-value email">
+				<span class="key">E-mail:</span>
+				<span class="value" title="<?php echo $val = ($this->context->transport->user->email ?: 'none specified') ?>"><?php echo $val ?></span>
+				<br>(only you can see this)
+			</div>
+		<?php endif ?>
 	</div>
 
 	<div class="sidebar-unit options">
@@ -50,6 +58,29 @@
 				</li>
 			<?php endif ?>
 
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::BanUser, $secondary)): ?>
+				<?php if (!$this->context->transport->user->banned): ?>
+					<li class="ban">
+						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('user', 'ban', ['name' => $this->context->transport->user->name]) ?>" data-confirm-text="Are you sure?">
+							Ban user
+						</a>
+					</li>
+				<?php else: ?>
+					<li class="unban">
+						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('user', 'unban', ['name' => $this->context->transport->user->name]) ?>" data-confirm-text="Are you sure?">
+							Unban user
+						</a>
+					</li>
+				<?php endif ?>
+			<?php endif ?>
+
+			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::AcceptUserRegistration) and !$this->context->transport->user->staff_confirmed and $this->config->registration->staffActivation): ?>
+				<li class="accept-registration">
+					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('user', 'accept-registration', ['name' => $this->context->transport->user->name]) ?>">
+						Accept registration
+					</a>
+				</li>
+			<?php endif ?>
 		</ul>
 
 		<script type="text/javascript">
@@ -89,8 +120,20 @@
 					<?php else: ?>
 						<li class="edit">
 					<?php endif ?>
-						<a href="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name, 'tab' => 'edit']) ?>">
+						<a href="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name]) ?>">
 							Account settings
+						</a>
+					</li>
+				<?php endif ?>
+
+				<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::DeleteUser, $secondary)): ?>
+					<?php if ($this->context->transport->tab == 'delete'): ?>
+						<li class="selected delete">
+					<?php else: ?>
+						<li class="delete">
+					<?php endif ?>
+						<a href="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>">
+							Delete account
 						</a>
 					</li>
 				<?php endif ?>
@@ -119,7 +162,7 @@
 	<?php endif ?>
 
 	<?php if ($this->context->transport->tab == 'edit'): ?>
-		<form action="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['id' => $this->context->transport->user->id]) ?>" method="post" class="edit aligned" autocomplete="off">
+		<form action="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name]) ?>" method="post" class="edit aligned" autocomplete="off">
 			<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
 				<div class="old-password">
 					<label class="left" for="old-password">Old password:</label>
@@ -131,25 +174,25 @@
 			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ChangeUserName, $secondary)): ?>
 				<div class="nickname">
 					<label class="left" for="name">Name:</label>
-					<input type="text" name="name" id="name" placeholder="New name&hellip;"/>
+					<input type="text" name="name" id="name" placeholder="New name&hellip;" value="<?php echo $this->context->suppliedName ?>"/>
 				</div>
 			<?php endif ?>
 
 			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ChangeUserEmail, $secondary)): ?>
 				<div class="email">
 					<label class="left" for="name">E-mail:</label>
-					<input type="text" name="email" id="email" placeholder="New e-mail&hellip;"/>
+					<input type="text" name="email" id="email" placeholder="New e-mail&hellip;" value="<?php echo $this->context->suppliedEmail ?>"/>
 				</div>
 			<?php endif ?>
 
 			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ChangeUserPassword, $secondary)): ?>
 				<div class="password1">
 					<label class="left" for="password1">New password:</label>
-					<input type="password" name="password1" id="password1" placeholder="New password&hellip;"/>
+					<input type="password" name="password1" id="password1" placeholder="New password&hellip;" value="<?php echo $this->context->suppliedPassword1 ?>"/>
 				</div>
 				<div class="password2">
 					<label class="left" for="password2"></label>
-					<input type="password" name="password2" id="password2" placeholder="New password&hellip; (repeat)"/>
+					<input type="password" name="password2" id="password2" placeholder="New password&hellip; (repeat)" value="<?php echo $this->context->suppliedPassword2 ?>"/>
 				</div>
 			<?php endif ?>
 
@@ -158,7 +201,7 @@
 					<label class="left" for="access-rank">Access rank:</label>
 					<select name="access-rank" id="access-rank">
 						<?php foreach (AccessRank::getAll() as $rank): ?>
-							<?php if ($rank == $this->context->transport->user->access_rank): ?>
+							<?php if (($this->context->suppliedAccessRank != '' and $rank == $this->context->suppliedAccessRank) or ($this->context->suppliedAccessRank == '' and $rank == $this->context->transport->user->access_rank)): ?>
 								<option value="<?php echo $rank ?>" selected="selected">
 							<?php else: ?>
 								<option value="<?php echo $rank ?>">
@@ -170,11 +213,42 @@
 				</div>
 			<?php endif ?>
 
+			<?php if ($this->context->transport->success === true): ?>
+				<p class="alert alert-success">Account settings updated!</p>
+			<?php elseif (isset($this->context->transport->errorMessage)): ?>
+				<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
+			<?php endif ?>
+
 			<div>
 				<label class="left">&nbsp;</label>
 				<button type="submit">Submit</button>
 			</div>
 		</form>
+
+	<?php elseif ($this->context->transport->tab == 'delete'): ?>
+
+		<form action="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>" method="post" class="edit aligned" autocomplete="off" data-confirm-text="Are you sure you want to delete your account?">
+			<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
+				<div class="old-password">
+					<label class="left" for="old-password">Old password:</label>
+					<input type="password" name="old-password" id="old-password" placeholder="Old password"/>
+				</div>
+			<?php endif ?>
+
+			<input type="hidden" name="remove" value="1"/>
+
+			<?php if ($this->context->transport->success === true): ?>
+				<p class="alert alert-success">Account settings updated!</p>
+			<?php elseif (isset($this->context->transport->errorMessage)): ?>
+				<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
+			<?php endif ?>
+
+			<div>
+				<label class="left">&nbsp;</label>
+				<button type="submit">Delete account</button>
+			</div>
+		</form>
+
 	<?php endif ?>
 
 </div>

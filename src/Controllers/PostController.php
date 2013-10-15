@@ -414,6 +414,7 @@ class PostController
 		$edited = false;
 		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
 
+		$this->context->transport->post = $post;
 
 		/* safety */
 		$suppliedSafety = InputHelper::get('safety');

@@ -23,19 +23,159 @@ class UserController
 
 
 	/**
+	* @route /user/{name}/ban
+	* @validate name [^\/]+
+	*/
+	public function banAction($name)
+	{
+		$user = self::locateUser($name);
+		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::BanUser, $secondary);
+		$user->banned = true;
+		R::store($user);
+		$this->context->transport->success = true;
+	}
+
+	/**
+	* @route /post/{name}/unban
+	* @validate name [^\/]+
+	*/
+	public function unbanAction($name)
+	{
+		$user = self::locateUser($name);
+		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::BanUser, $secondary);
+		$user->banned = false;
+		R::store($user);
+		$this->context->transport->success = true;
+	}
+
+	/**
+	* @route /post/{name}/accept-registration
+	* @validate name [^\/]+
+	*/
+	public function acceptRegistrationAction($name)
+	{
+		$user = self::locateUser($name);
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::AcceptUserRegistration);
+		$user->staff_confirmed = true;
+		R::store($user);
+		$this->context->transport->success = true;
+	}
+
+
+
+
+	/**
+	* @route /user/{name}/delete
+	* @validate name [^\/]+
+	*/
+	public function deleteAction($name)
+	{
+		$user = self::locateUser($name);
+		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::DeleteUser, $secondary);
+
+		$this->context->handleExceptions = true;
+		$this->context->transport->user = $user;
+		$this->context->transport->tab = 'delete';
+		$this->context->viewName = 'user-view';
+		$this->context->stylesheets []= 'user-view.css';
+		$this->context->subTitle = $name;
+
+		$this->context->suppliedOldPassword = $suppliedOldPassword = InputHelper::get('old-password');
+
+		if (InputHelper::get('remove'))
+		{
+			if ($this->context->user->id == $user->id)
+			{
+				$suppliedPasswordHash = Model_User::hashPassword($suppliedOldPassword, $user->pass_salt);
+				if ($suppliedPasswordHash != $user->pass_hash)
+					throw new SimpleException('Must supply valid password');
+			}
+			$user->ownFavoritee = [];
+			R::store($user);
+			#R::trashAll(R::findAll('favoritee', 'user_id = ?', [$user->id]));
+			R::trash($user);
+			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
+			$this->context->transport->success = true;
+		}
+	}
+
+
+
+	/**
 	* @route /user/{name}/edit
 	* @validate name [^\/]+
 	*/
 	public function editAction($name)
 	{
+		$user = self::locateUser($name);
+		$edited = false;
+		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
+
+		$this->context->handleExceptions = true;
+		$this->context->transport->user = $user;
+		$this->context->transport->tab = 'edit';
 		$this->context->viewName = 'user-view';
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->subTitle = $name;
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser);
 
-		$user = self::locateUser($name);
-		$this->context->transport->user = $user;
-		$this->context->transport->tab = 'edit';
+		$this->context->suppliedOldPassword = $suppliedOldPassword = InputHelper::get('old-password');
+		$this->context->suppliedName = $suppliedName = InputHelper::get('name');
+		$this->context->suppliedPassword1 = $suppliedPassword1 = InputHelper::get('password1');
+		$this->context->suppliedPassword2 = $suppliedPassword2 = InputHelper::get('password2');
+		$this->context->suppliedEmail = $suppliedEmail = InputHelper::get('email');
+		$this->context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
+		$oldPasswordHash = $user->pass_hash;
+
+		if ($suppliedName != '' and $suppliedName != $user->name)
+		{
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserName, $secondary);
+			$suppliedName = Model_User::validateUserName($suppliedName);
+			$user->name = $suppliedName;
+			$edited = true;
+		}
+
+		if ($suppliedPassword1 != '')
+		{
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserPassword, $secondary);
+			if ($suppliedPassword1 != $suppliedPassword2)
+				throw new SimpleException('Specified passwords must be the same');
+			$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
+			$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
+			$edited = true;
+		}
+
+		if ($suppliedEmail != '' and $suppliedEmail != $user->email)
+		{
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserEmail, $secondary);
+			$suppliedEmail = Model_User::validateEmail($suppliedEmail);
+			$user->email = $suppliedEmail;
+			$edited = true;
+		}
+
+		if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->access_rank)
+		{
+			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserAccessRank, $secondary);
+			$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
+			$user->access_rank = $suppliedAccessRank;
+			$edited = true;
+		}
+
+		if ($edited)
+		{
+			if ($this->context->user->id == $user->id)
+			{
+				$suppliedPasswordHash = Model_User::hashPassword($suppliedOldPassword, $user->pass_salt);
+				if ($suppliedPasswordHash != $oldPasswordHash)
+					throw new SimpleException('Must supply valid old password');
+			}
+			R::store($user);
+			$this->context->transport->success = true;
+		}
 	}
 
 
@@ -49,20 +189,21 @@ class UserController
 	*/
 	public function viewAction($name, $tab, $page)
 	{
-		$this->context->stylesheets []= 'user-view.css';
-		$this->context->stylesheets []= 'post-list.css';
-		$this->context->stylesheets []= 'paginator.css';
-		if ($this->config->browsing->endlessScrolling)
-			$this->context->scripts []= 'paginator-endless.js';
-		$this->context->subTitle = $name;
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser);
-
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
 		$user = self::locateUser($name);
 		if ($tab === null)
 			$tab = 'favs';
 		if ($page === null)
 			$page = 1;
+
+		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
+		$this->context->stylesheets []= 'user-view.css';
+		$this->context->stylesheets []= 'post-list.css';
+		$this->context->stylesheets []= 'paginator.css';
+		if ($this->config->browsing->endlessScrolling)
+			$this->context->scripts []= 'paginator-endless.js';
+		$this->context->subTitle = $name;
 
 		$buildDbQuery = function($dbQuery, $user, $tab)
 		{

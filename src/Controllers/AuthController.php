@@ -1,12 +1,6 @@
 <?php
 class AuthController
 {
-	private static function hashPassword($pass, $salt2)
-	{
-		$salt1 = \Chibi\Registry::getConfig()->registration->salt;
-		return sha1($salt1 . $salt2 . $pass);
-	}
-
 	/**
 	* @route /auth/login
 	*/
@@ -23,20 +17,23 @@ class AuthController
 			return;
 		}
 
-		$suppliedUser = InputHelper::get('user');
-		$suppliedPass = InputHelper::get('pass');
-		if ($suppliedUser !== null and $suppliedPass !== null)
+		$suppliedName = InputHelper::get('name');
+		$suppliedPassword = InputHelper::get('password');
+		if ($suppliedName !== null and $suppliedPassword !== null)
 		{
-			$dbUser = R::findOne('user', 'name = ?', [$suppliedUser]);
+			$dbUser = R::findOne('user', 'name = ?', [$suppliedName]);
 			if ($dbUser === null)
 				throw new SimpleException('Invalid username');
 
-			$suppliedPassHash = self::hashPassword($suppliedPass, $dbUser->pass_salt);
-			if ($suppliedPassHash != $dbUser->pass_hash)
+			$suppliedPasswordHash = Model_User::hashPassword($suppliedPassword, $dbUser->pass_salt);
+			if ($suppliedPasswordHash != $dbUser->pass_hash)
 				throw new SimpleException('Invalid password');
 
 			if (!$dbUser->staff_confirmed and $this->config->registration->staffActivation)
 				throw new SimpleException('Staff hasn\'t confirmed your registration yet');
+
+			if ($dbUser->banned)
+				throw new SimpleException('You are banned');
 
 			if (!$dbUser->email_confirmed and $this->config->registration->emailActivation)
 				throw new SimpleException('You haven\'t confirmed your e-mail address yet');
@@ -74,72 +71,53 @@ class AuthController
 			return;
 		}
 
-		$suppliedUser = InputHelper::get('user');
-		$suppliedPass1 = InputHelper::get('pass1');
-		$suppliedPass2 = InputHelper::get('pass2');
+		$suppliedName = InputHelper::get('name');
+		$suppliedPassword1 = InputHelper::get('password1');
+		$suppliedPassword2 = InputHelper::get('password2');
 		$suppliedEmail = InputHelper::get('email');
-		$this->context->suppliedUser = $suppliedUser;
-		$this->context->suppliedPass1 = $suppliedPass1;
-		$this->context->suppliedPass2 = $suppliedPass2;
+		$this->context->suppliedName = $suppliedName;
+		$this->context->suppliedPassword1 = $suppliedPassword1;
+		$this->context->suppliedPassword2 = $suppliedPassword2;
 		$this->context->suppliedEmail = $suppliedEmail;
 
 		$regConfig = $this->config->registration;
-		$passMinLength = intval($regConfig->passMinLength);
-		$passRegex = $regConfig->passRegex;
-		$userNameMinLength = intval($regConfig->userNameMinLength);
-		$userNameRegex = $regConfig->userNameRegex;
 		$emailActivation = $regConfig->emailActivation;
 		$staffActivation = $regConfig->staffActivation;
 
 		$this->context->transport->staffActivation = $staffActivation;
 		$this->context->transport->emailActivation = $emailActivation;
 
-		if ($suppliedUser !== null)
+		if ($suppliedName !== null)
 		{
-			$dbUser = R::findOne('user', 'name = ?', [$suppliedUser]);
-			if ($dbUser !== null)
-			{
-				if (!$dbUser->email_confirmed)
-					throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
+			$suppliedName = Model_User::validateUserName($suppliedName);
 
-				if (!$dbUser->staff_confirmed)
-					throw new SimpleException('User with this name is already registered and awaits admin confirmation');
-
-				throw new SimpleException('User with this name is already registered');
-			}
-
-			if (strlen($suppliedUser) < $userNameMinLength)
-				throw new SimpleException(sprintf('User name must have at least %d characters', $userNameMinLength));
-
-			if (!preg_match($userNameRegex, $suppliedUser))
-				throw new SimpleException('User name contains invalid characters');
-
-			if ($suppliedPass1 != $suppliedPass2)
+			if ($suppliedPassword1 != $suppliedPassword2)
 				throw new SimpleException('Specified passwords must be the same');
+			$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
 
-			if (strlen($suppliedPass1) < $passMinLength)
-				throw new SimpleException(sprintf('Password must have at least %d characters', $passMinLength));
-
-			if (!preg_match($passRegex, $suppliedPass1))
-				throw new SimpleException('Password contains invalid characters');
-
+			$suppliedEmail = Model_User::validateEmail($suppliedEmail);
 			if (empty($suppliedEmail) and $emailActivation)
 				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
 
-			if (!empty($suppliedEmail) and !TextHelper::isValidEmail($suppliedEmail))
-				throw new SimpleException('E-mail address appears to be invalid');
-
-
 			//register the user
 			$dbUser = R::dispense('user');
-			$dbUser->name = $suppliedUser;
+			$dbUser->name = $suppliedName;
 			$dbUser->pass_salt = md5(mt_rand() . uniqid());
-			$dbUser->pass_hash = self::hashPassword($suppliedPass1, $dbUser->pass_salt);
+			$dbUser->pass_hash = Model_User::hashPassword($suppliedPassword, $dbUser->pass_salt);
 			$dbUser->email = $suppliedEmail;
 			$dbUser->join_date = time();
-			$dbUser->staff_confirmed = $staffActivation ? false : true;
-			$dbUser->email_confirmed = $emailActivation ? false : true;
-			$dbUser->access_rank = R::findOne('user') === null ? AccessRank::Admin : AccessRank::Registered;
+			if (R::findOne('user') === null)
+			{
+				$dbUser->staff_confirmed = true;
+				$dbUser->email_confirmed = true;
+				$dbUser->access_rank = AccessRank::Admin;
+			}
+			else
+			{
+				$dbUser->staff_confirmed = false;
+				$dbUser->email_confirmed = false;
+				$dbUser->access_rank = AccessRank::Registered;
+			}
 
 			//prepare unique registration token
 			do

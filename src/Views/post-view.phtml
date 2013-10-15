@@ -44,31 +44,43 @@
 	<div class="sidebar-unit details">
 		<h1>details</h1>
 
-		<div class="safety">
+		<div class="key-value safety">
 			<span class="key">Safety:</span>
-			<span class="value"><?php echo PostSafety::toString($this->context->transport->post->safety) ?></span>
-		</div>
-
-		<div class="uploader">
-			<span class="key">Uploader:</span>
-			<span class="value">
-				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->name]) ?>">
-					<?php echo $this->context->transport->post->uploader->name ?>
-				</a>
+			<span class="value" title="<?php echo $val = PostSafety::toString($this->context->transport->post->safety) ?>">
+				<?php echo $val ?>
 			</span>
 		</div>
 
-		<div class="date">
+		<div class="key-value uploader">
+			<span class="key">Uploader:</span>
+			<?php if ($this->context->transport->post->uploader->id): ?>
+				<span class="value" title="<?php echo $val = $this->context->transport->post->uploader->name ?>">
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->name]) ?>">
+						<?php echo $val ?>
+					</a>
+				</span>
+			<?php else: ?>
+				<span class="value" title="[deleted user]">
+					[deleted user]
+				</span>
+			<?php endif ?>
+		</div>
+
+		<div class="key-value date">
 			<span class="key">Date:</span>
-			<span class="value"><?php echo date('Y-m-d H:i', $this->context->transport->post->upload_date) ?></span>
+			<span class="value" title="<?php echo $val = date('Y-m-d H:i', $this->context->transport->post->upload_date) ?>">
+				<?php echo $val ?>
+			</span>
 		</div>
 
 		<?php if ($this->context->transport->post->image_width > 0): ?>
-			<div class="dim">
+			<div class="key-value dim">
 				<span class="key">Dimensions:</span>
-				<span class="value"><?php printf('%dx%d',
+				<span class="value" title="<?php echo $val = sprintf('%dx%d',
 					$this->context->transport->post->image_width,
-					$this->context->transport->post->image_height) ?></span>
+					$this->context->transport->post->image_height) ?>">
+					<?php echo $val ?>
+				</span>
 			</div>
 		<?php endif ?>
 
@@ -110,13 +122,13 @@
 			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::FavoritePost)): ?>
 				<?php if (!$this->context->favorite): ?>
 					<li class="add-fav">
-						<a href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
+						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
 							Add to favorites
 						</a>
 					</li>
 				<?php else: ?>
 					<li class="rem-fav">
-						<a href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
+						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
 							Remove from favorites
 						</a>
 					</li>
@@ -150,13 +162,13 @@
 			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::HidePost, $secondary)): ?>
 				<?php if ($this->context->transport->post->hidden): ?>
 					<li class="unhide">
-						<a href="<?php echo \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]) ?>">
+						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]) ?>">
 							Unhide
 						</a>
 					</li>
 				<?php else: ?>
 					<li class="hide">
-						<a href="<?php echo \Chibi\UrlHelper::route('post', 'hide', ['id' => $this->context->transport->post->id]) ?>">
+						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'hide', ['id' => $this->context->transport->post->id]) ?>">
 							Hide
 						</a>
 					</li>
@@ -165,7 +177,7 @@
 
 			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::DeletePost, $secondary)): ?>
 				<li class="delete">
-					<a href="<?php echo \Chibi\UrlHelper::route('post', 'delete', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure?" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
+					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'delete', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure?" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
 						Delete
 					</a>
 				</li>

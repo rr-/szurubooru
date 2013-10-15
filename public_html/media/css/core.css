@@ -101,6 +101,15 @@ body {
 	border: 0;
 }
 
+footer {
+	text-align: center;
+	margin-top: 1em;
+	padding-top: 0.5em;
+	border-top: 1px solid #eee;
+	font-size: small;
+	color: silver;
+}
+
 .clear {
 	display: block;
 	clear: both;
@@ -111,7 +120,6 @@ body {
 	width: 256px;
 	margin-right: 2em;
 }
-
 #sidebar .sidebar-unit {
 	margin: 0 0 1.5em 0;
 	padding: 0.75em;
@@ -119,22 +127,38 @@ body {
 	padding-left: 0;
 	border-left: 0;
 }
-
 #sidebar h1 {
 	margin-top: 0;
 }
 
-h1, h2, h3 {
-	font-weight: normal;
+
+#sidebar .key {
+	padding-right: 0.5em;
+}
+#sidebar .key-value {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 #inner-content {
 	overflow: hidden;
 }
 
+h1, h2, h3 {
+	font-weight: normal;
+}
+
 p:first-child,
 h1:first-child {
 	margin-top: 0;
+}
+
+hr {
+	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAIElEQVQYlWNgQAPv3r37j4wHXBJdATY5BnyScAX4TAUAdfp5IbOdz/YAAAAASUVORK5CYII=');
+	border: 0;
+	height: 4px;
 }
 
 a {
@@ -202,7 +226,6 @@ form.aligned input[type=checkbox] {
 label {
 	display: inline-block;
 }
-
 label,
 input,
 select,
@@ -210,8 +233,12 @@ button {
 	font-family: inherit;
 	font-size: 11pt;
 }
-input:not([type=radio], [type=checkbox], [type=file]) {
+select,
+input:not([type=radio]):not([type=checkbox]):not([type=file]) {
 	border: 1px solid #ccc;
+}
+ul.tagit input {
+	border: 0 !important;
 }
 button {
 	font-size: 115%;
@@ -235,6 +262,10 @@ button:hover {
 	margin: 0 auto;
 }
 
+.alert-success {
+	border-color: #aba;
+	background-color: #aea;
+}
 .alert-error {
 	border-color: #faa;
 	background-color: #fdd;
@@ -245,21 +276,6 @@ button:hover {
 	background-color: #ffd;
 }
 
-footer {
-	text-align: center;
-	margin-top: 1em;
-	padding-top: 0.5em;
-	border-top: 1px solid #eee;
-	font-size: small;
-	color: silver;
-}
-
 .inactive {
 	opacity: .5;
-}
-
-hr {
-	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAIElEQVQYlWNgQAPv3r37j4wHXBJdATY5BnyScAX4TAUAdfp5IbOdz/YAAAAASUVORK5CYII=');
-	border: 0;
-	height: 4px;
 }
