@@ -63,7 +63,7 @@ class Model_User extends RedBean_SimpleModel
 				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
 
 			if (!$dbUser->staff_confirmed and \Chibi\Registry::getConfig()->registration->staffActivation)
-			throw new SimpleException('User with this name is already registered and awaits staff confirmation');
+				throw new SimpleException('User with this name is already registered and awaits staff confirmation');
 
 			throw new SimpleException('User with this name is already registered');
 		}

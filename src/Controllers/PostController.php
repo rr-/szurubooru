@@ -348,35 +348,14 @@ class PostController
 
 
 			/* safety */
-			$suppliedSafety = intval(InputHelper::get('safety'));
-			if (!in_array($suppliedSafety, PostSafety::getAll()))
-				throw new SimpleException('Invalid safety type "' . $suppliedSafety . '"');
+			$suppliedSafety = InputHelper::get('safety');
+			$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
 
 
 			/* tags */
-			$suppliedTags = trim(InputHelper::get('tags'));
-			$suppliedTags = preg_split('/[,;\s]+/', $suppliedTags);
-			$suppliedTags = array_filter($suppliedTags, function($x) { return $x != ''; });
-			$suppliedTags = array_unique($suppliedTags);
-			foreach ($suppliedTags as $tag)
-				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
-					throw new SimpleException('Invalid tag "' . $tag . '"');
-			if (empty($suppliedTags))
-				throw new SimpleException('No tags set');
-
-			$dbTags = [];
-			foreach ($suppliedTags as $tag)
-			{
-				$dbTag = R::findOne('tag', 'name = ?', [$tag]);
-				if (!$dbTag)
-				{
-					$dbTag = R::dispense('tag');
-					$dbTag->name = $tag;
-					R::store($dbTag);
-				}
-				$dbTags []= $dbTag;
-			}
-
+			$suppliedTags = InputHelper::get('tags');
+			$suppliedTags = Model_Post::validateTags($suppliedTags);
+			$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
 
 			/* db storage */
 			$dbPost = R::dispense('post');
@@ -421,16 +400,14 @@ class PostController
 		if ($suppliedSafety !== null)
 		{
 			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostSafety, $secondary);
-			$suppliedSafety = intval($suppliedSafety);
-			if (!in_array($suppliedSafety, PostSafety::getAll()))
-				throw new SimpleException('Invalid safety type "' . $suppliedSafety . '"');
+			$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
 			$post->safety = $suppliedSafety;
 			$edited = true;
 		}
 
 
 		/* tags */
-		$suppliedTags = trim(InputHelper::get('tags'));
+		$suppliedTags = InputHelper::get('tags');
 		if ($suppliedTags !== null)
 		{
 			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostTags, $secondary);
@@ -438,28 +415,8 @@ class PostController
 			if (InputHelper::get('tags-token') != $currentToken)
 				throw new SimpleException('Someone else has changed the tags in the meantime');
 
-			$suppliedTags = preg_split('/[,;\s]+/', $suppliedTags);
-			$suppliedTags = array_filter($suppliedTags, function($x) { return $x != ''; });
-			$suppliedTags = array_unique($suppliedTags);
-			foreach ($suppliedTags as $tag)
-				if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
-					throw new SimpleException('Invalid tag "' . $tag . '"');
-			if (empty($suppliedTags))
-				throw new SimpleException('No tags set');
-
-			$dbTags = [];
-			foreach ($suppliedTags as $tag)
-			{
-				$dbTag = R::findOne('tag', 'name = ?', [$tag]);
-				if (!$dbTag)
-				{
-					$dbTag = R::dispense('tag');
-					$dbTag->name = $tag;
-					R::store($dbTag);
-				}
-				$dbTags []= $dbTag;
-			}
-
+			$suppliedTags = Model_Post::validateTags($suppliedTags);
+			$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
 			$post->sharedTag = $dbTags;
 			$edited = true;
 		}
