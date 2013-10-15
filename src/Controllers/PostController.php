@@ -593,7 +593,7 @@ class PostController
 	private function decorateSearchQuery($dbQuery, $tokens)
 	{
 		$orderColumn = 'id';
-		$orderDir = 'DESC';
+		$orderDir = 1;
 		$randomReset = true;
 
 		foreach ($tokens as $token)
@@ -602,10 +602,12 @@ class PostController
 			{
 				$dbQuery->andNot();
 				$token = substr($token, 1);
+				$neg = true;
 			}
 			else
 			{
 				$dbQuery->and();
+				$neg = false;
 			}
 
 			$pos = strpos($token, ':');
@@ -728,16 +730,36 @@ class PostController
 					break;
 
 				case 'order':
-					$dbQuery->addSql('1');
-					$orderDir = 'DESC';
+					if (substr($val, -4) == 'desc')
+					{
+						$orderDir = 1;
+						$val = rtrim(substr($val, 0, -4), ',');
+					}
+					elseif (substr($val, -3) == 'asc')
+					{
+						$orderDir = -1;
+						$val = rtrim(substr($val, 0, -3), ',');
+					}
 					if ($val{0} == '-')
 					{
-						$orderDir = 'ASC';
+						$orderDir *= -1;
 						$val = substr($val, 1);
+					}
+					if ($neg)
+					{
+						$orderDir *= -1;
+						$dbQuery->addSql('0');
+					}
+					else
+					{
+						$dbQuery->addSql('1');
 					}
 
 					switch ($val)
 					{
+						case 'id':
+							$orderColumn = 'id';
+							break;
 						case 'date':
 							$orderColumn = 'upload_date';
 							break;
@@ -780,6 +802,6 @@ class PostController
 
 		if ($randomReset)
 			unset($_SESSION['browsing-seed']);
-		$dbQuery->orderBy($orderColumn . ' ' . $orderDir);
+		$dbQuery->orderBy($orderColumn . ' ' . ($orderDir == 1? 'DESC' : 'ASC'));
 	}
 }
