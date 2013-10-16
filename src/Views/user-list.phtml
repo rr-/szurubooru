@@ -1,0 +1,53 @@
+<nav class="sort-styles">
+	<ul>
+		<?php
+			$sortStyles =
+			[
+				'alpha,asc' => 'Sort A&rarr;Z',
+				'alpha,desc' => 'Sort Z&rarr;A',
+				'date,asc' => 'Sort old&rarr;new',
+				'date,desc' => 'Sort new&rarr;old',
+			];
+
+			if ($this->config->registration->staffActivation)
+				$sortStyles['pending'] = 'Pending staff review';
+		?>
+
+		<?php foreach ($sortStyles as $key => $text): ?>
+			<?php if ($this->context->sortStyle == $key): ?>
+				<li class="active">
+			<?php else: ?>
+				<li>
+			<?php endif ?>
+				<a href="<?php echo \Chibi\UrlHelper::route('user', 'list', ['sortStyle' => $key]) ?>"><?php echo $text ?></a>
+			</li>
+		<?php endforeach ?>
+	</ul>
+</nav>
+
+<?php if (empty($this->context->transport->users)): ?>
+	<p class="alert alert-warning">No users to show.</p>
+<?php else: ?>
+	<div class="users paginator-content">
+		<?php foreach ($this->context->transport->users as $user): ?>
+			<div class="user">
+				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+					<img src="<?php echo $user->getAvatarUrl(100) ?>" alt="<?php echo $user->name ?>"/>
+				</a>
+				<div class="details">
+					<h1>
+						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+							<?php echo $user->name ?>
+						</a>
+					</h1>
+
+					<div class="date-registered">Date registered: <?php echo date('Y-m-d H:i', $user->join_date) ?></div>
+					<div class="fav-count">Favorite count: <?php echo $user->countOwn('favoritee') ?></div>
+					<div class="post-count">Post count: <?php echo $user->alias('uploader')->countOwn('post') ?></div>
+				</div>
+			</div>
+		<?php endforeach ?>
+	</div>
+
+	<?php $this->renderFile('paginator') ?>
+<?php endif ?>

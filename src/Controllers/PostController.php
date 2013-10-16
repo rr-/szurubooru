@@ -143,9 +143,11 @@ class PostController
 		$searchDbQuery->offset('?')->put(($page - 1) * $postsPerPage);
 
 		$posts = $searchDbQuery->get();
-		$this->context->transport->page = $page;
-		$this->context->transport->postCount = $postCount;
-		$this->context->transport->pageCount = $pageCount;
+		$this->context->transport->paginator = new StdClass;
+		$this->context->transport->paginator->page = $page;
+		$this->context->transport->paginator->pageCount = $pageCount;
+		$this->context->transport->paginator->entityCount = $postCount;
+		$this->context->transport->paginator->entities = $posts;
 		$this->context->transport->posts = $posts;
 	}
 

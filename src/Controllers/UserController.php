@@ -13,11 +13,78 @@ class UserController
 
 	/**
 	* @route /users
+	* @route /users/{page}
+	* @route /users/{sortStyle}
+	* @route /users/{sortStyle}/{page}
+	* @validate sortStyle alpha|alpha,asc|alpha,desc|date,asc|date,desc|pending
+	* @validate page [0-9]+
 	*/
-	public function listAction()
+	public function listAction($sortStyle, $page)
 	{
-		$this->context->subTitle = 'users';
-		throw new SimpleException('Not implemented');
+		$this->context->stylesheets []= 'user-list.css';
+		$this->context->stylesheets []= 'paginator.css';
+		if ($this->config->browsing->endlessScrolling)
+			$this->context->scripts []= 'paginator-endless.js';
+
+		$page = intval($page);
+		$usersPerPage = intval($this->config->browsing->usersPerPage);
+		$this->context->subTitle = 'browsing users';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListUsers);
+
+		if ($sortStyle == '' or $sortStyle == 'alpha')
+			$sortStyle = 'alpha,asc';
+		if ($sortStyle == 'date')
+			$sortStyle = 'date,asc';
+
+		$buildDbQuery = function($dbQuery, $sortStyle)
+		{
+			$dbQuery->from('user');
+
+			switch ($sortStyle)
+			{
+				case 'alpha,asc':
+					$dbQuery->orderBy('name')->asc();
+					break;
+				case 'alpha,desc':
+					$dbQuery->orderBy('name')->desc();
+					break;
+				case 'date,asc':
+					$dbQuery->orderBy('join_date')->asc();
+					break;
+				case 'date,desc':
+					$dbQuery->orderBy('join_date')->desc();
+					break;
+				case 'pending':
+					$dbQuery->whereNot('staff_confirmed')->and($this->config->registration->staffActivation);
+					break;
+				default:
+					throw new SimpleException('Unknown sort style');
+			}
+		};
+
+		$countDbQuery = R::$f->begin();
+		$countDbQuery->select('COUNT(1)')->as('count');
+		$buildDbQuery($countDbQuery, $sortStyle);
+		$userCount = intval($countDbQuery->get('row')['count']);
+		$pageCount = ceil($userCount / $usersPerPage);
+		$page = max(1, min($pageCount, $page));
+
+		$searchDbQuery = R::$f->begin();
+		$searchDbQuery->select('user.*');
+		$buildDbQuery($searchDbQuery, $sortStyle);
+		$searchDbQuery->limit('?')->put($usersPerPage);
+		$searchDbQuery->offset('?')->put(($page - 1) * $usersPerPage);
+
+		$users = $searchDbQuery->get();
+		$users = R::convertToBeans('user', $users);
+		$this->context->sortStyle = $sortStyle;
+		$this->context->transport->paginator = new StdClass;
+		$this->context->transport->paginator->page = $page;
+		$this->context->transport->paginator->pageCount = $pageCount;
+		$this->context->transport->paginator->entityCount = $userCount;
+		$this->context->transport->paginator->entities = $users;
+		$this->context->transport->paginator->params = func_get_args();
+		$this->context->transport->users = $users;
 	}
 
 
@@ -275,9 +342,11 @@ class UserController
 		$posts = $searchDbQuery->get();
 		$this->context->transport->user = $user;
 		$this->context->transport->tab = $tab;
-		$this->context->transport->page = $page;
-		$this->context->transport->postCount = $postCount;
-		$this->context->transport->pageCount = $pageCount;
+		$this->context->transport->paginator = new StdClass;
+		$this->context->transport->paginator->page = $page;
+		$this->context->transport->paginator->pageCount = $pageCount;
+		$this->context->transport->paginator->entityCount = $postCount;
+		$this->context->transport->paginator->entities = $posts;
 		$this->context->transport->posts = $posts;
 	}
 

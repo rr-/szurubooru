@@ -142,23 +142,7 @@
 	</div>
 
 	<?php if (isset($this->context->transport->posts)): ?>
-		<?php
-			/* heh, what a stupid hack */
-			function pageUrl($page)
-			{
-				$context = \Chibi\Registry::getContext();
-				$controller = $context->route->simpleControllerName;
-				$action = $context->route->simpleActionName;
-				$page = max(1, $page);
-				$page = min($context->transport->pageCount, $page);
-				$params = [];
-				$params['page'] = $page;
-				$params['tab'] = $context->transport->tab;
-				$params['name'] = $context->transport->user->name;
-				return \Chibi\UrlHelper::route($controller, $action, $params);
-			}
-			$this->renderFile('post-list')
-		?>
+		<?php $this->renderFile('post-list') ?>
 	<?php endif ?>
 
 	<?php if ($this->context->transport->tab == 'edit'): ?>

@@ -1,0 +1,31 @@
+img {
+	float: left;
+	margin-right: 0.5em;
+}
+h1 {
+	margin-top: 0;
+	margin-bottom: 0.25em;
+}
+
+.user {
+	line-height: 1.5em;
+	margin-bottom: 1em;
+	width: 25em;
+	display: inline-block;
+}
+
+nav.sort-styles ul {
+	list-style-type: none;
+	margin: 0 0 1em 0;
+	text-align: center;
+	padding: 0;
+}
+nav.sort-styles li {
+	display: inline-block;
+	font-size: 105%;
+	margin: 0 1em;
+	padding-bottom: 0.2em;
+}
+nav.sort-styles li.active {
+	border-bottom: 3px solid firebrick;
+}
