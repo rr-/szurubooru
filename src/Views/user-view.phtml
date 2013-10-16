@@ -16,7 +16,7 @@
 
 		<div class="key-value access-rank">
 			<span class="key">Access rank:</span>
-			<span class="value" title="<?php echo $val = strtolower(AccessRank::toString($this->context->transport->user->access_rank)) ?>"><?php echo $val ?></span>
+			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(AccessRank::toString($this->context->transport->user->access_rank)) ?>"><?php echo $val ?></span>
 		</div>
 
 		<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
@@ -206,7 +206,7 @@
 							<?php else: ?>
 								<option value="<?php echo $rank ?>">
 							<?php endif ?>
-								<?php echo AccessRank::toString($rank) ?>
+								<?php echo TextHelper::camelCaseToHumanCase(AccessRank::toString($rank)) ?>
 							</option>
 						<?php endforeach ?>
 					</select>

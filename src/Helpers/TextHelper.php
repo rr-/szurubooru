@@ -36,6 +36,18 @@ class TextHelper
 		return $string;
 	}
 
+	public static function camelCaseToHumanCase($string, $ucfirst = false)
+	{
+		$string = preg_replace_callback('/[A-Z]/', function($x)
+		{
+			return ' ' . strtolower($x[0]);
+		}, $string);
+		$string = trim($string);
+		if ($ucfirst)
+			$string = ucfirst($string);
+		return $string;
+	}
+
 	public static function resolveConstant($constantName, $className = null)
 	{
 		$constantName = self::kebabCaseToCamelCase($constantName);

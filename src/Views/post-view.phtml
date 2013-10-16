@@ -46,7 +46,7 @@
 
 		<div class="key-value safety">
 			<span class="key">Safety:</span>
-			<span class="value" title="<?php echo $val = PostSafety::toString($this->context->transport->post->safety) ?>">
+			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(PostSafety::toString($this->context->transport->post->safety)) ?>">
 				<?php echo $val ?>
 			</span>
 		</div>
@@ -209,7 +209,7 @@
 					<?php foreach (PostSafety::getAll() as $safety): ?>
 						<label>
 							<input type="radio" name="safety" value="<?php echo $safety ?>" <?php if ($this->context->transport->post->safety == $safety) echo 'checked="checked"' ?>/>
-							&nbsp;<?php echo PostSafety::toString($safety) ?>
+							&nbsp;<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
 						</label>
 					<?php endforeach ?>
 				</div>
