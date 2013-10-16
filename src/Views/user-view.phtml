@@ -19,11 +19,11 @@
 			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(AccessRank::toString($this->context->transport->user->access_rank)) ?>"><?php echo $val ?></span>
 		</div>
 
-		<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
+		<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ViewUserEmail)): ?>
 			<div class="key-value email">
 				<span class="key">E-mail:</span>
 				<span class="value" title="<?php echo $val = ($this->context->transport->user->email_unconfirmed ? '(unconfirmed) ' . $this->context->transport->user->email_unconfirmed : $this->context->transport->user->email_confirmed ?: 'none specified') ?>"><?php echo $val ?></span>
-				<br>(only you can see this)
+				<br>(only you and staff can see this)
 			</div>
 		<?php endif ?>
 	</div>

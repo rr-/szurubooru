@@ -14,6 +14,7 @@ class Privilege extends Enum
 
 	const ListUsers = 11;
 	const ViewUser = 12;
+	const ViewUserEmail = 22;
 	const BanUser = 13;
 	const AcceptUserRegistration = 14;
 	const ChangeUserPassword = 15;
