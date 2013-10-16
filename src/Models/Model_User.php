@@ -111,6 +111,9 @@ class Model_User extends RedBean_SimpleModel
 		if (!in_array($accessRank, AccessRank::getAll()))
 			throw new SimpleException('Invalid access rank type "' . $accessRank . '"');
 
+		if ($accessRank == AccessRank::Nobody)
+			throw new SimpleException('Cannot set special accesss rank "' . $accessRank . '"');
+
 		return $accessRank;
 	}
 

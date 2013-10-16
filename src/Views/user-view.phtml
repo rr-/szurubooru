@@ -185,6 +185,7 @@
 					<label class="left" for="access-rank">Access rank:</label>
 					<select name="access-rank" id="access-rank">
 						<?php foreach (AccessRank::getAll() as $rank): ?>
+							<?php if ($rank == AccessRank::Nobody) continue ?>
 							<?php if (($this->context->suppliedAccessRank != '' and $rank == $this->context->suppliedAccessRank) or ($this->context->suppliedAccessRank == '' and $rank == $this->context->transport->user->access_rank)): ?>
 								<option value="<?php echo $rank ?>" selected="selected">
 							<?php else: ?>
