@@ -1,0 +1,6 @@
+<?php if ($this->context->transport->success === true): ?>
+	<p class="alert alert-success">Activation completed successfully.
+	<?php if ($this->config->registration->staffActivation): ?>
+		<br>However, your account still must be confirmed by staff.
+	<?php endif ?></p>
+<?php endif ?>

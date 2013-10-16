@@ -175,6 +175,8 @@ class PostController
 		$this->context->scripts []= 'upload.js';
 		$this->context->subTitle = 'upload';
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::UploadPost);
+		if ($this->config->registration->needEmailForUploading)
+			PrivilegesHelper::confirmEmail($this->context->user);
 
 		if (!empty($_FILES['file']['name']))
 		{

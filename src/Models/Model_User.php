@@ -3,8 +3,8 @@ class Model_User extends RedBean_SimpleModel
 {
 	public function getAvatarUrl($size = 32)
 	{
-		$subject = !empty($this->email)
-			? $this->email
+		$subject = !empty($this->email_confirmed)
+			? $this->email_confirmed
 			: $this->pass_salt . $this->name;
 		$hash = md5(strtolower(trim($subject)));
 		$url = 'http://www.gravatar.com/avatar/' . $hash . '?s=' . $size . '&d=retro';
@@ -59,7 +59,7 @@ class Model_User extends RedBean_SimpleModel
 		$dbUser = R::findOne('user', 'name = ?', [$userName]);
 		if ($dbUser !== null)
 		{
-			if (!$dbUser->email_confirmed and \Chibi\Registry::getConfig()->registration->emailActivation)
+			if (!$dbUser->email_confirmed and \Chibi\Registry::getConfig()->registration->needEmailForRegistering)
 				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
 
 			if (!$dbUser->staff_confirmed and \Chibi\Registry::getConfig()->registration->staffActivation)

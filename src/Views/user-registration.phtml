@@ -1,13 +1,13 @@
 <?php if ($this->context->transport->success === true): ?>
-	<p>Congratulations, your account was created.</p>
-	<?php if ($this->context->transport->emailActivation): ?>
-		<p>Please wait for activation e-mail.</p>
-		<?php if ($this->context->transport->staffActivation): ?>
-			<p>After this, your registration must be confirmed by staff.</p>
+	<p class="alert alert-success">Congratulations, your account was created.
+	<?php if (!empty($this->context->mailSent)): ?>
+		<br>Please wait for activation e-mail.
+		<?php if ($this->config->registration->staffActivation): ?>
+			<br>After this, your registration must be confirmed by staff.
 		<?php endif ?>
-	<?php elseif ($this->context->transport->staffActivation): ?>
-		<p>Your registration must be confirmed by staff.</p>
-	<?php endif ?>
+	<?php elseif ($this->config->registration->staffActivation): ?>
+		<br>Your registration must be now confirmed by staff.
+	<?php endif ?></p>
 <?php else: ?>
 	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth aligned" method="post">
 		<div>
@@ -30,7 +30,7 @@
 		</div>
 
 		<div>
-			<label class="left" for="email">E-mail address<?php if ($this->context->transport->emailActivation) echo ' (required)' ?>:</label>
+			<label class="left" for="email">E-mail address:</label>
 			<input id="email" name="email" value="<?php echo $this->context->suppliedEmail ?>" placeholder="e.g. vader@empire.gov" autocomplete="off"/>
 		</div>
 

@@ -17,7 +17,7 @@ function scrolled()
 				var dom = $(response);
 				var nextPage = dom.find('.paginator .next:not(.disabled) a').attr('href');
 				$(document).data('page-next', nextPage);
-				$('.paginator-content').append($(response).find('.paginator-content').children().fadeIn('slow'));
+				$('.paginator-content').append($(response).find('.paginator-content').children().css({opacity: 0}).animate({opacity: 1}, 'slow'));
 				scrolled();
 			});
 		}

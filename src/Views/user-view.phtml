@@ -22,7 +22,7 @@
 		<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
 			<div class="key-value email">
 				<span class="key">E-mail:</span>
-				<span class="value" title="<?php echo $val = ($this->context->transport->user->email ?: 'none specified') ?>"><?php echo $val ?></span>
+				<span class="value" title="<?php echo $val = ($this->context->transport->user->email_unconfirmed ? '(unconfirmed) ' . $this->context->transport->user->email_unconfirmed : $this->context->transport->user->email_confirmed ?: 'none specified') ?>"><?php echo $val ?></span>
 				<br>(only you can see this)
 			</div>
 		<?php endif ?>
@@ -199,7 +199,7 @@
 			<?php endif ?>
 
 			<?php if ($this->context->transport->success === true): ?>
-				<p class="alert alert-success">Account settings updated!</p>
+				<p class="alert alert-success">Account settings updated! <?php if (!empty($this->context->mailSent)) echo 'You will be sent new e-mail address confirmation message soon.' ?></p>
 			<?php elseif (isset($this->context->transport->errorMessage)): ?>
 				<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
 			<?php endif ?>

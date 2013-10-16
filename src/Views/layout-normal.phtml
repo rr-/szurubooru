@@ -44,7 +44,7 @@
 						if (!$this->context->loggedIn)
 						{
 							$nav []= ['Log in', \Chibi\UrlHelper::route('auth', 'login')];
-							$nav []= ['Register', \Chibi\UrlHelper::route('auth', 'register')];
+							$nav []= ['Register', \Chibi\UrlHelper::route('user', 'registration')];
 						}
 						else
 						{

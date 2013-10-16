@@ -9,6 +9,27 @@ class UserController
 		return $user;
 	}
 
+	private static function sendEmailConfirmation($user)
+	{
+		\Chibi\Registry::getContext()->mailSent = true;
+		$regConfig = \Chibi\Registry::getConfig()->registration;
+		$tokens = [];
+		$tokens['host'] = $_SERVER['HTTP_HOST'];
+		$tokens['link'] = \Chibi\UrlHelper::route('user', 'activation', ['token' => $user->email_token]);
+
+		$body = wordwrap(TextHelper::replaceTokens($regConfig->activationEmailBody, $tokens), 70);
+		$subject = TextHelper::replaceTokens($regConfig->activationEmailSubject, $tokens);
+		$senderName = TextHelper::replaceTokens($regConfig->activationEmailSenderName, $tokens);
+		$senderEmail = $regConfig->activationEmailSenderEmail;
+		$recipientEmail = $user->email_unconfirmed;
+
+		$headers = [];
+		$headers[] = sprintf('From: %s <%s>', $senderName, $senderEmail);
+		$headers[] = sprintf('Subject: %s', $subject);
+		$headers[] = sprintf('X-Mailer: PHP/%s', phpversion());
+		mail($recipientEmail, $subject, $body, implode("\r\n", $headers));
+	}
+
 
 
 	/**
@@ -55,7 +76,8 @@ class UserController
 					$dbQuery->orderBy('join_date')->desc();
 					break;
 				case 'pending':
-					$dbQuery->whereNot('staff_confirmed')->and($this->config->registration->staffActivation);
+					$dbQuery->where('staff_confirmed IS NULL');
+					$dbQuery->or('staff_confirmed = 0');
 					break;
 				default:
 					throw new SimpleException('Unknown sort style');
@@ -218,11 +240,20 @@ class UserController
 				$edited = true;
 			}
 
-			if ($suppliedEmail != '' and $suppliedEmail != $user->email)
+			if ($suppliedEmail != '' and $suppliedEmail != $user->email_confirmed)
 			{
 				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserEmail, $secondary);
 				$suppliedEmail = Model_User::validateEmail($suppliedEmail);
-				$user->email = $suppliedEmail;
+				if ($this->context->user->id == $user->id)
+				{
+					$user->email_unconfirmed = $suppliedEmail;
+					if (!empty($user->email_unconfirmed))
+						self::sendEmailConfirmation($user);
+				}
+				else
+				{
+					$user->email_confirmed = $suppliedEmail;
+				}
 				$edited = true;
 			}
 
@@ -369,5 +400,118 @@ class UserController
 		R::store($this->context->user);
 
 		$this->context->transport->success = true;
+	}
+
+
+
+	/**
+	* @route /register
+	*/
+	public function registrationAction()
+	{
+		$this->context->handleExceptions = true;
+		$this->context->stylesheets []= 'auth.css';
+		$this->context->subTitle = 'registration form';
+
+		//check if already logged in
+		if ($this->context->loggedIn)
+		{
+			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
+			return;
+		}
+
+		$suppliedName = InputHelper::get('name');
+		$suppliedPassword1 = InputHelper::get('password1');
+		$suppliedPassword2 = InputHelper::get('password2');
+		$suppliedEmail = InputHelper::get('email');
+		$this->context->suppliedName = $suppliedName;
+		$this->context->suppliedPassword1 = $suppliedPassword1;
+		$this->context->suppliedPassword2 = $suppliedPassword2;
+		$this->context->suppliedEmail = $suppliedEmail;
+
+		if ($suppliedName !== null)
+		{
+			$suppliedName = Model_User::validateUserName($suppliedName);
+
+			if ($suppliedPassword1 != $suppliedPassword2)
+				throw new SimpleException('Specified passwords must be the same');
+			$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
+
+			$suppliedEmail = Model_User::validateEmail($suppliedEmail);
+			if (empty($suppliedEmail) and $this->config->registration->needEmailForRegistering)
+				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
+
+			//register the user
+			$dbUser = R::dispense('user');
+			$dbUser->name = $suppliedName;
+			$dbUser->pass_salt = md5(mt_rand() . uniqid());
+			$dbUser->pass_hash = Model_User::hashPassword($suppliedPassword, $dbUser->pass_salt);
+			$dbUser->email_unconfirmed = $suppliedEmail;
+
+			//prepare unique registration token
+			do
+			{
+				$emailToken =  md5(mt_rand() . uniqid());
+			}
+			while (R::findOne('user', 'email_token = ?', [$emailToken]) !== null);
+			$dbUser->email_token = $emailToken;
+
+			$dbUser->join_date = time();
+			if (R::findOne('user') === null)
+			{
+				$dbUser->access_rank = AccessRank::Admin;
+				$dbUser->staff_confirmed = true;
+				$dbUser->email_confirmed = $suppliedEmail;
+			}
+			else
+			{
+				$dbUser->access_rank = AccessRank::Registered;
+				$dbUser->staff_confirmed = false;
+				$dbUser->staff_confirmed = null;
+				if (!empty($dbUser->email_unconfirmed))
+					self::sendEmailConfirmation($dbUser);
+			}
+
+			//save the user to db if everything went okay
+			R::store($dbUser);
+			$this->context->transport->success = true;
+
+			if (!$this->config->registration->needEmailForRegistering and !$this->config->registration->staffActivation)
+			{
+				$_SESSION['user-id'] = $dbUser->id;
+				\Chibi\Registry::getBootstrap()->attachUser();
+			}
+		}
+	}
+
+
+
+	/**
+	* @route /activation/{token}
+	*/
+	public function activationAction($token)
+	{
+		$this->context->subTitle = 'account activation';
+
+		if (empty($token))
+			throw new SimpleException('Invalid activation token');
+
+		$dbUser = R::findOne('user', 'email_token = ?', [$token]);
+		if ($dbUser === null)
+			throw new SimpleException('No user with such activation token');
+
+		if (!$dbUser->email_unconfirmed)
+			throw new SimpleException('This user was already activated');
+
+		$dbUser->email_confirmed = $dbUser->email_unconfirmed;
+		$dbUser->email_unconfirmed = null;
+		R::store($dbUser);
+		$this->context->transport->success = true;
+
+		if (!$this->config->registration->staffActivation)
+		{
+			$_SESSION['user-id'] = $dbUser->id;
+			\Chibi\Registry::getBootstrap()->attachUser();
+		}
 	}
 }

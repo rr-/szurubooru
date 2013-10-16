@@ -48,6 +48,12 @@ class PrivilegesHelper
 			throw new SimpleException('Insufficient privileges');
 		}
 	}
+
+	public static function confirmEmail($user)
+	{
+		if (!$user->email_confirmed)
+			throw new SimpleException('Need e-mail address confirmation to continue');
+	}
 }
 
 PrivilegesHelper::init();
