@@ -27,7 +27,7 @@ function configFactory()
 		$configPaths =
 		[
 			__DIR__ . DS . '../config.ini',
-			__DIR__ . DS . '../local.ini'
+			__DIR__ . DS . '../local.ini',
 		];
 		$configPaths = array_filter($configPaths, 'file_exists');
 

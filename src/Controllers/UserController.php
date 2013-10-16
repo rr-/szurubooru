@@ -9,18 +9,26 @@ class UserController
 		return $user;
 	}
 
-	private static function sendEmailConfirmation($user)
+	private static function sendEmailConfirmation(&$user)
 	{
-		\Chibi\Registry::getContext()->mailSent = true;
 		$regConfig = \Chibi\Registry::getConfig()->registration;
+
+		if (!$regConfig->confirmationEmailEnabled)
+		{
+			$user->email_confirmed = $user->email_unconfirmed;
+			$user->email_unconfirmed = null;
+			return;
+		}
+
+		\Chibi\Registry::getContext()->mailSent = true;
 		$tokens = [];
 		$tokens['host'] = $_SERVER['HTTP_HOST'];
 		$tokens['link'] = \Chibi\UrlHelper::route('user', 'activation', ['token' => $user->email_token]);
 
-		$body = wordwrap(TextHelper::replaceTokens($regConfig->activationEmailBody, $tokens), 70);
-		$subject = TextHelper::replaceTokens($regConfig->activationEmailSubject, $tokens);
-		$senderName = TextHelper::replaceTokens($regConfig->activationEmailSenderName, $tokens);
-		$senderEmail = $regConfig->activationEmailSenderEmail;
+		$body = wordwrap(TextHelper::replaceTokens($regConfig->confirmationEmailBody, $tokens), 70);
+		$subject = TextHelper::replaceTokens($regConfig->confirmationEmailSubject, $tokens);
+		$senderName = TextHelper::replaceTokens($regConfig->confirmationEmailSenderName, $tokens);
+		$senderEmail = $regConfig->confirmationEmailSenderEmail;
 		$recipientEmail = $user->email_unconfirmed;
 
 		$headers = [];
