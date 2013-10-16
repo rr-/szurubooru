@@ -633,13 +633,15 @@ class PostController
 			switch ($key)
 			{
 				case 'favmin':
+				case 'favmax':
+					$operator = $key == 'favmin' ? '>=' : '<=';
 					$dbQuery
 						->open()
 						->select('COUNT(1)')
 						->from('favoritee')
 						->where('post_id = post.id')
 						->close()
-						->addSql('>= ?')->put(intval($val));
+						->addSql($operator . ' ?')->put(intval($val));
 					break;
 
 				case 'type':
