@@ -99,6 +99,8 @@
 		<footer>
 			<div class="main-wrapper">
 				Load: <?php echo sprintf('%.05f', microtime(true) - trueStartTime()) ?>s
+				&nbsp;
+				Queries: <?php echo count(queryLogger()->getLogs()) ?>
 			</div>
 		</footer>
 	</body>
