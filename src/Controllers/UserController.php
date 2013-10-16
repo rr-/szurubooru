@@ -28,14 +28,23 @@ class UserController
 		$body = wordwrap(TextHelper::replaceTokens($regConfig->confirmationEmailBody, $tokens), 70);
 		$subject = TextHelper::replaceTokens($regConfig->confirmationEmailSubject, $tokens);
 		$senderName = TextHelper::replaceTokens($regConfig->confirmationEmailSenderName, $tokens);
-		$senderEmail = $regConfig->confirmationEmailSenderEmail;
+		$senderEmail = TextHelper::replaceTokens($regConfig->confirmationEmailSenderEmail, $tokens);
 		$recipientEmail = $user->email_unconfirmed;
 
 		$headers = [];
-		$headers[] = sprintf('From: %s <%s>', $senderName, $senderEmail);
-		$headers[] = sprintf('Subject: %s', $subject);
-		$headers[] = sprintf('X-Mailer: PHP/%s', phpversion());
-		mail($recipientEmail, $subject, $body, implode("\r\n", $headers));
+		$headers []= sprintf('MIME-Version: 1.0');
+		$headers []= sprintf('Content-Transfer-Encoding: 7bit');
+		$headers []= sprintf('Date: %s', date('r', $_SERVER['REQUEST_TIME']));
+		$headers []= sprintf('Message-ID: <%s>', $_SERVER['REQUEST_TIME'] . md5($_SERVER['REQUEST_TIME']) . '@' . $_SERVER['HTTP_HOST']);
+		$headers []= sprintf('From: %s <%s>', $senderName, $senderEmail);
+		$headers []= sprintf('Reply-To: %s', $senderEmail);
+		$headers []= sprintf('Return-Path: %s', $senderEmail);
+		$headers []= sprintf('Subject: %s', $subject);
+		$headers []= sprintf('Content-Type: text/plain; charset=utf-8', $subject);
+		$headers []= sprintf('X-Mailer: PHP/%s', phpversion());
+		$headers []= sprintf('X-Originating-IP: %s', $_SERVER['SERVER_ADDR']);
+		$subject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+		mail($recipientEmail, $subject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
 	}
 
 
