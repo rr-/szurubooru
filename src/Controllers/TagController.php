@@ -8,7 +8,7 @@ class TagController
 	{
 		$this->context->subTitle = 'tags';
 
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListTags);
+		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 
 		$dbQuery = R::$f->begin();
 		$dbQuery->select('tag.name, COUNT(1) AS count');

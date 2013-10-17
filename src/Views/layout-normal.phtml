@@ -23,22 +23,22 @@
 						$nav = [];
 
 						$nav []= ['Home', \Chibi\UrlHelper::route('index', 'index')];
-						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts))
+						if (PrivilegesHelper::confirm(Privilege::ListPosts))
 							$nav []= ['Browse', \Chibi\UrlHelper::route('post', 'list')];
 
-						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts))
+						if (PrivilegesHelper::confirm(Privilege::ListPosts))
 							$nav []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
 
-						if (PrivilegesHelper::confirm($this->context->user, Privilege::UploadPost))
+						if (PrivilegesHelper::confirm(Privilege::UploadPost))
 							$nav []= ['Upload', \Chibi\UrlHelper::route('post', 'upload')];
 
-						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListComments))
+						if (PrivilegesHelper::confirm(Privilege::ListComments))
 							$nav []= ['Comments', \Chibi\UrlHelper::route('comment', 'list')];
 
-						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListTags))
+						if (PrivilegesHelper::confirm(Privilege::ListTags))
 							$nav []= ['Tags', \Chibi\UrlHelper::route('tag', 'list')];
 
-						if (PrivilegesHelper::confirm($this->context->user, Privilege::ListUsers))
+						if (PrivilegesHelper::confirm(Privilege::ListUsers))
 							$nav []= ['Users', \Chibi\UrlHelper::route('user', 'list')];
 
 						if (!$this->context->loggedIn)
@@ -67,7 +67,7 @@
 						<li class="safety">
 							<ul>
 								<?php foreach (PostSafety::getAll() as $safety): ?>
-									<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety))): ?>
+									<?php if (PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety))): ?>
 										<li class="safety-<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety)) ?>">
 											<a href="<?php echo \Chibi\UrlHelper::route('user', 'toggle-safety', ['safety' => $safety]) ?>" class="<?php echo $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>" title="Searching <?php echo TextHelper::camelCaseToHumanCase(PostSafety::ToString($safety)) ?> posts: <?php echo $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
 												<span><?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?></span>

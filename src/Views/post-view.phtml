@@ -119,7 +119,7 @@
 		<h1>options</h1>
 
 		<ul>
-			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::FavoritePost)): ?>
+			<?php if (PrivilegesHelper::confirm(Privilege::FavoritePost)): ?>
 				<?php if (!$this->context->favorite): ?>
 					<li class="add-fav">
 						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
@@ -136,7 +136,6 @@
 			<?php endif ?>
 
 			<?php
-				$secondary = $this->context->transport->post->uploader->id == $this->context->user->id ? 'own' : 'all';
 				$editPostPrivileges = [
 					Privilege::EditPostSafety,
 					Privilege::EditPostTags,
@@ -145,7 +144,7 @@
 				$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
 				foreach (array_keys($editPostPrivileges) as $privilege)
 				{
-					if (PrivilegesHelper::confirm($this->context->user, $privilege, $secondary))
+					if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader)))
 						$editPostPrivileges[$privilege] = true;
 				}
 				$canEditAnything = count(array_filter($editPostPrivileges)) > 0;
@@ -159,7 +158,7 @@
 				</li>
 			<?php endif ?>
 
-			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::HidePost, $secondary)): ?>
+			<?php if (PrivilegesHelper::confirm(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
 				<?php if ($this->context->transport->post->hidden): ?>
 					<li class="unhide">
 						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]) ?>">
@@ -175,7 +174,7 @@
 				<?php endif ?>
 			<?php endif ?>
 
-			<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::DeletePost, $secondary)): ?>
+			<?php if (PrivilegesHelper::confirm(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
 				<li class="delete">
 					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'delete', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure?" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
 						Delete
@@ -252,7 +251,7 @@
 		<?php endif ?>
 	</div>
 
-	<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::AddComment)): ?>
+	<?php if (PrivilegesHelper::confirm(Privilege::AddComment)): ?>
 		<form action="<?php echo \Chibi\UrlHelper::route('comment', 'add', ['postId' => $this->context->transport->post->id]) ?>" method="post" class="add-comment aligned footer-unit">
 			<h1>add comment</h1>
 

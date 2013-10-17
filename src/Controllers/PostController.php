@@ -80,7 +80,7 @@ class PostController
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
 		$this->context->subTitle = 'browsing posts';
 		$this->context->transport->searchQuery = $query;
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListPosts);
+		PrivilegesHelper::confirmWithException(Privilege::ListPosts);
 
 		$buildDbQuery = function($dbQuery, $query)
 		{
@@ -90,7 +90,7 @@ class PostController
 			/* safety */
 			$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
 			{
-				return PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety)) and
+				return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
 					$this->context->user->hasEnabledSafety($safety);
 			});
 			$dbQuery->where('safety IN (' . R::genSlots($allowedSafety) . ')');
@@ -99,7 +99,7 @@ class PostController
 
 
 			/* hidden */
-			if (!PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, 'hidden'))
+			if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
 				$dbQuery->andNot('hidden');
 
 
@@ -158,7 +158,7 @@ class PostController
 		$this->context->stylesheets []= 'upload.css';
 		$this->context->scripts []= 'upload.js';
 		$this->context->subTitle = 'upload';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::UploadPost);
+		PrivilegesHelper::confirmWithException(Privilege::UploadPost);
 		if ($this->config->registration->needEmailForUploading)
 			PrivilegesHelper::confirmEmail($this->context->user);
 
@@ -246,7 +246,6 @@ class PostController
 		$post = Model_Post::locate($id);
 		R::preload($post, ['uploader' => 'user']);
 		$edited = false;
-		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
 
 		$this->context->transport->post = $post;
 
@@ -254,7 +253,7 @@ class PostController
 		$suppliedSafety = InputHelper::get('safety');
 		if ($suppliedSafety !== null)
 		{
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostSafety, $secondary);
+			PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 			$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
 			$post->safety = $suppliedSafety;
 			$edited = true;
@@ -265,7 +264,7 @@ class PostController
 		$suppliedTags = InputHelper::get('tags');
 		if ($suppliedTags !== null)
 		{
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostTags, $secondary);
+			PrivilegesHelper::confirmWithException(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 			$currentToken = self::serializeTags($post);
 			if (InputHelper::get('tags-token') != $currentToken)
 				throw new SimpleException('Someone else has changed the tags in the meantime');
@@ -280,7 +279,7 @@ class PostController
 		/* thumbnail */
 		if (!empty($_FILES['thumb']['name']))
 		{
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::EditPostThumb, $secondary);
+			PrivilegesHelper::confirmWithException(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 			$suppliedFile = $_FILES['thumb'];
 			self::handleUploadErrors($suppliedFile);
 
@@ -312,8 +311,7 @@ class PostController
 	public function hideAction($id)
 	{
 		$post = Model_Post::locate($id);
-		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::HidePost, $secondary);
+		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 		$post->hidden = true;
 		R::store($post);
 		$this->context->transport->success = true;
@@ -325,8 +323,7 @@ class PostController
 	public function unhideAction($id)
 	{
 		$post = Model_Post::locate($id);
-		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::HidePost, $secondary);
+		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 		$post->hidden = false;
 		R::store($post);
 		$this->context->transport->success = true;
@@ -338,8 +335,7 @@ class PostController
 	public function deleteAction($id)
 	{
 		$post = Model_Post::locate($id);
-		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::DeletePost, $secondary);
+		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 		//remove stuff from auxiliary tables
 		$post->ownFavoritee = [];
 		$post->sharedTag = [];
@@ -366,7 +362,7 @@ class PostController
 			if ($fav->id == $this->context->user->id)
 				throw new SimpleException('Already in favorites');
 
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::FavoritePost);
+		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
 		$post->link('favoritee')->user = $this->context->user;
 		R::store($post);
 		$this->context->transport->success = true;
@@ -381,7 +377,7 @@ class PostController
 		$post = Model_Post::locate($id);
 		R::preload($post, ['favoritee' => 'user']);
 
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::FavoritePost);
+		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
 		if (!$this->context->loggedIn)
 			throw new SimpleException('Not logged in');
 
@@ -415,9 +411,9 @@ class PostController
 			'ownComment.commenter' => 'user']);
 
 		if ($post->hidden)
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, 'hidden');
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
+			PrivilegesHelper::confirmWithException(Privilege::ViewPost, 'hidden');
+		PrivilegesHelper::confirmWithException(Privilege::ViewPost);
+		PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
 
 		$buildNextPostQuery = function($dbQuery, $id, $next)
 		{
@@ -425,7 +421,7 @@ class PostController
 				->from('post')
 				->where($next ? 'id > ?' : 'id < ?')
 				->put($id);
-			if (!PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, 'hidden'))
+			if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
 				$dbQuery->andNot('hidden');
 			$dbQuery->orderBy($next ? 'id asc' : 'id desc')
 				->limit(1);
@@ -481,8 +477,8 @@ class PostController
 		$this->context->layoutName = 'layout-file';
 		$post = Model_Post::locate($id);
 
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
+		PrivilegesHelper::confirmWithException(Privilege::ViewPost);
+		PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
 
 		$path = $this->config->main->thumbsPath . DS . $post->name;
 		if (!file_exists($path))
@@ -554,8 +550,8 @@ class PostController
 		$post = Model_Post::locate($name, true);
 		R::preload($post, ['tag']);
 
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost);
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost, PostSafety::toString($post->safety));
+		PrivilegesHelper::confirmWithException(Privilege::RetrievePost);
+		PrivilegesHelper::confirmWithException(Privilege::RetrievePost, PostSafety::toString($post->safety));
 
 		$path = $this->config->main->filesPath . DS . $post->name;
 		if (!file_exists($path))

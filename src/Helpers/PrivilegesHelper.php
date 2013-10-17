@@ -10,18 +10,19 @@ class PrivilegesHelper
 		{
 			if (strpos($key, '.') === false)
 				$key .= '.';
-			list ($privilegeName, $flag) = explode('.', $key);
+			list ($privilegeName, $subPrivilegeName) = explode('.', $key);
 			$privilegeName = TextHelper::camelCaseToKebabCase($privilegeName);
-			$flag = TextHelper::camelCaseToKebabCase($flag);
-			$key = rtrim($privilegeName . '.' . $flag, '.');
+			$subPrivilegeName = TextHelper::camelCaseToKebabCase($subPrivilegeName);
+			$key = rtrim($privilegeName . '.' . $subPrivilegeName, '.');
 
 			$minAccessRank = TextHelper::resolveConstant($minAccessRankName, 'AccessRank');
 			self::$privileges[$key] = $minAccessRank;
 		}
 	}
 
-	public static function confirm($user, $privilege, $flag = null)
+	public static function confirm($privilege, $subPrivilege = null)
 	{
+		$user = \Chibi\Registry::getContext()->user;
 		$minAccessRank = AccessRank::Admin;
 
 		$key = TextHelper::camelCaseToKebabCase(Privilege::toString($privilege));
@@ -29,9 +30,9 @@ class PrivilegesHelper
 		{
 			$minAccessRank = self::$privileges[$key];
 		}
-		if ($flag != null)
+		if ($subPrivilege != null)
 		{
-			$key2 = $key . '.' . strtolower($flag);
+			$key2 = $key . '.' . strtolower($subPrivilege);
 			if (isset(self::$privileges[$key2]))
 			{
 				$minAccessRank = self::$privileges[$key2];
@@ -41,12 +42,18 @@ class PrivilegesHelper
 		return intval($user->access_rank) >= $minAccessRank;
 	}
 
-	public static function confirmWithException($user, $privilege, $flag = null)
+	public static function confirmWithException($privilege, $subPrivilege = null)
 	{
-		if (!self::confirm($user, $privilege, $flag))
+		if (!self::confirm($privilege, $subPrivilege))
 		{
 			throw new SimpleException('Insufficient privileges');
 		}
+	}
+
+	public static function getIdentitySubPrivilege($user)
+	{
+		$userFromContext = \Chibi\Registry::getContext()->user;
+		return $user->id == $userFromContext->id ? 'own' : 'all';
 	}
 
 	public static function confirmEmail($user)

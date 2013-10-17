@@ -17,7 +17,7 @@ class CommentController
 
 		$page = intval($page);
 		$commentsPerPage = intval($this->config->comments->commentsPerPage);
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListComments);
+		PrivilegesHelper::confirmWithException(Privilege::ListComments);
 
 		$buildDbQuery = function($dbQuery)
 		{
@@ -59,7 +59,7 @@ class CommentController
 	*/
 	public function addAction($postId)
 	{
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::AddComment);
+		PrivilegesHelper::confirmWithException(Privilege::AddComment);
 		if ($this->config->registration->needEmailForCommenting)
 			PrivilegesHelper::confirmEmail($this->context->user);
 
@@ -90,8 +90,7 @@ class CommentController
 	public function deleteAction($id)
 	{
 		$comment = Model_Comment::locate($id);
-		$secondary = $comment->commenter->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::DeleteComment, $secondary);
+		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->commenter));
 		R::trash($comment);
 		$this->context->transport->success = true;
 	}

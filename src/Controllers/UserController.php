@@ -59,7 +59,7 @@ class UserController
 		$page = intval($page);
 		$usersPerPage = intval($this->config->browsing->usersPerPage);
 		$this->context->subTitle = 'browsing users';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ListUsers);
+		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
 
 		if ($sortStyle == '' or $sortStyle == 'alpha')
 			$sortStyle = 'alpha,asc';
@@ -127,8 +127,7 @@ class UserController
 	public function banAction($name)
 	{
 		$user = Model_User::locate($name);
-		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::BanUser, $secondary);
+		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		$user->banned = true;
 		R::store($user);
 		$this->context->transport->success = true;
@@ -141,8 +140,7 @@ class UserController
 	public function unbanAction($name)
 	{
 		$user = Model_User::locate($name);
-		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::BanUser, $secondary);
+		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		$user->banned = false;
 		R::store($user);
 		$this->context->transport->success = true;
@@ -155,7 +153,7 @@ class UserController
 	public function acceptRegistrationAction($name)
 	{
 		$user = Model_User::locate($name);
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::AcceptUserRegistration);
+		PrivilegesHelper::confirmWithException(Privilege::AcceptUserRegistration);
 		$user->staff_confirmed = true;
 		R::store($user);
 		$this->context->transport->success = true;
@@ -171,9 +169,8 @@ class UserController
 	public function deleteAction($name)
 	{
 		$user = Model_User::locate($name);
-		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::DeleteUser, $secondary);
+		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		$this->context->handleExceptions = true;
 		$this->context->transport->user = $user;
@@ -213,8 +210,7 @@ class UserController
 
 			$user = Model_User::locate($name);
 			$edited = false;
-			$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
-			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
+			PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
 			$this->context->handleExceptions = true;
 			$this->context->transport->user = $user;
@@ -233,7 +229,7 @@ class UserController
 
 			if ($suppliedName != '' and $suppliedName != $user->name)
 			{
-				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserName, $secondary);
+				PrivilegesHelper::confirmWithException(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($user));
 				$suppliedName = Model_User::validateUserName($suppliedName);
 				$user->name = $suppliedName;
 				$edited = true;
@@ -241,7 +237,7 @@ class UserController
 
 			if ($suppliedPassword1 != '')
 			{
-				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserPassword, $secondary);
+				PrivilegesHelper::confirmWithException(Privilege::ChangeUserPassword, PrivilegesHelper::getIdentitySubPrivilege($user));
 				if ($suppliedPassword1 != $suppliedPassword2)
 					throw new SimpleException('Specified passwords must be the same');
 				$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
@@ -251,7 +247,7 @@ class UserController
 
 			if ($suppliedEmail != '' and $suppliedEmail != $user->email_confirmed)
 			{
-				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserEmail, $secondary);
+				PrivilegesHelper::confirmWithException(Privilege::ChangeUserEmail, PrivilegesHelper::getIdentitySubPrivilege($user));
 				$suppliedEmail = Model_User::validateEmail($suppliedEmail);
 				if ($this->context->user->id == $user->id)
 				{
@@ -268,7 +264,7 @@ class UserController
 
 			if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->access_rank)
 			{
-				PrivilegesHelper::confirmWithException($this->context->user, Privilege::ChangeUserAccessRank, $secondary);
+				PrivilegesHelper::confirmWithException(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($user));
 				$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
 				$user->access_rank = $suppliedAccessRank;
 				$edited = true;
@@ -312,8 +308,7 @@ class UserController
 		if ($page === null)
 			$page = 1;
 
-		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
-		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
+		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'paginator.css';
@@ -329,7 +324,7 @@ class UserController
 			/* safety */
 			$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
 			{
-				return PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, PostSafety::toString($safety)) and
+				return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
 					$this->context->user->hasEnabledSafety($safety);
 			});
 			$dbQuery->where('safety IN (' . R::genSlots($allowedSafety) . ')');
@@ -338,7 +333,7 @@ class UserController
 
 
 			/* hidden */
-			if (!PrivilegesHelper::confirm($this->context->user, Privilege::ListPosts, 'hidden'))
+			if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
 				$dbQuery->andNot('hidden');
 
 
