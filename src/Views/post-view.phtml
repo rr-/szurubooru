@@ -238,10 +238,11 @@
 	<?php endif ?>
 
 	<div class="comments footer-unit">
-		<h1>comments (<?php echo $this->context->transport->post->countOwn('comment') ?>)</h1>
 		<?php if (empty($this->context->transport->post->ownComment)): ?>
-			<p class="alert alert-warning">No comments to show.</p>
+			<h1>comments</h1>
+			None yet.
 		<?php else: ?>
+			<h1>comments (<?php echo $this->context->transport->post->countOwn('comment') ?>)</h1>
 			<div class="comments">
 				<?php foreach ($this->context->transport->post->ownComment as $comment): ?>
 					<?php $this->context->comment = $comment ?>
