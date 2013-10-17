@@ -25,6 +25,7 @@ class Privilege extends Enum
 
 	const ListComments = 20;
 	const AddComment = 23;
+	const DeleteComment = 24;
 
 	const ListTags = 21;
 }

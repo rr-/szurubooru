@@ -51,6 +51,8 @@ class CommentController
 		$this->context->transport->comments = $comments;
 	}
 
+
+
 	/**
 	* @route /post/{postId}/add-comment
 	* @valdiate postId [0-9]+
@@ -77,5 +79,20 @@ class CommentController
 			$this->context->transport->textPreview = $comment->getText();
 			$this->context->transport->success = true;
 		}
+	}
+
+
+
+	/**
+	* @route /comment/{id}/delete
+	* @validate id [0-9]+
+	*/
+	public function deleteAction($id)
+	{
+		$comment = Model_Comment::locate($id);
+		$secondary = $comment->commenter->id == $this->context->user->id ? 'own' : 'all';
+		PrivilegesHelper::confirmWithException($this->context->user, Privilege::DeleteComment, $secondary);
+		R::trash($comment);
+		$this->context->transport->success = true;
 	}
 }

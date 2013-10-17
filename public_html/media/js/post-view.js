@@ -66,7 +66,7 @@ $(function()
 		$.ajax(ajaxData);
 	});
 
-	$('form.add-comment, form.edit-comment').submit(function(e)
+	$('form.add-comment').submit(function(e)
 	{
 		e.preventDefault();
 

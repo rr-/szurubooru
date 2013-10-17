@@ -90,8 +90,7 @@ i.icon-dl {
 	margin: 2px;
 }
 
-form.edit-post,
-form.edit-comment {
+form.edit-post {
 	display: none;
 }
 form.edit-post .safety label:not(.left) {

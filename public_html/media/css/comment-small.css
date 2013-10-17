@@ -1,9 +1,11 @@
 .comment {
 	margin: 0 0 1em 0;
 }
-.comment .body,
 .comment .avatar {
 	float: left;
+}
+.comment .body {
+	margin-left: 60px;
 }
 .comment .header {
 	margin-bottom: 0.2em;
@@ -26,5 +28,21 @@
 }
 .comment .date {
 	color: silver;
+}
+
+.comment .date,
+.comment .delete {
 	font-size: small;
+}
+.comment .delete:before {
+	margin-left: 0.2em;
+	content: ' [';
+	color: silver;
+}
+.comment .delete:after {
+	content: ']';
+	color: silver;
+}
+.comment .delete a {
+	color: silver;
 }
