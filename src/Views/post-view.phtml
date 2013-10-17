@@ -201,7 +201,7 @@
 	</div>
 
 	<?php if ($canEditAnything): ?>
-		<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit aligned">
+		<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit-post aligned footer-unit">
 			<h1>edit post</h1>
 			<?php if ($editPostPrivileges[Privilege::EditPostSafety]): ?>
 				<div class="safety">
@@ -233,6 +233,37 @@
 			<div>
 				<label class="left">&nbsp;</label>
 				<button type="submit">Submit</button>
+			</div>
+		</form>
+	<?php endif ?>
+
+	<div class="comments footer-unit">
+		<h1>comments (<?php echo $this->context->transport->post->countOwn('comment') ?>)</h1>
+		<?php if (empty($this->context->transport->post->ownComment)): ?>
+			<p class="alert alert-warning">No comments to show.</p>
+		<?php else: ?>
+			<div class="comments">
+				<?php foreach ($this->context->transport->post->ownComment as $comment): ?>
+					<?php $this->context->comment = $comment ?>
+					<?php echo $this->renderFile('comment-small') ?>
+				<?php endforeach ?>
+			</div>
+		<?php endif ?>
+	</div>
+
+	<?php if (PrivilegesHelper::confirm($this->context->user, Privilege::AddComment)): ?>
+		<form action="<?php echo \Chibi\UrlHelper::route('comment', 'add', ['postId' => $this->context->transport->post->id]) ?>" method="post" class="add-comment aligned footer-unit">
+			<h1>add comment</h1>
+
+			<div class="preview"></div>
+
+			<div class="text">
+				<textarea name="text" cols="50" rows="3"></textarea>
+			</div>
+
+			<div>
+				<button name="sender" type="submit" value="preview">Preview</button>&nbsp;
+				<button name="sender" type="submit" value="submit">Submit</button>
 			</div>
 		</form>
 	<?php endif ?>

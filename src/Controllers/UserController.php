@@ -1,14 +1,6 @@
 <?php
 class UserController
 {
-	private static function locateUser($key)
-	{
-		$user = R::findOne('user', 'name = ?', [$key]);
-		if (!$user)
-			throw new SimpleException('Invalid user name "' . $key . '"');
-		return $user;
-	}
-
 	private static function sendEmailConfirmation(&$user)
 	{
 		$regConfig = \Chibi\Registry::getConfig()->registration;
@@ -134,7 +126,7 @@ class UserController
 	*/
 	public function banAction($name)
 	{
-		$user = self::locateUser($name);
+		$user = Model_User::locate($name);
 		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::BanUser, $secondary);
 		$user->banned = true;
@@ -148,7 +140,7 @@ class UserController
 	*/
 	public function unbanAction($name)
 	{
-		$user = self::locateUser($name);
+		$user = Model_User::locate($name);
 		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::BanUser, $secondary);
 		$user->banned = false;
@@ -162,7 +154,7 @@ class UserController
 	*/
 	public function acceptRegistrationAction($name)
 	{
-		$user = self::locateUser($name);
+		$user = Model_User::locate($name);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::AcceptUserRegistration);
 		$user->staff_confirmed = true;
 		R::store($user);
@@ -178,7 +170,7 @@ class UserController
 	*/
 	public function deleteAction($name)
 	{
-		$user = self::locateUser($name);
+		$user = Model_User::locate($name);
 		$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::DeleteUser, $secondary);
@@ -219,7 +211,7 @@ class UserController
 		try
 		{
 
-			$user = self::locateUser($name);
+			$user = Model_User::locate($name);
 			$edited = false;
 			$secondary = $user->id == $this->context->user->id ? 'own' : 'all';
 			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewUser, $secondary);
@@ -297,7 +289,7 @@ class UserController
 		}
 		catch (Exception $e)
 		{
-			$this->context->transport->user = self::locateUser($name);
+			$this->context->transport->user = Model_User::locate($name);
 			throw $e;
 		}
 	}
@@ -314,7 +306,7 @@ class UserController
 	public function viewAction($name, $tab, $page)
 	{
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
-		$user = self::locateUser($name);
+		$user = Model_User::locate($name);
 		if ($tab === null)
 			$tab = 'favs';
 		if ($page === null)

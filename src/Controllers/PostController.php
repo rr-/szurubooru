@@ -8,23 +8,6 @@ class PostController
 		$callback();
 	}
 
-	private static function locatePost($key, $disallowNumeric = false)
-	{
-		if (is_numeric($key) and !$disallowNumeric)
-		{
-			$post = R::findOne('post', 'id = ?', [$key]);
-			if (!$post)
-				throw new SimpleException('Invalid post ID "' . $key . '"');
-		}
-		else
-		{
-			$post = R::findOne('post', 'name = ?', [$key]);
-			if (!$post)
-				throw new SimpleException('Invalid post name "' . $key . '"');
-		}
-		return $post;
-	}
-
 	private static function serializeTags($post)
 	{
 		$x = [];
@@ -74,6 +57,7 @@ class PostController
 	*/
 	public function listAction($query = null, $page = 1)
 	{
+		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'paginator.css';
 		if ($this->config->browsing->endlessScrolling)
@@ -255,11 +239,11 @@ class PostController
 
 
 	/**
-	* @route /post/edit/{id}
+	* @route /post/{id}/edit
 	*/
 	public function editAction($id)
 	{
-		$post = self::locatePost($id);
+		$post = Model_Post::locate($id);
 		R::preload($post, ['uploader' => 'user']);
 		$edited = false;
 		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
@@ -323,11 +307,11 @@ class PostController
 
 
 	/**
-	* @route /post/hide/{id}
+	* @route /post/{id}/hide
 	*/
 	public function hideAction($id)
 	{
-		$post = self::locatePost($id);
+		$post = Model_Post::locate($id);
 		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::HidePost, $secondary);
 		$post->hidden = true;
@@ -336,11 +320,11 @@ class PostController
 	}
 
 	/**
-	* @route /post/unhide/{id}
+	* @route /post/{id}/unhide
 	*/
 	public function unhideAction($id)
 	{
-		$post = self::locatePost($id);
+		$post = Model_Post::locate($id);
 		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::HidePost, $secondary);
 		$post->hidden = false;
@@ -349,11 +333,11 @@ class PostController
 	}
 
 	/**
-	* @route /post/delete/{id}
+	* @route /post/{id}/delete
 	*/
 	public function deleteAction($id)
 	{
-		$post = self::locatePost($id);
+		$post = Model_Post::locate($id);
 		$secondary = $post->uploader->id == $this->context->user->id ? 'own' : 'all';
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::DeletePost, $secondary);
 		//remove stuff from auxiliary tables
@@ -367,12 +351,12 @@ class PostController
 
 
 	/**
-	* @route /post/add-fav/{id}
-	* @route /post/fav-add/{id}
+	* @route /post/{id}/add-fav
+	* @route /post/{id}/fav-add
 	*/
 	public function addFavoriteAction($id)
 	{
-		$post = self::locatePost($id);
+		$post = Model_Post::locate($id);
 		R::preload($post, ['favoritee' => 'user']);
 
 		if (!$this->context->loggedIn)
@@ -389,12 +373,12 @@ class PostController
 	}
 
 	/**
-	* @route /post/rem-fav/{id}
-	* @route /post/fav-rem/{id}
+	* @route /post/{id}/rem-fav
+	* @route /post/{id}/fav-rem
 	*/
 	public function remFavoriteAction($id)
 	{
-		$post = self::locatePost($id);
+		$post = Model_Post::locate($id);
 		R::preload($post, ['favoritee' => 'user']);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::FavoritePost);
@@ -422,8 +406,13 @@ class PostController
 	*/
 	public function viewAction($id)
 	{
-		$post = self::locatePost($id);
-		R::preload($post, ['favoritee' => 'user', 'uploader' => 'user', 'tag']);
+		$post = Model_Post::locate($id);
+		R::preload($post, [
+			'favoritee' => 'user',
+			'uploader' => 'user',
+			'tag',
+			'comment',
+			'ownComment.commenter' => 'user']);
 
 		if ($post->hidden)
 			PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, 'hidden');
@@ -471,6 +460,7 @@ class PostController
 			$this->context->transport->tagDistribution[$row['name']] = $row['count'];
 
 		$this->context->stylesheets []= 'post-view.css';
+		$this->context->stylesheets []= 'comment-small.css';
 		$this->context->scripts []= 'post-view.js';
 		$this->context->subTitle = 'showing @' . $post->id;
 		$this->context->favorite = $favorite;
@@ -484,12 +474,12 @@ class PostController
 
 	/**
 	* Action that renders the thumbnail of the requested file and sends it to user.
-	* @route /post/thumb/{id}
+	* @route /post/{id}/thumb
 	*/
 	public function thumbAction($id)
 	{
 		$this->context->layoutName = 'layout-file';
-		$post = self::locatePost($id);
+		$post = Model_Post::locate($id);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::ViewPost, PostSafety::toString($post->safety));
@@ -556,12 +546,12 @@ class PostController
 
 	/**
 	* Action that renders the requested file itself and sends it to user.
-	* @route /post/retrieve/{name}
+	* @route /post/{name}/retrieve
 	*/
 	public function retrieveAction($name)
 	{
 		$this->context->layoutName = 'layout-file';
-		$post = self::locatePost($name, true);
+		$post = Model_Post::locate($name, true);
 		R::preload($post, ['tag']);
 
 		PrivilegesHelper::confirmWithException($this->context->user, Privilege::RetrievePost);

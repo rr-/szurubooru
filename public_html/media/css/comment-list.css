@@ -1,0 +1,16 @@
+.comment-group .post-wrapper {
+	float: left;
+}
+.comment-group .comments {
+	float: left;
+}
+
+.comment-group .post img {
+	margin-right: 1em;
+	margin-bottom: 1em;
+}
+
+.comment-group {
+	border-bottom: 1px solid #eee;
+	margin-bottom: 1em;
+}

@@ -85,4 +85,20 @@ $(function()
 			}
 		});
 	});
+
+
+	//attach data from submit buttons to forms before .submit() gets called
+	$(':submit').each(function()
+	{
+		$(this).click(function()
+		{
+			var form = $(this).closest('form');
+			form.find('.faux-submit').remove();
+			var input = $('<input class="faux-submit" type="hidden"/>').attr({
+				name: $(this).attr('name'),
+				value: $(this).val()
+			});
+			form.append(input);
+		});
+	});
 });

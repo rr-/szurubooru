@@ -141,4 +141,9 @@ class TextHelper
 
 		return json_encode($obj);
 	}
+
+	public static function parseMarkdown($text)
+	{
+		return \Michelf\Markdown::defaultTransform($text);
+	}
 }

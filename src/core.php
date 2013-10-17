@@ -8,6 +8,7 @@ function trueStartTime()
 }
 trueStartTime();
 
+require_once 'lib/php-markdown/Michelf/Markdown.php';
 require_once 'lib/redbean/RedBean/redbean.inc.php';
 require_once 'lib/chibi-core/Facade.php';
 require_once 'lib/chibi-core/Registry.php';
@@ -42,7 +43,7 @@ function configFactory()
 
 $config = configFactory();
 R::setup('sqlite:' . $config->main->dbPath);
-R::dependencies(['tag' => ['post'], 'favoritee' => ['post', 'user']]);
+R::dependencies(['tag' => ['post'], 'favoritee' => ['post', 'user'], 'comment' => ['post', 'user']]);
 
 //wire models
 \Chibi\AutoLoader::init([$config->chibi->userCodeDir, __DIR__]);

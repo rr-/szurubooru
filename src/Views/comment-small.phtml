@@ -1,0 +1,35 @@
+<div class="comment">
+	<div class="avatar">
+		<?php if ($this->context->comment->commenter): ?>
+			<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->comment->commenter->name]) ?>">
+				<img src="<?php echo $this->context->comment->commenter->getAvatarUrl(40) ?>" alt="<?php echo $this->context->comment->commenter->name ?: '[deleted user]' ?>"/>
+			</a>
+		<?php else: ?>
+			<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="[deleted user]">
+		<?php endif ?>
+	</div>
+
+	<div class="body">
+		<div class="header">
+			<span class="nickname">
+				<?php if ($this->context->comment->commenter): ?>
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->comment->commenter->name]) ?>">
+						<?php echo $this->context->comment->commenter->name ?>
+					</a>
+				<?php else: ?>
+					<div class="nickname">[deleted user]</div>
+				<?php endif ?>
+			</span>
+
+			<span class="date">
+				<?php echo date('Y-m-d H:i', $this->context->comment->comment_date) ?>
+			</span>
+		</div>
+
+		<div class="content">
+			<?php echo $this->context->comment->getText() ?>
+		</div>
+	</div>
+
+	<div class="clear"></div>
+</div>

@@ -23,11 +23,11 @@ $(function()
 			$('.tags input').tagit(tagItOptions);
 
 			e.preventDefault();
-			$('form.edit').slideDown();
+			$('form.edit-post').slideDown();
 		});
 	});
 
-	$('form.edit').submit(function(e)
+	$('form.edit-post').submit(function(e)
 	{
 		e.preventDefault();
 
@@ -53,6 +53,61 @@ $(function()
 				if (data['success'])
 				{
 					window.location.reload();
+				}
+				else
+				{
+					alert(data['errorMessage']);
+					formDom.find(':input').attr('readonly', false);
+					formDom.removeClass('inactive');
+				}
+			}
+		};
+
+		$.ajax(ajaxData);
+	});
+
+	$('form.add-comment, form.edit-comment').submit(function(e)
+	{
+		e.preventDefault();
+
+		var formDom = $(this);
+		if (formDom.hasClass('inactive'))
+			return;
+		formDom.addClass('inactive');
+		formDom.find(':input').attr('readonly', true);
+
+		var url = formDom.attr('action') + '?json';
+		var fd = new FormData(formDom[0]);
+
+		var preview = false;
+		$.each(formDom.serializeArray(), function(i, x)
+		{
+			if (x.name == 'sender' && x.value == 'preview')
+				preview = true;
+		});
+
+		var ajaxData =
+		{
+			url: url,
+			data: fd,
+			processData: false,
+			contentType: false,
+			type: 'POST',
+
+			success: function(data)
+			{
+				if (data['success'])
+				{
+					if (preview)
+					{
+						formDom.find('.preview').html(data['textPreview']).show();
+						formDom.find(':input').attr('readonly', false);
+						formDom.removeClass('inactive');
+					}
+					else
+					{
+						window.location.reload();
+					}
 				}
 				else
 				{

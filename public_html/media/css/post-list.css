@@ -1,20 +1,3 @@
 .posts img {
-	border: 1px solid #ddd;
-	box-shadow: 0.25em 0.25em #eee;
 	margin: 0.5em;
-	padding: 0;
-	width: 140px;
-	height: 140px;
-}
-
-.posts .post-type-flash img {
-	border-color: #dd5;
-	box-shadow: 0.25em 0.25em #eeb, 0.1em 0.1em 0.5em 0.1em rgba(238,238,187,0.5);
-}
-
-.posts a:focus img,
-.posts a:hover img {
-	border: 1px solid firebrick;
-	box-shadow: 0.25em 0.25em pink;
-	opacity: .9;
 }

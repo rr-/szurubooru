@@ -1,0 +1,30 @@
+.comment {
+	margin: 0 0 1em 0;
+}
+.comment .body,
+.comment .avatar {
+	float: left;
+}
+.comment .header {
+	margin-bottom: 0.2em;
+}
+.comment .avatar a {
+	display: inline-block;
+}
+.comment .avatar img {
+	width: 40px;
+	height: 40px;
+	background-image: url('http://www.gravatar.com/avatar/0?f=y&d=mm&s=40');
+	margin-right: 0.5em;
+}
+.comment {
+	clear: left;
+}
+.comment .date:before {
+	content: ' on ';
+	margin: 0 0.2em;
+}
+.comment .date {
+	color: silver;
+	font-size: small;
+}

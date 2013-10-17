@@ -1,0 +1,41 @@
+<?php if (empty($this->context->transport->comments)): ?>
+	<p class="alert alert-warning">No comments to show.</p>
+<?php else: ?>
+	<div class="comments paginator-content">
+		<?php
+			$groups = [];
+			$posts = [];
+			$currentGroupPostId = null;
+			$currentGroup = null;
+			foreach ($this->context->transport->comments as $comment)
+			{
+				if ($comment->post_id != $currentGroupPostId)
+				{
+					unset($currentGroup);
+					$currentGroup = [];
+					$currentGroupPostId = $comment->post_id;
+					$posts[$comment->post_id] = $comment->post;
+					$groups[] = &$currentGroup;
+				}
+				$currentGroup []= $comment;
+			}
+		?>
+		<?php foreach ($groups as $group): ?>
+			<div class="comment-group">
+				<div class="post-wrapper">
+					<?php $this->context->post = $posts[reset($group)->post_id] ?>
+					<?php echo $this->renderFile('post-small') ?>
+				</div>
+				<div class="comments">
+					<?php foreach ($group as $comment): ?>
+						<?php $this->context->comment = $comment ?>
+						<?php echo $this->renderFile('comment-small') ?>
+					<?php endforeach ?>
+				</div>
+				<div class="clear"></div>
+			</div>
+		<?php endforeach ?>
+	</div>
+
+	<?php $this->renderFile('paginator') ?>
+<?php endif ?>

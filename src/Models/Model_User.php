@@ -1,6 +1,14 @@
 <?php
 class Model_User extends RedBean_SimpleModel
 {
+	public static function locate($key)
+	{
+		$user = R::findOne('user', 'name = ?', [$key]);
+		if (!$user)
+			throw new SimpleException('Invalid user name "' . $key . '"');
+		return $user;
+	}
+
 	public function getAvatarUrl($size = 32)
 	{
 		$subject = !empty($this->email_confirmed)
