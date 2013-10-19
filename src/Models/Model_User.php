@@ -77,10 +77,14 @@ class Model_User extends RedBean_SimpleModel
 		}
 
 		$userNameMinLength = intval(\Chibi\Registry::getConfig()->registration->userNameMinLength);
+		$userNameMaxLength = intval(\Chibi\Registry::getConfig()->registration->userNameMaxLength);
 		$userNameRegex = \Chibi\Registry::getConfig()->registration->userNameRegex;
 
 		if (strlen($userName) < $userNameMinLength)
 			throw new SimpleException(sprintf('User name must have at least %d characters', $userNameMinLength));
+
+		if (strlen($userName) > $userNameMaxLength)
+			throw new SimpleException(sprintf('User name must have at most %d characters', $userNameMaxLength));
 
 		if (!preg_match($userNameRegex, $userName))
 			throw new SimpleException('User name contains invalid characters');

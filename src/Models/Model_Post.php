@@ -32,6 +32,13 @@ class Model_Post extends RedBean_SimpleModel
 	{
 		$tag = trim($tag);
 
+		$minLength = 1;
+		$maxLength = 64;
+		if (strlen($tag) < $minLength)
+			throw new SimpleException('Tag must have at least ' . $minLength . ' characters');
+		if (strlen($tag) > $maxLength)
+			throw new SimpleException('Tag must have at most ' . $maxLength . ' characters');
+
 		if (!preg_match('/^[a-zA-Z0-9_-]+$/i', $tag))
 			throw new SimpleException('Invalid tag "' . $tag . '"');
 
