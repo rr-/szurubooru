@@ -32,7 +32,7 @@
 		<?php foreach ($this->context->transport->users as $user): ?>
 			<div class="user">
 				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
-					<img src="<?php echo $user->getAvatarUrl(100) ?>" alt="<?php echo $user->name ?>"/>
+					<img src="<?php echo htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?php echo $user->name ?>"/>
 				</a>
 				<div class="details">
 					<h1>

@@ -57,6 +57,14 @@
 				</li>
 			<?php endif ?>
 
+			<?php if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+				<li class="edit">
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name, 'tab' => 'delete']) ?>">
+						Delete account
+					</a>
+				</li>
+			<?php endif ?>
+
 			<?php if (PrivilegesHelper::confirm(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 				<?php if (!$this->context->transport->user->banned): ?>
 					<li class="ban">

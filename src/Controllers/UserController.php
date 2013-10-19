@@ -321,6 +321,7 @@ class UserController
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->stylesheets []= 'post-list.css';
+		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'paginator.css';
 		if ($this->config->browsing->endlessScrolling)
 			$this->context->scripts []= 'paginator-endless.js';
