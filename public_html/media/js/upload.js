@@ -39,6 +39,15 @@ $(function()
 		handleFiles(this.files);
 	});
 
+	$('.post .move-down-trigger, .post .move-up-trigger').on('click', function()
+	{
+		var dir = $(this).hasClass('move-down-trigger') ? 'd' : 'u';
+		var post = $(this).parents('.post');
+			if (dir == 'u')
+				post.insertBefore(post.prev('.post'));
+			else
+				post.insertAfter(post.next('.post'));
+	});
 	$('.post .remove-trigger').on('click', function()
 	{
 		$(this).parents('.post').slideUp(function()

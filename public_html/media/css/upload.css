@@ -50,15 +50,48 @@
 	margin-bottom: 4em;
 }
 
-.post .remove-trigger {
-	cursor: pointer;
+.post .ops {
 	float: right;
-	color: rgba(128, 0, 0, 0.25);
+}
+
+.post .ops a {
+	cursor: pointer;
+	margin-left: 0.5em;
 	vertical-align: middle;
 }
-.post .remove-trigger span {
+.post a span {
 	margin-left: 0.25em;
 	vertical-align: middle;
+}
+
+.post .move-up-trigger,
+.post .move-down-trigger {
+	color: rgba(0, 64, 128, 0.5);
+}
+.post .move-up-trigger:hover,
+.post .move-down-trigger:hover {
+	color: #00f;
+}
+.post .move-up-trigger span,
+.post .move-down-trigger span {
+	color: rgba(0, 64, 128, 1);
+}
+
+.post:first-child .move-up-trigger {
+	display: none;
+}
+.post:last-child .move-down-trigger {
+	display: none;
+}
+
+
+.post .remove-trigger {
+	color: rgba(128, 0, 0, 0.5);
+}
+.post .remove-trigger:hover {
+	color: #f00;
+}
+.post .remove-trigger span {
 	color: rgba(128, 0, 0, 1);
 	font-size: 130%;
 }

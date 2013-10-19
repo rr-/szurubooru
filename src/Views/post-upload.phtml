@@ -38,9 +38,19 @@
 			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
 				<p class="alert alert-error">Some kind of error</p>
 
-				<a class="remove-trigger">
-					remove <span>&times;</span>
-				</a>
+				<div class="ops">
+					<a class="move-up-trigger">
+						move up <span>&uarr;</span>
+					</a>
+
+					<a class="move-down-trigger">
+						move down <span>&darr;</span>
+					</a>
+
+					<a class="remove-trigger">
+						remove <span>&times;</span>
+					</a>
+				</div>
 
 				<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
 				<div>
