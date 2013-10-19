@@ -6,6 +6,24 @@ if (!empty($this->context->transport->errorMessage))
 }
 else
 {
+	$lastModified = filemtime($this->context->transport->filePath);
+	$eTag = $this->context->transport->fileHash;
+	$ttl = $this->context->transport->cacheDaysToLive * 24 * 3600;
+
+	$ifModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
+		? $_SERVER['HTTP_IF_MODIFIED_SINCE']
+		: false;
+
+	$eTagHeader = isset($_SERVER['HTTP_IF_NONE_MATCH'])
+		? trim(trim($_SERVER['HTTP_IF_NONE_MATCH']), '"')
+		: false;
+
+	\Chibi\HeadersHelper::set('ETag', '"' . $eTag . '"');
+	\Chibi\HeadersHelper::set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $lastModified));
+	\Chibi\HeadersHelper::set('Pragma', 'public');
+	\Chibi\HeadersHelper::set('Cache-Control', 'public, max-age=' . $ttl);
+	\Chibi\HeadersHelper::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $ttl));
+
 	if (isset($this->context->transport->customFileName))
 	{
 		\Chibi\HeadersHelper::set(
@@ -16,6 +34,12 @@ else
 	\Chibi\HeadersHelper::set(
 		'Content-Type',
 		$this->context->transport->mimeType);
+
+	if (strtotime($ifModifiedSince) == $lastModified or $eTagHeader == $eTag)
+	{
+		header('HTTP/1.1 304 Not Modified');
+		exit;
+	}
 
 	readfile($this->context->transport->filePath);
 	flush();

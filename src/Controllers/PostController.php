@@ -529,12 +529,9 @@ class PostController
 		if (!is_readable($path))
 			throw new SimpleException('Thumbnail file is not readable');
 
-		$ttl = 60 * 60 * 24 * 3;
-		\Chibi\HeadersHelper::set('Pragma', 'public');
-		\Chibi\HeadersHelper::set('Cache-Control', 'public, max-age=' . $ttl);
-		\Chibi\HeadersHelper::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $ttl));
-
+		$this->context->transport->cacheDaysToLive = 30;
 		$this->context->transport->mimeType = 'image/png';
+		$this->context->transport->fileHash = 'thumb' . $post->file_hash;
 		$this->context->transport->filePath = $path;
 	}
 
@@ -568,13 +565,12 @@ class PostController
 			$ext);
 		$fn = preg_replace('/[[:^print:]]/', '', $fn);
 
-		$ttl = 60 * 60 * 24;
-		\Chibi\HeadersHelper::set('Pragma', 'public');
-		\Chibi\HeadersHelper::set('Cache-Control', 'public, max-age=' . $ttl);
-		\Chibi\HeadersHelper::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $ttl));
+		$ttl = 60 * 60 * 24 * 14;
 
+		$this->context->transport->cacheDaysToLive = 14;
 		$this->context->transport->customFileName = $fn;
 		$this->context->transport->mimeType = $post->mimeType;
+		$this->context->transport->fileHash = 'post' . $post->file_hash;
 		$this->context->transport->filePath = $path;
 	}
 
