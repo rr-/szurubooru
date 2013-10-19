@@ -115,7 +115,7 @@ body {
 
 footer {
 	text-align: center;
-	margin-top: 1em;
+	margin: 1em 0;
 	padding-top: 0.5em;
 	border-top: 1px solid #eee;
 	font-size: small;
@@ -305,4 +305,9 @@ button:hover {
 .clear {
 	display: block;
 	clear: both;
+}
+
+pre.debug {
+	text-align: left;
+	color: black;
 }
