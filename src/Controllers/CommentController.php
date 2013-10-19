@@ -90,6 +90,7 @@ class CommentController
 	public function deleteAction($id)
 	{
 		$comment = Model_Comment::locate($id);
+		R::preload($comment, ['commenter' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->commenter));
 		R::trash($comment);
 		$this->context->transport->success = true;
