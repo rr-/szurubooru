@@ -253,6 +253,16 @@ form.aligned input[type=checkbox] {
 	vertical-align: text-top;
 }
 
+.input-wrapper {
+	overflow: hidden;
+	display: block;
+}
+.input-wrapper ul.tagit,
+.input-wrapper input,
+.input-wrapper select {
+	width: 80%;
+}
+
 label {
 	display: inline-block;
 }
@@ -263,9 +273,11 @@ button {
 	font-family: inherit;
 	font-size: 11pt;
 }
+ul.tagit,
 select,
 input:not([type=radio]):not([type=checkbox]):not([type=file]) {
 	border: 1px solid #ccc;
+	border-radius: 3px;
 }
 ul.tagit input {
 	border: 0 !important;

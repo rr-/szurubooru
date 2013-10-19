@@ -9,6 +9,7 @@ class Privilege extends Enum
 	const EditPostSafety = 6;
 	const EditPostTags = 7;
 	const EditPostThumb = 8;
+	const EditPostSource = 26;
 	const HidePost = 9;
 	const DeletePost = 10;
 	const FeaturePost = 25;

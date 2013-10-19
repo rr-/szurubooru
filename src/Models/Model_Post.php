@@ -28,6 +28,18 @@ class Model_Post extends RedBean_SimpleModel
 		return $safety;
 	}
 
+	public static function validateSource($source)
+	{
+		$source = trim($source);
+
+		$maxLength = 100;
+		if (strlen($source) > $maxLength)
+			throw new SimpleException('Source must have at most ' . $maxLength . ' characters');
+
+		return $source;
+	}
+
+
 	public static function validateTag($tag)
 	{
 		$tag = trim($tag);

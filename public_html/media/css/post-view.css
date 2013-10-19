@@ -19,19 +19,19 @@ embed {
 	color: silver;
 }
 
-nav {
+#sidebar nav {
 	margin-bottom: 2em;
 }
-nav .left {
+#sidebar nav .left {
 	float: left;
 }
-nav .right {
+#sidebar nav .right {
 	float: right;
 }
-nav a.disabled {
+#sidebar nav a.disabled {
 	color: silver;
 }
-nav a.disabled i[class*='icon-'] {
+#sidebar nav a.disabled i[class*='icon-'] {
 	background-color: silver;
 }
 

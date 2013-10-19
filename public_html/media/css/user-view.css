@@ -40,10 +40,15 @@
 	padding: 0;
 }
 
-form.aligned label.left {
+form.edit label.left {
 	width: 10em;
 }
 
 form.edit .alert {
 	margin: 1em 0;
+}
+
+form.edit select,
+form.edit input {
+	width: 16em;
 }

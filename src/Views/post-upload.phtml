@@ -35,9 +35,11 @@
 		</div>
 
 		<div id="post-template" class="post">
-			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
-				<p class="alert alert-error">Some kind of error</p>
+			<p class="alert alert-error">Some kind of error</p>
 
+			<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+
+			<div class="form-wrapper">
 				<div class="ops">
 					<a class="move-up-trigger">
 						move up <span>&uarr;</span>
@@ -52,8 +54,7 @@
 					</a>
 				</div>
 
-				<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
-				<div>
+				<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post" class="aligned">
 					<div class="file-name">
 						<label class="left">File:</label>
 						<strong>filename.jpg</strong>
@@ -68,11 +69,15 @@
 
 					<div class="tags">
 						<label class="left">Tags:</label>
-						<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
+						<div class="input-wrapper"><input type="text" name="tags" placeholder="enter some tags&hellip;"/></div>
 					</div>
-				</div>
-				<div class="clear"></div>
-			</form>
+
+					<div class="source">
+						<label class="left">Source:</label>
+						<div class="input-wrapper"><input type="text" name="source" placeholder="where did you get this from? (optional)"/></div>
+					</div>
+				</form>
+			</div>
 		</div>
 
 		<div id="upload-no-posts">

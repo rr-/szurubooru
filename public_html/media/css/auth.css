@@ -1,33 +1,10 @@
 form.auth {
 	margin: 0 auto;
-	display: table;
-	border-collapse:separate;
-	border-spacing: 0 0.5em;
 	width: 400px;
 }
 
-form.auth div {
-	display: table-row;
-}
-
 form.auth label.left {
-	display: table-cell;
-	float: left;
 	width: 144px;
-}
-
-form.auth input {
-	display: block;
-}
-
-form.auth input {
-	width: 156px;
-	padding: 5px;
-	margin: 0;
-}
-
-form.auth button {
-	display: block;
 }
 
 form.auth p {

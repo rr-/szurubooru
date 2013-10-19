@@ -6,12 +6,12 @@
 
 	<div>
 		<label class="left" for="name">User name:</label>
-		<input id="name" name="name"/>
+		<div class="input-wrapper"><input id="name" name="name"/></div>
 	</div>
 
 	<div>
 		<label class="left" for="password">Password:</label>
-		<input type="password" id="password" name="password"/>
+		<div class="input-wrapper"><input type="password" id="password" name="password"/></div>
 	</div>
 
 	<?php if (isset($this->context->transport->errorMessage)): ?>

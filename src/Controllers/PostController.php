@@ -234,11 +234,14 @@ class PostController
 			$suppliedSafety = InputHelper::get('safety');
 			$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
 
-
 			/* tags */
 			$suppliedTags = InputHelper::get('tags');
 			$suppliedTags = Model_Post::validateTags($suppliedTags);
 			$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
+
+			/* source */
+			$suppliedSource = InputHelper::get('source');
+			$suppliedSource = Model_Post::validateSource($suppliedSource);
 
 			/* db storage */
 			$dbPost = R::dispense('post');
@@ -249,6 +252,7 @@ class PostController
 			$dbPost->file_size = filesize($suppliedFile['tmp_name']);
 			$dbPost->mime_type = $mimeType;
 			$dbPost->safety = $suppliedSafety;
+			$dbPost->source = $suppliedSource;
 			$dbPost->hidden = false;
 			$dbPost->upload_date = time();
 			$dbPost->image_width = $imageWidth;
@@ -322,6 +326,17 @@ class PostController
 
 			$path = $this->config->main->thumbsPath . DS . $post->name;
 			move_uploaded_file($suppliedFile['tmp_name'], $path);
+		}
+
+
+		/* source */
+		$suppliedSource = InputHelper::get('source');
+		if ($suppliedSource !== null)
+		{
+			PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+			$suppliedSource = Model_Post::validateSource($suppliedSource);
+			$post->source = $suppliedSource;
+			$edited = true;
 		}
 
 

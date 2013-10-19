@@ -140,3 +140,7 @@ ul.tagit {
 #theSubmit {
 	margin: 0 auto;
 }
+
+.post .form-wrapper {
+	overflow: hidden;
+}

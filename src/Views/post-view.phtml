@@ -84,6 +84,13 @@
 			</div>
 		<?php endif ?>
 
+		<div class="key-value source">
+			<span class="key">Source:</span>
+			<span class="value" title="<?php echo $val = htmlspecialchars($this->context->transport->post->source) ?>">
+				<?php echo $val ?>
+			</span>
+		</div>
+
 		<div class="permalink">
 			<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
 				<i class="icon-dl"></i>
@@ -140,6 +147,7 @@
 					Privilege::EditPostSafety,
 					Privilege::EditPostTags,
 					Privilege::EditPostThumb,
+					Privilege::EditPostSource,
 				];
 				$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
 				foreach (array_keys($editPostPrivileges) as $privilege)
@@ -225,15 +233,22 @@
 			<?php if ($editPostPrivileges[Privilege::EditPostTags]): ?>
 				<div class="tags">
 					<label class="left" for="tags">Tags:</label>
-					<input type="text" name="tags" id="tags" placeholder="enter some tags&hellip;" value="<?php echo join(',', array_map(function($tag) { return $tag->name; }, $this->context->transport->post->sharedTag)) ?>"/>
+					<div class="input-wrapper"><input type="text" name="tags" id="tags" placeholder="enter some tags&hellip;" value="<?php echo join(',', array_map(function($tag) { return $tag->name; }, $this->context->transport->post->sharedTag)) ?>"/></div>
 				</div>
 				<input type="hidden" name="tags-token" id="tags-token" value="<?php echo $this->context->transport->tagsToken ?>"/>
+			<?php endif ?>
+
+			<?php if ($editPostPrivileges[Privilege::EditPostSource]): ?>
+				<div class="source">
+					<label class="left" for="source">Source:</label>
+					<div class="input-wrapper"><input type="text" name="source" id="suorce" value="<?php echo $this->context->transport->post->source ?>"/></div>
+				</div>
 			<?php endif ?>
 
 			<?php if ($editPostPrivileges[Privilege::EditPostThumb]): ?>
 				<div class="thumb">
 					<label class="left" for="thumb">Thumb:</label>
-					<input type="file" name="thumb" id="thumb"/>
+					<div class="input-wrapper"><input type="file" name="thumb" id="thumb"/></div>
 				</div>
 			<?php endif ?>
 

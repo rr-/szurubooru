@@ -76,10 +76,12 @@ $(function()
 		var file = postDom.data('file');
 		var tags = postDom.find('[name=tags]').val();
 		var safety = postDom.find('[name=safety]:checked').val();
+		var source = postDom.find('[name=source]').val();
 		var fd = new FormData();
 		fd.append('file', file);
 		fd.append('tags', tags);
 		fd.append('safety', safety);
+		fd.append('source', source);
 
 		var ajaxData =
 		{

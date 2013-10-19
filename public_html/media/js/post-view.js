@@ -23,7 +23,8 @@ $(function()
 			$('.tags input').tagit(tagItOptions);
 
 			e.preventDefault();
-			$('form.edit-post').slideDown();
+			var formDom = $('form.edit-post');
+			formDom.show().css('height', formDom.height()).hide().slideDown();
 		});
 	});
 

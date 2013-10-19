@@ -157,7 +157,7 @@
 			<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
 				<div class="current-password">
 					<label class="left" for="current-password">Current password:</label>
-					<input type="password" name="current-password" id="current-password" placeholder="Current password"/>
+					<div class="input-wrapper"><input type="password" name="current-password" id="current-password" placeholder="Current password"/></div>
 				</div>
 				<hr>
 			<?php endif ?>
@@ -165,32 +165,32 @@
 			<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 				<div class="nickname">
 					<label class="left" for="name">Name:</label>
-					<input type="text" name="name" id="name" placeholder="New name&hellip;" value="<?php echo $this->context->suppliedName ?>"/>
+					<div class="input-wrapper"><input type="text" name="name" id="name" placeholder="New name&hellip;" value="<?php echo $this->context->suppliedName ?>"/></div>
 				</div>
 			<?php endif ?>
 
 			<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserEmail, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 				<div class="email">
 					<label class="left" for="name">E-mail:</label>
-					<input type="text" name="email" id="email" placeholder="New e-mail&hellip;" value="<?php echo $this->context->suppliedEmail ?>"/>
+					<div class="input-wrapper"><input type="text" name="email" id="email" placeholder="New e-mail&hellip;" value="<?php echo $this->context->suppliedEmail ?>"/></div>
 				</div>
 			<?php endif ?>
 
 			<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserPassword, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 				<div class="password1">
 					<label class="left" for="password1">New password:</label>
-					<input type="password" name="password1" id="password1" placeholder="New password&hellip;" value="<?php echo $this->context->suppliedPassword1 ?>"/>
+					<div class="input-wrapper"><input type="password" name="password1" id="password1" placeholder="New password&hellip;" value="<?php echo $this->context->suppliedPassword1 ?>"/></div>
 				</div>
 				<div class="password2">
 					<label class="left" for="password2"></label>
-					<input type="password" name="password2" id="password2" placeholder="New password&hellip; (repeat)" value="<?php echo $this->context->suppliedPassword2 ?>"/>
+					<div class="input-wrapper"><input type="password" name="password2" id="password2" placeholder="New password&hellip; (repeat)" value="<?php echo $this->context->suppliedPassword2 ?>"/></div>
 				</div>
 			<?php endif ?>
 
 			<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 				<div class="access-rank">
 					<label class="left" for="access-rank">Access rank:</label>
-					<select name="access-rank" id="access-rank">
+					<div class="input-wrapper"><select name="access-rank" id="access-rank">
 						<?php foreach (AccessRank::getAll() as $rank): ?>
 							<?php if ($rank == AccessRank::Nobody) continue ?>
 							<?php if (($this->context->suppliedAccessRank != '' and $rank == $this->context->suppliedAccessRank) or ($this->context->suppliedAccessRank == '' and $rank == $this->context->transport->user->access_rank)): ?>
@@ -201,7 +201,7 @@
 								<?php echo TextHelper::camelCaseToHumanCase(AccessRank::toString($rank)) ?>
 							</option>
 						<?php endforeach ?>
-					</select>
+					</select></div>
 				</div>
 			<?php endif ?>
 
@@ -223,7 +223,7 @@
 			<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
 				<div class="current-password">
 					<label class="left" for="current-password">Current password:</label>
-					<input type="password" name="current-password" id="current-password" placeholder="Current password"/>
+					<div class="input-wrapper"><input type="password" name="current-password" id="current-password" placeholder="Current password"/></div>
 				</div>
 			<?php endif ?>
 
