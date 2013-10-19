@@ -9,9 +9,16 @@ embed {
 	max-width: 100%;
 }
 
+.post-type-image img {
+	background: url('../img/bk-image.png') lemonchiffon;
+}
+.post-type-flash embed {
+	background: url('../img/bk-swf.png') lemonchiffon;
+}
+
 #sidebar .tags ul {
 	list-style-type: none;
-	margin: 0 0 0 1em;
+	margin: 0;
 	padding: 0;
 }
 #sidebar .tags li .count {
@@ -108,4 +115,9 @@ ul.tagit {
 	background: url('../img/preview.png') lemonchiffon;
 	padding: 0.5em;
 	display: none;
+}
+
+form.add-comment textarea {
+	width: 50em;
+	height: 8em;
 }

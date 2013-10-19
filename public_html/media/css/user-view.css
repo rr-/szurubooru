@@ -41,7 +41,7 @@
 }
 
 form.edit label.left {
-	width: 10em;
+	width: 9em;
 }
 
 form.edit .alert {
@@ -51,4 +51,5 @@ form.edit .alert {
 form.edit select,
 form.edit input {
 	width: 16em;
+	max-width: 90%;
 }

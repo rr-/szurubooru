@@ -13,6 +13,7 @@
 		<?php foreach (array_unique($this->context->scripts) as $name): ?>
 			<script type="text/javascript" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/js/' . $name) ?>"></script>
 		<?php endforeach ?>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
 	</head>
 
 	<body>

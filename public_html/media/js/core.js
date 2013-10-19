@@ -101,4 +101,24 @@ $(function()
 			form.append(input);
 		});
 	});
+
+	$(window).resize();
+});
+
+$(window).resize(function()
+{
+	//modify DOM on small viewports
+	$('#inner-content .unit').addClass('bottom-unit');
+	if ($('body').width() < 600)
+	{
+		$('body').addClass('small-screen');
+		$('#sidebar').insertAfter($('#inner-content'));
+		$('#sidebar .unit').removeClass('left-unit').addClass('bottom-unit');
+	}
+	else
+	{
+		$('body').removeClass('small-screen');
+		$('#inner-content').insertAfter($('#sidebar'));
+		$('#sidebar .unit').removeClass('bottom-unit').addClass('left-unit');
+	}
 });

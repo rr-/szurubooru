@@ -12,8 +12,14 @@
 .user {
 	line-height: 1.5em;
 	margin-bottom: 1em;
-	width: 25em;
+	margin-right: 1em;
 	display: inline-block;
+}
+
+.user .details {
+	display: inline-block;
+	max-width: 25em;
+	white-space: pre;
 }
 
 nav.sort-styles ul {

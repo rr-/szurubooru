@@ -25,7 +25,7 @@
 		<div class="clear"></div>
 	</nav>
 
-	<div class="sidebar-unit tags">
+	<div class="unit tags">
 		<h1>tags (<?php echo count($this->context->transport->post->sharedTag) ?>)</h1>
 		<ul>
 			<?php foreach ($this->context->transport->post->sharedTag as $tag): ?>
@@ -41,7 +41,7 @@
 		</ul>
 	</div>
 
-	<div class="sidebar-unit details">
+	<div class="unit details">
 		<h1>details</h1>
 
 		<div class="key-value safety">
@@ -104,7 +104,7 @@
 		</div>
 	</div>
 
-	<div class="sidebar-unit favorites">
+	<div class="unit favorites">
 		<?php if (count($this->context->transport->post->ownFavoritee) == 0): ?>
 			<h1>favorites</h1>
 			<p>None yet.</p>
@@ -122,7 +122,7 @@
 		<?php endif ?>
 	</div>
 
-	<div class="sidebar-unit options">
+	<div class="unit options">
 		<h1>options</h1>
 
 		<ul>
@@ -207,7 +207,7 @@
 </div>
 
 <div id="inner-content">
-	<div class="post-wrapper">
+	<div class="post-wrapper post-type-<?php echo strtolower(PostType::toString($this->context->transport->post->type)) ?>">
 		<?php if ($this->context->transport->post->type == PostType::Image): ?>
 			<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
 		<?php elseif ($this->context->transport->post->type == PostType::Flash): ?>
@@ -216,7 +216,7 @@
 	</div>
 
 	<?php if ($canEditAnything): ?>
-		<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit-post aligned footer-unit">
+		<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit-post aligned unit">
 			<h1>edit post</h1>
 			<?php if ($editPostPrivileges[Privilege::EditPostSafety]): ?>
 				<div class="safety">
@@ -259,7 +259,7 @@
 		</form>
 	<?php endif ?>
 
-	<div class="comments footer-unit">
+	<div class="comments unit">
 		<?php if (empty($this->context->transport->post->ownComment)): ?>
 			<h1>comments</h1>
 			None yet.
@@ -275,13 +275,13 @@
 	</div>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::AddComment)): ?>
-		<form action="<?php echo \Chibi\UrlHelper::route('comment', 'add', ['postId' => $this->context->transport->post->id]) ?>" method="post" class="add-comment aligned footer-unit">
+		<form action="<?php echo \Chibi\UrlHelper::route('comment', 'add', ['postId' => $this->context->transport->post->id]) ?>" method="post" class="add-comment aligned unit">
 			<h1>add comment</h1>
 
 			<div class="preview"></div>
 
 			<div class="text">
-				<textarea name="text" cols="50" rows="3"></textarea>
+				<div class="input-wrapper"><textarea name="text" cols="50" rows="3"></textarea></div>
 			</div>
 
 			<div>

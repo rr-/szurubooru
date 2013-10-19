@@ -1,10 +1,10 @@
 form.auth {
 	margin: 0 auto;
-	width: 400px;
+	max-width: 400px;
 }
 
 form.auth label.left {
-	width: 144px;
+	width: 35%;
 }
 
 form.auth p {

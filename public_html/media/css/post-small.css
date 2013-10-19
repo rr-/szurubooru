@@ -3,6 +3,7 @@
 	box-shadow: 0.25em 0.25em #eee;
 	padding: 0;
 	position: relative;
+	display: inline-block;
 }
 .post-type-flash {
 	border-color: #dd5;

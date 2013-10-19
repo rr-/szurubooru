@@ -27,6 +27,7 @@ body {
 }
 
 #top-nav {
+	width: 100%;
 	background: #eee;
 	color: black;
 }
@@ -109,12 +110,12 @@ body {
 }
 #top-nav li.safety a:hover { opacity: .7; }
 #top-nav li.safety a.inactive { opacity: 1; }
-#top-nav li.safety .safety-safe .enabled     { background: linear-gradient(to bottom, #CFE6C2 0%, #80C670 100%); }
-#top-nav li.safety .safety-safe .disabled    { background: linear-gradient(to bottom, #a0a0a0 0%, #808080 100%); }
-#top-nav li.safety .safety-sketchy .enabled  { background: linear-gradient(to bottom, #F0F4C8 0%, #EBE57A 100%); }
-#top-nav li.safety .safety-sketchy .disabled { background: linear-gradient(to bottom, #a0a0a0 0%, #808080 100%); }
-#top-nav li.safety .safety-unsafe .enabled   { background: linear-gradient(to bottom, #FBC6B6 0%, #F37865 100%); }
-#top-nav li.safety .safety-unsafe .disabled  { background: linear-gradient(to bottom, #a0a0a0 0%, #808080 100%); }
+#top-nav li.safety .safety-safe .enabled     { background: #cfe6c2; background: linear-gradient(to bottom, #CFE6C2 0%, #80C670 100%); }
+#top-nav li.safety .safety-safe .disabled    { background: #a0a0a0; background: linear-gradient(to bottom, #a0a0a0 0%, #808080 100%); }
+#top-nav li.safety .safety-sketchy .enabled  { background: #f0f4c8; background: linear-gradient(to bottom, #F0F4C8 0%, #EBE57A 100%); }
+#top-nav li.safety .safety-sketchy .disabled { background: #a0a0a0; background: linear-gradient(to bottom, #a0a0a0 0%, #808080 100%); }
+#top-nav li.safety .safety-unsafe .enabled   { background: #fbc6b6; background: linear-gradient(to bottom, #FBC6B6 0%, #F37865 100%); }
+#top-nav li.safety .safety-unsafe .disabled  { background: #a0a0a0; background: linear-gradient(to bottom, #a0a0a0 0%, #808080 100%); }
 
 
 
@@ -138,13 +139,6 @@ footer span:not(:last-child):after {
 	width: 256px;
 	margin-right: 2em;
 }
-#sidebar .sidebar-unit {
-	margin: 0 0 1.5em 0;
-	padding: 0.75em;
-	border: 1px solid #eee;
-	padding-left: 0;
-	border-left: 0;
-}
 #sidebar h1 {
 	margin-top: 0;
 }
@@ -162,14 +156,32 @@ footer span:not(:last-child):after {
 
 #inner-content {
 	overflow: hidden;
+	padding-bottom: 2em;
 }
 
-.footer-unit {
+.small-screen #sidebar {
+	float: none;
+	width: 100%;
+	padding: 0 0 1em 0;
+}
+.small-screen #inner-content {
+	float: none;
+	width: auto;
+}
+
+.bottom-unit {
 	padding: 0.5em 1em;
 	border: 1px solid #eee;
 	border-bottom: 0;
 	padding-bottom: 0;
 	margin: 1em 0 2em 0;
+}
+.left-unit {
+	margin: 0 0 1.5em 0;
+	padding: 0.75em;
+	border: 1px solid #eee;
+	padding-left: 0;
+	border-left: 0;
 }
 
 
@@ -259,8 +271,10 @@ form.aligned input[type=checkbox] {
 }
 .input-wrapper ul.tagit,
 .input-wrapper input,
+.input-wrapper textarea,
 .input-wrapper select {
 	width: 80%;
+	max-width: 80%;
 }
 
 label {
@@ -275,6 +289,7 @@ button {
 }
 ul.tagit,
 select,
+textarea,
 input:not([type=radio]):not([type=checkbox]):not([type=file]) {
 	border: 1px solid #ccc;
 	border-radius: 3px;

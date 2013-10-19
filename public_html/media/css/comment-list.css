@@ -15,3 +15,14 @@
 	border-bottom: 1px solid #eee;
 	margin-bottom: 1em;
 }
+
+.small-screen .comment-group .post-wrapper {
+	float: none;
+	text-align: center;
+}
+.small-screen .comment-group .post {
+	margin: 0 auto 1em auto;
+}
+.small-screen .comment-group .comments {
+	margin-left: 0;
+}
