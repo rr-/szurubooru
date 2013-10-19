@@ -58,7 +58,7 @@ class UserController
 
 		$page = intval($page);
 		$usersPerPage = intval($this->config->browsing->usersPerPage);
-		$this->context->subTitle = 'browsing users';
+		$this->context->subTitle = 'users';
 		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
 
 		if ($sortStyle == '' or $sortStyle == 'alpha')

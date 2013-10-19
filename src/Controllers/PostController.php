@@ -78,7 +78,7 @@ class PostController
 		$query = trim(urldecode($query));
 		$page = intval($page);
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
-		$this->context->subTitle = 'browsing posts';
+		$this->context->subTitle = 'posts';
 		$this->context->transport->searchQuery = $query;
 		PrivilegesHelper::confirmWithException(Privilege::ListPosts);
 
