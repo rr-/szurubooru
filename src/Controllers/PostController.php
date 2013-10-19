@@ -397,6 +397,21 @@ class PostController
 
 
 	/**
+	* @route /post/{id}/feature
+	*/
+	public function featureAction($id)
+	{
+		$post = Model_Post::locate($id);
+		PrivilegesHelper::confirmWithException(Privilege::FeaturePost);
+		Model_Property::set(Model_Property::FeaturedPostId, $post->id);
+		Model_Property::set(Model_Property::FeaturedPostUserId, $this->context->user->id);
+		Model_Property::set(Model_Property::FeaturedPostDate, time());
+		$this->context->transport->success = true;
+	}
+
+
+
+	/**
 	* Action that decorates the page containing the post.
 	* @route /post/{id}
 	*/

@@ -38,7 +38,7 @@ body {
 
 
 #top-nav ul.main-nav {
-	margin: 0 -0.75em;
+	margin: 0 0 0 -0.75em;
 	padding: 0;
 	list-style-type: none;
 }
@@ -68,17 +68,22 @@ body {
 #top-nav li.search {
 	float: right;
 	background: white;
-	margin: 0;
-	padding: 0 5px;
-	line-height: 38px;
+	margin: 5px 0;
+	padding: 0;
+	line-height: 20px;
 }
 #top-nav li.search input {
 	border: 0;
-	padding: 5px;
+	height: 20px;
+	line-height: 20px;
+	padding: 4px 10px;
+	margin: 0;
+	box-sizing: content-box;
 }
 
 #top-nav li.safety {
 	float: right;
+	margin-left: 5px;
 }
 #top-nav li.safety ul {
 	list-style-type: none;
@@ -120,6 +125,10 @@ footer {
 	border-top: 1px solid #eee;
 	font-size: small;
 	color: silver;
+}
+footer span:not(:last-child):after {
+	content: '\022C5';
+	margin: 0 0.2em;
 }
 
 

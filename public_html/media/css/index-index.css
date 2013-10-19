@@ -1,0 +1,82 @@
+#sidebar {
+	min-width: 100px;
+	padding: 5em 0;
+	width: 25%;
+	margin-right: 5%;
+	text-align: center;
+}
+#sidebar p {
+	font-size: small;
+}
+#sidebar p span:not(:last-child):after {
+	content: '\022C5';
+	margin: 0 0.5em;
+}
+
+#sidebar h1 {
+	font-size: 26pt;
+}
+#sidebar input {
+	width: 100%;
+	max-width: 300px;
+	border: 2px solid #ccc;
+	padding: 5px;
+}
+
+#featured-post {
+	float: right;
+	width: 70%;
+	position: relative;
+}
+
+#featured-post .header .tags:before {
+	margin: 0 0.5em;
+	content: '\2013';
+}
+#featured-post .header ul {
+	list-style-type: none;
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+#featured-post .header li {
+	display: inline;
+}
+#featured-post .header li:not(:last-child) a:after {
+	content: ', ';
+}
+
+#featured-post .body {
+	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAJElEQVQImWNgYGBgePfu3X8YZoABFA6SIqwS+HXgtANZF7IEAJnGPJE70lLLAAAAAElFTkSuQmCC');
+	margin: 1em 0;
+	text-align: center;
+}
+#featured-post .body img {
+	max-width: 100%;
+	margin: 0 auto;
+	display: block;
+}
+#featured-post .body a {
+	display: block;
+}
+
+#featured-post .header .favs-comments {
+	margin-left: 0.5em;
+	float: right;
+}
+
+#featured-post .footer {
+	text-align: right;
+}
+
+@media (max-width: 600px) {
+	#sidebar {
+		float: none;
+		width: 100%;
+		padding: 0 0 1em 0;
+	}
+	#featured-post {
+		float: none;
+		width: 100%;
+	}
+}
