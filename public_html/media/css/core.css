@@ -320,3 +320,21 @@ pre.debug {
 	text-align: left;
 	color: black;
 }
+
+.spoiler:before,
+.spoiler:after {
+	color: gray;
+}
+.spoiler:before {
+	content: '[ ';
+}
+.spoiler:after {
+	content: ' ]';
+}
+.spoiler {
+	background: #eee;
+	color: #eee;
+}
+.spoiler:hover {
+	color: black;
+}

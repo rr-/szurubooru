@@ -144,6 +144,7 @@ class TextHelper
 
 	public static function parseMarkdown($text)
 	{
-		return \Michelf\Markdown::defaultTransform($text);
+		#$text = strip_tags($text);
+		return CustomMarkdown::defaultTransform($text);
 	}
 }
