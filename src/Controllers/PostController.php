@@ -236,7 +236,7 @@ class PostController
 
 			/* tags */
 			$suppliedTags = InputHelper::get('tags');
-			$suppliedTags = Model_Post::validateTags($suppliedTags);
+			$suppliedTags = Model_Tag::validateTags($suppliedTags);
 			$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
 
 			/* source */
@@ -301,7 +301,7 @@ class PostController
 			if (InputHelper::get('tags-token') != $currentToken)
 				throw new SimpleException('Someone else has changed the tags in the meantime');
 
-			$suppliedTags = Model_Post::validateTags($suppliedTags);
+			$suppliedTags = Model_Tag::validateTags($suppliedTags);
 			$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
 			$post->sharedTag = $dbTags;
 			$edited = true;

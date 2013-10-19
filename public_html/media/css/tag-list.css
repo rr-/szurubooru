@@ -1,0 +1,36 @@
+.tags ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	column-width: 14em;
+	-moz-column-width: 14em;
+	-webkit-column-width: 14em;
+}
+.tags li {
+	margin: 0.2em 0.5em;
+	text-align: top;
+	width: 14em;
+	display: inline-block;
+}
+
+.form-wrapper {
+	width: 50%;
+	display: inline-block;
+	text-align: center;
+}
+.small-screen .form-wrapper {
+	width: 100%;
+}
+form.aligned {
+	text-align: left;
+	margin: 2em auto;
+}
+form.aligned label.left {
+	width: 7em;
+}
+form.aligned input {
+	width: 24em;
+}
+form h1 {
+	text-align: center;
+}

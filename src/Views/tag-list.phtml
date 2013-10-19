@@ -1,9 +1,55 @@
-<ul>
-	<?php foreach ($this->context->transport->tagDistribution as $tagName => $count): ?>
-		<li>
-			<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tagName]) ?>">
-				<?php echo $tagName . ' (' . $count . ')' ?>
-			</a>
-		</li>
-	<?php endforeach ?>
-</ul>
+<div class="tags">
+	<ul>
+		<?php foreach ($this->context->transport->tagDistribution as $tagName => $count): ?>
+			<li class="tag">
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tagName]) ?>">
+					<?php echo $tagName . ' (' . $count . ')' ?>
+				</a>
+			</li>
+		<?php endforeach ?>
+	</ul>
+</div>
+
+<?php if (PrivilegesHelper::confirm(Privilege::MergeTags)): ?>
+	<div class="form-wrapper">
+		<form class="aligned" method="post" action="<?php echo \Chibi\UrlHelper::route('tag', 'merge') ?>">
+			<h1>merge tags</h1>
+			<div>
+				<label class="left" for="merge-source-tag">Source tag:</label>
+				<div class="input-wrapper"><input type="text" name="source-tag" id="merge-source-tag"></div>
+			</div>
+
+			<div>
+				<label class="left" for="merge-target-tag">Target tag:</label>
+				<div class="input-wrapper"><input type="text" name="target-tag" id="merge-target-tag"></div>
+			</div>
+
+			<div>
+				<label class="left">&nbsp;</label>
+				<button type="submit">Merge!</button>
+			</div>
+		</form>
+	</div>
+<?php endif ?>
+
+<?php if (PrivilegesHelper::confirm(Privilege::RenameTags)): ?>
+	<div class="form-wrapper">
+		<form class="aligned simple-action" method="post" action="<?php echo \Chibi\UrlHelper::route('tag', 'rename') ?>">
+			<h1>rename tags</h1>
+			<div>
+				<label class="left" for="rename-source-tag">Source tag:</label>
+				<div class="input-wrapper"><input type="text" name="source-tag" id="rename-source-tag"></div>
+			</div>
+
+			<div>
+				<label class="left" for="rename-target-tag">Target tag:</label>
+				<div class="input-wrapper"><input type="text" name="target-tag" id="rename-target-tag"></div>
+			</div>
+
+			<div>
+				<label class="left">&nbsp;</label>
+				<button type="submit">Rename!</button>
+			</div>
+		</form>
+	</div>
+<?php endif ?>

@@ -30,4 +30,6 @@ class Privilege extends Enum
 	const DeleteComment = 24;
 
 	const ListTags = 21;
+	const MergeTags = 27;
+	const RenameTags = 27;
 }
