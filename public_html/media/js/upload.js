@@ -53,89 +53,83 @@ $(function()
 	});
 
 
-	$('#the-submit').click(function(e)
+	function sendNextPost()
 	{
-		e.preventDefault();
-		var theSubmit = $(this);
-		theSubmit.addClass('inactive');
 		var posts = $('#upload-step2 .post');
-
 		if (posts.length == 0)
 		{
-			//shouldn't happen
-			alert('No posts to upload!');
+			uploadFinished();
 			return;
 		}
 
-		var ajaxCalls = [];
-		posts.each(function()
+		var postDom = posts.first();
+		var url = postDom.find('form').attr('action') + '?json';
+		var file = postDom.data('file');
+		var tags = postDom.find('[name=tags]').val();
+		var safety = postDom.find('[name=safety]:checked').val();
+		var fd = new FormData();
+		fd.append('file', file);
+		fd.append('tags', tags);
+		fd.append('safety', safety);
+
+		var ajaxData =
 		{
-			var postDom = $(this);
-			var url = postDom.find('form').attr('action') + '?json';
-			var file = postDom.data('file');
-			var tags = postDom.find('[name=tags]').val();
-			var safety = postDom.find('[name=safety]:checked').val();
-			var fd = new FormData();
-			fd.append('file', file);
-			fd.append('tags', tags);
-			fd.append('safety', safety);
-
-			postDom.find(':input').attr('readonly', true);
-			postDom.addClass('inactive');
-
-			var ajaxData =
+			url: url,
+			data: fd,
+			processData: false,
+			contentType: false,
+			dataType: 'json',
+			type: 'POST',
+			success: function(data)
 			{
-				url: url,
-				data: fd,
-				processData: false,
-				contentType: false,
-				type: 'POST',
-				context: postDom
-			};
-
-			var defer = $.ajax(ajaxData)
-				.then(function(data)
-				{
-					data.postDom = $(this);
-					return data;
-				}).promise();
-
-			ajaxCalls.push(defer);
-		});
-
-
-		$.when.all(ajaxCalls).then(function(allData)
-		{
-			var errors = false;
-			for (var i in allData)
-			{
-				var data = allData[i];
-				var postDom = data.postDom;
 				if (data['success'])
 				{
 					postDom.slideUp(function()
 					{
-						$(this).remove();
+						postDom.remove();
+						sendNextPost();
 					});
 				}
 				else
 				{
-					postDom.removeClass('inactive');
-					postDom.find(':input').attr('readonly', false);
 					postDom.find('.alert').html(data['errorHtml']).slideDown();
-					errors = true;
+					enableUpload();
 				}
 			}
+		};
 
-			if (errors)
-			{
-				theSubmit.removeClass('inactive');
-			}
-			else
-			{
-				window.location.href = $('#upload-step2').attr('data-redirect-url');
-			}
-		});
+		$.ajax(ajaxData);
+	}
+
+	function uploadFinished()
+	{
+		window.location.href = $('#upload-step2').attr('data-redirect-url');
+	}
+
+	function disableUpload()
+	{
+		var theSubmit = $('#the-submit');
+		theSubmit.addClass('inactive');
+		var posts = $('#upload-step2 .post');
+		posts.find(':input').attr('readonly', true);
+		posts.addClass('inactive');
+	}
+
+	function enableUpload()
+	{
+		var theSubmit = $('#the-submit');
+		theSubmit.removeClass('inactive');
+		var posts = $('#upload-step2 .post');
+		posts.removeClass('inactive');
+		posts.find(':input').attr('readonly', false);
+	}
+
+	$('#the-submit').click(function(e)
+	{
+		e.preventDefault();
+		var theSubmit = $(this);
+		disableUpload();
+		sendNextPost();
 	});
 
 	function handleFiles(files)
