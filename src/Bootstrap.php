@@ -62,6 +62,7 @@ class Bootstrap
 		catch (SimpleException $e)
 		{
 			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
+			$this->context->transport->errorHtml = TextHelper::parseMarkdown($this->context->transport->errorMessage, true);
 			$this->context->transport->exception = $e;
 			$this->context->transport->success = false;
 			if (!$this->context->handleExceptions)
@@ -71,6 +72,7 @@ class Bootstrap
 		catch (Exception $e)
 		{
 			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
+			$this->context->transport->errorHtml = TextHelper::parseMarkdown($this->context->transport->errorMessage, true);
 			$this->context->transport->exception = $e;
 			$this->context->transport->success = false;
 			$this->context->viewName = 'error-exception';

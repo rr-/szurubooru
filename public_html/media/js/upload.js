@@ -122,7 +122,7 @@ $(function()
 				{
 					postDom.removeClass('inactive');
 					postDom.find(':input').attr('readonly', false);
-					postDom.find('.alert').text(data['errorMessage']).slideDown();
+					postDom.find('.alert').html(data['errorHtml']).slideDown();
 					errors = true;
 				}
 			}

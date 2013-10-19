@@ -192,7 +192,7 @@ class PostController
 			$fileHash = md5_file($suppliedFile['tmp_name']);
 			$duplicatedPost = R::findOne('post', 'file_hash = ?', [$fileHash]);
 			if ($duplicatedPost !== null)
-				throw new SimpleException('Duplicate upload');
+				throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
 
 			do
 			{

@@ -142,9 +142,11 @@ class TextHelper
 		return json_encode($obj);
 	}
 
-	public static function parseMarkdown($text)
+	public static function parseMarkdown($text, $inline = false)
 	{
-		#$text = strip_tags($text);
-		return CustomMarkdown::defaultTransform($text);
+		$output = CustomMarkdown::defaultTransform($text);
+		if ($inline)
+			$output = preg_replace('{</?p>}', '', $output);
+		return $output;
 	}
 }
