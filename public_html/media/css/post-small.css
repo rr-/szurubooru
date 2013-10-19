@@ -1,19 +1,61 @@
-.post img {
+.post {
 	border: 1px solid #ddd;
 	box-shadow: 0.25em 0.25em #eee;
 	padding: 0;
-	width: 140px;
-	height: 140px;
+	position: relative;
 }
-
-.post-type-flash img {
+.post-type-flash {
 	border-color: #dd5;
 	box-shadow: 0.25em 0.25em #eeb, 0.1em 0.1em 0.5em 0.1em rgba(238,238,187,0.5);
 }
 
-.post:focus img,
-.post:hover img {
+.post:focus,
+.post:hover {
 	border: 1px solid firebrick;
 	box-shadow: 0.25em 0.25em pink;
+}
+.post:focus img.thumb,
+.post:hover img.thumb {
 	opacity: .9;
+}
+
+.post img.thumb {
+	width: 140px;
+	height: 140px;
+	display: block;
+}
+
+.post .info-bar {
+	display: none;
+	height: 20px;
+	width: 100%;
+	border-top: 1px solid firebrick;
+	background: rgba(255, 128, 128, 0.75);
+	position: absolute;
+	bottom: 0;
+}
+.post:hover .info-bar {
+	display: block;
+}
+
+.post .icon-comments {
+	margin-left: 3px;
+	background-position: -64px -1px;
+}
+.post .icon-favs {
+	background-position: -43px -1px;
+}
+.post [class^='icon-'] {
+	opacity: .75;
+	width: 20px;
+	height: 20px;
+	line-height: 20px;
+	vertical-align: top;
+}
+.post span {
+	vertical-align: top;
+	font-size: small;
+	line-height: 20px;
+	margin-right: 0.5em;
+	display: inline-block;
 }

@@ -1,3 +1,4 @@
-.posts img {
+.post {
 	margin: 0.5em;
+	float: left;
 }

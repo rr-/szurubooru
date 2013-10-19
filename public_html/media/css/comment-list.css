@@ -2,15 +2,16 @@
 	float: left;
 }
 .comment-group .comments {
-	float: left;
+	margin-left: 170px;
+	overflow: hidden;
 }
 
-.comment-group .post img {
+.comment-group .post {
 	margin-right: 1em;
 	margin-bottom: 1em;
 }
 
-.comment-group {
+.comment-group:not(:last-child) {
 	border-bottom: 1px solid #eee;
 	margin-bottom: 1em;
 }
