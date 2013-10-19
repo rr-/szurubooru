@@ -52,6 +52,8 @@ class PrivilegesHelper
 
 	public static function getIdentitySubPrivilege($user)
 	{
+		if (!$user)
+			return false;
 		$userFromContext = \Chibi\Registry::getContext()->user;
 		return $user->id == $userFromContext->id ? 'own' : 'all';
 	}

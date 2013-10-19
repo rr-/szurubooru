@@ -189,6 +189,16 @@ class UserController
 				if ($suppliedPasswordHash != $user->pass_hash)
 					throw new SimpleException('Must supply valid password');
 			}
+			foreach ($user->alias('commenter')->ownComment as $comment)
+			{
+				$comment->commenter = null;
+				R::store($comment);
+			}
+			foreach ($user->alias('uploader')->ownPost as $post)
+			{
+				$post->uploader = null;
+				R::store($post);
+			}
 			$user->ownFavoritee = [];
 			R::store($user);
 			R::trash($user);
@@ -375,6 +385,8 @@ class UserController
 			->put(($page - 1) * $postsPerPage);
 
 		$posts = $searchDbQuery->get();
+		$posts = R::convertToBeans('post', $posts);
+		R::preload($posts, ['uploader' => 'user']);
 		$this->context->transport->user = $user;
 		$this->context->transport->tab = $tab;
 		$this->context->transport->paginator = new StdClass;

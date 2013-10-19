@@ -84,8 +84,34 @@ class PostController
 
 		$buildDbQuery = function($dbQuery, $query)
 		{
-			$dbQuery->from('post');
+			$dbQuery
+				->addSql(', ')
+				->open()
+				->select('COUNT(1)')
+				->from('comment')
+				->where('comment.post_id = post.id')
+				->close()
+				->as('comment_count');
 
+			$dbQuery
+				->addSql(', ')
+				->open()
+				->select('COUNT(1)')
+				->from('favoritee')
+				->where('favoritee.post_id = post.id')
+				->close()
+				->as('fav_count');
+
+			$dbQuery
+				->addSql(', ')
+				->open()
+				->select('COUNT(1)')
+				->from('post_tag')
+				->where('post_tag.post_id = post.id')
+				->close()
+				->as('tag_count');
+
+			$dbQuery->from('post');
 
 			/* safety */
 			$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
@@ -121,12 +147,14 @@ class PostController
 		$page = max(1, min($pageCount, $page));
 
 		$searchDbQuery = R::$f->begin();
-		$searchDbQuery->select('*');
+		$searchDbQuery->select('post.*');
 		$buildDbQuery($searchDbQuery, $query);
 		$searchDbQuery->limit('?')->put($postsPerPage);
 		$searchDbQuery->offset('?')->put(($page - 1) * $postsPerPage);
 
 		$posts = $searchDbQuery->get();
+		$posts = R::convertToBeans('post', $posts);
+		R::preload($posts, ['uploader' => 'user']);
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
 		$this->context->transport->paginator->pageCount = $pageCount;
@@ -593,7 +621,7 @@ class PostController
 
 	private function decorateSearchQuery($dbQuery, $tokens)
 	{
-		$orderColumn = 'id';
+		$orderColumn = 'post.id';
 		$orderDir = 1;
 		$randomReset = true;
 
@@ -601,13 +629,13 @@ class PostController
 		{
 			if ($token{0} == '-')
 			{
-				$dbQuery->andNot();
+				$andFunc = 'andNot';
 				$token = substr($token, 1);
 				$neg = true;
 			}
 			else
 			{
-				$dbQuery->and();
+				$andFunc = 'and';
 				$neg = false;
 			}
 
@@ -616,6 +644,7 @@ class PostController
 			{
 				$val = $token;
 				$dbQuery
+					->$andFunc()
 					->exists()
 					->open()
 					->select('1')
@@ -637,12 +666,7 @@ class PostController
 				case 'favmax':
 					$operator = $key == 'favmin' ? '>=' : '<=';
 					$dbQuery
-						->open()
-						->select('COUNT(1)')
-						->from('favoritee')
-						->where('post_id = post.id')
-						->close()
-						->addSql($operator . ' ?')->put(intval($val));
+						->$andFunc('fav_count ' . $operator . ' ?')->put(intval($val));
 					break;
 
 				case 'type':
@@ -658,7 +682,7 @@ class PostController
 							throw new SimpleException('Unknown type "' . $val . '"');
 					}
 					$dbQuery
-						->addSql('type = ?')
+						->$andFunc('type = ?')
 						->put($type);
 					break;
 
@@ -679,7 +703,7 @@ class PostController
 					if ($key == 'date')
 					{
 						$dbQuery
-							->addSql('upload_date >= ?')
+							->$andFunc('upload_date >= ?')
 							->and('upload_date <= ?')
 							->put($timeMin)
 							->put($timeMax);
@@ -687,13 +711,13 @@ class PostController
 					elseif ($key == 'datemin')
 					{
 						$dbQuery
-							->addSql('upload_date >= ?')
+							->$andFunc('upload_date >= ?')
 							->put($timeMin);
 					}
 					elseif ($key == 'datemax')
 					{
 						$dbQuery
-							->addSql('upload_date <= ?')
+							->$andFunc('upload_date <= ?')
 							->put($timeMax);
 					}
 					else
@@ -708,6 +732,7 @@ class PostController
 				case 'favoritee':
 				case 'favoriter':
 					$dbQuery
+						->$andFunc()
 						->exists()
 						->open()
 						->select('1')
@@ -724,7 +749,7 @@ class PostController
 				case 'uploader':
 				case 'uploaded':
 					$dbQuery
-						->addSql('uploader_id = ')
+						->$andFunc('uploader_id = ')
 						->open()
 						->select('user.id')
 						->from('user')
@@ -751,35 +776,30 @@ class PostController
 					if ($neg)
 					{
 						$orderDir *= -1;
-						$dbQuery->addSql('0');
-					}
-					else
-					{
-						$dbQuery->addSql('1');
 					}
 
 					switch ($val)
 					{
 						case 'id':
-							$orderColumn = 'id';
+							$orderColumn = 'post.id';
 							break;
 						case 'date':
-							$orderColumn = 'upload_date';
+							$orderColumn = 'post.upload_date';
 							break;
 						case 'comment':
 						case 'comments':
 						case 'commentcount':
-							$orderColumn = '(SELECT COUNT(1) FROM comment WHERE post_id = post.id)';
+							$orderColumn = 'comment_count';
 							break;
 						case 'fav':
 						case 'favs':
 						case 'favcount':
-							$orderColumn = '(SELECT COUNT(1) FROM favoritee WHERE post_id = post.id)';
+							$orderColumn = 'fav_count';
 							break;
 						case 'tag':
 						case 'tags':
 						case 'tagcount':
-							$orderColumn = '(SELECT COUNT(1) FROM post_tag WHERE post_id = post.id)';
+							$orderColumn = 'tag_count';
 							break;
 						case 'random':
 							//seeding works like this: if you visit anything
@@ -805,6 +825,11 @@ class PostController
 
 		if ($randomReset)
 			unset($_SESSION['browsing-seed']);
-		$dbQuery->orderBy($orderColumn . ' ' . ($orderDir == 1? 'DESC' : 'ASC'));
+
+		$dbQuery->orderBy($orderColumn);
+		if ($orderDir == 1)
+			$dbQuery->desc();
+		else
+			$dbQuery->asc();
 	}
 }

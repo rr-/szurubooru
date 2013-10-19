@@ -40,7 +40,7 @@ class CommentController
 
 		$comments = $searchDbQuery->get();
 		$comments = R::convertToBeans('comment', $comments);
-		R::preload($comments, ['commenter' => 'user']);
+		R::preload($comments, ['commenter' => 'user', 'post', 'post.uploader' => 'user']);
 		$this->context->postGroups = true;
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;

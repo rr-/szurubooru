@@ -53,7 +53,7 @@
 
 		<div class="key-value uploader">
 			<span class="key">Uploader:</span>
-			<?php if ($this->context->transport->post->uploader->id): ?>
+			<?php if ($this->context->transport->post->uploader): ?>
 				<span class="value" title="<?php echo $val = $this->context->transport->post->uploader->name ?>">
 					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->name]) ?>">
 						<?php echo $val ?>
