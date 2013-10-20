@@ -1,4 +1,7 @@
 <?php
+define('SZURU_VERSION', '0.1.0');
+define('SZURU_LINK', 'http://github.com/rr-/szurubooru');
+
 function trueStartTime()
 {
 	static $time = null;

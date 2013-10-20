@@ -129,7 +129,10 @@ footer {
 }
 footer span:not(:last-child):after {
 	content: '\022C5';
-	margin: 0 0.2em;
+	margin: 0 0.5em;
+}
+footer a {
+	color: silver;
 }
 
 

@@ -104,6 +104,7 @@
 				<?php if ($this->config->main->debugQueries): ?>
 					<pre class="debug"><?php echo join('<br>', array_map(function($x) { return preg_replace('/\s+/', ' ', $x); }, queryLogger()->getLogs())) ?></pre>
 				<?php endif ?>
+				<span><a href="<?php echo SZURU_LINK ?>">szurubooru v<?php echo SZURU_VERSION ?></a></span>
 			</div>
 		</footer>
 	</body>
