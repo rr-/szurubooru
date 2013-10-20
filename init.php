@@ -52,3 +52,7 @@ download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $libPath
 //fonts
 download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans.ttf', $fontsPath . 'DroidSans.ttf');
 download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans-Bold.ttf', $fontsPath . 'DroidSans-Bold.ttf');
+
+
+
+require_once 'upgrade.php';

@@ -43,6 +43,7 @@ function configFactory()
 
 $config = configFactory();
 R::setup('sqlite:' . $config->main->dbPath);
+R::freeze(true);
 R::dependencies(['tag' => ['post'], 'favoritee' => ['post', 'user'], 'comment' => ['post', 'user']]);
 
 //wire models
