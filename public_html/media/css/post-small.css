@@ -20,10 +20,14 @@
 	opacity: .9;
 }
 
+.post a {
+	display: inline-block;
+}
 .post img.thumb {
-	width: 140px;
-	height: 140px;
-	display: block;
+	display: inline-block;
+	width: 150px;
+	height: 150px;
+	vertical-align: top;
 }
 
 .post .info-bar {

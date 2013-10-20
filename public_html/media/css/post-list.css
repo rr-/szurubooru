@@ -1,4 +1,9 @@
 .post {
 	margin: 0.5em;
-	float: left;
+}
+.posts-wrapper {
+	text-align: center;
+}
+.posts {
+	margin: 0 auto;
 }
