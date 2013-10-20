@@ -1,12 +1,11 @@
 <form action="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth aligned" method="post">
-
 	<div>
 		<p>If you don't have an account yet,<br/><a href="<?php echo \Chibi\UrlHelper::route('user', 'registration'); ?>">click here</a> to create a new one.</p>
 	</div>
 
 	<div>
 		<label class="left" for="name">User name:</label>
-		<div class="input-wrapper"><input id="name" name="name"/></div>
+		<div class="input-wrapper"><input type="text" id="name" name="name"/></div>
 	</div>
 
 	<div>

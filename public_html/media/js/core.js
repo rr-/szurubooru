@@ -101,13 +101,14 @@ $(function()
 			form.append(input);
 		});
 	});
-
-	$(window).resize();
 });
 
+
+//modify DOM on small viewports
 $(window).resize(function()
 {
-	//modify DOM on small viewports
+	if ($('body').width() == $('body').data('last-width'))
+		return;
 	$('#inner-content .unit').addClass('bottom-unit');
 	if ($('body').width() < 600)
 	{
@@ -118,7 +119,9 @@ $(window).resize(function()
 	else
 	{
 		$('body').removeClass('small-screen');
-		$('#inner-content').insertAfter($('#sidebar'));
+		$('#sidebar').insertBefore($('#inner-content'));
 		$('#sidebar .unit').removeClass('bottom-unit').addClass('left-unit');
 	}
+	$('body').data('last-width', $('body').width());
 });
+$(function() { $(window).resize(); });
