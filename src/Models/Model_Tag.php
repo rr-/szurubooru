@@ -40,6 +40,9 @@ class Model_Tag extends RedBean_SimpleModel
 		if (!preg_match('/^[a-zA-Z0-9_.-]+$/i', $tag))
 			throw new SimpleException('Invalid tag "' . $tag . '"');
 
+		if (preg_match('/^\.\.?$/', $tag))
+			throw new SimpleException('Invalid tag "' . $tag . '"');
+
 		return $tag;
 	}
 
