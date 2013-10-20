@@ -478,6 +478,7 @@ class UserController
 			{
 				$dbUser->access_rank = AccessRank::Admin;
 				$dbUser->staff_confirmed = true;
+				$dbUser->email_unconfirmed = null;
 				$dbUser->email_confirmed = $suppliedEmail;
 			}
 			else
