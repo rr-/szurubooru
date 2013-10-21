@@ -43,32 +43,33 @@ class Model_User extends RedBean_SimpleModel
 
 
 
+	const SETTING_SAFETY = 1;
+	const SETTING_ENDLESS_SCROLLING = 2;
+
 	public function hasEnabledSafety($safety)
 	{
-		return $this->getSetting('safety-' . $safety) !== false;
+		return $this->getSetting(self::SETTING_SAFETY) & PostSafety::toFlag($safety);
 	}
 
 	public function enableSafety($safety, $enabled)
 	{
+		$new = $this->getSetting(self::SETTING_SAFETY);
 		if (!$enabled)
 		{
-			$this->setSetting('safety-' . $safety, false);
-			$anythingEnabled = false;
-			foreach (PostSafety::getAll() as $safety)
-				if (self::hasEnabledSafety($safety))
-					$anythingEnabled = true;
-			if (!$anythingEnabled)
-				$this->setSetting('safety-' . PostSafety::Safe, true);
+			$new &= ~PostSafety::toFlag($safety);
+			if (!$new)
+				$new = PostSafety::toFlag(PostSafety::Safe);
 		}
 		else
 		{
-			$this->setSetting('safety-' . $safety, true);
+			$new |= PostSafety::toFlag($safety);
 		}
+		$this->setSetting(self::SETTING_SAFETY, $new);
 	}
 
 	public function hasEnabledEndlessScrolling()
 	{
-		$ret = $this->getSetting('endless-scrolling');
+		$ret = $this->getSetting(self::SETTING_ENDLESS_SCROLLING);
 		if ($ret === null)
 			$ret = \Chibi\Registry::getConfig()->browsing->endlessScrollingDefault;
 		return $ret;
@@ -76,7 +77,7 @@ class Model_User extends RedBean_SimpleModel
 
 	public function enableEndlessScrolling($enabled)
 	{
-		$this->setSetting('endless-scrolling', (bool) $enabled);
+		$this->setSetting(self::SETTING_ENDLESS_SCROLLING, $enabled ? 1 : 0);
 	}
 
 
