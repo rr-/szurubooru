@@ -128,9 +128,12 @@ class UserController
 	{
 		$user = Model_User::locate($name);
 		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
-		$user->banned = true;
-		R::store($user);
-		$this->context->transport->success = true;
+		if (InputHelper::get('submit'))
+		{
+			$user->banned = true;
+			R::store($user);
+			$this->context->transport->success = true;
+		}
 	}
 
 	/**
@@ -141,9 +144,12 @@ class UserController
 	{
 		$user = Model_User::locate($name);
 		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
-		$user->banned = false;
-		R::store($user);
-		$this->context->transport->success = true;
+		if (InputHelper::get('submit'))
+		{
+			$user->banned = false;
+			R::store($user);
+			$this->context->transport->success = true;
+		}
 	}
 
 	/**
@@ -154,11 +160,13 @@ class UserController
 	{
 		$user = Model_User::locate($name);
 		PrivilegesHelper::confirmWithException(Privilege::AcceptUserRegistration);
-		$user->staff_confirmed = true;
-		R::store($user);
-		$this->context->transport->success = true;
+		if (InputHelper::get('submit'))
+		{
+			$user->staff_confirmed = true;
+			R::store($user);
+			$this->context->transport->success = true;
+		}
 	}
-
 
 
 
@@ -181,7 +189,7 @@ class UserController
 
 		$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
 
-		if (InputHelper::get('remove'))
+		if (InputHelper::get('submit'))
 		{
 			if ($this->context->user->id == $user->id)
 			{
@@ -217,9 +225,7 @@ class UserController
 	{
 		try
 		{
-
 			$user = Model_User::locate($name);
-			$edited = false;
 			PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
 			$this->context->handleExceptions = true;
@@ -237,51 +243,47 @@ class UserController
 			$this->context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
 			$currentPasswordHash = $user->pass_hash;
 
-			if ($suppliedName != '' and $suppliedName != $user->name)
+			if (InputHelper::get('submit'))
 			{
-				PrivilegesHelper::confirmWithException(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($user));
-				$suppliedName = Model_User::validateUserName($suppliedName);
-				$user->name = $suppliedName;
-				$edited = true;
-			}
-
-			if ($suppliedPassword1 != '')
-			{
-				PrivilegesHelper::confirmWithException(Privilege::ChangeUserPassword, PrivilegesHelper::getIdentitySubPrivilege($user));
-				if ($suppliedPassword1 != $suppliedPassword2)
-					throw new SimpleException('Specified passwords must be the same');
-				$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
-				$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
-				$edited = true;
-			}
-
-			if ($suppliedEmail != '' and $suppliedEmail != $user->email_confirmed)
-			{
-				PrivilegesHelper::confirmWithException(Privilege::ChangeUserEmail, PrivilegesHelper::getIdentitySubPrivilege($user));
-				$suppliedEmail = Model_User::validateEmail($suppliedEmail);
-				if ($this->context->user->id == $user->id)
+				if ($suppliedName != '' and $suppliedName != $user->name)
 				{
-					$user->email_unconfirmed = $suppliedEmail;
-					if (!empty($user->email_unconfirmed))
-						self::sendEmailConfirmation($user);
+					PrivilegesHelper::confirmWithException(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($user));
+					$suppliedName = Model_User::validateUserName($suppliedName);
+					$user->name = $suppliedName;
 				}
-				else
+
+				if ($suppliedPassword1 != '')
 				{
-					$user->email_confirmed = $suppliedEmail;
+					PrivilegesHelper::confirmWithException(Privilege::ChangeUserPassword, PrivilegesHelper::getIdentitySubPrivilege($user));
+					if ($suppliedPassword1 != $suppliedPassword2)
+						throw new SimpleException('Specified passwords must be the same');
+					$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
+					$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
 				}
-				$edited = true;
-			}
 
-			if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->access_rank)
-			{
-				PrivilegesHelper::confirmWithException(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($user));
-				$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
-				$user->access_rank = $suppliedAccessRank;
-				$edited = true;
-			}
+				if ($suppliedEmail != '' and $suppliedEmail != $user->email_confirmed)
+				{
+					PrivilegesHelper::confirmWithException(Privilege::ChangeUserEmail, PrivilegesHelper::getIdentitySubPrivilege($user));
+					$suppliedEmail = Model_User::validateEmail($suppliedEmail);
+					if ($this->context->user->id == $user->id)
+					{
+						$user->email_unconfirmed = $suppliedEmail;
+						if (!empty($user->email_unconfirmed))
+							self::sendEmailConfirmation($user);
+					}
+					else
+					{
+						$user->email_confirmed = $suppliedEmail;
+					}
+				}
 
-			if ($edited)
-			{
+				if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->access_rank)
+				{
+					PrivilegesHelper::confirmWithException(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($user));
+					$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
+					$user->access_rank = $suppliedAccessRank;
+				}
+
 				if ($this->context->user->id == $user->id)
 				{
 					$suppliedPasswordHash = Model_User::hashPassword($suppliedCurrentPassword, $user->pass_salt);
@@ -291,7 +293,6 @@ class UserController
 				R::store($user);
 				$this->context->transport->success = true;
 			}
-
 		}
 		catch (Exception $e)
 		{

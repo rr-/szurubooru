@@ -70,7 +70,7 @@ $(function()
 		aDom.addClass('inactive');
 
 		var url = $(this).attr('href') + '?json';
-		$.get(url, function(data)
+		$.get(url, {submit: 1}, function(data)
 		{
 			if (data['success'])
 			{

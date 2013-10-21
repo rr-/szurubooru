@@ -203,7 +203,7 @@ class PostController
 		if ($this->config->registration->needEmailForUploading)
 			PrivilegesHelper::confirmEmail($this->context->user);
 
-		if (!empty($_FILES['file']['name']))
+		if (InputHelper::get('submit'))
 		{
 			/* file contents */
 			$suppliedFile = $_FILES['file'];
@@ -290,73 +290,71 @@ class PostController
 	{
 		$post = Model_Post::locate($id);
 		R::preload($post, ['uploader' => 'user']);
-		$edited = false;
-
 		$this->context->transport->post = $post;
 
-		/* safety */
-		$suppliedSafety = InputHelper::get('safety');
-		if ($suppliedSafety !== null)
+		if (InputHelper::get('submit'))
 		{
-			PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-			$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
-			$post->safety = $suppliedSafety;
-			$edited = true;
-		}
+			/* safety */
+			$suppliedSafety = InputHelper::get('safety');
+			if ($suppliedSafety !== null)
+			{
+				PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
+				$post->safety = $suppliedSafety;
+				$edited = true;
+			}
 
 
-		/* tags */
-		$suppliedTags = InputHelper::get('tags');
-		if ($suppliedTags !== null)
-		{
-			PrivilegesHelper::confirmWithException(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-			$currentToken = self::serializeTags($post);
-			if (InputHelper::get('tags-token') != $currentToken)
-				throw new SimpleException('Someone else has changed the tags in the meantime');
+			/* tags */
+			$suppliedTags = InputHelper::get('tags');
+			if ($suppliedTags !== null)
+			{
+				PrivilegesHelper::confirmWithException(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				$currentToken = self::serializeTags($post);
+				if (InputHelper::get('tags-token') != $currentToken)
+					throw new SimpleException('Someone else has changed the tags in the meantime');
 
-			$suppliedTags = Model_Tag::validateTags($suppliedTags);
-			$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
-			$post->sharedTag = $dbTags;
-			$edited = true;
-		}
-
-
-		/* thumbnail */
-		if (!empty($_FILES['thumb']['name']))
-		{
-			PrivilegesHelper::confirmWithException(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-			$suppliedFile = $_FILES['thumb'];
-			self::handleUploadErrors($suppliedFile);
-
-			$mimeType = mime_content_type($suppliedFile['tmp_name']);
-			if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
-				throw new SimpleException('Invalid thumbnail type "' . $mimeType . '"');
-			list ($imageWidth, $imageHeight) = getimagesize($suppliedFile['tmp_name']);
-			if ($imageWidth != $this->config->browsing->thumbWidth)
-				throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbWidth . ')');
-			if ($imageWidth != $this->config->browsing->thumbHeight)
-				throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbHeight . ')');
-
-			$path = $this->config->main->thumbsPath . DS . $post->name;
-			move_uploaded_file($suppliedFile['tmp_name'], $path);
-		}
+				$suppliedTags = Model_Tag::validateTags($suppliedTags);
+				$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
+				$post->sharedTag = $dbTags;
+				$edited = true;
+			}
 
 
-		/* source */
-		$suppliedSource = InputHelper::get('source');
-		if ($suppliedSource !== null)
-		{
-			PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-			$suppliedSource = Model_Post::validateSource($suppliedSource);
-			$post->source = $suppliedSource;
-			$edited = true;
-		}
+			/* thumbnail */
+			if (!empty($_FILES['thumb']['name']))
+			{
+				PrivilegesHelper::confirmWithException(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				$suppliedFile = $_FILES['thumb'];
+				self::handleUploadErrors($suppliedFile);
+
+				$mimeType = mime_content_type($suppliedFile['tmp_name']);
+				if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
+					throw new SimpleException('Invalid thumbnail type "' . $mimeType . '"');
+				list ($imageWidth, $imageHeight) = getimagesize($suppliedFile['tmp_name']);
+				if ($imageWidth != $this->config->browsing->thumbWidth)
+					throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbWidth . ')');
+				if ($imageWidth != $this->config->browsing->thumbHeight)
+					throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbHeight . ')');
+
+				$path = $this->config->main->thumbsPath . DS . $post->name;
+				move_uploaded_file($suppliedFile['tmp_name'], $path);
+			}
 
 
-		/* db storage */
-		if ($edited)
+			/* source */
+			$suppliedSource = InputHelper::get('source');
+			if ($suppliedSource !== null)
+			{
+				PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				$suppliedSource = Model_Post::validateSource($suppliedSource);
+				$post->source = $suppliedSource;
+				$edited = true;
+			}
+
 			R::store($post);
-		$this->context->transport->success = true;
+			$this->context->transport->success = true;
+		}
 	}
 
 
@@ -368,9 +366,12 @@ class PostController
 	{
 		$post = Model_Post::locate($id);
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-		$post->hidden = true;
-		R::store($post);
-		$this->context->transport->success = true;
+		if (InputHelper::get('submit'))
+		{
+			$post->hidden = true;
+			R::store($post);
+			$this->context->transport->success = true;
+		}
 	}
 
 	/**
@@ -380,9 +381,12 @@ class PostController
 	{
 		$post = Model_Post::locate($id);
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-		$post->hidden = false;
-		R::store($post);
-		$this->context->transport->success = true;
+		if (InputHelper::get('submit'))
+		{
+			$post->hidden = false;
+			R::store($post);
+			$this->context->transport->success = true;
+		}
 	}
 
 	/**
@@ -392,12 +396,15 @@ class PostController
 	{
 		$post = Model_Post::locate($id);
 		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-		//remove stuff from auxiliary tables
-		$post->ownFavoritee = [];
-		$post->sharedTag = [];
-		R::store($post);
-		R::trash($post);
-		$this->context->transport->success = true;
+		if (InputHelper::get('submit'))
+		{
+			//remove stuff from auxiliary tables
+			$post->ownFavoritee = [];
+			$post->sharedTag = [];
+			R::store($post);
+			R::trash($post);
+			$this->context->transport->success = true;
+		}
 	}
 
 
@@ -410,18 +417,21 @@ class PostController
 	{
 		$post = Model_Post::locate($id);
 		R::preload($post, ['favoritee' => 'user']);
-
-		if (!$this->context->loggedIn)
-			throw new SimpleException('Not logged in');
-
-		foreach ($post->via('favoritee')->sharedUser as $fav)
-			if ($fav->id == $this->context->user->id)
-				throw new SimpleException('Already in favorites');
-
 		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
-		$post->link('favoritee')->user = $this->context->user;
-		R::store($post);
-		$this->context->transport->success = true;
+
+		if (InputHelper::get('submit'))
+		{
+			if (!$this->context->loggedIn)
+				throw new SimpleException('Not logged in');
+
+			foreach ($post->via('favoritee')->sharedUser as $fav)
+				if ($fav->id == $this->context->user->id)
+					throw new SimpleException('Already in favorites');
+
+			$post->link('favoritee')->user = $this->context->user;
+			R::store($post);
+			$this->context->transport->success = true;
+		}
 	}
 
 	/**
@@ -432,22 +442,25 @@ class PostController
 	{
 		$post = Model_Post::locate($id);
 		R::preload($post, ['favoritee' => 'user']);
-
 		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
-		if (!$this->context->loggedIn)
-			throw new SimpleException('Not logged in');
 
-		$finalKey = null;
-		foreach ($post->ownFavoritee as $key => $fav)
-			if ($fav->user->id == $this->context->user->id)
-				$finalKey = $key;
+		if (InputHelper::get('submit'))
+		{
+			if (!$this->context->loggedIn)
+				throw new SimpleException('Not logged in');
 
-		if ($finalKey === null)
-			throw new SimpleException('Not in favorites');
+			$finalKey = null;
+			foreach ($post->ownFavoritee as $key => $fav)
+				if ($fav->user->id == $this->context->user->id)
+					$finalKey = $key;
 
-		unset ($post->ownFavoritee[$finalKey]);
-		R::store($post);
-		$this->context->transport->success = true;
+			if ($finalKey === null)
+				throw new SimpleException('Not in favorites');
+
+			unset ($post->ownFavoritee[$finalKey]);
+			R::store($post);
+			$this->context->transport->success = true;
+		}
 	}
 
 

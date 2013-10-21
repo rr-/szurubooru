@@ -82,6 +82,7 @@ $(function()
 		fd.append('tags', tags);
 		fd.append('safety', safety);
 		fd.append('source', source);
+		fd.append('submit', 1);
 
 		var ajaxData =
 		{

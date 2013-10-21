@@ -50,6 +50,8 @@
 		</div>
 	<?php endif ?>
 
+	<input type="hidden" name="submit" value="1"/>
+
 	<?php if ($this->context->transport->success === true): ?>
 		<p class="alert alert-success">Account settings updated! <?php if (!empty($this->context->mailSent)) echo 'You will be sent new e-mail address confirmation message soon.' ?></p>
 	<?php elseif (isset($this->context->transport->errorMessage)): ?>
