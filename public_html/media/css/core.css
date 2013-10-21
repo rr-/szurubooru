@@ -265,7 +265,11 @@ form.aligned input[type=file] {
 }
 form.aligned input[type=radio],
 form.aligned input[type=checkbox] {
-	vertical-align: text-top;
+	width: auto;
+	max-width: auto;
+	margin: 0 10px 0 0;
+	padding: 0;
+	vertical-align: middle;
 }
 
 .input-wrapper {
