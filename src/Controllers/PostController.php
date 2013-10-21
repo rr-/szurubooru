@@ -365,6 +365,7 @@ class PostController
 	public function hideAction($id)
 	{
 		$post = Model_Post::locate($id);
+		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 		if (InputHelper::get('submit'))
 		{
@@ -380,6 +381,7 @@ class PostController
 	public function unhideAction($id)
 	{
 		$post = Model_Post::locate($id);
+		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 		if (InputHelper::get('submit'))
 		{
@@ -395,6 +397,7 @@ class PostController
 	public function deleteAction($id)
 	{
 		$post = Model_Post::locate($id);
+		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 		if (InputHelper::get('submit'))
 		{
