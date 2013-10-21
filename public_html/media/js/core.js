@@ -179,3 +179,25 @@ $(function()
 			}
 		});
 });
+
+function getTagItOptions()
+{
+	return {
+		caseSensitive: false,
+		autocomplete:
+		{
+			source:
+				function(request, response)
+				{
+					var term = request.term.toLowerCase();
+					var results = $.grep(this.options.availableTags, function(a)
+					{
+						return a.toLowerCase().indexOf(term) != -1;
+					});
+					if (!this.options.allowDuplicates)
+						results = this._subtractArray(results, this.assignedTags());
+					response(results);
+				},
+		}
+	};
+}

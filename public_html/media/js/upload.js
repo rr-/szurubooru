@@ -158,12 +158,9 @@ $(function()
 				$('.posts').append(postDom);
 
 				postDom.show();
-				var tagItOptions =
-				{
-					caseSensitive: true,
-					availableTags: tags,
-					placeholderText: $('.tags input').attr('placeholder')
-				};
+				var tagItOptions = getTagItOptions();
+				tagItOptions.availableTags = tags;
+				tagItOptions.placeholderText = $('.tags input').attr('placeholder');
 				$('.tags input', postDom).tagit(tagItOptions);
 
 				if (!file.type.match('image.*'))

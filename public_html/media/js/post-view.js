@@ -14,12 +14,9 @@ $(function()
 		{
 			tags = data['tags'];
 
-			var tagItOptions =
-			{
-				caseSensitive: true,
-				availableTags: tags,
-				placeholderText: $('.tags input').attr('placeholder')
-			};
+			var tagItOptions = getTagItOptions();
+			tagItOptions.availableTags = tags;
+			tagItOptions.placeholderText = $('.tags input').attr('placeholder');
 			$('.tags input').tagit(tagItOptions);
 
 			e.preventDefault();
