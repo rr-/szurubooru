@@ -1,0 +1,43 @@
+<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit-post aligned unit">
+	<h1>edit post</h1>
+	<?php if (PrivilegesHelper::confirm(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
+		<div class="safety">
+			<label class="left">Safety:</label>
+			<?php foreach (PostSafety::getAll() as $safety): ?>
+				<label>
+					<input type="radio" name="safety" value="<?php echo $safety ?>" <?php if ($this->context->transport->post->safety == $safety) echo 'checked="checked"' ?>/>
+					&nbsp;<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
+				</label>
+			<?php endforeach ?>
+		</div>
+	<?php endif ?>
+
+	<?php if (PrivilegesHelper::confirm(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
+		<div class="tags">
+			<label class="left" for="tags">Tags:</label>
+			<div class="input-wrapper"><input type="text" name="tags" id="tags" placeholder="enter some tags&hellip;" value="<?php echo join(',', array_map(function($tag) { return $tag->name; }, $this->context->transport->post->sharedTag)) ?>"/></div>
+		</div>
+		<input type="hidden" name="tags-token" id="tags-token" value="<?php echo $this->context->transport->tagsToken ?>"/>
+	<?php endif ?>
+
+	<?php if (PrivilegesHelper::confirm(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
+		<div class="source">
+			<label class="left" for="source">Source:</label>
+			<div class="input-wrapper"><input type="text" name="source" id="source" value="<?php echo $this->context->transport->post->source ?>"/></div>
+		</div>
+	<?php endif ?>
+
+	<?php if (PrivilegesHelper::confirm(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
+		<div class="thumb">
+			<label class="left" for="thumb">Thumb:</label>
+			<div class="input-wrapper"><input type="file" name="thumb" id="thumb"/></div>
+		</div>
+	<?php endif ?>
+
+	<input type="hidden" name="submit" value="1"/>
+
+	<div>
+		<label class="left">&nbsp;</label>
+		<button type="submit">Submit</button>
+	</div>
+</form>
