@@ -1,19 +1,27 @@
 <?php
 class Model_Post extends RedBean_SimpleModel
 {
-	public static function locate($key, $disallowNumeric = false)
+	public static function locate($key, $disallowNumeric = false, $throw = true)
 	{
 		if (is_numeric($key) and !$disallowNumeric)
 		{
 			$post = R::findOne('post', 'id = ?', [$key]);
 			if (!$post)
-				throw new SimpleException('Invalid post ID "' . $key . '"');
+			{
+				if ($throw)
+					throw new SimpleException('Invalid post ID "' . $key . '"');
+				return null;
+			}
 		}
 		else
 		{
 			$post = R::findOne('post', 'name = ?', [$key]);
 			if (!$post)
-				throw new SimpleException('Invalid post name "' . $key . '"');
+			{
+				if ($throw)
+					throw new SimpleException('Invalid post name "' . $key . '"');
+				return null;
+			}
 		}
 		return $post;
 	}

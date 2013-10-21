@@ -680,7 +680,7 @@ class PostController
 					->innerJoin('tag')
 					->on('post_tag.tag_id = tag.id')
 					->where('post_id = post.id')
-					->and('tag.name = ?')->put($val)
+					->and('LOWER(tag.name) = LOWER(?)')->put($val)
 					->close();
 				continue;
 			}

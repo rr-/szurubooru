@@ -1,11 +1,15 @@
 <?php
 class Model_Comment extends RedBean_SimpleModel
 {
-	public static function locate($key)
+	public static function locate($key, $throw = true)
 	{
 		$comment = R::findOne('comment', 'id = ?', [$key]);
 		if (!$comment)
-			throw new SimpleException('Invalid comment ID "' . $key . '"');
+		{
+			if ($throw)
+				throw new SimpleException('Invalid comment ID "' . $key . '"');
+			return null;
+		}
 		return $comment;
 	}
 

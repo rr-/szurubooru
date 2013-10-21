@@ -1,11 +1,15 @@
 <?php
 class Model_User extends RedBean_SimpleModel
 {
-	public static function locate($key)
+	public static function locate($key, $throw = true)
 	{
 		$user = R::findOne('user', 'name = ?', [$key]);
 		if (!$user)
-			throw new SimpleException('Invalid user name "' . $key . '"');
+		{
+			if ($throw)
+				throw new SimpleException('Invalid user name "' . $key . '"');
+			return null;
+		}
 		return $user;
 	}
 

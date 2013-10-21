@@ -1,12 +1,16 @@
 <?php
 class Model_Tag extends RedBean_SimpleModel
 {
-	public static function locate($key)
+	public static function locate($key, $throw = true)
 	{
-		$user = R::findOne('tag', 'name = ?', [$key]);
-		if (!$user)
-			throw new SimpleException('Invalid tag name "' . $key . '"');
-		return $user;
+		$tag = R::findOne('tag', 'LOWER(name) = LOWER(?)', [$key]);
+		if (!$tag)
+		{
+			if ($throw)
+				throw new SimpleException('Invalid tag name "' . $key . '"');
+			return null;
+		}
+		return $tag;
 	}
 
 	public static function insertOrUpdate($tags)
@@ -14,7 +18,7 @@ class Model_Tag extends RedBean_SimpleModel
 		$dbTags = [];
 		foreach ($tags as $tag)
 		{
-			$dbTag = R::findOne('tag', 'name = ?', [$tag]);
+			$dbTag = self::locate($tag, false);
 			if (!$dbTag)
 			{
 				$dbTag = R::dispense('tag');
