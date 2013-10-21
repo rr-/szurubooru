@@ -192,7 +192,10 @@ function getTagItOptions()
 					var term = request.term.toLowerCase();
 					var results = $.grep(this.options.availableTags, function(a)
 					{
-						return a.toLowerCase().indexOf(term) != -1;
+						if (term.length < 3)
+							return a.toLowerCase().indexOf(term) == 0;
+						else
+							return a.toLowerCase().indexOf(term) != -1;
 					});
 					if (!this.options.allowDuplicates)
 						results = this._subtractArray(results, this.assignedTags());
