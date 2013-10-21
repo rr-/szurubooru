@@ -21,6 +21,10 @@ embed {
 	margin: 0;
 	padding: 0;
 }
+#sidebar .tags li {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 #sidebar .tags li .count {
 	padding-left: 0.5em;
 	color: silver;

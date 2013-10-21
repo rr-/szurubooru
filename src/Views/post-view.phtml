@@ -29,7 +29,7 @@
 		<h1>tags (<?php echo count($this->context->transport->post->sharedTag) ?>)</h1>
 		<ul>
 			<?php foreach ($this->context->transport->post->sharedTag as $tag): ?>
-				<li>
+				<li title="<?php echo $tag->name ?>">
 					<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
 						<?php echo $tag->name ?>
 					</a>

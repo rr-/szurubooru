@@ -1,8 +1,9 @@
+<?php $max = max($this->context->transport->tagDistribution) ?>
 <div class="tags">
 	<ul>
 		<?php foreach ($this->context->transport->tagDistribution as $tagName => $count): ?>
-			<li class="tag">
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tagName]) ?>">
+			<li class="tag" title="<?php echo $tagName ?> (<?php echo $count ?>)">
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tagName]) ?>" style="opacity: <?php printf('%.02f', 0.25 + 0.75 *  log($count) / log($max)) ?>">
 					<?php echo $tagName . ' (' . $count . ')' ?>
 				</a>
 			</li>

@@ -6,11 +6,17 @@
 	-moz-column-width: 14em;
 	-webkit-column-width: 14em;
 }
+.tags li a:hover {
+	opacity: 1 !important;
+}
 .tags li {
 	margin: 0.2em 0.5em;
 	text-align: top;
 	width: 14em;
 	display: inline-block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .form-wrapper {
