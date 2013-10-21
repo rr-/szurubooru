@@ -1,4 +1,5 @@
-$.fn.hasAttr = function(name) {
+$.fn.hasAttr = function(name)
+{
 	return this.attr(name) !== undefined;
 };
 
@@ -124,4 +125,57 @@ $(window).resize(function()
 	}
 	$('body').data('last-width', $('body').width());
 });
-$(function() { $(window).resize(); });
+$(function()
+{
+	$(window).resize();
+});
+
+
+//autocomplete
+function split(val)
+{
+    return val.split(/\s+/);
+}
+
+function extractLast(term)
+{
+    return split(term).pop();
+}
+
+$(function()
+{
+	var searchInput = $('#top-nav .search input');
+	searchInput
+		// don't navigate away from the field on tab when selecting an item
+		.bind("keydown", function(event)
+		{
+			if (event.keyCode === $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active)
+			{
+				event.preventDefault();
+			}
+		}).autocomplete({
+			minLength: 0,
+			source: function(request, response)
+			{
+				var term = extractLast(request.term);
+				$.get(searchInput.attr('data-autocomplete-url') + '?json', {filter: term}, function(data)
+				{
+					response($.map(data.tags, function(tag) { return { label: tag, value: tag }; }));
+				});
+			},
+			focus: function()
+			{
+				// prevent value inserted on focus
+				return false;
+			},
+			select: function(event, ui)
+			{
+				var terms = split(this.value);
+				terms.pop();
+				terms.push(ui.item.value);
+				terms.push('');
+				this.value = terms.join(' ');
+				return false;
+			}
+		});
+});
