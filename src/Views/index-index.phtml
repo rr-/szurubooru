@@ -1,53 +1,45 @@
-<div id="sidebar">
+<div id="welcome">
 	<h1><?php echo $this->config->main->title ?></h1>
-
-	<form name="search" action="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
-		<input type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>">
-	</form>
-
 	<p>
 		<span>serving <?php echo $this->context->transport->postCount ?> posts</span>
-		<span>powered by <a href="<?php echo SZURU_LINK ?>">szurubooru</a></span>
 	</p>
 </div>
 
 <?php if (!empty($this->context->featuredPost)): ?>
-	<div id="inner-content">
-		<div class="header">
-			Featured image
+	<div class="header">
+		Featured image
 
-			<ul class="tags">
-			<?php foreach ($this->context->featuredPost->sharedTag as $tag): ?>
-				<li>
-					<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
-						<?php echo $tag->name ?>
-					</a>
-				</li>
-			<?php endforeach ?>
-			</ul>
+		<ul class="tags">
+		<?php foreach ($this->context->featuredPost->sharedTag as $tag): ?>
+			<li>
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
+					<?php echo $tag->name ?>
+				</a>
+			</li>
+		<?php endforeach ?>
+		</ul>
 
-			<span class="favs-comments">
-				<?php printf('%d&nbsp;fav%s', $x = $this->context->featuredPost->countOwn('favoritee'), $x == 1 ? '' : 's') ?>,&#32;
-				<?php printf('%d&nbsp;comment%s', $x = $this->context->featuredPost->countOwn('comment'), $x == 1 ? '' : 's') ?>
-			</span>
-			<div class="clear"></div>
-		</div>
-
-		<div class="body">
-			<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->featuredPost->id]) ?>">
-				<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->featuredPost->name]) ?>" alt="<?php echo $this->context->featuredPost->name ?>"/>
-			</a>
-		</div>
-
-		<div class="footer">
-			Featured&#32;
-			<?php if ($this->context->featuredPostUser): ?>
-				by <a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>"><?php echo $this->context->featuredPostUser->name ?></a>,&#32;
-			<?php endif ?>
-			<?php printf('%d day%s', $x = round((time() - $this->context->featuredPostDate) / (24 * 3600.)), $x == 1 ? '' : 's') ?> ago
-			<div class="clear"></div>
-		</div>
-
+		<span class="favs-comments">
+			<?php printf('%d&nbsp;fav%s', $x = $this->context->featuredPost->countOwn('favoritee'), $x == 1 ? '' : 's') ?>,&#32;
+			<?php printf('%d&nbsp;comment%s', $x = $this->context->featuredPost->countOwn('comment'), $x == 1 ? '' : 's') ?>
+		</span>
 		<div class="clear"></div>
 	</div>
+
+	<div class="body">
+		<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->featuredPost->id]) ?>">
+			<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->featuredPost->name]) ?>" alt="<?php echo $this->context->featuredPost->name ?>"/>
+		</a>
+	</div>
+
+	<div class="footer">
+		Featured&#32;
+		<?php if ($this->context->featuredPostUser): ?>
+			by <a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>"><?php echo $this->context->featuredPostUser->name ?></a>,&#32;
+		<?php endif ?>
+		<?php printf('%d day%s', $x = round((time() - $this->context->featuredPostDate) / (24 * 3600.)), $x == 1 ? '' : 's') ?> ago
+		<div class="clear"></div>
+	</div>
+
+	<div class="clear"></div>
 <?php endif ?>
