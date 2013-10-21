@@ -10,25 +10,26 @@ class TagController
 		$this->context->subTitle = 'tags';
 
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
+		$suppliedFilter = InputHelper::get('filter');
 
 		$dbQuery = R::$f->begin();
 		$dbQuery->select('tag.*, COUNT(1) AS count');
 		$dbQuery->from('tag');
 		$dbQuery->innerJoin('post_tag');
 		$dbQuery->on('tag.id = post_tag.tag_id');
-		$dbQuery->groupBy('tag.id');
-		$dbQuery->orderBy('LOWER(tag.name)')->asc();
-		$rows = $dbQuery->get();
-		$tags = R::convertToBeans('tag', $rows);
-
-		$suppliedFilter = InputHelper::get('filter');
 		if ($suppliedFilter)
 		{
-			$rows = array_filter($rows, function($row) use ($suppliedFilter)
-			{
-				return strpos(strtolower($row['name']), strtolower($suppliedFilter)) !== false;
-			});
+			if (strlen($suppliedFilter) >= 3)
+				$suppliedFilter = '%' . $suppliedFilter;
+			$suppliedFilter .= '%';
+			$dbQuery->where('LOWER(tag.name) LIKE LOWER(?)')->put($suppliedFilter);
 		}
+		$dbQuery->groupBy('tag.id');
+		$dbQuery->orderBy('LOWER(tag.name)')->asc();
+		if ($suppliedFilter)
+			$dbQuery->limit(15);
+		$rows = $dbQuery->get();
+		$tags = R::convertToBeans('tag', $rows);
 
 		$tags = [];
 		$tagDistribution = [];

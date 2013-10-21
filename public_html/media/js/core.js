@@ -154,7 +154,7 @@ $(function()
 				event.preventDefault();
 			}
 		}).autocomplete({
-			minLength: 0,
+			minLength: 1,
 			source: function(request, response)
 			{
 				var term = extractLast(request.term);
