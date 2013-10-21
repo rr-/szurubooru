@@ -53,7 +53,7 @@ class UserController
 	{
 		$this->context->stylesheets []= 'user-list.css';
 		$this->context->stylesheets []= 'paginator.css';
-		if ($this->config->browsing->endlessScrolling)
+		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
 
 		$page = intval($page);
@@ -218,6 +218,42 @@ class UserController
 
 
 	/**
+	* @route /user/{name}/settings
+	* @validate name [^\/]+
+	*/
+	public function settingsAction($name)
+	{
+		$user = Model_User::locate($name);
+		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+
+		$this->context->handleExceptions = true;
+		$this->context->transport->user = $user;
+		$this->context->transport->tab = 'settings';
+		$this->context->viewName = 'user-view';
+		$this->context->stylesheets []= 'user-view.css';
+		$this->context->subTitle = $name;
+
+		if (InputHelper::get('submit'))
+		{
+			$suppliedSafety = InputHelper::get('safety');
+			if (!is_array($suppliedSafety))
+				$suppliedSafety = [];
+			foreach (PostSafety::getAll() as $safety)
+				$user->enableSafety($safety, in_array($safety, $suppliedSafety));
+
+			$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
+
+			R::store($user);
+			$this->context->transport->user = $user;
+			if ($this->context->user->id == $user->id)
+				$this->context->user = $user;
+			$this->context->transport->success = true;
+		}
+	}
+
+
+
+	/**
 	* @route /user/{name}/edit
 	* @validate name [^\/]+
 	*/
@@ -324,7 +360,7 @@ class UserController
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'paginator.css';
-		if ($this->config->browsing->endlessScrolling)
+		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
 		$this->context->subTitle = $name;
 

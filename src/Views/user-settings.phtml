@@ -1,0 +1,37 @@
+<form action="<?php echo \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>" method="post" class="settings aligned">
+	<div class="safety">
+		<label class="left" for="name">Safety:</label>
+		<div class="input-wrapper">
+			<?php foreach (PostSafety::getAll() as $safety): ?>
+				<?php if (PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety))): ?>
+					<label><input type="checkbox" name="safety[]" value="<?php echo $safety ?>"<?php if ($this->context->transport->user->hasEnabledSafety($safety)) echo ' checked="checked"' ?>/>
+					<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?></label>
+				<?php endif ?>
+			<?php endforeach ?>
+		</div>
+	</div>
+
+	<div class="endless-scrolling">
+		<label class="left" for="name">Endless scrolling:</label>
+		<div class="input-wrapper">
+			<label>
+				<input type="checkbox" name="endless-scrolling" <?php if ($this->context->transport->user->hasEnabledEndlessScrolling()) echo ' checked="checked"' ?>/>
+				Enabled
+			</label>
+		</div>
+	</div>
+
+	<input type="hidden" name="submit" value="1"/>
+
+	<?php if ($this->context->transport->success === true): ?>
+		<p class="alert alert-success">Browsing settings updated!</p>
+	<?php elseif (isset($this->context->transport->errorMessage)): ?>
+		<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
+	<?php endif ?>
+
+	<div>
+		<label class="left">&nbsp;</label>
+		<button type="submit">Update settings</button>
+	</div>
+</form>
+

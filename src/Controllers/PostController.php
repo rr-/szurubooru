@@ -60,7 +60,7 @@ class PostController
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'paginator.css';
-		if ($this->config->browsing->endlessScrolling)
+		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
 
 		//redirect requests in form of /posts/?query=... to canonical address

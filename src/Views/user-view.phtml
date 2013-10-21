@@ -121,6 +121,16 @@
 					</a>
 				</li>
 
+				<?php if ($this->context->transport->tab == 'settings'): ?>
+					<li class="selected settings">
+				<?php else: ?>
+					<li class="settings">
+				<?php endif ?>
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>">
+						Browsing settings
+					</a>
+				</li>
+
 				<?php if ($canModifyAnything): ?>
 					<?php if ($this->context->transport->tab == 'edit'): ?>
 						<li class="selected edit">
@@ -152,7 +162,9 @@
 		<?php $this->renderFile('post-list') ?>
 	<?php endif ?>
 
-	<?php if ($this->context->transport->tab == 'edit'): ?>
+	<?php if ($this->context->transport->tab == 'settings'): ?>
+		<?php $this->renderFile('user-settings') ?>
+	<?php elseif ($this->context->transport->tab == 'edit'): ?>
 		<?php $this->renderFile('user-edit') ?>
 	<?php elseif ($this->context->transport->tab == 'delete'): ?>
 		<?php $this->renderFile('user-delete') ?>

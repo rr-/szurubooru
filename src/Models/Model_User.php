@@ -41,6 +41,8 @@ class Model_User extends RedBean_SimpleModel
 		$this->settings = $settings;
 	}
 
+
+
 	public function hasEnabledSafety($safety)
 	{
 		return $this->getSetting('safety-' . $safety) !== false;
@@ -63,6 +65,21 @@ class Model_User extends RedBean_SimpleModel
 			$this->setSetting('safety-' . $safety, true);
 		}
 	}
+
+	public function hasEnabledEndlessScrolling()
+	{
+		$ret = $this->getSetting('endless-scrolling');
+		if ($ret === null)
+			$ret = \Chibi\Registry::getConfig()->browsing->endlessScrollingDefault;
+		return $ret;
+	}
+
+	public function enableEndlessScrolling($enabled)
+	{
+		$this->setSetting('endless-scrolling', (bool) $enabled);
+	}
+
+
 
 	public static function validateUserName($userName)
 	{
