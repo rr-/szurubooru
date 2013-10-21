@@ -179,6 +179,19 @@ class PostController
 
 
 	/**
+	* @route /random
+	* @route /random/{page}
+	* @validate page \d*
+	*/
+	public function randomAction($page = 1)
+	{
+		$this->listAction('order:random', $page);
+		$this->context->viewName = 'post-list';
+	}
+
+
+
+	/**
 	* @route /post/upload
 	*/
 	public function uploadAction()

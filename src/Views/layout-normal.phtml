@@ -28,6 +28,9 @@
 							$nav []= ['Browse', \Chibi\UrlHelper::route('post', 'list')];
 
 						if (PrivilegesHelper::confirm(Privilege::ListPosts))
+							$nav []= ['Random', \Chibi\UrlHelper::route('post', 'random')];
+
+						if (PrivilegesHelper::confirm(Privilege::ListPosts))
 							$nav []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
 
 						if (PrivilegesHelper::confirm(Privilege::UploadPost))
