@@ -1,0 +1,21 @@
+<form action="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>" method="post" class="edit aligned" autocomplete="off" data-confirm-text="Are you sure you want to delete your account?">
+	<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
+		<div class="current-password">
+			<label class="left" for="current-password">Current password:</label>
+			<div class="input-wrapper"><input type="password" name="current-password" id="current-password" placeholder="Current password"/></div>
+		</div>
+	<?php endif ?>
+
+	<input type="hidden" name="remove" value="1"/>
+
+	<?php if ($this->context->transport->success === true): ?>
+		<p class="alert alert-success">Account settings updated!</p>
+	<?php elseif (isset($this->context->transport->errorMessage)): ?>
+		<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
+	<?php endif ?>
+
+	<div>
+		<label class="left">&nbsp;</label>
+		<button type="submit">Delete account</button>
+	</div>
+</form>
