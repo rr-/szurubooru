@@ -23,6 +23,7 @@ class AuthController
 			PrivilegesHelper::confirmEmail($dbUser);
 
 		$_SESSION['user-id'] = $dbUser->id;
+		$_SESSION['user'] = serialize($dbUser);
 		\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 		return $dbUser;
 	}

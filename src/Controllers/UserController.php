@@ -246,7 +246,10 @@ class UserController
 			R::store($user);
 			$this->context->transport->user = $user;
 			if ($this->context->user->id == $user->id)
+			{
 				$this->context->user = $user;
+				unset($_SESSION['user']);
+			}
 			$this->context->transport->success = true;
 		}
 	}

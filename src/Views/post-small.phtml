@@ -1,6 +1,6 @@
 <div class="post post-type-<?php echo TextHelper::camelCaseToHumanCase(PostType::toString($this->context->post->type)) ?>">
 	<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
-		<img class="thumb" src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['id' => $this->context->post->id]) ?>" alt="@<?php echo $this->context->post->id ?>"/>
+		<img class="thumb" src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>" alt="@<?php echo $this->context->post->id ?>"/>
 	</a>
 	<div class="info-bar">
 		<i class="icon-comments"></i> <span><?php echo $this->context->post->countOwn('comment') ?></span>

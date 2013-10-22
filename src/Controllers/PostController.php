@@ -557,19 +557,19 @@ class PostController
 
 	/**
 	* Action that renders the thumbnail of the requested file and sends it to user.
-	* @route /post/{id}/thumb
+	* @route /post/{name}/thumb
 	*/
-	public function thumbAction($id)
+	public function thumbAction($name)
 	{
 		$this->context->layoutName = 'layout-file';
-		$post = Model_Post::locate($id);
 
-		PrivilegesHelper::confirmWithException(Privilege::ViewPost);
-		PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
-
-		$path = $this->config->main->thumbsPath . DS . $post->name;
+		$path = $this->config->main->thumbsPath . DS . $name;
 		if (!file_exists($path))
 		{
+			$post = Model_Post::locate($id);
+
+			PrivilegesHelper::confirmWithException(Privilege::ViewPost);
+			PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
 			$srcPath = $this->config->main->filesPath . DS . $post->name;
 			$dstPath = $path;
 			$dstWidth = $this->config->browsing->thumbWidth;
@@ -623,17 +623,17 @@ class PostController
 			{
 				$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.png';
 			}
+
+			if (isset($tmpPath))
+				unlink($tmpPath);
 		}
 		if (!is_readable($path))
 			throw new SimpleException('Thumbnail file is not readable');
 
 		$this->context->transport->cacheDaysToLive = 30;
 		$this->context->transport->mimeType = 'image/png';
-		$this->context->transport->fileHash = 'thumb' . md5($post->file_hash . filemtime($path));
+		$this->context->transport->fileHash = 'thumb' . md5($name . filemtime($path));
 		$this->context->transport->filePath = $path;
-
-		if (isset($tmpPath))
-			unlink($tmpPath);
 	}
 
 

@@ -6,7 +6,12 @@ class Bootstrap
 		$this->context->loggedIn = false;
 		if (isset($_SESSION['user-id']))
 		{
-			$this->context->user = R::findOne('user', 'id = ?', [$_SESSION['user-id']]);
+			if (!isset($_SESSION['user']))
+			{
+				$dbUser = R::findOne('user', 'id = ?', [$_SESSION['user-id']]);
+				$_SESSION['user'] = serialize($dbUser);
+			}
+			$this->context->user = unserialize($_SESSION['user']);
 			if (!empty($this->context->user))
 			{
 				$this->context->loggedIn = true;
