@@ -596,11 +596,8 @@ class PostController
 						if (file_exists($tmpPath))
 							$srcImage = imagecreatefrompng($tmpPath);
 					}
-					if (!$srcImage)
-						$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb-swf.png';
 					break;
 				default:
-					$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.png';
 					break;
 			}
 
@@ -621,6 +618,10 @@ class PostController
 				imagepng($dstImage, $dstPath);
 				imagedestroy($srcImage);
 				imagedestroy($dstImage);
+			}
+			else
+			{
+				$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.png';
 			}
 		}
 		if (!is_readable($path))

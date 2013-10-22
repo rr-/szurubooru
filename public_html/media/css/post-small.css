@@ -6,8 +6,17 @@
 	display: inline-block;
 }
 .post-type-flash {
-	border-color: #dd5;
-	box-shadow: 0.25em 0.25em #eeb, 0.1em 0.1em 0.5em 0.1em rgba(238,238,187,0.5);
+	border-color: red;
+}
+.post-type-flash:after {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 150px;
+	height: 150px;
+	content: ' ';
+	background: url('../img/thumb-overlay-swf.png');
+	pointer-events: none;
 }
 
 .post:focus,
