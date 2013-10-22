@@ -629,7 +629,7 @@ class PostController
 
 		$this->context->transport->cacheDaysToLive = 30;
 		$this->context->transport->mimeType = 'image/png';
-		$this->context->transport->fileHash = 'thumb' . $post->file_hash;
+		$this->context->transport->fileHash = 'thumb' . md5($post->file_hash . filemtime($path));
 		$this->context->transport->filePath = $path;
 
 		if (isset($tmpPath))
