@@ -587,7 +587,17 @@ class PostController
 					$srcImage = imagecreatefromgif($srcPath);
 					break;
 				case 'application/x-shockwave-flash':
-					$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb-swf.png';
+					$srcImage = null;
+					exec('which swfrender', $tmp, $exitCode);
+					if ($exitCode == 0)
+					{
+						$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
+						exec('swfrender ' . $srcPath . ' -o ' . $tmpPath);
+						if (file_exists($tmpPath))
+							$srcImage = imagecreatefrompng($tmpPath);
+					}
+					if (!$srcImage)
+						$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb-swf.png';
 					break;
 				default:
 					$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.png';
@@ -620,6 +630,9 @@ class PostController
 		$this->context->transport->mimeType = 'image/png';
 		$this->context->transport->fileHash = 'thumb' . $post->file_hash;
 		$this->context->transport->filePath = $path;
+
+		if (isset($tmpPath))
+			unlink($tmpPath);
 	}
 
 
