@@ -48,7 +48,10 @@ class Model_User extends RedBean_SimpleModel
 
 	public function hasEnabledSafety($safety)
 	{
-		return $this->getSetting(self::SETTING_SAFETY) & PostSafety::toFlag($safety);
+		$all = $this->getSetting(self::SETTING_SAFETY);
+		if (!$all)
+			return true;
+		return $all & PostSafety::toFlag($safety);
 	}
 
 	public function enableSafety($safety, $enabled)
