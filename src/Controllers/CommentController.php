@@ -11,6 +11,7 @@ class CommentController
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'comment-list.css';
 		$this->context->stylesheets []= 'comment-small.css';
+		$this->context->stylesheets []= 'paginator.css';
 		$this->context->subTitle = 'comments';
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
