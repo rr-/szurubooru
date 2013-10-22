@@ -44,18 +44,12 @@
 	<div class="unit details">
 		<h1>details</h1>
 
-		<div class="key-value safety">
-			<span class="key">Safety:</span>
-			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(PostSafety::toString($this->context->transport->post->safety)) ?>">
-				<?php echo $val ?>
-			</span>
-		</div>
-
 		<div class="key-value uploader">
 			<span class="key">Uploader:</span>
 			<?php if ($this->context->transport->post->uploader): ?>
 				<span class="value" title="<?php echo $val = $this->context->transport->post->uploader->name ?>">
 					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->name]) ?>">
+						<img src="<?php echo htmlentities($this->context->transport->post->uploader->getAvatarUrl(16)) ?>" alt="<?php echo $this->context->transport->post->uploader->name ?>"/>
 						<?php echo $val ?>
 					</a>
 				</span>
@@ -64,6 +58,13 @@
 					[deleted user]
 				</span>
 			<?php endif ?>
+		</div>
+
+		<div class="key-value safety">
+			<span class="key">Safety:</span>
+			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(PostSafety::toString($this->context->transport->post->safety)) ?>">
+				<?php echo $val ?>
+			</span>
 		</div>
 
 		<div class="key-value date">

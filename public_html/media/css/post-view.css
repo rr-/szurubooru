@@ -46,6 +46,11 @@ embed {
 	background-color: silver;
 }
 
+#sidebar .uploader img {
+	vertical-align: middle;
+	margin: 0 0.5em 0 0;
+}
+
 i.icon-prev {
 	background-position: -12px -1px;
 }
