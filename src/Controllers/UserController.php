@@ -483,7 +483,7 @@ class UserController
 		$this->context->suppliedPassword2 = $suppliedPassword2;
 		$this->context->suppliedEmail = $suppliedEmail;
 
-		if ($suppliedName !== null)
+		if (InputHelper::get('submit'))
 		{
 			$suppliedName = Model_User::validateUserName($suppliedName);
 

@@ -13,9 +13,19 @@
 		<div class="input-wrapper"><input type="password" id="password" name="password"/></div>
 	</div>
 
+	<div>
+		<label class="left">&nbsp;</label>
+		<div class="input-wrapper">
+			<input type="checkbox" name="remember" value="1"/>
+			Remember me
+		</div>
+	</div>
+
 	<?php if (isset($this->context->transport->errorMessage)): ?>
 		<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
 	<?php endif ?>
+
+	<input type="hidden" name="submit" value="1"/>
 
 	<div>
 		<label class="left"></label>

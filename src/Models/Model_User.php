@@ -153,7 +153,7 @@ class Model_User extends RedBean_SimpleModel
 
 	public static function hashPassword($pass, $salt2)
 	{
-		$salt1 = \Chibi\Registry::getConfig()->registration->salt;
+		$salt1 = \Chibi\Registry::getConfig()->main->salt;
 		return sha1($salt1 . $salt2 . $pass);
 	}
 

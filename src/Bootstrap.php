@@ -12,6 +12,16 @@ class Bootstrap
 				$this->context->loggedIn = true;
 			}
 		}
+		if (!$this->context->loggedIn)
+		{
+			try
+			{
+				AuthController::tryAutoLogin();
+			}
+			catch (Exception $e)
+			{
+			}
+		}
 		if (empty($this->context->user))
 		{
 			$dummy = R::dispense('user');

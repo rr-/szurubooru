@@ -149,4 +149,22 @@ class TextHelper
 			$output = preg_replace('{</?p>}', '', $output);
 		return $output;
 	}
+
+	public static function encrypt($text)
+	{
+		$salt = \Chibi\Registry::getConfig()->main->salt;
+		$alg = MCRYPT_RIJNDAEL_256;
+		$mode = MCRYPT_MODE_ECB;
+		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
+		return trim(base64_encode(mcrypt_encrypt($alg, $salt, $text, $mode, $iv)));
+	}
+
+	public static function decrypt($text)
+	{
+		$salt = \Chibi\Registry::getConfig()->main->salt;
+		$alg = MCRYPT_RIJNDAEL_256;
+		$mode = MCRYPT_MODE_ECB;
+		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
+		return trim(mcrypt_decrypt($alg, $salt, base64_decode($text), $mode, $iv));
+	}
 }
