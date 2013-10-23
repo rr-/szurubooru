@@ -566,7 +566,7 @@ class PostController
 		$path = $this->config->main->thumbsPath . DS . $name;
 		if (!file_exists($path))
 		{
-			$post = Model_Post::locate($id);
+			$post = Model_Post::locate($name);
 
 			PrivilegesHelper::confirmWithException(Privilege::ViewPost);
 			PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
