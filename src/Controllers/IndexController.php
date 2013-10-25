@@ -49,6 +49,7 @@ class IndexController
 	*/
 	public function helpAction()
 	{
+		$this->context->stylesheets []= 'index-help.css';
 		$this->context->subTitle = 'help';
 	}
 }

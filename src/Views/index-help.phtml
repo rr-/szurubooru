@@ -4,6 +4,15 @@
 
 <p>If you&rsquo;re not a registered user, you will only see public (Safe) posts. Logging in to your account will enable you to filter content by its rating: Safe, Sketchy, and NSFW.</p>
 
+<p>You can use your keyboard to navigate around the site. There are a few shortcuts:</p>
+
+<ul>
+<li>focus search field: <code>[Q]</code></li>
+<li>scroll up/down: <code>[W]</code><span class="comma">, </span><code>[S]</code></li>
+<li>go to newer/older post or page: <code>[A]</code><span class="comma">, </span><code>[D]</code></li>
+<li>edit post: <code>[E]</code></li>
+</ul>
+
 <h1>Search syntax</h1>
 
 <ul>
@@ -12,10 +21,10 @@
 <li>uploaded by David: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'submit:David']) ?>"><code>submit:David</code></a> (note no spaces)</li>
 <li>favorited by David: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'fav:David']) ?>"><code>fav:David</code></a></li>
 <li>favorited by at least four users: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'favmin:4']) ?>"><code>favmin:4</code></a></li>
-<li>exactly from the specified date: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2001']) ?>"><code>date:2001</code></a>, <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2012-09-29']) ?>"><code>date:2012-09-29</code></a> (yyyy-mm-dd format)</li>
+<li>exactly from the specified date: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2001']) ?>"><code>date:2001</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2012-09-29']) ?>"><code>date:2012-09-29</code></a> (yyyy-mm-dd format)</li>
 <li>from the specified date onwards: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'datemin:2001-01-01']) ?>"><code>datemin:2001-01-01</code></a></li>
 <li>up to the specified date: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'datemax:2004-07']) ?>"><code>datemax:2004-07</code></a></li>
-<li>by content type: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:img']) ?>"><code>type:img</code></a>, <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:swf']) ?>"><code>type:swf</code></a> (images and flash files, respectively)</li>
+<li>by content type: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:img']) ?>"><code>type:img</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:swf']) ?>"><code>type:swf</code></a> (images and flash files, respectively)</li>
 </ul>
 
 <p>You can combine tags and negate any of them for interesting results. <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'sea -favmin:8 type:swf submit:Pirate']) ?>"><code>sea -favmin:8 type:swf submit:Pirate</code></a> will show you <strong>flash files</strong> tagged as <strong>sea</strong>, that were <strong>liked by seven people</strong> at most, uploaded by user <strong>Pirate</strong>.</p>
@@ -30,7 +39,7 @@
 <li>loved by most:  <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:favs']) ?>"><code>order:favs</code></a></li>
 </ul>
 
-<p>As shown with <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:date']) ?>"><code>order:date</code></a>, any of them can be reversed in the same way as negating other tags: by placing a dash before the tag.</p>
+<p>As shown with <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => '-order:date']) ?>"><code>-order:date</code></a><span class="comma">, </span>any of them can be reversed in the same way as negating other tags: by placing a dash before the tag.</p>
 
 <h1>Registration</h1>
 
@@ -38,6 +47,16 @@
 
 <p>Oh, and you can delete your account at any time. Posts you uploaded will stay, unless some angry admin removes them.</p>
 
+<h1>Comments</h1>
+
+<p>Registered users can post comments. Comments support <a href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>, extended by some handy tags:</p>
+
+<ul>
+<li>permalink to post number 426: <a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => 426]) ?>"><code>@426</code></a></li>
+<li>link to tag "Dragon_Ball": <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'Dragon_Ball']) ?>"><code>#Dragon_Ball</code></a></li>
+<li>mark text as spoiler and hide it: <code class="spoiler">[spoiler]There is no spoon.[/spoiler]</code></li>
+</ul>
+
 <h1>Uploads</h1>
 
-<p>After registering, you gain the power to upload files to the service, for everyone else to see. Owners of the site are not responsible for content uploaded by users. You are not allowed to post any form of <a href="http://www.urbandictionary.com/define.php?term=cp">cp</a>. If you possess it, we ask you to leave immediately and never come back.</p>
+<p>After registering and activating your account, you gain the power to upload files to the service, for everyone else to see. Owners of the site are not responsible for content uploaded by users. You are not allowed to post any form of <a href="http://www.urbandictionary.com/define.php?term=cp">cp</a>. If you possess it, we ask you to leave immediately and never come back.</p>
