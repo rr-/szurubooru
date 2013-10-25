@@ -41,6 +41,7 @@
 
 .post a {
 	display: inline-block;
+	vertical-align: top;
 }
 .post img.thumb {
 	display: inline-block;
