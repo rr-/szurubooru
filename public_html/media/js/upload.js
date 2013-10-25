@@ -45,6 +45,7 @@ $(function()
 	$('#url-handler-wrapper button').click(function(e)
 	{
 		var urls = $('#url-handler-wrapper textarea').val().split(/\s+/);
+		$('#url-handler-wrapper textarea').val('');
 		handleURLs(urls);
 	});
 
@@ -198,28 +199,25 @@ $(function()
 
 	function handleInputs(inputs, callback)
 	{
-		$('#upload-step1').fadeOut(function()
+		for (var i = 0; i < inputs.length; i ++)
 		{
-			for (var i = 0; i < inputs.length; i ++)
-			{
-				var input = inputs[i];
-				var postDom = $('#post-template').clone(true);
-				postDom.find('form').submit(false);
-				postDom.removeAttr('id');
+			var input = inputs[i];
+			var postDom = $('#post-template').clone(true);
+			postDom.find('form').submit(false);
+			postDom.removeAttr('id');
 
-				$('.posts').append(postDom);
+			$('.posts').append(postDom);
 
-				postDom.show();
-				var tagItOptions = getTagItOptions();
-				tagItOptions.availableTags = tags;
-				tagItOptions.placeholderText = $('.tags input').attr('placeholder');
-				$('.tags input', postDom).tagit(tagItOptions);
+			postDom.show();
+			var tagItOptions = getTagItOptions();
+			tagItOptions.availableTags = tags;
+			tagItOptions.placeholderText = $('.tags input').attr('placeholder');
+			$('.tags input', postDom).tagit(tagItOptions);
 
-				callback(postDom, input);
-			}
-			$('#upload-step2').fadeIn(function()
-			{
-			});
+			callback(postDom, input);
+		}
+		$('#upload-step2').fadeIn(function()
+		{
 		});
 	}
 });
