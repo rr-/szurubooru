@@ -226,6 +226,7 @@ class UserController
 	{
 		$user = Model_User::locate($name);
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		$this->context->handleExceptions = true;
 		$this->context->transport->user = $user;
@@ -444,8 +445,7 @@ class UserController
 	*/
 	public function toggleSafetyAction($safety)
 	{
-		if (!$this->context->loggedIn)
-			throw new SimpleException('Not logged in');
+		PrivilegesHelper::confirmWithException(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->user));
 
 		if (!in_array($safety, PostSafety::getAll()))
 			throw new SimpleExcetpion('Invalid safety');
