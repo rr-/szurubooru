@@ -22,6 +22,8 @@ $(function()
 			e.preventDefault();
 			var formDom = $('form.edit-post');
 			formDom.show().css('height', formDom.height()).hide().slideDown();
+
+			$('html, body').animate({ scrollTop: $(formDom).offset().top + 'px' }, 'fast');
 		});
 	});
 
@@ -118,4 +120,8 @@ $(function()
 
 		$.ajax(ajaxData);
 	});
+
+	Mousetrap.bind('a', function() { window.location = $('#sidebar .left a').attr('href'); });
+	Mousetrap.bind('d', function() { window.location = $('#sidebar .right a').attr('href'); });
+	Mousetrap.bind('e', function() { $('li.edit a').trigger('click'); return false; });
 });

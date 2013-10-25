@@ -49,6 +49,9 @@ foreach ($lines as $line)
 download('http://raw.github.com/aehlke/tag-it/master/css/jquery.tagit.css', $libPath . 'tagit' . DS . 'jquery.tagit.css');
 download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $libPath . 'tagit' . DS . 'jquery.tagit.js');
 
+//Mousetrap
+download('https://raw.github.com/ccampbell/mousetrap/master/mousetrap.min.js', $libPath . 'mousetrap' . DS . 'mousetrap.min.js');
+
 //fonts
 download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans.ttf', $fontsPath . 'DroidSans.ttf');
 download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans-Bold.ttf', $fontsPath . 'DroidSans-Bold.ttf');

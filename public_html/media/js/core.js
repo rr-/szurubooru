@@ -204,3 +204,10 @@ function getTagItOptions()
 		}
 	};
 }
+
+$(function()
+{
+	Mousetrap.bind('q', function() { $('#top-nav input').focus(); return false; });
+	Mousetrap.bind('w', function() { $('body,html').animate({scrollTop: '-=150px'}, 200); });
+	Mousetrap.bind('s', function() { $('body,html').animate({scrollTop: '+=150px'}, 200); });
+});

@@ -52,6 +52,7 @@ class Bootstrap
 		[
 			'../lib/jquery/jquery.min.js',
 			'../lib/jquery-ui/jquery-ui.min.js',
+			'../lib/mousetrap/mousetrap.min.js',
 			'core.js',
 		];
 
