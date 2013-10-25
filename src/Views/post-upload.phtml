@@ -37,7 +37,7 @@
 				<div id="file-handler-wrapper">
 					<div id="file-handler">
 						Drop files here!<br>
-						Or just click on this box.<br><br>
+						Or just click on this box.
 					</div>
 				</div>
 			</div>
@@ -45,7 +45,7 @@
 			<div class="tab url">
 				<div id="url-handler-wrapper">
 					<div id="url-handler">
-						<textarea placeholder="You can also paste some URLs." name="urls"></textarea>
+						<div class="input-wrapper"><textarea placeholder="Paste some URLs here, one per line." name="urls"></textarea></div>
 					</div>
 					<button type="submit">Add</button>
 				</div>
@@ -55,6 +55,8 @@
 		</div>
 
 		<div id="upload-step2" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
+			<hr>
+
 			<div class="posts">
 			</div>
 
@@ -114,10 +116,6 @@
 					<input type="hidden" name="submit" value="1"/>
 				</form>
 			</div>
-		</div>
-
-		<div id="upload-no-posts">
-			<p class="alert alert-warning">Well, that&rsquo;s disappointing&hellip;</p>
 		</div>
 	</div>
 

@@ -44,7 +44,14 @@ $(function()
 
 	$('#url-handler-wrapper button').click(function(e)
 	{
-		var urls = $('#url-handler-wrapper textarea').val().split(/\s+/);
+		var urls = [];
+		$.each($('#url-handler-wrapper textarea').val().split(/\s+/), function(i, url)
+		{
+			url = url.replace(/^\s+|\s+$/, '');
+			if (url == '')
+				return;
+			urls.push(url);
+		});
 		$('#url-handler-wrapper textarea').val('');
 		handleURLs(urls);
 	});
@@ -65,12 +72,8 @@ $(function()
 		$(this).parents('.post').slideUp(function()
 		{
 			$(this).remove();
+			handleInputs([]);
 		});
-		if ($('#upload-step2 .post').length == 1)
-		{
-			$('#upload-step2').slideUp();
-			$('#upload-no-posts').slideDown();
-		}
 	});
 
 
@@ -231,8 +234,9 @@ $(function()
 
 			callback(postDom, input);
 		}
-		$('#upload-step2').fadeIn(function()
-		{
-		});
+		if ($('.posts .post').length == 0)
+			$('#upload-step2').fadeOut();
+		else
+			$('#upload-step2').fadeIn();
 	}
 });

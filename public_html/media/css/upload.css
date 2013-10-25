@@ -8,6 +8,13 @@
 	float: left;
 }
 
+.tab {
+	margin-bottom: 1em;
+}
+.tab.url {
+	display: none;
+}
+
 #file-handler-wrapper {
 	display: table;
 	width: 100%;
@@ -17,7 +24,7 @@
 	font-size: 150%;
 	text-align: center;
 	vertical-align: middle;
-	height: 300px;
+	height: 8em;
 	display: table-cell;
 	border: 3px dashed #ddd;
 }
@@ -27,8 +34,9 @@
 }
 
 #url-handler textarea {
-	width: 50%;
-	height: 6em;
+	width: 100%;
+	height: 10em;
+	margin-bottom: 0.5em;
 }
 
 .post .thumbnail {
@@ -42,18 +50,17 @@
 	text-align: center;
 	display: block;
 	float: left;
-	margin-right: 1em;
+	margin-right: 10px;
 }
 
 .post .alert,
 #upload-step2,
-#upload-no-posts,
 #post-template {
 	display: none;
 }
 
 .post {
-	margin-bottom: 4em;
+	margin: 2em 0;
 }
 
 .post .ops {
@@ -107,7 +114,8 @@
 }
 .post label.left {
 	display: inline-block;
-	width: 4em;
+	width: 60px;
+	padding-right: 10px;
 	float: left;
 }
 .post .safety label:not(.left) {
@@ -140,23 +148,10 @@ ul.tagit {
 	font-size: 1em;
 }
 
-.submit-wrapper {
-	text-align: center;
-}
-#theSubmit {
-	margin: 0 auto;
+#the-submit {
+	margin: 0 0 0 205px;
 }
 
 .post .form-wrapper {
 	overflow: hidden;
-}
-
-.tab.url {
-	display: none;
-}
-.tab {
-	margin-bottom: 1em;
-}
-.tab textarea {
-	margin-bottom: 0.5em;
 }

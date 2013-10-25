@@ -280,8 +280,11 @@ form.aligned input[type=checkbox] {
 .input-wrapper input,
 .input-wrapper textarea,
 .input-wrapper select {
-	width: 80%;
-	max-width: 80%;
+	width: 100%;
+	max-width: 100%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 label {

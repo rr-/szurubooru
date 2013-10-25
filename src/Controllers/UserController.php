@@ -184,6 +184,7 @@ class UserController
 		$this->context->transport->user = $user;
 		$this->context->transport->tab = 'delete';
 		$this->context->viewName = 'user-view';
+		$this->context->stylesheets []= 'tabs.css';
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->subTitle = $name;
 
@@ -230,6 +231,7 @@ class UserController
 		$this->context->transport->user = $user;
 		$this->context->transport->tab = 'settings';
 		$this->context->viewName = 'user-view';
+		$this->context->stylesheets []= 'tabs.css';
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->subTitle = $name;
 
@@ -266,6 +268,7 @@ class UserController
 			$this->context->transport->user = $user;
 			$this->context->transport->tab = 'edit';
 			$this->context->viewName = 'user-view';
+			$this->context->stylesheets []= 'tabs.css';
 			$this->context->stylesheets []= 'user-view.css';
 			$this->context->subTitle = $name;
 
