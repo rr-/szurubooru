@@ -41,6 +41,16 @@ class Model_User extends RedBean_SimpleModel
 		$this->settings = $settings;
 	}
 
+	public function update()
+	{
+		$context = \Chibi\Registry::getContext();
+		if ($context->user->id == $this->id)
+		{
+			$context->user = $this;
+			unset($_SESSION['user']);
+		}
+	}
+
 
 
 	const SETTING_SAFETY = 1;
