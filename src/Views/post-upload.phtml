@@ -94,7 +94,7 @@
 						<?php $checked = false ?>
 						<?php foreach (PostSafety::getAll() as $safety): ?>
 							<label>
-								<input type="radio" name="safety" value="<?php echo PostSafety::Safe ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
+								<input type="radio" name="safety" value="<?php echo $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
 								<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
 								<?php $checked = true ?>
 							</label>
