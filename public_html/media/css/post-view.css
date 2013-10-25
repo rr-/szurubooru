@@ -10,7 +10,7 @@ embed {
 }
 
 .post-type-image img {
-	background: url('../img/bk-image.png') lemonchiffon;
+	/*background: url('../img/bk-image.png') lemonchiffon;*/
 }
 .post-type-flash embed {
 	background: url('../img/bk-swf.png') lemonchiffon;
