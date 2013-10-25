@@ -217,46 +217,56 @@ class PostController
 			elseif (InputHelper::get('url'))
 			{
 				$url = InputHelper::get('url');
+				$origName = $url;
 				if (!preg_match('/^https?:\/\//', $url))
 					throw new SimpleException('Invalid URL "' . $url . '"');
-				$origName = $url;
-				$sourcePath = tempnam(sys_get_temp_dir(), 'upload') . '.dat';
 
-				//warning: low level sh*t ahead
-				//download the URL $url into $sourcePath
-				$maxBytes = TextHelper::stripBytesUnits(ini_get('upload_max_filesize'));
-				set_time_limit(0);
-				$urlFP = fopen($url, 'rb');
-				if (!$urlFP)
-					throw new SimpleException('Cannot open URL for reading');
-				$sourceFP = fopen($sourcePath, 'w+b');
-				if (!$sourceFP)
+				if (preg_match('/youtube.com\/watch.*?=([a-zA-Z0-9_-]+)/', $url, $matches))
 				{
-					fclose($urlFP);
-					throw new SimpleException('Cannot open file for writing');
+					$origName = $matches[1];
+					$postType = PostType::Youtube;
+					$sourcePath = null;
 				}
-				try
+				else
 				{
-					while (!feof($urlFP))
+					$sourcePath = tempnam(sys_get_temp_dir(), 'upload') . '.dat';
+
+					//warning: low level sh*t ahead
+					//download the URL $url into $sourcePath
+					$maxBytes = TextHelper::stripBytesUnits(ini_get('upload_max_filesize'));
+					set_time_limit(0);
+					$urlFP = fopen($url, 'rb');
+					if (!$urlFP)
+						throw new SimpleException('Cannot open URL for reading');
+					$sourceFP = fopen($sourcePath, 'w+b');
+					if (!$sourceFP)
 					{
-						$buffer = fread($urlFP, 4 * 1024);
-						if (fwrite($sourceFP, $buffer) === false)
-							throw new SimpleException('Cannot write into file');
-						fflush($sourceFP);
-						if (ftell($sourceFP) > $maxBytes)
-							throw new SimpleException('File is too big (maximum allowed size: ' . TextHelper::useBytesUnits($maxBytes) . ')');
+						fclose($urlFP);
+						throw new SimpleException('Cannot open file for writing');
 					}
-				}
-				finally
-				{
-					fclose($urlFP);
-					fclose($sourceFP);
+					try
+					{
+						while (!feof($urlFP))
+						{
+							$buffer = fread($urlFP, 4 * 1024);
+							if (fwrite($sourceFP, $buffer) === false)
+								throw new SimpleException('Cannot write into file');
+							fflush($sourceFP);
+							if (ftell($sourceFP) > $maxBytes)
+								throw new SimpleException('File is too big (maximum allowed size: ' . TextHelper::useBytesUnits($maxBytes) . ')');
+						}
+					}
+					finally
+					{
+						fclose($urlFP);
+						fclose($sourceFP);
+					}
 				}
 			}
 
 
 			/* file details */
-			$mimeType = mime_content_type($sourcePath);
+			$mimeType = $sourcePath ? mime_content_type($sourcePath) : null;
 			$imageWidth = null;
 			$imageHeight = null;
 			switch ($mimeType)
@@ -272,13 +282,29 @@ class PostController
 					list ($imageWidth, $imageHeight) = getimagesize($sourcePath);
 					break;
 				default:
-					throw new SimpleException('Invalid file type "' . $mimeType . '"');
+					if (!isset($postType))
+						throw new SimpleException('Invalid file type "' . $mimeType . '"');
 			}
 
-			$fileHash = md5_file($sourcePath);
-			$duplicatedPost = R::findOne('post', 'file_hash = ?', [$fileHash]);
-			if ($duplicatedPost !== null)
-				throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
+			if ($sourcePath)
+			{
+				$fileSize = filesize($sourcePath);
+				$fileHash = md5_file($sourcePath);
+				$duplicatedPost = R::findOne('post', 'file_hash = ?', [$fileHash]);
+				if ($duplicatedPost !== null)
+					throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
+			}
+			else
+			{
+				$fileSize = 0;
+				$fileHash = null;
+				if ($postType == PostType::Youtube)
+				{
+					$duplicatedPost = R::findOne('post', 'orig_name = ?', [$origName]);
+					if ($duplicatedPost !== null)
+						throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
+				}
+			}
 
 			do
 			{
@@ -307,7 +333,7 @@ class PostController
 			$dbPost->name = $name;
 			$dbPost->orig_name = $origName;
 			$dbPost->file_hash = $fileHash;
-			$dbPost->file_size = filesize($sourcePath);
+			$dbPost->file_size = $fileSize;
 			$dbPost->mime_type = $mimeType;
 			$dbPost->safety = $suppliedSafety;
 			$dbPost->source = $suppliedSource;
@@ -319,10 +345,13 @@ class PostController
 			$dbPost->ownFavoritee = [];
 			$dbPost->sharedTag = $dbTags;
 
-			if (is_uploaded_file($sourcePath))
-				move_uploaded_file($sourcePath, $path);
-			else
-				rename($sourcePath, $path);
+			if ($sourcePath)
+			{
+				if (is_uploaded_file($sourcePath))
+					move_uploaded_file($sourcePath, $path);
+				else
+					rename($sourcePath, $path);
+			}
 			R::store($dbPost);
 
 			$this->context->transport->success = true;
@@ -623,7 +652,15 @@ class PostController
 			$dstWidth = $this->config->browsing->thumbWidth;
 			$dstHeight = $this->config->browsing->thumbHeight;
 
-			switch ($post->mime_type)
+			if ($post->type == PostType::Youtube)
+			{
+				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
+				$contents = file_get_contents('http://img.youtube.com/vi/' . $post->orig_name . '/mqdefault.jpg');
+				file_put_contents($tmpPath, $contents);
+				if (file_exists($tmpPath))
+					$srcImage = imagecreatefromjpeg($tmpPath);
+			}
+			else switch ($post->mime_type)
 			{
 				case 'image/jpeg':
 					$srcImage = imagecreatefromjpeg($srcPath);
@@ -783,6 +820,10 @@ class PostController
 							break;
 						case 'img':
 							$type = PostType::Image;
+							break;
+						case 'yt':
+						case 'youtube':
+							$type = PostType::Youtube;
 							break;
 						default:
 							throw new SimpleException('Unknown type "' . $val . '"');

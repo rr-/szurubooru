@@ -188,12 +188,27 @@ $(function()
 		handleInputs(urls, function(postDom, url)
 		{
 			postDom.data('url', url);
-			$('.file-name strong', postDom).text(url);
-			$('[name=source]', postDom).val(url);
-
-			var img = postDom.find('img');
-			img.css('background-image', 'none');
-			img.attr('src', url);
+			postDom.find('[name=source]').val(url);
+			if (matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/))
+			{
+				postDom.find('.file-name strong').text(url);
+				$.getJSON('http://gdata.youtube.com/feeds/api/videos/' + matches[1] + '?v=2&alt=jsonc', function(data)
+				{
+					postDom.find('.file-name strong')
+						.text(data.data.title);
+					postDom.find('img')
+						.css('background-image', 'none')
+						.attr('src', data.data.thumbnail.hqDefault);
+				});
+			}
+			else
+			{
+				postDom.find('.file-name strong')
+					.text(url);
+				postDom.find('img')
+					.css('background-image', 'none')
+					.attr('src', url);
+			}
 		});
 	}
 

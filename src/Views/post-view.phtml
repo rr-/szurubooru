@@ -92,19 +92,21 @@
 			</span>
 		</div>
 
-		<div class="permalink">
-			<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
-				<i class="icon-dl"></i>
-				<span class="ext">
-					<?php $mimes = ['image/jpeg' => 'JPG', 'image/gif' => 'GIF', 'image/png' => 'PNG', 'application/x-shockwave-flash' => 'SWF'] ?>
-					<?php $mime = $this->context->transport->post->mimeType ?>
-					<?php echo isset($mimes[$mime]) ? $mimes[$mime] : 'unknown' ?>
-				</span>
-				<span class="size">
-					<?php echo TextHelper::useBytesUnits($this->context->transport->post->file_size) ?>
-				</span>
-			</a>
-		</div>
+		<?php if ($this->context->transport->post->type != PostType::Youtube): ?>
+			<div class="permalink">
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
+					<i class="icon-dl"></i>
+					<span class="ext">
+						<?php $mimes = ['image/jpeg' => 'JPG', 'image/gif' => 'GIF', 'image/png' => 'PNG', 'application/x-shockwave-flash' => 'SWF'] ?>
+						<?php $mime = $this->context->transport->post->mimeType ?>
+						<?php echo isset($mimes[$mime]) ? $mimes[$mime] : 'unknown' ?>
+					</span>
+					<span class="size">
+						<?php echo TextHelper::useBytesUnits($this->context->transport->post->file_size) ?>
+					</span>
+				</a>
+			</div>
+		<?php endif ?>
 	</div>
 
 	<div class="unit favorites">
@@ -211,11 +213,17 @@
 
 <div id="inner-content">
 	<div class="post-wrapper post-type-<?php echo strtolower(PostType::toString($this->context->transport->post->type)) ?>">
-		<?php if ($this->context->transport->post->type == PostType::Image): ?>
-			<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
-		<?php elseif ($this->context->transport->post->type == PostType::Flash): ?>
-			<embed width="<?php echo $this->context->transport->post->image_width ?>" height="<?php echo $this->context->transport->post->image_height  ?>" type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>"/>
-		<?php endif ?>
+		<?php switch ($this->context->transport->post->type):
+			case PostType::Image: ?>
+				<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" alt="<?php echo $this->context->transport->post->name ?>"/>
+				<?php break ?>
+			<?php case PostType::Flash: ?>
+				<embed width="<?php echo $this->context->transport->post->image_width ?>" height="<?php echo $this->context->transport->post->image_height  ?>" type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>"/>
+				<?php break ?>
+			<?php case PostType::Youtube: ?>
+				<iframe width="800" height="600" src="//www.youtube.com/embed/<?php echo $this->context->transport->post->orig_name ?>" frameborder="0" allowfullscreen></iframe>
+				<?php break ?>
+		<?php endswitch ?>
 	</div>
 
 	<?php if ($canEditAnything): ?>
