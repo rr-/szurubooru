@@ -375,3 +375,7 @@ pre.debug {
 .spoiler:hover {
 	color: black;
 }
+
+img {
+	border: 0;
+}
