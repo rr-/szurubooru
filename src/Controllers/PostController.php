@@ -197,6 +197,7 @@ class PostController
 	public function uploadAction()
 	{
 		$this->context->stylesheets []= 'upload.css';
+		$this->context->stylesheets []= 'tabs.css';
 		$this->context->scripts []= 'upload.js';
 		$this->context->subTitle = 'upload';
 		PrivilegesHelper::confirmWithException(Privilege::UploadPost);
@@ -206,12 +207,56 @@ class PostController
 		if (InputHelper::get('submit'))
 		{
 			/* file contents */
-			$suppliedFile = $_FILES['file'];
-			self::handleUploadErrors($suppliedFile);
+			if (isset($_FILES['file']))
+			{
+				$suppliedFile = $_FILES['file'];
+				self::handleUploadErrors($suppliedFile);
+				$origName = basename($suppliedFile['name']);
+				$sourcePath = $suppliedFile['tmp_name'];
+			}
+			elseif (InputHelper::get('url'))
+			{
+				$url = InputHelper::get('url');
+				if (!preg_match('/^https?:\/\//', $url))
+					throw new SimpleException('Invalid URL "' . $url . '"');
+				$origName = $url;
+				$sourcePath = tempnam(sys_get_temp_dir(), 'upload') . '.dat';
+
+				//warning: low level sh*t ahead
+				//download the URL $url into $sourcePath
+				$maxBytes = TextHelper::stripBytesUnits(ini_get('upload_max_filesize'));
+				set_time_limit(0);
+				$urlFP = fopen($url, 'rb');
+				if (!$urlFP)
+					throw new SimpleException('Cannot open URL for reading');
+				$sourceFP = fopen($sourcePath, 'w+b');
+				if (!$sourceFP)
+				{
+					fclose($urlFP);
+					throw new SimpleException('Cannot open file for writing');
+				}
+				try
+				{
+					while (!feof($urlFP))
+					{
+						$buffer = fread($urlFP, 4 * 1024);
+						if (fwrite($sourceFP, $buffer) === false)
+							throw new SimpleException('Cannot write into file');
+						fflush($sourceFP);
+						if (ftell($sourceFP) > $maxBytes)
+							throw new SimpleException('File is too big (maximum allowed size: ' . TextHelper::useBytesUnits($maxBytes) . ')');
+					}
+				}
+				finally
+				{
+					fclose($urlFP);
+					fclose($sourceFP);
+				}
+			}
 
 
 			/* file details */
-			$mimeType = mime_content_type($suppliedFile['tmp_name']);
+			$mimeType = mime_content_type($sourcePath);
 			$imageWidth = null;
 			$imageHeight = null;
 			switch ($mimeType)
@@ -220,17 +265,17 @@ class PostController
 				case 'image/png':
 				case 'image/jpeg':
 					$postType = PostType::Image;
-					list ($imageWidth, $imageHeight) = getimagesize($suppliedFile['tmp_name']);
+					list ($imageWidth, $imageHeight) = getimagesize($sourcePath);
 					break;
 				case 'application/x-shockwave-flash':
 					$postType = PostType::Flash;
-					list ($imageWidth, $imageHeight) = getimagesize($suppliedFile['tmp_name']);
+					list ($imageWidth, $imageHeight) = getimagesize($sourcePath);
 					break;
 				default:
 					throw new SimpleException('Invalid file type "' . $mimeType . '"');
 			}
 
-			$fileHash = md5_file($suppliedFile['tmp_name']);
+			$fileHash = md5_file($sourcePath);
 			$duplicatedPost = R::findOne('post', 'file_hash = ?', [$fileHash]);
 			if ($duplicatedPost !== null)
 				throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
@@ -260,9 +305,9 @@ class PostController
 			$dbPost = R::dispense('post');
 			$dbPost->type = $postType;
 			$dbPost->name = $name;
-			$dbPost->orig_name = basename($suppliedFile['name']);
+			$dbPost->orig_name = $origName;
 			$dbPost->file_hash = $fileHash;
-			$dbPost->file_size = filesize($suppliedFile['tmp_name']);
+			$dbPost->file_size = filesize($sourcePath);
 			$dbPost->mime_type = $mimeType;
 			$dbPost->safety = $suppliedSafety;
 			$dbPost->source = $suppliedSource;
@@ -274,7 +319,10 @@ class PostController
 			$dbPost->ownFavoritee = [];
 			$dbPost->sharedTag = $dbTags;
 
-			move_uploaded_file($suppliedFile['tmp_name'], $path);
+			if (is_uploaded_file($sourcePath))
+				move_uploaded_file($sourcePath, $path);
+			else
+				rename($sourcePath, $path);
 			R::store($dbPost);
 
 			$this->context->transport->success = true;

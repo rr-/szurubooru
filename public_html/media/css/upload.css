@@ -26,6 +26,11 @@
 	border-color: firebrick;
 }
 
+#url-handler textarea {
+	width: 50%;
+	height: 6em;
+}
+
 .post .thumbnail {
 	width: 100px;
 	height: 100px;
@@ -144,4 +149,14 @@ ul.tagit {
 
 .post .form-wrapper {
 	overflow: hidden;
+}
+
+.tab.url {
+	display: none;
+}
+.tab {
+	margin-bottom: 1em;
+}
+.tab textarea {
+	margin-bottom: 0.5em;
 }

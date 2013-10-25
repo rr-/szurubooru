@@ -63,6 +63,18 @@ class TextHelper
 		return constant($constantName);
 	}
 
+	private static function stripUnits($string, $base, $suffixes)
+	{
+		$suffix = substr($string, -1, 1);
+		$index = array_search($suffix, $suffixes);
+		if ($index === false)
+			return $string;
+		$number = intval($string);
+		for ($i = 0; $i < $index; $i ++)
+			$number *= $base;
+		return $number;
+	}
+
 	private static function useUnits($number, $base, $suffixes)
 	{
 		$suffix = array_shift($suffixes);
@@ -87,6 +99,16 @@ class TextHelper
 	public static function useDecimalUnits($number)
 	{
 		return self::useUnits($number, 1000, ['', 'K', 'M']);
+	}
+
+	public static function stripBytesUnits($string)
+	{
+		return self::stripUnits($string, 1024, ['B', 'K', 'M', 'G']);
+	}
+
+	public static function stripDecimalUnits($string)
+	{
+		return self::stripUnits($string, 1000, ['', 'K', 'M']);
 	}
 
 	public static function removeUnsafeKeys(&$input, $regex)

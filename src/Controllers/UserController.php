@@ -359,6 +359,7 @@ class UserController
 			$page = 1;
 
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+		$this->context->stylesheets []= 'tabs.css';
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'post-small.css';

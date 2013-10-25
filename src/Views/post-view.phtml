@@ -96,7 +96,9 @@
 			<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
 				<i class="icon-dl"></i>
 				<span class="ext">
-					<?php echo strtoupper(substr($this->context->transport->post->orig_name, strrpos($this->context->transport->post->orig_name, '.') + 1)) ?>
+					<?php $mimes = ['image/jpeg' => 'JPG', 'image/gif' => 'GIF', 'image/png' => 'PNG', 'application/x-shockwave-flash' => 'SWF'] ?>
+					<?php $mime = $this->context->transport->post->mimeType ?>
+					<?php echo isset($mimes[$mime]) ? $mimes[$mime] : 'unknown' ?>
 				</span>
 				<span class="size">
 					<?php echo TextHelper::useBytesUnits($this->context->transport->post->file_size) ?>

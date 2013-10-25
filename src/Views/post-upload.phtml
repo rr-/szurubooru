@@ -14,11 +14,40 @@
 
 	<div id="inner-content">
 		<div id="upload-step1">
-			<input type=file multiple style="display: none"/>
-			<div id="file-handler-wrapper">
-				<div id="file-handler">
-					Drop files here!<br>
-					Or just click on this box.
+			<div class="tabs">
+				<nav>
+					<ul>
+						<li class="selected file">
+							<a href="#">
+								Upload from file
+							</a>
+						</li>
+
+						<li class="url">
+							<a href="#">
+								Upload from URL
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+			<div class="tab file">
+				<input type=file multiple style="display: none"/>
+				<div id="file-handler-wrapper">
+					<div id="file-handler">
+						Drop files here!<br>
+						Or just click on this box.<br><br>
+					</div>
+				</div>
+			</div>
+
+			<div class="tab url">
+				<div id="url-handler-wrapper">
+					<div id="url-handler">
+						<textarea placeholder="You can also paste some URLs." name="urls"></textarea>
+					</div>
+					<button type="submit">Submit</button>
 				</div>
 			</div>
 

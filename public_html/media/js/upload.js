@@ -1,35 +1,36 @@
 $(function()
 {
+	$('.tabs nav a').click(function(e)
+	{
+		e.preventDefault();
+		var className = $(this).parents('li').attr('class').replace('selected', '').replace(/^\s+|\s+$/, '');
+		$('.tabs nav li').removeClass('selected');
+		$(this).parents('li').addClass('selected');
+		$('.tab').hide();
+		$('.tab.' + className).show();
+	});
+
 	var tags = [];
 	$.getJSON('/tags?json', function(data)
 	{
 		tags = data['tags'];
 	});
 
-	var handler = $('#file-handler');
-	handler.on('dragenter', function(e)
+	$('#file-handler').on('dragenter', function(e)
 	{
 		$(this).addClass('active');
-	});
-
-	handler.on('dragleave', function(e)
+	}).on('dragleave', function(e)
 	{
 		$(this).removeClass('active');
-	});
-
-	handler.on('dragover', function(e)
+	}).on('dragover', function(e)
 	{
 		e.preventDefault();
-	});
-
-	handler.on('drop', function(e)
+	}).on('drop', function(e)
 	{
 		e.preventDefault();
 		handleFiles(e.originalEvent.dataTransfer.files);
 		$(this).trigger('dragleave');
-	});
-
-	handler.on('click', function(e)
+	}).on('click', function(e)
 	{
 		$(':file').show().focus().trigger('click').hide();
 	});
@@ -38,6 +39,16 @@ $(function()
 	{
 		handleFiles(this.files);
 	});
+
+
+
+	$('#url-handler-wrapper button').click(function(e)
+	{
+		var urls = $('#url-handler-wrapper textarea').val().split(/\s+/);
+		handleURLs(urls);
+	});
+
+
 
 	$('.post .move-down-trigger, .post .move-up-trigger').on('click', function()
 	{
@@ -62,6 +73,7 @@ $(function()
 	});
 
 
+
 	function sendNextPost()
 	{
 		var posts = $('#upload-step2 .post');
@@ -73,12 +85,14 @@ $(function()
 
 		var postDom = posts.first();
 		var url = postDom.find('form').attr('action') + '?json';
-		var file = postDom.data('file');
+		var sourceFile = postDom.data('file');
+		var sourceUrl = postDom.data('url');
 		var tags = postDom.find('[name=tags]').val();
 		var safety = postDom.find('[name=safety]:checked').val();
 		var source = postDom.find('[name=source]').val();
 		var fd = new FormData();
-		fd.append('file', file);
+		fd.append('file', sourceFile);
+		fd.append('url', sourceUrl);
 		fd.append('tags', tags);
 		fd.append('safety', safety);
 		fd.append('source', source);
@@ -146,16 +160,53 @@ $(function()
 
 	function handleFiles(files)
 	{
+		handleInputs(files, function(postDom, file)
+		{
+			postDom.data('file', file);
+			$('.file-name strong', postDom).text(file.name);
+
+			if (file.type.match('image.*'))
+			{
+				var img = postDom.find('img')
+				var reader = new FileReader();
+				reader.onload = (function(theFile, img)
+				{
+					return function(e)
+					{
+						img.css('background-image', 'none');
+						img.attr('src', e.target.result);
+					};
+				})(file, img);
+				reader.readAsDataURL(file);
+			}
+		});
+	}
+
+	function handleURLs(urls)
+	{
+		handleInputs(urls, function(postDom, url)
+		{
+			postDom.data('url', url);
+			$('.file-name strong', postDom).text(url);
+			$('[name=source]', postDom).val(url);
+
+			var img = postDom.find('img');
+			img.css('background-image', 'none');
+			img.attr('src', url);
+		});
+	}
+
+	function handleInputs(inputs, callback)
+	{
 		$('#upload-step1').fadeOut(function()
 		{
-			for (var i = 0; i < files.length; i ++)
+			for (var i = 0; i < inputs.length; i ++)
 			{
-				var file = files[i];
+				var input = inputs[i];
 				var postDom = $('#post-template').clone(true);
 				postDom.find('form').submit(false);
 				postDom.removeAttr('id');
-				postDom.data('file', file);
-				$('.file-name strong', postDom).text(file.name);
+
 				$('.posts').append(postDom);
 
 				postDom.show();
@@ -164,26 +215,7 @@ $(function()
 				tagItOptions.placeholderText = $('.tags input').attr('placeholder');
 				$('.tags input', postDom).tagit(tagItOptions);
 
-				if (!file.type.match('image.*'))
-				{
-					continue;
-				}
-
-				var img = postDom.find('img')
-				var reader = new FileReader();
-				reader.onload = (function(theFile, img)
-				{
-					return function(e)
-					{
-						/*img.css('max-width', img.css('width'));
-						img.css('max-height', img.css('height'));
-						img.css('width', 'auto');
-						img.css('height', 'auto');*/
-						img.css('background-image', 'none');
-						img.attr('src', e.target.result);
-					};
-				})(file, img);
-				reader.readAsDataURL(file);
+				callback(postDom, input);
 			}
 			$('#upload-step2').fadeIn(function()
 			{
