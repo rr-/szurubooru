@@ -207,9 +207,9 @@ function getTagItOptions()
 
 $(function()
 {
-	Mousetrap.bind('q', function() { $('#top-nav input').focus(); return false; });
+	Mousetrap.bind('q', function() { $('#top-nav input').focus(); return false; }, 'keyup');
 	Mousetrap.bind('w', function() { $('body,html').animate({scrollTop: '-=150px'}, 200); });
 	Mousetrap.bind('s', function() { $('body,html').animate({scrollTop: '+=150px'}, 200); });
-	Mousetrap.bind('a', function() { var url = $('.paginator .prev:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; });
-	Mousetrap.bind('d', function() { var url = $('.paginator .next:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; });
+	Mousetrap.bind('a', function() { var url = $('.paginator .prev:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
+	Mousetrap.bind('d', function() { var url = $('.paginator .next:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
 });

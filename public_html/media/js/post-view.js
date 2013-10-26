@@ -121,7 +121,7 @@ $(function()
 		$.ajax(ajaxData);
 	});
 
-	Mousetrap.bind('a', function() { var url = $('#sidebar .left a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; });
-	Mousetrap.bind('d', function() { var url = $('#sidebar .right a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; });
-	Mousetrap.bind('e', function() { $('li.edit a').trigger('click'); return false; });
+	Mousetrap.bind('a', function() { var url = $('#sidebar .left a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
+	Mousetrap.bind('d', function() { var url = $('#sidebar .right a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
+	Mousetrap.bind('e', function() { $('li.edit a').trigger('click'); return false; }, 'keyup');
 });
