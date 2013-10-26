@@ -87,8 +87,12 @@
 
 		<div class="key-value source">
 			<span class="key">Source:</span>
-			<span class="value" title="<?php echo $val = htmlspecialchars($this->context->transport->post->source) ?>">
-				<?php echo $val ?>
+			<span class="value" title="<?php echo $val = htmlspecialchars($this->context->transport->post->source ?: 'unknown') ?>">
+				<?php if (preg_match('/^((https?|ftp):|)\/\//', $val)): ?>
+					<a href="<?php echo $val ?>"><?php echo $val ?></a>
+				<?php else: ?>
+					<?php echo $val ?>
+				<?php endif ?>
 			</span>
 		</div>
 
