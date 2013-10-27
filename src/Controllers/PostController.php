@@ -119,7 +119,7 @@ class PostController
 				return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
 					$this->context->user->hasEnabledSafety($safety);
 			});
-			$dbQuery->where('safety IN (' . R::genSlots($allowedSafety) . ')');
+			$dbQuery->where('safety')->in('(' . R::genSlots($allowedSafety) . ')');
 			foreach ($allowedSafety as $s)
 				$dbQuery->put($s);
 
@@ -586,6 +586,14 @@ class PostController
 				->from('post')
 				->where($next ? 'id > ?' : 'id < ?')
 				->put($id);
+			$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
+			{
+				return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
+					$this->context->user->hasEnabledSafety($safety);
+			});
+			$dbQuery->and('safety')->in('(' . R::genSlots($allowedSafety) . ')');
+			foreach ($allowedSafety as $s)
+				$dbQuery->put($s);
 			if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
 				$dbQuery->andNot('hidden');
 			$dbQuery->orderBy($next ? 'id asc' : 'id desc')
@@ -611,7 +619,7 @@ class PostController
 		$dbQuery->from('tag');
 		$dbQuery->innerJoin('post_tag');
 		$dbQuery->on('tag.id = post_tag.tag_id');
-		$dbQuery->where('tag.id IN (' . R::genSlots($post->sharedTag) . ')');
+		$dbQuery->where('tag.id')->in('(' . R::genSlots($post->sharedTag) . ')');
 		foreach ($post->sharedTag as $tag)
 			$dbQuery->put($tag->id);
 		$dbQuery->groupBy('tag.id');
