@@ -414,7 +414,7 @@ class PostController
 				if ($imageWidth != $this->config->browsing->thumbHeight)
 					throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbHeight . ')');
 
-				$path = $this->config->main->thumbsPath . DS . $post->name;
+				$path = $this->config->main->thumbsPath . DS . $post->name . '.custom';
 				move_uploaded_file($suppliedFile['tmp_name'], $path);
 			}
 
@@ -640,7 +640,9 @@ class PostController
 	{
 		$this->context->layoutName = 'layout-file';
 
-		$path = $this->config->main->thumbsPath . DS . $name;
+		$path = $this->config->main->thumbsPath . DS . $name . '.custom';
+		if (!file_exists($path))
+			$path = $this->config->main->thumbsPath . DS . $name . '.default';
 		if (!file_exists($path))
 		{
 			$post = Model_Post::locate($name);
@@ -648,7 +650,6 @@ class PostController
 			PrivilegesHelper::confirmWithException(Privilege::ViewPost);
 			PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
 			$srcPath = $this->config->main->filesPath . DS . $post->name;
-			$dstPath = $path;
 			$dstWidth = $this->config->browsing->thumbWidth;
 			$dstHeight = $this->config->browsing->thumbHeight;
 
@@ -711,7 +712,7 @@ class PostController
 						throw new SimpleException('Unknown thumbnail crop style');
 				}
 
-				imagepng($dstImage, $dstPath);
+				imagepng($dstImage, $path);
 				imagedestroy($srcImage);
 				imagedestroy($dstImage);
 			}
