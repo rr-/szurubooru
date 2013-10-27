@@ -1,5 +1,5 @@
 #sidebar {
-	width: 200px;
+	width: 224px;
 	line-height: 1.33em;
 	font-size: 90%;
 }
@@ -49,6 +49,9 @@ embed {
 #sidebar .uploader img {
 	vertical-align: middle;
 	margin: 0 0.5em 0 0;
+	width: 16px;
+	height: 16px;
+	background-image: url('http://www.gravatar.com/avatar/0?f=y&d=mm&s=16');
 }
 
 i.icon-prev {
