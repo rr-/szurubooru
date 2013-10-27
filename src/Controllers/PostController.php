@@ -826,11 +826,24 @@ class PostController
 
 			switch ($key)
 			{
+				case 'id':
+					$ids = preg_split('/[;,]/', $val);
+					$ids = array_map('intval', $ids);
+					$dbQuery->$andFunc('id')->in('(' . R::genSlots($ids) . ')');
+					foreach ($ids as $id)
+						$dbQuery->put($id);
+					break;
+
+				case 'idmin':
+				case 'idmax':
+					$operator = $key == 'idmin' ? '>=' : '<=';
+					$dbQuery->$andFunc('id ' . $operator . ' ?')->put(intval($val));
+					break;
+
 				case 'favmin':
 				case 'favmax':
 					$operator = $key == 'favmin' ? '>=' : '<=';
-					$dbQuery
-						->$andFunc('fav_count ' . $operator . ' ?')->put(intval($val));
+					$dbQuery->$andFunc('fav_count ' . $operator . ' ?')->put(intval($val));
 					break;
 
 				case 'type':
