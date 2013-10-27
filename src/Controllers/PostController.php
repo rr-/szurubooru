@@ -673,13 +673,24 @@ class PostController
 					break;
 				case 'application/x-shockwave-flash':
 					$srcImage = null;
-					exec('which swfrender', $tmp, $exitCode);
+					exec('which dump-gnash', $tmp, $exitCode);
 					if ($exitCode == 0)
 					{
 						$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-						exec('swfrender ' . $srcPath . ' -o ' . $tmpPath);
+						exec('dump-gnash --screenshot last --screenshot-file ' . $tmpPath . ' -1 -r1 --max-advances 15 ' . $srcPath);
 						if (file_exists($tmpPath))
 							$srcImage = imagecreatefrompng($tmpPath);
+					}
+					if (!$srcImage)
+					{
+						exec('which swfrender', $tmp, $exitCode);
+						if ($exitCode == 0)
+						{
+							$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
+							exec('swfrender ' . $srcPath . ' -o ' . $tmpPath);
+							if (file_exists($tmpPath))
+								$srcImage = imagecreatefrompng($tmpPath);
+						}
 					}
 					break;
 				default:
