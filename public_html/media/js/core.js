@@ -158,10 +158,11 @@ $(function()
 			source: function(request, response)
 			{
 				var term = extractLast(request.term);
-				$.get(searchInput.attr('data-autocomplete-url') + '?json', {filter: term}, function(data)
-				{
-					response($.map(data.tags, function(tag) { return { label: tag, value: tag }; }));
-				});
+				if (term != '')
+					$.get(searchInput.attr('data-autocomplete-url') + '?json', {filter: term}, function(data)
+					{
+						response($.map(data.tags, function(tag) { return { label: tag, value: tag }; }));
+					});
 			},
 			focus: function()
 			{

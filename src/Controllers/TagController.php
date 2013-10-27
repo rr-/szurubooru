@@ -17,7 +17,7 @@ class TagController
 		$dbQuery->from('tag');
 		$dbQuery->innerJoin('post_tag');
 		$dbQuery->on('tag.id = post_tag.tag_id');
-		if ($suppliedFilter)
+		if ($suppliedFilter !== null)
 		{
 			if (strlen($suppliedFilter) >= 3)
 				$suppliedFilter = '%' . $suppliedFilter;
@@ -26,7 +26,7 @@ class TagController
 		}
 		$dbQuery->groupBy('tag.id');
 		$dbQuery->orderBy('LOWER(tag.name)')->asc();
-		if ($suppliedFilter)
+		if ($suppliedFilter !== null)
 			$dbQuery->limit(15);
 		$rows = $dbQuery->get();
 		$tags = R::convertToBeans('tag', $rows);
