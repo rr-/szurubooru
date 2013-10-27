@@ -21,10 +21,14 @@
 <li>uploaded by David: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'submit:David']) ?>"><code>submit:David</code></a> (note no spaces)</li>
 <li>favorited by David: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'fav:David']) ?>"><code>fav:David</code></a></li>
 <li>favorited by at least four users: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'favmin:4']) ?>"><code>favmin:4</code></a></li>
+<li>commented by at least three users: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'commentmin:3']) ?>"><code>commentmin:3</code></a></li>
+<li>tagged with at least seven tags: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'tagmin:7']) ?>"><code>tagmin:7</code></a></li>
 <li>exactly from the specified date: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2001']) ?>"><code>date:2001</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2012-09-29']) ?>"><code>date:2012-09-29</code></a> (yyyy-mm-dd format)</li>
 <li>from the specified date onwards: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'datemin:2001-01-01']) ?>"><code>datemin:2001-01-01</code></a></li>
 <li>up to the specified date: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'datemax:2004-07']) ?>"><code>datemax:2004-07</code></a></li>
-<li>by content type: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:img']) ?>"><code>type:img</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:swf']) ?>"><code>type:swf</code></a> (images and flash files, respectively)</li>
+<li>having specific ID: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'id:1,2,3,8']) ?>"><code>id:1,2,3,8</code></a></li>
+<li>having ID no less than specified value: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'idmin:28']) ?>"><code>idmin:28</code></a></li>
+<li>by content type: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:img']) ?>"><code>type:img</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:swf']) ?>"><code>type:swf</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:yt'] )?>"><code>type:yt</code></a> (images, flash files and Youtube videos, respectively)</li>
 </ul>
 
 <p>You can combine tags and negate any of them for interesting results. <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'sea -favmin:8 type:swf submit:Pirate']) ?>"><code>sea -favmin:8 type:swf submit:Pirate</code></a> will show you <strong>flash files</strong> tagged as <strong>sea</strong>, that were <strong>liked by seven people</strong> at most, uploaded by user <strong>Pirate</strong>.</p>
