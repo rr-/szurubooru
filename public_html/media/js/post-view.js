@@ -12,17 +12,20 @@ $(function()
 		var tags = [];
 		$.getJSON('/tags?json', function(data)
 		{
+			aDom.removeClass('inactive');
+			var formDom = $('form.edit-post');
 			tags = data['tags'];
 
-			var tagItOptions = getTagItOptions();
-			tagItOptions.availableTags = tags;
-			tagItOptions.placeholderText = $('.tags input').attr('placeholder');
-			$('.tags input').tagit(tagItOptions);
+			if (!$(formDom).is(':visible'))
+			{
+				var tagItOptions = getTagItOptions();
+				tagItOptions.availableTags = tags;
+				tagItOptions.placeholderText = $('.tags input').attr('placeholder');
+				$('.tags input').tagit(tagItOptions);
+				formDom.show().css('height', formDom.height()).hide().slideDown();
+			}
 
-			e.preventDefault();
-			var formDom = $('form.edit-post');
-			formDom.show().css('height', formDom.height()).hide().slideDown();
-
+			formDom.find('input[type=text]:visible:eq(0)').focus();
 			$('html, body').animate({ scrollTop: $(formDom).offset().top + 'px' }, 'fast');
 		});
 	});
