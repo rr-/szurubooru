@@ -846,6 +846,18 @@ class PostController
 					$dbQuery->$andFunc('fav_count ' . $operator . ' ?')->put(intval($val));
 					break;
 
+				case 'tagmin':
+				case 'tagmax':
+					$operator = $key == 'tagmin' ? '>=' : '<=';
+					$dbQuery->$andFunc('tag_count ' . $operator . ' ?')->put(intval($val));
+					break;
+
+				case 'commentmin':
+				case 'commentmax':
+					$operator = $key == 'commentmin' ? '>=' : '<=';
+					$dbQuery->$andFunc('comment_count ' . $operator . ' ?')->put(intval($val));
+					break;
+
 				case 'type':
 					switch ($val)
 					{
