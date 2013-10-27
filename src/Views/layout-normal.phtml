@@ -67,7 +67,7 @@
 						}
 					?>
 
-					<?php if ($this->context->loggedIn): ?>
+					<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->user))): ?>
 						<li class="safety">
 							<ul>
 								<?php foreach (PostSafety::getAll() as $safety): ?>

@@ -72,7 +72,8 @@ class CommentController
 			$text = Model_Comment::validateText($text);
 			$comment = R::dispense('comment');
 			$comment->post = $post;
-			$comment->commenter = $this->context->user;
+			if ($this->context->loggedIn)
+				$comment->commenter = $this->context->user;
 			$comment->comment_date = time();
 			$comment->text = $text;
 			if (InputHelper::get('sender') != 'preview')

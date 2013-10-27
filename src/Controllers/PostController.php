@@ -341,7 +341,8 @@ class PostController
 			$dbPost->upload_date = time();
 			$dbPost->image_width = $imageWidth;
 			$dbPost->image_height = $imageHeight;
-			$dbPost->uploader = $this->context->user;
+			if ($this->context->loggedIn)
+				$dbPost->uploader = $this->context->user;
 			$dbPost->ownFavoritee = [];
 			$dbPost->sharedTag = $dbTags;
 

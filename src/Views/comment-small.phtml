@@ -2,10 +2,10 @@
 	<div class="avatar">
 		<?php if ($this->context->comment->commenter): ?>
 			<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->comment->commenter->name]) ?>">
-				<img src="<?php echo htmlspecialchars($this->context->comment->commenter->getAvatarUrl(40)) ?>" alt="<?php echo $this->context->comment->commenter->name ?: '[deleted user]' ?>"/>
+				<img src="<?php echo htmlspecialchars($this->context->comment->commenter->getAvatarUrl(40)) ?>" alt="<?php echo $this->context->comment->commenter->name ?: '[unknown user]' ?>"/>
 			</a>
 		<?php else: ?>
-			<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="[deleted user]">
+			<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="[unknown user]">
 		<?php endif ?>
 	</div>
 
@@ -17,7 +17,7 @@
 						<?php echo $this->context->comment->commenter->name ?>
 					</a>
 				<?php else: ?>
-					[deleted user]
+					[unknown user]
 				<?php endif ?>
 			</span>
 

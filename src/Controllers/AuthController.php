@@ -4,6 +4,7 @@ class AuthController
 	public static function tryLogin($name, $password)
 	{
 		$config = \Chibi\Registry::getConfig();
+		$context = \Chibi\Registry::getContext();
 
 		$dbUser = R::findOne('user', 'name = ?', [$name]);
 		if ($dbUser === null)
@@ -22,8 +23,8 @@ class AuthController
 		if ($config->registration->needEmailForRegistering)
 			PrivilegesHelper::confirmEmail($dbUser);
 
-		$_SESSION['user-id'] = $dbUser->id;
-		$_SESSION['user'] = serialize($dbUser);
+		$context->user = $dbUser;
+		self::doReLog();
 		\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 		return $dbUser;
 	}
@@ -75,9 +76,56 @@ class AuthController
 	public function logoutAction()
 	{
 		$this->context->viewName = null;
-		$this->context->viewName = null;
-		unset($_SESSION['user-id']);
+		$this->context->layoutName = null;
+		self::doLogOut();
 		setcookie('auth', false, 0, '/');
 		\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
+	}
+
+	public static function doLogOut()
+	{
+		unset($_SESSION['user']);
+	}
+
+	public static function doLogIn()
+	{
+		$context = \Chibi\Registry::getContext();
+		if (!isset($_SESSION['user']))
+		{
+			if (!empty($context->user) and $context->user->id)
+			{
+				$dbUser = R::findOne('user', 'id = ?', [$context->user->id]);
+				$_SESSION['user'] = serialize($dbUser);
+			}
+			else
+			{
+				$dummy = R::dispense('user');
+				$dummy->name = 'Anonymous';
+				$dummy->access_rank = AccessRank::Anonymous;
+				$dummy->anonymous = true;
+				$_SESSION['user'] = serialize($dummy);
+			}
+		}
+		$context->user = unserialize($_SESSION['user']);
+		#throw new SimpleException($context->user->anonymous ? '1' : '0');
+		$context->loggedIn = $context->user->anonymous ? false : true;
+		if (!$context->loggedIn)
+		{
+			try
+			{
+				self::tryAutoLogin();
+			}
+			catch (Exception $e)
+			{
+			}
+		}
+	}
+
+	public static function doReLog()
+	{
+		$context = \Chibi\Registry::getContext();
+		if ($context->user !== null)
+			$_SESSION['user'] = serialize($context->user);
+		self::doLogIn();
 	}
 }

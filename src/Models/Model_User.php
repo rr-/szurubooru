@@ -41,17 +41,6 @@ class Model_User extends RedBean_SimpleModel
 		$this->settings = $settings;
 	}
 
-	public function update()
-	{
-		$context = \Chibi\Registry::getContext();
-		if ($context->user->id == $this->id)
-		{
-			$context->user = $this;
-			unset($_SESSION['user']);
-		}
-	}
-
-
 
 	const SETTING_SAFETY = 1;
 	const SETTING_ENDLESS_SCROLLING = 2;
@@ -60,7 +49,7 @@ class Model_User extends RedBean_SimpleModel
 	{
 		$all = $this->getSetting(self::SETTING_SAFETY);
 		if (!$all)
-			return true;
+			return $safety == PostSafety::toFlag(PostSafety::Safe);
 		return $all & PostSafety::toFlag($safety);
 	}
 

@@ -209,6 +209,8 @@ class UserController
 				R::store($post);
 			}
 			$user->ownFavoritee = [];
+			if ($user->id == $this->context->user->id)
+				AuthController::doLogOut();
 			R::store($user);
 			R::trash($user);
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
@@ -247,7 +249,7 @@ class UserController
 			$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
 
 			R::store($user);
-			$this->context->transport->user = $user;
+			AuthController::doReLog();
 			$this->context->transport->success = true;
 		}
 	}
@@ -453,7 +455,9 @@ class UserController
 		$this->context->user->enableSafety($safety,
 			!$this->context->user->hasEnabledSafety($safety));
 
-		R::store($this->context->user);
+		AuthController::doReLog();
+		if (!$this->context->user->anonymous)
+			R::store($this->context->user);
 
 		$this->context->transport->success = true;
 	}
@@ -535,8 +539,8 @@ class UserController
 
 			if (!$this->config->registration->needEmailForRegistering and !$this->config->registration->staffActivation)
 			{
-				$_SESSION['user-id'] = $dbUser->id;
-				\Chibi\Registry::getBootstrap()->attachUser();
+				$this->context->user = $dbUser;
+				AuthController::doReLog();
 			}
 		}
 	}
@@ -567,8 +571,8 @@ class UserController
 
 		if (!$this->config->registration->staffActivation)
 		{
-			$_SESSION['user-id'] = $dbUser->id;
-			\Chibi\Registry::getBootstrap()->attachUser();
+			$this->context->user = $dbUser;
+			AuthController::doReLog();
 		}
 	}
 }

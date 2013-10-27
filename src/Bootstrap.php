@@ -1,41 +1,6 @@
 <?php
 class Bootstrap
 {
-	public function attachUser()
-	{
-		$this->context->loggedIn = false;
-		if (isset($_SESSION['user-id']))
-		{
-			if (!isset($_SESSION['user']))
-			{
-				$dbUser = R::findOne('user', 'id = ?', [$_SESSION['user-id']]);
-				$_SESSION['user'] = serialize($dbUser);
-			}
-			$this->context->user = unserialize($_SESSION['user']);
-			if (!empty($this->context->user))
-			{
-				$this->context->loggedIn = true;
-			}
-		}
-		if (!$this->context->loggedIn)
-		{
-			try
-			{
-				AuthController::tryAutoLogin();
-			}
-			catch (Exception $e)
-			{
-			}
-		}
-		if (empty($this->context->user))
-		{
-			$dummy = R::dispense('user');
-			$dummy->name = 'Anonymous';
-			$dummy->access_rank = AccessRank::Anonymous;
-			$this->context->user = $dummy;
-		}
-	}
-
 	public function workWrapper($workCallback)
 	{
 		$this->config->chibi->baseUrl = 'http://' . rtrim($_SERVER['HTTP_HOST'], '/') . '/';
@@ -62,7 +27,7 @@ class Bootstrap
 		$this->context->transport = new StdClass;
 		$this->context->transport->success = null;
 
-		$this->attachUser();
+		AuthController::doLogIn();
 
 		if (empty($this->context->route))
 		{
