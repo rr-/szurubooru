@@ -56,58 +56,21 @@ class UserController
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
 
-		$page = intval($page);
-		$usersPerPage = intval($this->config->browsing->usersPerPage);
-		$this->context->subTitle = 'users';
-		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
-
 		if ($sortStyle == '' or $sortStyle == 'alpha')
 			$sortStyle = 'alpha,asc';
 		if ($sortStyle == 'date')
 			$sortStyle = 'date,asc';
 
-		$buildDbQuery = function($dbQuery, $sortStyle)
-		{
-			$dbQuery->from('user');
+		$page = intval($page);
+		$usersPerPage = intval($this->config->browsing->usersPerPage);
+		$this->context->subTitle = 'users';
+		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
 
-			switch ($sortStyle)
-			{
-				case 'alpha,asc':
-					$dbQuery->orderBy('name')->asc();
-					break;
-				case 'alpha,desc':
-					$dbQuery->orderBy('name')->desc();
-					break;
-				case 'date,asc':
-					$dbQuery->orderBy('join_date')->asc();
-					break;
-				case 'date,desc':
-					$dbQuery->orderBy('join_date')->desc();
-					break;
-				case 'pending':
-					$dbQuery->where('staff_confirmed IS NULL');
-					$dbQuery->or('staff_confirmed = 0');
-					break;
-				default:
-					throw new SimpleException('Unknown sort style');
-			}
-		};
-
-		$countDbQuery = R::$f->begin();
-		$countDbQuery->select('COUNT(1)')->as('count');
-		$buildDbQuery($countDbQuery, $sortStyle);
-		$userCount = intval($countDbQuery->get('row')['count']);
+		$userCount = Model_User::getEntityCount($sortStyle);
 		$pageCount = ceil($userCount / $usersPerPage);
 		$page = max(1, min($pageCount, $page));
+		$users = Model_User::getEntities($sortStyle, $usersPerPage, $page);
 
-		$searchDbQuery = R::$f->begin();
-		$searchDbQuery->select('user.*');
-		$buildDbQuery($searchDbQuery, $sortStyle);
-		$searchDbQuery->limit('?')->put($usersPerPage);
-		$searchDbQuery->offset('?')->put(($page - 1) * $usersPerPage);
-
-		$users = $searchDbQuery->get();
-		$users = R::convertToBeans('user', $users);
 		$this->context->sortStyle = $sortStyle;
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
@@ -369,67 +332,19 @@ class UserController
 			$this->context->scripts []= 'paginator-endless.js';
 		$this->context->subTitle = $name;
 
-		$buildDbQuery = function($dbQuery, $user, $tab)
-		{
-			$dbQuery->from('post');
+		$query = '';
+		if ($tab == 'uploads')
+			$query = 'submit:' . $user->name;
+		elseif ($tab == 'favs')
+			$query = 'fav:' . $user->name;
+		else
+			throw new SimpleException('Wrong tab');
 
-
-			/* safety */
-			$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
-			{
-				return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
-					$this->context->user->hasEnabledSafety($safety);
-			});
-			$dbQuery->where('safety IN (' . R::genSlots($allowedSafety) . ')');
-			foreach ($allowedSafety as $s)
-				$dbQuery->put($s);
-
-
-			/* hidden */
-			if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
-				$dbQuery->andNot('hidden');
-
-
-			/* tab */
-			switch ($tab)
-			{
-				case 'uploads':
-					$dbQuery
-						->and('uploader_id = ?')
-						->put($user->id);
-					break;
-				case 'favs':
-					$dbQuery
-						->and()
-						->exists()
-						->open()
-						->select('1')
-						->from('favoritee')
-						->where('post_id = post.id')
-						->and('favoritee.user_id = ?')
-						->put($user->id)
-						->close();
-					break;
-			}
-		};
-
-		$countDbQuery = R::$f->begin()->select('COUNT(*)')->as('count');
-		$buildDbQuery($countDbQuery, $user, $tab);
-		$postCount = intval($countDbQuery->get('row')['count']);
+		$postCount = Model_Post::getEntityCount($query);
 		$pageCount = ceil($postCount / $postsPerPage);
 		$page = max(1, min($pageCount, $page));
+		$posts = Model_Post::getEntities($query, $postsPerPage, $page);
 
-		$searchDbQuery = R::$f->begin()->select('*');
-		$buildDbQuery($searchDbQuery, $user, $tab);
-		$searchDbQuery->orderBy('id DESC')
-			->limit('?')
-			->put($postsPerPage)
-			->offset('?')
-			->put(($page - 1) * $postsPerPage);
-
-		$posts = $searchDbQuery->get();
-		$posts = R::convertToBeans('post', $posts);
-		R::preload($posts, ['uploader' => 'user']);
 		$this->context->transport->user = $user;
 		$this->context->transport->tab = $tab;
 		$this->context->transport->paginator = new StdClass;

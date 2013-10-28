@@ -12,35 +12,13 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 		$suppliedFilter = InputHelper::get('filter');
 
-		$dbQuery = R::$f->begin();
-		$dbQuery->select('tag.*, COUNT(1) AS count');
-		$dbQuery->from('tag');
-		$dbQuery->innerJoin('post_tag');
-		$dbQuery->on('tag.id = post_tag.tag_id');
-		if ($suppliedFilter !== null)
-		{
-			if (strlen($suppliedFilter) >= 3)
-				$suppliedFilter = '%' . $suppliedFilter;
-			$suppliedFilter .= '%';
-			$dbQuery->where('LOWER(tag.name) LIKE LOWER(?)')->put($suppliedFilter);
-		}
-		$dbQuery->groupBy('tag.id');
-		$dbQuery->orderBy('LOWER(tag.name)')->asc();
-		if ($suppliedFilter !== null)
-			$dbQuery->limit(15);
-		$rows = $dbQuery->get();
-		$tags = R::convertToBeans('tag', $rows);
-
-		$tags = [];
-		$tagDistribution = [];
-		foreach ($rows as $row)
-		{
-			$tags []= strval($row['name']);
-			$tagDistribution[$row['name']] = intval($row['count']);
-		}
-
+		$tags = Model_Tag::getEntities($suppliedFilter, null, null);
 		$this->context->transport->tags = $tags;
-		$this->context->transport->tagDistribution = $tagDistribution;
+
+		if ($this->context->json)
+			$this->context->transport->tags = array_values(array_map(function($tag) {
+				return ['name' => $tag->name, 'count' => $tag->getPostCount()];
+			}, $this->context->transport->tags));
 	}
 
 	/**

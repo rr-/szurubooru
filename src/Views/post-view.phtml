@@ -34,7 +34,7 @@
 						<?php echo $tag->name ?>
 					</a>
 					<span class="count">
-						<?php echo TextHelper::useDecimalUnits($this->context->transport->tagDistribution[$tag->name]) ?>
+						<?php echo TextHelper::useDecimalUnits($tag->getPostCount()) ?>
 					</span>
 				</li>
 			<?php endforeach ?>

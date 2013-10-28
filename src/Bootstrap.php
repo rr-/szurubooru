@@ -21,7 +21,8 @@ class Bootstrap
 			'core.js',
 		];
 
-		$this->context->layoutName = isset($_GET['json'])
+		$this->context->json = isset($_GET['json']);
+		$this->context->layoutName = $this->context->json
 			? 'layout-json'
 			: 'layout-normal';
 		$this->context->transport = new StdClass;

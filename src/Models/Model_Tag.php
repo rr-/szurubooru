@@ -1,5 +1,5 @@
 <?php
-class Model_Tag extends RedBean_SimpleModel
+class Model_Tag extends AbstractModel
 {
 	public static function locate($key, $throw = true)
 	{
@@ -50,6 +50,14 @@ class Model_Tag extends RedBean_SimpleModel
 		return $tag;
 	}
 
+	public function getPostCount()
+	{
+		if ($this->bean->getMeta('post_count'))
+			return $this->bean->getMeta('post_count');
+		return $this->bean->countShared('post');
+	}
+
+
 	public static function validateTags($tags)
 	{
 		$tags = trim($tags);
@@ -64,5 +72,32 @@ class Model_Tag extends RedBean_SimpleModel
 			throw new SimpleException('No tags set');
 
 		return $tags;
+	}
+
+	public static function getTableName()
+	{
+		return 'tag';
+	}
+
+	public static function getQueryBuilder()
+	{
+		return 'Model_Tag_Querybuilder';
+	}
+
+	public static function getEntities($query, $perPage = null, $page = 1)
+	{
+		$table = static::getTableName();
+		$rows = self::getEntitiesRows($query, $perPage, $page);
+		$entities = R::convertToBeans($table, $rows);
+
+		$rowMap = [];
+		foreach ($rows as &$row)
+			$rowMap[$row['id']] = $row;
+		unset ($row);
+
+		foreach ($entities as $entity)
+			$entity->setMeta('post_count', $rowMap[$entity->id]['count']);
+
+		return $entities;
 	}
 }

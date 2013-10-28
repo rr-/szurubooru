@@ -1,9 +1,19 @@
 <?php
-class Model_Comment extends RedBean_SimpleModel
+class Model_Comment extends AbstractModel
 {
+	public static function getTableName()
+	{
+		return 'comment';
+	}
+
+	public static function getQueryBuilder()
+	{
+		return 'Model_Comment_QueryBuilder';
+	}
+
 	public static function locate($key, $throw = true)
 	{
-		$comment = R::findOne('comment', 'id = ?', [$key]);
+		$comment = R::findOne(self::getTableName(), 'id = ?', [$key]);
 		if (!$comment)
 		{
 			if ($throw)

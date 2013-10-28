@@ -1,11 +1,11 @@
 <?php
-class Model_Post extends RedBean_SimpleModel
+class Model_Post extends AbstractModel
 {
 	public static function locate($key, $disallowNumeric = false, $throw = true)
 	{
 		if (is_numeric($key) and !$disallowNumeric)
 		{
-			$post = R::findOne('post', 'id = ?', [$key]);
+			$post = R::findOne(self::getTableName(), 'id = ?', [$key]);
 			if (!$post)
 			{
 				if ($throw)
@@ -15,7 +15,7 @@ class Model_Post extends RedBean_SimpleModel
 		}
 		else
 		{
-			$post = R::findOne('post', 'name = ?', [$key]);
+			$post = R::findOne(self::getTableName(), 'name = ?', [$key]);
 			if (!$post)
 			{
 				if ($throw)
@@ -45,5 +45,15 @@ class Model_Post extends RedBean_SimpleModel
 			throw new SimpleException('Source must have at most ' . $maxLength . ' characters');
 
 		return $source;
+	}
+
+	public static function getTableName()
+	{
+		return 'post';
+	}
+
+	public static function getQueryBuilder()
+	{
+		return 'Model_Post_QueryBuilder';
 	}
 }

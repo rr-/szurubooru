@@ -161,7 +161,7 @@ $(function()
 				if (term != '')
 					$.get(searchInput.attr('data-autocomplete-url') + '?json', {filter: term}, function(data)
 					{
-						response($.map(data.tags, function(tag) { return { label: tag, value: tag }; }));
+						response($.map(data.tags, function(tag) { return { label: tag.name, value: tag.name }; }));
 					});
 			},
 			focus: function()
@@ -191,13 +191,18 @@ function getTagItOptions()
 				function(request, response)
 				{
 					var term = request.term.toLowerCase();
-					var results = $.grep(this.options.availableTags, function(a)
+					var tags = $.map(this.options.availableTags, function(a)
+					{
+						return a.name;
+					});
+					var results = $.grep(tags, function(a)
 					{
 						if (term.length < 3)
 							return a.toLowerCase().indexOf(term) == 0;
 						else
 							return a.toLowerCase().indexOf(term) != -1;
 					});
+					results = results.slice(0, 15);
 					if (!this.options.allowDuplicates)
 						results = this._subtractArray(results, this.assignedTags());
 					response(results);

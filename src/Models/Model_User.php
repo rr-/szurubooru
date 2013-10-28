@@ -1,9 +1,9 @@
 <?php
-class Model_User extends RedBean_SimpleModel
+class Model_User extends AbstractModel
 {
 	public static function locate($key, $throw = true)
 	{
-		$user = R::findOne('user', 'name = ?', [$key]);
+		$user = R::findOne(self::getTableName(), 'name = ?', [$key]);
 		if (!$user)
 		{
 			if ($throw)
@@ -88,7 +88,7 @@ class Model_User extends RedBean_SimpleModel
 	{
 		$userName = trim($userName);
 
-		$dbUser = R::findOne('user', 'name = ?', [$userName]);
+		$dbUser = R::findOne(self::getTableName(), 'name = ?', [$userName]);
 		if ($dbUser !== null)
 		{
 			if (!$dbUser->email_confirmed and \Chibi\Registry::getConfig()->registration->needEmailForRegistering)
@@ -159,4 +159,13 @@ class Model_User extends RedBean_SimpleModel
 		return sha1($salt1 . $salt2 . $pass);
 	}
 
+	public static function getTableName()
+	{
+		return 'user';
+	}
+
+	public static function getQueryBuilder()
+	{
+		return 'Model_User_QueryBuilder';
+	}
 }

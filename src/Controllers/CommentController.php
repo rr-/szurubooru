@@ -12,35 +12,19 @@ class CommentController
 		$this->context->stylesheets []= 'comment-list.css';
 		$this->context->stylesheets []= 'comment-small.css';
 		$this->context->stylesheets []= 'paginator.css';
-		$this->context->subTitle = 'comments';
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
 
 		$page = intval($page);
 		$commentsPerPage = intval($this->config->comments->commentsPerPage);
+		$this->context->subTitle = 'comments';
 		PrivilegesHelper::confirmWithException(Privilege::ListComments);
 
-		$buildDbQuery = function($dbQuery)
-		{
-			$dbQuery->from('comment');
-			$dbQuery->orderBy('comment_date')->desc();
-		};
-
-		$countDbQuery = R::$f->begin();
-		$countDbQuery->select('COUNT(1)')->as('count');
-		$buildDbQuery($countDbQuery);
-		$commentCount = intval($countDbQuery->get('row')['count']);
+		$commentCount = Model_Comment::getEntityCount(null);
 		$pageCount = ceil($commentCount / $commentsPerPage);
 		$page = max(1, min($pageCount, $page));
+		$comments = Model_Comment::getEntities(null, $commentsPerPage, $page);
 
-		$searchDbQuery = R::$f->begin();
-		$searchDbQuery->select('comment.*');
-		$buildDbQuery($searchDbQuery);
-		$searchDbQuery->limit('?')->put($commentsPerPage);
-		$searchDbQuery->offset('?')->put(($page - 1) * $commentsPerPage);
-
-		$comments = $searchDbQuery->get();
-		$comments = R::convertToBeans('comment', $comments);
 		R::preload($comments, ['commenter' => 'user', 'post', 'post.uploader' => 'user']);
 		$this->context->postGroups = true;
 		$this->context->transport->paginator = new StdClass;
