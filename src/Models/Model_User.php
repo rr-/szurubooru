@@ -49,7 +49,7 @@ class Model_User extends AbstractModel
 	{
 		$all = $this->getSetting(self::SETTING_SAFETY);
 		if (!$all)
-			return $safety == PostSafety::toFlag(PostSafety::Safe);
+			return $safety == PostSafety::Safe;
 		return $all & PostSafety::toFlag($safety);
 	}
 
