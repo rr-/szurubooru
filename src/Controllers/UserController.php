@@ -212,6 +212,8 @@ class UserController
 			$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
 
 			R::store($user);
+			if ($user->id == $this->context->user->id)
+				$this->context->user = $user;
 			AuthController::doReLog();
 			$this->context->transport->success = true;
 		}
