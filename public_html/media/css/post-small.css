@@ -1,19 +1,19 @@
 .post {
-	border: 1px solid #ddd;
-	box-shadow: 0.25em 0.25em #eee;
 	padding: 0;
 	position: relative;
 	display: inline-block;
 }
 .post .link {
+	border: 1px solid #ddd;
+	box-shadow: 0.25em 0.25em #eee;
 	color: black;
 }
 
 .post-type-youtube:after,
 .post-type-flash:after {
 	position: absolute;
-	right: 0;
-	top: 0;
+	right: 1px; /* border */
+	top: 1px; /* border */
 	width: 150px;
 	height: 150px;
 	content: ' ';
@@ -44,6 +44,7 @@
 	margin: 60px 25px;
 	line-height: 30px;
 }
+.post .toggle-tag:focus,
 .post .toggle-tag:hover {
 	opacity: 1;
 }
@@ -60,13 +61,13 @@
 }
 
 
-.post:focus,
-.post:hover {
+.post .link:focus,
+.post .link:hover {
 	border: 1px solid firebrick;
 	box-shadow: 0.25em 0.25em pink;
 }
-.post:focus img.thumb,
-.post:hover img.thumb {
+.post .link:focus img.thumb,
+.post .link:hover img.thumb {
 	opacity: .9;
 }
 
@@ -84,13 +85,16 @@
 .post .info-bar {
 	display: none;
 	height: 20px;
-	width: 100%;
 	border-top: 1px solid firebrick;
 	background: rgba(255, 128, 128, 0.75);
 	position: absolute;
-	bottom: 0;
+	z-indeX: 3;
+	left: 1px; /* border */
+	right: 1px; /* border */
+	bottom: 1px; /* border */
 }
-.post:hover .info-bar {
+.post .link:focus .info-bar,
+.post .link:hover .info-bar {
 	display: block;
 }
 
@@ -101,14 +105,15 @@
 .post .icon-favs {
 	background-position: -43px -1px;
 }
-.post [class^='icon-'] {
+.post .link [class^='icon-'] {
 	opacity: .75;
+	background-color: transparent;
 	width: 20px;
 	height: 20px;
 	line-height: 20px;
 	vertical-align: top;
 }
-.post span {
+.post .link span {
 	vertical-align: top;
 	font-size: small;
 	line-height: 20px;

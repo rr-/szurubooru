@@ -31,3 +31,9 @@
 .paginator li.disabled a {
 	color: gray;
 }
+
+.paginator li a:focus,
+.paginator li a:hover {
+	border: 1px solid firebrick;
+	background: pink;
+}

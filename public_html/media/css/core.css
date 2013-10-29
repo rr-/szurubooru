@@ -108,6 +108,7 @@ body {
 #top-nav li.safety span {
 	display: none;
 }
+#top-nav li.safety a:focus,
 #top-nav li.safety a:hover { opacity: .7; }
 #top-nav li.safety a.inactive { opacity: 1; }
 #top-nav li.safety .safety-safe .enabled     { background: #cfe6c2; background: linear-gradient(to bottom, #CFE6C2 0%, #80C670 100%); }
