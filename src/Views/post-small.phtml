@@ -1,5 +1,18 @@
-<div class="post post-type-<?php echo TextHelper::camelCaseToHumanCase(PostType::toString($this->context->post->type)) ?>">
-	<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+<?php $classNames = ['post', 'post-type-' . TextHelper::camelCaseToHumanCase(PostType::toString($this->context->post->type))] ?>
+<?php if (isset($this->context->source) and $this->context->source == 'mass-tag'): ?>
+	<?php $classNames []= 'taggable' ?>
+	<?php if (in_array($this->context->additionalInfo, array_map(function($x) { return $x->name; }, $this->context->post->sharedTag))): ?>
+		<?php $classNames []= 'tagged' ?>
+	<?php endif ?>
+<?php endif ?>
+
+<div class="<?php echo implode(' ', $classNames) ?>">
+	<?php if (isset($this->context->source) and $this->context->source == 'mass-tag'): ?>
+		<a class="toggle-tag" href="<?php echo \Chibi\UrlHelper::route('post', 'toggle-tag', ['id' => $this->context->post->id, 'tag' => $this->context->additionalInfo]) ?>" data-text-tagged="Tagged" data-text-untagged="Untagged">
+			<?php echo in_array('tagged', $classNames) ? 'Tagged' : 'Untagged' ?>
+		</a>
+	<?php endif ?>
+	<a class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
 		<img class="thumb" src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>" alt="@<?php echo $this->context->post->id ?>"/>
 	</a>
 	<div class="info-bar">

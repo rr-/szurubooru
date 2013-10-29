@@ -12,49 +12,13 @@
 </div>
 
 <?php if (PrivilegesHelper::confirm(Privilege::MergeTags)): ?>
-	<div class="form-wrapper">
-		<form class="aligned" method="post" action="<?php echo \Chibi\UrlHelper::route('tag', 'merge') ?>">
-			<h1>merge tags</h1>
-			<div>
-				<label class="left" for="merge-source-tag">Source tag:</label>
-				<div class="input-wrapper"><input type="text" name="source-tag" id="merge-source-tag"></div>
-			</div>
-
-			<div>
-				<label class="left" for="merge-target-tag">Target tag:</label>
-				<div class="input-wrapper"><input type="text" name="target-tag" id="merge-target-tag"></div>
-			</div>
-
-			<input type="hidden" name="submit" value="1"/>
-
-			<div>
-				<label class="left">&nbsp;</label>
-				<button type="submit">Merge!</button>
-			</div>
-		</form>
-	</div>
+	<?php $this->renderFile('tag-merge') ?>
 <?php endif ?>
 
 <?php if (PrivilegesHelper::confirm(Privilege::RenameTags)): ?>
-	<div class="form-wrapper">
-		<form class="aligned simple-action" method="post" action="<?php echo \Chibi\UrlHelper::route('tag', 'rename') ?>">
-			<h1>rename tags</h1>
-			<div>
-				<label class="left" for="rename-source-tag">Source tag:</label>
-				<div class="input-wrapper"><input type="text" name="source-tag" id="rename-source-tag"></div>
-			</div>
+	<?php $this->renderFile('tag-rename') ?>
+<?php endif ?>
 
-			<div>
-				<label class="left" for="rename-target-tag">Target tag:</label>
-				<div class="input-wrapper"><input type="text" name="target-tag" id="rename-target-tag"></div>
-			</div>
-
-			<input type="hidden" name="submit" value="1"/>
-
-			<div>
-				<label class="left">&nbsp;</label>
-				<button type="submit">Rename!</button>
-			</div>
-		</form>
-	</div>
+<?php if (PrivilegesHelper::confirm(Privilege::MassTag)): ?>
+	<?php $this->renderFile('tag-mass-tag') ?>
 <?php endif ?>

@@ -70,4 +70,19 @@ class TagController
 			$this->context->transport->success = true;
 		}
 	}
+
+	/**
+	* @route /mass-tag-redirect
+	*/
+	public function massTagRedirectAction()
+	{
+		PrivilegesHelper::confirmWithException(Privilege::MassTag);
+		if (InputHelper::get('submit'))
+		{
+			$suppliedQuery = InputHelper::get('query');
+			$suppliedTag = InputHelper::get('tag');
+			$suppliedTag = Model_Tag::validateTag($suppliedTag);
+			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('post', 'list', ['source' => 'mass-tag', 'query' => urlencode($suppliedQuery), 'additionalInfo' => $suppliedTag]));
+		}
+	}
 }

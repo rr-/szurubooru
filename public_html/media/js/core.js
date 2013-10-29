@@ -144,8 +144,10 @@ function extractLast(term)
 
 $(function()
 {
-	var searchInput = $('#top-nav .search input');
-	searchInput
+	$('[data-autocomplete-url]').each(function()
+	{
+		var searchInput = $(this);
+		searchInput
 		// don't navigate away from the field on tab when selecting an item
 		.bind("keydown", function(event)
 		{
@@ -179,6 +181,7 @@ $(function()
 				return false;
 			}
 		});
+	});
 });
 
 function getTagItOptions()

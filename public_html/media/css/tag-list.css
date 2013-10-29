@@ -21,6 +21,7 @@
 
 .form-wrapper {
 	width: 50%;
+	max-width: 24em;
 	display: inline-block;
 	text-align: center;
 }
@@ -33,9 +34,6 @@ form.aligned {
 }
 form.aligned label.left {
 	width: 7em;
-}
-form.aligned input {
-	width: 24em;
 }
 form h1 {
 	text-align: center;

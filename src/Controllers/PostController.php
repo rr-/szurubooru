@@ -48,20 +48,28 @@ class PostController
 
 
 	/**
-	* @route /posts
-	* @route /posts/{page}
-	* @route /posts/{query}/
-	* @route /posts/{query}/{page}
+	* @route /{source}
+	* @route /{source}/{page}
+	* @route /{source}/{query}/
+	* @route /{source}/{query}/{page}
+	* @route /{source}/{additionalInfo}/{query}/
+	* @route /{source}/{additionalInfo}/{query}/{page}
+	* @validate source posts|mass-tag
 	* @validate page \d*
 	* @validate query [^\/]*
+	* @validate additionalInfo [^\/]*
 	*/
-	public function listAction($query = null, $page = 1)
+	public function listAction($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'paginator.css';
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
+		if ($source == 'mass-tag')
+			$this->context->scripts []= 'mass-tag.js';
+		$this->context->source = $source;
+		$this->context->additionalInfo = $additionalInfo;
 
 		//redirect requests in form of /posts/?query=... to canonical address
 		$formQuery = InputHelper::get('query');
@@ -70,7 +78,7 @@ class PostController
 			$this->context->transport->searchQuery = $formQuery;
 			if (strpos($formQuery, '/') !== false)
 				throw new SimpleException('Search query contains invalid characters');
-			$url = \Chibi\UrlHelper::route('post', 'list', ['query' => urlencode($formQuery)]);
+			$url = \Chibi\UrlHelper::route('post', 'list', ['source' => $source, 'additionalInfo' => $additionalInfo, 'query' => urlencode($formQuery)]);
 			\Chibi\UrlHelper::forward($url);
 			return;
 		}
@@ -81,6 +89,12 @@ class PostController
 		$this->context->subTitle = 'posts';
 		$this->context->transport->searchQuery = $query;
 		PrivilegesHelper::confirmWithException(Privilege::ListPosts);
+		if ($source == 'mass-tag')
+		{
+			PrivilegesHelper::confirmWithException(Privilege::MassTag);
+			$this->context->massTagTag = $additionalInfo;
+			$this->context->massTagQuery = $query;
+		}
 
 		$postCount = Model_Post::getEntityCount($query);
 		$pageCount = ceil($postCount / $postsPerPage);
@@ -93,6 +107,37 @@ class PostController
 		$this->context->transport->paginator->entityCount = $postCount;
 		$this->context->transport->paginator->entities = $posts;
 		$this->context->transport->posts = $posts;
+	}
+
+
+
+	/**
+	* @route /post/{id}/toggle-tag/{tag}
+	* @validate tag [^\/]*
+	*/
+	public function toggleTagAction($id, $tag)
+	{
+		$post = Model_Post::locate($id);
+		R::preload($post, ['uploader' => 'user']);
+		$this->context->transport->post = $post;
+		$tag = Model_Tag::validateTag($tag);
+
+		if (InputHelper::get('submit'))
+		{
+			PrivilegesHelper::confirmWithException(Privilege::MassTag);
+			$tags = array_map(function($x) { return $x->name; }, $post->sharedTag);
+
+			if (in_array($tag, $tags))
+				$tags = array_diff($tags, [$tag]);
+			else
+				$tags += [$tag];
+
+			$dbTags = Model_Tag::insertOrUpdate($tags);
+			$post->sharedTag = $dbTags;
+
+			R::store($post);
+			$this->context->transport->success = true;
+		}
 	}
 
 

@@ -1,0 +1,21 @@
+<div class="form-wrapper">
+	<form class="aligned" method="post" action="<?php echo \Chibi\UrlHelper::route('tag', 'merge') ?>">
+		<h1>merge tags</h1>
+		<div>
+			<label class="left" for="merge-source-tag">Source tag:</label>
+			<div class="input-wrapper"><input type="text" name="source-tag" id="merge-source-tag" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/></div>
+		</div>
+
+		<div>
+			<label class="left" for="merge-target-tag">Target tag:</label>
+			<div class="input-wrapper"><input type="text" name="target-tag" id="merge-target-tag" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/></div>
+		</div>
+
+		<input type="hidden" name="submit" value="1"/>
+
+		<div>
+			<label class="left">&nbsp;</label>
+			<button type="submit">Merge!</button>
+		</div>
+	</form>
+</div>

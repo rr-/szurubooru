@@ -5,6 +5,10 @@
 	position: relative;
 	display: inline-block;
 }
+.post .link {
+	color: black;
+}
+
 .post-type-youtube:after,
 .post-type-flash:after {
 	position: absolute;
@@ -26,6 +30,33 @@
 }
 .post-type-youtube:after {
 	background: url('../img/thumb-overlay-yt.png');
+}
+
+
+.post .toggle-tag {
+	position: absolute;
+	z-index: 2;
+	width: 100px;
+	height: 30px;
+	background: whitesmoke;
+	opacity: .5;
+	border: 1px solid black;
+	margin: 60px 25px;
+	line-height: 30px;
+}
+.post .toggle-tag:hover {
+	opacity: 1;
+}
+.post.taggable.tagged .toggle-tag {
+	background-color: #0f0;
+	color: black;
+}
+.post.taggable:not(.tagged) .toggle-tag {
+	background-color: #f00;
+	color: white;
+}
+.post .link {
+	z-index: 1;
 }
 
 

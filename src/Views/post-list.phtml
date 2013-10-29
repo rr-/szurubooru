@@ -1,3 +1,7 @@
+<?php if (isset($this->context->source) and $this->context->source == 'mass-tag' and PrivilegesHelper::confirm(Privilege::MassTag)): ?>
+	<?php $this->renderFile('tag-mass-tag') ?>
+<?php endif ?>
+
 <?php if (empty($this->context->transport->posts)): ?>
 	<p class="alert alert-warning">No posts to show.</p>
 <?php else: ?>

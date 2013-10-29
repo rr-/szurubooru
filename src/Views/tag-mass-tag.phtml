@@ -1,0 +1,21 @@
+<div class="form-wrapper">
+	<form class="aligned" method="post" action="<?php echo \Chibi\UrlHelper::route('tag', 'mass-tag-redirect') ?>">
+		<h1>mass tag</h1>
+		<div>
+			<label class="left" for="mass-tag-query">Search query:</label>
+			<div class="input-wrapper"><input type="text" name="query" id="mass-tag-query" value="<?php echo isset($this->context->massTagQuery) ? $this->context->massTagQuery : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/></div>
+		</div>
+
+		<div>
+			<label class="left" for="mass-tag-tag">Tag:</label>
+			<div class="input-wrapper"><input type="text" name="tag" id="mass-tag-tag" value="<?php echo isset($this->context->massTagTag) ? $this->context->massTagTag : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/></div>
+		</div>
+
+		<input type="hidden" name="submit" value="1"/>
+
+		<div>
+			<label class="left">&nbsp;</label>
+			<button type="submit">Tag!</button>
+		</div>
+	</form>
+</div>
