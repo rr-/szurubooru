@@ -582,7 +582,7 @@ class PostController
 
 			if ($post->type == PostType::Youtube)
 			{
-				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
+				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.jpg';
 				$contents = file_get_contents('http://img.youtube.com/vi/' . $post->orig_name . '/mqdefault.jpg');
 				file_put_contents($tmpPath, $contents);
 				if (file_exists($tmpPath))
@@ -639,13 +639,13 @@ class PostController
 						throw new SimpleException('Unknown thumbnail crop style');
 				}
 
-				imagepng($dstImage, $path);
+				imagejpeg($dstImage, $path);
 				imagedestroy($srcImage);
 				imagedestroy($dstImage);
 			}
 			else
 			{
-				$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.png';
+				$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
 			}
 
 			if (isset($tmpPath))
@@ -655,7 +655,7 @@ class PostController
 			throw new SimpleException('Thumbnail file is not readable');
 
 		$this->context->transport->cacheDaysToLive = 30;
-		$this->context->transport->mimeType = 'image/png';
+		$this->context->transport->mimeType = 'image/jpeg';
 		$this->context->transport->fileHash = 'thumb' . md5($name . filemtime($path));
 		$this->context->transport->filePath = $path;
 	}
