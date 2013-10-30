@@ -457,6 +457,11 @@ class PostController
 		if (InputHelper::get('submit'))
 		{
 			//remove stuff from auxiliary tables
+			foreach ($post->ownComment as $comment)
+			{
+				$comment->post = null;
+				R::store($comment);
+			}
 			$post->ownFavoritee = [];
 			$post->sharedTag = [];
 			R::store($post);
