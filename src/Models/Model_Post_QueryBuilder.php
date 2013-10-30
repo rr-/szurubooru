@@ -31,11 +31,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 	protected static function filterUserSafety($dbQuery)
 	{
 		$context = \Chibi\Registry::getContext();
-		$allowedSafety = array_filter(PostSafety::getAll(), function($safety) use ($context)
-		{
-			return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
-				$context->user->hasEnabledSafety($safety);
-		});
+		$allowedSafety = PrivilegesHelper::getAllowedSafety();
 		$dbQuery->addSql('safety')->in('(' . R::genSlots($allowedSafety) . ')');
 		foreach ($allowedSafety as $s)
 			$dbQuery->put($s);

@@ -63,6 +63,16 @@ class PrivilegesHelper
 		if (!$user->email_confirmed)
 			throw new SimpleException('Need e-mail address confirmation to continue');
 	}
+
+	public static function getAllowedSafety()
+	{
+		$context = \Chibi\Registry::getContext();
+		return array_filter(PostSafety::getAll(), function($safety) use ($context)
+		{
+			return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
+				$context->user->hasEnabledSafety($safety);
+		});
+	}
 }
 
 PrivilegesHelper::init();
