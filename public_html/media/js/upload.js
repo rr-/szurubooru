@@ -89,18 +89,12 @@ $(function()
 
 		var postDom = posts.first();
 		var url = postDom.find('form').attr('action') + '?json';
-		var sourceFile = postDom.data('file');
-		var sourceUrl = postDom.data('url');
-		var tags = postDom.find('[name=tags]').val();
-		var safety = postDom.find('[name=safety]:checked').val();
-		var source = postDom.find('[name=source]').val();
-		var fd = new FormData();
-		fd.append('file', sourceFile);
-		fd.append('url', sourceUrl);
-		fd.append('tags', tags);
-		fd.append('safety', safety);
-		fd.append('source', source);
-		fd.append('submit', 1);
+		console.log(postDom.find('form').get(0));
+		var fd = new FormData(postDom.find('form').get(0));
+
+		fd.append('file', postDom.data('file'));
+		fd.append('url', postDom.data('url'));
+
 
 		var ajaxData =
 		{

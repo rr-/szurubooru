@@ -318,7 +318,7 @@ class PostController
 			$dbPost->upload_date = time();
 			$dbPost->image_width = $imageWidth;
 			$dbPost->image_height = $imageHeight;
-			if ($this->context->loggedIn)
+			if ($this->context->loggedIn and !InputHelper::get('anonymous'))
 				$dbPost->uploader = $this->context->user;
 			$dbPost->ownFavoritee = [];
 			$dbPost->sharedTag = $dbTags;
