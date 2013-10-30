@@ -55,7 +55,11 @@ class Model_User extends AbstractModel
 
 	public function enableSafety($safety, $enabled)
 	{
-		$new = $this->getSetting(self::SETTING_SAFETY);
+		$all = $this->getSetting(self::SETTING_SAFETY);
+		if (!$all)
+			$all = PostSafety::toFlag(PostSafety::Safe);
+
+		$new = $all;
 		if (!$enabled)
 		{
 			$new &= ~PostSafety::toFlag($safety);
@@ -66,6 +70,7 @@ class Model_User extends AbstractModel
 		{
 			$new |= PostSafety::toFlag($safety);
 		}
+
 		$this->setSetting(self::SETTING_SAFETY, $new);
 	}
 
