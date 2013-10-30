@@ -61,5 +61,7 @@ class Bootstrap
 			$this->context->viewName = 'error-exception';
 			(new \Chibi\View())->renderFile($this->context->layoutName);
 		}
+
+		AuthController::observeWorkFinish();
 	}
 }

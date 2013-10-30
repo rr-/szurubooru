@@ -1,6 +1,17 @@
 <?php
 class AuthController
 {
+	private static function redirectAfterLog()
+	{
+		if (isset($_SESSION['login-redirect-url']))
+		{
+			\Chibi\UrlHelper::forward($_SESSION['login-redirect-url']);
+			unset($_SESSION['login-redirect-url']);
+			return;
+		}
+		\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
+	}
+
 	public static function tryLogin($name, $password)
 	{
 		$config = \Chibi\Registry::getConfig();
@@ -25,7 +36,6 @@ class AuthController
 
 		$context->user = $dbUser;
 		self::doReLog();
-		\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 		return $dbUser;
 	}
 
@@ -51,7 +61,7 @@ class AuthController
 		//check if already logged in
 		if ($this->context->loggedIn)
 		{
-			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
+			self::redirectAfterLog();
 			return;
 		}
 
@@ -67,6 +77,7 @@ class AuthController
 				setcookie('auth', TextHelper::encrypt($token), time() + 365 * 24 * 3600, '/');
 			}
 			$this->context->transport->success = true;
+			self::redirectAfterLog();
 		}
 	}
 
@@ -107,7 +118,6 @@ class AuthController
 			}
 		}
 		$context->user = unserialize($_SESSION['user']);
-		#throw new SimpleException($context->user->anonymous ? '1' : '0');
 		$context->loggedIn = $context->user->anonymous ? false : true;
 		if (!$context->loggedIn)
 		{
@@ -127,5 +137,15 @@ class AuthController
 		if ($context->user !== null)
 			$_SESSION['user'] = serialize($context->user);
 		self::doLogIn();
+	}
+
+	public static function observeWorkFinish()
+	{
+		if (strpos(\Chibi\HeadersHelper::get('Content-Type'), 'text/html') === false)
+			return;
+		$context = \Chibi\Registry::getContext();
+		if ($context->route->simpleControllerName == 'auth')
+			return;
+		$_SESSION['login-redirect-url'] = $context->query;
 	}
 }
