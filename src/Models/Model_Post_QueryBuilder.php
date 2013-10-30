@@ -30,7 +30,6 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 
 	protected static function filterUserSafety($dbQuery)
 	{
-		$context = \Chibi\Registry::getContext();
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
 		$dbQuery->addSql('safety')->in('(' . R::genSlots($allowedSafety) . ')');
 		foreach ($allowedSafety as $s)
@@ -295,7 +294,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 				throw new SimpleException('Unknown key "' . $val . '"');
 		}
 
-		if ($randomReset)
+		if ($randomReset and isset($_SESSION['browsing-seed']))
 			unset($_SESSION['browsing-seed']);
 
 		$dbQuery->orderBy($orderColumn);
@@ -310,7 +309,6 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 	public static function build($dbQuery, $query)
 	{
 		$config = \Chibi\Registry::getConfig();
-		$context = \Chibi\Registry::getContext();
 
 		self::attachCommentCount($dbQuery);
 		self::attachFavCount($dbQuery);

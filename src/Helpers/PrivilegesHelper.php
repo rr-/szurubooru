@@ -22,6 +22,9 @@ class PrivilegesHelper
 
 	public static function confirm($privilege, $subPrivilege = null)
 	{
+		if (php_sapi_name() == 'cli')
+			return true;
+
 		$user = \Chibi\Registry::getContext()->user;
 		$minAccessRank = AccessRank::Admin;
 
@@ -66,6 +69,9 @@ class PrivilegesHelper
 
 	public static function getAllowedSafety()
 	{
+		if (php_sapi_name() == 'cli')
+			return PostSafety::getAll();
+
 		$context = \Chibi\Registry::getContext();
 		return array_filter(PostSafety::getAll(), function($safety) use ($context)
 		{
