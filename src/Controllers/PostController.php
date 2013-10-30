@@ -644,8 +644,8 @@ class PostController
 		{
 			$post = Model_Post::locate($name);
 
-			PrivilegesHelper::confirmWithException(Privilege::ViewPost);
-			PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
+			PrivilegesHelper::confirmWithException(Privilege::ListPosts);
+			PrivilegesHelper::confirmWithException(Privilege::ListPosts, PostSafety::toString($post->safety));
 			$srcPath = $this->config->main->filesPath . DS . $post->name;
 			$dstWidth = $this->config->browsing->thumbWidth;
 			$dstHeight = $this->config->browsing->thumbHeight;
