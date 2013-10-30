@@ -27,6 +27,13 @@
 		</div>
 	<?php endif ?>
 
+	<?php if (PrivilegesHelper::confirm(Privilege::EditPostRelations, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
+		<div class="thumb">
+			<label class="left" for="relations">Relations:</label>
+			<div class="input-wrapper"><input type="text" name="relations" id="relations" placeholder="id1,id2,&hellip;" value="<?php echo join(',', array_map(function($post) { return $post->id; }, $this->context->transport->post->via('crossref')->sharedPost)) ?>"/></div>
+		</div>
+	<?php endif ?>
+
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
 		<div class="thumb">
 			<label class="left" for="thumb">Thumb:</label>

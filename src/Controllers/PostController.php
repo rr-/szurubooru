@@ -407,7 +407,28 @@ class PostController
 				$edited = true;
 			}
 
+
+			/* relations */
+			$suppliedRelations = InputHelper::get('relations');
+			if ($suppliedRelations !== null)
+			{
+				PrivilegesHelper::confirmWithException(Privilege::EditPostRelations, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				$relatedIds = array_filter(preg_split('/\D/', $suppliedRelations));
+				$relatedPosts = [];
+				foreach ($relatedIds as $relatedId)
+				{
+					if ($relatedId == $post->id)
+						continue;
+					if (count($relatedPosts) > $this->config->browsing->maxRelatedPosts)
+						throw new SimpleException('Too many related posts (maximum: ' . $this->config->browsing->maxRelatedPosts . ')');
+					$relatedPosts []= Model_Post::locate($relatedId);
+				}
+				$post->via('crossref')->sharedPost = $relatedPosts;
+			}
+
 			R::store($post);
+
+
 			$this->context->transport->success = true;
 		}
 	}
@@ -551,7 +572,6 @@ class PostController
 	{
 		$post = Model_Post::locate($id);
 		R::preload($post, [
-			'favoritee' => 'user',
 			'uploader' => 'user',
 			'tag',
 			'comment',

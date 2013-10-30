@@ -132,6 +132,21 @@
 		<?php endif ?>
 	</div>
 
+	<?php if (count($this->context->transport->post->via('crossref')->sharedPost)): ?>
+		<div class="relations unit">
+			<h1>related</h1>
+			<ul>
+				<?php foreach ($this->context->transport->post->via('crossref')->sharedPost as $relatedPost): ?>
+					<li>
+						<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $relatedPost->id]) ?>">
+							@<?php echo $relatedPost->id ?>
+						</a>
+					</li>
+				<?php endforeach ?>
+			</ul>
+		</div>
+	<?php endif ?>
+
 	<div class="unit options">
 		<h1>options</h1>
 

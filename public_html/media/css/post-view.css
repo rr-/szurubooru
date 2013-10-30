@@ -16,6 +16,7 @@ embed {
 	background: url('../img/bk-swf.png') lemonchiffon;
 }
 
+#sidebar .relations ul,
 #sidebar .tags ul {
 	list-style-type: none;
 	margin: 0;
