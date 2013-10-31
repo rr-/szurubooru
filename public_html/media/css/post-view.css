@@ -55,6 +55,17 @@ embed {
 	background-image: url('http://www.gravatar.com/avatar/0?f=y&d=mm&s=16');
 }
 
+#sidebar .safety-safe {
+	color: #43aa43;
+}
+#sidebar .safety-sketchy {
+	color: #d4a627;
+}
+#sidebar .safety-unsafe {
+	color: #df4b0d;
+}
+
+
 i.icon-prev {
 	background-position: -12px -1px;
 }

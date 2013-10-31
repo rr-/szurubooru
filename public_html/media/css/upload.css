@@ -131,13 +131,13 @@
 	line-height: 33px;
 }
 
-.safety-sfw {
-	color: #63ca63;
+.safety-safe {
+	color: #43aa43;
 }
 .safety-sketchy {
-	color: #f4c657;
+	color: #d4a627;
 }
-.safety-nsfw {
+.safety-unsafe {
 	color: #df4b0d;
 }
 

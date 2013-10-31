@@ -63,7 +63,7 @@
 
 		<div class="key-value safety">
 			<span class="key">Safety:</span>
-			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(PostSafety::toString($this->context->transport->post->safety)) ?>">
+			<span class="value safety-<?php echo $val = TextHelper::camelCaseToHumanCase(PostSafety::toString($this->context->transport->post->safety)) ?>" title="<?php echo $val ?>">
 				<?php echo $val ?>
 			</span>
 		</div>
