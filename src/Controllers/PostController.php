@@ -427,6 +427,7 @@ class PostController
 			}
 
 			R::store($post);
+			Model_Tag::removeUnused();
 
 
 			$this->context->transport->success = true;

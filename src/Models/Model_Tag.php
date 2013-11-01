@@ -3,7 +3,7 @@ class Model_Tag extends AbstractModel
 {
 	public static function locate($key, $throw = true)
 	{
-		$tag = R::findOne('tag', 'LOWER(name) = LOWER(?)', [$key]);
+		$tag = R::findOne(self::getTableName(), 'LOWER(name) = LOWER(?)', [$key]);
 		if (!$tag)
 		{
 			if ($throw)
@@ -11,6 +11,24 @@ class Model_Tag extends AbstractModel
 			return null;
 		}
 		return $tag;
+	}
+
+	public static function removeUnused()
+	{
+		$dbQuery = R::$f
+			->begin()
+			->select('id, name')
+			->from(self::getTableName())
+			->where()
+			->not()->exists()
+			->open()
+				->select('1')
+				->from('post_tag')
+				->where('post_tag.tag_id = tag.id')
+			->close();
+		$rows = $dbQuery->get();
+		$entities = R::convertToBeans(self::getTableName(), $rows);
+		R::trashAll($entities);
 	}
 
 	public static function insertOrUpdate($tags)
@@ -21,7 +39,7 @@ class Model_Tag extends AbstractModel
 			$dbTag = self::locate($tag, false);
 			if (!$dbTag)
 			{
-				$dbTag = R::dispense('tag');
+				$dbTag = R::dispense(self::getTableName());
 				$dbTag->name = $tag;
 				R::store($dbTag);
 			}
