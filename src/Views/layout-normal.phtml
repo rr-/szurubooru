@@ -42,6 +42,9 @@
 						if (PrivilegesHelper::confirm(Privilege::ListTags))
 							$nav []= ['Tags', \Chibi\UrlHelper::route('tag', 'list')];
 
+						if (PrivilegesHelper::confirm(Privilege::MassTag))
+							$nav []= ['Mass tag', \Chibi\UrlHelper::route('post', 'list', ['query' => isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '', 'source' => 'mass-tag'])];
+
 						if (PrivilegesHelper::confirm(Privilege::ListUsers))
 							$nav []= ['Users', \Chibi\UrlHelper::route('user', 'list')];
 
