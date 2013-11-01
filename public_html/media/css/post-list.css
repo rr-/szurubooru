@@ -15,13 +15,17 @@
 	width: 100%;
 }
 form.aligned {
+	margin: 0 auto;
 	width: 24em;
 	text-align: left;
-	margin: 0 auto;
 }
 form.aligned label.left {
 	width: 7em;
 }
 form h1 {
-	text-align: center;
+	display: none;
+}
+
+li.mass-tag {
+	float: right;
 }

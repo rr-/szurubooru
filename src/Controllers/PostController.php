@@ -63,7 +63,9 @@ class PostController
 	{
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'post-list.css';
+		$this->context->stylesheets []= 'tabs.css';
 		$this->context->stylesheets []= 'paginator.css';
+		$this->context->viewName = 'post-list-wrapper';
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
 		if ($source == 'mass-tag')
@@ -150,7 +152,6 @@ class PostController
 	public function favoritesAction($page = 1)
 	{
 		$this->listAction('favmin:1', $page);
-		$this->context->viewName = 'post-list';
 	}
 
 
@@ -163,7 +164,6 @@ class PostController
 	public function randomAction($page = 1)
 	{
 		$this->listAction('order:random', $page);
-		$this->context->viewName = 'post-list';
 	}
 
 

@@ -1,0 +1,33 @@
+<?php
+$tabs = [];
+if (PrivilegesHelper::confirm(Privilege::ListPosts)) $tabs []= ['All posts', \Chibi\UrlHelper::route('post', 'list')];
+if (PrivilegesHelper::confirm(Privilege::ListPosts)) $tabs []= ['Random', \Chibi\UrlHelper::route('post', 'random')];
+if (PrivilegesHelper::confirm(Privilege::ListPosts)) $tabs []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
+if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs []= ['Mass tag', \Chibi\UrlHelper::route('post', 'list', ['query' => isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '', 'source' => 'mass-tag', 'page' => $this->context->transport->paginator->page])];
+
+$activeTab = 0;
+if ($this->context->route->simpleActionName == 'random') $activeTab = 1;
+if ($this->context->route->simpleActionName == 'favorites') $activeTab = 2;
+if ($this->context->source == 'mass-tag') $activeTab = 3;
+?>
+
+<div class="tabs">
+	<nav>
+		<ul>
+			<?php foreach ($tabs as $i => $tab): ?>
+				<?php list($name, $url) = $tab ?>
+				<?php if ($i == $activeTab): ?>
+					<li class="selected <?php echo TextHelper::humanCaseToKebabCase($name) ?>">
+				<?php else: ?>
+					<li class="<?php echo TextHelper::humanCaseToKebabCase($name) ?>">
+				<?php endif ?>
+					<a href="<?php echo $url ?>">
+						<?php echo $name ?>
+					</a>
+				</li>
+			<?php endforeach  ?>
+		</ul>
+	</nav>
+</div>
+
+<?php $this->renderFile('post-list') ?>

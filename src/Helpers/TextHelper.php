@@ -48,6 +48,14 @@ class TextHelper
 		return $string;
 	}
 
+	public static function humanCaseToKebabCase($string)
+	{
+		$string = trim($string);
+		$string = str_replace(' ', '-', $string);
+		$string = strtolower($string);
+		return $string;
+	}
+
 	public static function resolveConstant($constantName, $className = null)
 	{
 		$constantName = self::kebabCaseToCamelCase($constantName);
