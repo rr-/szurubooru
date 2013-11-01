@@ -40,11 +40,11 @@
 }
 
 .post .thumbnail {
-	width: 100px;
-	height: 100px;
-	line-height: 100px;
+	width: 150px;
+	height: 150px;
+	line-height: 150px;
 	background-image: url('../img/thumb.jpg');
-	background-size: 100px 100px;
+	background-size: 150px 150px;
 	border: 1px solid black;
 	vertical-align: middle;
 	text-align: center;
@@ -126,6 +126,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: 50%;
+	white-space: pre;
 	display: inline-block;
 	vertical-align: middle;
 	line-height: 33px;
