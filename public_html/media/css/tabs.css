@@ -24,3 +24,7 @@
 	border-bottom: 1px solid white;
 	color: inherit;
 }
+
+.tabs li a:focus {
+	color: firebrick;
+}
