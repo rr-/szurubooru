@@ -1,0 +1,41 @@
+<?php $tabs = [] ?>
+<?php if (PrivilegesHelper::confirm(Privilege::ListTags)) $tabs['list'] = 'List'; ?>
+<?php if (PrivilegesHelper::confirm(Privilege::RenameTags)) $tabs['rename'] = 'Rename'; ?>
+<?php if (PrivilegesHelper::confirm(Privilege::MergeTags)) $tabs['merge'] = 'Merge'; ?>
+<?php if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs['mass-tag-redirect'] = 'Mass tag'; ?>
+
+<?php if (count(array_diff($tabs, ['list'])) > 1): ?>
+	<div class="tabs">
+		<nav>
+			<ul>
+				<?php foreach ($tabs as $tab => $name): ?>
+					<?php if ($this->context->route->simpleActionName == $tab): ?>
+						<li class="selected <?php echo $tab ?>">
+					<?php else: ?>
+						<li class="<?php echo $tab ?>">
+					<?php endif ?>
+						<a href="<?php echo \Chibi\UrlHelper::route('tag', $tab) ?>">
+							<?php echo $name ?>
+						</a>
+					</li>
+				<?php endforeach  ?>
+			</ul>
+		</nav>
+	</div>
+<?php endif ?>
+
+<?php if ($this->context->route->simpleActionName == 'merge'): ?>
+	<?php $this->renderFile('tag-merge') ?>
+<?php endif ?>
+
+<?php if ($this->context->route->simpleActionName == 'rename'): ?>
+	<?php $this->renderFile('tag-rename') ?>
+<?php endif ?>
+
+<?php if ($this->context->route->simpleActionName == 'list'): ?>
+	<?php $this->renderFile('tag-list') ?>
+<?php endif ?>
+
+<?php if ($this->context->route->simpleActionName == 'mass-tag-redirect'): ?>
+	<?php $this->renderFile('tag-mass-tag') ?>
+<?php endif ?>

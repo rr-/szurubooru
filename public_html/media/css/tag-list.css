@@ -30,11 +30,11 @@
 }
 form.aligned {
 	text-align: left;
-	margin: 2em auto;
+	margin: 0 auto;
 }
 form.aligned label.left {
 	width: 7em;
 }
 form h1 {
-	text-align: center;
+	display: none;
 }
