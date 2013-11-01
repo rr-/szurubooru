@@ -88,6 +88,8 @@ class TagController
 		if (InputHelper::get('submit'))
 		{
 			$suppliedQuery = InputHelper::get('query');
+			if (!$suppliedQuery)
+				$suppliedQuery = ' ';
 			$suppliedTag = InputHelper::get('tag');
 			$suppliedTag = Model_Tag::validateTag($suppliedTag);
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('post', 'list', ['source' => 'mass-tag', 'query' => urlencode($suppliedQuery), 'additionalInfo' => $suppliedTag]));
