@@ -81,6 +81,9 @@ class TagController
 
 			$suppliedTargetTag = InputHelper::get('target-tag');
 			$suppliedTargetTag = Model_Tag::validateTag($suppliedTargetTag);
+			$targetTag = Model_Tag::locate($suppliedTargetTag, false);
+			if ($targetTag)
+				throw new SimpleException('Target tag already exists');
 
 			$sourceTag = Model_Tag::locate($suppliedSourceTag);
 			$sourceTag->name = $suppliedTargetTag;
