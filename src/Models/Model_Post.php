@@ -40,7 +40,7 @@ class Model_Post extends AbstractModel
 	{
 		$source = trim($source);
 
-		$maxLength = 100;
+		$maxLength = 200;
 		if (strlen($source) > $maxLength)
 			throw new SimpleException('Source must have at most ' . $maxLength . ' characters');
 
