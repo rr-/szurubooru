@@ -29,8 +29,16 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
 		{
-			$sourceTag = Model_Tag::locate(InputHelper::get('source-tag'));
-			$targetTag = Model_Tag::locate(InputHelper::get('target-tag'));
+			$suppliedSourceTag = InputHelper::get('source-tag');
+			$suppliedSourceTag = Model_Tag::validateTag($suppliedSourceTag);
+			$sourceTag = Model_Tag::locate($suppliedSourceTag);
+
+			$suppliedTargetTag = InputHelper::get('target-tag');
+			$suppliedTargetTag = Model_Tag::validateTag($suppliedTargetTag);
+			$targetTag = Model_Tag::locate($suppliedTargetTag);
+
+			if ($sourceTag->id == $targetTag->id)
+				throw new SimpleException('Source and target tag are the same');
 
 			R::preload($sourceTag, 'post');
 
