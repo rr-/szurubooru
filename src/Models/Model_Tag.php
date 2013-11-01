@@ -83,21 +83,4 @@ class Model_Tag extends AbstractModel
 	{
 		return 'Model_Tag_Querybuilder';
 	}
-
-	public static function getEntities($query, $perPage = null, $page = 1)
-	{
-		$table = static::getTableName();
-		$rows = self::getEntitiesRows($query, $perPage, $page);
-		$entities = R::convertToBeans($table, $rows);
-
-		$rowMap = [];
-		foreach ($rows as &$row)
-			$rowMap[$row['id']] = $row;
-		unset ($row);
-
-		foreach ($entities as $entity)
-			$entity->setMeta('post_count', $rowMap[$entity->id]['count']);
-
-		return $entities;
-	}
 }

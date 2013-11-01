@@ -7,7 +7,7 @@ class model_Tag_QueryBuilder implements AbstractQueryBuilder
 		$limitQuery = false;
 		$dbQuery
 			->addSql(', COUNT(post_tag.post_id)')
-			->as('count')
+			->as('post_count')
 			->from('tag')
 			->innerJoin('post_tag')
 			->on('tag.id = post_tag.tag_id')

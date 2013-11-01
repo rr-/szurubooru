@@ -1,12 +1,12 @@
-<?php $max = max([0]+array_map(function($x) { return $x->getPostCount(); }, $this->context->transport->tags)); ?>
+<?php $max = max([0]+array_map(function($x) { return $x['post_count']; }, $this->context->transport->tags)); ?>
 <?php $add = 0.25 ?>
 <?php $mul = 0.75 / max(1, log(max(1, $max))) ?>
 <?php $url = \Chibi\UrlHelper::route('post', 'list', ['query' => '{query}']) ?>
 <div class="tags">
 	<ul>
 		<?php foreach ($this->context->transport->tags as $tag): ?>
-			<?php $name = $tag->name ?>
-			<?php $count = $tag->getPostCount() ?>
+			<?php $name = $tag['name'] ?>
+			<?php $count = $tag['post_count'] ?>
 			<li class="tag" title="<?php echo $name ?> (<?php echo $count ?>)">
 				<a href="<?php echo TextHelper::replaceTokens($url, ['query' => $name]) ?>" style="opacity: <?php printf('%.02f', $add + $mul * log($count)) ?>">
 					<?php echo $name . ' (' . $count . ')' ?>

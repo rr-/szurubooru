@@ -12,12 +12,12 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 		$suppliedFilter = InputHelper::get('filter');
 
-		$tags = Model_Tag::getEntities($suppliedFilter, null, null);
+		$tags = Model_Tag::getEntitiesRows($suppliedFilter, null, null);
 		$this->context->transport->tags = $tags;
 
 		if ($this->context->json)
 			$this->context->transport->tags = array_values(array_map(function($tag) {
-				return ['name' => $tag->name, 'count' => $tag->getPostCount()];
+				return ['name' => $tag['name'], 'count' => $tag['post_count']];
 			}, $this->context->transport->tags));
 	}
 
