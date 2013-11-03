@@ -16,6 +16,7 @@ class model_Tag_QueryBuilder implements AbstractQueryBuilder
 			->where('safety IN (' . R::genSlots($allowedSafety) . ')');
 		foreach ($allowedSafety as $s)
 			$dbQuery->put($s);
+
 		if ($query !== null)
 		{
 			$limitQuery = true;
@@ -27,10 +28,9 @@ class model_Tag_QueryBuilder implements AbstractQueryBuilder
 				->like('LOWER(?)')
 				->put($query);
 		}
-		$dbQuery
-			->groupBy('tag.id')
-			->orderBy('LOWER(tag.name)')
-			->asc();
+
+		$dbQuery->groupBy('tag.id');
+
 		if ($limitQuery)
 			$dbQuery->limit(15);
 	}

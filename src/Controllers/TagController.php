@@ -18,9 +18,20 @@ class TagController
 		$this->context->transport->tags = $tags;
 
 		if ($this->context->json)
+		{
 			$this->context->transport->tags = array_values(array_map(function($tag) {
 				return ['name' => $tag['name'], 'count' => $tag['post_count']];
 			}, $this->context->transport->tags));
+			usort($this->context->transport->tags, function($a, $b) {
+				return $a['count'] > $b['count'] ? -1 : 1;
+			});
+		}
+		else
+		{
+			uasort($this->context->transport->tags, function($a, $b) {
+				return strnatcasecmp($a['name'], $b['name']);
+			});
+		}
 	}
 
 	/**
