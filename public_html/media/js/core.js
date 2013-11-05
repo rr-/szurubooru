@@ -1,3 +1,4 @@
+//core functionalities, prototypes
 $.fn.hasAttr = function(name)
 {
 	return this.attr(name) !== undefined;
@@ -20,6 +21,9 @@ if ($.when.all === undefined)
 	}
 }
 
+
+
+//safety trigger
 $(function()
 {
 	$('.safety a').click(function(e)
@@ -44,65 +48,76 @@ $(function()
 			}
 		});
 	});
-
-	function confirmEvent(e)
-	{
-		if (!confirm($(this).attr('data-confirm-text')))
-		{
-			e.preventDefault();
-			e.stopPropagation();
-		}
-	}
-
-	$('form[data-confirm-text]').submit(confirmEvent);
-	$('a[data-confirm-text]').click(confirmEvent);
-
-	$('a.simple-action').click(function(e)
-	{
-		if(e.isPropagationStopped())
-			return;
-
-		e.preventDefault();
-
-		var aDom = $(this);
-		if (aDom.hasClass('inactive'))
-			return;
-		aDom.addClass('inactive');
-
-		var url = $(this).attr('href') + '?json';
-		$.get(url, {submit: 1}, function(data)
-		{
-			if (data['success'])
-			{
-				if (aDom.hasAttr('data-redirect-url'))
-					window.location.href = aDom.attr('data-redirect-url');
-				else
-					window.location.reload();
-			}
-			else
-			{
-				alert(data['errorMessage']);
-				aDom.removeClass('inactive');
-			}
-		});
-	});
-
-
-	//attach data from submit buttons to forms before .submit() gets called
-	$(':submit').each(function()
-	{
-		$(this).click(function()
-		{
-			var form = $(this).closest('form');
-			form.find('.faux-submit').remove();
-			var input = $('<input class="faux-submit" type="hidden"/>').attr({
-				name: $(this).attr('name'),
-				value: $(this).val()
-			});
-			form.append(input);
-		});
-	});
 });
+
+
+
+//basic event listeners
+$(function()
+{
+	$('body').bind('dom-update', function()
+	{
+		function confirmEvent(e)
+		{
+			if (!confirm($(this).attr('data-confirm-text')))
+			{
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		}
+
+		$('form[data-confirm-text]').submit(confirmEvent);
+		$('a[data-confirm-text]').click(confirmEvent);
+
+		$('a.simple-action').click(function(e)
+		{
+			if(e.isPropagationStopped())
+				return;
+
+			e.preventDefault();
+
+			var aDom = $(this);
+			if (aDom.hasClass('inactive'))
+				return;
+			aDom.addClass('inactive');
+
+			var url = $(this).attr('href') + '?json';
+			$.get(url, {submit: 1}, function(data)
+			{
+				if (data['success'])
+				{
+					if (aDom.hasAttr('data-redirect-url'))
+						window.location.href = aDom.attr('data-redirect-url');
+					else
+						window.location.reload();
+				}
+				else
+				{
+					alert(data['errorMessage']);
+					aDom.removeClass('inactive');
+				}
+			});
+		});
+
+
+		//attach data from submit buttons to forms before .submit() gets called
+		$(':submit').each(function()
+		{
+			$(this).click(function()
+			{
+				var form = $(this).closest('form');
+				form.find('.faux-submit').remove();
+				var input = $('<input class="faux-submit" type="hidden"/>').attr({
+					name: $(this).attr('name'),
+					value: $(this).val()
+				});
+				form.append(input);
+			});
+		});
+	});
+	$('body').trigger('dom-update');
+});
+
 
 
 //modify DOM on small viewports
@@ -129,6 +144,7 @@ $(function()
 {
 	$(window).resize();
 });
+
 
 
 //autocomplete
@@ -214,6 +230,9 @@ function getTagItOptions()
 	};
 }
 
+
+
+//hotkeys
 $(function()
 {
 	Mousetrap.bind('q', function() { $('#top-nav input').focus(); return false; }, 'keyup');
