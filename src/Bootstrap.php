@@ -51,6 +51,12 @@ class Bootstrap
 				$this->context->viewName = 'error-simple';
 			(new \Chibi\View())->renderFile($this->context->layoutName);
 		}
+		catch (\Chibi\MissingViewFileException $e)
+		{
+			$this->context->json = true;
+			$this->context->layoutName = 'layout-json';
+			(new \Chibi\View())->renderFile($this->context->layoutName);
+		}
 		catch (Exception $e)
 		{
 			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
