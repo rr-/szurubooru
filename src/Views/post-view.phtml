@@ -28,7 +28,9 @@
 	<div class="unit tags">
 		<h1>tags (<?php echo count($this->context->transport->post->sharedTag) ?>)</h1>
 		<ul>
-			<?php foreach ($this->context->transport->post->sharedTag as $tag): ?>
+			<?php $tags = $this->context->transport->post->sharedTag ?>
+			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
+			<?php foreach ($tags as $tag): ?>
 				<li title="<?php echo $tag->name ?>">
 					<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
 						<?php echo $tag->name ?>
