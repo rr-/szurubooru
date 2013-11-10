@@ -11,7 +11,7 @@ class IndexController
 		$this->context->stylesheets []= 'index-index.css';
 		$this->context->transport->postCount = R::$f->begin()->select('count(1)')->as('count')->from('post')->get('row')['count'];
 
-		$featuredPostRotationTime = $this->config->main->featuredPostMaxDays * 24 * 3600;
+		$featuredPostRotationTime = $this->config->misc->featuredPostMaxDays * 24 * 3600;
 
 		$featuredPostId = Model_Property::get(Model_Property::FeaturedPostId);
 		$featuredPostUserId = Model_Property::get(Model_Property::FeaturedPostUserId);
