@@ -28,26 +28,9 @@
 	max-width: 500px;
 }
 
-#content .header .tags:before {
-	margin: 0 0.5em;
-	content: '\2013';
-}
-#content .header ul {
-	list-style-type: none;
-	display: inline;
-	margin: 0;
-	padding: 0;
-}
-#content .header li {
-	display: inline;
-}
-#content .header li:not(:last-child) a:after {
-	content: ', ';
-}
-
 #content .body {
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAAJElEQVQImWNgYGBgePfu3X8YZoABFA6SIqwS+HXgtANZF7IEAJnGPJE70lLLAAAAAElFTkSuQmCC');
-	margin: 1em 0;
+	margin-top: 1em;
 	text-align: center;
 }
 #content .body img {
@@ -59,11 +42,26 @@
 	display: block;
 }
 
-#content .header .favs-comments {
-	margin-left: 0.5em;
+#content .footer {
+	font-size: small;
+	color: dimgray;
+	margin: 0.5em 0 3em 0;
+}
+#content .footer .left {
+	float: left;
+}
+#content .footer .right {
 	float: right;
 }
-
-#content .footer {
-	text-align: right;
+#content .footer ul {
+	list-style-type: none;
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+#content .footer li {
+	display: inline;
+}
+#content .footer li:not(:last-child) a:after {
+	content: ', ';
 }

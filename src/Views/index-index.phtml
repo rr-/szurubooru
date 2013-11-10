@@ -6,38 +6,41 @@
 </div>
 
 <?php if (!empty($this->context->featuredPost)): ?>
-	<div class="header">
-		Featured image
-
-		<ul class="tags">
-		<?php foreach ($this->context->featuredPost->sharedTag as $tag): ?>
-			<li>
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
-					<?php echo $tag->name ?>
-				</a>
-			</li>
-		<?php endforeach ?>
-		</ul>
-
-		<span class="favs-comments">
-			<?php printf('%d&nbsp;fav%s', $x = $this->context->featuredPost->countOwn('favoritee'), $x == 1 ? '' : 's') ?>,&#32;
-			<?php printf('%d&nbsp;comment%s', $x = $this->context->featuredPost->countOwn('comment'), $x == 1 ? '' : 's') ?>
-		</span>
-		<div class="clear"></div>
-	</div>
-
 	<div class="body">
 		<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->featuredPost->id]) ?>">
-			<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->featuredPost->name]) ?>" alt="<?php echo $this->context->featuredPost->name ?>"/>
+			<img title="Featured image" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->featuredPost->name]) ?>" alt="<?php echo $this->context->featuredPost->name ?>"/>
 		</a>
 	</div>
 
 	<div class="footer">
-		Featured&#32;
-		<?php if ($this->context->featuredPostUser): ?>
-			by <a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>"><?php echo $this->context->featuredPostUser->name ?></a>,&#32;
-		<?php endif ?>
-		<?php printf('%d day%s', $x = round((time() - $this->context->featuredPostDate) / (24 * 3600.)), $x == 1 ? '' : 's') ?> ago
+		<span class="left">
+			Tags:&nbsp;
+			<ul class="tags">
+			<?php foreach ($this->context->featuredPost->sharedTag as $tag): ?>
+				<li>
+					<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
+						<?php echo $tag->name ?>
+					</a>
+				</li>
+			<?php endforeach ?>
+			</ul>
+		</span>
+
+		<span class="right">
+			Featured&#32;
+			<?php if ($this->context->featuredPostUser): ?>
+				by <a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>"><?php echo $this->context->featuredPostUser->name ?></a>,&#32;
+			<?php endif ?>
+			<?php $x = round((time() - $this->context->featuredPostDate) / (24 * 3600.)) ?>
+			<?php if ($x == 0): ?>
+				today
+			<?php elseif ($x == 1):?>
+				yesterday
+			<?php else: ?>
+				<?php printf('%d days ago', $x) ?>
+			<?php endif ?>
+		</span>
+
 		<div class="clear"></div>
 	</div>
 
