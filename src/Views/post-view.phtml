@@ -70,6 +70,36 @@
 			</span>
 		</div>
 
+		<div class="key-value score">
+			<span class="key">Score:</span>
+			<span class="value">
+				<?php echo $this->context->transport->post->score ?>
+
+				<?php if (PrivilegesHelper::confirm(Privilege::ScorePost)): ?>
+					&nbsp;[
+					<?php $scoreLink = \Chibi\UrlHelper::route('post', 'score', ['id' => $this->context->transport->post->id, 'score' => '{score}']) ?>
+
+					<?php if ($this->context->score === 1): ?>
+						<a class="simple-action selected" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => 0]) ?>">
+					<?php else: ?>
+						<a class="simple-action" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => 1]) ?>">
+					<?php endif ?>
+						up
+					</a>
+
+					&nbsp;|&nbsp;
+
+					<?php if ($this->context->score === -1): ?>
+						<a class="simple-action selected" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => 0]) ?>">
+					<?php else: ?>
+						<a class="simple-action" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => -1]) ?>">
+					<?php endif ?>
+						down
+					</a>]
+				<?php endif ?>
+			</span>
+		</div>
+
 		<div class="key-value date">
 			<span class="key">Date:</span>
 			<span class="value" title="<?php echo $val = date('Y-m-d H:i', $this->context->transport->post->upload_date) ?>">

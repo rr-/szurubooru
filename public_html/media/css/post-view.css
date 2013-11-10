@@ -65,6 +65,10 @@ embed {
 	color: #df4b0d;
 }
 
+#sidebar .score .selected {
+	font-weight: bold;
+}
+
 
 i.icon-prev {
 	background-position: -12px -1px;

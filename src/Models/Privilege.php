@@ -14,6 +14,7 @@ class Privilege extends Enum
 	const HidePost = 9;
 	const DeletePost = 10;
 	const FeaturePost = 25;
+	const ScorePost = 31;
 
 	const ListUsers = 11;
 	const ViewUser = 12;

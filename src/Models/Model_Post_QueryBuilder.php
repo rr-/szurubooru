@@ -91,6 +91,16 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		$dbQuery->addSql('id <= ?')->put(intval($val));
 	}
 
+	protected static function filterTokenScoreMin($dbQuery, $val)
+	{
+		$dbQuery->addSql('score >= ?')->put(intval($val));
+	}
+
+	protected static function filterTokenScoreMax($dbQuery, $val)
+	{
+		$dbQuery->addSql('score <= ?')->put(intval($val));
+	}
+
 	protected static function filterTokenTagMin($dbQuery, $val)
 	{
 		$dbQuery->addSql('tag_count >= ?')->put(intval($val));
@@ -272,6 +282,10 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			case 'favs':
 			case 'favcount':
 				$orderColumn = 'fav_count';
+				break;
+			case 'score':
+				$orderDir *= -1;
+				$orderColumn = 'score';
 				break;
 			case 'tag':
 			case 'tags':

@@ -17,6 +17,7 @@ foreach ($upgrades as $upgradePath)
 	{
 		printf('Executing %s...' . PHP_EOL, $upgradePath);
 		$upgradeSql = file_get_contents($upgradePath);
+		$upgradeSql = preg_replace('/^[ \t]+(.*);/m', '\0--', $upgradeSql);
 		$queries = preg_split('/;\s*[\r\n]+/s', $upgradeSql);
 		$queries = array_map('trim', $queries);
 		foreach ($queries as $query)

@@ -22,6 +22,7 @@
 <li>favorited by David: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'fav:David']) ?>"><code>fav:David</code></a></li>
 <li>favorited by at least four users: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'favmin:4']) ?>"><code>favmin:4</code></a></li>
 <li>commented by at least three users: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'commentmin:3']) ?>"><code>commentmin:3</code></a></li>
+<li>having minimum score of 4: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'scoremin:4']) ?>"><code>scoremin:4</code></a></li>
 <li>tagged with at least seven tags: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'tagmin:7']) ?>"><code>tagmin:7</code></a></li>
 <li>exactly from the specified date: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2001']) ?>"><code>date:2001</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2012-09-29']) ?>"><code>date:2012-09-29</code></a> (yyyy-mm-dd format)</li>
 <li>from the specified date onwards: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'datemin:2001-01-01']) ?>"><code>datemin:2001-01-01</code></a></li>
@@ -40,7 +41,8 @@
 <li>newest to oldest: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:date']) ?>"><code>order:date</code></a> (pretty much default browse view)</li>
 <li>oldest to newest: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => '-order:date']) ?>"><code>-order:date</code></a></li>
 <li>most commented first: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:comments']) ?>"><code>order:comments</code></a></li>
-<li>loved by most:  <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:favs']) ?>"><code>order:favs</code></a></li>
+<li>loved by most: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:favs']) ?>"><code>order:favs</code></a></li>
+<li>highest scored: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:score']) ?>"><code>order:score</code></a></li>
 </ul>
 
 <p>As shown with <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => '-order:date']) ?>"><code>-order:date</code></a><span class="comma">, </span>any of them can be reversed in the same way as negating other tags: by placing a dash before the tag.</p>

@@ -551,6 +551,35 @@ class PostController
 
 
 	/**
+	* @route /post/{id}/score/{score}
+	* @validate score -1|0|1
+	*/
+	public function scoreAction($id, $score)
+	{
+		$post = Model_Post::locate($id);
+		PrivilegesHelper::confirmWithException(Privilege::ScorePost);
+
+		if (InputHelper::get('submit'))
+		{
+			if (!$this->context->loggedIn)
+				throw new SimpleException('Not logged in');
+
+			$p = R::findOne('post_score', 'post_id = ? AND user_id = ?', [$id, $this->context->user->id]);
+			if (!$p)
+			{
+				$p = R::dispense('post_score');
+				$p->post = $post;
+				$p->user = $this->context->user;
+			}
+			$p->score = $score;
+			R::store($p);
+			$this->context->transport->success = true;
+		}
+	}
+
+
+
+	/**
 	* @route /post/{id}/feature
 	*/
 	public function featureAction($id)
@@ -612,16 +641,24 @@ class PostController
 		$nextPost = $nextPostQuery->get('row');
 
 		$favorite = false;
+		$score = null;
 		if ($this->context->loggedIn)
+		{
 			foreach ($post->ownFavoritee as $fav)
 				if ($fav->user->id == $this->context->user->id)
 					$favorite = true;
+
+			$s = R::findOne('post_score', 'post_id = ? AND user_id = ?', [$post->id, $this->context->user->id]);
+			if ($s)
+				$score = intval($s->score);
+		}
 
 		$this->context->stylesheets []= 'post-view.css';
 		$this->context->stylesheets []= 'comment-small.css';
 		$this->context->scripts []= 'post-view.js';
 		$this->context->subTitle = 'showing @' . $post->id . ' &ndash; ' . join(', ', array_map(function($x) { return $x['name']; }, $post->sharedTag));
 		$this->context->favorite = $favorite;
+		$this->context->score = $score;
 		$this->context->transport->post = $post;
 		$this->context->transport->prevPostId = $prevPost ? $prevPost['id'] : null;
 		$this->context->transport->nextPostId = $nextPost ? $nextPost['id'] : null;
