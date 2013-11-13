@@ -564,10 +564,10 @@ class PostController
 			if (!$this->context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			$p = R::findOne('post_score', 'post_id = ? AND user_id = ?', [$id, $this->context->user->id]);
+			$p = R::findOne('postscore', 'post_id = ? AND user_id = ?', [$post->id, $this->context->user->id]);
 			if (!$p)
 			{
-				$p = R::dispense('post_score');
+				$p = R::dispense('postscore');
 				$p->post = $post;
 				$p->user = $this->context->user;
 			}
@@ -648,7 +648,7 @@ class PostController
 				if ($fav->user->id == $this->context->user->id)
 					$favorite = true;
 
-			$s = R::findOne('post_score', 'post_id = ? AND user_id = ?', [$post->id, $this->context->user->id]);
+			$s = R::findOne('postscore', 'post_id = ? AND user_id = ?', [$post->id, $this->context->user->id]);
 			if ($s)
 				$score = intval($s->score);
 		}

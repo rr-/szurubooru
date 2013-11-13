@@ -48,7 +48,6 @@ $config = configFactory();
 R::setup('sqlite:' . $config->main->dbPath);
 R::freeze(true);
 R::dependencies(['tag' => ['post'], 'favoritee' => ['post', 'user'], 'comment' => ['post', 'user']]);
-R::setStrictTyping(false);
 
 //wire models
 \Chibi\AutoLoader::init([__DIR__ . '/../' . $config->chibi->userCodeDir, __DIR__]);
