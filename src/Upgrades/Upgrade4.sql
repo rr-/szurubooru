@@ -9,7 +9,7 @@ CREATE TABLE post_score
 	user_id INTEGER,
 	score INTEGER,
 	FOREIGN KEY(post_id) REFERENCES post(id) ON DELETE CASCADE ON UPDATE SET NULL,
-	FOREIGN KEY(user_id) REFERENCES post(id) ON DELETE CASCADE ON UPDATE SET NULL
+	FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE SET NULL
 );
 CREATE INDEX idx_fk_post_score_post_id ON post_score(post_id);
 CREATE INDEX idx_fk_post_score_user_id ON post_score(user_id);
