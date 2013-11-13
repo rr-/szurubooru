@@ -243,7 +243,14 @@ class PostController
 
 
 			/* file details */
-			$mimeType = $sourcePath ? mime_content_type($sourcePath) : null;
+			$mimeType = null;
+			if ($sourcePath)
+			{
+				if (function_exists('mime_content_type'))
+					$mimeType = mime_content_type($sourcePath);
+				else
+					$mimeType = $suppliedFile['type'];
+			}
 			$imageWidth = null;
 			$imageHeight = null;
 			switch ($mimeType)

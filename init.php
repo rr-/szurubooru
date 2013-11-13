@@ -50,7 +50,7 @@ download('http://raw.github.com/aehlke/tag-it/master/css/jquery.tagit.css', $lib
 download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $libPath . 'tagit' . DS . 'jquery.tagit.js');
 
 //Mousetrap
-download('https://raw.github.com/ccampbell/mousetrap/master/mousetrap.min.js', $libPath . 'mousetrap' . DS . 'mousetrap.min.js');
+download('http://raw.github.com/ccampbell/mousetrap/master/mousetrap.min.js', $libPath . 'mousetrap' . DS . 'mousetrap.min.js');
 
 //fonts
 download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans.ttf', $fontsPath . 'DroidSans.ttf');
