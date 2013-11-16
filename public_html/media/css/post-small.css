@@ -84,7 +84,6 @@
 
 .post .info-bar {
 	display: none;
-	height: 20px;
 	border-top: 1px solid firebrick;
 	background: rgba(255, 128, 128, 0.75);
 	position: absolute;
@@ -92,14 +91,17 @@
 	left: 1px; /* border */
 	right: 1px; /* border */
 	bottom: 1px; /* border */
+	text-align: center;
 }
 .post .link:focus .info-bar,
 .post .link:hover .info-bar {
 	display: block;
 }
 
+.post .icon-score {
+	background-position: -85px -1px;
+}
 .post .icon-comments {
-	margin-left: 3px;
 	background-position: -64px -1px;
 }
 .post .icon-favs {
@@ -119,4 +121,7 @@
 	line-height: 20px;
 	margin-right: 0.5em;
 	display: inline-block;
+}
+.post .link span.inactive {
+	display: none;
 }

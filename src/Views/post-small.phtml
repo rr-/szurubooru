@@ -14,9 +14,27 @@
 	<?php endif ?>
 	<a class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
 		<img class="thumb" src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>" alt="@<?php echo $this->context->post->id ?>"/>
-		<div class="info-bar">
-			<i class="icon-comments"></i> <span><?php echo $this->context->post->countOwn('comment') ?></span>
-			<i class="icon-favs"></i> <span><?php echo $this->context->post->countOwn('favoritee') ?></span>
-		</div>
+		<?php
+			$x =
+			[
+				'score' => $this->context->post->score,
+				'comments' => $this->context->post->countOwn('comment'),
+				'favs' => $this->context->post->countOwn('favoritee'),
+			];
+		?>
+		<?php if (!empty($x)): ?>
+			<div class="info-bar">
+				<?php foreach ($x as $key => $val): ?>
+					<?php if ($val == 0): ?>
+						<span class="inactive">
+					<?php else: ?>
+						<span>
+					<?php endif ?>
+						<i class="icon-<?php echo $key ?>"></i>
+						&nbsp;<?php echo $val ?>
+					</span>
+				<?php endforeach ?>
+			</div>
+		<?php endif ?>
 	</a>
 </div>
