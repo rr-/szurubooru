@@ -49,6 +49,8 @@ class UserController
 		$headers []= sprintf('X-Originating-IP: %s', $_SERVER['SERVER_ADDR']);
 		$subject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 		mail($recipientEmail, $subject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
+
+		LogHelper::logEvent('mail', 'Sending e-mail with subject "' . $subject . '" to ' . $recipientEmail);
 	}
 
 	private static function sendEmailChangeConfirmation($user)
@@ -147,6 +149,7 @@ class UserController
 		{
 			$user->banned = true;
 			R::store($user);
+			LogHelper::logEvent('ban', '+{user} banned +{subject}', ['subject' => $user->name]);
 			StatusHelper::success();
 		}
 	}
@@ -163,6 +166,7 @@ class UserController
 		{
 			$user->banned = false;
 			R::store($user);
+			LogHelper::logEvent('unban', '+{user} unbanned +{subject}', ['subject' => $user->name]);
 			StatusHelper::success();
 		}
 	}
@@ -179,6 +183,7 @@ class UserController
 		{
 			$user->staff_confirmed = true;
 			R::store($user);
+			LogHelper::logEvent('reg-accept', '+{user} confirmed account for +{subject}', ['subject' => $user->name]);
 			StatusHelper::success();
 		}
 	}
@@ -207,6 +212,7 @@ class UserController
 
 		if (InputHelper::get('submit'))
 		{
+			$name = $user->name;
 			if ($this->context->user->id == $user->id)
 			{
 				$suppliedPasswordHash = Model_User::hashPassword($suppliedCurrentPassword, $user->pass_salt);
@@ -228,7 +234,9 @@ class UserController
 				AuthController::doLogOut();
 			R::store($user);
 			R::trash($user);
+
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
+			LogHelper::logEvent('user-del', '+{user} removed account for +{subject}', ['subject' => $name]);
 			StatusHelper::success();
 		}
 	}
@@ -303,12 +311,15 @@ class UserController
 			if (InputHelper::get('submit'))
 			{
 				$confirmMail = false;
+				LogHelper::bufferChanges();
 
 				if ($suppliedName != '' and $suppliedName != $user->name)
 				{
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($user));
 					$suppliedName = Model_User::validateUserName($suppliedName);
+					$oldName = $user->name;
 					$user->name = $suppliedName;
+					LogHelper::logEvent('user-edit', '+{user} renamed +{old} to +{new}', ['old' => $oldName, 'new' => $suppliedName]);
 				}
 
 				if ($suppliedPassword1 != '')
@@ -318,6 +329,7 @@ class UserController
 						throw new SimpleException('Specified passwords must be the same');
 					$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
 					$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
+					LogHelper::logEvent('user-edit', '+{user} changed password for +{subject}', ['subject' => $user->name]);
 				}
 
 				if ($suppliedEmail != '' and $suppliedEmail != $user->email_confirmed)
@@ -329,11 +341,13 @@ class UserController
 						$user->email_unconfirmed = $suppliedEmail;
 						if (!empty($user->email_unconfirmed))
 							$confirmMail = true;
+						LogHelper::logEvent('user-edit', '+{user} changed e-mail to {mail}', ['mail' => $suppliedEmail]);
 					}
 					else
 					{
 						$user->email_unconfirmed = null;
 						$user->email_confirmed = $suppliedEmail;
+						LogHelper::logEvent('user-edit', '+{user} changed e-mail for +{subject} to {mail}', ['subject' => $user->name, 'mail' => $suppliedEmail]);
 					}
 				}
 
@@ -342,6 +356,7 @@ class UserController
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($user));
 					$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
 					$user->access_rank = $suppliedAccessRank;
+					LogHelper::logEvent('user-edit', '+{user} changed access rank for +{subject} to {rank}', ['subject' => $user->name, 'rank' => AccessRank::toString($suppliedAccessRank)]);
 				}
 
 				if ($this->context->user->id == $user->id)
@@ -355,9 +370,10 @@ class UserController
 				if ($confirmMail)
 					self::sendEmailChangeConfirmation($user);
 
+				LogHelper::flush();
 				$message = 'Account settings updated!';
 				if ($confirmMail)
-					$message .= ' You wlil be sent an e-mail address confirmation message soon.';
+					$message .= ' You will be sent an e-mail address confirmation message soon.';
 				StatusHelper::success($message);
 			}
 		}
@@ -519,6 +535,7 @@ class UserController
 			elseif ($this->config->registration->staffActivation)
 				$message .= ' Your registration must be now confirmed by staff.';
 
+			LogHelper::logEvent('user-reg', '+{subject} just signed up', ['subject' => $dbUser->name]);
 			StatusHelper::success($message);
 
 			if (!$this->config->registration->needEmailForRegistering and !$this->config->registration->staffActivation)
@@ -548,6 +565,7 @@ class UserController
 		R::store($dbToken);
 		R::store($dbUser);
 
+		LogHelper::logEvent('user-activation', '+{subject} just activated account', ['subject' => $dbUser->name]);
 		$message = 'Activation completed successfully.';
 		if ($this->config->registration->staffActivation)
 			$message .= ' However, your account still must be confirmed by staff.';
@@ -584,6 +602,7 @@ class UserController
 		R::store($dbToken);
 		R::store($dbUser);
 
+		LogHelper::logEvent('user-pass-reset', '+{subject} just reset password', ['subject' => $dbUser->name]);
 		$message = 'Password reset successfuly. Your new password is **' . $randomPassword . '**.';
 		StatusHelper::success($message);
 

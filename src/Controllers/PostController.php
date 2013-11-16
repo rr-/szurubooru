@@ -130,9 +130,15 @@ class PostController
 			$tags = array_map(function($x) { return $x->name; }, $post->sharedTag);
 
 			if (in_array($tag, $tags))
+			{
 				$tags = array_diff($tags, [$tag]);
+				LogHelper::logEvent('post-tag-del', '+{user} untagged @{post} with #{tag}', ['post' => $post->id, 'tag' => $tag]);
+			}
 			else
+			{
 				$tags += [$tag];
+				LogHelper::logEvent('post-tag-add', '+{user} tagged @{post} with #{tag}', ['post' => $post->id, 'tag' => $tag]);
+			}
 
 			$dbTags = Model_Tag::insertOrUpdate($tags);
 			$post->sharedTag = $dbTags;
@@ -339,6 +345,12 @@ class PostController
 			}
 			R::store($dbPost);
 
+			LogHelper::logEvent('post-new',
+				'+{user} added @{post} tagged with '
+					. join(', ', array_map(function($dbTag) { return '#' . $dbTag->name; }, $dbTags))
+					. ' marked as ' . PostSafety::toString($dbPost->safety),
+				['post' => $dbPost->id]);
+
 			StatusHelper::success();
 		}
 	}
@@ -356,14 +368,17 @@ class PostController
 
 		if (InputHelper::get('submit'))
 		{
+			LogHelper::bufferChanges();
+
 			/* safety */
 			$suppliedSafety = InputHelper::get('safety');
-			if ($suppliedSafety !== null)
+			if ($suppliedSafety !== null and $suppliedSafety != $post->safety)
 			{
 				PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 				$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
 				$post->safety = $suppliedSafety;
 				$edited = true;
+				LogHelper::logEvent('post-edit', '+{user} changed safety for @{post} to {safety}', ['post' => $post->id, 'safety' => PostSafety::toString($post->safety)]);
 			}
 
 
@@ -378,8 +393,15 @@ class PostController
 
 				$suppliedTags = Model_Tag::validateTags($suppliedTags);
 				$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
+
+				$oldTags = array_map(function($tag) { return $tag->name; }, $post->sharedTag);
 				$post->sharedTag = $dbTags;
 				$edited = true;
+
+				foreach (array_diff($oldTags, $suppliedTags) as $tag)
+					LogHelper::logEvent('post-tag-del', '+{user} untagged @{post} with #{tag}', ['post' => $post->id, 'tag' => $tag]);
+				foreach (array_diff($suppliedTags, $oldTags) as $tag)
+					LogHelper::logEvent('post-tag-add', '+{user} tagged @{post} with #{tag}', ['post' => $post->id, 'tag' => $tag]);
 			}
 
 
@@ -401,17 +423,19 @@ class PostController
 
 				$path = $this->config->main->thumbsPath . DS . $post->name . '.custom';
 				move_uploaded_file($suppliedFile['tmp_name'], $path);
+				LogHelper::logEvent('post-edit', '+{user} added custom thumb for @{post}', ['post' => $post->id]);
 			}
 
 
 			/* source */
 			$suppliedSource = InputHelper::get('source');
-			if ($suppliedSource !== null)
+			if ($suppliedSource !== null and $suppliedSource != $post->sorce)
 			{
 				PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 				$suppliedSource = Model_Post::validateSource($suppliedSource);
 				$post->source = $suppliedSource;
 				$edited = true;
+				LogHelper::logEvent('post-edit', '+{user} changed source for @{post} to {source}', ['post' => $post->id, 'source' => $post->source]);
 			}
 
 
@@ -430,13 +454,20 @@ class PostController
 						throw new SimpleException('Too many related posts (maximum: ' . $this->config->browsing->maxRelatedPosts . ')');
 					$relatedPosts []= Model_Post::locate($relatedId);
 				}
+
+				$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->via('crossref')->sharedPost);
 				$post->via('crossref')->sharedPost = $relatedPosts;
+
+				foreach (array_diff($oldRelatedIds, $relatedIds) as $post2id)
+					LogHelper::logEvent('post-relation-del', '+{user} removed relation between @{post} and #{post2}', ['post' => $post->id, 'post2' => $post2id]);
+				foreach (array_diff($relatedIds, $oldRelatedIds) as $post2id)
+					LogHelper::logEvent('post-relation-add', '+{user} added relation between @{post} and #{post2}', ['post' => $post->id, 'post2' => $post2id]);
 			}
 
 			R::store($post);
 			Model_Tag::removeUnused();
 
-
+			LogHelper::flush();
 			StatusHelper::success();
 		}
 	}
@@ -451,13 +482,18 @@ class PostController
 		$post = Model_Post::locate($id);
 		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
 		if (InputHelper::get('submit'))
 		{
 			$post->hidden = true;
 			R::store($post);
+
+			LogHelper::logEvent('post-hide', '+{user} hidden @{post}', ['post' => $post->id]);
 			StatusHelper::success();
 		}
 	}
+
+
 
 	/**
 	* @route /post/{id}/unhide
@@ -467,13 +503,18 @@ class PostController
 		$post = Model_Post::locate($id);
 		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
 		if (InputHelper::get('submit'))
 		{
 			$post->hidden = false;
 			R::store($post);
+
+			LogHelper::logEvent('post-unhide', '+{user} unhidden @{post}', ['post' => $post->id]);
 			StatusHelper::success();
 		}
 	}
+
+
 
 	/**
 	* @route /post/{id}/delete
@@ -483,6 +524,7 @@ class PostController
 		$post = Model_Post::locate($id);
 		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
 		if (InputHelper::get('submit'))
 		{
 			//remove stuff from auxiliary tables
@@ -495,6 +537,8 @@ class PostController
 			$post->sharedTag = [];
 			R::store($post);
 			R::trash($post);
+
+			LogHelper::logEvent('post-delete', '+{user} deleted @{post}', ['post' => $id]);
 			StatusHelper::success();
 		}
 	}
@@ -597,6 +641,7 @@ class PostController
 		Model_Property::set(Model_Property::FeaturedPostUserId, $this->context->user->id);
 		Model_Property::set(Model_Property::FeaturedPostDate, time());
 		StatusHelper::success();
+		LogHelper::logEvent('post-feature', '+{user} featured @{post} on main page', ['post' => $post->id]);
 	}
 
 

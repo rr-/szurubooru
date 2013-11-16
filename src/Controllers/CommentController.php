@@ -63,6 +63,7 @@ class CommentController
 			if (InputHelper::get('sender') != 'preview')
 				R::store($comment);
 			$this->context->transport->textPreview = $comment->getText();
+			LogHelper::logEvent('comment-add', '+{user} commented on @{post}', ['post' => $post->id]);
 			StatusHelper::success();
 		}
 	}
@@ -78,6 +79,7 @@ class CommentController
 		$comment = Model_Comment::locate($id);
 		R::preload($comment, ['commenter' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->commenter));
+		LogHelper::logEvent('comment-del', '+{user} removed comment from @{post}', ['post' => $comment->post->id]);
 		R::trash($comment);
 		StatusHelper::success();
 	}

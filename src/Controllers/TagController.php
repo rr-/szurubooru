@@ -69,7 +69,9 @@ class TagController
 				R::store($post);
 			}
 			R::trash($sourceTag);
+
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
+			LogHelper::logEvent('tag-merge', '+{user} merged #{source} with #{target}', ['source' => $suppliedSourceTag, 'target' => $suppliedTargetTag]);
 			StatusHelper::success();
 		}
 	}
@@ -101,6 +103,7 @@ class TagController
 			R::store($sourceTag);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
+			LogHelper::logEvent('tag-rename', '+{user} renamed #{source} to #{target}', ['source' => $suppliedSourceTag, 'target' => $suppliedTargetTag]);
 			StatusHelper::success();
 		}
 	}
