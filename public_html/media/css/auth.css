@@ -11,3 +11,20 @@ form.auth p {
 	text-align: center;
 	margin: 10px 0;
 }
+
+form.auth .help {
+	opacity: .5;
+	margin-top: 1em;
+	font-size: small;
+}
+form.auth .help p {
+	margin: 0;
+	text-align: left;
+}
+form.auth .help label+div {
+	float: left;
+}
+form.auth .help ul {
+	margin: 0;
+	padding: 0;
+}

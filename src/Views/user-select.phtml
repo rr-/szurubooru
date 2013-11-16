@@ -1,0 +1,21 @@
+<?php if ($this->context->transport->success === true): ?>
+	<?php $this->renderFile('message') ?>
+<?php else: ?>
+	<form action="<?php echo \Chibi\UrlHelper::route($this->context->route->simpleControllerName, $this->context->route->simpleActionName) ?>" method="post" class="auth aligned" autocomplete="off">
+		<div>
+			<label class="left">User:</label>
+			<div class="input-wrapper">
+				<input name="name" placeholder="Name or e-mail address" type="text"/>
+			</div>
+		</div>
+
+		<input type="hidden" name="submit" value="1"/>
+
+		<?php $this->renderFile('message') ?>
+
+		<div>
+			<label class="left">&nbsp;</label>
+			<button type="submit">Continue</button>
+		</div>
+	</form>
+<?php endif ?>

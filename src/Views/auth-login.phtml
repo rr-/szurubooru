@@ -16,6 +16,8 @@
 	<div>
 		<label class="left">&nbsp;</label>
 		<div class="input-wrapper">
+			<button type="submit">Log in</button>
+			&nbsp;
 			<input type="hidden" name="remember" value="0"/>
 			<label>
 				<input type="checkbox" name="remember" value="1"/>
@@ -28,8 +30,14 @@
 
 	<input type="hidden" name="submit" value="1"/>
 
-	<div>
-		<label class="left"></label>
-		<button type="submit">Log in</button>
+	<div class="help">
+		<label class="left">&nbsp;</label>
+		<div>
+			<p>Problems logging in?</p>
+			<ul>
+				<li><a href="<?php echo \Chibi\UrlHelper::route('user', 'activation-retry') ?>">I haven't received activation e-mail</a></li>
+				<li><a href="<?php echo \Chibi\UrlHelper::route('user', 'registration') ?>">I don't have account</a></li>
+			</ul>
+		</div>
 	</div>
 </form>

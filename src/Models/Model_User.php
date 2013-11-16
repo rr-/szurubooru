@@ -4,13 +4,17 @@ class Model_User extends AbstractModel
 	public static function locate($key, $throw = true)
 	{
 		$user = R::findOne(self::getTableName(), 'name = ?', [$key]);
-		if (!$user)
-		{
-			if ($throw)
-				throw new SimpleException('Invalid user name "' . $key . '"');
-			return null;
-		}
-		return $user;
+		if ($user)
+			return $user;
+
+		$user = R::findOne(self::getTableName(), 'LOWER(email_confirmed) = LOWER(?)', [trim($key)]);
+		if ($user)
+			return $user;
+
+		if ($throw)
+			throw new SimpleException('Invalid user name "' . $key . '"');
+
+		return null;
 	}
 
 	public function getAvatarUrl($size = 32)

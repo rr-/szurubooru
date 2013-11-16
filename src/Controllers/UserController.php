@@ -550,4 +550,31 @@ class UserController
 			AuthController::doReLog();
 		}
 	}
+
+
+
+	/**
+	* @route /activation-retry/
+	*/
+	public function activationRetryAction()
+	{
+		$this->context->subTitle = 'activation retry';
+
+		$this->context->stylesheets []= 'auth.css';
+		$this->context->viewName = 'user-select';
+		if (InputHelper::get('submit'))
+		{
+			$name = InputHelper::get('name');
+			$user = Model_User::locate($name);
+			if (empty($user->email_unconfirmed))
+			{
+				if (!empty($user->email_confirmed))
+					throw new SimpleException('E-mail was already confirmed; activation skipped');
+				else
+					throw new SimpleException('This user has no e-mail specified; activation cannot proceed');
+			}
+			self::sendEmailChangeConfirmation($user);
+			StatusHelper::success('Activation e-mail resent.');
+		}
+	}
 }
