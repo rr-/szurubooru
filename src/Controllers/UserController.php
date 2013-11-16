@@ -32,6 +32,9 @@ class UserController
 		$senderName = TextHelper::replaceTokens($senderName, $tokens);
 		$senderEmail = TextHelper::replaceTokens($senderEmail, $tokens);
 
+		if (empty($recipientEmail))
+			throw new SimpleException('Destination e-mail address was not found');
+
 		$headers = [];
 		$headers []= sprintf('MIME-Version: 1.0');
 		$headers []= sprintf('Content-Transfer-Encoding: 7bit');
@@ -68,6 +71,23 @@ class UserController
 			$regConfig->confirmationEmailSenderName,
 			$regConfig->confirmationEmailSenderEmail,
 			$user->email_unconfirmed,
+			$tokens);
+	}
+
+	private static function sendPasswordResetConfirmation($user)
+	{
+		$regConfig = \Chibi\Registry::getConfig()->registration;
+
+		$tokens = [];
+		$tokens['link'] = \Chibi\UrlHelper::route('user', 'password-reset', ['token' => '{token}']);
+
+		return self::sendTokenizedEmail(
+			$user,
+			$regConfig->passwordResetEmailBody,
+			$regConfig->passwordResetEmailSubject,
+			$regConfig->passwordResetEmailSenderName,
+			$regConfig->passwordResetEmailSenderEmail,
+			$user->email_confirmed,
 			$tokens);
 	}
 
@@ -519,18 +539,7 @@ class UserController
 		$this->context->subTitle = 'account activation';
 		$this->context->viewName = 'message';
 
-		if (empty($token))
-			throw new SimpleException('Invalid activation token');
-
-		$dbToken = R::findOne('usertoken', 'token = ?', [$token]);
-		if ($dbToken === null)
-			throw new SimpleException('No user with such activation token');
-
-		if ($dbToken->used)
-			throw new SimpleException('This user was already activated');
-
-		if ($dbToken->expires !== null and time() > $dbToken->expires)
-			throw new SimpleException('Activation link expired');
+		$dbToken = Model_Token::locate($token);
 
 		$dbUser = $dbToken->user;
 		$dbUser->email_confirmed = $dbUser->email_unconfirmed;
@@ -554,14 +563,67 @@ class UserController
 
 
 	/**
-	* @route /activation-retry/
+	* @route /password-reset/{token}
 	*/
-	public function activationRetryAction()
+	public function passwordResetAction($token)
 	{
-		$this->context->subTitle = 'activation retry';
+		$this->context->subTitle = 'password reset';
+		$this->context->viewName = 'message';
 
-		$this->context->stylesheets []= 'auth.css';
+		$dbToken = Model_Token::locate($token);
+
+		$alphabet = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
+		$randomPassword = join('', array_map(function($x) use ($alphabet)
+		{
+			return $alphabet[$x];
+		}, array_rand($alphabet, 8)));
+
+		$dbUser = $dbToken->user;
+		$dbUser->pass_hash = Model_User::hashPassword($randomPassword, $dbUser->pass_salt);
+		$dbToken->used = true;
+		R::store($dbToken);
+		R::store($dbUser);
+
+		$message = 'Password reset successfuly. Your new password is **' . $randomPassword . '**.';
+		StatusHelper::success($message);
+
+		$this->context->user = $dbUser;
+		AuthController::doReLog();
+	}
+
+
+
+
+	/**
+	* @route /password-reset-proxy
+	*/
+	public function passwordResetProxyAction()
+	{
+		$this->context->subTtile = 'password reset';
 		$this->context->viewName = 'user-select';
+		$this->context->stylesheets []= 'auth.css';
+
+		if (InputHelper::get('submit'))
+		{
+			$name = InputHelper::get('name');
+			$user = Model_User::locate($name);
+			if (empty($user->email_confirmed))
+				throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
+
+			self::sendPasswordResetConfirmation($user);
+			StatusHelper::success('E-mail sent. Follow instructions to reset password.');
+		}
+	}
+
+	/**
+	* @route /activation-proxy
+	*/
+	public function activationProxyAction()
+	{
+		$this->context->subTitle = 'account activation';
+		$this->context->viewName = 'user-select';
+		$this->context->stylesheets []= 'auth.css';
+
 		if (InputHelper::get('submit'))
 		{
 			$name = InputHelper::get('name');
