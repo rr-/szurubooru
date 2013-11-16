@@ -1,27 +1,36 @@
 <?php
 class UserController
 {
-	private static function sendEmailConfirmation(&$user)
+	private static function sendTokenizedEmail(
+		$user,
+		$body,
+		$subject,
+		$senderName,
+		$senderEmail,
+		$recipientEmail,
+		$tokens)
 	{
-		$regConfig = \Chibi\Registry::getConfig()->registration;
-
-		if (!$regConfig->confirmationEmailEnabled)
+		//prepare unique user token
+		do
 		{
-			$user->email_confirmed = $user->email_unconfirmed;
-			$user->email_unconfirmed = null;
-			return;
+			$tokenText =  md5(mt_rand() . uniqid());
 		}
+		while (R::findOne('usertoken', 'token = ?', [$tokenText]) !== null);
+		$token = R::dispense('usertoken');
+		$token->user = $user;
+		$token->token = $tokenText;
+		$token->used = false;
+		$token->expires = null;
+		R::store($token);
 
 		\Chibi\Registry::getContext()->mailSent = true;
-		$tokens = [];
 		$tokens['host'] = $_SERVER['HTTP_HOST'];
-		$tokens['link'] = \Chibi\UrlHelper::route('user', 'activation', ['token' => $user->email_token]);
+		$tokens['token'] = $tokenText;
 
-		$body = wordwrap(TextHelper::replaceTokens($regConfig->confirmationEmailBody, $tokens), 70);
-		$subject = TextHelper::replaceTokens($regConfig->confirmationEmailSubject, $tokens);
-		$senderName = TextHelper::replaceTokens($regConfig->confirmationEmailSenderName, $tokens);
-		$senderEmail = TextHelper::replaceTokens($regConfig->confirmationEmailSenderEmail, $tokens);
-		$recipientEmail = $user->email_unconfirmed;
+		$body = wordwrap(TextHelper::replaceTokens($body, $tokens), 70);
+		$subject = TextHelper::replaceTokens($subject, $tokens);
+		$senderName = TextHelper::replaceTokens($senderName, $tokens);
+		$senderEmail = TextHelper::replaceTokens($senderEmail, $tokens);
 
 		$headers = [];
 		$headers []= sprintf('MIME-Version: 1.0');
@@ -37,6 +46,29 @@ class UserController
 		$headers []= sprintf('X-Originating-IP: %s', $_SERVER['SERVER_ADDR']);
 		$subject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 		mail($recipientEmail, $subject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
+	}
+
+	private static function sendEmailChangeConfirmation($user)
+	{
+		$regConfig = \Chibi\Registry::getConfig()->registration;
+		if (!$regConfig->confirmationEmailEnabled)
+		{
+			$user->email_confirmed = $user->email_unconfirmed;
+			$user->email_unconfirmed = null;
+			return;
+		}
+
+		$tokens = [];
+		$tokens['link'] = \Chibi\UrlHelper::route('user', 'activation', ['token' => '{token}']);
+
+		return self::sendTokenizedEmail(
+			$user,
+			$regConfig->confirmationEmailBody,
+			$regConfig->confirmationEmailSubject,
+			$regConfig->confirmationEmailSenderName,
+			$regConfig->confirmationEmailSenderEmail,
+			$user->email_unconfirmed,
+			$tokens);
 	}
 
 
@@ -250,6 +282,8 @@ class UserController
 
 			if (InputHelper::get('submit'))
 			{
+				$confirmMail = false;
+
 				if ($suppliedName != '' and $suppliedName != $user->name)
 				{
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($user));
@@ -274,7 +308,7 @@ class UserController
 					{
 						$user->email_unconfirmed = $suppliedEmail;
 						if (!empty($user->email_unconfirmed))
-							self::sendEmailConfirmation($user);
+							$confirmMail = true;
 					}
 					else
 					{
@@ -296,6 +330,10 @@ class UserController
 						throw new SimpleException('Must supply valid current password');
 				}
 				R::store($user);
+
+				if ($confirmMail)
+					self::sendEmailChangeConfirmation($user);
+
 				$this->context->transport->success = true;
 			}
 		}
@@ -425,17 +463,10 @@ class UserController
 			$dbUser->pass_hash = Model_User::hashPassword($suppliedPassword, $dbUser->pass_salt);
 			$dbUser->email_unconfirmed = $suppliedEmail;
 
-			//prepare unique registration token
-			do
-			{
-				$emailToken =  md5(mt_rand() . uniqid());
-			}
-			while (R::findOne('user', 'email_token = ?', [$emailToken]) !== null);
-			$dbUser->email_token = $emailToken;
-
 			$dbUser->join_date = time();
 			if (R::findOne('user') === null)
 			{
+				//very first user
 				$dbUser->access_rank = AccessRank::Admin;
 				$dbUser->staff_confirmed = true;
 				$dbUser->email_unconfirmed = null;
@@ -446,12 +477,14 @@ class UserController
 				$dbUser->access_rank = AccessRank::Registered;
 				$dbUser->staff_confirmed = false;
 				$dbUser->staff_confirmed = null;
-				if (!empty($dbUser->email_unconfirmed))
-					self::sendEmailConfirmation($dbUser);
 			}
 
 			//save the user to db if everything went okay
 			R::store($dbUser);
+
+			if (!empty($dbUser->email_unconfirmed))
+				self::sendEmailChangeConfirmation($dbUser);
+
 			$this->context->transport->success = true;
 
 			if (!$this->config->registration->needEmailForRegistering and !$this->config->registration->staffActivation)
@@ -474,15 +507,21 @@ class UserController
 		if (empty($token))
 			throw new SimpleException('Invalid activation token');
 
-		$dbUser = R::findOne('user', 'email_token = ?', [$token]);
-		if ($dbUser === null)
+		$dbToken = R::findOne('usertoken', 'token = ?', [$token]);
+		if ($dbToken === null)
 			throw new SimpleException('No user with such activation token');
 
-		if (!$dbUser->email_unconfirmed)
+		if ($dbToken->used)
 			throw new SimpleException('This user was already activated');
 
+		if ($dbToken->expires !== null and time() > $dbToken->expires)
+			throw new SimpleException('Activation link expired.');
+
+		$dbUser = $dbToken->user;
 		$dbUser->email_confirmed = $dbUser->email_unconfirmed;
 		$dbUser->email_unconfirmed = null;
+		$dbToken->used = true;
+		R::store($dbToken);
 		R::store($dbUser);
 		$this->context->transport->success = true;
 
