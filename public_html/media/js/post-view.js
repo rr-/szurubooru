@@ -59,7 +59,7 @@ $(function()
 				}
 				else
 				{
-					alert(data['errorMessage']);
+					alert(data['message']);
 					formDom.find(':input').attr('readonly', false);
 					formDom.removeClass('inactive');
 				}
@@ -114,7 +114,7 @@ $(function()
 				}
 				else
 				{
-					alert(data['errorMessage']);
+					alert(data['message']);
 					formDom.find(':input').attr('readonly', false);
 					formDom.removeClass('inactive');
 				}

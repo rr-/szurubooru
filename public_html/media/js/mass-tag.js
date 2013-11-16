@@ -28,7 +28,7 @@ $(function()
 				}
 				else
 				{
-					alert(data['errorMessage']);
+					alert(data['message']);
 					aDom.removeClass('inactive');
 				}
 			});
