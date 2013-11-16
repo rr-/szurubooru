@@ -1,13 +1,5 @@
 <?php if ($this->context->transport->success === true): ?>
-	<p class="alert alert-success">Congratulations, your account was created.
-	<?php if (!empty($this->context->mailSent)): ?>
-		<br>Please wait for activation e-mail.
-		<?php if ($this->config->registration->staffActivation): ?>
-			<br>After this, your registration must be confirmed by staff.
-		<?php endif ?>
-	<?php elseif ($this->config->registration->staffActivation): ?>
-		<br>Your registration must be now confirmed by staff.
-	<?php endif ?></p>
+	<?php $this->renderFile('message') ?>
 <?php else: ?>
 	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth aligned" method="post">
 		<div>
@@ -38,11 +30,9 @@
 			<p id="email-info">Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>Leave blank for random Gravatar.</p>
 		</div>
 
-		<?php if (isset($this->context->transport->errorMessage)): ?>
-			<div>
-				<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
-			</div>
-		<?php endif ?>
+		<div>
+			<?php $this->renderFile('message') ?>
+		</div>
 
 		<input type="hidden" name="submit" value="1"/>
 

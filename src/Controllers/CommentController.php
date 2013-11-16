@@ -63,7 +63,7 @@ class CommentController
 			if (InputHelper::get('sender') != 'preview')
 				R::store($comment);
 			$this->context->transport->textPreview = $comment->getText();
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -79,6 +79,6 @@ class CommentController
 		R::preload($comment, ['commenter' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->commenter));
 		R::trash($comment);
-		$this->context->transport->success = true;
+		StatusHelper::success();
 	}
 }

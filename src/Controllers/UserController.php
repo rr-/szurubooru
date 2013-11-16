@@ -127,7 +127,7 @@ class UserController
 		{
 			$user->banned = true;
 			R::store($user);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -143,7 +143,7 @@ class UserController
 		{
 			$user->banned = false;
 			R::store($user);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -159,7 +159,7 @@ class UserController
 		{
 			$user->staff_confirmed = true;
 			R::store($user);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -209,7 +209,7 @@ class UserController
 			R::store($user);
 			R::trash($user);
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -247,7 +247,7 @@ class UserController
 			if ($user->id == $this->context->user->id)
 				$this->context->user = $user;
 			AuthController::doReLog();
-			$this->context->transport->success = true;
+			StatusHelper::success('Browsing settings updated!');
 		}
 	}
 
@@ -312,6 +312,7 @@ class UserController
 					}
 					else
 					{
+						$user->email_unconfirmed = null;
 						$user->email_confirmed = $suppliedEmail;
 					}
 				}
@@ -334,7 +335,10 @@ class UserController
 				if ($confirmMail)
 					self::sendEmailChangeConfirmation($user);
 
-				$this->context->transport->success = true;
+				$message = 'Account settings updated!';
+				if ($confirmMail)
+					$message .= ' You wlil be sent an e-mail address confirmation message soon.';
+				StatusHelper::success($message);
 			}
 		}
 		catch (Exception $e)
@@ -414,7 +418,7 @@ class UserController
 		if (!$this->context->user->anonymous)
 			R::store($this->context->user);
 
-		$this->context->transport->success = true;
+		StatusHelper::success();
 	}
 
 
@@ -485,7 +489,17 @@ class UserController
 			if (!empty($dbUser->email_unconfirmed))
 				self::sendEmailChangeConfirmation($dbUser);
 
-			$this->context->transport->success = true;
+			$message = 'Congratulations, your account was created.';
+			if (!empty($this->context->mailSent))
+			{
+				$message .= ' Please wait for activation e-mail.';
+				if ($this->config->registration->staffActivation)
+					$message .= ' After this, your registration must be confirmed by staff.';
+			}
+			elseif ($this->config->registration->staffActivation)
+				$message .= ' Your registration must be now confirmed by staff.';
+
+			StatusHelper::success($message);
 
 			if (!$this->config->registration->needEmailForRegistering and !$this->config->registration->staffActivation)
 			{
@@ -503,6 +517,7 @@ class UserController
 	public function activationAction($token)
 	{
 		$this->context->subTitle = 'account activation';
+		$this->context->viewName = 'message';
 
 		if (empty($token))
 			throw new SimpleException('Invalid activation token');
@@ -515,7 +530,7 @@ class UserController
 			throw new SimpleException('This user was already activated');
 
 		if ($dbToken->expires !== null and time() > $dbToken->expires)
-			throw new SimpleException('Activation link expired.');
+			throw new SimpleException('Activation link expired');
 
 		$dbUser = $dbToken->user;
 		$dbUser->email_confirmed = $dbUser->email_unconfirmed;
@@ -523,7 +538,11 @@ class UserController
 		$dbToken->used = true;
 		R::store($dbToken);
 		R::store($dbUser);
-		$this->context->transport->success = true;
+
+		$message = 'Activation completed successfully.';
+		if ($this->config->registration->staffActivation)
+			$message .= ' However, your account still must be confirmed by staff.';
+		StatusHelper::success($message);
 
 		if (!$this->config->registration->staffActivation)
 		{

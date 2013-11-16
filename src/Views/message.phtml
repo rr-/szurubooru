@@ -1,0 +1,5 @@
+<?php if (!empty($this->context->transport->message)): ?>
+	<p class="alert <?php echo $this->context->transport->success ? 'alert-success' : 'alert-error'; ?>">
+		<?php echo $this->context->transport->messageHtml ?>
+	</p>
+<?php endif ?>

@@ -70,7 +70,7 @@ class TagController
 			}
 			R::trash($sourceTag);
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
-			$this->view->context->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -101,7 +101,7 @@ class TagController
 			R::store($sourceTag);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 

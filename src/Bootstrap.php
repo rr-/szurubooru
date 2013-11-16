@@ -26,7 +26,7 @@ class Bootstrap
 			? 'layout-json'
 			: 'layout-normal';
 		$this->context->transport = new StdClass;
-		$this->context->transport->success = null;
+		StatusHelper::init();
 
 		AuthController::doLogIn();
 
@@ -41,29 +41,24 @@ class Bootstrap
 		{
 			$workCallback();
 		}
-		catch (SimpleException $e)
-		{
-			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
-			$this->context->transport->errorHtml = TextHelper::parseMarkdown($this->context->transport->errorMessage, true);
-			$this->context->transport->exception = $e;
-			$this->context->transport->success = false;
-			if (!$this->context->handleExceptions)
-				$this->context->viewName = 'error-simple';
-			(new \Chibi\View())->renderFile($this->context->layoutName);
-		}
 		catch (\Chibi\MissingViewFileException $e)
 		{
 			$this->context->json = true;
 			$this->context->layoutName = 'layout-json';
 			(new \Chibi\View())->renderFile($this->context->layoutName);
 		}
+		catch (SimpleException $e)
+		{
+			StatusHelper::failure(rtrim($e->getMessage(), '.') . '.');
+			if (!$this->context->handleExceptions)
+				$this->context->viewName = 'message';
+			(new \Chibi\View())->renderFile($this->context->layoutName);
+		}
 		catch (Exception $e)
 		{
-			$this->context->transport->errorMessage = rtrim($e->getMessage(), '.') . '.';
-			$this->context->transport->errorHtml = TextHelper::parseMarkdown($this->context->transport->errorMessage, true);
+			StatusHelper::failure(rtrim($e->getMessage(), '.') . '.');
 			$this->context->transport->exception = $e;
 			$this->context->transport->queries = array_map(function($x) { return preg_replace('/\s+/', ' ', $x); }, queryLogger()->getLogs());
-			$this->context->transport->success = false;
 			$this->context->viewName = 'error-exception';
 			(new \Chibi\View())->renderFile($this->context->layoutName);
 		}

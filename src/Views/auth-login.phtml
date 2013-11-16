@@ -24,9 +24,7 @@
 		</div>
 	</div>
 
-	<?php if (isset($this->context->transport->errorMessage)): ?>
-		<p class="alert alert-error">Error: <?php echo $this->context->transport->errorMessage ?></p>
-	<?php endif ?>
+	<?php $this->renderFile('message') ?>
 
 	<input type="hidden" name="submit" value="1"/>
 

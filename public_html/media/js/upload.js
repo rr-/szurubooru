@@ -116,7 +116,7 @@ $(function()
 				}
 				else
 				{
-					postDom.find('.alert').html(data['errorHtml']).slideDown();
+					postDom.find('.alert').html(data['messageHtml']).slideDown();
 					enableUpload();
 				}
 			}

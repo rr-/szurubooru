@@ -138,7 +138,7 @@ class PostController
 			$post->sharedTag = $dbTags;
 
 			R::store($post);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -339,7 +339,7 @@ class PostController
 			}
 			R::store($dbPost);
 
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -437,7 +437,7 @@ class PostController
 			Model_Tag::removeUnused();
 
 
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -455,7 +455,7 @@ class PostController
 		{
 			$post->hidden = true;
 			R::store($post);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -471,7 +471,7 @@ class PostController
 		{
 			$post->hidden = false;
 			R::store($post);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -495,7 +495,7 @@ class PostController
 			$post->sharedTag = [];
 			R::store($post);
 			R::trash($post);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -522,7 +522,7 @@ class PostController
 
 			$post->link('favoritee')->user = $this->context->user;
 			R::store($post);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -551,7 +551,7 @@ class PostController
 
 			unset ($post->ownFavoritee[$finalKey]);
 			R::store($post);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -580,7 +580,7 @@ class PostController
 			}
 			$p->score = $score;
 			R::store($p);
-			$this->context->transport->success = true;
+			StatusHelper::success();
 		}
 	}
 
@@ -596,7 +596,7 @@ class PostController
 		Model_Property::set(Model_Property::FeaturedPostId, $post->id);
 		Model_Property::set(Model_Property::FeaturedPostUserId, $this->context->user->id);
 		Model_Property::set(Model_Property::FeaturedPostDate, time());
-		$this->context->transport->success = true;
+		StatusHelper::success();
 	}
 
 

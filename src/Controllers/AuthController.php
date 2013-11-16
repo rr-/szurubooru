@@ -76,7 +76,7 @@ class AuthController
 				$token = implode('|', [base64_encode($suppliedName), base64_encode($suppliedPassword)]);
 				setcookie('auth', TextHelper::encrypt($token), time() + 365 * 24 * 3600, '/');
 			}
-			$this->context->transport->success = true;
+			StatusHelper::success();
 			self::redirectAfterLog();
 		}
 	}

@@ -1,128 +1,122 @@
-<?php if ($this->context->transport->success === true): ?>
-	<p>Post created!</p>
-<?php else: ?>
+<div id="sidebar">
+	<div class="unit">
+		<h1>file upload</h1>
+		<p>Use tags to describe uploaded images. Try to specify characters, their look and shows they are from.</p>
+		<p>Set proper visibility setting if the image isn&rsquo;t safe for work or you&rsquo;re not sure it&rsquo;s 100% <span class="safety-safe">safe</span>.</p>
+		<p>Only registered users can view <span class="safety-sketchy">sketchy</span> or <span class="safety-unsafe">NSFW</span> content.</p>
+		<p>Click submit when you&rsquo;re done.</p>
+	</div>
+</div>
 
-	<div id="sidebar">
-		<div class="unit">
-			<h1>file upload</h1>
-			<p>Use tags to describe uploaded images. Try to specify characters, their look and shows they are from.</p>
-			<p>Set proper visibility setting if the image isn&rsquo;t safe for work or you&rsquo;re not sure it&rsquo;s 100% <span class="safety-safe">safe</span>.</p>
-			<p>Only registered users can view <span class="safety-sketchy">sketchy</span> or <span class="safety-unsafe">NSFW</span> content.</p>
-			<p>Click submit when you&rsquo;re done.</p>
+<div id="inner-content">
+	<div id="upload-step1">
+		<div class="tabs">
+			<nav>
+				<ul>
+					<li class="selected file">
+						<a href="#">
+							Upload from file
+						</a>
+					</li>
+
+					<li class="url">
+						<a href="#">
+							Upload from URL
+						</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+		<div class="tab file">
+			<input type=file multiple style="display: none"/>
+			<div id="file-handler-wrapper">
+				<div id="file-handler">
+					Drop files here!<br>
+					Or just click on this box.
+				</div>
+			</div>
+		</div>
+
+		<div class="tab url">
+			<div id="url-handler-wrapper">
+				<div id="url-handler">
+					<div class="input-wrapper"><textarea placeholder="Paste some URLs here, one per line." name="urls"></textarea></div>
+				</div>
+				<button type="submit">Add</button>
+			</div>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+
+	<div id="upload-step2" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
+		<hr>
+
+		<div class="posts">
+		</div>
+
+		<div class="submit-wrapper">
+			<button id="the-submit" type="submit">Submit</button>
 		</div>
 	</div>
 
-	<div id="inner-content">
-		<div id="upload-step1">
-			<div class="tabs">
-				<nav>
-					<ul>
-						<li class="selected file">
-							<a href="#">
-								Upload from file
-							</a>
-						</li>
+	<div id="post-template" class="post">
+		<p class="alert alert-error">Some kind of error</p>
 
-						<li class="url">
-							<a href="#">
-								Upload from URL
-							</a>
-						</li>
-					</ul>
-				</nav>
+		<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+
+		<div class="form-wrapper">
+			<div class="ops">
+				<a class="move-up-trigger">
+					move up <span>&uarr;</span>
+				</a>
+
+				<a class="move-down-trigger">
+					move down <span>&darr;</span>
+				</a>
+
+				<a class="remove-trigger">
+					remove <span>&times;</span>
+				</a>
 			</div>
 
-			<div class="tab file">
-				<input type=file multiple style="display: none"/>
-				<div id="file-handler-wrapper">
-					<div id="file-handler">
-						Drop files here!<br>
-						Or just click on this box.
-					</div>
-				</div>
-			</div>
-
-			<div class="tab url">
-				<div id="url-handler-wrapper">
-					<div id="url-handler">
-						<div class="input-wrapper"><textarea placeholder="Paste some URLs here, one per line." name="urls"></textarea></div>
-					</div>
-					<button type="submit">Add</button>
-				</div>
-			</div>
-
-			<div class="clear"></div>
-		</div>
-
-		<div id="upload-step2" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
-			<hr>
-
-			<div class="posts">
-			</div>
-
-			<div class="submit-wrapper">
-				<button id="the-submit" type="submit">Submit</button>
-			</div>
-		</div>
-
-		<div id="post-template" class="post">
-			<p class="alert alert-error">Some kind of error</p>
-
-			<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
-
-			<div class="form-wrapper">
-				<div class="ops">
-					<a class="move-up-trigger">
-						move up <span>&uarr;</span>
-					</a>
-
-					<a class="move-down-trigger">
-						move down <span>&darr;</span>
-					</a>
-
-					<a class="remove-trigger">
-						remove <span>&times;</span>
-					</a>
+			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post" class="aligned">
+				<div class="file-name">
+					<label class="left">File:</label>
+					<strong>filename.jpg</strong>
 				</div>
 
-				<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post" class="aligned">
-					<div class="file-name">
-						<label class="left">File:</label>
-						<strong>filename.jpg</strong>
-					</div>
-
-					<div class="safety">
-						<label class="left">Safety:</label>
-						<?php $checked = false ?>
-						<?php foreach (PostSafety::getAll() as $safety): ?>
-							<label>
-								<input type="radio" name="safety" value="<?php echo $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
-								<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
-								<?php $checked = true ?>
-							</label>
-						<?php endforeach ?>
-						<input type="hidden" name="anonymous" value="0"/>
+				<div class="safety">
+					<label class="left">Safety:</label>
+					<?php $checked = false ?>
+					<?php foreach (PostSafety::getAll() as $safety): ?>
 						<label>
-							<input type="checkbox" name="anonymous" value="1"/>
-							Upload anonymously
+							<input type="radio" name="safety" value="<?php echo $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
+							<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
+							<?php $checked = true ?>
 						</label>
+					<?php endforeach ?>
+					<input type="hidden" name="anonymous" value="0"/>
+					<label>
+						<input type="checkbox" name="anonymous" value="1"/>
+						Upload anonymously
+					</label>
 
-					</div>
+				</div>
 
-					<div class="tags">
-						<label class="left">Tags:</label>
-						<div class="input-wrapper"><input type="text" name="tags" placeholder="enter some tags&hellip;"/></div>
-					</div>
+				<div class="tags">
+					<label class="left">Tags:</label>
+					<div class="input-wrapper"><input type="text" name="tags" placeholder="enter some tags&hellip;"/></div>
+				</div>
 
-					<div class="source">
-						<label class="left">Source:</label>
-						<div class="input-wrapper"><input type="text" name="source" placeholder="where did you get this from? (optional)"/></div>
-					</div>
+				<div class="source">
+					<label class="left">Source:</label>
+					<div class="input-wrapper"><input type="text" name="source" placeholder="where did you get this from? (optional)"/></div>
+				</div>
 
-					<input type="hidden" name="submit" value="1"/>
-				</form>
-			</div>
+				<input type="hidden" name="submit" value="1"/>
+			</form>
 		</div>
 	</div>
-
-<?php endif ?>
+</div>
