@@ -475,6 +475,31 @@ class PostController
 
 
 	/**
+	* @route /post/{id}/flag
+	*/
+	public function flagAction($id)
+	{
+		$post = Model_Post::locate($id);
+		PrivilegesHelper::confirmWithException(Privilege::FlagPost);
+
+		if (InputHelper::get('submit'))
+		{
+			$key = '@' . $post->id;
+
+			if (!isset($_SESSION['flagged']))
+				$_SESSION['flagged'] = [];
+			if (in_array($key, $_SESSION['flagged']))
+				throw new SimpleException('You already flagged this post');
+			$_SESSION['flagged'] []= $key;
+
+			LogHelper::logEvent('post-flag', '**+{user} flagged @{post} for moderator attention**', ['post' => $post->id]);
+			StatusHelper::success();
+		}
+	}
+
+
+
+	/**
 	* @route /post/{id}/hide
 	*/
 	public function hideAction($id)

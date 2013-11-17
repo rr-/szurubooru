@@ -247,6 +247,14 @@
 				</li>
 			<?php endif ?>
 
+			<?php if (PrivilegesHelper::confirm(Privilege::FlagPost)): ?>
+				<li class="flag">
+					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'flag', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure you want to flag this post?">
+						Flag for moderator attention
+					</a>
+				</li>
+			<?php endif ?>
+
 			<?php if (PrivilegesHelper::confirm(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
 				<li class="delete">
 					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'delete', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure you want to delete this post?" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">

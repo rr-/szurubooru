@@ -138,6 +138,32 @@ class UserController
 
 
 	/**
+	* @route /user/{name}/flag
+	* @validate name [^\/]+
+	*/
+	public function flagAction($name)
+	{
+		$user = Model_User::locate($name);
+		PrivilegesHelper::confirmWithException(Privilege::FlagUser);
+
+		if (InputHelper::get('submit'))
+		{
+			$key = '+' . $user->name;
+
+			if (!isset($_SESSION['flagged']))
+				$_SESSION['flagged'] = [];
+			if (in_array($key, $_SESSION['flagged']))
+				throw new SimpleException('You already flagged this user');
+			$_SESSION['flagged'] []= $key;
+
+			LogHelper::logEvent('user-flag', '**+{user} flagged +{subject} for moderator attention**', ['subject' => $user->name]);
+			StatusHelper::success();
+		}
+	}
+
+
+
+	/**
 	* @route /user/{name}/ban
 	* @validate name [^\/]+
 	*/
@@ -145,14 +171,18 @@ class UserController
 	{
 		$user = Model_User::locate($name);
 		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+
 		if (InputHelper::get('submit'))
 		{
 			$user->banned = true;
 			R::store($user);
+
 			LogHelper::logEvent('ban', '+{user} banned +{subject}', ['subject' => $user->name]);
 			StatusHelper::success();
 		}
 	}
+
+
 
 	/**
 	* @route /post/{name}/unban
@@ -162,14 +192,18 @@ class UserController
 	{
 		$user = Model_User::locate($name);
 		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+
 		if (InputHelper::get('submit'))
 		{
 			$user->banned = false;
 			R::store($user);
+
 			LogHelper::logEvent('unban', '+{user} unbanned +{subject}', ['subject' => $user->name]);
 			StatusHelper::success();
 		}
 	}
+
+
 
 	/**
 	* @route /post/{name}/accept-registration

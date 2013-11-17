@@ -65,6 +65,14 @@
 				</li>
 			<?php endif ?>
 
+			<?php if (PrivilegesHelper::confirm(Privilege::FlagUser)): ?>
+				<li class="flag">
+					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('user', 'flag', ['name' => $this->context->transport->user->name]) ?>" data-confirm-text="Are you sure you want to flag this user?">
+						Flag for moderator attention
+					</a>
+				</li>
+			<?php endif ?>
+
 			<?php if (PrivilegesHelper::confirm(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 				<?php if (!$this->context->transport->user->banned): ?>
 					<li class="ban">
