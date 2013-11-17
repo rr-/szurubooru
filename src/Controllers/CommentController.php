@@ -62,9 +62,11 @@ class CommentController
 			$comment->comment_date = time();
 			$comment->text = $text;
 			if (InputHelper::get('sender') != 'preview')
+			{
 				R::store($comment);
+				LogHelper::logEvent('comment-add', '+{user} commented on @{post}', ['post' => $post->id]);
+			}
 			$this->context->transport->textPreview = $comment->getText();
-			LogHelper::logEvent('comment-add', '+{user} commented on @{post}', ['post' => $post->id]);
 			StatusHelper::success();
 		}
 	}
