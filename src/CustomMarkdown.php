@@ -5,7 +5,8 @@ class CustomMarkdown extends \Michelf\Markdown
 	{
 		$this->no_markup = true;
 		$this->span_gamut += ['doSpoilers' => 71];
-		$this->span_gamut += ['doUsers' => 7];
+		$this->span_gamut += ['doSpoilers' => 71];
+		$this->span_gamut += ['doStrike' => 6];
 		$this->span_gamut += ['doPosts' => 8];
 		$this->span_gamut += ['doTags' => 9];
 		$this->span_gamut += ['doAutoLinks2' => 29];
@@ -43,6 +44,14 @@ class CustomMarkdown extends \Michelf\Markdown
 	protected function doHardBreaks($text)
 	{
 		return preg_replace_callback('/\n/', [&$this, '_doHardBreaks_callback'], $text);
+	}
+
+	protected function doStrike($text)
+	{
+		return preg_replace_callback('{(~~|---)([^~]+)\1}', function($x)
+		{
+			return $this->hashPart('<del>') . $x[2] . $this->hashPart('</del>');
+		}, $text);
 	}
 
 	protected function doSpoilers($text)
