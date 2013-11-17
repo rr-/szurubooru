@@ -1,5 +1,5 @@
 <?php
-define('SZURU_VERSION', '0.3.0');
+define('SZURU_VERSION', '0.4.0');
 define('SZURU_LINK', 'http://github.com/rr-/szurubooru');
 
 define('DS', DIRECTORY_SEPARATOR);
