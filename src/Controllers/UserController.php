@@ -47,8 +47,8 @@ class UserController
 		$headers []= sprintf('Content-Type: text/plain; charset=utf-8', $subject);
 		$headers []= sprintf('X-Mailer: PHP/%s', phpversion());
 		$headers []= sprintf('X-Originating-IP: %s', $_SERVER['SERVER_ADDR']);
-		$subject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-		mail($recipientEmail, $subject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
+		$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+		mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
 
 		LogHelper::logEvent('mail', 'Sending e-mail with subject "' . $subject . '" to ' . $recipientEmail);
 	}
@@ -148,13 +148,13 @@ class UserController
 
 		if (InputHelper::get('submit'))
 		{
-			$key = '+' . $user->name;
+			$key = TextHelper::reprUser($user);
 
-			if (!isset($_SESSION['flagged']))
-				$_SESSION['flagged'] = [];
-			if (in_array($key, $_SESSION['flagged']))
+			$flagged = SessionHelper::get('flagged', []);
+			if (in_array($key, $flagged))
 				throw new SimpleException('You already flagged this user');
-			$_SESSION['flagged'] []= $key;
+			$flagged []= $key;
+			SessionHelper::set('flagged', $flagged);
 
 			LogHelper::logEvent('user-flag', '**+{user} flagged +{subject} for moderator attention**', ['subject' => $user->name]);
 			StatusHelper::success();
@@ -459,6 +459,9 @@ class UserController
 		$page = max(1, min($pageCount, $page));
 		$posts = Model_Post::getEntities($query, $postsPerPage, $page);
 
+		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
+
+		$this->context->flagged = $flagged;
 		$this->context->transport->user = $user;
 		$this->context->transport->tab = $tab;
 		$this->context->transport->paginator = new StdClass;
@@ -637,7 +640,7 @@ class UserController
 		R::store($dbUser);
 
 		LogHelper::logEvent('user-pass-reset', '+{subject} just reset password', ['subject' => $dbUser->name]);
-		$message = 'Password reset successfuly. Your new password is **' . $randomPassword . '**.';
+		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
 		StatusHelper::success($message);
 
 		$this->context->user = $dbUser;

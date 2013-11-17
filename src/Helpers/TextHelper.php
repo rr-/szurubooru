@@ -180,6 +180,21 @@ class TextHelper
 		return $output;
 	}
 
+	public static function reprPost($post)
+	{
+		return '@' . $post->id;
+	}
+
+	public static function reprUser($user)
+	{
+		return '+' . $user->name;
+	}
+
+	public static function reprTag($tag)
+	{
+		return '#' . $tag->name;
+	}
+
 	public static function encrypt($text)
 	{
 		$salt = \Chibi\Registry::getConfig()->main->salt;

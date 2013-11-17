@@ -484,13 +484,13 @@ class PostController
 
 		if (InputHelper::get('submit'))
 		{
-			$key = '@' . $post->id;
+			$key = TextHelper::reprPost($post);
 
-			if (!isset($_SESSION['flagged']))
-				$_SESSION['flagged'] = [];
-			if (in_array($key, $_SESSION['flagged']))
+			$flagged = SessionHelper::get('flagged', []);
+			if (in_array($key, $flagged))
 				throw new SimpleException('You already flagged this post');
-			$_SESSION['flagged'] []= $key;
+			$flagged []= $key;
+			SessionHelper::set('flagged', $flagged);
 
 			LogHelper::logEvent('post-flag', '**+{user} flagged @{post} for moderator attention**', ['post' => $post->id]);
 			StatusHelper::success();
@@ -730,12 +730,15 @@ class PostController
 				$score = intval($s->score);
 		}
 
+		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
+
 		$this->context->stylesheets []= 'post-view.css';
 		$this->context->stylesheets []= 'comment-small.css';
 		$this->context->scripts []= 'post-view.js';
 		$this->context->subTitle = 'showing @' . $post->id . ' &ndash; ' . join(', ', array_map(function($x) { return $x['name']; }, $post->sharedTag));
 		$this->context->favorite = $favorite;
 		$this->context->score = $score;
+		$this->context->flagged = $flagged;
 		$this->context->transport->post = $post;
 		$this->context->transport->prevPostId = $prevPost ? $prevPost['id'] : null;
 		$this->context->transport->nextPostId = $nextPost ? $nextPost['id'] : null;

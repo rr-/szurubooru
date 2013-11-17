@@ -84,10 +84,10 @@
 					<?php else: ?>
 						<a class="simple-action" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => 1]) ?>">
 					<?php endif ?>
-						up
+						vote up
 					</a>
 
-					&nbsp;|&nbsp;
+					,&nbsp;
 
 					<?php if ($this->context->score === -1): ?>
 						<a class="simple-action selected" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => 0]) ?>">
@@ -249,9 +249,15 @@
 
 			<?php if (PrivilegesHelper::confirm(Privilege::FlagPost)): ?>
 				<li class="flag">
-					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'flag', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure you want to flag this post?">
-						Flag for moderator attention
-					</a>
+					<?php if ($this->context->flagged): ?>
+						<a class="simple-action inactive" href="#">
+							Flagged
+						</a>
+					<?php else: ?>
+						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'flag', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure you want to flag this post?">
+							Flag for moderator attention
+						</a>
+					<?php endif ?>
 				</li>
 			<?php endif ?>
 
