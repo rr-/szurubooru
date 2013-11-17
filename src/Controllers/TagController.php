@@ -71,7 +71,7 @@ class TagController
 			R::trash($sourceTag);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
-			LogHelper::logEvent('tag-merge', '+{user} merged #{source} with #{target}', ['source' => $suppliedSourceTag, 'target' => $suppliedTargetTag]);
+			LogHelper::logEvent('tag-merge', '{user} merged {source} with {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
 			StatusHelper::success();
 		}
 	}
@@ -103,7 +103,7 @@ class TagController
 			R::store($sourceTag);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
-			LogHelper::logEvent('tag-rename', '+{user} renamed #{source} to #{target}', ['source' => $suppliedSourceTag, 'target' => $suppliedTargetTag]);
+			LogHelper::logEvent('tag-rename', '{user} renamed {source} to {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
 			StatusHelper::success();
 		}
 	}

@@ -132,12 +132,12 @@ class PostController
 			if (in_array($tag, $tags))
 			{
 				$tags = array_diff($tags, [$tag]);
-				LogHelper::logEvent('post-tag-del', '+{user} untagged @{post} with #{tag}', ['post' => $post->id, 'tag' => $tag]);
+				LogHelper::logEvent('post-tag-del', '{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 			}
 			else
 			{
 				$tags += [$tag];
-				LogHelper::logEvent('post-tag-add', '+{user} tagged @{post} with #{tag}', ['post' => $post->id, 'tag' => $tag]);
+				LogHelper::logEvent('post-tag-add', '{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 			}
 
 			$dbTags = Model_Tag::insertOrUpdate($tags);
@@ -345,11 +345,10 @@ class PostController
 			}
 			R::store($dbPost);
 
-			LogHelper::logEvent('post-new',
-				'+{user} added @{post} tagged with '
-					. join(', ', array_map(function($dbTag) { return '#' . $dbTag->name; }, $dbTags))
-					. ' marked as ' . PostSafety::toString($dbPost->safety),
-				['post' => $dbPost->id]);
+			LogHelper::logEvent('post-new', '{user} added {post} tagged with {tags} marked as {safety}', [
+				'post' => TextHelper::reprPost($dbPost),
+				'tags' =>  join(', ', array_map(['TextHelper', 'reprTag'], $dbTags)),
+				'safety' => PostSafety::toString($dbPost->safety)]);
 
 			StatusHelper::success();
 		}
@@ -378,7 +377,7 @@ class PostController
 				$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
 				$post->safety = $suppliedSafety;
 				$edited = true;
-				LogHelper::logEvent('post-edit', '+{user} changed safety for @{post} to {safety}', ['post' => $post->id, 'safety' => PostSafety::toString($post->safety)]);
+				LogHelper::logEvent('post-edit', '{user} changed safety for {post} to {safety}', ['post' => TextHelper::reprPost($post), 'safety' => PostSafety::toString($post->safety)]);
 			}
 
 
@@ -399,9 +398,9 @@ class PostController
 				$edited = true;
 
 				foreach (array_diff($oldTags, $suppliedTags) as $tag)
-					LogHelper::logEvent('post-tag-del', '+{user} untagged @{post} with #{tag}', ['post' => $post->id, 'tag' => $tag]);
+					LogHelper::logEvent('post-tag-del', '{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 				foreach (array_diff($suppliedTags, $oldTags) as $tag)
-					LogHelper::logEvent('post-tag-add', '+{user} tagged @{post} with #{tag}', ['post' => $post->id, 'tag' => $tag]);
+					LogHelper::logEvent('post-tag-add', '{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 			}
 
 
@@ -423,7 +422,7 @@ class PostController
 
 				$path = $this->config->main->thumbsPath . DS . $post->name . '.custom';
 				move_uploaded_file($suppliedFile['tmp_name'], $path);
-				LogHelper::logEvent('post-edit', '+{user} added custom thumb for @{post}', ['post' => $post->id]);
+				LogHelper::logEvent('post-edit', '{user} added custom thumb for {post}', ['post' => TextHelper::reprPost($post)]);
 			}
 
 
@@ -435,7 +434,7 @@ class PostController
 				$suppliedSource = Model_Post::validateSource($suppliedSource);
 				$post->source = $suppliedSource;
 				$edited = true;
-				LogHelper::logEvent('post-edit', '+{user} changed source for @{post} to {source}', ['post' => $post->id, 'source' => $post->source]);
+				LogHelper::logEvent('post-edit', '{user} changed source for {post} to {source}', ['post' => TextHelper::reprPost($post), 'source' => $post->source]);
 			}
 
 
@@ -459,9 +458,9 @@ class PostController
 				$post->via('crossref')->sharedPost = $relatedPosts;
 
 				foreach (array_diff($oldRelatedIds, $relatedIds) as $post2id)
-					LogHelper::logEvent('post-relation-del', '+{user} removed relation between @{post} and #{post2}', ['post' => $post->id, 'post2' => $post2id]);
+					LogHelper::logEvent('post-relation-del', '{user} removed relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
 				foreach (array_diff($relatedIds, $oldRelatedIds) as $post2id)
-					LogHelper::logEvent('post-relation-add', '+{user} added relation between @{post} and #{post2}', ['post' => $post->id, 'post2' => $post2id]);
+					LogHelper::logEvent('post-relation-add', '{user} added relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
 			}
 
 			R::store($post);
@@ -492,7 +491,7 @@ class PostController
 			$flagged []= $key;
 			SessionHelper::set('flagged', $flagged);
 
-			LogHelper::logEvent('post-flag', '**+{user} flagged @{post} for moderator attention**', ['post' => $post->id]);
+			LogHelper::logEvent('post-flag', '{user} flagged {post} for moderator attention', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
 		}
 	}
@@ -513,7 +512,7 @@ class PostController
 			$post->hidden = true;
 			R::store($post);
 
-			LogHelper::logEvent('post-hide', '+{user} hidden @{post}', ['post' => $post->id]);
+			LogHelper::logEvent('post-hide', '{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
 		}
 	}
@@ -534,7 +533,7 @@ class PostController
 			$post->hidden = false;
 			R::store($post);
 
-			LogHelper::logEvent('post-unhide', '+{user} unhidden @{post}', ['post' => $post->id]);
+			LogHelper::logEvent('post-unhide', '{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
 		}
 	}
@@ -563,7 +562,7 @@ class PostController
 			R::store($post);
 			R::trash($post);
 
-			LogHelper::logEvent('post-delete', '+{user} deleted @{post}', ['post' => $id]);
+			LogHelper::logEvent('post-delete', '{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
 			StatusHelper::success();
 		}
 	}
@@ -666,7 +665,7 @@ class PostController
 		Model_Property::set(Model_Property::FeaturedPostUserId, $this->context->user->id);
 		Model_Property::set(Model_Property::FeaturedPostDate, time());
 		StatusHelper::success();
-		LogHelper::logEvent('post-feature', '+{user} featured @{post} on main page', ['post' => $post->id]);
+		LogHelper::logEvent('post-feature', '{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
 	}
 
 

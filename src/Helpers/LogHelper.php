@@ -46,7 +46,7 @@ class LogHelper
 	public static function log($text, array $tokens = [])
 	{
 		if (isset(self::$context->user))
-			$tokens['user'] = self::$context->user->name;
+			$tokens['user'] = TextHelper::reprUser(self::$context->user->name);
 
 		$text = TextHelper::replaceTokens($text, $tokens);
 

@@ -46,8 +46,16 @@ class LogController
 		$lines = file_get_contents($path);
 		$lines = explode(PHP_EOL, str_replace(["\r", "\n"], PHP_EOL, $lines));
 		$lines = array_reverse($lines);
+
 		if (!empty($filter))
 			$lines = array_filter($lines, function($line) use ($filter) { return stripos($line, $filter) !== false; });
+
+		//stylize important lines
+		foreach ($lines as &$line)
+			if (strpos($line, 'flag') !== false)
+				$line = '**' . $line . '**';
+		unset($line);
+
 		$lines = join(PHP_EOL, $lines);
 		$lines = TextHelper::parseMarkdown($lines);
 		$lines = trim($lines);

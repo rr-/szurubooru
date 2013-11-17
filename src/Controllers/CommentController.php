@@ -64,7 +64,7 @@ class CommentController
 			if (InputHelper::get('sender') != 'preview')
 			{
 				R::store($comment);
-				LogHelper::logEvent('comment-add', '+{user} commented on @{post}', ['post' => $post->id]);
+				LogHelper::logEvent('comment-add', '{user} commented on {post}', ['post' => TextHelper::reprPost($post->id)]);
 			}
 			$this->context->transport->textPreview = $comment->getText();
 			StatusHelper::success();
@@ -82,7 +82,7 @@ class CommentController
 		$comment = Model_Comment::locate($id);
 		R::preload($comment, ['commenter' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->commenter));
-		LogHelper::logEvent('comment-del', '+{user} removed comment from @{post}', ['post' => $comment->post->id]);
+		LogHelper::logEvent('comment-del', '{user} removed comment from {post}', ['post' => TextHelper::reprPost($comment->post)]);
 		R::trash($comment);
 		StatusHelper::success();
 	}

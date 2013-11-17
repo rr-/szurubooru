@@ -182,16 +182,22 @@ class TextHelper
 
 	public static function reprPost($post)
 	{
+		if (!is_object($post))
+			return '@' . $post;
 		return '@' . $post->id;
 	}
 
 	public static function reprUser($user)
 	{
+		if (!is_object($user))
+			return '+' . $user;
 		return '+' . $user->name;
 	}
 
 	public static function reprTag($tag)
 	{
+		if (!is_object($tag))
+			return '#' . $tag;
 		return '#' . $tag->name;
 	}
 

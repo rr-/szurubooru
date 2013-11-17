@@ -7,3 +7,7 @@
 pre {
 	font-size: 11pt;
 }
+
+pre strong {
+	background: #fee;
+}
