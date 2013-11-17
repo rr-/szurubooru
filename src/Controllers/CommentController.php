@@ -50,10 +50,11 @@ class CommentController
 
 		$post = Model_Post::locate($postId);
 
-		$text = InputHelper::get('text');
-		if (!empty($text))
+		if (InputHelper::get('submit'))
 		{
+			$text = InputHelper::get('text');
 			$text = Model_Comment::validateText($text);
+
 			$comment = R::dispense('comment');
 			$comment->post = $post;
 			if ($this->context->loggedIn)
