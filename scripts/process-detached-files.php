@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../src/core.php';
+$config = \Chibi\Registry::getConfig();
 
 function usage()
 {
@@ -30,23 +31,23 @@ switch ($action)
 			mkdir($dir, 0755, true);
 		if (!is_dir($dir))
 			die($dir . ' is not a dir' . PHP_EOL);
-		$func = function($name) use ($dir)
+		$func = function($name) use ($dir, $config)
 		{
 			echo $name . PHP_EOL;
 			static $filesPath = null;
 			if ($filesPath == null)
-				$filesPath = configFactory()->main->filesPath;
+				$filesPath = $config->main->filesPath;
 			rename($filesPath . DS . $name, $dir . DS . $name);
 		};
 		break;
 
 	case '-purge':
-		$func = function($name) use ($dir)
+		$func = function($name) use ($dir, $config)
 		{
 			echo $name . PHP_EOL;
 			static $filesPath = null;
 			if ($filesPath == null)
-				$filesPath = configFactory()->main->filesPath;
+				$filesPath = $config->main->filesPath;
 			unlink($filesPath . DS . $name);
 		};
 		break;
@@ -62,7 +63,6 @@ foreach (R::findAll('post') as $post)
 }
 $names = array_flip($names);
 
-$config = configFactory();
 $filesPath = $config->main->filesPath;
 foreach (glob($filesPath . DS . '*') as $name)
 {

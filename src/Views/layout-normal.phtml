@@ -96,7 +96,7 @@
 
 		<footer>
 			<div class="main-wrapper">
-				<span>Load: <?php echo sprintf('%.05f', microtime(true) - trueStartTime()) ?>s</span>
+				<span>Load: <?php echo sprintf('%.05f', microtime(true) - $this->context->startTime) ?>s</span>
 				<span>Queries: <?php echo count(queryLogger()->getLogs()) ?></span>
 				<?php if ($this->config->misc->debugQueries): ?>
 					<pre class="debug"><?php echo join('<br>', array_map(function($x) { return preg_replace('/\s+/', ' ', $x); }, queryLogger()->getLogs())) ?></pre>
