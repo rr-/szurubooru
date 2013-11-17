@@ -8,6 +8,16 @@ class CustomMarkdown extends \Michelf\Markdown
 		$this->span_gamut += ['doPosts' => 8];
 		$this->span_gamut += ['doTags' => 9];
 		$this->span_gamut += ['doAutoLinks2' => 29];
+
+		//fix italics/bold in the middle of sentence
+		$prop = ['em_relist', 'strong_relist', 'em_strong_relist'];
+		for ($i = 0; $i < 3; $i ++)
+		{
+			$this->{$prop[$i]}[''] = '(?:(?<!\*)' . str_repeat('\*', $i + 1) . '(?!\*)|(?<![a-zA-Z0-9_])' . str_repeat('_', $i + 1) . '(?!_))(?=\S|$)(?![\.,:;]\s)';
+			$this->{$prop[$i]}[str_repeat('*', $i + 1)] = '(?<=\S|^)(?<!\*)' . str_repeat('\*', $i + 1) . '(?!\*)';
+			$this->{$prop[$i]}[str_repeat('_', $i + 1)] = '(?<=\S|^)(?<!_)' . str_repeat('_', $i + 1) . '(?![a-zA-Z0-9_])';
+		}
+
 		parent::__construct();
 	}
 
@@ -43,7 +53,7 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	protected function doPosts($text)
 	{
-		return preg_replace_callback('/@(\d+)/', function($x)
+		return preg_replace_callback('/(?:(?<!\w))@(\d+)/', function($x)
 		{
 			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('post', 'view', ['id' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
 		}, $text);
@@ -51,7 +61,7 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	protected function doTags($text)
 	{
-		return preg_replace_callback('/#([a-zA-Z0-9_-]+)/', function($x)
+		return preg_replace_callback('/(?:(?<!\w))#([a-zA-Z0-9_-]+)/', function($x)
 		{
 			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('post', 'list', ['query' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
 		}, $text);
