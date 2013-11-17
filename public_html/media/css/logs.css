@@ -1,0 +1,9 @@
+#content input {
+	margin: 0 1em;
+	height: 25px;
+	vertical-align: middle;
+}
+
+pre {
+	font-size: 11pt;
+}

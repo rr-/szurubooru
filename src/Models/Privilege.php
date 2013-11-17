@@ -36,4 +36,7 @@ class Privilege extends Enum
 	const MergeTags = 27;
 	const RenameTags = 27;
 	const MassTag = 29;
+
+	const ListLogs = 32;
+	const ViewLog = 33;
 }

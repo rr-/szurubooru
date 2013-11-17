@@ -197,4 +197,14 @@ class TextHelper
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
 		return trim(mcrypt_decrypt($alg, $salt, base64_decode($text), $mode, $iv));
 	}
+
+	public static function cleanPath($path)
+	{
+		$path = str_replace(['/', '\\'], DS, $path);
+		$path = preg_replace('{[^' . DS . ']+' . DS . '\.\.(' . DS . '|$)}', '', $path);
+		$path = preg_replace('{(' . DS . '|^)\.' . DS . '}', '\1', $path);
+		$path = preg_replace('{' . DS . '{2,}}', DS, $path);
+		$path = rtrim($path, DS);
+		return $path;
+	}
 }

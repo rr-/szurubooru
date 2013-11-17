@@ -1,0 +1,11 @@
+<?php if (empty($this->context->transport->log)): ?>
+	<p class="alert alert-warning">This log is empty. <a href="<?php echo \Chibi\UrlHelper::route('log', 'list') ?>">Go back</a></p>
+<?php else: ?>
+	<form action="<?php echo \Chibi\UrlHelper::route('log', 'view', ['name' => $this->context->transport->name]) ?>" method="get">
+		Keep only lines that contain:
+
+		<input type="text" name="filter" value="<?php echo $this->context->transport->filter ?>" placeholder="any text&hellip;"/>
+	</form>
+
+	<pre><?php echo $this->context->transport->log ?></pre>
+<?php endif ?>

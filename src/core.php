@@ -2,7 +2,9 @@
 define('SZURU_VERSION', '0.3.0');
 define('SZURU_LINK', 'http://github.com/rr-/szurubooru');
 
+define('DS', DIRECTORY_SEPARATOR);
 $startTime = microtime(true);
+$rootDir = __DIR__ . DS . '..' . DS;
 
 $requiredExtensions = ['pdo', 'pdo_sqlite', 'gd', 'openssl'];
 foreach ($requiredExtensions as $ext)
@@ -12,17 +14,17 @@ foreach ($requiredExtensions as $ext)
 date_default_timezone_set('UTC');
 setlocale(LC_CTYPE, 'en_US.UTF-8');
 ini_set('memory_limit', '128M');
-define('DS', DIRECTORY_SEPARATOR);
 
-require_once __DIR__ . '/../lib/php-markdown/Michelf/Markdown.php';
-require_once __DIR__ . '/../lib/redbean/RedBean/redbean.inc.php';
-require_once __DIR__ . '/../lib/chibi-core/Facade.php';
+require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'Markdown.php';
+require_once $rootDir . 'lib' . DS . 'redbean' . DS . 'RedBean' . DS . 'redbean.inc.php';
+require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'Facade.php';
 
 \Chibi\AutoLoader::init(__DIR__);
 \Chibi\Facade::init();
 $config = \Chibi\Registry::getConfig();
 $context = \Chibi\Registry::getContext();
 $context->startTime = $startTime;
+$context->rootDir = $rootDir;
 
 R::setup('sqlite:' . $config->main->dbPath);
 R::freeze(true);

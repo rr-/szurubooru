@@ -1,0 +1,13 @@
+<?php if (empty($this->context->transport->logs)): ?>
+	<p class="alert alert-warning">No logs to show.</p>
+<?php else: ?>
+	<ul>
+		<?php foreach ($this->context->transport->logs as $log): ?>
+			<li>
+				<a href="<?php echo \Chibi\UrlHelper::route('log', 'view', ['name' => $log]) ?>">
+					<?php echo $log ?>
+				</a>
+			</li>
+		<?php endforeach ?>
+	</ul>
+<?php endif ?>
