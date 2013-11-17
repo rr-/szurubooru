@@ -1,6 +1,6 @@
 <?php
 require_once 'src/core.php';
-$config = configFactory();
+$config = \Chibi\Registry::getConfig();
 $fontsPath = $config->main->mediaPath . DS . 'fonts' . DS;
 $libPath = $config->main->mediaPath . DS . 'lib' . DS;
 

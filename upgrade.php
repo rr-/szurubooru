@@ -1,6 +1,6 @@
 <?php
 require_once 'src/core.php';
-$config = configFactory();
+$config = \Chibi\Registry::getConfig();
 
 $dbVersion = Model_Property::get('db-version');
 printf('DB version = %d' . PHP_EOL, $dbVersion);
