@@ -1,6 +1,18 @@
 <?php
 class UserController
 {
+	private function loadUserView($user)
+	{
+		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
+		$this->context->flagged = $flagged;
+		$this->context->transport->user = $user;
+		$this->context->handleExceptions = true;
+		$this->context->viewName = 'user-view';
+		$this->context->stylesheets []= 'tabs.css';
+		$this->context->stylesheets []= 'user-view.css';
+		$this->context->subTitle = $user->name;
+	}
+
 	private static function sendTokenizedEmail(
 		$user,
 		$body,
@@ -234,13 +246,8 @@ class UserController
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		PrivilegesHelper::confirmWithException(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
-		$this->context->handleExceptions = true;
-		$this->context->transport->user = $user;
+		$this->loadUserView($user);
 		$this->context->transport->tab = 'delete';
-		$this->context->viewName = 'user-view';
-		$this->context->stylesheets []= 'tabs.css';
-		$this->context->stylesheets []= 'user-view.css';
-		$this->context->subTitle = $name;
 
 		$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
 
@@ -288,13 +295,8 @@ class UserController
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		PrivilegesHelper::confirmWithException(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($user));
 
-		$this->context->handleExceptions = true;
-		$this->context->transport->user = $user;
+		$this->loadUserView($user);
 		$this->context->transport->tab = 'settings';
-		$this->context->viewName = 'user-view';
-		$this->context->stylesheets []= 'tabs.css';
-		$this->context->stylesheets []= 'user-view.css';
-		$this->context->subTitle = $name;
 
 		if (InputHelper::get('submit'))
 		{
@@ -327,13 +329,8 @@ class UserController
 			$user = Model_User::locate($name);
 			PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
-			$this->context->handleExceptions = true;
-			$this->context->transport->user = $user;
+			$this->loadUserView($user);
 			$this->context->transport->tab = 'edit';
-			$this->context->viewName = 'user-view';
-			$this->context->stylesheets []= 'tabs.css';
-			$this->context->stylesheets []= 'user-view.css';
-			$this->context->subTitle = $name;
 
 			$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
 			$this->context->suppliedName = $suppliedName = InputHelper::get('name');
@@ -438,14 +435,12 @@ class UserController
 			$page = 1;
 
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
-		$this->context->stylesheets []= 'tabs.css';
-		$this->context->stylesheets []= 'user-view.css';
+		$this->loadUserView($user);
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'paginator.css';
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
-		$this->context->subTitle = $name;
 
 		$query = '';
 		if ($tab == 'uploads')
@@ -460,10 +455,6 @@ class UserController
 		$page = max(1, min($pageCount, $page));
 		$posts = Model_Post::getEntities($query, $postsPerPage, $page);
 
-		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
-
-		$this->context->flagged = $flagged;
-		$this->context->transport->user = $user;
 		$this->context->transport->tab = $tab;
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
