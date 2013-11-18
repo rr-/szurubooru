@@ -428,7 +428,7 @@ class PostController
 
 			/* source */
 			$suppliedSource = InputHelper::get('source');
-			if ($suppliedSource !== null and $suppliedSource != $post->sorce)
+			if ($suppliedSource !== null and $suppliedSource != $post->source)
 			{
 				PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 				$suppliedSource = Model_Post::validateSource($suppliedSource);
