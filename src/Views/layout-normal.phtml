@@ -2,18 +2,25 @@
 <html>
 	<head>
 		<meta charset="utf-8"/>
-		<?php if (isset($this->context->subTitle)): ?>
-			<title><?php printf('%s&nbsp;&ndash;&nbsp;%s', $this->context->title, $this->context->subTitle) ?></title>
-		<?php else: ?>
-			<title><?php echo $this->context->title ?></title>
-		<?php endif ?>
+		<?php
+			$title = isset($this->context->subTitle)
+				? sprintf('%s&nbsp;&ndash;&nbsp;%s', $this->context->title, $this->context->subTitle)
+				: $this->context->title
+		?>
+		<title><?php echo $title ?></title>
 		<?php foreach (array_unique($this->context->stylesheets) as $name): ?>
 			<link rel="stylesheet" type="text/css" href="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/css/' . $name) ?>"/>
 		<?php endforeach ?>
 		<?php foreach (array_unique($this->context->scripts) as $name): ?>
 			<script type="text/javascript" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/js/' . $name) ?>"></script>
 		<?php endforeach ?>
-		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"/>
+
+		<meta property="og:title" content="<?php echo $title ?>"/>
+		<meta property="og:url" content="<?php echo \Chibi\UrlHelper::currentUrl() ?>"/>
+		<?php if (!empty($this->context->pageThumb)): ?>
+			<meta property="og:image" content="<?php echo $this->context->pageThumb ?>"/>
+		<?php endif ?>
 	</head>
 
 	<body>

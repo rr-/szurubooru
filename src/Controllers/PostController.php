@@ -733,6 +733,7 @@ class PostController
 
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
 
+		$this->context->pageThumb = \Chibi\UrlHelper::route('post', 'thumb', ['name' => $post->name]);
 		$this->context->stylesheets []= 'post-view.css';
 		$this->context->stylesheets []= 'comment-small.css';
 		$this->context->scripts []= 'post-view.js';
@@ -752,13 +753,18 @@ class PostController
 	* Action that renders the thumbnail of the requested file and sends it to user.
 	* @route /post/{name}/thumb
 	*/
-	public function thumbAction($name)
+	public function thumbAction($name, $width = null, $height = null)
 	{
+		$dstWidth = $width === null ? $this->config->browsing->thumbWidth : $width;
+		$dstHeight = $height === null ? $this->config->browsing->thumbHeight : $height;
+		$dstWidth = min(1000, max(1, $dstWidth));
+		$dstHeight = min(1000, max(1, $dstHeight));
+
 		$this->context->layoutName = 'layout-file';
 
 		$path = $this->config->main->thumbsPath . DS . $name . '.custom';
 		if (!file_exists($path))
-			$path = $this->config->main->thumbsPath . DS . $name . '.default';
+			$path = $this->config->main->thumbsPath . DS . $name . '-' . $dstWidth . 'x' . $dstHeight . '.default';
 		if (!file_exists($path))
 		{
 			$post = Model_Post::locate($name);
@@ -766,8 +772,6 @@ class PostController
 			PrivilegesHelper::confirmWithException(Privilege::ListPosts);
 			PrivilegesHelper::confirmWithException(Privilege::ListPosts, PostSafety::toString($post->safety));
 			$srcPath = $this->config->main->filesPath . DS . $post->name;
-			$dstWidth = $this->config->browsing->thumbWidth;
-			$dstHeight = $this->config->browsing->thumbHeight;
 
 			if ($post->type == PostType::Youtube)
 			{

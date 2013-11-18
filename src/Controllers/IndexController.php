@@ -41,6 +41,7 @@ class IndexController
 			$this->context->featuredPost = $featuredPost;
 			$this->context->featuredPostUser = $featuredPostUser;
 			$this->context->featuredPostDate = $featuredPostDate;
+			$this->context->pageThumb = \Chibi\UrlHelper::route('post', 'thumb', ['name' => $featuredPost->name]);
 		}
 	}
 
