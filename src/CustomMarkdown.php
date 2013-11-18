@@ -5,8 +5,8 @@ class CustomMarkdown extends \Michelf\Markdown
 	{
 		$this->no_markup = true;
 		$this->span_gamut += ['doSpoilers' => 71];
-		$this->span_gamut += ['doSpoilers' => 71];
 		$this->span_gamut += ['doStrike' => 6];
+		$this->span_gamut += ['doUsers' => 7];
 		$this->span_gamut += ['doPosts' => 8];
 		$this->span_gamut += ['doTags' => 9];
 		$this->span_gamut += ['doAutoLinks2' => 29];
