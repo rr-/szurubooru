@@ -20,7 +20,7 @@ class UserController
 		$senderName,
 		$senderEmail,
 		$recipientEmail,
-		$tokens)
+		$linkActionName)
 	{
 		//prepare unique user token
 		do
@@ -36,8 +36,11 @@ class UserController
 		R::store($token);
 
 		\Chibi\Registry::getContext()->mailSent = true;
+		$tokens = [];
 		$tokens['host'] = $_SERVER['HTTP_HOST'];
 		$tokens['token'] = $tokenText;
+		if ($linkActionName !== null)
+			$tokens['link'] = \Chibi\UrlHelper::route('user', $linkActionName, ['token' => $tokenText]);
 
 		$body = wordwrap(TextHelper::replaceTokens($body, $tokens), 70);
 		$subject = TextHelper::replaceTokens($subject, $tokens);
@@ -75,9 +78,6 @@ class UserController
 			return;
 		}
 
-		$tokens = [];
-		$tokens['link'] = \Chibi\UrlHelper::route('user', 'activation', ['token' => '{token}']);
-
 		return self::sendTokenizedEmail(
 			$user,
 			$regConfig->confirmationEmailBody,
@@ -85,15 +85,12 @@ class UserController
 			$regConfig->confirmationEmailSenderName,
 			$regConfig->confirmationEmailSenderEmail,
 			$user->email_unconfirmed,
-			$tokens);
+			'activation');
 	}
 
 	private static function sendPasswordResetConfirmation($user)
 	{
 		$regConfig = \Chibi\Registry::getConfig()->registration;
-
-		$tokens = [];
-		$tokens['link'] = \Chibi\UrlHelper::route('user', 'password-reset', ['token' => '{token}']);
 
 		return self::sendTokenizedEmail(
 			$user,
@@ -102,7 +99,7 @@ class UserController
 			$regConfig->passwordResetEmailSenderName,
 			$regConfig->passwordResetEmailSenderEmail,
 			$user->email_confirmed,
-			$tokens);
+			'password-reset');
 	}
 
 

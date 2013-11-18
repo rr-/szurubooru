@@ -77,12 +77,12 @@
 
 				<?php if (PrivilegesHelper::confirm(Privilege::ScorePost)): ?>
 					&nbsp;[
-					<?php $scoreLink = \Chibi\UrlHelper::route('post', 'score', ['id' => $this->context->transport->post->id, 'score' => '{score}']) ?>
+					<?php $scoreLink = function($score) { return \Chibi\UrlHelper::route('post', 'score', ['id' => $this->context->transport->post->id, 'score' => $score]); } ?>
 
 					<?php if ($this->context->score === 1): ?>
-						<a class="simple-action selected" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => 0]) ?>">
+						<a class="simple-action selected" href="<?php echo $scoreLink(0) ?>">
 					<?php else: ?>
-						<a class="simple-action" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => 1]) ?>">
+						<a class="simple-action" href="<?php echo $scoreLink(1) ?>">
 					<?php endif ?>
 						vote up
 					</a>
@@ -90,9 +90,9 @@
 					,&nbsp;
 
 					<?php if ($this->context->score === -1): ?>
-						<a class="simple-action selected" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => 0]) ?>">
+						<a class="simple-action selected" href="<?php echo $scoreLink(0) ?>">
 					<?php else: ?>
-						<a class="simple-action" href="<?php echo TextHelper::replaceTokens($scoreLink, ['score' => -1]) ?>">
+						<a class="simple-action" href="<?php echo $scoreLink(-1) ?>">
 					<?php endif ?>
 						down
 					</a>]
