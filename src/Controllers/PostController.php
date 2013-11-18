@@ -80,12 +80,12 @@ class PostController
 			$this->context->transport->searchQuery = $formQuery;
 			if (strpos($formQuery, '/') !== false)
 				throw new SimpleException('Search query contains invalid characters');
-			$url = \Chibi\UrlHelper::route('post', 'list', ['source' => $source, 'additionalInfo' => $additionalInfo, 'query' => urlencode($formQuery)]);
+			$url = \Chibi\UrlHelper::route('post', 'list', ['source' => $source, 'additionalInfo' => $additionalInfo, 'query' => $formQuery]);
 			\Chibi\UrlHelper::forward($url);
 			return;
 		}
 
-		$query = trim(urldecode($query));
+		$query = trim($query);
 		$page = intval($page);
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
 		$this->context->subTitle = 'posts';

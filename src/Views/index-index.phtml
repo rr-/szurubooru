@@ -13,7 +13,7 @@
 	</div>
 
 	<div class="footer">
-		<span class="left">
+		<div class="left">
 			Tags:&nbsp;
 			<ul class="tags">
 			<?php foreach ($this->context->featuredPost->sharedTag as $tag): ?>
@@ -24,9 +24,9 @@
 				</li>
 			<?php endforeach ?>
 			</ul>
-		</span>
+		</div>
 
-		<span class="right">
+		<div class="right">
 			Featured&#32;
 			<?php if ($this->context->featuredPostUser): ?>
 				by <a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>"><?php echo $this->context->featuredPostUser->name ?></a>,&#32;
@@ -39,7 +39,7 @@
 			<?php else: ?>
 				<?php printf('%d days ago', $x) ?>
 			<?php endif ?>
-		</span>
+		</div>
 
 		<div class="clear"></div>
 	</div>
