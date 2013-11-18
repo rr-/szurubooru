@@ -253,6 +253,7 @@ class UserController
 				if ($suppliedPasswordHash != $user->pass_hash)
 					throw new SimpleException('Must supply valid password');
 			}
+			R::trashAll(R::find('postscore', 'user_id = ?', [$user->id]));
 			foreach ($user->alias('commenter')->ownComment as $comment)
 			{
 				$comment->commenter = null;

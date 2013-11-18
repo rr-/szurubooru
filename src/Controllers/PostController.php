@@ -552,6 +552,8 @@ class PostController
 		if (InputHelper::get('submit'))
 		{
 			//remove stuff from auxiliary tables
+			R::trashAll(R::find('postscore', 'post_id = ?', [$post->id]));
+			R::trashAll(R::find('crossref', 'post_id = ? OR post2_id = ?', [$post->id, $post->id]));
 			foreach ($post->ownComment as $comment)
 			{
 				$comment->post = null;
