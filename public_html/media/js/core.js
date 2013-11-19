@@ -133,7 +133,6 @@ function processSidebar()
 		$('#sidebar').insertBefore($('#inner-content'));
 		$('#sidebar .unit').removeClass('bottom-unit').addClass('left-unit');
 	}
-	$('body').data('last-width', $('body').width());
 }
 $(function()
 {
@@ -141,6 +140,8 @@ $(function()
 	{
 		if ($('body').width() == $('body').data('last-width'))
 			return;
+		$('body').data('last-width', $('body').width());
+		$('body').trigger('dom-update');
 	});
 	$('body').bind('dom-update', processSidebar);
 });
