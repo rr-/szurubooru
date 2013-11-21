@@ -216,6 +216,25 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		return self::filterTokenFav($dbQuery, $val);
 	}
 
+	protected static function filterTokenComment($dbQuery, $val)
+	{
+		$dbQuery
+			->exists()
+			->open()
+			->select('1')
+			->from('comment')
+			->innerJoin('user')
+			->on('commenter_id = user.id')
+			->where('post_id = post.id')
+			->and('user.name = ?')->put($val)
+			->close();
+	}
+
+	protected static function filterTokenCommenter($dbQuery, $val)
+	{
+		return self::filterTokenComment($dbQuery, $val);
+	}
+
 	protected static function filterTokenSubmit($dbQuery, $val)
 	{
 		$dbQuery
