@@ -178,9 +178,9 @@ $(function()
 			{
 				var term = extractLast(request.term);
 				if (term != '')
-					$.get(searchInput.attr('data-autocomplete-url') + '?json', {filter: term}, function(data)
+					$.get(searchInput.attr('data-autocomplete-url') + '?json', {filter: term + ' order:popularity,desc'}, function(data)
 					{
-						response($.map(data.tags, function(tag) { return { label: tag.name, value: tag.name }; }));
+						response($.map(data.tags, function(tag) { return { label: tag.name + ' (' + tag.count + ')', value: tag.name }; }));
 					});
 			},
 			focus: function()

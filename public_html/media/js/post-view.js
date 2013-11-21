@@ -10,7 +10,7 @@ function onDomUpdate()
 		aDom.addClass('inactive');
 
 		var tags = [];
-		$.getJSON('/tags?json', function(data)
+		$.getJSON('/tags?json', {filter: 'order:popularity,desc'}, function(data)
 		{
 			aDom.removeClass('inactive');
 			var formDom = $('form.edit-post');

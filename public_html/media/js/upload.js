@@ -11,7 +11,7 @@ $(function()
 	});
 
 	var tags = [];
-	$.getJSON('/tags?json', function(data)
+	$.getJSON('/tags?json', {filter: 'order:popularity,desc'}, function(data)
 	{
 		tags = data['tags'];
 	});

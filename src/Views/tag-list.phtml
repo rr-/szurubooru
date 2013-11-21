@@ -1,3 +1,30 @@
+<nav class="sort-styles">
+	<ul>
+		<?php
+			$sortStyles =
+			[
+				'order:alpha,asc' => 'Sort A&rarr;Z',
+				'order:alpha,desc' => 'Sort Z&rarr;A',
+				'order:popularity,desc' => 'Often used first',
+				'order:popularity,asc' => 'Rarely used first',
+			];
+
+			if ($this->config->registration->staffActivation)
+				$sortStyles['pending'] = 'Pending staff review';
+		?>
+
+		<?php foreach ($sortStyles as $key => $text): ?>
+			<?php if ($this->context->filter == $key): ?>
+				<li class="active">
+			<?php else: ?>
+				<li>
+			<?php endif ?>
+				<a href="<?php echo \Chibi\UrlHelper::route('tag', 'list', ['filter' => $key]) ?>"><?php echo $text ?></a>
+			</li>
+		<?php endforeach ?>
+	</ul>
+</nav>
+
 <?php $max = max([0]+array_map(function($x) { return $x['post_count']; }, $this->context->transport->tags)); ?>
 <?php $add = 0. ?>
 <?php $mul = 10. / max(1, log(max(1, $max))) ?>

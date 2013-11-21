@@ -47,3 +47,19 @@ form h1 {
 .frequency8 { color: #be4343; }
 .frequency9 { color: #b83333; }
 .frequency10 { color: #b22222; }
+
+nav.sort-styles ul {
+	list-style-type: none;
+	margin: 0 0 2.5em 0;
+	text-align: center;
+	padding: 0;
+}
+nav.sort-styles li {
+	display: inline-block;
+	font-size: 105%;
+	margin: 0 1em;
+	padding-bottom: 0.2em;
+}
+nav.sort-styles li.active {
+	border-bottom: 3px solid firebrick;
+}

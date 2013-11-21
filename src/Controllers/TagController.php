@@ -3,8 +3,10 @@ class TagController
 {
 	/**
 	* @route /tags
+	* @route /tags/{filter}
+	* @validate filter [a-zA-Z\32:,_-]+
 	*/
-	public function listAction()
+	public function listAction($filter = null)
 	{
 		$this->context->stylesheets []= 'tag-list.css';
 		$this->context->stylesheets []= 'tabs.css';
@@ -12,9 +14,10 @@ class TagController
 		$this->context->viewName = 'tag-list-wrapper';
 
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
-		$suppliedFilter = InputHelper::get('filter');
+		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
 
 		$tags = Model_Tag::getEntitiesRows($suppliedFilter, null, null);
+		$this->context->filter = $suppliedFilter;
 		$this->context->transport->tags = $tags;
 
 		if ($this->context->json)
@@ -22,20 +25,11 @@ class TagController
 			$this->context->transport->tags = array_values(array_map(function($tag) {
 				return ['name' => $tag['name'], 'count' => $tag['post_count']];
 			}, $this->context->transport->tags));
-			usort($this->context->transport->tags, function($a, $b) {
-				return $a['count'] > $b['count'] ? -1 : 1;
-			});
-		}
-		else
-		{
-			uasort($this->context->transport->tags, function($a, $b) {
-				return strnatcasecmp($a['name'], $b['name']);
-			});
 		}
 	}
 
 	/**
-	* @route /tags/merge
+	* @route /tag/merge
 	*/
 	public function mergeAction()
 	{
@@ -77,7 +71,7 @@ class TagController
 	}
 
 	/**
-	* @route /tags/rename
+	* @route /tag/rename
 	*/
 	public function renameAction()
 	{
