@@ -6,9 +6,6 @@
 	-moz-column-width: 14em;
 	-webkit-column-width: 14em;
 }
-.tags li a:hover {
-	opacity: 1 !important;
-}
 .tags li {
 	margin: 0.2em 0.5em;
 	text-align: top;
@@ -38,3 +35,15 @@ form.aligned label.left {
 form h1 {
 	display: none;
 }
+
+.frequency0 { color: #ecc8c8; }
+.frequency1 { color: #e6b7b7; }
+.frequency2 { color: #e0a7a7; }
+.frequency3 { color: #db9696; }
+.frequency4 { color: #d58686; }
+.frequency5 { color: #cf7575; }
+.frequency6 { color: #c96464; }
+.frequency7 { color: #c35454; }
+.frequency8 { color: #be4343; }
+.frequency9 { color: #b83333; }
+.frequency10 { color: #b22222; }
