@@ -40,6 +40,7 @@ All of the above can be sorted using additional sorting tags:
 - most commented first: [search]order:comments[/search]
 - loved by most: [search]order:favs[/search]
 - highest scored: [search]order:score[/search]
+- with most tags: [search]order:tags[/search]
 
 As shown with [search]-order:date[/search], any of them can be reversed in the same way as negating other tags: by placing a dash before the tag. If there is a "min" tag, there&rsquo;s also its "max" counterpart, e.g. [search]favmax:7[/search].
 

@@ -303,7 +303,6 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 				$orderColumn = 'fav_count';
 				break;
 			case 'score':
-				$orderDir *= -1;
 				$orderColumn = 'score';
 				break;
 			case 'tag':
@@ -397,9 +396,9 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			elseif ($key == 'order')
 			{
 				if ($neg)
-					$orderToken = $val;
-				else
 					$orderToken = '-' . $val;
+				else
+					$orderToken = $val;
 			}
 
 			else
