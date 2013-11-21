@@ -197,7 +197,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			->innerJoin('user')
 			->on('favoritee.user_id = user.id')
 			->where('post_id = post.id')
-			->and('user.name = ?')->put($val)
+			->and('LOWER(user.name) = LOWER(?)')->put($val)
 			->close();
 	}
 
@@ -226,7 +226,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			->innerJoin('user')
 			->on('commenter_id = user.id')
 			->where('post_id = post.id')
-			->and('user.name = ?')->put($val)
+			->and('LOWER(user.name) = LOWER(?)')->put($val)
 			->close();
 	}
 
@@ -242,7 +242,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			->open()
 			->select('user.id')
 			->from('user')
-			->where('name = ?')->put($val)
+			->where('LOWER(name) = LOWER(?)')->put($val)
 			->close();
 	}
 

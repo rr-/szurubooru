@@ -3,7 +3,7 @@ class Model_User extends AbstractModel
 {
 	public static function locate($key, $throw = true)
 	{
-		$user = R::findOne(self::getTableName(), 'name = ?', [$key]);
+		$user = R::findOne(self::getTableName(), 'LOWER(name) = LOWER(?)', [$key]);
 		if ($user)
 			return $user;
 
@@ -97,7 +97,7 @@ class Model_User extends AbstractModel
 	{
 		$userName = trim($userName);
 
-		$dbUser = R::findOne(self::getTableName(), 'name = ?', [$userName]);
+		$dbUser = R::findOne(self::getTableName(), 'LOWER(name) = LOWER(?)', [$userName]);
 		if ($dbUser !== null)
 		{
 			if (!$dbUser->email_confirmed and \Chibi\Registry::getConfig()->registration->needEmailForRegistering)

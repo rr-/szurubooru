@@ -17,7 +17,7 @@ class AuthController
 		$config = \Chibi\Registry::getConfig();
 		$context = \Chibi\Registry::getContext();
 
-		$dbUser = R::findOne('user', 'name = ?', [$name]);
+		$dbUser = Model_User::locate($name, false);
 		if ($dbUser === null)
 			throw new SimpleException('Invalid username');
 
