@@ -317,6 +317,9 @@ class PostController
 			$suppliedSource = InputHelper::get('source');
 			$suppliedSource = Model_Post::validateSource($suppliedSource);
 
+			/* anonymous */
+			$anonymous = InputHelper::get('anonymous');
+
 			/* db storage */
 			$dbPost = R::dispense('post');
 			$dbPost->type = $postType;
@@ -331,7 +334,7 @@ class PostController
 			$dbPost->upload_date = time();
 			$dbPost->image_width = $imageWidth;
 			$dbPost->image_height = $imageHeight;
-			if ($this->context->loggedIn and !InputHelper::get('anonymous'))
+			if ($this->context->loggedIn and !$anonymous)
 				$dbPost->uploader = $this->context->user;
 			$dbPost->ownFavoritee = [];
 			$dbPost->sharedTag = $dbTags;
@@ -345,7 +348,11 @@ class PostController
 			}
 			R::store($dbPost);
 
-			LogHelper::logEvent('post-new', '{user} added {post} tagged with {tags} marked as {safety}', [
+			$fmt = ($anonymous and !$this->config->misc->logAnonymousUploads)
+				? 'someone'
+				: '{user}';
+			$fmt .= ' added {post} tagged with {tags} marked as {safety}';
+			LogHelper::logEvent('post-new', $fmt, [
 				'post' => TextHelper::reprPost($dbPost),
 				'tags' =>  join(', ', array_map(['TextHelper', 'reprTag'], $dbTags)),
 				'safety' => PostSafety::toString($dbPost->safety)]);
