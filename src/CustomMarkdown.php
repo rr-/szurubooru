@@ -43,7 +43,7 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	protected function doHardBreaks($text)
 	{
-		return preg_replace_callback('/\n/', [&$this, '_doHardBreaks_callback'], $text);
+		return preg_replace_callback('/\n(?=[\[\]\(\)\w])/', [&$this, '_doHardBreaks_callback'], $text);
 	}
 
 	protected function doStrike($text)
