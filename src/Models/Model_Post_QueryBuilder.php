@@ -133,7 +133,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 
 	protected static function filterTokenType($dbQuery, $val)
 	{
-		switch ($val)
+		switch (strtolower($val))
 		{
 			case 'swf':
 				$type = PostType::Flash;
@@ -382,7 +382,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 				continue;
 			}
 
-			$key = substr($token, 0, $pos);
+			$key = strtolower(substr($token, 0, $pos));
 			$val = substr($token, $pos + 1);
 
 			$methodName = 'filterToken' . TextHelper::kebabCaseToCamelCase($key);
@@ -408,6 +408,6 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			}
 		}
 
-		self::order($dbQuery, $orderToken);
+		self::order($dbQuery, strtolower($orderToken));
 	}
 }
