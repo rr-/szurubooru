@@ -5,6 +5,7 @@ class CustomMarkdown extends \Michelf\Markdown
 	{
 		$this->no_markup = true;
 		$this->span_gamut += ['doSpoilers' => 71];
+		$this->span_gamut += ['doSearchPermalinks' => 72];
 		$this->span_gamut += ['doStrike' => 6];
 		$this->span_gamut += ['doUsers' => 7];
 		$this->span_gamut += ['doPosts' => 8];
@@ -82,6 +83,14 @@ class CustomMarkdown extends \Michelf\Markdown
 		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))\+([a-zA-Z0-9_-]+)/', function($x)
 		{
 			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('user', 'view', ['name' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
+		}, $text);
+	}
+
+	protected function doSearchPermalinks($text)
+	{
+		return preg_replace_callback('{\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]}is', function($x)
+		{
+			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('post', 'list', ['query' => $x[1]]) . '">') . $x[1] . $this->hashPart('</a>');
 		}, $text);
 	}
 }

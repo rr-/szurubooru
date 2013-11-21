@@ -1,70 +1,26 @@
-<h1>Browsing</h1>
+<?php
+$tabs = $this->config->help->subTitles;
+$firstTab = !empty($tabs) ? array_keys($tabs)[0] : null;
+?>
 
-<p>Clicking the <a href="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">Browse</a> button at the top will take you to the list of recent posts. Use the search box in the top right corner to find posts you want to see.</p>
+<?php if (count($tabs) > 1): ?>
+	<div class="tabs">
+		<nav>
+			<ul>
+				<?php foreach ($tabs as $tab => $text): ?>
+					<?php if ($tab == $this->context->tab): ?>
+						<li class="selected <?php echo $tab ?>">
+					<?php else: ?>
+						<li class="<?php echo $tab ?>">
+					<?php endif ?>
+						<a href="<?php echo \Chibi\UrlHelper::route('index', 'help', $tab == $firstTab ? [] : ['tab' => $tab]) ?>">
+							<?php echo $text ?>
+						</a>
+					</li>
+				<?php endforeach ?>
+			</ul>
+		</nav>
+	</div>
+<?php endif ?>
 
-<p>If you&rsquo;re not a registered user, you will only see public (Safe) posts. Logging in to your account will enable you to filter content by its rating: Safe, Sketchy, and NSFW.</p>
-
-<p>You can use your keyboard to navigate around the site. There are a few shortcuts:</p>
-
-<ul>
-<li>focus search field: <code>[Q]</code></li>
-<li>scroll up/down: <code>[W]</code><span class="comma">, </span><code>[S]</code></li>
-<li>go to newer/older post or page: <code>[A]</code><span class="comma">, </span><code>[D]</code></li>
-<li>edit post: <code>[E]</code></li>
-<li>focus first post in post list: <code>[P]</code></li>
-</ul>
-
-<h1>Search syntax</h1>
-
-<ul>
-<li>contatining tag "Haruhi": <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'Haruhi']) ?>"><code>Haruhi</code></a></li>
-<li><strong>not</strong> contatining tag "Kyon": <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => '-Kyon']) ?>"><code>-Kyon</code></a></li>
-<li>uploaded by David: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'submit:David']) ?>"><code>submit:David</code></a> (note no spaces)</li>
-<li>favorited by David: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'fav:David']) ?>"><code>fav:David</code></a></li>
-<li>favorited by at least four users: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'favmin:4']) ?>"><code>favmin:4</code></a></li>
-<li>commented by David: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'comment:David']) ?>"><code>comment:David</code></a></li>
-<li>commented by at least three users: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'commentmin:3']) ?>"><code>commentmin:3</code></a></li>
-<li>having minimum score of 4: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'scoremin:4']) ?>"><code>scoremin:4</code></a></li>
-<li>tagged with at least seven tags: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'tagmin:7']) ?>"><code>tagmin:7</code></a></li>
-<li>exactly from the specified date: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2001']) ?>"><code>date:2001</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'date:2012-09-29']) ?>"><code>date:2012-09-29</code></a> (yyyy-mm-dd format)</li>
-<li>from the specified date onwards: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'datemin:2001-01-01']) ?>"><code>datemin:2001-01-01</code></a></li>
-<li>up to the specified date: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'datemax:2004-07']) ?>"><code>datemax:2004-07</code></a></li>
-<li>having specific ID: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'id:1,2,3,8']) ?>"><code>id:1,2,3,8</code></a></li>
-<li>having ID no less than specified value: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'idmin:28']) ?>"><code>idmin:28</code></a></li>
-<li>by content type: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:img']) ?>"><code>type:img</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:swf']) ?>"><code>type:swf</code></a><span class="comma">, </span><a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'type:yt'] )?>"><code>type:yt</code></a> (images, flash files and Youtube videos, respectively)</li>
-</ul>
-
-<p>You can combine tags and negate any of them for interesting results. <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'sea -favmin:8 type:swf submit:Pirate']) ?>"><code>sea -favmin:8 type:swf submit:Pirate</code></a> will show you <strong>flash files</strong> tagged as <strong>sea</strong>, that were <strong>liked by seven people</strong> at most, uploaded by user <strong>Pirate</strong>.</p>
-
-<p>All of the above can be sorted using additional sorting tags:</p>
-
-<ul>
-<li>as random as it can get: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:random']) ?>"><code>order:random</code></a></li>
-<li>newest to oldest: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:date']) ?>"><code>order:date</code></a> (pretty much default browse view)</li>
-<li>oldest to newest: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => '-order:date']) ?>"><code>-order:date</code></a></li>
-<li>most commented first: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:comments']) ?>"><code>order:comments</code></a></li>
-<li>loved by most: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:favs']) ?>"><code>order:favs</code></a></li>
-<li>highest scored: <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'order:score']) ?>"><code>order:score</code></a></li>
-</ul>
-
-<p>As shown with <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => '-order:date']) ?>"><code>-order:date</code></a><span class="comma">, </span>any of them can be reversed in the same way as negating other tags: by placing a dash before the tag.</p>
-
-<h1>Registration</h1>
-
-<p>The e-mail you enter during account creation is only used to retrieve your <a href="http://gravatar.com">Gravatar</a> and activate your account. Only you can see it (well, except the database staff&hellip; we won&rsquo;t spam your mailbox anyway).</p>
-
-<p>Oh, and you can delete your account at any time. Posts you uploaded will stay, unless some angry admin removes them.</p>
-
-<h1>Comments</h1>
-
-<p>Registered users can post comments. Comments support <a href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>, extended by some handy tags:</p>
-
-<ul>
-<li>permalink to post number 426: <a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => 426]) ?>"><code>@426</code></a></li>
-<li>link to tag "Dragon_Ball": <a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => 'Dragon_Ball']) ?>"><code>#Dragon_Ball</code></a></li>
-<li>mark text as spoiler and hide it: <code class="spoiler">[spoiler]There is no spoon.[/spoiler]</code></li>
-</ul>
-
-<h1>Uploads</h1>
-
-<p>After registering and activating your account, you gain the power to upload files to the service, for everyone else to see. Owners of the site are not responsible for content uploaded by users. You are not allowed to post any form of <a href="http://www.urbandictionary.com/define.php?term=cp">cp</a>. If you possess it, we ask you to leave immediately and never come back.</p>
+<?php echo TextHelper::parseMarkdown(file_get_contents($this->context->path)) ?>

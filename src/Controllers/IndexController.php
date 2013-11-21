@@ -47,10 +47,19 @@ class IndexController
 
 	/**
 	* @route /help
+	* @route /help/{tab}
 	*/
-	public function helpAction()
+	public function helpAction($tab = null)
 	{
+		if (empty($this->config->help->paths) or empty($this->config->help->title))
+			throw new SimpleException('Help is disabled');
+		$tab = $tab ?: array_keys($this->config->help->subTitles)[0];
+		if (!isset($this->config->help->paths[$tab]))
+			throw new SimpleException('Invalid tab');
+		$this->context->path = $this->config->help->paths[$tab];
 		$this->context->stylesheets []= 'index-help.css';
+		$this->context->stylesheets []= 'tabs.css';
 		$this->context->subTitle = 'help';
+		$this->context->tab = $tab;
 	}
 }

@@ -57,7 +57,8 @@
 							$nav []= ['Log out', \Chibi\UrlHelper::route('auth', 'logout')];
 						}
 
-						$nav []= ['Help', \Chibi\UrlHelper::route('index', 'help')];
+						if (!empty($this->config->help->title))
+							$nav []= [$this->config->help->title, \Chibi\UrlHelper::route('index', 'help')];
 
 						foreach ($nav as $navItem)
 						{
