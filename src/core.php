@@ -2,30 +2,45 @@
 define('SZURU_VERSION', '0.4.1');
 define('SZURU_LINK', 'http://github.com/rr-/szurubooru');
 
+//basic settings and preparation
 define('DS', DIRECTORY_SEPARATOR);
 $startTime = microtime(true);
 $rootDir = __DIR__ . DS . '..' . DS;
+date_default_timezone_set('UTC');
+setlocale(LC_CTYPE, 'en_US.UTF-8');
+ini_set('memory_limit', '128M');
 
+//extension sanity checks
 $requiredExtensions = ['pdo', 'pdo_sqlite', 'gd', 'openssl'];
 foreach ($requiredExtensions as $ext)
 	if (!extension_loaded($ext))
 		die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);
 
-date_default_timezone_set('UTC');
-setlocale(LC_CTYPE, 'en_US.UTF-8');
-ini_set('memory_limit', '128M');
-
+//basic include calls, autoloader init
 require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'Markdown.php';
 require_once $rootDir . 'lib' . DS . 'redbean' . DS . 'RedBean' . DS . 'redbean.inc.php';
 require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'Facade.php';
-
 \Chibi\AutoLoader::init(__DIR__);
+
+//load config manually
+$configPaths =
+[
+	$rootDir . DS . 'data' . DS . 'config.ini',
+	$rootDir . DS . 'data' . DS . 'local.ini',
+];
+$config = new \Chibi\Config();
+foreach ($configPaths as $path)
+	if (file_exists($path))
+		$config->loadIni($path);
+\Chibi\Registry::setConfig($config);
+
+//prepare context
 \Chibi\Facade::init();
-$config = \Chibi\Registry::getConfig();
 $context = \Chibi\Registry::getContext();
 $context->startTime = $startTime;
 $context->rootDir = $rootDir;
 
+//load database
 R::setup('sqlite:' . $config->main->dbPath);
 R::freeze(true);
 R::dependencies(['tag' => ['post'], 'favoritee' => ['post', 'user'], 'comment' => ['post', 'user']]);
