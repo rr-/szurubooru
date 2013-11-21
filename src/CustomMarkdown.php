@@ -4,7 +4,7 @@ class CustomMarkdown extends \Michelf\Markdown
 	public function __construct()
 	{
 		$this->no_markup = true;
-		$this->span_gamut += ['doSpoilers' => 71];
+		$this->block_gamut += ['doSpoilers' => 71];
 		$this->span_gamut += ['doSearchPermalinks' => 72];
 		$this->span_gamut += ['doStrike' => 6];
 		$this->span_gamut += ['doUsers' => 7];
@@ -58,7 +58,7 @@ class CustomMarkdown extends \Michelf\Markdown
 	protected function doSpoilers($text)
 	{
 		if (is_array($text))
-			$text = $this->hashPart('<span class="spoiler">') . $text[1] . $this->hashPart('</span>');
+			$text = $this->hashBlock('<span class="spoiler">') . $this->runSpanGamut($text[1]) . $this->hashBlock('</span>');
 		return preg_replace_callback('{\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\])|(?R))+)\[\/spoiler\]}is', [__CLASS__, 'doSpoilers'], $text);
 	}
 
