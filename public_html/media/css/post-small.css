@@ -82,12 +82,17 @@
 	vertical-align: top;
 }
 
+.post .info-bar:before {
+	border-top: 1px solid firebrick;
+	margin-bottom: -1px;
+	content: '';
+	display: block;
+}
 .post .info-bar {
 	display: none;
-	border-top: 1px solid firebrick;
 	background: rgba(255, 128, 128, 0.75);
 	position: absolute;
-	z-indeX: 3;
+	z-index: 3;
 	left: 1px; /* border */
 	right: 1px; /* border */
 	bottom: 1px; /* border */
