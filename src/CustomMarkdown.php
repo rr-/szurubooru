@@ -26,7 +26,7 @@ class CustomMarkdown extends \Michelf\Markdown
 	protected function doAutoLinks2($text)
 	{
 		$text = preg_replace_callback('{(?<!<)((https?|ftp):[^\'"><\s]+)}i', [&$this, '_doAutoLinks_url_callback'], $text);
-		$text = preg_replace_callback('{(?<!\w)(www\.[^\'"><\s]+)}i', [&$this, '_doAutoLinks_url_callback'], $text);
+		$text = preg_replace_callback('{(?<![^\s\(\)\[\]])(www\.[^\'"><\s]+)}i', [&$this, '_doAutoLinks_url_callback'], $text);
 		return $text;
 	}
 
@@ -63,7 +63,7 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	protected function doPosts($text)
 	{
-		return preg_replace_callback('/(?:(?<!\w))@(\d+)/', function($x)
+		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))@(\d+)/', function($x)
 		{
 			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('post', 'view', ['id' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
 		}, $text);
@@ -71,7 +71,7 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	protected function doTags($text)
 	{
-		return preg_replace_callback('/(?:(?<!\w))#([a-zA-Z0-9_-]+)/', function($x)
+		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))#([a-zA-Z0-9_-]+)/', function($x)
 		{
 			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('post', 'list', ['query' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
 		}, $text);
@@ -79,7 +79,7 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	protected function doUsers($text)
 	{
-		return preg_replace_callback('/(?:(?<!\w))\+([a-zA-Z0-9_-]+)/', function($x)
+		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))\+([a-zA-Z0-9_-]+)/', function($x)
 		{
 			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('user', 'view', ['name' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
 		}, $text);
