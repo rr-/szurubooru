@@ -56,4 +56,13 @@ class Model_Post extends AbstractModel
 	{
 		return 'Model_Post_QueryBuilder';
 	}
+
+	public function isTaggedWith($tagName)
+	{
+		$tagName = trim(strtolower($tagName));
+		foreach ($this->sharedTag as $tag)
+			if (trim(strtolower($tag->name)) == $tagName)
+				return true;
+		return false;
+	}
 }

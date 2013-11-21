@@ -122,7 +122,10 @@ class PostController
 		$post = Model_Post::locate($id);
 		R::preload($post, ['uploader' => 'user']);
 		$this->context->transport->post = $post;
-		$tag = Model_Tag::validateTag($tag);
+
+		$tagRow = Model_Tag::locate($tag, false);
+		if ($tagRow !== null)
+			$tag = $tagRow->name;
 
 		if (InputHelper::get('submit'))
 		{
@@ -886,7 +889,8 @@ class PostController
 			$ext = '.dat';
 		$fn = sprintf('%s_%s_%s.%s',
 			$this->config->main->title,
-			$post->id, join(',', array_map(function($tag) { return $tag->name; }, $post->sharedTag)),
+			$post->id,
+			join(',', array_map(function($tag) { return $tag->name; }, $post->sharedTag)),
 			$ext);
 		$fn = preg_replace('/[[:^print:]]/', '', $fn);
 

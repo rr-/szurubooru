@@ -2,7 +2,7 @@
 <?php $masstag = (isset($this->context->source) and $this->context->source == 'mass-tag' and !empty($this->context->additionalInfo)) ?>
 <?php if ($masstag): ?>
 	<?php $classNames []= 'taggable' ?>
-	<?php if (in_array($this->context->additionalInfo, array_map(function($x) { return $x->name; }, $this->context->post->sharedTag))): ?>
+	<?php if ($this->context->post->isTaggedWith($this->context->additionalInfo)): ?>
 		<?php $classNames []= 'tagged' ?>
 	<?php endif ?>
 <?php endif ?>
