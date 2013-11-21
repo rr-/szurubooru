@@ -91,14 +91,15 @@ class TagController
 		{
 			$suppliedSourceTag = InputHelper::get('source-tag');
 			$suppliedSourceTag = Model_Tag::validateTag($suppliedSourceTag);
+			$sourceTag = Model_Tag::locate($suppliedSourceTag);
 
 			$suppliedTargetTag = InputHelper::get('target-tag');
 			$suppliedTargetTag = Model_Tag::validateTag($suppliedTargetTag);
 			$targetTag = Model_Tag::locate($suppliedTargetTag, false);
-			if ($targetTag)
+
+			if ($targetTag and $targetTag->id != $sourceTag->id)
 				throw new SimpleException('Target tag already exists');
 
-			$sourceTag = Model_Tag::locate($suppliedSourceTag);
 			$sourceTag->name = $suppliedTargetTag;
 			R::store($sourceTag);
 
