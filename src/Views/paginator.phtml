@@ -1,60 +1,77 @@
 <?php
-	$pagesVisible = [];
-	$pagesVisible []= 1;
-	$pagesVisible []= $this->context->transport->paginator->pageCount;
-	$delta = 3;
-	$pagesVisible = array_merge($pagesVisible, range($this->context->transport->paginator->page - $delta, $this->context->transport->paginator->page + $delta));
-	$pagesVisible = array_filter($pagesVisible, function($x) { return $x >= 1 and $x <= $this->context->transport->paginator->pageCount; });
-	$pagesVisible = array_unique($pagesVisible);
-	sort($pagesVisible, SORT_NUMERIC);
+$page = $this->context->transport->paginator->page;
+$pageCount = $this->context->transport->paginator->pageCount;
 
-	if (!function_exists('pageUrl'))
+$delta = 3;
+$pagesVisible = [1, $pageCount];
+$pagesVisible = array_merge($pagesVisible, range($page - $delta, $page + $delta));
+$pagesVisible = array_filter($pagesVisible, function($x) use ($pageCount) { return $x >= 1 and $x <= $pageCount; });
+$pagesVisible = array_unique($pagesVisible);
+sort($pagesVisible, SORT_NUMERIC);
+
+$finalPages = [$pagesVisible[0]];
+for ($i = 1; $i < count($pagesVisible); $i ++)
+{
+	$prevPage = $pagesVisible[$i - 1];
+	$subPage = $pagesVisible[$i];
+	if ($subPage - $prevPage == 2)
+		$finalPages []= $subPage - 1;
+	elseif ($subPage - $prevPage > 2)
+		$finalPages []= null;
+	$finalPages []= $subPage;
+}
+$pagesVisible = $finalPages;
+
+if (!function_exists('pageUrl'))
+{
+	function pageUrl($page)
 	{
-		function pageUrl($page)
-		{
-			$context = \Chibi\Registry::getContext();
-			$controller = $context->route->simpleControllerName;
-			$action = $context->route->simpleActionName;
-			$page = max(1, $page);
-			$page = min($context->transport->paginator->pageCount, $page);
-			$params = $context->route->arguments;
-			$params['page'] = $page;
-			return \Chibi\UrlHelper::route($controller, $action, $params);
-		}
+		$context = \Chibi\Registry::getContext();
+		$controller = $context->route->simpleControllerName;
+		$action = $context->route->simpleActionName;
+		$page = max(1, min($context->transport->paginator->pageCount, $page));
+		$params = $context->route->arguments;
+		$params['page'] = $page;
+		return \Chibi\UrlHelper::route($controller, $action, $params);
 	}
+}
 ?>
 
 <?php if (!empty($pagesVisible)): ?>
 	<nav class="paginator-wrapper">
 		<ul class="paginator">
-			<?php if ($this->context->transport->paginator->page > 1): ?>
+			<?php if ($page > 1): ?>
 				<li class="prev">
 			<?php else: ?>
 				<li class="prev disabled">
 			<?php endif ?>
-				<a href="<?php echo pageUrl($this->context->transport->paginator->page - 1) ?>">
+				<a href="<?php echo pageUrl($page - 1) ?>">
 					&laquo;
 				</a>
 			</li>
 
-			<?php foreach ($pagesVisible as $page): ?>
-				<?php if ($page == $this->context->transport->paginator->page): ?>
-					<li class="active">
+			<?php foreach ($pagesVisible as $subPage): ?>
+				<?php if ($subPage === null): ?>
+					<li>&hellip;</li>
 				<?php else: ?>
-					<li>
+					<?php if ($subPage == $page): ?>
+						<li class="active">
+					<?php else: ?>
+						<li>
+					<?php endif ?>
+						<a href="<?php echo pageUrl($subPage) ?>">
+							<?php echo $subPage ?>
+						</a>
+					</li>
 				<?php endif ?>
-					<a href="<?php echo pageUrl($page) ?>">
-						<?php echo $page ?>
-					</a>
-				</li>
 			<?php endforeach ?>
 
-			<?php if ($this->context->transport->paginator->page < $this->context->transport->paginator->pageCount): ?>
+			<?php if ($page < $pageCount): ?>
 				<li class="next">
 			<?php else: ?>
 				<li class="next disabled">
 			<?php endif ?>
-				<a href="<?php echo pageUrl($this->context->transport->paginator->page + 1) ?>">
+				<a href="<?php echo pageUrl($page + 1) ?>">
 					&raquo;
 				</a>
 			</li>

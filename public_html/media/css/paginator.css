@@ -10,12 +10,12 @@
 
 .paginator li {
 	display: inline-block;
+	margin-right: 0.5em;
 }
 
 .paginator li a {
 	display: inline-block;
 	padding: 0.2em 0.5em;
-	margin-right: 0.5em;
 	background: #eee;
 	border: 1px solid silver;
 	color: black;
