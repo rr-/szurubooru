@@ -29,6 +29,7 @@ You can use your keyboard to navigate around the site. There are a few shortcuts
 - having specific ID: [search]id:1,2,3,8[/search]
 - having ID no less than specified value: [search]idmin:28[/search]
 - by content type: [search]type:img[/search], [search]type:swf[/search], [search]type:yt[/search] (images, flash files and YouTube videos, respectively)
+- scored up/down by currently logged in user: [search]special:likes[/search] and [search]special:dislikes[/search]
 
 You can combine tags and negate any of them for interesting results. [search]sea -favmin:8 type:swf submit:Pirate[/search] will show you **flash files** tagged as **sea**, that were **liked by seven people** at most, uploaded by user **Pirate**.
 

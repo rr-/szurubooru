@@ -131,6 +131,43 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		$dbQuery->addSql('comment_count <= ?')->put(intval($val));
 	}
 
+	protected static function filterTokenSpecial($dbQuery, $val)
+	{
+		$context = \Chibi\Registry::getContext();
+
+		switch (strtolower($val))
+		{
+			case 'liked':
+			case 'likes':
+				$dbQuery
+					->exists()
+					->open()
+					->select('1')
+					->from('postscore')
+					->where('post_id = post.id')
+					->and('score > 0')
+					->and('user_id = ?')->put($context->user->id)
+					->close();
+				break;
+
+			case 'disliked':
+			case 'dislikes':
+				$dbQuery
+					->exists()
+					->open()
+					->select('1')
+					->from('postscore')
+					->where('post_id = post.id')
+					->and('score < 0')
+					->and('user_id = ?')->put($context->user->id)
+					->close();
+				break;
+
+			default:
+				throw new SimpleException('Unknown special "' . $val . '"');
+		}
+	}
+
 	protected static function filterTokenType($dbQuery, $val)
 	{
 		switch (strtolower($val))
