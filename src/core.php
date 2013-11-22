@@ -11,7 +11,7 @@ setlocale(LC_CTYPE, 'en_US.UTF-8');
 ini_set('memory_limit', '128M');
 
 //extension sanity checks
-$requiredExtensions = ['pdo', 'pdo_sqlite', 'gd', 'openssl'];
+$requiredExtensions = ['pdo', 'pdo_sqlite', 'gd', 'openssl', 'fileinfo'];
 foreach ($requiredExtensions as $ext)
 	if (!extension_loaded($ext))
 		die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);

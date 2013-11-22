@@ -8,13 +8,18 @@ class PostController
 		$callback();
 	}
 
-	private static function serializeTags($post)
+	private static function serializePost($post)
 	{
 		$x = [];
 		foreach ($post->sharedTag as $tag)
-			$x []= $tag->name;
+			$x []= TextHelper::reprTag($tag->name);
+		foreach ($post->via('crossref')->sharedPost as $relatedPost)
+			$x []= TextHelper::reprPost($relatedPost);
+		$x []= $post->safety;
+		$x []= $post->source;
+		$x []= $post->file_hash;
 		natcasesort($x);
-		$x = join('', $x);
+		$x = join(' ', $x);
 		return md5($x);
 	}
 
@@ -120,7 +125,6 @@ class PostController
 	public function toggleTagAction($id, $tag)
 	{
 		$post = Model_Post::locate($id);
-		R::preload($post, ['uploader' => 'user']);
 		$this->context->transport->post = $post;
 
 		$tagRow = Model_Tag::locate($tag, false);
@@ -146,7 +150,7 @@ class PostController
 			$dbTags = Model_Tag::insertOrUpdate($tags);
 			$post->sharedTag = $dbTags;
 
-			R::store($post);
+			Model_Post::save($post);
 			StatusHelper::success();
 		}
 	}
@@ -192,173 +196,38 @@ class PostController
 
 		if (InputHelper::get('submit'))
 		{
-			/* file contents */
-			if (isset($_FILES['file']))
+			R::transaction(function()
 			{
-				$suppliedFile = $_FILES['file'];
-				self::handleUploadErrors($suppliedFile);
-				$origName = basename($suppliedFile['name']);
-				$sourcePath = $suppliedFile['tmp_name'];
-			}
-			elseif (InputHelper::get('url'))
-			{
-				$url = InputHelper::get('url');
-				$origName = $url;
-				if (!preg_match('/^https?:\/\//', $url))
-					throw new SimpleException('Invalid URL "' . $url . '"');
+				$post = Model_Post::create();
 
-				if (preg_match('/youtube.com\/watch.*?=([a-zA-Z0-9_-]+)/', $url, $matches))
-				{
-					$origName = $matches[1];
-					$postType = PostType::Youtube;
-					$sourcePath = null;
-				}
-				else
-				{
-					$sourcePath = tempnam(sys_get_temp_dir(), 'upload') . '.dat';
+				//basic stuff
+				$anonymous = InputHelper::get('anonymous');
+				if ($this->context->loggedIn and !$anonymous)
+					$post->uploader = $this->context->user;
 
-					//warning: low level sh*t ahead
-					//download the URL $url into $sourcePath
-					$maxBytes = TextHelper::stripBytesUnits(ini_get('upload_max_filesize'));
-					set_time_limit(0);
-					$urlFP = fopen($url, 'rb');
-					if (!$urlFP)
-						throw new SimpleException('Cannot open URL for reading');
-					$sourceFP = fopen($sourcePath, 'w+b');
-					if (!$sourceFP)
-					{
-						fclose($urlFP);
-						throw new SimpleException('Cannot open file for writing');
-					}
-					try
-					{
-						while (!feof($urlFP))
-						{
-							$buffer = fread($urlFP, 4 * 1024);
-							if (fwrite($sourceFP, $buffer) === false)
-								throw new SimpleException('Cannot write into file');
-							fflush($sourceFP);
-							if (ftell($sourceFP) > $maxBytes)
-								throw new SimpleException('File is too big (maximum allowed size: ' . TextHelper::useBytesUnits($maxBytes) . ')');
-						}
-					}
-					finally
-					{
-						fclose($urlFP);
-						fclose($sourceFP);
-					}
-				}
-			}
+				//store the post to get the ID in the logs
+				Model_Post::save($post);
 
+				//log
+				LogHelper::bufferChanges();
+				$fmt = ($anonymous and !$this->config->misc->logAnonymousUploads)
+					? 'someone'
+					: '{user}';
+				$fmt .= ' added {post}';
+				LogHelper::logEvent('post-new', $fmt, ['post' => TextHelper::reprPost($post)]);
 
-			/* file details */
-			$mimeType = null;
-			if ($sourcePath)
-			{
-				if (function_exists('mime_content_type'))
-					$mimeType = mime_content_type($sourcePath);
-				else
-					$mimeType = $suppliedFile['type'];
-			}
-			$imageWidth = null;
-			$imageHeight = null;
-			switch ($mimeType)
-			{
-				case 'image/gif':
-				case 'image/png':
-				case 'image/jpeg':
-					$postType = PostType::Image;
-					list ($imageWidth, $imageHeight) = getimagesize($sourcePath);
-					break;
-				case 'application/x-shockwave-flash':
-					$postType = PostType::Flash;
-					list ($imageWidth, $imageHeight) = getimagesize($sourcePath);
-					break;
-				default:
-					if (!isset($postType))
-						throw new SimpleException('Invalid file type "' . $mimeType . '"');
-			}
+				//after logging basic info, do the editing stuff
+				$this->doEdit($post, true);
 
-			if ($sourcePath)
-			{
-				$fileSize = filesize($sourcePath);
-				$fileHash = md5_file($sourcePath);
-				$duplicatedPost = R::findOne('post', 'file_hash = ?', [$fileHash]);
-				if ($duplicatedPost !== null)
-					throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
-			}
-			else
-			{
-				$fileSize = 0;
-				$fileHash = null;
-				if ($postType == PostType::Youtube)
-				{
-					$duplicatedPost = R::findOne('post', 'orig_name = ?', [$origName]);
-					if ($duplicatedPost !== null)
-						throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
-				}
-			}
+				//this basically means that user didn't specify file nor url
+				if (empty($post->type))
+					throw new SimpleException('No post type detected; upload faled');
 
-			do
-			{
-				$name = md5(mt_rand() . uniqid());
-				$path = $this->config->main->filesPath . DS . $name;
-			}
-			while (file_exists($path));
+				LogHelper::flush();
 
-
-			/* safety */
-			$suppliedSafety = InputHelper::get('safety');
-			$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
-
-			/* tags */
-			$suppliedTags = InputHelper::get('tags');
-			$suppliedTags = Model_Tag::validateTags($suppliedTags);
-			$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
-
-			/* source */
-			$suppliedSource = InputHelper::get('source');
-			$suppliedSource = Model_Post::validateSource($suppliedSource);
-
-			/* anonymous */
-			$anonymous = InputHelper::get('anonymous');
-
-			/* db storage */
-			$dbPost = R::dispense('post');
-			$dbPost->type = $postType;
-			$dbPost->name = $name;
-			$dbPost->orig_name = $origName;
-			$dbPost->file_hash = $fileHash;
-			$dbPost->file_size = $fileSize;
-			$dbPost->mime_type = $mimeType;
-			$dbPost->safety = $suppliedSafety;
-			$dbPost->source = $suppliedSource;
-			$dbPost->hidden = false;
-			$dbPost->upload_date = time();
-			$dbPost->image_width = $imageWidth;
-			$dbPost->image_height = $imageHeight;
-			if ($this->context->loggedIn and !$anonymous)
-				$dbPost->uploader = $this->context->user;
-			$dbPost->ownFavoritee = [];
-			$dbPost->sharedTag = $dbTags;
-
-			if ($sourcePath)
-			{
-				if (is_uploaded_file($sourcePath))
-					move_uploaded_file($sourcePath, $path);
-				else
-					rename($sourcePath, $path);
-			}
-			R::store($dbPost);
-
-			$fmt = ($anonymous and !$this->config->misc->logAnonymousUploads)
-				? 'someone'
-				: '{user}';
-			$fmt .= ' added {post} tagged with {tags} marked as {safety}';
-			LogHelper::logEvent('post-new', $fmt, [
-				'post' => TextHelper::reprPost($dbPost),
-				'tags' =>  join(', ', array_map(['TextHelper', 'reprTag'], $dbTags)),
-				'safety' => PostSafety::toString($dbPost->safety)]);
+				//finish
+				Model_Post::save($post);
+			});
 
 			StatusHelper::success();
 		}
@@ -372,111 +241,21 @@ class PostController
 	public function editAction($id)
 	{
 		$post = Model_Post::locate($id);
-		R::preload($post, ['uploader' => 'user']);
 		$this->context->transport->post = $post;
 
 		if (InputHelper::get('submit'))
 		{
+			$editToken = InputHelper::get('edit-token');
+			if ($editToken != self::serializePost($post))
+				throw new SimpleException('This post was already edited by someone else in the meantime');
+
 			LogHelper::bufferChanges();
+			$this->doEdit($post, false);
+			LogHelper::flush();
 
-			/* safety */
-			$suppliedSafety = InputHelper::get('safety');
-			if ($suppliedSafety !== null and $suppliedSafety != $post->safety)
-			{
-				PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-				$suppliedSafety = Model_Post::validateSafety($suppliedSafety);
-				$post->safety = $suppliedSafety;
-				$edited = true;
-				LogHelper::logEvent('post-edit', '{user} changed safety for {post} to {safety}', ['post' => TextHelper::reprPost($post), 'safety' => PostSafety::toString($post->safety)]);
-			}
-
-
-			/* tags */
-			$suppliedTags = InputHelper::get('tags');
-			if ($suppliedTags !== null)
-			{
-				PrivilegesHelper::confirmWithException(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-				$currentToken = self::serializeTags($post);
-				if (InputHelper::get('tags-token') != $currentToken)
-					throw new SimpleException('Someone else has changed the tags in the meantime');
-
-				$suppliedTags = Model_Tag::validateTags($suppliedTags);
-				$dbTags = Model_Tag::insertOrUpdate($suppliedTags);
-
-				$oldTags = array_map(function($tag) { return $tag->name; }, $post->sharedTag);
-				$post->sharedTag = $dbTags;
-				$edited = true;
-
-				foreach (array_diff($oldTags, $suppliedTags) as $tag)
-					LogHelper::logEvent('post-tag-del', '{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
-				foreach (array_diff($suppliedTags, $oldTags) as $tag)
-					LogHelper::logEvent('post-tag-add', '{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
-			}
-
-
-			/* thumbnail */
-			if (!empty($_FILES['thumb']['name']))
-			{
-				PrivilegesHelper::confirmWithException(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-				$suppliedFile = $_FILES['thumb'];
-				self::handleUploadErrors($suppliedFile);
-
-				$mimeType = mime_content_type($suppliedFile['tmp_name']);
-				if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
-					throw new SimpleException('Invalid thumbnail type "' . $mimeType . '"');
-				list ($imageWidth, $imageHeight) = getimagesize($suppliedFile['tmp_name']);
-				if ($imageWidth != $this->config->browsing->thumbWidth)
-					throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbWidth . ')');
-				if ($imageWidth != $this->config->browsing->thumbHeight)
-					throw new SimpleException('Invalid thumbnail width (should be ' . $this->config->browsing->thumbHeight . ')');
-
-				$path = $this->config->main->thumbsPath . DS . $post->name . '.custom';
-				move_uploaded_file($suppliedFile['tmp_name'], $path);
-				LogHelper::logEvent('post-edit', '{user} added custom thumb for {post}', ['post' => TextHelper::reprPost($post)]);
-			}
-
-
-			/* source */
-			$suppliedSource = InputHelper::get('source');
-			if ($suppliedSource !== null and $suppliedSource != $post->source)
-			{
-				PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-				$suppliedSource = Model_Post::validateSource($suppliedSource);
-				$post->source = $suppliedSource;
-				$edited = true;
-				LogHelper::logEvent('post-edit', '{user} changed source for {post} to {source}', ['post' => TextHelper::reprPost($post), 'source' => $post->source]);
-			}
-
-
-			/* relations */
-			$suppliedRelations = InputHelper::get('relations');
-			if ($suppliedRelations !== null)
-			{
-				PrivilegesHelper::confirmWithException(Privilege::EditPostRelations, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
-				$relatedIds = array_filter(preg_split('/\D/', $suppliedRelations));
-				$relatedPosts = [];
-				foreach ($relatedIds as $relatedId)
-				{
-					if ($relatedId == $post->id)
-						continue;
-					if (count($relatedPosts) > $this->config->browsing->maxRelatedPosts)
-						throw new SimpleException('Too many related posts (maximum: ' . $this->config->browsing->maxRelatedPosts . ')');
-					$relatedPosts []= Model_Post::locate($relatedId);
-				}
-
-				$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->via('crossref')->sharedPost);
-				$post->via('crossref')->sharedPost = $relatedPosts;
-
-				foreach (array_diff($oldRelatedIds, $relatedIds) as $post2id)
-					LogHelper::logEvent('post-relation-del', '{user} removed relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
-				foreach (array_diff($relatedIds, $oldRelatedIds) as $post2id)
-					LogHelper::logEvent('post-relation-add', '{user} added relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
-			}
-
-			R::store($post);
+			Model_Post::save($post);
 			Model_Tag::removeUnused();
 
-			LogHelper::flush();
 			StatusHelper::success();
 		}
 	}
@@ -514,13 +293,12 @@ class PostController
 	public function hideAction($id)
 	{
 		$post = Model_Post::locate($id);
-		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 
 		if (InputHelper::get('submit'))
 		{
-			$post->hidden = true;
-			R::store($post);
+			$post->setHidden(true);
+			Model_Post::save($post);
 
 			LogHelper::logEvent('post-hide', '{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
@@ -535,13 +313,12 @@ class PostController
 	public function unhideAction($id)
 	{
 		$post = Model_Post::locate($id);
-		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 
 		if (InputHelper::get('submit'))
 		{
-			$post->hidden = false;
-			R::store($post);
+			$post->setHidden(false);
+			Model_Post::save($post);
 
 			LogHelper::logEvent('post-unhide', '{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
@@ -556,23 +333,11 @@ class PostController
 	public function deleteAction($id)
 	{
 		$post = Model_Post::locate($id);
-		R::preload($post, ['uploader' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 
 		if (InputHelper::get('submit'))
 		{
-			//remove stuff from auxiliary tables
-			R::trashAll(R::find('postscore', 'post_id = ?', [$post->id]));
-			R::trashAll(R::find('crossref', 'post_id = ? OR post2_id = ?', [$post->id, $post->id]));
-			foreach ($post->ownComment as $comment)
-			{
-				$comment->post = null;
-				R::store($comment);
-			}
-			$post->ownFavoritee = [];
-			$post->sharedTag = [];
-			R::store($post);
-			R::trash($post);
+			Model_Post::remove($post);
 
 			LogHelper::logEvent('post-delete', '{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
 			StatusHelper::success();
@@ -588,7 +353,6 @@ class PostController
 	public function addFavoriteAction($id)
 	{
 		$post = Model_Post::locate($id);
-		R::preload($post, ['favoritee' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
 
 		if (InputHelper::get('submit'))
@@ -596,12 +360,8 @@ class PostController
 			if (!$this->context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			foreach ($post->via('favoritee')->sharedUser as $fav)
-				if ($fav->id == $this->context->user->id)
-					throw new SimpleException('Already in favorites');
-
-			$post->link('favoritee')->user = $this->context->user;
-			R::store($post);
+			$this->context->user->addToFavorites($post);
+			Model_User::save($this->context->user);
 			StatusHelper::success();
 		}
 	}
@@ -613,7 +373,6 @@ class PostController
 	public function remFavoriteAction($id)
 	{
 		$post = Model_Post::locate($id);
-		R::preload($post, ['favoritee' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
 
 		if (InputHelper::get('submit'))
@@ -621,16 +380,8 @@ class PostController
 			if (!$this->context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			$finalKey = null;
-			foreach ($post->ownFavoritee as $key => $fav)
-				if ($fav->user->id == $this->context->user->id)
-					$finalKey = $key;
-
-			if ($finalKey === null)
-				throw new SimpleException('Not in favorites');
-
-			unset ($post->ownFavoritee[$finalKey]);
-			R::store($post);
+			$this->context->user->remFromFavorites($post);
+			Model_User::save($this->context->user);
 			StatusHelper::success();
 		}
 	}
@@ -651,15 +402,8 @@ class PostController
 			if (!$this->context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			$p = R::findOne('postscore', 'post_id = ? AND user_id = ?', [$post->id, $this->context->user->id]);
-			if (!$p)
-			{
-				$p = R::dispense('postscore');
-				$p->post = $post;
-				$p->user = $this->context->user;
-			}
-			$p->score = $score;
-			R::store($p);
+			$this->context->user->score($post, $score);
+			Model_User::save($this->context->user);
 			StatusHelper::success();
 		}
 	}
@@ -690,7 +434,6 @@ class PostController
 	{
 		$post = Model_Post::locate($id);
 		R::preload($post, [
-			'uploader' => 'user',
 			'tag',
 			'comment',
 			'ownComment.commenter' => 'user']);
@@ -728,19 +471,8 @@ class PostController
 		$buildNextPostQuery($nextPostQuery, $id, true);
 		$nextPost = $nextPostQuery->get('row');
 
-		$favorite = false;
-		$score = null;
-		if ($this->context->loggedIn)
-		{
-			foreach ($post->ownFavoritee as $fav)
-				if ($fav->user->id == $this->context->user->id)
-					$favorite = true;
-
-			$s = R::findOne('postscore', 'post_id = ? AND user_id = ?', [$post->id, $this->context->user->id]);
-			if ($s)
-				$score = intval($s->score);
-		}
-
+		$favorite = $this->context->user->hasFavorited($post);
+		$score = $this->context->user->getScore($post);
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
 
 		$this->context->pageThumb = \Chibi\UrlHelper::route('post', 'thumb', ['name' => $post->name]);
@@ -754,7 +486,7 @@ class PostController
 		$this->context->transport->post = $post;
 		$this->context->transport->prevPostId = $prevPost ? $prevPost['id'] : null;
 		$this->context->transport->nextPostId = $nextPost ? $nextPost['id'] : null;
-		$this->context->transport->tagsToken = self::serializeTags($post);
+		$this->context->transport->editToken = self::serializePost($post);
 	}
 
 
@@ -765,98 +497,25 @@ class PostController
 	*/
 	public function thumbAction($name, $width = null, $height = null)
 	{
-		$dstWidth = $width === null ? $this->config->browsing->thumbWidth : $width;
-		$dstHeight = $height === null ? $this->config->browsing->thumbHeight : $height;
-		$dstWidth = min(1000, max(1, $dstWidth));
-		$dstHeight = min(1000, max(1, $dstHeight));
-
-		$this->context->layoutName = 'layout-file';
-
-		$path = $this->config->main->thumbsPath . DS . $name . '.custom';
-		if (!file_exists($path))
-			$path = $this->config->main->thumbsPath . DS . $name . '-' . $dstWidth . 'x' . $dstHeight . '.default';
+		$path = Model_Post::getThumbCustomPath($name, $width, $height);
 		if (!file_exists($path))
 		{
-			$post = Model_Post::locate($name);
-
-			PrivilegesHelper::confirmWithException(Privilege::ListPosts);
-			PrivilegesHelper::confirmWithException(Privilege::ListPosts, PostSafety::toString($post->safety));
-			$srcPath = $this->config->main->filesPath . DS . $post->name;
-
-			if ($post->type == PostType::Youtube)
+			$path = Model_Post::getThumbDefaultPath($name, $width, $height);
+			if (!file_exists($path))
 			{
-				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.jpg';
-				$contents = file_get_contents('http://img.youtube.com/vi/' . $post->orig_name . '/mqdefault.jpg');
-				file_put_contents($tmpPath, $contents);
-				if (file_exists($tmpPath))
-					$srcImage = imagecreatefromjpeg($tmpPath);
+				$post = Model_Post::locate($name);
+				PrivilegesHelper::confirmWithException(Privilege::ListPosts);
+				PrivilegesHelper::confirmWithException(Privilege::ListPosts, PostSafety::toString($post->safety));
+				$post->makeThumb($width, $height);
+				if (!file_exists($path))
+					$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
 			}
-			else switch ($post->mime_type)
-			{
-				case 'image/jpeg':
-					$srcImage = imagecreatefromjpeg($srcPath);
-					break;
-				case 'image/png':
-					$srcImage = imagecreatefrompng($srcPath);
-					break;
-				case 'image/gif':
-					$srcImage = imagecreatefromgif($srcPath);
-					break;
-				case 'application/x-shockwave-flash':
-					$srcImage = null;
-					exec('which dump-gnash', $tmp, $exitCode);
-					if ($exitCode == 0)
-					{
-						$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-						exec('dump-gnash --screenshot last --screenshot-file ' . $tmpPath . ' -1 -r1 --max-advances 15 ' . $srcPath);
-						if (file_exists($tmpPath))
-							$srcImage = imagecreatefrompng($tmpPath);
-					}
-					if (!$srcImage)
-					{
-						exec('which swfrender', $tmp, $exitCode);
-						if ($exitCode == 0)
-						{
-							$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-							exec('swfrender ' . $srcPath . ' -o ' . $tmpPath);
-							if (file_exists($tmpPath))
-								$srcImage = imagecreatefrompng($tmpPath);
-						}
-					}
-					break;
-				default:
-					break;
-			}
-
-			if (isset($srcImage))
-			{
-				switch ($this->config->browsing->thumbStyle)
-				{
-					case 'outside':
-						$dstImage = ThumbnailHelper::cropOutside($srcImage, $dstWidth, $dstHeight);
-						break;
-					case 'inside':
-						$dstImage = ThumbnailHelper::cropInside($srcImage, $dstWidth, $dstHeight);
-						break;
-					default:
-						throw new SimpleException('Unknown thumbnail crop style');
-				}
-
-				imagejpeg($dstImage, $path);
-				imagedestroy($srcImage);
-				imagedestroy($dstImage);
-			}
-			else
-			{
-				$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
-			}
-
-			if (isset($tmpPath))
-				unlink($tmpPath);
 		}
+
 		if (!is_readable($path))
 			throw new SimpleException('Thumbnail file is not readable');
 
+		$this->context->layoutName = 'layout-file';
 		$this->context->transport->cacheDaysToLive = 30;
 		$this->context->transport->mimeType = 'image/jpeg';
 		$this->context->transport->fileHash = 'thumb' . md5($name . filemtime($path));
@@ -873,7 +532,6 @@ class PostController
 	{
 		$this->context->layoutName = 'layout-file';
 		$post = Model_Post::locate($name, true);
-		R::preload($post, ['tag']);
 
 		PrivilegesHelper::confirmWithException(Privilege::RetrievePost);
 		PrivilegesHelper::confirmWithException(Privilege::RetrievePost, PostSafety::toString($post->safety));
@@ -901,5 +559,118 @@ class PostController
 		$this->context->transport->mimeType = $post->mimeType;
 		$this->context->transport->fileHash = 'post' . $post->file_hash;
 		$this->context->transport->filePath = $path;
+	}
+
+
+
+	private function doEdit($post, $isNew)
+	{
+		/* file contents */
+		if (isset($_FILES['file']))
+		{
+			if (!$isNew)
+				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
+			$suppliedFile = $_FILES['file'];
+			self::handleUploadErrors($suppliedFile);
+
+			$srcPath = $suppliedFile['tmp_name'];
+			$post->setContentFromPath($srcPath);
+
+			if (!$isNew)
+				LogHelper::logEvent('post-edit', '{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
+		}
+		elseif (InputHelper::get('url'))
+		{
+			if (!$isNew)
+				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
+			$url = InputHelper::get('url');
+			$post->setContentFromUrl($url);
+
+			if (!$isNew)
+				LogHelper::logEvent('post-edit', '{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
+		}
+
+		/* safety */
+		$suppliedSafety = InputHelper::get('safety');
+		if ($suppliedSafety !== null)
+		{
+			if (!$isNew)
+				PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
+			$oldSafety = $post->safety;
+			$post->setSafety($suppliedSafety);
+			$newSafety = $post->safety;
+
+			if ($oldSafety != $newSafety)
+				LogHelper::logEvent('post-edit', '{user} changed safety for {post} to {safety}', ['post' => TextHelper::reprPost($post), 'safety' => PostSafety::toString($post->safety)]);
+		}
+
+		/* tags */
+		$suppliedTags = InputHelper::get('tags');
+		if ($suppliedTags !== null)
+		{
+			if (!$isNew)
+				PrivilegesHelper::confirmWithException(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
+			$oldTags = array_map(function($tag) { return $tag->name; }, $post->sharedTag);
+			$post->setTagsFromText($suppliedTags);
+			$newTags = array_map(function($tag) { return $tag->name; }, $post->sharedTag);
+
+			foreach (array_diff($oldTags, $newTags) as $tag)
+				LogHelper::logEvent('post-tag-del', '{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+
+			foreach (array_diff($newTags, $oldTags) as $tag)
+				LogHelper::logEvent('post-tag-add', '{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+		}
+
+		/* source */
+		$suppliedSource = InputHelper::get('source');
+		if ($suppliedSource !== null)
+		{
+			if (!$isNew)
+				PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
+			$oldSource = $post->source;
+			$post->setSource($suppliedSource);
+			$newSource = $post->source;
+
+			if ($oldSource != $newSource)
+				LogHelper::logEvent('post-edit', '{user} changed source for {post} to {source}', ['post' => TextHelper::reprPost($post), 'source' => $post->source]);
+		}
+
+		/* relations */
+		$suppliedRelations = InputHelper::get('relations');
+		if ($suppliedRelations !== null)
+		{
+			if (!$isNew)
+				PrivilegesHelper::confirmWithException(Privilege::EditPostRelations, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
+			$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->via('crossref')->sharedPost);
+			$post->setRelationsFromText($suppliedRelations);
+			$newRelatedIds = array_map(function($post) { return $post->id; }, $post->via('crossref')->sharedPost);
+
+			foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
+				LogHelper::logEvent('post-relation-del', '{user} removed relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
+
+			foreach (array_diff($newRelatedIds, $oldRelatedIds) as $post2id)
+				LogHelper::logEvent('post-relation-add', '{user} added relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
+		}
+
+		/* thumbnail */
+		if (!empty($_FILES['thumb']['name']))
+		{
+			if (!$isNew)
+				PrivilegesHelper::confirmWithException(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+
+			$suppliedFile = $_FILES['thumb'];
+			self::handleUploadErrors($suppliedFile);
+
+			$srcPath = $suppliedFile['tmp_name'];
+			$post->setCustomThumbnailFromPath($srcPath);
+
+			LogHelper::logEvent('post-edit', '{user} changed thumb for {post}', ['post' => TextHelper::reprPost($post)]);
+		}
 	}
 }

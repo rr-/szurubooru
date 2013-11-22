@@ -41,6 +41,8 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
 		{
+			Model_Tag::removeUnused();
+
 			$suppliedSourceTag = InputHelper::get('source-tag');
 			$suppliedSourceTag = Model_Tag::validateTag($suppliedSourceTag);
 			$sourceTag = Model_Tag::locate($suppliedSourceTag);
@@ -60,9 +62,9 @@ class TagController
 					if ($postTag->id == $sourceTag->id)
 						unset($post->sharedTag[$key]);
 				$post->sharedTag []= $targetTag;
-				R::store($post);
+				Model_Post::save($post);
 			}
-			R::trash($sourceTag);
+			Model_Tag::remove($sourceTag);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
 			LogHelper::logEvent('tag-merge', '{user} merged {source} with {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
@@ -83,6 +85,8 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
 		{
+			Model_Tag::removeUnused();
+
 			$suppliedSourceTag = InputHelper::get('source-tag');
 			$suppliedSourceTag = Model_Tag::validateTag($suppliedSourceTag);
 			$sourceTag = Model_Tag::locate($suppliedSourceTag);
@@ -95,7 +99,7 @@ class TagController
 				throw new SimpleException('Target tag already exists');
 
 			$sourceTag->name = $suppliedTargetTag;
-			R::store($sourceTag);
+			Model_Tag::save($sourceTag);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
 			LogHelper::logEvent('tag-rename', '{user} renamed {source} to {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);

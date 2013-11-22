@@ -1,6 +1,18 @@
 <?php
 class Model_Tag extends AbstractModel
 {
+	public static function getTableName()
+	{
+		return 'tag';
+	}
+
+	public static function getQueryBuilder()
+	{
+		return 'Model_Tag_Querybuilder';
+	}
+
+
+
 	public static function locate($key, $throw = true)
 	{
 		$tag = R::findOne(self::getTableName(), 'LOWER(name) = LOWER(?)', [$key]);
@@ -12,6 +24,8 @@ class Model_Tag extends AbstractModel
 		}
 		return $tag;
 	}
+
+
 
 	public static function removeUnused()
 	{
@@ -68,14 +82,6 @@ class Model_Tag extends AbstractModel
 		return $tag;
 	}
 
-	public function getPostCount()
-	{
-		if ($this->bean->getMeta('post_count'))
-			return $this->bean->getMeta('post_count');
-		return $this->bean->countShared('post');
-	}
-
-
 	public static function validateTags($tags)
 	{
 		$tags = trim($tags);
@@ -92,13 +98,10 @@ class Model_Tag extends AbstractModel
 		return $tags;
 	}
 
-	public static function getTableName()
+	public function getPostCount()
 	{
-		return 'tag';
-	}
-
-	public static function getQueryBuilder()
-	{
-		return 'Model_Tag_Querybuilder';
+		if ($this->bean->getMeta('post_count'))
+			return $this->bean->getMeta('post_count');
+		return $this->bean->countShared('post');
 	}
 }

@@ -50,4 +50,34 @@ abstract class AbstractModel extends RedBean_SimpleModel
 			$dbQuery->from($table);
 		return intval($dbQuery->get('row')['count']);
 	}
+
+	public static function create()
+	{
+		return R::dispense(static::getTableName());
+	}
+
+	public static function remove($entity)
+	{
+		R::trash($entity);
+	}
+
+	public static function save($entity)
+	{
+		R::store($entity);
+	}
+
+	/* FUSE methods for RedBeanPHP, preventing some aliasing errors */
+	public function open()
+	{
+		$this->preload();
+	}
+
+	public function after_update()
+	{
+		$this->preload();
+	}
+
+	public function preload()
+	{
+	}
 }

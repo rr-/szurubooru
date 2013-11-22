@@ -184,7 +184,7 @@ class UserController
 		if (InputHelper::get('submit'))
 		{
 			$user->banned = true;
-			R::store($user);
+			Model_User::save($user);
 
 			LogHelper::logEvent('ban', '{user} banned {subject}', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
@@ -205,7 +205,7 @@ class UserController
 		if (InputHelper::get('submit'))
 		{
 			$user->banned = false;
-			R::store($user);
+			Model_User::save($user);
 
 			LogHelper::logEvent('unban', '{user} unbanned {subject}', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
@@ -225,7 +225,7 @@ class UserController
 		if (InputHelper::get('submit'))
 		{
 			$user->staff_confirmed = true;
-			R::store($user);
+			Model_User::save($user);
 			LogHelper::logEvent('reg-accept', '{user} confirmed account for {subject}', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
 		}
@@ -257,22 +257,11 @@ class UserController
 				if ($suppliedPasswordHash != $user->pass_hash)
 					throw new SimpleException('Must supply valid password');
 			}
-			R::trashAll(R::find('postscore', 'user_id = ?', [$user->id]));
-			foreach ($user->alias('commenter')->ownComment as $comment)
-			{
-				$comment->commenter = null;
-				R::store($comment);
-			}
-			foreach ($user->alias('uploader')->ownPost as $post)
-			{
-				$post->uploader = null;
-				R::store($post);
-			}
-			$user->ownFavoritee = [];
-			if ($user->id == $this->context->user->id)
+
+			$oldId = $user->id;
+			Model_User::remove($user);
+			if ($oldId == $this->context->user->id)
 				AuthController::doLogOut();
-			R::store($user);
-			R::trash($user);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
 			LogHelper::logEvent('user-del', '{user} removed account for {subject}', ['subject' => TextHelper::reprUser($name)]);
@@ -305,7 +294,7 @@ class UserController
 
 			$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
 
-			R::store($user);
+			Model_User::save($user);
 			if ($user->id == $this->context->user->id)
 				$this->context->user = $user;
 			AuthController::doReLog();
@@ -394,7 +383,7 @@ class UserController
 					if ($suppliedPasswordHash != $currentPasswordHash)
 						throw new SimpleException('Must supply valid current password');
 				}
-				R::store($user);
+				Model_User::save($user);
 
 				if ($confirmMail)
 					self::sendEmailChangeConfirmation($user);
@@ -478,7 +467,7 @@ class UserController
 
 		AuthController::doReLog();
 		if (!$this->context->user->anonymous)
-			R::store($this->context->user);
+			Model_User::save($this->context->user);
 
 		StatusHelper::success();
 	}
@@ -523,9 +512,8 @@ class UserController
 				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
 
 			//register the user
-			$dbUser = R::dispense('user');
+			$dbUser = Model_User::create();
 			$dbUser->name = $suppliedName;
-			$dbUser->pass_salt = md5(mt_rand() . uniqid());
 			$dbUser->pass_hash = Model_User::hashPassword($suppliedPassword, $dbUser->pass_salt);
 			$dbUser->email_unconfirmed = $suppliedEmail;
 
@@ -546,7 +534,7 @@ class UserController
 			}
 
 			//save the user to db if everything went okay
-			R::store($dbUser);
+			Model_User::save($dbUser);
 
 			if (!empty($dbUser->email_unconfirmed))
 				self::sendEmailChangeConfirmation($dbUser);
@@ -589,7 +577,7 @@ class UserController
 		$dbUser->email_unconfirmed = null;
 		$dbToken->used = true;
 		R::store($dbToken);
-		R::store($dbUser);
+		Model_User::save($dbUser);
 
 		LogHelper::logEvent('user-activation', '{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
 		$message = 'Activation completed successfully.';
@@ -626,7 +614,7 @@ class UserController
 		$dbUser->pass_hash = Model_User::hashPassword($randomPassword, $dbUser->pass_salt);
 		$dbToken->used = true;
 		R::store($dbToken);
-		R::store($dbUser);
+		Model_User::save($dbUser);
 
 		LogHelper::logEvent('user-pass-reset', '{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
 		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';

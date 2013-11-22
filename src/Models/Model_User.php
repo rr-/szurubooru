@@ -1,6 +1,23 @@
 <?php
 class Model_User extends AbstractModel
 {
+	const SETTING_SAFETY = 1;
+	const SETTING_ENDLESS_SCROLLING = 2;
+
+
+
+	public static function getTableName()
+	{
+		return 'user';
+	}
+
+	public static function getQueryBuilder()
+	{
+		return 'Model_User_QueryBuilder';
+	}
+
+
+
 	public static function locate($key, $throw = true)
 	{
 		$user = R::findOne(self::getTableName(), 'LOWER(name) = LOWER(?)', [$key]);
@@ -17,81 +34,43 @@ class Model_User extends AbstractModel
 		return null;
 	}
 
-	public function getAvatarUrl($size = 32)
+	public static function create()
 	{
-		$subject = !empty($this->email_confirmed)
-			? $this->email_confirmed
-			: $this->pass_salt . $this->name;
-		$hash = md5(strtolower(trim($subject)));
-		$url = 'http://www.gravatar.com/avatar/' . $hash . '?s=' . $size . '&d=retro';
-		return $url;
+		$user = R::dispense(self::getTableName());
+		$user->pass_salt = md5(mt_rand() . uniqid());
+		return $user;
 	}
 
-	public function getSetting($key)
+	public static function remove($user)
 	{
-		$settings = json_decode($this->settings, true);
-		return isset($settings[$key])
-			? $settings[$key]
-			: null;
-	}
-
-	public function setSetting($key, $value)
-	{
-		$settings = json_decode($this->settings, true);
-		$settings[$key] = $value;
-		$settings = json_encode($settings);
-		if (strlen($settings) > 200)
-			throw new SimpleException('Too much data');
-		$this->settings = $settings;
-	}
-
-
-	const SETTING_SAFETY = 1;
-	const SETTING_ENDLESS_SCROLLING = 2;
-
-	public function hasEnabledSafety($safety)
-	{
-		$all = $this->getSetting(self::SETTING_SAFETY);
-		if (!$all)
-			return $safety == PostSafety::Safe;
-		return $all & PostSafety::toFlag($safety);
-	}
-
-	public function enableSafety($safety, $enabled)
-	{
-		$all = $this->getSetting(self::SETTING_SAFETY);
-		if (!$all)
-			$all = PostSafety::toFlag(PostSafety::Safe);
-
-		$new = $all;
-		if (!$enabled)
+		//remove stuff from auxiliary tables
+		R::trashAll(R::find('postscore', 'user_id = ?', [$user->id]));
+		foreach ($user->alias('commenter')->ownComment as $comment)
 		{
-			$new &= ~PostSafety::toFlag($safety);
-			if (!$new)
-				$new = PostSafety::toFlag(PostSafety::Safe);
+			$comment->commenter = null;
+			R::store($comment);
 		}
-		else
+		foreach ($user->alias('uploader')->ownPost as $post)
 		{
-			$new |= PostSafety::toFlag($safety);
+			$post->uploader = null;
+			R::store($post);
 		}
-
-		$this->setSetting(self::SETTING_SAFETY, $new);
+		$user->ownFavoritee = [];
+		R::store($user);
+		R::trash($user);
 	}
 
-	public function hasEnabledEndlessScrolling()
+	public static function save($user)
 	{
-		$ret = $this->getSetting(self::SETTING_ENDLESS_SCROLLING);
-		if ($ret === null)
-			$ret = \Chibi\Registry::getConfig()->browsing->endlessScrollingDefault;
-		return $ret;
+		R::store($user);
 	}
 
-	public function enableEndlessScrolling($enabled)
+
+
+	public static function getAnonymousName()
 	{
-		$this->setSetting(self::SETTING_ENDLESS_SCROLLING, $enabled ? 1 : 0);
+		return '[Anonymous user]';
 	}
-
-
 
 	public static function validateUserName($userName)
 	{
@@ -168,13 +147,126 @@ class Model_User extends AbstractModel
 		return sha1($salt1 . $salt2 . $pass);
 	}
 
-	public static function getTableName()
+
+
+	public function getAvatarUrl($size = 32)
 	{
-		return 'user';
+		$subject = !empty($this->email_confirmed)
+			? $this->email_confirmed
+			: $this->pass_salt . $this->name;
+		$hash = md5(strtolower(trim($subject)));
+		$url = 'http://www.gravatar.com/avatar/' . $hash . '?s=' . $size . '&d=retro';
+		return $url;
 	}
 
-	public static function getQueryBuilder()
+	public function getSetting($key)
 	{
-		return 'Model_User_QueryBuilder';
+		$settings = json_decode($this->settings, true);
+		return isset($settings[$key])
+			? $settings[$key]
+			: null;
+	}
+
+	public function setSetting($key, $value)
+	{
+		$settings = json_decode($this->settings, true);
+		$settings[$key] = $value;
+		$settings = json_encode($settings);
+		if (strlen($settings) > 200)
+			throw new SimpleException('Too much data');
+		$this->settings = $settings;
+	}
+
+	public function hasEnabledSafety($safety)
+	{
+		$all = $this->getSetting(self::SETTING_SAFETY);
+		if (!$all)
+			return $safety == PostSafety::Safe;
+		return $all & PostSafety::toFlag($safety);
+	}
+
+	public function enableSafety($safety, $enabled)
+	{
+		$all = $this->getSetting(self::SETTING_SAFETY);
+		if (!$all)
+			$all = PostSafety::toFlag(PostSafety::Safe);
+
+		$new = $all;
+		if (!$enabled)
+		{
+			$new &= ~PostSafety::toFlag($safety);
+			if (!$new)
+				$new = PostSafety::toFlag(PostSafety::Safe);
+		}
+		else
+		{
+			$new |= PostSafety::toFlag($safety);
+		}
+
+		$this->setSetting(self::SETTING_SAFETY, $new);
+	}
+
+	public function hasEnabledEndlessScrolling()
+	{
+		$ret = $this->getSetting(self::SETTING_ENDLESS_SCROLLING);
+		if ($ret === null)
+			$ret = \Chibi\Registry::getConfig()->browsing->endlessScrollingDefault;
+		return $ret;
+	}
+
+	public function enableEndlessScrolling($enabled)
+	{
+		$this->setSetting(self::SETTING_ENDLESS_SCROLLING, $enabled ? 1 : 0);
+	}
+
+	public function hasFavorited($post)
+	{
+		foreach ($this->bean->ownFavoritee as $fav)
+			if ($fav->post->id == $post->id)
+				return true;
+		return false;
+	}
+
+	public function getScore($post)
+	{
+		$s = R::findOne('postscore', 'post_id = ? AND user_id = ?', [$post->id, $this->id]);
+		if ($s)
+			return intval($s->score);
+		return null;
+	}
+
+	public function addToFavorites($post)
+	{
+		R::preload($this->bean, ['favoritee' => 'post']);
+		foreach ($this->bean->ownFavoritee as $fav)
+			if ($fav->post_id == $post->id)
+				throw new SimpleException('Already in favorites');
+
+		$this->bean->link('favoritee')->post = $post;
+	}
+
+	public function remFromFavorites($post)
+	{
+		$finalKey = null;
+		foreach ($this->bean->ownFavoritee as $key => $fav)
+			if ($fav->post_id == $post->id)
+				$finalKey = $key;
+
+		if ($finalKey === null)
+			throw new SimpleException('Not in favorites');
+
+		unset($this->bean->ownFavoritee[$finalKey]);
+	}
+
+	public function score($post, $score)
+	{
+		R::trashAll(R::find('postscore', 'post_id = ? AND user_id = ?', [$post->id, $this->id]));
+		$score = intval($score);
+		if ($score != 0)
+		{
+			$p = $this->bean->link('postscore');
+			$p->post = $post;
+			$p->score = $score;
+		}
 	}
 }

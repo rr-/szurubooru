@@ -9,7 +9,7 @@ class IndexController
 	{
 		$this->context->subTitle = 'home';
 		$this->context->stylesheets []= 'index-index.css';
-		$this->context->transport->postCount = R::$f->begin()->select('count(1)')->as('count')->from('post')->get('row')['count'];
+		$this->context->transport->postCount = Model_Post::getAllPostCount();
 
 		$featuredPostRotationTime = $this->config->misc->featuredPostMaxDays * 24 * 3600;
 

@@ -25,7 +25,6 @@ class CommentController
 		$page = max(1, min($pageCount, $page));
 		$comments = Model_Comment::getEntities(null, $commentsPerPage, $page);
 
-		R::preload($comments, ['commenter' => 'user', 'post', 'post.uploader' => 'user']);
 		$this->context->postGroups = true;
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
@@ -55,7 +54,7 @@ class CommentController
 			$text = InputHelper::get('text');
 			$text = Model_Comment::validateText($text);
 
-			$comment = R::dispense('comment');
+			$comment = Model_Comment::create();
 			$comment->post = $post;
 			if ($this->context->loggedIn)
 				$comment->commenter = $this->context->user;
@@ -63,7 +62,7 @@ class CommentController
 			$comment->text = $text;
 			if (InputHelper::get('sender') != 'preview')
 			{
-				R::store($comment);
+				Model_Comment::save($comment);
 				LogHelper::logEvent('comment-add', '{user} commented on {post}', ['post' => TextHelper::reprPost($post->id)]);
 			}
 			$this->context->transport->textPreview = $comment->getText();
@@ -80,10 +79,10 @@ class CommentController
 	public function deleteAction($id)
 	{
 		$comment = Model_Comment::locate($id);
-		R::preload($comment, ['commenter' => 'user']);
 		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->commenter));
+		Model_Comment::remove($comment);
+
 		LogHelper::logEvent('comment-del', '{user} removed comment from {post}', ['post' => TextHelper::reprPost($comment->post)]);
-		R::trash($comment);
 		StatusHelper::success();
 	}
 }
