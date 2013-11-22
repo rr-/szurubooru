@@ -1,0 +1,23 @@
+<?php $post = $this->context->transport->post ?>
+
+<?php if ($post->type == PostType::Image): ?>
+
+	<?php if (!empty($this->context->imageLink)): ?>
+		<a href="<?php echo $this->context->imageLink ?>">
+	<?php endif ?>
+
+	<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>" alt="<?php echo $post->name ?>"/>
+
+	<?php if (!empty($this->context->imageLink)): ?>
+		</a>
+	<?php endif ?>
+
+<?php elseif ($post->type ==  PostType::Flash): ?>
+
+	<embed width="<?php echo $post->image_width ?>" height="<?php echo $post->image_height  ?>" type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"/>
+
+<?php elseif ($post->type == PostType::Youtube): ?>
+
+	<iframe width="800" height="600" src="//www.youtube.com/embed/<?php echo $post->orig_name ?>" frameborder="0" allowfullscreen></iframe>
+
+<?php endif ?>

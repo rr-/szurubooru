@@ -7,9 +7,9 @@
 
 <?php if (!empty($this->context->featuredPost)): ?>
 	<div class="body">
-		<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->featuredPost->id]) ?>">
-			<img title="Featured image" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->featuredPost->name]) ?>" alt="<?php echo $this->context->featuredPost->name ?>"/>
-		</a>
+		<?php $this->context->imageLink = \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->featuredPost->id]) ?>
+		<?php $this->context->transport->post = $this->context->featuredPost ?>
+		<?php echo $this->renderFile('post-file-render') ?>
 	</div>
 
 	<div class="footer">
