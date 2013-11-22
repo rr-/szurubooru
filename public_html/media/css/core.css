@@ -328,7 +328,7 @@ button:hover {
 	border-style: solid;
 	border-width: 1px;
 	max-width: 500px;
-	margin: 0 auto;
+	margin: 2em auto !important;
 }
 
 .alert-success {
