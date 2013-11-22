@@ -146,30 +146,26 @@ class TextHelper
 	public static function jsonEncode($obj, $illegalKeysRegex = '')
 	{
 		if (is_array($obj))
+			$set = function($key, $val) use ($obj) { $obj[$key] = $val; };
+		else
+			$set = function($key, $val) use ($obj) { $obj->$key = $val; };
+
+		foreach ($obj as $key => $val)
 		{
-			foreach ($obj as $key => $val)
+			if ($val instanceof RedBean_OODBBean)
 			{
-				if ($val instanceof RedBean_OODBBean)
-				{
-					$obj[$key] = R::exportAll($val);
-				}
+				$set($key, R::exportAll($val));
 			}
-		}
-		elseif (is_object($obj))
-		{
-			foreach ($obj as $key => $val)
+			elseif ($val instanceof Exception)
 			{
-				if ($val instanceof RedBean_OODBBean)
-				{
-					$obj->$key = R::exportAll($val);
-				}
+				$set($key, ['message' => $val->getMessage(), 'trace' => $val->getTraceAsString()]);
 			}
 		}
 
 		if (!empty($illegalKeysRegex))
 			self::removeUnsafeKeys($obj, $illegalKeysRegex);
 
-		return json_encode($obj);
+		return json_encode($obj, JSON_UNESCAPED_UNICODE);
 	}
 
 	public static function parseMarkdown($text, $inline = false)
