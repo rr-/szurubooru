@@ -111,7 +111,7 @@ class AuthController
 			else
 			{
 				$dummy = R::dispense('user');
-				$dummy->name = 'Anonymous';
+				$dummy->name = Model_User::getAnonymousName();
 				$dummy->access_rank = AccessRank::Anonymous;
 				$dummy->anonymous = true;
 				$_SESSION['user'] = serialize($dummy);

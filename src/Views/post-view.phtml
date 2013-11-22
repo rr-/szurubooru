@@ -56,9 +56,9 @@
 					</a>
 				</span>
 			<?php else: ?>
-				<span class="value" title="[unknown user]">
-					<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="[unknown user]"/>
-					[unknown user]
+				<span class="value" title="<?php echo Model_User::getAnonymousName() ?>">
+					<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="<?php echo Model_User::getAnonymousName() ?>"/>
+					<?php echo Model_User::getAnonymousName() ?>
 				</span>
 			<?php endif ?>
 		</div>

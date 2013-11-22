@@ -211,7 +211,7 @@ class PostController
 				//log
 				LogHelper::bufferChanges();
 				$fmt = ($anonymous and !$this->config->misc->logAnonymousUploads)
-					? 'someone'
+					? '{anon}'
 					: '{user}';
 				$fmt .= ' added {post}';
 				LogHelper::logEvent('post-new', $fmt, ['post' => TextHelper::reprPost($post)]);

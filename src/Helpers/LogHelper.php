@@ -45,8 +45,11 @@ class LogHelper
 
 	public static function log($text, array $tokens = [])
 	{
-		if (isset(self::$context->user))
+		$tokens['anon'] = Model_User::getAnonymousName();
+		if (self::$context->loggedIn and isset(self::$context->user))
 			$tokens['user'] = TextHelper::reprUser(self::$context->user->name);
+		else
+			$tokens['user'] = $tokens['anon'];
 
 		$text = TextHelper::replaceTokens($text, $tokens);
 
