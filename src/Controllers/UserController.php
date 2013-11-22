@@ -65,7 +65,7 @@ class UserController
 		$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 		mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
 
-		LogHelper::logEvent('mail', 'Sending e-mail with subject "{subject}" to {mail}', ['subject' => $subject, 'mail' => $recipientEmail]);
+		LogHelper::log('Sending e-mail with subject "{subject}" to {mail}', ['subject' => $subject, 'mail' => $recipientEmail]);
 	}
 
 	private static function sendEmailChangeConfirmation($user)
@@ -165,7 +165,7 @@ class UserController
 			$flagged []= $key;
 			SessionHelper::set('flagged', $flagged);
 
-			LogHelper::logEvent('user-flag', '{user} flagged {subject} for moderator attention', ['subject' => TextHelper::reprUser($user)]);
+			LogHelper::log('{user} flagged {subject} for moderator attention', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
 		}
 	}
@@ -186,7 +186,7 @@ class UserController
 			$user->banned = true;
 			Model_User::save($user);
 
-			LogHelper::logEvent('ban', '{user} banned {subject}', ['subject' => TextHelper::reprUser($user)]);
+			LogHelper::log('{user} banned {subject}', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
 		}
 	}
@@ -207,7 +207,7 @@ class UserController
 			$user->banned = false;
 			Model_User::save($user);
 
-			LogHelper::logEvent('unban', '{user} unbanned {subject}', ['subject' => TextHelper::reprUser($user)]);
+			LogHelper::log('{user} unbanned {subject}', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
 		}
 	}
@@ -226,7 +226,7 @@ class UserController
 		{
 			$user->staff_confirmed = true;
 			Model_User::save($user);
-			LogHelper::logEvent('reg-accept', '{user} confirmed account for {subject}', ['subject' => TextHelper::reprUser($user)]);
+			LogHelper::log('{user} confirmed account for {subject}', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
 		}
 	}
@@ -264,7 +264,7 @@ class UserController
 				AuthController::doLogOut();
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
-			LogHelper::logEvent('user-del', '{user} removed account for {subject}', ['subject' => TextHelper::reprUser($name)]);
+			LogHelper::log('{user} removed account for {subject}', ['subject' => TextHelper::reprUser($name)]);
 			StatusHelper::success();
 		}
 	}
@@ -337,7 +337,7 @@ class UserController
 					$suppliedName = Model_User::validateUserName($suppliedName);
 					$oldName = $user->name;
 					$user->name = $suppliedName;
-					LogHelper::logEvent('user-edit', '{user} renamed {old} to {new}', ['old' => TextHelper::reprUser($oldName), 'new' => TextHelper::reprUser($suppliedName)]);
+					LogHelper::log('{user} renamed {old} to {new}', ['old' => TextHelper::reprUser($oldName), 'new' => TextHelper::reprUser($suppliedName)]);
 				}
 
 				if ($suppliedPassword1 != '')
@@ -347,7 +347,7 @@ class UserController
 						throw new SimpleException('Specified passwords must be the same');
 					$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
 					$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
-					LogHelper::logEvent('user-edit', '{user} changed password for {subject}', ['subject' => TextHelper::reprUser($user)]);
+					LogHelper::log('{user} changed password for {subject}', ['subject' => TextHelper::reprUser($user)]);
 				}
 
 				if ($suppliedEmail != '' and $suppliedEmail != $user->email_confirmed)
@@ -359,13 +359,13 @@ class UserController
 						$user->email_unconfirmed = $suppliedEmail;
 						if (!empty($user->email_unconfirmed))
 							$confirmMail = true;
-						LogHelper::logEvent('user-edit', '{user} changed e-mail to {mail}', ['mail' => $suppliedEmail]);
+						LogHelper::log('{user} changed e-mail to {mail}', ['mail' => $suppliedEmail]);
 					}
 					else
 					{
 						$user->email_unconfirmed = null;
 						$user->email_confirmed = $suppliedEmail;
-						LogHelper::logEvent('user-edit', '{user} changed e-mail for {subject} to {mail}', ['subject' => TextHelper::reprUser($user), 'mail' => $suppliedEmail]);
+						LogHelper::log('{user} changed e-mail for {subject} to {mail}', ['subject' => TextHelper::reprUser($user), 'mail' => $suppliedEmail]);
 					}
 				}
 
@@ -374,7 +374,7 @@ class UserController
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($user));
 					$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
 					$user->access_rank = $suppliedAccessRank;
-					LogHelper::logEvent('user-edit', '{user} changed access rank for {subject} to {rank}', ['subject' => TextHelper::reprUser($user), 'rank' => AccessRank::toString($suppliedAccessRank)]);
+					LogHelper::log('{user} changed access rank for {subject} to {rank}', ['subject' => TextHelper::reprUser($user), 'rank' => AccessRank::toString($suppliedAccessRank)]);
 				}
 
 				if ($this->context->user->id == $user->id)
@@ -549,7 +549,7 @@ class UserController
 			elseif ($this->config->registration->staffActivation)
 				$message .= ' Your registration must be now confirmed by staff.';
 
-			LogHelper::logEvent('user-reg', '{subject} just signed up', ['subject' => TextHelper::reprUser($dbUser)]);
+			LogHelper::log('{subject} just signed up', ['subject' => TextHelper::reprUser($dbUser)]);
 			StatusHelper::success($message);
 
 			if (!$this->config->registration->needEmailForRegistering and !$this->config->registration->staffActivation)
@@ -579,7 +579,7 @@ class UserController
 		R::store($dbToken);
 		Model_User::save($dbUser);
 
-		LogHelper::logEvent('user-activation', '{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
+		LogHelper::log('{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
 		$message = 'Activation completed successfully.';
 		if ($this->config->registration->staffActivation)
 			$message .= ' However, your account still must be confirmed by staff.';
@@ -616,7 +616,7 @@ class UserController
 		R::store($dbToken);
 		Model_User::save($dbUser);
 
-		LogHelper::logEvent('user-pass-reset', '{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
+		LogHelper::log('{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
 		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
 		StatusHelper::success($message);
 

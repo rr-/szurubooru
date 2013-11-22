@@ -62,11 +62,6 @@ class LogHelper
 		if (self::$autoFlush)
 			self::flush();
 	}
-
-	public static function logEvent($event, $text, array $tokens = [])
-	{
-		return self::log(sprintf('[%s] %s', $event, $text), $tokens);
-	}
 }
 
 LogHelper::init();

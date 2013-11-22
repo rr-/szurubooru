@@ -139,12 +139,12 @@ class PostController
 			if (in_array($tag, $tags))
 			{
 				$tags = array_diff($tags, [$tag]);
-				LogHelper::logEvent('post-tag-del', '{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+				LogHelper::log('{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 			}
 			else
 			{
 				$tags += [$tag];
-				LogHelper::logEvent('post-tag-add', '{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+				LogHelper::log('{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 			}
 
 			$dbTags = Model_Tag::insertOrUpdate($tags);
@@ -214,7 +214,7 @@ class PostController
 					? '{anon}'
 					: '{user}';
 				$fmt .= ' added {post}';
-				LogHelper::logEvent('post-new', $fmt, ['post' => TextHelper::reprPost($post)]);
+				LogHelper::log($fmt, ['post' => TextHelper::reprPost($post)]);
 
 				//after logging basic info, do the editing stuff
 				$this->doEdit($post, true);
@@ -280,7 +280,7 @@ class PostController
 			$flagged []= $key;
 			SessionHelper::set('flagged', $flagged);
 
-			LogHelper::logEvent('post-flag', '{user} flagged {post} for moderator attention', ['post' => TextHelper::reprPost($post)]);
+			LogHelper::log('{user} flagged {post} for moderator attention', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
 		}
 	}
@@ -300,7 +300,7 @@ class PostController
 			$post->setHidden(true);
 			Model_Post::save($post);
 
-			LogHelper::logEvent('post-hide', '{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
+			LogHelper::log('{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
 		}
 	}
@@ -320,7 +320,7 @@ class PostController
 			$post->setHidden(false);
 			Model_Post::save($post);
 
-			LogHelper::logEvent('post-unhide', '{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
+			LogHelper::log('{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
 		}
 	}
@@ -339,7 +339,7 @@ class PostController
 		{
 			Model_Post::remove($post);
 
-			LogHelper::logEvent('post-delete', '{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
+			LogHelper::log('{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
 			StatusHelper::success();
 		}
 	}
@@ -421,7 +421,7 @@ class PostController
 		Model_Property::set(Model_Property::FeaturedPostUserId, $this->context->user->id);
 		Model_Property::set(Model_Property::FeaturedPostDate, time());
 		StatusHelper::success();
-		LogHelper::logEvent('post-feature', '{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
+		LogHelper::log('{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
 	}
 
 
@@ -578,7 +578,7 @@ class PostController
 			$post->setContentFromPath($srcPath);
 
 			if (!$isNew)
-				LogHelper::logEvent('post-edit', '{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
+				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
 		}
 		elseif (InputHelper::get('url'))
 		{
@@ -589,7 +589,7 @@ class PostController
 			$post->setContentFromUrl($url);
 
 			if (!$isNew)
-				LogHelper::logEvent('post-edit', '{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
+				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
 		}
 
 		/* safety */
@@ -604,7 +604,7 @@ class PostController
 			$newSafety = $post->safety;
 
 			if ($oldSafety != $newSafety)
-				LogHelper::logEvent('post-edit', '{user} changed safety for {post} to {safety}', ['post' => TextHelper::reprPost($post), 'safety' => PostSafety::toString($post->safety)]);
+				LogHelper::log('{user} changed safety for {post} to {safety}', ['post' => TextHelper::reprPost($post), 'safety' => PostSafety::toString($post->safety)]);
 		}
 
 		/* tags */
@@ -619,10 +619,10 @@ class PostController
 			$newTags = array_map(function($tag) { return $tag->name; }, $post->sharedTag);
 
 			foreach (array_diff($oldTags, $newTags) as $tag)
-				LogHelper::logEvent('post-tag-del', '{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+				LogHelper::log('{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 
 			foreach (array_diff($newTags, $oldTags) as $tag)
-				LogHelper::logEvent('post-tag-add', '{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+				LogHelper::log('{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 		}
 
 		/* source */
@@ -637,7 +637,7 @@ class PostController
 			$newSource = $post->source;
 
 			if ($oldSource != $newSource)
-				LogHelper::logEvent('post-edit', '{user} changed source for {post} to {source}', ['post' => TextHelper::reprPost($post), 'source' => $post->source]);
+				LogHelper::log('{user} changed source for {post} to {source}', ['post' => TextHelper::reprPost($post), 'source' => $post->source]);
 		}
 
 		/* relations */
@@ -652,10 +652,10 @@ class PostController
 			$newRelatedIds = array_map(function($post) { return $post->id; }, $post->via('crossref')->sharedPost);
 
 			foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
-				LogHelper::logEvent('post-relation-del', '{user} removed relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
+				LogHelper::log('{user} removed relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
 
 			foreach (array_diff($newRelatedIds, $oldRelatedIds) as $post2id)
-				LogHelper::logEvent('post-relation-add', '{user} added relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
+				LogHelper::log('{user} added relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
 		}
 
 		/* thumbnail */
@@ -670,7 +670,7 @@ class PostController
 			$srcPath = $suppliedFile['tmp_name'];
 			$post->setCustomThumbnailFromPath($srcPath);
 
-			LogHelper::logEvent('post-edit', '{user} changed thumb for {post}', ['post' => TextHelper::reprPost($post)]);
+			LogHelper::log('{user} changed thumb for {post}', ['post' => TextHelper::reprPost($post)]);
 		}
 	}
 }
