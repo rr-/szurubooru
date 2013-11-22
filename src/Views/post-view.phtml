@@ -146,11 +146,8 @@
 		<?php endif ?>
 	</div>
 
-	<div class="unit favorites">
-		<?php if (count($this->context->transport->post->ownFavoritee) == 0): ?>
-			<h1>favorites</h1>
-			<p>None yet.</p>
-		<?php else: ?>
+	<?php if (count($this->context->transport->post->ownFavoritee) > 0): ?>
+		<div class="unit favorites">
 			<h1>favorites (<?php echo count($this->context->transport->post->ownFavoritee) ?>)</h1>
 			<ul>
 				<?php foreach ($this->context->transport->post->via('favoritee')->sharedUser as $user): ?>
@@ -161,8 +158,8 @@
 					</li>
 				<?php endforeach ?>
 			</ul>
-		<?php endif ?>
-	</div>
+		</div>
+	<?php endif ?>
 
 	<?php if (count($this->context->transport->post->via('crossref')->sharedPost)): ?>
 		<div class="relations unit">
@@ -296,17 +293,16 @@
 		<?php $this->renderFile('post-edit') ?>
 	<?php endif ?>
 
-	<div class="comments unit">
-		<?php if (empty($this->context->transport->post->ownComment)): ?>
-			<h1>comments</h1>
-			None yet.
-		<?php else: ?>
-			<h1>comments (<?php echo $this->context->transport->post->countOwn('comment') ?>)</h1>
-			<div class="comments">
-				<?php foreach ($this->context->transport->post->ownComment as $comment): ?>
-					<?php $this->context->comment = $comment ?>
-					<?php echo $this->renderFile('comment-small') ?>
-				<?php endforeach ?>
+	<div class="comments-wrapper">
+		<?php if (!empty($this->context->transport->post->ownComment)): ?>
+			<div class="comments unit">
+				<h1>comments (<?php echo $this->context->transport->post->countOwn('comment') ?>)</h1>
+				<div class="comments">
+					<?php foreach ($this->context->transport->post->ownComment as $comment): ?>
+						<?php $this->context->comment = $comment ?>
+						<?php echo $this->renderFile('comment-small') ?>
+					<?php endforeach ?>
+				</div>
 			</div>
 		<?php endif ?>
 	</div>

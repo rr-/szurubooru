@@ -34,7 +34,7 @@ function onDomUpdate()
 	{
 		$.get(window.location.href, function(data)
 		{
-			$('.comments.unit').replaceWith($(data).find('.comments.unit'));
+			$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
 			$('body').trigger('dom-update');
 		});
 	});
@@ -133,7 +133,7 @@ $(function()
 					{
 						$.get(window.location.href, function(data)
 						{
-							$('.comments.unit').replaceWith($(data).find('.comments.unit'));
+							$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
 							$('body').trigger('dom-update');
 						});
 						formDom.find('textarea').val('');
