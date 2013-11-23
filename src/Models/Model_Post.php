@@ -267,7 +267,7 @@ class Model_Post extends AbstractModel
 
 		$this->orig_name = basename($srcPath);
 		$duplicatedPost = R::findOne('post', 'file_hash = ?', [$this->file_hash]);
-		if ($duplicatedPost !== null)
+		if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
 			throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
 
 		$dstPath = $this->getFullPath($this->name);
@@ -276,6 +276,10 @@ class Model_Post extends AbstractModel
 			move_uploaded_file($srcPath, $dstPath);
 		else
 			rename($srcPath, $dstPath);
+
+		$thumbPath = self::getThumbDefaultPath($this->name);
+		if (file_exists($thumbPath))
+			unlink($thumbPath);
 	}
 
 
@@ -298,8 +302,12 @@ class Model_Post extends AbstractModel
 			$this->image_width = null;
 			$this->image_height = null;
 
+			$thumbPath = self::getThumbDefaultPath($this->name);
+			if (file_exists($thumbPath))
+				unlink($thumbPath);
+
 			$duplicatedPost = R::findOne('post', 'orig_name = ?', [$origName]);
-			if ($duplicatedPost !== null)
+			if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
 				throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
 			return;
 		}

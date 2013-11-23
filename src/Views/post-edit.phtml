@@ -34,6 +34,18 @@
 		</div>
 	<?php endif ?>
 
+	<?php if (PrivilegesHelper::confirm(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
+		<div class="url">
+			<label class="left" for="url">File:</label>
+			<div class="input-wrapper"><input type="text" name="url" id="url" placeholder="Some url&hellip;"/></div>
+		</div>
+
+		<div class="file">
+			<label class="left" for="file"></label>
+			<div class="input-wrapper"><input type="file" name="file" id="file"/></div>
+		</div>
+	<?php endif ?>
+
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
 		<div class="thumb">
 			<label class="left" for="thumb">Thumb:</label>

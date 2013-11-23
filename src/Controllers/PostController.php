@@ -572,7 +572,7 @@ class PostController
 	private function doEdit($post, $isNew)
 	{
 		/* file contents */
-		if (isset($_FILES['file']))
+		if (!empty($_FILES['file']['name']))
 		{
 			if (!$isNew)
 				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
