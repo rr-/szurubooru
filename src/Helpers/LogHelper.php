@@ -5,16 +5,14 @@ class LogHelper
 	static $context;
 	static $config;
 	static $autoFlush;
-	static $content;
+	static $buffer;
 
 	public static function init()
 	{
-		self::$config = \Chibi\Registry::getConfig();
-		self::$context = \Chibi\Registry::getContext();
-		self::$path = self::$config->main->logsPath . date('Y-m') . '.log';
+		self::$path = \Chibi\Registry::getConfig()->main->logsPath . date('Y-m') . '.log';
 		self::$autoFlush = true;
 
-		self::$content = '';
+		self::$buffer = [];
 	}
 
 	public static function bufferChanges()
@@ -29,12 +27,13 @@ class LogHelper
 			throw new SimpleException('Cannot write to log files');
 		if (flock($fh, LOCK_EX))
 		{
-			fwrite($fh, self::$content);
+			foreach (self::$buffer as $logEvent)
+				fwrite($fh, $logEvent->getFullText() . PHP_EOL);
 			fflush($fh);
 			flock($fh, LOCK_UN);
 			fclose($fh);
 		}
-		self::$content = '';
+		self::$buffer = [];
 		self::$autoFlush = true;
 	}
 
@@ -45,22 +44,57 @@ class LogHelper
 
 	public static function log($text, array $tokens = [])
 	{
-		$tokens['anon'] = Model_User::getAnonymousName();
-		if (self::$context->loggedIn and isset(self::$context->user))
-			$tokens['user'] = TextHelper::reprUser(self::$context->user->name);
-		else
-			$tokens['user'] = $tokens['anon'];
-
-		$text = TextHelper::replaceTokens($text, $tokens);
-
-		$timestamp = date('Y-m-d H:i:s');
-		$ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
-		$line = sprintf('[%s] %s: %s' . PHP_EOL, $timestamp, $ip, $text);
-
-		self::$content .= $line;
-
+		self::$buffer []= new LogEvent($text, $tokens);
 		if (self::$autoFlush)
 			self::flush();
+	}
+
+	//methods for manipulating buffered logs
+	public static function getBuffer()
+	{
+		return self::$buffer;
+	}
+
+	public static function setBuffer(array $buffer)
+	{
+		self::$buffer = $buffer;
+	}
+}
+
+class LogEvent
+{
+	public $timestamp;
+	public $text;
+	public $ip;
+	public $tokens;
+
+	public function __construct($text, array $tokens = [])
+	{
+		$this->timestamp = time();
+		$this->text = $text;
+		$this->ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+
+		$context = \Chibi\Registry::getContext();
+		$tokens['anon'] = Model_User::getAnonymousName();
+		if ($context->loggedIn and isset($context->user))
+			$tokens['user'] = TextHelper::reprUser($context->user->name);
+		else
+			$tokens['user'] = $tokens['anon'];
+		$this->tokens = $tokens;
+	}
+
+	public function getText()
+	{
+		return TextHelper::replaceTokens($this->text, $this->tokens);
+	}
+
+	public function getFullText()
+	{
+		$date = date('Y-m-d H:i:s', $this->timestamp);
+		$ip = $this->ip;
+		$text = $this->getText();
+		$line = sprintf('[%s] %s: %s', $date, $ip, $text);
+		return $line;
 	}
 }
 

@@ -199,6 +199,7 @@ class PostController
 			R::transaction(function()
 			{
 				$post = Model_Post::create();
+				LogHelper::bufferChanges();
 
 				//basic stuff
 				$anonymous = InputHelper::get('anonymous');
@@ -208,24 +209,29 @@ class PostController
 				//store the post to get the ID in the logs
 				Model_Post::save($post);
 
-				//log
-				LogHelper::bufferChanges();
-				$fmt = ($anonymous and !$this->config->misc->logAnonymousUploads)
-					? '{anon}'
-					: '{user}';
-				$fmt .= ' added {post}';
-				LogHelper::log($fmt, ['post' => TextHelper::reprPost($post)]);
-
-				//after logging basic info, do the editing stuff
+				//do the edits
 				$this->doEdit($post, true);
 
 				//this basically means that user didn't specify file nor url
 				if (empty($post->type))
 					throw new SimpleException('No post type detected; upload faled');
 
-				LogHelper::flush();
+				//clean edit log
+				LogHelper::setBuffer([]);
+
+				//log
+				$fmt = ($anonymous and !$this->config->misc->logAnonymousUploads)
+					? '{anon}'
+					: '{user}';
+				$fmt .= ' added {post} (tags: {tags}, safety: {safety}, source: {source})';
+				LogHelper::log($fmt, [
+					'post' => TextHelper::reprPost($post),
+					'tags' => join(', ', array_map(['TextHelper', 'reprTag'], $post->sharedTag)),
+					'safety' => PostSafety::toString($post->safety),
+					'source' => $post->source]);
 
 				//finish
+				LogHelper::flush();
 				Model_Post::save($post);
 			});
 
