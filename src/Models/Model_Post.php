@@ -238,6 +238,12 @@ class Model_Post extends AbstractModel
 
 	public function setContentFromPath($srcPath)
 	{
+		$this->file_size = filesize($srcPath);
+		$this->file_hash = md5_file($srcPath);
+
+		if ($this->file_size == 0)
+			throw new SimpleException('Specified file is empty');
+
 		$this->mime_type = mime_content_type($srcPath);
 		switch ($this->mime_type)
 		{
@@ -260,8 +266,6 @@ class Model_Post extends AbstractModel
 		}
 
 		$this->orig_name = basename($srcPath);
-		$this->file_size = filesize($srcPath);
-		$this->file_hash = md5_file($srcPath);
 		$duplicatedPost = R::findOne('post', 'file_hash = ?', [$this->file_hash]);
 		if ($duplicatedPost !== null)
 			throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
