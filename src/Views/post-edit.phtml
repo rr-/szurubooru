@@ -49,7 +49,12 @@
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
 		<div class="thumb">
 			<label class="left" for="thumb">Thumb:</label>
-			<div class="input-wrapper"><input type="file" name="thumb" id="thumb"/></div>
+			<div class="input-wrapper">
+				<input type="file" name="thumb" id="thumb"/>
+				<?php if ($this->context->transport->post->hasCustomThumb()): ?>
+					<small>(Currently using custom thumb)</small>
+				<?php endif ?>
+			</div>
 		</div>
 	<?php endif ?>
 

@@ -160,6 +160,12 @@ class Model_Post extends AbstractModel
 		return false;
 	}
 
+	public function hasCustomThumb($width = null, $height = null)
+	{
+		$thumbPath = self::getThumbCustomPath($this->name, $width, $height);
+		return file_exists($thumbPath);
+	}
+
 
 
 	public function setHidden($hidden)
