@@ -3,7 +3,7 @@
 process () {
 	x="$1";
 	echo "$x";
-	convert "$x" -fuzz 5% -trim +repage tmp && mv tmp "$x"
+	convert "$x" -fuzz 7% -trim +repage tmp && mv tmp "$x"
 }
 
 while read x; do
