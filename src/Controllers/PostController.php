@@ -604,7 +604,7 @@ class PostController
 			$newSafety = $post->safety;
 
 			if ($oldSafety != $newSafety)
-				LogHelper::log('{user} changed safety for {post} to {safety}', ['post' => TextHelper::reprPost($post), 'safety' => PostSafety::toString($post->safety)]);
+				LogHelper::log('{user} changed safety of {post} to {safety}', ['post' => TextHelper::reprPost($post), 'safety' => PostSafety::toString($post->safety)]);
 		}
 
 		/* tags */
@@ -637,7 +637,7 @@ class PostController
 			$newSource = $post->source;
 
 			if ($oldSource != $newSource)
-				LogHelper::log('{user} changed source for {post} to {source}', ['post' => TextHelper::reprPost($post), 'source' => $post->source]);
+				LogHelper::log('{user} changed source of {post} to {source}', ['post' => TextHelper::reprPost($post), 'source' => $post->source]);
 		}
 
 		/* relations */
@@ -670,7 +670,7 @@ class PostController
 			$srcPath = $suppliedFile['tmp_name'];
 			$post->setCustomThumbnailFromPath($srcPath);
 
-			LogHelper::log('{user} changed thumb for {post}', ['post' => TextHelper::reprPost($post)]);
+			LogHelper::log('{user} changed thumb of {post}', ['post' => TextHelper::reprPost($post)]);
 		}
 	}
 }

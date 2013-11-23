@@ -226,7 +226,7 @@ class UserController
 		{
 			$user->staff_confirmed = true;
 			Model_User::save($user);
-			LogHelper::log('{user} confirmed account for {subject}', ['subject' => TextHelper::reprUser($user)]);
+			LogHelper::log('{user} confirmed {subject}\'s account', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
 		}
 	}
@@ -264,7 +264,7 @@ class UserController
 				AuthController::doLogOut();
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
-			LogHelper::log('{user} removed account for {subject}', ['subject' => TextHelper::reprUser($name)]);
+			LogHelper::log('{user} removed {subject}\'s account', ['subject' => TextHelper::reprUser($name)]);
 			StatusHelper::success();
 		}
 	}
@@ -347,7 +347,7 @@ class UserController
 						throw new SimpleException('Specified passwords must be the same');
 					$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
 					$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
-					LogHelper::log('{user} changed password for {subject}', ['subject' => TextHelper::reprUser($user)]);
+					LogHelper::log('{user} changed {subject}\'s password', ['subject' => TextHelper::reprUser($user)]);
 				}
 
 				if ($suppliedEmail != '' and $suppliedEmail != $user->email_confirmed)
@@ -365,7 +365,7 @@ class UserController
 					{
 						$user->email_unconfirmed = null;
 						$user->email_confirmed = $suppliedEmail;
-						LogHelper::log('{user} changed e-mail for {subject} to {mail}', ['subject' => TextHelper::reprUser($user), 'mail' => $suppliedEmail]);
+						LogHelper::log('{user} changed {subject}\'s e-mail to {mail}', ['subject' => TextHelper::reprUser($user), 'mail' => $suppliedEmail]);
 					}
 				}
 
@@ -374,7 +374,7 @@ class UserController
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($user));
 					$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
 					$user->access_rank = $suppliedAccessRank;
-					LogHelper::log('{user} changed access rank for {subject} to {rank}', ['subject' => TextHelper::reprUser($user), 'rank' => AccessRank::toString($suppliedAccessRank)]);
+					LogHelper::log('{user} changed {subject}\'s access rank to {rank}', ['subject' => TextHelper::reprUser($user), 'rank' => AccessRank::toString($suppliedAccessRank)]);
 				}
 
 				if ($this->context->user->id == $user->id)
