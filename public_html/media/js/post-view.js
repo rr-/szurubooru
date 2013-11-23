@@ -137,6 +137,7 @@ $(function()
 					}
 					else
 					{
+						formDom.find('.preview').hide();
 						$.get(window.location.href, function(data)
 						{
 							$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
