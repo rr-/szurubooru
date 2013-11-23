@@ -25,20 +25,24 @@
 	</ul>
 </nav>
 
-<?php $max = max([0]+array_map(function($x) { return $x['post_count']; }, $this->context->transport->tags)); ?>
-<?php $add = 0. ?>
-<?php $mul = 10. / max(1, log(max(1, $max))) ?>
-<?php $url = \Chibi\UrlHelper::route('post', 'list', ['query' => '_query_']) ?>
-<div class="tags">
-	<ul>
-		<?php foreach ($this->context->transport->tags as $tag): ?>
-			<?php $name = $tag['name'] ?>
-			<?php $count = $tag['post_count'] ?>
-			<li class="tag" title="<?php echo $name ?> (<?php echo $count ?>)">
-				<a href="<?php echo str_replace('_query_', $name, $url) ?>" class="frequency<?php printf('%1.0f', $add + $mul * log($count)) ?>">
-					<?php echo $name . ' (' . $count . ')' ?>
-				</a>
-			</li>
-		<?php endforeach ?>
-	</ul>
-</div>
+<?php if (empty($this->context->transport->tags)): ?>
+	<p class="alert alert-warning">No tags to show.</p>
+<?php else: ?>
+	<?php $max = max([0]+array_map(function($x) { return $x['post_count']; }, $this->context->transport->tags)); ?>
+	<?php $add = 0. ?>
+	<?php $mul = 10. / max(1, log(max(1, $max))) ?>
+	<?php $url = \Chibi\UrlHelper::route('post', 'list', ['query' => '_query_']) ?>
+	<div class="tags">
+		<ul>
+			<?php foreach ($this->context->transport->tags as $tag): ?>
+				<?php $name = $tag['name'] ?>
+				<?php $count = $tag['post_count'] ?>
+				<li class="tag" title="<?php echo $name ?> (<?php echo $count ?>)">
+					<a href="<?php echo str_replace('_query_', $name, $url) ?>" class="frequency<?php printf('%1.0f', $add + $mul * log($count)) ?>">
+						<?php echo $name . ' (' . $count . ')' ?>
+					</a>
+				</li>
+			<?php endforeach ?>
+		</ul>
+	</div>
+<?php endif ?>
