@@ -32,7 +32,7 @@ switch ($action)
 		$func = function($user)
 		{
 			printUser($user);
-			R::trash($user);
+			Model_User::remove($user);
 		};
 		break;
 

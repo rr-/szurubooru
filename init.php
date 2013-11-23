@@ -1,8 +1,8 @@
 <?php
 require_once 'src/core.php';
 $config = \Chibi\Registry::getConfig();
-$fontsPath = $config->main->mediaPath . DS . 'fonts' . DS;
-$libPath = $config->main->mediaPath . DS . 'lib' . DS;
+$fontsPath = TextHelper::absolutePath($config->main->mediaPath . DS . 'fonts');
+$libPath = TextHelper::absolutePath($config->main->mediaPath . DS . 'lib');
 
 
 
@@ -29,10 +29,10 @@ function download($source, $destination = null)
 
 
 //jQuery
-download('http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', $libPath . 'jquery' . DS . 'jquery.min.js');
+download('http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', $libPath . DS . 'jquery' . DS . 'jquery.min.js');
 
 //jQuery UI
-download('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js', $libPath . 'jquery-ui' . DS . 'jquery-ui.min.js');
+download('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js', $libPath . DS . 'jquery-ui' . DS . 'jquery-ui.min.js');
 $manifest = download('http://ajax.googleapis.com/ajax/libs/jqueryui/1/MANIFEST');
 $lines = explode("\n", str_replace("\r", '', $manifest));
 foreach ($lines as $line)
@@ -40,21 +40,21 @@ foreach ($lines as $line)
 	if (preg_match('/themes\/flick\/(.*?) /', $line, $matches))
 	{
 		$srcUrl = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/' . $matches[0];
-		$dstUrl = $libPath . 'jquery-ui' . DS . $matches[1];
+		$dstUrl = $libPath . DS . 'jquery-ui' . DS . $matches[1];
 		download($srcUrl, $dstUrl);
 	}
 }
 
 //jQuery Tag-it!
-download('http://raw.github.com/aehlke/tag-it/master/css/jquery.tagit.css', $libPath . 'tagit' . DS . 'jquery.tagit.css');
-download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $libPath . 'tagit' . DS . 'jquery.tagit.js');
+download('http://raw.github.com/aehlke/tag-it/master/css/jquery.tagit.css', $libPath . DS . 'tagit' . DS . 'jquery.tagit.css');
+download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $libPath . DS . 'tagit' . DS . 'jquery.tagit.js');
 
 //Mousetrap
-download('http://raw.github.com/ccampbell/mousetrap/master/mousetrap.min.js', $libPath . 'mousetrap' . DS . 'mousetrap.min.js');
+download('http://raw.github.com/ccampbell/mousetrap/master/mousetrap.min.js', $libPath . DS . 'mousetrap' . DS . 'mousetrap.min.js');
 
 //fonts
-download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans.ttf', $fontsPath . 'DroidSans.ttf');
-download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans-Bold.ttf', $fontsPath . 'DroidSans-Bold.ttf');
+download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans.ttf', $fontsPath . DS . 'DroidSans.ttf');
+download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans-Bold.ttf', $fontsPath . DS . 'DroidSans-Bold.ttf');
 
 
 

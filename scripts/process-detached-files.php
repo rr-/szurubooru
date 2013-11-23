@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../src/core.php';
-$config = \Chibi\Registry::getConfig();
 
 function usage()
 {
@@ -31,24 +30,21 @@ switch ($action)
 			mkdir($dir, 0755, true);
 		if (!is_dir($dir))
 			die($dir . ' is not a dir' . PHP_EOL);
-		$func = function($name) use ($dir, $config)
+		$func = function($name) use ($dir)
 		{
 			echo $name . PHP_EOL;
-			static $filesPath = null;
-			if ($filesPath == null)
-				$filesPath = $config->main->filesPath;
-			rename($filesPath . DS . $name, $dir . DS . $name);
+			$srcPath = Model_Post::getFullPath($name);
+			$dstPath = $dir . DS . $name;
+			rename($srcPath, $dstPath);
 		};
 		break;
 
 	case '-purge':
-		$func = function($name) use ($dir, $config)
+		$func = function($name)
 		{
 			echo $name . PHP_EOL;
-			static $filesPath = null;
-			if ($filesPath == null)
-				$filesPath = $config->main->filesPath;
-			unlink($filesPath . DS . $name);
+			$srcPath = Model_Post::getFullPath($name);
+			unlink($srcPath);
 		};
 		break;
 
@@ -63,8 +59,8 @@ foreach (R::findAll('post') as $post)
 }
 $names = array_flip($names);
 
-$filesPath = $config->main->filesPath;
-foreach (glob($filesPath . DS . '*') as $name)
+$config = \Chibi\Registry::getConfig();
+foreach (glob(TextHelper::absolutePath($config->main->filesPath) . DS . '*') as $name)
 {
 	$name = basename($name);
 	if (!isset($names[$name]))

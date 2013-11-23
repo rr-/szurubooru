@@ -12,7 +12,6 @@ array_shift($argv);
 if (empty($argv))
 	usage() and die;
 
-$filesPath = rtrim(\Chibi\Registry::getConfig()->main->filesPath, DS);
 $query = array_shift($argv);
 $posts = Model_Post::getEntities($query, null, null);
 foreach ($posts as $post)
@@ -21,7 +20,7 @@ foreach ($posts as $post)
 	[
 		$post->id,
 		$post->name,
-		$filesPath . DS . $post->name,
+		Model_Post::getFullPath($post->name),
 		$post->mimeType,
 	]). PHP_EOL;
 }

@@ -9,8 +9,7 @@ class LogController
 		$this->context->subTitle = 'latest logs';
 		PrivilegesHelper::confirmWithException(Privilege::ListLogs);
 
-		$path = $this->context->rootDir . DS . $this->config->main->logsPath;
-		$path = TextHelper::cleanPath($path);
+		$path = TextHelper::absolutePath($this->config->main->logsPath);
 
 		$logs = [];
 		foreach (glob($path . DS . '*.log') as $log)
@@ -36,8 +35,7 @@ class LogController
 		PrivilegesHelper::confirmWithException(Privilege::ViewLog);
 
 		$name = str_replace(['/', '\\'], '', $name); //paranoia mode
-		$path = $this->context->rootDir . DS . $this->config->main->logsPath . DS . $name;
-		$path = TextHelper::cleanPath($path);
+		$path = TextHelper::absolutePath($this->config->main->logsPath . DS . $name);
 		if (!file_exists($path))
 			throw new SimpleException('Specified log doesn\'t exist');
 

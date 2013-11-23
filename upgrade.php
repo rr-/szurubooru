@@ -5,7 +5,8 @@ $config = \Chibi\Registry::getConfig();
 $dbVersion = Model_Property::get(Model_Property::DbVersion);
 printf('DB version = %d' . PHP_EOL, $dbVersion);
 
-$upgrades = glob('src/Upgrades/*.sql');
+$upgradesPath = TextHelper::absolutePath(\Chibi\Registry::getContext()->rootDir . DS . 'src' . DS . 'Upgrades');
+$upgrades = glob($upgradesPath . DS . '*.sql');
 natcasesort($upgrades);
 
 foreach ($upgrades as $upgradePath)

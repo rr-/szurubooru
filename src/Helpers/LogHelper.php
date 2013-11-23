@@ -1,7 +1,6 @@
 <?php
 class LogHelper
 {
-	static $path;
 	static $context;
 	static $config;
 	static $autoFlush;
@@ -9,9 +8,7 @@ class LogHelper
 
 	public static function init()
 	{
-		self::$path = \Chibi\Registry::getConfig()->main->logsPath . date('Y-m') . '.log';
 		self::$autoFlush = true;
-
 		self::$buffer = [];
 	}
 
@@ -39,7 +36,8 @@ class LogHelper
 
 	public static function getLogPath()
 	{
-		return self::$path;
+		return TextHelper::absolutePath(
+			\Chibi\Registry::getConfig()->main->logsPath . DS . date('Y-m') . '.log');
 	}
 
 	public static function log($text, array $tokens = [])

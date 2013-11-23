@@ -41,7 +41,7 @@ $context->startTime = $startTime;
 $context->rootDir = $rootDir;
 
 //load database
-R::setup('sqlite:' . $config->main->dbPath);
+R::setup('sqlite:' . TextHelper::absolutePath($config->main->dbPath));
 R::freeze(true);
 R::dependencies(['tag' => ['post'], 'favoritee' => ['post', 'user'], 'comment' => ['post', 'user']]);
 

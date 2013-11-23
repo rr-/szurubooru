@@ -130,10 +130,10 @@ class Model_Post extends AbstractModel
 	{
 		list ($width, $height) = self::validateThumbSize($width, $height);
 
-		return TextHelper::replaceTokens($text, [
+		return TextHelper::absolutePath(TextHelper::replaceTokens($text, [
 			'fullpath' => self::$config->main->thumbsPath . DS . $name,
 			'width' => $width,
-			'height' => $height]);
+			'height' => $height]));
 	}
 
 	public static function getThumbCustomPath($name, $width = null, $height = null)
@@ -148,7 +148,7 @@ class Model_Post extends AbstractModel
 
 	public static function getFullPath($name)
 	{
-		return self::$config->main->filesPath . DS . $name;
+		return TextHelper::absolutePath(self::$config->main->filesPath . DS . $name);
 	}
 
 	public function isTaggedWith($tagName)

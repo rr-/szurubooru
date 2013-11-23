@@ -514,7 +514,7 @@ class PostController
 				PrivilegesHelper::confirmWithException(Privilege::ListPosts, PostSafety::toString($post->safety));
 				$post->makeThumb($width, $height);
 				if (!file_exists($path))
-					$path = $this->config->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
+					$path = TextHelper::absolutePath($this->config->main->mediaPath . DS . 'img' . DS . 'thumb.jpg');
 			}
 		}
 
@@ -542,7 +542,7 @@ class PostController
 		PrivilegesHelper::confirmWithException(Privilege::RetrievePost);
 		PrivilegesHelper::confirmWithException(Privilege::RetrievePost, PostSafety::toString($post->safety));
 
-		$path = $this->config->main->filesPath . DS . $post->name;
+		$path = TextHelper::absolutePath($this->config->main->filesPath . DS . $post->name);
 		if (!file_exists($path))
 			throw new SimpleException('Post file does not exist');
 		if (!is_readable($path))

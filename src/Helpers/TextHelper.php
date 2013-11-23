@@ -224,4 +224,13 @@ class TextHelper
 		$path = rtrim($path, DS);
 		return $path;
 	}
+
+	public static function absolutePath($path)
+	{
+		if ($path{0} != DS)
+			$path = \Chibi\Registry::getContext()->rootDir . DS . $path;
+
+		$path = self::cleanPath($path);
+		return $path;
+	}
 }
