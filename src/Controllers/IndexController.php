@@ -11,36 +11,12 @@ class IndexController
 		$this->context->stylesheets []= 'index-index.css';
 		$this->context->transport->postCount = Model_Post::getAllPostCount();
 
-		$featuredPostRotationTime = $this->config->misc->featuredPostMaxDays * 24 * 3600;
-
-		$featuredPostId = Model_Property::get(Model_Property::FeaturedPostId);
-		$featuredPostUserId = Model_Property::get(Model_Property::FeaturedPostUserId);
-		$featuredPostDate = Model_Property::get(Model_Property::FeaturedPostDate);
-		if (!$featuredPostId or $featuredPostDate + $featuredPostRotationTime < time())
+		$featuredPost = $this->getFeaturedPost();
+		if ($featuredPost)
 		{
-			$featuredPostId = R::$f->begin()
-				->select('id')
-				->from('post')
-				->where('type = ?')->put(PostType::Image)
-				->and('safety = ?')->put(PostSafety::Safe)
-				->orderBy('random()')
-				->desc()
-				->get('row')['id'];
-			$featuredPostUserId = null;
-			$featuredPostDate = time();
-			Model_Property::set(Model_Property::FeaturedPostId, $featuredPostId);
-			Model_Property::set(Model_Property::FeaturedPostUserId, $featuredPostUserId);
-			Model_Property::set(Model_Property::FeaturedPostDate, $featuredPostDate);
-		}
-
-		if ($featuredPostId !== null)
-		{
-			$featuredPost = Model_Post::locate($featuredPostId);
-			R::preload($featuredPost, ['user', 'comment', 'favoritee']);
-			$featuredPostUser = R::findOne('user', 'id = ?', [$featuredPostUserId]);
 			$this->context->featuredPost = $featuredPost;
-			$this->context->featuredPostUser = $featuredPostUser;
-			$this->context->featuredPostDate = $featuredPostDate;
+			$this->context->featuredPostDate = Model_Property::get(Model_Property::FeaturedPostDate);
+			$this->context->featuredPostUser = Model_User::locate(Model_Property::get(Model_Property::FeaturedPostUserName), false);
 			$this->context->pageThumb = \Chibi\UrlHelper::route('post', 'thumb', ['name' => $featuredPost->name]);
 		}
 	}
@@ -61,5 +37,43 @@ class IndexController
 		$this->context->stylesheets []= 'tabs.css';
 		$this->context->subTitle = 'help';
 		$this->context->tab = $tab;
+	}
+
+	private function getFeaturedPost()
+	{
+		$featuredPostRotationTime = $this->config->misc->featuredPostMaxDays * 24 * 3600;
+
+		$featuredPostId = Model_Property::get(Model_Property::FeaturedPostId);
+		$featuredPostDate = Model_Property::get(Model_Property::FeaturedPostDate);
+
+		//check if too old
+		if (!$featuredPostId or $featuredPostDate + $featuredPostRotationTime < time())
+			return $this->featureNewPost();
+
+		//check if post was deleted
+		$featuredPost = Model_Post::locate($featuredPostId, false, false);
+		if (!$featuredPost)
+			return $this->featureNewPost();
+
+		return $featuredPost;
+	}
+
+	private function featureNewPost()
+	{
+		$featuredPostId = R::$f->begin()
+			->select('id')
+			->from('post')
+			->where('type = ?')->put(PostType::Image)
+			->and('safety = ?')->put(PostSafety::Safe)
+			->orderBy('random()')
+			->desc()
+			->get('row')['id'];
+		if (!$featuredPostId)
+			return null;
+
+		Model_Property::set(Model_Property::FeaturedPostId, $featuredPostId);
+		Model_Property::set(Model_Property::FeaturedPostDate, time());
+		Model_Property::set(Model_Property::FeaturedPostUserName, null);
+		return Model_Post::locate($featuredPostId);
 	}
 }

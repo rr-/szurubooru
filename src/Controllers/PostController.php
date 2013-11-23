@@ -424,8 +424,8 @@ class PostController
 		$post = Model_Post::locate($id);
 		PrivilegesHelper::confirmWithException(Privilege::FeaturePost);
 		Model_Property::set(Model_Property::FeaturedPostId, $post->id);
-		Model_Property::set(Model_Property::FeaturedPostUserId, $this->context->user->id);
 		Model_Property::set(Model_Property::FeaturedPostDate, time());
+		Model_Property::set(Model_Property::FeaturedPostUserName, $this->context->user->name);
 		StatusHelper::success();
 		LogHelper::log('{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
 	}
