@@ -168,12 +168,12 @@ class TextHelper
 		return json_encode($obj, JSON_UNESCAPED_UNICODE);
 	}
 
-	public static function parseMarkdown($text, $inline = false)
+	public static function parseMarkdown($text, $simple = false)
 	{
-		$output = CustomMarkdown::defaultTransform($text);
-		if ($inline)
-			$output = preg_replace('{</?p>}', '', $output);
-		return $output;
+		if ($simple)
+			return CustomMarkdown::simpleTransform($text);
+		else
+			return CustomMarkdown::defaultTransform($text);
 	}
 
 	public static function reprPost($post)

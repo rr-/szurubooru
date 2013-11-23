@@ -57,7 +57,7 @@ class LogController
 		unset($line);
 
 		$lines = join(PHP_EOL, $lines);
-		$lines = TextHelper::parseMarkdown($lines);
+		$lines = TextHelper::parseMarkdown($lines, true);
 		$lines = trim($lines);
 
 		$this->context->transport->filter = $filter;

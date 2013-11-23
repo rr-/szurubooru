@@ -1,8 +1,11 @@
 <?php
 class CustomMarkdown extends \Michelf\Markdown
 {
-	public function __construct()
+	protected $simple = false;
+
+	public function __construct($simple = false)
 	{
+		$this->simple = $simple;
 		$this->no_markup = true;
 		$this->block_gamut += ['doSpoilers' => 71];
 		$this->span_gamut += ['doSearchPermalinks' => 72];
@@ -22,6 +25,35 @@ class CustomMarkdown extends \Michelf\Markdown
 		}
 
 		parent::__construct();
+	}
+
+	protected function formParagraphs($text)
+	{
+		if ($this->simple)
+		{
+			$text = preg_replace('/\A\n+|\n+\z/', '', $text);
+			$grafs = preg_split('/\n{2,}/', $text, -1, PREG_SPLIT_NO_EMPTY);
+			foreach ($grafs as $key => $value)
+			{
+				if (!preg_match('/^B\x1A[0-9]+B$/', $value))
+				{
+					$value = $this->runSpanGamut($value);
+					$grafs[$key] = $this->unhash($value);
+				}
+				else
+				{
+					$grafs[$key] = $this->html_hashes[$value];
+				}
+			}
+			return implode("\n\n", $grafs);
+		}
+		return parent::formParagraphs($text);
+	}
+
+	public static function simpleTransform($text)
+	{
+		$parser = new self(true);
+		return $parser->transform($text);
 	}
 
 	protected function doAutoLinks2($text)
@@ -51,7 +83,7 @@ class CustomMarkdown extends \Michelf\Markdown
 	{
 		return preg_replace_callback('{(~~|---)([^~]+)\1}', function($x)
 		{
-			return $this->hashPart('<del>') . $x[2] . $this->hashPart('</del>');
+			return $this->hashPart('<del>' . $x[2] . '</del>');
 		}, $text);
 	}
 
@@ -64,33 +96,37 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	protected function doPosts($text)
 	{
-		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))@(\d+)/', function($x)
+		$link = \Chibi\UrlHelper::route('post', 'view', ['id' => '_post_']);
+		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))@(\d+)/', function($x) use ($link)
 		{
-			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('post', 'view', ['id' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
+			return $this->hashPart('<a href="' . str_replace('_post_', $x[1], $link) . '">' . $x[0] . '</a>');
 		}, $text);
 	}
 
 	protected function doTags($text)
 	{
-		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))#([a-zA-Z0-9_-]+)/', function($x)
+		$link = \Chibi\UrlHelper::route('post', 'list', ['query' => '_query_']);
+		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))#([a-zA-Z0-9_-]+)/', function($x) use ($link)
 		{
-			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('post', 'list', ['query' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
+			return $this->hashPart('<a href="' . str_replace('_query_', $x[1], $link) . '">' . $x[0] . '</a>');
 		}, $text);
 	}
 
 	protected function doUsers($text)
 	{
-		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))\+([a-zA-Z0-9_-]+)/', function($x)
+		$link = \Chibi\UrlHelper::route('user', 'view', ['name' => '_name_']);
+		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))\+([a-zA-Z0-9_-]+)/', function($x) use ($link)
 		{
-			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('user', 'view', ['name' => $x[1]]) . '">') . $x[0] . $this->hashPart('</a>');
+			return $this->hashPart('<a href="' . str_replace('_name_', $x[1], $link) . '">' . $x[0] . '</a>');
 		}, $text);
 	}
 
 	protected function doSearchPermalinks($text)
 	{
-		return preg_replace_callback('{\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]}is', function($x)
+		$link = \Chibi\UrlHelper::route('post', 'list', ['query' => '_query_']);
+		return preg_replace_callback('{\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]}is', function($x) use ($link)
 		{
-			return $this->hashPart('<a href="' . \Chibi\UrlHelper::route('post', 'list', ['query' => $x[1]]) . '">') . $x[1] . $this->hashPart('</a>');
+			return $this->hashPart('<a href="' . str_replace('_query_', $x[1], $link) . '">' . $x[1] . '</a>');
 		}, $text);
 	}
 }
