@@ -2,7 +2,7 @@
 require_once 'src/core.php';
 $config = \Chibi\Registry::getConfig();
 
-$dbVersion = Model_Property::get('db-version');
+$dbVersion = Model_Property::get(Model_Property::DbVersion);
 printf('DB version = %d' . PHP_EOL, $dbVersion);
 
 $upgrades = glob('src/Upgrades/*.sql');
@@ -28,5 +28,5 @@ foreach ($upgrades as $upgradePath)
 		}
 	}
 
-	Model_Property::set('db-version', $upgradeVersion);
+	Model_Property::set(Model_Property::DbVersion, $upgradeVersion);
 }
