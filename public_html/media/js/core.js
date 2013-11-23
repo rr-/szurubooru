@@ -36,12 +36,15 @@ $(function()
 		aDom.addClass('inactive');
 
 		var url = $(this).attr('href') + '?json';
-		$.get(url, function(data)
+		$.get(url).always(function(data)
 		{
 			if (data['success'])
 				window.location.reload();
 			else
-				alert(data['message']);
+			{
+				alert(data['message'] ? data['message'] : 'Fatal error');
+				aDom.removeClass('inactive');
+			}
 		});
 	});
 });
@@ -78,7 +81,7 @@ $(function()
 			aDom.addClass('inactive');
 
 			var url = $(this).attr('href') + '?json';
-			$.get(url, {submit: 1}, function(data)
+			$.get(url, {submit: 1}).always(function(data)
 			{
 				if (data['success'])
 				{
@@ -91,7 +94,7 @@ $(function()
 				}
 				else
 				{
-					alert(data['message']);
+					alert(data['message'] ? data['message'] : 'Fatal error');
 					aDom.removeClass('inactive');
 				}
 			});

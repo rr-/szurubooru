@@ -60,6 +60,8 @@ $(function()
 
 	$('.post .move-down-trigger, .post .move-up-trigger').on('click', function()
 	{
+		if ($('#the-submit').hasClass('inactive'))
+			return;
 		var dir = $(this).hasClass('move-down-trigger') ? 'd' : 'u';
 		var post = $(this).parents('.post');
 			if (dir == 'u')
@@ -69,6 +71,8 @@ $(function()
 	});
 	$('.post .remove-trigger').on('click', function()
 	{
+		if ($('#the-submit').hasClass('inactive'))
+			return;
 		$(this).parents('.post').slideUp(function()
 		{
 			$(this).remove();
@@ -119,6 +123,11 @@ $(function()
 					postDom.find('.alert').html(data['messageHtml']).slideDown();
 					enableUpload();
 				}
+			},
+			error: function(data)
+			{
+				postDom.find('.alert').html('Fatal error').slideDown();
+				enableUpload();
 			}
 		};
 
@@ -152,6 +161,8 @@ $(function()
 	{
 		e.preventDefault();
 		var theSubmit = $(this);
+		if (theSubmit.hasClass('inactive'))
+			return;
 		disableUpload();
 		sendNextPost();
 	});

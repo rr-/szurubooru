@@ -87,6 +87,12 @@ $(function()
 					formDom.find(':input').attr('readonly', false);
 					formDom.removeClass('inactive');
 				}
+			},
+			error: function()
+			{
+				alert('Fatal error');
+				formDom.find(':input').attr('readonly', false);
+				formDom.removeClass('inactive');
 			}
 		};
 
@@ -147,6 +153,12 @@ $(function()
 					formDom.find(':input').attr('readonly', false);
 					formDom.removeClass('inactive');
 				}
+			},
+			error: function()
+			{
+				alert('Fatal error');
+				formDom.find(':input').attr('readonly', false);
+				formDom.removeClass('inactive');
 			}
 		};
 
