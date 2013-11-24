@@ -87,7 +87,7 @@
 
 					<li class="search">
 						<form name="search" action="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
-							<input type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/>
+							<input class="autocomplete" type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/>
 						</form>
 					</li>
 
@@ -121,5 +121,12 @@
 				<?php endif ?>
 			</div>
 		</footer>
+
+		<script type="text/javascript">
+			$(function()
+			{
+				$('body').trigger('dom-update');
+			});
+		</script>
 	</body>
 </html>

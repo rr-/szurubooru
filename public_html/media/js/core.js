@@ -206,7 +206,7 @@ function extractLast(term)
 
 $(function()
 {
-	$('[data-autocomplete-url]').each(function()
+	$('.autocomplete').each(function()
 	{
 		var searchInput = $(this);
 		searchInput
@@ -287,10 +287,4 @@ $(function()
 	Mousetrap.bind('a', function() { var url = $('.paginator:visible .prev:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
 	Mousetrap.bind('d', function() { var url = $('.paginator:visible .next:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
 	Mousetrap.bind('p', function() { $('.post a').eq(0).focus(); return false; }, 'keyup');
-});
-
-
-$(function()
-{
-	$('body').trigger('dom-update');
 });

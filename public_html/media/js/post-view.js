@@ -52,7 +52,6 @@ function onDomUpdate()
 $(function()
 {
 	$('body').bind('dom-update', onDomUpdate);
-	onDomUpdate();
 
 	$('form.edit-post').submit(function(e)
 	{
