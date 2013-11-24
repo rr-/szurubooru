@@ -268,11 +268,44 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		return self::filterTokenSubmit($context, $dbQuery, $val);
 	}
 
-	protected static function filterTokenUploaded($dbQuery, $val)
+	protected static function filterTokenPrev($context, $dbQuery, $val)
 	{
-		return self::filterTokenSubmit($dbQuery, $val);
+		self::__filterTokenPrevNext($context, $dbQuery, $val);
 	}
 
+	protected static function filterTokenNext($context, $dbQuery, $val)
+	{
+		$context->orderDir *= -1;
+		self::__filterTokenPrevNext($context, $dbQuery, $val);
+	}
+
+	protected static function __filterTokenPrevNext($context, $dbQuery, $val)
+	{
+		$op1 = $context->orderDir == 1 ? '<' : '>';
+		$op2 = $context->orderDir != 1 ? '<' : '>';
+		$dbQuery
+			->open()
+				->open()
+					->addSql($context->orderColumn . ' ' . $op1 . ' ')
+					->open()
+						->select($context->orderColumn)
+						->from('post p2')
+						->where('p2.id = ?')->put(intval($val))
+					->close()
+					->and('id != ?')->put($val)
+				->close()
+				->or()
+				->open()
+					->addSql($context->orderColumn . ' = ')
+					->open()
+						->select($context->orderColumn)
+						->from('post p2')
+						->where('p2.id = ?')->put(intval($val))
+					->close()
+					->and('id ' . $op1 . ' ?')->put(intval($val))
+				->close()
+			->close();
+	}
 
 
 	protected static function parseOrderToken($context, $val)

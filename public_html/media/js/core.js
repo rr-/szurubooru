@@ -1,3 +1,37 @@
+function setCookie(name, value, exdays)
+{
+	var exdate = new Date();
+	exdate.setDate(exdate.getDate() + exdays);
+	value = escape(value) + '; path=/' + ((exdays == null) ? '' : '; expires=' + exdate.toUTCString());
+	document.cookie = name + '=' + value;
+}
+
+function getCookie(name)
+{
+	console.log(document.cookie);
+	var value = document.cookie;
+	var start = value.indexOf(' ' + name + '=');
+
+	if (start == -1)
+		start = value.indexOf(name + '=');
+
+	if (start == -1)
+		return null;
+
+	start = value.indexOf('=', start) + 1;
+	var end = value.indexOf(";", start);
+	if (end == -1)
+		end = value.length;
+
+	return unescape(value.substring(start, end));
+}
+
+function rememberLastSearchQuery()
+{
+	//lastSearchQuery variable is obtained from layout
+	setCookie('last-search-query', lastSearchQuery);
+}
+
 //core functionalities, prototypes
 $.fn.hasAttr = function(name)
 {
@@ -56,6 +90,7 @@ $(function()
 {
 	$('body').bind('dom-update', function()
 	{
+		//event confirmations
 		function confirmEvent(e)
 		{
 			if (!confirm($(this).attr('data-confirm-text')))
@@ -68,12 +103,15 @@ $(function()
 		$('form[data-confirm-text]').submit(confirmEvent);
 		$('a[data-confirm-text]').click(confirmEvent);
 
+
+		//simple action buttons
 		$('a.simple-action').click(function(e)
 		{
 			if(e.isPropagationStopped())
 				return;
 
 			e.preventDefault();
+			rememberLastSearchQuery();
 
 			var aDom = $(this);
 			if (aDom.hasClass('inactive'))
@@ -116,6 +154,10 @@ $(function()
 			});
 		});
 	});
+
+
+	//try to remember last search query
+	window.onbeforeunload = rememberLastSearchQuery;
 });
 
 

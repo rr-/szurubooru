@@ -1,5 +1,5 @@
 <div id="sidebar">
-	<nav>
+	<nav id="around">
 		<div class="left">
 			<?php if ($this->context->transport->nextPostId): ?>
 				<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->nextPostId]) ?>">
@@ -23,6 +23,13 @@
 		</div>
 
 		<div class="clear"></div>
+
+		<?php if (!empty($this->context->transport->lastSearchQuery)): ?>
+			<div class="text">
+				Current&nbsp;search:<br/>
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $this->context->transport->lastSearchQuery]) ?>"><?php echo $this->context->transport->lastSearchQuery ?></a>
+			</div>
+		<?php endif ?>
 	</nav>
 
 	<div class="unit tags">

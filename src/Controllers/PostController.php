@@ -66,15 +66,14 @@ class PostController
 	*/
 	public function listAction($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
+		$this->context->viewName = 'post-list-wrapper';
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'tabs.css';
 		$this->context->stylesheets []= 'paginator.css';
-		$this->context->viewName = 'post-list-wrapper';
+		$this->context->scripts []= 'post-list.js';
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
-		if ($source == 'mass-tag')
-			$this->context->scripts []= 'mass-tag.js';
 		$this->context->source = $source;
 		$this->context->additionalInfo = $additionalInfo;
 
@@ -83,6 +82,7 @@ class PostController
 		if ($formQuery !== null)
 		{
 			$this->context->transport->searchQuery = $formQuery;
+			$this->context->transport->lastSearchQuery = $formQuery;
 			if (strpos($formQuery, '/') !== false)
 				throw new SimpleException('Search query contains invalid characters');
 			$url = \Chibi\UrlHelper::route('post', 'list', ['source' => $source, 'additionalInfo' => $additionalInfo, 'query' => $formQuery]);
@@ -95,6 +95,7 @@ class PostController
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
 		$this->context->subTitle = 'posts';
 		$this->context->transport->searchQuery = $query;
+		$this->context->transport->lastSearchQuery = $query;
 		PrivilegesHelper::confirmWithException(Privilege::ListPosts);
 		if ($source == 'mass-tag')
 		{
@@ -444,38 +445,19 @@ class PostController
 			'comment',
 			'ownComment.commenter' => 'user']);
 
+		$this->context->transport->lastSearchQuery = InputHelper::get('last-search-query');
+
 		if ($post->hidden)
 			PrivilegesHelper::confirmWithException(Privilege::ViewPost, 'hidden');
 		PrivilegesHelper::confirmWithException(Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
 
-		$buildNextPostQuery = function($dbQuery, $id, $next)
-		{
-			$dbQuery->select('id')
-				->from('post')
-				->where($next ? 'id > ?' : 'id < ?')
-				->put($id);
-			$allowedSafety = array_filter(PostSafety::getAll(), function($safety)
-			{
-				return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
-					$this->context->user->hasEnabledSafety($safety);
-			});
-			$dbQuery->and('safety')->in('(' . R::genSlots($allowedSafety) . ')');
-			foreach ($allowedSafety as $s)
-				$dbQuery->put($s);
-			if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
-				$dbQuery->andNot('hidden');
-			$dbQuery->orderBy($next ? 'id asc' : 'id desc')
-				->limit(1);
-		};
-
-		$prevPostQuery = R::$f->begin();
-		$buildNextPostQuery($prevPostQuery, $id, false);
-		$prevPost = $prevPostQuery->get('row');
-
-		$nextPostQuery = R::$f->begin();
-		$buildNextPostQuery($nextPostQuery, $id, true);
-		$nextPost = $nextPostQuery->get('row');
+		Model_Post_QueryBuilder::enableTokenLimit(false);
+		$prevPostQuery = $this->context->transport->lastSearchQuery . ' prev:' . $id;
+		$nextPostQuery = $this->context->transport->lastSearchQuery . ' next:' . $id;
+		$prevPost = current(Model_Post::getEntities($prevPostQuery, 1, 1));
+		$nextPost = current(Model_Post::getEntities($nextPostQuery, 1, 1));
+		Model_Post_QueryBuilder::enableTokenLimit(true);
 
 		$favorite = $this->context->user->hasFavorited($post);
 		$score = $this->context->user->getScore($post);

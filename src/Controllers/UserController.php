@@ -425,6 +425,7 @@ class UserController
 		$this->context->stylesheets []= 'post-list.css';
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'paginator.css';
+		$this->context->scripts []= 'post-list.js';
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
 
@@ -442,6 +443,7 @@ class UserController
 		$posts = Model_Post::getEntities($query, $postsPerPage, $page);
 
 		$this->context->transport->tab = $tab;
+		$this->context->transport->lastSearchQuery = $query;
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
 		$this->context->transport->paginator->pageCount = $pageCount;

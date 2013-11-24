@@ -31,19 +31,26 @@ embed {
 	color: silver;
 }
 
-#sidebar nav {
+#around {
 	margin-bottom: 2em;
 }
-#sidebar nav .left {
+#around .text {
+	font-size: 90%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: center;
+	margin-top: 0.75em;
+}
+#around .left {
 	float: left;
 }
-#sidebar nav .right {
+#around .right {
 	float: right;
 }
-#sidebar nav a.disabled {
+#around a.disabled {
 	color: silver;
 }
-#sidebar nav a.disabled i[class*='icon-'] {
+#around a.disabled i[class*='icon-'] {
 	background-color: silver;
 }
 

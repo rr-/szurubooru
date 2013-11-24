@@ -90,6 +90,12 @@
 							<input type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/>
 						</form>
 					</li>
+
+					<?php if (isset($this->context->transport->lastSearchQuery)): ?>
+						<script type="text/javascript">
+							var lastSearchQuery = <?php echo json_encode($this->context->transport->lastSearchQuery) ?>;
+						</script>
+					<?php endif ?>
 				</ul>
 				<div class="clear"></div>
 			</div>

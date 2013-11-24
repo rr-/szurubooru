@@ -57,6 +57,7 @@ $(function()
 	$('form.edit-post').submit(function(e)
 	{
 		e.preventDefault();
+		rememberLastSearchQuery();
 
 		var formDom = $(this);
 		if (formDom.hasClass('inactive'))
@@ -102,6 +103,7 @@ $(function()
 	$('form.add-comment').submit(function(e)
 	{
 		e.preventDefault();
+		rememberLastSearchQuery();
 
 		var formDom = $(this);
 		if (formDom.hasClass('inactive'))
@@ -166,7 +168,7 @@ $(function()
 		$.ajax(ajaxData);
 	});
 
-	Mousetrap.bind('a', function() { var url = $('#sidebar .left a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
-	Mousetrap.bind('d', function() { var url = $('#sidebar .right a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
+	Mousetrap.bind('a', function() { var a = $('#sidebar .left a'); var url = a.attr('href'); if (typeof url !== 'undefined') { a.click(); window.location.href = url; } }, 'keyup');
+	Mousetrap.bind('d', function() { var a = $('#sidebar .right a'); var url = a.attr('href'); if (typeof url !== 'undefined') { a.click(); window.location.href = url; } }, 'keyup');
 	Mousetrap.bind('e', function() { $('li.edit a').trigger('click'); return false; }, 'keyup');
 });
