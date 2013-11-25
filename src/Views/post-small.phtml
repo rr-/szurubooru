@@ -13,7 +13,12 @@
 			<?php echo in_array('tagged', $classNames) ? 'Tagged' : 'Untagged' ?>
 		</a>
 	<?php endif ?>
-	<a class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+
+	<?php if ($this->context->user->hasEnabledPostTagTitles()): ?>
+		<a title="<?php echo join(', ', array_map(['TextHelper', 'reprTag'], $this->context->post->sharedTag)) ?>" class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+	<?php else: ?>
+		<a class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+	<?php endif ?>
 		<img class="thumb" src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>" alt="@<?php echo $this->context->post->id ?>"/>
 		<?php
 			$x =

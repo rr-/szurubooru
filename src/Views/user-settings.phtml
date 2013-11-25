@@ -21,6 +21,16 @@
 		</div>
 	</div>
 
+	<div class="post-tag-titles">
+		<label class="left" for="post-tag-titles">Tags in thumbs:</label>
+		<div class="input-wrapper">
+			<label>
+				<input type="checkbox" id="post-tag-titles" name="post-tag-titles" <?php if ($this->context->transport->user->hasEnabledPostTagTitles()) echo ' checked="checked"' ?>/>
+				Enabled
+			</label>
+		</div>
+	</div>
+
 	<input type="hidden" name="submit" value="1"/>
 
 	<?php $this->renderFile('message') ?>

@@ -293,6 +293,7 @@ class UserController
 				$user->enableSafety($safety, in_array($safety, $suppliedSafety));
 
 			$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
+			$user->enablePostTagTitles(InputHelper::get('post-tag-titles'));
 
 			Model_User::save($user);
 			if ($user->id == $this->context->user->id)

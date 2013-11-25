@@ -3,6 +3,7 @@ class Model_User extends AbstractModel
 {
 	const SETTING_SAFETY = 1;
 	const SETTING_ENDLESS_SCROLLING = 2;
+	const SETTING_POST_TAG_TITLES = 3;
 
 
 
@@ -204,6 +205,19 @@ class Model_User extends AbstractModel
 		}
 
 		$this->setSetting(self::SETTING_SAFETY, $new);
+	}
+
+	public function hasEnabledPostTagTitles()
+	{
+		$ret = $this->getSetting(self::SETTING_POST_TAG_TITLES);
+		if ($ret === null)
+			$ret = \Chibi\Registry::getConfig()->browsing->showPostTagTitlesDefault;
+		return $ret;
+	}
+
+	public function enablePostTagTitles($enabled)
+	{
+		$this->setSetting(self::SETTING_POST_TAG_TITLES, $enabled ? 1 : 0);
 	}
 
 	public function hasEnabledEndlessScrolling()
