@@ -14,7 +14,7 @@
 
 <?php elseif ($post->type ==  PostType::Flash): ?>
 
-	<embed width="<?php echo $post->image_width ?>" height="<?php echo $post->image_height  ?>" type="application/x-shockwave-flash" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"/>
+	<iframe width="<?php echo $post->image_width ?>" height="<?php echo $post->image_height  ?>" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"> </iframe>
 
 <?php elseif ($post->type == PostType::Youtube): ?>
 

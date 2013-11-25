@@ -12,8 +12,9 @@ embed {
 .post-type-image img {
 	/*background: url('../img/bk-image.png') lemonchiffon;*/
 }
-.post-type-flash embed {
-	background: url('../img/bk-swf.png') lemonchiffon;
+.post-type-flash iframe {
+	border: 0;
+	/*background: url('../img/bk-swf.png') lemonchiffon;*/
 }
 
 #sidebar .relations ul,
