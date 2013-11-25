@@ -58,8 +58,8 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	protected function doAutoLinks2($text)
 	{
-		$text = preg_replace_callback('{(?<!<)((https?|ftp):[^\'"><\s]+)}i', [&$this, '_doAutoLinks_url_callback'], $text);
-		$text = preg_replace_callback('{(?<![^\s\(\)\[\]])(www\.[^\'"><\s]+)}i', [&$this, '_doAutoLinks_url_callback'], $text);
+		$text = preg_replace_callback('{(?<!<)((https?|ftp):[^\'"><\s(){}]+)}i', [&$this, '_doAutoLinks_url_callback'], $text);
+		$text = preg_replace_callback('{(?<![^\s\(\)\[\]])(www\.[^\'"><\s(){}]+)}i', [&$this, '_doAutoLinks_url_callback'], $text);
 		return $text;
 	}
 
