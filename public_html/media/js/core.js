@@ -19,7 +19,7 @@ function getCookie(name)
 		return null;
 
 	start = value.indexOf('=', start) + 1;
-	var end = value.indexOf(";", start);
+	var end = value.indexOf(';', start);
 	if (end == -1)
 		end = value.length;
 
@@ -211,14 +211,19 @@ $(function()
 		var searchInput = $(this);
 		searchInput
 		// don't navigate away from the field on tab when selecting an item
-		.bind("keydown", function(event)
+		.bind('keydown', function(event)
 		{
-			if (event.keyCode === $.ui.keyCode.TAB && $(this).data("autocomplete").menu.active)
+			if (event.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active)
 			{
 				event.preventDefault();
 			}
 		}).autocomplete({
 			minLength: 1,
+			position:
+			{
+				my: 'right top',
+				at: 'right bottom'
+			},
 			source: function(request, response)
 			{
 				var term = extractLast(request.term);
