@@ -9,7 +9,7 @@
 
 <div class="<?php echo implode(' ', $classNames) ?>">
 	<?php if ($masstag): ?>
-		<a class="toggle-tag" href="<?php echo \Chibi\UrlHelper::route('post', 'toggle-tag', ['id' => $this->context->post->id, 'tag' => $this->context->additionalInfo]) ?>" data-text-tagged="Tagged" data-text-untagged="Untagged">
+		<a class="toggle-tag" href="<?php echo \Chibi\UrlHelper::route('post', 'toggle-tag', ['id' => $this->context->post->id, 'tag' => $this->context->additionalInfo, 'enable' => '_enable_']) ?>" data-text-tagged="Tagged" data-text-untagged="Untagged">
 			<?php echo in_array('tagged', $classNames) ? 'Tagged' : 'Untagged' ?>
 		</a>
 	<?php endif ?>

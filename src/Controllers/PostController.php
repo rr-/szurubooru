@@ -120,10 +120,11 @@ class PostController
 
 
 	/**
-	* @route /post/{id}/toggle-tag/{tag}
+	* @route /post/{id}/toggle-tag/{tag}/{enable}
 	* @validate tag [^\/]*
+	* @validate enable 0|1
 	*/
-	public function toggleTagAction($id, $tag)
+	public function toggleTagAction($id, $tag, $enable)
 	{
 		$post = Model_Post::locate($id);
 		$this->context->transport->post = $post;
@@ -137,12 +138,12 @@ class PostController
 			PrivilegesHelper::confirmWithException(Privilege::MassTag);
 			$tags = array_map(function($x) { return $x->name; }, $post->sharedTag);
 
-			if (in_array($tag, $tags))
+			if (!$enable and in_array($tag, $tags))
 			{
 				$tags = array_diff($tags, [$tag]);
 				LogHelper::log('{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 			}
-			else
+			elseif ($enable)
 			{
 				$tags += [$tag];
 				LogHelper::log('{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);

@@ -15,14 +15,18 @@ $(function()
 				return;
 			aDom.addClass('inactive');
 
+			var enable = !aDom.parents('.post').hasClass('tagged');
 			var url = $(this).attr('href') + '?json';
+			url = url.replace('_enable_', enable ? '1' : '0');
 			$.get(url, {submit: 1}).always(function(data)
 			{
 				if (data['success'])
 				{
 					aDom.removeClass('inactive');
-					aDom.parents('.post').toggleClass('tagged');
-					aDom.text(aDom.parents('.post').hasClass('tagged')
+					aDom.parents('.post').removeClass('tagged');
+					if (enable)
+						aDom.parents('.post').addClass('tagged');
+					aDom.text(enable
 						? aDom.attr('data-text-tagged')
 						: aDom.attr('data-text-untagged'));
 				}
