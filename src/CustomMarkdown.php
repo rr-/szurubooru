@@ -126,7 +126,7 @@ class CustomMarkdown extends \Michelf\Markdown
 		$link = \Chibi\UrlHelper::route('post', 'list', ['query' => '_query_']);
 		return preg_replace_callback('{\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]}is', function($x) use ($link)
 		{
-			return $this->hashPart('<a href="' . str_replace('_query_', $x[1], $link) . '">' . $x[1] . '</a>');
+			return $this->hashPart('<a href="' . str_replace('_query_', urlencode($x[1]), $link) . '">' . $x[1] . '</a>');
 		}, $text);
 	}
 }
