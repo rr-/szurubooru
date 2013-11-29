@@ -38,23 +38,6 @@ $.fn.hasAttr = function(name)
 	return this.attr(name) !== undefined;
 };
 
-if ($.when.all === undefined)
-{
-	$.when.all = function(deferreds)
-	{
-		var deferred = new $.Deferred();
-		$.when.apply($, deferreds).then(function()
-		{
-			deferred.resolve(Array.prototype.slice.call(arguments, 0));
-		}, function()
-		{
-			deferred.fail(Array.prototype.slice.call(arguments, 0));
-		});
-
-		return deferred;
-	}
-}
-
 
 
 //safety trigger
@@ -220,19 +203,19 @@ $(function()
 						response($.map(data.tags, function(tag) { return { label: tag.name + ' (' + tag.count + ')', value: tag.name }; }));
 					});
 			},
-			focus: function()
+			focus: function(e)
 			{
 				// prevent value inserted on focus
-				return false;
+				e.preventDefault();
 			},
-			select: function(event, ui)
+			select: function(e, ui)
 			{
+				e.preventDefault();
 				var terms = split(this.value);
 				terms.pop();
 				terms.push(ui.item.value);
 				terms.push('');
 				this.value = terms.join(' ');
-				return false;
 			}
 		};
 
@@ -248,12 +231,10 @@ $(function()
 		var searchInput = $(this);
 		searchInput
 		// don't navigate away from the field on tab when selecting an item
-		.bind('keydown', function(event)
+		.bind('keydown', function(e)
 		{
-			if (event.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active)
-			{
-				event.preventDefault();
-			}
+			if (e.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active)
+				e.preventDefault();
 		}).autocomplete(options);
 	});
 });
