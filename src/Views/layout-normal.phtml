@@ -88,11 +88,9 @@
 						</form>
 					</li>
 
-					<?php if (isset($this->context->transport->lastSearchQuery)): ?>
-						<script type="text/javascript">
-							var lastSearchQuery = <?php echo json_encode($this->context->transport->lastSearchQuery) ?>;
-						</script>
-					<?php endif ?>
+					<script type="text/javascript">
+						var lastSearchQuery = <?php echo json_encode(isset($this->context->transport->lastSearchQuery) ? $this->context->transport->lastSearchQuery : '') ?>;
+					</script>
 				</ul>
 				<div class="clear"></div>
 			</div>
