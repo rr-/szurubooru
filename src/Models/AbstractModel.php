@@ -26,6 +26,7 @@ abstract class AbstractModel extends RedBean_SimpleModel
 			$dbQuery->limit('?')->put($perPage);
 			$dbQuery->offset('?')->put(($page - 1) * $perPage);
 		}
+
 		$rows = $dbQuery->get();
 		return $rows;
 	}
@@ -35,6 +36,21 @@ abstract class AbstractModel extends RedBean_SimpleModel
 		$table = static::getTableName();
 		$rows = self::getEntitiesRows($query, $perPage, $page);
 		$entities = R::convertToBeans($table, $rows);
+		return $entities;
+	}
+
+	public static function getEntitiesFast($query, $perPage = null, $page = 1)
+	{
+		$table = static::getTableName();
+		$rows = self::getEntitiesRows($query, $perPage, $page);
+		$entities = R::dispense($table, count($rows));
+		reset($entities);
+		foreach ($rows as $row)
+		{
+			$entity = current($entities);
+			$entity->import($row);
+			next($entities);
+		}
 		return $entities;
 	}
 

@@ -106,7 +106,7 @@ class PostController
 		$postCount = Model_Post::getEntityCount($query);
 		$pageCount = ceil($postCount / $postsPerPage);
 		$page = max(1, min($pageCount, $page));
-		$posts = Model_Post::getEntities($query, $postsPerPage, $page);
+		$posts = Model_Post::getEntitiesFast($query, $postsPerPage, $page);
 
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
