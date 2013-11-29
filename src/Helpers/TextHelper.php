@@ -233,4 +233,20 @@ class TextHelper
 		$path = self::cleanPath($path);
 		return $path;
 	}
+
+	public static function openHtmlTag($tagName, array $attributes)
+	{
+		$html = '<' . $tagName;
+
+		foreach ($attributes as $key => $value)
+			$html .= ' ' . $key . '="' . $value . '"';
+
+		$html .= '>';
+		echo $html;
+	}
+
+	public static function closeHtmlTag($tagName)
+	{
+		echo '</' . $tagName . '>';
+	}
 }

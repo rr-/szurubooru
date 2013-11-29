@@ -183,102 +183,126 @@
 		</div>
 	<?php endif ?>
 
-	<div class="unit options">
-		<h1>options</h1>
+	<?php
+		$editPostPrivileges = [
+			Privilege::EditPostSafety,
+			Privilege::EditPostTags,
+			Privilege::EditPostThumb,
+			Privilege::EditPostSource,
+		];
+		$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
+		foreach (array_keys($editPostPrivileges) as $privilege)
+		{
+			if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader)))
+				$editPostPrivileges[$privilege] = true;
+		}
+		$canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
-		<ul>
-			<?php if (PrivilegesHelper::confirm(Privilege::FavoritePost)): ?>
-				<?php if (!$this->context->favorite): ?>
-					<li class="add-fav">
-						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
-							Add to favorites
-						</a>
-					</li>
-				<?php else: ?>
-					<li class="rem-fav">
-						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
-							Remove from favorites
-						</a>
-					</li>
-				<?php endif ?>
-			<?php endif ?>
+		$options = [];
 
-			<?php
-				$editPostPrivileges = [
-					Privilege::EditPostSafety,
-					Privilege::EditPostTags,
-					Privilege::EditPostThumb,
-					Privilege::EditPostSource,
+		if (PrivilegesHelper::confirm(Privilege::FavoritePost))
+		{
+			if (!$this->context->favorite)
+			{
+				$options []=
+				[
+					'class' => 'add-fav',
+					'text' => 'Add to favorites',
+					'simple-action' => \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]),
 				];
-				$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
-				foreach (array_keys($editPostPrivileges) as $privilege)
-				{
-					if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader)))
-						$editPostPrivileges[$privilege] = true;
-				}
-				$canEditAnything = count(array_filter($editPostPrivileges)) > 0;
-			?>
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'rem-fav',
+					'text' => 'Remove from favorites',
+					'simple-action' => \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]),
+				];
+			}
+		}
 
-			<?php if ($canEditAnything): ?>
-				<li class="edit">
-					<a href="#">
-						Edit
-					</a>
-				</li>
-			<?php endif ?>
+		if ($canEditAnything)
+		{
+			$options []=
+			[
+				'class' => 'edit',
+				'text' => 'Edit',
+			];
+		}
 
-			<?php if (PrivilegesHelper::confirm(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
-				<?php if ($this->context->transport->post->hidden): ?>
-					<li class="unhide">
-						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]) ?>">
-							Unhide
-						</a>
-					</li>
-				<?php else: ?>
-					<li class="hide">
-						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'hide', ['id' => $this->context->transport->post->id]) ?>">
-							Hide
-						</a>
-					</li>
-				<?php endif ?>
-			<?php endif ?>
+		if (PrivilegesHelper::confirm(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader)))
+		{
+			if ($this->context->transport->post->hidden)
+			{
+				$options []=
+				[
+					'class' => 'unhide',
+					'text' => 'Unhide',
+					'simple-action' => \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]),
+				];
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'hide',
+					'text' => 'Hide',
+					'simple-action' => \Chibi\UrlHelper::route('post', 'hide', ['id' => $this->context->transport->post->id]),
+				];
+			}
+		}
 
-			<?php if (PrivilegesHelper::confirm(Privilege::FeaturePost)): ?>
-				<li class="feature">
-					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'feature', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure you want to feature this post on the main page?" data-redirect-url="<?php echo \Chibi\UrlHelper::route('index', 'index') ?>">
-						Feature on main page
-					</a>
-				</li>
-			<?php endif ?>
+		if (PrivilegesHelper::confirm(Privilege::FeaturePost))
+		{
+			$options []=
+			[
+				'class' => 'feature',
+				'text' => 'Feature on main page',
+				'simple-action' => \Chibi\UrlHelper::route('post', 'feature', ['id' => $this->context->transport->post->id]),
+				'data-confirm-text' => 'Are you sure you want to feature this post on the main page?',
+				'data-redirect-url' => \Chibi\UrlHelper::route('index', 'index'),
+			];
+		}
 
-			<?php if (PrivilegesHelper::confirm(Privilege::FlagPost)): ?>
-				<li class="flag">
-					<?php if ($this->context->flagged): ?>
-						<a class="simple-action inactive" href="#">
-							Flagged
-						</a>
-					<?php else: ?>
-						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'flag', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure you want to flag this post?">
-							Flag for moderator attention
-						</a>
-					<?php endif ?>
-				</li>
-			<?php endif ?>
+		if (PrivilegesHelper::confirm(Privilege::FlagPost))
+		{
+			if ($this->context->flagged)
+			{
+				$options []=
+				[
+					'class' => 'flag',
+					'text' => 'Flagged',
+					'inactive' => true,
+				];
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'flag',
+					'text' => 'Flag for moderator attention',
+					'simple-action' => \Chibi\UrlHelper::route('post', 'flag', ['id' => $this->context->transport->post->id]),
+					'data-confirm-text' => 'Are you sure you want to flag this post?',
+				];
+			}
+		}
 
-			<?php if (PrivilegesHelper::confirm(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader))): ?>
-				<li class="delete">
-					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'delete', ['id' => $this->context->transport->post->id]) ?>" data-confirm-text="Are you sure you want to delete this post?" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
-						Delete
-					</a>
-				</li>
-			<?php endif ?>
-		</ul>
+		if (PrivilegesHelper::confirm(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader)))
+		{
+			$options []=
+			[
+				'class' => 'delete',
+				'text' => 'Delete',
+				'simple-action' => \Chibi\UrlHelper::route('post', 'delete', ['id' => $this->context->transport->post->id]),
+				'data-confirm-text' => 'Are you sure you want to delete this post?',
+				'data-redirect-url' => \Chibi\UrlHelper::route('post', 'list'),
+			];
+		}
 
-		<script type="text/javascript">
-			if (!$('.options ul li').length)
-				$('.options').hide();
-		</script>
-	</div>
+		$this->context->options = $options;
+		$this->renderFile('sidebar-options');
+	?>
 </div>
 
 <div id="inner-content">

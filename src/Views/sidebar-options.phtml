@@ -1,0 +1,35 @@
+<?php if (!empty($this->context->options)): ?>
+	<div class="unit options">
+		<h1>options</h1>
+
+		<ul>
+			<?php foreach ($this->context->options as $option): ?>
+				<li class="<?php echo $option['class']; if (isset($option['inactive'])) echo ' inactive' ?>">
+					<?php
+						$attrs = [];
+						if (!empty($option['link']))
+						{
+							$attrs['href'] = $option['link'];
+						}
+						elseif (!empty($option['simple-action']))
+						{
+							$attrs['href'] = $option['simple-action'];
+							$attrs['class'] = 'simple-action';
+						}
+						else
+							$attrs['href'] = '#';
+
+						foreach ($option as $key => $val)
+							if (strpos($key, 'data-') === 0)
+								$attrs[$key] = $val;
+
+						TextHelper::openHtmlTag('a', $attrs);
+						echo $option['text'];
+						TextHelper::closeHtmlTag('a');
+					?>
+				</li>
+			<?php endforeach ?>
+		</ul>
+	</div>
+<?php endif ?>
+

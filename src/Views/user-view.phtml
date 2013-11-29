@@ -28,87 +28,104 @@
 		<?php endif ?>
 	</div>
 
-	<div class="unit options">
-		<h1>options</h1>
+	<?php
+		$userModificationPrivileges = [
+			Privilege::ChangeUserName,
+			Privilege::ChangeUserEmail,
+			Privilege::ChangeUserPassword,
+			Privilege::ChangeUserAccessRank,
+		];
+		$userModificationPrivileges = array_fill_keys($userModificationPrivileges, false);
+		foreach (array_keys($userModificationPrivileges) as $privilege)
+		{
 
-		<ul>
-			<?php
-				$userModificationPrivileges = [
-					Privilege::ChangeUserName,
-					Privilege::ChangeUserEmail,
-					Privilege::ChangeUserPassword,
-					Privilege::ChangeUserAccessRank,
+			if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+				$userModificationPrivileges[$privilege] = true;
+		}
+		$canModifyAnything = count(array_filter($userModificationPrivileges)) > 0;
+
+		$options = [];
+
+		if ($canModifyAnything)
+		{
+			$options []=
+			[
+				'class' => 'edit',
+				'text' => 'Edit account settings',
+				'link' => \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name, 'tab' => 'edit']),
+			];
+		}
+
+		if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+		{
+			$options []=
+			[
+				'class' => 'delete',
+				'text' => 'Delete account',
+				'link' => \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name, 'tab' => 'delete']),
+			];
+		}
+
+		if (PrivilegesHelper::confirm(Privilege::FlagUser))
+		{
+			if ($this->context->flagged)
+			{
+				$options []=
+				[
+					'class' => 'flag',
+					'text' => 'Flagged',
+					'inactive' => true,
 				];
-				$userModificationPrivileges = array_fill_keys($userModificationPrivileges, false);
-				foreach (array_keys($userModificationPrivileges) as $privilege)
-				{
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'flag',
+					'text' => 'Flag for moderator attention',
+					'simple-action' => \Chibi\UrlHelper::route('user', 'flag', ['name' => $this->context->transport->user->name]),
+					'data-confirm-text' => 'Are you sure you want to flag this user?',
+				];
+			}
+		}
 
-					if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
-						$userModificationPrivileges[$privilege] = true;
-				}
-				$canModifyAnything = count(array_filter($userModificationPrivileges)) > 0;
-			?>
+		if (PrivilegesHelper::confirm(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+		{
+			if (!$this->context->transport->user->banned)
+			{
+				$options []=
+				[
+					'class' => 'ban',
+					'text' => 'Ban user',
+					'simple-action' => \Chibi\UrlHelper::route('user', 'ban', ['name' => $this->context->transport->user->name]),
+					'data-confirm-text' => 'Are you sure?',
+				];
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'unban',
+					'text' => 'Unban user',
+					'simple-action' => \Chibi\UrlHelper::route('user', 'unban', ['name' => $this->context->transport->user->name]),
+					'data-confirm-text' => 'Are you sure?',
+				];
+			}
+		}
 
-			<?php if ($canModifyAnything): ?>
-				<li class="edit">
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name, 'tab' => 'edit']) ?>">
-						Edit account settings
-					</a>
-				</li>
-			<?php endif ?>
+		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration) and !$this->context->transport->user->staff_confirmed and $this->config->registration->staffActivation)
+		{
+			$options []=
+			[
+				'class' => 'accept-registration',
+				'text' => 'Accept registration',
+				'simple-action' => \Chibi\UrlHelper::route('user', 'accept-registration', ['name' => $this->context->transport->user->name]),
+			];
+		}
 
-			<?php if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
-				<li class="edit">
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name, 'tab' => 'delete']) ?>">
-						Delete account
-					</a>
-				</li>
-			<?php endif ?>
-
-			<?php if (PrivilegesHelper::confirm(Privilege::FlagUser)): ?>
-				<li class="flag">
-					<?php if ($this->context->flagged): ?>
-						<a class="simple-action inactive" href="#">
-							Flagged
-						</a>
-					<?php else: ?>
-						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('user', 'flag', ['name' => $this->context->transport->user->name]) ?>" data-confirm-text="Are you sure you want to flag this user?">
-							Flag for moderator attention
-						</a>
-					<?php endif ?>
-				</li>
-			<?php endif ?>
-
-			<?php if (PrivilegesHelper::confirm(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
-				<?php if (!$this->context->transport->user->banned): ?>
-					<li class="ban">
-						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('user', 'ban', ['name' => $this->context->transport->user->name]) ?>" data-confirm-text="Are you sure?">
-							Ban user
-						</a>
-					</li>
-				<?php else: ?>
-					<li class="unban">
-						<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('user', 'unban', ['name' => $this->context->transport->user->name]) ?>" data-confirm-text="Are you sure?">
-							Unban user
-						</a>
-					</li>
-				<?php endif ?>
-			<?php endif ?>
-
-			<?php if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration) and !$this->context->transport->user->staff_confirmed and $this->config->registration->staffActivation): ?>
-				<li class="accept-registration">
-					<a class="simple-action" href="<?php echo \Chibi\UrlHelper::route('user', 'accept-registration', ['name' => $this->context->transport->user->name]) ?>">
-						Accept registration
-					</a>
-				</li>
-			<?php endif ?>
-		</ul>
-
-		<script type="text/javascript">
-			if (!$('.options ul li').length)
-				$('.options').hide();
-		</script>
-	</div>
+		$this->context->options = $options;
+		$this->renderFile('sidebar-options');
+	?>
 </div>
 
 <div id="inner-content">
