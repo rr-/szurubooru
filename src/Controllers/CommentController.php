@@ -24,6 +24,7 @@ class CommentController
 		$pageCount = ceil($commentCount / $commentsPerPage);
 		$page = max(1, min($pageCount, $page));
 		$comments = Model_Comment::getEntities(null, $commentsPerPage, $page);
+		R::preload($comments, ['commenter' => 'user', 'post', 'post.uploader' => 'user', 'post.sharedTag']);
 
 		$this->context->postGroups = true;
 		$this->context->transport->paginator = new StdClass;
@@ -79,6 +80,8 @@ class CommentController
 	public function deleteAction($id)
 	{
 		$comment = Model_Comment::locate($id);
+		R::preload($comment, ['commenter' => 'user']);
+
 		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->commenter));
 		Model_Comment::remove($comment);
 

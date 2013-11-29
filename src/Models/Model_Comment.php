@@ -11,11 +11,6 @@ class Model_Comment extends AbstractModel
 		return 'Model_Comment_QueryBuilder';
 	}
 
-	public function preload()
-	{
-		R::preload($this->bean, ['commenter' => 'user', 'post', 'post.uploader' => 'user']);
-	}
-
 
 
 	public static function locate($key, $throw = true)

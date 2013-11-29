@@ -24,8 +24,8 @@
 			$x =
 			[
 				'score' => $this->context->post->score,
-				'comments' => $this->context->post->countOwn('comment'),
-				'favs' => $this->context->post->countOwn('favoritee'),
+				'comments' => $this->context->post->comment_count,
+				'favs' => $this->context->post->fav_count,
 			];
 		?>
 		<?php if (!empty($x)): ?>

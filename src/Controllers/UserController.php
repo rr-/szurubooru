@@ -441,6 +441,7 @@ class UserController
 		$pageCount = ceil($postCount / $postsPerPage);
 		$page = max(1, min($pageCount, $page));
 		$posts = Model_Post::getEntities($query, $postsPerPage, $page);
+		R::preload($posts, 'sharedTag');
 
 		$this->context->transport->tab = $tab;
 		$this->context->transport->lastSearchQuery = $query;

@@ -81,19 +81,4 @@ abstract class AbstractModel extends RedBean_SimpleModel
 	{
 		R::store($entity);
 	}
-
-	/* FUSE methods for RedBeanPHP, preventing some aliasing errors */
-	public function open()
-	{
-		$this->preload();
-	}
-
-	public function after_update()
-	{
-		$this->preload();
-	}
-
-	public function preload()
-	{
-	}
 }

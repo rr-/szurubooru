@@ -18,11 +18,6 @@ class Model_Post extends AbstractModel
 		return 'Model_Post_QueryBuilder';
 	}
 
-	public function preload()
-	{
-		R::preload($this->bean, ['uploader' => 'user','favoritee' => 'user']);
-	}
-
 
 
 	public static function locate($key, $disallowNumeric = false, $throw = true)

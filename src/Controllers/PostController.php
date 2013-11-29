@@ -107,6 +107,7 @@ class PostController
 		$pageCount = ceil($postCount / $postsPerPage);
 		$page = max(1, min($pageCount, $page));
 		$posts = Model_Post::getEntitiesFast($query, $postsPerPage, $page);
+		R::preload($posts, 'sharedTag');
 
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
@@ -299,6 +300,8 @@ class PostController
 	public function hideAction($id)
 	{
 		$post = Model_Post::locate($id);
+		R::preload($post, ['uploader' => 'user']);
+
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 
 		if (InputHelper::get('submit'))
@@ -319,6 +322,8 @@ class PostController
 	public function unhideAction($id)
 	{
 		$post = Model_Post::locate($id);
+		R::preload($post, ['uploader' => 'user']);
+
 		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 
 		if (InputHelper::get('submit'))
@@ -339,6 +344,8 @@ class PostController
 	public function deleteAction($id)
 	{
 		$post = Model_Post::locate($id);
+		R::preload($post, ['uploader' => 'user']);
+
 		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
 
 		if (InputHelper::get('submit'))
@@ -441,8 +448,9 @@ class PostController
 		$post = Model_Post::locate($id);
 		R::preload($post, [
 			'tag',
-			'comment',
+			'uploader' => 'user',
 			'ownComment.commenter' => 'user']);
+		R::preload($this->context->user, ['ownFavoritee']);
 
 		$this->context->transport->lastSearchQuery = InputHelper::get('last-search-query');
 
@@ -552,6 +560,9 @@ class PostController
 
 	private function doEdit($post, $isNew)
 	{
+		if (!$isNew)
+			R::preload($post, ['uploader' => 'user']);
+
 		/* file contents */
 		if (!empty($_FILES['file']['name']))
 		{
