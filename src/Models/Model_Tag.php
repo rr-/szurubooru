@@ -73,7 +73,7 @@ class Model_Tag extends AbstractModel
 		if (strlen($tag) > $maxLength)
 			throw new SimpleException('Tag must have at most ' . $maxLength . ' characters');
 
-		if (!preg_match('/^[a-zA-Z0-9_.-]+$/i', $tag))
+		if (!preg_match('/^[()\[\]a-zA-Z0-9_.-]+$/i', $tag))
 			throw new SimpleException('Invalid tag "' . $tag . '"');
 
 		if (preg_match('/^\.\.?$/', $tag))
