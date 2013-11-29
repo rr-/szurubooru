@@ -322,6 +322,38 @@ button:hover {
 
 
 
+.tabs ul {
+	list-style-type: none;
+	margin: -4px 0 1em 0;
+	padding: 0;
+	border-bottom: 1px solid #ccc;
+}
+.tabs li {
+	display: inline-block;
+}
+
+.tabs li a {
+	display: inline-block;
+	padding: 0.5em 1em;
+	margin: 5px 0 -1px 0;
+	vertical-align: middle;
+	border: 1px none;
+	border-bottom: 1px solid #ccc;
+	color: silver;
+}
+.tabs li.selected a {
+	border: 1px solid #ccc;
+	border-bottom: none;
+	color: inherit;
+	background: white;
+}
+
+.tabs li a:focus {
+	color: firebrick;
+}
+
+
+
 .alert {
 	text-align: center;
 	padding: 10px;

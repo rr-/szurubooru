@@ -69,7 +69,6 @@ class PostController
 		$this->context->viewName = 'post-list-wrapper';
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'post-list.css';
-		$this->context->stylesheets []= 'tabs.css';
 		$this->context->stylesheets []= 'paginator.css';
 		$this->context->scripts []= 'post-list.js';
 		if ($this->context->user->hasEnabledEndlessScrolling())
@@ -189,7 +188,6 @@ class PostController
 	public function uploadAction()
 	{
 		$this->context->stylesheets []= 'upload.css';
-		$this->context->stylesheets []= 'tabs.css';
 		$this->context->scripts []= 'upload.js';
 		$this->context->subTitle = 'upload';
 		PrivilegesHelper::confirmWithException(Privilege::UploadPost);

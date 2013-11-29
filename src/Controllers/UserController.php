@@ -8,7 +8,6 @@ class UserController
 		$this->context->transport->user = $user;
 		$this->context->handleExceptions = true;
 		$this->context->viewName = 'user-view';
-		$this->context->stylesheets []= 'tabs.css';
 		$this->context->stylesheets []= 'user-view.css';
 		$this->context->subTitle = $user->name;
 	}

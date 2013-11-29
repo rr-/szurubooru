@@ -112,67 +112,65 @@
 </div>
 
 <div id="inner-content">
-	<div class="tabs">
-		<nav>
-			<ul>
-				<?php if ($this->context->transport->tab == 'favs'): ?>
-					<li class="selected favs">
+	<nav class="tabs">
+		<ul>
+			<?php if ($this->context->transport->tab == 'favs'): ?>
+				<li class="selected favs">
+			<?php else: ?>
+				<li class="favs">
+			<?php endif ?>
+				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'favs', 'page' => 1]) ?>">
+					Favs
+				</a>
+			</li>
+
+			<?php if ($this->context->transport->tab == 'uploads'): ?>
+				<li class="selected uploads">
+			<?php else: ?>
+				<li class="uploads">
+			<?php endif ?>
+				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'uploads', 'page' => 1]) ?>">
+					Uploads
+				</a>
+			</li>
+
+			<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+				<?php if ($this->context->transport->tab == 'settings'): ?>
+					<li class="selected settings">
 				<?php else: ?>
-					<li class="favs">
+					<li class="settings">
 				<?php endif ?>
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'favs', 'page' => 1]) ?>">
-						Favs
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>">
+						Browsing settings
 					</a>
 				</li>
+			<?php endif ?>
 
-				<?php if ($this->context->transport->tab == 'uploads'): ?>
-					<li class="selected uploads">
+			<?php if ($canModifyAnything): ?>
+				<?php if ($this->context->transport->tab == 'edit'): ?>
+					<li class="selected edit">
 				<?php else: ?>
-					<li class="uploads">
+					<li class="edit">
 				<?php endif ?>
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'uploads', 'page' => 1]) ?>">
-						Uploads
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name]) ?>">
+						Account settings
 					</a>
 				</li>
+			<?php endif ?>
 
-				<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
-					<?php if ($this->context->transport->tab == 'settings'): ?>
-						<li class="selected settings">
-					<?php else: ?>
-						<li class="settings">
-					<?php endif ?>
-						<a href="<?php echo \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>">
-							Browsing settings
-						</a>
-					</li>
+			<?php if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+				<?php if ($this->context->transport->tab == 'delete'): ?>
+					<li class="selected delete">
+				<?php else: ?>
+					<li class="delete">
 				<?php endif ?>
-
-				<?php if ($canModifyAnything): ?>
-					<?php if ($this->context->transport->tab == 'edit'): ?>
-						<li class="selected edit">
-					<?php else: ?>
-						<li class="edit">
-					<?php endif ?>
-						<a href="<?php echo \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name]) ?>">
-							Account settings
-						</a>
-					</li>
-				<?php endif ?>
-
-				<?php if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
-					<?php if ($this->context->transport->tab == 'delete'): ?>
-						<li class="selected delete">
-					<?php else: ?>
-						<li class="delete">
-					<?php endif ?>
-						<a href="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>">
-							Delete account
-						</a>
-					</li>
-				<?php endif ?>
-			</ul>
-		</nav>
-	</div>
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>">
+						Delete account
+					</a>
+				</li>
+			<?php endif ?>
+		</ul>
+	</nav>
 
 	<?php if (isset($this->context->transport->posts)): ?>
 		<?php $this->renderFile('post-list') ?>

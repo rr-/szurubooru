@@ -34,7 +34,6 @@ class IndexController
 			throw new SimpleException('Invalid tab');
 		$this->context->path = TextHelper::absolutePath($this->config->help->paths[$tab]);
 		$this->context->stylesheets []= 'index-help.css';
-		$this->context->stylesheets []= 'tabs.css';
 		$this->context->subTitle = 'help';
 		$this->context->tab = $tab;
 	}
