@@ -511,7 +511,7 @@ class PostController
 			throw new SimpleException('Thumbnail file is not readable');
 
 		$this->context->layoutName = 'layout-file';
-		$this->context->transport->cacheDaysToLive = 30;
+		$this->context->transport->cacheDaysToLive = 365;
 		$this->context->transport->mimeType = 'image/jpeg';
 		$this->context->transport->fileHash = 'thumb' . md5($name . filemtime($path));
 		$this->context->transport->filePath = $path;

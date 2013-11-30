@@ -83,8 +83,8 @@ $(function()
 			}
 		}
 
-		$('form[data-confirm-text]').submit(confirmEvent);
-		$('a[data-confirm-text]').click(confirmEvent);
+		$('form.confirmable').submit(confirmEvent);
+		$('a.confirmable').click(confirmEvent);
 
 
 		//simple action buttons
@@ -123,7 +123,7 @@ $(function()
 
 
 		//attach data from submit buttons to forms before .submit() gets called
-		$(':submit').each(function()
+		$('.submit').each(function()
 		{
 			$(this).click(function()
 			{
