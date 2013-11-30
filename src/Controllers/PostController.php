@@ -103,10 +103,10 @@ class PostController
 			$this->context->massTagQuery = $query;
 		}
 
-		$postCount = Model_Post::getEntityCount($query);
+		$page = max(1, $page);
+		list($posts, $postCount) = Model_Post::getEntitiesWithCount($query, $postsPerPage, $page);
 		$pageCount = ceil($postCount / $postsPerPage);
-		$page = max(1, min($pageCount, $page));
-		$posts = Model_Post::getEntitiesFast($query, $postsPerPage, $page);
+		$page = min($pageCount, $page);
 		R::preload($posts, 'sharedTag');
 
 		$this->context->transport->paginator = new StdClass;

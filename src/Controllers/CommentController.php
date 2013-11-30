@@ -20,10 +20,9 @@ class CommentController
 		$this->context->subTitle = 'comments';
 		PrivilegesHelper::confirmWithException(Privilege::ListComments);
 
-		$commentCount = Model_Comment::getEntityCount(null);
+		$page = max(1, $page);
+		list ($comments, $commentCount) = Model_Comment::getEntitiesWithCount(null, $commentsPerPage, $page);
 		$pageCount = ceil($commentCount / $commentsPerPage);
-		$page = max(1, min($pageCount, $page));
-		$comments = Model_Comment::getEntities(null, $commentsPerPage, $page);
 		R::preload($comments, ['commenter' => 'user', 'post', 'post.uploader' => 'user', 'post.sharedTag']);
 
 		$this->context->postGroups = true;

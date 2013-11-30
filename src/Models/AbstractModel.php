@@ -31,18 +31,11 @@ abstract class AbstractModel extends RedBean_SimpleModel
 		return $rows;
 	}
 
-	public static function getEntities($query, $perPage = null, $page = 1)
+	protected static function convertRows($rows, $table, $fast = false)
 	{
-		$table = static::getTableName();
-		$rows = self::getEntitiesRows($query, $perPage, $page);
-		$entities = R::convertToBeans($table, $rows);
-		return $entities;
-	}
+		if (!$fast)
+			return R::convertToBeans($table, $rows);
 
-	public static function getEntitiesFast($query, $perPage = null, $page = 1)
-	{
-		$table = static::getTableName();
-		$rows = self::getEntitiesRows($query, $perPage, $page);
 		$entities = R::dispense($table, count($rows));
 		reset($entities);
 		foreach ($rows as $row)
@@ -51,6 +44,15 @@ abstract class AbstractModel extends RedBean_SimpleModel
 			$entity->import($row);
 			next($entities);
 		}
+		reset($entities);
+		return $entities;
+	}
+
+	public static function getEntities($query, $perPage = null, $page = 1, $fast = false)
+	{
+		$table = static::getTableName();
+		$rows = self::getEntitiesRows($query, $perPage, $page);
+		$entities = self::convertRows($rows, $table, $fast);
 		return $entities;
 	}
 
@@ -64,7 +66,15 @@ abstract class AbstractModel extends RedBean_SimpleModel
 			$builder::build($dbQuery, $query);
 		else
 			$dbQuery->from($table);
-		return intval($dbQuery->get('row')['count']);
+		$ret = intval($dbQuery->get('row')['count']);
+		return $ret;
+	}
+
+	public static function getEntitiesWithCount($query, $perPage = null, $page = 1)
+	{
+		$entities = self::getEntities($query, $perPage, $page, true);
+		$count = self::getEntityCount($query);
+		return [$entities, $count];
 	}
 
 	public static function create()

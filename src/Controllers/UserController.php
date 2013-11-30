@@ -128,10 +128,9 @@ class UserController
 		$this->context->subTitle = 'users';
 		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
 
-		$userCount = Model_User::getEntityCount($sortStyle);
+		$page = max(1, $page);
+		list ($users, $userCount) = Model_User::getEntitiesWithCount($sortStyle, $usersPerPage, $page);
 		$pageCount = ceil($userCount / $usersPerPage);
-		$page = max(1, min($pageCount, $page));
-		$users = Model_User::getEntities($sortStyle, $usersPerPage, $page);
 
 		$this->context->sortStyle = $sortStyle;
 		$this->context->transport->paginator = new StdClass;
@@ -437,10 +436,9 @@ class UserController
 		else
 			throw new SimpleException('Wrong tab');
 
-		$postCount = Model_Post::getEntityCount($query);
+		$page = max(1, $page);
+		list ($posts, $postCount) = Model_Post::getEntitiesWithCount($query, $postsPerPage, $page);
 		$pageCount = ceil($postCount / $postsPerPage);
-		$page = max(1, min($pageCount, $page));
-		$posts = Model_Post::getEntities($query, $postsPerPage, $page);
 		R::preload($posts, 'sharedTag');
 
 		$this->context->transport->tab = $tab;
