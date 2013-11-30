@@ -12,6 +12,7 @@ RewriteRule ^.*$ /dispatch.php
 RewriteRule ^/?$ /dispatch.php
 
 <IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/javascript
 AddOutputFilterByType DEFLATE text/plain
 AddOutputFilterByType DEFLATE text/html
 AddOutputFilterByType DEFLATE text/xml
@@ -29,20 +30,20 @@ AddType text/plain .map
 
 <IfModule mod_expires.c>
 ExpiresActive on
-ExpiresByType image/jpg "access plus 2 months"
-ExpiresByType image/gif "access plus 2 months"
-ExpiresByType image/jpg "access plus 2 months"
-ExpiresByType image/jpeg "access plus 2 months"
-ExpiresByType image/png "access plus 2 months"
+ExpiresByType image/jpg "access plus 2 years"
+ExpiresByType image/gif "access plus 2 years"
+ExpiresByType image/jpg "access plus 2 years"
+ExpiresByType image/jpeg "access plus 2 years"
+ExpiresByType image/png "access plus 2 years"
 
-ExpiresByType image/x-icon "access plus 2 months"
-ExpiresByType image/icon "access plus 2 months"
-ExpiresByType application/x-ico "access plus 2 months"
-ExpiresByType application/ico "access plus 2 months"
+ExpiresByType image/x-icon "access plus 2 years"
+ExpiresByType image/icon "access plus 2 years"
+ExpiresByType application/x-ico "access plus 2 years"
+ExpiresByType application/ico "access plus 2 years"
 
-ExpiresByType text/plain "access plus 3 hours"
-ExpiresByType text/css "access plus 3 hours"
-ExpiresByType text/javascript "access plus 3 hours"
-ExpiresByType application/javascript "access plus 3 hours"
-ExpiresByType application/x-javascript "access plus 3 hours"
+ExpiresByType text/plain "access plus 1 year"
+ExpiresByType text/css "access plus 1 year"
+ExpiresByType text/javascript "access plus 1 year"
+ExpiresByType application/javascript "access plus 1 year"
+ExpiresByType application/x-javascript "access plus 1 year"
 </IfModule>
