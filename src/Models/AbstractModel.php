@@ -72,38 +72,11 @@ abstract class AbstractModel extends RedBean_SimpleModel
 
 	public static function getEntitiesWithCount($query, $perPage = null, $page = 1)
 	{
-		$table = static::getTableName();
-		$tempTable = $table . '_temp';
-
-		R::begin();
-		R::exec('CREATE TEMPORARY TABLE ' . $tempTable . '(id INTEGER)');
-		R::exec('CREATE INDEX idx_fk_' . $tempTable . '_id ON ' . $tempTable . '(id)');
-
-		$dbQuery = R::$f->getNew()->begin();
-		$dbQuery->insertInto($tempTable . '(id)');
-		$dbQuery->select($table . '.id');
-		$builder = static::getQueryBuilder();
-		if ($builder)
-			$builder::build($dbQuery, $query);
-		else
-			$dbQuery->from($table);
-		$dbQuery->get();
-
-		$count = intval(R::getCell('SELECT COUNT(*) FROM ' . $tempTable));
-		$rows = R::$f->getNew()
-			->begin()
-			->select($table . '.*')
-			->from($tempTable)
-			->innerJoin($table)
-			->on($table . '.id = ' . $tempTable . '.id')
-			->limit('?')->put($perPage)
-			->offset('?')->put(($page - 1) * $perPage)
-			->get();
-
-		R::rollback();
-
-		$entities = self::convertRows($rows, $table, true);
-		return [$entities, $count];
+		return
+		[
+			self::getEntities($query, $perPage, $page, true),
+			self::getEntityCount($query)
+		];
 	}
 
 	public static function create()
