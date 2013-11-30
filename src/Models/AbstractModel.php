@@ -33,16 +33,20 @@ abstract class AbstractModel extends RedBean_SimpleModel
 
 	protected static function convertRows($rows, $table, $fast = false)
 	{
+		if (empty($rows))
+			return [];
+
 		if (!$fast)
 			return R::convertToBeans($table, $rows);
 
 		$entities = R::dispense($table, count($rows));
-		reset($entities);
+		if (count($rows) == 1)
+			$entities = [$entities];
+		$entity = reset($entities);
 		foreach ($rows as $row)
 		{
-			$entity = current($entities);
 			$entity->import($row);
-			next($entities);
+			$entity = next($entities);
 		}
 		reset($entities);
 		return $entities;

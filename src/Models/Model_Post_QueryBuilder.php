@@ -40,15 +40,14 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 
 	protected static function filterTag($dbQuery, $val)
 	{
+		$tag = Model_Tag::locate($val);
 		$dbQuery
 			->exists()
 			->open()
 			->select('1')
 			->from('post_tag')
-			->innerJoin('tag')
-			->on('post_tag.tag_id = tag.id')
 			->where('post_id = post.id')
-			->and('LOWER(tag.name) = LOWER(?)')->put($val)
+			->and('post_tag.tag_id = ?')->put($tag->id)
 			->close();
 	}
 
@@ -187,9 +186,8 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 	{
 		list ($timeMin, $timeMax) = self::__filterTokenDateParser($val);
 		$dbQuery
-			->addSql('upload_date >= ?')->and('upload_date <= ?')
-			->put($timeMin)
-			->put($timeMax);
+			->addSql('upload_date >= ?')->put($timeMin)
+			->and('upload_date <= ?')->put($timeMax);
 	}
 
 	protected static function filterTokenDateMin($context, $dbQuery, $val)
@@ -206,15 +204,14 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 
 	protected static function filterTokenFav($context, $dbQuery, $val)
 	{
+		$user = Model_User::locate($val);
 		$dbQuery
 			->exists()
 			->open()
 			->select('1')
 			->from('favoritee')
-			->innerJoin('user')
-			->on('favoritee.user_id = user.id')
 			->where('post_id = post.id')
-			->and('LOWER(user.name) = LOWER(?)')->put($val)
+			->and('favoritee.user_id = ?')->put($user->id)
 			->close();
 	}
 
@@ -225,15 +222,14 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 
 	protected static function filterTokenComment($context, $dbQuery, $val)
 	{
+		$user = Model_User::locate($val);
 		$dbQuery
 			->exists()
 			->open()
 			->select('1')
 			->from('comment')
-			->innerJoin('user')
-			->on('commenter_id = user.id')
 			->where('post_id = post.id')
-			->and('LOWER(user.name) = LOWER(?)')->put($val)
+			->and('commenter_id = ?')->put($user->id)
 			->close();
 	}
 
@@ -244,13 +240,8 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 
 	protected static function filterTokenSubmit($context, $dbQuery, $val)
 	{
-		$dbQuery
-			->addSql('uploader_id = ')
-			->open()
-			->select('user.id')
-			->from('user')
-			->where('LOWER(name) = LOWER(?)')->put($val)
-			->close();
+		$user = Model_User::locate($val);
+		$dbQuery->addSql('uploader_id = ?')->put($user->id);
 	}
 
 	protected static function filterTokenUploader($context, $dbQuery, $val)
@@ -384,16 +375,14 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 	{
 		$unparsedTokens = [];
 
-		foreach ($tokens as $token)
+		foreach ($tokens as $origToken)
 		{
+			$token = $origToken;
+			$neg = false;
 			if ($token{0} == '-')
 			{
 				$token = substr($token, 1);
 				$neg = true;
-			}
-			else
-			{
-				$neg = false;
 			}
 
 			$pos = strpos($token, ':');
@@ -411,7 +400,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			$parsed = $callback($neg, $key, $val);
 
 			if (!$parsed)
-				$unparsedTokens []= $token;
+				$unparsedTokens []= $origToken;
 		}
 		return $unparsedTokens;
 	}
@@ -485,10 +474,13 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		else
 			$dbQuery->asc();
 
-		$dbQuery->addSql(', id ');
-		if ($context->orderDir == 1)
-			$dbQuery->desc();
-		else
-			$dbQuery->asc();
+		if ($context->orderColumn != 'id')
+		{
+			$dbQuery->addSql(', id');
+			if ($context->orderDir == 1)
+				$dbQuery->desc();
+			else
+				$dbQuery->asc();
+		}
 	}
 }
