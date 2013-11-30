@@ -1,10 +1,10 @@
 $(function()
 {
-	$('.tabs nav a').click(function(e)
+	$('.tabs a').click(function(e)
 	{
 		e.preventDefault();
 		var className = $(this).parents('li').attr('class').replace('selected', '').replace(/^\s+|\s+$/, '');
-		$('.tabs nav li').removeClass('selected');
+		$('.tabs li').removeClass('selected');
 		$(this).parents('li').addClass('selected');
 		$('.tab').hide();
 		$('.tab.' + className).show();
