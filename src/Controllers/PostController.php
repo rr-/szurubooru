@@ -452,18 +452,27 @@ class PostController
 			'ownComment.commenter' => 'user']);
 		R::preload($this->context->user, ['ownFavoritee']);
 
-		$this->context->transport->lastSearchQuery = InputHelper::get('last-search-query');
-
 		if ($post->hidden)
 			PrivilegesHelper::confirmWithException(Privilege::ViewPost, 'hidden');
 		PrivilegesHelper::confirmWithException(Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
 
 		Model_Post_QueryBuilder::enableTokenLimit(false);
-		$prevPostQuery = $this->context->transport->lastSearchQuery . ' prev:' . $id;
-		$nextPostQuery = $this->context->transport->lastSearchQuery . ' next:' . $id;
-		$prevPost = current(Model_Post::getEntities($prevPostQuery, 1, 1));
-		$nextPost = current(Model_Post::getEntities($nextPostQuery, 1, 1));
+		try
+		{
+			$this->context->transport->lastSearchQuery = InputHelper::get('last-search-query');
+			$prevPostQuery = $this->context->transport->lastSearchQuery . ' prev:' . $id;
+			$nextPostQuery = $this->context->transport->lastSearchQuery . ' next:' . $id;
+			$prevPost = current(Model_Post::getEntities($prevPostQuery, 1, 1));
+			$nextPost = current(Model_Post::getEntities($nextPostQuery, 1, 1));
+		}
+		#search for some reason was invalid, e.g. tag was deleted in the meantime
+		catch (Exception $e)
+		{
+			$this->context->transport->lastSearchQuery = '';
+			$prevPost = current(Model_Post::getEntities('prev:' . $id, 1, 1));
+			$nextPost = current(Model_Post::getEntities('next:' . $id, 1, 1));
+		}
 		Model_Post_QueryBuilder::enableTokenLimit(true);
 
 		$favorite = $this->context->user->hasFavorited($post);
