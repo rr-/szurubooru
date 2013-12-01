@@ -45,6 +45,7 @@ body {
 }
 #top-nav li.main-nav-item {
 	display: inline-block;
+	float: left;
 }
 
 #top-nav li input,
@@ -67,6 +68,7 @@ body {
 }
 
 #top-nav li.search {
+	display: inline-block;
 	float: right;
 	background: white;
 	margin: 5px 0;
@@ -83,6 +85,7 @@ body {
 }
 
 #top-nav li.safety {
+	display: inline-block;
 	float: right;
 	margin-left: 5px;
 }
@@ -384,6 +387,9 @@ button:hover {
 .clear {
 	display: block;
 	clear: both;
+	height: 1px; /* ghost top margin in firefox */
+	width: 100%;
+	margin: 0 0 -1px 0;
 }
 
 pre.debug {
