@@ -21,6 +21,10 @@
 	</head>
 
 	<body>
+		<script type="text/javascript">
+			var lastSearchQuery = <?php echo json_encode(isset($this->context->transport->lastSearchQuery) ? $this->context->transport->lastSearchQuery : '') ?>;
+		</script>
+
 		<nav id="top-nav">
 			<div class="main-wrapper">
 				<ul class="main-nav">
@@ -87,11 +91,8 @@
 							<input class="autocomplete" type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/>
 						</form>
 					</li>
-
-					<script type="text/javascript">
-						var lastSearchQuery = <?php echo json_encode(isset($this->context->transport->lastSearchQuery) ? $this->context->transport->lastSearchQuery : '') ?>;
-					</script>
 				</ul>
+
 				<div class="clear"></div>
 			</div>
 		</nav>
