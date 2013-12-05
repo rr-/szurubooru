@@ -1,0 +1,129 @@
+<ul class="main-nav">
+	<?php
+		$nav = [];
+
+		$activeController = $this->context->route->simpleControllerName;
+		$activeAction = $this->context->route->simpleActionName;
+
+		$registerNavItem = function ($text, $link, $active = false) use (&$nav)
+		{
+			$nav []= [
+				'text' => $text,
+				'link' => $link,
+				'active' => $active];
+		};
+
+		$registerNavItem(
+			'Home',
+			\Chibi\UrlHelper::route('index', 'index'),
+			$activeController == 'index' and $activeAction == 'index');
+
+		if (PrivilegesHelper::confirm(Privilege::ListPosts))
+		{
+			$registerNavItem(
+				'Browse',
+				\Chibi\UrlHelper::route('post', 'list'),
+				$activeController == 'post' and $activeAction != 'upload');
+		}
+
+		if (PrivilegesHelper::confirm(Privilege::UploadPost))
+		{
+			$registerNavItem(
+				'Upload',
+				\Chibi\UrlHelper::route('post', 'upload'),
+				$activeController == 'post' and $activeAction == 'upload');
+		}
+
+		if (PrivilegesHelper::confirm(Privilege::ListComments))
+		{
+			$registerNavItem(
+				'Comments',
+				\Chibi\UrlHelper::route('comment', 'list'),
+				$activeController == 'comment');
+		}
+
+		if (PrivilegesHelper::confirm(Privilege::ListTags))
+		{
+			$registerNavItem(
+				'Tags',
+				\Chibi\UrlHelper::route('tag', 'list'),
+				$activeController == 'tag');
+		}
+
+		if (PrivilegesHelper::confirm(Privilege::ListUsers))
+		{
+			$registerNavItem(
+				'Users',
+				\Chibi\UrlHelper::route('user', 'list'),
+				$activeController == 'user' and $activeAction != 'registration' and (!isset($this->context->route->arguments['name']) or $this->context->route->arguments['name'] != $this->context->user->name));
+		}
+
+		if (!$this->context->loggedIn)
+		{
+			$registerNavItem(
+				'Log in',
+				\Chibi\UrlHelper::route('auth', 'login'),
+				$activeController == 'auth' and $activeAction == 'login');
+
+			$registerNavItem(
+				'Register',
+				\Chibi\UrlHelper::route('user', 'registration'),
+				$activeController == 'user' and $activeAction == 'registration');
+		}
+		else
+		{
+			$registerNavItem(
+				'My account',
+				\Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->user->name]),
+				$activeController == 'user' and isset($this->context->route->arguments['name']) and $this->context->route->arguments['name'] == $this->context->user->name);
+
+			$registerNavItem(
+				'Log out',
+				\Chibi\UrlHelper::route('auth', 'logout'));
+		}
+
+		if (!empty($this->config->help->title))
+		{
+			$registerNavItem(
+				$this->config->help->title,
+				\Chibi\UrlHelper::route('index', 'help'),
+				$activeController == 'index' and $activeAction == 'help');
+		}
+
+		foreach ($nav as $navItem)
+		{
+			extract($navItem);
+			echo TextHelper::htmlTag('li', TextHelper::HTML_OPEN, ['class' => rtrim('main-nav-item ' . ($active ? 'active' : ''))]);
+			echo TextHelper::htmlTag('a', TextHelper::HTML_OPEN, ['href' => $link]);
+			echo $text;
+			echo TextHelper::htmlTag('a', textHelper::HTML_CLOSE);
+			echo TextHelper::htmlTag('li', textHelper::HTML_CLOSE);
+		}
+	?>
+
+	<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->user))): ?>
+		<li class="safety">
+			<ul>
+				<?php foreach (PostSafety::getAll() as $safety): ?>
+					<?php if (PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety))): ?>
+						<li class="safety-<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety)) ?>">
+							<a href="<?php echo \Chibi\UrlHelper::route('user', 'toggle-safety', ['safety' => $safety]) ?>" class="<?php echo $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>" title="Searching <?php echo TextHelper::camelCaseToHumanCase(PostSafety::ToString($safety)) ?> posts: <?php echo $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
+								<span><?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?></span>
+							</a>
+						</li>
+					<?php endif ?>
+				<?php endforeach ?>
+			</ul>
+		</li>
+	<?php endif ?>
+
+	<li class="search">
+		<form name="search" action="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
+			<input class="autocomplete" type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/>
+		</form>
+	</li>
+</ul>
+
+<div class="clear"></div>
+</div>
+

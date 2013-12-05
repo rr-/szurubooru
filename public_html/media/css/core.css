@@ -47,6 +47,11 @@ body {
 	display: inline-block;
 	float: left;
 }
+#top-nav li.main-nav-item.active a {
+	border-bottom: 3px solid #f7f7f7;
+	margin-bottom: 0;
+	background: #f7f7f7;
+}
 
 #top-nav li input,
 #top-nav li.main-nav-item a {
@@ -351,6 +356,7 @@ button:hover {
 	background: white;
 }
 
+.tabs li a:hover,
 .tabs li a:focus {
 	color: firebrick;
 }
