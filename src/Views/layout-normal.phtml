@@ -108,14 +108,17 @@
 			<div class="main-wrapper">
 				<span>Load: <?php echo sprintf('%.05f', microtime(true) - $this->context->startTime) ?>s</span>
 				<span>Queries: <?php echo count(queryLogger()->getLogs()) ?></span>
-				<?php if ($this->config->misc->debugQueries): ?>
-					<pre class="debug"><?php echo join('<br>', array_map(function($x) { return preg_replace('/\s+/', ' ', $x); }, queryLogger()->getLogs())) ?></pre>
-				<?php endif ?>
 				<span><a href="<?php echo SZURU_LINK ?>">szurubooru v<?php echo SZURU_VERSION ?></a></span>
 				<?php if (PrivilegesHelper::confirm(Privilege::ListLogs)): ?>
 					<span><a href="<?php echo \Chibi\UrlHelper::route('log', 'list') ?>">Logs</a></span>
 				<?php endif ?>
 			</div>
+			<?php if ($this->config->misc->debugQueries): ?>
+				<hr>
+				<div class="main-wrapper">
+					<pre class="debug"><?php echo join('<br>', array_map(function($x) { return preg_replace('/\s+/', ' ', $x); }, queryLogger()->getLogs())) ?></pre>
+				</div>
+			<?php endif ?>
 		</footer>
 
 		<?php foreach (array_unique($this->context->scripts) as $name): ?>
