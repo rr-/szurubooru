@@ -234,19 +234,30 @@ class TextHelper
 		return $path;
 	}
 
-	public static function openHtmlTag($tagName, array $attributes)
+	const HTML_OPEN = 1;
+	const HTML_CLOSE = 2;
+	const HTML_LEAF = 3;
+
+	public static function htmlTag($tagName, $tagStyle, array $attributes = [])
 	{
-		$html = '<' . $tagName;
+		$html = '<';
+		if ($tagStyle == self::HTML_CLOSE)
+			$html .= '/';
 
-		foreach ($attributes as $key => $value)
-			$html .= ' ' . $key . '="' . $value . '"';
+		$html .= $tagName;
 
+		if ($tagStyle == self::HTML_OPEN or $tagStyle == self::HTML_LEAF)
+		{
+			foreach ($attributes as $key => $value)
+			{
+				$html .= ' ' . $key . '="' . $value . '"';
+			}
+		}
+
+		if ($tagStyle == self::HTML_LEAF)
+			$html .= '/';
 		$html .= '>';
-		echo $html;
-	}
 
-	public static function closeHtmlTag($tagName)
-	{
-		echo '</' . $tagName . '>';
+		return $html;
 	}
 }

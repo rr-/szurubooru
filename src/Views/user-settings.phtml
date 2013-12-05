@@ -4,8 +4,19 @@
 		<div class="input-wrapper">
 			<?php foreach (PostSafety::getAll() as $safety): ?>
 				<?php if (PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety))): ?>
-					<label><input type="checkbox" name="safety[]" value="<?php echo $safety ?>"<?php if ($this->context->transport->user->hasEnabledSafety($safety)) echo ' checked="checked"' ?>/>
-					<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?></label>
+					<label>
+						<?php
+							$attrs = [];
+							$attrs['type'] = 'checkbox';
+							$attrs['name'] = 'safety[]';
+							$attrs['value'] = $safety;
+							if ($this->context->transport->user->hasEnabledSafety($safety))
+								$attrs['checked'] = 'checked';
+
+							echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+						?>
+						<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
+					</label>
 				<?php endif ?>
 			<?php endforeach ?>
 		</div>
@@ -15,7 +26,16 @@
 		<label class="left" for="endless-scrolling">Endless scrolling:</label>
 		<div class="input-wrapper">
 			<label>
-				<input type="checkbox" id="endless-scrolling" name="endless-scrolling" <?php if ($this->context->transport->user->hasEnabledEndlessScrolling()) echo ' checked="checked"' ?>/>
+				<?php
+					$attrs = [];
+					$attrs['type'] = 'checkbox';
+					$attrs['id'] = 'endless-scrolling';
+					$attrs['name'] = 'endless-scrolling';
+					if ($this->context->transport->user->hasEnabledEndlessScrolling())
+						$attrs['checked'] = 'checked';
+
+					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+				?>
 				Enabled
 			</label>
 		</div>
@@ -25,7 +45,35 @@
 		<label class="left" for="post-tag-titles">Tags in thumbs:</label>
 		<div class="input-wrapper">
 			<label>
-				<input type="checkbox" id="post-tag-titles" name="post-tag-titles" <?php if ($this->context->transport->user->hasEnabledPostTagTitles()) echo ' checked="checked"' ?>/>
+				<?php
+					$attrs = [];
+					$attrs['type'] = 'checkbox';
+					$attrs['id'] = 'post-tag-titles';
+					$attrs['name'] = 'post-tag-titles';
+					if ($this->context->transport->user->hasEnabledPostTagTitles())
+						$attrs['checked'] = 'checked';
+
+					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+				?>
+				Enabled
+			</label>
+		</div>
+	</div>
+
+	<div class="hide-disliked-posts">
+		<label class="left" for="hide-disliked-posts">Hide down-voted:</label>
+		<div class="input-wrapper">
+			<label>
+				<?php
+					$attrs = [];
+					$attrs['type'] = 'checkbox';
+					$attrs['id'] = 'hide-disliked-posts';
+					$attrs['name'] = 'hide-disliked-posts';
+					if ($this->context->transport->user->hasEnabledHidingDislikedPosts())
+						$attrs['checked'] = 'checked';
+
+					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+				?>
 				Enabled
 			</label>
 		</div>

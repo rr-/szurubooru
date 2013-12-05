@@ -292,6 +292,7 @@ class UserController
 
 			$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
 			$user->enablePostTagTitles(InputHelper::get('post-tag-titles'));
+			$user->enableHidingDislikedPosts(InputHelper::get('hide-disliked-posts'));
 
 			Model_User::save($user);
 			if ($user->id == $this->context->user->id)

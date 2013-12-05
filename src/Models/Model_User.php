@@ -4,6 +4,7 @@ class Model_User extends AbstractModel
 	const SETTING_SAFETY = 1;
 	const SETTING_ENDLESS_SCROLLING = 2;
 	const SETTING_POST_TAG_TITLES = 3;
+	const SETTING_HIDE_DISLIKED_POSTS = 4;
 
 
 
@@ -205,6 +206,19 @@ class Model_User extends AbstractModel
 		}
 
 		$this->setSetting(self::SETTING_SAFETY, $new);
+	}
+
+	public function hasEnabledHidingDislikedPosts()
+	{
+		$ret = $this->getSetting(self::SETTING_HIDE_DISLIKED_POSTS);
+		if ($ret === null)
+			$ret = !\Chibi\Registry::getConfig()->browsing->showDislikedPostsDefault;
+		return $ret;
+	}
+
+	public function enableHidingDislikedPosts($enabled)
+	{
+		$this->setSetting(self::SETTING_HIDE_DISLIKED_POSTS, $enabled ? 1 : 0);
 	}
 
 	public function hasEnabledPostTagTitles()

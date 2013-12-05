@@ -33,9 +33,9 @@
 						if (!empty($class))
 							$attrs['class'] = join(' ', $class);
 
-						TextHelper::openHtmlTag('a', $attrs);
+						echo TextHelper::htmlTag('a', TextHelper::HTML_OPEN, $attrs);
 						echo $option['text'];
-						TextHelper::closeHtmlTag('a');
+						echo TextHelper::htmlTag('a', TextHelper::HTML_CLOSE);
 					?>
 				</li>
 			<?php endforeach ?>
