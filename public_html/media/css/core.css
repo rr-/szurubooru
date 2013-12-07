@@ -424,3 +424,16 @@ pre.debug {
 img {
 	border: 0;
 }
+
+blockquote {
+	margin-left: 0;
+	border-left: 3px solid #eee;
+	background: ghostwhite;
+	padding: 0.5em;
+}
+blockquote>*:first-child {
+	margin-top: 0;
+}
+blockquote>*:last-child {
+	margin-bottom: 0;
+}
