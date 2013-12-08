@@ -74,6 +74,22 @@ class CustomMarkdown extends \Michelf\Markdown
 		return parent::_doAnchors_inline_callback($matches);
 	}
 
+	protected function _doCodeBlocks_callback($matches) {
+		$codeblock = $matches[1];
+
+		$codeblock = $this->outdent($codeblock);
+		$codeblock = htmlspecialchars($codeblock, ENT_NOQUOTES);
+
+		$codeblock = preg_replace('/\A\n+|\n+\z/', '', $codeblock);
+		$codeblock = preg_replace('/\n/', '<br/>', $codeblock);
+		$codeblock = preg_replace('/\t/', '&tab;', $codeblock);
+		$codeblock = preg_replace('/ /', '&nbsp;', $codeblock);
+
+		$codeblock = "<pre><code>$codeblock\n</code></pre>";
+		return "\n\n".$this->hashBlock($codeblock)."\n\n";
+	}
+
+
 	protected function doHardBreaks($text)
 	{
 		return preg_replace_callback('/\n(?=[\[\]\(\)\w])/', [&$this, '_doHardBreaks_callback'], $text);
