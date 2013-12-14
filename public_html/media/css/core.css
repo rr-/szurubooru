@@ -38,6 +38,9 @@ body {
 
 
 
+#top-nav .clear {
+	background: white;
+}
 #top-nav ul.main-nav {
 	margin: 0 0 0 -0.75em;
 	padding: 0;
