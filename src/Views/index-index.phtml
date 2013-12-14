@@ -16,13 +16,15 @@
 		<div class="left">
 			Tags:&nbsp;
 			<ul class="tags">
-			<?php foreach ($this->context->featuredPost->sharedTag as $tag): ?>
-				<li>
-					<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
-						<?php echo $tag->name ?>
-					</a>
-				</li>
-			<?php endforeach ?>
+				<?php $tags = $this->context->featuredPost->sharedTag ?>
+				<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
+				<?php foreach ($tags as $tag): ?>
+					<li>
+						<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
+							<?php echo $tag->name ?>
+						</a>
+					</li>
+				<?php endforeach ?>
 			</ul>
 		</div>
 

@@ -197,6 +197,15 @@ class TextHelper
 		return '#' . $tag->name;
 	}
 
+	public static function reprTags($tags)
+	{
+		$x = [];
+		foreach ($tags as $tag)
+			$x []= self::reprTag($tag);
+		natcasesort($x);
+		return join(', ', $x);
+	}
+
 	public static function encrypt($text)
 	{
 		$salt = \Chibi\Registry::getConfig()->main->salt;

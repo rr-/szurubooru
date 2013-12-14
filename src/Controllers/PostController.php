@@ -483,7 +483,7 @@ class PostController
 		$this->context->stylesheets []= 'post-view.css';
 		$this->context->stylesheets []= 'comment-small.css';
 		$this->context->scripts []= 'post-view.js';
-		$this->context->subTitle = 'showing @' . $post->id . ' &ndash; ' . join(', ', array_map(function($x) { return $x['name']; }, $post->sharedTag));
+		$this->context->subTitle = 'showing ' . TextHelper::reprPost($post) . ' &ndash; ' . TextHelper::reprTags($post->sharedTag);
 		$this->context->favorite = $favorite;
 		$this->context->score = $score;
 		$this->context->flagged = $flagged;
