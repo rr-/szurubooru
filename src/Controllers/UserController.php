@@ -38,6 +38,7 @@ class UserController
 		$tokens = [];
 		$tokens['host'] = $_SERVER['HTTP_HOST'];
 		$tokens['token'] = $tokenText;
+		$tokens['nl'] = PHP_EOL;
 		if ($linkActionName !== null)
 			$tokens['link'] = \Chibi\UrlHelper::route('user', $linkActionName, ['token' => $tokenText]);
 
@@ -440,7 +441,7 @@ class UserController
 		$page = max(1, $page);
 		list ($posts, $postCount) = Model_Post::getEntitiesWithCount($query, $postsPerPage, $page);
 		$pageCount = ceil($postCount / $postsPerPage);
-		R::preload($posts, 'sharedTag|tag');
+		Model_Post::attachTags($posts);
 
 		$this->context->transport->tab = $tab;
 		$this->context->transport->lastSearchQuery = $query;

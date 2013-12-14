@@ -107,7 +107,7 @@ class PostController
 		list($posts, $postCount) = Model_Post::getEntitiesWithCount($query, $postsPerPage, $page);
 		$pageCount = ceil($postCount / $postsPerPage);
 		$page = min($pageCount, $page);
-		R::preload($posts, 'sharedTag|tag');
+		Model_Post::attachTags($posts);
 
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;

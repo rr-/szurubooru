@@ -146,6 +146,26 @@ class Model_Post extends AbstractModel
 		return TextHelper::absolutePath(self::$config->main->filesPath . DS . $name);
 	}
 
+	public static function attachTags($posts)
+	{
+		//slow!!!
+		//R::preload($posts, 'sharedTag|tag');
+		$ids = array_map(function($x) { return $x->id; }, $posts);
+		$sql = 'SELECT post_tag.post_id, tag.* FROM tag INNER JOIN post_tag ON post_tag.tag_id = tag.id WHERE post_id IN (' . R::genSlots($ids) . ')';
+		$rows = R::getAll($sql, $ids);
+		$postMap = array_fill_keys($ids, []);
+		foreach ($rows as $row)
+		{
+			$postMap[$row['post_id']] []= $row;
+		}
+		foreach ($posts as $post)
+		{
+			$tagRows = $postMap[$post->id];
+			$tags = self::convertRows($tagRows, 'tag', true);
+			$post->setProperty('sharedTag', $tags, true, true);
+		}
+	}
+
 	public function isTaggedWith($tagName)
 	{
 		$tagName = trim(strtolower($tagName));

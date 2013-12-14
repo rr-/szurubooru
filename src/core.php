@@ -43,7 +43,6 @@ $context->rootDir = $rootDir;
 //load database
 R::setup($config->main->dbDriver . ':' . TextHelper::absolutePath($config->main->dbLocation), $config->main->dbUser, $config->main->dbPass);
 R::freeze(true);
-R::dependencies(['tag' => ['post'], 'favoritee' => ['post', 'user'], 'comment' => ['post', 'user']]);
 
 //wire models
 foreach (\Chibi\AutoLoader::getAllIncludablePaths() as $path)
