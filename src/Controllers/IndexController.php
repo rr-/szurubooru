@@ -64,7 +64,7 @@ class IndexController
 			->from('post')
 			->where('type = ?')->put(PostType::Image)
 			->and('safety = ?')->put(PostSafety::Safe)
-			->orderBy('random()')
+			->orderBy($this->config->main->dbDriver == 'sqlite' ? 'random()' : 'rand()')
 			->desc()
 			->get('row')['id'];
 		if (!$featuredPostId)

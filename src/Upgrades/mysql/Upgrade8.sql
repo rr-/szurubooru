@@ -2,7 +2,7 @@ ALTER TABLE post ADD COLUMN tag_count INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE post ADD COLUMN fav_count INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE post ADD COLUMN comment_count INTEGER NOT NULL DEFAULT 0;
 
-UPDATE POST SET tag_count = (SELECT COUNT(*) FROM post_tag WHERE post_id = post.id);
+UPDATE post SET tag_count = (SELECT COUNT(*) FROM post_tag WHERE post_id = post.id);
 UPDATE post SET fav_count = (SELECT COUNT(*) FROM favoritee WHERE post_id = post.id);
 UPDATE post SET comment_count = (SELECT COUNT(*) FROM comment WHERE post_id = post.id);
 

@@ -4,7 +4,7 @@ class Model_Property extends RedBean_SimpleModel
 	const FeaturedPostId = 0;
 	const FeaturedPostUserName = 1;
 	const FeaturedPostDate = 2;
-	const DbVersion = 'db-version';
+	const DbVersion = 3;
 
 	static $allProperties = null;
 
