@@ -249,8 +249,8 @@ class Model_User extends AbstractModel
 
 	public function hasFavorited($post)
 	{
-		foreach ($this->bean->ownFavoritee as $fav)
-			if ($fav->post->id == $post->id)
+		foreach ($this->bean->via('favoritee')->sharedPost as $favPost)
+			if ($favPost->id == $post->id)
 				return true;
 		return false;
 	}
