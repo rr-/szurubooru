@@ -2,8 +2,16 @@
 	<?php
 		$nav = [];
 
-		$activeController = $this->context->route->simpleControllerName;
-		$activeAction = $this->context->route->simpleActionName;
+		if ($this->context->route)
+		{
+			$activeController = $this->context->route->simpleControllerName;
+			$activeAction = $this->context->route->simpleActionName;
+		}
+		else
+		{
+			$activeController = null;
+			$activeAction = null;
+		}
 
 		$registerNavItem = function ($text, $link, $active = false) use (&$nav)
 		{
