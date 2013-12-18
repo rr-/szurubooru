@@ -42,7 +42,7 @@ class PrivilegesHelper
 			}
 		}
 
-		return intval($user->access_rank) >= $minAccessRank;
+		return intval($user->accessRank) >= $minAccessRank;
 	}
 
 	public static function confirmWithException($privilege, $subPrivilege = null)
@@ -63,7 +63,7 @@ class PrivilegesHelper
 
 	public static function confirmEmail($user)
 	{
-		if (!$user->email_confirmed)
+		if (!$user->emailConfirmed)
 			throw new SimpleException('Need e-mail address confirmation to continue');
 	}
 

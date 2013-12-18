@@ -1,5 +1,5 @@
 <?php
-class Model_Post_QueryBuilder implements AbstractQueryBuilder
+class PostSearchService extends AbstractSearchService
 {
 	private static $enableTokenLimit = true;
 
@@ -8,40 +8,40 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		self::$enableTokenLimit = $enable;
 	}
 
-	protected static function filterUserSafety($dbQuery)
+	protected static function filterUserSafety(SqlQuery $sqlQuery)
 	{
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		$dbQuery->addSql('safety')->in('(' . R::genSlots($allowedSafety) . ')');
+		$sqlQuery->raw('safety')->in()->genSlots($allowedSafety);
 		foreach ($allowedSafety as $s)
-			$dbQuery->put($s);
+			$sqlQuery->put($s);
 	}
 
-	protected static function filterUserHidden($dbQuery)
+	protected static function filterUserHidden(SqlQuery $sqlQuery)
 	{
 		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
-			$dbQuery->not()->addSql('hidden');
+			$sqlQuery->not('hidden');
 		else
-			$dbQuery->addSql('1');
+			$sqlQuery->raw('1');
 	}
 
-	protected static function filterChain($dbQuery)
+	protected static function filterChain(SqlQuery $sqlQuery)
 	{
-		if (isset($dbQuery->__chained))
-			$dbQuery->and();
+		if (isset($sqlQuery->__chained))
+			$sqlQuery->and();
 		else
-			$dbQuery->where();
-		$dbQuery->__chained = true;
+			$sqlQuery->where();
+		$sqlQuery->__chained = true;
 	}
 
-	protected static function filterNegate($dbQuery)
+	protected static function filterNegate(SqlQuery $sqlQuery)
 	{
-		$dbQuery->not();
+		$sqlQuery->not();
 	}
 
-	protected static function filterTag($dbQuery, $val)
+	protected static function filterTag($sqlQuery, $val)
 	{
-		$tag = Model_Tag::locate($val);
-		$dbQuery
+		$tag = TagModel::findByName($val);
+		$sqlQuery
 			->exists()
 			->open()
 			->select('1')
@@ -51,66 +51,64 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			->close();
 	}
 
-	protected static function filterTokenId($searchContext, $dbQuery, $val)
+	protected static function filterTokenId($searchContext, SqlQuery $sqlQuery, $val)
 	{
 		$ids = preg_split('/[;,]/', $val);
 		$ids = array_map('intval', $ids);
-		$dbQuery->addSql('id')->in('(' . R::genSlots($ids) . ')');
-		foreach ($ids as $id)
-			$dbQuery->put($id);
+		$sqlQuery->raw('id')->in()->genSlots($ids)->put($ids);
 	}
 
-	protected static function filterTokenIdMin($searchContext, $dbQuery, $val)
+	protected static function filterTokenIdMin($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('id >= ?')->put(intval($val));
+		$sqlQuery->raw('id >= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenIdMax($searchContext, $dbQuery, $val)
+	protected static function filterTokenIdMax($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('id <= ?')->put(intval($val));
+		$sqlQuery->raw('id <= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenScoreMin($searchContext, $dbQuery, $val)
+	protected static function filterTokenScoreMin($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('score >= ?')->put(intval($val));
+		$sqlQuery->raw('score >= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenScoreMax($searchContext, $dbQuery, $val)
+	protected static function filterTokenScoreMax($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('score <= ?')->put(intval($val));
+		$sqlQuery->raw('score <= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenTagMin($searchContext, $dbQuery, $val)
+	protected static function filterTokenTagMin($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('tag_count >= ?')->put(intval($val));
+		$sqlQuery->raw('tag_count >= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenTagMax($searchContext, $dbQuery, $val)
+	protected static function filterTokenTagMax($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('tag_count <= ?')->put(intval($val));
+		$sqlQuery->raw('tag_count <= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenFavMin($searchContext, $dbQuery, $val)
+	protected static function filterTokenFavMin($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('fav_count >= ?')->put(intval($val));
+		$sqlQuery->raw('fav_count >= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenFavMax($searchContext, $dbQuery, $val)
+	protected static function filterTokenFavMax($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('fav_count <= ?')->put(intval($val));
+		$sqlQuery->raw('fav_count <= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenCommentMin($searchContext, $dbQuery, $val)
+	protected static function filterTokenCommentMin($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('comment_count >= ?')->put(intval($val));
+		$sqlQuery->raw('comment_count >= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenCommentMax($searchContext, $dbQuery, $val)
+	protected static function filterTokenCommentMax($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$dbQuery->addSql('comment_count <= ?')->put(intval($val));
+		$sqlQuery->raw('comment_count <= ?')->put(intval($val));
 	}
 
-	protected static function filterTokenSpecial($searchContext, $dbQuery, $val)
+	protected static function filterTokenSpecial($searchContext, SqlQuery $sqlQuery, $val)
 	{
 		$context = \Chibi\Registry::getContext();
 
@@ -118,11 +116,11 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		{
 			case 'liked':
 			case 'likes':
-				$dbQuery
+				$sqlQuery
 					->exists()
 					->open()
 					->select('1')
-					->from('postscore')
+					->from('post_score')
 					->where('post_id = post.id')
 					->and('score > 0')
 					->and('user_id = ?')->put($context->user->id)
@@ -131,11 +129,11 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 
 			case 'disliked':
 			case 'dislikes':
-				$dbQuery
+				$sqlQuery
 					->exists()
 					->open()
 					->select('1')
-					->from('postscore')
+					->from('post_score')
 					->where('post_id = post.id')
 					->and('score < 0')
 					->and('user_id = ?')->put($context->user->id)
@@ -147,7 +145,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		}
 	}
 
-	protected static function filterTokenType($searchContext, $dbQuery, $val)
+	protected static function filterTokenType($searchContext, SqlQuery $sqlQuery, $val)
 	{
 		switch (strtolower($val))
 		{
@@ -164,7 +162,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			default:
 				throw new SimpleException('Unknown type "' . $val . '"');
 		}
-		$dbQuery->addSql('type = ?')->put($type);
+		$sqlQuery->raw('type = ?')->put($type);
 	}
 
 	protected static function __filterTokenDateParser($val)
@@ -182,30 +180,30 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		return [$timeMin, $timeMax];
 	}
 
-	protected static function filterTokenDate($searchContext, $dbQuery, $val)
+	protected static function filterTokenDate($searchContext, SqlQuery $sqlQuery, $val)
 	{
 		list ($timeMin, $timeMax) = self::__filterTokenDateParser($val);
-		$dbQuery
-			->addSql('upload_date >= ?')->put($timeMin)
+		$sqlQuery
+			->raw('upload_date >= ?')->put($timeMin)
 			->and('upload_date <= ?')->put($timeMax);
 	}
 
-	protected static function filterTokenDateMin($searchContext, $dbQuery, $val)
+	protected static function filterTokenDateMin($searchContext, SqlQuery $sqlQuery, $val)
 	{
 		list ($timeMin, $timeMax) = self::__filterTokenDateParser($val);
-		$dbQuery->addSql('upload_date >= ?')->put($timeMin);
+		$sqlQuery->raw('upload_date >= ?')->put($timeMin);
 	}
 
-	protected static function filterTokenDateMax($searchContext, $dbQuery, $val)
+	protected static function filterTokenDateMax($searchContext, SqlQuery $sqlQuery, $val)
 	{
 		list ($timeMin, $timeMax) = self::__filterTokenDateParser($val);
-		$dbQuery->addSql('upload_date <= ?')->put($timeMax);
+		$sqlQuery->raw('upload_date <= ?')->put($timeMax);
 	}
 
-	protected static function filterTokenFav($searchContext, $dbQuery, $val)
+	protected static function filterTokenFav($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$user = Model_User::locate($val);
-		$dbQuery
+		$user = UserModel::findByNameOrEmail($val);
+		$sqlQuery
 			->exists()
 			->open()
 			->select('1')
@@ -215,15 +213,15 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			->close();
 	}
 
-	protected static function filterTokenFavs($searchContext, $dbQuery, $val)
+	protected static function filterTokenFavs($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		return self::filterTokenFav($searchContext, $dbQuery, $val);
+		return self::filterTokenFav($searchContext, $sqlQuery, $val);
 	}
 
-	protected static function filterTokenComment($searchContext, $dbQuery, $val)
+	protected static function filterTokenComment($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$user = Model_User::locate($val);
-		$dbQuery
+		$user = UserModel::findByNameOrEmail($val);
+		$sqlQuery
 			->exists()
 			->open()
 			->select('1')
@@ -233,51 +231,51 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 			->close();
 	}
 
-	protected static function filterTokenCommenter($searchContext, $dbQuery, $val)
+	protected static function filterTokenCommenter($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		return self::filterTokenComment($searchContext, $dbQuery, $val);
+		return self::filterTokenComment($searchContext, $sqlQuery, $val);
 	}
 
-	protected static function filterTokenSubmit($searchContext, $dbQuery, $val)
+	protected static function filterTokenSubmit($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		$user = Model_User::locate($val);
-		$dbQuery->addSql('uploader_id = ?')->put($user->id);
+		$user = UserModel::findByNameOrEmail($val);
+		$sqlQuery->raw('uploader_id = ?')->put($user->id);
 	}
 
-	protected static function filterTokenUploader($searchContext, $dbQuery, $val)
+	protected static function filterTokenUploader($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		return self::filterTokenSubmit($searchContext, $dbQuery, $val);
+		return self::filterTokenSubmit($searchContext, $sqlQuery, $val);
 	}
 
-	protected static function filterTokenUpload($searchContext, $dbQuery, $val)
+	protected static function filterTokenUpload($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		return self::filterTokenSubmit($searchContext, $dbQuery, $val);
+		return self::filterTokenSubmit($searchContext, $sqlQuery, $val);
 	}
 
-	protected static function filterTokenUploaded($searchContext, $dbQuery, $val)
+	protected static function filterTokenUploaded($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		return self::filterTokenSubmit($searchContext, $dbQuery, $val);
+		return self::filterTokenSubmit($searchContext, $sqlQuery, $val);
 	}
 
-	protected static function filterTokenPrev($searchContext, $dbQuery, $val)
+	protected static function filterTokenPrev($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		self::__filterTokenPrevNext($searchContext, $dbQuery, $val);
+		self::__filterTokenPrevNext($searchContext, $sqlQuery, $val);
 	}
 
-	protected static function filterTokenNext($searchContext, $dbQuery, $val)
+	protected static function filterTokenNext($searchContext, SqlQuery $sqlQuery, $val)
 	{
 		$searchContext->orderDir *= -1;
-		self::__filterTokenPrevNext($searchContext, $dbQuery, $val);
+		self::__filterTokenPrevNext($searchContext, $sqlQuery, $val);
 	}
 
-	protected static function __filterTokenPrevNext($searchContext, $dbQuery, $val)
+	protected static function __filterTokenPrevNext($searchContext, SqlQuery $sqlQuery, $val)
 	{
 		$op1 = $searchContext->orderDir == 1 ? '<' : '>';
 		$op2 = $searchContext->orderDir != 1 ? '<' : '>';
-		$dbQuery
+		$sqlQuery
 			->open()
 				->open()
-					->addSql($searchContext->orderColumn . ' ' . $op1 . ' ')
+					->raw($searchContext->orderColumn . ' ' . $op1 . ' ')
 					->open()
 						->select($searchContext->orderColumn)
 						->from('post p2')
@@ -287,7 +285,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 				->close()
 				->or()
 				->open()
-					->addSql($searchContext->orderColumn . ' = ')
+					->raw($searchContext->orderColumn . ' = ')
 					->open()
 						->select($searchContext->orderColumn)
 						->from('post p2')
@@ -405,19 +403,19 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		return $unparsedTokens;
 	}
 
-	public static function build($dbQuery, $query)
+	public static function decorate(SqlQuery $sqlQuery, $searchQuery)
 	{
 		$config = \Chibi\Registry::getConfig();
 
-		$dbQuery->from('post');
+		$sqlQuery->from('post');
 
-		self::filterChain($dbQuery);
-		self::filterUserSafety($dbQuery);
-		self::filterChain($dbQuery);
-		self::filterUserHidden($dbQuery);
+		self::filterChain($sqlQuery);
+		self::filterUserSafety($sqlQuery);
+		self::filterChain($sqlQuery);
+		self::filterUserHidden($sqlQuery);
 
 		/* query tokens */
-		$tokens = array_filter(array_unique(explode(' ', $query)), function($x) { return $x != ''; });
+		$tokens = array_filter(array_unique(explode(' ', $searchQuery)), function($x) { return $x != ''; });
 		if (self::$enableTokenLimit and count($tokens) > $config->browsing->maxSearchTokens)
 			throw new SimpleException('Too many search tokens (maximum: ' . $config->browsing->maxSearchTokens . ')');
 
@@ -428,7 +426,7 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		$searchContext->orderColumn = 'id';
 		$searchContext->orderDir = 1;
 
-		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $dbQuery, &$orderToken)
+		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $sqlQuery, &$orderToken)
 		{
 			if ($key != 'order')
 				return false;
@@ -443,47 +441,47 @@ class Model_Post_QueryBuilder implements AbstractQueryBuilder
 		});
 
 
-		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $dbQuery)
+		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $sqlQuery)
 		{
 			if ($key !== null)
 				return false;
 
-			self::filterChain($dbQuery);
+			self::filterChain($sqlQuery);
 			if ($neg)
-				self::filterNegate($dbQuery);
-			self::filterTag($dbQuery, $val);
+				self::filterNegate($sqlQuery);
+			self::filterTag($sqlQuery, $val);
 			return true;
 		});
 
-		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $dbQuery)
+		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $sqlQuery)
 		{
 			$methodName = 'filterToken' . TextHelper::kebabCaseToCamelCase($key);
 			if (!method_exists(__CLASS__, $methodName))
 				return false;
 
-			self::filterChain($dbQuery);
+			self::filterChain($sqlQuery);
 			if ($neg)
-				self::filterNegate($dbQuery);
-			self::$methodName($searchContext, $dbQuery, $val);
+				self::filterNegate($sqlQuery);
+			self::$methodName($searchContext, $sqlQuery, $val);
 			return true;
 		});
 
 		if (!empty($tokens))
 			throw new SimpleException('Unknown search token "' . array_shift($tokens) . '"');
 
-		$dbQuery->orderBy($searchContext->orderColumn);
+		$sqlQuery->orderBy($searchContext->orderColumn);
 		if ($searchContext->orderDir == 1)
-			$dbQuery->desc();
+			$sqlQuery->desc();
 		else
-			$dbQuery->asc();
+			$sqlQuery->asc();
 
 		if ($searchContext->orderColumn != 'id')
 		{
-			$dbQuery->addSql(', id');
+			$sqlQuery->raw(', id');
 			if ($searchContext->orderDir == 1)
-				$dbQuery->desc();
+				$sqlQuery->desc();
 			else
-				$dbQuery->asc();
+				$sqlQuery->asc();
 		}
 	}
 }

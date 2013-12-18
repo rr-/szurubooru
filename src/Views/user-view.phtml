@@ -11,18 +11,18 @@
 
 		<div class="key-value join-date">
 			<span class="key">Joined:</span>
-			<span class="value" title="<?php echo $val = date('Y-m-d', $this->context->transport->user->join_date) ?>"><?php echo $val ?></span>
+			<span class="value" title="<?php echo $val = date('Y-m-d', $this->context->transport->user->joinDate) ?>"><?php echo $val ?></span>
 		</div>
 
 		<div class="key-value access-rank">
 			<span class="key">Access rank:</span>
-			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(AccessRank::toString($this->context->transport->user->access_rank)) ?>"><?php echo $val ?></span>
+			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(AccessRank::toString($this->context->transport->user->accessRank)) ?>"><?php echo $val ?></span>
 		</div>
 
 		<?php if (PrivilegesHelper::confirm(Privilege::ViewUserEmail, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 			<div class="key-value email">
 				<span class="key">E-mail:</span>
-				<span class="value" title="<?php echo $val = ($this->context->transport->user->email_unconfirmed ? '(unconfirmed) ' . $this->context->transport->user->email_unconfirmed : $this->context->transport->user->email_confirmed ?: 'none specified') ?>"><?php echo $val ?></span>
+				<span class="value" title="<?php echo $val = ($this->context->transport->user->emailUnconfirmed ? '(unconfirmed) ' . $this->context->transport->user->emailUnconfirmed : $this->context->transport->user->emailConfirmed ?: 'none specified') ?>"><?php echo $val ?></span>
 				<br>(only you and staff can see this)
 			</div>
 		<?php endif ?>
@@ -113,7 +113,7 @@
 			}
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration) and !$this->context->transport->user->staff_confirmed and $this->config->registration->staffActivation)
+		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration) and !$this->context->transport->user->staffConfirmed and $this->config->registration->staffActivation)
 		{
 			$options []=
 			[

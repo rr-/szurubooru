@@ -58,7 +58,7 @@ class Bootstrap
 		{
 			StatusHelper::failure(rtrim($e->getMessage(), '.') . '.');
 			$this->context->transport->exception = $e;
-			$this->context->transport->queries = array_map(function($x) { return preg_replace('/\s+/', ' ', $x); }, queryLogger()->getLogs());
+			$this->context->transport->queries = Database::getLogs();
 			$this->context->viewName = 'error-exception';
 			(new \Chibi\View())->renderFile($this->context->layoutName);
 		}

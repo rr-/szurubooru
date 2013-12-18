@@ -16,7 +16,7 @@
 		<div class="left">
 			Tags:&nbsp;
 			<ul class="tags">
-				<?php $tags = $this->context->featuredPost->sharedTag ?>
+				<?php $tags = $this->context->featuredPost->getTags() ?>
 				<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 				<?php foreach ($tags as $tag): ?>
 					<li>

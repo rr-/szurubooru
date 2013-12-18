@@ -9,12 +9,12 @@
 			$currentGroup = null;
 			foreach ($this->context->transport->comments as $comment)
 			{
-				if ($comment->post_id != $currentGroupPostId)
+				if ($comment->postId != $currentGroupPostId)
 				{
 					unset($currentGroup);
 					$currentGroup = [];
-					$currentGroupPostId = $comment->post_id;
-					$posts[$comment->post_id] = $comment->post;
+					$currentGroupPostId = $comment->postId;
+					$posts[$comment->postId] = $comment->getPost();
 					$groups[] = &$currentGroup;
 				}
 				$currentGroup []= $comment;
@@ -23,7 +23,7 @@
 		<?php foreach ($groups as $group): ?>
 			<div class="comment-group">
 				<div class="post-wrapper">
-					<?php $this->context->post = $posts[reset($group)->post_id] ?>
+					<?php $this->context->post = $posts[reset($group)->postId] ?>
 					<?php echo $this->renderFile('post-small') ?>
 				</div>
 				<div class="comments">

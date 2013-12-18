@@ -73,7 +73,7 @@ class LogEvent
 		$this->ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 
 		$context = \Chibi\Registry::getContext();
-		$tokens['anon'] = Model_User::getAnonymousName();
+		$tokens['anon'] = UserModel::getAnonymousName();
 		if ($context->loggedIn and isset($context->user))
 			$tokens['user'] = TextHelper::reprUser($context->user->name);
 		else

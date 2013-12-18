@@ -15,7 +15,7 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
 
-		$tags = Model_Tag::getEntitiesRows($suppliedFilter, null, null);
+		$tags = TagSearchService::getEntitiesRows($suppliedFilter, null, null);
 		$this->context->filter = $suppliedFilter;
 		$this->context->transport->tags = $tags;
 
@@ -39,30 +39,15 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
 		{
-			Model_Tag::removeUnused();
+			TagModel::removeUnused();
 
 			$suppliedSourceTag = InputHelper::get('source-tag');
-			$suppliedSourceTag = Model_Tag::validateTag($suppliedSourceTag);
-			$sourceTag = Model_Tag::locate($suppliedSourceTag);
+			$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
 
 			$suppliedTargetTag = InputHelper::get('target-tag');
-			$suppliedTargetTag = Model_Tag::validateTag($suppliedTargetTag);
-			$targetTag = Model_Tag::locate($suppliedTargetTag);
+			$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
 
-			if ($sourceTag->id == $targetTag->id)
-				throw new SimpleException('Source and target tag are the same');
-
-			R::preload($sourceTag, 'post');
-
-			foreach ($sourceTag->sharedPost as $post)
-			{
-				foreach ($post->sharedTag as $key => $postTag)
-					if ($postTag->id == $sourceTag->id)
-						unset($post->sharedTag[$key]);
-				$post->sharedTag []= $targetTag;
-				Model_Post::save($post);
-			}
-			Model_Tag::remove($sourceTag);
+			TagModel::merge($suppliedSourceTag, $suppliedTargetTag);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
 			LogHelper::log('{user} merged {source} with {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
@@ -82,21 +67,15 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
 		{
-			Model_Tag::removeUnused();
+			TagModel::removeUnused();
 
 			$suppliedSourceTag = InputHelper::get('source-tag');
-			$suppliedSourceTag = Model_Tag::validateTag($suppliedSourceTag);
-			$sourceTag = Model_Tag::locate($suppliedSourceTag);
+			$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
 
 			$suppliedTargetTag = InputHelper::get('target-tag');
-			$suppliedTargetTag = Model_Tag::validateTag($suppliedTargetTag);
-			$targetTag = Model_Tag::locate($suppliedTargetTag, false);
+			$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
 
-			if ($targetTag and $targetTag->id != $sourceTag->id)
-				throw new SimpleException('Target tag already exists');
-
-			$sourceTag->name = $suppliedTargetTag;
-			Model_Tag::save($sourceTag);
+			TagModel::rename($suppliedSourceTag, $suppliedTargetTag);
 
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
 			LogHelper::log('{user} renamed {source} to {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
@@ -121,7 +100,7 @@ class TagController
 				$suppliedQuery = ' ';
 			$suppliedTag = InputHelper::get('tag');
 			if (!empty($suppliedTag))
-				$suppliedTag = Model_Tag::validateTag($suppliedTag);
+				$suppliedTag = TagModel::validateTag($suppliedTag);
 			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('post', 'list', ['source' => 'mass-tag', 'query' => $suppliedQuery, 'additionalInfo' => $suppliedTag]));
 		}
 	}

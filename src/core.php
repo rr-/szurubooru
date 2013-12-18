@@ -12,7 +12,6 @@ ini_set('memory_limit', '128M');
 
 //basic include calls, autoloader init
 require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'Markdown.php';
-require_once $rootDir . 'lib' . DS . 'redbean' . DS . 'RedBean' . DS . 'redbean.inc.php';
 require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'Facade.php';
 \Chibi\AutoLoader::init(__DIR__);
 
@@ -40,20 +39,9 @@ $context = \Chibi\Registry::getContext();
 $context->startTime = $startTime;
 $context->rootDir = $rootDir;
 
-//load database
-R::setup($config->main->dbDriver . ':' . TextHelper::absolutePath($config->main->dbLocation), $config->main->dbUser, $config->main->dbPass);
-R::freeze(true);
+Database::connect($config->main->dbDriver, TextHelper::absolutePath($config->main->dbLocation), $config->main->dbUser, $config->main->dbPass);
 
 //wire models
 foreach (\Chibi\AutoLoader::getAllIncludablePaths() as $path)
 	if (preg_match('/Model/', $path))
 		\Chibi\AutoLoader::safeInclude($path);
-
-function queryLogger()
-{
-	static $queryLogger = null;
-	if ($queryLogger === null)
-		$queryLogger = RedBean_Plugin_QueryLogger::getInstanceAndAttach(R::getDatabaseAdapter());
-	return $queryLogger;
-}
-queryLogger();

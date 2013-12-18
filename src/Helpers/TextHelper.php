@@ -17,6 +17,18 @@ class TextHelper
 		return $text;
 	}
 
+	//todo: convert to enum and make one method
+	public static function snakeCaseToCamelCase($string, $lower = false)
+	{
+		$string = preg_split('/_/', $string);
+		$string = array_map('trim', $string);
+		$string = array_map('ucfirst', $string);
+		$string = join('', $string);
+		if ($lower)
+			$string = lcfirst($string);
+		return $string;
+	}
+
 	public static function kebabCaseToCamelCase($string)
 	{
 		$string = preg_split('/-/', $string);
@@ -152,13 +164,9 @@ class TextHelper
 
 		foreach ($obj as $key => $val)
 		{
-			if ($val instanceof RedBean_OODBBean)
+			if ($val instanceof Exception)
 			{
-				$set($key, R::exportAll($val));
-			}
-			elseif ($val instanceof Exception)
-			{
-				$set($key, ['message' => $val->getMessage(), 'trace' => $val->getTraceAsString()]);
+				$set($key, ['message' => $val->getMessage(), 'trace' => explode("\n", $val->getTraceAsString())]);
 			}
 		}
 

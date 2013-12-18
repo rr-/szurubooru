@@ -22,25 +22,20 @@ class UserController
 		$linkActionName)
 	{
 		//prepare unique user token
-		do
-		{
-			$tokenText =  md5(mt_rand() . uniqid());
-		}
-		while (R::findOne('usertoken', 'token = ?', [$tokenText]) !== null);
-		$token = R::dispense('usertoken');
-		$token->user = $user;
-		$token->token = $tokenText;
+		$token = TokenModel::spawn();
+		$token->setUser($user);
+		$token->token = TokenModel::forgeUnusedToken();
 		$token->used = false;
 		$token->expires = null;
-		R::store($token);
+		TokenModel::save($token);
 
 		\Chibi\Registry::getContext()->mailSent = true;
 		$tokens = [];
 		$tokens['host'] = $_SERVER['HTTP_HOST'];
-		$tokens['token'] = $tokenText;
+		$tokens['token'] = $token->token; //gosh this code looks so silly
 		$tokens['nl'] = PHP_EOL;
 		if ($linkActionName !== null)
-			$tokens['link'] = \Chibi\UrlHelper::route('user', $linkActionName, ['token' => $tokenText]);
+			$tokens['link'] = \Chibi\UrlHelper::route('user', $linkActionName, ['token' => $token->token]);
 
 		$body = wordwrap(TextHelper::replaceTokens($body, $tokens), 70);
 		$subject = TextHelper::replaceTokens($subject, $tokens);
@@ -73,8 +68,8 @@ class UserController
 		$regConfig = \Chibi\Registry::getConfig()->registration;
 		if (!$regConfig->confirmationEmailEnabled)
 		{
-			$user->email_confirmed = $user->email_unconfirmed;
-			$user->email_unconfirmed = null;
+			$user->emailConfirmed = $user->emailUnconfirmed;
+			$user->emailUnconfirmed = null;
 			return;
 		}
 
@@ -84,7 +79,7 @@ class UserController
 			$regConfig->confirmationEmailSubject,
 			$regConfig->confirmationEmailSenderName,
 			$regConfig->confirmationEmailSenderEmail,
-			$user->email_unconfirmed,
+			$user->emailUnconfirmed,
 			'activation');
 	}
 
@@ -98,7 +93,7 @@ class UserController
 			$regConfig->passwordResetEmailSubject,
 			$regConfig->passwordResetEmailSenderName,
 			$regConfig->passwordResetEmailSenderEmail,
-			$user->email_confirmed,
+			$user->emailConfirmed,
 			'password-reset');
 	}
 
@@ -130,7 +125,8 @@ class UserController
 		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
 
 		$page = max(1, $page);
-		list ($users, $userCount) = Model_User::getEntitiesWithCount($sortStyle, $usersPerPage, $page);
+		$users = UserSearchService::getEntities($sortStyle, $usersPerPage, $page);
+		$userCount = UserSearchService::getEntityCount($sortStyle, $usersPerPage, $page);
 		$pageCount = ceil($userCount / $usersPerPage);
 
 		$this->context->sortStyle = $sortStyle;
@@ -151,7 +147,7 @@ class UserController
 	*/
 	public function flagAction($name)
 	{
-		$user = Model_User::locate($name);
+		$user = UserModel::findByNameOrEmail($name);
 		PrivilegesHelper::confirmWithException(Privilege::FlagUser);
 
 		if (InputHelper::get('submit'))
@@ -177,13 +173,13 @@ class UserController
 	*/
 	public function banAction($name)
 	{
-		$user = Model_User::locate($name);
+		$user = UserModel::findByNameOrEmail($name);
 		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		if (InputHelper::get('submit'))
 		{
 			$user->banned = true;
-			Model_User::save($user);
+			UserModel::save($user);
 
 			LogHelper::log('{user} banned {subject}', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
@@ -198,13 +194,13 @@ class UserController
 	*/
 	public function unbanAction($name)
 	{
-		$user = Model_User::locate($name);
+		$user = UserModel::findByNameOrEmail($name);
 		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		if (InputHelper::get('submit'))
 		{
 			$user->banned = false;
-			Model_User::save($user);
+			UserModel::save($user);
 
 			LogHelper::log('{user} unbanned {subject}', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
@@ -219,12 +215,12 @@ class UserController
 	*/
 	public function acceptRegistrationAction($name)
 	{
-		$user = Model_User::locate($name);
+		$user = UserModel::findByNameOrEmail($name);
 		PrivilegesHelper::confirmWithException(Privilege::AcceptUserRegistration);
 		if (InputHelper::get('submit'))
 		{
-			$user->staff_confirmed = true;
-			Model_User::save($user);
+			$user->staffConfirmed = true;
+			UserModel::save($user);
 			LogHelper::log('{user} confirmed {subject}\'s account', ['subject' => TextHelper::reprUser($user)]);
 			StatusHelper::success();
 		}
@@ -238,7 +234,7 @@ class UserController
 	*/
 	public function deleteAction($name)
 	{
-		$user = Model_User::locate($name);
+		$user = UserModel::findByNameOrEmail($name);
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		PrivilegesHelper::confirmWithException(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
@@ -252,13 +248,13 @@ class UserController
 			$name = $user->name;
 			if ($this->context->user->id == $user->id)
 			{
-				$suppliedPasswordHash = Model_User::hashPassword($suppliedCurrentPassword, $user->pass_salt);
-				if ($suppliedPasswordHash != $user->pass_hash)
+				$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
+				if ($suppliedPasswordHash != $user->passHash)
 					throw new SimpleException('Must supply valid password');
 			}
 
 			$oldId = $user->id;
-			Model_User::remove($user);
+			UserModel::remove($user);
 			if ($oldId == $this->context->user->id)
 				AuthController::doLogOut();
 
@@ -276,7 +272,7 @@ class UserController
 	*/
 	public function settingsAction($name)
 	{
-		$user = Model_User::locate($name);
+		$user = UserModel::findByNameOrEmail($name);
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		PrivilegesHelper::confirmWithException(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($user));
 
@@ -295,7 +291,8 @@ class UserController
 			$user->enablePostTagTitles(InputHelper::get('post-tag-titles'));
 			$user->enableHidingDislikedPosts(InputHelper::get('hide-disliked-posts'));
 
-			Model_User::save($user);
+			if ($user->accessRank != AccessRank::Anonymous)
+				UserModel::save($user);
 			if ($user->id == $this->context->user->id)
 				$this->context->user = $user;
 			AuthController::doReLog();
@@ -313,7 +310,7 @@ class UserController
 	{
 		try
 		{
-			$user = Model_User::locate($name);
+			$user = UserModel::findByNameOrEmail($name);
 			PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
 			$this->loadUserView($user);
@@ -325,7 +322,7 @@ class UserController
 			$this->context->suppliedPassword2 = $suppliedPassword2 = InputHelper::get('password2');
 			$this->context->suppliedEmail = $suppliedEmail = InputHelper::get('email');
 			$this->context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
-			$currentPasswordHash = $user->pass_hash;
+			$currentPasswordHash = $user->passHash;
 
 			if (InputHelper::get('submit'))
 			{
@@ -335,7 +332,7 @@ class UserController
 				if ($suppliedName != '' and $suppliedName != $user->name)
 				{
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($user));
-					$suppliedName = Model_User::validateUserName($suppliedName);
+					$suppliedName = UserModel::validateUserName($suppliedName);
 					$oldName = $user->name;
 					$user->name = $suppliedName;
 					LogHelper::log('{user} renamed {old} to {new}', ['old' => TextHelper::reprUser($oldName), 'new' => TextHelper::reprUser($suppliedName)]);
@@ -346,45 +343,45 @@ class UserController
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserPassword, PrivilegesHelper::getIdentitySubPrivilege($user));
 					if ($suppliedPassword1 != $suppliedPassword2)
 						throw new SimpleException('Specified passwords must be the same');
-					$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
-					$user->pass_hash = Model_User::hashPassword($suppliedPassword, $user->pass_salt);
+					$suppliedPassword = UserModel::validatePassword($suppliedPassword1);
+					$user->passHash = UserModel::hashPassword($suppliedPassword, $user->passSalt);
 					LogHelper::log('{user} changed {subject}\'s password', ['subject' => TextHelper::reprUser($user)]);
 				}
 
-				if ($suppliedEmail != '' and $suppliedEmail != $user->email_confirmed)
+				if ($suppliedEmail != '' and $suppliedEmail != $user->emailConfirmed)
 				{
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserEmail, PrivilegesHelper::getIdentitySubPrivilege($user));
-					$suppliedEmail = Model_User::validateEmail($suppliedEmail);
+					$suppliedEmail = UserModel::validateEmail($suppliedEmail);
 					if ($this->context->user->id == $user->id)
 					{
-						$user->email_unconfirmed = $suppliedEmail;
-						if (!empty($user->email_unconfirmed))
+						$user->emailUnconfirmed = $suppliedEmail;
+						if (!empty($user->emailUnconfirmed))
 							$confirmMail = true;
 						LogHelper::log('{user} changed e-mail to {mail}', ['mail' => $suppliedEmail]);
 					}
 					else
 					{
-						$user->email_unconfirmed = null;
-						$user->email_confirmed = $suppliedEmail;
+						$user->emailUnconfirmed = null;
+						$user->emailConfirmed = $suppliedEmail;
 						LogHelper::log('{user} changed {subject}\'s e-mail to {mail}', ['subject' => TextHelper::reprUser($user), 'mail' => $suppliedEmail]);
 					}
 				}
 
-				if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->access_rank)
+				if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->accessRank)
 				{
 					PrivilegesHelper::confirmWithException(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($user));
-					$suppliedAccessRank = Model_User::validateAccessRank($suppliedAccessRank);
-					$user->access_rank = $suppliedAccessRank;
+					$suppliedAccessRank = UserModel::validateAccessRank($suppliedAccessRank);
+					$user->accessRank = $suppliedAccessRank;
 					LogHelper::log('{user} changed {subject}\'s access rank to {rank}', ['subject' => TextHelper::reprUser($user), 'rank' => AccessRank::toString($suppliedAccessRank)]);
 				}
 
 				if ($this->context->user->id == $user->id)
 				{
-					$suppliedPasswordHash = Model_User::hashPassword($suppliedCurrentPassword, $user->pass_salt);
+					$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
 					if ($suppliedPasswordHash != $currentPasswordHash)
 						throw new SimpleException('Must supply valid current password');
 				}
-				Model_User::save($user);
+				UserModel::save($user);
 
 				if ($confirmMail)
 					self::sendEmailChangeConfirmation($user);
@@ -398,7 +395,7 @@ class UserController
 		}
 		catch (Exception $e)
 		{
-			$this->context->transport->user = Model_User::locate($name);
+			$this->context->transport->user = UserModel::findByNameOrEmail($name);
 			throw $e;
 		}
 	}
@@ -406,16 +403,16 @@ class UserController
 
 
 	/**
-	* @route /user/{name}
+	* @route /user/{name}/{tab}
 	* @route /user/{name}/{tab}/{page}
 	* @validate name [^\/]+
 	* @validate tab favs|uploads
 	* @validate page \d*
 	*/
-	public function viewAction($name, $tab, $page)
+	public function viewAction($name, $tab = 'favs', $page)
 	{
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
-		$user = Model_User::locate($name);
+		$user = UserModel::findByNameOrEmail($name);
 		if ($tab === null)
 			$tab = 'favs';
 		if ($page === null)
@@ -439,9 +436,10 @@ class UserController
 			throw new SimpleException('Wrong tab');
 
 		$page = max(1, $page);
-		list ($posts, $postCount) = Model_Post::getEntitiesWithCount($query, $postsPerPage, $page);
+		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
+		$postCount = PostSearchService::getEntityCount($query, $postsPerPage, $page);
 		$pageCount = ceil($postCount / $postsPerPage);
-		Model_Post::attachTags($posts);
+		PostModel::preloadTags($posts);
 
 		$this->context->transport->tab = $tab;
 		$this->context->transport->lastSearchQuery = $query;
@@ -468,9 +466,9 @@ class UserController
 		$this->context->user->enableSafety($safety,
 			!$this->context->user->hasEnabledSafety($safety));
 
+		if ($this->context->user->accessRank != AccessRank::Anonymous)
+			UserModel::save($this->context->user);
 		AuthController::doReLog();
-		if (!$this->context->user->anonymous)
-			Model_User::save($this->context->user);
 
 		StatusHelper::success();
 	}
@@ -504,42 +502,42 @@ class UserController
 
 		if (InputHelper::get('submit'))
 		{
-			$suppliedName = Model_User::validateUserName($suppliedName);
+			$suppliedName = UserModel::validateUserName($suppliedName);
 
 			if ($suppliedPassword1 != $suppliedPassword2)
 				throw new SimpleException('Specified passwords must be the same');
-			$suppliedPassword = Model_User::validatePassword($suppliedPassword1);
+			$suppliedPassword = UserModel::validatePassword($suppliedPassword1);
 
-			$suppliedEmail = Model_User::validateEmail($suppliedEmail);
+			$suppliedEmail = UserModel::validateEmail($suppliedEmail);
 			if (empty($suppliedEmail) and $this->config->registration->needEmailForRegistering)
 				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
 
 			//register the user
-			$dbUser = Model_User::create();
+			$dbUser = UserModel::spawn();
 			$dbUser->name = $suppliedName;
-			$dbUser->pass_hash = Model_User::hashPassword($suppliedPassword, $dbUser->pass_salt);
-			$dbUser->email_unconfirmed = $suppliedEmail;
+			$dbUser->passHash = UserModel::hashPassword($suppliedPassword, $dbUser->passSalt);
+			$dbUser->emailUnconfirmed = $suppliedEmail;
 
-			$dbUser->join_date = time();
-			if (R::findOne('user') === null)
+			$dbUser->joinDate = time();
+			if (UserModel::getCount() == 0)
 			{
 				//very first user
-				$dbUser->access_rank = AccessRank::Admin;
-				$dbUser->staff_confirmed = true;
-				$dbUser->email_unconfirmed = null;
-				$dbUser->email_confirmed = $suppliedEmail;
+				$dbUser->accessRank = AccessRank::Admin;
+				$dbUser->staffConfirmed = true;
+				$dbUser->emailUnconfirmed = null;
+				$dbUser->emailConfirmed = $suppliedEmail;
 			}
 			else
 			{
-				$dbUser->access_rank = AccessRank::Registered;
-				$dbUser->staff_confirmed = false;
-				$dbUser->staff_confirmed = null;
+				$dbUser->accessRank = AccessRank::Registered;
+				$dbUser->staffConfirmed = false;
+				$dbUser->staffConfirmed = null;
 			}
 
 			//save the user to db if everything went okay
-			Model_User::save($dbUser);
+			UserModel::save($dbUser);
 
-			if (!empty($dbUser->email_unconfirmed))
+			if (!empty($dbUser->emailUnconfirmed))
 				self::sendEmailChangeConfirmation($dbUser);
 
 			$message = 'Congratulations, your account was created.';
@@ -573,14 +571,15 @@ class UserController
 		$this->context->subTitle = 'account activation';
 		$this->context->viewName = 'message';
 
-		$dbToken = Model_Token::locate($token);
+		$dbToken = TokenModel::findByToken($token);
+		TokenModel::checkValidity($dbToken);
 
-		$dbUser = $dbToken->user;
-		$dbUser->email_confirmed = $dbUser->email_unconfirmed;
-		$dbUser->email_unconfirmed = null;
+		$dbUser = $dbToken->getUser();
+		$dbUser->emailConfirmed = $dbUser->emailUnconfirmed;
+		$dbUser->emailUnconfirmed = null;
 		$dbToken->used = true;
-		R::store($dbToken);
-		Model_User::save($dbUser);
+		TokenModel::save($dbToken);
+		UserModel::save($dbUser);
 
 		LogHelper::log('{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
 		$message = 'Activation completed successfully.';
@@ -605,7 +604,8 @@ class UserController
 		$this->context->subTitle = 'password reset';
 		$this->context->viewName = 'message';
 
-		$dbToken = Model_Token::locate($token);
+		$dbToken = TokenModel::findByToken($token);
+		TokenModel::checkValidity($dbToken);
 
 		$alphabet = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
 		$randomPassword = join('', array_map(function($x) use ($alphabet)
@@ -613,11 +613,11 @@ class UserController
 			return $alphabet[$x];
 		}, array_rand($alphabet, 8)));
 
-		$dbUser = $dbToken->user;
-		$dbUser->pass_hash = Model_User::hashPassword($randomPassword, $dbUser->pass_salt);
+		$dbUser = $dbToken->getUser();
+		$dbUser->passHash = UserModel::hashPassword($randomPassword, $dbUser->passSalt);
 		$dbToken->used = true;
-		R::store($dbToken);
-		Model_User::save($dbUser);
+		TokenModel::save($dbToken);
+		UserModel::save($dbUser);
 
 		LogHelper::log('{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
 		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
@@ -642,8 +642,8 @@ class UserController
 		if (InputHelper::get('submit'))
 		{
 			$name = InputHelper::get('name');
-			$user = Model_User::locate($name);
-			if (empty($user->email_confirmed))
+			$user = UserModel::findByNameOrEmail($name);
+			if (empty($user->emailConfirmed))
 				throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
 
 			self::sendPasswordResetConfirmation($user);
@@ -663,10 +663,10 @@ class UserController
 		if (InputHelper::get('submit'))
 		{
 			$name = InputHelper::get('name');
-			$user = Model_User::locate($name);
-			if (empty($user->email_unconfirmed))
+			$user = UserModel::findByNameOrEmail($name);
+			if (empty($user->emailUnconfirmed))
 			{
-				if (!empty($user->email_confirmed))
+				if (!empty($user->emailConfirmed))
 					throw new SimpleException('E-mail was already confirmed; activation skipped');
 				else
 					throw new SimpleException('This user has no e-mail specified; activation cannot proceed');

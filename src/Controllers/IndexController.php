@@ -9,14 +9,14 @@ class IndexController
 	{
 		$this->context->subTitle = 'home';
 		$this->context->stylesheets []= 'index-index.css';
-		$this->context->transport->postCount = Model_Post::getAllPostCount();
+		$this->context->transport->postCount = PostModel::getCount();
 
 		$featuredPost = $this->getFeaturedPost();
 		if ($featuredPost)
 		{
 			$this->context->featuredPost = $featuredPost;
-			$this->context->featuredPostDate = Model_Property::get(Model_Property::FeaturedPostDate);
-			$this->context->featuredPostUser = Model_User::locate(Model_Property::get(Model_Property::FeaturedPostUserName), false);
+			$this->context->featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
+			$this->context->featuredPostUser = UserModel::findByNameOrEmail(PropertyModel::get(PropertyModel::FeaturedPostUserName), false);
 			$this->context->pageThumb = \Chibi\UrlHelper::route('post', 'thumb', ['name' => $featuredPost->name]);
 		}
 	}
@@ -42,15 +42,15 @@ class IndexController
 	{
 		$featuredPostRotationTime = $this->config->misc->featuredPostMaxDays * 24 * 3600;
 
-		$featuredPostId = Model_Property::get(Model_Property::FeaturedPostId);
-		$featuredPostDate = Model_Property::get(Model_Property::FeaturedPostDate);
+		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);
+		$featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
 
 		//check if too old
 		if (!$featuredPostId or $featuredPostDate + $featuredPostRotationTime < time())
 			return $this->featureNewPost();
 
 		//check if post was deleted
-		$featuredPost = Model_Post::locate($featuredPostId, false, false);
+		$featuredPost = PostModel::findById($featuredPostId, false);
 		if (!$featuredPost)
 			return $this->featureNewPost();
 
@@ -59,20 +59,20 @@ class IndexController
 
 	private function featureNewPost()
 	{
-		$featuredPostId = R::$f->begin()
+		$query = (new SqlQuery)
 			->select('id')
 			->from('post')
 			->where('type = ?')->put(PostType::Image)
 			->and('safety = ?')->put(PostSafety::Safe)
 			->orderBy($this->config->main->dbDriver == 'sqlite' ? 'random()' : 'rand()')
-			->desc()
-			->get('row')['id'];
+			->desc();
+		$featuredPostId = Database::fetchOne($query)['id'];
 		if (!$featuredPostId)
 			return null;
 
-		Model_Property::set(Model_Property::FeaturedPostId, $featuredPostId);
-		Model_Property::set(Model_Property::FeaturedPostDate, time());
-		Model_Property::set(Model_Property::FeaturedPostUserName, null);
-		return Model_Post::locate($featuredPostId);
+		PropertyModel::set(PropertyModel::FeaturedPostId, $featuredPostId);
+		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
+		PropertyModel::set(PropertyModel::FeaturedPostUserName, null);
+		return PostModel::findById($featuredPostId);
 	}
 }

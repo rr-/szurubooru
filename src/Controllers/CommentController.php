@@ -21,9 +21,13 @@ class CommentController
 		PrivilegesHelper::confirmWithException(Privilege::ListComments);
 
 		$page = max(1, $page);
-		list ($comments, $commentCount) = Model_Comment::getEntitiesWithCount(null, $commentsPerPage, $page);
+		$comments = CommentSearchService::getEntities(null, $commentsPerPage, $page);
+		$commentCount = CommentSearchService::getEntityCount(null, $commentsPerPage, $page);
 		$pageCount = ceil($commentCount / $commentsPerPage);
-		R::preload($comments, ['commenter' => 'user', 'post', 'post.uploader' => 'user', 'post.sharedTag']);
+		CommentModel::preloadCommenters($comments);
+		CommentModel::preloadPosts($comments);
+		$posts = array_map(function($comment) { return $comment->getPost(); }, $comments);
+		PostModel::preloadTags($posts);
 
 		$this->context->postGroups = true;
 		$this->context->transport->paginator = new StdClass;
@@ -47,22 +51,24 @@ class CommentController
 		if ($this->config->registration->needEmailForCommenting)
 			PrivilegesHelper::confirmEmail($this->context->user);
 
-		$post = Model_Post::locate($postId);
+		$post = PostModel::findById($postId);
 
 		if (InputHelper::get('submit'))
 		{
 			$text = InputHelper::get('text');
-			$text = Model_Comment::validateText($text);
+			$text = CommentModel::validateText($text);
 
-			$comment = Model_Comment::create();
-			$comment->post = $post;
+			$comment = CommentModel::spawn();
+			$comment->setPost($post);
 			if ($this->context->loggedIn)
-				$comment->commenter = $this->context->user;
-			$comment->comment_date = time();
+				$comment->setCommenter($this->context->user);
+			else
+				$comment->setCommenter(null);
+			$comment->commentDate = time();
 			$comment->text = $text;
 			if (InputHelper::get('sender') != 'preview')
 			{
-				Model_Comment::save($comment);
+				CommentModel::save($comment);
 				LogHelper::log('{user} commented on {post}', ['post' => TextHelper::reprPost($post->id)]);
 			}
 			$this->context->transport->textPreview = $comment->getText();
@@ -78,13 +84,12 @@ class CommentController
 	*/
 	public function deleteAction($id)
 	{
-		$comment = Model_Comment::locate($id);
-		R::preload($comment, ['commenter' => 'user']);
+		$comment = CommentModel::findById($id);
 
-		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->commenter));
-		Model_Comment::remove($comment);
+		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->getCommenter()));
+		CommentModel::remove($comment);
 
-		LogHelper::log('{user} removed comment from {post}', ['post' => TextHelper::reprPost($comment->post)]);
+		LogHelper::log('{user} removed comment from {post}', ['post' => TextHelper::reprPost($comment->getPost())]);
 		StatusHelper::success();
 	}
 }

@@ -1,27 +1,27 @@
 <?php
-class model_Tag_QueryBuilder implements AbstractQueryBuilder
+class TagSearchService extends AbstractSearchService
 {
-	public static function build($dbQuery, $query)
+	public static function decorate(SqlQuery $sqlQuery, $searchQuery)
 	{
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
 		$limitQuery = false;
-		$dbQuery
-			->addSql(', COUNT(post_tag.post_id)')
+		$sqlQuery
+			->raw(', COUNT(post_tag.post_id)')
 			->as('post_count')
 			->from('tag')
 			->innerJoin('post_tag')
 			->on('tag.id = post_tag.tag_id')
 			->innerJoin('post')
 			->on('post.id = post_tag.post_id')
-			->where('safety IN (' . R::genSlots($allowedSafety) . ')');
+			->where('safety')->in()->genSlots($allowedSafety);
 		foreach ($allowedSafety as $s)
-			$dbQuery->put($s);
+			$sqlQuery->put($s);
 
 		$orderToken = null;
 
-		if ($query !== null)
+		if ($searchQuery !== null)
 		{
-			$tokens = preg_split('/\s+/', $query);
+			$tokens = preg_split('/\s+/', $searchQuery);
 			foreach ($tokens as $token)
 			{
 				if (strpos($token, ':') !== false)
@@ -39,7 +39,7 @@ class model_Tag_QueryBuilder implements AbstractQueryBuilder
 					if (strlen($token) >= 3)
 						$token = '%' . $token;
 					$token .= '%';
-					$dbQuery
+					$sqlQuery
 						->and('LOWER(tag.name)')
 						->like('LOWER(?)')
 						->put($token);
@@ -47,16 +47,16 @@ class model_Tag_QueryBuilder implements AbstractQueryBuilder
 			}
 		}
 
-		$dbQuery->groupBy('tag.id');
+		$sqlQuery->groupBy('tag.id');
 		if ($orderToken)
-			self::order($dbQuery,$orderToken);
+			self::order($sqlQuery,$orderToken);
 
 
 		if ($limitQuery)
-			$dbQuery->limit(15);
+			$sqlQuery->limit(15);
 	}
 
-	private static function order($dbQuery, $value)
+	private static function order(SqlQuery $sqlQuery, $value)
 	{
 		if (strpos($value, ',') !== false)
 		{
@@ -71,17 +71,17 @@ class model_Tag_QueryBuilder implements AbstractQueryBuilder
 		switch ($orderColumn)
 		{
 			case 'popularity':
-				$dbQuery->orderBy('post_count');
+				$sqlQuery->orderBy('post_count');
 				break;
 
 			case 'alpha':
-				$dbQuery->orderBy('name');
+				$sqlQuery->orderBy('name');
 				break;
 		}
 
 		if ($orderDir == 'asc')
-			$dbQuery->asc();
+			$sqlQuery->asc();
 		else
-			$dbQuery->desc();
+			$sqlQuery->desc();
 	}
 }

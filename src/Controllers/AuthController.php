@@ -17,15 +17,15 @@ class AuthController
 		$config = \Chibi\Registry::getConfig();
 		$context = \Chibi\Registry::getContext();
 
-		$dbUser = Model_User::locate($name, false);
+		$dbUser = UserModel::findByNameOrEmail($name, false);
 		if ($dbUser === null)
 			throw new SimpleException('Invalid username');
 
-		$passwordHash = Model_User::hashPassword($password, $dbUser->pass_salt);
-		if ($passwordHash != $dbUser->pass_hash)
+		$passwordHash = UserModel::hashPassword($password, $dbUser->passSalt);
+		if ($passwordHash != $dbUser->passHash)
 			throw new SimpleException('Invalid password');
 
-		if (!$dbUser->staff_confirmed and $config->registration->staffActivation)
+		if (!$dbUser->staffConfirmed and $config->registration->staffActivation)
 			throw new SimpleException('Staff hasn\'t confirmed your registration yet');
 
 		if ($dbUser->banned)
@@ -105,20 +105,20 @@ class AuthController
 		{
 			if (!empty($context->user) and $context->user->id)
 			{
-				$dbUser = R::findOne('user', 'id = ?', [$context->user->id]);
+				$dbUser = UserModel::findById($context->user->id);
 				$_SESSION['user'] = serialize($dbUser);
 			}
 			else
 			{
-				$dummy = R::dispense('user');
-				$dummy->name = Model_User::getAnonymousName();
-				$dummy->access_rank = AccessRank::Anonymous;
-				$dummy->anonymous = true;
+				$dummy = UserModel::spawn();
+				$dummy->name = UserModel::getAnonymousName();
+				$dummy->accessRank = AccessRank::Anonymous;
 				$_SESSION['user'] = serialize($dummy);
 			}
 		}
+
 		$context->user = unserialize($_SESSION['user']);
-		$context->loggedIn = $context->user->anonymous ? false : true;
+		$context->loggedIn = $context->user->accessRank != AccessRank::Anonymous;
 		if (!$context->loggedIn)
 		{
 			try
@@ -135,7 +135,7 @@ class AuthController
 	{
 		$context = \Chibi\Registry::getContext();
 		if ($context->user !== null)
-			$_SESSION['user'] = serialize($context->user);
+			self::doLogOut();
 		self::doLogIn();
 	}
 

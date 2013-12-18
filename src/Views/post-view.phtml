@@ -33,9 +33,9 @@
 	</nav>
 
 	<div class="unit tags">
-		<h1>tags (<?php echo count($this->context->transport->post->sharedTag) ?>)</h1>
+		<h1>tags (<?php echo count($this->context->transport->post->getTags()) ?>)</h1>
 		<ul>
-			<?php $tags = $this->context->transport->post->sharedTag ?>
+			<?php $tags = $this->context->transport->post->getTags() ?>
 			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 			<?php foreach ($tags as $tag): ?>
 				<li title="<?php echo $tag->name ?>">
@@ -55,17 +55,18 @@
 
 		<div class="key-value uploader">
 			<span class="key">Uploader:</span>
-			<?php if ($this->context->transport->post->uploader): ?>
-				<span class="value" title="<?php echo $val = $this->context->transport->post->uploader->name ?>">
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->post->uploader->name]) ?>">
-						<img src="<?php echo htmlentities($this->context->transport->post->uploader->getAvatarUrl(16)) ?>" alt="<?php echo $this->context->transport->post->uploader->name ?>"/>
+			<?php $uploader = $this->context->transport->post->getUploader() ?>
+			<?php if ($uploader): ?>
+				<span class="value" title="<?php echo $val = $uploader->name ?>">
+					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $uploader->name]) ?>">
+						<img src="<?php echo htmlentities($uploader->getAvatarUrl(16)) ?>" alt="<?php echo $uploader->name ?>"/>
 						<?php echo $val ?>
 					</a>
 				</span>
 			<?php else: ?>
-				<span class="value" title="<?php echo Model_User::getAnonymousName() ?>">
-					<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="<?php echo Model_User::getAnonymousName() ?>"/>
-					<?php echo Model_User::getAnonymousName() ?>
+				<span class="value" title="<?php echo UserModel::getAnonymousName() ?>">
+					<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="<?php echo UserModel::getAnonymousName() ?>"/>
+					<?php echo UserModel::getAnonymousName() ?>
 				</span>
 			<?php endif ?>
 		</div>
@@ -109,17 +110,17 @@
 
 		<div class="key-value date">
 			<span class="key">Date:</span>
-			<span class="value" title="<?php echo $val = date('Y-m-d H:i', $this->context->transport->post->upload_date) ?>">
+			<span class="value" title="<?php echo $val = date('Y-m-d H:i', $this->context->transport->post->uploadDate) ?>">
 				<?php echo $val ?>
 			</span>
 		</div>
 
-		<?php if ($this->context->transport->post->image_width > 0): ?>
+		<?php if ($this->context->transport->post->imageWidth > 0): ?>
 			<div class="key-value dim">
 				<span class="key">Dimensions:</span>
 				<span class="value" title="<?php echo $val = sprintf('%dx%d',
-					$this->context->transport->post->image_width,
-					$this->context->transport->post->image_height) ?>">
+					$this->context->transport->post->imageWidth,
+					$this->context->transport->post->imageHeight) ?>">
 					<?php echo $val ?>
 				</span>
 			</div>
@@ -146,18 +147,18 @@
 						<?php echo isset($mimes[$mime]) ? $mimes[$mime] : 'unknown' ?>
 					</span>
 					<span class="size">
-						<?php echo TextHelper::useBytesUnits($this->context->transport->post->file_size) ?>
+						<?php echo TextHelper::useBytesUnits($this->context->transport->post->fileSize) ?>
 					</span>
 				</a>
 			</div>
 		<?php endif ?>
 	</div>
 
-	<?php if (count($this->context->transport->post->ownFavoritee) > 0): ?>
+	<?php if (count($this->context->transport->post->getFavorites()) > 0): ?>
 		<div class="unit favorites">
-			<h1>favorites (<?php echo count($this->context->transport->post->ownFavoritee) ?>)</h1>
+			<h1>favorites (<?php echo count($this->context->transport->post->getFavorites()) ?>)</h1>
 			<ul>
-				<?php foreach ($this->context->transport->post->via('favoritee')->sharedUser as $user): ?>
+				<?php foreach ($this->context->transport->post->getFavorites() as $user): ?>
 					<li>
 						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>" title="<?php echo $user->name ?>">
 							<img src="<?php echo htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?php echo $user->name ?>">
@@ -168,11 +169,11 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (count($this->context->transport->post->via('crossref')->sharedPost)): ?>
+	<?php if (count($this->context->transport->post->getRelations())): ?>
 		<div class="relations unit">
 			<h1>related</h1>
 			<ul>
-				<?php foreach ($this->context->transport->post->via('crossref')->sharedPost as $relatedPost): ?>
+				<?php foreach ($this->context->transport->post->getRelations() as $relatedPost): ?>
 					<li>
 						<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $relatedPost->id]) ?>">
 							@<?php echo $relatedPost->id ?>
@@ -193,7 +194,7 @@
 		$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
 		foreach (array_keys($editPostPrivileges) as $privilege)
 		{
-			if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader)))
+			if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
 				$editPostPrivileges[$privilege] = true;
 		}
 		$canEditAnything = count(array_filter($editPostPrivileges)) > 0;
@@ -231,7 +232,7 @@
 			];
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader)))
+		if (PrivilegesHelper::confirm(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
 		{
 			if ($this->context->transport->post->hidden)
 			{
@@ -288,7 +289,7 @@
 			}
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->uploader)))
+		if (PrivilegesHelper::confirm(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
 		{
 			$options []=
 			[
@@ -315,11 +316,11 @@
 	<?php endif ?>
 
 	<div class="comments-wrapper">
-		<?php if (!empty($this->context->transport->post->ownComment)): ?>
+		<?php if (!empty($this->context->transport->post->getComments())): ?>
 			<div class="comments unit">
-				<h1>comments (<?php echo $this->context->transport->post->countOwn('comment') ?>)</h1>
+				<h1>comments (<?php echo count($this->context->transport->post->getComments()) ?>)</h1>
 				<div class="comments">
-					<?php foreach ($this->context->transport->post->ownComment as $comment): ?>
+					<?php foreach ($this->context->transport->post->getComments() as $comment): ?>
 						<?php $this->context->comment = $comment ?>
 						<?php echo $this->renderFile('comment-small') ?>
 					<?php endforeach ?>

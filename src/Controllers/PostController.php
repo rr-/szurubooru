@@ -11,13 +11,13 @@ class PostController
 	private static function serializePost($post)
 	{
 		$x = [];
-		foreach ($post->sharedTag as $tag)
+		foreach ($post->getTags() as $tag)
 			$x []= TextHelper::reprTag($tag->name);
-		foreach ($post->via('crossref')->sharedPost as $relatedPost)
+		foreach ($post->getRelations() as $relatedPost)
 			$x []= TextHelper::reprPost($relatedPost);
 		$x []= $post->safety;
 		$x []= $post->source;
-		$x []= $post->file_hash;
+		$x []= $post->fileHash;
 		natcasesort($x);
 		$x = join(' ', $x);
 		return md5($x);
@@ -104,10 +104,11 @@ class PostController
 		}
 
 		$page = max(1, $page);
-		list($posts, $postCount) = Model_Post::getEntitiesWithCount($query, $postsPerPage, $page);
+		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
+		$postCount = PostSearchService::getEntityCount($query, $postsPerPage, $page);
 		$pageCount = ceil($postCount / $postsPerPage);
 		$page = min($pageCount, $page);
-		Model_Post::attachTags($posts);
+		PostModel::preloadTags($posts);
 
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
@@ -126,33 +127,40 @@ class PostController
 	*/
 	public function toggleTagAction($id, $tag, $enable)
 	{
-		$post = Model_Post::locate($id);
+		$tagName = $tag;
+		$post = PostModel::findByIdOrName($id);
 		$this->context->transport->post = $post;
-
-		$tagRow = Model_Tag::locate($tag, false);
-		if ($tagRow !== null)
-			$tag = $tagRow->name;
 
 		if (InputHelper::get('submit'))
 		{
 			PrivilegesHelper::confirmWithException(Privilege::MassTag);
-			$tags = array_map(function($x) { return $x->name; }, $post->sharedTag);
 
-			if (!$enable and in_array($tag, $tags))
+			$tags = $post->getTags();
+
+			if (!$enable)
 			{
-				$tags = array_diff($tags, [$tag]);
+				foreach ($tags as $i => $tag)
+					if ($tag->name == $tagName)
+						unset($tags[$i]);
 				LogHelper::log('{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 			}
 			elseif ($enable)
 			{
-				$tags += [$tag];
+				$tag = TagModel::findByName($tagName, false);
+				if ($tag === null)
+				{
+					$tag = TagModel::spawn();
+					$tag->name = $tagName;
+					TagModel::save($tag);
+				}
+
+				$tags []= $tag;
 				LogHelper::log('{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
 			}
 
-			$dbTags = Model_Tag::insertOrUpdate($tags);
-			$post->sharedTag = $dbTags;
+			$post->setTags($tags);
 
-			Model_Post::save($post);
+			PostModel::save($post);
 			StatusHelper::success();
 		}
 	}
@@ -197,18 +205,18 @@ class PostController
 
 		if (InputHelper::get('submit'))
 		{
-			R::transaction(function()
+			Database::transaction(function()
 			{
-				$post = Model_Post::create();
+				$post = PostModel::spawn();
 				LogHelper::bufferChanges();
 
 				//basic stuff
 				$anonymous = InputHelper::get('anonymous');
 				if ($this->context->loggedIn and !$anonymous)
-					$post->uploader = $this->context->user;
+					$post->setUploader($this->context->user);
 
 				//store the post to get the ID in the logs
-				Model_Post::save($post);
+				PostModel::forgeId($post);
 
 				//do the edits
 				$this->doEdit($post, true);
@@ -227,13 +235,13 @@ class PostController
 				$fmt .= ' added {post} (tags: {tags}, safety: {safety}, source: {source})';
 				LogHelper::log($fmt, [
 					'post' => TextHelper::reprPost($post),
-					'tags' => join(', ', array_map(['TextHelper', 'reprTag'], $post->sharedTag)),
+					'tags' => TextHelper::reprTags($post->getTags()),
 					'safety' => PostSafety::toString($post->safety),
 					'source' => $post->source]);
 
 				//finish
 				LogHelper::flush();
-				Model_Post::save($post);
+				PostModel::save($post);
 			});
 
 			StatusHelper::success();
@@ -247,7 +255,7 @@ class PostController
 	*/
 	public function editAction($id)
 	{
-		$post = Model_Post::locate($id);
+		$post = PostModel::findByIdOrName($id);
 		$this->context->transport->post = $post;
 
 		if (InputHelper::get('submit'))
@@ -260,8 +268,8 @@ class PostController
 			$this->doEdit($post, false);
 			LogHelper::flush();
 
-			Model_Post::save($post);
-			Model_Tag::removeUnused();
+			PostModel::save($post);
+			TagModel::removeUnused();
 
 			StatusHelper::success();
 		}
@@ -274,7 +282,7 @@ class PostController
 	*/
 	public function flagAction($id)
 	{
-		$post = Model_Post::locate($id);
+		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::FlagPost);
 
 		if (InputHelper::get('submit'))
@@ -299,15 +307,13 @@ class PostController
 	*/
 	public function hideAction($id)
 	{
-		$post = Model_Post::locate($id);
-		R::preload($post, ['uploader' => 'user']);
-
-		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+		$post = PostModel::findByIdOrName($id);
+		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
 			$post->setHidden(true);
-			Model_Post::save($post);
+			PostModel::save($post);
 
 			LogHelper::log('{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
@@ -321,15 +327,13 @@ class PostController
 	*/
 	public function unhideAction($id)
 	{
-		$post = Model_Post::locate($id);
-		R::preload($post, ['uploader' => 'user']);
-
-		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+		$post = PostModel::findByIdOrName($id);
+		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
 			$post->setHidden(false);
-			Model_Post::save($post);
+			PostModel::save($post);
 
 			LogHelper::log('{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
 			StatusHelper::success();
@@ -343,14 +347,12 @@ class PostController
 	*/
 	public function deleteAction($id)
 	{
-		$post = Model_Post::locate($id);
-		R::preload($post, ['uploader' => 'user']);
-
-		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+		$post = PostModel::findByIdOrName($id);
+		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
-			Model_Post::remove($post);
+			PostModel::remove($post);
 
 			LogHelper::log('{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
 			StatusHelper::success();
@@ -365,7 +367,7 @@ class PostController
 	*/
 	public function addFavoriteAction($id)
 	{
-		$post = Model_Post::locate($id);
+		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
 
 		if (InputHelper::get('submit'))
@@ -373,8 +375,7 @@ class PostController
 			if (!$this->context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			$this->context->user->addToFavorites($post);
-			Model_User::save($this->context->user);
+			UserModel::addToUserFavorites($this->context->user, $post);
 			StatusHelper::success();
 		}
 	}
@@ -385,7 +386,7 @@ class PostController
 	*/
 	public function remFavoriteAction($id)
 	{
-		$post = Model_Post::locate($id);
+		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
 
 		if (InputHelper::get('submit'))
@@ -393,8 +394,7 @@ class PostController
 			if (!$this->context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			$this->context->user->remFromFavorites($post);
-			Model_User::save($this->context->user);
+			UserModel::removeFromUserFavorites($this->context->user, $post);
 			StatusHelper::success();
 		}
 	}
@@ -407,7 +407,7 @@ class PostController
 	*/
 	public function scoreAction($id, $score)
 	{
-		$post = Model_Post::locate($id);
+		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::ScorePost);
 
 		if (InputHelper::get('submit'))
@@ -415,8 +415,7 @@ class PostController
 			if (!$this->context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			$this->context->user->score($post, $score);
-			Model_User::save($this->context->user);
+			UserModel::updateUserScore($this->context->user, $post, $score);
 			StatusHelper::success();
 		}
 	}
@@ -428,11 +427,11 @@ class PostController
 	*/
 	public function featureAction($id)
 	{
-		$post = Model_Post::locate($id);
+		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::FeaturePost);
-		Model_Property::set(Model_Property::FeaturedPostId, $post->id);
-		Model_Property::set(Model_Property::FeaturedPostDate, time());
-		Model_Property::set(Model_Property::FeaturedPostUserName, $this->context->user->name);
+		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
+		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
+		PropertyModel::set(PropertyModel::FeaturedPostUserName, $this->context->user->name);
 		StatusHelper::success();
 		LogHelper::log('{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
 	}
@@ -445,35 +444,31 @@ class PostController
 	*/
 	public function viewAction($id)
 	{
-		$post = Model_Post::locate($id);
-		R::preload($post, [
-			'tag',
-			'uploader' => 'user',
-			'ownComment.commenter' => 'user']);
-		R::preload($this->context->user, ['ownFavoritee']);
+		$post = PostModel::findByIdOrName($id);
+		CommentModel::preloadCommenters($post->getComments());
 
 		if ($post->hidden)
 			PrivilegesHelper::confirmWithException(Privilege::ViewPost, 'hidden');
 		PrivilegesHelper::confirmWithException(Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
 
-		Model_Post_QueryBuilder::enableTokenLimit(false);
+		PostSearchService::enableTokenLimit(false);
 		try
 		{
 			$this->context->transport->lastSearchQuery = InputHelper::get('last-search-query');
 			$prevPostQuery = $this->context->transport->lastSearchQuery . ' prev:' . $id;
 			$nextPostQuery = $this->context->transport->lastSearchQuery . ' next:' . $id;
-			$prevPost = current(Model_Post::getEntities($prevPostQuery, 1, 1));
-			$nextPost = current(Model_Post::getEntities($nextPostQuery, 1, 1));
+			$prevPost = current(PostSearchService::getEntities($prevPostQuery, 1, 1));
+			$nextPost = current(PostSearchService::getEntities($nextPostQuery, 1, 1));
 		}
 		#search for some reason was invalid, e.g. tag was deleted in the meantime
 		catch (Exception $e)
 		{
 			$this->context->transport->lastSearchQuery = '';
-			$prevPost = current(Model_Post::getEntities('prev:' . $id, 1, 1));
-			$nextPost = current(Model_Post::getEntities('next:' . $id, 1, 1));
+			$prevPost = current(PostModel::getEntities('prev:' . $id, 1, 1));
+			$nextPost = current(PostModel::getEntities('next:' . $id, 1, 1));
 		}
-		Model_Post_QueryBuilder::enableTokenLimit(true);
+		PostSearchService::enableTokenLimit(true);
 
 		$favorite = $this->context->user->hasFavorited($post);
 		$score = $this->context->user->getScore($post);
@@ -483,13 +478,13 @@ class PostController
 		$this->context->stylesheets []= 'post-view.css';
 		$this->context->stylesheets []= 'comment-small.css';
 		$this->context->scripts []= 'post-view.js';
-		$this->context->subTitle = 'showing ' . TextHelper::reprPost($post) . ' &ndash; ' . TextHelper::reprTags($post->sharedTag);
+		$this->context->subTitle = 'showing ' . TextHelper::reprPost($post) . ' &ndash; ' . TextHelper::reprTags($post->getTags());
 		$this->context->favorite = $favorite;
 		$this->context->score = $score;
 		$this->context->flagged = $flagged;
 		$this->context->transport->post = $post;
-		$this->context->transport->prevPostId = $prevPost ? $prevPost['id'] : null;
-		$this->context->transport->nextPostId = $nextPost ? $nextPost['id'] : null;
+		$this->context->transport->prevPostId = $prevPost ? $prevPost->id : null;
+		$this->context->transport->nextPostId = $nextPost ? $nextPost->id : null;
 		$this->context->transport->editToken = self::serializePost($post);
 	}
 
@@ -501,13 +496,13 @@ class PostController
 	*/
 	public function thumbAction($name, $width = null, $height = null)
 	{
-		$path = Model_Post::getThumbCustomPath($name, $width, $height);
+		$path = PostModel::getThumbCustomPath($name, $width, $height);
 		if (!file_exists($path))
 		{
-			$path = Model_Post::getThumbDefaultPath($name, $width, $height);
+			$path = PostModel::getThumbDefaultPath($name, $width, $height);
 			if (!file_exists($path))
 			{
-				$post = Model_Post::locate($name);
+				$post = PostModel::findByIdOrName($name);
 				PrivilegesHelper::confirmWithException(Privilege::ListPosts);
 				PrivilegesHelper::confirmWithException(Privilege::ListPosts, PostSafety::toString($post->safety));
 				$post->makeThumb($width, $height);
@@ -534,8 +529,7 @@ class PostController
 	*/
 	public function retrieveAction($name)
 	{
-		$this->context->layoutName = 'layout-file';
-		$post = Model_Post::locate($name, true);
+		$post = PostModel::findByName($name, true);
 
 		PrivilegesHelper::confirmWithException(Privilege::RetrievePost);
 		PrivilegesHelper::confirmWithException(Privilege::RetrievePost, PostSafety::toString($post->safety));
@@ -546,22 +540,23 @@ class PostController
 		if (!is_readable($path))
 			throw new SimpleException('Post file is not readable');
 
-		$ext = substr($post->orig_name, strrpos($post->orig_name, '.') + 1);
-		if (strpos($post->orig_name, '.') === false)
-			$ext = '.dat';
+		$ext = substr($post->origName, strrpos($post->origName, '.') + 1);
+		if (strpos($post->origName, '.') === false)
+			$ext = 'dat';
 		$fn = sprintf('%s_%s_%s.%s',
 			$this->config->main->title,
 			$post->id,
-			join(',', array_map(function($tag) { return $tag->name; }, $post->sharedTag)),
+			join(',', array_map(function($tag) { return $tag->name; }, $post->getTags())),
 			$ext);
 		$fn = preg_replace('/[[:^print:]]/', '', $fn);
 
 		$ttl = 60 * 60 * 24 * 14;
 
+		$this->context->layoutName = 'layout-file';
 		$this->context->transport->cacheDaysToLive = 14;
 		$this->context->transport->customFileName = $fn;
 		$this->context->transport->mimeType = $post->mimeType;
-		$this->context->transport->fileHash = 'post' . $post->file_hash;
+		$this->context->transport->fileHash = 'post' . $post->fileHash;
 		$this->context->transport->filePath = $path;
 	}
 
@@ -569,14 +564,11 @@ class PostController
 
 	private function doEdit($post, $isNew)
 	{
-		if (!$isNew)
-			R::preload($post, ['uploader' => 'user']);
-
 		/* file contents */
 		if (!empty($_FILES['file']['name']))
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 			$suppliedFile = $_FILES['file'];
 			self::handleUploadErrors($suppliedFile);
@@ -590,7 +582,7 @@ class PostController
 		elseif (InputHelper::get('url'))
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 			$url = InputHelper::get('url');
 			$post->setContentFromUrl($url);
@@ -604,7 +596,7 @@ class PostController
 		if ($suppliedSafety !== null)
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 			$oldSafety = $post->safety;
 			$post->setSafety($suppliedSafety);
@@ -619,11 +611,11 @@ class PostController
 		if ($suppliedTags !== null)
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				PrivilegesHelper::confirmWithException(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
-			$oldTags = array_map(function($tag) { return $tag->name; }, $post->sharedTag);
+			$oldTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
 			$post->setTagsFromText($suppliedTags);
-			$newTags = array_map(function($tag) { return $tag->name; }, $post->sharedTag);
+			$newTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
 
 			foreach (array_diff($oldTags, $newTags) as $tag)
 				LogHelper::log('{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
@@ -637,7 +629,7 @@ class PostController
 		if ($suppliedSource !== null)
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 			$oldSource = $post->source;
 			$post->setSource($suppliedSource);
@@ -652,11 +644,11 @@ class PostController
 		if ($suppliedRelations !== null)
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostRelations, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				PrivilegesHelper::confirmWithException(Privilege::EditPostRelations, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
-			$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->via('crossref')->sharedPost);
+			$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
 			$post->setRelationsFromText($suppliedRelations);
-			$newRelatedIds = array_map(function($post) { return $post->id; }, $post->via('crossref')->sharedPost);
+			$newRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
 
 			foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
 				LogHelper::log('{user} removed relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
@@ -669,7 +661,7 @@ class PostController
 		if (!empty($_FILES['thumb']['name']))
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($post->uploader));
+				PrivilegesHelper::confirmWithException(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 			$suppliedFile = $_FILES['thumb'];
 			self::handleUploadErrors($suppliedFile);

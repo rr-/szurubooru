@@ -15,7 +15,7 @@
 	<?php endif ?>
 
 	<?php if ($this->context->user->hasEnabledPostTagTitles()): ?>
-		<a title="<?php echo TextHelper::reprTags($this->context->post->sharedTag) ?>" class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+		<a title="<?php echo TextHelper::reprTags($this->context->post->getTags()) ?>" class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
 	<?php else: ?>
 		<a class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
 	<?php endif ?>
@@ -24,8 +24,8 @@
 			$x =
 			[
 				'score' => $this->context->post->score,
-				'comments' => $this->context->post->comment_count,
-				'favs' => $this->context->post->fav_count,
+				'comments' => $this->context->post->commentCount,
+				'favs' => $this->context->post->favCount,
 			];
 		?>
 		<?php if (!empty($x)): ?>

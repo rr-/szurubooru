@@ -38,7 +38,7 @@
 			<div class="input-wrapper"><select name="access-rank" id="access-rank">
 				<?php foreach (AccessRank::getAll() as $rank): ?>
 					<?php if ($rank == AccessRank::Nobody) continue ?>
-					<?php if (($this->context->suppliedAccessRank != '' and $rank == $this->context->suppliedAccessRank) or ($this->context->suppliedAccessRank == '' and $rank == $this->context->transport->user->access_rank)): ?>
+					<?php if (($this->context->suppliedAccessRank != '' and $rank == $this->context->suppliedAccessRank) or ($this->context->suppliedAccessRank == '' and $rank == $this->context->transport->user->accessRank)): ?>
 						<option value="<?php echo $rank ?>" selected="selected">
 					<?php else: ?>
 						<option value="<?php echo $rank ?>">
