@@ -382,6 +382,8 @@ class UserController
 						throw new SimpleException('Must supply valid current password');
 				}
 				UserModel::save($user);
+				if ($this->context->user->id == $user->id)
+					AuthController::doReLog();
 
 				if ($confirmMail)
 					self::sendEmailChangeConfirmation($user);
