@@ -70,9 +70,8 @@ class PostEntity extends AbstractEntity
 			->select('post.*')
 			->from('post')
 			->innerJoin('crossref')
-				->on()->open()->raw('post.id = crossref.post2_id')->and('crossref.post_id = :id')->close()
-				->or()->open()->raw('post.id = crossref.post_id')->and('crossref.post2_id = :id')->close()
-			->put(['id' => $this->id]);
+				->on()->open()->raw('post.id = crossref.post2_id')->and('crossref.post_id = ?')->close()->put($this->id)
+				->or()->open()->raw('post.id = crossref.post_id')->and('crossref.post2_id = ?')->close()->put($this->id);
 		$rows = Database::fetchAll($query);
 		$posts = PostModel::convertRows($rows);
 		$this->setCache('relations', $posts);

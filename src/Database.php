@@ -15,6 +15,7 @@ class Database
 			self::$pdo = new PDO($dsn, $user, $pass);
 			self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+			self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		}
 		catch (Exception $e)
 		{
@@ -53,7 +54,14 @@ class Database
 		if (!self::connected())
 			throw new Exception('Database is not connected');
 		$statement = self::makeStatement($sqlQuery);
-		$statement->execute();
+		try
+		{
+			$statement->execute();
+		}
+		catch (Exception $e)
+		{
+			throw new Exception('Problem with ' . $sqlQuery->getSql() . ' (' . $e->getMessage() . ')');
+		}
 		self::$queries []= $sqlQuery;
 		return $statement;
 	}
