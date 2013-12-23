@@ -14,6 +14,9 @@ class PostEntity extends AbstractEntity
 	public $imageHeight;
 	public $uploaderId;
 	public $source;
+	public $commentCount;
+	public $favCount;
+	public $score;
 
 	public function getUploader()
 	{

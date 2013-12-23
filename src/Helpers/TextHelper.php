@@ -20,7 +20,7 @@ class TextHelper
 	//todo: convert to enum and make one method
 	public static function snakeCaseToCamelCase($string, $lower = false)
 	{
-		$string = preg_split('/_/', $string);
+		$string = explode('_', $string);
 		$string = array_map('trim', $string);
 		$string = array_map('ucfirst', $string);
 		$string = join('', $string);
@@ -31,7 +31,7 @@ class TextHelper
 
 	public static function kebabCaseToCamelCase($string)
 	{
-		$string = preg_split('/-/', $string);
+		$string = explode('-', $string);
 		$string = array_map('trim', $string);
 		$string = array_map('ucfirst', $string);
 		$string = join('', $string);

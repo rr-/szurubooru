@@ -79,9 +79,22 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function convertRows(array $rows)
 	{
+		$keyCache = [];
+		$entities = [];
 		foreach ($rows as $i => $row)
-			$rows[$i] = self::convertRow($row);
-		return $rows;
+		{
+			$entity = self::spawn();
+			foreach ($row as $key => $val)
+			{
+				if (isset($keyCache[$key]))
+					$key = $keyCache[$key];
+				else
+					$key = $keyCache[$key] = TextHelper::snakeCaseToCamelCase($key, true);
+				$entity->$key = $val;
+			}
+			$entities[$i] = $entity;
+		}
+		return $entities;
 	}
 
 
