@@ -148,4 +148,13 @@ class UserEntity extends AbstractEntity
 			->where('commenter_id = ?')->put($this->id);
 		return Database::fetchOne($sqlQuery)['count'];
 	}
+
+	public function getPostCount()
+	{
+		$sqlQuery = (new SqlQuery)
+			->select('count(1)')->as('count')
+			->from('post')
+			->where('uploader_id = ?')->put($this->id);
+		return Database::fetchOne($sqlQuery)['count'];
+	}
 }
