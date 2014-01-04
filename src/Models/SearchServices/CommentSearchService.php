@@ -5,9 +5,17 @@ class CommentSearchService extends AbstractSearchService
 	{
 		$sqlQuery
 			->from('comment')
-			->where('post_id')
-			->is()->not('NULL')
-			->orderBy('id')
+			->innerJoin('post')
+			->on('post_id = post.id');
+
+		$allowedSafety = PrivilegesHelper::getAllowedSafety();
+		if (empty($allowedSafety))
+			$sqlQuery->where('0');
+		else
+			$sqlQuery->where('post.safety')->in()->genSlots($allowedSafety)->put($allowedSafety);
+
+		$sqlQuery
+			->orderBy('comment.id')
 			->desc();
 	}
 }
