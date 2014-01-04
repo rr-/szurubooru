@@ -12,8 +12,11 @@ class TagSearchService extends AbstractSearchService
 			->innerJoin('post_tag')
 			->on('tag.id = post_tag.tag_id')
 			->innerJoin('post')
-			->on('post.id = post_tag.post_id')
-			->where('safety')->in()->genSlots($allowedSafety);
+			->on('post.id = post_tag.post_id');
+		if (empty($allowedSafety))
+			$sqlQuery->where('0');
+		else
+			$sqlQuery->where('safety')->in()->genSlots($allowedSafety);
 		foreach ($allowedSafety as $s)
 			$sqlQuery->put($s);
 

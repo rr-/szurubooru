@@ -11,9 +11,10 @@ class PostSearchService extends AbstractSearchService
 	protected static function filterUserSafety(SqlQuery $sqlQuery)
 	{
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		$sqlQuery->raw('safety')->in()->genSlots($allowedSafety);
-		foreach ($allowedSafety as $s)
-			$sqlQuery->put($s);
+		if (empty($allowedSafety))
+			$sqlQuery->raw('0');
+		else
+			$sqlQuery->raw('safety')->in()->genSlots($allowedSafety)->put($allowedSafety);
 	}
 
 	protected static function filterUserHidden(SqlQuery $sqlQuery)
@@ -55,7 +56,10 @@ class PostSearchService extends AbstractSearchService
 	{
 		$ids = preg_split('/[;,]/', $val);
 		$ids = array_map('intval', $ids);
-		$sqlQuery->raw('id')->in()->genSlots($ids)->put($ids);
+		if (empty($ids))
+			$sqlQuery->raw('0');
+		else
+			$sqlQuery->raw('id')->in()->genSlots($ids)->put($ids);
 	}
 
 	protected static function filterTokenIdMin($searchContext, SqlQuery $sqlQuery, $val)
