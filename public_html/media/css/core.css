@@ -152,7 +152,7 @@ footer a {
 #sidebar {
 	float: left;
 	width: 256px;
-	margin-right: 2em;
+	margin-right: 1em;
 }
 #sidebar h1 {
 	margin-top: 0;
@@ -174,29 +174,36 @@ footer a {
 	padding-bottom: 2em;
 }
 
-.small-screen #sidebar {
-	float: none;
-	width: 100%;
-	padding: 0 0 1em 0;
-}
-.small-screen #inner-content {
-	float: none;
-	width: auto;
-}
-
-.bottom-unit {
-	padding: 0.5em 1em;
+.unit {
+	padding: 1em;
 	border: 1px solid #eee;
+	margin: 1em 0;
+}
+#inner-content .unit {
 	border-bottom: 0;
 	padding-bottom: 0;
-	margin: 1em 0 2em 0;
 }
-.left-unit {
-	margin: 0 0 1.5em 0;
-	padding: 0.75em;
-	border: 1px solid #eee;
-	padding-left: 0;
+#sidebar .unit {
 	border-left: 0;
+	padding-left: 0;
+}
+#small-screen { display: none; }
+
+@media only screen and (max-width:700px) {
+	#small-screen { display: block; }
+	body #sidebar {
+		float: none;
+		width: 100%;
+	}
+	body #sidebar .unit {
+		border: 1px solid #eee;
+		border-bottom: 0;
+		padding: 1em 1em 0 1em;
+	}
+	#inner-content {
+		float: none;
+		width: auto;
+	}
 }
 
 

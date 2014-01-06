@@ -148,19 +148,10 @@ $(function()
 //modify DOM on small viewports
 function processSidebar()
 {
-	$('#inner-content .unit').addClass('bottom-unit');
-	if ($('body').width() < 600)
-	{
-		$('body').addClass('small-screen');
+	if ($('#small-screen').is(':visible'))
 		$('#sidebar').insertAfter($('#inner-content'));
-		$('#sidebar .unit').removeClass('left-unit').addClass('bottom-unit');
-	}
 	else
-	{
-		$('body').removeClass('small-screen');
 		$('#sidebar').insertBefore($('#inner-content'));
-		$('#sidebar .unit').removeClass('bottom-unit').addClass('left-unit');
-	}
 }
 $(function()
 {
