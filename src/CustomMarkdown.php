@@ -7,7 +7,7 @@ class CustomMarkdown extends \Michelf\Markdown
 	{
 		$this->simple = $simple;
 		$this->no_markup = true;
-		$this->block_gamut += ['doSpoilers' => 71];
+		$this->span_gamut += ['doSpoilers' => 71];
 		$this->span_gamut += ['doSearchPermalinks' => 72];
 		$this->span_gamut += ['doStrike' => 6];
 		$this->span_gamut += ['doUsers' => 7];
