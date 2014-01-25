@@ -27,6 +27,13 @@ class CustomMarkdown extends \Michelf\Markdown
 		parent::__construct();
 	}
 
+	//disable atx-style headers
+	protected function _doHeaders_callback_atx($matches)
+	{
+		return $matches[0];
+	}
+
+	//disable paragraph forming when using simple markdown
 	protected function formParagraphs($text)
 	{
 		if ($this->simple)
@@ -56,6 +63,7 @@ class CustomMarkdown extends \Michelf\Markdown
 		return $parser->transform($text);
 	}
 
+	//automatically form links out of http://(...) and www.(...)
 	protected function doAutoLinks2($text)
 	{
 		$text = preg_replace_callback('{(?<!<)((https?|ftp):[^\'"><\s(){}]+)}i', [&$this, '_doAutoLinks_url_callback'], $text);
@@ -63,6 +71,7 @@ class CustomMarkdown extends \Michelf\Markdown
 		return $text;
 	}
 
+	//extend anchors callback for doAutolinks2
 	protected function _doAnchors_inline_callback($matches)
 	{
 		if ($matches[3] == '')
@@ -74,6 +83,8 @@ class CustomMarkdown extends \Michelf\Markdown
 		return parent::_doAnchors_inline_callback($matches);
 	}
 
+	//handle white characters inside code blocks
+	//so that they won't be optimized away by prettifying HTML
 	protected function _doCodeBlocks_callback($matches) {
 		$codeblock = $matches[1];
 
@@ -89,7 +100,8 @@ class CustomMarkdown extends \Michelf\Markdown
 		return "\n\n".$this->hashBlock($codeblock)."\n\n";
 	}
 
-
+	//change hard breaks trigger - simple \n followed by text
+	//instead of two spaces followed by \n
 	protected function doHardBreaks($text)
 	{
 		return preg_replace_callback('/\n(?=[\[\]\(\)\w])/', [&$this, '_doHardBreaks_callback'], $text);
