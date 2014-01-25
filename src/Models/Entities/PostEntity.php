@@ -422,4 +422,21 @@ class PostEntity extends AbstractEntity
 				unlink($srcPath);
 		}
 	}
+
+
+
+	public function getEditToken()
+	{
+		$x = [];
+		foreach ($this->getTags() as $tag)
+			$x []= TextHelper::reprTag($tag->name);
+		foreach ($this->getRelations() as $relatedPost)
+			$x []= TextHelper::reprPost($relatedPost);
+		$x []= $this->safety;
+		$x []= $this->source;
+		$x []= $this->fileHash;
+		natcasesort($x);
+		$x = join(' ', $x);
+		return md5($x);
+	}
 }

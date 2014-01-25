@@ -8,21 +8,6 @@ class PostController
 		$callback();
 	}
 
-	private static function serializePost($post)
-	{
-		$x = [];
-		foreach ($post->getTags() as $tag)
-			$x []= TextHelper::reprTag($tag->name);
-		foreach ($post->getRelations() as $relatedPost)
-			$x []= TextHelper::reprPost($relatedPost);
-		$x []= $post->safety;
-		$x []= $post->source;
-		$x []= $post->fileHash;
-		natcasesort($x);
-		$x = join(' ', $x);
-		return md5($x);
-	}
-
 	private static function handleUploadErrors($file)
 	{
 		switch ($file['error'])
@@ -261,7 +246,7 @@ class PostController
 		if (InputHelper::get('submit'))
 		{
 			$editToken = InputHelper::get('edit-token');
-			if ($editToken != self::serializePost($post))
+			if ($editToken != $post->getEditToken())
 				throw new SimpleException('This post was already edited by someone else in the meantime');
 
 			LogHelper::bufferChanges();
@@ -485,7 +470,6 @@ class PostController
 		$this->context->transport->post = $post;
 		$this->context->transport->prevPostId = $prevPost ? $prevPost->id : null;
 		$this->context->transport->nextPostId = $nextPost ? $nextPost->id : null;
-		$this->context->transport->editToken = self::serializePost($post);
 	}
 
 
