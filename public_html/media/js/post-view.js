@@ -29,7 +29,14 @@ $(function()
 				aDom.removeClass('inactive');
 
 			if (!$(formDom).is(':visible'))
-				formDom.parents('.unit').show().css('height', formDom.height()).hide().slideDown();
+			{
+				formDom.parents('.unit')
+					.show().css('height', formDom.height()).hide()
+					.slideDown(function()
+					{
+						$(this).css('height', 'auto');
+					});
+			}
 			$('html, body').animate({ scrollTop: $(formDom).offset().top + 'px' }, 'fast');
 			formDom.find('input[type=text]:visible:eq(0)').focus();
 		});
