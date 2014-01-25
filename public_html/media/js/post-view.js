@@ -1,56 +1,58 @@
-function onDomUpdate()
-{
-	$('li.edit a').click(function(e)
-	{
-		e.preventDefault();
-
-		var aDom = $(this);
-		if (aDom.hasClass('inactive'))
-			return;
-		aDom.addClass('inactive');
-
-		var tags = [];
-		$.getJSON('/tags?json', {filter: 'order:popularity,desc'}, function(data)
-		{
-			aDom.removeClass('inactive');
-			var formDom = $('form.edit-post');
-			tags = data['tags'];
-
-			if (!$(formDom).is(':visible'))
-			{
-				var tagItOptions = getTagItOptions();
-				tagItOptions.availableTags = tags;
-				tagItOptions.placeholderText = $('.tags input').attr('placeholder');
-				$('.tags input').tagit(tagItOptions);
-				formDom.show().css('height', formDom.height()).hide().slideDown();
-			}
-
-			formDom.find('input[type=text]:visible:eq(0)').focus();
-			$('html, body').animate({ scrollTop: $(formDom).offset().top + 'px' }, 'fast');
-		});
-	});
-
-	$('.comments.unit a.simple-action').data('callback', function()
-	{
-		$.get(window.location.href, function(data)
-		{
-			$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
-			$('body').trigger('dom-update');
-		});
-	});
-
-	$('#sidebar a.simple-action').data('callback', function()
-	{
-		$.get(window.location.href, function(data)
-		{
-			$('#sidebar').replaceWith($(data).find('#sidebar'));
-			$('body').trigger('dom-update');
-		});
-	});
-}
-
 $(function()
 {
+	function onDomUpdate()
+	{
+		$('#sidebar .edit a').click(function(e)
+		{
+			e.preventDefault();
+
+			var aDom = $(this);
+			if (aDom.hasClass('inactive'))
+				return;
+			aDom.addClass('inactive');
+
+			var formDom = $('form.edit-post');
+			if (formDom.find('.tagit').length == 0)
+			{
+				$.getJSON('/tags?json', {filter: 'order:popularity,desc'}, function(data)
+				{
+					aDom.removeClass('inactive');
+					var tags = data['tags'];
+
+					var tagItOptions = getTagItOptions();
+					tagItOptions.availableTags = tags;
+					tagItOptions.placeholderText = $('.tags input').attr('placeholder');
+					$('.tags input').tagit(tagItOptions);
+				});
+			}
+			else
+				aDom.removeClass('inactive');
+
+			if (!$(formDom).is(':visible'))
+				formDom.parents('.unit').show().css('height', formDom.height()).hide().slideDown();
+			$('html, body').animate({ scrollTop: $(formDom).offset().top + 'px' }, 'fast');
+			formDom.find('input[type=text]:visible:eq(0)').focus();
+		});
+
+		$('.comments.unit a.simple-action').data('callback', function()
+		{
+			$.get(window.location.href, function(data)
+			{
+				$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
+				$('body').trigger('dom-update');
+			});
+		});
+
+		$('#sidebar a.simple-action').data('callback', function()
+		{
+			$.get(window.location.href, function(data)
+			{
+				$('#sidebar').replaceWith($(data).find('#sidebar'));
+				$('body').trigger('dom-update');
+			});
+		});
+	}
+
 	$('body').bind('dom-update', onDomUpdate);
 
 	$('form.edit-post').submit(function(e)
@@ -79,82 +81,20 @@ $(function()
 			{
 				if (data['success'])
 				{
-					window.location.reload();
+					$.get(window.location.href, function(data)
+					{
+						$('#sidebar').replaceWith($(data).find('#sidebar'));
+						$('#edit-token').replaceWith($(data).find('#edit-token'));
+						$('body').trigger('dom-update');
+					});
+					formDom.parents('.unit').hide();
 				}
 				else
 				{
 					alert(data['message']);
-					formDom.find(':input').attr('readonly', false);
-					formDom.removeClass('inactive');
 				}
-			},
-			error: function()
-			{
-				alert('Fatal error');
 				formDom.find(':input').attr('readonly', false);
 				formDom.removeClass('inactive');
-			}
-		};
-
-		$.ajax(ajaxData);
-	});
-
-	$('form.add-comment').submit(function(e)
-	{
-		e.preventDefault();
-		rememberLastSearchQuery();
-
-		var formDom = $(this);
-		if (formDom.hasClass('inactive'))
-			return;
-		formDom.addClass('inactive');
-		formDom.find(':input').attr('readonly', true);
-
-		var url = formDom.attr('action') + '?json';
-		var fd = new FormData(formDom[0]);
-
-		var preview = false;
-		$.each(formDom.serializeArray(), function(i, x)
-		{
-			if (x.name == 'sender' && x.value == 'preview')
-				preview = true;
-		});
-
-		var ajaxData =
-		{
-			url: url,
-			data: fd,
-			processData: false,
-			contentType: false,
-			type: 'POST',
-
-			success: function(data)
-			{
-				if (data['success'])
-				{
-					if (preview)
-					{
-						formDom.find('.preview').html(data['textPreview']).show();
-					}
-					else
-					{
-						formDom.find('.preview').hide();
-						$.get(window.location.href, function(data)
-						{
-							$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
-							$('body').trigger('dom-update');
-						});
-						formDom.find('textarea').val('');
-					}
-					formDom.find(':input').attr('readonly', false);
-					formDom.removeClass('inactive');
-				}
-				else
-				{
-					alert(data['message']);
-					formDom.find(':input').attr('readonly', false);
-					formDom.removeClass('inactive');
-				}
 			},
 			error: function()
 			{

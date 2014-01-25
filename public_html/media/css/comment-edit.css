@@ -1,0 +1,12 @@
+.preview {
+	border: 1px solid yellow;
+	background: url('../img/preview.png') lemonchiffon;
+	padding: 0.5em;
+	display: none;
+}
+
+form.edit-comment textarea,
+form.add-comment textarea {
+	width: 50em;
+	height: 8em;
+}

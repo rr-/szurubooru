@@ -1,41 +1,43 @@
 <?php if (empty($this->context->transport->comments)): ?>
 	<p class="alert alert-warning">No comments to show.</p>
 <?php else: ?>
-	<div class="comments paginator-content">
-		<?php
-			$groups = [];
-			$posts = [];
-			$currentGroupPostId = null;
-			$currentGroup = null;
-			foreach ($this->context->transport->comments as $comment)
-			{
-				if ($comment->postId != $currentGroupPostId)
+	<div class="comments-wrapper">
+		<div class="comments paginator-content">
+			<?php
+				$groups = [];
+				$posts = [];
+				$currentGroupPostId = null;
+				$currentGroup = null;
+				foreach ($this->context->transport->comments as $comment)
 				{
-					unset($currentGroup);
-					$currentGroup = [];
-					$currentGroupPostId = $comment->postId;
-					$posts[$comment->postId] = $comment->getPost();
-					$groups[] = &$currentGroup;
+					if ($comment->postId != $currentGroupPostId)
+					{
+						unset($currentGroup);
+						$currentGroup = [];
+						$currentGroupPostId = $comment->postId;
+						$posts[$comment->postId] = $comment->getPost();
+						$groups[] = &$currentGroup;
+					}
+					$currentGroup []= $comment;
 				}
-				$currentGroup []= $comment;
-			}
-		?>
-		<?php foreach ($groups as $group): ?>
-			<div class="comment-group">
-				<div class="post-wrapper">
-					<?php $this->context->post = $posts[reset($group)->postId] ?>
-					<?php echo $this->renderFile('post-small') ?>
+			?>
+			<?php foreach ($groups as $group): ?>
+				<div class="comment-group">
+					<div class="post-wrapper">
+						<?php $this->context->post = $posts[reset($group)->postId] ?>
+						<?php echo $this->renderFile('post-small') ?>
+					</div>
+					<div class="comments">
+						<?php foreach ($group as $comment): ?>
+							<?php $this->context->comment = $comment ?>
+							<?php echo $this->renderFile('comment-small') ?>
+						<?php endforeach ?>
+					</div>
+					<div class="clear"></div>
 				</div>
-				<div class="comments">
-					<?php foreach ($group as $comment): ?>
-						<?php $this->context->comment = $comment ?>
-						<?php echo $this->renderFile('comment-small') ?>
-					<?php endforeach ?>
-				</div>
-				<div class="clear"></div>
-			</div>
-		<?php endforeach ?>
-	</div>
+			<?php endforeach ?>
+		</div>
 
-	<?php $this->renderFile('paginator') ?>
+		<?php $this->renderFile('paginator') ?>
+	</div>
 <?php endif ?>

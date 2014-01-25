@@ -31,18 +31,22 @@
 }
 
 .comment .date,
+.comment .edit,
 .comment .delete {
 	font-size: small;
 }
+.comment .edit:before,
 .comment .delete:before {
 	margin-left: 0.2em;
 	content: ' [';
 	color: silver;
 }
+.comment .edit:after,
 .comment .delete:after {
 	content: ']';
 	color: silver;
 }
+.comment .edit a,
 .comment .delete a {
 	color: silver;
 }

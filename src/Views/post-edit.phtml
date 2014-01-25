@@ -1,4 +1,4 @@
-<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit-post aligned unit">
+<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit-post aligned">
 	<h1>edit post</h1>
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 		<div class="safety">

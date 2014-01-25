@@ -133,7 +133,7 @@ i.icon-dl {
 	margin: 2px;
 }
 
-form.edit-post {
+.unit.edit-post {
 	display: none;
 }
 form.edit-post .safety label:not(.left) {
@@ -144,16 +144,4 @@ ul.tagit {
 	vertical-align: middle;
 	margin: 0;
 	font-size: 1em;
-}
-
-.preview {
-	border: 1px solid yellow;
-	background: url('../img/preview.png') lemonchiffon;
-	padding: 0.5em;
-	display: none;
-}
-
-form.add-comment textarea {
-	width: 50em;
-	height: 8em;
 }

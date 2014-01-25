@@ -462,7 +462,9 @@ class PostController
 		$this->context->pageThumb = \Chibi\UrlHelper::route('post', 'thumb', ['name' => $post->name]);
 		$this->context->stylesheets []= 'post-view.css';
 		$this->context->stylesheets []= 'comment-small.css';
+		$this->context->stylesheets []= 'comment-edit.css';
 		$this->context->scripts []= 'post-view.js';
+		$this->context->scripts []= 'comment-edit.js';
 		$this->context->subTitle = 'showing ' . TextHelper::reprPost($post) . ' &ndash; ' . TextHelper::reprTags($post->getTags());
 		$this->context->favorite = $favorite;
 		$this->context->score = $score;

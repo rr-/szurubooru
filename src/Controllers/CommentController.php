@@ -11,9 +11,11 @@ class CommentController
 		$this->context->stylesheets []= 'post-small.css';
 		$this->context->stylesheets []= 'comment-list.css';
 		$this->context->stylesheets []= 'comment-small.css';
+		$this->context->stylesheets []= 'comment-edit.css';
 		$this->context->stylesheets []= 'paginator.css';
 		if ($this->context->user->hasEnabledEndlessScrolling())
 			$this->context->scripts []= 'paginator-endless.js';
+		$this->context->scripts []= 'comment-edit.js';
 
 		$page = intval($page);
 		$commentsPerPage = intval($this->config->comments->commentsPerPage);
@@ -52,6 +54,7 @@ class CommentController
 			PrivilegesHelper::confirmEmail($this->context->user);
 
 		$post = PostModel::findById($postId);
+		$this->context->transport->post = $post;
 
 		if (InputHelper::get('submit'))
 		{
@@ -66,10 +69,41 @@ class CommentController
 				$comment->setCommenter(null);
 			$comment->commentDate = time();
 			$comment->text = $text;
+
 			if (InputHelper::get('sender') != 'preview')
 			{
 				CommentModel::save($comment);
 				LogHelper::log('{user} commented on {post}', ['post' => TextHelper::reprPost($post->id)]);
+			}
+			$this->context->transport->textPreview = $comment->getText();
+			StatusHelper::success();
+		}
+	}
+
+
+
+	/**
+	* @route /comment/{id}/edit
+	* @validate id [0-9]+
+	*/
+	public function editAction($id)
+	{
+		$comment = CommentModel::findById($id);
+		$this->context->transport->comment = $comment;
+
+		PrivilegesHelper::confirmWithException(Privilege::EditComment, PrivilegesHelper::getIdentitySubPrivilege($comment->getCommenter()));
+
+		if (InputHelper::get('submit'))
+		{
+			$text = InputHelper::get('text');
+			$text = CommentModel::validateText($text);
+
+			$comment->text = $text;
+
+			if (InputHelper::get('sender') != 'preview')
+			{
+				CommentModel::save($comment);
+				LogHelper::log('{user} has edited comment in {post}', ['post' => TextHelper::reprPost($comment->getPost())]);
 			}
 			$this->context->transport->textPreview = $comment->getText();
 			StatusHelper::success();
