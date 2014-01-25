@@ -103,7 +103,7 @@ class CommentController
 			if (InputHelper::get('sender') != 'preview')
 			{
 				CommentModel::save($comment);
-				LogHelper::log('{user} has edited comment in {post}', ['post' => TextHelper::reprPost($comment->getPost())]);
+				LogHelper::log('{user} edited comment in {post}', ['post' => TextHelper::reprPost($comment->getPost())]);
 			}
 			$this->context->transport->textPreview = $comment->getText();
 			StatusHelper::success();
