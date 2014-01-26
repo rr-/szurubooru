@@ -450,8 +450,8 @@ class PostController
 		catch (Exception $e)
 		{
 			$this->context->transport->lastSearchQuery = '';
-			$prevPost = current(PostModel::getEntities('prev:' . $id, 1, 1));
-			$nextPost = current(PostModel::getEntities('next:' . $id, 1, 1));
+			$prevPost = current(PostSearchService::getEntities('prev:' . $id, 1, 1));
+			$nextPost = current(PostSearchService::getEntities('next:' . $id, 1, 1));
 		}
 		PostSearchService::enableTokenLimit(true);
 
