@@ -1,3 +1,7 @@
+#content form {
+	margin-bottom: 1em;
+}
+
 #content input {
 	margin: 0 1em;
 	height: 25px;
@@ -6,6 +10,7 @@
 
 pre {
 	font-size: 11pt;
+	margin: 0;
 }
 
 pre strong {

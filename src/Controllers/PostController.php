@@ -75,7 +75,7 @@ class PostController
 		}
 
 		$query = trim($query);
-		$page = intval($page);
+		$page = max(1, intval($page));
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
 		$this->context->subTitle = 'posts';
 		$this->context->transport->searchQuery = $query;
@@ -88,7 +88,6 @@ class PostController
 			$this->context->massTagQuery = $query;
 		}
 
-		$page = max(1, $page);
 		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
 		$postCount = PostSearchService::getEntityCount($query, $postsPerPage, $page);
 		$pageCount = ceil($postCount / $postsPerPage);
