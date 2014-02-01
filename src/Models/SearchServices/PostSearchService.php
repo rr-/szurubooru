@@ -17,14 +17,6 @@ class PostSearchService extends AbstractSearchService
 			$sqlQuery->raw('safety')->in()->genSlots($allowedSafety)->put($allowedSafety);
 	}
 
-	protected static function filterUserHidden(SqlQuery $sqlQuery)
-	{
-		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
-			$sqlQuery->not('hidden');
-		else
-			$sqlQuery->raw('1');
-	}
-
 	protected static function filterChain(SqlQuery $sqlQuery)
 	{
 		if (isset($sqlQuery->__chained))
@@ -142,6 +134,10 @@ class PostSearchService extends AbstractSearchService
 					->and('score < 0')
 					->and('user_id = ?')->put($context->user->id)
 					->close();
+				break;
+
+			case 'hidden':
+				$sqlQuery->raw('hidden');
 				break;
 
 			default:
@@ -415,8 +411,6 @@ class PostSearchService extends AbstractSearchService
 
 		self::filterChain($sqlQuery);
 		self::filterUserSafety($sqlQuery);
-		self::filterChain($sqlQuery);
-		self::filterUserHidden($sqlQuery);
 
 		/* query tokens */
 		$tokens = array_filter(array_unique(explode(' ', $searchQuery)), function($x) { return $x != ''; });
@@ -425,6 +419,8 @@ class PostSearchService extends AbstractSearchService
 
 		if (\Chibi\Registry::getContext()->user->hasEnabledHidingDislikedPosts())
 			$tokens []= '-special:disliked';
+		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden') or !in_array('special:hidden', $tokens))
+			$tokens []= '-special:hidden';
 
 		$searchContext = new StdClass;
 		$searchContext->orderColumn = 'id';
