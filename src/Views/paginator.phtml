@@ -38,6 +38,12 @@ if (!function_exists('pageUrl'))
 ?>
 
 <?php if (!empty($pagesVisible)): ?>
+	<?php
+	LayoutHelper::addStylesheet('paginator.css');
+	if ($this->context->user->hasEnabledEndlessScrolling())
+		LayoutHelper::addScript('paginator-endless.js');
+	?>
+
 	<nav class="paginator-wrapper">
 		<ul class="paginator">
 			<?php if ($page > 1): ?>

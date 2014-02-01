@@ -8,18 +8,8 @@ class CommentController
 	*/
 	public function listAction($page)
 	{
-		$this->context->stylesheets []= 'post-small.css';
-		$this->context->stylesheets []= 'comment-list.css';
-		$this->context->stylesheets []= 'comment-small.css';
-		$this->context->stylesheets []= 'comment-edit.css';
-		$this->context->stylesheets []= 'paginator.css';
-		if ($this->context->user->hasEnabledEndlessScrolling())
-			$this->context->scripts []= 'paginator-endless.js';
-		$this->context->scripts []= 'comment-edit.js';
-
 		$page = intval($page);
 		$commentsPerPage = intval($this->config->comments->commentsPerPage);
-		$this->context->subTitle = 'comments';
 		PrivilegesHelper::confirmWithException(Privilege::ListComments);
 
 		$page = max(1, $page);

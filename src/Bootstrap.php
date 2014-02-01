@@ -7,19 +7,7 @@ class Bootstrap
 		session_start();
 
 		$this->context->handleExceptions = false;
-		$this->context->title = $this->config->main->title;
-		$this->context->stylesheets =
-		[
-			'../lib/jquery-ui/jquery-ui.css',
-			'core.css',
-		];
-		$this->context->scripts =
-		[
-			'../lib/jquery/jquery.min.js',
-			'../lib/jquery-ui/jquery-ui.min.js',
-			'../lib/mousetrap/mousetrap.min.js',
-			'core.js',
-		];
+		LayoutHelper::setTitle($this->config->main->title);
 
 		$this->context->json = isset($_GET['json']);
 		$this->context->layoutName = $this->context->json
@@ -39,7 +27,14 @@ class Bootstrap
 
 		try
 		{
-			$workCallback();
+			if ($this->context->layoutName == 'layout-normal')
+			{
+				ob_start(['LayoutHelper', 'transformHtml']);
+				$workCallback();
+				ob_end_flush();
+			}
+			else
+				$workCallback();
 		}
 		catch (\Chibi\MissingViewFileException $e)
 		{

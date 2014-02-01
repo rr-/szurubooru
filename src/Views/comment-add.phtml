@@ -1,3 +1,8 @@
+<?php
+LayoutHelper::addStylesheet('comment-edit.css');
+LayoutHelper::addScript('comment-edit.js');
+?>
+
 <form action="<?php echo \Chibi\UrlHelper::route('comment', 'add', ['postId' => $this->context->transport->post->id]) ?>" method="post" class="add-comment aligned">
 	<h1>add comment</h1>
 

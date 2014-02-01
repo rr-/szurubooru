@@ -8,8 +8,6 @@ class TagController
 	*/
 	public function listAction($filter = null)
 	{
-		$this->context->stylesheets []= 'tag-list.css';
-		$this->context->subTitle = 'tags';
 		$this->context->viewName = 'tag-list-wrapper';
 
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
@@ -32,8 +30,6 @@ class TagController
 	*/
 	public function mergeAction()
 	{
-		$this->context->stylesheets []= 'tag-list.css';
-		$this->context->subTitle = 'tags';
 		$this->context->viewName = 'tag-list-wrapper';
 
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
@@ -60,8 +56,6 @@ class TagController
 	*/
 	public function renameAction()
 	{
-		$this->context->stylesheets []= 'tag-list.css';
-		$this->context->subTitle = 'tags';
 		$this->context->viewName = 'tag-list-wrapper';
 
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
@@ -88,8 +82,6 @@ class TagController
 	*/
 	public function massTagRedirectAction()
 	{
-		$this->context->stylesheets []= 'tag-list.css';
-		$this->context->subTitle = 'tags';
 		$this->context->viewName = 'tag-list-wrapper';
 
 		PrivilegesHelper::confirmWithException(Privilege::MassTag);

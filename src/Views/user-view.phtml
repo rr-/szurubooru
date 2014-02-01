@@ -1,3 +1,8 @@
+<?php
+LayoutHelper::setSubTitle($this->context->transport->user->name);
+LayoutHelper::addStylesheet('user-view.css');
+?>
+
 <div id="sidebar">
 	<div class="avatar-wrapper">
 		<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name]) ?>">

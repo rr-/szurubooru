@@ -6,37 +6,37 @@
 			<?php foreach ($this->context->options as $option): ?>
 				<li class="<?php echo $option['class']; if (isset($option['inactive'])) echo ' inactive' ?>">
 					<?php
-						$class = [];
+					$class = [];
 
-						$attrs = [];
-						if (!empty($option['link']))
+					$attrs = [];
+					if (!empty($option['link']))
+					{
+						$attrs['href'] = $option['link'];
+					}
+					elseif (!empty($option['simple-action']))
+					{
+						$attrs['href'] = $option['simple-action'];
+						$class []= 'simple-action';
+
+						if (isset($option['data-confirm-text']))
 						{
-							$attrs['href'] = $option['link'];
+							$attrs['data-confirm-text'] = $option['data-confirm-text'];
+							$class []= 'confirmable';
 						}
-						elseif (!empty($option['simple-action']))
-						{
-							$attrs['href'] = $option['simple-action'];
-							$class []= 'simple-action';
 
-							if (isset($option['data-confirm-text']))
-							{
-								$attrs['data-confirm-text'] = $option['data-confirm-text'];
-								$class []= 'confirmable';
-							}
+						if (isset($option['data-redirect-url']))
+							$attrs['data-redirect-url'] = $option['data-redirect-url'];
+					}
+					else
+						$attrs['href'] = '#';
 
-							if (isset($option['data-redirect-url']))
-								$attrs['data-redirect-url'] = $option['data-redirect-url'];
-						}
-						else
-							$attrs['href'] = '#';
+					if (!empty($class))
+						$attrs['class'] = join(' ', $class);
 
-						if (!empty($class))
-							$attrs['class'] = join(' ', $class);
-
-						echo TextHelper::htmlTag('a', TextHelper::HTML_OPEN, $attrs);
-						echo $option['text'];
-						echo TextHelper::htmlTag('a', TextHelper::HTML_CLOSE);
-					?>
+					echo TextHelper::htmlTag('a', TextHelper::HTML_OPEN, $attrs);
+					echo $option['text'];
+					echo TextHelper::htmlTag('a', TextHelper::HTML_CLOSE);
+				?>
 				</li>
 			<?php endforeach ?>
 		</ul>

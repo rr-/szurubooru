@@ -1,2 +1,3 @@
-<?php \Chibi\HeadersHelper::set('Content-Type', 'application/json') ?>
-<?php echo TextHelper::jsonEncode($this->context->transport, '/.*(email|confirm|pass|salt)/i') ?>
+<?php
+\Chibi\HeadersHelper::set('Content-Type', 'application/json');
+echo TextHelper::jsonEncode($this->context->transport, '/.*(email|confirm|pass|salt)/i');

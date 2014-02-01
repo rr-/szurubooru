@@ -1,6 +1,10 @@
 <?php if ($this->context->transport->success === true): ?>
 	<?php $this->renderFile('message') ?>
 <?php else: ?>
+	<?php
+	LayoutHelper::addStylesheet('auth.css');
+	?>
+
 	<form action="<?php echo \Chibi\UrlHelper::route($this->context->route->simpleControllerName, $this->context->route->simpleActionName) ?>" method="post" class="auth aligned" autocomplete="off">
 		<div>
 			<label class="left">User:</label>

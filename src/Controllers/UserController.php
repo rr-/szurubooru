@@ -8,8 +8,6 @@ class UserController
 		$this->context->transport->user = $user;
 		$this->context->handleExceptions = true;
 		$this->context->viewName = 'user-view';
-		$this->context->stylesheets []= 'user-view.css';
-		$this->context->subTitle = $user->name;
 	}
 
 	private static function sendTokenizedEmail(
@@ -109,11 +107,6 @@ class UserController
 	*/
 	public function listAction($sortStyle, $page)
 	{
-		$this->context->stylesheets []= 'user-list.css';
-		$this->context->stylesheets []= 'paginator.css';
-		if ($this->context->user->hasEnabledEndlessScrolling())
-			$this->context->scripts []= 'paginator-endless.js';
-
 		if ($sortStyle == '' or $sortStyle == 'alpha')
 			$sortStyle = 'alpha,asc';
 		if ($sortStyle == 'date')
@@ -121,7 +114,6 @@ class UserController
 
 		$page = intval($page);
 		$usersPerPage = intval($this->config->browsing->usersPerPage);
-		$this->context->subTitle = 'users';
 		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
 
 		$page = max(1, $page);
@@ -422,12 +414,6 @@ class UserController
 
 		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 		$this->loadUserView($user);
-		$this->context->stylesheets []= 'post-list.css';
-		$this->context->stylesheets []= 'post-small.css';
-		$this->context->stylesheets []= 'paginator.css';
-		$this->context->scripts []= 'post-list.js';
-		if ($this->context->user->hasEnabledEndlessScrolling())
-			$this->context->scripts []= 'paginator-endless.js';
 
 		$query = '';
 		if ($tab == 'uploads')
@@ -483,8 +469,6 @@ class UserController
 	public function registrationAction()
 	{
 		$this->context->handleExceptions = true;
-		$this->context->stylesheets []= 'auth.css';
-		$this->context->subTitle = 'registration form';
 
 		//check if already logged in
 		if ($this->context->loggedIn)
@@ -570,8 +554,8 @@ class UserController
 	*/
 	public function activationAction($token)
 	{
-		$this->context->subTitle = 'account activation';
 		$this->context->viewName = 'message';
+		LayoutHelper::setSubTitle('account activation');
 
 		$dbToken = TokenModel::findByToken($token);
 		TokenModel::checkValidity($dbToken);
@@ -603,8 +587,8 @@ class UserController
 	*/
 	public function passwordResetAction($token)
 	{
-		$this->context->subTitle = 'password reset';
 		$this->context->viewName = 'message';
+		LayoutHelper::setSubTitle('password reset');
 
 		$dbToken = TokenModel::findByToken($token);
 		TokenModel::checkValidity($dbToken);
@@ -637,9 +621,8 @@ class UserController
 	*/
 	public function passwordResetProxyAction()
 	{
-		$this->context->subTtile = 'password reset';
 		$this->context->viewName = 'user-select';
-		$this->context->stylesheets []= 'auth.css';
+		LayoutHelper::setSubTitle('password reset');
 
 		if (InputHelper::get('submit'))
 		{
@@ -658,9 +641,8 @@ class UserController
 	*/
 	public function activationProxyAction()
 	{
-		$this->context->subTitle = 'account activation';
 		$this->context->viewName = 'user-select';
-		$this->context->stylesheets []= 'auth.css';
+		LayoutHelper::setSubTitle('account activation');
 
 		if (InputHelper::get('submit'))
 		{

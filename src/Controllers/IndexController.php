@@ -7,8 +7,6 @@ class IndexController
 	*/
 	public function indexAction()
 	{
-		$this->context->subTitle = 'home';
-		$this->context->stylesheets []= 'index-index.css';
 		$this->context->transport->postCount = PostModel::getCount();
 
 		$featuredPost = $this->getFeaturedPost();
@@ -17,7 +15,6 @@ class IndexController
 			$this->context->featuredPost = $featuredPost;
 			$this->context->featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
 			$this->context->featuredPostUser = UserModel::findByNameOrEmail(PropertyModel::get(PropertyModel::FeaturedPostUserName), false);
-			$this->context->pageThumb = \Chibi\UrlHelper::route('post', 'thumb', ['name' => $featuredPost->name]);
 		}
 	}
 
@@ -33,8 +30,6 @@ class IndexController
 		if (!isset($this->config->help->paths[$tab]))
 			throw new SimpleException('Invalid tab');
 		$this->context->path = TextHelper::absolutePath($this->config->help->paths[$tab]);
-		$this->context->stylesheets []= 'index-help.css';
-		$this->context->subTitle = 'help';
 		$this->context->tab = $tab;
 	}
 

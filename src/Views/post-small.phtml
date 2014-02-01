@@ -1,11 +1,25 @@
-<?php $classNames = ['post', 'post-type-' . TextHelper::camelCaseToHumanCase(PostType::toString($this->context->post->type))] ?>
-<?php $masstag = (isset($this->context->source) and $this->context->source == 'mass-tag' and !empty($this->context->additionalInfo)) ?>
-<?php if ($masstag): ?>
-	<?php $classNames []= 'taggable' ?>
-	<?php if ($this->context->post->isTaggedWith($this->context->additionalInfo)): ?>
-		<?php $classNames []= 'tagged' ?>
-	<?php endif ?>
-<?php endif ?>
+<?php
+LayoutHelper::addStylesheet('post-small.css');
+
+$classNames =
+[
+	'post',
+	'post-type-' . TextHelper::camelCaseToHumanCase(PostType::toString($this->context->post->type))
+];
+
+$masstag = (isset($this->context->source)
+	and $this->context->source == 'mass-tag'
+	and !empty($this->context->additionalInfo));
+
+if ($masstag)
+{
+	$classNames []= 'taggable';
+	if ($this->context->post->isTaggedWith($this->context->additionalInfo))
+	{
+		$classNames []= 'tagged';
+	}
+}
+?>
 
 <div class="<?php echo implode(' ', $classNames) ?>">
 	<?php if ($masstag): ?>

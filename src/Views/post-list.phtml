@@ -1,3 +1,8 @@
+<?php
+LayoutHelper::addStylesheet('post-list.css');
+LayoutHelper::addScript('post-list.js');
+?>
+
 <?php if (isset($this->context->source) and $this->context->source == 'mass-tag' and PrivilegesHelper::confirm(Privilege::MassTag)): ?>
 	<?php $this->renderFile('tag-mass-tag') ?>
 <?php endif ?>

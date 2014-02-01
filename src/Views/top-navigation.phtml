@@ -1,112 +1,112 @@
 <ul class="main-nav">
 	<?php
-		$nav = [];
+	$nav = [];
 
-		if ($this->context->route)
-		{
-			$activeController = $this->context->route->simpleControllerName;
-			$activeAction = $this->context->route->simpleActionName;
-		}
-		else
-		{
-			$activeController = null;
-			$activeAction = null;
-		}
+	if ($this->context->route)
+	{
+		$activeController = $this->context->route->simpleControllerName;
+		$activeAction = $this->context->route->simpleActionName;
+	}
+	else
+	{
+		$activeController = null;
+		$activeAction = null;
+	}
 
-		$registerNavItem = function ($text, $link, $active = false) use (&$nav)
-		{
-			$nav []= [
-				'text' => $text,
-				'link' => $link,
-				'active' => $active];
-		};
+	$registerNavItem = function ($text, $link, $active = false) use (&$nav)
+	{
+		$nav []= [
+			'text' => $text,
+			'link' => $link,
+			'active' => $active];
+	};
+
+	$registerNavItem(
+		'Home',
+		\Chibi\UrlHelper::route('index', 'index'),
+		$activeController == 'index' and $activeAction == 'index');
+
+	if (PrivilegesHelper::confirm(Privilege::ListPosts))
+	{
+		$registerNavItem(
+			'Browse',
+			\Chibi\UrlHelper::route('post', 'list'),
+			$activeController == 'post' and $activeAction != 'upload');
+	}
+
+	if (PrivilegesHelper::confirm(Privilege::UploadPost))
+	{
+		$registerNavItem(
+			'Upload',
+			\Chibi\UrlHelper::route('post', 'upload'),
+			$activeController == 'post' and $activeAction == 'upload');
+	}
+
+	if (PrivilegesHelper::confirm(Privilege::ListComments))
+	{
+		$registerNavItem(
+			'Comments',
+			\Chibi\UrlHelper::route('comment', 'list'),
+			$activeController == 'comment');
+	}
+
+	if (PrivilegesHelper::confirm(Privilege::ListTags))
+	{
+		$registerNavItem(
+			'Tags',
+			\Chibi\UrlHelper::route('tag', 'list'),
+			$activeController == 'tag');
+	}
+
+	if (PrivilegesHelper::confirm(Privilege::ListUsers))
+	{
+		$registerNavItem(
+			'Users',
+			\Chibi\UrlHelper::route('user', 'list'),
+			$activeController == 'user' and $activeAction != 'registration' and (!isset($this->context->route->arguments['name']) or $this->context->route->arguments['name'] != $this->context->user->name));
+	}
+
+	if (!$this->context->loggedIn)
+	{
+		$registerNavItem(
+			'Log in',
+			\Chibi\UrlHelper::route('auth', 'login'),
+			$activeController == 'auth' and $activeAction == 'login');
 
 		$registerNavItem(
-			'Home',
-			\Chibi\UrlHelper::route('index', 'index'),
-			$activeController == 'index' and $activeAction == 'index');
+			'Register',
+			\Chibi\UrlHelper::route('user', 'registration'),
+			$activeController == 'user' and $activeAction == 'registration');
+	}
+	else
+	{
+		$registerNavItem(
+			'My account',
+			\Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->user->name]),
+			$activeController == 'user' and isset($this->context->route->arguments['name']) and $this->context->route->arguments['name'] == $this->context->user->name);
 
-		if (PrivilegesHelper::confirm(Privilege::ListPosts))
-		{
-			$registerNavItem(
-				'Browse',
-				\Chibi\UrlHelper::route('post', 'list'),
-				$activeController == 'post' and $activeAction != 'upload');
-		}
+		$registerNavItem(
+			'Log out',
+			\Chibi\UrlHelper::route('auth', 'logout'));
+	}
 
-		if (PrivilegesHelper::confirm(Privilege::UploadPost))
-		{
-			$registerNavItem(
-				'Upload',
-				\Chibi\UrlHelper::route('post', 'upload'),
-				$activeController == 'post' and $activeAction == 'upload');
-		}
+	if (!empty($this->config->help->title))
+	{
+		$registerNavItem(
+			$this->config->help->title,
+			\Chibi\UrlHelper::route('index', 'help'),
+			$activeController == 'index' and $activeAction == 'help');
+	}
 
-		if (PrivilegesHelper::confirm(Privilege::ListComments))
-		{
-			$registerNavItem(
-				'Comments',
-				\Chibi\UrlHelper::route('comment', 'list'),
-				$activeController == 'comment');
-		}
-
-		if (PrivilegesHelper::confirm(Privilege::ListTags))
-		{
-			$registerNavItem(
-				'Tags',
-				\Chibi\UrlHelper::route('tag', 'list'),
-				$activeController == 'tag');
-		}
-
-		if (PrivilegesHelper::confirm(Privilege::ListUsers))
-		{
-			$registerNavItem(
-				'Users',
-				\Chibi\UrlHelper::route('user', 'list'),
-				$activeController == 'user' and $activeAction != 'registration' and (!isset($this->context->route->arguments['name']) or $this->context->route->arguments['name'] != $this->context->user->name));
-		}
-
-		if (!$this->context->loggedIn)
-		{
-			$registerNavItem(
-				'Log in',
-				\Chibi\UrlHelper::route('auth', 'login'),
-				$activeController == 'auth' and $activeAction == 'login');
-
-			$registerNavItem(
-				'Register',
-				\Chibi\UrlHelper::route('user', 'registration'),
-				$activeController == 'user' and $activeAction == 'registration');
-		}
-		else
-		{
-			$registerNavItem(
-				'My account',
-				\Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->user->name]),
-				$activeController == 'user' and isset($this->context->route->arguments['name']) and $this->context->route->arguments['name'] == $this->context->user->name);
-
-			$registerNavItem(
-				'Log out',
-				\Chibi\UrlHelper::route('auth', 'logout'));
-		}
-
-		if (!empty($this->config->help->title))
-		{
-			$registerNavItem(
-				$this->config->help->title,
-				\Chibi\UrlHelper::route('index', 'help'),
-				$activeController == 'index' and $activeAction == 'help');
-		}
-
-		foreach ($nav as $navItem)
-		{
-			extract($navItem);
-			echo TextHelper::htmlTag('li', TextHelper::HTML_OPEN, ['class' => rtrim('main-nav-item ' . ($active ? 'active' : ''))]);
-			echo TextHelper::htmlTag('a', TextHelper::HTML_OPEN, ['href' => $link]);
-			echo $text;
-			echo TextHelper::htmlTag('a', textHelper::HTML_CLOSE);
-			echo TextHelper::htmlTag('li', textHelper::HTML_CLOSE);
-		}
+	foreach ($nav as $navItem)
+	{
+		extract($navItem);
+		echo TextHelper::htmlTag('li', TextHelper::HTML_OPEN, ['class' => rtrim('main-nav-item ' . ($active ? 'active' : ''))]);
+		echo TextHelper::htmlTag('a', TextHelper::HTML_OPEN, ['href' => $link]);
+		echo $text;
+		echo TextHelper::htmlTag('a', textHelper::HTML_CLOSE);
+		echo TextHelper::htmlTag('li', textHelper::HTML_CLOSE);
+	}
 	?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->user))): ?>

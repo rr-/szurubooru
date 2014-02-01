@@ -1,6 +1,17 @@
+<?php
+LayoutHelper::setSubTitle('comments');
+?>
+
 <?php if (empty($this->context->transport->comments)): ?>
 	<p class="alert alert-warning">No comments to show.</p>
 <?php else: ?>
+	<?php
+	LayoutHelper::addStylesheet('comment-list.css');
+	LayoutHelper::addStylesheet('comment-small.css');
+	LayoutHelper::addStylesheet('comment-edit.css');
+	LayoutHelper::addScript('comment-edit.js');
+	?>
+
 	<div class="comments-wrapper">
 		<div class="comments paginator-content">
 			<?php

@@ -1,16 +1,24 @@
+<?php
+LayoutHelper::setSubTitle('users');
+LayoutHelper::addStylesheet('user-list.css');
+LayoutHelper::addStylesheet('paginator.css');
+if ($this->context->user->hasEnabledEndlessScrolling())
+	LayoutHelper::addScript('paginator-endless.js');
+?>
+
 <nav class="sort-styles">
 	<ul>
 		<?php
-			$sortStyles =
-			[
-				'alpha,asc' => 'Sort A&rarr;Z',
-				'alpha,desc' => 'Sort Z&rarr;A',
-				'date,asc' => 'Sort old&rarr;new',
-				'date,desc' => 'Sort new&rarr;old',
-			];
+		$sortStyles =
+		[
+			'alpha,asc' => 'Sort A&rarr;Z',
+			'alpha,desc' => 'Sort Z&rarr;A',
+			'date,asc' => 'Sort old&rarr;new',
+			'date,desc' => 'Sort new&rarr;old',
+		];
 
-			if ($this->config->registration->staffActivation)
-				$sortStyles['pending'] = 'Pending staff review';
+		if ($this->config->registration->staffActivation)
+			$sortStyles['pending'] = 'Pending staff review';
 		?>
 
 		<?php foreach ($sortStyles as $key => $text): ?>

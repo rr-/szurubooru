@@ -1,8 +1,13 @@
-<?php $tabs = [] ?>
-<?php if (PrivilegesHelper::confirm(Privilege::ListTags)) $tabs['list'] = 'List'; ?>
-<?php if (PrivilegesHelper::confirm(Privilege::RenameTags)) $tabs['rename'] = 'Rename'; ?>
-<?php if (PrivilegesHelper::confirm(Privilege::MergeTags)) $tabs['merge'] = 'Merge'; ?>
-<?php if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs['mass-tag-redirect'] = 'Mass tag'; ?>
+<?php
+LayoutHelper::setSubTitle('tags');
+LayoutHelper::addStylesheet('tag-list.css');
+
+$tabs = [];
+if (PrivilegesHelper::confirm(Privilege::ListTags)) $tabs['list'] = 'List';
+if (PrivilegesHelper::confirm(Privilege::RenameTags)) $tabs['rename'] = 'Rename';
+if (PrivilegesHelper::confirm(Privilege::MergeTags)) $tabs['merge'] = 'Merge';
+if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs['mass-tag-redirect'] = 'Mass tag';
+?>
 
 <?php if (count(array_diff($tabs, ['list'])) > 1): ?>
 	<nav class="tabs">

@@ -1,13 +1,6 @@
 <?php
 class PostController
 {
-	public function workWrapper($callback)
-	{
-		$this->context->stylesheets []= '../lib/tagit/jquery.tagit.css';
-		$this->context->scripts []= '../lib/tagit/jquery.tagit.js';
-		$callback();
-	}
-
 	private static function handleUploadErrors($file)
 	{
 		switch ($file['error'])
@@ -52,12 +45,6 @@ class PostController
 	public function listAction($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
 		$this->context->viewName = 'post-list-wrapper';
-		$this->context->stylesheets []= 'post-small.css';
-		$this->context->stylesheets []= 'post-list.css';
-		$this->context->stylesheets []= 'paginator.css';
-		$this->context->scripts []= 'post-list.js';
-		if ($this->context->user->hasEnabledEndlessScrolling())
-			$this->context->scripts []= 'paginator-endless.js';
 		$this->context->source = $source;
 		$this->context->additionalInfo = $additionalInfo;
 
@@ -77,7 +64,6 @@ class PostController
 		$query = trim($query);
 		$page = max(1, intval($page));
 		$postsPerPage = intval($this->config->browsing->postsPerPage);
-		$this->context->subTitle = 'posts';
 		$this->context->transport->searchQuery = $query;
 		$this->context->transport->lastSearchQuery = $query;
 		PrivilegesHelper::confirmWithException(Privilege::ListPosts);
@@ -180,9 +166,6 @@ class PostController
 	*/
 	public function uploadAction()
 	{
-		$this->context->stylesheets []= 'post-upload.css';
-		$this->context->scripts []= 'post-upload.js';
-		$this->context->subTitle = 'upload';
 		PrivilegesHelper::confirmWithException(Privilege::UploadPost);
 		if ($this->config->registration->needEmailForUploading)
 			PrivilegesHelper::confirmEmail($this->context->user);
@@ -458,13 +441,6 @@ class PostController
 		$score = $this->context->user->getScore($post);
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
 
-		$this->context->pageThumb = \Chibi\UrlHelper::route('post', 'thumb', ['name' => $post->name]);
-		$this->context->stylesheets []= 'post-view.css';
-		$this->context->stylesheets []= 'comment-small.css';
-		$this->context->stylesheets []= 'comment-edit.css';
-		$this->context->scripts []= 'post-view.js';
-		$this->context->scripts []= 'comment-edit.js';
-		$this->context->subTitle = 'showing ' . TextHelper::reprPost($post) . ' &ndash; ' . TextHelper::reprTags($post->getTags());
 		$this->context->favorite = $favorite;
 		$this->context->score = $score;
 		$this->context->flagged = $flagged;

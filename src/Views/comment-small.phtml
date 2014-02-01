@@ -1,3 +1,9 @@
+<?php
+LayoutHelper::addStylesheet('comment-small.css');
+LayoutHelper::addStylesheet('comment-edit.css');
+LayoutHelper::addScript('comment-edit.js');
+?>
+
 <div class="comment">
 	<div class="avatar">
 		<?php $commenter = $this->context->comment->getCommenter() ?>

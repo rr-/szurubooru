@@ -1,3 +1,11 @@
+<?php
+LayoutHelper::setSubTitle('showing ' . TextHelper::reprPost($this->context->transport->post) . ' &ndash; ' . TextHelper::reprTags($this->context->transport->post->getTags()));
+LayoutHelper::addStylesheet('post-view.css');
+LayoutHelper::addScript('post-view.js');
+LayoutHelper::addStylesheet('../lib/tagit/jquery.tagit.css');
+LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
+?>
+
 <div id="sidebar">
 	<nav id="around">
 		<div class="left">

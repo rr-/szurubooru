@@ -55,8 +55,6 @@ class AuthController
 	public function loginAction()
 	{
 		$this->context->handleExceptions = true;
-		$this->context->stylesheets []= 'auth.css';
-		$this->context->subTitle = 'authentication form';
 
 		//check if already logged in
 		if ($this->context->loggedIn)

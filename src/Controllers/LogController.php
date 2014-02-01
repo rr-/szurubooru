@@ -6,7 +6,6 @@ class LogController
 	*/
 	public function listAction()
 	{
-		$this->context->subTitle = 'latest logs';
 		PrivilegesHelper::confirmWithException(Privilege::ListLogs);
 
 		$path = TextHelper::absolutePath($this->config->main->logsPath);
@@ -49,12 +48,6 @@ class LogController
 			return;
 		}
 
-		$this->context->subTitle = 'logs (' . $name . ')';
-		$this->context->stylesheets []= 'logs.css';
-		$this->context->stylesheets []= 'paginator.css';
-		$this->context->scripts []= 'logs.js';
-		if ($this->context->user->hasEnabledEndlessScrolling())
-			$this->context->scripts []= 'paginator-endless.js';
 		PrivilegesHelper::confirmWithException(Privilege::ViewLog);
 
 		//parse input

@@ -1,6 +1,14 @@
+<?php
+LayoutHelper::setSubTitle('registration form');
+?>
+
 <?php if ($this->context->transport->success === true): ?>
 	<?php $this->renderFile('message') ?>
 <?php else: ?>
+	<?php
+	LayoutHelper::addStylesheet('auth.css');
+	?>
+
 	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth aligned" method="post">
 		<div>
 			<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>

@@ -1,4 +1,6 @@
 <?php
+LayoutHelper::setSubTitle('posts');
+
 $tabs = [];
 if (PrivilegesHelper::confirm(Privilege::ListPosts)) $tabs []= ['All posts', \Chibi\UrlHelper::route('post', 'list')];
 if (PrivilegesHelper::confirm(Privilege::ListPosts)) $tabs []= ['Random', \Chibi\UrlHelper::route('post', 'random')];

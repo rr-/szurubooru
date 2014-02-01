@@ -1,16 +1,16 @@
 <nav class="sort-styles">
 	<ul>
 		<?php
-			$sortStyles =
-			[
-				'order:alpha,asc' => 'Sort A&rarr;Z',
-				'order:alpha,desc' => 'Sort Z&rarr;A',
-				'order:popularity,desc' => 'Often used first',
-				'order:popularity,asc' => 'Rarely used first',
-			];
+		$sortStyles =
+		[
+			'order:alpha,asc' => 'Sort A&rarr;Z',
+			'order:alpha,desc' => 'Sort Z&rarr;A',
+			'order:popularity,desc' => 'Often used first',
+			'order:popularity,asc' => 'Rarely used first',
+		];
 
-			if ($this->config->registration->staffActivation)
-				$sortStyles['pending'] = 'Pending staff review';
+		if ($this->config->registration->staffActivation)
+			$sortStyles['pending'] = 'Pending staff review';
 		?>
 
 		<?php foreach ($sortStyles as $key => $text): ?>
