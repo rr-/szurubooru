@@ -108,7 +108,7 @@ class PostSearchService extends AbstractSearchService
 	{
 		$context = \Chibi\Registry::getContext();
 
-		switch (strtolower($val))
+		switch ($val)
 		{
 			case 'liked':
 			case 'likes':
@@ -147,7 +147,7 @@ class PostSearchService extends AbstractSearchService
 
 	protected static function filterTokenType($searchContext, SqlQuery $sqlQuery, $val)
 	{
-		switch (strtolower($val))
+		switch ($val)
 		{
 			case 'swf':
 				$type = PostType::Flash;
@@ -391,7 +391,7 @@ class PostSearchService extends AbstractSearchService
 			}
 			else
 			{
-				$key = strtolower(substr($token, 0, $pos));
+				$key = substr($token, 0, $pos);
 				$val = substr($token, $pos + 1);
 			}
 
@@ -413,7 +413,7 @@ class PostSearchService extends AbstractSearchService
 		self::filterUserSafety($sqlQuery);
 
 		/* query tokens */
-		$tokens = array_filter(array_unique(explode(' ', $searchQuery)), function($x) { return $x != ''; });
+		$tokens = array_filter(array_unique(explode(' ', strtolower($searchQuery))));
 		if (self::$enableTokenLimit and count($tokens) > $config->browsing->maxSearchTokens)
 			throw new SimpleException('Too many search tokens (maximum: ' . $config->browsing->maxSearchTokens . ')');
 
