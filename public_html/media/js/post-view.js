@@ -12,6 +12,7 @@ $(function()
 			aDom.addClass('inactive');
 
 			var formDom = $('form.edit-post');
+			formDom.data('original-data', formDom.serialize());
 			if (formDom.find('.tagit').length == 0)
 			{
 				$.getJSON('/tags?json', {filter: 'order:popularity,desc'}, function(data)
@@ -23,7 +24,13 @@ $(function()
 					tagItOptions.availableTags = tags;
 					tagItOptions.placeholderText = $('.tags input').attr('placeholder');
 					$('.tags input').tagit(tagItOptions);
+
 					formDom.find('input[type=text]:visible:eq(0)').focus();
+					formDom.find('textarea, input').bind('change keyup', function()
+					{
+						if (formDom.serialize() != formDom.data('original-data'))
+							enableExitConfirmation();
+					});
 				});
 			}
 			else
@@ -89,6 +96,8 @@ $(function()
 			{
 				if (data['success'])
 				{
+					disableExitConfirmation();
+
 					$.get(window.location.href, function(data)
 					{
 						$('#sidebar').replaceWith($(data).find('#sidebar'));

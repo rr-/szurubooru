@@ -136,6 +136,7 @@ $(function()
 
 	function uploadFinished()
 	{
+		disableExitConfirmation();
 		window.location.href = $('#upload-step2').attr('data-redirect-url');
 	}
 
@@ -224,6 +225,7 @@ $(function()
 	{
 		for (var i = 0; i < inputs.length; i ++)
 		{
+			enableExitConfirmation();
 			var input = inputs[i];
 			var postDom = $('#post-template').clone(true);
 			postDom.find('form').submit(false);

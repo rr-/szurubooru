@@ -180,8 +180,8 @@ class PostController
 	*/
 	public function uploadAction()
 	{
-		$this->context->stylesheets []= 'upload.css';
-		$this->context->scripts []= 'upload.js';
+		$this->context->stylesheets []= 'post-upload.css';
+		$this->context->scripts []= 'post-upload.js';
 		$this->context->subTitle = 'upload';
 		PrivilegesHelper::confirmWithException(Privilege::UploadPost);
 		if ($this->config->registration->needEmailForUploading)

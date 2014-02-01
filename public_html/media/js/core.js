@@ -272,3 +272,18 @@ $(function()
 	Mousetrap.bind('d', function() { var url = $('.paginator:visible .next:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
 	Mousetrap.bind('p', function() { $('.post a').eq(0).focus(); return false; }, 'keyup');
 });
+
+
+
+function enableExitConfirmation()
+{
+	$(window).bind('beforeunload', function(e)
+	{
+		return true;
+	});
+}
+
+function disableExitConfirmation()
+{
+	$(window).unbind('beforeunload');
+}

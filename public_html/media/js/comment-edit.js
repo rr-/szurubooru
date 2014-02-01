@@ -2,6 +2,12 @@ $(function()
 {
 	function onDomUpdate()
 	{
+		$('form.edit-comment textarea, form.add-comment textarea')
+			.bind('change keyup', function(e)
+			{
+				enableExitConfirmation();
+			});
+
 		$('form.edit-comment, form.add-comment').submit(function(e)
 		{
 			e.preventDefault();
@@ -41,6 +47,8 @@ $(function()
 						}
 						else
 						{
+							disableExitConfirmation();
+
 							formDom.find('.preview').hide();
 							var cb = function()
 							{
