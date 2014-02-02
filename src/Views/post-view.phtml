@@ -325,6 +325,10 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 		</div>
 	<?php endif ?>
 
+	<?php
+	LayoutHelper::addStylesheet('comment-list.css');
+	LayoutHelper::addStylesheet('comment-small.css');
+	?>
 	<div class="comments-wrapper">
 		<?php if (!empty($this->context->transport->post->getComments())): ?>
 			<div class="comments unit">
