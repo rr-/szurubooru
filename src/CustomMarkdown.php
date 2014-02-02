@@ -137,7 +137,7 @@ class CustomMarkdown extends \Michelf\Markdown
 	protected function doTags($text)
 	{
 		$link = \Chibi\UrlHelper::route('post', 'list', ['query' => '_query_']);
-		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))#([a-zA-Z0-9_-]+)/', function($x) use ($link)
+		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))#([()\[\]a-zA-Z0-9_.-]+)/', function($x) use ($link)
 		{
 			return $this->hashPart('<a href="' . str_replace('_query_', $x[1], $link) . '">' . $x[0] . '</a>');
 		}, $text);
