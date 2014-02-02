@@ -27,10 +27,12 @@ class CustomMarkdown extends \Michelf\Markdown
 		parent::__construct();
 	}
 
-	//disable atx-style headers
-	protected function _doHeaders_callback_atx($matches)
+	//make atx-style headers require space after hash
+	protected function doHeaders($text)
 	{
-		return $matches[0];
+		$text = preg_replace_callback('{ ^(.+?)[ ]*\n(=+|-+)[ ]*\n+ }mx', [&$this, '_doHeaders_callback_setext'], $text);
+		$text = preg_replace_callback('{^(\#{1,6})[ ]+(.+?)[ ]*\#*\n+}xm', [&$this, '_doHeaders_callback_atx'], $text);
+		return $text;
 	}
 
 	//disable paragraph forming when using simple markdown
@@ -85,7 +87,8 @@ class CustomMarkdown extends \Michelf\Markdown
 
 	//handle white characters inside code blocks
 	//so that they won't be optimized away by prettifying HTML
-	protected function _doCodeBlocks_callback($matches) {
+	protected function _doCodeBlocks_callback($matches)
+	{
 		$codeblock = $matches[1];
 
 		$codeblock = $this->outdent($codeblock);
