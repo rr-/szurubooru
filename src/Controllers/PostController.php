@@ -497,7 +497,7 @@ class PostController
 
 		$path = TextHelper::absolutePath($this->config->main->filesPath . DS . $post->name);
 		if (!file_exists($path))
-			throw new SimpleException('Post file does not exist');
+			throw new SimpleNotFoundException('Post file does not exist');
 		if (!is_readable($path))
 			throw new SimpleException('Post file is not readable');
 

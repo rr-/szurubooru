@@ -35,7 +35,7 @@ implements IModel
 	public static function findByToken($key, $throw = true)
 	{
 		if (empty($key))
-			throw new SimpleException('Invalid security token');
+			throw new SimpleNotFoundException('Invalid security token');
 
 		$query = (new SqlQuery)
 			->select('*')
@@ -47,7 +47,7 @@ implements IModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleException('No user with such security token');
+			throw new SimpleNotFoundException('No user with such security token');
 		return null;
 	}
 

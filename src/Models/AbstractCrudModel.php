@@ -31,7 +31,7 @@ abstract class AbstractCrudModel implements IModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleException('Invalid ' . static::getTableName() . ' ID "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid ' . static::getTableName() . ' ID "' . $key . '"');
 		return null;
 	}
 

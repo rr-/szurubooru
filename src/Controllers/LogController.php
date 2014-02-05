@@ -55,7 +55,7 @@ class LogController
 		$name = str_replace(['/', '\\'], '', $name); //paranoia mode
 		$path = TextHelper::absolutePath($this->config->main->logsPath . DS . $name);
 		if (!file_exists($path))
-			throw new SimpleException('Specified log doesn\'t exist');
+			throw new SimpleNotFoundException('Specified log doesn\'t exist');
 
 		//load lines
 		$lines = file_get_contents($path);

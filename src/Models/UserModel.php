@@ -95,7 +95,7 @@ class UserModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleException('Invalid user name "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid user name "' . $key . '"');
 		return null;
 	}
 
@@ -112,7 +112,7 @@ class UserModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleException('Invalid user name "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid user name "' . $key . '"');
 		return null;
 	}
 

@@ -146,7 +146,7 @@ class PostModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleException('Invalid post name "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid post name "' . $key . '"');
 		return null;
 	}
 
@@ -171,7 +171,7 @@ class PostModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleException('Invalid post hash "' . $hash . '"');
+			throw new SimpleNotFoundException('Invalid post hash "' . $hash . '"');
 		return null;
 	}
 

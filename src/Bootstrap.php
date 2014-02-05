@@ -42,6 +42,7 @@ class Bootstrap
 
 		if (empty($this->context->route))
 		{
+			http_response_code(404);
 			$this->context->viewName = 'error-404';
 			$this->render();
 			return;
@@ -59,6 +60,8 @@ class Bootstrap
 		}
 		catch (SimpleException $e)
 		{
+			if ($e instanceof SimpleNotFoundException)
+				http_response_code(404);
 			StatusHelper::failure(rtrim($e->getMessage(), '.') . '.');
 			if (!$this->context->handleExceptions)
 				$this->context->viewName = 'message';

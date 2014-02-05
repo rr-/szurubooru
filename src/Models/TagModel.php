@@ -126,7 +126,7 @@ class TagModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleException('Invalid tag name "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid tag name "' . $key . '"');
 		return null;
 	}
 
