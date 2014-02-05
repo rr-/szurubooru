@@ -1,6 +1,28 @@
 <?php
 class Bootstrap
 {
+	public function render($callback = null)
+	{
+		if ($callback === null)
+		{
+			$callback = function()
+			{
+				(new \Chibi\View())->renderFile($this->context->layoutName);
+			};
+		}
+
+		if ($this->context->layoutName == 'layout-normal')
+		{
+			ob_start(['LayoutHelper', 'transformHtml']);
+			$callback();
+			ob_end_flush();
+		}
+		else
+		{
+			$callback();
+		}
+	}
+
 	public function workWrapper($workCallback)
 	{
 		$this->config->chibi->baseUrl = 'http://' . rtrim($_SERVER['HTTP_HOST'], '/') . '/';
@@ -21,33 +43,26 @@ class Bootstrap
 		if (empty($this->context->route))
 		{
 			$this->context->viewName = 'error-404';
-			(new \Chibi\View())->renderFile($this->context->layoutName);
+			$this->render();
 			return;
 		}
 
 		try
 		{
-			if ($this->context->layoutName == 'layout-normal')
-			{
-				ob_start(['LayoutHelper', 'transformHtml']);
-				$workCallback();
-				ob_end_flush();
-			}
-			else
-				$workCallback();
+			$this->render($workCallback);
 		}
 		catch (\Chibi\MissingViewFileException $e)
 		{
 			$this->context->json = true;
 			$this->context->layoutName = 'layout-json';
-			(new \Chibi\View())->renderFile($this->context->layoutName);
+			$this->render();
 		}
 		catch (SimpleException $e)
 		{
 			StatusHelper::failure(rtrim($e->getMessage(), '.') . '.');
 			if (!$this->context->handleExceptions)
 				$this->context->viewName = 'message';
-			(new \Chibi\View())->renderFile($this->context->layoutName);
+			$this->render();
 		}
 		catch (Exception $e)
 		{
@@ -55,7 +70,7 @@ class Bootstrap
 			$this->context->transport->exception = $e;
 			$this->context->transport->queries = Database::getLogs();
 			$this->context->viewName = 'error-exception';
-			(new \Chibi\View())->renderFile($this->context->layoutName);
+			$this->render();
 		}
 
 		AuthController::observeWorkFinish();
