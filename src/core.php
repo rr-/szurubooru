@@ -1,5 +1,5 @@
 <?php
-define('SZURU_VERSION', '0.6.0');
+define('SZURU_VERSION', '0.6.1');
 define('SZURU_LINK', 'http://github.com/rr-/szurubooru');
 
 //basic settings and preparation
