@@ -8,6 +8,7 @@ class UserEntity extends AbstractEntity
 	public $emailUnconfirmed;
 	public $emailConfirmed;
 	public $joinDate;
+	public $lastLoginDate;
 	public $accessRank;
 	public $settings;
 	public $banned;

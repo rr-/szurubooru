@@ -104,6 +104,8 @@ class AuthController
 			if (!empty($context->user) and $context->user->id)
 			{
 				$dbUser = UserModel::findById($context->user->id);
+				$context->user->lastLoginDate = time();
+				UserModel::save($context->user);
 				$_SESSION['user'] = serialize($dbUser);
 			}
 			else

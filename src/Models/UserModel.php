@@ -34,6 +34,7 @@ class UserModel extends AbstractCrudModel
 				'email_unconfirmed' => $user->emailUnconfirmed,
 				'email_confirmed' => $user->emailConfirmed,
 				'join_date' => $user->joinDate,
+				'last_login_date' => $user->lastLoginDate,
 				'access_rank' => $user->accessRank,
 				'settings' => $user->settings,
 				'banned' => $user->banned
