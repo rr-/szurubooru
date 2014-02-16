@@ -36,25 +36,27 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 <?php if (empty($this->context->transport->users)): ?>
 	<p class="alert alert-warning">No users to show.</p>
 <?php else: ?>
-	<div class="users paginator-content">
-		<?php foreach ($this->context->transport->users as $user): ?>
-			<div class="user">
-				<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
-					<img src="<?php echo htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?php echo $user->name ?>"/>
-				</a>
-				<div class="details">
-					<h1>
-						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
-							<?php echo $user->name ?>
-						</a>
-					</h1>
+	<div class="users-wrapper">
+		<div class="users paginator-content">
+			<?php foreach ($this->context->transport->users as $user): ?>
+				<div class="user">
+					<a class="avatar" href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+						<img src="<?php echo htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?php echo $user->name ?>"/>
+					</a>
+					<div class="details">
+						<h1>
+							<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+								<?php echo $user->name ?>
+							</a>
+						</h1>
 
-					<div class="date-registered">Date registered: <?php echo date('Y-m-d H:i', $user->joinDate) ?></div>
-					<div class="fav-count">Favorite count: <?php echo $user->getFavoriteCount() ?></div>
-					<div class="post-count">Post count: <?php echo $user->getPostCount() ?></div>
+						<div class="date-registered">Registered: <?php echo date('Y-m-d H:i', $user->joinDate) ?></div>
+						<div class="fav-count">Favorite count: <?php echo $user->getFavoriteCount() ?></div>
+						<div class="post-count">Post count: <?php echo $user->getPostCount() ?></div>
+					</div>
 				</div>
-			</div>
-		<?php endforeach ?>
+			<?php endforeach ?>
+		</div>
 	</div>
 
 	<?php $this->renderFile('paginator') ?>
