@@ -118,7 +118,7 @@ class UserController
 
 		$page = max(1, $page);
 		$users = UserSearchService::getEntities($sortStyle, $usersPerPage, $page);
-		$userCount = UserSearchService::getEntityCount($sortStyle, $usersPerPage, $page);
+		$userCount = UserSearchService::getEntityCount($sortStyle);
 		$pageCount = ceil($userCount / $usersPerPage);
 
 		$this->context->sortStyle = $sortStyle;

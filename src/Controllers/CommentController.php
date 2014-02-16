@@ -14,7 +14,7 @@ class CommentController
 
 		$page = max(1, $page);
 		$comments = CommentSearchService::getEntities(null, $commentsPerPage, $page);
-		$commentCount = CommentSearchService::getEntityCount(null, $commentsPerPage, $page);
+		$commentCount = CommentSearchService::getEntityCount(null);
 		$pageCount = ceil($commentCount / $commentsPerPage);
 		CommentModel::preloadCommenters($comments);
 		CommentModel::preloadPosts($comments);

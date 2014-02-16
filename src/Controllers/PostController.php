@@ -75,7 +75,7 @@ class PostController
 		}
 
 		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
-		$postCount = PostSearchService::getEntityCount($query, $postsPerPage, $page);
+		$postCount = PostSearchService::getEntityCount($query);
 		$pageCount = ceil($postCount / $postsPerPage);
 		$page = min($pageCount, $page);
 		PostModel::preloadTags($posts);
