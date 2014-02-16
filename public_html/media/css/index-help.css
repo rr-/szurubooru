@@ -1,3 +1,7 @@
 code {
 	margin: 0 0.5em;
 }
+
+.tab-content {
+	padding-left: 1em;
+}

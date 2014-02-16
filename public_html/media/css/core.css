@@ -345,9 +345,9 @@ button:hover {
 
 .tabs ul {
 	list-style-type: none;
-	margin: -4px 0 1em 0;
+	margin: 0 0 1em 0;
 	padding: 0;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 3px solid #eee;
 }
 .tabs li {
 	display: inline-block;
@@ -356,15 +356,15 @@ button:hover {
 .tabs li a {
 	display: inline-block;
 	padding: 0.5em 1em;
-	margin: 5px 0 -1px 0;
 	vertical-align: middle;
-	border: 1px none;
-	border-bottom: 1px solid #ccc;
+	border: 3px solid rgba(238, 238, 238, 0);
+	border-bottom: 3px solid #eee;
 	color: silver;
+	margin: 0 0 -3px 0;
 }
 .tabs li.selected a {
-	border: 1px solid #ccc;
-	border-bottom: none;
+	border: 3px solid #eee;
+	border-bottom-color: rgba(238, 238, 238, 0);
 	color: inherit;
 	background: white;
 }
