@@ -17,22 +17,15 @@
 }
 
 .form-wrapper {
-	width: 50%;
 	max-width: 24em;
-	display: inline-block;
-	text-align: center;
 }
 .small-screen .form-wrapper {
 	width: 100%;
 }
-form.aligned {
-	text-align: left;
-	margin: 0 auto;
+#content form label {
+	width: 9em;
 }
-form.aligned label.left {
-	width: 7em;
-}
-form h1 {
+#content form h1 {
 	display: none;
 }
 

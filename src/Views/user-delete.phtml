@@ -1,7 +1,7 @@
-<form action="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>" method="post" class="delete aligned confirmable" autocomplete="off" data-confirm-text="Are you sure you want to delete your account?">
+<form action="<?php echo \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>" method="post" class="delete confirmable" autocomplete="off" data-confirm-text="Are you sure you want to delete your account?">
 	<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
-		<div class="current-password">
-			<label class="left" for="current-password">Current password:</label>
+		<div class="form-row current-password">
+			<label for="current-password">Current password:</label>
 			<div class="input-wrapper"><input type="password" name="current-password" id="current-password" placeholder="Current password"/></div>
 		</div>
 	<?php endif ?>
@@ -10,8 +10,8 @@
 
 	<?php $this->renderFile('message') ?>
 
-	<div>
-		<label class="left">&nbsp;</label>
+	<div class="form-row">
+		<label></label>
 		<button class="submit" type="submit">Delete account</button>
 	</div>
 </form>

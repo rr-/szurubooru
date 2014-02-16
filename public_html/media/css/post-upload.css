@@ -34,19 +34,14 @@
 	margin-top: 0.5em;
 	position: relative;
 }
-#url-handler input {
-	padding: 0.5em;
-}
 #url-handler .input-wrapper {
-	margin-right: 7.5em;
+	margin-right: 8.5em;
 }
 #url-handler button {
-	font-size: initial;
-	padding: 0.5em;
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 7em;
+	width: 8em;
 }
 
 .post .thumbnail {
@@ -119,19 +114,6 @@
 	font-size: 130%;
 }
 
-.post label {
-	line-height: 33px;
-}
-.post label.left {
-	display: inline-block;
-	width: 60px;
-	padding-right: 10px;
-	float: left;
-}
-.post .safety label:not(.left) {
-	margin-right: 0.75em;
-}
-
 .post .file-name strong {
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -139,7 +121,7 @@
 	white-space: pre;
 	display: inline-block;
 	vertical-align: middle;
-	line-height: 33px;
+	padding: 0.5em 0;
 }
 
 .safety-safe {
@@ -159,8 +141,15 @@ ul.tagit {
 	font-size: 1em;
 }
 
+.submit-wrapper {
+	text-align: center;
+}
 #the-submit {
-	margin: 0 0 0 205px;
+	margin: 0 auto;
+	font-size: 14.5pt;
+	padding: 0.35em 2em;
+	height: auto;
+	line-height: auto;
 }
 
 .post .form-wrapper {

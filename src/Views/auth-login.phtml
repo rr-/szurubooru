@@ -3,23 +3,21 @@ LayoutHelper::setSubTitle('authentication form');
 LayoutHelper::addStylesheet('auth.css');
 ?>
 
-<form action="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth aligned" method="post">
-	<div>
-		<p>If you don't have an account yet,<br/><a href="<?php echo \Chibi\UrlHelper::route('user', 'registration'); ?>">click here</a> to create a new one.</p>
-	</div>
+<form action="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth" method="post">
+	<p>If you don't have an account yet,<br/><a href="<?php echo \Chibi\UrlHelper::route('user', 'registration'); ?>">click here</a> to create a new one.</p>
 
-	<div>
-		<label class="left" for="name">User name:</label>
+	<div class="form-row">
+		<label for="name">User name:</label>
 		<div class="input-wrapper"><input type="text" id="name" name="name"/></div>
 	</div>
 
-	<div>
-		<label class="left" for="password">Password:</label>
+	<div class="form-row">
+		<label for="password">Password:</label>
 		<div class="input-wrapper"><input type="password" id="password" name="password"/></div>
 	</div>
 
-	<div>
-		<label class="left">&nbsp;</label>
+	<div class="form-row">
+		<label></label>
 		<div class="input-wrapper">
 			<button class="submit" type="submit">Log in</button>
 			&nbsp;
@@ -35,8 +33,8 @@ LayoutHelper::addStylesheet('auth.css');
 
 	<input type="hidden" name="submit" value="1"/>
 
-	<div class="help">
-		<label class="left">&nbsp;</label>
+	<div class="form-row help">
+		<label></label>
 		<div>
 			<p>Problems logging in?</p>
 			<ul>

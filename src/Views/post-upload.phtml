@@ -67,37 +67,38 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 				</a>
 			</div>
 
-			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post" class="aligned">
-				<div class="file-name">
-					<label class="left">File:</label>
+			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
+				<div class="form-row file-name">
+					<label>File:</label>
 					<strong>filename.jpg</strong>
 				</div>
 
-				<div class="safety">
-					<label class="left">Safety:</label>
-					<?php $checked = false ?>
-					<?php foreach (PostSafety::getAll() as $safety): ?>
+				<div class="form-row safety">
+					<label>Safety:</label>
+					<div class="input-wrapper">
+						<?php $checked = false ?>
+						<?php foreach (PostSafety::getAll() as $safety): ?>
+							<label>
+								<input type="radio" name="safety" value="<?php echo $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
+								<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
+								<?php $checked = true ?>
+							</label>
+						<?php endforeach ?>
+						<input type="hidden" name="anonymous" value="0"/>
 						<label>
-							<input type="radio" name="safety" value="<?php echo $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
-							<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
-							<?php $checked = true ?>
+							<input type="checkbox" name="anonymous" value="1"/>
+							Upload anonymously
 						</label>
-					<?php endforeach ?>
-					<input type="hidden" name="anonymous" value="0"/>
-					<label>
-						<input type="checkbox" name="anonymous" value="1"/>
-						Upload anonymously
-					</label>
-
+					</div>
 				</div>
 
-				<div class="tags">
-					<label class="left">Tags:</label>
+				<div class="form-row tags">
+					<label>Tags:</label>
 					<div class="input-wrapper"><input type="text" name="tags" placeholder="enter some tags&hellip;"/></div>
 				</div>
 
-				<div class="source">
-					<label class="left">Source:</label>
+				<div class="form-row source">
+					<label>Source:</label>
 					<div class="input-wrapper"><input type="text" name="source" placeholder="where did you get this from? (optional)"/></div>
 				</div>
 

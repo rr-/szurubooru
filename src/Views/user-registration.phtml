@@ -9,43 +9,37 @@ LayoutHelper::setSubTitle('registration form');
 	LayoutHelper::addStylesheet('auth.css');
 	?>
 
-	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth aligned" method="post">
-		<div>
-			<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>
-		</div>
+	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth" method="post">
+		<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>
 
-		<div>
-			<label class="left" for="name">User name:</label>
+		<div class="form-row">
+			<label for="name">User name:</label>
 			<div class="input-wrapper"><input type="text" id="name" name="name" value="<?php echo $this->context->suppliedName ?>" placeholder="e.g. darth_vader" autocomplete="off"/></div>
 		</div>
 
-		<div>
-			<label class="left" for="password1">Password:</label>
+		<div class="form-row">
+			<label for="password1">Password:</label>
 			<div class="input-wrapper"><input type="password" id="password1" name="password1" value="<?php echo $this->context->suppliedPassword1 ?>" placeholder="e.g. <?php echo str_repeat('&#x25cf;', 8) ?>" autocomplete="off"/></div>
 		</div>
 
-		<div>
-			<label class="left" for="password2">Password (repeat):</label>
+		<div class="form-row">
+			<label for="password2">Password (repeat):</label>
 			<div class="input-wrapper"><input type="password" id="password2" name="password2" value="<?php echo $this->context->suppliedPassword2 ?>" placeholder="e.g. <?php echo str_repeat('&#x25cf;', 8) ?>" autocomplete="off"/></div>
 		</div>
 
-		<div>
-			<label class="left" for="email">E-mail address:</label>
+		<div class="form-row">
+			<label for="email">E-mail address:</label>
 			<div class="input-wrapper"><input type="text" id="email" name="email" value="<?php echo $this->context->suppliedEmail ?>" placeholder="e.g. vader@empire.gov" autocomplete="off"/></div>
 		</div>
 
-		<div>
-			<p id="email-info">Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>Leave blank for random Gravatar.</p>
-		</div>
+		<p id="email-info">Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>Leave blank for random Gravatar.</p>
 
-		<div>
-			<?php $this->renderFile('message') ?>
-		</div>
+		<?php $this->renderFile('message') ?>
 
 		<input type="hidden" name="submit" value="1"/>
 
-		<div>
-			<label class="left"></label>
+		<div class="form-row">
+			<label></label>
 			<button class="submit" type="submit">Register</button>
 		</div>
 	</form>

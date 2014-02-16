@@ -88,11 +88,10 @@ body {
 }
 #top-nav li.search input {
 	border: 0;
-	height: 20px;
-	line-height: 20px;
-	padding: 4px 10px;
+	height: 28px;
+	line-height: 28px;
+	padding: 0 10px;
 	margin: 0;
-	box-sizing: content-box;
 }
 
 #top-nav li.safety {
@@ -237,42 +236,38 @@ a:hover i[class*='icon-'] {
 
 
 
-form.aligned input,
-form.aligned button {
-	vertical-align: text-top;
-}
-form.aligned label {
+.form-row>label {
+	display: inline-block;
 	text-align: right;
 	vertical-align: middle;
-}
-form.aligned label.left {
-	display: inline-block;
 	padding-right: 1em;
-	width: 5em;
+	width: 7em;
 	min-height: 1em;
 	float: left;
 }
-form.aligned>div {
-	margin-bottom: 0.5em;
-	clear: left;
-}
-form.aligned label,
-form.aligned input,
-form.aligned select,
-form.aligned button {
+label,
+input:not([type=radio]):not([type=checkbox]):not([type=file]),
+select,
+button {
+	-webkit-box-sizing: border-box !important;
+	-moz-box-sizing: border-box !important;
+	box-sizing: border-box !important;
 	vertical-align: middle;
-	line-height: 20px;
+	line-height: 24px;
+	height: 34px;
 }
-form.aligned label,
-form.aligned input,
-form.aligned select {
+label,
+input,
+select {
 	padding: 5px;
+	font-family: inherit;
+	font-size: 11pt;
 }
-form.aligned input[type=file] {
+input[type=file] {
 	padding: 5px 0;
 }
-form.aligned input[type=radio],
-form.aligned input[type=checkbox] {
+input[type=radio],
+input[type=checkbox] {
 	width: auto;
 	max-width: auto;
 	margin: 0 10px 0 0;
@@ -280,51 +275,49 @@ form.aligned input[type=checkbox] {
 	vertical-align: middle;
 }
 
+button {
+	font-size: 12pt;
+	border-radius: 5px;
+	padding: 5px 15px;
+	-moz-box-sizing: border-box;
+	color: white;
+	background: hsl(205,70%,70%);
+	border: 0;
+}
+button:hover {
+	background-color: hsl(205,70%,60%);
+	cursor: pointer;
+}
+
+.form-row {
+	margin: 0.25em 0;
+	clear: left;
+}
 .input-wrapper {
 	overflow: hidden;
 	display: block;
 }
-.input-wrapper ul.tagit,
-.input-wrapper input,
-.input-wrapper textarea,
-.input-wrapper select {
-	width: 100%;
-	max-width: 100%;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-}
 
-label {
-	display: inline-block;
-}
-label,
-input,
-select,
-button {
-	font-family: inherit;
-	font-size: 11pt;
-}
 ul.tagit,
 select,
 textarea,
 input:not([type=radio]):not([type=checkbox]):not([type=file]) {
+	width: 100%;
+	max-width: 100%;
 	border: 1px solid #ccc;
-	border-radius: 3px;
+	border-radius: 5px;
+}
+
+ul.tagit {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 ul.tagit input {
 	border: 0 !important;
-}
-button {
-	font-size: 115%;
-	padding: 0.2em 0.7em;
-	color: white;
-	background: cornflowerblue;
-	border: 0;
-}
-button:hover {
-	background-color: royalblue;
-	cursor: pointer;
+	line-height: auto !important;
+	height: auto !important;
+	margin: -4px 0 !important;
 }
 
 
@@ -368,7 +361,7 @@ button:hover {
 	border-style: solid;
 	border-width: 1px;
 	max-width: 500px;
-	margin: 2em auto !important;
+	margin: 2em auto;
 }
 
 .alert-success {

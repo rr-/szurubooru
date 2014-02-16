@@ -1,6 +1,6 @@
-<form action="<?php echo \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>" method="post" class="settings aligned">
-	<div class="safety">
-		<label class="left">Safety:</label>
+<form action="<?php echo \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>" method="post" class="settings">
+	<div class="form-row safety">
+		<label>Safety:</label>
 		<div class="input-wrapper">
 			<?php foreach (PostSafety::getAll() as $safety): ?>
 				<?php if (PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety))): ?>
@@ -22,8 +22,8 @@
 		</div>
 	</div>
 
-	<div class="endless-scrolling">
-		<label class="left" for="endless-scrolling">Endless scrolling:</label>
+	<div class="form-row endless-scrolling">
+		<label for="endless-scrolling">Endless scrolling:</label>
 		<div class="input-wrapper">
 			<label>
 				<?php
@@ -41,8 +41,8 @@
 		</div>
 	</div>
 
-	<div class="post-tag-titles">
-		<label class="left" for="post-tag-titles">Tags in thumbs:</label>
+	<div class="form-row post-tag-titles">
+		<label for="post-tag-titles">Tags in thumbs:</label>
 		<div class="input-wrapper">
 			<label>
 				<?php
@@ -60,8 +60,8 @@
 		</div>
 	</div>
 
-	<div class="hide-disliked-posts">
-		<label class="left" for="hide-disliked-posts">Hide down-voted:</label>
+	<div class="form-row hide-disliked-posts">
+		<label for="hide-disliked-posts">Hide down-voted:</label>
 		<div class="input-wrapper">
 			<label>
 				<?php
@@ -83,8 +83,8 @@
 
 	<?php $this->renderFile('message') ?>
 
-	<div>
-		<label class="left">&nbsp;</label>
+	<div class="form-row">
+		<label></label>
 		<button class="submit" type="submit">Update settings</button>
 	</div>
 </form>

@@ -12,22 +12,12 @@
 	padding: 0;
 }
 
-form.settings label.left,
-form.delete label.left,
-form.edit label.left {
-	width: 9em;
+#content form {
+	max-width: 30em;
 }
-
-form.settings .alert,
-form.delete .alert,
-form.edit .alert {
+#content form label {
+	width: 10em;
+}
+#content form .alert {
 	margin: 1em 0;
-}
-
-form.settings input,
-form.delete input,
-form.edit select,
-form.edit input {
-	width: 16em;
-	max-width: 90%;
 }

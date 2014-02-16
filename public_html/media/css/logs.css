@@ -4,8 +4,7 @@
 
 #content input {
 	margin: 0 1em;
-	height: 25px;
-	vertical-align: middle;
+	max-width: 50%;
 }
 
 pre {

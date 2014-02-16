@@ -3,18 +3,18 @@ LayoutHelper::addStylesheet('comment-edit.css');
 LayoutHelper::addScript('comment-edit.js');
 ?>
 
-<form action="<?php echo \Chibi\UrlHelper::route('comment', 'edit', ['id' => $this->context->transport->comment->id]) ?>" method="post" class="edit-comment aligned">
+<form action="<?php echo \Chibi\UrlHelper::route('comment', 'edit', ['id' => $this->context->transport->comment->id]) ?>" method="post" class="edit-comment">
 	<h1>edit comment</h1>
 
 	<div class="preview"></div>
 
-	<div class="text">
+	<div class="form-row text">
 		<div class="input-wrapper"><textarea name="text" cols="50" rows="3"><?php echo TextHelper::secureWhitespace($this->context->transport->comment->text) ?></textarea></div>
 	</div>
 
 	<input type="hidden" name="submit" value="1"/>
 
-	<div>
+	<div class="form-row">
 		<button name="sender" class="submit" type="submit" value="preview">Preview</button>&nbsp;
 		<button name="sender" class="submit" type="submit" value="submit">Submit</button>
 	</div>

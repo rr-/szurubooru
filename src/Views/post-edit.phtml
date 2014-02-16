@@ -1,54 +1,56 @@
-<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit-post aligned">
+<form action="<?php echo \Chibi\UrlHelper::route('post', 'edit', ['id' => $this->context->transport->post->id]) ?>" method="post" enctype="multipart/form-data" class="edit-post">
 	<h1>edit post</h1>
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
-		<div class="safety">
-			<label class="left">Safety:</label>
-			<?php foreach (PostSafety::getAll() as $safety): ?>
-				<label>
-					<input type="radio" name="safety" value="<?php echo $safety ?>" <?php if ($this->context->transport->post->safety == $safety) echo 'checked="checked"' ?>/>
-					&nbsp;<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
-				</label>
-			<?php endforeach ?>
+		<div class="form-row safety">
+			<label>Safety:</label>
+			<div class="input-wrapper">
+				<?php foreach (PostSafety::getAll() as $safety): ?>
+					<label>
+						<input type="radio" name="safety" value="<?php echo $safety ?>" <?php if ($this->context->transport->post->safety == $safety) echo 'checked="checked"' ?>/>
+						&nbsp;<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
+					</label>
+				<?php endforeach ?>
+			</div>
 		</div>
 	<?php endif ?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
-		<div class="tags">
-			<label class="left" for="tags">Tags:</label>
+		<div class="form-row tags">
+			<label for="tags">Tags:</label>
 			<div class="input-wrapper"><input type="text" name="tags" id="tags" placeholder="enter some tags&hellip;" value="<?php echo join(',', array_map(function($tag) { return $tag->name; }, $this->context->transport->post->getTags())) ?>"/></div>
 		</div>
 		<input type="hidden" name="edit-token" id="edit-token" value="<?php echo $this->context->transport->post->getEditToken() ?>"/>
 	<?php endif ?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
-		<div class="source">
-			<label class="left" for="source">Source:</label>
+		<div class="form-row source">
+			<label for="source">Source:</label>
 			<div class="input-wrapper"><input type="text" name="source" id="source" value="<?php echo $this->context->transport->post->source ?>"/></div>
 		</div>
 	<?php endif ?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostRelations, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
-		<div class="thumb">
-			<label class="left" for="relations">Relations:</label>
+		<div class="form-row thumb">
+			<label for="relations">Relations:</label>
 			<div class="input-wrapper"><input type="text" name="relations" id="relations" placeholder="id1,id2,&hellip;" value="<?php echo join(',', array_map(function($post) { return $post->id; }, $this->context->transport->post->getRelations())) ?>"/></div>
 		</div>
 	<?php endif ?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
-		<div class="url">
-			<label class="left" for="url">File:</label>
+		<div class="form-row url">
+			<label for="url">File:</label>
 			<div class="input-wrapper"><input type="text" name="url" id="url" placeholder="Some url&hellip;"/></div>
 		</div>
 
-		<div class="file">
-			<label class="left" for="file"></label>
+		<div class="form-row file">
+			<label for="file"></label>
 			<div class="input-wrapper"><input type="file" name="file" id="file"/></div>
 		</div>
 	<?php endif ?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
-		<div class="thumb">
-			<label class="left" for="thumb">Thumb:</label>
+		<div class="form-row thumb">
+			<label for="thumb">Thumb:</label>
 			<div class="input-wrapper">
 				<input type="file" name="thumb" id="thumb"/>
 				<?php if ($this->context->transport->post->hasCustomThumb()): ?>
@@ -60,8 +62,8 @@
 
 	<input type="hidden" name="submit" value="1"/>
 
-	<div>
-		<label class="left">&nbsp;</label>
+	<div class="form-row">
+		<label></label>
 		<button class="submit" type="submit">Submit</button>
 	</div>
 </form>

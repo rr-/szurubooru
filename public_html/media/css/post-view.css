@@ -136,9 +136,6 @@ i.icon-dl {
 .unit.edit-post {
 	display: none;
 }
-form.edit-post .safety label:not(.left) {
-	margin-right: 0.75em;
-}
 ul.tagit {
 	display: block;
 	vertical-align: middle;
