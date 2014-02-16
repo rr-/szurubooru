@@ -176,17 +176,7 @@ footer a {
 }
 
 .unit {
-	padding: 1em;
-	border: 1px solid #eee;
-	margin: 1em 0;
-}
-#inner-content .unit {
-	border-bottom: 0;
-	padding-bottom: 0;
-}
-#sidebar .unit {
-	border-left: 0;
-	padding-left: 0;
+	margin: 2.5em 0;
 }
 #sidebar .unit:first-child {
 	margin-top: 0;
@@ -198,11 +188,6 @@ footer a {
 	body #sidebar {
 		float: none;
 		width: 100%;
-	}
-	body #sidebar .unit {
-		border: 1px solid #eee;
-		border-bottom: 0;
-		padding: 1em 1em 0 1em;
 	}
 	#inner-content {
 		float: none;
