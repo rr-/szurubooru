@@ -27,7 +27,7 @@
 }
 #file-handler.active {
 	background: #eee;
-	border-color: firebrick;
+	border-color: hsl(0,70%,50%);
 }
 
 #url-handler {

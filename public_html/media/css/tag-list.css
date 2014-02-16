@@ -54,5 +54,5 @@ nav.sort-styles li {
 	padding-bottom: 0.2em;
 }
 nav.sort-styles li.active {
-	border-bottom: 3px solid firebrick;
+	border-bottom: 3px solid hsl(0,70%,50%);
 }

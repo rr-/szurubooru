@@ -47,3 +47,8 @@
 .comment .delete a {
 	color: silver;
 }
+
+.comment .edit a:hover,
+.comment .delete a:hover {
+	color: red;
+}

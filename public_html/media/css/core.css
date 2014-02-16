@@ -73,8 +73,8 @@ body {
 }
 #top-nav li.main-nav-item a:focus,
 #top-nav li.main-nav-item a:hover {
-	color: firebrick;
-	border-bottom: 3px solid firebrick;
+	color: hsl(0,70%,45%);
+	border-bottom: 3px solid hsl(0,70%,45%);
 	margin-bottom: 0;
 }
 
@@ -212,7 +212,7 @@ hr {
 }
 
 a {
-	color: firebrick;
+	color: hsl(0,70%,45%);
 	text-decoration: none;
 	outline: 0;
 }
@@ -227,7 +227,7 @@ i[class*='icon-'] {
 	display: inline-block;
 }
 a i[class*='icon-'] {
-	background-color: firebrick;
+	background-color: hsl(0,70%,45%);
 }
 a:focus i[class*='icon-'],
 a:hover i[class*='icon-'] {
@@ -281,11 +281,11 @@ button {
 	padding: 5px 15px;
 	-moz-box-sizing: border-box;
 	color: white;
-	background: hsl(205,70%,70%);
+	background: hsl(0,70%,60%);
 	border: 0;
 }
 button:hover {
-	background-color: hsl(205,70%,60%);
+	background-color: hsl(0,75%,50%);
 	cursor: pointer;
 }
 
@@ -350,7 +350,7 @@ ul.tagit input {
 
 .tabs li a:hover,
 .tabs li a:focus {
-	color: firebrick;
+	color: hsl(0,70%,45%);
 }
 
 
@@ -431,4 +431,10 @@ blockquote>*:first-child {
 }
 blockquote>*:last-child {
 	margin-bottom: 0;
+}
+
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+	color: hsla(0,70%,45%,0.8) !important;
 }

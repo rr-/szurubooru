@@ -34,6 +34,6 @@
 
 .paginator li a:focus,
 .paginator li a:hover {
-	border: 1px solid firebrick;
+	border: 1px solid hsl(0,70%,50%);
 	background: pink;
 }
