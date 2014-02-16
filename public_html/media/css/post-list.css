@@ -1,11 +1,11 @@
 .post {
-	margin: 0.5em;
+	margin: 8px;
 }
 .posts-wrapper {
 	text-align: center;
 }
 .posts {
-	margin: 0 auto;
+	margin: -8px auto 0 auto;
 }
 
 .form-wrapper {

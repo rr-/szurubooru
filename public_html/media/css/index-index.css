@@ -16,16 +16,15 @@
 	margin-bottom: 0;
 }
 
-#content {
+#content .main-wrapper>* {
 	margin: 0 auto;
 	width: 70%;
-	min-width: 500px;
 	position: relative;
 }
-.small-screen #content {
-	width: 100%;
-	min-width: 0;
-	max-width: 500px;
+@media only screen and (max-width:700px) {
+	#content .main-wrapper>* {
+		width: 100%;
+	}
 }
 
 #content .body {
@@ -45,7 +44,7 @@
 #content .footer {
 	font-size: small;
 	color: dimgray;
-	margin: 0.5em 0 3em 0;
+	margin: 0.5em auto 3em auto;
 }
 #content .footer .left {
 	float: left;

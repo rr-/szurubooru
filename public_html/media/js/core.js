@@ -157,13 +157,29 @@ $(function()
 {
 	$(window).resize(function()
 	{
+		fixSize();
 		if ($('body').width() == $('body').data('last-width'))
 			return;
 		$('body').data('last-width', $('body').width());
 		$('body').trigger('dom-update');
 	});
 	$('body').bind('dom-update', processSidebar);
+	fixSize();
 });
+
+var fixedEvenOnce = false;
+function fixSize()
+{
+	var multiply = 168;
+	var oldWidth = $('.main-wrapper:eq(0)').width();
+	$('.main-wrapper:eq(0)').width('');
+	var newWidth = $('.main-wrapper:eq(0)').width();
+	if (oldWidth != newWidth || !fixedEvenOnce)
+	{
+		$('.main-wrapper').width(multiply * Math.floor(newWidth / multiply));
+		fixedEvenOnce = true;
+	}
+}
 
 
 
