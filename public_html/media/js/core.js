@@ -295,7 +295,7 @@ function enableExitConfirmation()
 {
 	$(window).bind('beforeunload', function(e)
 	{
-		return true;
+		return 'There are unsaved changes.';
 	});
 }
 
