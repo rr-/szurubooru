@@ -6,8 +6,8 @@ $(function()
 		var className = $(this).parents('li').attr('class').replace('selected', '').replace(/^\s+|\s+$/, '');
 		$('.tabs li').removeClass('selected');
 		$(this).parents('li').addClass('selected');
-		$('.tab').hide();
-		$('.tab.' + className).show();
+		$('.tab-content').hide();
+		$('.tab-content.' + className).show();
 	});
 
 	var tags = [];

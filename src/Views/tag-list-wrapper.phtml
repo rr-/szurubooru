@@ -7,9 +7,10 @@ if (PrivilegesHelper::confirm(Privilege::ListTags)) $tabs['list'] = 'List';
 if (PrivilegesHelper::confirm(Privilege::RenameTags)) $tabs['rename'] = 'Rename';
 if (PrivilegesHelper::confirm(Privilege::MergeTags)) $tabs['merge'] = 'Merge';
 if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs['mass-tag-redirect'] = 'Mass tag';
+$showTabs = count($tabs) > 1;
 ?>
 
-<?php if (count(array_diff($tabs, ['list'])) > 1): ?>
+<?php if ($showTabs): ?>
 	<nav class="tabs">
 		<ul>
 			<?php foreach ($tabs as $tab => $name): ?>
@@ -25,6 +26,8 @@ if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs['mass-tag-redirect'] = 
 			<?php endforeach  ?>
 		</ul>
 	</nav>
+
+	<div class="tab-content">
 <?php endif ?>
 
 <?php if ($this->context->route->simpleActionName == 'merge'): ?>
@@ -41,4 +44,8 @@ if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs['mass-tag-redirect'] = 
 
 <?php if ($this->context->route->simpleActionName == 'mass-tag-redirect'): ?>
 	<?php $this->renderFile('tag-mass-tag') ?>
+<?php endif ?>
+
+<?php if ($showTabs): ?>
+	</div>
 <?php endif ?>

@@ -199,16 +199,18 @@ LayoutHelper::addStylesheet('user-view.css');
 		</ul>
 	</nav>
 
-	<?php if (isset($this->context->transport->posts)): ?>
-		<?php $this->renderFile('post-list') ?>
-	<?php endif ?>
+	<div class="tab-content">
+		<?php if (isset($this->context->transport->posts)): ?>
+			<?php $this->renderFile('post-list') ?>
+		<?php endif ?>
 
-	<?php if ($this->context->transport->tab == 'settings'): ?>
-		<?php $this->renderFile('user-settings') ?>
-	<?php elseif ($this->context->transport->tab == 'edit'): ?>
-		<?php $this->renderFile('user-edit') ?>
-	<?php elseif ($this->context->transport->tab == 'delete'): ?>
-		<?php $this->renderFile('user-delete') ?>
-	<?php endif ?>
+		<?php if ($this->context->transport->tab == 'settings'): ?>
+			<?php $this->renderFile('user-settings') ?>
+		<?php elseif ($this->context->transport->tab == 'edit'): ?>
+			<?php $this->renderFile('user-edit') ?>
+		<?php elseif ($this->context->transport->tab == 'delete'): ?>
+			<?php $this->renderFile('user-delete') ?>
+		<?php endif ?>
+	</div>
 
 </div>

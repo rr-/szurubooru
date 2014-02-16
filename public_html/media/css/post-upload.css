@@ -8,10 +8,10 @@
 	float: left;
 }
 
-.tab {
+.tab-content {
 	margin-bottom: 1em;
 }
-.tab.url {
+.tab-content.url {
 	display: none;
 }
 
