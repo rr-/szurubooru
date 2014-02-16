@@ -133,11 +133,9 @@ body {
 
 
 
-footer {
+footer .main-wrapper {
 	text-align: center;
-	margin: 1em 0;
-	padding-top: 0.5em;
-	border-top: 1px solid #eee;
+	margin-top: 1em;
 	font-size: small;
 	color: silver;
 }
