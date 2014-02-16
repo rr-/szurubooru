@@ -78,7 +78,7 @@ class TagSearchService extends AbstractSearchService
 				break;
 
 			case 'alpha':
-				$sqlQuery->orderBy('name');
+				$sqlQuery->orderBy('tag.name');
 				break;
 		}
 
