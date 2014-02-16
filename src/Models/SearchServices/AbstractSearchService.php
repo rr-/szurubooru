@@ -21,7 +21,7 @@ abstract class AbstractSearchService
 		$sqlQuery->offset('?')->put(($page - 1) * $perPage);
 	}
 
-	static function getEntitiesRows($searchQuery, $perPage = null, $page = 1)
+	public static function getEntitiesRows($searchQuery, $perPage = null, $page = 1)
 	{
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
@@ -35,21 +35,23 @@ abstract class AbstractSearchService
 		return $rows;
 	}
 
-	static function getEntities($searchQuery, $perPage = null, $page = 1)
+	public static function getEntities($searchQuery, $perPage = null, $page = 1)
 	{
 		$modelClassName = self::getModelClassName();
 		$rows = static::getEntitiesRows($searchQuery, $perPage, $page);
 		return $modelClassName::convertRows($rows);
 	}
 
-	static function getEntityCount($searchQuery)
+	public static function getEntityCount($searchQuery)
 	{
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
 
 		$sqlQuery = new SqlQuery();
 		$sqlQuery->select('count(1)')->as('count');
+		$sqlQuery->from()->raw('(')->select('1');
 		static::decorate($sqlQuery, $searchQuery);
+		$sqlQuery->raw(')');
 
 		return Database::fetchOne($sqlQuery)['count'];
 	}
