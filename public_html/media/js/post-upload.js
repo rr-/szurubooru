@@ -42,18 +42,22 @@ $(function()
 
 
 
+	$('#url-handler-wrapper input').keydown(function(e)
+	{
+		if (e.which == 13)
+		{
+			$('#url-handler-wrapper button').trigger('click');
+			e.preventDefault();
+		}
+	});
 	$('#url-handler-wrapper button').click(function(e)
 	{
-		var urls = [];
-		$.each($('#url-handler-wrapper textarea').val().split(/\s+/), function(i, url)
-		{
-			url = url.replace(/^\s+|\s+$/, '');
-			if (url == '')
-				return;
-			urls.push(url);
-		});
-		$('#url-handler-wrapper textarea').val('');
-		handleURLs(urls);
+		var url = $('#url-handler-wrapper input').val();
+		url = url.replace(/^\s+|\s+$/, '');
+		if (url == '')
+			return;
+		$('#url-handler-wrapper input').val('');
+		handleURLs([url]);
 	});
 
 

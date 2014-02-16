@@ -18,38 +18,18 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 
 <div id="inner-content">
 	<div id="upload-step1">
-		<nav class="tabs">
-			<ul>
-				<li class="selected file">
-					<a href="#">
-						Upload from file
-					</a>
-				</li>
-
-				<li class="url">
-					<a href="#">
-						Upload from URL
-					</a>
-				</li>
-			</ul>
-		</nav>
-
-		<div class="tab-content file">
+		<div id="file-handler-wrapper">
 			<input type=file multiple style="display: none"/>
-			<div id="file-handler-wrapper">
-				<div id="file-handler">
-					Drop files here!<br>
-					Or just click on this box.
-				</div>
+			<div id="file-handler">
+				Drop files here!<br>
+				Or just click on this box.
 			</div>
 		</div>
 
-		<div class="tab-content url">
-			<div id="url-handler-wrapper">
-				<div id="url-handler">
-					<div class="input-wrapper"><textarea placeholder="Paste some URLs here, one per line." name="urls"></textarea></div>
-				</div>
-				<button class="submit" type="submit">Add</button>
+		<div id="url-handler-wrapper">
+			<div id="url-handler">
+				<div class="input-wrapper"><input placeholder="Alternatively, paste an URL here." name="url"/></div>
+				<button class="submit" type="submit">Add URL</button>
 			</div>
 		</div>
 
