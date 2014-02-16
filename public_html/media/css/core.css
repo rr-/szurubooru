@@ -17,6 +17,8 @@ body {
 	color: black;
 	margin: 0;
 	padding: 0;
+	overflow-x: auto;
+	overflow-y: scroll;
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 12pt;
 }
