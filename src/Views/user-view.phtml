@@ -16,23 +16,33 @@ LayoutHelper::addStylesheet('user-view.css');
 
 		<div class="key-value join-date">
 			<span class="key">Joined:</span>
-			<span class="value" title="<?php echo $val = date('Y-m-d', $this->context->transport->user->joinDate) ?>"><?php echo $val ?></span>
+			<span class="value" title="<?php echo TextHelper::formatDate($this->context->transport->user->joinDate, true) ?>">
+				<?php echo TextHelper::formatDate($this->context->transport->user->joinDate, false) ?>
+			</span>
 		</div>
 
 		<div class="key-value last-login">
 			<span class="key">Last login:</span>
-			<span class="value" title="<?php echo $val = $this->context->transport->user->lastLoginDate ? date('Y-m-d', $this->context->transport->user->lastLoginDate) : 'Unknown' ?>"><?php echo $val ?></span>
+			<span class="value" title="<?php echo TextHelper::formatDate($this->context->transport->user->lastLoginDate, true) ?>">
+				<?php echo TextHelper::formatDate($this->context->transport->user->lastLoginDate, false) ?>
+			</span>
 		</div>
 
 		<div class="key-value access-rank">
 			<span class="key">Access rank:</span>
-			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(AccessRank::toString($this->context->transport->user->accessRank)) ?>"><?php echo $val ?></span>
+			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(AccessRank::toString($this->context->transport->user->accessRank)) ?>">
+				<?php echo $val ?>
+			</span>
 		</div>
 
 		<?php if (PrivilegesHelper::confirm(Privilege::ViewUserEmail, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 			<div class="key-value email">
 				<span class="key">E-mail:</span>
-				<span class="value" title="<?php echo $val = ($this->context->transport->user->emailUnconfirmed ? '(unconfirmed) ' . $this->context->transport->user->emailUnconfirmed : $this->context->transport->user->emailConfirmed ?: 'none specified') ?>"><?php echo $val ?></span>
+				<span class="value" title="<?php echo $val = ($this->context->transport->user->emailUnconfirmed
+						? '(unconfirmed) ' . $this->context->transport->user->emailUnconfirmed
+						: $this->context->transport->user->emailConfirmed ?: 'none specified') ?>">
+					<?php echo $val ?>
+				</span>
 				<br>(only you and staff can see this)
 			</div>
 		<?php endif ?>

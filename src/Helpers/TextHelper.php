@@ -284,4 +284,48 @@ class TextHelper
 
 		return $html;
 	}
+
+	public static function formatDate($date, $plain = true)
+	{
+		if (!$date)
+			return 'Unknown';
+		if ($plain)
+			return date('Y-m-d H:i:s', $date);
+
+		$now = time();
+		$diff = abs($now - $date);
+		$future = $now < $date;
+
+		$mul = 60;
+		if ($diff < $mul)
+			return $future ? 'in a few seconds' : 'just now';
+		if ($diff < $mul * 2)
+			return $future ? 'in a minute' : 'a minute ago';
+
+		$prevMul = $mul; $mul *= 60;
+		if ($diff < $mul)
+			return $future ? 'in ' . round($diff / $prevMul) . ' minutes' : round($diff / $prevMul) . ' minutes ago';
+		if ($diff < $mul * 2)
+			return $future ? 'in an hour' : 'an hour ago';
+
+		$prevMul = $mul; $mul *= 24;
+		if ($diff < $mul)
+			return $future ? 'in ' . round($diff / $prevMul) . ' hours' : round($diff / $prevMul) . ' hours ago';
+		if ($diff < $mul * 2)
+			return $future ? 'tomorrow' : 'yesterday';
+
+		$prevMul = $mul; $mul *= 30.42;
+		if ($diff < $mul)
+			return $future ? 'in ' . round($diff / $prevMul) . ' days' : round($diff / $prevMul) . ' days ago';
+		if ($diff < $mul * 2)
+			return $future ? 'in a month' : 'a month ago';
+
+		$prevMul = $mul; $mul *= 12;
+		if ($diff < $mul)
+			return $future ? 'in ' . round($diff / $prevMul) . ' months' : round($diff / $prevMul) . ' months ago';
+		if ($diff < $mul * 2)
+			return $future ? 'in a year' : 'a year ago';
+
+		return $future ? 'in ' . round($diff / $mul) . ' years' : round($diff / $prevMul) . ' years ago';
+	}
 }

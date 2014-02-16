@@ -28,8 +28,8 @@ LayoutHelper::addScript('comment-edit.js');
 				<?php endif ?>
 			</span>
 
-			<span class="date">
-				<?php echo date('Y-m-d H:i', $this->context->comment->commentDate) ?>
+			<span class="date" title="<?php echo TextHelper::formatDate($this->context->comment->commentDate, true) ?>">
+				<?php echo TextHelper::formatDate($this->context->comment->commentDate, false) ?>
 			</span>
 
 			<?php if (PrivilegesHelper::confirm(Privilege::EditComment, PrivilegesHelper::getIdentitySubPrivilege($commenter))): ?>

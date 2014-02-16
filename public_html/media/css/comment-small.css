@@ -22,11 +22,8 @@
 .comment {
 	clear: left;
 }
-.comment .date:before {
-	content: ' on ';
-	margin: 0 0.2em;
-}
 .comment .date {
+	margin: 0 0.2em 0 0.75em;
 	color: silver;
 }
 
