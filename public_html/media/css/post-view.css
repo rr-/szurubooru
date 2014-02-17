@@ -165,8 +165,27 @@ i.icon-fav {
 	margin: 2px;
 }
 
+#inner-content {
+	position: relative;
+}
 .unit.edit-post {
+	position: absolute;
+	margin-top: 0;
+	padding: 1em;
+	background: rgba(255, 255, 255, 0.8);
+	box-shadow: 0 0 1em 1em rgba(255, 255, 255, 0.8);
+	z-index: 99;
+	top: 0;
+	left: 0;
+	right: 0;
 	display: none;
+}
+.unit.edit-post ul.tagit,
+.unit.edit-post input:not([type=file]) {
+	background: rgba(255, 255, 255, 0.75);
+}
+.unit.edit-post ul.tagit input {
+	background: transparent;
 }
 ul.tagit {
 	display: block;

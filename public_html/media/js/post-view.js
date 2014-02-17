@@ -12,7 +12,6 @@ $(function()
 			aDom.addClass('inactive');
 
 			var formDom = $('form.edit-post');
-			formDom.data('original-data', formDom.serialize());
 			if (formDom.find('.tagit').length == 0)
 			{
 				$.getJSON('/tags?json', {filter: 'order:popularity,desc'}, function(data)
@@ -36,16 +35,41 @@ $(function()
 			else
 				aDom.removeClass('inactive');
 
+			var editUnit =  formDom.parents('.unit');
+			var postUnit = $('.post-wrapper');
 			if (!$(formDom).is(':visible'))
 			{
-				formDom.parents('.unit')
-					.show().css('height', formDom.height()).hide()
-					.slideDown(function()
+				formDom.data('original-data', formDom.serialize());
+
+				editUnit.show();
+				var editUnitHeight = formDom.height();
+				editUnit.css('height', editUnitHeight);
+				editUnit.hide();
+
+				if (postUnit.height() < editUnitHeight)
+					postUnit.animate({height: editUnitHeight + 'px'}, 'fast');
+
+				editUnit.slideDown('fast', function()
 					{
 						$(this).css('height', 'auto');
 					});
 			}
-			$('html, body').animate({ scrollTop: $(formDom).offset().top + 'px' }, 'fast');
+			else
+			{
+				editUnit.slideUp('fast');
+
+				var postUnitOldHeight = postUnit.height();
+				postUnit.height('auto');
+				var postUnitHeight = postUnit.height();
+				postUnit.height(postUnitOldHeight);
+				if (postUnitHeight != postUnitOldHeight)
+					postUnit.animate({height: postUnitHeight + 'px'});
+
+				if ($('.post-wrapper').height() < editUnitHeight)
+					$('.post-wrapper').animate({height: editUnitHeight + 'px'});
+				return;
+			}
+
 			formDom.find('input[type=text]:visible:eq(0)').focus();
 		});
 

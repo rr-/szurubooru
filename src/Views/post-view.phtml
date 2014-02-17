@@ -309,15 +309,15 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 </div>
 
 <div id="inner-content">
-	<div class="post-wrapper post-type-<?php echo strtolower(PostType::toString($this->context->transport->post->type)) ?>">
-		<?php echo $this->renderFile('post-file-render') ?>
-	</div>
-
 	<?php if ($canEditAnything): ?>
 		<div class="unit edit-post">
 			<?php $this->renderFile('post-edit') ?>
 		</div>
 	<?php endif ?>
+
+	<div class="post-wrapper post-type-<?php echo strtolower(PostType::toString($this->context->transport->post->type)) ?>">
+		<?php echo $this->renderFile('post-file-render') ?>
+	</div>
 
 	<?php
 	LayoutHelper::addStylesheet('comment-list.css');
