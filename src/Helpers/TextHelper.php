@@ -328,4 +328,16 @@ class TextHelper
 
 		return $future ? 'in ' . round($diff / $mul) . ' years' : round($diff / $prevMul) . ' years ago';
 	}
+
+	public static function resolveMimeType($mimeType)
+	{
+		$mimeTypes = [
+			'image/jpeg' => 'jpg',
+			'image/gif' => 'gif',
+			'image/png' => 'png',
+			'application/x-shockwave-flash' => 'swf'];
+		return isset($mimeTypes[$mimeType])
+			? $mimeTypes[$mimeType]
+			: null;
+	}
 }

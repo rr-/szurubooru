@@ -163,11 +163,9 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					<i class="icon-dl"></i>
 					<span>
 						<?php
-							$mimes = ['image/jpeg' => 'jpg', 'image/gif' => 'gif', 'image/png' => 'png', 'application/x-shockwave-flash' => 'swf'];
-							$mime = $this->context->transport->post->mimeType;
 							printf(
 								'Download %s (%s)',
-								isset($mimes[$mime]) ? strtoupper($mimes[$mime]) : 'Unknown',
+								strtoupper(TextHelper::resolveMimeType($this->context->transport->post->mimeType)) ?: 'Unknown',
 								TextHelper::useBytesUnits($this->context->transport->post->fileSize));
 						?>
 					</span>

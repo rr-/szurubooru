@@ -501,14 +501,11 @@ class PostController
 		if (!is_readable($path))
 			throw new SimpleException('Post file is not readable');
 
-		$ext = substr($post->origName, strrpos($post->origName, '.') + 1);
-		if (strpos($post->origName, '.') === false)
-			$ext = 'dat';
 		$fn = sprintf('%s_%s_%s.%s',
 			$this->config->main->title,
 			$post->id,
 			join(',', array_map(function($tag) { return $tag->name; }, $post->getTags())),
-			$ext);
+			TextHelper::resolveMimeType($post->mimeType) ?: 'dat');
 		$fn = preg_replace('/[[:^print:]]/', '', $fn);
 
 		$ttl = 60 * 60 * 24 * 14;
