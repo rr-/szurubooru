@@ -2,7 +2,7 @@ $(function()
 {
 	function onDomUpdate()
 	{
-		$('#sidebar .edit a').click(function(e)
+		$('#sidebar a.edit-post').click(function(e)
 		{
 			e.preventDefault();
 
@@ -126,5 +126,5 @@ $(function()
 
 	Mousetrap.bind('a', function() { var a = $('#sidebar .left a'); var url = a.attr('href'); if (typeof url !== 'undefined') { a.click(); window.location.href = url; } }, 'keyup');
 	Mousetrap.bind('d', function() { var a = $('#sidebar .right a'); var url = a.attr('href'); if (typeof url !== 'undefined') { a.click(); window.location.href = url; } }, 'keyup');
-	Mousetrap.bind('e', function() { $('li.edit a').trigger('click'); return false; }, 'keyup');
+	Mousetrap.bind('e', function() { $('a.edit-post').trigger('click'); return false; }, 'keyup');
 });

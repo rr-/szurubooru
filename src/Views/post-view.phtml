@@ -4,6 +4,20 @@ LayoutHelper::addStylesheet('post-view.css');
 LayoutHelper::addScript('post-view.js');
 LayoutHelper::addStylesheet('../lib/tagit/jquery.tagit.css');
 LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
+
+$editPostPrivileges = [
+	Privilege::EditPostSafety,
+	Privilege::EditPostTags,
+	Privilege::EditPostThumb,
+	Privilege::EditPostSource,
+];
+$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
+foreach (array_keys($editPostPrivileges) as $privilege)
+{
+	if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+		$editPostPrivileges[$privilege] = true;
+}
+$canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 ?>
 
 <div id="sidebar">
@@ -41,9 +55,9 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 	</nav>
 
 	<div class="unit tags">
-		<h1>tags (<?php echo count($this->context->transport->post->getTags()) ?>)</h1>
+		<?php $tags = $this->context->transport->post->getTags() ?>
+		<h1>tags (<?php echo count($tags) ?>)</h1>
 		<ul>
-			<?php $tags = $this->context->transport->post->getTags() ?>
 			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 			<?php foreach ($tags as $tag): ?>
 				<li title="<?php echo $tag->name ?>">
@@ -61,13 +75,12 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 	<div class="unit details">
 		<h1>details</h1>
 
-		<div class="key-value uploader">
-			<span class="key">Uploader:</span>
+		<div class="uploader">
 			<?php $uploader = $this->context->transport->post->getUploader() ?>
 			<?php if ($uploader): ?>
 				<span class="value" title="<?php echo $val = $uploader->name ?>">
 					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $uploader->name]) ?>">
-						<img src="<?php echo htmlentities($uploader->getAvatarUrl(16)) ?>" alt="<?php echo $uploader->name ?>"/>
+						<img src="<?php echo htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?php echo $uploader->name ?>"/>
 						<?php echo $val ?>
 					</a>
 				</span>
@@ -77,6 +90,10 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 					<?php echo UserModel::getAnonymousName() ?>
 				</span>
 			<?php endif ?>
+			<br>
+			<span class="date" title="<?php echo TextHelper::formatDate($this->context->transport->post->uploadDate, true) ?>">
+				<?php echo TextHelper::formatDate($this->context->transport->post->uploadDate, false) ?>
+			</span>
 		</div>
 
 		<div class="key-value safety">
@@ -85,6 +102,28 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 				<?php echo $val ?>
 			</span>
 		</div>
+
+		<div class="key-value source">
+			<span class="key">Source:</span>
+			<span class="value" title="<?php echo $val = htmlspecialchars($this->context->transport->post->source ?: 'unknown') ?>">
+				<?php if (preg_match('/^((https?|ftp):|)\/\//', $val)): ?>
+					<a href="<?php echo $val ?>"><?php echo $val ?></a>
+				<?php else: ?>
+					<?php echo $val ?>
+				<?php endif ?>
+			</span>
+		</div>
+
+		<?php if ($this->context->transport->post->imageWidth > 0): ?>
+			<div class="key-value dim">
+				<span class="key">Dimensions:</span>
+				<span class="value" title="<?php echo $val = sprintf('%dx%d',
+					$this->context->transport->post->imageWidth,
+					$this->context->transport->post->imageHeight) ?>">
+					<?php echo $val ?>
+				</span>
+			</div>
+		<?php endif ?>
 
 		<div class="key-value score">
 			<span class="key">Score:</span>
@@ -115,48 +154,48 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 				<?php endif ?>
 			</span>
 		</div>
+	</div>
 
-		<div class="key-value date">
-			<span class="key">Uploaded:</span>
-			<span class="value" title="<?php echo TextHelper::formatDate($this->context->transport->post->uploadDate, true) ?>">
-				<?php echo TextHelper::formatDate($this->context->transport->post->uploadDate, false) ?>
-			</span>
-		</div>
-
-		<?php if ($this->context->transport->post->imageWidth > 0): ?>
-			<div class="key-value dim">
-				<span class="key">Dimensions:</span>
-				<span class="value" title="<?php echo $val = sprintf('%dx%d',
-					$this->context->transport->post->imageWidth,
-					$this->context->transport->post->imageHeight) ?>">
-					<?php echo $val ?>
-				</span>
+	<div class="unit hl-options">
+		<?php if ($this->context->transport->post->type != PostType::Youtube): ?>
+			<div class="hl-option">
+				<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
+					<i class="icon-dl"></i>
+					<span>
+						<?php
+							$mimes = ['image/jpeg' => 'jpg', 'image/gif' => 'gif', 'image/png' => 'png', 'application/x-shockwave-flash' => 'swf'];
+							$mime = $this->context->transport->post->mimeType;
+							printf(
+								'Download %s (%s)',
+								isset($mimes[$mime]) ? strtoupper($mimes[$mime]) : 'Unknown',
+								TextHelper::useBytesUnits($this->context->transport->post->fileSize));
+						?>
+					</span>
+				</a>
 			</div>
 		<?php endif ?>
 
-		<div class="key-value source">
-			<span class="key">Source:</span>
-			<span class="value" title="<?php echo $val = htmlspecialchars($this->context->transport->post->source ?: 'unknown') ?>">
-				<?php if (preg_match('/^((https?|ftp):|)\/\//', $val)): ?>
-					<a href="<?php echo $val ?>"><?php echo $val ?></a>
+		<?php if (PrivilegesHelper::confirm(Privilege::FavoritePost)): ?>
+			<div class="hl-option">
+				<?php if (!$this->context->favorite): ?>
+					<a class="add-fav icon simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
+						<i class="icon-fav"></i>
+						<span>Add to favorites</span>
+					</a>
 				<?php else: ?>
-					<?php echo $val ?>
+					<a class="rem-fav icon simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
+						<i class="icon-fav"></i>
+						<span>Remove from favorites</span>
+					</a>
 				<?php endif ?>
-			</span>
-		</div>
+			</div>
+		<?php endif ?>
 
-		<?php if ($this->context->transport->post->type != PostType::Youtube): ?>
-			<div class="permalink">
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
-					<i class="icon-dl"></i>
-					<span class="ext">
-						<?php $mimes = ['image/jpeg' => 'JPG', 'image/gif' => 'GIF', 'image/png' => 'PNG', 'application/x-shockwave-flash' => 'SWF'] ?>
-						<?php $mime = $this->context->transport->post->mimeType ?>
-						<?php echo isset($mimes[$mime]) ? $mimes[$mime] : 'unknown' ?>
-					</span>
-					<span class="size">
-						<?php echo TextHelper::useBytesUnits($this->context->transport->post->fileSize) ?>
-					</span>
+		<?php if ($canEditAnything): ?>
+			<div class="hl-option">
+				<a class="edit-post icon" href="#">
+					<i class="icon-edit"></i>
+					<span>Edit</span>
 				</a>
 			</div>
 		<?php endif ?>
@@ -178,7 +217,7 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 	<?php endif ?>
 
 	<?php if (count($this->context->transport->post->getRelations())): ?>
-		<div class="relations unit">
+		<div class="unit relations">
 			<h1>related</h1>
 			<ul>
 				<?php foreach ($this->context->transport->post->getRelations() as $relatedPost): ?>
@@ -193,74 +232,7 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 	<?php endif ?>
 
 	<?php
-		$editPostPrivileges = [
-			Privilege::EditPostSafety,
-			Privilege::EditPostTags,
-			Privilege::EditPostThumb,
-			Privilege::EditPostSource,
-		];
-		$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
-		foreach (array_keys($editPostPrivileges) as $privilege)
-		{
-			if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
-				$editPostPrivileges[$privilege] = true;
-		}
-		$canEditAnything = count(array_filter($editPostPrivileges)) > 0;
-
 		$options = [];
-
-		if (PrivilegesHelper::confirm(Privilege::FavoritePost))
-		{
-			if (!$this->context->favorite)
-			{
-				$options []=
-				[
-					'class' => 'add-fav',
-					'text' => 'Add to favorites',
-					'simple-action' => \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]),
-				];
-			}
-			else
-			{
-				$options []=
-				[
-					'class' => 'rem-fav',
-					'text' => 'Remove from favorites',
-					'simple-action' => \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]),
-				];
-			}
-		}
-
-		if ($canEditAnything)
-		{
-			$options []=
-			[
-				'class' => 'edit',
-				'text' => 'Edit',
-			];
-		}
-
-		if (PrivilegesHelper::confirm(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
-		{
-			if ($this->context->transport->post->hidden)
-			{
-				$options []=
-				[
-					'class' => 'unhide',
-					'text' => 'Unhide',
-					'simple-action' => \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]),
-				];
-			}
-			else
-			{
-				$options []=
-				[
-					'class' => 'hide',
-					'text' => 'Hide',
-					'simple-action' => \Chibi\UrlHelper::route('post', 'hide', ['id' => $this->context->transport->post->id]),
-				];
-			}
-		}
 
 		if (PrivilegesHelper::confirm(Privilege::FeaturePost))
 		{
@@ -297,6 +269,28 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 			}
 		}
 
+		if (PrivilegesHelper::confirm(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+		{
+			if ($this->context->transport->post->hidden)
+			{
+				$options []=
+				[
+					'class' => 'unhide',
+					'text' => 'Unhide',
+					'simple-action' => \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]),
+				];
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'hide',
+					'text' => 'Hide',
+					'simple-action' => \Chibi\UrlHelper::route('post', 'hide', ['id' => $this->context->transport->post->id]),
+				];
+			}
+		}
+
 		if (PrivilegesHelper::confirm(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
 		{
 			$options []=
@@ -320,7 +314,7 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 	</div>
 
 	<?php if ($canEditAnything): ?>
-		<div class="edit-post unit">
+		<div class="unit edit-post">
 			<?php $this->renderFile('post-edit') ?>
 		</div>
 	<?php endif ?>
@@ -331,7 +325,7 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 	?>
 	<div class="comments-wrapper">
 		<?php if (!empty($this->context->transport->post->getComments())): ?>
-			<div class="comments unit">
+			<div class="unit comments">
 				<h1>comments (<?php echo count($this->context->transport->post->getComments()) ?>)</h1>
 				<div class="comments">
 					<?php foreach ($this->context->transport->post->getComments() as $comment): ?>
@@ -344,7 +338,7 @@ LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
 	</div>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::AddComment)): ?>
-		<div class="unit">
+		<div class="unit comment-add">
 			<?php $this->renderFile('comment-add') ?>
 		</div>
 	<?php endif ?>

@@ -55,13 +55,24 @@ embed {
 	background-color: silver;
 }
 
-#sidebar .uploader img {
-	vertical-align: middle;
-	margin: 0 0.5em 0 0;
-	width: 16px;
-	height: 16px;
-	background-image: url('http://www.gravatar.com/avatar/0?f=y&d=mm&s=16');
+#sidebar .uploader .date {
+	font-size: 9pt !important;
+	color: gray;
+	display: inline-block;
+	position: relative;
+	top: -5px;
 }
+#sidebar .uploader img {
+	vertical-align: text-top;
+	float: left;
+	margin: 3px 8px 0 0;
+	width: 25px;
+	height: 25px;
+	background-image: url('http://www.gravatar.com/avatar/0?f=y&d=mm&s=25');
+}
+
+#sidebar .unit.details { margin-bottom: 1.5em; }
+#sidebar .unit.hl-options { margin-top: 1.5em; }
 
 #sidebar .safety-safe {
 	color: #43aa43;
@@ -80,17 +91,19 @@ embed {
 
 i.icon-prev {
 	background-position: -12px -1px;
+	margin-left: 8px;
 }
 i.icon-next {
 	background-position: -1px -1px;
+	margin-right: 8px;
 }
 i.icon-prev,
 i.icon-next {
-	margin: 0 8px;
 	vertical-align: middle;
 	width: 8px;
 	height: 20px;
 }
+
 i.icon-dl {
 	margin: 0;
 	width: 20px;
@@ -98,14 +111,33 @@ i.icon-dl {
 	background-position: -22px -1px;
 }
 
-.permalink {
-	margin: 1em 0;
+i.icon-edit {
+	margin: 0;
+	width: 20px;
+	height: 20px;
+	background-position: -43px -22px;
 }
-.permalink .icon-dl {
+
+i.icon-fav {
+	margin: 0;
+	width: 20px;
+	height: 20px;
+}
+.add-fav i.icon-fav {
+	background-position: -1px -22px;
+}
+.rem-fav i.icon-fav {
+	background-position: -22px -22px;
+}
+
+.hl-option {
+	margin: 0.4em 0;
+}
+.hl-option i[class^='icon'] {
 	vertical-align: middle;
-	margin-right: 1em;
 }
-.permalink span {
+.hl-option span {
+	padding-left: 0.6em;
 	vertical-align: middle;
 }
 .permalink .ext:after {

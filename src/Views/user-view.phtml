@@ -76,13 +76,13 @@ LayoutHelper::addStylesheet('user-view.css');
 			];
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration) and !$this->context->transport->user->staffConfirmed and $this->config->registration->staffActivation)
 		{
 			$options []=
 			[
-				'class' => 'delete',
-				'text' => 'Delete account',
-				'link' => \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name, 'tab' => 'delete']),
+				'class' => 'accept-registration',
+				'text' => 'Accept registration',
+				'simple-action' => \Chibi\UrlHelper::route('user', 'accept-registration', ['name' => $this->context->transport->user->name]),
 			];
 		}
 
@@ -133,13 +133,13 @@ LayoutHelper::addStylesheet('user-view.css');
 			}
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration) and !$this->context->transport->user->staffConfirmed and $this->config->registration->staffActivation)
+		if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
 		{
 			$options []=
 			[
-				'class' => 'accept-registration',
-				'text' => 'Accept registration',
-				'simple-action' => \Chibi\UrlHelper::route('user', 'accept-registration', ['name' => $this->context->transport->user->name]),
+				'class' => 'delete',
+				'text' => 'Delete account',
+				'link' => \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name, 'tab' => 'delete']),
 			];
 		}
 
