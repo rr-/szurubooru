@@ -19,6 +19,6 @@
 
 <?php elseif ($post->type == PostType::Youtube): ?>
 
-	<iframe style="width: 800px; height: 600px; border: 0;" src="//www.youtube.com/embed/<?php echo $post->origName ?>" allowfullscreen></iframe>
+	<iframe style="width: 800px; height: 600px; border: 0;" src="//www.youtube.com/embed/<?php echo $post->fileHash ?>" allowfullscreen></iframe>
 
 <?php endif ?>

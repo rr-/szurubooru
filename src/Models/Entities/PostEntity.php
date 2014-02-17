@@ -234,7 +234,7 @@ class PostEntity extends AbstractEntity
 		if ($this->type == PostType::Youtube)
 		{
 			$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.jpg';
-			$contents = file_get_contents('http://img.youtube.com/vi/' . $this->origName . '/mqdefault.jpg');
+			$contents = file_get_contents('http://img.youtube.com/vi/' . $this->fileHash . '/mqdefault.jpg');
 			file_put_contents($tmpPath, $contents);
 			if (file_exists($tmpPath))
 				$srcImage = imagecreatefromjpeg($tmpPath);
@@ -333,7 +333,6 @@ class PostEntity extends AbstractEntity
 				throw new SimpleException('Invalid file type "' . $this->mimeType . '"');
 		}
 
-		$this->origName = basename($srcPath);
 		$duplicatedPost = PostModel::findByHash($this->fileHash, false);
 		if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
 			throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
@@ -352,19 +351,16 @@ class PostEntity extends AbstractEntity
 
 	public function setContentFromUrl($srcUrl)
 	{
-		$this->origName = $srcUrl;
-
 		if (!preg_match('/^https?:\/\//', $srcUrl))
 			throw new SimpleException('Invalid URL "' . $srcUrl . '"');
 
 		if (preg_match('/youtube.com\/watch.*?=([a-zA-Z0-9_-]+)/', $srcUrl, $matches))
 		{
-			$origName = $matches[1];
-			$this->origName = $origName;
+			$youtubeId = $matches[1];
 			$this->type = PostType::Youtube;
 			$this->mimeType = null;
 			$this->fileSize = null;
-			$this->fileHash = $origName;
+			$this->fileHash = $youtubeId;
 			$this->imageWidth = null;
 			$this->imageHeight = null;
 
@@ -372,7 +368,7 @@ class PostEntity extends AbstractEntity
 			if (file_exists($thumbPath))
 				unlink($thumbPath);
 
-			$duplicatedPost = PostModel::findByHash($origName, false);
+			$duplicatedPost = PostModel::findByHash($youtubeId, false);
 			if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
 				throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
 			return;

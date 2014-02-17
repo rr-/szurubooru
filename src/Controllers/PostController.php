@@ -536,6 +536,7 @@ class PostController
 
 			$srcPath = $suppliedFile['tmp_name'];
 			$post->setContentFromPath($srcPath);
+			$post->origName = $suppliedFile['name'];
 
 			if (!$isNew)
 				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
@@ -547,6 +548,7 @@ class PostController
 
 			$url = InputHelper::get('url');
 			$post->setContentFromUrl($url);
+			$post->origName = $url;
 
 			if (!$isNew)
 				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
