@@ -4,7 +4,6 @@ class TagSearchService extends AbstractSearchService
 	public static function decorate(SqlQuery $sqlQuery, $searchQuery)
 	{
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		$limitQuery = false;
 		$sqlQuery
 			->raw(', COUNT(post_tag.post_id)')
 			->as('post_count')
@@ -38,7 +37,6 @@ class TagSearchService extends AbstractSearchService
 				}
 				else
 				{
-					$limitQuery = true;
 					if (strlen($token) >= 3)
 						$token = '%' . $token;
 					$token .= '%';
@@ -53,10 +51,6 @@ class TagSearchService extends AbstractSearchService
 		$sqlQuery->groupBy('tag.id');
 		if ($orderToken)
 			self::order($sqlQuery,$orderToken);
-
-
-		if ($limitQuery)
-			$sqlQuery->limit(15);
 	}
 
 	private static function order(SqlQuery $sqlQuery, $value)

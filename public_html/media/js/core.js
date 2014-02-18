@@ -193,6 +193,25 @@ function extractLast(term)
     return split(term).pop();
 }
 
+function retrieveTags(searchTerm, cb)
+{
+	var options = { filter: searchTerm + ' order:popularity,desc' };
+	$.getJSON('/tags?json', options, function(data)
+	{
+		var tags = $.map(data.tags.slice(0, 15), function(tag)
+		{
+			var ret =
+			{
+				label: tag.name + ' (' + tag.count + ')',
+				value: tag.name,
+			};
+			return ret;
+		});
+
+		cb(tags);
+	});
+}
+
 $(function()
 {
 	$('.autocomplete').each(function()
@@ -204,10 +223,7 @@ $(function()
 			{
 				var term = extractLast(request.term);
 				if (term != '')
-					$.get(searchInput.attr('data-autocomplete-url') + '?json', {filter: term + ' order:popularity,desc'}, function(data)
-					{
-						response($.map(data.tags, function(tag) { return { label: tag.name + ' (' + tag.count + ')', value: tag.name }; }));
-					});
+					retrieveTags(term, response);
 			},
 			focus: function(e)
 			{
@@ -245,34 +261,34 @@ $(function()
 	});
 });
 
-function getTagItOptions()
+function attachTagIt(element)
 {
-	return {
+	var tagItOptions =
+	{
 		caseSensitive: false,
 		autocomplete:
 		{
 			source:
 				function(request, response)
 				{
-					var term = request.term.toLowerCase();
-					var tags = $.map(this.options.availableTags, function(a)
+					var tagit = this;
+					retrieveTags(request.term.toLowerCase(), function(tags)
 					{
-						return a.name;
+						if (!tagit.options.allowDuplicates)
+						{
+							tags = $.grep(tags, function(tag)
+							{
+								return tagit.assignedTags().indexOf(tag.value) == -1;
+							});
+						}
+						response(tags);
 					});
-					var results = $.grep(tags, function(a)
-					{
-						if (term.length < 3)
-							return a.toLowerCase().indexOf(term) == 0;
-						else
-							return a.toLowerCase().indexOf(term) != -1;
-					});
-					results = results.slice(0, 15);
-					if (!this.options.allowDuplicates)
-						results = this._subtractArray(results, this.assignedTags());
-					response(results);
 				},
 		}
 	};
+
+	tagItOptions.placeholderText = element.attr('placeholder');
+	element.tagit(tagItOptions);
 }
 
 

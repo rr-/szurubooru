@@ -4,12 +4,12 @@
 
 		<div class="form-row">
 			<label for="mass-tag-query">Search query:</label>
-			<div class="input-wrapper"><input class="autocomplete" type="text" name="query" id="mass-tag-query" value="<?php echo isset($this->context->massTagQuery) ? $this->context->massTagQuery : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/></div>
+			<div class="input-wrapper"><input class="autocomplete" type="text" name="query" id="mass-tag-query" value="<?php echo isset($this->context->massTagQuery) ? $this->context->massTagQuery : '' ?>"/></div>
 		</div>
 
 		<div class="form-row">
 			<label for="mass-tag-tag">Tag:</label>
-			<div class="input-wrapper"><input class="autocomplete" type="text" name="tag" id="mass-tag-tag" value="<?php echo isset($this->context->massTagTag) ? $this->context->massTagTag : '' ?>" data-autocomplete-url="<?php echo \Chibi\UrlHelper::route('tag', 'list') ?>"/></div>
+			<div class="input-wrapper"><input class="autocomplete" type="text" name="tag" id="mass-tag-tag" value="<?php echo isset($this->context->massTagTag) ? $this->context->massTagTag : '' ?>"/></div>
 		</div>
 
 		<input type="hidden" name="submit" value="1"/>

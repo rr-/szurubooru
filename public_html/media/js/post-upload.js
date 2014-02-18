@@ -10,12 +10,6 @@ $(function()
 		$('.tab-content.' + className).show();
 	});
 
-	var tags = [];
-	$.getJSON('/tags?json', {filter: 'order:popularity,desc'}, function(data)
-	{
-		tags = data['tags'];
-	});
-
 	$('#file-handler').on('dragenter', function(e)
 	{
 		$(this).addClass('active');
@@ -237,10 +231,7 @@ $(function()
 			$('.posts').append(postDom);
 
 			postDom.show();
-			var tagItOptions = getTagItOptions();
-			tagItOptions.availableTags = tags;
-			tagItOptions.placeholderText = $('.tags input').attr('placeholder');
-			$('.tags input', postDom).tagit(tagItOptions);
+			attachTagIt($('.tags input', postDom));
 
 			callback(postDom, input);
 		}

@@ -14,22 +14,14 @@ $(function()
 			var formDom = $('form.edit-post');
 			if (formDom.find('.tagit').length == 0)
 			{
-				$.getJSON('/tags?json', {filter: 'order:popularity,desc'}, function(data)
+				attachTagIt($('.tags input'));
+				aDom.removeClass('inactive');
+
+				formDom.find('input[type=text]:visible:eq(0)').focus();
+				formDom.find('textarea, input').bind('change keyup', function()
 				{
-					aDom.removeClass('inactive');
-					var tags = data['tags'];
-
-					var tagItOptions = getTagItOptions();
-					tagItOptions.availableTags = tags;
-					tagItOptions.placeholderText = $('.tags input').attr('placeholder');
-					$('.tags input').tagit(tagItOptions);
-
-					formDom.find('input[type=text]:visible:eq(0)').focus();
-					formDom.find('textarea, input').bind('change keyup', function()
-					{
-						if (formDom.serialize() != formDom.data('original-data'))
-							enableExitConfirmation();
-					});
+					if (formDom.serialize() != formDom.data('original-data'))
+						enableExitConfirmation();
 				});
 			}
 			else
