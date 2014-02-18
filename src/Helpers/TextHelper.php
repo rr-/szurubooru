@@ -87,33 +87,44 @@ class TextHelper
 	{
 		$suffix = substr($string, -1, 1);
 		$index = array_search($suffix, $suffixes);
-		if ($index === false)
-			return $string;
-		$number = intval($string);
-		for ($i = 0; $i < $index; $i ++)
-			$number *= $base;
-		return $number;
+		return floatval($string) * pow($base, $index !== false ? $index : 0);
 	}
 
-	private static function useUnits($number, $base, $suffixes)
+	private static function useUnits($number, $base, $suffixes, $fmtCallback = null)
 	{
 		$suffix = array_shift($suffixes);
-		if ($number < $base)
-		{
-			return sprintf('%d%s', $number, $suffix);
-		}
-		do
+
+		while ($number >= $base and !empty($suffixes))
 		{
 			$suffix = array_shift($suffixes);
 			$number /= (float) $base;
 		}
-		while ($number >= $base and !empty($suffixes));
-		return sprintf('%.01f%s', $number, $suffix);
+
+		if ($fmtCallback === null)
+		{
+			$fmtCallback = function($number, $suffix)
+			{
+				if ($suffix == '')
+					return $number;
+				return sprintf('%.01f%s', $number, $suffix);
+			};
+		}
+
+		return $fmtCallback($number, $suffix);
 	}
 
 	public static function useBytesUnits($number)
 	{
-		return self::useUnits($number, 1024, ['B', 'K', 'M', 'G']);
+		return self::useUnits(
+			$number,
+			1024,
+			['B', 'K', 'M', 'G'],
+			function($number, $suffix)
+			{
+				if ($number < 20 and $suffix != 'B')
+					return sprintf('%.01f%s', $number, $suffix);
+				return sprintf('%.0f%s', $number, $suffix);
+			});
 	}
 
 	public static function useDecimalUnits($number)
