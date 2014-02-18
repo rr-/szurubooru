@@ -8,7 +8,6 @@ function setCookie(name, value, exdays)
 
 function getCookie(name)
 {
-	console.log(document.cookie);
 	var value = document.cookie;
 	var start = value.indexOf(' ' + name + '=');
 

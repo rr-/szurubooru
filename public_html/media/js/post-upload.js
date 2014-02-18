@@ -97,7 +97,6 @@ $(function()
 
 		var postDom = posts.first();
 		var url = postDom.find('form').attr('action') + '?json';
-		console.log(postDom.find('form').get(0));
 		var fd = new FormData(postDom.find('form').get(0));
 
 		fd.append('file', postDom.data('file'));
