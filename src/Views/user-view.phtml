@@ -118,7 +118,7 @@ LayoutHelper::addStylesheet('user-view.css');
 					'class' => 'ban',
 					'text' => 'Ban user',
 					'simple-action' => \Chibi\UrlHelper::route('user', 'ban', ['name' => $this->context->transport->user->name]),
-					'data-confirm-text' => 'Are you sure?',
+					'data-confirm-text' => 'Are you sure you want to ban this user?',
 				];
 			}
 			else
@@ -128,7 +128,7 @@ LayoutHelper::addStylesheet('user-view.css');
 					'class' => 'unban',
 					'text' => 'Unban user',
 					'simple-action' => \Chibi\UrlHelper::route('user', 'unban', ['name' => $this->context->transport->user->name]),
-					'data-confirm-text' => 'Are you sure?',
+					'data-confirm-text' => 'Are you sure you want to unban this user?',
 				];
 			}
 		}
