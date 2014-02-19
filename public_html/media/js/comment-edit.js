@@ -3,12 +3,15 @@ $(function()
 	function onDomUpdate()
 	{
 		$('form.edit-comment textarea, form.add-comment textarea')
-			.bind('change keyup', function(e)
+			.off('change keyp')
+			.on('change keyup', function(e)
 			{
 				enableExitConfirmation();
 			});
 
-		$('form.edit-comment, form.add-comment').submit(function(e)
+		$('form.edit-comment, form.add-comment')
+			.off('submit')
+			.on('submit', function(e)
 		{
 			e.preventDefault();
 			rememberLastSearchQuery();
@@ -93,19 +96,30 @@ $(function()
 			$.ajax(ajaxData);
 		});
 
-		$('.comment .edit a').click(function(e)
+		$('.comment .edit a').off('click').on('click').click(function(e)
 		{
 			e.preventDefault();
 			var commentDom = $(this).parents('.comment');
-			$.get($(this).attr('href'), function(data)
+			var formDom = commentDom.find('form.edit-comment');
+			var cb = function(formDom)
 			{
-				commentDom.find('form.edit-comment').remove();
-				var otherForm = $(data).find('form.edit-comment');
-				otherForm.hide();
-				commentDom.find('.body').append(otherForm);
-				otherForm.slideDown();
+				formDom.slideToggle();
 				$('body').trigger('dom-update');
-			});
+			};
+
+			if (formDom.length == 0)
+			{
+				$.get($(this).attr('href'), function(data)
+				{
+					var otherForm = $(data).find('form.edit-comment');
+					otherForm.hide();
+					commentDom.find('.body').append(otherForm);
+					formDom = commentDom.find('form.edit-comment');
+					cb(formDom);
+				});
+			}
+			else
+				cb(formDom);
 		});
 	}
 
