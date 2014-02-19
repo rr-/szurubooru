@@ -158,6 +158,10 @@ footer a {
 	margin-top: 0;
 	margin-bottom: 10px;
 }
+#sidebar+#inner-content {
+	margin-left: 255px;
+	overflow: hidden;
+}
 
 
 #sidebar .key {
@@ -168,11 +172,6 @@ footer a {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-}
-
-#inner-content {
-	overflow: hidden;
-	padding-bottom: 2em;
 }
 
 .unit {
@@ -190,8 +189,9 @@ footer a {
 		width: 100%;
 	}
 	#inner-content {
-		float: none;
 		width: auto;
+		margin-left: 0;
+		margin-bottom: 2em;
 	}
 }
 
@@ -388,7 +388,7 @@ ul.tagit input {
 	clear: both;
 	height: 1px; /* ghost top margin in firefox */
 	width: 100%;
-	margin: 0 0 -1px 0;
+	margin: -1px 0 0 0;
 }
 
 pre.debug {
