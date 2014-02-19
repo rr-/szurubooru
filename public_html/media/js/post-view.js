@@ -2,7 +2,7 @@ $(function()
 {
 	function onDomUpdate()
 	{
-		$('#sidebar a.edit-post').click(function(e)
+		$('#sidebar a.edit-post').bindOnce('edit-post', 'click', function(e)
 		{
 			e.preventDefault();
 

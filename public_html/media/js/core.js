@@ -37,6 +37,17 @@ $.fn.hasAttr = function(name)
 	return this.attr(name) !== undefined;
 };
 
+$.fn.bindOnce = function(name, eventName, callback)
+{
+	$.each(this, function(i, item)
+	{
+		if ($(item).data(name) == name)
+			return;
+		$(item).data(name, name);
+		$(item).on(eventName, callback);
+	});
+};
+
 
 
 //safety trigger
@@ -82,14 +93,14 @@ $(function()
 			}
 		}
 
-		$('form.confirmable').submit(confirmEvent);
-		$('a.confirmable').click(confirmEvent);
+		$('form.confirmable').bindOnce('confirmation', 'submit', confirmEvent);
+		$('a.confirmable').bindOnce('confirmation', 'click', confirmEvent);
 
 
 		//simple action buttons
-		$('a.simple-action').click(function(e)
+		$('a.simple-action').bindOnce('simple-action', 'click', function(e)
 		{
-			if(e.isPropagationStopped())
+			if (e.isPropagationStopped())
 				return;
 
 			e.preventDefault();
@@ -124,7 +135,7 @@ $(function()
 		//attach data from submit buttons to forms before .submit() gets called
 		$('.submit').each(function()
 		{
-			$(this).click(function()
+			$(this).bindOnce('submit-faux-input', 'click', function()
 			{
 				var form = $(this).closest('form');
 				form.find('.faux-submit').remove();

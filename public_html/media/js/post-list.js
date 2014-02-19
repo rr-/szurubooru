@@ -2,13 +2,9 @@ $(function()
 {
 	$('body').bind('dom-update', function()
 	{
-		$('.post a.toggle-tag').click(function(e)
+		$('.post a.toggle-tag').bindOnce('toggle-tag', 'click', function(e)
 		{
-			if(e.isPropagationStopped())
-				return;
-
 			e.preventDefault();
-			e.stopPropagation();
 
 			var aDom = $(this);
 			if (aDom.hasClass('inactive'))

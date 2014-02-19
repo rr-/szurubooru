@@ -3,15 +3,13 @@ $(function()
 	function onDomUpdate()
 	{
 		$('form.edit-comment textarea, form.add-comment textarea')
-			.off('change keyp')
-			.on('change keyup', function(e)
-			{
-				enableExitConfirmation();
-			});
+			.bindOnce('exit-confirmation', 'change keyp', function(e)
+		{
+			enableExitConfirmation();
+		});
 
 		$('form.edit-comment, form.add-comment')
-			.off('submit')
-			.on('submit', function(e)
+			.bindOnce('comment-submit', 'submit', function(e)
 		{
 			e.preventDefault();
 			rememberLastSearchQuery();
@@ -96,7 +94,7 @@ $(function()
 			$.ajax(ajaxData);
 		});
 
-		$('.comment .edit a').off('click').on('click').click(function(e)
+		$('.comment .edit a').bindOnce('edit-comment', 'click', function(e)
 		{
 			e.preventDefault();
 			var commentDom = $(this).parents('.comment');
