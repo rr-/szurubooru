@@ -119,7 +119,8 @@ class TagModel extends AbstractCrudModel
 		$query = (new SqlQuery)
 			->select('*')
 			->from('tag')
-			->where('LOWER(name) = LOWER(?)')->put($key);
+			->where('name = ?')->put($key)
+			->collate()->nocase();
 
 		$row = Database::fetchOne($query);
 		if ($row)

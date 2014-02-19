@@ -41,9 +41,10 @@ class TagSearchService extends AbstractSearchService
 						$token = '%' . $token;
 					$token .= '%';
 					$sqlQuery
-						->and('LOWER(tag.name)')
-						->like('LOWER(?)')
-						->put($token);
+						->and('tag.name')
+						->like('?')
+						->put($token)
+						->collate()->nocase();
 				}
 			}
 		}

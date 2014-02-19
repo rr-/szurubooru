@@ -89,7 +89,8 @@ class UserModel extends AbstractCrudModel
 		$query = (new SqlQuery)
 			->select('*')
 			->from('user')
-			->where('LOWER(name) = LOWER(?)')->put(trim($key));
+			->where('name = ?')->put(trim($key))
+			->collate()->nocase();
 
 		$row = Database::fetchOne($query);
 		if ($row)
@@ -105,8 +106,10 @@ class UserModel extends AbstractCrudModel
 		$query = new SqlQuery();
 		$query->select('*')
 			->from('user')
-			->where('LOWER(name) = LOWER(?)')->put(trim($key))
-			->or('LOWER(email_confirmed) = LOWER(?)')->put(trim($key));
+			->where('name = ?')->put(trim($key))
+			->collate()->nocase()
+			->or('email_confirmed = ?')->put(trim($key))
+			->collate()->nocase();
 
 		$row = Database::fetchOne($query);
 		if ($row)
