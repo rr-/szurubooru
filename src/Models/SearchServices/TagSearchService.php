@@ -73,7 +73,7 @@ class TagSearchService extends AbstractSearchService
 				break;
 
 			case 'alpha':
-				$sqlQuery->orderBy('tag.name');
+				$sqlQuery->orderBy('tag.name')->collate()->nocase();
 				break;
 		}
 

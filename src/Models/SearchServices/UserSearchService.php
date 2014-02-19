@@ -9,10 +9,10 @@ class UserSearchService extends AbstractSearchService
 		switch ($sortStyle)
 		{
 			case 'alpha,asc':
-				$sqlQuery->orderBy('name')->asc();
+				$sqlQuery->orderBy('name')->collate()->nocase()->asc();
 				break;
 			case 'alpha,desc':
-				$sqlQuery->orderBy('name')->desc();
+				$sqlQuery->orderBy('name')->collate()->nocase()->desc();
 				break;
 			case 'date,asc':
 				$sqlQuery->orderBy('join_date')->asc();
