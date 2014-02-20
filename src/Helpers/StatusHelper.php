@@ -6,6 +6,9 @@ class StatusHelper
 		$context = \Chibi\Registry::getContext();
 		if (!empty($message))
 		{
+			if (!preg_match('/[.?!]$/', $message))
+				$message .= '.';
+
 			$context->transport->message = $message;
 			$context->transport->messageHtml = TextHelper::parseMarkdown($message, true);
 		}

@@ -47,6 +47,7 @@ class TagController
 	public function mergeAction()
 	{
 		$this->context->viewName = 'tag-list-wrapper';
+		$this->context->handleExceptions = true;
 
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
@@ -61,9 +62,8 @@ class TagController
 
 			TagModel::merge($suppliedSourceTag, $suppliedTargetTag);
 
-			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
 			LogHelper::log('{user} merged {source} with {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
-			StatusHelper::success();
+			StatusHelper::success('Tags merged successfully.');
 		}
 	}
 
@@ -73,6 +73,7 @@ class TagController
 	public function renameAction()
 	{
 		$this->context->viewName = 'tag-list-wrapper';
+		$this->context->handleExceptions = true;
 
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
@@ -87,9 +88,8 @@ class TagController
 
 			TagModel::rename($suppliedSourceTag, $suppliedTargetTag);
 
-			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('tag', 'list'));
 			LogHelper::log('{user} renamed {source} to {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
-			StatusHelper::success();
+			StatusHelper::success('Tag renamed successfully.');
 		}
 	}
 

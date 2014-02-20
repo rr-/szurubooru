@@ -62,14 +62,14 @@ class Bootstrap
 		{
 			if ($e instanceof SimpleNotFoundException)
 				http_response_code(404);
-			StatusHelper::failure(rtrim($e->getMessage(), '.') . '.');
+			StatusHelper::failure($e->getMessage());
 			if (!$this->context->handleExceptions)
 				$this->context->viewName = 'message';
 			$this->render();
 		}
 		catch (Exception $e)
 		{
-			StatusHelper::failure(rtrim($e->getMessage(), '.') . '.');
+			StatusHelper::failure($e->getMessage());
 			$this->context->transport->exception = $e;
 			$this->context->transport->queries = Database::getLogs();
 			$this->context->viewName = 'error-exception';
