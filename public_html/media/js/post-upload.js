@@ -224,7 +224,6 @@ $(function()
 	{
 		for (var i = 0; i < inputs.length; i ++)
 		{
-			enableExitConfirmation();
 			var input = inputs[i];
 			var postDom = $('#post-template').clone(true);
 			postDom.find('form').submit(false);
@@ -238,9 +237,15 @@ $(function()
 			callback(postDom, input);
 		}
 		if ($('.posts .post').length == 0)
+		{
+			disableExitConfirmation();
 			$('#upload-step2').fadeOut();
+		}
 		else
+		{
+			enableExitConfirmation();
 			$('#upload-step2').fadeIn();
+		}
 	}
 
 	$('.post img').mouseenter(function(e)
