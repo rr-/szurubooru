@@ -1,4 +1,7 @@
 <?php
+if (!isset($this->context->transport->paginator))
+	return;
+
 $page = $this->context->transport->paginator->page;
 $pageCount = $this->context->transport->paginator->pageCount;
 

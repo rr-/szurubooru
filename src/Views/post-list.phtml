@@ -7,7 +7,10 @@ LayoutHelper::addScript('post-list.js');
 	<?php $this->renderFile('tag-mass-tag') ?>
 <?php endif ?>
 
-<?php if (empty($this->context->transport->posts)): ?>
+
+<?php if (!empty($this->context->transport->message)): ?>
+	<?php $this->renderFile('message') ?>
+<?php elseif (empty($this->context->transport->posts)): ?>
 	<p class="alert alert-warning">No posts to show.</p>
 <?php else: ?>
 	<div class="posts-wrapper">

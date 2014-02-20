@@ -47,6 +47,7 @@ class PostController
 		$this->context->viewName = 'post-list-wrapper';
 		$this->context->source = $source;
 		$this->context->additionalInfo = $additionalInfo;
+		$this->context->handleExceptions = true;
 
 		//redirect requests in form of /posts/?query=... to canonical address
 		$formQuery = InputHelper::get('query');

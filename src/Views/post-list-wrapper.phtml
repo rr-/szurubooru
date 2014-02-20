@@ -2,10 +2,19 @@
 LayoutHelper::setSubTitle('posts');
 
 $tabs = [];
-if (PrivilegesHelper::confirm(Privilege::ListPosts)) $tabs []= ['All posts', \Chibi\UrlHelper::route('post', 'list')];
-if (PrivilegesHelper::confirm(Privilege::ListPosts)) $tabs []= ['Random', \Chibi\UrlHelper::route('post', 'random')];
-if (PrivilegesHelper::confirm(Privilege::ListPosts)) $tabs []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
-if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs []= ['Mass tag', \Chibi\UrlHelper::route('post', 'list', ['query' => isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '', 'source' => 'mass-tag', 'page' => $this->context->transport->paginator->page])];
+if (PrivilegesHelper::confirm(Privilege::ListPosts))
+	$tabs []= ['All posts', \Chibi\UrlHelper::route('post', 'list')];
+
+if (PrivilegesHelper::confirm(Privilege::ListPosts))
+	$tabs []= ['Random', \Chibi\UrlHelper::route('post', 'random')];
+if (PrivilegesHelper::confirm(Privilege::ListPosts))
+	$tabs []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
+
+if (PrivilegesHelper::confirm(Privilege::MassTag))
+	$tabs []= ['Mass tag', \Chibi\UrlHelper::route('post', 'list', [
+		'source' => 'mass-tag',
+		'query' => isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '',
+		'page' => isset($this->context->transport->paginator) ? $this->context->transport->paginator->page : 1])];
 
 $activeTab = 0;
 if ($this->context->route->simpleActionName == 'random') $activeTab = 1;
