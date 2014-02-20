@@ -180,13 +180,20 @@ $(function()
 				{
 					return function(e)
 					{
-						img.css('background-image', 'none');
-						img.attr('src', e.target.result);
+						changeThumb(img, e.target.result);
 					};
 				})(file, img);
 				reader.readAsDataURL(file);
 			}
 		});
+	}
+
+	function changeThumb(img, url)
+	{
+		$(img)
+			.css('background-image', 'none')
+			.attr('src', url)
+			.data('custom-thumb', true);
 	}
 
 	function handleURLs(urls)
@@ -202,18 +209,13 @@ $(function()
 				{
 					postDom.find('.file-name strong')
 						.text(data.data.title);
-					postDom.find('img')
-						.css('background-image', 'none')
-						.attr('src', data.data.thumbnail.hqDefault);
+					changeThumb(postDom.find('img'), data.data.thumbnail.hqDefault);
 				});
 			}
 			else
 			{
-				postDom.find('.file-name strong')
-					.text(url);
-				postDom.find('img')
-					.css('background-image', 'none')
-					.attr('src', url);
+				postDom.find('.file-name strong').text(url);
+				changeThumb(postDom.find('img'), url);
 			}
 		});
 	}
@@ -240,4 +242,24 @@ $(function()
 		else
 			$('#upload-step2').fadeIn();
 	}
+
+	$('.post img').mouseenter(function(e)
+	{
+		if ($(this).data('custom-thumb') != true)
+			return;
+
+		$('#lightbox')
+			.attr('src', $(this).attr('src'))
+			.show()
+			.position({
+				of: $(this),
+				my: 'center center',
+				at: 'center center',
+			})
+			.show();
+	});
+	$('.post img').mouseleave(function(e)
+	{
+		$('#lightbox').hide();
+	});
 });

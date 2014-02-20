@@ -155,3 +155,16 @@ ul.tagit {
 .post .form-wrapper {
 	overflow: hidden;
 }
+
+#lightbox {
+	display: none;
+	position: absolute;
+	pointer-events: none;
+	max-width: 400px;
+	max-height: 400px;
+	margin-top: -50%;
+	margin-left: -50%;
+	background: white;
+	border: 0.5em solid white;
+	box-shadow: 0 0 0 3px #eee;
+}
