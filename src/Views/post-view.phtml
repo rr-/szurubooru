@@ -130,7 +130,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<span class="value">
 				<?php echo $this->context->transport->post->score ?>
 
-				<?php if (PrivilegesHelper::confirm(Privilege::ScorePost)): ?>
+				<?php if (PrivilegesHelper::confirm(Privilege::ScorePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 					&nbsp;[
 					<?php $scoreLink = function($score) { return \Chibi\UrlHelper::route('post', 'score', ['id' => $this->context->transport->post->id, 'score' => $score]); } ?>
 
@@ -173,7 +173,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			</div>
 		<?php endif ?>
 
-		<?php if (PrivilegesHelper::confirm(Privilege::FavoritePost)): ?>
+		<?php if (PrivilegesHelper::confirm(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 			<div class="hl-option">
 				<?php if (!$this->context->favorite): ?>
 					<a class="add-fav icon simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
@@ -232,7 +232,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	<?php
 		$options = [];
 
-		if (PrivilegesHelper::confirm(Privilege::FeaturePost))
+		if (PrivilegesHelper::confirm(Privilege::FeaturePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
 		{
 			$options []=
 			[
@@ -244,7 +244,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			];
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::FlagPost))
+		if (PrivilegesHelper::confirm(Privilege::FlagPost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
 		{
 			if ($this->context->flagged)
 			{

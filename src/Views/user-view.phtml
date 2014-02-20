@@ -86,7 +86,7 @@ LayoutHelper::addStylesheet('user-view.css');
 			];
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::FlagUser))
+		if (PrivilegesHelper::confirm(Privilege::FlagUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
 		{
 			if ($this->context->flagged)
 			{

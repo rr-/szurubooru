@@ -140,7 +140,7 @@ class UserController
 	public function flagAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(Privilege::FlagUser);
+		PrivilegesHelper::confirmWithException(Privilege::FlagUser, PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		if (InputHelper::get('submit'))
 		{

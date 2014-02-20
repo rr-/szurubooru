@@ -254,7 +254,7 @@ class PostController
 	public function flagAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::FlagPost);
+		PrivilegesHelper::confirmWithException(Privilege::FlagPost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -339,7 +339,7 @@ class PostController
 	public function addFavoriteAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
+		PrivilegesHelper::confirmWithException(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -358,7 +358,7 @@ class PostController
 	public function remFavoriteAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::FavoritePost);
+		PrivilegesHelper::confirmWithException(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -379,7 +379,7 @@ class PostController
 	public function scoreAction($id, $score)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::ScorePost);
+		PrivilegesHelper::confirmWithException(Privilege::ScorePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -399,7 +399,7 @@ class PostController
 	public function featureAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::FeaturePost);
+		PrivilegesHelper::confirmWithException(Privilege::FeaturePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
 		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
 		PropertyModel::set(PropertyModel::FeaturedPostUserName, $this->context->user->name);
