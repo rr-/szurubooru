@@ -73,6 +73,9 @@ class PostController
 			PrivilegesHelper::confirmWithException(Privilege::MassTag);
 			$this->context->massTagTag = $additionalInfo;
 			$this->context->massTagQuery = $query;
+
+			if (!PrivilegesHelper::confirm(Privilege::MassTag, 'all'))
+				$query = trim($query . ' submit:' . $this->context->user->name);
 		}
 
 		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
@@ -104,7 +107,7 @@ class PostController
 
 		if (InputHelper::get('submit'))
 		{
-			PrivilegesHelper::confirmWithException(Privilege::MassTag);
+			PrivilegesHelper::confirmWithException(Privilege::MassTag, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 			$tags = $post->getTags();
 

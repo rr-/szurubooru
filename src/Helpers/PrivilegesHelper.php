@@ -17,6 +17,12 @@ class PrivilegesHelper
 
 			$minAccessRank = TextHelper::resolveConstant($minAccessRankName, 'AccessRank');
 			self::$privileges[$key] = $minAccessRank;
+
+			if (!isset(self::$privileges[$privilegeName]) or
+				self::$privileges[$privilegeName] > $minAccessRank)
+			{
+				self::$privileges[$privilegeName] = $minAccessRank;
+			}
 		}
 	}
 
@@ -48,9 +54,7 @@ class PrivilegesHelper
 	public static function confirmWithException($privilege, $subPrivilege = null)
 	{
 		if (!self::confirm($privilege, $subPrivilege))
-		{
 			throw new SimpleException('Insufficient privileges');
-		}
 	}
 
 	public static function getIdentitySubPrivilege($user)
