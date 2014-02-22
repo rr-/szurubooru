@@ -44,15 +44,13 @@ LayoutHelper::addScript('core.js');
 				<?php endif ?>
 				<hr>
 				<?php if ($this->config->misc->debugQueries): ?>
-					<pre class="debug">
 					<?php foreach (Database::getLogs() as $query)
 					{
 						$bindings = [];
 						foreach ($query->getBindings() as $k => $v)
 							$bindings []= $k . '=' . $v;
-						printf('<p>%s [%s]</p>', htmlspecialchars($query->getAsString()), join(', ', $bindings));
+						printf('<pre class="debug">%s [%s]</pre>', htmlspecialchars($query->getAsString()), join(', ', $bindings));
 					} ?>
-					</pre>
 				<?php endif ?>
 			</div>
 		</footer>
