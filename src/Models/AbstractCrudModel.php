@@ -21,12 +21,12 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function findById($key, $throw = true)
 	{
-		$query = (new SqlQuery)
-			->select('*')
-			->from(static::getTableName())
-			->where('id = ?')->put($key);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn('*');
+		$stmt->setTable(static::getTableName());
+		$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($key)));
 
-		$row = Database::fetchOne($query);
+		$row = Database::fetchOne($stmt);
 		if ($row)
 			return self::convertRow($row);
 
@@ -37,12 +37,12 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function findByIds(array $ids)
 	{
-		$query = (new SqlQuery)
-			->select('*')
-			->from(static::getTableName())
-			->where('id')->in()->genSlots($ids)->put($ids);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn('*');
+		$stmt->setTable(static::getTableName());
+		$stmt->setCriterion(SqlInOperator::fromArray('id', SqlBinding::fromArray($ids)));
 
-		$rows = Database::fetchAll($query);
+		$rows = Database::fetchAll($stmt);
 		if ($rows)
 			return self::convertRows($rows);
 
@@ -51,9 +51,10 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function getCount()
 	{
-		$query = new SqlQuery();
-		$query->select('count(1)')->as('count')->from(static::getTableName());
-		return Database::fetchOne($query)['count'];
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setTable(static::getTableName());
+		return Database::fetchOne($stmt)['count'];
 	}
 
 
@@ -106,13 +107,9 @@ abstract class AbstractCrudModel implements IModel
 			throw new Exception('Can be run only within transaction');
 		if (!$entity->id)
 		{
-			$config = \Chibi\Registry::getConfig();
-			$query = (new SqlQuery);
-			if ($config->main->dbDriver == 'sqlite')
-				$query->insertInto($table)->defaultValues();
-			else
-				$query->insertInto($table)->values()->open()->close();
-			Database::query($query);
+			$stmt = new SqlInsertStatement();
+			$stmt->setTable($table);
+			Database::exec($stmt);
 			$entity->id = Database::lastInsertId();
 		}
 	}

@@ -427,17 +427,17 @@ class PostController
 		try
 		{
 			$this->context->transport->lastSearchQuery = InputHelper::get('last-search-query');
-			$prevPostQuery = $this->context->transport->lastSearchQuery . ' prev:' . $id;
-			$nextPostQuery = $this->context->transport->lastSearchQuery . ' next:' . $id;
-			$prevPost = current(PostSearchService::getEntities($prevPostQuery, 1, 1));
-			$nextPost = current(PostSearchService::getEntities($nextPostQuery, 1, 1));
+			list ($prevPostId, $nextPostId) =
+				PostSearchService::getPostIdsAround(
+					$this->context->transport->lastSearchQuery, $id);
 		}
 		#search for some reason was invalid, e.g. tag was deleted in the meantime
 		catch (Exception $e)
 		{
 			$this->context->transport->lastSearchQuery = '';
-			$prevPost = current(PostSearchService::getEntities('prev:' . $id, 1, 1));
-			$nextPost = current(PostSearchService::getEntities('next:' . $id, 1, 1));
+			list ($prevPostId, $nextPostId) =
+				PostSearchService::getPostIdsAround(
+					$this->context->transport->lastSearchQuery, $id);
 		}
 		PostSearchService::enableTokenLimit(true);
 
@@ -449,8 +449,8 @@ class PostController
 		$this->context->score = $score;
 		$this->context->flagged = $flagged;
 		$this->context->transport->post = $post;
-		$this->context->transport->prevPostId = $prevPost ? $prevPost->id : null;
-		$this->context->transport->nextPostId = $nextPost ? $nextPost->id : null;
+		$this->context->transport->prevPostId = $prevPostId ? $prevPostId : null;
+		$this->context->transport->nextPostId = $nextPostId ? $nextPostId : null;
 	}
 
 

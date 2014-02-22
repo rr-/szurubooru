@@ -3,108 +3,148 @@ class PostSearchService extends AbstractSearchService
 {
 	private static $enableTokenLimit = true;
 
+	public static function getPostIdsAround($searchQuery, $postId)
+	{
+		return Database::transaction(function() use ($searchQuery, $postId)
+		{
+			$stmt = new SqlRawStatement('CREATE TEMPORARY TABLE IF NOT EXISTS post_search(id INTEGER PRIMARY KEY, post_id INTEGER)');
+			Database::exec($stmt);
+
+			$stmt = new SqlDeleteStatement();
+			$stmt->setTable('post_search');
+			Database::exec($stmt);
+
+			$innerStmt = new SqlSelectStatement($searchQuery);
+			$innerStmt->setColumn('id');
+			self::decorate($innerStmt, $searchQuery);
+			$stmt = new SqlInsertStatement();
+			$stmt->setTable('post_search');
+			$stmt->setSource(['post_id'], $innerStmt);
+			Database::exec($stmt);
+
+			$stmt = new SqlSelectStatement();
+			$stmt->setColumn('post_id');
+			$stmt->setTable('post_search');
+			$stmt->setCriterion(
+				new SqlEqualsOrLesserOperator(
+					new SqlAbsOperator(
+						new SqlSubtractionOperator('id', (new SqlSelectStatement)
+							->setTable('post_search')
+							->setColumn('id')
+							->setCriterion(new SqlEqualsOperator('post_id', new SqlBinding($postId))))),
+					1));
+			$rows = Database::fetchAll($stmt);
+			$ids = array_map(function($row) { return $row['post_id']; }, $rows);
+
+			if (count($ids) == 1 or // no prev and no next post
+				count($ids) == 0) // even the post we are looking at is hidden from normal search for whatever reason
+			{
+				return [null, null];
+			}
+			elseif (count($ids) == 2) // no prev or no next post
+			{
+				return $ids[0] == $postId
+					? [$ids[1], null]
+					: [null, $ids[0]];
+			}
+			elseif (count($ids) == 3) // both prev and next post
+			{
+				return [$ids[2], $ids[0]];
+			}
+			else
+			{
+				throw new Exception('Unexpected result count (ids: ' . join(',', $ids) . ')');
+			}
+		});
+	}
+
 	public static function enableTokenLimit($enable)
 	{
 		self::$enableTokenLimit = $enable;
 	}
 
-	protected static function filterUserSafety(SqlQuery $sqlQuery)
+	protected static function decorateNegation(SqlExpression $criterion, $negative)
+	{
+		return !$negative
+			? $criterion
+			: new SqlNegationOperator($criterion);
+	}
+
+	protected static function filterUserSafety(SqlSelectStatement $stmt)
 	{
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		if (empty($allowedSafety))
-			$sqlQuery->raw('0');
-		else
-			$sqlQuery->raw('safety')->in()->genSlots($allowedSafety)->put($allowedSafety);
+		$stmt->getCriterion()->add(SqlInOperator::fromArray('safety', SqlBinding::fromArray($allowedSafety)));
 	}
 
-	protected static function filterChain(SqlQuery $sqlQuery)
-	{
-		if (isset($sqlQuery->__chained))
-			$sqlQuery->and();
-		else
-			$sqlQuery->where();
-		$sqlQuery->__chained = true;
-	}
-
-	protected static function filterNegate(SqlQuery $sqlQuery)
-	{
-		$sqlQuery->not();
-	}
-
-	protected static function filterTag($sqlQuery, $val)
+	protected static function filterTag(SqlSelectStatement $stmt, $val, $neg)
 	{
 		$tag = TagModel::findByName($val);
-		$sqlQuery
-			->exists()
-			->open()
-			->select('1')
-			->from('post_tag')
-			->where('post_id = post.id')
-			->and('post_tag.tag_id = ?')->put($tag->id)
-			->close();
+		$innerStmt = new SqlSelectStatement();
+		$innerStmt->setTable('post_tag');
+		$innerStmt->setCriterion((new SqlConjunction)
+			->add(new SqlEqualsOperator('post_id', 'post.id'))
+			->add(new SqlEqualsOperator('post_tag.tag_id', new SqlBinding($tag->id))));
+		$stmt->getCriterion()->add(self::decorateNegation(new SqlExistsOperator($innerStmt), $neg));
 	}
 
-	protected static function filterTokenId($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenId($val)
 	{
 		$ids = preg_split('/[;,]/', $val);
 		$ids = array_map('intval', $ids);
-		if (empty($ids))
-			$sqlQuery->raw('0');
-		else
-			$sqlQuery->raw('id')->in()->genSlots($ids)->put($ids);
+		return SqlInOperator::fromArray('id', $ids);
 	}
 
-	protected static function filterTokenIdMin($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenIdMin($val)
 	{
-		$sqlQuery->raw('id >= ?')->put(intval($val));
+		return new SqlEqualsOrGreaterOperator('id', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenIdMax($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenIdMax($val)
 	{
-		$sqlQuery->raw('id <= ?')->put(intval($val));
+		return new SqlEqualsOrLesserOperator('id', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenScoreMin($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenScoreMin($val)
 	{
-		$sqlQuery->raw('score >= ?')->put(intval($val));
+		return new SqlEqualsOrGreaterOperator('score', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenScoreMax($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenScoreMax($val)
 	{
-		$sqlQuery->raw('score <= ?')->put(intval($val));
+		return new SqlEqualsOrLesserOperator('score', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenTagMin($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenTagMin($val)
 	{
-		$sqlQuery->raw('tag_count >= ?')->put(intval($val));
+		return new SqlEqualsOrGreaterOperator('tag_count', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenTagMax($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenTagMax($val)
 	{
-		$sqlQuery->raw('tag_count <= ?')->put(intval($val));
+		return new SqlEqualsOrLesserOperator('tag_count', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenFavMin($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenFavMin($val)
 	{
-		$sqlQuery->raw('fav_count >= ?')->put(intval($val));
+		return new SqlEqualsOrGreaterOperator('fav_count', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenFavMax($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenFavMax($val)
 	{
-		$sqlQuery->raw('fav_count <= ?')->put(intval($val));
+		return new SqlEqualsOrLesserOperator('fav_count', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenCommentMin($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenCommentMin($val)
 	{
-		$sqlQuery->raw('comment_count >= ?')->put(intval($val));
+		return new SqlEqualsOrGreaterOperator('comment_count', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenCommentMax($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenCommentMax($val)
 	{
-		$sqlQuery->raw('comment_count <= ?')->put(intval($val));
+		return new SqlEqualsOrLesserOperator('comment_count', new SqlBinding(intval($val)));
 	}
 
-	protected static function filterTokenSpecial($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenSpecial($val)
 	{
 		$context = \Chibi\Registry::getContext();
 
@@ -112,40 +152,33 @@ class PostSearchService extends AbstractSearchService
 		{
 			case 'liked':
 			case 'likes':
-				$sqlQuery
-					->exists()
-					->open()
-					->select('1')
-					->from('post_score')
-					->where('post_id = post.id')
-					->and('score > 0')
-					->and('user_id = ?')->put($context->user->id)
-					->close();
-				break;
+				$innerStmt = new SqlSelectStatement();
+				$innerStmt->setTable('post_score');
+				$innerStmt->setCriterion((new SqlConjunction)
+					->add(new SqlGreaterOperator('score', '0'))
+					->add(new SqlEqualsOperator('post_id', 'post.id'))
+					->add(new SqlEqualsOperator('user_id', new SqlBinding($context->user->id))));
+				return new SqlExistsOperator($innerStmt);
 
 			case 'disliked':
 			case 'dislikes':
-				$sqlQuery
-					->exists()
-					->open()
-					->select('1')
-					->from('post_score')
-					->where('post_id = post.id')
-					->and('score < 0')
-					->and('user_id = ?')->put($context->user->id)
-					->close();
-				break;
+				$innerStmt = new SqlSelectStatement();
+				$innerStmt->setTable('post_score');
+				$innerStmt->setCriterion((new SqlConjunction)
+					->add(new SqlLesserOperator('score', '0'))
+					->add(new SqlEqualsOperator('post_id', 'post.id'))
+					->add(new SqlEqualsOperator('user_id', new SqlBinding($context->user->id))));
+				return new SqlExistsOperator($innerStmt);
 
 			case 'hidden':
-				$sqlQuery->raw('hidden');
-				break;
+				return new SqlStringExpression('hidden');
 
 			default:
 				throw new SimpleException('Unknown special "' . $val . '"');
 		}
 	}
 
-	protected static function filterTokenType($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenType($val)
 	{
 		switch ($val)
 		{
@@ -162,7 +195,7 @@ class PostSearchService extends AbstractSearchService
 			default:
 				throw new SimpleException('Unknown type "' . $val . '"');
 		}
-		$sqlQuery->raw('type = ?')->put($type);
+		return new SqlEqualsOperator('type', new SqlBinding($type));
 	}
 
 	protected static function __filterTokenDateParser($val)
@@ -180,142 +213,101 @@ class PostSearchService extends AbstractSearchService
 		return [$timeMin, $timeMax];
 	}
 
-	protected static function filterTokenDate($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenDate($val)
 	{
 		list ($timeMin, $timeMax) = self::__filterTokenDateParser($val);
-		$sqlQuery
-			->raw('upload_date >= ?')->put($timeMin)
-			->and('upload_date <= ?')->put($timeMax);
+		return (new SqlConjunction)
+			->add(new SqlEqualsOrGreaterOperator('upload_date', new SqlBinding($timeMin)))
+			->add(new SqlEqualsOrLesserOperator('upload_date', new SqlBinding($timeMax)));
 	}
 
-	protected static function filterTokenDateMin($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenDateMin($val)
 	{
 		list ($timeMin, $timeMax) = self::__filterTokenDateParser($val);
-		$sqlQuery->raw('upload_date >= ?')->put($timeMin);
+		return new SqlEqualsOrGreaterOperator('upload_date', new SqlBinding($timeMin));
 	}
 
-	protected static function filterTokenDateMax($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenDateMax($val)
 	{
 		list ($timeMin, $timeMax) = self::__filterTokenDateParser($val);
-		$sqlQuery->raw('upload_date <= ?')->put($timeMax);
+		return new SqlEqualsOrLesserOperator('upload_date', new SqlBinding($timeMax));
 	}
 
-	protected static function filterTokenFav($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenFav($val)
 	{
 		$user = UserModel::findByNameOrEmail($val);
-		$sqlQuery
-			->exists()
-			->open()
-			->select('1')
-			->from('favoritee')
-			->where('post_id = post.id')
-			->and('favoritee.user_id = ?')->put($user->id)
-			->close();
+		$innerStmt = (new SqlSelectStatement)
+			->setTable('favoritee')
+			->setCriterion((new SqlConjunction)
+				->add(new SqlEqualsOperator('post_id', 'post.id'))
+				->add(new SqlEqualsOperator('favoritee.user_id', new SqlBinding($user->id))));
+		return new SqlExistsOperator($innerStmt);
 	}
 
-	protected static function filterTokenFavs($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenFavs($val)
 	{
-		return self::filterTokenFav($searchContext, $sqlQuery, $val);
+		return self::filterTokenFav($val);
 	}
 
-	protected static function filterTokenComment($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenComment($val)
 	{
 		$user = UserModel::findByNameOrEmail($val);
-		$sqlQuery
-			->exists()
-			->open()
-			->select('1')
-			->from('comment')
-			->where('post_id = post.id')
-			->and('commenter_id = ?')->put($user->id)
-			->close();
+		$innerStmt = (new SqlSelectStatement)
+			->setTable('comment')
+			->setCriterion((new SqlConjunction)
+				->add(new SqlEqualsOperator('post_id', 'post.id'))
+				->add(new SqlEqualsOperator('commenter_id', new SqlBinding($user->id))));
+		return new SqlExistsOperator($innerStmt);
 	}
 
-	protected static function filterTokenCommenter($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenCommenter($val)
 	{
-		return self::filterTokenComment($searchContext, $sqlQuery, $val);
+		return self::filterTokenComment($searchContext, $stmt, $val);
 	}
 
-	protected static function filterTokenSubmit($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenSubmit($val)
 	{
 		$user = UserModel::findByNameOrEmail($val);
-		$sqlQuery->raw('uploader_id = ?')->put($user->id);
+		return new SqlEqualsOperator('uploader_id', new SqlBinding($user->id));
 	}
 
-	protected static function filterTokenUploader($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenUploader($val)
 	{
-		return self::filterTokenSubmit($searchContext, $sqlQuery, $val);
+		return self::filterTokenSubmit($val);
 	}
 
-	protected static function filterTokenUpload($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenUpload($val)
 	{
-		return self::filterTokenSubmit($searchContext, $sqlQuery, $val);
+		return self::filterTokenSubmit($val);
 	}
 
-	protected static function filterTokenUploaded($searchContext, SqlQuery $sqlQuery, $val)
+	protected static function filterTokenUploaded($val)
 	{
-		return self::filterTokenSubmit($searchContext, $sqlQuery, $val);
-	}
-
-	protected static function filterTokenPrev($searchContext, SqlQuery $sqlQuery, $val)
-	{
-		self::__filterTokenPrevNext($searchContext, $sqlQuery, $val);
-	}
-
-	protected static function filterTokenNext($searchContext, SqlQuery $sqlQuery, $val)
-	{
-		$searchContext->orderDir *= -1;
-		self::__filterTokenPrevNext($searchContext, $sqlQuery, $val);
-	}
-
-	protected static function __filterTokenPrevNext($searchContext, SqlQuery $sqlQuery, $val)
-	{
-		$op1 = $searchContext->orderDir == 1 ? '<' : '>';
-		$op2 = $searchContext->orderDir != 1 ? '<' : '>';
-		$sqlQuery
-			->open()
-				->open()
-					->raw($searchContext->orderColumn . ' ' . $op1 . ' ')
-					->open()
-						->select($searchContext->orderColumn)
-						->from('post p2')
-						->where('p2.id = ?')->put(intval($val))
-					->close()
-					->and('id != ?')->put($val)
-				->close()
-				->or()
-				->open()
-					->raw($searchContext->orderColumn . ' = ')
-					->open()
-						->select($searchContext->orderColumn)
-						->from('post p2')
-						->where('p2.id = ?')->put(intval($val))
-					->close()
-					->and('id ' . $op1 . ' ?')->put(intval($val))
-				->close()
-			->close();
+		return self::filterTokenSubmit($val);
 	}
 
 
-	protected static function parseOrderToken($searchContext, $val)
+
+	protected static function changeOrder($stmt, $val, $neg = true)
 	{
 		$randomReset = true;
 
-		$orderDir = 1;
+		$orderDir = SqlSelectStatement::ORDER_DESC;
 		if (substr($val, -4) == 'desc')
 		{
-			$orderDir = 1;
+			$orderDir = SqlSelectStatement::ORDER_DESC;
 			$val = rtrim(substr($val, 0, -4), ',');
 		}
 		elseif (substr($val, -3) == 'asc')
 		{
-			$orderDir = -1;
+			$orderDir = SqlSelectStatement::ORDER_ASC;
 			$val = rtrim(substr($val, 0, -3), ',');
 		}
-		if ($val{0} == '-')
+		if ($neg)
 		{
-			$orderDir *= -1;
-			$val = substr($val, 1);
+			$orderDir = $orderDir == SqlSelectStatement::ORDER_DESC
+				? SqlSelectStatement::ORDER_ASC
+				: SqlSelectStatement::ORDER_DESC;
 		}
 
 		switch ($val)
@@ -329,11 +321,13 @@ class PostSearchService extends AbstractSearchService
 			case 'comment':
 			case 'comments':
 			case 'commentcount':
+			case 'comment_count':
 				$orderColumn = 'comment_count';
 				break;
 			case 'fav':
 			case 'favs':
 			case 'favcount':
+			case 'fav_count':
 				$orderColumn = 'fav_count';
 				break;
 			case 'score':
@@ -342,6 +336,7 @@ class PostSearchService extends AbstractSearchService
 			case 'tag':
 			case 'tags':
 			case 'tagcount':
+			case 'tag_count':
 				$orderColumn = 'tag_count';
 				break;
 			case 'random':
@@ -363,61 +358,26 @@ class PostSearchService extends AbstractSearchService
 		if ($randomReset and isset($_SESSION['browsing-seed']))
 			unset($_SESSION['browsing-seed']);
 
-		$searchContext->orderColumn = $orderColumn;
-		$searchContext->orderDir = $orderDir;
+		$stmt->setOrderBy($orderColumn, $orderDir);
 	}
 
 
 
-	protected static function iterateTokens($tokens, $callback)
-	{
-		$unparsedTokens = [];
-
-		foreach ($tokens as $origToken)
-		{
-			$token = $origToken;
-			$neg = false;
-			if ($token{0} == '-')
-			{
-				$token = substr($token, 1);
-				$neg = true;
-			}
-
-			$pos = strpos($token, ':');
-			if ($pos === false)
-			{
-				$key = null;
-				$val = $token;
-			}
-			else
-			{
-				$key = substr($token, 0, $pos);
-				$val = substr($token, $pos + 1);
-			}
-
-			$parsed = $callback($neg, $key, $val);
-
-			if (!$parsed)
-				$unparsedTokens []= $origToken;
-		}
-		return $unparsedTokens;
-	}
-
-	public static function decorate(SqlQuery $sqlQuery, $searchQuery)
+	public static function decorate(SqlSelectStatement $stmt, $searchQuery)
 	{
 		$config = \Chibi\Registry::getConfig();
 
-		$sqlQuery->from('post');
+		$stmt->setTable('post');
+		$stmt->setCriterion(new SqlConjunction());
 
-		self::filterChain($sqlQuery);
-		self::filterUserSafety($sqlQuery);
+		self::filterUserSafety($stmt);
 
 		/* query tokens */
-		$tokens = array_filter(array_unique(explode(' ', strtolower($searchQuery))));
+		$tokens = array_filter(array_unique(preg_split('/\s+/', strtolower($searchQuery))));
 		if (self::$enableTokenLimit and count($tokens) > $config->browsing->maxSearchTokens)
 			throw new SimpleException('Too many search tokens (maximum: ' . $config->browsing->maxSearchTokens . ')');
 
-		if (\Chibi\Registry::getContext()->user->hasEnabledHidingDislikedPosts())
+		if (\Chibi\Registry::getContext()->user->hasEnabledHidingDislikedPosts() and !in_array('special:disliked', $tokens))
 			$tokens []= '-special:disliked';
 		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden') or !in_array('special:hidden', $tokens))
 			$tokens []= '-special:hidden';
@@ -426,62 +386,43 @@ class PostSearchService extends AbstractSearchService
 		$searchContext->orderColumn = 'id';
 		$searchContext->orderDir = 1;
 
-		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $sqlQuery, &$orderToken)
+		foreach ($tokens as $token)
 		{
-			if ($key != 'order')
-				return false;
+			$neg = false;
+			if ($token{0} == '-')
+			{
+				$neg = true;
+				$token = substr($token, 1);
+			}
 
-			if ($neg)
-				$orderToken = '-' . $val;
+			if (strpos($token, ':') !== false)
+			{
+				list ($key, $val) = explode(':', $token);
+				$key = strtolower($key);
+				if ($key == 'order')
+				{
+					self::changeOrder($stmt, $val, $neg);
+				}
+				else
+				{
+					$methodName = 'filterToken' . TextHelper::kebabCaseToCamelCase($key);
+					if (!method_exists(__CLASS__, $methodName))
+						throw new SimpleException('Unknown search token "' . $key . '"');
+
+					$criterion = self::$methodName($val);
+					$criterion = self::decorateNegation($criterion, $neg);
+					$stmt->getCriterion()->add($criterion);
+				}
+			}
 			else
-				$orderToken = $val;
-			self::parseOrderToken($searchContext, $orderToken);
-
-			return true;
-		});
-
-
-		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $sqlQuery)
-		{
-			if ($key !== null)
-				return false;
-
-			self::filterChain($sqlQuery);
-			if ($neg)
-				self::filterNegate($sqlQuery);
-			self::filterTag($sqlQuery, $val);
-			return true;
-		});
-
-		$tokens = self::iterateTokens($tokens, function($neg, $key, $val) use ($searchContext, $sqlQuery)
-		{
-			$methodName = 'filterToken' . TextHelper::kebabCaseToCamelCase($key);
-			if (!method_exists(__CLASS__, $methodName))
-				return false;
-
-			self::filterChain($sqlQuery);
-			if ($neg)
-				self::filterNegate($sqlQuery);
-			self::$methodName($searchContext, $sqlQuery, $val);
-			return true;
-		});
-
-		if (!empty($tokens))
-			throw new SimpleException('Unknown search token "' . array_shift($tokens) . '"');
-
-		$sqlQuery->orderBy($searchContext->orderColumn);
-		if ($searchContext->orderDir == 1)
-			$sqlQuery->desc();
-		else
-			$sqlQuery->asc();
-
-		if ($searchContext->orderColumn != 'id')
-		{
-			$sqlQuery->raw(', id');
-			if ($searchContext->orderDir == 1)
-				$sqlQuery->desc();
-			else
-				$sqlQuery->asc();
+			{
+				self::filterTag($stmt, $token, $neg);
+			}
 		}
+
+		$stmt->addOrderBy('id',
+			empty($stmt->getOrderBy())
+				? SqlSelectStatement::ORDER_DESC
+				: $stmt->getOrderBy()[0][1]);
 	}
 }

@@ -51,12 +51,12 @@ class PostEntity extends AbstractEntity
 	{
 		if ($this->hasCache('favoritee'))
 			return $this->getCache('favoritee');
-		$query = (new SqlQuery)
-			->select('user.*')
-			->from('user')
-			->innerJoin('favoritee')->on('favoritee.user_id = user.id')
-			->where('favoritee.post_id = ?')->put($this->id);
-		$rows = Database::fetchAll($query);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn('user.*');
+		$stmt->setTable('user');
+		$stmt->addInnerJoin('favoritee', new SqlEqualsOperator('favoritee.user_id', 'user.id'));
+		$stmt->setCriterion(new SqlEqualsOperator('favoritee.post_id', new SqlBinding($this->id)));
+		$rows = Database::fetchAll($stmt);
 		$favorites = UserModel::convertRows($rows);
 		$this->setCache('favoritee', $favorites);
 		return $favorites;
@@ -69,13 +69,20 @@ class PostEntity extends AbstractEntity
 		if ($this->hasCache('relations'))
 			return $this->getCache('relations');
 
-		$query = (new SqlQuery)
-			->select('post.*')
-			->from('post')
-			->innerJoin('crossref')
-				->on()->open()->raw('post.id = crossref.post2_id')->and('crossref.post_id = ?')->close()->put($this->id)
-				->or()->open()->raw('post.id = crossref.post_id')->and('crossref.post2_id = ?')->close()->put($this->id);
-		$rows = Database::fetchAll($query);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn('post.*');
+		$stmt->setTable('post');
+		$binding = new SqlBinding($this->id);
+		$stmt->addInnerJoin('crossref', (new SqlDisjunction)
+			->add(
+				(new SqlConjunction)
+					->add(new SqlEqualsOperator('post.id', 'crossref.post2_id'))
+					->add(new SqlEqualsOperator('crossref.post_id', $binding)))
+			->add(
+				(new SqlConjunction)
+					->add(new SqlEqualsOperator('post.id', 'crossref.post_id'))
+					->add(new SqlEqualsOperator('crossref.post2_id', $binding))));
+		$rows = Database::fetchAll($stmt);
 		$posts = PostModel::convertRows($rows);
 		$this->setCache('relations', $posts);
 		return $posts;

@@ -1,28 +1,29 @@
 <?php
 class UserSearchService extends AbstractSearchService
 {
-	protected static function decorate(SQLQuery $sqlQuery, $searchQuery)
+	protected static function decorate(SqlSelectStatement $stmt, $searchQuery)
 	{
-		$sqlQuery->from('user');
+		$stmt->setTable('user');
 
 		$sortStyle = $searchQuery;
 		switch ($sortStyle)
 		{
 			case 'alpha,asc':
-				$sqlQuery->orderBy('name')->collate()->nocase()->asc();
+				$stmt->setOrderBy(new SqlNoCaseOperator('name'), SqlSelectStatement::ORDER_ASC);
 				break;
 			case 'alpha,desc':
-				$sqlQuery->orderBy('name')->collate()->nocase()->desc();
+				$stmt->setOrderBy(new SqlNoCaseOperator('name'), SqlSelectStatement::ORDER_DESC);
 				break;
 			case 'date,asc':
-				$sqlQuery->orderBy('join_date')->asc();
+				$stmt->setOrderBy('join_date', SqlSelectStatement::ORDER_ASC);
 				break;
 			case 'date,desc':
-				$sqlQuery->orderBy('join_date')->desc();
+				$stmt->setOrderBy('join_date', SqlSelectStatement::ORDER_DESC);
 				break;
 			case 'pending':
-				$sqlQuery->where('staff_confirmed IS NULL');
-				$sqlQuery->or('staff_confirmed = 0');
+				$stmt->setCriterion((new SqlDisjunction)
+					->add(new SqlIsNullOperator('staff_confirmed'))
+					->add(new SqlEqualsOperator('staff_confirmed', '0')));
 				break;
 			default:
 				throw new SimpleException('Unknown sort style "' . $sortStyle . '"');

@@ -54,14 +54,14 @@ class IndexController
 
 	private function featureNewPost()
 	{
-		$query = (new SqlQuery)
-			->select('id')
-			->from('post')
-			->where('type = ?')->put(PostType::Image)
-			->and('safety = ?')->put(PostSafety::Safe)
-			->orderBy($this->config->main->dbDriver == 'sqlite' ? 'random()' : 'rand()')
-			->desc();
-		$featuredPostId = Database::fetchOne($query)['id'];
+		$stmt = (new SqlSelectStatement)
+			->setColumn('id')
+			->setTable('post')
+			->setCriterion((new SqlConjunction)
+				->add(new SqlEqualsOperator('type', new SqlBinding(PostType::Image)))
+				->add(new SqlEqualsOperator('safety', new SqlBinding(PostSafety::Safe))))
+			->setOrderBy(new SqlRandomOperator(), SqlSelectStatement::ORDER_DESC);
+		$featuredPostId = Database::fetchOne($stmt)['id'];
 		if (!$featuredPostId)
 			return null;
 

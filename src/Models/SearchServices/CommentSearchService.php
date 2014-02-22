@@ -1,21 +1,14 @@
 <?php
 class CommentSearchService extends AbstractSearchService
 {
-	public static function decorate(SqlQuery $sqlQuery, $searchQuery)
+	public static function decorate(SqlSelectStatement $stmt, $searchQuery)
 	{
-		$sqlQuery
-			->from('comment')
-			->innerJoin('post')
-			->on('post_id = post.id');
+		$stmt->setTable('comment');
+		$stmt->addInnerJoin('post', new SqlEqualsOperator('post_id', 'post.id'));
 
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		if (empty($allowedSafety))
-			$sqlQuery->where('0');
-		else
-			$sqlQuery->where('post.safety')->in()->genSlots($allowedSafety)->put($allowedSafety);
+		$stmt->setCriterion(SqlInOperator::fromArray('post.safety', SqlBinding::fromArray($allowedSafety)));
 
-		$sqlQuery
-			->orderBy('comment.id')
-			->desc();
+		$stmt->addOrderBy('comment.id', SqlSelectStatement::ORDER_DESC);
 	}
 }

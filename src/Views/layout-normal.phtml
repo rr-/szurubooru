@@ -50,7 +50,7 @@ LayoutHelper::addScript('core.js');
 						$bindings = [];
 						foreach ($query->getBindings() as $k => $v)
 							$bindings []= $k . '=' . $v;
-						printf('<p>%s [%s]</p>', htmlspecialchars($query->getSql()), join(', ', $bindings));
+						printf('<p>%s [%s]</p>', htmlspecialchars($query->getAsString()), join(', ', $bindings));
 					} ?>
 					</pre>
 				<?php endif ?>

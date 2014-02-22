@@ -48,48 +48,50 @@ class PostModel extends AbstractCrudModel
 				'source' => $post->source,
 				];
 
-			$query = (new SqlQuery)
-				->update('post')
-				->set(join(', ', array_map(function($key) { return $key . ' = ?'; }, array_keys($bindings))))
-				->put(array_values($bindings))
-				->where('id = ?')->put($post->id);
-			Database::query($query);
+			$stmt = new SqlUpdateStatement();
+			$stmt->setTable('post');
+
+			foreach ($bindings as $key => $value)
+				$stmt->setColumn($key, new SqlBinding($value));
+
+			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($post->id)));
+			Database::exec($stmt);
 
 			//tags
 			$tags = $post->getTags();
 
-			$query = (new SqlQuery)
-				->deleteFrom('post_tag')
-				->where('post_id = ?')->put($post->id);
-			Database::query($query);
+			$stmt = new SqlDeleteStatement();
+			$stmt->setTable('post_tag');
+			$stmt->setCriterion(new SqlEqualsOperator('post_id', new SqlBinding($post->id)));
+			Database::exec($stmt);
 
 			foreach ($tags as $postTag)
 			{
-				$query = (new SqlQuery)
-					->insertInto('post_tag')
-					->surround('post_id, tag_id')
-					->values()->surround('?, ?')
-					->put([$post->id, $postTag->id]);
-				Database::query($query);
+				$stmt = new SqlInsertStatement();
+				$stmt->setTable('post_tag');
+				$stmt->setColumn('post_id', new SqlBinding($post->id));
+				$stmt->setColumn('tag_id', new SqlBinding($postTag->id));
+				Database::exec($stmt);
 			}
 
 			//relations
 			$relations = $post->getRelations();
 
-			$query = (new SqlQuery)
-				->deleteFrom('crossref')
-				->where('post_id = ?')->put($post->id)
-				->or('post2_id = ?')->put($post->id);
-			Database::query($query);
+			$stmt = new SqlDeleteStatement();
+			$stmt->setTable('crossref');
+			$binding = new SqlBinding($post->id);
+			$stmt->setCriterion((new SqlDisjunction)
+				->add(new SqlEqualsOperator('post_id', $binding))
+				->add(new SqlEqualsOperator('post2_id', $binding)));
+			Database::exec($stmt);
 
 			foreach ($relations as $relatedPost)
 			{
-				$query = (new SqlQuery)
-					->insertInto('crossref')
-					->surround('post_id, post2_id')
-					->values()->surround('?, ?')
-					->put([$post->id, $relatedPost->id]);
-				Database::query($query);
+				$stmt = new SqlInsertStatement();
+				$stmt->setTable('crossref');
+				$stmt->setColumn('post_id', new SqlBinding($post->id));
+				$stmt->setColumn('post2_id', new SqlBinding($relatedPost->id));
+				Database::exec($stmt);
 			}
 		});
 	}
@@ -98,36 +100,31 @@ class PostModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($post)
 		{
-			$queries = [];
+			$binding = new SqlBinding($post->id);
 
-			$queries []= (new SqlQuery)
-				->deleteFrom('post_score')
-				->where('post_id = ?')->put($post->id);
+			$stmt = new SqlDeleteStatement();
+			$stmt->setTable('post_score');
+			$stmt->setCriterion(new SqlEqualsOperator('post_id', $binding));
+			Database::exec($stmt);
 
-			$queries []= (new SqlQuery)
-				->deleteFrom('post_tag')
-				->where('post_id = ?')->put($post->id);
+			$stmt->setTable('post_tag');
+			Database::exec($stmt);
 
-			$queries []= (new SqlQuery)
-				->deleteFrom('crossref')
-				->where('post_id = ?')->put($post->id)
-				->or('post2_id = ?')->put($post->id);
+			$stmt->setTable('favoritee');
+			Database::exec($stmt);
 
-			$queries []= (new SqlQuery)
-				->deleteFrom('favoritee')
-				->where('post_id = ?')->put($post->id);
+			$stmt->setTable('comment');
+			Database::exec($stmt);
 
-			$queries []= (new SqlQuery)
-				->update('comment')
-				->set('post_id = NULL')
-				->where('post_id = ?')->put($post->id);
+			$stmt->setTable('crossref');
+			$stmt->setCriterion((new SqlDisjunction)
+				->add(new SqlEqualsOperator('post_id', $binding))
+				->add(new SqlEqualsOperator('post_id', $binding)));
+			Database::exec($stmt);
 
-			$queries []= (new SqlQuery)
-				->deleteFrom('post')
-				->where('id = ?')->put($post->id);
-
-			foreach ($queries as $query)
-				Database::query($query);
+			$stmt->setTable('post');
+			$stmt->setCriterion(new SqlEqualsOperator('id', $binding));
+			Database::exec($stmt);
 		});
 	}
 
@@ -136,12 +133,12 @@ class PostModel extends AbstractCrudModel
 
 	public static function findByName($key, $throw = true)
 	{
-		$query = (new SqlQuery)
-			->select('*')
-			->from('post')
-			->where('name = ?')->put($key);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn('*');
+		$stmt->setTable('post');
+		$stmt->setCriterion(new SqlEqualsOperator('name', new SqlBinding($key)));
 
-		$row = Database::fetchOne($query);
+		$row = Database::fetchOne($stmt);
 		if ($row)
 			return self::convertRow($row);
 
@@ -161,12 +158,12 @@ class PostModel extends AbstractCrudModel
 
 	public static function findByHash($key, $throw = true)
 	{
-		$query = (new SqlQuery)
-			->select('*')
-			->from('post')
-			->where('file_hash = ?')->put($key);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn('*');
+		$stmt->setTable('post');
+		$stmt->setCriterion(new SqlEqualsOperator('file_hash', new SqlBinding($key)));
 
-		$row = Database::fetchOne($query);
+		$row = Database::fetchOne($stmt);
 		if ($row)
 			return self::convertRow($row);
 
@@ -192,12 +189,13 @@ class PostModel extends AbstractCrudModel
 		}
 		$postIds = array_keys($postMap);
 
-		$sqlQuery = (new SqlQuery)
-			->select('tag.*, post_id')
-			->from('tag')
-			->innerJoin('post_tag')->on('post_tag.tag_id = tag.id')
-			->where('post_id')->in()->genSlots($postIds)->put($postIds);
-		$rows = Database::fetchAll($sqlQuery);
+		$stmt = new SqlSelectStatement();
+		$stmt->setTable('tag');
+		$stmt->addColumn('tag.*');
+		$stmt->addColumn('post_id');
+		$stmt->addInnerJoin('post_tag', new SqlEqualsOperator('post_tag.tag_id', 'tag.id'));
+		$stmt->setCriterion(SqlInOperator::fromArray('post_id', SqlBinding::fromArray($postIds)));
+		$rows = Database::fetchAll($stmt);
 
 		foreach ($rows as $row)
 		{

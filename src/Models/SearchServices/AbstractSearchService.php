@@ -8,17 +8,18 @@ abstract class AbstractSearchService
 		return $modelClassName;
 	}
 
-	protected static function decorate(SqlQuery $sqlQuery, $searchQuery)
+	protected static function decorate(SqlSelectStatement $stmt, $searchQuery)
 	{
 		throw new NotImplementedException();
 	}
 
-	protected static function decoratePager(SqlQuery $sqlQuery, $perPage, $page)
+	protected static function decoratePager(SqlSelectStatement $stmt, $perPage, $page)
 	{
 		if ($perPage === null)
 			return;
-		$sqlQuery->limit('?')->put($perPage);
-		$sqlQuery->offset('?')->put(($page - 1) * $perPage);
+		$stmt->setLimit(
+			new SqlBinding($perPage),
+			new SqlBinding(($page - 1) * $perPage));
 	}
 
 	public static function getEntitiesRows($searchQuery, $perPage = null, $page = 1)
@@ -26,12 +27,12 @@ abstract class AbstractSearchService
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
 
-		$sqlQuery = new SqlQuery();
-		$sqlQuery->select($table . '.*');
-		static::decorate($sqlQuery, $searchQuery);
-		self::decoratePager($sqlQuery, $perPage, $page);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn($table . '.*');
+		static::decorate($stmt, $searchQuery);
+		static::decoratePager($stmt, $perPage, $page);
 
-		$rows = Database::fetchAll($sqlQuery);
+		$rows = Database::fetchAll($stmt);
 		return $rows;
 	}
 
@@ -47,12 +48,13 @@ abstract class AbstractSearchService
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
 
-		$sqlQuery = new SqlQuery();
-		$sqlQuery->select('count(1)')->as('count');
-		$sqlQuery->from()->raw('(')->select('1');
-		static::decorate($sqlQuery, $searchQuery);
-		$sqlQuery->raw(')');
+		$innerStmt = new SqlSelectStatement();
+		static::decorate($innerStmt, $searchQuery);
 
-		return Database::fetchOne($sqlQuery)['count'];
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setSource($innerStmt);
+
+		return Database::fetchOne($stmt)['count'];
 	}
 }

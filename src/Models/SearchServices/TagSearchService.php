@@ -1,23 +1,15 @@
 <?php
 class TagSearchService extends AbstractSearchService
 {
-	public static function decorate(SqlQuery $sqlQuery, $searchQuery)
+	public static function decorate(SqlSelectStatement $stmt, $searchQuery)
 	{
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		$sqlQuery
-			->raw(', COUNT(post_tag.post_id)')
-			->as('post_count')
-			->from('tag')
-			->innerJoin('post_tag')
-			->on('tag.id = post_tag.tag_id')
-			->innerJoin('post')
-			->on('post.id = post_tag.post_id');
-		if (empty($allowedSafety))
-			$sqlQuery->where('0');
-		else
-			$sqlQuery->where('safety')->in()->genSlots($allowedSafety);
-		foreach ($allowedSafety as $s)
-			$sqlQuery->put($s);
+		$stmt
+			->addColumn('COUNT(post_tag.post_id) AS post_count')
+			->setTable('tag')
+			->addInnerJoin('post_tag', new SqlEqualsOperator('tag.id', 'post_tag.tag_id'))
+			->addInnerJoin('post', new SqlEqualsOperator('post.id', 'post_tag.post_id'));
+		$stmt->setCriterion((new SqlConjunction)->add(SqlInOperator::fromArray('safety', SqlBinding::fromArray($allowedSafety))));
 
 		$orderToken = null;
 
@@ -40,21 +32,17 @@ class TagSearchService extends AbstractSearchService
 					if (strlen($token) >= 3)
 						$token = '%' . $token;
 					$token .= '%';
-					$sqlQuery
-						->and('tag.name')
-						->like('?')
-						->put($token)
-						->collate()->nocase();
+					$stmt->getCriterion()->add(new SqlNoCaseOperator(new SqlLikeOperator('tag.name', new SqlBinding($token))));
 				}
 			}
 		}
 
-		$sqlQuery->groupBy('tag.id');
+		$stmt->groupBy('tag.id');
 		if ($orderToken)
-			self::order($sqlQuery,$orderToken);
+			self::order($stmt,$orderToken);
 	}
 
-	private static function order(SqlQuery $sqlQuery, $value)
+	private static function order(SqlSelectStatement $stmt, $value)
 	{
 		if (strpos($value, ',') !== false)
 		{
@@ -69,17 +57,18 @@ class TagSearchService extends AbstractSearchService
 		switch ($orderColumn)
 		{
 			case 'popularity':
-				$sqlQuery->orderBy('post_count');
+				$stmt->setOrderBy('post_count',
+					$orderDir == 'asc'
+						? SqlSelectStatement::ORDER_ASC
+						: SqlSelectStatement::ORDER_DESC);
 				break;
 
 			case 'alpha':
-				$sqlQuery->orderBy('tag.name')->collate()->nocase();
+				$stmt->setOrderBy(new SqlNoCaseOperator('tag.name'),
+					$orderDir == 'asc'
+						? SqlSelectStatement::ORDER_ASC
+						: SqlSelectStatement::ORDER_DESC);
 				break;
 		}
-
-		if ($orderDir == 'asc')
-			$sqlQuery->asc();
-		else
-			$sqlQuery->desc();
 	}
 }

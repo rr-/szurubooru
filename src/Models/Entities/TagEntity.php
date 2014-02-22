@@ -5,10 +5,10 @@ class TagEntity extends AbstractEntity
 
 	public function getPostCount()
 	{
-		$query = (new SqlQuery)
-			->select('count(*)')->as('count')
-			->from('post_tag')
-			->where('tag_id = ?')->put($this->id);
-		return Database::fetchOne($query)['count'];
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setTable('post_tag');
+		$stmt->setCriterion(new SqlEqualsOperator('tag_id', new SqlBinding($this->id)));
+		return Database::fetchOne($stmt)['count'];
 	}
 }

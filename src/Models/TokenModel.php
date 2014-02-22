@@ -20,12 +20,14 @@ implements IModel
 				'expires' => $token->expires,
 				];
 
-			$query = (new SqlQuery)
-				->update('user_token')
-				->set(join(', ', array_map(function($key) { return $key . ' = ?'; }, array_keys($bindings))))
-				->put(array_values($bindings))
-				->where('id = ?')->put($token->id);
-			Database::query($query);
+			$stmt = new SqlUpdateStatement();
+			$stmt->setTable('user_token');
+			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($token->id)));
+
+			foreach ($bindings as $key => $val)
+				$stmt->setColumn($key, new SqlBinding($val));
+
+			Database::exec($stmt);
 
 		});
 	}
@@ -37,12 +39,12 @@ implements IModel
 		if (empty($key))
 			throw new SimpleNotFoundException('Invalid security token');
 
-		$query = (new SqlQuery)
-			->select('*')
-			->from('user_token')
-			->where('token = ?')->put($key);
+		$stmt = new SqlSelectStatement();
+		$stmt->setTable('user_token');
+		$stmt->setColumn('*');
+		$stmt->setCriterion(new SqlEqualsOperator('token', new SqlBinding($key)));
 
-		$row = Database::fetchOne($query);
+		$row = Database::fetchOne($stmt);
 		if ($row)
 			return self::convertRow($row);
 

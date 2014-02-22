@@ -4,7 +4,14 @@ $config = \Chibi\Registry::getConfig();
 
 function getDbVersion()
 {
-	$dbVersion = PropertyModel::get(PropertyModel::DbVersion);
+	try
+	{
+		$dbVersion = PropertyModel::get(PropertyModel::DbVersion);
+	}
+	catch (Exception $e)
+	{
+		return [null, null];
+	}
 	if (strpos($dbVersion, '.') !== false)
 	{
 		list ($dbVersionMajor, $dbVersionMinor) = explode('.', $dbVersion);
@@ -50,7 +57,7 @@ foreach ($upgrades as $upgradePath)
 			{
 				try
 				{
-					Database::query((new SqlQuery)->raw($query));
+					Database::exec(new SqlRawStatement($query));
 				}
 				catch (Exception $e)
 				{

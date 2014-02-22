@@ -25,13 +25,14 @@ class CommentModel extends AbstractCrudModel
 				'comment_date' => $comment->commentDate,
 				'commenter_id' => $comment->commenterId];
 
-			$query = (new SqlQuery)
-				->update('comment')
-				->set(join(', ', array_map(function($key) { return $key . ' = ?'; }, array_keys($bindings))))
-				->put(array_values($bindings))
-				->where('id = ?')->put($comment->id);
+			$stmt = new SqlUpdateStatement();
+			$stmt->setTable('comment');
+			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($comment->id)));
 
-			Database::query($query);
+			foreach ($bindings as $key => $val)
+				$stmt->setColumn($key, new SqlBinding($val));
+
+			Database::exec($stmt);
 		});
 	}
 
@@ -39,10 +40,10 @@ class CommentModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($comment)
 		{
-			$query = (new SqlQuery)
-				->deleteFrom('comment')
-				->where('id = ?')->put($comment->id);
-			Database::query($query);
+			$stmt = new SqlDeleteStatement();
+			$stmt->setTable('comment');
+			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($comment->id)));
+			Database::exec($stmt);
 		});
 	}
 
@@ -50,14 +51,12 @@ class CommentModel extends AbstractCrudModel
 
 	public static function findAllByPostId($key)
 	{
-		$query = new SqlQuery();
-		$query
-			->select('comment.*')
-			->from('comment')
-			->where('post_id = ?')
-			->put($key);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn('comment.*');
+		$stmt->setTable('comment');
+		$stmt->setCriterion(new SqlEqualsOperator('post_id', new SqlBinding($key)));
 
-		$rows = Database::fetchAll($query);
+		$rows = Database::fetchAll($stmt);
 		if ($rows)
 			return self::convertRows($rows);
 		return [];

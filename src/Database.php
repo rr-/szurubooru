@@ -24,19 +24,19 @@ class Database
 		}
 	}
 
-	public static function makeStatement(SqlQuery $sqlQuery)
+	protected static function makeStatement(SqlStatement $stmt)
 	{
 		try
 		{
-			$stmt = self::$pdo->prepare($sqlQuery->getSql());
+			$pdoStatement = self::$pdo->prepare($stmt->getAsString());
+			foreach ($stmt->getBindings() as $key => $value)
+				$pdoStatement->bindValue(is_numeric($key) ? $key + 1 : ltrim($key, ':'), $value);
 		}
 		catch (Exception $e)
 		{
-			throw new Exception('Problem with ' . $sqlQuery->getSql() . ' (' . $e->getMessage() . ')');
+			throw new Exception('Problem with ' . $stmt->getAsString() . ' (' . $e->getMessage() . ')');
 		}
-		foreach ($sqlQuery->getBindings() as $key => $value)
-			$stmt->bindValue(is_numeric($key) ? $key + 1 : $key, $value);
-		return $stmt;
+		return $pdoStatement;
 	}
 
 	public static function disconnect()
@@ -49,32 +49,32 @@ class Database
 		return self::$pdo !== null;
 	}
 
-	public static function query(SqlQuery $sqlQuery)
+	public static function exec(SqlStatement $stmt)
 	{
 		if (!self::connected())
 			throw new Exception('Database is not connected');
-		$statement = self::makeStatement($sqlQuery);
+		$statement = self::makeStatement($stmt);
 		try
 		{
 			$statement->execute();
 		}
 		catch (Exception $e)
 		{
-			throw new Exception('Problem with ' . $sqlQuery->getSql() . ' (' . $e->getMessage() . ')');
+			throw new Exception('Problem with ' . $stmt->getAsString() . ' (' . $e->getMessage() . ')');
 		}
-		self::$queries []= $sqlQuery;
+		self::$queries []= $stmt;
 		return $statement;
 	}
 
-	public static function fetchOne(SqlQuery $sqlQuery)
+	public static function fetchOne(SqlStatement $stmt)
 	{
-		$statement = self::query($sqlQuery);
+		$statement = self::exec($stmt);
 		return $statement->fetch();
 	}
 
-	public static function fetchAll(SqlQuery $sqlQuery)
+	public static function fetchAll(SqlStatement $stmt)
 	{
-		$statement = self::query($sqlQuery);
+		$statement = self::exec($stmt);
 		return $statement->fetchAll();
 	}
 

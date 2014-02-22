@@ -20,8 +20,10 @@ class PropertyModel implements IModel
 		{
 			self::$loaded = true;
 			self::$allProperties = [];
-			$query = (new SqlQuery())->select('*')->from('property');
-			foreach (Database::fetchAll($query) as $row)
+			$stmt = new SqlSelectStatement();
+			$stmt ->setColumn('*');
+			$stmt ->setTable('property');
+			foreach (Database::fetchAll($stmt) as $row)
 				self::$allProperties[$row['prop_id']] = $row['value'];
 		}
 	}
@@ -39,33 +41,26 @@ class PropertyModel implements IModel
 		self::loadIfNecessary();
 		Database::transaction(function() use ($propertyId, $value)
 		{
-			$row = Database::query((new SqlQuery)
-				->select('id')
-				->from('property')
-				->where('prop_id = ?')
-				->put($propertyId));
-
-			$query = (new SqlQuery);
+			$stmt = new SqlSelectStatement();
+			$stmt->setColumn('id');
+			$stmt->setTable('property');
+			$stmt->setCriterion(new SqlEqualsOperator('prop_id', new SqlBinding($propertyId)));
+			$row = Database::fetchOne($stmt);
 
 			if ($row)
 			{
-				$query
-					->update('property')
-					->set('value = ?')
-					->put($value)
-					->where('prop_id = ?')
-					->put($propertyId);
+				$stmt = new SqlUpdateStatement();
+				$stmt->setCriterion(new SqlEqualsOperator('prop_id', new SqlBinding($propertyId)));
 			}
 			else
 			{
-				$query
-					->insertInto('property')
-					->open()->raw('prop_id, value_id')->close()
-					->open()->raw('?, ?')->close()
-					->put([$propertyId, $value]);
+				$stmt = new SqlInsertStatement();
+				$stmt->setColumn('prop_id', new SqlBinding($propertyId));
 			}
+			$stmt->setTable('property');
+			$stmt->setColumn('value', new SqlBinding($value));
 
-			Database::query($query);
+			Database::exec($stmt);
 
 			self::$allProperties[$propertyId] = $value;
 		});

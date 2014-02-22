@@ -111,22 +111,24 @@ class UserEntity extends AbstractEntity
 
 	public function hasFavorited($post)
 	{
-		$query = (new SqlQuery)
-			->select('count(1)')->as('count')
-			->from('favoritee')
-			->where('user_id = ?')->put($this->id)
-			->and('post_id = ?')->put($post->id);
-		return Database::fetchOne($query)['count'] == 1;
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setTable('favoritee');
+		$stmt->setCriterion((new SqlConjunction)
+			->add(new SqlEqualsOperator('user_id', new SqlBinding($this->id)))
+			->add(new SqlEqualsOperator('post_id', new SqlBinding($post->id))));
+		return Database::fetchOne($stmt)['count'] == 1;
 	}
 
 	public function getScore($post)
 	{
-		$query = (new SqlQuery)
-			->select('score')
-			->from('post_score')
-			->where('user_id = ?')->put($this->id)
-			->and('post_id = ?')->put($post->id);
-		$row = Database::fetchOne($query);
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn('score');
+		$stmt->setTable('post_score');
+		$stmt->setCriterion((new SqlConjunction)
+			->add(new SqlEqualsOperator('user_id', new SqlBinding($this->id)))
+			->add(new SqlEqualsOperator('post_id', new SqlBinding($post->id))));
+		$row = Database::fetchOne($stmt);
 		if ($row)
 			return intval($row['score']);
 		return null;
@@ -134,28 +136,28 @@ class UserEntity extends AbstractEntity
 
 	public function getFavoriteCount()
 	{
-		$sqlQuery = (new SqlQuery)
-			->select('count(1)')->as('count')
-			->from('favoritee')
-			->where('user_id = ?')->put($this->id);
-		return Database::fetchOne($sqlQuery)['count'];
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setTable('favoritee');
+		$stmt->setCriterion(new SqlEqualsOperator('user_id', new SqlBinding($this->id)));
+		return Database::fetchOne($stmt)['count'];
 	}
 
 	public function getCommentCount()
 	{
-		$sqlQuery = (new SqlQuery)
-			->select('count(1)')->as('count')
-			->from('comment')
-			->where('commenter_id = ?')->put($this->id);
-		return Database::fetchOne($sqlQuery)['count'];
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setTable('comment');
+		$stmt->setCriterion(new SqlEqualsOperator('commenter_id', new SqlBinding($this->id)));
+		return Database::fetchOne($stmt)['count'];
 	}
 
 	public function getPostCount()
 	{
-		$sqlQuery = (new SqlQuery)
-			->select('count(1)')->as('count')
-			->from('post')
-			->where('uploader_id = ?')->put($this->id);
-		return Database::fetchOne($sqlQuery)['count'];
+		$stmt = new SqlSelectStatement();
+		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setTable('post');
+		$stmt->setCriterion(new SqlEqualsOperator('uploader_id', new SqlBinding($this->id)));
+		return Database::fetchOne($stmt)['count'];
 	}
 }
