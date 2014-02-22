@@ -12,6 +12,8 @@
 			<div class="input-wrapper"><input class="autocomplete" type="text" name="tag" id="mass-tag-tag" value="<?php echo isset($this->context->massTagTag) ? htmlspecialchars($this->context->massTagTag) : '' ?>"/></div>
 		</div>
 
+		<input type="hidden" name="old-page" value="<?php echo isset($this->context->transport->paginator) ? htmlspecialchars($this->context->transport->paginator->page) : '' ?>"/>
+		<input type="hidden" name="old-query" value="<?php echo isset($this->context->massTagQuery) ? htmlspecialchars($this->context->massTagQuery) : '' ?>"/>
 		<input type="hidden" name="submit" value="1"/>
 
 		<div class="form-row">

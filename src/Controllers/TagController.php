@@ -103,13 +103,19 @@ class TagController
 		PrivilegesHelper::confirmWithException(Privilege::MassTag);
 		if (InputHelper::get('submit'))
 		{
+			$suppliedOldPage = intval(InputHelper::get('old-page'));
+			$suppliedOldQuery = InputHelper::get('old-query');
 			$suppliedQuery = InputHelper::get('query');
-			if (!$suppliedQuery)
-				$suppliedQuery = ' ';
 			$suppliedTag = InputHelper::get('tag');
-			if (!empty($suppliedTag))
-				$suppliedTag = TagModel::validateTag($suppliedTag);
-			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('post', 'list', ['source' => 'mass-tag', 'query' => $suppliedQuery, 'additionalInfo' => $suppliedTag]));
+
+			$params = [
+				'source' => 'mass-tag',
+				'query' => $suppliedQuery ?: ' ',
+				'additionalInfo' => $suppliedTag ? TagModel::validateTag($suppliedTag) : '',
+			];
+			if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
+				$params['page'] = $suppliedOldPage;
+			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('post', 'list', $params));
 		}
 	}
 }
