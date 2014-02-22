@@ -15,10 +15,13 @@
 
 <?php elseif ($post->type ==  PostType::Flash): ?>
 
-	<iframe width="<?php echo $post->imageWidth ?>" height="<?php echo $post->imageHeight  ?>" src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"> </iframe>
+	<object type="<?php echo $post->mimeType ?>" width="<?php echo $post->imageWidth ?>" height="<?php echo $post->imageHeight ?>" data="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+		<param name="movie" value="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"/>
+		<param name="wmode" value="opaque"/>
+	</object>
 
 <?php elseif ($post->type == PostType::Youtube): ?>
 
-	<iframe style="width: 800px; height: 600px; border: 0;" src="//www.youtube.com/embed/<?php echo $post->fileHash ?>" allowfullscreen></iframe>
+	<iframe style="width: 800px; height: 600px; border: 0;" src="//www.youtube.com/embed/<?php echo $post->fileHash ?>?wmode=opaque" allowfullscreen></iframe>
 
 <?php endif ?>
