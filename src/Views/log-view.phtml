@@ -13,7 +13,7 @@ LayoutHelper::setSubTitle('logs (' . $name . ')');
 	<form action="<?php echo \Chibi\UrlHelper::route('log', 'view', ['name' => $this->context->transport->name]) ?>" method="get">
 		Keep only lines that contain:
 
-		<input type="text" name="query" value="<?php echo $this->context->transport->filter ?>" placeholder="any text&hellip;"/>
+		<input type="text" name="query" value="<?php echo htmlspecialchars($this->context->transport->filter) ?>" placeholder="any text&hellip;"/>
 	</form>
 
 	<div class="paginator-content">

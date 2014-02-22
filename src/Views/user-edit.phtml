@@ -10,25 +10,25 @@
 	<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 		<div class="form-row nickname">
 			<label for="name">Name:</label>
-			<div class="input-wrapper"><input type="text" name="name" id="name" placeholder="New name&hellip;" value="<?php echo $this->context->suppliedName ?>"/></div>
+			<div class="input-wrapper"><input type="text" name="name" id="name" placeholder="New name&hellip;" value="<?php echo htmlspecialchars($this->context->suppliedName) ?>"/></div>
 		</div>
 	<?php endif ?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserEmail, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 		<div class="form-row email">
 			<label for="name">E-mail:</label>
-			<div class="input-wrapper"><input type="text" name="email" id="email" placeholder="New e-mail&hellip;" value="<?php echo $this->context->suppliedEmail ?>"/></div>
+			<div class="input-wrapper"><input type="text" name="email" id="email" placeholder="New e-mail&hellip;" value="<?php echo htmlspecialchars($this->context->suppliedEmail) ?>"/></div>
 		</div>
 	<?php endif ?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserPassword, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 		<div class="form-row password1">
 			<label for="password1">New password:</label>
-			<div class="input-wrapper"><input type="password" name="password1" id="password1" placeholder="New password&hellip;" value="<?php echo $this->context->suppliedPassword1 ?>"/></div>
+			<div class="input-wrapper"><input type="password" name="password1" id="password1" placeholder="New password&hellip;" value="<?php echo htmlspecialchars($this->context->suppliedPassword1) ?>"/></div>
 		</div>
 		<div class="form-row password2">
 			<label for="password2"></label>
-			<div class="input-wrapper"><input type="password" name="password2" id="password2" placeholder="New password&hellip; (repeat)" value="<?php echo $this->context->suppliedPassword2 ?>"/></div>
+			<div class="input-wrapper"><input type="password" name="password2" id="password2" placeholder="New password&hellip; (repeat)" value="<?php echo htmlspecialchars($this->context->suppliedPassword2) ?>"/></div>
 		</div>
 	<?php endif ?>
 

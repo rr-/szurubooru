@@ -17,15 +17,15 @@
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 		<div class="form-row tags">
 			<label for="tags">Tags:</label>
-			<div class="input-wrapper"><input type="text" name="tags" id="tags" placeholder="enter some tags&hellip;" value="<?php echo join(',', array_map(function($tag) { return $tag->name; }, $this->context->transport->post->getTags())) ?>"/></div>
+			<div class="input-wrapper"><input type="text" name="tags" id="tags" placeholder="enter some tags&hellip;" value="<?php echo join(',', array_map(function($tag) { return htmlspecialchars($tag->name); }, $this->context->transport->post->getTags())) ?>"/></div>
 		</div>
-		<input type="hidden" name="edit-token" id="edit-token" value="<?php echo $this->context->transport->post->getEditToken() ?>"/>
+		<input type="hidden" name="edit-token" id="edit-token" value="<?php echo htmlspecialchars($this->context->transport->post->getEditToken()) ?>"/>
 	<?php endif ?>
 
 	<?php if (PrivilegesHelper::confirm(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 		<div class="form-row source">
 			<label for="source">Source:</label>
-			<div class="input-wrapper"><input type="text" name="source" id="source" value="<?php echo $this->context->transport->post->source ?>"/></div>
+			<div class="input-wrapper"><input type="text" name="source" id="source" value="<?php echo htmlspecialchars($this->context->transport->post->source) ?>"/></div>
 		</div>
 	<?php endif ?>
 
