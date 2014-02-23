@@ -23,38 +23,26 @@ class PostSearchService extends AbstractSearchService
 			Database::exec($stmt);
 
 			$stmt = new SqlSelectStatement();
-			$stmt->setColumn('post_id');
 			$stmt->setTable('post_search');
-			$stmt->setCriterion(
-				new SqlEqualsOrLesserOperator(
-					new SqlAbsOperator(
-						new SqlSubtractionOperator('id', (new SqlSelectStatement)
-							->setTable('post_search')
-							->setColumn('id')
-							->setCriterion(new SqlEqualsOperator('post_id', new SqlBinding($postId))))),
-					1));
-			$rows = Database::fetchAll($stmt);
-			$ids = array_map(function($row) { return $row['post_id']; }, $rows);
+			$stmt->setColumn('id');
+			$stmt->setCriterion(new SqlEqualsOperator('post_id', new SqlBinding($postId)));
+			$rowId = Database::fetchOne($stmt)['id'];
 
-			if (count($ids) == 1 or // no prev and no next post
-				count($ids) == 0) // even the post we are looking at is hidden from normal search for whatever reason
-			{
+			//it's possible that given post won't show in search results:
+			//it can be hidden, it can have prohibited safety etc.
+			if (!$rowId)
 				return [null, null];
-			}
-			elseif (count($ids) == 2) // no prev or no next post
-			{
-				return $ids[0] == $postId
-					? [$ids[1], null]
-					: [null, $ids[0]];
-			}
-			elseif (count($ids) == 3) // both prev and next post
-			{
-				return [$ids[2], $ids[0]];
-			}
-			else
-			{
-				throw new Exception('Unexpected result count (ids: ' . join(',', $ids) . ')');
-			}
+
+			$rowId = intval($rowId);
+			$stmt->setColumn('post_id');
+
+			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($rowId - 1)));
+			$nextPostId = Database::fetchOne($stmt)['post_id'];
+
+			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($rowId + 1)));
+			$prevPostId = Database::fetchOne($stmt)['post_id'];
+
+			return [$prevPostId, $nextPostId];
 		});
 	}
 
