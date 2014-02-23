@@ -346,6 +346,7 @@ class PostController
 			if (!$this->context->loggedIn)
 				throw new SimpleException('Not logged in');
 
+			UserModel::updateUserScore($this->context->user, $post, 1);
 			UserModel::addToUserFavorites($this->context->user, $post);
 			StatusHelper::success();
 		}
