@@ -14,14 +14,9 @@ abstract class SqlExpression
 
 	public function getBindings()
 	{
-		$stack = array_merge([], $this->subExpressions);
 		$bindings = $this->bindings;
-		while (!empty($stack))
-		{
-			$item = array_pop($stack);
-			$stack = array_merge($stack, $item->subExpressions);
-			$bindings = array_merge($bindings, $item->bindings);
-		}
+		foreach ($this->subExpressions as $subExpression)
+			$bindings = array_merge($bindings, $subExpression->getBindings());
 		return $bindings;
 	}
 
@@ -29,8 +24,10 @@ abstract class SqlExpression
 	{
 		if ($object instanceof SqlBinding)
 		{
-			$this->bind($object->getName(), $object->getValue());
-			return new SqlStringExpression($object->getName());
+			$expr =  new SqlStringExpression($object->getName());
+			$expr->bind($object->getName(), $object->getValue());
+			$this->subExpressions []= $expr;
+			return $expr;
 		}
 		else if ($object instanceof SqlExpression)
 		{

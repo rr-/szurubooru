@@ -24,19 +24,21 @@ class Database
 		}
 	}
 
-	protected static function makeStatement(SqlStatement $stmt)
+	protected static function convertStatement(SqlStatement $stmt)
 	{
 		try
 		{
-			$pdoStatement = self::$pdo->prepare($stmt->getAsString());
+			$stmtText = $stmt->getAsString();
+			$stmtPdo = self::$pdo->prepare($stmtText);
 			foreach ($stmt->getBindings() as $key => $value)
-				$pdoStatement->bindValue(is_numeric($key) ? $key + 1 : ltrim($key, ':'), $value);
+				if (strpos($stmtText, $key) !== false)
+					$stmtPdo->bindValue($key, $value);
 		}
 		catch (Exception $e)
 		{
-			throw new Exception('Problem with ' . $stmt->getAsString() . ' (' . $e->getMessage() . ')');
+			throw new Exception('Problem with ' . $stmt->getAsString() . ' creation (' . $e->getMessage() . ')');
 		}
-		return $pdoStatement;
+		return $stmtPdo;
 	}
 
 	public static function disconnect()
@@ -53,29 +55,29 @@ class Database
 	{
 		if (!self::connected())
 			throw new Exception('Database is not connected');
-		$statement = self::makeStatement($stmt);
+		$stmtPdo = self::convertStatement($stmt);
 		try
 		{
-			$statement->execute();
+			$stmtPdo->execute();
 		}
 		catch (Exception $e)
 		{
-			throw new Exception('Problem with ' . $stmt->getAsString() . ' (' . $e->getMessage() . ')');
+			throw new Exception('Problem with ' . $stmt->getAsString() . ' execution (' . $e->getMessage() . ')');
 		}
 		self::$queries []= $stmt;
-		return $statement;
+		return $stmtPdo;
 	}
 
 	public static function fetchOne(SqlStatement $stmt)
 	{
-		$statement = self::exec($stmt);
-		return $statement->fetch();
+		$stmtPdo = self::exec($stmt);
+		return $stmtPdo->fetch();
 	}
 
 	public static function fetchAll(SqlStatement $stmt)
 	{
-		$statement = self::exec($stmt);
-		return $statement->fetchAll();
+		$stmtPdo = self::exec($stmt);
+		return $stmtPdo->fetchAll();
 	}
 
 	public static function getLogs()
