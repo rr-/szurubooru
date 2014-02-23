@@ -8,27 +8,29 @@ class CommentController
 	*/
 	public function listAction($page)
 	{
-		$page = intval($page);
-		$commentsPerPage = intval($this->config->comments->commentsPerPage);
 		PrivilegesHelper::confirmWithException(Privilege::ListComments);
 
-		$page = max(1, $page);
-		$comments = CommentSearchService::getEntities(null, $commentsPerPage, $page);
-		$commentCount = CommentSearchService::getEntityCount(null);
-		$pageCount = ceil($commentCount / $commentsPerPage);
-		CommentModel::preloadCommenters($comments);
-		CommentModel::preloadPosts($comments);
-		$posts = array_map(function($comment) { return $comment->getPost(); }, $comments);
+		$page = max(1, intval($page));
+		$commentsPerPage = intval($this->config->comments->commentsPerPage);
+		$searchQuery = 'comment_min:1 order:comment_date,desc';
+
+		$posts = PostSearchService::getEntities($searchQuery, $commentsPerPage, $page);
+		$postCount = PostSearchService::getEntityCount($searchQuery);
+		$pageCount = ceil($postCount / $commentsPerPage);
 		PostModel::preloadTags($posts);
+		$comments = [];
+		foreach ($posts as $post)
+			$comments = array_merge($comments, $post->getComments());
+		CommentModel::preloadCommenters($comments);
 
 		$this->context->postGroups = true;
+		$this->context->transport->posts = $posts;
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
 		$this->context->transport->paginator->pageCount = $pageCount;
-		$this->context->transport->paginator->entityCount = $commentCount;
-		$this->context->transport->paginator->entities = $comments;
+		$this->context->transport->paginator->entityCount = $postCount;
+		$this->context->transport->paginator->entities = $posts;
 		$this->context->transport->paginator->params = func_get_args();
-		$this->context->transport->comments = $comments;
 	}
 
 

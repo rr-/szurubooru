@@ -225,6 +225,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif (in_array($orderByString, ['tag', 'tags', 'tagcount', 'tag_count']))
 			$orderColumn = 'tag_count';
 
+		elseif (in_array($orderByString, ['commentdate', 'comment_date']))
+			$orderColumn = 'comment_date';
+
 		elseif ($orderByString == 'random')
 		{
 			//seeding works like this: if you visit anything

@@ -26,3 +26,8 @@
 .small-screen .comment-group .comments {
 	margin-left: 0;
 }
+
+.hellip {
+	margin-bottom: 2em;
+	display: inline-block;
+}

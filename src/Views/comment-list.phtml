@@ -2,7 +2,7 @@
 LayoutHelper::setSubTitle('comments');
 ?>
 
-<?php if (empty($this->context->transport->comments)): ?>
+<?php if (empty($this->context->transport->posts)): ?>
 	<p class="alert alert-warning">No comments to show.</p>
 <?php else: ?>
 	<?php
@@ -14,35 +14,24 @@ LayoutHelper::setSubTitle('comments');
 
 	<div class="comments-wrapper">
 		<div class="comments paginator-content">
-			<?php
-				$groups = [];
-				$posts = [];
-				$currentGroupPostId = null;
-				$currentGroup = null;
-				foreach ($this->context->transport->comments as $comment)
-				{
-					if ($comment->postId != $currentGroupPostId)
-					{
-						unset($currentGroup);
-						$currentGroup = [];
-						$currentGroupPostId = $comment->postId;
-						$posts[$comment->postId] = $comment->getPost();
-						$groups[] = &$currentGroup;
-					}
-					$currentGroup []= $comment;
-				}
-			?>
-			<?php foreach ($groups as $group): ?>
+			<?php foreach ($this->context->transport->posts as $post): ?>
 				<div class="comment-group">
 					<div class="post-wrapper">
-						<?php $this->context->post = $posts[reset($group)->postId] ?>
+						<?php $this->context->post = $post ?>
 						<?php echo $this->renderFile('post-small') ?>
 					</div>
 					<div class="comments">
-						<?php foreach ($group as $comment): ?>
+						<?php $comments = array_reverse($post->getComments()) ?>
+						<?php foreach (array_slice($comments, 0, $this->config->comments->maxCommentsInList) as $comment): ?>
 							<?php $this->context->comment = $comment ?>
 							<?php echo $this->renderFile('comment-small') ?>
 						<?php endforeach ?>
+
+						<?php if (count($comments) > $this->config->comments->maxCommentsInList): ?>
+							<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+								<span class="hellip">(more&hellip;)</span>
+							</a>
+						<?php endif ?>
 					</div>
 					<div class="clear"></div>
 				</div>
