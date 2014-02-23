@@ -8,9 +8,21 @@ abstract class AbstractSearchService
 		return $modelClassName;
 	}
 
-	protected static function decorate(SqlSelectStatement $stmt, $searchQuery)
+	protected static function getParserClassName()
 	{
-		throw new NotImplementedException();
+		$searchServiceClassName = get_called_class();
+		$parserClassName = str_replace('SearchService', 'SearchParser', $searchServiceClassName);
+		return $parserClassName;
+	}
+
+	protected static function decorateParser(SqlSelectStatement $stmt, $searchQuery)
+	{
+		$parserClassName = self::getParserClassName();
+		(new $parserClassName)->decorate($stmt, $searchQuery);
+	}
+
+	protected static function decorateCustom(SqlSelectStatement $stmt)
+	{
 	}
 
 	protected static function decoratePager(SqlSelectStatement $stmt, $perPage, $page)
@@ -29,11 +41,12 @@ abstract class AbstractSearchService
 
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn($table . '.*');
-		static::decorate($stmt, $searchQuery);
+		$stmt->setTable($table);
+		static::decorateParser($stmt, $searchQuery);
+		static::decorateCustom($stmt);
 		static::decoratePager($stmt, $perPage, $page);
 
-		$rows = Database::fetchAll($stmt);
-		return $rows;
+		return Database::fetchAll($stmt);
 	}
 
 	public static function getEntities($searchQuery, $perPage = null, $page = 1)
@@ -49,7 +62,9 @@ abstract class AbstractSearchService
 		$table = $modelClassName::getTableName();
 
 		$innerStmt = new SqlSelectStatement();
-		static::decorate($innerStmt, $searchQuery);
+		$innerStmt->setTable($table);
+		static::decorateParser($innerStmt, $searchQuery);
+		static::decorateCustom($innerStmt);
 
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));

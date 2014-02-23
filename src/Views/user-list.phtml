@@ -9,25 +9,25 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 <nav class="sort-styles">
 	<ul>
 		<?php
-		$sortStyles =
+		$filters =
 		[
-			'alpha,asc' => 'Sort A&rarr;Z',
-			'alpha,desc' => 'Sort Z&rarr;A',
-			'date,asc' => 'Sort old&rarr;new',
-			'date,desc' => 'Sort new&rarr;old',
+			'order:alpha,asc' => 'Sort A&rarr;Z',
+			'order:alpha,desc' => 'Sort Z&rarr;A',
+			'order:date,asc' => 'Sort old&rarr;new',
+			'order:date,desc' => 'Sort new&rarr;old',
 		];
 
 		if ($this->config->registration->staffActivation)
-			$sortStyles['pending'] = 'Pending staff review';
+			$filters['pending'] = 'Pending staff review';
 		?>
 
-		<?php foreach ($sortStyles as $key => $text): ?>
-			<?php if ($this->context->sortStyle == $key): ?>
+		<?php foreach ($filters as $key => $text): ?>
+			<?php if ($this->context->filter == $key): ?>
 				<li class="active">
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?php echo \Chibi\UrlHelper::route('user', 'list', ['sortStyle' => $key]) ?>"><?php echo $text ?></a>
+				<a href="<?php echo \Chibi\UrlHelper::route('user', 'list', ['filter' => $key]) ?>"><?php echo $text ?></a>
 			</li>
 		<?php endforeach ?>
 	</ul>

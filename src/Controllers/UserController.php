@@ -100,35 +100,32 @@ class UserController
 	/**
 	* @route /users
 	* @route /users/{page}
-	* @route /users/{sortStyle}
-	* @route /users/{sortStyle}/{page}
-	* @validate sortStyle alpha|alpha,asc|alpha,desc|date,asc|date,desc|pending
+	* @route /users/{filter}
+	* @route /users/{filter}/{page}
+	* @validate filter [a-zA-Z\32:,_-]+
 	* @validate page [0-9]+
 	*/
-	public function listAction($sortStyle, $page)
+	public function listAction($filter, $page)
 	{
-		if ($sortStyle == '' or $sortStyle == 'alpha')
-			$sortStyle = 'alpha,asc';
-		if ($sortStyle == 'date')
-			$sortStyle = 'date,asc';
-
-		$page = intval($page);
-		$usersPerPage = intval($this->config->browsing->usersPerPage);
 		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
 
-		$page = max(1, $page);
-		$users = UserSearchService::getEntities($sortStyle, $usersPerPage, $page);
-		$userCount = UserSearchService::getEntityCount($sortStyle);
-		$pageCount = ceil($userCount / $usersPerPage);
+		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
+		$page = max(1, intval($page));
+		$usersPerPage = intval($this->config->browsing->usersPerPage);
 
-		$this->context->sortStyle = $sortStyle;
+		$users = UserSearchService::getEntities($suppliedFilter, $usersPerPage, $page);
+		$userCount = UserSearchService::getEntityCount($suppliedFilter);
+		$pageCount = ceil($userCount / $usersPerPage);
+		$page = min($pageCount, $page);
+
+		$this->context->filter = $suppliedFilter;
+		$this->context->transport->users = $users;
 		$this->context->transport->paginator = new StdClass;
 		$this->context->transport->paginator->page = $page;
 		$this->context->transport->paginator->pageCount = $pageCount;
 		$this->context->transport->paginator->entityCount = $userCount;
 		$this->context->transport->paginator->entities = $users;
 		$this->context->transport->paginator->params = func_get_args();
-		$this->context->transport->users = $users;
 	}
 
 

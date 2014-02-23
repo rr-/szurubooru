@@ -12,8 +12,8 @@ class TagController
 	public function listAction($filter = null, $page = 1)
 	{
 		$this->context->viewName = 'tag-list-wrapper';
-
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
+
 		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
 		$page = max(1, intval($page));
 		$tagsPerPage = intval($this->config->browsing->tagsPerPage);
@@ -22,6 +22,7 @@ class TagController
 		$tagCount = TagSearchService::getEntityCount($suppliedFilter);
 		$pageCount = ceil($tagCount / $tagsPerPage);
 		$page = min($pageCount, $page);
+
 		$this->context->filter = $suppliedFilter;
 		$this->context->transport->tags = $tags;
 

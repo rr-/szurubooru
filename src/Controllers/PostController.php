@@ -423,7 +423,6 @@ class PostController
 		PrivilegesHelper::confirmWithException(Privilege::ViewPost);
 		PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
 
-		PostSearchService::enableTokenLimit(false);
 		try
 		{
 			$this->context->transport->lastSearchQuery = InputHelper::get('last-search-query');
@@ -439,7 +438,6 @@ class PostController
 				PostSearchService::getPostIdsAround(
 					$this->context->transport->lastSearchQuery, $id);
 		}
-		PostSearchService::enableTokenLimit(true);
 
 		$favorite = $this->context->user->hasFavorited($post);
 		$score = $this->context->user->getScore($post);
