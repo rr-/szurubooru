@@ -8,9 +8,6 @@
 			'order:popularity,desc' => 'Often used first',
 			'order:popularity,asc' => 'Rarely used first',
 		];
-
-		if ($this->config->registration->staffActivation)
-			$sortStyles['pending'] = 'Pending staff review';
 		?>
 
 		<?php foreach ($filters as $key => $text): ?>
