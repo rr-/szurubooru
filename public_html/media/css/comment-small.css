@@ -49,6 +49,8 @@
 }
 
 .comment .edit a:hover,
-.comment .delete a:hover {
+.comment .delete a:hover,
+.comment .edit a:focus,
+.comment .delete a:focus {
 	color: red;
 }
