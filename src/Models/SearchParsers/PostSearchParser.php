@@ -54,7 +54,7 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected static function getCriterionForComplexToken($key, $value)
 	{
-		if (in_array($key, ['id']))
+		if (in_array($key, ['id', 'ids']))
 		{
 			$ids = preg_split('/[;,]/', $value);
 			$ids = array_map('intval', $ids);
@@ -89,43 +89,43 @@ class PostSearchParser extends AbstractSearchParser
 			return new SqlEqualsOperator('uploader_id', new SqlBinding($user->id));
 		}
 
-		elseif (in_array($key, ['idmin']))
+		elseif (in_array($key, ['idmin', 'id_min']))
 			return new SqlEqualsOrGreaterOperator('id', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['idmax']))
+		elseif (in_array($key, ['idmax', 'id_max']))
 			return new SqlEqualsOrLesserOperator('id', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['scoremin']))
+		elseif (in_array($key, ['scoremin', 'score_min']))
 			return new SqlEqualsOrGreaterOperator('score', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['scoremax']))
+		elseif (in_array($key, ['scoremax', 'score_max']))
 			return new SqlEqualsOrLesserOperator('score', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['tagmin']))
+		elseif (in_array($key, ['tagmin', 'tag_min']))
 			return new SqlEqualsOrGreaterOperator('tag_count', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['tagmax']))
+		elseif (in_array($key, ['tagmax', 'tag_max']))
 			return new SqlEqualsOrLesserOperator('tag_count', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['favmin']))
+		elseif (in_array($key, ['favmin', 'fav_min']))
 			return new SqlEqualsOrGreaterOperator('fav_count', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['favmax']))
+		elseif (in_array($key, ['favmax', 'fav_max']))
 			return new SqlEqualsOrLesserOperator('fav_count', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['commentmin']))
+		elseif (in_array($key, ['commentmin', 'comment_min']))
 			return new SqlEqualsOrGreaterOperator('comment_count', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['commentmax']))
+		elseif (in_array($key, ['commentmax', 'comment_max']))
 			return new SqlEqualsOrLesserOperator('comment_count', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['datemin', 'date']))
+		elseif (in_array($key, ['datemin', 'date_min', 'date']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
 			return new SqlEqualsOrGreaterOperator('upload_date', new SqlBinding($dateMin));
 		}
 
-		elseif (in_array($key, ['datemax', 'date']))
+		elseif (in_array($key, ['datemax', 'date_max', 'date']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
 			return new SqlEqualsOrLesserOperator('upload_date', new SqlBinding($dateMax));
