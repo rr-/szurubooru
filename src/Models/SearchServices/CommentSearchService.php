@@ -7,7 +7,10 @@ class CommentSearchService extends AbstractSearchService
 		$stmt->addInnerJoin('post', new SqlEqualsOperator('post_id', 'post.id'));
 
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		$stmt->setCriterion(SqlInOperator::fromArray('post.safety', SqlBinding::fromArray($allowedSafety)));
+		$stmt->setCriterion(new SqlConjunction());
+		$stmt->getCriterion()->add(SqlInOperator::fromArray('post.safety', SqlBinding::fromArray($allowedSafety)));
+		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
+			$stmt->getCriterion()->add(new SqlNegationOperator(new SqlStringExpression('hidden')));
 
 		$stmt->addOrderBy('comment.id', SqlSelectStatement::ORDER_DESC);
 	}
