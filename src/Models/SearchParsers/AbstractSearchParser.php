@@ -79,7 +79,7 @@ abstract class AbstractSearchParser
 		}
 
 		if (!$this->processOrderToken($orderByString, $orderDir))
-			throw new SimpleException('Invalid search order type: ' . $orderbyString);
+			throw new SimpleException('Invalid search order type: ' . $orderByString);
 	}
 
 	protected function processComplexToken($key, $value, $neg)

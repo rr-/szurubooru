@@ -40,7 +40,7 @@ class PostSearchParser extends AbstractSearchParser
 			$this->statement->getCriterion()->add($operator);
 		}
 
-		$this->statement->addOrderBy('id',
+		$this->statement->addOrderBy('post.id',
 			empty($this->statement->getOrderBy())
 				? SqlSelectStatement::ORDER_DESC
 				: $this->statement->getOrderBy()[0][1]);
@@ -58,7 +58,7 @@ class PostSearchParser extends AbstractSearchParser
 		{
 			$ids = preg_split('/[;,]/', $value);
 			$ids = array_map('intval', $ids);
-			return SqlInOperator::fromArray('id', SqlBinding::fromArray($ids));
+			return SqlInOperator::fromArray('post.id', SqlBinding::fromArray($ids));
 		}
 
 		elseif (in_array($key, ['fav', 'favs']))
