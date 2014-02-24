@@ -7,7 +7,7 @@ class SqlSelectStatement extends SqlStatement
 	protected $columns = null;
 	protected $source = null;
 	protected $innerJoins = [];
-	protected $outerJoins = [];
+	protected $leftOuterJoins = [];
 	protected $criterion = null;
 	protected $orderBy = [];
 	protected $limit = null;
@@ -68,10 +68,26 @@ class SqlSelectStatement extends SqlStatement
 		return $this;
 	}
 
-	public function addOuterJoin($table, $expression)
+	public function addLeftOuterJoin($table, $expression)
 	{
-		$this->innerJoins []= [$table, $this->attachExpression($expression)];
+		$this->leftOuterJoins []= [$table, $this->attachExpression($expression)];
 		return $this;
+	}
+
+	public function getJoinedTables()
+	{
+		$tables = [];
+		foreach (array_merge($this->innerJoins, $this->leftOuterJoins) as $join)
+		{
+			list ($table, $joinExpression) = $join;
+			$tables []= $table;
+		}
+		return array_unique($tables);
+	}
+
+	public function isTableJoined($table)
+	{
+		return in_array($table, $this->getJoinedTables());
 	}
 
 	public function getCriterion()
@@ -123,7 +139,7 @@ class SqlSelectStatement extends SqlStatement
 		return $this;
 	}
 
-	public function groupBy($groupBy)
+	public function setGroupBy($groupBy)
 	{
 		$this->groupBy = $this->attachExpression($groupBy);
 	}
@@ -146,10 +162,10 @@ class SqlSelectStatement extends SqlStatement
 			$sql .= ' INNER JOIN ' . $table . ' ON ' . $criterion->getAsString();
 		}
 
-		foreach ($this->outerJoins as $outerJoin)
+		foreach ($this->leftOuterJoins as $outerJoin)
 		{
-			list ($table, $criterion) = $join;
-			$sql .= ' OUTER JOIN ' . $table . ' ON ' . $criterion->getAsString();
+			list ($table, $criterion) = $outerJoin;
+			$sql .= ' LEFT OUTER JOIN ' . $table . ' ON ' . $criterion->getAsString();
 		}
 
 		if (!empty($this->criterion) and !empty($this->criterion->getAsString()))

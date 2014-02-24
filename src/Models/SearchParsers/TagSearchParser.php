@@ -8,7 +8,7 @@ class TagSearchParser extends AbstractSearchParser
 			->addInnerJoin('post_tag', new SqlEqualsOperator('tag.id', 'post_tag.tag_id'))
 			->addInnerJoin('post', new SqlEqualsOperator('post.id', 'post_tag.post_id'))
 			->setCriterion((new SqlConjunction)->add(SqlInOperator::fromArray('safety', SqlBinding::fromArray($allowedSafety))))
-			->groupBy('tag.id');
+			->setGroupBy('tag.id');
 	}
 
 	protected function processSimpleToken($value, $neg)
