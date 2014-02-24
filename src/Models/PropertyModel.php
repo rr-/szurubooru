@@ -44,13 +44,13 @@ class PropertyModel implements IModel
 			$stmt = new SqlSelectStatement();
 			$stmt->setColumn('id');
 			$stmt->setTable('property');
-			$stmt->setCriterion(new SqlEqualsOperator('prop_id', new SqlBinding($propertyId)));
+			$stmt->setCriterion(new SqlEqualsFunctor('prop_id', new SqlBinding($propertyId)));
 			$row = Database::fetchOne($stmt);
 
 			if ($row)
 			{
 				$stmt = new SqlUpdateStatement();
-				$stmt->setCriterion(new SqlEqualsOperator('prop_id', new SqlBinding($propertyId)));
+				$stmt->setCriterion(new SqlEqualsFunctor('prop_id', new SqlBinding($propertyId)));
 			}
 			else
 			{

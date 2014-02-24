@@ -57,10 +57,10 @@ class IndexController
 		$stmt = (new SqlSelectStatement)
 			->setColumn('id')
 			->setTable('post')
-			->setCriterion((new SqlConjunction)
-				->add(new SqlEqualsOperator('type', new SqlBinding(PostType::Image)))
-				->add(new SqlEqualsOperator('safety', new SqlBinding(PostSafety::Safe))))
-			->setOrderBy(new SqlRandomOperator(), SqlSelectStatement::ORDER_DESC);
+			->setCriterion((new SqlConjunctionFunctor)
+				->add(new SqlEqualsFunctor('type', new SqlBinding(PostType::Image)))
+				->add(new SqlEqualsFunctor('safety', new SqlBinding(PostSafety::Safe))))
+			->setOrderBy(new SqlRandomFunctor(), SqlSelectStatement::ORDER_DESC);
 		$featuredPostId = Database::fetchOne($stmt)['id'];
 		if (!$featuredPostId)
 			return null;

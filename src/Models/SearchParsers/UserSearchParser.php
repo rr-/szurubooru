@@ -8,9 +8,9 @@ class UserSearchParser extends AbstractSearchParser
 
 		if ($value == 'pending')
 		{
-			$this->statement->setCriterion((new SqlDisjunction)
-				->add(new SqlIsNullOperator('staff_confirmed'))
-				->add(new SqlEqualsOperator('staff_confirmed', '0')));
+			$this->statement->setCriterion((new SqlDisjunctionFunctor)
+				->add(new SqlIsFunctor('staff_confirmed', new SqlNullFunctor()))
+				->add(new SqlEqualsFunctor('staff_confirmed', '0')));
 			return true;
 		}
 		return false;
@@ -19,7 +19,7 @@ class UserSearchParser extends AbstractSearchParser
 	protected function processOrderToken($orderByString, $orderDir)
 	{
 		if ($orderByString == 'alpha')
-			$this->statement->setOrderBy(new SqlNoCaseOperator('name'), $orderDir);
+			$this->statement->setOrderBy(new SqlNoCaseFunctor('name'), $orderDir);
 		elseif ($orderByString == 'date')
 			$this->statement->setOrderBy('join_date', $orderDir);
 		else

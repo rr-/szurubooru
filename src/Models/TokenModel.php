@@ -22,7 +22,7 @@ implements IModel
 
 			$stmt = new SqlUpdateStatement();
 			$stmt->setTable('user_token');
-			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($token->id)));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($token->id)));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new SqlBinding($val));
@@ -42,7 +42,7 @@ implements IModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setTable('user_token');
 		$stmt->setColumn('*');
-		$stmt->setCriterion(new SqlEqualsOperator('token', new SqlBinding($key)));
+		$stmt->setCriterion(new SqlEqualsFunctor('token', new SqlBinding($key)));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)

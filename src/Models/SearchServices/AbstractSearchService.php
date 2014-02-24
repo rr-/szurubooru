@@ -68,7 +68,7 @@ abstract class AbstractSearchService
 		$innerStmt->resetOrderBy();
 
 		$stmt = new SqlSelectStatement();
-		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setColumn(new SqlAliasFunctor(new SqlCountFunctor('1'), 'count'));
 		$stmt->setSource($innerStmt);
 
 		return Database::fetchOne($stmt)['count'];

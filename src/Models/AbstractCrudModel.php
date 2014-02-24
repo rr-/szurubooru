@@ -24,7 +24,7 @@ abstract class AbstractCrudModel implements IModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable(static::getTableName());
-		$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($key)));
+		$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($key)));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -40,7 +40,7 @@ abstract class AbstractCrudModel implements IModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable(static::getTableName());
-		$stmt->setCriterion(SqlInOperator::fromArray('id', SqlBinding::fromArray(array_unique($ids))));
+		$stmt->setCriterion(SqlInFunctor::fromArray('id', SqlBinding::fromArray(array_unique($ids))));
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
@@ -52,7 +52,7 @@ abstract class AbstractCrudModel implements IModel
 	public static function getCount()
 	{
 		$stmt = new SqlSelectStatement();
-		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
+		$stmt->setColumn(new SqlAliasFunctor(new SqlCountFunctor('1'), 'count'));
 		$stmt->setTable(static::getTableName());
 		return Database::fetchOne($stmt)['count'];
 	}

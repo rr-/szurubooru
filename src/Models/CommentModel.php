@@ -27,7 +27,7 @@ class CommentModel extends AbstractCrudModel
 
 			$stmt = new SqlUpdateStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($comment->id)));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($comment->id)));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new SqlBinding($val));
@@ -42,7 +42,7 @@ class CommentModel extends AbstractCrudModel
 		{
 			$stmt = new SqlDeleteStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($comment->id)));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($comment->id)));
 			Database::exec($stmt);
 		});
 	}
@@ -54,7 +54,7 @@ class CommentModel extends AbstractCrudModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('comment.*');
 		$stmt->setTable('comment');
-		$stmt->setCriterion(new SqlEqualsOperator('post_id', new SqlBinding($key)));
+		$stmt->setCriterion(new SqlEqualsFunctor('post_id', new SqlBinding($key)));
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)

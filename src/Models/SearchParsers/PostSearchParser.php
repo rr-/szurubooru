@@ -8,10 +8,10 @@ class PostSearchParser extends AbstractSearchParser
 		$config = \Chibi\Registry::getConfig();
 
 		$this->tags = [];
-		$this->statement->setCriterion(new SqlConjunction());
+		$this->statement->setCriterion(new SqlConjunctionFunctor());
 
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		$this->statement->getCriterion()->add(SqlInOperator::fromArray('safety', SqlBinding::fromArray($allowedSafety)));
+		$this->statement->getCriterion()->add(SqlInFunctor::fromArray('safety', SqlBinding::fromArray($allowedSafety)));
 
 		if (\Chibi\Registry::getContext()->user->hasEnabledHidingDislikedPosts() and !in_array('special:disliked', array_map('strtolower', $tokens)))
 			$this->processComplexToken('special', 'disliked', true);
@@ -31,12 +31,12 @@ class PostSearchParser extends AbstractSearchParser
 			$tag = TagModel::findByName($tagName);
 			$innerStmt = new SqlSelectStatement();
 			$innerStmt->setTable('post_tag');
-			$innerStmt->setCriterion((new SqlConjunction)
-				->add(new SqlEqualsOperator('post_tag.post_id', 'post.id'))
-				->add(new SqlEqualsOperator('post_tag.tag_id', new SqlBinding($tag->id))));
-			$operator = new SqlExistsOperator($innerStmt);
+			$innerStmt->setCriterion((new SqlConjunctionFunctor)
+				->add(new SqlEqualsFunctor('post_tag.post_id', 'post.id'))
+				->add(new SqlEqualsFunctor('post_tag.tag_id', new SqlBinding($tag->id))));
+			$operator = new SqlExistsFunctor($innerStmt);
 			if ($neg)
-				$operator = new SqlNegationOperator($operator);
+				$operator = new SqlNegationFunctor($operator);
 			$this->statement->getCriterion()->add($operator);
 		}
 
@@ -58,7 +58,7 @@ class PostSearchParser extends AbstractSearchParser
 		{
 			$ids = preg_split('/[;,]/', $value);
 			$ids = array_map('intval', $ids);
-			return SqlInOperator::fromArray('post.id', SqlBinding::fromArray($ids));
+			return SqlInFunctor::fromArray('post.id', SqlBinding::fromArray($ids));
 		}
 
 		elseif (in_array($key, ['fav', 'favs']))
@@ -66,10 +66,10 @@ class PostSearchParser extends AbstractSearchParser
 			$user = UserModel::findByNameOrEmail($value);
 			$innerStmt = (new SqlSelectStatement)
 				->setTable('favoritee')
-				->setCriterion((new SqlConjunction)
-					->add(new SqlEqualsOperator('favoritee.post_id', 'post.id'))
-					->add(new SqlEqualsOperator('favoritee.user_id', new SqlBinding($user->id))));
-			return new SqlExistsOperator($innerStmt);
+				->setCriterion((new SqlConjunctionFunctor)
+					->add(new SqlEqualsFunctor('favoritee.post_id', 'post.id'))
+					->add(new SqlEqualsFunctor('favoritee.user_id', new SqlBinding($user->id))));
+			return new SqlExistsFunctor($innerStmt);
 		}
 
 		elseif (in_array($key, ['comment', 'commenter']))
@@ -77,66 +77,66 @@ class PostSearchParser extends AbstractSearchParser
 			$user = UserModel::findByNameOrEmail($value);
 			$innerStmt = (new SqlSelectStatement)
 				->setTable('comment')
-				->setCriterion((new SqlConjunction)
-					->add(new SqlEqualsOperator('comment.post_id', 'post.id'))
-					->add(new SqlEqualsOperator('comment.commenter_id', new SqlBinding($user->id))));
-			return new SqlExistsOperator($innerStmt);
+				->setCriterion((new SqlConjunctionFunctor)
+					->add(new SqlEqualsFunctor('comment.post_id', 'post.id'))
+					->add(new SqlEqualsFunctor('comment.commenter_id', new SqlBinding($user->id))));
+			return new SqlExistsFunctor($innerStmt);
 		}
 
 		elseif (in_array($key, ['submit', 'upload', 'uploader', 'uploaded']))
 		{
 			$user = UserModel::findByNameOrEmail($value);
-			return new SqlEqualsOperator('uploader_id', new SqlBinding($user->id));
+			return new SqlEqualsFunctor('uploader_id', new SqlBinding($user->id));
 		}
 
 		elseif (in_array($key, ['idmin', 'id_min']))
-			return new SqlEqualsOrGreaterOperator('post.id', new SqlBinding(intval($value)));
+			return new SqlEqualsOrGreaterFunctor('post.id', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['idmax', 'id_max']))
-			return new SqlEqualsOrLesserOperator('post.id', new SqlBinding(intval($value)));
+			return new SqlEqualsOrLesserFunctor('post.id', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['scoremin', 'score_min']))
-			return new SqlEqualsOrGreaterOperator('score', new SqlBinding(intval($value)));
+			return new SqlEqualsOrGreaterFunctor('score', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['scoremax', 'score_max']))
-			return new SqlEqualsOrLesserOperator('score', new SqlBinding(intval($value)));
+			return new SqlEqualsOrLesserFunctor('score', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['tagmin', 'tag_min']))
-			return new SqlEqualsOrGreaterOperator('tag_count', new SqlBinding(intval($value)));
+			return new SqlEqualsOrGreaterFunctor('tag_count', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['tagmax', 'tag_max']))
-			return new SqlEqualsOrLesserOperator('tag_count', new SqlBinding(intval($value)));
+			return new SqlEqualsOrLesserFunctor('tag_count', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['favmin', 'fav_min']))
-			return new SqlEqualsOrGreaterOperator('fav_count', new SqlBinding(intval($value)));
+			return new SqlEqualsOrGreaterFunctor('fav_count', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['favmax', 'fav_max']))
-			return new SqlEqualsOrLesserOperator('fav_count', new SqlBinding(intval($value)));
+			return new SqlEqualsOrLesserFunctor('fav_count', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['commentmin', 'comment_min']))
-			return new SqlEqualsOrGreaterOperator('comment_count', new SqlBinding(intval($value)));
+			return new SqlEqualsOrGreaterFunctor('comment_count', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['commentmax', 'comment_max']))
-			return new SqlEqualsOrLesserOperator('comment_count', new SqlBinding(intval($value)));
+			return new SqlEqualsOrLesserFunctor('comment_count', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['date']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
-			return (new SqlConjunction)
-				->add(new SqlEqualsOrLesserOperator('upload_date', new SqlBinding($dateMax)))
-				->add(new SqlEqualsOrGreaterOperator('upload_date', new SqlBinding($dateMin)));
+			return (new SqlConjunctionFunctor)
+				->add(new SqlEqualsOrLesserFunctor('upload_date', new SqlBinding($dateMax)))
+				->add(new SqlEqualsOrGreaterFunctor('upload_date', new SqlBinding($dateMin)));
 		}
 
 		elseif (in_array($key, ['datemin', 'date_min']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
-			return new SqlEqualsOrGreaterOperator('upload_date', new SqlBinding($dateMin));
+			return new SqlEqualsOrGreaterFunctor('upload_date', new SqlBinding($dateMin));
 		}
 
 		elseif (in_array($key, ['datemax', 'date_max']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
-			return new SqlEqualsOrLesserOperator('upload_date', new SqlBinding($dateMax));
+			return new SqlEqualsOrLesserFunctor('upload_date', new SqlBinding($dateMax));
 		}
 
 		elseif ($key == 'special')
@@ -147,22 +147,22 @@ class PostSearchParser extends AbstractSearchParser
 			{
 				if (!$this->statement->isTableJoined('post_score'))
 				{
-					$this->statement->addLeftOuterJoin('post_score', (new SqlConjunction)
-						->add(new SqlEqualsOperator('post_score.post_id', 'post.id'))
-						->add(new SqlEqualsOperator('post_score.user_id', new SqlBinding($context->user->id))));
+					$this->statement->addLeftOuterJoin('post_score', (new SqlConjunctionFunctor)
+						->add(new SqlEqualsFunctor('post_score.post_id', 'post.id'))
+						->add(new SqlEqualsFunctor('post_score.user_id', new SqlBinding($context->user->id))));
 				}
-				return new SqlEqualsOperator(new SqlIfNullOperator('post_score.score', '0'), '1');
+				return new SqlEqualsFunctor(new SqlIfNullFunctor('post_score.score', '0'), '1');
 			}
 
 			elseif (in_array($value, ['disliked', 'dislikes']))
 			{
 				if (!$this->statement->isTableJoined('post_score'))
 				{
-					$this->statement->addLeftOuterJoin('post_score', (new SqlConjunction)
-						->add(new SqlEqualsOperator('post_score.post_id', 'post.id'))
-						->add(new SqlEqualsOperator('post_score.user_id', new SqlBinding($context->user->id))));
+					$this->statement->addLeftOuterJoin('post_score', (new SqlConjunctionFunctor)
+						->add(new SqlEqualsFunctor('post_score.post_id', 'post.id'))
+						->add(new SqlEqualsFunctor('post_score.user_id', new SqlBinding($context->user->id))));
 				}
-				return new SqlEqualsOperator(new SqlIfNullOperator('post_score.score', '0'), '-1');
+				return new SqlEqualsFunctor(new SqlIfNullFunctor('post_score.score', '0'), '-1');
 			}
 
 			elseif ($value == 'hidden')
@@ -184,7 +184,7 @@ class PostSearchParser extends AbstractSearchParser
 			else
 				throw new SimpleException('Invalid post type: ' . $value);
 
-			return new SqlEqualsOperator('type', new SqlBinding($type));
+			return new SqlEqualsFunctor('type', new SqlBinding($type));
 		}
 
 		return null;
@@ -197,7 +197,7 @@ class PostSearchParser extends AbstractSearchParser
 			return false;
 
 		if ($neg)
-			$criterion = new SqlNegationOperator($criterion);
+			$criterion = new SqlNegationFunctor($criterion);
 
 		$this->statement->getCriterion()->add($criterion);
 		return true;
@@ -239,7 +239,9 @@ class PostSearchParser extends AbstractSearchParser
 			if (!isset($_SESSION['browsing-seed']))
 				$_SESSION['browsing-seed'] = mt_rand();
 			$seed = $_SESSION['browsing-seed'];
-			$orderColumn = 'SUBSTR(post.id * ' . $seed .', LENGTH(post.id) + 2)';
+			$orderColumn = new SqlSubstrFunctor(
+				new SqlMultiplicationFunctor('post.id', $seed),
+				new SqlAdditionFunctor(new SqlLengthFunctor('post.id'), '2'));
 		}
 
 		else

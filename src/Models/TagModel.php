@@ -15,7 +15,7 @@ class TagModel extends AbstractCrudModel
 			$stmt = new SqlUpdateStatement();
 			$stmt->setTable('tag');
 			$stmt->setColumn('name', new SqlBinding($tag->name));
-			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($tag->id)));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($tag->id)));
 
 			Database::exec($stmt);
 		});
@@ -28,12 +28,12 @@ class TagModel extends AbstractCrudModel
 
 		$stmt = new SqlDeleteStatement();
 		$stmt->setTable('post_tag');
-		$stmt->setCriterion(new SqlEqualsOperator('tag_id', $binding));
+		$stmt->setCriterion(new SqlEqualsFunctor('tag_id', $binding));
 		Database::exec($stmt);
 
 		$stmt = new SqlDeleteStatement();
 		$stmt->setTable('tag');
-		$stmt->setCriterion(new SqlEqualsOperator('id', $binding));
+		$stmt->setCriterion(new SqlEqualsFunctor('id', $binding));
 		Database::exec($stmt);
 	}
 
@@ -66,24 +66,24 @@ class TagModel extends AbstractCrudModel
 			$stmt->setColumn('post.id');
 			$stmt->setTable('post');
 			$stmt->setCriterion(
-				(new SqlConjunction)
+				(new SqlConjunctionFunctor)
 				->add(
-					new SqlExistsOperator(
+					new SqlExistsFunctor(
 						(new SqlSelectStatement)
 							->setTable('post_tag')
 							->setCriterion(
-								(new SqlConjunction)
-									->add(new SqlEqualsOperator('post_tag.post_id', 'post.id'))
-									->add(new SqlEqualsOperator('post_tag.tag_id', new SqlBinding($sourceTag->id))))))
+								(new SqlConjunctionFunctor)
+									->add(new SqlEqualsFunctor('post_tag.post_id', 'post.id'))
+									->add(new SqlEqualsFunctor('post_tag.tag_id', new SqlBinding($sourceTag->id))))))
 				->add(
-					new SqlNegationOperator(
-					new SqlExistsOperator(
+					new SqlNegationFunctor(
+					new SqlExistsFunctor(
 						(new SqlSelectStatement)
 							->setTable('post_tag')
 							->setCriterion(
-								(new SqlConjunction)
-									->add(new SqlEqualsOperator('post_tag.post_id', 'post.id'))
-									->add(new SqlEqualsOperator('post_tag.tag_id', new SqlBinding($targetTag->id))))))));
+								(new SqlConjunctionFunctor)
+									->add(new SqlEqualsFunctor('post_tag.post_id', 'post.id'))
+									->add(new SqlEqualsFunctor('post_tag.tag_id', new SqlBinding($targetTag->id))))))));
 			$rows = Database::fetchAll($stmt);
 			$postIds = array_map(function($row) { return $row['id']; }, $rows);
 
@@ -106,8 +106,8 @@ class TagModel extends AbstractCrudModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('tag.*');
 		$stmt->setTable('tag');
-		$stmt->addInnerJoin('post_tag', new SqlEqualsOperator('post_tag.tag_id', 'tag.id'));
-		$stmt->setCriterion(new SqlEqualsOperator('post_tag.post_id', new SqlBinding($key)));
+		$stmt->addInnerJoin('post_tag', new SqlEqualsFunctor('post_tag.tag_id', 'tag.id'));
+		$stmt->setCriterion(new SqlEqualsFunctor('post_tag.post_id', new SqlBinding($key)));
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
@@ -120,7 +120,7 @@ class TagModel extends AbstractCrudModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('tag.*');
 		$stmt->setTable('tag');
-		$stmt->setCriterion(new SqlNoCaseOperator(new SqlEqualsOperator('name', new SqlBinding($key))));
+		$stmt->setCriterion(new SqlNoCaseFunctor(new SqlEqualsFunctor('name', new SqlBinding($key))));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -138,11 +138,11 @@ class TagModel extends AbstractCrudModel
 		$stmt = (new SqlDeleteStatement)
 			->setTable('tag')
 			->setCriterion(
-				new SqlNegationOperator(
-					new SqlExistsOperator(
+				new SqlNegationFunctor(
+					new SqlExistsFunctor(
 						(new SqlSelectStatement)
 							->setTable('post_tag')
-							->setCriterion(new SqlEqualsOperator('post_tag.tag_id', 'tag.id')))));
+							->setCriterion(new SqlEqualsFunctor('post_tag.tag_id', 'tag.id')))));
 		Database::exec($stmt);
 	}
 

@@ -42,7 +42,7 @@ class UserModel extends AbstractCrudModel
 
 			$stmt = (new SqlUpdateStatement)
 				->setTable('user')
-				->setCriterion(new SqlEqualsOperator('id', new SqlBinding($user->id)));
+				->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($user->id)));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new SqlBinding($val));
@@ -59,26 +59,26 @@ class UserModel extends AbstractCrudModel
 
 			$stmt = new SqlDeleteStatement();
 			$stmt->setTable('post_score');
-			$stmt->setCriterion(new SqlEqualsOperator('user_id', $binding));
+			$stmt->setCriterion(new SqlEqualsFunctor('user_id', $binding));
 			Database::exec($stmt);
 
 			$stmt->setTable('favoritee');
 			Database::exec($stmt);
 
 			$stmt->setTable('user');
-			$stmt->setCriterion(new SqlEqualsOperator('id', $binding));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', $binding));
 			Database::exec($stmt);
 
 			$stmt = new SqlUpdateStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new SqlEqualsOperator('commenter_id', $binding));
-			$stmt->setColumn('commenter_id', new SqlNullOperator());
+			$stmt->setCriterion(new SqlEqualsFunctor('commenter_id', $binding));
+			$stmt->setColumn('commenter_id', new SqlNullFunctor());
 			Database::exec($stmt);
 
 			$stmt = new SqlUpdateStatement();
 			$stmt->setTable('post');
-			$stmt->setCriterion(new SqlEqualsOperator('uploader_id', $binding));
-			$stmt->setColumn('uploader_id', new SqlNullOperator());
+			$stmt->setCriterion(new SqlEqualsFunctor('uploader_id', $binding));
+			$stmt->setColumn('uploader_id', new SqlNullFunctor());
 			Database::exec($stmt);
 		});
 	}
@@ -90,7 +90,7 @@ class UserModel extends AbstractCrudModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable('user');
-		$stmt->setCriterion(new SqlNoCaseOperator(new SqlEqualsOperator('name', new SqlBinding(trim($key)))));
+		$stmt->setCriterion(new SqlNoCaseFunctor(new SqlEqualsFunctor('name', new SqlBinding(trim($key)))));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -106,9 +106,9 @@ class UserModel extends AbstractCrudModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable('user');
-		$stmt->setCriterion((new SqlDisjunction)
-			->add(new SqlNoCaseOperator(new SqlEqualsOperator('name', new SqlBinding(trim($key)))))
-			->add(new SqlNoCaseOperator(new SqlEqualsOperator('email_confirmed', new SqlBinding(trim($key))))));
+		$stmt->setCriterion((new SqlDisjunctionFunctor)
+			->add(new SqlNoCaseFunctor(new SqlEqualsFunctor('name', new SqlBinding(trim($key)))))
+			->add(new SqlNoCaseFunctor(new SqlEqualsFunctor('email_confirmed', new SqlBinding(trim($key))))));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -127,9 +127,9 @@ class UserModel extends AbstractCrudModel
 		{
 			$stmt = new SqlDeleteStatement();
 			$stmt->setTable('post_score');
-			$stmt->setCriterion((new SqlConjunction)
-				->add(new SqlEqualsOperator('post_id', new SqlBinding($post->id)))
-				->add(new SqlEqualsOperator('user_id', new SqlBinding($user->id))));
+			$stmt->setCriterion((new SqlConjunctionFunctor)
+				->add(new SqlEqualsFunctor('post_id', new SqlBinding($post->id)))
+				->add(new SqlEqualsFunctor('user_id', new SqlBinding($user->id))));
 			Database::exec($stmt);
 			$score = intval($score);
 			if ($score != 0)
@@ -163,9 +163,9 @@ class UserModel extends AbstractCrudModel
 		{
 			$stmt = new SqlDeleteStatement();
 			$stmt->setTable('favoritee');
-			$stmt->setCriterion((new SqlConjunction)
-				->add(new SqlEqualsOperator('post_id', new SqlBinding($post->id)))
-				->add(new SqlEqualsOperator('user_id', new SqlBinding($user->id))));
+			$stmt->setCriterion((new SqlConjunctionFunctor)
+				->add(new SqlEqualsFunctor('post_id', new SqlBinding($post->id)))
+				->add(new SqlEqualsFunctor('user_id', new SqlBinding($user->id))));
 			Database::exec($stmt);
 		});
 	}

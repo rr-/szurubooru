@@ -154,7 +154,7 @@ class SqlSelectStatement extends SqlStatement
 			}, $this->columns));
 		else
 			$sql .= '1';
-		$sql .= ' FROM (' . $this->source->getAsString() . ')';
+		$sql .= ' FROM ' . self::surroundBraces($this->source);
 
 		foreach ($this->innerJoins as $join)
 		{

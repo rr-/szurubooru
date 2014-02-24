@@ -54,8 +54,8 @@ class PostEntity extends AbstractEntity
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('user.*');
 		$stmt->setTable('user');
-		$stmt->addInnerJoin('favoritee', new SqlEqualsOperator('favoritee.user_id', 'user.id'));
-		$stmt->setCriterion(new SqlEqualsOperator('favoritee.post_id', new SqlBinding($this->id)));
+		$stmt->addInnerJoin('favoritee', new SqlEqualsFunctor('favoritee.user_id', 'user.id'));
+		$stmt->setCriterion(new SqlEqualsFunctor('favoritee.post_id', new SqlBinding($this->id)));
 		$rows = Database::fetchAll($stmt);
 		$favorites = UserModel::convertRows($rows);
 		$this->setCache('favoritee', $favorites);
@@ -73,15 +73,15 @@ class PostEntity extends AbstractEntity
 		$stmt->setColumn('post.*');
 		$stmt->setTable('post');
 		$binding = new SqlBinding($this->id);
-		$stmt->addInnerJoin('crossref', (new SqlDisjunction)
+		$stmt->addInnerJoin('crossref', (new SqlDisjunctionFunctor)
 			->add(
-				(new SqlConjunction)
-					->add(new SqlEqualsOperator('post.id', 'crossref.post2_id'))
-					->add(new SqlEqualsOperator('crossref.post_id', $binding)))
+				(new SqlConjunctionFunctor)
+					->add(new SqlEqualsFunctor('post.id', 'crossref.post2_id'))
+					->add(new SqlEqualsFunctor('crossref.post_id', $binding)))
 			->add(
-				(new SqlConjunction)
-					->add(new SqlEqualsOperator('post.id', 'crossref.post_id'))
-					->add(new SqlEqualsOperator('crossref.post2_id', $binding))));
+				(new SqlConjunctionFunctor)
+					->add(new SqlEqualsFunctor('post.id', 'crossref.post_id'))
+					->add(new SqlEqualsFunctor('crossref.post2_id', $binding))));
 		$rows = Database::fetchAll($stmt);
 		$posts = PostModel::convertRows($rows);
 		$this->setCache('relations', $posts);

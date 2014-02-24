@@ -54,7 +54,7 @@ class PostModel extends AbstractCrudModel
 			foreach ($bindings as $key => $value)
 				$stmt->setColumn($key, new SqlBinding($value));
 
-			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($post->id)));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($post->id)));
 			Database::exec($stmt);
 
 			//tags
@@ -62,7 +62,7 @@ class PostModel extends AbstractCrudModel
 
 			$stmt = new SqlDeleteStatement();
 			$stmt->setTable('post_tag');
-			$stmt->setCriterion(new SqlEqualsOperator('post_id', new SqlBinding($post->id)));
+			$stmt->setCriterion(new SqlEqualsFunctor('post_id', new SqlBinding($post->id)));
 			Database::exec($stmt);
 
 			foreach ($tags as $postTag)
@@ -80,9 +80,9 @@ class PostModel extends AbstractCrudModel
 			$stmt = new SqlDeleteStatement();
 			$stmt->setTable('crossref');
 			$binding = new SqlBinding($post->id);
-			$stmt->setCriterion((new SqlDisjunction)
-				->add(new SqlEqualsOperator('post_id', $binding))
-				->add(new SqlEqualsOperator('post2_id', $binding)));
+			$stmt->setCriterion((new SqlDisjunctionFunctor)
+				->add(new SqlEqualsFunctor('post_id', $binding))
+				->add(new SqlEqualsFunctor('post2_id', $binding)));
 			Database::exec($stmt);
 
 			foreach ($relations as $relatedPost)
@@ -104,7 +104,7 @@ class PostModel extends AbstractCrudModel
 
 			$stmt = new SqlDeleteStatement();
 			$stmt->setTable('post_score');
-			$stmt->setCriterion(new SqlEqualsOperator('post_id', $binding));
+			$stmt->setCriterion(new SqlEqualsFunctor('post_id', $binding));
 			Database::exec($stmt);
 
 			$stmt->setTable('post_tag');
@@ -117,13 +117,13 @@ class PostModel extends AbstractCrudModel
 			Database::exec($stmt);
 
 			$stmt->setTable('crossref');
-			$stmt->setCriterion((new SqlDisjunction)
-				->add(new SqlEqualsOperator('post_id', $binding))
-				->add(new SqlEqualsOperator('post_id', $binding)));
+			$stmt->setCriterion((new SqlDisjunctionFunctor)
+				->add(new SqlEqualsFunctor('post_id', $binding))
+				->add(new SqlEqualsFunctor('post_id', $binding)));
 			Database::exec($stmt);
 
 			$stmt->setTable('post');
-			$stmt->setCriterion(new SqlEqualsOperator('id', $binding));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', $binding));
 			Database::exec($stmt);
 		});
 	}
@@ -136,7 +136,7 @@ class PostModel extends AbstractCrudModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable('post');
-		$stmt->setCriterion(new SqlEqualsOperator('name', new SqlBinding($key)));
+		$stmt->setCriterion(new SqlEqualsFunctor('name', new SqlBinding($key)));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -161,7 +161,7 @@ class PostModel extends AbstractCrudModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable('post');
-		$stmt->setCriterion(new SqlEqualsOperator('file_hash', new SqlBinding($key)));
+		$stmt->setCriterion(new SqlEqualsFunctor('file_hash', new SqlBinding($key)));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -193,7 +193,7 @@ class PostModel extends AbstractCrudModel
 		$stmt->setTable('comment');
 		$stmt->addColumn('comment.*');
 		$stmt->addColumn('post_id');
-		$stmt->setCriterion(SqlInOperator::fromArray('post_id', SqlBinding::fromArray($postIds)));
+		$stmt->setCriterion(SqlInFunctor::fromArray('post_id', SqlBinding::fromArray($postIds)));
 		$rows = Database::fetchAll($stmt);
 
 		foreach ($rows as $row)
@@ -234,8 +234,8 @@ class PostModel extends AbstractCrudModel
 		$stmt->setTable('tag');
 		$stmt->addColumn('tag.*');
 		$stmt->addColumn('post_id');
-		$stmt->addInnerJoin('post_tag', new SqlEqualsOperator('post_tag.tag_id', 'tag.id'));
-		$stmt->setCriterion(SqlInOperator::fromArray('post_id', SqlBinding::fromArray($postIds)));
+		$stmt->addInnerJoin('post_tag', new SqlEqualsFunctor('post_tag.tag_id', 'tag.id'));
+		$stmt->setCriterion(SqlInFunctor::fromArray('post_id', SqlBinding::fromArray($postIds)));
 		$rows = Database::fetchAll($stmt);
 
 		foreach ($rows as $row)

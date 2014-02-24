@@ -24,7 +24,7 @@ class PostSearchService extends AbstractSearchService
 			$stmt = new SqlSelectStatement();
 			$stmt->setTable('post_search');
 			$stmt->setColumn('id');
-			$stmt->setCriterion(new SqlEqualsOperator('post_id', new SqlBinding($postId)));
+			$stmt->setCriterion(new SqlEqualsFunctor('post_id', new SqlBinding($postId)));
 			$rowId = Database::fetchOne($stmt)['id'];
 
 			//it's possible that given post won't show in search results:
@@ -35,10 +35,10 @@ class PostSearchService extends AbstractSearchService
 			$rowId = intval($rowId);
 			$stmt->setColumn('post_id');
 
-			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($rowId - 1)));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($rowId - 1)));
 			$nextPostId = Database::fetchOne($stmt)['post_id'];
 
-			$stmt->setCriterion(new SqlEqualsOperator('id', new SqlBinding($rowId + 1)));
+			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($rowId + 1)));
 			$prevPostId = Database::fetchOne($stmt)['post_id'];
 
 			return [$prevPostId, $nextPostId];

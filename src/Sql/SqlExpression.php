@@ -12,6 +12,13 @@ abstract class SqlExpression
 		return $this;
 	}
 
+	protected static function surroundBraces(SqlExpression $object)
+	{
+		if ($object instanceof SqlStatement)
+			return '(' . $object->getAsString() . ')';
+		return $object->getAsString();
+	}
+
 	public function getBindings()
 	{
 		$bindings = $this->bindings;
