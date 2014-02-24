@@ -1,5 +1,5 @@
 <?php
-class SqlAbsFunctor extends SqlUnaryFunctor
+class SqlAbsFunctor extends SqlFunctionFunctor
 {
 	public function getFunctionName()
 	{

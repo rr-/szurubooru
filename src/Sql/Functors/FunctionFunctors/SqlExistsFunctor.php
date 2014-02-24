@@ -1,5 +1,5 @@
 <?php
-class SqlExistsFunctor extends SqlUnaryFunctor
+class SqlExistsFunctor extends SqlFunctionFunctor
 {
 	public function getFunctionName()
 	{
@@ -9,5 +9,10 @@ class SqlExistsFunctor extends SqlUnaryFunctor
 	public function getArgumentCount()
 	{
 		return 1;
+	}
+
+	public function getAsString()
+	{
+		return $this->getFunctionName() . ' (' . $this->subjects[0]->getAsString() . ')';
 	}
 }

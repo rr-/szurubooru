@@ -1,5 +1,5 @@
 <?php
-class SqlMaxFunctor extends SqlUnaryFunctor
+class SqlMaxFunctor extends SqlFunctionFunctor
 {
 	public function getFunctionName()
 	{

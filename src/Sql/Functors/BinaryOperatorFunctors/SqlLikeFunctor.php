@@ -1,5 +1,5 @@
 <?php
-class SqlLikeFunctor extends SqlBinaryFunctor
+class SqlLikeFunctor extends SqlBinaryOperatorFunctor
 {
 	protected function getOperator()
 	{
