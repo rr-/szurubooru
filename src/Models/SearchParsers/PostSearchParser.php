@@ -32,7 +32,7 @@ class PostSearchParser extends AbstractSearchParser
 			$innerStmt = new SqlSelectStatement();
 			$innerStmt->setTable('post_tag');
 			$innerStmt->setCriterion((new SqlConjunction)
-				->add(new SqlEqualsOperator('post_id', 'post.id'))
+				->add(new SqlEqualsOperator('post_tag.post_id', 'post.id'))
 				->add(new SqlEqualsOperator('post_tag.tag_id', new SqlBinding($tag->id))));
 			$operator = new SqlExistsOperator($innerStmt);
 			if ($neg)
@@ -52,7 +52,7 @@ class PostSearchParser extends AbstractSearchParser
 		return true;
 	}
 
-	protected static function getCriterionForComplexToken($key, $value)
+	protected function prepareCriterionForComplexToken($key, $value)
 	{
 		if (in_array($key, ['id', 'ids']))
 		{
@@ -67,7 +67,7 @@ class PostSearchParser extends AbstractSearchParser
 			$innerStmt = (new SqlSelectStatement)
 				->setTable('favoritee')
 				->setCriterion((new SqlConjunction)
-					->add(new SqlEqualsOperator('post_id', 'post.id'))
+					->add(new SqlEqualsOperator('favoritee.post_id', 'post.id'))
 					->add(new SqlEqualsOperator('favoritee.user_id', new SqlBinding($user->id))));
 			return new SqlExistsOperator($innerStmt);
 		}
@@ -78,8 +78,8 @@ class PostSearchParser extends AbstractSearchParser
 			$innerStmt = (new SqlSelectStatement)
 				->setTable('comment')
 				->setCriterion((new SqlConjunction)
-					->add(new SqlEqualsOperator('post_id', 'post.id'))
-					->add(new SqlEqualsOperator('commenter_id', new SqlBinding($user->id))));
+					->add(new SqlEqualsOperator('comment.post_id', 'post.id'))
+					->add(new SqlEqualsOperator('comment.commenter_id', new SqlBinding($user->id))));
 			return new SqlExistsOperator($innerStmt);
 		}
 
@@ -90,10 +90,10 @@ class PostSearchParser extends AbstractSearchParser
 		}
 
 		elseif (in_array($key, ['idmin', 'id_min']))
-			return new SqlEqualsOrGreaterOperator('id', new SqlBinding(intval($value)));
+			return new SqlEqualsOrGreaterOperator('post.id', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['idmax', 'id_max']))
-			return new SqlEqualsOrLesserOperator('id', new SqlBinding(intval($value)));
+			return new SqlEqualsOrLesserOperator('post.id', new SqlBinding(intval($value)));
 
 		elseif (in_array($key, ['scoremin', 'score_min']))
 			return new SqlEqualsOrGreaterOperator('score', new SqlBinding(intval($value)));
@@ -145,24 +145,24 @@ class PostSearchParser extends AbstractSearchParser
 			$value = strtolower($value);
 			if (in_array($value, ['liked', 'likes']))
 			{
-				$innerStmt = new SqlSelectStatement();
-				$innerStmt->setTable('post_score');
-				$innerStmt->setCriterion((new SqlConjunction)
-					->add(new SqlGreaterOperator('score', '0'))
-					->add(new SqlEqualsOperator('post_id', 'post.id'))
-					->add(new SqlEqualsOperator('user_id', new SqlBinding($context->user->id))));
-				return new SqlExistsOperator($innerStmt);
+				if (!$this->statement->isTableJoined('post_score'))
+				{
+					$this->statement->addLeftOuterJoin('post_score', (new SqlConjunction)
+						->add(new SqlEqualsOperator('post_score.post_id', 'post.id'))
+						->add(new SqlEqualsOperator('post_score.user_id', new SqlBinding($context->user->id))));
+				}
+				return new SqlEqualsOperator(new SqlIfNullOperator('post_score.score', '0'), '1');
 			}
 
 			elseif (in_array($value, ['disliked', 'dislikes']))
 			{
-				$innerStmt = new SqlSelectStatement();
-				$innerStmt->setTable('post_score');
-				$innerStmt->setCriterion((new SqlConjunction)
-					->add(new SqlLesserOperator('score', '0'))
-					->add(new SqlEqualsOperator('post_id', 'post.id'))
-					->add(new SqlEqualsOperator('user_id', new SqlBinding($context->user->id))));
-				return new SqlExistsOperator($innerStmt);
+				if (!$this->statement->isTableJoined('post_score'))
+				{
+					$this->statement->addLeftOuterJoin('post_score', (new SqlConjunction)
+						->add(new SqlEqualsOperator('post_score.post_id', 'post.id'))
+						->add(new SqlEqualsOperator('post_score.user_id', new SqlBinding($context->user->id))));
+				}
+				return new SqlEqualsOperator(new SqlIfNullOperator('post_score.score', '0'), '-1');
 			}
 
 			elseif ($value == 'hidden')
@@ -192,7 +192,7 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processComplexToken($key, $value, $neg)
 	{
-		$criterion = self::getCriterionForComplexToken($key, $value);
+		$criterion = $this->prepareCriterionForComplexToken($key, $value);
 		if (!$criterion)
 			return false;
 
@@ -208,7 +208,7 @@ class PostSearchParser extends AbstractSearchParser
 		$randomReset = true;
 
 		if (in_array($orderByString, ['id']))
-			$orderColumn = 'id';
+			$orderColumn = 'post.id';
 
 		elseif (in_array($orderByString, ['date']))
 			$orderColumn = 'upload_date';
@@ -239,7 +239,7 @@ class PostSearchParser extends AbstractSearchParser
 			if (!isset($_SESSION['browsing-seed']))
 				$_SESSION['browsing-seed'] = mt_rand();
 			$seed = $_SESSION['browsing-seed'];
-			$orderColumn = 'SUBSTR(id * ' . $seed .', LENGTH(id) + 2)';
+			$orderColumn = 'SUBSTR(post.id * ' . $seed .', LENGTH(post.id) + 2)';
 		}
 
 		else
