@@ -174,6 +174,47 @@ class PostModel extends AbstractCrudModel
 
 
 
+	public static function preloadComments($posts)
+	{
+		if (empty($posts))
+			return;
+
+		$postMap = [];
+		$tagsMap = [];
+		foreach ($posts as $post)
+		{
+			$postId = $post->id;
+			$postMap[$postId] = $post;
+			$commentMap[$postId] = [];
+		}
+		$postIds = array_unique(array_keys($postMap));
+
+		$stmt = new SqlSelectStatement();
+		$stmt->setTable('comment');
+		$stmt->addColumn('comment.*');
+		$stmt->addColumn('post_id');
+		$stmt->setCriterion(SqlInOperator::fromArray('post_id', SqlBinding::fromArray($postIds)));
+		$rows = Database::fetchAll($stmt);
+
+		foreach ($rows as $row)
+		{
+			if (isset($comments[$row['id']]))
+				continue;
+			unset($row['post_id']);
+			$comment = CommentModel::convertRow($row);
+			$comments[$row['id']] = $comment;
+		}
+
+		foreach ($rows as $row)
+		{
+			$postId = $row['post_id'];
+			$commentMap[$postId] []= $comments[$row['id']];
+		}
+
+		foreach ($commentMap as $postId => $comments)
+			$postMap[$postId]->setCache('comments', $comments);
+	}
+
 	public static function preloadTags($posts)
 	{
 		if (empty($posts))

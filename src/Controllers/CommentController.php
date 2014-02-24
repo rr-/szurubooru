@@ -18,6 +18,7 @@ class CommentController
 		$postCount = PostSearchService::getEntityCount($searchQuery);
 		$pageCount = ceil($postCount / $commentsPerPage);
 		PostModel::preloadTags($posts);
+		PostModel::preloadComments($posts);
 		$comments = [];
 		foreach ($posts as $post)
 			$comments = array_merge($comments, $post->getComments());
