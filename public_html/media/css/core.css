@@ -391,14 +391,6 @@ ul.tagit input {
 	margin: -1px 0 0 0;
 }
 
-pre.debug {
-	margin-left: 1em;
-	text-align: left;
-	color: black;
-	white-space: normal;
-	text-indent: -1em;
-}
-
 .spoiler:before,
 .spoiler:after {
 	color: gray;

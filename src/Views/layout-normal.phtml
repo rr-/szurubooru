@@ -43,17 +43,12 @@ LayoutHelper::addScript('core.js');
 					<span><a href="<?php echo \Chibi\UrlHelper::route('log', 'list') ?>">Logs</a></span>
 				<?php endif ?>
 				<hr>
-				<?php if ($this->config->misc->debugQueries): ?>
-					<?php foreach (Database::getLogs() as $query)
-					{
-						$bindings = [];
-						foreach ($query->getBindings() as $k => $v)
-							$bindings []= $k . '=' . $v;
-						printf('<pre class="debug">%s [%s]</pre>', htmlspecialchars($query->getAsString()), join(', ', $bindings));
-					} ?>
-				<?php endif ?>
 			</div>
 		</footer>
+
+		<?php if ($this->config->misc->debugQueries): ?>
+			<?php echo $this->renderFile('debug') ?>
+		<?php endif ?>
 
 		<div id="small-screen"></div>
 	</body>

@@ -1,0 +1,24 @@
+<?php LayoutHelper::addStylesheet('debug.css') ?>
+<div class="main-wrapper">
+	<?php foreach (Database::getLogs() as $log): ?>
+		<div class="debug">
+			<?php
+				$query = $log->statement->getAsString();
+				$query = str_replace('(', '<span>(', $query);
+				$query = str_replace(')', ')</span>', $query);
+			?>
+			<pre class="query"><?php echo $query ?></pre>
+
+			<pre class="bindings"><?php echo join(', ', array_map(function($key) use ($log)
+				{
+					return $key . '=<span class="value">' . $log->statement->getBindings()[$key] . '</span>';
+				},
+				array_keys($log->statement->getBindings()))) ?></pre>
+
+			<table>
+				<tr><td>Execution:</td><td><?php echo sprintf('%.05fs', $log->timeExec) ?></td></tr>
+				<tr><td>Retrieval:</td><td><?php echo sprintf('%.05fs', $log->timeFetch) ?></td></tr>
+			</table>
+		</div>
+	<?php endforeach ?>
+</div>

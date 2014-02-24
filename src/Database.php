@@ -2,7 +2,7 @@
 class Database
 {
 	protected static $pdo = null;
-	protected static $queries = [];
+	protected static $queryLogs = [];
 
 	public static function connect($driver, $location, $user, $pass)
 	{
@@ -51,38 +51,52 @@ class Database
 		return self::$pdo !== null;
 	}
 
-	public static function exec(SqlStatement $stmt)
+	private static function execInternal(SqlStatement $stmt, $callback)
 	{
 		if (!self::connected())
 			throw new Exception('Database is not connected');
+
 		$stmtPdo = self::convertStatement($stmt);
 		try
 		{
+			$timeStart = microtime(true);
 			$stmtPdo->execute();
+			$timeExec = microtime(true) - $timeStart;
+
+			$timeStart = microtime(true);
+			$ret = $callback($stmtPdo);
+			$timeFetch = microtime(true) - $timeStart;
 		}
 		catch (Exception $e)
 		{
 			throw new Exception('Problem with ' . $stmt->getAsString() . ' execution (' . $e->getMessage() . ')');
 		}
-		self::$queries []= $stmt;
-		return $stmtPdo;
+		$queryLog = new StdClass();
+		$queryLog->statement = $stmt;
+		$queryLog->timeExec = $timeExec;
+		$queryLog->timeFetch = $timeFetch;
+		self::$queryLogs []= $queryLog;
+		return $ret;
+	}
+
+	public static function exec(SqlStatement $stmt)
+	{
+		return self::execInternal($stmt, function($stmtPdo) { });
 	}
 
 	public static function fetchOne(SqlStatement $stmt)
 	{
-		$stmtPdo = self::exec($stmt);
-		return $stmtPdo->fetch();
+		return self::execInternal($stmt, function($stmtPdo) { return $stmtPdo->fetch(); });
 	}
 
 	public static function fetchAll(SqlStatement $stmt)
 	{
-		$stmtPdo = self::exec($stmt);
-		return $stmtPdo->fetchAll();
+		return self::execInternal($stmt, function($stmtPdo) { return $stmtPdo->fetchAll(); });
 	}
 
 	public static function getLogs()
 	{
-		return self::$queries;
+		return self::$queryLogs;
 	}
 
 	public static function inTransaction()

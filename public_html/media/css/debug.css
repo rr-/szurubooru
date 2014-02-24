@@ -1,0 +1,30 @@
+div.debug {
+	background: #f5f5f5;
+	font-size: 90%;
+	margin: 1em 0;
+	padding: 1em;
+	color: black;
+	text-align: left;
+}
+div.debug pre {
+	margin-left: 1em;
+	white-space: normal;
+	text-indent: -1em;
+}
+div.debug pre.query {
+	color: maroon;
+}
+div.debug pre.bindings {
+	color: gray;
+}
+div.debug pre.bindings .value {
+	color: green;
+	font-weight: bold;
+	margin-right: 1em;
+}
+div.debug pre.query span {
+	background: rgba(255, 0, 0, 0.05);
+}
+div.debug pre.query span:hover {
+	background: white;
+}
