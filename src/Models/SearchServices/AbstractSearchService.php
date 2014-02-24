@@ -65,6 +65,7 @@ abstract class AbstractSearchService
 		$innerStmt->setTable($table);
 		static::decorateParser($innerStmt, $searchQuery);
 		static::decorateCustom($innerStmt);
+		$innerStmt->resetOrderBy();
 
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn(new SqlAliasOperator(new SqlCountOperator('1'), 'count'));
