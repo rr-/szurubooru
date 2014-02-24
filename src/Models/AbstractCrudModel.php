@@ -40,7 +40,7 @@ abstract class AbstractCrudModel implements IModel
 		$stmt = new SqlSelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable(static::getTableName());
-		$stmt->setCriterion(SqlInOperator::fromArray('id', SqlBinding::fromArray($ids)));
+		$stmt->setCriterion(SqlInOperator::fromArray('id', SqlBinding::fromArray(array_unique($ids))));
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)

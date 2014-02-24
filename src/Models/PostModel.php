@@ -187,7 +187,7 @@ class PostModel extends AbstractCrudModel
 			$postMap[$postId] = $post;
 			$tagsMap[$postId] = [];
 		}
-		$postIds = array_keys($postMap);
+		$postIds = array_unique(array_keys($postMap));
 
 		$stmt = new SqlSelectStatement();
 		$stmt->setTable('tag');
@@ -213,9 +213,7 @@ class PostModel extends AbstractCrudModel
 		}
 
 		foreach ($tagsMap as $postId => $tags)
-		{
 			$postMap[$postId]->setCache('tags', $tags);
-		}
 	}
 
 
