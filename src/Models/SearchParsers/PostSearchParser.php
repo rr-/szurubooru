@@ -119,13 +119,21 @@ class PostSearchParser extends AbstractSearchParser
 		elseif (in_array($key, ['commentmax', 'comment_max']))
 			return new SqlEqualsOrLesserOperator('comment_count', new SqlBinding(intval($value)));
 
-		elseif (in_array($key, ['datemin', 'date_min', 'date']))
+		elseif (in_array($key, ['date']))
+		{
+			list ($dateMin, $dateMax) = self::parseDate($value);
+			return (new SqlConjunction)
+				->add(new SqlEqualsOrLesserOperator('upload_date', new SqlBinding($dateMax)))
+				->add(new SqlEqualsOrGreaterOperator('upload_date', new SqlBinding($dateMin)));
+		}
+
+		elseif (in_array($key, ['datemin', 'date_min']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
 			return new SqlEqualsOrGreaterOperator('upload_date', new SqlBinding($dateMin));
 		}
 
-		elseif (in_array($key, ['datemax', 'date_max', 'date']))
+		elseif (in_array($key, ['datemax', 'date_max']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
 			return new SqlEqualsOrLesserOperator('upload_date', new SqlBinding($dateMax));
