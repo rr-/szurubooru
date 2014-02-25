@@ -25,7 +25,7 @@
 <?php if (empty($this->context->transport->tags)): ?>
 	<p class="alert alert-warning">No tags to show.</p>
 <?php else: ?>
-	<?php $max = max([0]+array_map(function($x) { return $x['post_count']; }, $this->context->transport->tags)); ?>
+	<?php $max = $this->context->highestUsage ?>
 	<?php $add = 0. ?>
 	<?php $mul = 10. / max(1, log(max(1, $max))) ?>
 	<?php $url = \Chibi\UrlHelper::route('post', 'list', ['query' => '_query_']) ?>

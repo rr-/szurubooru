@@ -34,6 +34,7 @@ class TagController
 		}
 		else
 		{
+			$this->context->highestUsage = TagSearchService::getMostUsedTag()['post_count'];
 			$this->context->transport->paginator = new StdClass;
 			$this->context->transport->paginator->page = $page;
 			$this->context->transport->paginator->pageCount = $pageCount;
