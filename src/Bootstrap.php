@@ -3,24 +3,10 @@ class Bootstrap
 {
 	public function render($callback = null)
 	{
-		if ($callback === null)
-		{
-			$callback = function()
-			{
-				(new \Chibi\View())->renderFile($this->context->layoutName);
-			};
-		}
-
-		if ($this->context->layoutName == 'layout-normal')
-		{
-			ob_start(['LayoutHelper', 'transformHtml']);
+		if ($callback !== null)
 			$callback();
-			ob_end_flush();
-		}
 		else
-		{
-			$callback();
-		}
+			(new \Chibi\View())->renderFile($this->context->layoutName);
 	}
 
 	public function workWrapper($workCallback)
@@ -29,7 +15,7 @@ class Bootstrap
 		session_start();
 
 		$this->context->handleExceptions = false;
-		LayoutHelper::setTitle($this->config->main->title);
+		CustomAssetViewDecorator::setTitle($this->config->main->title);
 
 		$this->context->json = isset($_GET['json']);
 		$this->context->layoutName = $this->context->json
@@ -48,6 +34,8 @@ class Bootstrap
 			return;
 		}
 
+		$this->context->viewDecorators []= new CustomAssetViewDecorator();
+		$this->context->viewDecorators []= new \Chibi\PrettyPrintViewDecorator();
 		try
 		{
 			$this->render($workCallback);

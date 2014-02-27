@@ -2,7 +2,7 @@
 	<?php $this->renderFile('message') ?>
 <?php else: ?>
 	<?php
-	LayoutHelper::addStylesheet('auth.css');
+	CustomAssetViewDecorator::addStylesheet('auth.css');
 	?>
 
 	<form action="<?php echo \Chibi\UrlHelper::route($this->context->route->simpleControllerName, $this->context->route->simpleActionName) ?>" method="post" class="auth" autocomplete="off">

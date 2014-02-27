@@ -1,6 +1,6 @@
 <?php
-LayoutHelper::setSubTitle('tags');
-LayoutHelper::addStylesheet('tag-list.css');
+CustomAssetViewDecorator::setSubTitle('tags');
+CustomAssetViewDecorator::addStylesheet('tag-list.css');
 
 $tabs = [];
 if (PrivilegesHelper::confirm(Privilege::ListTags)) $tabs['list'] = 'List';

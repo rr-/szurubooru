@@ -1,4 +1,4 @@
-<?php LayoutHelper::setPageThumb(\Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->transport->post->name])) ?>
+<?php CustomAssetViewDecorator::setPageThumb(\Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->transport->post->name])) ?>
 <?php $post = $this->context->transport->post ?>
 
 <?php if ($post->type == PostType::Image): ?>

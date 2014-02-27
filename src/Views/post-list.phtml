@@ -1,6 +1,6 @@
 <?php
-LayoutHelper::addStylesheet('post-list.css');
-LayoutHelper::addScript('post-list.js');
+CustomAssetViewDecorator::addStylesheet('post-list.css');
+CustomAssetViewDecorator::addScript('post-list.js');
 ?>
 
 <?php if (isset($this->context->source) and $this->context->source == 'mass-tag' and PrivilegesHelper::confirm(Privilege::MassTag)): ?>

@@ -42,9 +42,9 @@ if (!function_exists('pageUrl'))
 
 <?php if (!empty($pagesVisible)): ?>
 	<?php
-	LayoutHelper::addStylesheet('paginator.css');
+	CustomAssetViewDecorator::addStylesheet('paginator.css');
 	if ($this->context->user->hasEnabledEndlessScrolling())
-		LayoutHelper::addScript('paginator-endless.js');
+		CustomAssetViewDecorator::addScript('paginator-endless.js');
 	?>
 
 	<nav class="paginator-wrapper">

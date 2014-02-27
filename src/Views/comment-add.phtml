@@ -1,6 +1,6 @@
 <?php
-LayoutHelper::addStylesheet('comment-edit.css');
-LayoutHelper::addScript('comment-edit.js');
+CustomAssetViewDecorator::addStylesheet('comment-edit.css');
+CustomAssetViewDecorator::addScript('comment-edit.js');
 ?>
 
 <form action="<?php echo \Chibi\UrlHelper::route('comment', 'add', ['postId' => $this->context->transport->post->id]) ?>" method="post" class="add-comment">

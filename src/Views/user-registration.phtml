@@ -1,12 +1,12 @@
 <?php
-LayoutHelper::setSubTitle('registration form');
+CustomAssetViewDecorator::setSubTitle('registration form');
 ?>
 
 <?php if ($this->context->transport->success === true): ?>
 	<?php $this->renderFile('message') ?>
 <?php else: ?>
 	<?php
-	LayoutHelper::addStylesheet('auth.css');
+	CustomAssetViewDecorator::addStylesheet('auth.css');
 	?>
 
 	<form action="<?php echo \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth" method="post">

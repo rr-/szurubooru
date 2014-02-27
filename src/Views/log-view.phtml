@@ -1,13 +1,13 @@
 <?php
-LayoutHelper::setSubTitle('logs (' . $name . ')');
+CustomAssetViewDecorator::setSubTitle('logs (' . $name . ')');
 ?>
 
 <?php if (empty($this->context->transport->lines)): ?>
 	<p class="alert alert-warning">This log is empty. <a href="<?php echo \Chibi\UrlHelper::route('log', 'list') ?>">Go back</a></p>
 <?php else: ?>
 	<?php
-	LayoutHelper::addStylesheet('logs.css');
-	LayoutHelper::addScript('logs.js');
+	CustomAssetViewDecorator::addStylesheet('logs.css');
+	CustomAssetViewDecorator::addScript('logs.js');
 	?>
 
 	<form action="<?php echo \Chibi\UrlHelper::route('log', 'view', ['name' => $this->context->transport->name]) ?>" method="get">

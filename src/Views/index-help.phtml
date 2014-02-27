@@ -1,6 +1,6 @@
 <?php
-LayoutHelper::setSubtitle('help');
-LayoutHelper::addStylesheet('index-help.css');
+CustomAssetViewDecorator::setSubtitle('help');
+CustomAssetViewDecorator::addStylesheet('index-help.css');
 
 $tabs = $this->config->help->subTitles;
 $firstTab = !empty($tabs) ? array_keys($tabs)[0] : null;

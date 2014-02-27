@@ -1,6 +1,6 @@
 <?php
-LayoutHelper::setSubTitle('authentication form');
-LayoutHelper::addStylesheet('auth.css');
+CustomAssetViewDecorator::setSubTitle('authentication form');
+CustomAssetViewDecorator::addStylesheet('auth.css');
 ?>
 
 <form action="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth" method="post">

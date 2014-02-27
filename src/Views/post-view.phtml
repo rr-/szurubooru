@@ -1,9 +1,9 @@
 <?php
-LayoutHelper::setSubTitle('showing ' . TextHelper::reprPost($this->context->transport->post) . ' &ndash; ' . TextHelper::reprTags($this->context->transport->post->getTags()));
-LayoutHelper::addStylesheet('post-view.css');
-LayoutHelper::addScript('post-view.js');
-LayoutHelper::addStylesheet('../lib/tagit/jquery.tagit.css');
-LayoutHelper::addScript('../lib/tagit/jquery.tagit.js');
+CustomAssetViewDecorator::setSubTitle('showing ' . TextHelper::reprPost($this->context->transport->post) . ' &ndash; ' . TextHelper::reprTags($this->context->transport->post->getTags()));
+CustomAssetViewDecorator::addStylesheet('post-view.css');
+CustomAssetViewDecorator::addScript('post-view.js');
+CustomAssetViewDecorator::addStylesheet('../lib/tagit/jquery.tagit.css');
+CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 
 $editPostPrivileges = [
 	Privilege::EditPostSafety,
@@ -318,8 +318,8 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	</div>
 
 	<?php
-	LayoutHelper::addStylesheet('comment-list.css');
-	LayoutHelper::addStylesheet('comment-small.css');
+	CustomAssetViewDecorator::addStylesheet('comment-list.css');
+	CustomAssetViewDecorator::addStylesheet('comment-small.css');
 	?>
 	<div class="comments-wrapper">
 		<?php if (!empty($this->context->transport->post->getComments())): ?>

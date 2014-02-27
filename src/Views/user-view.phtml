@@ -1,6 +1,6 @@
 <?php
-LayoutHelper::setSubTitle($this->context->transport->user->name);
-LayoutHelper::addStylesheet('user-view.css');
+CustomAssetViewDecorator::setSubTitle($this->context->transport->user->name);
+CustomAssetViewDecorator::addStylesheet('user-view.css');
 ?>
 
 <div id="sidebar">

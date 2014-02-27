@@ -1,15 +1,15 @@
 <?php
-LayoutHelper::setSubTitle('comments');
+CustomAssetViewDecorator::setSubTitle('comments');
 ?>
 
 <?php if (empty($this->context->transport->posts)): ?>
 	<p class="alert alert-warning">No comments to show.</p>
 <?php else: ?>
 	<?php
-	LayoutHelper::addStylesheet('comment-list.css');
-	LayoutHelper::addStylesheet('comment-small.css');
-	LayoutHelper::addStylesheet('comment-edit.css');
-	LayoutHelper::addScript('comment-edit.js');
+	CustomAssetViewDecorator::addStylesheet('comment-list.css');
+	CustomAssetViewDecorator::addStylesheet('comment-small.css');
+	CustomAssetViewDecorator::addStylesheet('comment-edit.css');
+	CustomAssetViewDecorator::addScript('comment-edit.js');
 	?>
 
 	<div class="comments-wrapper">
