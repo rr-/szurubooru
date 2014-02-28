@@ -4,6 +4,8 @@ use \Chibi\Sql as Sql;
 class PostSearchParser extends AbstractSearchParser
 {
 	private $tags;
+	private $showHidden = false;
+	private $showDisliked = false;
 
 	protected function processSetup(&$tokens)
 	{
@@ -15,18 +17,18 @@ class PostSearchParser extends AbstractSearchParser
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
 		$this->statement->getCriterion()->add(Sql\InFunctor::fromArray('safety', Sql\Binding::fromArray($allowedSafety)));
 
-		if (\Chibi\Registry::getContext()->user->hasEnabledHidingDislikedPosts() and !in_array('special:disliked', array_map('strtolower', $tokens)))
-			$this->processComplexToken('special', 'disliked', true);
-
-		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden') or !in_array('special:hidden', array_map('strtolower', $tokens)))
-			$this->processComplexToken('special', 'hidden', true);
-
 		if (count($tokens) > $config->browsing->maxSearchTokens)
 			throw new SimpleException('Too many search tokens (maximum: ' . $config->browsing->maxSearchTokens . ')');
 	}
 
 	protected function processTeardown()
 	{
+		if (\Chibi\Registry::getContext()->user->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
+			$this->processComplexToken('special', 'disliked', true);
+
+		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden') or !$this->showHidden)
+			$this->processComplexToken('special', 'hidden', true);
+
 		foreach ($this->tags as $item)
 		{
 			list ($tagName, $neg) = $item;
@@ -163,6 +165,7 @@ class PostSearchParser extends AbstractSearchParser
 
 			elseif (in_array($value, ['dislike', 'disliked', 'dislikes']))
 			{
+				$this->showDisliked = true;
 				if (!$this->statement->isTableJoined('post_score'))
 				{
 					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
@@ -173,7 +176,10 @@ class PostSearchParser extends AbstractSearchParser
 			}
 
 			elseif ($value == 'hidden')
+			{
+				$this->showHidden = true;
 				return new Sql\StringExpression('hidden');
+			}
 
 			else
 				throw new SimpleException('Invalid special token: ' . $value);
