@@ -145,7 +145,12 @@ class PostSearchParser extends AbstractSearchParser
 		{
 			$context = \Chibi\Registry::getContext();
 			$value = strtolower($value);
-			if (in_array($value, ['like', 'liked', 'likes']))
+			if (in_array($value, ['fav', 'favs', 'favd', 'favorite', 'favorites']))
+			{
+				return $this->prepareCriterionForComplexToken('fav', $context->user->name);
+			}
+
+			elseif (in_array($value, ['like', 'liked', 'likes']))
 			{
 				if (!$this->statement->isTableJoined('post_score'))
 				{
