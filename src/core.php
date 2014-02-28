@@ -13,7 +13,7 @@ ini_set('memory_limit', '128M');
 //basic include calls, autoloader init
 require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'Markdown.php';
 require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'Facade.php';
-\Chibi\AutoLoader::init(__DIR__);
+\Chibi\AutoLoader::init([__DIR__, $rootDir . 'lib' . DS . 'chibi-sql']);
 
 //load config manually
 $configPaths =
@@ -39,7 +39,11 @@ $context = \Chibi\Registry::getContext();
 $context->startTime = $startTime;
 $context->rootDir = $rootDir;
 
-Database::connect($config->main->dbDriver, TextHelper::absolutePath($config->main->dbLocation), $config->main->dbUser, $config->main->dbPass);
+\Chibi\Database::connect(
+	$config->main->dbDriver,
+	TextHelper::absolutePath($config->main->dbLocation),
+	$config->main->dbUser,
+	$config->main->dbPass);
 
 //wire models
 foreach (\Chibi\AutoLoader::getAllIncludablePaths() as $path)

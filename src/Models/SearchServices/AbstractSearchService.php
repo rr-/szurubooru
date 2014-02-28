@@ -1,4 +1,7 @@
 <?php
+use \Chibi\Sql as Sql;
+use \Chibi\Database as Database;
+
 abstract class AbstractSearchService
 {
 	protected static function getModelClassName()
@@ -15,23 +18,23 @@ abstract class AbstractSearchService
 		return $parserClassName;
 	}
 
-	protected static function decorateParser(SqlSelectStatement $stmt, $searchQuery)
+	protected static function decorateParser(Sql\SelectStatement $stmt, $searchQuery)
 	{
 		$parserClassName = self::getParserClassName();
 		(new $parserClassName)->decorate($stmt, $searchQuery);
 	}
 
-	protected static function decorateCustom(SqlSelectStatement $stmt)
+	protected static function decorateCustom(Sql\SelectStatement $stmt)
 	{
 	}
 
-	protected static function decoratePager(SqlSelectStatement $stmt, $perPage, $page)
+	protected static function decoratePager(Sql\SelectStatement $stmt, $perPage, $page)
 	{
 		if ($perPage === null)
 			return;
 		$stmt->setLimit(
-			new SqlBinding($perPage),
-			new SqlBinding(($page - 1) * $perPage));
+			new Sql\Binding($perPage),
+			new Sql\Binding(($page - 1) * $perPage));
 	}
 
 	public static function getEntitiesRows($searchQuery, $perPage = null, $page = 1)
@@ -39,7 +42,7 @@ abstract class AbstractSearchService
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
 
-		$stmt = new SqlSelectStatement();
+		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn($table . '.*');
 		$stmt->setTable($table);
 		static::decorateParser($stmt, $searchQuery);
@@ -61,14 +64,14 @@ abstract class AbstractSearchService
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
 
-		$innerStmt = new SqlSelectStatement();
+		$innerStmt = new Sql\SelectStatement();
 		$innerStmt->setTable($table);
 		static::decorateParser($innerStmt, $searchQuery);
 		static::decorateCustom($innerStmt);
 		$innerStmt->resetOrderBy();
 
-		$stmt = new SqlSelectStatement();
-		$stmt->setColumn(new SqlAliasFunctor(new SqlCountFunctor('1'), 'count'));
+		$stmt = new Sql\SelectStatement();
+		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setSource($innerStmt);
 
 		return Database::fetchOne($stmt)['count'];

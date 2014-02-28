@@ -1,4 +1,7 @@
 <?php
+use \Chibi\Sql as Sql;
+use \Chibi\Database as Database;
+
 class CommentModel extends AbstractCrudModel
 {
 	public static function getTableName()
@@ -25,12 +28,12 @@ class CommentModel extends AbstractCrudModel
 				'comment_date' => $comment->commentDate,
 				'commenter_id' => $comment->commenterId];
 
-			$stmt = new SqlUpdateStatement();
+			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($comment->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->id)));
 
 			foreach ($bindings as $key => $val)
-				$stmt->setColumn($key, new SqlBinding($val));
+				$stmt->setColumn($key, new Sql\Binding($val));
 
 			Database::exec($stmt);
 		});
@@ -40,9 +43,9 @@ class CommentModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($comment)
 		{
-			$stmt = new SqlDeleteStatement();
+			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($comment->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->id)));
 			Database::exec($stmt);
 		});
 	}
@@ -51,10 +54,10 @@ class CommentModel extends AbstractCrudModel
 
 	public static function findAllByPostId($key)
 	{
-		$stmt = new SqlSelectStatement();
+		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('comment.*');
 		$stmt->setTable('comment');
-		$stmt->setCriterion(new SqlEqualsFunctor('post_id', new SqlBinding($key)));
+		$stmt->setCriterion(new Sql\EqualsFunctor('post_id', new Sql\Binding($key)));
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)

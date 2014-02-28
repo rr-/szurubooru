@@ -1,30 +1,33 @@
 <?php
+use \Chibi\Sql as Sql;
+use \Chibi\Database as Database;
+
 class PostSearchService extends AbstractSearchService
 {
 	public static function getPostIdsAround($searchQuery, $postId)
 	{
 		return Database::transaction(function() use ($searchQuery, $postId)
 		{
-			$stmt = new SqlRawStatement('CREATE TEMPORARY TABLE IF NOT EXISTS post_search(id INTEGER PRIMARY KEY, post_id INTEGER)');
+			$stmt = new Sql\RawStatement('CREATE TEMPORARY TABLE IF NOT EXISTS post_search(id INTEGER PRIMARY KEY, post_id INTEGER)');
 			Database::exec($stmt);
 
-			$stmt = new SqlDeleteStatement();
+			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('post_search');
 			Database::exec($stmt);
 
-			$innerStmt = new SqlSelectStatement($searchQuery);
+			$innerStmt = new Sql\SelectStatement($searchQuery);
 			$innerStmt->setColumn('post.id');
 			$innerStmt->setTable('post');
 			self::decorateParser($innerStmt, $searchQuery);
-			$stmt = new SqlInsertStatement();
+			$stmt = new Sql\InsertStatement();
 			$stmt->setTable('post_search');
 			$stmt->setSource(['post_id'], $innerStmt);
 			Database::exec($stmt);
 
-			$stmt = new SqlSelectStatement();
+			$stmt = new Sql\SelectStatement();
 			$stmt->setTable('post_search');
 			$stmt->setColumn('id');
-			$stmt->setCriterion(new SqlEqualsFunctor('post_id', new SqlBinding($postId)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('post_id', new Sql\Binding($postId)));
 			$rowId = Database::fetchOne($stmt)['id'];
 
 			//it's possible that given post won't show in search results:
@@ -35,10 +38,10 @@ class PostSearchService extends AbstractSearchService
 			$rowId = intval($rowId);
 			$stmt->setColumn('post_id');
 
-			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($rowId - 1)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($rowId - 1)));
 			$nextPostId = Database::fetchOne($stmt)['post_id'];
 
-			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($rowId + 1)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($rowId + 1)));
 			$prevPostId = Database::fetchOne($stmt)['post_id'];
 
 			return [$prevPostId, $nextPostId];

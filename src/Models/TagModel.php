@@ -1,4 +1,7 @@
 <?php
+use \Chibi\Sql as Sql;
+use \Chibi\Database as Database;
+
 class TagModel extends AbstractCrudModel
 {
 	public static function getTableName()
@@ -12,10 +15,10 @@ class TagModel extends AbstractCrudModel
 		{
 			self::forgeId($tag, 'tag');
 
-			$stmt = new SqlUpdateStatement();
+			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('tag');
-			$stmt->setColumn('name', new SqlBinding($tag->name));
-			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($tag->id)));
+			$stmt->setColumn('name', new Sql\Binding($tag->name));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($tag->id)));
 
 			Database::exec($stmt);
 		});
@@ -24,16 +27,16 @@ class TagModel extends AbstractCrudModel
 
 	public static function remove($tag)
 	{
-		$binding = new SqlBinding($tag->id);
+		$binding = new Sql\Binding($tag->id);
 
-		$stmt = new SqlDeleteStatement();
+		$stmt = new Sql\DeleteStatement();
 		$stmt->setTable('post_tag');
-		$stmt->setCriterion(new SqlEqualsFunctor('tag_id', $binding));
+		$stmt->setCriterion(new Sql\EqualsFunctor('tag_id', $binding));
 		Database::exec($stmt);
 
-		$stmt = new SqlDeleteStatement();
+		$stmt = new Sql\DeleteStatement();
 		$stmt->setTable('tag');
-		$stmt->setCriterion(new SqlEqualsFunctor('id', $binding));
+		$stmt->setCriterion(new Sql\EqualsFunctor('id', $binding));
 		Database::exec($stmt);
 	}
 
@@ -62,28 +65,28 @@ class TagModel extends AbstractCrudModel
 			if ($sourceTag->id == $targetTag->id)
 				throw new SimpleException('Source and target tag are the same');
 
-			$stmt = new SqlSelectStatement();
+			$stmt = new Sql\SelectStatement();
 			$stmt->setColumn('post.id');
 			$stmt->setTable('post');
 			$stmt->setCriterion(
-				(new SqlConjunctionFunctor)
+				(new Sql\ConjunctionFunctor)
 				->add(
-					new SqlExistsFunctor(
-						(new SqlSelectStatement)
+					new Sql\ExistsFunctor(
+						(new Sql\SelectStatement)
 							->setTable('post_tag')
 							->setCriterion(
-								(new SqlConjunctionFunctor)
-									->add(new SqlEqualsFunctor('post_tag.post_id', 'post.id'))
-									->add(new SqlEqualsFunctor('post_tag.tag_id', new SqlBinding($sourceTag->id))))))
+								(new Sql\ConjunctionFunctor)
+									->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
+									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($sourceTag->id))))))
 				->add(
-					new SqlNegationFunctor(
-					new SqlExistsFunctor(
-						(new SqlSelectStatement)
+					new Sql\NegationFunctor(
+					new Sql\ExistsFunctor(
+						(new Sql\SelectStatement)
 							->setTable('post_tag')
 							->setCriterion(
-								(new SqlConjunctionFunctor)
-									->add(new SqlEqualsFunctor('post_tag.post_id', 'post.id'))
-									->add(new SqlEqualsFunctor('post_tag.tag_id', new SqlBinding($targetTag->id))))))));
+								(new Sql\ConjunctionFunctor)
+									->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
+									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($targetTag->id))))))));
 			$rows = Database::fetchAll($stmt);
 			$postIds = array_map(function($row) { return $row['id']; }, $rows);
 
@@ -91,10 +94,10 @@ class TagModel extends AbstractCrudModel
 
 			foreach ($postIds as $postId)
 			{
-				$stmt = new SqlInsertStatement();
+				$stmt = new Sql\InsertStatement();
 				$stmt->setTable('post_tag');
-				$stmt->setColumn('post_id', new SqlBinding($postId));
-				$stmt->setColumn('tag_id', new SqlBinding($targetTag->id));
+				$stmt->setColumn('post_id', new Sql\Binding($postId));
+				$stmt->setColumn('tag_id', new Sql\Binding($targetTag->id));
 				Database::exec($stmt);
 			}
 		});
@@ -103,11 +106,11 @@ class TagModel extends AbstractCrudModel
 
 	public static function findAllByPostId($key)
 	{
-		$stmt = new SqlSelectStatement();
+		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('tag.*');
 		$stmt->setTable('tag');
-		$stmt->addInnerJoin('post_tag', new SqlEqualsFunctor('post_tag.tag_id', 'tag.id'));
-		$stmt->setCriterion(new SqlEqualsFunctor('post_tag.post_id', new SqlBinding($key)));
+		$stmt->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'));
+		$stmt->setCriterion(new Sql\EqualsFunctor('post_tag.post_id', new Sql\Binding($key)));
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
@@ -117,10 +120,10 @@ class TagModel extends AbstractCrudModel
 
 	public static function findByName($key, $throw = true)
 	{
-		$stmt = new SqlSelectStatement();
+		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('tag.*');
 		$stmt->setTable('tag');
-		$stmt->setCriterion(new SqlNoCaseFunctor(new SqlEqualsFunctor('name', new SqlBinding($key))));
+		$stmt->setCriterion(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding($key))));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -135,14 +138,14 @@ class TagModel extends AbstractCrudModel
 
 	public static function removeUnused()
 	{
-		$stmt = (new SqlDeleteStatement)
+		$stmt = (new Sql\DeleteStatement)
 			->setTable('tag')
 			->setCriterion(
-				new SqlNegationFunctor(
-					new SqlExistsFunctor(
-						(new SqlSelectStatement)
+				new Sql\NegationFunctor(
+					new Sql\ExistsFunctor(
+						(new Sql\SelectStatement)
 							->setTable('post_tag')
-							->setCriterion(new SqlEqualsFunctor('post_tag.tag_id', 'tag.id')))));
+							->setCriterion(new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id')))));
 		Database::exec($stmt);
 	}
 

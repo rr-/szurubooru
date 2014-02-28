@@ -1,9 +1,11 @@
 <?php
+use \Chibi\Sql as Sql;
+
 abstract class AbstractSearchParser
 {
 	protected $statement;
 
-	public function decorate(SqlSelectStatement $statement, $filterString)
+	public function decorate(Sql\SelectStatement $statement, $filterString)
 	{
 		$this->statement = $statement;
 
@@ -65,17 +67,17 @@ abstract class AbstractSearchParser
 		$orderByString = strtolower(array_shift($arr));
 		$orderDirString = strtolower(array_shift($arr));
 		if ($orderDirString == 'asc')
-			$orderDir = SqlSelectStatement::ORDER_ASC;
+			$orderDir = Sql\SelectStatement::ORDER_ASC;
 		elseif ($orderDirString == 'desc')
-			$orderDir = SqlSelectStatement::ORDER_DESC;
+			$orderDir = Sql\SelectStatement::ORDER_DESC;
 		else
 			throw new SimpleException('Invalid search order direction: ' . $searchOrderDir);
 
 		if ($neg)
 		{
-			$orderDir = $orderDir == SqlSelectStatement::ORDER_ASC
-				? SqlSelectStatement::ORDER_DESC
-				: SqlSelectStatement::ORDER_ASC;
+			$orderDir = $orderDir == Sql\SelectStatement::ORDER_ASC
+				? Sql\SelectStatement::ORDER_DESC
+				: Sql\SelectStatement::ORDER_ASC;
 		}
 
 		if (!$this->processOrderToken($orderByString, $orderDir))

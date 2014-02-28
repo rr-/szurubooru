@@ -1,6 +1,8 @@
 <?php
+use \Chibi\Sql as Sql;
+use \Chibi\Database as Database;
+
 class TokenModel extends AbstractCrudModel
-implements IModel
 {
 	public static function getTableName()
 	{
@@ -20,29 +22,27 @@ implements IModel
 				'expires' => $token->expires,
 				];
 
-			$stmt = new SqlUpdateStatement();
+			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('user_token');
-			$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($token->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($token->id)));
 
 			foreach ($bindings as $key => $val)
-				$stmt->setColumn($key, new SqlBinding($val));
+				$stmt->setColumn($key, new Sql\Binding($val));
 
 			Database::exec($stmt);
 
 		});
 	}
 
-
-
 	public static function findByToken($key, $throw = true)
 	{
 		if (empty($key))
 			throw new SimpleNotFoundException('Invalid security token');
 
-		$stmt = new SqlSelectStatement();
+		$stmt = new Sql\SelectStatement();
 		$stmt->setTable('user_token');
 		$stmt->setColumn('*');
-		$stmt->setCriterion(new SqlEqualsFunctor('token', new SqlBinding($key)));
+		$stmt->setCriterion(new Sql\EqualsFunctor('token', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -52,8 +52,6 @@ implements IModel
 			throw new SimpleNotFoundException('No user with such security token');
 		return null;
 	}
-
-
 
 	public static function checkValidity($token)
 	{
@@ -66,8 +64,6 @@ implements IModel
 		if ($token->expires !== null and time() > $token->expires)
 			throw new SimpleException('This token has expired');
 	}
-
-
 
 	public static function forgeUnusedToken()
 	{

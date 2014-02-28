@@ -4,3 +4,6 @@
 [submodule "php-markdown"]
 	path = lib/php-markdown
 	url = https://github.com/michelf/php-markdown.git
+[submodule "lib/chibi-sql"]
+	path = lib/chibi-sql
+	url = https://github.com/rr-/chibi-sql.git

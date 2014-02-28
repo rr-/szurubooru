@@ -1,4 +1,6 @@
 <?php
+use \Chibi\Sql as Sql;
+
 class UserSearchParser extends AbstractSearchParser
 {
 	protected function processSimpleToken($value, $neg)
@@ -8,9 +10,9 @@ class UserSearchParser extends AbstractSearchParser
 
 		if ($value == 'pending')
 		{
-			$this->statement->setCriterion((new SqlDisjunctionFunctor)
-				->add(new SqlIsFunctor('staff_confirmed', new SqlNullFunctor()))
-				->add(new SqlEqualsFunctor('staff_confirmed', '0')));
+			$this->statement->setCriterion((new Sql\DisjunctionFunctor)
+				->add(new Sql\IsFunctor('staff_confirmed', new Sql\NullFunctor()))
+				->add(new Sql\EqualsFunctor('staff_confirmed', '0')));
 			return true;
 		}
 		return false;
@@ -19,7 +21,7 @@ class UserSearchParser extends AbstractSearchParser
 	protected function processOrderToken($orderByString, $orderDir)
 	{
 		if ($orderByString == 'alpha')
-			$this->statement->setOrderBy(new SqlNoCaseFunctor('name'), $orderDir);
+			$this->statement->setOrderBy(new Sql\NoCaseFunctor('name'), $orderDir);
 		elseif ($orderByString == 'date')
 			$this->statement->setOrderBy('join_date', $orderDir);
 		else

@@ -176,7 +176,7 @@ class PostController
 
 		if (InputHelper::get('submit'))
 		{
-			Database::transaction(function()
+			\Chibi\Database::transaction(function()
 			{
 				$post = PostModel::spawn();
 				LogHelper::bufferChanges();

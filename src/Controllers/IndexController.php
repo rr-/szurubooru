@@ -47,27 +47,8 @@ class IndexController
 		//check if post was deleted
 		$featuredPost = PostModel::findById($featuredPostId, false);
 		if (!$featuredPost)
-			return $this->featureNewPost();
+			return PropertyModel::featureNewPost();
 
 		return $featuredPost;
-	}
-
-	private function featureNewPost()
-	{
-		$stmt = (new SqlSelectStatement)
-			->setColumn('id')
-			->setTable('post')
-			->setCriterion((new SqlConjunctionFunctor)
-				->add(new SqlEqualsFunctor('type', new SqlBinding(PostType::Image)))
-				->add(new SqlEqualsFunctor('safety', new SqlBinding(PostSafety::Safe))))
-			->setOrderBy(new SqlRandomFunctor(), SqlSelectStatement::ORDER_DESC);
-		$featuredPostId = Database::fetchOne($stmt)['id'];
-		if (!$featuredPostId)
-			return null;
-
-		PropertyModel::set(PropertyModel::FeaturedPostId, $featuredPostId);
-		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
-		PropertyModel::set(PropertyModel::FeaturedPostUserName, null);
-		return PostModel::findById($featuredPostId);
 	}
 }

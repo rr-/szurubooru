@@ -1,13 +1,15 @@
 <?php
+use \Chibi\Sql as Sql;
+
 class TagSearchParser extends AbstractSearchParser
 {
 	protected function processSetup(&$tokens)
 	{
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
 		$this->statement
-			->addInnerJoin('post_tag', new SqlEqualsFunctor('tag.id', 'post_tag.tag_id'))
-			->addInnerJoin('post', new SqlEqualsFunctor('post.id', 'post_tag.post_id'))
-			->setCriterion((new SqlConjunctionFunctor)->add(SqlInFunctor::fromArray('safety', SqlBinding::fromArray($allowedSafety))))
+			->addInnerJoin('post_tag', new Sql\EqualsFunctor('tag.id', 'post_tag.tag_id'))
+			->addInnerJoin('post', new Sql\EqualsFunctor('post.id', 'post_tag.post_id'))
+			->setCriterion((new Sql\ConjunctionFunctor)->add(Sql\InFunctor::fromArray('safety', Sql\Binding::fromArray($allowedSafety))))
 			->setGroupBy('tag.id');
 	}
 
@@ -20,7 +22,7 @@ class TagSearchParser extends AbstractSearchParser
 			$value = '%' . $value;
 		$value .= '%';
 
-		$this->statement->getCriterion()->add(new SqlNoCaseFunctor(new SqlLikeFunctor('tag.name', new SqlBinding($value))));
+		$this->statement->getCriterion()->add(new Sql\NoCaseFunctor(new Sql\LikeFunctor('tag.name', new Sql\Binding($value))));
 		return true;
 	}
 

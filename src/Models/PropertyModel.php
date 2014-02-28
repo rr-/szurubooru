@@ -1,4 +1,7 @@
 <?php
+use \Chibi\Sql as Sql;
+use \Chibi\Database as Database;
+
 class PropertyModel implements IModel
 {
 	const FeaturedPostId = 0;
@@ -20,7 +23,7 @@ class PropertyModel implements IModel
 		{
 			self::$loaded = true;
 			self::$allProperties = [];
-			$stmt = new SqlSelectStatement();
+			$stmt = new Sql\SelectStatement();
 			$stmt ->setColumn('*');
 			$stmt ->setTable('property');
 			foreach (Database::fetchAll($stmt) as $row)
@@ -41,28 +44,47 @@ class PropertyModel implements IModel
 		self::loadIfNecessary();
 		Database::transaction(function() use ($propertyId, $value)
 		{
-			$stmt = new SqlSelectStatement();
+			$stmt = new Sql\SelectStatement();
 			$stmt->setColumn('id');
 			$stmt->setTable('property');
-			$stmt->setCriterion(new SqlEqualsFunctor('prop_id', new SqlBinding($propertyId)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('prop_id', new Sql\Binding($propertyId)));
 			$row = Database::fetchOne($stmt);
 
 			if ($row)
 			{
-				$stmt = new SqlUpdateStatement();
-				$stmt->setCriterion(new SqlEqualsFunctor('prop_id', new SqlBinding($propertyId)));
+				$stmt = new Sql\UpdateStatement();
+				$stmt->setCriterion(new Sql\EqualsFunctor('prop_id', new Sql\Binding($propertyId)));
 			}
 			else
 			{
-				$stmt = new SqlInsertStatement();
-				$stmt->setColumn('prop_id', new SqlBinding($propertyId));
+				$stmt = new Sql\InsertStatement();
+				$stmt->setColumn('prop_id', new Sql\Binding($propertyId));
 			}
 			$stmt->setTable('property');
-			$stmt->setColumn('value', new SqlBinding($value));
+			$stmt->setColumn('value', new Sql\Binding($value));
 
 			Database::exec($stmt);
 
 			self::$allProperties[$propertyId] = $value;
 		});
+	}
+
+	public static function featureNewPost()
+	{
+		$stmt = (new Sql\SelectStatement)
+			->setColumn('id')
+			->setTable('post')
+			->setCriterion((new Sql\ConjunctionFunctor)
+				->add(new Sql\EqualsFunctor('type', new Sql\Binding(PostType::Image)))
+				->add(new Sql\EqualsFunctor('safety', new Sql\Binding(PostSafety::Safe))))
+			->setOrderBy(new Sql\RandomFunctor(), Sql\SelectStatement::ORDER_DESC);
+		$featuredPostId = Database::fetchOne($stmt)['id'];
+		if (!$featuredPostId)
+			return null;
+
+		self::set(self::FeaturedPostId, $featuredPostId);
+		self::set(self::FeaturedPostDate, time());
+		self::set(self::FeaturedPostUserName, null);
+		return PostModel::findById($featuredPostId);
 	}
 }

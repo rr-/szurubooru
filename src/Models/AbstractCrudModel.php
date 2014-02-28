@@ -1,4 +1,7 @@
 <?php
+use \Chibi\Sql as Sql;
+use \Chibi\Database as Database;
+
 abstract class AbstractCrudModel implements IModel
 {
 	public static function spawn()
@@ -21,10 +24,10 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function findById($key, $throw = true)
 	{
-		$stmt = new SqlSelectStatement();
+		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable(static::getTableName());
-		$stmt->setCriterion(new SqlEqualsFunctor('id', new SqlBinding($key)));
+		$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
@@ -37,10 +40,10 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function findByIds(array $ids)
 	{
-		$stmt = new SqlSelectStatement();
+		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable(static::getTableName());
-		$stmt->setCriterion(SqlInFunctor::fromArray('id', SqlBinding::fromArray(array_unique($ids))));
+		$stmt->setCriterion(Sql\InFunctor::fromArray('id', Sql\Binding::fromArray(array_unique($ids))));
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
@@ -51,8 +54,8 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function getCount()
 	{
-		$stmt = new SqlSelectStatement();
-		$stmt->setColumn(new SqlAliasFunctor(new SqlCountFunctor('1'), 'count'));
+		$stmt = new Sql\SelectStatement();
+		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable(static::getTableName());
 		return Database::fetchOne($stmt)['count'];
 	}
@@ -107,7 +110,7 @@ abstract class AbstractCrudModel implements IModel
 			throw new Exception('Can be run only within transaction');
 		if (!$entity->id)
 		{
-			$stmt = new SqlInsertStatement();
+			$stmt = new Sql\InsertStatement();
 			$stmt->setTable($table);
 			Database::exec($stmt);
 			$entity->id = Database::lastInsertId();

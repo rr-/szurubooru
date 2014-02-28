@@ -1,4 +1,6 @@
 <?php
+use \Chibi\Database as Database;
+
 class Bootstrap
 {
 	public function render($callback = null)
