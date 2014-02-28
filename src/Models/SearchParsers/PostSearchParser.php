@@ -145,7 +145,7 @@ class PostSearchParser extends AbstractSearchParser
 		{
 			$context = \Chibi\Registry::getContext();
 			$value = strtolower($value);
-			if (in_array($value, ['liked', 'likes']))
+			if (in_array($value, ['like', 'liked', 'likes']))
 			{
 				if (!$this->statement->isTableJoined('post_score'))
 				{
@@ -156,7 +156,7 @@ class PostSearchParser extends AbstractSearchParser
 				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '1');
 			}
 
-			elseif (in_array($value, ['disliked', 'dislikes']))
+			elseif (in_array($value, ['dislike', 'disliked', 'dislikes']))
 			{
 				if (!$this->statement->isTableJoined('post_score'))
 				{
