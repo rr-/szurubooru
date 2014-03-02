@@ -552,7 +552,7 @@ class UserController
 	public function activationAction($token)
 	{
 		$this->context->viewName = 'message';
-		LayoutHelper::setSubTitle('account activation');
+		CustomAssetViewDecorator::setSubTitle('account activation');
 
 		$dbToken = TokenModel::findByToken($token);
 		TokenModel::checkValidity($dbToken);
@@ -585,7 +585,7 @@ class UserController
 	public function passwordResetAction($token)
 	{
 		$this->context->viewName = 'message';
-		LayoutHelper::setSubTitle('password reset');
+		CustomAssetViewDecorator::setSubTitle('password reset');
 
 		$dbToken = TokenModel::findByToken($token);
 		TokenModel::checkValidity($dbToken);
@@ -619,7 +619,7 @@ class UserController
 	public function passwordResetProxyAction()
 	{
 		$this->context->viewName = 'user-select';
-		LayoutHelper::setSubTitle('password reset');
+		CustomAssetViewDecorator::setSubTitle('password reset');
 
 		if (InputHelper::get('submit'))
 		{
@@ -639,7 +639,7 @@ class UserController
 	public function activationProxyAction()
 	{
 		$this->context->viewName = 'user-select';
-		LayoutHelper::setSubTitle('account activation');
+		CustomAssetViewDecorator::setSubTitle('account activation');
 
 		if (InputHelper::get('submit'))
 		{
