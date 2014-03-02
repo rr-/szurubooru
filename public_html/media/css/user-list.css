@@ -17,17 +17,13 @@ nav.sort-styles li.active {
 .users-wrapper {
 	text-align: center;
 }
-.users {
-	column-width: 20em;
-	-moz-column-width: 20em;
-	-webkit-column-width: 20em;
-}
 
 .user {
 	text-align: initial;
 	line-height: 1.5em;
 	margin-bottom: 1em;
 	margin-right: 1em;
+	float: left;
 	white-space: pre;
 }
 
