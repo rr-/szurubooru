@@ -226,14 +226,14 @@ class PostSearchParser extends AbstractSearchParser
 		elseif (in_array($orderByString, ['date']))
 			$orderColumn = 'upload_date';
 
+		elseif (in_array($orderByString, ['score']))
+			$orderColumn = 'score';
+
 		elseif (in_array($orderByString, ['comment', 'comments', 'commentcount', 'comment_count']))
 			$orderColumn = 'comment_count';
 
 		elseif (in_array($orderByString, ['fav', 'favs', 'favcount', 'fav_count']))
 			$orderColumn = 'fav_count';
-
-		elseif (in_array($orderByString, ['score']))
-			$orderColumn = 'score';
 
 		elseif (in_array($orderByString, ['tag', 'tags', 'tagcount', 'tag_count']))
 			$orderColumn = 'tag_count';

@@ -59,7 +59,7 @@ abstract class AbstractSearchParser
 	{
 		$arr = preg_split('/[;,]/', $orderToken);
 		if (count($arr) == 1)
-			$arr []= 'asc';
+			$arr []= 'desc';
 
 		if (count($arr) != 2)
 			throw new SimpleException('Invalid search order token: ' . $orderToken);
