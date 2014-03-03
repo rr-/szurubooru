@@ -80,7 +80,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 			$url = &$matches[4];
 		else
 			$url = &$matches[3];
-		if (!preg_match('/^((https?|ftp):|)\/\//', $url))
+		if (!preg_match('/^((https?|ftp):|)\//', $url))
 			$url = 'http://' . $url;
 		return parent::_doAnchors_inline_callback($matches);
 	}
@@ -130,7 +130,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 		$link = \Chibi\UrlHelper::route('post', 'view', ['id' => '_post_']);
 		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))@(\d+)/', function($x) use ($link)
 		{
-			return $this->hashPart('<a href="' . str_replace('_post_', $x[1], $link) . '">' . $x[0] . '</a>');
+			return $this->hashPart('<a href="' . str_replace('_post_', $x[1], $link) . '"><code>' . $x[0] . '</code></a>');
 		}, $text);
 	}
 

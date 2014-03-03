@@ -1,7 +1,22 @@
-code {
-	margin: 0 0.5em;
-}
-
 .tab-content {
 	padding-left: 1em;
+}
+
+table {
+	border-spacing: 0;
+	border: 3px solid #eee;
+}
+table th {
+	padding: 0.3em 0.5em;
+}
+table td {
+	padding: 0.1em 0.5em;
+}
+table th {
+	text-align: left;
+	background: #eee;
+}
+table td:first-child {
+	white-space: pre;
+	font-family: verdana;
 }

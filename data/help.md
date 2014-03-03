@@ -6,44 +6,66 @@ If you&rsquo;re not a registered user, you will only see public (Safe) posts. Lo
 
 You can use your keyboard to navigate around the site. There are a few shortcuts:
 
-- focus search field: `[Q]`
-- scroll up/down: `[W]` and `[S]`
-- go to newer/older post or page: `[A]` and `[D]`
-- edit post: `[E]`
-- focus first post in post list: `[P]`
+Hotkey          | Description
+--------------- | -----------
+`[Q]`           | Focus search field
+`[W]` and `[S]` | Scroll up / down
+`[A]` and `[D]` | Go to newer/older post or page
+`[E]`           | Edit post
+`[P]`           | Focus first post in post list
 
 # Search syntax
 
-- contatining tag "Haruhi": [search]Haruhi[/search]
-- **not** contatining tag "Kyon": [search]-Kyon[/search]
-- uploaded by David: [search]submit:David[/search] (note no spaces)
-- favorited by David: [search]fav:David[/search]
-- favorited by at least four users: [search]favmin:4[/search]
-- commented by David: [search]comment:David[/search]
-- having at least three comments: [search]commentmin:3[/search]
-- having minimum score of 4: [search]scoremin:4[/search]
-- tagged with at least seven tags: [search]tagmin:7[/search]
-- exactly from the specified date: [search]date:2001[/search], [search]date:2012-09-29[/search] (yyyy-mm-dd format)
-- from the specified date onwards: [search]datemin:2001-01-01[/search]
-- up to the specified date: [search]datemax:2004-07[/search]
-- having specific ID: [search]id:1,2,3,8[/search]
-- having ID no less than specified value: [search]idmin:28[/search]
-- by content type: [search]type:img[/search], [search]type:swf[/search], [search]type:yt[/search] (images, flash files and YouTube videos, respectively)
-- scored up/down by currently logged in user: [search]special:likes[/search] and [search]special:dislikes[/search]
+Command                           | Description                                               | Aliases                                         |
+--------------------------------- | --------------------------------------------------------- | ----------------------------------------------- |
+[search]Haruhi[/search]           | containing tag "Haruhi"                                   | -                                               |
+[search]-Kyon[/search]            | **not** containing tag "Kyon"                             | -                                               |
+[search]submit:David[/search]     | uploaded by user David                                    | `upload`, `uploads`, `uploaded`, `uploader`     |
+[search]comment:David[/search]    | commented by David                                        | `comments`, `commenter`, `commented`            |
+[search]fav:David[/search]        | favorited by David                                        | `favs`, `favd`                                  |
+[search]favmin:4[/search]         | favorited by at least four users                          | `fav_min`                                       |
+[search]favmax:4[/search]         | favorited by at most four users                           | `fax_max`                                       |
+[search]commentmin:3[/search]     | having at least three comments                            | `comment_min`                                   |
+[search]commentmax:3[/search]     | having at most three comments                             | `comment_max`                                   |
+[search]scoremin:4[/search]       | having minimum score of 4                                 | `score_min`                                     |
+[search]scoremax:4[/search]       | having maximum score of 4                                 | `score_max`                                     |
+[search]tagmin:7[/search]         | tagged with at least seven tags                           | `tag_min`                                       |
+[search]tagmax:7[/search]         | tagged with at most seven tags                            | `tax_max`                                       |
+[search]date:2000[/search]        | posted in year 2000                                       | -                                               |
+[search]date:2000-01[/search]     | posted in January, 2000                                   | -                                               |
+[search]date:2000-01-01[/search]  | posted on January 1st, 2000                               | -                                               |
+[search]datemin:...[/search]      | posted on `...` or later (format like in `date:`)         | `date_min`                                      |
+[search]datemax:...[/search]      | posted on `...` or earlier (format like in `date:`)       | `date_max`                                      |
+[search]id:1,2,3[/search]         | having specific post ID                                   | `ids`                                           |
+[search]idmin:5[/search]          | posts with ID greater than or equal to @5                 | `id_min`                                        |
+[search]idmax:5[/search]          | posts with ID less than or equal to @5                    | `id_max`                                        |
+[search]type:img[/search]         | only image posts                                          | -                                               |
+[search]type:swf[/search]         | only Flash posts                                          | -                                               |
+[search]type:yt[/search]          | only Youtube posts                                        | `type:youtube`                                  |
+[search]special:liked[/search]    | posts liked by currently logged in user                   | `special:likes`, `special:like`                 |
+[search]special:disliked[/search] | posts disliked by currently logged in user                | `special:dislikes`, `special:dislike`           |
+[search]special:fav[/search]      | posts added to favorites by currently logged in user      | `special:favs`, `special:favd`                  |
+[search]special:hidden[/search]   | hidden (soft-deleted) posts; moderators only              | -                                               |
 
 You can combine tags and negate any of them for interesting results. [search]sea -favmin:8 type:swf submit:Pirate[/search] will show you **flash files** tagged as **sea**, that were **liked by seven people** at most, uploaded by user **Pirate**.
 
-All of the above can be sorted using additional sorting tags:
+All of the above can be sorted using additional tag in form of `order:...`:
 
-- as random as it can get: [search]order:random[/search]
-- newest to oldest: [search]order:date[/search] (pretty much default browse view)
-- oldest to newest: [search]-order:date[/search]
-- most commented first: [search]order:comments[/search]
-- loved by most: [search]order:favs[/search]
-- highest scored: [search]order:score[/search]
-- with most tags: [search]order:tags[/search]
+Command                            | Description                                              | Aliases (`order:...`)                      |
+ --------------------------------- | -------------------------------------------------------- | ------------------------------------------ |
+[search]order:random[/search]      | as random as it can get                                  | -                                          |
+[search]order:id[/search]          | highest to lowest post ID (default browse view)          | -                                          |
+[search]order:date[/search]        | newest to oldest (pretty much same as above)             | -                                          |
+[search]-order:date[/search]       | oldest to newest                                         | -                                          |
+[search]order:date,asc[/search]    | oldest to newest (ascending order, default = descending) | -                                          |
+[search]order:score[/search]       | highest scored                                           | -                                          |
+[search]order:comments[/search]    | most commented first                                     | `comment`, `commentcount`, `comment_count` |
+[search]order:favs[/search]        | loved by most                                            | `fav`, `favcount`, `fav_count`             |
+[search]order:tags[/search]        | with most tags                                           | `tag`, `tagcount`, `tag_count`             |
+[search]order:commentdate[/search] | recently commented                                       | `comment_date`                             |
+[search]order:favdate[/search]     | recently added to favorites                              | `fav_date`                                 |
 
-As shown with [search]-order:date[/search], any of them can be reversed in the same way as negating other tags: by placing a dash before the tag. If there is a "min" tag, there&rsquo;s also its "max" counterpart, e.g. [search]favmax:7[/search].
+As shown with [search]-order:date[/search], any of them can be reversed in the same way as negating other tags: by placing a dash before the tag.
 
 # Registration
 
@@ -62,3 +84,5 @@ Registered users can post comments. Comments support [Markdown syntax](http://da
 # Uploads
 
 After registering and activating your account, you gain the power to upload files to the service for everyone else to see.
+
+Remember to follow the [rules](/help/rules)!
