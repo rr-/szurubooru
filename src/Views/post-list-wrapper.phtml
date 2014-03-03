@@ -2,24 +2,41 @@
 CustomAssetViewDecorator::setSubTitle('posts');
 
 $tabs = [];
+$activeTab = 0;
 if (PrivilegesHelper::confirm(Privilege::ListPosts))
 	$tabs []= ['All posts', \Chibi\UrlHelper::route('post', 'list')];
 
 if (PrivilegesHelper::confirm(Privilege::ListPosts))
+{
 	$tabs []= ['Random', \Chibi\UrlHelper::route('post', 'random')];
+	if ($this->context->route->simpleActionName == 'random')
+		$activeTab = count($tabs) - 1;
+}
+
 if (PrivilegesHelper::confirm(Privilege::ListPosts))
+{
 	$tabs []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
+	if ($this->context->route->simpleActionName == 'favorites')
+		$activeTab = count($tabs) - 1;
+}
+
+if (PrivilegesHelper::confirm(Privilege::ListPosts))
+{
+	$tabs []= ['Upvoted', \Chibi\UrlHelper::route('post', 'upvoted')];
+	if ($this->context->route->simpleActionName == 'upvoted')
+		$activeTab = count($tabs) - 1;
+}
 
 if (PrivilegesHelper::confirm(Privilege::MassTag))
+{
 	$tabs []= ['Mass tag', \Chibi\UrlHelper::route('post', 'list', [
 		'source' => 'mass-tag',
 		'query' => isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '',
 		'page' => isset($this->context->transport->paginator) ? $this->context->transport->paginator->page : 1])];
+	if ($this->context->source == 'mass-tag')
+		$activeTab = count($tabs) - 1;
+}
 
-$activeTab = 0;
-if ($this->context->route->simpleActionName == 'random') $activeTab = 1;
-if ($this->context->route->simpleActionName == 'favorites') $activeTab = 2;
-if ($this->context->source == 'mass-tag') $activeTab = 3;
 ?>
 
 <nav class="tabs">

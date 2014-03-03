@@ -151,7 +151,15 @@ class PostController
 		$this->listAction('favmin:1', $page);
 	}
 
-
+	/**
+	* @route /upvoted
+	* @route /upvoted/{page}
+	* @validate page \d*
+	*/
+	public function upvotedAction($page = 1)
+	{
+		$this->listAction('scoremin:1', $page);
+	}
 
 	/**
 	* @route /random
