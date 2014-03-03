@@ -273,11 +273,14 @@ class PostSearchParser extends AbstractSearchParser
 	protected static function parseDate($value)
 	{
 		list ($year, $month, $day) = explode('-', $value . '-0-0');
-		$yearMin = $yearMax = intval($year);
-		$monthMin = $monthMax = intval($month);
+		$year = intval($year);
+		$month = intval($month);
+		$day = intval($day);
+		$yearMin = $yearMax = $year;
+		$monthMin = $monthMax = $month;
 		$monthMin = $monthMin ?: 1;
 		$monthMax = $monthMax ?: 12;
-		$dayMin = $dayMax = intval($day);
+		$dayMin = $dayMax = $day;
 		$dayMin = $dayMin ?: 1;
 		$dayMax = $dayMax ?: intval(date('t', mktime(0, 0, 0, $monthMax, 1, $year)));
 		$timeMin = mktime(0, 0, 0, $monthMin, $dayMin, $yearMin);
