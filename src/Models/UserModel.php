@@ -156,6 +156,7 @@ class UserModel extends AbstractCrudModel
 			$stmt->setTable('favoritee');
 			$stmt->setColumn('post_id', new Sql\Binding($post->id));
 			$stmt->setColumn('user_id', new Sql\Binding($user->id));
+			$stmt->setColumn('fav_date', time());
 			Database::exec($stmt);
 		});
 	}
