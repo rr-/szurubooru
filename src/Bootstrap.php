@@ -14,11 +14,11 @@ class Bootstrap
 	public function workWrapper($workCallback)
 	{
 		$this->config->chibi->baseUrl = 'http://' . rtrim($_SERVER['HTTP_HOST'], '/') . '/';
-		session_start();
-
-		$this->context->handleExceptions = false;
+		$this->context->viewDecorators []= new CustomAssetViewDecorator();
+		$this->context->viewDecorators []= new \Chibi\PrettyPrintViewDecorator();
 		CustomAssetViewDecorator::setTitle($this->config->main->title);
 
+		$this->context->handleExceptions = false;
 		$this->context->json = isset($_GET['json']);
 		$this->context->layoutName = $this->context->json
 			? 'layout-json'
@@ -26,6 +26,7 @@ class Bootstrap
 		$this->context->transport = new StdClass;
 		StatusHelper::init();
 
+		session_start();
 		AuthController::doLogIn();
 
 		if (empty($this->context->route))
@@ -36,8 +37,6 @@ class Bootstrap
 			return;
 		}
 
-		$this->context->viewDecorators []= new CustomAssetViewDecorator();
-		$this->context->viewDecorators []= new \Chibi\PrettyPrintViewDecorator();
 		try
 		{
 			$this->render($workCallback);
