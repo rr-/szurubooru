@@ -42,7 +42,7 @@ class IndexController
 
 		//check if too old
 		if (!$featuredPostId or $featuredPostDate + $featuredPostRotationTime < time())
-			return $this->featureNewPost();
+			return PropertyModel::featureNewPost();
 
 		//check if post was deleted
 		$featuredPost = PostModel::findById($featuredPostId, false);
