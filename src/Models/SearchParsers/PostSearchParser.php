@@ -65,7 +65,7 @@ class PostSearchParser extends AbstractSearchParser
 			return Sql\InFunctor::fromArray('post.id', Sql\Binding::fromArray($ids));
 		}
 
-		elseif (in_array($key, ['fav', 'favs']))
+		elseif (in_array($key, ['fav', 'favs', 'favd']))
 		{
 			$user = UserModel::findByNameOrEmail($value);
 			$innerStmt = (new Sql\SelectStatement)
@@ -76,7 +76,7 @@ class PostSearchParser extends AbstractSearchParser
 			return new Sql\ExistsFunctor($innerStmt);
 		}
 
-		elseif (in_array($key, ['comment', 'commenter']))
+		elseif (in_array($key, ['comment', 'comments', 'commenter', 'commented']))
 		{
 			$user = UserModel::findByNameOrEmail($value);
 			$innerStmt = (new Sql\SelectStatement)
@@ -87,7 +87,7 @@ class PostSearchParser extends AbstractSearchParser
 			return new Sql\ExistsFunctor($innerStmt);
 		}
 
-		elseif (in_array($key, ['submit', 'upload', 'uploader', 'uploaded']))
+		elseif (in_array($key, ['submit', 'upload', `uploads`, 'uploader', 'uploaded']))
 		{
 			$user = UserModel::findByNameOrEmail($value);
 			return new Sql\EqualsFunctor('uploader_id', new Sql\Binding($user->id));
@@ -147,7 +147,7 @@ class PostSearchParser extends AbstractSearchParser
 		{
 			$context = \Chibi\Registry::getContext();
 			$value = strtolower($value);
-			if (in_array($value, ['fav', 'favs', 'favd', 'favorite', 'favorites']))
+			if (in_array($value, ['fav', 'favs', 'favd']))
 			{
 				return $this->prepareCriterionForComplexToken('fav', $context->user->name);
 			}
