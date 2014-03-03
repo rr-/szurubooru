@@ -90,7 +90,7 @@ class PostSearchParser extends AbstractSearchParser
 		elseif (in_array($key, ['submit', 'upload', `uploads`, 'uploader', 'uploaded']))
 		{
 			$user = UserModel::findByNameOrEmail($value);
-			return new Sql\EqualsFunctor('uploader_id', new Sql\Binding($user->id));
+			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->id));
 		}
 
 		elseif (in_array($key, ['idmin', 'id_min']))
@@ -100,47 +100,47 @@ class PostSearchParser extends AbstractSearchParser
 			return new Sql\EqualsOrLesserFunctor('post.id', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['scoremin', 'score_min']))
-			return new Sql\EqualsOrGreaterFunctor('score', new Sql\Binding(intval($value)));
+			return new Sql\EqualsOrGreaterFunctor('post.score', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['scoremax', 'score_max']))
-			return new Sql\EqualsOrLesserFunctor('score', new Sql\Binding(intval($value)));
+			return new Sql\EqualsOrLesserFunctor('post.score', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['tagmin', 'tag_min']))
-			return new Sql\EqualsOrGreaterFunctor('tag_count', new Sql\Binding(intval($value)));
+			return new Sql\EqualsOrGreaterFunctor('post.tag_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['tagmax', 'tag_max']))
-			return new Sql\EqualsOrLesserFunctor('tag_count', new Sql\Binding(intval($value)));
+			return new Sql\EqualsOrLesserFunctor('post.tag_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['favmin', 'fav_min']))
-			return new Sql\EqualsOrGreaterFunctor('fav_count', new Sql\Binding(intval($value)));
+			return new Sql\EqualsOrGreaterFunctor('post.fav_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['favmax', 'fav_max']))
-			return new Sql\EqualsOrLesserFunctor('fav_count', new Sql\Binding(intval($value)));
+			return new Sql\EqualsOrLesserFunctor('post.fav_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['commentmin', 'comment_min']))
-			return new Sql\EqualsOrGreaterFunctor('comment_count', new Sql\Binding(intval($value)));
+			return new Sql\EqualsOrGreaterFunctor('post.comment_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['commentmax', 'comment_max']))
-			return new Sql\EqualsOrLesserFunctor('comment_count', new Sql\Binding(intval($value)));
+			return new Sql\EqualsOrLesserFunctor('post.comment_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['date']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
 			return (new Sql\ConjunctionFunctor)
-				->add(new Sql\EqualsOrLesserFunctor('upload_date', new Sql\Binding($dateMax)))
-				->add(new Sql\EqualsOrGreaterFunctor('upload_date', new Sql\Binding($dateMin)));
+				->add(new Sql\EqualsOrLesserFunctor('post.upload_date', new Sql\Binding($dateMax)))
+				->add(new Sql\EqualsOrGreaterFunctor('post.upload_date', new Sql\Binding($dateMin)));
 		}
 
 		elseif (in_array($key, ['datemin', 'date_min']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
-			return new Sql\EqualsOrGreaterFunctor('upload_date', new Sql\Binding($dateMin));
+			return new Sql\EqualsOrGreaterFunctor('post.upload_date', new Sql\Binding($dateMin));
 		}
 
 		elseif (in_array($key, ['datemax', 'date_max']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
-			return new Sql\EqualsOrLesserFunctor('upload_date', new Sql\Binding($dateMax));
+			return new Sql\EqualsOrLesserFunctor('post.upload_date', new Sql\Binding($dateMax));
 		}
 
 		elseif ($key == 'special')
@@ -224,25 +224,25 @@ class PostSearchParser extends AbstractSearchParser
 			$orderColumn = 'post.id';
 
 		elseif (in_array($orderByString, ['date']))
-			$orderColumn = 'upload_date';
+			$orderColumn = 'post.upload_date';
 
 		elseif (in_array($orderByString, ['score']))
-			$orderColumn = 'score';
+			$orderColumn = 'post.score';
 
 		elseif (in_array($orderByString, ['comment', 'comments', 'commentcount', 'comment_count']))
-			$orderColumn = 'comment_count';
+			$orderColumn = 'post.comment_count';
 
 		elseif (in_array($orderByString, ['fav', 'favs', 'favcount', 'fav_count']))
-			$orderColumn = 'fav_count';
+			$orderColumn = 'post.fav_count';
 
 		elseif (in_array($orderByString, ['tag', 'tags', 'tagcount', 'tag_count']))
-			$orderColumn = 'tag_count';
+			$orderColumn = 'post.tag_count';
 
 		elseif (in_array($orderByString, ['commentdate', 'comment_date']))
-			$orderColumn = 'comment_date';
+			$orderColumn = 'post.comment_date';
 
 		elseif (in_array($orderByString, ['favdate', 'fav_date']))
-			$orderColumn = 'fav_date';
+			$orderColumn = 'post.fav_date';
 
 		elseif ($orderByString == 'random')
 		{
