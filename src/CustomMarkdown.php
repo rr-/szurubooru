@@ -1,12 +1,12 @@
 <?php
-class CustomMarkdown extends \Michelf\Markdown
+class CustomMarkdown extends \Michelf\MarkdownExtra
 {
 	protected $simple = false;
 
 	public function __construct($simple = false)
 	{
 		$this->simple = $simple;
-		$this->no_markup = true;
+		$this->no_markup = $simple;
 		$this->span_gamut += ['doSpoilers' => 71];
 		$this->span_gamut += ['doSearchPermalinks' => 72];
 		$this->span_gamut += ['doStrike' => 6];

@@ -12,6 +12,7 @@ ini_set('memory_limit', '128M');
 
 //basic include calls, autoloader init
 require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'Markdown.php';
+require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
 require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'Facade.php';
 \Chibi\AutoLoader::init([__DIR__, $rootDir . 'lib' . DS . 'chibi-sql']);
 
