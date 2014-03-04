@@ -64,6 +64,7 @@ Command                            | Description                                
 [search]order:tags[/search]        | with most tags                                           | `tag`, `tagcount`, `tag_count`             |
 [search]order:commentdate[/search] | recently commented                                       | `comment_date`                             |
 [search]order:favdate[/search]     | recently added to favorites                              | `fav_date`                                 |
+[search]order:filesize[/search]    | largest files first                                      | `file_size`                                |
 
 As shown with [search]-order:date[/search], any of them can be reversed in the same way as negating other tags: by placing a dash before the tag.
 

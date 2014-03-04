@@ -244,6 +244,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif (in_array($orderByString, ['favdate', 'fav_date']))
 			$orderColumn = 'post.fav_date';
 
+		elseif (in_array($orderByString, ['filesize', 'file_size']))
+			$orderColumn = 'post.file_size';
+
 		elseif ($orderByString == 'random')
 		{
 			//seeding works like this: if you visit anything
