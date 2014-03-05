@@ -3,8 +3,8 @@
 	max-width: 400px;
 }
 
-#content form label {
-	width: 35%;
+#content form.register label {
+	width: 12em;
 }
 
 #content form p {
