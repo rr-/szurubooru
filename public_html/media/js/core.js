@@ -304,15 +304,59 @@ function attachTagIt(element)
 
 
 
+//prevent keybindings from executing when flash posts are focused
+var oldMousetrapBind = Mousetrap.bind;
+Mousetrap.bind = function(key, func, args)
+{
+	oldMousetrapBind(key, function()
+	{
+		if ($(document.activeElement).parents('.post-type-flash').length > 0)
+			return false;
+
+		func();
+	}, args);
+};
+
+
+
 //hotkeys
 $(function()
 {
-	Mousetrap.bind('q', function() { $('#top-nav input').focus(); return false; }, 'keyup');
-	Mousetrap.bind('w', function() { $('body,html').animate({scrollTop: '-=150px'}, 200); });
-	Mousetrap.bind('s', function() { $('body,html').animate({scrollTop: '+=150px'}, 200); });
-	Mousetrap.bind('a', function() { var url = $('.paginator:visible .prev:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
-	Mousetrap.bind('d', function() { var url = $('.paginator:visible .next:not(.disabled) a').attr('href'); if (typeof url !== 'undefined') window.location.href = url; }, 'keyup');
-	Mousetrap.bind('p', function() { $('.post a').eq(0).focus(); return false; }, 'keyup');
+	Mousetrap.bind('q', function()
+		{
+			$('#top-nav input').focus();
+			return false;
+		}, 'keyup');
+
+	Mousetrap.bind('w', function()
+		{
+			$('body,html').animate({scrollTop: '-=150px'}, 200);
+		});
+
+	Mousetrap.bind('s', function()
+		{
+			$('body,html').animate({scrollTop: '+=150px'}, 200);
+		});
+
+	Mousetrap.bind('a', function()
+		{
+			var url = $('.paginator:visible .prev:not(.disabled) a').attr('href');
+			if (typeof url !== 'undefined')
+				window.location.href = url;
+		}, 'keyup');
+
+	Mousetrap.bind('d', function()
+		{
+			var url = $('.paginator:visible .next:not(.disabled) a').attr('href');
+			if (typeof url !== 'undefined')
+				window.location.href = url;
+		}, 'keyup');
+
+	Mousetrap.bind('p', function()
+		{
+			$('.post a').eq(0).focus();
+			return false;
+		}, 'keyup');
 });
 
 
