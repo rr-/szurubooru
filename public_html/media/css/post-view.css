@@ -88,7 +88,10 @@ embed {
 	font-weight: bold;
 }
 
-
+#sidebar .left a,
+#sidebar .right a {
+	display: inline-block;
+}
 i.icon-prev {
 	background-position: -12px -1px;
 	margin-left: 8px;
