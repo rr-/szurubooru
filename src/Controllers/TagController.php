@@ -14,7 +14,7 @@ class TagController
 		$this->context->viewName = 'tag-list-wrapper';
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 
-		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
+		$suppliedFilter = $filter ?: 'order:alpha,asc';
 		$page = max(1, intval($page));
 		$tagsPerPage = intval($this->config->browsing->tagsPerPage);
 
@@ -41,6 +41,29 @@ class TagController
 			$this->context->transport->paginator->entityCount = $tagCount;
 			$this->context->transport->paginator->entities = $tags;
 		}
+	}
+
+	/**
+	* @route /tags-autocomplete
+	*/
+	public function autoCompleteAction()
+	{
+		PrivilegesHelper::confirmWithException(Privilege::ListTags);
+
+		$suppliedSearch = InputHelper::get('search');
+
+		$filter = $suppliedSearch . ' order:popularity,desc';
+		$tags = TagSearchService::getEntitiesRows($filter, 15, 1);
+
+		$this->context->transport->tags =
+			array_values(array_map(
+				function($tag)
+				{
+					return [
+						'name' => $tag['name'],
+						'count' => $tag['post_count']
+					];
+				}, $tags));
 	}
 
 	/**

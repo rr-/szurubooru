@@ -199,15 +199,10 @@ function split(val)
     return val.split(/\s+/);
 }
 
-function extractLast(term)
-{
-    return split(term).pop();
-}
-
 function retrieveTags(searchTerm, cb)
 {
-	var options = { filter: searchTerm + ' order:popularity,desc' };
-	$.getJSON('/tags?json', options, function(data)
+	var options = { search: searchTerm };
+	$.getJSON('/tags-autocomplete?json', options, function(data)
 	{
 		var tags = $.map(data.tags.slice(0, 15), function(tag)
 		{
@@ -232,7 +227,8 @@ $(function()
 			minLength: 1,
 			source: function(request, response)
 			{
-				var term = extractLast(request.term);
+				var terms = split(request.term);
+				var term = terms.pop();
 				if (term != '')
 					retrieveTags(term, response);
 			},
@@ -283,6 +279,7 @@ function attachTagIt(element)
 				function(request, response)
 				{
 					var tagit = this;
+					//var context = tagit.element.tagit('assignedTags');
 					retrieveTags(request.term.toLowerCase(), function(tags)
 					{
 						if (!tagit.options.allowDuplicates)
