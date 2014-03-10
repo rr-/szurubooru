@@ -292,7 +292,7 @@ function attachTagIt(target)
 				$.each(data.tags.slice(0, 10), function(i, tag)
 				{
 					var link = $('<a>');
-					link.attr('href', '#');
+					link.attr('href', '/posts/' + tag.name + '/');
 					link.text('#' + tag.name);
 					link.click(function(e)
 					{
@@ -310,6 +310,7 @@ function attachTagIt(target)
 				div.addClass('related-tags');
 				div.append('<p>Related tags:</p>');
 				div.append(list);
+				div.append('<div class="clear"></div>');
 				div.insertAfter(targetTagit).hide().slideDown();
 			});
 		},
