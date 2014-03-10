@@ -268,11 +268,52 @@ $(function()
 	});
 });
 
-function attachTagIt(element)
+function attachTagIt(target)
 {
 	var tagItOptions =
 	{
 		caseSensitive: false,
+		onTagClicked: function(e, ui)
+		{
+			var targetTagit = ui.tag.parents('.tagit');
+			options = { tag: ui.tagLabel };
+			if (targetTagit.siblings('.related-tags:eq(0)').data('for') == options.tag)
+			{
+				targetTagit.siblings('.related-tags').slideUp(function()
+				{
+					$(this).remove();
+				});
+				return;
+			}
+
+			$.getJSON('/tags-related?json', options, function(data)
+			{
+				var list = $('<ul>');
+				$.each(data.tags.slice(0, 10), function(i, tag)
+				{
+					var link = $('<a>');
+					link.attr('href', '#');
+					link.text('#' + tag.name);
+					link.click(function(e)
+					{
+						e.preventDefault();
+						target.tagit('createTag', tag.name);
+					});
+					list.append(link.wrap('<li/>').parent());
+				});
+				targetTagit.siblings('.related-tags').slideUp(function()
+				{
+					$(this).remove();
+				});
+				var div = $('<div>');
+				div.data('for', options.tag);
+				div.addClass('related-tags');
+				div.append('<p>Related tags:</p>');
+				div.append(list);
+				div.insertAfter(targetTagit).hide().slideDown();
+			});
+		},
+
 		autocomplete:
 		{
 			source:
@@ -295,8 +336,8 @@ function attachTagIt(element)
 		}
 	};
 
-	tagItOptions.placeholderText = element.attr('placeholder');
-	element.tagit(tagItOptions);
+	tagItOptions.placeholderText = target.attr('placeholder');
+	target.tagit(tagItOptions);
 }
 
 

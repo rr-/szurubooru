@@ -320,6 +320,28 @@ ul.tagit input {
 	height: auto !important;
 	margin: -4px 0 !important;
 }
+.related-tags {
+	padding: 0.5em;
+	background: rgba(255,255,255,0.7);
+	border-radius: 3px;
+	margin: 0.4em 0 0.2em 0;
+	font-size: 95%;
+}
+.related-tags ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	display: block;
+	overflow: hidden;
+}
+.related-tags p {
+	float: left;
+	margin: 0 1em 0 0;
+}
+.related-tags li {
+	display: inline-block;
+	margin: 0 1em 0 0;
+}
 
 
 
@@ -427,7 +449,6 @@ blockquote>*:last-child {
 }
 
 .ui-state-default,
-.ui-widget-content .ui-state-default,
-.ui-widget-header .ui-state-default {
+.ui-state-default a {
 	color: hsla(0,70%,45%,0.8) !important;
 }

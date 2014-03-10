@@ -67,6 +67,28 @@ class TagController
 	}
 
 	/**
+	* @route /tags-related
+	*/
+	public function relatedAction()
+	{
+		PrivilegesHelper::confirmWithException(Privilege::ListTags);
+
+		$suppliedTag = InputHelper::get('tag');
+
+		$tags = TagSearchService::getRelatedTagRows($suppliedTag, 10, 1);
+
+		$this->context->transport->tags =
+			array_values(array_map(
+				function($tag)
+				{
+					return [
+						'name' => $tag['name'],
+						'count' => $tag['post_count']
+					];
+				}, $tags));
+	}
+
+	/**
 	* @route /tag/merge
 	*/
 	public function mergeAction()
