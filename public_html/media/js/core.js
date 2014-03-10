@@ -276,7 +276,8 @@ function attachTagIt(target)
 		onTagClicked: function(e, ui)
 		{
 			var targetTagit = ui.tag.parents('.tagit');
-			options = { tag: ui.tagLabel };
+			var context = target.tagit('assignedTags');
+			options = { context: context, tag: ui.tagLabel };
 			if (targetTagit.siblings('.related-tags:eq(0)').data('for') == options.tag)
 			{
 				targetTagit.siblings('.related-tags').slideUp(function()
@@ -289,7 +290,7 @@ function attachTagIt(target)
 			$.getJSON('/tags-related?json', options, function(data)
 			{
 				var list = $('<ul>');
-				$.each(data.tags.slice(0, 10), function(i, tag)
+				$.each(data.tags, function(i, tag)
 				{
 					var link = $('<a>');
 					link.attr('href', '/posts/' + tag.name + '/');

@@ -73,9 +73,11 @@ class TagController
 	{
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 
+		$suppliedContext = (array) InputHelper::get('context');
 		$suppliedTag = InputHelper::get('tag');
 
-		$tags = TagSearchService::getRelatedTagRows($suppliedTag, 10, 1);
+		$limit = intval($this->config->browsing->tagsRelated);
+		$tags = TagSearchService::getRelatedTagRows($suppliedTag, $suppliedContext, $limit);
 
 		$this->context->transport->tags =
 			array_values(array_map(

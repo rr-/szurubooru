@@ -9,7 +9,7 @@ class TagSearchService extends AbstractSearchService
 		$stmt->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'));
 	}
 
-	public static function getRelatedTagRows($parentTagName, $limit)
+	public static function getRelatedTagRows($parentTagName, $context, $limit)
 	{
 		$parentTagEntity = TagModel::findByName($parentTagName, false);
 		if (empty($parentTagEntity))
@@ -24,7 +24,6 @@ class TagSearchService extends AbstractSearchService
 			->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'))
 			->setGroupBy('tag.id')
 			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
-			->setLimit($limit + 1, 0)
 			->setCriterion(new Sql\ExistsFunctor((new Sql\SelectStatement)
 				->setTable('post_tag pt2')
 				->setCriterion((new Sql\ConjunctionFunctor)
@@ -62,6 +61,8 @@ class TagSearchService extends AbstractSearchService
 		}
 
 		usort($rows, function($a, $b) { return intval($b['sort']) - intval($a['sort']); });
+		$rows = array_filter($rows, function($row) use ($context) { return !in_array($row['name'], $context); });
+		$rows = array_slice($rows, 0, $limit);
 
 		return $rows;
 	}
