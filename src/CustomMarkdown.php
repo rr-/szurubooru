@@ -28,11 +28,11 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 	}
 
 	//make atx-style headers require space after hash
-	protected function doHeaders($text)
+	protected function _doHeaders_callback_atx($matches)
 	{
-		$text = preg_replace_callback('{ ^(.+?)[ ]*\n(=+|-+)[ ]*\n+ }mx', [&$this, '_doHeaders_callback_setext'], $text);
-		$text = preg_replace_callback('{^(\#{1,6})[ ]+(.+?)[ ]*\#*\n+}xm', [&$this, '_doHeaders_callback_atx'], $text);
-		return $text;
+		if (!preg_match('/^#+\s/', $matches[0]))
+			return $matches[0];
+		return parent::_doHeaders_callback_atx($matches);
 	}
 
 	//disable paragraph forming when using simple markdown
