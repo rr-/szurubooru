@@ -430,6 +430,9 @@ ul.tagit input {
 .spoiler:hover {
 	color: black;
 }
+.spoiler:not(:hover) a {
+	color: #eee;
+}
 
 img {
 	border: 0;

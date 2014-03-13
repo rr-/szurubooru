@@ -7,11 +7,11 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 	{
 		$this->simple = $simple;
 		$this->no_markup = $simple;
-		$this->span_gamut += ['doSpoilers' => 71];
-		$this->span_gamut += ['doSearchPermalinks' => 72];
 		$this->span_gamut += ['doStrike' => 6];
 		$this->span_gamut += ['doUsers' => 7];
 		$this->span_gamut += ['doPosts' => 8];
+		$this->span_gamut += ['doSpoilers' => 8.5];
+		$this->span_gamut += ['doSearchPermalinks' => 8.75];
 		$this->span_gamut += ['doTags' => 9];
 		$this->span_gamut += ['doAutoLinks2' => 29];
 
@@ -122,7 +122,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 	{
 		if (is_array($text))
 			$text = $this->hashBlock('<span class="spoiler">') . $this->runSpanGamut($text[1]) . $this->hashBlock('</span>');
-		return preg_replace_callback('{\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\])|(?R))+)\[\/spoiler\]}is', [__CLASS__, 'doSpoilers'], $text);
+		return preg_replace_callback('{(?<!#)\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\])|(?R))+)\[\/spoiler\]}is', [__CLASS__, 'doSpoilers'], $text);
 	}
 
 	protected function doPosts($text)
