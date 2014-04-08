@@ -260,33 +260,47 @@ class PostEntity extends AbstractEntity
 			case 'image/gif':
 				$srcImage = imagecreatefromgif($srcPath);
 				break;
+
 			case 'application/x-shockwave-flash':
 				$srcImage = null;
-				exec('which dump-gnash', $tmp, $exitCode);
-				if ($exitCode == 0)
+				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
+				exec('dump-gnash --screenshot last --screenshot-file "' . $tmpPath . '" -1 -r1 --max-advances 15 "' . $srcPath . '"');
+				if (file_exists($tmpPath))
+					$srcImage = imagecreatefrompng($tmpPath);
+
+				if (!$srcImage)
 				{
 					$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-					exec('dump-gnash --screenshot last --screenshot-file ' . $tmpPath . ' -1 -r1 --max-advances 15 ' . $srcPath);
+					exec('swfrender ' . $srcPath . ' -o ' . $tmpPath);
 					if (file_exists($tmpPath))
 						$srcImage = imagecreatefrompng($tmpPath);
 				}
+				break;
+
+			case 'video/mp4':
+			case 'video/webm':
+			case 'video/ogg':
+			case 'application/ogg':
+			case 'video/x-flv':
+			case 'video/3gpp':
+				$srcImage = null;
+				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
+				exec('ffmpegthumbnailer -i"' . $srcPath . '" -o"' . $tmpPath . '" -s0 -t"12%"');
+				if (file_exists($tmpPath))
+					$srcImage = imagecreatefrompng($tmpPath);
+
 				if (!$srcImage)
 				{
-					exec('which swfrender', $tmp, $exitCode);
-					if ($exitCode == 0)
-					{
-						$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-						exec('swfrender ' . $srcPath . ' -o ' . $tmpPath);
-						if (file_exists($tmpPath))
-							$srcImage = imagecreatefrompng($tmpPath);
-					}
+					exec('ffmpeg -i "' . $srcPath . '" -vframes 1 "' . $tmpPath . '"');
+					if (file_exists($tmpPath))
+						$srcImage = imagecreatefrompng($tmpPath);
 				}
 				break;
 			default:
 				break;
 		}
 
-		if (isset($tmpPath))
+		if (isset($tmpPath) and file_exists($tmpPath))
 			unlink($tmpPath);
 
 		if (!isset($srcImage))
@@ -336,6 +350,17 @@ class PostEntity extends AbstractEntity
 			case 'application/x-shockwave-flash':
 				list ($imageWidth, $imageHeight) = getimagesize($srcPath);
 				$this->type = PostType::Flash;
+				$this->imageWidth = $imageWidth;
+				$this->imageHeight = $imageHeight;
+				break;
+			case 'video/webm':
+			case 'video/mp4':
+			case 'video/ogg':
+			case 'application/ogg':
+			case 'video/x-flv':
+			case 'video/3gpp':
+				list ($imageWidth, $imageHeight) = getimagesize($srcPath);
+				$this->type = PostType::Video;
 				$this->imageWidth = $imageWidth;
 				$this->imageHeight = $imageHeight;
 				break;

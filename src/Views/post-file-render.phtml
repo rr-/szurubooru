@@ -24,4 +24,11 @@
 
 	<iframe style="width: 800px; height: 600px; border: 0;" src="//www.youtube.com/embed/<?php echo $post->fileHash ?>?wmode=opaque" allowfullscreen></iframe>
 
+<?php elseif ($post->type == PostType::Video): ?>
+
+	<video style="width: <?= $post->imageWidth ?>px; height: <?= $post->imageHeight ?>px" controls>
+		<source type="<?= $post->mimeType ?>" src="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+		Your browser doesn't support HTML5 &lt;video&gt; tag.
+	</video>
+
 <?php endif ?>
