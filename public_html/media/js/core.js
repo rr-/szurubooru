@@ -180,6 +180,8 @@ $(function()
 var fixedEvenOnce = false;
 function fixSize()
 {
+	if ($('#small-screen').is(':visible'))
+		return;
 	var multiply = 168;
 	var oldWidth = $('.main-wrapper:eq(0)').width();
 	$('.main-wrapper:eq(0)').width('');
