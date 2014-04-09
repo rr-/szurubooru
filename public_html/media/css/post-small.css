@@ -10,7 +10,12 @@
 }
 
 .post-type-youtube:after,
-.post-type-flash:after {
+.post-type-swf:after,
+.post-type-mp4:after,
+.post-type-webm:after,
+.post-type-ogg:after,
+.post-type-3gp:after,
+.post-type-flv:after {
 	position: absolute;
 	right: 1px; /* border */
 	top: 1px; /* border */
@@ -19,18 +24,22 @@
 	content: ' ';
 	pointer-events: none;
 }
-.post-type-flash {
+.post-type-youtube,
+.post-type-swf,
+.post-type-mp4,
+.post-type-webm,
+.post-type-ogg,
+.post-type-3gp,
+.post-type-flv {
 	border-color: red;
 }
-.post-type-youtube {
-	border-color: red;
-}
-.post-type-flash:after {
-	background: url('../img/thumb-overlay-swf.png');
-}
-.post-type-youtube:after {
-	background: url('../img/thumb-overlay-yt.png');
-}
+.post-type-swf:after { background: url('../img/thumb-overlay-swf.png'); }
+.post-type-youtube:after { background: url('../img/thumb-overlay-yt.png'); }
+.post-type-mp4:after { background: url('../img/thumb-overlay-mp4.png'); }
+.post-type-webm:after { background: url('../img/thumb-overlay-webm.png'); }
+.post-type-ogg:after { background: url('../img/thumb-overlay-ogg.png'); }
+.post-type-3gp:after { background: url('../img/thumb-overlay-3gp.png'); }
+.post-type-flv:after { background: url('../img/thumb-overlay-flv.png'); }
 
 
 .post .toggle-tag {

@@ -4,7 +4,8 @@ CustomAssetViewDecorator::addStylesheet('post-small.css');
 $classNames =
 [
 	'post',
-	'post-type-' . TextHelper::camelCaseToHumanCase(PostType::toString($this->context->post->type))
+	'post-type-' .(TextHelper::resolveMimeType($this->context->post->mimeType) ?:
+		TextHelper::camelCaseToHumanCase(PostType::toString($this->context->post->type))),
 ];
 
 $masstag = (isset($this->context->source)

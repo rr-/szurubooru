@@ -346,7 +346,13 @@ class TextHelper
 			'image/jpeg' => 'jpg',
 			'image/gif' => 'gif',
 			'image/png' => 'png',
-			'application/x-shockwave-flash' => 'swf'];
+			'application/x-shockwave-flash' => 'swf',
+			'video/mp4' => 'mp4',
+			'video/webm' => 'webm',
+			'video/ogg' => 'ogg',
+			'application/ogg' => 'ogg',
+			'video/x-flv' => 'flv',
+			'video/3gpp' => '3gp'];
 		return isset($mimeTypes[$mimeType])
 			? $mimeTypes[$mimeType]
 			: null;

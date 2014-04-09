@@ -192,6 +192,8 @@ class PostSearchParser extends AbstractSearchParser
 				$type = PostType::Flash;
 			elseif ($value == 'img')
 				$type = PostType::Image;
+			elseif ($value == 'video' or in_array($value, ['mp4', 'webm', 'ogg', '3gp', 'ogg']))
+				$type = PostType::Video;
 			elseif ($value == 'yt' or $value == 'youtube')
 				$type = PostType::Youtube;
 			else
