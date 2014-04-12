@@ -17,61 +17,12 @@ class TextHelper
 		return $text;
 	}
 
-	//todo: convert to enum and make one method
-	public static function snakeCaseToCamelCase($string, $lower = false)
-	{
-		$string = explode('_', $string);
-		$string = array_map('trim', $string);
-		$string = array_map('ucfirst', $string);
-		$string = join('', $string);
-		if ($lower)
-			$string = lcfirst($string);
-		return $string;
-	}
-
-	public static function kebabCaseToCamelCase($string)
-	{
-		$string = explode('-', $string);
-		$string = array_map('trim', $string);
-		$string = array_map('ucfirst', $string);
-		$string = join('', $string);
-		return $string;
-	}
-
-	public static function camelCaseToKebabCase($string)
-	{
-		$string = preg_replace_callback('/[A-Z]/', function($x)
-		{
-			return '-' . strtolower($x[0]);
-		}, $string);
-		$string = trim($string, '-');
-		return $string;
-	}
-
-	public static function camelCaseToHumanCase($string, $ucfirst = false)
-	{
-		$string = preg_replace_callback('/[A-Z]/', function($x)
-		{
-			return ' ' . strtolower($x[0]);
-		}, $string);
-		$string = trim($string);
-		if ($ucfirst)
-			$string = ucfirst($string);
-		return $string;
-	}
-
-	public static function humanCaseToKebabCase($string)
-	{
-		$string = trim($string);
-		$string = str_replace(' ', '-', $string);
-		$string = strtolower($string);
-		return $string;
-	}
-
 	public static function resolveConstant($constantName, $className = null)
 	{
-		$constantName = self::kebabCaseToCamelCase($constantName);
-		//convert from kebab-case to CamelCase
+		$constantName = TextCaseConverter::convert($constantName,
+			TextCaseConverter::SPINAL_CASE,
+			TextCaseConverter::CAMEL_CASE);
+
 		if ($className !== null)
 		{
 			$constantName = $className . '::' . $constantName;

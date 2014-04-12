@@ -7,3 +7,6 @@
 [submodule "lib/chibi-sql"]
 	path = lib/chibi-sql
 	url = https://github.com/rr-/chibi-sql.git
+[submodule "lib/TextCaseConverter"]
+	path = lib/TextCaseConverter
+	url = https://gist.github.com/rr-/10522533.git

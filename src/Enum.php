@@ -8,6 +8,13 @@ class Enum
 		return array_search($constant, $constants);
 	}
 
+	public static function toDisplayString($constant)
+	{
+		TextCaseConverter::convert(static::toString($constant),
+			TextCaseConverter::SNAKE_CASE,
+			TextCaseConverter::BLANK_CASE);
+	}
+
 	public static function getAll()
 	{
 		$cls = new ReflectionClass(get_called_class());

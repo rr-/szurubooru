@@ -15,7 +15,7 @@
 
 							echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
 						?>
-						<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
+						<?php echo ucfirst(PostSafety::toDisplayString($safety)) ?>
 					</label>
 				<?php endif ?>
 			<?php endforeach ?>

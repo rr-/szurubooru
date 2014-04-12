@@ -30,7 +30,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 
 		<div class="key-value access-rank">
 			<span class="key">Access rank:</span>
-			<span class="value" title="<?php echo $val = TextHelper::camelCaseToHumanCase(AccessRank::toString($this->context->transport->user->accessRank)) ?>">
+			<span class="value" title="<?php echo $val = AccessRank::toDisplayString($this->context->transport->user->accessRank) ?>">
 				<?php echo $val ?>
 			</span>
 		</div>

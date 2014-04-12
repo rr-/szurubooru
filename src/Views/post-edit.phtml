@@ -7,7 +7,7 @@
 				<?php foreach (PostSafety::getAll() as $safety): ?>
 					<label>
 						<input type="radio" name="safety" value="<?php echo $safety ?>" <?php if ($this->context->transport->post->safety == $safety) echo 'checked="checked"' ?>/>
-						&nbsp;<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
+						&nbsp;<?php echo ucfirst(PostSafety::toDisplayString($safety)) ?>
 					</label>
 				<?php endforeach ?>
 			</div>

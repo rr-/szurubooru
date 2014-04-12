@@ -44,9 +44,9 @@ if (PrivilegesHelper::confirm(Privilege::MassTag))
 		<?php foreach ($tabs as $i => $tab): ?>
 			<?php list($name, $url) = $tab ?>
 			<?php if ($i == $activeTab): ?>
-				<li class="selected <?php echo TextHelper::humanCaseToKebabCase($name) ?>">
+				<li class="selected <?php echo TextCaseConverter::convert($name, TextCaseConverter::BLANK_CASE, TextCaseConverter::SPINAL_CASE) ?>">
 			<?php else: ?>
-				<li class="<?php echo TextHelper::humanCaseToKebabCase($name) ?>">
+				<li class="<?php echo TextCaseConverter::convert($name, TextCaseConverter::BLANK_CASE, TextCaseConverter::SPINAL_CASE) ?>">
 			<?php endif ?>
 				<a href="<?php echo $url ?>">
 					<?php echo $name ?>

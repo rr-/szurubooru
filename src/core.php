@@ -11,6 +11,7 @@ setlocale(LC_CTYPE, 'en_US.UTF-8');
 ini_set('memory_limit', '128M');
 
 //basic include calls, autoloader init
+require_once $rootDir . 'lib' . DS . 'TextCaseConverter' . DS . 'TextCaseConverter.php';
 require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'Markdown.php';
 require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
 require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'Facade.php';

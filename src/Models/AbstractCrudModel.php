@@ -75,7 +75,10 @@ abstract class AbstractCrudModel implements IModel
 		$entity = self::spawn();
 		foreach ($row as $key => $val)
 		{
-			$key = TextHelper::snakeCaseToCamelCase($key, true);
+			$key = TextCaseConverter::convert($key,
+				TextCaseConverter::SNAKE_CASE,
+				TextCaseConverter::LOWER_CAMEL_CASE);
+
 			$entity->$key = $val;
 		}
 		return $entity;
@@ -93,7 +96,12 @@ abstract class AbstractCrudModel implements IModel
 				if (isset($keyCache[$key]))
 					$key = $keyCache[$key];
 				else
-					$key = $keyCache[$key] = TextHelper::snakeCaseToCamelCase($key, true);
+				{
+					$key = $keyCache[$key] = TextCaseConverter::convert($key,
+						TextCaseConverter::SNAKE_CASE,
+						TextCaseConverter::LOWER_CAMEL_CASE);
+				}
+
 				$entity->$key = $val;
 			}
 			$entities[$i] = $entity;

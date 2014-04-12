@@ -80,7 +80,7 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 						<?php foreach (PostSafety::getAll() as $safety): ?>
 							<label>
 								<input type="radio" name="safety" value="<?php echo $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
-								<?php echo TextHelper::camelCaseToHumanCase(PostSafety::toString($safety), true) ?>
+								<?php echo ucfirst(PostSafety::toDisplayString($safety)) ?>
 								<?php $checked = true ?>
 							</label>
 						<?php endforeach ?>

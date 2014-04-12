@@ -98,7 +98,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		<div class="key-value safety">
 			<span class="key">Safety:</span>
-			<span class="value safety-<?php echo $val = TextHelper::camelCaseToHumanCase(PostSafety::toString($this->context->transport->post->safety)) ?>" title="<?php echo $val ?>">
+			<span class="value safety-<?php echo $val = PostSafety::toDisplayString($this->context->transport->post->safety) ?>" title="<?php echo $val ?>">
 				<?php echo $val ?>
 			</span>
 		</div>
@@ -313,7 +313,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		</div>
 	<?php endif ?>
 
-	<div class="post-wrapper post-type-<?php echo strtolower(PostType::toString($this->context->transport->post->type)) ?>">
+	<div class="post-wrapper post-type-<?php echo PostType::toString($this->context->transport->post->type) ?>">
 		<?php echo $this->renderFile('post-file-render') ?>
 	</div>
 

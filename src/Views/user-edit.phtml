@@ -43,7 +43,7 @@
 					<?php else: ?>
 						<option value="<?php echo $rank ?>">
 					<?php endif ?>
-						<?php echo TextHelper::camelCaseToHumanCase(AccessRank::toString($rank)) ?>
+						<?php echo AccessRank::toDisplayString($rank) ?>
 					</option>
 				<?php endforeach ?>
 			</select></div>

@@ -11,8 +11,14 @@ class PrivilegesHelper
 			if (strpos($key, '.') === false)
 				$key .= '.';
 			list ($privilegeName, $subPrivilegeName) = explode('.', $key);
-			$privilegeName = TextHelper::camelCaseToKebabCase($privilegeName);
-			$subPrivilegeName = TextHelper::camelCaseToKebabCase($subPrivilegeName);
+
+			$privilegeName = TextCaseConverter::convert($privilegeName,
+				TextCaseConverter::CAMEL_CASE,
+				TextCaseConverter::SPINAL_CASE);
+			$subPrivilegeName = TextCaseConverter::convert($subPrivilegeName,
+				TextCaseConverter::CAMEL_CASE,
+				TextCaseConverter::SPINAL_CASE);
+
 			$key = rtrim($privilegeName . '.' . $subPrivilegeName, '.');
 
 			$minAccessRank = TextHelper::resolveConstant($minAccessRankName, 'AccessRank');
@@ -34,7 +40,10 @@ class PrivilegesHelper
 		$user = \Chibi\Registry::getContext()->user;
 		$minAccessRank = AccessRank::Admin;
 
-		$key = TextHelper::camelCaseToKebabCase(Privilege::toString($privilege));
+		$key = TextCaseConverter::convert(Privilege::toString($privilege),
+			TextCaseConverter::CAMEL_CASE,
+			TextCaseConverter::SPINAL_CASE);
+
 		if (isset(self::$privileges[$key]))
 		{
 			$minAccessRank = self::$privileges[$key];
