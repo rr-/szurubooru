@@ -180,7 +180,7 @@ class TextHelper
 	{
 		$salt = \Chibi\Registry::getConfig()->main->salt;
 		$alg = MCRYPT_RIJNDAEL_256;
-		$mode = MCRYPT_MODE_ECB;
+		$mode = MCRYPT_MODE_CBC;
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
 		return trim(base64_encode(mcrypt_encrypt($alg, $salt, $text, $mode, $iv)));
 	}
@@ -189,7 +189,7 @@ class TextHelper
 	{
 		$salt = \Chibi\Registry::getConfig()->main->salt;
 		$alg = MCRYPT_RIJNDAEL_256;
-		$mode = MCRYPT_MODE_ECB;
+		$mode = MCRYPT_MODE_CBC;
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
 		return trim(mcrypt_decrypt($alg, $salt, base64_decode($text), $mode, $iv));
 	}
