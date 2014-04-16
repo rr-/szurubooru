@@ -31,7 +31,7 @@ class TagSearchParser extends AbstractSearchParser
 		if ($orderByString == 'popularity')
 			$this->statement->setOrderBy('post_count', $orderDir);
 		elseif ($orderByString == 'alpha')
-			$this->statement->setOrderBy('tag.name', $orderDir);
+			$this->statement->setOrderBy(new Sql\CaseFunctor('tag.name'), $orderDir);
 		else
 			return false;
 		return true;

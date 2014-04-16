@@ -72,7 +72,7 @@ abstract class AbstractSearchService
 
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
-		$stmt->setSource($innerStmt);
+		$stmt->setSource($innerStmt, 'inner_stmt');
 
 		return Database::fetchOne($stmt)['count'];
 	}

@@ -57,7 +57,7 @@ foreach ($upgrades as $upgradePath)
 			{
 				try
 				{
-					\Chibi\Database::exec(new \Chibi\Sql\RawStatement($query));
+					\Chibi\Database::execUnprepared(new \Chibi\Sql\RawStatement($query));
 				}
 				catch (Exception $e)
 				{
