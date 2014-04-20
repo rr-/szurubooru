@@ -8,7 +8,10 @@ class PostSearchService extends AbstractSearchService
 	{
 		return Database::transaction(function() use ($searchQuery, $postId)
 		{
-			$stmt = new Sql\RawStatement('CREATE TEMPORARY TABLE IF NOT EXISTS post_search(id INTEGER PRIMARY KEY, post_id INTEGER)');
+			if (Database::getDriver() == 'sqlite')
+				$stmt = new Sql\RawStatement('CREATE TEMPORARY TABLE IF NOT EXISTS post_search(id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER)');
+			else
+				$stmt = new Sql\RawStatement('CREATE TEMPORARY TABLE IF NOT EXISTS post_search(id INTEGER PRIMARY KEY AUTO_INCREMENT, post_id INTEGER)');
 			Database::exec($stmt);
 
 			$stmt = new Sql\DeleteStatement();
