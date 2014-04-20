@@ -36,9 +36,9 @@ CustomAssetViewDecorator::addScript('core.js');
 		<footer>
 			<div class="main-wrapper">
 				<hr>
-				<span>Load: <?php echo sprintf('%.05f', microtime(true) - $this->context->startTime) ?>s</span>
-				<span>Queries: <?php echo count(\Chibi\Database::getLogs()) ?></span>
-				<span><a href="<?php echo SZURU_LINK ?>">szurubooru v<?php echo SZURU_VERSION ?></a></span>
+				<span>Load:&nbsp;<?php echo sprintf('%.05f', microtime(true) - $this->context->startTime) ?>s</span>
+				<span>Queries:&nbsp;<?php echo count(\Chibi\Database::getLogs()) ?></span>
+				<span><a href="<?php echo SZURU_LINK ?>">szurubooru&nbsp;v<?php echo SZURU_VERSION ?></a></span>
 				<?php if (PrivilegesHelper::confirm(Privilege::ListLogs)): ?>
 					<span><a href="<?php echo \Chibi\UrlHelper::route('log', 'list') ?>">Logs</a></span>
 				<?php endif ?>

@@ -139,9 +139,8 @@ footer .main-wrapper {
 	font-size: small;
 	color: silver;
 }
-footer span:not(:last-child):after {
-	content: '\022C5';
-	margin: 0 0.5em;
+footer span:not(:last-of-type):after {
+	content: '\2000\022C5\2000';
 }
 footer a {
 	color: silver;
@@ -374,6 +373,9 @@ ul.tagit input {
 .tabs li a:hover,
 .tabs li a:focus {
 	color: hsl(0,70%,45%);
+}
+.tab-content {
+	clear: both;
 }
 
 
