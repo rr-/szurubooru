@@ -10,7 +10,7 @@ class Enum
 
 	public static function toDisplayString($constant)
 	{
-		TextCaseConverter::convert(static::toString($constant),
+		return TextCaseConverter::convert(static::toString($constant),
 			TextCaseConverter::SNAKE_CASE,
 			TextCaseConverter::BLANK_CASE);
 	}
