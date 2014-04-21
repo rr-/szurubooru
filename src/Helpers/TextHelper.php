@@ -182,16 +182,25 @@ class TextHelper
 		$alg = MCRYPT_RIJNDAEL_256;
 		$mode = MCRYPT_MODE_CBC;
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
-		return trim(base64_encode(mcrypt_encrypt($alg, $salt, $text, $mode, $iv)));
+		return base64_encode($iv) . '|' . base64_encode(mcrypt_encrypt($alg, $salt, $text, $mode, $iv));
 	}
 
 	public static function decrypt($text)
 	{
-		$salt = \Chibi\Registry::getConfig()->main->salt;
-		$alg = MCRYPT_RIJNDAEL_256;
-		$mode = MCRYPT_MODE_CBC;
-		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
-		return trim(mcrypt_decrypt($alg, $salt, base64_decode($text), $mode, $iv));
+		try
+		{
+			$salt = \Chibi\Registry::getConfig()->main->salt;
+			list ($iv, $hash) = explode('|', $text, 2);
+			$iv = base64_decode($iv);
+			$hash = base64_decode($hash);
+			$alg = MCRYPT_RIJNDAEL_256;
+			$mode = MCRYPT_MODE_CBC;
+			return trim(mcrypt_decrypt($alg, $salt, $hash, $mode, $iv));
+		}
+		catch (Exception $e)
+		{
+			throw new SimpleException('Supplied input is not valid encrypted text');
+		}
 	}
 
 	public static function cleanPath($path)
