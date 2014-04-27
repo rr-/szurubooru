@@ -302,6 +302,7 @@ ul.tagit,
 select,
 textarea,
 input:not([type=radio]):not([type=checkbox]):not([type=file]) {
+	background: white;
 	width: 100%;
 	max-width: 100%;
 	border: 1px solid #ccc;
