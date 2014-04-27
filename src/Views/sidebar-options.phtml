@@ -4,7 +4,7 @@
 
 		<ul>
 			<?php foreach ($this->context->options as $option): ?>
-				<li class="<?php echo $option['class']; if (isset($option['inactive'])) echo ' inactive' ?>">
+				<li class="<?= $option['class']; if (isset($option['inactive'])) echo ' inactive' ?>">
 					<?php
 					$class = [];
 

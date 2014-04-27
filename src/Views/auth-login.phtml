@@ -3,8 +3,8 @@ CustomAssetViewDecorator::setSubTitle('authentication form');
 CustomAssetViewDecorator::addStylesheet('auth.css');
 ?>
 
-<form action="<?php echo \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth" method="post">
-	<p>If you don't have an account yet,<br/><a href="<?php echo \Chibi\UrlHelper::route('user', 'registration'); ?>">click here</a> to create a new one.</p>
+<form action="<?= \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth" method="post">
+	<p>If you don't have an account yet,<br/><a href="<?= \Chibi\UrlHelper::route('user', 'registration'); ?>">click here</a> to create a new one.</p>
 
 	<div class="form-row">
 		<label for="name">User name:</label>
@@ -38,9 +38,9 @@ CustomAssetViewDecorator::addStylesheet('auth.css');
 		<div>
 			<p>Problems logging in?</p>
 			<ul>
-				<li><a href="<?php echo \Chibi\UrlHelper::route('user', 'password-reset-proxy') ?>">I don't remember my password</a></li>
-				<li><a href="<?php echo \Chibi\UrlHelper::route('user', 'activation-proxy') ?>">I haven't received activation e-mail</a></li>
-				<li><a href="<?php echo \Chibi\UrlHelper::route('user', 'registration') ?>">I don't have an account</a></li>
+				<li><a href="<?= \Chibi\UrlHelper::route('user', 'password-reset-proxy') ?>">I don't remember my password</a></li>
+				<li><a href="<?= \Chibi\UrlHelper::route('user', 'activation-proxy') ?>">I haven't received activation e-mail</a></li>
+				<li><a href="<?= \Chibi\UrlHelper::route('user', 'registration') ?>">I don't have an account</a></li>
 			</ul>
 		</div>
 	</div>

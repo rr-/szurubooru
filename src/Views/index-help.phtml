@@ -12,12 +12,12 @@ $showTabs = count($tabs) > 1;
 		<ul>
 			<?php foreach ($tabs as $tab => $text): ?>
 				<?php if ($tab == $this->context->tab): ?>
-					<li class="selected <?php echo $tab ?>">
+					<li class="selected <?= $tab ?>">
 				<?php else: ?>
-					<li class="<?php echo $tab ?>">
+					<li class="<?= $tab ?>">
 				<?php endif ?>
-					<a href="<?php echo \Chibi\UrlHelper::route('index', 'help', $tab == $firstTab ? [] : ['tab' => $tab]) ?>">
-						<?php echo $text ?>
+					<a href="<?= \Chibi\UrlHelper::route('index', 'help', $tab == $firstTab ? [] : ['tab' => $tab]) ?>">
+						<?= $text ?>
 					</a>
 				</li>
 			<?php endforeach ?>
@@ -27,7 +27,7 @@ $showTabs = count($tabs) > 1;
 	<div class="tab-content">
 <?php endif ?>
 
-<?php echo TextHelper::parseMarkdown(file_get_contents($this->context->path)) ?>
+<?= TextHelper::parseMarkdown(file_get_contents($this->context->path)) ?>
 
 <?php if ($showTabs): ?>
 	</div>

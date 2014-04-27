@@ -8,11 +8,11 @@ CustomAssetViewDecorator::addScript('comment-edit.js');
 	<div class="avatar">
 		<?php $commenter = $this->context->comment->getCommenter() ?>
 		<?php if ($commenter): ?>
-			<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $commenter->name]) ?>">
-				<img src="<?php echo htmlspecialchars($commenter->getAvatarUrl(40)) ?>" alt="<?php echo $commenter->name ?>"/>
+			<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $commenter->name]) ?>">
+				<img src="<?= htmlspecialchars($commenter->getAvatarUrl(40)) ?>" alt="<?= $commenter->name ?>"/>
 			</a>
 		<?php else: ?>
-			<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="<?php echo UserModel::getAnonymousName() ?>">
+			<img src="<?= \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="<?= UserModel::getAnonymousName() ?>">
 		<?php endif ?>
 	</div>
 
@@ -20,21 +20,21 @@ CustomAssetViewDecorator::addScript('comment-edit.js');
 		<div class="header">
 			<span class="nickname">
 				<?php if ($commenter): ?>
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $commenter->name]) ?>">
-						<?php echo $commenter->name ?>
+					<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $commenter->name]) ?>">
+						<?= $commenter->name ?>
 					</a>
 				<?php else: ?>
-					<?php echo UserModel::getAnonymousName() ?>
+					<?= UserModel::getAnonymousName() ?>
 				<?php endif ?>
 			</span>
 
-			<span class="date" title="<?php echo TextHelper::formatDate($this->context->comment->commentDate, true) ?>">
-				<?php echo TextHelper::formatDate($this->context->comment->commentDate, false) ?>
+			<span class="date" title="<?= TextHelper::formatDate($this->context->comment->commentDate, true) ?>">
+				<?= TextHelper::formatDate($this->context->comment->commentDate, false) ?>
 			</span>
 
 			<?php if (PrivilegesHelper::confirm(Privilege::EditComment, PrivilegesHelper::getIdentitySubPrivilege($commenter))): ?>
 				<span class="edit">
-					<a href="<?php echo \Chibi\UrlHelper::route('comment', 'edit', ['id' => $this->context->comment->id]) ?>">
+					<a href="<?= \Chibi\UrlHelper::route('comment', 'edit', ['id' => $this->context->comment->id]) ?>">
 						edit
 					</a>
 				</span>
@@ -42,7 +42,7 @@ CustomAssetViewDecorator::addScript('comment-edit.js');
 
 			<?php if (PrivilegesHelper::confirm(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($commenter))): ?>
 				<span class="delete">
-					<a class="simple-action confirmable" href="<?php echo \Chibi\UrlHelper::route('comment', 'delete', ['id' => $this->context->comment->id]) ?>" data-confirm-text="Are you sure you want to delete this comment?">
+					<a class="simple-action confirmable" href="<?= \Chibi\UrlHelper::route('comment', 'delete', ['id' => $this->context->comment->id]) ?>" data-confirm-text="Are you sure you want to delete this comment?">
 						delete
 					</a>
 				</span>
@@ -50,7 +50,7 @@ CustomAssetViewDecorator::addScript('comment-edit.js');
 		</div>
 
 		<div class="content">
-			<?php echo $this->context->comment->getText() ?>
+			<?= $this->context->comment->getText() ?>
 		</div>
 	</div>
 

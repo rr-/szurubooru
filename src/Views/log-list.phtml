@@ -8,8 +8,8 @@ $this->context->subTitle = 'latest logs';
 	<ul>
 		<?php foreach ($this->context->transport->logs as $log): ?>
 			<li>
-				<a href="<?php echo \Chibi\UrlHelper::route('log', 'view', ['name' => $log]) ?>">
-					<?php echo $log ?>
+				<a href="<?= \Chibi\UrlHelper::route('log', 'view', ['name' => $log]) ?>">
+					<?= $log ?>
 				</a>
 			</li>
 		<?php endforeach ?>

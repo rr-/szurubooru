@@ -4,9 +4,9 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 ?>
 
 <div id="welcome">
-	<h1><?php echo $this->config->main->title ?></h1>
+	<h1><?= $this->config->main->title ?></h1>
 	<p>
-		<span>serving <?php echo $this->context->transport->postCount ?> posts</span>
+		<span>serving <?= $this->context->transport->postCount ?> posts</span>
 	</p>
 </div>
 
@@ -14,7 +14,7 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 	<div class="body">
 		<?php $this->context->imageLink = \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->featuredPost->id]) ?>
 		<?php $this->context->transport->post = $this->context->featuredPost ?>
-		<?php echo $this->renderFile('post-file-render') ?>
+		<?= $this->renderFile('post-file-render') ?>
 	</div>
 
 	<div class="footer">
@@ -25,8 +25,8 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 				<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 				<?php foreach ($tags as $tag): ?>
 					<li>
-						<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
-							<?php echo $tag->name ?>
+						<a href="<?= \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
+							<?= $tag->name ?>
 						</a>
 					</li>
 				<?php endforeach ?>
@@ -36,7 +36,7 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 		<div class="right">
 			Featured&#32;
 			<?php if ($this->context->featuredPostUser): ?>
-				by <a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>"><?php echo $this->context->featuredPostUser->name ?></a>,&#32;
+				by <a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>"><?= $this->context->featuredPostUser->name ?></a>,&#32;
 			<?php endif ?>
 			<?php $x = round((time() - $this->context->featuredPostDate) / (24 * 3600.)) ?>
 			<?php if ($x == 0): ?>

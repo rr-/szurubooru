@@ -114,9 +114,9 @@
 			<ul>
 				<?php foreach (PostSafety::getAll() as $safety): ?>
 					<?php if (PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety))): ?>
-						<li class="safety-<?php echo TextCaseConverter::convert(PostSafety::toString($safety), TextCaseConverter::CAMEL_CASE, TextCaseConverter::SPINAL_CASE) ?>">
-							<a href="<?php echo \Chibi\UrlHelper::route('user', 'toggle-safety', ['safety' => $safety]) ?>" class="<?php echo $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>" title="Searching <?php echo PostSafety::toDisplayString($safety) ?> posts: <?php echo $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
-								<span><?php echo ucfirst(PostSafety::toDisplayString($safety)) ?></span>
+						<li class="safety-<?= TextCaseConverter::convert(PostSafety::toString($safety), TextCaseConverter::CAMEL_CASE, TextCaseConverter::SPINAL_CASE) ?>">
+							<a href="<?= \Chibi\UrlHelper::route('user', 'toggle-safety', ['safety' => $safety]) ?>" class="<?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>" title="Searching <?= PostSafety::toDisplayString($safety) ?> posts: <?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
+								<span><?= ucfirst(PostSafety::toDisplayString($safety)) ?></span>
 							</a>
 						</li>
 					<?php endif ?>
@@ -126,8 +126,8 @@
 	<?php endif ?>
 
 	<li class="search">
-		<form name="search" action="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
-			<input class="autocomplete" type="search" name="query" placeholder="Search&hellip;" value="<?php echo isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>"/>
+		<form name="search" action="<?= \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
+			<input class="autocomplete" type="search" name="query" placeholder="Search&hellip;" value="<?= isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>"/>
 		</form>
 	</li>
 </ul>

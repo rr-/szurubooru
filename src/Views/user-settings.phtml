@@ -1,4 +1,4 @@
-<form action="<?php echo \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>" method="post" class="settings">
+<form action="<?= \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>" method="post" class="settings">
 	<div class="form-row safety">
 		<label>Safety:</label>
 		<div class="input-wrapper">
@@ -15,7 +15,7 @@
 
 							echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
 						?>
-						<?php echo ucfirst(PostSafety::toDisplayString($safety)) ?>
+						<?= ucfirst(PostSafety::toDisplayString($safety)) ?>
 					</label>
 				<?php endif ?>
 			<?php endforeach ?>

@@ -17,7 +17,7 @@ CustomAssetViewDecorator::addScript('post-list.js');
 		<div class="posts paginator-content">
 			<?php foreach ($this->context->transport->posts as $post): ?>
 				<?php $this->context->post = $post ?>
-				<?php echo $this->renderFile('post-small') ?>
+				<?= $this->renderFile('post-small') ?>
 			<?php endforeach ?>
 		</div>
 		<div class="clear"></div>

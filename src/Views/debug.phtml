@@ -7,17 +7,17 @@
 				$query = str_replace('(', '<span>(', $query);
 				$query = str_replace(')', ')</span>', $query);
 			?>
-			<pre class="query"><?php echo $query ?></pre>
+			<pre class="query"><?= $query ?></pre>
 
-			<pre class="bindings"><?php echo join(', ', array_map(function($key) use ($log)
+			<pre class="bindings"><?= join(', ', array_map(function($key) use ($log)
 				{
 					return $key . '=<span class="value">' . $log->getStatement()->getBindings()[$key] . '</span>';
 				},
 				array_keys($log->getStatement()->getBindings()))) ?></pre>
 
 			<table>
-				<tr><td>Execution:</td><td><?php echo sprintf('%.05fs', $log->getExecutionTime()) ?></td></tr>
-				<tr><td>Retrieval:</td><td><?php echo sprintf('%.05fs', $log->getRetrievalTime()) ?></td></tr>
+				<tr><td>Execution:</td><td><?= sprintf('%.05fs', $log->getExecutionTime()) ?></td></tr>
+				<tr><td>Retrieval:</td><td><?= sprintf('%.05fs', $log->getRetrievalTime()) ?></td></tr>
 			</table>
 		</div>
 	<?php endforeach ?>

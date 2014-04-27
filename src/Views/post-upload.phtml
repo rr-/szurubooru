@@ -36,7 +36,7 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 		<div class="clear"></div>
 	</div>
 
-	<div id="upload-step2" data-redirect-url="<?php echo \Chibi\UrlHelper::route('post', 'list') ?>">
+	<div id="upload-step2" data-redirect-url="<?= \Chibi\UrlHelper::route('post', 'list') ?>">
 		<hr>
 
 		<div class="posts">
@@ -50,7 +50,7 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 	<div id="post-template" class="post">
 		<p class="alert alert-error">Some kind of error</p>
 
-		<img class="thumbnail" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+		<img class="thumbnail" src="<?= \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
 
 		<div class="form-wrapper">
 			<div class="ops">
@@ -67,7 +67,7 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 				</a>
 			</div>
 
-			<form action="<?php echo \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
+			<form action="<?= \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
 				<div class="form-row file-name">
 					<label>File:</label>
 					<strong>filename.jpg</strong>
@@ -79,8 +79,8 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 						<?php $checked = false ?>
 						<?php foreach (PostSafety::getAll() as $safety): ?>
 							<label>
-								<input type="radio" name="safety" value="<?php echo $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
-								<?php echo ucfirst(PostSafety::toDisplayString($safety)) ?>
+								<input type="radio" name="safety" value="<?= $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
+								<?= ucfirst(PostSafety::toDisplayString($safety)) ?>
 								<?php $checked = true ?>
 							</label>
 						<?php endforeach ?>
@@ -108,4 +108,4 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 	</div>
 </div>
 
-<img id="lightbox" src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Preview"/>
+<img id="lightbox" src="<?= \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Preview"/>

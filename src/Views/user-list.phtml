@@ -27,7 +27,7 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?php echo \Chibi\UrlHelper::route('user', 'list', ['filter' => $key]) ?>"><?php echo $text ?></a>
+				<a href="<?= \Chibi\UrlHelper::route('user', 'list', ['filter' => $key]) ?>"><?= $text ?></a>
 			</li>
 		<?php endforeach ?>
 	</ul>
@@ -40,26 +40,26 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 		<div class="users paginator-content">
 			<?php foreach ($this->context->transport->users as $user): ?>
 				<div class="user">
-					<a class="avatar" href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
-						<img src="<?php echo htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?php echo $user->name ?>"/>
+					<a class="avatar" href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+						<img src="<?= htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?= $user->name ?>"/>
 					</a>
 					<div class="details">
 						<h1>
-							<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
-								<?php echo $user->name ?>
+							<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+								<?= $user->name ?>
 							</a>
 						</h1>
 
-						<div class="date-registered" title="<?php echo TextHelper::formatDate($user->joinDate, true) ?>">
-							Registered: <?php echo TextHelper::formatDate($user->joinDate, false) ?>
+						<div class="date-registered" title="<?= TextHelper::formatDate($user->joinDate, true) ?>">
+							Registered: <?= TextHelper::formatDate($user->joinDate, false) ?>
 						</div>
 
 						<div class="post-count">
-							Uploaded: <?php echo TextHelper::useDecimalUnits($user->getPostCount()) ?>
+							Uploaded: <?= TextHelper::useDecimalUnits($user->getPostCount()) ?>
 						</div>
 
 						<div class="fav-count">
-							Favorites: <?php echo TextHelper::useDecimalUnits($user->getFavoriteCount()) ?>
+							Favorites: <?= TextHelper::useDecimalUnits($user->getFavoriteCount()) ?>
 						</div>
 					</div>
 				</div>

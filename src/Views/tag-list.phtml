@@ -16,7 +16,7 @@
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?php echo \Chibi\UrlHelper::route('tag', 'list', ['filter' => $key]) ?>"><?php echo $text ?></a>
+				<a href="<?= \Chibi\UrlHelper::route('tag', 'list', ['filter' => $key]) ?>"><?= $text ?></a>
 			</li>
 		<?php endforeach ?>
 	</ul>
@@ -34,9 +34,9 @@
 			<?php foreach ($this->context->transport->tags as $tag): ?>
 				<?php $name = $tag['name'] ?>
 				<?php $count = $tag['post_count'] ?>
-				<li class="tag" title="<?php echo $name ?> (<?php echo $count ?>)">
-					<a href="<?php echo str_replace('_query_', $name, $url) ?>" class="frequency<?php printf('%1.0f', $add + $mul * log($count)) ?>">
-						<?php echo $name . ' (' . $count . ')' ?>
+				<li class="tag" title="<?= $name ?> (<?= $count ?>)">
+					<a href="<?= str_replace('_query_', $name, $url) ?>" class="frequency<?php printf('%1.0f', $add + $mul * log($count)) ?>">
+						<?= $name . ' (' . $count . ')' ?>
 					</a>
 				</li>
 			<?php endforeach ?>

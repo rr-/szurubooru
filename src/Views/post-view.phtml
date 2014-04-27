@@ -24,7 +24,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	<nav id="around">
 		<div class="left">
 			<?php if ($this->context->transport->nextPostId): ?>
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->nextPostId]) ?>">
+				<a href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->nextPostId]) ?>">
 			<?php else: ?>
 				<a class="disabled">
 			<?php endif ?>
@@ -35,7 +35,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		<div class="right">
 			<?php if ($this->context->transport->prevPostId): ?>
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->prevPostId]) ?>">
+				<a href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->prevPostId]) ?>">
 			<?php else: ?>
 				<a class="disabled">
 			<?php endif ?>
@@ -49,23 +49,23 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php if (!empty($this->context->transport->lastSearchQuery)): ?>
 			<div class="text">
 				Current&nbsp;search:<br/>
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $this->context->transport->lastSearchQuery]) ?>"><?php echo $this->context->transport->lastSearchQuery ?></a>
+				<a href="<?= \Chibi\UrlHelper::route('post', 'list', ['query' => $this->context->transport->lastSearchQuery]) ?>"><?= $this->context->transport->lastSearchQuery ?></a>
 			</div>
 		<?php endif ?>
 	</nav>
 
 	<div class="unit tags">
 		<?php $tags = $this->context->transport->post->getTags() ?>
-		<h1>tags (<?php echo count($tags) ?>)</h1>
+		<h1>tags (<?= count($tags) ?>)</h1>
 		<ul>
 			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 			<?php foreach ($tags as $tag): ?>
-				<li title="<?php echo $tag->name ?>">
-					<a href="<?php echo \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
-						<?php echo $tag->name ?>
+				<li title="<?= $tag->name ?>">
+					<a href="<?= \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
+						<?= $tag->name ?>
 					</a>
 					<span class="count">
-						<?php echo TextHelper::useDecimalUnits($tag->getPostCount()) ?>
+						<?= TextHelper::useDecimalUnits($tag->getPostCount()) ?>
 					</span>
 				</li>
 			<?php endforeach ?>
@@ -78,38 +78,38 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="uploader">
 			<?php $uploader = $this->context->transport->post->getUploader() ?>
 			<?php if ($uploader): ?>
-				<span class="value" title="<?php echo $val = $uploader->name ?>">
-					<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $uploader->name]) ?>">
-						<img src="<?php echo htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?php echo $uploader->name ?>"/>
-						<?php echo $val ?>
+				<span class="value" title="<?= $val = $uploader->name ?>">
+					<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $uploader->name]) ?>">
+						<img src="<?= htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?= $uploader->name ?>"/>
+						<?= $val ?>
 					</a>
 				</span>
 			<?php else: ?>
-				<span class="value" title="<?php echo UserModel::getAnonymousName() ?>">
-					<img src="<?php echo \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="<?php echo UserModel::getAnonymousName() ?>"/>
-					<?php echo UserModel::getAnonymousName() ?>
+				<span class="value" title="<?= UserModel::getAnonymousName() ?>">
+					<img src="<?= \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="<?= UserModel::getAnonymousName() ?>"/>
+					<?= UserModel::getAnonymousName() ?>
 				</span>
 			<?php endif ?>
 			<br>
-			<span class="date" title="<?php echo TextHelper::formatDate($this->context->transport->post->uploadDate, true) ?>">
-				<?php echo TextHelper::formatDate($this->context->transport->post->uploadDate, false) ?>
+			<span class="date" title="<?= TextHelper::formatDate($this->context->transport->post->uploadDate, true) ?>">
+				<?= TextHelper::formatDate($this->context->transport->post->uploadDate, false) ?>
 			</span>
 		</div>
 
 		<div class="key-value safety">
 			<span class="key">Safety:</span>
-			<span class="value safety-<?php echo $val = PostSafety::toDisplayString($this->context->transport->post->safety) ?>" title="<?php echo $val ?>">
-				<?php echo $val ?>
+			<span class="value safety-<?= $val = PostSafety::toDisplayString($this->context->transport->post->safety) ?>" title="<?= $val ?>">
+				<?= $val ?>
 			</span>
 		</div>
 
 		<div class="key-value source">
 			<span class="key">Source:</span>
-			<span class="value" title="<?php echo $val = htmlspecialchars($this->context->transport->post->source ?: 'unknown') ?>">
+			<span class="value" title="<?= $val = htmlspecialchars($this->context->transport->post->source ?: 'unknown') ?>">
 				<?php if (preg_match('/^((https?|ftp):|)\/\//', $this->context->transport->post->source)): ?>
-					<a href="<?php echo $val ?>"><?php echo $val ?></a>
+					<a href="<?= $val ?>"><?= $val ?></a>
 				<?php else: ?>
-					<?php echo $val ?>
+					<?= $val ?>
 				<?php endif ?>
 			</span>
 		</div>
@@ -117,10 +117,10 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php if ($this->context->transport->post->imageWidth > 0): ?>
 			<div class="key-value dim">
 				<span class="key">Dimensions:</span>
-				<span class="value" title="<?php echo $val = sprintf('%dx%d',
+				<span class="value" title="<?= $val = sprintf('%dx%d',
 					$this->context->transport->post->imageWidth,
 					$this->context->transport->post->imageHeight) ?>">
-					<?php echo $val ?>
+					<?= $val ?>
 				</span>
 			</div>
 		<?php endif ?>
@@ -128,16 +128,16 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="key-value score">
 			<span class="key">Score:</span>
 			<span class="value">
-				<?php echo $this->context->transport->post->score ?>
+				<?= $this->context->transport->post->score ?>
 
 				<?php if (PrivilegesHelper::confirm(Privilege::ScorePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 					&nbsp;[
 					<?php $scoreLink = function($score) { return \Chibi\UrlHelper::route('post', 'score', ['id' => $this->context->transport->post->id, 'score' => $score]); } ?>
 
 					<?php if ($this->context->score === 1): ?>
-						<a class="simple-action selected" href="<?php echo $scoreLink(0) ?>">
+						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
 					<?php else: ?>
-						<a class="simple-action" href="<?php echo $scoreLink(1) ?>">
+						<a class="simple-action" href="<?= $scoreLink(1) ?>">
 					<?php endif ?>
 						vote up
 					</a>
@@ -145,9 +145,9 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					,&nbsp;
 
 					<?php if ($this->context->score === -1): ?>
-						<a class="simple-action selected" href="<?php echo $scoreLink(0) ?>">
+						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
 					<?php else: ?>
-						<a class="simple-action" href="<?php echo $scoreLink(-1) ?>">
+						<a class="simple-action" href="<?= $scoreLink(-1) ?>">
 					<?php endif ?>
 						down
 					</a>]
@@ -159,7 +159,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	<div class="unit hl-options">
 		<?php if ($this->context->transport->post->type != PostType::Youtube): ?>
 			<div class="hl-option">
-				<a href="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
+				<a href="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
 					<i class="icon-dl"></i>
 					<span>
 						<?php
@@ -176,12 +176,12 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php if (PrivilegesHelper::confirm(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 			<div class="hl-option">
 				<?php if (!$this->context->favorite): ?>
-					<a class="add-fav icon simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
+					<a class="add-fav icon simple-action" href="<?= \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
 						<i class="icon-fav"></i>
 						<span>Add to favorites</span>
 					</a>
 				<?php else: ?>
-					<a class="rem-fav icon simple-action" href="<?php echo \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
+					<a class="rem-fav icon simple-action" href="<?= \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
 						<i class="icon-fav"></i>
 						<span>Remove from favorites</span>
 					</a>
@@ -201,12 +201,12 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 	<?php if (count($this->context->transport->post->getFavorites()) > 0): ?>
 		<div class="unit favorites">
-			<h1>favorites (<?php echo count($this->context->transport->post->getFavorites()) ?>)</h1>
+			<h1>favorites (<?= count($this->context->transport->post->getFavorites()) ?>)</h1>
 			<ul>
 				<?php foreach ($this->context->transport->post->getFavorites() as $user): ?>
 					<li>
-						<a href="<?php echo \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>" title="<?php echo $user->name ?>">
-							<img src="<?php echo htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?php echo $user->name ?>">
+						<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>" title="<?= $user->name ?>">
+							<img src="<?= htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?= $user->name ?>">
 						</a>
 					</li>
 				<?php endforeach ?>
@@ -220,8 +220,8 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<ul>
 				<?php foreach ($this->context->transport->post->getRelations() as $relatedPost): ?>
 					<li>
-						<a href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $relatedPost->id]) ?>">
-							@<?php echo $relatedPost->id ?>
+						<a href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $relatedPost->id]) ?>">
+							@<?= $relatedPost->id ?>
 						</a>
 					</li>
 				<?php endforeach ?>
@@ -313,8 +313,8 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		</div>
 	<?php endif ?>
 
-	<div class="post-wrapper post-type-<?php echo PostType::toString($this->context->transport->post->type) ?>">
-		<?php echo $this->renderFile('post-file-render') ?>
+	<div class="post-wrapper post-type-<?= PostType::toString($this->context->transport->post->type) ?>">
+		<?= $this->renderFile('post-file-render') ?>
 	</div>
 
 	<?php
@@ -324,11 +324,11 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	<div class="comments-wrapper">
 		<?php if (!empty($this->context->transport->post->getComments())): ?>
 			<div class="unit comments">
-				<h1>comments (<?php echo count($this->context->transport->post->getComments()) ?>)</h1>
+				<h1>comments (<?= count($this->context->transport->post->getComments()) ?>)</h1>
 				<div class="comments">
 					<?php foreach ($this->context->transport->post->getComments() as $comment): ?>
 						<?php $this->context->comment = $comment ?>
-						<?php echo $this->renderFile('comment-small') ?>
+						<?= $this->renderFile('comment-small') ?>
 					<?php endforeach ?>
 				</div>
 			</div>

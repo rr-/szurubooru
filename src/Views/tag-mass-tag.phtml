@@ -1,19 +1,19 @@
 <div class="form-wrapper">
-	<form method="post" action="<?php echo \Chibi\UrlHelper::route('tag', 'mass-tag-redirect') ?>">
+	<form method="post" action="<?= \Chibi\UrlHelper::route('tag', 'mass-tag-redirect') ?>">
 		<h1>mass tag</h1>
 
 		<div class="form-row">
 			<label for="mass-tag-query">Search query:</label>
-			<div class="input-wrapper"><input class="autocomplete" type="text" name="query" id="mass-tag-query" value="<?php echo isset($this->context->massTagQuery) ? htmlspecialchars($this->context->massTagQuery) : '' ?>"/></div>
+			<div class="input-wrapper"><input class="autocomplete" type="text" name="query" id="mass-tag-query" value="<?= isset($this->context->massTagQuery) ? htmlspecialchars($this->context->massTagQuery) : '' ?>"/></div>
 		</div>
 
 		<div class="form-row">
 			<label for="mass-tag-tag">Tag:</label>
-			<div class="input-wrapper"><input class="autocomplete" type="text" name="tag" id="mass-tag-tag" value="<?php echo isset($this->context->massTagTag) ? htmlspecialchars($this->context->massTagTag) : '' ?>"/></div>
+			<div class="input-wrapper"><input class="autocomplete" type="text" name="tag" id="mass-tag-tag" value="<?= isset($this->context->massTagTag) ? htmlspecialchars($this->context->massTagTag) : '' ?>"/></div>
 		</div>
 
-		<input type="hidden" name="old-page" value="<?php echo isset($this->context->transport->paginator) ? htmlspecialchars($this->context->transport->paginator->page) : '' ?>"/>
-		<input type="hidden" name="old-query" value="<?php echo isset($this->context->massTagQuery) ? htmlspecialchars($this->context->massTagQuery) : '' ?>"/>
+		<input type="hidden" name="old-page" value="<?= isset($this->context->transport->paginator) ? htmlspecialchars($this->context->transport->paginator->page) : '' ?>"/>
+		<input type="hidden" name="old-query" value="<?= isset($this->context->massTagQuery) ? htmlspecialchars($this->context->massTagQuery) : '' ?>"/>
 		<input type="hidden" name="submit" value="1"/>
 
 		<div class="form-row">

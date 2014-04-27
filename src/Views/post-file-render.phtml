@@ -4,10 +4,10 @@
 <?php if ($post->type == PostType::Image): ?>
 
 	<?php if (!empty($this->context->imageLink)): ?>
-		<a href="<?php echo $this->context->imageLink ?>">
+		<a href="<?= $this->context->imageLink ?>">
 	<?php endif ?>
 
-	<img src="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>" alt="<?php echo $post->name ?>"/>
+	<img src="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>" alt="<?= $post->name ?>"/>
 
 	<?php if (!empty($this->context->imageLink)): ?>
 		</a>
@@ -15,14 +15,14 @@
 
 <?php elseif ($post->type ==  PostType::Flash): ?>
 
-	<object type="<?php echo $post->mimeType ?>" width="<?php echo $post->imageWidth ?>" height="<?php echo $post->imageHeight ?>" data="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
-		<param name="movie" value="<?php echo \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"/>
+	<object type="<?= $post->mimeType ?>" width="<?= $post->imageWidth ?>" height="<?= $post->imageHeight ?>" data="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+		<param name="movie" value="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"/>
 		<param name="wmode" value="opaque"/>
 	</object>
 
 <?php elseif ($post->type == PostType::Youtube): ?>
 
-	<iframe style="width: 800px; height: 600px; border: 0;" src="//www.youtube.com/embed/<?php echo $post->fileHash ?>?wmode=opaque" allowfullscreen></iframe>
+	<iframe style="width: 800px; height: 600px; border: 0;" src="//www.youtube.com/embed/<?= $post->fileHash ?>?wmode=opaque" allowfullscreen></iframe>
 
 <?php elseif ($post->type == PostType::Video): ?>
 

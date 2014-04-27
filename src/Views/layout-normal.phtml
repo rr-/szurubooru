@@ -16,7 +16,7 @@ CustomAssetViewDecorator::addScript('core.js');
 
 	<body>
 		<script type="text/javascript">
-			var lastSearchQuery = <?php echo json_encode(isset($this->context->transport->lastSearchQuery) ? $this->context->transport->lastSearchQuery : '') ?>;
+			var lastSearchQuery = <?= json_encode(isset($this->context->transport->lastSearchQuery) ? $this->context->transport->lastSearchQuery : '') ?>;
 		</script>
 
 		<nav id="top-nav">
@@ -28,7 +28,7 @@ CustomAssetViewDecorator::addScript('core.js');
 
 		<section id="content">
 			<div class="main-wrapper">
-				<?php echo $this->renderView() ?>
+				<?= $this->renderView() ?>
 			</div>
 			<div class="clear"></div>
 		</section>
@@ -36,18 +36,18 @@ CustomAssetViewDecorator::addScript('core.js');
 		<footer>
 			<div class="main-wrapper">
 				<hr>
-				<span>Load:&nbsp;<?php echo sprintf('%.05f', microtime(true) - $this->context->startTime) ?>s</span>
-				<span>Queries:&nbsp;<?php echo count(\Chibi\Database::getLogs()) ?></span>
-				<span><a href="<?php echo SZURU_LINK ?>">szurubooru&nbsp;v<?php echo SZURU_VERSION ?></a></span>
+				<span>Load:&nbsp;<?= sprintf('%.05f', microtime(true) - $this->context->startTime) ?>s</span>
+				<span>Queries:&nbsp;<?= count(\Chibi\Database::getLogs()) ?></span>
+				<span><a href="<?= SZURU_LINK ?>">szurubooru&nbsp;v<?= SZURU_VERSION ?></a></span>
 				<?php if (PrivilegesHelper::confirm(Privilege::ListLogs)): ?>
-					<span><a href="<?php echo \Chibi\UrlHelper::route('log', 'list') ?>">Logs</a></span>
+					<span><a href="<?= \Chibi\UrlHelper::route('log', 'list') ?>">Logs</a></span>
 				<?php endif ?>
 				<hr>
 			</div>
 		</footer>
 
 		<?php if ($this->config->misc->debugQueries): ?>
-			<?php echo $this->renderFile('debug') ?>
+			<?= $this->renderFile('debug') ?>
 		<?php endif ?>
 
 		<div id="small-screen"></div>

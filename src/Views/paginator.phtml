@@ -54,7 +54,7 @@ if (!function_exists('pageUrl'))
 			<?php else: ?>
 				<li class="prev disabled">
 			<?php endif ?>
-				<a href="<?php echo pageUrl($page - 1) ?>">
+				<a href="<?= pageUrl($page - 1) ?>">
 					&laquo;
 				</a>
 			</li>
@@ -68,8 +68,8 @@ if (!function_exists('pageUrl'))
 					<?php else: ?>
 						<li>
 					<?php endif ?>
-						<a href="<?php echo pageUrl($subPage) ?>">
-							<?php echo $subPage ?>
+						<a href="<?= pageUrl($subPage) ?>">
+							<?= $subPage ?>
 						</a>
 					</li>
 				<?php endif ?>
@@ -80,7 +80,7 @@ if (!function_exists('pageUrl'))
 			<?php else: ?>
 				<li class="next disabled">
 			<?php endif ?>
-				<a href="<?php echo pageUrl($page + 1) ?>">
+				<a href="<?= pageUrl($page + 1) ?>">
 					&raquo;
 				</a>
 			</li>

@@ -15,12 +15,12 @@ $showTabs = count($tabs) > 1;
 		<ul>
 			<?php foreach ($tabs as $tab => $name): ?>
 				<?php if ($this->context->route->simpleActionName == $tab): ?>
-					<li class="selected <?php echo $tab ?>">
+					<li class="selected <?= $tab ?>">
 				<?php else: ?>
-					<li class="<?php echo $tab ?>">
+					<li class="<?= $tab ?>">
 				<?php endif ?>
-					<a href="<?php echo \Chibi\UrlHelper::route('tag', $tab) ?>">
-						<?php echo $name ?>
+					<a href="<?= \Chibi\UrlHelper::route('tag', $tab) ?>">
+						<?= $name ?>
 					</a>
 				</li>
 			<?php endforeach  ?>

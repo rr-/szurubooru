@@ -25,19 +25,19 @@ if ($masstag)
 }
 ?>
 
-<div class="<?php echo implode(' ', $classNames) ?>">
+<div class="<?= implode(' ', $classNames) ?>">
 	<?php if ($masstag): ?>
-		<a class="toggle-tag" href="<?php echo \Chibi\UrlHelper::route('post', 'toggle-tag', ['id' => $this->context->post->id, 'tag' => $this->context->additionalInfo, 'enable' => '_enable_']) ?>" data-text-tagged="Tagged" data-text-untagged="Untagged">
-			<?php echo in_array('tagged', $classNames) ? 'Tagged' : 'Untagged' ?>
+		<a class="toggle-tag" href="<?= \Chibi\UrlHelper::route('post', 'toggle-tag', ['id' => $this->context->post->id, 'tag' => $this->context->additionalInfo, 'enable' => '_enable_']) ?>" data-text-tagged="Tagged" data-text-untagged="Untagged">
+			<?= in_array('tagged', $classNames) ? 'Tagged' : 'Untagged' ?>
 		</a>
 	<?php endif ?>
 
 	<?php if ($this->context->user->hasEnabledPostTagTitles()): ?>
-		<a title="<?php echo TextHelper::reprTags($this->context->post->getTags()) ?>" class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+		<a title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>" class="link" href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
 	<?php else: ?>
-		<a class="link" href="<?php echo \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+		<a class="link" href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
 	<?php endif ?>
-		<img class="thumb" src="<?php echo \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>" alt="@<?php echo $this->context->post->id ?>"/>
+		<img class="thumb" src="<?= \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>" alt="@<?= $this->context->post->id ?>"/>
 		<?php
 			$x =
 			[
@@ -54,8 +54,8 @@ if ($masstag)
 					<?php else: ?>
 						<span>
 					<?php endif ?>
-						<i class="icon-<?php echo $key ?>"></i>
-						&nbsp;<?php echo $val ?>
+						<i class="icon-<?= $key ?>"></i>
+						&nbsp;<?= $val ?>
 					</span>
 				<?php endforeach ?>
 			</div>
