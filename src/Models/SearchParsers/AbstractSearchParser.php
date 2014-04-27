@@ -35,13 +35,13 @@ abstract class AbstractSearchParser
 				else
 				{
 					if (!$this->processComplexToken($key, $value, $neg))
-						throw new SimpleException('Invalid search token: ' . $key);
+						throw new SimpleException('Invalid search token "%s"', $key);
 				}
 			}
 			else
 			{
 				if (!$this->processSimpleToken($token, $neg))
-					throw new SimpleException('Invalid search token: ' . $token);
+					throw new SimpleException('Invalid search token "%s"', $token);
 			}
 		}
 		$this->processTeardown();
@@ -62,7 +62,7 @@ abstract class AbstractSearchParser
 			$arr []= 'desc';
 
 		if (count($arr) != 2)
-			throw new SimpleException('Invalid search order token: ' . $orderToken);
+			throw new SimpleException('Invalid search order token "%s"', $orderToken);
 
 		$orderByString = strtolower(array_shift($arr));
 		$orderDirString = strtolower(array_shift($arr));
@@ -71,7 +71,7 @@ abstract class AbstractSearchParser
 		elseif ($orderDirString == 'desc')
 			$orderDir = Sql\SelectStatement::ORDER_DESC;
 		else
-			throw new SimpleException('Invalid search order direction: ' . $searchOrderDir);
+			throw new SimpleException('Invalid search order direction "%s"', $searchOrderDir);
 
 		if ($neg)
 		{
@@ -81,7 +81,7 @@ abstract class AbstractSearchParser
 		}
 
 		if (!$this->processOrderToken($orderByString, $orderDir))
-			throw new SimpleException('Invalid search order type: ' . $orderByString);
+			throw new SimpleException('Invalid search order type "%s"', $orderByString);
 	}
 
 	protected function processComplexToken($key, $value, $neg)

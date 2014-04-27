@@ -63,7 +63,12 @@ class LogController
 		$lines = array_reverse($lines);
 
 		if (!empty($filter))
-			$lines = array_filter($lines, function($line) use ($filter) { return stripos($line, $filter) !== false; });
+		{
+			$lines = array_filter($lines, function($line) use ($filter)
+			{
+				return stripos($line, $filter) !== false;
+			});
+		}
 
 		$lineCount = count($lines);
 		$logsPerPage = intval($this->config->browsing->logsPerPage);

@@ -84,7 +84,9 @@ class CommentController
 		$comment = CommentModel::findById($id);
 		$this->context->transport->comment = $comment;
 
-		PrivilegesHelper::confirmWithException(Privilege::EditComment, PrivilegesHelper::getIdentitySubPrivilege($comment->getCommenter()));
+		PrivilegesHelper::confirmWithException(
+			Privilege::EditComment,
+			PrivilegesHelper::getIdentitySubPrivilege($comment->getCommenter()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -113,7 +115,10 @@ class CommentController
 	{
 		$comment = CommentModel::findById($id);
 
-		PrivilegesHelper::confirmWithException(Privilege::DeleteComment, PrivilegesHelper::getIdentitySubPrivilege($comment->getCommenter()));
+		PrivilegesHelper::confirmWithException(
+			Privilege::DeleteComment,
+			PrivilegesHelper::getIdentitySubPrivilege($comment->getCommenter()));
+
 		CommentModel::remove($comment);
 
 		LogHelper::log('{user} removed comment from {post}', ['post' => TextHelper::reprPost($comment->getPost())]);

@@ -12,13 +12,14 @@ class PostSearchParser extends AbstractSearchParser
 		$config = \Chibi\Registry::getConfig();
 
 		$this->tags = [];
-		$this->statement->setCriterion(new Sql\ConjunctionFunctor());
+		$crit = new Sql\ConjunctionFunctor();
 
 		$allowedSafety = PrivilegesHelper::getAllowedSafety();
-		$this->statement->getCriterion()->add(Sql\InFunctor::fromArray('safety', Sql\Binding::fromArray($allowedSafety)));
+		$crit->add(Sql\InFunctor::fromArray('safety', Sql\Binding::fromArray($allowedSafety)));
 
+		$this->statement->setCriterion($crit);
 		if (count($tokens) > $config->browsing->maxSearchTokens)
-			throw new SimpleException('Too many search tokens (maximum: ' . $config->browsing->maxSearchTokens . ')');
+			throw new SimpleException('Too many search tokens (maximum: %d)', $config->browsing->maxSearchTokens);
 	}
 
 	protected function processTeardown()
@@ -182,7 +183,7 @@ class PostSearchParser extends AbstractSearchParser
 			}
 
 			else
-				throw new SimpleException('Invalid special token: ' . $value);
+				throw new SimpleException('Invalid special token "%s"', $value);
 		}
 
 		elseif ($key == 'type')
@@ -197,7 +198,7 @@ class PostSearchParser extends AbstractSearchParser
 			elseif ($value == 'yt' or $value == 'youtube')
 				$type = PostType::Youtube;
 			else
-				throw new SimpleException('Invalid post type: ' . $value);
+				throw new SimpleException('Invalid post type "%s"', $value);
 
 			return new Sql\EqualsFunctor('type', new Sql\Binding($type));
 		}

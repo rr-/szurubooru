@@ -14,7 +14,9 @@ class IndexController
 		{
 			$this->context->featuredPost = $featuredPost;
 			$this->context->featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
-			$this->context->featuredPostUser = UserModel::findByNameOrEmail(PropertyModel::get(PropertyModel::FeaturedPostUserName), false);
+			$this->context->featuredPostUser = UserModel::findByNameOrEmail(
+				PropertyModel::get(PropertyModel::FeaturedPostUserName),
+				false);
 		}
 	}
 

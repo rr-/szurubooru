@@ -111,7 +111,10 @@ class TagController
 
 			TagModel::merge($suppliedSourceTag, $suppliedTargetTag);
 
-			LogHelper::log('{user} merged {source} with {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
+			LogHelper::log('{user} merged {source} with {target}', [
+				'source' => TextHelper::reprTag($suppliedSourceTag),
+				'target' => TextHelper::reprTag($suppliedTargetTag)]);
+
 			StatusHelper::success('Tags merged successfully.');
 		}
 	}
@@ -137,7 +140,10 @@ class TagController
 
 			TagModel::rename($suppliedSourceTag, $suppliedTargetTag);
 
-			LogHelper::log('{user} renamed {source} to {target}', ['source' => TextHelper::reprTag($suppliedSourceTag), 'target' => TextHelper::reprTag($suppliedTargetTag)]);
+			LogHelper::log('{user} renamed {source} to {target}', [
+				'source' => TextHelper::reprTag($suppliedSourceTag),
+				'target' => TextHelper::reprTag($suppliedTargetTag)]);
+
 			StatusHelper::success('Tag renamed successfully.');
 		}
 	}

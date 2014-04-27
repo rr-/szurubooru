@@ -93,10 +93,10 @@ class CommentModel extends AbstractCrudModel
 		$config = \Chibi\Registry::getConfig();
 
 		if (strlen($text) < $config->comments->minLength)
-			throw new SimpleException(sprintf('Comment must have at least %d characters', $config->comments->minLength));
+			throw new SimpleException('Comment must have at least %d characters', $config->comments->minLength);
 
 		if (strlen($text) > $config->comments->maxLength)
-			throw new SimpleException(sprintf('Comment must have at most %d characters', $config->comments->maxLength));
+			throw new SimpleException('Comment must have at most %d characters', $config->comments->maxLength);
 
 		return $text;
 	}

@@ -43,11 +43,13 @@ class UserController
 		if (empty($recipientEmail))
 			throw new SimpleException('Destination e-mail address was not found');
 
+		$messageId = $_SERVER['REQUEST_TIME'] . md5($_SERVER['REQUEST_TIME']) . '@' . $_SERVER['HTTP_HOST'];
+
 		$headers = [];
 		$headers []= sprintf('MIME-Version: 1.0');
 		$headers []= sprintf('Content-Transfer-Encoding: 7bit');
 		$headers []= sprintf('Date: %s', date('r', $_SERVER['REQUEST_TIME']));
-		$headers []= sprintf('Message-ID: <%s>', $_SERVER['REQUEST_TIME'] . md5($_SERVER['REQUEST_TIME']) . '@' . $_SERVER['HTTP_HOST']);
+		$headers []= sprintf('Message-ID: <%s>', $messageId);
 		$headers []= sprintf('From: %s <%s>', $senderName, $senderEmail);
 		$headers []= sprintf('Reply-To: %s', $senderEmail);
 		$headers []= sprintf('Return-Path: %s', $senderEmail);
@@ -58,7 +60,9 @@ class UserController
 		$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 		mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
 
-		LogHelper::log('Sending e-mail with subject "{subject}" to {mail}', ['subject' => $subject, 'mail' => $recipientEmail]);
+		LogHelper::log('Sending e-mail with subject "{subject}" to {mail}', [
+			'subject' => $subject,
+			'mail' => $recipientEmail]);
 	}
 
 	private static function sendEmailChangeConfirmation($user)
@@ -107,7 +111,8 @@ class UserController
 	*/
 	public function listAction($filter, $page)
 	{
-		PrivilegesHelper::confirmWithException(Privilege::ListUsers);
+		PrivilegesHelper::confirmWithException(
+			Privilege::ListUsers);
 
 		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
 		$page = max(1, intval($page));
@@ -137,7 +142,9 @@ class UserController
 	public function flagAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(Privilege::FlagUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::FlagUser,
+			PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		if (InputHelper::get('submit'))
 		{
@@ -149,7 +156,9 @@ class UserController
 			$flagged []= $key;
 			SessionHelper::set('flagged', $flagged);
 
-			LogHelper::log('{user} flagged {subject} for moderator attention', ['subject' => TextHelper::reprUser($user)]);
+			LogHelper::log('{user} flagged {subject} for moderator attention', [
+				'subject' => TextHelper::reprUser($user)]);
+
 			StatusHelper::success();
 		}
 	}
@@ -163,7 +172,9 @@ class UserController
 	public function banAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::BanUser,
+			PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		if (InputHelper::get('submit'))
 		{
@@ -184,7 +195,9 @@ class UserController
 	public function unbanAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::BanUser,
+			PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		if (InputHelper::get('submit'))
 		{
@@ -205,7 +218,9 @@ class UserController
 	public function acceptRegistrationAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(Privilege::AcceptUserRegistration);
+		PrivilegesHelper::confirmWithException(
+			Privilege::AcceptUserRegistration);
+
 		if (InputHelper::get('submit'))
 		{
 			$user->staffConfirmed = true;
@@ -224,8 +239,12 @@ class UserController
 	public function deleteAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
-		PrivilegesHelper::confirmWithException(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::ViewUser,
+			PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::DeleteUser,
+			PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		$this->loadUserView($user);
 		$this->context->transport->tab = 'delete';
@@ -262,8 +281,12 @@ class UserController
 	public function settingsAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
-		PrivilegesHelper::confirmWithException(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::ViewUser,
+			PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::ChangeUserSettings,
+			PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		$this->loadUserView($user);
 		$this->context->transport->tab = 'settings';
@@ -300,7 +323,9 @@ class UserController
 		try
 		{
 			$user = UserModel::findByNameOrEmail($name);
-			PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+			PrivilegesHelper::confirmWithException(
+				Privilege::ViewUser,
+				PrivilegesHelper::getIdentitySubPrivilege($user));
 
 			$this->loadUserView($user);
 			$this->context->transport->tab = 'edit';
@@ -320,16 +345,24 @@ class UserController
 
 				if ($suppliedName != '' and $suppliedName != $user->name)
 				{
-					PrivilegesHelper::confirmWithException(Privilege::ChangeUserName, PrivilegesHelper::getIdentitySubPrivilege($user));
+					PrivilegesHelper::confirmWithException(
+						Privilege::ChangeUserName,
+						PrivilegesHelper::getIdentitySubPrivilege($user));
+
 					$suppliedName = UserModel::validateUserName($suppliedName);
 					$oldName = $user->name;
 					$user->name = $suppliedName;
-					LogHelper::log('{user} renamed {old} to {new}', ['old' => TextHelper::reprUser($oldName), 'new' => TextHelper::reprUser($suppliedName)]);
+					LogHelper::log('{user} renamed {old} to {new}', [
+						'old' => TextHelper::reprUser($oldName),
+						'new' => TextHelper::reprUser($suppliedName)]);
 				}
 
 				if ($suppliedPassword1 != '')
 				{
-					PrivilegesHelper::confirmWithException(Privilege::ChangeUserPassword, PrivilegesHelper::getIdentitySubPrivilege($user));
+					PrivilegesHelper::confirmWithException(
+						Privilege::ChangeUserPassword,
+						PrivilegesHelper::getIdentitySubPrivilege($user));
+
 					if ($suppliedPassword1 != $suppliedPassword2)
 						throw new SimpleException('Specified passwords must be the same');
 					$suppliedPassword = UserModel::validatePassword($suppliedPassword1);
@@ -339,7 +372,10 @@ class UserController
 
 				if ($suppliedEmail != '' and $suppliedEmail != $user->emailConfirmed)
 				{
-					PrivilegesHelper::confirmWithException(Privilege::ChangeUserEmail, PrivilegesHelper::getIdentitySubPrivilege($user));
+					PrivilegesHelper::confirmWithException(
+						Privilege::ChangeUserEmail,
+						PrivilegesHelper::getIdentitySubPrivilege($user));
+
 					$suppliedEmail = UserModel::validateEmail($suppliedEmail);
 					if ($this->context->user->id == $user->id)
 					{
@@ -352,16 +388,23 @@ class UserController
 					{
 						$user->emailUnconfirmed = null;
 						$user->emailConfirmed = $suppliedEmail;
-						LogHelper::log('{user} changed {subject}\'s e-mail to {mail}', ['subject' => TextHelper::reprUser($user), 'mail' => $suppliedEmail]);
+						LogHelper::log('{user} changed {subject}\'s e-mail to {mail}', [
+							'subject' => TextHelper::reprUser($user),
+							'mail' => $suppliedEmail]);
 					}
 				}
 
 				if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->accessRank)
 				{
-					PrivilegesHelper::confirmWithException(Privilege::ChangeUserAccessRank, PrivilegesHelper::getIdentitySubPrivilege($user));
+					PrivilegesHelper::confirmWithException(
+						Privilege::ChangeUserAccessRank,
+						PrivilegesHelper::getIdentitySubPrivilege($user));
+
 					$suppliedAccessRank = UserModel::validateAccessRank($suppliedAccessRank);
 					$user->accessRank = $suppliedAccessRank;
-					LogHelper::log('{user} changed {subject}\'s access rank to {rank}', ['subject' => TextHelper::reprUser($user), 'rank' => AccessRank::toString($suppliedAccessRank)]);
+					LogHelper::log('{user} changed {subject}\'s access rank to {rank}', [
+						'subject' => TextHelper::reprUser($user),
+						'rank' => AccessRank::toString($suppliedAccessRank)]);
 				}
 
 				if ($this->context->user->id == $user->id)
@@ -409,7 +452,10 @@ class UserController
 		if ($page === null)
 			$page = 1;
 
-		PrivilegesHelper::confirmWithException(Privilege::ViewUser, PrivilegesHelper::getIdentitySubPrivilege($user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::ViewUser,
+			PrivilegesHelper::getIdentitySubPrivilege($user));
+
 		$this->loadUserView($user);
 
 		$query = '';
@@ -443,7 +489,9 @@ class UserController
 	*/
 	public function toggleSafetyAction($safety)
 	{
-		PrivilegesHelper::confirmWithException(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->user));
+		PrivilegesHelper::confirmWithException(
+			Privilege::ChangeUserSettings,
+			PrivilegesHelper::getIdentitySubPrivilege($this->context->user));
 
 		if (!in_array($safety, PostSafety::getAll()))
 			throw new SimpleExcetpion('Invalid safety');

@@ -100,7 +100,7 @@ class UserModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleNotFoundException('Invalid user name "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid user name "%s"', $key);
 		return null;
 	}
 
@@ -118,7 +118,7 @@ class UserModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleNotFoundException('Invalid user name "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid user name "%s"', $key);
 		return null;
 	}
 
@@ -197,10 +197,10 @@ class UserModel extends AbstractCrudModel
 		$userNameRegex = \Chibi\Registry::getConfig()->registration->userNameRegex;
 
 		if (strlen($userName) < $userNameMinLength)
-			throw new SimpleException(sprintf('User name must have at least %d characters', $userNameMinLength));
+			throw new SimpleException('User name must have at least %d characters', $userNameMinLength);
 
 		if (strlen($userName) > $userNameMaxLength)
-			throw new SimpleException(sprintf('User name must have at most %d characters', $userNameMaxLength));
+			throw new SimpleException('User name must have at most %d characters', $userNameMaxLength);
 
 		if (!preg_match($userNameRegex, $userName))
 			throw new SimpleException('User name contains invalid characters');
@@ -214,7 +214,7 @@ class UserModel extends AbstractCrudModel
 		$passRegex = \Chibi\Registry::getConfig()->registration->passRegex;
 
 		if (strlen($password) < $passMinLength)
-			throw new SimpleException(sprintf('Password must have at least %d characters', $passMinLength));
+			throw new SimpleException('Password must have at least %d characters', $passMinLength);
 
 		if (!preg_match($passRegex, $password))
 			throw new SimpleException('Password contains invalid characters');
@@ -237,10 +237,10 @@ class UserModel extends AbstractCrudModel
 		$accessRank = intval($accessRank);
 
 		if (!in_array($accessRank, AccessRank::getAll()))
-			throw new SimpleException('Invalid access rank type "' . $accessRank . '"');
+			throw new SimpleException('Invalid access rank type "%s"', $accessRank);
 
 		if ($accessRank == AccessRank::Nobody)
-			throw new SimpleException('Cannot set special accesss rank "' . $accessRank . '"');
+			throw new SimpleException('Cannot set special accesss rank "%s"', $accessRank);
 
 		return $accessRank;
 	}

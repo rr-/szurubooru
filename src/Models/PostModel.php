@@ -146,7 +146,7 @@ class PostModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleNotFoundException('Invalid post name "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid post name "%s"', $key);
 		return null;
 	}
 
@@ -171,7 +171,7 @@ class PostModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleNotFoundException('Invalid post hash "' . $hash . '"');
+			throw new SimpleNotFoundException('Invalid post hash "%s"', $hash);
 		return null;
 	}
 
@@ -267,7 +267,7 @@ class PostModel extends AbstractCrudModel
 		$safety = intval($safety);
 
 		if (!in_array($safety, PostSafety::getAll()))
-			throw new SimpleException('Invalid safety type "' . $safety . '"');
+			throw new SimpleException('Invalid safety type "%s"', $safety);
 
 		return $safety;
 	}
@@ -278,7 +278,7 @@ class PostModel extends AbstractCrudModel
 
 		$maxLength = 200;
 		if (strlen($source) > $maxLength)
-			throw new SimpleException('Source must have at most ' . $maxLength . ' characters');
+			throw new SimpleException('Source must have at most %d characters', $maxLength);
 
 		return $source;
 	}

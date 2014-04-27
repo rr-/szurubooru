@@ -7,20 +7,28 @@ class PostController
 		{
 			case UPLOAD_ERR_OK:
 				break;
+
 			case UPLOAD_ERR_INI_SIZE:
-				throw new SimpleException('File is too big (maximum size allowed: ' . ini_get('upload_max_filesize') . ')');
+				throw new SimpleException('File is too big (maximum size: %s)', ini_get('upload_max_filesize'));
+
 			case UPLOAD_ERR_FORM_SIZE:
 				throw new SimpleException('File is too big than it was allowed in HTML form');
+
 			case UPLOAD_ERR_PARTIAL:
 				throw new SimpleException('File transfer was interrupted');
+
 			case UPLOAD_ERR_NO_FILE:
 				throw new SimpleException('No file was uploaded');
+
 			case UPLOAD_ERR_NO_TMP_DIR:
 				throw new SimpleException('Server misconfiguration error: missing temporary folder');
+
 			case UPLOAD_ERR_CANT_WRITE:
 				throw new SimpleException('Server misconfiguration error: cannot write to disk');
+
 			case UPLOAD_ERR_EXTENSION:
 				throw new SimpleException('Server misconfiguration error: upload was canceled by an extension');
+
 			default:
 				throw new SimpleException('Generic file upload error (id: ' . $file['error'] . ')');
 		}
@@ -57,7 +65,11 @@ class PostController
 			$this->context->transport->lastSearchQuery = $formQuery;
 			if (strpos($formQuery, '/') !== false)
 				throw new SimpleException('Search query contains invalid characters');
-			$url = \Chibi\UrlHelper::route('post', 'list', ['source' => $source, 'additionalInfo' => $additionalInfo, 'query' => $formQuery]);
+
+			$url = \Chibi\UrlHelper::route('post', 'list', [
+				'source' => $source,
+				'additionalInfo' => $additionalInfo,
+				'query' => $formQuery]);
 			\Chibi\UrlHelper::forward($url);
 			return;
 		}
@@ -107,7 +119,9 @@ class PostController
 
 		if (InputHelper::get('submit'))
 		{
-			PrivilegesHelper::confirmWithException(Privilege::MassTag, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+			PrivilegesHelper::confirmWithException(
+				Privilege::MassTag,
+				PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 			$tags = $post->getTags();
 
@@ -116,7 +130,10 @@ class PostController
 				foreach ($tags as $i => $tag)
 					if ($tag->name == $tagName)
 						unset($tags[$i]);
-				LogHelper::log('{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+
+				LogHelper::log('{user} untagged {post} with {tag}', [
+					'post' => TextHelper::reprPost($post),
+					'tag' => TextHelper::reprTag($tag)]);
 			}
 			elseif ($enable)
 			{
@@ -129,7 +146,9 @@ class PostController
 				}
 
 				$tags []= $tag;
-				LogHelper::log('{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+				LogHelper::log('{user} tagged {post} with {tag}', [
+					'post' => TextHelper::reprPost($post),
+					'tag' => TextHelper::reprTag($tag)]);
 			}
 
 			$post->setTags($tags);

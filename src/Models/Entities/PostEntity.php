@@ -115,7 +115,7 @@ class PostEntity extends AbstractEntity
 				continue;
 
 			if (count($relatedPosts) > $config->browsing->maxRelatedPosts)
-				throw new SimpleException('Too many related posts (maximum: ' . $config->browsing->maxRelatedPosts . ')');
+				throw new SimpleException('Too many related posts (maximum: %d)', $config->browsing->maxRelatedPosts);
 
 			$relatedPosts []= PostModel::findById($relatedId);
 		}
@@ -219,13 +219,13 @@ class PostEntity extends AbstractEntity
 
 		$mimeType = mime_content_type($srcPath);
 		if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
-			throw new SimpleException('Invalid thumbnail type "' . $mimeType . '"');
+			throw new SimpleException('Invalid thumbnail type "%s"', $mimeType);
 
 		list ($imageWidth, $imageHeight) = getimagesize($srcPath);
 		if ($imageWidth != $config->browsing->thumbWidth)
-			throw new SimpleException('Invalid thumbnail width (should be ' . $config->browsing->thumbWidth . ')');
+			throw new SimpleException('Invalid thumbnail width (should be %d)', $config->browsing->thumbWidth);
 		if ($imageHeight != $config->browsing->thumbHeight)
-			throw new SimpleException('Invalid thumbnail height (should be ' . $config->browsing->thumbHeight . ')');
+			throw new SimpleException('Invalid thumbnail height (should be %d)', $config->browsing->thumbHeight);
 
 		$dstPath = $this->getThumbCustomPath();
 
@@ -264,7 +264,13 @@ class PostEntity extends AbstractEntity
 			case 'application/x-shockwave-flash':
 				$srcImage = null;
 				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-				exec('dump-gnash --screenshot last --screenshot-file "' . $tmpPath . '" -1 -r1 --max-advances 15 "' . $srcPath . '"');
+
+				$cmd = sprintf(
+					'dump-gnash --screenshot last --screenshot-file "%s" -1 -r1 --max-advances 15 "%s"',
+					$tmpPath,
+					$srcPath);
+				exec($cmd);
+
 				if (file_exists($tmpPath))
 					$srcImage = imagecreatefrompng($tmpPath);
 
@@ -285,13 +291,24 @@ class PostEntity extends AbstractEntity
 			case 'video/3gpp':
 				$srcImage = null;
 				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-				exec('ffmpegthumbnailer -i"' . $srcPath . '" -o"' . $tmpPath . '" -s0 -t"12%"');
+
+				$cmd = sprintf(
+					'ffmpegthumbnailer -i"%s" -o"%s" -s0 -t"12%"',
+					$srcPath,
+					$tmpPath);
+				exec($cmd);
+
 				if (file_exists($tmpPath))
 					$srcImage = imagecreatefrompng($tmpPath);
 
 				if (!$srcImage)
 				{
-					exec('ffmpeg -i "' . $srcPath . '" -vframes 1 "' . $tmpPath . '"');
+					exec($cmd);
+					$cmd = sprintf(
+						'ffmpeg -i "%s" -vframes 1 "%s"',
+						$srcPath,
+						$tmpPath);
+
 					if (file_exists($tmpPath))
 						$srcImage = imagecreatefrompng($tmpPath);
 				}
@@ -365,12 +382,12 @@ class PostEntity extends AbstractEntity
 				$this->imageHeight = $imageHeight;
 				break;
 			default:
-				throw new SimpleException('Invalid file type "' . $this->mimeType . '"');
+				throw new SimpleException('Invalid file type "%s"', $this->mimeType);
 		}
 
 		$duplicatedPost = PostModel::findByHash($this->fileHash, false);
 		if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
-			throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
+			throw new SimpleException('Duplicate upload: %s', TextHelper::reprPost($duplicatedPost));
 
 		$dstPath = $this->getFullPath();
 
@@ -387,7 +404,7 @@ class PostEntity extends AbstractEntity
 	public function setContentFromUrl($srcUrl)
 	{
 		if (!preg_match('/^https?:\/\//', $srcUrl))
-			throw new SimpleException('Invalid URL "' . $srcUrl . '"');
+			throw new SimpleException('Invalid URL "%s"', $srcUrl);
 
 		if (preg_match('/youtube.com\/watch.*?=([a-zA-Z0-9_-]+)/', $srcUrl, $matches))
 		{
@@ -405,7 +422,7 @@ class PostEntity extends AbstractEntity
 
 			$duplicatedPost = PostModel::findByHash($youtubeId, false);
 			if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
-				throw new SimpleException('Duplicate upload: @' . $duplicatedPost->id);
+				throw new SimpleException('Duplicate upload: %s' . TextHelper::reprPost($duplicatedPost));
 			return;
 		}
 
@@ -434,7 +451,7 @@ class PostEntity extends AbstractEntity
 					throw new SimpleException('Cannot write into file');
 				fflush($srcFP);
 				if (ftell($srcFP) > $maxBytes)
-					throw new SimpleException('File is too big (maximum allowed size: ' . TextHelper::useBytesUnits($maxBytes) . ')');
+					throw new SimpleException('File is too big (maximum size: %s)', TextHelper::useBytesUnits($maxBytes));
 			}
 		}
 		finally

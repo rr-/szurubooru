@@ -130,7 +130,7 @@ class TagModel extends AbstractCrudModel
 			return self::convertRow($row);
 
 		if ($throw)
-			throw new SimpleNotFoundException('Invalid tag name "' . $key . '"');
+			throw new SimpleNotFoundException('Invalid tag name "%s"', $key);
 		return null;
 	}
 
@@ -158,15 +158,15 @@ class TagModel extends AbstractCrudModel
 		$minLength = 1;
 		$maxLength = 64;
 		if (strlen($tag) < $minLength)
-			throw new SimpleException('Tag must have at least ' . $minLength . ' characters');
+			throw new SimpleException('Tag must have at least %d characters', $minLength);
 		if (strlen($tag) > $maxLength)
-			throw new SimpleException('Tag must have at most ' . $maxLength . ' characters');
+			throw new SimpleException('Tag must have at most %d characters', $maxLength);
 
 		if (!preg_match('/^[()\[\]a-zA-Z0-9_.-]+$/i', $tag))
-			throw new SimpleException('Invalid tag "' . $tag . '"');
+			throw new SimpleException('Invalid tag "%s"', $tag);
 
 		if (preg_match('/^\.\.?$/', $tag))
-			throw new SimpleException('Invalid tag "' . $tag . '"');
+			throw new SimpleException('Invalid tag "%s"', $tag);
 
 		return $tag;
 	}
