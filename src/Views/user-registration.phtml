@@ -14,25 +14,59 @@ CustomAssetViewDecorator::setSubTitle('registration form');
 
 		<div class="form-row">
 			<label for="name">User name:</label>
-			<div class="input-wrapper"><input type="text" id="name" name="name" value="<?= htmlspecialchars($this->context->suppliedName) ?>" placeholder="e.g. darth_vader" autocomplete="off"/></div>
+			<div class="input-wrapper">
+				<input
+					type="text"
+					id="name"
+					name="name"
+					value="<?= htmlspecialchars($this->context->suppliedName) ?>"
+					placeholder="e.g. darth_vader"
+					autocomplete="off"/>
+			</div>
 		</div>
 
 		<div class="form-row">
 			<label for="password1">Password:</label>
-			<div class="input-wrapper"><input type="password" id="password1" name="password1" value="<?= htmlspecialchars($this->context->suppliedPassword1) ?>" placeholder="e.g. <?= str_repeat('&#x25cf;', 8) ?>" autocomplete="off"/></div>
+			<div class="input-wrapper">
+				<input
+					type="password"
+					id="password1"
+					name="password1"
+					value="<?= htmlspecialchars($this->context->suppliedPassword1) ?>"
+					placeholder="e.g. <?= str_repeat('&#x25cf;', 8) ?>"
+					autocomplete="off"/>
+			</div>
 		</div>
 
 		<div class="form-row">
 			<label for="password2">Password (repeat):</label>
-			<div class="input-wrapper"><input type="password" id="password2" name="password2" value="<?= htmlspecialchars($this->context->suppliedPassword2) ?>" placeholder="e.g. <?= str_repeat('&#x25cf;', 8) ?>" autocomplete="off"/></div>
+			<div class="input-wrapper">
+				<input
+					type="password"
+					id="password2"
+					name="password2"
+					value="<?= htmlspecialchars($this->context->suppliedPassword2) ?>"
+					placeholder="e.g. <?= str_repeat('&#x25cf;', 8) ?>"
+					autocomplete="off"/>
+			</div>
 		</div>
 
 		<div class="form-row">
 			<label for="email">E-mail address:</label>
-			<div class="input-wrapper"><input type="text" id="email" name="email" value="<?= htmlspecialchars($this->context->suppliedEmail) ?>" placeholder="e.g. vader@empire.gov" autocomplete="off"/></div>
+			<div class="input-wrapper">
+				<input
+					type="text"
+					id="email"
+					name="email"
+					value="<?= htmlspecialchars($this->context->suppliedEmail) ?>"
+					placeholder="e.g. vader@empire.gov" autocomplete="off"/>
+			</div>
 		</div>
 
-		<p id="email-info">Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>Leave blank for random Gravatar.</p>
+		<p id="email-info">
+			Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>
+			Leave blank for random Gravatar.
+		</p>
 
 		<?php $this->renderFile('message') ?>
 

@@ -16,7 +16,10 @@ CustomAssetViewDecorator::addScript('core.js');
 
 	<body>
 		<script type="text/javascript">
-			var lastSearchQuery = <?= json_encode(isset($this->context->transport->lastSearchQuery) ? $this->context->transport->lastSearchQuery : '') ?>;
+			var lastSearchQuery = <?= json_encode(
+				isset($this->context->transport->lastSearchQuery)
+					? $this->context->transport->lastSearchQuery
+					:'') ?>;
 		</script>
 
 		<nav id="top-nav">

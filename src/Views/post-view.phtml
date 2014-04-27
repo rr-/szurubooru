@@ -1,5 +1,8 @@
 <?php
-CustomAssetViewDecorator::setSubTitle('showing ' . TextHelper::reprPost($this->context->transport->post) . ' &ndash; ' . TextHelper::reprTags($this->context->transport->post->getTags()));
+$subTitle = sprintf('showing %s&nbsp;&ndash;%s',
+	TextHelper::reprPost($this->context->transport->post),
+	TextHelper::reprTags($this->context->transport->post->getTags()));
+CustomAssetViewDecorator::setSubTitle($subTitle);
 CustomAssetViewDecorator::addStylesheet('post-view.css');
 CustomAssetViewDecorator::addScript('post-view.js');
 CustomAssetViewDecorator::addStylesheet('../lib/tagit/jquery.tagit.css');
@@ -14,7 +17,10 @@ $editPostPrivileges = [
 $editPostPrivileges = array_fill_keys($editPostPrivileges, false);
 foreach (array_keys($editPostPrivileges) as $privilege)
 {
-	if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+	if (PrivilegesHelper::confirm(
+		$privilege,
+		PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+
 		$editPostPrivileges[$privilege] = true;
 }
 $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
@@ -49,7 +55,10 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php if (!empty($this->context->transport->lastSearchQuery)): ?>
 			<div class="text">
 				Current&nbsp;search:<br/>
-				<a href="<?= \Chibi\UrlHelper::route('post', 'list', ['query' => $this->context->transport->lastSearchQuery]) ?>"><?= $this->context->transport->lastSearchQuery ?></a>
+				<a href="<?= \Chibi\UrlHelper::route('post', 'list', [
+					'query' => $this->context->transport->lastSearchQuery]) ?>">
+					<?= $this->context->transport->lastSearchQuery ?>
+				</a>
 			</div>
 		<?php endif ?>
 	</nav>
@@ -61,12 +70,8 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 			<?php foreach ($tags as $tag): ?>
 				<li title="<?= $tag->name ?>">
-					<a href="<?= \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
-						<?= $tag->name ?>
-					</a>
-					<span class="count">
-						<?= TextHelper::useDecimalUnits($tag->getPostCount()) ?>
-					</span>
+					<a href="<?= \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>"><?= $tag->name ?></a>
+					<span class="count"><?= TextHelper::useDecimalUnits($tag->getPostCount()) ?></span>
 				</li>
 			<?php endforeach ?>
 		</ul>
@@ -130,10 +135,8 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<span class="value">
 				<?= $this->context->transport->post->score ?>
 
+				<?php $scoreLink = function($score) { return \Chibi\UrlHelper::route('post', 'score', ['id' => $this->context->transport->post->id, 'score' => $score]); } ?>
 				<?php if (PrivilegesHelper::confirm(Privilege::ScorePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
-					&nbsp;[
-					<?php $scoreLink = function($score) { return \Chibi\UrlHelper::route('post', 'score', ['id' => $this->context->transport->post->id, 'score' => $score]); } ?>
-
 					<?php if ($this->context->score === 1): ?>
 						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
 					<?php else: ?>
@@ -150,7 +153,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 						<a class="simple-action" href="<?= $scoreLink(-1) ?>">
 					<?php endif ?>
 						down
-					</a>]
+					</a>
 				<?php endif ?>
 			</span>
 		</div>

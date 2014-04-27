@@ -88,6 +88,15 @@ embed {
 	font-weight: bold;
 }
 
+#sidebar .score a:first-of-type:before {
+	content: '[';
+	color: black;
+}
+#sidebar .score a:last-of-type:after {
+	content: ']';
+	color: black;
+}
+
 #sidebar .left a,
 #sidebar .right a {
 	display: inline-block;
@@ -140,7 +149,7 @@ i.icon-fav {
 	vertical-align: middle;
 }
 .hl-option span {
-	padding-left: 0.6em;
+	padding-left: 0.4em;
 	vertical-align: middle;
 }
 .permalink .ext:after {

@@ -222,13 +222,6 @@ class TextHelper
 		return $path;
 	}
 
-	public static function secureWhitespace($text)
-	{
-		$text = str_replace(["\r\n", "\r", "\n"], '&#10;', $text);
-		$text = str_replace(' ', '&#32;', $text);
-		return $text;
-	}
-
 	const HTML_OPEN = 1;
 	const HTML_CLOSE = 2;
 	const HTML_LEAF = 3;

@@ -17,17 +17,20 @@ CustomAssetViewDecorator::setSubTitle('comments');
 			<?php foreach ($this->context->transport->posts as $post): ?>
 				<div class="comment-group">
 					<div class="post-wrapper">
-						<?php $this->context->post = $post ?>
+						<?php
+							$this->context->post = $post;
+							$comments = array_reverse($post->getComments());
+							$commentsToDisplay = array_slice($comments, 0, $this->config->comments->maxCommentsInList);
+						?>
 						<?= $this->renderFile('post-small') ?>
 					</div>
 					<div class="comments">
-						<?php $comments = array_reverse($post->getComments()) ?>
-						<?php foreach (array_slice($comments, 0, $this->config->comments->maxCommentsInList) as $comment): ?>
+						<?php foreach ($commentsToDisplay as $comment): ?>
 							<?php $this->context->comment = $comment ?>
 							<?= $this->renderFile('comment-small') ?>
 						<?php endforeach ?>
 
-						<?php if (count($comments) > $this->config->comments->maxCommentsInList): ?>
+						<?php if (count($comments) > count($commentsToDisplay)): ?>
 							<a href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
 								<span class="hellip">(more&hellip;)</span>
 							</a>

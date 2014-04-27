@@ -27,17 +27,30 @@ if ($masstag)
 
 <div class="<?= implode(' ', $classNames) ?>">
 	<?php if ($masstag): ?>
-		<a class="toggle-tag" href="<?= \Chibi\UrlHelper::route('post', 'toggle-tag', ['id' => $this->context->post->id, 'tag' => $this->context->additionalInfo, 'enable' => '_enable_']) ?>" data-text-tagged="Tagged" data-text-untagged="Untagged">
+		<a class="toggle-tag"
+			href="<?= \Chibi\UrlHelper::route('post', 'toggle-tag', [
+				'id' => $this->context->post->id,
+				'tag' => $this->context->additionalInfo,
+				'enable' => '_enable_']) ?>"
+			data-text-tagged="Tagged"
+			data-text-untagged="Untagged">
+
 			<?= in_array('tagged', $classNames) ? 'Tagged' : 'Untagged' ?>
+
 		</a>
 	<?php endif ?>
 
-	<?php if ($this->context->user->hasEnabledPostTagTitles()): ?>
-		<a title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>" class="link" href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
-	<?php else: ?>
-		<a class="link" href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
-	<?php endif ?>
-		<img class="thumb" src="<?= \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>" alt="@<?= $this->context->post->id ?>"/>
+	<a class="link"
+		<?php if ($this->context->user->hasEnabledPostTagTitles()): ?>
+			title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>"
+		<?php endif ?>
+		href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+
+		<img
+			class="thumb"
+			src="<?= \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>"
+			alt="@<?= $this->context->post->id ?>"/>
+
 		<?php
 			$x =
 			[
@@ -46,6 +59,7 @@ if ($masstag)
 				'favs' => $this->context->post->favCount,
 			];
 		?>
+
 		<?php if (!empty($x)): ?>
 			<div class="info-bar">
 				<?php foreach ($x as $key => $val): ?>
@@ -55,7 +69,7 @@ if ($masstag)
 						<span>
 					<?php endif ?>
 						<i class="icon-<?= $key ?>"></i>
-						&nbsp;<?= $val ?>
+						<?= $val ?>
 					</span>
 				<?php endforeach ?>
 			</div>

@@ -9,6 +9,7 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 <div id="sidebar">
 	<div class="unit">
 		<h1>file upload</h1>
+
 		<p>Use tags to describe uploaded images. Try to specify characters, their look and shows they are from.</p>
 		<p>Set proper visibility setting if the image isn&rsquo;t safe for work or you&rsquo;re not sure it&rsquo;s 100% <span class="safety-safe">safe</span>.</p>
 		<p>Only registered users can view <span class="safety-sketchy">sketchy</span> or <span class="safety-unsafe">NSFW</span> content.</p>
@@ -79,8 +80,16 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 						<?php $checked = false ?>
 						<?php foreach (PostSafety::getAll() as $safety): ?>
 							<label>
-								<input type="radio" name="safety" value="<?= $safety ?>"<?php if (!$checked) echo ' checked="checked"' ?>/>
+								<input
+									type="radio"
+									name="safety"
+									<?php if (!$checked): ?>
+										checked="checked"
+									<?php endif ?>
+									value="<?= $safety ?>" />
+
 								<?= ucfirst(PostSafety::toDisplayString($safety)) ?>
+
 								<?php $checked = true ?>
 							</label>
 						<?php endforeach ?>
@@ -94,12 +103,16 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 
 				<div class="form-row tags">
 					<label>Tags:</label>
-					<div class="input-wrapper"><input type="text" name="tags" placeholder="enter some tags&hellip;"/></div>
+					<div class="input-wrapper">
+						<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
+					</div>
 				</div>
 
 				<div class="form-row source">
 					<label>Source:</label>
-					<div class="input-wrapper"><input type="text" name="source" placeholder="where did you get this from? (optional)"/></div>
+					<div class="input-wrapper">
+						<input type="text" name="source" placeholder="where did you get this from? (optional)"/>
+					</div>
 				</div>
 
 				<input type="hidden" name="submit" value="1"/>

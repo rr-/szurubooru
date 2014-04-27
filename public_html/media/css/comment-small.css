@@ -32,14 +32,14 @@
 .comment .delete {
 	font-size: small;
 }
-.comment .edit:before,
-.comment .delete:before {
+.comment .edit a:before,
+.comment .delete a:before {
 	margin-left: 0.2em;
 	content: ' [';
 	color: silver;
 }
-.comment .edit:after,
-.comment .delete:after {
+.comment .edit a:after,
+.comment .delete a:after {
 	content: ']';
 	color: silver;
 }

@@ -4,7 +4,10 @@ CustomAssetViewDecorator::addStylesheet('auth.css');
 ?>
 
 <form action="<?= \Chibi\UrlHelper::route('auth', 'login') ?>" class="auth" method="post">
-	<p>If you don't have an account yet,<br/><a href="<?= \Chibi\UrlHelper::route('user', 'registration'); ?>">click here</a> to create a new one.</p>
+	<p>
+		If you don't have an account yet,<br/>
+		<a href="<?= \Chibi\UrlHelper::route('user', 'registration'); ?>">click here</a> to create a new one.
+	</p>
 
 	<div class="form-row">
 		<label for="name">User name:</label>
@@ -22,10 +25,7 @@ CustomAssetViewDecorator::addStylesheet('auth.css');
 			<button class="submit" type="submit">Log in</button>
 			&nbsp;
 			<input type="hidden" name="remember" value="0"/>
-			<label>
-				<input type="checkbox" name="remember" value="1"/>
-				Remember me
-			</label>
+			<label><input type="checkbox" name="remember" value="1"/> Remember me</label>
 		</div>
 	</div>
 

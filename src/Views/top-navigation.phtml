@@ -63,7 +63,9 @@
 		$registerNavItem(
 			'Users',
 			\Chibi\UrlHelper::route('user', 'list'),
-			$activeController == 'user' and $activeAction != 'registration' and (!isset($this->context->route->arguments['name']) or $this->context->route->arguments['name'] != $this->context->user->name));
+			$activeController == 'user' and $activeAction != 'registration' and
+				(!isset($this->context->route->arguments['name']) or
+					$this->context->route->arguments['name'] != $this->context->user->name));
 	}
 
 	if (!$this->context->loggedIn)
@@ -83,7 +85,8 @@
 		$registerNavItem(
 			'My account',
 			\Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->user->name]),
-			$activeController == 'user' and isset($this->context->route->arguments['name']) and $this->context->route->arguments['name'] == $this->context->user->name);
+			$activeController == 'user' and isset($this->context->route->arguments['name']) and
+				$this->context->route->arguments['name'] == $this->context->user->name);
 
 		$registerNavItem(
 			'Log out',
@@ -113,12 +116,21 @@
 		<li class="safety">
 			<ul>
 				<?php foreach (PostSafety::getAll() as $safety): ?>
-					<?php if (PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety))): ?>
+					<?php if (PrivilegesHelper::confirm(
+						Privilege::ListPosts,
+						PostSafety::toString($safety))): ?>
+
 						<li class="safety-<?= TextCaseConverter::convert(PostSafety::toString($safety), TextCaseConverter::CAMEL_CASE, TextCaseConverter::SPINAL_CASE) ?>">
-							<a href="<?= \Chibi\UrlHelper::route('user', 'toggle-safety', ['safety' => $safety]) ?>" class="<?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>" title="Searching <?= PostSafety::toDisplayString($safety) ?> posts: <?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
+
+							<a class="<?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
+								href="<?= \Chibi\UrlHelper::route('user', 'toggle-safety', ['safety' => $safety]) ?>"
+								title="Searching <?= PostSafety::toDisplayString($safety) ?> posts: <?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
+
 								<span><?= ucfirst(PostSafety::toDisplayString($safety)) ?></span>
+
 							</a>
 						</li>
+
 					<?php endif ?>
 				<?php endforeach ?>
 			</ul>
@@ -127,7 +139,14 @@
 
 	<li class="search">
 		<form name="search" action="<?= \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
-			<input class="autocomplete" type="search" name="query" placeholder="Search&hellip;" value="<?= isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>"/>
+
+			<input
+				class="autocomplete"
+				type="search"
+				name="query"
+				placeholder="Search&hellip;"
+				value="<?= isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>"/>
+
 		</form>
 	</li>
 </ul>

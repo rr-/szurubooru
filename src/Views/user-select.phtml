@@ -5,7 +5,12 @@
 	CustomAssetViewDecorator::addStylesheet('auth.css');
 	?>
 
-	<form action="<?= \Chibi\UrlHelper::route($this->context->route->simpleControllerName, $this->context->route->simpleActionName) ?>" method="post" class="auth" autocomplete="off">
+	<form
+		method="post"
+		action="<?= \Chibi\UrlHelper::route($this->context->route->simpleControllerName, $this->context->route->simpleActionName) ?>"
+		class="auth"
+		autocomplete="off">
+
 		<div class="form-row">
 			<label>User:</label>
 			<div class="input-wrapper">

@@ -35,6 +35,7 @@ else
 		'Content-Type',
 		$this->context->transport->mimeType);
 
+
 	if (strtotime($ifModifiedSince) == $lastModified or $eTagHeader == $eTag)
 	{
 		header('HTTP/1.1 304 Not Modified');

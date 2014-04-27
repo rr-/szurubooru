@@ -12,8 +12,12 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 
 <?php if (!empty($this->context->featuredPost)): ?>
 	<div class="body">
-		<?php $this->context->imageLink = \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->featuredPost->id]) ?>
-		<?php $this->context->transport->post = $this->context->featuredPost ?>
+		<?php
+			$this->context->transport->post = $this->context->featuredPost;
+			$this->context->imageLink = \Chibi\UrlHelper::route('post', 'view', [
+				'id' => $this->context->featuredPost->id]);
+		?>
+
 		<?= $this->renderFile('post-file-render') ?>
 	</div>
 
@@ -34,10 +38,14 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 		</div>
 
 		<div class="right">
-			Featured&#32;
+			Featured
 			<?php if ($this->context->featuredPostUser): ?>
-				by <a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>"><?= $this->context->featuredPostUser->name ?></a>,&#32;
+				by
+				<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>">
+					<?= $this->context->featuredPostUser->name ?>
+				</a>,
 			<?php endif ?>
+
 			<?php $x = round((time() - $this->context->featuredPostDate) / (24 * 3600.)) ?>
 			<?php if ($x == 0): ?>
 				today

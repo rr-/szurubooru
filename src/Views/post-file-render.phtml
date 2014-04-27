@@ -15,19 +15,33 @@
 
 <?php elseif ($post->type ==  PostType::Flash): ?>
 
-	<object type="<?= $post->mimeType ?>" width="<?= $post->imageWidth ?>" height="<?= $post->imageHeight ?>" data="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+	<object
+		type="<?= $post->mimeType ?>"
+		width="<?= $post->imageWidth ?>"
+		height="<?= $post->imageHeight ?>"
+		data="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+
 		<param name="movie" value="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"/>
 		<param name="wmode" value="opaque"/>
+
 	</object>
 
 <?php elseif ($post->type == PostType::Youtube): ?>
 
-	<iframe style="width: 800px; height: 600px; border: 0;" src="//www.youtube.com/embed/<?= $post->fileHash ?>?wmode=opaque" allowfullscreen></iframe>
+	<iframe
+		style="width: 800px; height: 600px; border: 0;"
+		src="//www.youtube.com/embed/<?= $post->fileHash ?>?wmode=opaque"
+		allowfullscreen>
+
+	</iframe>
 
 <?php elseif ($post->type == PostType::Video): ?>
 
 	<video style="max-width: 100%" controls>
-		<source type="<?= $post->mimeType ?>" src="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+		<source
+			type="<?= $post->mimeType ?>"
+			src="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+
 		Your browser doesn't support HTML5 &lt;video&gt; tag.
 	</video>
 

@@ -1,8 +1,16 @@
-<form action="<?= \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>" method="post" class="delete confirmable" autocomplete="off" data-confirm-text="Are you sure you want to delete your account?">
+<form
+	action="<?= \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>"
+	method="post"
+	class="delete confirmable"
+	autocomplete="off"
+	data-confirm-text="Are you sure you want to delete your account?">
+
 	<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
 		<div class="form-row current-password">
 			<label for="current-password">Current password:</label>
-			<div class="input-wrapper"><input type="password" name="current-password" id="current-password" placeholder="Current password"/></div>
+			<div class="input-wrapper">
+				<input type="password" name="current-password" id="current-password" placeholder="Current password"/>
+			</div>
 		</div>
 	<?php endif ?>
 

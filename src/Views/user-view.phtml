@@ -6,7 +6,9 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 <div id="sidebar">
 	<div class="avatar-wrapper">
 		<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name]) ?>">
-			<img src="<?= htmlspecialchars($this->context->transport->user->getAvatarUrl(140)) ?>" alt="<?= $this->context->transport->user->name ?>">
+			<img
+				src="<?= htmlspecialchars($this->context->transport->user->getAvatarUrl(140)) ?>"
+				alt="<?= $this->context->transport->user->name ?>"/>
 		</a>
 		<h1><?= $this->context->transport->user->name ?></h1>
 	</div>
@@ -16,26 +18,41 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 
 		<div class="key-value join-date">
 			<span class="key">Joined:</span>
-			<span class="value" title="<?= TextHelper::formatDate($this->context->transport->user->joinDate, true) ?>">
+			<span
+				class="value"
+				title="<?= TextHelper::formatDate($this->context->transport->user->joinDate, true) ?>">
+
 				<?= TextHelper::formatDate($this->context->transport->user->joinDate, false) ?>
+
 			</span>
 		</div>
 
 		<div class="key-value last-login">
 			<span class="key">Last login:</span>
-			<span class="value" title="<?= TextHelper::formatDate($this->context->transport->user->lastLoginDate, true) ?>">
+			<span
+				class="value"
+				title="<?= TextHelper::formatDate($this->context->transport->user->lastLoginDate, true) ?>">
+
 				<?= TextHelper::formatDate($this->context->transport->user->lastLoginDate, false) ?>
+
 			</span>
 		</div>
 
 		<div class="key-value access-rank">
 			<span class="key">Access rank:</span>
-			<span class="value" title="<?= $val = AccessRank::toDisplayString($this->context->transport->user->accessRank) ?>">
+			<span
+				class="value"
+				title="<?= $val = AccessRank::toDisplayString($this->context->transport->user->accessRank) ?>">
+
 				<?= $val ?>
+
 			</span>
 		</div>
 
-		<?php if (PrivilegesHelper::confirm(Privilege::ViewUserEmail, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+		<?php if (PrivilegesHelper::confirm(
+			Privilege::ViewUserEmail,
+			PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+
 			<div class="key-value email">
 				<span class="key">E-mail:</span>
 				<span class="value" title="<?= $val = ($this->context->transport->user->emailUnconfirmed
@@ -59,8 +76,12 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 		foreach (array_keys($userModificationPrivileges) as $privilege)
 		{
 
-			if (PrivilegesHelper::confirm($privilege, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+			if (PrivilegesHelper::confirm(
+				$privilege,
+				PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+			{
 				$userModificationPrivileges[$privilege] = true;
+			}
 		}
 		$canModifyAnything = count(array_filter($userModificationPrivileges)) > 0;
 
@@ -72,21 +93,27 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 			[
 				'class' => 'edit',
 				'text' => 'Edit account settings',
-				'link' => \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name, 'tab' => 'edit']),
+				'link' => \Chibi\UrlHelper::route('user', 'edit', [
+					'name' => $this->context->transport->user->name, 'tab' => 'edit']),
 			];
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration) and !$this->context->transport->user->staffConfirmed and $this->config->registration->staffActivation)
+		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration)
+			and !$this->context->transport->user->staffConfirmed
+			and $this->config->registration->staffActivation)
 		{
 			$options []=
 			[
 				'class' => 'accept-registration',
 				'text' => 'Accept registration',
-				'simple-action' => \Chibi\UrlHelper::route('user', 'accept-registration', ['name' => $this->context->transport->user->name]),
+				'simple-action' => \Chibi\UrlHelper::route('user', 'accept-registration', [
+					'name' => $this->context->transport->user->name]),
 			];
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::FlagUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+		if (PrivilegesHelper::confirm(
+			Privilege::FlagUser,
+			PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
 		{
 			if ($this->context->flagged)
 			{
@@ -103,13 +130,16 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				[
 					'class' => 'flag',
 					'text' => 'Flag for moderator attention',
-					'simple-action' => \Chibi\UrlHelper::route('user', 'flag', ['name' => $this->context->transport->user->name]),
+					'simple-action' => \Chibi\UrlHelper::route('user', 'flag', [
+						'name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to flag this user?',
 				];
 			}
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::BanUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+		if (PrivilegesHelper::confirm(
+			Privilege::BanUser,
+			PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
 		{
 			if (!$this->context->transport->user->banned)
 			{
@@ -117,7 +147,8 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				[
 					'class' => 'ban',
 					'text' => 'Ban user',
-					'simple-action' => \Chibi\UrlHelper::route('user', 'ban', ['name' => $this->context->transport->user->name]),
+					'simple-action' => \Chibi\UrlHelper::route('user', 'ban', [
+						'name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to ban this user?',
 				];
 			}
@@ -127,19 +158,23 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				[
 					'class' => 'unban',
 					'text' => 'Unban user',
-					'simple-action' => \Chibi\UrlHelper::route('user', 'unban', ['name' => $this->context->transport->user->name]),
+					'simple-action' => \Chibi\UrlHelper::route('user', 'unban', [
+						'name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to unban this user?',
 				];
 			}
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+		if (PrivilegesHelper::confirm(
+			Privilege::DeleteUser,
+			PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
 		{
 			$options []=
 			[
 				'class' => 'delete',
 				'text' => 'Delete account',
-				'link' => \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name, 'tab' => 'delete']),
+				'link' => \Chibi\UrlHelper::route('user', 'delete', [
+					'name' => $this->context->transport->user->name, 'tab' => 'delete']),
 			];
 		}
 
@@ -156,7 +191,10 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 			<?php else: ?>
 				<li class="favs">
 			<?php endif ?>
-				<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'favs', 'page' => 1]) ?>">
+				<a href="<?= \Chibi\UrlHelper::route('user', 'view', [
+					'name' => $this->context->transport->user->name,
+					'tab' => 'favs',
+					'page' => 1]) ?>">
 					Favs
 				</a>
 			</li>
@@ -166,18 +204,25 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 			<?php else: ?>
 				<li class="uploads">
 			<?php endif ?>
-				<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name, 'tab' => 'uploads', 'page' => 1]) ?>">
+				<a href="<?= \Chibi\UrlHelper::route('user', 'view', [
+					'name' => $this->context->transport->user->name,
+					'tab' => 'uploads',
+					'page' => 1]) ?>">
 					Uploads
 				</a>
 			</li>
 
-			<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+			<?php if (PrivilegesHelper::confirm(
+				Privilege::ChangeUserSettings,
+				PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+
 				<?php if ($this->context->transport->tab == 'settings'): ?>
 					<li class="selected settings">
 				<?php else: ?>
 					<li class="settings">
 				<?php endif ?>
-					<a href="<?= \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>">
+					<a href="<?= \Chibi\UrlHelper::route('user', 'settings', [
+						'name' => $this->context->transport->user->name]) ?>">
 						Browsing settings
 					</a>
 				</li>
@@ -189,19 +234,23 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				<?php else: ?>
 					<li class="edit">
 				<?php endif ?>
-					<a href="<?= \Chibi\UrlHelper::route('user', 'edit', ['name' => $this->context->transport->user->name]) ?>">
+					<a href="<?= \Chibi\UrlHelper::route('user', 'edit', [
+						'name' => $this->context->transport->user->name]) ?>">
 						Account settings
 					</a>
 				</li>
 			<?php endif ?>
 
-			<?php if (PrivilegesHelper::confirm(Privilege::DeleteUser, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+			<?php if (PrivilegesHelper::confirm(
+				Privilege::DeleteUser,
+				PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
 				<?php if ($this->context->transport->tab == 'delete'): ?>
 					<li class="selected delete">
 				<?php else: ?>
 					<li class="delete">
 				<?php endif ?>
-					<a href="<?= \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>">
+					<a href="<?= \Chibi\UrlHelper::route('user', 'delete', [
+						'name' => $this->context->transport->user->name]) ?>">
 						Delete account
 					</a>
 				</li>

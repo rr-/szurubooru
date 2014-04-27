@@ -7,11 +7,11 @@
 	max-width: 50%;
 }
 
-pre {
+code {
 	font-size: 11pt;
 	margin: 0;
 }
 
-pre strong {
+code strong {
 	background: #fee;
 }

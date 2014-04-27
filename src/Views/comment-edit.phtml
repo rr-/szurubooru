@@ -3,13 +3,19 @@ CustomAssetViewDecorator::addStylesheet('comment-edit.css');
 CustomAssetViewDecorator::addScript('comment-edit.js');
 ?>
 
-<form action="<?= \Chibi\UrlHelper::route('comment', 'edit', ['id' => $this->context->transport->comment->id]) ?>" method="post" class="edit-comment">
+<form
+	action="<?= \Chibi\UrlHelper::route('comment', 'edit', ['id' => $this->context->transport->comment->id]) ?>"
+	method="post"
+	class="edit-comment">
+
 	<h1>edit comment</h1>
 
 	<div class="preview"></div>
 
 	<div class="form-row text">
-		<div class="input-wrapper"><textarea name="text" cols="50" rows="3"><?= TextHelper::secureWhitespace($this->context->transport->comment->text) ?></textarea></div>
+		<div class="input-wrapper">
+			<textarea name="text" cols="50" rows="3"><?= $this->context->transport->comment->text ?></textarea>
+		</div>
 	</div>
 
 	<input type="hidden" name="submit" value="1"/>
