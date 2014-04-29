@@ -8,10 +8,10 @@ class CommentSearchParser extends AbstractSearchParser
 		$this->statement->addInnerJoin('post', new Sql\EqualsFunctor('post_id', 'post.id'));
 		$crit = new Sql\ConjunctionFunctor();
 
-		$allowedSafety = PrivilegesHelper::getAllowedSafety();
+		$allowedSafety = Access::getAllowedSafety();
 		$crit->add(Sql\InFunctor::fromArray('post.safety', Sql\Binding::fromArray($allowedSafety)));
 
-		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden'))
+		if (!Access::check(Privilege::ListPosts, 'hidden'))
 			$crit->add(new Sql\NegationFunctor(new Sql\StringExpression('hidden')));
 
 		$this->statement->setCriterion($crit);

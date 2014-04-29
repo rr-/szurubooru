@@ -3,31 +3,31 @@ Assets::setSubTitle('posts');
 
 $tabs = [];
 $activeTab = 0;
-if (PrivilegesHelper::confirm(Privilege::ListPosts))
+if (Access::check(Privilege::ListPosts))
 	$tabs []= ['All posts', \Chibi\Router::linkTo(['PostController', 'listAction'])];
 
-if (PrivilegesHelper::confirm(Privilege::ListPosts))
+if (Access::check(Privilege::ListPosts))
 {
 	$tabs []= ['Random', \Chibi\Router::linkTo(['PostController', 'randomAction'])];
 	if ($this->context->simpleActionName == 'random')
 		$activeTab = count($tabs) - 1;
 }
 
-if (PrivilegesHelper::confirm(Privilege::ListPosts))
+if (Access::check(Privilege::ListPosts))
 {
 	$tabs []= ['Favorites', \Chibi\Router::linkTo(['PostController', 'favoritesAction'])];
 	if ($this->context->simpleActionName == 'favorites')
 		$activeTab = count($tabs) - 1;
 }
 
-if (PrivilegesHelper::confirm(Privilege::ListPosts))
+if (Access::check(Privilege::ListPosts))
 {
 	$tabs []= ['Upvoted', \Chibi\Router::linkTo(['PostController', 'upvotedAction'])];
 	if ($this->context->simpleActionName == 'upvoted')
 		$activeTab = count($tabs) - 1;
 }
 
-if (PrivilegesHelper::confirm(Privilege::MassTag))
+if (Access::check(Privilege::MassTag))
 {
 	$tabs []= ['Mass tag', \Chibi\Router::linkTo(['PostController', 'listAction'], [
 		'source' => 'mass-tag',

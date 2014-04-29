@@ -66,14 +66,14 @@ class PostController
 		$postsPerPage = intval(getConfig()->browsing->postsPerPage);
 		$context->transport->searchQuery = $query;
 		$context->transport->lastSearchQuery = $query;
-		PrivilegesHelper::confirmWithException(Privilege::ListPosts);
+		Access::assert(Privilege::ListPosts);
 		if ($source == 'mass-tag')
 		{
-			PrivilegesHelper::confirmWithException(Privilege::MassTag);
+			Access::assert(Privilege::MassTag);
 			$context->massTagTag = $additionalInfo;
 			$context->massTagQuery = $query;
 
-			if (!PrivilegesHelper::confirm(Privilege::MassTag, 'all'))
+			if (!Access::confirm(Privilege::MassTag, 'all'))
 				$query = trim($query . ' submit:' . $context->user->name);
 		}
 
@@ -100,9 +100,9 @@ class PostController
 
 		if (InputHelper::get('submit'))
 		{
-			PrivilegesHelper::confirmWithException(
+			Access::assert(
 				Privilege::MassTag,
-				PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+				Access::getIdentity($post->getUploader()));
 
 			$tags = $post->getTags();
 
@@ -157,9 +157,9 @@ class PostController
 	public function uploadAction()
 	{
 		$context = getContext();
-		PrivilegesHelper::confirmWithException(Privilege::UploadPost);
+		Access::assert(Privilege::UploadPost);
 		if (getConfig()->registration->needEmailForUploading)
-			PrivilegesHelper::confirmEmail($context->user);
+			Access::assertEmailConfirmation();
 
 		if (InputHelper::get('submit'))
 		{
@@ -232,7 +232,7 @@ class PostController
 	public function flagAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::FlagPost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+		Access::assert(Privilege::FlagPost, Access::getIdentity($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -252,7 +252,7 @@ class PostController
 	public function hideAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+		Access::assert(Privilege::HidePost, Access::getIdentity($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -267,7 +267,7 @@ class PostController
 	public function unhideAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+		Access::assert(Privilege::HidePost, Access::getIdentity($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -282,7 +282,7 @@ class PostController
 	public function deleteAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+		Access::assert(Privilege::DeletePost, Access::getIdentity($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -297,7 +297,7 @@ class PostController
 	{
 		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -314,7 +314,7 @@ class PostController
 	{
 		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -330,7 +330,7 @@ class PostController
 	{
 		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::ScorePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+		Access::assert(Privilege::ScorePost, Access::getIdentity($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -346,7 +346,7 @@ class PostController
 	{
 		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
-		PrivilegesHelper::confirmWithException(Privilege::FeaturePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+		Access::assert(Privilege::FeaturePost, Access::getIdentity($post->getUploader()));
 		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
 		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
 		PropertyModel::set(PropertyModel::FeaturedPostUserName, $context->user->name);
@@ -361,9 +361,9 @@ class PostController
 		CommentModel::preloadCommenters($post->getComments());
 
 		if ($post->hidden)
-			PrivilegesHelper::confirmWithException(Privilege::ViewPost, 'hidden');
-		PrivilegesHelper::confirmWithException(Privilege::ViewPost);
-		PrivilegesHelper::confirmWithException(Privilege::ViewPost, PostSafety::toString($post->safety));
+			Access::assert(Privilege::ViewPost, 'hidden');
+		Access::assert(Privilege::ViewPost);
+		Access::assert(Privilege::ViewPost, PostSafety::toString($post->safety));
 
 		try
 		{
@@ -403,8 +403,8 @@ class PostController
 			if (!file_exists($path))
 			{
 				$post = PostModel::findByIdOrName($name);
-				PrivilegesHelper::confirmWithException(Privilege::ListPosts);
-				PrivilegesHelper::confirmWithException(Privilege::ListPosts, PostSafety::toString($post->safety));
+				Access::assert(Privilege::ListPosts);
+				Access::assert(Privilege::ListPosts, PostSafety::toString($post->safety));
 				$post->makeThumb($width, $height);
 				if (!file_exists($path))
 				{
@@ -430,8 +430,8 @@ class PostController
 		$config = getConfig();
 		$context = getContext();
 
-		PrivilegesHelper::confirmWithException(Privilege::RetrievePost);
-		PrivilegesHelper::confirmWithException(Privilege::RetrievePost, PostSafety::toString($post->safety));
+		Access::assert(Privilege::RetrievePost);
+		Access::assert(Privilege::RetrievePost, PostSafety::toString($post->safety));
 
 		$path = $config->main->filesPath . DS . $post->name;
 		$path = TextHelper::absolutePath($path);
@@ -465,7 +465,7 @@ class PostController
 		if (!empty($_FILES['file']['name']))
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
 
 			$suppliedFile = $_FILES['file'];
 			self::handleUploadErrors($suppliedFile);
@@ -480,7 +480,7 @@ class PostController
 		elseif (InputHelper::get('url'))
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostFile, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
 
 			$url = InputHelper::get('url');
 			$post->setContentFromUrl($url);
@@ -495,7 +495,7 @@ class PostController
 		if ($suppliedSafety !== null)
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostSafety, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+				Access::assert(Privilege::EditPostSafety, Access::getIdentity($post->getUploader()));
 
 			$oldSafety = $post->safety;
 			$post->setSafety($suppliedSafety);
@@ -510,7 +510,7 @@ class PostController
 		if ($suppliedTags !== null)
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostTags, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+				Access::assert(Privilege::EditPostTags, Access::getIdentity($post->getUploader()));
 
 			$oldTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
 			$post->setTagsFromText($suppliedTags);
@@ -528,7 +528,7 @@ class PostController
 		if ($suppliedSource !== null)
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostSource, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+				Access::assert(Privilege::EditPostSource, Access::getIdentity($post->getUploader()));
 
 			$oldSource = $post->source;
 			$post->setSource($suppliedSource);
@@ -543,7 +543,7 @@ class PostController
 		if ($suppliedRelations !== null)
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostRelations, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+				Access::assert(Privilege::EditPostRelations, Access::getIdentity($post->getUploader()));
 
 			$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
 			$post->setRelationsFromText($suppliedRelations);
@@ -560,7 +560,7 @@ class PostController
 		if (!empty($_FILES['thumb']['name']))
 		{
 			if (!$isNew)
-				PrivilegesHelper::confirmWithException(Privilege::EditPostThumb, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
+				Access::assert(Privilege::EditPostThumb, Access::getIdentity($post->getUploader()));
 
 			$suppliedFile = $_FILES['thumb'];
 			self::handleUploadErrors($suppliedFile);

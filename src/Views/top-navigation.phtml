@@ -18,7 +18,7 @@
 		\Chibi\Router::linkTo(['IndexController', 'indexAction']),
 		$activeController == 'index' and $activeAction == 'index');
 
-	if (PrivilegesHelper::confirm(Privilege::ListPosts))
+	if (Access::check(Privilege::ListPosts))
 	{
 		$registerNavItem(
 			'Browse',
@@ -26,7 +26,7 @@
 			$activeController == 'post' and $activeAction != 'upload');
 	}
 
-	if (PrivilegesHelper::confirm(Privilege::UploadPost))
+	if (Access::check(Privilege::UploadPost))
 	{
 		$registerNavItem(
 			'Upload',
@@ -34,7 +34,7 @@
 			$activeController == 'post' and $activeAction == 'upload');
 	}
 
-	if (PrivilegesHelper::confirm(Privilege::ListComments))
+	if (Access::check(Privilege::ListComments))
 	{
 		$registerNavItem(
 			'Comments',
@@ -42,7 +42,7 @@
 			$activeController == 'comment');
 	}
 
-	if (PrivilegesHelper::confirm(Privilege::ListTags))
+	if (Access::check(Privilege::ListTags))
 	{
 		$registerNavItem(
 			'Tags',
@@ -50,7 +50,7 @@
 			$activeController == 'tag');
 	}
 
-	if (PrivilegesHelper::confirm(Privilege::ListUsers))
+	if (Access::check(Privilege::ListUsers))
 	{
 		$registerNavItem(
 			'Users',
@@ -104,11 +104,11 @@
 	}
 	?>
 
-	<?php if (PrivilegesHelper::confirm(Privilege::ChangeUserSettings, PrivilegesHelper::getIdentitySubPrivilege($this->context->user))): ?>
+	<?php if (Access::check(Privilege::ChangeUserSettings, Access::getIdentity($this->context->user))): ?>
 		<li class="safety">
 			<ul>
 				<?php foreach (PostSafety::getAll() as $safety): ?>
-					<?php if (PrivilegesHelper::confirm(
+					<?php if (Access::check(
 						Privilege::ListPosts,
 						PostSafety::toString($safety))): ?>
 

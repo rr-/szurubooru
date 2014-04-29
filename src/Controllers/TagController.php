@@ -5,7 +5,7 @@ class TagController
 	{
 		$context = getContext();
 		$context->viewName = 'tag-list-wrapper';
-		PrivilegesHelper::confirmWithException(Privilege::ListTags);
+		Access::assert(Privilege::ListTags);
 
 		$suppliedFilter = $filter ?: 'order:alpha,asc';
 		$page = max(1, intval($page));
@@ -39,7 +39,7 @@ class TagController
 	public function autoCompleteAction()
 	{
 		$context = getContext();
-		PrivilegesHelper::confirmWithException(Privilege::ListTags);
+		Access::assert(Privilege::ListTags);
 
 		$suppliedSearch = InputHelper::get('search');
 
@@ -60,7 +60,7 @@ class TagController
 	public function relatedAction()
 	{
 		$context = getContext();
-		PrivilegesHelper::confirmWithException(Privilege::ListTags);
+		Access::assert(Privilege::ListTags);
 
 		$suppliedContext = (array) InputHelper::get('context');
 		$suppliedTag = InputHelper::get('tag');
@@ -85,7 +85,7 @@ class TagController
 		$context->viewName = 'tag-list-wrapper';
 		$context->handleExceptions = true;
 
-		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
+		Access::assert(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
 		{
 			TagModel::removeUnused();
@@ -112,7 +112,7 @@ class TagController
 		$context->viewName = 'tag-list-wrapper';
 		$context->handleExceptions = true;
 
-		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
+		Access::assert(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
 		{
 			TagModel::removeUnused();
@@ -138,7 +138,7 @@ class TagController
 		$context = getContext();
 		$context->viewName = 'tag-list-wrapper';
 
-		PrivilegesHelper::confirmWithException(Privilege::MassTag);
+		Access::assert(Privilege::MassTag);
 		if (InputHelper::get('submit'))
 		{
 			$suppliedOldPage = intval(InputHelper::get('old-page'));

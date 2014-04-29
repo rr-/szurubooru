@@ -10,9 +10,9 @@
 		id="edit-token"
 		value="<?= htmlspecialchars($this->context->transport->post->getEditToken()) ?>"/>
 
-	<?php if (PrivilegesHelper::confirm(
+	<?php if (Access::check(
 		Privilege::EditPostSafety,
-		PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
+		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
 
 		<div class="form-row safety">
 			<label>Safety:</label>
@@ -32,9 +32,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (PrivilegesHelper::confirm(
+	<?php if (Access::check(
 		Privilege::EditPostTags,
-		PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
+		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
 
 		<div class="form-row tags">
 			<label for="tags">Tags:</label>
@@ -51,8 +51,8 @@
 	<?php endif ?>
 
 	<?php if (
-		PrivilegesHelper::confirm(Privilege::EditPostSource,
-		PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
+		Access::check(Privilege::EditPostSource,
+		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
 
 		<div class="form-row source">
 			<label for="source">Source:</label>
@@ -66,8 +66,8 @@
 	<?php endif ?>
 
 	<?php if (
-		PrivilegesHelper::confirm(Privilege::EditPostRelations,
-		PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
+		Access::check(Privilege::EditPostRelations,
+		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
 
 		<div class="form-row thumb">
 			<label for="relations">Relations:</label>
@@ -84,8 +84,8 @@
 	<?php endif ?>
 
 	<?php if (
-		PrivilegesHelper::confirm(Privilege::EditPostFile,
-		PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
+		Access::check(Privilege::EditPostFile,
+		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
 
 		<div class="form-row url">
 			<label for="url">File:</label>
@@ -103,8 +103,8 @@
 	<?php endif ?>
 
 	<?php if (
-		PrivilegesHelper::confirm(Privilege::EditPostThumb,
-		PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
+		Access::check(Privilege::EditPostThumb,
+		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
 
 		<div class="form-row thumb">
 			<label for="thumb">Thumb:</label>

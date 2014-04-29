@@ -34,9 +34,9 @@ Assets::addScript('comment-edit.js');
 				<?= TextHelper::formatDate($this->context->comment->commentDate, false) ?>
 			</span>
 
-			<?php if (PrivilegesHelper::confirm(
+			<?php if (Access::check(
 				Privilege::EditComment,
-				PrivilegesHelper::getIdentitySubPrivilege($commenter))): ?>
+				Access::getIdentity($commenter))): ?>
 				<span class="edit">
 					<a href="<?= \Chibi\Router::linkTo(['CommentController', 'editAction'], ['id' => $this->context->comment->id]) ?>">
 						edit
@@ -45,8 +45,8 @@ Assets::addScript('comment-edit.js');
 			<?php endif ?>
 
 			<?php if (
-				PrivilegesHelper::confirm(Privilege::DeleteComment,
-				PrivilegesHelper::getIdentitySubPrivilege($commenter))): ?>
+				Access::check(Privilege::DeleteComment,
+				Access::getIdentity($commenter))): ?>
 				<span class="delete">
 					<a href="<?= \Chibi\Router::linkTo(['CommentController', 'deleteAction'], ['id' => $this->context->comment->id]) ?>"
 						class="simple-action confirmable"

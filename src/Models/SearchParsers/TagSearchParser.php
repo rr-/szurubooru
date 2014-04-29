@@ -5,7 +5,7 @@ class TagSearchParser extends AbstractSearchParser
 {
 	protected function processSetup(&$tokens)
 	{
-		$allowedSafety = PrivilegesHelper::getAllowedSafety();
+		$allowedSafety = Access::getAllowedSafety();
 		$this->statement
 			->addInnerJoin('post_tag', new Sql\EqualsFunctor('tag.id', 'post_tag.tag_id'))
 			->addInnerJoin('post', new Sql\EqualsFunctor('post.id', 'post_tag.post_id'))

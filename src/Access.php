@@ -1,5 +1,5 @@
 <?php
-class PrivilegesHelper
+class Access
 {
 	private static $privileges = [];
 
@@ -32,7 +32,7 @@ class PrivilegesHelper
 		}
 	}
 
-	public static function confirm($privilege, $subPrivilege = null)
+	public static function check($privilege, $subPrivilege = null)
 	{
 		if (php_sapi_name() == 'cli')
 			return true;
@@ -60,13 +60,13 @@ class PrivilegesHelper
 		return intval($user->accessRank) >= $minAccessRank;
 	}
 
-	public static function confirmWithException($privilege, $subPrivilege = null)
+	public static function assert($privilege, $subPrivilege = null)
 	{
-		if (!self::confirm($privilege, $subPrivilege))
+		if (!self::check($privilege, $subPrivilege))
 			throw new SimpleException('Insufficient privileges');
 	}
 
-	public static function getIdentitySubPrivilege($user)
+	public static function getIdentity($user)
 	{
 		if (!$user)
 			return 'all';
@@ -74,8 +74,9 @@ class PrivilegesHelper
 		return $user->id == $userFromContext->id ? 'own' : 'all';
 	}
 
-	public static function confirmEmail($user)
+	public static function assertEmailConfirmation()
 	{
+		$user = getContext()->user;
 		if (!$user->emailConfirmed)
 			throw new SimpleException('Need e-mail address confirmation to continue');
 	}
@@ -88,10 +89,10 @@ class PrivilegesHelper
 		$context = getContext();
 		return array_filter(PostSafety::getAll(), function($safety) use ($context)
 		{
-			return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and
-				$context->user->hasEnabledSafety($safety);
+			return Access::check(Privilege::ListPosts, PostSafety::toString($safety))
+				and $context->user->hasEnabledSafety($safety);
 		});
 	}
 }
 
-PrivilegesHelper::init();
+Access::init();

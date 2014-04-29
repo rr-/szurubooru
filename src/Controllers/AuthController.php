@@ -32,7 +32,7 @@ class AuthController
 			throw new SimpleException('You are banned');
 
 		if ($config->registration->needEmailForRegistering)
-			PrivilegesHelper::confirmEmail($dbUser);
+			Access::requireEmail($dbUser);
 
 		$context->user = $dbUser;
 		self::doReLog();

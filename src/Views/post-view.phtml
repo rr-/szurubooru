@@ -17,9 +17,9 @@ $editPostPrivileges = [
 $editPostPrivileges = array_fill_keys($editPostPrivileges, false);
 foreach (array_keys($editPostPrivileges) as $privilege)
 {
-	if (PrivilegesHelper::confirm(
+	if (Access::check(
 		$privilege,
-		PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+		Access::getIdentity($this->context->transport->post->getUploader())))
 
 		$editPostPrivileges[$privilege] = true;
 }
@@ -136,7 +136,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				<?= $this->context->transport->post->score ?>
 
 				<?php $scoreLink = function($score) { return \Chibi\Router::linkTo(['PostController', 'scoreAction'], ['id' => $this->context->transport->post->id, 'score' => $score]); } ?>
-				<?php if (PrivilegesHelper::confirm(Privilege::ScorePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
+				<?php if (Access::check(Privilege::ScorePost, Access::getIdentity($this->context->transport->post->getUploader()))): ?>
 					<?php if ($this->context->score === 1): ?>
 						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
 					<?php else: ?>
@@ -176,7 +176,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			</div>
 		<?php endif ?>
 
-		<?php if (PrivilegesHelper::confirm(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
+		<?php if (Access::check(Privilege::FavoritePost, Access::getIdentity($this->context->transport->post->getUploader()))): ?>
 			<div class="hl-option">
 				<?php if (!$this->context->favorite): ?>
 					<a class="add-fav icon simple-action" href="<?= \Chibi\Router::linkTo(['PostController', 'addFavoriteAction'], ['id' => $this->context->transport->post->id]) ?>">
@@ -235,7 +235,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	<?php
 		$options = [];
 
-		if (PrivilegesHelper::confirm(Privilege::FeaturePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+		if (Access::check(Privilege::FeaturePost, Access::getIdentity($this->context->transport->post->getUploader())))
 		{
 			$options []=
 			[
@@ -247,7 +247,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			];
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::FlagPost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+		if (Access::check(Privilege::FlagPost, Access::getIdentity($this->context->transport->post->getUploader())))
 		{
 			if ($this->context->flagged)
 			{
@@ -270,7 +270,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			}
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::HidePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+		if (Access::check(Privilege::HidePost, Access::getIdentity($this->context->transport->post->getUploader())))
 		{
 			if ($this->context->transport->post->hidden)
 			{
@@ -292,7 +292,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			}
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::DeletePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader())))
+		if (Access::check(Privilege::DeletePost, Access::getIdentity($this->context->transport->post->getUploader())))
 		{
 			$options []=
 			[
@@ -338,7 +338,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php endif ?>
 	</div>
 
-	<?php if (PrivilegesHelper::confirm(Privilege::AddComment)): ?>
+	<?php if (Access::check(Privilege::AddComment)): ?>
 		<div class="unit comment-add">
 			<?php \Chibi\View::render('comment-add', $this->context) ?>
 		</div>

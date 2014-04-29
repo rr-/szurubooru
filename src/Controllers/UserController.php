@@ -103,7 +103,7 @@ class UserController
 	public function listAction($filter, $page)
 	{
 		$context = getContext();
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::ListUsers);
 
 		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
@@ -128,9 +128,9 @@ class UserController
 	public function flagAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::FlagUser,
-			PrivilegesHelper::getIdentitySubPrivilege($user));
+			Access::getIdentity($user));
 
 		if (InputHelper::get('submit'))
 		{
@@ -152,9 +152,9 @@ class UserController
 	public function banAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::BanUser,
-			PrivilegesHelper::getIdentitySubPrivilege($user));
+			Access::getIdentity($user));
 
 		if (InputHelper::get('submit'))
 		{
@@ -169,9 +169,9 @@ class UserController
 	public function unbanAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::BanUser,
-			PrivilegesHelper::getIdentitySubPrivilege($user));
+			Access::getIdentity($user));
 
 		if (InputHelper::get('submit'))
 		{
@@ -186,7 +186,7 @@ class UserController
 	public function acceptRegistrationAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::AcceptUserRegistration);
 
 		if (InputHelper::get('submit'))
@@ -202,12 +202,12 @@ class UserController
 	{
 		$context = getContext();
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::ViewUser,
-			PrivilegesHelper::getIdentitySubPrivilege($user));
-		PrivilegesHelper::confirmWithException(
+			Access::getIdentity($user));
+		Access::assert(
 			Privilege::DeleteUser,
-			PrivilegesHelper::getIdentitySubPrivilege($user));
+			Access::getIdentity($user));
 
 		$this->loadUserView($user);
 		$context->transport->tab = 'delete';
@@ -239,12 +239,12 @@ class UserController
 	{
 		$context = getContext();
 		$user = UserModel::findByNameOrEmail($name);
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::ViewUser,
-			PrivilegesHelper::getIdentitySubPrivilege($user));
-		PrivilegesHelper::confirmWithException(
+			Access::getIdentity($user));
+		Access::assert(
 			Privilege::ChangeUserSettings,
-			PrivilegesHelper::getIdentitySubPrivilege($user));
+			Access::getIdentity($user));
 
 		$this->loadUserView($user);
 		$context->transport->tab = 'settings';
@@ -276,9 +276,9 @@ class UserController
 		try
 		{
 			$user = UserModel::findByNameOrEmail($name);
-			PrivilegesHelper::confirmWithException(
+			Access::assert(
 				Privilege::ViewUser,
-				PrivilegesHelper::getIdentitySubPrivilege($user));
+				Access::getIdentity($user));
 
 			$this->loadUserView($user);
 			$context->transport->tab = 'edit';
@@ -298,9 +298,9 @@ class UserController
 
 				if ($suppliedName != '' and $suppliedName != $user->name)
 				{
-					PrivilegesHelper::confirmWithException(
+					Access::assert(
 						Privilege::ChangeUserName,
-						PrivilegesHelper::getIdentitySubPrivilege($user));
+						Access::getIdentity($user));
 
 					$suppliedName = UserModel::validateUserName($suppliedName);
 					$oldName = $user->name;
@@ -312,9 +312,9 @@ class UserController
 
 				if ($suppliedPassword1 != '')
 				{
-					PrivilegesHelper::confirmWithException(
+					Access::assert(
 						Privilege::ChangeUserPassword,
-						PrivilegesHelper::getIdentitySubPrivilege($user));
+						Access::getIdentity($user));
 
 					if ($suppliedPassword1 != $suppliedPassword2)
 						throw new SimpleException('Specified passwords must be the same');
@@ -325,9 +325,9 @@ class UserController
 
 				if ($suppliedEmail != '' and $suppliedEmail != $user->emailConfirmed)
 				{
-					PrivilegesHelper::confirmWithException(
+					Access::assert(
 						Privilege::ChangeUserEmail,
-						PrivilegesHelper::getIdentitySubPrivilege($user));
+						Access::getIdentity($user));
 
 					$suppliedEmail = UserModel::validateEmail($suppliedEmail);
 					if ($context->user->id == $user->id)
@@ -349,9 +349,9 @@ class UserController
 
 				if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->accessRank)
 				{
-					PrivilegesHelper::confirmWithException(
+					Access::assert(
 						Privilege::ChangeUserAccessRank,
-						PrivilegesHelper::getIdentitySubPrivilege($user));
+						Access::getIdentity($user));
 
 					$suppliedAccessRank = UserModel::validateAccessRank($suppliedAccessRank);
 					$user->accessRank = $suppliedAccessRank;
@@ -397,9 +397,9 @@ class UserController
 		if ($page === null)
 			$page = 1;
 
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::ViewUser,
-			PrivilegesHelper::getIdentitySubPrivilege($user));
+			Access::getIdentity($user));
 
 		$this->loadUserView($user);
 
@@ -430,9 +430,9 @@ class UserController
 	public function toggleSafetyAction($safety)
 	{
 		$context = getContext();
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::ChangeUserSettings,
-			PrivilegesHelper::getIdentitySubPrivilege($context->user));
+			Access::getIdentity($context->user));
 
 		if (!in_array($safety, PostSafety::getAll()))
 			throw new SimpleExcetpion('Invalid safety');

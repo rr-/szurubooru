@@ -5,7 +5,7 @@ Assets::addScript('post-list.js');
 
 <?php if (isset($this->context->source)
 	and $this->context->source == 'mass-tag'
-	and PrivilegesHelper::confirm(Privilege::MassTag)): ?>
+	and Access::check(Privilege::MassTag)): ?>
 
 	<?php \Chibi\View::render('tag-mass-tag', $this->context) ?>
 

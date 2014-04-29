@@ -4,7 +4,7 @@ class LogController
 	public function listAction()
 	{
 		$context = getContext();
-		PrivilegesHelper::confirmWithException(Privilege::ListLogs);
+		Access::assert(Privilege::ListLogs);
 
 		$path = TextHelper::absolutePath(getConfig()->main->logsPath);
 
@@ -38,7 +38,7 @@ class LogController
 			return;
 		}
 
-		PrivilegesHelper::confirmWithException(Privilege::ViewLog);
+		Access::assert(Privilege::ViewLog);
 
 		//parse input
 		$page = max(1, intval($page));

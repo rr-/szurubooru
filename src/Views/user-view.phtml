@@ -49,9 +49,9 @@ Assets::addStylesheet('user-view.css');
 			</span>
 		</div>
 
-		<?php if (PrivilegesHelper::confirm(
+		<?php if (Access::check(
 			Privilege::ViewUserEmail,
-			PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+			Access::getIdentity($this->context->transport->user))): ?>
 
 			<div class="key-value email">
 				<span class="key">E-mail:</span>
@@ -76,9 +76,9 @@ Assets::addStylesheet('user-view.css');
 		foreach (array_keys($userModificationPrivileges) as $privilege)
 		{
 
-			if (PrivilegesHelper::confirm(
+			if (Access::check(
 				$privilege,
-				PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+				Access::getIdentity($this->context->transport->user)))
 			{
 				$userModificationPrivileges[$privilege] = true;
 			}
@@ -98,7 +98,7 @@ Assets::addStylesheet('user-view.css');
 			];
 		}
 
-		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration)
+		if (Access::check(Privilege::AcceptUserRegistration)
 			and !$this->context->transport->user->staffConfirmed
 			and getConfig()->registration->staffActivation)
 		{
@@ -111,9 +111,9 @@ Assets::addStylesheet('user-view.css');
 			];
 		}
 
-		if (PrivilegesHelper::confirm(
+		if (Access::check(
 			Privilege::FlagUser,
-			PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+			Access::getIdentity($this->context->transport->user)))
 		{
 			if ($this->context->flagged)
 			{
@@ -137,9 +137,9 @@ Assets::addStylesheet('user-view.css');
 			}
 		}
 
-		if (PrivilegesHelper::confirm(
+		if (Access::check(
 			Privilege::BanUser,
-			PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+			Access::getIdentity($this->context->transport->user)))
 		{
 			if (!$this->context->transport->user->banned)
 			{
@@ -165,9 +165,9 @@ Assets::addStylesheet('user-view.css');
 			}
 		}
 
-		if (PrivilegesHelper::confirm(
+		if (Access::check(
 			Privilege::DeleteUser,
-			PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user)))
+			Access::getIdentity($this->context->transport->user)))
 		{
 			$options []=
 			[
@@ -212,9 +212,9 @@ Assets::addStylesheet('user-view.css');
 				</a>
 			</li>
 
-			<?php if (PrivilegesHelper::confirm(
+			<?php if (Access::check(
 				Privilege::ChangeUserSettings,
-				PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+				Access::getIdentity($this->context->transport->user))): ?>
 
 				<?php if ($this->context->transport->tab == 'settings'): ?>
 					<li class="selected settings">
@@ -241,9 +241,9 @@ Assets::addStylesheet('user-view.css');
 				</li>
 			<?php endif ?>
 
-			<?php if (PrivilegesHelper::confirm(
+			<?php if (Access::check(
 				Privilege::DeleteUser,
-				PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->user))): ?>
+				Access::getIdentity($this->context->transport->user))): ?>
 				<?php if ($this->context->transport->tab == 'delete'): ?>
 					<li class="selected delete">
 				<?php else: ?>

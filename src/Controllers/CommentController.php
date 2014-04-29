@@ -3,7 +3,7 @@ class CommentController
 {
 	public function listAction($page)
 	{
-		PrivilegesHelper::confirmWithException(Privilege::ListComments);
+		Access::assert(Privilege::ListComments);
 
 		$page = max(1, intval($page));
 		$commentsPerPage = intval(getConfig()->comments->commentsPerPage);
@@ -33,9 +33,9 @@ class CommentController
 	public function addAction($postId)
 	{
 		$context = getContext();
-		PrivilegesHelper::confirmWithException(Privilege::AddComment);
+		Access::assert(Privilege::AddComment);
 		if (getConfig()->registration->needEmailForCommenting)
-			PrivilegesHelper::confirmEmail($context->user);
+			Access::assertEmailConfirmation();
 
 		$post = PostModel::findById($postId);
 		$context->transport->post = $post;
@@ -70,9 +70,9 @@ class CommentController
 		$comment = CommentModel::findById($id);
 		$context->transport->comment = $comment;
 
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::EditComment,
-			PrivilegesHelper::getIdentitySubPrivilege($comment->getCommenter()));
+			Access::getIdentity($comment->getCommenter()));
 
 		if (InputHelper::get('submit'))
 		{
@@ -95,9 +95,9 @@ class CommentController
 	{
 		$comment = CommentModel::findById($id);
 
-		PrivilegesHelper::confirmWithException(
+		Access::assert(
 			Privilege::DeleteComment,
-			PrivilegesHelper::getIdentitySubPrivilege($comment->getCommenter()));
+			Access::getIdentity($comment->getCommenter()));
 
 		CommentModel::remove($comment);
 

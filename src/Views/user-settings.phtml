@@ -3,7 +3,7 @@
 		<label>Safety:</label>
 		<div class="input-wrapper">
 			<?php foreach (PostSafety::getAll() as $safety): ?>
-				<?php if (PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety))): ?>
+				<?php if (Access::check(Privilege::ListPosts, PostSafety::toString($safety))): ?>
 					<label>
 						<?php
 							$attrs = [];

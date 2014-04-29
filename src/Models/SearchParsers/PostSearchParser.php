@@ -14,7 +14,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->tags = [];
 		$crit = new Sql\ConjunctionFunctor();
 
-		$allowedSafety = PrivilegesHelper::getAllowedSafety();
+		$allowedSafety = Access::getAllowedSafety();
 		$crit->add(Sql\InFunctor::fromArray('safety', Sql\Binding::fromArray($allowedSafety)));
 
 		$this->statement->setCriterion($crit);
@@ -27,7 +27,7 @@ class PostSearchParser extends AbstractSearchParser
 		if (getContext()->user->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
 			$this->processComplexToken('special', 'disliked', true);
 
-		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden') or !$this->showHidden)
+		if (!Access::check(Privilege::ListPosts, 'hidden') or !$this->showHidden)
 			$this->processComplexToken('special', 'hidden', true);
 
 		foreach ($this->tags as $item)

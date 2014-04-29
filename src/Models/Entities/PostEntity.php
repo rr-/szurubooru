@@ -36,8 +36,6 @@ class PostEntity extends AbstractEntity
 		$this->setCache('uploader', $user);
 	}
 
-
-
 	public function getComments()
 	{
 		if ($this->hasCache('comments'))
@@ -46,9 +44,6 @@ class PostEntity extends AbstractEntity
 		$this->setCache('comments', $comments);
 		return $comments;
 	}
-
-
-
 
 	public function getFavorites()
 	{
@@ -64,8 +59,6 @@ class PostEntity extends AbstractEntity
 		$this->setCache('favoritee', $favorites);
 		return $favorites;
 	}
-
-
 
 	public function getRelations()
 	{
@@ -123,8 +116,6 @@ class PostEntity extends AbstractEntity
 		$this->setRelations($relatedPosts);
 	}
 
-
-
 	public function getTags()
 	{
 		if ($this->hasCache('tags'))
@@ -173,9 +164,6 @@ class PostEntity extends AbstractEntity
 		return false;
 	}
 
-
-
-
 	public function setHidden($hidden)
 	{
 		$this->hidden = boolval($hidden);
@@ -190,7 +178,6 @@ class PostEntity extends AbstractEntity
 	{
 		$this->source = PostModel::validateSource($source);
 	}
-
 
 	public function getThumbCustomPath($width = null, $height = null)
 	{
@@ -343,8 +330,6 @@ class PostEntity extends AbstractEntity
 		return true;
 	}
 
-
-
 	public function setContentFromPath($srcPath)
 	{
 		$this->fileSize = filesize($srcPath);
@@ -470,8 +455,6 @@ class PostEntity extends AbstractEntity
 				unlink($srcPath);
 		}
 	}
-
-
 
 	public function getEditToken()
 	{
