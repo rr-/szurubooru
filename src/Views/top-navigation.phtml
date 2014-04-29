@@ -2,16 +2,8 @@
 	<?php
 	$nav = [];
 
-	if ($this->context->route)
-	{
-		$activeController = $this->context->route->simpleControllerName;
-		$activeAction = $this->context->route->simpleActionName;
-	}
-	else
-	{
-		$activeController = null;
-		$activeAction = null;
-	}
+	$activeController = $this->context->simpleControllerName;
+	$activeAction = $this->context->simpleActionName;
 
 	$registerNavItem = function ($text, $link, $active = false) use (&$nav)
 	{
@@ -23,14 +15,14 @@
 
 	$registerNavItem(
 		'Home',
-		\Chibi\UrlHelper::route('index', 'index'),
+		\Chibi\Router::linkTo(['IndexController', 'indexAction']),
 		$activeController == 'index' and $activeAction == 'index');
 
 	if (PrivilegesHelper::confirm(Privilege::ListPosts))
 	{
 		$registerNavItem(
 			'Browse',
-			\Chibi\UrlHelper::route('post', 'list'),
+			\Chibi\Router::linkTo(['PostController', 'listAction']),
 			$activeController == 'post' and $activeAction != 'upload');
 	}
 
@@ -38,7 +30,7 @@
 	{
 		$registerNavItem(
 			'Upload',
-			\Chibi\UrlHelper::route('post', 'upload'),
+			\Chibi\Router::linkTo(['PostController', 'uploadAction']),
 			$activeController == 'post' and $activeAction == 'upload');
 	}
 
@@ -46,7 +38,7 @@
 	{
 		$registerNavItem(
 			'Comments',
-			\Chibi\UrlHelper::route('comment', 'list'),
+			\Chibi\Router::linkTo(['CommentController', 'listAction']),
 			$activeController == 'comment');
 	}
 
@@ -54,7 +46,7 @@
 	{
 		$registerNavItem(
 			'Tags',
-			\Chibi\UrlHelper::route('tag', 'list'),
+			\Chibi\Router::linkTo(['TagController', 'listAction']),
 			$activeController == 'tag');
 	}
 
@@ -62,7 +54,7 @@
 	{
 		$registerNavItem(
 			'Users',
-			\Chibi\UrlHelper::route('user', 'list'),
+			\Chibi\Router::linkTo(['UserController', 'listAction']),
 			$activeController == 'user' and $activeAction != 'registration' and
 				(!isset($this->context->route->arguments['name']) or
 					$this->context->route->arguments['name'] != $this->context->user->name));
@@ -72,32 +64,32 @@
 	{
 		$registerNavItem(
 			'Log in',
-			\Chibi\UrlHelper::route('auth', 'login'),
+			\Chibi\Router::linkTo(['AuthController', 'loginAction']),
 			$activeController == 'auth' and $activeAction == 'login');
 
 		$registerNavItem(
 			'Register',
-			\Chibi\UrlHelper::route('user', 'registration'),
+			\Chibi\Router::linkTo(['UserController', 'registrationAction']),
 			$activeController == 'user' and $activeAction == 'registration');
 	}
 	else
 	{
 		$registerNavItem(
 			'My account',
-			\Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->user->name]),
+			\Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $this->context->user->name]),
 			$activeController == 'user' and isset($this->context->route->arguments['name']) and
 				$this->context->route->arguments['name'] == $this->context->user->name);
 
 		$registerNavItem(
 			'Log out',
-			\Chibi\UrlHelper::route('auth', 'logout'));
+			\Chibi\Router::linkTo(['AuthController', 'logoutAction']));
 	}
 
-	if (!empty($this->config->help->title))
+	if (!empty(getConfig()->help->title))
 	{
 		$registerNavItem(
-			$this->config->help->title,
-			\Chibi\UrlHelper::route('index', 'help'),
+			getConfig()->help->title,
+			\Chibi\Router::linkTo(['IndexController', 'helpAction']),
 			$activeController == 'index' and $activeAction == 'help');
 	}
 
@@ -123,7 +115,7 @@
 						<li class="safety-<?= TextCaseConverter::convert(PostSafety::toString($safety), TextCaseConverter::CAMEL_CASE, TextCaseConverter::SPINAL_CASE) ?>">
 
 							<a class="<?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
-								href="<?= \Chibi\UrlHelper::route('user', 'toggle-safety', ['safety' => $safety]) ?>"
+								href="<?= \Chibi\Router::linkTo(['UserController', 'toggleSafetyAction'], ['safety' => $safety]) ?>"
 								title="Searching <?= PostSafety::toDisplayString($safety) ?> posts: <?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
 
 								<span><?= ucfirst(PostSafety::toDisplayString($safety)) ?></span>
@@ -138,7 +130,7 @@
 	<?php endif ?>
 
 	<li class="search">
-		<form name="search" action="<?= \Chibi\UrlHelper::route('post', 'list') ?>" method="get">
+		<form name="search" action="<?= \Chibi\Router::linkTo(['PostController', 'listAction']) ?>" method="get">
 
 			<input
 				class="autocomplete"

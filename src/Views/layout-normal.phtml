@@ -1,10 +1,10 @@
 <?php
-CustomAssetViewDecorator::addStylesheet('../lib/jquery-ui/jquery-ui.css');
-CustomAssetViewDecorator::addStylesheet('core.css');
-CustomAssetViewDecorator::addScript('../lib/jquery/jquery.min.js');
-CustomAssetViewDecorator::addScript('../lib/jquery-ui/jquery-ui.min.js');
-CustomAssetViewDecorator::addScript('../lib/mousetrap/mousetrap.min.js');
-CustomAssetViewDecorator::addScript('core.js');
+Assets::addStylesheet('../lib/jquery-ui/jquery-ui.css');
+Assets::addStylesheet('core.css');
+Assets::addScript('../lib/jquery/jquery.min.js');
+Assets::addScript('../lib/jquery-ui/jquery-ui.min.js');
+Assets::addScript('../lib/mousetrap/mousetrap.min.js');
+Assets::addScript('core.js');
 ?>
 
 <!DOCTYPE html>
@@ -24,14 +24,14 @@ CustomAssetViewDecorator::addScript('core.js');
 
 		<nav id="top-nav">
 			<div class="main-wrapper">
-				<?php $this->renderFile('top-navigation') ?>
+				<?php \Chibi\View::render('top-navigation', $this->context) ?>
 			</div>
 			<div class="clear"></div>
 		</nav>
 
 		<section id="content">
 			<div class="main-wrapper">
-				<?= $this->renderView() ?>
+				<?= \Chibi\View::render($this->context->viewName, $this->context) ?>
 			</div>
 			<div class="clear"></div>
 		</section>
@@ -43,14 +43,14 @@ CustomAssetViewDecorator::addScript('core.js');
 				<span>Queries:&nbsp;<?= count(\Chibi\Database::getLogs()) ?></span>
 				<span><a href="<?= SZURU_LINK ?>">szurubooru&nbsp;v<?= SZURU_VERSION ?></a></span>
 				<?php if (PrivilegesHelper::confirm(Privilege::ListLogs)): ?>
-					<span><a href="<?= \Chibi\UrlHelper::route('log', 'list') ?>">Logs</a></span>
+					<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listAction']) ?>">Logs</a></span>
 				<?php endif ?>
 				<hr>
 			</div>
 		</footer>
 
-		<?php if ($this->config->misc->debugQueries): ?>
-			<?= $this->renderFile('debug') ?>
+		<?php if (getConfig()->misc->debugQueries): ?>
+			<?= \Chibi\View::render('debug', $this->context) ?>
 		<?php endif ?>
 
 		<div id="small-screen"></div>

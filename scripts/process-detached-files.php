@@ -59,7 +59,7 @@ foreach (R::findAll('post') as $post)
 }
 $names = array_flip($names);
 
-$config = \Chibi\Registry::getConfig();
+$config = getConfig();
 foreach (glob(TextHelper::absolutePath($config->main->filesPath) . DS . '*') as $name)
 {
 	$name = basename($name);

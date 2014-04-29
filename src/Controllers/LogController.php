@@ -1,14 +1,12 @@
 <?php
 class LogController
 {
-	/**
-	* @route /logs
-	*/
 	public function listAction()
 	{
+		$context = getContext();
 		PrivilegesHelper::confirmWithException(Privilege::ListLogs);
 
-		$path = TextHelper::absolutePath($this->config->main->logsPath);
+		$path = TextHelper::absolutePath(getConfig()->main->logsPath);
 
 		$logs = [];
 		foreach (glob($path . DS . '*.log') as $log)
@@ -19,27 +17,19 @@ class LogController
 			return strnatcasecmp($b, $a); //reverse natcasesort
 		});
 
-		$this->context->transport->logs = $logs;
+		$context->transport->logs = $logs;
 	}
 
-	/**
-	* @route /log/{name}
-	* @route /log/{name}/{page}
-	* @route /log/{name}/{page}/{filter}
-	* @validate name [0-9a-zA-Z._-]+
-	* @validate page \d*
-	* @validate filter .*
-	*/
 	public function viewAction($name, $page = 1, $filter = '')
 	{
+		$context = getContext();
 		//redirect requests in form of ?query=... to canonical address
 		$formQuery = InputHelper::get('query');
 		if ($formQuery !== null)
 		{
-			\Chibi\UrlHelper::forward(
-				\Chibi\UrlHelper::route(
-					'log',
-					'view',
+			\Chibi\Util\Url::forward(
+				\Chibi\Router::linkTo(
+					['LogController', 'viewAction'],
 					[
 						'name' => $name,
 						'filter' => $formQuery,
@@ -53,7 +43,7 @@ class LogController
 		//parse input
 		$page = max(1, intval($page));
 		$name = str_replace(['/', '\\'], '', $name); //paranoia mode
-		$path = TextHelper::absolutePath($this->config->main->logsPath . DS . $name);
+		$path = TextHelper::absolutePath(getConfig()->main->logsPath . DS . $name);
 		if (!file_exists($path))
 			throw new SimpleNotFoundException('Specified log doesn\'t exist');
 
@@ -71,7 +61,7 @@ class LogController
 		}
 
 		$lineCount = count($lines);
-		$logsPerPage = intval($this->config->browsing->logsPerPage);
+		$logsPerPage = intval(getConfig()->browsing->logsPerPage);
 		$pageCount = ceil($lineCount / $logsPerPage);
 		$page = min($pageCount, $page);
 
@@ -87,13 +77,13 @@ class LogController
 		$lines = TextHelper::parseMarkdown($lines, true);
 		$lines = trim($lines);
 
-		$this->context->transport->paginator = new StdClass;
-		$this->context->transport->paginator->page = $page;
-		$this->context->transport->paginator->pageCount = $pageCount;
-		$this->context->transport->paginator->entityCount = $lineCount;
-		$this->context->transport->paginator->entities = $lines;
-		$this->context->transport->lines = $lines;
-		$this->context->transport->filter = $filter;
-		$this->context->transport->name = $name;
+		$context->transport->paginator = new StdClass;
+		$context->transport->paginator->page = $page;
+		$context->transport->paginator->pageCount = $pageCount;
+		$context->transport->paginator->entityCount = $lineCount;
+		$context->transport->paginator->entities = $lines;
+		$context->transport->lines = $lines;
+		$context->transport->filter = $filter;
+		$context->transport->name = $name;
 	}
 }

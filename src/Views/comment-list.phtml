@@ -1,15 +1,15 @@
 <?php
-CustomAssetViewDecorator::setSubTitle('comments');
+Assets::setSubTitle('comments');
 ?>
 
 <?php if (empty($this->context->transport->posts)): ?>
 	<p class="alert alert-warning">No comments to show.</p>
 <?php else: ?>
 	<?php
-	CustomAssetViewDecorator::addStylesheet('comment-list.css');
-	CustomAssetViewDecorator::addStylesheet('comment-small.css');
-	CustomAssetViewDecorator::addStylesheet('comment-edit.css');
-	CustomAssetViewDecorator::addScript('comment-edit.js');
+	Assets::addStylesheet('comment-list.css');
+	Assets::addStylesheet('comment-small.css');
+	Assets::addStylesheet('comment-edit.css');
+	Assets::addScript('comment-edit.js');
 	?>
 
 	<div class="comments-wrapper">
@@ -20,18 +20,18 @@ CustomAssetViewDecorator::setSubTitle('comments');
 						<?php
 							$this->context->post = $post;
 							$comments = array_reverse($post->getComments());
-							$commentsToDisplay = array_slice($comments, 0, $this->config->comments->maxCommentsInList);
+							$commentsToDisplay = array_slice($comments, 0, getConfig()->comments->maxCommentsInList);
 						?>
-						<?= $this->renderFile('post-small') ?>
+						<?php \Chibi\View::render('post-small', $this->context) ?>
 					</div>
 					<div class="comments">
 						<?php foreach ($commentsToDisplay as $comment): ?>
 							<?php $this->context->comment = $comment ?>
-							<?= $this->renderFile('comment-small') ?>
+							<?php \Chibi\View::render('comment-small', $this->context) ?>
 						<?php endforeach ?>
 
 						<?php if (count($comments) > count($commentsToDisplay)): ?>
-							<a href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+							<a href="<?= \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => $this->context->post->id]) ?>">
 								<span class="hellip">(more&hellip;)</span>
 							</a>
 						<?php endif ?>
@@ -41,6 +41,6 @@ CustomAssetViewDecorator::setSubTitle('comments');
 			<?php endforeach ?>
 		</div>
 
-		<?php $this->renderFile('paginator') ?>
+		<?php \Chibi\View::render('paginator', $this->context) ?>
 	</div>
 <?php endif ?>

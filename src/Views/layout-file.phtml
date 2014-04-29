@@ -1,7 +1,7 @@
 <?php
 if (!empty($this->context->transport->errorMessage))
 {
-	\Chibi\HeadersHelper::set('Content-Type', 'text/plain; charset=utf-8');
+	\Chibi\Util\Headers::set('Content-Type', 'text/plain; charset=utf-8');
 	echo $this->context->transport->errorMessage;
 }
 else
@@ -18,20 +18,20 @@ else
 		? trim(trim($_SERVER['HTTP_IF_NONE_MATCH']), '"')
 		: false;
 
-	\Chibi\HeadersHelper::set('ETag', '"' . $eTag . '"');
-	\Chibi\HeadersHelper::set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $lastModified));
-	\Chibi\HeadersHelper::set('Pragma', 'public');
-	\Chibi\HeadersHelper::set('Cache-Control', 'public, max-age=' . $ttl);
-	\Chibi\HeadersHelper::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $ttl));
+	\Chibi\Util\Headers::set('ETag', '"' . $eTag . '"');
+	\Chibi\Util\Headers::set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $lastModified));
+	\Chibi\Util\Headers::set('Pragma', 'public');
+	\Chibi\Util\Headers::set('Cache-Control', 'public, max-age=' . $ttl);
+	\Chibi\Util\Headers::set('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $ttl));
 
 	if (isset($this->context->transport->customFileName))
 	{
-		\Chibi\HeadersHelper::set(
+		\Chibi\Util\Headers::set(
 			'Content-Disposition',
 			'inline; filename="' . $this->context->transport->customFileName . '"');
 	}
 
-	\Chibi\HeadersHelper::set(
+	\Chibi\Util\Headers::set(
 		'Content-Type',
 		$this->context->transport->mimeType);
 

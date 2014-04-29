@@ -1,25 +1,26 @@
 <?php
-CustomAssetViewDecorator::setSubTitle('tags');
-CustomAssetViewDecorator::addStylesheet('tag-list.css');
+Assets::setSubTitle('tags');
+Assets::addStylesheet('tag-list.css');
 
 $tabs = [];
-if (PrivilegesHelper::confirm(Privilege::ListTags)) $tabs['list'] = 'List';
-if (PrivilegesHelper::confirm(Privilege::RenameTags)) $tabs['rename'] = 'Rename';
-if (PrivilegesHelper::confirm(Privilege::MergeTags)) $tabs['merge'] = 'Merge';
-if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs['mass-tag-redirect'] = 'Mass tag';
+if (PrivilegesHelper::confirm(Privilege::ListTags)) $tabs['list'] = ['List', 'listAction'];
+if (PrivilegesHelper::confirm(Privilege::RenameTags)) $tabs['rename'] = ['Rename', 'renameAction'];
+if (PrivilegesHelper::confirm(Privilege::MergeTags)) $tabs['merge'] = ['Merge', 'mergeAction'];
+if (PrivilegesHelper::confirm(Privilege::MassTag)) $tabs['mass-tag-redirect'] = ['Mass tag', 'massTagRedirectAction'];
 $showTabs = count($tabs) > 1;
 ?>
 
 <?php if ($showTabs): ?>
 	<nav class="tabs">
 		<ul>
-			<?php foreach ($tabs as $tab => $name): ?>
-				<?php if ($this->context->route->simpleActionName == $tab): ?>
+			<?php foreach ($tabs as $tab => $item): ?>
+				<?php list ($name, $action) = $item ?>
+				<?php if ($this->context->simpleActionName == $tab): ?>
 					<li class="selected <?= $tab ?>">
 				<?php else: ?>
 					<li class="<?= $tab ?>">
 				<?php endif ?>
-					<a href="<?= \Chibi\UrlHelper::route('tag', $tab) ?>">
+					<a href="<?= \Chibi\Router::linkTo(['TagController', $action]) ?>">
 						<?= $name ?>
 					</a>
 				</li>
@@ -30,20 +31,20 @@ $showTabs = count($tabs) > 1;
 	<div class="tab-content">
 <?php endif ?>
 
-<?php if ($this->context->route->simpleActionName == 'merge'): ?>
-	<?php $this->renderFile('tag-merge') ?>
+<?php if ($this->context->simpleActionName == 'merge'): ?>
+	<?php \Chibi\View::render('tag-merge', $this->context) ?>
 <?php endif ?>
 
-<?php if ($this->context->route->simpleActionName == 'rename'): ?>
-	<?php $this->renderFile('tag-rename') ?>
+<?php if ($this->context->simpleActionName == 'rename'): ?>
+	<?php \Chibi\View::render('tag-rename', $this->context) ?>
 <?php endif ?>
 
-<?php if ($this->context->route->simpleActionName == 'list'): ?>
-	<?php $this->renderFile('tag-list') ?>
+<?php if ($this->context->simpleActionName == 'list'): ?>
+	<?php \Chibi\View::render('tag-list', $this->context) ?>
 <?php endif ?>
 
-<?php if ($this->context->route->simpleActionName == 'mass-tag-redirect'): ?>
-	<?php $this->renderFile('tag-mass-tag') ?>
+<?php if ($this->context->simpleActionName == 'mass-tag-redirect'): ?>
+	<?php \Chibi\View::render('tag-mass-tag', $this->context) ?>
 <?php endif ?>
 
 <?php if ($showTabs): ?>

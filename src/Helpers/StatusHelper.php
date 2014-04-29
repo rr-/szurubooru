@@ -3,7 +3,7 @@ class StatusHelper
 {
 	private static function flag($success, $message = null)
 	{
-		$context = \Chibi\Registry::getContext();
+		$context = getContext();
 		if (!empty($message))
 		{
 			if (!preg_match('/[.?!]$/', $message))
@@ -17,7 +17,7 @@ class StatusHelper
 
 	public static function init()
 	{
-		$context = \Chibi\Registry::getContext();
+		$context = getContext();
 		$context->transport->success = null;
 	}
 

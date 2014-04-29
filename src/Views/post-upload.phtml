@@ -1,9 +1,9 @@
 <?php
-CustomAssetViewDecorator::setSubTitle('upload');
-CustomAssetViewDecorator::addStylesheet('post-upload.css');
-CustomAssetViewDecorator::addScript('post-upload.js');
-CustomAssetViewDecorator::addStylesheet('../lib/tagit/jquery.tagit.css');
-CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
+Assets::setSubTitle('upload');
+Assets::addStylesheet('post-upload.css');
+Assets::addScript('post-upload.js');
+Assets::addStylesheet('../lib/tagit/jquery.tagit.css');
+Assets::addScript('../lib/tagit/jquery.tagit.js');
 ?>
 
 <div id="sidebar">
@@ -37,7 +37,7 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 		<div class="clear"></div>
 	</div>
 
-	<div id="upload-step2" data-redirect-url="<?= \Chibi\UrlHelper::route('post', 'list') ?>">
+	<div id="upload-step2" data-redirect-url="<?= \Chibi\Router::linkTo(['PostController', 'listAction']) ?>">
 		<hr>
 
 		<div class="posts">
@@ -51,7 +51,7 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 	<div id="post-template" class="post">
 		<p class="alert alert-error">Some kind of error</p>
 
-		<img class="thumbnail" src="<?= \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+		<img class="thumbnail" src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
 
 		<div class="form-wrapper">
 			<div class="ops">
@@ -68,7 +68,7 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 				</a>
 			</div>
 
-			<form action="<?= \Chibi\UrlHelper::route('post', 'upload') ?>" method="post">
+			<form action="<?= \Chibi\Router::linkTo(['PostController', 'uploadAction']) ?>" method="post">
 				<div class="form-row file-name">
 					<label>File:</label>
 					<strong>filename.jpg</strong>
@@ -121,4 +121,4 @@ CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
 	</div>
 </div>
 
-<img id="lightbox" src="<?= \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="Preview"/>
+<img id="lightbox" src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Preview"/>

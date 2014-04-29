@@ -1,4 +1,4 @@
-<form action="<?= \Chibi\UrlHelper::route('user', 'settings', ['name' => $this->context->transport->user->name]) ?>" method="post" class="settings">
+<form action="<?= \Chibi\Router::linkTo(['UserController', 'settingsAction'], ['name' => $this->context->transport->user->name]) ?>" method="post" class="settings">
 	<div class="form-row safety">
 		<label>Safety:</label>
 		<div class="input-wrapper">
@@ -81,7 +81,7 @@
 
 	<input type="hidden" name="submit" value="1"/>
 
-	<?php $this->renderFile('message') ?>
+	<?php \Chibi\View::render('message', $this->context) ?>
 
 	<div class="form-row">
 		<label></label>

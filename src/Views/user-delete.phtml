@@ -1,5 +1,5 @@
 <form
-	action="<?= \Chibi\UrlHelper::route('user', 'delete', ['name' => $this->context->transport->user->name]) ?>"
+	action="<?= \Chibi\Router::linkTo(['UserController', 'deleteAction'], ['name' => $this->context->transport->user->name]) ?>"
 	method="post"
 	class="delete confirmable"
 	autocomplete="off"
@@ -16,7 +16,7 @@
 
 	<input type="hidden" name="submit" value="1"/>
 
-	<?php $this->renderFile('message') ?>
+	<?php \Chibi\View::render('message', $this->context) ?>
 
 	<div class="form-row">
 		<label></label>

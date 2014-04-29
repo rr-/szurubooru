@@ -13,7 +13,7 @@ class PostModel extends AbstractCrudModel
 
 	public static function init()
 	{
-		self::$config = \Chibi\Registry::getConfig();
+		self::$config = getConfig();
 	}
 
 	public static function spawn()

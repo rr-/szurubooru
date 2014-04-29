@@ -1,6 +1,6 @@
 <?php
 require_once 'src/core.php';
-$config = \Chibi\Registry::getConfig();
+$config = getConfig();
 $fontsPath = TextHelper::absolutePath($config->main->mediaPath . DS . 'fonts');
 $libPath = TextHelper::absolutePath($config->main->mediaPath . DS . 'lib');
 

@@ -77,7 +77,7 @@ class UserEntity extends AbstractEntity
 	{
 		$ret = $this->getSetting(UserModel::SETTING_HIDE_DISLIKED_POSTS);
 		if ($ret === null)
-			$ret = !\Chibi\Registry::getConfig()->browsing->showDislikedPostsDefault;
+			$ret = !getConfig()->browsing->showDislikedPostsDefault;
 		return $ret;
 	}
 
@@ -90,7 +90,7 @@ class UserEntity extends AbstractEntity
 	{
 		$ret = $this->getSetting(UserModel::SETTING_POST_TAG_TITLES);
 		if ($ret === null)
-			$ret = \Chibi\Registry::getConfig()->browsing->showPostTagTitlesDefault;
+			$ret = getConfig()->browsing->showPostTagTitlesDefault;
 		return $ret;
 	}
 
@@ -103,7 +103,7 @@ class UserEntity extends AbstractEntity
 	{
 		$ret = $this->getSetting(UserModel::SETTING_ENDLESS_SCROLLING);
 		if ($ret === null)
-			$ret = \Chibi\Registry::getConfig()->browsing->endlessScrollingDefault;
+			$ret = getConfig()->browsing->endlessScrollingDefault;
 		return $ret;
 	}
 

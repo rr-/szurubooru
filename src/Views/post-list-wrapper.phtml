@@ -1,35 +1,35 @@
 <?php
-CustomAssetViewDecorator::setSubTitle('posts');
+Assets::setSubTitle('posts');
 
 $tabs = [];
 $activeTab = 0;
 if (PrivilegesHelper::confirm(Privilege::ListPosts))
-	$tabs []= ['All posts', \Chibi\UrlHelper::route('post', 'list')];
+	$tabs []= ['All posts', \Chibi\Router::linkTo(['PostController', 'listAction'])];
 
 if (PrivilegesHelper::confirm(Privilege::ListPosts))
 {
-	$tabs []= ['Random', \Chibi\UrlHelper::route('post', 'random')];
-	if ($this->context->route->simpleActionName == 'random')
+	$tabs []= ['Random', \Chibi\Router::linkTo(['PostController', 'randomAction'])];
+	if ($this->context->simpleActionName == 'random')
 		$activeTab = count($tabs) - 1;
 }
 
 if (PrivilegesHelper::confirm(Privilege::ListPosts))
 {
-	$tabs []= ['Favorites', \Chibi\UrlHelper::route('post', 'favorites')];
-	if ($this->context->route->simpleActionName == 'favorites')
+	$tabs []= ['Favorites', \Chibi\Router::linkTo(['PostController', 'favoritesAction'])];
+	if ($this->context->simpleActionName == 'favorites')
 		$activeTab = count($tabs) - 1;
 }
 
 if (PrivilegesHelper::confirm(Privilege::ListPosts))
 {
-	$tabs []= ['Upvoted', \Chibi\UrlHelper::route('post', 'upvoted')];
-	if ($this->context->route->simpleActionName == 'upvoted')
+	$tabs []= ['Upvoted', \Chibi\Router::linkTo(['PostController', 'upvotedAction'])];
+	if ($this->context->simpleActionName == 'upvoted')
 		$activeTab = count($tabs) - 1;
 }
 
 if (PrivilegesHelper::confirm(Privilege::MassTag))
 {
-	$tabs []= ['Mass tag', \Chibi\UrlHelper::route('post', 'list', [
+	$tabs []= ['Mass tag', \Chibi\Router::linkTo(['PostController', 'listAction'], [
 		'source' => 'mass-tag',
 		'query' => isset($this->context->transport->searchQuery)
 			? htmlspecialchars($this->context->transport->searchQuery)
@@ -67,5 +67,5 @@ if (PrivilegesHelper::confirm(Privilege::MassTag))
 </nav>
 
 <div class="tab-content">
-	<?php $this->renderFile('post-list') ?>
+	<?php \Chibi\View::render('post-list', $this->context) ?>
 </div>

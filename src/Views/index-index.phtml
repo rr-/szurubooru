@@ -1,10 +1,10 @@
 <?php
-CustomAssetViewDecorator::setSubtitle('home');
-CustomAssetViewDecorator::addStylesheet('index-index.css');
+Assets::setSubtitle('home');
+Assets::addStylesheet('index-index.css');
 ?>
 
 <div id="welcome">
-	<h1><?= $this->config->main->title ?></h1>
+	<h1><?= getConfig()->main->title ?></h1>
 	<p>
 		<span>serving <?= $this->context->transport->postCount ?> posts</span>
 	</p>
@@ -14,11 +14,11 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 	<div class="body">
 		<?php
 			$this->context->transport->post = $this->context->featuredPost;
-			$this->context->imageLink = \Chibi\UrlHelper::route('post', 'view', [
+			$this->context->imageLink = \Chibi\Router::linkTo(['PostController', 'viewAction'], [
 				'id' => $this->context->featuredPost->id]);
 		?>
 
-		<?= $this->renderFile('post-file-render') ?>
+		<?php \Chibi\View::render('post-file-render', $this->context) ?>
 	</div>
 
 	<div class="footer">
@@ -29,7 +29,7 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 				<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 				<?php foreach ($tags as $tag): ?>
 					<li>
-						<a href="<?= \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>">
+						<a href="<?= \Chibi\Router::linkTo(['PostController', 'listAction'], ['query' => $tag->name]) ?>">
 							<?= $tag->name ?>
 						</a>
 					</li>
@@ -41,7 +41,7 @@ CustomAssetViewDecorator::addStylesheet('index-index.css');
 			Featured
 			<?php if ($this->context->featuredPostUser): ?>
 				by
-				<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->featuredPostUser->name]) ?>">
+				<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $this->context->featuredPostUser->name]) ?>">
 					<?= $this->context->featuredPostUser->name ?>
 				</a>,
 			<?php endif ?>

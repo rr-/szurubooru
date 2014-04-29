@@ -1,5 +1,5 @@
 <?php
-CustomAssetViewDecorator::addStylesheet('post-small.css');
+Assets::addStylesheet('post-small.css');
 
 $classNames =
 [
@@ -28,7 +28,7 @@ if ($masstag)
 <div class="<?= implode(' ', $classNames) ?>">
 	<?php if ($masstag): ?>
 		<a class="toggle-tag"
-			href="<?= \Chibi\UrlHelper::route('post', 'toggle-tag', [
+			href="<?= \Chibi\Router::linkTo(['PostController', 'toggleTagAction'], [
 				'id' => $this->context->post->id,
 				'tag' => $this->context->additionalInfo,
 				'enable' => '_enable_']) ?>"
@@ -44,11 +44,11 @@ if ($masstag)
 		<?php if ($this->context->user->hasEnabledPostTagTitles()): ?>
 			title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>"
 		<?php endif ?>
-		href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->post->id]) ?>">
+		href="<?= \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => $this->context->post->id]) ?>">
 
 		<img
 			class="thumb"
-			src="<?= \Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->post->name]) ?>"
+			src="<?= \Chibi\Router::linkTo(['PostController', 'thumbAction'], ['name' => $this->context->post->name]) ?>"
 			alt="@<?= $this->context->post->id ?>"/>
 
 		<?php

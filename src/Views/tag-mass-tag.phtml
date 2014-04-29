@@ -1,5 +1,5 @@
 <div class="form-wrapper">
-	<form method="post" action="<?= \Chibi\UrlHelper::route('tag', 'mass-tag-redirect') ?>">
+	<form method="post" action="<?= \Chibi\Router::linkTo(['TagController', 'massTagRedirectAction']) ?>">
 		<h1>mass tag</h1>
 
 		<div class="form-row">

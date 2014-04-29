@@ -179,22 +179,23 @@ class UserModel extends AbstractCrudModel
 	public static function validateUserName($userName)
 	{
 		$userName = trim($userName);
+		$config = getConfig();
 
 		$dbUser = self::findByName($userName, false);
 		if ($dbUser !== null)
 		{
-			if (!$dbUser->emailConfirmed and \Chibi\Registry::getConfig()->registration->needEmailForRegistering)
+			if (!$dbUser->emailConfirmed and $config->registration->needEmailForRegistering)
 				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
 
-			if (!$dbUser->staffConfirmed and \Chibi\Registry::getConfig()->registration->staffActivation)
+			if (!$dbUser->staffConfirmed and $config->registration->staffActivation)
 				throw new SimpleException('User with this name is already registered and awaits staff confirmation');
 
 			throw new SimpleException('User with this name is already registered');
 		}
 
-		$userNameMinLength = intval(\Chibi\Registry::getConfig()->registration->userNameMinLength);
-		$userNameMaxLength = intval(\Chibi\Registry::getConfig()->registration->userNameMaxLength);
-		$userNameRegex = \Chibi\Registry::getConfig()->registration->userNameRegex;
+		$userNameMinLength = intval($config->registration->userNameMinLength);
+		$userNameMaxLength = intval($config->registration->userNameMaxLength);
+		$userNameRegex = $config->registration->userNameRegex;
 
 		if (strlen($userName) < $userNameMinLength)
 			throw new SimpleException('User name must have at least %d characters', $userNameMinLength);
@@ -210,8 +211,9 @@ class UserModel extends AbstractCrudModel
 
 	public static function validatePassword($password)
 	{
-		$passMinLength = intval(\Chibi\Registry::getConfig()->registration->passMinLength);
-		$passRegex = \Chibi\Registry::getConfig()->registration->passRegex;
+		$config = getConfig();
+		$passMinLength = intval($config->registration->passMinLength);
+		$passRegex = $config->registration->passRegex;
 
 		if (strlen($password) < $passMinLength)
 			throw new SimpleException('Password must have at least %d characters', $passMinLength);
@@ -254,7 +256,7 @@ class UserModel extends AbstractCrudModel
 
 	public static function hashPassword($pass, $salt2)
 	{
-		$salt1 = \Chibi\Registry::getConfig()->main->salt;
+		$salt1 = getConfig()->main->salt;
 		return sha1($salt1 . $salt2 . $pass);
 	}
 }

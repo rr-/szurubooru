@@ -36,58 +36,45 @@ class PostController
 			throw new SimpleException('Generic file upload error');
 	}
 
-
-
-	/**
-	* @route /{source}
-	* @route /{source}/{page}
-	* @route /{source}/{query}/
-	* @route /{source}/{query}/{page}
-	* @route /{source}/{additionalInfo}/{query}/
-	* @route /{source}/{additionalInfo}/{query}/{page}
-	* @validate source posts|mass-tag
-	* @validate page \d*
-	* @validate query [^\/]*
-	* @validate additionalInfo [^\/]*
-	*/
 	public function listAction($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
-		$this->context->viewName = 'post-list-wrapper';
-		$this->context->source = $source;
-		$this->context->additionalInfo = $additionalInfo;
-		$this->context->handleExceptions = true;
+		$context = getContext();
+		$context->viewName = 'post-list-wrapper';
+		$context->source = $source;
+		$context->additionalInfo = $additionalInfo;
+		$context->handleExceptions = true;
 
 		//redirect requests in form of /posts/?query=... to canonical address
 		$formQuery = InputHelper::get('query');
 		if ($formQuery !== null)
 		{
-			$this->context->transport->searchQuery = $formQuery;
-			$this->context->transport->lastSearchQuery = $formQuery;
+			$context->transport->searchQuery = $formQuery;
+			$context->transport->lastSearchQuery = $formQuery;
 			if (strpos($formQuery, '/') !== false)
 				throw new SimpleException('Search query contains invalid characters');
 
-			$url = \Chibi\UrlHelper::route('post', 'list', [
+			$url = \Chibi\Router::linkTo(['PostController', 'listAction'], [
 				'source' => $source,
 				'additionalInfo' => $additionalInfo,
 				'query' => $formQuery]);
-			\Chibi\UrlHelper::forward($url);
+			\Chibi\Util\Url::forward($url);
 			return;
 		}
 
 		$query = trim($query);
 		$page = max(1, intval($page));
-		$postsPerPage = intval($this->config->browsing->postsPerPage);
-		$this->context->transport->searchQuery = $query;
-		$this->context->transport->lastSearchQuery = $query;
+		$postsPerPage = intval(getConfig()->browsing->postsPerPage);
+		$context->transport->searchQuery = $query;
+		$context->transport->lastSearchQuery = $query;
 		PrivilegesHelper::confirmWithException(Privilege::ListPosts);
 		if ($source == 'mass-tag')
 		{
 			PrivilegesHelper::confirmWithException(Privilege::MassTag);
-			$this->context->massTagTag = $additionalInfo;
-			$this->context->massTagQuery = $query;
+			$context->massTagTag = $additionalInfo;
+			$context->massTagQuery = $query;
 
 			if (!PrivilegesHelper::confirm(Privilege::MassTag, 'all'))
-				$query = trim($query . ' submit:' . $this->context->user->name);
+				$query = trim($query . ' submit:' . $context->user->name);
 		}
 
 		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
@@ -96,26 +83,20 @@ class PostController
 		$page = min($pageCount, $page);
 		PostModel::preloadTags($posts);
 
-		$this->context->transport->paginator = new StdClass;
-		$this->context->transport->paginator->page = $page;
-		$this->context->transport->paginator->pageCount = $pageCount;
-		$this->context->transport->paginator->entityCount = $postCount;
-		$this->context->transport->paginator->entities = $posts;
-		$this->context->transport->posts = $posts;
+		$context->transport->paginator = new StdClass;
+		$context->transport->paginator->page = $page;
+		$context->transport->paginator->pageCount = $pageCount;
+		$context->transport->paginator->entityCount = $postCount;
+		$context->transport->paginator->entities = $posts;
+		$context->transport->posts = $posts;
 	}
 
-
-
-	/**
-	* @route /post/{id}/toggle-tag/{tag}/{enable}
-	* @validate tag [^\/]*
-	* @validate enable 0|1
-	*/
 	public function toggleTagAction($id, $tag, $enable)
 	{
+		$context = getContext();
 		$tagName = $tag;
 		$post = PostModel::findByIdOrName($id);
-		$this->context->transport->post = $post;
+		$context->transport->post = $post;
 
 		if (InputHelper::get('submit'))
 		{
@@ -158,60 +139,39 @@ class PostController
 		}
 	}
 
-
-
-	/**
-	* @route /favorites
-	* @route /favorites/{page}
-	* @validate page \d*
-	*/
 	public function favoritesAction($page = 1)
 	{
 		$this->listAction('favmin:1', $page);
 	}
 
-	/**
-	* @route /upvoted
-	* @route /upvoted/{page}
-	* @validate page \d*
-	*/
 	public function upvotedAction($page = 1)
 	{
 		$this->listAction('scoremin:1', $page);
 	}
 
-	/**
-	* @route /random
-	* @route /random/{page}
-	* @validate page \d*
-	*/
 	public function randomAction($page = 1)
 	{
 		$this->listAction('order:random', $page);
 	}
 
-
-
-	/**
-	* @route /post/upload
-	*/
 	public function uploadAction()
 	{
+		$context = getContext();
 		PrivilegesHelper::confirmWithException(Privilege::UploadPost);
-		if ($this->config->registration->needEmailForUploading)
-			PrivilegesHelper::confirmEmail($this->context->user);
+		if (getConfig()->registration->needEmailForUploading)
+			PrivilegesHelper::confirmEmail($context->user);
 
 		if (InputHelper::get('submit'))
 		{
-			\Chibi\Database::transaction(function()
+			\Chibi\Database::transaction(function() use ($context)
 			{
 				$post = PostModel::spawn();
 				LogHelper::bufferChanges();
 
 				//basic stuff
 				$anonymous = InputHelper::get('anonymous');
-				if ($this->context->loggedIn and !$anonymous)
-					$post->setUploader($this->context->user);
+				if ($context->loggedIn and !$anonymous)
+					$post->setUploader($context->user);
 
 				//store the post to get the ID in the logs
 				PostModel::forgeId($post);
@@ -227,7 +187,7 @@ class PostController
 				LogHelper::setBuffer([]);
 
 				//log
-				$fmt = ($anonymous and !$this->config->misc->logAnonymousUploads)
+				$fmt = ($anonymous and !getConfig()->misc->logAnonymousUploads)
 					? '{anon}'
 					: '{user}';
 				$fmt .= ' added {post} (tags: {tags}, safety: {safety}, source: {source})';
@@ -246,15 +206,11 @@ class PostController
 		}
 	}
 
-
-
-	/**
-	* @route /post/{id}/edit
-	*/
 	public function editAction($id)
 	{
+		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
-		$this->context->transport->post = $post;
+		$context->transport->post = $post;
 
 		if (InputHelper::get('submit'))
 		{
@@ -273,11 +229,6 @@ class PostController
 		}
 	}
 
-
-
-	/**
-	* @route /post/{id}/flag
-	*/
 	public function flagAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
@@ -298,11 +249,6 @@ class PostController
 		}
 	}
 
-
-
-	/**
-	* @route /post/{id}/hide
-	*/
 	public function hideAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
@@ -318,11 +264,6 @@ class PostController
 		}
 	}
 
-
-
-	/**
-	* @route /post/{id}/unhide
-	*/
 	public function unhideAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
@@ -338,11 +279,6 @@ class PostController
 		}
 	}
 
-
-
-	/**
-	* @route /post/{id}/delete
-	*/
 	public function deleteAction($id)
 	{
 		$post = PostModel::findByIdOrName($id);
@@ -357,92 +293,70 @@ class PostController
 		}
 	}
 
-
-
-	/**
-	* @route /post/{id}/add-fav
-	* @route /post/{id}/fav-add
-	*/
 	public function addFavoriteAction($id)
 	{
+		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
-			if (!$this->context->loggedIn)
+			if (!$context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			UserModel::updateUserScore($this->context->user, $post, 1);
-			UserModel::addToUserFavorites($this->context->user, $post);
+			UserModel::updateUserScore($context->user, $post, 1);
+			UserModel::addToUserFavorites($context->user, $post);
 			StatusHelper::success();
 		}
 	}
 
-	/**
-	* @route /post/{id}/rem-fav
-	* @route /post/{id}/fav-rem
-	*/
-	public function remFavoriteAction($id)
+	public function removeFavoriteAction($id)
 	{
+		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
-			if (!$this->context->loggedIn)
+			if (!$context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			UserModel::removeFromUserFavorites($this->context->user, $post);
+			UserModel::removeFromUserFavorites($context->user, $post);
 			StatusHelper::success();
 		}
 	}
 
-
-
-	/**
-	* @route /post/{id}/score/{score}
-	* @validate score -1|0|1
-	*/
 	public function scoreAction($id, $score)
 	{
+		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::ScorePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 
 		if (InputHelper::get('submit'))
 		{
-			if (!$this->context->loggedIn)
+			if (!$context->loggedIn)
 				throw new SimpleException('Not logged in');
 
-			UserModel::updateUserScore($this->context->user, $post, $score);
+			UserModel::updateUserScore($context->user, $post, $score);
 			StatusHelper::success();
 		}
 	}
 
-
-
-	/**
-	* @route /post/{id}/feature
-	*/
 	public function featureAction($id)
 	{
+		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
 		PrivilegesHelper::confirmWithException(Privilege::FeaturePost, PrivilegesHelper::getIdentitySubPrivilege($post->getUploader()));
 		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
 		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
-		PropertyModel::set(PropertyModel::FeaturedPostUserName, $this->context->user->name);
+		PropertyModel::set(PropertyModel::FeaturedPostUserName, $context->user->name);
 		StatusHelper::success();
 		LogHelper::log('{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
 	}
 
-
-
-	/**
-	* Action that decorates the page containing the post.
-	* @route /post/{id}
-	*/
 	public function viewAction($id)
 	{
+		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
 		CommentModel::preloadCommenters($post->getComments());
 
@@ -453,40 +367,35 @@ class PostController
 
 		try
 		{
-			$this->context->transport->lastSearchQuery = InputHelper::get('last-search-query');
+			$context->transport->lastSearchQuery = InputHelper::get('last-search-query');
 			list ($prevPostId, $nextPostId) =
 				PostSearchService::getPostIdsAround(
-					$this->context->transport->lastSearchQuery, $id);
+					$context->transport->lastSearchQuery, $id);
 		}
 		#search for some reason was invalid, e.g. tag was deleted in the meantime
 		catch (Exception $e)
 		{
-			$this->context->transport->lastSearchQuery = '';
+			$context->transport->lastSearchQuery = '';
 			list ($prevPostId, $nextPostId) =
 				PostSearchService::getPostIdsAround(
-					$this->context->transport->lastSearchQuery, $id);
+					$context->transport->lastSearchQuery, $id);
 		}
 
-		$favorite = $this->context->user->hasFavorited($post);
-		$score = $this->context->user->getScore($post);
+		$favorite = $context->user->hasFavorited($post);
+		$score = $context->user->getScore($post);
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
 
-		$this->context->favorite = $favorite;
-		$this->context->score = $score;
-		$this->context->flagged = $flagged;
-		$this->context->transport->post = $post;
-		$this->context->transport->prevPostId = $prevPostId ? $prevPostId : null;
-		$this->context->transport->nextPostId = $nextPostId ? $nextPostId : null;
+		$context->favorite = $favorite;
+		$context->score = $score;
+		$context->flagged = $flagged;
+		$context->transport->post = $post;
+		$context->transport->prevPostId = $prevPostId ? $prevPostId : null;
+		$context->transport->nextPostId = $nextPostId ? $nextPostId : null;
 	}
 
-
-
-	/**
-	* Action that renders the thumbnail of the requested file and sends it to user.
-	* @route /post/{name}/thumb
-	*/
 	public function thumbAction($name, $width = null, $height = null)
 	{
+		$context = getContext();
 		$path = PostModel::getThumbCustomPath($name, $width, $height);
 		if (!file_exists($path))
 		{
@@ -498,41 +407,41 @@ class PostController
 				PrivilegesHelper::confirmWithException(Privilege::ListPosts, PostSafety::toString($post->safety));
 				$post->makeThumb($width, $height);
 				if (!file_exists($path))
-					$path = TextHelper::absolutePath($this->config->main->mediaPath . DS . 'img' . DS . 'thumb.jpg');
+				{
+					$path = getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
+					$path = TextHelper::absolutePath($path);
+				}
 			}
 		}
 
 		if (!is_readable($path))
 			throw new SimpleException('Thumbnail file is not readable');
 
-		$this->context->layoutName = 'layout-file';
-		$this->context->transport->cacheDaysToLive = 365;
-		$this->context->transport->mimeType = 'image/jpeg';
-		$this->context->transport->fileHash = 'thumb' . md5($name . filemtime($path));
-		$this->context->transport->filePath = $path;
+		$context->layoutName = 'layout-file';
+		$context->transport->cacheDaysToLive = 365;
+		$context->transport->mimeType = 'image/jpeg';
+		$context->transport->fileHash = 'thumb' . md5($name . filemtime($path));
+		$context->transport->filePath = $path;
 	}
 
-
-
-	/**
-	* Action that renders the requested file itself and sends it to user.
-	* @route /post/{name}/retrieve
-	*/
 	public function retrieveAction($name)
 	{
 		$post = PostModel::findByName($name, true);
+		$config = getConfig();
+		$context = getContext();
 
 		PrivilegesHelper::confirmWithException(Privilege::RetrievePost);
 		PrivilegesHelper::confirmWithException(Privilege::RetrievePost, PostSafety::toString($post->safety));
 
-		$path = TextHelper::absolutePath($this->config->main->filesPath . DS . $post->name);
+		$path = $config->main->filesPath . DS . $post->name;
+		$path = TextHelper::absolutePath($path);
 		if (!file_exists($path))
 			throw new SimpleNotFoundException('Post file does not exist');
 		if (!is_readable($path))
 			throw new SimpleException('Post file is not readable');
 
 		$fn = sprintf('%s_%s_%s.%s',
-			$this->config->main->title,
+			$config->main->title,
 			$post->id,
 			join(',', array_map(function($tag) { return $tag->name; }, $post->getTags())),
 			TextHelper::resolveMimeType($post->mimeType) ?: 'dat');
@@ -540,12 +449,12 @@ class PostController
 
 		$ttl = 60 * 60 * 24 * 14;
 
-		$this->context->layoutName = 'layout-file';
-		$this->context->transport->cacheDaysToLive = 14;
-		$this->context->transport->customFileName = $fn;
-		$this->context->transport->mimeType = $post->mimeType;
-		$this->context->transport->fileHash = 'post' . $post->fileHash;
-		$this->context->transport->filePath = $path;
+		$context->layoutName = 'layout-file';
+		$context->transport->cacheDaysToLive = 14;
+		$context->transport->customFileName = $fn;
+		$context->transport->mimeType = $post->mimeType;
+		$context->transport->fileHash = 'post' . $post->fileHash;
+		$context->transport->filePath = $path;
 	}
 
 

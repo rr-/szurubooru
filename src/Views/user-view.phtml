@@ -1,11 +1,11 @@
 <?php
-CustomAssetViewDecorator::setSubTitle($this->context->transport->user->name);
-CustomAssetViewDecorator::addStylesheet('user-view.css');
+Assets::setSubTitle($this->context->transport->user->name);
+Assets::addStylesheet('user-view.css');
 ?>
 
 <div id="sidebar">
 	<div class="avatar-wrapper">
-		<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $this->context->transport->user->name]) ?>">
+		<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $this->context->transport->user->name]) ?>">
 			<img
 				src="<?= htmlspecialchars($this->context->transport->user->getAvatarUrl(140)) ?>"
 				alt="<?= $this->context->transport->user->name ?>"/>
@@ -93,20 +93,20 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 			[
 				'class' => 'edit',
 				'text' => 'Edit account settings',
-				'link' => \Chibi\UrlHelper::route('user', 'edit', [
+				'link' => \Chibi\Router::linkTo(['UserController', 'editAction'], [
 					'name' => $this->context->transport->user->name, 'tab' => 'edit']),
 			];
 		}
 
 		if (PrivilegesHelper::confirm(Privilege::AcceptUserRegistration)
 			and !$this->context->transport->user->staffConfirmed
-			and $this->config->registration->staffActivation)
+			and getConfig()->registration->staffActivation)
 		{
 			$options []=
 			[
 				'class' => 'accept-registration',
 				'text' => 'Accept registration',
-				'simple-action' => \Chibi\UrlHelper::route('user', 'accept-registration', [
+				'simple-action' => \Chibi\Router::linkTo(['UserController', 'acceptRegistrationAction'], [
 					'name' => $this->context->transport->user->name]),
 			];
 		}
@@ -130,7 +130,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				[
 					'class' => 'flag',
 					'text' => 'Flag for moderator attention',
-					'simple-action' => \Chibi\UrlHelper::route('user', 'flag', [
+					'simple-action' => \Chibi\Router::linkTo(['UserController', 'flagAction'], [
 						'name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to flag this user?',
 				];
@@ -147,7 +147,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				[
 					'class' => 'ban',
 					'text' => 'Ban user',
-					'simple-action' => \Chibi\UrlHelper::route('user', 'ban', [
+					'simple-action' => \Chibi\Router::linkTo(['UserController', 'banAction'], [
 						'name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to ban this user?',
 				];
@@ -158,7 +158,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				[
 					'class' => 'unban',
 					'text' => 'Unban user',
-					'simple-action' => \Chibi\UrlHelper::route('user', 'unban', [
+					'simple-action' => \Chibi\Router::linkTo(['UserController', 'unbanAction'], [
 						'name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to unban this user?',
 				];
@@ -173,13 +173,13 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 			[
 				'class' => 'delete',
 				'text' => 'Delete account',
-				'link' => \Chibi\UrlHelper::route('user', 'delete', [
+				'link' => \Chibi\Router::linkTo(['UserController', 'deleteAction'], [
 					'name' => $this->context->transport->user->name, 'tab' => 'delete']),
 			];
 		}
 
 		$this->context->options = $options;
-		$this->renderFile('sidebar-options');
+		\Chibi\View::render('sidebar-options', $this->context);
 	?>
 </div>
 
@@ -191,7 +191,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 			<?php else: ?>
 				<li class="favs">
 			<?php endif ?>
-				<a href="<?= \Chibi\UrlHelper::route('user', 'view', [
+				<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], [
 					'name' => $this->context->transport->user->name,
 					'tab' => 'favs',
 					'page' => 1]) ?>">
@@ -204,7 +204,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 			<?php else: ?>
 				<li class="uploads">
 			<?php endif ?>
-				<a href="<?= \Chibi\UrlHelper::route('user', 'view', [
+				<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], [
 					'name' => $this->context->transport->user->name,
 					'tab' => 'uploads',
 					'page' => 1]) ?>">
@@ -221,7 +221,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				<?php else: ?>
 					<li class="settings">
 				<?php endif ?>
-					<a href="<?= \Chibi\UrlHelper::route('user', 'settings', [
+					<a href="<?= \Chibi\Router::linkTo(['UserController', 'settingsAction'], [
 						'name' => $this->context->transport->user->name]) ?>">
 						Browsing settings
 					</a>
@@ -234,7 +234,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				<?php else: ?>
 					<li class="edit">
 				<?php endif ?>
-					<a href="<?= \Chibi\UrlHelper::route('user', 'edit', [
+					<a href="<?= \Chibi\Router::linkTo(['UserController', 'editAction'], [
 						'name' => $this->context->transport->user->name]) ?>">
 						Account settings
 					</a>
@@ -249,7 +249,7 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 				<?php else: ?>
 					<li class="delete">
 				<?php endif ?>
-					<a href="<?= \Chibi\UrlHelper::route('user', 'delete', [
+					<a href="<?= \Chibi\Router::linkTo(['UserController', 'deleteAction'], [
 						'name' => $this->context->transport->user->name]) ?>">
 						Delete account
 					</a>
@@ -260,15 +260,15 @@ CustomAssetViewDecorator::addStylesheet('user-view.css');
 
 	<div class="tab-content">
 		<?php if (isset($this->context->transport->posts)): ?>
-			<?php $this->renderFile('post-list') ?>
+			<?php \Chibi\View::render('post-list', $this->context) ?>
 		<?php endif ?>
 
 		<?php if ($this->context->transport->tab == 'settings'): ?>
-			<?php $this->renderFile('user-settings') ?>
+			<?php \Chibi\View::render('user-settings', $this->context) ?>
 		<?php elseif ($this->context->transport->tab == 'edit'): ?>
-			<?php $this->renderFile('user-edit') ?>
+			<?php \Chibi\View::render('user-edit', $this->context) ?>
 		<?php elseif ($this->context->transport->tab == 'delete'): ?>
-			<?php $this->renderFile('user-delete') ?>
+			<?php \Chibi\View::render('user-delete', $this->context) ?>
 		<?php endif ?>
 	</div>
 

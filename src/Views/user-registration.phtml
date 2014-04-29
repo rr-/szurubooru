@@ -1,15 +1,15 @@
 <?php
-CustomAssetViewDecorator::setSubTitle('registration form');
+Assets::setSubTitle('registration form');
 ?>
 
 <?php if ($this->context->transport->success === true): ?>
-	<?php $this->renderFile('message') ?>
+	<?php \Chibi\View::render('message', $this->context) ?>
 <?php else: ?>
 	<?php
-	CustomAssetViewDecorator::addStylesheet('auth.css');
+	Assets::addStylesheet('auth.css');
 	?>
 
-	<form action="<?= \Chibi\UrlHelper::route('auth', 'register') ?>" class="auth register" method="post">
+	<form action="<?= \Chibi\Router::linkTo(['UserController', 'registrationAction']) ?>" class="auth register" method="post">
 		<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>
 
 		<div class="form-row">
@@ -68,7 +68,7 @@ CustomAssetViewDecorator::setSubTitle('registration form');
 			Leave blank for random Gravatar.
 		</p>
 
-		<?php $this->renderFile('message') ?>
+		<?php \Chibi\View::render('message', $this->context) ?>
 
 		<input type="hidden" name="submit" value="1"/>
 

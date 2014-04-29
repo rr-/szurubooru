@@ -1,8 +1,8 @@
 <?php
-CustomAssetViewDecorator::setSubtitle('help');
-CustomAssetViewDecorator::addStylesheet('index-help.css');
+Assets::setSubtitle('help');
+Assets::addStylesheet('index-help.css');
 
-$tabs = $this->config->help->subTitles;
+$tabs = getConfig()->help->subTitles;
 $firstTab = !empty($tabs) ? array_keys($tabs)[0] : null;
 $showTabs = count($tabs) > 1;
 ?>
@@ -16,7 +16,7 @@ $showTabs = count($tabs) > 1;
 				<?php else: ?>
 					<li class="<?= $tab ?>">
 				<?php endif ?>
-					<a href="<?= \Chibi\UrlHelper::route('index', 'help', $tab == $firstTab ? [] : ['tab' => $tab]) ?>">
+					<a href="<?= \Chibi\Router::linkTo(['IndexController', 'helpAction'], $tab == $firstTab ? [] : ['tab' => $tab]) ?>">
 						<?= $text ?>
 					</a>
 				</li>

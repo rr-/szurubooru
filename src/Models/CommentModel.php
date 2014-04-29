@@ -90,7 +90,7 @@ class CommentModel extends AbstractCrudModel
 	public static function validateText($text)
 	{
 		$text = trim($text);
-		$config = \Chibi\Registry::getConfig();
+		$config = getConfig();
 
 		if (strlen($text) < $config->comments->minLength)
 			throw new SimpleException('Comment must have at least %d characters', $config->comments->minLength);

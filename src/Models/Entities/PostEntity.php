@@ -105,7 +105,7 @@ class PostEntity extends AbstractEntity
 
 	public function setRelationsFromText($relationsText)
 	{
-		$config = \Chibi\Registry::getConfig();
+		$config = getConfig();
 		$relatedIds = array_filter(preg_split('/\D/', $relationsText));
 
 		$relatedPosts = [];
@@ -215,7 +215,7 @@ class PostEntity extends AbstractEntity
 
 	public function setCustomThumbnailFromPath($srcPath)
 	{
-		$config = \Chibi\Registry::getConfig();
+		$config = getConfig();
 
 		$mimeType = mime_content_type($srcPath);
 		if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
@@ -323,7 +323,7 @@ class PostEntity extends AbstractEntity
 		if (!isset($srcImage))
 			return false;
 
-		$config = \Chibi\Registry::getConfig();
+		$config = getConfig();
 		switch ($config->browsing->thumbStyle)
 		{
 			case 'outside':

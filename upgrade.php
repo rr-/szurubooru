@@ -1,6 +1,6 @@
 <?php
 require_once 'src/core.php';
-$config = \Chibi\Registry::getConfig();
+$config = getConfig();
 
 function getDbVersion()
 {
@@ -29,7 +29,7 @@ function getDbVersion()
 	return [$dbVersionMajor, $dbVersionMinor];
 }
 
-$upgradesPath = TextHelper::absolutePath(\Chibi\Registry::getContext()->rootDir . DS . 'src' . DS . 'Upgrades' . DS . $config->main->dbDriver);
+$upgradesPath = TextHelper::absolutePath($config->rootDir . DS . 'src' . DS . 'Upgrades' . DS . $config->main->dbDriver);
 $upgrades = glob($upgradesPath . DS . '*.sql');
 natcasesort($upgrades);
 

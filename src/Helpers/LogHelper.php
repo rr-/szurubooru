@@ -36,8 +36,7 @@ class LogHelper
 
 	public static function getLogPath()
 	{
-		return TextHelper::absolutePath(
-			\Chibi\Registry::getConfig()->main->logsPath . DS . date('Y-m') . '.log');
+		return TextHelper::absolutePath(getConfig()->main->logsPath . DS . date('Y-m') . '.log');
 	}
 
 	public static function log($text, array $tokens = [])
@@ -72,7 +71,7 @@ class LogEvent
 		$this->text = $text;
 		$this->ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 
-		$context = \Chibi\Registry::getContext();
+		$context = getContext();
 		$tokens['anon'] = UserModel::getAnonymousName();
 		if ($context->loggedIn and isset($context->user))
 			$tokens['user'] = TextHelper::reprUser($context->user->name);

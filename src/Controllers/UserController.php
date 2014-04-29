@@ -3,11 +3,12 @@ class UserController
 {
 	private function loadUserView($user)
 	{
+		$context = getContext();
 		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
-		$this->context->flagged = $flagged;
-		$this->context->transport->user = $user;
-		$this->context->handleExceptions = true;
-		$this->context->viewName = 'user-view';
+		$context->flagged = $flagged;
+		$context->transport->user = $user;
+		$context->handleExceptions = true;
+		$context->viewName = 'user-view';
 	}
 
 	private static function sendTokenizedEmail(
@@ -27,13 +28,13 @@ class UserController
 		$token->expires = null;
 		TokenModel::save($token);
 
-		\Chibi\Registry::getContext()->mailSent = true;
+		getContext()->mailSent = true;
 		$tokens = [];
 		$tokens['host'] = $_SERVER['HTTP_HOST'];
 		$tokens['token'] = $token->token; //gosh this code looks so silly
 		$tokens['nl'] = PHP_EOL;
 		if ($linkActionName !== null)
-			$tokens['link'] = \Chibi\UrlHelper::route('user', $linkActionName, ['token' => $token->token]);
+			$tokens['link'] = \Chibi\Router::linkTo(['UserController', $linkActionName], ['token' => $token->token]);
 
 		$body = wordwrap(TextHelper::replaceTokens($body, $tokens), 70);
 		$subject = TextHelper::replaceTokens($subject, $tokens);
@@ -67,7 +68,7 @@ class UserController
 
 	private static function sendEmailChangeConfirmation($user)
 	{
-		$regConfig = \Chibi\Registry::getConfig()->registration;
+		$regConfig = getConfig()->registration;
 		if (!$regConfig->confirmationEmailEnabled)
 		{
 			$user->emailConfirmed = $user->emailUnconfirmed;
@@ -82,12 +83,12 @@ class UserController
 			$regConfig->confirmationEmailSenderName,
 			$regConfig->confirmationEmailSenderEmail,
 			$user->emailUnconfirmed,
-			'activation');
+			'activationAction');
 	}
 
 	private static function sendPasswordResetConfirmation($user)
 	{
-		$regConfig = \Chibi\Registry::getConfig()->registration;
+		$regConfig = getConfig()->registration;
 
 		return self::sendTokenizedEmail(
 			$user,
@@ -96,49 +97,34 @@ class UserController
 			$regConfig->passwordResetEmailSenderName,
 			$regConfig->passwordResetEmailSenderEmail,
 			$user->emailConfirmed,
-			'password-reset');
+			'passwordResetAction');
 	}
 
-
-
-	/**
-	* @route /users
-	* @route /users/{page}
-	* @route /users/{filter}
-	* @route /users/{filter}/{page}
-	* @validate filter [a-zA-Z\32:,_-]+
-	* @validate page [0-9]+
-	*/
 	public function listAction($filter, $page)
 	{
+		$context = getContext();
 		PrivilegesHelper::confirmWithException(
 			Privilege::ListUsers);
 
 		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
 		$page = max(1, intval($page));
-		$usersPerPage = intval($this->config->browsing->usersPerPage);
+		$usersPerPage = intval(getConfig()->browsing->usersPerPage);
 
 		$users = UserSearchService::getEntities($suppliedFilter, $usersPerPage, $page);
 		$userCount = UserSearchService::getEntityCount($suppliedFilter);
 		$pageCount = ceil($userCount / $usersPerPage);
 		$page = min($pageCount, $page);
 
-		$this->context->filter = $suppliedFilter;
-		$this->context->transport->users = $users;
-		$this->context->transport->paginator = new StdClass;
-		$this->context->transport->paginator->page = $page;
-		$this->context->transport->paginator->pageCount = $pageCount;
-		$this->context->transport->paginator->entityCount = $userCount;
-		$this->context->transport->paginator->entities = $users;
-		$this->context->transport->paginator->params = func_get_args();
+		$context->filter = $suppliedFilter;
+		$context->transport->users = $users;
+		$context->transport->paginator = new StdClass;
+		$context->transport->paginator->page = $page;
+		$context->transport->paginator->pageCount = $pageCount;
+		$context->transport->paginator->entityCount = $userCount;
+		$context->transport->paginator->entities = $users;
+		$context->transport->paginator->params = func_get_args();
 	}
 
-
-
-	/**
-	* @route /user/{name}/flag
-	* @validate name [^\/]+
-	*/
 	public function flagAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
@@ -163,12 +149,6 @@ class UserController
 		}
 	}
 
-
-
-	/**
-	* @route /user/{name}/ban
-	* @validate name [^\/]+
-	*/
 	public function banAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
@@ -186,12 +166,6 @@ class UserController
 		}
 	}
 
-
-
-	/**
-	* @route /post/{name}/unban
-	* @validate name [^\/]+
-	*/
 	public function unbanAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
@@ -209,12 +183,6 @@ class UserController
 		}
 	}
 
-
-
-	/**
-	* @route /post/{name}/accept-registration
-	* @validate name [^\/]+
-	*/
 	public function acceptRegistrationAction($name)
 	{
 		$user = UserModel::findByNameOrEmail($name);
@@ -230,14 +198,9 @@ class UserController
 		}
 	}
 
-
-
-	/**
-	* @route /user/{name}/delete
-	* @validate name [^\/]+
-	*/
 	public function deleteAction($name)
 	{
+		$context = getContext();
 		$user = UserModel::findByNameOrEmail($name);
 		PrivilegesHelper::confirmWithException(
 			Privilege::ViewUser,
@@ -247,14 +210,14 @@ class UserController
 			PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		$this->loadUserView($user);
-		$this->context->transport->tab = 'delete';
+		$context->transport->tab = 'delete';
 
-		$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
+		$context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
 
 		if (InputHelper::get('submit'))
 		{
 			$name = $user->name;
-			if ($this->context->user->id == $user->id)
+			if ($context->user->id == $user->id)
 			{
 				$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
 				if ($suppliedPasswordHash != $user->passHash)
@@ -263,23 +226,18 @@ class UserController
 
 			$oldId = $user->id;
 			UserModel::remove($user);
-			if ($oldId == $this->context->user->id)
+			if ($oldId == $context->user->id)
 				AuthController::doLogOut();
 
-			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
+			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
 			LogHelper::log('{user} removed {subject}\'s account', ['subject' => TextHelper::reprUser($name)]);
 			StatusHelper::success();
 		}
 	}
 
-
-
-	/**
-	* @route /user/{name}/settings
-	* @validate name [^\/]+
-	*/
 	public function settingsAction($name)
 	{
+		$context = getContext();
 		$user = UserModel::findByNameOrEmail($name);
 		PrivilegesHelper::confirmWithException(
 			Privilege::ViewUser,
@@ -289,7 +247,7 @@ class UserController
 			PrivilegesHelper::getIdentitySubPrivilege($user));
 
 		$this->loadUserView($user);
-		$this->context->transport->tab = 'settings';
+		$context->transport->tab = 'settings';
 
 		if (InputHelper::get('submit'))
 		{
@@ -305,21 +263,16 @@ class UserController
 
 			if ($user->accessRank != AccessRank::Anonymous)
 				UserModel::save($user);
-			if ($user->id == $this->context->user->id)
-				$this->context->user = $user;
+			if ($user->id == $context->user->id)
+				$context->user = $user;
 			AuthController::doReLog();
 			StatusHelper::success('Browsing settings updated!');
 		}
 	}
 
-
-
-	/**
-	* @route /user/{name}/edit
-	* @validate name [^\/]+
-	*/
 	public function editAction($name)
 	{
+		$context = getContext();
 		try
 		{
 			$user = UserModel::findByNameOrEmail($name);
@@ -328,14 +281,14 @@ class UserController
 				PrivilegesHelper::getIdentitySubPrivilege($user));
 
 			$this->loadUserView($user);
-			$this->context->transport->tab = 'edit';
+			$context->transport->tab = 'edit';
 
-			$this->context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
-			$this->context->suppliedName = $suppliedName = InputHelper::get('name');
-			$this->context->suppliedPassword1 = $suppliedPassword1 = InputHelper::get('password1');
-			$this->context->suppliedPassword2 = $suppliedPassword2 = InputHelper::get('password2');
-			$this->context->suppliedEmail = $suppliedEmail = InputHelper::get('email');
-			$this->context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
+			$context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
+			$context->suppliedName = $suppliedName = InputHelper::get('name');
+			$context->suppliedPassword1 = $suppliedPassword1 = InputHelper::get('password1');
+			$context->suppliedPassword2 = $suppliedPassword2 = InputHelper::get('password2');
+			$context->suppliedEmail = $suppliedEmail = InputHelper::get('email');
+			$context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
 			$currentPasswordHash = $user->passHash;
 
 			if (InputHelper::get('submit'))
@@ -377,7 +330,7 @@ class UserController
 						PrivilegesHelper::getIdentitySubPrivilege($user));
 
 					$suppliedEmail = UserModel::validateEmail($suppliedEmail);
-					if ($this->context->user->id == $user->id)
+					if ($context->user->id == $user->id)
 					{
 						$user->emailUnconfirmed = $suppliedEmail;
 						if (!empty($user->emailUnconfirmed))
@@ -407,14 +360,14 @@ class UserController
 						'rank' => AccessRank::toString($suppliedAccessRank)]);
 				}
 
-				if ($this->context->user->id == $user->id)
+				if ($context->user->id == $user->id)
 				{
 					$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
 					if ($suppliedPasswordHash != $currentPasswordHash)
 						throw new SimpleException('Must supply valid current password');
 				}
 				UserModel::save($user);
-				if ($this->context->user->id == $user->id)
+				if ($context->user->id == $user->id)
 					AuthController::doReLog();
 
 				if ($confirmMail)
@@ -429,23 +382,15 @@ class UserController
 		}
 		catch (Exception $e)
 		{
-			$this->context->transport->user = UserModel::findByNameOrEmail($name);
+			$context->transport->user = UserModel::findByNameOrEmail($name);
 			throw $e;
 		}
 	}
 
-
-
-	/**
-	* @route /user/{name}/{tab}
-	* @route /user/{name}/{tab}/{page}
-	* @validate name [^\/]+
-	* @validate tab favs|uploads
-	* @validate page \d*
-	*/
 	public function viewAction($name, $tab = 'favs', $page)
 	{
-		$postsPerPage = intval($this->config->browsing->postsPerPage);
+		$context = getContext();
+		$postsPerPage = intval(getConfig()->browsing->postsPerPage);
 		$user = UserModel::findByNameOrEmail($name);
 		if ($tab === null)
 			$tab = 'favs';
@@ -472,53 +417,45 @@ class UserController
 		$pageCount = ceil($postCount / $postsPerPage);
 		PostModel::preloadTags($posts);
 
-		$this->context->transport->tab = $tab;
-		$this->context->transport->lastSearchQuery = $query;
-		$this->context->transport->paginator = new StdClass;
-		$this->context->transport->paginator->page = $page;
-		$this->context->transport->paginator->pageCount = $pageCount;
-		$this->context->transport->paginator->entityCount = $postCount;
-		$this->context->transport->paginator->entities = $posts;
-		$this->context->transport->posts = $posts;
+		$context->transport->tab = $tab;
+		$context->transport->lastSearchQuery = $query;
+		$context->transport->paginator = new StdClass;
+		$context->transport->paginator->page = $page;
+		$context->transport->paginator->pageCount = $pageCount;
+		$context->transport->paginator->entityCount = $postCount;
+		$context->transport->paginator->entities = $posts;
+		$context->transport->posts = $posts;
 	}
 
-
-
-	/**
-	* @route /user/toggle-safety/{safety}
-	*/
 	public function toggleSafetyAction($safety)
 	{
+		$context = getContext();
 		PrivilegesHelper::confirmWithException(
 			Privilege::ChangeUserSettings,
-			PrivilegesHelper::getIdentitySubPrivilege($this->context->user));
+			PrivilegesHelper::getIdentitySubPrivilege($context->user));
 
 		if (!in_array($safety, PostSafety::getAll()))
 			throw new SimpleExcetpion('Invalid safety');
 
-		$this->context->user->enableSafety($safety,
-			!$this->context->user->hasEnabledSafety($safety));
+		$context->user->enableSafety($safety,
+			!$context->user->hasEnabledSafety($safety));
 
-		if ($this->context->user->accessRank != AccessRank::Anonymous)
-			UserModel::save($this->context->user);
+		if ($context->user->accessRank != AccessRank::Anonymous)
+			UserModel::save($context->user);
 		AuthController::doReLog();
 
 		StatusHelper::success();
 	}
 
-
-
-	/**
-	* @route /register
-	*/
 	public function registrationAction()
 	{
-		$this->context->handleExceptions = true;
+		$context = getContext();
+		$context->handleExceptions = true;
 
 		//check if already logged in
-		if ($this->context->loggedIn)
+		if ($context->loggedIn)
 		{
-			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('index', 'index'));
+			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
 			return;
 		}
 
@@ -526,10 +463,10 @@ class UserController
 		$suppliedPassword1 = InputHelper::get('password1');
 		$suppliedPassword2 = InputHelper::get('password2');
 		$suppliedEmail = InputHelper::get('email');
-		$this->context->suppliedName = $suppliedName;
-		$this->context->suppliedPassword1 = $suppliedPassword1;
-		$this->context->suppliedPassword2 = $suppliedPassword2;
-		$this->context->suppliedEmail = $suppliedEmail;
+		$context->suppliedName = $suppliedName;
+		$context->suppliedPassword1 = $suppliedPassword1;
+		$context->suppliedPassword2 = $suppliedPassword2;
+		$context->suppliedEmail = $suppliedEmail;
 
 		if (InputHelper::get('submit'))
 		{
@@ -540,7 +477,7 @@ class UserController
 			$suppliedPassword = UserModel::validatePassword($suppliedPassword1);
 
 			$suppliedEmail = UserModel::validateEmail($suppliedEmail);
-			if (empty($suppliedEmail) and $this->config->registration->needEmailForRegistering)
+			if (empty($suppliedEmail) and getConfig()->registration->needEmailForRegistering)
 				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
 
 			//register the user
@@ -572,35 +509,31 @@ class UserController
 				self::sendEmailChangeConfirmation($dbUser);
 
 			$message = 'Congratulations, your account was created.';
-			if (!empty($this->context->mailSent))
+			if (!empty($context->mailSent))
 			{
 				$message .= ' Please wait for activation e-mail.';
-				if ($this->config->registration->staffActivation)
+				if (getConfig()->registration->staffActivation)
 					$message .= ' After this, your registration must be confirmed by staff.';
 			}
-			elseif ($this->config->registration->staffActivation)
+			elseif (getConfig()->registration->staffActivation)
 				$message .= ' Your registration must be now confirmed by staff.';
 
 			LogHelper::log('{subject} just signed up', ['subject' => TextHelper::reprUser($dbUser)]);
 			StatusHelper::success($message);
 
-			if (!$this->config->registration->needEmailForRegistering and !$this->config->registration->staffActivation)
+			if (!getConfig()->registration->needEmailForRegistering and !getConfig()->registration->staffActivation)
 			{
-				$this->context->user = $dbUser;
+				$context->user = $dbUser;
 				AuthController::doReLog();
 			}
 		}
 	}
 
-
-
-	/**
-	* @route /activation/{token}
-	*/
 	public function activationAction($token)
 	{
-		$this->context->viewName = 'message';
-		CustomAssetViewDecorator::setSubTitle('account activation');
+		$context = getContext();
+		$context->viewName = 'message';
+		Assets::setSubTitle('account activation');
 
 		$dbToken = TokenModel::findByToken($token);
 		TokenModel::checkValidity($dbToken);
@@ -614,26 +547,22 @@ class UserController
 
 		LogHelper::log('{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
 		$message = 'Activation completed successfully.';
-		if ($this->config->registration->staffActivation)
+		if (getConfig()->registration->staffActivation)
 			$message .= ' However, your account still must be confirmed by staff.';
 		StatusHelper::success($message);
 
-		if (!$this->config->registration->staffActivation)
+		if (!getConfig()->registration->staffActivation)
 		{
-			$this->context->user = $dbUser;
+			$context->user = $dbUser;
 			AuthController::doReLog();
 		}
 	}
 
-
-
-	/**
-	* @route /password-reset/{token}
-	*/
 	public function passwordResetAction($token)
 	{
-		$this->context->viewName = 'message';
-		CustomAssetViewDecorator::setSubTitle('password reset');
+		$context = getContext();
+		$context->viewName = 'message';
+		Assets::setSubTitle('password reset');
 
 		$dbToken = TokenModel::findByToken($token);
 		TokenModel::checkValidity($dbToken);
@@ -654,20 +583,15 @@ class UserController
 		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
 		StatusHelper::success($message);
 
-		$this->context->user = $dbUser;
+		$context->user = $dbUser;
 		AuthController::doReLog();
 	}
 
-
-
-
-	/**
-	* @route /password-reset-proxy
-	*/
 	public function passwordResetProxyAction()
 	{
-		$this->context->viewName = 'user-select';
-		CustomAssetViewDecorator::setSubTitle('password reset');
+		$context = getContext();
+		$context->viewName = 'user-select';
+		Assets::setSubTitle('password reset');
 
 		if (InputHelper::get('submit'))
 		{
@@ -681,13 +605,11 @@ class UserController
 		}
 	}
 
-	/**
-	* @route /activation-proxy
-	*/
 	public function activationProxyAction()
 	{
-		$this->context->viewName = 'user-select';
-		CustomAssetViewDecorator::setSubTitle('account activation');
+		$context = getContext();
+		$context->viewName = 'user-select';
+		Assets::setSubTitle('account activation');
 
 		if (InputHelper::get('submit'))
 		{

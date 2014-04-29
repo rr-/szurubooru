@@ -9,7 +9,7 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processSetup(&$tokens)
 	{
-		$config = \Chibi\Registry::getConfig();
+		$config = getConfig();
 
 		$this->tags = [];
 		$crit = new Sql\ConjunctionFunctor();
@@ -24,7 +24,7 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processTeardown()
 	{
-		if (\Chibi\Registry::getContext()->user->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
+		if (getContext()->user->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
 			$this->processComplexToken('special', 'disliked', true);
 
 		if (!PrivilegesHelper::confirm(Privilege::ListPosts, 'hidden') or !$this->showHidden)
@@ -146,7 +146,7 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif ($key == 'special')
 		{
-			$context = \Chibi\Registry::getContext();
+			$context = getContext();
 			$value = strtolower($value);
 			if (in_array($value, ['fav', 'favs', 'favd']))
 			{

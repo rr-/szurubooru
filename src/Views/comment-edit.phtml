@@ -1,10 +1,10 @@
 <?php
-CustomAssetViewDecorator::addStylesheet('comment-edit.css');
-CustomAssetViewDecorator::addScript('comment-edit.js');
+Assets::addStylesheet('comment-edit.css');
+Assets::addScript('comment-edit.js');
 ?>
 
 <form
-	action="<?= \Chibi\UrlHelper::route('comment', 'edit', ['id' => $this->context->transport->comment->id]) ?>"
+	action="<?= \Chibi\Router::linkTo(['CommentController', 'editAction'], ['id' => $this->context->transport->comment->id]) ?>"
 	method="post"
 	class="edit-comment">
 

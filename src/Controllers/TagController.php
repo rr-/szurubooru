@@ -1,53 +1,44 @@
 <?php
 class TagController
 {
-	/**
-	* @route /tags
-	* @route /tags/{page}
-	* @route /tags/{filter}
-	* @route /tags/{filter}/{page}
-	* @validate filter [a-zA-Z\32:,_-]+
-	* @validate page \d*
-	*/
 	public function listAction($filter = null, $page = 1)
 	{
-		$this->context->viewName = 'tag-list-wrapper';
+		$context = getContext();
+		$context->viewName = 'tag-list-wrapper';
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 
 		$suppliedFilter = $filter ?: 'order:alpha,asc';
 		$page = max(1, intval($page));
-		$tagsPerPage = intval($this->config->browsing->tagsPerPage);
+		$tagsPerPage = intval(getConfig()->browsing->tagsPerPage);
 
 		$tags = TagSearchService::getEntitiesRows($suppliedFilter, $tagsPerPage, $page);
 		$tagCount = TagSearchService::getEntityCount($suppliedFilter);
 		$pageCount = ceil($tagCount / $tagsPerPage);
 		$page = min($pageCount, $page);
 
-		$this->context->filter = $suppliedFilter;
-		$this->context->transport->tags = $tags;
+		$context->filter = $suppliedFilter;
+		$context->transport->tags = $tags;
 
-		if ($this->context->json)
+		if ($context->json)
 		{
-			$this->context->transport->tags = array_values(array_map(function($tag) {
+			$context->transport->tags = array_values(array_map(function($tag) {
 				return ['name' => $tag['name'], 'count' => $tag['post_count']];
-			}, $this->context->transport->tags));
+			}, $context->transport->tags));
 		}
 		else
 		{
-			$this->context->highestUsage = TagSearchService::getMostUsedTag()['post_count'];
-			$this->context->transport->paginator = new StdClass;
-			$this->context->transport->paginator->page = $page;
-			$this->context->transport->paginator->pageCount = $pageCount;
-			$this->context->transport->paginator->entityCount = $tagCount;
-			$this->context->transport->paginator->entities = $tags;
+			$context->highestUsage = TagSearchService::getMostUsedTag()['post_count'];
+			$context->transport->paginator = new StdClass;
+			$context->transport->paginator->page = $page;
+			$context->transport->paginator->pageCount = $pageCount;
+			$context->transport->paginator->entityCount = $tagCount;
+			$context->transport->paginator->entities = $tags;
 		}
 	}
 
-	/**
-	* @route /tags-autocomplete
-	*/
 	public function autoCompleteAction()
 	{
+		$context = getContext();
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 
 		$suppliedSearch = InputHelper::get('search');
@@ -55,7 +46,7 @@ class TagController
 		$filter = $suppliedSearch . ' order:popularity,desc';
 		$tags = TagSearchService::getEntitiesRows($filter, 15, 1);
 
-		$this->context->transport->tags =
+		$context->transport->tags =
 			array_values(array_map(
 				function($tag)
 				{
@@ -66,20 +57,18 @@ class TagController
 				}, $tags));
 	}
 
-	/**
-	* @route /tags-related
-	*/
 	public function relatedAction()
 	{
+		$context = getContext();
 		PrivilegesHelper::confirmWithException(Privilege::ListTags);
 
 		$suppliedContext = (array) InputHelper::get('context');
 		$suppliedTag = InputHelper::get('tag');
 
-		$limit = intval($this->config->browsing->tagsRelated);
+		$limit = intval(getConfig()->browsing->tagsRelated);
 		$tags = TagSearchService::getRelatedTagRows($suppliedTag, $suppliedContext, $limit);
 
-		$this->context->transport->tags =
+		$context->transport->tags =
 			array_values(array_map(
 				function($tag)
 				{
@@ -90,13 +79,11 @@ class TagController
 				}, $tags));
 	}
 
-	/**
-	* @route /tag/merge
-	*/
 	public function mergeAction()
 	{
-		$this->context->viewName = 'tag-list-wrapper';
-		$this->context->handleExceptions = true;
+		$context = getContext();
+		$context->viewName = 'tag-list-wrapper';
+		$context->handleExceptions = true;
 
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
@@ -119,13 +106,11 @@ class TagController
 		}
 	}
 
-	/**
-	* @route /tag/rename
-	*/
 	public function renameAction()
 	{
-		$this->context->viewName = 'tag-list-wrapper';
-		$this->context->handleExceptions = true;
+		$context = getContext();
+		$context->viewName = 'tag-list-wrapper';
+		$context->handleExceptions = true;
 
 		PrivilegesHelper::confirmWithException(Privilege::MergeTags);
 		if (InputHelper::get('submit'))
@@ -148,12 +133,10 @@ class TagController
 		}
 	}
 
-	/**
-	* @route /mass-tag-redirect
-	*/
 	public function massTagRedirectAction()
 	{
-		$this->context->viewName = 'tag-list-wrapper';
+		$context = getContext();
+		$context->viewName = 'tag-list-wrapper';
 
 		PrivilegesHelper::confirmWithException(Privilege::MassTag);
 		if (InputHelper::get('submit'))
@@ -170,7 +153,7 @@ class TagController
 			];
 			if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
 				$params['page'] = $suppliedOldPage;
-			\Chibi\UrlHelper::forward(\Chibi\UrlHelper::route('post', 'list', $params));
+			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['PostController', 'listAction'], $params));
 		}
 	}
 }

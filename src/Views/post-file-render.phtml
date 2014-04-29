@@ -1,4 +1,4 @@
-<?php CustomAssetViewDecorator::setPageThumb(\Chibi\UrlHelper::route('post', 'thumb', ['name' => $this->context->transport->post->name])) ?>
+<?php Assets::setPageThumb(\Chibi\Router::linkTo(['PostController', 'thumbAction'], ['name' => $this->context->transport->post->name])) ?>
 <?php $post = $this->context->transport->post ?>
 
 <?php if ($post->type == PostType::Image): ?>
@@ -7,7 +7,7 @@
 		<a href="<?= $this->context->imageLink ?>">
 	<?php endif ?>
 
-	<img src="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>" alt="<?= $post->name ?>"/>
+	<img src="<?= \Chibi\Router::linkTo(['PostController', 'retrieveAction'], ['name' => $post->name]) ?>" alt="<?= $post->name ?>"/>
 
 	<?php if (!empty($this->context->imageLink)): ?>
 		</a>
@@ -19,9 +19,9 @@
 		type="<?= $post->mimeType ?>"
 		width="<?= $post->imageWidth ?>"
 		height="<?= $post->imageHeight ?>"
-		data="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+		data="<?= \Chibi\Router::linkTo(['PostController', 'retrieveAction'], ['name' => $post->name]) ?>">
 
-		<param name="movie" value="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>"/>
+		<param name="movie" value="<?= \Chibi\Router::linkTo(['PostController', 'retrieveAction'], ['name' => $post->name]) ?>"/>
 		<param name="wmode" value="opaque"/>
 
 	</object>
@@ -40,7 +40,7 @@
 	<video style="max-width: 100%" controls>
 		<source
 			type="<?= $post->mimeType ?>"
-			src="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $post->name]) ?>">
+			src="<?= \Chibi\Router::linkTo(['PostController', 'retrieveAction'], ['name' => $post->name]) ?>">
 
 		Your browser doesn't support HTML5 &lt;video&gt; tag.
 	</video>

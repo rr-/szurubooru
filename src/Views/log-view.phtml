@@ -1,19 +1,19 @@
 <?php
-CustomAssetViewDecorator::setSubTitle('logs (' . $name . ')');
+Assets::setSubTitle('logs (' . $this->context->transport->name . ')');
 ?>
 
 <?php if (empty($this->context->transport->lines)): ?>
 	<p class="alert alert-warning">
-		This log is empty. <a href="<?= \Chibi\UrlHelper::route('log', 'list') ?>">Go back</a>
+		This log is empty. <a href="<?= \Chibi\Router::linkTo(['LogController', 'listAction']) ?>">Go back</a>
 	</p>
 <?php else: ?>
 	<?php
-	CustomAssetViewDecorator::addStylesheet('logs.css');
-	CustomAssetViewDecorator::addScript('logs.js');
+	Assets::addStylesheet('logs.css');
+	Assets::addScript('logs.js');
 	?>
 
 	<form method="get"
-		action="<?= \Chibi\UrlHelper::route('log', 'view', ['name' => $this->context->transport->name]) ?>">
+		action="<?= \Chibi\Router::linkTo(['LogController', 'viewAction'], ['name' => $this->context->transport->name]) ?>">
 
 		Keep only lines that contain:
 
@@ -27,5 +27,5 @@ CustomAssetViewDecorator::setSubTitle('logs (' . $name . ')');
 		<code><?= $this->context->transport->lines ?></code>
 	</div>
 
-	<?php $this->renderFile('paginator') ?>
+	<?php \Chibi\View::render('paginator', $this->context) ?>
 <?php endif ?>

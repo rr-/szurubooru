@@ -1,9 +1,9 @@
 <?php
-CustomAssetViewDecorator::setSubTitle('users');
-CustomAssetViewDecorator::addStylesheet('user-list.css');
-CustomAssetViewDecorator::addStylesheet('paginator.css');
+Assets::setSubTitle('users');
+Assets::addStylesheet('user-list.css');
+Assets::addStylesheet('paginator.css');
 if ($this->context->user->hasEnabledEndlessScrolling())
-	CustomAssetViewDecorator::addScript('paginator-endless.js');
+	Assets::addScript('paginator-endless.js');
 ?>
 
 <nav class="sort-styles">
@@ -17,7 +17,7 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 			'order:date,desc' => 'Sort new&rarr;old',
 		];
 
-		if ($this->config->registration->staffActivation)
+		if (getConfig()->registration->staffActivation)
 			$filters['pending'] = 'Pending staff review';
 		?>
 
@@ -27,7 +27,7 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?= \Chibi\UrlHelper::route('user', 'list', ['filter' => $key]) ?>"><?= $text ?></a>
+				<a href="<?= \Chibi\Router::linkTo(['UserController', 'listAction'], ['filter' => $key]) ?>"><?= $text ?></a>
 			</li>
 		<?php endforeach ?>
 	</ul>
@@ -40,12 +40,12 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 		<div class="users paginator-content">
 			<?php foreach ($this->context->transport->users as $user): ?>
 				<div class="user">
-					<a class="avatar" href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+					<a class="avatar" href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $user->name]) ?>">
 						<img src="<?= htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?= $user->name ?>"/>
 					</a>
 					<div class="details">
 						<h1>
-							<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>">
+							<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $user->name]) ?>">
 								<?= $user->name ?>
 							</a>
 						</h1>
@@ -68,5 +68,5 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 		<div class="clear"></div>
 	</div>
 
-	<?php $this->renderFile('paginator') ?>
+	<?php \Chibi\View::render('paginator', $this->context) ?>
 <?php endif ?>

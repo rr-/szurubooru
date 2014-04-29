@@ -1,43 +1,39 @@
 <?php
 class IndexController
 {
-	/**
-	* @route /
-	* @route /index
-	*/
 	public function indexAction()
 	{
-		$this->context->transport->postCount = PostModel::getCount();
+		$context = getContext();
+		$context->transport->postCount = PostModel::getCount();
 
 		$featuredPost = $this->getFeaturedPost();
 		if ($featuredPost)
 		{
-			$this->context->featuredPost = $featuredPost;
-			$this->context->featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
-			$this->context->featuredPostUser = UserModel::findByNameOrEmail(
+			$context->featuredPost = $featuredPost;
+			$context->featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
+			$context->featuredPostUser = UserModel::findByNameOrEmail(
 				PropertyModel::get(PropertyModel::FeaturedPostUserName),
 				false);
 		}
 	}
 
-	/**
-	* @route /help
-	* @route /help/{tab}
-	*/
 	public function helpAction($tab = null)
 	{
-		if (empty($this->config->help->paths) or empty($this->config->help->title))
+		$config = getConfig();
+		$context = getContext();
+		if (empty($config->help->paths) or empty($config->help->title))
 			throw new SimpleException('Help is disabled');
-		$tab = $tab ?: array_keys($this->config->help->subTitles)[0];
-		if (!isset($this->config->help->paths[$tab]))
+		$tab = $tab ?: array_keys($config->help->subTitles)[0];
+		if (!isset($config->help->paths[$tab]))
 			throw new SimpleException('Invalid tab');
-		$this->context->path = TextHelper::absolutePath($this->config->help->paths[$tab]);
-		$this->context->tab = $tab;
+		$context->path = TextHelper::absolutePath($config->help->paths[$tab]);
+		$context->tab = $tab;
 	}
 
 	private function getFeaturedPost()
 	{
-		$featuredPostRotationTime = $this->config->misc->featuredPostMaxDays * 24 * 3600;
+		$config = getConfig();
+		$featuredPostRotationTime = $config->misc->featuredPostMaxDays * 24 * 3600;
 
 		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);
 		$featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);

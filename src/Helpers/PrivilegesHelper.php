@@ -6,7 +6,7 @@ class PrivilegesHelper
 	public static function init()
 	{
 		self::$privileges = [];
-		foreach (\Chibi\Registry::getConfig()->privileges as $key => $minAccessRankName)
+		foreach (getConfig()->privileges as $key => $minAccessRankName)
 		{
 			if (strpos($key, '.') === false)
 				$key .= '.';
@@ -37,7 +37,7 @@ class PrivilegesHelper
 		if (php_sapi_name() == 'cli')
 			return true;
 
-		$user = \Chibi\Registry::getContext()->user;
+		$user = getContext()->user;
 		$minAccessRank = AccessRank::Admin;
 
 		$key = TextCaseConverter::convert(Privilege::toString($privilege),
@@ -70,7 +70,7 @@ class PrivilegesHelper
 	{
 		if (!$user)
 			return 'all';
-		$userFromContext = \Chibi\Registry::getContext()->user;
+		$userFromContext = getContext()->user;
 		return $user->id == $userFromContext->id ? 'own' : 'all';
 	}
 
@@ -85,7 +85,7 @@ class PrivilegesHelper
 		if (php_sapi_name() == 'cli')
 			return PostSafety::getAll();
 
-		$context = \Chibi\Registry::getContext();
+		$context = getContext();
 		return array_filter(PostSafety::getAll(), function($safety) use ($context)
 		{
 			return PrivilegesHelper::confirm(Privilege::ListPosts, PostSafety::toString($safety)) and

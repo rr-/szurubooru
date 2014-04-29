@@ -29,22 +29,21 @@ if (!function_exists('pageUrl'))
 {
 	function pageUrl($page)
 	{
-		$context = \Chibi\Registry::getContext();
-		$controller = $context->route->simpleControllerName;
-		$action = $context->route->simpleActionName;
+		$context = getContext();
+		$destination = $context->route->destination;
 		$page = max(1, min($context->transport->paginator->pageCount, $page));
 		$params = $context->route->arguments;
 		$params['page'] = $page;
-		return \Chibi\UrlHelper::route($controller, $action, $params);
+		return \Chibi\Router::linkTo($destination, $params);
 	}
 }
 ?>
 
 <?php if (!empty($pagesVisible)): ?>
 	<?php
-	CustomAssetViewDecorator::addStylesheet('paginator.css');
+	Assets::addStylesheet('paginator.css');
 	if ($this->context->user->hasEnabledEndlessScrolling())
-		CustomAssetViewDecorator::addScript('paginator-endless.js');
+		Assets::addScript('paginator-endless.js');
 	?>
 
 	<nav class="paginator-wrapper">

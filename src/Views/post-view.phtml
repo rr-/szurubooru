@@ -2,11 +2,11 @@
 $subTitle = sprintf('showing %s&nbsp;&ndash;%s',
 	TextHelper::reprPost($this->context->transport->post),
 	TextHelper::reprTags($this->context->transport->post->getTags()));
-CustomAssetViewDecorator::setSubTitle($subTitle);
-CustomAssetViewDecorator::addStylesheet('post-view.css');
-CustomAssetViewDecorator::addScript('post-view.js');
-CustomAssetViewDecorator::addStylesheet('../lib/tagit/jquery.tagit.css');
-CustomAssetViewDecorator::addScript('../lib/tagit/jquery.tagit.js');
+Assets::setSubTitle($subTitle);
+Assets::addStylesheet('post-view.css');
+Assets::addScript('post-view.js');
+Assets::addStylesheet('../lib/tagit/jquery.tagit.css');
+Assets::addScript('../lib/tagit/jquery.tagit.js');
 
 $editPostPrivileges = [
 	Privilege::EditPostSafety,
@@ -30,7 +30,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	<nav id="around">
 		<div class="left">
 			<?php if ($this->context->transport->nextPostId): ?>
-				<a href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->nextPostId]) ?>">
+				<a href="<?= \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => $this->context->transport->nextPostId]) ?>">
 			<?php else: ?>
 				<a class="disabled">
 			<?php endif ?>
@@ -41,7 +41,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		<div class="right">
 			<?php if ($this->context->transport->prevPostId): ?>
-				<a href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $this->context->transport->prevPostId]) ?>">
+				<a href="<?= \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => $this->context->transport->prevPostId]) ?>">
 			<?php else: ?>
 				<a class="disabled">
 			<?php endif ?>
@@ -55,7 +55,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php if (!empty($this->context->transport->lastSearchQuery)): ?>
 			<div class="text">
 				Current&nbsp;search:<br/>
-				<a href="<?= \Chibi\UrlHelper::route('post', 'list', [
+				<a href="<?= \Chibi\Router::linkTo(['PostController', 'listAction'], [
 					'query' => $this->context->transport->lastSearchQuery]) ?>">
 					<?= $this->context->transport->lastSearchQuery ?>
 				</a>
@@ -70,7 +70,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 			<?php foreach ($tags as $tag): ?>
 				<li title="<?= $tag->name ?>">
-					<a href="<?= \Chibi\UrlHelper::route('post', 'list', ['query' => $tag->name]) ?>"><?= $tag->name ?></a>
+					<a href="<?= \Chibi\Router::linkTo(['PostController', 'listAction'], ['query' => $tag->name]) ?>"><?= $tag->name ?></a>
 					<span class="count"><?= TextHelper::useDecimalUnits($tag->getPostCount()) ?></span>
 				</li>
 			<?php endforeach ?>
@@ -84,14 +84,14 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php $uploader = $this->context->transport->post->getUploader() ?>
 			<?php if ($uploader): ?>
 				<span class="value" title="<?= $val = $uploader->name ?>">
-					<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $uploader->name]) ?>">
+					<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $uploader->name]) ?>">
 						<img src="<?= htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?= $uploader->name ?>"/>
 						<?= $val ?>
 					</a>
 				</span>
 			<?php else: ?>
 				<span class="value" title="<?= UserModel::getAnonymousName() ?>">
-					<img src="<?= \Chibi\UrlHelper::absoluteUrl('/media/img/pixel.gif') ?>" alt="<?= UserModel::getAnonymousName() ?>"/>
+					<img src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="<?= UserModel::getAnonymousName() ?>"/>
 					<?= UserModel::getAnonymousName() ?>
 				</span>
 			<?php endif ?>
@@ -135,7 +135,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<span class="value">
 				<?= $this->context->transport->post->score ?>
 
-				<?php $scoreLink = function($score) { return \Chibi\UrlHelper::route('post', 'score', ['id' => $this->context->transport->post->id, 'score' => $score]); } ?>
+				<?php $scoreLink = function($score) { return \Chibi\Router::linkTo(['PostController', 'scoreAction'], ['id' => $this->context->transport->post->id, 'score' => $score]); } ?>
 				<?php if (PrivilegesHelper::confirm(Privilege::ScorePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 					<?php if ($this->context->score === 1): ?>
 						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
@@ -162,7 +162,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	<div class="unit hl-options">
 		<?php if ($this->context->transport->post->type != PostType::Youtube): ?>
 			<div class="hl-option">
-				<a href="<?= \Chibi\UrlHelper::route('post', 'retrieve', ['name' => $this->context->transport->post->name]) ?>" title="Download">
+				<a href="<?= \Chibi\Router::linkTo(['PostController', 'retrieveAction'], ['name' => $this->context->transport->post->name]) ?>" title="Download">
 					<i class="icon-dl"></i>
 					<span>
 						<?php
@@ -179,12 +179,12 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php if (PrivilegesHelper::confirm(Privilege::FavoritePost, PrivilegesHelper::getIdentitySubPrivilege($this->context->transport->post->getUploader()))): ?>
 			<div class="hl-option">
 				<?php if (!$this->context->favorite): ?>
-					<a class="add-fav icon simple-action" href="<?= \Chibi\UrlHelper::route('post', 'add-favorite', ['id' => $this->context->transport->post->id]) ?>">
+					<a class="add-fav icon simple-action" href="<?= \Chibi\Router::linkTo(['PostController', 'addFavoriteAction'], ['id' => $this->context->transport->post->id]) ?>">
 						<i class="icon-fav"></i>
 						<span>Add to favorites</span>
 					</a>
 				<?php else: ?>
-					<a class="rem-fav icon simple-action" href="<?= \Chibi\UrlHelper::route('post', 'rem-favorite', ['id' => $this->context->transport->post->id]) ?>">
+					<a class="rem-fav icon simple-action" href="<?= \Chibi\Router::linkTo(['PostController', 'removeFavoriteAction'], ['id' => $this->context->transport->post->id]) ?>">
 						<i class="icon-fav"></i>
 						<span>Remove from favorites</span>
 					</a>
@@ -208,7 +208,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<ul>
 				<?php foreach ($this->context->transport->post->getFavorites() as $user): ?>
 					<li>
-						<a href="<?= \Chibi\UrlHelper::route('user', 'view', ['name' => $user->name]) ?>" title="<?= $user->name ?>">
+						<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $user->name]) ?>" title="<?= $user->name ?>">
 							<img src="<?= htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?= $user->name ?>">
 						</a>
 					</li>
@@ -223,7 +223,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<ul>
 				<?php foreach ($this->context->transport->post->getRelations() as $relatedPost): ?>
 					<li>
-						<a href="<?= \Chibi\UrlHelper::route('post', 'view', ['id' => $relatedPost->id]) ?>">
+						<a href="<?= \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => $relatedPost->id]) ?>">
 							@<?= $relatedPost->id ?>
 						</a>
 					</li>
@@ -241,9 +241,9 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			[
 				'class' => 'feature',
 				'text' => 'Feature on main page',
-				'simple-action' => \Chibi\UrlHelper::route('post', 'feature', ['id' => $this->context->transport->post->id]),
+				'simple-action' => \Chibi\Router::linkTo(['PostController', 'featureAction'], ['id' => $this->context->transport->post->id]),
 				'data-confirm-text' => 'Are you sure you want to feature this post on the main page?',
-				'data-redirect-url' => \Chibi\UrlHelper::route('index', 'index'),
+				'data-redirect-url' => \Chibi\Router::linkTo(['IndexController', 'indexAction']),
 			];
 		}
 
@@ -264,7 +264,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				[
 					'class' => 'flag',
 					'text' => 'Flag for moderator attention',
-					'simple-action' => \Chibi\UrlHelper::route('post', 'flag', ['id' => $this->context->transport->post->id]),
+					'simple-action' => \Chibi\Router::linkTo(['PostController', 'flagAction'], ['id' => $this->context->transport->post->id]),
 					'data-confirm-text' => 'Are you sure you want to flag this post?',
 				];
 			}
@@ -278,7 +278,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				[
 					'class' => 'unhide',
 					'text' => 'Unhide',
-					'simple-action' => \Chibi\UrlHelper::route('post', 'unhide', ['id' => $this->context->transport->post->id]),
+					'simple-action' => \Chibi\Router::linkTo(['PostController', 'unhideAction'], ['id' => $this->context->transport->post->id]),
 				];
 			}
 			else
@@ -287,7 +287,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				[
 					'class' => 'hide',
 					'text' => 'Hide',
-					'simple-action' => \Chibi\UrlHelper::route('post', 'hide', ['id' => $this->context->transport->post->id]),
+					'simple-action' => \Chibi\Router::linkTo(['PostController', 'hideAction'], ['id' => $this->context->transport->post->id]),
 				];
 			}
 		}
@@ -298,31 +298,31 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			[
 				'class' => 'delete',
 				'text' => 'Delete',
-				'simple-action' => \Chibi\UrlHelper::route('post', 'delete', ['id' => $this->context->transport->post->id]),
+				'simple-action' => \Chibi\Router::linkTo(['PostController', 'deleteAction'], ['id' => $this->context->transport->post->id]),
 				'data-confirm-text' => 'Are you sure you want to delete this post?',
-				'data-redirect-url' => \Chibi\UrlHelper::route('post', 'list'),
+				'data-redirect-url' => \Chibi\Router::linkTo(['PostController', 'listAction']),
 			];
 		}
 
 		$this->context->options = $options;
-		$this->renderFile('sidebar-options');
+		\Chibi\View::render('sidebar-options', $this->context);
 	?>
 </div>
 
 <div id="inner-content">
 	<?php if ($canEditAnything): ?>
 		<div class="unit edit-post">
-			<?php $this->renderFile('post-edit') ?>
+			<?php \Chibi\View::render('post-edit', $this->context) ?>
 		</div>
 	<?php endif ?>
 
 	<div class="post-wrapper post-type-<?= PostType::toString($this->context->transport->post->type) ?>">
-		<?= $this->renderFile('post-file-render') ?>
+		<?= \Chibi\View::render('post-file-render', $this->context) ?>
 	</div>
 
 	<?php
-	CustomAssetViewDecorator::addStylesheet('comment-list.css');
-	CustomAssetViewDecorator::addStylesheet('comment-small.css');
+	Assets::addStylesheet('comment-list.css');
+	Assets::addStylesheet('comment-small.css');
 	?>
 	<div class="comments-wrapper">
 		<?php if (!empty($this->context->transport->post->getComments())): ?>
@@ -331,7 +331,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				<div class="comments">
 					<?php foreach ($this->context->transport->post->getComments() as $comment): ?>
 						<?php $this->context->comment = $comment ?>
-						<?= $this->renderFile('comment-small') ?>
+						<?= \Chibi\View::render('comment-small', $this->context) ?>
 					<?php endforeach ?>
 				</div>
 			</div>
@@ -340,7 +340,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 	<?php if (PrivilegesHelper::confirm(Privilege::AddComment)): ?>
 		<div class="unit comment-add">
-			<?php $this->renderFile('comment-add') ?>
+			<?php \Chibi\View::render('comment-add', $this->context) ?>
 		</div>
 	<?php endif ?>
 </div>
