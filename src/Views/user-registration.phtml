@@ -9,7 +9,11 @@ Assets::setSubTitle('registration form');
 	Assets::addStylesheet('auth.css');
 	?>
 
-	<form action="<?= \Chibi\Router::linkTo(['UserController', 'registrationAction']) ?>" class="auth register" method="post">
+	<form
+		action="<?= \Chibi\Router::linkTo(['UserController', 'registrationAction']) ?>"
+		class="auth register"
+		method="post">
+
 		<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>
 
 		<div class="form-row">

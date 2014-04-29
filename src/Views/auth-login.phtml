@@ -3,7 +3,12 @@ Assets::setSubTitle('authentication form');
 Assets::addStylesheet('auth.css');
 ?>
 
-<form action="<?= \Chibi\Router::linkTo(['AuthController', 'loginAction']) ?>" class="auth" method="post">
+<form
+	method="post"
+	action="<?= \Chibi\Router::linkTo(
+		['AuthController', 'loginAction']) ?>"
+	class="auth">
+
 	<p>
 		If you don't have an account yet,<br/>
 		<a href="<?= \Chibi\Router::linkTo(['UserController', 'registrationAction']); ?>">click here</a> to create a new one.

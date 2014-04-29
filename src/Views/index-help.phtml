@@ -16,7 +16,9 @@ $showTabs = count($tabs) > 1;
 				<?php else: ?>
 					<li class="<?= $tab ?>">
 				<?php endif ?>
-					<a href="<?= \Chibi\Router::linkTo(['IndexController', 'helpAction'], $tab == $firstTab ? [] : ['tab' => $tab]) ?>">
+					<a href="<?= \Chibi\Router::linkTo(
+						['IndexController', 'helpAction'],
+						$tab == $firstTab ? [] : ['tab' => $tab]) ?>">
 						<?= $text ?>
 					</a>
 				</li>

@@ -41,7 +41,9 @@ Assets::addStylesheet('index-index.css');
 			Featured
 			<?php if ($this->context->featuredPostUser): ?>
 				by
-				<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $this->context->featuredPostUser->name]) ?>">
+				<a href="<?= \Chibi\Router::linkTo(
+					['UserController', 'viewAction'],
+					['name' => $this->context->featuredPostUser->name]) ?>">
 					<?= $this->context->featuredPostUser->name ?>
 				</a>,
 			<?php endif ?>

@@ -22,7 +22,9 @@ Assets::addScript('comment-edit.js');
 		<div class="header">
 			<span class="nickname">
 				<?php if ($commenter): ?>
-					<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $commenter->name]) ?>">
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'viewAction'],
+						['name' => $commenter->name]) ?>">
 						<?= $commenter->name ?>
 					</a>
 				<?php else: ?>
@@ -38,7 +40,9 @@ Assets::addScript('comment-edit.js');
 				Privilege::EditComment,
 				Access::getIdentity($commenter))): ?>
 				<span class="edit">
-					<a href="<?= \Chibi\Router::linkTo(['CommentController', 'editAction'], ['id' => $this->context->comment->id]) ?>">
+					<a href="<?= \Chibi\Router::linkTo(
+						['CommentController', 'editAction'],
+						['id' => $this->context->comment->id]) ?>">
 						edit
 					</a>
 				</span>
@@ -48,9 +52,11 @@ Assets::addScript('comment-edit.js');
 				Access::check(Privilege::DeleteComment,
 				Access::getIdentity($commenter))): ?>
 				<span class="delete">
-					<a href="<?= \Chibi\Router::linkTo(['CommentController', 'deleteAction'], ['id' => $this->context->comment->id]) ?>"
-						class="simple-action confirmable"
-						data-confirm-text="Are you sure you want to delete this comment?">
+					<a class="simple-action confirmable"
+						data-confirm-text="Are you sure you want to delete this comment?"
+						href="<?= \Chibi\Router::linkTo(
+						['CommentController', 'deleteAction'],
+						['id' => $this->context->comment->id]) ?>">
 						delete
 					</a>
 				</span>

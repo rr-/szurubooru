@@ -5,7 +5,10 @@ Assets::addStylesheet('user-view.css');
 
 <div id="sidebar">
 	<div class="avatar-wrapper">
-		<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $this->context->transport->user->name]) ?>">
+		<a href="<?= \Chibi\Router::linkTo(
+			['UserController', 'viewAction'],
+			['name' => $this->context->transport->user->name]) ?>">
+
 			<img
 				src="<?= htmlspecialchars($this->context->transport->user->getAvatarUrl(140)) ?>"
 				alt="<?= $this->context->transport->user->name ?>"/>
@@ -93,8 +96,9 @@ Assets::addStylesheet('user-view.css');
 			[
 				'class' => 'edit',
 				'text' => 'Edit account settings',
-				'link' => \Chibi\Router::linkTo(['UserController', 'editAction'], [
-					'name' => $this->context->transport->user->name, 'tab' => 'edit']),
+				'link' => \Chibi\Router::linkTo(
+					['UserController', 'editAction'],
+					['name' => $this->context->transport->user->name, 'tab' => 'edit']),
 			];
 		}
 
@@ -106,8 +110,9 @@ Assets::addStylesheet('user-view.css');
 			[
 				'class' => 'accept-registration',
 				'text' => 'Accept registration',
-				'simple-action' => \Chibi\Router::linkTo(['UserController', 'acceptRegistrationAction'], [
-					'name' => $this->context->transport->user->name]),
+				'simple-action' => \Chibi\Router::linkTo(
+					['UserController', 'acceptRegistrationAction'],
+					['name' => $this->context->transport->user->name]),
 			];
 		}
 
@@ -130,8 +135,9 @@ Assets::addStylesheet('user-view.css');
 				[
 					'class' => 'flag',
 					'text' => 'Flag for moderator attention',
-					'simple-action' => \Chibi\Router::linkTo(['UserController', 'flagAction'], [
-						'name' => $this->context->transport->user->name]),
+					'simple-action' => \Chibi\Router::linkTo(
+						['UserController', 'flagAction'],
+						['name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to flag this user?',
 				];
 			}
@@ -147,8 +153,9 @@ Assets::addStylesheet('user-view.css');
 				[
 					'class' => 'ban',
 					'text' => 'Ban user',
-					'simple-action' => \Chibi\Router::linkTo(['UserController', 'banAction'], [
-						'name' => $this->context->transport->user->name]),
+					'simple-action' => \Chibi\Router::linkTo(
+						['UserController', 'banAction'],
+						['name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to ban this user?',
 				];
 			}
@@ -158,8 +165,9 @@ Assets::addStylesheet('user-view.css');
 				[
 					'class' => 'unban',
 					'text' => 'Unban user',
-					'simple-action' => \Chibi\Router::linkTo(['UserController', 'unbanAction'], [
-						'name' => $this->context->transport->user->name]),
+					'simple-action' => \Chibi\Router::linkTo(
+						['UserController', 'unbanAction'],
+						['name' => $this->context->transport->user->name]),
 					'data-confirm-text' => 'Are you sure you want to unban this user?',
 				];
 			}
@@ -173,8 +181,9 @@ Assets::addStylesheet('user-view.css');
 			[
 				'class' => 'delete',
 				'text' => 'Delete account',
-				'link' => \Chibi\Router::linkTo(['UserController', 'deleteAction'], [
-					'name' => $this->context->transport->user->name, 'tab' => 'delete']),
+				'link' => \Chibi\Router::linkTo(
+					['UserController', 'deleteAction'],
+					['name' => $this->context->transport->user->name, 'tab' => 'delete']),
 			];
 		}
 
@@ -191,8 +200,9 @@ Assets::addStylesheet('user-view.css');
 			<?php else: ?>
 				<li class="favs">
 			<?php endif ?>
-				<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], [
-					'name' => $this->context->transport->user->name,
+				<a href="<?= \Chibi\Router::linkTo(
+					['UserController', 'viewAction'],
+					['name' => $this->context->transport->user->name,
 					'tab' => 'favs',
 					'page' => 1]) ?>">
 					Favs
@@ -204,8 +214,9 @@ Assets::addStylesheet('user-view.css');
 			<?php else: ?>
 				<li class="uploads">
 			<?php endif ?>
-				<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], [
-					'name' => $this->context->transport->user->name,
+				<a href="<?= \Chibi\Router::linkTo(
+					['UserController', 'viewAction'],
+					['name' => $this->context->transport->user->name,
 					'tab' => 'uploads',
 					'page' => 1]) ?>">
 					Uploads
@@ -221,8 +232,9 @@ Assets::addStylesheet('user-view.css');
 				<?php else: ?>
 					<li class="settings">
 				<?php endif ?>
-					<a href="<?= \Chibi\Router::linkTo(['UserController', 'settingsAction'], [
-						'name' => $this->context->transport->user->name]) ?>">
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'settingsAction'],
+						['name' => $this->context->transport->user->name]) ?>">
 						Browsing settings
 					</a>
 				</li>
@@ -234,8 +246,9 @@ Assets::addStylesheet('user-view.css');
 				<?php else: ?>
 					<li class="edit">
 				<?php endif ?>
-					<a href="<?= \Chibi\Router::linkTo(['UserController', 'editAction'], [
-						'name' => $this->context->transport->user->name]) ?>">
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'editAction'],
+						['name' => $this->context->transport->user->name]) ?>">
 						Account settings
 					</a>
 				</li>
@@ -249,8 +262,9 @@ Assets::addStylesheet('user-view.css');
 				<?php else: ?>
 					<li class="delete">
 				<?php endif ?>
-					<a href="<?= \Chibi\Router::linkTo(['UserController', 'deleteAction'], [
-						'name' => $this->context->transport->user->name]) ?>">
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'deleteAction'],
+						['name' => $this->context->transport->user->name]) ?>">
 						Delete account
 					</a>
 				</li>

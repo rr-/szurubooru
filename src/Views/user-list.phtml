@@ -27,7 +27,9 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?= \Chibi\Router::linkTo(['UserController', 'listAction'], ['filter' => $key]) ?>"><?= $text ?></a>
+				<a href="<?= \Chibi\Router::linkTo(['UserController', 'listAction'], ['filter' => $key]) ?>">
+					<?= $text ?>
+				</a>
 			</li>
 		<?php endforeach ?>
 	</ul>
@@ -40,12 +42,16 @@ if ($this->context->user->hasEnabledEndlessScrolling())
 		<div class="users paginator-content">
 			<?php foreach ($this->context->transport->users as $user): ?>
 				<div class="user">
-					<a class="avatar" href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $user->name]) ?>">
+					<a class="avatar" href="<?= \Chibi\Router::linkTo(
+						['UserController', 'viewAction'],
+						['name' => $user->name]) ?>">
 						<img src="<?= htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?= $user->name ?>"/>
 					</a>
 					<div class="details">
 						<h1>
-							<a href="<?= \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $user->name]) ?>">
+							<a href="<?= \Chibi\Router::linkTo(
+								['UserController', 'viewAction'],
+								['name' => $user->name]) ?>">
 								<?= $user->name ?>
 							</a>
 						</h1>

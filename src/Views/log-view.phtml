@@ -13,7 +13,9 @@ Assets::setSubTitle('logs (' . $this->context->transport->name . ')');
 	?>
 
 	<form method="get"
-		action="<?= \Chibi\Router::linkTo(['LogController', 'viewAction'], ['name' => $this->context->transport->name]) ?>">
+		action="<?= \Chibi\Router::linkTo(
+			['LogController', 'viewAction'],
+			['name' => $this->context->transport->name]) ?>">
 
 		Keep only lines that contain:
 

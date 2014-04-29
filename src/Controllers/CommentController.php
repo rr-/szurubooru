@@ -84,7 +84,8 @@ class CommentController
 			if (InputHelper::get('sender') != 'preview')
 			{
 				CommentModel::save($comment);
-				LogHelper::log('{user} edited comment in {post}', ['post' => TextHelper::reprPost($comment->getPost())]);
+				LogHelper::log('{user} edited comment in {post}', [
+					'post' => TextHelper::reprPost($comment->getPost())]);
 			}
 			$context->transport->textPreview = $comment->getText();
 			StatusHelper::success();
@@ -101,7 +102,8 @@ class CommentController
 
 		CommentModel::remove($comment);
 
-		LogHelper::log('{user} removed comment from {post}', ['post' => TextHelper::reprPost($comment->getPost())]);
+		LogHelper::log('{user} removed comment from {post}', [
+			'post' => TextHelper::reprPost($comment->getPost())]);
 		StatusHelper::success();
 	}
 }

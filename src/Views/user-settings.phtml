@@ -1,4 +1,10 @@
-<form action="<?= \Chibi\Router::linkTo(['UserController', 'settingsAction'], ['name' => $this->context->transport->user->name]) ?>" method="post" class="settings">
+<form
+	action="<?= \Chibi\Router::linkTo(
+		['UserController', 'settingsAction'],
+		['name' => $this->context->transport->user->name]) ?>"
+	method="post"
+	class="settings">
+
 	<div class="form-row safety">
 		<label>Safety:</label>
 		<div class="input-wrapper">

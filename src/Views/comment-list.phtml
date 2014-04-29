@@ -31,7 +31,9 @@ Assets::setSubTitle('comments');
 						<?php endforeach ?>
 
 						<?php if (count($comments) > count($commentsToDisplay)): ?>
-							<a href="<?= \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => $this->context->post->id]) ?>">
+							<a href="<?= \Chibi\Router::linkTo(
+								['PostController', 'viewAction'],
+								['id' => $this->context->post->id]) ?>">
 								<span class="hellip">(more&hellip;)</span>
 							</a>
 						<?php endif ?>

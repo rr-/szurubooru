@@ -112,11 +112,20 @@
 						Privilege::ListPosts,
 						PostSafety::toString($safety))): ?>
 
-						<li class="safety-<?= TextCaseConverter::convert(PostSafety::toString($safety), TextCaseConverter::CAMEL_CASE, TextCaseConverter::SPINAL_CASE) ?>">
+						<li class="safety-<?= TextCaseConverter::convert(
+							PostSafety::toString($safety),
+							TextCaseConverter::CAMEL_CASE,
+							TextCaseConverter::SPINAL_CASE) ?>">
 
 							<a class="<?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
-								href="<?= \Chibi\Router::linkTo(['UserController', 'toggleSafetyAction'], ['safety' => $safety]) ?>"
-								title="Searching <?= PostSafety::toDisplayString($safety) ?> posts: <?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>">
+								href="<?= \Chibi\Router::linkTo(
+									['UserController', 'toggleSafetyAction'],
+									['safety' => $safety]) ?>"
+								title="<?= sprintf('Searching %s posts: %s',
+									PostSafety::toDisplayString($safety),
+									$this->context->user->hasEnabledSafety($safety)
+										? 'enabled'
+										: 'disabled') ?>">
 
 								<span><?= ucfirst(PostSafety::toDisplayString($safety)) ?></span>
 
@@ -137,7 +146,9 @@
 				type="search"
 				name="query"
 				placeholder="Search&hellip;"
-				value="<?= isset($this->context->transport->searchQuery) ? htmlspecialchars($this->context->transport->searchQuery) : '' ?>"/>
+				value="<?= isset($this->context->transport->searchQuery)
+					? htmlspecialchars($this->context->transport->searchQuery)
+					: '' ?>"/>
 
 		</form>
 	</li>

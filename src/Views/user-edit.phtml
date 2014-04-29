@@ -1,4 +1,11 @@
-<form action="<?= \Chibi\Router::linkTo(['UserController', 'editAction'], ['name' => $this->context->transport->user->name]) ?>" method="post" class="edit" autocomplete="off">
+<form
+	action="<?= \Chibi\Router::linkTo(
+		['UserController', 'editAction'],
+		['name' => $this->context->transport->user->name]) ?>"
+	method="post"
+	class="edit"
+	autocomplete="off">
+
 	<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
 		<div class="form-row current-password">
 			<label for="current-password">Current password:</label>

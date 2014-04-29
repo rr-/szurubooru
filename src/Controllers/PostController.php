@@ -502,7 +502,11 @@ class PostController
 			$newSafety = $post->safety;
 
 			if ($oldSafety != $newSafety)
-				LogHelper::log('{user} changed safety of {post} to {safety}', ['post' => TextHelper::reprPost($post), 'safety' => PostSafety::toString($post->safety)]);
+			{
+				LogHelper::log('{user} changed safety of {post} to {safety}', [
+					'post' => TextHelper::reprPost($post),
+					'safety' => PostSafety::toString($post->safety)]);
+			}
 		}
 
 		/* tags */
@@ -517,10 +521,18 @@ class PostController
 			$newTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
 
 			foreach (array_diff($oldTags, $newTags) as $tag)
-				LogHelper::log('{user} untagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+			{
+				LogHelper::log('{user} untagged {post} with {tag}', [
+					'post' => TextHelper::reprPost($post),
+					'tag' => TextHelper::reprTag($tag)]);
+			}
 
 			foreach (array_diff($newTags, $oldTags) as $tag)
-				LogHelper::log('{user} tagged {post} with {tag}', ['post' => TextHelper::reprPost($post), 'tag' => TextHelper::reprTag($tag)]);
+			{
+				LogHelper::log('{user} tagged {post} with {tag}', [
+					'post' => TextHelper::reprPost($post),
+					'tag' => TextHelper::reprTag($tag)]);
+			}
 		}
 
 		/* source */
@@ -535,7 +547,11 @@ class PostController
 			$newSource = $post->source;
 
 			if ($oldSource != $newSource)
-				LogHelper::log('{user} changed source of {post} to {source}', ['post' => TextHelper::reprPost($post), 'source' => $post->source]);
+			{
+				LogHelper::log('{user} changed source of {post} to {source}', [
+					'post' => TextHelper::reprPost($post),
+					'source' => $post->source]);
+			}
 		}
 
 		/* relations */
@@ -550,10 +566,18 @@ class PostController
 			$newRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
 
 			foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
-				LogHelper::log('{user} removed relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
+			{
+				LogHelper::log('{user} removed relation between {post} and {post2}', [
+					'post' => TextHelper::reprPost($post),
+					'post2' => TextHelper::reprPost($post2id)]);
+			}
 
 			foreach (array_diff($newRelatedIds, $oldRelatedIds) as $post2id)
-				LogHelper::log('{user} added relation between {post} and {post2}', ['post' => TextHelper::reprPost($post), 'post2' => TextHelper::reprPost($post2id)]);
+			{
+				LogHelper::log('{user} added relation between {post} and {post2}', [
+					'post' => TextHelper::reprPost($post),
+					'post2' => TextHelper::reprPost($post2id)]);
+			}
 		}
 
 		/* thumbnail */

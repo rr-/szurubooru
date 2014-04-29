@@ -108,7 +108,11 @@ class PostEntity extends AbstractEntity
 				continue;
 
 			if (count($relatedPosts) > $config->browsing->maxRelatedPosts)
-				throw new SimpleException('Too many related posts (maximum: %d)', $config->browsing->maxRelatedPosts);
+			{
+				throw new SimpleException(
+					'Too many related posts (maximum: %d)',
+					$config->browsing->maxRelatedPosts);
+			}
 
 			$relatedPosts []= PostModel::findById($relatedId);
 		}
@@ -372,7 +376,11 @@ class PostEntity extends AbstractEntity
 
 		$duplicatedPost = PostModel::findByHash($this->fileHash, false);
 		if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
-			throw new SimpleException('Duplicate upload: %s', TextHelper::reprPost($duplicatedPost));
+		{
+			throw new SimpleException(
+				'Duplicate upload: %s',
+				TextHelper::reprPost($duplicatedPost));
+		}
 
 		$dstPath = $this->getFullPath();
 
@@ -407,7 +415,11 @@ class PostEntity extends AbstractEntity
 
 			$duplicatedPost = PostModel::findByHash($youtubeId, false);
 			if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
-				throw new SimpleException('Duplicate upload: %s' . TextHelper::reprPost($duplicatedPost));
+			{
+				throw new SimpleException(
+					'Duplicate upload: %s',
+					TextHelper::reprPost($duplicatedPost));
+			}
 			return;
 		}
 
@@ -436,7 +448,11 @@ class PostEntity extends AbstractEntity
 					throw new SimpleException('Cannot write into file');
 				fflush($srcFP);
 				if (ftell($srcFP) > $maxBytes)
-					throw new SimpleException('File is too big (maximum size: %s)', TextHelper::useBytesUnits($maxBytes));
+				{
+					throw new SimpleException(
+						'File is too big (maximum size: %s)',
+						TextHelper::useBytesUnits($maxBytes));
+				}
 			}
 		}
 		finally
