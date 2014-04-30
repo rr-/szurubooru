@@ -40,28 +40,28 @@ class CommentController
 		$post = PostModel::findById($postId);
 		$context->transport->post = $post;
 
-		if (InputHelper::get('submit'))
+		if (!InputHelper::get('submit'))
+			return;
+
+		$text = InputHelper::get('text');
+		$text = CommentModel::validateText($text);
+
+		$comment = CommentModel::spawn();
+		$comment->setPost($post);
+		if ($context->loggedIn)
+			$comment->setCommenter($context->user);
+		else
+			$comment->setCommenter(null);
+		$comment->commentDate = time();
+		$comment->text = $text;
+
+		if (InputHelper::get('sender') != 'preview')
 		{
-			$text = InputHelper::get('text');
-			$text = CommentModel::validateText($text);
-
-			$comment = CommentModel::spawn();
-			$comment->setPost($post);
-			if ($context->loggedIn)
-				$comment->setCommenter($context->user);
-			else
-				$comment->setCommenter(null);
-			$comment->commentDate = time();
-			$comment->text = $text;
-
-			if (InputHelper::get('sender') != 'preview')
-			{
-				CommentModel::save($comment);
-				LogHelper::log('{user} commented on {post}', ['post' => TextHelper::reprPost($post->id)]);
-			}
-			$context->transport->textPreview = $comment->getText();
-			StatusHelper::success();
+			CommentModel::save($comment);
+			LogHelper::log('{user} commented on {post}', ['post' => TextHelper::reprPost($post->id)]);
 		}
+		$context->transport->textPreview = $comment->getText();
+		StatusHelper::success();
 	}
 
 	public function editAction($id)
@@ -74,22 +74,22 @@ class CommentController
 			Privilege::EditComment,
 			Access::getIdentity($comment->getCommenter()));
 
-		if (InputHelper::get('submit'))
+		if (!InputHelper::get('submit'))
+			return;
+
+		$text = InputHelper::get('text');
+		$text = CommentModel::validateText($text);
+
+		$comment->text = $text;
+
+		if (InputHelper::get('sender') != 'preview')
 		{
-			$text = InputHelper::get('text');
-			$text = CommentModel::validateText($text);
-
-			$comment->text = $text;
-
-			if (InputHelper::get('sender') != 'preview')
-			{
-				CommentModel::save($comment);
-				LogHelper::log('{user} edited comment in {post}', [
-					'post' => TextHelper::reprPost($comment->getPost())]);
-			}
-			$context->transport->textPreview = $comment->getText();
-			StatusHelper::success();
+			CommentModel::save($comment);
+			LogHelper::log('{user} edited comment in {post}', [
+				'post' => TextHelper::reprPost($comment->getPost())]);
 		}
+		$context->transport->textPreview = $comment->getText();
+		StatusHelper::success();
 	}
 
 	public function deleteAction($id)

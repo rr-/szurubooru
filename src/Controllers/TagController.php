@@ -86,24 +86,24 @@ class TagController
 		$context->handleExceptions = true;
 
 		Access::assert(Privilege::MergeTags);
-		if (InputHelper::get('submit'))
-		{
-			TagModel::removeUnused();
+		if (!InputHelper::get('submit'))
+			return;
 
-			$suppliedSourceTag = InputHelper::get('source-tag');
-			$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
+		TagModel::removeUnused();
 
-			$suppliedTargetTag = InputHelper::get('target-tag');
-			$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
+		$suppliedSourceTag = InputHelper::get('source-tag');
+		$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
 
-			TagModel::merge($suppliedSourceTag, $suppliedTargetTag);
+		$suppliedTargetTag = InputHelper::get('target-tag');
+		$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
 
-			LogHelper::log('{user} merged {source} with {target}', [
-				'source' => TextHelper::reprTag($suppliedSourceTag),
-				'target' => TextHelper::reprTag($suppliedTargetTag)]);
+		TagModel::merge($suppliedSourceTag, $suppliedTargetTag);
 
-			StatusHelper::success('Tags merged successfully.');
-		}
+		LogHelper::log('{user} merged {source} with {target}', [
+			'source' => TextHelper::reprTag($suppliedSourceTag),
+			'target' => TextHelper::reprTag($suppliedTargetTag)]);
+
+		StatusHelper::success('Tags merged successfully.');
 	}
 
 	public function renameAction()
@@ -113,24 +113,24 @@ class TagController
 		$context->handleExceptions = true;
 
 		Access::assert(Privilege::MergeTags);
-		if (InputHelper::get('submit'))
-		{
-			TagModel::removeUnused();
+		if (!InputHelper::get('submit'))
+			return;
 
-			$suppliedSourceTag = InputHelper::get('source-tag');
-			$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
+		TagModel::removeUnused();
 
-			$suppliedTargetTag = InputHelper::get('target-tag');
-			$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
+		$suppliedSourceTag = InputHelper::get('source-tag');
+		$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
 
-			TagModel::rename($suppliedSourceTag, $suppliedTargetTag);
+		$suppliedTargetTag = InputHelper::get('target-tag');
+		$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
 
-			LogHelper::log('{user} renamed {source} to {target}', [
-				'source' => TextHelper::reprTag($suppliedSourceTag),
-				'target' => TextHelper::reprTag($suppliedTargetTag)]);
+		TagModel::rename($suppliedSourceTag, $suppliedTargetTag);
 
-			StatusHelper::success('Tag renamed successfully.');
-		}
+		LogHelper::log('{user} renamed {source} to {target}', [
+			'source' => TextHelper::reprTag($suppliedSourceTag),
+			'target' => TextHelper::reprTag($suppliedTargetTag)]);
+
+		StatusHelper::success('Tag renamed successfully.');
 	}
 
 	public function massTagRedirectAction()
@@ -139,21 +139,21 @@ class TagController
 		$context->viewName = 'tag-list-wrapper';
 
 		Access::assert(Privilege::MassTag);
-		if (InputHelper::get('submit'))
-		{
-			$suppliedOldPage = intval(InputHelper::get('old-page'));
-			$suppliedOldQuery = InputHelper::get('old-query');
-			$suppliedQuery = InputHelper::get('query');
-			$suppliedTag = InputHelper::get('tag');
+		if (!InputHelper::get('submit'))
+			return;
 
-			$params = [
-				'source' => 'mass-tag',
-				'query' => $suppliedQuery ?: ' ',
-				'additionalInfo' => $suppliedTag ? TagModel::validateTag($suppliedTag) : '',
-			];
-			if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
-				$params['page'] = $suppliedOldPage;
-			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['PostController', 'listAction'], $params));
-		}
+		$suppliedOldPage = intval(InputHelper::get('old-page'));
+		$suppliedOldQuery = InputHelper::get('old-query');
+		$suppliedQuery = InputHelper::get('query');
+		$suppliedTag = InputHelper::get('tag');
+
+		$params = [
+			'source' => 'mass-tag',
+			'query' => $suppliedQuery ?: ' ',
+			'additionalInfo' => $suppliedTag ? TagModel::validateTag($suppliedTag) : '',
+		];
+		if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
+			$params['page'] = $suppliedOldPage;
+		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['PostController', 'listAction'], $params));
 	}
 }

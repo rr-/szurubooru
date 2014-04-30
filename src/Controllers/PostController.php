@@ -1,41 +1,6 @@
 <?php
 class PostController
 {
-	private static function handleUploadErrors($file)
-	{
-		switch ($file['error'])
-		{
-			case UPLOAD_ERR_OK:
-				break;
-
-			case UPLOAD_ERR_INI_SIZE:
-				throw new SimpleException('File is too big (maximum size: %s)', ini_get('upload_max_filesize'));
-
-			case UPLOAD_ERR_FORM_SIZE:
-				throw new SimpleException('File is too big than it was allowed in HTML form');
-
-			case UPLOAD_ERR_PARTIAL:
-				throw new SimpleException('File transfer was interrupted');
-
-			case UPLOAD_ERR_NO_FILE:
-				throw new SimpleException('No file was uploaded');
-
-			case UPLOAD_ERR_NO_TMP_DIR:
-				throw new SimpleException('Server misconfiguration error: missing temporary folder');
-
-			case UPLOAD_ERR_CANT_WRITE:
-				throw new SimpleException('Server misconfiguration error: cannot write to disk');
-
-			case UPLOAD_ERR_EXTENSION:
-				throw new SimpleException('Server misconfiguration error: upload was canceled by an extension');
-
-			default:
-				throw new SimpleException('Generic file upload error (id: ' . $file['error'] . ')');
-		}
-		if (!is_uploaded_file($file['tmp_name']))
-			throw new SimpleException('Generic file upload error');
-	}
-
 	public function listAction($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
 		$context = getContext();
@@ -98,45 +63,45 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		$context->transport->post = $post;
 
-		if (InputHelper::get('submit'))
+		if (!InputHelper::get('submit'))
+			return;
+
+		Access::assert(
+			Privilege::MassTag,
+			Access::getIdentity($post->getUploader()));
+
+		$tags = $post->getTags();
+
+		if (!$enable)
 		{
-			Access::assert(
-				Privilege::MassTag,
-				Access::getIdentity($post->getUploader()));
+			foreach ($tags as $i => $tag)
+				if ($tag->name == $tagName)
+					unset($tags[$i]);
 
-			$tags = $post->getTags();
-
-			if (!$enable)
-			{
-				foreach ($tags as $i => $tag)
-					if ($tag->name == $tagName)
-						unset($tags[$i]);
-
-				LogHelper::log('{user} untagged {post} with {tag}', [
-					'post' => TextHelper::reprPost($post),
-					'tag' => TextHelper::reprTag($tag)]);
-			}
-			elseif ($enable)
-			{
-				$tag = TagModel::findByName($tagName, false);
-				if ($tag === null)
-				{
-					$tag = TagModel::spawn();
-					$tag->name = $tagName;
-					TagModel::save($tag);
-				}
-
-				$tags []= $tag;
-				LogHelper::log('{user} tagged {post} with {tag}', [
-					'post' => TextHelper::reprPost($post),
-					'tag' => TextHelper::reprTag($tag)]);
-			}
-
-			$post->setTags($tags);
-
-			PostModel::save($post);
-			StatusHelper::success();
+			LogHelper::log('{user} untagged {post} with {tag}', [
+				'post' => TextHelper::reprPost($post),
+				'tag' => TextHelper::reprTag($tag)]);
 		}
+		elseif ($enable)
+		{
+			$tag = TagModel::findByName($tagName, false);
+			if ($tag === null)
+			{
+				$tag = TagModel::spawn();
+				$tag->name = $tagName;
+				TagModel::save($tag);
+			}
+
+			$tags []= $tag;
+			LogHelper::log('{user} tagged {post} with {tag}', [
+				'post' => TextHelper::reprPost($post),
+				'tag' => TextHelper::reprTag($tag)]);
+		}
+
+		$post->setTags($tags);
+
+		PostModel::save($post);
+		StatusHelper::success();
 	}
 
 	public function favoritesAction($page = 1)
@@ -161,49 +126,49 @@ class PostController
 		if (getConfig()->registration->needEmailForUploading)
 			Access::assertEmailConfirmation();
 
-		if (InputHelper::get('submit'))
+		if (!InputHelper::get('submit'))
+			return;
+
+		\Chibi\Database::transaction(function() use ($context)
 		{
-			\Chibi\Database::transaction(function() use ($context)
-			{
-				$post = PostModel::spawn();
-				LogHelper::bufferChanges();
+			$post = PostModel::spawn();
+			LogHelper::bufferChanges();
 
-				//basic stuff
-				$anonymous = InputHelper::get('anonymous');
-				if ($context->loggedIn and !$anonymous)
-					$post->setUploader($context->user);
+			//basic stuff
+			$anonymous = InputHelper::get('anonymous');
+			if ($context->loggedIn and !$anonymous)
+				$post->setUploader($context->user);
 
-				//store the post to get the ID in the logs
-				PostModel::forgeId($post);
+			//store the post to get the ID in the logs
+			PostModel::forgeId($post);
 
-				//do the edits
-				$this->doEdit($post, true);
+			//do the edits
+			$this->doEdit($post, true);
 
-				//this basically means that user didn't specify file nor url
-				if (empty($post->type))
-					throw new SimpleException('No post type detected; upload faled');
+			//this basically means that user didn't specify file nor url
+			if (empty($post->type))
+				throw new SimpleException('No post type detected; upload faled');
 
-				//clean edit log
-				LogHelper::setBuffer([]);
+			//clean edit log
+			LogHelper::setBuffer([]);
 
-				//log
-				$fmt = ($anonymous and !getConfig()->misc->logAnonymousUploads)
-					? '{anon}'
-					: '{user}';
-				$fmt .= ' added {post} (tags: {tags}, safety: {safety}, source: {source})';
-				LogHelper::log($fmt, [
-					'post' => TextHelper::reprPost($post),
-					'tags' => TextHelper::reprTags($post->getTags()),
-					'safety' => PostSafety::toString($post->safety),
-					'source' => $post->source]);
+			//log
+			$fmt = ($anonymous and !getConfig()->misc->logAnonymousUploads)
+				? '{anon}'
+				: '{user}';
+			$fmt .= ' added {post} (tags: {tags}, safety: {safety}, source: {source})';
+			LogHelper::log($fmt, [
+				'post' => TextHelper::reprPost($post),
+				'tags' => TextHelper::reprTags($post->getTags()),
+				'safety' => PostSafety::toString($post->safety),
+				'source' => $post->source]);
 
-				//finish
-				LogHelper::flush();
-				PostModel::save($post);
-			});
+			//finish
+			LogHelper::flush();
+			PostModel::save($post);
+		});
 
-			StatusHelper::success();
-		}
+		StatusHelper::success();
 	}
 
 	public function editAction($id)
@@ -212,21 +177,21 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		$context->transport->post = $post;
 
-		if (InputHelper::get('submit'))
-		{
-			$editToken = InputHelper::get('edit-token');
-			if ($editToken != $post->getEditToken())
-				throw new SimpleException('This post was already edited by someone else in the meantime');
+		if (!InputHelper::get('submit'))
+			return;
 
-			LogHelper::bufferChanges();
-			$this->doEdit($post, false);
-			LogHelper::flush();
+		$editToken = InputHelper::get('edit-token');
+		if ($editToken != $post->getEditToken())
+			throw new SimpleException('This post was already edited by someone else in the meantime');
 
-			PostModel::save($post);
-			TagModel::removeUnused();
+		LogHelper::bufferChanges();
+		$this->doEdit($post, false);
+		LogHelper::flush();
 
-			StatusHelper::success();
-		}
+		PostModel::save($post);
+		TagModel::removeUnused();
+
+		StatusHelper::success();
 	}
 
 	public function flagAction($id)
@@ -234,19 +199,19 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::FlagPost, Access::getIdentity($post->getUploader()));
 
-		if (InputHelper::get('submit'))
-		{
-			$key = TextHelper::reprPost($post);
+		if (!InputHelper::get('submit'))
+			return;
 
-			$flagged = SessionHelper::get('flagged', []);
-			if (in_array($key, $flagged))
-				throw new SimpleException('You already flagged this post');
-			$flagged []= $key;
-			SessionHelper::set('flagged', $flagged);
+		$key = TextHelper::reprPost($post);
 
-			LogHelper::log('{user} flagged {post} for moderator attention', ['post' => TextHelper::reprPost($post)]);
-			StatusHelper::success();
-		}
+		$flagged = SessionHelper::get('flagged', []);
+		if (in_array($key, $flagged))
+			throw new SimpleException('You already flagged this post');
+		$flagged []= $key;
+		SessionHelper::set('flagged', $flagged);
+
+		LogHelper::log('{user} flagged {post} for moderator attention', ['post' => TextHelper::reprPost($post)]);
+		StatusHelper::success();
 	}
 
 	public function hideAction($id)
@@ -254,14 +219,14 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::HidePost, Access::getIdentity($post->getUploader()));
 
-		if (InputHelper::get('submit'))
-		{
-			$post->setHidden(true);
-			PostModel::save($post);
+		if (!InputHelper::get('submit'))
+			return;
 
-			LogHelper::log('{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
-			StatusHelper::success();
-		}
+		$post->setHidden(true);
+		PostModel::save($post);
+
+		LogHelper::log('{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
+		StatusHelper::success();
 	}
 
 	public function unhideAction($id)
@@ -269,14 +234,14 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::HidePost, Access::getIdentity($post->getUploader()));
 
-		if (InputHelper::get('submit'))
-		{
-			$post->setHidden(false);
-			PostModel::save($post);
+		if (!InputHelper::get('submit'))
+			return;
 
-			LogHelper::log('{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
-			StatusHelper::success();
-		}
+		$post->setHidden(false);
+		PostModel::save($post);
+
+		LogHelper::log('{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
+		StatusHelper::success();
 	}
 
 	public function deleteAction($id)
@@ -284,13 +249,13 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::DeletePost, Access::getIdentity($post->getUploader()));
 
-		if (InputHelper::get('submit'))
-		{
-			PostModel::remove($post);
+		if (!InputHelper::get('submit'))
+			return;
 
-			LogHelper::log('{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
-			StatusHelper::success();
-		}
+		PostModel::remove($post);
+
+		LogHelper::log('{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
+		StatusHelper::success();
 	}
 
 	public function addFavoriteAction($id)
@@ -299,15 +264,15 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
 
-		if (InputHelper::get('submit'))
-		{
-			if (!$context->loggedIn)
-				throw new SimpleException('Not logged in');
+		if (!InputHelper::get('submit'))
+			return;
 
-			UserModel::updateUserScore($context->user, $post, 1);
-			UserModel::addToUserFavorites($context->user, $post);
-			StatusHelper::success();
-		}
+		if (!$context->loggedIn)
+			throw new SimpleException('Not logged in');
+
+		UserModel::updateUserScore($context->user, $post, 1);
+		UserModel::addToUserFavorites($context->user, $post);
+		StatusHelper::success();
 	}
 
 	public function removeFavoriteAction($id)
@@ -316,14 +281,14 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
 
-		if (InputHelper::get('submit'))
-		{
-			if (!$context->loggedIn)
-				throw new SimpleException('Not logged in');
+		if (!InputHelper::get('submit'))
+			return;
 
-			UserModel::removeFromUserFavorites($context->user, $post);
-			StatusHelper::success();
-		}
+		if (!$context->loggedIn)
+			throw new SimpleException('Not logged in');
+
+		UserModel::removeFromUserFavorites($context->user, $post);
+		StatusHelper::success();
 	}
 
 	public function scoreAction($id, $score)
@@ -332,14 +297,14 @@ class PostController
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::ScorePost, Access::getIdentity($post->getUploader()));
 
-		if (InputHelper::get('submit'))
-		{
-			if (!$context->loggedIn)
-				throw new SimpleException('Not logged in');
+		if (!InputHelper::get('submit'))
+			return;
 
-			UserModel::updateUserScore($context->user, $post, $score);
-			StatusHelper::success();
-		}
+		if (!$context->loggedIn)
+			throw new SimpleException('Not logged in');
+
+		UserModel::updateUserScore($context->user, $post, $score);
+		StatusHelper::success();
 	}
 
 	public function featureAction($id)
@@ -457,39 +422,8 @@ class PostController
 		$context->transport->filePath = $path;
 	}
 
-
-
 	private function doEdit($post, $isNew)
 	{
-		/* file contents */
-		if (!empty($_FILES['file']['name']))
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
-
-			$suppliedFile = $_FILES['file'];
-			self::handleUploadErrors($suppliedFile);
-
-			$srcPath = $suppliedFile['tmp_name'];
-			$post->setContentFromPath($srcPath);
-			$post->origName = $suppliedFile['name'];
-
-			if (!$isNew)
-				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
-		}
-		elseif (InputHelper::get('url'))
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
-
-			$url = InputHelper::get('url');
-			$post->setContentFromUrl($url);
-			$post->origName = $url;
-
-			if (!$isNew)
-				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
-		}
-
 		/* safety */
 		$suppliedSafety = InputHelper::get('safety');
 		if ($suppliedSafety !== null)
@@ -580,6 +514,32 @@ class PostController
 			}
 		}
 
+		/* file contents */
+		if (!empty($_FILES['file']['name']))
+		{
+			if (!$isNew)
+				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
+
+			$suppliedFile = $_FILES['file'];
+			TransferHelper::handleUploadErrors($suppliedFile);
+
+			$post->setContentFromPath($suppliedFile['tmp_name'], $suppliedFile['name']);
+
+			if (!$isNew)
+				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
+		}
+		elseif (InputHelper::get('url'))
+		{
+			if (!$isNew)
+				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
+
+			$url = InputHelper::get('url');
+			$post->setContentFromUrl($url);
+
+			if (!$isNew)
+				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
+		}
+
 		/* thumbnail */
 		if (!empty($_FILES['thumb']['name']))
 		{
@@ -587,10 +547,9 @@ class PostController
 				Access::assert(Privilege::EditPostThumb, Access::getIdentity($post->getUploader()));
 
 			$suppliedFile = $_FILES['thumb'];
-			self::handleUploadErrors($suppliedFile);
+			TransferHelper::handleUploadErrors($suppliedFile);
 
-			$srcPath = $suppliedFile['tmp_name'];
-			$post->setCustomThumbnailFromPath($srcPath);
+			$post->setCustomThumbnailFromPath($srcPath = $suppliedFile['tmp_name']);
 
 			LogHelper::log('{user} changed thumb of {post}', ['post' => TextHelper::reprPost($post)]);
 		}

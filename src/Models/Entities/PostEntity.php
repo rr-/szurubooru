@@ -213,17 +213,18 @@ class PostEntity extends AbstractEntity
 			throw new SimpleException('Invalid thumbnail type "%s"', $mimeType);
 
 		list ($imageWidth, $imageHeight) = getimagesize($srcPath);
-		if ($imageWidth != $config->browsing->thumbWidth)
-			throw new SimpleException('Invalid thumbnail width (should be %d)', $config->browsing->thumbWidth);
-		if ($imageHeight != $config->browsing->thumbHeight)
-			throw new SimpleException('Invalid thumbnail height (should be %d)', $config->browsing->thumbHeight);
+		if ($imageWidth != $config->browsing->thumbWidth
+			or $imageHeight != $config->browsing->thumbHeight)
+		{
+			throw new SimpleException(
+				'Invalid thumbnail size (should be %dx%d)',
+				$config->browsing->thumbWidth,
+				$config->browsing->thumbHeight);
+		}
 
 		$dstPath = $this->getThumbCustomPath();
 
-		if (is_uploaded_file($srcPath))
-			move_uploaded_file($srcPath, $dstPath);
-		else
-			rename($srcPath, $dstPath);
+		TransferHelper::moveUpload($srcPath, $dstPath);
 	}
 
 	public function makeThumb($width = null, $height = null)
@@ -334,10 +335,11 @@ class PostEntity extends AbstractEntity
 		return true;
 	}
 
-	public function setContentFromPath($srcPath)
+	public function setContentFromPath($srcPath, $origName)
 	{
 		$this->fileSize = filesize($srcPath);
 		$this->fileHash = md5_file($srcPath);
+		$this->origName = $origName;
 
 		if ($this->fileSize == 0)
 			throw new SimpleException('Specified file is empty');
@@ -384,10 +386,7 @@ class PostEntity extends AbstractEntity
 
 		$dstPath = $this->getFullPath();
 
-		if (is_uploaded_file($srcPath))
-			move_uploaded_file($srcPath, $dstPath);
-		else
-			rename($srcPath, $dstPath);
+		TransferHelper::moveUpload($srcPath, $dstPath);
 
 		$thumbPath = $this->getThumbDefaultPath();
 		if (file_exists($thumbPath))
@@ -398,6 +397,8 @@ class PostEntity extends AbstractEntity
 	{
 		if (!preg_match('/^https?:\/\//', $srcUrl))
 			throw new SimpleException('Invalid URL "%s"', $srcUrl);
+
+		$this->origName = $srcUrl;
 
 		if (preg_match('/youtube.com\/watch.*?=([a-zA-Z0-9_-]+)/', $srcUrl, $matches))
 		{
@@ -425,45 +426,13 @@ class PostEntity extends AbstractEntity
 
 		$srcPath = tempnam(sys_get_temp_dir(), 'upload') . '.dat';
 
-		//warning: low level sh*t ahead
-		//download the URL $srcUrl into $srcPath
-		$maxBytes = TextHelper::stripBytesUnits(ini_get('upload_max_filesize'));
-		set_time_limit(0);
-		$urlFP = fopen($srcUrl, 'rb');
-		if (!$urlFP)
-			throw new SimpleException('Cannot open URL for reading');
-		$srcFP = fopen($srcPath, 'w+b');
-		if (!$srcFP)
-		{
-			fclose($urlFP);
-			throw new SimpleException('Cannot open file for writing');
-		}
-
 		try
 		{
-			while (!feof($urlFP))
-			{
-				$buffer = fread($urlFP, 4 * 1024);
-				if (fwrite($srcFP, $buffer) === false)
-					throw new SimpleException('Cannot write into file');
-				fflush($srcFP);
-				if (ftell($srcFP) > $maxBytes)
-				{
-					throw new SimpleException(
-						'File is too big (maximum size: %s)',
-						TextHelper::useBytesUnits($maxBytes));
-				}
-			}
-		}
-		finally
-		{
-			fclose($urlFP);
-			fclose($srcFP);
-		}
+			$maxBytes = TextHelper::stripBytesUnits(ini_get('upload_max_filesize'));
 
-		try
-		{
-			$this->setContentFromPath($srcPath);
+			TransferHelper::download($srcUrl, $srcPath, $maxBytes);
+
+			$this->setContentFromPath($srcPath, basename($srcUrl));
 		}
 		finally
 		{

@@ -61,20 +61,20 @@ class AuthController
 			return;
 		}
 
-		if (InputHelper::get('submit'))
-		{
-			$suppliedName = InputHelper::get('name');
-			$suppliedPassword = InputHelper::get('password');
-			$dbUser = self::tryLogin($suppliedName, $suppliedPassword);
+		if (!InputHelper::get('submit'))
+			return;
 
-			if (InputHelper::get('remember'))
-			{
-				$token = implode('|', [base64_encode($suppliedName), base64_encode($suppliedPassword)]);
-				setcookie('auth', TextHelper::encrypt($token), time() + 365 * 24 * 3600, '/');
-			}
-			StatusHelper::success();
-			self::redirectAfterLog();
+		$suppliedName = InputHelper::get('name');
+		$suppliedPassword = InputHelper::get('password');
+		$dbUser = self::tryLogin($suppliedName, $suppliedPassword);
+
+		if (InputHelper::get('remember'))
+		{
+			$token = implode('|', [base64_encode($suppliedName), base64_encode($suppliedPassword)]);
+			setcookie('auth', TextHelper::encrypt($token), time() + 365 * 24 * 3600, '/');
 		}
+		StatusHelper::success();
+		self::redirectAfterLog();
 	}
 
 	public function logoutAction()
