@@ -370,7 +370,7 @@ class PostController
 				$post = PostModel::findByIdOrName($name);
 				Access::assert(Privilege::ListPosts);
 				Access::assert(Privilege::ListPosts, PostSafety::toString($post->safety));
-				$post->makeThumb($width, $height);
+				$post->generateThumb($width, $height);
 				if (!file_exists($path))
 				{
 					$path = getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';

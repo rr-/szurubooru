@@ -227,112 +227,24 @@ class PostEntity extends AbstractEntity
 		TransferHelper::moveUpload($srcPath, $dstPath);
 	}
 
-	public function makeThumb($width = null, $height = null)
+	public function generateThumb($width = null, $height = null)
 	{
 		list ($width, $height) = PostModel::validateThumbSize($width, $height);
-		$dstPath = $this->getThumbDefaultPath($width, $height);
 		$srcPath = $this->getFullPath();
+		$dstPath = $this->getThumbDefaultPath($width, $height);
 
 		if ($this->type == PostType::Youtube)
 		{
-			$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.jpg';
-			$contents = file_get_contents('http://img.youtube.com/vi/' . $this->fileHash . '/mqdefault.jpg');
-			file_put_contents($tmpPath, $contents);
-			if (file_exists($tmpPath))
-				$srcImage = imagecreatefromjpeg($tmpPath);
+			return ThumbnailHelper::generateFromUrl(
+				'http://img.youtube.com/vi/' . $this->fileHash . '/mqdefault.jpg',
+				$dstPath,
+				$width,
+				$height);
 		}
-		else switch ($this->mimeType)
+		else
 		{
-			case 'image/jpeg':
-				$srcImage = imagecreatefromjpeg($srcPath);
-				break;
-			case 'image/png':
-				$srcImage = imagecreatefrompng($srcPath);
-				break;
-			case 'image/gif':
-				$srcImage = imagecreatefromgif($srcPath);
-				break;
-
-			case 'application/x-shockwave-flash':
-				$srcImage = null;
-				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-
-				$cmd = sprintf(
-					'dump-gnash --screenshot last --screenshot-file "%s" -1 -r1 --max-advances 15 "%s"',
-					$tmpPath,
-					$srcPath);
-				exec($cmd);
-
-				if (file_exists($tmpPath))
-					$srcImage = imagecreatefrompng($tmpPath);
-
-				if (!$srcImage)
-				{
-					$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-					exec('swfrender ' . $srcPath . ' -o ' . $tmpPath);
-					if (file_exists($tmpPath))
-						$srcImage = imagecreatefrompng($tmpPath);
-				}
-				break;
-
-			case 'video/mp4':
-			case 'video/webm':
-			case 'video/ogg':
-			case 'application/ogg':
-			case 'video/x-flv':
-			case 'video/3gpp':
-				$srcImage = null;
-				$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-
-				$cmd = sprintf(
-					'ffmpegthumbnailer -i"%s" -o"%s" -s0 -t"12%"',
-					$srcPath,
-					$tmpPath);
-				exec($cmd);
-
-				if (file_exists($tmpPath))
-					$srcImage = imagecreatefrompng($tmpPath);
-
-				if (!$srcImage)
-				{
-					exec($cmd);
-					$cmd = sprintf(
-						'ffmpeg -i "%s" -vframes 1 "%s"',
-						$srcPath,
-						$tmpPath);
-
-					if (file_exists($tmpPath))
-						$srcImage = imagecreatefrompng($tmpPath);
-				}
-				break;
-			default:
-				break;
+			return ThumbnailHelper::generateFromPath($srcPath, $dstPath, $width, $height);
 		}
-
-		if (isset($tmpPath) and file_exists($tmpPath))
-			unlink($tmpPath);
-
-		if (!isset($srcImage))
-			return false;
-
-		$config = getConfig();
-		switch ($config->browsing->thumbStyle)
-		{
-			case 'outside':
-				$dstImage = ThumbnailHelper::cropOutside($srcImage, $width, $height);
-				break;
-			case 'inside':
-				$dstImage = ThumbnailHelper::cropInside($srcImage, $width, $height);
-				break;
-			default:
-				throw new SimpleException('Unknown thumbnail crop style');
-		}
-
-		imagejpeg($dstImage, $dstPath);
-		imagedestroy($srcImage);
-		imagedestroy($dstImage);
-
-		return true;
 	}
 
 	public function setContentFromPath($srcPath, $origName)
