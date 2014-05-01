@@ -38,7 +38,7 @@ class PostController
 			$context->massTagTag = $additionalInfo;
 			$context->massTagQuery = $query;
 
-			if (!Access::confirm(Privilege::MassTag, 'all'))
+			if (!Access::check(Privilege::MassTag, 'all'))
 				$query = trim($query . ' submit:' . $context->user->name);
 		}
 
