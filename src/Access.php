@@ -60,6 +60,12 @@ class Access
 		return intval($user->accessRank) >= $minAccessRank;
 	}
 
+	public static function assertAuthentication()
+	{
+		if (!Auth::isLoggedIn())
+			throw new SimpleException('Not logged in');
+	}
+
 	public static function assert($privilege, $subPrivilege = null)
 	{
 		if (!self::check($privilege, $subPrivilege))

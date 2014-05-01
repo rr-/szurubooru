@@ -263,12 +263,10 @@ class PostController
 		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
+		Access::assertAuthentication();
 
 		if (!InputHelper::get('submit'))
 			return;
-
-		if (!Auth::isLoggedIn())
-			throw new SimpleException('Not logged in');
 
 		UserModel::updateUserScore(Auth::getCurrentUser(), $post, 1);
 		UserModel::addToUserFavorites(Auth::getCurrentUser(), $post);
@@ -280,12 +278,10 @@ class PostController
 		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
+		Access::assertAuthentication();
 
 		if (!InputHelper::get('submit'))
 			return;
-
-		if (!Auth::isLoggedIn())
-			throw new SimpleException('Not logged in');
 
 		UserModel::removeFromUserFavorites(Auth::getCurrentUser(), $post);
 		StatusHelper::success();
@@ -296,12 +292,10 @@ class PostController
 		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
 		Access::assert(Privilege::ScorePost, Access::getIdentity($post->getUploader()));
+		Access::assertAuthentication();
 
 		if (!InputHelper::get('submit'))
 			return;
-
-		if (!Auth::isLoggedIn())
-			throw new SimpleException('Not logged in');
 
 		UserModel::updateUserScore(Auth::getCurrentUser(), $post, $score);
 		StatusHelper::success();
