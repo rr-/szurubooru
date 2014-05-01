@@ -35,7 +35,7 @@ $context->simpleActionName = null;
 		TextCaseConverter::SPINAL_CASE);
 
 	$context->simpleActionName = TextCaseConverter::convert(
-		str_replace('Action', '', $methodName),
+		preg_replace('/Action|View/', '', $methodName),
 		TextCaseConverter::CAMEL_CASE,
 		TextCaseConverter::SPINAL_CASE);
 
@@ -44,6 +44,13 @@ $context->simpleActionName = null;
 		$context->simpleControllerName,
 		$context->simpleActionName);
 });
+
+\Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments');
+\Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments/{page}', ['page' => '\d+']);
+\Chibi\Router::register(['CommentController', 'addAction'], 'POST', '/comment/add');
+\Chibi\Router::register(['CommentController', 'deleteAction'], 'POST', '/comment/{id}/delete', ['id' => '\d+']);
+\Chibi\Router::register(['CommentController', 'editView'], 'GET', '/comment/{id}/edit', ['id' => '\d+']);
+\Chibi\Router::register(['CommentController', 'editAction'], 'POST', '/comment/{id}/edit', ['id' => '\d+']);
 
 foreach (['GET', 'POST'] as $method)
 {
@@ -59,11 +66,6 @@ foreach (['GET', 'POST'] as $method)
 	\Chibi\Router::register(['AuthController', 'logoutAction'], $method, '/auth/logout');
 	\Chibi\Router::register(['AuthController', 'loginAction'], 'POST', '/auth/login');
 	\Chibi\Router::register(['AuthController', 'logoutAction'], 'POST', '/auth/logout');
-	\Chibi\Router::register(['CommentController', 'listAction'], $method, '/comments');
-	\Chibi\Router::register(['CommentController', 'listAction'], $method, '/comments/{page}', ['page' => '\d+']);
-	\Chibi\Router::register(['CommentController', 'addAction'], $method, '/post/{postId}/add-comment', ['postId' => '\d+']);
-	\Chibi\Router::register(['CommentController', 'deleteAction'], $method, '/comment/{id}/delete', ['id' => '\d+']);
-	\Chibi\Router::register(['CommentController', 'editAction'], $method, '/comment/{id}/edit', ['id' => '\d+']);
 
 	$postValidation =
 	[

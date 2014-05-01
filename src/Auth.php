@@ -85,6 +85,7 @@ class Auth
 	private static function getAnonymousUser()
 	{
 		$dummy = UserModel::spawn();
+		$dummy->id = null;
 		$dummy->name = UserModel::getAnonymousName();
 		$dummy->accessRank = AccessRank::Anonymous;
 		return $dummy;

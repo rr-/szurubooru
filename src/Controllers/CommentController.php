@@ -1,7 +1,7 @@
 <?php
 class CommentController
 {
-	public function listAction($page)
+	public function listView($page)
 	{
 		Access::assert(Privilege::ListComments);
 
@@ -30,64 +30,46 @@ class CommentController
 		$context->transport->paginator->params = func_get_args();
 	}
 
-	public function addAction($postId)
+	public function previewAction()
 	{
-		$context = getContext();
-		Access::assert(Privilege::AddComment);
-		if (getConfig()->registration->needEmailForCommenting)
-			Access::assertEmailConfirmation();
+		$comment = Api::run(
+			new PreviewCommentJob(),
+			[
+				'text' => InputHelper::get('text')
+			]);
 
-		$post = PostModel::findById($postId);
-		$context->transport->post = $post;
+		getContext()->transport->textPreview = $comment->getText();
+	}
 
-		if (!InputHelper::get('submit'))
-			return;
+	public function addAction()
+	{
+		if (InputHelper::get('sender') == 'preview')
+			return $this->previewAction();
 
-		$text = InputHelper::get('text');
-		$text = CommentModel::validateText($text);
+		$comment = Api::run(
+			new AddCommentJob(),
+			[
+				'post-id' => InputHelper::get('post-id'),
+				'text' => InputHelper::get('text')
+			]);
+	}
 
-		$comment = CommentModel::spawn();
-		$comment->setPost($post);
-		if (Auth::isLoggedIn())
-			$comment->setCommenter(Auth::getCurrentUser());
-		else
-			$comment->setCommenter(null);
-		$comment->commentDate = time();
-		$comment->text = $text;
-
-		if (InputHelper::get('sender') != 'preview')
-		{
-			CommentModel::save($comment);
-			LogHelper::log('{user} commented on {post}', ['post' => TextHelper::reprPost($post->id)]);
-		}
-		$context->transport->textPreview = $comment->getText();
+	public function editView($id)
+	{
+		getContext()->transport->comment = CommentModel::findById($id);
 	}
 
 	public function editAction($id)
 	{
-		$context = getContext();
-		$comment = CommentModel::findById($id);
-		$context->transport->comment = $comment;
+		if (InputHelper::get('sender') == 'preview')
+			return $this->previewAction();
 
-		Access::assert(
-			Privilege::EditComment,
-			Access::getIdentity($comment->getCommenter()));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$text = InputHelper::get('text');
-		$text = CommentModel::validateText($text);
-
-		$comment->text = $text;
-
-		if (InputHelper::get('sender') != 'preview')
-		{
-			CommentModel::save($comment);
-			LogHelper::log('{user} edited comment in {post}', [
-				'post' => TextHelper::reprPost($comment->getPost())]);
-		}
-		$context->transport->textPreview = $comment->getText();
+		$comment = Api::run(
+			new EditCommentJob(),
+			[
+				'comment-id' => $id,
+				'text' => InputHelper::get('text')
+			]);
 	}
 
 	public function deleteAction($id)

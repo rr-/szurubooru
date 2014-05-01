@@ -71,11 +71,17 @@ class LogEvent
 		$this->text = $text;
 		$this->ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 
-		$tokens['anon'] = UserModel::getAnonymousName();
-		if (Auth::isLoggedIn())
-			$tokens['user'] = TextHelper::reprUser(Auth::getCurrentUser()->name);
-		else
-			$tokens['user'] = $tokens['anon'];
+		//todo: deprecated
+		if (!isset($tokens['anon']))
+			$tokens['anon'] = UserModel::getAnonymousName();
+		if (!isset($tokens['user']))
+		{
+			if (Auth::isLoggedIn())
+				$tokens['user'] = TextHelper::reprUser(Auth::getCurrentUser()->name);
+			else
+				$tokens['user'] = $tokens['anon'];
+		}
+
 		$this->tokens = $tokens;
 	}
 

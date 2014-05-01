@@ -5,9 +5,7 @@ Assets::addScript('comment-edit.js');
 
 <form
 	method="post"
-	action="<?= \Chibi\Router::linkTo(
-		['CommentController', 'addAction'],
-		['postId' => $this->context->transport->post->id]) ?>"
+	action="<?= \Chibi\Router::linkTo(['CommentController', 'addAction']) ?>"
 	class="add-comment">
 
 	<h1>add comment</h1>
@@ -18,6 +16,7 @@ Assets::addScript('comment-edit.js');
 		<div class="input-wrapper"><textarea name="text" cols="50" rows="3"></textarea></div>
 	</div>
 
+	<input type="hidden" name="post-id" value="<?= $this->context->transport->post->id ?>">
 	<input type="hidden" name="submit" value="1"/>
 
 	<div class="form-row">

@@ -41,15 +41,15 @@ Assets::addScript('comment-edit.js');
 				Access::getIdentity($commenter))): ?>
 				<span class="edit">
 					<a href="<?= \Chibi\Router::linkTo(
-						['CommentController', 'editAction'],
+						['CommentController', 'editView'],
 						['id' => $this->context->comment->id]) ?>">
 						edit
 					</a>
 				</span>
 			<?php endif ?>
 
-			<?php if (
-				Access::check(Privilege::DeleteComment,
+			<?php if (Access::check(
+				Privilege::DeleteComment,
 				Access::getIdentity($commenter))): ?>
 				<span class="delete">
 					<a class="simple-action confirmable"
