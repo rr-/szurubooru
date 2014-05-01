@@ -103,7 +103,7 @@ class TagController
 			'source' => TextHelper::reprTag($suppliedSourceTag),
 			'target' => TextHelper::reprTag($suppliedTargetTag)]);
 
-		StatusHelper::success('Tags merged successfully.');
+		Messenger::message('Tags merged successfully.');
 	}
 
 	public function renameAction()
@@ -130,7 +130,7 @@ class TagController
 			'source' => TextHelper::reprTag($suppliedSourceTag),
 			'target' => TextHelper::reprTag($suppliedTargetTag)]);
 
-		StatusHelper::success('Tag renamed successfully.');
+		Messenger::message('Tag renamed successfully.');
 	}
 
 	public function massTagRedirectAction()

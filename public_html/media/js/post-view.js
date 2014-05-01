@@ -110,28 +110,23 @@ $(function()
 
 			success: function(data)
 			{
-				if (data['success'])
-				{
-					disableExitConfirmation();
+				disableExitConfirmation();
 
-					$.get(window.location.href, function(data)
-					{
-						$('#sidebar').replaceWith($(data).find('#sidebar'));
-						$('#edit-token').replaceWith($(data).find('#edit-token'));
-						$('body').trigger('dom-update');
-					});
-					formDom.parents('.unit').hide();
-				}
-				else
+				$.get(window.location.href, function(data)
 				{
-					alert(data['message']);
-				}
+					$('#sidebar').replaceWith($(data).find('#sidebar'));
+					$('#edit-token').replaceWith($(data).find('#edit-token'));
+					$('body').trigger('dom-update');
+				});
+				formDom.parents('.unit').hide();
 				formDom.find(':input').attr('readonly', false);
 				formDom.removeClass('inactive');
 			},
-			error: function()
+			error: function(xhr)
 			{
-				alert('Fatal error');
+				alert(xhr.responseJSON
+					? xhr.responseJSON.message
+					: 'Fatal error');
 				formDom.find(':input').attr('readonly', false);
 				formDom.removeClass('inactive');
 			}

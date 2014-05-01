@@ -101,7 +101,6 @@ class PostController
 		$post->setTags($tags);
 
 		PostModel::save($post);
-		StatusHelper::success();
 	}
 
 	public function favoritesAction($page = 1)
@@ -167,8 +166,6 @@ class PostController
 			LogHelper::flush();
 			PostModel::save($post);
 		});
-
-		StatusHelper::success();
 	}
 
 	public function editAction($id)
@@ -190,8 +187,6 @@ class PostController
 
 		PostModel::save($post);
 		TagModel::removeUnused();
-
-		StatusHelper::success();
 	}
 
 	public function flagAction($id)
@@ -211,7 +206,6 @@ class PostController
 		SessionHelper::set('flagged', $flagged);
 
 		LogHelper::log('{user} flagged {post} for moderator attention', ['post' => TextHelper::reprPost($post)]);
-		StatusHelper::success();
 	}
 
 	public function hideAction($id)
@@ -226,7 +220,6 @@ class PostController
 		PostModel::save($post);
 
 		LogHelper::log('{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
-		StatusHelper::success();
 	}
 
 	public function unhideAction($id)
@@ -241,7 +234,6 @@ class PostController
 		PostModel::save($post);
 
 		LogHelper::log('{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
-		StatusHelper::success();
 	}
 
 	public function deleteAction($id)
@@ -255,7 +247,6 @@ class PostController
 		PostModel::remove($post);
 
 		LogHelper::log('{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
-		StatusHelper::success();
 	}
 
 	public function addFavoriteAction($id)
@@ -270,7 +261,6 @@ class PostController
 
 		UserModel::updateUserScore(Auth::getCurrentUser(), $post, 1);
 		UserModel::addToUserFavorites(Auth::getCurrentUser(), $post);
-		StatusHelper::success();
 	}
 
 	public function removeFavoriteAction($id)
@@ -284,7 +274,6 @@ class PostController
 			return;
 
 		UserModel::removeFromUserFavorites(Auth::getCurrentUser(), $post);
-		StatusHelper::success();
 	}
 
 	public function scoreAction($id, $score)
@@ -298,7 +287,6 @@ class PostController
 			return;
 
 		UserModel::updateUserScore(Auth::getCurrentUser(), $post, $score);
-		StatusHelper::success();
 	}
 
 	public function featureAction($id)
@@ -309,7 +297,6 @@ class PostController
 		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
 		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
 		PropertyModel::set(PropertyModel::FeaturedPostUserName, Auth::getCurrentUser()->name);
-		StatusHelper::success();
 		LogHelper::log('{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
 	}
 

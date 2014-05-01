@@ -61,7 +61,6 @@ class CommentController
 			LogHelper::log('{user} commented on {post}', ['post' => TextHelper::reprPost($post->id)]);
 		}
 		$context->transport->textPreview = $comment->getText();
-		StatusHelper::success();
 	}
 
 	public function editAction($id)
@@ -89,7 +88,6 @@ class CommentController
 				'post' => TextHelper::reprPost($comment->getPost())]);
 		}
 		$context->transport->textPreview = $comment->getText();
-		StatusHelper::success();
 	}
 
 	public function deleteAction($id)
@@ -104,6 +102,5 @@ class CommentController
 
 		LogHelper::log('{user} removed comment from {post}', [
 			'post' => TextHelper::reprPost($comment->getPost())]);
-		StatusHelper::success();
 	}
 }

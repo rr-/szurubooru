@@ -20,8 +20,6 @@ class AuthController
 		$suppliedPassword = InputHelper::get('password');
 		$remember = boolval(InputHelper::get('remember'));
 		$dbUser = Auth::login($suppliedName, $suppliedPassword, $remember);
-
-		StatusHelper::success();
 		self::redirectAfterLog();
 	}
 

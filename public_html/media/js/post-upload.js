@@ -107,23 +107,20 @@ $(function()
 			type: 'POST',
 			success: function(data)
 			{
-				if (data['success'])
+				postDom.slideUp(function()
 				{
-					postDom.slideUp(function()
-					{
-						postDom.remove();
-						sendNextPost();
-					});
-				}
-				else
-				{
-					postDom.find('.alert').html(data['messageHtml']).slideDown();
-					enableUpload();
-				}
+					postDom.remove();
+					sendNextPost();
+				});
 			},
-			error: function(data)
+			error: function(xhr)
 			{
-				postDom.find('.alert').html('Fatal error').slideDown();
+				postDom
+					.find('.alert')
+					.html(xhr.responseJSON
+						? xhr.responseJSON.messageHtml
+						: 'Fatal error')
+					.slideDown();
 				enableUpload();
 			}
 		};

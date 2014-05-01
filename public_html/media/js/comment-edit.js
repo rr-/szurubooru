@@ -40,52 +40,45 @@ $(function()
 
 				success: function(data)
 				{
-					if (data['success'])
+					if (preview)
 					{
-						if (preview)
-						{
-							formDom.find('.preview').html(data['textPreview']).show();
-						}
-						else
-						{
-							disableExitConfirmation();
-
-							formDom.find('.preview').hide();
-							var cb = function()
-							{
-								$.get(window.location.href, function(data)
-								{
-									$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
-									$('body').trigger('dom-update');
-								});
-							}
-							if (formDom.hasClass('add-comment'))
-							{
-								cb();
-								formDom.find('textarea').val('');
-							}
-							else
-							{
-								formDom.slideUp(function()
-								{
-									cb();
-									$(this).remove();
-								});
-							}
-						}
-						formDom.find(':input').attr('readonly', false);
-						formDom.removeClass('inactive');
+						formDom.find('.preview').html(data['textPreview']).show();
 					}
 					else
 					{
-						alert(data['message']);
-						formDom.find(':input').attr('readonly', false);
-						formDom.removeClass('inactive');
+						disableExitConfirmation();
+
+						formDom.find('.preview').hide();
+						var cb = function()
+						{
+							$.get(window.location.href, function(data)
+							{
+								$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
+								$('body').trigger('dom-update');
+							});
+						}
+						if (formDom.hasClass('add-comment'))
+						{
+							cb();
+							formDom.find('textarea').val('');
+						}
+						else
+						{
+							formDom.slideUp(function()
+							{
+								cb();
+								$(this).remove();
+							});
+						}
 					}
+					formDom.find(':input').attr('readonly', false);
+					formDom.removeClass('inactive');
 				},
-				error: function()
+				error: function(xhr)
 				{
-					alert('Fatal error');
+					alert(xhr.responseJSON
+						? xhr.responseJSON.message
+						: 'Fatal error');
 					formDom.find(':input').attr('readonly', false);
 					formDom.removeClass('inactive');
 				}

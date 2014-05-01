@@ -63,15 +63,15 @@ $(function()
 		aDom.addClass('inactive');
 
 		var url = $(this).attr('href') + '?json';
-		$.get(url).always(function(data)
+		$.get(url).success(function(data)
 		{
-			if (data['success'])
-				window.location.reload();
-			else
-			{
-				alert(data['message'] ? data['message'] : 'Fatal error');
-				aDom.removeClass('inactive');
-			}
+			window.location.reload();
+		}).error(function(xhr)
+		{
+			alert(xhr.responseJSON
+				? xhr.responseJSON.message
+				: 'Fatal error');
+			aDom.removeClass('inactive');
 		});
 	});
 });
@@ -112,22 +112,20 @@ $(function()
 			aDom.addClass('inactive');
 
 			var url = $(this).attr('href') + '?json';
-			$.get(url, {submit: 1}).always(function(data)
+			$.post(url, {submit: 1}).success(function(data)
 			{
-				if (data['success'])
-				{
-					if (aDom.hasAttr('data-redirect-url'))
-						window.location.href = aDom.attr('data-redirect-url');
-					else if (aDom.data('callback'))
-						aDom.data('callback')();
-					else
-						window.location.reload();
-				}
+				if (aDom.hasAttr('data-redirect-url'))
+					window.location.href = aDom.attr('data-redirect-url');
+				else if (aDom.data('callback'))
+					aDom.data('callback')();
 				else
-				{
-					alert(data['message'] ? data['message'] : 'Fatal error');
-					aDom.removeClass('inactive');
-				}
+					window.location.reload();
+			}).error(function(xhr)
+			{
+				alert(xhr.responseJSON
+					? xhr.responseJSON.message
+					: 'Fatal error');
+				aDom.removeClass('inactive');
 			});
 		});
 

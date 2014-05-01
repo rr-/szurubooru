@@ -46,8 +46,6 @@ class UserController
 
 		LogHelper::log('{user} flagged {subject} for moderator attention', [
 			'subject' => TextHelper::reprUser($user)]);
-
-		StatusHelper::success();
 	}
 
 	public function banAction($name)
@@ -64,7 +62,6 @@ class UserController
 		UserModel::save($user);
 
 		LogHelper::log('{user} banned {subject}', ['subject' => TextHelper::reprUser($user)]);
-		StatusHelper::success();
 	}
 
 	public function unbanAction($name)
@@ -81,7 +78,6 @@ class UserController
 		UserModel::save($user);
 
 		LogHelper::log('{user} unbanned {subject}', ['subject' => TextHelper::reprUser($user)]);
-		StatusHelper::success();
 	}
 
 	public function acceptRegistrationAction($name)
@@ -96,7 +92,6 @@ class UserController
 		$user->staffConfirmed = true;
 		UserModel::save($user);
 		LogHelper::log('{user} confirmed {subject}\'s account', ['subject' => TextHelper::reprUser($user)]);
-		StatusHelper::success();
 	}
 
 	public function deleteAction($name)
@@ -133,7 +128,6 @@ class UserController
 
 		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
 		LogHelper::log('{user} removed {subject}\'s account', ['subject' => TextHelper::reprUser($name)]);
-		StatusHelper::success();
 	}
 
 	public function settingsAction($name)
@@ -167,7 +161,7 @@ class UserController
 			UserModel::save($user);
 		if ($user->id == Auth::getCurrentUser()->id)
 			Auth::setCurrentUser($user);
-		StatusHelper::success('Browsing settings updated!');
+		Messenger::message('Browsing settings updated!');
 	}
 
 	public function editAction($name)
@@ -278,7 +272,7 @@ class UserController
 			$message = 'Account settings updated!';
 			if ($confirmMail)
 				$message .= ' You will be sent an e-mail address confirmation message soon.';
-			StatusHelper::success($message);
+			Messenger::message($message);
 		}
 		catch (Exception $e)
 		{
@@ -343,8 +337,6 @@ class UserController
 		if ($user->accessRank != AccessRank::Anonymous)
 			UserModel::save($user);
 		Auth::setCurrentUser($user);
-
-		StatusHelper::success();
 	}
 
 	public function registrationAction()
@@ -420,7 +412,7 @@ class UserController
 			$message .= ' Your registration must be now confirmed by staff.';
 
 		LogHelper::log('{subject} just signed up', ['subject' => TextHelper::reprUser($dbUser)]);
-		StatusHelper::success($message);
+		Messenger::message($message);
 
 		if (!getConfig()->registration->needEmailForRegistering and !getConfig()->registration->staffActivation)
 		{
@@ -448,7 +440,7 @@ class UserController
 		$message = 'Activation completed successfully.';
 		if (getConfig()->registration->staffActivation)
 			$message .= ' However, your account still must be confirmed by staff.';
-		StatusHelper::success($message);
+		Messenger::message($message);
 
 		if (!getConfig()->registration->staffActivation)
 		{
@@ -479,7 +471,7 @@ class UserController
 
 		LogHelper::log('{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
 		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
-		StatusHelper::success($message);
+		Messenger::message($message);
 
 		Auth::setCurrentUser($dbUser);
 	}
@@ -499,7 +491,7 @@ class UserController
 			throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
 
 		self::sendPasswordResetConfirmation($user);
-		StatusHelper::success('E-mail sent. Follow instructions to reset password.');
+		Messenger::message('E-mail sent. Follow instructions to reset password.');
 	}
 
 	public function activationProxyAction()
@@ -521,7 +513,7 @@ class UserController
 				throw new SimpleException('This user has no e-mail specified; activation cannot proceed');
 		}
 		self::sendEmailChangeConfirmation($user);
-		StatusHelper::success('Activation e-mail resent.');
+		Messenger::message('Activation e-mail resent.');
 	}
 
 	private function loadUserView($user)

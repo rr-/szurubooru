@@ -14,23 +14,21 @@ $(function()
 			var enable = !aDom.parents('.post').hasClass('tagged');
 			var url = $(this).attr('href') + '?json';
 			url = url.replace('_enable_', enable ? '1' : '0');
-			$.get(url, {submit: 1}).always(function(data)
+			$.get(url, {submit: 1}).success(function(data)
 			{
-				if (data['success'])
-				{
-					aDom.removeClass('inactive');
-					aDom.parents('.post').removeClass('tagged');
-					if (enable)
-						aDom.parents('.post').addClass('tagged');
-					aDom.text(enable
-						? aDom.attr('data-text-tagged')
-						: aDom.attr('data-text-untagged'));
-				}
-				else
-				{
-					alert(data['message'] ? data['message'] : 'Fatal error');
-					aDom.removeClass('inactive');
-				}
+				aDom.removeClass('inactive');
+				aDom.parents('.post').removeClass('tagged');
+				if (enable)
+					aDom.parents('.post').addClass('tagged');
+				aDom.text(enable
+					? aDom.attr('data-text-tagged')
+					: aDom.attr('data-text-untagged'));
+			}).error(function(xhr)
+			{
+				alert(xhr.responseJSON
+					? xhr.responseJSON.message
+					: 'Fatal error');
+				aDom.removeClass('inactive');
 			});
 		});
 	});
