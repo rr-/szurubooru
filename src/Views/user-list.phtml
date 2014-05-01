@@ -2,7 +2,7 @@
 Assets::setSubTitle('users');
 Assets::addStylesheet('user-list.css');
 Assets::addStylesheet('paginator.css');
-if ($this->context->user->hasEnabledEndlessScrolling())
+if (Auth::getCurrentUser()->hasEnabledEndlessScrolling())
 	Assets::addScript('paginator-endless.js');
 ?>
 

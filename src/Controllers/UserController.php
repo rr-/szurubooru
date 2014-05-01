@@ -119,7 +119,7 @@ class UserController
 			return;
 
 		$name = $user->name;
-		if ($context->user->id == $user->id)
+		if (Auth::getCurrentUser()->id == $user->id)
 		{
 			$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
 			if ($suppliedPasswordHash != $user->passHash)
@@ -128,8 +128,8 @@ class UserController
 
 		$oldId = $user->id;
 		UserModel::remove($user);
-		if ($oldId == $context->user->id)
-			AuthController::doLogOut();
+		if ($oldId == Auth::getCurrentUser()->id)
+			Auth::logOut();
 
 		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
 		LogHelper::log('{user} removed {subject}\'s account', ['subject' => TextHelper::reprUser($name)]);
@@ -165,9 +165,8 @@ class UserController
 
 		if ($user->accessRank != AccessRank::Anonymous)
 			UserModel::save($user);
-		if ($user->id == $context->user->id)
-			$context->user = $user;
-		AuthController::doReLog();
+		if ($user->id == Auth::getCurrentUser()->id)
+			Auth::setCurrentUser($user);
 		StatusHelper::success('Browsing settings updated!');
 	}
 
@@ -232,7 +231,7 @@ class UserController
 					Access::getIdentity($user));
 
 				$suppliedEmail = UserModel::validateEmail($suppliedEmail);
-				if ($context->user->id == $user->id)
+				if (Auth::getCurrentUser()->id == $user->id)
 				{
 					$user->emailUnconfirmed = $suppliedEmail;
 					if (!empty($user->emailUnconfirmed))
@@ -262,15 +261,15 @@ class UserController
 					'rank' => AccessRank::toString($suppliedAccessRank)]);
 			}
 
-			if ($context->user->id == $user->id)
+			if (Auth::getCurrentUser()->id == $user->id)
 			{
 				$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
 				if ($suppliedPasswordHash != $currentPasswordHash)
 					throw new SimpleException('Must supply valid current password');
 			}
 			UserModel::save($user);
-			if ($context->user->id == $user->id)
-				AuthController::doReLog();
+			if (Auth::getCurrentUser()->id == $user->id)
+				Auth::setCurrentUser($user);
 
 			if ($confirmMail)
 				self::sendEmailChangeConfirmation($user);
@@ -330,20 +329,20 @@ class UserController
 
 	public function toggleSafetyAction($safety)
 	{
-		$context = getContext();
+		$user = Auth::getCurrentUser();
+
 		Access::assert(
 			Privilege::ChangeUserSettings,
-			Access::getIdentity($context->user));
+			Access::getIdentity($user));
 
 		if (!in_array($safety, PostSafety::getAll()))
 			throw new SimpleExcetpion('Invalid safety');
 
-		$context->user->enableSafety($safety,
-			!$context->user->hasEnabledSafety($safety));
+		$user->enableSafety($safety, !$user->hasEnabledSafety($safety));
 
-		if ($context->user->accessRank != AccessRank::Anonymous)
-			UserModel::save($context->user);
-		AuthController::doReLog();
+		if ($user->accessRank != AccessRank::Anonymous)
+			UserModel::save($user);
+		Auth::setCurrentUser($user);
 
 		StatusHelper::success();
 	}
@@ -354,7 +353,7 @@ class UserController
 		$context->handleExceptions = true;
 
 		//check if already logged in
-		if ($context->loggedIn)
+		if (Auth::isLoggedIn())
 		{
 			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
 			return;
@@ -425,8 +424,7 @@ class UserController
 
 		if (!getConfig()->registration->needEmailForRegistering and !getConfig()->registration->staffActivation)
 		{
-			$context->user = $dbUser;
-			AuthController::doReLog();
+			Auth::setCurrentUser($dbUser);
 		}
 	}
 
@@ -454,8 +452,7 @@ class UserController
 
 		if (!getConfig()->registration->staffActivation)
 		{
-			$context->user = $dbUser;
-			AuthController::doReLog();
+			Auth::setCurrentUser($dbUser);
 		}
 	}
 
@@ -484,8 +481,7 @@ class UserController
 		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
 		StatusHelper::success($message);
 
-		$context->user = $dbUser;
-		AuthController::doReLog();
+		Auth::setCurrentUser($dbUser);
 	}
 
 	public function passwordResetProxyAction()

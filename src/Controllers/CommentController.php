@@ -48,8 +48,8 @@ class CommentController
 
 		$comment = CommentModel::spawn();
 		$comment->setPost($post);
-		if ($context->loggedIn)
-			$comment->setCommenter($context->user);
+		if (Auth::isLoggedIn())
+			$comment->setCommenter(Auth::getCurrentUser());
 		else
 			$comment->setCommenter(null);
 		$comment->commentDate = time();

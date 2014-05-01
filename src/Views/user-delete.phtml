@@ -7,7 +7,7 @@
 	autocomplete="off"
 	data-confirm-text="Are you sure you want to delete your account?">
 
-	<?php if ($this->context->user->id == $this->context->transport->user->id): ?>
+	<?php if (Auth::getCurrentUser()->id == $this->context->transport->user->id): ?>
 		<div class="form-row current-password">
 			<label for="current-password">Current password:</label>
 			<div class="input-wrapper">

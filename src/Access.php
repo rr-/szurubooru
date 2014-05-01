@@ -37,7 +37,7 @@ class Access
 		if (php_sapi_name() == 'cli')
 			return true;
 
-		$user = getContext()->user;
+		$user = Auth::getCurrentUser();
 		$minAccessRank = AccessRank::Admin;
 
 		$key = TextCaseConverter::convert(Privilege::toString($privilege),
@@ -66,19 +66,18 @@ class Access
 			throw new SimpleException('Insufficient privileges');
 	}
 
+	public static function assertEmailConfirmation()
+	{
+		$user = Auth::getCurrentUser();
+		if (!$user->emailConfirmed)
+			throw new SimpleException('Need e-mail address confirmation to continue');
+	}
+
 	public static function getIdentity($user)
 	{
 		if (!$user)
 			return 'all';
-		$userFromContext = getContext()->user;
-		return $user->id == $userFromContext->id ? 'own' : 'all';
-	}
-
-	public static function assertEmailConfirmation()
-	{
-		$user = getContext()->user;
-		if (!$user->emailConfirmed)
-			throw new SimpleException('Need e-mail address confirmation to continue');
+		return $user->id == Auth::getCurrentUser()->id ? 'own' : 'all';
 	}
 
 	public static function getAllowedSafety()
@@ -86,11 +85,10 @@ class Access
 		if (php_sapi_name() == 'cli')
 			return PostSafety::getAll();
 
-		$context = getContext();
-		return array_filter(PostSafety::getAll(), function($safety) use ($context)
+		return array_filter(PostSafety::getAll(), function($safety)
 		{
 			return Access::check(Privilege::ListPosts, PostSafety::toString($safety))
-				and $context->user->hasEnabledSafety($safety);
+				and Auth::getCurrentUser()->hasEnabledSafety($safety);
 		});
 	}
 }

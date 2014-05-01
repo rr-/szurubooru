@@ -157,7 +157,8 @@ $context->transport = new StdClass;
 StatusHelper::init();
 
 session_start();
-AuthController::doLogIn();
+if (!Auth::isLoggedIn())
+	Auth::tryAutoLogin();
 
 try
 {

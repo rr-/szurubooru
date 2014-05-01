@@ -39,7 +39,7 @@ class PostController
 			$context->massTagQuery = $query;
 
 			if (!Access::check(Privilege::MassTag, 'all'))
-				$query = trim($query . ' submit:' . $context->user->name);
+				$query = trim($query . ' submit:' . Auth::getCurrentUser()->name);
 		}
 
 		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
@@ -136,8 +136,8 @@ class PostController
 
 			//basic stuff
 			$anonymous = InputHelper::get('anonymous');
-			if ($context->loggedIn and !$anonymous)
-				$post->setUploader($context->user);
+			if (Auth::isLoggedIn() and !$anonymous)
+				$post->setUploader(Auth::getCurrentUser());
 
 			//store the post to get the ID in the logs
 			PostModel::forgeId($post);
@@ -267,11 +267,11 @@ class PostController
 		if (!InputHelper::get('submit'))
 			return;
 
-		if (!$context->loggedIn)
+		if (!Auth::isLoggedIn())
 			throw new SimpleException('Not logged in');
 
-		UserModel::updateUserScore($context->user, $post, 1);
-		UserModel::addToUserFavorites($context->user, $post);
+		UserModel::updateUserScore(Auth::getCurrentUser(), $post, 1);
+		UserModel::addToUserFavorites(Auth::getCurrentUser(), $post);
 		StatusHelper::success();
 	}
 
@@ -284,10 +284,10 @@ class PostController
 		if (!InputHelper::get('submit'))
 			return;
 
-		if (!$context->loggedIn)
+		if (!Auth::isLoggedIn())
 			throw new SimpleException('Not logged in');
 
-		UserModel::removeFromUserFavorites($context->user, $post);
+		UserModel::removeFromUserFavorites(Auth::getCurrentUser(), $post);
 		StatusHelper::success();
 	}
 
@@ -300,10 +300,10 @@ class PostController
 		if (!InputHelper::get('submit'))
 			return;
 
-		if (!$context->loggedIn)
+		if (!Auth::isLoggedIn())
 			throw new SimpleException('Not logged in');
 
-		UserModel::updateUserScore($context->user, $post, $score);
+		UserModel::updateUserScore(Auth::getCurrentUser(), $post, $score);
 		StatusHelper::success();
 	}
 
@@ -314,7 +314,7 @@ class PostController
 		Access::assert(Privilege::FeaturePost, Access::getIdentity($post->getUploader()));
 		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
 		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
-		PropertyModel::set(PropertyModel::FeaturedPostUserName, $context->user->name);
+		PropertyModel::set(PropertyModel::FeaturedPostUserName, Auth::getCurrentUser()->name);
 		StatusHelper::success();
 		LogHelper::log('{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
 	}
@@ -346,8 +346,8 @@ class PostController
 					$context->transport->lastSearchQuery, $id);
 		}
 
-		$favorite = $context->user->hasFavorited($post);
-		$score = $context->user->getScore($post);
+		$favorite = Auth::getCurrentUser()->hasFavorited($post);
+		$score = Auth::getCurrentUser()->getScore($post);
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
 
 		$context->favorite = $favorite;

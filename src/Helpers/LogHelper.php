@@ -71,10 +71,9 @@ class LogEvent
 		$this->text = $text;
 		$this->ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
 
-		$context = getContext();
 		$tokens['anon'] = UserModel::getAnonymousName();
-		if ($context->loggedIn and isset($context->user))
-			$tokens['user'] = TextHelper::reprUser($context->user->name);
+		if (Auth::isLoggedIn())
+			$tokens['user'] = TextHelper::reprUser(Auth::getCurrentUser()->name);
 		else
 			$tokens['user'] = $tokens['anon'];
 		$this->tokens = $tokens;

@@ -24,7 +24,7 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processTeardown()
 	{
-		if (getContext()->user->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
+		if (Auth::getCurrentUser()->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
 			$this->processComplexToken('special', 'disliked', true);
 
 		if (!Access::check(Privilege::ListPosts, 'hidden') or !$this->showHidden)
@@ -146,11 +146,12 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif ($key == 'special')
 		{
-			$context = getContext();
+			$activeUser = Auth::getCurrentUser();
+
 			$value = strtolower($value);
 			if (in_array($value, ['fav', 'favs', 'favd']))
 			{
-				return $this->prepareCriterionForComplexToken('fav', $context->user->name);
+				return $this->prepareCriterionForComplexToken('fav', $activeUser->name);
 			}
 
 			elseif (in_array($value, ['like', 'liked', 'likes']))
@@ -159,7 +160,7 @@ class PostSearchParser extends AbstractSearchParser
 				{
 					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
 						->add(new Sql\EqualsFunctor('post_score.post_id', 'post.id'))
-						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($context->user->id))));
+						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->id))));
 				}
 				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '1');
 			}
@@ -171,7 +172,7 @@ class PostSearchParser extends AbstractSearchParser
 				{
 					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
 						->add(new Sql\EqualsFunctor('post_score.post_id', 'post.id'))
-						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($context->user->id))));
+						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->id))));
 				}
 				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '-1');
 			}

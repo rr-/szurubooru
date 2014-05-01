@@ -57,10 +57,10 @@
 			\Chibi\Router::linkTo(['UserController', 'listAction']),
 			$activeController == 'user' and $activeAction != 'registration' and
 				(!isset($this->context->route->arguments['name']) or
-					$this->context->route->arguments['name'] != $this->context->user->name));
+					$this->context->route->arguments['name'] != Auth::getCurrentUser()->name));
 	}
 
-	if (!$this->context->loggedIn)
+	if (!Auth::isLoggedIn())
 	{
 		$registerNavItem(
 			'Log in',
@@ -76,9 +76,9 @@
 	{
 		$registerNavItem(
 			'My account',
-			\Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => $this->context->user->name]),
+			\Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => Auth::getCurrentUser()->name]),
 			$activeController == 'user' and isset($this->context->route->arguments['name']) and
-				$this->context->route->arguments['name'] == $this->context->user->name);
+				$this->context->route->arguments['name'] == Auth::getCurrentUser()->name);
 
 		$registerNavItem(
 			'Log out',
@@ -104,7 +104,7 @@
 	}
 	?>
 
-	<?php if (Access::check(Privilege::ChangeUserSettings, Access::getIdentity($this->context->user))): ?>
+	<?php if (Access::check(Privilege::ChangeUserSettings, Access::getIdentity(Auth::getCurrentUser()))): ?>
 		<li class="safety">
 			<ul>
 				<?php foreach (PostSafety::getAll() as $safety): ?>
@@ -117,13 +117,13 @@
 							TextCaseConverter::CAMEL_CASE,
 							TextCaseConverter::SPINAL_CASE) ?>">
 
-							<a class="<?= $this->context->user->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
+							<a class="<?= Auth::getCurrentUser()->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
 								href="<?= \Chibi\Router::linkTo(
 									['UserController', 'toggleSafetyAction'],
 									['safety' => $safety]) ?>"
 								title="<?= sprintf('Searching %s posts: %s',
 									PostSafety::toDisplayString($safety),
-									$this->context->user->hasEnabledSafety($safety)
+									Auth::getCurrentUser()->hasEnabledSafety($safety)
 										? 'enabled'
 										: 'disabled') ?>">
 
