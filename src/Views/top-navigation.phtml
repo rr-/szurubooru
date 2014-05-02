@@ -64,7 +64,7 @@
 	{
 		$registerNavItem(
 			'Log in',
-			\Chibi\Router::linkTo(['AuthController', 'loginAction']),
+			\Chibi\Router::linkTo(['AuthController', 'loginView']),
 			$activeController == 'auth' and $activeAction == 'login');
 
 		$registerNavItem(

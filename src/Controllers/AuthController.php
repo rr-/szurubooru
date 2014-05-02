@@ -1,33 +1,27 @@
 <?php
 class AuthController
 {
-	public function loginAction()
+	public function loginView()
 	{
 		$context = getContext();
 		$context->handleExceptions = true;
 
 		//check if already logged in
 		if (Auth::isLoggedIn())
-		{
 			self::redirectAfterLog();
-			return;
-		}
+	}
 
-		if (!InputHelper::get('submit'))
-			return;
-
+	public function loginAction()
+	{
 		$suppliedName = InputHelper::get('name');
 		$suppliedPassword = InputHelper::get('password');
 		$remember = boolval(InputHelper::get('remember'));
-		$dbUser = Auth::login($suppliedName, $suppliedPassword, $remember);
+		Auth::login($suppliedName, $suppliedPassword, $remember);
 		self::redirectAfterLog();
 	}
 
 	public function logoutAction()
 	{
-		$context = getContext();
-		$context->viewName = null;
-		$context->layoutName = null;
 		Auth::logout();
 		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
 	}
