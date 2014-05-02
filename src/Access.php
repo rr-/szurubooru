@@ -38,7 +38,7 @@ class Access
 			return true;
 
 		$user = Auth::getCurrentUser();
-		$minAccessRank = AccessRank::Admin;
+		$minAccessRank = AccessRank::Nobody;
 
 		$key = TextCaseConverter::convert(Privilege::toString($privilege),
 			TextCaseConverter::CAMEL_CASE,
