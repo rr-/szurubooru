@@ -46,7 +46,7 @@ class CommentController
 		if (InputHelper::get('sender') == 'preview')
 			return $this->previewAction();
 
-		$comment = Api::run(
+		Api::run(
 			new AddCommentJob(),
 			[
 				JobArgs::POST_ID => InputHelper::get('post-id'),
@@ -64,7 +64,7 @@ class CommentController
 		if (InputHelper::get('sender') == 'preview')
 			return $this->previewAction();
 
-		$comment = Api::run(
+		Api::run(
 			new EditCommentJob(),
 			[
 				JobArgs::COMMENT_ID => $id,
@@ -74,15 +74,10 @@ class CommentController
 
 	public function deleteAction($id)
 	{
-		$comment = CommentModel::findById($id);
-
-		Access::assert(
-			Privilege::DeleteComment,
-			Access::getIdentity($comment->getCommenter()));
-
-		CommentModel::remove($comment);
-
-		LogHelper::log('{user} removed comment from {post}', [
-			'post' => TextHelper::reprPost($comment->getPost())]);
+		$comment = Api::run(
+			new DeleteCommentJob(),
+			[
+				JobArgs::COMMENT_ID => $id,
+			]);
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-class EditCommentJob extends AbstractJob
+class DeleteCommentJob extends AbstractJob
 {
 	protected $comment;
 
@@ -10,24 +10,20 @@ class EditCommentJob extends AbstractJob
 
 	public function execute()
 	{
-		$comment = $this->comment;
+		$post = $this->comment->getPost();
 
-		$comment->commentDate = time();
-		$comment->text = CommentModel::validateText($this->getArgument(JobArgs::TEXT));
+		CommentModel::remove($this->comment);
 
-		CommentModel::save($comment);
-		LogHelper::log('{user} edited comment in {post}', [
+		LogHelper::log('{user} removed comment from {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
-			'post' => TextHelper::reprPost($comment->getPost())]);
-
-		return $comment;
+			'post' => TextHelper::reprPost($post)]);
 	}
 
 	public function requiresPrivilege()
 	{
 		return
 		[
-			Privilege::EditComment,
+			Privilege::DeleteComment,
 			Access::getIdentity($this->comment->getCommenter())
 		];
 	}
