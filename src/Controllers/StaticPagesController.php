@@ -1,10 +1,11 @@
 <?php
-class IndexController
+class StaticPagesController
 {
-	public function indexAction()
+	public function mainPageView()
 	{
 		$context = getContext();
 		$context->transport->postCount = PostModel::getCount();
+		$context->viewName = 'static-main';
 
 		$featuredPost = $this->getFeaturedPost();
 		if ($featuredPost)
@@ -17,15 +18,19 @@ class IndexController
 		}
 	}
 
-	public function helpAction($tab = null)
+	public function helpView($tab = null)
 	{
 		$config = getConfig();
 		$context = getContext();
+
 		if (empty($config->help->paths) or empty($config->help->title))
 			throw new SimpleException('Help is disabled');
+
 		$tab = $tab ?: array_keys($config->help->subTitles)[0];
 		if (!isset($config->help->paths[$tab]))
 			throw new SimpleException('Invalid tab');
+
+		$context->viewName = 'static-help';
 		$context->path = TextHelper::absolutePath($config->help->paths[$tab]);
 		$context->tab = $tab;
 	}

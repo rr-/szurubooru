@@ -283,7 +283,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					['PostController', 'featureAction'],
 					['id' => $this->context->transport->post->id]),
 				'data-confirm-text' => 'Are you sure you want to feature this post on the main page?',
-				'data-redirect-url' => \Chibi\Router::linkTo(['IndexController', 'indexAction']),
+				'data-redirect-url' => \Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']),
 			];
 		}
 

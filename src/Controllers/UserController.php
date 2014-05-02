@@ -126,7 +126,7 @@ class UserController
 		if ($oldId == Auth::getCurrentUser()->id)
 			Auth::logOut();
 
-		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
+		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']));
 		LogHelper::log('{user} removed {subject}\'s account', ['subject' => TextHelper::reprUser($name)]);
 	}
 
@@ -347,7 +347,7 @@ class UserController
 		//check if already logged in
 		if (Auth::isLoggedIn())
 		{
-			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
+			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']));
 			return;
 		}
 

@@ -45,6 +45,11 @@ $context->simpleActionName = null;
 		$context->simpleActionName);
 });
 
+\Chibi\Router::register(['StaticPagesController', 'mainPageView'], 'GET', '');
+\Chibi\Router::register(['StaticPagesController', 'mainPageView'], 'GET', '/index');
+\Chibi\Router::register(['StaticPagesController', 'helpView'], 'GET', '/help');
+\Chibi\Router::register(['StaticPagesController', 'helpView'], 'GET', '/help/{tab}');
+
 \Chibi\Router::register(['AuthController', 'loginView'], 'GET', '/auth/login');
 \Chibi\Router::register(['AuthController', 'loginAction'], 'POST', '/auth/login');
 \Chibi\Router::register(['AuthController', 'logoutAction'], 'POST', '/auth/logout');
@@ -81,10 +86,6 @@ $postValidation =
 
 foreach (['GET', 'POST'] as $method)
 {
-	\Chibi\Router::register(['IndexController', 'indexAction'], $method, '');
-	\Chibi\Router::register(['IndexController', 'indexAction'], $method, '/index');
-	\Chibi\Router::register(['IndexController', 'helpAction'], $method, '/help');
-	\Chibi\Router::register(['IndexController', 'helpAction'], $method, '/help/{tab}');
 	\Chibi\Router::register(['LogController', 'listAction'], $method, '/logs');
 	\Chibi\Router::register(['LogController', 'viewAction'], $method, '/log/{name}', ['name' => '[0-9a-zA-Z._-]+']);
 	\Chibi\Router::register(['LogController', 'viewAction'], $method, '/log/{name}/{page}', ['name' => '[0-9a-zA-Z._-]+', 'page' => '\d*']);

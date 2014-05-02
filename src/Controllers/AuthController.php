@@ -46,6 +46,6 @@ class AuthController
 			unset($_SESSION['login-redirect-url']);
 			return;
 		}
-		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
+		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']));
 	}
 }

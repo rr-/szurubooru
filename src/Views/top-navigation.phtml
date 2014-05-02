@@ -15,8 +15,8 @@
 
 	$registerNavItem(
 		'Home',
-		\Chibi\Router::linkTo(['IndexController', 'indexAction']),
-		$activeController == 'index' and $activeAction == 'index');
+		\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']),
+		$activeController == 'static-pages' and $activeAction == 'main-page');
 
 	if (Access::check(Privilege::ListPosts))
 	{
@@ -89,8 +89,8 @@
 	{
 		$registerNavItem(
 			getConfig()->help->title,
-			\Chibi\Router::linkTo(['IndexController', 'helpAction']),
-			$activeController == 'index' and $activeAction == 'help');
+			\Chibi\Router::linkTo(['StaticPagesController', 'helpView']),
+			$activeController == 'static-pages' and $activeAction == 'help');
 	}
 
 	foreach ($nav as $navItem)
