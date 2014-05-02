@@ -8,7 +8,7 @@ class AuthController
 
 		//check if already logged in
 		if (Auth::isLoggedIn())
-			self::redirectAfterLog();
+			self::redirect();
 	}
 
 	public function loginAction()
@@ -17,13 +17,13 @@ class AuthController
 		$suppliedPassword = InputHelper::get('password');
 		$remember = boolval(InputHelper::get('remember'));
 		Auth::login($suppliedName, $suppliedPassword, $remember);
-		self::redirectAfterLog();
+		self::redirect();
 	}
 
 	public function logoutAction()
 	{
 		Auth::logout();
-		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
+		self::redirect();
 	}
 
 	public static function observeWorkFinish()
@@ -38,7 +38,7 @@ class AuthController
 		$_SESSION['login-redirect-url'] = $context->query;
 	}
 
-	private static function redirectAfterLog()
+	private static function redirect()
 	{
 		if (isset($_SESSION['login-redirect-url']))
 		{
