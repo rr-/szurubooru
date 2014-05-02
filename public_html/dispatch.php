@@ -1,4 +1,6 @@
 <?php
+$startTime = microtime(true);
+
 require_once '../src/core.php';
 
 $query = rtrim($_SERVER['REQUEST_URI'], '/');
