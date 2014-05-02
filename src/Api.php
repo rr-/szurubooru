@@ -7,11 +7,20 @@ class Api
 
 		return \Chibi\Database::transaction(function() use ($job, $jobArgs)
 		{
+			$job->prepare($jobArgs);
+
 			if ($job->requiresAuthentication())
 				Access::assertAuthentication();
 
 			if ($job->requiresConfirmedEmail())
 				Access::assertEmailConfirmation();
+
+			$p = $job->requiresPrivilege();
+			list ($privilege, $subPrivilege) = is_array($p)
+				? $p
+				: [$p, null];
+			if ($privilege !== null)
+				Access::assert($privilege, $subPrivilege);
 
 			return $job->execute($jobArgs);
 		});

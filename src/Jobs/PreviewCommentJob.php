@@ -10,7 +10,6 @@ class PreviewCommentJob extends AbstractJob
 		$comment->setCommenter($user);
 		$comment->commentDate = time();
 		$comment->text = $text;
-
 		return $comment;
 	}
 

@@ -3,8 +3,8 @@ class AddCommentJob extends AbstractJob
 {
 	public function execute($arguments)
 	{
-		$post = PostModel::findById($arguments['post-id']);
 		$user = Auth::getCurrentUser();
+		$post = PostModel::findById($arguments['post-id']);
 		$text = CommentModel::validateText($arguments['text']);
 
 		$comment = CommentModel::spawn();
@@ -15,7 +15,7 @@ class AddCommentJob extends AbstractJob
 
 		CommentModel::save($comment);
 		LogHelper::log('{user} commented on {post}', [
-			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
+			'user' => TextHelper::reprUser($user),
 			'post' => TextHelper::reprPost($comment->getPost()->id)]);
 
 		return $comment;
