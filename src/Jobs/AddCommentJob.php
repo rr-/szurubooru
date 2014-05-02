@@ -1,11 +1,11 @@
 <?php
 class AddCommentJob extends AbstractJob
 {
-	public function execute($arguments)
+	public function execute()
 	{
 		$user = Auth::getCurrentUser();
-		$post = PostModel::findById($arguments['post-id']);
-		$text = CommentModel::validateText($arguments['text']);
+		$post = PostModel::findById($this->getArgument(JobArgs::POST_ID));
+		$text = CommentModel::validateText($this->getArgument(JobArgs::TEXT));
 
 		$comment = CommentModel::spawn();
 		$comment->setCommenter($user);

@@ -1,10 +1,10 @@
 <?php
 class PreviewCommentJob extends AbstractJob
 {
-	public function execute($arguments)
+	public function execute()
 	{
 		$user = Auth::getCurrentUser();
-		$text = CommentModel::validateText($arguments['text']);
+		$text = CommentModel::validateText($this->getArgument(JobArgs::TEXT));
 
 		$comment = CommentModel::spawn();
 		$comment->setCommenter($user);

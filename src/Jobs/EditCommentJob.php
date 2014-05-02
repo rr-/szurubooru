@@ -3,18 +3,18 @@ class EditCommentJob extends AbstractJob
 {
 	protected $comment;
 
-	public function prepare($arguments)
+	public function prepare()
 	{
-		$this->comment = CommentModel::findById($arguments['comment-id']);
+		$this->comment = CommentModel::findById($this->getArgument(JobArgs::COMMENT_ID));
 	}
 
-	public function execute($arguments)
+	public function execute()
 	{
 		$user = Auth::getCurrentUser();
 		$comment = $this->comment;
 
 		$comment->commentDate = time();
-		$comment->text = CommentModel::validateText($arguments['text']);
+		$comment->text = CommentModel::validateText($this->getArgument(JobArgs::TEXT));
 
 		CommentModel::save($comment);
 		LogHelper::log('{user} edited comment in {post}', [

@@ -35,7 +35,7 @@ class CommentController
 		$comment = Api::run(
 			new PreviewCommentJob(),
 			[
-				'text' => InputHelper::get('text')
+				JobArgs::TEXT => InputHelper::get('text')
 			]);
 
 		getContext()->transport->textPreview = $comment->getText();
@@ -49,8 +49,8 @@ class CommentController
 		$comment = Api::run(
 			new AddCommentJob(),
 			[
-				'post-id' => InputHelper::get('post-id'),
-				'text' => InputHelper::get('text')
+				JobArgs::POST_ID => InputHelper::get('post-id'),
+				JobArgs::TEXT => InputHelper::get('text')
 			]);
 	}
 
@@ -67,8 +67,8 @@ class CommentController
 		$comment = Api::run(
 			new EditCommentJob(),
 			[
-				'comment-id' => $id,
-				'text' => InputHelper::get('text')
+				JobArgs::COMMENT_ID => $id,
+				JobArgs::TEXT => InputHelper::get('text')
 			]);
 	}
 
