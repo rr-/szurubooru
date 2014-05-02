@@ -154,6 +154,6 @@ class TagController
 		];
 		if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
 			$params['page'] = $suppliedOldPage;
-		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['PostController', 'listAction'], $params));
+		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['PostController', 'listView'], $params));
 	}
 }

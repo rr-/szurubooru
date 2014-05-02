@@ -1,7 +1,7 @@
 <?php
 class PostController
 {
-	public function listAction($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
+	public function listView($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
 		$context = getContext();
 		$context->viewName = 'post-list-wrapper';
@@ -18,7 +18,7 @@ class PostController
 			if (strpos($formQuery, '/') !== false)
 				throw new SimpleException('Search query contains invalid characters');
 
-			$url = \Chibi\Router::linkTo(['PostController', 'listAction'], [
+			$url = \Chibi\Router::linkTo(['PostController', 'listView'], [
 				'source' => $source,
 				'additionalInfo' => $additionalInfo,
 				'query' => $formQuery]);
@@ -27,11 +27,8 @@ class PostController
 		}
 
 		$query = trim($query);
-		$page = max(1, intval($page));
-		$postsPerPage = intval(getConfig()->browsing->postsPerPage);
 		$context->transport->searchQuery = $query;
 		$context->transport->lastSearchQuery = $query;
-		Access::assert(Privilege::ListPosts);
 		if ($source == 'mass-tag')
 		{
 			Access::assert(Privilege::MassTag);
@@ -42,18 +39,34 @@ class PostController
 				$query = trim($query . ' submit:' . Auth::getCurrentUser()->name);
 		}
 
-		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
-		$postCount = PostSearchService::getEntityCount($query);
-		$pageCount = ceil($postCount / $postsPerPage);
-		$page = min($pageCount, $page);
-		PostModel::preloadTags($posts);
+		$ret = Api::run(
+			new ListPostsJob(),
+			[
+				JobArgs::PAGE_NUMBER => $page,
+				JobArgs::QUERY => $query
+			]);
 
+		$context->transport->posts = $ret->posts;
 		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $page;
-		$context->transport->paginator->pageCount = $pageCount;
-		$context->transport->paginator->entityCount = $postCount;
-		$context->transport->paginator->entities = $posts;
-		$context->transport->posts = $posts;
+		$context->transport->paginator->page = $ret->page;
+		$context->transport->paginator->pageCount = $ret->pageCount;
+		$context->transport->paginator->entityCount = $ret->postCount;
+		$context->transport->paginator->entities = $ret->posts;
+	}
+
+	public function favoritesView($page = 1)
+	{
+		$this->listView('favmin:1', $page);
+	}
+
+	public function upvotedView($page = 1)
+	{
+		$this->listView('scoremin:1', $page);
+	}
+
+	public function randomView($page = 1)
+	{
+		$this->listView('order:random', $page);
 	}
 
 	public function toggleTagAction($id, $tag, $enable)
@@ -101,21 +114,6 @@ class PostController
 		$post->setTags($tags);
 
 		PostModel::save($post);
-	}
-
-	public function favoritesAction($page = 1)
-	{
-		$this->listAction('favmin:1', $page);
-	}
-
-	public function upvotedAction($page = 1)
-	{
-		$this->listAction('scoremin:1', $page);
-	}
-
-	public function randomAction($page = 1)
-	{
-		$this->listAction('order:random', $page);
 	}
 
 	public function uploadAction()

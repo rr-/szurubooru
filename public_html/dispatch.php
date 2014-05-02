@@ -45,6 +45,28 @@ $context->simpleActionName = null;
 		$context->simpleActionName);
 });
 
+$postValidation =
+[
+	'tag' => '[^\/]*',
+	'enable' => '0|1',
+	'source' => 'posts|mass-tag',
+	'query' => '[^\/]*',
+	'additionalInfo' => '[^\/]*',
+	'score' => '-1|0|1',
+];
+
+\Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}', $postValidation);
+\Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}', $postValidation);
+\Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}/{page}', $postValidation);
+\Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{additionalInfo}/{query}/{page}', $postValidation);
+
+\Chibi\Router::register(['PostController', 'randomView'], 'GET', '/random', $postValidation);
+\Chibi\Router::register(['PostController', 'randomView'], 'GET', '/random/{page}', $postValidation);
+\Chibi\Router::register(['PostController', 'favoritesView'], 'GET', '/favorites', $postValidation);
+\Chibi\Router::register(['PostController', 'favoritesView'], 'GET', '/favorites/{page}', $postValidation);
+\Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted', $postValidation);
+\Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted/{page}', $postValidation);
+
 \Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments');
 \Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments/{page}', ['page' => '\d+']);
 \Chibi\Router::register(['CommentController', 'addAction'], 'POST', '/comment/add');
@@ -67,28 +89,8 @@ foreach (['GET', 'POST'] as $method)
 	\Chibi\Router::register(['AuthController', 'loginAction'], 'POST', '/auth/login');
 	\Chibi\Router::register(['AuthController', 'logoutAction'], 'POST', '/auth/logout');
 
-	$postValidation =
-	[
-		'tag' => '[^\/]*',
-		'enable' => '0|1',
-		'source' => 'posts|mass-tag',
-		'query' => '[^\/]*',
-		'additionalInfo' => '[^\/]*',
-		'score' => '-1|0|1',
-	];
-
 	\Chibi\Router::register(['PostController', 'uploadAction'], $method, '/posts/upload', $postValidation);
-	\Chibi\Router::register(['PostController', 'listAction'], $method, '/{source}', $postValidation);
-	\Chibi\Router::register(['PostController', 'listAction'], $method, '/{source}/{query}', $postValidation);
-	\Chibi\Router::register(['PostController', 'listAction'], $method, '/{source}/{query}/{page}', $postValidation);
-	\Chibi\Router::register(['PostController', 'listAction'], $method, '/{source}/{additionalInfo}/{query}/{page}', $postValidation);
 	\Chibi\Router::register(['PostController', 'toggleTagAction'], $method, '/post/{id}/toggle-tag/{tag}/{enable}', $postValidation);
-	\Chibi\Router::register(['PostController', 'favoritesAction'], $method, '/favorites', $postValidation);
-	\Chibi\Router::register(['PostController', 'favoritesAction'], $method, '/favorites/{page}', $postValidation);
-	\Chibi\Router::register(['PostController', 'upvotedAction'], $method, '/upvoted', $postValidation);
-	\Chibi\Router::register(['PostController', 'upvotedAction'], $method, '/upvoted/{page}', $postValidation);
-	\Chibi\Router::register(['PostController', 'randomAction'], $method, '/random', $postValidation);
-	\Chibi\Router::register(['PostController', 'randomAction'], $method, '/random/{page}', $postValidation);
 	\Chibi\Router::register(['PostController', 'viewAction'], $method, '/post/{id}', $postValidation);
 	\Chibi\Router::register(['PostController', 'retrieveAction'], $method, '/post/{name}/retrieve', $postValidation);
 	\Chibi\Router::register(['PostController', 'thumbAction'], $method, '/post/{name}/thumb', $postValidation);

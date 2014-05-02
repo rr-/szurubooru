@@ -22,7 +22,7 @@
 	{
 		$registerNavItem(
 			'Browse',
-			\Chibi\Router::linkTo(['PostController', 'listAction']),
+			\Chibi\Router::linkTo(['PostController', 'listView']),
 			$activeController == 'post' and $activeAction != 'upload');
 	}
 
@@ -139,7 +139,7 @@
 	<?php endif ?>
 
 	<li class="search">
-		<form name="search" action="<?= \Chibi\Router::linkTo(['PostController', 'listAction']) ?>" method="get">
+		<form name="search" action="<?= \Chibi\Router::linkTo(['PostController', 'listView']) ?>" method="get">
 
 			<input
 				class="autocomplete"

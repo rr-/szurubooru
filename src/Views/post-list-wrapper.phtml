@@ -4,32 +4,32 @@ Assets::setSubTitle('posts');
 $tabs = [];
 $activeTab = 0;
 if (Access::check(Privilege::ListPosts))
-	$tabs []= ['All posts', \Chibi\Router::linkTo(['PostController', 'listAction'])];
+	$tabs []= ['All posts', \Chibi\Router::linkTo(['PostController', 'listView'])];
 
 if (Access::check(Privilege::ListPosts))
 {
-	$tabs []= ['Random', \Chibi\Router::linkTo(['PostController', 'randomAction'])];
+	$tabs []= ['Random', \Chibi\Router::linkTo(['PostController', 'randomView'])];
 	if ($this->context->simpleActionName == 'random')
 		$activeTab = count($tabs) - 1;
 }
 
 if (Access::check(Privilege::ListPosts))
 {
-	$tabs []= ['Favorites', \Chibi\Router::linkTo(['PostController', 'favoritesAction'])];
+	$tabs []= ['Favorites', \Chibi\Router::linkTo(['PostController', 'favoritesView'])];
 	if ($this->context->simpleActionName == 'favorites')
 		$activeTab = count($tabs) - 1;
 }
 
 if (Access::check(Privilege::ListPosts))
 {
-	$tabs []= ['Upvoted', \Chibi\Router::linkTo(['PostController', 'upvotedAction'])];
+	$tabs []= ['Upvoted', \Chibi\Router::linkTo(['PostController', 'upvotedView'])];
 	if ($this->context->simpleActionName == 'upvoted')
 		$activeTab = count($tabs) - 1;
 }
 
 if (Access::check(Privilege::MassTag))
 {
-	$tabs []= ['Mass tag', \Chibi\Router::linkTo(['PostController', 'listAction'], [
+	$tabs []= ['Mass tag', \Chibi\Router::linkTo(['PostController', 'listView'], [
 		'source' => 'mass-tag',
 		'query' => isset($this->context->transport->searchQuery)
 			? htmlspecialchars($this->context->transport->searchQuery)

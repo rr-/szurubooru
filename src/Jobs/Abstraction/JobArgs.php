@@ -5,4 +5,5 @@ class JobArgs
 	const POST_ID = 'post-id';
 	const TEXT = 'text';
 	const PAGE_NUMBER = 'page-number';
+	const QUERY = 'query';
 }

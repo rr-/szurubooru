@@ -60,7 +60,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<div class="text">
 				Current&nbsp;search:<br/>
 				<a href="<?= \Chibi\Router::linkTo(
-					['PostController', 'listAction'],
+					['PostController', 'listView'],
 					['query' => $this->context->transport->lastSearchQuery]) ?>">
 					<?= $this->context->transport->lastSearchQuery ?>
 				</a>
@@ -76,7 +76,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php foreach ($tags as $tag): ?>
 				<li title="<?= $tag->name ?>">
 					<a href="<?= \Chibi\Router::linkTo(
-						['PostController', 'listAction'],
+						['PostController', 'listView'],
 						['query' => $tag->name]) ?>"
 						><?= $tag->name ?>
 					</a>
@@ -354,7 +354,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					['PostController', 'deleteAction'],
 					['id' => $this->context->transport->post->id]),
 				'data-confirm-text' => 'Are you sure you want to delete this post?',
-				'data-redirect-url' => \Chibi\Router::linkTo(['PostController', 'listAction']),
+				'data-redirect-url' => \Chibi\Router::linkTo(['PostController', 'listView']),
 			];
 		}
 

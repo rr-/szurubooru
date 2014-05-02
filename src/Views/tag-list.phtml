@@ -28,7 +28,7 @@
 	<?php $max = $this->context->highestUsage ?>
 	<?php $add = 0. ?>
 	<?php $mul = 10. / max(1, log(max(1, $max))) ?>
-	<?php $url = \Chibi\Router::linkTo(['PostController', 'listAction'], ['query' => '_query_']) ?>
+	<?php $url = \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => '_query_']) ?>
 	<div class="tags paginator-content">
 		<ul>
 			<?php foreach ($this->context->transport->tags as $tag): ?>

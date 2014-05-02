@@ -29,7 +29,7 @@ Assets::addStylesheet('index-index.css');
 				<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
 				<?php foreach ($tags as $tag): ?>
 					<li>
-						<a href="<?= \Chibi\Router::linkTo(['PostController', 'listAction'], ['query' => $tag->name]) ?>">
+						<a href="<?= \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => $tag->name]) ?>">
 							<?= $tag->name ?>
 						</a>
 					</li>

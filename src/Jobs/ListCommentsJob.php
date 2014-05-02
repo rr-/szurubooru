@@ -12,6 +12,8 @@ class ListCommentsJob extends AbstractJob
 		$posts = PostSearchService::getEntities($searchQuery, $commentsPerPage, $page);
 		$postCount = PostSearchService::getEntityCount($searchQuery);
 		$pageCount = ceil($postCount / $commentsPerPage);
+		$page = min($pageCount, $page);
+
 		PostModel::preloadTags($posts);
 		PostModel::preloadComments($posts);
 		$comments = [];
