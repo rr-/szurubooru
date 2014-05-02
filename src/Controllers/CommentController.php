@@ -1,33 +1,21 @@
 <?php
 class CommentController
 {
-	public function listView($page)
+	public function listView($page = 1)
 	{
-		Access::assert(Privilege::ListComments);
-
-		$page = max(1, intval($page));
-		$commentsPerPage = intval(getConfig()->comments->commentsPerPage);
-		$searchQuery = 'comment_min:1 order:comment_date,desc';
-
-		$posts = PostSearchService::getEntities($searchQuery, $commentsPerPage, $page);
-		$postCount = PostSearchService::getEntityCount($searchQuery);
-		$pageCount = ceil($postCount / $commentsPerPage);
-		PostModel::preloadTags($posts);
-		PostModel::preloadComments($posts);
-		$comments = [];
-		foreach ($posts as $post)
-			$comments = array_merge($comments, $post->getComments());
-		CommentModel::preloadCommenters($comments);
+		$ret = Api::run(
+			new ListCommentsJob(),
+			[
+				JobArgs::PAGE_NUMBER => $page,
+			]);
 
 		$context = getContext();
-		$context->postGroups = true;
-		$context->transport->posts = $posts;
+		$context->transport->posts = $ret->posts;
 		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $page;
-		$context->transport->paginator->pageCount = $pageCount;
-		$context->transport->paginator->entityCount = $postCount;
-		$context->transport->paginator->entities = $posts;
-		$context->transport->paginator->params = func_get_args();
+		$context->transport->paginator->page = $ret->page;
+		$context->transport->paginator->pageCount = $ret->pageCount;
+		$context->transport->paginator->entityCount = $ret->postCount;
+		$context->transport->paginator->entities = $ret->posts;
 	}
 
 	public function previewAction()
