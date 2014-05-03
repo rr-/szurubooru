@@ -128,6 +128,7 @@ class UserController
 
 		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
 		LogHelper::log('{user} removed {subject}\'s account', ['subject' => TextHelper::reprUser($name)]);
+		exit;
 	}
 
 	public function settingsAction($name)
@@ -348,7 +349,7 @@ class UserController
 		if (Auth::isLoggedIn())
 		{
 			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
-			return;
+			exit;
 		}
 
 		$suppliedName = InputHelper::get('name');

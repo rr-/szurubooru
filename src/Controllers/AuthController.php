@@ -30,6 +30,7 @@ class AuthController
 		$context->layoutName = null;
 		Auth::logout();
 		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
+		exit;
 	}
 
 	public static function observeWorkFinish()
@@ -50,8 +51,9 @@ class AuthController
 		{
 			\Chibi\Util\Url::forward(\Chibi\Util\Url::makeAbsolute($_SESSION['login-redirect-url']));
 			unset($_SESSION['login-redirect-url']);
-			return;
+			exit;
 		}
 		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
+		exit;
 	}
 }

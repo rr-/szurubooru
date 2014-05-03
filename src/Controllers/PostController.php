@@ -23,7 +23,7 @@ class PostController
 				'additionalInfo' => $additionalInfo,
 				'query' => $formQuery]);
 			\Chibi\Util\Url::forward($url);
-			return;
+			exit;
 		}
 
 		$query = trim($query);

@@ -35,7 +35,7 @@ class LogController
 						'filter' => $formQuery,
 						'page' => 1
 					]));
-			return;
+			exit;
 		}
 
 		Access::assert(Privilege::ViewLog);
