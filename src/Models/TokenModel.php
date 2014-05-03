@@ -30,7 +30,6 @@ class TokenModel extends AbstractCrudModel
 				$stmt->setColumn($key, new Sql\Binding($val));
 
 			Database::exec($stmt);
-
 		});
 	}
 

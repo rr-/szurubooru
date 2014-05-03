@@ -30,7 +30,7 @@
 	{
 		$registerNavItem(
 			'Upload',
-			\Chibi\Router::linkTo(['PostController', 'uploadAction']),
+			\Chibi\Router::linkTo(['PostController', 'uploadView']),
 			$activeController == 'post' and $activeAction == 'upload');
 	}
 

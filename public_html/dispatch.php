@@ -70,6 +70,9 @@ $postValidation =
 	'score' => '-1|0|1',
 ];
 
+\Chibi\Router::register(['PostController', 'uploadView'], 'GET', '/posts/upload', $postValidation);
+\Chibi\Router::register(['PostController', 'uploadAction'], 'POST', '/posts/upload', $postValidation);
+
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}/{page}', $postValidation);
@@ -92,7 +95,6 @@ $postValidation =
 
 foreach (['GET', 'POST'] as $method)
 {
-	\Chibi\Router::register(['PostController', 'uploadAction'], $method, '/posts/upload', $postValidation);
 	\Chibi\Router::register(['PostController', 'viewAction'], $method, '/post/{id}', $postValidation);
 	\Chibi\Router::register(['PostController', 'retrieveAction'], $method, '/post/{name}/retrieve', $postValidation);
 	\Chibi\Router::register(['PostController', 'thumbAction'], $method, '/post/{name}/thumb', $postValidation);

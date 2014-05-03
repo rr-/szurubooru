@@ -19,6 +19,10 @@ class PostModel extends AbstractCrudModel
 	public static function spawn()
 	{
 		$post = new PostEntity;
+		$post->score = 0;
+		$post->favCount = 0;
+		$post->commentCount = 0;
+		$post->safety = PostSafety::Safe;
 		$post->hidden = false;
 		$post->uploadDate = time();
 		do

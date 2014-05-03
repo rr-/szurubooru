@@ -84,54 +84,35 @@ class PostController
 			]);
 	}
 
+	public function uploadView()
+	{
+	}
+
 	public function uploadAction()
 	{
-		$context = getContext();
-		Access::assert(Privilege::UploadPost);
-		if (getConfig()->registration->needEmailForUploading)
-			Access::assertEmailConfirmation();
+		$jobArgs =
+		[
+			AddPostJob::ANONYMOUS => InputHelper::get('anonymous'),
+			EditPostSafetyJob::SAFETY => InputHelper::get('safety'),
+			EditPostTagsJob::TAG_NAMES => InputHelper::get('tags'),
+			EditPostSourceJob::SOURCE => InputHelper::get('source'),
+		];
 
-		if (!InputHelper::get('submit'))
-			return;
-
-		\Chibi\Database::transaction(function() use ($context)
+		if (!empty(InputHelper::get('url')))
 		{
-			$post = PostModel::spawn();
-			LogHelper::bufferChanges();
+			$jobArgs[EditPostUrlJob::CONTENT_URL] = InputHelper::get('url');
+		}
+		elseif (!empty($_FILES['file']['name']))
+		{
+			$file = $_FILES['file'];
+			TransferHelper::handleUploadErrors($file);
 
-			//basic stuff
-			$anonymous = InputHelper::get('anonymous');
-			if (Auth::isLoggedIn() and !$anonymous)
-				$post->setUploader(Auth::getCurrentUser());
+			$jobArgs[EditPostContentJob::POST_CONTENT] = Api::serializeFile(
+				$file['tmp_name'],
+				$file['name']);
+		}
 
-			//store the post to get the ID in the logs
-			PostModel::forgeId($post);
-
-			//do the edits
-			$this->doEdit($post, true);
-
-			//this basically means that user didn't specify file nor url
-			if (empty($post->type))
-				throw new SimpleException('No post type detected; upload faled');
-
-			//clean edit log
-			LogHelper::setBuffer([]);
-
-			//log
-			$fmt = ($anonymous and !getConfig()->misc->logAnonymousUploads)
-				? '{anon}'
-				: '{user}';
-			$fmt .= ' added {post} (tags: {tags}, safety: {safety}, source: {source})';
-			LogHelper::log($fmt, [
-				'post' => TextHelper::reprPost($post),
-				'tags' => TextHelper::reprTags($post->getTags()),
-				'safety' => PostSafety::toString($post->safety),
-				'source' => $post->source]);
-
-			//finish
-			LogHelper::flush();
-			PostModel::save($post);
-		});
+		Api::run(new AddPostJob(), $jobArgs);
 	}
 
 	public function editAction($id)

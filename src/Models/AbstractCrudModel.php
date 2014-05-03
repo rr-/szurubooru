@@ -120,6 +120,14 @@ abstract class AbstractCrudModel implements IModel
 		{
 			$stmt = new Sql\InsertStatement();
 			$stmt->setTable($table);
+			foreach ($entity as $key => $val)
+			{
+				$key = TextCaseConverter::convert($key,
+					TextCaseConverter::LOWER_CAMEL_CASE,
+					TextCaseConverter::SNAKE_CASE);
+
+				$stmt->setColumn($key, new Sql\Binding($val));
+			}
 			Database::exec($stmt);
 			$entity->id = Database::lastInsertId();
 		}

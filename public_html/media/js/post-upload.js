@@ -166,6 +166,7 @@ $(function()
 	{
 		handleInputs(files, function(postDom, file)
 		{
+			postDom.data('url', '');
 			postDom.data('file', file);
 			$('.file-name strong', postDom).text(file.name);
 
@@ -198,6 +199,7 @@ $(function()
 		handleInputs(urls, function(postDom, url)
 		{
 			postDom.data('url', url);
+			postDom.data('file', '');
 			postDom.find('[name=source]').val(url);
 			if (matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/))
 			{

@@ -4,6 +4,7 @@ abstract class AbstractJob
 	const COMMENT_ID = 'comment-id';
 	const POST_ID = 'post-id';
 	const TAG_NAME = 'tag-name';
+	const TAG_NAMES = 'tags';
 	const TEXT = 'text';
 	const PAGE_NUMBER = 'page-number';
 	const QUERY = 'query';
@@ -24,10 +25,20 @@ abstract class AbstractJob
 
 	public function getArgument($key)
 	{
-		if (!isset($this->arguments[$key]))
-			throw new SimpleException('Expected argument "' . $key . '" was not specified');
+		if (!$this->hasArgument($key))
+			throw new ApiMissingArgumentException($key);
 
 		return $this->arguments[$key];
+	}
+
+	public function getArguments()
+	{
+		return $this->arguments;
+	}
+
+	public function hasArgument($key)
+	{
+		return isset($this->arguments[$key]);
 	}
 
 	public function setArguments($arguments)
