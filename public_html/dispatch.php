@@ -74,6 +74,7 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'uploadAction'], 'POST', '/posts/upload', $postValidation);
 \Chibi\Router::register(['PostController', 'editView'], 'GET', '/post/{id}/edit', $postValidation);
 \Chibi\Router::register(['PostController', 'editAction'], 'POST', '/post/{id}/edit', $postValidation);
+\Chibi\Router::register(['PostController', 'deleteAction'], 'POST', '/post/{id}/delete', $postValidation);
 
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}', $postValidation);
@@ -105,7 +106,6 @@ foreach (['GET', 'POST'] as $method)
 	\Chibi\Router::register(['PostController', 'thumbAction'], $method, '/post/{name}/thumb', $postValidation);
 	\Chibi\Router::register(['PostController', 'removeFavoriteAction'], $method, '/post/{id}/rem-fav', $postValidation);
 	\Chibi\Router::register(['PostController', 'addFavoriteAction'], $method, '/post/{id}/add-fav', $postValidation);
-	\Chibi\Router::register(['PostController', 'deleteAction'], $method, '/post/{id}/delete', $postValidation);
 	\Chibi\Router::register(['PostController', 'featureAction'], $method, '/post/{id}/feature', $postValidation);
 	\Chibi\Router::register(['PostController', 'scoreAction'], $method, '/post/{id}/score/{score}', $postValidation);
 

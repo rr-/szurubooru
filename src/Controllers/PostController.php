@@ -187,15 +187,8 @@ class PostController
 
 	public function deleteAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::DeletePost, Access::getIdentity($post->getUploader()));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		PostModel::remove($post);
-
-		LogHelper::log('{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
+		Api::run(new DeletePostJob(), [
+			DeletePostJob::POST_ID => $id]);
 	}
 
 	public function addFavoriteAction($id)
