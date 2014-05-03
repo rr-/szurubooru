@@ -187,7 +187,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php if ($this->context->transport->post->type != PostType::Youtube): ?>
 			<div class="hl-option">
 				<a title="Download" href="<?= \Chibi\Router::linkTo(
-					['PostController', 'retrieveAction'],
+					['PostController', 'fileView'],
 					['name' => $this->context->transport->post->name]) ?>">
 					<i class="icon-dl"></i>
 					<span>

@@ -40,12 +40,4 @@ class Api
 		});
 		return $statuses;
 	}
-
-	public static function serializeFile($filePath, $fileName)
-	{
-		$x = new StdClass;
-		$x->filePath = $filePath;
-		$x->fileName = $fileName;
-		return $x;
-	}
 }

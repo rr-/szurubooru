@@ -48,7 +48,7 @@ if ($masstag)
 
 		<img
 			class="thumb"
-			src="<?= \Chibi\Router::linkTo(['PostController', 'thumbAction'], ['name' => $this->context->post->name]) ?>"
+			src="<?= \Chibi\Router::linkTo(['PostController', 'thumbView'], ['name' => $this->context->post->name]) ?>"
 			alt="@<?= $this->context->post->id ?>"/>
 
 		<?php

@@ -107,7 +107,7 @@ class PostController
 			$file = $_FILES['file'];
 			TransferHelper::handleUploadErrors($file);
 
-			$jobArgs[EditPostContentJob::POST_CONTENT] = Api::serializeFile(
+			$jobArgs[EditPostContentJob::POST_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
 		}
@@ -147,7 +147,7 @@ class PostController
 			$file = $_FILES['file'];
 			TransferHelper::handleUploadErrors($file);
 
-			$jobArgs[EditPostContentJob::POST_CONTENT] = Api::serializeFile(
+			$jobArgs[EditPostContentJob::POST_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
 		}
@@ -157,7 +157,7 @@ class PostController
 			$file = $_FILES['thumb'];
 			TransferHelper::handleUploadErrors($file);
 
-			$jobArgs[EditPostThumbJob::THUMB_CONTENT] = Api::serializeFile(
+			$jobArgs[EditPostThumbJob::THUMB_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
 		}
@@ -256,67 +256,34 @@ class PostController
 		$context->transport->nextPostId = $nextPostId ? $nextPostId : null;
 	}
 
-	public function thumbAction($name, $width = null, $height = null)
+	public function fileView($name)
 	{
+		$ret = Api::run(new GetPostContentJob(), [GetPostContentJob::POST_NAME => $name]);
+
 		$context = getContext();
-		$path = PostModel::getThumbCustomPath($name, $width, $height);
-		if (!file_exists($path))
-		{
-			$path = PostModel::getThumbDefaultPath($name, $width, $height);
-			if (!file_exists($path))
-			{
-				$post = PostModel::findByIdOrName($name);
-				Access::assert(Privilege::ListPosts);
-				Access::assert(Privilege::ListPosts, PostSafety::toString($post->safety));
-				$post->generateThumb($width, $height);
-				if (!file_exists($path))
-				{
-					$path = getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
-					$path = TextHelper::absolutePath($path);
-				}
-			}
-		}
-
-		if (!is_readable($path))
-			throw new SimpleException('Thumbnail file is not readable');
-
+		$context->transport->cacheDaysToLive = 14;
+		$context->transport->customFileName = $ret->fileName;
+		$context->transport->mimeType = $ret->mimeType;
+		$context->transport->fileHash = 'post' . md5(substr($ret->fileContent, 0, 4096));
+		$context->transport->fileContent = $ret->fileContent;
+		$context->transport->lastModified = $ret->lastModified;
 		$context->layoutName = 'layout-file';
-		$context->transport->cacheDaysToLive = 365;
-		$context->transport->mimeType = 'image/jpeg';
-		$context->transport->fileHash = 'thumb' . md5($name . filemtime($path));
-		$context->transport->filePath = $path;
 	}
 
-	public function retrieveAction($name)
+	public function thumbView($name, $width = null, $height = null)
 	{
-		$post = PostModel::findByName($name, true);
-		$config = getConfig();
+		$ret = Api::run(new GetPostThumbJob(), [
+			GetPostThumbJob::POST_NAME => $name,
+			GetPostThumbJob::WIDTH => $width,
+			GetPostThumbJob::HEIGHT => $height]);
+
 		$context = getContext();
-
-		Access::assert(Privilege::RetrievePost);
-		Access::assert(Privilege::RetrievePost, PostSafety::toString($post->safety));
-
-		$path = $config->main->filesPath . DS . $post->name;
-		$path = TextHelper::absolutePath($path);
-		if (!file_exists($path))
-			throw new SimpleNotFoundException('Post file does not exist');
-		if (!is_readable($path))
-			throw new SimpleException('Post file is not readable');
-
-		$fn = sprintf('%s_%s_%s.%s',
-			$config->main->title,
-			$post->id,
-			join(',', array_map(function($tag) { return $tag->name; }, $post->getTags())),
-			TextHelper::resolveMimeType($post->mimeType) ?: 'dat');
-		$fn = preg_replace('/[[:^print:]]/', '', $fn);
-
-		$ttl = 60 * 60 * 24 * 14;
-
+		$context->transport->cacheDaysToLive = 365;
+		$context->transport->customFileName = $ret->fileName;
+		$context->transport->mimeType = 'image/jpeg';
+		$context->transport->fileHash = 'thumb' . md5(substr($ret->fileContent, 0, 4096));
+		$context->transport->fileContent = $ret->fileContent;
+		$context->transport->lastModified = $ret->lastModified;
 		$context->layoutName = 'layout-file';
-		$context->transport->cacheDaysToLive = 14;
-		$context->transport->customFileName = $fn;
-		$context->transport->mimeType = $post->mimeType;
-		$context->transport->fileHash = 'post' . $post->fileHash;
-		$context->transport->filePath = $path;
 	}
 }

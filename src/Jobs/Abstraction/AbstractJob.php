@@ -3,6 +3,7 @@ abstract class AbstractJob
 {
 	const COMMENT_ID = 'comment-id';
 	const POST_ID = 'post-id';
+	const POST_NAME = 'post-name';
 	const TAG_NAME = 'tag-name';
 	const TAG_NAMES = 'tags';
 	const TEXT = 'text';

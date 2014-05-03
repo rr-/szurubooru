@@ -6,10 +6,10 @@ class GetPostJob extends AbstractPostEditJob
 		$post = $this->post;
 
 		//todo: refactor this so that requiresPrivilege can accept multiple privileges
-		if ($this->post->hidden)
+		if ($post->hidden)
 			Access::assert(Privilege::ViewPost, 'hidden');
 		Access::assert(Privilege::ViewPost);
-		Access::assert(Privilege::ViewPost, PostSafety::toString($this->post->safety));
+		Access::assert(Privilege::ViewPost, PostSafety::toString($post->safety));
 
 		CommentModel::preloadCommenters($post->getComments());
 

@@ -89,6 +89,8 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted/{page}', $postValidation);
 
 \Chibi\Router::register(['PostController', 'genericView'], 'GET', '/post/{id}', $postValidation);
+\Chibi\Router::register(['PostController', 'fileView'], 'GET', '/post/{name}/retrieve', $postValidation);
+\Chibi\Router::register(['PostController', 'thumbView'], 'GET', '/post/{name}/thumb', $postValidation);
 
 \Chibi\Router::register(['PostController', 'toggleTagAction'], 'POST', '/post/{id}/toggle-tag/{tag}/{enable}', $postValidation);
 \Chibi\Router::register(['PostController', 'flagAction'], 'POST', '/post/{id}/flag', $postValidation);
@@ -114,9 +116,6 @@ $commentValidation =
 
 foreach (['GET', 'POST'] as $method)
 {
-	\Chibi\Router::register(['PostController', 'retrieveAction'], $method, '/post/{name}/retrieve', $postValidation);
-	\Chibi\Router::register(['PostController', 'thumbAction'], $method, '/post/{name}/thumb', $postValidation);
-
 	$tagValidation =
 	[
 		'page' => '\d*',
