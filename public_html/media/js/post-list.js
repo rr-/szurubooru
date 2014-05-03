@@ -14,7 +14,7 @@ $(function()
 			var enable = !aDom.parents('.post').hasClass('tagged');
 			var url = $(this).attr('href') + '?json';
 			url = url.replace('_enable_', enable ? '1' : '0');
-			$.get(url, {submit: 1}).success(function(data)
+			$.post(url).success(function(data)
 			{
 				aDom.removeClass('inactive');
 				aDom.parents('.post').removeClass('tagged');

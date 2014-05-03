@@ -71,49 +71,17 @@ class PostController
 
 	public function toggleTagAction($id, $tag, $enable)
 	{
-		$context = getContext();
-		$tagName = $tag;
-		$post = PostModel::findByIdOrName($id);
-		$context->transport->post = $post;
-
-		if (!InputHelper::get('submit'))
-			return;
-
 		Access::assert(
 			Privilege::MassTag,
-			Access::getIdentity($post->getUploader()));
+			Access::getIdentity(PostModel::findById($id)->getUploader()));
 
-		$tags = $post->getTags();
-
-		if (!$enable)
-		{
-			foreach ($tags as $i => $tag)
-				if ($tag->name == $tagName)
-					unset($tags[$i]);
-
-			LogHelper::log('{user} untagged {post} with {tag}', [
-				'post' => TextHelper::reprPost($post),
-				'tag' => TextHelper::reprTag($tag)]);
-		}
-		elseif ($enable)
-		{
-			$tag = TagModel::findByName($tagName, false);
-			if ($tag === null)
-			{
-				$tag = TagModel::spawn();
-				$tag->name = $tagName;
-				TagModel::save($tag);
-			}
-
-			$tags []= $tag;
-			LogHelper::log('{user} tagged {post} with {tag}', [
-				'post' => TextHelper::reprPost($post),
-				'tag' => TextHelper::reprTag($tag)]);
-		}
-
-		$post->setTags($tags);
-
-		PostModel::save($post);
+		Api::run(
+			new TogglePostTagJob(),
+			[
+				JobArgs::POST_ID => $id,
+				JobArgs::TAG_NAME => $tag,
+				JobArgs::STATE => $enable,
+			]);
 	}
 
 	public function uploadAction()
