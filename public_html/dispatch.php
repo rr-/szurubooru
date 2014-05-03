@@ -87,6 +87,7 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted', $postValidation);
 \Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted/{page}', $postValidation);
 \Chibi\Router::register(['PostController', 'toggleTagAction'], 'POST', '/post/{id}/toggle-tag/{tag}/{enable}', $postValidation);
+\Chibi\Router::register(['PostController', 'flagAction'], 'POST', '/post/{id}/flag', $postValidation);
 
 \Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments');
 \Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments/{page}', ['page' => '\d+']);
@@ -105,7 +106,6 @@ foreach (['GET', 'POST'] as $method)
 	\Chibi\Router::register(['PostController', 'deleteAction'], $method, '/post/{id}/delete', $postValidation);
 	\Chibi\Router::register(['PostController', 'hideAction'], $method, '/post/{id}/hide', $postValidation);
 	\Chibi\Router::register(['PostController', 'unhideAction'], $method, '/post/{id}/unhide', $postValidation);
-	\Chibi\Router::register(['PostController', 'flagAction'], $method, '/post/{id}/flag', $postValidation);
 	\Chibi\Router::register(['PostController', 'featureAction'], $method, '/post/{id}/feature', $postValidation);
 	\Chibi\Router::register(['PostController', 'scoreAction'], $method, '/post/{id}/score/{score}', $postValidation);
 

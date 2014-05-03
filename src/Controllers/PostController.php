@@ -168,21 +168,7 @@ class PostController
 
 	public function flagAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::FlagPost, Access::getIdentity($post->getUploader()));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$key = TextHelper::reprPost($post);
-
-		$flagged = SessionHelper::get('flagged', []);
-		if (in_array($key, $flagged))
-			throw new SimpleException('You already flagged this post');
-		$flagged []= $key;
-		SessionHelper::set('flagged', $flagged);
-
-		LogHelper::log('{user} flagged {post} for moderator attention', ['post' => TextHelper::reprPost($post)]);
+		Api::run(new FlagPostJob(), [FlagPostJob::POST_ID => $id]);
 	}
 
 	public function hideAction($id)
