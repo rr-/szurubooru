@@ -44,7 +44,7 @@ if ($masstag)
 		<?php if (Auth::getCurrentUser()->hasEnabledPostTagTitles()): ?>
 			title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>"
 		<?php endif ?>
-		href="<?= \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => $this->context->post->id]) ?>">
+		href="<?= \Chibi\Router::linkTo(['PostController', 'genericView'], ['id' => $this->context->post->id]) ?>">
 
 		<img
 			class="thumb"

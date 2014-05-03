@@ -127,7 +127,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 
 	protected function doPosts($text)
 	{
-		$link = \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => '_post_']);
+		$link = \Chibi\Router::linkTo(['PostController', 'genericView'], ['id' => '_post_']);
 		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))@(\d+)/', function($x) use ($link)
 		{
 			return $this->hashPart('<a href="' . str_replace('_post_', $x[1], $link) . '"><code>' . $x[0] . '</code></a>');

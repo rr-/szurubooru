@@ -87,6 +87,9 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'favoritesView'], 'GET', '/favorites/{page}', $postValidation);
 \Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted', $postValidation);
 \Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted/{page}', $postValidation);
+
+\Chibi\Router::register(['PostController', 'genericView'], 'GET', '/post/{id}', $postValidation);
+
 \Chibi\Router::register(['PostController', 'toggleTagAction'], 'POST', '/post/{id}/toggle-tag/{tag}/{enable}', $postValidation);
 \Chibi\Router::register(['PostController', 'flagAction'], 'POST', '/post/{id}/flag', $postValidation);
 \Chibi\Router::register(['PostController', 'hideAction'], 'POST', '/post/{id}/hide', $postValidation);
@@ -96,16 +99,21 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'scoreAction'], 'POST', '/post/{id}/score/{score}', $postValidation);
 \Chibi\Router::register(['PostController', 'featureAction'], 'POST', '/post/{id}/feature', $postValidation);
 
-\Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments');
-\Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments/{page}', ['page' => '\d+']);
-\Chibi\Router::register(['CommentController', 'addAction'], 'POST', '/comment/add');
-\Chibi\Router::register(['CommentController', 'deleteAction'], 'POST', '/comment/{id}/delete', ['id' => '\d+']);
-\Chibi\Router::register(['CommentController', 'editView'], 'GET', '/comment/{id}/edit', ['id' => '\d+']);
-\Chibi\Router::register(['CommentController', 'editAction'], 'POST', '/comment/{id}/edit', ['id' => '\d+']);
+$commentValidation =
+[
+	'id' => '\d+',
+	'page' => '\d+',
+];
+
+\Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments', $commentValidation);
+\Chibi\Router::register(['CommentController', 'listView'], 'GET', '/comments/{page}', $commentValidation);
+\Chibi\Router::register(['CommentController', 'addAction'], 'POST', '/comment/add', $commentValidation);
+\Chibi\Router::register(['CommentController', 'deleteAction'], 'POST', '/comment/{id}/delete', $commentValidation);
+\Chibi\Router::register(['CommentController', 'editView'], 'GET', '/comment/{id}/edit', $commentValidation);
+\Chibi\Router::register(['CommentController', 'editAction'], 'POST', '/comment/{id}/edit', $commentValidation);
 
 foreach (['GET', 'POST'] as $method)
 {
-	\Chibi\Router::register(['PostController', 'viewAction'], $method, '/post/{id}', $postValidation);
 	\Chibi\Router::register(['PostController', 'retrieveAction'], $method, '/post/{name}/retrieve', $postValidation);
 	\Chibi\Router::register(['PostController', 'thumbAction'], $method, '/post/{name}/thumb', $postValidation);
 

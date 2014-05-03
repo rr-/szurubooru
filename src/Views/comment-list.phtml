@@ -32,7 +32,7 @@ Assets::setSubTitle('comments');
 
 						<?php if (count($comments) > count($commentsToDisplay)): ?>
 							<a href="<?= \Chibi\Router::linkTo(
-								['PostController', 'viewAction'],
+								['PostController', 'genericView'],
 								['id' => $this->context->post->id]) ?>">
 								<span class="hellip">(more&hellip;)</span>
 							</a>

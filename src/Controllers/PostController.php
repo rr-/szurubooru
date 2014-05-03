@@ -218,16 +218,13 @@ class PostController
 			FeaturePostJob::POST_ID => $id]);
 	}
 
-	public function viewAction($id)
+	public function genericView($id)
 	{
 		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		CommentModel::preloadCommenters($post->getComments());
+		$context->viewName = 'post-view';
 
-		if ($post->hidden)
-			Access::assert(Privilege::ViewPost, 'hidden');
-		Access::assert(Privilege::ViewPost);
-		Access::assert(Privilege::ViewPost, PostSafety::toString($post->safety));
+		$post = Api::run(new GetPostJob(), [
+			GetPostJob::POST_ID => $id]);
 
 		try
 		{
@@ -245,6 +242,8 @@ class PostController
 					$context->transport->lastSearchQuery, $id);
 		}
 
+		//todo:
+		//move these to PostEntity when implementing ApiController
 		$favorite = Auth::getCurrentUser()->hasFavorited($post);
 		$score = Auth::getCurrentUser()->getScore($post);
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));

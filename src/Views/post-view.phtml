@@ -31,7 +31,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="left">
 			<?php if ($this->context->transport->nextPostId): ?>
 				<a href="<?= \Chibi\Router::linkTo(
-					['PostController', 'viewAction'],
+					['PostController', 'genericView'],
 					['id' => $this->context->transport->nextPostId]) ?>">
 			<?php else: ?>
 				<a class="disabled">
@@ -44,7 +44,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="right">
 			<?php if ($this->context->transport->prevPostId): ?>
 				<a href="<?= \Chibi\Router::linkTo(
-					['PostController', 'viewAction'],
+					['PostController', 'genericView'],
 					['id' => $this->context->transport->prevPostId]) ?>">
 			<?php else: ?>
 				<a class="disabled">
@@ -259,7 +259,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<ul>
 				<?php foreach ($this->context->transport->post->getRelations() as $relatedPost): ?>
 					<li>
-						<a href="<?= \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => $relatedPost->id]) ?>">
+						<a href="<?= \Chibi\Router::linkTo(['PostController', 'genericView'], ['id' => $relatedPost->id]) ?>">
 							@<?= $relatedPost->id ?>
 						</a>
 					</li>
