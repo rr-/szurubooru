@@ -3,9 +3,9 @@ class GetLogJob extends AbstractJob
 {
 	public function execute()
 	{
-		$page = $this->getArgument(JobArgs::PAGE_NUMBER);
-		$name = $this->getArgument(JobArgs::LOG_ID);
-		$query = $this->getArgument(JobArgs::QUERY);
+		$page = $this->getArgument(self::PAGE_NUMBER);
+		$name = $this->getArgument(self::LOG_ID);
+		$query = $this->getArgument(self::QUERY);
 
 		//parse input
 		$page = max(1, intval($page));

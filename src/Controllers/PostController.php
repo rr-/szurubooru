@@ -42,8 +42,8 @@ class PostController
 		$ret = Api::run(
 			new ListPostsJob(),
 			[
-				JobArgs::PAGE_NUMBER => $page,
-				JobArgs::QUERY => $query
+				ListPostsJob::PAGE_NUMBER => $page,
+				ListPostsJob::QUERY => $query
 			]);
 
 		$context->transport->posts = $ret->posts;
@@ -78,9 +78,9 @@ class PostController
 		Api::run(
 			new TogglePostTagJob(),
 			[
-				JobArgs::POST_ID => $id,
-				JobArgs::TAG_NAME => $tag,
-				JobArgs::STATE => $enable,
+				TogglePostTagJob::POST_ID => $id,
+				TogglePostTagJob::TAG_NAME => $tag,
+				TogglePostTagJob::STATE => $enable,
 			]);
 	}
 

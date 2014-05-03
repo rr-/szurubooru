@@ -4,7 +4,7 @@ class PreviewCommentJob extends AbstractJob
 	public function execute()
 	{
 		$user = Auth::getCurrentUser();
-		$text = CommentModel::validateText($this->getArgument(JobArgs::TEXT));
+		$text = CommentModel::validateText($this->getArgument(self::TEXT));
 
 		$comment = CommentModel::spawn();
 		$comment->setCommenter($user);

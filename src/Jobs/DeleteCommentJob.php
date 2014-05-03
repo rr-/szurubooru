@@ -5,7 +5,7 @@ class DeleteCommentJob extends AbstractJob
 
 	public function prepare()
 	{
-		$this->comment = CommentModel::findById($this->getArgument(JobArgs::COMMENT_ID));
+		$this->comment = CommentModel::findById($this->getArgument(self::COMMENT_ID));
 	}
 
 	public function execute()

@@ -3,7 +3,7 @@ class ListCommentsJob extends AbstractJob
 {
 	public function execute()
 	{
-		$page = $this->getArgument(JobArgs::PAGE_NUMBER);
+		$page = $this->getArgument(self::PAGE_NUMBER);
 
 		$page = max(1, intval($page));
 		$commentsPerPage = intval(getConfig()->comments->commentsPerPage);

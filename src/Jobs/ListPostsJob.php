@@ -3,8 +3,8 @@ class ListPostsJob extends AbstractJob
 {
 	public function execute()
 	{
-		$page = $this->getArgument(JobArgs::PAGE_NUMBER);
-		$query = $this->getArgument(JobArgs::QUERY);
+		$page = $this->getArgument(self::PAGE_NUMBER);
+		$query = $this->getArgument(self::QUERY);
 
 		$page = max(1, intval($page));
 		$postsPerPage = intval(getConfig()->browsing->postsPerPage);
