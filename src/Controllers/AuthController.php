@@ -44,8 +44,9 @@ class AuthController
 		{
 			\Chibi\Util\Url::forward(\Chibi\Util\Url::makeAbsolute($_SESSION['login-redirect-url']));
 			unset($_SESSION['login-redirect-url']);
-			return;
+			exit;
 		}
 		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']));
+		exit;
 	}
 }

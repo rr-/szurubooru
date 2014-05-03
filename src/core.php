@@ -1,5 +1,4 @@
 <?php
-$startTime = microtime(true);
 define('SZURU_VERSION', '0.7.1');
 define('SZURU_LINK', 'http://github.com/rr-/szurubooru');
 

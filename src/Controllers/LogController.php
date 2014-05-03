@@ -24,7 +24,7 @@ class LogController
 						'filter' => $formQuery,
 						'page' => 1
 					]));
-			return;
+			exit;
 		}
 
 		$ret = Api::run(
