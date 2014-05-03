@@ -141,8 +141,10 @@ foreach (['GET', 'POST'] as $method)
 	\Chibi\Router::register(['UserController', 'settingsAction'], $method, '/user/{name}/settings', $userValidations);
 	\Chibi\Router::register(['UserController', 'editAction'], $method, '/user/{name}/edit', $userValidations);
 	\Chibi\Router::register(['UserController', 'activationAction'], $method, '/activation/{token}', $userValidations);
+	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy', $userValidations);
 	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy/{token}', $userValidations);
 	\Chibi\Router::register(['UserController', 'passwordResetAction'], $method, '/password-reset/{token}', $userValidations);
+	\Chibi\Router::register(['UserController', 'passwordResetProxyAction'], $method, '/password-reset-proxy', $userValidations);
 	\Chibi\Router::register(['UserController', 'passwordResetProxyAction'], $method, '/password-reset-proxy/{token}', $userValidations);
 	\Chibi\Router::register(['UserController', 'toggleSafetyAction'], $method, '/user/toggle-safety/{safety}', $userValidations);
 }
