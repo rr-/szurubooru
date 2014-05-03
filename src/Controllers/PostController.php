@@ -193,29 +193,16 @@ class PostController
 
 	public function addFavoriteAction($id)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
-		Access::assertAuthentication();
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		UserModel::updateUserScore(Auth::getCurrentUser(), $post, 1);
-		UserModel::addToUserFavorites(Auth::getCurrentUser(), $post);
+		Api::run(new TogglePostFavoriteJob(), [
+			TogglePostFavoriteJob::POST_ID => $id,
+			TogglePostFavoriteJob::STATE => true]);
 	}
 
 	public function removeFavoriteAction($id)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
-		Access::assertAuthentication();
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		UserModel::removeFromUserFavorites(Auth::getCurrentUser(), $post);
+		Api::run(new TogglePostFavoriteJob(), [
+			TogglePostFavoriteJob::POST_ID => $id,
+			TogglePostFavoriteJob::STATE => false]);
 	}
 
 	public function scoreAction($id, $score)
