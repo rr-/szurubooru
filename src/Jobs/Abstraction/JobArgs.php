@@ -6,4 +6,5 @@ class JobArgs
 	const TEXT = 'text';
 	const PAGE_NUMBER = 'page-number';
 	const QUERY = 'query';
+	const LOG_ID = 'log-id';
 }

@@ -8,7 +8,7 @@ $this->context->subTitle = 'latest logs';
 	<ul>
 		<?php foreach ($this->context->transport->logs as $log): ?>
 			<li>
-				<a href="<?= \Chibi\Router::linkTo(['LogController', 'viewAction'], ['name' => $log]) ?>">
+				<a href="<?= \Chibi\Router::linkTo(['LogController', 'logView'], ['name' => $log]) ?>">
 					<?= $log ?>
 				</a>
 			</li>

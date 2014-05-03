@@ -55,6 +55,11 @@ $context->simpleActionName = null;
 \Chibi\Router::register(['AuthController', 'logoutAction'], 'POST', '/auth/logout');
 \Chibi\Router::register(['AuthController', 'logoutAction'], 'GET', '/auth/logout');
 
+\Chibi\Router::register(['LogController', 'listView'], 'GET', '/logs');
+\Chibi\Router::register(['LogController', 'logView'], 'GET', '/log/{name}', ['name' => '[0-9a-zA-Z._-]+']);
+\Chibi\Router::register(['LogController', 'logView'], 'GET', '/log/{name}/{page}', ['name' => '[0-9a-zA-Z._-]+', 'page' => '\d*']);
+\Chibi\Router::register(['LogController', 'logView'], 'GET', '/log/{name}/{page}/{filter}', ['name' => '[0-9a-zA-Z._-]+', 'page' => '\d*', 'filter' => '.*']);
+
 $postValidation =
 [
 	'tag' => '[^\/]*',
@@ -86,11 +91,6 @@ $postValidation =
 
 foreach (['GET', 'POST'] as $method)
 {
-	\Chibi\Router::register(['LogController', 'listAction'], $method, '/logs');
-	\Chibi\Router::register(['LogController', 'viewAction'], $method, '/log/{name}', ['name' => '[0-9a-zA-Z._-]+']);
-	\Chibi\Router::register(['LogController', 'viewAction'], $method, '/log/{name}/{page}', ['name' => '[0-9a-zA-Z._-]+', 'page' => '\d*']);
-	\Chibi\Router::register(['LogController', 'viewAction'], $method, '/log/{name}/{page}/{filter}', ['name' => '[0-9a-zA-Z._-]+', 'page' => '\d*', 'filter' => '.*']);
-
 	\Chibi\Router::register(['PostController', 'uploadAction'], $method, '/posts/upload', $postValidation);
 	\Chibi\Router::register(['PostController', 'toggleTagAction'], $method, '/post/{id}/toggle-tag/{tag}/{enable}', $postValidation);
 	\Chibi\Router::register(['PostController', 'viewAction'], $method, '/post/{id}', $postValidation);

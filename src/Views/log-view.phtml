@@ -4,7 +4,7 @@ Assets::setSubTitle('logs (' . $this->context->transport->name . ')');
 
 <?php if (empty($this->context->transport->lines)): ?>
 	<p class="alert alert-warning">
-		This log is empty. <a href="<?= \Chibi\Router::linkTo(['LogController', 'listAction']) ?>">Go back</a>
+		This log is empty. <a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Go back</a>
 	</p>
 <?php else: ?>
 	<?php
@@ -14,7 +14,7 @@ Assets::setSubTitle('logs (' . $this->context->transport->name . ')');
 
 	<form method="get"
 		action="<?= \Chibi\Router::linkTo(
-			['LogController', 'viewAction'],
+			['LogController', 'logView'],
 			['name' => $this->context->transport->name]) ?>">
 
 		Keep only lines that contain:

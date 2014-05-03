@@ -43,7 +43,7 @@ Assets::addScript('core.js');
 				<span>Queries:&nbsp;<?= count(\Chibi\Database::getLogs()) ?></span>
 				<span><a href="<?= SZURU_LINK ?>">szurubooru&nbsp;v<?= SZURU_VERSION ?></a></span>
 				<?php if (Access::check(Privilege::ListLogs)): ?>
-					<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listAction']) ?>">Logs</a></span>
+					<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Logs</a></span>
 				<?php endif ?>
 				<hr>
 			</div>
