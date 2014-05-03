@@ -11,6 +11,7 @@ class EditPostTagsJob extends AbstractPostJob
 		$newTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
 
 		PostModel::save($post);
+		TagModel::removeUnused();
 
 		foreach (array_diff($oldTags, $newTags) as $tag)
 		{

@@ -30,6 +30,7 @@ class TogglePostTagJob extends AbstractPostJob
 
 		$post->setTags($tags);
 		PostModel::save($post);
+		TagModel::removeUnused();
 
 		if ($enable)
 		{
