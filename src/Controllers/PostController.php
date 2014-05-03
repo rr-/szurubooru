@@ -173,30 +173,16 @@ class PostController
 
 	public function hideAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::HidePost, Access::getIdentity($post->getUploader()));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$post->setHidden(true);
-		PostModel::save($post);
-
-		LogHelper::log('{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
+		Api::run(new TogglePostVisibilityJob(), [
+			TogglePostVisibilityJob::POST_ID => $id,
+			TogglePostVisibilityJob::STATE => false]);
 	}
 
 	public function unhideAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::HidePost, Access::getIdentity($post->getUploader()));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$post->setHidden(false);
-		PostModel::save($post);
-
-		LogHelper::log('{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
+		Api::run(new TogglePostVisibilityJob(), [
+			TogglePostVisibilityJob::POST_ID => $id,
+			TogglePostVisibilityJob::STATE => true]);
 	}
 
 	public function deleteAction($id)
