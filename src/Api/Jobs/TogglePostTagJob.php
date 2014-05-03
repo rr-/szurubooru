@@ -1,28 +1,46 @@
 <?php
-class EditPostTagsJob extends AbstractPostEditJob
+class TogglePostTagJob extends AbstractPostJob
 {
 	public function execute()
 	{
+		$tagName = $this->getArgument(self::TAG_NAME);
+		$enable = boolval($this->getArgument(self::STATE));
 		$post = $this->post;
-		$tags = $this->getArgument(self::TAG_NAMES);
 
-		$oldTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
-		$post->setTagsFromText($tags);
-		$newTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
+		$tags = $post->getTags();
 
+		if ($enable)
+		{
+			$tag = TagModel::findByName($tagName, false);
+			if ($tag === null)
+			{
+				$tag = TagModel::spawn();
+				$tag->name = $tagName;
+				TagModel::save($tag);
+			}
+
+			$tags []= $tag;
+		}
+		else
+		{
+			foreach ($tags as $i => $tag)
+				if ($tag->name == $tagName)
+					unset($tags[$i]);
+		}
+
+		$post->setTags($tags);
 		PostModel::save($post);
 
-		foreach (array_diff($oldTags, $newTags) as $tag)
+		if ($enable)
 		{
-			LogHelper::log('{user} untagged {post} with {tag}', [
+			LogHelper::log('{user} tagged {post} with {tag}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
 				'tag' => TextHelper::reprTag($tag)]);
 		}
-
-		foreach (array_diff($newTags, $oldTags) as $tag)
+		else
 		{
-			LogHelper::log('{user} tagged {post} with {tag}', [
+			LogHelper::log('{user} untagged {post} with {tag}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
 				'tag' => TextHelper::reprTag($tag)]);

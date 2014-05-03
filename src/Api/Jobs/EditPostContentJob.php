@@ -1,17 +1,16 @@
 <?php
-class EditPostUrlJob extends AbstractPostEditJob
+class EditPostContentJob extends AbstractPostJob
 {
-	const POST_CONTENT_URL = 'post-content-url';
+	const POST_CONTENT = 'post-content';
 
 	public function execute()
 	{
 		$post = $this->post;
-		$url = $this->getArgument(self::POST_CONTENT_URL);
+		$file = $this->getArgument(self::POST_CONTENT);
 
-		$post->setContentFromUrl($url);
+		$post->setContentFromPath($file->filePath, $file->fileName);
 
 		PostModel::save($post);
-
 		LogHelper::log('{user} changed contents of {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);

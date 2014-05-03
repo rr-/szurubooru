@@ -1,5 +1,5 @@
 <?php
-class FeaturePostJob extends AbstractPostEditJob
+class FeaturePostJob extends AbstractPostJob
 {
 	public function execute()
 	{

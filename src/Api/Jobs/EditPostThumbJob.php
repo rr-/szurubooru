@@ -1,18 +1,18 @@
 <?php
-class TogglePostVisibilityJob extends AbstractPostEditJob
+class EditPostThumbJob extends AbstractPostJob
 {
+	const THUMB_CONTENT = 'thumb-content';
+
 	public function execute()
 	{
 		$post = $this->post;
-		$visible = boolval($this->getArgument(self::STATE));
+		$file = $this->getArgument(self::THUMB_CONTENT);
 
-		$post->setHidden(!$visible);
+		$post->setCustomThumbnailFromPath($file->filePath);
+
 		PostModel::save($post);
 
-		LogHelper::log(
-			$visible
-				? '{user} unhidden {post}'
-				: '{user} hidden {post}', [
+		LogHelper::log('{user} changed thumb of {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 
@@ -23,14 +23,14 @@ class TogglePostVisibilityJob extends AbstractPostEditJob
 	{
 		return
 		[
-			Privilege::HidePost,
+			Privilege::EditPostThumb,
 			Access::getIdentity($this->post->getUploader())
 		];
 	}
 
 	public function requiresAuthentication()
 	{
-		return true;
+		return false;
 	}
 
 	public function requiresConfirmedEmail()

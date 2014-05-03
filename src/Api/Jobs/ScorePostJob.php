@@ -1,5 +1,5 @@
 <?php
-class ScorePostJob extends AbstractPostEditJob
+class ScorePostJob extends AbstractPostJob
 {
 	const SCORE = 'score';
 

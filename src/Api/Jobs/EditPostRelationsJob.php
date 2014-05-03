@@ -1,5 +1,5 @@
 <?php
-class EditPostRelationsJob extends AbstractPostEditJob
+class EditPostRelationsJob extends AbstractPostJob
 {
 	const RELATED_POST_IDS = 'related-post-ids';
 

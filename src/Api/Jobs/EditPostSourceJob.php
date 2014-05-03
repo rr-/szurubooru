@@ -1,5 +1,5 @@
 <?php
-class EditPostSourceJob extends AbstractPostEditJob
+class EditPostSourceJob extends AbstractPostJob
 {
 	const SOURCE = 'source';
 

@@ -1,5 +1,5 @@
 <?php
-class EditPostSafetyJob extends AbstractPostEditJob
+class EditPostSafetyJob extends AbstractPostJob
 {
 	const SAFETY = 'safety';
 

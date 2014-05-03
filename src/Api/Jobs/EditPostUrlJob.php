@@ -1,18 +1,18 @@
 <?php
-class EditPostThumbJob extends AbstractPostEditJob
+class EditPostUrlJob extends AbstractPostJob
 {
-	const THUMB_CONTENT = 'thumb-content';
+	const POST_CONTENT_URL = 'post-content-url';
 
 	public function execute()
 	{
 		$post = $this->post;
-		$file = $this->getArgument(self::THUMB_CONTENT);
+		$url = $this->getArgument(self::POST_CONTENT_URL);
 
-		$post->setCustomThumbnailFromPath($file->filePath);
+		$post->setContentFromUrl($url);
 
 		PostModel::save($post);
 
-		LogHelper::log('{user} changed thumb of {post}', [
+		LogHelper::log('{user} changed contents of {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 
@@ -23,7 +23,7 @@ class EditPostThumbJob extends AbstractPostEditJob
 	{
 		return
 		[
-			Privilege::EditPostThumb,
+			Privilege::EditPostFile,
 			Access::getIdentity($this->post->getUploader())
 		];
 	}

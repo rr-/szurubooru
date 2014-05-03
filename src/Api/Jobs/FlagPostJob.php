@@ -1,5 +1,5 @@
 <?php
-class FlagPostJob extends AbstractPostEditJob
+class FlagPostJob extends AbstractPostJob
 {
 	public function execute()
 	{

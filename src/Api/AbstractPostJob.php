@@ -1,5 +1,5 @@
 <?php
-abstract class AbstractPostEditJob extends AbstractJob
+abstract class AbstractPostJob extends AbstractJob
 {
 	protected $post;
 

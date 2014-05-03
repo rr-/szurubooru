@@ -1,22 +1,29 @@
 <?php
-class DeletePostJob extends AbstractPostEditJob
+class TogglePostVisibilityJob extends AbstractPostJob
 {
 	public function execute()
 	{
 		$post = $this->post;
+		$visible = boolval($this->getArgument(self::STATE));
 
-		PostModel::remove($post);
+		$post->setHidden(!$visible);
+		PostModel::save($post);
 
-		LogHelper::log('{user} deleted {post}', [
+		LogHelper::log(
+			$visible
+				? '{user} unhidden {post}'
+				: '{user} hidden {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
+
+		return $post;
 	}
 
 	public function requiresPrivilege()
 	{
 		return
 		[
-			Privilege::DeletePost,
+			Privilege::HidePost,
 			Access::getIdentity($this->post->getUploader())
 		];
 	}
@@ -28,6 +35,6 @@ class DeletePostJob extends AbstractPostEditJob
 
 	public function requiresConfirmedEmail()
 	{
-		return getConfig()->registration->needEmailForCommenting;
+		return false;
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-class TogglePostFavoriteJob extends AbstractPostEditJob
+class TogglePostFavoriteJob extends AbstractPostJob
 {
 	public function execute()
 	{
