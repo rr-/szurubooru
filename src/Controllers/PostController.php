@@ -207,15 +207,9 @@ class PostController
 
 	public function scoreAction($id, $score)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::ScorePost, Access::getIdentity($post->getUploader()));
-		Access::assertAuthentication();
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		UserModel::updateUserScore(Auth::getCurrentUser(), $post, $score);
+		Api::run(new ScorePostJob(), [
+			ScorePostJob::POST_ID => $id,
+			ScorePostJob::SCORE => $score]);
 	}
 
 	public function featureAction($id)
