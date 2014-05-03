@@ -1,12 +1,12 @@
 <?php
 class EditPostUrlJob extends AbstractPostEditJob
 {
-	const CONTENT_URL = 'url';
+	const POST_CONTENT_URL = 'post-content-url';
 
 	public function execute()
 	{
 		$post = $this->post;
-		$url = $this->getArgument(self::CONTENT_URL);
+		$url = $this->getArgument(self::POST_CONTENT_URL);
 
 		$post->setContentFromUrl($url);
 

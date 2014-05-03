@@ -19,8 +19,8 @@ class Api
 			$p = $job->requiresPrivilege();
 			list ($privilege, $subPrivilege) = is_array($p)
 				? $p
-				: [$p, null];
-			if ($privilege !== null)
+				: [$p, false];
+			if ($privilege !== false)
 				Access::assert($privilege, $subPrivilege);
 
 			return $job->execute();

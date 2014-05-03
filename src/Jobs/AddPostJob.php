@@ -17,29 +17,10 @@ class AddPostJob extends AbstractJob
 		PostModel::forgeId($post);
 
 		//do the edits
-		//warning: each handler runs uses the same privileges as post editing
-		$subJobs =
-		[
-			new EditPostSafetyJob(),
-			new EditPostTagsJob(),
-			new EditPostSourceJob(),
-			new EditPostRelationsJob(),
-			new EditPostContentJob(),
-			new EditPostUrlJob(),
-		];
-
-		foreach ($subJobs as $subJob)
-		{
-			$args = $this->getArguments();
-			$args[self::POST_ID] = $post->id;
-			try
-			{
-				Api::run($subJob, $args);
-			}
-			catch (ApiMissingArgumentException $e)
-			{
-			}
-		}
+		//warning: it uses the same privileges as post editing internally
+		$arguments = $this->getArguments();
+		$arguments[EditPostJob::POST_ID] = $post->id;
+		Api::execute(new EditPostJob(), $arguments);
 
 		//load the post after edits
 		$post = PostModel::findById($post->id);

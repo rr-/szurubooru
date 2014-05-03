@@ -100,7 +100,7 @@ class PostController
 
 		if (!empty(InputHelper::get('url')))
 		{
-			$jobArgs[EditPostUrlJob::CONTENT_URL] = InputHelper::get('url');
+			$jobArgs[EditPostUrlJob::POST_CONTENT_URL] = InputHelper::get('url');
 		}
 		elseif (!empty($_FILES['file']['name']))
 		{
@@ -115,24 +115,54 @@ class PostController
 		Api::run(new AddPostJob(), $jobArgs);
 	}
 
+	public function editView($id)
+	{
+		$post = PostModel::findByIdOrName($id);
+		$context = getContext()->transport->post = $post;
+	}
+
 	public function editAction($id)
 	{
-		$context = getContext();
 		$post = PostModel::findByIdOrName($id);
-		$context->transport->post = $post;
-
-		if (!InputHelper::get('submit'))
-			return;
 
 		$editToken = InputHelper::get('edit-token');
 		if ($editToken != $post->getEditToken())
 			throw new SimpleException('This post was already edited by someone else in the meantime');
 
-		LogHelper::bufferChanges();
-		$this->doEdit($post, false);
-		LogHelper::flush();
+		$jobArgs =
+		[
+			EditPostJob::POST_ID => $id,
+			EditPostSafetyJob::SAFETY => InputHelper::get('safety'),
+			EditPostTagsJob::TAG_NAMES => InputHelper::get('tags'),
+			EditPostSourceJob::SOURCE => InputHelper::get('source'),
+			EditPostRelationsJob::RELATED_POST_IDS => InputHelper::get('relations'),
+		];
 
-		PostModel::save($post);
+		if (!empty(InputHelper::get('url')))
+		{
+			$jobArgs[EditPostUrlJob::POST_CONTENT_URL] = InputHelper::get('url');
+		}
+		elseif (!empty($_FILES['file']['name']))
+		{
+			$file = $_FILES['file'];
+			TransferHelper::handleUploadErrors($file);
+
+			$jobArgs[EditPostContentJob::POST_CONTENT] = Api::serializeFile(
+				$file['tmp_name'],
+				$file['name']);
+		}
+
+		if (!empty($_FILES['thumb']['name']))
+		{
+			$file = $_FILES['thumb'];
+			TransferHelper::handleUploadErrors($file);
+
+			$jobArgs[EditPostThumbJob::THUMB_CONTENT] = Api::serializeFile(
+				$file['tmp_name'],
+				$file['name']);
+		}
+
+		Api::run(new EditPostJob(), $jobArgs);
 		TagModel::removeUnused();
 	}
 
@@ -348,138 +378,5 @@ class PostController
 		$context->transport->mimeType = $post->mimeType;
 		$context->transport->fileHash = 'post' . $post->fileHash;
 		$context->transport->filePath = $path;
-	}
-
-	private function doEdit($post, $isNew)
-	{
-		/* safety */
-		$suppliedSafety = InputHelper::get('safety');
-		if ($suppliedSafety !== null)
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostSafety, Access::getIdentity($post->getUploader()));
-
-			$oldSafety = $post->safety;
-			$post->setSafety($suppliedSafety);
-			$newSafety = $post->safety;
-
-			if ($oldSafety != $newSafety)
-			{
-				LogHelper::log('{user} changed safety of {post} to {safety}', [
-					'post' => TextHelper::reprPost($post),
-					'safety' => PostSafety::toString($post->safety)]);
-			}
-		}
-
-		/* tags */
-		$suppliedTags = InputHelper::get('tags');
-		if ($suppliedTags !== null)
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostTags, Access::getIdentity($post->getUploader()));
-
-			$oldTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
-			$post->setTagsFromText($suppliedTags);
-			$newTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
-
-			foreach (array_diff($oldTags, $newTags) as $tag)
-			{
-				LogHelper::log('{user} untagged {post} with {tag}', [
-					'post' => TextHelper::reprPost($post),
-					'tag' => TextHelper::reprTag($tag)]);
-			}
-
-			foreach (array_diff($newTags, $oldTags) as $tag)
-			{
-				LogHelper::log('{user} tagged {post} with {tag}', [
-					'post' => TextHelper::reprPost($post),
-					'tag' => TextHelper::reprTag($tag)]);
-			}
-		}
-
-		/* source */
-		$suppliedSource = InputHelper::get('source');
-		if ($suppliedSource !== null)
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostSource, Access::getIdentity($post->getUploader()));
-
-			$oldSource = $post->source;
-			$post->setSource($suppliedSource);
-			$newSource = $post->source;
-
-			if ($oldSource != $newSource)
-			{
-				LogHelper::log('{user} changed source of {post} to {source}', [
-					'post' => TextHelper::reprPost($post),
-					'source' => $post->source]);
-			}
-		}
-
-		/* relations */
-		$suppliedRelations = InputHelper::get('relations');
-		if ($suppliedRelations !== null)
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostRelations, Access::getIdentity($post->getUploader()));
-
-			$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
-			$post->setRelationsFromText($suppliedRelations);
-			$newRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
-
-			foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
-			{
-				LogHelper::log('{user} removed relation between {post} and {post2}', [
-					'post' => TextHelper::reprPost($post),
-					'post2' => TextHelper::reprPost($post2id)]);
-			}
-
-			foreach (array_diff($newRelatedIds, $oldRelatedIds) as $post2id)
-			{
-				LogHelper::log('{user} added relation between {post} and {post2}', [
-					'post' => TextHelper::reprPost($post),
-					'post2' => TextHelper::reprPost($post2id)]);
-			}
-		}
-
-		/* file contents */
-		if (!empty($_FILES['file']['name']))
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
-
-			$suppliedFile = $_FILES['file'];
-			TransferHelper::handleUploadErrors($suppliedFile);
-
-			$post->setContentFromPath($suppliedFile['tmp_name'], $suppliedFile['name']);
-
-			if (!$isNew)
-				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
-		}
-		elseif (InputHelper::get('url'))
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
-
-			$url = InputHelper::get('url');
-			$post->setContentFromUrl($url);
-
-			if (!$isNew)
-				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
-		}
-
-		/* thumbnail */
-		if (!empty($_FILES['thumb']['name']))
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostThumb, Access::getIdentity($post->getUploader()));
-
-			$suppliedFile = $_FILES['thumb'];
-			TransferHelper::handleUploadErrors($suppliedFile);
-
-			$post->setCustomThumbnailFromPath($srcPath = $suppliedFile['tmp_name']);
-
-			LogHelper::log('{user} changed thumb of {post}', ['post' => TextHelper::reprPost($post)]);
-		}
 	}
 }
