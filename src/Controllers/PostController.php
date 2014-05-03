@@ -214,13 +214,8 @@ class PostController
 
 	public function featureAction($id)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::FeaturePost, Access::getIdentity($post->getUploader()));
-		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
-		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
-		PropertyModel::set(PropertyModel::FeaturedPostUserName, Auth::getCurrentUser()->name);
-		LogHelper::log('{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
+		Api::run(new FeaturePostJob(), [
+			FeaturePostJob::POST_ID => $id]);
 	}
 
 	public function viewAction($id)
