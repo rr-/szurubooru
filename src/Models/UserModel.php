@@ -176,18 +176,18 @@ class UserModel extends AbstractCrudModel
 
 
 
-	public static function validateUserName($userName)
+	public static function validateUserName(UserEntity $user)
 	{
-		$userName = trim($userName);
+		$userName = trim($user->name);
 		$config = getConfig();
 
-		$dbUser = self::findByName($userName, false);
-		if ($dbUser !== null)
+		$otherUser = self::findByName($userName, false);
+		if ($otherUser !== null and $otherUser->id != $user->id)
 		{
-			if (!$dbUser->emailConfirmed and $config->registration->needEmailForRegistering)
+			if (!$otherUser->emailConfirmed and $config->registration->needEmailForRegistering)
 				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
 
-			if (!$dbUser->staffConfirmed and $config->registration->staffActivation)
+			if (!$otherUser->staffConfirmed and $config->registration->staffActivation)
 				throw new SimpleException('User with this name is already registered and awaits staff confirmation');
 
 			throw new SimpleException('User with this name is already registered');

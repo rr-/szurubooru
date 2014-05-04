@@ -23,7 +23,7 @@ Assets::setSubTitle('registration form');
 					type="text"
 					id="name"
 					name="name"
-					value="<?= htmlspecialchars($this->context->suppliedName) ?>"
+					value="<?= htmlspecialchars(InputHelper::get('name')) ?>"
 					placeholder="e.g. darth_vader"
 					autocomplete="off"/>
 			</div>
@@ -36,7 +36,7 @@ Assets::setSubTitle('registration form');
 					type="password"
 					id="password1"
 					name="password1"
-					value="<?= htmlspecialchars($this->context->suppliedPassword1) ?>"
+					value="<?= htmlspecialchars(InputHelper::get('password1')) ?>"
 					placeholder="e.g. <?= str_repeat('&#x25cf;', 8) ?>"
 					autocomplete="off"/>
 			</div>
@@ -49,7 +49,7 @@ Assets::setSubTitle('registration form');
 					type="password"
 					id="password2"
 					name="password2"
-					value="<?= htmlspecialchars($this->context->suppliedPassword2) ?>"
+					value="<?= htmlspecialchars(InputHelper::get('password2')) ?>"
 					placeholder="e.g. <?= str_repeat('&#x25cf;', 8) ?>"
 					autocomplete="off"/>
 			</div>
@@ -62,7 +62,7 @@ Assets::setSubTitle('registration form');
 					type="text"
 					id="email"
 					name="email"
-					value="<?= htmlspecialchars($this->context->suppliedEmail) ?>"
+					value="<?= htmlspecialchars(InputHelper::get('email')) ?>"
 					placeholder="e.g. vader@empire.gov" autocomplete="off"/>
 			</div>
 		</div>

@@ -18,6 +18,7 @@ class Privilege extends Enum
 	const ScorePost = 31;
 	const FlagPost = 34;
 
+	const RegisterAccount = 38;
 	const ListUsers = 11;
 	const ViewUser = 12;
 	const ViewUserEmail = 22;

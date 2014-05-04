@@ -143,6 +143,12 @@ $userValidation =
 \Chibi\Router::register(['UserController', 'listView'], 'GET', '/users', $userValidation);
 \Chibi\Router::register(['UserController', 'listView'], 'GET', '/users/{page}', $userValidation);
 \Chibi\Router::register(['UserController', 'listView'], 'GET', '/users/{filter}/{page}', $userValidation);
+\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{name}/{tab}', $userValidation);
+\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{name}/{tab}/{page}', $userValidation);
+
+\Chibi\Router::register(['UserController', 'registrationView'], 'GET', '/register', $userValidation);
+\Chibi\Router::register(['UserController', 'registrationAction'], 'POST', '/register', $userValidation);
+
 \Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{name}/flag', $userValidation);
 \Chibi\Router::register(['UserController', 'banAction'], 'POST', '/user/{name}/ban', $userValidation);
 \Chibi\Router::register(['UserController', 'unbanAction'], 'POST', '/user/{name}/unban', $userValidation);
@@ -150,14 +156,11 @@ $userValidation =
 \Chibi\Router::register(['UserController', 'deleteAction'], 'POST', '/user/{name}/delete', $userValidation);
 \Chibi\Router::register(['UserController', 'settingsAction'], 'POST', '/user/{name}/settings', $userValidation);
 \Chibi\Router::register(['UserController', 'editAction'], 'POST', '/user/{name}/edit', $userValidation);
-\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{name}/{tab}', $userValidation);
-\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{name}/{tab}/{page}', $userValidation);
 
 foreach (['GET', 'POST'] as $method)
 {
 	\Chibi\Router::register(['TagController', 'massTagRedirectAction'], $method, '/mass-tag-redirect', $tagValidation);
 
-	\Chibi\Router::register(['UserController', 'registrationAction'], $method, '/register', $userValidation);
 	\Chibi\Router::register(['UserController', 'activationAction'], $method, '/activation/{token}', $userValidation);
 	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy', $userValidation);
 	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy/{token}', $userValidation);

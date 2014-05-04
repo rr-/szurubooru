@@ -171,7 +171,7 @@ class UserController
 		Auth::setCurrentUser($user);
 	}
 
-	public function registrationAction()
+	public function registrationView()
 	{
 		$context = getContext();
 		$context->handleExceptions = true;
@@ -182,56 +182,26 @@ class UserController
 			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']));
 			exit;
 		}
+	}
 
-		$suppliedName = InputHelper::get('name');
-		$suppliedPassword1 = InputHelper::get('password1');
-		$suppliedPassword2 = InputHelper::get('password2');
-		$suppliedEmail = InputHelper::get('email');
-		$context->suppliedName = $suppliedName;
-		$context->suppliedPassword1 = $suppliedPassword1;
-		$context->suppliedPassword2 = $suppliedPassword2;
-		$context->suppliedEmail = $suppliedEmail;
+	public function registrationAction()
+	{
+		$this->registrationView();
 
-		if (!InputHelper::get('submit'))
-			return;
-
-		$suppliedName = UserModel::validateUserName($suppliedName);
-
-		if ($suppliedPassword1 != $suppliedPassword2)
+		if (InputHelper::get('password1') != InputHelper::get('password2'))
 			throw new SimpleException('Specified passwords must be the same');
-		$suppliedPassword = UserModel::validatePassword($suppliedPassword1);
 
-		$suppliedEmail = UserModel::validateEmail($suppliedEmail);
-		if (empty($suppliedEmail) and getConfig()->registration->needEmailForRegistering)
-			throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
+		$user = Api::run(new AddUserJob(),
+		[
+			EditUserNameJob::NEW_USER_NAME => InputHelper::get('name'),
+			EditUserPasswordJob::NEW_PASSWORD => InputHelper::get('password1'),
+			EditUserEmailJob::NEW_EMAIL => InputHelper::get('email'),
+		]);
 
-		//register the user
-		$dbUser = UserModel::spawn();
-		$dbUser->name = $suppliedName;
-		$dbUser->passHash = UserModel::hashPassword($suppliedPassword, $dbUser->passSalt);
-		$dbUser->emailUnconfirmed = $suppliedEmail;
-
-		$dbUser->joinDate = time();
-		if (UserModel::getCount() == 0)
+		if (!getConfig()->registration->needEmailForRegistering and !getConfig()->registration->staffActivation)
 		{
-			//very first user
-			$dbUser->accessRank = AccessRank::Admin;
-			$dbUser->staffConfirmed = true;
-			$dbUser->emailUnconfirmed = null;
-			$dbUser->emailConfirmed = $suppliedEmail;
+			Auth::setCurrentUser($user);
 		}
-		else
-		{
-			$dbUser->accessRank = AccessRank::Registered;
-			$dbUser->staffConfirmed = false;
-			$dbUser->staffConfirmed = null;
-		}
-
-		//save the user to db if everything went okay
-		UserModel::save($dbUser);
-
-		if (!empty($dbUser->emailUnconfirmed))
-			EditUserEmailJob::sendEmail($dbUser);
 
 		$message = 'Congratulations, your account was created.';
 		if (Mailer::getMailCounter() > 0)
@@ -243,13 +213,7 @@ class UserController
 		elseif (getConfig()->registration->staffActivation)
 			$message .= ' Your registration must be now confirmed by staff.';
 
-		LogHelper::log('{subject} just signed up', ['subject' => TextHelper::reprUser($dbUser)]);
 		Messenger::message($message);
-
-		if (!getConfig()->registration->needEmailForRegistering and !getConfig()->registration->staffActivation)
-		{
-			Auth::setCurrentUser($dbUser);
-		}
 	}
 
 	public function activationAction($token)

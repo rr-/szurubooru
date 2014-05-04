@@ -1,6 +1,8 @@
 <?php
-class Api
+final class Api
 {
+	protected static $checkPrivileges;
+
 	public static function run($job, $jobArgs)
 	{
 		$user = Auth::getCurrentUser();
@@ -10,18 +12,21 @@ class Api
 			$job->setArguments($jobArgs);
 			$job->prepare();
 
-			if ($job->requiresAuthentication())
-				Access::assertAuthentication();
+			if (self::$checkPrivileges)
+			{
+				if ($job->requiresAuthentication())
+					Access::assertAuthentication();
 
-			if ($job->requiresConfirmedEmail())
-				Access::assertEmailConfirmation();
+				if ($job->requiresConfirmedEmail())
+					Access::assertEmailConfirmation();
 
-			$p = $job->requiresPrivilege();
-			list ($privilege, $subPrivilege) = is_array($p)
-				? $p
-				: [$p, false];
-			if ($privilege !== false)
-				Access::assert($privilege, $subPrivilege);
+				$p = $job->requiresPrivilege();
+				list ($privilege, $subPrivilege) = is_array($p)
+					? $p
+					: [$p, false];
+				if ($privilege !== false)
+					Access::assert($privilege, $subPrivilege);
+			}
 
 			return $job->execute();
 		});
@@ -39,5 +44,15 @@ class Api
 			}
 		});
 		return $statuses;
+	}
+
+	public static function disablePrivilegeChecking()
+	{
+		self::$checkPrivileges = false;
+	}
+
+	public static function enablePrivilegeChecking()
+	{
+		self::$checkPrivileges = true;
 	}
 }

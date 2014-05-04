@@ -9,10 +9,10 @@ class EditUserJob extends AbstractUserJob
 
 		$subJobs =
 		[
+			new EditUserAccessRankJob(),
 			new EditUserNameJob(),
 			new EditUserPasswordJob(),
 			new EditUserEmailJob(),
-			new EditUserAccessRankJob(),
 		];
 
 		foreach ($subJobs as $subJob)

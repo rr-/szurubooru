@@ -6,6 +6,7 @@ abstract class AbstractJob
 	const POST_NAME = 'post-name';
 	const TAG_NAME = 'tag-name';
 	const TAG_NAMES = 'tags';
+	const USER_ID = 'user-id';
 	const USER_NAME = 'user-name';
 	const TEXT = 'text';
 	const PAGE_NUMBER = 'page-number';

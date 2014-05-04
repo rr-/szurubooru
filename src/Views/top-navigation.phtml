@@ -69,7 +69,7 @@
 
 		$registerNavItem(
 			'Register',
-			\Chibi\Router::linkTo(['UserController', 'registrationAction']),
+			\Chibi\Router::linkTo(['UserController', 'registrationView']),
 			$activeController == 'user' and $activeAction == 'registration');
 	}
 	else

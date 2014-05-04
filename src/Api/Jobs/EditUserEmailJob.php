@@ -5,6 +5,10 @@ class EditUserEmailJob extends AbstractUserJob
 
 	public function execute()
 	{
+		if (getConfig()->registration->needEmailForRegistering)
+			if (!$this->hasArguemnt(self::NEW_EMAIL) or empty($this->getArgument(self::NEW_EMAIL)))
+				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
+
 		$user = $this->user;
 		$newEmail = UserModel::validateEmail($this->getArgument(self::NEW_EMAIL));
 
