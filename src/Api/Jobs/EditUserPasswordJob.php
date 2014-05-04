@@ -1,5 +1,5 @@
 <?php
-class EditUserPasswordJob extends AbstractUserJob
+class EditUserPasswordJob extends AbstractUserEditJob
 {
 	const NEW_PASSWORD = 'new-password';
 
@@ -15,7 +15,8 @@ class EditUserPasswordJob extends AbstractUserJob
 
 		$user->passHash = $newPasswordHash;
 
-		UserModel::save($user);
+		if (!$this->skipSaving)
+			UserModel::save($user);
 
 		LogHelper::log('{user} changed {subject}\'s password', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),

@@ -1,5 +1,5 @@
 <?php
-class EditPostUrlJob extends AbstractPostJob
+class EditPostUrlJob extends AbstractPostEditJob
 {
 	const POST_CONTENT_URL = 'post-content-url';
 
@@ -10,7 +10,8 @@ class EditPostUrlJob extends AbstractPostJob
 
 		$post->setContentFromUrl($url);
 
-		PostModel::save($post);
+		if (!$this->skipSaving)
+			PostModel::save($post);
 
 		LogHelper::log('{user} changed contents of {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),

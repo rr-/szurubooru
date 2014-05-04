@@ -1,5 +1,5 @@
 <?php
-class EditPostRelationsJob extends AbstractPostJob
+class EditPostRelationsJob extends AbstractPostEditJob
 {
 	const RELATED_POST_IDS = 'related-post-ids';
 
@@ -12,7 +12,8 @@ class EditPostRelationsJob extends AbstractPostJob
 		$post->setRelationsFromText($relations);
 		$newRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
 
-		PostModel::save($post);
+		if (!$this->skipSaving)
+			PostModel::save($post);
 
 		foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
 		{

@@ -2,16 +2,22 @@
 abstract class AbstractJob
 {
 	const COMMENT_ID = 'comment-id';
+	const LOG_ID = 'log-id';
+
+	const POST_ENTITY = 'post';
 	const POST_ID = 'post-id';
 	const POST_NAME = 'post-name';
+
 	const TAG_NAME = 'tag-name';
 	const TAG_NAMES = 'tags';
+
+	const USER_ENTITY = 'user';
 	const USER_ID = 'user-id';
 	const USER_NAME = 'user-name';
-	const TEXT = 'text';
+
 	const PAGE_NUMBER = 'page-number';
+	const TEXT = 'text';
 	const QUERY = 'query';
-	const LOG_ID = 'log-id';
 	const STATE = 'state';
 
 	protected $arguments;

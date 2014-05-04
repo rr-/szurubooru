@@ -1,5 +1,5 @@
 <?php
-class EditPostTagsJob extends AbstractPostJob
+class EditPostTagsJob extends AbstractPostEditJob
 {
 	public function execute()
 	{
@@ -10,8 +10,11 @@ class EditPostTagsJob extends AbstractPostJob
 		$post->setTagsFromText($tags);
 		$newTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
 
-		PostModel::save($post);
-		TagModel::removeUnused();
+		if (!$this->skipSaving)
+		{
+			PostModel::save($post);
+			TagModel::removeUnused();
+		}
 
 		foreach (array_diff($oldTags, $newTags) as $tag)
 		{

@@ -1,5 +1,5 @@
 <?php
-class EditPostThumbJob extends AbstractPostJob
+class EditPostThumbJob extends AbstractPostEditJob
 {
 	const THUMB_CONTENT = 'thumb-content';
 
@@ -10,7 +10,8 @@ class EditPostThumbJob extends AbstractPostJob
 
 		$post->setCustomThumbnailFromPath($file->filePath);
 
-		PostModel::save($post);
+		if (!$this->skipSaving)
+			PostModel::save($post);
 
 		LogHelper::log('{user} changed thumb of {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),

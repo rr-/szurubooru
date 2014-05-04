@@ -5,7 +5,14 @@ abstract class AbstractPostJob extends AbstractJob
 
 	public function prepare()
 	{
-		$postId = $this->getArgument(self::POST_ID);
-		$this->post = PostModel::findByIdOrName($postId);
+		if ($this->hasArgument(self::POST_ENTITY))
+		{
+			$this->post = $this->getArgument(self::POST_ENTITY);
+		}
+		else
+		{
+			$postId = $this->getArgument(self::POST_ID);
+			$this->post = PostModel::findByIdOrName($postId);
+		}
 	}
 }

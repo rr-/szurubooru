@@ -1,5 +1,5 @@
 <?php
-class EditUserJob extends AbstractUserJob
+class EditUserJob extends AbstractUserEditJob
 {
 	protected $subJobs;
 
@@ -38,10 +38,13 @@ class EditUserJob extends AbstractUserJob
 
 		LogHelper::bufferChanges();
 
-		foreach ($subJobs as $subJob)
+		foreach ($this->subJobs as $subJob)
 		{
+			if ($this->skipSaving)
+				$subJob->skipSaving();
+
 			$args = $this->getArguments();
-			$args[self::USER_NAME] = $user->name;
+			$args[self::USER_ENTITY] = $user;
 			try
 			{
 				Api::run($subJob, $args);
@@ -50,6 +53,9 @@ class EditUserJob extends AbstractUserJob
 			{
 			}
 		}
+
+		if (!$this->skipSaving)
+			UserModel::save($user);
 
 		LogHelper::flush();
 		return $user;

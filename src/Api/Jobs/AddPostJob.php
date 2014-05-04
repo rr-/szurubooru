@@ -17,13 +17,10 @@ class AddPostJob extends AbstractJob
 		PostModel::forgeId($post);
 
 		//do the edits
-		//warning: it uses the same privileges as post editing internally
+		//warning: it uses internally the same privileges as post editing
 		$arguments = $this->getArguments();
-		$arguments[EditPostJob::POST_ID] = $post->id;
-		Api::run(new EditPostJob(), $arguments);
-
-		//load the post after edits
-		$post = PostModel::findById($post->id);
+		$arguments[EditPostJob::POST_ENTITY] = $post;
+		Api::run((new EditPostJob)->skipSaving(), $arguments);
 
 		// basically means that user didn't specify file nor url
 		//todo:
@@ -32,6 +29,9 @@ class AddPostJob extends AbstractJob
 		//- enforce entity validity upon calling save() in models
 		if (empty($post->type))
 			throw new SimpleException('No post type detected; upload faled');
+
+		//save to db
+		PostModel::save($post);
 
 		//clean edit log
 		LogHelper::setBuffer([]);
@@ -48,7 +48,6 @@ class AddPostJob extends AbstractJob
 
 		//finish
 		LogHelper::flush();
-		PostModel::save($post);
 
 		return $post;
 	}

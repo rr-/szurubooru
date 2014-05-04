@@ -1,5 +1,5 @@
 <?php
-class EditPostJob extends AbstractPostJob
+class EditPostJob extends AbstractPostEditJob
 {
 	public function execute()
 	{
@@ -20,8 +20,11 @@ class EditPostJob extends AbstractPostJob
 
 		foreach ($subJobs as $subJob)
 		{
+			if ($this->skipSaving)
+				$subJob->skipSaving();
+
 			$args = $this->getArguments();
-			$args[self::POST_ID] = $post->id;
+			$args[self::POST_ENTITY] = $post;
 			try
 			{
 				Api::run($subJob, $args);
@@ -30,6 +33,9 @@ class EditPostJob extends AbstractPostJob
 			{
 			}
 		}
+
+		if (!$this->skipSaving)
+			PostModel::save($post);
 
 		LogHelper::flush();
 		return $post;

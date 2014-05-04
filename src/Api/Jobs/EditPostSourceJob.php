@@ -1,5 +1,5 @@
 <?php
-class EditPostSourceJob extends AbstractPostJob
+class EditPostSourceJob extends AbstractPostEditJob
 {
 	const SOURCE = 'source';
 
@@ -11,7 +11,8 @@ class EditPostSourceJob extends AbstractPostJob
 		$oldSource = $post->source;
 		$post->setSource($newSource);
 
-		PostModel::save($post);
+		if (!$this->skipSaving)
+			PostModel::save($post);
 
 		if ($oldSource != $newSource)
 		{

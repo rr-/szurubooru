@@ -1,5 +1,5 @@
 <?php
-class EditUserEmailJob extends AbstractUserJob
+class EditUserEmailJob extends AbstractUserEditJob
 {
 	const NEW_EMAIL = 'new-email';
 
@@ -29,7 +29,8 @@ class EditUserEmailJob extends AbstractUserJob
 			$user->confirmEmail();
 		}
 
-		UserModel::save($user);
+		if (!$this->skipSaving)
+			UserModel::save($user);
 
 		LogHelper::log('{user} changed {subject}\'s e-mail to {mail}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),

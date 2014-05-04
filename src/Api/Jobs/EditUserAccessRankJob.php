@@ -1,5 +1,5 @@
 <?php
-class EditUserAccessRankJob extends AbstractUserJob
+class EditUserAccessRankJob extends AbstractUserEditJob
 {
 	const NEW_ACCESS_RANK = 'new-access-rank';
 
@@ -14,7 +14,8 @@ class EditUserAccessRankJob extends AbstractUserJob
 
 		$user->accessRank = $newAccessRank;
 
-		UserModel::save($user);
+		if (!$this->skipSaving)
+			UserModel::save($user);
 
 		LogHelper::log('{user} changed {subject}\'s access rank to {rank}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),

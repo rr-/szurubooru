@@ -1,5 +1,5 @@
 <?php
-class EditUserNameJob extends AbstractUserJob
+class EditUserNameJob extends AbstractUserEditJob
 {
 	const NEW_USER_NAME = 'new-user-name';
 
@@ -15,7 +15,8 @@ class EditUserNameJob extends AbstractUserJob
 		$user->name = $newName;
 		UserModel::validateUserName($user);
 
-		UserModel::save($user);
+		if (!$this->skipSaving)
+			UserModel::save($user);
 
 		LogHelper::log('{user} renamed {old} to {new}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),

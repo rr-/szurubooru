@@ -1,5 +1,5 @@
 <?php
-class EditPostContentJob extends AbstractPostJob
+class EditPostContentJob extends AbstractPostEditJob
 {
 	const POST_CONTENT = 'post-content';
 
@@ -10,7 +10,9 @@ class EditPostContentJob extends AbstractPostJob
 
 		$post->setContentFromPath($file->filePath, $file->fileName);
 
-		PostModel::save($post);
+		if (!$this->skipSaving)
+			PostModel::save($post);
+
 		LogHelper::log('{user} changed contents of {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);

@@ -12,7 +12,7 @@ class AddUserJob extends AbstractJob
 		UserModel::forgeId($user);
 
 		$arguments = $this->getArguments();
-		$arguments[EditUserJob::USER_NAME] = $user->name;
+		$arguments[EditUserJob::USER_ENTITY] = $user;
 
 		$arguments[EditUserAccessRankJob::NEW_ACCESS_RANK] = $firstUser
 			? AccessRank::Admin
@@ -20,15 +20,12 @@ class AddUserJob extends AbstractJob
 
 		LogHelper::bufferChanges();
 		Api::disablePrivilegeChecking();
-		Api::run(new EditUserJob(), $arguments);
+		Api::run((new EditUserJob)->skipSaving(), $arguments);
 		Api::enablePrivilegeChecking();
 		LogHelper::setBuffer([]);
 
 		if ($firstUser)
 			$user->confirmEmail();
-
-		//load the user after edits
-		$user = UserModel::findById($user->id);
 
 		//save the user to db if everything went okay
 		UserModel::save($user);

@@ -1,5 +1,5 @@
 <?php
-class EditPostSafetyJob extends AbstractPostJob
+class EditPostSafetyJob extends AbstractPostEditJob
 {
 	const SAFETY = 'safety';
 
@@ -11,7 +11,8 @@ class EditPostSafetyJob extends AbstractPostJob
 		$oldSafety = $post->safety;
 		$post->setSafety($newSafety);
 
-		PostModel::save($post);
+		if (!$this->skipSaving)
+			PostModel::save($post);
 
 		if ($oldSafety != $newSafety)
 		{
