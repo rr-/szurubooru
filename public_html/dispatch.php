@@ -132,40 +132,39 @@ $tagValidation =
 \Chibi\Router::register(['TagController', 'mergeView'], 'GET', '/tags-merge', $tagValidation);
 \Chibi\Router::register(['TagController', 'mergeAction'], 'POST', '/tags-merge', $tagValidation);
 
-$userValidations =
+$userValidation =
 [
 	'name' => '[^\/]+',
 	'page' => '\d*',
-	'tab' => 'favs|uploads',
+	'tab' => 'favs|uploads|settings|edit|delete',
 	'filter' => '[^\/]+',
 ];
 
-\Chibi\Router::register(['UserController', 'listView'], 'GET', '/users', $userValidations);
-\Chibi\Router::register(['UserController', 'listView'], 'GET', '/users/{page}', $userValidations);
-\Chibi\Router::register(['UserController', 'listView'], 'GET', '/users/{filter}/{page}', $userValidations);
-\Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{name}/flag', $userValidations);
-\Chibi\Router::register(['UserController', 'banAction'], 'POST', '/user/{name}/ban', $userValidations);
-\Chibi\Router::register(['UserController', 'unbanAction'], 'POST', '/user/{name}/unban', $userValidations);
-\Chibi\Router::register(['UserController', 'acceptRegistrationAction'], 'POST', '/user/{name}/accept-registration', $userValidations);
-\Chibi\Router::register(['UserController', 'deleteView'], 'GET', '/user/{name}/delete', $userValidations);
-\Chibi\Router::register(['UserController', 'deleteAction'], 'POST', '/user/{name}/delete', $userValidations);
+\Chibi\Router::register(['UserController', 'listView'], 'GET', '/users', $userValidation);
+\Chibi\Router::register(['UserController', 'listView'], 'GET', '/users/{page}', $userValidation);
+\Chibi\Router::register(['UserController', 'listView'], 'GET', '/users/{filter}/{page}', $userValidation);
+\Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{name}/flag', $userValidation);
+\Chibi\Router::register(['UserController', 'banAction'], 'POST', '/user/{name}/ban', $userValidation);
+\Chibi\Router::register(['UserController', 'unbanAction'], 'POST', '/user/{name}/unban', $userValidation);
+\Chibi\Router::register(['UserController', 'acceptRegistrationAction'], 'POST', '/user/{name}/accept-registration', $userValidation);
+\Chibi\Router::register(['UserController', 'deleteAction'], 'POST', '/user/{name}/delete', $userValidation);
+\Chibi\Router::register(['UserController', 'settingsAction'], 'POST', '/user/{name}/settings', $userValidation);
+\Chibi\Router::register(['UserController', 'editAction'], 'POST', '/user/{name}/edit', $userValidation);
+\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{name}/{tab}', $userValidation);
+\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{name}/{tab}/{page}', $userValidation);
 
 foreach (['GET', 'POST'] as $method)
 {
 	\Chibi\Router::register(['TagController', 'massTagRedirectAction'], $method, '/mass-tag-redirect', $tagValidation);
 
-	\Chibi\Router::register(['UserController', 'registrationAction'], $method, '/register', $userValidations);
-	\Chibi\Router::register(['UserController', 'viewAction'], $method, '/user/{name}/{tab}', $userValidations);
-	\Chibi\Router::register(['UserController', 'viewAction'], $method, '/user/{name}/{tab}/{page}', $userValidations);
-	\Chibi\Router::register(['UserController', 'settingsAction'], $method, '/user/{name}/settings', $userValidations);
-	\Chibi\Router::register(['UserController', 'editAction'], $method, '/user/{name}/edit', $userValidations);
-	\Chibi\Router::register(['UserController', 'activationAction'], $method, '/activation/{token}', $userValidations);
-	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy', $userValidations);
-	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy/{token}', $userValidations);
-	\Chibi\Router::register(['UserController', 'passwordResetAction'], $method, '/password-reset/{token}', $userValidations);
-	\Chibi\Router::register(['UserController', 'passwordResetProxyAction'], $method, '/password-reset-proxy', $userValidations);
-	\Chibi\Router::register(['UserController', 'passwordResetProxyAction'], $method, '/password-reset-proxy/{token}', $userValidations);
-	\Chibi\Router::register(['UserController', 'toggleSafetyAction'], $method, '/user/toggle-safety/{safety}', $userValidations);
+	\Chibi\Router::register(['UserController', 'registrationAction'], $method, '/register', $userValidation);
+	\Chibi\Router::register(['UserController', 'activationAction'], $method, '/activation/{token}', $userValidation);
+	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy', $userValidation);
+	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy/{token}', $userValidation);
+	\Chibi\Router::register(['UserController', 'passwordResetAction'], $method, '/password-reset/{token}', $userValidation);
+	\Chibi\Router::register(['UserController', 'passwordResetProxyAction'], $method, '/password-reset-proxy', $userValidation);
+	\Chibi\Router::register(['UserController', 'passwordResetProxyAction'], $method, '/password-reset-proxy/{token}', $userValidation);
+	\Chibi\Router::register(['UserController', 'toggleSafetyAction'], $method, '/user/toggle-safety/{safety}', $userValidation);
 }
 
 Assets::setTitle($config->main->title);

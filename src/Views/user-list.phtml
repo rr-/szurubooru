@@ -43,14 +43,14 @@ if (Auth::getCurrentUser()->hasEnabledEndlessScrolling())
 			<?php foreach ($this->context->transport->users as $user): ?>
 				<div class="user">
 					<a class="avatar" href="<?= \Chibi\Router::linkTo(
-						['UserController', 'viewAction'],
+						['UserController', 'genericView'],
 						['name' => $user->name]) ?>">
 						<img src="<?= htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?= $user->name ?>"/>
 					</a>
 					<div class="details">
 						<h1>
 							<a href="<?= \Chibi\Router::linkTo(
-								['UserController', 'viewAction'],
+								['UserController', 'genericView'],
 								['name' => $user->name]) ?>">
 								<?= $user->name ?>
 							</a>

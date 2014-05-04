@@ -94,7 +94,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php if ($uploader): ?>
 				<span class="value" title="<?= $val = $uploader->name ?>">
 					<a href="<?= \Chibi\Router::linkTo(
-						['UserController', 'viewAction'],
+						['UserController', 'genericView'],
 						['name' => $uploader->name]) ?>">
 						<img src="<?= htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?= $uploader->name ?>"/>
 						<?= $val ?>
@@ -243,7 +243,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				<?php foreach ($this->context->transport->post->getFavorites() as $user): ?>
 					<li>
 						<a title="<?= $user->name ?>" href="<?= \Chibi\Router::linkTo(
-							['UserController', 'viewAction'],
+							['UserController', 'genericView'],
 							['name' => $user->name]) ?>">
 							<img src="<?= htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?= $user->name ?>">
 						</a>

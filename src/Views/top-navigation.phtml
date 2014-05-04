@@ -76,7 +76,7 @@
 	{
 		$registerNavItem(
 			'My account',
-			\Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => Auth::getCurrentUser()->name]),
+			\Chibi\Router::linkTo(['UserController', 'genericView'], ['name' => Auth::getCurrentUser()->name]),
 			$activeController == 'user' and isset($this->context->route->arguments['name']) and
 				$this->context->route->arguments['name'] == Auth::getCurrentUser()->name);
 

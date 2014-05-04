@@ -6,7 +6,7 @@ Assets::addStylesheet('user-view.css');
 <div id="sidebar">
 	<div class="avatar-wrapper">
 		<a href="<?= \Chibi\Router::linkTo(
-			['UserController', 'viewAction'],
+			['UserController', 'genericView'],
 			['name' => $this->context->transport->user->name]) ?>">
 
 			<img
@@ -201,7 +201,7 @@ Assets::addStylesheet('user-view.css');
 				<li class="favs">
 			<?php endif ?>
 				<a href="<?= \Chibi\Router::linkTo(
-					['UserController', 'viewAction'],
+					['UserController', 'genericView'],
 					['name' => $this->context->transport->user->name,
 					'tab' => 'favs',
 					'page' => 1]) ?>">
@@ -215,7 +215,7 @@ Assets::addStylesheet('user-view.css');
 				<li class="uploads">
 			<?php endif ?>
 				<a href="<?= \Chibi\Router::linkTo(
-					['UserController', 'viewAction'],
+					['UserController', 'genericView'],
 					['name' => $this->context->transport->user->name,
 					'tab' => 'uploads',
 					'page' => 1]) ?>">
@@ -233,8 +233,9 @@ Assets::addStylesheet('user-view.css');
 					<li class="settings">
 				<?php endif ?>
 					<a href="<?= \Chibi\Router::linkTo(
-						['UserController', 'settingsAction'],
-						['name' => $this->context->transport->user->name]) ?>">
+						['UserController', 'genericView'],
+						['name' => $this->context->transport->user->name,
+						'tab' => 'settings']) ?>">
 						Browsing settings
 					</a>
 				</li>
@@ -247,8 +248,9 @@ Assets::addStylesheet('user-view.css');
 					<li class="edit">
 				<?php endif ?>
 					<a href="<?= \Chibi\Router::linkTo(
-						['UserController', 'editAction'],
-						['name' => $this->context->transport->user->name]) ?>">
+						['UserController', 'genericView'],
+						['name' => $this->context->transport->user->name,
+						'tab' => 'edit']) ?>">
 						Account settings
 					</a>
 				</li>
@@ -263,8 +265,9 @@ Assets::addStylesheet('user-view.css');
 					<li class="delete">
 				<?php endif ?>
 					<a href="<?= \Chibi\Router::linkTo(
-						['UserController', 'deleteAction'],
-						['name' => $this->context->transport->user->name]) ?>">
+						['UserController', 'genericView'],
+						['name' => $this->context->transport->user->name,
+						'tab' => 'delete']) ?>">
 						Delete account
 					</a>
 				</li>
