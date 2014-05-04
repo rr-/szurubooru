@@ -18,7 +18,7 @@ class EditUserPasswordJob extends AbstractUserEditJob
 		if (!$this->skipSaving)
 			UserModel::save($user);
 
-		LogHelper::log('{user} changed {subject}\'s password', [
+		Logger::log('{user} changed {subject}\'s password', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user)]);
 

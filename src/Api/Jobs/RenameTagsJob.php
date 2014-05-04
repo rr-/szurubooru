@@ -12,7 +12,7 @@ class RenameTagsJob extends AbstractJob
 		TagModel::removeUnused();
 		TagModel::rename($sourceTag, $targetTag);
 
-		LogHelper::log('{user} renamed {source} to {target}', [
+		Logger::log('{user} renamed {source} to {target}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'source' => TextHelper::reprTag($sourceTag),
 			'target' => TextHelper::reprTag($targetTag)]);

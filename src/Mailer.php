@@ -44,7 +44,7 @@ class Mailer
 
 		self::$mailCounter ++;
 
-		LogHelper::log('Sending e-mail with subject "{subject}" to {mail}', [
+		Logger::log('Sending e-mail with subject "{subject}" to {mail}', [
 			'subject' => $subject,
 			'mail' => $recipientEmail]);
 	}

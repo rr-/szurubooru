@@ -5,7 +5,7 @@ class EditPostJob extends AbstractPostEditJob
 	{
 		$post = $this->post;
 
-		LogHelper::bufferChanges();
+		Logger::bufferChanges();
 
 		$subJobs =
 		[
@@ -37,7 +37,7 @@ class EditPostJob extends AbstractPostEditJob
 		if (!$this->skipSaving)
 			PostModel::save($post);
 
-		LogHelper::flush();
+		Logger::flush();
 		return $post;
 	}
 }

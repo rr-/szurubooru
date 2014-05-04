@@ -7,7 +7,7 @@ class DeletePostJob extends AbstractPostJob
 
 		PostModel::remove($post);
 
-		LogHelper::log('{user} deleted {post}', [
+		Logger::log('{user} deleted {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 	}

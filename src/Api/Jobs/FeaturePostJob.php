@@ -9,7 +9,7 @@ class FeaturePostJob extends AbstractPostJob
 		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
 		PropertyModel::set(PropertyModel::FeaturedPostUserName, Auth::getCurrentUser()->name);
 
-		LogHelper::log('{user} featured {post} on main page', [
+		Logger::log('{user} featured {post} on main page', [
 			'user' => TextHelper::reprPost(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 

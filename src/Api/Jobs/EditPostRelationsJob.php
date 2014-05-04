@@ -17,7 +17,7 @@ class EditPostRelationsJob extends AbstractPostEditJob
 
 		foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
 		{
-			LogHelper::log('{user} removed relation between {post} and {post2}', [
+			Logger::log('{user} removed relation between {post} and {post2}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
 				'post2' => TextHelper::reprPost($post2id)]);
@@ -25,7 +25,7 @@ class EditPostRelationsJob extends AbstractPostEditJob
 
 		foreach (array_diff($newRelatedIds, $oldRelatedIds) as $post2id)
 		{
-			LogHelper::log('{user} added relation between {post} and {post2}', [
+			Logger::log('{user} added relation between {post} and {post2}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
 				'post2' => TextHelper::reprPost($post2id)]);

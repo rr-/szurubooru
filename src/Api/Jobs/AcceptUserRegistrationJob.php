@@ -8,7 +8,7 @@ class AcceptUserRegistrationJob extends AbstractUserJob
 		$user->staffConfirmed = true;
 		UserModel::save($user);
 
-		LogHelper::log('{user} confirmed {subject}\'s account', [
+		Logger::log('{user} confirmed {subject}\'s account', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user)]);
 	}

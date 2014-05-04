@@ -12,7 +12,7 @@ class MergeTagsJob extends AbstractJob
 		TagModel::removeUnused();
 		TagModel::merge($sourceTag, $targetTag);
 
-		LogHelper::log('{user} merged {source} with {target}', [
+		Logger::log('{user} merged {source} with {target}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'source' => TextHelper::reprTag($sourceTag),
 			'target' => TextHelper::reprTag($targetTag)]);

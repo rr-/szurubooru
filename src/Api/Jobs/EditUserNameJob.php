@@ -18,7 +18,7 @@ class EditUserNameJob extends AbstractUserEditJob
 		if (!$this->skipSaving)
 			UserModel::save($user);
 
-		LogHelper::log('{user} renamed {old} to {new}', [
+		Logger::log('{user} renamed {old} to {new}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'old' => TextHelper::reprUser($oldName),
 			'new' => TextHelper::reprUser($newName)]);

@@ -18,11 +18,11 @@ class AddUserJob extends AbstractJob
 			? AccessRank::Admin
 			: AccessRank::Registered;
 
-		LogHelper::bufferChanges();
+		Logger::bufferChanges();
 		Api::disablePrivilegeChecking();
 		Api::run((new EditUserJob)->skipSaving(), $arguments);
 		Api::enablePrivilegeChecking();
-		LogHelper::setBuffer([]);
+		Logger::setBuffer([]);
 
 		if ($firstUser)
 			$user->confirmEmail();
@@ -30,10 +30,10 @@ class AddUserJob extends AbstractJob
 		//save the user to db if everything went okay
 		UserModel::save($user);
 
-		LogHelper::log('{subject} just signed up', [
+		Logger::log('{subject} just signed up', [
 			'subject' => TextHelper::reprUser($user)]);
 
-		LogHelper::flush();
+		Logger::flush();
 
 		return $user;
 	}

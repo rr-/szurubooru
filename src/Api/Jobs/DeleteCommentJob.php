@@ -14,7 +14,7 @@ class DeleteCommentJob extends AbstractJob
 
 		CommentModel::remove($this->comment);
 
-		LogHelper::log('{user} removed comment from {post}', [
+		Logger::log('{user} removed comment from {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 	}

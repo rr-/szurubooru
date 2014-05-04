@@ -17,7 +17,7 @@ class EditUserAccessRankJob extends AbstractUserEditJob
 		if (!$this->skipSaving)
 			UserModel::save($user);
 
-		LogHelper::log('{user} changed {subject}\'s access rank to {rank}', [
+		Logger::log('{user} changed {subject}\'s access rank to {rank}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user),
 			'rank' => $newAccessRank->toString()]);

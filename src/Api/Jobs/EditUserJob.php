@@ -36,7 +36,7 @@ class EditUserJob extends AbstractUserEditJob
 	{
 		$user = $this->user;
 
-		LogHelper::bufferChanges();
+		Logger::bufferChanges();
 
 		foreach ($this->subJobs as $subJob)
 		{
@@ -57,7 +57,7 @@ class EditUserJob extends AbstractUserEditJob
 		if (!$this->skipSaving)
 			UserModel::save($user);
 
-		LogHelper::flush();
+		Logger::flush();
 		return $user;
 	}
 

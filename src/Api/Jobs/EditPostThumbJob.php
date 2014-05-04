@@ -13,7 +13,7 @@ class EditPostThumbJob extends AbstractPostEditJob
 		if (!$this->skipSaving)
 			PostModel::save($post);
 
-		LogHelper::log('{user} changed thumb of {post}', [
+		Logger::log('{user} changed thumb of {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 

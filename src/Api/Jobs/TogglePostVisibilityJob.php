@@ -9,7 +9,7 @@ class TogglePostVisibilityJob extends AbstractPostJob
 		$post->setHidden(!$visible);
 		PostModel::save($post);
 
-		LogHelper::log(
+		Logger::log(
 			$visible
 				? '{user} unhidden {post}'
 				: '{user} hidden {post}', [

@@ -8,7 +8,7 @@ class DeleteUserJob extends AbstractUserJob
 		$name = $user->name;
 		UserModel::remove($user);
 
-		LogHelper::log('{user} removed {subject}\'s account', [
+		Logger::log('{user} removed {subject}\'s account', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($name)]);
 	}

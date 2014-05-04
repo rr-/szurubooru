@@ -33,7 +33,7 @@ class ActivateUserEmailJob extends AbstractJob
 			TokenModel::save($token);
 			UserModel::save($user);
 
-			LogHelper::log('{subject} just activated account', [
+			Logger::log('{subject} just activated account', [
 				'subject' => TextHelper::reprUser($user)]);
 
 			return $user;

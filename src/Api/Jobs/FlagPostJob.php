@@ -12,7 +12,7 @@ class FlagPostJob extends AbstractPostJob
 		$flagged []= $key;
 		SessionHelper::set('flagged', $flagged);
 
-		LogHelper::log('{user} flagged {post} for moderator attention', [
+		Logger::log('{user} flagged {post} for moderator attention', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 

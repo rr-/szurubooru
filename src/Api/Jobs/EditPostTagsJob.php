@@ -18,7 +18,7 @@ class EditPostTagsJob extends AbstractPostEditJob
 
 		foreach (array_diff($oldTags, $newTags) as $tag)
 		{
-			LogHelper::log('{user} untagged {post} with {tag}', [
+			Logger::log('{user} untagged {post} with {tag}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
 				'tag' => TextHelper::reprTag($tag)]);
@@ -26,7 +26,7 @@ class EditPostTagsJob extends AbstractPostEditJob
 
 		foreach (array_diff($newTags, $oldTags) as $tag)
 		{
-			LogHelper::log('{user} tagged {post} with {tag}', [
+			Logger::log('{user} tagged {post} with {tag}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
 				'tag' => TextHelper::reprTag($tag)]);

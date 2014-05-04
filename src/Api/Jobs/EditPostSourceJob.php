@@ -16,7 +16,7 @@ class EditPostSourceJob extends AbstractPostEditJob
 
 		if ($oldSource != $newSource)
 		{
-			LogHelper::log('{user} changed source of {post} to {source}', [
+			Logger::log('{user} changed source of {post} to {source}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
 				'source' => $post->source]);

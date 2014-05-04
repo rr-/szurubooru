@@ -12,7 +12,7 @@ class FlagUserJob extends AbstractUserJob
 		$flagged []= $key;
 		SessionHelper::set('flagged', $flagged);
 
-		LogHelper::log('{user} flagged {subject} for moderator attention', [
+		Logger::log('{user} flagged {subject} for moderator attention', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user)]);
 

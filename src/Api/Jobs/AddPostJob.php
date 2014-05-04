@@ -6,7 +6,7 @@ class AddPostJob extends AbstractJob
 	public function execute()
 	{
 		$post = PostModel::spawn();
-		LogHelper::bufferChanges();
+		Logger::bufferChanges();
 
 		//basic stuff
 		$anonymous = $this->getArgument(self::ANONYMOUS);
@@ -34,10 +34,10 @@ class AddPostJob extends AbstractJob
 		PostModel::save($post);
 
 		//clean edit log
-		LogHelper::setBuffer([]);
+		Logger::setBuffer([]);
 
 		//log
-		LogHelper::log('{user} added {post} (tags: {tags}, safety: {safety}, source: {source})', [
+		Logger::log('{user} added {post} (tags: {tags}, safety: {safety}, source: {source})', [
 			'user' => ($anonymous and !getConfig()->misc->logAnonymousUploads)
 				? TextHelper::reprUser(UserModel::getAnonymousName())
 				: TextHelper::reprUser(Auth::getCurrentUser()),
@@ -47,7 +47,7 @@ class AddPostJob extends AbstractJob
 			'source' => $post->source]);
 
 		//finish
-		LogHelper::flush();
+		Logger::flush();
 
 		return $post;
 	}

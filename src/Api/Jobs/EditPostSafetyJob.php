@@ -16,7 +16,7 @@ class EditPostSafetyJob extends AbstractPostEditJob
 
 		if ($oldSafety != $newSafety)
 		{
-			LogHelper::log('{user} changed safety of {post} to {safety}', [
+			Logger::log('{user} changed safety of {post} to {safety}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
 				'safety' => $post->getSafety()->toString()]);

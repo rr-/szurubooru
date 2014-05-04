@@ -35,7 +35,7 @@ class PasswordResetJob extends AbstractJob
 			TokenModel::save($token);
 			UserModel::save($user);
 
-			LogHelper::log('{subject} just reset password', [
+			Logger::log('{subject} just reset password', [
 				'subject' => TextHelper::reprUser($user)]);
 
 			$x = new StdClass;

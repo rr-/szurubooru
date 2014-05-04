@@ -16,7 +16,7 @@ class EditCommentJob extends AbstractJob
 		$comment->text = CommentModel::validateText($this->getArgument(self::TEXT));
 
 		CommentModel::save($comment);
-		LogHelper::log('{user} edited comment in {post}', [
+		Logger::log('{user} edited comment in {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($comment->getPost())]);
 

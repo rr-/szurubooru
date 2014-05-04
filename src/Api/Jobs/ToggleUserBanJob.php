@@ -9,7 +9,7 @@ class ToggleUserBanJob extends AbstractUserJob
 		$user->banned = $banned;
 		UserModel::save($user);
 
-		LogHelper::log(
+		Logger::log(
 			$banned
 				? '{user} banned {subject}'
 				: '{user} unbanned {subject}', [

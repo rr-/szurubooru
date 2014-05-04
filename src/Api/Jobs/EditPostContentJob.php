@@ -13,7 +13,7 @@ class EditPostContentJob extends AbstractPostEditJob
 		if (!$this->skipSaving)
 			PostModel::save($post);
 
-		LogHelper::log('{user} changed contents of {post}', [
+		Logger::log('{user} changed contents of {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 

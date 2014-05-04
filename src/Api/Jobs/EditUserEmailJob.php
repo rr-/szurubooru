@@ -32,7 +32,7 @@ class EditUserEmailJob extends AbstractUserEditJob
 		if (!$this->skipSaving)
 			UserModel::save($user);
 
-		LogHelper::log('{user} changed {subject}\'s e-mail to {mail}', [
+		Logger::log('{user} changed {subject}\'s e-mail to {mail}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user),
 			'mail' => $newEmail]);
