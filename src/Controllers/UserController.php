@@ -87,92 +87,26 @@ class UserController
 		$this->genericView($name, 'edit');
 		$this->requirePasswordConfirmation();
 
-		$user = getContext()->transport->user;
+		if (InputHelper::get('password1') != InputHelper::get('password2'))
+			throw new SimpleException('Specified passwords must be the same');
 
-		$suppliedCurrentPassword = InputHelper::get('current-password');
-		$suppliedName = InputHelper::get('name');
-		$suppliedPassword1 = InputHelper::get('password1');
-		$suppliedPassword2 = InputHelper::get('password2');
-		$suppliedEmail = InputHelper::get('email');
-		$suppliedAccessRank = InputHelper::get('access-rank');
+		$args =
+		[
+			EditUserNameJob::USER_NAME => $name,
+			EditUserNameJob::NEW_USER_NAME => InputHelper::get('name'),
+			EditUserPasswordJob::NEW_PASSWORD => InputHelper::get('password1'),
+			EditUserEmailJob::NEW_EMAIL => InputHelper::get('email'),
+			EditUserAccessRankJob::NEW_ACCESS_RANK => InputHelper::get('access-rank'),
+		];
 
-		$confirmMail = false;
-		LogHelper::bufferChanges();
+		$args = array_filter($args);
+		$user = Api::run(new EditUserJob(), $args);
 
-		if ($suppliedName != '' and $suppliedName != $user->name)
-		{
-			Access::assert(
-				Privilege::ChangeUserName,
-				Access::getIdentity($user));
-
-			$suppliedName = UserModel::validateUserName($suppliedName);
-			$oldName = $user->name;
-			$user->name = $suppliedName;
-			LogHelper::log('{user} renamed {old} to {new}', [
-				'old' => TextHelper::reprUser($oldName),
-				'new' => TextHelper::reprUser($suppliedName)]);
-		}
-
-		if ($suppliedPassword1 != '')
-		{
-			Access::assert(
-				Privilege::ChangeUserPassword,
-				Access::getIdentity($user));
-
-			if ($suppliedPassword1 != $suppliedPassword2)
-				throw new SimpleException('Specified passwords must be the same');
-			$suppliedPassword = UserModel::validatePassword($suppliedPassword1);
-			$user->passHash = UserModel::hashPassword($suppliedPassword, $user->passSalt);
-			LogHelper::log('{user} changed {subject}\'s password', ['subject' => TextHelper::reprUser($user)]);
-		}
-
-		if ($suppliedEmail != '' and $suppliedEmail != $user->emailConfirmed)
-		{
-			Access::assert(
-				Privilege::ChangeUserEmail,
-				Access::getIdentity($user));
-
-			$suppliedEmail = UserModel::validateEmail($suppliedEmail);
-			if (Auth::getCurrentUser()->id == $user->id)
-			{
-				$user->emailUnconfirmed = $suppliedEmail;
-				if (!empty($user->emailUnconfirmed))
-					$confirmMail = true;
-				LogHelper::log('{user} changed e-mail to {mail}', ['mail' => $suppliedEmail]);
-			}
-			else
-			{
-				$user->emailUnconfirmed = null;
-				$user->emailConfirmed = $suppliedEmail;
-				LogHelper::log('{user} changed {subject}\'s e-mail to {mail}', [
-					'subject' => TextHelper::reprUser($user),
-					'mail' => $suppliedEmail]);
-			}
-		}
-
-		if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->accessRank)
-		{
-			Access::assert(
-				Privilege::ChangeUserAccessRank,
-				Access::getIdentity($user));
-
-			$suppliedAccessRank = UserModel::validateAccessRank($suppliedAccessRank);
-			$user->accessRank = $suppliedAccessRank;
-			LogHelper::log('{user} changed {subject}\'s access rank to {rank}', [
-				'subject' => TextHelper::reprUser($user),
-				'rank' => AccessRank::toString($suppliedAccessRank)]);
-		}
-
-		if ($confirmMail)
-			self::sendEmailChangeConfirmation($user);
-
-		UserModel::save($user);
 		if (Auth::getCurrentUser()->id == $user->id)
 			Auth::setCurrentUser($user);
 
-		LogHelper::flush();
 		$message = 'Account settings updated!';
-		if ($confirmMail)
+		if (Mailer::getMailCounter() > 0)
 			$message .= ' You will be sent an e-mail address confirmation message soon.';
 
 		Messenger::message($message);
@@ -297,10 +231,10 @@ class UserController
 		UserModel::save($dbUser);
 
 		if (!empty($dbUser->emailUnconfirmed))
-			self::sendEmailChangeConfirmation($dbUser);
+			EditUserEmailJob::sendEmail($dbUser);
 
 		$message = 'Congratulations, your account was created.';
-		if (!empty($context->mailSent))
+		if (Mailer::getMailCounter() > 0)
 		{
 			$message .= ' Please wait for activation e-mail.';
 			if (getConfig()->registration->staffActivation)
@@ -410,97 +344,25 @@ class UserController
 			else
 				throw new SimpleException('This user has no e-mail specified; activation cannot proceed');
 		}
-		self::sendEmailChangeConfirmation($user);
+		EditUserEmailJob::sendEmail($user);
 		Messenger::message('Activation e-mail resent.');
-	}
-
-	private static function sendTokenizedEmail(
-		$user,
-		$body,
-		$subject,
-		$senderName,
-		$senderEmail,
-		$recipientEmail,
-		$linkActionName)
-	{
-		//prepare unique user token
-		$token = TokenModel::spawn();
-		$token->setUser($user);
-		$token->token = TokenModel::forgeUnusedToken();
-		$token->used = false;
-		$token->expires = null;
-		TokenModel::save($token);
-
-		getContext()->mailSent = true;
-		$tokens = [];
-		$tokens['host'] = $_SERVER['HTTP_HOST'];
-		$tokens['token'] = $token->token; //gosh this code looks so silly
-		$tokens['nl'] = PHP_EOL;
-		if ($linkActionName !== null)
-			$tokens['link'] = \Chibi\Router::linkTo(['UserController', $linkActionName], ['token' => $token->token]);
-
-		$body = wordwrap(TextHelper::replaceTokens($body, $tokens), 70);
-		$subject = TextHelper::replaceTokens($subject, $tokens);
-		$senderName = TextHelper::replaceTokens($senderName, $tokens);
-		$senderEmail = TextHelper::replaceTokens($senderEmail, $tokens);
-
-		if (empty($recipientEmail))
-			throw new SimpleException('Destination e-mail address was not found');
-
-		$messageId = $_SERVER['REQUEST_TIME'] . md5($_SERVER['REQUEST_TIME']) . '@' . $_SERVER['HTTP_HOST'];
-
-		$headers = [];
-		$headers []= sprintf('MIME-Version: 1.0');
-		$headers []= sprintf('Content-Transfer-Encoding: 7bit');
-		$headers []= sprintf('Date: %s', date('r', $_SERVER['REQUEST_TIME']));
-		$headers []= sprintf('Message-ID: <%s>', $messageId);
-		$headers []= sprintf('From: %s <%s>', $senderName, $senderEmail);
-		$headers []= sprintf('Reply-To: %s', $senderEmail);
-		$headers []= sprintf('Return-Path: %s', $senderEmail);
-		$headers []= sprintf('Subject: %s', $subject);
-		$headers []= sprintf('Content-Type: text/plain; charset=utf-8', $subject);
-		$headers []= sprintf('X-Mailer: PHP/%s', phpversion());
-		$headers []= sprintf('X-Originating-IP: %s', $_SERVER['SERVER_ADDR']);
-		$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-		mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
-
-		LogHelper::log('Sending e-mail with subject "{subject}" to {mail}', [
-			'subject' => $subject,
-			'mail' => $recipientEmail]);
-	}
-
-	private static function sendEmailChangeConfirmation($user)
-	{
-		$regConfig = getConfig()->registration;
-		if (!$regConfig->confirmationEmailEnabled)
-		{
-			$user->emailConfirmed = $user->emailUnconfirmed;
-			$user->emailUnconfirmed = null;
-			return;
-		}
-
-		return self::sendTokenizedEmail(
-			$user,
-			$regConfig->confirmationEmailBody,
-			$regConfig->confirmationEmailSubject,
-			$regConfig->confirmationEmailSenderName,
-			$regConfig->confirmationEmailSenderEmail,
-			$user->emailUnconfirmed,
-			'activationAction');
 	}
 
 	private static function sendPasswordResetConfirmation($user)
 	{
 		$regConfig = getConfig()->registration;
 
-		return self::sendTokenizedEmail(
+		$mail = new Mail();
+		$mail->body = $regConfig->passwordResetEmailBody;
+		$mail->subject = $regConfig->passwordResetEmailSubject;
+		$mail->senderName = $regConfig->passwordResetEmailSenderName;
+		$mail->senderEmail = $regConfig->passwordResetEmailSenderEmail;
+		$mail->recipientEmail = $user->emailConfirmed;
+
+		return Mailer::sendMailWithTokenLink(
 			$user,
-			$regConfig->passwordResetEmailBody,
-			$regConfig->passwordResetEmailSubject,
-			$regConfig->passwordResetEmailSenderName,
-			$regConfig->passwordResetEmailSenderEmail,
-			$user->emailConfirmed,
-			'passwordResetAction');
+			['UserController', 'passwordResetAction'],
+			$mail);
 	}
 
 	private function requirePasswordConfirmation()

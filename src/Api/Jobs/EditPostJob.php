@@ -5,6 +5,8 @@ class EditPostJob extends AbstractPostJob
 	{
 		$post = $this->post;
 
+		LogHelper::bufferChanges();
+
 		$subJobs =
 		[
 			new EditPostSafetyJob(),
@@ -29,6 +31,7 @@ class EditPostJob extends AbstractPostJob
 			}
 		}
 
+		LogHelper::flush();
 		return $post;
 	}
 }
