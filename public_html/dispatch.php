@@ -151,10 +151,10 @@ $userValidation =
 
 \Chibi\Router::register(['UserController', 'activationView'], 'GET', '/activation', $userValidation);
 \Chibi\Router::register(['UserController', 'activationAction'], 'POST', '/activation', $userValidation);
-\Chibi\Router::register(['UserController', 'activationAction'], 'GET', '/activation/{token}', $userValidation);
+\Chibi\Router::register(['UserController', 'activationAction'], 'GET', '/activation/{tokenText}', $userValidation);
 \Chibi\Router::register(['UserController', 'passwordResetView'], 'GET', '/password-reset', $userValidation);
 \Chibi\Router::register(['UserController', 'passwordResetAction'], 'POST', '/password-reset', $userValidation);
-\Chibi\Router::register(['UserController', 'passwordResetAction'], 'GET', '/password-reset/{token}', $userValidation);
+\Chibi\Router::register(['UserController', 'passwordResetAction'], 'GET', '/password-reset/{tokenText}', $userValidation);
 
 \Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{name}/flag', $userValidation);
 \Chibi\Router::register(['UserController', 'banAction'], 'POST', '/user/{name}/ban', $userValidation);

@@ -24,11 +24,8 @@ class AddUserJob extends AbstractJob
 		Api::enablePrivilegeChecking();
 		LogHelper::setBuffer([]);
 
-		if ($firstUser and empty($user->emailConfirmed))
-		{
-			$user->emailConfirmed = $user->emailUnconfirmed;
-			$user->emailUnconfirmed = null;
-		}
+		if ($firstUser)
+			$user->confirmEmail();
 
 		//load the user after edits
 		$user = UserModel::findById($user->id);

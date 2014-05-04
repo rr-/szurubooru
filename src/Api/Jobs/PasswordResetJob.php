@@ -1,0 +1,64 @@
+<?php
+class PasswordResetJob extends AbstractJob
+{
+	const TOKEN = 'token';
+	const NEW_PASSWORD = 'new-password';
+
+	public function execute()
+	{
+		if (!$this->hasArgument(self::TOKEN))
+		{
+			$user = UserModel::findByNameOrEmail($this->getArgument(self::USER_NAME));
+
+			if (empty($user->emailConfirmed))
+				throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
+
+			self::sendEmail($user);
+
+			return $user;
+		}
+		else
+		{
+			$tokenText = $this->getArgument(self::TOKEN);
+			$token = TokenModel::findByToken($tokenText);
+			TokenModel::checkValidity($token);
+
+			$alphabet = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
+			$newPassword = join('', array_map(function($x) use ($alphabet)
+			{
+				return $alphabet[$x];
+			}, array_rand($alphabet, 8)));
+
+			$user = $token->getUser();
+			$user->passHash = UserModel::hashPassword($newPassword, $user->passSalt);
+			$token->used = true;
+			TokenModel::save($token);
+			UserModel::save($user);
+
+			LogHelper::log('{subject} just reset password', [
+				'subject' => TextHelper::reprUser($user)]);
+
+			$x = new StdClass;
+			$x->user = $user;
+			$x->newPassword = $newPassword;
+			return $x;
+		}
+	}
+
+	public static function sendEmail($user)
+	{
+		$regConfig = getConfig()->registration;
+
+		$mail = new Mail();
+		$mail->body = $regConfig->passwordResetEmailBody;
+		$mail->subject = $regConfig->passwordResetEmailSubject;
+		$mail->senderName = $regConfig->passwordResetEmailSenderName;
+		$mail->senderEmail = $regConfig->passwordResetEmailSenderEmail;
+		$mail->recipientEmail = $user->emailConfirmed;
+
+		return Mailer::sendMailWithTokenLink(
+			$user,
+			['UserController', 'passwordResetAction'],
+			$mail);
+	}
+}

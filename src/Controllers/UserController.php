@@ -223,51 +223,30 @@ class UserController
 		Assets::setSubTitle('account activation');
 	}
 
-	public function activationAction($token)
+	public function activationAction($tokenText)
 	{
 		$context = getContext();
 		$context->viewName = 'message';
 		Assets::setSubTitle('account activation');
+		$name = InputHelper::get('name');
 
-		if (empty($token))
+		if (empty($tokenText))
 		{
-			$name = InputHelper::get('name');
-			$user = UserModel::findByNameOrEmail($name);
-			if (empty($user->emailUnconfirmed))
-			{
-				if (!empty($user->emailConfirmed))
-					throw new SimpleException('E-mail was already confirmed; activation skipped');
-				else
-					throw new SimpleException('This user has no e-mail specified; activation cannot proceed');
-			}
-			EditUserEmailJob::sendEmail($user);
+			Api::run(new ActivateUserEmailJob(), [ ActivateUserEmailJob::USER_NAME => $name ]);
+
 			Messenger::message('Activation e-mail resent.');
 		}
 		else
 		{
-			$dbToken = TokenModel::findByToken($token);
-			TokenModel::checkValidity($dbToken);
+			$user = Api::run(new ActivateUserEmailJob(), [ ActivateUserEmailJob::TOKEN => $tokenText ]);
 
-			$dbUser = $dbToken->getUser();
-			if (empty($dbUser->emailConfirmed))
-			{
-				$dbUser->emailConfirmed = $dbUser->emailUnconfirmed;
-				$dbUser->emailUnconfirmed = null;
-			}
-			$dbToken->used = true;
-			TokenModel::save($dbToken);
-			UserModel::save($dbUser);
-
-			LogHelper::log('{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
 			$message = 'Activation completed successfully.';
 			if (getConfig()->registration->staffActivation)
 				$message .= ' However, your account still must be confirmed by staff.';
 			Messenger::message($message);
 
 			if (!getConfig()->registration->staffActivation)
-			{
-				Auth::setCurrentUser($dbUser);
-			}
+				Auth::setCurrentUser($user);
 		}
 	}
 
@@ -278,62 +257,29 @@ class UserController
 		Assets::setSubTitle('password reset');
 	}
 
-	public function passwordResetAction($token)
+	public function passwordResetAction($tokenText)
 	{
 		$context = getContext();
 		$context->viewName = 'message';
 		Assets::setSubTitle('password reset');
+		$name = InputHelper::get('name');
 
-		if (empty($token))
+		if (empty($tokenText))
 		{
-			$name = InputHelper::get('name');
-			$user = UserModel::findByNameOrEmail($name);
-			if (empty($user->emailConfirmed))
-				throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
+			Api::run(new PasswordResetJob(), [ PasswordResetJob::USER_NAME => $name ]);
 
-			self::sendPasswordResetConfirmation($user);
 			Messenger::message('E-mail sent. Follow instructions to reset password.');
 		}
 		else
 		{
-			$dbToken = TokenModel::findByToken($token);
-			TokenModel::checkValidity($dbToken);
+			$ret = Api::run(new PasswordResetJob(), [ PasswordResetJob::TOKEN => $tokenText ]);
 
-			$alphabet = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
-			$randomPassword = join('', array_map(function($x) use ($alphabet)
-			{
-				return $alphabet[$x];
-			}, array_rand($alphabet, 8)));
+			Messenger::message(sprintf(
+				'Password reset successful. Your new password is **%s**.',
+				$ret->newPassword));
 
-			$dbUser = $dbToken->getUser();
-			$dbUser->passHash = UserModel::hashPassword($randomPassword, $dbUser->passSalt);
-			$dbToken->used = true;
-			TokenModel::save($dbToken);
-			UserModel::save($dbUser);
-
-			LogHelper::log('{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
-			$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
-			Messenger::message($message);
-
-			Auth::setCurrentUser($dbUser);
+			Auth::setCurrentUser($ret->user);
 		}
-	}
-
-	private static function sendPasswordResetConfirmation($user)
-	{
-		$regConfig = getConfig()->registration;
-
-		$mail = new Mail();
-		$mail->body = $regConfig->passwordResetEmailBody;
-		$mail->subject = $regConfig->passwordResetEmailSubject;
-		$mail->senderName = $regConfig->passwordResetEmailSenderName;
-		$mail->senderEmail = $regConfig->passwordResetEmailSenderEmail;
-		$mail->recipientEmail = $user->emailConfirmed;
-
-		return Mailer::sendMailWithTokenLink(
-			$user,
-			['UserController', 'passwordResetAction'],
-			$mail);
 	}
 
 	private function requirePasswordConfirmation()

@@ -112,6 +112,15 @@ class UserEntity extends AbstractEntity
 		$this->setSetting(UserModel::SETTING_ENDLESS_SCROLLING, $enabled ? 1 : 0);
 	}
 
+	public function confirmEmail()
+	{
+		if (!empty($this->emailConfirmed))
+			return;
+
+		$this->emailConfirmed = $user->emailUnconfirmed;
+		$this->emailUnconfirmed = null;
+	}
+
 	public function hasFavorited($post)
 	{
 		$stmt = new Sql\SelectStatement();
