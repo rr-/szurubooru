@@ -21,10 +21,8 @@ class TogglePostVisibilityJob extends AbstractPostJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::HidePost,
-			Access::getIdentity($this->post->getUploader())
-		];
+			Access::getIdentity($this->post->getUploader()));
 	}
 }

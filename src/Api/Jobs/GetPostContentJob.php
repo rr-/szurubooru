@@ -1,16 +1,16 @@
 <?php
 class GetPostContentJob extends AbstractJob
 {
+	protected $post;
+
+	public function prepare()
+	{
+		$this->post = PostModel::findByName($this->getArgument(self::POST_NAME));
+	}
+
 	public function execute()
 	{
-		$post = PostModel::findByName($this->getArgument(self::POST_NAME));
-
-		//todo: refactor this so that requiresPrivilege can accept multiple privileges
-		if ($post->hidden)
-			Access::assert(Privilege::RetrievePost, 'hidden');
-		Access::assert(Privilege::RetrievePost);
-		Access::assert(Privilege::RetrievePost, PostSafety::toString($post->safety));
-
+		$post = $this->post;
 		$config = getConfig();
 
 		$path = $config->main->filesPath . DS . $post->name;
@@ -32,7 +32,14 @@ class GetPostContentJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		//temporarily enforced in execute
-		return false;
+		$post = $this->post;
+		$privileges = [];
+
+		if ($post->hidden)
+			$privileges []= new Privilege(Privilege::ViewPost, 'hidden');
+
+		$privileges []= new Privilege(Privilege::ViewPost, PostSafety::toString($post->safety));
+
+		return $privileges;
 	}
 }

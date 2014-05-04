@@ -15,10 +15,8 @@ class DeleteUserJob extends AbstractUserJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::DeleteUser,
-			Access::getIdentity($this->user)
-		];
+			Access::getIdentity($this->user));
 	}
 }

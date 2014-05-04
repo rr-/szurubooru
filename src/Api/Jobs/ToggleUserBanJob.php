@@ -19,10 +19,8 @@ class ToggleUserBanJob extends AbstractUserJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::BanUser,
-			Access::getIdentity($this->user)
-		];
+			Access::getIdentity($this->user));
 	}
 }

@@ -41,6 +41,6 @@ class GetLogJob extends AbstractPageJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::ViewLog;
+		return new Privilege(Privilege::ViewLog);
 	}
 }

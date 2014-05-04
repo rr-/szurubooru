@@ -22,6 +22,6 @@ class ListPostsJob extends AbstractPageJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::ListPosts;
+		return new Privilege(Privilege::ListPosts);
 	}
 }

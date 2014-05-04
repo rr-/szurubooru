@@ -12,9 +12,9 @@
 		id="edit-token"
 		value="<?= htmlspecialchars($this->context->transport->post->getEditToken()) ?>"/>
 
-	<?php if (Access::check(
+	<?php if (Access::check(new Privilege(
 		Privilege::EditPostSafety,
-		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
+		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
 
 		<div class="form-row safety">
 			<label>Safety:</label>
@@ -34,9 +34,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (Access::check(
+	<?php if (Access::check(new Privilege(
 		Privilege::EditPostTags,
-		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
+		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
 
 		<div class="form-row tags">
 			<label for="tags">Tags:</label>
@@ -52,9 +52,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (
-		Access::check(Privilege::EditPostSource,
-		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
+	<?php if (Access::check(new Privilege(
+		Privilege::EditPostSource,
+		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
 
 		<div class="form-row source">
 			<label for="source">Source:</label>
@@ -67,9 +67,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (
-		Access::check(Privilege::EditPostRelations,
-		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
+	<?php if (Access::check(new Privilege(
+		Privilege::EditPostRelations,
+		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
 
 		<div class="form-row thumb">
 			<label for="relations">Relations:</label>
@@ -85,9 +85,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (
-		Access::check(Privilege::EditPostFile,
-		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
+	<?php if (Access::check(new Privilege(
+		Privilege::EditPostFile,
+		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
 
 		<div class="form-row url">
 			<label for="url">File:</label>
@@ -104,9 +104,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (
-		Access::check(Privilege::EditPostThumb,
-		Access::getIdentity($this->context->transport->post->getUploader()))): ?>
+	<?php if (Access::check(new Privilege(
+		Privilege::EditPostThumb,
+		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
 
 		<div class="form-row thumb">
 			<label for="thumb">Thumb:</label>

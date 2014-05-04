@@ -20,6 +20,6 @@ class RenameTagsJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::RenameTags;
+		return new Privilege(Privilege::RenameTags);
 	}
 }

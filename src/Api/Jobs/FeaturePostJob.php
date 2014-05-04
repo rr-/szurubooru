@@ -18,11 +18,9 @@ class FeaturePostJob extends AbstractPostJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::FeaturePost,
-			Access::getIdentity($this->post->getUploader())
-		];
+			Access::getIdentity($this->post->getUploader()));
 	}
 
 	public function requiresAuthentication()

@@ -20,6 +20,6 @@ class MergeTagsJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::MergeTags;
+		return new Privilege(Privilege::MergeTags);
 	}
 }

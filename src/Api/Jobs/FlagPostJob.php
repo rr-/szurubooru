@@ -21,10 +21,8 @@ class FlagPostJob extends AbstractPostJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::FlagPost,
-			Access::getIdentity($this->post->getUploader())
-		];
+			Access::getIdentity($this->post->getUploader()));
 	}
 }

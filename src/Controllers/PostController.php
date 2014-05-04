@@ -31,11 +31,11 @@ class PostController
 		$context->transport->lastSearchQuery = $query;
 		if ($source == 'mass-tag')
 		{
-			Access::assert(Privilege::MassTag);
+			Access::assert(new Privilege(Privilege::MassTag));
 			$context->massTagTag = $additionalInfo;
 			$context->massTagQuery = $query;
 
-			if (!Access::check(Privilege::MassTag, 'all'))
+			if (!Access::check(new Privilege(Privilege::MassTag, 'all')))
 				$query = trim($query . ' submit:' . Auth::getCurrentUser()->name);
 		}
 
@@ -67,9 +67,9 @@ class PostController
 
 	public function toggleTagAction($id, $tag, $enable)
 	{
-		Access::assert(
+		Access::assert(new Privilege(
 			Privilege::MassTag,
-			Access::getIdentity(PostModel::findById($id)->getUploader()));
+			Access::getIdentity(PostModel::findById($id)->getUploader())));
 
 		Api::run(
 			new TogglePostTagJob(),
@@ -113,7 +113,9 @@ class PostController
 
 	public function editView($id)
 	{
-		$post = PostModel::findByIdOrName($id);
+		$post = Api::run(new GetPostJob(), [
+			GetPostJob::POST_ID => $id]);
+
 		$context = getContext()->transport->post = $post;
 	}
 

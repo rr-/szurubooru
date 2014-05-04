@@ -27,7 +27,7 @@ class PostSearchParser extends AbstractSearchParser
 		if (Auth::getCurrentUser()->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
 			$this->processComplexToken('special', 'disliked', true);
 
-		if (!Access::check(Privilege::ListPosts, 'hidden') or !$this->showHidden)
+		if (!Access::check(new Privilege(Privilege::ListPosts, 'hidden')) or !$this->showHidden)
 			$this->processComplexToken('special', 'hidden', true);
 
 		foreach ($this->tags as $item)

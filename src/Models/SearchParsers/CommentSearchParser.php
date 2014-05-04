@@ -11,7 +11,7 @@ class CommentSearchParser extends AbstractSearchParser
 		$allowedSafety = Access::getAllowedSafety();
 		$crit->add(Sql\InFunctor::fromArray('post.safety', Sql\Binding::fromArray($allowedSafety)));
 
-		if (!Access::check(Privilege::ListPosts, 'hidden'))
+		if (!Access::check(new Privilege(Privilege::ListPosts, 'hidden')))
 			$crit->add(new Sql\NegationFunctor(new Sql\StringExpression('hidden')));
 
 		$this->statement->setCriterion($crit);

@@ -5,12 +5,6 @@ class GetPostJob extends AbstractPostJob
 	{
 		$post = $this->post;
 
-		//todo: refactor this so that requiresPrivilege can accept multiple privileges
-		if ($post->hidden)
-			Access::assert(Privilege::ViewPost, 'hidden');
-		Access::assert(Privilege::ViewPost);
-		Access::assert(Privilege::ViewPost, PostSafety::toString($post->safety));
-
 		CommentModel::preloadCommenters($post->getComments());
 
 		return $post;
@@ -18,7 +12,14 @@ class GetPostJob extends AbstractPostJob
 
 	public function requiresPrivilege()
 	{
-		//temporarily enforced in execute
-		return false;
+		$post = $this->post;
+		$privileges = [];
+
+		if ($post->hidden)
+			$privileges []= new Privilege(Privilege::ViewPost, 'hidden');
+
+		$privileges []= new Privilege(Privilege::ViewPost, PostSafety::toString($post->safety));
+
+		return $privileges;
 	}
 }

@@ -27,10 +27,8 @@ class EditUserNameJob extends AbstractUserJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::ChangeUserName,
-			Access::getIdentity($this->user),
-		];
+			Access::getIdentity($this->user));
 	}
 }

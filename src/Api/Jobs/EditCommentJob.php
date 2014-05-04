@@ -25,11 +25,9 @@ class EditCommentJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::EditComment,
-			Access::getIdentity($this->comment->getCommenter())
-		];
+			Access::getIdentity($this->comment->getCommenter()));
 	}
 
 	public function requiresAuthentication()

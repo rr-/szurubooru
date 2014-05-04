@@ -20,6 +20,6 @@ class ListTagsJob extends AbstractPageJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::ListTags;
+		return new Privilege(Privilege::ListTags);
 	}
 }

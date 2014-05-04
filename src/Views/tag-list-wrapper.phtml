@@ -3,10 +3,18 @@ Assets::setSubTitle('tags');
 Assets::addStylesheet('tag-list.css');
 
 $tabs = [];
-if (Access::check(Privilege::ListTags)) $tabs['list'] = ['List', 'listView'];
-if (Access::check(Privilege::RenameTags)) $tabs['rename'] = ['Rename', 'renameView'];
-if (Access::check(Privilege::MergeTags)) $tabs['merge'] = ['Merge', 'mergeView'];
-if (Access::check(Privilege::MassTag)) $tabs['mass-tag-redirect'] = ['Mass tag', 'massTagRedirectAction'];
+if (Access::check(new Privilege(Privilege::ListTags)))
+	$tabs['list'] = ['List', 'listView'];
+
+if (Access::check(new Privilege(Privilege::RenameTags)))
+	$tabs['rename'] = ['Rename', 'renameView'];
+
+if (Access::check(new Privilege(Privilege::MergeTags)))
+	$tabs['merge'] = ['Merge', 'mergeView'];
+
+if (Access::check(new Privilege(Privilege::MassTag)))
+	$tabs['mass-tag-redirect'] = ['Mass tag', 'massTagRedirectAction'];
+
 $showTabs = count($tabs) > 1;
 ?>
 

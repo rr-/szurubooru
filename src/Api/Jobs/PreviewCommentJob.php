@@ -15,7 +15,7 @@ class PreviewCommentJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::AddComment;
+		return new Privilege(Privilege::AddComment);
 	}
 
 	public function requiresAuthentication()

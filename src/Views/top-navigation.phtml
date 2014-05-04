@@ -18,7 +18,7 @@
 		\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']),
 		$activeController == 'static-pages' and $activeAction == 'main-page');
 
-	if (Access::check(Privilege::ListPosts))
+	if (Access::check(new Privilege(Privilege::ListPosts)))
 	{
 		$registerNavItem(
 			'Browse',
@@ -26,7 +26,7 @@
 			$activeController == 'post' and $activeAction != 'upload');
 	}
 
-	if (Access::check(Privilege::UploadPost))
+	if (Access::check(new Privilege(Privilege::UploadPost)))
 	{
 		$registerNavItem(
 			'Upload',
@@ -34,7 +34,7 @@
 			$activeController == 'post' and $activeAction == 'upload');
 	}
 
-	if (Access::check(Privilege::ListComments))
+	if (Access::check(new Privilege(Privilege::ListComments)))
 	{
 		$registerNavItem(
 			'Comments',
@@ -42,7 +42,7 @@
 			$activeController == 'comment');
 	}
 
-	if (Access::check(Privilege::ListTags))
+	if (Access::check(new Privilege(Privilege::ListTags)))
 	{
 		$registerNavItem(
 			'Tags',
@@ -50,7 +50,7 @@
 			$activeController == 'tag');
 	}
 
-	if (Access::check(Privilege::ListUsers))
+	if (Access::check(new Privilege(Privilege::ListUsers)))
 	{
 		$registerNavItem(
 			'Users',
@@ -104,13 +104,15 @@
 	}
 	?>
 
-	<?php if (Access::check(Privilege::ChangeUserSettings, Access::getIdentity(Auth::getCurrentUser()))): ?>
+	<?php if (Access::check(new Privilege(
+		Privilege::ChangeUserSettings,
+		Access::getIdentity(Auth::getCurrentUser())))): ?>
 		<li class="safety">
 			<ul>
 				<?php foreach (PostSafety::getAll() as $safety): ?>
-					<?php if (Access::check(
+					<?php if (Access::check(new Privilege(
 						Privilege::ListPosts,
-						PostSafety::toString($safety))): ?>
+						PostSafety::toString($safety)))): ?>
 
 						<li class="safety-<?= TextCaseConverter::convert(
 							PostSafety::toString($safety),

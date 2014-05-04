@@ -44,4 +44,13 @@ class Privilege extends Enum
 
 	const ListLogs = 32;
 	const ViewLog = 33;
+
+	public $primary;
+	public $secondary;
+
+	public function __construct($primary, $secondary = null)
+	{
+		$this->primary = $primary;
+		$this->secondary = $secondary;
+	}
 }

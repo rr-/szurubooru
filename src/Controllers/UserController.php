@@ -27,17 +27,24 @@ class UserController
 
 		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
 
+		if ($tab == 'uploads')
+			$query = 'submit:' . $user->name;
+		elseif ($tab == 'favs')
+			$query = 'fav:' . $user->name;
+
+		elseif ($tab == 'delete')
+			Access::assert(new Privilege(Privilege::DeleteUser));
+		elseif ($tab == 'settings')
+			Access::assert(new Privilege(Privilege::ChangeUserSettings));
+		elseif ($tab == 'edit' and !(new EditUserJob)->canEditAnything(Auth::getCurrentUser()))
+			Access::fail();
+
 		$context = getContext();
 		$context->flagged = $flagged;
 		$context->transport->tab = $tab;
 		$context->transport->user = $user;
 		$context->handleExceptions = true;
 		$context->viewName = 'user-view';
-
-		if ($tab == 'uploads')
-			$query = 'submit:' . $user->name;
-		elseif ($tab == 'favs')
-			$query = 'fav:' . $user->name;
 
 		if (isset($query))
 		{
@@ -60,9 +67,9 @@ class UserController
 
 		$user = getContext()->transport->user;
 
-		Access::assert(
+		Access::assert(new Privilege(
 			Privilege::ChangeUserSettings,
-			Access::getIdentity($user));
+			Access::getIdentity($user)));
 
 		$suppliedSafety = InputHelper::get('safety');
 		if (!is_array($suppliedSafety))
@@ -157,9 +164,9 @@ class UserController
 	{
 		$user = Auth::getCurrentUser();
 
-		Access::assert(
+		Access::assert(new Privilege(
 			Privilege::ChangeUserSettings,
-			Access::getIdentity($user));
+			Access::getIdentity($user)));
 
 		if (!in_array($safety, PostSafety::getAll()))
 			throw new SimpleExcetpion('Invalid safety');

@@ -20,10 +20,8 @@ class EditPostContentJob extends AbstractPostJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::EditPostFile,
-			Access::getIdentity($this->post->getUploader())
-		];
+			Access::getIdentity($this->post->getUploader()));
 	}
 }

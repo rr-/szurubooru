@@ -32,7 +32,7 @@ class Access
 		}
 	}
 
-	public static function check($privilege, $subPrivilege = null)
+	public static function check(Privilege $privilege)
 	{
 		if (php_sapi_name() == 'cli')
 			return true;
@@ -40,7 +40,7 @@ class Access
 		$user = Auth::getCurrentUser();
 		$minAccessRank = AccessRank::Nobody;
 
-		$key = TextCaseConverter::convert(Privilege::toString($privilege),
+		$key = TextCaseConverter::convert(Privilege::toString($privilege->primary),
 			TextCaseConverter::CAMEL_CASE,
 			TextCaseConverter::SPINAL_CASE);
 
@@ -48,9 +48,9 @@ class Access
 		{
 			$minAccessRank = self::$privileges[$key];
 		}
-		if ($subPrivilege != null)
+		if ($privilege->secondary != null)
 		{
-			$key2 = $key . '.' . strtolower($subPrivilege);
+			$key2 = $key . '.' . strtolower($privilege->secondary);
 			if (isset(self::$privileges[$key2]))
 			{
 				$minAccessRank = self::$privileges[$key2];
@@ -63,20 +63,25 @@ class Access
 	public static function assertAuthentication()
 	{
 		if (!Auth::isLoggedIn())
-			throw new SimpleException('Not logged in');
+			self::fail('Not logged in');
 	}
 
-	public static function assert($privilege, $subPrivilege = null)
+	public static function assert(Privilege $privilege)
 	{
-		if (!self::check($privilege, $subPrivilege))
-			throw new SimpleException('Insufficient privileges');
+		if (!self::check($privilege))
+			self::fail();
 	}
 
 	public static function assertEmailConfirmation()
 	{
 		$user = Auth::getCurrentUser();
 		if (!$user->emailConfirmed)
-			throw new SimpleException('Need e-mail address confirmation to continue');
+			self::fail('Need e-mail address confirmation to continue');
+	}
+
+	public static function fail($message = 'Insufficient privileges')
+	{
+		throw new SimpleException($message);
 	}
 
 	public static function getIdentity($user)
@@ -93,7 +98,7 @@ class Access
 
 		return array_filter(PostSafety::getAll(), function($safety)
 		{
-			return Access::check(Privilege::ListPosts, PostSafety::toString($safety))
+			return Access::check(new Privilege(Privilege::ListPosts, PostSafety::toString($safety)))
 				and Auth::getCurrentUser()->hasEnabledSafety($safety);
 		});
 	}

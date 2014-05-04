@@ -14,11 +14,9 @@ class DeletePostJob extends AbstractPostJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::DeletePost,
-			Access::getIdentity($this->post->getUploader())
-		];
+			Access::getIdentity($this->post->getUploader()));
 	}
 
 	public function requiresAuthentication()

@@ -21,11 +21,9 @@ class DeleteCommentJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::DeleteComment,
-			Access::getIdentity($this->comment->getCommenter())
-		];
+			Access::getIdentity($this->comment->getCommenter()));
 	}
 
 	public function requiresAuthentication()

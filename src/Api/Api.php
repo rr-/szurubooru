@@ -1,7 +1,7 @@
 <?php
 final class Api
 {
-	protected static $checkPrivileges;
+	protected static $checkPrivileges = true;
 
 	public static function run($job, $jobArgs)
 	{
@@ -12,24 +12,32 @@ final class Api
 			$job->setArguments($jobArgs);
 			$job->prepare();
 
-			if (self::$checkPrivileges)
-			{
-				if ($job->requiresAuthentication())
-					Access::assertAuthentication();
-
-				if ($job->requiresConfirmedEmail())
-					Access::assertEmailConfirmation();
-
-				$p = $job->requiresPrivilege();
-				list ($privilege, $subPrivilege) = is_array($p)
-					? $p
-					: [$p, false];
-				if ($privilege !== false)
-					Access::assert($privilege, $subPrivilege);
-			}
+			self::checkPrivileges($job);
 
 			return $job->execute();
 		});
+	}
+
+	public static function checkPrivileges(AbstractJob $job)
+	{
+		if (!self::$checkPrivileges)
+			return;
+
+		if ($job->requiresAuthentication())
+			Access::assertAuthentication();
+
+		if ($job->requiresConfirmedEmail())
+			Access::assertEmailConfirmation();
+
+		$privileges = $job->requiresPrivilege();
+		if ($privileges !== false)
+		{
+			if (!is_array($privileges))
+				$privileges = [$privileges];
+
+			foreach ($privileges as $privilege)
+				Access::assert($privilege);
+		}
 	}
 
 	public static function runMultiple($jobs)

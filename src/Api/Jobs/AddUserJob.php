@@ -43,6 +43,6 @@ class AddUserJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::RegisterAccount;
+		return new Privilege(Privilege::RegisterAccount);
 	}
 }

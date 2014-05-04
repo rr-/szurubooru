@@ -27,6 +27,6 @@ class ListCommentsJob extends AbstractPageJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::ListComments;
+		return new Privilege(Privilege::ListComments);
 	}
 }

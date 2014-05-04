@@ -8,10 +8,8 @@ class GetUserJob extends AbstractUserJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::ViewUser,
-			Access::getIdentity($this->user)
-		];
+			Access::getIdentity($this->user));
 	}
 }

@@ -20,6 +20,6 @@ class ListUsersJob extends AbstractPageJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::ListUsers;
+		return new Privilege(Privilege::ListUsers);
 	}
 }

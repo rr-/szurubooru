@@ -55,7 +55,7 @@ class AddPostJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::UploadPost;
+		return new Privilege(Privilege::UploadPost);
 	}
 
 	public function requiresConfirmedEmail()

@@ -20,9 +20,9 @@
 		<hr>
 	<?php endif ?>
 
-	<?php if (Access::check(
+	<?php if (Access::check(new Privilege(
 		Privilege::ChangeUserName,
-		Access::getIdentity($this->context->transport->user))): ?>
+		Access::getIdentity($this->context->transport->user)))): ?>
 
 		<div class="form-row nickname">
 			<label for="name">Name:</label>
@@ -37,9 +37,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (Access::check(
+	<?php if (Access::check(new Privilege(
 		Privilege::ChangeUserEmail,
-		Access::getIdentity($this->context->transport->user))): ?>
+		Access::getIdentity($this->context->transport->user)))): ?>
 
 		<div class="form-row email">
 			<label for="name">E-mail:</label>
@@ -54,9 +54,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (
-		Access::check(Privilege::ChangeUserPassword,
-		Access::getIdentity($this->context->transport->user))): ?>
+	<?php if (Access::check(new Privilege(
+		Privilege::ChangeUserPassword,
+		Access::getIdentity($this->context->transport->user)))): ?>
 
 		<div class="form-row password1">
 			<label for="password1">New password:</label>
@@ -82,9 +82,9 @@
 		</div>
 	<?php endif ?>
 
-	<?php if (Access::check(
+	<?php if (Access::check(new Privilege(
 		Privilege::ChangeUserAccessRank,
-		Access::getIdentity($this->context->transport->user))): ?>
+		Access::getIdentity($this->context->transport->user)))): ?>
 
 		<div class="form-row access-rank">
 			<label for="access-rank">Access rank:</label>

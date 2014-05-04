@@ -15,6 +15,6 @@ class AcceptUserRegistrationJob extends AbstractUserJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::AcceptUserRegistration;
+		return new Privilege(Privilege::AcceptUserRegistration);
 	}
 }

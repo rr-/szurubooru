@@ -19,6 +19,6 @@ class ListLogsJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return Privilege::ListLogs;
+		return new Privilege(Privilege::ListLogs);
 	}
 }

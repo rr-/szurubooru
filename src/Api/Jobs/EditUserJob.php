@@ -1,19 +1,42 @@
 <?php
 class EditUserJob extends AbstractUserJob
 {
-	public function execute()
+	protected $subJobs;
+
+	public function __construct()
 	{
-		$user = $this->user;
-
-		LogHelper::bufferChanges();
-
-		$subJobs =
+		$this->subJobs =
 		[
 			new EditUserAccessRankJob(),
 			new EditUserNameJob(),
 			new EditUserPasswordJob(),
 			new EditUserEmailJob(),
 		];
+	}
+
+	public function canEditAnything($user)
+	{
+		$this->privileges = [];
+		foreach ($this->subJobs as $subJob)
+		{
+			try
+			{
+				$subJob->user = $user;
+				Api::checkPrivileges($subJob);
+				return true;
+			}
+			catch (SimpleException $e)
+			{
+			}
+		}
+		return false;
+	}
+
+	public function execute()
+	{
+		$user = $this->user;
+
+		LogHelper::bufferChanges();
 
 		foreach ($subJobs as $subJob)
 		{
@@ -30,5 +53,10 @@ class EditUserJob extends AbstractUserJob
 
 		LogHelper::flush();
 		return $user;
+	}
+
+	public function requiresPrivilege()
+	{
+		return false;
 	}
 }

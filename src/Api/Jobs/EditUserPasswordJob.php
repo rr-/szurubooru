@@ -26,10 +26,8 @@ class EditUserPasswordJob extends AbstractUserJob
 
 	public function requiresPrivilege()
 	{
-		return
-		[
+		return new Privilege(
 			Privilege::ChangeUserPassword,
-			Access::getIdentity($this->user),
-		];
+			Access::getIdentity($this->user));
 	}
 }

@@ -79,8 +79,6 @@ class TagController
 		$context->viewName = 'tag-list-wrapper';
 		$context->handleExceptions = true;
 
-		Access::assert(Privilege::MergeTags);
-
 		Api::run(
 			new MergeTagsJob(),
 			[
@@ -103,8 +101,6 @@ class TagController
 		$context->viewName = 'tag-list-wrapper';
 		$context->handleExceptions = true;
 
-		Access::assert(Privilege::MergeTags);
-
 		Api::run(
 			new RenameTagsJob(),
 			[
@@ -120,7 +116,7 @@ class TagController
 		$context = getContext();
 		$context->viewName = 'tag-list-wrapper';
 
-		Access::assert(Privilege::MassTag);
+		Access::assert(new Privilege(Privilege::MassTag));
 		if (!InputHelper::get('submit'))
 			return;
 
