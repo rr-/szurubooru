@@ -125,10 +125,10 @@ $tagValidation =
 \Chibi\Router::register(['TagController', 'listView'], 'GET', '/tags', $tagValidation);
 \Chibi\Router::register(['TagController', 'listView'], 'GET', '/tags/{page}', $tagValidation);
 \Chibi\Router::register(['TagController', 'listView'], 'GET', '/tags/{filter}/{page}', $tagValidation);
+\Chibi\Router::register(['TagController', 'autoCompleteView'], 'GET', '/tags-autocomplete', $tagValidation);
 
 foreach (['GET', 'POST'] as $method)
 {
-	\Chibi\Router::register(['TagController', 'autoCompleteAction'], $method, '/tags-autocomplete', $tagValidation);
 	\Chibi\Router::register(['TagController', 'relatedAction'], $method, '/tags-related', $tagValidation);
 	\Chibi\Router::register(['TagController', 'mergeAction'], $method, '/tags-merge', $tagValidation);
 	\Chibi\Router::register(['TagController', 'renameAction'], $method, '/tags-rename', $tagValidation);

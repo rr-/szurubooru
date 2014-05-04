@@ -18,16 +18,19 @@ class TagController
 		$context->transport->paginator = $ret;
 	}
 
-	public function autoCompleteAction()
+	public function autoCompleteView()
 	{
+		$filter = InputHelper::get('search');
+		$filter .= ' order:popularity,desc';
+
+		$ret = Api::run(
+			(new ListTagsJob)->setPageSize(15),
+			[
+				ListTagsJob::QUERY => $filter,
+				ListTagsJob::PAGE_NUMBER => 1,
+			]);
+
 		$context = getContext();
-		Access::assert(Privilege::ListTags);
-
-		$suppliedSearch = InputHelper::get('search');
-
-		$filter = $suppliedSearch . ' order:popularity,desc';
-		$tags = TagSearchService::getEntitiesRows($filter, 15, 1);
-
 		$context->transport->tags =
 			array_values(array_map(
 				function($tag)
@@ -36,7 +39,7 @@ class TagController
 						'name' => $tag['name'],
 						'count' => $tag['post_count']
 					];
-				}, $tags));
+				}, $ret->entities));
 	}
 
 	public function relatedAction()
