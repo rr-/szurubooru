@@ -10,7 +10,7 @@ class ListRelatedTagsJob extends ListTagsJob
 
 		$tags = TagSearchService::getRelatedTags($tag);
 		$tagCount = count($tags);
-		$tags = array_filter($tags, function($tag) use ($otherTags) { return !in_array($tag->name, $otherTags); });
+		$tags = array_filter($tags, function($tag) use ($otherTags) { return !in_array($tag->getName(), $otherTags); });
 		$tags = array_slice($tags, 0, $pageSize);
 
 		return $this->getPager($tags, $tagCount, $page, $pageSize);

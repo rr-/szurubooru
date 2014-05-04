@@ -36,7 +36,7 @@ class PostController
 			$context->massTagQuery = $query;
 
 			if (!Access::check(new Privilege(Privilege::MassTag, 'all')))
-				$query = trim($query . ' submit:' . Auth::getCurrentUser()->name);
+				$query = trim($query . ' submit:' . Auth::getCurrentUser()->getName());
 		}
 
 		$ret = Api::run(

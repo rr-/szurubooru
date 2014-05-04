@@ -6,9 +6,9 @@ class EditPostTagsJob extends AbstractPostEditJob
 		$post = $this->post;
 		$tags = $this->getArgument(self::TAG_NAMES);
 
-		$oldTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
+		$oldTags = array_map(function($tag) { return $tag->getName(); }, $post->getTags());
 		$post->setTagsFromText($tags);
-		$newTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
+		$newTags = array_map(function($tag) { return $tag->getName(); }, $post->getTags());
 
 		if (!$this->skipSaving)
 		{

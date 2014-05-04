@@ -1,7 +1,7 @@
 <form
 	action="<?= \Chibi\Router::linkTo(
 		['UserController', 'settingsAction'],
-		['name' => $this->context->transport->user->name]) ?>"
+		['name' => $this->context->transport->user->getName()]) ?>"
 	method="post"
 	class="settings">
 

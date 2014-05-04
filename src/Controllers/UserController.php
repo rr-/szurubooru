@@ -28,9 +28,9 @@ class UserController
 		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
 
 		if ($tab == 'uploads')
-			$query = 'submit:' . $user->name;
+			$query = 'submit:' . $user->getName();
 		elseif ($tab == 'favs')
-			$query = 'fav:' . $user->name;
+			$query = 'fav:' . $user->getName();
 
 		elseif ($tab == 'delete')
 			Access::assert(new Privilege(Privilege::DeleteUser));

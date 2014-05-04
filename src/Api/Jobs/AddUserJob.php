@@ -8,7 +8,7 @@ class AddUserJob extends AbstractJob
 		$user = UserModel::spawn();
 		$user->joinDate = time();
 		$user->staffConfirmed = $firstUser;
-		$user->name = $this->getArgument(EditUserNameJob::NEW_USER_NAME);
+		$user->setName($this->getArgument(EditUserNameJob::NEW_USER_NAME));
 		UserModel::forgeId($user);
 
 		$arguments = $this->getArguments();

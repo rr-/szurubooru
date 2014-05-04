@@ -157,14 +157,14 @@ class TextHelper
 	{
 		if (!is_object($user))
 			return '+' . $user;
-		return '+' . $user->name;
+		return '+' . $user->getName();
 	}
 
 	public static function reprTag($tag)
 	{
 		if (!is_object($tag))
 			return '#' . $tag;
-		return '#' . $tag->name;
+		return '#' . $tag->getName();
 	}
 
 	public static function reprTags($tags)

@@ -25,7 +25,7 @@ class TagModel extends AbstractCrudModel
 
 			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('tag');
-			$stmt->setColumn('name', new Sql\Binding($tag->name));
+			$stmt->setColumn('name', new Sql\Binding($tag->getName()));
 			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($tag->id)));
 
 			Database::exec($stmt);
@@ -58,8 +58,8 @@ class TagModel extends AbstractCrudModel
 			if ($targetTag and $targetTag->id != $sourceTag->id)
 				throw new SimpleException('Target tag already exists');
 
-			$sourceTag->name = $targetName;
-			TagModel::validateTag($sourceTag->name);
+			$sourceTag->setName($targetName);
+			TagModel::validateTag($sourceTag->getName());
 			self::save($sourceTag);
 		});
 	}

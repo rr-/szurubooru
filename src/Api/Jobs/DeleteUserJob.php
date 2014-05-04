@@ -5,7 +5,7 @@ class DeleteUserJob extends AbstractUserJob
 	{
 		$user = $this->user;
 
-		$name = $user->name;
+		$name = $user->getName();
 		UserModel::remove($user);
 
 		Logger::log('{user} removed {subject}\'s account', [

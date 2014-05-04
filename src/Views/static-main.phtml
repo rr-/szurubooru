@@ -26,11 +26,11 @@ Assets::addStylesheet('static-main.css');
 			Tags:&nbsp;
 			<ul class="tags">
 				<?php $tags = $this->context->featuredPost->getTags() ?>
-				<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
+				<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->getName(), $b->getName()); }) ?>
 				<?php foreach ($tags as $tag): ?>
 					<li>
-						<a href="<?= \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => $tag->name]) ?>">
-							<?= $tag->name ?>
+						<a href="<?= \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => $tag->getName()]) ?>">
+							<?= $tag->getName() ?>
 						</a>
 					</li>
 				<?php endforeach ?>
@@ -43,8 +43,8 @@ Assets::addStylesheet('static-main.css');
 				by
 				<a href="<?= \Chibi\Router::linkTo(
 					['UserController', 'genericView'],
-					['name' => $this->context->featuredPostUser->name]) ?>">
-					<?= $this->context->featuredPostUser->name ?>
+					['name' => $this->context->featuredPostUser->getName()]) ?>">
+					<?= $this->context->featuredPostUser->getName() ?>
 				</a>,
 			<?php endif ?>
 

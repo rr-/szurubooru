@@ -46,7 +46,7 @@
 					id="tags"
 					placeholder="enter some tags&hellip;"
 					value="<?= join(',', array_map(function($tag) {
-						return htmlspecialchars($tag->name);
+						return htmlspecialchars($tag->getName());
 					}, $this->context->transport->post->getTags())) ?>"/>
 			</div>
 		</div>

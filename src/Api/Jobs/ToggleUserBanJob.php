@@ -6,7 +6,10 @@ class ToggleUserBanJob extends AbstractUserJob
 		$user = $this->user;
 		$banned = boolval($this->getArgument(self::STATE));
 
-		$user->banned = $banned;
+		if ($banned)
+			$user->ban();
+		else
+			$user->unban();
 		UserModel::save($user);
 
 		Logger::log(

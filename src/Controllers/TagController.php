@@ -36,7 +36,7 @@ class TagController
 				function($tag)
 				{
 					return [
-						'name' => $tag->name,
+						'name' => $tag->getName(),
 						'count' => $tag->getPostCount(),
 					];
 				}, $ret->entities));
@@ -61,7 +61,7 @@ class TagController
 				function($tag)
 				{
 					return [
-						'name' => $tag->name,
+						'name' => $tag->getName(),
 						'count' => $tag->getPostCount(),
 					];
 				}, $ret->entities));

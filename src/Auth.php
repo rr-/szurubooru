@@ -13,22 +13,22 @@ class Auth
 		$config = getConfig();
 		$context = getContext();
 
-		$dbUser = UserModel::findByNameOrEmail($name, false);
-		if ($dbUser === null)
+		$user = UserModel::findByNameOrEmail($name, false);
+		if ($user === null)
 			throw new SimpleException('Invalid username');
 
-		$passwordHash = UserModel::hashPassword($password, $dbUser->passSalt);
-		if ($passwordHash != $dbUser->passHash)
+		$passwordHash = UserModel::hashPassword($password, $user->passSalt);
+		if ($passwordHash != $user->passHash)
 			throw new SimpleException('Invalid password');
 
-		if (!$dbUser->staffConfirmed and $config->registration->staffActivation)
+		if (!$user->staffConfirmed and $config->registration->staffActivation)
 			throw new SimpleException('Staff hasn\'t confirmed your registration yet');
 
-		if ($dbUser->banned)
+		if ($user->isBanned())
 			throw new SimpleException('You are banned');
 
 		if ($config->registration->needEmailForRegistering)
-			Access::requireEmail($dbUser);
+			Access::requireEmail($user);
 
 		if ($remember)
 		{
@@ -36,7 +36,7 @@ class Auth
 			setcookie('auth', TextHelper::encrypt($token), time() + 365 * 24 * 3600, '/');
 		}
 
-		self::setCurrentUser($dbUser);
+		self::setCurrentUser($user);
 	}
 
 	public static function tryAutoLogin()
@@ -86,7 +86,7 @@ class Auth
 	{
 		$dummy = UserModel::spawn();
 		$dummy->id = null;
-		$dummy->name = UserModel::getAnonymousName();
+		$dummy->setName(UserModel::getAnonymousName());
 		$dummy->setAccessRank(new AccessRank(AccessRank::Anonymous));
 		return $dummy;
 	}

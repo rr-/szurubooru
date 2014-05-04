@@ -1,7 +1,7 @@
 <form
 	action="<?= \Chibi\Router::linkTo(
 		['UserController', 'deleteAction'],
-		['name' => $this->context->transport->user->name]) ?>"
+		['name' => $this->context->transport->user->getName()]) ?>"
 	method="post"
 	class="delete confirmable"
 	autocomplete="off"

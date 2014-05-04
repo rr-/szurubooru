@@ -57,7 +57,7 @@
 			\Chibi\Router::linkTo(['UserController', 'listView']),
 			$activeController == 'user' and $activeAction != 'registration' and
 				(!isset($this->context->route->arguments['name']) or
-					$this->context->route->arguments['name'] != Auth::getCurrentUser()->name));
+					$this->context->route->arguments['name'] != Auth::getCurrentUser()->getName()));
 	}
 
 	if (!Auth::isLoggedIn())
@@ -76,9 +76,9 @@
 	{
 		$registerNavItem(
 			'My account',
-			\Chibi\Router::linkTo(['UserController', 'genericView'], ['name' => Auth::getCurrentUser()->name]),
+			\Chibi\Router::linkTo(['UserController', 'genericView'], ['name' => Auth::getCurrentUser()->getName()]),
 			$activeController == 'user' and isset($this->context->route->arguments['name']) and
-				$this->context->route->arguments['name'] == Auth::getCurrentUser()->name);
+				$this->context->route->arguments['name'] == Auth::getCurrentUser()->getName());
 
 		$registerNavItem(
 			'Log out',

@@ -13,7 +13,7 @@ class GetPostContentJob extends AbstractJob
 		$post = $this->post;
 		$config = getConfig();
 
-		$path = $config->main->filesPath . DS . $post->name;
+		$path = $config->main->filesPath . DS . $post->getName();
 		$path = TextHelper::absolutePath($path);
 		if (!file_exists($path))
 			throw new SimpleNotFoundException('Post file does not exist');
@@ -23,7 +23,7 @@ class GetPostContentJob extends AbstractJob
 		$fileName = sprintf('%s_%s_%s.%s',
 			$config->main->title,
 			$post->id,
-			join(',', array_map(function($tag) { return $tag->name; }, $post->getTags())),
+			join(',', array_map(function($tag) { return $tag->getName(); }, $post->getTags())),
 			TextHelper::resolveMimeType($post->mimeType) ?: 'dat');
 		$fileName = preg_replace('/[[:^print:]]/', '', $fileName);
 

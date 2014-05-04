@@ -5,7 +5,7 @@ use \Chibi\Database as Database;
 class PostEntity extends AbstractEntity
 {
 	protected $type;
-	public $name;
+	protected $name;
 	public $origName;
 	public $fileHash;
 	public $fileSize;
@@ -151,7 +151,7 @@ class PostEntity extends AbstractEntity
 			if (!$tag)
 			{
 				$tag = TagModel::spawn();
-				$tag->name = $tagName;
+				$tag->setName($tagName);
 				TagModel::save($tag);
 			}
 			$tags []= $tag;
@@ -163,7 +163,7 @@ class PostEntity extends AbstractEntity
 	{
 		$tagName = trim(strtolower($tagName));
 		foreach ($this->getTags() as $tag)
-			if (trim(strtolower($tag->name)) == $tagName)
+			if (trim(strtolower($tag->getName())) == $tagName)
 				return true;
 		return false;
 	}
@@ -171,6 +171,16 @@ class PostEntity extends AbstractEntity
 	public function setHidden($hidden)
 	{
 		$this->hidden = boolval($hidden);
+	}
+
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	public function setName($name)
+	{
+		$this->name = $name;
 	}
 
 	public function getType()
@@ -202,17 +212,17 @@ class PostEntity extends AbstractEntity
 
 	public function getThumbCustomPath($width = null, $height = null)
 	{
-		return PostModel::getThumbCustomPath($this->name, $width, $height);
+		return PostModel::getThumbCustomPath($this->getName(), $width, $height);
 	}
 
 	public function getThumbDefaultPath($width = null, $height = null)
 	{
-		return PostModel::getThumbDefaultPath($this->name, $width, $height);
+		return PostModel::getThumbDefaultPath($this->getName(), $width, $height);
 	}
 
 	public function getFullPath()
 	{
-		return PostModel::getFullPath($this->name);
+		return PostModel::getFullPath($this->getName());
 	}
 
 	public function hasCustomThumb($width = null, $height = null)
@@ -374,7 +384,7 @@ class PostEntity extends AbstractEntity
 	{
 		$x = [];
 		foreach ($this->getTags() as $tag)
-			$x []= TextHelper::reprTag($tag->name);
+			$x []= TextHelper::reprTag($tag->getName());
 		foreach ($this->getRelations() as $relatedPost)
 			$x []= TextHelper::reprPost($relatedPost);
 		$x []= $this->getSafety()->toInteger();

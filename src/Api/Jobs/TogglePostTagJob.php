@@ -15,7 +15,7 @@ class TogglePostTagJob extends AbstractPostJob
 			if ($tag === null)
 			{
 				$tag = TagModel::spawn();
-				$tag->name = $tagName;
+				$tag->setName($tagName);
 				TagModel::save($tag);
 			}
 
@@ -24,7 +24,7 @@ class TogglePostTagJob extends AbstractPostJob
 		else
 		{
 			foreach ($tags as $i => $tag)
-				if ($tag->name == $tagName)
+				if ($tag->getName() == $tagName)
 					unset($tags[$i]);
 		}
 

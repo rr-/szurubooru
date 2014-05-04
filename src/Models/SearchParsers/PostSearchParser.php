@@ -156,7 +156,7 @@ class PostSearchParser extends AbstractSearchParser
 			$value = strtolower($value);
 			if (in_array($value, ['fav', 'favs', 'favd']))
 			{
-				return $this->prepareCriterionForComplexToken('fav', $activeUser->name);
+				return $this->prepareCriterionForComplexToken('fav', $activeUser->getName());
 			}
 
 			elseif (in_array($value, ['like', 'liked', 'likes']))

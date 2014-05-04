@@ -8,11 +8,11 @@ class EditUserNameJob extends AbstractUserEditJob
 		$user = $this->user;
 		$newName = $this->getArgument(self::NEW_USER_NAME);
 
-		$oldName = $user->name;
+		$oldName = $user->getName();
 		if ($oldName == $newName)
 			return $user;
 
-		$user->name = $newName;
+		$user->setName($newName);
 		UserModel::validateUserName($user);
 
 		if (!$this->skipSaving)

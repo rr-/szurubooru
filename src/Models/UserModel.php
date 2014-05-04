@@ -42,7 +42,7 @@ class UserModel extends AbstractCrudModel
 			self::forgeId($user);
 
 			$bindings = [
-				'name' => $user->name,
+				'name' => $user->getName(),
 				'pass_salt' => $user->passSalt,
 				'pass_hash' => $user->passHash,
 				'staff_confirmed' => $user->staffConfirmed,
@@ -52,7 +52,7 @@ class UserModel extends AbstractCrudModel
 				'last_login_date' => $user->lastLoginDate,
 				'access_rank' => $user->getAccessRank()->toInteger(),
 				'settings' => $user->settings,
-				'banned' => $user->banned
+				'banned' => $user->isBanned(),
 				];
 
 			$stmt = (new Sql\UpdateStatement)
@@ -190,7 +190,7 @@ class UserModel extends AbstractCrudModel
 
 	public static function validateUserName(UserEntity $user)
 	{
-		$userName = trim($user->name);
+		$userName = trim($user->getName());
 		$config = getConfig();
 
 		$otherUser = self::findByName($userName, false);

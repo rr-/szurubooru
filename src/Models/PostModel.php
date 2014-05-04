@@ -37,7 +37,7 @@ class PostModel extends AbstractCrudModel
 		$post->uploadDate = time();
 		do
 		{
-			$post->name = md5(mt_rand() . uniqid());
+			$post->setName(md5(mt_rand() . uniqid()));
 		}
 		while (file_exists($post->getFullPath()));
 		return $post;
@@ -51,7 +51,7 @@ class PostModel extends AbstractCrudModel
 
 			$bindings = [
 				'type' => $post->getType()->toInteger(),
-				'name' => $post->name,
+				'name' => $post->getName(),
 				'orig_name' => $post->origName,
 				'file_hash' => $post->fileHash,
 				'file_size' => $post->fileSize,

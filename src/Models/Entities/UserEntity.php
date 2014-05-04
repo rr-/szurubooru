@@ -4,7 +4,7 @@ use \Chibi\Database as Database;
 
 class UserEntity extends AbstractEntity
 {
-	public $name;
+	protected $name;
 	public $passSalt;
 	public $passHash;
 	public $staffConfirmed;
@@ -14,7 +14,32 @@ class UserEntity extends AbstractEntity
 	public $lastLoginDate;
 	protected $accessRank;
 	public $settings;
-	public $banned;
+	protected $banned = false;
+
+	public function isBanned()
+	{
+		return $this->banned;
+	}
+
+	public function ban()
+	{
+		$this->banned = true;
+	}
+
+	public function unban()
+	{
+		$this->banned = false;
+	}
+
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	public function setName($name)
+	{
+		$this->name = $name;
+	}
 
 	public function getAccessRank()
 	{
@@ -31,7 +56,7 @@ class UserEntity extends AbstractEntity
 	{
 		$subject = !empty($this->emailConfirmed)
 			? $this->emailConfirmed
-			: $this->passSalt . $this->name;
+			: $this->passSalt . $this->getName();
 		$hash = md5(strtolower(trim($subject)));
 		$url = 'http://www.gravatar.com/avatar/' . $hash . '?s=' . $size . '&d=retro';
 		return $url;

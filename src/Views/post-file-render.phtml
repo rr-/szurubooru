@@ -1,7 +1,7 @@
 <?php
 Assets::setPageThumb(\Chibi\Router::linkTo(
 	['PostController', 'thumbView'],
-	['name' => $this->context->transport->post->name]));
+	['name' => $this->context->transport->post->getName()]));
 $post = $this->context->transport->post;
 ?>
 
@@ -11,10 +11,10 @@ $post = $this->context->transport->post;
 		<a href="<?= $this->context->imageLink ?>">
 	<?php endif ?>
 
-	<img alt="<?= $post->name ?>"
+	<img alt="<?= $post->getName() ?>"
 		src="<?= \Chibi\Router::linkTo(
 			['PostController', 'fileView'],
-			['name' => $post->name]) ?>"/>
+			['name' => $post->getName()]) ?>"/>
 
 	<?php if (!empty($this->context->imageLink)): ?>
 		</a>
@@ -28,12 +28,12 @@ $post = $this->context->transport->post;
 		height="<?= $post->imageHeight ?>"
 		data="<?= \Chibi\Router::linkTo(
 			['PostController', 'fileView'],
-			['name' => $post->name]) ?>">
+			['name' => $post->getName()]) ?>">
 
 		<param name="wmode" value="opaque"/>
 		<param name="movie" value="<?= \Chibi\Router::linkTo(
 			['PostController', 'fileView'],
-			['name' => $post->name]) ?>"/>
+			['name' => $post->getName()]) ?>"/>
 
 	</object>
 
@@ -53,7 +53,7 @@ $post = $this->context->transport->post;
 			type="<?= $post->mimeType ?>"
 			src="<?= \Chibi\Router::linkTo(
 				['PostController', 'fileView'],
-				['name' => $post->name]) ?>">
+				['name' => $post->getName()]) ?>">
 
 		Your browser doesn't support HTML5 &lt;video&gt; tag.
 	</video>

@@ -72,13 +72,13 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php $tags = $this->context->transport->post->getTags() ?>
 		<h1>tags (<?= count($tags) ?>)</h1>
 		<ul>
-			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->name, $b->name); }) ?>
+			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->getName(), $b->getName()); }) ?>
 			<?php foreach ($tags as $tag): ?>
-				<li title="<?= $tag->name ?>">
+				<li title="<?= $tag->getName() ?>">
 					<a href="<?= \Chibi\Router::linkTo(
 						['PostController', 'listView'],
-						['query' => $tag->name]) ?>"
-						><?= $tag->name ?>
+						['query' => $tag->getName()]) ?>"
+						><?= $tag->getName() ?>
 					</a>
 					<span class="count"><?= TextHelper::useDecimalUnits($tag->getPostCount()) ?></span>
 				</li>
@@ -92,11 +92,11 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="uploader">
 			<?php $uploader = $this->context->transport->post->getUploader() ?>
 			<?php if ($uploader): ?>
-				<span class="value" title="<?= $val = $uploader->name ?>">
+				<span class="value" title="<?= $val = $uploader->getName() ?>">
 					<a href="<?= \Chibi\Router::linkTo(
 						['UserController', 'genericView'],
-						['name' => $uploader->name]) ?>">
-						<img src="<?= htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?= $uploader->name ?>"/>
+						['name' => $uploader->getName()]) ?>">
+						<img src="<?= htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?= $uploader->getName() ?>"/>
 						<?= $val ?>
 					</a>
 				</span>
@@ -188,7 +188,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<div class="hl-option">
 				<a title="Download" href="<?= \Chibi\Router::linkTo(
 					['PostController', 'fileView'],
-					['name' => $this->context->transport->post->name]) ?>">
+					['name' => $this->context->transport->post->getName()]) ?>">
 					<i class="icon-dl"></i>
 					<span>
 						<?php
@@ -242,10 +242,10 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<ul>
 				<?php foreach ($this->context->transport->post->getFavorites() as $user): ?>
 					<li>
-						<a title="<?= $user->name ?>" href="<?= \Chibi\Router::linkTo(
+						<a title="<?= $user->getName() ?>" href="<?= \Chibi\Router::linkTo(
 							['UserController', 'genericView'],
-							['name' => $user->name]) ?>">
-							<img src="<?= htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?= $user->name ?>">
+							['name' => $user->getName()]) ?>">
+							<img src="<?= htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?= $user->getName() ?>">
 						</a>
 					</li>
 				<?php endforeach ?>
