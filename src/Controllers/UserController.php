@@ -33,34 +33,16 @@ class UserController
 
 	public function banAction($name)
 	{
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::BanUser,
-			Access::getIdentity($user));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$user->banned = true;
-		UserModel::save($user);
-
-		LogHelper::log('{user} banned {subject}', ['subject' => TextHelper::reprUser($user)]);
+		Api::run(new ToggleUserBanJob(), [
+			ToggleUserBanJob::USER_NAME => $name,
+			ToggleUserBanJob::STATE => true]);
 	}
 
 	public function unbanAction($name)
 	{
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::BanUser,
-			Access::getIdentity($user));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$user->banned = false;
-		UserModel::save($user);
-
-		LogHelper::log('{user} unbanned {subject}', ['subject' => TextHelper::reprUser($user)]);
+		Api::run(new ToggleUserBanJob(), [
+			ToggleUserBanJob::USER_NAME => $name,
+			ToggleUserBanJob::STATE => false]);
 	}
 
 	public function acceptRegistrationAction($name)
