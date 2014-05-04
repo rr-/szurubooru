@@ -27,7 +27,7 @@ if (Auth::getCurrentUser()->hasEnabledEndlessScrolling())
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?= \Chibi\Router::linkTo(['UserController', 'listAction'], ['filter' => $key]) ?>">
+				<a href="<?= \Chibi\Router::linkTo(['UserController', 'listView'], ['filter' => $key]) ?>">
 					<?= $text ?>
 				</a>
 			</li>

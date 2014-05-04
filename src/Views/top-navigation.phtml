@@ -54,7 +54,7 @@
 	{
 		$registerNavItem(
 			'Users',
-			\Chibi\Router::linkTo(['UserController', 'listAction']),
+			\Chibi\Router::linkTo(['UserController', 'listView']),
 			$activeController == 'user' and $activeAction != 'registration' and
 				(!isset($this->context->route->arguments['name']) or
 					$this->context->route->arguments['name'] != Auth::getCurrentUser()->name));

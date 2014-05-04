@@ -1,29 +1,20 @@
 <?php
 class UserController
 {
-	public function listAction($filter, $page)
+	public function listView($filter = 'order:alpha,asc', $page = 1)
 	{
+		$ret = Api::run(
+			new ListUsersJob(),
+			[
+				ListUsersJob::PAGE_NUMBER => $page,
+				ListUsersJob::QUERY => $filter,
+			]);
+
 		$context = getContext();
-		Access::assert(
-			Privilege::ListUsers);
 
-		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
-		$page = max(1, intval($page));
-		$usersPerPage = intval(getConfig()->browsing->usersPerPage);
-
-		$users = UserSearchService::getEntities($suppliedFilter, $usersPerPage, $page);
-		$userCount = UserSearchService::getEntityCount($suppliedFilter);
-		$pageCount = ceil($userCount / $usersPerPage);
-		$page = min($pageCount, $page);
-
-		$context->filter = $suppliedFilter;
-		$context->transport->users = $users;
-		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $page;
-		$context->transport->paginator->pageCount = $pageCount;
-		$context->transport->paginator->entityCount = $userCount;
-		$context->transport->paginator->entities = $users;
-		$context->transport->paginator->params = func_get_args();
+		$context->filter = $filter;
+		$context->transport->users = $ret->entities;
+		$context->transport->paginator = $ret;
 	}
 
 	public function flagAction($name)
