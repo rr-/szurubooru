@@ -43,8 +43,8 @@ Assets::addStylesheet('auth.css');
 		<div>
 			<p>Problems logging in?</p>
 			<ul>
-				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'passwordResetProxyAction']) ?>">I don't remember my password</a></li>
-				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'activationProxyAction']) ?>">I haven't received activation e-mail</a></li>
+				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'passwordResetView']) ?>">I don't remember my password</a></li>
+				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'activationView']) ?>">I haven't received activation e-mail</a></li>
 				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'registrationView']) ?>">I don't have an account</a></li>
 			</ul>
 		</div>

@@ -216,32 +216,66 @@ class UserController
 		Messenger::message($message);
 	}
 
+	public function activationView()
+	{
+		$context = getContext();
+		$context->viewName = 'user-select';
+		Assets::setSubTitle('account activation');
+	}
+
 	public function activationAction($token)
 	{
 		$context = getContext();
 		$context->viewName = 'message';
 		Assets::setSubTitle('account activation');
 
-		$dbToken = TokenModel::findByToken($token);
-		TokenModel::checkValidity($dbToken);
-
-		$dbUser = $dbToken->getUser();
-		$dbUser->emailConfirmed = $dbUser->emailUnconfirmed;
-		$dbUser->emailUnconfirmed = null;
-		$dbToken->used = true;
-		TokenModel::save($dbToken);
-		UserModel::save($dbUser);
-
-		LogHelper::log('{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
-		$message = 'Activation completed successfully.';
-		if (getConfig()->registration->staffActivation)
-			$message .= ' However, your account still must be confirmed by staff.';
-		Messenger::message($message);
-
-		if (!getConfig()->registration->staffActivation)
+		if (empty($token))
 		{
-			Auth::setCurrentUser($dbUser);
+			$name = InputHelper::get('name');
+			$user = UserModel::findByNameOrEmail($name);
+			if (empty($user->emailUnconfirmed))
+			{
+				if (!empty($user->emailConfirmed))
+					throw new SimpleException('E-mail was already confirmed; activation skipped');
+				else
+					throw new SimpleException('This user has no e-mail specified; activation cannot proceed');
+			}
+			EditUserEmailJob::sendEmail($user);
+			Messenger::message('Activation e-mail resent.');
 		}
+		else
+		{
+			$dbToken = TokenModel::findByToken($token);
+			TokenModel::checkValidity($dbToken);
+
+			$dbUser = $dbToken->getUser();
+			if (empty($dbUser->emailConfirmed))
+			{
+				$dbUser->emailConfirmed = $dbUser->emailUnconfirmed;
+				$dbUser->emailUnconfirmed = null;
+			}
+			$dbToken->used = true;
+			TokenModel::save($dbToken);
+			UserModel::save($dbUser);
+
+			LogHelper::log('{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
+			$message = 'Activation completed successfully.';
+			if (getConfig()->registration->staffActivation)
+				$message .= ' However, your account still must be confirmed by staff.';
+			Messenger::message($message);
+
+			if (!getConfig()->registration->staffActivation)
+			{
+				Auth::setCurrentUser($dbUser);
+			}
+		}
+	}
+
+	public function passwordResetView()
+	{
+		$context = getContext();
+		$context->viewName = 'user-select';
+		Assets::setSubTitle('password reset');
 	}
 
 	public function passwordResetAction($token)
@@ -250,66 +284,39 @@ class UserController
 		$context->viewName = 'message';
 		Assets::setSubTitle('password reset');
 
-		$dbToken = TokenModel::findByToken($token);
-		TokenModel::checkValidity($dbToken);
-
-		$alphabet = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
-		$randomPassword = join('', array_map(function($x) use ($alphabet)
+		if (empty($token))
 		{
-			return $alphabet[$x];
-		}, array_rand($alphabet, 8)));
+			$name = InputHelper::get('name');
+			$user = UserModel::findByNameOrEmail($name);
+			if (empty($user->emailConfirmed))
+				throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
 
-		$dbUser = $dbToken->getUser();
-		$dbUser->passHash = UserModel::hashPassword($randomPassword, $dbUser->passSalt);
-		$dbToken->used = true;
-		TokenModel::save($dbToken);
-		UserModel::save($dbUser);
-
-		LogHelper::log('{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
-		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
-		Messenger::message($message);
-
-		Auth::setCurrentUser($dbUser);
-	}
-
-	public function passwordResetProxyAction()
-	{
-		$context = getContext();
-		$context->viewName = 'user-select';
-		Assets::setSubTitle('password reset');
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$name = InputHelper::get('name');
-		$user = UserModel::findByNameOrEmail($name);
-		if (empty($user->emailConfirmed))
-			throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
-
-		self::sendPasswordResetConfirmation($user);
-		Messenger::message('E-mail sent. Follow instructions to reset password.');
-	}
-
-	public function activationProxyAction()
-	{
-		$context = getContext();
-		$context->viewName = 'user-select';
-		Assets::setSubTitle('account activation');
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$name = InputHelper::get('name');
-		$user = UserModel::findByNameOrEmail($name);
-		if (empty($user->emailUnconfirmed))
-		{
-			if (!empty($user->emailConfirmed))
-				throw new SimpleException('E-mail was already confirmed; activation skipped');
-			else
-				throw new SimpleException('This user has no e-mail specified; activation cannot proceed');
+			self::sendPasswordResetConfirmation($user);
+			Messenger::message('E-mail sent. Follow instructions to reset password.');
 		}
-		EditUserEmailJob::sendEmail($user);
-		Messenger::message('Activation e-mail resent.');
+		else
+		{
+			$dbToken = TokenModel::findByToken($token);
+			TokenModel::checkValidity($dbToken);
+
+			$alphabet = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
+			$randomPassword = join('', array_map(function($x) use ($alphabet)
+			{
+				return $alphabet[$x];
+			}, array_rand($alphabet, 8)));
+
+			$dbUser = $dbToken->getUser();
+			$dbUser->passHash = UserModel::hashPassword($randomPassword, $dbUser->passSalt);
+			$dbToken->used = true;
+			TokenModel::save($dbToken);
+			UserModel::save($dbUser);
+
+			LogHelper::log('{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
+			$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
+			Messenger::message($message);
+
+			Auth::setCurrentUser($dbUser);
+		}
 	}
 
 	private static function sendPasswordResetConfirmation($user)

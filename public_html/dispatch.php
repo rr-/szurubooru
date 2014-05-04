@@ -149,6 +149,13 @@ $userValidation =
 \Chibi\Router::register(['UserController', 'registrationView'], 'GET', '/register', $userValidation);
 \Chibi\Router::register(['UserController', 'registrationAction'], 'POST', '/register', $userValidation);
 
+\Chibi\Router::register(['UserController', 'activationView'], 'GET', '/activation', $userValidation);
+\Chibi\Router::register(['UserController', 'activationAction'], 'POST', '/activation', $userValidation);
+\Chibi\Router::register(['UserController', 'activationAction'], 'GET', '/activation/{token}', $userValidation);
+\Chibi\Router::register(['UserController', 'passwordResetView'], 'GET', '/password-reset', $userValidation);
+\Chibi\Router::register(['UserController', 'passwordResetAction'], 'POST', '/password-reset', $userValidation);
+\Chibi\Router::register(['UserController', 'passwordResetAction'], 'GET', '/password-reset/{token}', $userValidation);
+
 \Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{name}/flag', $userValidation);
 \Chibi\Router::register(['UserController', 'banAction'], 'POST', '/user/{name}/ban', $userValidation);
 \Chibi\Router::register(['UserController', 'unbanAction'], 'POST', '/user/{name}/unban', $userValidation);
@@ -161,12 +168,6 @@ foreach (['GET', 'POST'] as $method)
 {
 	\Chibi\Router::register(['TagController', 'massTagRedirectAction'], $method, '/mass-tag-redirect', $tagValidation);
 
-	\Chibi\Router::register(['UserController', 'activationAction'], $method, '/activation/{token}', $userValidation);
-	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy', $userValidation);
-	\Chibi\Router::register(['UserController', 'activationProxyAction'], $method, '/activation-proxy/{token}', $userValidation);
-	\Chibi\Router::register(['UserController', 'passwordResetAction'], $method, '/password-reset/{token}', $userValidation);
-	\Chibi\Router::register(['UserController', 'passwordResetProxyAction'], $method, '/password-reset-proxy', $userValidation);
-	\Chibi\Router::register(['UserController', 'passwordResetProxyAction'], $method, '/password-reset-proxy/{token}', $userValidation);
 	\Chibi\Router::register(['UserController', 'toggleSafetyAction'], $method, '/user/toggle-safety/{safety}', $userValidation);
 }
 
