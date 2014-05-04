@@ -42,40 +42,37 @@ class UserController
 			AcceptUserRegistrationJob::USER_NAME => $name]);
 	}
 
-	public function deleteAction($name)
+	public function deleteView($name)
 	{
-		$context = getContext();
 		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::ViewUser,
-			Access::getIdentity($user));
-		Access::assert(
-			Privilege::DeleteUser,
-			Access::getIdentity($user));
 
 		$this->loadUserView($user);
+		$context = getContext();
 		$context->transport->tab = 'delete';
+	}
 
-		$context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
+	public function deleteAction($name)
+	{
+		$this->deleteView($name);
+		$user = UserModel::findByNameOrEmail($name);
 
-		if (!InputHelper::get('submit'))
-			return;
-
-		$name = $user->name;
 		if (Auth::getCurrentUser()->id == $user->id)
 		{
-			$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
+			$suppliedPassword = InputHelper::get('current-password');
+			$suppliedPasswordHash = UserModel::hashPassword($suppliedPassword, $user->passSalt);
 			if ($suppliedPasswordHash != $user->passHash)
 				throw new SimpleException('Must supply valid password');
 		}
 
 		$oldId = $user->id;
-		UserModel::remove($user);
+
+		Api::run(new DeleteUserJob(), [
+			DeleteUserJob::USER_NAME => $name]);
+
 		if ($oldId == Auth::getCurrentUser()->id)
 			Auth::logOut();
 
 		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']));
-		LogHelper::log('{user} removed {subject}\'s account', ['subject' => TextHelper::reprUser($name)]);
 		exit;
 	}
 
