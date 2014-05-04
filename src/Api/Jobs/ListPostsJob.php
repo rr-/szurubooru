@@ -24,14 +24,4 @@ class ListPostsJob extends AbstractPageJob
 	{
 		return Privilege::ListPosts;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

@@ -22,14 +22,4 @@ class ListTagsJob extends AbstractPageJob
 	{
 		return Privilege::ListTags;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

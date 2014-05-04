@@ -22,14 +22,4 @@ class RenameTagsJob extends AbstractJob
 	{
 		return Privilege::RenameTags;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

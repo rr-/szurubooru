@@ -19,14 +19,4 @@ class ScorePostJob extends AbstractPostJob
 			Access::getIdentity($this->post->getUploader())
 		];
 	}
-
-	public function requiresAuthentication()
-	{
-		return true;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

@@ -58,11 +58,6 @@ class AddPostJob extends AbstractJob
 		return Privilege::UploadPost;
 	}
 
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
 	public function requiresConfirmedEmail()
 	{
 		return getConfig()->registration->needEmailForUploading;

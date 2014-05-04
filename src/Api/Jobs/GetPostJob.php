@@ -21,14 +21,4 @@ class GetPostJob extends AbstractPostJob
 		//temporarily enforced in execute
 		return false;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

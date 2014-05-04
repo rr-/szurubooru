@@ -29,9 +29,4 @@ class FeaturePostJob extends AbstractPostJob
 	{
 		return true;
 	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

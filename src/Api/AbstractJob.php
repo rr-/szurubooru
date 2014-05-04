@@ -21,9 +21,20 @@ abstract class AbstractJob
 
 	public abstract function execute();
 
-	public abstract function requiresAuthentication();
-	public abstract function requiresConfirmedEmail();
-	public abstract function requiresPrivilege();
+	public function requiresAuthentication()
+	{
+		return false;
+	}
+
+	public function requiresConfirmedEmail()
+	{
+		return false;
+	}
+
+	public function requiresPrivilege()
+	{
+		return false;
+	}
 
 	public function getArgument($key)
 	{

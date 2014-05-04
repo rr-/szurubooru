@@ -32,9 +32,4 @@ class TogglePostFavoriteJob extends AbstractPostJob
 	{
 		return true;
 	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

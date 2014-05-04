@@ -22,14 +22,4 @@ class MergeTagsJob extends AbstractJob
 	{
 		return Privilege::MergeTags;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

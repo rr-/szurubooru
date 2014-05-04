@@ -43,14 +43,4 @@ class GetLogJob extends AbstractPageJob
 	{
 		return Privilege::ViewLog;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

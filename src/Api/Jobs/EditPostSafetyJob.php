@@ -32,14 +32,4 @@ class EditPostSafetyJob extends AbstractPostJob
 			Access::getIdentity($this->post->getUploader())
 		];
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

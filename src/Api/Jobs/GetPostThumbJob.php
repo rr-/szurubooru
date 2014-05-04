@@ -44,14 +44,4 @@ class GetPostThumbJob extends AbstractJob
 		//manually enforced in execute when post is retrieved
 		return false;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

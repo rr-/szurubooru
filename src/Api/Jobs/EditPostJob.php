@@ -31,19 +31,4 @@ class EditPostJob extends AbstractPostJob
 
 		return $post;
 	}
-
-	public function requiresPrivilege()
-	{
-		return false;
-	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

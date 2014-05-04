@@ -29,14 +29,4 @@ class ListCommentsJob extends AbstractPageJob
 	{
 		return Privilege::ListComments;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

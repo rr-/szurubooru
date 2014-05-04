@@ -21,14 +21,4 @@ class ListLogsJob extends AbstractJob
 	{
 		return Privilege::ListLogs;
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }

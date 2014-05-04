@@ -25,14 +25,4 @@ class ToggleUserBanJob extends AbstractUserJob
 			Access::getIdentity($this->user)
 		];
 	}
-
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
-	{
-		return false;
-	}
 }
