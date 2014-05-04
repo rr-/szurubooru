@@ -67,6 +67,12 @@ class TagController
 				}, $ret->entities));
 	}
 
+	public function mergeView()
+	{
+		$context = getContext();
+		$context->viewName = 'tag-list-wrapper';
+	}
+
 	public function mergeAction()
 	{
 		$context = getContext();
@@ -74,22 +80,13 @@ class TagController
 		$context->handleExceptions = true;
 
 		Access::assert(Privilege::MergeTags);
-		if (!InputHelper::get('submit'))
-			return;
 
-		TagModel::removeUnused();
-
-		$suppliedSourceTag = InputHelper::get('source-tag');
-		$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
-
-		$suppliedTargetTag = InputHelper::get('target-tag');
-		$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
-
-		TagModel::merge($suppliedSourceTag, $suppliedTargetTag);
-
-		LogHelper::log('{user} merged {source} with {target}', [
-			'source' => TextHelper::reprTag($suppliedSourceTag),
-			'target' => TextHelper::reprTag($suppliedTargetTag)]);
+		Api::run(
+			new MergeTagsJob(),
+			[
+				MergeTagsJob::SOURCE_TAG_NAME => InputHelper::get('source-tag'),
+				MergeTagsJob::TARGET_TAG_NAME => InputHelper::get('target-tag'),
+			]);
 
 		Messenger::message('Tags merged successfully.');
 	}
