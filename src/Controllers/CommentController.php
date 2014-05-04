@@ -10,12 +10,8 @@ class CommentController
 			]);
 
 		$context = getContext();
-		$context->transport->posts = $ret->posts;
-		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $ret->page;
-		$context->transport->paginator->pageCount = $ret->pageCount;
-		$context->transport->paginator->entityCount = $ret->postCount;
-		$context->transport->paginator->entities = $ret->posts;
+		$context->transport->posts = $ret->entities;
+		$context->transport->paginator = $ret;
 	}
 
 	public function previewAction()

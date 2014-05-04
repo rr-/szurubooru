@@ -1,18 +1,14 @@
 <?php
-class ListCommentsJob extends AbstractJob
+class ListCommentsJob extends AbstractPageJob
 {
 	public function execute()
 	{
+		$pageSize = $this->getPageSize();
 		$page = $this->getArgument(self::PAGE_NUMBER);
+		$query = 'comment_min:1 order:comment_date,desc';
 
-		$page = max(1, intval($page));
-		$commentsPerPage = intval(getConfig()->comments->commentsPerPage);
-		$searchQuery = 'comment_min:1 order:comment_date,desc';
-
-		$posts = PostSearchService::getEntities($searchQuery, $commentsPerPage, $page);
-		$postCount = PostSearchService::getEntityCount($searchQuery);
-		$pageCount = ceil($postCount / $commentsPerPage);
-		$page = min($pageCount, $page);
+		$posts = PostSearchService::getEntities($query, $pageSize, $page);
+		$postCount = PostSearchService::getEntityCount($query);
 
 		PostModel::preloadTags($posts);
 		PostModel::preloadComments($posts);
@@ -21,12 +17,12 @@ class ListCommentsJob extends AbstractJob
 			$comments = array_merge($comments, $post->getComments());
 		CommentModel::preloadCommenters($comments);
 
-		$ret = new StdClass;
-		$ret->posts = $posts;
-		$ret->postCount = $postCount;
-		$ret->page = $page;
-		$ret->pageCount = $pageCount;
-		return $ret;
+		return $this->getPager($posts, $postCount, $page, $pageSize);
+	}
+
+	public function getDefaultPageSize()
+	{
+		return intval(getConfig()->comments->commentsPerPage);
 	}
 
 	public function requiresPrivilege()

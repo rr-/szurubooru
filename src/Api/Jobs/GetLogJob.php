@@ -1,8 +1,9 @@
 <?php
-class GetLogJob extends AbstractJob
+class GetLogJob extends AbstractPageJob
 {
 	public function execute()
 	{
+		$pageSize = $this->getPageSize();
 		$page = $this->getArgument(self::PAGE_NUMBER);
 		$name = $this->getArgument(self::LOG_ID);
 		$query = $this->getArgument(self::QUERY);
@@ -28,18 +29,14 @@ class GetLogJob extends AbstractJob
 		}
 
 		$lineCount = count($lines);
-		$logsPerPage = intval(getConfig()->browsing->logsPerPage);
-		$pageCount = ceil($lineCount / $logsPerPage);
-		$page = min($pageCount, $page);
+		$lines = array_slice($lines, ($page - 1) * $pageSize, $pageSize);
 
-		$lines = array_slice($lines, ($page - 1) * $logsPerPage, $logsPerPage);
+		return $this->getPager($lines, $lineCount, $page, $pageSize);
+	}
 
-		$ret = new StdClass;
-		$ret->lines = $lines;
-		$ret->lineCount = $lineCount;
-		$ret->page = $page;
-		$ret->pageCount = $pageCount;
-		return $ret;
+	public function getDefaultPageSize()
+	{
+		return intval(getConfig()->browsing->logsPerPage);
 	}
 
 	public function requiresPrivilege()

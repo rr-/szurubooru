@@ -1,25 +1,21 @@
 <?php
-class ListTagsJob extends AbstractJob
+class ListTagsJob extends AbstractPageJob
 {
 	public function execute()
 	{
+		$pageSize = $this->getPageSize();
 		$page = $this->getArgument(self::PAGE_NUMBER);
 		$query = $this->getArgument(self::QUERY);
 
-		$page = max(1, intval($page));
-		$tagsPerPage = intval(getConfig()->browsing->tagsPerPage);
-
-		$tags = TagSearchService::getEntitiesRows($query, $tagsPerPage, $page);
+		$tags = TagSearchService::getEntitiesRows($query, $pageSize, $page);
 		$tagCount = TagSearchService::getEntityCount($query);
-		$pageCount = ceil($tagCount / $tagsPerPage);
-		$page = min($pageCount, $page);
 
-		$ret = new StdClass;
-		$ret->tags = $tags;
-		$ret->tagCount = $tagCount;
-		$ret->page = $page;
-		$ret->pageCount = $pageCount;
-		return $ret;
+		return $this->getPager($tags, $tagCount, $page, $pageSize);
+	}
+
+	public function getDefaultPageSize()
+	{
+		return intval(getConfig()->browsing->tagsPerPage);
 	}
 
 	public function requiresPrivilege()

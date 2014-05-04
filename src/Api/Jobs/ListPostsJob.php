@@ -1,27 +1,23 @@
 <?php
-class ListPostsJob extends AbstractJob
+class ListPostsJob extends AbstractPageJob
 {
 	public function execute()
 	{
+		$pageSize = $this->getPageSize();
 		$page = $this->getArgument(self::PAGE_NUMBER);
 		$query = $this->getArgument(self::QUERY);
 
-		$page = max(1, intval($page));
-		$postsPerPage = intval(getConfig()->browsing->postsPerPage);
-
-		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
+		$posts = PostSearchService::getEntities($query, $pageSize, $page);
 		$postCount = PostSearchService::getEntityCount($query);
-		$pageCount = ceil($postCount / $postsPerPage);
-		$page = min($pageCount, $page);
 
 		PostModel::preloadTags($posts);
 
-		$ret = new StdClass;
-		$ret->posts = $posts;
-		$ret->postCount = $postCount;
-		$ret->page = $page;
-		$ret->pageCount = $pageCount;
-		return $ret;
+		return $this->getPager($posts, $postCount, $page, $pageSize);
+	}
+
+	public function getDefaultPageSize()
+	{
+		return intval(getConfig()->browsing->postsPerPage);
 	}
 
 	public function requiresPrivilege()

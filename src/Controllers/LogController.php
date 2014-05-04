@@ -36,21 +36,18 @@ class LogController
 			]);
 
 		//stylize important lines
-		foreach ($ret->lines as &$line)
+		$lines = $ret->entities;
+		foreach ($lines as &$line)
 			if (strpos($line, 'flag') !== false)
 				$line = '**' . $line . '**';
 		unset($line);
 
-		$ret->lines = join(PHP_EOL, $ret->lines);
-		$ret->lines = TextHelper::parseMarkdown($ret->lines, true);
-		$ret->lines = trim($ret->lines);
+		$lines = join(PHP_EOL, $lines);
+		$lines = TextHelper::parseMarkdown($lines, true);
+		$lines = trim($lines);
 
-		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $ret->page;
-		$context->transport->paginator->pageCount = $ret->pageCount;
-		$context->transport->paginator->entityCount = $ret->lineCount;
-		$context->transport->paginator->entities = $ret->lines;
-		$context->transport->lines = $ret->lines;
+		$context->transport->paginator = $ret;
+		$context->transport->lines = $lines;
 		$context->transport->filter = $filter;
 		$context->transport->name = $name;
 	}

@@ -14,12 +14,8 @@ class TagController
 		$context->viewName = 'tag-list-wrapper';
 		$context->highestUsage = TagSearchService::getMostUsedTag()['post_count'];
 		$context->filter = $filter;
-		$context->transport->tags = $ret->tags;
-		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $ret->page;
-		$context->transport->paginator->pageCount = $ret->pageCount;
-		$context->transport->paginator->entityCount = $ret->tagCount;
-		$context->transport->paginator->entities = $ret->tags;
+		$context->transport->tags = $ret->entities;
+		$context->transport->paginator = $ret;
 	}
 
 	public function autoCompleteAction()
