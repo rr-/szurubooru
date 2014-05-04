@@ -3,9 +3,6 @@ class AuthController
 {
 	public function loginView()
 	{
-		$context = getContext();
-		$context->handleExceptions = true;
-
 		//check if already logged in
 		if (Auth::isLoggedIn())
 			self::redirect();
@@ -13,6 +10,10 @@ class AuthController
 
 	public function loginAction()
 	{
+		$context = getContext();
+		$context->viewName = 'auth-login';
+		$context->handleExceptions = true;
+
 		$suppliedName = InputHelper::get('name');
 		$suppliedPassword = InputHelper::get('password');
 		$remember = boolval(InputHelper::get('remember'));
