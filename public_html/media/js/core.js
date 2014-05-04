@@ -112,7 +112,7 @@ $(function()
 			aDom.addClass('inactive');
 
 			var url = $(this).attr('href') + '?json';
-			$.post(url, {submit: 1}).success(function(data)
+			$.post(url).success(function(data)
 			{
 				if (aDom.hasAttr('data-redirect-url'))
 					window.location.href = aDom.attr('data-redirect-url');

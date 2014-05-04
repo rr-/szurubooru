@@ -117,8 +117,6 @@ class TagController
 		$context->viewName = 'tag-list-wrapper';
 
 		Access::assert(new Privilege(Privilege::MassTag));
-		if (!InputHelper::get('submit'))
-			return;
 
 		$suppliedOldPage = intval(InputHelper::get('old-page'));
 		$suppliedOldQuery = InputHelper::get('old-query');
