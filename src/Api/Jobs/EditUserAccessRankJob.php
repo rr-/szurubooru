@@ -6,13 +6,13 @@ class EditUserAccessRankJob extends AbstractUserEditJob
 	public function execute()
 	{
 		$user = $this->user;
-		$newAccessRank = UserModel::validateAccessRank($this->getArgument(self::NEW_ACCESS_RANK));
+		$newAccessRank = new AccessRank($this->getArgument(self::NEW_ACCESS_RANK));
 
-		$oldAccessRank = $user->accessRank;
+		$oldAccessRank = $user->getAccessRank();
 		if ($oldAccessRank == $newAccessRank)
 			return $user;
 
-		$user->accessRank = $newAccessRank;
+		$user->setAccessRank($newAccessRank);
 
 		if (!$this->skipSaving)
 			UserModel::save($user);
@@ -20,7 +20,7 @@ class EditUserAccessRankJob extends AbstractUserEditJob
 		LogHelper::log('{user} changed {subject}\'s access rank to {rank}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user),
-			'rank' => AccessRank::toString($newAccessRank)]);
+			'rank' => $newAccessRank->toString()]);
 
 		return $user;
 	}

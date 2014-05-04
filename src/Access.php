@@ -40,24 +40,22 @@ class Access
 		$user = Auth::getCurrentUser();
 		$minAccessRank = AccessRank::Nobody;
 
-		$key = TextCaseConverter::convert(Privilege::toString($privilege->primary),
+		$key = TextCaseConverter::convert($privilege->toString(),
 			TextCaseConverter::CAMEL_CASE,
 			TextCaseConverter::SPINAL_CASE);
 
-		if (isset(self::$privileges[$key]))
-		{
-			$minAccessRank = self::$privileges[$key];
-		}
-		if ($privilege->secondary != null)
-		{
-			$key2 = $key . '.' . strtolower($privilege->secondary);
-			if (isset(self::$privileges[$key2]))
-			{
-				$minAccessRank = self::$privileges[$key2];
-			}
-		}
+		$privilege->secondary = null;
+		$key2 = TextCaseConverter::convert($privilege->toString(),
+			TextCaseConverter::CAMEL_CASE,
+			TextCaseConverter::SPINAL_CASE);
 
-		return intval($user->accessRank) >= $minAccessRank;
+
+		if (isset(self::$privileges[$key]))
+			$minAccessRank = self::$privileges[$key];
+		elseif (isset(self::$privileges[$key2]))
+			$minAccessRank = self::$privileges[$key2];
+
+		return $user->getAccessRank()->toInteger() >= $minAccessRank;
 	}
 
 	public static function assertAuthentication()
@@ -98,7 +96,7 @@ class Access
 
 		return array_filter(PostSafety::getAll(), function($safety)
 		{
-			return Access::check(new Privilege(Privilege::ListPosts, PostSafety::toString($safety)))
+			return Access::check(new Privilege(Privilege::ListPosts, $safety->toString()))
 				and Auth::getCurrentUser()->hasEnabledSafety($safety);
 		});
 	}

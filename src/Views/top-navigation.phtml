@@ -112,24 +112,24 @@
 				<?php foreach (PostSafety::getAll() as $safety): ?>
 					<?php if (Access::check(new Privilege(
 						Privilege::ListPosts,
-						PostSafety::toString($safety)))): ?>
+						$safety->toString()))): ?>
 
 						<li class="safety-<?= TextCaseConverter::convert(
-							PostSafety::toString($safety),
+							$safety->toString(),
 							TextCaseConverter::CAMEL_CASE,
 							TextCaseConverter::SPINAL_CASE) ?>">
 
 							<a class="<?= Auth::getCurrentUser()->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
 								href="<?= \Chibi\Router::linkTo(
 									['UserController', 'toggleSafetyAction'],
-									['safety' => $safety]) ?>"
+									['safety' => $safety->toInteger()]) ?>"
 								title="<?= sprintf('Searching %s posts: %s',
-									PostSafety::toDisplayString($safety),
+									$safety->toDisplayString(),
 									Auth::getCurrentUser()->hasEnabledSafety($safety)
 										? 'enabled'
 										: 'disabled') ?>">
 
-								<span><?= ucfirst(PostSafety::toDisplayString($safety)) ?></span>
+								<span><?= ucfirst($safety->toDisplayString()) ?></span>
 
 							</a>
 						</li>

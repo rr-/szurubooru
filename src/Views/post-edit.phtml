@@ -23,11 +23,11 @@
 					<label>
 						<input type="radio"
 							name="safety"
-							<?php if ($this->context->transport->post->safety == $safety): ?>
+							<?php if ($this->context->transport->post->getSafety() == $safety): ?>
 								checked="checked"
 							<?php endif ?>
-							value="<?= $safety ?>"/>
-						&nbsp;<?= ucfirst(PostSafety::toDisplayString($safety)) ?>
+							value="<?= $safety->toInteger() ?>"/>
+						&nbsp;<?= ucfirst($safety->toDisplayString()) ?>
 					</label>
 				<?php endforeach ?>
 			</div>

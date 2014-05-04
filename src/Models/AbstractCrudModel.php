@@ -88,7 +88,16 @@ abstract class AbstractCrudModel implements IModel
 					TextCaseConverter::LOWER_CAMEL_CASE);
 			}
 
-			$entity->$key = $val;
+			if (property_exists($entity, $key))
+			{
+				$reflectionProperty = new ReflectionProperty(get_class($entity), $key);
+				$reflectionProperty->setAccessible(true);
+				$reflectionProperty->setValue($entity, $val);
+			}
+			else
+			{
+				$entity->$key = $val;
+			}
 		}
 		return $entity;
 	}

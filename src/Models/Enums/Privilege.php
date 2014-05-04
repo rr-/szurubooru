@@ -51,6 +51,14 @@ class Privilege extends Enum
 	public function __construct($primary, $secondary = null)
 	{
 		$this->primary = $primary;
-		$this->secondary = $secondary;
+		$this->secondary = strtolower($secondary);
+	}
+
+	public function toString()
+	{
+		$string = self::_toString($this->primary);
+		if ($this->secondary)
+			$string .= '.' . $this->secondary;
+		return $string;
 	}
 }

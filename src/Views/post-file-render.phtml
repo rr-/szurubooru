@@ -5,7 +5,7 @@ Assets::setPageThumb(\Chibi\Router::linkTo(
 $post = $this->context->transport->post;
 ?>
 
-<?php if ($post->type == PostType::Image): ?>
+<?php if ($post->getType()->toInteger() == PostType::Image): ?>
 
 	<?php if (!empty($this->context->imageLink)): ?>
 		<a href="<?= $this->context->imageLink ?>">
@@ -20,7 +20,7 @@ $post = $this->context->transport->post;
 		</a>
 	<?php endif ?>
 
-<?php elseif ($post->type ==  PostType::Flash): ?>
+<?php elseif ($post->getType()->toInteger() ==  PostType::Flash): ?>
 
 	<object
 		type="<?= $post->mimeType ?>"
@@ -37,7 +37,7 @@ $post = $this->context->transport->post;
 
 	</object>
 
-<?php elseif ($post->type == PostType::Youtube): ?>
+<?php elseif ($post->getType()->toInteger() == PostType::Youtube): ?>
 
 	<iframe
 		style="width: 800px; height: 600px; border: 0;"
@@ -46,7 +46,7 @@ $post = $this->context->transport->post;
 
 	</iframe>
 
-<?php elseif ($post->type == PostType::Video): ?>
+<?php elseif ($post->getType()->toInteger() == PostType::Video): ?>
 
 	<video style="max-width: 100%" controls>
 		<source

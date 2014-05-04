@@ -45,7 +45,7 @@ Assets::addStylesheet('user-view.css');
 			<span class="key">Access rank:</span>
 			<span
 				class="value"
-				title="<?= $val = AccessRank::toDisplayString($this->context->transport->user->accessRank) ?>">
+				title="<?= $val = $this->context->transport->user->getAccessRank()->toDisplayString() ?>">
 
 				<?= $val ?>
 

@@ -11,19 +11,19 @@
 			<?php foreach (PostSafety::getAll() as $safety): ?>
 				<?php if (Access::check(new Privilege(
 					Privilege::ListPosts,
-					PostSafety::toString($safety)))): ?>
+					$safety->toString()))): ?>
 					<label>
 						<?php
 							$attrs = [];
 							$attrs['type'] = 'checkbox';
 							$attrs['name'] = 'safety[]';
-							$attrs['value'] = $safety;
+							$attrs['value'] = $safety->toInteger();
 							if ($this->context->transport->user->hasEnabledSafety($safety))
 								$attrs['checked'] = 'checked';
 
 							echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
 						?>
-						<?= ucfirst(PostSafety::toDisplayString($safety)) ?>
+						<?= ucfirst($safety->toDisplayString()) ?>
 					</label>
 				<?php endif ?>
 			<?php endforeach ?>

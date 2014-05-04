@@ -6,7 +6,7 @@ $classNames =
 	'post',
 	'post-type-' . TextCaseConverter::convert(
 		TextHelper::resolveMimeType($this->context->post->mimeType)
-			?: PostType::toString($this->context->post->type),
+			?: $this->context->post->getType()->toString(),
 		TextCaseConverter::CAMEL_CASE,
 		TextCaseConverter::SPINAL_CASE),
 ];

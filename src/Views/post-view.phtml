@@ -116,7 +116,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		<div class="key-value safety">
 			<span class="key">Safety:</span>
-			<span class="value safety-<?= $val = PostSafety::toDisplayString($this->context->transport->post->safety) ?>"
+			<span class="value safety-<?= $val = $this->context->transport->post->getSafety()->toDisplayString() ?>"
 				title="<?= $val ?>">
 				<?= $val ?>
 			</span>
@@ -184,7 +184,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	</div>
 
 	<div class="unit hl-options">
-		<?php if ($this->context->transport->post->type != PostType::Youtube): ?>
+		<?php if ($this->context->transport->post->getType()->toInteger() != PostType::Youtube): ?>
 			<div class="hl-option">
 				<a title="Download" href="<?= \Chibi\Router::linkTo(
 					['PostController', 'fileView'],
@@ -370,7 +370,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		</div>
 	<?php endif ?>
 
-	<div class="post-wrapper post-type-<?= PostType::toString($this->context->transport->post->type) ?>">
+	<div class="post-wrapper post-type-<?= $this->context->transport->post->getType()->toString() ?>">
 		<?= \Chibi\View::render('post-file-render', $this->context) ?>
 	</div>
 

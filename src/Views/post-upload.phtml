@@ -86,9 +86,9 @@ Assets::addScript('../lib/tagit/jquery.tagit.js');
 									<?php if (!$checked): ?>
 										checked="checked"
 									<?php endif ?>
-									value="<?= $safety ?>" />
+									value="<?= $safety->toInteger() ?>" />
 
-								<?= ucfirst(PostSafety::toDisplayString($safety)) ?>
+								<?= ucfirst($safety->toDisplayString()) ?>
 
 								<?php $checked = true ?>
 							</label>

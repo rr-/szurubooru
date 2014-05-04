@@ -14,17 +14,29 @@ class UserModel extends AbstractCrudModel
 		return 'user';
 	}
 
+	public static function convertRow($row)
+	{
+		$entity = parent::convertRow($row);
+
+		if (isset($row['access_rank']))
+			$entity->setAccessRank(new AccessRank($row['access_rank']));
+
+		return $entity;
+	}
+
 	public static function spawn()
 	{
 		$user = new UserEntity();
+		$user->setAccessRank(new AccessRank(AccessRank::Anonymous));
 		$user->passSalt = md5(mt_rand() . uniqid());
 		return $user;
 	}
 
 	public static function save($user)
 	{
-		if ($user->accessRank == AccessRank::Anonymous)
+		if ($user->getAccessRank()->toInteger() == AccessRank::Anonymous)
 			throw new Exception('Trying to save anonymous user into database');
+
 		Database::transaction(function() use ($user)
 		{
 			self::forgeId($user);
@@ -38,7 +50,7 @@ class UserModel extends AbstractCrudModel
 				'email_confirmed' => $user->emailConfirmed,
 				'join_date' => $user->joinDate,
 				'last_login_date' => $user->lastLoginDate,
-				'access_rank' => $user->accessRank,
+				'access_rank' => $user->getAccessRank()->toInteger(),
 				'settings' => $user->settings,
 				'banned' => $user->banned
 				];
@@ -234,15 +246,12 @@ class UserModel extends AbstractCrudModel
 		return $email;
 	}
 
-	public static function validateAccessRank($accessRank)
+	public static function validateAccessRank(AccessRank $accessRank)
 	{
-		$accessRank = intval($accessRank);
+		$accessRank->validate();
 
-		if (!in_array($accessRank, AccessRank::getAll()))
-			throw new SimpleException('Invalid access rank type "%s"', $accessRank);
-
-		if ($accessRank == AccessRank::Nobody)
-			throw new SimpleException('Cannot set special accesss rank "%s"', $accessRank);
+		if ($accessRank->toInteger() == AccessRank::Nobody)
+			throw new SimpleException('Cannot set special access rank "%s"', $accessRank->toString());
 
 		return $accessRank;
 	}

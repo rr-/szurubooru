@@ -38,7 +38,7 @@ class GetPostContentJob extends AbstractJob
 		if ($post->hidden)
 			$privileges []= new Privilege(Privilege::ViewPost, 'hidden');
 
-		$privileges []= new Privilege(Privilege::ViewPost, PostSafety::toString($post->safety));
+		$privileges []= new Privilege(Privilege::ViewPost, $post->getSafety()->toString());
 
 		return $privileges;
 	}

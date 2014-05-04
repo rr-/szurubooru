@@ -6,23 +6,33 @@ class PostModel extends AbstractCrudModel
 {
 	protected static $config;
 
-	public static function getTableName()
-	{
-		return 'post';
-	}
-
 	public static function init()
 	{
 		self::$config = getConfig();
 	}
 
+	public static function getTableName()
+	{
+		return 'post';
+	}
+
+	public static function convertRow($row)
+	{
+		$entity = parent::convertRow($row);
+
+		if (isset($row['type']))
+			$entity->setType(new PostType($row['type']));
+
+		if (isset($row['safety']))
+			$entity->setSafety(new PostSafety($row['safety']));
+
+		return $entity;
+	}
+
 	public static function spawn()
 	{
 		$post = new PostEntity;
-		$post->score = 0;
-		$post->favCount = 0;
-		$post->commentCount = 0;
-		$post->safety = PostSafety::Safe;
+		$post->setSafety(new PostSafety(PostSafety::Safe));
 		$post->hidden = false;
 		$post->uploadDate = time();
 		do
@@ -40,13 +50,13 @@ class PostModel extends AbstractCrudModel
 			self::forgeId($post);
 
 			$bindings = [
-				'type' => $post->type,
+				'type' => $post->getType()->toInteger(),
 				'name' => $post->name,
 				'orig_name' => $post->origName,
 				'file_hash' => $post->fileHash,
 				'file_size' => $post->fileSize,
 				'mime_type' => $post->mimeType,
-				'safety' => $post->safety,
+				'safety' => $post->getSafety()->toInteger(),
 				'hidden' => $post->hidden,
 				'upload_date' => $post->uploadDate,
 				'image_width' => $post->imageWidth,
@@ -265,16 +275,6 @@ class PostModel extends AbstractCrudModel
 	}
 
 
-
-	public static function validateSafety($safety)
-	{
-		$safety = intval($safety);
-
-		if (!in_array($safety, PostSafety::getAll()))
-			throw new SimpleException('Invalid safety type "%s"', $safety);
-
-		return $safety;
-	}
 
 	public static function validateSource($source)
 	{

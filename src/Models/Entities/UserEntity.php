@@ -12,9 +12,20 @@ class UserEntity extends AbstractEntity
 	public $emailConfirmed;
 	public $joinDate;
 	public $lastLoginDate;
-	public $accessRank;
+	protected $accessRank;
 	public $settings;
 	public $banned;
+
+	public function getAccessRank()
+	{
+		return $this->accessRank;
+	}
+
+	public function setAccessRank(AccessRank $accessRank)
+	{
+		$accessRank->validate();
+		$this->accessRank = $accessRank;
+	}
 
 	public function getAvatarUrl($size = 32)
 	{
@@ -44,31 +55,30 @@ class UserEntity extends AbstractEntity
 		$this->settings = $settings;
 	}
 
-	public function hasEnabledSafety($safety)
+	public function hasEnabledSafety(PostSafety $safety)
 	{
 		$all = $this->getSetting(UserModel::SETTING_SAFETY);
 		if (!$all)
-			return $safety == PostSafety::Safe;
-		return $all & PostSafety::toFlag($safety);
+			return $safety->toInteger() == PostSafety::Safe;
+		return $all & $safety->toFlag();
 	}
 
-	public function enableSafety($safety, $enabled)
+	public function enableSafety(PostSafety $safety, $enabled)
 	{
 		$all = $this->getSetting(UserModel::SETTING_SAFETY);
-		if (!$all)
-			$all = PostSafety::toFlag(PostSafety::Safe);
 
 		$new = $all;
 		if (!$enabled)
 		{
-			$new &= ~PostSafety::toFlag($safety);
-			if (!$new)
-				$new = PostSafety::toFlag(PostSafety::Safe);
+			$new &= ~$safety->toFlag();
 		}
 		else
 		{
-			$new |= PostSafety::toFlag($safety);
+			$new |= $safety->toFlag();
 		}
+
+		if (!$new)
+			$new = (new PostSafety(PostSafety::Safe))->toFlag();
 
 		$this->setSetting(UserModel::SETTING_SAFETY, $new);
 	}

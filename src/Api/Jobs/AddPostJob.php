@@ -27,7 +27,7 @@ class AddPostJob extends AbstractJob
 		//- move this to PostEntity::isValid()
 		//- create IValidatable interface
 		//- enforce entity validity upon calling save() in models
-		if (empty($post->type))
+		if (empty($post->getType()))
 			throw new SimpleException('No post type detected; upload faled');
 
 		//save to db
@@ -43,7 +43,7 @@ class AddPostJob extends AbstractJob
 				: TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post),
 			'tags' => TextHelper::reprTags($post->getTags()),
-			'safety' => PostSafety::toString($post->safety),
+			'safety' => $post->getSafety()->toString(),
 			'source' => $post->source]);
 
 		//finish

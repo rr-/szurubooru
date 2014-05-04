@@ -91,14 +91,15 @@
 			<div class="input-wrapper">
 				<select name="access-rank" id="access-rank">
 					<?php foreach (AccessRank::getAll() as $rank): ?>
-						<?php if ($rank == AccessRank::Nobody) continue ?>
-						<?php if ($rank == InputHelper::get('access-rank') or (!InputHelper::get('access-rank')
-							and $rank == $this->context->transport->user->accessRank)): ?>
-							<option value="<?= $rank ?>" selected="selected">
+						<?php if ($rank->toInteger() == AccessRank::Nobody) continue ?>
+						<?php if ($rank->toInteger() == InputHelper::get('access-rank')
+							or (!InputHelper::get('access-rank') and
+								$rank == $this->context->transport->user->getAccessRank())): ?>
+							<option value="<?= $rank->toInteger() ?>" selected="selected">
 						<?php else: ?>
-							<option value="<?= $rank ?>">
+							<option value="<?= $rank->toInteger() ?>">
 						<?php endif ?>
-							<?= AccessRank::toDisplayString($rank) ?>
+							<?= $rank->toDisplayString() ?>
 						</option>
 					<?php endforeach ?>
 				</select>

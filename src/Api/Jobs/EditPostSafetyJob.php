@@ -6,9 +6,9 @@ class EditPostSafetyJob extends AbstractPostEditJob
 	public function execute()
 	{
 		$post = $this->post;
-		$newSafety = $this->getArgument(self::SAFETY);
+		$newSafety = new PostSafety($this->getArgument(self::SAFETY));
 
-		$oldSafety = $post->safety;
+		$oldSafety = $post->getSafety();
 		$post->setSafety($newSafety);
 
 		if (!$this->skipSaving)
@@ -19,7 +19,7 @@ class EditPostSafetyJob extends AbstractPostEditJob
 			LogHelper::log('{user} changed safety of {post} to {safety}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
-				'safety' => PostSafety::toString($post->safety)]);
+				'safety' => $post->getSafety()->toString()]);
 		}
 
 		return $post;

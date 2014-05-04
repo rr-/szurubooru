@@ -20,7 +20,7 @@ class GetPostThumbJob extends AbstractJob
 
 				if ($post->hidden)
 					Access::assert(new Privilege(Privilege::ListPosts, 'hidden'));
-				Access::assert(new Privilege(Privilege::ListPosts, PostSafety::toString($post->safety)));
+				Access::assert(new Privilege(Privilege::ListPosts, $post->getSafety()->toString()));
 
 				$post->generateThumb($width, $height);
 

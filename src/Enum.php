@@ -1,21 +1,23 @@
 <?php
-class Enum
+abstract class Enum
 {
-	public static function toString($constant)
+	public abstract function toString();
+
+	public function _toString($constant)
 	{
 		$cls = new ReflectionClass(get_called_class());
 		$constants = $cls->getConstants();
 		return array_search($constant, $constants);
 	}
 
-	public static function toDisplayString($constant)
+	public function toDisplayString()
 	{
-		return TextCaseConverter::convert(static::toString($constant),
+		return TextCaseConverter::convert($this->toString(),
 			TextCaseConverter::SNAKE_CASE,
 			TextCaseConverter::BLANK_CASE);
 	}
 
-	public static function getAll()
+	public static function getAllConstants()
 	{
 		$cls = new ReflectionClass(get_called_class());
 		$constants = $cls->getConstants();

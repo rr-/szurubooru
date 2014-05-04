@@ -4,22 +4,22 @@ use \Chibi\Database as Database;
 
 class PostEntity extends AbstractEntity
 {
-	public $type;
+	protected $type;
 	public $name;
 	public $origName;
 	public $fileHash;
 	public $fileSize;
 	public $mimeType;
-	public $safety;
+	protected $safety;
 	public $hidden;
 	public $uploadDate;
 	public $imageWidth;
 	public $imageHeight;
 	public $uploaderId;
 	public $source;
-	public $commentCount;
-	public $favCount;
-	public $score;
+	public $commentCount = 0;
+	public $favCount = 0;
+	public $score = 0;
 
 	public function getUploader()
 	{
@@ -173,9 +173,26 @@ class PostEntity extends AbstractEntity
 		$this->hidden = boolval($hidden);
 	}
 
-	public function setSafety($safety)
+	public function getType()
 	{
-		$this->safety = PostModel::validateSafety($safety);
+		return $this->type;
+	}
+
+	public function setType(PostType $type)
+	{
+		$type->validate();
+		$this->type = $type;
+	}
+
+	public function getSafety()
+	{
+		return $this->safety;
+	}
+
+	public function setSafety(PostSafety $safety)
+	{
+		$safety->validate();
+		$this->safety = $safety;
 	}
 
 	public function setSource($source)
@@ -233,7 +250,7 @@ class PostEntity extends AbstractEntity
 		$srcPath = $this->getFullPath();
 		$dstPath = $this->getThumbDefaultPath($width, $height);
 
-		if ($this->type == PostType::Youtube)
+		if ($this->getType()->toInteger() == PostType::Youtube)
 		{
 			return ThumbnailHelper::generateFromUrl(
 				'http://img.youtube.com/vi/' . $this->fileHash . '/mqdefault.jpg',
@@ -263,13 +280,13 @@ class PostEntity extends AbstractEntity
 			case 'image/png':
 			case 'image/jpeg':
 				list ($imageWidth, $imageHeight) = getimagesize($srcPath);
-				$this->type = PostType::Image;
+				$this->setType(new PostType(PostType::Image));
 				$this->imageWidth = $imageWidth;
 				$this->imageHeight = $imageHeight;
 				break;
 			case 'application/x-shockwave-flash':
 				list ($imageWidth, $imageHeight) = getimagesize($srcPath);
-				$this->type = PostType::Flash;
+				$this->setType(new PostType(PostType::Flash));
 				$this->imageWidth = $imageWidth;
 				$this->imageHeight = $imageHeight;
 				break;
@@ -280,7 +297,7 @@ class PostEntity extends AbstractEntity
 			case 'video/x-flv':
 			case 'video/3gpp':
 				list ($imageWidth, $imageHeight) = getimagesize($srcPath);
-				$this->type = PostType::Video;
+				$this->setType(new PostType(PostType::Video));
 				$this->imageWidth = $imageWidth;
 				$this->imageHeight = $imageHeight;
 				break;
@@ -315,7 +332,7 @@ class PostEntity extends AbstractEntity
 		if (preg_match('/youtube.com\/watch.*?=([a-zA-Z0-9_-]+)/', $srcUrl, $matches))
 		{
 			$youtubeId = $matches[1];
-			$this->type = PostType::Youtube;
+			$this->setType(new PostType(PostType::Youtube));
 			$this->mimeType = null;
 			$this->fileSize = null;
 			$this->fileHash = $youtubeId;
@@ -360,7 +377,7 @@ class PostEntity extends AbstractEntity
 			$x []= TextHelper::reprTag($tag->name);
 		foreach ($this->getRelations() as $relatedPost)
 			$x []= TextHelper::reprPost($relatedPost);
-		$x []= $this->safety;
+		$x []= $this->getSafety()->toInteger();
 		$x []= $this->source;
 		$x []= $this->fileHash;
 		natcasesort($x);

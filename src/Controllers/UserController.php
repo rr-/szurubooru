@@ -81,7 +81,7 @@ class UserController
 		$user->enablePostTagTitles(InputHelper::get('post-tag-titles'));
 		$user->enableHidingDislikedPosts(InputHelper::get('hide-disliked-posts'));
 
-		if ($user->accessRank != AccessRank::Anonymous)
+		if ($user->getAccessRank()->toInteger() != AccessRank::Anonymous)
 			UserModel::save($user);
 		if ($user->id == Auth::getCurrentUser()->id)
 			Auth::setCurrentUser($user);
@@ -168,12 +168,12 @@ class UserController
 			Privilege::ChangeUserSettings,
 			Access::getIdentity($user)));
 
-		if (!in_array($safety, PostSafety::getAll()))
-			throw new SimpleExcetpion('Invalid safety');
+		$safety = new PostSafety($safety);
+		$safety->validate();
 
 		$user->enableSafety($safety, !$user->hasEnabledSafety($safety));
 
-		if ($user->accessRank != AccessRank::Anonymous)
+		if ($user->getAccessRank()->toInteger() != AccessRank::Anonymous)
 			UserModel::save($user);
 		Auth::setCurrentUser($user);
 	}

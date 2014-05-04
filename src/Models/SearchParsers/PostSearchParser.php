@@ -14,8 +14,13 @@ class PostSearchParser extends AbstractSearchParser
 		$this->tags = [];
 		$crit = new Sql\ConjunctionFunctor();
 
-		$allowedSafety = Access::getAllowedSafety();
-		$crit->add(Sql\InFunctor::fromArray('safety', Sql\Binding::fromArray($allowedSafety)));
+		$allowedSafety = array_map(
+			function($safety)
+			{
+				return $safety->toInteger();
+			},
+			Access::getAllowedSafety());
+		$crit->add(Sql\InFunctor::fromArray('post.safety', Sql\Binding::fromArray($allowedSafety)));
 
 		$this->statement->setCriterion($crit);
 		if (count($tokens) > $config->browsing->maxSearchTokens)

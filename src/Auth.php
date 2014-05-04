@@ -70,7 +70,7 @@ class Auth
 		}
 		else
 		{
-			$_SESSION['logged-in'] = $user->accessRank != AccessRank::Anonymous;
+			$_SESSION['logged-in'] = $user->getAccessRank()->toInteger() != AccessRank::Anonymous;
 			$_SESSION['user'] = serialize($user);
 		}
 	}
@@ -87,7 +87,7 @@ class Auth
 		$dummy = UserModel::spawn();
 		$dummy->id = null;
 		$dummy->name = UserModel::getAnonymousName();
-		$dummy->accessRank = AccessRank::Anonymous;
+		$dummy->setAccessRank(new AccessRank(AccessRank::Anonymous));
 		return $dummy;
 	}
 }
