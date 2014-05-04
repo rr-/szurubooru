@@ -116,18 +116,18 @@ $commentValidation =
 \Chibi\Router::register(['CommentController', 'editView'], 'GET', '/comment/{id}/edit', $commentValidation);
 \Chibi\Router::register(['CommentController', 'editAction'], 'POST', '/comment/{id}/edit', $commentValidation);
 
+$tagValidation =
+[
+	'page' => '\d*',
+	'filter' => '[^\/]+',
+];
+
+\Chibi\Router::register(['TagController', 'listView'], 'GET', '/tags', $tagValidation);
+\Chibi\Router::register(['TagController', 'listView'], 'GET', '/tags/{page}', $tagValidation);
+\Chibi\Router::register(['TagController', 'listView'], 'GET', '/tags/{filter}/{page}', $tagValidation);
+
 foreach (['GET', 'POST'] as $method)
 {
-	$tagValidation =
-	[
-		'page' => '\d*',
-		'filter' => '[^\/]+',
-	];
-
-	\Chibi\Router::register(['TagController', 'listAction'], $method, '/tags', $tagValidation);
-	\Chibi\Router::register(['TagController', 'listAction'], $method, '/tags/{filter}', $tagValidation);
-	\Chibi\Router::register(['TagController', 'listAction'], $method, '/tags/{page}', $tagValidation);
-	\Chibi\Router::register(['TagController', 'listAction'], $method, '/tags/{filter}/{page}', $tagValidation);
 	\Chibi\Router::register(['TagController', 'autoCompleteAction'], $method, '/tags-autocomplete', $tagValidation);
 	\Chibi\Router::register(['TagController', 'relatedAction'], $method, '/tags-related', $tagValidation);
 	\Chibi\Router::register(['TagController', 'mergeAction'], $method, '/tags-merge', $tagValidation);

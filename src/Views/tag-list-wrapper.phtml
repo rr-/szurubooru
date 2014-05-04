@@ -3,7 +3,7 @@ Assets::setSubTitle('tags');
 Assets::addStylesheet('tag-list.css');
 
 $tabs = [];
-if (Access::check(Privilege::ListTags)) $tabs['list'] = ['List', 'listAction'];
+if (Access::check(Privilege::ListTags)) $tabs['list'] = ['List', 'listView'];
 if (Access::check(Privilege::RenameTags)) $tabs['rename'] = ['Rename', 'renameAction'];
 if (Access::check(Privilege::MergeTags)) $tabs['merge'] = ['Merge', 'mergeAction'];
 if (Access::check(Privilege::MassTag)) $tabs['mass-tag-redirect'] = ['Mass tag', 'massTagRedirectAction'];

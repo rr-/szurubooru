@@ -16,7 +16,7 @@
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?= \Chibi\Router::linkTo(['TagController', 'listAction'], ['filter' => $key]) ?>"><?= $text ?></a>
+				<a href="<?= \Chibi\Router::linkTo(['TagController', 'listView'], ['filter' => $key]) ?>"><?= $text ?></a>
 			</li>
 		<?php endforeach ?>
 	</ul>

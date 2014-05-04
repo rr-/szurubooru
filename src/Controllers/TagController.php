@@ -1,39 +1,25 @@
 <?php
 class TagController
 {
-	public function listAction($filter = null, $page = 1)
+	public function listView($filter = 'order:alpha,asc', $page = 1)
 	{
+		$ret = Api::run(
+			new ListTagsJob(),
+			[
+				ListTagsJob::PAGE_NUMBER => $page,
+				ListTagsJob::QUERY => $filter,
+			]);
+
 		$context = getContext();
 		$context->viewName = 'tag-list-wrapper';
-		Access::assert(Privilege::ListTags);
-
-		$suppliedFilter = $filter ?: 'order:alpha,asc';
-		$page = max(1, intval($page));
-		$tagsPerPage = intval(getConfig()->browsing->tagsPerPage);
-
-		$tags = TagSearchService::getEntitiesRows($suppliedFilter, $tagsPerPage, $page);
-		$tagCount = TagSearchService::getEntityCount($suppliedFilter);
-		$pageCount = ceil($tagCount / $tagsPerPage);
-		$page = min($pageCount, $page);
-
-		$context->filter = $suppliedFilter;
-		$context->transport->tags = $tags;
-
-		if ($context->json)
-		{
-			$context->transport->tags = array_values(array_map(function($tag) {
-				return ['name' => $tag['name'], 'count' => $tag['post_count']];
-			}, $context->transport->tags));
-		}
-		else
-		{
-			$context->highestUsage = TagSearchService::getMostUsedTag()['post_count'];
-			$context->transport->paginator = new StdClass;
-			$context->transport->paginator->page = $page;
-			$context->transport->paginator->pageCount = $pageCount;
-			$context->transport->paginator->entityCount = $tagCount;
-			$context->transport->paginator->entities = $tags;
-		}
+		$context->highestUsage = TagSearchService::getMostUsedTag()['post_count'];
+		$context->filter = $filter;
+		$context->transport->tags = $ret->tags;
+		$context->transport->paginator = new StdClass;
+		$context->transport->paginator->page = $ret->page;
+		$context->transport->paginator->pageCount = $ret->pageCount;
+		$context->transport->paginator->entityCount = $ret->tagCount;
+		$context->transport->paginator->entities = $ret->tags;
 	}
 
 	public function autoCompleteAction()
