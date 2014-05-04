@@ -28,24 +28,7 @@ class UserController
 
 	public function flagAction($name)
 	{
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::FlagUser,
-			Access::getIdentity($user));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$key = TextHelper::reprUser($user);
-
-		$flagged = SessionHelper::get('flagged', []);
-		if (in_array($key, $flagged))
-			throw new SimpleException('You already flagged this user');
-		$flagged []= $key;
-		SessionHelper::set('flagged', $flagged);
-
-		LogHelper::log('{user} flagged {subject} for moderator attention', [
-			'subject' => TextHelper::reprUser($user)]);
+		Api::run(new FlagUserJob(), [FlagUserJob::USER_NAME => $name]);
 	}
 
 	public function banAction($name)

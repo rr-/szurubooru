@@ -132,17 +132,19 @@ $tagValidation =
 \Chibi\Router::register(['TagController', 'mergeView'], 'GET', '/tags-merge', $tagValidation);
 \Chibi\Router::register(['TagController', 'mergeAction'], 'POST', '/tags-merge', $tagValidation);
 
+$userValidations =
+[
+	'name' => '[^\/]+',
+	'page' => '\d*',
+	'tab' => 'favs|uploads',
+	'filter' => '[^\/]+',
+];
+
+\Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{name}/flag', $userValidations);
+
 foreach (['GET', 'POST'] as $method)
 {
 	\Chibi\Router::register(['TagController', 'massTagRedirectAction'], $method, '/mass-tag-redirect', $tagValidation);
-
-	$userValidations =
-	[
-		'name' => '[^\/]+',
-		'page' => '\d*',
-		'tab' => 'favs|uploads',
-		'filter' => '[^\/]+',
-	];
 
 	\Chibi\Router::register(['UserController', 'registrationAction'], $method, '/register', $userValidations);
 	\Chibi\Router::register(['UserController', 'viewAction'], $method, '/user/{name}/{tab}', $userValidations);
@@ -151,7 +153,6 @@ foreach (['GET', 'POST'] as $method)
 	\Chibi\Router::register(['UserController', 'listAction'], $method, '/users/{page}', $userValidations);
 	\Chibi\Router::register(['UserController', 'listAction'], $method, '/users/{filter}', $userValidations);
 	\Chibi\Router::register(['UserController', 'listAction'], $method, '/users/{filter}/{page}', $userValidations);
-	\Chibi\Router::register(['UserController', 'flagAction'], $method, '/user/{name}/flag', $userValidations);
 	\Chibi\Router::register(['UserController', 'banAction'], $method, '/user/{name}/ban', $userValidations);
 	\Chibi\Router::register(['UserController', 'unbanAction'], $method, '/user/{name}/unban', $userValidations);
 	\Chibi\Router::register(['UserController', 'acceptRegistrationAction'], $method, '/user/{name}/accept-registration', $userValidations);
