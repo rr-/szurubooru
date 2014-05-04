@@ -94,6 +94,12 @@ class TagController
 		Messenger::message('Tags merged successfully.');
 	}
 
+	public function renameView()
+	{
+		$context = getContext();
+		$context->viewName = 'tag-list-wrapper';
+	}
+
 	public function renameAction()
 	{
 		$context = getContext();
@@ -101,22 +107,13 @@ class TagController
 		$context->handleExceptions = true;
 
 		Access::assert(Privilege::MergeTags);
-		if (!InputHelper::get('submit'))
-			return;
 
-		TagModel::removeUnused();
-
-		$suppliedSourceTag = InputHelper::get('source-tag');
-		$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
-
-		$suppliedTargetTag = InputHelper::get('target-tag');
-		$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
-
-		TagModel::rename($suppliedSourceTag, $suppliedTargetTag);
-
-		LogHelper::log('{user} renamed {source} to {target}', [
-			'source' => TextHelper::reprTag($suppliedSourceTag),
-			'target' => TextHelper::reprTag($suppliedTargetTag)]);
+		Api::run(
+			new RenameTagsJob(),
+			[
+				RenameTagsJob::SOURCE_TAG_NAME => InputHelper::get('source-tag'),
+				RenameTagsJob::TARGET_TAG_NAME => InputHelper::get('target-tag'),
+			]);
 
 		Messenger::message('Tag renamed successfully.');
 	}

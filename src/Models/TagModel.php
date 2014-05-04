@@ -59,6 +59,7 @@ class TagModel extends AbstractCrudModel
 				throw new SimpleException('Target tag already exists');
 
 			$sourceTag->name = $targetName;
+			TagModel::validateTag($sourceTag->name);
 			self::save($sourceTag);
 		});
 	}
