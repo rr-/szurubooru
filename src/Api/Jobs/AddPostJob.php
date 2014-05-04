@@ -20,7 +20,7 @@ class AddPostJob extends AbstractJob
 		//warning: it uses the same privileges as post editing internally
 		$arguments = $this->getArguments();
 		$arguments[EditPostJob::POST_ID] = $post->id;
-		Api::execute(new EditPostJob(), $arguments);
+		Api::run(new EditPostJob(), $arguments);
 
 		//load the post after edits
 		$post = PostModel::findById($post->id);
