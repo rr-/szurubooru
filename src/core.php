@@ -1,4 +1,6 @@
 <?php
+$startTime = microtime(true);
+
 define('SZURU_VERSION', '0.7.1');
 define('SZURU_LINK', 'http://github.com/rr-/szurubooru');
 
@@ -17,38 +19,60 @@ require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'include.php';
 \Chibi\AutoLoader::registerFilesystem($rootDir . 'lib' . DS . 'chibi-sql');
 \Chibi\AutoLoader::registerFilesystem(__DIR__);
 
-//load config manually
-$configPaths =
-[
-	$rootDir . DS . 'data' . DS . 'config.ini',
-	$rootDir . DS . 'data' . DS . 'local.ini',
-];
-$config = new \Chibi\Config();
-foreach ($configPaths as $path)
-	if (file_exists($path))
-		$config->loadIni($path);
-$config->rootDir = $rootDir;
-
 function getConfig()
 {
 	global $config;
 	return $config;
 }
 
+function getContext()
+{
+	global $context;
+	return $context;
+}
 
-//extension sanity checks
-$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'gd', 'openssl', 'fileinfo'];
-foreach ($requiredExtensions as $ext)
-	if (!extension_loaded($ext))
-		die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);
+function resetEnvironment()
+{
+	//load config manually
+	global $config;
+	global $rootDir;
+	global $startTime;
 
-\Chibi\Database::connect(
-	$config->main->dbDriver,
-	TextHelper::absolutePath($config->main->dbLocation),
-	$config->main->dbUser,
-	$config->main->dbPass);
+	$configPaths =
+	[
+		$rootDir . DS . 'data' . DS . 'config.ini',
+		$rootDir . DS . 'data' . DS . 'local.ini',
+		$rootDir . DS . 'tests' . DS . 'test.ini',
+	];
+	$config = new \Chibi\Config();
+	foreach ($configPaths as $path)
+		if (file_exists($path))
+			$config->loadIni($path);
+	$config->rootDir = $rootDir;
 
-//wire models
-foreach (\Chibi\AutoLoader::getAllIncludablePaths() as $path)
-	if (preg_match('/Model/', $path))
-		\Chibi\AutoLoader::safeInclude($path);
+	//prepare context
+	global $context;
+	$context = new StdClass;
+	$context->startTime = $startTime;
+
+	//extension sanity checks
+	$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'gd', 'openssl', 'fileinfo'];
+	foreach ($requiredExtensions as $ext)
+		if (!extension_loaded($ext))
+			die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);
+
+	if (\Chibi\Database::connected())
+		\Chibi\Database::disconnect();
+
+	Auth::setCurrentUser(null);
+	Access::init();
+	Logger::init();
+
+	\Chibi\Database::connect(
+		$config->main->dbDriver,
+		TextHelper::absolutePath($config->main->dbLocation),
+		$config->main->dbUser,
+		$config->main->dbPass);
+}
+
+resetEnvironment();

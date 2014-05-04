@@ -57,5 +57,3 @@ class Logger
 		self::$buffer = $buffer;
 	}
 }
-
-Logger::init();

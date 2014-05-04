@@ -101,5 +101,3 @@ class Access
 		});
 	}
 }
-
-Access::init();

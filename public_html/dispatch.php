@@ -1,25 +1,14 @@
 <?php
-$startTime = microtime(true);
-
 require_once '../src/core.php';
 
 $query = rtrim($_SERVER['REQUEST_URI'], '/');
-
-//prepare context
-$context = new StdClass;
-$context->startTime = $startTime;
+$context = getContext();
 $context->query = $query;
 
 function renderView()
 {
 	$context = getContext();
 	\Chibi\View::render($context->layoutName, $context);
-}
-
-function getContext()
-{
-	global $context;
-	return $context;
 }
 
 $context->simpleControllerName = null;
