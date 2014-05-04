@@ -38,16 +38,8 @@ class UserController
 
 	public function acceptRegistrationAction($name)
 	{
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::AcceptUserRegistration);
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$user->staffConfirmed = true;
-		UserModel::save($user);
-		LogHelper::log('{user} confirmed {subject}\'s account', ['subject' => TextHelper::reprUser($user)]);
+		Api::run(new AcceptUserRegistrationJob(), [
+			AcceptUserRegistrationJob::USER_NAME => $name]);
 	}
 
 	public function deleteAction($name)

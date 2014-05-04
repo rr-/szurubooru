@@ -146,6 +146,7 @@ $userValidations =
 \Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{name}/flag', $userValidations);
 \Chibi\Router::register(['UserController', 'banAction'], 'POST', '/user/{name}/ban', $userValidations);
 \Chibi\Router::register(['UserController', 'unbanAction'], 'POST', '/user/{name}/unban', $userValidations);
+\Chibi\Router::register(['UserController', 'acceptRegistrationAction'], 'POST', '/user/{name}/accept-registration', $userValidations);
 
 foreach (['GET', 'POST'] as $method)
 {
@@ -154,7 +155,6 @@ foreach (['GET', 'POST'] as $method)
 	\Chibi\Router::register(['UserController', 'registrationAction'], $method, '/register', $userValidations);
 	\Chibi\Router::register(['UserController', 'viewAction'], $method, '/user/{name}/{tab}', $userValidations);
 	\Chibi\Router::register(['UserController', 'viewAction'], $method, '/user/{name}/{tab}/{page}', $userValidations);
-	\Chibi\Router::register(['UserController', 'acceptRegistrationAction'], $method, '/user/{name}/accept-registration', $userValidations);
 	\Chibi\Router::register(['UserController', 'deleteAction'], $method, '/user/{name}/delete', $userValidations);
 	\Chibi\Router::register(['UserController', 'settingsAction'], $method, '/user/{name}/settings', $userValidations);
 	\Chibi\Router::register(['UserController', 'editAction'], $method, '/user/{name}/edit', $userValidations);
