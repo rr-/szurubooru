@@ -19,7 +19,12 @@ class UserController
 
 	public function genericView($name, $tab = 'favs', $page = 1)
 	{
-		$user = UserModel::findByNameOrEmail($name);
+		$user = Api::run(
+			new GetUserJob(),
+			[
+				GetUserJob::USER_NAME => $name,
+			]);
+
 		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
 
 		$context = getContext();
@@ -47,10 +52,6 @@ class UserController
 			$context->transport->paginator = $ret;
 			$context->transport->lastSearchQuery = $query;
 		}
-
-		Access::assert(
-			Privilege::ViewUser,
-			Access::getIdentity($user));
 	}
 
 	public function settingsAction($name)
@@ -59,9 +60,6 @@ class UserController
 
 		$user = getContext()->transport->user;
 
-		Access::assert(
-			Privilege::ViewUser,
-			Access::getIdentity($user));
 		Access::assert(
 			Privilege::ChangeUserSettings,
 			Access::getIdentity($user));
@@ -90,10 +88,6 @@ class UserController
 		$this->requirePasswordConfirmation();
 
 		$user = getContext()->transport->user;
-
-		Access::assert(
-			Privilege::ViewUser,
-			Access::getIdentity($user));
 
 		$suppliedCurrentPassword = InputHelper::get('current-password');
 		$suppliedName = InputHelper::get('name');
