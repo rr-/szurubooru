@@ -42,17 +42,20 @@ class TagController
 				}, $ret->entities));
 	}
 
-	public function relatedAction()
+	public function relatedView()
 	{
+		$otherTags = (array) InputHelper::get('context');
+		$tag = InputHelper::get('tag');
+
+		$ret = Api::run(
+			(new ListRelatedTagsJob),
+			[
+				ListRelatedTagsJob::TAG_NAME => $tag,
+				ListRelatedTagsJob::TAG_NAMES => $otherTags,
+				ListRelatedTagsJob::PAGE_NUMBER => 1
+			]);
+
 		$context = getContext();
-		Access::assert(Privilege::ListTags);
-
-		$suppliedContext = (array) InputHelper::get('context');
-		$suppliedTag = InputHelper::get('tag');
-
-		$limit = intval(getConfig()->browsing->tagsRelated);
-		$tags = TagSearchService::getRelatedTagRows($suppliedTag, $suppliedContext, $limit);
-
 		$context->transport->tags =
 			array_values(array_map(
 				function($tag)
@@ -61,7 +64,7 @@ class TagController
 						'name' => $tag['name'],
 						'count' => $tag['post_count']
 					];
-				}, $tags));
+				}, $ret->entities));
 	}
 
 	public function mergeAction()
