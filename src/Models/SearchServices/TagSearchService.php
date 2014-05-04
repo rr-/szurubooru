@@ -9,7 +9,7 @@ class TagSearchService extends AbstractSearchService
 		$stmt->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'));
 	}
 
-	public static function getRelatedTagRows($parentTagName)
+	public static function getRelatedTags($parentTagName)
 	{
 		$parentTagEntity = TagModel::findByName($parentTagName, false);
 		if (empty($parentTagEntity))
@@ -62,7 +62,7 @@ class TagSearchService extends AbstractSearchService
 
 		usort($rows, function($a, $b) { return intval($b['sort']) - intval($a['sort']); });
 
-		return $rows;
+		return TagModel::convertRows($rows);
 	}
 
 	public static function getMostUsedTag()
@@ -74,6 +74,6 @@ class TagSearchService extends AbstractSearchService
 			->setGroupBy('post_tag.tag_id')
 			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
 			->setLimit(1, 0);
-		return Database::fetchOne($stmt);
+		return TagModel::convertRow(Database::fetchOne($stmt));
 	}
 }

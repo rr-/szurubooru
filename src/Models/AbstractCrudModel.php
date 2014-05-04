@@ -4,6 +4,8 @@ use \Chibi\Database as Database;
 
 abstract class AbstractCrudModel implements IModel
 {
+	private static $keyCache = [];
+
 	public static function spawn()
 	{
 		$entityClassName = static::getEntityClassName();
@@ -31,7 +33,7 @@ abstract class AbstractCrudModel implements IModel
 
 		$row = Database::fetchOne($stmt);
 		if ($row)
-			return self::convertRow($row);
+			return static::convertRow($row);
 
 		if ($throw)
 			throw new SimpleNotFoundException('Invalid %s ID "%s"', static::getTableName(), $key);
@@ -47,7 +49,7 @@ abstract class AbstractCrudModel implements IModel
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
-			return self::convertRows($rows);
+			return static::convertRows($rows);
 
 		return [];
 	}
@@ -72,12 +74,19 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function convertRow($row)
 	{
-		$entity = self::spawn();
+		$entity = static::spawn();
 		foreach ($row as $key => $val)
 		{
-			$key = TextCaseConverter::convert($key,
-				TextCaseConverter::SNAKE_CASE,
-				TextCaseConverter::LOWER_CAMEL_CASE);
+			if (isset(self::$keyCache[$key]))
+			{
+				$key = self::$keyCache[$key];
+			}
+			else
+			{
+				$key = self::$keyCache[$key] = TextCaseConverter::convert($key,
+					TextCaseConverter::SNAKE_CASE,
+					TextCaseConverter::LOWER_CAMEL_CASE);
+			}
 
 			$entity->$key = $val;
 		}
@@ -86,25 +95,10 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function convertRows(array $rows)
 	{
-		$keyCache = [];
 		$entities = [];
 		foreach ($rows as $i => $row)
 		{
-			$entity = self::spawn();
-			foreach ($row as $key => $val)
-			{
-				if (isset($keyCache[$key]))
-					$key = $keyCache[$key];
-				else
-				{
-					$key = $keyCache[$key] = TextCaseConverter::convert($key,
-						TextCaseConverter::SNAKE_CASE,
-						TextCaseConverter::LOWER_CAMEL_CASE);
-				}
-
-				$entity->$key = $val;
-			}
-			$entities[$i] = $entity;
+			$entities[$i] = static::convertRow($row);
 		}
 		return $entities;
 	}

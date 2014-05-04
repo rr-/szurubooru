@@ -9,6 +9,14 @@ class TagModel extends AbstractCrudModel
 		return 'tag';
 	}
 
+	public static function convertRow($row)
+	{
+		$entity = parent::convertRow($row);
+		if (isset($row['post_count']))
+			$entity->setCache('post_count', $row['post_count']);
+		return $entity;
+	}
+
 	public static function save($tag)
 	{
 		Database::transaction(function() use ($tag)

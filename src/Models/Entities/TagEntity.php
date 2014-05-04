@@ -8,6 +8,9 @@ class TagEntity extends AbstractEntity
 
 	public function getPostCount()
 	{
+		if ($this->hasCache('post_count'))
+			return $this->getCache('post_count');
+
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('post_tag');

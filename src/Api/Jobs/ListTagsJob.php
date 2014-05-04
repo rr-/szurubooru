@@ -7,7 +7,7 @@ class ListTagsJob extends AbstractPageJob
 		$page = $this->getArgument(self::PAGE_NUMBER);
 		$query = $this->getArgument(self::QUERY);
 
-		$tags = TagSearchService::getEntitiesRows($query, $pageSize, $page);
+		$tags = TagSearchService::getEntities($query, $pageSize, $page);
 		$tagCount = TagSearchService::getEntityCount($query);
 
 		return $this->getPager($tags, $tagCount, $page, $pageSize);

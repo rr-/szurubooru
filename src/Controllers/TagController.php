@@ -12,7 +12,7 @@ class TagController
 
 		$context = getContext();
 		$context->viewName = 'tag-list-wrapper';
-		$context->highestUsage = TagSearchService::getMostUsedTag()['post_count'];
+		$context->highestUsage = TagSearchService::getMostUsedTag()->getPostCount();
 		$context->filter = $filter;
 		$context->transport->tags = $ret->entities;
 		$context->transport->paginator = $ret;
@@ -36,8 +36,8 @@ class TagController
 				function($tag)
 				{
 					return [
-						'name' => $tag['name'],
-						'count' => $tag['post_count']
+						'name' => $tag->name,
+						'count' => $tag->getPostCount(),
 					];
 				}, $ret->entities));
 	}
@@ -61,8 +61,8 @@ class TagController
 				function($tag)
 				{
 					return [
-						'name' => $tag['name'],
-						'count' => $tag['post_count']
+						'name' => $tag->name,
+						'count' => $tag->getPostCount(),
 					];
 				}, $ret->entities));
 	}

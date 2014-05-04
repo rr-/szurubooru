@@ -32,8 +32,8 @@
 	<div class="tags paginator-content">
 		<ul>
 			<?php foreach ($this->context->transport->tags as $tag): ?>
-				<?php $name = $tag['name'] ?>
-				<?php $count = $tag['post_count'] ?>
+				<?php $name = $tag->name ?>
+				<?php $count = $tag->getPostCount() ?>
 				<li class="tag" title="<?= $name ?> (<?= $count ?>)">
 					<a href="<?= str_replace('_query_', $name, $url) ?>"
 						class="frequency<?php printf('%1.0f', $add + $mul * log($count)) ?>">

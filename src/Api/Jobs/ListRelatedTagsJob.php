@@ -8,9 +8,9 @@ class ListRelatedTagsJob extends ListTagsJob
 		$tag = $this->getArgument(self::TAG_NAME);
 		$otherTags = $this->hasArgument(self::TAG_NAMES) ? $this->getArgument(self::TAG_NAMES) : [];
 
-		$tags = TagSearchService::getRelatedTagRows($tag);
+		$tags = TagSearchService::getRelatedTags($tag);
 		$tagCount = count($tags);
-		$tags = array_filter($tags, function($tag) use ($otherTags) { return !in_array($tag['name'], $otherTags); });
+		$tags = array_filter($tags, function($tag) use ($otherTags) { return !in_array($tag->name, $otherTags); });
 		$tags = array_slice($tags, 0, $pageSize);
 
 		return $this->getPager($tags, $tagCount, $page, $pageSize);
