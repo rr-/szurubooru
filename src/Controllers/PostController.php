@@ -159,7 +159,6 @@ class PostController
 		}
 
 		Api::run(new EditPostJob(), $jobArgs);
-		TagModel::removeUnused();
 	}
 
 	public function flagAction($id)
