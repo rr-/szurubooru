@@ -20,11 +20,11 @@ class GetLogJob extends AbstractPageJob
 		$lines = explode(PHP_EOL, str_replace(["\r", "\n"], PHP_EOL, $lines));
 		$lines = array_reverse($lines);
 
-		if (!empty($filter))
+		if (!empty($query))
 		{
-			$lines = array_filter($lines, function($line) use ($filter)
+			$lines = array_filter($lines, function($line) use ($query)
 			{
-				return stripos($line, $filter) !== false;
+				return stripos($line, $query) !== false;
 			});
 		}
 
