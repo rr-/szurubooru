@@ -18,6 +18,8 @@ class CommentModel extends AbstractCrudModel
 
 	public static function save($comment)
 	{
+		$comment->validate();
+
 		Database::transaction(function() use ($comment)
 		{
 			self::forgeId($comment);

@@ -1,10 +1,15 @@
 <?php
-class TokenEntity extends AbstractEntity
+class TokenEntity extends AbstractEntity implements IValidatable
 {
 	public $userId;
 	public $token;
 	public $used;
 	public $expires;
+
+	public function validate()
+	{
+		//todo
+	}
 
 	public function getUser()
 	{

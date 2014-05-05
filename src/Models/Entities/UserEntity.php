@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class UserEntity extends AbstractEntity
+class UserEntity extends AbstractEntity implements IValidatable
 {
 	protected $name;
 	public $passSalt;
@@ -15,6 +15,16 @@ class UserEntity extends AbstractEntity
 	protected $accessRank;
 	public $settings;
 	protected $banned = false;
+
+	public function validate()
+	{
+		//todo: add more validation
+		if (empty($this->getAccessRank()))
+			throw new SimpleException('No access rank detected');
+
+		if ($this->getAccessRank()->toInteger() == AccessRank::Anonymous)
+			throw new Exception('Trying to save anonymous user into database');
+	}
 
 	public function isBanned()
 	{

@@ -22,14 +22,6 @@ class AddPostJob extends AbstractJob
 		$arguments[EditPostJob::POST_ENTITY] = $post;
 		Api::run((new EditPostJob)->skipSaving(), $arguments);
 
-		// basically means that user didn't specify file nor url
-		//todo:
-		//- move this to PostEntity::isValid()
-		//- create IValidatable interface
-		//- enforce entity validity upon calling save() in models
-		if (empty($post->getType()))
-			throw new SimpleException('No post type detected; upload faled');
-
 		//save to db
 		PostModel::save($post);
 

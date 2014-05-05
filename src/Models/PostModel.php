@@ -45,6 +45,8 @@ class PostModel extends AbstractCrudModel
 
 	public static function save($post)
 	{
+		$post->validate();
+
 		Database::transaction(function() use ($post)
 		{
 			self::forgeId($post);

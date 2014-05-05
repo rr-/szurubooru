@@ -2,9 +2,14 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class TagEntity extends AbstractEntity
+class TagEntity extends AbstractEntity implements IValidatable
 {
 	protected $name;
+
+	public function validate()
+	{
+		//todo
+	}
 
 	public function setName($name)
 	{

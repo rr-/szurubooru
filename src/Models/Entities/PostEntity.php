@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class PostEntity extends AbstractEntity
+class PostEntity extends AbstractEntity implements IValidatable
 {
 	protected $type;
 	protected $name;
@@ -20,6 +20,13 @@ class PostEntity extends AbstractEntity
 	public $commentCount = 0;
 	public $favCount = 0;
 	public $score = 0;
+
+	public function validate()
+	{
+		//todo
+		if (empty($this->getType()))
+			throw new SimpleException('No post type detected');
+	}
 
 	public function getUploader()
 	{

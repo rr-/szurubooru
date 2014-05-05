@@ -19,6 +19,8 @@ class TagModel extends AbstractCrudModel
 
 	public static function save($tag)
 	{
+		$tag->validate();
+
 		Database::transaction(function() use ($tag)
 		{
 			self::forgeId($tag, 'tag');

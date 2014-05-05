@@ -34,8 +34,7 @@ class UserModel extends AbstractCrudModel
 
 	public static function save($user)
 	{
-		if ($user->getAccessRank()->toInteger() == AccessRank::Anonymous)
-			throw new Exception('Trying to save anonymous user into database');
+		$user->validate();
 
 		Database::transaction(function() use ($user)
 		{

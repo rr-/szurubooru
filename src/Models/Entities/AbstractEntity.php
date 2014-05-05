@@ -1,5 +1,5 @@
 <?php
-class AbstractEntity
+abstract class AbstractEntity implements IValidatable
 {
 	public $id;
 	protected $__cache;

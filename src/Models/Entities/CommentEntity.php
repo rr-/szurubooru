@@ -1,10 +1,15 @@
 <?php
-class CommentEntity extends AbstractEntity
+class CommentEntity extends AbstractEntity implements IValidatable
 {
 	public $text;
 	public $postId;
 	public $commentDate;
 	public $commenterId;
+
+	public function validate()
+	{
+		//todo
+	}
 
 	public function getText()
 	{

@@ -11,6 +11,8 @@ class TokenModel extends AbstractCrudModel
 
 	public static function save($token)
 	{
+		$token->validate();
+
 		Database::transaction(function() use ($token)
 		{
 			self::forgeId($token);
