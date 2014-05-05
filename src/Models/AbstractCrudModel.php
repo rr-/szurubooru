@@ -59,7 +59,7 @@ abstract class AbstractCrudModel implements IModel
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable(static::getTableName());
-		return Database::fetchOne($stmt)['count'];
+		return (int) Database::fetchOne($stmt)['count'];
 	}
 
 
@@ -75,6 +75,13 @@ abstract class AbstractCrudModel implements IModel
 	public static function convertRow($row)
 	{
 		$entity = static::spawn();
+
+		//todo: force this to be implemented by children
+		//instead of providing clumsy generic solution
+
+		if (isset($row['id']))
+			$row['id'] = (int) $row['id'];
+
 		foreach ($row as $key => $val)
 		{
 			if (isset(self::$keyCache[$key]))
@@ -132,7 +139,7 @@ abstract class AbstractCrudModel implements IModel
 				$stmt->setColumn($key, new Sql\Binding($val));
 			}
 			Database::exec($stmt);
-			$entity->id = Database::lastInsertId();
+			$entity->id = (int) Database::lastInsertId();
 		}
 	}
 

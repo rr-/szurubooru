@@ -49,8 +49,26 @@ class Assert
 
 	public function areEqual($expected, $actual)
 	{
+		if ($expected !== $actual)
+			$this->fail('Assertion failed. Expected: "' . $this->dumpVar($expected) . '", got: "' . $this->dumpVar($actual) . '"');
+	}
+
+	public function areEquivalent($expected, $actual)
+	{
 		if ($expected != $actual)
 			$this->fail('Assertion failed. Expected: "' . $this->dumpVar($expected) . '", got: "' . $this->dumpVar($actual) . '"');
+	}
+
+	public function areNotEqual($expected, $actual)
+	{
+		if ($expected === $actual)
+			$this->fail('Assertion failed. Specified objects are equal');
+	}
+
+	public function areNotEquivalent($expected, $actual)
+	{
+		if ($expected == $actual)
+			$this->fail('Assertion failed. Specified objects are equivalent');
 	}
 
 	public function dumpVar($var)
