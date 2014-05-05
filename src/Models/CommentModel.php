@@ -39,6 +39,8 @@ class CommentModel extends AbstractCrudModel
 
 			Database::exec($stmt);
 		});
+
+		return $comment;
 	}
 
 	public static function remove($comment)

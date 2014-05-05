@@ -113,6 +113,8 @@ class PostModel extends AbstractCrudModel
 				Database::exec($stmt);
 			}
 		});
+
+		return $post;
 	}
 
 	public static function remove($post)

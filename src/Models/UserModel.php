@@ -63,6 +63,8 @@ class UserModel extends AbstractCrudModel
 
 			Database::exec($stmt);
 		});
+
+		return $user;
 	}
 
 	public static function remove($user)

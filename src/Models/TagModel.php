@@ -32,7 +32,8 @@ class TagModel extends AbstractCrudModel
 
 			Database::exec($stmt);
 		});
-		return $tag->id;
+
+		return $tag;
 	}
 
 	public static function remove($tag)

@@ -33,6 +33,8 @@ class TokenModel extends AbstractCrudModel
 
 			Database::exec($stmt);
 		});
+
+		return $token;
 	}
 
 	public static function findByToken($key, $throw = true)
