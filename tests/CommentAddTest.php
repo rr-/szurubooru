@@ -20,7 +20,7 @@ class CommentAddTest extends AbstractTest
 		$this->assert->isNotNull($comment->commentDate);
 		$this->assert->doesNotThrow(function() use ($comment)
 		{
-			UserModel::findById($comment->getId());
+			CommentModel::findById($comment->getId());
 		});
 	}
 
