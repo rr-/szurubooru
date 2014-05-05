@@ -1,16 +1,22 @@
 <?php
 $configPath = __DIR__ . '/test.ini';
 
-if (isset($_SERVER['argv']))
-	$args = $_SERVER['argv'];
+$options = getopt('cf:', ['clean', 'filter:']);
+
+$cleanDatabase = (isset($options['c']) or isset($options['clean']));
+
+if (isset($options['f']))
+	$filter = $options['f'];
+elseif (isset($options['filter']))
+	$filter = $options['filter'];
 else
-	$args = [];
+	$filter = null;
 
 try
 {
 	$dbPath = __DIR__ . '/db.sqlite';
 
-	if (file_exists($dbPath) and in_array('-c', $args))
+	if (file_exists($dbPath) and $cleanDatabase)
 		unlink($dbPath);
 
 	$configIni =
@@ -34,17 +40,25 @@ try
 
 	upgradeDatabase();
 
-	runAll();
+	runAll($filter);
 }
 finally
 {
 	unlink($configPath);
 }
 
-function getTestMethods()
+function getTestMethods($filter)
 {
-	//get all test methods
 	$testClasses = \Chibi\Util\Reflection::loadClasses(glob(__DIR__ . '/*Test.php'));
+
+	if ($filter !== null)
+	{
+		$testClasses = array_filter($testClasses, function($className) use ($filter)
+		{
+			return stripos($className, $filter) !== false;
+		});
+	}
+
 	$testMethods = [];
 
 	foreach ($testClasses as $class)
@@ -62,10 +76,10 @@ function getTestMethods()
 	return $testMethods;
 }
 
-function runAll()
+function runAll($filter)
 {
 	$startTime = microtime(true);
-	$testMethods = getTestMethods();
+	$testMethods = getTestMethods($filter);
 
 	echo 'Starting tests' . PHP_EOL;
 
@@ -75,7 +89,7 @@ function runAll()
 		$labels[$key] = $method->class . '::' . $method->name;
 
 	//ensure every label has the same length
-	$maxLabelLength = max(array_map('strlen', $labels));
+	$maxLabelLength = count($testMethods) > 0 ? max(array_map('strlen', $labels)) : 0;
 	foreach ($labels as &$label)
 		$label = str_pad($label, $maxLabelLength + 1, ' ');
 
