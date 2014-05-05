@@ -5,11 +5,18 @@ class Logger
 	static $config;
 	static $autoFlush;
 	static $buffer;
+	static $path;
 
 	public static function init()
 	{
 		self::$autoFlush = true;
 		self::$buffer = [];
+		self::$path = self::getLogPath();
+		$dir = dirname(self::$path);
+		if (!is_dir($dir))
+			mkdir($dir, 0777, true);
+		#if (!is_writable(self::$path))
+		#	throw new SimpleException('Cannot write logs to "' . self::$path . '". Check access rights.');
 	}
 
 	public static function bufferChanges()
@@ -19,7 +26,7 @@ class Logger
 
 	public static function flush()
 	{
-		$fh = fopen(self::getLogPath(), 'ab');
+		$fh = fopen(self::$path, 'ab');
 		if (!$fh)
 			throw new SimpleException('Cannot write to log files');
 		if (flock($fh, LOCK_EX))
@@ -36,7 +43,11 @@ class Logger
 
 	public static function getLogPath()
 	{
-		return TextHelper::absolutePath(getConfig()->main->logsPath . DS . date('Y-m') . '.log');
+		return TextHelper::absolutePath(
+			TextHelper::replaceTokens(getConfig()->main->logsPath, [
+				'yyyy' => date('Y'),
+				'mm' => date('m'),
+				'dd' => date('d')]));
 	}
 
 	public static function log($text, array $tokens = [])

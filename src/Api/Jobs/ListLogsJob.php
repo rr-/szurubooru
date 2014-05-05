@@ -6,7 +6,7 @@ class ListLogsJob extends AbstractJob
 		$path = TextHelper::absolutePath(getConfig()->main->logsPath);
 
 		$logs = [];
-		foreach (glob($path . DS . '*.log') as $log)
+		foreach (glob(dirname($path) . DS . '*.log') as $log)
 			$logs []= basename($log);
 
 		usort($logs, function($a, $b)

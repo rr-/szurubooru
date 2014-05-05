@@ -11,7 +11,7 @@ class GetLogJob extends AbstractPageJob
 		//parse input
 		$page = max(1, intval($page));
 		$name = str_replace(['/', '\\'], '', $name); //paranoia mode
-		$path = TextHelper::absolutePath(getConfig()->main->logsPath . DS . $name);
+		$path = TextHelper::absolutePath(dirname(getConfig()->main->logsPath) . DS . $name);
 		if (!file_exists($path))
 			throw new SimpleNotFoundException('Specified log doesn\'t exist');
 
