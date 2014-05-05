@@ -2,7 +2,12 @@
 abstract class AbstractEntity implements IValidatable
 {
 	public $id;
-	protected $__cache;
+	protected $__cache = [];
+
+	public function resetCache()
+	{
+		$this->__cache = [];
+	}
 
 	public function setCache($key, $value)
 	{

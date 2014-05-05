@@ -28,7 +28,7 @@ class AddCommentJob extends AbstractJob
 
 	public function requiresAuthentication()
 	{
-		return true;
+		return false;
 	}
 
 	public function requiresConfirmedEmail()
