@@ -22,7 +22,7 @@ class GetPostContentJob extends AbstractJob
 
 		$fileName = sprintf('%s_%s_%s.%s',
 			$config->main->title,
-			$post->id,
+			$post->getId(),
 			join(',', array_map(function($tag) { return $tag->getName(); }, $post->getTags())),
 			TextHelper::resolveMimeType($post->mimeType) ?: 'dat');
 		$fileName = preg_replace('/[[:^print:]]/', '', $fileName);

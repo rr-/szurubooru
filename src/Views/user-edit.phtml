@@ -6,7 +6,7 @@
 	class="edit"
 	autocomplete="off">
 
-	<?php if (Auth::getCurrentUser()->id == $this->context->transport->user->id): ?>
+	<?php if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId()): ?>
 		<div class="form-row current-password">
 			<label for="current-password">Current password:</label>
 			<div class="input-wrapper">

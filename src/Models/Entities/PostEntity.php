@@ -39,7 +39,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 
 	public function setUploader($user)
 	{
-		$this->uploaderId = $user->id;
+		$this->uploaderId = $user->getId();
 		$this->setCache('uploader', $user);
 	}
 
@@ -47,7 +47,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 	{
 		if ($this->hasCache('comments'))
 			return $this->getCache('comments');
-		$comments = CommentModel::findAllByPostId($this->id);
+		$comments = CommentModel::findAllByPostId($this->getId());
 		$this->setCache('comments', $comments);
 		return $comments;
 	}
@@ -60,7 +60,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 		$stmt->setColumn('user.*');
 		$stmt->setTable('user');
 		$stmt->addInnerJoin('favoritee', new Sql\EqualsFunctor('favoritee.user_id', 'user.id'));
-		$stmt->setCriterion(new Sql\EqualsFunctor('favoritee.post_id', new Sql\Binding($this->id)));
+		$stmt->setCriterion(new Sql\EqualsFunctor('favoritee.post_id', new Sql\Binding($this->getId())));
 		$rows = Database::fetchAll($stmt);
 		$favorites = UserModel::convertRows($rows);
 		$this->setCache('favoritee', $favorites);
@@ -75,7 +75,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('post.*');
 		$stmt->setTable('post');
-		$binding = new Sql\Binding($this->id);
+		$binding = new Sql\Binding($this->getId());
 		$stmt->addInnerJoin('crossref', (new Sql\DisjunctionFunctor)
 			->add(
 				(new Sql\ConjunctionFunctor)
@@ -94,11 +94,11 @@ class PostEntity extends AbstractEntity implements IValidatable
 	public function setRelations(array $relations)
 	{
 		foreach ($relations as $relatedPost)
-			if (!$relatedPost->id)
+			if (!$relatedPost->getId())
 				throw new Exception('All related posts must be saved');
 		$uniqueRelations = [];
 		foreach ($relations as $relatedPost)
-			$uniqueRelations[$relatedPost->id] = $relatedPost;
+			$uniqueRelations[$relatedPost->getId()] = $relatedPost;
 		$relations = array_values($uniqueRelations);
 		$this->setCache('relations', $relations);
 	}
@@ -111,7 +111,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 		$relatedPosts = [];
 		foreach ($relatedIds as $relatedId)
 		{
-			if ($relatedId == $this->id)
+			if ($relatedId == $this->getId())
 				continue;
 
 			if (count($relatedPosts) > $config->browsing->maxRelatedPosts)
@@ -131,7 +131,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 	{
 		if ($this->hasCache('tags'))
 			return $this->getCache('tags');
-		$tags = TagModel::findAllByPostId($this->id);
+		$tags = TagModel::findAllByPostId($this->getId());
 		$this->setCache('tags', $tags);
 		return $tags;
 	}
@@ -139,11 +139,11 @@ class PostEntity extends AbstractEntity implements IValidatable
 	public function setTags(array $tags)
 	{
 		foreach ($tags as $tag)
-			if (!$tag->id)
+			if (!$tag->getId())
 				throw new Exception('All tags must be saved');
 		$uniqueTags = [];
 		foreach ($tags as $tag)
-			$uniqueTags[$tag->id] = $tag;
+			$uniqueTags[$tag->getId()] = $tag;
 		$tags = array_values($uniqueTags);
 		$this->setCache('tags', $tags);
 	}
@@ -323,7 +323,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 		}
 
 		$duplicatedPost = PostModel::findByHash($this->fileHash, false);
-		if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
+		if ($duplicatedPost !== null and (!$this->getId() or $this->getId() != $duplicatedPost->getId()))
 		{
 			throw new SimpleException(
 				'Duplicate upload: %s',
@@ -361,7 +361,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 				unlink($thumbPath);
 
 			$duplicatedPost = PostModel::findByHash($youtubeId, false);
-			if ($duplicatedPost !== null and (!$this->id or $this->id != $duplicatedPost->id))
+			if ($duplicatedPost !== null and (!$this->getId() or $this->getId() != $duplicatedPost->getId()))
 			{
 				throw new SimpleException(
 					'Duplicate upload: %s',

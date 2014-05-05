@@ -15,12 +15,12 @@ class CommentAddTest extends AbstractTest
 
 		$this->assert->areEqual(1, CommentModel::getCount());
 		$this->assert->areEqual($text, $comment->text);
-		$this->assert->areEqual(Auth::getCurrentUser()->id, $comment->getCommenter()->id);
-		$this->assert->areEqual(1, $comment->getPost()->id);
+		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $comment->getCommenter()->getId());
+		$this->assert->areEqual(1, $comment->getPost()->getId());
 		$this->assert->isNotNull($comment->commentDate);
 		$this->assert->doesNotThrow(function() use ($comment)
 		{
-			UserModel::findById($comment->id);
+			UserModel::findById($comment->getId());
 		});
 	}
 
@@ -102,7 +102,7 @@ class CommentAddTest extends AbstractTest
 		});
 
 		$this->assert->areEqual($text, $comment->text);
-		$this->assert->areEqual(Auth::getCurrentUser()->id, $comment->getCommenter()->id);
+		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $comment->getCommenter()->getId());
 		$this->assert->areEqual(UserModel::getAnonymousName(), $comment->getCommenter()->getName());
 	}
 
@@ -145,7 +145,7 @@ class CommentAddTest extends AbstractTest
 		return Api::run(
 			new AddCommentJob(),
 			[
-				AddCommentJob::POST_ID => $post->id,
+				AddCommentJob::POST_ID => $post->getId(),
 				AddCommentJob::TEXT => $text,
 			]);
 	}

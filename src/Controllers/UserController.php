@@ -83,7 +83,7 @@ class UserController
 
 		if ($user->getAccessRank()->toInteger() != AccessRank::Anonymous)
 			UserModel::save($user);
-		if ($user->id == Auth::getCurrentUser()->id)
+		if ($user->getId() == Auth::getCurrentUser()->getId())
 			Auth::setCurrentUser($user);
 
 		Messenger::message('Browsing settings updated!');
@@ -109,7 +109,7 @@ class UserController
 		$args = array_filter($args);
 		$user = Api::run(new EditUserJob(), $args);
 
-		if (Auth::getCurrentUser()->id == $user->id)
+		if (Auth::getCurrentUser()->getId() == $user->getId())
 			Auth::setCurrentUser($user);
 
 		$message = 'Account settings updated!';
@@ -127,7 +127,7 @@ class UserController
 		Api::run(new DeleteUserJob(), [
 			DeleteUserJob::USER_NAME => $name]);
 
-		$user = UserModel::findById(Auth::getCurrentUser()->id, false);
+		$user = UserModel::findById(Auth::getCurrentUser()->getId(), false);
 		if (!$user)
 			Auth::logOut();
 
@@ -292,7 +292,7 @@ class UserController
 	private function requirePasswordConfirmation()
 	{
 		$user = getContext()->transport->user;
-		if (Auth::getCurrentUser()->id == $user->id)
+		if (Auth::getCurrentUser()->getId() == $user->getId())
 		{
 			$suppliedPassword = InputHelper::get('current-password');
 			$suppliedPasswordHash = UserModel::hashPassword($suppliedPassword, $user->passSalt);

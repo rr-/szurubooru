@@ -19,7 +19,7 @@ class EditUserEmailJob extends AbstractUserEditJob
 		$user->emailUnconfirmed = $newEmail;
 		$user->emailConfirmed = null;
 
-		if (Auth::getCurrentUser()->id == $user->id)
+		if (Auth::getCurrentUser()->getId() == $user->getId())
 		{
 			if (!empty($newEmail))
 				ActivateUserEmailJob::sendEmail($user);

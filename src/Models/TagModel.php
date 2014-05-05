@@ -28,7 +28,7 @@ class TagModel extends AbstractCrudModel
 			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('tag');
 			$stmt->setColumn('name', new Sql\Binding($tag->getName()));
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($tag->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($tag->getId())));
 
 			Database::exec($stmt);
 		});
@@ -38,7 +38,7 @@ class TagModel extends AbstractCrudModel
 
 	public static function remove($tag)
 	{
-		$binding = new Sql\Binding($tag->id);
+		$binding = new Sql\Binding($tag->getId());
 
 		$stmt = new Sql\DeleteStatement();
 		$stmt->setTable('post_tag');
@@ -58,7 +58,7 @@ class TagModel extends AbstractCrudModel
 			$sourceTag = TagModel::findByName($sourceName);
 			$targetTag = TagModel::findByName($targetName, false);
 
-			if ($targetTag and $targetTag->id != $sourceTag->id)
+			if ($targetTag and $targetTag->getId() != $sourceTag->getId())
 				throw new SimpleException('Target tag already exists');
 
 			$sourceTag->setName($targetName);
@@ -74,7 +74,7 @@ class TagModel extends AbstractCrudModel
 			$sourceTag = TagModel::findByName($sourceName);
 			$targetTag = TagModel::findByName($targetName);
 
-			if ($sourceTag->id == $targetTag->id)
+			if ($sourceTag->getId() == $targetTag->getId())
 				throw new SimpleException('Source and target tag are the same');
 
 			$stmt = new Sql\SelectStatement();
@@ -89,7 +89,7 @@ class TagModel extends AbstractCrudModel
 							->setCriterion(
 								(new Sql\ConjunctionFunctor)
 									->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($sourceTag->id))))))
+									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($sourceTag->getId()))))))
 				->add(
 					new Sql\NegationFunctor(
 					new Sql\ExistsFunctor(
@@ -98,7 +98,7 @@ class TagModel extends AbstractCrudModel
 							->setCriterion(
 								(new Sql\ConjunctionFunctor)
 									->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($targetTag->id))))))));
+									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($targetTag->getId()))))))));
 			$rows = Database::fetchAll($stmt);
 			$postIds = array_map(function($row) { return $row['id']; }, $rows);
 
@@ -109,7 +109,7 @@ class TagModel extends AbstractCrudModel
 				$stmt = new Sql\InsertStatement();
 				$stmt->setTable('post_tag');
 				$stmt->setColumn('post_id', new Sql\Binding($postId));
-				$stmt->setColumn('tag_id', new Sql\Binding($targetTag->id));
+				$stmt->setColumn('tag_id', new Sql\Binding($targetTag->getId()));
 				Database::exec($stmt);
 			}
 		});

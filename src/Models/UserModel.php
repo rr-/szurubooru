@@ -56,7 +56,7 @@ class UserModel extends AbstractCrudModel
 
 			$stmt = (new Sql\UpdateStatement)
 				->setTable('user')
-				->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($user->id)));
+				->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($user->getId())));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new Sql\Binding($val));
@@ -71,7 +71,7 @@ class UserModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($user)
 		{
-			$binding = new Sql\Binding($user->id);
+			$binding = new Sql\Binding($user->getId());
 
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('post_score');
@@ -144,16 +144,16 @@ class UserModel extends AbstractCrudModel
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('post_score');
 			$stmt->setCriterion((new Sql\ConjunctionFunctor)
-				->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->id)))
-				->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($user->id))));
+				->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId())))
+				->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($user->getId()))));
 			Database::exec($stmt);
 			$score = intval($score);
 			if ($score != 0)
 			{
 				$stmt = new Sql\InsertStatement();
 				$stmt->setTable('post_score');
-				$stmt->setColumn('post_id', new Sql\Binding($post->id));
-				$stmt->setColumn('user_id', new Sql\Binding($user->id));
+				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
+				$stmt->setColumn('user_id', new Sql\Binding($user->getId()));
 				$stmt->setColumn('score', new Sql\Binding($score));
 				Database::exec($stmt);
 			}
@@ -167,8 +167,8 @@ class UserModel extends AbstractCrudModel
 			self::removeFromUserFavorites($user, $post);
 			$stmt = new Sql\InsertStatement();
 			$stmt->setTable('favoritee');
-			$stmt->setColumn('post_id', new Sql\Binding($post->id));
-			$stmt->setColumn('user_id', new Sql\Binding($user->id));
+			$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
+			$stmt->setColumn('user_id', new Sql\Binding($user->getId()));
 			$stmt->setColumn('fav_date', time());
 			Database::exec($stmt);
 		});
@@ -181,8 +181,8 @@ class UserModel extends AbstractCrudModel
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('favoritee');
 			$stmt->setCriterion((new Sql\ConjunctionFunctor)
-				->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->id)))
-				->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($user->id))));
+				->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId())))
+				->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($user->getId()))));
 			Database::exec($stmt);
 		});
 	}
@@ -195,7 +195,7 @@ class UserModel extends AbstractCrudModel
 		$config = getConfig();
 
 		$otherUser = self::findByName($userName, false);
-		if ($otherUser !== null and $otherUser->id != $user->id)
+		if ($otherUser !== null and $otherUser->getId() != $user->getId())
 		{
 			if (!$otherUser->emailConfirmed and $config->registration->needEmailForRegistering)
 				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');

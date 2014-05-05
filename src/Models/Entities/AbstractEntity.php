@@ -1,8 +1,18 @@
 <?php
 abstract class AbstractEntity implements IValidatable
 {
-	public $id;
+	protected $id;
 	protected $__cache = [];
+
+	public function getId()
+	{
+		return $this->id;
+	}
+
+	public function setId($id)
+	{
+		$this->id = $id;
+	}
 
 	public function resetCache()
 	{

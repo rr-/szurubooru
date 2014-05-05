@@ -1,7 +1,7 @@
 <form method="post"
 	action="<?= \Chibi\Router::linkTo(
 		['PostController', 'editAction'],
-		['id' => $this->context->transport->post->id]) ?>"
+		['id' => $this->context->transport->post->getId()]) ?>"
 	enctype="multipart/form-data"
 	class="edit-post">
 
@@ -79,7 +79,7 @@
 					id="relations"
 					placeholder="id1,id2,&hellip;"
 					value="<?= join(',', array_map(function($post) {
-						return $post->id;
+						return $post->getId();
 					}, $this->context->transport->post->getRelations())) ?>"/>
 			</div>
 		</div>

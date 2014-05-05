@@ -16,7 +16,7 @@ class AddCommentJob extends AbstractJob
 		CommentModel::save($comment);
 		Logger::log('{user} commented on {post}', [
 			'user' => TextHelper::reprUser($user),
-			'post' => TextHelper::reprPost($comment->getPost()->id)]);
+			'post' => TextHelper::reprPost($comment->getPost())]);
 
 		return $comment;
 	}

@@ -150,7 +150,7 @@ class TextHelper
 	{
 		if (!is_object($post))
 			return '@' . $post;
-		return '@' . $post->id;
+		return '@' . $post->getId();
 	}
 
 	public static function reprUser($user)

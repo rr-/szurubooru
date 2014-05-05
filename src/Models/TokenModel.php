@@ -26,7 +26,7 @@ class TokenModel extends AbstractCrudModel
 
 			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('user_token');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($token->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($token->getId())));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new Sql\Binding($val));

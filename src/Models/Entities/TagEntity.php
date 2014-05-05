@@ -29,7 +29,7 @@ class TagEntity extends AbstractEntity implements IValidatable
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('post_tag');
-		$stmt->setCriterion(new Sql\EqualsFunctor('tag_id', new Sql\Binding($this->id)));
+		$stmt->setCriterion(new Sql\EqualsFunctor('tag_id', new Sql\Binding($this->getId())));
 		return Database::fetchOne($stmt)['count'];
 	}
 }

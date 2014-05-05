@@ -14,7 +14,7 @@ class TagSearchService extends AbstractSearchService
 		$parentTagEntity = TagModel::findByName($parentTagName, false);
 		if (empty($parentTagEntity))
 			return [];
-		$parentTagId = $parentTagEntity->id;
+		$parentTagId = $parentTagEntity->getId();
 
 		//get tags that appear with selected tag along with their occurence frequency
 		$stmt = (new Sql\SelectStatement)

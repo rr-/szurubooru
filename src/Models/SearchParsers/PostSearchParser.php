@@ -43,7 +43,7 @@ class PostSearchParser extends AbstractSearchParser
 			$innerStmt->setTable('post_tag');
 			$innerStmt->setCriterion((new Sql\ConjunctionFunctor)
 				->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-				->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($tag->id))));
+				->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($tag->getId()))));
 			$operator = new Sql\ExistsFunctor($innerStmt);
 			if ($neg)
 				$operator = new Sql\NegationFunctor($operator);
@@ -78,7 +78,7 @@ class PostSearchParser extends AbstractSearchParser
 				->setTable('favoritee')
 				->setCriterion((new Sql\ConjunctionFunctor)
 					->add(new Sql\EqualsFunctor('favoritee.post_id', 'post.id'))
-					->add(new Sql\EqualsFunctor('favoritee.user_id', new Sql\Binding($user->id))));
+					->add(new Sql\EqualsFunctor('favoritee.user_id', new Sql\Binding($user->getId()))));
 			return new Sql\ExistsFunctor($innerStmt);
 		}
 
@@ -89,14 +89,14 @@ class PostSearchParser extends AbstractSearchParser
 				->setTable('comment')
 				->setCriterion((new Sql\ConjunctionFunctor)
 					->add(new Sql\EqualsFunctor('comment.post_id', 'post.id'))
-					->add(new Sql\EqualsFunctor('comment.commenter_id', new Sql\Binding($user->id))));
+					->add(new Sql\EqualsFunctor('comment.commenter_id', new Sql\Binding($user->getId()))));
 			return new Sql\ExistsFunctor($innerStmt);
 		}
 
 		elseif (in_array($key, ['submit', 'upload', 'uploads', 'uploader', 'uploaded']))
 		{
 			$user = UserModel::findByNameOrEmail($value);
-			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->id));
+			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->getId()));
 		}
 
 		elseif (in_array($key, ['idmin', 'id_min']))
@@ -165,7 +165,7 @@ class PostSearchParser extends AbstractSearchParser
 				{
 					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
 						->add(new Sql\EqualsFunctor('post_score.post_id', 'post.id'))
-						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->id))));
+						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->getId()))));
 				}
 				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '1');
 			}
@@ -177,7 +177,7 @@ class PostSearchParser extends AbstractSearchParser
 				{
 					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
 						->add(new Sql\EqualsFunctor('post_score.post_id', 'post.id'))
-						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->id))));
+						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->getId()))));
 				}
 				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '-1');
 			}

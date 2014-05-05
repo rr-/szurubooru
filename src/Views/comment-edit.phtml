@@ -7,7 +7,7 @@ Assets::addScript('comment-edit.js');
 	method="post"
 	action="<?= \Chibi\Router::linkTo(
 		['CommentController', 'editAction'],
-		['id' => $this->context->transport->comment->id]) ?>"
+		['id' => $this->context->transport->comment->getId()]) ?>"
 	class="edit-comment">
 
 	<h1>edit comment</h1>

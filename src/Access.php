@@ -105,7 +105,7 @@ class Access
 	{
 		if (!$user)
 			return 'all';
-		return $user->id == Auth::getCurrentUser()->id ? 'own' : 'all';
+		return $user->getId() == Auth::getCurrentUser()->getId() ? 'own' : 'all';
 	}
 
 	public static function getAllowedSafety()

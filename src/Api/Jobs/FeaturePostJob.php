@@ -5,7 +5,7 @@ class FeaturePostJob extends AbstractPostJob
 	{
 		$post = $this->post;
 
-		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
+		PropertyModel::set(PropertyModel::FeaturedPostId, $post->getId());
 		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
 		PropertyModel::set(PropertyModel::FeaturedPostUserName, Auth::getCurrentUser()->getName());
 

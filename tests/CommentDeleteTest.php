@@ -73,7 +73,7 @@ class CommentDeleteTest extends AbstractTest
 			Api::run(
 				new DeleteCommentJob(),
 				[
-					DeleteCommentJob::COMMENT_ID => $comment->id,
+					DeleteCommentJob::COMMENT_ID => $comment->getId(),
 				]);
 		}, 'Insufficient privileges');
 	}
@@ -99,7 +99,7 @@ class CommentDeleteTest extends AbstractTest
 		return Api::run(
 			new DeleteCommentJob(),
 			[
-				DeleteCommentJob::COMMENT_ID => $comment->id,
+				DeleteCommentJob::COMMENT_ID => $comment->getId(),
 			]);
 	}
 

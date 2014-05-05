@@ -126,7 +126,7 @@ abstract class AbstractCrudModel implements IModel
 		$table = static::getTableName();
 		if (!Database::inTransaction())
 			throw new Exception('Can be run only within transaction');
-		if (!$entity->id)
+		if (!$entity->getId())
 		{
 			$stmt = new Sql\InsertStatement();
 			$stmt->setTable($table);
@@ -139,7 +139,7 @@ abstract class AbstractCrudModel implements IModel
 				$stmt->setColumn($key, new Sql\Binding($val));
 			}
 			Database::exec($stmt);
-			$entity->id = (int) Database::lastInsertId();
+			$entity->setId((int) Database::lastInsertId());
 		}
 	}
 

@@ -16,7 +16,7 @@ Assets::addScript('comment-edit.js');
 		<div class="input-wrapper"><textarea name="text" cols="50" rows="3"></textarea></div>
 	</div>
 
-	<input type="hidden" name="post-id" value="<?= $this->context->transport->post->id ?>">
+	<input type="hidden" name="post-id" value="<?= $this->context->transport->post->getId() ?>">
 
 	<div class="form-row">
 		<button name="sender" class="submit" type="submit" value="preview">Preview</button>&nbsp;

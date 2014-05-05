@@ -18,6 +18,6 @@ class TokenEntity extends AbstractEntity implements IValidatable
 
 	public function setUser($user)
 	{
-		$this->userId = $user ? $user->id : null;
+		$this->userId = $user ? $user->getId() : null;
 	}
 }

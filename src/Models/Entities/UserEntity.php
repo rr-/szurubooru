@@ -172,8 +172,8 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('favoritee');
 		$stmt->setCriterion((new Sql\ConjunctionFunctor)
-			->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->id)))
-			->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->id))));
+			->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->getId())))
+			->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId()))));
 		return Database::fetchOne($stmt)['count'] == 1;
 	}
 
@@ -183,8 +183,8 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$stmt->setColumn('score');
 		$stmt->setTable('post_score');
 		$stmt->setCriterion((new Sql\ConjunctionFunctor)
-			->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->id)))
-			->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->id))));
+			->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->getId())))
+			->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId()))));
 		$row = Database::fetchOne($stmt);
 		if ($row)
 			return intval($row['score']);
@@ -196,7 +196,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('favoritee');
-		$stmt->setCriterion(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->id)));
+		$stmt->setCriterion(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->getId())));
 		return Database::fetchOne($stmt)['count'];
 	}
 
@@ -205,7 +205,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('comment');
-		$stmt->setCriterion(new Sql\EqualsFunctor('commenter_id', new Sql\Binding($this->id)));
+		$stmt->setCriterion(new Sql\EqualsFunctor('commenter_id', new Sql\Binding($this->getId())));
 		return Database::fetchOne($stmt)['count'];
 	}
 
@@ -214,7 +214,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('post');
-		$stmt->setCriterion(new Sql\EqualsFunctor('uploader_id', new Sql\Binding($this->id)));
+		$stmt->setCriterion(new Sql\EqualsFunctor('uploader_id', new Sql\Binding($this->getId())));
 		return Database::fetchOne($stmt)['count'];
 	}
 }

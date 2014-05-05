@@ -12,12 +12,12 @@ class CommentEditTest extends AbstractTest
 		});
 
 		$this->assert->areEqual($text, $comment->text);
-		$this->assert->areEqual(Auth::getCurrentUser()->id, $comment->getCommenter()->id);
-		$this->assert->areEqual(1, $comment->getPost()->id);
+		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $comment->getCommenter()->getId());
+		$this->assert->areEqual(1, $comment->getPost()->getId());
 		$this->assert->isNotNull($comment->commentDate);
 		$this->assert->doesNotThrow(function() use ($comment)
 		{
-			UserModel::findById($comment->id);
+			UserModel::findById($comment->getId());
 		});
 	}
 
@@ -117,7 +117,7 @@ class CommentEditTest extends AbstractTest
 			Api::run(
 				new EditCommentJob(),
 				[
-					EditCommentJob::COMMENT_ID => $comment->id,
+					EditCommentJob::COMMENT_ID => $comment->getId(),
 					EditCommentJob::TEXT => 'alohaa',
 				]);
 		}, 'Insufficient privileges');
@@ -145,7 +145,7 @@ class CommentEditTest extends AbstractTest
 		return Api::run(
 			new EditCommentJob(),
 			[
-				EditCommentJob::COMMENT_ID => $comment->id,
+				EditCommentJob::COMMENT_ID => $comment->getId(),
 				EditCommentJob::TEXT => $text,
 			]);
 	}

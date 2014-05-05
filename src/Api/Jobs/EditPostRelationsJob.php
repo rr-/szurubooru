@@ -8,9 +8,9 @@ class EditPostRelationsJob extends AbstractPostEditJob
 		$post = $this->post;
 		$relations = $this->getArgument(self::RELATED_POST_IDS);
 
-		$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
+		$oldRelatedIds = array_map(function($post) { return $post->getId(); }, $post->getRelations());
 		$post->setRelationsFromText($relations);
-		$newRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
+		$newRelatedIds = array_map(function($post) { return $post->getId(); }, $post->getRelations());
 
 		if (!$this->skipSaving)
 			PostModel::save($post);

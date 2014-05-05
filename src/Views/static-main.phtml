@@ -15,7 +15,7 @@ Assets::addStylesheet('static-main.css');
 		<?php
 			$this->context->transport->post = $this->context->featuredPost;
 			$this->context->imageLink = \Chibi\Router::linkTo(['PostController', 'genericView'], [
-				'id' => $this->context->featuredPost->id]);
+				'id' => $this->context->featuredPost->getId()]);
 		?>
 
 		<?php \Chibi\View::render('post-file-render', $this->context) ?>

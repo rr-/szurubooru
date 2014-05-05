@@ -73,7 +73,7 @@ class PostModel extends AbstractCrudModel
 			foreach ($bindings as $key => $value)
 				$stmt->setColumn($key, new Sql\Binding($value));
 
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($post->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($post->getId())));
 			Database::exec($stmt);
 
 			//tags
@@ -81,15 +81,15 @@ class PostModel extends AbstractCrudModel
 
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('post_tag');
-			$stmt->setCriterion(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId())));
 			Database::exec($stmt);
 
 			foreach ($tags as $postTag)
 			{
 				$stmt = new Sql\InsertStatement();
 				$stmt->setTable('post_tag');
-				$stmt->setColumn('post_id', new Sql\Binding($post->id));
-				$stmt->setColumn('tag_id', new Sql\Binding($postTag->id));
+				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
+				$stmt->setColumn('tag_id', new Sql\Binding($postTag->getId()));
 				Database::exec($stmt);
 			}
 
@@ -98,7 +98,7 @@ class PostModel extends AbstractCrudModel
 
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('crossref');
-			$binding = new Sql\Binding($post->id);
+			$binding = new Sql\Binding($post->getId());
 			$stmt->setCriterion((new Sql\DisjunctionFunctor)
 				->add(new Sql\EqualsFunctor('post_id', $binding))
 				->add(new Sql\EqualsFunctor('post2_id', $binding)));
@@ -108,8 +108,8 @@ class PostModel extends AbstractCrudModel
 			{
 				$stmt = new Sql\InsertStatement();
 				$stmt->setTable('crossref');
-				$stmt->setColumn('post_id', new Sql\Binding($post->id));
-				$stmt->setColumn('post2_id', new Sql\Binding($relatedPost->id));
+				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
+				$stmt->setColumn('post2_id', new Sql\Binding($relatedPost->getId()));
 				Database::exec($stmt);
 			}
 		});
@@ -121,7 +121,7 @@ class PostModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($post)
 		{
-			$binding = new Sql\Binding($post->id);
+			$binding = new Sql\Binding($post->getId());
 
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('post_score');
@@ -204,7 +204,7 @@ class PostModel extends AbstractCrudModel
 		$tagsMap = [];
 		foreach ($posts as $post)
 		{
-			$postId = $post->id;
+			$postId = $post->getId();
 			$postMap[$postId] = $post;
 			$commentMap[$postId] = [];
 		}
@@ -245,7 +245,7 @@ class PostModel extends AbstractCrudModel
 		$tagsMap = [];
 		foreach ($posts as $post)
 		{
-			$postId = $post->id;
+			$postId = $post->getId();
 			$postMap[$postId] = $post;
 			$tagsMap[$postId] = [];
 		}

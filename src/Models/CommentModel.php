@@ -32,7 +32,7 @@ class CommentModel extends AbstractCrudModel
 
 			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->getId())));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new Sql\Binding($val));
@@ -49,7 +49,7 @@ class CommentModel extends AbstractCrudModel
 		{
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->getId())));
 			Database::exec($stmt);
 		});
 	}
@@ -75,7 +75,7 @@ class CommentModel extends AbstractCrudModel
 	{
 		self::preloadOneToMany($comments,
 			function($comment) { return $comment->commenterId; },
-			function($user) { return $user->id; },
+			function($user) { return $user->getId(); },
 			function($userIds) { return UserModel::findByIds($userIds); },
 			function($comment, $user) { return $comment->setCache('commenter', $user); });
 	}
@@ -84,7 +84,7 @@ class CommentModel extends AbstractCrudModel
 	{
 		self::preloadOneToMany($comments,
 			function($comment) { return $comment->postId; },
-			function($post) { return $post->id; },
+			function($post) { return $post->getId(); },
 			function($postIds) { return PostModel::findByIds($postIds); },
 			function($comment, $post) { $comment->setCache('post', $post); });
 	}
