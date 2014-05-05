@@ -32,12 +32,14 @@ class Access
 		}
 	}
 
-	public static function check(Privilege $privilege)
+	public static function check(Privilege $privilege, $user = null)
 	{
 		if (php_sapi_name() == 'cli')
 			return true;
 
-		$user = Auth::getCurrentUser();
+		if ($user === null)
+			$user = Auth::getCurrentUser();
+
 		$minAccessRank = AccessRank::Nobody;
 
 		$key = TextCaseConverter::convert($privilege->toString(),
@@ -58,22 +60,31 @@ class Access
 		return $user->getAccessRank()->toInteger() >= $minAccessRank;
 	}
 
+	public static function checkEmailConfirmation($user = null)
+	{
+		if ($user === null)
+			$user = Auth::getCurrentUser();
+
+		if (!$user->emailConfirmed)
+			return false;
+		return true;
+	}
+
 	public static function assertAuthentication()
 	{
 		if (!Auth::isLoggedIn())
 			self::fail('Not logged in');
 	}
 
-	public static function assert(Privilege $privilege)
+	public static function assert(Privilege $privilege, $user = null)
 	{
-		if (!self::check($privilege))
+		if (!self::check($privilege, $user))
 			self::fail();
 	}
 
-	public static function assertEmailConfirmation()
+	public static function assertEmailConfirmation($user = null)
 	{
-		$user = Auth::getCurrentUser();
-		if (!$user->emailConfirmed)
+		if (!self::checkEmailConfirmation($user))
 			self::fail('Need e-mail address confirmation to continue');
 	}
 

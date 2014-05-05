@@ -28,7 +28,7 @@ class Auth
 			throw new SimpleException('You are banned');
 
 		if ($config->registration->needEmailForRegistering)
-			Access::requireEmail($user);
+			Access::assertEmailConfirmation($user);
 
 		if ($remember)
 		{
