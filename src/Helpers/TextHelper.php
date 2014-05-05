@@ -195,7 +195,11 @@ class TextHelper
 			$hash = base64_decode($hash);
 			$alg = MCRYPT_RIJNDAEL_256;
 			$mode = MCRYPT_MODE_CBC;
-			return trim(mcrypt_decrypt($alg, $salt, $hash, $mode, $iv));
+			$ret = mcrypt_decrypt($alg, $salt, $hash, $mode, $iv);
+			$pos = strpos($ret, "\0");
+			if ($pos !== false)
+				$ret = substr($ret, 0, $pos);
+			return $ret;
 		}
 		catch (Exception $e)
 		{
