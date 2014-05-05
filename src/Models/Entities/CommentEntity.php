@@ -1,48 +1,93 @@
 <?php
-class CommentEntity extends AbstractEntity implements IValidatable
+final class CommentEntity extends AbstractEntity implements IValidatable
 {
-	public $text;
-	public $postId;
-	public $commentDate;
-	public $commenterId;
+	protected $text;
+	protected $postId;
+	protected $commentDate;
+	protected $commenterId;
 
 	public function validate()
 	{
-		//todo
+		$text = trim($this->getText());
+		$config = getConfig();
+
+		if (strlen($text) < $config->comments->minLength)
+			throw new SimpleException('Comment must have at least %d characters', $config->comments->minLength);
+
+		if (strlen($text) > $config->comments->maxLength)
+			throw new SimpleException('Comment must have at most %d characters', $config->comments->maxLength);
+
+		if (!$this->getPostId())
+			throw new SimpleException('Trying to save comment that doesn\'t refer to any post');
+
+		if (!$this->getDateTime())
+			throw new SimpleException('Trying to save comment that has no creation date specified');
+
+		$this->setText($text);
 	}
 
 	public function getText()
 	{
-		return TextHelper::parseMarkdown($this->text);
+		return $this->text;
 	}
 
-	public function setPost($post)
+	public function getTextMarkdown()
 	{
-		$this->setCache('post', $post);
-		$this->postId = $post->id;
+		return TextHelper::parseMarkdown($this->getText());
 	}
 
-	public function setCommenter($user)
+	public function setText($text)
 	{
-		$this->setCache('commenter', $user);
-		$this->commenterId = $user ? $user->id : null;
+		$this->text = $text;
 	}
 
 	public function getPost()
 	{
 		if ($this->hasCache('post'))
 			return $this->getCache('post');
-		$post = PostModel::findById($this->postId);
+		$post = PostModel::findById($this->getPostId());
 		$this->setCache('post', $post);
 		return $post;
+	}
+
+	public function getPostId()
+	{
+		return $this->postId;
+	}
+
+	public function setPost($post)
+	{
+		$this->setCache('post', $post);
+		$this->postId = $post->getId();
+	}
+
+	public function getDateTime()
+	{
+		return $this->commentDate;
+	}
+
+	public function setDateTime($dateTime)
+	{
+		$this->commentDate = $dateTime;
 	}
 
 	public function getCommenter()
 	{
 		if ($this->hasCache('commenter'))
 			return $this->getCache('commenter');
-		$user = UserModel::findById($this->commenterId, false);
+		$user = UserModel::findById($this->getCommenterId(), false);
 		$this->setCache('commenter', $user);
 		return $user;
+	}
+
+	public function getCommenterId()
+	{
+		return $this->commenterId;
+	}
+
+	public function setCommenter($user)
+	{
+		$this->setCache('commenter', $user);
+		$this->commenterId = $user ? $user->getId() : null;
 	}
 }

@@ -4,12 +4,17 @@ class PreviewCommentJob extends AbstractJob
 	public function execute()
 	{
 		$user = Auth::getCurrentUser();
-		$text = CommentModel::validateText($this->getArgument(self::TEXT));
+		$text = $this->getArgument(self::TEXT);
+		$post = PostModel::findById($this->getArgument(self::POST_ID));
 
 		$comment = CommentModel::spawn();
 		$comment->setCommenter($user);
-		$comment->commentDate = time();
-		$comment->text = $text;
+		$comment->setDateTime(time());
+		$comment->setText($text);
+		$comment->setPost($post);
+
+		$comment->validate();
+
 		return $comment;
 	}
 
@@ -20,7 +25,7 @@ class PreviewCommentJob extends AbstractJob
 
 	public function requiresAuthentication()
 	{
-		return true;
+		return false;
 	}
 
 	public function requiresConfirmedEmail()

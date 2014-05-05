@@ -19,10 +19,11 @@ class CommentController
 		$comment = Api::run(
 			new PreviewCommentJob(),
 			[
+				PreviewCommentJob::POST_ID => InputHelper::get('post-id'),
 				PreviewCommentJob::TEXT => InputHelper::get('text')
 			]);
 
-		getContext()->transport->textPreview = $comment->getText();
+		getContext()->transport->textPreview = $comment->getTextMarkdown();
 	}
 
 	public function addAction()

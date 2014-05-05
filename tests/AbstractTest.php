@@ -35,7 +35,7 @@ class AbstractTest
 		$comment = CommentModel::spawn();
 		$comment->setPost($post);
 		$comment->setCommenter($owner);
-		$comment->text = 'test test';
+		$comment->setText('test test');
 		return CommentModel::save($comment);
 	}
 }

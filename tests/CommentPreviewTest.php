@@ -1,9 +1,7 @@
 <?php
-class CommentAddTest extends AbstractTest
+class CommentPreviewTest extends AbstractTest
 {
-	protected $user;
-
-	public function testSaving()
+	public function testPreview()
 	{
 		$this->prepare();
 
@@ -13,15 +11,14 @@ class CommentAddTest extends AbstractTest
 			return $this->runApi($text);
 		});
 
-		$this->assert->areEqual(1, CommentModel::getCount());
+		$this->assert->areEqual(0, CommentModel::getCount());
 		$this->assert->areEqual($text, $comment->getText());
 		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $comment->getCommenter()->getId());
-		$this->assert->areEqual(1, $comment->getPost()->getId());
 		$this->assert->isNotNull($comment->getDateTime());
-		$this->assert->doesNotThrow(function() use ($comment)
+		$this->assert->throws(function() use ($comment)
 		{
 			CommentModel::findById($comment->getId());
-		});
+		}, 'Invalid comment ID');
 	}
 
 	public function testAlmostTooShortText()
@@ -86,67 +83,16 @@ class CommentAddTest extends AbstractTest
 		}, 'Insufficient privileges');
 	}
 
-	public function testAnonymous()
-	{
-		$this->prepare();
-
-		Auth::setCurrentUser(null);
-		getConfig()->privileges->addComment = 'anonymous';
-		Access::init();
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::AddComment)));
-
-		$text = 'alohaaaaaaa';
-		$comment = $this->assert->doesNotThrow(function() use ($text)
-		{
-			return $this->runApi($text);
-		});
-
-		$this->assert->areEqual($text, $comment->getText());
-		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $comment->getCommenter()->getId());
-		$this->assert->areEqual(UserModel::getAnonymousName(), $comment->getCommenter()->getName());
-	}
-
-	public function testPrivilegeDependancies()
-	{
-		$this->prepare();
-
-		getConfig()->privileges->{'editComment'} = 'nobody';
-		getConfig()->privileges->{'editComment.own'} = 'nobody';
-		getConfig()->privileges->{'editComment.all'} = 'nobody';
-		Access::init();
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::AddComment)));
-		$this->assert->isFalse(Access::check(new Privilege(Privilege::EditComment)));
-
-		$this->assert->doesNotThrow(function()
-		{
-			return $this->runApi('alohaaaaaaa');
-		}, 'insufficient privileges');
-	}
-
-	public function testWrongPostId()
-	{
-		$this->prepare();
-		$this->assert->throws(function()
-		{
-			return Api::run(
-				new AddCommentJob(),
-				[
-					AddCommentJob::POST_ID => 100,
-					AddCommentJob::TEXT => 'alohaa',
-				]);
-		}, 'Invalid post ID');
-	}
-
 
 	protected function runApi($text)
 	{
 		$post = $this->mockPost();
 
 		return Api::run(
-			new AddCommentJob(),
+			new PreviewCommentJob(),
 			[
-				AddCommentJob::POST_ID => $post->getId(),
-				AddCommentJob::TEXT => $text,
+				PreviewCommentJob::POST_ID => $post->getId(),
+				PreviewCommentJob::TEXT => $text,
 			]);
 	}
 

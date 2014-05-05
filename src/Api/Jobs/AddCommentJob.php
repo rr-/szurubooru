@@ -5,13 +5,13 @@ class AddCommentJob extends AbstractJob
 	{
 		$user = Auth::getCurrentUser();
 		$post = PostModel::findById($this->getArgument(self::POST_ID));
-		$text = CommentModel::validateText($this->getArgument(self::TEXT));
+		$text = $this->getArgument(self::TEXT);
 
 		$comment = CommentModel::spawn();
 		$comment->setCommenter($user);
 		$comment->setPost($post);
-		$comment->commentDate = time();
-		$comment->text = $text;
+		$comment->setDateTime(time());
+		$comment->setText($text);
 
 		CommentModel::save($comment);
 		Logger::log('{user} commented on {post}', [

@@ -11,10 +11,10 @@ class CommentEditTest extends AbstractTest
 			return $this->runApi($text);
 		});
 
-		$this->assert->areEqual($text, $comment->text);
+		$this->assert->areEqual($text, $comment->getText());
 		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $comment->getCommenter()->getId());
 		$this->assert->areEqual(1, $comment->getPost()->getId());
-		$this->assert->isNotNull($comment->commentDate);
+		$this->assert->isNotNull($comment->getDateTime());
 		$this->assert->doesNotThrow(function() use ($comment)
 		{
 			CommentModel::findById($comment->getId());

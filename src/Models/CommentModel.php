@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class CommentModel extends AbstractCrudModel
+final class CommentModel extends AbstractCrudModel
 {
 	public static function getTableName()
 	{
@@ -12,7 +12,7 @@ class CommentModel extends AbstractCrudModel
 	public static function spawn()
 	{
 		$comment = new CommentEntity;
-		$comment->commentDate = time();
+		$comment->setDateTime(time());
 		return $comment;
 	}
 
@@ -25,10 +25,10 @@ class CommentModel extends AbstractCrudModel
 			self::forgeId($comment);
 
 			$bindings = [
-				'text' => $comment->text,
-				'post_id' => $comment->postId,
-				'comment_date' => $comment->commentDate,
-				'commenter_id' => $comment->commenterId];
+				'text' => $comment->getText(),
+				'post_id' => $comment->getPostId(),
+				'comment_date' => $comment->getDateTime(),
+				'commenter_id' => $comment->getCommenterId()];
 
 			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('comment');
@@ -74,7 +74,7 @@ class CommentModel extends AbstractCrudModel
 	public static function preloadCommenters($comments)
 	{
 		self::preloadOneToMany($comments,
-			function($comment) { return $comment->commenterId; },
+			function($comment) { return $comment->getCommenterId(); },
 			function($user) { return $user->getId(); },
 			function($userIds) { return UserModel::findByIds($userIds); },
 			function($comment, $user) { return $comment->setCache('commenter', $user); });
@@ -83,25 +83,9 @@ class CommentModel extends AbstractCrudModel
 	public static function preloadPosts($comments)
 	{
 		self::preloadOneToMany($comments,
-			function($comment) { return $comment->postId; },
+			function($comment) { return $comment->getPostId(); },
 			function($post) { return $post->getId(); },
 			function($postIds) { return PostModel::findByIds($postIds); },
 			function($comment, $post) { $comment->setCache('post', $post); });
-	}
-
-
-
-	public static function validateText($text)
-	{
-		$text = trim($text);
-		$config = getConfig();
-
-		if (strlen($text) < $config->comments->minLength)
-			throw new SimpleException('Comment must have at least %d characters', $config->comments->minLength);
-
-		if (strlen($text) > $config->comments->maxLength)
-			throw new SimpleException('Comment must have at most %d characters', $config->comments->maxLength);
-
-		return $text;
 	}
 }

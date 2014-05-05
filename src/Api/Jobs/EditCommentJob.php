@@ -12,8 +12,8 @@ class EditCommentJob extends AbstractJob
 	{
 		$comment = $this->comment;
 
-		$comment->commentDate = time();
-		$comment->text = CommentModel::validateText($this->getArgument(self::TEXT));
+		$comment->setDateTime(time());
+		$comment->setText($this->getArgument(self::TEXT));
 
 		CommentModel::save($comment);
 		Logger::log('{user} edited comment in {post}', [
