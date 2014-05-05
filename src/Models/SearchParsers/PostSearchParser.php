@@ -93,7 +93,7 @@ class PostSearchParser extends AbstractSearchParser
 			return new Sql\ExistsFunctor($innerStmt);
 		}
 
-		elseif (in_array($key, ['submit', 'upload', `uploads`, 'uploader', 'uploaded']))
+		elseif (in_array($key, ['submit', 'upload', 'uploads', 'uploader', 'uploaded']))
 		{
 			$user = UserModel::findByNameOrEmail($value);
 			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->id));
