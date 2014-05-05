@@ -19,9 +19,9 @@ class AddUserJob extends AbstractJob
 			: AccessRank::Registered;
 
 		Logger::bufferChanges();
-		Api::disablePrivilegeChecking();
+		Access::disablePrivilegeChecking();
 		Api::run((new EditUserJob)->skipSaving(), $arguments);
-		Api::enablePrivilegeChecking();
+		Access::enablePrivilegeChecking();
 		Logger::setBuffer([]);
 
 		if ($firstUser)

@@ -2,6 +2,7 @@
 class Access
 {
 	private static $privileges = [];
+	private static $checkPrivileges = true;
 
 	public static function init()
 	{
@@ -30,11 +31,15 @@ class Access
 				self::$privileges[$privilegeName] = $minAccessRank;
 			}
 		}
+
+		//todo: move to scripts etc.
+		#if (php_sapi_name() == 'cli')
+		#	self::disablePrivilegeChecking();
 	}
 
 	public static function check(Privilege $privilege, $user = null)
 	{
-		if (php_sapi_name() == 'cli')
+		if (!self::$checkPrivileges)
 			return true;
 
 		if ($user === null)
@@ -62,6 +67,9 @@ class Access
 
 	public static function checkEmailConfirmation($user = null)
 	{
+		if (!self::$checkPrivileges)
+			return true;
+
 		if ($user === null)
 			$user = Auth::getCurrentUser();
 
@@ -102,7 +110,7 @@ class Access
 
 	public static function getAllowedSafety()
 	{
-		if (php_sapi_name() == 'cli')
+		if (!self::$checkPrivileges)
 			return PostSafety::getAll();
 
 		return array_filter(PostSafety::getAll(), function($safety)
@@ -110,5 +118,15 @@ class Access
 			return Access::check(new Privilege(Privilege::ListPosts, $safety->toString()))
 				and Auth::getCurrentUser()->hasEnabledSafety($safety);
 		});
+	}
+
+	public static function disablePrivilegeChecking()
+	{
+		self::$checkPrivileges = false;
+	}
+
+	public static function enablePrivilegeChecking()
+	{
+		self::$checkPrivileges = true;
 	}
 }

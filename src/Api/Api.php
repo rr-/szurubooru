@@ -1,8 +1,6 @@
 <?php
 final class Api
 {
-	protected static $checkPrivileges = true;
-
 	public static function run($job, $jobArgs)
 	{
 		$user = Auth::getCurrentUser();
@@ -20,9 +18,6 @@ final class Api
 
 	public static function checkPrivileges(AbstractJob $job)
 	{
-		if (!self::$checkPrivileges)
-			return;
-
 		if ($job->requiresAuthentication())
 			Access::assertAuthentication();
 
@@ -52,15 +47,5 @@ final class Api
 			}
 		});
 		return $statuses;
-	}
-
-	public static function disablePrivilegeChecking()
-	{
-		self::$checkPrivileges = false;
-	}
-
-	public static function enablePrivilegeChecking()
-	{
-		self::$checkPrivileges = true;
 	}
 }
