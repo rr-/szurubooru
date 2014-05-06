@@ -33,9 +33,17 @@ class UserController
 			$query = 'fav:' . $user->getName();
 
 		elseif ($tab == 'delete')
-			Access::assert(new Privilege(Privilege::DeleteUser));
+		{
+			Access::assert(new Privilege(
+				Privilege::DeleteUser,
+				Access::getIdentity($user)));
+		}
 		elseif ($tab == 'settings')
-			Access::assert(new Privilege(Privilege::ChangeUserSettings));
+		{
+			Access::assert(new Privilege(
+				Privilege::ChangeUserSettings,
+				Access::getIdentity($user)));
+		}
 		elseif ($tab == 'edit' and !(new EditUserJob)->canEditAnything(Auth::getCurrentUser()))
 			Access::fail();
 
