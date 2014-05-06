@@ -17,4 +17,9 @@ class ScorePostJob extends AbstractPostJob
 			Privilege::ScorePost,
 			Access::getIdentity($this->post->getUploader()));
 	}
+
+	public function requiresAuthentication()
+	{
+		return true;
+	}
 }
