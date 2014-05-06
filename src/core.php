@@ -31,29 +31,39 @@ function getContext()
 	return $context;
 }
 
-function resetEnvironment()
+function prepareConfig($testEnvironment)
 {
 	//load config manually
 	global $config;
 	global $rootDir;
-	global $startTime;
 
-	$configPaths =
-	[
-		$rootDir . DS . 'data' . DS . 'config.ini',
-		$rootDir . DS . 'data' . DS . 'local.ini',
-		$rootDir . DS . 'tests' . DS . 'test.ini',
-	];
+	$configPaths = [];
+	if (!$testEnvironment)
+	{
+		$configPaths []= $rootDir . DS . 'data' . DS . 'config.ini';
+		$configPaths []= $rootDir . DS . 'data' . DS . 'local.ini';
+	}
+	else
+	{
+		$configPaths []= $rootDir . DS . 'tests' . DS . 'config.ini';
+	}
+
 	$config = new \Chibi\Config();
 	foreach ($configPaths as $path)
 		if (file_exists($path))
 			$config->loadIni($path);
 	$config->rootDir = $rootDir;
+}
 
+function prepareEnvironment($testEnvironment)
+{
 	//prepare context
 	global $context;
+	global $startTime;
 	$context = new StdClass;
 	$context->startTime = $startTime;
+
+	$config = getConfig();
 
 	//extension sanity checks
 	$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'gd', 'openssl', 'fileinfo'];
@@ -71,8 +81,9 @@ function resetEnvironment()
 	\Chibi\Database::connect(
 		$config->main->dbDriver,
 		TextHelper::absolutePath($config->main->dbLocation),
-		$config->main->dbUser,
-		$config->main->dbPass);
+		isset($config->main->dbUser) ? $config->main->dbUser : null,
+		isset($config->main->dbPass) ? $config->main->dbPass : null);
 }
 
-resetEnvironment();
+prepareConfig(false);
+prepareEnvironment(false);

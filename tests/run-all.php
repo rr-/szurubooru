@@ -3,8 +3,6 @@ require_once __DIR__ . '/../src/core.php';
 require_once __DIR__ . '/../src/upgrade.php';
 \Chibi\Autoloader::registerFileSystem(__DIR__);
 
-$configPath = __DIR__ . '/test.ini';
-
 $options = getopt('cf:', ['clean', 'filter:']);
 
 $cleanDatabase = (isset($options['c']) or isset($options['clean']));
@@ -16,36 +14,29 @@ elseif (isset($options['filter']))
 else
 	$filter = null;
 
+$dbPath = __DIR__ . '/db.sqlite';
+
+if (file_exists($dbPath) and $cleanDatabase)
+	unlink($dbPath);
+
 try
 {
-	$dbPath = __DIR__ . '/db.sqlite';
-
-	if (file_exists($dbPath) and $cleanDatabase)
-		unlink($dbPath);
-
-	$configIni =
-	[
-		'[main]',
-		'dbDriver = "sqlite"',
-		'dbLocation = "' . $dbPath . '"',
-		'filesPath  = "' . __DIR__ . 'files',
-		'thumbsPath = "' . __DIR__ . 'thumbs',
-		'logsPath = "/dev/null"',
-		'[registration]',
-		'needEmailForRegistering = 0',
-		'needEmailForCommenting = 0',
-		'needEmailForUploading = 0'
-	];
-
-	file_put_contents($configPath, implode(PHP_EOL, $configIni));
-
+	resetEnvironment();
 	upgradeDatabase();
 
 	runAll($filter);
 }
 finally
 {
-	unlink($configPath);
+}
+
+function resetEnvironment()
+{
+	global $dbPath;
+	prepareConfig(true);
+	getConfig()->main->dbDriver = 'sqlite';
+	getConfig()->main->dbLocation = $dbPath;
+	prepareEnvironment(true);
 }
 
 function getTestMethods($filter)
@@ -151,6 +142,7 @@ function runAll($filter)
 function runSingle($callback)
 {
 	resetEnvironment();
+	resetEnvironment(true);
 	\Chibi\Database::rollback(function() use ($callback)
 	{
 		$callback();
