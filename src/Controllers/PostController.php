@@ -106,8 +106,6 @@ class PostController
 			$jobArgs[EditPostContentJob::POST_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
-
-			TransferHelper::remove($file['tmp_name']);
 		}
 
 		Api::run(new AddPostJob(), $jobArgs);
@@ -150,8 +148,6 @@ class PostController
 			$jobArgs[EditPostContentJob::POST_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
-
-			TransferHelper::remove($file['tmp_name']);
 		}
 
 		if (!empty($_FILES['thumb']['name']))
@@ -162,8 +158,6 @@ class PostController
 			$jobArgs[EditPostThumbJob::THUMB_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
-
-			TransferHelper::remove($file['tmp_name']);
 		}
 
 		Api::run(new EditPostJob(), $jobArgs);
