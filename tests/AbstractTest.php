@@ -8,6 +8,14 @@ class AbstractTest
 		$this->assert = new Assert();
 	}
 
+	public function setup()
+	{
+	}
+
+	public function teardown()
+	{
+	}
+
 	protected function mockUser()
 	{
 		$user = UserModel::spawn();

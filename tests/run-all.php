@@ -3,180 +3,234 @@ require_once __DIR__ . '/../src/core.php';
 require_once __DIR__ . '/../src/upgrade.php';
 \Chibi\Autoloader::registerFileSystem(__DIR__);
 
-$options = getopt('cf:', ['clean', 'filter:']);
-
-$cleanDatabase = (isset($options['c']) or isset($options['clean']));
-
-if (isset($options['f']))
-	$filter = $options['f'];
-elseif (isset($options['filter']))
-	$filter = $options['filter'];
-else
-	$filter = null;
-
-$dbPath = __DIR__ . '/db.sqlite';
-
-if (file_exists($dbPath) and $cleanDatabase)
-	unlink($dbPath);
-
-try
+class TestRunner
 {
-	resetEnvironment();
-	upgradeDatabase();
+	protected $dbPath;
 
-	runAll($filter);
-}
-finally
-{
-	removeTestFolders();
-}
-
-function resetEnvironment()
-{
-	global $dbPath;
-	prepareConfig(true);
-	getConfig()->main->dbDriver = 'sqlite';
-	getConfig()->main->dbLocation = $dbPath;
-	removeTestFolders();
-	prepareEnvironment(true);
-}
-
-function removeTestFolders()
-{
-	$folders =
-	[
-		realpath(getConfig()->main->filesPath),
-		realpath(getConfig()->main->thumbsPath),
-		realpath(dirname(getConfig()->main->logsPath)),
-	];
-
-	foreach ($folders as $folder)
+	public function __construct()
 	{
-		if (!file_exists($folder))
-			continue;
-
-		$it = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator(
-				$folder,
-				FilesystemIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::CHILD_FIRST);
-
-		foreach ($it as $path)
-		{
-			$path->isFile()
-				? unlink($path->getPathname())
-				: rmdir($path->getPathname());
-		}
-		rmdir($folder);
-	}
-}
-
-function getTestMethods($filter)
-{
-	$testFiles = [];
-	foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__)) as $fileName)
-	{
-		$path = $fileName->getPathname();
-		if (preg_match('/.*Test.php$/', $path))
-			$testFiles []= $path;
+		$this->dbPath = __DIR__ . '/db.sqlite';
 	}
 
-	$testClasses = \Chibi\Util\Reflection::loadClasses($testFiles);
-
-	if ($filter !== null)
+	public function run($options)
 	{
-		$testClasses = array_filter($testClasses, function($className) use ($filter)
-		{
-			return stripos($className, $filter) !== false;
-		});
-	}
+		$cleanDatabase = (isset($options['c']) or isset($options['clean']));
 
-	$testMethods = [];
+		if (isset($options['f']))
+			$filter = $options['f'];
+		elseif (isset($options['filter']))
+			$filter = $options['filter'];
+		else
+			$filter = null;
 
-	foreach ($testClasses as $class)
-	{
-		$reflectionClass = new ReflectionClass($class);
-		foreach ($reflectionClass->getMethods() as $method)
-		{
-			if (preg_match('/test/i', $method->name) and $method->isPublic())
-			{
-				$testMethods []= $method;
-			}
-		}
-	}
+		if ($cleanDatabase)
+			$this->cleanDatabase();
 
-	return $testMethods;
-}
-
-function runAll($filter)
-{
-	$startTime = microtime(true);
-	$testMethods = getTestMethods($filter);
-
-	echo 'Starting tests' . PHP_EOL;
-
-	//get display names of the methods
-	$labels = [];
-	foreach ($testMethods as $key => $method)
-		$labels[$key] = $method->class . '::' . $method->name;
-
-	//ensure every label has the same length
-	$maxLabelLength = count($testMethods) > 0 ? max(array_map('strlen', $labels)) : 0;
-	foreach ($labels as &$label)
-		$label = str_pad($label, $maxLabelLength + 1, ' ');
-
-	$pad = count($testMethods) ? ceil(log10(1 + count($testMethods))) : 0;
-
-	//run all the methods
-	$success = true;
-	foreach ($testMethods as $key => $method)
-	{
-		$instance = new $method->class();
-		$testStartTime = microtime(true);
-
-		echo str_pad($key + 1, $pad, ' ', STR_PAD_LEFT) . ' ';
-		echo $labels[$key] . '... ';
-
-		unset($e);
 		try
 		{
-			runSingle(function() use ($method, $instance)
+			$this->resetEnvironment();
+			upgradeDatabase();
+
+			$testFixtures = $this->getTestFixtures($filter);
+			$this->runAll($testFixtures);
+		}
+		finally
+		{
+			$this->removeTestFolders();
+		}
+	}
+
+	protected function cleanDatabase()
+	{
+		if (file_exists($this->dbPath))
+			unlink($this->dbPath);
+	}
+
+	protected function resetEnvironment()
+	{
+		prepareConfig(true);
+		getConfig()->main->dbDriver = 'sqlite';
+		getConfig()->main->dbLocation = $this->dbPath;
+		$this->removeTestFolders();
+		prepareEnvironment(true);
+	}
+
+	protected function removeTestFolders()
+	{
+		$folders =
+		[
+			realpath(getConfig()->main->filesPath),
+			realpath(getConfig()->main->thumbsPath),
+			realpath(dirname(getConfig()->main->logsPath)),
+		];
+
+		foreach ($folders as $folder)
+		{
+			if (!file_exists($folder))
+				continue;
+
+			$it = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator(
+					$folder,
+					FilesystemIterator::SKIP_DOTS),
+				RecursiveIteratorIterator::CHILD_FIRST);
+
+			foreach ($it as $path)
+			{
+				$path->isFile()
+					? unlink($path->getPathname())
+					: rmdir($path->getPathname());
+			}
+			rmdir($folder);
+		}
+	}
+
+	protected function getTestFixtures($filter)
+	{
+		$testFiles = [];
+		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__)) as $fileName)
+		{
+			$path = $fileName->getPathname();
+			if (preg_match('/.*Test.php$/', $path))
+				$testFiles []= $path;
+		}
+
+		$testClasses = \Chibi\Util\Reflection::loadClasses($testFiles);
+
+		if ($filter !== null)
+		{
+			$testClasses = array_filter($testClasses, function($className) use ($filter)
+			{
+				return stripos($className, $filter) !== false;
+			});
+		}
+
+		$testFixtures = [];
+
+		foreach ($testClasses as $class)
+		{
+			$reflectionClass = new ReflectionClass($class);
+			if ($reflectionClass->isAbstract())
+				continue;
+
+			$testFixture = new StdClass;
+			$testFixture->class = $reflectionClass;
+			$testFixture->methods = [];
+			foreach ($reflectionClass->getMethods() as $method)
+			{
+				if (preg_match('/test/i', $method->name)
+					and $method->isPublic()
+					and $method->getNumberOfParameters() == 0)
+				{
+					$testFixture->methods []= $method;
+				}
+			}
+			$testFixtures []= $testFixture;
+		}
+
+		return $testFixtures;
+	}
+
+	protected function runAll($testFixtures)
+	{
+		$startTime = microtime(true);
+
+		$testNumber = 0;
+		$resultPrinter = function($result) use (&$testNumber)
+		{
+			printf('%3d %-65s ', ++ $testNumber, $result->origin->class . '::' . $result->origin->name);
+
+			if ($result->success)
+				echo 'OK';
+			else
+				echo 'FAIL';
+
+			printf(' [%.03fs]' . PHP_EOL, $result->duration);
+			if ($result->exception)
+			{
+				echo '---' . PHP_EOL;
+				echo $result->exception->getMessage() . PHP_EOL;
+				echo $result->exception->getTraceAsString() . PHP_EOL;
+				echo '---' . PHP_EOL . PHP_EOL;
+			}
+		};
+
+		//run all the methods
+		echo 'Starting tests' . PHP_EOL;
+
+		$success = true;
+		foreach ($testFixtures as $className => $testFixture)
+		{
+			$results = $this->runTestFixture($testFixture, $resultPrinter);
+
+			foreach ($results as $result)
+				$success &= $result->success;
+		}
+
+		printf('%3s %-65s %s [%.03fs]' . PHP_EOL,
+			' ',
+			'All tests',
+			$success ? 'OK' : 'FAIL',
+			microtime(true) - $startTime);
+
+		return $success;
+	}
+
+	protected function runTestFixture($testFixture, $resultPrinter)
+	{
+		$instance = $testFixture->class->newInstance();
+
+		$instance->setup();
+		$results = [];
+		foreach ($testFixture->methods as $method)
+		{
+			$result = $this->runTest(function() use ($method, $instance)
 				{
 					$method->invoke($instance);
 				});
-			echo 'OK';
+			$result->origin = $method;
+
+			if ($resultPrinter !== null)
+				$resultPrinter($result);
+
+			$results []= $result;
+		}
+		$instance->teardown();
+		return $results;
+	}
+
+	protected function runTest($callback)
+	{
+		$this->resetEnvironment();
+
+		$startTime = microtime(true);
+		$result = new TestResult();
+		try
+		{
+			\Chibi\Database::rollback(function() use ($callback)
+			{
+				$callback();
+			});
+			$result->success = true;
 		}
 		catch (Exception $e)
 		{
-			$success = false;
-			echo 'FAIL';
+			$result->exception = $e;
+			$result->success = false;
 		}
-
-		printf(' [%.03fs]' . PHP_EOL, microtime(true) - $testStartTime);
-		if (isset($e))
-		{
-			echo '---' . PHP_EOL;
-			echo $e->getMessage() . PHP_EOL;
-			echo $e->getTraceAsString() . PHP_EOL;
-			echo '---' . PHP_EOL . PHP_EOL;
-		}
+		$endTime = microtime(true);
+		$result->duration = $endTime - $startTime;
+		return $result;
 	}
-
-	printf('%s %s... %s [%.03fs]' . PHP_EOL,
-		str_pad('', $pad, ' '),
-		str_pad('All tests', $maxLabelLength + 1, ' '),
-		$success ? 'OK' : 'FAIL',
-		microtime(true) - $startTime);
-
-	return $success;
 }
 
-function runSingle($callback)
+class TestResult
 {
-	resetEnvironment();
-	resetEnvironment(true);
-	\Chibi\Database::rollback(function() use ($callback)
-	{
-		$callback();
-	});
+	public $duration;
+	public $success;
+	public $exception;
+	public $origin;
 }
+
+$options = getopt('cf:', ['clean', 'filter:']);
+(new TestRunner)->run($options);
