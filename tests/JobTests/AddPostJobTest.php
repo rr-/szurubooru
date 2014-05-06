@@ -48,6 +48,16 @@ class AddPostJobTest extends AbstractTest
 		}, 'Insufficient privilege');
 	}
 
+	public function testLogBuffering()
+	{
+		$this->testSaving();
+
+		$logPath = Logger::getLogPath();
+		$x = file_get_contents($logPath);
+		$lines = array_filter(explode("\n", $x));
+		$this->assert->areEqual(1, count($lines));
+	}
+
 	protected function prepare()
 	{
 		getConfig()->registration->needEmailForUploading = false;

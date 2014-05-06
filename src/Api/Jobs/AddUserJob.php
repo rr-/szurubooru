@@ -23,10 +23,16 @@ class AddUserJob extends AbstractJob
 		$arguments[EditUserJob::USER_ENTITY] = $user;
 
 		Logger::bufferChanges();
-		$job = new EditUserJob();
-		$job->setContext(self::CONTEXT_BATCH_ADD);
-		Api::run($job, $arguments);
-		Logger::setBuffer([]);
+		try
+		{
+			$job = new EditUserJob();
+			$job->setContext(self::CONTEXT_BATCH_ADD);
+			Api::run($job, $arguments);
+		}
+		finally
+		{
+			Logger::discardBuffer();
+		}
 
 		//save the user to db if everything went okay
 		UserModel::save($user);

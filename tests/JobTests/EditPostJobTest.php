@@ -14,8 +14,8 @@ class EditPostJobTest extends AbstractTest
 		$args =
 		[
 			EditPostJob::POST_ID => $post->getId(),
-			EditPostSafetyJob::SAFETY => PostSafety::Safe,
-			EditPostSourceJob::SOURCE => '',
+			EditPostSafetyJob::SAFETY => PostSafety::Sketchy,
+			EditPostSourceJob::SOURCE => 'some source huh',
 			EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 		];
 
@@ -46,5 +46,15 @@ class EditPostJobTest extends AbstractTest
 		{
 			Api::run(new EditPostJob(), $args);
 		}, 'Insufficient privilege');
+	}
+
+	public function testLogBuffering()
+	{
+		$this->testSaving();
+
+		$logPath = Logger::getLogPath();
+		$x = file_get_contents($logPath);
+		$lines = array_filter(explode("\n", $x));
+		$this->assert->areEqual(3, count($lines));
 	}
 }

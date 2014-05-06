@@ -262,4 +262,14 @@ class AddUserJobTest extends AbstractTest
 
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 	}
+
+	public function testLogBuffering()
+	{
+		$this->testSaving();
+
+		$logPath = Logger::getLogPath();
+		$x = file_get_contents($logPath);
+		$lines = array_filter(explode("\n", $x));
+		$this->assert->areEqual(2, count($lines));
+	}
 }

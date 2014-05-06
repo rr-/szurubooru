@@ -35,9 +35,11 @@ class EditPostJob extends AbstractPostJob
 		}
 
 		if ($this->getContext() == AbstractJob::CONTEXT_NORMAL)
+		{
 			PostModel::save($post);
+			Logger::flush();
+		}
 
-		Logger::flush();
 		return $post;
 	}
 

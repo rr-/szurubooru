@@ -3,17 +3,10 @@ class LoggerTest extends AbstractTest
 {
 	public function testLogging()
 	{
-		$logPath = __DIR__ . '/logs/{yyyy}-{mm}-{dd}.log';
-		$realLogPath = __DIR__ . '/logs/' . date('Y-m-d') . '.log';
+		$realLogPath = Logger::getLogPath();
 
 		try
 		{
-			getConfig()->main->logsPath = $logPath;
-			$this->assert->doesNotThrow(function()
-			{
-				Logger::init();
-			});
-
 			$this->assert->isFalse(file_exists($realLogPath));
 			$this->assert->doesNotThrow(function()
 			{
@@ -29,5 +22,42 @@ class LoggerTest extends AbstractTest
 			if (file_exists($realLogPath))
 				unlink($realLogPath);
 		}
+	}
+
+	public function testPathChanging()
+	{
+		$logPath = __DIR__ . '/logs/{yyyy}-{mm}-{dd}.log';
+		$realLogPath = __DIR__ . '/logs/' . date('Y-m-d') . '.log';
+
+		getConfig()->main->logsPath = $logPath;
+		$this->assert->doesNotThrow(function()
+		{
+			Logger::init();
+		});
+		$this->assert->areEqual($realLogPath, Logger::getLogPath());
+	}
+
+	public function testDiscarding()
+	{
+		$realLogPath = Logger::getLogPath();
+
+		$this->assert->isFalse(file_exists($realLogPath));
+
+		Logger::bufferChanges();
+		Logger::log('line 1');
+		Logger::log('line 2');
+		Logger::log('line 3');
+		Logger::discardBuffer();
+
+		$this->assert->isFalse(file_exists($realLogPath));
+		Logger::log('line 4');
+		Logger::flush();
+		$this->assert->isTrue(file_exists($realLogPath));
+
+		$x = file_get_contents($realLogPath);
+		$this->assert->isTrue(strpos($x, 'line 1') === false);
+		$this->assert->isTrue(strpos($x, 'line 2') === false);
+		$this->assert->isTrue(strpos($x, 'line 3') === false);
+		$this->assert->isTrue(strpos($x, 'line 4') !== false);
 	}
 }

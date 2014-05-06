@@ -24,6 +24,9 @@ class Logger
 
 	public static function flush()
 	{
+		if (empty(self::$buffer))
+			return;
+
 		$fh = fopen(self::$path, 'ab');
 		if (!$fh)
 			throw new SimpleException('Cannot write to log files');
@@ -61,8 +64,8 @@ class Logger
 		return self::$buffer;
 	}
 
-	public static function setBuffer(array $buffer)
+	public static function discardBuffer()
 	{
-		self::$buffer = $buffer;
+		self::$buffer = [];
 	}
 }

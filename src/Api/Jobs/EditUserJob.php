@@ -59,9 +59,9 @@ class EditUserJob extends AbstractUserJob
 		{
 			UserModel::save($user);
 			EditUserEmailJob::observeSave($user);
+			Logger::flush();
 		}
 
-		Logger::flush();
 		return $user;
 	}
 
