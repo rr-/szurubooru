@@ -43,7 +43,7 @@ class EditUserEmailJob extends AbstractUserEditJob
 	public function requiresPrivilege()
 	{
 		return new Privilege(
-			Privilege::ChangeUserAccessRank,
+			Privilege::ChangeUserEmail,
 			Access::getIdentity($this->user));
 	}
 }
