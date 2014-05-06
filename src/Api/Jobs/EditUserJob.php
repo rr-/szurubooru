@@ -1,5 +1,5 @@
 <?php
-class EditUserJob extends AbstractUserEditJob
+class EditUserJob extends AbstractUserJob
 {
 	protected $subJobs;
 
@@ -25,7 +25,7 @@ class EditUserJob extends AbstractUserEditJob
 				Api::checkPrivileges($subJob);
 				return true;
 			}
-			catch (SimpleException $e)
+			catch (AccessException $e)
 			{
 			}
 		}
@@ -40,8 +40,9 @@ class EditUserJob extends AbstractUserEditJob
 
 		foreach ($this->subJobs as $subJob)
 		{
-			if ($this->skipSaving)
-				$subJob->skipSaving();
+			$subJob->setContext($this->getContext() == self::CONTEXT_BATCH_ADD
+				? self::CONTEXT_BATCH_ADD
+				: self::CONTEXT_BATCH_EDIT);
 
 			$args = $this->getArguments();
 			$args[self::USER_ENTITY] = $user;
@@ -49,12 +50,12 @@ class EditUserJob extends AbstractUserEditJob
 			{
 				Api::run($subJob, $args);
 			}
-			catch (ApiMissingArgumentException $e)
+			catch (ApiJobUnsatisfiedException $e)
 			{
 			}
 		}
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			UserModel::save($user);
 
 		Logger::flush();

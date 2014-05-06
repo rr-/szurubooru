@@ -1,6 +1,10 @@
 <?php
 abstract class AbstractJob
 {
+	const CONTEXT_NORMAL = 1;
+	const CONTEXT_BATCH_EDIT = 2;
+	const CONTEXT_BATCH_ADD = 3;
+
 	const COMMENT_ID = 'comment-id';
 	const LOG_ID = 'log-id';
 
@@ -21,12 +25,18 @@ abstract class AbstractJob
 	const STATE = 'state';
 
 	protected $arguments = [];
+	protected $context = self::CONTEXT_NORMAL;
 
 	public function prepare()
 	{
 	}
 
 	public abstract function execute();
+
+	public function isSatisfied()
+	{
+		return true;
+	}
 
 	public function requiresAuthentication()
 	{
@@ -41,6 +51,16 @@ abstract class AbstractJob
 	public function requiresPrivilege()
 	{
 		return false;
+	}
+
+	public function getContext()
+	{
+		return $this->context;
+	}
+
+	public function setContext($context)
+	{
+		$this->context = $context;
 	}
 
 	public function getArgument($key)

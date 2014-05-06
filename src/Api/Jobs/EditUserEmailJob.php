@@ -1,7 +1,12 @@
 <?php
-class EditUserEmailJob extends AbstractUserEditJob
+class EditUserEmailJob extends AbstractUserJob
 {
 	const NEW_EMAIL = 'new-email';
+
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::NEW_EMAIL);
+	}
 
 	public function execute()
 	{
@@ -29,7 +34,7 @@ class EditUserEmailJob extends AbstractUserEditJob
 			$user->confirmEmail();
 		}
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			UserModel::save($user);
 
 		Logger::log('{user} changed {subject}\'s e-mail to {mail}', [

@@ -1,8 +1,14 @@
 <?php
-class EditPostContentJob extends AbstractPostEditJob
+class EditPostContentJob extends AbstractPostJob
 {
 	const POST_CONTENT = 'post-content';
 	const POST_CONTENT_URL = 'post-content-url';
+
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::POST_CONTENT)
+			or $this->hasArgument(self::POST_CONTENT_URL);
+	}
 
 	public function execute()
 	{
@@ -19,7 +25,7 @@ class EditPostContentJob extends AbstractPostEditJob
 			$post->setContentFromPath($file->filePath, $file->fileName);
 		}
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			PostModel::save($post);
 
 		Logger::log('{user} changed contents of {post}', [
@@ -32,7 +38,9 @@ class EditPostContentJob extends AbstractPostEditJob
 	public function requiresPrivilege()
 	{
 		return new Privilege(
-			Privilege::EditPostContent,
+			$this->getContext() == self::CONTEXT_BATCH_ADD
+				? Privilege::AddPostContent
+				: Privilege::EditPostContent,
 			Access::getIdentity($this->post->getUploader()));
 	}
 }

@@ -86,7 +86,7 @@ class Access
 	public static function assert(Privilege $privilege, $user = null)
 	{
 		if (!self::check($privilege, $user))
-			self::fail();
+			self::fail('Insufficient privileges (' . $privilege->toString() . ')');
 	}
 
 	public static function assertEmailConfirmation($user = null)
@@ -95,9 +95,9 @@ class Access
 			self::fail('Need e-mail address confirmation to continue');
 	}
 
-	public static function fail($message = 'Insufficient privileges')
+	public static function fail($message)
 	{
-		throw new SimpleException($message);
+		throw new AccessException($message);
 	}
 
 	public static function getIdentity($user)

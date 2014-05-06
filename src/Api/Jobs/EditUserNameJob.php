@@ -1,7 +1,12 @@
 <?php
-class EditUserNameJob extends AbstractUserEditJob
+class EditUserNameJob extends AbstractUserJob
 {
 	const NEW_USER_NAME = 'new-user-name';
+
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::NEW_USER_NAME);
+	}
 
 	public function execute()
 	{
@@ -15,7 +20,7 @@ class EditUserNameJob extends AbstractUserEditJob
 		$user->setName($newName);
 		UserModel::validateUserName($user);
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			UserModel::save($user);
 
 		Logger::log('{user} renamed {old} to {new}', [

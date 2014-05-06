@@ -1,7 +1,12 @@
 <?php
-class EditUserPasswordJob extends AbstractUserEditJob
+class EditUserPasswordJob extends AbstractUserJob
 {
 	const NEW_PASSWORD = 'new-password';
+
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::NEW_PASSWORD);
+	}
 
 	public function execute()
 	{
@@ -15,7 +20,7 @@ class EditUserPasswordJob extends AbstractUserEditJob
 
 		$user->passHash = $newPasswordHash;
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			UserModel::save($user);
 
 		Logger::log('{user} changed {subject}\'s password', [

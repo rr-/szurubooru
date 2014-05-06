@@ -59,4 +59,9 @@ class AbstractTest
 		getConfig()->privileges->$privilege = 'nobody';
 		Access::init();
 	}
+
+	protected function getPath($name)
+	{
+		return getConfig()->rootDir . DS . 'tests' . DS . 'TestFiles' . DS . $name;
+	}
 }

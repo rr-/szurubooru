@@ -2,21 +2,30 @@
 class Privilege extends Enum
 {
 	const ListPosts = 1;
-	const UploadPost = 2;
 	const ViewPost = 3;
 	const RetrievePost = 4;
 	const FavoritePost = 5;
+	const HidePost = 9;
+	const DeletePost = 10;
+	const FeaturePost = 25;
+	const ScorePost = 31;
+	const FlagPost = 34;
+
+	const EditPost = 45;
 	const EditPostSafety = 6;
 	const EditPostTags = 7;
 	const EditPostThumb = 8;
 	const EditPostSource = 26;
 	const EditPostRelations = 30;
 	const EditPostContent = 36;
-	const HidePost = 9;
-	const DeletePost = 10;
-	const FeaturePost = 25;
-	const ScorePost = 31;
-	const FlagPost = 34;
+
+	const AddPost = 2;
+	const AddPostSafety = 39;
+	const AddPostTags = 40;
+	const AddPostThumb = 41;
+	const AddPostSource = 42;
+	const AddPostRelations = 43;
+	const AddPostContent = 44;
 
 	const RegisterAccount = 38;
 	const ListUsers = 11;

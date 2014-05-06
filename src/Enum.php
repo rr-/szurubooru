@@ -13,7 +13,7 @@ abstract class Enum
 	public function toDisplayString()
 	{
 		return TextCaseConverter::convert($this->toString(),
-			TextCaseConverter::SNAKE_CASE,
+			TextCaseConverter::CAMEL_CASE,
 			TextCaseConverter::BLANK_CASE);
 	}
 

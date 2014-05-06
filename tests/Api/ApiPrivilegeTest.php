@@ -15,9 +15,8 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->testRegularPrivilege(new ActivateUserEmailJob(), false);
 		$this->testRegularPrivilege(new AddCommentJob(), new Privilege(Privilege::AddComment));
 		$this->testRegularPrivilege(new PreviewCommentJob(), new Privilege(Privilege::AddComment));
-		$this->testRegularPrivilege(new AddPostJob(), new Privilege(Privilege::UploadPost));
+		$this->testRegularPrivilege(new AddPostJob(), new Privilege(Privilege::AddPost));
 		$this->testRegularPrivilege(new AddUserJob(), new Privilege(Privilege::RegisterAccount));
-		$this->testRegularPrivilege(new EditPostJob(), false);
 		$this->testRegularPrivilege(new EditUserJob(), false);
 		$this->testRegularPrivilege(new GetLogJob(), new Privilege(Privilege::ViewLog));
 		$this->testRegularPrivilege(new ListCommentsJob(), new Privilege(Privilege::ListComments));
@@ -42,12 +41,27 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->login($this->mockUser());
 
 		$this->testDynamicPostPrivilege(new DeletePostJob(), new Privilege(Privilege::DeletePost));
+		$this->testDynamicPostPrivilege(new EditPostJob(), new Privilege(Privilege::EditPost));
 		$this->testDynamicPostPrivilege(new EditPostContentJob(), new Privilege(Privilege::EditPostContent));
 		$this->testDynamicPostPrivilege(new EditPostRelationsJob(), new Privilege(Privilege::EditPostRelations));
 		$this->testDynamicPostPrivilege(new EditPostSafetyJob(), new Privilege(Privilege::EditPostSafety));
 		$this->testDynamicPostPrivilege(new EditPostSourceJob(), new Privilege(Privilege::EditPostSource));
 		$this->testDynamicPostPrivilege(new EditPostTagsJob(), new Privilege(Privilege::EditPostTags));
 		$this->testDynamicPostPrivilege(new EditPostThumbJob(), new Privilege(Privilege::EditPostThumb));
+
+		$ctx = function($job)
+		{
+			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
+			return $job;
+		};
+		$this->testDynamicPostPrivilege($ctx(new EditPostJob), new Privilege(Privilege::AddPost));
+		$this->testDynamicPostPrivilege($ctx(new EditPostContentJob), new Privilege(Privilege::AddPostContent));
+		$this->testDynamicPostPrivilege($ctx(new EditPostRelationsJob), new Privilege(Privilege::AddPostRelations));
+		$this->testDynamicPostPrivilege($ctx(new EditPostSafetyJob), new Privilege(Privilege::AddPostSafety));
+		$this->testDynamicPostPrivilege($ctx(new EditPostSourceJob), new Privilege(Privilege::AddPostSource));
+		$this->testDynamicPostPrivilege($ctx(new EditPostTagsJob), new Privilege(Privilege::AddPostTags));
+		$this->testDynamicPostPrivilege($ctx(new EditPostThumbJob), new Privilege(Privilege::AddPostThumb));
+
 		$this->testDynamicPostPrivilege(new FeaturePostJob(), new Privilege(Privilege::FeaturePost));
 		$this->testDynamicPostPrivilege(new FlagPostJob(), new Privilege(Privilege::FlagPost));
 		$this->testDynamicPostPrivilege(new ScorePostJob(), new Privilege(Privilege::ScorePost));

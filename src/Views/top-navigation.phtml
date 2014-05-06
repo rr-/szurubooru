@@ -26,7 +26,7 @@
 			$activeController == 'post' and $activeAction != 'upload');
 	}
 
-	if (Access::check(new Privilege(Privilege::UploadPost)))
+	if (Access::check(new Privilege(Privilege::AddPost)))
 	{
 		$registerNavItem(
 			'Upload',

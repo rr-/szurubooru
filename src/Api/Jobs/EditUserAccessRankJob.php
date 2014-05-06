@@ -1,7 +1,12 @@
 <?php
-class EditUserAccessRankJob extends AbstractUserEditJob
+class EditUserAccessRankJob extends AbstractUserJob
 {
 	const NEW_ACCESS_RANK = 'new-access-rank';
+
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::NEW_ACCESS_RANK);
+	}
 
 	public function execute()
 	{
@@ -14,7 +19,7 @@ class EditUserAccessRankJob extends AbstractUserEditJob
 
 		$user->setAccessRank($newAccessRank);
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			UserModel::save($user);
 
 		Logger::log('{user} changed {subject}\'s access rank to {rank}', [

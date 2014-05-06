@@ -1,7 +1,12 @@
 <?php
-class EditPostSafetyJob extends AbstractPostEditJob
+class EditPostSafetyJob extends AbstractPostJob
 {
 	const SAFETY = 'safety';
+
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::SAFETY);
+	}
 
 	public function execute()
 	{
@@ -11,7 +16,7 @@ class EditPostSafetyJob extends AbstractPostEditJob
 		$oldSafety = $post->getSafety();
 		$post->setSafety($newSafety);
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			PostModel::save($post);
 
 		if ($oldSafety != $newSafety)
@@ -28,7 +33,9 @@ class EditPostSafetyJob extends AbstractPostEditJob
 	public function requiresPrivilege()
 	{
 		return new Privilege(
-			Privilege::EditPostSafety,
+			$this->getContext() == self::CONTEXT_BATCH_ADD
+				? Privilege::AddPostSafety
+				: Privilege::EditPostSafety,
 			Access::getIdentity($this->post->getUploader()));
 	}
 }

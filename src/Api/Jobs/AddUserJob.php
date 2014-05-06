@@ -20,7 +20,9 @@ class AddUserJob extends AbstractJob
 
 		Logger::bufferChanges();
 		Access::disablePrivilegeChecking();
-		Api::run((new EditUserJob)->skipSaving(), $arguments);
+		$job = new EditUserJob();
+		$job->setContext(self::CONTEXT_BATCH_ADD);
+		Api::run($job, $arguments);
 		Access::enablePrivilegeChecking();
 		Logger::setBuffer([]);
 

@@ -8,6 +8,10 @@ final class Api
 		return \Chibi\Database::transaction(function() use ($job, $jobArgs)
 		{
 			$job->setArguments($jobArgs);
+
+			if (!$job->isSatisfied())
+				throw new ApiJobUnsatisfiedException($job);
+
 			$job->prepare();
 
 			self::checkPrivileges($job);

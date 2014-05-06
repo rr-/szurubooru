@@ -162,9 +162,4 @@ class EditPostContentJobTest extends AbstractTest
 
 		return $post;
 	}
-
-	protected function getPath($name)
-	{
-		return getConfig()->rootDir . DS . 'tests' . DS . 'TestFiles' . DS . $name;
-	}
 }

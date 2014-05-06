@@ -1,7 +1,12 @@
 <?php
-class EditPostRelationsJob extends AbstractPostEditJob
+class EditPostRelationsJob extends AbstractPostJob
 {
 	const RELATED_POST_IDS = 'related-post-ids';
+
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::RELATED_POST_IDS);
+	}
 
 	public function execute()
 	{
@@ -12,7 +17,7 @@ class EditPostRelationsJob extends AbstractPostEditJob
 		$post->setRelationsFromText($relations);
 		$newRelatedIds = array_map(function($post) { return $post->getId(); }, $post->getRelations());
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			PostModel::save($post);
 
 		foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
@@ -37,7 +42,9 @@ class EditPostRelationsJob extends AbstractPostEditJob
 	public function requiresPrivilege()
 	{
 		return new Privilege(
-			Privilege::EditPostRelations,
+			$this->getContext() == self::CONTEXT_BATCH_ADD
+				? Privilege::AddPostRelations
+				: Privilege::EditPostRelations,
 			Access::getIdentity($this->post->getUploader()));
 	}
 }

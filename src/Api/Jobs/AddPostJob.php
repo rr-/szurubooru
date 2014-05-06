@@ -6,7 +6,6 @@ class AddPostJob extends AbstractJob
 	public function execute()
 	{
 		$post = PostModel::spawn();
-		Logger::bufferChanges();
 
 		//basic stuff
 		$anonymous = $this->getArgument(self::ANONYMOUS);
@@ -20,13 +19,15 @@ class AddPostJob extends AbstractJob
 		//warning: it uses internally the same privileges as post editing
 		$arguments = $this->getArguments();
 		$arguments[EditPostJob::POST_ENTITY] = $post;
-		Api::run((new EditPostJob)->skipSaving(), $arguments);
+
+		Logger::bufferChanges();
+		$job = new EditPostJob();
+		$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
+		Api::run($job, $arguments);
+		Logger::setBuffer([]);
 
 		//save to db
 		PostModel::save($post);
-
-		//clean edit log
-		Logger::setBuffer([]);
 
 		//log
 		Logger::log('{user} added {post} (tags: {tags}, safety: {safety}, source: {source})', [
@@ -46,7 +47,7 @@ class AddPostJob extends AbstractJob
 
 	public function requiresPrivilege()
 	{
-		return new Privilege(Privilege::UploadPost);
+		return new Privilege(Privilege::AddPost);
 	}
 
 	public function requiresConfirmedEmail()

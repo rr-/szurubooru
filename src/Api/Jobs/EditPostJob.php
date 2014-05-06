@@ -1,5 +1,5 @@
 <?php
-class EditPostJob extends AbstractPostEditJob
+class EditPostJob extends AbstractPostJob
 {
 	public function execute()
 	{
@@ -19,8 +19,9 @@ class EditPostJob extends AbstractPostEditJob
 
 		foreach ($subJobs as $subJob)
 		{
-			if ($this->skipSaving)
-				$subJob->skipSaving();
+			$subJob->setContext($this->getContext() == self::CONTEXT_BATCH_ADD
+				? self::CONTEXT_BATCH_ADD
+				: self::CONTEXT_BATCH_EDIT);
 
 			$args = $this->getArguments();
 			$args[self::POST_ENTITY] = $post;
@@ -28,15 +29,24 @@ class EditPostJob extends AbstractPostEditJob
 			{
 				Api::run($subJob, $args);
 			}
-			catch (ApiMissingArgumentException $e)
+			catch (ApiJobUnsatisfiedException $e)
 			{
 			}
 		}
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == AbstractJob::CONTEXT_NORMAL)
 			PostModel::save($post);
 
 		Logger::flush();
 		return $post;
+	}
+
+	public function requiresPrivilege()
+	{
+		return new Privilege(
+			$this->getContext() == self::CONTEXT_BATCH_ADD
+				? Privilege::AddPost
+				: Privilege::EditPost,
+			Access::getIdentity($this->post->getUploader()));
 	}
 }

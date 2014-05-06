@@ -1,6 +1,11 @@
 <?php
-class EditPostTagsJob extends AbstractPostEditJob
+class EditPostTagsJob extends AbstractPostJob
 {
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::TAG_NAMES);
+	}
+
 	public function execute()
 	{
 		$post = $this->post;
@@ -10,7 +15,7 @@ class EditPostTagsJob extends AbstractPostEditJob
 		$post->setTagsFromText($tags);
 		$newTags = array_map(function($tag) { return $tag->getName(); }, $post->getTags());
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 		{
 			PostModel::save($post);
 			TagModel::removeUnused();
@@ -38,7 +43,9 @@ class EditPostTagsJob extends AbstractPostEditJob
 	public function requiresPrivilege()
 	{
 		return new Privilege(
-			Privilege::EditPostTags,
+			$this->getContext() == self::CONTEXT_BATCH_ADD
+				? Privilege::AddPostTags
+				: Privilege::EditPostTags,
 			Access::getIdentity($this->post->getUploader()));
 	}
 }

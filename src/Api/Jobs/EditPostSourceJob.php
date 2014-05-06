@@ -1,7 +1,12 @@
 <?php
-class EditPostSourceJob extends AbstractPostEditJob
+class EditPostSourceJob extends AbstractPostJob
 {
 	const SOURCE = 'source';
+
+	public function isSatisfied()
+	{
+		return $this->hasArgument(self::SOURCE);
+	}
 
 	public function execute()
 	{
@@ -11,7 +16,7 @@ class EditPostSourceJob extends AbstractPostEditJob
 		$oldSource = $post->source;
 		$post->setSource($newSource);
 
-		if (!$this->skipSaving)
+		if ($this->getContext() == self::CONTEXT_NORMAL)
 			PostModel::save($post);
 
 		if ($oldSource != $newSource)
@@ -28,7 +33,9 @@ class EditPostSourceJob extends AbstractPostEditJob
 	public function requiresPrivilege()
 	{
 		return new Privilege(
-			Privilege::EditPostSource,
+			$this->getContext() == self::CONTEXT_BATCH_ADD
+				? Privilege::AddPostSource
+				: Privilege::EditPostSource,
 			Access::getIdentity($this->post->getUploader()));
 	}
 }
