@@ -26,6 +26,6 @@ class DeletePostJob extends AbstractPostJob
 
 	public function requiresConfirmedEmail()
 	{
-		return getConfig()->registration->needEmailForCommenting;
+		return false;
 	}
 }

@@ -33,6 +33,6 @@ class DeleteCommentJob extends AbstractJob
 
 	public function requiresConfirmedEmail()
 	{
-		return getConfig()->registration->needEmailForCommenting;
+		return false;
 	}
 }

@@ -37,6 +37,6 @@ class EditCommentJob extends AbstractJob
 
 	public function requiresConfirmedEmail()
 	{
-		return getConfig()->registration->needEmailForCommenting;
+		return false;
 	}
 }
