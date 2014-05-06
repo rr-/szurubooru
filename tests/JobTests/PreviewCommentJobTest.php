@@ -82,7 +82,7 @@ class PreviewCommentJobTest extends AbstractTest
 
 	protected function runApi($text)
 	{
-		$post = $this->mockPost();
+		$post = $this->mockPost(Auth::getCurrentUser());
 
 		return Api::run(
 			new PreviewCommentJob(),

@@ -17,9 +17,10 @@ class AbstractTest
 		return UserModel::save($user);
 	}
 
-	protected function mockPost()
+	protected function mockPost($owner)
 	{
 		$post = PostModel::spawn();
+		$post->setUploader($owner);
 		$post->setType(new PostType(PostType::Image));
 		return PostModel::save($post);
 	}
@@ -31,7 +32,7 @@ class AbstractTest
 
 	protected function mockComment($owner)
 	{
-		$post = $this->mockPost();
+		$post = $this->mockPost($owner);
 		$comment = CommentModel::spawn();
 		$comment->setPost($post);
 		$comment->setCommenter($owner);
