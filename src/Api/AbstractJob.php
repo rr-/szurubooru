@@ -20,7 +20,7 @@ abstract class AbstractJob
 	const QUERY = 'query';
 	const STATE = 'state';
 
-	protected $arguments;
+	protected $arguments = [];
 
 	public function prepare()
 	{
@@ -61,7 +61,12 @@ abstract class AbstractJob
 		return isset($this->arguments[$key]);
 	}
 
-	public function setArguments($arguments)
+	public function setArgument($key, $value)
+	{
+		$this->arguments[$key] = $value;
+	}
+
+	public function setArguments(array $arguments)
 	{
 		$this->arguments = $arguments;
 	}
