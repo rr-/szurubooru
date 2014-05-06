@@ -1,5 +1,5 @@
 <?php
-class CommentAddTest extends AbstractTest
+class AddCommentJobTest extends AbstractTest
 {
 	protected $user;
 

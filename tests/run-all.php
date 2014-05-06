@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__ . '/../src/core.php';
+require_once __DIR__ . '/../src/upgrade.php';
+\Chibi\Autoloader::registerFileSystem(__DIR__);
+
 $configPath = __DIR__ . '/test.ini';
 
 $options = getopt('cf:', ['clean', 'filter:']);
@@ -35,9 +39,6 @@ try
 
 	file_put_contents($configPath, implode(PHP_EOL, $configIni));
 
-	require_once __DIR__ . '/../src/core.php';
-	require_once __DIR__ . '/../src/upgrade.php';
-
 	upgradeDatabase();
 
 	runAll($filter);
@@ -49,7 +50,15 @@ finally
 
 function getTestMethods($filter)
 {
-	$testClasses = \Chibi\Util\Reflection::loadClasses(glob(__DIR__ . '/*Test.php'));
+	$testFiles = [];
+	foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__)) as $fileName)
+	{
+		$path = $fileName->getPathname();
+		if (preg_match('/.*Test.php$/', $path))
+			$testFiles []= $path;
+	}
+
+	$testClasses = \Chibi\Util\Reflection::loadClasses($testFiles);
 
 	if ($filter !== null)
 	{

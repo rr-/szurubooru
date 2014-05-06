@@ -1,5 +1,5 @@
 <?php
-class CommentListTest extends AbstractTest
+class ListCommentJobTest extends AbstractTest
 {
 	public function testNone()
 	{

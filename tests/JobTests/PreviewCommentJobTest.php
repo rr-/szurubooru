@@ -1,5 +1,5 @@
 <?php
-class CommentPreviewTest extends AbstractTest
+class PreviewCommentJobTest extends AbstractTest
 {
 	public function testPreview()
 	{

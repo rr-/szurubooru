@@ -1,5 +1,5 @@
 <?php
-class CommentDeleteTest extends AbstractTest
+class DeleteCommentJobTest extends AbstractTest
 {
 	public function testOwn()
 	{
