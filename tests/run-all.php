@@ -93,7 +93,7 @@ function runAll($filter)
 	foreach ($labels as &$label)
 		$label = str_pad($label, $maxLabelLength + 1, ' ');
 
-	$pad = count($testMethods) ? ceil(log10(count($testMethods))) : 0;
+	$pad = count($testMethods) ? ceil(log10(1 + count($testMethods))) : 0;
 
 	//run all the methods
 	$success = true;
