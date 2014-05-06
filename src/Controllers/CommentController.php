@@ -14,22 +14,19 @@ class CommentController
 		$context->transport->paginator = $ret;
 	}
 
-	public function previewAction()
-	{
-		$comment = Api::run(
-			new PreviewCommentJob(),
-			[
-				PreviewCommentJob::POST_ID => InputHelper::get('post-id'),
-				PreviewCommentJob::TEXT => InputHelper::get('text')
-			]);
-
-		getContext()->transport->textPreview = $comment->getTextMarkdown();
-	}
-
 	public function addAction()
 	{
 		if (InputHelper::get('sender') == 'preview')
-			return $this->previewAction();
+		{
+			$comment = Api::run(
+				new PreviewCommentJob(),
+				[
+					PreviewCommentJob::POST_ID => InputHelper::get('post-id'),
+					PreviewCommentJob::TEXT => InputHelper::get('text')
+				]);
+
+			getContext()->transport->textPreview = $comment->getTextMarkdown();
+		}
 
 		Api::run(
 			new AddCommentJob(),
@@ -47,7 +44,16 @@ class CommentController
 	public function editAction($id)
 	{
 		if (InputHelper::get('sender') == 'preview')
-			return $this->previewAction();
+		{
+			$comment = Api::run(
+				new PreviewCommentJob(),
+				[
+					PreviewCommentJob::COMMENT_ID => $id,
+					PreviewCommentJob::TEXT => InputHelper::get('text')
+				]);
+
+			getContext()->transport->textPreview = $comment->getTextMarkdown();
+		}
 
 		Api::run(
 			new EditCommentJob(),

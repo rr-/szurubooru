@@ -5,13 +5,21 @@ class PreviewCommentJob extends AbstractJob
 	{
 		$user = Auth::getCurrentUser();
 		$text = $this->getArgument(self::TEXT);
-		$post = PostModel::findById($this->getArgument(self::POST_ID));
 
-		$comment = CommentModel::spawn();
+		if ($this->hasArgument(self::POST_ID))
+		{
+			$post = PostModel::findById($this->getArgument(self::POST_ID));
+			$comment = CommentModel::spawn();
+			$comment->setPost($post);
+		}
+		else
+		{
+			$comment = CommentModel::findById($this->getArgument(self::COMMENT_ID));
+		}
+
 		$comment->setCommenter($user);
 		$comment->setDateTime(time());
 		$comment->setText($text);
-		$comment->setPost($post);
 
 		$comment->validate();
 

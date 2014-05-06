@@ -57,6 +57,38 @@ class PreviewCommentJobTest extends AbstractTest
 		}, 'Comment must have at most');
 	}
 
+	public function testViaPost()
+	{
+		$this->prepare();
+		$post = $this->mockPost(Auth::getCurrentUser());
+
+		$this->assert->doesNotThrow(function() use ($post)
+		{
+			Api::run(
+				new PreviewCommentJob(),
+				[
+					PreviewCommentJob::POST_ID => $post->getId(),
+					PreviewCommentJob::TEXT => 'alohaaa',
+				]);
+		});
+	}
+
+	public function testViaComment()
+	{
+		$this->prepare();
+		$comment = $this->mockComment(Auth::getCurrentUser());
+
+		$this->assert->doesNotThrow(function() use ($comment)
+		{
+			Api::run(
+				new PreviewCommentJob(),
+				[
+					PreviewCommentJob::COMMENT_ID => $comment->getId(),
+					PreviewCommentJob::TEXT => 'alohaaa',
+				]);
+		});
+	}
+
 
 	protected function runApi($text)
 	{
