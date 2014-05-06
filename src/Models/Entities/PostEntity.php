@@ -258,7 +258,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 
 		$dstPath = $this->getThumbCustomPath();
 
-		TransferHelper::moveUpload($srcPath, $dstPath);
+		TransferHelper::copy($srcPath, $dstPath);
 	}
 
 	public function generateThumb($width = null, $height = null)
@@ -332,7 +332,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 
 		$dstPath = $this->getFullPath();
 
-		TransferHelper::moveUpload($srcPath, $dstPath);
+		TransferHelper::copy($srcPath, $dstPath);
 
 		$thumbPath = $this->getThumbDefaultPath();
 		if (file_exists($thumbPath))
@@ -370,20 +370,20 @@ class PostEntity extends AbstractEntity implements IValidatable
 			return;
 		}
 
-		$srcPath = tempnam(sys_get_temp_dir(), 'upload') . '.dat';
+		$tmpPath = tempnam(sys_get_temp_dir(), 'upload') . '.dat';
 
 		try
 		{
 			$maxBytes = TextHelper::stripBytesUnits(ini_get('upload_max_filesize'));
 
-			TransferHelper::download($srcUrl, $srcPath, $maxBytes);
+			TransferHelper::download($srcUrl, $tmpPath, $maxBytes);
 
-			$this->setContentFromPath($srcPath, basename($srcUrl));
+			$this->setContentFromPath($tmpPath, basename($srcUrl));
 		}
 		finally
 		{
-			if (file_exists($srcPath))
-				unlink($srcPath);
+			if (file_exists($tmpPath))
+				unlink($tmpPath);
 		}
 	}
 

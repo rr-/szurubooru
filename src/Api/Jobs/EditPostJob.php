@@ -14,7 +14,6 @@ class EditPostJob extends AbstractPostEditJob
 			new EditPostSourceJob(),
 			new EditPostRelationsJob(),
 			new EditPostContentJob(),
-			new EditPostUrlJob(),
 			new EditPostThumbJob(),
 		];
 

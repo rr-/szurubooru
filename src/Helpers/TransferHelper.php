@@ -1,8 +1,17 @@
 <?php
 class TransferHelper
 {
+	protected static $mocks = [];
+
 	public static function download($srcUrl, $dstPath, $maxBytes = null)
 	{
+		if (isset(self::$mocks[$srcUrl]))
+		{
+			self::copy(self::$mocks[$srcUrl], $dstPath);
+			chmod($dstPath, 0644);
+			return;
+		}
+
 		set_time_limit(0);
 		$srcHandle = fopen($srcUrl, 'rb');
 		if (!$srcHandle)
@@ -42,6 +51,11 @@ class TransferHelper
 		}
 	}
 
+	public static function mockForDownload($url, $sourceFile)
+	{
+		self::$mocks[$url] = $sourceFile;
+	}
+
 	public static function moveUpload($srcPath, $dstPath)
 	{
 		if ($srcPath == $dstPath)
@@ -55,8 +69,8 @@ class TransferHelper
 		{
 			//problems with permissions on some systems?
 			#rename($srcPath, $dstPath);
-			copy($srcPath, $dstPath);
-			unlink($srcPath);
+			self::copy($srcPath, $dstPath);
+			self::remove($srcPath);
 		}
 	}
 
@@ -66,6 +80,12 @@ class TransferHelper
 			throw new SimpleException('Trying to copy file to the same location');
 
 		copy($srcPath, $dstPath);
+	}
+
+	public static function remove($srcPath)
+	{
+		if (file_exists($srcPath))
+			unlink($srcPath);
 	}
 
 	public static function createDirectory($dirPath)

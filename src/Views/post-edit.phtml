@@ -86,7 +86,7 @@
 	<?php endif ?>
 
 	<?php if (Access::check(new Privilege(
-		Privilege::EditPostFile,
+		Privilege::EditPostContent,
 		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
 
 		<div class="form-row url">
