@@ -57,28 +57,6 @@ class PreviewCommentJobTest extends AbstractTest
 		}, 'Comment must have at most');
 	}
 
-	public function testNoAuth()
-	{
-		$this->prepare();
-		Auth::setCurrentUser(null);
-
-		$this->assert->doesNotThrow(function()
-		{
-			return $this->runApi('alohaaaaaaa');
-		});
-	}
-
-	public function testAccessDenial()
-	{
-		$this->prepare();
-		$this->revokeAccess('addComment');
-
-		$this->assert->throws(function()
-		{
-			return $this->runApi('alohaaaaaaa');
-		}, 'Insufficient privileges');
-	}
-
 
 	protected function runApi($text)
 	{

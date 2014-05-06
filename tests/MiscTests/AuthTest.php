@@ -1,5 +1,5 @@
 <?php
-class BasicAuthTest extends AbstractTest
+class AuthTest extends AbstractTest
 {
 	public function testValidPassword()
 	{

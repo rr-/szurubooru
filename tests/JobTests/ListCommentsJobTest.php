@@ -55,14 +55,6 @@ class ListCommentJobTest extends AbstractTest
 		$this->assert->areEqual(1, count($ret->entities));
 	}
 
-	public function testAccessDenial()
-	{
-		$this->assert->throws(function()
-		{
-			$this->runApi(1);
-		}, 'Insufficient privileges');
-	}
-
 	protected function runApi($page)
 	{
 		return Api::run(

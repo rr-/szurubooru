@@ -14,57 +14,6 @@ class DeleteCommentJobTest extends AbstractTest
 		$this->assert->areEqual(0, CommentModel::getCount());
 	}
 
-	public function testNoAuth()
-	{
-		$this->prepare();
-		Auth::setCurrentUser(null);
-
-		$this->assert->throws(function()
-		{
-			$this->runApi();
-		}, 'Not logged in');
-	}
-
-	public function testOwnAccessDenial()
-	{
-		$this->prepare();
-
-		$this->assert->throws(function()
-		{
-			$this->runApi();
-		}, 'Insufficient privileges');
-	}
-
-	public function testOtherAccessGrant()
-	{
-		$this->prepare();
-		$this->grantAccess('deleteComment.all');
-
-		$comment = $this->mockComment(Auth::getCurrentUser());
-		//login as someone else
-		$this->login($this->mockUser());
-
-		$this->assert->doesNotThrow(function() use ($comment)
-		{
-			$this->runApi($comment);
-		});
-	}
-
-	public function testOtherAccessDenial()
-	{
-		$this->prepare();
-		$this->grantAccess('deleteComment.own');
-
-		$comment = $this->mockComment(Auth::getCurrentUser());
-		//login as someone else
-		$this->login($this->mockUser());
-
-		$this->assert->throws(function() use ($comment)
-		{
-			$this->runApi($comment);
-		}, 'Insufficient privileges');
-	}
-
 	public function testWrongCommentId()
 	{
 		$this->prepare();

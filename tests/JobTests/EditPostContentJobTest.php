@@ -103,61 +103,6 @@ class EditPostContentJobTest extends AbstractTest
 		});
 	}
 
-	public function testNoAuth()
-	{
-		$this->prepare();
-		$this->grantAccess('editPostContent');
-		Auth::setCurrentUser(null);
-
-		$this->assert->doesNotThrow(function()
-		{
-			$this->uploadFromFile('image.jpg');
-		});
-	}
-
-	public function testOwnAccessDenial()
-	{
-		$this->prepare();
-
-		$this->assert->throws(function()
-		{
-			$this->uploadFromFile('image.jpg');
-		}, 'Insufficient privileges');
-	}
-
-	public function testOtherAccessGrant()
-	{
-		$this->prepare();
-		$this->grantAccess('editPostContent.all');
-
-		$post = $this->mockPost(Auth::getCurrentUser());
-
-		//login as someone else
-		$this->login($this->mockUser());
-
-		$this->assert->doesNotThrow(function() use ($post)
-		{
-			$this->uploadFromFile('image.jpg', $post);
-		});
-	}
-
-	public function testOtherAccessDenial()
-	{
-		$this->prepare();
-		$this->grantAccess('editPostContent.own');
-
-		$post = $this->mockPost(Auth::getCurrentUser());
-
-		//login as someone else
-		$this->login($this->mockUser());
-
-		$this->assert->throws(function() use ($post)
-		{
-			$this->uploadFromFile('image.jpg', $post);
-		}, 'Insufficient privileges');
-	}
-
-
 	public function testWrongPostId()
 	{
 		$this->assert->throws(function()

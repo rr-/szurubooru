@@ -24,16 +24,6 @@ class AddCommentJobTest extends AbstractTest
 		});
 	}
 
-	public function testEmailActivation()
-	{
-		$this->prepare();
-		getConfig()->registration->needEmailForCommenting = true;
-		$this->assert->throws(function()
-		{
-			$this->runApi('alohaaaa');
-		}, 'Need e-mail');
-	}
-
 	public function testAlmostTooShortText()
 	{
 		$this->prepare();
@@ -68,28 +58,6 @@ class AddCommentJobTest extends AbstractTest
 		{
 			$this->runApi(str_repeat('b', getConfig()->comments->maxLength + 1));
 		}, 'Comment must have at most');
-	}
-
-	public function testNoAuth()
-	{
-		$this->prepare();
-		Auth::setCurrentUser(null);
-
-		$this->assert->doesNotThrow(function()
-		{
-			$this->runApi('alohaaaaaaa');
-		});
-	}
-
-	public function testAccessDenial()
-	{
-		$this->prepare();
-		$this->revokeAccess('addComment');
-
-		$this->assert->throws(function()
-		{
-			$this->runApi('alohaaaaaaa');
-		}, 'Insufficient privileges');
 	}
 
 	public function testAnonymous()
