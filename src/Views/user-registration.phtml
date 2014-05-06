@@ -2,7 +2,7 @@
 Assets::setSubTitle('registration form');
 ?>
 
-<?php if (isset($this->context->transport->message)): ?>
+<?php if (isset($this->context->transport->message) and $this->context->transport->success): ?>
 	<?php \Chibi\View::render('message', $this->context) ?>
 <?php else: ?>
 	<?php
