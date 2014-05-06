@@ -284,7 +284,7 @@ class PostModel extends AbstractCrudModel
 	{
 		$source = trim($source);
 
-		$maxLength = 200;
+		$maxLength = getConfig()->posts->maxSourceLength;
 		if (strlen($source) > $maxLength)
 			throw new SimpleException('Source must have at most %d characters', $maxLength);
 
