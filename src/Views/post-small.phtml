@@ -49,7 +49,7 @@ if ($masstag)
 		<img
 			class="thumb"
 			src="<?= \Chibi\Router::linkTo(['PostController', 'thumbView'], ['name' => $this->context->post->getName()]) ?>"
-			alt="@<?= $this->context->post->getId() ?>"/>
+			alt="<?= TextHelper::reprPost($this->context->post) ?>"/>
 
 		<?php
 			$x =

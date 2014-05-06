@@ -262,7 +262,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 						<a href="<?= \Chibi\Router::linkTo(
 							['PostController', 'genericView'],
 							['id' => $relatedPost->getId()]) ?>">
-							@<?= $relatedPost->getId() ?>
+							<?= TextHelper::reprPost($relatedPost) ?>
 						</a>
 					</li>
 				<?php endforeach ?>
