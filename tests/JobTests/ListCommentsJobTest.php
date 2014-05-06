@@ -3,6 +3,8 @@ class ListCommentJobTest extends AbstractTest
 {
 	public function testNone()
 	{
+		$this->grantAccess('listComments');
+
 		$this->assert->areEqual(0, CommentModel::getCount());
 
 		$ret = $this->runApi(1);
@@ -11,6 +13,9 @@ class ListCommentJobTest extends AbstractTest
 
 	public function testSingle()
 	{
+		$this->grantAccess('listComments');
+		$this->grantAccess('listPosts');
+
 		$this->assert->areEqual(0, CommentModel::getCount());
 
 		$this->mockComment($this->mockUser());
@@ -32,6 +37,9 @@ class ListCommentJobTest extends AbstractTest
 
 	public function testPaging()
 	{
+		$this->grantAccess('listComments');
+		$this->grantAccess('listPosts');
+
 		getConfig()->comments->commentsPerPage = 2;
 
 		$this->assert->areEqual(0, CommentModel::getCount());
@@ -49,16 +57,11 @@ class ListCommentJobTest extends AbstractTest
 
 	public function testAccessDenial()
 	{
-		getConfig()->privileges->listComments = 'nobody';
-		Access::init();
-		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListComments)));
-
 		$this->assert->throws(function()
 		{
 			$this->runApi(1);
 		}, 'Insufficient privileges');
 	}
-
 
 	protected function runApi($page)
 	{

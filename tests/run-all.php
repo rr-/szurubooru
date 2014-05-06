@@ -66,7 +66,7 @@ function getTestMethods($filter)
 		$reflectionClass = new ReflectionClass($class);
 		foreach ($reflectionClass->getMethods() as $method)
 		{
-			if (preg_match('/test/i', $method->name))
+			if (preg_match('/test/i', $method->name) and $method->isPublic())
 			{
 				$testMethods []= $method;
 			}

@@ -25,8 +25,7 @@ class Access
 			$minAccessRank = TextHelper::resolveConstant($minAccessRankName, 'AccessRank');
 			self::$privileges[$key] = $minAccessRank;
 
-			if (!isset(self::$privileges[$privilegeName]) or
-				self::$privileges[$privilegeName] > $minAccessRank)
+			if (!isset(self::$privileges[$privilegeName]))
 			{
 				self::$privileges[$privilegeName] = $minAccessRank;
 			}

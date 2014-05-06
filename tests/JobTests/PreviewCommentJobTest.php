@@ -62,20 +62,16 @@ class PreviewCommentJobTest extends AbstractTest
 		$this->prepare();
 		Auth::setCurrentUser(null);
 
-		$this->assert->throws(function()
+		$this->assert->doesNotThrow(function()
 		{
-			$this->assert->isFalse(Auth::isLoggedIn());
 			return $this->runApi('alohaaaaaaa');
-		}, 'Insufficient privileges');
+		});
 	}
 
 	public function testAccessDenial()
 	{
 		$this->prepare();
-
-		getConfig()->privileges->addComment = 'nobody';
-		Access::init();
-		$this->assert->isFalse(Access::check(new Privilege(Privilege::AddComment)));
+		$this->revokeAccess('addComment');
 
 		$this->assert->throws(function()
 		{
@@ -98,6 +94,8 @@ class PreviewCommentJobTest extends AbstractTest
 
 	protected function prepare()
 	{
+		getConfig()->registration->needEmailForCommenting = false;
+		$this->grantAccess('addComment');
 		$this->login($this->mockUser());
 	}
 }

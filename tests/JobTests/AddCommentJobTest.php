@@ -24,12 +24,22 @@ class AddCommentJobTest extends AbstractTest
 		});
 	}
 
+	public function testEmailActivation()
+	{
+		$this->prepare();
+		getConfig()->registration->needEmailForCommenting = true;
+		$this->assert->throws(function()
+		{
+			$this->runApi('alohaaaa');
+		}, 'Need e-mail');
+	}
+
 	public function testAlmostTooShortText()
 	{
 		$this->prepare();
 		$this->assert->doesNotThrow(function()
 		{
-			return $this->runApi(str_repeat('b', getConfig()->comments->minLength));
+			$this->runApi(str_repeat('b', getConfig()->comments->minLength));
 		});
 	}
 
@@ -38,7 +48,7 @@ class AddCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->assert->doesNotThrow(function()
 		{
-			return $this->runApi(str_repeat('b', getConfig()->comments->maxLength));
+			$this->runApi(str_repeat('b', getConfig()->comments->maxLength));
 		});
 	}
 
@@ -47,7 +57,7 @@ class AddCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->assert->throws(function()
 		{
-			return $this->runApi(str_repeat('b', getConfig()->comments->minLength - 1));
+			$this->runApi(str_repeat('b', getConfig()->comments->minLength - 1));
 		}, 'Comment must have at least');
 	}
 
@@ -56,7 +66,7 @@ class AddCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->assert->throws(function()
 		{
-			return $this->runApi(str_repeat('b', getConfig()->comments->maxLength + 1));
+			$this->runApi(str_repeat('b', getConfig()->comments->maxLength + 1));
 		}, 'Comment must have at most');
 	}
 
@@ -65,35 +75,28 @@ class AddCommentJobTest extends AbstractTest
 		$this->prepare();
 		Auth::setCurrentUser(null);
 
-		$this->assert->throws(function()
+		$this->assert->doesNotThrow(function()
 		{
-			$this->assert->isFalse(Auth::isLoggedIn());
-			return $this->runApi('alohaaaaaaa');
-		}, 'Insufficient privileges');
+			$this->runApi('alohaaaaaaa');
+		});
 	}
 
 	public function testAccessDenial()
 	{
 		$this->prepare();
-
-		getConfig()->privileges->addComment = 'nobody';
-		Access::init();
-		$this->assert->isFalse(Access::check(new Privilege(Privilege::AddComment)));
+		$this->revokeAccess('addComment');
 
 		$this->assert->throws(function()
 		{
-			return $this->runApi('alohaaaaaaa');
+			$this->runApi('alohaaaaaaa');
 		}, 'Insufficient privileges');
 	}
 
 	public function testAnonymous()
 	{
 		$this->prepare();
-
+		$this->grantAccess('addComment');
 		Auth::setCurrentUser(null);
-		getConfig()->privileges->addComment = 'anonymous';
-		Access::init();
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::AddComment)));
 
 		$text = 'alohaaaaaaa';
 		$comment = $this->assert->doesNotThrow(function() use ($text)
@@ -106,29 +109,13 @@ class AddCommentJobTest extends AbstractTest
 		$this->assert->areEqual(UserModel::getAnonymousName(), $comment->getCommenter()->getName());
 	}
 
-	public function testPrivilegeDependancies()
-	{
-		$this->prepare();
-
-		getConfig()->privileges->{'editComment'} = 'nobody';
-		getConfig()->privileges->{'editComment.own'} = 'nobody';
-		getConfig()->privileges->{'editComment.all'} = 'nobody';
-		Access::init();
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::AddComment)));
-		$this->assert->isFalse(Access::check(new Privilege(Privilege::EditComment)));
-
-		$this->assert->doesNotThrow(function()
-		{
-			return $this->runApi('alohaaaaaaa');
-		}, 'insufficient privileges');
-	}
-
 	public function testWrongPostId()
 	{
 		$this->prepare();
+		$this->grantAccess('addComment');
 		$this->assert->throws(function()
 		{
-			return Api::run(
+			Api::run(
 				new AddCommentJob(),
 				[
 					AddCommentJob::POST_ID => 100,
@@ -152,6 +139,8 @@ class AddCommentJobTest extends AbstractTest
 
 	protected function prepare()
 	{
+		getConfig()->registration->needEmailForCommenting = false;
+		$this->grantAccess('addComment');
 		$this->login($this->mockUser());
 	}
 }

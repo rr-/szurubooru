@@ -4,10 +4,11 @@ class DeleteCommentJobTest extends AbstractTest
 	public function testOwn()
 	{
 		$this->prepare();
+		$this->grantAccess('deleteComment');
 
 		$this->assert->doesNotThrow(function()
 		{
-			return $this->runApi();
+			$this->runApi();
 		});
 
 		$this->assert->areEqual(0, CommentModel::getCount());
@@ -20,8 +21,7 @@ class DeleteCommentJobTest extends AbstractTest
 
 		$this->assert->throws(function()
 		{
-			$this->assert->isFalse(Auth::isLoggedIn());
-			return $this->runApi();
+			$this->runApi();
 		}, 'Not logged in');
 	}
 
@@ -29,52 +29,39 @@ class DeleteCommentJobTest extends AbstractTest
 	{
 		$this->prepare();
 
-		getConfig()->privileges->{'deleteComment.own'} = 'nobody';
-		Access::init();
-		$this->assert->isFalse(Access::check(new Privilege(Privilege::DeleteComment)));
-
 		$this->assert->throws(function()
 		{
-			return $this->runApi();
+			$this->runApi();
 		}, 'Insufficient privileges');
 	}
 
 	public function testOtherAccessGrant()
 	{
 		$this->prepare();
+		$this->grantAccess('deleteComment.all');
 
-		getConfig()->privileges->{'deleteComment.all'} = 'nobody';
-		Access::init();
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::DeleteComment)));
+		$comment = $this->mockComment(Auth::getCurrentUser());
+		//login as someone else
+		$this->login($this->mockUser());
 
-		$this->assert->doesNotThrow(function()
+		$this->assert->doesNotThrow(function() use ($comment)
 		{
-			return $this->runApi();
+			$this->runApi($comment);
 		});
 	}
 
 	public function testOtherAccessDenial()
 	{
 		$this->prepare();
+		$this->grantAccess('deleteComment.own');
 
 		$comment = $this->mockComment(Auth::getCurrentUser());
-
 		//login as someone else
 		$this->login($this->mockUser());
 
-		getConfig()->privileges->{'deleteComment.all'} = 'nobody';
-		Access::init();
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::DeleteComment)));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::DeleteComment, 'own')));
-		$this->assert->isFalse(Access::check(new Privilege(Privilege::DeleteComment, 'all')));
-
 		$this->assert->throws(function() use ($comment)
 		{
-			Api::run(
-				new DeleteCommentJob(),
-				[
-					DeleteCommentJob::COMMENT_ID => $comment->getId(),
-				]);
+			$this->runApi($comment);
 		}, 'Insufficient privileges');
 	}
 
@@ -83,7 +70,7 @@ class DeleteCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->assert->throws(function()
 		{
-			return Api::run(
+			Api::run(
 				new DeleteCommentJob(),
 				[
 					DeleteCommentJob::COMMENT_ID => 100,
@@ -92,9 +79,10 @@ class DeleteCommentJobTest extends AbstractTest
 	}
 
 
-	protected function runApi()
+	protected function runApi($comment = null)
 	{
-		$comment = $this->mockComment(Auth::getCurrentUser());
+		if ($comment === null)
+			$comment = $this->mockComment(Auth::getCurrentUser());
 
 		return Api::run(
 			new DeleteCommentJob(),

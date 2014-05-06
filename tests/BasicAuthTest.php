@@ -3,6 +3,9 @@ class BasicAuthTest extends AbstractTest
 {
 	public function testValidPassword()
 	{
+		getConfig()->registration->staffActivation = false;
+		getConfig()->registration->needEmailForRegistering = false;
+
 		$user = $this->prepareValidUser();
 		UserModel::save($user);
 
@@ -43,6 +46,9 @@ class BasicAuthTest extends AbstractTest
 
 	public function testBanned()
 	{
+		getConfig()->registration->staffActivation = false;
+		getConfig()->registration->needEmailForRegistering = false;
+
 		$user = $this->prepareValidUser();
 		$user->ban();
 		UserModel::save($user);
@@ -56,6 +62,7 @@ class BasicAuthTest extends AbstractTest
 	public function testStaffConfirmationEnabled()
 	{
 		getConfig()->registration->staffActivation = true;
+		getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
 		$user->staffConfirmed = false;
@@ -70,6 +77,7 @@ class BasicAuthTest extends AbstractTest
 	public function testStaffConfirmationDisabled()
 	{
 		getConfig()->registration->staffActivation = false;
+		getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
 		$user->staffConfirmed = false;
@@ -83,6 +91,7 @@ class BasicAuthTest extends AbstractTest
 
 	public function testMailConfirmationEnabledFail1()
 	{
+		getConfig()->registration->staffActivation = false;
 		getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();
@@ -97,6 +106,7 @@ class BasicAuthTest extends AbstractTest
 
 	public function testMailConfirmationEnabledFail2()
 	{
+		getConfig()->registration->staffActivation = false;
 		getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();
@@ -112,6 +122,7 @@ class BasicAuthTest extends AbstractTest
 
 	public function testMailConfirmationEnabledPass()
 	{
+		getConfig()->registration->staffActivation = false;
 		getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();

@@ -38,4 +38,16 @@ class AbstractTest
 		$comment->setText('test test');
 		return CommentModel::save($comment);
 	}
+
+	protected function grantAccess($privilege)
+	{
+		getConfig()->privileges->$privilege = 'anonymous';
+		Access::init();
+	}
+
+	protected function revokeAccess($privilege)
+	{
+		getConfig()->privileges->$privilege = 'nobody';
+		Access::init();
+	}
 }
