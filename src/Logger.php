@@ -12,9 +12,7 @@ class Logger
 		self::$autoFlush = true;
 		self::$buffer = [];
 		self::$path = self::getLogPath();
-		$dir = dirname(self::$path);
-		if (!is_dir($dir))
-			mkdir($dir, 0777, true);
+		TransferHelper::createDirectory(dirname(self::$path));
 		#if (!is_writable(self::$path))
 		#	throw new SimpleException('Cannot write logs to "' . self::$path . '". Check access rights.');
 	}

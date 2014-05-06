@@ -28,6 +28,7 @@ try
 }
 finally
 {
+	removeTestFolders();
 }
 
 function resetEnvironment()
@@ -36,7 +37,38 @@ function resetEnvironment()
 	prepareConfig(true);
 	getConfig()->main->dbDriver = 'sqlite';
 	getConfig()->main->dbLocation = $dbPath;
+	removeTestFolders();
 	prepareEnvironment(true);
+}
+
+function removeTestFolders()
+{
+	$folders =
+	[
+		realpath(getConfig()->main->filesPath),
+		realpath(getConfig()->main->thumbsPath),
+		realpath(dirname(getConfig()->main->logsPath)),
+	];
+
+	foreach ($folders as $folder)
+	{
+		if (!file_exists($folder))
+			continue;
+
+		$it = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator(
+				$folder,
+				FilesystemIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::CHILD_FIRST);
+
+		foreach ($it as $path)
+		{
+			$path->isFile()
+				? unlink($path->getPathname())
+				: rmdir($path->getPathname());
+		}
+		rmdir($folder);
+	}
 }
 
 function getTestMethods($filter)

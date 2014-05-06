@@ -44,6 +44,9 @@ class TransferHelper
 
 	public static function moveUpload($srcPath, $dstPath)
 	{
+		if ($srcPath == $dstPath)
+			throw new SimpleException('Trying to move file to the same location');
+
 		if (is_uploaded_file($srcPath))
 		{
 			move_uploaded_file($srcPath, $dstPath);
@@ -55,6 +58,27 @@ class TransferHelper
 			copy($srcPath, $dstPath);
 			unlink($srcPath);
 		}
+	}
+
+	public static function copy($srcPath, $dstPath)
+	{
+		if ($srcPath == $dstPath)
+			throw new SimpleException('Trying to copy file to the same location');
+
+		copy($srcPath, $dstPath);
+	}
+
+	public static function createDirectory($dirPath)
+	{
+		if (file_exists($dirPath))
+		{
+			if (!is_dir($dirPath))
+				throw new SimpleException($dirPath . ' exists, but it\'s not a directory');
+
+			return;
+		}
+
+		mkdir($dirPath, 0777, true);
 	}
 
 	public static function handleUploadErrors($file)

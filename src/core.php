@@ -7,6 +7,7 @@ define('SZURU_LINK', 'http://github.com/rr-/szurubooru');
 //basic settings and preparation
 define('DS', DIRECTORY_SEPARATOR);
 $rootDir = __DIR__ . DS . '..' . DS;
+chdir($rootDir);
 date_default_timezone_set('UTC');
 setlocale(LC_CTYPE, 'en_US.UTF-8');
 ini_set('memory_limit', '128M');
@@ -64,6 +65,9 @@ function prepareEnvironment($testEnvironment)
 	$context->startTime = $startTime;
 
 	$config = getConfig();
+
+	TransferHelper::createDirectory($config->main->filesPath);
+	TransferHelper::createDirectory($config->main->thumbsPath);
 
 	//extension sanity checks
 	$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'gd', 'openssl', 'fileinfo'];

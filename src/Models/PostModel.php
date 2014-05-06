@@ -4,13 +4,6 @@ use \Chibi\Database as Database;
 
 class PostModel extends AbstractCrudModel
 {
-	protected static $config;
-
-	public static function init()
-	{
-		self::$config = getConfig();
-	}
-
 	public static function getTableName()
 	{
 		return 'post';
@@ -293,8 +286,8 @@ class PostModel extends AbstractCrudModel
 
 	public static function validateThumbSize($width, $height)
 	{
-		$width = $width === null ? self::$config->browsing->thumbWidth : $width;
-		$height = $height === null ? self::$config->browsing->thumbHeight : $height;
+		$width = $width === null ? getConfig()->browsing->thumbWidth : $width;
+		$height = $height === null ? getConfig()->browsing->thumbHeight : $height;
 		$width = min(1000, max(1, $width));
 		$height = min(1000, max(1, $height));
 		return [$width, $height];
@@ -305,7 +298,7 @@ class PostModel extends AbstractCrudModel
 		list ($width, $height) = self::validateThumbSize($width, $height);
 
 		return TextHelper::absolutePath(TextHelper::replaceTokens($text, [
-			'fullpath' => self::$config->main->thumbsPath . DS . $name,
+			'fullpath' => getConfig()->main->thumbsPath . DS . $name,
 			'width' => $width,
 			'height' => $height]));
 	}
@@ -322,8 +315,6 @@ class PostModel extends AbstractCrudModel
 
 	public static function getFullPath($name)
 	{
-		return TextHelper::absolutePath(self::$config->main->filesPath . DS . $name);
+		return TextHelper::absolutePath(getConfig()->main->filesPath . DS . $name);
 	}
 }
-
-PostModel::init();
