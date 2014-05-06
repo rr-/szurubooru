@@ -20,8 +20,8 @@ class AbstractTest
 	{
 		$user = UserModel::spawn();
 		$user->setAccessRank(new AccessRank(AccessRank::Registered));
-		$user->setName('dummy');
-		$user->passHash = UserModel::hashPassword('ble', $user->passSalt);
+		$user->setName('dummy'.uniqid());
+		$user->setPassword('sekai');
 		return UserModel::save($user);
 	}
 

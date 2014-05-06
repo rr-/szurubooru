@@ -9,6 +9,7 @@ class UserModel extends AbstractCrudModel
 	const SETTING_POST_TAG_TITLES = 3;
 	const SETTING_HIDE_DISLIKED_POSTS = 4;
 
+
 	public static function getTableName()
 	{
 		return 'user';
@@ -28,7 +29,7 @@ class UserModel extends AbstractCrudModel
 	{
 		$user = new UserEntity();
 		$user->setAccessRank(new AccessRank(AccessRank::Anonymous));
-		$user->passSalt = md5(mt_rand() . uniqid());
+		$user->setPasswordSalt(md5(mt_rand() . uniqid()));
 		return $user;
 	}
 
@@ -42,8 +43,8 @@ class UserModel extends AbstractCrudModel
 
 			$bindings = [
 				'name' => $user->getName(),
-				'pass_salt' => $user->passSalt,
-				'pass_hash' => $user->passHash,
+				'pass_salt' => $user->getPasswordSalt(),
+				'pass_hash' => $user->getPasswordHash(),
 				'staff_confirmed' => $user->staffConfirmed,
 				'email_unconfirmed' => $user->emailUnconfirmed,
 				'email_confirmed' => $user->emailConfirmed,
@@ -187,56 +188,6 @@ class UserModel extends AbstractCrudModel
 		});
 	}
 
-
-
-	public static function validateUserName(UserEntity $user)
-	{
-		$userName = trim($user->getName());
-		$config = getConfig();
-
-		$otherUser = self::findByName($userName, false);
-		if ($otherUser !== null and $otherUser->getId() != $user->getId())
-		{
-			if (!$otherUser->emailConfirmed and $config->registration->needEmailForRegistering)
-				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
-
-			if (!$otherUser->staffConfirmed and $config->registration->staffActivation)
-				throw new SimpleException('User with this name is already registered and awaits staff confirmation');
-
-			throw new SimpleException('User with this name is already registered');
-		}
-
-		$userNameMinLength = intval($config->registration->userNameMinLength);
-		$userNameMaxLength = intval($config->registration->userNameMaxLength);
-		$userNameRegex = $config->registration->userNameRegex;
-
-		if (strlen($userName) < $userNameMinLength)
-			throw new SimpleException('User name must have at least %d characters', $userNameMinLength);
-
-		if (strlen($userName) > $userNameMaxLength)
-			throw new SimpleException('User name must have at most %d characters', $userNameMaxLength);
-
-		if (!preg_match($userNameRegex, $userName))
-			throw new SimpleException('User name contains invalid characters');
-
-		return $userName;
-	}
-
-	public static function validatePassword($password)
-	{
-		$config = getConfig();
-		$passMinLength = intval($config->registration->passMinLength);
-		$passRegex = $config->registration->passRegex;
-
-		if (strlen($password) < $passMinLength)
-			throw new SimpleException('Password must have at least %d characters', $passMinLength);
-
-		if (!preg_match($passRegex, $password))
-			throw new SimpleException('Password contains invalid characters');
-
-		return $password;
-	}
-
 	public static function validateEmail($email)
 	{
 		$email = trim($email);
@@ -246,17 +197,6 @@ class UserModel extends AbstractCrudModel
 
 		return $email;
 	}
-
-	public static function validateAccessRank(AccessRank $accessRank)
-	{
-		$accessRank->validate();
-
-		if ($accessRank->toInteger() == AccessRank::Nobody)
-			throw new SimpleException('Cannot set special access rank "%s"', $accessRank->toString());
-
-		return $accessRank;
-	}
-
 
 
 	public static function getAnonymousName()

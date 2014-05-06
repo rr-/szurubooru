@@ -140,8 +140,8 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	{
 		$ownUser = Auth::getCurrentUser();
 
-		$otherUser = $this->mockUser($this->mockUser());
-		$otherUser->setName('somebody-else');
+		$otherUser = $this->mockUser();
+		$otherUser->setName('dummy' . uniqid());
 		UserModel::save($otherUser);
 
 		$this->testedJobs []= $job;

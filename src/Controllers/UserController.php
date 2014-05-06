@@ -303,8 +303,8 @@ class UserController
 		if (Auth::getCurrentUser()->getId() == $user->getId())
 		{
 			$suppliedPassword = InputHelper::get('current-password');
-			$suppliedPasswordHash = UserModel::hashPassword($suppliedPassword, $user->passSalt);
-			if ($suppliedPasswordHash != $user->passHash)
+			$suppliedPasswordHash = UserModel::hashPassword($suppliedPassword, $user->getPasswordSalt());
+			if ($suppliedPasswordHash != $user->getPasswordHash())
 				throw new SimpleException('Must supply valid password');
 		}
 	}

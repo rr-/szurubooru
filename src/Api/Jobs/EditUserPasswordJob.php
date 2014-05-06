@@ -11,14 +11,13 @@ class EditUserPasswordJob extends AbstractUserJob
 	public function execute()
 	{
 		$user = $this->user;
-		$newPassword = UserModel::validatePassword($this->getArgument(self::NEW_PASSWORD));
+		$newPassword = $this->getArgument(self::NEW_PASSWORD);
 
-		$newPasswordHash = UserModel::hashPassword($newPassword, $user->passSalt);
-		$oldPasswordHash = $user->passHash;
+		$oldPasswordHash = $user->getPasswordHash();
+		$user->setPassword($newPassword);
+		$newPasswordHash = $user->getPasswordHash();
 		if ($oldPasswordHash == $newPasswordHash)
 			return $user;
-
-		$user->passHash = $newPasswordHash;
 
 		if ($this->getContext() == self::CONTEXT_NORMAL)
 			UserModel::save($user);
@@ -33,7 +32,9 @@ class EditUserPasswordJob extends AbstractUserJob
 	public function requiresPrivilege()
 	{
 		return new Privilege(
-			Privilege::ChangeUserPassword,
+			$this->getContext() == self::CONTEXT_BATCH_ADD
+				? Privilege::RegisterAccount
+				: Privilege::ChangeUserPassword,
 			Access::getIdentity($this->user));
 	}
 }

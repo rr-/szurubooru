@@ -17,8 +17,8 @@ class Auth
 		if ($user === null)
 			throw new SimpleException('Invalid username');
 
-		$passwordHash = UserModel::hashPassword($password, $user->passSalt);
-		if ($passwordHash != $user->passHash)
+		$passwordHash = UserModel::hashPassword($password, $user->getPasswordSalt());
+		if ($passwordHash != $user->getPasswordHash())
 			throw new SimpleException('Invalid password');
 
 		if (!$user->staffConfirmed and $config->registration->staffActivation)

@@ -8,26 +8,26 @@ class AddUserJob extends AbstractJob
 		$user = UserModel::spawn();
 		$user->joinDate = time();
 		$user->staffConfirmed = $firstUser;
-		$user->setName($this->getArgument(EditUserNameJob::NEW_USER_NAME));
 		UserModel::forgeId($user);
 
 		$arguments = $this->getArguments();
 		$arguments[EditUserJob::USER_ENTITY] = $user;
 
-		$arguments[EditUserAccessRankJob::NEW_ACCESS_RANK] = $firstUser
-			? AccessRank::Admin
-			: AccessRank::Registered;
-
 		Logger::bufferChanges();
-		Access::disablePrivilegeChecking();
 		$job = new EditUserJob();
 		$job->setContext(self::CONTEXT_BATCH_ADD);
 		Api::run($job, $arguments);
-		Access::enablePrivilegeChecking();
 		Logger::setBuffer([]);
 
 		if ($firstUser)
+		{
+			$user->setAccessRank(new AccessRank(AccessRank::Admin));
 			$user->confirmEmail();
+		}
+		else
+		{
+			$user->setAccessRank(new AccessRank(AccessRank::Registered));
+		}
 
 		//save the user to db if everything went okay
 		UserModel::save($user);

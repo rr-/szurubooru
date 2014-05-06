@@ -30,7 +30,7 @@ class PasswordResetJob extends AbstractJob
 			}, array_rand($alphabet, 8)));
 
 			$user = $token->getUser();
-			$user->passHash = UserModel::hashPassword($newPassword, $user->passSalt);
+			$user->setPassword($newPassword);
 			$token->used = true;
 			TokenModel::save($token);
 			UserModel::save($user);

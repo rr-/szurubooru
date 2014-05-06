@@ -11,7 +11,7 @@ class AuthTest extends AbstractTest
 
 		$this->assert->doesNotThrow(function()
 		{
-			Auth::login('existing', 'ble', false);
+			Auth::login('existing', 'bleee', false);
 		});
 	}
 
@@ -35,7 +35,7 @@ class AuthTest extends AbstractTest
 	public function testInvalidPassword()
 	{
 		$user = $this->prepareValidUser();
-		$user->passHash = UserModel::hashPassword('ble2', $user->passSalt);
+		$user->setPassword('blee2');
 		UserModel::save($user);
 
 		$this->assert->throws(function()
@@ -55,7 +55,7 @@ class AuthTest extends AbstractTest
 
 		$this->assert->throws(function()
 		{
-			Auth::login('existing', 'ble', false);
+			Auth::login('existing', 'bleee', false);
 		}, 'You are banned');
 	}
 
@@ -70,7 +70,7 @@ class AuthTest extends AbstractTest
 
 		$this->assert->throws(function()
 		{
-			Auth::login('existing', 'ble', false);
+			Auth::login('existing', 'bleee', false);
 		}, 'staff hasn\'t confirmed');
 	}
 
@@ -85,7 +85,7 @@ class AuthTest extends AbstractTest
 
 		$this->assert->doesNotThrow(function()
 		{
-			Auth::login('existing', 'ble', false);
+			Auth::login('existing', 'bleee', false);
 		});
 	}
 
@@ -100,7 +100,7 @@ class AuthTest extends AbstractTest
 
 		$this->assert->throws(function()
 		{
-			Auth::login('existing', 'ble', false);
+			Auth::login('existing', 'bleee', false);
 		}, 'need e-mail address confirmation');
 	}
 
@@ -116,7 +116,7 @@ class AuthTest extends AbstractTest
 
 		$this->assert->throws(function()
 		{
-			Auth::login('existing', 'ble', false);
+			Auth::login('existing', 'bleee', false);
 		}, 'need e-mail address confirmation');
 	}
 
@@ -132,7 +132,7 @@ class AuthTest extends AbstractTest
 
 		$this->assert->doesNotThrow(function()
 		{
-			Auth::login('existing', 'ble', false);
+			Auth::login('existing', 'bleee', false);
 		});
 	}
 
@@ -143,7 +143,7 @@ class AuthTest extends AbstractTest
 		$user = UserModel::spawn();
 		$user->setAccessRank(new AccessRank(AccessRank::Registered));
 		$user->setName('existing');
-		$user->passHash = UserModel::hashPassword('ble', $user->passSalt);
+		$user->setPassword('bleee');
 		return $user;
 	}
 }

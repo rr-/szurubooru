@@ -12,7 +12,10 @@ class Assert
 		catch (Exception $e)
 		{
 			if (stripos($e->getMessage(), $expectedMessage) === false)
-				$this->fail('Assertion failed. Expected: "' . $expectedMessage . '", got: "' . $e->getMessage() . '"');
+			{
+				$this->fail('Assertion failed. Expected: "' . $expectedMessage . '", got: "' . $e->getMessage() . '"'
+					. PHP_EOL . $e->getTraceAsString() . PHP_EOL . '---' . PHP_EOL);
+			}
 		}
 		if ($success)
 			$this->fail('Assertion failed. Expected exception, got nothing');
@@ -26,7 +29,8 @@ class Assert
 		}
 		catch (Exception $e)
 		{
-			$this->fail('Assertion failed. Expected nothing, got exception: "' . $e->getMessage() . '"');
+			$this->fail('Assertion failed. Expected nothing, got exception: "' . $e->getMessage() . '"'
+				. PHP_EOL . $e->getTraceAsString() . PHP_EOL . '---' . PHP_EOL);
 		}
 		return $ret;
 	}

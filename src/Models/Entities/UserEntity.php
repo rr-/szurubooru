@@ -5,8 +5,8 @@ use \Chibi\Database as Database;
 class UserEntity extends AbstractEntity implements IValidatable
 {
 	protected $name;
-	public $passSalt;
-	public $passHash;
+	protected $passSalt;
+	protected $passHash;
 	public $staffConfirmed;
 	public $emailUnconfirmed;
 	public $emailConfirmed;
@@ -16,14 +16,91 @@ class UserEntity extends AbstractEntity implements IValidatable
 	public $settings;
 	protected $banned = false;
 
+	protected $__passwordChanged = false;
+	protected $__password;
+
 	public function validate()
 	{
-		//todo: add more validation
+		$this->validateUserName();
+		$this->validatePassword();
+
+		//todo: validate e-mails
+
 		if (empty($this->getAccessRank()))
-			throw new SimpleException('No access rank detected');
+			throw new Exception('No access rank detected');
 
 		if ($this->getAccessRank()->toInteger() == AccessRank::Anonymous)
 			throw new Exception('Trying to save anonymous user into database');
+	}
+
+
+	protected function validateUserName()
+	{
+		$userName = $this->getName();
+		$config = getConfig();
+
+		$otherUser = UserModel::findByName($userName, false);
+		if ($otherUser !== null and $otherUser->getId() != $this->getId())
+		{
+			if (!$otherUser->emailConfirmed
+				and isset($config->registration->needEmailForRegistering)
+				and $config->registration->needEmailForRegistering)
+			{
+				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
+			}
+
+			if (!$otherUser->staffConfirmed
+				and $config->registration->staffActivation)
+			{
+				throw new SimpleException('User with this name is already registered and awaits staff confirmation');
+			}
+
+			throw new SimpleException('User with this name is already registered');
+		}
+
+		$userNameMinLength = intval($config->registration->userNameMinLength);
+		$userNameMaxLength = intval($config->registration->userNameMaxLength);
+		$userNameRegex = $config->registration->userNameRegex;
+
+		if (strlen($userName) < $userNameMinLength)
+			throw new SimpleException('User name must have at least %d characters', $userNameMinLength);
+
+		if (strlen($userName) > $userNameMaxLength)
+			throw new SimpleException('User name must have at most %d characters', $userNameMaxLength);
+
+		if (!preg_match($userNameRegex, $userName))
+			throw new SimpleException('User name contains invalid characters');
+	}
+
+	public function validatePassword()
+	{
+		if (empty($this->getPasswordHash()))
+			throw new Exception('Trying to save user with no password into database');
+
+		if (!$this->__passwordChanged)
+			return;
+
+		$config = getConfig();
+		$passMinLength = intval($config->registration->passMinLength);
+		$passRegex = $config->registration->passRegex;
+
+		$password = $this->__password;
+
+		if (strlen($password) < $passMinLength)
+			throw new SimpleException('Password must have at least %d characters', $passMinLength);
+
+		if (!preg_match($passRegex, $password))
+			throw new SimpleException('Password contains invalid characters');
+	}
+
+	public static function validateAccessRank(AccessRank $accessRank)
+	{
+		$accessRank->validate();
+
+		if ($accessRank->toInteger() == AccessRank::Nobody)
+			throw new Exception('Cannot set special access rank "%s"', $accessRank->toString());
+
+		return $accessRank;
 	}
 
 	public function isBanned()
@@ -48,7 +125,30 @@ class UserEntity extends AbstractEntity implements IValidatable
 
 	public function setName($name)
 	{
-		$this->name = $name;
+		$this->name = trim($name);
+	}
+
+	public function getPasswordHash()
+	{
+		return $this->passHash;
+	}
+
+	public function getPasswordSalt()
+	{
+		return $this->passSalt;
+	}
+
+	public function setPasswordSalt($passSalt)
+	{
+		$this->passSalt = $passSalt;
+		$this->passHash = null;
+	}
+
+	public function setPassword($password)
+	{
+		$this->__passwordChanged = true;
+		$this->__password = $password;
+		$this->passHash = UserModel::hashPassword($password, $this->passSalt);
 	}
 
 	public function getAccessRank()
@@ -162,7 +262,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		if (!empty($this->emailConfirmed))
 			return;
 
-		$this->emailConfirmed = $user->emailUnconfirmed;
+		$this->emailConfirmed = $this->emailUnconfirmed;
 		$this->emailUnconfirmed = null;
 	}
 

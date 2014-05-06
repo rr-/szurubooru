@@ -18,7 +18,6 @@ class EditUserNameJob extends AbstractUserJob
 			return $user;
 
 		$user->setName($newName);
-		UserModel::validateUserName($user);
 
 		if ($this->getContext() == self::CONTEXT_NORMAL)
 			UserModel::save($user);
@@ -34,7 +33,9 @@ class EditUserNameJob extends AbstractUserJob
 	public function requiresPrivilege()
 	{
 		return new Privilege(
-			Privilege::ChangeUserName,
+			$this->getContext() == self::CONTEXT_BATCH_ADD
+				? Privilege::RegisterAccount
+				: Privilege::ChangeUserName,
 			Access::getIdentity($this->user));
 	}
 }
