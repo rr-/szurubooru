@@ -18,10 +18,10 @@ class TokenModel extends AbstractCrudModel
 			self::forgeId($token);
 
 			$bindings = [
-				'user_id' => $token->userId,
-				'token' => $token->token,
-				'used' => $token->used,
-				'expires' => $token->expires,
+				'user_id' => $token->getUserId(),
+				'token' => $token->getText(),
+				'used' => $token->isUsed(),
+				'expires' => $token->getExpirationDate(),
 				];
 
 			$stmt = new Sql\UpdateStatement();
@@ -61,10 +61,10 @@ class TokenModel extends AbstractCrudModel
 		if (empty($token))
 			throw new SimpleException('Invalid security token');
 
-		if ($token->used)
+		if ($token->isUsed())
 			throw new SimpleException('This token was already used');
 
-		if ($token->expires !== null and time() > $token->expires)
+		if ($token->getExpirationDate() !== null and time() > $token->getExpirationDate())
 			throw new SimpleException('This token has expired');
 	}
 

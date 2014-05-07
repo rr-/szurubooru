@@ -1,18 +1,25 @@
 <?php
 class Mailer
 {
-	private static $mailCounter = 0;
-	private static $mock = false;
+	private static $mailCounter;
+	private static $mailsSent;
+	private static $mock;
 
 	public static function init()
 	{
 		self::$mailCounter = 0;
+		self::$mailsSent = [];
 		self::$mock = false;
 	}
 
 	public static function getMailCounter()
 	{
 		return self::$mailCounter;
+	}
+
+	public static function getMailsSent()
+	{
+		return self::$mailsSent;
 	}
 
 	public static function mockSending()
@@ -63,6 +70,8 @@ class Mailer
 		if (!self::$mock)
 			mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
 
+		$mail->tokens = $tokens;
+		self::$mailsSent []= $mail;
 		self::$mailCounter ++;
 
 		Logger::log('Sending e-mail with subject "{subject}" to {mail}', [
@@ -79,13 +88,13 @@ class Mailer
 		//prepare unique user token
 		$token = TokenModel::spawn();
 		$token->setUser($user);
-		$token->token = TokenModel::forgeUnusedToken();
-		$token->used = false;
-		$token->expires = null;
+		$token->setText(TokenModel::forgeUnusedToken());
+		$token->setUsed(false);
+		$token->setExpirationDate(null);
 		TokenModel::save($token);
 
-		if (!self::$mock)
-			$tokens['link'] = \Chibi\Router::linkTo($linkDestination, ['token' => $token->token]);
+		$tokens['link'] = \Chibi\Router::linkTo($linkDestination, ['tokenText' => $token->getText()]);
+		$tokens['token'] = $token->getText(); //yeah
 
 		return self::sendMail($mail, $tokens);
 	}

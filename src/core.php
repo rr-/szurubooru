@@ -20,6 +20,8 @@ require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'include.php';
 \Chibi\AutoLoader::registerFilesystem($rootDir . 'lib' . DS . 'chibi-sql');
 \Chibi\AutoLoader::registerFilesystem(__DIR__);
 
+require_once $rootDir . 'src' . DS . 'routes.php';
+
 function getConfig()
 {
 	global $config;

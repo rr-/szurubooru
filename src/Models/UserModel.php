@@ -120,12 +120,15 @@ class UserModel extends AbstractCrudModel
 
 	public static function findByNameOrEmail($key, $throw = true)
 	{
+		$key = trim($key);
+
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
 		$stmt->setTable('user');
 		$stmt->setCriterion((new Sql\DisjunctionFunctor)
-			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding(trim($key)))))
-			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('email_confirmed', new Sql\Binding(trim($key))))));
+			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding($key))))
+			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('email_unconfirmed', new Sql\Binding($key))))
+			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('email_confirmed', new Sql\Binding($key)))));
 
 		$row = Database::fetchOne($stmt);
 		if ($row)

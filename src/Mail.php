@@ -6,4 +6,6 @@ class Mail
 	public $senderName;
 	public $senderEmail;
 	public $recipientEmail;
+
+	public $tokens;
 }

@@ -263,6 +263,48 @@ class AddUserJobTest extends AbstractTest
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 	}
 
+	public function testEmailsTwoUsersSameMail()
+	{
+		getConfig()->registration->needEmailForRegistering = true;
+		Mailer::mockSending();
+		$this->assert->areEqual(0, Mailer::getMailCounter());
+
+		$this->grantAccess('registerAccount');
+
+		$user1 = $this->assert->doesNotThrow(function()
+		{
+			return Api::run(
+				new AddUserJob(),
+				[
+					EditUserNameJob::NEW_USER_NAME => 'dummy',
+					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
+					EditUserEmailJob::NEW_EMAIL => 'godzilla@whitestar.gov',
+				]);
+		});
+
+		$user2 = $this->assert->doesNotThrow(function()
+		{
+			return Api::run(
+				new AddUserJob(),
+				[
+					EditUserNameJob::NEW_USER_NAME => 'dummy2',
+					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
+					EditUserEmailJob::NEW_EMAIL => 'godzilla@whitestar.gov',
+				]);
+		});
+
+		$this->assert->areEqual(2, Mailer::getMailCounter());
+		$token1text = Mailer::getMailsSent()[0]->tokens['token'];
+		$token2text = Mailer::getMailsSent()[1]->tokens['token'];
+		$this->assert->areNotEqual($token1text, $token2text);
+
+		$token1 = TokenModel::findByToken($token1text);
+		$token2 = TokenModel::findByToken($token2text);
+
+		$this->assert->areEqual($user1->getId(), $token1->getUser()->getId());
+		$this->assert->areEqual($user2->getId(), $token2->getUser()->getId());
+	}
+
 	public function testLogBuffering()
 	{
 		$this->testSaving();

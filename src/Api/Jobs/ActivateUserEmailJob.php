@@ -29,7 +29,7 @@ class ActivateUserEmailJob extends AbstractJob
 
 			$user = $token->getUser();
 			$user->confirmEmail();
-			$token->used = true;
+			$token->setUsed(true);
 			TokenModel::save($token);
 			UserModel::save($user);
 
