@@ -17,7 +17,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->prepare();
 		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromFile('image.jpg');
-		$this->assert->areEqual('image/jpeg', $post->mimeType);
+		$this->assert->areEqual('image/jpeg', $post->getMimeType());
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
 		$this->assert->areEqual(320, $post->getImageWidth());
 		$this->assert->areEqual(240, $post->getImageHeight());
@@ -32,7 +32,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->prepare();
 		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromFile('image.png');
-		$this->assert->areEqual('image/png', $post->mimeType);
+		$this->assert->areEqual('image/png', $post->getMimeType());
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
 		$this->assert->areEqual(320, $post->getImageWidth());
 		$this->assert->areEqual(240, $post->getImageHeight());
@@ -47,7 +47,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->prepare();
 		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromFile('image.gif');
-		$this->assert->areEqual('image/gif', $post->mimeType);
+		$this->assert->areEqual('image/gif', $post->getMimeType());
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
 		$this->assert->areEqual(320, $post->getImageWidth());
 		$this->assert->areEqual(240, $post->getImageHeight());
@@ -91,7 +91,7 @@ class EditPostContentJobTest extends AbstractTest
 				EditPostContentJob::POST_CONTENT_URL => 'http://www.youtube.com/watch?v=qWq_jydCUw4', 'test.jpg',
 			]);
 		$this->assert->areEqual(PostType::Youtube, $post->getType()->toInteger());
-		$this->assert->areEqual('qWq_jydCUw4', $post->fileHash);
+		$this->assert->areEqual('qWq_jydCUw4', $post->getFileHash());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
 			$post->generateThumb();

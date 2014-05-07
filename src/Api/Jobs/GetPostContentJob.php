@@ -24,7 +24,7 @@ class GetPostContentJob extends AbstractJob
 			$config->main->title,
 			$post->getId(),
 			join(',', array_map(function($tag) { return $tag->getName(); }, $post->getTags())),
-			TextHelper::resolveMimeType($post->mimeType) ?: 'dat');
+			TextHelper::resolveMimeType($post->getMimeType()) ?: 'dat');
 		$fileName = preg_replace('/[[:^print:]]/', '', $fileName);
 
 		return new ApiFileOutput($path, $fileName);

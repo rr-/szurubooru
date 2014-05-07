@@ -194,8 +194,9 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 						<?php
 							printf(
 								'Download %s (%s)',
-								strtoupper(TextHelper::resolveMimeType($this->context->transport->post->mimeType)) ?: 'Unknown',
-								TextHelper::useBytesUnits($this->context->transport->post->fileSize));
+								strtoupper(TextHelper::resolveMimeType($this->context->transport->post->getMimeType()))
+									?: 'Unknown',
+								TextHelper::useBytesUnits($this->context->transport->post->getFileSize()));
 						?>
 					</span>
 				</a>

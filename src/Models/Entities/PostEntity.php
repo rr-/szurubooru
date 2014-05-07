@@ -7,9 +7,9 @@ class PostEntity extends AbstractEntity implements IValidatable
 	protected $type;
 	protected $name;
 	protected $origName;
-	public $fileHash;
-	public $fileSize;
-	public $mimeType;
+	protected $fileHash;
+	protected $fileSize;
+	protected $mimeType;
 	protected $safety;
 	protected $hidden;
 	public $uploadDate;
@@ -239,6 +239,36 @@ class PostEntity extends AbstractEntity implements IValidatable
 		$this->origName = $origName;
 	}
 
+	public function getFileHash()
+	{
+		return $this->fileHash;
+	}
+
+	public function setFileHash($fileHash)
+	{
+		$this->fileHash = $fileHash;
+	}
+
+	public function getFileSize()
+	{
+		return $this->fileSize;
+	}
+
+	public function setFileSize($fileSize)
+	{
+		$this->fileSize = $fileSize;
+	}
+
+	public function getMimeType()
+	{
+		return $this->mimeType;
+	}
+
+	public function setMimeType($mimeType)
+	{
+		$this->mimeType = $mimeType;
+	}
+
 	public function getType()
 	{
 		return $this->type;
@@ -322,7 +352,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 		if ($this->getType()->toInteger() == PostType::Youtube)
 		{
 			return ThumbnailHelper::generateFromUrl(
-				'http://img.youtube.com/vi/' . $this->fileHash . '/mqdefault.jpg',
+				'http://img.youtube.com/vi/' . $this->getFileHash() . '/mqdefault.jpg',
 				$dstPath,
 				$width,
 				$height);
@@ -335,15 +365,15 @@ class PostEntity extends AbstractEntity implements IValidatable
 
 	public function setContentFromPath($srcPath, $origName)
 	{
-		$this->fileSize = filesize($srcPath);
-		$this->fileHash = md5_file($srcPath);
+		$this->setFileSize(filesize($srcPath));
+		$this->setFileHash(md5_file($srcPath));
 		$this->setOriginalName($origName);
 
-		if ($this->fileSize == 0)
+		if ($this->getFileSize() == 0)
 			throw new SimpleException('Specified file is empty');
 
-		$this->mimeType = mime_content_type($srcPath);
-		switch ($this->mimeType)
+		$this->setMimeType(mime_content_type($srcPath));
+		switch ($this->getMimeType())
 		{
 			case 'image/gif':
 			case 'image/png':
@@ -371,10 +401,10 @@ class PostEntity extends AbstractEntity implements IValidatable
 				$this->setImageHeight($imageHeight);
 				break;
 			default:
-				throw new SimpleException('Invalid file type "%s"', $this->mimeType);
+				throw new SimpleException('Invalid file type "%s"', $this->getMimeType());
 		}
 
-		$duplicatedPost = PostModel::findByHash($this->fileHash, false);
+		$duplicatedPost = PostModel::findByHash($this->getFileHash(), false);
 		if ($duplicatedPost !== null and (!$this->getId() or $this->getId() != $duplicatedPost->getId()))
 		{
 			throw new SimpleException(
@@ -402,9 +432,9 @@ class PostEntity extends AbstractEntity implements IValidatable
 		{
 			$youtubeId = $matches[1];
 			$this->setType(new PostType(PostType::Youtube));
-			$this->mimeType = null;
-			$this->fileSize = null;
-			$this->fileHash = $youtubeId;
+			$this->setMimeType(null);
+			$this->setFileSize(null);
+			$this->setFileHash($youtubeId);
 			$this->setImageWidth(null);
 			$this->setImageHeight(null);
 
@@ -451,7 +481,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 
 		$x []= $this->getSafety()->toInteger();
 		$x []= $this->getSource();
-		$x []= $this->fileHash;
+		$x []= $this->getFileHash();
 
 		natcasesort($x);
 

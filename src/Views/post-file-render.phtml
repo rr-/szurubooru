@@ -23,7 +23,7 @@ $post = $this->context->transport->post;
 <?php elseif ($post->getType()->toInteger() ==  PostType::Flash): ?>
 
 	<object
-		type="<?= $post->mimeType ?>"
+		type="<?= $post->getMimeType() ?>"
 		width="<?= $post->getImageWidth() ?>"
 		height="<?= $post->getImageHeight() ?>"
 		data="<?= \Chibi\Router::linkTo(
@@ -41,7 +41,7 @@ $post = $this->context->transport->post;
 
 	<iframe
 		style="width: 800px; height: 600px; border: 0;"
-		src="//www.youtube.com/embed/<?= $post->fileHash ?>?wmode=opaque"
+		src="//www.youtube.com/embed/<?= $post->getFileHash() ?>?wmode=opaque"
 		allowfullscreen>
 
 	</iframe>
@@ -50,7 +50,7 @@ $post = $this->context->transport->post;
 
 	<video style="max-width: 100%" controls>
 		<source
-			type="<?= $post->mimeType ?>"
+			type="<?= $post->getMimeType() ?>"
 			src="<?= \Chibi\Router::linkTo(
 				['PostController', 'fileView'],
 				['name' => $post->getName()]) ?>">
