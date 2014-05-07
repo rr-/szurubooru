@@ -2,16 +2,35 @@
 class Mailer
 {
 	private static $mailCounter = 0;
+	private static $mock = false;
+
+	public static function init()
+	{
+		self::$mailCounter = 0;
+		self::$mock = false;
+	}
 
 	public static function getMailCounter()
 	{
 		return self::$mailCounter;
 	}
 
+	public static function mockSending()
+	{
+		self::$mock = true;
+	}
+
 	public static function sendMail(Mail $mail, array $tokens = [])
 	{
+		$host = isset($_SERVER['HTTP_HOST'])
+			? $_SERVER['HTTP_HOST']
+			: '';
+		$ip = isset($_SERVER['SERVER_ADDR'])
+			? $_SERVER['SERVER_ADDR']
+			: '';
+
 		if (!isset($tokens['host']))
-			$tokens['host'] = $_SERVER['HTTP_HOST'];
+			$tokens['host'] = $host;
 
 		if (!isset($tokens['nl']))
 			$tokens['nl'] = PHP_EOL;
@@ -25,7 +44,7 @@ class Mailer
 		if (empty($recipientEmail))
 			throw new SimpleException('Destination e-mail address was not found');
 
-		$messageId = $_SERVER['REQUEST_TIME'] . md5($_SERVER['REQUEST_TIME']) . '@' . $_SERVER['HTTP_HOST'];
+		$messageId = $_SERVER['REQUEST_TIME'] . md5($_SERVER['REQUEST_TIME']) . '@' . $host;
 
 		$headers = [];
 		$headers []= sprintf('MIME-Version: 1.0');
@@ -38,9 +57,11 @@ class Mailer
 		$headers []= sprintf('Subject: %s', $subject);
 		$headers []= sprintf('Content-Type: text/plain; charset=utf-8', $subject);
 		$headers []= sprintf('X-Mailer: PHP/%s', phpversion());
-		$headers []= sprintf('X-Originating-IP: %s', $_SERVER['SERVER_ADDR']);
+		$headers []= sprintf('X-Originating-IP: %s', $ip);
 		$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-		mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
+
+		if (!self::$mock)
+			mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
 
 		self::$mailCounter ++;
 
@@ -63,7 +84,8 @@ class Mailer
 		$token->expires = null;
 		TokenModel::save($token);
 
-		$tokens['link'] = \Chibi\Router::linkTo($linkDestination, ['token' => $token->token]);
+		if (!self::$mock)
+			$tokens['link'] = \Chibi\Router::linkTo($linkDestination, ['token' => $token->token]);
 
 		return self::sendMail($mail, $tokens);
 	}

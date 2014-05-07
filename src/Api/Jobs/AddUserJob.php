@@ -10,6 +10,15 @@ class AddUserJob extends AbstractJob
 		$user->staffConfirmed = $firstUser;
 		UserModel::forgeId($user);
 
+		if ($firstUser)
+		{
+			$user->setAccessRank(new AccessRank(AccessRank::Admin));
+		}
+		else
+		{
+			$user->setAccessRank(new AccessRank(AccessRank::Registered));
+		}
+
 		$arguments = $this->getArguments();
 		$arguments[EditUserJob::USER_ENTITY] = $user;
 
@@ -19,18 +28,9 @@ class AddUserJob extends AbstractJob
 		Api::run($job, $arguments);
 		Logger::setBuffer([]);
 
-		if ($firstUser)
-		{
-			$user->setAccessRank(new AccessRank(AccessRank::Admin));
-			$user->confirmEmail();
-		}
-		else
-		{
-			$user->setAccessRank(new AccessRank(AccessRank::Registered));
-		}
-
 		//save the user to db if everything went okay
 		UserModel::save($user);
+		EditUserEmailJob::observeSave($user);
 
 		Logger::log('{subject} just signed up', [
 			'subject' => TextHelper::reprUser($user)]);

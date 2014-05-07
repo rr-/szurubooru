@@ -8,8 +8,8 @@ class UserEntity extends AbstractEntity implements IValidatable
 	protected $passSalt;
 	protected $passHash;
 	public $staffConfirmed;
-	public $emailUnconfirmed;
-	public $emailConfirmed;
+	protected $emailUnconfirmed;
+	protected $emailConfirmed;
 	public $joinDate;
 	public $lastLoginDate;
 	protected $accessRank;
@@ -42,7 +42,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$otherUser = UserModel::findByName($userName, false);
 		if ($otherUser !== null and $otherUser->getId() != $this->getId())
 		{
-			if (!$otherUser->emailConfirmed
+			if (!$otherUser->getConfirmedEmail()
 				and isset($config->registration->needEmailForRegistering)
 				and $config->registration->needEmailForRegistering)
 			{
@@ -128,6 +128,26 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$this->name = trim($name);
 	}
 
+	public function getUnconfirmedEmail()
+	{
+		return $this->emailUnconfirmed;
+	}
+
+	public function setUnconfirmedEmail($email)
+	{
+		$this->emailUnconfirmed = $email;
+	}
+
+	public function getConfirmedEmail()
+	{
+		return $this->emailConfirmed;
+	}
+
+	public function setConfirmedEmail($email)
+	{
+		$this->emailConfirmed = $email;
+	}
+
 	public function getPasswordHash()
 	{
 		return $this->passHash;
@@ -164,8 +184,8 @@ class UserEntity extends AbstractEntity implements IValidatable
 
 	public function getAvatarUrl($size = 32)
 	{
-		$subject = !empty($this->emailConfirmed)
-			? $this->emailConfirmed
+		$subject = !empty($this->getConfirmedEmail())
+			? $this->getConfirmedEmail()
 			: $this->passSalt . $this->getName();
 		$hash = md5(strtolower(trim($subject)));
 		$url = 'http://www.gravatar.com/avatar/' . $hash . '?s=' . $size . '&d=retro';
@@ -259,11 +279,11 @@ class UserEntity extends AbstractEntity implements IValidatable
 
 	public function confirmEmail()
 	{
-		if (!empty($this->emailConfirmed))
+		if (empty($this->getUnconfirmedEmail()))
 			return;
 
-		$this->emailConfirmed = $this->emailUnconfirmed;
-		$this->emailUnconfirmed = null;
+		$this->setConfirmedEmail($this->getUnconfirmedEmail());
+		$this->setUnconfirmedEmail(null);
 	}
 
 	public function hasFavorited($post)

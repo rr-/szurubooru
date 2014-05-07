@@ -56,7 +56,10 @@ class EditUserJob extends AbstractUserJob
 		}
 
 		if ($this->getContext() == self::CONTEXT_NORMAL)
+		{
 			UserModel::save($user);
+			EditUserEmailJob::observeSave($user);
+		}
 
 		Logger::flush();
 		return $user;

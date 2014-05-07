@@ -111,7 +111,7 @@ class AuthTest extends AbstractTest
 
 		$user = $this->prepareValidUser();
 		$user->staffConfirmed = false;
-		$user->emailUnconfirmed = 'test@example.com';
+		$user->setUnconfirmedEmail('test@example.com');
 		UserModel::save($user);
 
 		$this->assert->throws(function()
@@ -127,7 +127,7 @@ class AuthTest extends AbstractTest
 
 		$user = $this->prepareValidUser();
 		$user->staffConfirmed = false;
-		$user->emailConfirmed = 'test@example.com';
+		$user->setConfirmedEmail('test@example.com');
 		UserModel::save($user);
 
 		$this->assert->doesNotThrow(function()

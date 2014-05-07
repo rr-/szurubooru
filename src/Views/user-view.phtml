@@ -58,9 +58,9 @@ Assets::addStylesheet('user-view.css');
 
 			<div class="key-value email">
 				<span class="key">E-mail:</span>
-				<span class="value" title="<?= $val = ($this->context->transport->user->emailUnconfirmed
-						? '(unconfirmed) ' . $this->context->transport->user->emailUnconfirmed
-						: $this->context->transport->user->emailConfirmed ?: 'none specified') ?>">
+				<span class="value" title="<?= $val = ($this->context->transport->user->getUnconfirmedEmail()
+						? '(unconfirmed) ' . $this->context->transport->user->getUnconfirmedEmail()
+						: $this->context->transport->user->getConfirmedEmail() ?: 'none specified') ?>">
 					<?= $val ?>
 				</span>
 				<br>(only you and staff can see this)

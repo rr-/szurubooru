@@ -9,9 +9,9 @@ class ActivateUserEmailJob extends AbstractJob
 		{
 			$user = UserModel::findByNameOrEmail($this->getArgument(self::USER_NAME));
 
-			if (empty($user->emailUnconfirmed))
+			if (empty($user->getUnconfirmedEmail()))
 			{
-				if (!empty($user->emailConfirmed))
+				if (!empty($user->getConfirmedEmail()))
 					throw new SimpleException('E-mail was already confirmed; activation skipped');
 				else
 					throw new SimpleException('This user has no e-mail specified; activation cannot proceed');
@@ -55,7 +55,7 @@ class ActivateUserEmailJob extends AbstractJob
 		$mail->subject = $regConfig->confirmationEmailSubject;
 		$mail->senderName = $regConfig->confirmationEmailSenderName;
 		$mail->senderEmail = $regConfig->confirmationEmailSenderEmail;
-		$mail->recipientEmail = $user->emailUnconfirmed;
+		$mail->recipientEmail = $user->getUnconfirmedEmail();
 
 		return Mailer::sendMailWithTokenLink(
 			$user,

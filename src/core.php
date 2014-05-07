@@ -81,6 +81,7 @@ function prepareEnvironment($testEnvironment)
 	Auth::setCurrentUser(null);
 	Access::init();
 	Logger::init();
+	Mailer::init();
 
 	\Chibi\Database::connect(
 		$config->main->dbDriver,

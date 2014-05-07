@@ -72,7 +72,7 @@ class Access
 		if ($user === null)
 			$user = Auth::getCurrentUser();
 
-		if (!$user->emailConfirmed)
+		if (!$user->getConfirmedEmail())
 			return false;
 		return true;
 	}

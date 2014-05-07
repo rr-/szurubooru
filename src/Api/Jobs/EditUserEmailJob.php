@@ -17,25 +17,18 @@ class EditUserEmailJob extends AbstractUserJob
 		$user = $this->user;
 		$newEmail = UserModel::validateEmail($this->getArgument(self::NEW_EMAIL));
 
-		$oldEmail = $user->emailConfirmed;
+		$oldEmail = $user->getConfirmedEmail();
 		if ($oldEmail == $newEmail)
 			return $user;
 
-		$user->emailUnconfirmed = $newEmail;
-		$user->emailConfirmed = null;
-
-		if (Auth::getCurrentUser()->getId() == $user->getId())
-		{
-			if (!empty($newEmail))
-				ActivateUserEmailJob::sendEmail($user);
-		}
-		else
-		{
-			$user->confirmEmail();
-		}
+		$user->setUnconfirmedEmail($newEmail);
+		$user->setConfirmedEmail(null);
 
 		if ($this->getContext() == self::CONTEXT_NORMAL)
+		{
 			UserModel::save($user);
+			self::observeSave($user);
+		}
 
 		Logger::log('{user} changed {subject}\'s e-mail to {mail}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
@@ -43,6 +36,19 @@ class EditUserEmailJob extends AbstractUserJob
 			'mail' => $newEmail]);
 
 		return $user;
+	}
+
+	public static function observeSave($user)
+	{
+		if (Access::check(new Privilege(Privilege::ChangeUserEmailNoConfirm), $user))
+		{
+			$user->confirmEmail();
+		}
+		else
+		{
+			if (!empty($user->getUnconfirmedEmail()))
+				ActivateUserEmailJob::sendEmail($user);
+		}
 	}
 
 	public function requiresPrivilege()
