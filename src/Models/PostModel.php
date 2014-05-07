@@ -56,7 +56,7 @@ class PostModel extends AbstractCrudModel
 				'upload_date' => $post->uploadDate,
 				'image_width' => $post->getImageWidth(),
 				'image_height' => $post->getImageHeight(),
-				'uploader_id' => $post->uploaderId,
+				'uploader_id' => $post->getUploaderId(),
 				'source' => $post->getSource(),
 				];
 

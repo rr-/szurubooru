@@ -15,7 +15,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 	public $uploadDate;
 	protected $imageWidth;
 	protected $imageHeight;
-	public $uploaderId;
+	protected $uploaderId;
 	protected $source;
 	public $commentCount = 0;
 	public $favCount = 0;
@@ -39,14 +39,21 @@ class PostEntity extends AbstractEntity implements IValidatable
 	{
 		if ($this->hasCache('uploader'))
 			return $this->getCache('uploader');
+		if (!$this->uploaderId)
+			return null;
 		$uploader = UserModel::findById($this->uploaderId, false);
 		$this->setCache('uploader', $uploader);
 		return $uploader;
 	}
 
+	public function getUploaderId()
+	{
+		return $this->uploaderId;
+	}
+
 	public function setUploader($user)
 	{
-		$this->uploaderId = $user->getId();
+		$this->uploaderId = $user !== null ? $user->getId() : null;
 		$this->setCache('uploader', $user);
 	}
 

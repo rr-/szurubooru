@@ -75,7 +75,9 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 	{
 		if ($this->hasCache('commenter'))
 			return $this->getCache('commenter');
-		$user = UserModel::findById($this->getCommenterId(), false);
+		if (!$this->commenterId)
+			return null;
+		$user = UserModel::findById($this->commenterId, false);
 		$this->setCache('commenter', $user);
 		return $user;
 	}
