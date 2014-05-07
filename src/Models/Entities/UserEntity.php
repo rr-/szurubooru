@@ -7,7 +7,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 	protected $name;
 	protected $passSalt;
 	protected $passHash;
-	public $staffConfirmed;
+	protected $staffConfirmed;
 	protected $emailUnconfirmed;
 	protected $emailConfirmed;
 	protected $joinDate;
@@ -48,7 +48,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
 			}
 
-			if (!$otherUser->staffConfirmed
+			if (!$otherUser->isStaffConfirmed()
 				and $config->registration->staffActivation)
 			{
 				throw new SimpleException('User with this name is already registered and awaits staff confirmation');
@@ -166,6 +166,16 @@ class UserEntity extends AbstractEntity implements IValidatable
 	public function setConfirmedEmail($email)
 	{
 		$this->emailConfirmed = $email;
+	}
+
+	public function isStaffConfirmed()
+	{
+		return $this->staffConfirmed;
+	}
+
+	public function setStaffConfirmed($confirmed)
+	{
+		$this->staffConfirmed = $confirmed;
 	}
 
 	public function getPasswordHash()

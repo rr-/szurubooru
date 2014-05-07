@@ -21,7 +21,7 @@ class Auth
 		if ($passwordHash != $user->getPasswordHash())
 			throw new SimpleException('Invalid password');
 
-		if (!$user->staffConfirmed and $config->registration->staffActivation)
+		if (!$user->isStaffConfirmed() and $config->registration->staffActivation)
 			throw new SimpleException('Staff hasn\'t confirmed your registration yet');
 
 		if ($user->isBanned())

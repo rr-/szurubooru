@@ -9,7 +9,6 @@ class UserModel extends AbstractCrudModel
 	const SETTING_POST_TAG_TITLES = 3;
 	const SETTING_HIDE_DISLIKED_POSTS = 4;
 
-
 	public static function getTableName()
 	{
 		return 'user';
@@ -45,7 +44,7 @@ class UserModel extends AbstractCrudModel
 				'name' => $user->getName(),
 				'pass_salt' => $user->getPasswordSalt(),
 				'pass_hash' => $user->getPasswordHash(),
-				'staff_confirmed' => $user->staffConfirmed,
+				'staff_confirmed' => $user->isStaffConfirmed(),
 				'email_unconfirmed' => $user->getUnconfirmedEmail(),
 				'email_confirmed' => $user->getConfirmedEmail(),
 				'join_date' => $user->getJoinTime(),

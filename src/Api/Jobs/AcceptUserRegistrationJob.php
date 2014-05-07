@@ -5,7 +5,7 @@ class AcceptUserRegistrationJob extends AbstractUserJob
 	{
 		$user = $this->user;
 
-		$user->staffConfirmed = true;
+		$user->setStaffConfirmed(true);
 		UserModel::save($user);
 
 		Logger::log('{user} confirmed {subject}\'s account', [

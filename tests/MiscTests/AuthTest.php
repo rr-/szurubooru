@@ -65,7 +65,7 @@ class AuthTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
-		$user->staffConfirmed = false;
+		$user->setStaffConfirmed(false);
 		UserModel::save($user);
 
 		$this->assert->throws(function()
@@ -80,7 +80,7 @@ class AuthTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
-		$user->staffConfirmed = false;
+		$user->setStaffConfirmed(false);
 		UserModel::save($user);
 
 		$this->assert->doesNotThrow(function()
@@ -95,7 +95,7 @@ class AuthTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();
-		$user->staffConfirmed = false;
+		$user->setStaffConfirmed(false);
 		UserModel::save($user);
 
 		$this->assert->throws(function()
@@ -110,7 +110,7 @@ class AuthTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();
-		$user->staffConfirmed = false;
+		$user->setStaffConfirmed(false);
 		$user->setUnconfirmedEmail('test@example.com');
 		UserModel::save($user);
 
@@ -126,7 +126,7 @@ class AuthTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();
-		$user->staffConfirmed = false;
+		$user->setStaffConfirmed(false);
 		$user->setConfirmedEmail('test@example.com');
 		UserModel::save($user);
 

@@ -103,7 +103,7 @@ Assets::addStylesheet('user-view.css');
 		}
 
 		if (Access::check(new Privilege(Privilege::AcceptUserRegistration))
-			and !$this->context->transport->user->staffConfirmed
+			and !$this->context->transport->user->isStaffConfirmed()
 			and getConfig()->registration->staffActivation)
 		{
 			$options []=
