@@ -161,40 +161,29 @@ class TagModel extends AbstractCrudModel
 		Database::exec($stmt);
 	}
 
-
-
-	public static function validateTag($tag)
+	public static function spawnFromNames(array $tagNames)
 	{
-		$tag = trim($tag);
-
-		$minLength = 1;
-		$maxLength = 64;
-		if (strlen($tag) < $minLength)
-			throw new SimpleException('Tag must have at least %d characters', $minLength);
-		if (strlen($tag) > $maxLength)
-			throw new SimpleException('Tag must have at most %d characters', $maxLength);
-
-		if (!preg_match('/^[()\[\]a-zA-Z0-9_.-]+$/i', $tag))
-			throw new SimpleException('Invalid tag "%s"', $tag);
-
-		if (preg_match('/^\.\.?$/', $tag))
-			throw new SimpleException('Invalid tag "%s"', $tag);
-
-		return $tag;
+		$tags = [];
+		foreach ($tagNames as $tagName)
+		{
+			$tag = TagModel::findByName($tagName, false);
+			if (!$tag)
+			{
+				$tag = TagModel::spawn();
+				$tag->setName($tagName);
+				TagModel::save($tag);
+			}
+			$tags []= $tag;
+		}
+		return $tags;
 	}
+
+
 
 	public static function validateTags($tags)
 	{
-		$tags = trim($tags);
-		$tags = preg_split('/[,;\s]+/', $tags);
-		$tags = array_filter($tags, function($x) { return $x != ''; });
-		$tags = array_unique($tags);
-
 		foreach ($tags as $key => $tag)
 			$tags[$key] = self::validateTag($tag);
-
-		if (empty($tags))
-			throw new SimpleException('No tags set');
 
 		return $tags;
 	}

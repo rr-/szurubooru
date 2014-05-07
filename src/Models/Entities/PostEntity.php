@@ -27,6 +27,9 @@ class PostEntity extends AbstractEntity implements IValidatable
 		if (empty($this->getType()))
 			throw new SimpleException('No post type detected');
 
+		if (empty($this->getTags()))
+			throw new SimpleException('No tags set');
+
 		$this->getType()->validate();
 
 		$this->getSafety()->validate();
@@ -161,24 +164,6 @@ class PostEntity extends AbstractEntity implements IValidatable
 			$uniqueTags[$tag->getId()] = $tag;
 		$tags = array_values($uniqueTags);
 		$this->setCache('tags', $tags);
-	}
-
-	public function setTagsFromText($tagsText)
-	{
-		$tagNames = TagModel::validateTags($tagsText);
-		$tags = [];
-		foreach ($tagNames as $tagName)
-		{
-			$tag = TagModel::findByName($tagName, false);
-			if (!$tag)
-			{
-				$tag = TagModel::spawn();
-				$tag->setName($tagName);
-				TagModel::save($tag);
-			}
-			$tags []= $tag;
-		}
-		$this->setTags($tags);
 	}
 
 	public function isTaggedWith($tagName)

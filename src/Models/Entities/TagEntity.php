@@ -8,12 +8,27 @@ class TagEntity extends AbstractEntity implements IValidatable
 
 	public function validate()
 	{
-		//todo
+		$minLength = getConfig()->tags->minLength;
+		$maxLength = getConfig()->tags->maxLength;
+		$regex = getConfig()->tags->regex;
+
+		$name = $this->getName();
+
+		if (strlen($name) < $minLength)
+			throw new SimpleException('Tag must have at least %d characters', $minLength);
+		if (strlen($name) > $maxLength)
+			throw new SimpleException('Tag must have at most %d characters', $maxLength);
+
+		if (!preg_match($regex, $name))
+			throw new SimpleException('Invalid tag "%s"', $name);
+
+		if (preg_match('/^\.\.?$/', $name))
+			throw new SimpleException('Invalid tag "%s"', $name);
 	}
 
 	public function setName($name)
 	{
-		$this->name = $name;
+		$this->name = trim($name);
 	}
 
 	public function getName()

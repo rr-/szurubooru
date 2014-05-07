@@ -25,11 +25,19 @@ class AbstractTest
 		return UserModel::save($user);
 	}
 
+	protected function mockTag()
+	{
+		$tag = TagModel::spawn();
+		$tag->setName(uniqid());
+		return TagModel::save($tag);
+	}
+
 	protected function mockPost($owner)
 	{
 		$post = PostModel::spawn();
 		$post->setUploader($owner);
 		$post->setType(new PostType(PostType::Image));
+		$post->setTags([$this->mockTag(), $this->mockTag()]);
 		return PostModel::save($post);
 	}
 

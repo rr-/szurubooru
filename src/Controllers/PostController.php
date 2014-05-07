@@ -90,7 +90,7 @@ class PostController
 		[
 			AddPostJob::ANONYMOUS => InputHelper::get('anonymous'),
 			EditPostSafetyJob::SAFETY => InputHelper::get('safety'),
-			EditPostTagsJob::TAG_NAMES => InputHelper::get('tags'),
+			EditPostTagsJob::TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
 			EditPostSourceJob::SOURCE => InputHelper::get('source'),
 		];
 
@@ -131,7 +131,7 @@ class PostController
 		[
 			EditPostJob::POST_ID => $id,
 			EditPostSafetyJob::SAFETY => InputHelper::get('safety'),
-			EditPostTagsJob::TAG_NAMES => InputHelper::get('tags'),
+			EditPostTagsJob::TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
 			EditPostSourceJob::SOURCE => InputHelper::get('source'),
 			EditPostRelationsJob::RELATED_POST_IDS => InputHelper::get('relations'),
 		];
@@ -282,5 +282,15 @@ class PostController
 		$context->transport->fileContent = $ret->fileContent;
 		$context->transport->lastModified = $ret->lastModified;
 		$context->layoutName = 'layout-file';
+	}
+
+
+	protected function splitTags($string)
+	{
+		$tags = trim($string);
+		$tags = preg_split('/[,;\s]+/', $tags);
+		$tags = array_filter($tags, function($x) { return $x != ''; });
+		$tags = array_unique($tags);
+		return $tags;
 	}
 }

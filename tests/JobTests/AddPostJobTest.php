@@ -21,6 +21,7 @@ class AddPostJobTest extends AbstractTest
 					EditPostSafetyJob::SAFETY => PostSafety::Safe,
 					EditPostSourceJob::SOURCE => '',
 					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					EditPostTagsJob::TAG_NAMES => ['kamen', 'raider'],
 				]);
 		});
 
@@ -47,6 +48,7 @@ class AddPostJobTest extends AbstractTest
 				[
 					AddPostJob::ANONYMOUS => true,
 					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					EditPostTagsJob::TAG_NAMES => ['kamen', 'raider'],
 				]);
 		});
 
@@ -57,7 +59,7 @@ class AddPostJobTest extends AbstractTest
 		$this->assert->areEqual(null, $post->getUploaderId());
 	}
 
-	public function testPrivilegeFail()
+	public function testPartialPrivilegeFail()
 	{
 		$this->prepare();
 
@@ -66,17 +68,73 @@ class AddPostJobTest extends AbstractTest
 		$this->grantAccess('addPostTags');
 		$this->grantAccess('addPostContent');
 
-		$args =
-		[
-			EditPostSafetyJob::SAFETY => PostSafety::Safe,
-			EditPostSourceJob::SOURCE => '',
-			EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
-		];
-
-		$this->assert->throws(function() use ($args)
+		$this->assert->throws(function()
 		{
-			Api::run(new AddPostJob(), $args);
+			Api::run(
+				new AddPostJob(),
+				[
+					EditPostSafetyJob::SAFETY => PostSafety::Safe,
+					EditPostSourceJob::SOURCE => '',
+					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+				]);
 		}, 'Insufficient privilege');
+	}
+
+	public function testInvalidSafety()
+	{
+		$this->prepare();
+
+		$this->grantAccess('addPost');
+		$this->grantAccess('addPostTags');
+		$this->grantAccess('addPostContent');
+		$this->grantAccess('addPostSafety');
+
+		$this->assert->throws(function()
+		{
+			Api::run(
+				new AddPostJob(),
+				[
+					EditPostSafetyJob::SAFETY => 666,
+					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					EditPostTagsJob::TAG_NAMES => ['kamen', 'raider'],
+				]);
+		}, 'Invalid safety type');
+	}
+
+	public function testNoContentFail()
+	{
+		$this->prepare();
+
+		$this->grantAccess('addPost');
+		$this->grantAccess('addPostTags');
+		$this->grantAccess('addPostContent');
+
+		$this->assert->throws(function()
+		{
+			Api::run(
+				new AddPostJob(),
+				[
+					EditPostTagsJob::TAG_NAMES => ['kamen', 'raider'],
+				]);
+		}, 'No post type detected');
+	}
+
+	public function testEmptyTagsFail()
+	{
+		$this->prepare();
+
+		$this->grantAccess('addPost');
+		$this->grantAccess('addPostTags');
+		$this->grantAccess('addPostContent');
+
+		$this->assert->throws(function()
+		{
+			Api::run(
+				new AddPostJob(),
+				[
+					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+				]);
+		}, 'No tags set');
 	}
 
 	public function testLogBuffering()

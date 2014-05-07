@@ -9,10 +9,15 @@ class EditPostTagsJob extends AbstractPostJob
 	public function execute()
 	{
 		$post = $this->post;
-		$tags = $this->getArgument(self::TAG_NAMES);
+		$tagNames = $this->getArgument(self::TAG_NAMES);
+
+		if (!is_array($tagNames))
+			throw new SimpleException('Expected array');
+
+		$tags = TagModel::spawnFromNames($tagNames);
 
 		$oldTags = array_map(function($tag) { return $tag->getName(); }, $post->getTags());
-		$post->setTagsFromText($tags);
+		$post->setTags($tags);
 		$newTags = array_map(function($tag) { return $tag->getName(); }, $post->getTags());
 
 		if ($this->getContext() == self::CONTEXT_NORMAL)
