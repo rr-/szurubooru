@@ -11,18 +11,50 @@ class AddPostJobTest extends AbstractTest
 		$this->grantAccess('addPostSource');
 		$this->grantAccess('addPostContent');
 
-		$args =
-		[
-			AddPostJob::ANONYMOUS => false,
-			EditPostSafetyJob::SAFETY => PostSafety::Safe,
-			EditPostSourceJob::SOURCE => '',
-			EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
-		];
+		$this->login($this->mockUser());
 
-		$this->assert->doesNotThrow(function() use ($args)
+		$post = $this->assert->doesNotThrow(function()
 		{
-			Api::run(new AddPostJob(), $args);
+			return Api::run(
+				new AddPostJob(),
+				[
+					EditPostSafetyJob::SAFETY => PostSafety::Safe,
+					EditPostSourceJob::SOURCE => '',
+					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+				]);
 		});
+
+		$this->assert->areEqual(
+			file_get_contents($post->getFullPath()),
+			file_get_contents($this->getPath('image.jpg')));
+		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $post->getUploaderId());
+	}
+
+	public function testAnonymousUploads()
+	{
+		$this->prepare();
+
+		$this->grantAccess('addPost');
+		$this->grantAccess('addPostTags');
+		$this->grantAccess('addPostContent');
+
+		$this->login($this->mockUser());
+
+		$post = $this->assert->doesNotThrow(function()
+		{
+			return Api::run(
+				new AddPostJob(),
+				[
+					AddPostJob::ANONYMOUS => true,
+					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+				]);
+		});
+
+		$this->assert->areEqual(
+			file_get_contents($post->getFullPath()),
+			file_get_contents($this->getPath('image.jpg')));
+		$this->assert->areNotEqual(Auth::getCurrentUser()->getId(), $post->getUploaderId());
+		$this->assert->areEqual(null, $post->getUploaderId());
 	}
 
 	public function testPrivilegeFail()
@@ -36,7 +68,6 @@ class AddPostJobTest extends AbstractTest
 
 		$args =
 		[
-			AddPostJob::ANONYMOUS => false,
 			EditPostSafetyJob::SAFETY => PostSafety::Safe,
 			EditPostSourceJob::SOURCE => '',
 			EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),

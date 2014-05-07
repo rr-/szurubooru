@@ -7,7 +7,8 @@ class AddPostJob extends AbstractJob
 	{
 		$post = PostModel::spawn();
 
-		$anonymous = $this->getArgument(self::ANONYMOUS);
+		$anonymous = $this->hasArgument(self::ANONYMOUS)
+			and $this->getArgument(self::ANONYMOUS);
 		if (Auth::isLoggedIn() and !$anonymous)
 			$post->setUploader(Auth::getCurrentUser());
 
