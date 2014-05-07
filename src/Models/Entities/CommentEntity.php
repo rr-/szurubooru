@@ -20,7 +20,7 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 		if (!$this->getPostId())
 			throw new SimpleException('Trying to save comment that doesn\'t refer to any post');
 
-		if (!$this->getDateTime())
+		if (!$this->getCreationTime())
 			throw new SimpleException('Trying to save comment that has no creation date specified');
 
 		$this->setText($text);
@@ -61,14 +61,14 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 		$this->postId = $post->getId();
 	}
 
-	public function getDateTime()
+	public function getCreationTime()
 	{
 		return $this->commentDate;
 	}
 
-	public function setDateTime($dateTime)
+	public function setCreationTime($unixTime)
 	{
-		$this->commentDate = $dateTime;
+		$this->commentDate = $unixTime;
 	}
 
 	public function getCommenter()

@@ -31,14 +31,14 @@ class TokenEntity extends AbstractEntity implements IValidatable
 		$this->used = $used;
 	}
 
-	public function getExpirationDate()
+	public function getExpirationTime()
 	{
 		return $this->expires;
 	}
 
-	public function setExpirationDate($time)
+	public function setExpirationTime($unixTime)
 	{
-		$this->expires = $time;
+		$this->expires = $unixTime;
 	}
 
 	public function getUser()

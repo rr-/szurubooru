@@ -32,8 +32,8 @@ Assets::addScript('comment-edit.js');
 				<?php endif ?>
 			</span>
 
-			<span class="date" title="<?= TextHelper::formatDate($this->context->comment->getDateTime(), true) ?>">
-				<?= TextHelper::formatDate($this->context->comment->getDateTime(), false) ?>
+			<span class="date" title="<?= TextHelper::formatDate($this->context->comment->getCreationTime(), true) ?>">
+				<?= TextHelper::formatDate($this->context->comment->getCreationTime(), false) ?>
 			</span>
 
 			<?php if (Access::check(new Privilege(

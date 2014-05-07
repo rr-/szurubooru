@@ -27,7 +27,7 @@ class PostModel extends AbstractCrudModel
 		$post = new PostEntity;
 		$post->setSafety(new PostSafety(PostSafety::Safe));
 		$post->setHidden(false);
-		$post->uploadDate = time();
+		$post->setCreationTime(time());
 		do
 		{
 			$post->setName(md5(mt_rand() . uniqid()));
@@ -53,7 +53,7 @@ class PostModel extends AbstractCrudModel
 				'mime_type' => $post->getMimeType(),
 				'safety' => $post->getSafety()->toInteger(),
 				'hidden' => $post->isHidden(),
-				'upload_date' => $post->uploadDate,
+				'upload_date' => $post->getCreationTime(),
 				'image_width' => $post->getImageWidth(),
 				'image_height' => $post->getImageHeight(),
 				'uploader_id' => $post->getUploaderId(),

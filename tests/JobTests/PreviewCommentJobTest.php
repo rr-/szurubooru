@@ -14,7 +14,7 @@ class PreviewCommentJobTest extends AbstractTest
 		$this->assert->areEqual(0, CommentModel::getCount());
 		$this->assert->areEqual($text, $comment->getText());
 		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $comment->getCommenter()->getId());
-		$this->assert->isNotNull($comment->getDateTime());
+		$this->assert->isNotNull($comment->getCreationTime());
 		$this->assert->throws(function() use ($comment)
 		{
 			CommentModel::findById($comment->getId());

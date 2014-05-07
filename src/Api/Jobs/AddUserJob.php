@@ -6,7 +6,7 @@ class AddUserJob extends AbstractJob
 		$firstUser = UserModel::getCount() == 0;
 
 		$user = UserModel::spawn();
-		$user->joinDate = time();
+		$user->setJoinTime(time());
 		$user->staffConfirmed = $firstUser;
 		UserModel::forgeId($user);
 

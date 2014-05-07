@@ -109,8 +109,8 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php endif ?>
 			<br>
 			<span class="date"
-				title="<?= TextHelper::formatDate($this->context->transport->post->uploadDate, true) ?>">
-				<?= TextHelper::formatDate($this->context->transport->post->uploadDate, false) ?>
+				title="<?= TextHelper::formatDate($this->context->transport->post->getCreationTime(), true) ?>">
+				<?= TextHelper::formatDate($this->context->transport->post->getCreationTime(), false) ?>
 			</span>
 		</div>
 

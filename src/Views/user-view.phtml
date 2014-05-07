@@ -23,9 +23,9 @@ Assets::addStylesheet('user-view.css');
 			<span class="key">Joined:</span>
 			<span
 				class="value"
-				title="<?= TextHelper::formatDate($this->context->transport->user->joinDate, true) ?>">
+				title="<?= TextHelper::formatDate($this->context->transport->user->getJoinTime(), true) ?>">
 
-				<?= TextHelper::formatDate($this->context->transport->user->joinDate, false) ?>
+				<?= TextHelper::formatDate($this->context->transport->user->getJoinTime(), false) ?>
 
 			</span>
 		</div>
@@ -34,9 +34,9 @@ Assets::addStylesheet('user-view.css');
 			<span class="key">Last login:</span>
 			<span
 				class="value"
-				title="<?= TextHelper::formatDate($this->context->transport->user->lastLoginDate, true) ?>">
+				title="<?= TextHelper::formatDate($this->context->transport->user->getLastLoginTime(), true) ?>">
 
-				<?= TextHelper::formatDate($this->context->transport->user->lastLoginDate, false) ?>
+				<?= TextHelper::formatDate($this->context->transport->user->getLastLoginTime(), false) ?>
 
 			</span>
 		</div>

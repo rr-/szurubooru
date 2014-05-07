@@ -12,11 +12,12 @@ class PostEntity extends AbstractEntity implements IValidatable
 	protected $mimeType;
 	protected $safety;
 	protected $hidden;
-	public $uploadDate;
+	protected $uploadDate;
 	protected $imageWidth;
 	protected $imageHeight;
 	protected $uploaderId;
 	protected $source;
+
 	public $commentCount = 0;
 	public $favCount = 0;
 	public $score = 0;
@@ -197,6 +198,16 @@ class PostEntity extends AbstractEntity implements IValidatable
 	public function setHidden($hidden)
 	{
 		$this->hidden = boolval($hidden);
+	}
+
+	public function getCreationTime()
+	{
+		return $this->uploadDate;
+	}
+
+	public function setCreationTime($unixTime)
+	{
+		$this->uploadDate = $unixTime;
 	}
 
 	public function getImageWidth()

@@ -18,7 +18,7 @@ class PreviewCommentJob extends AbstractJob
 		}
 
 		$comment->setCommenter($user);
-		$comment->setDateTime(time());
+		$comment->setCreationTime(time());
 		$comment->setText($text);
 
 		$comment->validate();

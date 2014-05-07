@@ -12,7 +12,7 @@ class EditCommentJob extends AbstractJob
 	{
 		$comment = $this->comment;
 
-		$comment->setDateTime(time());
+		$comment->setCreationTime(time());
 		$comment->setText($this->getArgument(self::TEXT));
 
 		CommentModel::save($comment);

@@ -56,8 +56,8 @@ if (Auth::getCurrentUser()->hasEnabledEndlessScrolling())
 							</a>
 						</h1>
 
-						<div class="date-registered" title="<?= TextHelper::formatDate($user->joinDate, true) ?>">
-							Registered: <?= TextHelper::formatDate($user->joinDate, false) ?>
+						<div class="date-registered" title="<?= TextHelper::formatDate($user->getJoinTime(), true) ?>">
+							Registered: <?= TextHelper::formatDate($user->getJoinTime(), false) ?>
 						</div>
 
 						<div class="post-count">

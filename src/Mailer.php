@@ -90,7 +90,7 @@ class Mailer
 		$token->setUser($user);
 		$token->setText(TokenModel::forgeUnusedToken());
 		$token->setUsed(false);
-		$token->setExpirationDate(null);
+		$token->setExpirationTime(null);
 		TokenModel::save($token);
 
 		$tokens['link'] = \Chibi\Router::linkTo($linkDestination, ['tokenText' => $token->getText()]);

@@ -10,8 +10,8 @@ class UserEntity extends AbstractEntity implements IValidatable
 	public $staffConfirmed;
 	protected $emailUnconfirmed;
 	protected $emailConfirmed;
-	public $joinDate;
-	public $lastLoginDate;
+	protected $joinDate;
+	protected $lastLoginDate;
 	protected $accessRank;
 	public $settings;
 	protected $banned = false;
@@ -32,7 +32,6 @@ class UserEntity extends AbstractEntity implements IValidatable
 		if ($this->getAccessRank()->toInteger() == AccessRank::Anonymous)
 			throw new Exception('Trying to save anonymous user into database');
 	}
-
 
 	protected function validateUserName()
 	{
@@ -103,6 +102,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		return $accessRank;
 	}
 
+
 	public function isBanned()
 	{
 		return $this->banned;
@@ -126,6 +126,26 @@ class UserEntity extends AbstractEntity implements IValidatable
 	public function setName($name)
 	{
 		$this->name = trim($name);
+	}
+
+	public function getJoinTime()
+	{
+		return $this->joinDate;
+	}
+
+	public function setJoinTime($unixTime)
+	{
+		$this->joinDate = $unixTime;
+	}
+
+	public function getLastLoginTime()
+	{
+		return $this->lastLoginDate;
+	}
+
+	public function setLastLoginTime($unixTime)
+	{
+		$this->lastLoginDate = $unixTime;
 	}
 
 	public function getUnconfirmedEmail()

@@ -21,7 +21,7 @@ class TokenModel extends AbstractCrudModel
 				'user_id' => $token->getUserId(),
 				'token' => $token->getText(),
 				'used' => $token->isUsed(),
-				'expires' => $token->getExpirationDate(),
+				'expires' => $token->getExpirationTime(),
 				];
 
 			$stmt = new Sql\UpdateStatement();
@@ -64,7 +64,7 @@ class TokenModel extends AbstractCrudModel
 		if ($token->isUsed())
 			throw new SimpleException('This token was already used');
 
-		if ($token->getExpirationDate() !== null and time() > $token->getExpirationDate())
+		if ($token->getExpirationTime() !== null and time() > $token->getExpirationTime())
 			throw new SimpleException('This token has expired');
 	}
 

@@ -10,7 +10,7 @@ class AddCommentJob extends AbstractJob
 		$comment = CommentModel::spawn();
 		$comment->setCommenter($user);
 		$comment->setPost($post);
-		$comment->setDateTime(time());
+		$comment->setCreationTime(time());
 		$comment->setText($text);
 
 		CommentModel::save($comment);

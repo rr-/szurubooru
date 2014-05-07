@@ -12,7 +12,7 @@ final class CommentModel extends AbstractCrudModel
 	public static function spawn()
 	{
 		$comment = new CommentEntity;
-		$comment->setDateTime(time());
+		$comment->setCreationTime(time());
 		return $comment;
 	}
 
@@ -27,7 +27,7 @@ final class CommentModel extends AbstractCrudModel
 			$bindings = [
 				'text' => $comment->getText(),
 				'post_id' => $comment->getPostId(),
-				'comment_date' => $comment->getDateTime(),
+				'comment_date' => $comment->getCreationTime(),
 				'commenter_id' => $comment->getCommenterId()];
 
 			$stmt = new Sql\UpdateStatement();
