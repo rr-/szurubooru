@@ -13,8 +13,8 @@ class PostEntity extends AbstractEntity implements IValidatable
 	protected $safety;
 	public $hidden;
 	public $uploadDate;
-	public $imageWidth;
-	public $imageHeight;
+	protected $imageWidth;
+	protected $imageHeight;
 	public $uploaderId;
 	protected $source;
 	public $commentCount = 0;
@@ -187,6 +187,26 @@ class PostEntity extends AbstractEntity implements IValidatable
 		$this->hidden = boolval($hidden);
 	}
 
+	public function getImageWidth()
+	{
+		return $this->imageWidth;
+	}
+
+	public function setImageWidth($imageWidth)
+	{
+		$this->imageWidth = $imageWidth;
+	}
+
+	public function getImageHeight()
+	{
+		return $this->imageHeight;
+	}
+
+	public function setImageHeight($imageHeight)
+	{
+		$this->imageHeight = $imageHeight;
+	}
+
 	public function getName()
 	{
 		return $this->name;
@@ -308,14 +328,14 @@ class PostEntity extends AbstractEntity implements IValidatable
 			case 'image/jpeg':
 				list ($imageWidth, $imageHeight) = getimagesize($srcPath);
 				$this->setType(new PostType(PostType::Image));
-				$this->imageWidth = $imageWidth;
-				$this->imageHeight = $imageHeight;
+				$this->setImageWidth($imageWidth);
+				$this->setImageHeight($imageHeight);
 				break;
 			case 'application/x-shockwave-flash':
 				list ($imageWidth, $imageHeight) = getimagesize($srcPath);
 				$this->setType(new PostType(PostType::Flash));
-				$this->imageWidth = $imageWidth;
-				$this->imageHeight = $imageHeight;
+				$this->setImageWidth($imageWidth);
+				$this->setImageHeight($imageHeight);
 				break;
 			case 'video/webm':
 			case 'video/mp4':
@@ -325,8 +345,8 @@ class PostEntity extends AbstractEntity implements IValidatable
 			case 'video/3gpp':
 				list ($imageWidth, $imageHeight) = getimagesize($srcPath);
 				$this->setType(new PostType(PostType::Video));
-				$this->imageWidth = $imageWidth;
-				$this->imageHeight = $imageHeight;
+				$this->setImageWidth($imageWidth);
+				$this->setImageHeight($imageHeight);
 				break;
 			default:
 				throw new SimpleException('Invalid file type "%s"', $this->mimeType);
@@ -363,8 +383,8 @@ class PostEntity extends AbstractEntity implements IValidatable
 			$this->mimeType = null;
 			$this->fileSize = null;
 			$this->fileHash = $youtubeId;
-			$this->imageWidth = null;
-			$this->imageHeight = null;
+			$this->setImageWidth(null);
+			$this->setImageHeight(null);
 
 			$thumbPath = $this->getThumbDefaultPath();
 			if (file_exists($thumbPath))

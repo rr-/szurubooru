@@ -134,12 +134,12 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			</span>
 		</div>
 
-		<?php if ($this->context->transport->post->imageWidth > 0): ?>
+		<?php if ($this->context->transport->post->getImageWidth()): ?>
 			<div class="key-value dim">
 				<span class="key">Dimensions:</span>
 				<span class="value" title="<?= $val = sprintf('%dx%d',
-					$this->context->transport->post->imageWidth,
-					$this->context->transport->post->imageHeight) ?>">
+					$this->context->transport->post->getImageWidth(),
+					$this->context->transport->post->getImageHeight()) ?>">
 					<?= $val ?>
 				</span>
 			</div>

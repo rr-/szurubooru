@@ -24,8 +24,8 @@ $post = $this->context->transport->post;
 
 	<object
 		type="<?= $post->mimeType ?>"
-		width="<?= $post->imageWidth ?>"
-		height="<?= $post->imageHeight ?>"
+		width="<?= $post->getImageWidth() ?>"
+		height="<?= $post->getImageHeight() ?>"
 		data="<?= \Chibi\Router::linkTo(
 			['PostController', 'fileView'],
 			['name' => $post->getName()]) ?>">

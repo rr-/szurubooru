@@ -19,8 +19,8 @@ class EditPostContentJobTest extends AbstractTest
 		$post = $this->uploadFromFile('image.jpg');
 		$this->assert->areEqual('image/jpeg', $post->mimeType);
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
-		$this->assert->areEqual(320, $post->imageWidth);
-		$this->assert->areEqual(240, $post->imageHeight);
+		$this->assert->areEqual(320, $post->getImageWidth());
+		$this->assert->areEqual(240, $post->getImageHeight());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
 			$post->generateThumb();
@@ -34,8 +34,8 @@ class EditPostContentJobTest extends AbstractTest
 		$post = $this->uploadFromFile('image.png');
 		$this->assert->areEqual('image/png', $post->mimeType);
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
-		$this->assert->areEqual(320, $post->imageWidth);
-		$this->assert->areEqual(240, $post->imageHeight);
+		$this->assert->areEqual(320, $post->getImageWidth());
+		$this->assert->areEqual(240, $post->getImageHeight());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
 			$post->generateThumb();
@@ -49,8 +49,8 @@ class EditPostContentJobTest extends AbstractTest
 		$post = $this->uploadFromFile('image.gif');
 		$this->assert->areEqual('image/gif', $post->mimeType);
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
-		$this->assert->areEqual(320, $post->imageWidth);
-		$this->assert->areEqual(240, $post->imageHeight);
+		$this->assert->areEqual(320, $post->getImageWidth());
+		$this->assert->areEqual(240, $post->getImageHeight());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
 			$post->generateThumb();

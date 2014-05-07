@@ -54,8 +54,8 @@ class PostModel extends AbstractCrudModel
 				'safety' => $post->getSafety()->toInteger(),
 				'hidden' => $post->hidden,
 				'upload_date' => $post->uploadDate,
-				'image_width' => $post->imageWidth,
-				'image_height' => $post->imageHeight,
+				'image_width' => $post->getImageWidth(),
+				'image_height' => $post->getImageHeight(),
 				'uploader_id' => $post->uploaderId,
 				'source' => $post->getSource(),
 				];
