@@ -16,16 +16,23 @@ class PostEntity extends AbstractEntity implements IValidatable
 	public $imageWidth;
 	public $imageHeight;
 	public $uploaderId;
-	public $source;
+	protected $source;
 	public $commentCount = 0;
 	public $favCount = 0;
 	public $score = 0;
 
 	public function validate()
 	{
-		//todo
 		if (empty($this->getType()))
 			throw new SimpleException('No post type detected');
+
+		$this->getType()->validate();
+
+		$this->getSafety()->validate();
+
+		$maxSourceLength = getConfig()->posts->maxSourceLength;
+		if (strlen($this->getSource()) > $maxSourceLength)
+			throw new SimpleException('Source must have at most %d characters', $maxSourceLength);
 	}
 
 	public function getUploader()
@@ -197,7 +204,6 @@ class PostEntity extends AbstractEntity implements IValidatable
 
 	public function setType(PostType $type)
 	{
-		$type->validate();
 		$this->type = $type;
 	}
 
@@ -208,13 +214,17 @@ class PostEntity extends AbstractEntity implements IValidatable
 
 	public function setSafety(PostSafety $safety)
 	{
-		$safety->validate();
 		$this->safety = $safety;
+	}
+
+	public function getSource()
+	{
+		return $this->source;
 	}
 
 	public function setSource($source)
 	{
-		$this->source = PostModel::validateSource($source);
+		$this->source = trim($source);
 	}
 
 	public function getThumbCustomPath($width = null, $height = null)
@@ -390,14 +400,19 @@ class PostEntity extends AbstractEntity implements IValidatable
 	public function getEditToken()
 	{
 		$x = [];
+
 		foreach ($this->getTags() as $tag)
 			$x []= TextHelper::reprTag($tag->getName());
+
 		foreach ($this->getRelations() as $relatedPost)
 			$x []= TextHelper::reprPost($relatedPost);
+
 		$x []= $this->getSafety()->toInteger();
-		$x []= $this->source;
+		$x []= $this->getSource();
 		$x []= $this->fileHash;
+
 		natcasesort($x);
+
 		$x = join(' ', $x);
 		return md5($x);
 	}

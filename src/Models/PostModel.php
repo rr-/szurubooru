@@ -57,7 +57,7 @@ class PostModel extends AbstractCrudModel
 				'image_width' => $post->imageWidth,
 				'image_height' => $post->imageHeight,
 				'uploader_id' => $post->uploaderId,
-				'source' => $post->source,
+				'source' => $post->getSource(),
 				];
 
 			$stmt = new Sql\UpdateStatement();
@@ -272,17 +272,6 @@ class PostModel extends AbstractCrudModel
 	}
 
 
-
-	public static function validateSource($source)
-	{
-		$source = trim($source);
-
-		$maxLength = getConfig()->posts->maxSourceLength;
-		if (strlen($source) > $maxLength)
-			throw new SimpleException('Source must have at most %d characters', $maxLength);
-
-		return $source;
-	}
 
 	public static function validateThumbSize($width, $height)
 	{

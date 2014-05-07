@@ -38,7 +38,7 @@ class AddPostJob extends AbstractJob
 			'post' => TextHelper::reprPost($post),
 			'tags' => TextHelper::reprTags($post->getTags()),
 			'safety' => $post->getSafety()->toString(),
-			'source' => $post->source]);
+			'source' => $post->getSource()]);
 
 		Logger::flush();
 

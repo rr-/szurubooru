@@ -13,7 +13,7 @@ class EditPostSourceJob extends AbstractPostJob
 		$post = $this->post;
 		$newSource = $this->getArgument(self::SOURCE);
 
-		$oldSource = $post->source;
+		$oldSource = $post->getSource();
 		$post->setSource($newSource);
 
 		if ($this->getContext() == self::CONTEXT_NORMAL)
@@ -24,7 +24,7 @@ class EditPostSourceJob extends AbstractPostJob
 			Logger::log('{user} changed source of {post} to {source}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
-				'source' => $post->source]);
+				'source' => $post->getSource()]);
 		}
 
 		return $post;

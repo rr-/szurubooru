@@ -125,8 +125,8 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="key-value source">
 			<span class="key">Source:</span>
 			<span class="value"
-				title="<?= $val = htmlspecialchars($this->context->transport->post->source ?: 'unknown') ?>">
-				<?php if (preg_match('/^((https?|ftp):|)\/\//', $this->context->transport->post->source)): ?>
+				title="<?= $val = htmlspecialchars($this->context->transport->post->getSource() ?: 'unknown') ?>">
+				<?php if (preg_match('/^((https?|ftp):|)\/\//', $this->context->transport->post->getSource())): ?>
 					<a href="<?= $val ?>"><?= $val ?></a>
 				<?php else: ?>
 					<?= $val ?>
