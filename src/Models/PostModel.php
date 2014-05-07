@@ -47,7 +47,7 @@ class PostModel extends AbstractCrudModel
 			$bindings = [
 				'type' => $post->getType()->toInteger(),
 				'name' => $post->getName(),
-				'orig_name' => $post->origName,
+				'orig_name' => $post->getOriginalName(),
 				'file_hash' => $post->fileHash,
 				'file_size' => $post->fileSize,
 				'mime_type' => $post->mimeType,

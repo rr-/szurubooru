@@ -6,7 +6,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 {
 	protected $type;
 	protected $name;
-	public $origName;
+	protected $origName;
 	public $fileHash;
 	public $fileSize;
 	public $mimeType;
@@ -229,6 +229,16 @@ class PostEntity extends AbstractEntity implements IValidatable
 		$this->name = $name;
 	}
 
+	public function getOriginalName()
+	{
+		return $this->origName;
+	}
+
+	public function setOriginalName($origName)
+	{
+		$this->origName = $origName;
+	}
+
 	public function getType()
 	{
 		return $this->type;
@@ -327,7 +337,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 	{
 		$this->fileSize = filesize($srcPath);
 		$this->fileHash = md5_file($srcPath);
-		$this->origName = $origName;
+		$this->setOriginalName($origName);
 
 		if ($this->fileSize == 0)
 			throw new SimpleException('Specified file is empty');
@@ -386,7 +396,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 		if (!preg_match('/^https?:\/\//', $srcUrl))
 			throw new SimpleException('Invalid URL "%s"', $srcUrl);
 
-		$this->origName = $srcUrl;
+		$this->setOriginalName($srcUrl);
 
 		if (preg_match('/youtube.com\/watch.*?=([a-zA-Z0-9_-]+)/', $srcUrl, $matches))
 		{
