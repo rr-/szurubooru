@@ -11,7 +11,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 	public $fileSize;
 	public $mimeType;
 	protected $safety;
-	public $hidden;
+	protected $hidden;
 	public $uploadDate;
 	protected $imageWidth;
 	protected $imageHeight;
@@ -180,6 +180,11 @@ class PostEntity extends AbstractEntity implements IValidatable
 			if (trim(strtolower($tag->getName())) == $tagName)
 				return true;
 		return false;
+	}
+
+	public function isHidden()
+	{
+		return $this->hidden;
 	}
 
 	public function setHidden($hidden)

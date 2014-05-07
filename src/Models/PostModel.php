@@ -26,7 +26,7 @@ class PostModel extends AbstractCrudModel
 	{
 		$post = new PostEntity;
 		$post->setSafety(new PostSafety(PostSafety::Safe));
-		$post->hidden = false;
+		$post->setHidden(false);
 		$post->uploadDate = time();
 		do
 		{
@@ -52,7 +52,7 @@ class PostModel extends AbstractCrudModel
 				'file_size' => $post->fileSize,
 				'mime_type' => $post->mimeType,
 				'safety' => $post->getSafety()->toInteger(),
-				'hidden' => $post->hidden,
+				'hidden' => $post->isHidden(),
 				'upload_date' => $post->uploadDate,
 				'image_width' => $post->getImageWidth(),
 				'image_height' => $post->getImageHeight(),

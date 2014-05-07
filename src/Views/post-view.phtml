@@ -320,7 +320,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			Privilege::HidePost,
 			Access::getIdentity($this->context->transport->post->getUploader()))))
 		{
-			if ($this->context->transport->post->hidden)
+			if ($this->context->transport->post->isHidden())
 			{
 				$options []=
 				[

@@ -15,7 +15,7 @@ class GetPostJob extends AbstractPostJob
 		$post = $this->post;
 		$privileges = [];
 
-		if ($post->hidden)
+		if ($post->isHidden())
 			$privileges []= new Privilege(Privilege::ViewPost, 'hidden');
 
 		$privileges []= new Privilege(Privilege::ViewPost, $post->getSafety()->toString());
