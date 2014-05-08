@@ -38,7 +38,7 @@ class PostSearchParser extends AbstractSearchParser
 		foreach ($this->tags as $item)
 		{
 			list ($tagName, $neg) = $item;
-			$tag = TagModel::findByName($tagName);
+			$tag = TagModel::getByName($tagName);
 			$innerStmt = new Sql\SelectStatement();
 			$innerStmt->setTable('post_tag');
 			$innerStmt->setCriterion((new Sql\ConjunctionFunctor)
@@ -73,7 +73,7 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif (in_array($key, ['fav', 'favs', 'favd']))
 		{
-			$user = UserModel::findByNameOrEmail($value);
+			$user = UserModel::getByNameOrEmail($value);
 			$innerStmt = (new Sql\SelectStatement)
 				->setTable('favoritee')
 				->setCriterion((new Sql\ConjunctionFunctor)
@@ -84,7 +84,7 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif (in_array($key, ['comment', 'comments', 'commenter', 'commented']))
 		{
-			$user = UserModel::findByNameOrEmail($value);
+			$user = UserModel::getByNameOrEmail($value);
 			$innerStmt = (new Sql\SelectStatement)
 				->setTable('comment')
 				->setCriterion((new Sql\ConjunctionFunctor)
@@ -95,7 +95,7 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif (in_array($key, ['submit', 'upload', 'uploads', 'uploader', 'uploaded']))
 		{
-			$user = UserModel::findByNameOrEmail($value);
+			$user = UserModel::getByNameOrEmail($value);
 			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->getId()));
 		}
 

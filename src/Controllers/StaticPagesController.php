@@ -12,7 +12,7 @@ class StaticPagesController
 		{
 			$context->featuredPost = $featuredPost;
 			$context->featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
-			$context->featuredPostUser = UserModel::findByNameOrEmail(
+			$context->featuredPostUser = UserModel::getByNameOrEmail(
 				PropertyModel::get(PropertyModel::FeaturedPostUserName),
 				false);
 		}
@@ -48,7 +48,7 @@ class StaticPagesController
 			return PropertyModel::featureNewPost();
 
 		//check if post was deleted
-		$featuredPost = PostModel::findById($featuredPostId, false);
+		$featuredPost = PostModel::tryGetById($featuredPostId);
 		if (!$featuredPost)
 			return PropertyModel::featureNewPost();
 

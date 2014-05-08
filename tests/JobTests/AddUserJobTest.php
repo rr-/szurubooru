@@ -298,8 +298,8 @@ class AddUserJobTest extends AbstractTest
 		$token2text = Mailer::getMailsSent()[1]->tokens['token'];
 		$this->assert->areNotEqual($token1text, $token2text);
 
-		$token1 = TokenModel::findByToken($token1text);
-		$token2 = TokenModel::findByToken($token2text);
+		$token1 = TokenModel::getByToken($token1text);
+		$token2 = TokenModel::getByToken($token2text);
 
 		$this->assert->areEqual($user1->getId(), $token1->getUser()->getId());
 		$this->assert->areEqual($user2->getId(), $token2->getUser()->getId());

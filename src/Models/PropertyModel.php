@@ -85,6 +85,6 @@ class PropertyModel implements IModel
 		self::set(self::FeaturedPostId, $featuredPostId);
 		self::set(self::FeaturedPostDate, time());
 		self::set(self::FeaturedPostUserName, null);
-		return PostModel::findById($featuredPostId);
+		return PostModel::getById($featuredPostId);
 	}
 }

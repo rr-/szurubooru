@@ -55,8 +55,8 @@ class TagModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($sourceName, $targetName)
 		{
-			$sourceTag = TagModel::findByName($sourceName);
-			$targetTag = TagModel::findByName($targetName, false);
+			$sourceTag = TagModel::getByName($sourceName);
+			$targetTag = TagModel::tryGetByName($targetName);
 
 			if ($targetTag and $targetTag->getId() != $sourceTag->getId())
 				throw new SimpleException('Target tag already exists');
@@ -71,8 +71,8 @@ class TagModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($sourceName, $targetName)
 		{
-			$sourceTag = TagModel::findByName($sourceName);
-			$targetTag = TagModel::findByName($targetName);
+			$sourceTag = TagModel::getByName($sourceName);
+			$targetTag = TagModel::getByName($targetName);
 
 			if ($sourceTag->getId() == $targetTag->getId())
 				throw new SimpleException('Source and target tag are the same');
@@ -116,7 +116,7 @@ class TagModel extends AbstractCrudModel
 	}
 
 
-	public static function findAllByPostId($key)
+	public static function getAllByPostId($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('tag.*');
@@ -130,7 +130,15 @@ class TagModel extends AbstractCrudModel
 		return [];
 	}
 
-	public static function findByName($key, $throw = true)
+	public static function getByName($key)
+	{
+		$ret = self::tryGetByName($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid tag name "%s"', $key);
+		return $ret;
+	}
+
+	public static function tryGetByName($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('tag.*');
@@ -138,12 +146,9 @@ class TagModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding($key))));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid tag name "%s"', $key);
-		return null;
+		return $row
+			? self::convertRow($row)
+			: null;
 	}
 
 
@@ -166,7 +171,7 @@ class TagModel extends AbstractCrudModel
 		$tags = [];
 		foreach ($tagNames as $tagName)
 		{
-			$tag = TagModel::findByName($tagName, false);
+			$tag = TagModel::tryGetByName($tagName);
 			if (!$tag)
 			{
 				$tag = TagModel::spawn();

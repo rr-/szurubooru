@@ -69,7 +69,7 @@ class PostController
 	{
 		Access::assert(new Privilege(
 			Privilege::MassTag,
-			Access::getIdentity(PostModel::findById($id)->getUploader())));
+			Access::getIdentity(PostModel::getById($id)->getUploader())));
 
 		Api::run(
 			new TogglePostTagJob(),
@@ -121,7 +121,7 @@ class PostController
 
 	public function editAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
+		$post = PostModel::getByIdOrName($id);
 
 		$editToken = InputHelper::get('edit-token');
 		if ($editToken != $post->getEditToken())

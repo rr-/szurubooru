@@ -37,7 +37,15 @@ class TokenModel extends AbstractCrudModel
 		return $token;
 	}
 
-	public static function findByToken($key, $throw = true)
+	public static function getByToken($key)
+	{
+		$ret = self::tryGetByToken($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('No user with such security token');
+		return $ret;
+	}
+
+	public static function tryGetByToken($key)
 	{
 		if (empty($key))
 			throw new SimpleNotFoundException('Invalid security token');
@@ -48,12 +56,9 @@ class TokenModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\EqualsFunctor('token', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('No user with such security token');
-		return null;
+		return $row
+			? self::convertRow($row)
+			: null;
 	}
 
 	public static function checkValidity($token)
@@ -74,7 +79,7 @@ class TokenModel extends AbstractCrudModel
 		while (true)
 		{
 			$tokenText =  md5(mt_rand() . uniqid());
-			$token = self::findByToken($tokenText, false);
+			$token = self::tryGetByToken($tokenText);
 			if (!$token)
 				return $tokenText;
 		}

@@ -8,13 +8,13 @@ class PreviewCommentJob extends AbstractJob
 
 		if ($this->hasArgument(self::POST_ID))
 		{
-			$post = PostModel::findById($this->getArgument(self::POST_ID));
+			$post = PostModel::getById($this->getArgument(self::POST_ID));
 			$comment = CommentModel::spawn();
 			$comment->setPost($post);
 		}
 		else
 		{
-			$comment = CommentModel::findById($this->getArgument(self::COMMENT_ID));
+			$comment = CommentModel::getById($this->getArgument(self::COMMENT_ID));
 		}
 
 		$comment->setCommenter($user);

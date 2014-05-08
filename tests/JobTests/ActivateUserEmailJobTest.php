@@ -25,7 +25,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 
 		$tokens = Mailer::getMailsSent()[0]->tokens;
 		$tokenText = $tokens['token'];
-		$token = TokenModel::findByToken($tokenText);
+		$token = TokenModel::getByToken($tokenText);
 
 		$this->assert->areEqual($user->getId(), $token->getUser()->getId());
 		$this->assert->isTrue(strpos($tokens['link'], $tokenText) !== false);
@@ -66,7 +66,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		});
 
 		//reload local entity after changes done by the job
-		$user = UserModel::findById($user->getId());
+		$user = UserModel::getById($user->getId());
 
 		$this->assert->areEqual(null, $user->getUnconfirmedEmail());
 		$this->assert->areEqual('godzilla@whitestar.gov', $user->getConfirmedEmail());
@@ -139,8 +139,8 @@ class ActivateUserEmailJobTest extends AbstractTest
 		$token2text = $tokens2['token'];
 		$this->assert->areNotEqual($token1text, $token2text);
 
-		$token1 = TokenModel::findByToken($token1text);
-		$token2 = TokenModel::findByToken($token2text);
+		$token1 = TokenModel::getByToken($token1text);
+		$token2 = TokenModel::getByToken($token2text);
 
 		$this->assert->areEqual($user1->getId(), $token1->getUser()->getId());
 		$this->assert->areEqual($user2->getId(), $token2->getUser()->getId());

@@ -17,7 +17,7 @@ class PreviewCommentJobTest extends AbstractTest
 		$this->assert->isNotNull($comment->getCreationTime());
 		$this->assert->throws(function() use ($comment)
 		{
-			CommentModel::findById($comment->getId());
+			CommentModel::getById($comment->getId());
 		}, 'Invalid comment ID');
 	}
 

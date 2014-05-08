@@ -5,7 +5,7 @@ class EditCommentJob extends AbstractJob
 
 	public function prepare()
 	{
-		$this->comment = CommentModel::findById($this->getArgument(self::COMMENT_ID));
+		$this->comment = CommentModel::getById($this->getArgument(self::COMMENT_ID));
 	}
 
 	public function execute()

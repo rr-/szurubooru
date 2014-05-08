@@ -16,7 +16,7 @@ class GetPostThumbJob extends AbstractJob
 			$path = PostModel::getThumbDefaultPath($name, $width, $height);
 			if (!file_exists($path))
 			{
-				$post = PostModel::findByIdOrName($name);
+				$post = PostModel::getByIdOrName($name);
 
 				if ($post->isHidden())
 					Access::assert(new Privilege(Privilege::ListPosts, 'hidden'));

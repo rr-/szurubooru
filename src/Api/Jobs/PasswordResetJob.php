@@ -8,7 +8,7 @@ class PasswordResetJob extends AbstractJob
 	{
 		if (!$this->hasArgument(self::TOKEN))
 		{
-			$user = UserModel::findByNameOrEmail($this->getArgument(self::USER_NAME));
+			$user = UserModel::getByNameOrEmail($this->getArgument(self::USER_NAME));
 
 			if (empty($user->getConfirmedEmail()))
 				throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
@@ -20,7 +20,7 @@ class PasswordResetJob extends AbstractJob
 		else
 		{
 			$tokenText = $this->getArgument(self::TOKEN);
-			$token = TokenModel::findByToken($tokenText);
+			$token = TokenModel::getByToken($tokenText);
 			TokenModel::checkValidity($token);
 
 			$alphabet = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));

@@ -45,7 +45,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 			return $this->getCache('uploader');
 		if (!$this->uploaderId)
 			return null;
-		$uploader = UserModel::findById($this->uploaderId, false);
+		$uploader = UserModel::tryGetById($this->uploaderId);
 		$this->setCache('uploader', $uploader);
 		return $uploader;
 	}
@@ -65,7 +65,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 	{
 		if ($this->hasCache('comments'))
 			return $this->getCache('comments');
-		$comments = CommentModel::findAllByPostId($this->getId());
+		$comments = CommentModel::getAllByPostId($this->getId());
 		$this->setCache('comments', $comments);
 		return $comments;
 	}
@@ -139,7 +139,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 					$config->browsing->maxRelatedPosts);
 			}
 
-			$relatedPosts []= PostModel::findById($relatedId);
+			$relatedPosts []= PostModel::getById($relatedId);
 		}
 
 		$this->setRelations($relatedPosts);
@@ -149,7 +149,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 	{
 		if ($this->hasCache('tags'))
 			return $this->getCache('tags');
-		$tags = TagModel::findAllByPostId($this->getId());
+		$tags = TagModel::getAllByPostId($this->getId());
 		$this->setCache('tags', $tags);
 		return $tags;
 	}
@@ -400,7 +400,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 				throw new SimpleException('Invalid file type "%s"', $this->getMimeType());
 		}
 
-		$duplicatedPost = PostModel::findByHash($this->getFileHash(), false);
+		$duplicatedPost = PostModel::tryGetByHash($this->getFileHash());
 		if ($duplicatedPost !== null and (!$this->getId() or $this->getId() != $duplicatedPost->getId()))
 		{
 			throw new SimpleException(
@@ -438,7 +438,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 			if (file_exists($thumbPath))
 				unlink($thumbPath);
 
-			$duplicatedPost = PostModel::findByHash($youtubeId, false);
+			$duplicatedPost = PostModel::tryGetByHash($youtubeId);
 			if ($duplicatedPost !== null and (!$this->getId() or $this->getId() != $duplicatedPost->getId()))
 			{
 				throw new SimpleException(

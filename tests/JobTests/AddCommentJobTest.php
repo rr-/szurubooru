@@ -20,7 +20,7 @@ class AddCommentJobTest extends AbstractTest
 		$this->assert->isNotNull($comment->getCreationTime());
 		$this->assert->doesNotThrow(function() use ($comment)
 		{
-			CommentModel::findById($comment->getId());
+			CommentModel::getById($comment->getId());
 		});
 	}
 

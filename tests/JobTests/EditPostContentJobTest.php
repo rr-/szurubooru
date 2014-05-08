@@ -8,7 +8,7 @@ class EditPostContentJobTest extends AbstractTest
 		$post = $this->uploadFromFile('image.jpg');
 		$this->assert->doesNotThrow(function() use ($post)
 		{
-			PostModel::findById($post->getId());
+			PostModel::getById($post->getId());
 		});
 	}
 
@@ -74,7 +74,7 @@ class EditPostContentJobTest extends AbstractTest
 		$post = $this->uploadFromUrl('image.jpg');
 		$this->assert->doesNotThrow(function() use ($post)
 		{
-			PostModel::findById($post->getId());
+			PostModel::getById($post->getId());
 		});
 	}
 
@@ -99,7 +99,7 @@ class EditPostContentJobTest extends AbstractTest
 
 		$this->assert->doesNotThrow(function() use ($post)
 		{
-			PostModel::findById($post->getId());
+			PostModel::getById($post->getId());
 		});
 	}
 

@@ -11,7 +11,7 @@ class TagSearchService extends AbstractSearchService
 
 	public static function getRelatedTags($parentTagName)
 	{
-		$parentTagEntity = TagModel::findByName($parentTagName, false);
+		$parentTagEntity = TagModel::tryGetByName($parentTagName);
 		if (empty($parentTagEntity))
 			return [];
 		$parentTagId = $parentTagEntity->getId();

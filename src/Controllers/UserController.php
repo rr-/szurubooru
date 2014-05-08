@@ -135,7 +135,7 @@ class UserController
 		Api::run(new DeleteUserJob(), [
 			DeleteUserJob::USER_NAME => $name]);
 
-		$user = UserModel::findById(Auth::getCurrentUser()->getId(), false);
+		$user = UserModel::tryGetById(Auth::getCurrentUser()->getId());
 		if (!$user)
 			Auth::logOut();
 

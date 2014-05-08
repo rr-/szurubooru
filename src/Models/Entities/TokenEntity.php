@@ -43,7 +43,7 @@ class TokenEntity extends AbstractEntity implements IValidatable
 
 	public function getUser()
 	{
-		return UserModel::findById($this->userId);
+		return UserModel::getById($this->userId);
 	}
 
 	public function getUserId()

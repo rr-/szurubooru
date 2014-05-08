@@ -13,7 +13,7 @@ class EditPostSourceJobTest extends AbstractTest
 		$this->assert->areEqual('a', $post->getSource());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
-			PostModel::findById($post->getId());
+			PostModel::getById($post->getId());
 		});
 	}
 

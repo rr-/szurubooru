@@ -12,7 +12,7 @@ abstract class AbstractPostJob extends AbstractJob
 		else
 		{
 			$postId = $this->getArgument(self::POST_ID);
-			$this->post = PostModel::findByIdOrName($postId);
+			$this->post = PostModel::getByIdOrName($postId);
 		}
 	}
 }

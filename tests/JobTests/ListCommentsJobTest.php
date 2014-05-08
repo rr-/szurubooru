@@ -26,7 +26,7 @@ class ListCommentJobTest extends AbstractTest
 		$post = $ret->entities[0];
 		$samePost = $this->assert->doesNotThrow(function() use ($post)
 		{
-			return PostModel::findById($post->getId());
+			return PostModel::getById($post->getId());
 		});
 		//posts retrieved via ListCommentsJob should already have cached its comments
 		$this->assert->areNotEquivalent($post, $samePost);

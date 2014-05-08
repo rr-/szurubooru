@@ -38,7 +38,7 @@ class CommentController
 
 	public function editView($id)
 	{
-		getContext()->transport->comment = CommentModel::findById($id);
+		getContext()->transport->comment = CommentModel::getById($id);
 	}
 
 	public function editAction($id)

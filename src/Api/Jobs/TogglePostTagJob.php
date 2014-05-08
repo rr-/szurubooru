@@ -11,7 +11,7 @@ class TogglePostTagJob extends AbstractPostJob
 
 		if ($enable)
 		{
-			$tag = TagModel::findByName($tagName, false);
+			$tag = TagModel::tryGetByName($tagName);
 			if ($tag === null)
 			{
 				$tag = TagModel::spawn();

@@ -38,7 +38,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$userName = $this->getName();
 		$config = getConfig();
 
-		$otherUser = UserModel::findByName($userName, false);
+		$otherUser = UserModel::tryGetByName($userName);
 		if ($otherUser !== null and $otherUser->getId() != $this->getId())
 		{
 			if (!$otherUser->getConfirmedEmail()

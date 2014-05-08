@@ -145,7 +145,15 @@ class PostModel extends AbstractCrudModel
 
 
 
-	public static function findByName($key, $throw = true)
+	public static function getByName($key)
+	{
+		$ret = self::tryGetByName($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid post name "%s"', $key);
+		return $ret;
+	}
+
+	public static function tryGetByName($key, $throw = true)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
@@ -153,24 +161,29 @@ class PostModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\EqualsFunctor('name', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid post name "%s"', $key);
-		return null;
+		return $row
+			? self::convertRow($row)
+			: null;
 	}
 
-	public static function findByIdOrName($key, $throw = true)
+	public static function getByIdOrName($key)
 	{
 		if (is_numeric($key))
-			$post = self::findById($key, $throw);
+			$post = self::getById($key);
 		else
-			$post = self::findByName($key, $throw);
+			$post = self::getByName($key);
 		return $post;
 	}
 
-	public static function findByHash($key, $throw = true)
+	public static function getByHash($key)
+	{
+		$ret = self::tryGetByHash($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid post hash "%s"', $hash);
+		return $ret;
+	}
+
+	public static function tryGetByHash($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
@@ -178,12 +191,9 @@ class PostModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\EqualsFunctor('file_hash', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid post hash "%s"', $hash);
-		return null;
+		return $row
+			? self::convertRow($row)
+			: null;
 	}
 
 

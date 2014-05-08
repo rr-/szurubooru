@@ -101,7 +101,15 @@ class UserModel extends AbstractCrudModel
 
 
 
-	public static function findByName($key, $throw = true)
+	public static function getByName($key)
+	{
+		$ret = self::tryGetByName($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid user name "%s"', $key);
+		return $ret;
+	}
+
+	public static function tryGetByName($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
@@ -109,15 +117,20 @@ class UserModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding(trim($key)))));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid user name "%s"', $key);
-		return null;
+		return $row
+			? self::convertRow($row)
+			: null;
 	}
 
-	public static function findByNameOrEmail($key, $throw = true)
+	public static function getByNameOrEmail($key)
+	{
+		$ret = self::tryGetByNameOrEmail($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid user name "%s"', $key);
+		return $ret;
+	}
+
+	public static function tryGetByNameOrEmail($key)
 	{
 		$key = trim($key);
 
@@ -130,12 +143,9 @@ class UserModel extends AbstractCrudModel
 			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('email_confirmed', new Sql\Binding($key)))));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid user name "%s"', $key);
-		return null;
+		return $row
+			? self::convertRow($row)
+			: null;
 	}
 
 

@@ -56,7 +56,7 @@ final class CommentModel extends AbstractCrudModel
 
 
 
-	public static function findAllByPostId($key)
+	public static function getAllByPostId($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('comment.*');
@@ -76,7 +76,7 @@ final class CommentModel extends AbstractCrudModel
 		self::preloadOneToMany($comments,
 			function($comment) { return $comment->getCommenterId(); },
 			function($user) { return $user->getId(); },
-			function($userIds) { return UserModel::findByIds($userIds); },
+			function($userIds) { return UserModel::getAllByIds($userIds); },
 			function($comment, $user) { return $comment->setCache('commenter', $user); });
 	}
 
@@ -85,7 +85,7 @@ final class CommentModel extends AbstractCrudModel
 		self::preloadOneToMany($comments,
 			function($comment) { return $comment->getPostId(); },
 			function($post) { return $post->getId(); },
-			function($postIds) { return PostModel::findByIds($postIds); },
+			function($postIds) { return PostModel::getAllByIds($postIds); },
 			function($comment, $post) { $comment->setCache('post', $post); });
 	}
 }

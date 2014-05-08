@@ -12,7 +12,7 @@ abstract class AbstractUserJob extends AbstractJob
 		else
 		{
 			$userName = $this->getArgument(self::USER_NAME);
-			$this->user = UserModel::findByNameOrEmail($userName);
+			$this->user = UserModel::getByNameOrEmail($userName);
 		}
 	}
 }

@@ -13,7 +13,7 @@ class Auth
 		$config = getConfig();
 		$context = getContext();
 
-		$user = UserModel::findByNameOrEmail($name, false);
+		$user = UserModel::tryGetByNameOrEmail($name);
 		if ($user === null)
 			throw new SimpleException('Invalid username');
 

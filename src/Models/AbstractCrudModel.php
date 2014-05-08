@@ -23,8 +23,15 @@ abstract class AbstractCrudModel implements IModel
 	}
 
 
+	public static function getById($key)
+	{
+		$ret = self::tryGetById($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid %s ID "%s"', static::getTableName(), $key);
+		return $ret;
+	}
 
-	public static function findById($key, $throw = true)
+	public static function tryGetById($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
@@ -32,15 +39,12 @@ abstract class AbstractCrudModel implements IModel
 		$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return static::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid %s ID "%s"', static::getTableName(), $key);
-		return null;
+		return $row
+			? static::convertRow($row)
+			: null;
 	}
 
-	public static function findByIds(array $ids)
+	public static function getAllByIds(array $ids)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
