@@ -18,6 +18,8 @@ class ToggleUserBanJob extends AbstractUserJob
 				: '{user} unbanned {subject}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user)]);
+
+		return $user;
 	}
 
 	public function requiresPrivilege()
