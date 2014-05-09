@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class PropertyModel implements IModel
+final class PropertyModel implements IModel
 {
 	const FeaturedPostId = 0;
 	const FeaturedPostUserName = 1;

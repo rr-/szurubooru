@@ -18,12 +18,16 @@ class ListCommentJobTest extends AbstractTest
 
 		$this->assert->areEqual(0, CommentModel::getCount());
 
-		$this->mockComment($this->mockUser());
+		$comment = $this->mockComment($this->mockUser());
 
 		$ret = $this->runApi(1);
 		$this->assert->areEqual(1, count($ret->entities));
 
 		$post = $ret->entities[0];
+		$newComment = $post->getComments()[0];
+		$this->assert->areEqual($comment->getPostId(), $newComment->getPostId());
+		$this->assert->areEqual($comment->getPost()->getId(), $newComment->getPost()->getId());
+
 		$samePost = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return PostModel::getById($post->getId());

@@ -56,7 +56,7 @@ abstract class AbstractSearchService
 	{
 		$modelClassName = self::getModelClassName();
 		$rows = static::getEntitiesRows($searchQuery, $perPage, $page);
-		return $modelClassName::convertRows($rows);
+		return $modelClassName::spawnFromDatabaseRows($rows);
 	}
 
 	public static function getEntityCount($searchQuery)

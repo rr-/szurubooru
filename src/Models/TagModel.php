@@ -2,19 +2,11 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class TagModel extends AbstractCrudModel
+final class TagModel extends AbstractCrudModel
 {
 	public static function getTableName()
 	{
 		return 'tag';
-	}
-
-	public static function convertRow($row)
-	{
-		$entity = parent::convertRow($row);
-		if (isset($row['post_count']))
-			$entity->setCache('post_count', $row['post_count']);
-		return $entity;
 	}
 
 	public static function save($tag)
@@ -126,7 +118,7 @@ class TagModel extends AbstractCrudModel
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
-			return self::convertRows($rows);
+			return self::spawnFromDatabaseRows($rows);
 		return [];
 	}
 
@@ -147,7 +139,7 @@ class TagModel extends AbstractCrudModel
 
 		$row = Database::fetchOne($stmt);
 		return $row
-			? self::convertRow($row)
+			? self::spawnFromDatabaseRow($row)
 			: null;
 	}
 

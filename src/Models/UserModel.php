@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class UserModel extends AbstractCrudModel
+final class UserModel extends AbstractCrudModel
 {
 	const SETTING_SAFETY = 1;
 	const SETTING_ENDLESS_SCROLLING = 2;
@@ -12,24 +12,6 @@ class UserModel extends AbstractCrudModel
 	public static function getTableName()
 	{
 		return 'user';
-	}
-
-	public static function convertRow($row)
-	{
-		$entity = parent::convertRow($row);
-
-		if (isset($row['access_rank']))
-			$entity->setAccessRank(new AccessRank($row['access_rank']));
-
-		return $entity;
-	}
-
-	public static function spawn()
-	{
-		$user = new UserEntity();
-		$user->setAccessRank(new AccessRank(AccessRank::Anonymous));
-		$user->setPasswordSalt(md5(mt_rand() . uniqid()));
-		return $user;
 	}
 
 	public static function save($user)
@@ -118,7 +100,7 @@ class UserModel extends AbstractCrudModel
 
 		$row = Database::fetchOne($stmt);
 		return $row
-			? self::convertRow($row)
+			? self::spawnFromDatabaseRow($row)
 			: null;
 	}
 
@@ -144,7 +126,7 @@ class UserModel extends AbstractCrudModel
 
 		$row = Database::fetchOne($stmt);
 		return $row
-			? self::convertRow($row)
+			? self::spawnFromDatabaseRow($row)
 			: null;
 	}
 
@@ -154,6 +136,7 @@ class UserModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($user, $post, $score)
 		{
+			$post->removeCache('score');
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('post_score');
 			$stmt->setCriterion((new Sql\ConjunctionFunctor)
@@ -177,6 +160,7 @@ class UserModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($user, $post)
 		{
+			$post->removeCache('fav_count');
 			self::removeFromUserFavorites($user, $post);
 			$stmt = new Sql\InsertStatement();
 			$stmt->setTable('favoritee');
@@ -191,6 +175,7 @@ class UserModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($user, $post)
 		{
+			$post->removeCache('fav_count');
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('favoritee');
 			$stmt->setCriterion((new Sql\ConjunctionFunctor)

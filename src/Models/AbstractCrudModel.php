@@ -9,7 +9,22 @@ abstract class AbstractCrudModel implements IModel
 	public static function spawn()
 	{
 		$entityClassName = static::getEntityClassName();
-		return new $entityClassName();
+		$entity = new $entityClassName(new static);
+		$entity->fillNew();
+		return $entity;
+	}
+
+	public static function spawnFromDatabaseRows($input)
+	{
+		return array_map([get_called_class(), 'spawnFromDatabaseRow'], $input);
+	}
+
+	public static function spawnFromDatabaseRow($row)
+	{
+		$entityClassName = static::getEntityClassName();
+		$entity = new $entityClassName(new static);
+		$entity->fillFromDatabase($row);
+		return $entity;
 	}
 
 	public static function remove($entities)
@@ -40,7 +55,7 @@ abstract class AbstractCrudModel implements IModel
 
 		$row = Database::fetchOne($stmt);
 		return $row
-			? static::convertRow($row)
+			? static::spawnFromDatabaseRow($row)
 			: null;
 	}
 
@@ -53,7 +68,7 @@ abstract class AbstractCrudModel implements IModel
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
-			return static::convertRows($rows);
+			return static::spawnFromDatabaseRows($rows);
 
 		return [];
 	}
@@ -75,55 +90,6 @@ abstract class AbstractCrudModel implements IModel
 		$entityClassName = str_replace('Model', 'Entity', $modelClassName);
 		return $entityClassName;
 	}
-
-	public static function convertRow($row)
-	{
-		$entity = static::spawn();
-
-		//todo: force this to be implemented by children
-		//instead of providing clumsy generic solution
-
-		if (isset($row['id']))
-			$row['id'] = (int) $row['id'];
-
-		foreach ($row as $key => $val)
-		{
-			if (isset(self::$keyCache[$key]))
-			{
-				$key = self::$keyCache[$key];
-			}
-			else
-			{
-				$key = self::$keyCache[$key] = TextCaseConverter::convert($key,
-					TextCaseConverter::SNAKE_CASE,
-					TextCaseConverter::LOWER_CAMEL_CASE);
-			}
-
-			if (property_exists($entity, $key))
-			{
-				$reflectionProperty = new ReflectionProperty(get_class($entity), $key);
-				$reflectionProperty->setAccessible(true);
-				$reflectionProperty->setValue($entity, $val);
-			}
-			else
-			{
-				$entity->$key = $val;
-			}
-		}
-		return $entity;
-	}
-
-	public static function convertRows(array $rows)
-	{
-		$entities = [];
-		foreach ($rows as $i => $row)
-		{
-			$entities[$i] = static::convertRow($row);
-		}
-		return $entities;
-	}
-
-
 
 	public static function forgeId($entity)
 	{

@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class PostEntity extends AbstractEntity implements IValidatable
+final class PostEntity extends AbstractEntity implements IValidatable
 {
 	protected $type;
 	protected $name;
@@ -18,9 +18,38 @@ class PostEntity extends AbstractEntity implements IValidatable
 	protected $uploaderId;
 	protected $source;
 
-	protected $commentCount = 0;
-	protected $favCount = 0;
-	protected $score = 0;
+	public function fillNew()
+	{
+		$this->setSafety(new PostSafety(PostSafety::Safe));
+		$this->setHidden(false);
+		$this->setCreationTime(time());
+		do
+		{
+			$this->setName(md5(mt_rand() . uniqid()));
+		}
+		while (file_exists($this->getFullPath()));
+	}
+
+	public function fillFromDatabase($row)
+	{
+		$this->id = (int) $row['id'];
+		$this->name = $row['name'];
+		$this->origName = $row['orig_name'];
+		$this->fileHash = $row['file_hash'];
+		$this->fileSize = (int) $row['file_size'];
+		$this->mimeType = $row['mime_type'];
+		$this->hidden = (bool) $row['hidden'];
+		$this->uploadDate = $row['upload_date'];
+		$this->imageWidth = (int) $row['image_width'];
+		$this->imageHeight = (int) $row['image_height'];
+		$this->uploaderId = (int) $row['uploader_id'];
+		$this->source = $row['source'];
+		$this->setCache('comment_count', $row['comment_count']);
+		$this->setCache('fav_count', $row['fav_count']);
+		$this->setCache('score', $row['score']);
+		$this->setType(new PostType($row['type']));
+		$this->setSafety(new PostSafety($row['safety']));
+	}
 
 	public function validate()
 	{
@@ -80,24 +109,24 @@ class PostEntity extends AbstractEntity implements IValidatable
 		$stmt->addInnerJoin('favoritee', new Sql\EqualsFunctor('favoritee.user_id', 'user.id'));
 		$stmt->setCriterion(new Sql\EqualsFunctor('favoritee.post_id', new Sql\Binding($this->getId())));
 		$rows = Database::fetchAll($stmt);
-		$favorites = UserModel::convertRows($rows);
+		$favorites = UserModel::spawnFromDatabaseRows($rows);
 		$this->setCache('favoritee', $favorites);
 		return $favorites;
 	}
 
 	public function getScore()
 	{
-		return $this->score;
+		return (int) $this->getColumnWithCache('score');
 	}
 
 	public function getCommentCount()
 	{
-		return $this->commentCount;
+		return (int) $this->getColumnWithCache('comment_count');
 	}
 
 	public function getFavoriteCount()
 	{
-		return $this->favCount;
+		return (int) $this->getColumnWithCache('fav_count');
 	}
 
 	public function getRelations()
@@ -119,7 +148,7 @@ class PostEntity extends AbstractEntity implements IValidatable
 					->add(new Sql\EqualsFunctor('post.id', 'crossref.post_id'))
 					->add(new Sql\EqualsFunctor('crossref.post2_id', $binding))));
 		$rows = Database::fetchAll($stmt);
-		$posts = PostModel::convertRows($rows);
+		$posts = PostModel::spawnFromDatabaseRows($rows);
 		$this->setCache('relations', $posts);
 		return $posts;
 	}

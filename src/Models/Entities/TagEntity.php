@@ -2,9 +2,22 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class TagEntity extends AbstractEntity implements IValidatable
+final class TagEntity extends AbstractEntity implements IValidatable
 {
-	protected $name;
+	private $name;
+
+	public function fillNew()
+	{
+	}
+
+	public function fillFromDatabase($row)
+	{
+		$this->id = (int) $row['id'];
+		$this->name = $row['name'];
+
+		if (isset($row['post_count']))
+			$this->setCache('post_count', (int) $row['post_count']);
+	}
 
 	public function validate()
 	{

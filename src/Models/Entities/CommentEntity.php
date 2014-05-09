@@ -1,10 +1,24 @@
 <?php
 final class CommentEntity extends AbstractEntity implements IValidatable
 {
-	protected $text;
-	protected $postId;
-	protected $commentDate;
-	protected $commenterId;
+	private $text;
+	private $postId;
+	private $commentDate;
+	private $commenterId;
+
+	public function fillNew()
+	{
+		$this->commentDate = time();
+	}
+
+	public function fillFromDatabase($row)
+	{
+		$this->id = (int) $row['id'];
+		$this->text = $row['text'];
+		$this->postId = (int) $row['post_id'];
+		$this->commentDate = $row['comment_date'];
+		$this->commenterId = (int) $row['commenter_id'];
+	}
 
 	public function validate()
 	{

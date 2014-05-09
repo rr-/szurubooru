@@ -62,7 +62,7 @@ class TagSearchService extends AbstractSearchService
 
 		usort($rows, function($a, $b) { return intval($b['sort']) - intval($a['sort']); });
 
-		return TagModel::convertRows($rows);
+		return TagModel::spawnFromDatabaseRows($rows);
 	}
 
 	public static function getMostUsedTag()
@@ -74,6 +74,6 @@ class TagSearchService extends AbstractSearchService
 			->setGroupBy('post_tag.tag_id')
 			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
 			->setLimit(1, 0);
-		return TagModel::convertRow(Database::fetchOne($stmt));
+		return TagModel::spawnFromDatabaseRow(Database::fetchOne($stmt));
 	}
 }

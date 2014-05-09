@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class TokenModel extends AbstractCrudModel
+final class TokenModel extends AbstractCrudModel
 {
 	public static function getTableName()
 	{
@@ -57,7 +57,7 @@ class TokenModel extends AbstractCrudModel
 
 		$row = Database::fetchOne($stmt);
 		return $row
-			? self::convertRow($row)
+			? self::spawnFromDatabaseRow($row)
 			: null;
 	}
 

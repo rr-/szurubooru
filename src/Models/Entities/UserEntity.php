@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class UserEntity extends AbstractEntity implements IValidatable
+final class UserEntity extends AbstractEntity implements IValidatable
 {
 	protected $name;
 	protected $passSalt;
@@ -18,6 +18,28 @@ class UserEntity extends AbstractEntity implements IValidatable
 
 	protected $__passwordChanged = false;
 	protected $__password;
+
+	public function fillNew()
+	{
+		$this->setAccessRank(new AccessRank(AccessRank::Anonymous));
+		$this->setPasswordSalt(md5(mt_rand() . uniqid()));
+	}
+
+	public function fillFromDatabase($row)
+	{
+		$this->id = (int) $row['id'];
+		$this->name = $row['name'];
+		$this->passSalt = $row['pass_salt'];
+		$this->passHash = $row['pass_hash'];
+		$this->staffConfirmed = $row['staff_confirmed'];
+		$this->emailUnconfirmed = $row['email_unconfirmed'];
+		$this->emailConfirmed = $row['email_confirmed'];
+		$this->joinDate = $row['join_date'];
+		$this->lastLoginDate = $row['last_login_date'];
+		$this->settings = $row['settings'];
+		$this->banned = $row['banned'];
+		$this->setAccessRank(new AccessRank($row['access_rank']));
+	}
 
 	public function validate()
 	{

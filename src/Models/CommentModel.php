@@ -9,16 +9,10 @@ final class CommentModel extends AbstractCrudModel
 		return 'comment';
 	}
 
-	public static function spawn()
-	{
-		$comment = new CommentEntity;
-		$comment->setCreationTime(time());
-		return $comment;
-	}
-
 	public static function save($comment)
 	{
 		$comment->validate();
+		$comment->getPost()->removeCache('comment_count');
 
 		Database::transaction(function() use ($comment)
 		{
@@ -47,6 +41,7 @@ final class CommentModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($comment)
 		{
+			$comment->getPost()->removeCache('comment_count');
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('comment');
 			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->getId())));
@@ -65,7 +60,7 @@ final class CommentModel extends AbstractCrudModel
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
-			return self::convertRows($rows);
+			return self::spawnFromDatabaseRows($rows);
 		return [];
 	}
 

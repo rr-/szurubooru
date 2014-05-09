@@ -2,38 +2,11 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class PostModel extends AbstractCrudModel
+final class PostModel extends AbstractCrudModel
 {
 	public static function getTableName()
 	{
 		return 'post';
-	}
-
-	public static function convertRow($row)
-	{
-		$entity = parent::convertRow($row);
-
-		if (isset($row['type']))
-			$entity->setType(new PostType($row['type']));
-
-		if (isset($row['safety']))
-			$entity->setSafety(new PostSafety($row['safety']));
-
-		return $entity;
-	}
-
-	public static function spawn()
-	{
-		$post = new PostEntity;
-		$post->setSafety(new PostSafety(PostSafety::Safe));
-		$post->setHidden(false);
-		$post->setCreationTime(time());
-		do
-		{
-			$post->setName(md5(mt_rand() . uniqid()));
-		}
-		while (file_exists($post->getFullPath()));
-		return $post;
 	}
 
 	public static function save($post)
@@ -162,7 +135,7 @@ class PostModel extends AbstractCrudModel
 
 		$row = Database::fetchOne($stmt);
 		return $row
-			? self::convertRow($row)
+			? self::spawnFromDatabaseRow($row)
 			: null;
 	}
 
@@ -192,7 +165,7 @@ class PostModel extends AbstractCrudModel
 
 		$row = Database::fetchOne($stmt);
 		return $row
-			? self::convertRow($row)
+			? self::spawnFromDatabaseRow($row)
 			: null;
 	}
 
@@ -224,8 +197,7 @@ class PostModel extends AbstractCrudModel
 		{
 			if (isset($comments[$row['id']]))
 				continue;
-			unset($row['post_id']);
-			$comment = CommentModel::convertRow($row);
+			$comment = CommentModel::spawnFromDatabaseRow($row);
 			$comments[$row['id']] = $comment;
 		}
 
@@ -267,7 +239,7 @@ class PostModel extends AbstractCrudModel
 			if (isset($tags[$row['id']]))
 				continue;
 			unset($row['post_id']);
-			$tag = TagModel::convertRow($row);
+			$tag = TagModel::spawnFromDatabaseRow($row);
 			$tags[$row['id']] = $tag;
 		}
 
