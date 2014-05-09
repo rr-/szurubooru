@@ -1,0 +1,57 @@
+<?php
+class TogglePostVisibilityJobTest extends AbstractTest
+{
+	public function testHiding()
+	{
+		$this->grantAccess('hidePost');
+		$this->login($this->mockUser());
+		$post = $this->mockPost(Auth::getCurrentUser());
+
+		$this->assert->isFalse($post->isHidden());
+
+		$post = $this->assert->doesNotThrow(function() use ($post)
+		{
+			return Api::run(
+				new TogglePostVisibilityJob(),
+				[
+					TogglePostVisibilityJob::POST_ID => $post->getId(),
+					TogglePostVisibilityJob::STATE => 0,
+				]);
+		});
+
+		$this->assert->isTrue($post->isHidden());
+	}
+
+	public function testShowing()
+	{
+		$this->grantAccess('hidePost');
+		$this->login($this->mockUser());
+		$post = $this->mockPost(Auth::getCurrentUser());
+
+		$this->assert->isFalse($post->isHidden());
+
+		$post = $this->assert->doesNotThrow(function() use ($post)
+		{
+			return Api::run(
+				new TogglePostVisibilityJob(),
+				[
+					TogglePostVisibilityJob::POST_ID => $post->getId(),
+					TogglePostVisibilityJob::STATE => 0,
+				]);
+		});
+
+		$this->assert->isTrue($post->isHidden());
+
+		$post = $this->assert->doesNotThrow(function() use ($post)
+		{
+			return Api::run(
+				new TogglePostVisibilityJob(),
+				[
+					TogglePostVisibilityJob::POST_ID => $post->getId(),
+					TogglePostVisibilityJob::STATE => 1,
+				]);
+		});
+
+		$this->assert->isFalse($post->isHidden());
+	}
+}

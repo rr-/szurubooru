@@ -12,11 +12,13 @@ class AddCommentJobTest extends AbstractTest
 		{
 			return $this->runApi($text);
 		});
+		$post = $comment->getPost();
 
 		$this->assert->areEqual(1, CommentModel::getCount());
 		$this->assert->areEqual($text, $comment->getText());
 		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $comment->getCommenter()->getId());
-		$this->assert->areEqual(1, $comment->getPost()->getId());
+		$this->assert->areEqual(1, $post->getId());
+		$this->assert->areEqual(1, $post->getCommentCount());
 		$this->assert->isNotNull($comment->getCreationTime());
 		$this->assert->doesNotThrow(function() use ($comment)
 		{

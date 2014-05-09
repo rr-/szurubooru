@@ -6,11 +6,22 @@ class DeleteCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->grantAccess('deleteComment');
 
-		$this->assert->doesNotThrow(function()
+		$comment = $this->mockComment(Auth::getCurrentUser());
+		$post = $comment->getPost();
+		$this->assert->areEqual(1, $post->getCommentCount());
+
+		$this->assert->doesNotThrow(function() use ($comment)
 		{
-			$this->runApi();
+			Api::run(
+				new DeleteCommentJob(),
+				[
+					DeleteCommentJob::COMMENT_ID => $comment->getId(),
+				]);
 		});
 
+		//post needs to be retrieved again from db to refresh cache
+		$post = PostModel::getById($post->getId());
+		$this->assert->areEqual(0, $post->getCommentCount());
 		$this->assert->areEqual(0, CommentModel::getCount());
 	}
 
@@ -27,18 +38,6 @@ class DeleteCommentJobTest extends AbstractTest
 		}, 'Invalid comment ID');
 	}
 
-
-	protected function runApi($comment = null)
-	{
-		if ($comment === null)
-			$comment = $this->mockComment(Auth::getCurrentUser());
-
-		return Api::run(
-			new DeleteCommentJob(),
-			[
-				DeleteCommentJob::COMMENT_ID => $comment->getId(),
-			]);
-	}
 
 	protected function prepare()
 	{
