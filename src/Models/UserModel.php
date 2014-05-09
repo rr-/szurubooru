@@ -144,6 +144,8 @@ final class UserModel extends AbstractCrudModel
 				->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($user->getId()))));
 			Database::exec($stmt);
 			$score = intval($score);
+			if (abs($score) > 1)
+				throw new SimpleException('Invalid score');
 			if ($score != 0)
 			{
 				$stmt = new Sql\InsertStatement();
