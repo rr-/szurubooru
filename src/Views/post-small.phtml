@@ -54,9 +54,9 @@ if ($masstag)
 		<?php
 			$x =
 			[
-				'score' => $this->context->post->score,
-				'comments' => $this->context->post->commentCount,
-				'favs' => $this->context->post->favCount,
+				'score' => $this->context->post->getScore(),
+				'comments' => $this->context->post->getCommentCount(),
+				'favs' => $this->context->post->getFavoriteCount(),
 			];
 		?>
 

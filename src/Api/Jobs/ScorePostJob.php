@@ -9,6 +9,8 @@ class ScorePostJob extends AbstractPostJob
 		$score = intval($this->getArgument(self::SCORE));
 
 		UserModel::updateUserScore(Auth::getCurrentUser(), $post, $score);
+
+		return $post;
 	}
 
 	public function requiresPrivilege()

@@ -347,7 +347,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('favoritee');
 		$stmt->setCriterion(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->getId())));
-		return Database::fetchOne($stmt)['count'];
+		return (int) Database::fetchOne($stmt)['count'];
 	}
 
 	public function getCommentCount()
@@ -356,7 +356,7 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('comment');
 		$stmt->setCriterion(new Sql\EqualsFunctor('commenter_id', new Sql\Binding($this->getId())));
-		return Database::fetchOne($stmt)['count'];
+		return (int) Database::fetchOne($stmt)['count'];
 	}
 
 	public function getPostCount()
@@ -365,6 +365,6 @@ class UserEntity extends AbstractEntity implements IValidatable
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable('post');
 		$stmt->setCriterion(new Sql\EqualsFunctor('uploader_id', new Sql\Binding($this->getId())));
-		return Database::fetchOne($stmt)['count'];
+		return (int) Database::fetchOne($stmt)['count'];
 	}
 }

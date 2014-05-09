@@ -18,9 +18,9 @@ class PostEntity extends AbstractEntity implements IValidatable
 	protected $uploaderId;
 	protected $source;
 
-	public $commentCount = 0;
-	public $favCount = 0;
-	public $score = 0;
+	protected $commentCount = 0;
+	protected $favCount = 0;
+	protected $score = 0;
 
 	public function validate()
 	{
@@ -83,6 +83,21 @@ class PostEntity extends AbstractEntity implements IValidatable
 		$favorites = UserModel::convertRows($rows);
 		$this->setCache('favoritee', $favorites);
 		return $favorites;
+	}
+
+	public function getScore()
+	{
+		return $this->score;
+	}
+
+	public function getCommentCount()
+	{
+		return $this->commentCount;
+	}
+
+	public function getFavoriteCount()
+	{
+		return $this->favCount;
 	}
 
 	public function getRelations()

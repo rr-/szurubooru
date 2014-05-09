@@ -241,12 +241,12 @@ class PostController
 
 		//todo:
 		//move these to PostEntity when implementing ApiController
-		$favorite = Auth::getCurrentUser()->hasFavorited($post);
-		$score = Auth::getCurrentUser()->getScore($post);
+		$isUserFavorite = Auth::getCurrentUser()->hasFavorited($post);
+		$userScore = Auth::getCurrentUser()->getScore($post);
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
 
-		$context->favorite = $favorite;
-		$context->score = $score;
+		$context->isUserFavorite = $isUserFavorite;
+		$context->userScore = $userScore;
 		$context->flagged = $flagged;
 		$context->transport->post = $post;
 		$context->transport->prevPostId = $prevPostId ? $prevPostId : null;

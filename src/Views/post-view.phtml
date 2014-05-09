@@ -148,7 +148,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="key-value score">
 			<span class="key">Score:</span>
 			<span class="value">
-				<?= $this->context->transport->post->score ?>
+				<?= $this->context->transport->post->getScore() ?>
 
 				<?php
 					$scoreLink = function($score)
@@ -161,7 +161,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				<?php if (Access::check(new Privilege(
 					Privilege::ScorePost,
 					Access::getIdentity($this->context->transport->post->getUploader())))): ?>
-					<?php if ($this->context->score === 1): ?>
+					<?php if ($this->context->userScore === 1): ?>
 						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
 					<?php else: ?>
 						<a class="simple-action" href="<?= $scoreLink(1) ?>">
@@ -171,7 +171,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 					,&nbsp;
 
-					<?php if ($this->context->score === -1): ?>
+					<?php if ($this->context->userScore === -1): ?>
 						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
 					<?php else: ?>
 						<a class="simple-action" href="<?= $scoreLink(-1) ?>">
@@ -207,7 +207,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			Privilege::FavoritePost,
 			Access::getIdentity($this->context->transport->post->getUploader())))): ?>
 			<div class="hl-option">
-				<?php if (!$this->context->favorite): ?>
+				<?php if (!$this->context->isUserFavorite): ?>
 					<a class="add-fav icon simple-action"
 						href="<?= \Chibi\Router::linkTo(
 							['PostController', 'addFavoriteAction'],
