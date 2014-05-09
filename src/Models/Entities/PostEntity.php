@@ -4,19 +4,19 @@ use \Chibi\Database as Database;
 
 final class PostEntity extends AbstractEntity implements IValidatable
 {
-	protected $type;
-	protected $name;
-	protected $origName;
-	protected $fileHash;
-	protected $fileSize;
-	protected $mimeType;
-	protected $safety;
-	protected $hidden;
-	protected $uploadDate;
-	protected $imageWidth;
-	protected $imageHeight;
-	protected $uploaderId;
-	protected $source;
+	private $type;
+	private $name;
+	private $origName;
+	private $fileHash;
+	private $fileSize;
+	private $mimeType;
+	private $safety;
+	private $hidden;
+	private $uploadDate;
+	private $imageWidth;
+	private $imageHeight;
+	private $uploaderId;
+	private $source;
 
 	public function fillNew()
 	{

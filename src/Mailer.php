@@ -88,7 +88,6 @@ class Mailer
 		//prepare unique user token
 		$token = TokenModel::spawn();
 		$token->setUser($user);
-		$token->setText(TokenModel::forgeUnusedToken());
 		$token->setUsed(false);
 		$token->setExpirationTime(null);
 		TokenModel::save($token);

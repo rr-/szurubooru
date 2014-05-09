@@ -4,20 +4,20 @@ use \Chibi\Database as Database;
 
 final class UserEntity extends AbstractEntity implements IValidatable
 {
-	protected $name;
-	protected $passSalt;
-	protected $passHash;
-	protected $staffConfirmed;
-	protected $emailUnconfirmed;
-	protected $emailConfirmed;
-	protected $joinDate;
-	protected $lastLoginDate;
-	protected $accessRank;
+	private $name;
+	private $passSalt;
+	private $passHash;
+	private $staffConfirmed;
+	private $emailUnconfirmed;
+	private $emailConfirmed;
+	private $joinDate;
+	private $lastLoginDate;
+	private $accessRank;
 	public $settings;
-	protected $banned = false;
+	private $banned = false;
 
-	protected $__passwordChanged = false;
-	protected $__password;
+	private $__passwordChanged = false;
+	private $__password;
 
 	public function fillNew()
 	{
@@ -55,7 +55,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 			throw new Exception('Trying to save anonymous user into database');
 	}
 
-	protected function validateUserName()
+	private function validateUserName()
 	{
 		$userName = $this->getName();
 		$config = getConfig();

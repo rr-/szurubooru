@@ -72,16 +72,4 @@ final class TokenModel extends AbstractCrudModel
 		if ($token->getExpirationTime() !== null and time() > $token->getExpirationTime())
 			throw new SimpleException('This token has expired');
 	}
-
-	public static function forgeUnusedToken()
-	{
-		$tokenText = '';
-		while (true)
-		{
-			$tokenText =  md5(mt_rand() . uniqid());
-			$token = self::tryGetByToken($tokenText);
-			if (!$token)
-				return $tokenText;
-		}
-	}
 }

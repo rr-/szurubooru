@@ -8,6 +8,18 @@ final class TokenEntity extends AbstractEntity implements IValidatable
 
 	public function fillNew()
 	{
+		$this->used = false;
+
+		$tokenText = '';
+		while (true)
+		{
+			$tokenText =  md5(mt_rand() . uniqid());
+			$token = TokenModel::tryGetByToken($tokenText);
+			if (!$token)
+				break;
+		}
+
+		$this->token = $tokenText;
 	}
 
 	public function fillFromDatabase($row)
@@ -21,7 +33,8 @@ final class TokenEntity extends AbstractEntity implements IValidatable
 
 	public function validate()
 	{
-		//todo
+		if (empty($this->token))
+			throw new Exception('Trying to save empty token');
 	}
 
 	public function getText()
