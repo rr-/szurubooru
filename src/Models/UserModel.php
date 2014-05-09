@@ -187,17 +187,6 @@ final class UserModel extends AbstractCrudModel
 		});
 	}
 
-	public static function validateEmail($email)
-	{
-		$email = trim($email);
-
-		if (!empty($email) and !TextHelper::isValidEmail($email))
-			throw new SimpleException('E-mail address appears to be invalid');
-
-		return $email;
-	}
-
-
 	public static function getAnonymousName()
 	{
 		return '[Anonymous user]';

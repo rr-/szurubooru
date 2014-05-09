@@ -41,7 +41,7 @@ final class TagEntity extends AbstractEntity implements IValidatable
 
 	public function setName($name)
 	{
-		$this->name = trim($name);
+		$this->name = $name === null ? null : trim($name);
 	}
 
 	public function getName()

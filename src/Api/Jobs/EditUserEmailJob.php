@@ -15,7 +15,7 @@ class EditUserEmailJob extends AbstractUserJob
 				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
 
 		$user = $this->user;
-		$newEmail = UserModel::validateEmail($this->getArgument(self::NEW_EMAIL));
+		$newEmail = $this->getArgument(self::NEW_EMAIL);
 
 		$oldEmail = $user->getConfirmedEmail();
 		if ($oldEmail == $newEmail)

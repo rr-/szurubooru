@@ -22,13 +22,12 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 
 	public function validate()
 	{
-		$text = trim($this->getText());
 		$config = getConfig();
 
-		if (strlen($text) < $config->comments->minLength)
+		if (strlen($this->getText()) < $config->comments->minLength)
 			throw new SimpleException('Comment must have at least %d characters', $config->comments->minLength);
 
-		if (strlen($text) > $config->comments->maxLength)
+		if (strlen($this->getText()) > $config->comments->maxLength)
 			throw new SimpleException('Comment must have at most %d characters', $config->comments->maxLength);
 
 		if (!$this->getPostId())
@@ -36,8 +35,6 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 
 		if (!$this->getCreationTime())
 			throw new SimpleException('Trying to save comment that has no creation date specified');
-
-		$this->setText($text);
 	}
 
 	public function getText()
@@ -52,7 +49,7 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 
 	public function setText($text)
 	{
-		$this->text = $text;
+		$this->text = $text === null ? null : trim($text);
 	}
 
 	public function getPost()

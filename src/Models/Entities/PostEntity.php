@@ -336,7 +336,7 @@ final class PostEntity extends AbstractEntity implements IValidatable
 
 	public function setSource($source)
 	{
-		$this->source = trim($source);
+		$this->source = $source === null ? null : trim($source);
 	}
 
 	public function getThumbCustomPath($width = null, $height = null)

@@ -45,8 +45,8 @@ final class UserEntity extends AbstractEntity implements IValidatable
 	{
 		$this->validateUserName();
 		$this->validatePassword();
-
-		//todo: validate e-mails
+		$this->validateAccessRank();
+		$this->validateEmails();
 
 		if (empty($this->getAccessRank()))
 			throw new Exception('No access rank detected');
@@ -114,16 +114,25 @@ final class UserEntity extends AbstractEntity implements IValidatable
 			throw new SimpleException('Password contains invalid characters');
 	}
 
-	public static function validateAccessRank(AccessRank $accessRank)
+	public function validateAccessRank()
 	{
-		$accessRank->validate();
+		$this->accessRank->validate();
 
-		if ($accessRank->toInteger() == AccessRank::Nobody)
-			throw new Exception('Cannot set special access rank "%s"', $accessRank->toString());
-
-		return $accessRank;
+		if ($this->accessRank->toInteger() == AccessRank::Nobody)
+			throw new Exception('Cannot set special access rank "%s"', $this->accessRank->toString());
 	}
 
+	public function validateEmails()
+	{
+		$this->validateEmail($this->getUnconfirmedEmail());
+		$this->validateEmail($this->getConfirmedEmail());
+	}
+
+	private function validateEmail($email)
+	{
+		if (!empty($email) and !TextHelper::isValidEmail($email))
+			throw new SimpleException('E-mail address appears to be invalid');
+	}
 
 	public function isBanned()
 	{
@@ -147,7 +156,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 
 	public function setName($name)
 	{
-		$this->name = trim($name);
+		$this->name = $name === null ? null : trim($name);
 	}
 
 	public function getJoinTime()
@@ -177,7 +186,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 
 	public function setUnconfirmedEmail($email)
 	{
-		$this->emailUnconfirmed = $email;
+		$this->emailUnconfirmed = $email === null ? null : trim($email);
 	}
 
 	public function getConfirmedEmail()
@@ -187,7 +196,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 
 	public function setConfirmedEmail($email)
 	{
-		$this->emailConfirmed = $email;
+		$this->emailConfirmed = $email === null ? null : trim($email);
 	}
 
 	public function isStaffConfirmed()
