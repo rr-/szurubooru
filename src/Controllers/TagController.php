@@ -111,13 +111,17 @@ class TagController
 		Messenger::message('Tag renamed successfully.');
 	}
 
-	public function massTagRedirectAction()
+	public function massTagRedirectView()
 	{
 		$context = getContext();
 		$context->viewName = 'tag-list-wrapper';
 
 		Access::assert(new Privilege(Privilege::MassTag));
+	}
 
+	public function massTagRedirectAction()
+	{
+		$this->massTagRedirectView();
 		$suppliedOldPage = intval(InputHelper::get('old-page'));
 		$suppliedOldQuery = InputHelper::get('old-query');
 		$suppliedQuery = InputHelper::get('query');

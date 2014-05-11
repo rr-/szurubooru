@@ -83,7 +83,8 @@ $tagValidation =
 \Chibi\Router::register(['TagController', 'renameAction'], 'POST', '/tags-rename', $tagValidation);
 \Chibi\Router::register(['TagController', 'mergeView'], 'GET', '/tags-merge', $tagValidation);
 \Chibi\Router::register(['TagController', 'mergeAction'], 'POST', '/tags-merge', $tagValidation);
-\Chibi\Router::register(['TagController', 'massTagRedirectAction'], 'GET', '/mass-tag-redirect', $tagValidation);
+\Chibi\Router::register(['TagController', 'massTagRedirectView'], 'GET', '/mass-tag-redirect', $tagValidation);
+\Chibi\Router::register(['TagController', 'massTagRedirectAction'], 'POST', '/mass-tag-redirect', $tagValidation);
 
 $userValidation =
 [
