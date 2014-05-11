@@ -288,4 +288,59 @@ final class PostModel extends AbstractCrudModel
 	{
 		return TextHelper::absolutePath(getConfig()->main->filesPath . DS . $name);
 	}
+
+
+
+	public static function getFeaturedPost()
+	{
+		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);
+		if (!$featuredPostId)
+			return null;
+		return PostModel::tryGetById($featuredPostId);
+	}
+
+	public static function featureRandomPostIfNecessary()
+	{
+		$config = getConfig();
+		$featuredPostRotationTime = $config->misc->featuredPostMaxDays * 24 * 3600;
+
+		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);
+		$featuredPostUnixTime = PropertyModel::get(PropertyModel::FeaturedPostUnixTime);
+
+		//check if too old
+		if (!$featuredPostId or $featuredPostUnixTime + $featuredPostRotationTime < time())
+		{
+			self::featureRandomPost();
+			return true;
+		}
+
+		//check if post was deleted
+		$featuredPost = PostModel::tryGetById($featuredPostId);
+		if (!$featuredPost)
+		{
+			self::featureRandomPost();
+			return true;
+		}
+
+		return false;
+	}
+
+	public static function featureRandomPost()
+	{
+		$stmt = (new Sql\SelectStatement)
+			->setColumn('id')
+			->setTable('post')
+			->setCriterion((new Sql\ConjunctionFunctor)
+				->add(new Sql\NegationFunctor(new Sql\StringExpression('hidden')))
+				->add(new Sql\EqualsFunctor('type', new Sql\Binding(PostType::Image)))
+				->add(new Sql\EqualsFunctor('safety', new Sql\Binding(PostSafety::Safe))))
+			->setOrderBy(new Sql\RandomFunctor(), Sql\SelectStatement::ORDER_DESC);
+		$featuredPostId = Database::fetchOne($stmt)['id'];
+		if (!$featuredPostId)
+			return null;
+
+		PropertyModel::set(PropertyModel::FeaturedPostId, $featuredPostId);
+		PropertyModel::set(PropertyModel::FeaturedPostUnixTime, time());
+		PropertyModel::set(PropertyModel::FeaturedPostUserName, null);
+	}
 }

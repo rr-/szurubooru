@@ -6,11 +6,17 @@ final class PropertyModel implements IModel
 {
 	const FeaturedPostId = 0;
 	const FeaturedPostUserName = 1;
-	const FeaturedPostDate = 2;
+	const FeaturedPostUnixTime = 2;
 	const DbVersion = 3;
 
-	static $allProperties = null;
-	static $loaded = false;
+	static $allProperties;
+	static $loaded;
+
+	public static function init()
+	{
+		self::$allProperties = null;
+		self::$loaded = false;
+	}
 
 	public static function getTableName()
 	{
@@ -19,16 +25,16 @@ final class PropertyModel implements IModel
 
 	public static function loadIfNecessary()
 	{
-		if (!self::$loaded)
-		{
-			self::$loaded = true;
-			self::$allProperties = [];
-			$stmt = new Sql\SelectStatement();
-			$stmt ->setColumn('*');
-			$stmt ->setTable('property');
-			foreach (Database::fetchAll($stmt) as $row)
-				self::$allProperties[$row['prop_id']] = $row['value'];
-		}
+		if (self::$loaded)
+			return;
+
+		self::$loaded = true;
+		self::$allProperties = [];
+		$stmt = new Sql\SelectStatement();
+		$stmt ->setColumn('*');
+		$stmt ->setTable('property');
+		foreach (Database::fetchAll($stmt) as $row)
+			self::$allProperties[$row['prop_id']] = $row['value'];
 	}
 
 	public static function get($propertyId)
@@ -67,24 +73,5 @@ final class PropertyModel implements IModel
 
 			self::$allProperties[$propertyId] = $value;
 		});
-	}
-
-	public static function featureNewPost()
-	{
-		$stmt = (new Sql\SelectStatement)
-			->setColumn('id')
-			->setTable('post')
-			->setCriterion((new Sql\ConjunctionFunctor)
-				->add(new Sql\EqualsFunctor('type', new Sql\Binding(PostType::Image)))
-				->add(new Sql\EqualsFunctor('safety', new Sql\Binding(PostSafety::Safe))))
-			->setOrderBy(new Sql\RandomFunctor(), Sql\SelectStatement::ORDER_DESC);
-		$featuredPostId = Database::fetchOne($stmt)['id'];
-		if (!$featuredPostId)
-			return null;
-
-		self::set(self::FeaturedPostId, $featuredPostId);
-		self::set(self::FeaturedPostDate, time());
-		self::set(self::FeaturedPostUserName, null);
-		return PostModel::getById($featuredPostId);
 	}
 }

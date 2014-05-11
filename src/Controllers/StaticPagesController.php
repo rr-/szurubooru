@@ -7,14 +7,14 @@ class StaticPagesController
 		$context->transport->postCount = PostModel::getCount();
 		$context->viewName = 'static-main';
 
-		$featuredPost = $this->getFeaturedPost();
+		PostModel::featureRandomPostIfNecessary();
+		$featuredPost = PostModel::getFeaturedPost();
 		if ($featuredPost)
 		{
 			$context->featuredPost = $featuredPost;
-			$context->featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
-			$context->featuredPostUser = UserModel::getByNameOrEmail(
-				PropertyModel::get(PropertyModel::FeaturedPostUserName),
-				false);
+			$context->featuredPostUnixTime = PropertyModel::get(PropertyModel::FeaturedPostUnixTime);
+			$context->featuredPostUser = UserModel::tryGetByNameOrEmail(
+				PropertyModel::get(PropertyModel::FeaturedPostUserName));
 		}
 	}
 
@@ -33,25 +33,5 @@ class StaticPagesController
 		$context->viewName = 'static-help';
 		$context->path = TextHelper::absolutePath($config->help->paths[$tab]);
 		$context->tab = $tab;
-	}
-
-	private function getFeaturedPost()
-	{
-		$config = getConfig();
-		$featuredPostRotationTime = $config->misc->featuredPostMaxDays * 24 * 3600;
-
-		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);
-		$featuredPostDate = PropertyModel::get(PropertyModel::FeaturedPostDate);
-
-		//check if too old
-		if (!$featuredPostId or $featuredPostDate + $featuredPostRotationTime < time())
-			return PropertyModel::featureNewPost();
-
-		//check if post was deleted
-		$featuredPost = PostModel::tryGetById($featuredPostId);
-		if (!$featuredPost)
-			return PropertyModel::featureNewPost();
-
-		return $featuredPost;
 	}
 }

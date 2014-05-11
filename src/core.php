@@ -84,6 +84,7 @@ function prepareEnvironment($testEnvironment)
 	Access::init();
 	Logger::init();
 	Mailer::init();
+	PropertyModel::init();
 
 	\Chibi\Database::connect(
 		$config->main->dbDriver,
