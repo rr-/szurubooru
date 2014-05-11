@@ -69,7 +69,8 @@ class TagSearchService extends AbstractSearchService
 	{
 		$stmt = (new Sql\SelectStatement)
 			->setTable('post_tag')
-			->addColumn('tag_id')
+			->addInnerJoin('tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'))
+			->addColumn('tag.*')
 			->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'))
 			->setGroupBy('post_tag.tag_id')
 			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
