@@ -16,8 +16,8 @@ class TogglePostFavoriteJobTest extends AbstractTest
 			return Api::run(
 				new TogglePostFavoriteJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::STATE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_STATE => 1,
 				]);
 		});
 
@@ -43,8 +43,8 @@ class TogglePostFavoriteJobTest extends AbstractTest
 			return Api::run(
 				new TogglePostFavoriteJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::STATE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_STATE => 1,
 				]);
 		});
 
@@ -53,8 +53,8 @@ class TogglePostFavoriteJobTest extends AbstractTest
 			return Api::run(
 				new TogglePostFavoriteJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::STATE => 0,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_STATE => 0,
 				]);
 		});
 
@@ -81,8 +81,8 @@ class TogglePostFavoriteJobTest extends AbstractTest
 			return Api::run(
 				new TogglePostFavoriteJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::STATE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_STATE => 1,
 				]);
 		});
 
@@ -92,8 +92,8 @@ class TogglePostFavoriteJobTest extends AbstractTest
 			return Api::run(
 				new TogglePostFavoriteJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::STATE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_STATE => 1,
 				]);
 		});
 

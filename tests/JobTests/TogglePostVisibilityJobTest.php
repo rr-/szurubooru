@@ -14,8 +14,8 @@ class TogglePostVisibilityJobTest extends AbstractTest
 			return Api::run(
 				new TogglePostVisibilityJob(),
 				[
-					TogglePostVisibilityJob::POST_ID => $post->getId(),
-					TogglePostVisibilityJob::STATE => 0,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_STATE => 0,
 				]);
 		});
 
@@ -35,8 +35,8 @@ class TogglePostVisibilityJobTest extends AbstractTest
 			return Api::run(
 				new TogglePostVisibilityJob(),
 				[
-					TogglePostVisibilityJob::POST_ID => $post->getId(),
-					TogglePostVisibilityJob::STATE => 0,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_STATE => 0,
 				]);
 		});
 
@@ -47,8 +47,8 @@ class TogglePostVisibilityJobTest extends AbstractTest
 			return Api::run(
 				new TogglePostVisibilityJob(),
 				[
-					TogglePostVisibilityJob::POST_ID => $post->getId(),
-					TogglePostVisibilityJob::STATE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_STATE => 1,
 				]);
 		});
 

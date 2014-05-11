@@ -45,7 +45,7 @@ class EditUserJob extends AbstractUserJob
 				: self::CONTEXT_BATCH_EDIT);
 
 			$args = $this->getArguments();
-			$args[self::USER_ENTITY] = $user;
+			$args[JobArgs::ARG_USER_ENTITY] = $user;
 			try
 			{
 				Api::run($subJob, $args);

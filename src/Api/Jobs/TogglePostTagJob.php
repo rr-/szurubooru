@@ -3,8 +3,8 @@ class TogglePostTagJob extends AbstractPostJob
 {
 	public function execute()
 	{
-		$tagName = $this->getArgument(self::TAG_NAME);
-		$enable = boolval($this->getArgument(self::STATE));
+		$tagName = $this->getArgument(JobArgs::ARG_TAG_NAME);
+		$enable = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
 		$post = $this->post;
 
 		$tags = $post->getTags();

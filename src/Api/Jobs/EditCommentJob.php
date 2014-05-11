@@ -5,7 +5,7 @@ class EditCommentJob extends AbstractJob
 
 	public function prepare()
 	{
-		$this->comment = CommentModel::getById($this->getArgument(self::COMMENT_ID));
+		$this->comment = CommentModel::getById($this->getArgument(JobArgs::ARG_COMMENT_ID));
 	}
 
 	public function execute()
@@ -13,7 +13,7 @@ class EditCommentJob extends AbstractJob
 		$comment = $this->comment;
 
 		$comment->setCreationTime(time());
-		$comment->setText($this->getArgument(self::TEXT));
+		$comment->setText($this->getArgument(JobArgs::ARG_NEW_TEXT));
 
 		CommentModel::save($comment);
 		Logger::log('{user} edited comment in {post}', [

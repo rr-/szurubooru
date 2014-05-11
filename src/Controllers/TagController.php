@@ -6,8 +6,8 @@ class TagController
 		$ret = Api::run(
 			new ListTagsJob(),
 			[
-				ListTagsJob::PAGE_NUMBER => $page,
-				ListTagsJob::QUERY => $filter,
+				JobArgs::ARG_PAGE_NUMBER => $page,
+				JobArgs::ARG_QUERY => $filter,
 			]);
 
 		$context = getContext();
@@ -26,8 +26,8 @@ class TagController
 		$ret = Api::run(
 			(new ListTagsJob)->setPageSize(15),
 			[
-				ListTagsJob::QUERY => $filter,
-				ListTagsJob::PAGE_NUMBER => 1,
+				JobArgs::ARG_QUERY => $filter,
+				JobArgs::ARG_PAGE_NUMBER => 1,
 			]);
 
 		$context = getContext();
@@ -50,9 +50,9 @@ class TagController
 		$ret = Api::run(
 			(new ListRelatedTagsJob),
 			[
-				ListRelatedTagsJob::TAG_NAME => $tag,
-				ListRelatedTagsJob::TAG_NAMES => $otherTags,
-				ListRelatedTagsJob::PAGE_NUMBER => 1
+				JobArgs::ARG_TAG_NAME => $tag,
+				JobArgs::ARG_TAG_NAMES => $otherTags,
+				JobArgs::ARG_PAGE_NUMBER => 1
 			]);
 
 		$context = getContext();
@@ -82,8 +82,8 @@ class TagController
 		Api::run(
 			new MergeTagsJob(),
 			[
-				MergeTagsJob::SOURCE_TAG_NAME => InputHelper::get('source-tag'),
-				MergeTagsJob::TARGET_TAG_NAME => InputHelper::get('target-tag'),
+				JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
+				JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
 			]);
 
 		Messenger::message('Tags merged successfully.');
@@ -104,8 +104,8 @@ class TagController
 		Api::run(
 			new RenameTagsJob(),
 			[
-				RenameTagsJob::SOURCE_TAG_NAME => InputHelper::get('source-tag'),
-				RenameTagsJob::TARGET_TAG_NAME => InputHelper::get('target-tag'),
+				JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
+				JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
 			]);
 
 		Messenger::message('Tag renamed successfully.');

@@ -5,7 +5,7 @@ class GetPostContentJob extends AbstractJob
 
 	public function prepare()
 	{
-		$this->post = PostModel::getByName($this->getArgument(self::POST_NAME));
+		$this->post = PostModel::getByName($this->getArgument(JobArgs::ARG_POST_NAME));
 	}
 
 	public function execute()

@@ -10,8 +10,8 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
 				]);
 		});
 
@@ -26,8 +26,8 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy2',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy2',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
 				]);
 		});
 
@@ -44,8 +44,8 @@ class AddUserJobTest extends AbstractTest
 			Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => str_repeat('s', getConfig()->registration->passMinLength - 1),
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => str_repeat('s', getConfig()->registration->passMinLength - 1),
 				]);
 		}, 'Password must have at least');
 	}
@@ -63,9 +63,9 @@ class AddUserJobTest extends AbstractTest
 			Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => str_repeat('s', getConfig()->registration->passMinLength - 1),
-					EditUserEmailJob::NEW_EMAIL => 'godzilla@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => str_repeat('s', getConfig()->registration->passMinLength - 1),
+					JobArgs::ARG_NEW_EMAIL => 'godzilla@whitestar.gov',
 				]);
 		}, 'Password must have at least');
 
@@ -82,8 +82,8 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => $pass,
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => $pass,
 				]);
 		});
 
@@ -109,8 +109,8 @@ class AddUserJobTest extends AbstractTest
 			Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
 				]);
 		});
 
@@ -119,8 +119,8 @@ class AddUserJobTest extends AbstractTest
 			Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
 				]);
 		}, 'User with');
 	}
@@ -134,9 +134,9 @@ class AddUserJobTest extends AbstractTest
 			Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserAccessRankJob::NEW_ACCESS_RANK => 'power-user',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_ACCESS_RANK => 'power-user',
 				]);
 		}, 'Insufficient privileges');
 	}
@@ -155,9 +155,9 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserEmailJob::NEW_EMAIL => 'godzilla@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_EMAIL => 'godzilla@whitestar.gov',
 				]);
 		});
 
@@ -170,9 +170,9 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy2',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserEmailJob::NEW_EMAIL => 'godzilla2@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy2',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_EMAIL => 'godzilla2@whitestar.gov',
 				]);
 		});
 
@@ -197,9 +197,9 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserEmailJob::NEW_EMAIL => 'godzilla@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_EMAIL => 'godzilla@whitestar.gov',
 				]);
 		});
 
@@ -211,9 +211,9 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy2',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserEmailJob::NEW_EMAIL => 'godzilla2@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy2',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_EMAIL => 'godzilla2@whitestar.gov',
 				]);
 		});
 
@@ -237,9 +237,9 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserEmailJob::NEW_EMAIL => 'godzilla@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_EMAIL => 'godzilla@whitestar.gov',
 				]);
 		});
 
@@ -251,9 +251,9 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy2',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserEmailJob::NEW_EMAIL => 'godzilla2@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy2',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_EMAIL => 'godzilla2@whitestar.gov',
 				]);
 		});
 
@@ -276,9 +276,9 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserEmailJob::NEW_EMAIL => 'godzilla@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_EMAIL => 'godzilla@whitestar.gov',
 				]);
 		});
 
@@ -287,9 +287,9 @@ class AddUserJobTest extends AbstractTest
 			return Api::run(
 				new AddUserJob(),
 				[
-					EditUserNameJob::NEW_USER_NAME => 'dummy2',
-					EditUserPasswordJob::NEW_PASSWORD => 'sekai',
-					EditUserEmailJob::NEW_EMAIL => 'godzilla@whitestar.gov',
+					JobArgs::ARG_NEW_USER_NAME => 'dummy2',
+					JobArgs::ARG_NEW_PASSWORD => 'sekai',
+					JobArgs::ARG_NEW_EMAIL => 'godzilla@whitestar.gov',
 				]);
 		});
 

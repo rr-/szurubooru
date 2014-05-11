@@ -17,8 +17,8 @@ class EditUserEmailJobTest extends AbstractTest
 			return Api::run(
 				new EditUserEmailJob(),
 				[
-					EditUserEmailJob::USER_NAME => $user->getName(),
-					EditUserEmailJob::NEW_EMAIL => 'xena@other-side.gr',
+					JobArgs::ARG_USER_NAME => $user->getName(),
+					JobArgs::ARG_NEW_EMAIL => 'xena@other-side.gr',
 				]);
 		});
 
@@ -44,8 +44,8 @@ class EditUserEmailJobTest extends AbstractTest
 			return Api::run(
 				new EditUserEmailJob(),
 				[
-					EditUserEmailJob::USER_NAME => $user->getName(),
-					EditUserEmailJob::NEW_EMAIL => 'xena@other-side.gr',
+					JobArgs::ARG_USER_NAME => $user->getName(),
+					JobArgs::ARG_NEW_EMAIL => 'xena@other-side.gr',
 				]);
 		});
 
@@ -70,8 +70,8 @@ class EditUserEmailJobTest extends AbstractTest
 			Api::run(
 				new EditUserEmailJob(),
 				[
-					EditUserEmailJob::USER_NAME => $user->getName(),
-					EditUserEmailJob::NEW_EMAIL => 'hrmfbpdvpds@brtedf',
+					JobArgs::ARG_USER_NAME => $user->getName(),
+					JobArgs::ARG_NEW_EMAIL => 'hrmfbpdvpds@brtedf',
 				]);
 		}, 'E-mail address appears to be invalid');
 

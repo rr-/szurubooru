@@ -3,13 +3,13 @@ class EditPostTagsJob extends AbstractPostJob
 {
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::TAG_NAMES);
+		return $this->hasArgument(JobArgs::ARG_NEW_TAG_NAMES);
 	}
 
 	public function execute()
 	{
 		$post = $this->post;
-		$tagNames = $this->getArgument(self::TAG_NAMES);
+		$tagNames = $this->getArgument(JobArgs::ARG_NEW_TAG_NAMES);
 
 		if (!is_array($tagNames))
 			throw new SimpleException('Expected array');

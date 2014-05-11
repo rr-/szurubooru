@@ -1,17 +1,15 @@
 <?php
 class EditPostThumbJob extends AbstractPostJob
 {
-	const THUMB_CONTENT = 'thumb-content';
-
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::THUMB_CONTENT);
+		return $this->hasArgument(JobArgs::ARG_NEW_THUMB_CONTENT);
 	}
 
 	public function execute()
 	{
 		$post = $this->post;
-		$file = $this->getArgument(self::THUMB_CONTENT);
+		$file = $this->getArgument(JobArgs::ARG_NEW_THUMB_CONTENT);
 
 		$post->setCustomThumbnailFromPath($file->filePath);
 

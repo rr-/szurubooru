@@ -45,8 +45,8 @@ class EditPostSourceJobTest extends AbstractTest
 			Api::run(
 				new EditPostSourceJob(),
 				[
-					EditPostSourceJob::POST_ID => 100,
-					EditPostSourceJob::SOURCE => 'alohaa',
+					JobArgs::ARG_POST_ID => 100,
+					JobArgs::ARG_NEW_SOURCE => 'alohaa',
 				]);
 		}, 'Invalid post ID');
 	}
@@ -58,8 +58,8 @@ class EditPostSourceJobTest extends AbstractTest
 		return Api::run(
 			new EditPostSourceJob(),
 			[
-				EditPostSourceJob::POST_ID => $post->getId(),
-				EditPostSourceJob::SOURCE => $text
+				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_NEW_SOURCE => $text
 			]);
 	}
 

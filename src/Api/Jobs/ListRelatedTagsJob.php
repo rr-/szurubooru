@@ -4,9 +4,9 @@ class ListRelatedTagsJob extends ListTagsJob
 	public function execute()
 	{
 		$pageSize = $this->getPageSize();
-		$page = $this->getArgument(self::PAGE_NUMBER);
-		$tag = $this->getArgument(self::TAG_NAME);
-		$otherTags = $this->hasArgument(self::TAG_NAMES) ? $this->getArgument(self::TAG_NAMES) : [];
+		$page = $this->getArgument(JobArgs::ARG_PAGE_NUMBER);
+		$tag = $this->getArgument(JobArgs::ARG_TAG_NAME);
+		$otherTags = $this->hasArgument(JobArgs::ARG_TAG_NAMES) ? $this->getArgument(JobArgs::ARG_TAG_NAMES) : [];
 
 		$tags = TagSearchService::getRelatedTags($tag);
 		$tagCount = count($tags);

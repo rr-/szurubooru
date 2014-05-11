@@ -14,9 +14,9 @@ class EditUserJobTest extends AbstractTest
 			return Api::run(
 				new EditUserJob(),
 				[
-					EditUserJob::USER_NAME => $user->getName(),
-					EditUserNameJob::NEW_USER_NAME => $newName,
-					EditUserPasswordJob::NEW_PASSWORD => 'changed',
+					JobArgs::ARG_USER_NAME => $user->getName(),
+					JobArgs::ARG_NEW_USER_NAME => $newName,
+					JobArgs::ARG_NEW_PASSWORD => 'changed',
 				]);
 		});
 

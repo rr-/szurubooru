@@ -67,8 +67,8 @@ class PreviewCommentJobTest extends AbstractTest
 			Api::run(
 				new PreviewCommentJob(),
 				[
-					PreviewCommentJob::POST_ID => $post->getId(),
-					PreviewCommentJob::TEXT => 'alohaaa',
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_TEXT => 'alohaaa',
 				]);
 		});
 	}
@@ -83,8 +83,8 @@ class PreviewCommentJobTest extends AbstractTest
 			Api::run(
 				new PreviewCommentJob(),
 				[
-					PreviewCommentJob::COMMENT_ID => $comment->getId(),
-					PreviewCommentJob::TEXT => 'alohaaa',
+					JobArgs::ARG_COMMENT_ID => $comment->getId(),
+					JobArgs::ARG_NEW_TEXT => 'alohaaa',
 				]);
 		});
 	}
@@ -97,8 +97,8 @@ class PreviewCommentJobTest extends AbstractTest
 		return Api::run(
 			new PreviewCommentJob(),
 			[
-				PreviewCommentJob::POST_ID => $post->getId(),
-				PreviewCommentJob::TEXT => $text,
+				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_NEW_TEXT => $text,
 			]);
 	}
 

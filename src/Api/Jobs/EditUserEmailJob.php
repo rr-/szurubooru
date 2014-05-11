@@ -1,21 +1,19 @@
 <?php
 class EditUserEmailJob extends AbstractUserJob
 {
-	const NEW_EMAIL = 'new-email';
-
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::NEW_EMAIL);
+		return $this->hasArgument(JobArgs::ARG_NEW_EMAIL);
 	}
 
 	public function execute()
 	{
 		if (getConfig()->registration->needEmailForRegistering)
-			if (!$this->hasArgument(self::NEW_EMAIL) or empty($this->getArgument(self::NEW_EMAIL)))
+			if (!$this->hasArgument(JobArgs::ARG_NEW_EMAIL) or empty($this->getArgument(JobArgs::ARG_NEW_EMAIL)))
 				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
 
 		$user = $this->user;
-		$newEmail = $this->getArgument(self::NEW_EMAIL);
+		$newEmail = $this->getArgument(JobArgs::ARG_NEW_EMAIL);
 
 		$oldEmail = $user->getConfirmedEmail();
 		if ($oldEmail == $newEmail)

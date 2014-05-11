@@ -1,17 +1,15 @@
 <?php
 class EditUserPasswordJob extends AbstractUserJob
 {
-	const NEW_PASSWORD = 'new-password';
-
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::NEW_PASSWORD);
+		return $this->hasArgument(JobArgs::ARG_NEW_PASSWORD);
 	}
 
 	public function execute()
 	{
 		$user = $this->user;
-		$newPassword = $this->getArgument(self::NEW_PASSWORD);
+		$newPassword = $this->getArgument(JobArgs::ARG_NEW_PASSWORD);
 
 		$oldPasswordHash = $user->getPasswordHash();
 		$user->setPassword($newPassword);

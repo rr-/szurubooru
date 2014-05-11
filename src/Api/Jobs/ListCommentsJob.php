@@ -4,7 +4,7 @@ class ListCommentsJob extends AbstractPageJob
 	public function execute()
 	{
 		$pageSize = $this->getPageSize();
-		$page = $this->getArgument(self::PAGE_NUMBER);
+		$page = $this->getArgument(JobArgs::ARG_PAGE_NUMBER);
 		$query = 'comment_min:1 order:comment_date,desc';
 
 		$posts = PostSearchService::getEntities($query, $pageSize, $page);

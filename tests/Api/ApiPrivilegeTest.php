@@ -78,12 +78,12 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$otherPost = $this->mockPost($this->mockUser());
 
 		$expectedPrivilege->secondary = 'all';
-		$job->setArgument(AbstractJob::POST_ID, $otherPost->getId());
+		$job->setArgument(JobArgs::ARG_POST_ID, $otherPost->getId());
 		$job->prepare();
 		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
 
 		$expectedPrivilege->secondary = 'own';
-		$job->setArgument(AbstractJob::POST_ID, $ownPost->getId());
+		$job->setArgument(JobArgs::ARG_POST_ID, $ownPost->getId());
 		$job->prepare();
 		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
 	}
@@ -105,8 +105,8 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 			$post->setHidden(true);
 			PostModel::save($post);
 
-			$job->setArgument(AbstractJob::POST_ID, $post->getId());
-			$job->setArgument(AbstractJob::POST_NAME, $post->getName());
+			$job->setArgument(JobArgs::ARG_POST_ID, $post->getId());
+			$job->setArgument(JobArgs::ARG_POST_NAME, $post->getName());
 			$job->prepare();
 			$this->assert->areEquivalent([
 				new Privilege(Privilege::ViewPost, 'hidden'),
@@ -147,12 +147,12 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->testedJobs []= $job;
 
 		$expectedPrivilege->secondary = 'own';
-		$job->setArgument(AbstractJob::USER_NAME, $ownUser->getName());
+		$job->setArgument(JobArgs::ARG_USER_NAME, $ownUser->getName());
 		$job->prepare();
 		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
 
 		$expectedPrivilege->secondary = 'all';
-		$job->setArgument(AbstractJob::USER_NAME, $otherUser->getName());
+		$job->setArgument(JobArgs::ARG_USER_NAME, $otherUser->getName());
 		$job->prepare();
 		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
 	}
@@ -173,12 +173,12 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->testedJobs []= $job;
 
 		$expectedPrivilege->secondary = 'own';
-		$job->setArgument(AbstractJob::COMMENT_ID, $ownComment->getId());
+		$job->setArgument(JobArgs::ARG_COMMENT_ID, $ownComment->getId());
 		$job->prepare();
 		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
 
 		$expectedPrivilege->secondary = 'all';
-		$job->setArgument(AbstractJob::COMMENT_ID, $otherComment->getId());
+		$job->setArgument(JobArgs::ARG_COMMENT_ID, $otherComment->getId());
 		$job->prepare();
 		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
 	}
@@ -192,8 +192,8 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 			return Api::run(
 				new AddCommentJob(),
 				[
-					AddCommentJob::POST_ID => $post->getId(),
-					AddCommentJob::TEXT => 'alohaaa',
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_TEXT => 'alohaaa',
 				]);
 		}, 'Insufficient privileges');
 	}

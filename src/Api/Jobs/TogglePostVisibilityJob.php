@@ -4,7 +4,7 @@ class TogglePostVisibilityJob extends AbstractPostJob
 	public function execute()
 	{
 		$post = $this->post;
-		$visible = boolval($this->getArgument(self::STATE));
+		$visible = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
 
 		$post->setHidden(!$visible);
 		PostModel::save($post);

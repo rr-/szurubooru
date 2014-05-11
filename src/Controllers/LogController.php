@@ -30,9 +30,9 @@ class LogController
 		$ret = Api::run(
 			new GetLogJob(),
 			[
-				GetLogJob::PAGE_NUMBER => $page,
-				GetLogJob::LOG_ID => $name,
-				GetLogJob::QUERY => $filter,
+				JobArgs::ARG_PAGE_NUMBER => $page,
+				JobArgs::ARG_LOG_ID => $name,
+				JobArgs::ARG_QUERY => $filter,
 			]);
 
 		//stylize important lines

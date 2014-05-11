@@ -4,8 +4,8 @@ class ListPostsJob extends AbstractPageJob
 	public function execute()
 	{
 		$pageSize = $this->getPageSize();
-		$page = $this->getArgument(self::PAGE_NUMBER);
-		$query = $this->getArgument(self::QUERY);
+		$page = $this->getArgument(JobArgs::ARG_PAGE_NUMBER);
+		$query = $this->getArgument(JobArgs::ARG_QUERY);
 
 		$posts = PostSearchService::getEntities($query, $pageSize, $page);
 		$postCount = PostSearchService::getEntityCount($query);

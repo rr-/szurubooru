@@ -87,8 +87,8 @@ class EditPostContentJobTest extends AbstractTest
 		$post = Api::run(
 			new EditPostContentJob(),
 			[
-				EditPostContentJob::POST_ID => $post->getId(),
-				EditPostContentJob::POST_CONTENT_URL => 'http://www.youtube.com/watch?v=qWq_jydCUw4', 'test.jpg',
+				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_NEW_POST_CONTENT_URL => 'http://www.youtube.com/watch?v=qWq_jydCUw4', 'test.jpg',
 			]);
 		$this->assert->areEqual(PostType::Youtube, $post->getType()->toInteger());
 		$this->assert->areEqual('qWq_jydCUw4', $post->getFileHash());
@@ -110,8 +110,8 @@ class EditPostContentJobTest extends AbstractTest
 			Api::run(
 				new EditPostContentJob(),
 				[
-					EditPostContentJob::POST_ID => 100,
-					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_POST_ID => 100,
+					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 				]);
 		}, 'Invalid post ID');
 	}
@@ -133,8 +133,8 @@ class EditPostContentJobTest extends AbstractTest
 		$post = Api::run(
 			new EditPostContentJob(),
 			[
-				EditPostContentJob::POST_ID => $post->getId(),
-				EditPostContentJob::POST_CONTENT_URL => $url,
+				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
 			]);
 
 		$this->assert->areEqual(
@@ -152,8 +152,8 @@ class EditPostContentJobTest extends AbstractTest
 		$post = Api::run(
 			new EditPostContentJob(),
 			[
-				EditPostContentJob::POST_ID => $post->getId(),
-				EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath($fileName), 'test.jpg'),
+				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath($fileName), 'test.jpg'),
 			]);
 
 		$this->assert->areEqual(

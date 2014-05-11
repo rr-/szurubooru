@@ -18,10 +18,10 @@ class AddPostJobTest extends AbstractTest
 			return Api::run(
 				new AddPostJob(),
 				[
-					EditPostSafetyJob::SAFETY => PostSafety::Safe,
-					EditPostSourceJob::SOURCE => '',
-					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
-					EditPostTagsJob::TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
+					JobArgs::ARG_NEW_SOURCE => '',
+					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
 				]);
 		});
 
@@ -46,9 +46,9 @@ class AddPostJobTest extends AbstractTest
 			return Api::run(
 				new AddPostJob(),
 				[
-					AddPostJob::ANONYMOUS => true,
-					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
-					EditPostTagsJob::TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_ANONYMOUS => true,
+					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
 				]);
 		});
 
@@ -73,9 +73,9 @@ class AddPostJobTest extends AbstractTest
 			Api::run(
 				new AddPostJob(),
 				[
-					EditPostSafetyJob::SAFETY => PostSafety::Safe,
-					EditPostSourceJob::SOURCE => '',
-					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
+					JobArgs::ARG_NEW_SOURCE => '',
+					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 				]);
 		}, 'Insufficient privilege');
 	}
@@ -94,9 +94,9 @@ class AddPostJobTest extends AbstractTest
 			Api::run(
 				new AddPostJob(),
 				[
-					EditPostSafetyJob::SAFETY => 666,
-					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
-					EditPostTagsJob::TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_NEW_SAFETY => 666,
+					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
 				]);
 		}, 'Invalid safety type');
 	}
@@ -114,7 +114,7 @@ class AddPostJobTest extends AbstractTest
 			Api::run(
 				new AddPostJob(),
 				[
-					EditPostTagsJob::TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_TAG_NAMES => ['kamen', 'raider'],
 				]);
 		}, 'No post type detected');
 	}
@@ -132,7 +132,7 @@ class AddPostJobTest extends AbstractTest
 			Api::run(
 				new AddPostJob(),
 				[
-					EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 				]);
 		}, 'No tags set');
 	}

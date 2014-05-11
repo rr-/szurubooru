@@ -17,7 +17,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 			Api::run(
 				new ActivateUserEmailJob(),
 				[
-					ActivateUserEmailJob::USER_NAME => $user->getName(),
+					JobArgs::ARG_USER_NAME => $user->getName(),
 				]);
 		});
 
@@ -50,7 +50,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 			Api::run(
 				new ActivateUserEmailJob(),
 				[
-					ActivateUserEmailJob::USER_NAME => $user->getName(),
+					JobArgs::ARG_USER_NAME => $user->getName(),
 				]);
 		});
 
@@ -61,7 +61,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 			Api::run(
 				new ActivateUserEmailJob(),
 				[
-					ActivateUserEmailJob::TOKEN => $tokenText,
+					JobArgs::ARG_TOKEN => $tokenText,
 				]);
 		});
 
@@ -88,7 +88,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		Api::run(
 			new ActivateUserEmailJob(),
 			[
-				ActivateUserEmailJob::USER_NAME => $user->getName(),
+				JobArgs::ARG_USER_NAME => $user->getName(),
 			]);
 
 		$tokenText = Mailer::getMailsSent()[0]->tokens['token'];
@@ -96,7 +96,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		Api::run(
 			new ActivateUserEmailJob(),
 			[
-				ActivateUserEmailJob::TOKEN => $tokenText,
+				JobArgs::ARG_TOKEN => $tokenText,
 			]);
 
 		$this->assert->throws(function() use ($tokenText)
@@ -104,7 +104,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 			Api::run(
 				new ActivateUserEmailJob(),
 				[
-					ActivateUserEmailJob::TOKEN => $tokenText,
+					JobArgs::ARG_TOKEN => $tokenText,
 				]);
 		}, 'This token was already used');
 	}
@@ -124,13 +124,13 @@ class ActivateUserEmailJobTest extends AbstractTest
 		Api::run(
 			new ActivateUserEmailJob(),
 			[
-				ActivateUserEmailJob::USER_NAME => $user1->getName(),
+				JobArgs::ARG_USER_NAME => $user1->getName(),
 			]);
 
 		Api::run(
 			new ActivateUserEmailJob(),
 			[
-				ActivateUserEmailJob::USER_NAME => $user2->getName(),
+				JobArgs::ARG_USER_NAME => $user2->getName(),
 			]);
 
 		$tokens1 = Mailer::getMailsSent()[0]->tokens;

@@ -1,8 +1,6 @@
 <?php
 class FeaturePostJob extends AbstractPostJob
 {
-	const ANONYMOUS = 'anonymous';
-
 	public function execute()
 	{
 		$post = $this->post;
@@ -11,7 +9,7 @@ class FeaturePostJob extends AbstractPostJob
 		PropertyModel::set(PropertyModel::FeaturedPostUnixTime, time());
 
 		PropertyModel::set(PropertyModel::FeaturedPostUserName,
-			($this->hasArgument(self::ANONYMOUS) and $this->getArgument(self::ANONYMOUS))
+			($this->hasArgument(JobArgs::ARG_ANONYMOUS) and $this->getArgument(JobArgs::ARG_ANONYMOUS))
 			? null
 			: Auth::getCurrentUser()->getName());
 

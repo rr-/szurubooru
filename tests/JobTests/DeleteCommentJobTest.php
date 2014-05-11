@@ -15,7 +15,7 @@ class DeleteCommentJobTest extends AbstractTest
 			Api::run(
 				new DeleteCommentJob(),
 				[
-					DeleteCommentJob::COMMENT_ID => $comment->getId(),
+					JobArgs::ARG_COMMENT_ID => $comment->getId(),
 				]);
 		});
 
@@ -33,7 +33,7 @@ class DeleteCommentJobTest extends AbstractTest
 			Api::run(
 				new DeleteCommentJob(),
 				[
-					DeleteCommentJob::COMMENT_ID => 100,
+					JobArgs::ARG_COMMENT_ID => 100,
 				]);
 		}, 'Invalid comment ID');
 	}

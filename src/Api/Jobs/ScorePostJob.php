@@ -1,12 +1,10 @@
 <?php
 class ScorePostJob extends AbstractPostJob
 {
-	const SCORE = 'score';
-
 	public function execute()
 	{
 		$post = $this->post;
-		$score = intval($this->getArgument(self::SCORE));
+		$score = intval($this->getArgument(JobArgs::ARG_NEW_POST_SCORE));
 
 		UserModel::updateUserScore(Auth::getCurrentUser(), $post, $score);
 

@@ -4,8 +4,8 @@ class ListUsersJob extends AbstractPageJob
 	public function execute()
 	{
 		$pageSize = $this->getPageSize();
-		$page = $this->getArgument(self::PAGE_NUMBER);
-		$filter = $this->getArgument(self::QUERY);
+		$page = $this->getArgument(JobArgs::ARG_PAGE_NUMBER);
+		$filter = $this->getArgument(JobArgs::ARG_QUERY);
 
 		$users = UserSearchService::getEntities($filter, $pageSize, $page);
 		$userCount = UserSearchService::getEntityCount($filter);

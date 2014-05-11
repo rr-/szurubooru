@@ -4,7 +4,7 @@ class ToggleUserBanJob extends AbstractUserJob
 	public function execute()
 	{
 		$user = $this->user;
-		$banned = boolval($this->getArgument(self::STATE));
+		$banned = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
 
 		if ($banned)
 			$user->ban();

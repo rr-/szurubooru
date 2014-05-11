@@ -42,8 +42,8 @@ class PostController
 		$ret = Api::run(
 			new ListPostsJob(),
 			[
-				ListPostsJob::PAGE_NUMBER => $page,
-				ListPostsJob::QUERY => $query
+				JobArgs::ARG_PAGE_NUMBER => $page,
+				JobArgs::ARG_QUERY => $query
 			]);
 
 		$context->transport->posts = $ret->entities;
@@ -74,9 +74,9 @@ class PostController
 		Api::run(
 			new TogglePostTagJob(),
 			[
-				TogglePostTagJob::POST_ID => $id,
-				TogglePostTagJob::TAG_NAME => $tag,
-				TogglePostTagJob::STATE => $enable,
+				JobArgs::ARG_POST_ID => $id,
+				JobArgs::ARG_TAG_NAME => $tag,
+				JobArgs::ARG_NEW_STATE => $enable,
 			]);
 	}
 
@@ -88,22 +88,22 @@ class PostController
 	{
 		$jobArgs =
 		[
-			AddPostJob::ANONYMOUS => InputHelper::get('anonymous'),
-			EditPostSafetyJob::SAFETY => InputHelper::get('safety'),
-			EditPostTagsJob::TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
-			EditPostSourceJob::SOURCE => InputHelper::get('source'),
+			JobArgs::ARG_ANONYMOUS => InputHelper::get('anonymous'),
+			JobArgs::ARG_NEW_SAFETY => InputHelper::get('safety'),
+			JobArgs::ARG_NEW_TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
+			JobArgs::ARG_NEW_SOURCE => InputHelper::get('source'),
 		];
 
 		if (!empty(InputHelper::get('url')))
 		{
-			$jobArgs[EditPostContentJob::POST_CONTENT_URL] = InputHelper::get('url');
+			$jobArgs[JobArgs::ARG_NEW_POST_CONTENT_URL] = InputHelper::get('url');
 		}
 		elseif (!empty($_FILES['file']['name']))
 		{
 			$file = $_FILES['file'];
 			TransferHelper::handleUploadErrors($file);
 
-			$jobArgs[EditPostContentJob::POST_CONTENT] = new ApiFileInput(
+			$jobArgs[JobArgs::ARG_NEW_POST_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
 		}
@@ -114,7 +114,7 @@ class PostController
 	public function editView($id)
 	{
 		$post = Api::run(new GetPostJob(), [
-			GetPostJob::POST_ID => $id]);
+			JobArgs::ARG_POST_ID => $id]);
 
 		$context = getContext()->transport->post = $post;
 	}
@@ -129,23 +129,23 @@ class PostController
 
 		$jobArgs =
 		[
-			EditPostJob::POST_ID => $id,
-			EditPostSafetyJob::SAFETY => InputHelper::get('safety'),
-			EditPostTagsJob::TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
-			EditPostSourceJob::SOURCE => InputHelper::get('source'),
-			EditPostRelationsJob::RELATED_POST_IDS => InputHelper::get('relations'),
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_SAFETY => InputHelper::get('safety'),
+			JobArgs::ARG_NEW_TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
+			JobArgs::ARG_NEW_SOURCE => InputHelper::get('source'),
+			JobArgs::ARG_NEW_RELATED_POST_IDS => InputHelper::get('relations'),
 		];
 
 		if (!empty(InputHelper::get('url')))
 		{
-			$jobArgs[EditPostContentJob::POST_CONTENT_URL] = InputHelper::get('url');
+			$jobArgs[JobArgs::ARG_NEW_POST_CONTENT_URL] = InputHelper::get('url');
 		}
 		elseif (!empty($_FILES['file']['name']))
 		{
 			$file = $_FILES['file'];
 			TransferHelper::handleUploadErrors($file);
 
-			$jobArgs[EditPostContentJob::POST_CONTENT] = new ApiFileInput(
+			$jobArgs[JobArgs::ARG_NEW_POST_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
 		}
@@ -155,7 +155,7 @@ class PostController
 			$file = $_FILES['thumb'];
 			TransferHelper::handleUploadErrors($file);
 
-			$jobArgs[EditPostThumbJob::THUMB_CONTENT] = new ApiFileInput(
+			$jobArgs[JobArgs::ARG_NEW_THUMB_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
 		}
@@ -165,54 +165,54 @@ class PostController
 
 	public function flagAction($id)
 	{
-		Api::run(new FlagPostJob(), [FlagPostJob::POST_ID => $id]);
+		Api::run(new FlagPostJob(), [JobArgs::ARG_POST_ID => $id]);
 	}
 
 	public function hideAction($id)
 	{
 		Api::run(new TogglePostVisibilityJob(), [
-			TogglePostVisibilityJob::POST_ID => $id,
-			TogglePostVisibilityJob::STATE => false]);
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_STATE => false]);
 	}
 
 	public function unhideAction($id)
 	{
 		Api::run(new TogglePostVisibilityJob(), [
-			TogglePostVisibilityJob::POST_ID => $id,
-			TogglePostVisibilityJob::STATE => true]);
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_STATE => true]);
 	}
 
 	public function deleteAction($id)
 	{
 		Api::run(new DeletePostJob(), [
-			DeletePostJob::POST_ID => $id]);
+			JobArgs::ARG_POST_ID => $id]);
 	}
 
 	public function addFavoriteAction($id)
 	{
 		Api::run(new TogglePostFavoriteJob(), [
-			TogglePostFavoriteJob::POST_ID => $id,
-			TogglePostFavoriteJob::STATE => true]);
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_STATE => true]);
 	}
 
 	public function removeFavoriteAction($id)
 	{
 		Api::run(new TogglePostFavoriteJob(), [
-			TogglePostFavoriteJob::POST_ID => $id,
-			TogglePostFavoriteJob::STATE => false]);
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_STATE => false]);
 	}
 
 	public function scoreAction($id, $score)
 	{
 		Api::run(new ScorePostJob(), [
-			ScorePostJob::POST_ID => $id,
-			ScorePostJob::SCORE => $score]);
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_POST_SCORE => $score]);
 	}
 
 	public function featureAction($id)
 	{
 		Api::run(new FeaturePostJob(), [
-			FeaturePostJob::POST_ID => $id]);
+			JobArgs::ARG_POST_ID => $id]);
 	}
 
 	public function genericView($id)
@@ -221,7 +221,7 @@ class PostController
 		$context->viewName = 'post-view';
 
 		$post = Api::run(new GetPostJob(), [
-			GetPostJob::POST_ID => $id]);
+			JobArgs::ARG_POST_ID => $id]);
 
 		try
 		{
@@ -255,7 +255,7 @@ class PostController
 
 	public function fileView($name)
 	{
-		$ret = Api::run(new GetPostContentJob(), [GetPostContentJob::POST_NAME => $name]);
+		$ret = Api::run(new GetPostContentJob(), [JobArgs::ARG_POST_NAME => $name]);
 
 		$context = getContext();
 		$context->transport->cacheDaysToLive = 14;
@@ -270,9 +270,9 @@ class PostController
 	public function thumbView($name, $width = null, $height = null)
 	{
 		$ret = Api::run(new GetPostThumbJob(), [
-			GetPostThumbJob::POST_NAME => $name,
-			GetPostThumbJob::WIDTH => $width,
-			GetPostThumbJob::HEIGHT => $height]);
+			JobArgs::ARG_POST_NAME => $name,
+			JobArgs::ARG_THUMB_WIDTH => $width,
+			JobArgs::ARG_THUMB_HEIGHT => $height]);
 
 		$context = getContext();
 		$context->transport->cacheDaysToLive = 365;

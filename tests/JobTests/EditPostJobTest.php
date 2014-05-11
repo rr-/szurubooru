@@ -13,10 +13,10 @@ class EditPostJobTest extends AbstractTest
 
 		$args =
 		[
-			EditPostJob::POST_ID => $post->getId(),
-			EditPostSafetyJob::SAFETY => PostSafety::Sketchy,
-			EditPostSourceJob::SOURCE => 'some source huh',
-			EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+			JobArgs::ARG_POST_ID => $post->getId(),
+			JobArgs::ARG_NEW_SAFETY => PostSafety::Sketchy,
+			JobArgs::ARG_NEW_SOURCE => 'some source huh',
+			JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 		];
 
 		$this->assert->doesNotThrow(function() use ($args)
@@ -36,10 +36,10 @@ class EditPostJobTest extends AbstractTest
 
 		$args =
 		[
-			EditPostJob::POST_ID => $post->getId(),
-			EditPostSafetyJob::SAFETY => PostSafety::Safe,
-			EditPostSourceJob::SOURCE => '',
-			EditPostContentJob::POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+			JobArgs::ARG_POST_ID => $post->getId(),
+			JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
+			JobArgs::ARG_NEW_SOURCE => '',
+			JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 		];
 
 		$this->assert->throws(function() use ($args)

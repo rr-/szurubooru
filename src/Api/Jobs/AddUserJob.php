@@ -20,7 +20,7 @@ class AddUserJob extends AbstractJob
 		}
 
 		$arguments = $this->getArguments();
-		$arguments[EditUserJob::USER_ENTITY] = $user;
+		$arguments[JobArgs::ARG_USER_ENTITY] = $user;
 
 		Logger::bufferChanges();
 		try

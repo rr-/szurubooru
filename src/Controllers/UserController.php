@@ -6,8 +6,8 @@ class UserController
 		$ret = Api::run(
 			new ListUsersJob(),
 			[
-				ListUsersJob::PAGE_NUMBER => $page,
-				ListUsersJob::QUERY => $filter,
+				JobArgs::ARG_PAGE_NUMBER => $page,
+				JobArgs::ARG_QUERY => $filter,
 			]);
 
 		$context = getContext();
@@ -22,7 +22,7 @@ class UserController
 		$user = Api::run(
 			new GetUserJob(),
 			[
-				GetUserJob::USER_NAME => $name,
+				JobArgs::ARG_USER_NAME => $name,
 			]);
 
 		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
@@ -59,8 +59,8 @@ class UserController
 			$ret = Api::run(
 				new ListPostsJob(),
 				[
-					ListPostsJob::PAGE_NUMBER => $page,
-					ListPostsJob::QUERY => $query
+					JobArgs::ARG_PAGE_NUMBER => $page,
+					JobArgs::ARG_QUERY => $query
 				]);
 
 			$context->transport->posts = $ret->entities;
@@ -107,11 +107,11 @@ class UserController
 
 		$args =
 		[
-			EditUserNameJob::USER_NAME => $name,
-			EditUserNameJob::NEW_USER_NAME => InputHelper::get('name'),
-			EditUserPasswordJob::NEW_PASSWORD => InputHelper::get('password1'),
-			EditUserEmailJob::NEW_EMAIL => InputHelper::get('email'),
-			EditUserAccessRankJob::NEW_ACCESS_RANK => InputHelper::get('access-rank'),
+			JobArgs::ARG_USER_NAME => $name,
+			JobArgs::ARG_NEW_USER_NAME => InputHelper::get('name'),
+			JobArgs::ARG_NEW_PASSWORD => InputHelper::get('password1'),
+			JobArgs::ARG_NEW_EMAIL => InputHelper::get('email'),
+			JobArgs::ARG_NEW_ACCESS_RANK => InputHelper::get('access-rank'),
 		];
 
 		$args = array_filter($args);
@@ -133,7 +133,7 @@ class UserController
 		$this->requirePasswordConfirmation();
 
 		Api::run(new DeleteUserJob(), [
-			DeleteUserJob::USER_NAME => $name]);
+			JobArgs::ARG_USER_NAME => $name]);
 
 		$user = UserModel::tryGetById(Auth::getCurrentUser()->getId());
 		if (!$user)
@@ -145,27 +145,27 @@ class UserController
 
 	public function flagAction($name)
 	{
-		Api::run(new FlagUserJob(), [FlagUserJob::USER_NAME => $name]);
+		Api::run(new FlagUserJob(), [JobArgs::ARG_USER_NAME => $name]);
 	}
 
 	public function banAction($name)
 	{
 		Api::run(new ToggleUserBanJob(), [
-			ToggleUserBanJob::USER_NAME => $name,
-			ToggleUserBanJob::STATE => true]);
+			JobArgs::ARG_USER_NAME => $name,
+			JobArgs::ARG_NEW_STATE => true]);
 	}
 
 	public function unbanAction($name)
 	{
 		Api::run(new ToggleUserBanJob(), [
-			ToggleUserBanJob::USER_NAME => $name,
-			ToggleUserBanJob::STATE => false]);
+			JobArgs::ARG_USER_NAME => $name,
+			JobArgs::ARG_NEW_STATE => false]);
 	}
 
 	public function acceptRegistrationAction($name)
 	{
 		Api::run(new AcceptUserRegistrationJob(), [
-			AcceptUserRegistrationJob::USER_NAME => $name]);
+			JobArgs::ARG_USER_NAME => $name]);
 	}
 
 	public function toggleSafetyAction($safety)
@@ -208,9 +208,9 @@ class UserController
 
 		$user = Api::run(new AddUserJob(),
 		[
-			EditUserNameJob::NEW_USER_NAME => InputHelper::get('name'),
-			EditUserPasswordJob::NEW_PASSWORD => InputHelper::get('password1'),
-			EditUserEmailJob::NEW_EMAIL => InputHelper::get('email'),
+			JobArgs::ARG_NEW_USER_NAME => InputHelper::get('name'),
+			JobArgs::ARG_NEW_PASSWORD => InputHelper::get('password1'),
+			JobArgs::ARG_NEW_EMAIL => InputHelper::get('email'),
 		]);
 
 		if (!getConfig()->registration->needEmailForRegistering and !getConfig()->registration->staffActivation)
@@ -247,13 +247,13 @@ class UserController
 
 		if (empty($tokenText))
 		{
-			Api::run(new ActivateUserEmailJob(), [ ActivateUserEmailJob::USER_NAME => $name ]);
+			Api::run(new ActivateUserEmailJob(), [ JobArgs::ARG_USER_NAME => $name ]);
 
 			Messenger::message('Activation e-mail resent.');
 		}
 		else
 		{
-			$user = Api::run(new ActivateUserEmailJob(), [ ActivateUserEmailJob::TOKEN => $tokenText ]);
+			$user = Api::run(new ActivateUserEmailJob(), [ JobArgs::ARG_TOKEN => $tokenText ]);
 
 			$message = 'Activation completed successfully.';
 			if (getConfig()->registration->staffActivation)
@@ -281,13 +281,13 @@ class UserController
 
 		if (empty($tokenText))
 		{
-			Api::run(new PasswordResetJob(), [ PasswordResetJob::USER_NAME => $name ]);
+			Api::run(new PasswordResetJob(), [ JobArgs::ARG_USER_NAME => $name ]);
 
 			Messenger::message('E-mail sent. Follow instructions to reset password.');
 		}
 		else
 		{
-			$ret = Api::run(new PasswordResetJob(), [ PasswordResetJob::TOKEN => $tokenText ]);
+			$ret = Api::run(new PasswordResetJob(), [ JobArgs::ARG_TOKEN => $tokenText ]);
 
 			Messenger::message(sprintf(
 				'Password reset successful. Your new password is **%s**.',

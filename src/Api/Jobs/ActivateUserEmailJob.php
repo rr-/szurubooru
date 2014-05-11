@@ -1,13 +1,11 @@
 <?php
 class ActivateUserEmailJob extends AbstractJob
 {
-	const TOKEN = 'token';
-
 	public function execute()
 	{
-		if (!$this->hasArgument(self::TOKEN))
+		if (!$this->hasArgument(JobArgs::ARG_TOKEN))
 		{
-			$user = UserModel::getByNameOrEmail($this->getArgument(self::USER_NAME));
+			$user = UserModel::getByNameOrEmail($this->getArgument(JobArgs::ARG_USER_NAME));
 
 			if (empty($user->getUnconfirmedEmail()))
 			{
@@ -23,7 +21,7 @@ class ActivateUserEmailJob extends AbstractJob
 		}
 		else
 		{
-			$tokenText = $this->getArgument(self::TOKEN);
+			$tokenText = $this->getArgument(JobArgs::ARG_TOKEN);
 			$token = TokenModel::getByToken($tokenText);
 			TokenModel::checkValidity($token);
 

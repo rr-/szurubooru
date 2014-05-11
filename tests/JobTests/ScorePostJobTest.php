@@ -14,8 +14,8 @@ class ScorePostJobTest extends AbstractTest
 			return Api::run(
 				new ScorePostJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::SCORE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_POST_SCORE => 1,
 				]);
 		});
 
@@ -33,8 +33,8 @@ class ScorePostJobTest extends AbstractTest
 			return Api::run(
 				new ScorePostJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::SCORE => -1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_POST_SCORE => -1,
 				]);
 		});
 
@@ -52,8 +52,8 @@ class ScorePostJobTest extends AbstractTest
 			Api::run(
 				new ScorePostJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::SCORE => 2,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_POST_SCORE => 2,
 				]);
 		}, 'Invalid score');
 
@@ -71,8 +71,8 @@ class ScorePostJobTest extends AbstractTest
 			return Api::run(
 				new ScorePostJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::SCORE => -1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_POST_SCORE => -1,
 				]);
 		});
 
@@ -81,8 +81,8 @@ class ScorePostJobTest extends AbstractTest
 			return Api::run(
 				new ScorePostJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::SCORE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_POST_SCORE => 1,
 				]);
 		});
 
@@ -100,8 +100,8 @@ class ScorePostJobTest extends AbstractTest
 			return Api::run(
 				new ScorePostJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::SCORE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_POST_SCORE => 1,
 				]);
 		});
 
@@ -112,8 +112,8 @@ class ScorePostJobTest extends AbstractTest
 			return Api::run(
 				new ScorePostJob(),
 				[
-					ScorePostJob::POST_ID => $post->getId(),
-					ScorePostJob::SCORE => 1,
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_POST_SCORE => 1,
 				]);
 		});
 

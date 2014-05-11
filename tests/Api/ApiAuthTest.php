@@ -67,7 +67,7 @@ class ApiAuthTest extends AbstractFullApiTest
 			return Api::run(
 				new DeleteCommentJob(),
 				[
-					DeleteCommentJob::COMMENT_ID => $comment->getId(),
+					JobArgs::ARG_COMMENT_ID => $comment->getId(),
 				]);
 		}, 'Not logged in');
 	}

@@ -64,7 +64,7 @@ class ListCommentJobTest extends AbstractTest
 		return Api::run(
 			new ListCommentsJob(),
 			[
-				ListCommentsJob::PAGE_NUMBER => $page,
+				JobArgs::ARG_PAGE_NUMBER => $page,
 			]);
 	}
 }

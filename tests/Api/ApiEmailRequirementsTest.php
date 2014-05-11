@@ -97,8 +97,8 @@ class ApiEmailRequirementsTest extends AbstractFullApiTest
 			return Api::run(
 				new AddCommentJob(),
 				[
-					AddCommentJob::POST_ID => $post->getId(),
-					AddCommentJob::TEXT => 'alohaaa',
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_TEXT => 'alohaaa',
 				]);
 		}, 'Need e-mail');
 	}

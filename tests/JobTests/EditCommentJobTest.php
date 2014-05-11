@@ -70,8 +70,8 @@ class EditCommentJobTest extends AbstractTest
 			Api::run(
 				new EditCommentJob(),
 				[
-					EditCommentJob::COMMENT_ID => 100,
-					EditCommentJob::TEXT => 'alohaa',
+					JobArgs::ARG_COMMENT_ID => 100,
+					JobArgs::ARG_NEW_TEXT => 'alohaa',
 				]);
 		}, 'Invalid comment ID');
 	}
@@ -84,8 +84,8 @@ class EditCommentJobTest extends AbstractTest
 		return Api::run(
 			new EditCommentJob(),
 			[
-				EditCommentJob::COMMENT_ID => $comment->getId(),
-				EditCommentJob::TEXT => $text,
+				JobArgs::ARG_COMMENT_ID => $comment->getId(),
+				JobArgs::ARG_NEW_TEXT => $text,
 			]);
 	}
 

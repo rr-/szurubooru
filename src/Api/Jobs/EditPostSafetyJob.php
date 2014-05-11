@@ -1,17 +1,15 @@
 <?php
 class EditPostSafetyJob extends AbstractPostJob
 {
-	const SAFETY = 'safety';
-
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::SAFETY);
+		return $this->hasArgument(JobArgs::ARG_NEW_SAFETY);
 	}
 
 	public function execute()
 	{
 		$post = $this->post;
-		$newSafety = new PostSafety($this->getArgument(self::SAFETY));
+		$newSafety = new PostSafety($this->getArgument(JobArgs::ARG_NEW_SAFETY));
 
 		$oldSafety = $post->getSafety();
 		$post->setSafety($newSafety);

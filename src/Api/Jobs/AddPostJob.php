@@ -1,21 +1,19 @@
 <?php
 class AddPostJob extends AbstractJob
 {
-	const ANONYMOUS = 'anonymous';
-
 	public function execute()
 	{
 		$post = PostModel::spawn();
 
-		$anonymous = $this->hasArgument(self::ANONYMOUS)
-			and $this->getArgument(self::ANONYMOUS);
+		$anonymous = $this->hasArgument(JobArgs::ARG_ANONYMOUS)
+			and $this->getArgument(JobArgs::ARG_ANONYMOUS);
 		if (Auth::isLoggedIn() and !$anonymous)
 			$post->setUploader(Auth::getCurrentUser());
 
 		PostModel::forgeId($post);
 
 		$arguments = $this->getArguments();
-		$arguments[EditPostJob::POST_ENTITY] = $post;
+		$arguments[JobArgs::ARG_POST_ENTITY] = $post;
 
 		Logger::bufferChanges();
 		try

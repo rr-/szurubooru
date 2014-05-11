@@ -1,17 +1,15 @@
 <?php
 class EditUserAccessRankJob extends AbstractUserJob
 {
-	const NEW_ACCESS_RANK = 'new-access-rank';
-
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::NEW_ACCESS_RANK);
+		return $this->hasArgument(JobArgs::ARG_NEW_ACCESS_RANK);
 	}
 
 	public function execute()
 	{
 		$user = $this->user;
-		$newAccessRank = new AccessRank($this->getArgument(self::NEW_ACCESS_RANK));
+		$newAccessRank = new AccessRank($this->getArgument(JobArgs::ARG_NEW_ACCESS_RANK));
 
 		$oldAccessRank = $user->getAccessRank();
 		if ($oldAccessRank == $newAccessRank)

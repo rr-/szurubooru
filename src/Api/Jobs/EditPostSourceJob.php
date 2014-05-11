@@ -1,17 +1,15 @@
 <?php
 class EditPostSourceJob extends AbstractPostJob
 {
-	const SOURCE = 'source';
-
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::SOURCE);
+		return $this->hasArgument(JobArgs::ARG_NEW_SOURCE);
 	}
 
 	public function execute()
 	{
 		$post = $this->post;
-		$newSource = $this->getArgument(self::SOURCE);
+		$newSource = $this->getArgument(JobArgs::ARG_NEW_SOURCE);
 
 		$oldSource = $post->getSource();
 		$post->setSource($newSource);

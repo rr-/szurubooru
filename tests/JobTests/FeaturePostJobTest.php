@@ -15,7 +15,7 @@ class FeaturePostJobTest extends AbstractTest
 			Api::run(
 				new FeaturePostJob(),
 				[
-					FeaturePostJob::POST_ID => $post2->getId()
+					JobArgs::ARG_POST_ID => $post2->getId()
 				]);
 		});
 
@@ -38,8 +38,8 @@ class FeaturePostJobTest extends AbstractTest
 			Api::run(
 				new FeaturePostJob(),
 				[
-					FeaturePostJob::POST_ID => $post2->getId(),
-					FeaturePostJob::ANONYMOUS => true,
+					JobArgs::ARG_POST_ID => $post2->getId(),
+					JobArgs::ARG_ANONYMOUS => true,
 				]);
 		});
 

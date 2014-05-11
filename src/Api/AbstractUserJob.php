@@ -5,13 +5,13 @@ abstract class AbstractUserJob extends AbstractJob
 
 	public function prepare()
 	{
-		if ($this->hasArgument(self::USER_ENTITY))
+		if ($this->hasArgument(JobArgs::ARG_USER_ENTITY))
 		{
-			$this->user = $this->getArgument(self::USER_ENTITY);
+			$this->user = $this->getArgument(JobArgs::ARG_USER_ENTITY);
 		}
 		else
 		{
-			$userName = $this->getArgument(self::USER_NAME);
+			$userName = $this->getArgument(JobArgs::ARG_USER_NAME);
 			$this->user = UserModel::getByNameOrEmail($userName);
 		}
 	}

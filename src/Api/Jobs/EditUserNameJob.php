@@ -1,17 +1,15 @@
 <?php
 class EditUserNameJob extends AbstractUserJob
 {
-	const NEW_USER_NAME = 'new-user-name';
-
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::NEW_USER_NAME);
+		return $this->hasArgument(JobArgs::ARG_NEW_USER_NAME);
 	}
 
 	public function execute()
 	{
 		$user = $this->user;
-		$newName = $this->getArgument(self::NEW_USER_NAME);
+		$newName = $this->getArgument(JobArgs::ARG_NEW_USER_NAME);
 
 		$oldName = $user->getName();
 		if ($oldName == $newName)

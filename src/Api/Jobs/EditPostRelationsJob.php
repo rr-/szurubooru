@@ -1,17 +1,15 @@
 <?php
 class EditPostRelationsJob extends AbstractPostJob
 {
-	const RELATED_POST_IDS = 'related-post-ids';
-
 	public function isSatisfied()
 	{
-		return $this->hasArgument(self::RELATED_POST_IDS);
+		return $this->hasArgument(JobArgs::ARG_NEW_RELATED_POST_IDS);
 	}
 
 	public function execute()
 	{
 		$post = $this->post;
-		$relations = $this->getArgument(self::RELATED_POST_IDS);
+		$relations = $this->getArgument(JobArgs::ARG_NEW_RELATED_POST_IDS);
 
 		$oldRelatedIds = array_map(function($post) { return $post->getId(); }, $post->getRelations());
 		$post->setRelationsFromText($relations);

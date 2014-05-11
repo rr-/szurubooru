@@ -24,7 +24,7 @@ class EditPostJob extends AbstractPostJob
 				: self::CONTEXT_BATCH_EDIT);
 
 			$args = $this->getArguments();
-			$args[self::POST_ENTITY] = $post;
+			$args[JobArgs::ARG_POST_ENTITY] = $post;
 			try
 			{
 				Api::run($subJob, $args);

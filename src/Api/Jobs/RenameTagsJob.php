@@ -1,13 +1,10 @@
 <?php
 class RenameTagsJob extends AbstractJob
 {
-	const SOURCE_TAG_NAME = 'source-tag-name';
-	const TARGET_TAG_NAME = 'target-tag-name';
-
 	public function execute()
 	{
-		$sourceTag = $this->getArgument(self::SOURCE_TAG_NAME);
-		$targetTag = $this->getArgument(self::TARGET_TAG_NAME);
+		$sourceTag = $this->getArgument(JobArgs::ARG_SOURCE_TAG_NAME);
+		$targetTag = $this->getArgument(JobArgs::ARG_TARGET_TAG_NAME);
 
 		TagModel::removeUnused();
 		TagModel::rename($sourceTag, $targetTag);
