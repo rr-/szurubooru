@@ -35,10 +35,16 @@ class Assert
 		return $ret;
 	}
 
+	public function isNull($actual)
+	{
+		if ($actual !== null and $actual !== false)
+			$this->fail('Assertion failed. Expected: NULL, got: "' . $actual . '"');
+	}
+
 	public function isNotNull($actual)
 	{
 		if ($actual === null or $actual === false)
-			$this->fail('Assertion failed. Expected: NULL, got: "' . $actual . '"');
+			$this->fail('Assertion failed. Expected: not NULL, got: "' . $actual . '"');
 	}
 
 	public function isTrue($actual)
