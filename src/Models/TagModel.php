@@ -54,7 +54,6 @@ final class TagModel extends AbstractCrudModel
 				throw new SimpleException('Target tag already exists');
 
 			$sourceTag->setName($targetName);
-			TagModel::validateTag($sourceTag->getName());
 			self::save($sourceTag);
 		});
 	}
@@ -172,16 +171,6 @@ final class TagModel extends AbstractCrudModel
 			}
 			$tags []= $tag;
 		}
-		return $tags;
-	}
-
-
-
-	public static function validateTags($tags)
-	{
-		foreach ($tags as $key => $tag)
-			$tags[$key] = self::validateTag($tag);
-
 		return $tags;
 	}
 }

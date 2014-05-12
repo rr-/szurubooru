@@ -130,7 +130,7 @@ class TagController
 		$params = [
 			'source' => 'mass-tag',
 			'query' => $suppliedQuery ?: ' ',
-			'additionalInfo' => $suppliedTag ? TagModel::validateTag($suppliedTag) : '',
+			'additionalInfo' => $suppliedTag ? $suppliedTag : '',
 		];
 		if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
 			$params['page'] = $suppliedOldPage;
