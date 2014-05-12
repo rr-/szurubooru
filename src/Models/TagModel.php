@@ -47,11 +47,16 @@ final class TagModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($sourceName, $targetName)
 		{
-			$sourceTag = TagModel::getByName($sourceName);
-			$targetTag = TagModel::tryGetByName($targetName);
+			$sourceTag = self::getByName($sourceName);
+			$targetTag = self::tryGetByName($targetName);
 
-			if ($targetTag and $targetTag->getId() != $sourceTag->getId())
+			if ($targetTag)
+			{
+				if ($sourceTag->getId() == $targetTag->getId())
+					throw new SimpleException('Source and target tag are the same');
+
 				throw new SimpleException('Target tag already exists');
+			}
 
 			$sourceTag->setName($targetName);
 			self::save($sourceTag);
@@ -62,8 +67,8 @@ final class TagModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($sourceName, $targetName)
 		{
-			$sourceTag = TagModel::getByName($sourceName);
-			$targetTag = TagModel::getByName($targetName);
+			$sourceTag = self::getByName($sourceName);
+			$targetTag = self::getByName($targetName);
 
 			if ($sourceTag->getId() == $targetTag->getId())
 				throw new SimpleException('Source and target tag are the same');
@@ -162,12 +167,12 @@ final class TagModel extends AbstractCrudModel
 		$tags = [];
 		foreach ($tagNames as $tagName)
 		{
-			$tag = TagModel::tryGetByName($tagName);
+			$tag = self::tryGetByName($tagName);
 			if (!$tag)
 			{
-				$tag = TagModel::spawn();
+				$tag = self::spawn();
 				$tag->setName($tagName);
-				TagModel::save($tag);
+				self::save($tag);
 			}
 			$tags []= $tag;
 		}
