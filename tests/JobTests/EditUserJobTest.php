@@ -36,4 +36,17 @@ class EditUserJobTest extends AbstractTest
 		$lines = array_filter(explode("\n", $x));
 		$this->assert->areEqual(2, count($lines));
 	}
+
+	public function testCanEditSomething()
+	{
+		$this->grantAccess('changeUserName.own');
+		$user = $this->mockUser();
+		$user = $this->assert->isTrue((new EditUserJob())->canEditAnything($user));
+	}
+
+	public function testCannotEditAnything()
+	{
+		$user = $this->mockUser();
+		$user = $this->assert->isFalse((new EditUserJob())->canEditAnything($user));
+	}
 }

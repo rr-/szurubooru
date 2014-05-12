@@ -23,7 +23,7 @@ class EditUserJob extends AbstractJob
 		{
 			try
 			{
-				$subJob->user = $user;
+				$subJob->setArgument(JobArgs::ARG_USER_ENTITY, $user);
 				Api::checkPrivileges($subJob);
 				return true;
 			}
