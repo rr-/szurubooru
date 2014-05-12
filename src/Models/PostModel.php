@@ -264,14 +264,17 @@ final class PostModel extends AbstractCrudModel
 		return [$width, $height];
 	}
 
-	private static function getThumbPathTokenized($text, $name, $width = null, $height = null)
+	public static function tryGetWorkingThumbPath($name, $width = null, $height = null)
 	{
-		list ($width, $height) = self::validateThumbSize($width, $height);
+		$path = PostModel::getThumbCustomPath($name, $width, $height);
+		if (file_exists($path) and is_readable($path))
+			return $path;
 
-		return TextHelper::absolutePath(TextHelper::replaceTokens($text, [
-			'fullpath' => getConfig()->main->thumbsPath . DS . $name,
-			'width' => $width,
-			'height' => $height]));
+		$path = PostModel::getThumbDefaultPath($name, $width, $height);
+		if (file_exists($path) and is_readable($path))
+			return $path;
+
+		return null;
 	}
 
 	public static function getThumbCustomPath($name, $width = null, $height = null)
@@ -282,6 +285,25 @@ final class PostModel extends AbstractCrudModel
 	public static function getThumbDefaultPath($name, $width = null, $height = null)
 	{
 		return self::getThumbPathTokenized('{fullpath}-{width}x{height}.default', $name, $width, $height);
+	}
+
+	private static function getThumbPathTokenized($text, $name, $width = null, $height = null)
+	{
+		list ($width, $height) = self::validateThumbSize($width, $height);
+
+		return TextHelper::absolutePath(TextHelper::replaceTokens($text, [
+			'fullpath' => getConfig()->main->thumbsPath . DS . $name,
+			'width' => $width,
+			'height' => $height]));
+	}
+
+	public static function tryGetWorkingFullPath($name)
+	{
+		$path = self::getFullPath($name);
+		if (file_exists($path) and is_readable($path))
+			return $path;
+
+		return null;
 	}
 
 	public static function getFullPath($name)

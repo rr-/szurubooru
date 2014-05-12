@@ -13,12 +13,9 @@ class GetPostContentJob extends AbstractJob
 		$post = $this->postRetriever->retrieve();
 		$config = getConfig();
 
-		$path = $config->main->filesPath . DS . $post->getName();
-		$path = TextHelper::absolutePath($path);
-		if (!file_exists($path))
+		$path = $post->tryGetWorkingFullPath();
+		if (!$path)
 			throw new SimpleNotFoundException('Post file does not exist');
-		if (!is_readable($path))
-			throw new SimpleException('Post file is not readable');
 
 		$fileName = sprintf('%s_%s_%s.%s',
 			$config->main->title,

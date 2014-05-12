@@ -315,6 +315,21 @@ final class PostEntity extends AbstractEntity implements IValidatable
 		$this->source = $source === null ? null : trim($source);
 	}
 
+	public function tryGetWorkingFullPath()
+	{
+		return PostModel::tryGetWorkingFullPath($this->getName());
+	}
+
+	public function getFullPath()
+	{
+		return PostModel::getFullPath($this->getName());
+	}
+
+	public function tryGetWorkingThumbPath($width = null, $height = null)
+	{
+		return PostModel::tryGetWorkingThumbPath($this->getName(), $width, $height);
+	}
+
 	public function getThumbCustomPath($width = null, $height = null)
 	{
 		return PostModel::getThumbCustomPath($this->getName(), $width, $height);
@@ -323,11 +338,6 @@ final class PostEntity extends AbstractEntity implements IValidatable
 	public function getThumbDefaultPath($width = null, $height = null)
 	{
 		return PostModel::getThumbDefaultPath($this->getName(), $width, $height);
-	}
-
-	public function getFullPath()
-	{
-		return PostModel::getFullPath($this->getName());
 	}
 
 	public function hasCustomThumb($width = null, $height = null)

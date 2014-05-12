@@ -22,27 +22,20 @@ class GetPostThumbJob extends AbstractJob
 		$width = $this->hasArgument(JobArgs::ARG_THUMB_WIDTH) ? $this->getArgument(JobArgs::ARG_THUMB_WIDTH) : null;
 		$height = $this->hasArgument(JobArgs::ARG_THUMB_HEIGHT) ? $this->getArgument(JobArgs::ARG_THUMB_HEIGHT) : null;
 
-		$path = PostModel::getThumbCustomPath($name, $width, $height);
-		if (!file_exists($path))
+		$path = PostModel::tryGetWorkingThumbPath($name, $width, $height);
+		if (!$path)
 		{
-			$path = PostModel::getThumbDefaultPath($name, $width, $height);
+			$post = PostModel::getByName($name);
+			$post = $this->postRetriever->retrieve();
+
+			$post->generateThumb($width, $height);
+
 			if (!file_exists($path))
 			{
-				$post = PostModel::getByName($name);
-				$post = $this->postRetriever->retrieve();
-
-				$post->generateThumb($width, $height);
-
-				if (!file_exists($path))
-				{
-					$path = getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
-					$path = TextHelper::absolutePath($path);
-				}
+				$path = getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
+				$path = TextHelper::absolutePath($path);
 			}
 		}
-
-		if (!is_readable($path))
-			throw new SimpleException('Thumbnail file is not readable');
 
 		return new ApiFileOutput($path, 'thumbnail.jpg');
 	}
