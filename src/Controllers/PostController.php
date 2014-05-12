@@ -133,7 +133,7 @@ class PostController
 			JobArgs::ARG_NEW_SAFETY => InputHelper::get('safety'),
 			JobArgs::ARG_NEW_TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
 			JobArgs::ARG_NEW_SOURCE => InputHelper::get('source'),
-			JobArgs::ARG_NEW_RELATED_POST_IDS => InputHelper::get('relations'),
+			JobArgs::ARG_NEW_RELATED_POST_IDS => $this->splitPostIds(InputHelper::get('relations')),
 		];
 
 		if (!empty(InputHelper::get('url')))
@@ -284,11 +284,18 @@ class PostController
 		$context->layoutName = 'layout-file';
 	}
 
+	protected function splitPostIds($string)
+	{
+		$ids = preg_split('/\D/', trim($string));
+		$ids = array_filter($ids, function($x) { return $x != ''; });
+		$ids = array_map('intval', $ids);
+		$ids = array_unique($ids);
+		return $ids;
+	}
 
 	protected function splitTags($string)
 	{
-		$tags = trim($string);
-		$tags = preg_split('/[,;\s]+/', $tags);
+		$tags = preg_split('/[,;\s]+/', trim($string));
 		$tags = array_filter($tags, function($x) { return $x != ''; });
 		$tags = array_unique($tags);
 		return $tags;

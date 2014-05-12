@@ -11,10 +11,15 @@ class EditPostRelationsJob extends AbstractJob
 	public function execute()
 	{
 		$post = $this->postRetriever->retrieve();
-		$relations = $this->getArgument(JobArgs::ARG_NEW_RELATED_POST_IDS);
+		$relatedPostIds = $this->getArgument(JobArgs::ARG_NEW_RELATED_POST_IDS);
+
+		if (!is_array($relatedPostIds))
+			throw new SimpleException('Expected array');
+
+		$relatedPosts = PostModel::getAllByIds($relatedPostIds);
 
 		$oldRelatedIds = array_map(function($post) { return $post->getId(); }, $post->getRelations());
-		$post->setRelationsFromText($relations);
+		$post->setRelations($relatedPosts);
 		$newRelatedIds = array_map(function($post) { return $post->getId(); }, $post->getRelations());
 
 		if ($this->getContext() == self::CONTEXT_NORMAL)

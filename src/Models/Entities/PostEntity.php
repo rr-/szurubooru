@@ -165,30 +165,6 @@ final class PostEntity extends AbstractEntity implements IValidatable
 		$this->setCache('relations', $relations);
 	}
 
-	public function setRelationsFromText($relationsText)
-	{
-		$config = getConfig();
-		$relatedIds = array_filter(preg_split('/\D/', $relationsText));
-
-		$relatedPosts = [];
-		foreach ($relatedIds as $relatedId)
-		{
-			if ($relatedId == $this->getId())
-				continue;
-
-			if (count($relatedPosts) > $config->browsing->maxRelatedPosts)
-			{
-				throw new SimpleException(
-					'Too many related posts (maximum: %d)',
-					$config->browsing->maxRelatedPosts);
-			}
-
-			$relatedPosts []= PostModel::getById($relatedId);
-		}
-
-		$this->setRelations($relatedPosts);
-	}
-
 	public function getTags()
 	{
 		if ($this->hasCache('tags'))
