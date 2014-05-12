@@ -1,9 +1,16 @@
 <?php
-class EditCommentJob extends AbstractCommentJob
+class EditCommentJob extends AbstractJob
 {
+	protected $commentRetriever;
+
+	public function __construct()
+	{
+		$this->commentRetriever = new CommentRetriever($this);
+	}
+
 	public function execute()
 	{
-		$comment = $this->comment;
+		$comment = $this->commentRetriever->retrieve();
 
 		$comment->setCreationTime(time());
 		$comment->setText($this->getArgument(JobArgs::ARG_NEW_TEXT));
@@ -16,16 +23,18 @@ class EditCommentJob extends AbstractCommentJob
 		return $comment;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_TEXT;
+		return JobArgs::Conjunction(
+			$this->commentRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_TEXT);
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::EditComment,
-			Access::getIdentity($this->comment->getCommenter()));
+			Access::getIdentity($this->commentRetriever->retrieve()->getCommenter()));
 	}
 
 	public function isAuthenticationRequired()

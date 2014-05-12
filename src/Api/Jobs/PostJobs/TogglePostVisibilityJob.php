@@ -1,9 +1,16 @@
 <?php
-class TogglePostVisibilityJob extends AbstractPostJob
+class TogglePostVisibilityJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$visible = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
 
 		$post->setHidden(!$visible);
@@ -19,15 +26,17 @@ class TogglePostVisibilityJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_STATE;
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_STATE);
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::HidePost,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

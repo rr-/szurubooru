@@ -1,9 +1,16 @@
 <?php
-class FeaturePostJob extends AbstractPostJob
+class FeaturePostJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 
 		PropertyModel::set(PropertyModel::FeaturedPostId, $post->getId());
 		PropertyModel::set(PropertyModel::FeaturedPostUnixTime, time());
@@ -20,16 +27,18 @@ class FeaturePostJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::Optional(JobArgs::ARG_ANONYMOUS);
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::Optional(JobArgs::ARG_ANONYMOUS));
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::FeaturePost,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 
 	public function isAuthenticationRequired()

@@ -1,27 +1,29 @@
 <?php
-class PreviewCommentJob extends AbstractJob
+class AddCommentJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
+		$post = $this->postRetriever->retrieve();
 		$user = Auth::getCurrentUser();
 		$text = $this->getArgument(JobArgs::ARG_NEW_TEXT);
 
-		if ($this->hasArgument(JobArgs::ARG_POST_ID))
-		{
-			$post = PostModel::getById($this->getArgument(JobArgs::ARG_POST_ID));
-			$comment = CommentModel::spawn();
-			$comment->setPost($post);
-		}
-		else
-		{
-			$comment = CommentModel::getById($this->getArgument(JobArgs::ARG_COMMENT_ID));
-		}
-
+		$comment = CommentModel::spawn();
 		$comment->setCommenter($user);
+		$comment->setPost($post);
 		$comment->setCreationTime(time());
 		$comment->setText($text);
 
-		$comment->validate();
+		CommentModel::save($comment);
+		Logger::log('{user} commented on {post}', [
+			'user' => TextHelper::reprUser($user),
+			'post' => TextHelper::reprPost($comment->getPost())]);
 
 		return $comment;
 	}
@@ -29,10 +31,8 @@ class PreviewCommentJob extends AbstractJob
 	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
-			JobArgs::ARG_NEW_TEXT,
-			JobArgs::Alternative(
-				JobArgs::ARG_COMMENT_ID,
-				JobArgs::ARG_POST_ID));
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_TEXT);
 	}
 
 	public function getRequiredPrivileges()

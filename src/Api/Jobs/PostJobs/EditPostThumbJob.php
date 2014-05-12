@@ -1,9 +1,16 @@
 <?php
-class EditPostThumbJob extends AbstractPostJob
+class EditPostThumbJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$file = $this->getArgument(JobArgs::ARG_NEW_THUMB_CONTENT);
 
 		$post->setCustomThumbnailFromPath($file->filePath);
@@ -18,9 +25,11 @@ class EditPostThumbJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_THUMB_CONTENT;
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_THUMB_CONTENT);
 	}
 
 	public function getRequiredPrivileges()
@@ -29,6 +38,6 @@ class EditPostThumbJob extends AbstractPostJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::AddPostThumb
 				: Privilege::EditPostThumb,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

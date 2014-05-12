@@ -1,13 +1,20 @@
 <?php
-class EditUserEmailJob extends AbstractUserJob
+class EditUserEmailJob extends AbstractJob
 {
+	protected $userRetriever;
+
+	public function __construct()
+	{
+		$this->userRetriever = new UserRetriever($this);
+	}
+
 	public function execute()
 	{
 		if (getConfig()->registration->needEmailForRegistering)
 			if (!$this->hasArgument(JobArgs::ARG_NEW_EMAIL) or empty($this->getArgument(JobArgs::ARG_NEW_EMAIL)))
 				throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
 
-		$user = $this->user;
+		$user = $this->userRetriever->retrieve();
 		$newEmail = $this->getArgument(JobArgs::ARG_NEW_EMAIL);
 
 		$oldEmail = $user->getConfirmedEmail();
@@ -44,9 +51,11 @@ class EditUserEmailJob extends AbstractUserJob
 		}
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_EMAIL;
+		return JobArgs::Conjunction(
+			$this->userRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_EMAIL);
 	}
 
 	public function getRequiredPrivileges()
@@ -55,6 +64,6 @@ class EditUserEmailJob extends AbstractUserJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::RegisterAccount
 				: Privilege::ChangeUserEmail,
-			Access::getIdentity($this->user));
+			Access::getIdentity($this->userRetriever->retrieve()));
 	}
 }

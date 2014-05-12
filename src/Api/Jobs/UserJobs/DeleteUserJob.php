@@ -1,9 +1,16 @@
 <?php
-class DeleteUserJob extends AbstractUserJob
+class DeleteUserJob extends AbstractJob
 {
+	protected $userRetriever;
+
+	public function __construct()
+	{
+		$this->userRetriever = new UserRetriever($this);
+	}
+
 	public function execute()
 	{
-		$user = $this->user;
+		$user = $this->userRetriever->retrieve();
 
 		$name = $user->getName();
 		UserModel::remove($user);
@@ -13,15 +20,15 @@ class DeleteUserJob extends AbstractUserJob
 			'subject' => TextHelper::reprUser($name)]);
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return null;
+		return $this->userRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::DeleteUser,
-			Access::getIdentity($this->user));
+			Access::getIdentity($this->userRetriever->retrieve()));
 	}
 }

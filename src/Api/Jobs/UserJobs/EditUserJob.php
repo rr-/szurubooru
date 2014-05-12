@@ -1,10 +1,12 @@
 <?php
-class EditUserJob extends AbstractUserJob
+class EditUserJob extends AbstractJob
 {
+	protected $userRetriever;
 	protected $subJobs;
 
 	public function __construct()
 	{
+		$this->userRetriever = new UserRetriever($this);
 		$this->subJobs =
 		[
 			new EditUserAccessRankJob(),
@@ -34,7 +36,7 @@ class EditUserJob extends AbstractUserJob
 
 	public function execute()
 	{
-		$user = $this->user;
+		$user = $this->userRetriever->retrieve();
 
 		Logger::bufferChanges();
 
@@ -65,9 +67,9 @@ class EditUserJob extends AbstractUserJob
 		return $user;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return null;
+		return $this->userRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()

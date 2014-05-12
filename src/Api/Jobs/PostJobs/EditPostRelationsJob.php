@@ -1,9 +1,16 @@
 <?php
-class EditPostRelationsJob extends AbstractPostJob
+class EditPostRelationsJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$relations = $this->getArgument(JobArgs::ARG_NEW_RELATED_POST_IDS);
 
 		$oldRelatedIds = array_map(function($post) { return $post->getId(); }, $post->getRelations());
@@ -32,9 +39,11 @@ class EditPostRelationsJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_RELATED_POST_IDS;
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_RELATED_POST_IDS);
 	}
 
 	public function getRequiredPrivileges()
@@ -43,6 +52,6 @@ class EditPostRelationsJob extends AbstractPostJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::AddPostRelations
 				: Privilege::EditPostRelations,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

@@ -1,11 +1,18 @@
 <?php
-class TogglePostTagJob extends AbstractPostJob
+class TogglePostTagJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
 		$tagName = $this->getArgument(JobArgs::ARG_TAG_NAME);
 		$enable = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 
 		$tags = $post->getTags();
 
@@ -50,17 +57,19 @@ class TogglePostTagJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::Conjunction(
 			JobArgs::ARG_TAG_NAME,
-			Jobargs::ARG_NEW_STATE);
+			Jobargs::ARG_NEW_STATE));
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::EditPostTags,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

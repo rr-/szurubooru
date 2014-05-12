@@ -1,9 +1,16 @@
 <?php
-class EditPostTagsJob extends AbstractPostJob
+class EditPostTagsJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$tagNames = $this->getArgument(JobArgs::ARG_NEW_TAG_NAMES);
 
 		if (!is_array($tagNames))
@@ -40,9 +47,11 @@ class EditPostTagsJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_TAG_NAMES;
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_TAG_NAMES);
 	}
 
 	public function getRequiredPrivileges()
@@ -51,6 +60,6 @@ class EditPostTagsJob extends AbstractPostJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::AddPostTags
 				: Privilege::EditPostTags,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

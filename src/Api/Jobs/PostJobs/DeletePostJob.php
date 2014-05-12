@@ -1,9 +1,16 @@
 <?php
-class DeletePostJob extends AbstractPostJob
+class DeletePostJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 
 		PostModel::remove($post);
 
@@ -12,16 +19,16 @@ class DeletePostJob extends AbstractPostJob
 			'post' => TextHelper::reprPost($post)]);
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return null;
+		return $this->postRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::DeletePost,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 
 	public function isAuthenticationRequired()

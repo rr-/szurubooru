@@ -1,9 +1,16 @@
 <?php
-class EditUserAccessRankJob extends AbstractUserJob
+class EditUserAccessRankJob extends AbstractJob
 {
+	protected $userRetriever;
+
+	public function __construct()
+	{
+		$this->userRetriever = new UserRetriever($this);
+	}
+
 	public function execute()
 	{
-		$user = $this->user;
+		$user = $this->userRetriever->retrieve();
 		$newAccessRank = new AccessRank($this->getArgument(JobArgs::ARG_NEW_ACCESS_RANK));
 
 		$oldAccessRank = $user->getAccessRank();
@@ -23,15 +30,17 @@ class EditUserAccessRankJob extends AbstractUserJob
 		return $user;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_ACCESS_RANK;
+		return JobArgs::Conjunction(
+			$this->userRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_ACCESS_RANK);
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::ChangeUserAccessRank,
-			Access::getIdentity($this->user));
+			Access::getIdentity($this->userRetriever->retrieve()));
 	}
 }

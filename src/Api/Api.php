@@ -33,12 +33,12 @@ final class Api
 		return $statuses;
 	}
 
-	public static function checkArguments(AbstractJob $job)
+	public static function checkArguments(IJob $job)
 	{
 		self::runArgumentCheck($job, $job->getRequiredArguments());
 	}
 
-	public static function checkPrivileges(AbstractJob $job)
+	public static function checkPrivileges(IJob $job)
 	{
 		if ($job->isAuthenticationRequired())
 			Access::assertAuthentication();
@@ -57,7 +57,7 @@ final class Api
 		}
 	}
 
-	private static function runArgumentCheck($job, $item)
+	private static function runArgumentCheck(IJob $job, $item)
 	{
 		if (is_array($item))
 			throw new Exception('Argument definition cannot be an array.');

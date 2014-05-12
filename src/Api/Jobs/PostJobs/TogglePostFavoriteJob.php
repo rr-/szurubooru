@@ -1,9 +1,16 @@
 <?php
-class TogglePostFavoriteJob extends AbstractPostJob
+class TogglePostFavoriteJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$favorite = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
 
 		if ($favorite)
@@ -19,16 +26,18 @@ class TogglePostFavoriteJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_STATE;
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_STATE);
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::FavoritePost,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 
 	public function isAuthenticationRequired()

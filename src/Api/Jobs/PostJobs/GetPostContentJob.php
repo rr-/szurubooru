@@ -1,19 +1,16 @@
 <?php
 class GetPostContentJob extends AbstractJob
 {
-	protected $post;
+	protected $postRetriever;
 
-	public function prepare()
+	public function __construct()
 	{
-		if ($this->hasArgument(JobArgs::ARG_POST_ENTITY))
-			$this->post = $this->getArgument(JobArgs::ARG_POST_ENTITY);
-		else
-			$this->post = PostModel::getByName($this->getArgument(JobArgs::ARG_POST_NAME));
+		$this->postRetriever = new SafePostRetriever($this);
 	}
 
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$config = getConfig();
 
 		$path = $config->main->filesPath . DS . $post->getName();
@@ -35,14 +32,12 @@ class GetPostContentJob extends AbstractJob
 
 	public function getRequiredArguments()
 	{
-		return JobArgs::Alternative(
-			JobArgs::ARG_POST_NAME,
-			JobArgs::ARG_POST_ENTITY);
+		return $this->postRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$privileges = [];
 
 		if ($post->isHidden())

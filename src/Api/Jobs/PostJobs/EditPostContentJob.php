@@ -1,9 +1,16 @@
 <?php
-class EditPostContentJob extends AbstractPostJob
+class EditPostContentJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 
 		if ($this->hasArgument(JobArgs::ARG_NEW_POST_CONTENT_URL))
 		{
@@ -26,11 +33,13 @@ class EditPostContentJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::Alternative(
-			JobArgs::ARG_NEW_POST_CONTENT,
-			JobArgs::ARG_NEW_POST_CONTENT_URL);
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::Alternative(
+				JobArgs::ARG_NEW_POST_CONTENT,
+				JobArgs::ARG_NEW_POST_CONTENT_URL));
 	}
 
 	public function getRequiredPrivileges()
@@ -39,6 +48,6 @@ class EditPostContentJob extends AbstractPostJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::AddPostContent
 				: Privilege::EditPostContent,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

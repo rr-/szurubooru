@@ -1,9 +1,16 @@
 <?php
-class EditPostSafetyJob extends AbstractPostJob
+class EditPostSafetyJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$newSafety = new PostSafety($this->getArgument(JobArgs::ARG_NEW_SAFETY));
 
 		$oldSafety = $post->getSafety();
@@ -23,9 +30,11 @@ class EditPostSafetyJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_SAFETY;
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_SAFETY);
 	}
 
 	public function getRequiredPrivileges()
@@ -34,6 +43,6 @@ class EditPostSafetyJob extends AbstractPostJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::AddPostSafety
 				: Privilege::EditPostSafety,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

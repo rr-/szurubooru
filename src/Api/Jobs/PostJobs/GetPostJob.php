@@ -1,23 +1,32 @@
 <?php
-class GetPostJob extends AbstractPostJob
+class GetPostJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 
 		CommentModel::preloadCommenters($post->getComments());
 
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return null;
+		return JobArgs::Conjunction(
+			$this->postRetriever->getRequiredArguments(),
+			null);
 	}
 
 	public function getRequiredPrivileges()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$privileges = [];
 
 		if ($post->isHidden())

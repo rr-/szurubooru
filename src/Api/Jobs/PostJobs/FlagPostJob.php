@@ -1,9 +1,16 @@
 <?php
-class FlagPostJob extends AbstractPostJob
+class FlagPostJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 		$key = TextHelper::reprPost($post);
 
 		$flagged = SessionHelper::get('flagged', []);
@@ -19,15 +26,15 @@ class FlagPostJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return null;
+		return $this->postRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::FlagPost,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

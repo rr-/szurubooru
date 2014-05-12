@@ -1,10 +1,23 @@
 <?php
-class GetLogJob extends AbstractPageJob
+class GetLogJob extends AbstractJob implements IPagedJob
 {
+	protected $pager;
+
+	public function __construct()
+	{
+		$this->pager = new JobPager($this);
+		$this->pager->setPageSize(getConfig()->browsing->logsPerPage);
+	}
+
+	public function getPager()
+	{
+		return $this->pager;
+	}
+
 	public function execute()
 	{
-		$pageSize = $this->getPageSize();
-		$page = $this->getArgument(JobArgs::ARG_PAGE_NUMBER);
+		$pageSize = $this->pager->getPageSize();
+		$page = $this->pager->getPageNumber();
 		$name = $this->getArgument(JobArgs::ARG_LOG_ID);
 		$query = $this->getArgument(JobArgs::ARG_QUERY);
 
@@ -31,17 +44,13 @@ class GetLogJob extends AbstractPageJob
 		$lineCount = count($lines);
 		$lines = array_slice($lines, ($page - 1) * $pageSize, $pageSize);
 
-		return $this->getPager($lines, $lineCount, $page, $pageSize);
+		return $this->pager->serialize($lines, $lineCount);
 	}
 
-	public function getDefaultPageSize()
-	{
-		return intval(getConfig()->browsing->logsPerPage);
-	}
-
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
+			$this->pager->getRequiredArguments(),
 			JobArgs::ARG_LOG_ID,
 			JobArgs::ARG_QUERY);
 	}

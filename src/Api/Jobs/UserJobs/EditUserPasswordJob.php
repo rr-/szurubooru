@@ -1,9 +1,16 @@
 <?php
-class EditUserPasswordJob extends AbstractUserJob
+class EditUserPasswordJob extends AbstractJob
 {
+	protected $userRetriever;
+
+	public function __construct()
+	{
+		$this->userRetriever = new UserRetriever($this);
+	}
+
 	public function execute()
 	{
-		$user = $this->user;
+		$user = $this->userRetriever->retrieve();
 		$newPassword = $this->getArgument(JobArgs::ARG_NEW_PASSWORD);
 
 		$oldPasswordHash = $user->getPasswordHash();
@@ -22,9 +29,11 @@ class EditUserPasswordJob extends AbstractUserJob
 		return $user;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_PASSWORD;
+		return JobArgs::Conjunction(
+			$this->userRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_PASSWORD);
 	}
 
 	public function getRequiredPrivileges()
@@ -33,6 +42,6 @@ class EditUserPasswordJob extends AbstractUserJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::RegisterAccount
 				: Privilege::ChangeUserPassword,
-			Access::getIdentity($this->user));
+			Access::getIdentity($this->userRetriever->retrieve()));
 	}
 }

@@ -1,9 +1,16 @@
 <?php
-class EditUserNameJob extends AbstractUserJob
+class EditUserNameJob extends AbstractJob
 {
+	protected $userRetriever;
+
+	public function __construct()
+	{
+		$this->userRetriever = new UserRetriever($this);
+	}
+
 	public function execute()
 	{
-		$user = $this->user;
+		$user = $this->userRetriever->retrieve();
 		$newName = $this->getArgument(JobArgs::ARG_NEW_USER_NAME);
 
 		$oldName = $user->getName();
@@ -23,9 +30,11 @@ class EditUserNameJob extends AbstractUserJob
 		return $user;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_USER_NAME;
+		return JobArgs::Conjunction(
+			$this->userRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_USER_NAME);
 	}
 
 	public function getRequiredPrivileges()
@@ -34,6 +43,6 @@ class EditUserNameJob extends AbstractUserJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::RegisterAccount
 				: Privilege::ChangeUserName,
-			Access::getIdentity($this->user));
+			Access::getIdentity($this->userRetriever->retrieve()));
 	}
 }

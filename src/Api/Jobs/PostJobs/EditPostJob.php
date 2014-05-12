@@ -1,9 +1,16 @@
 <?php
-class EditPostJob extends AbstractPostJob
+class EditPostJob extends AbstractJob
 {
+	protected $postRetriever;
+
+	public function __construct()
+	{
+		$this->postRetriever = new PostRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->post;
+		$post = $this->postRetriever->retrieve();
 
 		Logger::bufferChanges();
 
@@ -43,9 +50,9 @@ class EditPostJob extends AbstractPostJob
 		return $post;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return null;
+		return $this->postRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()
@@ -54,6 +61,6 @@ class EditPostJob extends AbstractPostJob
 			$this->getContext() == self::CONTEXT_BATCH_ADD
 				? Privilege::AddPost
 				: Privilege::EditPost,
-			Access::getIdentity($this->post->getUploader()));
+			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

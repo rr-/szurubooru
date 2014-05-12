@@ -1,20 +1,27 @@
 <?php
-class GetUserJob extends AbstractUserJob
+class GetUserJob extends AbstractJob
 {
-	public function execute()
+	protected $userRetriever;
+
+	public function __construct()
 	{
-		return $this->user;
+		$this->userRetriever = new UserRetriever($this);
 	}
 
-	public function getRequiredSubArguments()
+	public function execute()
 	{
-		return null;
+		return $this->userRetriever->retrieve();
+	}
+
+	public function getRequiredArguments()
+	{
+		return $this->userRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::ViewUser,
-			Access::getIdentity($this->user));
+			Access::getIdentity($this->userRetriever->retrieve()));
 	}
 }

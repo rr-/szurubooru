@@ -1,10 +1,23 @@
 <?php
-class ListCommentsJob extends AbstractPageJob
+class ListCommentsJob extends AbstractJob implements IPagedJob
 {
+	protected $pager;
+
+	public function __construct()
+	{
+		$this->pager = new JobPager($this);
+		$this->pager->setPageSize(getConfig()->comments->commentsPerPage);
+	}
+
+	public function getPager()
+	{
+		return $this->pager;
+	}
+
 	public function execute()
 	{
-		$pageSize = $this->getPageSize();
-		$page = $this->getArgument(JobArgs::ARG_PAGE_NUMBER);
+		$pageSize = $this->pager->getPageSize();
+		$page = $this->pager->getPageNumber();
 		$query = 'comment_min:1 order:comment_date,desc';
 
 		$posts = PostSearchService::getEntities($query, $pageSize, $page);
@@ -17,17 +30,12 @@ class ListCommentsJob extends AbstractPageJob
 			$comments = array_merge($comments, $post->getComments());
 		CommentModel::preloadCommenters($comments);
 
-		return $this->getPager($posts, $postCount, $page, $pageSize);
+		return $this->pager->serialize($posts, $postCount);
 	}
 
-	public function getDefaultPageSize()
+	public function getRequiredArguments()
 	{
-		return intval(getConfig()->comments->commentsPerPage);
-	}
-
-	public function getRequiredSubArguments()
-	{
-		return null;
+		return $this->pager->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()

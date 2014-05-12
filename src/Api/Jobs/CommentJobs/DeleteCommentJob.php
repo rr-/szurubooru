@@ -1,27 +1,35 @@
 <?php
-class DeleteCommentJob extends AbstractCommentJob
+class DeleteCommentJob extends AbstractJob
 {
+	protected $commentRetriever;
+
+	public function __construct()
+	{
+		$this->commentRetriever = new CommentRetriever($this);
+	}
+
 	public function execute()
 	{
-		$post = $this->comment->getPost();
+		$comment = $this->commentRetriever->retrieve();
+		$post = $comment->getPost();
 
-		CommentModel::remove($this->comment);
+		CommentModel::remove($comment);
 
 		Logger::log('{user} removed comment from {post}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post)]);
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return null;
+		return $this->commentRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::DeleteComment,
-			Access::getIdentity($this->comment->getCommenter()));
+			Access::getIdentity($this->commentRetriever->retrieve()->getCommenter()));
 	}
 
 	public function isAuthenticationRequired()

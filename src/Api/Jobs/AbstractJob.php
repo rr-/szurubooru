@@ -1,5 +1,5 @@
 <?php
-abstract class AbstractJob
+abstract class AbstractJob implements IJob
 {
 	const CONTEXT_NORMAL = 1;
 	const CONTEXT_BATCH_EDIT = 2;
@@ -14,10 +14,7 @@ abstract class AbstractJob
 
 	public abstract function execute();
 
-	public function getRequiredArguments()
-	{
-		return null;
-	}
+	public abstract function getRequiredArguments();
 
 	public function getRequiredPrivileges()
 	{

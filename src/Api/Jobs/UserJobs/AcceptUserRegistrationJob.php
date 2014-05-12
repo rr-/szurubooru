@@ -1,9 +1,16 @@
 <?php
-class AcceptUserRegistrationJob extends AbstractUserJob
+class AcceptUserRegistrationJob extends AbstractJob
 {
+	protected $userRetriever;
+
+	public function __construct()
+	{
+		$this->userRetriever = new UserRetriever($this);
+	}
+
 	public function execute()
 	{
-		$user = $this->user;
+		$user = $this->userRetriever->getRequiredArguments();
 
 		$user->setStaffConfirmed(true);
 		UserModel::save($user);
@@ -13,9 +20,9 @@ class AcceptUserRegistrationJob extends AbstractUserJob
 			'subject' => TextHelper::reprUser($user)]);
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return null;
+		return $this->userRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()

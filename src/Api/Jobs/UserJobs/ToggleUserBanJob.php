@@ -1,9 +1,16 @@
 <?php
-class ToggleUserBanJob extends AbstractUserJob
+class ToggleUserBanJob extends AbstractJob
 {
+	protected $userRetriever;
+
+	public function __construct()
+	{
+		$this->userRetriever = new UserRetriever($this);
+	}
+
 	public function execute()
 	{
-		$user = $this->user;
+		$user = $this->userRetriever->retrieve();
 		$banned = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
 
 		if ($banned)
@@ -22,15 +29,17 @@ class ToggleUserBanJob extends AbstractUserJob
 		return $user;
 	}
 
-	public function getRequiredSubArguments()
+	public function getRequiredArguments()
 	{
-		return JobArgs::ARG_NEW_STATE;
+		return JobArgs::Conjunction(
+			$this->userRetriever->getRequiredArguments(),
+			JobArgs::ARG_NEW_STATE);
 	}
 
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
 			Privilege::BanUser,
-			Access::getIdentity($this->user));
+			Access::getIdentity($this->userRetriever->retrieve()));
 	}
 }

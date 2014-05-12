@@ -44,9 +44,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	public function testDeleteCommentJob()
 	{
 		$this->testArguments(new DeleteCommentJob(),
-			JobArgs::Alternative(
-				JobArgs::ARG_COMMENT_ENTITY,
-				JobArgs::ARG_COMMENT_ID));
+			$this->getCommentSelector());
 	}
 
 	public function testDeleteUserJob()
@@ -60,9 +58,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 		$this->testArguments(new EditCommentJob(),
 			JobArgs::Conjunction(
 				JobArgs::ARG_NEW_TEXT,
-				JobArgs::Alternative(
-					JobArgs::ARG_COMMENT_ENTITY,
-					JobArgs::ARG_COMMENT_ID)));
+				$this->getCommentSelector()));
 	}
 
 	public function testEditPostContentJob()
@@ -185,7 +181,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 			JobArgs::Conjunction(
 				JobArgs::ARG_QUERY,
 				JobArgs::ARG_LOG_ID,
-				JobArgs::ARG_PAGE_NUMBER));
+				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 
 	public function testGetPostContentJob()
@@ -218,7 +214,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	public function testListCommentsJob()
 	{
 		$this->testArguments(new ListCommentsJob(),
-				JobArgs::ARG_PAGE_NUMBER);
+			JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER));
 	}
 
 	public function testListLogsJob()
@@ -232,7 +228,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 		$this->testArguments(new ListPostsJob(),
 			JobArgs::Conjunction(
 				JobArgs::ARG_QUERY,
-				JobArgs::ARG_PAGE_NUMBER));
+				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 
 	public function testListRelatedTagsJob()
@@ -241,8 +237,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 			JobArgs::Conjunction(
 				JobArgs::Optional(JobArgs::ARG_TAG_NAMES),
 				JobArgs::ARG_TAG_NAME,
-				JobArgs::ARG_QUERY,
-				JobArgs::ARG_PAGE_NUMBER));
+				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 
 	public function testListTagsJob()
@@ -250,7 +245,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 		$this->testArguments(new ListTagsJob(),
 			JobArgs::Conjunction(
 				JobArgs::ARG_QUERY,
-				JobArgs::ARG_PAGE_NUMBER));
+				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 
 	public function testListUsersJob()
@@ -258,7 +253,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 		$this->testArguments(new ListUsersJob(),
 			JobArgs::Conjunction(
 				JobArgs::ARG_QUERY,
-				JobArgs::ARG_PAGE_NUMBER));
+				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 
 	public function testMergeTagsJob()
@@ -290,8 +285,8 @@ class ApiArgumentTest extends AbstractFullApiTest
 		$this->testArguments(new PreviewCommentJob(),
 			JobArgs::Conjunction(
 				JobArgs::Alternative(
-					JobArgs::ARG_POST_ID,
-					JobArgs::ARG_COMMENT_ID),
+					$this->getPostSelector(),
+					$this->getCommentSelector()),
 				JobArgs::ARG_NEW_TEXT));
 	}
 
@@ -355,6 +350,13 @@ class ApiArgumentTest extends AbstractFullApiTest
 		return JobArgs::Alternative(
 			JobArgs::ARG_POST_NAME,
 			JobArgs::ARG_POST_ENTITY);
+	}
+
+	protected function getCommentSelector()
+	{
+		return JobArgs::Alternative(
+			JobArgs::ARG_COMMENT_ENTITY,
+			JobArgs::ARG_COMMENT_ID);
 	}
 
 	protected function getUserSelector()
