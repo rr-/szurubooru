@@ -50,34 +50,6 @@ $.fn.bindOnce = function(name, eventName, callback)
 
 
 
-//safety trigger
-$(function()
-{
-	$('.safety a').click(function(e)
-	{
-		e.preventDefault();
-
-		var aDom = $(this);
-		if (aDom.hasClass('inactive'))
-			return;
-		aDom.addClass('inactive');
-
-		var url = $(this).attr('href') + '?json';
-		$.get(url).success(function(data)
-		{
-			window.location.reload();
-		}).error(function(xhr)
-		{
-			alert(xhr.responseJSON
-				? xhr.responseJSON.message
-				: 'Fatal error');
-			aDom.removeClass('inactive');
-		});
-	});
-});
-
-
-
 //basic event listeners
 $(function()
 {

@@ -83,7 +83,7 @@ class UserController
 		if (!is_array($suppliedSafety))
 			$suppliedSafety = [];
 		foreach (PostSafety::getAll() as $safety)
-			$user->enableSafety($safety, in_array($safety, $suppliedSafety));
+			$user->enableSafety($safety, in_array($safety->toInteger(), $suppliedSafety));
 
 		$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
 		$user->enablePostTagTitles(InputHelper::get('post-tag-titles'));

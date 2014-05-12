@@ -19,7 +19,7 @@ class PostSafety extends Enum implements IValidatable
 
 	public function toFlag()
 	{
-		return pow(2, $this->safety);
+		return pow(2, $this->safety - 1);
 	}
 
 	public function toString()

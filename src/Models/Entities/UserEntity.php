@@ -48,6 +48,9 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		$this->validateAccessRank();
 		$this->validateEmails();
 
+		if (!$this->getSetting(UserModel::SETTING_SAFETY))
+			$this->setSetting(UserModel::SETTING_SAFETY, (new PostSafety(PostSafety::Safe))->toFlag());
+
 		if (empty($this->getAccessRank()))
 			throw new Exception('No access rank detected');
 
@@ -275,8 +278,8 @@ final class UserEntity extends AbstractEntity implements IValidatable
 	{
 		$all = $this->getSetting(UserModel::SETTING_SAFETY);
 		if (!$all)
-			return $safety->toInteger() == PostSafety::Safe;
-		return $all & $safety->toFlag();
+			return $safety->toInteger() == (new PostSafety(PostSafety::Safe))->toInteger();
+		return ($all & $safety->toFlag()) == $safety->toFlag();
 	}
 
 	public function enableSafety(PostSafety $safety, $enabled)
@@ -292,9 +295,6 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		{
 			$new |= $safety->toFlag();
 		}
-
-		if (!$new)
-			$new = (new PostSafety(PostSafety::Safe))->toFlag();
 
 		$this->setSetting(UserModel::SETTING_SAFETY, $new);
 	}
