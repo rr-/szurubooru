@@ -27,6 +27,25 @@ class EditUserJobTest extends AbstractTest
 		$this->assert->isFalse(empty($user->getPasswordHash()));
 	}
 
+	public function testPartialPrivilegeFail()
+	{
+		$this->grantAccess('changeUserName.own');
+		$user = $this->mockUser();
+
+		$newName = 'dummy' . uniqid();
+
+		$this->assert->throws(function() use ($user, $newName)
+		{
+			return Api::run(
+				new EditUserJob(),
+				[
+					JobArgs::ARG_USER_NAME => $user->getName(),
+					JobArgs::ARG_NEW_USER_NAME => $newName,
+					JobArgs::ARG_NEW_PASSWORD => 'this should make it fail',
+				]);
+		}, 'Insufficient privilege');
+	}
+
 	public function testLogBuffering()
 	{
 		$this->testSaving();

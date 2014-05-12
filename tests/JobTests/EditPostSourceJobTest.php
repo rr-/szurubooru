@@ -37,6 +37,17 @@ class EditPostSourceJobTest extends AbstractTest
 		}, 'Source must have at most');
 	}
 
+	public function testEmptyText()
+	{
+		$this->prepare();
+		$this->grantAccess('editPostSource.own');
+		$post = $this->assert->doesNotThrow(function()
+		{
+			return $this->runApi('');
+		});
+		$this->assert->areEqual('', $post->getSource());
+	}
+
 	public function testWrongPostId()
 	{
 		$this->prepare();

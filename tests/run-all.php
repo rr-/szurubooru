@@ -48,6 +48,7 @@ class TestRunner
 
 	protected function resetEnvironment()
 	{
+		$_SESSION = [];
 		prepareConfig(true);
 		getConfig()->main->dbDriver = 'sqlite';
 		getConfig()->main->dbLocation = $this->dbPath;

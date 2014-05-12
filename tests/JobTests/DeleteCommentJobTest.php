@@ -1,7 +1,7 @@
 <?php
 class DeleteCommentJobTest extends AbstractTest
 {
-	public function testOwn()
+	public function testRemoval()
 	{
 		$this->prepare();
 		$this->grantAccess('deleteComment');

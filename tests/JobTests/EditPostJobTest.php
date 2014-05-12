@@ -25,7 +25,7 @@ class EditPostJobTest extends AbstractTest
 		});
 	}
 
-	public function testPrivilegeFail()
+	public function testPartialPrivilegeFail()
 	{
 		$this->grantAccess('editPost');
 		$this->grantAccess('editPostSafety');
@@ -38,7 +38,7 @@ class EditPostJobTest extends AbstractTest
 		[
 			JobArgs::ARG_POST_ID => $post->getId(),
 			JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
-			JobArgs::ARG_NEW_SOURCE => '',
+			JobArgs::ARG_NEW_SOURCE => 'this should make it fail',
 			JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 		];
 

@@ -74,6 +74,35 @@ class EditUserEmailJobTest extends AbstractTest
 					JobArgs::ARG_NEW_EMAIL => 'hrmfbpdvpds@brtedf',
 				]);
 		}, 'E-mail address appears to be invalid');
+	}
 
+	public function testChangingToExistingDenial()
+	{
+		getConfig()->registration->needEmailForRegistering = false;
+		Mailer::mockSending();
+		$this->assert->areEqual(0, Mailer::getMailCounter());
+
+		getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
+		$this->grantAccess('changeUserEmail');
+
+		$user = $this->mockUser();
+		$otherUser = $this->mockUser();
+		$otherUser->setUnconfirmedEmail('super@mario.plumbing');
+		UserModel::save($otherUser);
+
+		$this->assert->throws(function() use ($user, $otherUser)
+		{
+			Api::run(
+				new EditUserEmailJob(),
+				[
+					JobArgs::ARG_USER_NAME => $user->getName(),
+					JobArgs::ARG_NEW_EMAIL => $otherUser->getUnconfirmedEmail(),
+				]);
+		}, 'User with this e-mail is already registered');
+
+		$this->assert->areEqual(null, $user->getUnconfirmedEmail());
+		$this->assert->areEqual(null, $user->getConfirmedEmail());
+
+		$this->assert->areEqual(0, Mailer::getMailCounter());
 	}
 }

@@ -74,7 +74,7 @@ class AddPostJobTest extends AbstractTest
 				new AddPostJob(),
 				[
 					JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
-					JobArgs::ARG_NEW_SOURCE => '',
+					JobArgs::ARG_NEW_SOURCE => 'this should make it fail',
 					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 				]);
 		}, 'Insufficient privilege');

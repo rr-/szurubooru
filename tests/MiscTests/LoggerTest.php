@@ -26,8 +26,8 @@ class LoggerTest extends AbstractTest
 
 	public function testPathChanging()
 	{
-		$logPath = __DIR__ . '/logs/{yyyy}-{mm}-{dd}.log';
-		$realLogPath = __DIR__ . '/logs/' . date('Y-m-d') . '.log';
+		$logPath = dirname(__DIR__) . '/logs/{yyyy}-{mm}-{dd}.log';
+		$realLogPath = dirname(__DIR__) . '/logs/' . date('Y-m-d') . '.log';
 
 		getConfig()->main->logsPath = $logPath;
 		$this->assert->doesNotThrow(function()

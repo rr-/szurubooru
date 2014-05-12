@@ -10,6 +10,10 @@ class EditPostContentJobTest extends AbstractTest
 		{
 			PostModel::getById($post->getId());
 		});
+		$this->assert->isTrue($post->getFileSize() > 0);
+		$this->assert->isNotNull($post->getFileHash());
+		$this->assert->isNotNull($post->getMimeType());
+		$this->assert->isNotNull($post->getType()->toInteger());
 	}
 
 	public function testFileJpeg()
@@ -76,6 +80,10 @@ class EditPostContentJobTest extends AbstractTest
 		{
 			PostModel::getById($post->getId());
 		});
+		$this->assert->isTrue($post->getFileSize() > 0);
+		$this->assert->isNotNull($post->getFileHash());
+		$this->assert->isNotNull($post->getMimeType());
+		$this->assert->isNotNull($post->getType()->toInteger());
 	}
 
 	public function testUrlYoutube()
@@ -88,7 +96,7 @@ class EditPostContentJobTest extends AbstractTest
 			new EditPostContentJob(),
 			[
 				JobArgs::ARG_POST_ID => $post->getId(),
-				JobArgs::ARG_NEW_POST_CONTENT_URL => 'http://www.youtube.com/watch?v=qWq_jydCUw4', 'test.jpg',
+				JobArgs::ARG_NEW_POST_CONTENT_URL => 'http://www.youtube.com/watch?v=qWq_jydCUw4',
 			]);
 		$this->assert->areEqual(PostType::Youtube, $post->getType()->toInteger());
 		$this->assert->areEqual('qWq_jydCUw4', $post->getFileHash());
@@ -116,6 +124,57 @@ class EditPostContentJobTest extends AbstractTest
 		}, 'Invalid post ID');
 	}
 
+
+	public function testDuplicateFile()
+	{
+		$this->prepare();
+		$this->grantAccess('editPostContent');
+		$post = $this->uploadFromFile('image.png');
+		$this->assert->areEqual('image/png', $post->getMimeType());
+		$this->assert->throws(function()
+		{
+			$this->uploadFromFile('image.png');
+		}, 'Duplicate upload: @1');
+	}
+
+	public function testDuplicateUrl()
+	{
+		$this->prepare();
+		$this->grantAccess('editPostContent');
+		$post = $this->uploadFromUrl('image.png');
+		$this->assert->areEqual('image/png', $post->getMimeType());
+		$this->assert->throws(function()
+		{
+			$this->uploadFromUrl('image.png');
+		}, 'Duplicate upload: @1');
+	}
+
+	public function testDuplicateYoutube()
+	{
+		$this->prepare();
+		$this->grantAccess('editPostContent');
+
+		$url = 'http://www.youtube.com/watch?v=qWq_jydCUw4';
+
+		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = Api::run(
+			new EditPostContentJob(),
+			[
+				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
+			]);
+
+		$post = $this->mockPost(Auth::getCurrentUser());
+		$this->assert->throws(function() use ($post, $url)
+		{
+			Api::run(
+				new EditPostContentJob(),
+				[
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
+				]);
+		}, 'Duplicate upload: @1');
+	}
 
 	protected function prepare()
 	{

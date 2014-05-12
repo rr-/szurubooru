@@ -48,77 +48,77 @@ class AccessTest extends AbstractTest
 		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts), $user));
 	}
 
-	public function testSubPrivileges1()
+	public function testSubPrivilegesOnlySub()
 	{
-		getConfig()->privileges->{'listPosts.dummy'} = 'power-user';
+		getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		Access::init();
 
 		$user = $this->mockUser();
 		$user->setAccessRank(new AccessRank(AccessRank::PowerUser));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'dummy'), $user));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'baka'), $user));
+		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'own'), $user));
+		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'all'), $user));
 		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts), $user));
 	}
 
-	public function testSubPrivileges2a()
+	public function testSubPrivilegesSubAndGeneralNormalOrder()
 	{
-		getConfig()->privileges->{'listPosts.dummy'} = 'power-user';
+		getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		getConfig()->privileges->{'listPosts'} = 'admin';
 		Access::init();
-		$this->testSubPrivileges2();
+		$this->testSubPrivilegesSubAndGeneral();
 	}
 
-	public function testSubPrivileges2b()
+	public function testSubPrivilegesSubAndGeneralReverseOrder()
 	{
 		getConfig()->privileges->{'listPosts'} = 'admin';
-		getConfig()->privileges->{'listPosts.dummy'} = 'power-user';
+		getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		Access::init();
-		$this->testSubPrivileges2();
+		$this->testSubPrivilegesSubAndGeneral();
 	}
 
-	protected function testSubPrivileges2()
+	protected function testSubPrivilegesSubAndGeneral()
 	{
 		$user = $this->mockUser();
 		$user->setAccessRank(new AccessRank(AccessRank::PowerUser));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'dummy'), $user));
+		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'own'), $user));
 		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts, 'baka'), $user));
 		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts), $user));
 
 		$user->setAccessRank(new AccessRank(AccessRank::Admin));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'dummy'), $user));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'baka'), $user));
+		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'own'), $user));
+		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'all'), $user));
 		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts), $user));
 	}
 
-	public function testSubPrivileges3a()
+	public function testSubPrivilegesMultipleSubAndGeneralNormalOrder()
 	{
-		getConfig()->privileges->{'listPosts.dummy'} = 'power-user';
-		getConfig()->privileges->{'listPosts.baka'} = 'admin';
+		getConfig()->privileges->{'listPosts.own'} = 'power-user';
+		getConfig()->privileges->{'listPosts.all'} = 'admin';
 		getConfig()->privileges->{'listPosts'} = 'nobody';
 		Access::init();
-		$this->testSubPrivileges3();
+		$this->testSubPrivilegesMultipleSubAndGeneral();
 	}
 
-	public function testSubPrivileges3b()
+	public function testSubPrivilegesMultipleSubAndGeneralReverseOrder()
 	{
 		getConfig()->privileges->{'listPosts'} = 'nobody';
-		getConfig()->privileges->{'listPosts.dummy'} = 'power-user';
-		getConfig()->privileges->{'listPosts.baka'} = 'admin';
+		getConfig()->privileges->{'listPosts.own'} = 'power-user';
+		getConfig()->privileges->{'listPosts.all'} = 'admin';
 		Access::init();
-		$this->testSubPrivileges3();
+		$this->testSubPrivilegesMultipleSubAndGeneral();
 	}
 
-	protected function testSubPrivileges3()
+	protected function testSubPrivilegesMultipleSubAndGeneral()
 	{
 		$user = $this->mockUser();
 		$user->setAccessRank(new AccessRank(AccessRank::PowerUser));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'dummy'), $user));
-		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts, 'baka'), $user));
+		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'own'), $user));
+		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts, 'all'), $user));
 		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts), $user));
 
 		$user->setAccessRank(new AccessRank(AccessRank::Admin));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'dummy'), $user));
-		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'baka'), $user));
+		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'own'), $user));
+		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'all'), $user));
 		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts), $user));
 	}
 }

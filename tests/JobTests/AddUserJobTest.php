@@ -122,7 +122,7 @@ class AddUserJobTest extends AbstractTest
 					JobArgs::ARG_NEW_USER_NAME => 'dummy',
 					JobArgs::ARG_NEW_PASSWORD => 'sekai',
 				]);
-		}, 'User with');
+		}, 'User with this name is already registered');
 	}
 
 	public function testAccessRankDenial()
