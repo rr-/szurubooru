@@ -17,7 +17,7 @@ class PasswordResetJob extends AbstractJob
 			if (empty($user->getConfirmedEmail()))
 				throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
 
-			UserModel::sendPasswordResetEmail($user);
+			self::sendEmail($user);
 
 			return $user;
 		}
@@ -35,7 +35,7 @@ class PasswordResetJob extends AbstractJob
 
 			$user = $token->getUser();
 			$user->setPassword($newPassword);
-			$token->used = true;
+			$token->setUsed(true);
 			TokenModel::save($token);
 			UserModel::save($user);
 

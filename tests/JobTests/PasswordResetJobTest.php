@@ -1,7 +1,7 @@
 <?php
-class ActivateUserEmailJobTest extends AbstractTest
+class PasswordResetJobTest extends AbstractTest
 {
-	public function testSending()
+	public function testDontSendIfUnconfirmedMail()
 	{
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
@@ -10,12 +10,31 @@ class ActivateUserEmailJobTest extends AbstractTest
 		$user->setUnconfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 
+		$this->assert->throws(function() use ($user)
+		{
+			Api::run(
+				new PasswordResetJob(),
+				[
+					JobArgs::ARG_USER_NAME => $user->getName(),
+				]);
+		}, 'no e-mail confirmed');
+	}
+
+	public function testSending()
+	{
+		getConfig()->registration->needEmailForRegistering = true;
+		Mailer::mockSending();
+
+		$user = $this->mockUser();
+		$user->setConfirmedEmail('godzilla@whitestar.gov');
+		UserModel::save($user);
+
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
 		$this->assert->doesNotThrow(function() use ($user)
 		{
 			Api::run(
-				new ActivateUserEmailJob(),
+				new PasswordResetJob(),
 				[
 					JobArgs::ARG_USER_NAME => $user->getName(),
 				]);
@@ -33,22 +52,19 @@ class ActivateUserEmailJobTest extends AbstractTest
 		return $tokenText;
 	}
 
-	public function testConfirming()
+	public function testObtainingNewPassword()
 	{
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$user = $this->mockUser();
-		$user->setUnconfirmedEmail('godzilla@whitestar.gov');
+		$user->setConfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
-
-		$this->assert->areEqual('godzilla@whitestar.gov', $user->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user->getConfirmedEmail());
 
 		$this->assert->doesNotThrow(function() use ($user)
 		{
 			Api::run(
-				new ActivateUserEmailJob(),
+				new PasswordResetJob(),
 				[
 					JobArgs::ARG_USER_NAME => $user->getName(),
 				]);
@@ -56,20 +72,24 @@ class ActivateUserEmailJobTest extends AbstractTest
 
 		$tokenText = Mailer::getMailsSent()[0]->tokens['token'];
 
-		$this->assert->doesNotThrow(function() use ($tokenText)
+		$ret = $this->assert->doesNotThrow(function() use ($tokenText)
 		{
-			Api::run(
-				new ActivateUserEmailJob(),
+			return Api::run(
+				new PasswordResetJob(),
 				[
 					JobArgs::ARG_TOKEN => $tokenText,
 				]);
 		});
 
-		//reload local entity after changes done by the job
-		$user = UserModel::getById($user->getId());
+		$user = $ret->user;
+		$newPassword = $ret->newPassword;
+		$newPasswordHash = UserModel::hashPassword($newPassword, $user->getPasswordSalt());
 
-		$this->assert->areEqual(null, $user->getUnconfirmedEmail());
-		$this->assert->areEqual('godzilla@whitestar.gov', $user->getConfirmedEmail());
+		$this->assert->areEqual($newPasswordHash, $user->getPasswordHash());
+		$this->assert->doesNotThrow(function() use ($user, $newPassword)
+		{
+			Auth::login($user->getName(), $newPassword, false);
+		});
 	}
 
 	public function testUsingTokenTwice()
@@ -78,14 +98,11 @@ class ActivateUserEmailJobTest extends AbstractTest
 		Mailer::mockSending();
 
 		$user = $this->mockUser();
-		$user->setUnconfirmedEmail('godzilla@whitestar.gov');
+		$user->setConfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 
-		$this->assert->areEqual('godzilla@whitestar.gov', $user->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user->getConfirmedEmail());
-
 		Api::run(
-			new ActivateUserEmailJob(),
+			new PasswordResetJob(),
 			[
 				JobArgs::ARG_USER_NAME => $user->getName(),
 			]);
@@ -93,7 +110,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		$tokenText = Mailer::getMailsSent()[0]->tokens['token'];
 
 		Api::run(
-			new ActivateUserEmailJob(),
+			new PasswordResetJob(),
 			[
 				JobArgs::ARG_TOKEN => $tokenText,
 			]);
@@ -101,7 +118,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		$this->assert->throws(function() use ($tokenText)
 		{
 			Api::run(
-				new ActivateUserEmailJob(),
+				new PasswordResetJob(),
 				[
 					JobArgs::ARG_TOKEN => $tokenText,
 				]);
