@@ -10,7 +10,7 @@ class AcceptUserRegistrationJob extends AbstractJob
 
 	public function execute()
 	{
-		$user = $this->userRetriever->getRequiredArguments();
+		$user = $this->userRetriever->retrieve();
 
 		$user->setStaffConfirmed(true);
 		UserModel::save($user);
@@ -18,6 +18,8 @@ class AcceptUserRegistrationJob extends AbstractJob
 		Logger::log('{user} confirmed {subject}\'s account', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user)]);
+
+		return $user;
 	}
 
 	public function getRequiredArguments()

@@ -78,7 +78,7 @@ class AuthTest extends AbstractTest
 		}, 'You are banned');
 	}
 
-	public function testStaffConfirmationEnabled()
+	public function testStaffConfirmationEnabledFail()
 	{
 		getConfig()->registration->staffActivation = true;
 		getConfig()->registration->needEmailForRegistering = false;
@@ -93,7 +93,24 @@ class AuthTest extends AbstractTest
 		}, 'staff hasn\'t confirmed');
 	}
 
-	public function testStaffConfirmationDisabled()
+	public function testStaffConfirmationEnabledPass()
+	{
+		getConfig()->registration->staffActivation = true;
+		getConfig()->registration->needEmailForRegistering = false;
+
+		$user = $this->prepareValidUser();
+		$user->setStaffConfirmed(true);
+		UserModel::save($user);
+
+		$this->assert->doesNotThrow(function()
+		{
+			Auth::login('existing', 'bleee', false);
+		});
+
+		$this->assert->isTrue(Auth::isLoggedIn());
+	}
+
+	public function testStaffConfirmationDisabledPass()
 	{
 		getConfig()->registration->staffActivation = false;
 		getConfig()->registration->needEmailForRegistering = false;
@@ -106,6 +123,8 @@ class AuthTest extends AbstractTest
 		{
 			Auth::login('existing', 'bleee', false);
 		});
+
+		$this->assert->isTrue(Auth::isLoggedIn());
 	}
 
 	public function testMailConfirmationEnabledFail1()
