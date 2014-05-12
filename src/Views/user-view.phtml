@@ -7,7 +7,7 @@ Assets::addStylesheet('user-view.css');
 	<div class="avatar-wrapper">
 		<a href="<?= \Chibi\Router::linkTo(
 			['UserController', 'genericView'],
-			['name' => $this->context->transport->user->getName()]) ?>">
+			['identifier' => $this->context->transport->user->getName()]) ?>">
 
 			<img
 				src="<?= htmlspecialchars($this->context->transport->user->getAvatarUrl(140)) ?>"
@@ -98,7 +98,7 @@ Assets::addStylesheet('user-view.css');
 				'text' => 'Edit account settings',
 				'link' => \Chibi\Router::linkTo(
 					['UserController', 'editAction'],
-					['name' => $this->context->transport->user->getName(), 'tab' => 'edit']),
+					['identifier' => $this->context->transport->user->getName(), 'tab' => 'edit']),
 			];
 		}
 
@@ -112,7 +112,7 @@ Assets::addStylesheet('user-view.css');
 				'text' => 'Accept registration',
 				'simple-action' => \Chibi\Router::linkTo(
 					['UserController', 'acceptRegistrationAction'],
-					['name' => $this->context->transport->user->getName()]),
+					['identifier' => $this->context->transport->user->getName()]),
 			];
 		}
 
@@ -137,7 +137,7 @@ Assets::addStylesheet('user-view.css');
 					'text' => 'Flag for moderator attention',
 					'simple-action' => \Chibi\Router::linkTo(
 						['UserController', 'flagAction'],
-						['name' => $this->context->transport->user->getName()]),
+						['identifier' => $this->context->transport->user->getName()]),
 					'data-confirm-text' => 'Are you sure you want to flag this user?',
 				];
 			}
@@ -155,7 +155,7 @@ Assets::addStylesheet('user-view.css');
 					'text' => 'Ban user',
 					'simple-action' => \Chibi\Router::linkTo(
 						['UserController', 'banAction'],
-						['name' => $this->context->transport->user->getName()]),
+						['identifier' => $this->context->transport->user->getName()]),
 					'data-confirm-text' => 'Are you sure you want to ban this user?',
 				];
 			}
@@ -167,7 +167,7 @@ Assets::addStylesheet('user-view.css');
 					'text' => 'Unban user',
 					'simple-action' => \Chibi\Router::linkTo(
 						['UserController', 'unbanAction'],
-						['name' => $this->context->transport->user->getName()]),
+						['identifier' => $this->context->transport->user->getName()]),
 					'data-confirm-text' => 'Are you sure you want to unban this user?',
 				];
 			}
@@ -183,7 +183,7 @@ Assets::addStylesheet('user-view.css');
 				'text' => 'Delete account',
 				'link' => \Chibi\Router::linkTo(
 					['UserController', 'deleteAction'],
-					['name' => $this->context->transport->user->getName(), 'tab' => 'delete']),
+					['identifier' => $this->context->transport->user->getName(), 'tab' => 'delete']),
 			];
 		}
 
@@ -202,7 +202,7 @@ Assets::addStylesheet('user-view.css');
 			<?php endif ?>
 				<a href="<?= \Chibi\Router::linkTo(
 					['UserController', 'genericView'],
-					['name' => $this->context->transport->user->getName(),
+					['identifier' => $this->context->transport->user->getName(),
 					'tab' => 'favs',
 					'page' => 1]) ?>">
 					Favs
@@ -216,7 +216,7 @@ Assets::addStylesheet('user-view.css');
 			<?php endif ?>
 				<a href="<?= \Chibi\Router::linkTo(
 					['UserController', 'genericView'],
-					['name' => $this->context->transport->user->getName(),
+					['identifier' => $this->context->transport->user->getName(),
 					'tab' => 'uploads',
 					'page' => 1]) ?>">
 					Uploads
@@ -234,7 +234,7 @@ Assets::addStylesheet('user-view.css');
 				<?php endif ?>
 					<a href="<?= \Chibi\Router::linkTo(
 						['UserController', 'genericView'],
-						['name' => $this->context->transport->user->getName(),
+						['identifier' => $this->context->transport->user->getName(),
 						'tab' => 'settings']) ?>">
 						Browsing settings
 					</a>
@@ -249,7 +249,7 @@ Assets::addStylesheet('user-view.css');
 				<?php endif ?>
 					<a href="<?= \Chibi\Router::linkTo(
 						['UserController', 'genericView'],
-						['name' => $this->context->transport->user->getName(),
+						['identifier' => $this->context->transport->user->getName(),
 						'tab' => 'edit']) ?>">
 						Account settings
 					</a>
@@ -266,7 +266,7 @@ Assets::addStylesheet('user-view.css');
 				<?php endif ?>
 					<a href="<?= \Chibi\Router::linkTo(
 						['UserController', 'genericView'],
-						['name' => $this->context->transport->user->getName(),
+						['identifier' => $this->context->transport->user->getName(),
 						'tab' => 'delete']) ?>">
 						Delete account
 					</a>

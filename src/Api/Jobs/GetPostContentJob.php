@@ -5,7 +5,10 @@ class GetPostContentJob extends AbstractJob
 
 	public function prepare()
 	{
-		$this->post = PostModel::getByName($this->getArgument(JobArgs::ARG_POST_NAME));
+		if ($this->hasArgument(JobArgs::ARG_POST_ENTITY))
+			$this->post = $this->getArgument(JobArgs::ARG_POST_ENTITY);
+		else
+			$this->post = PostModel::getByName($this->getArgument(JobArgs::ARG_POST_NAME));
 	}
 
 	public function execute()
@@ -30,7 +33,14 @@ class GetPostContentJob extends AbstractJob
 		return new ApiFileOutput($path, $fileName);
 	}
 
-	public function requiresPrivilege()
+	public function getRequiredArguments()
+	{
+		return JobArgs::Alternative(
+			JobArgs::ARG_POST_NAME,
+			JobArgs::ARG_POST_ENTITY);
+	}
+
+	public function getRequiredPrivileges()
 	{
 		$post = $this->post;
 		$privileges = [];

@@ -52,7 +52,7 @@ class ApiAuthTest extends AbstractFullApiTest
 	protected function testAuth($job, $expectedAuth)
 	{
 		$this->testedJobs []= $job;
-		$this->assert->areEqual($expectedAuth, $job->requiresAuthentication());
+		$this->assert->areEqual($expectedAuth, $job->isAuthenticationRequired());
 	}
 
 	public function testAuthEnforcing()

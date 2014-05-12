@@ -17,13 +17,11 @@ class UserController
 		$context->transport->paginator = $ret;
 	}
 
-	public function genericView($name, $tab = 'favs', $page = 1)
+	public function genericView($identifier, $tab = 'favs', $page = 1)
 	{
 		$user = Api::run(
 			new GetUserJob(),
-			[
-				JobArgs::ARG_USER_NAME => $name,
-			]);
+			$this->appendUserIdentifierArgument([], $identifier));
 
 		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
 
@@ -69,9 +67,9 @@ class UserController
 		}
 	}
 
-	public function settingsAction($name)
+	public function settingsAction($identifier)
 	{
-		$this->genericView($name, 'settings');
+		$this->genericView($identifier, 'settings');
 
 		$user = getContext()->transport->user;
 
@@ -97,9 +95,9 @@ class UserController
 		Messenger::message('Browsing settings updated!');
 	}
 
-	public function editAction($name)
+	public function editAction($identifier)
 	{
-		$this->genericView($name, 'edit');
+		$this->genericView($identifier, 'edit');
 		$this->requirePasswordConfirmation();
 
 		if (InputHelper::get('password1') != InputHelper::get('password2'))
@@ -107,12 +105,12 @@ class UserController
 
 		$args =
 		[
-			JobArgs::ARG_USER_NAME => $name,
 			JobArgs::ARG_NEW_USER_NAME => InputHelper::get('name'),
 			JobArgs::ARG_NEW_PASSWORD => InputHelper::get('password1'),
 			JobArgs::ARG_NEW_EMAIL => InputHelper::get('email'),
 			JobArgs::ARG_NEW_ACCESS_RANK => InputHelper::get('access-rank'),
 		];
+		$args = $this->appendUserIdentifierArgument($args, $identifier);
 
 		$args = array_filter($args);
 		$user = Api::run(new EditUserJob(), $args);
@@ -127,13 +125,14 @@ class UserController
 		Messenger::message($message);
 	}
 
-	public function deleteAction($name)
+	public function deleteAction($identifier)
 	{
-		$this->genericView($name, 'delete');
+		$this->genericView($identifier, 'delete');
 		$this->requirePasswordConfirmation();
 
-		Api::run(new DeleteUserJob(), [
-			JobArgs::ARG_USER_NAME => $name]);
+		Api::run(
+			new DeleteUserJob(),
+			$this->appendUserIdentifierArgument([], $identifier));
 
 		$user = UserModel::tryGetById(Auth::getCurrentUser()->getId());
 		if (!$user)
@@ -143,29 +142,36 @@ class UserController
 		exit;
 	}
 
-	public function flagAction($name)
+	public function flagAction($identifier)
 	{
-		Api::run(new FlagUserJob(), [JobArgs::ARG_USER_NAME => $name]);
+		Api::run(
+			new FlagUserJob(),
+			$this->appendUserIdentifierArgument([], $identifier));
 	}
 
-	public function banAction($name)
+	public function banAction($identifier)
 	{
-		Api::run(new ToggleUserBanJob(), [
-			JobArgs::ARG_USER_NAME => $name,
-			JobArgs::ARG_NEW_STATE => true]);
+		Api::run(
+			new ToggleUserBanJob(),
+			$this->appendUserIdentifierArgument([
+				JobArgs::ARG_NEW_STATE => true
+			], $identifier));
 	}
 
-	public function unbanAction($name)
+	public function unbanAction($identifier)
 	{
-		Api::run(new ToggleUserBanJob(), [
-			JobArgs::ARG_USER_NAME => $name,
-			JobArgs::ARG_NEW_STATE => false]);
+		Api::run(
+			new ToggleUserBanJob(),
+			$this->appendUserIdentifierArgument([
+				JobArgs::ARG_NEW_STATE => true
+			], $identifier));
 	}
 
-	public function acceptRegistrationAction($name)
+	public function acceptRegistrationAction($identifier)
 	{
-		Api::run(new AcceptUserRegistrationJob(), [
-			JobArgs::ARG_USER_NAME => $name]);
+		Api::run(
+			new AcceptUserRegistrationJob(),
+			$this->appendUserIdentifierArgument([], $identifier));
 	}
 
 	public function toggleSafetyAction($safety)
@@ -243,17 +249,20 @@ class UserController
 		$context = getContext();
 		$context->viewName = 'message';
 		Assets::setSubTitle('account activation');
-		$name = InputHelper::get('name');
+		$identifier = InputHelper::get('identifier');
 
 		if (empty($tokenText))
 		{
-			Api::run(new ActivateUserEmailJob(), [ JobArgs::ARG_USER_NAME => $name ]);
+			Api::run(
+				new ActivateUserEmailJob(),
+				$this->appendUserIdentifierArgument([], $identifier));
 
 			Messenger::message('Activation e-mail resent.');
 		}
 		else
 		{
-			$user = Api::run(new ActivateUserEmailJob(), [ JobArgs::ARG_TOKEN => $tokenText ]);
+			$user = Api::run(new ActivateUserEmailJob(), [
+				JobArgs::ARG_TOKEN => $tokenText ]);
 
 			$message = 'Activation completed successfully.';
 			if (getConfig()->registration->staffActivation)
@@ -277,11 +286,13 @@ class UserController
 		$context = getContext();
 		$context->viewName = 'message';
 		Assets::setSubTitle('password reset');
-		$name = InputHelper::get('name');
+		$identifier = InputHelper::get('identifier');
 
 		if (empty($tokenText))
 		{
-			Api::run(new PasswordResetJob(), [ JobArgs::ARG_USER_NAME => $name ]);
+			Api::run(
+				new PasswordResetJob(),
+				$this->appendUserIdentifierArgument([], $identifier));
 
 			Messenger::message('E-mail sent. Follow instructions to reset password.');
 		}
@@ -307,5 +318,14 @@ class UserController
 			if ($suppliedPasswordHash != $user->getPasswordHash())
 				throw new SimpleException('Must supply valid password');
 		}
+	}
+
+	private function appendUserIdentifierArgument(array $arguments, $userIdentifier)
+	{
+		if (strpos($userIdentifier, '@') !== false)
+			$arguments[JobArgs::ARG_USER_EMAIL] = $userIdentifier;
+		else
+			$arguments[JobArgs::ARG_USER_NAME] = $userIdentifier;
+		return $arguments;
 	}
 }

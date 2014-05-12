@@ -15,7 +15,14 @@ class RenameTagsJob extends AbstractJob
 			'target' => TextHelper::reprTag($targetTag)]);
 	}
 
-	public function requiresPrivilege()
+	public function getRequiredArguments()
+	{
+		return JobArgs::Conjunction(
+			JobArgs::ARG_SOURCE_TAG_NAME,
+			JobArgs::ARG_TARGET_TAG_NAME);
+	}
+
+	public function getRequiredPrivileges()
 	{
 		return new Privilege(Privilege::RenameTags);
 	}

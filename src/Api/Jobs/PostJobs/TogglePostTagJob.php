@@ -1,0 +1,66 @@
+<?php
+class TogglePostTagJob extends AbstractPostJob
+{
+	public function execute()
+	{
+		$tagName = $this->getArgument(JobArgs::ARG_TAG_NAME);
+		$enable = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
+		$post = $this->post;
+
+		$tags = $post->getTags();
+
+		if ($enable)
+		{
+			$tag = TagModel::tryGetByName($tagName);
+			if ($tag === null)
+			{
+				$tag = TagModel::spawn();
+				$tag->setName($tagName);
+				TagModel::save($tag);
+			}
+
+			$tags []= $tag;
+		}
+		else
+		{
+			foreach ($tags as $i => $tag)
+				if ($tag->getName() == $tagName)
+					unset($tags[$i]);
+		}
+
+		$post->setTags($tags);
+		PostModel::save($post);
+		TagModel::removeUnused();
+
+		if ($enable)
+		{
+			Logger::log('{user} tagged {post} with {tag}', [
+				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
+				'post' => TextHelper::reprPost($post),
+				'tag' => TextHelper::reprTag($tag)]);
+		}
+		else
+		{
+			Logger::log('{user} untagged {post} with {tag}', [
+				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
+				'post' => TextHelper::reprPost($post),
+				'tag' => TextHelper::reprTag($tag)]);
+		}
+
+		return $post;
+	}
+
+	public function getRequiredSubArguments()
+	{
+		return JobArgs::Conjunction(
+			JobArgs::ARG_TAG_NAME,
+			Jobargs::ARG_NEW_STATE);
+	}
+
+	public function getRequiredPrivileges()
+	{
+		return new Privilege(
+			Privilege::EditPostTags,
+			Access::getIdentity($this->post->getUploader()));
+	}
+}

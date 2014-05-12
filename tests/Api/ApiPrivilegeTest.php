@@ -33,7 +33,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	protected function testRegularPrivilege($job, $expectedPrivilege)
 	{
 		$this->testedJobs []= $job;
-		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
+		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
 	}
 
 	public function testDynamicPostPrivileges()
@@ -80,12 +80,12 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$expectedPrivilege->secondary = 'all';
 		$job->setArgument(JobArgs::ARG_POST_ID, $otherPost->getId());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
+		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
 
 		$expectedPrivilege->secondary = 'own';
 		$job->setArgument(JobArgs::ARG_POST_ID, $ownPost->getId());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
+		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
 	}
 
 	public function testDynamicPostRetrievalPrivileges()
@@ -110,7 +110,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 			$job->prepare();
 			$this->assert->areEquivalent([
 				new Privilege(Privilege::ViewPost, 'hidden'),
-				new Privilege(Privilege::ViewPost, 'safe')], $job->requiresPrivilege());
+				new Privilege(Privilege::ViewPost, 'safe')], $job->getRequiredPrivileges());
 		}
 	}
 
@@ -118,7 +118,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	{
 		$job = new GetPostThumbJob();
 		$this->testedJobs []= $job;
-		$this->assert->areEquivalent(false, $job->requiresPrivilege());
+		$this->assert->areEquivalent(false, $job->getRequiredPrivileges());
 	}
 
 	public function testDynamicUserPrivileges()
@@ -149,12 +149,12 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$expectedPrivilege->secondary = 'own';
 		$job->setArgument(JobArgs::ARG_USER_NAME, $ownUser->getName());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
+		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
 
 		$expectedPrivilege->secondary = 'all';
 		$job->setArgument(JobArgs::ARG_USER_NAME, $otherUser->getName());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
+		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
 	}
 
 	public function testDynamicCommentPrivileges()
@@ -175,12 +175,12 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$expectedPrivilege->secondary = 'own';
 		$job->setArgument(JobArgs::ARG_COMMENT_ID, $ownComment->getId());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
+		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
 
 		$expectedPrivilege->secondary = 'all';
 		$job->setArgument(JobArgs::ARG_COMMENT_ID, $otherComment->getId());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->requiresPrivilege());
+		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
 	}
 
 	public function testPrivilegeEnforcing()

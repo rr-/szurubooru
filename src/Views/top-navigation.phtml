@@ -56,8 +56,8 @@
 			'Users',
 			\Chibi\Router::linkTo(['UserController', 'listView']),
 			$activeController == 'user' and $activeAction != 'registration' and
-				(!isset($this->context->route->arguments['name']) or
-					$this->context->route->arguments['name'] != Auth::getCurrentUser()->getName()));
+				(!isset($this->context->route->arguments['identifier']) or
+					$this->context->route->arguments['identifier'] != Auth::getCurrentUser()->getName()));
 	}
 
 	if (!Auth::isLoggedIn())
@@ -76,9 +76,9 @@
 	{
 		$registerNavItem(
 			'My account',
-			\Chibi\Router::linkTo(['UserController', 'genericView'], ['name' => Auth::getCurrentUser()->getName()]),
-			$activeController == 'user' and isset($this->context->route->arguments['name']) and
-				$this->context->route->arguments['name'] == Auth::getCurrentUser()->getName());
+			\Chibi\Router::linkTo(['UserController', 'genericView'], ['identifier' => Auth::getCurrentUser()->getName()]),
+			$activeController == 'user' and isset($this->context->route->arguments['identifier']) and
+				$this->context->route->arguments['identifier'] == Auth::getCurrentUser()->getName());
 
 		$registerNavItem(
 			'Log out',
@@ -119,7 +119,7 @@
 							TextCaseConverter::CAMEL_CASE,
 							TextCaseConverter::SPINAL_CASE) ?>">
 
-							<a class="<?= Auth::getCurrentUser()->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
+							<a class="simple-action <?= Auth::getCurrentUser()->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
 								href="<?= \Chibi\Router::linkTo(
 									['UserController', 'toggleSafetyAction'],
 									['safety' => $safety->toInteger()]) ?>"

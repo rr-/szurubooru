@@ -43,7 +43,7 @@ Assets::addStylesheet('static-main.css');
 				by
 				<a href="<?= \Chibi\Router::linkTo(
 					['UserController', 'genericView'],
-					['name' => $this->context->featuredPostUser->getName()]) ?>">
+					['identifier' => $this->context->featuredPostUser->getName()]) ?>">
 					<?= $this->context->featuredPostUser->getName() ?>
 				</a>,
 			<?php endif ?>

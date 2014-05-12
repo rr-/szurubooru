@@ -9,8 +9,7 @@ final class Api
 		{
 			$job->setArguments($jobArgs);
 
-			if (!$job->isSatisfied())
-				throw new ApiJobUnsatisfiedException($job);
+			self::checkArguments($job);
 
 			$job->prepare();
 
@@ -18,25 +17,6 @@ final class Api
 
 			return $job->execute();
 		});
-	}
-
-	public static function checkPrivileges(AbstractJob $job)
-	{
-		if ($job->requiresAuthentication())
-			Access::assertAuthentication();
-
-		if ($job->requiresConfirmedEmail())
-			Access::assertEmailConfirmation();
-
-		$privileges = $job->requiresPrivilege();
-		if ($privileges !== false)
-		{
-			if (!is_array($privileges))
-				$privileges = [$privileges];
-
-			foreach ($privileges as $privilege)
-				Access::assert($privilege);
-		}
 	}
 
 	public static function runMultiple($jobs)
@@ -51,5 +31,64 @@ final class Api
 			}
 		});
 		return $statuses;
+	}
+
+	public static function checkArguments(AbstractJob $job)
+	{
+		self::runArgumentCheck($job, $job->getRequiredArguments());
+	}
+
+	public static function checkPrivileges(AbstractJob $job)
+	{
+		if ($job->isAuthenticationRequired())
+			Access::assertAuthentication();
+
+		if ($job->isConfirmedEmailRequired())
+			Access::assertEmailConfirmation();
+
+		$privileges = $job->getRequiredPrivileges();
+		if ($privileges !== false)
+		{
+			if (!is_array($privileges))
+				$privileges = [$privileges];
+
+			foreach ($privileges as $privilege)
+				Access::assert($privilege);
+		}
+	}
+
+	private static function runArgumentCheck($job, $item)
+	{
+		if (is_array($item))
+			throw new Exception('Argument definition cannot be an array.');
+		elseif ($item instanceof JobArgsNestedStruct)
+		{
+			if ($item instanceof JobArgsAlternative)
+			{
+				$success = false;
+				foreach ($item->args as $subItem)
+				{
+					try
+					{
+						self::runArgumentCheck($job, $subItem);
+						$success = true;
+					}
+					catch (ApiJobUnsatisfiedException $e)
+					{
+					}
+				}
+				if (!$success)
+					throw new ApiJobUnsatisfiedException($job);
+			}
+			elseif ($item instanceof JobArgsConjunction)
+			{
+				foreach ($item->args as $subItem)
+					!self::runArgumentCheck($job, $subItem);
+			}
+		}
+		elseif ($item === null)
+			return;
+		elseif (!$job->hasArgument($item))
+			throw new ApiJobUnsatisfiedException($job, $item);
 	}
 }

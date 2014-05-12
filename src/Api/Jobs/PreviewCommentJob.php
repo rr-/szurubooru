@@ -26,17 +26,26 @@ class PreviewCommentJob extends AbstractJob
 		return $comment;
 	}
 
-	public function requiresPrivilege()
+	public function getRequiredArguments()
+	{
+		return JobArgs::Conjunction(
+			JobArgs::ARG_NEW_TEXT,
+			JobArgs::Alternative(
+				JobArgs::ARG_COMMENT_ID,
+				JobArgs::ARG_POST_ID));
+	}
+
+	public function getRequiredPrivileges()
 	{
 		return new Privilege(Privilege::AddComment);
 	}
 
-	public function requiresAuthentication()
+	public function isAuthenticationRequired()
 	{
 		return false;
 	}
 
-	public function requiresConfirmedEmail()
+	public function isConfirmedEmailRequired()
 	{
 		return getConfig()->registration->needEmailForCommenting;
 	}

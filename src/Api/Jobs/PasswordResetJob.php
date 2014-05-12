@@ -5,7 +5,12 @@ class PasswordResetJob extends AbstractJob
 	{
 		if (!$this->hasArgument(JobArgs::ARG_TOKEN))
 		{
-			$user = UserModel::getByNameOrEmail($this->getArgument(JobArgs::ARG_USER_NAME));
+			if ($this->hasArgument(JobArgs::ARG_USER_NAME))
+				$user = UserModel::getByNameOrEmail($this->getArgument(JobArgs::ARG_USER_NAME));
+			elseif ($this->hasArgument(JobArgs::ARG_USER_EMAIL))
+				$user = UserModel::getByNameOrEmail($this->getArgument(JobArgs::ARG_USER_EMAIL));
+			else
+				$user = $this->getArgument(JobArgs::ARG_USER_ENTITTY);
 
 			if (empty($user->getConfirmedEmail()))
 				throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
@@ -40,6 +45,15 @@ class PasswordResetJob extends AbstractJob
 			$x->newPassword = $newPassword;
 			return $x;
 		}
+	}
+
+	public function getRequiredArguments()
+	{
+		return JobArgs::Alternative(
+			JobArgs::ARG_USER_NAME,
+			JobArgs::ARG_USER_EMAIL,
+			JobArgs::ARG_USER_ENTITY,
+			JobArgs::ARG_TOKEN);
 	}
 
 	public static function sendEmail($user)

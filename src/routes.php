@@ -88,7 +88,7 @@ $tagValidation =
 
 $userValidation =
 [
-	'name' => '[^\/]+',
+	'identifier' => '[^\/]+',
 	'page' => '\d*',
 	'tab' => 'favs|uploads|settings|edit|delete',
 	'filter' => '[^\/]+',
@@ -97,8 +97,8 @@ $userValidation =
 \Chibi\Router::register(['UserController', 'listView'], 'GET', '/users', $userValidation);
 \Chibi\Router::register(['UserController', 'listView'], 'GET', '/users/{page}', $userValidation);
 \Chibi\Router::register(['UserController', 'listView'], 'GET', '/users/{filter}/{page}', $userValidation);
-\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{name}/{tab}', $userValidation);
-\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{name}/{tab}/{page}', $userValidation);
+\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{identifier}/{tab}', $userValidation);
+\Chibi\Router::register(['UserController', 'genericView'], 'GET', '/user/{identifier}/{tab}/{page}', $userValidation);
 
 \Chibi\Router::register(['UserController', 'registrationView'], 'GET', '/register', $userValidation);
 \Chibi\Router::register(['UserController', 'registrationAction'], 'POST', '/register', $userValidation);
@@ -110,11 +110,11 @@ $userValidation =
 \Chibi\Router::register(['UserController', 'passwordResetAction'], 'POST', '/password-reset', $userValidation);
 \Chibi\Router::register(['UserController', 'passwordResetAction'], 'GET', '/password-reset/{tokenText}', $userValidation);
 
-\Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{name}/flag', $userValidation);
-\Chibi\Router::register(['UserController', 'banAction'], 'POST', '/user/{name}/ban', $userValidation);
-\Chibi\Router::register(['UserController', 'unbanAction'], 'POST', '/user/{name}/unban', $userValidation);
-\Chibi\Router::register(['UserController', 'acceptRegistrationAction'], 'POST', '/user/{name}/accept-registration', $userValidation);
-\Chibi\Router::register(['UserController', 'deleteAction'], 'POST', '/user/{name}/delete', $userValidation);
-\Chibi\Router::register(['UserController', 'settingsAction'], 'POST', '/user/{name}/settings', $userValidation);
-\Chibi\Router::register(['UserController', 'editAction'], 'POST', '/user/{name}/edit', $userValidation);
+\Chibi\Router::register(['UserController', 'flagAction'], 'POST', '/user/{identifier}/flag', $userValidation);
+\Chibi\Router::register(['UserController', 'banAction'], 'POST', '/user/{identifier}/ban', $userValidation);
+\Chibi\Router::register(['UserController', 'unbanAction'], 'POST', '/user/{identifier}/unban', $userValidation);
+\Chibi\Router::register(['UserController', 'acceptRegistrationAction'], 'POST', '/user/{identifier}/accept-registration', $userValidation);
+\Chibi\Router::register(['UserController', 'deleteAction'], 'POST', '/user/{identifier}/delete', $userValidation);
+\Chibi\Router::register(['UserController', 'settingsAction'], 'POST', '/user/{identifier}/settings', $userValidation);
+\Chibi\Router::register(['UserController', 'editAction'], 'POST', '/user/{identifier}/edit', $userValidation);
 \Chibi\Router::register(['UserController', 'toggleSafetyAction'], 'POST', '/user/toggle-safety/{safety}', $userValidation);

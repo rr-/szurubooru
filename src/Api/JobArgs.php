@@ -8,8 +8,9 @@ class JobArgs
 	const ARG_TOKEN = 'token';
 
 	const ARG_USER_ENTITY = 'user';
-	const ARG_USER_ID = 'user-id';
+	#const ARG_USER_ID = 'user-id';
 	const ARG_USER_NAME = 'user-name';
+	const ARG_USER_EMAIL = 'user-email';
 
 	const ARG_POST_ENTITY = 'post';
 	const ARG_POST_ID = 'post-id';
@@ -18,6 +19,7 @@ class JobArgs
 	const ARG_TAG_NAME = 'tag-name';
 	const ARG_TAG_NAMES = 'tag-names';
 
+	const ARG_COMMENT_ENTITY = 'comment';
 	const ARG_COMMENT_ID = 'comment-id';
 
 	const ARG_LOG_ID = 'log-id';
@@ -44,4 +46,19 @@ class JobArgs
 	const ARG_NEW_EMAIL = 'new-email';
 	const ARG_NEW_USER_NAME = 'new-user-name';
 	const ARG_NEW_PASSWORD = 'new-password';
+
+	public static function Alternative()
+	{
+		return JobArgsAlternative::factory(func_get_args());
+	}
+
+	public static function Conjunction()
+	{
+		return JobArgsConjunction::factory(func_get_args());
+	}
+
+	public static function Optional()
+	{
+		return JobArgsOptional::factory(func_get_args());
+	}
 }

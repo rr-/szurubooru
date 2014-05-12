@@ -46,7 +46,12 @@ class AddUserJob extends AbstractJob
 		return $user;
 	}
 
-	public function requiresPrivilege()
+	public function getRequiredArguments()
+	{
+		return null;
+	}
+
+	public function getRequiredPrivileges()
 	{
 		return new Privilege(Privilege::RegisterAccount);
 	}

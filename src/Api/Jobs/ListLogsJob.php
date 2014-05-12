@@ -17,7 +17,12 @@ class ListLogsJob extends AbstractJob
 		return $logs;
 	}
 
-	public function requiresPrivilege()
+	public function getRequiredArguments()
+	{
+		return null;
+	}
+
+	public function getRequiredPrivileges()
 	{
 		return new Privilege(Privilege::ListLogs);
 	}

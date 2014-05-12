@@ -14,22 +14,22 @@ abstract class AbstractJob
 
 	public abstract function execute();
 
-	public function isSatisfied()
+	public function getRequiredArguments()
 	{
-		return true;
+		return null;
 	}
 
-	public function requiresAuthentication()
-	{
-		return false;
-	}
-
-	public function requiresConfirmedEmail()
+	public function getRequiredPrivileges()
 	{
 		return false;
 	}
 
-	public function requiresPrivilege()
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
 	{
 		return false;
 	}

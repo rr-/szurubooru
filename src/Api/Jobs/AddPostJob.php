@@ -44,12 +44,17 @@ class AddPostJob extends AbstractJob
 		return $post;
 	}
 
-	public function requiresPrivilege()
+	public function getRequiredArguments()
+	{
+		return JobArgs::Optional(JobArgs::ARG_ANONYMOUS);
+	}
+
+	public function getRequiredPrivileges()
 	{
 		return new Privilege(Privilege::AddPost);
 	}
 
-	public function requiresConfirmedEmail()
+	public function isConfirmedEmailRequired()
 	{
 		return getConfig()->registration->needEmailForUploading;
 	}

@@ -8,7 +8,9 @@ Assets::addScript('comment-edit.js');
 	<div class="avatar">
 		<?php $commenter = $this->context->comment->getCommenter() ?>
 		<?php if ($commenter): ?>
-			<a href="<?= \Chibi\Router::linkTo(['UserController', 'genericView'], ['name' => $commenter->getName()]) ?>">
+			<a href="<?= \Chibi\Router::linkTo(
+				['UserController', 'genericView'],
+				['identifier' => $commenter->getName()]) ?>">
 				<img src="<?= htmlspecialchars($commenter->getAvatarUrl(40)) ?>" alt="<?= $commenter->getName() ?>"/>
 			</a>
 		<?php else: ?>
@@ -24,7 +26,7 @@ Assets::addScript('comment-edit.js');
 				<?php if ($commenter): ?>
 					<a href="<?= \Chibi\Router::linkTo(
 						['UserController', 'genericView'],
-						['name' => $commenter->getName()]) ?>">
+						['identifier' => $commenter->getName()]) ?>">
 						<?= $commenter->getName() ?>
 					</a>
 				<?php else: ?>

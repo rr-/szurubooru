@@ -5,7 +5,12 @@ class ActivateUserEmailJob extends AbstractJob
 	{
 		if (!$this->hasArgument(JobArgs::ARG_TOKEN))
 		{
-			$user = UserModel::getByNameOrEmail($this->getArgument(JobArgs::ARG_USER_NAME));
+			if ($this->hasArgument(JobArgs::ARG_USER_ENTITY))
+				$user = $this->getArgument(JobArgs::ARG_USER_ENTITY);
+			elseif ($this->hasArgument(JobArgs::ARG_USER_NAME))
+				$user = UserModel::getByName($this->getArgument(JobArgs::ARG_USER_NAME));
+			else
+				$user = UserModel::getByEmail($this->getArgument(JobArgs::ARG_USER_EMAIL));
 
 			if (empty($user->getUnconfirmedEmail()))
 			{
@@ -36,6 +41,16 @@ class ActivateUserEmailJob extends AbstractJob
 
 			return $user;
 		}
+	}
+
+	public function getRequiredArguments()
+	{
+		return JobArgs::Alternative(
+			JobArgs::ARG_TOKEN,
+			JobArgs::Alternative(
+				JobArgs::ARG_USER_ENTITY,
+				JobArgs::ARG_USER_EMAIL,
+				JobArgs::ARG_USER_NAME));
 	}
 
 	public static function sendEmail($user)

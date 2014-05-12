@@ -95,7 +95,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				<span class="value" title="<?= $val = $uploader->getName() ?>">
 					<a href="<?= \Chibi\Router::linkTo(
 						['UserController', 'genericView'],
-						['name' => $uploader->getName()]) ?>">
+						['identifier' => $uploader->getName()]) ?>">
 						<img src="<?= htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?= $uploader->getName() ?>"/>
 						<?= $val ?>
 					</a>
@@ -245,7 +245,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					<li>
 						<a title="<?= $user->getName() ?>" href="<?= \Chibi\Router::linkTo(
 							['UserController', 'genericView'],
-							['name' => $user->getName()]) ?>">
+							['identifier' => $user->getName()]) ?>">
 							<img src="<?= htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?= $user->getName() ?>">
 						</a>
 					</li>
