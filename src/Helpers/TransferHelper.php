@@ -56,24 +56,6 @@ class TransferHelper
 		self::$mocks[$url] = $sourceFile;
 	}
 
-	public static function moveUpload($srcPath, $dstPath)
-	{
-		if ($srcPath == $dstPath)
-			throw new SimpleException('Trying to move file to the same location');
-
-		if (is_uploaded_file($srcPath))
-		{
-			move_uploaded_file($srcPath, $dstPath);
-		}
-		else
-		{
-			//problems with permissions on some systems?
-			#rename($srcPath, $dstPath);
-			self::copy($srcPath, $dstPath);
-			self::remove($srcPath);
-		}
-	}
-
 	public static function copy($srcPath, $dstPath)
 	{
 		if ($srcPath == $dstPath)
