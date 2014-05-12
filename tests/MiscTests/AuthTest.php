@@ -13,6 +13,25 @@ class AuthTest extends AbstractTest
 		{
 			Auth::login('existing', 'bleee', false);
 		});
+
+		$this->assert->isTrue(Auth::isLoggedIn());
+	}
+
+	public function testLoginViaEmail()
+	{
+		getConfig()->registration->staffActivation = false;
+		getConfig()->registration->needEmailForRegistering = false;
+
+		$user = $this->prepareValidUser();
+		$user->setConfirmedEmail('godzilla@whitestar.gov');
+		UserModel::save($user);
+
+		$this->assert->doesNotThrow(function() use ($user)
+		{
+			Auth::login($user->getConfirmedEmail(), 'bleee', false);
+		});
+
+		$this->assert->isTrue(Auth::isLoggedIn());
 	}
 
 	public function testLogout()
@@ -24,12 +43,12 @@ class AuthTest extends AbstractTest
 		$this->assert->isFalse(Auth::isLoggedIn());
 	}
 
-	public function testInvalidUser()
+	public function testInvalidUserName()
 	{
 		$this->assert->throws(function()
 		{
 			Auth::login('non-existing', 'wrong-password', false);
-		}, 'invalid username');
+		}, 'invalid user name');
 	}
 
 	public function testInvalidPassword()

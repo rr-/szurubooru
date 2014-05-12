@@ -104,15 +104,15 @@ final class UserModel extends AbstractCrudModel
 			: null;
 	}
 
-	public static function getByNameOrEmail($key)
+	public static function getByEmail($key)
 	{
-		$ret = self::tryGetByNameOrEmail($key);
+		$ret = self::tryGetByEmail($key);
 		if (!$ret)
-			throw new SimpleNotFoundException('Invalid user name "%s"', $key);
+			throw new SimpleNotFoundException('Invalid user e-mail "%s"', $key);
 		return $ret;
 	}
 
-	public static function tryGetByNameOrEmail($key)
+	public static function tryGetByEmail($key)
 	{
 		$key = trim($key);
 
@@ -120,7 +120,6 @@ final class UserModel extends AbstractCrudModel
 		$stmt->setColumn('*');
 		$stmt->setTable('user');
 		$stmt->setCriterion((new Sql\DisjunctionFunctor)
-			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding($key))))
 			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('email_unconfirmed', new Sql\Binding($key))))
 			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('email_confirmed', new Sql\Binding($key)))));
 

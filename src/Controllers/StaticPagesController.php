@@ -13,7 +13,7 @@ class StaticPagesController
 		{
 			$context->featuredPost = $featuredPost;
 			$context->featuredPostUnixTime = PropertyModel::get(PropertyModel::FeaturedPostUnixTime);
-			$context->featuredPostUser = UserModel::tryGetByNameOrEmail(
+			$context->featuredPostUser = UserModel::tryGetByName(
 				PropertyModel::get(PropertyModel::FeaturedPostUserName));
 		}
 	}

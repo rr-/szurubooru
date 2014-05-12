@@ -13,9 +13,9 @@ class Auth
 		$config = getConfig();
 		$context = getContext();
 
-		$user = UserModel::tryGetByNameOrEmail($name);
+		$user = UserModel::tryGetByEmail($name);
 		if ($user === null)
-			throw new SimpleException('Invalid username');
+			$user = UserModel::getByName($name);
 
 		$passwordHash = UserModel::hashPassword($password, $user->getPasswordSalt());
 		if ($passwordHash != $user->getPasswordHash())

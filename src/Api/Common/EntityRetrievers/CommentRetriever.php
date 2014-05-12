@@ -8,6 +8,11 @@ class CommentRetriever implements IEntityRetriever
 		$this->job = $job;
 	}
 
+	public function getJob()
+	{
+		return $this->job;
+	}
+
 	public function tryRetrieve()
 	{
 		if ($this->job->hasArgument(JobArgs::ARG_COMMENT_ENTITY))

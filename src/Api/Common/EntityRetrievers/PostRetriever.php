@@ -8,6 +8,11 @@ class PostRetriever implements IEntityRetriever
 		$this->job = $job;
 	}
 
+	public function getJob()
+	{
+		return $this->job;
+	}
+
 	public function tryRetrieve()
 	{
 		if ($this->job->hasArgument(JobArgs::ARG_POST_ENTITY))
@@ -17,7 +22,7 @@ class PostRetriever implements IEntityRetriever
 			return PostModel::getById($this->job->getArgument(JobArgs::ARG_POST_ID));
 
 		if ($this->job->hasArgument(JobArgs::ARG_POST_NAME))
-			return PostModel::getByName($job->getArgument(JobArgs::ARG_POST_NAME));
+			return PostModel::getByName($this->job->getArgument(JobArgs::ARG_POST_NAME));
 
 		return null;
 	}

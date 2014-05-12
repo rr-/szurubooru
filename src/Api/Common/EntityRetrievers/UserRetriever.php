@@ -8,13 +8,21 @@ class UserRetriever implements IEntityRetriever
 		$this->job = $job;
 	}
 
+	public function getJob()
+	{
+		return $this->job;
+	}
+
 	public function tryRetrieve()
 	{
 		if ($this->job->hasArgument(JobArgs::ARG_USER_ENTITY))
 			return $this->job->getArgument(JobArgs::ARG_USER_ENTITY);
 
+		if ($this->job->hasArgument(JobArgs::ARG_USER_EMAIL))
+			return UserModel::getByEmail($this->job->getArgument(JobArgs::ARG_USER_EMAIL));
+
 		if ($this->job->hasArgument(JobArgs::ARG_USER_NAME))
-			return UserModel::getByNameOrEmail($this->job->getArgument(JobArgs::ARG_USER_NAME));
+			return UserModel::getByName($this->job->getArgument(JobArgs::ARG_USER_NAME));
 
 		return null;
 	}

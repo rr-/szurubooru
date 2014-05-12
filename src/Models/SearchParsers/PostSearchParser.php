@@ -73,7 +73,7 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif (in_array($key, ['fav', 'favs', 'favd']))
 		{
-			$user = UserModel::getByNameOrEmail($value);
+			$user = UserModel::getByName($value);
 			$innerStmt = (new Sql\SelectStatement)
 				->setTable('favoritee')
 				->setCriterion((new Sql\ConjunctionFunctor)
@@ -84,7 +84,7 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif (in_array($key, ['comment', 'comments', 'commenter', 'commented']))
 		{
-			$user = UserModel::getByNameOrEmail($value);
+			$user = UserModel::getByName($value);
 			$innerStmt = (new Sql\SelectStatement)
 				->setTable('comment')
 				->setCriterion((new Sql\ConjunctionFunctor)
@@ -95,7 +95,7 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif (in_array($key, ['submit', 'upload', 'uploads', 'uploader', 'uploaded']))
 		{
-			$user = UserModel::getByNameOrEmail($value);
+			$user = UserModel::getByName($value);
 			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->getId()));
 		}
 
