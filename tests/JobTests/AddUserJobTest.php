@@ -282,7 +282,7 @@ class AddUserJobTest extends AbstractTest
 				]);
 		});
 
-		$user2 = $this->assert->doesNotThrow(function()
+		$user2 = $this->assert->throws(function()
 		{
 			return Api::run(
 				new AddUserJob(),
@@ -291,18 +291,7 @@ class AddUserJobTest extends AbstractTest
 					JobArgs::ARG_NEW_PASSWORD => 'sekai',
 					JobArgs::ARG_NEW_EMAIL => 'godzilla@whitestar.gov',
 				]);
-		});
-
-		$this->assert->areEqual(2, Mailer::getMailCounter());
-		$token1text = Mailer::getMailsSent()[0]->tokens['token'];
-		$token2text = Mailer::getMailsSent()[1]->tokens['token'];
-		$this->assert->areNotEqual($token1text, $token2text);
-
-		$token1 = TokenModel::getByToken($token1text);
-		$token2 = TokenModel::getByToken($token2text);
-
-		$this->assert->areEqual($user1->getId(), $token1->getUser()->getId());
-		$this->assert->areEqual($user2->getId(), $token2->getUser()->getId());
+		}, 'User with this e-mail is already registered');
 	}
 
 	public function testLogBuffering()

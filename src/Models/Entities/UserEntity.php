@@ -66,20 +66,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		$otherUser = UserModel::tryGetByName($userName);
 		if ($otherUser !== null and $otherUser->getId() != $this->getId())
 		{
-			if (!$otherUser->getConfirmedEmail()
-				and isset($config->registration->needEmailForRegistering)
-				and $config->registration->needEmailForRegistering)
-			{
-				throw new SimpleException('User with this name is already registered and awaits e-mail confirmation');
-			}
-
-			if (!$otherUser->isStaffConfirmed()
-				and $config->registration->staffActivation)
-			{
-				throw new SimpleException('User with this name is already registered and awaits staff confirmation');
-			}
-
-			throw new SimpleException('User with this name is already registered');
+			$this->throwDuplicateUserError($otherUser, 'name');
 		}
 
 		$userNameMinLength = intval($config->registration->userNameMinLength);
@@ -96,7 +83,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 			throw new SimpleException('User name contains invalid characters');
 	}
 
-	public function validatePassword()
+	private function validatePassword()
 	{
 		if (empty($this->getPasswordHash()))
 			throw new Exception('Trying to save user with no password into database');
@@ -117,7 +104,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 			throw new SimpleException('Password contains invalid characters');
 	}
 
-	public function validateAccessRank()
+	private function validateAccessRank()
 	{
 		$this->accessRank->validate();
 
@@ -125,7 +112,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 			throw new Exception('Cannot set special access rank "%s"', $this->accessRank->toString());
 	}
 
-	public function validateEmails()
+	private function validateEmails()
 	{
 		$this->validateEmail($this->getUnconfirmedEmail());
 		$this->validateEmail($this->getConfirmedEmail());
@@ -135,6 +122,38 @@ final class UserEntity extends AbstractEntity implements IValidatable
 	{
 		if (!empty($email) and !TextHelper::isValidEmail($email))
 			throw new SimpleException('E-mail address appears to be invalid');
+
+		$otherUser = UserModel::tryGetByEmail($email);
+		if ($otherUser !== null and $otherUser->getId() != $this->getId())
+		{
+			$this->throwDuplicateUserError($otherUser, 'e-mail');
+		}
+	}
+
+	private function throwDuplicateUserError($otherUser, $reason)
+	{
+		$config = getConfig();
+
+		if (!$otherUser->getConfirmedEmail()
+			and isset($config->registration->needEmailForRegistering)
+			and $config->registration->needEmailForRegistering)
+		{
+			throw new SimpleException(
+				'User with this %s is already registered and awaits e-mail confirmation',
+				$reason);
+		}
+
+		if (!$otherUser->isStaffConfirmed()
+			and $config->registration->staffActivation)
+		{
+			throw new SimpleException(
+				'User with this %s is already registered and awaits staff confirmation',
+				$reason);
+		}
+
+		throw new SimpleException(
+			'User with this %s is already registered',
+			$reason);
 	}
 
 	public function isBanned()

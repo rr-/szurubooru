@@ -108,42 +108,4 @@ class ActivateUserEmailJobTest extends AbstractTest
 				]);
 		}, 'This token was already used');
 	}
-
-	public function testTokensTwoUsersSameMail()
-	{
-		getConfig()->registration->needEmailForRegistering = true;
-		Mailer::mockSending();
-
-		$user1 = $this->mockUser();
-		$user2 = $this->mockUser();
-		$user1->setUnconfirmedEmail('godzilla@whitestar.gov');
-		$user2->setUnconfirmedEmail('godzilla@whitestar.gov');
-		UserModel::save($user1);
-		UserModel::save($user2);
-
-		Api::run(
-			new ActivateUserEmailJob(),
-			[
-				JobArgs::ARG_USER_NAME => $user1->getName(),
-			]);
-
-		Api::run(
-			new ActivateUserEmailJob(),
-			[
-				JobArgs::ARG_USER_NAME => $user2->getName(),
-			]);
-
-		$tokens1 = Mailer::getMailsSent()[0]->tokens;
-		$tokens2 = Mailer::getMailsSent()[1]->tokens;
-		$token1text = $tokens1['token'];
-		$token2text = $tokens2['token'];
-		$this->assert->areNotEqual($token1text, $token2text);
-
-		$token1 = TokenModel::getByToken($token1text);
-		$token2 = TokenModel::getByToken($token2text);
-
-		$this->assert->areEqual($user1->getId(), $token1->getUser()->getId());
-		$this->assert->areEqual($user2->getId(), $token2->getUser()->getId());
-		$this->assert->areNotEqual($token1->getUserId(), $token2->getUserId());
-	}
 }
