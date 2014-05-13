@@ -17,7 +17,7 @@ class FlagPostJobTest extends AbstractTest
 
 		$logPath = Logger::getLogPath();
 		$logs = file_get_contents($logPath);
-		$logs = array_filter(explode("\n", $logs));
+		$logs = explode("\n", $logs);
 		$this->assert->areEqual(1, count($logs));
 		$this->assert->isTrue(strpos($logs[0], 'flagged @' . $post->getId() . ' for moderator attention') !== false);
 	}

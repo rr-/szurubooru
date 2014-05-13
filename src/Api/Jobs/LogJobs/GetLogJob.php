@@ -30,6 +30,7 @@ class GetLogJob extends AbstractJob implements IPagedJob
 
 		//load lines
 		$lines = file_get_contents($path);
+		$lines = trim($lines);
 		$lines = explode(PHP_EOL, str_replace(["\r", "\n"], PHP_EOL, $lines));
 		$lines = array_reverse($lines);
 

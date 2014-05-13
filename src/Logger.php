@@ -27,13 +27,19 @@ class Logger
 		if (empty(self::$buffer))
 			return;
 
+		$sep = file_exists(self::$path)
+			? PHP_EOL
+			: '';
 		$fh = fopen(self::$path, 'ab');
 		if (!$fh)
 			throw new SimpleException('Cannot write to log files');
 		if (flock($fh, LOCK_EX))
 		{
 			foreach (self::$buffer as $logEvent)
-				fwrite($fh, $logEvent->getFullText() . PHP_EOL);
+			{
+				fwrite($fh, $sep . $logEvent->getFullText());
+				$sep = PHP_EOL;
+			}
 			fflush($fh);
 			flock($fh, LOCK_UN);
 			fclose($fh);

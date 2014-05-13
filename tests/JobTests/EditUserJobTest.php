@@ -52,7 +52,7 @@ class EditUserJobTest extends AbstractTest
 
 		$logPath = Logger::getLogPath();
 		$x = file_get_contents($logPath);
-		$lines = array_filter(explode("\n", $x));
+		$lines = explode("\n", $x);
 		$this->assert->areEqual(2, count($lines));
 	}
 
