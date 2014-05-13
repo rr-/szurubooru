@@ -18,7 +18,9 @@ class ListTagsJob extends AbstractJob implements IPagedJob
 	{
 		$pageSize = $this->pager->getPageSize();
 		$page = $this->pager->getPageNumber();
-		$query = $this->getArgument(JobArgs::ARG_QUERY);
+		$query = $this->hasArgument(JobArgs::ARG_QUERY)
+			? $this->getArgument(JobArgs::ARG_QUERY)
+			: '';
 
 		$tags = TagSearchService::getEntities($query, $pageSize, $page);
 		$tagCount = TagSearchService::getEntityCount($query);
@@ -30,7 +32,7 @@ class ListTagsJob extends AbstractJob implements IPagedJob
 	{
 		return JobArgs::Conjunction(
 			$this->pager->getRequiredArguments(),
-			JobArgs::ARG_QUERY);
+			JobArgs::Optional(JobArgs::ARG_QUERY));
 	}
 
 	public function getRequiredPrivileges()

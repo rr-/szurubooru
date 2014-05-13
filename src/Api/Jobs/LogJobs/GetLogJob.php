@@ -19,7 +19,9 @@ class GetLogJob extends AbstractJob implements IPagedJob
 		$pageSize = $this->pager->getPageSize();
 		$page = $this->pager->getPageNumber();
 		$name = $this->getArgument(JobArgs::ARG_LOG_ID);
-		$query = $this->getArgument(JobArgs::ARG_QUERY);
+		$query = $this->hasArgument(JobArgs::ARG_QUERY)
+			? $this->getArgument(JobArgs::ARG_QUERY)
+			: '';
 
 		//parse input
 		$page = max(1, intval($page));
@@ -53,7 +55,7 @@ class GetLogJob extends AbstractJob implements IPagedJob
 		return JobArgs::Conjunction(
 			$this->pager->getRequiredArguments(),
 			JobArgs::ARG_LOG_ID,
-			JobArgs::ARG_QUERY);
+			JobArgs::Optional(JobArgs::ARG_QUERY));
 	}
 
 	public function getRequiredPrivileges()

@@ -18,7 +18,9 @@ class ListUsersJob extends AbstractJob implements IPagedJob
 	{
 		$pageSize = $this->pager->getPageSize();
 		$page = $this->pager->getPageNumber();
-		$filter = $this->getArgument(JobArgs::ARG_QUERY);
+		$filter = $this->hasArgument(JobArgs::ARG_QUERY)
+			? $this->getArgument(JobArgs::ARG_QUERY)
+			: '';
 
 		$users = UserSearchService::getEntities($filter, $pageSize, $page);
 		$userCount = UserSearchService::getEntityCount($filter);
@@ -30,7 +32,7 @@ class ListUsersJob extends AbstractJob implements IPagedJob
 	{
 		return JobArgs::Conjunction(
 			$this->pager->getRequiredArguments(),
-			JobArgs::ARG_QUERY);
+			JobArgs::Optional(JobArgs::ARG_QUERY));
 	}
 
 	public function getRequiredPrivileges()

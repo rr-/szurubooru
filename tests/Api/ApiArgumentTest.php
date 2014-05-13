@@ -179,7 +179,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new GetLogJob(),
 			JobArgs::Conjunction(
-				JobArgs::ARG_QUERY,
+				JobArgs::Optional(JobArgs::ARG_QUERY),
 				JobArgs::ARG_LOG_ID,
 				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
@@ -227,7 +227,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new ListPostsJob(),
 			JobArgs::Conjunction(
-				JobArgs::ARG_QUERY,
+				JobArgs::Optional(JobArgs::ARG_QUERY),
 				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 
@@ -244,7 +244,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new ListTagsJob(),
 			JobArgs::Conjunction(
-				JobArgs::ARG_QUERY,
+				JobArgs::Optional(JobArgs::ARG_QUERY),
 				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 
@@ -252,7 +252,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new ListUsersJob(),
 			JobArgs::Conjunction(
-				JobArgs::ARG_QUERY,
+				JobArgs::Optional(JobArgs::ARG_QUERY),
 				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 

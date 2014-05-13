@@ -18,7 +18,9 @@ class ListPostsJob extends AbstractJob implements IPagedJob
 	{
 		$pageSize = $this->pager->getPageSize();
 		$page = $this->pager->getPageNumber();
-		$query = $this->getArgument(JobArgs::ARG_QUERY);
+		$query = $this->hasArgument(JobArgs::ARG_QUERY)
+			? $this->getArgument(JobArgs::ARG_QUERY)
+			: '';
 
 		$posts = PostSearchService::getEntities($query, $pageSize, $page);
 		$postCount = PostSearchService::getEntityCount($query);
@@ -32,7 +34,7 @@ class ListPostsJob extends AbstractJob implements IPagedJob
 	{
 		return JobArgs::Conjunction(
 			$this->pager->getRequiredArguments(),
-			JobArgs::ARG_QUERY);
+			JobArgs::Optional(JobArgs::ARG_QUERY));
 	}
 
 	public function getRequiredPrivileges()
