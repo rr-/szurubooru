@@ -38,6 +38,7 @@ class AbstractTest
 		$post->setUploader($owner);
 		$post->setType(new PostType(PostType::Image));
 		$post->setTags([$this->mockTag(), $this->mockTag()]);
+		copy($this->getPath('image.jpg'), $post->getFullPath());
 		return PostModel::save($post);
 	}
 

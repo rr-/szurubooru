@@ -56,6 +56,9 @@ final class PostEntity extends AbstractEntity implements IValidatable
 		if (empty($this->getType()))
 			throw new SimpleException('No post type detected');
 
+		if (empty($this->tryGetWorkingFullPath()))
+			throw new SimpleException('No post content');
+
 		if (empty($this->getTags()))
 			throw new SimpleException('No tags set');
 
