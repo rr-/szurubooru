@@ -55,7 +55,6 @@ class Access
 			TextCaseConverter::CAMEL_CASE,
 			TextCaseConverter::SPINAL_CASE);
 
-
 		if (isset(self::$privileges[$key]))
 			$minAccessRank = self::$privileges[$key];
 		elseif (isset(self::$privileges[$key2]))
