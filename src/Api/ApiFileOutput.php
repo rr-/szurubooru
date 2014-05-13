@@ -6,6 +6,8 @@ class ApiFileOutput
 {
 	public $fileContent;
 	public $fileName;
+	public $lastModified;
+	public $mimeType;
 
 	public function __construct($filePath, $fileName)
 	{
