@@ -17,6 +17,9 @@ class GetPostThumbJobTest extends AbstractTest
 
 		$this->assert->isNotNull($post->tryGetWorkingFullPath());
 		$this->assert->areEqual('image/jpeg', $output->mimeType);
+		$this->assert->areNotEqual(
+			file_get_contents(getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg'),
+			$output->fileContent);
 	}
 
 	public function testIdFail()

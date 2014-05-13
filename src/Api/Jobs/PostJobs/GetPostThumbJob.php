@@ -29,8 +29,9 @@ class GetPostThumbJob extends AbstractJob
 			$post = $this->postRetriever->retrieve();
 
 			$post->generateThumb($width, $height);
+			$path = PostModel::tryGetWorkingThumbPath($name, $width, $height);
 
-			if (!file_exists($path))
+			if (!$path)
 			{
 				$path = getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
 				$path = TextHelper::absolutePath($path);
