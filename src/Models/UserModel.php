@@ -14,7 +14,7 @@ final class UserModel extends AbstractCrudModel
 		return 'user';
 	}
 
-	public static function save($user)
+	protected static function saveSingle($user)
 	{
 		$user->validate();
 
@@ -49,7 +49,7 @@ final class UserModel extends AbstractCrudModel
 		return $user;
 	}
 
-	public static function remove($user)
+	protected static function removeSingle($user)
 	{
 		Database::transaction(function() use ($user)
 		{

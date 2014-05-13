@@ -60,7 +60,7 @@ class PreviewCommentJobTest extends AbstractTest
 	public function testViaPost()
 	{
 		$this->prepare();
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 
 		$this->assert->doesNotThrow(function() use ($post)
 		{
@@ -76,7 +76,9 @@ class PreviewCommentJobTest extends AbstractTest
 	public function testViaComment()
 	{
 		$this->prepare();
-		$comment = $this->mockComment(Auth::getCurrentUser());
+		$comment = $this->commentMocker->mockSingle();
+		$comment->setCommenter(Auth::getCurrentUser());
+		CommentModel::save($comment);
 
 		$this->assert->doesNotThrow(function() use ($comment)
 		{
@@ -92,7 +94,7 @@ class PreviewCommentJobTest extends AbstractTest
 
 	protected function runApi($text)
 	{
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 
 		return Api::run(
 			new PreviewCommentJob(),
@@ -106,6 +108,6 @@ class PreviewCommentJobTest extends AbstractTest
 	{
 		getConfig()->registration->needEmailForCommenting = false;
 		$this->grantAccess('addComment');
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 	}
 }

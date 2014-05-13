@@ -6,7 +6,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setUnconfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 
@@ -38,7 +38,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setUnconfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 
@@ -77,7 +77,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setUnconfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 

@@ -124,7 +124,7 @@ class TogglePostTagJobTest extends AbstractTest
 	private function preparePost(array $tagNames)
 	{
 		$this->grantAccess('editPostTags');
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 		$post->setTags(TagModel::spawnFromNames($tagNames));
 		PostModel::save($post);
 		return $post;

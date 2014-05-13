@@ -5,21 +5,20 @@ class FeaturePostJobTest extends AbstractTest
 	{
 		$this->grantAccess('featurePost');
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$this->login($user);
-		$post1 = $this->mockPost($user);
-		$post2 = $this->mockPost($user);
+		$posts = $this->postMocker->mockMultiple(2);
 
-		$this->assert->doesNotThrow(function() use ($post2)
+		$this->assert->doesNotThrow(function() use ($posts)
 		{
 			Api::run(
 				new FeaturePostJob(),
 				[
-					JobArgs::ARG_POST_ID => $post2->getId()
+					JobArgs::ARG_POST_ID => $posts[1]->getId()
 				]);
 		});
 
-		$this->assert->areEqual($post2->getId(), PropertyModel::get(PropertyModel::FeaturedPostId));
+		$this->assert->areEqual($posts[1]->getId(), PropertyModel::get(PropertyModel::FeaturedPostId));
 		$this->assert->areEqual($user->getName(), PropertyModel::get(PropertyModel::FeaturedPostUserName));
 		$this->assert->isNotNull(PropertyModel::get(PropertyModel::FeaturedPostUnixTime));
 	}
@@ -28,22 +27,20 @@ class FeaturePostJobTest extends AbstractTest
 	{
 		$this->grantAccess('featurePost');
 
-		$user = $this->mockUser();
-		$this->login($user);
-		$post1 = $this->mockPost($user);
-		$post2 = $this->mockPost($user);
+		$this->login($this->userMocker->mockSingle());
+		$posts = $this->postMocker->mockMultiple(2);
 
-		$this->assert->doesNotThrow(function() use ($post2)
+		$this->assert->doesNotThrow(function() use ($posts)
 		{
 			Api::run(
 				new FeaturePostJob(),
 				[
-					JobArgs::ARG_POST_ID => $post2->getId(),
+					JobArgs::ARG_POST_ID => $posts[1]->getId(),
 					JobArgs::ARG_ANONYMOUS => true,
 				]);
 		});
 
-		$this->assert->areEqual($post2->getId(), PropertyModel::get(PropertyModel::FeaturedPostId));
+		$this->assert->areEqual($posts[1]->getId(), PropertyModel::get(PropertyModel::FeaturedPostId));
 		$this->assert->areEqual(null, PropertyModel::get(PropertyModel::FeaturedPostUserName));
 	}
 }

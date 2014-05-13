@@ -9,7 +9,7 @@ final class TagModel extends AbstractCrudModel
 		return 'tag';
 	}
 
-	public static function save($tag)
+	protected static function saveSingle($tag)
 	{
 		$tag->validate();
 
@@ -28,7 +28,7 @@ final class TagModel extends AbstractCrudModel
 		return $tag;
 	}
 
-	public static function remove($tag)
+	protected static function removeSingle($tag)
 	{
 		$binding = new Sql\Binding($tag->getId());
 

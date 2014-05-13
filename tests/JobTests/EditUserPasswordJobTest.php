@@ -14,7 +14,7 @@ class EditUserPasswordJobTest extends AbstractTest
 	public function testTooShortPassword()
 	{
 		$this->grantAccess('changeUserPassword');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$newPassword = str_repeat('a', getConfig()->registration->passMinLength - 1);
 		$oldPasswordHash = $user->getPasswordHash();
@@ -35,7 +35,7 @@ class EditUserPasswordJobTest extends AbstractTest
 	private function testValidPassword($newPassword)
 	{
 		$this->grantAccess('changeUserPassword');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$newPasswordHash = UserModel::hashPassword($newPassword, $user->getPasswordSalt());
 

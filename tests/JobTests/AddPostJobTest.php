@@ -11,7 +11,7 @@ class AddPostJobTest extends AbstractTest
 		$this->grantAccess('addPostSource');
 		$this->grantAccess('addPostContent');
 
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 
 		$post = $this->assert->doesNotThrow(function()
 		{
@@ -20,14 +20,15 @@ class AddPostJobTest extends AbstractTest
 				[
 					JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
 					JobArgs::ARG_NEW_SOURCE => '',
-					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_NEW_POST_CONTENT =>
+						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);
 		});
 
 		$this->assert->areEqual(
 			file_get_contents($post->getFullPath()),
-			file_get_contents($this->getPath('image.jpg')));
+			file_get_contents($this->testSupport->getPath('image.jpg')));
 		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $post->getUploaderId());
 	}
 
@@ -39,7 +40,7 @@ class AddPostJobTest extends AbstractTest
 		$this->grantAccess('addPostTags');
 		$this->grantAccess('addPostContent');
 
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 
 		$post = $this->assert->doesNotThrow(function()
 		{
@@ -47,14 +48,15 @@ class AddPostJobTest extends AbstractTest
 				new AddPostJob(),
 				[
 					JobArgs::ARG_ANONYMOUS => true,
-					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_NEW_POST_CONTENT =>
+						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);
 		});
 
 		$this->assert->areEqual(
 			file_get_contents($post->getFullPath()),
-			file_get_contents($this->getPath('image.jpg')));
+			file_get_contents($this->testSupport->getPath('image.jpg')));
 		$this->assert->areNotEqual(Auth::getCurrentUser()->getId(), $post->getUploaderId());
 		$this->assert->areEqual(null, $post->getUploaderId());
 	}
@@ -75,7 +77,8 @@ class AddPostJobTest extends AbstractTest
 				[
 					JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
 					JobArgs::ARG_NEW_SOURCE => 'this should make it fail',
-					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_NEW_POST_CONTENT =>
+						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);
 		}, 'Insufficient privilege');
 	}
@@ -95,8 +98,9 @@ class AddPostJobTest extends AbstractTest
 				new AddPostJob(),
 				[
 					JobArgs::ARG_NEW_SAFETY => 666,
-					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
 					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_NEW_POST_CONTENT =>
+						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);
 		}, 'Invalid safety type');
 	}
@@ -132,7 +136,8 @@ class AddPostJobTest extends AbstractTest
 			Api::run(
 				new AddPostJob(),
 				[
-					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_NEW_POST_CONTENT =>
+						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);
 		}, 'No tags set');
 	}

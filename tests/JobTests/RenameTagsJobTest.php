@@ -5,20 +5,14 @@ class RenameTagsJobTest extends AbstractTest
 	{
 		$this->grantAccess('renameTags');
 
-		$sourceTag = $this->mockTag();
-		$randomTag = $this->mockTag();
-		$targetTag = $this->mockTag();
+		list ($sourceTag, $randomTag, $targetTag)
+			= $this->tagMocker->mockMultiple(3);
 
-		$posts = [];
-		foreach (range(0, 2) as $i)
-			$posts []= $this->mockPost($this->mockUser());
-
+		$posts = $this->postMocker->mockMultiple(3);
 		$posts[0]->setTags([$sourceTag]);
 		$posts[1]->setTags([$randomTag]);
 		$posts[2]->setTags([$sourceTag, $randomTag]);
-
-		foreach ($posts as $post)
-			PostModel::save($post);
+		PostModel::save($posts);
 
 		$this->assert->doesNotThrow(function() use ($sourceTag, $targetTag)
 		{
@@ -33,23 +27,20 @@ class RenameTagsJobTest extends AbstractTest
 		foreach ($posts as $k => $post)
 			$posts[$k] = PostModel::getById($post->getId());
 
-		$this->assertTagNames($posts[0], [$targetTag]);
-		$this->assertTagNames($posts[1], [$randomTag]);
-		$this->assertTagNames($posts[2], [$randomTag, $targetTag]);
+		$this->testSupport->assertTagNames($posts[0], [$targetTag]);
+		$this->testSupport->assertTagNames($posts[1], [$randomTag]);
+		$this->testSupport->assertTagNames($posts[2], [$randomTag, $targetTag]);
 	}
 
 	public function testRenamingToExistingTag()
 	{
 		$this->grantAccess('renameTags');
 
-		$sourceTag = $this->mockTag();
-		$post = $this->mockPost($this->mockUser());
-		$post->setTags([$sourceTag]);
-		PostModel::save($post);
+		list ($sourceTag, $targetTag)
+			= $this->tagMocker->mockMultiple(2);
 
-		$targetTag = $this->mockTag();
-		$post = $this->mockPost($this->mockUser());
-		$post->setTags([$targetTag]);
+		$post = $this->postMocker->mockSingle();
+		$post->setTags([$sourceTag, $targetTag]);
 		PostModel::save($post);
 
 		$this->assert->throws(function() use ($sourceTag, $targetTag)
@@ -67,8 +58,9 @@ class RenameTagsJobTest extends AbstractTest
 	{
 		$this->grantAccess('renameTags');
 
-		$sourceTag = $this->mockTag();
-		$post = $this->mockPost($this->mockUser());
+		$sourceTag = $this->tagMocker->mockSingle();
+
+		$post = $this->postMocker->mockSingle();
 		$post->setTags([$sourceTag]);
 		PostModel::save($post);
 
@@ -81,24 +73,5 @@ class RenameTagsJobTest extends AbstractTest
 					JobArgs::ARG_TARGET_TAG_NAME => $sourceTag->getName(),
 				]);
 		}, 'Source and target tag are the same');
-	}
-
-	private function assertTagNames($post, $tags)
-	{
-		$tagNames = $this->getTagNames($tags);
-		$postTagNames = $this->getTagNames($post->getTags());
-		$this->assert->areEquivalent($tagNames, $postTagNames);
-	}
-
-	private function getTagNames($tags)
-	{
-		$tagNames = array_map(
-			function($tag)
-			{
-				return $tag->getName();
-			}, $tags);
-		natcasesort($tagNames);
-		$tagNames = array_values($tagNames);
-		return $tagNames;
 	}
 }

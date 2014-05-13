@@ -97,7 +97,7 @@ class AddCommentJobTest extends AbstractTest
 
 	protected function runApi($text)
 	{
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 
 		return Api::run(
 			new AddCommentJob(),
@@ -111,6 +111,6 @@ class AddCommentJobTest extends AbstractTest
 	{
 		getConfig()->registration->needEmailForCommenting = false;
 		$this->grantAccess('addComment');
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 	}
 }

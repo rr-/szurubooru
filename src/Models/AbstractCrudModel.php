@@ -29,12 +29,54 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function remove($entities)
 	{
-		throw new NotImplementedException();
+		if (is_array($entities))
+			return static::removeMultiple($entities);
+		else
+			return static::removeSingle($entities);
 	}
 
-	public static function save($entity)
+	protected static function removeMultiple($entities)
 	{
-		throw new NotImplementedException();
+		$cb = [get_called_class(), 'removeSingle'];
+		Database::transaction(function() use ($entities, $cb)
+		{
+			foreach ($entities as $entity)
+			{
+				$cb($entity);
+			}
+		});
+	}
+
+	protected static function removeSingle($entity)
+	{
+		throw new BadMethodCallException('Not implemented');
+	}
+
+	public static function save($entities)
+	{
+		if (is_array($entities))
+			return static::saveMultiple($entities);
+		else
+			return static::saveSingle($entities);
+	}
+
+	protected static function saveMultiple($entities)
+	{
+		$cb = [get_called_class(), 'saveSingle'];
+		return Database::transaction(function() use ($entities, $cb)
+		{
+			$ret = [];
+			foreach ($entities as $entity)
+			{
+				$ret []= $cb($entity);
+			}
+			return $ret;
+		});
+	}
+
+	protected static function saveSingle($entity)
+	{
+		throw new BadMethodCallException('Not implemented');
 	}
 
 

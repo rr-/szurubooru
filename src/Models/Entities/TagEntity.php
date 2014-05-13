@@ -55,9 +55,11 @@ final class TagEntity extends AbstractEntity implements IValidatable
 			return $this->getCache('post_count');
 
 		$stmt = new Sql\SelectStatement();
-		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
+		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'post_count'));
 		$stmt->setTable('post_tag');
 		$stmt->setCriterion(new Sql\EqualsFunctor('tag_id', new Sql\Binding($this->getId())));
-		return Database::fetchOne($stmt)['count'];
+		$row = Database::fetchOne($stmt);
+		$this->setCache('post_count', (int) $row['post_count']);
+		return $this->getCache('post_count');
 	}
 }

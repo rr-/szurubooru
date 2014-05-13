@@ -3,11 +3,10 @@ class EditPostRelationsJobTest extends AbstractTest
 {
 	public function testEditing()
 	{
-		$basePost = $this->mockPost($this->mockUser());
 		$this->grantAccess('editPostRelations');
 
-		$post1 = $this->mockPost($this->mockUser());
-		$post2 = $this->mockPost($this->mockUser());
+		list ($basePost, $post1, $post2)
+			= $this->postMocker->mockMultiple(3);
 
 		$basePost = $this->assert->doesNotThrow(function() use ($basePost, $post1, $post2)
 		{
@@ -30,11 +29,10 @@ class EditPostRelationsJobTest extends AbstractTest
 
 	public function testOverwriting()
 	{
-		$basePost = $this->mockPost($this->mockUser());
 		$this->grantAccess('editPostRelations');
 
-		$post1 = $this->mockPost($this->mockUser());
-		$post2 = $this->mockPost($this->mockUser());
+		list ($basePost, $post1, $post2)
+			= $this->postMocker->mockMultiple(3);
 
 		$basePost->setRelations([$post1]);
 		PostModel::save($basePost);
@@ -61,11 +59,10 @@ class EditPostRelationsJobTest extends AbstractTest
 
 	public function testOverwritingEmpty()
 	{
-		$basePost = $this->mockPost($this->mockUser());
 		$this->grantAccess('editPostRelations');
 
-		$post1 = $this->mockPost($this->mockUser());
-		$post2 = $this->mockPost($this->mockUser());
+		list ($basePost, $post1, $post2)
+			= $this->postMocker->mockMultiple(3);
 
 		$basePost->setRelations([$post1]);
 		PostModel::save($basePost);

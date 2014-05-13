@@ -75,7 +75,7 @@ class CommentRetrieverTest extends AbstractTest
 
 	private function prepareComment()
 	{
-		return $this->mockComment($this->mockUser());
+		return $this->commentMocker->mockSingle();
 	}
 
 	private function prepareRetriever()

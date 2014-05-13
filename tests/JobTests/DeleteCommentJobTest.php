@@ -6,7 +6,7 @@ class DeleteCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->grantAccess('deleteComment');
 
-		$comment = $this->mockComment(Auth::getCurrentUser());
+		$comment = $this->commentMocker->mockSingle();
 		$post = $comment->getPost();
 		$this->assert->areEqual(1, $post->getCommentCount());
 
@@ -41,6 +41,6 @@ class DeleteCommentJobTest extends AbstractTest
 
 	protected function prepare()
 	{
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 	}
 }

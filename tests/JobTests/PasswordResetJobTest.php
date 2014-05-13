@@ -6,7 +6,7 @@ class PasswordResetJobTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setUnconfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 
@@ -25,7 +25,7 @@ class PasswordResetJobTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setConfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 
@@ -57,7 +57,7 @@ class PasswordResetJobTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setConfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 
@@ -97,7 +97,7 @@ class PasswordResetJobTest extends AbstractTest
 		getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setConfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 

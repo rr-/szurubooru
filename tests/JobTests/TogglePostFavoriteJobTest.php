@@ -4,9 +4,9 @@ class TogglePostFavoriteJobTest extends AbstractTest
 	public function testFaving()
 	{
 		$this->grantAccess('favoritePost');
-		$user = $this->mockUser();
+		$post = $this->postMocker->mockSingle();
+		$user = $this->userMocker->mockSingle();
 		$this->login($user);
-		$post = $this->mockPost($user);
 
 		$this->assert->areEqual(0, $post->getScore());
 		$this->assert->areEqual(0, $post->getFavoriteCount());
@@ -31,9 +31,9 @@ class TogglePostFavoriteJobTest extends AbstractTest
 	public function testDefaving()
 	{
 		$this->grantAccess('favoritePost');
-		$user = $this->mockUser();
+		$post = $this->postMocker->mockSingle();
+		$user = $this->userMocker->mockSingle();
 		$this->login($user);
-		$post = $this->mockPost($user);
 
 		$this->assert->areEqual(0, $post->getScore());
 		$this->assert->areEqual(0, $post->getFavoriteCount());
@@ -68,14 +68,13 @@ class TogglePostFavoriteJobTest extends AbstractTest
 	public function testFavingTwoPeople()
 	{
 		$this->grantAccess('favoritePost');
-		$user1 = $this->mockUser();
-		$user2 = $this->mockUser();
-		$post = $this->mockPost($user1);
+		$users = $this->userMocker->mockMultiple(2);
+		$post = $this->postMocker->mockSingle();
 
 		$this->assert->areEqual(0, $post->getScore());
 		$this->assert->areEqual(0, $post->getFavoriteCount());
 
-		$this->login($user1);
+		$this->login($users[0]);
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
@@ -86,7 +85,7 @@ class TogglePostFavoriteJobTest extends AbstractTest
 				]);
 		});
 
-		$this->login($user2);
+		$this->login($users[1]);
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
@@ -99,11 +98,11 @@ class TogglePostFavoriteJobTest extends AbstractTest
 
 		$this->assert->areEqual(2, $post->getScore());
 		$this->assert->areEqual(2, $post->getFavoriteCount());
-		$this->assert->areEqual(1, $user1->getFavoriteCount());
-		$this->assert->areEqual(1, $user1->getScore($post));
-		$this->assert->areEqual(1, $user2->getFavoriteCount());
-		$this->assert->areEqual(1, $user2->getScore($post));
-		$this->assert->areEqual(true, $user1->hasFavorited($post));
-		$this->assert->areEqual(true, $user2->hasFavorited($post));
+		$this->assert->areEqual(1, $users[0]->getFavoriteCount());
+		$this->assert->areEqual(1, $users[0]->getScore($post));
+		$this->assert->areEqual(1, $users[1]->getFavoriteCount());
+		$this->assert->areEqual(1, $users[1]->getScore($post));
+		$this->assert->areEqual(true, $users[0]->hasFavorited($post));
+		$this->assert->areEqual(true, $users[1]->hasFavorited($post));
 	}
 }

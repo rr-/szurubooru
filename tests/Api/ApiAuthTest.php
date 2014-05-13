@@ -60,7 +60,7 @@ class ApiAuthTest extends AbstractFullApiTest
 		getConfig()->registration->needEmailForCommenting = false;
 		$this->grantAccess('addComment');
 
-		$comment = $this->mockComment(Auth::getCurrentUser());
+		$comment = $this->commentMocker->mockSingle();
 
 		$this->assert->throws(function() use ($comment)
 		{

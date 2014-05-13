@@ -4,7 +4,7 @@ class ToggleUserBanJobTest extends AbstractTest
 	public function testBanning()
 	{
 		$this->grantAccess('banUser');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$this->login($user);
 
 		$this->assert->isFalse($user->isBanned());
@@ -25,7 +25,7 @@ class ToggleUserBanJobTest extends AbstractTest
 	public function testUnbanning()
 	{
 		$this->grantAccess('banUser');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$this->login($user);
 
 		$this->assert->isFalse($user->isBanned());

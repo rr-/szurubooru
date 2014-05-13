@@ -38,7 +38,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 
 	public function testDynamicPostPrivileges()
 	{
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 
 		$this->testDynamicPostPrivilege(new DeletePostJob(), new Privilege(Privilege::DeletePost));
 		$this->testDynamicPostPrivilege(new EditPostJob(), new Privilege(Privilege::EditPost));
@@ -74,8 +74,10 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	{
 		$this->testedJobs []= $job;
 
-		$ownPost = $this->mockPost(Auth::getCurrentUser());
-		$otherPost = $this->mockPost($this->mockUser());
+		list ($ownPost, $otherPost) = $this->postMocker->mockMultiple(2);
+		$ownPost->setUploader(Auth::getCurrentUser());
+		$otherPost->setUploader($this->userMocker->mockSingle());
+		PostModel::save([$ownPost, $otherPost]);
 
 		$expectedPrivilege->secondary = 'all';
 		$job->setArgument(JobArgs::ARG_POST_ID, $otherPost->getId());
@@ -96,7 +98,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 			new GetPostContentJob(),
 		];
 
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 
 		foreach ($jobs as $job)
 		{
@@ -123,7 +125,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 
 	public function testDynamicUserPrivileges()
 	{
-		$ownUser = $this->mockUser();
+		$ownUser = $this->userMocker->mockSingle();
 		$this->login($ownUser);
 
 		$this->testDynamicUserPrivilege(new DeleteUserJob(), new Privilege(Privilege::DeleteUser));
@@ -140,7 +142,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	{
 		$ownUser = Auth::getCurrentUser();
 
-		$otherUser = $this->mockUser();
+		$otherUser = $this->userMocker->mockSingle();
 		$otherUser->setName('dummy' . uniqid());
 		UserModel::save($otherUser);
 
@@ -159,7 +161,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 
 	public function testDynamicCommentPrivileges()
 	{
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 
 		$this->testDynamicCommentPrivilege(new DeleteCommentJob(), new Privilege(Privilege::DeleteComment));
 		$this->testDynamicCommentPrivilege(new EditCommentJob(), new Privilege(Privilege::EditComment));
@@ -167,8 +169,10 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 
 	protected function testDynamicCommentPrivilege($job, $expectedPrivilege)
 	{
-		$ownComment = $this->mockComment(Auth::getCurrentUser());
-		$otherComment = $this->mockComment($this->mockUser());
+		list ($ownComment, $otherComment) = $this->commentMocker->mockMultiple(2);
+		$ownComment->setCommenter(Auth::getCurrentUser());
+		$otherComment->setCommenter($this->userMocker->mockSingle());
+		CommentModel::save([$ownComment, $otherComment]);
 
 		$this->testedJobs []= $job;
 
@@ -187,7 +191,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	{
 		$this->assert->throws(function()
 		{
-			$post = $this->mockPost(Auth::getCurrentUser());
+			$post = $this->postMocker->mockSingle();
 			getConfig()->registration->needEmailForCommenting = false;
 			return Api::run(
 				new AddCommentJob(),

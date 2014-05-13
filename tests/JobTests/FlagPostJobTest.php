@@ -4,7 +4,7 @@ class FlagPostJobTest extends AbstractTest
 	public function testFlagging()
 	{
 		$this->grantAccess('flagPost');
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
@@ -25,7 +25,7 @@ class FlagPostJobTest extends AbstractTest
 	public function testDoubleFlagging()
 	{
 		$this->grantAccess('flagPost');
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 
 		$this->assert->doesNotThrow(function() use ($post)
 		{

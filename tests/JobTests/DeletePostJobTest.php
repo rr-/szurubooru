@@ -3,9 +3,8 @@ class DeletePostJobTest extends AbstractTest
 {
 	public function testRemoval()
 	{
-		$user = $this->mockUser();
-		$post = $this->mockPost($user);
-		$this->login($user);
+		$post = $this->postMocker->mockSingle();
+		$this->login($this->userMocker->mockSingle());
 		$this->grantAccess('deletePost');
 
 		$this->assert->doesNotThrow(function() use ($post)
@@ -23,9 +22,8 @@ class DeletePostJobTest extends AbstractTest
 
 	public function testWrongPostId()
 	{
-		$user = $this->mockUser();
-		$post = $this->mockPost($user);
-		$this->login($user);
+		$post = $this->postMocker->mockSingle();
+		$this->login($this->userMocker->mockSingle());
 
 		$this->assert->throws(function()
 		{

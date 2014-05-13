@@ -3,7 +3,7 @@ class EditPostTagsJobTest extends AbstractTest
 {
 	public function testEditing()
 	{
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 		$this->grantAccess('editPostTags');
 
 		$newTagNames = ['big', 'boss'];
@@ -30,7 +30,7 @@ class EditPostTagsJobTest extends AbstractTest
 
 	public function testFailOnEmptyTags()
 	{
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 		$this->grantAccess('editPostTags');
 
 		$this->assert->throws(function() use ($post)
@@ -46,7 +46,7 @@ class EditPostTagsJobTest extends AbstractTest
 
 	public function testTooShortTag()
 	{
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 		$this->grantAccess('editPostTags');
 
 		$newTagNames = [str_repeat('u', getConfig()->tags->minLength - 1)];
@@ -63,7 +63,7 @@ class EditPostTagsJobTest extends AbstractTest
 
 	public function testTooLongTag()
 	{
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 		$this->grantAccess('editPostTags');
 
 		$newTagNames = [str_repeat('u', getConfig()->tags->maxLength + 1)];
@@ -80,7 +80,7 @@ class EditPostTagsJobTest extends AbstractTest
 
 	public function testInvalidTag()
 	{
-		$post = $this->mockPost($this->mockUser());
+		$post = $this->postMocker->mockSingle();
 		$this->grantAccess('editPostTags');
 
 		$newTagNames = ['bulma/goku'];

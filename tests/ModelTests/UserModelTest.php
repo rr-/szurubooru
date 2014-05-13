@@ -90,8 +90,7 @@ class UserModelTest extends AbstractTest
 
 	private function prepareTwoUsersWithSameName()
 	{
-		$user1 = $this->mockUser();
-		$user2 = $this->mockUser();
+		list ($user1, $user2) = $this->userMocker->mockMultiple(2);
 		$user1->setName('pikachu');
 		$user2->setName('pikachu');
 		UserModel::save($user1);
@@ -100,8 +99,7 @@ class UserModelTest extends AbstractTest
 
 	private function prepareTwoUsersWithSameEmail($confirmFirst, $confirmSecond)
 	{
-		$user1 = $this->mockUser();
-		$user2 = $this->mockUser();
+		list ($user1, $user2) = $this->userMocker->mockMultiple(2);
 		$mail = 'godzilla@whitestar.gov';
 
 		if ($confirmFirst)

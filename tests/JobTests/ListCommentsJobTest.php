@@ -18,7 +18,7 @@ class ListCommentJobTest extends AbstractTest
 
 		$this->assert->areEqual(0, CommentModel::getCount());
 
-		$comment = $this->mockComment($this->mockUser());
+		$comment = $this->commentMocker->mockSingle();
 
 		$ret = $this->runApi(1);
 		$this->assert->areEqual(1, count($ret->entities));
@@ -48,9 +48,7 @@ class ListCommentJobTest extends AbstractTest
 
 		$this->assert->areEqual(0, CommentModel::getCount());
 
-		$this->mockComment($this->mockUser());
-		$this->mockComment($this->mockUser());
-		$this->mockComment($this->mockUser());
+		$this->commentMocker->mockMultiple(3);
 
 		$ret = $this->runApi(1);
 		$this->assert->areEqual(2, count($ret->entities));

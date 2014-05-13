@@ -79,7 +79,9 @@ class EditCommentJobTest extends AbstractTest
 
 	protected function runApi($text)
 	{
-		$comment = $this->mockComment(Auth::getCurrentUser());
+		$comment = $this->commentMocker->mockSingle();
+		$comment->setCommenter(Auth::getCurrentUser());
+		CommentModel::save($comment);
 
 		return Api::run(
 			new EditCommentJob(),
@@ -91,6 +93,6 @@ class EditCommentJobTest extends AbstractTest
 
 	protected function prepare()
 	{
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 	}
 }

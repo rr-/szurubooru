@@ -25,7 +25,7 @@ class PostModelTest extends AbstractTest
 
 	public function testFeaturingRandomPost()
 	{
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 
 		PostModel::featureRandomPost();
 
@@ -35,16 +35,14 @@ class PostModelTest extends AbstractTest
 	public function testFeaturingIllegalPosts()
 	{
 		$posts = [];
-		foreach (range(0, 5) as $i)
-			$posts []= $this->mockPost(Auth::getCurrentUser());
+		$posts = $this->postMocker->mockMultiple(6);
 		$posts[0]->setSafety(new PostSafety(PostSafety::Sketchy));
 		$posts[1]->setSafety(new PostSafety(PostSafety::Sketchy));
 		$posts[2]->setHidden(true);
 		$posts[3]->setType(new PostType(PostType::Youtube));
 		$posts[4]->setType(new PostType(PostType::Flash));
 		$posts[5]->setType(new PostType(PostType::Video));
-		foreach ($posts as $post)
-			PostModel::save($post);
+		PostModel::save($posts);
 
 		PostModel::featureRandomPost();
 
@@ -53,7 +51,7 @@ class PostModelTest extends AbstractTest
 
 	public function testAutoFeaturingFirstTime()
 	{
-		$this->mockPost(Auth::getCurrentUser());
+		$this->postMocker->mockSingle();
 
 		$this->assert->doesNotThrow(function()
 		{
@@ -65,7 +63,7 @@ class PostModelTest extends AbstractTest
 
 	public function testAutoFeaturingTooSoon()
 	{
-		$this->mockPost(Auth::getCurrentUser());
+		$this->postMocker->mockSingle();
 
 		$this->assert->isTrue(PostModel::featureRandomPostIfNecessary());
 		$this->assert->isFalse(PostModel::featureRandomPostIfNecessary());
@@ -75,7 +73,7 @@ class PostModelTest extends AbstractTest
 
 	public function testAutoFeaturingOutdated()
 	{
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 		$minTimestamp = getConfig()->misc->featuredPostMaxDays * 24 * 3600;
 
 		$this->assert->isTrue(PostModel::featureRandomPostIfNecessary());
@@ -89,14 +87,14 @@ class PostModelTest extends AbstractTest
 
 	public function testAutoFeaturingDeletedPost()
 	{
-		$post = $this->mockPost(Auth::getCurrentUser());
-
+		$post = $this->postMocker->mockSingle();
 		$this->assert->isTrue(PostModel::featureRandomPostIfNecessary());
 		$this->assert->isNotNull(PostModel::getFeaturedPost());
-		PostModel::remove($post);
-		$anotherPost = $this->mockPost(Auth::getCurrentUser());
-		$this->assert->isTrue(PostModel::featureRandomPostIfNecessary());
 
+		PostModel::remove($post);
+
+		$anotherPost = $this->postMocker->mockSingle();
+		$this->assert->isTrue(PostModel::featureRandomPostIfNecessary());
 		$this->assert->isNotNull(PostModel::getFeaturedPost());
 	}
 }

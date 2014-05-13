@@ -91,7 +91,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->prepare();
 		$this->grantAccess('editPostContent');
 
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 		$post = Api::run(
 			new EditPostContentJob(),
 			[
@@ -119,7 +119,8 @@ class EditPostContentJobTest extends AbstractTest
 				new EditPostContentJob(),
 				[
 					JobArgs::ARG_POST_ID => 100,
-					JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_NEW_POST_CONTENT =>
+						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);
 		}, 'Invalid post ID');
 	}
@@ -156,7 +157,7 @@ class EditPostContentJobTest extends AbstractTest
 
 		$url = 'http://www.youtube.com/watch?v=qWq_jydCUw4';
 
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 		$post = Api::run(
 			new EditPostContentJob(),
 			[
@@ -164,7 +165,7 @@ class EditPostContentJobTest extends AbstractTest
 				JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
 			]);
 
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 		$this->assert->throws(function() use ($post, $url)
 		{
 			Api::run(
@@ -178,16 +179,16 @@ class EditPostContentJobTest extends AbstractTest
 
 	protected function prepare()
 	{
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 	}
 
 	protected function uploadFromUrl($fileName, $post = null)
 	{
 		if ($post === null)
-			$post = $this->mockPost(Auth::getCurrentUser());
+			$post = $this->postMocker->mockSingle();
 
 		$url = 'http://example.com/mock_' . $fileName;
-		TransferHelper::mockForDownload($url, $this->getPath($fileName));
+		TransferHelper::mockForDownload($url, $this->testSupport->getPath($fileName));
 
 		$post = Api::run(
 			new EditPostContentJob(),
@@ -198,7 +199,7 @@ class EditPostContentJobTest extends AbstractTest
 
 		$this->assert->isNotNull($post->tryGetWorkingFullPath());
 		$this->assert->areEqual(
-			file_get_contents($this->getPath($fileName)),
+			file_get_contents($this->testSupport->getPath($fileName)),
 			file_get_contents($post->tryGetWorkingFullPath()));
 
 		return $post;
@@ -207,18 +208,19 @@ class EditPostContentJobTest extends AbstractTest
 	protected function uploadFromFile($fileName, $post = null)
 	{
 		if ($post === null)
-			$post = $this->mockPost(Auth::getCurrentUser());
+			$post = $this->postMocker->mockSingle();
 
 		$post = Api::run(
 			new EditPostContentJob(),
 			[
 				JobArgs::ARG_POST_ID => $post->getId(),
-				JobArgs::ARG_NEW_POST_CONTENT => new ApiFileInput($this->getPath($fileName), 'test.jpg'),
+				JobArgs::ARG_NEW_POST_CONTENT =>
+					new ApiFileInput($this->testSupport->getPath($fileName), 'test.jpg'),
 			]);
 
 		$this->assert->isNotNull($post->tryGetWorkingFullPath());
 		$this->assert->areEqual(
-			file_get_contents($this->getPath($fileName)),
+			file_get_contents($this->testSupport->getPath($fileName)),
 			file_get_contents($post->tryGetWorkingFullPath()));
 
 		return $post;

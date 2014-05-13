@@ -2,10 +2,20 @@
 class AbstractTest
 {
 	public $assert;
+	protected $postMocker;
+	protected $tagMocker;
+	protected $userMocker;
+	protected $commentMocker;
+	protected $testSupport;
 
 	public function __construct()
 	{
 		$this->assert = new Assert();
+		$this->testSupport = new TestSupport($this->assert);
+		$this->tagMocker = new TagMocker();
+		$this->postMocker = new PostMocker($this->tagMocker, $this->testSupport);
+		$this->userMocker = new UserMocker();
+		$this->commentMocker = new CommentMocker($this->postMocker);
 	}
 
 	public function setup()
@@ -16,45 +26,9 @@ class AbstractTest
 	{
 	}
 
-	protected function mockUser()
-	{
-		$user = UserModel::spawn();
-		$user->setAccessRank(new AccessRank(AccessRank::Registered));
-		$user->setName('dummy'.uniqid());
-		$user->setPassword('sekai');
-		return UserModel::save($user);
-	}
-
-	protected function mockTag()
-	{
-		$tag = TagModel::spawn();
-		$tag->setName(uniqid());
-		return TagModel::save($tag);
-	}
-
-	protected function mockPost($owner)
-	{
-		$post = PostModel::spawn();
-		$post->setUploader($owner);
-		$post->setType(new PostType(PostType::Image));
-		$post->setTags([$this->mockTag(), $this->mockTag()]);
-		copy($this->getPath('image.jpg'), $post->getFullPath());
-		return PostModel::save($post);
-	}
-
 	protected function login($user)
 	{
 		Auth::setCurrentUser($user);
-	}
-
-	protected function mockComment($owner)
-	{
-		$post = $this->mockPost($owner);
-		$comment = CommentModel::spawn();
-		$comment->setPost($post);
-		$comment->setCommenter($owner);
-		$comment->setText('test test');
-		return CommentModel::save($comment);
 	}
 
 	protected function grantAccess($privilege)
@@ -67,10 +41,5 @@ class AbstractTest
 	{
 		getConfig()->privileges->$privilege = 'nobody';
 		Access::init();
-	}
-
-	protected function getPath($name)
-	{
-		return getConfig()->rootDir . DS . 'tests' . DS . 'TestFiles' . DS . $name;
 	}
 }

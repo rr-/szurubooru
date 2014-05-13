@@ -6,7 +6,7 @@ class EditPostSafetyJobTest extends AbstractTest
 		$this->prepare();
 		$this->grantAccess('editPostSafety.own');
 
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
@@ -44,7 +44,7 @@ class EditPostSafetyJobTest extends AbstractTest
 		$this->prepare();
 		$this->grantAccess('editPostSafety.own');
 
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 		$this->assert->throws(function() use ($post)
 		{
 			Api::run(
@@ -58,6 +58,6 @@ class EditPostSafetyJobTest extends AbstractTest
 
 	protected function prepare()
 	{
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 	}
 }

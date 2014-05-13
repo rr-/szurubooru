@@ -9,7 +9,7 @@ final class CommentModel extends AbstractCrudModel
 		return 'comment';
 	}
 
-	public static function save($comment)
+	protected static function saveSingle($comment)
 	{
 		$comment->validate();
 		$comment->getPost()->removeCache('comment_count');
@@ -37,7 +37,7 @@ final class CommentModel extends AbstractCrudModel
 		return $comment;
 	}
 
-	public static function remove($comment)
+	protected static function removeSingle($comment)
 	{
 		Database::transaction(function() use ($comment)
 		{

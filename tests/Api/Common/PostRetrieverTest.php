@@ -84,7 +84,7 @@ class PostRetrieverTest extends AbstractTest
 
 	private function preparePost()
 	{
-		return $this->mockPost($this->mockUser());
+		return $this->postMocker->mockSingle();
 	}
 
 	private function prepareRetriever()

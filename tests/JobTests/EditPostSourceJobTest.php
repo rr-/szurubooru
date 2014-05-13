@@ -65,7 +65,7 @@ class EditPostSourceJobTest extends AbstractTest
 
 	protected function runApi($text)
 	{
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$post = $this->postMocker->mockSingle();
 		return Api::run(
 			new EditPostSourceJob(),
 			[
@@ -76,6 +76,6 @@ class EditPostSourceJobTest extends AbstractTest
 
 	protected function prepare()
 	{
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 	}
 }

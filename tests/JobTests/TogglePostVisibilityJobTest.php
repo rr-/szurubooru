@@ -4,8 +4,8 @@ class TogglePostVisibilityJobTest extends AbstractTest
 	public function testHiding()
 	{
 		$this->grantAccess('hidePost');
-		$this->login($this->mockUser());
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$this->login($this->userMocker->mockSingle());
+		$post = $this->postMocker->mockSingle();
 
 		$this->assert->isFalse($post->isHidden());
 
@@ -25,8 +25,8 @@ class TogglePostVisibilityJobTest extends AbstractTest
 	public function testShowing()
 	{
 		$this->grantAccess('hidePost');
-		$this->login($this->mockUser());
-		$post = $this->mockPost(Auth::getCurrentUser());
+		$this->login($this->userMocker->mockSingle());
+		$post = $this->postMocker->mockSingle();
 
 		$this->assert->isFalse($post->isHidden());
 

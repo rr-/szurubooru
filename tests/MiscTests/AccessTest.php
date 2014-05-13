@@ -9,7 +9,7 @@ class AccessTest extends AbstractTest
 
 	public function testAccessRanks1()
 	{
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setAccessRank(new AccessRank(AccessRank::Admin));
 		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts), $user));
 
@@ -31,7 +31,7 @@ class AccessTest extends AbstractTest
 		getConfig()->privileges->listPosts = 'power-user';
 		Access::init();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setAccessRank(new AccessRank(AccessRank::Admin));
 		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts), $user));
 
@@ -53,7 +53,7 @@ class AccessTest extends AbstractTest
 		getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		Access::init();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setAccessRank(new AccessRank(AccessRank::PowerUser));
 		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'own'), $user));
 		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'all'), $user));
@@ -78,7 +78,7 @@ class AccessTest extends AbstractTest
 
 	protected function testSubPrivilegesSubAndGeneral()
 	{
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setAccessRank(new AccessRank(AccessRank::PowerUser));
 		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'own'), $user));
 		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts, 'baka'), $user));
@@ -110,7 +110,7 @@ class AccessTest extends AbstractTest
 
 	protected function testSubPrivilegesMultipleSubAndGeneral()
 	{
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setAccessRank(new AccessRank(AccessRank::PowerUser));
 		$this->assert->isTrue(Access::check(new Privilege(Privilege::ListPosts, 'own'), $user));
 		$this->assert->isFalse(Access::check(new Privilege(Privilege::ListPosts, 'all'), $user));

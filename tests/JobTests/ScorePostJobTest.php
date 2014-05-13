@@ -3,10 +3,8 @@ class ScorePostJobTest extends AbstractTest
 {
 	public function testScoring()
 	{
-		$this->grantAccess('scorePost');
-		$this->login($this->mockUser());
-		$post = $this->mockPost(Auth::getCurrentUser());
-
+		$this->loginRandomPerson();
+		$post = $this->postMocker->mockSingle();
 		$this->assert->areEqual(0, $post->getScore());
 
 		$post = $this->assert->doesNotThrow(function() use ($post)
@@ -24,10 +22,8 @@ class ScorePostJobTest extends AbstractTest
 
 	public function testNegativeScore()
 	{
-		$this->grantAccess('scorePost');
-		$this->login($this->mockUser());
-		$post = $this->mockPost(Auth::getCurrentUser());
-
+		$this->loginRandomPerson();
+		$post = $this->postMocker->mockSingle();
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
@@ -43,10 +39,8 @@ class ScorePostJobTest extends AbstractTest
 
 	public function testInvalidScore()
 	{
-		$this->grantAccess('scorePost');
-		$this->login($this->mockUser());
-		$post = $this->mockPost(Auth::getCurrentUser());
-
+		$this->loginRandomPerson();
+		$post = $this->postMocker->mockSingle();
 		$this->assert->throws(function() use ($post)
 		{
 			Api::run(
@@ -62,10 +56,8 @@ class ScorePostJobTest extends AbstractTest
 
 	public function testScoreOverwriting()
 	{
-		$this->grantAccess('scorePost');
-		$this->login($this->mockUser());
-		$post = $this->mockPost(Auth::getCurrentUser());
-
+		$this->loginRandomPerson();
+		$post = $this->postMocker->mockSingle();
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
@@ -91,10 +83,8 @@ class ScorePostJobTest extends AbstractTest
 
 	public function testScoreTwoPeople()
 	{
-		$this->grantAccess('scorePost');
-		$this->login($this->mockUser());
-		$post = $this->mockPost(Auth::getCurrentUser());
-
+		$this->loginRandomPerson();
+		$post = $this->postMocker->mockSingle();
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
@@ -105,8 +95,7 @@ class ScorePostJobTest extends AbstractTest
 				]);
 		});
 
-		$this->login($this->mockUser());
-
+		$this->loginRandomPerson();
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
@@ -118,5 +107,11 @@ class ScorePostJobTest extends AbstractTest
 		});
 
 		$this->assert->areEqual(2, $post->getScore());
+	}
+
+	private function loginRandomPerson()
+	{
+		$this->grantAccess('scorePost');
+		$this->login($this->userMocker->mockSingle());
 	}
 }

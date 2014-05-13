@@ -9,7 +9,7 @@ final class TokenModel extends AbstractCrudModel
 		return 'user_token';
 	}
 
-	public static function save($token)
+	protected static function saveSingle($token)
 	{
 		$token->validate();
 

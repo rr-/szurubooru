@@ -10,7 +10,7 @@ class EditUserEmailJobTest extends AbstractTest
 		getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
 		$this->grantAccess('changeUserEmail');
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$user = $this->assert->doesNotThrow(function() use ($user)
 		{
@@ -37,7 +37,7 @@ class EditUserEmailJobTest extends AbstractTest
 		getConfig()->privileges->changeUserEmailNoConfirm = 'admin';
 		$this->grantAccess('changeUserEmail');
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$user = $this->assert->doesNotThrow(function() use ($user)
 		{
@@ -63,7 +63,7 @@ class EditUserEmailJobTest extends AbstractTest
 		getConfig()->privileges->changeUserEmailNoConfirm = 'nobody';
 		$this->grantAccess('changeUserEmail');
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$this->assert->throws(function() use ($user)
 		{
@@ -85,8 +85,8 @@ class EditUserEmailJobTest extends AbstractTest
 		getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
 		$this->grantAccess('changeUserEmail');
 
-		$user = $this->mockUser();
-		$otherUser = $this->mockUser();
+		list ($user, $otherUser)
+			= $this->userMocker->mockMultiple(2);
 		$otherUser->setUnconfirmedEmail('super@mario.plumbing');
 		UserModel::save($otherUser);
 

@@ -88,11 +88,11 @@ class ApiEmailRequirementsTest extends AbstractFullApiTest
 	public function testEnforcing()
 	{
 		$this->grantAccess('addComment');
-		$this->login($this->mockUser());
+		$this->login($this->userMocker->mockSingle());
 		getConfig()->registration->needEmailForCommenting = true;
 		$this->assert->throws(function()
 		{
-			$post = $this->mockPost(Auth::getCurrentUser());
+			$post = $this->postMocker->mockSingle();
 
 			return Api::run(
 				new AddCommentJob(),

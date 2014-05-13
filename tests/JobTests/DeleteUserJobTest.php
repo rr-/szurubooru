@@ -3,7 +3,7 @@ class DeleteUserJobTest extends AbstractTest
 {
 	public function testRemoval()
 	{
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$this->login($user);
 		$this->grantAccess('deleteUser');
 
@@ -22,7 +22,7 @@ class DeleteUserJobTest extends AbstractTest
 
 	public function testWrongUserId()
 	{
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$this->login($user);
 
 		$this->assert->throws(function()

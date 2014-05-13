@@ -9,7 +9,7 @@ final class PostModel extends AbstractCrudModel
 		return 'post';
 	}
 
-	public static function save($post)
+	protected static function saveSingle($post)
 	{
 		$post->validate();
 
@@ -83,7 +83,7 @@ final class PostModel extends AbstractCrudModel
 		return $post;
 	}
 
-	public static function remove($post)
+	protected static function removeSingle($post)
 	{
 		Database::transaction(function() use ($post)
 		{

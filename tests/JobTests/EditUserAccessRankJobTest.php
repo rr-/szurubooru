@@ -4,7 +4,7 @@ class EditUserAccessRankJobTest extends AbstractTest
 	public function testEditing()
 	{
 		$this->grantAccess('changeUserAccessRank');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$this->assert->areEqual(AccessRank::Registered, $user->getAccessRank()->toInteger());
 
@@ -24,7 +24,7 @@ class EditUserAccessRankJobTest extends AbstractTest
 	public function testSettingToNobodyDenial()
 	{
 		$this->grantAccess('changeUserAccessRank');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$this->assert->areEqual(AccessRank::Registered, $user->getAccessRank()->toInteger());
 
@@ -44,7 +44,7 @@ class EditUserAccessRankJobTest extends AbstractTest
 		getConfig()->privileges->changeUserAccessRank = 'power-user';
 		Access::init();
 
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setAccessRank(new AccessRank(AccessRank::PowerUser));
 		UserModel::save($user);
 

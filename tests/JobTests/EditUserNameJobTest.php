@@ -4,7 +4,7 @@ class EditUserNameJobTest extends AbstractTest
 	public function testEditing()
 	{
 		$this->grantAccess('changeUserName');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$newName = uniqid();
 
@@ -26,7 +26,7 @@ class EditUserNameJobTest extends AbstractTest
 	public function testTooShortName()
 	{
 		$this->grantAccess('changeUserName');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$newName = str_repeat('a', getConfig()->registration->userNameMinLength - 1);
 
@@ -44,7 +44,7 @@ class EditUserNameJobTest extends AbstractTest
 	public function testTooLongName()
 	{
 		$this->grantAccess('changeUserName');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$newName = str_repeat('a', getConfig()->registration->userNameMaxLength + 1);
 
@@ -62,7 +62,7 @@ class EditUserNameJobTest extends AbstractTest
 	public function testInvalidName()
 	{
 		$this->grantAccess('changeUserName');
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 
 		$newName = 'ble/ble';
 
@@ -80,8 +80,8 @@ class EditUserNameJobTest extends AbstractTest
 	public function testChangingToExistingDenial()
 	{
 		$this->grantAccess('changeUserName');
-		$user = $this->mockUser();
-		$otherUser = $this->mockUser();
+		list ($user, $otherUser)
+			= $this->userMocker->mockMultiple(2);
 
 		$newName = $otherUser->getName();
 		$this->assert->areNotEqual($newName, $user->getName());

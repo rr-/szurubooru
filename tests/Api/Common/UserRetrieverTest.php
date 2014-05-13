@@ -84,7 +84,7 @@ class UserRetrieverTest extends AbstractTest
 
 	private function prepareUser()
 	{
-		$user = $this->mockUser();
+		$user = $this->userMocker->mockSingle();
 		$user->setConfirmedEmail('godzilla@whitestar.gov');
 		UserModel::save($user);
 		return $user;
