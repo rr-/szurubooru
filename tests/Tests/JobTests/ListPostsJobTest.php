@@ -602,6 +602,14 @@ class ListPostsJobTest extends AbstractTest
 		$this->testOrder('order:id', [$posts[2], $posts[1], $posts[0]]);
 	}
 
+	public function testOrderByIdUsingAlternativeKeyword()
+	{
+		$this->grantAccess('listPosts');
+		$posts = $this->preparePostsWithTags();
+
+		$this->testOrder('sort:id', [$posts[2], $posts[1], $posts[0]]);
+	}
+
 	public function testOrderByFavCount()
 	{
 		$this->grantAccess('listPosts');

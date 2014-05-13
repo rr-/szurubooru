@@ -28,7 +28,7 @@ abstract class AbstractSearchParser
 				list ($key, $value) = explode(':', $token, 2);
 				$key = strtolower($key);
 
-				if ($key == 'order')
+				if ($key == 'order' or $key == 'sort')
 				{
 					$this->internalProcessOrderToken($value, $neg);
 				}
