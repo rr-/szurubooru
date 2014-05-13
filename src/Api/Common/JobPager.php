@@ -36,15 +36,15 @@ class JobPager
 		$pageSize = $this->getPageSize();
 		$pageNumber = $this->getPageNumber();
 
-		$pageCount = ceil($totalEntityCount / $pageSize);
+		$pageCount = (int) ceil($totalEntityCount / $pageSize);
 		$pageNumber = $this->getPageNumber();
 		$pageNumber = min($pageCount, $pageNumber);
 
 		$ret = new StdClass;
 		$ret->entities = $entities;
-		$ret->entityCount = $totalEntityCount;
-		$ret->page = $pageNumber;
-		$ret->pageCount = $pageCount;
+		$ret->entityCount = (int) $totalEntityCount;
+		$ret->page = (int) $pageNumber;
+		$ret->pageCount = (int) $pageCount;
 		return $ret;
 	}
 }
