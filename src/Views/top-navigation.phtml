@@ -119,13 +119,15 @@
 							TextCaseConverter::CAMEL_CASE,
 							TextCaseConverter::SPINAL_CASE) ?>">
 
-							<a class="simple-action <?= Auth::getCurrentUser()->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
+							<a class="simple-action <?= Auth::getCurrentUser()->getSettings()->hasEnabledSafety($safety)
+									? 'enabled'
+									: 'disabled' ?>"
 								href="<?= \Chibi\Router::linkTo(
 									['UserController', 'toggleSafetyAction'],
 									['safety' => $safety->toInteger()]) ?>"
 								title="<?= sprintf('Searching %s posts: %s',
 									$safety->toDisplayString(),
-									Auth::getCurrentUser()->hasEnabledSafety($safety)
+									Auth::getCurrentUser()->getSettings()->hasEnabledSafety($safety)
 										? 'enabled'
 										: 'disabled') ?>">
 

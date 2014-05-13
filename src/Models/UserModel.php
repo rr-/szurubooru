@@ -4,11 +4,6 @@ use \Chibi\Database as Database;
 
 final class UserModel extends AbstractCrudModel
 {
-	const SETTING_SAFETY = 1;
-	const SETTING_ENDLESS_SCROLLING = 2;
-	const SETTING_POST_TAG_TITLES = 3;
-	const SETTING_HIDE_DISLIKED_POSTS = 4;
-
 	public static function getTableName()
 	{
 		return 'user';
@@ -32,7 +27,7 @@ final class UserModel extends AbstractCrudModel
 				'join_date' => $user->getJoinTime(),
 				'last_login_date' => $user->getLastLoginTime(),
 				'access_rank' => $user->getAccessRank()->toInteger(),
-				'settings' => $user->settings,
+				'settings' => $user->getSettings()->getAllAsSerializedString(),
 				'banned' => $user->isBanned(),
 				];
 

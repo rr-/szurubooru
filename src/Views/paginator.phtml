@@ -42,7 +42,7 @@ if (!function_exists('pageUrl'))
 <?php if (!empty($pagesVisible)): ?>
 	<?php
 	Assets::addStylesheet('paginator.css');
-	if (Auth::getCurrentUser()->hasEnabledEndlessScrolling())
+	if (Auth::getCurrentUser()->getSettings()->hasEnabledEndlessScrolling())
 		Assets::addScript('paginator-endless.js');
 	?>
 

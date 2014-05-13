@@ -16,4 +16,44 @@ class TextHelperTest extends AbstractTest
 			$this->assert->areEqual($text, TextHelper::decrypt(TextHelper::encrypt($text)));
 		}
 	}
+
+	public function testToIntegerOrNulll()
+	{
+		$this->assert->areEqual(1, TextHelper::toIntegerOrNull(1));
+		$this->assert->areEqual(1, TextHelper::toIntegerOrNull('1'));
+		$this->assert->areEqual(-1, TextHelper::toIntegerOrNull(-1));
+		$this->assert->areEqual(-2, TextHelper::toIntegerOrNull('-2'));
+		$this->assert->areEqual(0, TextHelper::toIntegerOrNull(0));
+		$this->assert->areEqual(0, TextHelper::toIntegerOrNull('0'));
+		$this->assert->areEqual(null, TextHelper::toIntegerOrNull('rubbish'));
+		$this->assert->areEqual(null, TextHelper::toIntegerOrNull('1e1'));
+		$this->assert->areEqual(null, TextHelper::toIntegerOrNull('1.7'));
+		$this->assert->areEqual(null, TextHelper::toIntegerOrNull(true));
+		$this->assert->areEqual(null, TextHelper::toIntegerOrNull(false));
+		$this->assert->areEqual(null, TextHelper::toIntegerOrNull(null));
+	}
+
+	public function testToBooleanOrNull()
+	{
+		$this->assert->isTrue(TextHelper::toBooleanOrNull(1));
+		$this->assert->isTrue(TextHelper::toBooleanOrNull('1'));
+		$this->assert->isTrue(TextHelper::toBooleanOrNull('yes'));
+		$this->assert->isTrue(TextHelper::toBooleanOrNull('y'));
+		$this->assert->isTrue(TextHelper::toBooleanOrNull('on'));
+		$this->assert->isTrue(TextHelper::toBooleanOrNull('TrUe'));
+		$this->assert->isTrue(TextHelper::toBooleanOrNull('true'));
+		$this->assert->isTrue(TextHelper::toBooleanOrNull(true));
+		$this->assert->isFalse(TextHelper::toBooleanOrNull(0));
+		$this->assert->isFalse(TextHelper::toBooleanOrNull('0'));
+		$this->assert->isFalse(TextHelper::toBooleanOrNull('no'));
+		$this->assert->isFalse(TextHelper::toBooleanOrNull('n'));
+		$this->assert->isFalse(TextHelper::toBooleanOrNull('off'));
+		$this->assert->isFalse(TextHelper::toBooleanOrNull('FaLsE'));
+		$this->assert->isFalse(TextHelper::toBooleanOrNull('false'));
+		$this->assert->isFalse(TextHelper::toBooleanOrNull(false));
+		$this->assert->areEqual(null, TextHelper::toBooleanOrNull(2));
+		$this->assert->areEqual(null, TextHelper::toBooleanOrNull('2'));
+		$this->assert->areEqual(null, TextHelper::toBooleanOrNull('rubbish'));
+		$this->assert->areEqual(null, TextHelper::toBooleanOrNull(null));
+	}
 }

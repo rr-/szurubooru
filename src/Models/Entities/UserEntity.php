@@ -13,16 +13,17 @@ final class UserEntity extends AbstractEntity implements IValidatable
 	private $joinDate;
 	private $lastLoginDate;
 	private $accessRank;
-	public $settings;
 	private $banned = false;
 
-	private $__passwordChanged = false;
-	private $__password;
+	private $settings;
+	private $_passwordChanged = false;
+	private $_password;
 
 	public function fillNew()
 	{
 		$this->setAccessRank(new AccessRank(AccessRank::Anonymous));
 		$this->setPasswordSalt(md5(mt_rand() . uniqid()));
+		$this->settings = new UserSettings();
 	}
 
 	public function fillFromDatabase($row)
@@ -36,9 +37,9 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		$this->emailConfirmed = $row['email_confirmed'];
 		$this->joinDate = $row['join_date'];
 		$this->lastLoginDate = $row['last_login_date'];
-		$this->settings = $row['settings'];
 		$this->banned = $row['banned'];
 		$this->setAccessRank(new AccessRank($row['access_rank']));
+		$this->settings = new UserSettings($row['settings']);
 	}
 
 	public function validate()
@@ -47,9 +48,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		$this->validatePassword();
 		$this->validateAccessRank();
 		$this->validateEmails();
-
-		if (!$this->getSetting(UserModel::SETTING_SAFETY))
-			$this->setSetting(UserModel::SETTING_SAFETY, (new PostSafety(PostSafety::Safe))->toFlag());
+		$this->settings->validate();
 
 		if (empty($this->getAccessRank()))
 			throw new Exception('No access rank detected');
@@ -88,14 +87,14 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		if (empty($this->getPasswordHash()))
 			throw new Exception('Trying to save user with no password into database');
 
-		if (!$this->__passwordChanged)
+		if (!$this->_passwordChanged)
 			return;
 
 		$config = getConfig();
 		$passMinLength = intval($config->registration->passMinLength);
 		$passRegex = $config->registration->passRegex;
 
-		$password = $this->__password;
+		$password = $this->_password;
 
 		if (strlen($password) < $passMinLength)
 			throw new SimpleException('Password must have at least %d characters', $passMinLength);
@@ -249,8 +248,8 @@ final class UserEntity extends AbstractEntity implements IValidatable
 
 	public function setPassword($password)
 	{
-		$this->__passwordChanged = true;
-		$this->__password = $password;
+		$this->_passwordChanged = true;
+		$this->_password = $password;
 		$this->passHash = UserModel::hashPassword($password, $this->passSalt);
 	}
 
@@ -275,86 +274,9 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		return $url;
 	}
 
-	public function getSetting($key)
+	public function getSettings()
 	{
-		$settings = json_decode($this->settings, true);
-		return isset($settings[$key])
-			? $settings[$key]
-			: null;
-	}
-
-	public function setSetting($key, $value)
-	{
-		$settings = json_decode($this->settings, true);
-		$settings[$key] = $value;
-		$settings = json_encode($settings);
-		if (strlen($settings) > 200)
-			throw new SimpleException('Too much data');
-		$this->settings = $settings;
-	}
-
-	public function hasEnabledSafety(PostSafety $safety)
-	{
-		$all = $this->getSetting(UserModel::SETTING_SAFETY);
-		if (!$all)
-			return $safety->toInteger() == (new PostSafety(PostSafety::Safe))->toInteger();
-		return ($all & $safety->toFlag()) == $safety->toFlag();
-	}
-
-	public function enableSafety(PostSafety $safety, $enabled)
-	{
-		$all = $this->getSetting(UserModel::SETTING_SAFETY);
-
-		$new = $all;
-		if (!$enabled)
-		{
-			$new &= ~$safety->toFlag();
-		}
-		else
-		{
-			$new |= $safety->toFlag();
-		}
-
-		$this->setSetting(UserModel::SETTING_SAFETY, $new);
-	}
-
-	public function hasEnabledHidingDislikedPosts()
-	{
-		$ret = $this->getSetting(UserModel::SETTING_HIDE_DISLIKED_POSTS);
-		if ($ret === null)
-			$ret = !getConfig()->browsing->showDislikedPostsDefault;
-		return $ret;
-	}
-
-	public function enableHidingDislikedPosts($enabled)
-	{
-		$this->setSetting(UserModel::SETTING_HIDE_DISLIKED_POSTS, $enabled ? 1 : 0);
-	}
-
-	public function hasEnabledPostTagTitles()
-	{
-		$ret = $this->getSetting(UserModel::SETTING_POST_TAG_TITLES);
-		if ($ret === null)
-			$ret = getConfig()->browsing->showPostTagTitlesDefault;
-		return $ret;
-	}
-
-	public function enablePostTagTitles($enabled)
-	{
-		$this->setSetting(UserModel::SETTING_POST_TAG_TITLES, $enabled ? 1 : 0);
-	}
-
-	public function hasEnabledEndlessScrolling()
-	{
-		$ret = $this->getSetting(UserModel::SETTING_ENDLESS_SCROLLING);
-		if ($ret === null)
-			$ret = getConfig()->browsing->endlessScrollingDefault;
-		return $ret;
-	}
-
-	public function enableEndlessScrolling($enabled)
-	{
-		$this->setSetting(UserModel::SETTING_ENDLESS_SCROLLING, $enabled ? 1 : 0);
+		return $this->settings;
 	}
 
 	public function confirmEmail()

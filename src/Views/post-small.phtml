@@ -41,7 +41,7 @@ if ($masstag)
 	<?php endif ?>
 
 	<a class="link"
-		<?php if (Auth::getCurrentUser()->hasEnabledPostTagTitles()): ?>
+		<?php if (Auth::getCurrentUser()->getSettings()->hasEnabledPostTagTitles()): ?>
 			title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>"
 		<?php endif ?>
 		href="<?= \Chibi\Router::linkTo(['PostController', 'genericView'], ['id' => $this->context->post->getId()]) ?>">

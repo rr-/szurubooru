@@ -7,6 +7,48 @@ class TextHelper
 		return preg_match($emailRegex, $email);
 	}
 
+	public static function toIntegerOrNull($x)
+	{
+		if ($x === true or $x === false)
+			return null;
+
+		if ($x === 0 or $x === '0')
+			return 0;
+
+		$y = intval($x);
+
+		if ($y !== 0)
+		{
+			if (!preg_match('/^-?\d+$/', $x))
+				return null;
+
+			return $y;
+		}
+
+		return null;
+	}
+
+	public static function toBooleanOrNull($x)
+	{
+		switch (strtolower($x))
+		{
+			case '1':
+			case 'true':
+			case 'on':
+			case 'yes':
+			case 'y':
+				return true;
+			case '0':
+			case 'false':
+			case 'off':
+			case 'no':
+			case 'n':
+				return false;
+			default:
+				return null;
+		}
+	}
+
 	public static function replaceTokens($text, array $tokens)
 	{
 		foreach ($tokens as $key => $value)

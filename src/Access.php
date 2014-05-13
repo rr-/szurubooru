@@ -114,7 +114,7 @@ class Access
 		return array_filter(PostSafety::getAll(), function($safety)
 		{
 			return Access::check(new Privilege(Privilege::ListPosts, $safety->toString()))
-				and Auth::getCurrentUser()->hasEnabledSafety($safety);
+				and Auth::getCurrentUser()->getSettings()->hasEnabledSafety($safety);
 		});
 	}
 

@@ -29,7 +29,7 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processTeardown()
 	{
-		if (Auth::getCurrentUser()->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
+		if (Auth::getCurrentUser()->getSettings()->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
 			$this->processComplexToken('special', 'disliked', true);
 
 		if (!Access::check(new Privilege(Privilege::ListPosts, 'hidden')) or !$this->showHidden)

@@ -1,3 +1,7 @@
+<?php
+$settings = $this->context->transport->user->getSettings();
+?>
+
 <form
 	action="<?= \Chibi\Router::linkTo(
 		['UserController', 'settingsAction'],
@@ -18,7 +22,7 @@
 							$attrs['type'] = 'checkbox';
 							$attrs['name'] = 'safety[]';
 							$attrs['value'] = $safety->toInteger();
-							if ($this->context->transport->user->hasEnabledSafety($safety))
+							if ($settings->hasEnabledSafety($safety))
 								$attrs['checked'] = 'checked';
 
 							echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
@@ -39,7 +43,7 @@
 					$attrs['type'] = 'checkbox';
 					$attrs['id'] = 'endless-scrolling';
 					$attrs['name'] = 'endless-scrolling';
-					if ($this->context->transport->user->hasEnabledEndlessScrolling())
+					if ($settings->hasEnabledEndlessScrolling())
 						$attrs['checked'] = 'checked';
 
 					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
@@ -58,7 +62,7 @@
 					$attrs['type'] = 'checkbox';
 					$attrs['id'] = 'post-tag-titles';
 					$attrs['name'] = 'post-tag-titles';
-					if ($this->context->transport->user->hasEnabledPostTagTitles())
+					if ($settings->hasEnabledPostTagTitles())
 						$attrs['checked'] = 'checked';
 
 					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
@@ -77,7 +81,7 @@
 					$attrs['type'] = 'checkbox';
 					$attrs['id'] = 'hide-disliked-posts';
 					$attrs['name'] = 'hide-disliked-posts';
-					if ($this->context->transport->user->hasEnabledHidingDislikedPosts())
+					if ($settings->hasEnabledHidingDislikedPosts())
 						$attrs['checked'] = 'checked';
 
 					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);

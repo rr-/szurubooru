@@ -41,9 +41,9 @@ class ListPostsJobTest extends AbstractTest
 	public function testAutomaticSafetyFilterOnlySafeEnabled()
 	{
 		$user = $this->userMocker->mockSingle();
-		$user->enableSafety(new PostSafety(PostSafety::Safe), true);
-		$user->enableSafety(new PostSafety(PostSafety::Sketchy), false);
-		$user->enableSafety(new PostSafety(PostSafety::Unsafe), false);
+		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Safe), true);
+		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Sketchy), false);
+		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Unsafe), false);
 		UserModel::save($user);
 		$this->login($user);
 
@@ -68,9 +68,9 @@ class ListPostsJobTest extends AbstractTest
 	public function testAutomaticSafetyFilterAllEnabled()
 	{
 		$user = $this->userMocker->mockSingle();
-		$user->enableSafety(new PostSafety(PostSafety::Safe), true);
-		$user->enableSafety(new PostSafety(PostSafety::Sketchy), true);
-		$user->enableSafety(new PostSafety(PostSafety::Unsafe), true);
+		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Safe), true);
+		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Sketchy), true);
+		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Unsafe), true);
 		UserModel::save($user);
 		$this->login($user);
 
@@ -97,7 +97,7 @@ class ListPostsJobTest extends AbstractTest
 	{
 		$this->grantAccess('listPosts');
 		$user = $this->userMocker->mockSingle();
-		$user->enableHidingDislikedPosts(true);
+		$user->getSettings()->enableHidingDislikedPosts(true);
 		$post = $this->postMocker->mockSingle();
 		$this->login($user);
 
@@ -115,7 +115,7 @@ class ListPostsJobTest extends AbstractTest
 	{
 		$this->grantAccess('listPosts');
 		$user = $this->userMocker->mockSingle();
-		$user->enableHidingDislikedPosts(false);
+		$user->getSettings()->enableHidingDislikedPosts(false);
 		$post = $this->postMocker->mockSingle();
 		$this->login($user);
 
@@ -133,7 +133,7 @@ class ListPostsJobTest extends AbstractTest
 	{
 		$this->grantAccess('listPosts');
 		$user = $this->userMocker->mockSingle();
-		$user->enableHidingDislikedPosts(true);
+		$user->getSettings()->enableHidingDislikedPosts(true);
 		$post = $this->postMocker->mockSingle();
 		$this->login($user);
 

@@ -81,11 +81,11 @@ class UserController
 		if (!is_array($suppliedSafety))
 			$suppliedSafety = [];
 		foreach (PostSafety::getAll() as $safety)
-			$user->enableSafety($safety, in_array($safety->toInteger(), $suppliedSafety));
+			$user->getSettings()->enableSafety($safety, in_array($safety->toInteger(), $suppliedSafety));
 
-		$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
-		$user->enablePostTagTitles(InputHelper::get('post-tag-titles'));
-		$user->enableHidingDislikedPosts(InputHelper::get('hide-disliked-posts'));
+		$user->getSettings()->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
+		$user->getSettings()->enablePostTagTitles(InputHelper::get('post-tag-titles'));
+		$user->getSettings()->enableHidingDislikedPosts(InputHelper::get('hide-disliked-posts'));
 
 		if ($user->getAccessRank()->toInteger() != AccessRank::Anonymous)
 			UserModel::save($user);
@@ -185,7 +185,7 @@ class UserController
 		$safety = new PostSafety($safety);
 		$safety->validate();
 
-		$user->enableSafety($safety, !$user->hasEnabledSafety($safety));
+		$user->getSettings()->enableSafety($safety, !$user->getSettings()->hasEnabledSafety($safety));
 
 		if ($user->getAccessRank()->toInteger() != AccessRank::Anonymous)
 			UserModel::save($user);
