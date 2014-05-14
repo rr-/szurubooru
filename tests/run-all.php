@@ -98,13 +98,18 @@ class TestRunner
 
 		$testClasses = \Chibi\Util\Reflection::loadClasses($testFiles);
 
-		if ($filter !== null)
+		$classFilter = $filter;
+		$methodFilter = null;
+		if ($filter !== null and strpos($filter, '::') !== false)
 		{
-			$testClasses = array_filter($testClasses, function($className) use ($filter)
-			{
-				return stripos($className, $filter) !== false;
-			});
+			list ($classFilter, $methodFilter) = explode('::', $filter);
 		}
+
+		if ($classFilter)
+			$testClasses = array_filter($testClasses, function($className) use ($classFilter)
+			{
+				return stripos($className, $classFilter) !== false;
+			});
 
 		$testFixtures = [];
 
@@ -119,6 +124,9 @@ class TestRunner
 			$testFixture->methods = [];
 			foreach ($reflectionClass->getMethods() as $method)
 			{
+				if ($methodFilter and stripos($method->name, $methodFilter) === false)
+					continue;
+
 				if (preg_match('/test/i', $method->name)
 					and $method->isPublic()
 					and $method->getNumberOfParameters() == 0)
@@ -126,7 +134,9 @@ class TestRunner
 					$testFixture->methods []= $method;
 				}
 			}
-			$testFixtures []= $testFixture;
+
+			if (!empty($testFixture->methods))
+				$testFixtures []= $testFixture;
 		}
 
 		return $testFixtures;
