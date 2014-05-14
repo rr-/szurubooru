@@ -71,28 +71,46 @@ class UserController
 	{
 		$this->genericView($identifier, 'settings');
 
-		$user = getContext()->transport->user;
-
-		Access::assert(new Privilege(
-			Privilege::ChangeUserSettings,
-			Access::getIdentity($user)));
-
 		$suppliedSafety = InputHelper::get('safety');
-		if (!is_array($suppliedSafety))
-			$suppliedSafety = [];
-		foreach (PostSafety::getAll() as $safety)
-			$user->getSettings()->enableSafety($safety, in_array($safety->toInteger(), $suppliedSafety));
+		$desiredSafety = PostSafety::makeFlags($suppliedSafety);
 
-		$user->getSettings()->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
-		$user->getSettings()->enablePostTagTitles(InputHelper::get('post-tag-titles'));
-		$user->getSettings()->enableHidingDislikedPosts(InputHelper::get('hide-disliked-posts'));
+		$user = Api::run(
+			new EditUserSettingsJob(),
+			$this->appendUserIdentifierArgument(
+			[
+				JobArgs::ARG_NEW_SETTINGS =>
+				[
+					UserSettings::SETTING_SAFETY => $desiredSafety,
+					UserSettings::SETTING_ENDLESS_SCROLLING => InputHelper::get('endless-scrolling'),
+					UserSettings::SETTING_POST_TAG_TITLES => InputHelper::get('post-tag-titles'),
+					UserSettings::SETTING_HIDE_DISLIKED_POSTS => InputHelper::get('hide-disliked-posts'),
+				]
+			], $identifier));
 
-		if ($user->getAccessRank()->toInteger() != AccessRank::Anonymous)
-			UserModel::save($user);
+		getContext()->transport->user = $user;
 		if ($user->getId() == Auth::getCurrentUser()->getId())
 			Auth::setCurrentUser($user);
 
 		Messenger::message('Browsing settings updated!');
+	}
+
+	public function toggleSafetyAction($safety)
+	{
+		$safety = new PostSafety($safety);
+		$safety->validate();
+
+		$user = Auth::getCurrentUser();
+		$user->getSettings()->enableSafety($safety, !$user->getSettings()->hasEnabledSafety($safety));
+		$desiredSafety = $user->getSettings()->get(UserSettings::SETTING_SAFETY);
+
+		$user = Api::run(
+			new EditUserSettingsJob(),
+			[
+				JobArgs::ARG_USER_ENTITY => Auth::getCurrentUser(),
+				JobArgs::ARG_NEW_SETTINGS => [UserSettings::SETTING_SAFETY => $desiredSafety],
+			]);
+
+		Auth::setCurrentUser($user);
 	}
 
 	public function editAction($identifier)
@@ -172,24 +190,6 @@ class UserController
 		Api::run(
 			new AcceptUserRegistrationJob(),
 			$this->appendUserIdentifierArgument([], $identifier));
-	}
-
-	public function toggleSafetyAction($safety)
-	{
-		$user = Auth::getCurrentUser();
-
-		Access::assert(new Privilege(
-			Privilege::ChangeUserSettings,
-			Access::getIdentity($user)));
-
-		$safety = new PostSafety($safety);
-		$safety->validate();
-
-		$user->getSettings()->enableSafety($safety, !$user->getSettings()->hasEnabledSafety($safety));
-
-		if ($user->getAccessRank()->toInteger() != AccessRank::Anonymous)
-			UserModel::save($user);
-		Auth::setCurrentUser($user);
 	}
 
 	public function registrationView()

@@ -25,6 +25,7 @@ class ApiEmailRequirementsTest extends AbstractFullApiTest
 		$this->testRegularEmailRequirement(new EditUserJob());
 		$this->testRegularEmailRequirement(new EditUserNameJob());
 		$this->testRegularEmailRequirement(new EditUserPasswordJob());
+		$this->testRegularEmailRequirement(new EditUserSettingsJob());
 		$this->testRegularEmailRequirement(new FeaturePostJob());
 		$this->testRegularEmailRequirement(new FlagPostJob());
 		$this->testRegularEmailRequirement(new FlagUserJob());
@@ -33,6 +34,7 @@ class ApiEmailRequirementsTest extends AbstractFullApiTest
 		$this->testRegularEmailRequirement(new GetPostJob());
 		$this->testRegularEmailRequirement(new GetPostThumbJob());
 		$this->testRegularEmailRequirement(new GetUserJob());
+		$this->testRegularEmailRequirement(new GetUserSettingsJob());
 		$this->testRegularEmailRequirement(new ListCommentsJob());
 		$this->testRegularEmailRequirement(new ListLogsJob());
 		$this->testRegularEmailRequirement(new ListPostsJob());

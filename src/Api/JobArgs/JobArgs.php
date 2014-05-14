@@ -38,14 +38,15 @@ class JobArgs
 	const ARG_NEW_THUMB_CONTENT = 'new-thumb-content';
 	const ARG_NEW_TAG_NAMES = 'new-tag-names';
 
-	const ARG_NEW_POST_SCORE = 'new-post-score';
-	const ARG_SOURCE_TAG_NAME = 'source-tag-name';
-	const ARG_TARGET_TAG_NAME = 'target-tag-name';
-
 	const ARG_NEW_ACCESS_RANK = 'new-access-rank';
 	const ARG_NEW_EMAIL = 'new-email';
 	const ARG_NEW_USER_NAME = 'new-user-name';
 	const ARG_NEW_PASSWORD = 'new-password';
+	const ARG_NEW_SETTINGS = 'new-settings';
+
+	const ARG_NEW_POST_SCORE = 'new-post-score';
+	const ARG_SOURCE_TAG_NAME = 'source-tag-name';
+	const ARG_TARGET_TAG_NAME = 'target-tag-name';
 
 	public static function Alternative()
 	{

@@ -133,8 +133,10 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->testDynamicUserPrivilege(new EditUserEmailJob(), new Privilege(Privilege::ChangeUserEmail));
 		$this->testDynamicUserPrivilege(new EditUserNameJob(), new Privilege(Privilege::ChangeUserName));
 		$this->testDynamicUserPrivilege(new EditUserPasswordJob(), new Privilege(Privilege::ChangeUserPassword));
+		$this->testDynamicUserPrivilege(new EditUserSettingsJob(), new Privilege(Privilege::ChangeUserSettings));
 		$this->testDynamicUserPrivilege(new FlagUserJob(), new Privilege(Privilege::FlagUser));
 		$this->testDynamicUserPrivilege(new GetUserJob(), new Privilege(Privilege::ViewUser));
+		$this->testDynamicUserPrivilege(new GetUserSettingsJob(), new Privilege(Privilege::ChangeUserSettings));
 		$this->testDynamicUserPrivilege(new ToggleUserBanJob(), new Privilege(Privilege::BanUser));
 	}
 

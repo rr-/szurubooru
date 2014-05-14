@@ -27,6 +27,18 @@ class PostSafety extends Enum implements IValidatable
 		return self::_toString($this->safety);
 	}
 
+	public static function makeFlags($safetyCodes)
+	{
+		if (!is_array($safetyCodes))
+			return 0;
+
+		$flags = 0;
+		foreach (self::getAll() as $safety)
+			if (in_array($safety->toInteger(), $safetyCodes))
+				$flags |= $safety->toFlag();
+		return $flags;
+	}
+
 	public static function getAll()
 	{
 		return array_map(function($constantName)

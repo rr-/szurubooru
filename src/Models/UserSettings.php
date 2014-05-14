@@ -21,6 +21,7 @@ class UserSettings implements IValidatable
 		$serialized = $this->getAllAsSerializedString();
 		if (strlen($serialized) > 200)
 			throw new SimpleException('Too much data');
+
 		$this->ensureCorrectTypes();
 	}
 

@@ -211,6 +211,12 @@ class ApiArgumentTest extends AbstractFullApiTest
 			$this->getUserSelector());
 	}
 
+	public function testGetUserSettingsJob()
+	{
+		$this->testArguments(new GetUserSettingsJob(),
+			$this->getUserSelector());
+	}
+
 	public function testListCommentsJob()
 	{
 		$this->testArguments(new ListCommentsJob(),
@@ -278,6 +284,14 @@ class ApiArgumentTest extends AbstractFullApiTest
 			JobArgs::Alternative(
 				JobArgs::ARG_TOKEN,
 				$this->getUserSelector()));
+	}
+
+	public function testEditUserSettingsJob()
+	{
+		$this->testArguments(new EditUserSettingsJob(),
+			JobArgs::Conjunction(
+				$this->getUserSelector(),
+				JobArgs::ARG_NEW_SETTINGS));
 	}
 
 	public function testPreviewCommentJob()
