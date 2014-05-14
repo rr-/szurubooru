@@ -26,6 +26,9 @@ function download($source, $destination = null)
 	return $content;
 }
 
+$version = exec('git describe --tags --always --dirty');
+$branch = exec('git rev-parse --abbrev-ref HEAD');
+PropertyModel::set(PropertyModel::EngineVersion, $version . '@' . $branch);
 
 
 //jQuery

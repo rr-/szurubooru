@@ -40,7 +40,11 @@ Assets::addScript('core.js');
 			<div class="main-wrapper">
 				<hr/>
 				<div class="left">
-					<span><a href="<?= SZURU_LINK ?>">szurubooru&nbsp;v<?= SZURU_VERSION ?></a></span>
+					<span>
+						<a href="<?= getConfig()->misc->githubLink ?>">
+							szurubooru&nbsp;<?= PropertyModel::get(PropertyModel::EngineVersion) ?>
+						</a>
+					</span>
 					<?php if (Access::check(new Privilege(Privilege::ListLogs))): ?>
 						<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Logs</a></span>
 					<?php endif ?>

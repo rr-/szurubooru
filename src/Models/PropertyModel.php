@@ -10,6 +10,7 @@ final class PropertyModel implements IModel
 	const DbVersion = 3;
 	const PostSpaceUsage = 4;
 	const PostSpaceUsageUnixTime = 5;
+	const EngineVersion = 6;
 
 	static $allProperties;
 	static $loaded;
