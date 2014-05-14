@@ -8,6 +8,8 @@ final class PropertyModel implements IModel
 	const FeaturedPostUserName = 1;
 	const FeaturedPostUnixTime = 2;
 	const DbVersion = 3;
+	const PostSpaceUsage = 4;
+	const PostSpaceUsageUnixTime = 5;
 
 	static $allProperties;
 	static $loaded;

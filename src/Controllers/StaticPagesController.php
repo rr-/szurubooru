@@ -6,6 +6,7 @@ class StaticPagesController
 		$context = getContext();
 		$context->transport->postCount = PostModel::getCount();
 		$context->viewName = 'static-main';
+		$context->transport->postSpaceUsage = PostModel::getSpaceUsage();
 
 		PostModel::featureRandomPostIfNecessary();
 		$featuredPost = PostModel::getFeaturedPost();

@@ -313,6 +313,32 @@ final class PostModel extends AbstractCrudModel
 
 
 
+	public static function getSpaceUsage()
+	{
+		$unixTime = PropertyModel::get(PropertyModel::PostSpaceUsageUnixTime);
+		if (($unixTime !== null) and (time() - $unixTime < 24 * 60 * 60))
+			return PropertyModel::get(PropertyModel::PostSpaceUsage);
+
+		$totalBytes = 0;
+		$paths = [getConfig()->main->filesPath, getConfig()->main->thumbsPath];
+
+		foreach ($paths as $path)
+		{
+			$iterator =
+				new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator(
+					$path, FilesystemIterator::SKIP_DOTS));
+
+			foreach ($iterator as $object)
+				$totalBytes += $object->getSize();
+		}
+
+		PropertyModel::set(PropertyModel::PostSpaceUsage, $totalBytes);
+		PropertyModel::set(PropertyModel::PostSpaceUsageUnixTime, time());
+
+		return $totalBytes;
+	}
+
 	public static function getFeaturedPost()
 	{
 		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);

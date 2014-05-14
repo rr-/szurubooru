@@ -6,7 +6,11 @@ Assets::addStylesheet('static-main.css');
 <div id="welcome">
 	<h1><?= getConfig()->main->title ?></h1>
 	<p>
-		<span>serving <?= $this->context->transport->postCount ?> posts</span>
+		<span>
+			<?php printf('serving %d posts (%s)',
+				$this->context->transport->postCount,
+				TextHelper::useBytesUnits($this->context->transport->postSpaceUsage)) ?>
+		</span>
 	</p>
 </div>
 
