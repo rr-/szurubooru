@@ -38,14 +38,20 @@ Assets::addScript('core.js');
 
 		<footer>
 			<div class="main-wrapper">
-				<hr>
-				<span>Load:&nbsp;<?= sprintf('%.05f', microtime(true) - $this->context->startTime) ?>s</span>
-				<span>Queries:&nbsp;<?= count(\Chibi\Database::getLogs()) ?></span>
-				<span><a href="<?= SZURU_LINK ?>">szurubooru&nbsp;v<?= SZURU_VERSION ?></a></span>
-				<?php if (Access::check(new Privilege(Privilege::ListLogs))): ?>
-					<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Logs</a></span>
-				<?php endif ?>
-				<hr>
+				<hr/>
+				<div class="left">
+					<span><a href="<?= SZURU_LINK ?>">szurubooru&nbsp;v<?= SZURU_VERSION ?></a></span>
+					<?php if (Access::check(new Privilege(Privilege::ListLogs))): ?>
+						<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Logs</a></span>
+					<?php endif ?>
+				</div>
+				<div class="right">
+					<span><?= TextHelper::useBytesUnits(memory_get_usage()) ?></span>
+					<span><?= sprintf('%.04f', microtime(true) - $this->context->startTime) ?>s</span>
+					<span><?= count(\Chibi\Database::getLogs()) ?> queries</span>
+				</div>
+				<div class="clear"></div>
+				<hr/>
 			</div>
 		</footer>
 

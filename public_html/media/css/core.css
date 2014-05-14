@@ -145,6 +145,12 @@ footer span:not(:last-of-type):after {
 footer a {
 	color: silver;
 }
+footer .left {
+	float: left;
+}
+footer .right {
+	float: right;
+}
 
 
 
