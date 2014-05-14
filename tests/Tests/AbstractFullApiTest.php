@@ -19,7 +19,12 @@ abstract class AbstractFullApiTest extends AbstractTest
 
 	protected function getAllJobs()
 	{
-		$files = glob(getConfig()->rootDir . DS . 'src' . DS . 'Api' . DS . 'Jobs' . DS . '*.php');
+		$pathToJobs = getConfig()->rootDir . DS . 'src' . DS . 'Api' . DS . 'Jobs';
+		$directory = new RecursiveDirectoryIterator($pathToJobs);
+		$iterator = new RecursiveIteratorIterator($directory);
+		$regex = new RegexIterator($iterator, '/^.+Job\.php$/i');
+		$files = array_keys(iterator_to_array($regex));
+
 		\Chibi\Util\Reflection::loadClasses($files);
 		return array_filter(get_declared_classes(), function($x)
 		{
