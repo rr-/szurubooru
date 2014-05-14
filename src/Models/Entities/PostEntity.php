@@ -328,24 +328,24 @@ final class PostEntity extends AbstractEntity implements IValidatable
 		return PostModel::getFullPath($this->getName());
 	}
 
-	public function tryGetWorkingThumbPath($width = null, $height = null)
+	public function tryGetWorkingThumbPath()
 	{
-		return PostModel::tryGetWorkingThumbPath($this->getName(), $width, $height);
+		return PostModel::tryGetWorkingThumbPath($this->getName());
 	}
 
-	public function getThumbCustomPath($width = null, $height = null)
+	public function getThumbCustomSourcePath()
 	{
-		return PostModel::getThumbCustomPath($this->getName(), $width, $height);
+		return PostModel::getThumbCustomSourcePath($this->getName());
 	}
 
-	public function getThumbDefaultPath($width = null, $height = null)
+	public function getThumbPath()
 	{
-		return PostModel::getThumbDefaultPath($this->getName(), $width, $height);
+		return PostModel::getThumbPath($this->getName());
 	}
 
-	public function hasCustomThumb($width = null, $height = null)
+	public function hasCustomThumb()
 	{
-		$thumbPath = $this->getThumbCustomPath($width, $height);
+		$thumbPath = $this->getThumbCustomSourcePath();
 		return file_exists($thumbPath);
 	}
 
@@ -357,26 +357,21 @@ final class PostEntity extends AbstractEntity implements IValidatable
 		if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
 			throw new SimpleException('Invalid thumbnail type "%s"', $mimeType);
 
-		list ($imageWidth, $imageHeight) = getimagesize($srcPath);
-		if ($imageWidth != $config->browsing->thumbWidth
-			or $imageHeight != $config->browsing->thumbHeight)
-		{
-			throw new SimpleException(
-				'Invalid thumbnail size (should be %dx%d)',
-				$config->browsing->thumbWidth,
-				$config->browsing->thumbHeight);
-		}
-
-		$dstPath = $this->getThumbCustomPath();
+		$dstPath = $this->getThumbCustomSourcePath();
 
 		TransferHelper::copy($srcPath, $dstPath);
+
+		$this->generateThumb();
 	}
 
-	public function generateThumb($width = null, $height = null)
+	public function generateThumb()
 	{
-		list ($width, $height) = PostModel::validateThumbSize($width, $height);
-		$srcPath = $this->getFullPath();
-		$dstPath = $this->getThumbDefaultPath($width, $height);
+		$width = getConfig()->browsing->thumbWidth;
+		$height = getConfig()->browsing->thumbHeight;
+		$dstPath = $this->getThumbPath($width, $height);
+
+		if (file_exists($this->getThumbCustomSourcePath()))
+			return ThumbnailHelper::generateFromPath($this->getThumbCustomSourcePath(), $dstPath, $width, $height);
 
 		if ($this->getType()->toInteger() == PostType::Youtube)
 		{
@@ -388,7 +383,7 @@ final class PostEntity extends AbstractEntity implements IValidatable
 		}
 		else
 		{
-			return ThumbnailHelper::generateFromPath($srcPath, $dstPath, $width, $height);
+			return ThumbnailHelper::generateFromPath($this->getFullPath(), $dstPath, $width, $height);
 		}
 	}
 
@@ -445,7 +440,7 @@ final class PostEntity extends AbstractEntity implements IValidatable
 
 		TransferHelper::copy($srcPath, $dstPath);
 
-		$thumbPath = $this->getThumbDefaultPath();
+		$thumbPath = $this->getThumbPath();
 		if (file_exists($thumbPath))
 			unlink($thumbPath);
 	}
@@ -467,7 +462,7 @@ final class PostEntity extends AbstractEntity implements IValidatable
 			$this->setImageWidth(null);
 			$this->setImageHeight(null);
 
-			$thumbPath = $this->getThumbDefaultPath();
+			$thumbPath = $this->getThumbPath();
 			if (file_exists($thumbPath))
 				unlink($thumbPath);
 

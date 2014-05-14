@@ -255,46 +255,29 @@ final class PostModel extends AbstractCrudModel
 
 
 
-	public static function validateThumbSize($width, $height)
+	public static function tryGetWorkingThumbPath($name)
 	{
-		$width = $width === null ? getConfig()->browsing->thumbWidth : $width;
-		$height = $height === null ? getConfig()->browsing->thumbHeight : $height;
-		$width = min(1000, max(1, $width));
-		$height = min(1000, max(1, $height));
-		return [$width, $height];
-	}
-
-	public static function tryGetWorkingThumbPath($name, $width = null, $height = null)
-	{
-		$path = PostModel::getThumbCustomPath($name, $width, $height);
-		if (file_exists($path) and is_readable($path))
-			return $path;
-
-		$path = PostModel::getThumbDefaultPath($name, $width, $height);
+		$path = PostModel::getThumbPath($name);
 		if (file_exists($path) and is_readable($path))
 			return $path;
 
 		return null;
 	}
 
-	public static function getThumbCustomPath($name, $width = null, $height = null)
+	public static function getThumbCustomSourcePath($name)
 	{
-		return self::getThumbPathTokenized('{fullpath}.custom', $name, $width, $height);
+		return self::getThumbPathTokenized('{fullpath}.thumb_source', $name);
 	}
 
-	public static function getThumbDefaultPath($name, $width = null, $height = null)
+	public static function getThumbPath($name)
 	{
-		return self::getThumbPathTokenized('{fullpath}-{width}x{height}.default', $name, $width, $height);
+		return self::getThumbPathTokenized('{fullpath}.thumb', $name);
 	}
 
-	private static function getThumbPathTokenized($text, $name, $width = null, $height = null)
+	private static function getThumbPathTokenized($text, $name)
 	{
-		list ($width, $height) = self::validateThumbSize($width, $height);
-
 		return TextHelper::absolutePath(TextHelper::replaceTokens($text, [
-			'fullpath' => getConfig()->main->thumbsPath . DS . $name,
-			'width' => $width,
-			'height' => $height]));
+			'fullpath' => getConfig()->main->thumbsPath . DS . $name]));
 	}
 
 	public static function tryGetWorkingFullPath($name)

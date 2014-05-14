@@ -267,12 +267,9 @@ class PostController
 		$context->layoutName = 'layout-file';
 	}
 
-	public function thumbView($name, $width = null, $height = null)
+	public function thumbView($name)
 	{
-		$ret = Api::run(new GetPostThumbJob(), [
-			JobArgs::ARG_POST_NAME => $name,
-			JobArgs::ARG_THUMB_WIDTH => $width,
-			JobArgs::ARG_THUMB_HEIGHT => $height]);
+		$ret = Api::run(new GetPostThumbJob(), [JobArgs::ARG_POST_NAME => $name]);
 
 		$context = getContext();
 		$context->transport->cacheDaysToLive = 365;

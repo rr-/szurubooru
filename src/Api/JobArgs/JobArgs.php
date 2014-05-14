@@ -24,9 +24,6 @@ class JobArgs
 
 	const ARG_LOG_ID = 'log-id';
 
-	const ARG_THUMB_WIDTH = 'thumb-width';
-	const ARG_THUMB_HEIGHT = 'thumb-height';
-
 	const ARG_NEW_TEXT = 'new-text';
 	const ARG_NEW_STATE = 'new-state';
 

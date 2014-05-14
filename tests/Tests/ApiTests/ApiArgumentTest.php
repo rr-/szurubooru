@@ -203,11 +203,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 
 	public function testGetPostThumbJob()
 	{
-		$this->testArguments(new GetPostThumbJob(),
-			JobArgs::Conjunction(
-				JobArgs::Optional(JobArgs::ARG_THUMB_WIDTH),
-				JobArgs::Optional(JobArgs::ARG_THUMB_HEIGHT),
-				$this->getPostSafeSelector()));
+		$this->testArguments(new GetPostThumbJob(), $this->getPostSafeSelector());
 	}
 
 	public function testGetUserJob()

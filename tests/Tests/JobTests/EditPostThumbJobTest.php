@@ -19,20 +19,19 @@ class EditPostThumbJobTest extends AbstractTest
 		});
 
 		$this->assert->isTrue($post->hasCustomThumb());
-		$this->assert->isNotNull($post->getThumbCustomPath());
-		$this->assert->areEqual($post->getThumbCustomPath(), $post->tryGetWorkingThumbPath());
-		$this->assert->areEqual(
-			file_get_contents($this->testSupport->getPath('thumb.jpg')),
-			file_get_contents($post->tryGetWorkingThumbPath()));
+		$img = imagecreatefromjpeg($post->tryGetWorkingThumbPath());
+		$this->assert->areEqual(150, imagesx($img));
+		$this->assert->areEqual(150, imagesy($img));
+		imagedestroy($img);
 	}
 
-	public function testFileInvalidDimensions()
+	public function testFileDifferentDimensions()
 	{
 		$this->grantAccess('editPostThumb');
 		$post = $this->postMocker->mockSingle();
 
 		$this->assert->isFalse($post->hasCustomThumb());
-		$this->assert->throws(function() use ($post)
+		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
 				new EditPostThumbJob(),
@@ -41,9 +40,12 @@ class EditPostThumbJobTest extends AbstractTest
 					JobArgs::ARG_NEW_THUMB_CONTENT =>
 						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);
-		}, 'invalid thumbnail size');
+		});
 
-		$this->assert->isFalse($post->hasCustomThumb());
-		$this->assert->areNotEqual($post->getThumbCustomPath(), $post->tryGetWorkingThumbPath());
+		$this->assert->isTrue($post->hasCustomThumb());
+		$img = imagecreatefromjpeg($post->tryGetWorkingThumbPath());
+		$this->assert->areEqual(150, imagesx($img));
+		$this->assert->areEqual(150, imagesy($img));
+		imagedestroy($img);
 	}
 }

@@ -19,17 +19,14 @@ class GetPostThumbJob extends AbstractJob
 			$name = $post->getName();
 		}
 
-		$width = $this->hasArgument(JobArgs::ARG_THUMB_WIDTH) ? $this->getArgument(JobArgs::ARG_THUMB_WIDTH) : null;
-		$height = $this->hasArgument(JobArgs::ARG_THUMB_HEIGHT) ? $this->getArgument(JobArgs::ARG_THUMB_HEIGHT) : null;
-
-		$path = PostModel::tryGetWorkingThumbPath($name, $width, $height);
+		$path = PostModel::tryGetWorkingThumbPath($name);
 		if (!$path)
 		{
 			$post = PostModel::getByName($name);
 			$post = $this->postRetriever->retrieve();
 
-			$post->generateThumb($width, $height);
-			$path = PostModel::tryGetWorkingThumbPath($name, $width, $height);
+			$post->generateThumb();
+			$path = PostModel::tryGetWorkingThumbPath($name);
 
 			if (!$path)
 			{
@@ -43,15 +40,11 @@ class GetPostThumbJob extends AbstractJob
 
 	public function getRequiredArguments()
 	{
-		return JobArgs::Conjunction(
-			$this->postRetriever->getRequiredArguments(),
-			JobArgs::Optional(JobArgs::ARG_THUMB_WIDTH),
-			JobArgs::Optional(JobArgs::ARG_THUMB_HEIGHT));
+		return $this->postRetriever->getRequiredArguments();
 	}
 
 	public function getRequiredPrivileges()
 	{
-		//privilege check removed to make thumbs faster
 		return false;
 	}
 }
