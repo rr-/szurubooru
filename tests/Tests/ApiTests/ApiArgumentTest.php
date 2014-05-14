@@ -184,6 +184,11 @@ class ApiArgumentTest extends AbstractFullApiTest
 				JobArgs::Optional(JobArgs::ARG_PAGE_NUMBER)));
 	}
 
+	public function testGetPropertyJob()
+	{
+		$this->testArguments(new GetPropertyJob(), JobArgs::ARG_QUERY);
+	}
+
 	public function testGetPostContentJob()
 	{
 		$this->testArguments(new GetPostContentJob(),

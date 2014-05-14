@@ -19,6 +19,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->testRegularPrivilege(new AddUserJob(), new Privilege(Privilege::RegisterAccount));
 		$this->testRegularPrivilege(new EditUserJob(), false);
 		$this->testRegularPrivilege(new GetLogJob(), new Privilege(Privilege::ViewLog));
+		$this->testRegularPrivilege(new GetPropertyJob(), false);
 		$this->testRegularPrivilege(new ListCommentsJob(), new Privilege(Privilege::ListComments));
 		$this->testRegularPrivilege(new ListLogsJob(), new Privilege(Privilege::ListLogs));
 		$this->testRegularPrivilege(new ListPostsJob(), new Privilege(Privilege::ListPosts));
