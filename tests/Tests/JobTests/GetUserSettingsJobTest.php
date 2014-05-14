@@ -5,7 +5,6 @@ class GetUserSettingsJobTest extends AbstractTest
 	{
 		$this->grantAccess('changeUserSettings');
 		$user = $this->userMocker->mockSingle();
-		$this->login($user);
 
 		$settings = $this->assert->doesNotThrow(function() use ($user)
 		{
@@ -28,7 +27,6 @@ class GetUserSettingsJobTest extends AbstractTest
 	{
 		$this->grantAccess('changeUserSettings');
 		$user = $this->userMocker->mockSingle();
-		$this->login($user);
 
 		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Sketchy), true);
 		UserModel::save($user);
@@ -57,7 +55,6 @@ class GetUserSettingsJobTest extends AbstractTest
 	{
 		$this->grantAccess('changeUserSettings');
 		$user = $this->userMocker->mockSingle();
-		$this->login($user);
 
 		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Sketchy), true);
 		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Safe), false);

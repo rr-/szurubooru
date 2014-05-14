@@ -41,6 +41,9 @@ class Auth
 
 	public static function tryAutoLogin()
 	{
+		if (self::isLoggedIn())
+			return;
+
 		if (!isset($_COOKIE['auth']))
 			return;
 
@@ -77,7 +80,7 @@ class Auth
 
 	public static function getCurrentUser()
 	{
-		return self::isLoggedIn()
+		return isset($_SESSION['user'])
 			? unserialize($_SESSION['user'])
 			: self::getAnonymousUser();
 	}

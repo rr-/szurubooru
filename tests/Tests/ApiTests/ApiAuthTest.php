@@ -24,7 +24,7 @@ class ApiAuthTest extends AbstractFullApiTest
 		$this->testAuth(new EditUserJob(), false);
 		$this->testAuth(new EditUserNameJob(), false);
 		$this->testAuth(new EditUserPasswordJob(), false);
-		$this->testAuth(new EditUserSettingsJob(), true);
+		$this->testAuth(new EditUserSettingsJob(), false);
 		$this->testAuth(new FeaturePostJob(), true);
 		$this->testAuth(new FlagPostJob(), false);
 		$this->testAuth(new FlagUserJob(), false);
@@ -33,7 +33,7 @@ class ApiAuthTest extends AbstractFullApiTest
 		$this->testAuth(new GetPostJob(), false);
 		$this->testAuth(new GetPostThumbJob(), false);
 		$this->testAuth(new GetUserJob(), false);
-		$this->testAuth(new GetUserSettingsJob(), true);
+		$this->testAuth(new GetUserSettingsJob(), false);
 		$this->testAuth(new ListCommentsJob(), false);
 		$this->testAuth(new ListLogsJob(), false);
 		$this->testAuth(new ListPostsJob(), false);

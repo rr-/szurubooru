@@ -80,7 +80,8 @@ function prepareEnvironment($testEnvironment)
 	if (\Chibi\Database::connected())
 		\Chibi\Database::disconnect();
 
-	Auth::setCurrentUser(null);
+	if ($testEnvironment)
+		Auth::setCurrentUser(null);
 	Access::init();
 	Logger::init();
 	Mailer::init();

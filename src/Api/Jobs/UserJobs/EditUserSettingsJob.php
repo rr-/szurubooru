@@ -20,6 +20,10 @@ class EditUserSettingsJob extends AbstractJob
 		{
 			$user->getSettings()->set($key, $value);
 		}
+
+		if ($user->getAccessRank()->toInteger() == AccessRank::Anonymous)
+			return $user;
+
 		return UserModel::save($user);
 	}
 
@@ -39,6 +43,6 @@ class EditUserSettingsJob extends AbstractJob
 
 	public function isAuthenticationRequired()
 	{
-		return true;
+		return false;
 	}
 }

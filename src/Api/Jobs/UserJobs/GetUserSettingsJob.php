@@ -28,6 +28,6 @@ class GetUserSettingsJob extends AbstractJob
 
 	public function isAuthenticationRequired()
 	{
-		return true;
+		return false;
 	}
 }
