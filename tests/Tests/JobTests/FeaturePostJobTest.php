@@ -41,6 +41,6 @@ class FeaturePostJobTest extends AbstractTest
 		});
 
 		$this->assert->areEqual($posts[1]->getId(), PropertyModel::get(PropertyModel::FeaturedPostId));
-		$this->assert->areEqual(null, PropertyModel::get(PropertyModel::FeaturedPostUserName));
+		$this->assert->isNull(PropertyModel::get(PropertyModel::FeaturedPostUserName));
 	}
 }

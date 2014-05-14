@@ -162,7 +162,7 @@ class AddUserJobTest extends AbstractTest
 		});
 
 		//first user = admin = has confirmed e-mail automatically
-		$this->assert->areEqual(null, $user1->getUnconfirmedEmail());
+		$this->assert->isNull($user1->getUnconfirmedEmail());
 		$this->assert->areEqual('godzilla@whitestar.gov', $user1->getConfirmedEmail());
 
 		$user2 = $this->assert->doesNotThrow(function()
@@ -178,7 +178,7 @@ class AddUserJobTest extends AbstractTest
 
 		//any other user = non-admin = has to confirmed e-mail manually
 		$this->assert->areEqual('godzilla2@whitestar.gov', $user2->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user2->getConfirmedEmail());
+		$this->assert->isNull($user2->getConfirmedEmail());
 
 		$this->assert->areEqual(1, Mailer::getMailCounter());
 	}
@@ -204,7 +204,7 @@ class AddUserJobTest extends AbstractTest
 		});
 
 		$this->assert->areEqual('godzilla@whitestar.gov', $user1->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user1->getConfirmedEmail());
+		$this->assert->isNull($user1->getConfirmedEmail());
 
 		$user2 = $this->assert->doesNotThrow(function()
 		{
@@ -218,7 +218,7 @@ class AddUserJobTest extends AbstractTest
 		});
 
 		$this->assert->areEqual('godzilla2@whitestar.gov', $user2->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user2->getConfirmedEmail());
+		$this->assert->isNull($user2->getConfirmedEmail());
 
 		$this->assert->areEqual(2, Mailer::getMailCounter());
 	}
@@ -243,7 +243,7 @@ class AddUserJobTest extends AbstractTest
 				]);
 		});
 
-		$this->assert->areEqual(null, $user1->getUnconfirmedEmail());
+		$this->assert->isNull($user1->getUnconfirmedEmail());
 		$this->assert->areEqual('godzilla@whitestar.gov', $user1->getConfirmedEmail());
 
 		$user2 = $this->assert->doesNotThrow(function()
@@ -257,7 +257,7 @@ class AddUserJobTest extends AbstractTest
 				]);
 		});
 
-		$this->assert->areEqual(null, $user2->getUnconfirmedEmail());
+		$this->assert->isNull($user2->getUnconfirmedEmail());
 		$this->assert->areEqual('godzilla2@whitestar.gov', $user2->getConfirmedEmail());
 
 		$this->assert->areEqual(0, Mailer::getMailCounter());

@@ -43,7 +43,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		UserModel::save($user);
 
 		$this->assert->areEqual('godzilla@whitestar.gov', $user->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user->getConfirmedEmail());
+		$this->assert->isNull($user->getConfirmedEmail());
 
 		$this->assert->doesNotThrow(function() use ($user)
 		{
@@ -68,7 +68,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		//reload local entity after changes done by the job
 		$user = UserModel::getById($user->getId());
 
-		$this->assert->areEqual(null, $user->getUnconfirmedEmail());
+		$this->assert->isNull($user->getUnconfirmedEmail());
 		$this->assert->areEqual('godzilla@whitestar.gov', $user->getConfirmedEmail());
 	}
 
@@ -82,7 +82,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 		UserModel::save($user);
 
 		$this->assert->areEqual('godzilla@whitestar.gov', $user->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user->getConfirmedEmail());
+		$this->assert->isNull($user->getConfirmedEmail());
 
 		Api::run(
 			new ActivateUserEmailJob(),

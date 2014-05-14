@@ -58,7 +58,7 @@ class AddPostJobTest extends AbstractTest
 			file_get_contents($post->getFullPath()),
 			file_get_contents($this->testSupport->getPath('image.jpg')));
 		$this->assert->areNotEqual(Auth::getCurrentUser()->getId(), $post->getUploaderId());
-		$this->assert->areEqual(null, $post->getUploaderId());
+		$this->assert->isNull($post->getUploaderId());
 	}
 
 	public function testPartialPrivilegeFail()

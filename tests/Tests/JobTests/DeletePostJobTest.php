@@ -16,7 +16,7 @@ class DeletePostJobTest extends AbstractTest
 				]);
 		});
 
-		$this->assert->areEqual(null, PostModel::tryGetByName($post->getName()));
+		$this->assert->isNull(PostModel::tryGetByName($post->getName()));
 		$this->assert->areEqual(0, PostModel::getCount());
 	}
 

@@ -37,14 +37,14 @@ class Assert
 
 	public function isNull($actual)
 	{
-		if ($actual !== null and $actual !== false)
-			$this->fail('Assertion failed. Expected: NULL, got: "' . $actual . '"');
+		if ($actual !== null)
+			$this->fail('Assertion failed. Expected: NULL, got: "' . $this->dumpVar(actual) . '"');
 	}
 
 	public function isNotNull($actual)
 	{
-		if ($actual === null or $actual === false)
-			$this->fail('Assertion failed. Expected: not NULL, got: "' . $actual . '"');
+		if ($actual === null)
+			$this->fail('Assertion failed. Expected: not NULL, got: "' . $this->dumpVar(actual) . '"');
 	}
 
 	public function isTrue($actual)

@@ -8,7 +8,7 @@ class PostModelTest extends AbstractTest
 			return PostModel::getFeaturedPost();
 		});
 
-		$this->assert->areEqual(null, $post);
+		$this->assert->isNull($post);
 	}
 
 	public function testFeaturingNoPost()
@@ -20,7 +20,7 @@ class PostModelTest extends AbstractTest
 			return PostModel::getFeaturedPost();
 		});
 
-		$this->assert->areEqual(null, $post);
+		$this->assert->isNull($post);
 	}
 
 	public function testFeaturingRandomPost()
@@ -46,7 +46,7 @@ class PostModelTest extends AbstractTest
 
 		PostModel::featureRandomPost();
 
-		$this->assert->areEqual(null, PropertyModel::get(PropertyModel::FeaturedPostId));
+		$this->assert->isNull(PropertyModel::get(PropertyModel::FeaturedPostId));
 	}
 
 	public function testAutoFeaturingFirstTime()

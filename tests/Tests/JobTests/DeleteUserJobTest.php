@@ -16,7 +16,7 @@ class DeleteUserJobTest extends AbstractTest
 				]);
 		});
 
-		$this->assert->areEqual(null, UserModel::tryGetByName($user->getName()));
+		$this->assert->isNull(UserModel::tryGetByName($user->getName()));
 		$this->assert->areEqual(0, UserModel::getCount());
 	}
 

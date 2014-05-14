@@ -25,12 +25,12 @@ class TextHelperTest extends AbstractTest
 		$this->assert->areEqual(-2, TextHelper::toIntegerOrNull('-2'));
 		$this->assert->areEqual(0, TextHelper::toIntegerOrNull(0));
 		$this->assert->areEqual(0, TextHelper::toIntegerOrNull('0'));
-		$this->assert->areEqual(null, TextHelper::toIntegerOrNull('rubbish'));
-		$this->assert->areEqual(null, TextHelper::toIntegerOrNull('1e1'));
-		$this->assert->areEqual(null, TextHelper::toIntegerOrNull('1.7'));
-		$this->assert->areEqual(null, TextHelper::toIntegerOrNull(true));
-		$this->assert->areEqual(null, TextHelper::toIntegerOrNull(false));
-		$this->assert->areEqual(null, TextHelper::toIntegerOrNull(null));
+		$this->assert->isNull(TextHelper::toIntegerOrNull('rubbish'));
+		$this->assert->isNull(TextHelper::toIntegerOrNull('1e1'));
+		$this->assert->isNull(TextHelper::toIntegerOrNull('1.7'));
+		$this->assert->isNull(TextHelper::toIntegerOrNull(true));
+		$this->assert->isNull(TextHelper::toIntegerOrNull(false));
+		$this->assert->isNull(TextHelper::toIntegerOrNull(null));
 	}
 
 	public function testToBooleanOrNull()
@@ -51,9 +51,9 @@ class TextHelperTest extends AbstractTest
 		$this->assert->isFalse(TextHelper::toBooleanOrNull('FaLsE'));
 		$this->assert->isFalse(TextHelper::toBooleanOrNull('false'));
 		$this->assert->isFalse(TextHelper::toBooleanOrNull(false));
-		$this->assert->areEqual(null, TextHelper::toBooleanOrNull(2));
-		$this->assert->areEqual(null, TextHelper::toBooleanOrNull('2'));
-		$this->assert->areEqual(null, TextHelper::toBooleanOrNull('rubbish'));
-		$this->assert->areEqual(null, TextHelper::toBooleanOrNull(null));
+		$this->assert->isNull(TextHelper::toBooleanOrNull(2));
+		$this->assert->isNull(TextHelper::toBooleanOrNull('2'));
+		$this->assert->isNull(TextHelper::toBooleanOrNull('rubbish'));
+		$this->assert->isNull(TextHelper::toBooleanOrNull(null));
 	}
 }

@@ -22,7 +22,7 @@ class EditUserEmailJobTest extends AbstractTest
 				]);
 		});
 
-		$this->assert->areEqual(null, $user->getUnconfirmedEmail());
+		$this->assert->isNull($user->getUnconfirmedEmail());
 		$this->assert->areEqual('xena@other-side.gr', $user->getConfirmedEmail());
 
 		$this->assert->areEqual(0, Mailer::getMailCounter());
@@ -50,7 +50,7 @@ class EditUserEmailJobTest extends AbstractTest
 		});
 
 		$this->assert->areEqual('xena@other-side.gr', $user->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user->getConfirmedEmail());
+		$this->assert->isNull($user->getConfirmedEmail());
 
 		$this->assert->areEqual(1, Mailer::getMailCounter());
 	}
@@ -100,8 +100,8 @@ class EditUserEmailJobTest extends AbstractTest
 				]);
 		}, 'User with this e-mail is already registered');
 
-		$this->assert->areEqual(null, $user->getUnconfirmedEmail());
-		$this->assert->areEqual(null, $user->getConfirmedEmail());
+		$this->assert->isNull($user->getUnconfirmedEmail());
+		$this->assert->isNull($user->getConfirmedEmail());
 
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 	}
