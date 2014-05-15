@@ -25,7 +25,7 @@ final class PostModel extends AbstractCrudModel
 				'file_size' => $post->getFileSize(),
 				'mime_type' => $post->getMimeType(),
 				'safety' => $post->getSafety()->toInteger(),
-				'hidden' => $post->isHidden(),
+				'hidden' => $post->isHidden() ? 1 : 0,
 				'upload_date' => $post->getCreationTime(),
 				'image_width' => $post->getImageWidth(),
 				'image_height' => $post->getImageHeight(),

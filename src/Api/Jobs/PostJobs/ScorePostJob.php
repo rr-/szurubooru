@@ -11,7 +11,7 @@ class ScorePostJob extends AbstractJob
 	public function execute()
 	{
 		$post = $this->postRetriever->retrieve();
-		$score = intval($this->getArgument(JobArgs::ARG_NEW_POST_SCORE));
+		$score = TextHelper::toInteger($this->getArgument(JobArgs::ARG_NEW_POST_SCORE));
 
 		UserModel::updateUserScore(Auth::getCurrentUser(), $post, $score);
 

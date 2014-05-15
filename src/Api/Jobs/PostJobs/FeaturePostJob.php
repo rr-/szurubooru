@@ -15,8 +15,12 @@ class FeaturePostJob extends AbstractJob
 		PropertyModel::set(PropertyModel::FeaturedPostId, $post->getId());
 		PropertyModel::set(PropertyModel::FeaturedPostUnixTime, time());
 
+		$anonymous = false;
+		if ($this->hasArgument(JobArgs::ARG_ANONYMOUS))
+			$anonymous = TextHelper::toBoolean($this->getArgument(JobArgs::ARG_ANONYMOUS));
+
 		PropertyModel::set(PropertyModel::FeaturedPostUserName,
-			($this->hasArgument(JobArgs::ARG_ANONYMOUS) and $this->getArgument(JobArgs::ARG_ANONYMOUS))
+			$anonymous
 			? null
 			: Auth::getCurrentUser()->getName());
 

@@ -36,7 +36,7 @@ class FeaturePostJobTest extends AbstractTest
 				new FeaturePostJob(),
 				[
 					JobArgs::ARG_POST_ID => $posts[1]->getId(),
-					JobArgs::ARG_ANONYMOUS => true,
+					JobArgs::ARG_ANONYMOUS => '1',
 				]);
 		});
 

@@ -21,14 +21,14 @@ final class UserModel extends AbstractCrudModel
 				'name' => $user->getName(),
 				'pass_salt' => $user->getPasswordSalt(),
 				'pass_hash' => $user->getPasswordHash(),
-				'staff_confirmed' => $user->isStaffConfirmed(),
+				'staff_confirmed' => $user->isStaffConfirmed() ? 1 : 0,
 				'email_unconfirmed' => $user->getUnconfirmedEmail(),
 				'email_confirmed' => $user->getConfirmedEmail(),
 				'join_date' => $user->getJoinTime(),
 				'last_login_date' => $user->getLastLoginTime(),
 				'access_rank' => $user->getAccessRank()->toInteger(),
 				'settings' => $user->getSettings()->getAllAsSerializedString(),
-				'banned' => $user->isBanned(),
+				'banned' => $user->isBanned() ? 1 : 0,
 				];
 
 			$stmt = (new Sql\UpdateStatement)

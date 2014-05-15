@@ -11,7 +11,7 @@ class TogglePostFavoriteJob extends AbstractJob
 	public function execute()
 	{
 		$post = $this->postRetriever->retrieve();
-		$favorite = boolval($this->getArgument(JobArgs::ARG_NEW_STATE));
+		$favorite = TextHelper::toBoolean($this->getArgument(JobArgs::ARG_NEW_STATE));
 
 		if ($favorite)
 		{

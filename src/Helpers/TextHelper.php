@@ -7,6 +7,14 @@ class TextHelper
 		return preg_match($emailRegex, $email);
 	}
 
+	public static function toInteger($x)
+	{
+		$y = self::toIntegerOrNull($x);
+		if ($y === null)
+			return 0;
+		return $y;
+	}
+
 	public static function toIntegerOrNull($x)
 	{
 		if ($x === true or $x === false)
@@ -26,6 +34,14 @@ class TextHelper
 		}
 
 		return null;
+	}
+
+	public static function toBoolean($x)
+	{
+		$y = self::toBooleanOrNull($x);
+		if ($y === null)
+			return false;
+		return $y;
 	}
 
 	public static function toBooleanOrNull($x)

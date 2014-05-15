@@ -18,6 +18,7 @@ class AddPostJobTest extends AbstractTest
 			return Api::run(
 				new AddPostJob(),
 				[
+					JobArgs::ARG_ANONYMOUS => '0',
 					JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
 					JobArgs::ARG_NEW_SOURCE => '',
 					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
@@ -30,6 +31,7 @@ class AddPostJobTest extends AbstractTest
 			file_get_contents($post->getFullPath()),
 			file_get_contents($this->testSupport->getPath('image.jpg')));
 		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $post->getUploaderId());
+		$this->assert->isNotNull($post->getUploaderId());
 	}
 
 	public function testAnonymousUploads()
@@ -47,7 +49,7 @@ class AddPostJobTest extends AbstractTest
 			return Api::run(
 				new AddPostJob(),
 				[
-					JobArgs::ARG_ANONYMOUS => true,
+					JobArgs::ARG_ANONYMOUS => '1',
 					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
 					JobArgs::ARG_NEW_POST_CONTENT =>
 						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),

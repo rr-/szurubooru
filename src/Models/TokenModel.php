@@ -20,7 +20,7 @@ final class TokenModel extends AbstractCrudModel
 			$bindings = [
 				'user_id' => $token->getUserId(),
 				'token' => $token->getText(),
-				'used' => $token->isUsed(),
+				'used' => $token->isUsed() ? 1 : 0,
 				'expires' => $token->getExpirationTime(),
 				];
 
