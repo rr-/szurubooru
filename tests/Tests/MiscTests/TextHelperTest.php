@@ -17,7 +17,7 @@ class TextHelperTest extends AbstractTest
 		}
 	}
 
-	public function testToIntegerOrNulll()
+	public function testToIntegerOrNull()
 	{
 		$this->assert->areEqual(1, TextHelper::toIntegerOrNull(1));
 		$this->assert->areEqual(1, TextHelper::toIntegerOrNull('1'));

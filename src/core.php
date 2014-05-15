@@ -19,77 +19,175 @@ require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'include.php';
 
 require_once $rootDir . 'src' . DS . 'routes.php';
 
+final class Core
+{
+	private static $context;
+	private static $config;
+
+	static function getConfig()
+	{
+		return self::$config;
+	}
+
+	static function getContext()
+	{
+		return self::$context;
+	}
+
+	static function prepareConfig($testEnvironment)
+	{
+		//load config manually
+		global $config;
+		global $rootDir;
+
+		$configPaths = [];
+		if (!$testEnvironment)
+		{
+			$configPaths []= $rootDir . DS . 'data' . DS . 'config.ini';
+			$configPaths []= $rootDir . DS . 'data' . DS . 'local.ini';
+		}
+		else
+		{
+			$configPaths []= $rootDir . DS . 'tests' . DS . 'config.ini';
+		}
+
+		self::$config = new \Chibi\Config();
+		foreach ($configPaths as $path)
+			if (file_exists($path))
+				self::$config->loadIni($path);
+		self::$config->rootDir = $rootDir;
+	}
+
+	static function prepareEnvironment($testEnvironment)
+	{
+		//prepare context
+		global $startTime;
+		self::$context = new StdClass;
+		self::$context->startTime = $startTime;
+
+		$config = self::getConfig();
+
+		TransferHelper::createDirectory($config->main->filesPath);
+		TransferHelper::createDirectory($config->main->thumbsPath);
+
+		//extension sanity checks
+		$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'gd', 'openssl', 'fileinfo'];
+		foreach ($requiredExtensions as $ext)
+			if (!extension_loaded($ext))
+				die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);
+
+		if (\Chibi\Database::connected())
+			\Chibi\Database::disconnect();
+
+		if ($testEnvironment)
+			Auth::setCurrentUser(null);
+		Access::init();
+		Logger::init();
+		Mailer::init();
+		PropertyModel::init();
+
+		\Chibi\Database::connect(
+			$config->main->dbDriver,
+			TextHelper::absolutePath($config->main->dbLocation),
+			isset($config->main->dbUser) ? $config->main->dbUser : null,
+			isset($config->main->dbPass) ? $config->main->dbPass : null);
+	}
+
+	static function getDbVersion()
+	{
+		try
+		{
+			$dbVersion = PropertyModel::get(PropertyModel::DbVersion);
+		}
+		catch (Exception $e)
+		{
+			return [null, null];
+		}
+		if (strpos($dbVersion, '.') !== false)
+		{
+			list ($dbVersionMajor, $dbVersionMinor) = explode('.', $dbVersion);
+		}
+		elseif ($dbVersion)
+		{
+			$dbVersionMajor = $dbVersion;
+			$dbVersionMinor = null;
+		}
+		else
+		{
+			$dbVersionMajor = 0;
+			$dbVersionMinor = 0;
+		}
+		return [$dbVersionMajor, $dbVersionMinor];
+	}
+
+	static function upgradeDatabase()
+	{
+		$config = self::getConfig();
+		$upgradesPath = TextHelper::absolutePath($config->rootDir
+			. DS . 'src' . DS . 'Upgrades' . DS . $config->main->dbDriver);
+
+		$upgrades = glob($upgradesPath . DS . '*.sql');
+		natcasesort($upgrades);
+
+		foreach ($upgrades as $upgradePath)
+		{
+			preg_match('/(\d+)\.sql/', $upgradePath, $matches);
+			$upgradeVersionMajor = intval($matches[1]);
+
+			list ($dbVersionMajor, $dbVersionMinor) = self::getDbVersion();
+
+			if (($upgradeVersionMajor > $dbVersionMajor)
+				or ($upgradeVersionMajor == $dbVersionMajor and $dbVersionMinor !== null))
+			{
+				printf('%s: executing' . PHP_EOL, $upgradePath);
+				$upgradeSql = file_get_contents($upgradePath);
+				$upgradeSql = preg_replace('/^[ \t]+(.*);/m', '\0--', $upgradeSql);
+				$queries = preg_split('/;\s*[\r\n]+/s', $upgradeSql);
+				$queries = array_map('trim', $queries);
+				$queries = array_filter($queries);
+				$upgradeVersionMinor = 0;
+				foreach ($queries as $query)
+				{
+					$query = preg_replace('/\s*--(.*?)$/m', '', $query);
+					++ $upgradeVersionMinor;
+					if ($upgradeVersionMinor > $dbVersionMinor)
+					{
+						try
+						{
+							\Chibi\Database::execUnprepared(new \Chibi\Sql\RawStatement($query));
+						}
+						catch (Exception $e)
+						{
+							echo $e . PHP_EOL;
+							echo $query . PHP_EOL;
+							die;
+						}
+						PropertyModel::set(PropertyModel::DbVersion, $upgradeVersionMajor . '.' . $upgradeVersionMinor);
+					}
+				}
+				PropertyModel::set(PropertyModel::DbVersion, $upgradeVersionMajor);
+			}
+			else
+			{
+				printf('%s: no need to execute' . PHP_EOL, $upgradePath);
+			}
+		}
+
+		list ($dbVersionMajor, $dbVersionMinor) = self::getDbVersion();
+		printf('Database version: %d.%d' . PHP_EOL, $dbVersionMajor, $dbVersionMinor);
+	}
+}
+
+//legacy
 function getConfig()
 {
-	global $config;
-	return $config;
+	return Core::getConfig();
 }
 
 function getContext()
 {
-	global $context;
-	return $context;
+	return Core::getContext();
 }
 
-function prepareConfig($testEnvironment)
-{
-	//load config manually
-	global $config;
-	global $rootDir;
-
-	$configPaths = [];
-	if (!$testEnvironment)
-	{
-		$configPaths []= $rootDir . DS . 'data' . DS . 'config.ini';
-		$configPaths []= $rootDir . DS . 'data' . DS . 'local.ini';
-	}
-	else
-	{
-		$configPaths []= $rootDir . DS . 'tests' . DS . 'config.ini';
-	}
-
-	$config = new \Chibi\Config();
-	foreach ($configPaths as $path)
-		if (file_exists($path))
-			$config->loadIni($path);
-	$config->rootDir = $rootDir;
-}
-
-function prepareEnvironment($testEnvironment)
-{
-	//prepare context
-	global $context;
-	global $startTime;
-	$context = new StdClass;
-	$context->startTime = $startTime;
-
-	$config = getConfig();
-
-	TransferHelper::createDirectory($config->main->filesPath);
-	TransferHelper::createDirectory($config->main->thumbsPath);
-
-	//extension sanity checks
-	$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'gd', 'openssl', 'fileinfo'];
-	foreach ($requiredExtensions as $ext)
-		if (!extension_loaded($ext))
-			die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);
-
-	if (\Chibi\Database::connected())
-		\Chibi\Database::disconnect();
-
-	if ($testEnvironment)
-		Auth::setCurrentUser(null);
-	Access::init();
-	Logger::init();
-	Mailer::init();
-	PropertyModel::init();
-
-	\Chibi\Database::connect(
-		$config->main->dbDriver,
-		TextHelper::absolutePath($config->main->dbLocation),
-		isset($config->main->dbUser) ? $config->main->dbUser : null,
-		isset($config->main->dbPass) ? $config->main->dbPass : null);
-}
-
-prepareConfig(false);
-prepareEnvironment(false);
+Core::prepareConfig(false);
+Core::prepareEnvironment(false);
