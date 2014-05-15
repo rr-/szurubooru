@@ -25,9 +25,9 @@ final class TokenEntity extends AbstractEntity implements IValidatable
 	public function fillFromDatabase($row)
 	{
 		$this->id = (int) $row['id'];
-		$this->userId = (int) $row['user_id'];
+		$this->userId = TextHelper::toIntegerOrNull($row['user_id']);
 		$this->token = $row['token'];
-		$this->used = (bool) $row['used'];
+		$this->used = TextHelper::toBooleanOrNull($row['used']);
 		$this->expires = $row['expires'];
 	}
 

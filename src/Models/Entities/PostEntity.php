@@ -22,6 +22,7 @@ final class PostEntity extends AbstractEntity implements IValidatable
 	{
 		$this->setSafety(new PostSafety(PostSafety::Safe));
 		$this->setHidden(false);
+		$this->setUploader(null);
 		$this->setCreationTime(time());
 		do
 		{
@@ -36,13 +37,13 @@ final class PostEntity extends AbstractEntity implements IValidatable
 		$this->name = $row['name'];
 		$this->origName = $row['orig_name'];
 		$this->fileHash = $row['file_hash'];
-		$this->fileSize = (int) $row['file_size'];
+		$this->fileSize = TextHelper::toIntegerOrNull($row['file_size']);
 		$this->mimeType = $row['mime_type'];
-		$this->hidden = (bool) $row['hidden'];
+		$this->hidden = TextHelper::toBooleanOrNull($row['hidden']);
 		$this->uploadDate = $row['upload_date'];
-		$this->imageWidth = (int) $row['image_width'];
-		$this->imageHeight = (int) $row['image_height'];
-		$this->uploaderId = (int) $row['uploader_id'];
+		$this->imageWidth = TextHelper::toIntegerOrNull($row['image_width']);
+		$this->imageHeight = TextHelper::toIntegerOrNull($row['image_height']);
+		$this->uploaderId = TextHelper::toIntegerOrNull($row['uploader_id']);
 		$this->source = $row['source'];
 		$this->setCache('comment_count', $row['comment_count']);
 		$this->setCache('fav_count', $row['fav_count']);

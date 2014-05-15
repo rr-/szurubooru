@@ -15,9 +15,9 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 	{
 		$this->id = (int) $row['id'];
 		$this->text = $row['text'];
-		$this->postId = (int) $row['post_id'];
+		$this->postId = TextHelper::toIntegerOrNull($row['post_id']);
 		$this->commentDate = $row['comment_date'];
-		$this->commenterId = (int) $row['commenter_id'];
+		$this->commenterId = TextHelper::toIntegerOrNull($row['commenter_id']);
 	}
 
 	public function validate()

@@ -203,9 +203,13 @@ class ListPostsJobTest extends AbstractTest
 
 		foreach (['id', 'ids'] as $alias)
 		{
-			$ret = $this->assert->doesNotThrow(function() use ($alias)
+			$ret = $this->assert->doesNotThrow(function() use ($alias, $posts)
 			{
-				return Api::run(new ListPostsJob(), [JobArgs::ARG_QUERY => $alias . ':1,3,5']);
+				$query = sprintf('%s:9999,%d,%d',
+					$alias,
+					$posts[0]->getId(),
+					$posts[2]->getId());
+				return Api::run(new ListPostsJob(), [JobArgs::ARG_QUERY => $query]);
 			});
 
 			$this->assert->areEqual(2, $ret->entityCount);
@@ -311,9 +315,9 @@ class ListPostsJobTest extends AbstractTest
 
 		foreach (['idmin', 'id_min'] as $alias)
 		{
-			$ret = $this->assert->doesNotThrow(function() use ($alias)
+			$ret = $this->assert->doesNotThrow(function() use ($alias, $posts)
 			{
-				return Api::run(new ListPostsJob(), [JobArgs::ARG_QUERY => $alias . ':2']);
+				return Api::run(new ListPostsJob(), [JobArgs::ARG_QUERY => $alias . ':' . $posts[1]->getId()]);
 			});
 
 			$this->assert->areEqual(2, $ret->entityCount);
@@ -323,9 +327,9 @@ class ListPostsJobTest extends AbstractTest
 
 		foreach (['idmax', 'id_max'] as $alias)
 		{
-			$ret = $this->assert->doesNotThrow(function() use ($alias)
+			$ret = $this->assert->doesNotThrow(function() use ($alias, $posts)
 			{
-				return Api::run(new ListPostsJob(), [JobArgs::ARG_QUERY => $alias . ':2']);
+				return Api::run(new ListPostsJob(), [JobArgs::ARG_QUERY => $alias . ':' . $posts[1]->getId()]);
 			});
 
 			$this->assert->areEqual(2, $ret->entityCount);
@@ -680,7 +684,8 @@ class ListPostsJobTest extends AbstractTest
 		$this->grantAccess('listPosts');
 		$num = 15;
 		$posts = $this->postMocker->mockMultiple($num);
-		$expectedPostIdsSorted = range(1, $num);
+		$expectedPostIdsSorted = array_map(function($post) { return $post->getId(); }, $posts);
+		sort($expectedPostIdsSorted);
 
 		$ret = $this->assert->doesNotThrow(function()
 		{

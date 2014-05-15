@@ -135,7 +135,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->assert->throws(function()
 		{
 			$this->uploadFromFile('image.png');
-		}, 'Duplicate upload: @1');
+		}, 'Duplicate upload: @' . $post->getId());
 	}
 
 	public function testDuplicateUrl()
@@ -147,7 +147,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->assert->throws(function()
 		{
 			$this->uploadFromUrl('image.png');
-		}, 'Duplicate upload: @1');
+		}, 'Duplicate upload: @' . $post->getId());
 	}
 
 	public function testDuplicateYoutube()
@@ -165,16 +165,16 @@ class EditPostContentJobTest extends AbstractTest
 				JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
 			]);
 
-		$post = $this->postMocker->mockSingle();
-		$this->assert->throws(function() use ($post, $url)
+		$anotherPost = $this->postMocker->mockSingle();
+		$this->assert->throws(function() use ($anotherPost, $url)
 		{
 			Api::run(
 				new EditPostContentJob(),
 				[
-					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_ID => $anotherPost->getId(),
 					JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
 				]);
-		}, 'Duplicate upload: @1');
+		}, 'Duplicate upload: @' . $post->getId());
 	}
 
 	protected function prepare()
