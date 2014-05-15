@@ -30,7 +30,7 @@ class GetPostThumbJob extends AbstractJob
 
 			if (!$path)
 			{
-				$path = getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
+				$path = Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
 				$path = TextHelper::absolutePath($path);
 			}
 		}

@@ -28,7 +28,7 @@ class EditCommentJobTest extends AbstractTest
 		$this->grantAccess('editComment.own');
 		$this->assert->doesNotThrow(function()
 		{
-			$this->runApi(str_repeat('b', getConfig()->comments->minLength));
+			$this->runApi(str_repeat('b', Core::getConfig()->comments->minLength));
 		});
 	}
 
@@ -38,7 +38,7 @@ class EditCommentJobTest extends AbstractTest
 		$this->grantAccess('editComment.own');
 		$this->assert->doesNotThrow(function()
 		{
-			$this->runApi(str_repeat('b', getConfig()->comments->maxLength));
+			$this->runApi(str_repeat('b', Core::getConfig()->comments->maxLength));
 		});
 	}
 
@@ -48,7 +48,7 @@ class EditCommentJobTest extends AbstractTest
 		$this->grantAccess('editComment.own');
 		$this->assert->throws(function()
 		{
-			$this->runApi(str_repeat('b', getConfig()->comments->minLength - 1));
+			$this->runApi(str_repeat('b', Core::getConfig()->comments->minLength - 1));
 		}, 'Comment must have at least');
 	}
 
@@ -58,7 +58,7 @@ class EditCommentJobTest extends AbstractTest
 		$this->grantAccess('editComment.own');
 		$this->assert->throws(function()
 		{
-			$this->runApi(str_repeat('b', getConfig()->comments->maxLength + 1));
+			$this->runApi(str_repeat('b', Core::getConfig()->comments->maxLength + 1));
 		}, 'Comment must have at most');
 	}
 

@@ -10,7 +10,7 @@ class TestSupport
 
 	public function getPath($assetName)
 	{
-		return TextHelper::absolutePath(getConfig()->rootDir . DS . 'tests' . DS . 'Files' . DS . $assetName);
+		return TextHelper::absolutePath(Core::getConfig()->rootDir . DS . 'tests' . DS . 'Files' . DS . $assetName);
 	}
 
 	public function assertTagNames($post, $tags)

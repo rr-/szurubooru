@@ -22,7 +22,7 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 
 	public function validate()
 	{
-		$config = getConfig();
+		$config = Core::getConfig();
 
 		if (strlen($this->getText()) < $config->comments->minLength)
 			throw new SimpleException('Comment must have at least %d characters', $config->comments->minLength);

@@ -37,7 +37,6 @@ final class Core
 	static function prepareConfig($testEnvironment)
 	{
 		//load config manually
-		global $config;
 		global $rootDir;
 
 		$configPaths = [];
@@ -176,17 +175,6 @@ final class Core
 		list ($dbVersionMajor, $dbVersionMinor) = self::getDbVersion();
 		printf('Database version: %d.%d' . PHP_EOL, $dbVersionMajor, $dbVersionMinor);
 	}
-}
-
-//legacy
-function getConfig()
-{
-	return Core::getConfig();
-}
-
-function getContext()
-{
-	return Core::getContext();
 }
 
 Core::prepareConfig(false);

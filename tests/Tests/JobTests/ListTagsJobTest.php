@@ -7,7 +7,7 @@ class ListTagsJobTest extends AbstractTest
 		$this->grantAccess('listPosts');
 
 		$tags = $this->tagMocker->mockMultiple(3);
-		getConfig()->browsing->tagsPerPage = 2;
+		Core::getConfig()->browsing->tagsPerPage = 2;
 
 		$post = $this->postMocker->mockSingle();
 		$post->setTags($tags);

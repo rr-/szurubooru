@@ -10,7 +10,7 @@ class UserController
 				JobArgs::ARG_QUERY => $filter,
 			]);
 
-		$context = getContext();
+		$context = Core::getContext();
 
 		$context->filter = $filter;
 		$context->transport->users = $ret->entities;
@@ -45,7 +45,7 @@ class UserController
 		elseif ($tab == 'edit' and !(new EditUserJob)->canEditAnything(Auth::getCurrentUser()))
 			Access::fail();
 
-		$context = getContext();
+		$context = Core::getContext();
 		$context->flagged = $flagged;
 		$context->transport->tab = $tab;
 		$context->transport->user = $user;
@@ -87,7 +87,7 @@ class UserController
 				]
 			], $identifier));
 
-		getContext()->transport->user = $user;
+		Core::getContext()->transport->user = $user;
 		if ($user->getId() == Auth::getCurrentUser()->getId())
 			Auth::setCurrentUser($user);
 
@@ -194,7 +194,7 @@ class UserController
 
 	public function registrationView()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->handleExceptions = true;
 
 		//check if already logged in
@@ -219,7 +219,7 @@ class UserController
 			JobArgs::ARG_NEW_EMAIL => InputHelper::get('email'),
 		]);
 
-		if (!getConfig()->registration->needEmailForRegistering and !getConfig()->registration->staffActivation)
+		if (!Core::getConfig()->registration->needEmailForRegistering and !Core::getConfig()->registration->staffActivation)
 		{
 			Auth::setCurrentUser($user);
 		}
@@ -228,10 +228,10 @@ class UserController
 		if (Mailer::getMailCounter() > 0)
 		{
 			$message .= ' Please wait for activation e-mail.';
-			if (getConfig()->registration->staffActivation)
+			if (Core::getConfig()->registration->staffActivation)
 				$message .= ' After this, your registration must be confirmed by staff.';
 		}
-		elseif (getConfig()->registration->staffActivation)
+		elseif (Core::getConfig()->registration->staffActivation)
 			$message .= ' Your registration must be now confirmed by staff.';
 
 		Messenger::message($message);
@@ -239,14 +239,14 @@ class UserController
 
 	public function activationView()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'user-select';
 		Assets::setSubTitle('account activation');
 	}
 
 	public function activationAction($tokenText)
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'message';
 		Assets::setSubTitle('account activation');
 		$identifier = InputHelper::get('identifier');
@@ -265,25 +265,25 @@ class UserController
 				JobArgs::ARG_TOKEN => $tokenText ]);
 
 			$message = 'Activation completed successfully.';
-			if (getConfig()->registration->staffActivation)
+			if (Core::getConfig()->registration->staffActivation)
 				$message .= ' However, your account still must be confirmed by staff.';
 			Messenger::message($message);
 
-			if (!getConfig()->registration->staffActivation)
+			if (!Core::getConfig()->registration->staffActivation)
 				Auth::setCurrentUser($user);
 		}
 	}
 
 	public function passwordResetView()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'user-select';
 		Assets::setSubTitle('password reset');
 	}
 
 	public function passwordResetAction($tokenText)
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'message';
 		Assets::setSubTitle('password reset');
 		$identifier = InputHelper::get('identifier');
@@ -310,7 +310,7 @@ class UserController
 
 	private function requirePasswordConfirmation()
 	{
-		$user = getContext()->transport->user;
+		$user = Core::getContext()->transport->user;
 		if (Auth::getCurrentUser()->getId() == $user->getId())
 		{
 			$suppliedPassword = InputHelper::get('current-password');

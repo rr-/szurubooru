@@ -3,7 +3,7 @@ class PostController
 {
 	public function listView($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'post-list-wrapper';
 		$context->source = $source;
 		$context->additionalInfo = $additionalInfo;
@@ -116,7 +116,7 @@ class PostController
 		$post = Api::run(new GetPostJob(), [
 			JobArgs::ARG_POST_ID => $id]);
 
-		$context = getContext()->transport->post = $post;
+		$context = Core::getContext()->transport->post = $post;
 	}
 
 	public function editAction($id)
@@ -217,7 +217,7 @@ class PostController
 
 	public function genericView($id)
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'post-view';
 
 		$post = Api::run(new GetPostJob(), [
@@ -257,7 +257,7 @@ class PostController
 	{
 		$ret = Api::run(new GetPostContentJob(), [JobArgs::ARG_POST_NAME => $name]);
 
-		$context = getContext();
+		$context = Core::getContext();
 		$context->transport->cacheDaysToLive = 14;
 		$context->transport->customFileName = $ret->fileName;
 		$context->transport->mimeType = $ret->mimeType;
@@ -271,7 +271,7 @@ class PostController
 	{
 		$ret = Api::run(new GetPostThumbJob(), [JobArgs::ARG_POST_NAME => $name]);
 
-		$context = getContext();
+		$context = Core::getContext();
 		$context->transport->cacheDaysToLive = 365;
 		$context->transport->customFileName = $ret->fileName;
 		$context->transport->mimeType = 'image/jpeg';

@@ -60,7 +60,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 	private function validateUserName()
 	{
 		$userName = $this->getName();
-		$config = getConfig();
+		$config = Core::getConfig();
 
 		$otherUser = UserModel::tryGetByName($userName);
 		if ($otherUser !== null and $otherUser->getId() != $this->getId())
@@ -90,7 +90,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		if (!$this->_passwordChanged)
 			return;
 
-		$config = getConfig();
+		$config = Core::getConfig();
 		$passMinLength = intval($config->registration->passMinLength);
 		$passRegex = $config->registration->passRegex;
 
@@ -131,7 +131,7 @@ final class UserEntity extends AbstractEntity implements IValidatable
 
 	private function throwDuplicateUserError($otherUser, $reason)
 	{
-		$config = getConfig();
+		$config = Core::getConfig();
 
 		if (!$otherUser->getConfirmedEmail()
 			and isset($config->registration->needEmailForRegistering)

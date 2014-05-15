@@ -44,7 +44,7 @@ class ListCommentJobTest extends AbstractTest
 		$this->grantAccess('listComments');
 		$this->grantAccess('listPosts');
 
-		getConfig()->comments->commentsPerPage = 2;
+		Core::getConfig()->comments->commentsPerPage = 2;
 
 		$this->assert->areEqual(0, CommentModel::getCount());
 

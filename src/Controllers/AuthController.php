@@ -10,7 +10,7 @@ class AuthController
 
 	public function loginAction()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'auth-login';
 		$context->handleExceptions = true;
 
@@ -33,7 +33,7 @@ class AuthController
 			return;
 		if (\Chibi\Util\Headers::getCode() != 200)
 			return;
-		$context = getContext();
+		$context = Core::getContext();
 		if ($context->simpleControllerName == 'auth')
 			return;
 		$_SESSION['login-redirect-url'] = $context->query;

@@ -19,7 +19,7 @@ abstract class AbstractFullApiTest extends AbstractTest
 
 	protected function getAllJobs()
 	{
-		$pathToJobs = getConfig()->rootDir . DS . 'src' . DS . 'Api' . DS . 'Jobs';
+		$pathToJobs = Core::getConfig()->rootDir . DS . 'src' . DS . 'Api' . DS . 'Jobs';
 		$directory = new RecursiveDirectoryIterator($pathToJobs);
 		$iterator = new RecursiveIteratorIterator($directory);
 		$regex = new RegexIterator($iterator, '/^.+Job\.php$/i');

@@ -3,8 +3,8 @@ class AuthTest extends AbstractTest
 {
 	public function testValidPassword()
 	{
-		getConfig()->registration->staffActivation = false;
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
 		UserModel::save($user);
@@ -19,8 +19,8 @@ class AuthTest extends AbstractTest
 
 	public function testLoginViaEmail()
 	{
-		getConfig()->registration->staffActivation = false;
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
 		$user->setConfirmedEmail('godzilla@whitestar.gov');
@@ -65,8 +65,8 @@ class AuthTest extends AbstractTest
 
 	public function testBanned()
 	{
-		getConfig()->registration->staffActivation = false;
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
 		$user->ban();
@@ -80,8 +80,8 @@ class AuthTest extends AbstractTest
 
 	public function testStaffConfirmationEnabledFail()
 	{
-		getConfig()->registration->staffActivation = true;
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->staffActivation = true;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
 		$user->setStaffConfirmed(false);
@@ -95,8 +95,8 @@ class AuthTest extends AbstractTest
 
 	public function testStaffConfirmationEnabledPass()
 	{
-		getConfig()->registration->staffActivation = true;
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->staffActivation = true;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
 		$user->setStaffConfirmed(true);
@@ -112,8 +112,8 @@ class AuthTest extends AbstractTest
 
 	public function testStaffConfirmationDisabledPass()
 	{
-		getConfig()->registration->staffActivation = false;
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 
 		$user = $this->prepareValidUser();
 		$user->setStaffConfirmed(false);
@@ -129,8 +129,8 @@ class AuthTest extends AbstractTest
 
 	public function testMailConfirmationEnabledFail1()
 	{
-		getConfig()->registration->staffActivation = false;
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();
 		$user->setStaffConfirmed(false);
@@ -144,8 +144,8 @@ class AuthTest extends AbstractTest
 
 	public function testMailConfirmationEnabledFail2()
 	{
-		getConfig()->registration->staffActivation = false;
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();
 		$user->setStaffConfirmed(false);
@@ -160,8 +160,8 @@ class AuthTest extends AbstractTest
 
 	public function testMailConfirmationEnabledPass()
 	{
-		getConfig()->registration->staffActivation = false;
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 
 		$user = $this->prepareValidUser();
 		$user->setStaffConfirmed(false);

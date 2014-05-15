@@ -14,7 +14,7 @@ Assets::addStylesheet('user-list.css');
 			'order:date,desc' => 'Sort new&rarr;old',
 		];
 
-		if (getConfig()->registration->staffActivation)
+		if (Core::getConfig()->registration->staffActivation)
 			$filters['pending'] = 'Pending staff review';
 		?>
 

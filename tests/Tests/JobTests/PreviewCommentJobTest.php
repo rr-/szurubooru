@@ -26,7 +26,7 @@ class PreviewCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->assert->doesNotThrow(function()
 		{
-			return $this->runApi(str_repeat('b', getConfig()->comments->minLength));
+			return $this->runApi(str_repeat('b', Core::getConfig()->comments->minLength));
 		});
 	}
 
@@ -35,7 +35,7 @@ class PreviewCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->assert->doesNotThrow(function()
 		{
-			return $this->runApi(str_repeat('b', getConfig()->comments->maxLength));
+			return $this->runApi(str_repeat('b', Core::getConfig()->comments->maxLength));
 		});
 	}
 
@@ -44,7 +44,7 @@ class PreviewCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->assert->throws(function()
 		{
-			return $this->runApi(str_repeat('b', getConfig()->comments->minLength - 1));
+			return $this->runApi(str_repeat('b', Core::getConfig()->comments->minLength - 1));
 		}, 'Comment must have at least');
 	}
 
@@ -53,7 +53,7 @@ class PreviewCommentJobTest extends AbstractTest
 		$this->prepare();
 		$this->assert->throws(function()
 		{
-			return $this->runApi(str_repeat('b', getConfig()->comments->maxLength + 1));
+			return $this->runApi(str_repeat('b', Core::getConfig()->comments->maxLength + 1));
 		}, 'Comment must have at most');
 	}
 
@@ -106,7 +106,7 @@ class PreviewCommentJobTest extends AbstractTest
 
 	protected function prepare()
 	{
-		getConfig()->registration->needEmailForCommenting = false;
+		Core::getConfig()->registration->needEmailForCommenting = false;
 		$this->grantAccess('addComment');
 		$this->login($this->userMocker->mockSingle());
 	}

@@ -3,7 +3,7 @@ class ListLogsJob extends AbstractJob
 {
 	public function execute()
 	{
-		$path = TextHelper::absolutePath(getConfig()->main->logsPath);
+		$path = TextHelper::absolutePath(Core::getConfig()->main->logsPath);
 
 		$logs = [];
 		foreach (glob(dirname($path) . DS . '*.log') as $log)

@@ -23,7 +23,7 @@ class EditPostSourceJobTest extends AbstractTest
 		$this->grantAccess('editPostSource.own');
 		$this->assert->doesNotThrow(function()
 		{
-			$this->runApi(str_repeat('a', getConfig()->posts->maxSourceLength));
+			$this->runApi(str_repeat('a', Core::getConfig()->posts->maxSourceLength));
 		});
 	}
 
@@ -33,7 +33,7 @@ class EditPostSourceJobTest extends AbstractTest
 		$this->grantAccess('editPostSource.own');
 		$this->assert->throws(function()
 		{
-			$this->runApi(str_repeat('a', getConfig()->posts->maxSourceLength + 1));
+			$this->runApi(str_repeat('a', Core::getConfig()->posts->maxSourceLength + 1));
 		}, 'Source must have at most');
 	}
 

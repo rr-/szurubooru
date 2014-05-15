@@ -3,7 +3,7 @@ class UserModelTest extends AbstractTest
 {
 	public function testSavingTwoUsersSameNameNoActivation()
 	{
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 		list ($user1, $user2) = $this->prepareTwoUsersWithSameName();
 		$this->assert->throws(function() use ($user2)
 		{
@@ -13,7 +13,7 @@ class UserModelTest extends AbstractTest
 
 	public function testSavingTwoUsersSameNameEmailActivation()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		list ($user1, $user2) = $this->prepareTwoUsersWithSameName();
 		$this->assert->throws(function() use ($user2)
 		{
@@ -23,7 +23,7 @@ class UserModelTest extends AbstractTest
 
 	public function testSavingTwoUsersSameNameStaffActivation()
 	{
-		getConfig()->registration->staffActivation = true;
+		Core::getConfig()->registration->staffActivation = true;
 		list ($user1, $user2) = $this->prepareTwoUsersWithSameName();
 		$this->assert->throws(function() use ($user2)
 		{
@@ -33,7 +33,7 @@ class UserModelTest extends AbstractTest
 
 	public function testSavingTwoUsersSameEmailNoActivation()
 	{
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 		list ($user1, $user2) = $this->prepareTwoUsersWithSameEmail(false, false);
 		$this->assert->throws(function() use ($user2)
 		{
@@ -43,7 +43,7 @@ class UserModelTest extends AbstractTest
 
 	public function testSavingTwoUsersSameEmailEmailActivation()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		list ($user1, $user2) = $this->prepareTwoUsersWithSameEmail(false, false);
 		$this->assert->throws(function() use ($user2)
 		{
@@ -53,7 +53,7 @@ class UserModelTest extends AbstractTest
 
 	public function testSavingTwoUsersSameEmailStaffActivation()
 	{
-		getConfig()->registration->staffActivation = true;
+		Core::getConfig()->registration->staffActivation = true;
 		list ($user1, $user2) = $this->prepareTwoUsersWithSameEmail(false, false);
 		$this->assert->throws(function() use ($user2)
 		{

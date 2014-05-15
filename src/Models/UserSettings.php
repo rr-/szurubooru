@@ -111,13 +111,13 @@ class UserSettings implements IValidatable
 			$this->set(self::SETTING_SAFETY, (new PostSafety(PostSafety::Safe))->toInteger());
 
 		if ($this->get(self::SETTING_HIDE_DISLIKED_POSTS) === null)
-			$this->set(self::SETTING_HIDE_DISLIKED_POSTS, !(bool) getConfig()->browsing->showDislikedPostsDefault);
+			$this->set(self::SETTING_HIDE_DISLIKED_POSTS, !(bool) Core::getConfig()->browsing->showDislikedPostsDefault);
 
 		if ($this->get(self::SETTING_POST_TAG_TITLES) === null)
-			$this->set(self::SETTING_POST_TAG_TITLES, (bool) getConfig()->browsing->showPostTagTitlesDefault);
+			$this->set(self::SETTING_POST_TAG_TITLES, (bool) Core::getConfig()->browsing->showPostTagTitlesDefault);
 
 		if ($this->get(self::SETTING_ENDLESS_SCROLLING) === null)
-			$this->set(self::SETTING_ENDLESS_SCROLLING, (bool) getConfig()->browsing->endlessScrollingDefault);
+			$this->set(self::SETTING_ENDLESS_SCROLLING, (bool) Core::getConfig()->browsing->endlessScrollingDefault);
 	}
 
 	private function ensureCorrectTypes()

@@ -9,7 +9,7 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processSetup(&$tokens)
 	{
-		$config = getConfig();
+		$config = Core::getConfig();
 
 		$this->tags = [];
 		$crit = new Sql\ConjunctionFunctor();

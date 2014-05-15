@@ -31,7 +31,7 @@ class AddPostJob extends AbstractJob
 		PostModel::save($post);
 
 		Logger::log('{user} added {post} (tags: {tags}, safety: {safety}, source: {source})', [
-			'user' => ($anonymous and !getConfig()->misc->logAnonymousUploads)
+			'user' => ($anonymous and !Core::getConfig()->misc->logAnonymousUploads)
 				? TextHelper::reprUser(UserModel::getAnonymousName())
 				: TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post),
@@ -56,6 +56,6 @@ class AddPostJob extends AbstractJob
 
 	public function isConfirmedEmailRequired()
 	{
-		return getConfig()->registration->needEmailForUploading;
+		return Core::getConfig()->registration->needEmailForUploading;
 	}
 }

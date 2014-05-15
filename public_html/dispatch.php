@@ -2,12 +2,12 @@
 require_once '../src/core.php';
 
 $query = rtrim($_SERVER['REQUEST_URI'], '/');
-$context = getContext();
+$context = Core::getContext();
 $context->query = $query;
 
 function renderView()
 {
-	$context = getContext();
+	$context = Core::getContext();
 	\Chibi\View::render($context->layoutName, $context);
 }
 
@@ -16,7 +16,7 @@ $context->simpleActionName = null;
 
 \Chibi\Router::setObserver(function($route, $args)
 {
-	$context = getContext();
+	$context = Core::getContext();
 	$context->route = $route;
 	list ($className, $methodName) = $route->destination;
 
@@ -36,7 +36,7 @@ $context->simpleActionName = null;
 		$context->simpleActionName);
 });
 
-Assets::setTitle($config->main->title);
+Assets::setTitle(Core::getConfig()->main->title);
 
 $context->handleExceptions = false;
 $context->json = isset($_GET['json']);

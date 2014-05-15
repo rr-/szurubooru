@@ -41,7 +41,7 @@ Assets::addScript('core.js');
 				<hr/>
 				<div class="left">
 					<span>
-						<a href="<?= getConfig()->misc->githubLink ?>">
+						<a href="<?= Core::getConfig()->misc->githubLink ?>">
 							szurubooru&nbsp;<?= PropertyModel::get(PropertyModel::EngineVersion) ?>
 						</a>
 					</span>
@@ -59,7 +59,7 @@ Assets::addScript('core.js');
 			</div>
 		</footer>
 
-		<?php if (getConfig()->misc->debugQueries): ?>
+		<?php if (Core::getConfig()->misc->debugQueries): ?>
 			<?= \Chibi\View::render('debug', $this->context) ?>
 		<?php endif ?>
 

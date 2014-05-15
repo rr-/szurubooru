@@ -220,7 +220,7 @@ class TextHelper
 
 	public static function encrypt($text)
 	{
-		$salt = getConfig()->main->salt;
+		$salt = Core::getConfig()->main->salt;
 		$alg = MCRYPT_RIJNDAEL_256;
 		$mode = MCRYPT_MODE_CBC;
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
@@ -231,7 +231,7 @@ class TextHelper
 	{
 		try
 		{
-			$salt = getConfig()->main->salt;
+			$salt = Core::getConfig()->main->salt;
 			list ($iv, $hash) = explode('|', $text, 2);
 			$iv = base64_decode($iv);
 			$hash = base64_decode($hash);
@@ -262,7 +262,7 @@ class TextHelper
 	public static function absolutePath($path)
 	{
 		if ($path{0} != DS)
-			$path = getConfig()->rootDir . DS . $path;
+			$path = Core::getConfig()->rootDir . DS . $path;
 
 		$path = self::cleanPath($path);
 		return $path;

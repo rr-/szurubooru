@@ -20,7 +20,7 @@ Assets::setSubTitle('comments');
 						<?php
 							$this->context->post = $post;
 							$comments = array_reverse($post->getComments());
-							$commentsToDisplay = array_slice($comments, 0, getConfig()->comments->maxCommentsInList);
+							$commentsToDisplay = array_slice($comments, 0, Core::getConfig()->comments->maxCommentsInList);
 						?>
 						<?php \Chibi\View::render('post-small', $this->context) ?>
 					</div>

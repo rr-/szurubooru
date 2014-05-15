@@ -6,7 +6,7 @@ class Messenger
 		if (empty($message))
 			return;
 
-		$context = getContext();
+		$context = Core::getContext();
 
 		if (!preg_match('/[.?!]$/', $message))
 			$message .= '.';

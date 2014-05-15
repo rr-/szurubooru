@@ -277,7 +277,7 @@ final class PostModel extends AbstractCrudModel
 	private static function getThumbPathTokenized($text, $name)
 	{
 		return TextHelper::absolutePath(TextHelper::replaceTokens($text, [
-			'fullpath' => getConfig()->main->thumbsPath . DS . $name]));
+			'fullpath' => Core::getConfig()->main->thumbsPath . DS . $name]));
 	}
 
 	public static function tryGetWorkingFullPath($name)
@@ -291,7 +291,7 @@ final class PostModel extends AbstractCrudModel
 
 	public static function getFullPath($name)
 	{
-		return TextHelper::absolutePath(getConfig()->main->filesPath . DS . $name);
+		return TextHelper::absolutePath(Core::getConfig()->main->filesPath . DS . $name);
 	}
 
 
@@ -303,7 +303,7 @@ final class PostModel extends AbstractCrudModel
 			return PropertyModel::get(PropertyModel::PostSpaceUsage);
 
 		$totalBytes = 0;
-		$paths = [getConfig()->main->filesPath, getConfig()->main->thumbsPath];
+		$paths = [Core::getConfig()->main->filesPath, Core::getConfig()->main->thumbsPath];
 
 		foreach ($paths as $path)
 		{
@@ -332,7 +332,7 @@ final class PostModel extends AbstractCrudModel
 
 	public static function featureRandomPostIfNecessary()
 	{
-		$config = getConfig();
+		$config = Core::getConfig();
 		$featuredPostRotationTime = $config->misc->featuredPostMaxDays * 24 * 3600;
 
 		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);

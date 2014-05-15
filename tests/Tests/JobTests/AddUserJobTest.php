@@ -45,14 +45,14 @@ class AddUserJobTest extends AbstractTest
 				new AddUserJob(),
 				[
 					JobArgs::ARG_NEW_USER_NAME => 'dummy',
-					JobArgs::ARG_NEW_PASSWORD => str_repeat('s', getConfig()->registration->passMinLength - 1),
+					JobArgs::ARG_NEW_PASSWORD => str_repeat('s', Core::getConfig()->registration->passMinLength - 1),
 				]);
 		}, 'Password must have at least');
 	}
 
 	public function testSkippingMailingUponFailing() //yo dog
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$this->assert->areEqual(0, Mailer::getMailCounter());
@@ -64,7 +64,7 @@ class AddUserJobTest extends AbstractTest
 				new AddUserJob(),
 				[
 					JobArgs::ARG_NEW_USER_NAME => 'dummy',
-					JobArgs::ARG_NEW_PASSWORD => str_repeat('s', getConfig()->registration->passMinLength - 1),
+					JobArgs::ARG_NEW_PASSWORD => str_repeat('s', Core::getConfig()->registration->passMinLength - 1),
 					JobArgs::ARG_NEW_EMAIL => 'godzilla@whitestar.gov',
 				]);
 		}, 'Password must have at least');
@@ -89,7 +89,7 @@ class AddUserJobTest extends AbstractTest
 
 		$this->assert->isTrue(strlen($user->getPasswordHash()) < 100);
 
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 		$this->assert->doesNotThrow(function() use ($pass)
 		{
 			Auth::login('dummy', $pass, false);
@@ -143,11 +143,11 @@ class AddUserJobTest extends AbstractTest
 
 	public function testEmailsMixedConfirmation()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		getConfig()->privileges->changeUserEmailNoConfirm = 'admin';
+		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'admin';
 		$this->grantAccess('registerAccount');
 
 		$user1 = $this->assert->doesNotThrow(function()
@@ -185,11 +185,11 @@ class AddUserJobTest extends AbstractTest
 
 	public function testEmailsEveryoneMustConfirm()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		getConfig()->privileges->changeUserEmailNoConfirm = 'nobody';
+		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'nobody';
 		$this->grantAccess('registerAccount');
 
 		$user1 = $this->assert->doesNotThrow(function()
@@ -225,11 +225,11 @@ class AddUserJobTest extends AbstractTest
 
 	public function testEmailsEveryoneSkipConfirm()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
+		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
 		$this->grantAccess('registerAccount');
 
 		$user1 = $this->assert->doesNotThrow(function()
@@ -265,7 +265,7 @@ class AddUserJobTest extends AbstractTest
 
 	public function testEmailsTwoUsersSameMail()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 

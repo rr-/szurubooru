@@ -21,9 +21,9 @@ final class TagEntity extends AbstractEntity implements IValidatable
 
 	public function validate()
 	{
-		$minLength = getConfig()->tags->minLength;
-		$maxLength = getConfig()->tags->maxLength;
-		$regex = getConfig()->tags->regex;
+		$minLength = Core::getConfig()->tags->minLength;
+		$maxLength = Core::getConfig()->tags->maxLength;
+		$regex = Core::getConfig()->tags->regex;
 
 		$name = $this->getName();
 

@@ -6,7 +6,7 @@ class ListUsersJob extends AbstractJob implements IPagedJob
 	public function  __construct()
 	{
 		$this->pager = new JobPager($this);
-		$this->pager->setPageSize(getConfig()->browsing->usersPerPage);
+		$this->pager->setPageSize(Core::getConfig()->browsing->usersPerPage);
 	}
 
 	public function getPager()

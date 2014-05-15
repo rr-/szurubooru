@@ -53,6 +53,6 @@ class PreviewCommentJob extends AbstractJob
 
 	public function isConfirmedEmailRequired()
 	{
-		return getConfig()->registration->needEmailForCommenting;
+		return Core::getConfig()->registration->needEmailForCommenting;
 	}
 }

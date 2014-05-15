@@ -66,7 +66,7 @@ final class PostEntity extends AbstractEntity implements IValidatable
 
 		$this->getSafety()->validate();
 
-		$maxSourceLength = getConfig()->posts->maxSourceLength;
+		$maxSourceLength = Core::getConfig()->posts->maxSourceLength;
 		if (strlen($this->getSource()) > $maxSourceLength)
 			throw new SimpleException('Source must have at most %d characters', $maxSourceLength);
 	}
@@ -351,7 +351,7 @@ final class PostEntity extends AbstractEntity implements IValidatable
 
 	public function setCustomThumbnailFromPath($srcPath)
 	{
-		$config = getConfig();
+		$config = Core::getConfig();
 
 		$mimeType = mime_content_type($srcPath);
 		if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
@@ -366,8 +366,8 @@ final class PostEntity extends AbstractEntity implements IValidatable
 
 	public function generateThumb()
 	{
-		$width = getConfig()->browsing->thumbWidth;
-		$height = getConfig()->browsing->thumbHeight;
+		$width = Core::getConfig()->browsing->thumbWidth;
+		$height = Core::getConfig()->browsing->thumbHeight;
 		$dstPath = $this->getThumbPath($width, $height);
 
 		if (file_exists($this->getThumbCustomSourcePath()))

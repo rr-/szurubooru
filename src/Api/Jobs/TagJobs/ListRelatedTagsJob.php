@@ -6,7 +6,7 @@ class ListRelatedTagsJob extends AbstractJob implements IPagedJob
 	public function __construct()
 	{
 		$this->pager = new JobPager($this);
-		$this->pager->setPageSize(getConfig()->browsing->tagsRelated);
+		$this->pager->setPageSize(Core::getConfig()->browsing->tagsRelated);
 	}
 
 	public function getPager()

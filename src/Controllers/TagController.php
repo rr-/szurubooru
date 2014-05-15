@@ -10,7 +10,7 @@ class TagController
 				JobArgs::ARG_QUERY => $filter,
 			]);
 
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'tag-list-wrapper';
 		$context->highestUsage = TagSearchService::getMostUsedTag()->getPostCount();
 		$context->filter = $filter;
@@ -30,7 +30,7 @@ class TagController
 				JobArgs::ARG_PAGE_NUMBER => 1,
 			]);
 
-		$context = getContext();
+		$context = Core::getContext();
 		$context->transport->tags =
 			array_values(array_map(
 				function($tag)
@@ -55,7 +55,7 @@ class TagController
 				JobArgs::ARG_PAGE_NUMBER => 1
 			]);
 
-		$context = getContext();
+		$context = Core::getContext();
 		$context->transport->tags =
 			array_values(array_map(
 				function($tag)
@@ -69,13 +69,13 @@ class TagController
 
 	public function mergeView()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'tag-list-wrapper';
 	}
 
 	public function mergeAction()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'tag-list-wrapper';
 		$context->handleExceptions = true;
 
@@ -91,13 +91,13 @@ class TagController
 
 	public function renameView()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'tag-list-wrapper';
 	}
 
 	public function renameAction()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'tag-list-wrapper';
 		$context->handleExceptions = true;
 
@@ -113,7 +113,7 @@ class TagController
 
 	public function massTagRedirectView()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'tag-list-wrapper';
 
 		Access::assert(new Privilege(Privilege::MassTag));

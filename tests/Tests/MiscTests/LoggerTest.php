@@ -26,10 +26,10 @@ class LoggerTest extends AbstractTest
 
 	public function testPathChanging()
 	{
-		$logPath = TextHelper::absolutePath(getConfig()->rootDir . '/tests/logs/{yyyy}-{mm}-{dd}.log');
-		$realLogPath = TextHelper::absolutePath(getConfig()->rootDir . '/tests/logs/' . date('Y-m-d') . '.log');
+		$logPath = TextHelper::absolutePath(Core::getConfig()->rootDir . '/tests/logs/{yyyy}-{mm}-{dd}.log');
+		$realLogPath = TextHelper::absolutePath(Core::getConfig()->rootDir . '/tests/logs/' . date('Y-m-d') . '.log');
 
-		getConfig()->main->logsPath = $logPath;
+		Core::getConfig()->main->logsPath = $logPath;
 		$this->assert->doesNotThrow(function()
 		{
 			Logger::init();

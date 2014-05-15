@@ -6,7 +6,7 @@ class ListPostsJob extends AbstractJob implements IPagedJob
 	public function  __construct()
 	{
 		$this->pager = new JobPager($this);
-		$this->pager->setPageSize(getConfig()->browsing->postsPerPage);
+		$this->pager->setPageSize(Core::getConfig()->browsing->postsPerPage);
 	}
 
 	public function getPager()

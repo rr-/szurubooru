@@ -37,7 +37,7 @@ class GetLogJobTest extends AbstractTest
 
 	private function run($args)
 	{
-		getConfig()->browsing->logsPerPage = 2;
+		Core::getConfig()->browsing->logsPerPage = 2;
 		$this->grantAccess('viewLog');
 		Logger::log('line1');
 		Logger::log('line2');

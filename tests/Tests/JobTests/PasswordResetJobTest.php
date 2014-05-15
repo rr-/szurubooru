@@ -3,7 +3,7 @@ class PasswordResetJobTest extends AbstractTest
 {
 	public function testDontSendIfUnconfirmedMail()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$user = $this->userMocker->mockSingle();
@@ -22,7 +22,7 @@ class PasswordResetJobTest extends AbstractTest
 
 	public function testSending()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$user = $this->userMocker->mockSingle();
@@ -54,7 +54,7 @@ class PasswordResetJobTest extends AbstractTest
 
 	public function testObtainingNewPassword()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$user = $this->userMocker->mockSingle();
@@ -94,7 +94,7 @@ class PasswordResetJobTest extends AbstractTest
 
 	public function testUsingTokenTwice()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$user = $this->userMocker->mockSingle();

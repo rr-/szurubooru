@@ -3,7 +3,7 @@ class StaticPagesController
 {
 	public function mainPageView()
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->transport->postCount = PostModel::getCount();
 		$context->viewName = 'static-main';
 		$context->transport->postSpaceUsage = PostModel::getSpaceUsage();
@@ -21,8 +21,8 @@ class StaticPagesController
 
 	public function helpView($tab = null)
 	{
-		$config = getConfig();
-		$context = getContext();
+		$config = Core::getConfig();
+		$context = Core::getContext();
 
 		if (empty($config->help->paths) or empty($config->help->title))
 			throw new SimpleException('Help is disabled');

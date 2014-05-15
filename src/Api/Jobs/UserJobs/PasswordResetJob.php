@@ -58,7 +58,7 @@ class PasswordResetJob extends AbstractJob
 
 	public static function sendEmail($user)
 	{
-		$regConfig = getConfig()->registration;
+		$regConfig = Core::getConfig()->registration;
 
 		$mail = new Mail();
 		$mail->body = $regConfig->passwordResetEmailBody;

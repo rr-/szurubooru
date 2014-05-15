@@ -28,7 +28,7 @@ class AccessTest extends AbstractTest
 
 	public function testAccessRanks2()
 	{
-		getConfig()->privileges->listPosts = 'power-user';
+		Core::getConfig()->privileges->listPosts = 'power-user';
 		Access::init();
 
 		$user = $this->userMocker->mockSingle();
@@ -50,7 +50,7 @@ class AccessTest extends AbstractTest
 
 	public function testSubPrivilegesOnlySub()
 	{
-		getConfig()->privileges->{'listPosts.own'} = 'power-user';
+		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		Access::init();
 
 		$user = $this->userMocker->mockSingle();
@@ -62,16 +62,16 @@ class AccessTest extends AbstractTest
 
 	public function testSubPrivilegesSubAndGeneralNormalOrder()
 	{
-		getConfig()->privileges->{'listPosts.own'} = 'power-user';
-		getConfig()->privileges->{'listPosts'} = 'admin';
+		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
+		Core::getConfig()->privileges->{'listPosts'} = 'admin';
 		Access::init();
 		$this->testSubPrivilegesSubAndGeneral();
 	}
 
 	public function testSubPrivilegesSubAndGeneralReverseOrder()
 	{
-		getConfig()->privileges->{'listPosts'} = 'admin';
-		getConfig()->privileges->{'listPosts.own'} = 'power-user';
+		Core::getConfig()->privileges->{'listPosts'} = 'admin';
+		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		Access::init();
 		$this->testSubPrivilegesSubAndGeneral();
 	}
@@ -92,18 +92,18 @@ class AccessTest extends AbstractTest
 
 	public function testSubPrivilegesMultipleSubAndGeneralNormalOrder()
 	{
-		getConfig()->privileges->{'listPosts.own'} = 'power-user';
-		getConfig()->privileges->{'listPosts.all'} = 'admin';
-		getConfig()->privileges->{'listPosts'} = 'nobody';
+		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
+		Core::getConfig()->privileges->{'listPosts.all'} = 'admin';
+		Core::getConfig()->privileges->{'listPosts'} = 'nobody';
 		Access::init();
 		$this->testSubPrivilegesMultipleSubAndGeneral();
 	}
 
 	public function testSubPrivilegesMultipleSubAndGeneralReverseOrder()
 	{
-		getConfig()->privileges->{'listPosts'} = 'nobody';
-		getConfig()->privileges->{'listPosts.own'} = 'power-user';
-		getConfig()->privileges->{'listPosts.all'} = 'admin';
+		Core::getConfig()->privileges->{'listPosts'} = 'nobody';
+		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
+		Core::getConfig()->privileges->{'listPosts.all'} = 'admin';
 		Access::init();
 		$this->testSubPrivilegesMultipleSubAndGeneral();
 	}

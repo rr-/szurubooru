@@ -5,7 +5,7 @@ class ListPostsJobTest extends AbstractTest
 	{
 		$this->grantAccess('listPosts');
 		$posts = $this->postMocker->mockMultiple(3);
-		getConfig()->browsing->postsPerPage = 2;
+		Core::getConfig()->browsing->postsPerPage = 2;
 
 		$ret = $this->assert->doesNotThrow(function()
 		{

@@ -4,12 +4,12 @@ class LogController
 	public function listView()
 	{
 		$ret = Api::run(new ListLogsJob(), []);
-		getContext()->transport->logs = $ret;
+		Core::getContext()->transport->logs = $ret;
 	}
 
 	public function logView($name, $page = 1, $filter = '')
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$context->viewName = 'log-view';
 
 		//redirect requests in form of ?query=... to canonical address

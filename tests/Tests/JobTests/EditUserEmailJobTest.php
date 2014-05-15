@@ -3,11 +3,11 @@ class EditUserEmailJobTest extends AbstractTest
 {
 	public function testNoConfirmation()
 	{
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
+		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
 		$this->grantAccess('changeUserEmail');
 
 		$user = $this->userMocker->mockSingle();
@@ -30,11 +30,11 @@ class EditUserEmailJobTest extends AbstractTest
 
 	public function testConfirmation()
 	{
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		getConfig()->privileges->changeUserEmailNoConfirm = 'admin';
+		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'admin';
 		$this->grantAccess('changeUserEmail');
 
 		$user = $this->userMocker->mockSingle();
@@ -57,10 +57,10 @@ class EditUserEmailJobTest extends AbstractTest
 
 	public function testInvalidEmail()
 	{
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 		Mailer::mockSending();
 
-		getConfig()->privileges->changeUserEmailNoConfirm = 'nobody';
+		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'nobody';
 		$this->grantAccess('changeUserEmail');
 
 		$user = $this->userMocker->mockSingle();
@@ -78,11 +78,11 @@ class EditUserEmailJobTest extends AbstractTest
 
 	public function testChangingToExistingDenial()
 	{
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
+		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
 		$this->grantAccess('changeUserEmail');
 
 		list ($user, $otherUser)

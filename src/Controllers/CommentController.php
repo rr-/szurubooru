@@ -9,7 +9,7 @@ class CommentController
 				JobArgs::ARG_PAGE_NUMBER => $page,
 			]);
 
-		$context = getContext();
+		$context = Core::getContext();
 		$context->transport->posts = $ret->entities;
 		$context->transport->paginator = $ret;
 	}
@@ -25,7 +25,7 @@ class CommentController
 					JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
 				]);
 
-			getContext()->transport->textPreview = $comment->getTextMarkdown();
+			Core::getContext()->transport->textPreview = $comment->getTextMarkdown();
 		}
 
 		Api::run(
@@ -38,7 +38,7 @@ class CommentController
 
 	public function editView($id)
 	{
-		getContext()->transport->comment = CommentModel::getById($id);
+		Core::getContext()->transport->comment = CommentModel::getById($id);
 	}
 
 	public function editAction($id)
@@ -52,7 +52,7 @@ class CommentController
 					JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
 				]);
 
-			getContext()->transport->textPreview = $comment->getTextMarkdown();
+			Core::getContext()->transport->textPreview = $comment->getTextMarkdown();
 		}
 
 		Api::run(

@@ -2,7 +2,7 @@
 Assets::setSubtitle('help');
 Assets::addStylesheet('static-help.css');
 
-$tabs = getConfig()->help->subTitles;
+$tabs = Core::getConfig()->help->subTitles;
 $firstTab = !empty($tabs) ? array_keys($tabs)[0] : null;
 $showTabs = count($tabs) > 1;
 ?>

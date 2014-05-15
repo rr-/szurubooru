@@ -195,7 +195,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->assert->throws(function()
 		{
 			$post = $this->postMocker->mockSingle();
-			getConfig()->registration->needEmailForCommenting = false;
+			Core::getConfig()->registration->needEmailForCommenting = false;
 			return Api::run(
 				new AddCommentJob(),
 				[

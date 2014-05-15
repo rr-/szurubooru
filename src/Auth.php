@@ -10,8 +10,8 @@ class Auth
 
 	public static function login($name, $password, $remember)
 	{
-		$config = getConfig();
-		$context = getContext();
+		$config = Core::getConfig();
+		$context = Core::getContext();
 
 		$user = UserModel::tryGetByEmail($name);
 		if ($user === null)

@@ -49,7 +49,7 @@ class EditPostTagsJobTest extends AbstractTest
 		$post = $this->postMocker->mockSingle();
 		$this->grantAccess('editPostTags');
 
-		$newTagNames = [str_repeat('u', getConfig()->tags->minLength - 1)];
+		$newTagNames = [str_repeat('u', Core::getConfig()->tags->minLength - 1)];
 		$this->assert->throws(function() use ($post, $newTagNames)
 		{
 			Api::run(
@@ -66,7 +66,7 @@ class EditPostTagsJobTest extends AbstractTest
 		$post = $this->postMocker->mockSingle();
 		$this->grantAccess('editPostTags');
 
-		$newTagNames = [str_repeat('u', getConfig()->tags->maxLength + 1)];
+		$newTagNames = [str_repeat('u', Core::getConfig()->tags->maxLength + 1)];
 		$this->assert->throws(function() use ($post, $newTagNames)
 		{
 			Api::run(

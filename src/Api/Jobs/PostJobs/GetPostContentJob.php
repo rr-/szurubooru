@@ -11,7 +11,7 @@ class GetPostContentJob extends AbstractJob
 	public function execute()
 	{
 		$post = $this->postRetriever->retrieve();
-		$config = getConfig();
+		$config = Core::getConfig();
 
 		$path = $post->tryGetWorkingFullPath();
 		if (!$path)

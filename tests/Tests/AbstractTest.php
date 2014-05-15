@@ -33,13 +33,13 @@ class AbstractTest
 
 	protected function grantAccess($privilege)
 	{
-		getConfig()->privileges->$privilege = 'anonymous';
+		Core::getConfig()->privileges->$privilege = 'anonymous';
 		Access::init();
 	}
 
 	protected function revokeAccess($privilege)
 	{
-		getConfig()->privileges->$privilege = 'nobody';
+		Core::getConfig()->privileges->$privilege = 'nobody';
 		Access::init();
 	}
 }

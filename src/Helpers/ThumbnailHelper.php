@@ -145,7 +145,7 @@ class ThumbnailHelper
 				throw new SimpleException('Invalid thumbnail file type');
 		}
 
-		$config = getConfig();
+		$config = Core::getConfig();
 		switch ($config->browsing->thumbStyle)
 		{
 			case 'outside':

@@ -3,7 +3,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 {
 	public function testSending()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$user = $this->userMocker->mockSingle();
@@ -35,7 +35,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 
 	public function testConfirming()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$user = $this->userMocker->mockSingle();
@@ -74,7 +74,7 @@ class ActivateUserEmailJobTest extends AbstractTest
 
 	public function testUsingTokenTwice()
 	{
-		getConfig()->registration->needEmailForRegistering = true;
+		Core::getConfig()->registration->needEmailForRegistering = true;
 		Mailer::mockSending();
 
 		$user = $this->userMocker->mockSingle();

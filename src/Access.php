@@ -7,7 +7,7 @@ class Access
 	public static function init()
 	{
 		self::$privileges = [];
-		foreach (getConfig()->privileges as $key => $minAccessRankName)
+		foreach (Core::getConfig()->privileges as $key => $minAccessRankName)
 		{
 			if (strpos($key, '.') === false)
 				$key .= '.';

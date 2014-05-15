@@ -28,7 +28,7 @@ class EditUserNameJobTest extends AbstractTest
 		$this->grantAccess('changeUserName');
 		$user = $this->userMocker->mockSingle();
 
-		$newName = str_repeat('a', getConfig()->registration->userNameMinLength - 1);
+		$newName = str_repeat('a', Core::getConfig()->registration->userNameMinLength - 1);
 
 		$this->assert->throws(function() use ($user, $newName)
 		{
@@ -46,7 +46,7 @@ class EditUserNameJobTest extends AbstractTest
 		$this->grantAccess('changeUserName');
 		$user = $this->userMocker->mockSingle();
 
-		$newName = str_repeat('a', getConfig()->registration->userNameMaxLength + 1);
+		$newName = str_repeat('a', Core::getConfig()->registration->userNameMaxLength + 1);
 
 		$this->assert->throws(function() use ($user, $newName)
 		{

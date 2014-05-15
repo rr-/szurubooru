@@ -7,7 +7,7 @@ class ListRelatedTagsJobTest extends AbstractTest
 		$this->grantAccess('listPosts');
 
 		$tags = $this->tagMocker->mockMultiple(3);
-		getConfig()->browsing->tagsRelated = 1;
+		Core::getConfig()->browsing->tagsRelated = 1;
 
 		$post = $this->postMocker->mockSingle();
 		$post->setTags($tags);

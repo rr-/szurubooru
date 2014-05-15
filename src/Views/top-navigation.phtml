@@ -85,10 +85,10 @@
 			\Chibi\Router::linkTo(['AuthController', 'logoutAction']));
 	}
 
-	if (!empty(getConfig()->help->title))
+	if (!empty(Core::getConfig()->help->title))
 	{
 		$registerNavItem(
-			getConfig()->help->title,
+			Core::getConfig()->help->title,
 			\Chibi\Router::linkTo(['StaticPagesController', 'helpView']),
 			$activeController == 'static-pages' and $activeAction == 'help');
 	}

@@ -5,12 +5,12 @@ class ListLogsJobTest extends AbstractTest
 	{
 		$this->grantAccess('listLogs');
 
-		getConfig()->main->logsPath = TextHelper::absolutePath(getConfig()->rootDir . '/tests/logs/test1.log');
+		Core::getConfig()->main->logsPath = TextHelper::absolutePath(Core::getConfig()->rootDir . '/tests/logs/test1.log');
 		Logger::init();
 
 		Logger::log('nonsense');
 
-		getConfig()->main->logsPath = TextHelper::absolutePath(getConfig()->rootDir . '/tests/logs/test2.log');
+		Core::getConfig()->main->logsPath = TextHelper::absolutePath(Core::getConfig()->rootDir . '/tests/logs/test2.log');
 		Logger::init();
 
 		Logger::log('nonsense');

@@ -41,7 +41,7 @@ class EditUserAccessRankJobTest extends AbstractTest
 
 	public function testHigherThanMyselfDenial()
 	{
-		getConfig()->privileges->changeUserAccessRank = 'power-user';
+		Core::getConfig()->privileges->changeUserAccessRank = 'power-user';
 		Access::init();
 
 		$user = $this->userMocker->mockSingle();

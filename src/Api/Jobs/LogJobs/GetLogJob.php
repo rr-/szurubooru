@@ -6,7 +6,7 @@ class GetLogJob extends AbstractJob implements IPagedJob
 	public function __construct()
 	{
 		$this->pager = new JobPager($this);
-		$this->pager->setPageSize(getConfig()->browsing->logsPerPage);
+		$this->pager->setPageSize(Core::getConfig()->browsing->logsPerPage);
 	}
 
 	public function getPager()
@@ -26,7 +26,7 @@ class GetLogJob extends AbstractJob implements IPagedJob
 		//parse input
 		$page = max(1, intval($page));
 		$name = str_replace(['/', '\\'], '', $name); //paranoia mode
-		$path = TextHelper::absolutePath(dirname(getConfig()->main->logsPath) . DS . $name);
+		$path = TextHelper::absolutePath(dirname(Core::getConfig()->main->logsPath) . DS . $name);
 		if (!file_exists($path))
 			throw new SimpleNotFoundException('Specified log doesn\'t exist');
 

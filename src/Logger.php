@@ -51,7 +51,7 @@ class Logger
 	public static function getLogPath()
 	{
 		return TextHelper::absolutePath(
-			TextHelper::replaceTokens(getConfig()->main->logsPath, [
+			TextHelper::replaceTokens(Core::getConfig()->main->logsPath, [
 				'yyyy' => date('Y'),
 				'mm' => date('m'),
 				'dd' => date('d')]));

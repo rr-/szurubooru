@@ -154,6 +154,6 @@ class AddPostJobTest extends AbstractTest
 
 	protected function prepare()
 	{
-		getConfig()->registration->needEmailForUploading = false;
+		Core::getConfig()->registration->needEmailForUploading = false;
 	}
 }

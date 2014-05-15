@@ -6,7 +6,7 @@ class ListCommentsJob extends AbstractJob implements IPagedJob
 	public function __construct()
 	{
 		$this->pager = new JobPager($this);
-		$this->pager->setPageSize(getConfig()->comments->commentsPerPage);
+		$this->pager->setPageSize(Core::getConfig()->comments->commentsPerPage);
 	}
 
 	public function getPager()

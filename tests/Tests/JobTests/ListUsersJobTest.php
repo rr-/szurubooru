@@ -6,7 +6,7 @@ class ListUsersJobTest extends AbstractTest
 		$this->grantAccess('listUsers');
 
 		$users = $this->userMocker->mockMultiple(3);
-		getConfig()->browsing->usersPerPage = 2;
+		Core::getConfig()->browsing->usersPerPage = 2;
 
 		$ret = $this->assert->doesNotThrow(function()
 		{

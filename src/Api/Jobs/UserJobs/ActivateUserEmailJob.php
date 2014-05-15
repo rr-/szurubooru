@@ -54,7 +54,7 @@ class ActivateUserEmailJob extends AbstractJob
 
 	public static function sendEmail($user)
 	{
-		$regConfig = getConfig()->registration;
+		$regConfig = Core::getConfig()->registration;
 
 		if (!$regConfig->confirmationEmailEnabled)
 		{

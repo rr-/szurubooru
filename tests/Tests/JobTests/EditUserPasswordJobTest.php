@@ -16,7 +16,7 @@ class EditUserPasswordJobTest extends AbstractTest
 		$this->grantAccess('changeUserPassword');
 		$user = $this->userMocker->mockSingle();
 
-		$newPassword = str_repeat('a', getConfig()->registration->passMinLength - 1);
+		$newPassword = str_repeat('a', Core::getConfig()->registration->passMinLength - 1);
 		$oldPasswordHash = $user->getPasswordHash();
 
 		$this->assert->throws(function() use ($user, $newPassword)
@@ -51,7 +51,7 @@ class EditUserPasswordJobTest extends AbstractTest
 
 		$this->assert->areEqual($newPasswordHash, $user->getPasswordHash());
 
-		getConfig()->registration->needEmailForRegistering = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
 		$this->assert->doesNotThrow(function() use ($user, $newPassword)
 		{
 			Auth::login($user->getName(), $newPassword, false);

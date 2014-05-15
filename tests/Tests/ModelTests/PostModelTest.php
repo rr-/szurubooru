@@ -74,7 +74,7 @@ class PostModelTest extends AbstractTest
 	public function testAutoFeaturingOutdated()
 	{
 		$post = $this->postMocker->mockSingle();
-		$minTimestamp = getConfig()->misc->featuredPostMaxDays * 24 * 3600;
+		$minTimestamp = Core::getConfig()->misc->featuredPostMaxDays * 24 * 3600;
 
 		$this->assert->isTrue(PostModel::featureRandomPostIfNecessary());
 		PropertyModel::set(PropertyModel::FeaturedPostUnixTime, time() - $minTimestamp - 1);

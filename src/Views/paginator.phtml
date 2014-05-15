@@ -29,7 +29,7 @@ if (!function_exists('pageUrl'))
 {
 	function pageUrl($page)
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$destination = $context->route->destination;
 		$page = max(1, min($context->transport->paginator->pageCount, $page));
 		$params = $context->route->arguments;

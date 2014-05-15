@@ -188,7 +188,7 @@ final class UserModel extends AbstractCrudModel
 
 	public static function hashPassword($pass, $salt2)
 	{
-		$salt1 = getConfig()->main->salt;
+		$salt1 = Core::getConfig()->main->salt;
 		return sha1($salt1 . $salt2 . $pass);
 	}
 }
