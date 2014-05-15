@@ -35,4 +35,9 @@ class StaticPagesController
 		$context->path = TextHelper::absolutePath($config->help->paths[$tab]);
 		$context->tab = $tab;
 	}
+
+	public function fatalErrorView($code = null)
+	{
+		throw new SimpleException('Error ' . $code . ' while retrieving ' . $_SERVER['REQUEST_URI']);
+	}
 }

@@ -1,7 +1,10 @@
 <?php
 require_once '../src/core.php';
 
-$query = rtrim($_SERVER['REQUEST_URI'], '/');
+if (isset($_SERVER['REDIRECT_URL']))
+	$query = rtrim($_SERVER['REDIRECT_URL'], '/');
+else
+	$query = rtrim($_SERVER['REQUEST_URI'], '/');
 $context = Core::getContext();
 $context->query = $query;
 
@@ -69,12 +72,6 @@ try
 	{
 		throw new SimpleNotFoundException($query . ' not found.');
 	}
-}
-catch (\Chibi\MissingViewFileException $e)
-{
-	$context->json = true;
-	$context->layoutName = 'layout-json';
-	renderView();
 }
 catch (SimpleException $e)
 {
