@@ -42,8 +42,8 @@ $context->simpleActionName = null;
 Assets::setTitle(Core::getConfig()->main->title);
 
 $context->handleExceptions = false;
-$context->json = isset($_GET['json']);
-$context->layoutName = $context->json
+$context->layoutName
+	= isset($_SERVER['HTTP_X_AJAX'])
 	? 'layout-json'
 	: 'layout-normal';
 $context->viewName = '';
@@ -87,7 +87,7 @@ catch (SimpleException $e)
 catch (Exception $e)
 {
 	\Chibi\Util\Headers::setCode(400);
-	Messenger::message($e->getMessage());
+	Messenger::message($e->getMessage(), false);
 	$context->transport->exception = $e;
 	$context->transport->queries = \Chibi\Database::getLogs();
 	$context->viewName = 'error-exception';

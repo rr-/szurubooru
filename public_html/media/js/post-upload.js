@@ -90,7 +90,7 @@ $(function()
 		}
 
 		var postDom = posts.first();
-		var url = postDom.find('form').attr('action') + '?json';
+		var url = postDom.find('form').attr('action');
 		var fd = new FormData(postDom.find('form').get(0));
 
 		fd.append('file', postDom.data('file'));
@@ -104,7 +104,6 @@ $(function()
 			processData: false,
 			contentType: false,
 			dataType: 'json',
-			type: 'POST',
 			success: function(data)
 			{
 				postDom.slideUp(function()
@@ -125,7 +124,7 @@ $(function()
 			}
 		};
 
-		$.ajax(ajaxData);
+		postJSON(ajaxData);
 	}
 
 	function uploadFinished()
@@ -204,7 +203,8 @@ $(function()
 			if (matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/))
 			{
 				postDom.find('.file-name strong').text(url);
-				$.getJSON('http://gdata.youtube.com/feeds/api/videos/' + matches[1] + '?v=2&alt=jsonc', function(data)
+				var url = 'http://gdata.youtube.com/feeds/api/videos/' + matches[1] + '?v=2&alt=jsonc';
+				getJSON({ url: url }).success(function(data)
 				{
 					postDom.find('.file-name strong')
 						.text(data.data.title);

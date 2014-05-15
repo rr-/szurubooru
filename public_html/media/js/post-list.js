@@ -12,9 +12,9 @@ $(function()
 			aDom.addClass('inactive');
 
 			var enable = !aDom.parents('.post').hasClass('tagged');
-			var url = $(this).attr('href') + '?json';
+			var url = $(this).attr('href');
 			url = url.replace('_enable_', enable ? '1' : '0');
-			$.post(url).success(function(data)
+			postJSON({ url: url }).success(function(data)
 			{
 				aDom.removeClass('inactive');
 				aDom.parents('.post').removeClass('tagged');

@@ -20,7 +20,7 @@ $(function()
 			formDom.addClass('inactive');
 			formDom.find(':input').attr('readonly', true);
 
-			var url = formDom.attr('action') + '?json';
+			var url = formDom.attr('action');
 			var fd = new FormData(formDom[0]);
 
 			var preview = false;
@@ -36,7 +36,6 @@ $(function()
 				data: fd,
 				processData: false,
 				contentType: false,
-				type: 'POST',
 
 				success: function(data)
 				{
@@ -51,7 +50,7 @@ $(function()
 						formDom.find('.preview').hide();
 						var cb = function()
 						{
-							$.get(window.location.href, function(data)
+							$.get(window.location.href).success(function(data)
 							{
 								$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
 								$('body').trigger('dom-update');
@@ -84,7 +83,7 @@ $(function()
 				}
 			};
 
-			$.ajax(ajaxData);
+			postJSON(ajaxData);
 		});
 
 		$('.comment .edit a').bindOnce('edit-comment', 'click', function(e)
@@ -100,7 +99,7 @@ $(function()
 
 			if (formDom.length == 0)
 			{
-				$.get($(this).attr('href'), function(data)
+				$.get($(this).attr('href')).success(function(data)
 				{
 					var otherForm = $(data).find('form.edit-comment');
 					otherForm.hide();
