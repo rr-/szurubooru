@@ -27,13 +27,15 @@ class CommentController
 
 			Core::getContext()->transport->textPreview = $comment->getTextMarkdown();
 		}
-
-		Api::run(
-			new AddCommentJob(),
-			[
-				JobArgs::ARG_POST_ID => InputHelper::get('post-id'),
-				JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
-			]);
+		else
+		{
+			Api::run(
+				new AddCommentJob(),
+				[
+					JobArgs::ARG_POST_ID => InputHelper::get('post-id'),
+					JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
+				]);
+		}
 	}
 
 	public function editView($id)
@@ -54,13 +56,15 @@ class CommentController
 
 			Core::getContext()->transport->textPreview = $comment->getTextMarkdown();
 		}
-
-		Api::run(
-			new EditCommentJob(),
-			[
-				JobArgs::ARG_COMMENT_ID => $id,
-				JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
-			]);
+		else
+		{
+			Api::run(
+				new EditCommentJob(),
+				[
+					JobArgs::ARG_COMMENT_ID => $id,
+					JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
+				]);
+		}
 	}
 
 	public function deleteAction($id)
