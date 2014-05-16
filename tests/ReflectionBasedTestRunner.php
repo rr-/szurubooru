@@ -1,5 +1,5 @@
 <?php
-class TestRunner implements ITestRunner
+class ReflectionBasedTestRunner implements ITestRunner
 {
 	protected $filter = null;
 	protected $testsPath = __DIR__;
@@ -7,6 +7,12 @@ class TestRunner implements ITestRunner
 	protected $environmentPrepareAction = null;
 	protected $environmentCleanAction = null;
 	protected $testWrapperAction = null;
+
+	public function run()
+	{
+		$testFixtures = $this->getTestFixtures($this->filter);
+		$this->runAll($testFixtures);
+	}
 
 	public function setFilter($filter)
 	{
@@ -31,12 +37,6 @@ class TestRunner implements ITestRunner
 	public function setTestWrapperAction($callback)
 	{
 		$this->testWrapperAction = $callback;
-	}
-
-	public function run()
-	{
-		$testFixtures = $this->getTestFixtures($this->filter);
-		$this->runAll($testFixtures);
 	}
 
 	protected function getTestFixtures($filter)
