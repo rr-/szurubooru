@@ -23,8 +23,10 @@ class TagController
 		$filter = InputHelper::get('search');
 		$filter .= ' order:popularity,desc';
 
+		$job = new ListTagsJob();
+		$job->getPager()->setPageSize(15);
 		$ret = Api::run(
-			(new ListTagsJob)->setPageSize(15),
+			$job,
 			[
 				JobArgs::ARG_QUERY => $filter,
 				JobArgs::ARG_PAGE_NUMBER => 1,
