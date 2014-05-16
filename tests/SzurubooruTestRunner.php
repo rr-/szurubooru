@@ -5,6 +5,12 @@ class SzurubooruTestRunner implements ITestRunner
 	{
 		$options = $this->getOptions();
 
+		if ($options->help)
+		{
+			$this->printHelp();
+			exit(0);
+		}
+
 		$this->resetEnvironment($options);
 		if ($options->cleanDatabase)
 			$this->cleanDatabase();
@@ -36,11 +42,18 @@ class SzurubooruTestRunner implements ITestRunner
 		$testRunner->run();
 	}
 
+	private function printHelp()
+	{
+		readfile(__DIR__ . DIRECTORY_SEPARATOR . 'help.txt');
+	}
+
 	private function getOptions()
 	{
-		$options = getopt('cf:', ['clean', 'filter:', 'driver:']);
+		$options = getopt('cf:h', ['clean', 'filter:', 'driver:', 'help']);
 
 		$ret = new SzurubooruTestOptions;
+
+		$ret->help = (isset($options['h']) or isset($options['h']));
 
 		$ret->cleanDatabase = (isset($options['c']) or isset($options['clean']));
 
