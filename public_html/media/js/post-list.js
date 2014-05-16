@@ -13,7 +13,7 @@ $(function()
 
 			var enable = !aDom.parents('.post').hasClass('tagged');
 			var url = $(this).attr('href');
-			url = url.replace('_enable_', enable ? '1' : '0');
+			url = url.replace(/\/[01]\/?$/, '/' + (enable ? '1' : '0'));
 			postJSON({ url: url }).success(function(data)
 			{
 				aDom.removeClass('inactive');

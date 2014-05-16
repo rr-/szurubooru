@@ -94,25 +94,6 @@ class UserController
 		Messenger::message('Browsing settings updated!');
 	}
 
-	public function toggleSafetyAction($safety)
-	{
-		$safety = new PostSafety($safety);
-		$safety->validate();
-
-		$user = Auth::getCurrentUser();
-		$user->getSettings()->enableSafety($safety, !$user->getSettings()->hasEnabledSafety($safety));
-		$desiredSafety = $user->getSettings()->get(UserSettings::SETTING_SAFETY);
-
-		$user = Api::run(
-			new EditUserSettingsJob(),
-			[
-				JobArgs::ARG_USER_ENTITY => Auth::getCurrentUser(),
-				JobArgs::ARG_NEW_SETTINGS => [UserSettings::SETTING_SAFETY => $desiredSafety],
-			]);
-
-		Auth::setCurrentUser($user);
-	}
-
 	public function editAction($identifier)
 	{
 		$this->genericView($identifier, 'edit');
@@ -143,6 +124,26 @@ class UserController
 		Messenger::message($message);
 	}
 
+	public function toggleSafetyAction($safety)
+	{
+		$safety = new PostSafety($safety);
+		$safety->validate();
+
+		$user = Auth::getCurrentUser();
+		$user->getSettings()->enableSafety($safety, !$user->getSettings()->hasEnabledSafety($safety));
+		$desiredSafety = $user->getSettings()->get(UserSettings::SETTING_SAFETY);
+
+		$user = Api::run(
+			new EditUserSettingsJob(),
+			[
+				JobArgs::ARG_USER_ENTITY => Auth::getCurrentUser(),
+				JobArgs::ARG_NEW_SETTINGS => [UserSettings::SETTING_SAFETY => $desiredSafety],
+			]);
+
+		Auth::setCurrentUser($user);
+		$this->redirectToLastVisitedUrl();
+	}
+
 	public function deleteAction($identifier)
 	{
 		$this->genericView($identifier, 'delete');
@@ -165,6 +166,7 @@ class UserController
 		Api::run(
 			new FlagUserJob(),
 			$this->appendUserIdentifierArgument([], $identifier));
+		$this->redirectToGenericView($identifier);
 	}
 
 	public function banAction($identifier)
@@ -174,6 +176,7 @@ class UserController
 			$this->appendUserIdentifierArgument([
 				JobArgs::ARG_NEW_STATE => true
 			], $identifier));
+		$this->redirectToGenericView($identifier);
 	}
 
 	public function unbanAction($identifier)
@@ -183,6 +186,7 @@ class UserController
 			$this->appendUserIdentifierArgument([
 				JobArgs::ARG_NEW_STATE => true
 			], $identifier));
+		$this->redirectToGenericView($identifier);
 	}
 
 	public function acceptRegistrationAction($identifier)
@@ -190,6 +194,7 @@ class UserController
 		Api::run(
 			new AcceptUserRegistrationJob(),
 			$this->appendUserIdentifierArgument([], $identifier));
+		$this->redirectToGenericView($identifier);
 	}
 
 	public function registrationView()
@@ -327,5 +332,21 @@ class UserController
 		else
 			$arguments[JobArgs::ARG_USER_NAME] = $userIdentifier;
 		return $arguments;
+	}
+
+	private function redirectToLastVisitedUrl()
+	{
+		$lastUrl = SessionHelper::getLastVisitedUrl();
+		if ($lastUrl)
+			\Chibi\Util\Url::forward($lastUrl);
+		exit;
+	}
+
+	private function redirectToGenericView($identifier)
+	{
+		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(
+			['UserController', 'genericView'],
+			['identifier' => $identifier]));
+		exit;
 	}
 }

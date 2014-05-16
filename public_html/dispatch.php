@@ -49,7 +49,7 @@ $context->layoutName
 $context->viewName = '';
 $context->transport = new StdClass;
 
-session_start();
+SessionHelper::init();
 if (!Auth::isLoggedIn())
 	Auth::tryAutoLogin();
 

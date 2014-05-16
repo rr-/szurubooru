@@ -36,6 +36,7 @@ class CommentController
 					JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
 				]);
 		}
+		$this->redirectToLastVisitedUrl();
 	}
 
 	public function editView($id)
@@ -65,6 +66,7 @@ class CommentController
 					JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
 				]);
 		}
+		$this->redirectToLastVisitedUrl();
 	}
 
 	public function deleteAction($id)
@@ -74,5 +76,14 @@ class CommentController
 			[
 				JobArgs::ARG_COMMENT_ID => $id,
 			]);
+		$this->redirectToLastVisitedUrl();
+	}
+
+	private function redirectToLastVisitedUrl()
+	{
+		$lastUrl = SessionHelper::getLastVisitedUrl();
+		if ($lastUrl)
+			\Chibi\Util\Url::forward($lastUrl);
+		exit;
 	}
 }

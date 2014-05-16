@@ -32,7 +32,7 @@ if ($masstag)
 			href="<?= \Chibi\Router::linkTo(['PostController', 'toggleTagAction'], [
 				'id' => $this->context->post->getId(),
 				'tag' => $this->context->additionalInfo,
-				'enable' => '_enable_']) ?>"
+				'enable' => in_array('tagged', $classNames) ? '0' : '1']) ?>"
 			data-text-tagged="Tagged"
 			data-text-untagged="Untagged">
 

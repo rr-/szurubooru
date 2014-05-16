@@ -229,7 +229,9 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		<?php if ($canEditAnything): ?>
 			<div class="hl-option">
-				<a class="edit-post icon" href="#">
+				<a class="edit-post icon" href="<?= \Chibi\Router::linkTo(
+					['PostController', 'editView'],
+					['id' => $this->context->transport->post->getId()]) ?>">
 					<i class="icon-edit"></i>
 					<span>Edit</span>
 				</a>

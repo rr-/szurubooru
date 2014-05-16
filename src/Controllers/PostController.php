@@ -78,6 +78,8 @@ class PostController
 				JobArgs::ARG_TAG_NAME => $tag,
 				JobArgs::ARG_NEW_STATE => $enable,
 			]);
+
+		$this->redirectToLastVisitedUrl();
 	}
 
 	public function uploadView()
@@ -161,11 +163,13 @@ class PostController
 		}
 
 		Api::run(new EditPostJob(), $jobArgs);
+		$this->redirectToGenericView($id);
 	}
 
 	public function flagAction($id)
 	{
 		Api::run(new FlagPostJob(), [JobArgs::ARG_POST_ID => $id]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function hideAction($id)
@@ -173,6 +177,7 @@ class PostController
 		Api::run(new TogglePostVisibilityJob(), [
 			JobArgs::ARG_POST_ID => $id,
 			JobArgs::ARG_NEW_STATE => false]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function unhideAction($id)
@@ -180,12 +185,14 @@ class PostController
 		Api::run(new TogglePostVisibilityJob(), [
 			JobArgs::ARG_POST_ID => $id,
 			JobArgs::ARG_NEW_STATE => true]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function deleteAction($id)
 	{
 		Api::run(new DeletePostJob(), [
 			JobArgs::ARG_POST_ID => $id]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function addFavoriteAction($id)
@@ -193,6 +200,7 @@ class PostController
 		Api::run(new TogglePostFavoriteJob(), [
 			JobArgs::ARG_POST_ID => $id,
 			JobArgs::ARG_NEW_STATE => true]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function removeFavoriteAction($id)
@@ -200,6 +208,7 @@ class PostController
 		Api::run(new TogglePostFavoriteJob(), [
 			JobArgs::ARG_POST_ID => $id,
 			JobArgs::ARG_NEW_STATE => false]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function scoreAction($id, $score)
@@ -207,12 +216,14 @@ class PostController
 		Api::run(new ScorePostJob(), [
 			JobArgs::ARG_POST_ID => $id,
 			JobArgs::ARG_NEW_POST_SCORE => $score]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function featureAction($id)
 	{
 		Api::run(new FeaturePostJob(), [
 			JobArgs::ARG_POST_ID => $id]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function genericView($id)
@@ -281,7 +292,7 @@ class PostController
 		$context->layoutName = 'layout-file';
 	}
 
-	protected function splitPostIds($string)
+	private function splitPostIds($string)
 	{
 		$ids = preg_split('/\D/', trim($string));
 		$ids = array_filter($ids, function($x) { return $x != ''; });
@@ -290,11 +301,27 @@ class PostController
 		return $ids;
 	}
 
-	protected function splitTags($string)
+	private function splitTags($string)
 	{
 		$tags = preg_split('/[,;\s]+/', trim($string));
 		$tags = array_filter($tags, function($x) { return $x != ''; });
 		$tags = array_unique($tags);
 		return $tags;
+	}
+
+	private function redirectToLastVisitedUrl()
+	{
+		$lastUrl = SessionHelper::getLastVisitedUrl();
+		if ($lastUrl)
+			\Chibi\Util\Url::forward($lastUrl);
+		exit;
+	}
+
+	private function redirectToGenericView($id)
+	{
+		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(
+			['PostController', 'genericView'],
+			['id' => $id]));
+		exit;
 	}
 }
