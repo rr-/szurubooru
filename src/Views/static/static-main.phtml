@@ -1,6 +1,6 @@
 <?php
-Assets::setSubtitle('home');
-Assets::addStylesheet('static-main.css');
+$this->assets->setSubtitle('home');
+$this->assets->addStylesheet('static-main.css');
 ?>
 
 <div id="welcome">
@@ -22,7 +22,7 @@ Assets::addStylesheet('static-main.css');
 				'id' => $this->context->featuredPost->getId()]);
 		?>
 
-		<?php \Chibi\View::render('post-file-render', $this->context) ?>
+		<?php $this->renderExternal('post-file-render') ?>
 	</div>
 
 	<div class="footer">

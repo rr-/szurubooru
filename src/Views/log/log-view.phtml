@@ -1,5 +1,5 @@
 <?php
-Assets::setSubTitle('logs (' . $this->context->transport->name . ')');
+$this->assets->setSubTitle('logs (' . $this->context->transport->name . ')');
 ?>
 
 <?php if (empty($this->context->transport->lines)): ?>
@@ -8,8 +8,8 @@ Assets::setSubTitle('logs (' . $this->context->transport->name . ')');
 	</p>
 <?php else: ?>
 	<?php
-	Assets::addStylesheet('logs.css');
-	Assets::addScript('logs.js');
+	$this->assets->addStylesheet('logs.css');
+	$this->assets->addScript('logs.js');
 	?>
 
 	<form method="get"
@@ -29,5 +29,5 @@ Assets::setSubTitle('logs (' . $this->context->transport->name . ')');
 		<code><?= $this->context->transport->lines ?></code>
 	</div>
 
-	<?php \Chibi\View::render('paginator', $this->context) ?>
+	<?php $this->renderExternal('paginator') ?>
 <?php endif ?>

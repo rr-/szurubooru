@@ -1,6 +1,6 @@
 <?php
-Assets::setSubTitle('tags');
-Assets::addStylesheet('tag-list.css');
+$this->assets->setSubTitle('tags');
+$this->assets->addStylesheet('tag-list.css');
 
 $tabs = [];
 if (Access::check(new Privilege(Privilege::ListTags)))
@@ -13,7 +13,7 @@ if (Access::check(new Privilege(Privilege::MergeTags)))
 	$tabs['merge'] = ['Merge', 'mergeView'];
 
 if (Access::check(new Privilege(Privilege::MassTag)))
-	$tabs['mass-tag-redirect'] = ['Mass tag', 'massTagRedirectAction'];
+	$tabs['mass-tag'] = ['Mass tag', 'massTagRedirectAction'];
 
 $showTabs = count($tabs) > 1;
 ?>
@@ -21,12 +21,12 @@ $showTabs = count($tabs) > 1;
 <?php if ($showTabs): ?>
 	<nav class="tabs">
 		<ul>
-			<?php foreach ($tabs as $tab => $item): ?>
+			<?php foreach ($tabs as $source => $item): ?>
 				<?php list ($name, $action) = $item ?>
-				<?php if ($this->context->simpleActionName == $tab): ?>
-					<li class="selected <?= $tab ?>">
+				<?php if ($this->context->source == $source): ?>
+					<li class="selected <?= $source ?>">
 				<?php else: ?>
-					<li class="<?= $tab ?>">
+					<li class="<?= $source ?>">
 				<?php endif ?>
 					<a href="<?= \Chibi\Router::linkTo(['TagController', $action]) ?>">
 						<?= $name ?>
@@ -39,20 +39,20 @@ $showTabs = count($tabs) > 1;
 	<div class="tab-content">
 <?php endif ?>
 
-<?php if ($this->context->simpleActionName == 'merge'): ?>
-	<?php \Chibi\View::render('tag-merge', $this->context) ?>
+<?php if ($this->context->source == 'merge'): ?>
+	<?php $this->renderExternal('tag-merge') ?>
 <?php endif ?>
 
-<?php if ($this->context->simpleActionName == 'rename'): ?>
-	<?php \Chibi\View::render('tag-rename', $this->context) ?>
+<?php if ($this->context->source == 'rename'): ?>
+	<?php $this->renderExternal('tag-rename') ?>
 <?php endif ?>
 
-<?php if ($this->context->simpleActionName == 'list'): ?>
-	<?php \Chibi\View::render('tag-list', $this->context) ?>
+<?php if ($this->context->source == 'list'): ?>
+	<?php $this->renderExternal('tag-list') ?>
 <?php endif ?>
 
-<?php if ($this->context->simpleActionName == 'mass-tag-redirect'): ?>
-	<?php \Chibi\View::render('tag-mass-tag', $this->context) ?>
+<?php if ($this->context->source == 'mass-tag'): ?>
+	<?php $this->renderExternal('tag-mass-tag') ?>
 <?php endif ?>
 
 <?php if ($showTabs): ?>

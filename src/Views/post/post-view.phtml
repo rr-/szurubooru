@@ -2,11 +2,11 @@
 $subTitle = sprintf('showing %s&nbsp;&ndash;%s',
 	TextHelper::reprPost($this->context->transport->post),
 	TextHelper::reprTags($this->context->transport->post->getTags()));
-Assets::setSubTitle($subTitle);
-Assets::addStylesheet('post-view.css');
-Assets::addScript('post-view.js');
-Assets::addStylesheet('../lib/tagit/jquery.tagit.css');
-Assets::addScript('../lib/tagit/jquery.tagit.js');
+$this->assets->setSubTitle($subTitle);
+$this->assets->addStylesheet('post-view.css');
+$this->assets->addScript('post-view.js');
+$this->assets->addStylesheet('../lib/tagit/jquery.tagit.css');
+$this->assets->addScript('../lib/tagit/jquery.tagit.js');
 
 $editPostPrivileges = [
 	Privilege::EditPostSafety,
@@ -364,24 +364,24 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		}
 
 		$this->context->options = $options;
-		\Chibi\View::render('sidebar-options', $this->context);
+		$this->renderExternal('sidebar-options');
 	?>
 </div>
 
 <div id="inner-content">
 	<?php if ($canEditAnything): ?>
 		<div class="unit edit-post">
-			<?php \Chibi\View::render('post-edit', $this->context) ?>
+			<?php $this->renderExternal('post-edit') ?>
 		</div>
 	<?php endif ?>
 
 	<div class="post-wrapper post-type-<?= $this->context->transport->post->getType()->toString() ?>">
-		<?= \Chibi\View::render('post-file-render', $this->context) ?>
+		<?php $this->renderExternal('post-file-render') ?>
 	</div>
 
 	<?php
-		Assets::addStylesheet('comment-list.css');
-		Assets::addStylesheet('comment-small.css');
+		$this->assets->addStylesheet('comment-list.css');
+		$this->assets->addStylesheet('comment-small.css');
 	?>
 
 	<div class="comments-wrapper">
@@ -391,7 +391,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				<div class="comments">
 					<?php foreach ($this->context->transport->post->getComments() as $comment): ?>
 						<?php $this->context->comment = $comment ?>
-						<?= \Chibi\View::render('comment-small', $this->context) ?>
+						<?php $this->renderExternal('comment-small') ?>
 					<?php endforeach ?>
 				</div>
 			</div>
@@ -400,7 +400,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 	<?php if (Access::check(new Privilege(Privilege::AddComment))): ?>
 		<div class="unit comment-add">
-			<?php \Chibi\View::render('comment-add', $this->context) ?>
+			<?php $this->renderExternal('comment-add') ?>
 		</div>
 	<?php endif ?>
 </div>

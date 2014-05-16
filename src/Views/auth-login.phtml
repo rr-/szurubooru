@@ -1,6 +1,6 @@
 <?php
-Assets::setSubTitle('authentication form');
-Assets::addStylesheet('auth.css');
+$this->assets->setSubTitle('authentication form');
+$this->assets->addStylesheet('auth.css');
 ?>
 
 <form
@@ -34,7 +34,7 @@ Assets::addStylesheet('auth.css');
 		</div>
 	</div>
 
-	<?php \Chibi\View::render('message', $this->context) ?>
+	<?php $this->renderExternal('message') ?>
 
 	<div class="form-row help">
 		<label></label>

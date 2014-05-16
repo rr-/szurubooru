@@ -1,6 +1,6 @@
 <?php
-Assets::setSubTitle('users');
-Assets::addStylesheet('user-list.css');
+$this->assets->setSubTitle('users');
+$this->assets->addStylesheet('user-list.css');
 ?>
 
 <nav class="sort-styles">
@@ -71,5 +71,5 @@ Assets::addStylesheet('user-list.css');
 		<div class="clear"></div>
 	</div>
 
-	<?php \Chibi\View::render('paginator', $this->context) ?>
+	<?php $this->renderExternal('paginator') ?>
 <?php endif ?>

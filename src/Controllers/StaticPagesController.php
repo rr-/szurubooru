@@ -1,11 +1,10 @@
 <?php
-class StaticPagesController
+class StaticPagesController extends AbstractController
 {
 	public function mainPageView()
 	{
 		$context = Core::getContext();
 		$context->transport->postCount = PostModel::getCount();
-		$context->viewName = 'static-main';
 		$context->transport->postSpaceUsage = PostModel::getSpaceUsage();
 
 		PostModel::featureRandomPostIfNecessary();
@@ -17,6 +16,8 @@ class StaticPagesController
 			$context->featuredPostUser = UserModel::tryGetByName(
 				PropertyModel::get(PropertyModel::FeaturedPostUserName));
 		}
+
+		$this->renderView('static-main');
 	}
 
 	public function helpView($tab = null)
@@ -31,9 +32,10 @@ class StaticPagesController
 		if (!isset($config->help->paths[$tab]))
 			throw new SimpleException('Invalid tab');
 
-		$context->viewName = 'static-help';
 		$context->path = TextHelper::absolutePath($config->help->paths[$tab]);
 		$context->tab = $tab;
+
+		$this->renderView('static-help');
 	}
 
 	public function fatalErrorView($code = null)

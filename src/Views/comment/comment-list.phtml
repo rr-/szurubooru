@@ -1,15 +1,15 @@
 <?php
-Assets::setSubTitle('comments');
+$this->assets->setSubTitle('comments');
 ?>
 
 <?php if (empty($this->context->transport->posts)): ?>
 	<p class="alert alert-warning">No comments to show.</p>
 <?php else: ?>
 	<?php
-	Assets::addStylesheet('comment-list.css');
-	Assets::addStylesheet('comment-small.css');
-	Assets::addStylesheet('comment-edit.css');
-	Assets::addScript('comment-edit.js');
+	$this->assets->addStylesheet('comment-list.css');
+	$this->assets->addStylesheet('comment-small.css');
+	$this->assets->addStylesheet('comment-edit.css');
+	$this->assets->addScript('comment-edit.js');
 	?>
 
 	<div class="comments-wrapper">
@@ -22,12 +22,12 @@ Assets::setSubTitle('comments');
 							$comments = array_reverse($post->getComments());
 							$commentsToDisplay = array_slice($comments, 0, Core::getConfig()->comments->maxCommentsInList);
 						?>
-						<?php \Chibi\View::render('post-small', $this->context) ?>
+						<?php $this->renderExternal('post-small') ?>
 					</div>
 					<div class="comments">
 						<?php foreach ($commentsToDisplay as $comment): ?>
 							<?php $this->context->comment = $comment ?>
-							<?php \Chibi\View::render('comment-small', $this->context) ?>
+							<?php $this->renderExternal('comment-small') ?>
 						<?php endforeach ?>
 
 						<?php if (count($comments) > count($commentsToDisplay)): ?>
@@ -43,6 +43,6 @@ Assets::setSubTitle('comments');
 			<?php endforeach ?>
 		</div>
 
-		<?php \Chibi\View::render('paginator', $this->context) ?>
+		<?php $this->renderExternal('paginator') ?>
 	</div>
 <?php endif ?>

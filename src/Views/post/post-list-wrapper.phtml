@@ -1,5 +1,5 @@
 <?php
-Assets::setSubTitle('posts');
+$this->assets->setSubTitle('posts');
 
 $tabs = [];
 $activeTab = 0;
@@ -9,15 +9,15 @@ if (Access::check(new Privilege(Privilege::ListPosts)))
 if (Access::check(new Privilege(Privilege::ListPosts)))
 {
 	$tabs []= ['Random', \Chibi\Router::linkTo(['PostController', 'randomView'])];
-	if ($this->context->simpleActionName == 'random')
+	if ($this->context->source == 'random')
 		$activeTab = count($tabs) - 1;
 
 	$tabs []= ['Favorites', \Chibi\Router::linkTo(['PostController', 'favoritesView'])];
-	if ($this->context->simpleActionName == 'favorites')
+	if ($this->context->source == 'favorites')
 		$activeTab = count($tabs) - 1;
 
 	$tabs []= ['Upvoted', \Chibi\Router::linkTo(['PostController', 'upvotedView'])];
-	if ($this->context->simpleActionName == 'upvoted')
+	if ($this->context->source == 'upvoted')
 		$activeTab = count($tabs) - 1;
 }
 
@@ -61,5 +61,5 @@ if (Access::check(new Privilege(Privilege::MassTag)))
 </nav>
 
 <div class="tab-content">
-	<?php \Chibi\View::render('post-list', $this->context) ?>
+	<?php $this->renderExternal('post-list') ?>
 </div>

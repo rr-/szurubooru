@@ -1,68 +1,75 @@
 <?php
-class PostController
+class PostController extends AbstractController
 {
 	public function listView($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
 		$context = Core::getContext();
-		$context->viewName = 'post-list-wrapper';
 		$context->source = $source;
 		$context->additionalInfo = $additionalInfo;
-		$context->handleExceptions = true;
 
-		//redirect requests in form of /posts/?query=... to canonical address
-		$formQuery = InputHelper::get('query');
-		if ($formQuery !== null)
+		try
 		{
-			$context->transport->searchQuery = $formQuery;
-			$context->transport->lastSearchQuery = $formQuery;
-			if (strpos($formQuery, '/') !== false)
-				throw new SimpleException('Search query contains invalid characters');
+			//redirect requests in form of /posts/?query=... to canonical address
+			$formQuery = InputHelper::get('query');
+			if ($formQuery !== null)
+			{
+				$context->transport->searchQuery = $formQuery;
+				$context->transport->lastSearchQuery = $formQuery;
+				if (strpos($formQuery, '/') !== false)
+					throw new SimpleException('Search query contains invalid characters');
 
-			$url = \Chibi\Router::linkTo(['PostController', 'listView'], [
-				'source' => $source,
-				'additionalInfo' => $additionalInfo,
-				'query' => $formQuery]);
-			\Chibi\Util\Url::forward($url);
-			exit;
+				$url = \Chibi\Router::linkTo(['PostController', 'listView'], [
+					'source' => $source,
+					'additionalInfo' => $additionalInfo,
+					'query' => $formQuery]);
+				$this->redirect($url);
+				return;
+			}
+
+			$query = trim($query);
+			$context->transport->searchQuery = $query;
+			$context->transport->lastSearchQuery = $query;
+			if ($source == 'mass-tag')
+			{
+				Access::assert(new Privilege(Privilege::MassTag));
+				$context->massTagTag = $additionalInfo;
+				$context->massTagQuery = $query;
+
+				if (!Access::check(new Privilege(Privilege::MassTag, 'all')))
+					$query = trim($query . ' submit:' . Auth::getCurrentUser()->getName());
+			}
+
+			$ret = Api::run(
+				new ListPostsJob(),
+				[
+					JobArgs::ARG_PAGE_NUMBER => $page,
+					JobArgs::ARG_QUERY => $query
+				]);
+
+			$context->transport->posts = $ret->entities;
+			$context->transport->paginator = $ret;
+		}
+		catch (SimpleException $e)
+		{
+			Messenger::fail($e->getMessage());
 		}
 
-		$query = trim($query);
-		$context->transport->searchQuery = $query;
-		$context->transport->lastSearchQuery = $query;
-		if ($source == 'mass-tag')
-		{
-			Access::assert(new Privilege(Privilege::MassTag));
-			$context->massTagTag = $additionalInfo;
-			$context->massTagQuery = $query;
-
-			if (!Access::check(new Privilege(Privilege::MassTag, 'all')))
-				$query = trim($query . ' submit:' . Auth::getCurrentUser()->getName());
-		}
-
-		$ret = Api::run(
-			new ListPostsJob(),
-			[
-				JobArgs::ARG_PAGE_NUMBER => $page,
-				JobArgs::ARG_QUERY => $query
-			]);
-
-		$context->transport->posts = $ret->entities;
-		$context->transport->paginator = $ret;
+		$this->renderView('post-list-wrapper');
 	}
 
 	public function favoritesView($page = 1)
 	{
-		$this->listView('favmin:1', $page);
+		$this->listView('favmin:1', $page, 'favorites');
 	}
 
 	public function upvotedView($page = 1)
 	{
-		$this->listView('scoremin:1', $page);
+		$this->listView('scoremin:1', $page, 'upvoted');
 	}
 
 	public function randomView($page = 1)
 	{
-		$this->listView('order:random', $page);
+		$this->listView('order:random', $page, 'random');
 	}
 
 	public function toggleTagAction($id, $tag, $enable)
@@ -79,11 +86,15 @@ class PostController
 				JobArgs::ARG_NEW_STATE => $enable,
 			]);
 
-		$this->redirectToLastVisitedUrl();
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToLastVisitedUrl();
 	}
 
 	public function uploadView()
 	{
+		$this->renderView('post-upload');
 	}
 
 	public function uploadAction()
@@ -111,6 +122,11 @@ class PostController
 		}
 
 		Api::run(new AddPostJob(), $jobArgs);
+
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToPostList();
 	}
 
 	public function editView($id)
@@ -119,6 +135,7 @@ class PostController
 			JobArgs::ARG_POST_ID => $id]);
 
 		$context = Core::getContext()->transport->post = $post;
+		$this->renderView('post-edit');
 	}
 
 	public function editAction($id)
@@ -163,13 +180,21 @@ class PostController
 		}
 
 		Api::run(new EditPostJob(), $jobArgs);
-		$this->redirectToGenericView($id);
+
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToGenericView($id);
 	}
 
 	public function flagAction($id)
 	{
 		Api::run(new FlagPostJob(), [JobArgs::ARG_POST_ID => $id]);
-		$this->redirectToGenericView($id);
+
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToGenericView($id);
 	}
 
 	public function hideAction($id)
@@ -192,7 +217,7 @@ class PostController
 	{
 		Api::run(new DeletePostJob(), [
 			JobArgs::ARG_POST_ID => $id]);
-		$this->redirectToGenericView($id);
+		$this->redirectToPostList();
 	}
 
 	public function addFavoriteAction($id)
@@ -229,7 +254,6 @@ class PostController
 	public function genericView($id)
 	{
 		$context = Core::getContext();
-		$context->viewName = 'post-view';
 
 		$post = Api::run(new GetPostJob(), [
 			JobArgs::ARG_POST_ID => $id]);
@@ -262,6 +286,8 @@ class PostController
 		$context->transport->post = $post;
 		$context->transport->prevPostId = $prevPostId ? $prevPostId : null;
 		$context->transport->nextPostId = $nextPostId ? $nextPostId : null;
+
+		$this->renderView('post-view');
 	}
 
 	public function fileView($name)
@@ -275,7 +301,7 @@ class PostController
 		$context->transport->fileHash = 'post' . md5(substr($ret->fileContent, 0, 4096));
 		$context->transport->fileContent = $ret->fileContent;
 		$context->transport->lastModified = $ret->lastModified;
-		$context->layoutName = 'layout-file';
+		$this->renderFile();
 	}
 
 	public function thumbView($name)
@@ -289,8 +315,9 @@ class PostController
 		$context->transport->fileHash = 'thumb' . md5(substr($ret->fileContent, 0, 4096));
 		$context->transport->fileContent = $ret->fileContent;
 		$context->transport->lastModified = $ret->lastModified;
-		$context->layoutName = 'layout-file';
+		$this->renderFile();
 	}
+
 
 	private function splitPostIds($string)
 	{
@@ -309,19 +336,15 @@ class PostController
 		return $tags;
 	}
 
-	private function redirectToLastVisitedUrl()
+	private function redirectToPostList()
 	{
-		$lastUrl = SessionHelper::getLastVisitedUrl();
-		if ($lastUrl)
-			\Chibi\Util\Url::forward($lastUrl);
-		exit;
+		$this->redirect(\Chibi\Router::linkTo(['PostController', 'listView']));
 	}
 
 	private function redirectToGenericView($id)
 	{
-		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(
+		$this->redirect(\Chibi\Router::linkTo(
 			['PostController', 'genericView'],
 			['id' => $id]));
-		exit;
 	}
 }

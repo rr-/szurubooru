@@ -1,5 +1,5 @@
 <?php
-class TagController
+class TagController extends AbstractController
 {
 	public function listView($filter = 'order:alpha,asc', $page = 1)
 	{
@@ -11,11 +11,11 @@ class TagController
 			]);
 
 		$context = Core::getContext();
-		$context->viewName = 'tag-list-wrapper';
 		$context->highestUsage = TagSearchService::getMostUsedTag()->getPostCount();
 		$context->filter = $filter;
 		$context->transport->tags = $ret->entities;
 		$context->transport->paginator = $ret;
+		$this->renderViewWithSource('tag-list-wrapper', 'list');
 	}
 
 	public function autoCompleteView()
@@ -42,6 +42,8 @@ class TagController
 						'count' => $tag->getPostCount(),
 					];
 				}, $ret->entities));
+
+		$this->renderAjax();
 	}
 
 	public function relatedView()
@@ -67,76 +69,94 @@ class TagController
 						'count' => $tag->getPostCount(),
 					];
 				}, $ret->entities));
+
+		$this->renderAjax();
 	}
 
 	public function mergeView()
 	{
-		$context = Core::getContext();
-		$context->viewName = 'tag-list-wrapper';
+		$this->renderViewWithSource('tag-list-wrapper', 'merge');
 	}
 
 	public function mergeAction()
 	{
-		$context = Core::getContext();
-		$context->viewName = 'tag-list-wrapper';
-		$context->handleExceptions = true;
+		try
+		{
+			Api::run(
+				new MergeTagsJob(),
+				[
+					JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
+					JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
+				]);
 
-		Api::run(
-			new MergeTagsJob(),
-			[
-				JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
-				JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
-			]);
+			Messenger::success('Tags merged successfully.');
+		}
+		catch (SimpleException $e)
+		{
+			Messenger::fail($e->getMessage());
+		}
 
-		Messenger::message('Tags merged successfully.');
+		$this->renderViewWithSource('tag-list-wrapper', 'merge');
 	}
 
 	public function renameView()
 	{
-		$context = Core::getContext();
-		$context->viewName = 'tag-list-wrapper';
+		$this->renderViewWithSource('tag-list-wrapper', 'rename');
 	}
 
 	public function renameAction()
 	{
-		$context = Core::getContext();
-		$context->viewName = 'tag-list-wrapper';
-		$context->handleExceptions = true;
+		try
+		{
+			Api::run(
+				new RenameTagsJob(),
+				[
+					JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
+					JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
+				]);
 
-		Api::run(
-			new RenameTagsJob(),
-			[
-				JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
-				JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
-			]);
+			Messenger::success('Tag renamed successfully.');
+		}
+		catch (Exception $e)
+		{
+			Messenger::fail($e->getMessage());
+		}
 
-		Messenger::message('Tag renamed successfully.');
+		$this->renderViewWithSource('tag-list-wrapper', 'rename');
 	}
 
 	public function massTagRedirectView()
 	{
-		$context = Core::getContext();
-		$context->viewName = 'tag-list-wrapper';
-
 		Access::assert(new Privilege(Privilege::MassTag));
+		$this->renderViewWithSource('tag-list-wrapper', 'mass-tag');
 	}
 
 	public function massTagRedirectAction()
 	{
-		$this->massTagRedirectView();
+		Access::assert(new Privilege(Privilege::MassTag));
 		$suppliedOldPage = intval(InputHelper::get('old-page'));
 		$suppliedOldQuery = InputHelper::get('old-query');
 		$suppliedQuery = InputHelper::get('query');
 		$suppliedTag = InputHelper::get('tag');
 
-		$params = [
+		$params =
+		[
 			'source' => 'mass-tag',
 			'query' => $suppliedQuery ?: ' ',
 			'additionalInfo' => $suppliedTag ? $suppliedTag : '',
 		];
+
 		if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
 			$params['page'] = $suppliedOldPage;
-		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['PostController', 'listView'], $params));
-		exit;
+
+		$this->redirect(\Chibi\Router::linkTo(['PostController', 'listView'], $params));
+	}
+
+
+	private function renderViewWithSource($viewName, $source)
+	{
+		$context = Core::getContext();
+		$context->source = $source;
+		$this->renderView($viewName);
 	}
 }

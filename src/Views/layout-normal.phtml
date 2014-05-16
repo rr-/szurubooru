@@ -1,10 +1,10 @@
 <?php
-Assets::addStylesheet('../lib/jquery-ui/jquery-ui.css');
-Assets::addStylesheet('core.css');
-Assets::addScript('../lib/jquery/jquery.min.js');
-Assets::addScript('../lib/jquery-ui/jquery-ui.min.js');
-Assets::addScript('../lib/mousetrap/mousetrap.min.js');
-Assets::addScript('core.js');
+$this->assets->addStylesheet('../lib/jquery-ui/jquery-ui.css');
+$this->assets->addStylesheet('core.css');
+$this->assets->addScript('../lib/jquery/jquery.min.js');
+$this->assets->addScript('../lib/jquery-ui/jquery-ui.min.js');
+$this->assets->addScript('../lib/mousetrap/mousetrap.min.js');
+$this->assets->addScript('core.js');
 ?>
 
 <!DOCTYPE html>
@@ -24,14 +24,14 @@ Assets::addScript('core.js');
 
 		<nav id="top-nav">
 			<div class="main-wrapper">
-				<?php \Chibi\View::render('top-navigation', $this->context) ?>
+				<?php $this->renderExternal('top-navigation') ?>
 			</div>
 			<div class="clear"></div>
 		</nav>
 
 		<section id="content">
 			<div class="main-wrapper">
-				<?= \Chibi\View::render($this->context->viewName, $this->context) ?>
+				<?php $this->renderExternal($this->context->viewName) ?>
 			</div>
 			<div class="clear"></div>
 		</section>
@@ -60,7 +60,7 @@ Assets::addScript('core.js');
 		</footer>
 
 		<?php if (Core::getConfig()->misc->debugQueries): ?>
-			<?= \Chibi\View::render('debug', $this->context) ?>
+			<?php $this->renderExternal('debug') ?>
 		<?php endif ?>
 
 		<div id="small-screen"></div>

@@ -1,6 +1,6 @@
 <?php
-Assets::setSubtitle('help');
-Assets::addStylesheet('static-help.css');
+$this->assets->setSubtitle('help');
+$this->assets->addStylesheet('static-help.css');
 
 $tabs = Core::getConfig()->help->subTitles;
 $firstTab = !empty($tabs) ? array_keys($tabs)[0] : null;

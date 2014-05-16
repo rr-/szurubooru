@@ -1,12 +1,21 @@
 <?php
 class Messenger
 {
-	public static function message($message, $success = true)
+	public static function success($message)
 	{
-		if (empty($message))
-			return;
+		self::message($message, true);
+	}
 
+	public static function fail($message)
+	{
+		self::message($message, false);
+	}
+
+	private static function message($message, $success = true)
+	{
 		$context = Core::getContext();
+
+		$message = $message ?: 'Empty message';
 
 		if (!preg_match('/[.?!]$/', $message))
 			$message .= '.';

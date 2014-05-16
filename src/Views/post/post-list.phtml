@@ -1,17 +1,17 @@
 <?php
-Assets::addStylesheet('post-list.css');
-Assets::addScript('post-list.js');
+$this->assets->addStylesheet('post-list.css');
+$this->assets->addScript('post-list.js');
 
 if (isset($this->context->source)
 	and $this->context->source == 'mass-tag'
 	and Access::check(new Privilege(Privilege::MassTag)))
 {
-	\Chibi\View::render('tag-mass-tag', $this->context);
+	$this->renderExternal('tag-mass-tag');
 }
 ?>
 
 <?php if (!empty($this->context->transport->message)): ?>
-	<?php \Chibi\View::render('message', $this->context) ?>
+	<?php $this->renderExternal('message') ?>
 <?php elseif (empty($this->context->transport->posts)): ?>
 	<p class="alert alert-warning">No posts to show.</p>
 <?php else: ?>
@@ -19,11 +19,11 @@ if (isset($this->context->source)
 		<div class="posts paginator-content">
 			<?php foreach ($this->context->transport->posts as $post): ?>
 				<?php $this->context->post = $post ?>
-				<?php \Chibi\View::render('post-small', $this->context) ?>
+				<?php $this->renderExternal('post-small') ?>
 			<?php endforeach ?>
 		</div>
 		<div class="clear"></div>
 	</div>
 
-	<?php \Chibi\View::render('paginator', $this->context) ?>
+	<?php $this->renderExternal('paginator') ?>
 <?php endif ?>

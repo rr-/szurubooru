@@ -1,5 +1,5 @@
 <?php
-Assets::setPageThumb(\Chibi\Router::linkTo(
+$this->assets->setPageThumb(\Chibi\Router::linkTo(
 	['PostController', 'thumbView'],
 	['name' => $this->context->transport->post->getName()]));
 $post = $this->context->transport->post;

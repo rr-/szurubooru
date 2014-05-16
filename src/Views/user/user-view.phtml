@@ -1,6 +1,6 @@
 <?php
-Assets::setSubTitle($this->context->transport->user->getName());
-Assets::addStylesheet('user-view.css');
+$this->assets->setSubTitle($this->context->transport->user->getName());
+$this->assets->addStylesheet('user-view.css');
 ?>
 
 <div id="sidebar">
@@ -188,7 +188,7 @@ Assets::addStylesheet('user-view.css');
 		}
 
 		$this->context->options = $options;
-		\Chibi\View::render('sidebar-options', $this->context);
+		$this->renderExternal('sidebar-options');
 	?>
 </div>
 
@@ -277,15 +277,15 @@ Assets::addStylesheet('user-view.css');
 
 	<div class="tab-content">
 		<?php if (isset($this->context->transport->posts)): ?>
-			<?php \Chibi\View::render('post-list', $this->context) ?>
+			<?php $this->renderExternal('post-list') ?>
 		<?php endif ?>
 
 		<?php if ($this->context->transport->tab == 'settings'): ?>
-			<?php \Chibi\View::render('user-settings', $this->context) ?>
+			<?php $this->renderExternal('user-settings') ?>
 		<?php elseif ($this->context->transport->tab == 'edit'): ?>
-			<?php \Chibi\View::render('user-edit', $this->context) ?>
+			<?php $this->renderExternal('user-edit') ?>
 		<?php elseif ($this->context->transport->tab == 'delete'): ?>
-			<?php \Chibi\View::render('user-delete', $this->context) ?>
+			<?php $this->renderExternal('user-delete') ?>
 		<?php endif ?>
 	</div>
 

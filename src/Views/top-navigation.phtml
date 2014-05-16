@@ -2,8 +2,20 @@
 	<?php
 	$nav = [];
 
-	$activeController = $this->context->simpleControllerName;
-	$activeAction = $this->context->simpleActionName;
+	list ($className, $methodName)
+		= isset($this->context->route)
+		? $this->context->route->destination
+		: [null, null];
+
+	$activeController = TextCaseConverter::convert(
+		str_replace('Controller', '', $className),
+		TextCaseConverter::CAMEL_CASE,
+		TextCaseConverter::SPINAL_CASE);
+
+	$activeAction = TextCaseConverter::convert(
+		preg_replace('/Action|View/', '', $methodName),
+		TextCaseConverter::CAMEL_CASE,
+		TextCaseConverter::SPINAL_CASE);
 
 	$registerNavItem = function ($text, $link, $active = false) use (&$nav)
 	{

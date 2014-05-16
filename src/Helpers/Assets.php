@@ -1,47 +1,41 @@
 <?php
 class Assets extends \Chibi\Util\Assets
 {
-	private static $pageThumb = null;
-	private static $subTitle = null;
+	private $pageThumb = null;
+	private $subTitle = null;
 
-	public static function init()
+	public function setSubTitle($text)
 	{
-		\Chibi\Util\Assets::disable();
-		self::enable();
+		$this->subTitle = $text;
 	}
 
-	public static function setSubTitle($text)
+	public function setPageThumb($path)
 	{
-		self::$subTitle = $text;
+		$this->pageThumb = $path;
 	}
 
-	public static function setPageThumb($path)
-	{
-		self::$pageThumb = $path;
-	}
-
-	public static function addStylesheet($path)
+	public function addStylesheet($path)
 	{
 		return parent::addStylesheet('/media/css/' . $path);
 	}
 
-	public static function addScript($path)
+	public function addScript($path)
 	{
 		return parent::addScript('/media/js/' . $path);
 	}
 
-	public static function transformHtml($html)
+	public function transformHtml($html)
 	{
-		self::$title = isset(self::$subTitle)
-			? sprintf('%s&nbsp;&ndash;&nbsp;%s', self::$title, self::$subTitle)
-			: self::$title;
+		$this->title = isset($this->subTitle)
+			? sprintf('%s&nbsp;&ndash;&nbsp;%s', $this->title, $this->subTitle)
+			: $this->title;
 
 		$html = parent::transformHtml($html);
 
-		$headSnippet = '<meta property="og:title" content="' . self::$title . '"/>';
+		$headSnippet = '<meta property="og:title" content="' . $this->title . '"/>';
 		$headSnippet .= '<meta property="og:url" content="' . \Chibi\Util\Url::currentUrl() . '"/>';
-		if (!empty(self::$pageThumb))
-			$headSnippet .= '<meta property="og:image" content="' . self::$pageThumb . '"/>';
+		if (!empty($this->pageThumb))
+			$headSnippet .= '<meta property="og:image" content="' . $this->pageThumb . '"/>';
 
 		$bodySnippet = '<script type="text/javascript">';
 		$bodySnippet .= '$(function() {';
@@ -54,5 +48,3 @@ class Assets extends \Chibi\Util\Assets
 		return $html;
 	}
 }
-
-Assets::init();

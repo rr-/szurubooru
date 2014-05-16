@@ -1,12 +1,12 @@
 <?php
-Assets::setSubTitle('registration form');
+$this->assets->setSubTitle('registration form');
 ?>
 
 <?php if (isset($this->context->transport->message) and $this->context->transport->success): ?>
-	<?php \Chibi\View::render('message', $this->context) ?>
+	<?php $this->renderExternal('message') ?>
 <?php else: ?>
 	<?php
-	Assets::addStylesheet('auth.css');
+	$this->assets->addStylesheet('auth.css');
 	?>
 
 	<form
@@ -72,7 +72,7 @@ Assets::setSubTitle('registration form');
 			Leave blank for random Gravatar.
 		</p>
 
-		<?php \Chibi\View::render('message', $this->context) ?>
+		<?php $this->renderExternal('message') ?>
 
 		<div class="form-row">
 			<label></label>

@@ -91,7 +91,7 @@ $settings = $this->context->transport->user->getSettings();
 		</div>
 	</div>
 
-	<?php \Chibi\View::render('message', $this->context) ?>
+	<?php $this->renderExternal('message') ?>
 
 	<div class="form-row">
 		<label></label>

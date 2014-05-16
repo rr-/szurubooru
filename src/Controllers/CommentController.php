@@ -1,5 +1,5 @@
 <?php
-class CommentController
+class CommentController extends AbstractController
 {
 	public function listView($page = 1)
 	{
@@ -12,6 +12,7 @@ class CommentController
 		$context = Core::getContext();
 		$context->transport->posts = $ret->entities;
 		$context->transport->paginator = $ret;
+		$this->renderView('comment-list');
 	}
 
 	public function addAction()
@@ -26,6 +27,7 @@ class CommentController
 				]);
 
 			Core::getContext()->transport->textPreview = $comment->getTextMarkdown();
+			$this->renderAjax();
 		}
 		else
 		{
@@ -35,13 +37,18 @@ class CommentController
 					JobArgs::ARG_POST_ID => InputHelper::get('post-id'),
 					JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
 				]);
+
+			if ($this->isAjax())
+				$this->renderAjax();
+			else
+				$this->redirectToLastVisitedUrl();
 		}
-		$this->redirectToLastVisitedUrl();
 	}
 
 	public function editView($id)
 	{
 		Core::getContext()->transport->comment = CommentModel::getById($id);
+		$this->renderView('comment-edit');
 	}
 
 	public function editAction($id)
@@ -56,6 +63,7 @@ class CommentController
 				]);
 
 			Core::getContext()->transport->textPreview = $comment->getTextMarkdown();
+			$this->renderAjax();
 		}
 		else
 		{
@@ -65,8 +73,12 @@ class CommentController
 					JobArgs::ARG_COMMENT_ID => $id,
 					JobArgs::ARG_NEW_TEXT => InputHelper::get('text')
 				]);
+
+			if ($this->isAjax())
+				$this->renderAjax();
+			else
+				$this->redirectToLastVisitedUrl('comment/');
 		}
-		$this->redirectToLastVisitedUrl();
 	}
 
 	public function deleteAction($id)
@@ -76,14 +88,10 @@ class CommentController
 			[
 				JobArgs::ARG_COMMENT_ID => $id,
 			]);
-		$this->redirectToLastVisitedUrl();
-	}
 
-	private function redirectToLastVisitedUrl()
-	{
-		$lastUrl = SessionHelper::getLastVisitedUrl();
-		if ($lastUrl)
-			\Chibi\Util\Url::forward($lastUrl);
-		exit;
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToLastVisitedUrl('comment/');
 	}
 }
