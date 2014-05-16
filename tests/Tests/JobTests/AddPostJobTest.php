@@ -34,6 +34,30 @@ class AddPostJobTest extends AbstractTest
 		$this->assert->isNotNull($post->getUploaderId());
 	}
 
+	public function testYoutube()
+	{
+		$this->prepare();
+
+		$this->grantAccess('addPost');
+		$this->grantAccess('addPostTags');
+		$this->grantAccess('addPostContent');
+
+		$this->login($this->userMocker->mockSingle());
+
+		$post = $this->assert->doesNotThrow(function()
+		{
+			return Api::run(
+				new AddPostJob(),
+				[
+					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_NEW_POST_CONTENT_URL => 'http://www.youtube.com/watch?v=qWq_jydCUw4',
+				]);
+		});
+
+		$this->assert->areEqual(PostType::Youtube, $post->getType()->toInteger());
+		$this->assert->areEqual('qWq_jydCUw4', $post->getFileHash());
+	}
+
 	public function testAnonymousUploads()
 	{
 		$this->prepare();
