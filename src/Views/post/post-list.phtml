@@ -1,16 +1,14 @@
 <?php
 Assets::addStylesheet('post-list.css');
 Assets::addScript('post-list.js');
-?>
 
-<?php if (isset($this->context->source)
+if (isset($this->context->source)
 	and $this->context->source == 'mass-tag'
-	and Access::check(new Privilege(Privilege::MassTag))): ?>
-
-	<?php \Chibi\View::render('tag-mass-tag', $this->context) ?>
-
-<?php endif ?>
-
+	and Access::check(new Privilege(Privilege::MassTag)))
+{
+	\Chibi\View::render('tag-mass-tag', $this->context);
+}
+?>
 
 <?php if (!empty($this->context->transport->message)): ?>
 	<?php \Chibi\View::render('message', $this->context) ?>

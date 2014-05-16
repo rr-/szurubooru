@@ -378,9 +378,10 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	</div>
 
 	<?php
-	Assets::addStylesheet('comment-list.css');
-	Assets::addStylesheet('comment-small.css');
+		Assets::addStylesheet('comment-list.css');
+		Assets::addStylesheet('comment-small.css');
 	?>
+
 	<div class="comments-wrapper">
 		<?php if (!empty($this->context->transport->post->getComments())): ?>
 			<div class="unit comments">

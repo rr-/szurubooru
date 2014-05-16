@@ -26,6 +26,7 @@ if ($masstag)
 ?>
 
 <div class="<?= implode(' ', $classNames) ?>">
+
 	<?php if ($masstag): ?>
 		<a class="toggle-tag"
 			href="<?= \Chibi\Router::linkTo(['PostController', 'toggleTagAction'], [
