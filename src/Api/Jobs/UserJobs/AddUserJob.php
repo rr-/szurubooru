@@ -3,7 +3,10 @@ class AddUserJob extends AbstractJob
 {
 	public function __construct()
 	{
-		$this->addSubJob(new EditUserJob());
+		$this->addSubJob(new EditUserAccessRankJob());
+		$this->addSubJob(new EditUserNameJob());
+		$this->addSubJob(new EditUserPasswordJob());
+		$this->addSubJob(new EditUserEmailJob());
 	}
 
 	public function execute()
@@ -28,15 +31,21 @@ class AddUserJob extends AbstractJob
 		$arguments[JobArgs::ARG_USER_ENTITY] = $user;
 
 		Logger::bufferChanges();
-		try
+		foreach ($this->getSubJobs() as $subJob)
 		{
-			$job = $this->getSubJobs()[0];
-			$job->setContext(self::CONTEXT_BATCH_ADD);
-			Api::run($job, $arguments);
-		}
-		finally
-		{
-			Logger::discardBuffer();
+			$subJob->setContext(self::CONTEXT_BATCH_ADD);
+
+			try
+			{
+				Api::run($subJob, $arguments);
+			}
+			catch (ApiJobUnsatisfiedException $e)
+			{
+			}
+			finally
+			{
+				Logger::discardBuffer();
+			}
 		}
 
 		//save the user to db if everything went okay

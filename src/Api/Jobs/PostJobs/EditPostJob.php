@@ -18,30 +18,25 @@ class EditPostJob extends AbstractJob
 	{
 		$post = $this->postRetriever->retrieve();
 
-		Logger::bufferChanges();
+		$arguments = $this->getArguments();
+		$arguments[JobArgs::ARG_POST_ENTITY] = $post;
 
+		Logger::bufferChanges();
 		foreach ($this->getSubJobs() as $subJob)
 		{
-			$subJob->setContext($this->getContext() == self::CONTEXT_BATCH_ADD
-				? self::CONTEXT_BATCH_ADD
-				: self::CONTEXT_BATCH_EDIT);
+			$subJob->setContext(self::CONTEXT_BATCH_EDIT);
 
-			$args = $this->getArguments();
-			$args[JobArgs::ARG_POST_ENTITY] = $post;
 			try
 			{
-				Api::run($subJob, $args);
+				Api::run($subJob, $arguments);
 			}
 			catch (ApiJobUnsatisfiedException $e)
 			{
 			}
 		}
 
-		if ($this->getContext() == AbstractJob::CONTEXT_NORMAL)
-		{
-			PostModel::save($post);
-			Logger::flush();
-		}
+		PostModel::save($post);
+		Logger::flush();
 
 		return $post;
 	}
@@ -54,9 +49,7 @@ class EditPostJob extends AbstractJob
 	public function getRequiredPrivileges()
 	{
 		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::AddPost
-				: Privilege::EditPost,
+			Privilege::EditPost,
 			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
 	}
 }

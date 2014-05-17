@@ -55,7 +55,6 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
 			return $job;
 		};
-		$this->testDynamicPostPrivilege($ctx(new EditPostJob), new Privilege(Privilege::AddPost));
 		$this->testDynamicPostPrivilege($ctx(new EditPostContentJob), new Privilege(Privilege::AddPostContent));
 		$this->testDynamicPostPrivilege($ctx(new EditPostRelationsJob), new Privilege(Privilege::AddPostRelations));
 		$this->testDynamicPostPrivilege($ctx(new EditPostSafetyJob), new Privilege(Privilege::AddPostSafety));
@@ -135,6 +134,18 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->testDynamicUserPrivilege(new EditUserNameJob(), new Privilege(Privilege::ChangeUserName));
 		$this->testDynamicUserPrivilege(new EditUserPasswordJob(), new Privilege(Privilege::ChangeUserPassword));
 		$this->testDynamicUserPrivilege(new EditUserSettingsJob(), new Privilege(Privilege::ChangeUserSettings));
+
+		$ctx = function($job)
+		{
+			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
+			return $job;
+		};
+		$this->testDynamicUserPrivilege($ctx(new EditUserAccessRankJob()), new Privilege(Privilege::ChangeUserAccessRank));
+		$this->testDynamicUserPrivilege($ctx(new EditUserEmailJob()), new Privilege(Privilege::RegisterAccount));
+		$this->testDynamicUserPrivilege($ctx(new EditUserNameJob()), new Privilege(Privilege::RegisterAccount));
+		$this->testDynamicUserPrivilege($ctx(new EditUserPasswordJob()), new Privilege(Privilege::RegisterAccount));
+		$this->testDynamicUserPrivilege($ctx(new EditUserSettingsJob()), new Privilege(Privilege::ChangeUserSettings));
+
 		$this->testDynamicUserPrivilege(new FlagUserJob(), new Privilege(Privilege::FlagUser));
 		$this->testDynamicUserPrivilege(new GetUserJob(), new Privilege(Privilege::ViewUser));
 		$this->testDynamicUserPrivilege(new GetUserSettingsJob(), new Privilege(Privilege::ChangeUserSettings));

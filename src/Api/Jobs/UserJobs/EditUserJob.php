@@ -34,19 +34,17 @@ class EditUserJob extends AbstractJob
 	{
 		$user = $this->userRetriever->retrieve();
 
-		Logger::bufferChanges();
+		$arguments = $this->getArguments();
+		$arguments[JobArgs::ARG_USER_ENTITY] = $user;
 
+		Logger::bufferChanges();
 		foreach ($this->getSubJobs() as $subJob)
 		{
-			$subJob->setContext($this->getContext() == self::CONTEXT_BATCH_ADD
-				? self::CONTEXT_BATCH_ADD
-				: self::CONTEXT_BATCH_EDIT);
+			$subJob->setContext(self::CONTEXT_BATCH_EDIT);
 
-			$args = $this->getArguments();
-			$args[JobArgs::ARG_USER_ENTITY] = $user;
 			try
 			{
-				Api::run($subJob, $args);
+				Api::run($subJob, $arguments);
 			}
 			catch (ApiJobUnsatisfiedException $e)
 			{

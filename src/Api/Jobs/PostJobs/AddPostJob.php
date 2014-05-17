@@ -3,7 +3,12 @@ class AddPostJob extends AbstractJob
 {
 	public function __construct()
 	{
-		$this->addSubJob(new EditPostJob());
+		$this->addSubJob(new EditPostSafetyJob());
+		$this->addSubJob(new EditPostTagsJob());
+		$this->addSubJob(new EditPostSourceJob());
+		$this->addSubJob(new EditPostRelationsJob());
+		$this->addSubJob(new EditPostContentJob());
+		$this->addSubJob(new EditPostThumbJob());
 	}
 
 	public function execute()
@@ -23,15 +28,20 @@ class AddPostJob extends AbstractJob
 		$arguments[JobArgs::ARG_POST_ENTITY] = $post;
 
 		Logger::bufferChanges();
-		try
+		foreach ($this->getSubJobs() as $subJob)
 		{
-			$job = $this->getSubJobs()[0];
-			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
-			Api::run($job, $arguments);
-		}
-		finally
-		{
-			Logger::discardBuffer();
+			$subJob->setContext(AbstractJob::CONTEXT_BATCH_ADD);
+			try
+			{
+				Api::run($subJob, $arguments);
+			}
+			catch (ApiJobUnsatisfiedException $e)
+			{
+			}
+			finally
+			{
+				Logger::discardBuffer();
+			}
 		}
 
 		//save the post to db if everything went okay
