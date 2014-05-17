@@ -96,8 +96,8 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 
 		$codeblock = preg_replace('/\A\n+|\n+\z/', '', $codeblock);
 		$codeblock = preg_replace('/\n/', '<br/>', $codeblock);
-		$codeblock = preg_replace('/\t/', '&tab;', $codeblock);
-		$codeblock = preg_replace('/ /', '&nbsp;', $codeblock);
+		#$codeblock = preg_replace('/\t/', '&tab;', $codeblock);
+		#$codeblock = preg_replace('/ /', '&nbsp;', $codeblock);
 
 		$codeblock = "<pre><code>$codeblock\n</code></pre>";
 		return "\n\n".$this->hashBlock($codeblock)."\n\n";

@@ -16,6 +16,17 @@ abstract class AbstractJob implements IJob
 
 	public abstract function getRequiredArguments();
 
+	public function getName()
+	{
+		$name = get_called_class();
+		$name = str_replace('Job', '', $name);
+		$name = TextCaseConverter::convert(
+			$name,
+			TextCaseConverter::UPPER_CAMEL_CASE,
+			TextCaseConverter::SPINAL_CASE);
+		return $name;
+	}
+
 	public function getRequiredPrivileges()
 	{
 		return false;

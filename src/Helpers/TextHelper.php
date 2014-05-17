@@ -151,51 +151,6 @@ class TextHelper
 		return self::stripUnits($string, 1000, ['', 'K', 'M']);
 	}
 
-	public static function removeUnsafeKeys(&$input, $regex)
-	{
-		if (is_array($input))
-		{
-			foreach ($input as $key => $val)
-			{
-				if (preg_match($regex, $key))
-					unset($input[$key]);
-				else
-					self::removeUnsafeKeys($input[$key], $regex);
-			}
-		}
-		elseif (is_object($input))
-		{
-			foreach ($input as $key => $val)
-			{
-				if (preg_match($regex, $key))
-					unset($input->$key);
-				else
-					self::removeUnsafeKeys($input->$key, $regex);
-			}
-		}
-	}
-
-	public static function jsonEncode($obj, $illegalKeysRegex = '')
-	{
-		if (is_array($obj))
-			$set = function($key, $val) use ($obj) { $obj[$key] = $val; };
-		else
-			$set = function($key, $val) use ($obj) { $obj->$key = $val; };
-
-		foreach ($obj as $key => $val)
-		{
-			if ($val instanceof Exception)
-			{
-				$set($key, ['message' => $val->getMessage(), 'trace' => explode("\n", $val->getTraceAsString())]);
-			}
-		}
-
-		if (!empty($illegalKeysRegex))
-			self::removeUnsafeKeys($obj, $illegalKeysRegex);
-
-		return json_encode($obj, JSON_UNESCAPED_UNICODE);
-	}
-
 	public static function parseMarkdown($text, $simple = false)
 	{
 		if ($simple)

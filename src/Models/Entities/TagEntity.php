@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-final class TagEntity extends AbstractEntity implements IValidatable
+final class TagEntity extends AbstractEntity implements IValidatable, ISerializable
 {
 	private $name;
 
@@ -17,6 +17,15 @@ final class TagEntity extends AbstractEntity implements IValidatable
 
 		if (isset($row['post_count']))
 			$this->setCache('post_count', (int) $row['post_count']);
+	}
+
+	public function serializeToArray()
+	{
+		return
+		[
+			'name' => $this->getName(),
+			'post-count' => $this->getPostCount(),
+		];
 	}
 
 	public function validate()

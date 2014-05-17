@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-final class UserEntity extends AbstractEntity implements IValidatable
+final class UserEntity extends AbstractEntity implements IValidatable, ISerializable
 {
 	private $name;
 	private $passSalt;
@@ -40,6 +40,18 @@ final class UserEntity extends AbstractEntity implements IValidatable
 		$this->banned = $row['banned'];
 		$this->setAccessRank(new AccessRank($row['access_rank']));
 		$this->settings = new UserSettings($row['settings']);
+	}
+
+	public function serializeToArray()
+	{
+		return
+		[
+			'name' => $this->getName(),
+			'join-time' => $this->getJoinTime(),
+			'last-login-time' => $this->getLastLoginTime(),
+			'access-rank' => $this->getAccessRank()->toInteger(),
+			'is-banned' => $this->isBanned(),
+		];
 	}
 
 	public function validate()

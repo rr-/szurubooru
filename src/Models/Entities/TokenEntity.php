@@ -31,6 +31,17 @@ final class TokenEntity extends AbstractEntity implements IValidatable
 		$this->expires = $row['expires'];
 	}
 
+	public function serializeToArray()
+	{
+		return
+		[
+			'user' => $this->getUser(),
+			'text' => $this->getText(),
+			'is-used' => $this->isUser(),
+			'expiration-time' => $this->getExpirationTime(),
+		];
+	}
+
 	public function validate()
 	{
 		if (empty($this->token))

@@ -1,7 +1,7 @@
 <?php
 final class Api
 {
-	public static function run($job, $jobArgs)
+	public static function run(IJob $job, $jobArgs)
 	{
 		$user = Auth::getCurrentUser();
 
@@ -90,5 +90,21 @@ final class Api
 			return;
 		elseif (!$job->hasArgument($item))
 			throw new ApiJobUnsatisfiedException($job, $item);
+	}
+
+	public static function getAllJobClassNames()
+	{
+		$pathToJobs = Core::getConfig()->rootDir . DS . 'src' . DS . 'Api' . DS . 'Jobs';
+		$directory = new RecursiveDirectoryIterator($pathToJobs);
+		$iterator = new RecursiveIteratorIterator($directory);
+		$regex = new RegexIterator($iterator, '/^.+Job\.php$/i');
+		$files = array_keys(iterator_to_array($regex));
+
+		\Chibi\Util\Reflection::loadClasses($files);
+		return array_filter(get_declared_classes(), function($x)
+		{
+			$class = new ReflectionClass($x);
+			return !$class->isAbstract() and $class->isSubClassOf('AbstractJob');
+		});
 	}
 }

@@ -1,4 +1,6 @@
 <?php
+\Chibi\Router::register(['ApiController', 'runAction'], null, '/api');
+
 \Chibi\Router::register(['StaticPagesController', 'mainPageView'], 'GET', '');
 \Chibi\Router::register(['StaticPagesController', 'mainPageView'], 'GET', '/index');
 \Chibi\Router::register(['StaticPagesController', 'helpView'], 'GET', '/help');

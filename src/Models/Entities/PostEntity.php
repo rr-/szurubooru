@@ -2,7 +2,7 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-final class PostEntity extends AbstractEntity implements IValidatable
+final class PostEntity extends AbstractEntity implements IValidatable, ISerializable
 {
 	private $type;
 	private $name;
@@ -50,6 +50,28 @@ final class PostEntity extends AbstractEntity implements IValidatable
 		$this->setCache('score', $row['score']);
 		$this->setType(new PostType($row['type']));
 		$this->setSafety(new PostSafety($row['safety']));
+	}
+
+	public function serializeToArray()
+	{
+		return
+		[
+			'name' => $this->getName(),
+			'id' => $this->getId(),
+			'orig-name' => $this->getOriginalName(),
+			'file-hash' => $this->getFileHash(),
+			'file-size' => $this->getFileSize(),
+			'mime-type' => $this->getMimeType(),
+			'is-hidden' => $this->isHidden(),
+			'creation-time' => $this->getCreationTime(),
+			'image-width' => $this->getImageWidth(),
+			'image-height' => $this->getImageHeight(),
+			'uploader' => $this->getUploader() ? $this->getUploader()->getName() : null,
+			'comments' => array_map(function($comment) { return $comment->serializeToArray(); }, $this->getComments()),
+			'tags' => array_map(function($tag) { return $tag->getName(); }, $this->getTags()),
+			'type' => $this->getType()->toInteger(),
+			'safety' => $this->getSafety()->toInteger(),
+		];
 	}
 
 	public function validate()

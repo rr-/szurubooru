@@ -20,6 +20,16 @@ final class CommentEntity extends AbstractEntity implements IValidatable
 		$this->commenterId = TextHelper::toIntegerOrNull($row['commenter_id']);
 	}
 
+	public function serializeToArray()
+	{
+		return
+		[
+			'text' => $this->getText(),
+			'comment-time' => $this->getCreationTime(),
+			'commenter' => $this->getCommenter() ? $this->getCommenter()->getName() : null,
+		];
+	}
+
 	public function validate()
 	{
 		$config = Core::getConfig();
