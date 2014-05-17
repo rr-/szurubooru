@@ -1,6 +1,11 @@
 <?php
 final class Api
 {
+	public static function getUrl()
+	{
+		return \Chibi\Router::linkTo(['ApiController', 'runAction']);
+	}
+
 	public static function run(IJob $job, $jobArgs)
 	{
 		$user = Auth::getCurrentUser();

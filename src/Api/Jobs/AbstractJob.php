@@ -7,6 +7,7 @@ abstract class AbstractJob implements IJob
 
 	protected $arguments = [];
 	protected $context = self::CONTEXT_NORMAL;
+	protected $subJobs;
 
 	public function prepare()
 	{
@@ -25,6 +26,16 @@ abstract class AbstractJob implements IJob
 			TextCaseConverter::UPPER_CAMEL_CASE,
 			TextCaseConverter::SPINAL_CASE);
 		return $name;
+	}
+
+	public function addSubJob(IJob $subJob)
+	{
+		$this->subJobs []= $subJob;
+	}
+
+	public function getSubJobs()
+	{
+		return $this->subJobs;
 	}
 
 	public function getRequiredPrivileges()

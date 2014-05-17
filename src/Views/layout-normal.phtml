@@ -42,9 +42,10 @@ $this->assets->addScript('core.js');
 				<div class="left">
 					<span>
 						<a href="<?= Core::getConfig()->misc->githubLink ?>">
-							szurubooru&nbsp;<?= PropertyModel::get(PropertyModel::EngineVersion) ?>
+							<?= PropertyModel::get(PropertyModel::EngineVersion) ?>
 						</a>
 					</span>
+					<span><a href="<?= \Chibi\Router::linkTo(['StaticPagesController', 'apiDocsView']) ?>">API</a></span>
 					<?php if (Access::check(new Privilege(Privilege::ListLogs))): ?>
 						<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Logs</a></span>
 					<?php endif ?>

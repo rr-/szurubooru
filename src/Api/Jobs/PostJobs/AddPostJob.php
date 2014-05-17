@@ -1,6 +1,11 @@
 <?php
 class AddPostJob extends AbstractJob
 {
+	public function __construct()
+	{
+		$this->addSubJob(new EditPostJob());
+	}
+
 	public function execute()
 	{
 		$post = PostModel::spawn();
@@ -20,7 +25,7 @@ class AddPostJob extends AbstractJob
 		Logger::bufferChanges();
 		try
 		{
-			$job = new EditPostJob();
+			$job = $this->getSubJobs()[0];
 			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
 			Api::run($job, $arguments);
 		}

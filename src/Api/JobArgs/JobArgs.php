@@ -59,4 +59,14 @@ class JobArgs
 	{
 		return JobArgsOptional::factory(func_get_args());
 	}
+
+	public static function getInternalArguments()
+	{
+		return
+		[
+			self::ARG_POST_ENTITY,
+			self::ARG_USER_ENTITY,
+			self::ARG_COMMENT_ENTITY
+		];
+	}
 }

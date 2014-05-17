@@ -6,6 +6,12 @@ class EditPostJob extends AbstractJob
 	public function __construct()
 	{
 		$this->postRetriever = new PostRetriever($this);
+		$this->addSubJob(new EditPostSafetyJob());
+		$this->addSubJob(new EditPostTagsJob());
+		$this->addSubJob(new EditPostSourceJob());
+		$this->addSubJob(new EditPostRelationsJob());
+		$this->addSubJob(new EditPostContentJob());
+		$this->addSubJob(new EditPostThumbJob());
 	}
 
 	public function execute()
@@ -14,17 +20,7 @@ class EditPostJob extends AbstractJob
 
 		Logger::bufferChanges();
 
-		$subJobs =
-		[
-			new EditPostSafetyJob(),
-			new EditPostTagsJob(),
-			new EditPostSourceJob(),
-			new EditPostRelationsJob(),
-			new EditPostContentJob(),
-			new EditPostThumbJob(),
-		];
-
-		foreach ($subJobs as $subJob)
+		foreach ($this->getSubJobs() as $subJob)
 		{
 			$subJob->setContext($this->getContext() == self::CONTEXT_BATCH_ADD
 				? self::CONTEXT_BATCH_ADD

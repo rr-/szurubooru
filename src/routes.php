@@ -3,6 +3,7 @@
 
 \Chibi\Router::register(['StaticPagesController', 'mainPageView'], 'GET', '');
 \Chibi\Router::register(['StaticPagesController', 'mainPageView'], 'GET', '/index');
+\Chibi\Router::register(['StaticPagesController', 'apiDocsView'], 'GET', '/api-docs');
 \Chibi\Router::register(['StaticPagesController', 'helpView'], 'GET', '/help');
 \Chibi\Router::register(['StaticPagesController', 'helpView'], 'GET', '/help/{tab}');
 \Chibi\Router::register(['StaticPagesController', 'fatalErrorView'], 'POST', '/fatal-error/{code}');

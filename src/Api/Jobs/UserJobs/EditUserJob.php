@@ -2,24 +2,20 @@
 class EditUserJob extends AbstractJob
 {
 	protected $userRetriever;
-	protected $subJobs;
 
 	public function __construct()
 	{
 		$this->userRetriever = new UserRetriever($this);
-		$this->subJobs =
-		[
-			new EditUserAccessRankJob(),
-			new EditUserNameJob(),
-			new EditUserPasswordJob(),
-			new EditUserEmailJob(),
-		];
+		$this->addSubJob(new EditUserAccessRankJob());
+		$this->addSubJob(new EditUserNameJob());
+		$this->addSubJob(new EditUserPasswordJob());
+		$this->addSubJob(new EditUserEmailJob());
 	}
 
 	public function canEditAnything($user)
 	{
 		$this->privileges = [];
-		foreach ($this->subJobs as $subJob)
+		foreach ($this->getSubJobs() as $subJob)
 		{
 			try
 			{
@@ -40,7 +36,7 @@ class EditUserJob extends AbstractJob
 
 		Logger::bufferChanges();
 
-		foreach ($this->subJobs as $subJob)
+		foreach ($this->getSubJobs() as $subJob)
 		{
 			$subJob->setContext($this->getContext() == self::CONTEXT_BATCH_ADD
 				? self::CONTEXT_BATCH_ADD

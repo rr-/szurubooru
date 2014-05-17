@@ -1,6 +1,11 @@
 <?php
 class AddUserJob extends AbstractJob
 {
+	public function __construct()
+	{
+		$this->addSubJob(new EditUserJob());
+	}
+
 	public function execute()
 	{
 		$firstUser = UserModel::getCount() == 0;
@@ -25,7 +30,7 @@ class AddUserJob extends AbstractJob
 		Logger::bufferChanges();
 		try
 		{
-			$job = new EditUserJob();
+			$job = $this->getSubJobs()[0];
 			$job->setContext(self::CONTEXT_BATCH_ADD);
 			Api::run($job, $arguments);
 		}

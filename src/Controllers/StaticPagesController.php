@@ -38,6 +38,11 @@ class StaticPagesController extends AbstractController
 		$this->renderView('static-help');
 	}
 
+	public function apiDocsView()
+	{
+		$this->renderView('static-api');
+	}
+
 	public function fatalErrorView($code = null)
 	{
 		throw new SimpleException('Error ' . $code . ' while retrieving ' . $_SERVER['REQUEST_URI']);
