@@ -1,59 +1,59 @@
 <?php
 class Privilege extends Enum
 {
-	const ListPosts = 1;
-	const ViewPost = 3;
-	const RetrievePost = 4;
-	const FavoritePost = 5;
-	const HidePost = 9;
-	const DeletePost = 10;
-	const FeaturePost = 25;
-	const ScorePost = 31;
-	const FlagPost = 34;
+	const ListPosts = 'listPosts';
+	const ViewPost = 'viewPost';
+	const RetrievePost = 'retrievePost';
+	const FavoritePost = 'favoritePost';
+	const HidePost = 'hidePost';
+	const DeletePost = 'deletePost';
+	const FeaturePost = 'featurePost';
+	const ScorePost = 'scorePost';
+	const FlagPost = 'flagPost';
 
-	const EditPost = 45;
-	const EditPostSafety = 6;
-	const EditPostTags = 7;
-	const EditPostThumb = 8;
-	const EditPostSource = 26;
-	const EditPostRelations = 30;
-	const EditPostContent = 36;
+	const EditPost = 'editPost';
+	const EditPostSafety = 'editPostSafety';
+	const EditPostTags = 'editPostTags';
+	const EditPostThumb = 'editPostThumb';
+	const EditPostSource = 'editPostSource';
+	const EditPostRelations = 'editPostRelations';
+	const EditPostContent = 'editPostContent';
 
-	const AddPost = 2;
-	const AddPostSafety = 39;
-	const AddPostTags = 40;
-	const AddPostThumb = 41;
-	const AddPostSource = 42;
-	const AddPostRelations = 43;
-	const AddPostContent = 44;
+	const AddPost = 'addPost';
+	const AddPostSafety = 'addPostSafety';
+	const AddPostTags = 'addPostTags';
+	const AddPostThumb = 'addPostThumb';
+	const AddPostSource = 'addPostSource';
+	const AddPostRelations = 'addPostRelations';
+	const AddPostContent = 'addPostContent';
 
-	const RegisterAccount = 38;
-	const ListUsers = 11;
-	const ViewUser = 12;
-	const ViewUserEmail = 22;
-	const BanUser = 13;
-	const AcceptUserRegistration = 14;
-	const ChangeUserPassword = 15;
-	const ChangeUserAccessRank = 16;
-	const ChangeUserEmail = 17;
-	const ChangeUserEmailNoConfirm = 46;
-	const ChangeUserName = 18;
-	const ChangeUserSettings = 28;
-	const DeleteUser = 19;
-	const FlagUser = 35;
+	const RegisterAccount = 'registerAccount';
+	const ListUsers = 'listUsers';
+	const ViewUser = 'viewUser';
+	const ViewUserEmail = 'viewUserEmail';
+	const BanUser = 'banUser';
+	const AcceptUserRegistration = 'acceptUserRegistration';
+	const EditUserPassword = 'editUserPassword';
+	const EditUserAccessRank = 'editUserAccessRank';
+	const EditUserEmail = 'editUserEmail';
+	const EditUserEmailNoConfirm = 'editUserEmailNoConfirm';
+	const EditUserName = 'editUserName';
+	const EditUserSettings = 'editUserSettings';
+	const DeleteUser = 'deleteUser';
+	const FlagUser = 'flagUser';
 
-	const ListComments = 20;
-	const AddComment = 23;
-	const DeleteComment = 24;
-	const EditComment = 37;
+	const ListComments = 'listComments';
+	const AddComment = 'addComment';
+	const DeleteComment = 'deleteComment';
+	const EditComment = 'editComment';
 
-	const ListTags = 21;
-	const MergeTags = 27;
-	const RenameTags = 47;
-	const MassTag = 29;
+	const ListTags = 'listTags';
+	const MergeTags = 'mergeTags';
+	const RenameTags = 'renameTags';
+	const MassTag = 'massTag';
 
-	const ListLogs = 32;
-	const ViewLog = 33;
+	const ListLogs = 'listLogs';
+	const ViewLog = 'viewLog';
 
 	public $primary;
 	public $secondary;
@@ -66,7 +66,7 @@ class Privilege extends Enum
 
 	public function toString()
 	{
-		$string = self::_toString($this->primary);
+		$string = $this->primary;
 		if ($this->secondary)
 			$string .= '.' . $this->secondary;
 		return $string;

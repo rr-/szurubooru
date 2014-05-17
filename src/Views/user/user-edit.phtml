@@ -21,7 +21,7 @@
 	<?php endif ?>
 
 	<?php if (Access::check(new Privilege(
-		Privilege::ChangeUserName,
+		Privilege::EditUserName,
 		Access::getIdentity($this->context->transport->user)))): ?>
 
 		<div class="form-row nickname">
@@ -38,7 +38,7 @@
 	<?php endif ?>
 
 	<?php if (Access::check(new Privilege(
-		Privilege::ChangeUserEmail,
+		Privilege::EditUserEmail,
 		Access::getIdentity($this->context->transport->user)))): ?>
 
 		<div class="form-row email">
@@ -55,7 +55,7 @@
 	<?php endif ?>
 
 	<?php if (Access::check(new Privilege(
-		Privilege::ChangeUserPassword,
+		Privilege::EditUserPassword,
 		Access::getIdentity($this->context->transport->user)))): ?>
 
 		<div class="form-row password1">
@@ -83,7 +83,7 @@
 	<?php endif ?>
 
 	<?php if (Access::check(new Privilege(
-		Privilege::ChangeUserAccessRank,
+		Privilege::EditUserAccessRank,
 		Access::getIdentity($this->context->transport->user)))): ?>
 
 		<div class="form-row access-rank">

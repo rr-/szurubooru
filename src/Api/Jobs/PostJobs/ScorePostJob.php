@@ -25,15 +25,23 @@ class ScorePostJob extends AbstractJob
 			JobArgs::ARG_NEW_POST_SCORE);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::ScorePost,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return Privilege::ScorePost;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
 	}
 
 	public function isAuthenticationRequired()
 	{
 		return true;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

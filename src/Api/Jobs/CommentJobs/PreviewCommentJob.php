@@ -41,9 +41,14 @@ class PreviewCommentJob extends AbstractJob
 				$this->postRetriever->getRequiredArguments()));
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(Privilege::AddComment);
+		return Privilege::AddComment;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
 	}
 
 	public function isAuthenticationRequired()

@@ -22,8 +22,23 @@ class ListLogsJob extends AbstractJob
 		return null;
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(Privilege::ListLogs);
+		return Privilege::ListLogs;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

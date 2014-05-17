@@ -27,8 +27,23 @@ class AcceptUserRegistrationJob extends AbstractJob
 		return $this->userRetriever->getRequiredArguments();
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(Privilege::AcceptUserRegistration);
+		return Privilege::AcceptUserRegistration;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

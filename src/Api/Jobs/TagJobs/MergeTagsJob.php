@@ -22,8 +22,23 @@ class MergeTagsJob extends AbstractJob
 			JobArgs::ARG_TARGET_TAG_NAME);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(Privilege::MergeTags);
+		return Privilege::MergeTags;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

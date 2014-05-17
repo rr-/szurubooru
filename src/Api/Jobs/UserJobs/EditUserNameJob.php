@@ -37,12 +37,25 @@ class EditUserNameJob extends AbstractJob
 			JobArgs::ARG_NEW_USER_NAME);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::RegisterAccount
-				: Privilege::ChangeUserName,
-			Access::getIdentity($this->userRetriever->retrieve()));
+		return $this->getContext() == self::CONTEXT_BATCH_ADD
+			? Privilege::RegisterAccount
+			: Privilege::EditUserName;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->userRetriever->retrieve());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

@@ -24,7 +24,13 @@ class PostSafety extends Enum implements IValidatable
 
 	public function toString()
 	{
-		return self::_toString($this->safety);
+		switch ($this->safety)
+		{
+			case self::Safe: return 'safe';
+			case self::Sketchy: return 'sketchy';
+			case self::Unsafe: return 'unsafe';
+		}
+		return null;
 	}
 
 	public static function makeFlags($safetyCodes)

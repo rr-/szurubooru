@@ -37,12 +37,25 @@ class EditPostSourceJob extends AbstractJob
 			JobArgs::ARG_NEW_SOURCE);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::AddPostSource
-				: Privilege::EditPostSource,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return $this->getContext() == self::CONTEXT_BATCH_ADD
+			? Privilege::AddPostSource
+			: Privilege::EditPostSource;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

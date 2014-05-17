@@ -30,11 +30,14 @@ class EditCommentJob extends AbstractJob
 			JobArgs::ARG_NEW_TEXT);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::EditComment,
-			Access::getIdentity($this->commentRetriever->retrieve()->getCommenter()));
+		return Privilege::EditComment;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->commentRetriever->retrieve()->getCommenter());
 	}
 
 	public function isAuthenticationRequired()

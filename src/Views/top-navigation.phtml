@@ -117,7 +117,7 @@
 	?>
 
 	<?php if (Access::check(new Privilege(
-		Privilege::ChangeUserSettings,
+		Privilege::EditUserSettings,
 		Access::getIdentity(Auth::getCurrentUser())))): ?>
 		<li class="safety">
 			<ul>

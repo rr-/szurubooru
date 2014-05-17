@@ -54,12 +54,25 @@ class EditPostTagsJob extends AbstractJob
 			JobArgs::ARG_NEW_TAG_NAMES);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::AddPostTags
-				: Privilege::EditPostTags,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return $this->getContext() == self::CONTEXT_BATCH_ADD
+			? Privilege::AddPostTags
+			: Privilege::EditPostTags;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

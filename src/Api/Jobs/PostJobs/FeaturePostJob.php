@@ -38,15 +38,23 @@ class FeaturePostJob extends AbstractJob
 			JobArgs::Optional(JobArgs::ARG_ANONYMOUS));
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::FeaturePost,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return Privilege::FeaturePost;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
 	}
 
 	public function isAuthenticationRequired()
 	{
 		return true;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

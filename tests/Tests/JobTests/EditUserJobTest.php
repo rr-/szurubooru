@@ -3,8 +3,8 @@ class EditUserJobTest extends AbstractTest
 {
 	public function testSaving()
 	{
-		$this->grantAccess('changeUserName.own');
-		$this->grantAccess('changeUserPassword.own');
+		$this->grantAccess('editUserName.own');
+		$this->grantAccess('editUserPassword.own');
 		$user = $this->userMocker->mockSingle();
 
 		$newName = 'dummy' . uniqid();
@@ -29,7 +29,7 @@ class EditUserJobTest extends AbstractTest
 
 	public function testPartialPrivilegeFail()
 	{
-		$this->grantAccess('changeUserName.own');
+		$this->grantAccess('editUserName.own');
 		$user = $this->userMocker->mockSingle();
 
 		$newName = 'dummy' . uniqid();
@@ -58,7 +58,7 @@ class EditUserJobTest extends AbstractTest
 
 	public function testCanEditSomething()
 	{
-		$this->grantAccess('changeUserName.own');
+		$this->grantAccess('editUserName.own');
 		$user = $this->userMocker->mockSingle();
 		$user = $this->assert->isTrue((new EditUserJob())->canEditAnything($user));
 	}

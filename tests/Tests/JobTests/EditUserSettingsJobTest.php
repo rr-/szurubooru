@@ -3,7 +3,7 @@ class EditUserSettingsJobTest extends AbstractTest
 {
 	public function testEditing()
 	{
-		$this->grantAccess('changeUserSettings');
+		$this->grantAccess('editUserSettings');
 		$user = $this->userMocker->mockSingle();
 
 		$expectedSafety = (new PostSafety(PostSafety::Sketchy))->toFlag();
@@ -33,7 +33,7 @@ class EditUserSettingsJobTest extends AbstractTest
 
 	public function testSettingAdditional()
 	{
-		$this->grantAccess('changeUserSettings');
+		$this->grantAccess('editUserSettings');
 		$user = $this->userMocker->mockSingle();
 
 		$user = $this->assert->doesNotThrow(function() use ($user)
@@ -61,7 +61,7 @@ class EditUserSettingsJobTest extends AbstractTest
 
 	public function testSettingBadValues()
 	{
-		$this->grantAccess('changeUserSettings');
+		$this->grantAccess('editUserSettings');
 		$user = $this->userMocker->mockSingle();
 
 		$user = $this->assert->doesNotThrow(function() use ($user)
@@ -90,7 +90,7 @@ class EditUserSettingsJobTest extends AbstractTest
 
 	public function testSettingTooLongData()
 	{
-		$this->grantAccess('changeUserSettings');
+		$this->grantAccess('editUserSettings');
 		$user = $this->userMocker->mockSingle();
 
 		$this->assert->throws(function() use ($user)

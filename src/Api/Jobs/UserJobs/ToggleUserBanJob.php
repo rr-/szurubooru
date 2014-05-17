@@ -36,10 +36,23 @@ class ToggleUserBanJob extends AbstractJob
 			JobArgs::ARG_NEW_STATE);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::BanUser,
-			Access::getIdentity($this->userRetriever->retrieve()));
+		return Privilege::BanUser;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->userRetriever->retrieve());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

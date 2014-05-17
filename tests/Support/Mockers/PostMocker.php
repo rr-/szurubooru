@@ -15,7 +15,6 @@ class PostMocker extends AbstractMocker implements IMocker
 	public function mockSingle()
 	{
 		$post = PostModel::spawn();
-		#$post->setUploader($owner);
 		$post->setType(new PostType(PostType::Image));
 		$post->setTags([$this->tagMocker->mockSingle()]);
 		copy($this->testSupport->getPath('image.jpg'), $post->getFullPath());

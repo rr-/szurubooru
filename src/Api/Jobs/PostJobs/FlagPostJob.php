@@ -31,10 +31,23 @@ class FlagPostJob extends AbstractJob
 		return $this->postRetriever->getRequiredArguments();
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::FlagPost,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return Privilege::FlagPost;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

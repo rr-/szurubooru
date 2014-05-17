@@ -66,7 +66,22 @@ class EditUserJob extends AbstractJob
 		return $this->userRetriever->getRequiredArguments();
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
+	{
+		return null;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
 	{
 		return false;
 	}

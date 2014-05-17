@@ -25,11 +25,14 @@ class DeleteCommentJob extends AbstractJob
 		return $this->commentRetriever->getRequiredArguments();
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::DeleteComment,
-			Access::getIdentity($this->commentRetriever->retrieve()->getCommenter()));
+		return Privilege::DeleteComment;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->commentRetriever->retrieve()->getCommenter());
 	}
 
 	public function isAuthenticationRequired()

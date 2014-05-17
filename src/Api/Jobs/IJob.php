@@ -5,7 +5,8 @@ interface IJob
 	public function execute();
 
 	public function getRequiredArguments();
-	public function getRequiredPrivileges();
+	public function getRequiredMainPrivilege();
+	public function getRequiredSubPrivileges();
 	public function isAuthenticationRequired();
 	public function isConfirmedEmailRequired();
 

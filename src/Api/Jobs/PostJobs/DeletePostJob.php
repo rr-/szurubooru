@@ -24,11 +24,14 @@ class DeletePostJob extends AbstractJob
 		return $this->postRetriever->getRequiredArguments();
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::DeletePost,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return Privilege::DeletePost;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
 	}
 
 	public function isAuthenticationRequired()

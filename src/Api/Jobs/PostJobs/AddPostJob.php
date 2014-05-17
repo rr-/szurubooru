@@ -66,9 +66,19 @@ class AddPostJob extends AbstractJob
 		return JobArgs::Optional(JobArgs::ARG_ANONYMOUS);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(Privilege::AddPost);
+		return Privilege::AddPost;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
 	}
 
 	public function isConfirmedEmailRequired()

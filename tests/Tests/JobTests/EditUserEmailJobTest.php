@@ -7,8 +7,8 @@ class EditUserEmailJobTest extends AbstractTest
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
-		$this->grantAccess('changeUserEmail');
+		Core::getConfig()->privileges->editUserEmailNoConfirm = 'anonymous';
+		$this->grantAccess('editUserEmail');
 
 		$user = $this->userMocker->mockSingle();
 
@@ -34,8 +34,8 @@ class EditUserEmailJobTest extends AbstractTest
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'admin';
-		$this->grantAccess('changeUserEmail');
+		Core::getConfig()->privileges->editUserEmailNoConfirm = 'admin';
+		$this->grantAccess('editUserEmail');
 
 		$user = $this->userMocker->mockSingle();
 
@@ -60,8 +60,8 @@ class EditUserEmailJobTest extends AbstractTest
 		Core::getConfig()->registration->needEmailForRegistering = false;
 		Mailer::mockSending();
 
-		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'nobody';
-		$this->grantAccess('changeUserEmail');
+		Core::getConfig()->privileges->editUserEmailNoConfirm = 'nobody';
+		$this->grantAccess('editUserEmail');
 
 		$user = $this->userMocker->mockSingle();
 
@@ -82,8 +82,8 @@ class EditUserEmailJobTest extends AbstractTest
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
-		$this->grantAccess('changeUserEmail');
+		Core::getConfig()->privileges->editUserEmailNoConfirm = 'anonymous';
+		$this->grantAccess('editUserEmail');
 
 		list ($user, $otherUser)
 			= $this->userMocker->mockMultiple(2);

@@ -33,10 +33,23 @@ class TogglePostVisibilityJob extends AbstractJob
 			JobArgs::ARG_NEW_STATE);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::HidePost,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return Privilege::HidePost;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

@@ -13,14 +13,10 @@ class Access
 				$key .= '.';
 			list ($privilegeName, $subPrivilegeName) = explode('.', $key);
 
-			$privilegeName = TextCaseConverter::convert($privilegeName,
-				TextCaseConverter::CAMEL_CASE,
-				TextCaseConverter::SPINAL_CASE);
-			$subPrivilegeName = TextCaseConverter::convert($subPrivilegeName,
-				TextCaseConverter::CAMEL_CASE,
-				TextCaseConverter::SPINAL_CASE);
-
 			$key = rtrim($privilegeName . '.' . $subPrivilegeName, '.');
+
+			if (!in_array($privilegeName, Privilege::getAllConstants()))
+				throw new Exception('Invalid privilege name in config: ' . $privilegeName);
 
 			$minAccessRank = TextHelper::resolveConstant($minAccessRankName, 'AccessRank');
 			self::$privileges[$key] = $minAccessRank;
@@ -46,14 +42,9 @@ class Access
 
 		$minAccessRank = AccessRank::Nobody;
 
-		$key = TextCaseConverter::convert($privilege->toString(),
-			TextCaseConverter::CAMEL_CASE,
-			TextCaseConverter::SPINAL_CASE);
-
+		$key = $privilege->toString();
 		$privilege->secondary = null;
-		$key2 = TextCaseConverter::convert($privilege->toString(),
-			TextCaseConverter::CAMEL_CASE,
-			TextCaseConverter::SPINAL_CASE);
+		$key2 = $privilege->toString();
 
 		if (isset(self::$privileges[$key]))
 			$minAccessRank = self::$privileges[$key];
@@ -85,7 +76,7 @@ class Access
 	public static function assert(Privilege $privilege, $user = null)
 	{
 		if (!self::check($privilege, $user))
-			self::fail('Insufficient privileges (' . $privilege->toString() . ')');
+			self::fail('Insufficient privileges (' . $privilege->toDisplayString() . ')');
 	}
 
 	public static function assertEmailConfirmation($user = null)

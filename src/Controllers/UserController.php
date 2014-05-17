@@ -332,7 +332,7 @@ class UserController extends AbstractController
 		elseif ($tab == 'settings')
 		{
 			Access::assert(new Privilege(
-				Privilege::ChangeUserSettings,
+				Privilege::EditUserSettings,
 				Access::getIdentity($user)));
 		}
 		elseif ($tab == 'edit' and !(new EditUserJob)->canEditAnything(Auth::getCurrentUser()))

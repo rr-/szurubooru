@@ -147,7 +147,7 @@ class AddUserJobTest extends AbstractTest
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'admin';
+		Core::getConfig()->privileges->editUserEmailNoConfirm = 'admin';
 		$this->grantAccess('registerAccount');
 
 		$user1 = $this->assert->doesNotThrow(function()
@@ -189,7 +189,7 @@ class AddUserJobTest extends AbstractTest
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'nobody';
+		Core::getConfig()->privileges->editUserEmailNoConfirm = 'nobody';
 		$this->grantAccess('registerAccount');
 
 		$user1 = $this->assert->doesNotThrow(function()
@@ -229,7 +229,7 @@ class AddUserJobTest extends AbstractTest
 		Mailer::mockSending();
 		$this->assert->areEqual(0, Mailer::getMailCounter());
 
-		Core::getConfig()->privileges->changeUserEmailNoConfirm = 'anonymous';
+		Core::getConfig()->privileges->editUserEmailNoConfirm = 'anonymous';
 		$this->grantAccess('registerAccount');
 
 		$user1 = $this->assert->doesNotThrow(function()

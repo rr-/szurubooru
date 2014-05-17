@@ -37,10 +37,23 @@ class EditUserAccessRankJob extends AbstractJob
 			JobArgs::ARG_NEW_ACCESS_RANK);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::ChangeUserAccessRank,
-			Access::getIdentity($this->userRetriever->retrieve()));
+		return Privilege::EditUserAccessRank;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->userRetriever->retrieve());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

@@ -38,21 +38,6 @@ abstract class AbstractJob implements IJob
 		return $this->subJobs;
 	}
 
-	public function getRequiredPrivileges()
-	{
-		return false;
-	}
-
-	public function isAuthenticationRequired()
-	{
-		return false;
-	}
-
-	public function isConfirmedEmailRequired()
-	{
-		return false;
-	}
-
 	public function getContext()
 	{
 		return $this->context;

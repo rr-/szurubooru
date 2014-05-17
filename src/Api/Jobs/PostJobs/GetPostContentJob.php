@@ -32,16 +32,31 @@ class GetPostContentJob extends AbstractJob
 		return $this->postRetriever->getRequiredArguments();
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
+	{
+		return Privilege::ViewPost;
+	}
+
+	public function getRequiredSubPrivileges()
 	{
 		$post = $this->postRetriever->retrieve();
 		$privileges = [];
 
 		if ($post->isHidden())
-			$privileges []= new Privilege(Privilege::ViewPost, 'hidden');
+			$privileges []= 'hidden';
 
-		$privileges []= new Privilege(Privilege::ViewPost, $post->getSafety()->toString());
+		$privileges []= $post->getSafety()->toString();
 
 		return $privileges;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

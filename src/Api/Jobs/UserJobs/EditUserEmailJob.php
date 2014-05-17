@@ -40,7 +40,7 @@ class EditUserEmailJob extends AbstractJob
 
 	public static function observeSave($user)
 	{
-		if (Access::check(new Privilege(Privilege::ChangeUserEmailNoConfirm), $user))
+		if (Access::check(new Privilege(Privilege::EditUserEmailNoConfirm), $user))
 		{
 			$user->confirmEmail();
 		}
@@ -58,12 +58,25 @@ class EditUserEmailJob extends AbstractJob
 			JobArgs::ARG_NEW_EMAIL);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::RegisterAccount
-				: Privilege::ChangeUserEmail,
-			Access::getIdentity($this->userRetriever->retrieve()));
+		return $this->getContext() == self::CONTEXT_BATCH_ADD
+			? Privilege::RegisterAccount
+			: Privilege::EditUserEmail;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->userRetriever->retrieve());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

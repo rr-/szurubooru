@@ -52,6 +52,26 @@ class ActivateUserEmailJob extends AbstractJob
 			$this->userRetriever->getRequiredArguments());
 	}
 
+	public function getRequiredMainPrivilege()
+	{
+		return null;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
+	}
+
 	public static function sendEmail($user)
 	{
 		$regConfig = Core::getConfig()->registration;

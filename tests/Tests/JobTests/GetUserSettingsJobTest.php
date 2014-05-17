@@ -3,7 +3,7 @@ class GetUserSettingsJobTest extends AbstractTest
 {
 	public function testRetrieving()
 	{
-		$this->grantAccess('changeUserSettings');
+		$this->grantAccess('editUserSettings');
 		$user = $this->userMocker->mockSingle();
 
 		$settings = $this->assert->doesNotThrow(function() use ($user)
@@ -25,7 +25,7 @@ class GetUserSettingsJobTest extends AbstractTest
 
 	public function testSwitchingSafety()
 	{
-		$this->grantAccess('changeUserSettings');
+		$this->grantAccess('editUserSettings');
 		$user = $this->userMocker->mockSingle();
 
 		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Sketchy), true);
@@ -53,7 +53,7 @@ class GetUserSettingsJobTest extends AbstractTest
 
 	public function testSwitchingSafety2()
 	{
-		$this->grantAccess('changeUserSettings');
+		$this->grantAccess('editUserSettings');
 		$user = $this->userMocker->mockSingle();
 
 		$user->getSettings()->enableSafety(new PostSafety(PostSafety::Sketchy), true);

@@ -11,83 +11,83 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 
 	public function testRegularPrivileges()
 	{
-		$this->testRegularPrivilege(new AcceptUserRegistrationJob(), new Privilege(Privilege::AcceptUserRegistration));
-		$this->testRegularPrivilege(new ActivateUserEmailJob(), false);
-		$this->testRegularPrivilege(new AddCommentJob(), new Privilege(Privilege::AddComment));
-		$this->testRegularPrivilege(new PreviewCommentJob(), new Privilege(Privilege::AddComment));
-		$this->testRegularPrivilege(new AddPostJob(), new Privilege(Privilege::AddPost));
-		$this->testRegularPrivilege(new AddUserJob(), new Privilege(Privilege::RegisterAccount));
-		$this->testRegularPrivilege(new EditUserJob(), false);
-		$this->testRegularPrivilege(new GetLogJob(), new Privilege(Privilege::ViewLog));
-		$this->testRegularPrivilege(new GetPropertyJob(), false);
-		$this->testRegularPrivilege(new ListCommentsJob(), new Privilege(Privilege::ListComments));
-		$this->testRegularPrivilege(new ListLogsJob(), new Privilege(Privilege::ListLogs));
-		$this->testRegularPrivilege(new ListPostsJob(), new Privilege(Privilege::ListPosts));
-		$this->testRegularPrivilege(new ListRelatedTagsJob(), new Privilege(Privilege::ListTags));
-		$this->testRegularPrivilege(new ListTagsJob(), new Privilege(Privilege::ListTags));
-		$this->testRegularPrivilege(new ListUsersJob(), new Privilege(Privilege::ListUsers));
-		$this->testRegularPrivilege(new PasswordResetJob(), false);
-		$this->testRegularPrivilege(new MergeTagsJob(), new Privilege(Privilege::MergeTags));
-		$this->testRegularPrivilege(new RenameTagsJob(), new Privilege(Privilege::RenameTags));
+		$this->testRegularPrivilege(new AcceptUserRegistrationJob(), Privilege::AcceptUserRegistration);
+		$this->testRegularPrivilege(new ActivateUserEmailJob(), null);
+		$this->testRegularPrivilege(new AddCommentJob(), Privilege::AddComment);
+		$this->testRegularPrivilege(new PreviewCommentJob(), Privilege::AddComment);
+		$this->testRegularPrivilege(new AddPostJob(), Privilege::AddPost);
+		$this->testRegularPrivilege(new AddUserJob(), Privilege::RegisterAccount);
+		$this->testRegularPrivilege(new EditUserJob(), null);
+		$this->testRegularPrivilege(new GetLogJob(), Privilege::ViewLog);
+		$this->testRegularPrivilege(new GetPropertyJob(), null);
+		$this->testRegularPrivilege(new ListCommentsJob(), Privilege::ListComments);
+		$this->testRegularPrivilege(new ListLogsJob(), Privilege::ListLogs);
+		$this->testRegularPrivilege(new ListPostsJob(), Privilege::ListPosts);
+		$this->testRegularPrivilege(new ListRelatedTagsJob(), Privilege::ListTags);
+		$this->testRegularPrivilege(new ListTagsJob(), Privilege::ListTags);
+		$this->testRegularPrivilege(new ListUsersJob(), Privilege::ListUsers);
+		$this->testRegularPrivilege(new PasswordResetJob(), null);
+		$this->testRegularPrivilege(new MergeTagsJob(), Privilege::MergeTags);
+		$this->testRegularPrivilege(new RenameTagsJob(), Privilege::RenameTags);
 	}
 
 	protected function testRegularPrivilege($job, $expectedPrivilege)
 	{
 		$this->testedJobs []= $job;
-		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
+		$this->assert->areEqual($expectedPrivilege, $job->getRequiredMainPrivilege());
+		$this->assert->isNull($job->getRequiredSubPrivileges());
 	}
 
 	public function testDynamicPostPrivileges()
 	{
 		$this->login($this->userMocker->mockSingle());
 
-		$this->testDynamicPostPrivilege(new DeletePostJob(), new Privilege(Privilege::DeletePost));
-		$this->testDynamicPostPrivilege(new EditPostJob(), new Privilege(Privilege::EditPost));
-		$this->testDynamicPostPrivilege(new EditPostContentJob(), new Privilege(Privilege::EditPostContent));
-		$this->testDynamicPostPrivilege(new EditPostRelationsJob(), new Privilege(Privilege::EditPostRelations));
-		$this->testDynamicPostPrivilege(new EditPostSafetyJob(), new Privilege(Privilege::EditPostSafety));
-		$this->testDynamicPostPrivilege(new EditPostSourceJob(), new Privilege(Privilege::EditPostSource));
-		$this->testDynamicPostPrivilege(new EditPostTagsJob(), new Privilege(Privilege::EditPostTags));
-		$this->testDynamicPostPrivilege(new EditPostThumbJob(), new Privilege(Privilege::EditPostThumb));
+		$this->testDynamicPostPrivilege(new DeletePostJob(), Privilege::DeletePost);
+		$this->testDynamicPostPrivilege(new EditPostJob(), Privilege::EditPost);
+		$this->testDynamicPostPrivilege(new EditPostContentJob(), Privilege::EditPostContent);
+		$this->testDynamicPostPrivilege(new EditPostRelationsJob(), Privilege::EditPostRelations);
+		$this->testDynamicPostPrivilege(new EditPostSafetyJob(), Privilege::EditPostSafety);
+		$this->testDynamicPostPrivilege(new EditPostSourceJob(), Privilege::EditPostSource);
+		$this->testDynamicPostPrivilege(new EditPostTagsJob(), Privilege::EditPostTags);
+		$this->testDynamicPostPrivilege(new EditPostThumbJob(), Privilege::EditPostThumb);
 
 		$ctx = function($job)
 		{
 			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
 			return $job;
 		};
-		$this->testDynamicPostPrivilege($ctx(new EditPostContentJob), new Privilege(Privilege::AddPostContent));
-		$this->testDynamicPostPrivilege($ctx(new EditPostRelationsJob), new Privilege(Privilege::AddPostRelations));
-		$this->testDynamicPostPrivilege($ctx(new EditPostSafetyJob), new Privilege(Privilege::AddPostSafety));
-		$this->testDynamicPostPrivilege($ctx(new EditPostSourceJob), new Privilege(Privilege::AddPostSource));
-		$this->testDynamicPostPrivilege($ctx(new EditPostTagsJob), new Privilege(Privilege::AddPostTags));
-		$this->testDynamicPostPrivilege($ctx(new EditPostThumbJob), new Privilege(Privilege::AddPostThumb));
+		$this->testDynamicPostPrivilege($ctx(new EditPostContentJob), Privilege::AddPostContent);
+		$this->testDynamicPostPrivilege($ctx(new EditPostRelationsJob), Privilege::AddPostRelations);
+		$this->testDynamicPostPrivilege($ctx(new EditPostSafetyJob), Privilege::AddPostSafety);
+		$this->testDynamicPostPrivilege($ctx(new EditPostSourceJob), Privilege::AddPostSource);
+		$this->testDynamicPostPrivilege($ctx(new EditPostTagsJob), Privilege::AddPostTags);
+		$this->testDynamicPostPrivilege($ctx(new EditPostThumbJob), Privilege::AddPostThumb);
 
-		$this->testDynamicPostPrivilege(new FeaturePostJob(), new Privilege(Privilege::FeaturePost));
-		$this->testDynamicPostPrivilege(new FlagPostJob(), new Privilege(Privilege::FlagPost));
-		$this->testDynamicPostPrivilege(new ScorePostJob(), new Privilege(Privilege::ScorePost));
-		$this->testDynamicPostPrivilege(new TogglePostTagJob(), new Privilege(Privilege::EditPostTags));
-		$this->testDynamicPostPrivilege(new TogglePostVisibilityJob(), new Privilege(Privilege::HidePost));
-		$this->testDynamicPostPrivilege(new TogglePostFavoriteJob(), new Privilege(Privilege::FavoritePost));
+		$this->testDynamicPostPrivilege(new FeaturePostJob(), Privilege::FeaturePost);
+		$this->testDynamicPostPrivilege(new FlagPostJob(), Privilege::FlagPost);
+		$this->testDynamicPostPrivilege(new ScorePostJob(), Privilege::ScorePost);
+		$this->testDynamicPostPrivilege(new TogglePostTagJob(), Privilege::EditPostTags);
+		$this->testDynamicPostPrivilege(new TogglePostVisibilityJob(), Privilege::HidePost);
+		$this->testDynamicPostPrivilege(new TogglePostFavoriteJob(), Privilege::FavoritePost);
 	}
 
 	protected function testDynamicPostPrivilege($job, $expectedPrivilege)
 	{
 		$this->testedJobs []= $job;
+		$this->assert->areEqual($expectedPrivilege, $job->getRequiredMainPrivilege());
 
 		list ($ownPost, $otherPost) = $this->postMocker->mockMultiple(2);
 		$ownPost->setUploader(Auth::getCurrentUser());
 		$otherPost->setUploader($this->userMocker->mockSingle());
 		PostModel::save([$ownPost, $otherPost]);
 
-		$expectedPrivilege->secondary = 'all';
 		$job->setArgument(JobArgs::ARG_POST_ID, $otherPost->getId());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
+		$this->assert->areEqual('all', $job->getRequiredSubPrivileges());
 
-		$expectedPrivilege->secondary = 'own';
 		$job->setArgument(JobArgs::ARG_POST_ID, $ownPost->getId());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
+		$this->assert->areEqual('own', $job->getRequiredSubPrivileges());
 	}
 
 	public function testDynamicPostRetrievalPrivileges()
@@ -110,9 +110,10 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 			$job->setArgument(JobArgs::ARG_POST_ID, $post->getId());
 			$job->setArgument(JobArgs::ARG_POST_NAME, $post->getName());
 			$job->prepare();
-			$this->assert->areEquivalent([
-				new Privilege(Privilege::ViewPost, 'hidden'),
-				new Privilege(Privilege::ViewPost, 'safe')], $job->getRequiredPrivileges());
+			$this->assert->areEqual(Privilege::ViewPost, $job->getRequiredMainPrivilege());
+			$sub = $job->getRequiredSubPrivileges();
+			natcasesort($sub);
+			$this->assert->areEquivalent(['hidden', 'safe'], $sub);
 		}
 	}
 
@@ -120,7 +121,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	{
 		$job = new GetPostThumbJob();
 		$this->testedJobs []= $job;
-		$this->assert->areEquivalent(false, $job->getRequiredPrivileges());
+		$this->assert->isNull($job->getRequiredMainPrivilege());
 	}
 
 	public function testDynamicUserPrivileges()
@@ -128,91 +129,125 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$ownUser = $this->userMocker->mockSingle();
 		$this->login($ownUser);
 
-		$this->testDynamicUserPrivilege(new DeleteUserJob(), new Privilege(Privilege::DeleteUser));
-		$this->testDynamicUserPrivilege(new EditUserAccessRankJob(), new Privilege(Privilege::ChangeUserAccessRank));
-		$this->testDynamicUserPrivilege(new EditUserEmailJob(), new Privilege(Privilege::ChangeUserEmail));
-		$this->testDynamicUserPrivilege(new EditUserNameJob(), new Privilege(Privilege::ChangeUserName));
-		$this->testDynamicUserPrivilege(new EditUserPasswordJob(), new Privilege(Privilege::ChangeUserPassword));
-		$this->testDynamicUserPrivilege(new EditUserSettingsJob(), new Privilege(Privilege::ChangeUserSettings));
+		$this->testDynamicUserPrivilege(new DeleteUserJob(), Privilege::DeleteUser);
+		$this->testDynamicUserPrivilege(new EditUserAccessRankJob(), Privilege::EditUserAccessRank);
+		$this->testDynamicUserPrivilege(new EditUserEmailJob(), Privilege::EditUserEmail);
+		$this->testDynamicUserPrivilege(new EditUserNameJob(), Privilege::EditUserName);
+		$this->testDynamicUserPrivilege(new EditUserPasswordJob(), Privilege::EditUserPassword);
+		$this->testDynamicUserPrivilege(new EditUserSettingsJob(), Privilege::EditUserSettings);
 
 		$ctx = function($job)
 		{
 			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
 			return $job;
 		};
-		$this->testDynamicUserPrivilege($ctx(new EditUserAccessRankJob()), new Privilege(Privilege::ChangeUserAccessRank));
-		$this->testDynamicUserPrivilege($ctx(new EditUserEmailJob()), new Privilege(Privilege::RegisterAccount));
-		$this->testDynamicUserPrivilege($ctx(new EditUserNameJob()), new Privilege(Privilege::RegisterAccount));
-		$this->testDynamicUserPrivilege($ctx(new EditUserPasswordJob()), new Privilege(Privilege::RegisterAccount));
-		$this->testDynamicUserPrivilege($ctx(new EditUserSettingsJob()), new Privilege(Privilege::ChangeUserSettings));
+		$this->testDynamicUserPrivilege($ctx(new EditUserAccessRankJob()), Privilege::EditUserAccessRank);
+		$this->testDynamicUserPrivilege($ctx(new EditUserEmailJob()), Privilege::RegisterAccount);
+		$this->testDynamicUserPrivilege($ctx(new EditUserNameJob()), Privilege::RegisterAccount);
+		$this->testDynamicUserPrivilege($ctx(new EditUserPasswordJob()), Privilege::RegisterAccount);
+		$this->testDynamicUserPrivilege($ctx(new EditUserSettingsJob()), Privilege::EditUserSettings);
 
-		$this->testDynamicUserPrivilege(new FlagUserJob(), new Privilege(Privilege::FlagUser));
-		$this->testDynamicUserPrivilege(new GetUserJob(), new Privilege(Privilege::ViewUser));
-		$this->testDynamicUserPrivilege(new GetUserSettingsJob(), new Privilege(Privilege::ChangeUserSettings));
-		$this->testDynamicUserPrivilege(new ToggleUserBanJob(), new Privilege(Privilege::BanUser));
+		$this->testDynamicUserPrivilege(new FlagUserJob(), Privilege::FlagUser);
+		$this->testDynamicUserPrivilege(new GetUserJob(), Privilege::ViewUser);
+		$this->testDynamicUserPrivilege(new GetUserSettingsJob(), Privilege::EditUserSettings);
+		$this->testDynamicUserPrivilege(new ToggleUserBanJob(), Privilege::BanUser);
 	}
 
 	protected function testDynamicUserPrivilege($job, $expectedPrivilege)
 	{
+		$this->testedJobs []= $job;
+		$this->assert->areEqual($expectedPrivilege, $job->getRequiredMainPrivilege());
+
 		$ownUser = Auth::getCurrentUser();
 
 		$otherUser = $this->userMocker->mockSingle();
 		$otherUser->setName('dummy' . uniqid());
 		UserModel::save($otherUser);
 
-		$this->testedJobs []= $job;
-
-		$expectedPrivilege->secondary = 'own';
 		$job->setArgument(JobArgs::ARG_USER_NAME, $ownUser->getName());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
+		$this->assert->areEqual('own', $job->getRequiredSubPrivileges());
 
-		$expectedPrivilege->secondary = 'all';
 		$job->setArgument(JobArgs::ARG_USER_NAME, $otherUser->getName());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
+		$this->assert->areEqual('all', $job->getRequiredSubPrivileges());
 	}
 
 	public function testDynamicCommentPrivileges()
 	{
 		$this->login($this->userMocker->mockSingle());
 
-		$this->testDynamicCommentPrivilege(new DeleteCommentJob(), new Privilege(Privilege::DeleteComment));
-		$this->testDynamicCommentPrivilege(new EditCommentJob(), new Privilege(Privilege::EditComment));
+		$this->testDynamicCommentPrivilege(new DeleteCommentJob(), Privilege::DeleteComment);
+		$this->testDynamicCommentPrivilege(new EditCommentJob(), Privilege::EditComment);
 	}
 
 	protected function testDynamicCommentPrivilege($job, $expectedPrivilege)
 	{
+		$this->testedJobs []= $job;
+		$this->assert->areEqual($expectedPrivilege, $job->getRequiredMainPrivilege());
+
 		list ($ownComment, $otherComment) = $this->commentMocker->mockMultiple(2);
 		$ownComment->setCommenter(Auth::getCurrentUser());
 		$otherComment->setCommenter($this->userMocker->mockSingle());
 		CommentModel::save([$ownComment, $otherComment]);
 
-		$this->testedJobs []= $job;
-
-		$expectedPrivilege->secondary = 'own';
 		$job->setArgument(JobArgs::ARG_COMMENT_ID, $ownComment->getId());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
+		$this->assert->areEqual('own', $job->getRequiredSubPrivileges());
 
-		$expectedPrivilege->secondary = 'all';
 		$job->setArgument(JobArgs::ARG_COMMENT_ID, $otherComment->getId());
 		$job->prepare();
-		$this->assert->areEquivalent($expectedPrivilege, $job->getRequiredPrivileges());
+		$this->assert->areEqual('all', $job->getRequiredSubPrivileges());
 	}
 
 	public function testPrivilegeEnforcing()
 	{
-		$this->assert->throws(function()
+		$post = $this->postMocker->mockSingle();
+		Core::getConfig()->registration->needEmailForCommenting = false;
+
+		$this->assert->throws(function() use ($post)
 		{
-			$post = $this->postMocker->mockSingle();
-			Core::getConfig()->registration->needEmailForCommenting = false;
-			return Api::run(
+			Api::run(
 				new AddCommentJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
 					JobArgs::ARG_NEW_TEXT => 'alohaaa',
 				]);
 		}, 'Insufficient privileges');
+	}
+
+	public function testComplexPrivilegeEnforcing()
+	{
+		$post = $this->postMocker->mockSingle();
+		Core::getConfig()->registration->needEmailForCommenting = false;
+		$this->grantAccess('editPost.own');
+		$this->grantAccess('editPostTags.own');
+		$this->revokeAccess('editPost.all');
+		$this->revokeAccess('editPostTags.all');
+		$user = $this->userMocker->mockSingle();
+		$this->login($user);
+
+		$this->assert->throws(function() use ($post)
+		{
+			Api::run(
+				new EditPostTagsJob(),
+				[
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_TAG_NAMES => ['test1', 'test2'],
+				]);
+		}, 'Insufficient privileges');
+
+		$post->setUploader($user);
+		PostModel::save($post);
+
+		$this->assert->doesNotThrow(function() use ($post)
+		{
+			Api::run(
+				new EditPostTagsJob(),
+				[
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_NEW_TAG_NAMES => ['test1', 'test2'],
+				]);
+		});
 	}
 }

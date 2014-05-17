@@ -43,7 +43,22 @@ class GetPostThumbJob extends AbstractJob
 		return $this->postRetriever->getRequiredArguments();
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
+	{
+		return null;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
 	{
 		return false;
 	}

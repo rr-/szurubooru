@@ -32,12 +32,25 @@ class EditPostThumbJob extends AbstractJob
 			JobArgs::ARG_NEW_THUMB_CONTENT);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::AddPostThumb
-				: Privilege::EditPostThumb,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return $this->getContext() == self::CONTEXT_BATCH_ADD
+			? Privilege::AddPostThumb
+			: Privilege::EditPostThumb;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

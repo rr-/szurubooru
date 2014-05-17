@@ -35,8 +35,23 @@ class ListUsersJob extends AbstractJob implements IPagedJob
 			JobArgs::Optional(JobArgs::ARG_QUERY));
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(Privilege::ListUsers);
+		return Privilege::ListUsers;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return null;
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

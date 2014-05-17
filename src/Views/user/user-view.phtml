@@ -70,10 +70,10 @@ $this->assets->addStylesheet('user-view.css');
 
 	<?php
 		$userModificationPrivileges = [
-			Privilege::ChangeUserName,
-			Privilege::ChangeUserEmail,
-			Privilege::ChangeUserPassword,
-			Privilege::ChangeUserAccessRank,
+			Privilege::EditUserName,
+			Privilege::EditUserEmail,
+			Privilege::EditUserPassword,
+			Privilege::EditUserAccessRank,
 		];
 		$userModificationPrivileges = array_fill_keys($userModificationPrivileges, false);
 		foreach (array_keys($userModificationPrivileges) as $privilege)
@@ -224,7 +224,7 @@ $this->assets->addStylesheet('user-view.css');
 			</li>
 
 			<?php if (Access::check(new Privilege(
-				Privilege::ChangeUserSettings,
+				Privilege::EditUserSettings,
 				Access::getIdentity($this->context->transport->user)))): ?>
 
 				<?php if ($this->context->transport->tab == 'settings'): ?>

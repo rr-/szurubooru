@@ -120,7 +120,7 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 		$this->accessRank->validate();
 
 		if ($this->accessRank->toInteger() == AccessRank::Nobody)
-			throw new Exception(sprintf('Cannot set special access rank "%s"', $this->accessRank->toString()));
+			throw new Exception(sprintf('Cannot set special access rank "%s"', $this->accessRank->toDisplayString()));
 	}
 
 	private function validateEmails()

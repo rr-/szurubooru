@@ -51,14 +51,16 @@ final class Api
 		if ($job->isConfirmedEmailRequired())
 			Access::assertEmailConfirmation();
 
-		$privileges = $job->getRequiredPrivileges();
-		if ($privileges !== false)
-		{
-			if (!is_array($privileges))
-				$privileges = [$privileges];
+		$mainPrivilege = $job->getRequiredMainPrivilege();
+		$subPrivileges = $job->getRequiredSubPrivileges();
+		if (!is_array($subPrivileges))
+			$subPrivileges = [$subPrivileges];
 
-			foreach ($privileges as $privilege)
-				Access::assert($privilege);
+		if ($mainPrivilege !== null)
+		{
+			Access::assert(new Privilege($mainPrivilege));
+			foreach ($subPrivileges as $subPrivilege)
+				Access::assert(new Privilege($mainPrivilege, $subPrivilege));
 		}
 	}
 

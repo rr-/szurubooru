@@ -18,10 +18,23 @@ class GetUserJob extends AbstractJob
 		return $this->userRetriever->getRequiredArguments();
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			Privilege::ViewUser,
-			Access::getIdentity($this->userRetriever->retrieve()));
+		return Privilege::ViewUser;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->userRetriever->retrieve());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

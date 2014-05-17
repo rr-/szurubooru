@@ -36,12 +36,25 @@ class EditUserPasswordJob extends AbstractJob
 			JobArgs::ARG_NEW_PASSWORD);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::RegisterAccount
-				: Privilege::ChangeUserPassword,
-			Access::getIdentity($this->userRetriever->retrieve()));
+		return $this->getContext() == self::CONTEXT_BATCH_ADD
+			? Privilege::RegisterAccount
+			: Privilege::EditUserPassword;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->userRetriever->retrieve());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

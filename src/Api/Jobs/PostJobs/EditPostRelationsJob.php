@@ -51,12 +51,25 @@ class EditPostRelationsJob extends AbstractJob
 			JobArgs::ARG_NEW_RELATED_POST_IDS);
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::AddPostRelations
-				: Privilege::EditPostRelations,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return $this->getContext() == self::CONTEXT_BATCH_ADD
+			? Privilege::AddPostRelations
+			: Privilege::EditPostRelations;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }

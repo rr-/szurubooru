@@ -42,12 +42,25 @@ class EditPostContentJob extends AbstractJob
 				JobArgs::ARG_NEW_POST_CONTENT_URL));
 	}
 
-	public function getRequiredPrivileges()
+	public function getRequiredMainPrivilege()
 	{
-		return new Privilege(
-			$this->getContext() == self::CONTEXT_BATCH_ADD
-				? Privilege::AddPostContent
-				: Privilege::EditPostContent,
-			Access::getIdentity($this->postRetriever->retrieve()->getUploader()));
+		return $this->getContext() == self::CONTEXT_BATCH_ADD
+			? Privilege::AddPostContent
+			: Privilege::EditPostContent;
+	}
+
+	public function getRequiredSubPrivileges()
+	{
+		return Access::getIdentity($this->postRetriever->retrieve()->getUploader());
+	}
+
+	public function isAuthenticationRequired()
+	{
+		return false;
+	}
+
+	public function isConfirmedEmailRequired()
+	{
+		return false;
 	}
 }
