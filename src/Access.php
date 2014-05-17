@@ -12,19 +12,18 @@ class Access
 			if (strpos($key, '.') === false)
 				$key .= '.';
 			list ($privilegeName, $subPrivilegeName) = explode('.', $key);
-
-			$key = rtrim($privilegeName . '.' . $subPrivilegeName, '.');
+			$minAccessRank = new AccessRank(TextHelper::resolveConstant($minAccessRankName, 'AccessRank'));
 
 			if (!in_array($privilegeName, Privilege::getAllConstants()))
 				throw new Exception('Invalid privilege name in config: ' . $privilegeName);
 
-			$minAccessRank = TextHelper::resolveConstant($minAccessRankName, 'AccessRank');
-			self::$privileges[$key] = $minAccessRank;
-
 			if (!isset(self::$privileges[$privilegeName]))
 			{
-				self::$privileges[$privilegeName] = $minAccessRank;
+				self::$privileges[$privilegeName] = [];
+				self::$privileges[$privilegeName][null] = $minAccessRank;
 			}
+
+			self::$privileges[$privilegeName][$subPrivilegeName] = $minAccessRank;
 		}
 
 		//todo: move to scripts etc.
@@ -40,18 +39,15 @@ class Access
 		if ($user === null)
 			$user = Auth::getCurrentUser();
 
-		$minAccessRank = AccessRank::Nobody;
+		$minAccessRank = new AccessRank(AccessRank::Nobody);
 
-		$key = $privilege->toString();
-		$privilege->secondary = null;
-		$key2 = $privilege->toString();
+		if (isset(self::$privileges[$privilege->primary][$privilege->secondary]))
+			$minAccessRank = self::$privileges[$privilege->primary][$privilege->secondary];
 
-		if (isset(self::$privileges[$key]))
-			$minAccessRank = self::$privileges[$key];
-		elseif (isset(self::$privileges[$key2]))
-			$minAccessRank = self::$privileges[$key2];
+		elseif (isset(self::$privileges[$privilege->primary][null]))
+			$minAccessRank = self::$privileges[$privilege->primary][null];
 
-		return $user->getAccessRank()->toInteger() >= $minAccessRank;
+		return $user->getAccessRank()->toInteger() >= $minAccessRank->toInteger();
 	}
 
 	public static function checkEmailConfirmation($user = null)
@@ -107,6 +103,13 @@ class Access
 			return Access::check(new Privilege(Privilege::ListPosts, $safety->toString()))
 				and Auth::getCurrentUser()->getSettings()->hasEnabledSafety($safety);
 		});
+	}
+
+	public static function getAllDefinedSubPrivileges($privilege)
+	{
+		if (!isset(self::$privileges[$privilege]))
+			return null;
+		return self::$privileges[$privilege];
 	}
 
 	public static function disablePrivilegeChecking()

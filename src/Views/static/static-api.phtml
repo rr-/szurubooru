@@ -56,8 +56,8 @@ encoding.</p>
 
 <h3>Handling errors</h3>
 
-<p>When errors occur all errors are logged to <code>message</code> field and changes done with request is rolled
-back.</p>
+<p>Normally all jobs return <code>200 OK</code>. However, when an error occurs, its reason is logged to
+<code>message</code> field, changes are rolled back and API returns <code>400 Bad Request</code>.</p>
 
 <hr/>
 
@@ -69,31 +69,50 @@ back.</p>
 	<thead>
 		<tr>
 			<th>Privilege</th>
+			<th>Sub privilege</th>
 			<th>Minimum access rank</th>
 		</tr>
 	</thead>
-	<tbody>
-		<?php  foreach (Core::getConfig()->privileges as $privilege => $minAccessRank): ?>
-			<tr>
-				<td><?= $privilege ?></td>
-				<td><?= $minAccessRank ?></td>
-			</tr>
-		<?php endforeach ?>
-	</tbody>
+	<?php  foreach (Privilege::getAllConstants() as $privilege): ?>
+		<?php $i = 0 ?>
+		<tbody>
+			<?php foreach (Access::getAllDefinedSubPrivileges($privilege) as $subPrivilege => $minAccessRank): ?>
+				<?php if ($i == 0): ?>
+					<tr id="privilege-<?= $privilege ?>">
+				<?php else: ?>
+					<tr>
+				<?php endif ?>
+					<td><?= $privilege ?></td>
+					<td><?= $subPrivilege ?: '&mdash;' ?></td>
+					<td><?= $minAccessRank->toDisplayString() ?></td>
+				</tr>
+				<?php $i ++ ?>
+			<?php endforeach ?>
+		</tbody>
+	<?php endforeach ?>
 </table>
 
 <hr/>
 
 <h2>Full list of available jobs</h2>
 
+<p>Some jobs execute other jobs. Such relations are listed under &bdquo;chained jobs&rdquo; sections. This means you
+shouldn't be too surprised if <code>add-user</code> doesn't require any arguments&nbsp;&ndash; they're enforced in its
+chained jobs.</p>
+
 <?php
 $jobClassNames = Api::getAllJobClassNames();
 natcasesort($jobClassNames);
+$jobClassNames = array_values($jobClassNames);
 
-foreach ($jobClassNames as $className)
+foreach ($jobClassNames as $i => $className)
 {
 	$job = new $className;
 ?>
+
+	<?php if ($i != 0): ?>
+		<hr/>
+	<?php endif ?>
 
 	<h3 id="job-<?= $job->getName() ?>">
 		<a href="#job-<?= $job->getName() ?>"><?= $job->getName() ?></a>
@@ -125,17 +144,47 @@ foreach ($jobClassNames as $className)
 		};
 	?>
 
-	<p>Required arguments: <?= $showArgs($job->getRequiredArguments()) ?></p>
-	<p>Requires e-mail confirmation: <?= $job->isConfirmedEmailRequired() ? 'yes' : 'no' ?></p>
-	<p>Requires authentication: <?= $job->isAuthenticationRequired() ? 'yes' : 'no' ?></p>
-	<?php if (!empty($job->getSubJobs())): ?>
-	<p>Sub jobs: <?= implode(', ', array_map(function($job)
-		{
-			return '<a href="#job-' . $job->getName() . '">' . $job->getName() . '</a>';
-		}, $job->getSubJobs())); ?></p>
-	<?php endif ?>
+	<p>
+		Required arguments:
+		<?php if ($job->getRequiredArguments()): ?>
+			<?= $showArgs($job->getRequiredArguments()) ?>
+		<?php else: ?>
+			none
+		<?php endif ?>
+	</p>
 
-	<hr/>
+	<p>
+		Required privilege:
+		<?php if ($job->getRequiredMainPrivilege()): ?>
+			<a href="#privilege-<?= $job->getRequiredMainPrivilege() ?>">
+				<?= $job->getRequiredMainPrivilege() ?>
+			</a>
+		<?php else: ?>
+			none
+		<?php endif ?>
+	</p>
+
+	<p>
+		Requires e-mail confirmation:
+		<?= $job->isConfirmedEmailRequired() ? 'yes' : 'no' ?>
+	</p>
+
+	<p>
+		Requires authentication:
+		<?= $job->isAuthenticationRequired() ? 'yes' : 'no' ?>
+	</p>
+
+	<?php if (!empty($job->getSubJobs())): ?>
+		<p>
+			Chained jobs:
+			<?php
+				echo implode(', ', array_map(function($job)
+				{
+					return '<a href="#job-' . $job->getName() . '">' . $job->getName() . '</a>';
+				}, $job->getSubJobs()));
+			?>
+		</p>
+	<?php endif ?>
 <?php
 }
 ?>
