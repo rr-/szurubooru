@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../src/core.php';
 
+Access::disablePrivilegeChecking();
+
 function usage()
 {
 	echo 'Usage: ' . basename(__FILE__);
@@ -33,7 +35,7 @@ switch ($action)
 		$func = function($name) use ($dir)
 		{
 			echo $name . PHP_EOL;
-			$srcPath = Model_Post::getFullPath($name);
+			$srcPath = PostModel::getFullPath($name);
 			$dstPath = $dir . DS . $name;
 			rename($srcPath, $dstPath);
 		};
@@ -43,7 +45,7 @@ switch ($action)
 		$func = function($name)
 		{
 			echo $name . PHP_EOL;
-			$srcPath = Model_Post::getFullPath($name);
+			$srcPath = PostModel::getFullPath($name);
 			unlink($srcPath);
 		};
 		break;
@@ -53,13 +55,13 @@ switch ($action)
 }
 
 $names = [];
-foreach (R::findAll('post') as $post)
+foreach (PostSearchService::getEntities(null, null, null) as $post)
 {
-	$names []= $post->name;
+	$names []= $post->getName();
 }
 $names = array_flip($names);
 
-$config = getConfig();
+$config = Core::getConfig();
 foreach (glob(TextHelper::absolutePath($config->main->filesPath) . DS . '*') as $name)
 {
 	$name = basename($name);

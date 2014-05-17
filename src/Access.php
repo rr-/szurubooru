@@ -25,10 +25,6 @@ class Access
 
 			self::$privileges[$privilegeName][$subPrivilegeName] = $minAccessRank;
 		}
-
-		//todo: move to scripts etc.
-		#if (php_sapi_name() == 'cli')
-		#	self::disablePrivilegeChecking();
 	}
 
 	public static function check(Privilege $privilege, $user = null)
