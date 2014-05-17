@@ -108,6 +108,9 @@ $jobClassNames = array_values($jobClassNames);
 foreach ($jobClassNames as $i => $className)
 {
 	$job = new $className;
+	if (!$job->isAvailableToPublic())
+		continue;
+
 ?>
 
 	<?php if ($i != 0): ?>

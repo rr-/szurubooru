@@ -22,6 +22,8 @@ class ApiController extends AbstractController
 			$job = $this->jobFromName($jobName);
 			if (!$job)
 				throw new SimpleException('Unknown job: ' . $jobName);
+			if (!$job->isAvailableToPublic())
+				throw new SimpleException('This job is unavailable for public.');
 
 			if (isset($_FILES['args']))
 			{

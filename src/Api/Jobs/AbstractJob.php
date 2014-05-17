@@ -17,6 +17,11 @@ abstract class AbstractJob implements IJob
 
 	public abstract function getRequiredArguments();
 
+	public function isAvailableToPublic()
+	{
+		return true;
+	}
+
 	public function getName()
 	{
 		$name = get_called_class();

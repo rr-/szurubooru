@@ -9,6 +9,7 @@ interface IJob
 	public function getRequiredSubPrivileges();
 	public function isAuthenticationRequired();
 	public function isConfirmedEmailRequired();
+	public function isAvailableToPublic();
 
 	public function getArgument($key);
 	public function getArguments();

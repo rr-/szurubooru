@@ -76,6 +76,11 @@ class PasswordResetJob extends AbstractJob
 		return false;
 	}
 
+	public function isAvailableToPublic()
+	{
+		return false;
+	}
+
 	public static function sendEmail($user)
 	{
 		$regConfig = Core::getConfig()->registration;
