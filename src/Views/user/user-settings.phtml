@@ -37,15 +37,21 @@ $settings = $this->context->transport->user->getSettings();
 	<div class="form-row endless-scrolling">
 		<label for="endless-scrolling">Endless scrolling:</label>
 		<div class="input-wrapper">
+			<?php
+				$attrs = [];
+				$attrs['name'] = 'endless-scrolling';
+				$attrs['type'] = 'hidden';
+				$attrs['value'] = '0';
+				echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+			?>
 			<label>
 				<?php
-					$attrs = [];
+
 					$attrs['type'] = 'checkbox';
+					$attrs['value'] = '1';
 					$attrs['id'] = 'endless-scrolling';
-					$attrs['name'] = 'endless-scrolling';
 					if ($settings->hasEnabledEndlessScrolling())
 						$attrs['checked'] = 'checked';
-
 					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
 				?>
 				Enabled
@@ -56,15 +62,20 @@ $settings = $this->context->transport->user->getSettings();
 	<div class="form-row post-tag-titles">
 		<label for="post-tag-titles">Tags in thumbs:</label>
 		<div class="input-wrapper">
+			<?php
+				$attrs = [];
+				$attrs['name'] = 'post-tag-titles';
+				$attrs['type'] = 'hidden';
+				$attrs['value'] = '0';
+				echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+			?>
 			<label>
 				<?php
-					$attrs = [];
 					$attrs['type'] = 'checkbox';
+					$attrs['value'] = '1';
 					$attrs['id'] = 'post-tag-titles';
-					$attrs['name'] = 'post-tag-titles';
 					if ($settings->hasEnabledPostTagTitles())
 						$attrs['checked'] = 'checked';
-
 					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
 				?>
 				Enabled
@@ -75,15 +86,20 @@ $settings = $this->context->transport->user->getSettings();
 	<div class="form-row hide-disliked-posts">
 		<label for="hide-disliked-posts">Hide down-voted:</label>
 		<div class="input-wrapper">
+			<?php
+				$attrs = [];
+				$attrs['name'] = 'hide-disliked-posts';
+				$attrs['type'] = 'hidden';
+				$attrs['value'] = '0';
+				echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+			?>
 			<label>
 				<?php
-					$attrs = [];
 					$attrs['type'] = 'checkbox';
+					$attrs['value'] = '1';
 					$attrs['id'] = 'hide-disliked-posts';
-					$attrs['name'] = 'hide-disliked-posts';
 					if ($settings->hasEnabledHidingDislikedPosts())
 						$attrs['checked'] = 'checked';
-
 					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
 				?>
 				Enabled
