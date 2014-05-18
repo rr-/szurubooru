@@ -155,7 +155,9 @@
 	<?php endif ?>
 
 	<li class="search">
-		<form name="search" action="<?= \Chibi\Router::linkTo(['PostController', 'listView']) ?>" method="get">
+		<form method="post"
+			action="<?= \Chibi\Router::linkTo(['PostController', 'listRedirectAction']) ?>"
+			name="search">
 
 			<input
 				class="autocomplete"

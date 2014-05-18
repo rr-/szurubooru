@@ -9,23 +9,6 @@ class PostController extends AbstractController
 
 		try
 		{
-			//redirect requests in form of /posts/?query=... to canonical address
-			$formQuery = InputHelper::get('query');
-			if ($formQuery !== null)
-			{
-				$context->transport->searchQuery = $formQuery;
-				$context->transport->lastSearchQuery = $formQuery;
-				if (strpos($formQuery, '/') !== false)
-					throw new SimpleException('Search query contains invalid characters');
-
-				$url = \Chibi\Router::linkTo(['PostController', 'listView'], [
-					'source' => $source,
-					'additionalInfo' => $additionalInfo,
-					'query' => $formQuery]);
-				$this->redirect($url);
-				return;
-			}
-
 			$query = trim($query);
 			$context->transport->searchQuery = $query;
 			$context->transport->lastSearchQuery = $query;
@@ -55,6 +38,27 @@ class PostController extends AbstractController
 		}
 
 		$this->renderView('post-list-wrapper');
+	}
+
+	public function listRedirectAction($source = 'posts')
+	{
+		$context = Core::getContext();
+		$query = trim(InputHelper::get('query'));
+		$context->transport->searchQuery = $query;
+		$context->transport->lastSearchQuery = $query;
+		if (strpos($query, '/') !== false)
+			throw new SimpleException('Search query contains invalid characters');
+
+		$params = [];
+		$params['source'] = $source;
+		if ($query)
+			$params['query'] = $query;
+		#if ($additionalInfo)
+		#	$params['additionalInfo'] = $additionalInfo;
+		$params['page'] = 1;
+
+		$url = \Chibi\Router::linkTo(['PostController', 'listView'], $params);
+		$this->redirect($url);
 	}
 
 	public function favoritesView($page = 1)

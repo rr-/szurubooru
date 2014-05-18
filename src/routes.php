@@ -27,6 +27,7 @@ $postValidation =
 	'query' => '[^\/]*',
 	'additionalInfo' => '[^\/]*',
 	'score' => '-1|0|1',
+	'page' => '\d*',
 ];
 
 \Chibi\Router::register(['PostController', 'uploadView'], 'GET', '/posts/upload', $postValidation);
@@ -36,9 +37,10 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'deleteAction'], null, '/post/{id}/delete', $postValidation);
 
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}', $postValidation);
-\Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}', $postValidation);
+\Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{page}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}/{page}', $postValidation);
-\Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{additionalInfo}/{query}/{page}', $postValidation);
+\Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}/{additionalInfo}/{page}', $postValidation);
+\Chibi\Router::register(['PostController', 'listRedirectAction'], 'POST', '/{source}-redirect', $postValidation);
 
 \Chibi\Router::register(['PostController', 'randomView'], 'GET', '/random', $postValidation);
 \Chibi\Router::register(['PostController', 'randomView'], 'GET', '/random/{page}', $postValidation);
