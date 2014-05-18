@@ -8,4 +8,4 @@ Your actions related to posts (uploading, tagging, etc.) are logged, along with 
 
 # Cookies
 
-Cookies are used to store your session data and browsing preferences, such as endless scrolling or visibility of NSFW posts.
+Cookies are used to store your session data in order to keep you logged in and personalize your web experience.
