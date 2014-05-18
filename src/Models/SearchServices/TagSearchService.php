@@ -16,51 +16,35 @@ class TagSearchService extends AbstractSearchService
 			return [];
 		$parentTagId = $parentTagEntity->getId();
 
-		//get tags that appear with selected tag along with their occurence frequency
-		$stmt = (new Sql\SelectStatement)
-			->setTable('tag')
-			->addColumn('tag.*')
-			->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'))
-			->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'))
-			->setGroupBy('tag.id')
-			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
-			->setCriterion(new Sql\ExistsFunctor((new Sql\SelectStatement)
-				->setTable('post_tag pt2')
-				->setCriterion((new Sql\ConjunctionFunctor)
-					->add(new Sql\EqualsFunctor('pt2.post_id', 'post_tag.post_id'))
-					->add(new Sql\EqualsFunctor('pt2.tag_id', new Sql\Binding($parentTagId)))
-				)));
+		$punishCommonTags = false;
 
-		$rows1 = [];
-		foreach (Database::fetchAll($stmt) as $row)
-			$rows1[$row['id']] = $row;
+		$rows = self::getSiblingTagsWithOccurences($parentTagId);
+		unset($rows[$parentTagId]);
 
-		//get the same tags, but this time - get global occurence frequency
-		$stmt = (new Sql\SelectStatement)
-			->setTable('tag')
-			->addColumn('tag.*')
-			->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'))
-			->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'))
-			->setCriterion(Sql\InFunctor::fromArray('tag.id', Sql\Binding::fromArray(array_keys($rows1))))
-			->setGroupBy('tag.id');
-
-		$rows2 = [];
-		foreach (Database::fetchAll($stmt) as $row)
-			$rows2[$row['id']] = $row;
-
-		$rows = [];
-		foreach ($rows1 as $i => $row)
+		if ($punishCommonTags)
 		{
-			//multiply own occurences by two because we are going to subtract them
-			$row['sort'] = $row['post_count'] * 2;
-			//subtract global occurencecount
-			$row['sort'] -= isset($rows2[$i]) ? $rows2[$i]['post_count'] : 0;
+			$rowsGlobal = self::getGlobalOccurencesForTags(array_keys($rows));
 
-			if ($row['id'] != $parentTagId)
-				$rows []= $row;
+			foreach ($rows as $i => &$row)
+			{
+				//multiply own occurences by two because we are going to subtract them
+				$row['sort'] = $row['post_count'] * 2;
+				//subtract global occurencecount
+				$row['sort'] -= isset($rowsGlobal[$i]) ? $rowsGlobal[$i]['post_count'] : 0;
+			}
+		}
+		else
+		{
+			foreach ($rows as $i => &$row)
+			{
+				$row['sort'] = $row['post_count'];
+			}
 		}
 
-		usort($rows, function($a, $b) { return intval($b['sort']) - intval($a['sort']); });
+		usort($rows, function($a, $b)
+		{
+			return intval($b['sort']) - intval($a['sort']);
+		});
 
 		return TagModel::spawnFromDatabaseRows($rows);
 	}
@@ -76,5 +60,44 @@ class TagSearchService extends AbstractSearchService
 			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
 			->setLimit(1, 0);
 		return TagModel::spawnFromDatabaseRow(Database::fetchOne($stmt));
+	}
+
+
+	private static function getSiblingTagsWithOccurences($parentTagId)
+	{
+		$stmt = (new Sql\SelectStatement)
+			->setTable('tag')
+			->addColumn('tag.*')
+			->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'))
+			->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'))
+			->setGroupBy('tag.id')
+			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
+			->setCriterion(new Sql\ExistsFunctor((new Sql\SelectStatement)
+				->setTable('post_tag pt2')
+				->setCriterion((new Sql\ConjunctionFunctor)
+					->add(new Sql\EqualsFunctor('pt2.post_id', 'post_tag.post_id'))
+					->add(new Sql\EqualsFunctor('pt2.tag_id', new Sql\Binding($parentTagId)))
+				)));
+
+		$rows = [];
+		foreach (Database::fetchAll($stmt) as $row)
+			$rows[$row['id']] = $row;
+		return $rows;
+	}
+
+	private static function getGlobalOccurencesForTags($tagIds)
+	{
+		$stmt = (new Sql\SelectStatement)
+			->setTable('tag')
+			->addColumn('tag.*')
+			->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'))
+			->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'))
+			->setCriterion(Sql\InFunctor::fromArray('tag.id', Sql\Binding::fromArray($tagIds)))
+			->setGroupBy('tag.id');
+
+		$rows = [];
+		foreach (Database::fetchAll($stmt) as $row)
+			$rows[$row['id']] = $row;
+		return $rows;
 	}
 }
