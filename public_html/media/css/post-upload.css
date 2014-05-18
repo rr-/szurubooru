@@ -74,7 +74,7 @@
 
 .post .ops a {
 	cursor: pointer;
-	margin-left: 0.5em;
+	margin-left: 1.5em;
 	vertical-align: middle;
 }
 .post a span {
@@ -117,11 +117,11 @@
 .post .file-name strong {
 	overflow: hidden;
 	text-overflow: ellipsis;
-	max-width: 50%;
+	max-width: 100%;
 	white-space: pre;
 	display: inline-block;
-	vertical-align: middle;
-	padding: 0.5em 0;
+	vertical-align: text-bottom;
+	line-height: 30px;
 }
 
 .safety-safe {
@@ -154,6 +154,9 @@ ul.tagit {
 
 .post .form-wrapper {
 	overflow: hidden;
+}
+.post form {
+	margin-top: 0;
 }
 
 #lightbox {

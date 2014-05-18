@@ -71,7 +71,9 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 			<form action="<?= \Chibi\Router::linkTo(['PostController', 'uploadAction']) ?>" method="post">
 				<div class="form-row file-name">
 					<label>File:</label>
-					<strong>filename.jpg</strong>
+					<div class="input-wrapper">
+						<strong>filename.jpg</strong>
+					</div>
 				</div>
 
 				<div class="form-row safety">
