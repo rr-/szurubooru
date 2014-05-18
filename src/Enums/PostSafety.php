@@ -1,5 +1,5 @@
 <?php
-class PostSafety extends Enum implements IValidatable
+class PostSafety extends AbstractEnum implements IEnum, IValidatable
 {
 	const Safe = 1;
 	const Sketchy = 2;

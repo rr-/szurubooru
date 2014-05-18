@@ -1,5 +1,5 @@
 <?php
-class AccessRank extends Enum implements IValidatable
+class AccessRank extends AbstractEnum implements IEnum, IValidatable
 {
 	const Anonymous = 0;
 	const Registered = 1;
@@ -22,7 +22,16 @@ class AccessRank extends Enum implements IValidatable
 
 	public function toString()
 	{
-		return self::_toString($this->accessRank);
+		switch ($this->accessRank)
+		{
+			case self::Anonymous: return 'anonymous';
+			case self::Registered: return 'registered';
+			case self::PowerUser: return 'power-user';
+			case self::Moderator: return 'moderator';
+			case self::Admin: return 'admin';
+			case self::Nobody: return 'nobody';
+		}
+		return null;
 	}
 
 	public static function getAll()

@@ -25,7 +25,7 @@ class EditUserAccessRankJob extends AbstractJob
 		Logger::log('{user} changed {subject}\'s access rank to {rank}', [
 			'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 			'subject' => TextHelper::reprUser($user),
-			'rank' => $newAccessRank->toString()]);
+			'rank' => $newAccessRank->toDisplayString()]);
 
 		return $user;
 	}

@@ -1,5 +1,5 @@
 <?php
-class PostType extends Enum implements IValidatable
+class PostType extends AbstractEnum implements IEnum, IValidatable
 {
 	const Image = 1;
 	const Flash = 2;
@@ -20,7 +20,14 @@ class PostType extends Enum implements IValidatable
 
 	public function toString()
 	{
-		return self::_toString($this->type);
+		switch ($this->type)
+		{
+			case self::Image: return 'image';
+			case self::Flash: return 'flash';
+			case self::Youtube: return 'youtube';
+			case self::Video: return 'video';
+		}
+		return null;
 	}
 
 	public function validate()

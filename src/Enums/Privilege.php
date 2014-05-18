@@ -1,5 +1,5 @@
 <?php
-class Privilege extends Enum
+class Privilege extends AbstractEnum implements IEnum
 {
 	const ListPosts = 'listPosts';
 	const ViewPost = 'viewPost';
@@ -70,5 +70,10 @@ class Privilege extends Enum
 		if ($this->secondary)
 			$string .= '.' . $this->secondary;
 		return $string;
+	}
+
+	public function toDisplayString()
+	{
+		return $this->toString();
 	}
 }
