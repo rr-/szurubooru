@@ -147,7 +147,7 @@ $this->assets->addStylesheet('user-view.css');
 			Privilege::BanUser,
 			Access::getIdentity($this->context->transport->user))))
 		{
-			if (!$this->context->transport->user->banned)
+			if (!$this->context->transport->user->isBanned())
 			{
 				$options []=
 				[
