@@ -285,7 +285,7 @@ button {
 	font-size: 12pt;
 	border-radius: 5px;
 	padding: 5px 15px;
-	-moz-box-sizing: border-box;
+	line-height: 100%;
 	color: white;
 	background: hsl(0,70%,60%);
 	border: 0;
