@@ -145,7 +145,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 
 	protected function doUsers($text)
 	{
-		$link = \Chibi\Router::linkTo(['UserController', 'genericView'], ['name' => '_name_']);
+		$link = \Chibi\Router::linkTo(['UserController', 'genericView'], ['identifier' => '_name_']);
 		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))\+([a-zA-Z0-9_-]+)/', function($x) use ($link)
 		{
 			return $this->hashPart('<a href="' . str_replace('_name_', $x[1], $link) . '">' . $x[0] . '</a>');
