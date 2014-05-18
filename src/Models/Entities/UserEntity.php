@@ -35,8 +35,8 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 		$this->staffConfirmed = $row['staff_confirmed'];
 		$this->emailUnconfirmed = $row['email_unconfirmed'];
 		$this->emailConfirmed = $row['email_confirmed'];
-		$this->joinDate = $row['join_date'];
-		$this->lastLoginDate = $row['last_login_date'];
+		$this->joinDate = TextHelper::toIntegerOrNull($row['join_date']);
+		$this->lastLoginDate = TextHelper::toIntegerOrNull($row['last_login_date']);
 		$this->banned = $row['banned'];
 		$this->setAccessRank(new AccessRank($row['access_rank']));
 		$this->settings = new UserSettings($row['settings']);

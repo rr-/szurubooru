@@ -15,6 +15,9 @@ class AuthTest extends AbstractTest
 		});
 
 		$this->assert->isTrue(Auth::isLoggedIn());
+
+		$user = UserModel::getByName($user->getName());
+		$this->assert->areEqual(time(), $user->getLastLoginTime());
 	}
 
 	public function testLoginViaEmail()
