@@ -37,6 +37,9 @@ class Auth
 		}
 
 		self::setCurrentUser($dbUser);
+
+		$dbUser->lastLoginDate = time();
+		UserModel::save($dbUser);
 	}
 
 	public static function tryAutoLogin()
