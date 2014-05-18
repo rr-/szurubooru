@@ -4,25 +4,91 @@ use \Chibi\Database as Database;
 
 abstract class AbstractCrudModel implements IModel
 {
+	private static $keyCache = [];
+
 	public static function spawn()
 	{
 		$entityClassName = static::getEntityClassName();
-		return new $entityClassName();
+		$entity = new $entityClassName(new static);
+		$entity->fillNew();
+		return $entity;
+	}
+
+	public static function spawnFromDatabaseRows($input)
+	{
+		return array_map([get_called_class(), 'spawnFromDatabaseRow'], $input);
+	}
+
+	public static function spawnFromDatabaseRow($row)
+	{
+		$entityClassName = static::getEntityClassName();
+		$entity = new $entityClassName(new static);
+		$entity->fillFromDatabase($row);
+		return $entity;
 	}
 
 	public static function remove($entities)
 	{
-		throw new NotImplementedException();
+		if (is_array($entities))
+			return static::removeMultiple($entities);
+		else
+			return static::removeSingle($entities);
 	}
 
-	public static function save($entity)
+	protected static function removeMultiple($entities)
 	{
-		throw new NotImplementedException();
+		$cb = [get_called_class(), 'removeSingle'];
+		Database::transaction(function() use ($entities, $cb)
+		{
+			foreach ($entities as $entity)
+			{
+				$cb($entity);
+			}
+		});
+	}
+
+	protected static function removeSingle($entity)
+	{
+		throw new BadMethodCallException('Not implemented');
+	}
+
+	public static function save($entities)
+	{
+		if (is_array($entities))
+			return static::saveMultiple($entities);
+		else
+			return static::saveSingle($entities);
+	}
+
+	protected static function saveMultiple($entities)
+	{
+		$cb = [get_called_class(), 'saveSingle'];
+		return Database::transaction(function() use ($entities, $cb)
+		{
+			$ret = [];
+			foreach ($entities as $entity)
+			{
+				$ret []= $cb($entity);
+			}
+			return $ret;
+		});
+	}
+
+	protected static function saveSingle($entity)
+	{
+		throw new BadMethodCallException('Not implemented');
 	}
 
 
+	public static function getById($key)
+	{
+		$ret = self::tryGetById($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid %s ID "%s"', static::getTableName(), $key);
+		return $ret;
+	}
 
-	public static function findById($key, $throw = true)
+	public static function tryGetById($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
@@ -30,15 +96,12 @@ abstract class AbstractCrudModel implements IModel
 		$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid %s ID "%s"', static::getTableName(), $key);
-		return null;
+		return $row
+			? static::spawnFromDatabaseRow($row)
+			: null;
 	}
 
-	public static function findByIds(array $ids)
+	public static function getAllByIds(array $ids)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
@@ -47,7 +110,7 @@ abstract class AbstractCrudModel implements IModel
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
-			return self::convertRows($rows);
+			return static::spawnFromDatabaseRows($rows);
 
 		return [];
 	}
@@ -57,7 +120,7 @@ abstract class AbstractCrudModel implements IModel
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
 		$stmt->setTable(static::getTableName());
-		return Database::fetchOne($stmt)['count'];
+		return (int) Database::fetchOne($stmt)['count'];
 	}
 
 
@@ -70,58 +133,25 @@ abstract class AbstractCrudModel implements IModel
 		return $entityClassName;
 	}
 
-	public static function convertRow($row)
-	{
-		$entity = self::spawn();
-		foreach ($row as $key => $val)
-		{
-			$key = TextCaseConverter::convert($key,
-				TextCaseConverter::SNAKE_CASE,
-				TextCaseConverter::LOWER_CAMEL_CASE);
-
-			$entity->$key = $val;
-		}
-		return $entity;
-	}
-
-	public static function convertRows(array $rows)
-	{
-		$keyCache = [];
-		$entities = [];
-		foreach ($rows as $i => $row)
-		{
-			$entity = self::spawn();
-			foreach ($row as $key => $val)
-			{
-				if (isset($keyCache[$key]))
-					$key = $keyCache[$key];
-				else
-				{
-					$key = $keyCache[$key] = TextCaseConverter::convert($key,
-						TextCaseConverter::SNAKE_CASE,
-						TextCaseConverter::LOWER_CAMEL_CASE);
-				}
-
-				$entity->$key = $val;
-			}
-			$entities[$i] = $entity;
-		}
-		return $entities;
-	}
-
-
-
 	public static function forgeId($entity)
 	{
 		$table = static::getTableName();
 		if (!Database::inTransaction())
 			throw new Exception('Can be run only within transaction');
-		if (!$entity->id)
+		if (!$entity->getId())
 		{
 			$stmt = new Sql\InsertStatement();
 			$stmt->setTable($table);
+			foreach ($entity as $key => $val)
+			{
+				$key = TextCaseConverter::convert($key,
+					TextCaseConverter::LOWER_CAMEL_CASE,
+					TextCaseConverter::SNAKE_CASE);
+
+				$stmt->setColumn($key, new Sql\Binding($val));
+			}
 			Database::exec($stmt);
-			$entity->id = Database::lastInsertId();
+			$entity->setId((int) Database::lastInsertId());
 		}
 	}
 

@@ -1,0 +1,79 @@
+<?php
+$this->assets->addStylesheet('post-small.css');
+
+$classNames =
+[
+	'post',
+	'post-type-' . TextCaseConverter::convert(
+		TextHelper::resolveMimeType($this->context->post->getMimeType())
+			?: $this->context->post->getType()->toString(),
+		TextCaseConverter::CAMEL_CASE,
+		TextCaseConverter::SPINAL_CASE),
+];
+
+$masstag = (isset($this->context->source)
+	and $this->context->source == 'mass-tag'
+	and !empty($this->context->additionalInfo));
+
+if ($masstag)
+{
+	$classNames []= 'taggable';
+	if ($this->context->post->isTaggedWith($this->context->additionalInfo))
+	{
+		$classNames []= 'tagged';
+	}
+}
+?>
+
+<div class="<?= implode(' ', $classNames) ?>">
+
+	<?php if ($masstag): ?>
+		<a class="toggle-tag"
+			href="<?= \Chibi\Router::linkTo(['PostController', 'toggleTagAction'], [
+				'id' => $this->context->post->getId(),
+				'tag' => $this->context->additionalInfo,
+				'enable' => in_array('tagged', $classNames) ? '0' : '1']) ?>"
+			data-text-tagged="Tagged"
+			data-text-untagged="Untagged">
+
+			<?= in_array('tagged', $classNames) ? 'Tagged' : 'Untagged' ?>
+
+		</a>
+	<?php endif ?>
+
+	<a class="link"
+		<?php if (Auth::getCurrentUser()->getSettings()->hasEnabledPostTagTitles()): ?>
+			title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>"
+		<?php endif ?>
+		href="<?= \Chibi\Router::linkTo(['PostController', 'genericView'], ['id' => $this->context->post->getId()]) ?>">
+
+		<img
+			class="thumb"
+			src="<?= \Chibi\Router::linkTo(['PostController', 'thumbView'], ['name' => $this->context->post->getName()]) ?>"
+			alt="<?= TextHelper::reprPost($this->context->post) ?>"/>
+
+		<?php
+			$x =
+			[
+				'score' => $this->context->post->getScore(),
+				'comments' => $this->context->post->getCommentCount(),
+				'favs' => $this->context->post->getFavoriteCount(),
+			];
+		?>
+
+		<?php if (!empty($x)): ?>
+			<div class="info-bar">
+				<?php foreach ($x as $key => $val): ?>
+					<?php if ($val == 0): ?>
+						<span class="inactive">
+					<?php else: ?>
+						<span>
+					<?php endif ?>
+						<i class="icon-<?= $key ?>"></i>
+						<?= $val ?>
+					</span>
+				<?php endforeach ?>
+			</div>
+		<?php endif ?>
+	</a>
+</div>

@@ -1,0 +1,193 @@
+<?php
+$this->assets->addStylesheet('static-api.css');
+?>
+
+<h2>API documentation</h2>
+
+<p>All interaction with API proceeds through just one URL: <code><?= Api::getUrl() ?></code>.</p>
+
+<p>One request to API means executing one so-called &bdquo;job&rdquo;. Most of things that can be done through web
+interface, can be also done through the API.</p>
+
+<hr/>
+
+<h2>Request construction</h2>
+
+<p>To specify job to be executed, send <code>name</code> parameter. Optional job arguments can be specified with
+<code>args</code> parameter. Example using <code>curl</code>:</p>
+
+<pre><code>curl \
+	--data 'name=get-post' \
+		'&amp;args[post-id]=5408' \
+	<?= Api::getUrl() ?></code></pre>
+
+<h3>Authentication</h3>
+
+<p>In order to make authenticated request, you need to supply request with your credentials. This can be done by
+passing <code>auth[user]</code> and <code>auth[name]</code> parameters:</p>
+
+<pre><code>curl \
+	--data 'auth[user]=example' \
+		'&amp;auth[pass]=secret' \
+		'&amp;name=get-post' \
+		'&amp;args[post-id]=5408' \
+	<?= Api::getUrl() ?></code></pre>
+
+<h3>Sending files</h3>
+
+<p>In order to send files to API, you have to send <code>multipart/form-data</code> request. With <code>curl</code>
+this can be done using <code>-F</code> option to encode each parameter and prepending <code>@</code> character to
+chosen file name:</p>
+
+<pre><code>curl \
+	-F 'auth[user]=example' \
+	-F 'auth[pass]=secret' \
+	-F 'name=add-post' \
+	-F 'args[new-tag-names][0]=test' \
+	-F 'args[new-tag-names][1]=test2' \
+	-F 'args[new-tag-names][2]=test3' \
+	-F 'args[new-post-content]=@./custom.png' \
+	<?= Api::getUrl() ?></code></pre>
+
+<h3>Output</h3>
+
+<p>Output is always represented in JSON array. Files are stored in JSON as well using gzip compression and base64
+encoding.</p>
+
+<h3>Handling errors</h3>
+
+<p>Normally all jobs return <code>200 OK</code>. However, when an error occurs, its reason is logged to
+<code>message</code> field, changes are rolled back and API returns <code>400 Bad Request</code>.</p>
+
+<hr/>
+
+<h2>Privilege table</h2>
+
+<p>Each job checks for some privileges depending on context it is run with.</p>
+
+<table>
+	<thead>
+		<tr>
+			<th>Privilege</th>
+			<th>Sub privilege</th>
+			<th>Minimum access rank</th>
+		</tr>
+	</thead>
+	<?php  foreach (Privilege::getAllConstants() as $privilege): ?>
+		<?php $i = 0 ?>
+		<tbody>
+			<?php foreach (Access::getAllDefinedSubPrivileges($privilege) as $subPrivilege => $minAccessRank): ?>
+				<?php if ($i == 0): ?>
+					<tr id="privilege-<?= $privilege ?>">
+				<?php else: ?>
+					<tr>
+				<?php endif ?>
+					<td><?= $privilege ?></td>
+					<td><?= $subPrivilege ?: '&mdash;' ?></td>
+					<td><?= $minAccessRank->toDisplayString() ?></td>
+				</tr>
+				<?php $i ++ ?>
+			<?php endforeach ?>
+		</tbody>
+	<?php endforeach ?>
+</table>
+
+<hr/>
+
+<h2>Full list of available jobs</h2>
+
+<p>Some jobs execute other jobs. Such relations are listed under &bdquo;chained jobs&rdquo; sections. This means you
+shouldn't be too surprised if <code>add-user</code> doesn't require any arguments&nbsp;&ndash; they're enforced in its
+chained jobs.</p>
+
+<?php
+$jobClassNames = Api::getAllJobClassNames();
+natcasesort($jobClassNames);
+$jobClassNames = array_values($jobClassNames);
+
+foreach ($jobClassNames as $i => $className)
+{
+	$job = new $className;
+	if (!$job->isAvailableToPublic())
+		continue;
+
+?>
+
+	<?php if ($i != 0): ?>
+		<hr/>
+	<?php endif ?>
+
+	<h3 id="job-<?= $job->getName() ?>">
+		<a href="#job-<?= $job->getName() ?>"><?= $job->getName() ?></a>
+	</h3>
+
+	<?php
+		$showArgs = function($args) use (&$showArgs)
+		{
+			if ($args instanceof JobArgsConjunction)
+			{
+				return '(' . implode(' AND ', array_filter(array_map(function($arg) use ($showArgs)
+				{
+					return $showArgs($arg);
+				}, $args->args))) . ')';
+			}
+			elseif ($args instanceof JobArgsAlternative)
+			{
+				return '(' . implode(' OR ', array_filter(array_map(function($arg) use ($showArgs)
+				{
+					return $showArgs($arg);
+				}, $args->args))) . ')';
+			}
+			elseif ($args instanceof JobArgsOptional)
+				return $showArgs($args->args[0]) . ' (optional)';
+			elseif (in_array($args, JobArgs::getInternalArguments()))
+				return null;
+			else
+				return $args;
+		};
+	?>
+
+	<p>
+		Required arguments:
+		<?php if ($job->getRequiredArguments()): ?>
+			<?= $showArgs($job->getRequiredArguments()) ?>
+		<?php else: ?>
+			none
+		<?php endif ?>
+	</p>
+
+	<p>
+		Required privilege:
+		<?php if ($job->getRequiredMainPrivilege()): ?>
+			<a href="#privilege-<?= $job->getRequiredMainPrivilege() ?>">
+				<?= $job->getRequiredMainPrivilege() ?>
+			</a>
+		<?php else: ?>
+			none
+		<?php endif ?>
+	</p>
+
+	<p>
+		Requires e-mail confirmation:
+		<?= $job->isConfirmedEmailRequired() ? 'yes' : 'no' ?>
+	</p>
+
+	<p>
+		Requires authentication:
+		<?= $job->isAuthenticationRequired() ? 'yes' : 'no' ?>
+	</p>
+
+	<?php if (!empty($job->getSubJobs())): ?>
+		<p>
+			Chained jobs:
+			<?php
+				echo implode(', ', array_map(function($job)
+				{
+					return '<a href="#job-' . $job->getName() . '">' . $job->getName() . '</a>';
+				}, $job->getSubJobs()));
+			?>
+		</p>
+	<?php endif ?>
+<?php
+}
+?>

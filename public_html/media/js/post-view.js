@@ -67,7 +67,7 @@ $(function()
 
 		$('.comments.unit a.simple-action').data('callback', function()
 		{
-			$.get(window.location.href, function(data)
+			$.get(window.location.href).success(function(data)
 			{
 				$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
 				$('body').trigger('dom-update');
@@ -76,7 +76,7 @@ $(function()
 
 		$('#sidebar a.simple-action').data('callback', function()
 		{
-			$.get(window.location.href, function(data)
+			$.get(window.location.href).success(function(data)
 			{
 				$('#sidebar').replaceWith($(data).find('#sidebar'));
 				$('body').trigger('dom-update');
@@ -97,7 +97,7 @@ $(function()
 		formDom.addClass('inactive');
 		formDom.find(':input').attr('readonly', true);
 
-		var url = formDom.attr('action') + '?json';
+		var url = formDom.attr('action');
 		var fd = new FormData(formDom[0]);
 
 		var ajaxData =
@@ -112,7 +112,7 @@ $(function()
 			{
 				disableExitConfirmation();
 
-				$.get(window.location.href, function(data)
+				$.get(window.location.href).success(function(data)
 				{
 					$('#sidebar').replaceWith($(data).find('#sidebar'));
 					$('#edit-token').replaceWith($(data).find('#edit-token'));
@@ -132,7 +132,7 @@ $(function()
 			}
 		};
 
-		$.ajax(ajaxData);
+		postJSON(ajaxData);
 	});
 
 	Mousetrap.bind('a', function()

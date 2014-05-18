@@ -9,13 +9,18 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processSetup(&$tokens)
 	{
-		$config = getConfig();
+		$config = Core::getConfig();
 
 		$this->tags = [];
 		$crit = new Sql\ConjunctionFunctor();
 
-		$allowedSafety = Access::getAllowedSafety();
-		$crit->add(Sql\InFunctor::fromArray('safety', Sql\Binding::fromArray($allowedSafety)));
+		$allowedSafety = array_map(
+			function($safety)
+			{
+				return $safety->toInteger();
+			},
+			Access::getAllowedSafety());
+		$crit->add(Sql\InFunctor::fromArray('post.safety', Sql\Binding::fromArray($allowedSafety)));
 
 		$this->statement->setCriterion($crit);
 		if (count($tokens) > $config->browsing->maxSearchTokens)
@@ -24,21 +29,21 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processTeardown()
 	{
-		if (Auth::getCurrentUser()->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
+		if (Auth::getCurrentUser()->getSettings()->hasEnabledHidingDislikedPosts() and !$this->showDisliked)
 			$this->processComplexToken('special', 'disliked', true);
 
-		if (!Access::check(Privilege::ListPosts, 'hidden') or !$this->showHidden)
+		if (!Access::check(new Privilege(Privilege::ListPosts, 'hidden')) or !$this->showHidden)
 			$this->processComplexToken('special', 'hidden', true);
 
 		foreach ($this->tags as $item)
 		{
 			list ($tagName, $neg) = $item;
-			$tag = TagModel::findByName($tagName);
+			$tag = TagModel::getByName($tagName);
 			$innerStmt = new Sql\SelectStatement();
 			$innerStmt->setTable('post_tag');
 			$innerStmt->setCriterion((new Sql\ConjunctionFunctor)
 				->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-				->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($tag->id))));
+				->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($tag->getId()))));
 			$operator = new Sql\ExistsFunctor($innerStmt);
 			if ($neg)
 				$operator = new Sql\NegationFunctor($operator);
@@ -68,30 +73,30 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif (in_array($key, ['fav', 'favs', 'favd']))
 		{
-			$user = UserModel::findByNameOrEmail($value);
+			$user = UserModel::getByName($value);
 			$innerStmt = (new Sql\SelectStatement)
 				->setTable('favoritee')
 				->setCriterion((new Sql\ConjunctionFunctor)
 					->add(new Sql\EqualsFunctor('favoritee.post_id', 'post.id'))
-					->add(new Sql\EqualsFunctor('favoritee.user_id', new Sql\Binding($user->id))));
+					->add(new Sql\EqualsFunctor('favoritee.user_id', new Sql\Binding($user->getId()))));
 			return new Sql\ExistsFunctor($innerStmt);
 		}
 
 		elseif (in_array($key, ['comment', 'comments', 'commenter', 'commented']))
 		{
-			$user = UserModel::findByNameOrEmail($value);
+			$user = UserModel::getByName($value);
 			$innerStmt = (new Sql\SelectStatement)
 				->setTable('comment')
 				->setCriterion((new Sql\ConjunctionFunctor)
 					->add(new Sql\EqualsFunctor('comment.post_id', 'post.id'))
-					->add(new Sql\EqualsFunctor('comment.commenter_id', new Sql\Binding($user->id))));
+					->add(new Sql\EqualsFunctor('comment.commenter_id', new Sql\Binding($user->getId()))));
 			return new Sql\ExistsFunctor($innerStmt);
 		}
 
-		elseif (in_array($key, ['submit', 'upload', `uploads`, 'uploader', 'uploaded']))
+		elseif (in_array($key, ['submit', 'upload', 'uploads', 'uploader', 'uploaded']))
 		{
-			$user = UserModel::findByNameOrEmail($value);
-			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->id));
+			$user = UserModel::getByName($value);
+			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->getId()));
 		}
 
 		elseif (in_array($key, ['idmin', 'id_min']))
@@ -151,7 +156,7 @@ class PostSearchParser extends AbstractSearchParser
 			$value = strtolower($value);
 			if (in_array($value, ['fav', 'favs', 'favd']))
 			{
-				return $this->prepareCriterionForComplexToken('fav', $activeUser->name);
+				return $this->prepareCriterionForComplexToken('fav', $activeUser->getName());
 			}
 
 			elseif (in_array($value, ['like', 'liked', 'likes']))
@@ -160,7 +165,7 @@ class PostSearchParser extends AbstractSearchParser
 				{
 					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
 						->add(new Sql\EqualsFunctor('post_score.post_id', 'post.id'))
-						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->id))));
+						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->getId()))));
 				}
 				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '1');
 			}
@@ -172,7 +177,7 @@ class PostSearchParser extends AbstractSearchParser
 				{
 					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
 						->add(new Sql\EqualsFunctor('post_score.post_id', 'post.id'))
-						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->id))));
+						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->getId()))));
 				}
 				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '-1');
 			}
@@ -190,11 +195,11 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($key == 'type')
 		{
 			$value = strtolower($value);
-			if ($value == 'swf')
+			if (in_array($value, ['swf', 'flash']))
 				$type = PostType::Flash;
-			elseif ($value == 'img')
+			elseif (in_array($value, ['img', 'image']))
 				$type = PostType::Image;
-			elseif ($value == 'video' or in_array($value, ['mp4', 'webm', 'ogg', '3gp', 'ogg']))
+			elseif ($value == 'video')
 				$type = PostType::Video;
 			elseif ($value == 'yt' or $value == 'youtube')
 				$type = PostType::Youtube;

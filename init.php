@@ -1,6 +1,6 @@
 <?php
 require_once 'src/core.php';
-$config = getConfig();
+$config = Core::getConfig();
 $fontsPath = TextHelper::absolutePath($config->main->mediaPath . DS . 'fonts');
 $libPath = TextHelper::absolutePath($config->main->mediaPath . DS . 'lib');
 
@@ -26,6 +26,9 @@ function download($source, $destination = null)
 	return $content;
 }
 
+$version = exec('git describe --tags --always --dirty');
+$branch = exec('git rev-parse --abbrev-ref HEAD');
+PropertyModel::set(PropertyModel::EngineVersion, $version . '@' . $branch);
 
 
 //jQuery

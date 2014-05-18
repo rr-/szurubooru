@@ -1,0 +1,48 @@
+<nav class="sort-styles">
+	<ul>
+		<?php
+		$filters =
+		[
+			'order:alpha,asc' => 'Sort A&rarr;Z',
+			'order:alpha,desc' => 'Sort Z&rarr;A',
+			'order:popularity,desc' => 'Often used first',
+			'order:popularity,asc' => 'Rarely used first',
+		];
+		?>
+
+		<?php foreach ($filters as $key => $text): ?>
+			<?php if ($this->context->filter == $key): ?>
+				<li class="active">
+			<?php else: ?>
+				<li>
+			<?php endif ?>
+				<a href="<?= \Chibi\Router::linkTo(['TagController', 'listView'], ['filter' => $key]) ?>"><?= $text ?></a>
+			</li>
+		<?php endforeach ?>
+	</ul>
+</nav>
+
+<?php if (empty($this->context->transport->tags)): ?>
+	<p class="alert alert-warning">No tags to show.</p>
+<?php else: ?>
+	<?php $max = $this->context->highestUsage ?>
+	<?php $add = 0. ?>
+	<?php $mul = 10. / max(1, log(max(1, $max))) ?>
+	<?php $url = \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => '_query_']) ?>
+	<div class="tags paginator-content">
+		<ul>
+			<?php foreach ($this->context->transport->tags as $tag): ?>
+				<?php $name = $tag->getName() ?>
+				<?php $count = $tag->getPostCount() ?>
+				<li class="tag" title="<?= $name ?> (<?= $count ?>)">
+					<a href="<?= str_replace('_query_', $name, $url) ?>"
+						class="frequency<?php printf('%1.0f', $add + $mul * log($count)) ?>">
+						<?= $name . ' (' . $count . ')' ?>
+					</a>
+				</li>
+			<?php endforeach ?>
+		</ul>
+	</div>
+
+	<?php $this->renderExternal('paginator') ?>
+<?php endif ?>

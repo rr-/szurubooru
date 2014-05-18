@@ -1,0 +1,27 @@
+<?php if (isset($this->context->transport->message)): ?>
+	<?php $this->renderExternal('message') ?>
+<?php else: ?>
+	<?php
+	$this->assets->addStylesheet('auth.css');
+	?>
+
+	<form
+		method="post"
+		class="auth"
+		autocomplete="off">
+
+		<div class="form-row">
+			<label>User:</label>
+			<div class="input-wrapper">
+				<input name="identifier" placeholder="Name or e-mail address" type="text"/>
+			</div>
+		</div>
+
+		<?php $this->renderExternal('message') ?>
+
+		<div class="form-row">
+			<label></label>
+			<button class="submit" type="submit">Continue</button>
+		</div>
+	</form>
+<?php endif ?>

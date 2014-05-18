@@ -15,7 +15,7 @@ function scrolled()
 		if (pageNext != null && pageNext != pageDone)
 		{
 			$(document).data('page-done', pageNext);
-			$.get(pageNext, [], function(response)
+			$.get(pageNext).success(function(response)
 			{
 				var dom = $(response);
 				var nextPage = dom.find('.paginator .next:not(.disabled) a').attr('href');

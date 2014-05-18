@@ -1,0 +1,25 @@
+<?php
+$this->assets->addStylesheet('comment-edit.css');
+$this->assets->addScript('comment-edit.js');
+?>
+
+<form
+	method="post"
+	action="<?= \Chibi\Router::linkTo(['CommentController', 'addAction']) ?>"
+	class="add-comment">
+
+	<h1>add comment</h1>
+
+	<div class="preview"></div>
+
+	<div class="form-row text">
+		<div class="input-wrapper"><textarea name="text" cols="50" rows="3"></textarea></div>
+	</div>
+
+	<input type="hidden" name="post-id" value="<?= $this->context->transport->post->getId() ?>">
+
+	<div class="form-row">
+		<button name="sender" class="submit" type="submit" value="preview">Preview</button>&nbsp;
+		<button name="sender" class="submit" type="submit" value="submit">Submit</button>
+	</div>
+</form>

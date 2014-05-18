@@ -10,25 +10,25 @@ class Auth
 
 	public static function login($name, $password, $remember)
 	{
-		$config = getConfig();
-		$context = getContext();
+		$config = Core::getConfig();
+		$context = Core::getContext();
 
-		$dbUser = UserModel::findByNameOrEmail($name, false);
-		if ($dbUser === null)
-			throw new SimpleException('Invalid username');
+		$user = UserModel::tryGetByEmail($name);
+		if ($user === null)
+			$user = UserModel::getByName($name);
 
-		$passwordHash = UserModel::hashPassword($password, $dbUser->passSalt);
-		if ($passwordHash != $dbUser->passHash)
+		$passwordHash = UserModel::hashPassword($password, $user->getPasswordSalt());
+		if ($passwordHash != $user->getPasswordHash())
 			throw new SimpleException('Invalid password');
 
-		if (!$dbUser->staffConfirmed and $config->registration->staffActivation)
+		if (!$user->isStaffConfirmed() and $config->registration->staffActivation)
 			throw new SimpleException('Staff hasn\'t confirmed your registration yet');
 
-		if ($dbUser->banned)
+		if ($user->isBanned())
 			throw new SimpleException('You are banned');
 
 		if ($config->registration->needEmailForRegistering)
-			Access::requireEmail($dbUser);
+			Access::assertEmailConfirmation($user);
 
 		if ($remember)
 		{
@@ -36,14 +36,17 @@ class Auth
 			setcookie('auth', TextHelper::encrypt($token), time() + 365 * 24 * 3600, '/');
 		}
 
-		self::setCurrentUser($dbUser);
+		self::setCurrentUser($user);
 
-		$dbUser->lastLoginDate = time();
-		UserModel::save($dbUser);
+		$user->setLastLoginTime(time());
+		UserModel::save($user);
 	}
 
 	public static function tryAutoLogin()
 	{
+		if (self::isLoggedIn())
+			return;
+
 		if (!isset($_COOKIE['auth']))
 			return;
 
@@ -73,14 +76,14 @@ class Auth
 		}
 		else
 		{
-			$_SESSION['logged-in'] = $user->accessRank != AccessRank::Anonymous;
+			$_SESSION['logged-in'] = $user->getAccessRank()->toInteger() != AccessRank::Anonymous;
 			$_SESSION['user'] = serialize($user);
 		}
 	}
 
 	public static function getCurrentUser()
 	{
-		return self::isLoggedIn()
+		return isset($_SESSION['user'])
 			? unserialize($_SESSION['user'])
 			: self::getAnonymousUser();
 	}
@@ -88,8 +91,9 @@ class Auth
 	private static function getAnonymousUser()
 	{
 		$dummy = UserModel::spawn();
-		$dummy->name = UserModel::getAnonymousName();
-		$dummy->accessRank = AccessRank::Anonymous;
+		$dummy->setId(null);
+		$dummy->setName(UserModel::getAnonymousName());
+		$dummy->setAccessRank(new AccessRank(AccessRank::Anonymous));
 		return $dummy;
 	}
 }

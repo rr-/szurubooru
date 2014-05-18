@@ -39,8 +39,8 @@ Command                           | Description                                 
 [search]id:1,2,3[/search]         | having specific post ID                                   | `ids`                                           |
 [search]idmin:5[/search]          | posts with ID greater than or equal to @5                 | `id_min`                                        |
 [search]idmax:5[/search]          | posts with ID less than or equal to @5                    | `id_max`                                        |
-[search]type:img[/search]         | only image posts                                          | -                                               |
-[search]type:swf[/search]         | only Flash posts                                          | -                                               |
+[search]type:img[/search]         | only image posts                                          | `type:image`                                    |
+[search]type:flash[/search]         | only Flash posts                                        | `type:swf`                                      |
 [search]type:yt[/search]          | only Youtube posts                                        | `type:youtube`                                  |
 [search]special:liked[/search]    | posts liked by currently logged in user                   | `special:likes`, `special:like`                 |
 [search]special:disliked[/search] | posts disliked by currently logged in user                | `special:dislikes`, `special:dislike`           |

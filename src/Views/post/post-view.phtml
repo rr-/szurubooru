@@ -1,0 +1,406 @@
+<?php
+$subTitle = sprintf('showing %s&nbsp;&ndash;%s',
+	TextHelper::reprPost($this->context->transport->post),
+	TextHelper::reprTags($this->context->transport->post->getTags()));
+$this->assets->setSubTitle($subTitle);
+$this->assets->addStylesheet('post-view.css');
+$this->assets->addScript('post-view.js');
+$this->assets->addStylesheet('../lib/tagit/jquery.tagit.css');
+$this->assets->addScript('../lib/tagit/jquery.tagit.js');
+
+$editPostPrivileges = [
+	Privilege::EditPostSafety,
+	Privilege::EditPostTags,
+	Privilege::EditPostThumb,
+	Privilege::EditPostSource,
+];
+$editPostPrivileges = array_fill_keys($editPostPrivileges, false);
+foreach (array_keys($editPostPrivileges) as $privilege)
+{
+	if (Access::check(new Privilege(
+		$privilege,
+		Access::getIdentity($this->context->transport->post->getUploader()))))
+
+		$editPostPrivileges[$privilege] = true;
+}
+$canEditAnything = count(array_filter($editPostPrivileges)) > 0;
+?>
+
+<div id="sidebar">
+	<nav id="around">
+		<div class="left">
+			<?php if ($this->context->transport->nextPostId): ?>
+				<a href="<?= \Chibi\Router::linkTo(
+					['PostController', 'genericView'],
+					['id' => $this->context->transport->nextPostId]) ?>">
+			<?php else: ?>
+				<a class="disabled">
+			<?php endif ?>
+				<i class="icon-next"></i>
+				<span>next post</span>
+			</a>
+		</div>
+
+		<div class="right">
+			<?php if ($this->context->transport->prevPostId): ?>
+				<a href="<?= \Chibi\Router::linkTo(
+					['PostController', 'genericView'],
+					['id' => $this->context->transport->prevPostId]) ?>">
+			<?php else: ?>
+				<a class="disabled">
+			<?php endif ?>
+				<span>prev post</span>
+				<i class="icon-prev"></i>
+			</a>
+		</div>
+
+		<div class="clear"></div>
+
+		<?php if (!empty($this->context->transport->lastSearchQuery)): ?>
+			<div class="text">
+				Current&nbsp;search:<br/>
+				<a href="<?= \Chibi\Router::linkTo(
+					['PostController', 'listView'],
+					['query' => $this->context->transport->lastSearchQuery]) ?>">
+					<?= $this->context->transport->lastSearchQuery ?>
+				</a>
+			</div>
+		<?php endif ?>
+	</nav>
+
+	<div class="unit tags">
+		<?php $tags = $this->context->transport->post->getTags() ?>
+		<h1>tags (<?= count($tags) ?>)</h1>
+		<ul>
+			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->getName(), $b->getName()); }) ?>
+			<?php foreach ($tags as $tag): ?>
+				<li title="<?= $tag->getName() ?>">
+					<a href="<?= \Chibi\Router::linkTo(
+						['PostController', 'listView'],
+						['query' => $tag->getName()]) ?>"
+						><?= $tag->getName() ?>
+					</a>
+					<span class="count"><?= TextHelper::useDecimalUnits($tag->getPostCount()) ?></span>
+				</li>
+			<?php endforeach ?>
+		</ul>
+	</div>
+
+	<div class="unit details">
+		<h1>details</h1>
+
+		<div class="uploader">
+			<?php $uploader = $this->context->transport->post->getUploader() ?>
+			<?php if ($uploader): ?>
+				<span class="value" title="<?= $val = $uploader->getName() ?>">
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'genericView'],
+						['identifier' => $uploader->getName()]) ?>">
+						<img src="<?= htmlentities($uploader->getAvatarUrl(24)) ?>" alt="<?= $uploader->getName() ?>"/>
+						<?= $val ?>
+					</a>
+				</span>
+			<?php else: ?>
+				<span class="value" title="<?= UserModel::getAnonymousName() ?>">
+					<img src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>"
+						alt="<?= UserModel::getAnonymousName() ?>"/>
+					<?= UserModel::getAnonymousName() ?>
+				</span>
+			<?php endif ?>
+			<br>
+			<span class="date"
+				title="<?= TextHelper::formatDate($this->context->transport->post->getCreationTime(), true) ?>">
+				<?= TextHelper::formatDate($this->context->transport->post->getCreationTime(), false) ?>
+			</span>
+		</div>
+
+		<div class="key-value safety">
+			<span class="key">Safety:</span>
+			<span class="value safety-<?= $val = $this->context->transport->post->getSafety()->toDisplayString() ?>"
+				title="<?= $val ?>">
+				<?= $val ?>
+			</span>
+		</div>
+
+		<div class="key-value source">
+			<span class="key">Source:</span>
+			<span class="value"
+				title="<?= $val = htmlspecialchars($this->context->transport->post->getSource() ?: 'unknown') ?>">
+				<?php if (preg_match('/^((https?|ftp):|)\/\//', $this->context->transport->post->getSource())): ?>
+					<a href="<?= $val ?>"><?= $val ?></a>
+				<?php else: ?>
+					<?= $val ?>
+				<?php endif ?>
+			</span>
+		</div>
+
+		<?php if ($this->context->transport->post->getImageWidth()): ?>
+			<div class="key-value dim">
+				<span class="key">Dimensions:</span>
+				<span class="value" title="<?= $val = sprintf('%dx%d',
+					$this->context->transport->post->getImageWidth(),
+					$this->context->transport->post->getImageHeight()) ?>">
+					<?= $val ?>
+				</span>
+			</div>
+		<?php endif ?>
+
+		<div class="key-value score">
+			<span class="key">Score:</span>
+			<span class="value">
+				<?= $this->context->transport->post->getScore() ?>
+
+				<?php
+					$scoreLink = function($score)
+					{
+						return \Chibi\Router::linkTo(
+							['PostController', 'scoreAction'],
+							['id' => $this->context->transport->post->getId(), 'score' => $score]);
+					}
+				?>
+				<?php if (Access::check(new Privilege(
+					Privilege::ScorePost,
+					Access::getIdentity($this->context->transport->post->getUploader())))): ?>
+					<?php if ($this->context->userScore === 1): ?>
+						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
+					<?php else: ?>
+						<a class="simple-action" href="<?= $scoreLink(1) ?>">
+					<?php endif ?>
+						vote up
+					</a>
+
+					,&nbsp;
+
+					<?php if ($this->context->userScore === -1): ?>
+						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
+					<?php else: ?>
+						<a class="simple-action" href="<?= $scoreLink(-1) ?>">
+					<?php endif ?>
+						down
+					</a>
+				<?php endif ?>
+			</span>
+		</div>
+	</div>
+
+	<div class="unit hl-options">
+		<?php if ($this->context->transport->post->getType()->toInteger() != PostType::Youtube): ?>
+			<div class="hl-option">
+				<a title="Download" href="<?= \Chibi\Router::linkTo(
+					['PostController', 'fileView'],
+					['name' => $this->context->transport->post->getName()]) ?>">
+					<i class="icon-dl"></i>
+					<span>
+						<?php
+							printf(
+								'Download %s (%s)',
+								strtoupper(TextHelper::resolveMimeType($this->context->transport->post->getMimeType()))
+									?: 'Unknown',
+								TextHelper::useBytesUnits($this->context->transport->post->getFileSize()));
+						?>
+					</span>
+				</a>
+			</div>
+		<?php endif ?>
+
+		<?php if (Access::check(new Privilege(
+			Privilege::FavoritePost,
+			Access::getIdentity($this->context->transport->post->getUploader())))): ?>
+			<div class="hl-option">
+				<?php if (!$this->context->isUserFavorite): ?>
+					<a class="add-fav icon simple-action"
+						href="<?= \Chibi\Router::linkTo(
+							['PostController', 'addFavoriteAction'],
+							['id' => $this->context->transport->post->getId()]) ?>">
+						<i class="icon-fav"></i>
+						<span>Add to favorites</span>
+					</a>
+				<?php else: ?>
+					<a class="rem-fav icon simple-action"
+						href="<?= \Chibi\Router::linkTo(
+							['PostController', 'removeFavoriteAction'],
+							['id' => $this->context->transport->post->getId()]) ?>">
+						<i class="icon-fav"></i>
+						<span>Remove from favorites</span>
+					</a>
+				<?php endif ?>
+			</div>
+		<?php endif ?>
+
+		<?php if ($canEditAnything): ?>
+			<div class="hl-option">
+				<a class="edit-post icon" href="<?= \Chibi\Router::linkTo(
+					['PostController', 'editView'],
+					['id' => $this->context->transport->post->getId()]) ?>">
+					<i class="icon-edit"></i>
+					<span>Edit</span>
+				</a>
+			</div>
+		<?php endif ?>
+	</div>
+
+	<?php if (count($this->context->transport->post->getFavorites()) > 0): ?>
+		<div class="unit favorites">
+			<h1>favorites (<?= count($this->context->transport->post->getFavorites()) ?>)</h1>
+			<ul>
+				<?php foreach ($this->context->transport->post->getFavorites() as $user): ?>
+					<li>
+						<a title="<?= $user->getName() ?>" href="<?= \Chibi\Router::linkTo(
+							['UserController', 'genericView'],
+							['identifier' => $user->getName()]) ?>">
+							<img src="<?= htmlspecialchars($user->getAvatarUrl()) ?>" alt="<?= $user->getName() ?>">
+						</a>
+					</li>
+				<?php endforeach ?>
+			</ul>
+		</div>
+	<?php endif ?>
+
+	<?php if (count($this->context->transport->post->getRelations())): ?>
+		<div class="unit relations">
+			<h1>related</h1>
+			<ul>
+				<?php foreach ($this->context->transport->post->getRelations() as $relatedPost): ?>
+					<li>
+						<a href="<?= \Chibi\Router::linkTo(
+							['PostController', 'genericView'],
+							['id' => $relatedPost->getId()]) ?>">
+							<?= TextHelper::reprPost($relatedPost) ?>
+						</a>
+					</li>
+				<?php endforeach ?>
+			</ul>
+		</div>
+	<?php endif ?>
+
+	<?php
+		$options = [];
+
+		if (Access::check(new Privilege(
+			Privilege::FeaturePost,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			$options []=
+			[
+				'class' => 'feature',
+				'text' => 'Feature on main page',
+				'simple-action' => \Chibi\Router::linkTo(
+					['PostController', 'featureAction'],
+					['id' => $this->context->transport->post->getId()]),
+				'data-confirm-text' => 'Are you sure you want to feature this post on the main page?',
+				'data-redirect-url' => \Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']),
+			];
+		}
+
+		if (Access::check(new Privilege(
+			Privilege::FlagPost,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			if ($this->context->flagged)
+			{
+				$options []=
+				[
+					'class' => 'flag',
+					'text' => 'Flagged',
+					'inactive' => true,
+				];
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'flag',
+					'text' => 'Flag for moderator attention',
+					'simple-action' => \Chibi\Router::linkTo(
+						['PostController', 'flagAction'],
+						['id' => $this->context->transport->post->getId()]),
+					'data-confirm-text' => 'Are you sure you want to flag this post?',
+				];
+			}
+		}
+
+		if (Access::check(new Privilege(
+			Privilege::HidePost,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			if ($this->context->transport->post->isHidden())
+			{
+				$options []=
+				[
+					'class' => 'unhide',
+					'text' => 'Unhide',
+					'simple-action' => \Chibi\Router::linkTo(
+						['PostController', 'unhideAction'],
+						['id' => $this->context->transport->post->getId()]),
+				];
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'hide',
+					'text' => 'Hide',
+					'simple-action' => \Chibi\Router::linkTo(
+						['PostController', 'hideAction'],
+						['id' => $this->context->transport->post->getId()]),
+				];
+			}
+		}
+
+		if (Access::check(new Privilege(
+			Privilege::DeletePost,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			$options []=
+			[
+				'class' => 'delete',
+				'text' => 'Delete',
+				'simple-action' => \Chibi\Router::linkTo(
+					['PostController', 'deleteAction'],
+					['id' => $this->context->transport->post->getId()]),
+				'data-confirm-text' => 'Are you sure you want to delete this post?',
+				'data-redirect-url' => \Chibi\Router::linkTo(['PostController', 'listView']),
+			];
+		}
+
+		$this->context->options = $options;
+		$this->renderExternal('sidebar-options');
+	?>
+</div>
+
+<div id="inner-content">
+	<?php if ($canEditAnything): ?>
+		<div class="unit edit-post">
+			<?php $this->renderExternal('post-edit') ?>
+		</div>
+	<?php endif ?>
+
+	<div class="post-wrapper post-type-<?= $this->context->transport->post->getType()->toString() ?>">
+		<?php $this->renderExternal('post-file-render') ?>
+	</div>
+
+	<?php
+		$this->assets->addStylesheet('comment-list.css');
+		$this->assets->addStylesheet('comment-small.css');
+	?>
+
+	<div class="comments-wrapper">
+		<?php if (!empty($this->context->transport->post->getComments())): ?>
+			<div class="unit comments">
+				<h1>comments (<?= count($this->context->transport->post->getComments()) ?>)</h1>
+				<div class="comments">
+					<?php foreach ($this->context->transport->post->getComments() as $comment): ?>
+						<?php $this->context->comment = $comment ?>
+						<?php $this->renderExternal('comment-small') ?>
+					<?php endforeach ?>
+				</div>
+			</div>
+		<?php endif ?>
+	</div>
+
+	<?php if (Access::check(new Privilege(Privilege::AddComment))): ?>
+		<div class="unit comment-add">
+			<?php $this->renderExternal('comment-add') ?>
+		</div>
+	<?php endif ?>
+</div>

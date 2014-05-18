@@ -1,0 +1,100 @@
+<?php
+$settings = $this->context->transport->user->getSettings();
+?>
+
+<form
+	action="<?= \Chibi\Router::linkTo(
+		['UserController', 'settingsAction'],
+		['identifier' => $this->context->transport->user->getName()]) ?>"
+	method="post"
+	class="settings">
+
+	<div class="form-row safety">
+		<label>Safety:</label>
+		<div class="input-wrapper">
+			<?php foreach (PostSafety::getAll() as $safety): ?>
+				<?php if (Access::check(new Privilege(
+					Privilege::ListPosts,
+					$safety->toString()))): ?>
+					<label>
+						<?php
+							$attrs = [];
+							$attrs['type'] = 'checkbox';
+							$attrs['name'] = 'safety[]';
+							$attrs['value'] = $safety->toInteger();
+							if ($settings->hasEnabledSafety($safety))
+								$attrs['checked'] = 'checked';
+
+							echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+						?>
+						<?= ucfirst($safety->toDisplayString()) ?>
+					</label>
+				<?php endif ?>
+			<?php endforeach ?>
+		</div>
+	</div>
+
+	<div class="form-row endless-scrolling">
+		<label for="endless-scrolling">Endless scrolling:</label>
+		<div class="input-wrapper">
+			<label>
+				<?php
+					$attrs = [];
+					$attrs['type'] = 'checkbox';
+					$attrs['id'] = 'endless-scrolling';
+					$attrs['name'] = 'endless-scrolling';
+					if ($settings->hasEnabledEndlessScrolling())
+						$attrs['checked'] = 'checked';
+
+					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+				?>
+				Enabled
+			</label>
+		</div>
+	</div>
+
+	<div class="form-row post-tag-titles">
+		<label for="post-tag-titles">Tags in thumbs:</label>
+		<div class="input-wrapper">
+			<label>
+				<?php
+					$attrs = [];
+					$attrs['type'] = 'checkbox';
+					$attrs['id'] = 'post-tag-titles';
+					$attrs['name'] = 'post-tag-titles';
+					if ($settings->hasEnabledPostTagTitles())
+						$attrs['checked'] = 'checked';
+
+					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+				?>
+				Enabled
+			</label>
+		</div>
+	</div>
+
+	<div class="form-row hide-disliked-posts">
+		<label for="hide-disliked-posts">Hide down-voted:</label>
+		<div class="input-wrapper">
+			<label>
+				<?php
+					$attrs = [];
+					$attrs['type'] = 'checkbox';
+					$attrs['id'] = 'hide-disliked-posts';
+					$attrs['name'] = 'hide-disliked-posts';
+					if ($settings->hasEnabledHidingDislikedPosts())
+						$attrs['checked'] = 'checked';
+
+					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
+				?>
+				Enabled
+			</label>
+		</div>
+	</div>
+
+	<?php $this->renderExternal('message') ?>
+
+	<div class="form-row">
+		<label></label>
+		<button class="submit" type="submit">Update settings</button>
+	</div>
+</form>

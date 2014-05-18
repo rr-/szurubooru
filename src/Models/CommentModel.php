@@ -2,57 +2,56 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class CommentModel extends AbstractCrudModel
+final class CommentModel extends AbstractCrudModel
 {
 	public static function getTableName()
 	{
 		return 'comment';
 	}
 
-	public static function spawn()
+	protected static function saveSingle($comment)
 	{
-		$comment = new CommentEntity;
-		$comment->commentDate = time();
-		return $comment;
-	}
+		$comment->validate();
+		$comment->getPost()->removeCache('comment_count');
 
-	public static function save($comment)
-	{
 		Database::transaction(function() use ($comment)
 		{
 			self::forgeId($comment);
 
 			$bindings = [
-				'text' => $comment->text,
-				'post_id' => $comment->postId,
-				'comment_date' => $comment->commentDate,
-				'commenter_id' => $comment->commenterId];
+				'text' => $comment->getText(),
+				'post_id' => $comment->getPostId(),
+				'comment_date' => $comment->getCreationTime(),
+				'commenter_id' => $comment->getCommenterId()];
 
 			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->getId())));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new Sql\Binding($val));
 
 			Database::exec($stmt);
 		});
+
+		return $comment;
 	}
 
-	public static function remove($comment)
+	protected static function removeSingle($comment)
 	{
 		Database::transaction(function() use ($comment)
 		{
+			$comment->getPost()->removeCache('comment_count');
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->getId())));
 			Database::exec($stmt);
 		});
 	}
 
 
 
-	public static function findAllByPostId($key)
+	public static function getAllByPostId($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('comment.*');
@@ -61,7 +60,7 @@ class CommentModel extends AbstractCrudModel
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
-			return self::convertRows($rows);
+			return self::spawnFromDatabaseRows($rows);
 		return [];
 	}
 
@@ -70,34 +69,18 @@ class CommentModel extends AbstractCrudModel
 	public static function preloadCommenters($comments)
 	{
 		self::preloadOneToMany($comments,
-			function($comment) { return $comment->commenterId; },
-			function($user) { return $user->id; },
-			function($userIds) { return UserModel::findByIds($userIds); },
+			function($comment) { return $comment->getCommenterId(); },
+			function($user) { return $user->getId(); },
+			function($userIds) { return UserModel::getAllByIds($userIds); },
 			function($comment, $user) { return $comment->setCache('commenter', $user); });
 	}
 
 	public static function preloadPosts($comments)
 	{
 		self::preloadOneToMany($comments,
-			function($comment) { return $comment->postId; },
-			function($post) { return $post->id; },
-			function($postIds) { return PostModel::findByIds($postIds); },
+			function($comment) { return $comment->getPostId(); },
+			function($post) { return $post->getId(); },
+			function($postIds) { return PostModel::getAllByIds($postIds); },
 			function($comment, $post) { $comment->setCache('post', $post); });
-	}
-
-
-
-	public static function validateText($text)
-	{
-		$text = trim($text);
-		$config = getConfig();
-
-		if (strlen($text) < $config->comments->minLength)
-			throw new SimpleException('Comment must have at least %d characters', $config->comments->minLength);
-
-		if (strlen($text) > $config->comments->maxLength)
-			throw new SimpleException('Comment must have at most %d characters', $config->comments->maxLength);
-
-		return $text;
 	}
 }

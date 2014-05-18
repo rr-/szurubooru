@@ -1,6 +1,6 @@
 <?php
-Assets::setSubTitle('authentication form');
-Assets::addStylesheet('auth.css');
+$this->assets->setSubTitle('authentication form');
+$this->assets->addStylesheet('auth.css');
 ?>
 
 <form
@@ -11,7 +11,7 @@ Assets::addStylesheet('auth.css');
 
 	<p>
 		If you don't have an account yet,<br/>
-		<a href="<?= \Chibi\Router::linkTo(['UserController', 'registrationAction']); ?>">click here</a> to create a new one.
+		<a href="<?= \Chibi\Router::linkTo(['UserController', 'registrationView']); ?>">click here</a> to create a new one.
 	</p>
 
 	<div class="form-row">
@@ -34,18 +34,16 @@ Assets::addStylesheet('auth.css');
 		</div>
 	</div>
 
-	<?php \Chibi\View::render('message', $this->context) ?>
-
-	<input type="hidden" name="submit" value="1"/>
+	<?php $this->renderExternal('message') ?>
 
 	<div class="form-row help">
 		<label></label>
 		<div>
 			<p>Problems logging in?</p>
 			<ul>
-				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'passwordResetProxyAction']) ?>">I don't remember my password</a></li>
-				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'activationProxyAction']) ?>">I haven't received activation e-mail</a></li>
-				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'registrationAction']) ?>">I don't have an account</a></li>
+				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'passwordResetView']) ?>">I don't remember my password</a></li>
+				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'activationView']) ?>">I haven't received activation e-mail</a></li>
+				<li><a href="<?= \Chibi\Router::linkTo(['UserController', 'registrationView']) ?>">I don't have an account</a></li>
 			</ul>
 		</div>
 	</div>

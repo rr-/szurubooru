@@ -1,0 +1,124 @@
+<?php
+$this->assets->setSubTitle('upload');
+$this->assets->addStylesheet('post-upload.css');
+$this->assets->addScript('post-upload.js');
+$this->assets->addStylesheet('../lib/tagit/jquery.tagit.css');
+$this->assets->addScript('../lib/tagit/jquery.tagit.js');
+?>
+
+<div id="sidebar">
+	<div class="unit">
+		<h1>file upload</h1>
+
+		<p>Use tags to describe uploaded images. Try to specify characters, their look and shows they are from.</p>
+		<p>Set proper visibility setting if the image isn&rsquo;t safe for work or you&rsquo;re not sure it&rsquo;s 100% <span class="safety-safe">safe</span>.</p>
+		<p>Only registered users can view <span class="safety-sketchy">sketchy</span> or <span class="safety-unsafe">NSFW</span> content.</p>
+		<p>Click submit when you&rsquo;re done.</p>
+	</div>
+</div>
+
+<div id="inner-content">
+	<div id="upload-step1">
+		<div id="file-handler-wrapper">
+			<input type=file multiple style="display: none"/>
+			<div id="file-handler">
+				Drop files here!<br>
+				Or just click on this box.
+			</div>
+		</div>
+
+		<div id="url-handler-wrapper">
+			<div id="url-handler">
+				<div class="input-wrapper"><input placeholder="Alternatively, paste an URL here." name="url"/></div>
+				<button class="submit" type="submit">Add URL</button>
+			</div>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+
+	<div id="upload-step2" data-redirect-url="<?= \Chibi\Router::linkTo(['PostController', 'listView']) ?>">
+		<hr>
+
+		<div class="posts">
+		</div>
+
+		<div class="submit-wrapper">
+			<button id="the-submit" class="submit" type="submit">Submit</button>
+		</div>
+	</div>
+
+	<div id="post-template" class="post">
+		<p class="alert alert-error">Some kind of error</p>
+
+		<img class="thumbnail" src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+
+		<div class="form-wrapper">
+			<div class="ops">
+				<a class="move-up-trigger">
+					move up <span>&uarr;</span>
+				</a>
+
+				<a class="move-down-trigger">
+					move down <span>&darr;</span>
+				</a>
+
+				<a class="remove-trigger">
+					remove <span>&times;</span>
+				</a>
+			</div>
+
+			<form action="<?= \Chibi\Router::linkTo(['PostController', 'uploadAction']) ?>" method="post">
+				<div class="form-row file-name">
+					<label>File:</label>
+					<div class="input-wrapper">
+						<strong>filename.jpg</strong>
+					</div>
+				</div>
+
+				<div class="form-row safety">
+					<label>Safety:</label>
+					<div class="input-wrapper">
+						<?php $checked = false ?>
+						<?php foreach (PostSafety::getAll() as $safety): ?>
+							<label>
+								<input
+									type="radio"
+									name="safety"
+									<?php if (!$checked): ?>
+										checked="checked"
+									<?php endif ?>
+									value="<?= $safety->toInteger() ?>" />
+
+								<?= ucfirst($safety->toDisplayString()) ?>
+
+								<?php $checked = true ?>
+							</label>
+						<?php endforeach ?>
+						<input type="hidden" name="anonymous" value="0"/>
+						<label>
+							<input type="checkbox" name="anonymous" value="1"/>
+							Upload anonymously
+						</label>
+					</div>
+				</div>
+
+				<div class="form-row tags">
+					<label>Tags:</label>
+					<div class="input-wrapper">
+						<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
+					</div>
+				</div>
+
+				<div class="form-row source">
+					<label>Source:</label>
+					<div class="input-wrapper">
+						<input type="text" name="source" placeholder="where did you get this from? (optional)"/>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<img id="lightbox" src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Preview"/>

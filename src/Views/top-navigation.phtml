@@ -2,8 +2,20 @@
 	<?php
 	$nav = [];
 
-	$activeController = $this->context->simpleControllerName;
-	$activeAction = $this->context->simpleActionName;
+	list ($className, $methodName)
+		= isset($this->context->route)
+		? $this->context->route->destination
+		: [null, null];
+
+	$activeController = TextCaseConverter::convert(
+		str_replace('Controller', '', $className),
+		TextCaseConverter::CAMEL_CASE,
+		TextCaseConverter::SPINAL_CASE);
+
+	$activeAction = TextCaseConverter::convert(
+		preg_replace('/Action|View/', '', $methodName),
+		TextCaseConverter::CAMEL_CASE,
+		TextCaseConverter::SPINAL_CASE);
 
 	$registerNavItem = function ($text, $link, $active = false) use (&$nav)
 	{
@@ -15,82 +27,82 @@
 
 	$registerNavItem(
 		'Home',
-		\Chibi\Router::linkTo(['IndexController', 'indexAction']),
-		$activeController == 'index' and $activeAction == 'index');
+		\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']),
+		$activeController == 'static-pages' and $activeAction == 'main-page');
 
-	if (Access::check(Privilege::ListPosts))
+	if (Access::check(new Privilege(Privilege::ListPosts)))
 	{
 		$registerNavItem(
 			'Browse',
-			\Chibi\Router::linkTo(['PostController', 'listAction']),
+			\Chibi\Router::linkTo(['PostController', 'listView']),
 			$activeController == 'post' and $activeAction != 'upload');
 	}
 
-	if (Access::check(Privilege::UploadPost))
+	if (Access::check(new Privilege(Privilege::AddPost)))
 	{
 		$registerNavItem(
 			'Upload',
-			\Chibi\Router::linkTo(['PostController', 'uploadAction']),
+			\Chibi\Router::linkTo(['PostController', 'uploadView']),
 			$activeController == 'post' and $activeAction == 'upload');
 	}
 
-	if (Access::check(Privilege::ListComments))
+	if (Access::check(new Privilege(Privilege::ListComments)))
 	{
 		$registerNavItem(
 			'Comments',
-			\Chibi\Router::linkTo(['CommentController', 'listAction']),
+			\Chibi\Router::linkTo(['CommentController', 'listView']),
 			$activeController == 'comment');
 	}
 
-	if (Access::check(Privilege::ListTags))
+	if (Access::check(new Privilege(Privilege::ListTags)))
 	{
 		$registerNavItem(
 			'Tags',
-			\Chibi\Router::linkTo(['TagController', 'listAction']),
+			\Chibi\Router::linkTo(['TagController', 'listView']),
 			$activeController == 'tag');
 	}
 
-	if (Access::check(Privilege::ListUsers))
+	if (Access::check(new Privilege(Privilege::ListUsers)))
 	{
 		$registerNavItem(
 			'Users',
-			\Chibi\Router::linkTo(['UserController', 'listAction']),
+			\Chibi\Router::linkTo(['UserController', 'listView']),
 			$activeController == 'user' and $activeAction != 'registration' and
-				(!isset($this->context->route->arguments['name']) or
-					$this->context->route->arguments['name'] != Auth::getCurrentUser()->name));
+				(!isset($this->context->route->arguments['identifier']) or
+					$this->context->route->arguments['identifier'] != Auth::getCurrentUser()->getName()));
 	}
 
 	if (!Auth::isLoggedIn())
 	{
 		$registerNavItem(
 			'Log in',
-			\Chibi\Router::linkTo(['AuthController', 'loginAction']),
+			\Chibi\Router::linkTo(['AuthController', 'loginView']),
 			$activeController == 'auth' and $activeAction == 'login');
 
 		$registerNavItem(
 			'Register',
-			\Chibi\Router::linkTo(['UserController', 'registrationAction']),
+			\Chibi\Router::linkTo(['UserController', 'registrationView']),
 			$activeController == 'user' and $activeAction == 'registration');
 	}
 	else
 	{
 		$registerNavItem(
 			'My account',
-			\Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => Auth::getCurrentUser()->name]),
-			$activeController == 'user' and isset($this->context->route->arguments['name']) and
-				$this->context->route->arguments['name'] == Auth::getCurrentUser()->name);
+			\Chibi\Router::linkTo(['UserController', 'genericView'], ['identifier' => Auth::getCurrentUser()->getName()]),
+			$activeController == 'user' and isset($this->context->route->arguments['identifier']) and
+				$this->context->route->arguments['identifier'] == Auth::getCurrentUser()->getName());
 
 		$registerNavItem(
 			'Log out',
 			\Chibi\Router::linkTo(['AuthController', 'logoutAction']));
 	}
 
-	if (!empty(getConfig()->help->title))
+	if (!empty(Core::getConfig()->help->title))
 	{
 		$registerNavItem(
-			getConfig()->help->title,
-			\Chibi\Router::linkTo(['IndexController', 'helpAction']),
-			$activeController == 'index' and $activeAction == 'help');
+			Core::getConfig()->help->title,
+			\Chibi\Router::linkTo(['StaticPagesController', 'helpView']),
+			$activeController == 'static-pages' and $activeAction == 'help');
 	}
 
 	foreach ($nav as $navItem)
@@ -104,30 +116,34 @@
 	}
 	?>
 
-	<?php if (Access::check(Privilege::ChangeUserSettings, Access::getIdentity(Auth::getCurrentUser()))): ?>
+	<?php if (Access::check(new Privilege(
+		Privilege::EditUserSettings,
+		Access::getIdentity(Auth::getCurrentUser())))): ?>
 		<li class="safety">
 			<ul>
 				<?php foreach (PostSafety::getAll() as $safety): ?>
-					<?php if (Access::check(
+					<?php if (Access::check(new Privilege(
 						Privilege::ListPosts,
-						PostSafety::toString($safety))): ?>
+						$safety->toString()))): ?>
 
 						<li class="safety-<?= TextCaseConverter::convert(
-							PostSafety::toString($safety),
+							$safety->toString(),
 							TextCaseConverter::CAMEL_CASE,
 							TextCaseConverter::SPINAL_CASE) ?>">
 
-							<a class="<?= Auth::getCurrentUser()->hasEnabledSafety($safety) ? 'enabled' : 'disabled' ?>"
+							<a class="simple-action <?= Auth::getCurrentUser()->getSettings()->hasEnabledSafety($safety)
+									? 'enabled'
+									: 'disabled' ?>"
 								href="<?= \Chibi\Router::linkTo(
 									['UserController', 'toggleSafetyAction'],
-									['safety' => $safety]) ?>"
+									['safety' => $safety->toInteger()]) ?>"
 								title="<?= sprintf('Searching %s posts: %s',
-									PostSafety::toDisplayString($safety),
-									Auth::getCurrentUser()->hasEnabledSafety($safety)
+									$safety->toDisplayString(),
+									Auth::getCurrentUser()->getSettings()->hasEnabledSafety($safety)
 										? 'enabled'
 										: 'disabled') ?>">
 
-								<span><?= ucfirst(PostSafety::toDisplayString($safety)) ?></span>
+								<span><?= ucfirst($safety->toDisplayString()) ?></span>
 
 							</a>
 						</li>
@@ -139,7 +155,9 @@
 	<?php endif ?>
 
 	<li class="search">
-		<form name="search" action="<?= \Chibi\Router::linkTo(['PostController', 'listAction']) ?>" method="get">
+		<form method="post"
+			action="<?= \Chibi\Router::linkTo(['PostController', 'listRedirectAction']) ?>"
+			name="search">
 
 			<input
 				class="autocomplete"

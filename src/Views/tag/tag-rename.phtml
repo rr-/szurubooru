@@ -1,0 +1,26 @@
+<div class="form-wrapper">
+	<form method="post" action="<?= \Chibi\Router::linkTo(['TagController', 'renameAction']) ?>">
+		<h1>rename tags</h1>
+
+		<div class="form-row">
+			<label for="rename-source-tag">Source tag:</label>
+			<div class="input-wrapper">
+				<input class="autocomplete" type="text" name="source-tag" id="rename-source-tag"/>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<label for="rename-target-tag">Target tag:</label>
+			<div class="input-wrapper">
+				<input type="text" name="target-tag" id="rename-target-tag"/>
+			</div>
+		</div>
+
+		<?php $this->renderExternal('message') ?>
+
+		<div class="form-row">
+			<label></label>
+			<button class="submit" type="submit">Rename!</button>
+		</div>
+	</form>
+</div>

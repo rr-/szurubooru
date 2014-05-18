@@ -145,6 +145,12 @@ footer span:not(:last-of-type):after {
 footer a {
 	color: silver;
 }
+footer .left {
+	float: left;
+}
+footer .right {
+	float: right;
+}
 
 
 
@@ -254,12 +260,12 @@ button {
 	box-sizing: border-box !important;
 	vertical-align: middle;
 	line-height: 24px;
-	height: 34px;
+	padding: 3px 5px;
+	height: 30px;
 }
 label,
 input,
 select {
-	padding: 5px;
 	font-family: inherit;
 	font-size: 11pt;
 }
@@ -290,7 +296,7 @@ button:hover {
 }
 
 .form-row {
-	margin: 0.25em 0;
+	margin: 0 0 0.5em 0;
 	clear: left;
 }
 .input-wrapper {
@@ -313,12 +319,19 @@ ul.tagit {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+	min-height: 32px;
+}
+ul.tagit li.tagit-new {
+	padding: 1px 0 !important;
+}
+ul.tagit li.tagit-choice {
+	padding: 1px 20px 1px 5px !important;
 }
 ul.tagit input {
 	border: 0 !important;
 	line-height: auto !important;
 	height: auto !important;
-	margin: -4px 0 !important;
+	padding: 0 !important;
 }
 .related-tags {
 	padding: 0.5em;

@@ -1,0 +1,60 @@
+<?php
+$this->assets->setSubTitle('tags');
+$this->assets->addStylesheet('tag-list.css');
+
+$tabs = [];
+if (Access::check(new Privilege(Privilege::ListTags)))
+	$tabs['list'] = ['List', 'listView'];
+
+if (Access::check(new Privilege(Privilege::RenameTags)))
+	$tabs['rename'] = ['Rename', 'renameView'];
+
+if (Access::check(new Privilege(Privilege::MergeTags)))
+	$tabs['merge'] = ['Merge', 'mergeView'];
+
+if (Access::check(new Privilege(Privilege::MassTag)))
+	$tabs['mass-tag'] = ['Mass tag', 'massTagRedirectAction'];
+
+$showTabs = count($tabs) > 1;
+?>
+
+<?php if ($showTabs): ?>
+	<nav class="tabs">
+		<ul>
+			<?php foreach ($tabs as $source => $item): ?>
+				<?php list ($name, $action) = $item ?>
+				<?php if ($this->context->source == $source): ?>
+					<li class="selected <?= $source ?>">
+				<?php else: ?>
+					<li class="<?= $source ?>">
+				<?php endif ?>
+					<a href="<?= \Chibi\Router::linkTo(['TagController', $action]) ?>">
+						<?= $name ?>
+					</a>
+				</li>
+			<?php endforeach  ?>
+		</ul>
+	</nav>
+
+	<div class="tab-content">
+<?php endif ?>
+
+<?php if ($this->context->source == 'merge'): ?>
+	<?php $this->renderExternal('tag-merge') ?>
+<?php endif ?>
+
+<?php if ($this->context->source == 'rename'): ?>
+	<?php $this->renderExternal('tag-rename') ?>
+<?php endif ?>
+
+<?php if ($this->context->source == 'list'): ?>
+	<?php $this->renderExternal('tag-list') ?>
+<?php endif ?>
+
+<?php if ($this->context->source == 'mass-tag'): ?>
+	<?php $this->renderExternal('tag-mass-tag') ?>
+<?php endif ?>
+
+<?php if ($showTabs): ?>
+	</div>
+<?php endif ?>

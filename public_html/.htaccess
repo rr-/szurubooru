@@ -1,10 +1,14 @@
 DirectorySlash Off
 Options -Indexes
 
+ErrorDocument 403 /fatal-error/403
+ErrorDocument 404 /fatal-error/404
+ErrorDocument 500 /fatal-error/500
+
 RewriteEngine On
-ErrorDocument 403 /dispatch.php?request=error/http&code=403
-ErrorDocument 404 /dispatch.php?request=error/http&code=404
-ErrorDocument 500 /dispatch.php?request=error/http&code=500
+RewriteCond %{DOCUMENT_ROOT}/thumbs/$1.thumb -f
+RewriteRule ^/?post/(.*)/thumb/?$ /thumbs/$1.thumb
+RewriteRule ^/?thumbs/(.*).thumb - [L,T=image/jpeg]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

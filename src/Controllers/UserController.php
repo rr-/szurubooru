@@ -1,618 +1,402 @@
 <?php
-class UserController
+class UserController extends AbstractController
 {
-	public function listAction($filter, $page)
+	public function listView($filter = 'order:alpha,asc', $page = 1)
 	{
-		$context = getContext();
-		Access::assert(
-			Privilege::ListUsers);
+		$ret = Api::run(
+			new ListUsersJob(),
+			[
+				JobArgs::ARG_PAGE_NUMBER => $page,
+				JobArgs::ARG_QUERY => $filter,
+			]);
 
-		$suppliedFilter = $filter ?: InputHelper::get('filter') ?: 'order:alpha,asc';
-		$page = max(1, intval($page));
-		$usersPerPage = intval(getConfig()->browsing->usersPerPage);
-
-		$users = UserSearchService::getEntities($suppliedFilter, $usersPerPage, $page);
-		$userCount = UserSearchService::getEntityCount($suppliedFilter);
-		$pageCount = ceil($userCount / $usersPerPage);
-		$page = min($pageCount, $page);
-
-		$context->filter = $suppliedFilter;
-		$context->transport->users = $users;
-		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $page;
-		$context->transport->paginator->pageCount = $pageCount;
-		$context->transport->paginator->entityCount = $userCount;
-		$context->transport->paginator->entities = $users;
-		$context->transport->paginator->params = func_get_args();
+		$context = Core::getContext();
+		$context->filter = $filter;
+		$context->transport->users = $ret->entities;
+		$context->transport->paginator = $ret;
+		$this->renderView('user-list');
 	}
 
-	public function flagAction($name)
+	public function genericView($identifier, $tab = 'favs', $page = 1)
 	{
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::FlagUser,
-			Access::getIdentity($user));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$key = TextHelper::reprUser($user);
-
-		$flagged = SessionHelper::get('flagged', []);
-		if (in_array($key, $flagged))
-			throw new SimpleException('You already flagged this user');
-		$flagged []= $key;
-		SessionHelper::set('flagged', $flagged);
-
-		LogHelper::log('{user} flagged {subject} for moderator attention', [
-			'subject' => TextHelper::reprUser($user)]);
+		$this->prepareGenericView($identifier, $tab, $page);
+		$this->renderView('user-view');
 	}
 
-	public function banAction($name)
+	public function settingsAction($identifier)
 	{
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::BanUser,
-			Access::getIdentity($user));
+		$this->prepareGenericView($identifier, 'settings');
 
-		if (!InputHelper::get('submit'))
-			return;
-
-		$user->banned = true;
-		UserModel::save($user);
-
-		LogHelper::log('{user} banned {subject}', ['subject' => TextHelper::reprUser($user)]);
-	}
-
-	public function unbanAction($name)
-	{
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::BanUser,
-			Access::getIdentity($user));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$user->banned = false;
-		UserModel::save($user);
-
-		LogHelper::log('{user} unbanned {subject}', ['subject' => TextHelper::reprUser($user)]);
-	}
-
-	public function acceptRegistrationAction($name)
-	{
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::AcceptUserRegistration);
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$user->staffConfirmed = true;
-		UserModel::save($user);
-		LogHelper::log('{user} confirmed {subject}\'s account', ['subject' => TextHelper::reprUser($user)]);
-	}
-
-	public function deleteAction($name)
-	{
-		$context = getContext();
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::ViewUser,
-			Access::getIdentity($user));
-		Access::assert(
-			Privilege::DeleteUser,
-			Access::getIdentity($user));
-
-		$this->loadUserView($user);
-		$context->transport->tab = 'delete';
-
-		$context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$name = $user->name;
-		if (Auth::getCurrentUser()->id == $user->id)
-		{
-			$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
-			if ($suppliedPasswordHash != $user->passHash)
-				throw new SimpleException('Must supply valid password');
-		}
-
-		$oldId = $user->id;
-		UserModel::remove($user);
-		if ($oldId == Auth::getCurrentUser()->id)
-			Auth::logOut();
-
-		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
-		LogHelper::log('{user} removed {subject}\'s account', ['subject' => TextHelper::reprUser($name)]);
-		exit;
-	}
-
-	public function settingsAction($name)
-	{
-		$context = getContext();
-		$user = UserModel::findByNameOrEmail($name);
-		Access::assert(
-			Privilege::ViewUser,
-			Access::getIdentity($user));
-		Access::assert(
-			Privilege::ChangeUserSettings,
-			Access::getIdentity($user));
-
-		$this->loadUserView($user);
-		$context->transport->tab = 'settings';
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$suppliedSafety = InputHelper::get('safety');
-		if (!is_array($suppliedSafety))
-			$suppliedSafety = [];
-		foreach (PostSafety::getAll() as $safety)
-			$user->enableSafety($safety, in_array($safety, $suppliedSafety));
-
-		$user->enableEndlessScrolling(InputHelper::get('endless-scrolling'));
-		$user->enablePostTagTitles(InputHelper::get('post-tag-titles'));
-		$user->enableHidingDislikedPosts(InputHelper::get('hide-disliked-posts'));
-
-		if ($user->accessRank != AccessRank::Anonymous)
-			UserModel::save($user);
-		if ($user->id == Auth::getCurrentUser()->id)
-			Auth::setCurrentUser($user);
-		Messenger::message('Browsing settings updated!');
-	}
-
-	public function editAction($name)
-	{
-		$context = getContext();
 		try
 		{
-			$user = UserModel::findByNameOrEmail($name);
-			Access::assert(
-				Privilege::ViewUser,
-				Access::getIdentity($user));
+			$suppliedSafety = InputHelper::get('safety');
+			$desiredSafety = PostSafety::makeFlags($suppliedSafety);
 
-			$this->loadUserView($user);
-			$context->transport->tab = 'edit';
+			$user = Api::run(
+				new EditUserSettingsJob(),
+				$this->appendUserIdentifierArgument(
+				[
+					JobArgs::ARG_NEW_SETTINGS =>
+					[
+						UserSettings::SETTING_SAFETY => $desiredSafety,
+						UserSettings::SETTING_ENDLESS_SCROLLING => InputHelper::get('endless-scrolling'),
+						UserSettings::SETTING_POST_TAG_TITLES => InputHelper::get('post-tag-titles'),
+						UserSettings::SETTING_HIDE_DISLIKED_POSTS => InputHelper::get('hide-disliked-posts'),
+					]
+				], $identifier));
 
-			$context->suppliedCurrentPassword = $suppliedCurrentPassword = InputHelper::get('current-password');
-			$context->suppliedName = $suppliedName = InputHelper::get('name');
-			$context->suppliedPassword1 = $suppliedPassword1 = InputHelper::get('password1');
-			$context->suppliedPassword2 = $suppliedPassword2 = InputHelper::get('password2');
-			$context->suppliedEmail = $suppliedEmail = InputHelper::get('email');
-			$context->suppliedAccessRank = $suppliedAccessRank = InputHelper::get('access-rank');
-			$currentPasswordHash = $user->passHash;
-
-			if (!InputHelper::get('submit'))
-				return;
-
-			$confirmMail = false;
-			LogHelper::bufferChanges();
-
-			if ($suppliedName != '' and $suppliedName != $user->name)
-			{
-				Access::assert(
-					Privilege::ChangeUserName,
-					Access::getIdentity($user));
-
-				$suppliedName = UserModel::validateUserName($suppliedName);
-				$oldName = $user->name;
-				$user->name = $suppliedName;
-				LogHelper::log('{user} renamed {old} to {new}', [
-					'old' => TextHelper::reprUser($oldName),
-					'new' => TextHelper::reprUser($suppliedName)]);
-			}
-
-			if ($suppliedPassword1 != '')
-			{
-				Access::assert(
-					Privilege::ChangeUserPassword,
-					Access::getIdentity($user));
-
-				if ($suppliedPassword1 != $suppliedPassword2)
-					throw new SimpleException('Specified passwords must be the same');
-				$suppliedPassword = UserModel::validatePassword($suppliedPassword1);
-				$user->passHash = UserModel::hashPassword($suppliedPassword, $user->passSalt);
-				LogHelper::log('{user} changed {subject}\'s password', ['subject' => TextHelper::reprUser($user)]);
-			}
-
-			if ($suppliedEmail != '' and $suppliedEmail != $user->emailConfirmed)
-			{
-				Access::assert(
-					Privilege::ChangeUserEmail,
-					Access::getIdentity($user));
-
-				$suppliedEmail = UserModel::validateEmail($suppliedEmail);
-				if (Auth::getCurrentUser()->id == $user->id)
-				{
-					$user->emailUnconfirmed = $suppliedEmail;
-					if (!empty($user->emailUnconfirmed))
-						$confirmMail = true;
-					LogHelper::log('{user} changed e-mail to {mail}', ['mail' => $suppliedEmail]);
-				}
-				else
-				{
-					$user->emailUnconfirmed = null;
-					$user->emailConfirmed = $suppliedEmail;
-					LogHelper::log('{user} changed {subject}\'s e-mail to {mail}', [
-						'subject' => TextHelper::reprUser($user),
-						'mail' => $suppliedEmail]);
-				}
-			}
-
-			if ($suppliedAccessRank != '' and $suppliedAccessRank != $user->accessRank)
-			{
-				Access::assert(
-					Privilege::ChangeUserAccessRank,
-					Access::getIdentity($user));
-
-				$suppliedAccessRank = UserModel::validateAccessRank($suppliedAccessRank);
-				$user->accessRank = $suppliedAccessRank;
-				LogHelper::log('{user} changed {subject}\'s access rank to {rank}', [
-					'subject' => TextHelper::reprUser($user),
-					'rank' => AccessRank::toString($suppliedAccessRank)]);
-			}
-
-			if (Auth::getCurrentUser()->id == $user->id)
-			{
-				$suppliedPasswordHash = UserModel::hashPassword($suppliedCurrentPassword, $user->passSalt);
-				if ($suppliedPasswordHash != $currentPasswordHash)
-					throw new SimpleException('Must supply valid current password');
-			}
-			UserModel::save($user);
-			if (Auth::getCurrentUser()->id == $user->id)
+			Core::getContext()->transport->user = $user;
+			if ($user->getId() == Auth::getCurrentUser()->getId())
 				Auth::setCurrentUser($user);
 
-			if ($confirmMail)
-				self::sendEmailChangeConfirmation($user);
-
-			LogHelper::flush();
-			$message = 'Account settings updated!';
-			if ($confirmMail)
-				$message .= ' You will be sent an e-mail address confirmation message soon.';
-			Messenger::message($message);
+			Messenger::success('Browsing settings updated!');
 		}
-		catch (Exception $e)
+		catch (SimpleException $e)
 		{
-			$context->transport->user = UserModel::findByNameOrEmail($name);
-			throw $e;
+			Messenger::fail($e->getMessage());
 		}
+
+		$this->renderView('user-view');
 	}
 
-	public function viewAction($name, $tab = 'favs', $page)
+	public function editAction($identifier)
 	{
-		$context = getContext();
-		$postsPerPage = intval(getConfig()->browsing->postsPerPage);
-		$user = UserModel::findByNameOrEmail($name);
-		if ($tab === null)
-			$tab = 'favs';
-		if ($page === null)
-			$page = 1;
+		$this->prepareGenericView($identifier, 'edit');
 
-		Access::assert(
-			Privilege::ViewUser,
-			Access::getIdentity($user));
+		try
+		{
+			$this->requirePasswordConfirmation();
 
-		$this->loadUserView($user);
+			if (InputHelper::get('password1') != InputHelper::get('password2'))
+				throw new SimpleException('Specified passwords must be the same');
 
-		$query = '';
-		if ($tab == 'uploads')
-			$query = 'submit:' . $user->name;
-		elseif ($tab == 'favs')
-			$query = 'fav:' . $user->name;
-		else
-			throw new SimpleException('Wrong tab');
+			$args =
+			[
+				JobArgs::ARG_NEW_USER_NAME => InputHelper::get('name'),
+				JobArgs::ARG_NEW_PASSWORD => InputHelper::get('password1'),
+				JobArgs::ARG_NEW_EMAIL => InputHelper::get('email'),
+				JobArgs::ARG_NEW_ACCESS_RANK => InputHelper::get('access-rank'),
+			];
+			$args = $this->appendUserIdentifierArgument($args, $identifier);
 
-		$page = max(1, $page);
-		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
-		$postCount = PostSearchService::getEntityCount($query, $postsPerPage, $page);
-		$pageCount = ceil($postCount / $postsPerPage);
-		PostModel::preloadTags($posts);
+			$args = array_filter($args);
+			$user = Api::run(new EditUserJob(), $args);
 
-		$context->transport->tab = $tab;
-		$context->transport->lastSearchQuery = $query;
-		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $page;
-		$context->transport->paginator->pageCount = $pageCount;
-		$context->transport->paginator->entityCount = $postCount;
-		$context->transport->paginator->entities = $posts;
-		$context->transport->posts = $posts;
+			if (Auth::getCurrentUser()->getId() == $user->getId())
+				Auth::setCurrentUser($user);
+
+			$message = 'Account settings updated!';
+			if (Mailer::getMailCounter() > 0)
+				$message .= ' You will be sent an e-mail address confirmation message soon.';
+
+			Messenger::success($message);
+		}
+		catch (SimpleException $e)
+		{
+			Messenger::fail($e->getMessage());
+		}
+
+		$this->renderView('user-view');
+	}
+
+	public function deleteAction($identifier)
+	{
+		$this->prepareGenericView($identifier, 'delete');
+
+		try
+		{
+			$this->requirePasswordConfirmation();
+
+			Api::run(
+				new DeleteUserJob(),
+				$this->appendUserIdentifierArgument([], $identifier));
+
+			$user = UserModel::tryGetById(Auth::getCurrentUser()->getId());
+			if (!$user)
+				Auth::logOut();
+
+			$this->redirectToMainPage();
+		}
+		catch (SimpleException $e)
+		{
+			Messenger::fail($e->getMessage());
+			$this->renderView('user-view');
+		}
 	}
 
 	public function toggleSafetyAction($safety)
 	{
+		$safety = new PostSafety($safety);
+		$safety->validate();
+
 		$user = Auth::getCurrentUser();
+		$user->getSettings()->enableSafety($safety, !$user->getSettings()->hasEnabledSafety($safety));
+		$desiredSafety = $user->getSettings()->get(UserSettings::SETTING_SAFETY);
 
-		Access::assert(
-			Privilege::ChangeUserSettings,
-			Access::getIdentity($user));
+		$user = Api::run(
+			new EditUserSettingsJob(),
+			[
+				JobArgs::ARG_USER_ENTITY => Auth::getCurrentUser(),
+				JobArgs::ARG_NEW_SETTINGS => [UserSettings::SETTING_SAFETY => $desiredSafety],
+			]);
 
-		if (!in_array($safety, PostSafety::getAll()))
-			throw new SimpleExcetpion('Invalid safety');
-
-		$user->enableSafety($safety, !$user->hasEnabledSafety($safety));
-
-		if ($user->accessRank != AccessRank::Anonymous)
-			UserModel::save($user);
 		Auth::setCurrentUser($user);
+		$this->redirectToLastVisitedUrl();
+	}
+
+	public function flagAction($identifier)
+	{
+		Api::run(
+			new FlagUserJob(),
+			$this->appendUserIdentifierArgument([], $identifier));
+		$this->redirectToGenericView($identifier);
+	}
+
+	public function banAction($identifier)
+	{
+		Api::run(
+			new ToggleUserBanJob(),
+			$this->appendUserIdentifierArgument([
+				JobArgs::ARG_NEW_STATE => true
+			], $identifier));
+		$this->redirectToGenericView($identifier);
+	}
+
+	public function unbanAction($identifier)
+	{
+		Api::run(
+			new ToggleUserBanJob(),
+			$this->appendUserIdentifierArgument([
+				JobArgs::ARG_NEW_STATE => true
+			], $identifier));
+		$this->redirectToGenericView($identifier);
+	}
+
+	public function acceptRegistrationAction($identifier)
+	{
+		Api::run(
+			new AcceptUserRegistrationJob(),
+			$this->appendUserIdentifierArgument([], $identifier));
+		$this->redirectToGenericView($identifier);
+	}
+
+	public function registrationView()
+	{
+		if (Auth::isLoggedIn())
+			$this->redirectToMainPage();
+		$this->renderView('user-registration');
 	}
 
 	public function registrationAction()
 	{
-		$context = getContext();
-		$context->handleExceptions = true;
-
-		//check if already logged in
-		if (Auth::isLoggedIn())
+		try
 		{
-			\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['IndexController', 'indexAction']));
-			exit;
+			if (InputHelper::get('password1') != InputHelper::get('password2'))
+				throw new SimpleException('Specified passwords must be the same');
+
+			$user = Api::run(new AddUserJob(),
+			[
+				JobArgs::ARG_NEW_USER_NAME => InputHelper::get('name'),
+				JobArgs::ARG_NEW_PASSWORD => InputHelper::get('password1'),
+				JobArgs::ARG_NEW_EMAIL => InputHelper::get('email'),
+			]);
+
+			if (!$this->isAnyAccountActivationNeeded())
+			{
+				Auth::setCurrentUser($user);
+			}
+
+			$message = 'Congratulations, your account was created.';
+			if (Mailer::getMailCounter() > 0)
+			{
+				$message .= ' Please wait for activation e-mail.';
+				if (Core::getConfig()->registration->staffActivation)
+					$message .= ' After this, your registration must be confirmed by staff.';
+			}
+			elseif (Core::getConfig()->registration->staffActivation)
+				$message .= ' Your registration must be now confirmed by staff.';
+
+			Messenger::success($message);
+		}
+		catch (SimpleException $e)
+		{
+			Messenger::fail($e->getMessage());
 		}
 
-		$suppliedName = InputHelper::get('name');
-		$suppliedPassword1 = InputHelper::get('password1');
-		$suppliedPassword2 = InputHelper::get('password2');
-		$suppliedEmail = InputHelper::get('email');
-		$context->suppliedName = $suppliedName;
-		$context->suppliedPassword1 = $suppliedPassword1;
-		$context->suppliedPassword2 = $suppliedPassword2;
-		$context->suppliedEmail = $suppliedEmail;
+		$this->renderView('user-registration');
+	}
 
-		if (!InputHelper::get('submit'))
-			return;
+	public function activationView()
+	{
+		$this->assets->setSubTitle('account activation');
+		$this->renderView('user-select');
+	}
 
-		$suppliedName = UserModel::validateUserName($suppliedName);
+	public function activationAction($tokenText)
+	{
+		$this->assets->setSubTitle('account activation');
+		$identifier = InputHelper::get('identifier');
 
-		if ($suppliedPassword1 != $suppliedPassword2)
-			throw new SimpleException('Specified passwords must be the same');
-		$suppliedPassword = UserModel::validatePassword($suppliedPassword1);
-
-		$suppliedEmail = UserModel::validateEmail($suppliedEmail);
-		if (empty($suppliedEmail) and getConfig()->registration->needEmailForRegistering)
-			throw new SimpleException('E-mail address is required - you will be sent confirmation e-mail.');
-
-		//register the user
-		$dbUser = UserModel::spawn();
-		$dbUser->name = $suppliedName;
-		$dbUser->passHash = UserModel::hashPassword($suppliedPassword, $dbUser->passSalt);
-		$dbUser->emailUnconfirmed = $suppliedEmail;
-
-		$dbUser->joinDate = time();
-		if (UserModel::getCount() == 0)
+		try
 		{
-			//very first user
-			$dbUser->accessRank = AccessRank::Admin;
-			$dbUser->staffConfirmed = true;
-			$dbUser->emailUnconfirmed = null;
-			$dbUser->emailConfirmed = $suppliedEmail;
+		if (empty($tokenText))
+		{
+			Api::run(
+				new ActivateUserEmailJob(),
+				$this->appendUserIdentifierArgument([], $identifier));
+
+			Messenger::success('Activation e-mail resent.');
 		}
 		else
 		{
-			$dbUser->accessRank = AccessRank::Registered;
-			$dbUser->staffConfirmed = false;
-			$dbUser->staffConfirmed = null;
+			$user = Api::run(new ActivateUserEmailJob(), [
+				JobArgs::ARG_TOKEN => $tokenText ]);
+
+			$message = 'Activation completed successfully.';
+			if (Core::getConfig()->registration->staffActivation)
+				$message .= ' However, your account still must be confirmed by staff.';
+			Messenger::success($message);
+
+			if (!Core::getConfig()->registration->staffActivation)
+				Auth::setCurrentUser($user);
+		}
+		}
+		catch (SimpleException $e)
+		{
+			Messenger::fail($e->getMessage());
 		}
 
-		//save the user to db if everything went okay
-		UserModel::save($dbUser);
-
-		if (!empty($dbUser->emailUnconfirmed))
-			self::sendEmailChangeConfirmation($dbUser);
-
-		$message = 'Congratulations, your account was created.';
-		if (!empty($context->mailSent))
-		{
-			$message .= ' Please wait for activation e-mail.';
-			if (getConfig()->registration->staffActivation)
-				$message .= ' After this, your registration must be confirmed by staff.';
-		}
-		elseif (getConfig()->registration->staffActivation)
-			$message .= ' Your registration must be now confirmed by staff.';
-
-		LogHelper::log('{subject} just signed up', ['subject' => TextHelper::reprUser($dbUser)]);
-		Messenger::message($message);
-
-		if (!getConfig()->registration->needEmailForRegistering and !getConfig()->registration->staffActivation)
-		{
-			Auth::setCurrentUser($dbUser);
-		}
+		$this->renderView('message');
 	}
 
-	public function activationAction($token)
+	public function passwordResetView()
 	{
-		$context = getContext();
-		$context->viewName = 'message';
-		Assets::setSubTitle('account activation');
-
-		$dbToken = TokenModel::findByToken($token);
-		TokenModel::checkValidity($dbToken);
-
-		$dbUser = $dbToken->getUser();
-		$dbUser->emailConfirmed = $dbUser->emailUnconfirmed;
-		$dbUser->emailUnconfirmed = null;
-		$dbToken->used = true;
-		TokenModel::save($dbToken);
-		UserModel::save($dbUser);
-
-		LogHelper::log('{subject} just activated account', ['subject' => TextHelper::reprUser($dbUser)]);
-		$message = 'Activation completed successfully.';
-		if (getConfig()->registration->staffActivation)
-			$message .= ' However, your account still must be confirmed by staff.';
-		Messenger::message($message);
-
-		if (!getConfig()->registration->staffActivation)
-		{
-			Auth::setCurrentUser($dbUser);
-		}
+		$this->assets->setSubTitle('password reset');
+		$this->renderView('user-select');
 	}
 
-	public function passwordResetAction($token)
+	public function passwordResetAction($tokenText)
 	{
-		$context = getContext();
-		$context->viewName = 'message';
-		Assets::setSubTitle('password reset');
+		$this->assets->setSubTitle('password reset');
+		$identifier = InputHelper::get('identifier');
 
-		$dbToken = TokenModel::findByToken($token);
-		TokenModel::checkValidity($dbToken);
-
-		$alphabet = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
-		$randomPassword = join('', array_map(function($x) use ($alphabet)
+		try
 		{
-			return $alphabet[$x];
-		}, array_rand($alphabet, 8)));
+			if (empty($tokenText))
+			{
+				Api::run(
+					new PasswordResetJob(),
+					$this->appendUserIdentifierArgument([], $identifier));
 
-		$dbUser = $dbToken->getUser();
-		$dbUser->passHash = UserModel::hashPassword($randomPassword, $dbUser->passSalt);
-		$dbToken->used = true;
-		TokenModel::save($dbToken);
-		UserModel::save($dbUser);
-
-		LogHelper::log('{subject} just reset password', ['subject' => TextHelper::reprUser($dbUser)]);
-		$message = 'Password reset successful. Your new password is **' . $randomPassword . '**.';
-		Messenger::message($message);
-
-		Auth::setCurrentUser($dbUser);
-	}
-
-	public function passwordResetProxyAction()
-	{
-		$context = getContext();
-		$context->viewName = 'user-select';
-		Assets::setSubTitle('password reset');
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$name = InputHelper::get('name');
-		$user = UserModel::findByNameOrEmail($name);
-		if (empty($user->emailConfirmed))
-			throw new SimpleException('This user has no e-mail confirmed; password reset cannot proceed');
-
-		self::sendPasswordResetConfirmation($user);
-		Messenger::message('E-mail sent. Follow instructions to reset password.');
-	}
-
-	public function activationProxyAction()
-	{
-		$context = getContext();
-		$context->viewName = 'user-select';
-		Assets::setSubTitle('account activation');
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$name = InputHelper::get('name');
-		$user = UserModel::findByNameOrEmail($name);
-		if (empty($user->emailUnconfirmed))
-		{
-			if (!empty($user->emailConfirmed))
-				throw new SimpleException('E-mail was already confirmed; activation skipped');
+				Messenger::success('E-mail sent. Follow instructions to reset password.');
+			}
 			else
-				throw new SimpleException('This user has no e-mail specified; activation cannot proceed');
+			{
+				$ret = Api::run(new PasswordResetJob(), [ JobArgs::ARG_TOKEN => $tokenText ]);
+
+				Messenger::success(sprintf(
+					'Password reset successful. Your new password is **%s**.',
+					$ret->newPassword));
+
+				Auth::setCurrentUser($ret->user);
+			}
 		}
-		self::sendEmailChangeConfirmation($user);
-		Messenger::message('Activation e-mail resent.');
-	}
-
-	private function loadUserView($user)
-	{
-		$context = getContext();
-		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
-		$context->flagged = $flagged;
-		$context->transport->user = $user;
-		$context->handleExceptions = true;
-		$context->viewName = 'user-view';
-	}
-
-	private static function sendTokenizedEmail(
-		$user,
-		$body,
-		$subject,
-		$senderName,
-		$senderEmail,
-		$recipientEmail,
-		$linkActionName)
-	{
-		//prepare unique user token
-		$token = TokenModel::spawn();
-		$token->setUser($user);
-		$token->token = TokenModel::forgeUnusedToken();
-		$token->used = false;
-		$token->expires = null;
-		TokenModel::save($token);
-
-		getContext()->mailSent = true;
-		$tokens = [];
-		$tokens['host'] = $_SERVER['HTTP_HOST'];
-		$tokens['token'] = $token->token; //gosh this code looks so silly
-		$tokens['nl'] = PHP_EOL;
-		if ($linkActionName !== null)
-			$tokens['link'] = \Chibi\Router::linkTo(['UserController', $linkActionName], ['token' => $token->token]);
-
-		$body = wordwrap(TextHelper::replaceTokens($body, $tokens), 70);
-		$subject = TextHelper::replaceTokens($subject, $tokens);
-		$senderName = TextHelper::replaceTokens($senderName, $tokens);
-		$senderEmail = TextHelper::replaceTokens($senderEmail, $tokens);
-
-		if (empty($recipientEmail))
-			throw new SimpleException('Destination e-mail address was not found');
-
-		$messageId = $_SERVER['REQUEST_TIME'] . md5($_SERVER['REQUEST_TIME']) . '@' . $_SERVER['HTTP_HOST'];
-
-		$headers = [];
-		$headers []= sprintf('MIME-Version: 1.0');
-		$headers []= sprintf('Content-Transfer-Encoding: 7bit');
-		$headers []= sprintf('Date: %s', date('r', $_SERVER['REQUEST_TIME']));
-		$headers []= sprintf('Message-ID: <%s>', $messageId);
-		$headers []= sprintf('From: %s <%s>', $senderName, $senderEmail);
-		$headers []= sprintf('Reply-To: %s', $senderEmail);
-		$headers []= sprintf('Return-Path: %s', $senderEmail);
-		$headers []= sprintf('Subject: %s', $subject);
-		$headers []= sprintf('Content-Type: text/plain; charset=utf-8', $subject);
-		$headers []= sprintf('X-Mailer: PHP/%s', phpversion());
-		$headers []= sprintf('X-Originating-IP: %s', $_SERVER['SERVER_ADDR']);
-		$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-		mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail);
-
-		LogHelper::log('Sending e-mail with subject "{subject}" to {mail}', [
-			'subject' => $subject,
-			'mail' => $recipientEmail]);
-	}
-
-	private static function sendEmailChangeConfirmation($user)
-	{
-		$regConfig = getConfig()->registration;
-		if (!$regConfig->confirmationEmailEnabled)
+		catch (SimpleException $e)
 		{
-			$user->emailConfirmed = $user->emailUnconfirmed;
-			$user->emailUnconfirmed = null;
-			return;
+			Messenger::fail($e->getMessage());
 		}
 
-		return self::sendTokenizedEmail(
-			$user,
-			$regConfig->confirmationEmailBody,
-			$regConfig->confirmationEmailSubject,
-			$regConfig->confirmationEmailSenderName,
-			$regConfig->confirmationEmailSenderEmail,
-			$user->emailUnconfirmed,
-			'activationAction');
+		$this->renderView('message');
 	}
 
-	private static function sendPasswordResetConfirmation($user)
-	{
-		$regConfig = getConfig()->registration;
 
-		return self::sendTokenizedEmail(
-			$user,
-			$regConfig->passwordResetEmailBody,
-			$regConfig->passwordResetEmailSubject,
-			$regConfig->passwordResetEmailSenderName,
-			$regConfig->passwordResetEmailSenderEmail,
-			$user->emailConfirmed,
-			'passwordResetAction');
+	private function prepareGenericView($identifier, $tab, $page = 1)
+	{
+		$user = Api::run(
+			new GetUserJob(),
+			$this->appendUserIdentifierArgument([], $identifier));
+
+		$flagged = in_array(TextHelper::reprUser($user), SessionHelper::get('flagged', []));
+
+		if ($tab == 'uploads')
+			$query = 'submit:' . $user->getName();
+		elseif ($tab == 'favs')
+			$query = 'fav:' . $user->getName();
+
+		elseif ($tab == 'delete')
+		{
+			Access::assert(new Privilege(
+				Privilege::DeleteUser,
+				Access::getIdentity($user)));
+		}
+		elseif ($tab == 'settings')
+		{
+			Access::assert(new Privilege(
+				Privilege::EditUserSettings,
+				Access::getIdentity($user)));
+		}
+		elseif ($tab == 'edit' and !(new EditUserJob)->canEditAnything(Auth::getCurrentUser()))
+			Access::fail();
+
+		$context = Core::getContext();
+		$context->flagged = $flagged;
+		$context->transport->tab = $tab;
+		$context->transport->user = $user;
+
+		if (isset($query))
+		{
+			$ret = Api::run(
+				new ListPostsJob(),
+				[
+					JobArgs::ARG_PAGE_NUMBER => $page,
+					JobArgs::ARG_QUERY => $query
+				]);
+
+			$context->transport->posts = $ret->entities;
+			$context->transport->paginator = $ret;
+			$context->transport->lastSearchQuery = $query;
+		}
+	}
+
+
+	private function isAnyAccountActivationNeeded()
+	{
+		$config = Core::getConfig();
+		return ($config->registration->needEmailForRegistering
+			or $config->registration->staffActivation);
+	}
+
+	private function requirePasswordConfirmation()
+	{
+		$user = Core::getContext()->transport->user;
+		if (Auth::getCurrentUser()->getId() == $user->getId())
+		{
+			$suppliedPassword = InputHelper::get('current-password');
+			$suppliedPasswordHash = UserModel::hashPassword($suppliedPassword, $user->getPasswordSalt());
+			if ($suppliedPasswordHash != $user->getPasswordHash())
+				throw new SimpleException('Must supply valid password');
+		}
+	}
+
+	private function appendUserIdentifierArgument(array $arguments, $userIdentifier)
+	{
+		if (strpos($userIdentifier, '@') !== false)
+			$arguments[JobArgs::ARG_USER_EMAIL] = $userIdentifier;
+		else
+			$arguments[JobArgs::ARG_USER_NAME] = $userIdentifier;
+		return $arguments;
+	}
+
+	private function redirectToMainPage()
+	{
+		$this->redirect(\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']));
+		exit;
+	}
+
+	private function redirectToGenericView($identifier)
+	{
+		$this->redirect(\Chibi\Router::linkTo(
+			['UserController', 'genericView'],
+			['identifier' => $identifier]));
 	}
 }

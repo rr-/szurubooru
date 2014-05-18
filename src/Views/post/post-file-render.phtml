@@ -1,0 +1,61 @@
+<?php
+$this->assets->setPageThumb(\Chibi\Router::linkTo(
+	['PostController', 'thumbView'],
+	['name' => $this->context->transport->post->getName()]));
+$post = $this->context->transport->post;
+?>
+
+<?php if ($post->getType()->toInteger() == PostType::Image): ?>
+
+	<?php if (!empty($this->context->imageLink)): ?>
+		<a href="<?= $this->context->imageLink ?>">
+	<?php endif ?>
+
+	<img alt="<?= $post->getName() ?>"
+		src="<?= \Chibi\Router::linkTo(
+			['PostController', 'fileView'],
+			['name' => $post->getName()]) ?>"/>
+
+	<?php if (!empty($this->context->imageLink)): ?>
+		</a>
+	<?php endif ?>
+
+<?php elseif ($post->getType()->toInteger() ==  PostType::Flash): ?>
+
+	<object
+		type="<?= $post->getMimeType() ?>"
+		width="<?= $post->getImageWidth() ?>"
+		height="<?= $post->getImageHeight() ?>"
+		data="<?= \Chibi\Router::linkTo(
+			['PostController', 'fileView'],
+			['name' => $post->getName()]) ?>">
+
+		<param name="wmode" value="opaque"/>
+		<param name="movie" value="<?= \Chibi\Router::linkTo(
+			['PostController', 'fileView'],
+			['name' => $post->getName()]) ?>"/>
+
+	</object>
+
+<?php elseif ($post->getType()->toInteger() == PostType::Youtube): ?>
+
+	<iframe
+		style="width: 800px; height: 600px; border: 0;"
+		src="//www.youtube.com/embed/<?= $post->getFileHash() ?>?wmode=opaque"
+		allowfullscreen>
+
+	</iframe>
+
+<?php elseif ($post->getType()->toInteger() == PostType::Video): ?>
+
+	<video style="max-width: 100%" controls>
+		<source
+			type="<?= $post->getMimeType() ?>"
+			src="<?= \Chibi\Router::linkTo(
+				['PostController', 'fileView'],
+				['name' => $post->getName()]) ?>">
+
+		Your browser doesn't support HTML5 &lt;video&gt; tag.
+	</video>
+
+<?php endif ?>

@@ -1,3 +1,6 @@
 <?php
-\Chibi\Util\Headers::set('Content-Type', 'application/json');
-echo TextHelper::jsonEncode($this->context->transport, '/.*(email|confirm|pass|salt)/i');
+if (!headers_sent())
+	\Chibi\Util\Headers::set('Content-Type', 'application/json');
+$serializer = new RecursiveSerializer($this->context->transport);
+$array = $serializer->serializeToArray();
+echo json_encode($array, JSON_UNESCAPED_UNICODE);

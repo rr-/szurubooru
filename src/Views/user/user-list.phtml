@@ -1,0 +1,75 @@
+<?php
+$this->assets->setSubTitle('users');
+$this->assets->addStylesheet('user-list.css');
+?>
+
+<nav class="sort-styles">
+	<ul>
+		<?php
+		$filters =
+		[
+			'order:alpha,asc' => 'Sort A&rarr;Z',
+			'order:alpha,desc' => 'Sort Z&rarr;A',
+			'order:date,asc' => 'Sort old&rarr;new',
+			'order:date,desc' => 'Sort new&rarr;old',
+		];
+
+		if (Core::getConfig()->registration->staffActivation)
+			$filters['pending'] = 'Pending staff review';
+		?>
+
+		<?php foreach ($filters as $key => $text): ?>
+			<?php if ($this->context->filter == $key): ?>
+				<li class="active">
+			<?php else: ?>
+				<li>
+			<?php endif ?>
+				<a href="<?= \Chibi\Router::linkTo(['UserController', 'listView'], ['filter' => $key]) ?>">
+					<?= $text ?>
+				</a>
+			</li>
+		<?php endforeach ?>
+	</ul>
+</nav>
+
+<?php if (empty($this->context->transport->users)): ?>
+	<p class="alert alert-warning">No users to show.</p>
+<?php else: ?>
+	<div class="users-wrapper">
+		<div class="users paginator-content">
+			<?php foreach ($this->context->transport->users as $user): ?>
+				<div class="user">
+					<a class="avatar" href="<?= \Chibi\Router::linkTo(
+						['UserController', 'genericView'],
+						['identifier' => $user->getName()]) ?>">
+						<img src="<?= htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?= $user->getName() ?>"/>
+					</a>
+					<div class="details">
+						<h1>
+							<a href="<?= \Chibi\Router::linkTo(
+								['UserController', 'genericView'],
+								['identifier' => $user->getName()]) ?>">
+								<?= $user->getName() ?>
+							</a>
+						</h1>
+
+						<div class="date-joined" title="<?= TextHelper::formatDate($user->getJoinTime(), true) ?>">
+							Joined: <?= TextHelper::formatDate($user->getJoinTime(), false) ?>
+						</div>
+
+						<div class="date-seen">
+							Last seen: <?= TextHelper::formatDate($user->getLastLoginTime(), false) ?>
+						</div>
+
+						<div class="post-count">
+							Uploads: <?= TextHelper::useDecimalUnits($user->getPostCount()) ?>
+						</div>
+					</div>
+				</div>
+			<?php endforeach ?>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<?php $this->renderExternal('paginator') ?>
+<?php endif ?>

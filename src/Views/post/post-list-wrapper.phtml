@@ -1,0 +1,65 @@
+<?php
+$this->assets->setSubTitle('posts');
+
+$tabs = [];
+$activeTab = 0;
+if (Access::check(new Privilege(Privilege::ListPosts)))
+	$tabs []= ['All posts', \Chibi\Router::linkTo(['PostController', 'listView'])];
+
+if (Access::check(new Privilege(Privilege::ListPosts)))
+{
+	$tabs []= ['Random', \Chibi\Router::linkTo(['PostController', 'randomView'])];
+	if ($this->context->source == 'random')
+		$activeTab = count($tabs) - 1;
+
+	$tabs []= ['Favorites', \Chibi\Router::linkTo(['PostController', 'favoritesView'])];
+	if ($this->context->source == 'favorites')
+		$activeTab = count($tabs) - 1;
+
+	$tabs []= ['Upvoted', \Chibi\Router::linkTo(['PostController', 'upvotedView'])];
+	if ($this->context->source == 'upvoted')
+		$activeTab = count($tabs) - 1;
+}
+
+if (Access::check(new Privilege(Privilege::MassTag)))
+{
+	$tabs []= ['Mass tag', \Chibi\Router::linkTo(['PostController', 'listView'], [
+		'source' => 'mass-tag',
+		'query' => isset($this->context->transport->searchQuery)
+			? htmlspecialchars($this->context->transport->searchQuery)
+			: '',
+		'page' => isset($this->context->transport->paginator)
+			? $this->context->transport->paginator->page
+			: 1])];
+
+	if ($this->context->source == 'mass-tag')
+		$activeTab = count($tabs) - 1;
+}
+
+?>
+
+<nav class="tabs">
+	<ul>
+		<?php foreach ($tabs as $i => $tab): ?>
+			<?php
+				list($name, $url) = $tab;
+				$classes = [];
+				$classes []= TextCaseConverter::convert($name,
+					TextCaseConverter::BLANK_CASE,
+					TextCaseConverter::SPINAL_CASE);
+				if ($i == $activeTab)
+					$classes []= 'selected';
+			?>
+
+			<li class="<?= join(' ', $classes) ?>">
+				<a href="<?= $url ?>">
+					<?= $name ?>
+				</a>
+			</li>
+		<?php endforeach  ?>
+	</ul>
+</nav>
+
+<div class="tab-content">
+	<?php $this->renderExternal('post-list') ?>
+</div>

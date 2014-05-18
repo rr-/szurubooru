@@ -1,0 +1,74 @@
+<?php
+	$this->assets->addStylesheet('comment-small.css');
+	$this->assets->addStylesheet('comment-edit.css');
+	$this->assets->addScript('comment-edit.js');
+?>
+
+<div class="comment">
+	<div class="avatar">
+		<?php $commenter = $this->context->comment->getCommenter() ?>
+		<?php if ($commenter): ?>
+			<a href="<?= \Chibi\Router::linkTo(
+				['UserController', 'genericView'],
+				['identifier' => $commenter->getName()]) ?>">
+				<img src="<?= htmlspecialchars($commenter->getAvatarUrl(40)) ?>" alt="<?= $commenter->getName() ?>"/>
+			</a>
+		<?php else: ?>
+			<img
+				src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>"
+				alt="<?= UserModel::getAnonymousName() ?>">
+		<?php endif ?>
+	</div>
+
+	<div class="body">
+		<div class="header">
+			<span class="nickname">
+				<?php if ($commenter): ?>
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'genericView'],
+						['identifier' => $commenter->getName()]) ?>">
+						<?= $commenter->getName() ?>
+					</a>
+				<?php else: ?>
+					<?= UserModel::getAnonymousName() ?>
+				<?php endif ?>
+			</span>
+
+			<span class="date" title="<?= TextHelper::formatDate($this->context->comment->getCreationTime(), true) ?>">
+				<?= TextHelper::formatDate($this->context->comment->getCreationTime(), false) ?>
+			</span>
+
+			<?php if (Access::check(new Privilege(
+				Privilege::EditComment,
+				Access::getIdentity($commenter)))): ?>
+				<span class="edit">
+					<a href="<?= \Chibi\Router::linkTo(
+						['CommentController', 'editView'],
+						['id' => $this->context->comment->getId()]) ?>">
+						edit
+					</a>
+				</span>
+			<?php endif ?>
+
+			<?php if (Access::check(new Privilege(
+				Privilege::DeleteComment,
+				Access::getIdentity($commenter)))): ?>
+				<span class="delete">
+					<a class="simple-action confirmable"
+						data-confirm-text="Are you sure you want to delete this comment?"
+						href="<?= \Chibi\Router::linkTo(
+						['CommentController', 'deleteAction'],
+						['id' => $this->context->comment->getId()]) ?>">
+						delete
+					</a>
+				</span>
+			<?php endif ?>
+		</div>
+
+		<div class="content">
+			<?= $this->context->comment->getTextMarkdown() ?>
+		</div>
+	</div>
+
+	<div class="clear"></div>
+</div>

@@ -1,0 +1,17 @@
+<?php
+$this->context->subTitle = 'latest logs';
+?>
+
+<?php if (empty($this->context->transport->logs)): ?>
+	<p class="alert alert-warning">No logs to show.</p>
+<?php else: ?>
+	<ul>
+		<?php foreach ($this->context->transport->logs as $log): ?>
+			<li>
+				<a href="<?= \Chibi\Router::linkTo(['LogController', 'logView'], ['name' => $log]) ?>">
+					<?= $log ?>
+				</a>
+			</li>
+		<?php endforeach ?>
+	</ul>
+<?php endif ?>

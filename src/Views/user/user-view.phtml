@@ -1,0 +1,292 @@
+<?php
+$this->assets->setSubTitle($this->context->transport->user->getName());
+$this->assets->addStylesheet('user-view.css');
+?>
+
+<div id="sidebar">
+	<div class="avatar-wrapper">
+		<a href="<?= \Chibi\Router::linkTo(
+			['UserController', 'genericView'],
+			['identifier' => $this->context->transport->user->getName()]) ?>">
+
+			<img
+				src="<?= htmlspecialchars($this->context->transport->user->getAvatarUrl(140)) ?>"
+				alt="<?= $this->context->transport->user->getName() ?>"/>
+		</a>
+		<h1><?= $this->context->transport->user->getName() ?></h1>
+	</div>
+
+	<div class="unit details">
+		<h1>details</h1>
+
+		<div class="key-value join-date">
+			<span class="key">Joined:</span>
+			<span
+				class="value"
+				title="<?= TextHelper::formatDate($this->context->transport->user->getJoinTime(), true) ?>">
+
+				<?= TextHelper::formatDate($this->context->transport->user->getJoinTime(), false) ?>
+
+			</span>
+		</div>
+
+		<div class="key-value last-login">
+			<span class="key">Last seen:</span>
+			<span
+				class="value"
+				title="<?= TextHelper::formatDate($this->context->transport->user->getLastLoginTime(), true) ?>">
+
+				<?= TextHelper::formatDate($this->context->transport->user->getLastLoginTime(), false) ?>
+
+			</span>
+		</div>
+
+		<div class="key-value access-rank">
+			<span class="key">Access rank:</span>
+			<span
+				class="value"
+				title="<?= $val = $this->context->transport->user->getAccessRank()->toDisplayString() ?>">
+
+				<?= $val ?>
+
+			</span>
+		</div>
+
+		<?php if (Access::check(new Privilege(
+			Privilege::ViewUserEmail,
+			Access::getIdentity($this->context->transport->user)))): ?>
+
+			<div class="key-value email">
+				<span class="key">E-mail:</span>
+				<span class="value" title="<?= $val = ($this->context->transport->user->getUnconfirmedEmail()
+						? '(unconfirmed) ' . $this->context->transport->user->getUnconfirmedEmail()
+						: $this->context->transport->user->getConfirmedEmail() ?: 'none specified') ?>">
+					<?= $val ?>
+				</span>
+				<br>(only you and staff can see this)
+			</div>
+		<?php endif ?>
+	</div>
+
+	<?php
+		$userModificationPrivileges = [
+			Privilege::EditUserName,
+			Privilege::EditUserEmail,
+			Privilege::EditUserPassword,
+			Privilege::EditUserAccessRank,
+		];
+		$userModificationPrivileges = array_fill_keys($userModificationPrivileges, false);
+		foreach (array_keys($userModificationPrivileges) as $privilege)
+		{
+
+			if (Access::check(new Privilege(
+				$privilege,
+				Access::getIdentity($this->context->transport->user))))
+			{
+				$userModificationPrivileges[$privilege] = true;
+			}
+		}
+		$canModifyAnything = count(array_filter($userModificationPrivileges)) > 0;
+
+		$options = [];
+
+		if ($canModifyAnything)
+		{
+			$options []=
+			[
+				'class' => 'edit',
+				'text' => 'Edit account settings',
+				'link' => \Chibi\Router::linkTo(
+					['UserController', 'editAction'],
+					['identifier' => $this->context->transport->user->getName(), 'tab' => 'edit']),
+			];
+		}
+
+		if (Access::check(new Privilege(Privilege::AcceptUserRegistration))
+			and !$this->context->transport->user->isStaffConfirmed()
+			and Core::getConfig()->registration->staffActivation)
+		{
+			$options []=
+			[
+				'class' => 'accept-registration',
+				'text' => 'Accept registration',
+				'simple-action' => \Chibi\Router::linkTo(
+					['UserController', 'acceptRegistrationAction'],
+					['identifier' => $this->context->transport->user->getName()]),
+			];
+		}
+
+		if (Access::check(new Privilege(
+			Privilege::FlagUser,
+			Access::getIdentity($this->context->transport->user))))
+		{
+			if ($this->context->flagged)
+			{
+				$options []=
+				[
+					'class' => 'flag',
+					'text' => 'Flagged',
+					'inactive' => true,
+				];
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'flag',
+					'text' => 'Flag for moderator attention',
+					'simple-action' => \Chibi\Router::linkTo(
+						['UserController', 'flagAction'],
+						['identifier' => $this->context->transport->user->getName()]),
+					'data-confirm-text' => 'Are you sure you want to flag this user?',
+				];
+			}
+		}
+
+		if (Access::check(new Privilege(
+			Privilege::BanUser,
+			Access::getIdentity($this->context->transport->user))))
+		{
+			if (!$this->context->transport->user->isBanned())
+			{
+				$options []=
+				[
+					'class' => 'ban',
+					'text' => 'Ban user',
+					'simple-action' => \Chibi\Router::linkTo(
+						['UserController', 'banAction'],
+						['identifier' => $this->context->transport->user->getName()]),
+					'data-confirm-text' => 'Are you sure you want to ban this user?',
+				];
+			}
+			else
+			{
+				$options []=
+				[
+					'class' => 'unban',
+					'text' => 'Unban user',
+					'simple-action' => \Chibi\Router::linkTo(
+						['UserController', 'unbanAction'],
+						['identifier' => $this->context->transport->user->getName()]),
+					'data-confirm-text' => 'Are you sure you want to unban this user?',
+				];
+			}
+		}
+
+		if (Access::check(new Privilege(
+			Privilege::DeleteUser,
+			Access::getIdentity($this->context->transport->user))))
+		{
+			$options []=
+			[
+				'class' => 'delete',
+				'text' => 'Delete account',
+				'link' => \Chibi\Router::linkTo(
+					['UserController', 'deleteAction'],
+					['identifier' => $this->context->transport->user->getName(), 'tab' => 'delete']),
+			];
+		}
+
+		$this->context->options = $options;
+		$this->renderExternal('sidebar-options');
+	?>
+</div>
+
+<div id="inner-content">
+	<nav class="tabs">
+		<ul>
+			<?php if ($this->context->transport->tab == 'favs'): ?>
+				<li class="selected favs">
+			<?php else: ?>
+				<li class="favs">
+			<?php endif ?>
+				<a href="<?= \Chibi\Router::linkTo(
+					['UserController', 'genericView'],
+					['identifier' => $this->context->transport->user->getName(),
+					'tab' => 'favs',
+					'page' => 1]) ?>">
+					Favs
+				</a>
+			</li>
+
+			<?php if ($this->context->transport->tab == 'uploads'): ?>
+				<li class="selected uploads">
+			<?php else: ?>
+				<li class="uploads">
+			<?php endif ?>
+				<a href="<?= \Chibi\Router::linkTo(
+					['UserController', 'genericView'],
+					['identifier' => $this->context->transport->user->getName(),
+					'tab' => 'uploads',
+					'page' => 1]) ?>">
+					Uploads
+				</a>
+			</li>
+
+			<?php if (Access::check(new Privilege(
+				Privilege::EditUserSettings,
+				Access::getIdentity($this->context->transport->user)))): ?>
+
+				<?php if ($this->context->transport->tab == 'settings'): ?>
+					<li class="selected settings">
+				<?php else: ?>
+					<li class="settings">
+				<?php endif ?>
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'genericView'],
+						['identifier' => $this->context->transport->user->getName(),
+						'tab' => 'settings']) ?>">
+						Browsing settings
+					</a>
+				</li>
+			<?php endif ?>
+
+			<?php if ($canModifyAnything): ?>
+				<?php if ($this->context->transport->tab == 'edit'): ?>
+					<li class="selected edit">
+				<?php else: ?>
+					<li class="edit">
+				<?php endif ?>
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'genericView'],
+						['identifier' => $this->context->transport->user->getName(),
+						'tab' => 'edit']) ?>">
+						Account settings
+					</a>
+				</li>
+			<?php endif ?>
+
+			<?php if (Access::check(new Privilege(
+				Privilege::DeleteUser,
+				Access::getIdentity($this->context->transport->user)))): ?>
+				<?php if ($this->context->transport->tab == 'delete'): ?>
+					<li class="selected delete">
+				<?php else: ?>
+					<li class="delete">
+				<?php endif ?>
+					<a href="<?= \Chibi\Router::linkTo(
+						['UserController', 'genericView'],
+						['identifier' => $this->context->transport->user->getName(),
+						'tab' => 'delete']) ?>">
+						Delete account
+					</a>
+				</li>
+			<?php endif ?>
+		</ul>
+	</nav>
+
+	<div class="tab-content">
+		<?php if (isset($this->context->transport->posts)): ?>
+			<?php $this->renderExternal('post-list') ?>
+		<?php endif ?>
+
+		<?php if ($this->context->transport->tab == 'settings'): ?>
+			<?php $this->renderExternal('user-settings') ?>
+		<?php elseif ($this->context->transport->tab == 'edit'): ?>
+			<?php $this->renderExternal('user-edit') ?>
+		<?php elseif ($this->context->transport->tab == 'delete'): ?>
+			<?php $this->renderExternal('user-delete') ?>
+		<?php endif ?>
+	</div>
+
+</div>

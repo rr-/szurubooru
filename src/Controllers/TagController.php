@@ -1,160 +1,163 @@
 <?php
-class TagController
+class TagController extends AbstractController
 {
-	public function listAction($filter = null, $page = 1)
+	public function listView($filter = 'order:alpha,asc', $page = 1)
 	{
-		$context = getContext();
-		$context->viewName = 'tag-list-wrapper';
-		Access::assert(Privilege::ListTags);
+		$ret = Api::run(
+			new ListTagsJob(),
+			[
+				JobArgs::ARG_PAGE_NUMBER => $page,
+				JobArgs::ARG_QUERY => $filter,
+			]);
 
-		$suppliedFilter = $filter ?: 'order:alpha,asc';
-		$page = max(1, intval($page));
-		$tagsPerPage = intval(getConfig()->browsing->tagsPerPage);
-
-		$tags = TagSearchService::getEntitiesRows($suppliedFilter, $tagsPerPage, $page);
-		$tagCount = TagSearchService::getEntityCount($suppliedFilter);
-		$pageCount = ceil($tagCount / $tagsPerPage);
-		$page = min($pageCount, $page);
-
-		$context->filter = $suppliedFilter;
-		$context->transport->tags = $tags;
-
-		if ($context->json)
-		{
-			$context->transport->tags = array_values(array_map(function($tag) {
-				return ['name' => $tag['name'], 'count' => $tag['post_count']];
-			}, $context->transport->tags));
-		}
-		else
-		{
-			$context->highestUsage = TagSearchService::getMostUsedTag()['post_count'];
-			$context->transport->paginator = new StdClass;
-			$context->transport->paginator->page = $page;
-			$context->transport->paginator->pageCount = $pageCount;
-			$context->transport->paginator->entityCount = $tagCount;
-			$context->transport->paginator->entities = $tags;
-		}
+		$context = Core::getContext();
+		$context->highestUsage = TagSearchService::getMostUsedTag()->getPostCount();
+		$context->filter = $filter;
+		$context->transport->tags = $ret->entities;
+		$context->transport->paginator = $ret;
+		$this->renderViewWithSource('tag-list-wrapper', 'list');
 	}
 
-	public function autoCompleteAction()
+	public function autoCompleteView()
 	{
-		$context = getContext();
-		Access::assert(Privilege::ListTags);
+		$filter = InputHelper::get('search');
+		$filter .= ' order:popularity,desc';
 
-		$suppliedSearch = InputHelper::get('search');
+		$job = new ListTagsJob();
+		$job->getPager()->setPageSize(15);
+		$ret = Api::run(
+			$job,
+			[
+				JobArgs::ARG_QUERY => $filter,
+				JobArgs::ARG_PAGE_NUMBER => 1,
+			]);
 
-		$filter = $suppliedSearch . ' order:popularity,desc';
-		$tags = TagSearchService::getEntitiesRows($filter, 15, 1);
-
+		$context = Core::getContext();
 		$context->transport->tags =
 			array_values(array_map(
 				function($tag)
 				{
 					return [
-						'name' => $tag['name'],
-						'count' => $tag['post_count']
+						'name' => $tag->getName(),
+						'count' => $tag->getPostCount(),
 					];
-				}, $tags));
+				}, $ret->entities));
+
+		$this->renderAjax();
 	}
 
-	public function relatedAction()
+	public function relatedView()
 	{
-		$context = getContext();
-		Access::assert(Privilege::ListTags);
+		$otherTags = (array) InputHelper::get('context');
+		$tag = InputHelper::get('tag');
 
-		$suppliedContext = (array) InputHelper::get('context');
-		$suppliedTag = InputHelper::get('tag');
+		$ret = Api::run(
+			(new ListRelatedTagsJob),
+			[
+				JobArgs::ARG_TAG_NAME => $tag,
+				JobArgs::ARG_TAG_NAMES => $otherTags,
+				JobArgs::ARG_PAGE_NUMBER => 1
+			]);
 
-		$limit = intval(getConfig()->browsing->tagsRelated);
-		$tags = TagSearchService::getRelatedTagRows($suppliedTag, $suppliedContext, $limit);
-
+		$context = Core::getContext();
 		$context->transport->tags =
 			array_values(array_map(
 				function($tag)
 				{
 					return [
-						'name' => $tag['name'],
-						'count' => $tag['post_count']
+						'name' => $tag->getName(),
+						'count' => $tag->getPostCount(),
 					];
-				}, $tags));
+				}, $ret->entities));
+
+		$this->renderAjax();
+	}
+
+	public function mergeView()
+	{
+		$this->renderViewWithSource('tag-list-wrapper', 'merge');
 	}
 
 	public function mergeAction()
 	{
-		$context = getContext();
-		$context->viewName = 'tag-list-wrapper';
-		$context->handleExceptions = true;
+		try
+		{
+			Api::run(
+				new MergeTagsJob(),
+				[
+					JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
+					JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
+				]);
 
-		Access::assert(Privilege::MergeTags);
-		if (!InputHelper::get('submit'))
-			return;
+			Messenger::success('Tags merged successfully.');
+		}
+		catch (SimpleException $e)
+		{
+			Messenger::fail($e->getMessage());
+		}
 
-		TagModel::removeUnused();
+		$this->renderViewWithSource('tag-list-wrapper', 'merge');
+	}
 
-		$suppliedSourceTag = InputHelper::get('source-tag');
-		$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
-
-		$suppliedTargetTag = InputHelper::get('target-tag');
-		$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
-
-		TagModel::merge($suppliedSourceTag, $suppliedTargetTag);
-
-		LogHelper::log('{user} merged {source} with {target}', [
-			'source' => TextHelper::reprTag($suppliedSourceTag),
-			'target' => TextHelper::reprTag($suppliedTargetTag)]);
-
-		Messenger::message('Tags merged successfully.');
+	public function renameView()
+	{
+		$this->renderViewWithSource('tag-list-wrapper', 'rename');
 	}
 
 	public function renameAction()
 	{
-		$context = getContext();
-		$context->viewName = 'tag-list-wrapper';
-		$context->handleExceptions = true;
+		try
+		{
+			Api::run(
+				new RenameTagsJob(),
+				[
+					JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
+					JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
+				]);
 
-		Access::assert(Privilege::MergeTags);
-		if (!InputHelper::get('submit'))
-			return;
+			Messenger::success('Tag renamed successfully.');
+		}
+		catch (Exception $e)
+		{
+			Messenger::fail($e->getMessage());
+		}
 
-		TagModel::removeUnused();
+		$this->renderViewWithSource('tag-list-wrapper', 'rename');
+	}
 
-		$suppliedSourceTag = InputHelper::get('source-tag');
-		$suppliedSourceTag = TagModel::validateTag($suppliedSourceTag);
-
-		$suppliedTargetTag = InputHelper::get('target-tag');
-		$suppliedTargetTag = TagModel::validateTag($suppliedTargetTag);
-
-		TagModel::rename($suppliedSourceTag, $suppliedTargetTag);
-
-		LogHelper::log('{user} renamed {source} to {target}', [
-			'source' => TextHelper::reprTag($suppliedSourceTag),
-			'target' => TextHelper::reprTag($suppliedTargetTag)]);
-
-		Messenger::message('Tag renamed successfully.');
+	public function massTagRedirectView()
+	{
+		Access::assert(new Privilege(Privilege::MassTag));
+		$this->renderViewWithSource('tag-list-wrapper', 'mass-tag');
 	}
 
 	public function massTagRedirectAction()
 	{
-		$context = getContext();
-		$context->viewName = 'tag-list-wrapper';
-
-		Access::assert(Privilege::MassTag);
-		if (!InputHelper::get('submit'))
-			return;
-
+		Access::assert(new Privilege(Privilege::MassTag));
 		$suppliedOldPage = intval(InputHelper::get('old-page'));
 		$suppliedOldQuery = InputHelper::get('old-query');
 		$suppliedQuery = InputHelper::get('query');
 		$suppliedTag = InputHelper::get('tag');
 
-		$params = [
+		$params =
+		[
 			'source' => 'mass-tag',
-			'query' => $suppliedQuery ?: ' ',
-			'additionalInfo' => $suppliedTag ? TagModel::validateTag($suppliedTag) : '',
+			'query' => $suppliedQuery ?: '',
+			'additionalInfo' => $suppliedTag ? $suppliedTag : '',
 		];
+
 		if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
 			$params['page'] = $suppliedOldPage;
-		\Chibi\Util\Url::forward(\Chibi\Router::linkTo(['PostController', 'listAction'], $params));
-		exit;
+
+		$url = \Chibi\Router::linkTo(['PostController', 'listView'], $params);
+		$this->redirect($url);
+	}
+
+
+	private function renderViewWithSource($viewName, $source)
+	{
+		$context = Core::getContext();
+		$context->source = $source;
+		$this->renderView($viewName);
 	}
 }

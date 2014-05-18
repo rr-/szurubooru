@@ -96,8 +96,8 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 
 		$codeblock = preg_replace('/\A\n+|\n+\z/', '', $codeblock);
 		$codeblock = preg_replace('/\n/', '<br/>', $codeblock);
-		$codeblock = preg_replace('/\t/', '&tab;', $codeblock);
-		$codeblock = preg_replace('/ /', '&nbsp;', $codeblock);
+		#$codeblock = preg_replace('/\t/', '&tab;', $codeblock);
+		#$codeblock = preg_replace('/ /', '&nbsp;', $codeblock);
 
 		$codeblock = "<pre><code>$codeblock\n</code></pre>";
 		return "\n\n".$this->hashBlock($codeblock)."\n\n";
@@ -127,7 +127,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 
 	protected function doPosts($text)
 	{
-		$link = \Chibi\Router::linkTo(['PostController', 'viewAction'], ['id' => '_post_']);
+		$link = \Chibi\Router::linkTo(['PostController', 'genericView'], ['id' => '_post_']);
 		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))@(\d+)/', function($x) use ($link)
 		{
 			return $this->hashPart('<a href="' . str_replace('_post_', $x[1], $link) . '"><code>' . $x[0] . '</code></a>');
@@ -136,7 +136,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 
 	protected function doTags($text)
 	{
-		$link = \Chibi\Router::linkTo(['PostController', 'listAction'], ['query' => '_query_']);
+		$link = \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => '_query_']);
 		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))#([()\[\]a-zA-Z0-9_.-]+)/', function($x) use ($link)
 		{
 			return $this->hashPart('<a href="' . str_replace('_query_', $x[1], $link) . '">' . $x[0] . '</a>');
@@ -145,7 +145,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 
 	protected function doUsers($text)
 	{
-		$link = \Chibi\Router::linkTo(['UserController', 'viewAction'], ['name' => '_name_']);
+		$link = \Chibi\Router::linkTo(['UserController', 'genericView'], ['name' => '_name_']);
 		return preg_replace_callback('/(?:(?<![^\s\(\)\[\]]))\+([a-zA-Z0-9_-]+)/', function($x) use ($link)
 		{
 			return $this->hashPart('<a href="' . str_replace('_name_', $x[1], $link) . '">' . $x[0] . '</a>');
@@ -154,7 +154,7 @@ class CustomMarkdown extends \Michelf\MarkdownExtra
 
 	protected function doSearchPermalinks($text)
 	{
-		$link = \Chibi\Router::linkTo(['PostController', 'listAction'], ['query' => '_query_']);
+		$link = \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => '_query_']);
 		return preg_replace_callback('{\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]}is', function($x) use ($link)
 		{
 			return $this->hashPart('<a href="' . str_replace('_query_', urlencode($x[1]), $link) . '">' . $x[1] . '</a>');

@@ -2,32 +2,35 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class TagModel extends AbstractCrudModel
+final class TagModel extends AbstractCrudModel
 {
 	public static function getTableName()
 	{
 		return 'tag';
 	}
 
-	public static function save($tag)
+	protected static function saveSingle($tag)
 	{
+		$tag->validate();
+
 		Database::transaction(function() use ($tag)
 		{
 			self::forgeId($tag, 'tag');
 
 			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('tag');
-			$stmt->setColumn('name', new Sql\Binding($tag->name));
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($tag->id)));
+			$stmt->setColumn('name', new Sql\Binding($tag->getName()));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($tag->getId())));
 
 			Database::exec($stmt);
 		});
-		return $tag->id;
+
+		return $tag;
 	}
 
-	public static function remove($tag)
+	protected static function removeSingle($tag)
 	{
-		$binding = new Sql\Binding($tag->id);
+		$binding = new Sql\Binding($tag->getId());
 
 		$stmt = new Sql\DeleteStatement();
 		$stmt->setTable('post_tag');
@@ -44,13 +47,18 @@ class TagModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($sourceName, $targetName)
 		{
-			$sourceTag = TagModel::findByName($sourceName);
-			$targetTag = TagModel::findByName($targetName, false);
+			$sourceTag = self::getByName($sourceName);
+			$targetTag = self::tryGetByName($targetName);
 
-			if ($targetTag and $targetTag->id != $sourceTag->id)
+			if ($targetTag)
+			{
+				if ($sourceTag->getId() == $targetTag->getId())
+					throw new SimpleException('Source and target tag are the same');
+
 				throw new SimpleException('Target tag already exists');
+			}
 
-			$sourceTag->name = $targetName;
+			$sourceTag->setName($targetName);
 			self::save($sourceTag);
 		});
 	}
@@ -59,10 +67,10 @@ class TagModel extends AbstractCrudModel
 	{
 		Database::transaction(function() use ($sourceName, $targetName)
 		{
-			$sourceTag = TagModel::findByName($sourceName);
-			$targetTag = TagModel::findByName($targetName);
+			$sourceTag = self::getByName($sourceName);
+			$targetTag = self::getByName($targetName);
 
-			if ($sourceTag->id == $targetTag->id)
+			if ($sourceTag->getId() == $targetTag->getId())
 				throw new SimpleException('Source and target tag are the same');
 
 			$stmt = new Sql\SelectStatement();
@@ -77,7 +85,7 @@ class TagModel extends AbstractCrudModel
 							->setCriterion(
 								(new Sql\ConjunctionFunctor)
 									->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($sourceTag->id))))))
+									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($sourceTag->getId()))))))
 				->add(
 					new Sql\NegationFunctor(
 					new Sql\ExistsFunctor(
@@ -86,7 +94,7 @@ class TagModel extends AbstractCrudModel
 							->setCriterion(
 								(new Sql\ConjunctionFunctor)
 									->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($targetTag->id))))))));
+									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($targetTag->getId()))))))));
 			$rows = Database::fetchAll($stmt);
 			$postIds = array_map(function($row) { return $row['id']; }, $rows);
 
@@ -97,14 +105,14 @@ class TagModel extends AbstractCrudModel
 				$stmt = new Sql\InsertStatement();
 				$stmt->setTable('post_tag');
 				$stmt->setColumn('post_id', new Sql\Binding($postId));
-				$stmt->setColumn('tag_id', new Sql\Binding($targetTag->id));
+				$stmt->setColumn('tag_id', new Sql\Binding($targetTag->getId()));
 				Database::exec($stmt);
 			}
 		});
 	}
 
 
-	public static function findAllByPostId($key)
+	public static function getAllByPostId($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('tag.*');
@@ -114,11 +122,19 @@ class TagModel extends AbstractCrudModel
 
 		$rows = Database::fetchAll($stmt);
 		if ($rows)
-			return self::convertRows($rows);
+			return self::spawnFromDatabaseRows($rows);
 		return [];
 	}
 
-	public static function findByName($key, $throw = true)
+	public static function getByName($key)
+	{
+		$ret = self::tryGetByName($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid tag name "%s"', $key);
+		return $ret;
+	}
+
+	public static function tryGetByName($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('tag.*');
@@ -126,12 +142,9 @@ class TagModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding($key))));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid tag name "%s"', $key);
-		return null;
+		return $row
+			? self::spawnFromDatabaseRow($row)
+			: null;
 	}
 
 
@@ -149,41 +162,20 @@ class TagModel extends AbstractCrudModel
 		Database::exec($stmt);
 	}
 
-
-
-	public static function validateTag($tag)
+	public static function spawnFromNames(array $tagNames)
 	{
-		$tag = trim($tag);
-
-		$minLength = 1;
-		$maxLength = 64;
-		if (strlen($tag) < $minLength)
-			throw new SimpleException('Tag must have at least %d characters', $minLength);
-		if (strlen($tag) > $maxLength)
-			throw new SimpleException('Tag must have at most %d characters', $maxLength);
-
-		if (!preg_match('/^[()\[\]a-zA-Z0-9_.-]+$/i', $tag))
-			throw new SimpleException('Invalid tag "%s"', $tag);
-
-		if (preg_match('/^\.\.?$/', $tag))
-			throw new SimpleException('Invalid tag "%s"', $tag);
-
-		return $tag;
-	}
-
-	public static function validateTags($tags)
-	{
-		$tags = trim($tags);
-		$tags = preg_split('/[,;\s]+/', $tags);
-		$tags = array_filter($tags, function($x) { return $x != ''; });
-		$tags = array_unique($tags);
-
-		foreach ($tags as $key => $tag)
-			$tags[$key] = self::validateTag($tag);
-
-		if (empty($tags))
-			throw new SimpleException('No tags set');
-
+		$tags = [];
+		foreach ($tagNames as $tagName)
+		{
+			$tag = self::tryGetByName($tagName);
+			if (!$tag)
+			{
+				$tag = self::spawn();
+				$tag->setName($tagName);
+				self::save($tag);
+			}
+			$tags []= $tag;
+		}
 		return $tags;
 	}
 }

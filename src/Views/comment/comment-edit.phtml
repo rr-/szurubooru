@@ -1,0 +1,27 @@
+<?php
+$this->assets->addStylesheet('comment-edit.css');
+$this->assets->addScript('comment-edit.js');
+?>
+
+<form
+	method="post"
+	action="<?= \Chibi\Router::linkTo(
+		['CommentController', 'editAction'],
+		['id' => $this->context->transport->comment->getId()]) ?>"
+	class="edit-comment">
+
+	<h1>edit comment</h1>
+
+	<div class="preview"></div>
+
+	<div class="form-row text">
+		<div class="input-wrapper">
+			<textarea name="text" cols="50" rows="3"><?= $this->context->transport->comment->getText() ?></textarea>
+		</div>
+	</div>
+
+	<div class="form-row">
+		<button name="sender" class="submit" type="submit" value="preview">Preview</button>&nbsp;
+		<button name="sender" class="submit" type="submit" value="submit">Submit</button>
+	</div>
+</form>

@@ -1,10 +1,10 @@
 <?php
-Assets::addStylesheet('../lib/jquery-ui/jquery-ui.css');
-Assets::addStylesheet('core.css');
-Assets::addScript('../lib/jquery/jquery.min.js');
-Assets::addScript('../lib/jquery-ui/jquery-ui.min.js');
-Assets::addScript('../lib/mousetrap/mousetrap.min.js');
-Assets::addScript('core.js');
+$this->assets->addStylesheet('../lib/jquery-ui/jquery-ui.css');
+$this->assets->addStylesheet('core.css');
+$this->assets->addScript('../lib/jquery/jquery.min.js');
+$this->assets->addScript('../lib/jquery-ui/jquery-ui.min.js');
+$this->assets->addScript('../lib/mousetrap/mousetrap.min.js');
+$this->assets->addScript('core.js');
 ?>
 
 <!DOCTYPE html>
@@ -24,33 +24,44 @@ Assets::addScript('core.js');
 
 		<nav id="top-nav">
 			<div class="main-wrapper">
-				<?php \Chibi\View::render('top-navigation', $this->context) ?>
+				<?php $this->renderExternal('top-navigation') ?>
 			</div>
 			<div class="clear"></div>
 		</nav>
 
 		<section id="content">
 			<div class="main-wrapper">
-				<?= \Chibi\View::render($this->context->viewName, $this->context) ?>
+				<?php $this->renderExternal($this->context->viewName) ?>
 			</div>
 			<div class="clear"></div>
 		</section>
 
 		<footer>
 			<div class="main-wrapper">
-				<hr>
-				<span>Load:&nbsp;<?= sprintf('%.05f', microtime(true) - $this->context->startTime) ?>s</span>
-				<span>Queries:&nbsp;<?= count(\Chibi\Database::getLogs()) ?></span>
-				<span><a href="<?= SZURU_LINK ?>">szurubooru&nbsp;v<?= SZURU_VERSION ?></a></span>
-				<?php if (Access::check(Privilege::ListLogs)): ?>
-					<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listAction']) ?>">Logs</a></span>
-				<?php endif ?>
-				<hr>
+				<hr/>
+				<div class="left">
+					<span>
+						<a href="<?= Core::getConfig()->misc->githubLink ?>">
+							<?= PropertyModel::get(PropertyModel::EngineVersion) ?>
+						</a>
+					</span>
+					<span><a href="<?= \Chibi\Router::linkTo(['StaticPagesController', 'apiDocsView']) ?>">API</a></span>
+					<?php if (Access::check(new Privilege(Privilege::ListLogs))): ?>
+						<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Logs</a></span>
+					<?php endif ?>
+				</div>
+				<div class="right">
+					<span><?= TextHelper::useBytesUnits(memory_get_usage()) ?></span>
+					<span><?= sprintf('%.04f', microtime(true) - $this->context->startTime) ?>s</span>
+					<span><?= $x = count(\Chibi\Database::getLogs()) ?> <?= $x != 1 ? 'queries' : 'query' ?></span>
+				</div>
+				<div class="clear"></div>
+				<hr/>
 			</div>
 		</footer>
 
-		<?php if (getConfig()->misc->debugQueries): ?>
-			<?= \Chibi\View::render('debug', $this->context) ?>
+		<?php if (Core::getConfig()->misc->debugQueries): ?>
+			<?php $this->renderExternal('debug') ?>
 		<?php endif ?>
 
 		<div id="small-screen"></div>

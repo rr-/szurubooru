@@ -1,0 +1,25 @@
+<form
+	action="<?= \Chibi\Router::linkTo(
+		['UserController', 'deleteAction'],
+		['identifier' => $this->context->transport->user->getName()]) ?>"
+	method="post"
+	class="delete confirmable"
+	autocomplete="off"
+	data-confirm-text="Are you sure you want to delete your account?">
+
+	<?php if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId()): ?>
+		<div class="form-row current-password">
+			<label for="current-password">Current password:</label>
+			<div class="input-wrapper">
+				<input type="password" name="current-password" id="current-password" placeholder="Current password"/>
+			</div>
+		</div>
+	<?php endif ?>
+
+	<?php $this->renderExternal('message') ?>
+
+	<div class="form-row">
+		<label></label>
+		<button class="submit" type="submit">Delete account</button>
+	</div>
+</form>

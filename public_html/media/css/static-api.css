@@ -1,0 +1,18 @@
+#content pre {
+	background: ghostwhite;
+	padding: 0.5em;
+	border-left: 0.2em solid silver;
+}
+
+#content table {
+	border-spacing: 0;
+	border-collapse: collapsue;
+}
+#content th,
+#content td {
+	text-align: left;
+	padding: 0.2em 0.5em;
+}
+#content tbody:nth-child(2n) {
+	background: #fafafa;
+}

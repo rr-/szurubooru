@@ -1,0 +1,36 @@
+<?php
+$this->assets->setSubtitle('help');
+$this->assets->addStylesheet('static-help.css');
+
+$tabs = Core::getConfig()->help->subTitles;
+$firstTab = !empty($tabs) ? array_keys($tabs)[0] : null;
+$showTabs = count($tabs) > 1;
+?>
+
+<?php if ($showTabs): ?>
+	<nav class="tabs">
+		<ul>
+			<?php foreach ($tabs as $tab => $text): ?>
+				<?php if ($tab == $this->context->tab): ?>
+					<li class="selected <?= $tab ?>">
+				<?php else: ?>
+					<li class="<?= $tab ?>">
+				<?php endif ?>
+					<a href="<?= \Chibi\Router::linkTo(
+						['StaticPagesController', 'helpView'],
+						$tab == $firstTab ? [] : ['tab' => $tab]) ?>">
+						<?= $text ?>
+					</a>
+				</li>
+			<?php endforeach ?>
+		</ul>
+	</nav>
+
+	<div class="tab-content">
+<?php endif ?>
+
+<?= TextHelper::parseMarkdown(file_get_contents($this->context->path)) ?>
+
+<?php if ($showTabs): ?>
+	</div>
+<?php endif ?>

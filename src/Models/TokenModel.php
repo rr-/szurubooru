@@ -2,39 +2,50 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class TokenModel extends AbstractCrudModel
+final class TokenModel extends AbstractCrudModel
 {
 	public static function getTableName()
 	{
 		return 'user_token';
 	}
 
-	public static function save($token)
+	protected static function saveSingle($token)
 	{
+		$token->validate();
+
 		Database::transaction(function() use ($token)
 		{
 			self::forgeId($token);
 
 			$bindings = [
-				'user_id' => $token->userId,
-				'token' => $token->token,
-				'used' => $token->used,
-				'expires' => $token->expires,
+				'user_id' => $token->getUserId(),
+				'token' => $token->getText(),
+				'used' => $token->isUsed() ? 1 : 0,
+				'expires' => $token->getExpirationTime(),
 				];
 
 			$stmt = new Sql\UpdateStatement();
 			$stmt->setTable('user_token');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($token->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($token->getId())));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new Sql\Binding($val));
 
 			Database::exec($stmt);
-
 		});
+
+		return $token;
 	}
 
-	public static function findByToken($key, $throw = true)
+	public static function getByToken($key)
+	{
+		$ret = self::tryGetByToken($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('No user with such security token');
+		return $ret;
+	}
+
+	public static function tryGetByToken($key)
 	{
 		if (empty($key))
 			throw new SimpleNotFoundException('Invalid security token');
@@ -45,12 +56,9 @@ class TokenModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\EqualsFunctor('token', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('No user with such security token');
-		return null;
+		return $row
+			? self::spawnFromDatabaseRow($row)
+			: null;
 	}
 
 	public static function checkValidity($token)
@@ -58,22 +66,10 @@ class TokenModel extends AbstractCrudModel
 		if (empty($token))
 			throw new SimpleException('Invalid security token');
 
-		if ($token->used)
+		if ($token->isUsed())
 			throw new SimpleException('This token was already used');
 
-		if ($token->expires !== null and time() > $token->expires)
+		if ($token->getExpirationTime() !== null and time() > $token->getExpirationTime())
 			throw new SimpleException('This token has expired');
-	}
-
-	public static function forgeUnusedToken()
-	{
-		$tokenText = '';
-		while (true)
-		{
-			$tokenText =  md5(mt_rand() . uniqid());
-			$token = self::findByToken($tokenText, false);
-			if (!$token)
-				return $tokenText;
-		}
 	}
 }

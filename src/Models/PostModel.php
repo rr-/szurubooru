@@ -2,53 +2,35 @@
 use \Chibi\Sql as Sql;
 use \Chibi\Database as Database;
 
-class PostModel extends AbstractCrudModel
+final class PostModel extends AbstractCrudModel
 {
-	protected static $config;
-
 	public static function getTableName()
 	{
 		return 'post';
 	}
 
-	public static function init()
+	protected static function saveSingle($post)
 	{
-		self::$config = getConfig();
-	}
+		$post->validate();
 
-	public static function spawn()
-	{
-		$post = new PostEntity;
-		$post->hidden = false;
-		$post->uploadDate = time();
-		do
-		{
-			$post->name = md5(mt_rand() . uniqid());
-		}
-		while (file_exists($post->getFullPath()));
-		return $post;
-	}
-
-	public static function save($post)
-	{
 		Database::transaction(function() use ($post)
 		{
 			self::forgeId($post);
 
 			$bindings = [
-				'type' => $post->type,
-				'name' => $post->name,
-				'orig_name' => $post->origName,
-				'file_hash' => $post->fileHash,
-				'file_size' => $post->fileSize,
-				'mime_type' => $post->mimeType,
-				'safety' => $post->safety,
-				'hidden' => $post->hidden,
-				'upload_date' => $post->uploadDate,
-				'image_width' => $post->imageWidth,
-				'image_height' => $post->imageHeight,
-				'uploader_id' => $post->uploaderId,
-				'source' => $post->source,
+				'type' => $post->getType()->toInteger(),
+				'name' => $post->getName(),
+				'orig_name' => $post->getOriginalName(),
+				'file_hash' => $post->getFileHash(),
+				'file_size' => $post->getFileSize(),
+				'mime_type' => $post->getMimeType(),
+				'safety' => $post->getSafety()->toInteger(),
+				'hidden' => $post->isHidden() ? 1 : 0,
+				'upload_date' => $post->getCreationTime(),
+				'image_width' => $post->getImageWidth(),
+				'image_height' => $post->getImageHeight(),
+				'uploader_id' => $post->getUploaderId(),
+				'source' => $post->getSource(),
 				];
 
 			$stmt = new Sql\UpdateStatement();
@@ -57,7 +39,7 @@ class PostModel extends AbstractCrudModel
 			foreach ($bindings as $key => $value)
 				$stmt->setColumn($key, new Sql\Binding($value));
 
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($post->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($post->getId())));
 			Database::exec($stmt);
 
 			//tags
@@ -65,15 +47,15 @@ class PostModel extends AbstractCrudModel
 
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('post_tag');
-			$stmt->setCriterion(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->id)));
+			$stmt->setCriterion(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId())));
 			Database::exec($stmt);
 
 			foreach ($tags as $postTag)
 			{
 				$stmt = new Sql\InsertStatement();
 				$stmt->setTable('post_tag');
-				$stmt->setColumn('post_id', new Sql\Binding($post->id));
-				$stmt->setColumn('tag_id', new Sql\Binding($postTag->id));
+				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
+				$stmt->setColumn('tag_id', new Sql\Binding($postTag->getId()));
 				Database::exec($stmt);
 			}
 
@@ -82,7 +64,7 @@ class PostModel extends AbstractCrudModel
 
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('crossref');
-			$binding = new Sql\Binding($post->id);
+			$binding = new Sql\Binding($post->getId());
 			$stmt->setCriterion((new Sql\DisjunctionFunctor)
 				->add(new Sql\EqualsFunctor('post_id', $binding))
 				->add(new Sql\EqualsFunctor('post2_id', $binding)));
@@ -92,18 +74,20 @@ class PostModel extends AbstractCrudModel
 			{
 				$stmt = new Sql\InsertStatement();
 				$stmt->setTable('crossref');
-				$stmt->setColumn('post_id', new Sql\Binding($post->id));
-				$stmt->setColumn('post2_id', new Sql\Binding($relatedPost->id));
+				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
+				$stmt->setColumn('post2_id', new Sql\Binding($relatedPost->getId()));
 				Database::exec($stmt);
 			}
 		});
+
+		return $post;
 	}
 
-	public static function remove($post)
+	protected static function removeSingle($post)
 	{
 		Database::transaction(function() use ($post)
 		{
-			$binding = new Sql\Binding($post->id);
+			$binding = new Sql\Binding($post->getId());
 
 			$stmt = new Sql\DeleteStatement();
 			$stmt->setTable('post_score');
@@ -134,7 +118,15 @@ class PostModel extends AbstractCrudModel
 
 
 
-	public static function findByName($key, $throw = true)
+	public static function getByName($key)
+	{
+		$ret = self::tryGetByName($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid post name "%s"', $key);
+		return $ret;
+	}
+
+	public static function tryGetByName($key, $throw = true)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
@@ -142,24 +134,29 @@ class PostModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\EqualsFunctor('name', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid post name "%s"', $key);
-		return null;
+		return $row
+			? self::spawnFromDatabaseRow($row)
+			: null;
 	}
 
-	public static function findByIdOrName($key, $throw = true)
+	public static function getByIdOrName($key)
 	{
 		if (is_numeric($key))
-			$post = self::findById($key, $throw);
+			$post = self::getById($key);
 		else
-			$post = self::findByName($key, $throw);
+			$post = self::getByName($key);
 		return $post;
 	}
 
-	public static function findByHash($key, $throw = true)
+	public static function getByHash($key)
+	{
+		$ret = self::tryGetByHash($key);
+		if (!$ret)
+			throw new SimpleNotFoundException('Invalid post hash "%s"', $hash);
+		return $ret;
+	}
+
+	public static function tryGetByHash($key)
 	{
 		$stmt = new Sql\SelectStatement();
 		$stmt->setColumn('*');
@@ -167,12 +164,9 @@ class PostModel extends AbstractCrudModel
 		$stmt->setCriterion(new Sql\EqualsFunctor('file_hash', new Sql\Binding($key)));
 
 		$row = Database::fetchOne($stmt);
-		if ($row)
-			return self::convertRow($row);
-
-		if ($throw)
-			throw new SimpleNotFoundException('Invalid post hash "%s"', $hash);
-		return null;
+		return $row
+			? self::spawnFromDatabaseRow($row)
+			: null;
 	}
 
 
@@ -186,7 +180,7 @@ class PostModel extends AbstractCrudModel
 		$tagsMap = [];
 		foreach ($posts as $post)
 		{
-			$postId = $post->id;
+			$postId = $post->getId();
 			$postMap[$postId] = $post;
 			$commentMap[$postId] = [];
 		}
@@ -203,8 +197,7 @@ class PostModel extends AbstractCrudModel
 		{
 			if (isset($comments[$row['id']]))
 				continue;
-			unset($row['post_id']);
-			$comment = CommentModel::convertRow($row);
+			$comment = CommentModel::spawnFromDatabaseRow($row);
 			$comments[$row['id']] = $comment;
 		}
 
@@ -227,7 +220,7 @@ class PostModel extends AbstractCrudModel
 		$tagsMap = [];
 		foreach ($posts as $post)
 		{
-			$postId = $post->id;
+			$postId = $post->getId();
 			$postMap[$postId] = $post;
 			$tagsMap[$postId] = [];
 		}
@@ -246,7 +239,7 @@ class PostModel extends AbstractCrudModel
 			if (isset($tags[$row['id']]))
 				continue;
 			unset($row['post_id']);
-			$tag = TagModel::convertRow($row);
+			$tag = TagModel::spawnFromDatabaseRow($row);
 			$tags[$row['id']] = $tag;
 		}
 
@@ -262,60 +255,123 @@ class PostModel extends AbstractCrudModel
 
 
 
-	public static function validateSafety($safety)
+	public static function tryGetWorkingThumbPath($name)
 	{
-		$safety = intval($safety);
+		$path = PostModel::getThumbPath($name);
+		if (file_exists($path) and is_readable($path))
+			return $path;
 
-		if (!in_array($safety, PostSafety::getAll()))
-			throw new SimpleException('Invalid safety type "%s"', $safety);
-
-		return $safety;
+		return null;
 	}
 
-	public static function validateSource($source)
+	public static function getThumbCustomSourcePath($name)
 	{
-		$source = trim($source);
-
-		$maxLength = 200;
-		if (strlen($source) > $maxLength)
-			throw new SimpleException('Source must have at most %d characters', $maxLength);
-
-		return $source;
+		return self::getThumbPathTokenized('{fullpath}.thumb_source', $name);
 	}
 
-	public static function validateThumbSize($width, $height)
+	public static function getThumbPath($name)
 	{
-		$width = $width === null ? self::$config->browsing->thumbWidth : $width;
-		$height = $height === null ? self::$config->browsing->thumbHeight : $height;
-		$width = min(1000, max(1, $width));
-		$height = min(1000, max(1, $height));
-		return [$width, $height];
+		return self::getThumbPathTokenized('{fullpath}.thumb', $name);
 	}
 
-	private static function getThumbPathTokenized($text, $name, $width = null, $height = null)
+	private static function getThumbPathTokenized($text, $name)
 	{
-		list ($width, $height) = self::validateThumbSize($width, $height);
-
 		return TextHelper::absolutePath(TextHelper::replaceTokens($text, [
-			'fullpath' => self::$config->main->thumbsPath . DS . $name,
-			'width' => $width,
-			'height' => $height]));
+			'fullpath' => Core::getConfig()->main->thumbsPath . DS . $name]));
 	}
 
-	public static function getThumbCustomPath($name, $width = null, $height = null)
+	public static function tryGetWorkingFullPath($name)
 	{
-		return self::getThumbPathTokenized('{fullpath}.custom', $name, $width, $height);
-	}
+		$path = self::getFullPath($name);
+		if (file_exists($path) and is_readable($path))
+			return $path;
 
-	public static function getThumbDefaultPath($name, $width = null, $height = null)
-	{
-		return self::getThumbPathTokenized('{fullpath}-{width}x{height}.default', $name, $width, $height);
+		return null;
 	}
 
 	public static function getFullPath($name)
 	{
-		return TextHelper::absolutePath(self::$config->main->filesPath . DS . $name);
+		return TextHelper::absolutePath(Core::getConfig()->main->filesPath . DS . $name);
+	}
+
+
+
+	public static function getSpaceUsage()
+	{
+		$unixTime = PropertyModel::get(PropertyModel::PostSpaceUsageUnixTime);
+		if (($unixTime !== null) and (time() - $unixTime < 24 * 60 * 60))
+			return PropertyModel::get(PropertyModel::PostSpaceUsage);
+
+		$totalBytes = 0;
+		$paths = [Core::getConfig()->main->filesPath, Core::getConfig()->main->thumbsPath];
+
+		foreach ($paths as $path)
+		{
+			$iterator =
+				new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator(
+					$path, FilesystemIterator::SKIP_DOTS));
+
+			foreach ($iterator as $object)
+				$totalBytes += $object->getSize();
+		}
+
+		PropertyModel::set(PropertyModel::PostSpaceUsage, $totalBytes);
+		PropertyModel::set(PropertyModel::PostSpaceUsageUnixTime, time());
+
+		return $totalBytes;
+	}
+
+	public static function getFeaturedPost()
+	{
+		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);
+		if (!$featuredPostId)
+			return null;
+		return PostModel::tryGetById($featuredPostId);
+	}
+
+	public static function featureRandomPostIfNecessary()
+	{
+		$config = Core::getConfig();
+		$featuredPostRotationTime = $config->misc->featuredPostMaxDays * 24 * 3600;
+
+		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);
+		$featuredPostUnixTime = PropertyModel::get(PropertyModel::FeaturedPostUnixTime);
+
+		//check if too old
+		if (!$featuredPostId or $featuredPostUnixTime + $featuredPostRotationTime < time())
+		{
+			self::featureRandomPost();
+			return true;
+		}
+
+		//check if post was deleted
+		$featuredPost = PostModel::tryGetById($featuredPostId);
+		if (!$featuredPost)
+		{
+			self::featureRandomPost();
+			return true;
+		}
+
+		return false;
+	}
+
+	public static function featureRandomPost()
+	{
+		$stmt = (new Sql\SelectStatement)
+			->setColumn('id')
+			->setTable('post')
+			->setCriterion((new Sql\ConjunctionFunctor)
+				->add(new Sql\NegationFunctor(new Sql\StringExpression('hidden')))
+				->add(new Sql\EqualsFunctor('type', new Sql\Binding(PostType::Image)))
+				->add(new Sql\EqualsFunctor('safety', new Sql\Binding(PostSafety::Safe))))
+			->setOrderBy(new Sql\RandomFunctor(), Sql\SelectStatement::ORDER_DESC);
+		$featuredPostId = Database::fetchOne($stmt)['id'];
+		if (!$featuredPostId)
+			return null;
+
+		PropertyModel::set(PropertyModel::FeaturedPostId, $featuredPostId);
+		PropertyModel::set(PropertyModel::FeaturedPostUnixTime, time());
+		PropertyModel::set(PropertyModel::FeaturedPostUserName, null);
 	}
 }
-
-PostModel::init();

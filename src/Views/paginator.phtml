@@ -29,7 +29,7 @@ if (!function_exists('pageUrl'))
 {
 	function pageUrl($page)
 	{
-		$context = getContext();
+		$context = Core::getContext();
 		$destination = $context->route->destination;
 		$page = max(1, min($context->transport->paginator->pageCount, $page));
 		$params = $context->route->arguments;
@@ -41,9 +41,9 @@ if (!function_exists('pageUrl'))
 
 <?php if (!empty($pagesVisible)): ?>
 	<?php
-	Assets::addStylesheet('paginator.css');
-	if (Auth::getCurrentUser()->hasEnabledEndlessScrolling())
-		Assets::addScript('paginator-endless.js');
+	$this->assets->addStylesheet('paginator.css');
+	if (Auth::getCurrentUser()->getSettings()->hasEnabledEndlessScrolling())
+		$this->assets->addScript('paginator-endless.js');
 	?>
 
 	<nav class="paginator-wrapper">

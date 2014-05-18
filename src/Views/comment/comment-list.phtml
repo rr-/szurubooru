@@ -1,0 +1,48 @@
+<?php
+$this->assets->setSubTitle('comments');
+?>
+
+<?php if (empty($this->context->transport->posts)): ?>
+	<p class="alert alert-warning">No comments to show.</p>
+<?php else: ?>
+	<?php
+	$this->assets->addStylesheet('comment-list.css');
+	$this->assets->addStylesheet('comment-small.css');
+	$this->assets->addStylesheet('comment-edit.css');
+	$this->assets->addScript('comment-edit.js');
+	?>
+
+	<div class="comments-wrapper">
+		<div class="comments paginator-content">
+			<?php foreach ($this->context->transport->posts as $post): ?>
+				<div class="comment-group">
+					<div class="post-wrapper">
+						<?php
+							$this->context->post = $post;
+							$comments = array_reverse($post->getComments());
+							$commentsToDisplay = array_slice($comments, 0, Core::getConfig()->comments->maxCommentsInList);
+						?>
+						<?php $this->renderExternal('post-small') ?>
+					</div>
+					<div class="comments">
+						<?php foreach ($commentsToDisplay as $comment): ?>
+							<?php $this->context->comment = $comment ?>
+							<?php $this->renderExternal('comment-small') ?>
+						<?php endforeach ?>
+
+						<?php if (count($comments) > count($commentsToDisplay)): ?>
+							<a href="<?= \Chibi\Router::linkTo(
+								['PostController', 'genericView'],
+								['id' => $this->context->post->getId()]) ?>">
+								<span class="hellip">(more&hellip;)</span>
+							</a>
+						<?php endif ?>
+					</div>
+					<div class="clear"></div>
+				</div>
+			<?php endforeach ?>
+		</div>
+
+		<?php $this->renderExternal('paginator') ?>
+	</div>
+<?php endif ?>

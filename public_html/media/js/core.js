@@ -32,6 +32,24 @@ function rememberLastSearchQuery()
 }
 
 //core functionalities, prototypes
+function getJSON(data)
+{
+	if (typeof(data.headers) === 'undefined')
+		data.headers = {};
+	data.headers['X-Ajax'] = '1';
+	data.type = 'GET';
+	return $.ajax(data);
+};
+
+function postJSON(data)
+{
+	if (typeof(data.headers) === 'undefined')
+		data.headers = {};
+	data.headers['X-Ajax'] = '1';
+	data.type = 'POST';
+	return $.ajax(data);
+};
+
 $.fn.hasAttr = function(name)
 {
 	return this.attr(name) !== undefined;
@@ -47,34 +65,6 @@ $.fn.bindOnce = function(name, eventName, callback)
 		$(item).on(eventName, callback);
 	});
 };
-
-
-
-//safety trigger
-$(function()
-{
-	$('.safety a').click(function(e)
-	{
-		e.preventDefault();
-
-		var aDom = $(this);
-		if (aDom.hasClass('inactive'))
-			return;
-		aDom.addClass('inactive');
-
-		var url = $(this).attr('href') + '?json';
-		$.get(url).success(function(data)
-		{
-			window.location.reload();
-		}).error(function(xhr)
-		{
-			alert(xhr.responseJSON
-				? xhr.responseJSON.message
-				: 'Fatal error');
-			aDom.removeClass('inactive');
-		});
-	});
-});
 
 
 
@@ -111,8 +101,8 @@ $(function()
 				return;
 			aDom.addClass('inactive');
 
-			var url = $(this).attr('href') + '?json';
-			$.post(url, {submit: 1}).success(function(data)
+			var url = $(this).attr('href');
+			postJSON({ url: url }).success(function(data)
 			{
 				if (aDom.hasAttr('data-redirect-url'))
 					window.location.href = aDom.attr('data-redirect-url');
@@ -201,21 +191,26 @@ function split(val)
 
 function retrieveTags(searchTerm, cb)
 {
-	var options = { search: searchTerm };
-	$.getJSON('/tags-autocomplete?json', options, function(data)
+	var options =
 	{
-		var tags = $.map(data.tags.slice(0, 15), function(tag)
+		url: '/tags-autocomplete',
+		data: { search: searchTerm }
+	};
+	getJSON(options)
+		.success(function(data)
 		{
-			var ret =
+			var tags = $.map(data.tags.slice(0, 15), function(tag)
 			{
-				label: tag.name + ' (' + tag.count + ')',
-				value: tag.name,
-			};
-			return ret;
-		});
+				var ret =
+				{
+					label: tag.name + ' (' + tag.count + ')',
+					value: tag.name,
+				};
+				return ret;
+			});
 
-		cb(tags);
-	});
+			cb(tags);
+		});
 }
 
 $(function()
@@ -277,8 +272,17 @@ function attachTagIt(target)
 		{
 			var targetTagit = ui.tag.parents('.tagit');
 			var context = target.tagit('assignedTags');
-			options = { context: context, tag: ui.tagLabel };
-			if (targetTagit.siblings('.related-tags:eq(0)').data('for') == options.tag)
+			var options =
+			{
+				url: '/tags-related',
+				data:
+				{
+					context: context,
+					tag: ui.tagLabel
+				}
+			};
+
+			if (targetTagit.siblings('.related-tags:eq(0)').data('for') == options.data.tag)
 			{
 				targetTagit.siblings('.related-tags').slideUp(function()
 				{
@@ -287,7 +291,7 @@ function attachTagIt(target)
 				return;
 			}
 
-			$.getJSON('/tags-related?json', options, function(data)
+			getJSON(options).success(function(data)
 			{
 				var list = $('<ul>');
 				$.each(data.tags, function(i, tag)

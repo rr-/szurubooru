@@ -23,13 +23,17 @@ embed {
 	margin: 0;
 	padding: 0;
 }
-#sidebar .tags li {
+#sidebar .tags li a {
 	overflow: hidden;
 	text-overflow: ellipsis;
+	display: inline-block;
+	max-width: 90%;
+	vertical-align: text-bottom;
 }
 #sidebar .tags li .count {
 	padding-left: 0.5em;
 	color: silver;
+	vertical-align: text-bottom;
 }
 
 #around {

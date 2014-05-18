@@ -9,14 +9,62 @@ class TagSearchService extends AbstractSearchService
 		$stmt->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'));
 	}
 
-	public static function getRelatedTagRows($parentTagName, $context, $limit)
+	public static function getRelatedTags($parentTagName)
 	{
-		$parentTagEntity = TagModel::findByName($parentTagName, false);
+		$parentTagEntity = TagModel::tryGetByName($parentTagName);
 		if (empty($parentTagEntity))
 			return [];
-		$parentTagId = $parentTagEntity->id;
+		$parentTagId = $parentTagEntity->getId();
 
-		//get tags that appear with selected tag along with their occurence frequency
+		$punishCommonTags = false;
+
+		$rows = self::getSiblingTagsWithOccurences($parentTagId);
+		unset($rows[$parentTagId]);
+
+		if ($punishCommonTags)
+		{
+			$rowsGlobal = self::getGlobalOccurencesForTags(array_keys($rows));
+
+			foreach ($rows as $i => &$row)
+			{
+				//multiply own occurences by two because we are going to subtract them
+				$row['sort'] = $row['post_count'] * 2;
+				//subtract global occurencecount
+				$row['sort'] -= isset($rowsGlobal[$i]) ? $rowsGlobal[$i]['post_count'] : 0;
+			}
+		}
+		else
+		{
+			foreach ($rows as $i => &$row)
+			{
+				$row['sort'] = $row['post_count'];
+			}
+		}
+
+		usort($rows, function($a, $b)
+		{
+			return intval($b['sort']) - intval($a['sort']);
+		});
+
+		return TagModel::spawnFromDatabaseRows($rows);
+	}
+
+	public static function getMostUsedTag()
+	{
+		$stmt = (new Sql\SelectStatement)
+			->setTable('post_tag')
+			->addInnerJoin('tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'))
+			->addColumn('tag.*')
+			->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'))
+			->setGroupBy('post_tag.tag_id')
+			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
+			->setLimit(1, 0);
+		return TagModel::spawnFromDatabaseRow(Database::fetchOne($stmt));
+	}
+
+
+	private static function getSiblingTagsWithOccurences($parentTagId)
+	{
 		$stmt = (new Sql\SelectStatement)
 			->setTable('tag')
 			->addColumn('tag.*')
@@ -31,51 +79,25 @@ class TagSearchService extends AbstractSearchService
 					->add(new Sql\EqualsFunctor('pt2.tag_id', new Sql\Binding($parentTagId)))
 				)));
 
-		$rows1 = [];
+		$rows = [];
 		foreach (Database::fetchAll($stmt) as $row)
-			$rows1[$row['id']] = $row;
+			$rows[$row['id']] = $row;
+		return $rows;
+	}
 
-		//get the same tags, but this time - get global occurence frequency
+	private static function getGlobalOccurencesForTags($tagIds)
+	{
 		$stmt = (new Sql\SelectStatement)
 			->setTable('tag')
 			->addColumn('tag.*')
 			->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'))
 			->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'))
-			->setCriterion(Sql\InFunctor::fromArray('tag.id', Sql\Binding::fromArray(array_keys($rows1))))
+			->setCriterion(Sql\InFunctor::fromArray('tag.id', Sql\Binding::fromArray($tagIds)))
 			->setGroupBy('tag.id');
 
-		$rows2 = [];
-		foreach (Database::fetchAll($stmt) as $row)
-			$rows2[$row['id']] = $row;
-
 		$rows = [];
-		foreach ($rows1 as $i => $row)
-		{
-			//multiply own occurences by two because we are going to subtract them
-			$row['sort'] = $row['post_count'] * 2;
-			//subtract global occurencecount
-			$row['sort'] -= isset($rows2[$i]) ? $rows2[$i]['post_count'] : 0;
-
-			if ($row['id'] != $parentTagId)
-				$rows []= $row;
-		}
-
-		usort($rows, function($a, $b) { return intval($b['sort']) - intval($a['sort']); });
-		$rows = array_filter($rows, function($row) use ($context) { return !in_array($row['name'], $context); });
-		$rows = array_slice($rows, 0, $limit);
-
+		foreach (Database::fetchAll($stmt) as $row)
+			$rows[$row['id']] = $row;
 		return $rows;
-	}
-
-	public static function getMostUsedTag()
-	{
-		$stmt = (new Sql\SelectStatement)
-			->setTable('post_tag')
-			->addColumn('tag_id')
-			->addColumn(new Sql\AliasFunctor(new Sql\CountFunctor('post_tag.post_id'), 'post_count'))
-			->setGroupBy('post_tag.tag_id')
-			->setOrderBy('post_count', Sql\SelectStatement::ORDER_DESC)
-			->setLimit(1, 0);
-		return Database::fetchOne($stmt);
 	}
 }

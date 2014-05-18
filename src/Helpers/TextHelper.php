@@ -7,6 +7,64 @@ class TextHelper
 		return preg_match($emailRegex, $email);
 	}
 
+	public static function toInteger($x)
+	{
+		$y = self::toIntegerOrNull($x);
+		if ($y === null)
+			return 0;
+		return $y;
+	}
+
+	public static function toIntegerOrNull($x)
+	{
+		if ($x === true or $x === false)
+			return null;
+
+		if ($x === 0 or $x === '0')
+			return 0;
+
+		$y = intval($x);
+
+		if ($y !== 0)
+		{
+			if (!preg_match('/^-?\d+$/', $x))
+				return null;
+
+			return $y;
+		}
+
+		return null;
+	}
+
+	public static function toBoolean($x)
+	{
+		$y = self::toBooleanOrNull($x);
+		if ($y === null)
+			return false;
+		return $y;
+	}
+
+	public static function toBooleanOrNull($x)
+	{
+		switch (strtolower($x))
+		{
+			case '1':
+			case 'true':
+			case 'on':
+			case 'yes':
+			case 'y':
+				return true;
+			case '0':
+			case 'false':
+			case 'off':
+			case 'no':
+			case 'n':
+				return false;
+			default:
+				return null;
+		}
+	}
+
 	public static function replaceTokens($text, array $tokens)
 	{
 		foreach ($tokens as $key => $value)
@@ -93,51 +151,6 @@ class TextHelper
 		return self::stripUnits($string, 1000, ['', 'K', 'M']);
 	}
 
-	public static function removeUnsafeKeys(&$input, $regex)
-	{
-		if (is_array($input))
-		{
-			foreach ($input as $key => $val)
-			{
-				if (preg_match($regex, $key))
-					unset($input[$key]);
-				else
-					self::removeUnsafeKeys($input[$key], $regex);
-			}
-		}
-		elseif (is_object($input))
-		{
-			foreach ($input as $key => $val)
-			{
-				if (preg_match($regex, $key))
-					unset($input->$key);
-				else
-					self::removeUnsafeKeys($input->$key, $regex);
-			}
-		}
-	}
-
-	public static function jsonEncode($obj, $illegalKeysRegex = '')
-	{
-		if (is_array($obj))
-			$set = function($key, $val) use ($obj) { $obj[$key] = $val; };
-		else
-			$set = function($key, $val) use ($obj) { $obj->$key = $val; };
-
-		foreach ($obj as $key => $val)
-		{
-			if ($val instanceof Exception)
-			{
-				$set($key, ['message' => $val->getMessage(), 'trace' => explode("\n", $val->getTraceAsString())]);
-			}
-		}
-
-		if (!empty($illegalKeysRegex))
-			self::removeUnsafeKeys($obj, $illegalKeysRegex);
-
-		return json_encode($obj, JSON_UNESCAPED_UNICODE);
-	}
-
 	public static function parseMarkdown($text, $simple = false)
 	{
 		if ($simple)
@@ -150,21 +163,21 @@ class TextHelper
 	{
 		if (!is_object($post))
 			return '@' . $post;
-		return '@' . $post->id;
+		return '@' . $post->getId();
 	}
 
 	public static function reprUser($user)
 	{
 		if (!is_object($user))
 			return '+' . $user;
-		return '+' . $user->name;
+		return '+' . $user->getName();
 	}
 
 	public static function reprTag($tag)
 	{
 		if (!is_object($tag))
 			return '#' . $tag;
-		return '#' . $tag->name;
+		return '#' . $tag->getName();
 	}
 
 	public static function reprTags($tags)
@@ -178,7 +191,7 @@ class TextHelper
 
 	public static function encrypt($text)
 	{
-		$salt = getConfig()->main->salt;
+		$salt = Core::getConfig()->main->salt;
 		$alg = MCRYPT_RIJNDAEL_256;
 		$mode = MCRYPT_MODE_CBC;
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
@@ -189,13 +202,17 @@ class TextHelper
 	{
 		try
 		{
-			$salt = getConfig()->main->salt;
+			$salt = Core::getConfig()->main->salt;
 			list ($iv, $hash) = explode('|', $text, 2);
 			$iv = base64_decode($iv);
 			$hash = base64_decode($hash);
 			$alg = MCRYPT_RIJNDAEL_256;
 			$mode = MCRYPT_MODE_CBC;
-			return trim(mcrypt_decrypt($alg, $salt, $hash, $mode, $iv));
+			$ret = mcrypt_decrypt($alg, $salt, $hash, $mode, $iv);
+			$pos = strpos($ret, "\0");
+			if ($pos !== false)
+				$ret = substr($ret, 0, $pos);
+			return $ret;
 		}
 		catch (Exception $e)
 		{
@@ -216,7 +233,7 @@ class TextHelper
 	public static function absolutePath($path)
 	{
 		if ($path{0} != DS)
-			$path = getConfig()->rootDir . DS . $path;
+			$path = Core::getConfig()->rootDir . DS . $path;
 
 		$path = self::cleanPath($path);
 		return $path;

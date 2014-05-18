@@ -1,315 +1,266 @@
 <?php
-class PostController
+class PostController extends AbstractController
 {
-	public function listAction($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
+	public function listView($query = null, $page = 1, $source = 'posts', $additionalInfo = null)
 	{
-		$context = getContext();
-		$context->viewName = 'post-list-wrapper';
+		$context = Core::getContext();
 		$context->source = $source;
 		$context->additionalInfo = $additionalInfo;
-		$context->handleExceptions = true;
 
-		//redirect requests in form of /posts/?query=... to canonical address
-		$formQuery = InputHelper::get('query');
-		if ($formQuery !== null)
+		try
 		{
-			$context->transport->searchQuery = $formQuery;
-			$context->transport->lastSearchQuery = $formQuery;
-			if (strpos($formQuery, '/') !== false)
-				throw new SimpleException('Search query contains invalid characters');
+			$query = trim($query);
+			$context->transport->searchQuery = $query;
+			$context->transport->lastSearchQuery = $query;
+			if ($source == 'mass-tag')
+			{
+				Access::assert(new Privilege(Privilege::MassTag));
+				$context->massTagTag = $additionalInfo;
+				$context->massTagQuery = $query;
 
-			$url = \Chibi\Router::linkTo(['PostController', 'listAction'], [
-				'source' => $source,
-				'additionalInfo' => $additionalInfo,
-				'query' => $formQuery]);
-			\Chibi\Util\Url::forward($url);
-			exit;
+				if (!Access::check(new Privilege(Privilege::MassTag, 'all')))
+					$query = trim($query . ' submit:' . Auth::getCurrentUser()->getName());
+			}
+
+			$ret = Api::run(
+				new ListPostsJob(),
+				[
+					JobArgs::ARG_PAGE_NUMBER => $page,
+					JobArgs::ARG_QUERY => $query
+				]);
+
+			$context->transport->posts = $ret->entities;
+			$context->transport->paginator = $ret;
+		}
+		catch (SimpleException $e)
+		{
+			Messenger::fail($e->getMessage());
 		}
 
-		$query = trim($query);
-		$page = max(1, intval($page));
-		$postsPerPage = intval(getConfig()->browsing->postsPerPage);
+		$this->renderView('post-list-wrapper');
+	}
+
+	public function listRedirectAction($source = 'posts')
+	{
+		$context = Core::getContext();
+		$query = trim(InputHelper::get('query'));
 		$context->transport->searchQuery = $query;
 		$context->transport->lastSearchQuery = $query;
-		Access::assert(Privilege::ListPosts);
-		if ($source == 'mass-tag')
-		{
-			Access::assert(Privilege::MassTag);
-			$context->massTagTag = $additionalInfo;
-			$context->massTagQuery = $query;
+		if (strpos($query, '/') !== false)
+			throw new SimpleException('Search query contains invalid characters');
 
-			if (!Access::check(Privilege::MassTag, 'all'))
-				$query = trim($query . ' submit:' . Auth::getCurrentUser()->name);
-		}
+		$params = [];
+		$params['source'] = $source;
+		if ($query)
+			$params['query'] = $query;
+		#if ($additionalInfo)
+		#	$params['additionalInfo'] = $additionalInfo;
+		$params['page'] = 1;
 
-		$posts = PostSearchService::getEntities($query, $postsPerPage, $page);
-		$postCount = PostSearchService::getEntityCount($query);
-		$pageCount = ceil($postCount / $postsPerPage);
-		$page = min($pageCount, $page);
-		PostModel::preloadTags($posts);
+		$url = \Chibi\Router::linkTo(['PostController', 'listView'], $params);
+		$this->redirect($url);
+	}
 
-		$context->transport->paginator = new StdClass;
-		$context->transport->paginator->page = $page;
-		$context->transport->paginator->pageCount = $pageCount;
-		$context->transport->paginator->entityCount = $postCount;
-		$context->transport->paginator->entities = $posts;
-		$context->transport->posts = $posts;
+	public function favoritesView($page = 1)
+	{
+		$this->listView('favmin:1', $page, 'favorites');
+	}
+
+	public function upvotedView($page = 1)
+	{
+		$this->listView('scoremin:1', $page, 'upvoted');
+	}
+
+	public function randomView($page = 1)
+	{
+		$this->listView('order:random', $page, 'random');
 	}
 
 	public function toggleTagAction($id, $tag, $enable)
 	{
-		$context = getContext();
-		$tagName = $tag;
-		$post = PostModel::findByIdOrName($id);
-		$context->transport->post = $post;
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		Access::assert(
+		Access::assert(new Privilege(
 			Privilege::MassTag,
-			Access::getIdentity($post->getUploader()));
+			Access::getIdentity(PostModel::getById($id)->getUploader())));
 
-		$tags = $post->getTags();
+		Api::run(
+			new TogglePostTagJob(),
+			[
+				JobArgs::ARG_POST_ID => $id,
+				JobArgs::ARG_TAG_NAME => $tag,
+				JobArgs::ARG_NEW_STATE => $enable,
+			]);
 
-		if (!$enable)
-		{
-			foreach ($tags as $i => $tag)
-				if ($tag->name == $tagName)
-					unset($tags[$i]);
-
-			LogHelper::log('{user} untagged {post} with {tag}', [
-				'post' => TextHelper::reprPost($post),
-				'tag' => TextHelper::reprTag($tag)]);
-		}
-		elseif ($enable)
-		{
-			$tag = TagModel::findByName($tagName, false);
-			if ($tag === null)
-			{
-				$tag = TagModel::spawn();
-				$tag->name = $tagName;
-				TagModel::save($tag);
-			}
-
-			$tags []= $tag;
-			LogHelper::log('{user} tagged {post} with {tag}', [
-				'post' => TextHelper::reprPost($post),
-				'tag' => TextHelper::reprTag($tag)]);
-		}
-
-		$post->setTags($tags);
-
-		PostModel::save($post);
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToLastVisitedUrl();
 	}
 
-	public function favoritesAction($page = 1)
+	public function uploadView()
 	{
-		$this->listAction('favmin:1', $page);
-	}
-
-	public function upvotedAction($page = 1)
-	{
-		$this->listAction('scoremin:1', $page);
-	}
-
-	public function randomAction($page = 1)
-	{
-		$this->listAction('order:random', $page);
+		$this->renderView('post-upload');
 	}
 
 	public function uploadAction()
 	{
-		$context = getContext();
-		Access::assert(Privilege::UploadPost);
-		if (getConfig()->registration->needEmailForUploading)
-			Access::assertEmailConfirmation();
+		$jobArgs =
+		[
+			JobArgs::ARG_ANONYMOUS => InputHelper::get('anonymous'),
+			JobArgs::ARG_NEW_SAFETY => InputHelper::get('safety'),
+			JobArgs::ARG_NEW_TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
+			JobArgs::ARG_NEW_SOURCE => InputHelper::get('source'),
+		];
 
-		if (!InputHelper::get('submit'))
-			return;
-
-		\Chibi\Database::transaction(function() use ($context)
+		if (!empty(InputHelper::get('url')))
 		{
-			$post = PostModel::spawn();
-			LogHelper::bufferChanges();
+			$jobArgs[JobArgs::ARG_NEW_POST_CONTENT_URL] = InputHelper::get('url');
+		}
+		elseif (!empty($_FILES['file']['name']))
+		{
+			$file = $_FILES['file'];
+			TransferHelper::handleUploadErrors($file);
 
-			//basic stuff
-			$anonymous = InputHelper::get('anonymous');
-			if (Auth::isLoggedIn() and !$anonymous)
-				$post->setUploader(Auth::getCurrentUser());
+			$jobArgs[JobArgs::ARG_NEW_POST_CONTENT] = new ApiFileInput(
+				$file['tmp_name'],
+				$file['name']);
+		}
 
-			//store the post to get the ID in the logs
-			PostModel::forgeId($post);
+		Api::run(new AddPostJob(), $jobArgs);
 
-			//do the edits
-			$this->doEdit($post, true);
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToPostList();
+	}
 
-			//this basically means that user didn't specify file nor url
-			if (empty($post->type))
-				throw new SimpleException('No post type detected; upload faled');
+	public function editView($id)
+	{
+		$post = Api::run(new GetPostJob(), [
+			JobArgs::ARG_POST_ID => $id]);
 
-			//clean edit log
-			LogHelper::setBuffer([]);
-
-			//log
-			$fmt = ($anonymous and !getConfig()->misc->logAnonymousUploads)
-				? '{anon}'
-				: '{user}';
-			$fmt .= ' added {post} (tags: {tags}, safety: {safety}, source: {source})';
-			LogHelper::log($fmt, [
-				'post' => TextHelper::reprPost($post),
-				'tags' => TextHelper::reprTags($post->getTags()),
-				'safety' => PostSafety::toString($post->safety),
-				'source' => $post->source]);
-
-			//finish
-			LogHelper::flush();
-			PostModel::save($post);
-		});
+		$context = Core::getContext()->transport->post = $post;
+		$this->renderView('post-edit');
 	}
 
 	public function editAction($id)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		$context->transport->post = $post;
-
-		if (!InputHelper::get('submit'))
-			return;
+		$post = PostModel::getByIdOrName($id);
 
 		$editToken = InputHelper::get('edit-token');
 		if ($editToken != $post->getEditToken())
 			throw new SimpleException('This post was already edited by someone else in the meantime');
 
-		LogHelper::bufferChanges();
-		$this->doEdit($post, false);
-		LogHelper::flush();
+		$jobArgs =
+		[
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_SAFETY => InputHelper::get('safety'),
+			JobArgs::ARG_NEW_TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
+			JobArgs::ARG_NEW_SOURCE => InputHelper::get('source'),
+			JobArgs::ARG_NEW_RELATED_POST_IDS => $this->splitPostIds(InputHelper::get('relations')),
+		];
 
-		PostModel::save($post);
-		TagModel::removeUnused();
+		if (!empty(InputHelper::get('url')))
+		{
+			$jobArgs[JobArgs::ARG_NEW_POST_CONTENT_URL] = InputHelper::get('url');
+		}
+		elseif (!empty($_FILES['file']['name']))
+		{
+			$file = $_FILES['file'];
+			TransferHelper::handleUploadErrors($file);
+
+			$jobArgs[JobArgs::ARG_NEW_POST_CONTENT] = new ApiFileInput(
+				$file['tmp_name'],
+				$file['name']);
+		}
+
+		if (!empty($_FILES['thumb']['name']))
+		{
+			$file = $_FILES['thumb'];
+			TransferHelper::handleUploadErrors($file);
+
+			$jobArgs[JobArgs::ARG_NEW_THUMB_CONTENT] = new ApiFileInput(
+				$file['tmp_name'],
+				$file['name']);
+		}
+
+		Api::run(new EditPostJob(), $jobArgs);
+
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToGenericView($id);
 	}
 
 	public function flagAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::FlagPost, Access::getIdentity($post->getUploader()));
+		Api::run(new FlagPostJob(), [JobArgs::ARG_POST_ID => $id]);
 
-		if (!InputHelper::get('submit'))
-			return;
-
-		$key = TextHelper::reprPost($post);
-
-		$flagged = SessionHelper::get('flagged', []);
-		if (in_array($key, $flagged))
-			throw new SimpleException('You already flagged this post');
-		$flagged []= $key;
-		SessionHelper::set('flagged', $flagged);
-
-		LogHelper::log('{user} flagged {post} for moderator attention', ['post' => TextHelper::reprPost($post)]);
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->redirectToGenericView($id);
 	}
 
 	public function hideAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::HidePost, Access::getIdentity($post->getUploader()));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$post->setHidden(true);
-		PostModel::save($post);
-
-		LogHelper::log('{user} hidden {post}', ['post' => TextHelper::reprPost($post)]);
+		Api::run(new TogglePostVisibilityJob(), [
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_STATE => false]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function unhideAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::HidePost, Access::getIdentity($post->getUploader()));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		$post->setHidden(false);
-		PostModel::save($post);
-
-		LogHelper::log('{user} unhidden {post}', ['post' => TextHelper::reprPost($post)]);
+		Api::run(new TogglePostVisibilityJob(), [
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_STATE => true]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function deleteAction($id)
 	{
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::DeletePost, Access::getIdentity($post->getUploader()));
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		PostModel::remove($post);
-
-		LogHelper::log('{user} deleted {post}', ['post' => TextHelper::reprPost($id)]);
+		Api::run(new DeletePostJob(), [
+			JobArgs::ARG_POST_ID => $id]);
+		$this->redirectToPostList();
 	}
 
 	public function addFavoriteAction($id)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
-		Access::assertAuthentication();
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		UserModel::updateUserScore(Auth::getCurrentUser(), $post, 1);
-		UserModel::addToUserFavorites(Auth::getCurrentUser(), $post);
+		Api::run(new TogglePostFavoriteJob(), [
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_STATE => true]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function removeFavoriteAction($id)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::FavoritePost, Access::getIdentity($post->getUploader()));
-		Access::assertAuthentication();
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		UserModel::removeFromUserFavorites(Auth::getCurrentUser(), $post);
+		Api::run(new TogglePostFavoriteJob(), [
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_STATE => false]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function scoreAction($id, $score)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::ScorePost, Access::getIdentity($post->getUploader()));
-		Access::assertAuthentication();
-
-		if (!InputHelper::get('submit'))
-			return;
-
-		UserModel::updateUserScore(Auth::getCurrentUser(), $post, $score);
+		Api::run(new ScorePostJob(), [
+			JobArgs::ARG_POST_ID => $id,
+			JobArgs::ARG_NEW_POST_SCORE => $score]);
+		$this->redirectToGenericView($id);
 	}
 
 	public function featureAction($id)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		Access::assert(Privilege::FeaturePost, Access::getIdentity($post->getUploader()));
-		PropertyModel::set(PropertyModel::FeaturedPostId, $post->id);
-		PropertyModel::set(PropertyModel::FeaturedPostDate, time());
-		PropertyModel::set(PropertyModel::FeaturedPostUserName, Auth::getCurrentUser()->name);
-		LogHelper::log('{user} featured {post} on main page', ['post' => TextHelper::reprPost($post)]);
+		Api::run(new FeaturePostJob(), [
+			JobArgs::ARG_POST_ID => $id]);
+		$this->redirectToGenericView($id);
 	}
 
-	public function viewAction($id)
+	public function genericView($id)
 	{
-		$context = getContext();
-		$post = PostModel::findByIdOrName($id);
-		CommentModel::preloadCommenters($post->getComments());
+		$context = Core::getContext();
 
-		if ($post->hidden)
-			Access::assert(Privilege::ViewPost, 'hidden');
-		Access::assert(Privilege::ViewPost);
-		Access::assert(Privilege::ViewPost, PostSafety::toString($post->safety));
+		$post = Api::run(new GetPostJob(), [
+			JobArgs::ARG_POST_ID => $id]);
 
 		try
 		{
@@ -327,212 +278,77 @@ class PostController
 					$context->transport->lastSearchQuery, $id);
 		}
 
-		$favorite = Auth::getCurrentUser()->hasFavorited($post);
-		$score = Auth::getCurrentUser()->getScore($post);
+		//todo:
+		//move these to PostEntity when implementing ApiController
+		$isUserFavorite = Auth::getCurrentUser()->hasFavorited($post);
+		$userScore = Auth::getCurrentUser()->getScore($post);
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
 
-		$context->favorite = $favorite;
-		$context->score = $score;
+		$context->isUserFavorite = $isUserFavorite;
+		$context->userScore = $userScore;
 		$context->flagged = $flagged;
 		$context->transport->post = $post;
 		$context->transport->prevPostId = $prevPostId ? $prevPostId : null;
 		$context->transport->nextPostId = $nextPostId ? $nextPostId : null;
+
+		$this->renderView('post-view');
 	}
 
-	public function thumbAction($name, $width = null, $height = null)
+	public function fileView($name)
 	{
-		$context = getContext();
-		$path = PostModel::getThumbCustomPath($name, $width, $height);
-		if (!file_exists($path))
-		{
-			$path = PostModel::getThumbDefaultPath($name, $width, $height);
-			if (!file_exists($path))
-			{
-				$post = PostModel::findByIdOrName($name);
-				Access::assert(Privilege::ListPosts);
-				Access::assert(Privilege::ListPosts, PostSafety::toString($post->safety));
-				$post->generateThumb($width, $height);
-				if (!file_exists($path))
-				{
-					$path = getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
-					$path = TextHelper::absolutePath($path);
-				}
-			}
-		}
+		$ret = Api::run(new GetPostContentJob(), [JobArgs::ARG_POST_NAME => $name]);
 
-		if (!is_readable($path))
-			throw new SimpleException('Thumbnail file is not readable');
-
-		$context->layoutName = 'layout-file';
-		$context->transport->cacheDaysToLive = 365;
-		$context->transport->mimeType = 'image/jpeg';
-		$context->transport->fileHash = 'thumb' . md5($name . filemtime($path));
-		$context->transport->filePath = $path;
-	}
-
-	public function retrieveAction($name)
-	{
-		$post = PostModel::findByName($name, true);
-		$config = getConfig();
-		$context = getContext();
-
-		Access::assert(Privilege::RetrievePost);
-		Access::assert(Privilege::RetrievePost, PostSafety::toString($post->safety));
-
-		$path = $config->main->filesPath . DS . $post->name;
-		$path = TextHelper::absolutePath($path);
-		if (!file_exists($path))
-			throw new SimpleNotFoundException('Post file does not exist');
-		if (!is_readable($path))
-			throw new SimpleException('Post file is not readable');
-
-		$fn = sprintf('%s_%s_%s.%s',
-			$config->main->title,
-			$post->id,
-			join(',', array_map(function($tag) { return $tag->name; }, $post->getTags())),
-			TextHelper::resolveMimeType($post->mimeType) ?: 'dat');
-		$fn = preg_replace('/[[:^print:]]/', '', $fn);
-
-		$ttl = 60 * 60 * 24 * 14;
-
-		$context->layoutName = 'layout-file';
+		$context = Core::getContext();
 		$context->transport->cacheDaysToLive = 14;
-		$context->transport->customFileName = $fn;
-		$context->transport->mimeType = $post->mimeType;
-		$context->transport->fileHash = 'post' . $post->fileHash;
-		$context->transport->filePath = $path;
+		$context->transport->customFileName = $ret->fileName;
+		$context->transport->mimeType = $ret->mimeType;
+		$context->transport->fileHash = 'post' . md5(substr($ret->fileContent, 0, 4096));
+		$context->transport->fileContent = $ret->fileContent;
+		$context->transport->lastModified = $ret->lastModified;
+		$this->renderFile();
 	}
 
-	private function doEdit($post, $isNew)
+	public function thumbView($name)
 	{
-		/* safety */
-		$suppliedSafety = InputHelper::get('safety');
-		if ($suppliedSafety !== null)
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostSafety, Access::getIdentity($post->getUploader()));
+		$ret = Api::run(new GetPostThumbJob(), [JobArgs::ARG_POST_NAME => $name]);
 
-			$oldSafety = $post->safety;
-			$post->setSafety($suppliedSafety);
-			$newSafety = $post->safety;
+		$context = Core::getContext();
+		$context->transport->cacheDaysToLive = 365;
+		$context->transport->customFileName = $ret->fileName;
+		$context->transport->mimeType = 'image/jpeg';
+		$context->transport->fileHash = 'thumb' . md5(substr($ret->fileContent, 0, 4096));
+		$context->transport->fileContent = $ret->fileContent;
+		$context->transport->lastModified = $ret->lastModified;
+		$this->renderFile();
+	}
 
-			if ($oldSafety != $newSafety)
-			{
-				LogHelper::log('{user} changed safety of {post} to {safety}', [
-					'post' => TextHelper::reprPost($post),
-					'safety' => PostSafety::toString($post->safety)]);
-			}
-		}
 
-		/* tags */
-		$suppliedTags = InputHelper::get('tags');
-		if ($suppliedTags !== null)
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostTags, Access::getIdentity($post->getUploader()));
+	private function splitPostIds($string)
+	{
+		$ids = preg_split('/\D/', trim($string));
+		$ids = array_filter($ids, function($x) { return $x != ''; });
+		$ids = array_map('intval', $ids);
+		$ids = array_unique($ids);
+		return $ids;
+	}
 
-			$oldTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
-			$post->setTagsFromText($suppliedTags);
-			$newTags = array_map(function($tag) { return $tag->name; }, $post->getTags());
+	private function splitTags($string)
+	{
+		$tags = preg_split('/[,;\s]+/', trim($string));
+		$tags = array_filter($tags, function($x) { return $x != ''; });
+		$tags = array_unique($tags);
+		return $tags;
+	}
 
-			foreach (array_diff($oldTags, $newTags) as $tag)
-			{
-				LogHelper::log('{user} untagged {post} with {tag}', [
-					'post' => TextHelper::reprPost($post),
-					'tag' => TextHelper::reprTag($tag)]);
-			}
+	private function redirectToPostList()
+	{
+		$this->redirect(\Chibi\Router::linkTo(['PostController', 'listView']));
+	}
 
-			foreach (array_diff($newTags, $oldTags) as $tag)
-			{
-				LogHelper::log('{user} tagged {post} with {tag}', [
-					'post' => TextHelper::reprPost($post),
-					'tag' => TextHelper::reprTag($tag)]);
-			}
-		}
-
-		/* source */
-		$suppliedSource = InputHelper::get('source');
-		if ($suppliedSource !== null)
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostSource, Access::getIdentity($post->getUploader()));
-
-			$oldSource = $post->source;
-			$post->setSource($suppliedSource);
-			$newSource = $post->source;
-
-			if ($oldSource != $newSource)
-			{
-				LogHelper::log('{user} changed source of {post} to {source}', [
-					'post' => TextHelper::reprPost($post),
-					'source' => $post->source]);
-			}
-		}
-
-		/* relations */
-		$suppliedRelations = InputHelper::get('relations');
-		if ($suppliedRelations !== null)
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostRelations, Access::getIdentity($post->getUploader()));
-
-			$oldRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
-			$post->setRelationsFromText($suppliedRelations);
-			$newRelatedIds = array_map(function($post) { return $post->id; }, $post->getRelations());
-
-			foreach (array_diff($oldRelatedIds, $newRelatedIds) as $post2id)
-			{
-				LogHelper::log('{user} removed relation between {post} and {post2}', [
-					'post' => TextHelper::reprPost($post),
-					'post2' => TextHelper::reprPost($post2id)]);
-			}
-
-			foreach (array_diff($newRelatedIds, $oldRelatedIds) as $post2id)
-			{
-				LogHelper::log('{user} added relation between {post} and {post2}', [
-					'post' => TextHelper::reprPost($post),
-					'post2' => TextHelper::reprPost($post2id)]);
-			}
-		}
-
-		/* file contents */
-		if (!empty($_FILES['file']['name']))
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
-
-			$suppliedFile = $_FILES['file'];
-			TransferHelper::handleUploadErrors($suppliedFile);
-
-			$post->setContentFromPath($suppliedFile['tmp_name'], $suppliedFile['name']);
-
-			if (!$isNew)
-				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
-		}
-		elseif (InputHelper::get('url'))
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostFile, Access::getIdentity($post->getUploader()));
-
-			$url = InputHelper::get('url');
-			$post->setContentFromUrl($url);
-
-			if (!$isNew)
-				LogHelper::log('{user} changed contents of {post}', ['post' => TextHelper::reprPost($post)]);
-		}
-
-		/* thumbnail */
-		if (!empty($_FILES['thumb']['name']))
-		{
-			if (!$isNew)
-				Access::assert(Privilege::EditPostThumb, Access::getIdentity($post->getUploader()));
-
-			$suppliedFile = $_FILES['thumb'];
-			TransferHelper::handleUploadErrors($suppliedFile);
-
-			$post->setCustomThumbnailFromPath($srcPath = $suppliedFile['tmp_name']);
-
-			LogHelper::log('{user} changed thumb of {post}', ['post' => TextHelper::reprPost($post)]);
-		}
+	private function redirectToGenericView($id)
+	{
+		$this->redirect(\Chibi\Router::linkTo(
+			['PostController', 'genericView'],
+			['id' => $id]));
 	}
 }

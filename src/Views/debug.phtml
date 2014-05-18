@@ -1,4 +1,7 @@
-<?php Assets::addStylesheet('debug.css') ?>
+<?php
+$this->assets->addStylesheet('debug.css');
+?>
+
 <div class="main-wrapper">
 	<?php foreach (\Chibi\Database::getLogs() as $log): ?>
 		<div class="debug">
