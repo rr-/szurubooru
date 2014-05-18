@@ -16,12 +16,12 @@ class Assets extends \Chibi\Util\Assets
 
 	public function addStylesheet($path)
 	{
-		return parent::addStylesheet('/media/css/' . $path);
+		return parent::addStylesheet($this->decorateUrl('/media/css/' . $path));
 	}
 
 	public function addScript($path)
 	{
-		return parent::addScript('/media/js/' . $path);
+		return parent::addScript($this->decorateUrl('/media/js/' . $path));
 	}
 
 	public function transformHtml($html)
@@ -46,5 +46,11 @@ class Assets extends \Chibi\Util\Assets
 		$html = str_replace('</head>', $headSnippet . '</head>', $html);
 		$html = str_replace('</body>', $bodySnippet . '</body>', $html);
 		return $html;
+	}
+
+
+	private function decorateUrl($url)
+	{
+		return $url . '?' . PropertyModel::get(PropertyModel::EngineVersion);
 	}
 }
