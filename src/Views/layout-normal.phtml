@@ -53,7 +53,7 @@ $this->assets->addScript('core.js');
 				<div class="right">
 					<span><?= TextHelper::useBytesUnits(memory_get_usage()) ?></span>
 					<span><?= sprintf('%.04f', microtime(true) - $this->context->startTime) ?>s</span>
-					<span><?= count(\Chibi\Database::getLogs()) ?> queries</span>
+					<span><?= $x = count(\Chibi\Database::getLogs()) ?> <?= $x != 1 ? 'queries' : 'query' ?></span>
 				</div>
 				<div class="clear"></div>
 				<hr/>
