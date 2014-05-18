@@ -3,7 +3,6 @@ class AbstractController
 {
 	protected $assets;
 	private $layoutName;
-	private static $isRendered;
 
 	public function isAjax()
 	{
@@ -16,12 +15,6 @@ class AbstractController
 
 		$this->assets = new Assets();
 		$this->assets->setTitle(Core::getConfig()->main->title);
-	}
-
-	public function __destruct()
-	{
-		if ($this->isAjax())
-			$this->renderAjax();
 	}
 
 	public function renderAjax()
@@ -38,11 +31,6 @@ class AbstractController
 
 	public function renderView($viewName)
 	{
-		//no matter which controller runs it (including ErrorController), render only once
-		if (self::isRendered())
-			return;
-
-		self::markAsRendered();
 		$context = Core::getContext();
 		if ($viewName !== null)
 			$context->viewName = $viewName;
@@ -64,16 +52,6 @@ class AbstractController
 			\Chibi\Util\Url::forward($url);
 	}
 
-
-	private static function isRendered()
-	{
-		return self::$isRendered;
-	}
-
-	private static function markAsRendered()
-	{
-		self::$isRendered = true;
-	}
 
 	private function switchLayout($layoutName)
 	{
