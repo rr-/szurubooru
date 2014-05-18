@@ -142,12 +142,14 @@ class TagController extends AbstractController
 		$params =
 		[
 			'source' => 'mass-tag',
-			'query' => $suppliedQuery ?: '',
+			'query' => trim($suppliedQuery ?: ''),
 			'additionalInfo' => $suppliedTag ? $suppliedTag : '',
 		];
 
 		if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
 			$params['page'] = $suppliedOldPage;
+		else
+			$params['page'] = 1;
 
 		$url = \Chibi\Router::linkTo(['PostController', 'listView'], $params);
 		$this->redirect($url);

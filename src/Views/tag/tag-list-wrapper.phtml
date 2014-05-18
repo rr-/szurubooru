@@ -13,7 +13,7 @@ if (Access::check(new Privilege(Privilege::MergeTags)))
 	$tabs['merge'] = ['Merge', 'mergeView'];
 
 if (Access::check(new Privilege(Privilege::MassTag)))
-	$tabs['mass-tag'] = ['Mass tag', 'massTagRedirectAction'];
+	$tabs['mass-tag'] = ['Mass tag', 'massTagRedirectView'];
 
 $showTabs = count($tabs) > 1;
 ?>

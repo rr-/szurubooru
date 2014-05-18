@@ -40,7 +40,7 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{page}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}/{page}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}/{additionalInfo}/{page}', $postValidation);
-\Chibi\Router::register(['PostController', 'listRedirectAction'], 'POST', '/{source}-redirect', $postValidation);
+\Chibi\Router::register(['PostController', 'listRedirectAction'], 'POST', '/posts-redirect', $postValidation);
 
 \Chibi\Router::register(['PostController', 'randomView'], 'GET', '/random', $postValidation);
 \Chibi\Router::register(['PostController', 'randomView'], 'GET', '/random/{page}', $postValidation);
