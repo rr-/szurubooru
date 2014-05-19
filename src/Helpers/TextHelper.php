@@ -46,6 +46,15 @@ class TextHelper
 
 	public static function toBooleanOrNull($x)
 	{
+		if ($x === null)
+			return null;
+
+		if ($x === true)
+			return true;
+
+		if ($x === false)
+			return false;
+
 		switch (strtolower($x))
 		{
 			case '1':
@@ -54,12 +63,14 @@ class TextHelper
 			case 'yes':
 			case 'y':
 				return true;
+
 			case '0':
 			case 'false':
 			case 'off':
 			case 'no':
 			case 'n':
 				return false;
+
 			default:
 				return null;
 		}

@@ -51,9 +51,20 @@ class TextHelperTest extends AbstractTest
 		$this->assert->isFalse(TextHelper::toBooleanOrNull('FaLsE'));
 		$this->assert->isFalse(TextHelper::toBooleanOrNull('false'));
 		$this->assert->isFalse(TextHelper::toBooleanOrNull(false));
+		$this->assert->isNotNull(TextHelper::toBooleanOrNull(false));
 		$this->assert->isNull(TextHelper::toBooleanOrNull(2));
 		$this->assert->isNull(TextHelper::toBooleanOrNull('2'));
 		$this->assert->isNull(TextHelper::toBooleanOrNull('rubbish'));
 		$this->assert->isNull(TextHelper::toBooleanOrNull(null));
+	}
+
+	public function testAssert()
+	{
+		$this->assert->isNull(null);
+		$this->assert->isNotNull(false);
+		$this->assert->isFalse(false);
+		$this->assert->areNotEqual(true, '1');
+		$this->assert->isTrue(true);
+		$this->assert->areNotEqual(false, null);
 	}
 }

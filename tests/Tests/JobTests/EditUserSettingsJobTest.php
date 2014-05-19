@@ -29,6 +29,27 @@ class EditUserSettingsJobTest extends AbstractTest
 		$this->assert->isTrue($settings->get(UserSettings::SETTING_ENDLESS_SCROLLING));
 		$this->assert->isTrue($settings->get(UserSettings::SETTING_POST_TAG_TITLES));
 		$this->assert->isTrue($settings->get(UserSettings::SETTING_HIDE_DISLIKED_POSTS));
+
+		$user = $this->assert->doesNotThrow(function() use ($user, $expectedSafety)
+		{
+			return Api::run(
+				new EditUserSettingsJob(),
+				[
+					JobArgs::ARG_USER_NAME => $user->getName(),
+					JobArgs::ARG_NEW_SETTINGS =>
+					[
+						UserSettings::SETTING_ENDLESS_SCROLLING => false,
+						UserSettings::SETTING_POST_TAG_TITLES => false,
+						UserSettings::SETTING_HIDE_DISLIKED_POSTS => false,
+					]
+				]);
+		});
+
+		$settings = $user->getSettings();
+
+		$this->assert->isFalse($settings->get(UserSettings::SETTING_ENDLESS_SCROLLING));
+		$this->assert->isFalse($settings->get(UserSettings::SETTING_POST_TAG_TITLES));
+		$this->assert->isFalse($settings->get(UserSettings::SETTING_HIDE_DISLIKED_POSTS));
 	}
 
 	public function testSettingAdditional()
