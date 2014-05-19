@@ -7,11 +7,18 @@
 	max-width: 50%;
 }
 
-code {
-	font-size: 11pt;
-	margin: 0;
+#content code {
+	font-size: 9pt;
 }
 
-code strong {
+#content .paginator-content {
+	margin: 0;
+	max-width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#content code strong {
 	background: #fee;
 }
