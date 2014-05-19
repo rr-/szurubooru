@@ -70,7 +70,7 @@ final class Core
 		TransferHelper::createDirectory($config->main->thumbsPath);
 
 		//extension sanity checks
-		$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'gd', 'openssl', 'fileinfo'];
+		$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'openssl', 'fileinfo'];
 		foreach ($requiredExtensions as $ext)
 			if (!extension_loaded($ext))
 				die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);

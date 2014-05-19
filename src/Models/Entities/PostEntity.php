@@ -393,12 +393,20 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		$height = Core::getConfig()->browsing->thumbHeight;
 		$dstPath = $this->getThumbPath($width, $height);
 
+		$thumbnailGenerator = new SmartThumbnailGenerator();
+
 		if (file_exists($this->getThumbCustomSourcePath()))
-			return ThumbnailHelper::generateFromPath($this->getThumbCustomSourcePath(), $dstPath, $width, $height);
+		{
+			return $thumbnailGenerator->generateFromFile(
+				$this->getThumbCustomSourcePath(),
+				$dstPath,
+				$width,
+				$height);
+		}
 
 		if ($this->getType()->toInteger() == PostType::Youtube)
 		{
-			return ThumbnailHelper::generateFromUrl(
+			return $thumbnailGenerator->generateFromUrl(
 				'http://img.youtube.com/vi/' . $this->getFileHash() . '/mqdefault.jpg',
 				$dstPath,
 				$width,
@@ -406,7 +414,11 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		}
 		else
 		{
-			return ThumbnailHelper::generateFromPath($this->getFullPath(), $dstPath, $width, $height);
+			return $thumbnailGenerator->generateFromFile(
+				$this->getFullPath(),
+				$dstPath,
+				$width,
+				$height);
 		}
 	}
 
