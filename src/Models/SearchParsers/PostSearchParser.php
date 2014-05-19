@@ -6,6 +6,7 @@ class PostSearchParser extends AbstractSearchParser
 	private $tags;
 	private $showHidden = false;
 	private $showDisliked = false;
+	private $randomReset = true;
 
 	protected function processSetup(&$tokens)
 	{
@@ -34,6 +35,9 @@ class PostSearchParser extends AbstractSearchParser
 
 		if (!Access::check(new Privilege(Privilege::ListPosts, 'hidden')) or !$this->showHidden)
 			$this->processComplexToken('special', 'hidden', true);
+
+		if ($this->randomReset and isset($_SESSION['browsing-seed']))
+			unset($_SESSION['browsing-seed']);
 
 		foreach ($this->tags as $item)
 		{
@@ -227,8 +231,6 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function processOrderToken($orderByString, $orderDir)
 	{
-		$randomReset = true;
-
 		if (in_array($orderByString, ['id']))
 			$orderColumn = 'post.id';
 
@@ -263,7 +265,7 @@ class PostSearchParser extends AbstractSearchParser
 			//is going to reset. however, it stays the same as
 			//long as you keep visiting pages with order:random
 			//specified.
-			$randomReset = false;
+			$this->randomReset = false;
 			if (!isset($_SESSION['browsing-seed']))
 				$_SESSION['browsing-seed'] = mt_rand();
 			$seed = $_SESSION['browsing-seed'];
@@ -274,9 +276,6 @@ class PostSearchParser extends AbstractSearchParser
 
 		else
 			return false;
-
-		if ($randomReset and isset($_SESSION['browsing-seed']))
-			unset($_SESSION['browsing-seed']);
 
 		$this->statement->setOrderBy($orderColumn, $orderDir);
 		return true;
