@@ -13,7 +13,14 @@ class TransferHelper
 		}
 
 		set_time_limit(0);
-		$srcHandle = fopen($srcUrl, 'rb');
+		try
+		{
+			$srcHandle = fopen($srcUrl, 'rb');
+		}
+		catch (Exception $e)
+		{
+			throw new SimpleException('Cannot open URL for reading: ' . $e->getMessage());
+		}
 		if (!$srcHandle)
 			throw new SimpleException('Cannot open URL for reading');
 
