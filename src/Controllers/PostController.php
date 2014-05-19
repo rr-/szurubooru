@@ -43,7 +43,15 @@ class PostController extends AbstractController
 	public function listRedirectAction($source = 'posts')
 	{
 		$context = Core::getContext();
+
+		if ($source == 'mass-tag')
+			Access::assert(new Privilege(Privilege::MassTag));
+
+		$oldPage = intval(InputHelper::get('old-page'));
+		$oldQuery = trim(InputHelper::get('old-query'));
 		$query = trim(InputHelper::get('query'));
+		$additionalInfo = trim(InputHelper::get('tag'));
+
 		$context->transport->searchQuery = $query;
 		$context->transport->lastSearchQuery = $query;
 		if (strpos($query, '/') !== false)
@@ -53,9 +61,14 @@ class PostController extends AbstractController
 		$params['source'] = $source;
 		if ($query)
 			$params['query'] = $query;
-		#if ($additionalInfo)
-		#	$params['additionalInfo'] = $additionalInfo;
-		$params['page'] = 1;
+		if ($additionalInfo)
+			$params['additionalInfo'] = $additionalInfo;
+
+		if ($oldPage != 0 and $oldQuery == $query)
+			$params['page'] = $oldPage;
+		else
+			$params['page'] = 1;
+
 
 		$url = \Chibi\Router::linkTo(['PostController', 'listView'], $params);
 		$this->redirect($url);

@@ -40,7 +40,7 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{page}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}/{page}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{query}/{additionalInfo}/{page}', $postValidation);
-\Chibi\Router::register(['PostController', 'listRedirectAction'], 'POST', '/posts-redirect', $postValidation);
+\Chibi\Router::register(['PostController', 'listRedirectAction'], 'POST', '/{source}-redirect', $postValidation);
 
 \Chibi\Router::register(['PostController', 'randomView'], 'GET', '/random', $postValidation);
 \Chibi\Router::register(['PostController', 'randomView'], 'GET', '/random/{page}', $postValidation);
@@ -91,7 +91,6 @@ $tagValidation =
 \Chibi\Router::register(['TagController', 'mergeView'], 'GET', '/tags-merge', $tagValidation);
 \Chibi\Router::register(['TagController', 'mergeAction'], 'POST', '/tags-merge', $tagValidation);
 \Chibi\Router::register(['TagController', 'massTagRedirectView'], 'GET', '/mass-tag-redirect', $tagValidation);
-\Chibi\Router::register(['TagController', 'massTagRedirectAction'], 'POST', '/mass-tag-redirect', $tagValidation);
 
 $userValidation =
 [

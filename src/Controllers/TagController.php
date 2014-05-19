@@ -131,30 +131,6 @@ class TagController extends AbstractController
 		$this->renderViewWithSource('tag-list-wrapper', 'mass-tag');
 	}
 
-	public function massTagRedirectAction()
-	{
-		Access::assert(new Privilege(Privilege::MassTag));
-		$suppliedOldPage = intval(InputHelper::get('old-page'));
-		$suppliedOldQuery = InputHelper::get('old-query');
-		$suppliedQuery = InputHelper::get('query');
-		$suppliedTag = InputHelper::get('tag');
-
-		$params =
-		[
-			'source' => 'mass-tag',
-			'query' => trim($suppliedQuery ?: ''),
-			'additionalInfo' => $suppliedTag ? $suppliedTag : '',
-		];
-
-		if ($suppliedOldPage != 0 and $suppliedOldQuery == $suppliedQuery)
-			$params['page'] = $suppliedOldPage;
-		else
-			$params['page'] = 1;
-
-		$url = \Chibi\Router::linkTo(['PostController', 'listView'], $params);
-		$this->redirect($url);
-	}
-
 
 	private function renderViewWithSource($viewName, $source)
 	{
