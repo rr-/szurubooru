@@ -1,5 +1,5 @@
 <?php
-$subTitle = sprintf('showing %s&nbsp;&ndash;%s',
+$subTitle = sprintf('showing %s&nbsp;&ndash;&nbsp;%s',
 	TextHelper::reprPost($this->context->transport->post),
 	TextHelper::reprTags($this->context->transport->post->getTags()));
 $this->assets->setSubTitle($subTitle);
