@@ -3,6 +3,9 @@ class ImageImagickThumbnailGenerator implements IThumbnailGenerator
 {
 	public function generateFromFile($srcPath, $dstPath, $width, $height)
 	{
+		if (!file_exists($srcPath))
+			return false;
+
 		$image = new Imagick($srcPath);
 		$image = $image->coalesceImages();
 

@@ -3,6 +3,9 @@ class ImageGdThumbnailGenerator implements IThumbnailGenerator
 {
 	public function generateFromFile($srcPath, $dstPath, $width, $height)
 	{
+		if (!file_exists($srcPath))
+			return false;
+
 		$mime = mime_content_type($srcPath);
 
 		switch ($mime)

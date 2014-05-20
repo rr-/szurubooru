@@ -3,6 +3,9 @@ class VideoThumbnailGenerator implements IThumbnailGenerator
 {
 	public function generateFromFile($srcPath, $dstPath, $width, $height)
 	{
+		if (!file_exists($srcPath))
+			return false;
+
 		$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.jpg';
 
 		$cmd = sprintf(
