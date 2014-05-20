@@ -16,56 +16,36 @@ $this->assets->setSubTitle('registration form');
 
 		<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>
 
-		<div class="form-row">
-			<label for="name">User name:</label>
-			<div class="input-wrapper">
-				<input
-					type="text"
-					id="name"
-					name="name"
-					value="<?= htmlspecialchars(InputHelper::get('name')) ?>"
-					placeholder="e.g. darth_vader"
-					autocomplete="off"/>
-			</div>
-		</div>
+		<?php
+			$context = new StdClass;
+			$context->name = 'name';
+			$context->label = 'User name';
+			$context->value = htmlspecialchars(InputHelper::get('name'));
+			$context->placeholder = 'e.g. darth_vader';
+			$context->noAutocomplete = true;
+			$this->renderExternal('input-text', $context);
 
-		<div class="form-row">
-			<label for="password1">Password:</label>
-			<div class="input-wrapper">
-				<input
-					type="password"
-					id="password1"
-					name="password1"
-					value="<?= htmlspecialchars(InputHelper::get('password1')) ?>"
-					placeholder="e.g. <?= str_repeat('&#x25cf;', 8) ?>"
-					autocomplete="off"/>
-			</div>
-		</div>
+			$context = new StdClass;
+			$context->name = 'password1';
+			$context->label = 'Password';
+			$context->value = htmlspecialchars(InputHelper::get('password1'));
+			$context->placeholder = 'e.g. ' . str_repeat('&#x25cf;', 8);
+			$context->noAutocomplete = true;
+			$this->renderExternal('input-password', $context);
 
-		<div class="form-row">
-			<label for="password2">Password (repeat):</label>
-			<div class="input-wrapper">
-				<input
-					type="password"
-					id="password2"
-					name="password2"
-					value="<?= htmlspecialchars(InputHelper::get('password2')) ?>"
-					placeholder="e.g. <?= str_repeat('&#x25cf;', 8) ?>"
-					autocomplete="off"/>
-			</div>
-		</div>
+			$context->name = 'password2';
+			$context->label = 'Password (repeat)';
+			$context->value = htmlspecialchars(InputHelper::get('password2'));
+			$this->renderExternal('input-password', $context);
 
-		<div class="form-row">
-			<label for="email">E-mail address:</label>
-			<div class="input-wrapper">
-				<input
-					type="text"
-					id="email"
-					name="email"
-					value="<?= htmlspecialchars(InputHelper::get('email')) ?>"
-					placeholder="e.g. vader@empire.gov" autocomplete="off"/>
-			</div>
-		</div>
+			$context = new StdClass;
+			$context->name = 'email';
+			$context->label = 'E-mail address';
+			$context->value = htmlspecialchars(InputHelper::get('email'));
+			$context->placeholder = 'e.g. vader@empire.gov';
+			$context->noAutocomplete = true;
+			$this->renderExternal('input-text', $context);
+		?>
 
 		<p id="email-info">
 			Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>

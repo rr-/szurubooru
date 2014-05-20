@@ -1,0 +1,38 @@
+<?php
+$id = uniqid();
+$label = isset($this->context->label) ? $this->context->label . ':' : '';
+$optionValuesDisabled = $this->context->optionValuesDisabled;
+$optionValuesEnabled = $this->context->optionValuesEnabled;
+$optionLabels = $this->context->optionLabels;
+$optionNames = $this->context->optionNames;
+$optionStates = $this->context->optionStates;
+$keys = array_keys($optionNames);
+?>
+
+<div class="form-row">
+	<label for="<?= $id ?>">
+		<?= $label ?>
+	</label>
+	<div class="input-wrapper">
+
+		<?php foreach ($keys as $key): ?>
+			<input type="hidden"
+				name="<?= $optionNames[$key] ?>"
+				value="<?= $optionValuesDisabled[$key] ?>"/>
+
+			<label>
+				<input type="checkbox"
+					name="<?= $optionNames[$key] ?>"
+					<?php if (count($keys) == 1): ?>
+						id="<?= $id ?>"
+					<?php endif ?>
+					<?php if ($optionStates[$key]): ?>
+						checked="checked"
+					<?php endif ?>
+					value="<?= $optionValuesEnabled[$key] ?>"/>
+
+				<?= $optionLabels[$key] ?>
+			</label>
+		<?php endforeach ?>
+	</div>
+</div>

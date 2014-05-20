@@ -14,15 +14,17 @@ $this->assets->addStylesheet('auth.css');
 		<a href="<?= \Chibi\Router::linkTo(['UserController', 'registrationView']); ?>">click here</a> to create a new one.
 	</p>
 
-	<div class="form-row">
-		<label for="name">User name:</label>
-		<div class="input-wrapper"><input type="text" id="name" name="name"/></div>
-	</div>
+	<?php
+		$context = new StdClass;
+		$context->name = 'name';
+		$context->label = 'User name';
+		$this->renderExternal('input-text', $context);
 
-	<div class="form-row">
-		<label for="password">Password:</label>
-		<div class="input-wrapper"><input type="password" id="password" name="password"/></div>
-	</div>
+		$context = new StdClass;
+		$context->name = 'password';
+		$context->label = 'Password';
+		$this->renderExternal('input-password', $context);
+	?>
 
 	<div class="form-row">
 		<label></label>

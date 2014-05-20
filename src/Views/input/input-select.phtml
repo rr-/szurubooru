@@ -1,0 +1,28 @@
+<?php
+$id = uniqid();
+$name = $this->context->name;
+$label = isset($this->context->label) ? $this->context->label . ':' : '';
+$optionValues = $this->context->optionValues;
+$optionLabels = $this->context->optionLabels;
+$activeOptionValue = isset($this->context->activeOptionValue) ? $this->context->activeOptionValue : null;
+$keys = array_keys($optionValues);
+?>
+
+<div class="form-row">
+	<label for="<?= $id ?>">
+		<?= $label ?>
+	</label>
+	<div class="input-wrapper">
+		<select name="<?= $name ?>" id="<?= $id ?>">
+			<?php foreach ($keys as $key): ?>
+				<?php if ($activeOptionValue == $optionValues[$key]): ?>
+					<option value="<?= $optionValues[$key] ?>" selected="selected">
+					<?php else: ?>
+					<option value="<?= $optionValues[$key] ?>">
+				<?php endif ?>
+					<?= $optionLabels[$key] ?>
+				</option>
+			<?php endforeach ?>
+		</select>
+	</div>
+</div>

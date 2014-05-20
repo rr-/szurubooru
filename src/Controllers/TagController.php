@@ -85,8 +85,8 @@ class TagController extends AbstractController
 			Api::run(
 				new MergeTagsJob(),
 				[
-					JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
-					JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
+					JobArgs::ARG_SOURCE_TAG_NAME => trim(InputHelper::get('source-tag')),
+					JobArgs::ARG_TARGET_TAG_NAME => trim(InputHelper::get('target-tag')),
 				]);
 
 			Messenger::success('Tags merged successfully.');
@@ -111,8 +111,8 @@ class TagController extends AbstractController
 			Api::run(
 				new RenameTagsJob(),
 				[
-					JobArgs::ARG_SOURCE_TAG_NAME => InputHelper::get('source-tag'),
-					JobArgs::ARG_TARGET_TAG_NAME => InputHelper::get('target-tag'),
+					JobArgs::ARG_SOURCE_TAG_NAME => trim(InputHelper::get('source-tag')),
+					JobArgs::ARG_TARGET_TAG_NAME => trim(InputHelper::get('target-tag')),
 				]);
 
 			Messenger::success('Tag renamed successfully.');

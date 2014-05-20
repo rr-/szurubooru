@@ -7,14 +7,16 @@
 	autocomplete="off"
 	data-confirm-text="Are you sure you want to delete your account?">
 
-	<?php if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId()): ?>
-		<div class="form-row current-password">
-			<label for="current-password">Current password:</label>
-			<div class="input-wrapper">
-				<input type="password" name="current-password" id="current-password" placeholder="Current password"/>
-			</div>
-		</div>
-	<?php endif ?>
+	<?php
+		if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId())
+		{
+			$context = new StdClass;
+			$context->label = 'Current password';
+			$context->name = 'current-password';
+			$context->placeholder = 'Current password';
+			$this->renderExternal('input-password', $context);
+		}
+	?>
 
 	<?php $this->renderExternal('message') ?>
 

@@ -6,108 +6,83 @@
 	class="edit"
 	autocomplete="off">
 
-	<?php if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId()): ?>
-		<div class="form-row current-password">
-			<label for="current-password">Current password:</label>
-			<div class="input-wrapper">
-				<input
-					type="password"
-					name="current-password"
-					id="current-password"
-					placeholder="Current password"/>
-			</div>
-		</div>
-		<hr>
-	<?php endif ?>
+	<?php
+		if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId())
+		{
+			$context = new StdClass;
+			$context->label = 'Current password';
+			$context->name = 'current-password';
+			$context->placeholder = 'Current password';
+			$this->renderExternal('input-password', $context);
+			echo '<hr/>';
+		}
 
-	<?php if (Access::check(new Privilege(
-		Privilege::EditUserName,
-		Access::getIdentity($this->context->transport->user)))): ?>
+		if (Access::check(new Privilege(
+			Privilege::EditUserName,
+			Access::getIdentity($this->context->transport->user))))
+		{
+			$context = new StdClass;
+			$context->label = 'Name';
+			$context->name = 'name';
+			$context->placeholder = 'New name&hellip;';
+			$context->value = htmlspecialchars(InputHelper::get('name'));
+			$this->renderExternal('input-text', $context);
+		}
 
-		<div class="form-row nickname">
-			<label for="name">Name:</label>
-			<div class="input-wrapper">
-				<input
-					type="text"
-					name="name"
-					id="name"
-					placeholder="New name&hellip;"
-					value="<?= htmlspecialchars(InputHelper::get('name')) ?>">
-			</div>
-		</div>
-	<?php endif ?>
+		if (Access::check(new Privilege(
+			Privilege::EditUserEmail,
+			Access::getIdentity($this->context->transport->user))))
+		{
+			$context = new StdClass;
+			$context->label = 'E-mail';
+			$context->name = 'email';
+			$context->placeholder = 'New e-mail&hellip;';
+			$context->value = htmlspecialchars(InputHelper::get('email'));
+			$this->renderExternal('input-text', $context);
+		}
 
-	<?php if (Access::check(new Privilege(
-		Privilege::EditUserEmail,
-		Access::getIdentity($this->context->transport->user)))): ?>
+		if (Access::check(new Privilege(
+			Privilege::EditUserPassword,
+			Access::getIdentity($this->context->transport->user))))
+		{
+			$context = new StdClass;
+			$context->label = 'New password';
+			$context->name = 'password1';
+			$context->placeholder = 'New password&hellip;';
+			$context->value = htmlspecialchars(InputHelper::get('password1'));
+			$this->renderExternal('input-password', $context);
 
-		<div class="form-row email">
-			<label for="name">E-mail:</label>
-			<div class="input-wrapper">
-				<input
-					type="text"
-					name="email"
-					id="email"
-					placeholder="New e-mail&hellip;"
-					value="<?= htmlspecialchars(InputHelper::get('email')) ?>"/>
-			</div>
-		</div>
-	<?php endif ?>
+			$context = new StdClass;
+			$context->name = 'password2';
+			$context->placeholder = 'New password&hellip; (repeat)';
+			$context->value = htmlspecialchars(InputHelper::get('password2'));
+			$this->renderExternal('input-password', $context);
+		}
 
-	<?php if (Access::check(new Privilege(
-		Privilege::EditUserPassword,
-		Access::getIdentity($this->context->transport->user)))): ?>
+		if (Access::check(new Privilege(
+			Privilege::EditUserAccessRank,
+			Access::getIdentity($this->context->transport->user))))
+		{
+			$accessRanks = array_filter(
+				AccessRank::getAll(),
+				function($ar)
+				{
+					return $ar->toInteger() != AccessRank::Nobody;
+				});
 
-		<div class="form-row password1">
-			<label for="password1">New password:</label>
-			<div class="input-wrapper">
-				<input
-					type="password"
-					name="password1"
-					id="password1"
-					placeholder="New password&hellip;"
-					value="<?= htmlspecialchars(InputHelper::get('password1')) ?>"/>
-			</div>
-		</div>
-		<div class="form-row password2">
-			<label for="password2"></label>
-			<div class="input-wrapper">
-				<input
-					type="password"
-					name="password2"
-					id="password2"
-					placeholder="New password&hellip; (repeat)"
-					value="<?= htmlspecialchars(InputHelper::get('password2')) ?>"/>
-			</div>
-		</div>
-	<?php endif ?>
+			$context = new StdClass;
+			$context->name = 'access-rank';
+			$context->label = 'Access rank';
+			$context->placeholder = 'New password&hellip; (repeat)';
+			$context->optionValues = array_map(function($ar) { return $ar->toInteger(); }, $accessRanks);
+			$context->optionLabels = array_map(function($ar) { return $ar->toDisplayString(); }, $accessRanks);
+			$context->activeOptionValue = InputHelper::get('access-rank')
+				?: $this->context->transport->user->getAccessRank()->toInteger();
+			$this->renderExternal('input-select', $context);
+		}
 
-	<?php if (Access::check(new Privilege(
-		Privilege::EditUserAccessRank,
-		Access::getIdentity($this->context->transport->user)))): ?>
-
-		<div class="form-row access-rank">
-			<label for="access-rank">Access rank:</label>
-			<div class="input-wrapper">
-				<select name="access-rank" id="access-rank">
-					<?php foreach (AccessRank::getAll() as $rank): ?>
-						<?php if ($rank->toInteger() == AccessRank::Nobody) continue ?>
-						<?php if ($rank->toInteger() == InputHelper::get('access-rank')
-							or (!InputHelper::get('access-rank') and
-								$rank == $this->context->transport->user->getAccessRank())): ?>
-							<option value="<?= $rank->toInteger() ?>" selected="selected">
-						<?php else: ?>
-							<option value="<?= $rank->toInteger() ?>">
-						<?php endif ?>
-							<?= $rank->toDisplayString() ?>
-						</option>
-					<?php endforeach ?>
-				</select>
-			</div>
-		</div>
-	<?php endif ?>
-
-	<?php $this->renderExternal('message') ?>
+		$this->renderExternal('message');
+	?>
 
 	<div class="form-row">
 		<label></label>

@@ -4,47 +4,41 @@
 		['source' => 'mass-tag']) ?>">
 		<h1>mass tag</h1>
 
-		<div class="form-row">
-			<label for="mass-tag-query">Search query:</label>
-			<div class="input-wrapper">
-				<input
-					class="autocomplete"
-					type="text"
-					name="query"
-					id="mass-tag-query"
-					value="<?= isset($this->context->massTagQuery)
-						? htmlspecialchars($this->context->massTagQuery)
-						: '' ?>"/>
-			</div>
-		</div>
+		<?php
+			$context = new StdClass;
+			$context->name = 'query';
+			$context->label = 'Search query';
+			$context->inputClass = 'autocomplete';
+			if (isset($this->context->massTagQuery))
+				$context->value = htmlspecialchars($this->context->massTagQuery);
+			$this->renderExternal('input-text', $context);
+		?>
 
-		<div class="form-row">
-			<label for="mass-tag-tag">Tag:</label>
-			<div class="input-wrapper">
-				<input
-					class="autocomplete"
-					type="text"
-					name="tag"
-					id="mass-tag-tag"
-					value="<?= isset($this->context->massTagTag)
-						? htmlspecialchars($this->context->massTagTag)
-						: '' ?>"/>
-			</div>
-		</div>
+		<?php
+			$context = new StdClass;
+			$context->name = 'tag';
+			$context->label = 'Tag';
+			$context->inputClass = 'autocomplete';
+			if (isset($this->context->massTagTag))
+				$context->value = htmlspecialchars($this->context->massTagTag);
+			$this->renderExternal('input-text', $context);
 
-		<input
-			type="hidden"
-			name="old-page"
-			value="<?= isset($this->context->transport->paginator)
-				? htmlspecialchars($this->context->transport->paginator->page)
-				: '' ?>"/>
+			if (isset($this->context->transport->paginator))
+			{
+				$context = new StdClass;
+				$context->name = 'old-page';
+				$context->value = intval($this->context->transport->paginator->page);
+				$this->renderExternal('input-hidden', $context);
+			}
 
-		<input
-			type="hidden"
-			name="old-query"
-			value="<?= isset($this->context->massTagQuery)
-				? htmlspecialchars($this->context->massTagQuery)
-				: '' ?>"/>
+			if (isset($this->context->massTagQuery))
+			{
+				$context = new StdClass;
+				$context->name = 'old-query';
+				$context->value = htmlspecialchars($this->context->massTagQuery);
+				$this->renderExternal('input-hidden', $context);
+			}
+		?>
 
 		<div class="form-row">
 			<label></label>

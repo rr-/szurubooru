@@ -14,7 +14,7 @@ $(function()
 			var formDom = $('form.edit-post');
 			if (formDom.find('.tagit').length == 0)
 			{
-				attachTagIt($('.tags input'));
+				attachTagIt($('input[name=tags]'));
 				aDom.removeClass('inactive');
 
 				formDom.find('input[type=text]:visible:eq(0)').focus();

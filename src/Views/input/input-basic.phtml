@@ -1,0 +1,36 @@
+<?php
+$id = uniqid();
+$type = $this->context->type;
+$name = $this->context->name;
+$label = isset($this->context->label) ? $this->context->label . ':' : '';
+$value = isset($this->context->value) ? $this->context->value : '';
+$placeholder = isset($this->context->placeholder) ? $this->context->placeholder : '';
+$additionalInfo = isset($this->context->additionalInfo) ? $this->context->additionalInfo : '';
+$inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '';
+$noAutocomplete = isset($this->context->noAutocomplete) ? true : false;
+?>
+
+<div class="form-row">
+	<label for="<?= $id ?>">
+		<?= $label ?>
+	</label>
+	<div class="input-wrapper">
+		<input
+			<?php if ($noAutocomplete): ?>
+				autocomplete="off"
+			<?php endif ?>
+			<?php if ($inputClass != ''): ?>
+				class="<?= $inputClass ?>"
+			<?php endif ?>
+			type="<?= $type ?>"
+			name="<?= $name ?>"
+			id="<?= $id ?>"
+			placeholder="<?= $placeholder ?>"
+			value="<?= $value ?>"/>
+
+		<?php if ($additionalInfo): ?>
+			<small><?= $additionalInfo ?></small>
+		<?php endif ?>
+	</div>
+</div>
+

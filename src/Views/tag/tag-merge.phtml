@@ -2,21 +2,20 @@
 	<form method="post" action="<?= \Chibi\Router::linkTo(['TagController', 'mergeAction']) ?>">
 		<h1>merge tags</h1>
 
-		<div class="form-row">
-			<label for="merge-source-tag">Source tag:</label>
-			<div class="input-wrapper">
-				<input class="autocomplete" type="text" name="source-tag" id="merge-source-tag"/>
-			</div>
-		</div>
+		<?php
+			$context = new StdClass;
+			$context->name = 'source-tag';
+			$context->label = 'Source tag';
+			$context->inputClass = 'autocomplete';
+			$this->renderExternal('input-text', $context);
 
-		<div class="form-row">
-			<label for="merge-target-tag">Target tag:</label>
-			<div class="input-wrapper">
-				<input class="autocomplete" type="text" name="target-tag" id="merge-target-tag"/>
-			</div>
-		</div>
+			$context = new StdClass;
+			$context->name = 'target-tag';
+			$context->label = 'Target tag';
+			$this->renderExternal('input-text', $context);
 
-		<?php $this->renderExternal('message') ?>
+			$this->renderExternal('message');
+		?>
 
 		<div class="form-row">
 			<label></label>

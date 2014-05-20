@@ -12,112 +12,94 @@
 		id="edit-token"
 		value="<?= htmlspecialchars($this->context->transport->post->getEditToken()) ?>"/>
 
-	<?php if (Access::check(new Privilege(
-		Privilege::EditPostSafety,
-		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
+	<?php
+		if (Access::check(new Privilege(
+			Privilege::EditPostSafety,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			$safety = PostSafety::getAll();
 
-		<div class="form-row safety">
-			<label>Safety:</label>
-			<div class="input-wrapper">
-				<?php foreach (PostSafety::getAll() as $safety): ?>
-					<label>
-						<input type="radio"
-							name="safety"
-							<?php if ($this->context->transport->post->getSafety() == $safety): ?>
-								checked="checked"
-							<?php endif ?>
-							value="<?= $safety->toInteger() ?>"/>
-						&nbsp;<?= ucfirst($safety->toDisplayString()) ?>
-					</label>
-				<?php endforeach ?>
-			</div>
-		</div>
-	<?php endif ?>
+			$context = new StdClass;
+			$context->label = 'Safety';
+			$context->name = 'safety';
+			$context->optionValues = array_map(function($s) { return $s->toInteger(); }, $safety);
+			$context->optionLabels = array_map(function($s) { return ucfirst($s->toDisplayString()); }, $safety);
+			$context->activeOptionValue = $this->context->transport->post->getSafety()->toInteger();
+			$this->renderExternal('input-radioboxes', $context);
+		}
 
-	<?php if (Access::check(new Privilege(
-		Privilege::EditPostTags,
-		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
+		if (Access::check(new Privilege(
+			Privilege::EditPostTags,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			$context = new StdClass;
+			$context->label = 'Tags';
+			$context->name = 'tags';
+			$context->placeholder = 'Enter some tags&hellip;';
+			$context->value = join(',', array_map(
+				function($tag)
+				{
+					return htmlspecialchars($tag->getName());
+				},
+				$this->context->transport->post->getTags()));
+			$this->renderExternal('input-text', $context);
+		}
 
-		<div class="form-row tags">
-			<label for="tags">Tags:</label>
-			<div class="input-wrapper">
-				<input type="text"
-					name="tags"
-					id="tags"
-					placeholder="enter some tags&hellip;"
-					value="<?= join(',', array_map(function($tag) {
-						return htmlspecialchars($tag->getName());
-					}, $this->context->transport->post->getTags())) ?>"/>
-			</div>
-		</div>
-	<?php endif ?>
+		if (Access::check(new Privilege(
+			Privilege::EditPostSource,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			$context = new StdClass;
+			$context->label = 'Source';
+			$context->name = 'source';
+			$context->value = htmlspecialchars($this->context->transport->post->getSource());
+			$this->renderExternal('input-text', $context);
+		}
 
-	<?php if (Access::check(new Privilege(
-		Privilege::EditPostSource,
-		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
+		if (Access::check(new Privilege(
+			Privilege::EditPostRelations,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			$context = new StdClass;
+			$context->label = 'Relations';
+			$context->name = 'relations';
+			$context->placeholder = 'id1,id2,&hellip;';
+			$context->value = join(',', array_map(
+				function($post)
+				{
+					return $post->getId();
+				},
+				$this->context->transport->post->getRelations()));
+			$this->renderExternal('input-text', $context);
+		}
 
-		<div class="form-row source">
-			<label for="source">Source:</label>
-			<div class="input-wrapper">
-				<input type="text"
-					name="source"
-					id="source"
-					value="<?= htmlspecialchars($this->context->transport->post->getSource()) ?>"/>
-			</div>
-		</div>
-	<?php endif ?>
+		if (Access::check(new Privilege(
+			Privilege::EditPostContent,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			$context = new StdClass;
+			$context->label = 'File';
+			$context->name = 'url';
+			$context->placeholder = 'Some URL&hellip;';
+			$this->renderExternal('input-text', $context);
 
-	<?php if (Access::check(new Privilege(
-		Privilege::EditPostRelations,
-		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
+			$context = new StdClass;
+			$context->name = 'file';
+			$this->renderExternal('input-file', $context);
+		}
 
-		<div class="form-row thumb">
-			<label for="relations">Relations:</label>
-			<div class="input-wrapper">
-				<input type="text"
-					name="relations"
-					id="relations"
-					placeholder="id1,id2,&hellip;"
-					value="<?= join(',', array_map(function($post) {
-						return $post->getId();
-					}, $this->context->transport->post->getRelations())) ?>"/>
-			</div>
-		</div>
-	<?php endif ?>
-
-	<?php if (Access::check(new Privilege(
-		Privilege::EditPostContent,
-		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
-
-		<div class="form-row url">
-			<label for="url">File:</label>
-			<div class="input-wrapper">
-				<input type="text" name="url" id="url" placeholder="Some url&hellip;"/>
-			</div>
-		</div>
-
-		<div class="form-row file">
-			<label for="file"></label>
-			<div class="input-wrapper">
-				<input type="file" name="file" id="file"/>
-			</div>
-		</div>
-	<?php endif ?>
-
-	<?php if (Access::check(new Privilege(
-		Privilege::EditPostThumb,
-		Access::getIdentity($this->context->transport->post->getUploader())))): ?>
-
-		<div class="form-row thumb">
-			<label for="thumb">Thumb:</label>
-			<div class="input-wrapper">
-				<input type="file" name="thumb" id="thumb"/>
-				<?php if ($this->context->transport->post->hasCustomThumb()): ?>
-					<small>(Currently using custom thumb)</small>
-				<?php endif ?>
-			</div>
-		</div>
-	<?php endif ?>
+		if (Access::check(new Privilege(
+			Privilege::EditPostThumb,
+			Access::getIdentity($this->context->transport->post->getUploader()))))
+		{
+			$context = new StdClass;
+			$context->name = 'thumb';
+			$context->label = 'Thumb';
+			if ($this->context->transport->post->hasCustomThumb())
+				$context->additionalInfo = '(Currently using custom thumb)';
+			$this->renderExternal('input-file', $context);
+		}
+	?>
 
 	<div class="form-row">
 		<label></label>

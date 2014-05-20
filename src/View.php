@@ -12,10 +12,10 @@ class View extends \Chibi\View
 		$view->render();
 	}
 
-	protected function renderExternal($viewName)
+	protected function renderExternal($viewName, $context = null)
 	{
 		$view = new View($viewName);
-		$view->context = $this->context;
+		$view->context = $context !== null ? $context : $this->context;
 		$view->assets = $this->assets;
 		$view->render();
 	}

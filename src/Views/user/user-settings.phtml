@@ -9,103 +9,43 @@ $settings = $this->context->transport->user->getSettings();
 	method="post"
 	class="settings">
 
-	<div class="form-row safety">
-		<label>Safety:</label>
-		<div class="input-wrapper">
-			<?php foreach (PostSafety::getAll() as $safety): ?>
-				<?php if (Access::check(new Privilege(
-					Privilege::ListPosts,
-					$safety->toString()))): ?>
-					<label>
-						<?php
-							$attrs = [];
-							$attrs['type'] = 'checkbox';
-							$attrs['name'] = 'safety[]';
-							$attrs['value'] = $safety->toInteger();
-							if ($settings->hasEnabledSafety($safety))
-								$attrs['checked'] = 'checked';
+	<?php
+		$safety = array_filter(
+			PostSafety::getAll(),
+			function($s)
+			{
+				return Access::check(new Privilege(Privilege::ListPosts, $s->toString()));
+			});
 
-							echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
-						?>
-						<?= ucfirst($safety->toDisplayString()) ?>
-					</label>
-				<?php endif ?>
-			<?php endforeach ?>
-		</div>
-	</div>
+		$context = new StdClass;
+		$context->label = 'Safety';
+		$context->optionValuesDisabled = array_map(function($s) { return null; }, $safety);
+		$context->optionValuesEnabled = array_map(function($s) { return $s->toInteger(); }, $safety);
+		$context->optionLabels = array_map(function($s) { return ucfirst($s->toDisplayString()); }, $safety);
+		$context->optionNames = array_map(function($s) { return 'safety[]'; }, $safety);
+		$context->optionStates = array_map(function($s) use ($settings) { return $settings->hasEnabledSafety($s); }, $safety);
+		$this->renderExternal('input-checkboxes', $context);
 
-	<div class="form-row endless-scrolling">
-		<label for="endless-scrolling">Endless scrolling:</label>
-		<div class="input-wrapper">
-			<?php
-				$attrs = [];
-				$attrs['name'] = 'endless-scrolling';
-				$attrs['type'] = 'hidden';
-				$attrs['value'] = '0';
-				echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
-			?>
-			<label>
-				<?php
+		$context = new StdClass;
+		$context->optionValuesDisabled = ['0'];
+		$context->optionValuesEnabled = ['1'];
+		$context->optionLabels = ['Enabled'];
 
-					$attrs['type'] = 'checkbox';
-					$attrs['value'] = '1';
-					$attrs['id'] = 'endless-scrolling';
-					if ($settings->hasEnabledEndlessScrolling())
-						$attrs['checked'] = 'checked';
-					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
-				?>
-				Enabled
-			</label>
-		</div>
-	</div>
+		$context->label = 'Endless scrolling';
+		$context->optionNames = ['endless-scrolling'];
+		$context->optionStates = [$settings->hasEnabledEndlessScrolling()];
+		$this->renderExternal('input-checkboxes', $context);
 
-	<div class="form-row post-tag-titles">
-		<label for="post-tag-titles">Tags in thumbs:</label>
-		<div class="input-wrapper">
-			<?php
-				$attrs = [];
-				$attrs['name'] = 'post-tag-titles';
-				$attrs['type'] = 'hidden';
-				$attrs['value'] = '0';
-				echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
-			?>
-			<label>
-				<?php
-					$attrs['type'] = 'checkbox';
-					$attrs['value'] = '1';
-					$attrs['id'] = 'post-tag-titles';
-					if ($settings->hasEnabledPostTagTitles())
-						$attrs['checked'] = 'checked';
-					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
-				?>
-				Enabled
-			</label>
-		</div>
-	</div>
+		$context->label = 'Tags in thumbs';
+		$context->optionNames = ['post-tag-titles'];
+		$context->optionStates = [$settings->hasEnabledPostTagTitles()];
+		$this->renderExternal('input-checkboxes', $context);
 
-	<div class="form-row hide-disliked-posts">
-		<label for="hide-disliked-posts">Hide down-voted:</label>
-		<div class="input-wrapper">
-			<?php
-				$attrs = [];
-				$attrs['name'] = 'hide-disliked-posts';
-				$attrs['type'] = 'hidden';
-				$attrs['value'] = '0';
-				echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
-			?>
-			<label>
-				<?php
-					$attrs['type'] = 'checkbox';
-					$attrs['value'] = '1';
-					$attrs['id'] = 'hide-disliked-posts';
-					if ($settings->hasEnabledHidingDislikedPosts())
-						$attrs['checked'] = 'checked';
-					echo TextHelper::htmlTag('input', TextHelper::HTML_LEAF, $attrs);
-				?>
-				Enabled
-			</label>
-		</div>
-	</div>
+		$context->label = 'Hide down-voted';
+		$context->optionNames = ['hide-disliked-posts'];
+		$context->optionStates = [$settings->hasEnabledHidingDislikedPosts()];
+		$this->renderExternal('input-checkboxes', $context);
+	?>
 
 	<?php $this->renderExternal('message') ?>
 
