@@ -89,13 +89,13 @@
 		}
 
 		if (Access::check(new Privilege(
-			Privilege::EditPostThumb,
+			Privilege::EditPostThumbnail,
 			Access::getIdentity($this->context->transport->post->getUploader()))))
 		{
 			$context = new StdClass;
-			$context->name = 'thumb';
+			$context->name = 'thumbnail';
 			$context->label = 'Thumb';
-			if ($this->context->transport->post->hasCustomThumb())
+			if ($this->context->transport->post->hasCustomThumbnail())
 				$context->additionalInfo = '(Currently using custom thumb)';
 			$this->renderExternal('input-file', $context);
 		}

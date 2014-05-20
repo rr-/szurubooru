@@ -1,25 +1,25 @@
 <?php
-class EditPostThumbJobTest extends AbstractTest
+class EditPostThumbnailJobTest extends AbstractTest
 {
 	public function testFile()
 	{
-		$this->grantAccess('editPostThumb');
+		$this->grantAccess('editPostThumbnail');
 		$post = $this->postMocker->mockSingle();
 
-		$this->assert->isFalse($post->hasCustomThumb());
+		$this->assert->isFalse($post->hasCustomThumbnail());
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
-				new EditPostThumbJob(),
+				new EditPostThumbnailJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
-					JobArgs::ARG_NEW_THUMB_CONTENT =>
+					JobArgs::ARG_NEW_THUMBNAIL_CONTENT =>
 						new ApiFileInput($this->testSupport->getPath('thumb.jpg'), 'test.jpg'),
 				]);
 		});
 
-		$this->assert->isTrue($post->hasCustomThumb());
-		$img = imagecreatefromjpeg($post->tryGetWorkingThumbPath());
+		$this->assert->isTrue($post->hasCustomThumbnail());
+		$img = imagecreatefromjpeg($post->tryGetWorkingThumbnailPath());
 		$this->assert->areEqual(150, imagesx($img));
 		$this->assert->areEqual(150, imagesy($img));
 		imagedestroy($img);
@@ -27,23 +27,23 @@ class EditPostThumbJobTest extends AbstractTest
 
 	public function testFileDifferentDimensions()
 	{
-		$this->grantAccess('editPostThumb');
+		$this->grantAccess('editPostThumbnail');
 		$post = $this->postMocker->mockSingle();
 
-		$this->assert->isFalse($post->hasCustomThumb());
+		$this->assert->isFalse($post->hasCustomThumbnail());
 		$post = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
-				new EditPostThumbJob(),
+				new EditPostThumbnailJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
-					JobArgs::ARG_NEW_THUMB_CONTENT =>
+					JobArgs::ARG_NEW_THUMBNAIL_CONTENT =>
 						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);
 		});
 
-		$this->assert->isTrue($post->hasCustomThumb());
-		$img = imagecreatefromjpeg($post->tryGetWorkingThumbPath());
+		$this->assert->isTrue($post->hasCustomThumbnail());
+		$img = imagecreatefromjpeg($post->tryGetWorkingThumbnailPath());
 		$this->assert->areEqual(150, imagesx($img));
 		$this->assert->areEqual(150, imagesy($img));
 		imagedestroy($img);

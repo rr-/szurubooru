@@ -7,7 +7,7 @@ class ImageImagickThumbnailGenerator implements IThumbnailGenerator
 		$image = $image->coalesceImages();
 
 		$config = Core::getConfig();
-		switch ($config->browsing->thumbStyle)
+		switch ($config->browsing->thumbnailStyle)
 		{
 			case 'outside':
 				$this->cropOutside($image, $width, $height);

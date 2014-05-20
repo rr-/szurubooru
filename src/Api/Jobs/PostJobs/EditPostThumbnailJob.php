@@ -1,5 +1,5 @@
 <?php
-class EditPostThumbJob extends AbstractJob
+class EditPostThumbnailJob extends AbstractJob
 {
 	protected $postRetriever;
 
@@ -11,7 +11,7 @@ class EditPostThumbJob extends AbstractJob
 	public function execute()
 	{
 		$post = $this->postRetriever->retrieve();
-		$file = $this->getArgument(JobArgs::ARG_NEW_THUMB_CONTENT);
+		$file = $this->getArgument(JobArgs::ARG_NEW_THUMBNAIL_CONTENT);
 
 		$post->setCustomThumbnailFromPath($file->filePath);
 
@@ -29,14 +29,14 @@ class EditPostThumbJob extends AbstractJob
 	{
 		return JobArgs::Conjunction(
 			$this->postRetriever->getRequiredArguments(),
-			JobArgs::ARG_NEW_THUMB_CONTENT);
+			JobArgs::ARG_NEW_THUMBNAIL_CONTENT);
 	}
 
 	public function getRequiredMainPrivilege()
 	{
 		return $this->getContext() == self::CONTEXT_BATCH_ADD
-			? Privilege::AddPostThumb
-			: Privilege::EditPostThumb;
+			? Privilege::AddPostThumbnail
+			: Privilege::EditPostThumbnail;
 	}
 
 	public function getRequiredSubPrivileges()

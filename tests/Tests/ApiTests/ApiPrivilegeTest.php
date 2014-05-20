@@ -49,7 +49,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->testDynamicPostPrivilege(new EditPostSafetyJob(), Privilege::EditPostSafety);
 		$this->testDynamicPostPrivilege(new EditPostSourceJob(), Privilege::EditPostSource);
 		$this->testDynamicPostPrivilege(new EditPostTagsJob(), Privilege::EditPostTags);
-		$this->testDynamicPostPrivilege(new EditPostThumbJob(), Privilege::EditPostThumb);
+		$this->testDynamicPostPrivilege(new EditPostThumbnailJob(), Privilege::EditPostThumbnail);
 
 		$ctx = function($job)
 		{
@@ -61,7 +61,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$this->testDynamicPostPrivilege($ctx(new EditPostSafetyJob), Privilege::AddPostSafety);
 		$this->testDynamicPostPrivilege($ctx(new EditPostSourceJob), Privilege::AddPostSource);
 		$this->testDynamicPostPrivilege($ctx(new EditPostTagsJob), Privilege::AddPostTags);
-		$this->testDynamicPostPrivilege($ctx(new EditPostThumbJob), Privilege::AddPostThumb);
+		$this->testDynamicPostPrivilege($ctx(new EditPostThumbnailJob), Privilege::AddPostThumbnail);
 
 		$this->testDynamicPostPrivilege(new FeaturePostJob(), Privilege::FeaturePost);
 		$this->testDynamicPostPrivilege(new FlagPostJob(), Privilege::FlagPost);
@@ -117,9 +117,9 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		}
 	}
 
-	public function testDynamicPostThumbPrivileges()
+	public function testDynamicPostThumbnailPrivileges()
 	{
-		$job = new GetPostThumbJob();
+		$job = new GetPostThumbnailJob();
 		$this->testedJobs []= $job;
 		$this->assert->isNull($job->getRequiredMainPrivilege());
 	}

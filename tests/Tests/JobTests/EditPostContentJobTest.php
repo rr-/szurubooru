@@ -27,7 +27,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->assert->areEqual(240, $post->getImageHeight());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
-			$post->generateThumb();
+			$post->generateThumbnail();
 		});
 	}
 
@@ -42,7 +42,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->assert->areEqual(240, $post->getImageHeight());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
-			$post->generateThumb();
+			$post->generateThumbnail();
 		});
 	}
 
@@ -57,7 +57,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->assert->areEqual(240, $post->getImageHeight());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
-			$post->generateThumb();
+			$post->generateThumbnail();
 		});
 	}
 
@@ -102,7 +102,7 @@ class EditPostContentJobTest extends AbstractTest
 		$this->assert->areEqual('qWq_jydCUw4', $post->getFileHash());
 		$this->assert->doesNotThrow(function() use ($post)
 		{
-			$post->generateThumb();
+			$post->generateThumbnail();
 		});
 
 		$this->assert->doesNotThrow(function() use ($post)

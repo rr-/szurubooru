@@ -112,7 +112,7 @@ class SzurubooruTestRunner implements ITestRunner
 		$folders =
 		[
 			realpath(Core::getConfig()->main->filesPath),
-			realpath(Core::getConfig()->main->thumbsPath),
+			realpath(Core::getConfig()->main->thumbnailsPath),
 			realpath(dirname(Core::getConfig()->main->logsPath)),
 		];
 

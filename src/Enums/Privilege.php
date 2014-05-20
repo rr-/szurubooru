@@ -14,7 +14,7 @@ class Privilege extends AbstractEnum implements IEnum
 	const EditPost = 'editPost';
 	const EditPostSafety = 'editPostSafety';
 	const EditPostTags = 'editPostTags';
-	const EditPostThumb = 'editPostThumb';
+	const EditPostThumbnail = 'editPostThumbnail';
 	const EditPostSource = 'editPostSource';
 	const EditPostRelations = 'editPostRelations';
 	const EditPostContent = 'editPostContent';
@@ -22,7 +22,7 @@ class Privilege extends AbstractEnum implements IEnum
 	const AddPost = 'addPost';
 	const AddPostSafety = 'addPostSafety';
 	const AddPostTags = 'addPostTags';
-	const AddPostThumb = 'addPostThumb';
+	const AddPostThumbnail = 'addPostThumbnail';
 	const AddPostSource = 'addPostSource';
 	const AddPostRelations = 'addPostRelations';
 	const AddPostContent = 'addPostContent';

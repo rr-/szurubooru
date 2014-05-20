@@ -186,12 +186,12 @@ class PostController extends AbstractController
 				$file['name']);
 		}
 
-		if (!empty($_FILES['thumb']['name']))
+		if (!empty($_FILES['thumbnail']['name']))
 		{
-			$file = $_FILES['thumb'];
+			$file = $_FILES['thumbnail'];
 			TransferHelper::handleUploadErrors($file);
 
-			$jobArgs[JobArgs::ARG_NEW_THUMB_CONTENT] = new ApiFileInput(
+			$jobArgs[JobArgs::ARG_NEW_THUMBNAIL_CONTENT] = new ApiFileInput(
 				$file['tmp_name'],
 				$file['name']);
 		}
@@ -321,9 +321,9 @@ class PostController extends AbstractController
 		$this->renderFile();
 	}
 
-	public function thumbView($name)
+	public function thumbnailView($name)
 	{
-		$ret = Api::run(new GetPostThumbJob(), [JobArgs::ARG_POST_NAME => $name]);
+		$ret = Api::run(new GetPostThumbnailJob(), [JobArgs::ARG_POST_NAME => $name]);
 
 		$context = Core::getContext();
 		$context->transport->cacheDaysToLive = 365;

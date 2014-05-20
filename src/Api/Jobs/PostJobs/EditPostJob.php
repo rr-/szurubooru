@@ -11,7 +11,7 @@ class EditPostJob extends AbstractJob
 		$this->addSubJob(new EditPostSourceJob());
 		$this->addSubJob(new EditPostRelationsJob());
 		$this->addSubJob(new EditPostContentJob());
-		$this->addSubJob(new EditPostThumbJob());
+		$this->addSubJob(new EditPostThumbnailJob());
 	}
 
 	public function execute()

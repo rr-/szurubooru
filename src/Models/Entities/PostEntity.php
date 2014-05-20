@@ -351,25 +351,25 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		return PostModel::getFullPath($this->getName());
 	}
 
-	public function tryGetWorkingThumbPath()
+	public function tryGetWorkingThumbnailPath()
 	{
-		return PostModel::tryGetWorkingThumbPath($this->getName());
+		return PostModel::tryGetWorkingThumbnailPath($this->getName());
 	}
 
-	public function getThumbCustomSourcePath()
+	public function getCustomThumbnailSourcePath()
 	{
-		return PostModel::getThumbCustomSourcePath($this->getName());
+		return PostModel::getCustomThumbnailSourcePath($this->getName());
 	}
 
-	public function getThumbPath()
+	public function getThumbnailPath()
 	{
-		return PostModel::getThumbPath($this->getName());
+		return PostModel::getThumbnailPath($this->getName());
 	}
 
-	public function hasCustomThumb()
+	public function hasCustomThumbnail()
 	{
-		$thumbPath = $this->getThumbCustomSourcePath();
-		return file_exists($thumbPath);
+		$thumbnailPath = $this->getCustomThumbnailSourcePath();
+		return file_exists($thumbnailPath);
 	}
 
 	public function setCustomThumbnailFromPath($srcPath)
@@ -378,27 +378,27 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 
 		$mimeType = mime_content_type($srcPath);
 		if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
-			throw new SimpleException('Invalid thumbnail type "%s"', $mimeType);
+			throw new SimpleException('Invalid file type "%s"', $mimeType);
 
-		$dstPath = $this->getThumbCustomSourcePath();
+		$dstPath = $this->getCustomThumbnailSourcePath();
 
 		TransferHelper::copy($srcPath, $dstPath);
 
-		$this->generateThumb();
+		$this->generateThumbnail();
 	}
 
-	public function generateThumb()
+	public function generateThumbnail()
 	{
-		$width = Core::getConfig()->browsing->thumbWidth;
-		$height = Core::getConfig()->browsing->thumbHeight;
-		$dstPath = $this->getThumbPath($width, $height);
+		$width = Core::getConfig()->browsing->thumbnailWidth;
+		$height = Core::getConfig()->browsing->thumbnailHeight;
+		$dstPath = $this->getThumbnailPath($width, $height);
 
 		$thumbnailGenerator = new SmartThumbnailGenerator();
 
-		if (file_exists($this->getThumbCustomSourcePath()))
+		if (file_exists($this->getCustomThumbnailSourcePath()))
 		{
 			return $thumbnailGenerator->generateFromFile(
-				$this->getThumbCustomSourcePath(),
+				$this->getCustomThumbnailSourcePath(),
 				$dstPath,
 				$width,
 				$height);
@@ -475,9 +475,9 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 
 		TransferHelper::copy($srcPath, $dstPath);
 
-		$thumbPath = $this->getThumbPath();
-		if (file_exists($thumbPath))
-			unlink($thumbPath);
+		$thumbnailPath = $this->getThumbnailPath();
+		if (file_exists($thumbnailPath))
+			unlink($thumbnailPath);
 	}
 
 	public function setContentFromUrl($srcUrl)
@@ -497,9 +497,9 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 			$this->setImageWidth(null);
 			$this->setImageHeight(null);
 
-			$thumbPath = $this->getThumbPath();
-			if (file_exists($thumbPath))
-				unlink($thumbPath);
+			$thumbnailPath = $this->getThumbnailPath();
+			if (file_exists($thumbnailPath))
+				unlink($thumbnailPath);
 
 			$duplicatedPost = PostModel::tryGetByHash($youtubeId);
 			if ($duplicatedPost !== null and (!$this->getId() or $this->getId() != $duplicatedPost->getId()))

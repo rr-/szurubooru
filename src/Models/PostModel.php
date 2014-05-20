@@ -255,29 +255,23 @@ final class PostModel extends AbstractCrudModel
 
 
 
-	public static function tryGetWorkingThumbPath($name)
+	public static function tryGetWorkingThumbnailPath($name)
 	{
-		$path = PostModel::getThumbPath($name);
+		$path = PostModel::getThumbnailPath($name);
 		if (file_exists($path) and is_readable($path))
 			return $path;
 
 		return null;
 	}
 
-	public static function getThumbCustomSourcePath($name)
+	public static function getCustomThumbnailSourcePath($name)
 	{
-		return self::getThumbPathTokenized('{fullpath}.thumb_source', $name);
+		return Core::getConfig()->main->thumbnailsPath . DS . $name . '.thumb_source';
 	}
 
-	public static function getThumbPath($name)
+	public static function getThumbnailPath($name)
 	{
-		return self::getThumbPathTokenized('{fullpath}.thumb', $name);
-	}
-
-	private static function getThumbPathTokenized($text, $name)
-	{
-		return TextHelper::absolutePath(TextHelper::replaceTokens($text, [
-			'fullpath' => Core::getConfig()->main->thumbsPath . DS . $name]));
+		return Core::getConfig()->main->thumbnailsPath . DS . $name . '.thumb';
 	}
 
 	public static function tryGetWorkingFullPath($name)
@@ -303,7 +297,7 @@ final class PostModel extends AbstractCrudModel
 			return PropertyModel::get(PropertyModel::PostSpaceUsage);
 
 		$totalBytes = 0;
-		$paths = [Core::getConfig()->main->filesPath, Core::getConfig()->main->thumbsPath];
+		$paths = [Core::getConfig()->main->filesPath, Core::getConfig()->main->thumbnailsPath];
 
 		foreach ($paths as $path)
 		{

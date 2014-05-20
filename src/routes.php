@@ -51,7 +51,7 @@ $postValidation =
 
 \Chibi\Router::register(['PostController', 'genericView'], 'GET', '/post/{id}', $postValidation);
 \Chibi\Router::register(['PostController', 'fileView'], 'GET', '/post/{name}/retrieve', $postValidation);
-\Chibi\Router::register(['PostController', 'thumbView'], 'GET', '/post/{name}/thumb', $postValidation);
+\Chibi\Router::register(['PostController', 'thumbnailView'], 'GET', '/post/{name}/thumb', $postValidation);
 
 \Chibi\Router::register(['PostController', 'toggleTagAction'], null, '/post/{id}/toggle-tag/{tag}/{enable}', $postValidation);
 \Chibi\Router::register(['PostController', 'flagAction'], null, '/post/{id}/flag', $postValidation);

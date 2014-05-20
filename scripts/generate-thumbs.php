@@ -13,8 +13,8 @@ foreach ($posts as $post)
 {
 	++ $i;
 	printf('%s (%d/%d)' . PHP_EOL, TextHelper::reprPost($post), $i, $entityCount);
-	if (!$post->tryGetWorkingThumbPath())
-		$post->generateThumb();
+	if (!$post->tryGetWorkingThumbnailPath())
+		$post->generateThumbnail();
 }
 
-echo 'Don\'t forget to check access rights.';
+echo 'Don\'t forget to check access rights.' . PHP_EOL;

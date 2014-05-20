@@ -1,7 +1,7 @@
 <?php
 class Assets extends \Chibi\Util\Assets
 {
-	private $pageThumb = null;
+	private $pageThumbnail = null;
 	private $subTitle = null;
 
 	public function setSubTitle($text)
@@ -9,9 +9,9 @@ class Assets extends \Chibi\Util\Assets
 		$this->subTitle = $text;
 	}
 
-	public function setPageThumb($path)
+	public function setPageThumbnail($path)
 	{
-		$this->pageThumb = $path;
+		$this->pageThumbnail = $path;
 	}
 
 	public function addStylesheet($path)
@@ -34,8 +34,8 @@ class Assets extends \Chibi\Util\Assets
 
 		$headSnippet = '<meta property="og:title" content="' . $this->title . '"/>';
 		$headSnippet .= '<meta property="og:url" content="' . \Chibi\Util\Url::currentUrl() . '"/>';
-		if (!empty($this->pageThumb))
-			$headSnippet .= '<meta property="og:image" content="' . $this->pageThumb . '"/>';
+		if (!empty($this->pageThumbnail))
+			$headSnippet .= '<meta property="og:image" content="' . $this->pageThumbnail . '"/>';
 
 		$bodySnippet = '<script type="text/javascript">';
 		$bodySnippet .= '$(function() {';

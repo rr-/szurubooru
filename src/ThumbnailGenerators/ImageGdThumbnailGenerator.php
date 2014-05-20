@@ -24,7 +24,7 @@ class ImageGdThumbnailGenerator implements IThumbnailGenerator
 		}
 
 		$config = Core::getConfig();
-		switch ($config->browsing->thumbStyle)
+		switch ($config->browsing->thumbnailStyle)
 		{
 			case 'outside':
 				$dstImage = $this->cropOutside($srcImage, $width, $height);

@@ -67,7 +67,7 @@ final class Core
 		$config = self::getConfig();
 
 		TransferHelper::createDirectory($config->main->filesPath);
-		TransferHelper::createDirectory($config->main->thumbsPath);
+		TransferHelper::createDirectory($config->main->thumbnailsPath);
 
 		//extension sanity checks
 		$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'openssl', 'fileinfo'];

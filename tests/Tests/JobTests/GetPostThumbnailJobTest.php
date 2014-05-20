@@ -1,7 +1,7 @@
 <?php
-class GetPostThumbJobTest extends AbstractTest
+class GetPostThumbnailJobTest extends AbstractTest
 {
-	public function testThumbRetrieval()
+	public function testThumbnailRetrieval()
 	{
 		$this->grantAccess('viewPost');
 		$post = $this->postMocker->mockSingle();
@@ -9,7 +9,7 @@ class GetPostThumbJobTest extends AbstractTest
 		$output = $this->assert->doesNotThrow(function() use ($post)
 		{
 			return Api::run(
-				new GetPostThumbJob(),
+				new GetPostThumbnailJob(),
 				[
 					JobArgs::ARG_POST_NAME => $post->getName(),
 				]);
@@ -29,7 +29,7 @@ class GetPostThumbJobTest extends AbstractTest
 		$this->assert->throws(function()
 		{
 			Api::run(
-				new GetPostThumbJob(),
+				new GetPostThumbnailJob(),
 				[
 					JobArgs::ARG_POST_ID => 100,
 				]);
@@ -43,7 +43,7 @@ class GetPostThumbJobTest extends AbstractTest
 		$this->assert->throws(function()
 		{
 			Api::run(
-				new GetPostThumbJob(),
+				new GetPostThumbnailJob(),
 				[
 					JobArgs::ARG_POST_NAME => 'nonsense',
 				]);

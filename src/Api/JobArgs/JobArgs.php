@@ -32,7 +32,7 @@ class JobArgs
 	const ARG_NEW_RELATED_POST_IDS = 'new-related-post-ids';
 	const ARG_NEW_SAFETY = 'new-safety';
 	const ARG_NEW_SOURCE = 'new-source';
-	const ARG_NEW_THUMB_CONTENT = 'new-thumb-content';
+	const ARG_NEW_THUMBNAIL_CONTENT = 'new-thumbnail-content';
 	const ARG_NEW_TAG_NAMES = 'new-tag-names';
 
 	const ARG_NEW_ACCESS_RANK = 'new-access-rank';

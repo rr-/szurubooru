@@ -1,5 +1,5 @@
 <?php
-class GetPostThumbJob extends AbstractJob
+class GetPostThumbnailJob extends AbstractJob
 {
 	protected $postRetriever;
 
@@ -19,18 +19,18 @@ class GetPostThumbJob extends AbstractJob
 			$name = $post->getName();
 		}
 
-		$path = PostModel::tryGetWorkingThumbPath($name);
+		$path = PostModel::tryGetWorkingThumbnailPath($name);
 		if (!$path)
 		{
 			$post = PostModel::getByName($name);
 			$post = $this->postRetriever->retrieve();
 
-			$post->generateThumb();
-			$path = PostModel::tryGetWorkingThumbPath($name);
+			$post->generateThumbnail();
+			$path = PostModel::tryGetWorkingThumbnailPath($name);
 
 			if (!$path)
 			{
-				$path = Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
+				$path = Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumbnail.jpg';
 				$path = TextHelper::absolutePath($path);
 			}
 		}

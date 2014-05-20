@@ -109,12 +109,12 @@ class ApiArgumentTest extends AbstractFullApiTest
 				JobArgs::ARG_NEW_TAG_NAMES));
 	}
 
-	public function testEditPostThumbJob()
+	public function testEditPostThumbnailJob()
 	{
-		$this->testArguments(new EditPostThumbJob(),
+		$this->testArguments(new EditPostThumbnailJob(),
 			JobArgs::Conjunction(
 				$this->getPostSelector(),
-				JobArgs::ARG_NEW_THUMB_CONTENT));
+				JobArgs::ARG_NEW_THUMBNAIL_CONTENT));
 	}
 
 	public function testEditUserAccessRankJob()
@@ -201,9 +201,9 @@ class ApiArgumentTest extends AbstractFullApiTest
 			$this->getPostSelector());
 	}
 
-	public function testGetPostThumbJob()
+	public function testGetPostThumbnailJob()
 	{
-		$this->testArguments(new GetPostThumbJob(), $this->getPostSafeSelector());
+		$this->testArguments(new GetPostThumbnailJob(), $this->getPostSafeSelector());
 	}
 
 	public function testGetUserJob()

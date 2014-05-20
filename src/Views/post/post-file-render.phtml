@@ -1,6 +1,6 @@
 <?php
-$this->assets->setPageThumb(\Chibi\Router::linkTo(
-	['PostController', 'thumbView'],
+$this->assets->setPageThumbnail(\Chibi\Router::linkTo(
+	['PostController', 'thumbnailView'],
 	['name' => $this->context->transport->post->getName()]));
 $post = $this->context->transport->post;
 ?>
