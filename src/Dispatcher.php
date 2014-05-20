@@ -35,7 +35,7 @@ class Dispatcher
 			$errorController = new ErrorController;
 			$errorController->simpleExceptionView($e);
 		}
-		catch (SimpleException $e)
+		catch (Exception $e)
 		{
 			$errorController = new ErrorController;
 			$errorController->seriousExceptionView($e);

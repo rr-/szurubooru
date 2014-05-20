@@ -19,6 +19,7 @@ class ErrorController extends AbstractController
 	{
 		\Chibi\Util\Headers::setCode(400);
 		Messenger::fail($exception->getMessage());
+		$context = Core::getContext();
 		$context->transport->exception = $exception;
 		$context->transport->queries = \Chibi\Database::getLogs();
 
