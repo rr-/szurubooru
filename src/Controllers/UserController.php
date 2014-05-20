@@ -53,6 +53,7 @@ class UserController extends AbstractController
 		}
 		catch (SimpleException $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 		}
 
@@ -106,6 +107,7 @@ class UserController extends AbstractController
 		}
 		catch (SimpleException $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 		}
 
@@ -132,6 +134,7 @@ class UserController extends AbstractController
 		}
 		catch (SimpleException $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 			$this->renderView('user-view');
 		}
@@ -233,6 +236,7 @@ class UserController extends AbstractController
 		}
 		catch (SimpleException $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 		}
 
@@ -252,30 +256,31 @@ class UserController extends AbstractController
 
 		try
 		{
-		if (empty($tokenText))
-		{
-			Api::run(
-				new ActivateUserEmailJob(),
-				$this->appendUserIdentifierArgument([], $identifier));
+			if (empty($tokenText))
+			{
+				Api::run(
+					new ActivateUserEmailJob(),
+					$this->appendUserIdentifierArgument([], $identifier));
 
-			Messenger::success('Activation e-mail resent.');
-		}
-		else
-		{
-			$user = Api::run(new ActivateUserEmailJob(), [
-				JobArgs::ARG_TOKEN => $tokenText ]);
+				Messenger::success('Activation e-mail resent.');
+			}
+			else
+			{
+				$user = Api::run(new ActivateUserEmailJob(), [
+					JobArgs::ARG_TOKEN => $tokenText ]);
 
-			$message = 'Activation completed successfully.';
-			if (Core::getConfig()->registration->staffActivation)
-				$message .= ' However, your account still must be confirmed by staff.';
-			Messenger::success($message);
+				$message = 'Activation completed successfully.';
+				if (Core::getConfig()->registration->staffActivation)
+					$message .= ' However, your account still must be confirmed by staff.';
+				Messenger::success($message);
 
-			if (!Core::getConfig()->registration->staffActivation)
-				Auth::setCurrentUser($user);
-		}
+				if (!Core::getConfig()->registration->staffActivation)
+					Auth::setCurrentUser($user);
+			}
 		}
 		catch (SimpleException $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 		}
 
@@ -316,6 +321,7 @@ class UserController extends AbstractController
 		}
 		catch (SimpleException $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 		}
 

@@ -34,6 +34,7 @@ class PostController extends AbstractController
 		}
 		catch (SimpleException $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 		}
 

@@ -20,6 +20,7 @@ class AuthController extends AbstractController
 		}
 		catch (SimpleException $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 			$this->renderView('auth-login');
 		}

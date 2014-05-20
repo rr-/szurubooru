@@ -39,6 +39,7 @@ class ApiController extends AbstractController
 		}
 		catch (Exception $e)
 		{
+			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
 		}
 
