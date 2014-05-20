@@ -11,21 +11,18 @@ class AuthController extends AbstractController
 
 	public function loginAction()
 	{
-		try
+		$success = $this->interceptErrors(function()
 		{
 			$suppliedName = InputHelper::get('name');
 			$suppliedPassword = InputHelper::get('password');
 			$remember = boolval(InputHelper::get('remember'));
 			Auth::login($suppliedName, $suppliedPassword, $remember);
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-			$this->renderView('auth-login');
-		}
+		});
 
-		$this->redirectToLastVisitedUrl('auth');
+		if ($success)
+			$this->redirectToLastVisitedUrl('auth');
+		else
+			$this->renderView('auth-login');
 	}
 
 	public function logoutAction()

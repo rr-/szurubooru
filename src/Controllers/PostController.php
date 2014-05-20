@@ -7,7 +7,7 @@ class PostController extends AbstractController
 		$context->source = $source;
 		$context->additionalInfo = $additionalInfo;
 
-		try
+		$this->interceptErrors(function() use ($context, $query, $page, $source, $additionalInfo)
 		{
 			$query = trim($query);
 			$context->transport->searchQuery = $query;
@@ -31,12 +31,7 @@ class PostController extends AbstractController
 
 			$context->transport->posts = $ret->entities;
 			$context->transport->paginator = $ret;
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		$this->renderView('post-list-wrapper');
 	}

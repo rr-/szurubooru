@@ -38,6 +38,21 @@ class AbstractController
 	}
 
 
+	protected function interceptErrors($action)
+	{
+		try
+		{
+			$action();
+			return true;
+		}
+		catch (SimpleException $e)
+		{
+			\Chibi\Util\Headers::setCode(400);
+			Messenger::fail($e->getMessage());
+			return false;
+		}
+	}
+
 	protected function redirectToLastVisitedUrl($filter = null)
 	{
 		$targetUrl = SessionHelper::getLastVisitedUrl($filter);

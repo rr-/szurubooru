@@ -80,7 +80,7 @@ class TagController extends AbstractController
 
 	public function mergeAction()
 	{
-		try
+		$this->interceptErrors(function()
 		{
 			Api::run(
 				new MergeTagsJob(),
@@ -90,12 +90,7 @@ class TagController extends AbstractController
 				]);
 
 			Messenger::success('Tags merged successfully.');
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		if ($this->isAjax())
 			$this->renderAjax();
@@ -110,7 +105,7 @@ class TagController extends AbstractController
 
 	public function renameAction()
 	{
-		try
+		$this->interceptErrors(function()
 		{
 			Api::run(
 				new RenameTagsJob(),
@@ -120,12 +115,7 @@ class TagController extends AbstractController
 				]);
 
 			Messenger::success('Tag renamed successfully.');
-		}
-		catch (Exception $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		if ($this->isAjax())
 			$this->renderAjax();

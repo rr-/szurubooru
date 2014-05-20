@@ -3,10 +3,10 @@ class ApiController extends AbstractController
 {
 	public function runAction()
 	{
-		$context = Core::getContext();
-
-		try
+		$this->interceptErrors(function()
 		{
+			$context = Core::getContext();
+
 			if (!Auth::isLoggedIn())
 			{
 				$auth = InputHelper::get('auth');
@@ -36,12 +36,7 @@ class ApiController extends AbstractController
 			}
 
 			$context->transport->status = Api::run($job, $jobArgs);
-		}
-		catch (Exception $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		$this->renderAjax();
 	}

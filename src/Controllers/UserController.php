@@ -27,7 +27,7 @@ class UserController extends AbstractController
 	{
 		$this->prepareGenericView($identifier, 'settings');
 
-		try
+		$this->interceptErrors(function() use ($identifier)
 		{
 			$suppliedSafety = InputHelper::get('safety');
 			$desiredSafety = PostSafety::makeFlags($suppliedSafety);
@@ -50,12 +50,7 @@ class UserController extends AbstractController
 				Auth::setCurrentUser($user);
 
 			Messenger::success('Browsing settings updated!');
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		if ($this->isAjax())
 			$this->renderAjax();
@@ -67,7 +62,7 @@ class UserController extends AbstractController
 	{
 		$this->prepareGenericView($identifier, 'edit');
 
-		try
+		$this->interceptErrors(function() use ($identifier)
 		{
 			$this->requirePasswordConfirmation();
 
@@ -107,12 +102,7 @@ class UserController extends AbstractController
 				$message .= ' You will be sent an e-mail address confirmation message soon.';
 
 			Messenger::success($message);
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		if ($this->isAjax())
 			$this->renderAjax();
@@ -124,7 +114,7 @@ class UserController extends AbstractController
 	{
 		$this->prepareGenericView($identifier, 'delete');
 
-		try
+		$success = $this->interceptErrors(function() use ($identifier)
 		{
 			$this->requirePasswordConfirmation();
 
@@ -135,19 +125,14 @@ class UserController extends AbstractController
 			$user = UserModel::tryGetById(Auth::getCurrentUser()->getId());
 			if (!$user)
 				Auth::logOut();
+		});
 
+		if ($success)
 			$this->redirectToMainPage();
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-
-			if ($this->isAjax())
-				$this->renderAjax();
-			else
-				$this->renderView('user-view');
-		}
+		elseif ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->renderView('user-view');
 	}
 
 	public function toggleSafetyAction($safety)
@@ -215,7 +200,7 @@ class UserController extends AbstractController
 
 	public function registrationAction()
 	{
-		try
+		$this->interceptErrors(function()
 		{
 			if (InputHelper::get('password1') != InputHelper::get('password2'))
 				throw new SimpleException('Specified passwords must be the same');
@@ -243,12 +228,7 @@ class UserController extends AbstractController
 				$message .= ' Your registration must be now confirmed by staff.';
 
 			Messenger::success($message);
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		$this->renderView('user-registration');
 	}
@@ -264,7 +244,7 @@ class UserController extends AbstractController
 		$this->assets->setSubTitle('account activation');
 		$identifier = InputHelper::get('identifier');
 
-		try
+		$this->interceptErrors(function() use ($tokenText, $identifier)
 		{
 			if (empty($tokenText))
 			{
@@ -287,12 +267,7 @@ class UserController extends AbstractController
 				if (!Core::getConfig()->registration->staffActivation)
 					Auth::setCurrentUser($user);
 			}
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		$this->renderView('message');
 	}
@@ -308,7 +283,7 @@ class UserController extends AbstractController
 		$this->assets->setSubTitle('password reset');
 		$identifier = InputHelper::get('identifier');
 
-		try
+		$this->interceptErrors(function() use ($tokenText, $identifier)
 		{
 			if (empty($tokenText))
 			{
@@ -328,12 +303,7 @@ class UserController extends AbstractController
 
 				Auth::setCurrentUser($ret->user);
 			}
-		}
-		catch (SimpleException $e)
-		{
-			\Chibi\Util\Headers::setCode(400);
-			Messenger::fail($e->getMessage());
-		}
+		});
 
 		$this->renderView('message');
 	}
