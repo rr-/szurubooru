@@ -1,5 +1,8 @@
 <div class="form-wrapper">
-	<form method="post" action="<?= \Chibi\Router::linkTo(['TagController', 'mergeAction']) ?>">
+	<form method="post"
+		class="simple-action"
+		action="<?= \Chibi\Router::linkTo(['TagController', 'mergeAction']) ?>">
+
 		<h1>merge tags</h1>
 
 		<?php
@@ -12,6 +15,7 @@
 			$context = new StdClass;
 			$context->name = 'target-tag';
 			$context->label = 'Target tag';
+			$context->inputClass = 'autocomplete';
 			$this->renderExternal('input-text', $context);
 
 			$this->renderExternal('message');

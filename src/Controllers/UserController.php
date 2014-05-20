@@ -57,7 +57,10 @@ class UserController extends AbstractController
 			Messenger::fail($e->getMessage());
 		}
 
-		$this->renderView('user-view');
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->renderView('user-view');
 	}
 
 	public function editAction($identifier)
@@ -111,7 +114,10 @@ class UserController extends AbstractController
 			Messenger::fail($e->getMessage());
 		}
 
-		$this->renderView('user-view');
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->renderView('user-view');
 	}
 
 	public function deleteAction($identifier)
@@ -136,7 +142,11 @@ class UserController extends AbstractController
 		{
 			\Chibi\Util\Headers::setCode(400);
 			Messenger::fail($e->getMessage());
-			$this->renderView('user-view');
+
+			if ($this->isAjax())
+				$this->renderAjax();
+			else
+				$this->renderView('user-view');
 		}
 	}
 

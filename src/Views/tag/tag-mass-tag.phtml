@@ -1,7 +1,10 @@
 <div class="form-wrapper">
-	<form method="post" action="<?= \Chibi\Router::linkTo(
-		['PostController', 'listRedirectAction'],
-		['source' => 'mass-tag']) ?>">
+	<form method="post"
+		class="simple-action"
+		action="<?= \Chibi\Router::linkTo(
+			['PostController', 'listRedirectAction'],
+			['source' => 'mass-tag']) ?>">
+
 		<h1>mass tag</h1>
 
 		<?php

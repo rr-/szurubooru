@@ -48,7 +48,12 @@ class AbstractController
 
 	protected function redirect($url)
 	{
-		if (!$this->isAjax())
+		if ($this->isAjax())
+		{
+			Core::getContext()->transport->redirectUrl = $url;
+			$this->renderAjax();
+		}
+		else
 			\Chibi\Util\Url::forward($url);
 	}
 

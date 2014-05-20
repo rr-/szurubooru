@@ -120,6 +120,54 @@ $(function()
 		});
 
 
+		//simple action forms
+		$('form.simple-action').bindOnce('simple-action', 'submit', function(e)
+		{
+			e.preventDefault();
+			rememberLastSearchQuery();
+
+			var formDom = $(this);
+			if (formDom.hasClass('inactive'))
+				return;
+			formDom.addClass('inactive');
+			formDom.find(':input').attr('readonly', true);
+
+			var url = formDom.attr('action');
+			var fd = new FormData(formDom[0]);
+
+			var ajaxData =
+			{
+				url: url,
+				data: fd,
+				processData: false,
+				contentType: false,
+			};
+
+			postJSON(ajaxData)
+				.success(function(data)
+				{
+					if (data.message)
+						alert(data.message);
+					console.log(data);
+					disableExitConfirmation();
+					formDom.find(':input').attr('readonly', false);
+					formDom.removeClass('inactive');
+					if (data.redirectUrl)
+						window.location.href = data.redirectUrl;
+					else
+						window.location.reload();
+				})
+				.error(function(xhr)
+				{
+					alert(xhr.responseJSON
+						? xhr.responseJSON.message
+						: 'Fatal error');
+					formDom.find(':input').attr('readonly', false);
+					formDom.removeClass('inactive');
+				});
+		});
+
+
 		//attach data from submit buttons to forms before .submit() gets called
 		$('.submit').each(function()
 		{

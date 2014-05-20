@@ -288,8 +288,7 @@ class PostController extends AbstractController
 		{
 			$context->transport->lastSearchQuery = '';
 			list ($prevPostId, $nextPostId) =
-				PostSearchService::getPostIdsAround(
-					$context->transport->lastSearchQuery, $id);
+				PostSearchService::getPostIdsAround($context->transport->lastSearchQuery, $id);
 		}
 
 		//todo:

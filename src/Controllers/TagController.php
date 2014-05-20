@@ -97,7 +97,10 @@ class TagController extends AbstractController
 			Messenger::fail($e->getMessage());
 		}
 
-		$this->renderViewWithSource('tag-list-wrapper', 'merge');
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->renderViewWithSource('tag-list-wrapper', 'merge');
 	}
 
 	public function renameView()
@@ -124,7 +127,10 @@ class TagController extends AbstractController
 			Messenger::fail($e->getMessage());
 		}
 
-		$this->renderViewWithSource('tag-list-wrapper', 'rename');
+		if ($this->isAjax())
+			$this->renderAjax();
+		else
+			$this->renderViewWithSource('tag-list-wrapper', 'rename');
 	}
 
 	public function massTagRedirectView()

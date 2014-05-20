@@ -106,7 +106,6 @@ $(function()
 			data: fd,
 			processData: false,
 			contentType: false,
-			type: 'POST',
 
 			success: function(data)
 			{

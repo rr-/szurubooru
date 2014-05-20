@@ -7,7 +7,7 @@ $settings = $this->context->transport->user->getSettings();
 		['UserController', 'settingsAction'],
 		['identifier' => $this->context->transport->user->getName()]) ?>"
 	method="post"
-	class="settings">
+	class="user-settings simple-action">
 
 	<?php
 		$safety = array_filter(

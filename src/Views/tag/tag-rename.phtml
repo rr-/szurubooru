@@ -1,5 +1,8 @@
 <div class="form-wrapper">
-	<form method="post" action="<?= \Chibi\Router::linkTo(['TagController', 'renameAction']) ?>">
+	<form method="post"
+		class="simple-action"
+		action="<?= \Chibi\Router::linkTo(['TagController', 'renameAction']) ?>">
+
 		<h1>rename tags</h1>
 
 		<?php
