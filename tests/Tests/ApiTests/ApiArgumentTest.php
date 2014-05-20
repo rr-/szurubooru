@@ -147,6 +147,15 @@ class ApiArgumentTest extends AbstractFullApiTest
 				JobArgs::ARG_NEW_USER_NAME));
 	}
 
+	public function testEditUserAvatarJob()
+	{
+		$this->testArguments(new EditUserAvatarJob(),
+			JobArgs::Conjunction(
+				$this->getUserSelector(),
+				JobArgs::ARG_NEW_AVATAR_STYLE,
+				JobArgs::Optional(JobArgs::ARG_NEW_AVATAR_CONTENT)));
+	}
+
 	public function testEditUserPasswordJob()
 	{
 		$this->testArguments(new EditUserPasswordJob(),

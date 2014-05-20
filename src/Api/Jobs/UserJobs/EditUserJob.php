@@ -10,6 +10,7 @@ class EditUserJob extends AbstractJob
 		$this->addSubJob(new EditUserNameJob());
 		$this->addSubJob(new EditUserPasswordJob());
 		$this->addSubJob(new EditUserEmailJob());
+		$this->addSubJob(new EditUserAvatarJob());
 	}
 
 	public function canEditAnything($user)

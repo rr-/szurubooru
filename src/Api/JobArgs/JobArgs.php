@@ -39,6 +39,8 @@ class JobArgs
 	const ARG_NEW_EMAIL = 'new-email';
 	const ARG_NEW_USER_NAME = 'new-user-name';
 	const ARG_NEW_PASSWORD = 'new-password';
+	const ARG_NEW_AVATAR_CONTENT = 'new-avatar-content';
+	const ARG_NEW_AVATAR_STYLE = 'new-avatar-style';
 	const ARG_NEW_SETTINGS = 'new-settings';
 
 	const ARG_NEW_POST_SCORE = 'new-post-score';

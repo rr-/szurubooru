@@ -24,6 +24,7 @@ class ApiAuthTest extends AbstractFullApiTest
 		$this->testAuth(new EditUserEmailJob(), false);
 		$this->testAuth(new EditUserNameJob(), false);
 		$this->testAuth(new EditUserPasswordJob(), false);
+		$this->testAuth(new EditUserAvatarJob(), false);
 		$this->testAuth(new EditUserSettingsJob(), false);
 		$this->testAuth(new FeaturePostJob(), true);
 		$this->testAuth(new FlagPostJob(), false);

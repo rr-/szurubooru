@@ -29,6 +29,7 @@ final class UserModel extends AbstractCrudModel
 				'access_rank' => $user->getAccessRank()->toInteger(),
 				'settings' => $user->getSettings()->getAllAsSerializedString(),
 				'banned' => $user->isBanned() ? 1 : 0,
+				'avatar_style' => $user->getAvatarStyle()->toInteger(),
 				];
 
 			$stmt = (new Sql\UpdateStatement)

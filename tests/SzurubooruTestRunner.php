@@ -113,6 +113,7 @@ class SzurubooruTestRunner implements ITestRunner
 		[
 			realpath(Core::getConfig()->main->filesPath),
 			realpath(Core::getConfig()->main->thumbnailsPath),
+			realpath(Core::getConfig()->main->avatarsPath),
 			realpath(dirname(Core::getConfig()->main->logsPath)),
 		];
 

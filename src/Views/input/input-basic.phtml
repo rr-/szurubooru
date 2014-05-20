@@ -19,7 +19,7 @@ $noAutocomplete = isset($this->context->noAutocomplete) ? true : false;
 			<?php if ($noAutocomplete): ?>
 				autocomplete="off"
 			<?php endif ?>
-			<?php if ($inputClass != ''): ?>
+			<?php if ($inputClass): ?>
 				class="<?= $inputClass ?>"
 			<?php endif ?>
 			type="<?= $type ?>"

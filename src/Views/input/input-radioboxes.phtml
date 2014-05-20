@@ -6,6 +6,7 @@ $optionValues = $this->context->optionValues;
 $optionLabels = $this->context->optionLabels;
 $activeOptionValue = $this->context->activeOptionValue;
 $keys = array_keys($optionValues);
+$inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '';
 ?>
 
 <div class="form-row">
@@ -18,6 +19,9 @@ $keys = array_keys($optionValues);
 			<label>
 				<input type="radio"
 					name="<?= $name ?>"
+					<?php if ($inputClass): ?>
+						class="<?= $inputClass ?>"
+					<?php endif ?>
 					<?php if (count($keys) == 1): ?>
 						id="<?= $id ?>"
 					<?php endif ?>

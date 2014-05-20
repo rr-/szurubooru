@@ -6,6 +6,7 @@ $optionValues = $this->context->optionValues;
 $optionLabels = $this->context->optionLabels;
 $activeOptionValue = isset($this->context->activeOptionValue) ? $this->context->activeOptionValue : null;
 $keys = array_keys($optionValues);
+$inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '';
 ?>
 
 <div class="form-row">
@@ -13,7 +14,13 @@ $keys = array_keys($optionValues);
 		<?= $label ?>
 	</label>
 	<div class="input-wrapper">
-		<select name="<?= $name ?>" id="<?= $id ?>">
+		<select
+			<?php if ($inputClass): ?>
+				class="<?= $inputclass ?>"
+			<?php endif ?>
+			name="<?= $name ?>"
+			id="<?= $id ?>">
+
 			<?php foreach ($keys as $key): ?>
 				<?php if ($activeOptionValue == $optionValues[$key]): ?>
 					<option value="<?= $optionValues[$key] ?>" selected="selected">
@@ -23,6 +30,7 @@ $keys = array_keys($optionValues);
 					<?= $optionLabels[$key] ?>
 				</option>
 			<?php endforeach ?>
+
 		</select>
 	</div>
 </div>

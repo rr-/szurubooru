@@ -14,6 +14,7 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 	private $lastLoginDate;
 	private $accessRank;
 	private $banned = false;
+	private $avatarStyle;
 
 	private $settings;
 	private $_passwordChanged = false;
@@ -23,6 +24,7 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 	{
 		$this->setAccessRank(new AccessRank(AccessRank::Anonymous));
 		$this->setPasswordSalt(md5(mt_rand() . uniqid()));
+		$this->avatarStyle = new UserAvatarStyle(UserAvatarStyle::Gravatar);
 		$this->settings = new UserSettings();
 	}
 
@@ -39,6 +41,7 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 		$this->lastLoginDate = TextHelper::toIntegerOrNull($row['last_login_date']);
 		$this->banned = $row['banned'];
 		$this->setAccessRank(new AccessRank($row['access_rank']));
+		$this->avatarStyle = new UserAvatarStyle($row['avatar_style']);
 		$this->settings = new UserSettings($row['settings']);
 	}
 
@@ -61,6 +64,7 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 		$this->validateAccessRank();
 		$this->validateEmails();
 		$this->settings->validate();
+		$this->avatarStyle->validate();
 
 		if (empty($this->getAccessRank()))
 			throw new Exception('No access rank detected');
@@ -276,14 +280,44 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 		$this->accessRank = $accessRank;
 	}
 
+	public function getAvatarStyle()
+	{
+		return $this->avatarStyle;
+	}
+
+	public function setAvatarStyle(UserAvatarStyle $userAvatarStyle)
+	{
+		$this->avatarStyle = $userAvatarStyle;
+	}
+
 	public function getAvatarUrl($size = 32)
 	{
-		$subject = !empty($this->getConfirmedEmail())
-			? $this->getConfirmedEmail()
-			: $this->passSalt . $this->getName();
-		$hash = md5(strtolower(trim($subject)));
-		$url = 'http://www.gravatar.com/avatar/' . $hash . '?s=' . $size . '&d=retro';
-		return $url;
+		switch ($this->avatarStyle->toInteger())
+		{
+			case UserAvatarStyle::None:
+				return $this->getBlankAvatarUrl($size);
+
+			case UserAvatarStyle::Gravatar:
+				return $this->getGravatarAvatarUrl($size);
+
+			case UserAvatarStyle::Custom:
+				return $this->getCustomAvatarUrl($size);
+		}
+	}
+
+	public function setCustomAvatarFromPath($srcPath)
+	{
+		$config = Core::getConfig();
+
+		$mimeType = mime_content_type($srcPath);
+		if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
+			throw new SimpleException('Invalid file type "%s"', $mimeType);
+
+		$dstPath = $this->getCustomAvatarSourcePath();
+
+		TransferHelper::copy($srcPath, $dstPath);
+		$this->removeOldCustomAvatar();
+		$this->setAvatarStyle(new UserAvatarStyle(UserAvatarStyle::Custom));
 	}
 
 	public function getSettings()
@@ -350,5 +384,68 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 		$stmt->setTable('post');
 		$stmt->setCriterion(new Sql\EqualsFunctor('uploader_id', new Sql\Binding($this->getId())));
 		return (int) Database::fetchOne($stmt)['count'];
+	}
+
+
+	private function getBlankAvatarUrl($size)
+	{
+		return 'http://www.gravatar.com/avatar/?s=' . $size . '&d=mm';
+	}
+
+	private function getGravatarAvatarUrl($size)
+	{
+		$subject = !empty($this->getConfirmedEmail())
+			? $this->getConfirmedEmail()
+			: $this->passSalt . $this->getName();
+		$hash = md5(strtolower(trim($subject)));
+		return 'http://www.gravatar.com/avatar/' . $hash . '?s=' . $size . '&d=retro';
+	}
+
+	private function getCustomAvatarUrl($size)
+	{
+		$fileName = md5($this->getName()) . '-' . $size . '.avatar';
+		$path = $this->getCustomAvatarPath($size);
+		if (!file_exists($path))
+			$this->generateCustomAvatar($size);
+		if (file_exists($path))
+			return \Chibi\Util\Url::makeAbsolute('/avatars/' . $fileName);
+		return $this->getBlankAvatarUrl($size);
+	}
+
+	private function getCustomAvatarSourcePath()
+	{
+		$fileName = md5($this->getName()) . '.avatar_source';
+		return Core::getConfig()->main->avatarsPath . DS . $fileName;
+	}
+
+	private function getCustomAvatarPath($size)
+	{
+		$fileName = md5($this->getName()) . '-' . $size . '.avatar';
+		return Core::getConfig()->main->avatarsPath . DS . $fileName;
+	}
+
+	private function getCustomAvatarPaths()
+	{
+		$hash = md5($this->getName());
+		return glob(Core::getConfig()->main->avatarsPath . DS . $hash . '*.avatar');
+	}
+
+	private function removeOldCustomAvatar()
+	{
+		foreach ($this->getCustomAvatarPaths() as $path)
+			TransferHelper::remove($path);
+	}
+
+	private function generateCustomAvatar($size)
+	{
+		$srcPath = $this->getCustomAvatarSourcePath($size);
+		$dstPath = $this->getCustomAvatarPath($size);
+
+		$thumbnailGenerator = new ImageThumbnailGenerator();
+		return $thumbnailGenerator->generateFromFile(
+			$srcPath,
+			$dstPath,
+			$size,
+			$size);
 	}
 }

@@ -391,7 +391,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 	{
 		$width = Core::getConfig()->browsing->thumbnailWidth;
 		$height = Core::getConfig()->browsing->thumbnailHeight;
-		$dstPath = $this->getThumbnailPath($width, $height);
+		$dstPath = $this->getThumbnailPath();
 
 		$thumbnailGenerator = new SmartThumbnailGenerator();
 

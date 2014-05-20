@@ -76,12 +76,25 @@ class UserController extends AbstractController
 				JobArgs::ARG_NEW_PASSWORD => InputHelper::get('password1'),
 				JobArgs::ARG_NEW_EMAIL => InputHelper::get('email'),
 				JobArgs::ARG_NEW_ACCESS_RANK => InputHelper::get('access-rank'),
+				Jobargs::ARG_NEW_AVATAR_STYLE => InputHelper::get('avatar-style'),
 			];
+
+			if (!empty($_FILES['avatar-content']['name']))
+			{
+				$file = $_FILES['avatar-content'];
+				TransferHelper::handleUploadErrors($file);
+
+				$args[JobArgs::ARG_NEW_AVATAR_CONTENT] = new ApiFileInput(
+					$file['tmp_name'],
+					$file['name']);
+			}
+
 			$args = $this->appendUserIdentifierArgument($args, $identifier);
 
 			$args = array_filter($args);
 			$user = Api::run(new EditUserJob(), $args);
 
+			Core::getContext()->transport->user = $user;
 			if (Auth::getCurrentUser()->getId() == $user->getId())
 				Auth::setCurrentUser($user);
 

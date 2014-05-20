@@ -38,6 +38,7 @@ class Privilege extends AbstractEnum implements IEnum
 	const EditUserEmail = 'editUserEmail';
 	const EditUserEmailNoConfirm = 'editUserEmailNoConfirm';
 	const EditUserName = 'editUserName';
+	const EditUserAvatar = 'editUserAvatar';
 	const EditUserSettings = 'editUserSettings';
 	const DeleteUser = 'deleteUser';
 	const FlagUser = 'flagUser';

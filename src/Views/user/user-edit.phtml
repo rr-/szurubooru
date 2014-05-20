@@ -1,7 +1,12 @@
+<?php
+$this->assets->addScript('user-edit.js');
+?>
+
 <form
 	action="<?= \Chibi\Router::linkTo(
 		['UserController', 'editAction'],
 		['identifier' => $this->context->transport->user->getName()]) ?>"
+	enctype="multipart/form-data"
 	method="post"
 	class="edit"
 	autocomplete="off">
@@ -15,6 +20,26 @@
 			$context->placeholder = 'Current password';
 			$this->renderExternal('input-password', $context);
 			echo '<hr/>';
+		}
+
+		if (Access::check(new Privilege(
+			Privilege::EditUserAvatar,
+			Access::getIdentity($this->context->transport->user))))
+		{
+			$styles = UserAvatarStyle::getAll();
+			$context = new StdClass;
+			$context->name = 'avatar-style';
+			$context->label = 'User picture';
+			$context->optionValues = array_map(function($s) { return $s->toInteger(); }, $styles);
+			$context->optionLabels = array_map(function($s) { return ucfirst($s->toDisplayString()); }, $styles);
+			$context->activeOptionValue = $this->context->transport->user->getAvatarStyle()->toInteger();
+			$context->inputClass = 'avatar-style';
+			$this->renderExternal('input-radioboxes', $context);
+
+			$context = new StdClass;
+			$context->name = 'avatar-content';
+			$context->inputClass = 'avatar-content';
+			$this->renderExternal('input-file', $context);
 		}
 
 		if (Access::check(new Privilege(
