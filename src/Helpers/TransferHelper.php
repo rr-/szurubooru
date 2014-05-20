@@ -41,8 +41,6 @@ class TransferHelper
 				fflush($dstHandle);
 				if ($maxBytes !== null and ftell($dstHandle) > $maxBytes)
 				{
-					fclose($srcHandle);
-					fclose($dstHandle);
 					throw new SimpleException(
 						'File is too big (maximum size: %s)',
 						TextHelper::useBytesUnits($maxBytes));
