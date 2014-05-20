@@ -75,6 +75,12 @@ class PostSearchParser extends AbstractSearchParser
 			return Sql\InFunctor::fromArray('post.id', Sql\Binding::fromArray($ids));
 		}
 
+		if (in_array($key, ['name', 'names', 'hash', 'hashes']))
+		{
+			$ids = preg_split('/[;,]/', $value);
+			return Sql\InFunctor::fromArray('post.name', Sql\Binding::fromArray($ids));
+		}
+
 		elseif (in_array($key, ['fav', 'favs', 'favd']))
 		{
 			$user = UserModel::getByName($value);

@@ -218,6 +218,28 @@ class ListPostsJobTest extends AbstractTest
 		}
 	}
 
+	public function testNames()
+	{
+		$this->grantAccess('listPosts');
+		$posts = $this->postMocker->mockMultiple(3);
+
+		foreach (['hash', 'hashes', 'name', 'names'] as $alias)
+		{
+			$ret = $this->assert->doesNotThrow(function() use ($alias, $posts)
+			{
+				$query = sprintf('%s:9999,%s,%s',
+					$alias,
+					$posts[0]->getName(),
+					$posts[2]->getName());
+				return Api::run(new ListPostsJob(), [JobArgs::ARG_QUERY => $query]);
+			});
+
+			$this->assert->areEqual(2, $ret->entityCount);
+			$this->assert->areEqual($posts[2]->getId(), $ret->entities[0]->getId());
+			$this->assert->areEqual($posts[0]->getId(), $ret->entities[1]->getId());
+		}
+	}
+
 	public function testFavs()
 	{
 		$this->grantAccess('listPosts');
