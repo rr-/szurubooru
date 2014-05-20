@@ -32,9 +32,9 @@ $postValidation =
 
 \Chibi\Router::register(['PostController', 'uploadView'], 'GET', '/posts/upload', $postValidation);
 \Chibi\Router::register(['PostController', 'uploadAction'], 'POST', '/posts/upload', $postValidation);
-\Chibi\Router::register(['PostController', 'editView'], 'GET', '/post/{id}/edit', $postValidation);
-\Chibi\Router::register(['PostController', 'editAction'], 'POST', '/post/{id}/edit', $postValidation);
-\Chibi\Router::register(['PostController', 'deleteAction'], null, '/post/{id}/delete', $postValidation);
+\Chibi\Router::register(['PostController', 'editView'], 'GET', '/post/{identifier}/edit', $postValidation);
+\Chibi\Router::register(['PostController', 'editAction'], 'POST', '/post/{identifier}/edit', $postValidation);
+\Chibi\Router::register(['PostController', 'deleteAction'], null, '/post/{identifier}/delete', $postValidation);
 
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}', $postValidation);
 \Chibi\Router::register(['PostController', 'listView'], 'GET', '/{source}/{page}', $postValidation);
@@ -49,18 +49,18 @@ $postValidation =
 \Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted', $postValidation);
 \Chibi\Router::register(['PostController', 'upvotedView'], 'GET', '/upvoted/{page}', $postValidation);
 
-\Chibi\Router::register(['PostController', 'genericView'], 'GET', '/post/{id}', $postValidation);
+\Chibi\Router::register(['PostController', 'genericView'], 'GET', '/post/{identifier}', $postValidation);
 \Chibi\Router::register(['PostController', 'fileView'], 'GET', '/post/{name}/retrieve', $postValidation);
 \Chibi\Router::register(['PostController', 'thumbnailView'], 'GET', '/post/{name}/thumb', $postValidation);
 
-\Chibi\Router::register(['PostController', 'toggleTagAction'], null, '/post/{id}/toggle-tag/{tag}/{enable}', $postValidation);
-\Chibi\Router::register(['PostController', 'flagAction'], null, '/post/{id}/flag', $postValidation);
-\Chibi\Router::register(['PostController', 'hideAction'], null, '/post/{id}/hide', $postValidation);
-\Chibi\Router::register(['PostController', 'unhideAction'], null, '/post/{id}/unhide', $postValidation);
-\Chibi\Router::register(['PostController', 'removeFavoriteAction'], null, '/post/{id}/rem-fav', $postValidation);
-\Chibi\Router::register(['PostController', 'addFavoriteAction'], null, '/post/{id}/add-fav', $postValidation);
-\Chibi\Router::register(['PostController', 'scoreAction'], null, '/post/{id}/score/{score}', $postValidation);
-\Chibi\Router::register(['PostController', 'featureAction'], null, '/post/{id}/feature', $postValidation);
+\Chibi\Router::register(['PostController', 'toggleTagAction'], null, '/post/{identifier}/toggle-tag/{tag}/{enable}', $postValidation);
+\Chibi\Router::register(['PostController', 'flagAction'], null, '/post/{identifier}/flag', $postValidation);
+\Chibi\Router::register(['PostController', 'hideAction'], null, '/post/{identifier}/hide', $postValidation);
+\Chibi\Router::register(['PostController', 'unhideAction'], null, '/post/{identifier}/unhide', $postValidation);
+\Chibi\Router::register(['PostController', 'removeFavoriteAction'], null, '/post/{identifier}/rem-fav', $postValidation);
+\Chibi\Router::register(['PostController', 'addFavoriteAction'], null, '/post/{identifier}/add-fav', $postValidation);
+\Chibi\Router::register(['PostController', 'scoreAction'], null, '/post/{identifier}/score/{score}', $postValidation);
+\Chibi\Router::register(['PostController', 'featureAction'], null, '/post/{identifier}/feature', $postValidation);
 
 $commentValidation =
 [

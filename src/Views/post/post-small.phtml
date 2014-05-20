@@ -30,7 +30,7 @@ if ($masstag)
 	<?php if ($masstag): ?>
 		<a class="toggle-tag"
 			href="<?= \Chibi\Router::linkTo(['PostController', 'toggleTagAction'], [
-				'id' => $this->context->post->getId(),
+				'identifier' => $this->context->post->getId(),
 				'tag' => $this->context->additionalInfo,
 				'enable' => in_array('tagged', $classNames) ? '0' : '1']) ?>"
 			data-text-tagged="Tagged"
@@ -45,7 +45,7 @@ if ($masstag)
 		<?php if (Auth::getCurrentUser()->getSettings()->hasEnabledPostTagTitles()): ?>
 			title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>"
 		<?php endif ?>
-		href="<?= \Chibi\Router::linkTo(['PostController', 'genericView'], ['id' => $this->context->post->getId()]) ?>">
+		href="<?= \Chibi\Router::linkTo(['PostController', 'genericView'], ['identifier' => $this->context->post->getId()]) ?>">
 
 		<img
 			class="thumb"

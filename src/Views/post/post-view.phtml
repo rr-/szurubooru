@@ -32,7 +32,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php if ($this->context->transport->nextPostId): ?>
 				<a href="<?= \Chibi\Router::linkTo(
 					['PostController', 'genericView'],
-					['id' => $this->context->transport->nextPostId]) ?>">
+					['identifier' => $this->context->transport->nextPostId]) ?>">
 			<?php else: ?>
 				<a class="disabled">
 			<?php endif ?>
@@ -45,7 +45,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php if ($this->context->transport->prevPostId): ?>
 				<a href="<?= \Chibi\Router::linkTo(
 					['PostController', 'genericView'],
-					['id' => $this->context->transport->prevPostId]) ?>">
+					['identifier' => $this->context->transport->prevPostId]) ?>">
 			<?php else: ?>
 				<a class="disabled">
 			<?php endif ?>
@@ -155,7 +155,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					{
 						return \Chibi\Router::linkTo(
 							['PostController', 'scoreAction'],
-							['id' => $this->context->transport->post->getId(), 'score' => $score]);
+							['identifier' => $this->context->transport->post->getId(), 'score' => $score]);
 					}
 				?>
 				<?php if (Access::check(new Privilege(
@@ -211,7 +211,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					<a class="add-fav icon simple-action"
 						href="<?= \Chibi\Router::linkTo(
 							['PostController', 'addFavoriteAction'],
-							['id' => $this->context->transport->post->getId()]) ?>">
+							['identifier' => $this->context->transport->post->getId()]) ?>">
 						<i class="icon-fav"></i>
 						<span>Add to favorites</span>
 					</a>
@@ -219,7 +219,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					<a class="rem-fav icon simple-action"
 						href="<?= \Chibi\Router::linkTo(
 							['PostController', 'removeFavoriteAction'],
-							['id' => $this->context->transport->post->getId()]) ?>">
+							['identifier' => $this->context->transport->post->getId()]) ?>">
 						<i class="icon-fav"></i>
 						<span>Remove from favorites</span>
 					</a>
@@ -231,7 +231,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<div class="hl-option">
 				<a class="edit-post icon" href="<?= \Chibi\Router::linkTo(
 					['PostController', 'editView'],
-					['id' => $this->context->transport->post->getId()]) ?>">
+					['identifier' => $this->context->transport->post->getId()]) ?>">
 					<i class="icon-edit"></i>
 					<span>Edit</span>
 				</a>
@@ -264,7 +264,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					<li>
 						<a href="<?= \Chibi\Router::linkTo(
 							['PostController', 'genericView'],
-							['id' => $relatedPost->getId()]) ?>">
+							['identifier' => $relatedPost->getId()]) ?>">
 							<?= TextHelper::reprPost($relatedPost) ?>
 						</a>
 					</li>
@@ -286,7 +286,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				'text' => 'Feature on main page',
 				'simple-action' => \Chibi\Router::linkTo(
 					['PostController', 'featureAction'],
-					['id' => $this->context->transport->post->getId()]),
+					['identifier' => $this->context->transport->post->getId()]),
 				'data-confirm-text' => 'Are you sure you want to feature this post on the main page?',
 				'data-redirect-url' => \Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']),
 			];
@@ -313,7 +313,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					'text' => 'Flag for moderator attention',
 					'simple-action' => \Chibi\Router::linkTo(
 						['PostController', 'flagAction'],
-						['id' => $this->context->transport->post->getId()]),
+						['identifier' => $this->context->transport->post->getId()]),
 					'data-confirm-text' => 'Are you sure you want to flag this post?',
 				];
 			}
@@ -331,7 +331,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					'text' => 'Unhide',
 					'simple-action' => \Chibi\Router::linkTo(
 						['PostController', 'unhideAction'],
-						['id' => $this->context->transport->post->getId()]),
+						['identifier' => $this->context->transport->post->getId()]),
 				];
 			}
 			else
@@ -342,7 +342,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					'text' => 'Hide',
 					'simple-action' => \Chibi\Router::linkTo(
 						['PostController', 'hideAction'],
-						['id' => $this->context->transport->post->getId()]),
+						['identifier' => $this->context->transport->post->getId()]),
 				];
 			}
 		}
@@ -357,7 +357,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				'text' => 'Delete',
 				'simple-action' => \Chibi\Router::linkTo(
 					['PostController', 'deleteAction'],
-					['id' => $this->context->transport->post->getId()]),
+					['identifier' => $this->context->transport->post->getId()]),
 				'data-confirm-text' => 'Are you sure you want to delete this post?',
 				'data-redirect-url' => \Chibi\Router::linkTo(['PostController', 'listView']),
 			];

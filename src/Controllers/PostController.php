@@ -90,19 +90,20 @@ class PostController extends AbstractController
 		$this->listView('order:random', $page, 'random');
 	}
 
-	public function toggleTagAction($id, $tag, $enable)
+	public function toggleTagAction($identifier, $tag, $enable)
 	{
 		Access::assert(new Privilege(
 			Privilege::MassTag,
-			Access::getIdentity(PostModel::getById($id)->getUploader())));
+			Access::getIdentity(PostModel::getByIdOrName($identifier)->getUploader())));
 
-		Api::run(
-			new TogglePostTagJob(),
-			[
-				JobArgs::ARG_POST_ID => $id,
-				JobArgs::ARG_TAG_NAME => $tag,
-				JobArgs::ARG_NEW_STATE => $enable,
-			]);
+		$jobArgs =
+		[
+			JobArgs::ARG_TAG_NAME => $tag,
+			JobArgs::ARG_NEW_STATE => $enable,
+		];
+		$jobArgs = $this->appendPostIdentifierArgument($args, $identifier);
+
+		Api::run(new TogglePostTagJob(), $jobArgs);
 
 		if ($this->isAjax())
 			$this->renderAjax();
@@ -147,18 +148,19 @@ class PostController extends AbstractController
 			$this->redirectToPostList();
 	}
 
-	public function editView($id)
+	public function editView($identifier)
 	{
-		$post = Api::run(new GetPostJob(), [
-			JobArgs::ARG_POST_ID => $id]);
+		$jobArgs = [];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		$post = Api::run(new GetPostJob(), $jobArgs);
 
 		$context = Core::getContext()->transport->post = $post;
 		$this->renderView('post-edit');
 	}
 
-	public function editAction($id)
+	public function editAction($identifier)
 	{
-		$post = PostModel::getByIdOrName($id);
+		$post = PostModel::getByIdOrName($identifier);
 
 		$editToken = InputHelper::get('edit-token');
 		if ($editToken != $post->getEditToken())
@@ -166,12 +168,12 @@ class PostController extends AbstractController
 
 		$jobArgs =
 		[
-			JobArgs::ARG_POST_ID => $id,
 			JobArgs::ARG_NEW_SAFETY => InputHelper::get('safety'),
 			JobArgs::ARG_NEW_TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
 			JobArgs::ARG_NEW_SOURCE => InputHelper::get('source'),
 			JobArgs::ARG_NEW_RELATED_POST_IDS => $this->splitPostIds(InputHelper::get('relations')),
 		];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
 
 		if (!empty(InputHelper::get('url')))
 		{
@@ -202,97 +204,100 @@ class PostController extends AbstractController
 		if ($this->isAjax())
 			$this->renderAjax();
 		else
-			$this->redirectToGenericView($id);
+			$this->redirectToGenericView($identifier);
 	}
 
-	public function flagAction($id)
+	public function flagAction($identifier)
 	{
-		Api::run(new FlagPostJob(), [JobArgs::ARG_POST_ID => $id]);
+		$jobArgs = [];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		Api::run(new FlagPostJob(), $jobArgs);
 
 		if ($this->isAjax())
 			$this->renderAjax();
 		else
-			$this->redirectToGenericView($id);
+			$this->redirectToGenericView($identifier);
 	}
 
-	public function hideAction($id)
+	public function hideAction($identifier)
 	{
-		Api::run(new TogglePostVisibilityJob(), [
-			JobArgs::ARG_POST_ID => $id,
-			JobArgs::ARG_NEW_STATE => false]);
-		$this->redirectToGenericView($id);
+		$jobArgs = [JobArgs::ARG_NEW_STATE => false];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		Api::run(new TogglePostVisibilityJob(), $jobArgs);
+		$this->redirectToGenericView($identifier);
 	}
 
-	public function unhideAction($id)
+	public function unhideAction($identifier)
 	{
-		Api::run(new TogglePostVisibilityJob(), [
-			JobArgs::ARG_POST_ID => $id,
-			JobArgs::ARG_NEW_STATE => true]);
-		$this->redirectToGenericView($id);
+		$jobArgs = [JobArgs::ARG_NEW_STATE => true];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		Api::run(new TogglePostVisibilityJob(), $jobArgs);
+		$this->redirectToGenericView($identifier);
 	}
 
-	public function deleteAction($id)
+	public function deleteAction($identifier)
 	{
-		Api::run(new DeletePostJob(), [
-			JobArgs::ARG_POST_ID => $id]);
+		$jobArgs = [];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		Api::run(new DeletePostJob(), $jobArgs);
 		$this->redirectToPostList();
 	}
 
-	public function addFavoriteAction($id)
+	public function addFavoriteAction($identifier)
 	{
-		Api::run(new TogglePostFavoriteJob(), [
-			JobArgs::ARG_POST_ID => $id,
-			JobArgs::ARG_NEW_STATE => true]);
-		$this->redirectToGenericView($id);
+		$jobArgs = [JobArgs::ARG_NEW_STATE => true];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		Api::run(new TogglePostFavoriteJob(), $jobArgs);
+		$this->redirectToGenericView($identifier);
 	}
 
-	public function removeFavoriteAction($id)
+	public function removeFavoriteAction($identifier)
 	{
-		Api::run(new TogglePostFavoriteJob(), [
-			JobArgs::ARG_POST_ID => $id,
-			JobArgs::ARG_NEW_STATE => false]);
-		$this->redirectToGenericView($id);
+		$jobArgs = [JobArgs::ARG_NEW_STATE => false];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		Api::run(new TogglePostFavoriteJob(), $jobArgs);
+		$this->redirectToGenericView($identifier);
 	}
 
-	public function scoreAction($id, $score)
+	public function scoreAction($identifier, $score)
 	{
-		Api::run(new ScorePostJob(), [
-			JobArgs::ARG_POST_ID => $id,
-			JobArgs::ARG_NEW_POST_SCORE => $score]);
-		$this->redirectToGenericView($id);
+		$jobArgs = [JobArgs::ARG_NEW_POST_SCORE => $score];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		Api::run(new ScorePostJob(), $jobArgs);
+		$this->redirectToGenericView($identifier);
 	}
 
-	public function featureAction($id)
+	public function featureAction($identifier)
 	{
-		Api::run(new FeaturePostJob(), [
-			JobArgs::ARG_POST_ID => $id]);
-		$this->redirectToGenericView($id);
+		$jobArgs = [];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		Api::run(new FeaturePostJob(), $jobArgs);
+		$this->redirectToGenericView($identifier);
 	}
 
-	public function genericView($id)
+	public function genericView($identifier)
 	{
 		$context = Core::getContext();
 
-		$post = Api::run(new GetPostJob(), [
-			JobArgs::ARG_POST_ID => $id]);
+		$jobArgs = [];
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
+		$post = Api::run(new GetPostJob(), $jobArgs);
 
 		try
 		{
 			$context->transport->lastSearchQuery = InputHelper::get('last-search-query');
 			list ($prevPostId, $nextPostId) =
 				PostSearchService::getPostIdsAround(
-					$context->transport->lastSearchQuery, $id);
+					$context->transport->lastSearchQuery, $identifier);
 		}
 		#search for some reason was invalid, e.g. tag was deleted in the meantime
 		catch (Exception $e)
 		{
 			$context->transport->lastSearchQuery = '';
 			list ($prevPostId, $nextPostId) =
-				PostSearchService::getPostIdsAround($context->transport->lastSearchQuery, $id);
+				PostSearchService::getPostIdsAround($context->transport->lastSearchQuery, $identifier);
 		}
 
-		//todo:
-		//move these to PostEntity when implementing ApiController
 		$isUserFavorite = Auth::getCurrentUser()->hasFavorited($post);
 		$userScore = Auth::getCurrentUser()->getScore($post);
 		$flagged = in_array(TextHelper::reprPost($post), SessionHelper::get('flagged', []));
@@ -336,6 +341,15 @@ class PostController extends AbstractController
 	}
 
 
+	private function appendPostIdentifierArgument(array $arguments, $postIdentifier)
+	{
+		if (is_numeric($postIdentifier))
+			$arguments[JobArgs::ARG_POST_ID] = $postIdentifier;
+		else
+			$arguments[JobArgs::ARG_POST_NAME] = $postIdentifier;
+		return $arguments;
+	}
+
 	private function splitPostIds($string)
 	{
 		$ids = preg_split('/\D/', trim($string));
@@ -358,10 +372,10 @@ class PostController extends AbstractController
 		$this->redirect(\Chibi\Router::linkTo(['PostController', 'listView']));
 	}
 
-	private function redirectToGenericView($id)
+	private function redirectToGenericView($identifier)
 	{
 		$this->redirect(\Chibi\Router::linkTo(
 			['PostController', 'genericView'],
-			['id' => $id]));
+			['identifier' => $identifier]));
 	}
 }
