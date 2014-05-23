@@ -280,7 +280,7 @@ class TextHelper
 	public static function formatDate($date, $plain = true)
 	{
 		if (!$date)
-			return 'Unknown';
+			return 'Never';
 		if ($plain)
 			return date('Y-m-d H:i:s', $date);
 
