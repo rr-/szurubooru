@@ -96,7 +96,7 @@ class PostController extends AbstractController
 			JobArgs::ARG_TAG_NAME => $tag,
 			JobArgs::ARG_NEW_STATE => $enable,
 		];
-		$jobArgs = $this->appendPostIdentifierArgument($args, $identifier);
+		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
 
 		Api::run(new TogglePostTagJob(), $jobArgs);
 
