@@ -16,7 +16,7 @@
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?= \Chibi\Router::linkTo(['TagController', 'listView'], ['filter' => $key]) ?>"><?= $text ?></a>
+				<a href="<?= Core::getRouter()->linkTo(['TagController', 'listView'], ['filter' => $key]) ?>"><?= $text ?></a>
 			</li>
 		<?php endforeach ?>
 	</ul>
@@ -28,7 +28,7 @@
 	<?php $max = $this->context->highestUsage ?>
 	<?php $add = 0. ?>
 	<?php $mul = 10. / max(1, log(max(1, $max))) ?>
-	<?php $url = \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => '_query_']) ?>
+	<?php $url = Core::getRouter()->linkTo(['PostController', 'listView'], ['query' => '_query_']) ?>
 	<div class="tags paginator-content">
 		<ul>
 			<?php foreach ($this->context->transport->tags as $tag): ?>

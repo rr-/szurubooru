@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 abstract class AbstractCrudModel implements IModel
 {
@@ -38,7 +37,7 @@ abstract class AbstractCrudModel implements IModel
 	protected static function removeMultiple($entities)
 	{
 		$cb = [get_called_class(), 'removeSingle'];
-		Database::transaction(function() use ($entities, $cb)
+		Core::getDatabase()->transaction(function() use ($entities, $cb)
 		{
 			foreach ($entities as $entity)
 			{
@@ -63,7 +62,7 @@ abstract class AbstractCrudModel implements IModel
 	protected static function saveMultiple($entities)
 	{
 		$cb = [get_called_class(), 'saveSingle'];
-		return Database::transaction(function() use ($entities, $cb)
+		return Core::getDatabase()->transaction(function() use ($entities, $cb)
 		{
 			$ret = [];
 			foreach ($entities as $entity)
@@ -90,12 +89,12 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function tryGetById($key)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('*');
 		$stmt->setTable(static::getTableName());
-		$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($key)));
+		$stmt->setCriterion(Sql\Functors::equals('id', new Sql\Binding($key)));
 
-		$row = Database::fetchOne($stmt);
+		$row = Core::getDatabase()->fetchOne($stmt);
 		return $row
 			? static::spawnFromDatabaseRow($row)
 			: null;
@@ -103,12 +102,12 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function getAllByIds(array $ids)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('*');
 		$stmt->setTable(static::getTableName());
-		$stmt->setCriterion(Sql\InFunctor::fromArray('id', Sql\Binding::fromArray(array_unique($ids))));
+		$stmt->setCriterion(Sql\Functors::in('id', Sql\Binding::fromArray(array_unique($ids))));
 
-		$rows = Database::fetchAll($stmt);
+		$rows = Core::getDatabase()->fetchAll($stmt);
 		if ($rows)
 			return static::spawnFromDatabaseRows($rows);
 
@@ -117,10 +116,10 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function getCount()
 	{
-		$stmt = new Sql\SelectStatement();
-		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
+		$stmt = Sql\Statements::select();
+		$stmt->setColumn(Sql\Functors::alias(Sql\Functors::count('1'), 'count'));
 		$stmt->setTable(static::getTableName());
-		return (int) Database::fetchOne($stmt)['count'];
+		return (int) Core::getDatabase()->fetchOne($stmt)['count'];
 	}
 
 
@@ -136,11 +135,11 @@ abstract class AbstractCrudModel implements IModel
 	public static function forgeId($entity)
 	{
 		$table = static::getTableName();
-		if (!Database::inTransaction())
+		if (!Core::getDatabase()->inTransaction())
 			throw new Exception('Can be run only within transaction');
 		if (!$entity->getId())
 		{
-			$stmt = new Sql\InsertStatement();
+			$stmt = Sql\Statements::insert();
 			$stmt->setTable($table);
 			foreach ($entity as $key => $val)
 			{
@@ -150,8 +149,8 @@ abstract class AbstractCrudModel implements IModel
 
 				$stmt->setColumn($key, new Sql\Binding($val));
 			}
-			Database::exec($stmt);
-			$entity->setId((int) Database::lastInsertId());
+			Core::getDatabase()->execute($stmt);
+			$entity->setId((int) Core::getDatabase()->lastInsertId());
 		}
 	}
 

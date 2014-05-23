@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class TagModel extends AbstractCrudModel
 {
@@ -13,16 +12,16 @@ final class TagModel extends AbstractCrudModel
 	{
 		$tag->validate();
 
-		Database::transaction(function() use ($tag)
+		Core::getDatabase()->transaction(function() use ($tag)
 		{
 			self::forgeId($tag, 'tag');
 
-			$stmt = new Sql\UpdateStatement();
+			$stmt = Sql\Statements::update();
 			$stmt->setTable('tag');
 			$stmt->setColumn('name', new Sql\Binding($tag->getName()));
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($tag->getId())));
+			$stmt->setCriterion(Sql\Functors::equals('id', new Sql\Binding($tag->getId())));
 
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 		});
 
 		return $tag;
@@ -32,20 +31,20 @@ final class TagModel extends AbstractCrudModel
 	{
 		$binding = new Sql\Binding($tag->getId());
 
-		$stmt = new Sql\DeleteStatement();
+		$stmt = Sql\Statements::delete();
 		$stmt->setTable('post_tag');
-		$stmt->setCriterion(new Sql\EqualsFunctor('tag_id', $binding));
-		Database::exec($stmt);
+		$stmt->setCriterion(Sql\Functors::equals('tag_id', $binding));
+		Core::getDatabase()->execute($stmt);
 
-		$stmt = new Sql\DeleteStatement();
+		$stmt = Sql\Statements::delete();
 		$stmt->setTable('tag');
-		$stmt->setCriterion(new Sql\EqualsFunctor('id', $binding));
-		Database::exec($stmt);
+		$stmt->setCriterion(Sql\Functors::equals('id', $binding));
+		Core::getDatabase()->execute($stmt);
 	}
 
 	public static function rename($sourceName, $targetName)
 	{
-		Database::transaction(function() use ($sourceName, $targetName)
+		Core::getDatabase()->transaction(function() use ($sourceName, $targetName)
 		{
 			$sourceTag = self::getByName($sourceName);
 			$targetTag = self::tryGetByName($targetName);
@@ -65,7 +64,7 @@ final class TagModel extends AbstractCrudModel
 
 	public static function merge($sourceName, $targetName)
 	{
-		Database::transaction(function() use ($sourceName, $targetName)
+		Core::getDatabase()->transaction(function() use ($sourceName, $targetName)
 		{
 			$sourceTag = self::getByName($sourceName);
 			$targetTag = self::getByName($targetName);
@@ -73,40 +72,40 @@ final class TagModel extends AbstractCrudModel
 			if ($sourceTag->getId() == $targetTag->getId())
 				throw new SimpleException('Source and target tag are the same');
 
-			$stmt = new Sql\SelectStatement();
+			$stmt = Sql\Statements::select();
 			$stmt->setColumn('post.id');
 			$stmt->setTable('post');
 			$stmt->setCriterion(
-				(new Sql\ConjunctionFunctor)
+				Sql\Functors::conjunction()
 				->add(
-					new Sql\ExistsFunctor(
-						(new Sql\SelectStatement)
+					Sql\Functors::exists(
+						Sql\Statements::select()
 							->setTable('post_tag')
 							->setCriterion(
-								(new Sql\ConjunctionFunctor)
-									->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($sourceTag->getId()))))))
+								Sql\Functors::conjunction()
+									->add(Sql\Functors::equals('post_tag.post_id', 'post.id'))
+									->add(Sql\Functors::equals('post_tag.tag_id', new Sql\Binding($sourceTag->getId()))))))
 				->add(
-					new Sql\NegationFunctor(
-					new Sql\ExistsFunctor(
-						(new Sql\SelectStatement)
+					Sql\Functors::negation(
+					Sql\Functors::exists(
+						Sql\Statements::select()
 							->setTable('post_tag')
 							->setCriterion(
-								(new Sql\ConjunctionFunctor)
-									->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-									->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($targetTag->getId()))))))));
-			$rows = Database::fetchAll($stmt);
+								Sql\Functors::conjunction()
+									->add(Sql\Functors::equals('post_tag.post_id', 'post.id'))
+									->add(Sql\Functors::equals('post_tag.tag_id', new Sql\Binding($targetTag->getId()))))))));
+			$rows = Core::getDatabase()->fetchAll($stmt);
 			$postIds = array_map(function($row) { return $row['id']; }, $rows);
 
 			self::remove($sourceTag);
 
 			foreach ($postIds as $postId)
 			{
-				$stmt = new Sql\InsertStatement();
+				$stmt = Sql\Statements::insert();
 				$stmt->setTable('post_tag');
 				$stmt->setColumn('post_id', new Sql\Binding($postId));
 				$stmt->setColumn('tag_id', new Sql\Binding($targetTag->getId()));
-				Database::exec($stmt);
+				Core::getDatabase()->execute($stmt);
 			}
 		});
 	}
@@ -114,13 +113,13 @@ final class TagModel extends AbstractCrudModel
 
 	public static function getAllByPostId($key)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('tag.*');
 		$stmt->setTable('tag');
-		$stmt->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'));
-		$stmt->setCriterion(new Sql\EqualsFunctor('post_tag.post_id', new Sql\Binding($key)));
+		$stmt->addInnerJoin('post_tag', Sql\Functors::equals('post_tag.tag_id', 'tag.id'));
+		$stmt->setCriterion(Sql\Functors::equals('post_tag.post_id', new Sql\Binding($key)));
 
-		$rows = Database::fetchAll($stmt);
+		$rows = Core::getDatabase()->fetchAll($stmt);
 		if ($rows)
 			return self::spawnFromDatabaseRows($rows);
 		return [];
@@ -136,12 +135,12 @@ final class TagModel extends AbstractCrudModel
 
 	public static function tryGetByName($key)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('tag.*');
 		$stmt->setTable('tag');
-		$stmt->setCriterion(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding($key))));
+		$stmt->setCriterion(Sql\Functors::noCase(Sql\Functors::equals('name', new Sql\Binding($key))));
 
-		$row = Database::fetchOne($stmt);
+		$row = Core::getDatabase()->fetchOne($stmt);
 		return $row
 			? self::spawnFromDatabaseRow($row)
 			: null;
@@ -151,15 +150,15 @@ final class TagModel extends AbstractCrudModel
 
 	public static function removeUnused()
 	{
-		$stmt = (new Sql\DeleteStatement)
+		$stmt = Sql\Statements::delete()
 			->setTable('tag')
 			->setCriterion(
-				new Sql\NegationFunctor(
-					new Sql\ExistsFunctor(
-						(new Sql\SelectStatement)
+				Sql\Functors::negation(
+					Sql\Functors::exists(
+						Sql\Statements::select()
 							->setTable('post_tag')
-							->setCriterion(new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id')))));
-		Database::exec($stmt);
+							->setCriterion(Sql\Functors::equals('post_tag.tag_id', 'tag.id')))));
+		Core::getDatabase()->execute($stmt);
 	}
 
 	public static function spawnFromNames(array $tagNames)

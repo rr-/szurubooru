@@ -55,11 +55,11 @@ abstract class AbstractEntity implements IValidatable
 		if ($this->hasCache($columnName))
 			return $this->getCache($columnName);
 
-		$stmt = new \Chibi\Sql\SelectStatement();
+		$stmt = \Chibi\Sql\Statements::select();
 		$stmt->setTable($this->model->getTableName());
 		$stmt->setColumn($columnName);
-		$stmt->setCriterion(new \Chibi\Sql\EqualsFunctor('id', new \Chibi\Sql\Binding($this->getId())));
-		$value = \Chibi\Database::fetchOne($stmt)[$columnName];
+		$stmt->setCriterion(\Chibi\Sql\Functors::equals('id', new \Chibi\Sql\Binding($this->getId())));
+		$value = Core::getDatabase()->fetchOne($stmt)[$columnName];
 		$this->setCache($columnName, $value);
 		return $value;
 	}

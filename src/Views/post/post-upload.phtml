@@ -37,7 +37,7 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 		<div class="clear"></div>
 	</div>
 
-	<div id="upload-step2" data-redirect-url="<?= \Chibi\Router::linkTo(['PostController', 'listView']) ?>">
+	<div id="upload-step2" data-redirect-url="<?= Core::getRouter()->linkTo(['PostController', 'listView']) ?>">
 		<hr>
 
 		<div class="posts">
@@ -68,7 +68,7 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 				</a>
 			</div>
 
-			<form action="<?= \Chibi\Router::linkTo(['PostController', 'uploadAction']) ?>" method="post">
+			<form action="<?= Core::getRouter()->linkTo(['PostController', 'uploadAction']) ?>" method="post">
 				<div class="form-row file-name">
 					<label>File:</label>
 					<div class="input-wrapper">

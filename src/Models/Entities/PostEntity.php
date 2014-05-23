@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class PostEntity extends AbstractEntity implements IValidatable, ISerializable
 {
@@ -129,12 +128,12 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 	{
 		if ($this->hasCache('favoritee'))
 			return $this->getCache('favoritee');
-		$stmt = new Sql\SelectStatement();
+		$stmt = \Chibi\Sql\Statements::select();
 		$stmt->setColumn('user.*');
 		$stmt->setTable('user');
-		$stmt->addInnerJoin('favoritee', new Sql\EqualsFunctor('favoritee.user_id', 'user.id'));
-		$stmt->setCriterion(new Sql\EqualsFunctor('favoritee.post_id', new Sql\Binding($this->getId())));
-		$rows = Database::fetchAll($stmt);
+		$stmt->addInnerJoin('favoritee', Sql\Functors::equals('favoritee.user_id', 'user.id'));
+		$stmt->setCriterion(Sql\Functors::equals('favoritee.post_id', new Sql\Binding($this->getId())));
+		$rows = Core::getDatabase()->fetchAll($stmt);
 		$favorites = UserModel::spawnFromDatabaseRows($rows);
 		$this->setCache('favoritee', $favorites);
 		return $favorites;
@@ -160,21 +159,21 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		if ($this->hasCache('relations'))
 			return $this->getCache('relations');
 
-		$stmt = new Sql\SelectStatement();
+		$stmt = \Chibi\Sql\Statements::select();
 		$stmt->setColumn('post.*');
 		$stmt->setTable('post');
 		$binding = new Sql\Binding($this->getId());
-		$stmt->addInnerJoin('crossref', (new Sql\DisjunctionFunctor)
+		$stmt->addInnerJoin('crossref', Sql\Functors::disjunction()
 			->add(
-				(new Sql\ConjunctionFunctor)
-					->add(new Sql\EqualsFunctor('post.id', 'crossref.post2_id'))
-					->add(new Sql\EqualsFunctor('crossref.post_id', $binding)))
+				Sql\Functors::conjunction()
+					->add(Sql\Functors::equals('post.id', 'crossref.post2_id'))
+					->add(Sql\Functors::equals('crossref.post_id', $binding)))
 			->add(
-				(new Sql\ConjunctionFunctor)
-					->add(new Sql\EqualsFunctor('post.id', 'crossref.post_id'))
-					->add(new Sql\EqualsFunctor('crossref.post2_id', $binding))));
-		$rows = Database::fetchAll($stmt);
-		$posts = PostModel::spawnFromDatabaseRows($rows);
+				Sql\Functors::conjunction()
+					->add(Sql\Functors::equals('post.id', 'crossref.post_id'))
+					->add(Sql\Functors::equals('crossref.post2_id', $binding))));
+		$rows = Core::getDatabase()->fetchAll($stmt);
+		$posts = $this->model->spawnFromDatabaseRows($rows);
 		$this->setCache('relations', $posts);
 		return $posts;
 	}
@@ -343,27 +342,27 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 
 	public function tryGetWorkingFullPath()
 	{
-		return PostModel::tryGetWorkingFullPath($this->getName());
+		return $this->model->tryGetWorkingFullPath($this->getName());
 	}
 
 	public function getFullPath()
 	{
-		return PostModel::getFullPath($this->getName());
+		return $this->model->getFullPath($this->getName());
 	}
 
 	public function tryGetWorkingThumbnailPath()
 	{
-		return PostModel::tryGetWorkingThumbnailPath($this->getName());
+		return $this->model->tryGetWorkingThumbnailPath($this->getName());
 	}
 
 	public function getCustomThumbnailSourcePath()
 	{
-		return PostModel::getCustomThumbnailSourcePath($this->getName());
+		return $this->model->getCustomThumbnailSourcePath($this->getName());
 	}
 
 	public function getThumbnailPath()
 	{
-		return PostModel::getThumbnailPath($this->getName());
+		return $this->model->getThumbnailPath($this->getName());
 	}
 
 	public function hasCustomThumbnail()
@@ -463,7 +462,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 				throw new SimpleException('Invalid file type "%s"', $this->getMimeType());
 		}
 
-		$duplicatedPost = PostModel::tryGetByHash($this->getFileHash());
+		$duplicatedPost = $this->model->tryGetByHash($this->getFileHash());
 		if ($duplicatedPost !== null and (!$this->getId() or $this->getId() != $duplicatedPost->getId()))
 		{
 			throw new SimpleException(
@@ -501,7 +500,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 			if (file_exists($thumbnailPath))
 				unlink($thumbnailPath);
 
-			$duplicatedPost = PostModel::tryGetByHash($youtubeId);
+			$duplicatedPost = $this->model->tryGetByHash($youtubeId);
 			if ($duplicatedPost !== null and (!$this->getId() or $this->getId() != $duplicatedPost->getId()))
 			{
 				throw new SimpleException(

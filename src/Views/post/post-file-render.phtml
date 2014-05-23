@@ -1,5 +1,5 @@
 <?php
-$this->assets->setPageThumbnail(\Chibi\Router::linkTo(
+$this->assets->setPageThumbnail(Core::getRouter()->linkTo(
 	['PostController', 'thumbnailView'],
 	['name' => $this->context->transport->post->getName()]));
 $post = $this->context->transport->post;
@@ -12,7 +12,7 @@ $post = $this->context->transport->post;
 	<?php endif ?>
 
 	<img alt="<?= $post->getName() ?>"
-		src="<?= \Chibi\Router::linkTo(
+		src="<?= Core::getRouter()->linkTo(
 			['PostController', 'fileView'],
 			['name' => $post->getName()]) ?>"/>
 
@@ -26,12 +26,12 @@ $post = $this->context->transport->post;
 		type="<?= $post->getMimeType() ?>"
 		width="<?= $post->getImageWidth() ?>"
 		height="<?= $post->getImageHeight() ?>"
-		data="<?= \Chibi\Router::linkTo(
+		data="<?= Core::getRouter()->linkTo(
 			['PostController', 'fileView'],
 			['name' => $post->getName()]) ?>">
 
 		<param name="wmode" value="opaque"/>
-		<param name="movie" value="<?= \Chibi\Router::linkTo(
+		<param name="movie" value="<?= Core::getRouter()->linkTo(
 			['PostController', 'fileView'],
 			['name' => $post->getName()]) ?>"/>
 
@@ -51,7 +51,7 @@ $post = $this->context->transport->post;
 	<video style="max-width: 100%" controls>
 		<source
 			type="<?= $post->getMimeType() ?>"
-			src="<?= \Chibi\Router::linkTo(
+			src="<?= Core::getRouter()->linkTo(
 				['PostController', 'fileView'],
 				['name' => $post->getName()]) ?>">
 

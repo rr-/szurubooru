@@ -57,7 +57,7 @@ class AbstractController
 	{
 		$targetUrl = SessionHelper::getLastVisitedUrl($filter);
 		if (!$targetUrl)
-			$targetUrl = \Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']);
+			$targetUrl = Core::getRouter()->linkTo(['StaticPagesController', 'mainPageView']);
 		$this->redirect($targetUrl);
 	}
 

@@ -16,7 +16,7 @@ $showTabs = count($tabs) > 1;
 				<?php else: ?>
 					<li class="<?= $tab ?>">
 				<?php endif ?>
-					<a href="<?= \Chibi\Router::linkTo(
+					<a href="<?= Core::getRouter()->linkTo(
 						['StaticPagesController', 'helpView'],
 						$tab == $firstTab ? [] : ['tab' => $tab]) ?>">
 						<?= $text ?>

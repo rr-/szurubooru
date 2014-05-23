@@ -3,7 +3,7 @@ $settings = $this->context->transport->user->getSettings();
 ?>
 
 <form
-	action="<?= \Chibi\Router::linkTo(
+	action="<?= Core::getRouter()->linkTo(
 		['UserController', 'settingsAction'],
 		['identifier' => $this->context->transport->user->getName()]) ?>"
 	method="post"

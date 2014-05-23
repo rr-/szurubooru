@@ -1,5 +1,5 @@
 <form method="post"
-	action="<?= \Chibi\Router::linkTo(
+	action="<?= Core::getRouter()->linkTo(
 		['PostController', 'editAction'],
 		['identifier' => $this->context->transport->post->getId()]) ?>"
 	enctype="multipart/form-data"

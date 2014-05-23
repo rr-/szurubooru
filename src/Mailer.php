@@ -92,7 +92,7 @@ class Mailer
 		$token->setExpirationTime(null);
 		TokenModel::save($token);
 
-		$tokens['link'] = \Chibi\Router::linkTo($linkDestination, ['tokenText' => $token->getText()]);
+		$tokens['link'] = Core::getRouter()->linkTo($linkDestination, ['tokenText' => $token->getText()]);
 		$tokens['token'] = $token->getText(); //yeah
 
 		return self::sendMail($mail, $tokens);

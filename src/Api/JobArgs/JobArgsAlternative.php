@@ -2,7 +2,7 @@
 class JobArgsAlternative extends JobArgsNestedStruct
 {
 	/**
-	* simplifies the structure as much as possible
+	* Simplifies the structure as much as possible
 	* and returns new class or existing args.
 	*/
 	public static function factory(array $args)

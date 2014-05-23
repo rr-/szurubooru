@@ -14,7 +14,7 @@ class LogController extends AbstractController
 		$formQuery = InputHelper::get('query');
 		if ($formQuery !== null)
 		{
-			$this->redirect(\Chibi\Router::linkTo(
+			$this->redirect(Core::getRouter()->linkTo(
 				['LogController', 'logView'],
 				[
 					'name' => $name,

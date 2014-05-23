@@ -24,7 +24,7 @@ $this->assets->addStylesheet('user-list.css');
 			<?php else: ?>
 				<li>
 			<?php endif ?>
-				<a href="<?= \Chibi\Router::linkTo(['UserController', 'listView'], ['filter' => $key]) ?>">
+				<a href="<?= Core::getRouter()->linkTo(['UserController', 'listView'], ['filter' => $key]) ?>">
 					<?= $text ?>
 				</a>
 			</li>
@@ -39,14 +39,14 @@ $this->assets->addStylesheet('user-list.css');
 		<div class="users paginator-content">
 			<?php foreach ($this->context->transport->users as $user): ?>
 				<div class="user">
-					<a class="avatar" href="<?= \Chibi\Router::linkTo(
+					<a class="avatar" href="<?= Core::getRouter()->linkTo(
 						['UserController', 'genericView'],
 						['identifier' => $user->getName()]) ?>">
 						<img src="<?= htmlspecialchars($user->getAvatarUrl(100)) ?>" alt="<?= $user->getName() ?>"/>
 					</a>
 					<div class="details">
 						<h1>
-							<a href="<?= \Chibi\Router::linkTo(
+							<a href="<?= Core::getRouter()->linkTo(
 								['UserController', 'genericView'],
 								['identifier' => $user->getName()]) ?>">
 								<?= $user->getName() ?>

@@ -12,10 +12,10 @@ class TagSearchParser extends AbstractSearchParser
 			},
 			Access::getAllowedSafety());
 		$this->statement
-			->addInnerJoin('post_tag', new Sql\EqualsFunctor('tag.id', 'post_tag.tag_id'))
-			->addInnerJoin('post', new Sql\EqualsFunctor('post.id', 'post_tag.post_id'))
-			->setCriterion((new Sql\ConjunctionFunctor)
-				->add(Sql\InFunctor::fromArray('safety', Sql\Binding::fromArray($allowedSafety))))
+			->addInnerJoin('post_tag', Sql\Functors::equals('tag.id', 'post_tag.tag_id'))
+			->addInnerJoin('post', Sql\Functors::equals('post.id', 'post_tag.post_id'))
+			->setCriterion(Sql\Functors::conjunction()
+				->add(Sql\Functors::in('safety', Sql\Binding::fromArray($allowedSafety))))
 			->setGroupBy('tag.id');
 	}
 
@@ -29,7 +29,7 @@ class TagSearchParser extends AbstractSearchParser
 		$value .= '%';
 
 		$this->statement->getCriterion()
-			->add(new Sql\NoCaseFunctor(new Sql\LikeFunctor('tag.name', new Sql\Binding($value))));
+			->add(Sql\Functors::noCase(Sql\Functors::like('tag.name', new Sql\Binding($value))));
 
 		return true;
 	}
@@ -39,7 +39,7 @@ class TagSearchParser extends AbstractSearchParser
 		if ($orderByString == 'popularity')
 			$this->statement->setOrderBy('post_count', $orderDir);
 		elseif ($orderByString == 'alpha')
-			$this->statement->setOrderBy(new Sql\CaseFunctor('tag.name'), $orderDir);
+			$this->statement->setOrderBy(Sql\Functors::{'case'}('tag.name'), $orderDir);
 		else
 			return false;
 		return true;

@@ -3,7 +3,7 @@ $this->assets->addScript('user-edit.js');
 ?>
 
 <form
-	action="<?= \Chibi\Router::linkTo(
+	action="<?= Core::getRouter()->linkTo(
 		['UserController', 'editAction'],
 		['identifier' => $this->context->transport->user->getName()]) ?>"
 	enctype="multipart/form-data"

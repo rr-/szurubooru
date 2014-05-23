@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class CommentModel extends AbstractCrudModel
 {
@@ -14,7 +13,7 @@ final class CommentModel extends AbstractCrudModel
 		$comment->validate();
 		$comment->getPost()->removeCache('comment_count');
 
-		Database::transaction(function() use ($comment)
+		Core::getDatabase()->transaction(function() use ($comment)
 		{
 			self::forgeId($comment);
 
@@ -24,14 +23,14 @@ final class CommentModel extends AbstractCrudModel
 				'comment_date' => $comment->getCreationTime(),
 				'commenter_id' => $comment->getCommenterId()];
 
-			$stmt = new Sql\UpdateStatement();
+			$stmt = Sql\Statements::update();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->getId())));
+			$stmt->setCriterion(Sql\Functors::equals('id', new Sql\Binding($comment->getId())));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new Sql\Binding($val));
 
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 		});
 
 		return $comment;
@@ -39,13 +38,13 @@ final class CommentModel extends AbstractCrudModel
 
 	protected static function removeSingle($comment)
 	{
-		Database::transaction(function() use ($comment)
+		Core::getDatabase()->transaction(function() use ($comment)
 		{
 			$comment->getPost()->removeCache('comment_count');
-			$stmt = new Sql\DeleteStatement();
+			$stmt = Sql\Statements::delete();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($comment->getId())));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('id', new Sql\Binding($comment->getId())));
+			Core::getDatabase()->execute($stmt);
 		});
 	}
 
@@ -53,12 +52,12 @@ final class CommentModel extends AbstractCrudModel
 
 	public static function getAllByPostId($key)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('comment.*');
 		$stmt->setTable('comment');
-		$stmt->setCriterion(new Sql\EqualsFunctor('post_id', new Sql\Binding($key)));
+		$stmt->setCriterion(Sql\Functors::equals('post_id', new Sql\Binding($key)));
 
-		$rows = Database::fetchAll($stmt);
+		$rows = Core::getDatabase()->fetchAll($stmt);
 		if ($rows)
 			return self::spawnFromDatabaseRows($rows);
 		return [];

@@ -23,9 +23,9 @@ class Dispatcher
 	{
 		try
 		{
-			\Chibi\Router::run($query);
+			Core::getRouter()->run($query);
 		}
-		catch (\Chibi\UnhandledRouteException $e)
+		catch (\Chibi\Routing\UnhandledRouteException $e)
 		{
 			$errorController = new ErrorController;
 			$errorController->simpleExceptionView(new SimpleNotFoundException($query . ' not found.'));
@@ -67,7 +67,7 @@ class Dispatcher
 
 	private function setRouterObserver()
 	{
-		\Chibi\Router::setObserver(function($route, $args)
+		Core::getRouter()->setObserver(function($route, $args)
 		{
 			$context = Core::getContext();
 			$context->route = $route;

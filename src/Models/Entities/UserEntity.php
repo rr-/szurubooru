@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class UserEntity extends AbstractEntity implements IValidatable, ISerializable
 {
@@ -336,24 +335,24 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 
 	public function hasFavorited($post)
 	{
-		$stmt = new Sql\SelectStatement();
-		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
+		$stmt = \Chibi\Sql\Statements::select();
+		$stmt->setColumn(Sql\Functors::alias(Sql\Functors::count('1'), 'count'));
 		$stmt->setTable('favoritee');
-		$stmt->setCriterion((new Sql\ConjunctionFunctor)
-			->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->getId())))
-			->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId()))));
-		return Database::fetchOne($stmt)['count'] == 1;
+		$stmt->setCriterion(Sql\Functors::conjunction()
+			->add(Sql\Functors::equals('user_id', new Sql\Binding($this->getId())))
+			->add(Sql\Functors::equals('post_id', new Sql\Binding($post->getId()))));
+		return Core::getDatabase()->fetchOne($stmt)['count'] == 1;
 	}
 
 	public function getScore($post)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = \Chibi\Sql\Statements::select();
 		$stmt->setColumn('score');
 		$stmt->setTable('post_score');
-		$stmt->setCriterion((new Sql\ConjunctionFunctor)
-			->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->getId())))
-			->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId()))));
-		$row = Database::fetchOne($stmt);
+		$stmt->setCriterion(Sql\Functors::conjunction()
+			->add(Sql\Functors::equals('user_id', new Sql\Binding($this->getId())))
+			->add(Sql\Functors::equals('post_id', new Sql\Binding($post->getId()))));
+		$row = Core::getDatabase()->fetchOne($stmt);
 		if ($row)
 			return intval($row['score']);
 		return null;
@@ -361,29 +360,29 @@ final class UserEntity extends AbstractEntity implements IValidatable, ISerializ
 
 	public function getFavoriteCount()
 	{
-		$stmt = new Sql\SelectStatement();
-		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
+		$stmt = \Chibi\Sql\Statements::select();
+		$stmt->setColumn(Sql\Functors::alias(Sql\Functors::count('1'), 'count'));
 		$stmt->setTable('favoritee');
-		$stmt->setCriterion(new Sql\EqualsFunctor('user_id', new Sql\Binding($this->getId())));
-		return (int) Database::fetchOne($stmt)['count'];
+		$stmt->setCriterion(Sql\Functors::equals('user_id', new Sql\Binding($this->getId())));
+		return (int) Core::getDatabase()->fetchOne($stmt)['count'];
 	}
 
 	public function getCommentCount()
 	{
-		$stmt = new Sql\SelectStatement();
-		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
+		$stmt = \Chibi\Sql\Statements::select();
+		$stmt->setColumn(Sql\Functors::alias(Sql\Functors::count('1'), 'count'));
 		$stmt->setTable('comment');
-		$stmt->setCriterion(new Sql\EqualsFunctor('commenter_id', new Sql\Binding($this->getId())));
-		return (int) Database::fetchOne($stmt)['count'];
+		$stmt->setCriterion(Sql\Functors::equals('commenter_id', new Sql\Binding($this->getId())));
+		return (int) Core::getDatabase()->fetchOne($stmt)['count'];
 	}
 
 	public function getPostCount()
 	{
-		$stmt = new Sql\SelectStatement();
-		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
+		$stmt = \Chibi\Sql\Statements::select();
+		$stmt->setColumn(Sql\Functors::alias(Sql\Functors::count('1'), 'count'));
 		$stmt->setTable('post');
-		$stmt->setCriterion(new Sql\EqualsFunctor('uploader_id', new Sql\Binding($this->getId())));
-		return (int) Database::fetchOne($stmt)['count'];
+		$stmt->setCriterion(Sql\Functors::equals('uploader_id', new Sql\Binding($this->getId())));
+		return (int) Core::getDatabase()->fetchOne($stmt)['count'];
 	}
 
 

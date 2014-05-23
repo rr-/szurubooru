@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class PostModel extends AbstractCrudModel
 {
@@ -13,7 +12,7 @@ final class PostModel extends AbstractCrudModel
 	{
 		$post->validate();
 
-		Database::transaction(function() use ($post)
+		Core::getDatabase()->transaction(function() use ($post)
 		{
 			self::forgeId($post);
 
@@ -33,50 +32,50 @@ final class PostModel extends AbstractCrudModel
 				'source' => $post->getSource(),
 				];
 
-			$stmt = new Sql\UpdateStatement();
+			$stmt = Sql\Statements::update();
 			$stmt->setTable('post');
 
 			foreach ($bindings as $key => $value)
 				$stmt->setColumn($key, new Sql\Binding($value));
 
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($post->getId())));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('id', new Sql\Binding($post->getId())));
+			Core::getDatabase()->execute($stmt);
 
 			//tags
 			$tags = $post->getTags();
 
-			$stmt = new Sql\DeleteStatement();
+			$stmt = Sql\Statements::delete();
 			$stmt->setTable('post_tag');
-			$stmt->setCriterion(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId())));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('post_id', new Sql\Binding($post->getId())));
+			Core::getDatabase()->execute($stmt);
 
 			foreach ($tags as $postTag)
 			{
-				$stmt = new Sql\InsertStatement();
+				$stmt = Sql\Statements::insert();
 				$stmt->setTable('post_tag');
 				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
 				$stmt->setColumn('tag_id', new Sql\Binding($postTag->getId()));
-				Database::exec($stmt);
+				Core::getDatabase()->execute($stmt);
 			}
 
 			//relations
 			$relations = $post->getRelations();
 
-			$stmt = new Sql\DeleteStatement();
+			$stmt = Sql\Statements::delete();
 			$stmt->setTable('crossref');
 			$binding = new Sql\Binding($post->getId());
-			$stmt->setCriterion((new Sql\DisjunctionFunctor)
-				->add(new Sql\EqualsFunctor('post_id', $binding))
-				->add(new Sql\EqualsFunctor('post2_id', $binding)));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::disjunction()
+				->add(Sql\Functors::equals('post_id', $binding))
+				->add(Sql\Functors::equals('post2_id', $binding)));
+			Core::getDatabase()->execute($stmt);
 
 			foreach ($relations as $relatedPost)
 			{
-				$stmt = new Sql\InsertStatement();
+				$stmt = Sql\Statements::insert();
 				$stmt->setTable('crossref');
 				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
 				$stmt->setColumn('post2_id', new Sql\Binding($relatedPost->getId()));
-				Database::exec($stmt);
+				Core::getDatabase()->execute($stmt);
 			}
 		});
 
@@ -85,33 +84,33 @@ final class PostModel extends AbstractCrudModel
 
 	protected static function removeSingle($post)
 	{
-		Database::transaction(function() use ($post)
+		Core::getDatabase()->transaction(function() use ($post)
 		{
 			$binding = new Sql\Binding($post->getId());
 
-			$stmt = new Sql\DeleteStatement();
+			$stmt = Sql\Statements::delete();
 			$stmt->setTable('post_score');
-			$stmt->setCriterion(new Sql\EqualsFunctor('post_id', $binding));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('post_id', $binding));
+			Core::getDatabase()->execute($stmt);
 
 			$stmt->setTable('post_tag');
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 
 			$stmt->setTable('favoritee');
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 
 			$stmt->setTable('comment');
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 
 			$stmt->setTable('crossref');
-			$stmt->setCriterion((new Sql\DisjunctionFunctor)
-				->add(new Sql\EqualsFunctor('post_id', $binding))
-				->add(new Sql\EqualsFunctor('post_id', $binding)));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::disjunction()
+				->add(Sql\Functors::equals('post_id', $binding))
+				->add(Sql\Functors::equals('post_id', $binding)));
+			Core::getDatabase()->execute($stmt);
 
 			$stmt->setTable('post');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', $binding));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('id', $binding));
+			Core::getDatabase()->execute($stmt);
 		});
 	}
 
@@ -128,12 +127,12 @@ final class PostModel extends AbstractCrudModel
 
 	public static function tryGetByName($key, $throw = true)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('*');
 		$stmt->setTable('post');
-		$stmt->setCriterion(new Sql\EqualsFunctor('name', new Sql\Binding($key)));
+		$stmt->setCriterion(Sql\Functors::equals('name', new Sql\Binding($key)));
 
-		$row = Database::fetchOne($stmt);
+		$row = Core::getDatabase()->fetchOne($stmt);
 		return $row
 			? self::spawnFromDatabaseRow($row)
 			: null;
@@ -158,12 +157,12 @@ final class PostModel extends AbstractCrudModel
 
 	public static function tryGetByHash($key)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('*');
 		$stmt->setTable('post');
-		$stmt->setCriterion(new Sql\EqualsFunctor('file_hash', new Sql\Binding($key)));
+		$stmt->setCriterion(Sql\Functors::equals('file_hash', new Sql\Binding($key)));
 
-		$row = Database::fetchOne($stmt);
+		$row = Core::getDatabase()->fetchOne($stmt);
 		return $row
 			? self::spawnFromDatabaseRow($row)
 			: null;
@@ -186,12 +185,12 @@ final class PostModel extends AbstractCrudModel
 		}
 		$postIds = array_unique(array_keys($postMap));
 
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setTable('comment');
 		$stmt->addColumn('comment.*');
 		$stmt->addColumn('post_id');
-		$stmt->setCriterion(Sql\InFunctor::fromArray('post_id', Sql\Binding::fromArray($postIds)));
-		$rows = Database::fetchAll($stmt);
+		$stmt->setCriterion(Sql\Functors::in('post_id', Sql\Binding::fromArray($postIds)));
+		$rows = Core::getDatabase()->fetchAll($stmt);
 
 		foreach ($rows as $row)
 		{
@@ -226,13 +225,13 @@ final class PostModel extends AbstractCrudModel
 		}
 		$postIds = array_unique(array_keys($postMap));
 
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setTable('tag');
 		$stmt->addColumn('tag.*');
 		$stmt->addColumn('post_id');
-		$stmt->addInnerJoin('post_tag', new Sql\EqualsFunctor('post_tag.tag_id', 'tag.id'));
-		$stmt->setCriterion(Sql\InFunctor::fromArray('post_id', Sql\Binding::fromArray($postIds)));
-		$rows = Database::fetchAll($stmt);
+		$stmt->addInnerJoin('post_tag', Sql\Functors::equals('post_tag.tag_id', 'tag.id'));
+		$stmt->setCriterion(Sql\Functors::in('post_id', Sql\Binding::fromArray($postIds)));
+		$rows = Core::getDatabase()->fetchAll($stmt);
 
 		foreach ($rows as $row)
 		{
@@ -352,15 +351,15 @@ final class PostModel extends AbstractCrudModel
 
 	public static function featureRandomPost()
 	{
-		$stmt = (new Sql\SelectStatement)
+		$stmt = Sql\Statements::select()
 			->setColumn('id')
 			->setTable('post')
-			->setCriterion((new Sql\ConjunctionFunctor)
-				->add(new Sql\NegationFunctor(new Sql\StringExpression('hidden')))
-				->add(new Sql\EqualsFunctor('type', new Sql\Binding(PostType::Image)))
-				->add(new Sql\EqualsFunctor('safety', new Sql\Binding(PostSafety::Safe))))
-			->setOrderBy(new Sql\RandomFunctor(), Sql\SelectStatement::ORDER_DESC);
-		$featuredPostId = Database::fetchOne($stmt)['id'];
+			->setCriterion(Sql\Functors::conjunction()
+				->add(Sql\Functors::negation(new Sql\StringExpression('hidden')))
+				->add(Sql\Functors::equals('type', new Sql\Binding(PostType::Image)))
+				->add(Sql\Functors::equals('safety', new Sql\Binding(PostSafety::Safe))))
+			->setOrderBy(Sql\Functors::random(), Sql\Statements\SelectStatement::ORDER_DESC);
+		$featuredPostId = Core::getDatabase()->fetchOne($stmt)['id'];
 		if (!$featuredPostId)
 			return null;
 

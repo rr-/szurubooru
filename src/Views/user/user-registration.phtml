@@ -10,7 +10,7 @@ $this->assets->setSubTitle('registration form');
 	?>
 
 	<form
-		action="<?= \Chibi\Router::linkTo(['UserController', 'registrationAction']) ?>"
+		action="<?= Core::getRouter()->linkTo(['UserController', 'registrationAction']) ?>"
 		class="auth register"
 		method="post">
 

@@ -21,7 +21,7 @@ class ErrorController extends AbstractController
 		Messenger::fail($exception->getMessage());
 		$context = Core::getContext();
 		$context->transport->exception = $exception;
-		$context->transport->queries = \Chibi\Database::getLogs();
+		$context->transport->queries = Core::getDatabase()->getLogs();
 
 		if ($this->isAjax())
 			$this->renderAjax();

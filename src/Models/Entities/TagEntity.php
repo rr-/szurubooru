@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class TagEntity extends AbstractEntity implements IValidatable, ISerializable
 {
@@ -63,11 +62,11 @@ final class TagEntity extends AbstractEntity implements IValidatable, ISerializa
 		if ($this->hasCache('post_count'))
 			return $this->getCache('post_count');
 
-		$stmt = new Sql\SelectStatement();
-		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'post_count'));
+		$stmt = \Chibi\Sql\Statements::select();
+		$stmt->setColumn(Sql\Functors::alias(Sql\Functors::count('1'), 'post_count'));
 		$stmt->setTable('post_tag');
-		$stmt->setCriterion(new Sql\EqualsFunctor('tag_id', new Sql\Binding($this->getId())));
-		$row = Database::fetchOne($stmt);
+		$stmt->setCriterion(Sql\Functors::equals('tag_id', new Sql\Binding($this->getId())));
+		$row = Core::getDatabase()->fetchOne($stmt);
 		$this->setCache('post_count', (int) $row['post_count']);
 		return $this->getCache('post_count');
 	}

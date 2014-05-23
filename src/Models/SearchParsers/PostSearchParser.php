@@ -13,7 +13,7 @@ class PostSearchParser extends AbstractSearchParser
 		$config = Core::getConfig();
 
 		$this->tags = [];
-		$crit = new Sql\ConjunctionFunctor();
+		$crit = Sql\Functors::conjunction();
 
 		$allowedSafety = array_map(
 			function($safety)
@@ -21,7 +21,7 @@ class PostSearchParser extends AbstractSearchParser
 				return $safety->toInteger();
 			},
 			Access::getAllowedSafety());
-		$crit->add(Sql\InFunctor::fromArray('post.safety', Sql\Binding::fromArray($allowedSafety)));
+		$crit->add(Sql\Functors::in('post.safety', Sql\Binding::fromArray($allowedSafety)));
 
 		$this->statement->setCriterion($crit);
 		if (count($tokens) > $config->browsing->maxSearchTokens)
@@ -43,20 +43,20 @@ class PostSearchParser extends AbstractSearchParser
 		{
 			list ($tagName, $neg) = $item;
 			$tag = TagModel::getByName($tagName);
-			$innerStmt = new Sql\SelectStatement();
+			$innerStmt = Sql\Statements::select();
 			$innerStmt->setTable('post_tag');
-			$innerStmt->setCriterion((new Sql\ConjunctionFunctor)
-				->add(new Sql\EqualsFunctor('post_tag.post_id', 'post.id'))
-				->add(new Sql\EqualsFunctor('post_tag.tag_id', new Sql\Binding($tag->getId()))));
-			$operator = new Sql\ExistsFunctor($innerStmt);
+			$innerStmt->setCriterion(Sql\Functors::conjunction()
+				->add(Sql\Functors::equals('post_tag.post_id', 'post.id'))
+				->add(Sql\Functors::equals('post_tag.tag_id', new Sql\Binding($tag->getId()))));
+			$operator = Sql\Functors::exists($innerStmt);
 			if ($neg)
-				$operator = new Sql\NegationFunctor($operator);
+				$operator = Sql\Functors::negation($operator);
 			$this->statement->getCriterion()->add($operator);
 		}
 
 		$this->statement->addOrderBy('post.id',
 			empty($this->statement->getOrderBy())
-				? Sql\SelectStatement::ORDER_DESC
+				? Sql\Statements\SelectStatement::ORDER_DESC
 				: $this->statement->getOrderBy()[0][1]);
 	}
 
@@ -72,91 +72,91 @@ class PostSearchParser extends AbstractSearchParser
 		{
 			$ids = preg_split('/[;,]/', $value);
 			$ids = array_map('intval', $ids);
-			return Sql\InFunctor::fromArray('post.id', Sql\Binding::fromArray($ids));
+			return Sql\Functors::in('post.id', Sql\Binding::fromArray($ids));
 		}
 
 		if (in_array($key, ['name', 'names', 'hash', 'hashes']))
 		{
 			$ids = preg_split('/[;,]/', $value);
-			return Sql\InFunctor::fromArray('post.name', Sql\Binding::fromArray($ids));
+			return Sql\Functors::in('post.name', Sql\Binding::fromArray($ids));
 		}
 
 		elseif (in_array($key, ['fav', 'favs', 'favd']))
 		{
 			$user = UserModel::getByName($value);
-			$innerStmt = (new Sql\SelectStatement)
+			$innerStmt = Sql\Statements::select()
 				->setTable('favoritee')
-				->setCriterion((new Sql\ConjunctionFunctor)
-					->add(new Sql\EqualsFunctor('favoritee.post_id', 'post.id'))
-					->add(new Sql\EqualsFunctor('favoritee.user_id', new Sql\Binding($user->getId()))));
-			return new Sql\ExistsFunctor($innerStmt);
+				->setCriterion(Sql\Functors::conjunction()
+					->add(Sql\Functors::equals('favoritee.post_id', 'post.id'))
+					->add(Sql\Functors::equals('favoritee.user_id', new Sql\Binding($user->getId()))));
+			return Sql\Functors::exists($innerStmt);
 		}
 
 		elseif (in_array($key, ['comment', 'comments', 'commenter', 'commented']))
 		{
 			$user = UserModel::getByName($value);
-			$innerStmt = (new Sql\SelectStatement)
+			$innerStmt = Sql\Statements::select()
 				->setTable('comment')
-				->setCriterion((new Sql\ConjunctionFunctor)
-					->add(new Sql\EqualsFunctor('comment.post_id', 'post.id'))
-					->add(new Sql\EqualsFunctor('comment.commenter_id', new Sql\Binding($user->getId()))));
-			return new Sql\ExistsFunctor($innerStmt);
+				->setCriterion(Sql\Functors::conjunction()
+					->add(Sql\Functors::equals('comment.post_id', 'post.id'))
+					->add(Sql\Functors::equals('comment.commenter_id', new Sql\Binding($user->getId()))));
+			return Sql\Functors::exists($innerStmt);
 		}
 
 		elseif (in_array($key, ['submit', 'upload', 'uploads', 'uploader', 'uploaded']))
 		{
 			$user = UserModel::getByName($value);
-			return new Sql\EqualsFunctor('post.uploader_id', new Sql\Binding($user->getId()));
+			return Sql\Functors::equals('post.uploader_id', new Sql\Binding($user->getId()));
 		}
 
 		elseif (in_array($key, ['idmin', 'id_min']))
-			return new Sql\EqualsOrGreaterFunctor('post.id', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrGreater('post.id', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['idmax', 'id_max']))
-			return new Sql\EqualsOrLesserFunctor('post.id', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrLesser('post.id', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['scoremin', 'score_min']))
-			return new Sql\EqualsOrGreaterFunctor('post.score', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrGreater('post.score', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['scoremax', 'score_max']))
-			return new Sql\EqualsOrLesserFunctor('post.score', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrLesser('post.score', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['tagmin', 'tag_min']))
-			return new Sql\EqualsOrGreaterFunctor('post.tag_count', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrGreater('post.tag_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['tagmax', 'tag_max']))
-			return new Sql\EqualsOrLesserFunctor('post.tag_count', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrLesser('post.tag_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['favmin', 'fav_min']))
-			return new Sql\EqualsOrGreaterFunctor('post.fav_count', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrGreater('post.fav_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['favmax', 'fav_max']))
-			return new Sql\EqualsOrLesserFunctor('post.fav_count', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrLesser('post.fav_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['commentmin', 'comment_min']))
-			return new Sql\EqualsOrGreaterFunctor('post.comment_count', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrGreater('post.comment_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['commentmax', 'comment_max']))
-			return new Sql\EqualsOrLesserFunctor('post.comment_count', new Sql\Binding(intval($value)));
+			return Sql\Functors::equalsOrLesser('post.comment_count', new Sql\Binding(intval($value)));
 
 		elseif (in_array($key, ['date']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
-			return (new Sql\ConjunctionFunctor)
-				->add(new Sql\EqualsOrLesserFunctor('post.upload_date', new Sql\Binding($dateMax)))
-				->add(new Sql\EqualsOrGreaterFunctor('post.upload_date', new Sql\Binding($dateMin)));
+			return Sql\Functors::conjunction()
+				->add(Sql\Functors::equalsOrLesser('post.upload_date', new Sql\Binding($dateMax)))
+				->add(Sql\Functors::equalsOrGreater('post.upload_date', new Sql\Binding($dateMin)));
 		}
 
 		elseif (in_array($key, ['datemin', 'date_min']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
-			return new Sql\EqualsOrGreaterFunctor('post.upload_date', new Sql\Binding($dateMin));
+			return Sql\Functors::equalsOrGreater('post.upload_date', new Sql\Binding($dateMin));
 		}
 
 		elseif (in_array($key, ['datemax', 'date_max']))
 		{
 			list ($dateMin, $dateMax) = self::parseDate($value);
-			return new Sql\EqualsOrLesserFunctor('post.upload_date', new Sql\Binding($dateMax));
+			return Sql\Functors::equalsOrLesser('post.upload_date', new Sql\Binding($dateMax));
 		}
 
 		elseif ($key == 'special')
@@ -173,11 +173,11 @@ class PostSearchParser extends AbstractSearchParser
 			{
 				if (!$this->statement->isTableJoined('post_score'))
 				{
-					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
-						->add(new Sql\EqualsFunctor('post_score.post_id', 'post.id'))
-						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->getId()))));
+					$this->statement->addLeftOuterJoin('post_score', Sql\Functors::conjunction()
+						->add(Sql\Functors::equals('post_score.post_id', 'post.id'))
+						->add(Sql\Functors::equals('post_score.user_id', new Sql\Binding($activeUser->getId()))));
 				}
-				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '1');
+				return Sql\Functors::equals(Sql\Functors::ifNull('post_score.score', '0'), '1');
 			}
 
 			elseif (in_array($value, ['dislike', 'disliked', 'dislikes']))
@@ -185,11 +185,11 @@ class PostSearchParser extends AbstractSearchParser
 				$this->showDisliked = true;
 				if (!$this->statement->isTableJoined('post_score'))
 				{
-					$this->statement->addLeftOuterJoin('post_score', (new Sql\ConjunctionFunctor)
-						->add(new Sql\EqualsFunctor('post_score.post_id', 'post.id'))
-						->add(new Sql\EqualsFunctor('post_score.user_id', new Sql\Binding($activeUser->getId()))));
+					$this->statement->addLeftOuterJoin('post_score', Sql\Functors::conjunction()
+						->add(Sql\Functors::equals('post_score.post_id', 'post.id'))
+						->add(Sql\Functors::equals('post_score.user_id', new Sql\Binding($activeUser->getId()))));
 				}
-				return new Sql\EqualsFunctor(new Sql\IfNullFunctor('post_score.score', '0'), '-1');
+				return Sql\Functors::equals(Sql\Functors::ifNull('post_score.score', '0'), '-1');
 			}
 
 			elseif ($value == 'hidden')
@@ -216,7 +216,7 @@ class PostSearchParser extends AbstractSearchParser
 			else
 				throw new SimpleException('Invalid post type "%s"', $value);
 
-			return new Sql\EqualsFunctor('type', new Sql\Binding($type));
+			return Sql\Functors::equals('type', new Sql\Binding($type));
 		}
 
 		return null;
@@ -229,7 +229,7 @@ class PostSearchParser extends AbstractSearchParser
 			return false;
 
 		if ($neg)
-			$criterion = new Sql\NegationFunctor($criterion);
+			$criterion = Sql\Functors::negation($criterion);
 
 		$this->statement->getCriterion()->add($criterion);
 		return true;
@@ -275,9 +275,9 @@ class PostSearchParser extends AbstractSearchParser
 			if (!isset($_SESSION['browsing-seed']))
 				$_SESSION['browsing-seed'] = mt_rand();
 			$seed = $_SESSION['browsing-seed'];
-			$orderColumn = new Sql\SubstrFunctor(
-				new Sql\MultiplicationFunctor('post.id', $seed),
-				new Sql\AdditionFunctor(new Sql\LengthFunctor('post.id'), '2'));
+			$orderColumn = Sql\Functors::substr(
+				Sql\Functors::multiplication('post.id', $seed),
+				Sql\Functors::addition(Sql\Functors::length('post.id'), '2'));
 		}
 
 		else

@@ -3,10 +3,10 @@ $this->assets->addStylesheet('debug.css');
 ?>
 
 <div class="main-wrapper">
-	<?php foreach (\Chibi\Database::getLogs() as $log): ?>
+	<?php foreach (Core::getDatabase()->getLogs() as $log): ?>
 		<div class="debug">
 			<?php
-				$query = $log->getStatement()->getAsString();
+				$query = $log->getStatement();
 				$query = str_replace('(', '<span>(', $query);
 				$query = str_replace(')', ')</span>', $query);
 			?>
@@ -14,9 +14,9 @@ $this->assets->addStylesheet('debug.css');
 
 			<pre class="bindings"><?= join(', ', array_map(function($key) use ($log)
 				{
-					return $key . '=<span class="value">' . $log->getStatement()->getBindings()[$key] . '</span>';
+					return $key . '=<span class="value">' . $log->getBindings()[$key] . '</span>';
 				},
-				array_keys($log->getStatement()->getBindings()))) ?></pre>
+				array_keys($log->getBindings()))) ?></pre>
 
 			<table>
 				<tr><td>Execution:</td><td><?= sprintf('%.05fs', $log->getExecutionTime()) ?></td></tr>

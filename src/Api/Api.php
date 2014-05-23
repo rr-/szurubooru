@@ -3,14 +3,14 @@ final class Api
 {
 	public static function getUrl()
 	{
-		return \Chibi\Router::linkTo(['ApiController', 'runAction']);
+		return Core::getRouter()->linkTo(['ApiController', 'runAction']);
 	}
 
 	public static function run(IJob $job, $jobArgs)
 	{
 		$user = Auth::getCurrentUser();
 
-		return \Chibi\Database::transaction(function() use ($job, $jobArgs)
+		return Core::getDatabase()->transaction(function() use ($job, $jobArgs)
 		{
 			$job->setArguments($jobArgs);
 
@@ -27,7 +27,7 @@ final class Api
 	public static function runMultiple($jobs)
 	{
 		$statuses = [];
-		\Chibi\Database::transaction(function() use ($jobs, &$statuses)
+		Core::getDatabase()->transaction(function() use ($jobs, &$statuses)
 		{
 			foreach ($jobs as $jobItem)
 			{

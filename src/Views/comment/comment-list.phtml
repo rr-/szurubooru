@@ -31,7 +31,7 @@ $this->assets->setSubTitle('comments');
 						<?php endforeach ?>
 
 						<?php if (count($comments) > count($commentsToDisplay)): ?>
-							<a href="<?= \Chibi\Router::linkTo(
+							<a href="<?= Core::getRouter()->linkTo(
 								['PostController', 'genericView'],
 								['id' => $this->context->post->getId()]) ?>">
 								<span class="hellip">(more&hellip;)</span>

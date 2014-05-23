@@ -5,7 +5,7 @@ abstract class AbstractSearchParser
 {
 	protected $statement;
 
-	public function decorate(Sql\SelectStatement $statement, $filterString)
+	public function decorate($statement, $filterString)
 	{
 		$this->statement = $statement;
 
@@ -67,17 +67,17 @@ abstract class AbstractSearchParser
 		$orderByString = strtolower(array_shift($arr));
 		$orderDirString = strtolower(array_shift($arr));
 		if ($orderDirString == 'asc')
-			$orderDir = Sql\SelectStatement::ORDER_ASC;
+			$orderDir = Sql\Statements\SelectStatement::ORDER_ASC;
 		elseif ($orderDirString == 'desc')
-			$orderDir = Sql\SelectStatement::ORDER_DESC;
+			$orderDir = Sql\Statements\SelectStatement::ORDER_DESC;
 		else
 			throw new SimpleException('Invalid search order direction "%s"', $searchOrderDir);
 
 		if ($neg)
 		{
-			$orderDir = $orderDir == Sql\SelectStatement::ORDER_ASC
-				? Sql\SelectStatement::ORDER_DESC
-				: Sql\SelectStatement::ORDER_ASC;
+			$orderDir = $orderDir == Sql\Statements\SelectStatement::ORDER_ASC
+				? Sql\Statements\SelectStatement::ORDER_DESC
+				: Sql\Statements\SelectStatement::ORDER_ASC;
 		}
 
 		if (!$this->processOrderToken($orderByString, $orderDir))

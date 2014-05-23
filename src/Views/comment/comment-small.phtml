@@ -8,7 +8,7 @@
 	<div class="avatar">
 		<?php $commenter = $this->context->comment->getCommenter() ?>
 		<?php if ($commenter): ?>
-			<a href="<?= \Chibi\Router::linkTo(
+			<a href="<?= Core::getRouter()->linkTo(
 				['UserController', 'genericView'],
 				['identifier' => $commenter->getName()]) ?>">
 				<img src="<?= htmlspecialchars($commenter->getAvatarUrl(40)) ?>" alt="<?= $commenter->getName() ?>"/>
@@ -24,7 +24,7 @@
 		<div class="header">
 			<span class="nickname">
 				<?php if ($commenter): ?>
-					<a href="<?= \Chibi\Router::linkTo(
+					<a href="<?= Core::getRouter()->linkTo(
 						['UserController', 'genericView'],
 						['identifier' => $commenter->getName()]) ?>">
 						<?= $commenter->getName() ?>
@@ -42,7 +42,7 @@
 				Privilege::EditComment,
 				Access::getIdentity($commenter)))): ?>
 				<span class="edit">
-					<a href="<?= \Chibi\Router::linkTo(
+					<a href="<?= Core::getRouter()->linkTo(
 						['CommentController', 'editView'],
 						['id' => $this->context->comment->getId()]) ?>">
 						edit
@@ -56,7 +56,7 @@
 				<span class="delete">
 					<a class="simple-action confirmable"
 						data-confirm-text="Are you sure you want to delete this comment?"
-						href="<?= \Chibi\Router::linkTo(
+						href="<?= Core::getRouter()->linkTo(
 						['CommentController', 'deleteAction'],
 						['id' => $this->context->comment->getId()]) ?>">
 						delete

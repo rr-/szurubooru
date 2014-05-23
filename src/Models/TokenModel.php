@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class TokenModel extends AbstractCrudModel
 {
@@ -13,7 +12,7 @@ final class TokenModel extends AbstractCrudModel
 	{
 		$token->validate();
 
-		Database::transaction(function() use ($token)
+		Core::getDatabase()->transaction(function() use ($token)
 		{
 			self::forgeId($token);
 
@@ -24,14 +23,14 @@ final class TokenModel extends AbstractCrudModel
 				'expires' => $token->getExpirationTime(),
 				];
 
-			$stmt = new Sql\UpdateStatement();
+			$stmt = Sql\Statements::update();
 			$stmt->setTable('user_token');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($token->getId())));
+			$stmt->setCriterion(Sql\Functors::equals('id', new Sql\Binding($token->getId())));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new Sql\Binding($val));
 
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 		});
 
 		return $token;
@@ -50,12 +49,12 @@ final class TokenModel extends AbstractCrudModel
 		if (empty($key))
 			throw new SimpleNotFoundException('Invalid security token');
 
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setTable('user_token');
 		$stmt->setColumn('*');
-		$stmt->setCriterion(new Sql\EqualsFunctor('token', new Sql\Binding($key)));
+		$stmt->setCriterion(Sql\Functors::equals('token', new Sql\Binding($key)));
 
-		$row = Database::fetchOne($stmt);
+		$row = Core::getDatabase()->fetchOne($stmt);
 		return $row
 			? self::spawnFromDatabaseRow($row)
 			: null;

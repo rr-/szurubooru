@@ -28,7 +28,7 @@ $showTabs = count($tabs) > 1;
 				<?php else: ?>
 					<li class="<?= $source ?>">
 				<?php endif ?>
-					<a href="<?= \Chibi\Router::linkTo(['TagController', $action]) ?>">
+					<a href="<?= Core::getRouter()->linkTo(['TagController', $action]) ?>">
 						<?= $name ?>
 					</a>
 				</li>

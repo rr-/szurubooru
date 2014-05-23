@@ -388,13 +388,13 @@ class UserController extends AbstractController
 
 	private function redirectToMainPage()
 	{
-		$this->redirect(\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']));
+		$this->redirect(Core::getRouter()->linkTo(['StaticPagesController', 'mainPageView']));
 		exit;
 	}
 
 	private function redirectToGenericView($identifier)
 	{
-		$this->redirect(\Chibi\Router::linkTo(
+		$this->redirect(Core::getRouter()->linkTo(
 			['UserController', 'genericView'],
 			['identifier' => $identifier]));
 	}

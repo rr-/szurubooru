@@ -34,7 +34,7 @@ if (!function_exists('pageUrl'))
 		$page = max(1, min($context->transport->paginator->pageCount, $page));
 		$params = $context->route->arguments;
 		$params['page'] = $page;
-		return \Chibi\Router::linkTo($destination, $params);
+		return Core::getRouter()->linkTo($destination, $params);
 	}
 }
 ?>

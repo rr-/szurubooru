@@ -1,28 +1,37 @@
 <?php
 $startTime = microtime(true);
-
-//basic settings and preparation
 define('DS', DIRECTORY_SEPARATOR);
-$rootDir = __DIR__ . DS . '..' . DS;
-chdir($rootDir);
-date_default_timezone_set('UTC');
-setlocale(LC_CTYPE, 'en_US.UTF-8');
-ini_set('memory_limit', '128M');
-
-//basic include calls, autoloader init
-require_once $rootDir . 'lib' . DS . 'TextCaseConverter' . DS . 'TextCaseConverter.php';
-require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'Markdown.php';
-require_once $rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
-require_once $rootDir . 'lib' . DS . 'chibi-core' . DS . 'include.php';
-\Chibi\AutoLoader::registerFilesystem($rootDir . 'lib' . DS . 'chibi-sql');
-\Chibi\AutoLoader::registerFilesystem(__DIR__);
-
-require_once $rootDir . 'src' . DS . 'routes.php';
 
 final class Core
 {
 	private static $context;
 	private static $config;
+	private static $router;
+	private static $database;
+	private static $rootDir;
+
+	static function init()
+	{
+		self::$rootDir = __DIR__ . DS . '..' . DS;
+		chdir(self::$rootDir);
+		date_default_timezone_set('UTC');
+		setlocale(LC_CTYPE, 'en_US.UTF-8');
+		ini_set('memory_limit', '128M');
+
+		require_once self::$rootDir . 'lib' . DS . 'TextCaseConverter' . DS . 'TextCaseConverter.php';
+		require_once self::$rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'Markdown.php';
+		require_once self::$rootDir . 'lib' . DS . 'php-markdown' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
+		require_once self::$rootDir . 'lib' . DS . 'chibi-core' . DS . 'include.php';
+		require_once self::$rootDir . 'lib' . DS . 'chibi-sql' . DS . 'include.php';
+		\Chibi\AutoLoader::registerFilesystem(__DIR__);
+
+		self::$router = new Router();
+	}
+
+	static function getRouter()
+	{
+		return self::$router;
+	}
 
 	static function getConfig()
 	{
@@ -34,35 +43,52 @@ final class Core
 		return self::$context;
 	}
 
+	static function getDatabase()
+	{
+		return self::$database;
+	}
+
 	static function prepareConfig($testEnvironment)
 	{
-		//load config manually
-		global $rootDir;
-
 		$configPaths = [];
 		if (!$testEnvironment)
 		{
-			$configPaths []= $rootDir . DS . 'data' . DS . 'config.ini';
-			$configPaths []= $rootDir . DS . 'data' . DS . 'local.ini';
+			$configPaths []= self::$rootDir . DS . 'data' . DS . 'config.ini';
+			$configPaths []= self::$rootDir . DS . 'data' . DS . 'local.ini';
 		}
 		else
 		{
-			$configPaths []= $rootDir . DS . 'tests' . DS . 'config.ini';
+			$configPaths []= self::$rootDir . DS . 'tests' . DS . 'config.ini';
 		}
 
 		self::$config = new \Chibi\Config();
 		foreach ($configPaths as $path)
 			if (file_exists($path))
 				self::$config->loadIni($path);
-		self::$config->rootDir = $rootDir;
+		self::$config->rootDir = self::$rootDir;
 	}
 
-	static function prepareEnvironment($testEnvironment)
+	static function prepareContext()
 	{
-		//prepare context
 		global $startTime;
 		self::$context = new StdClass;
 		self::$context->startTime = $startTime;
+	}
+
+	static function prepareDatabase()
+	{
+		$config = self::getConfig();
+		self::$database = new \Chibi\Db\Database(
+			$config->main->dbDriver,
+			TextHelper::absolutePath($config->main->dbLocation),
+			isset($config->main->dbUser) ? $config->main->dbUser : null,
+			isset($config->main->dbPass) ? $config->main->dbPass : null);
+		\Chibi\Sql\Config::setDriver(self::$database->getDriver());
+	}
+
+	static function prepareEnvironment()
+	{
+		self::prepareContext();
 
 		$config = self::getConfig();
 
@@ -76,21 +102,10 @@ final class Core
 			if (!extension_loaded($ext))
 				die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);
 
-		if (\Chibi\Database::connected())
-			\Chibi\Database::disconnect();
-
-		if ($testEnvironment)
-			Auth::setCurrentUser(null);
 		Access::init();
 		Logger::init();
 		Mailer::init();
 		PropertyModel::init();
-
-		\Chibi\Database::connect(
-			$config->main->dbDriver,
-			TextHelper::absolutePath($config->main->dbLocation),
-			isset($config->main->dbUser) ? $config->main->dbUser : null,
-			isset($config->main->dbPass) ? $config->main->dbPass : null);
 	}
 
 	static function getDbVersion()
@@ -154,7 +169,7 @@ final class Core
 					{
 						try
 						{
-							\Chibi\Database::execUnprepared(new \Chibi\Sql\RawStatement($query));
+							Core::getDatabase()->executeUnprepared(new \Chibi\Sql\RawStatement($query));
 						}
 						catch (Exception $e)
 						{
@@ -178,5 +193,7 @@ final class Core
 	}
 }
 
+Core::init();
 Core::prepareConfig(false);
+Core::prepareDatabase();
 Core::prepareEnvironment(false);

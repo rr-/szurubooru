@@ -66,7 +66,7 @@ class PostController extends AbstractController
 			$params['page'] = 1;
 
 
-		$url = \Chibi\Router::linkTo(['PostController', 'listView'], $params);
+		$url = Core::getRouter()->linkTo(['PostController', 'listView'], $params);
 		$this->redirect($url);
 	}
 
@@ -364,12 +364,12 @@ class PostController extends AbstractController
 
 	private function redirectToPostList()
 	{
-		$this->redirect(\Chibi\Router::linkTo(['PostController', 'listView']));
+		$this->redirect(Core::getRouter()->linkTo(['PostController', 'listView']));
 	}
 
 	private function redirectToGenericView($identifier)
 	{
-		$this->redirect(\Chibi\Router::linkTo(
+		$this->redirect(Core::getRouter()->linkTo(
 			['PostController', 'genericView'],
 			['identifier' => $identifier]));
 	}

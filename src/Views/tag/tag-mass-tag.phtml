@@ -1,7 +1,7 @@
 <div class="form-wrapper">
 	<form method="post"
 		class="simple-action"
-		action="<?= \Chibi\Router::linkTo(
+		action="<?= Core::getRouter()->linkTo(
 			['PostController', 'listRedirectAction'],
 			['source' => 'mass-tag']) ?>">
 

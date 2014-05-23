@@ -18,7 +18,7 @@ $this->assets->addStylesheet('static-main.css');
 	<div class="body">
 		<?php
 			$this->context->transport->post = $this->context->featuredPost;
-			$this->context->imageLink = \Chibi\Router::linkTo(
+			$this->context->imageLink = Core::getRouter()->linkTo(
 				['PostController', 'genericView'],
 				['identifier' => $this->context->featuredPost->getId()]);
 		?>
@@ -34,7 +34,7 @@ $this->assets->addStylesheet('static-main.css');
 				<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->getName(), $b->getName()); }) ?>
 				<?php foreach ($tags as $tag): ?>
 					<li>
-						<a href="<?= \Chibi\Router::linkTo(['PostController', 'listView'], ['query' => $tag->getName()]) ?>">
+						<a href="<?= Core::getRouter()->linkTo(['PostController', 'listView'], ['query' => $tag->getName()]) ?>">
 							<?= $tag->getName() ?>
 						</a>
 					</li>
@@ -46,7 +46,7 @@ $this->assets->addStylesheet('static-main.css');
 			Featured
 			<?php if ($this->context->featuredPostUser): ?>
 				by
-				<a href="<?= \Chibi\Router::linkTo(
+				<a href="<?= Core::getRouter()->linkTo(
 					['UserController', 'genericView'],
 					['identifier' => $this->context->featuredPostUser->getName()]) ?>">
 					<?= $this->context->featuredPostUser->getName() ?>

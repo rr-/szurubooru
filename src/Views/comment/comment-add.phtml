@@ -5,7 +5,7 @@ $this->assets->addScript('comment-edit.js');
 
 <form
 	method="post"
-	action="<?= \Chibi\Router::linkTo(['CommentController', 'addAction']) ?>"
+	action="<?= Core::getRouter()->linkTo(['CommentController', 'addAction']) ?>"
 	class="add-comment">
 
 	<h1>add comment</h1>

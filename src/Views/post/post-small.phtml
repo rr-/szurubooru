@@ -29,7 +29,7 @@ if ($masstag)
 
 	<?php if ($masstag): ?>
 		<a class="toggle-tag"
-			href="<?= \Chibi\Router::linkTo(['PostController', 'toggleTagAction'], [
+			href="<?= Core::getRouter()->linkTo(['PostController', 'toggleTagAction'], [
 				'identifier' => $this->context->post->getId(),
 				'tag' => $this->context->additionalInfo,
 				'enable' => in_array('tagged', $classNames) ? '0' : '1']) ?>"
@@ -45,11 +45,11 @@ if ($masstag)
 		<?php if (Auth::getCurrentUser()->getSettings()->hasEnabledPostTagTitles()): ?>
 			title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>"
 		<?php endif ?>
-		href="<?= \Chibi\Router::linkTo(['PostController', 'genericView'], ['identifier' => $this->context->post->getId()]) ?>">
+		href="<?= Core::getRouter()->linkTo(['PostController', 'genericView'], ['identifier' => $this->context->post->getId()]) ?>">
 
 		<img
 			class="thumb"
-			src="<?= \Chibi\Router::linkTo(['PostController', 'thumbnailView'], ['name' => $this->context->post->getName()]) ?>"
+			src="<?= Core::getRouter()->linkTo(['PostController', 'thumbnailView'], ['name' => $this->context->post->getName()]) ?>"
 			alt="<?= TextHelper::reprPost($this->context->post) ?>"/>
 
 		<?php

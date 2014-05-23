@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 abstract class AbstractSearchService
 {
@@ -18,17 +17,17 @@ abstract class AbstractSearchService
 		return $parserClassName;
 	}
 
-	protected static function decorateParser(Sql\SelectStatement $stmt, $searchQuery)
+	protected static function decorateParser($stmt, $searchQuery)
 	{
 		$parserClassName = self::getParserClassName();
 		(new $parserClassName)->decorate($stmt, $searchQuery);
 	}
 
-	protected static function decorateCustom(Sql\SelectStatement $stmt)
+	protected static function decorateCustom($stmt)
 	{
 	}
 
-	protected static function decoratePager(Sql\SelectStatement $stmt, $perPage, $page)
+	protected static function decoratePager($stmt, $perPage, $page)
 	{
 		if ($perPage === null)
 			return;
@@ -42,14 +41,14 @@ abstract class AbstractSearchService
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
 
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn($table . '.*');
 		$stmt->setTable($table);
 		static::decorateParser($stmt, $searchQuery);
 		static::decorateCustom($stmt);
 		static::decoratePager($stmt, $perPage, $page);
 
-		return Database::fetchAll($stmt);
+		return Core::getDatabase()->fetchAll($stmt);
 	}
 
 	public static function getEntities($searchQuery, $perPage = null, $page = 1)
@@ -64,16 +63,16 @@ abstract class AbstractSearchService
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
 
-		$innerStmt = new Sql\SelectStatement();
+		$innerStmt = Sql\Statements::select();
 		$innerStmt->setTable($table);
 		static::decorateParser($innerStmt, $searchQuery);
 		static::decorateCustom($innerStmt);
 		$innerStmt->resetOrderBy();
 
-		$stmt = new Sql\SelectStatement();
-		$stmt->setColumn(new Sql\AliasFunctor(new Sql\CountFunctor('1'), 'count'));
+		$stmt = Sql\Statements::select();
+		$stmt->setColumn(Sql\Functors::alias(Sql\Functors::count('1'), 'count'));
 		$stmt->setSource($innerStmt, 'inner_stmt');
 
-		return Database::fetchOne($stmt)['count'];
+		return Core::getDatabase()->fetchOne($stmt)['count'];
 	}
 }

@@ -45,15 +45,15 @@ $this->assets->addScript('core.js');
 							<?= PropertyModel::get(PropertyModel::EngineVersion) ?>
 						</a>
 					</span>
-					<span><a href="<?= \Chibi\Router::linkTo(['StaticPagesController', 'apiDocsView']) ?>">API</a></span>
+					<span><a href="<?= Core::getRouter()->linkTo(['StaticPagesController', 'apiDocsView']) ?>">API</a></span>
 					<?php if (Access::check(new Privilege(Privilege::ListLogs))): ?>
-						<span><a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Logs</a></span>
+						<span><a href="<?= Core::getRouter()->linkTo(['LogController', 'listView']) ?>">Logs</a></span>
 					<?php endif ?>
 				</div>
 				<div class="right">
 					<span><?= TextHelper::useBytesUnits(memory_get_usage()) ?></span>
 					<span><?= sprintf('%.04f', microtime(true) - $this->context->startTime) ?>s</span>
-					<span><?= $x = count(\Chibi\Database::getLogs()) ?> <?= $x != 1 ? 'queries' : 'query' ?></span>
+					<span><?= $x = count(Core::getDatabase()->getLogs()) ?> <?= $x != 1 ? 'queries' : 'query' ?></span>
 				</div>
 				<div class="clear"></div>
 				<hr/>

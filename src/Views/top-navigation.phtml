@@ -27,14 +27,14 @@
 
 	$registerNavItem(
 		'Home',
-		\Chibi\Router::linkTo(['StaticPagesController', 'mainPageView']),
+		Core::getRouter()->linkTo(['StaticPagesController', 'mainPageView']),
 		$activeController == 'static-pages' and $activeAction == 'main-page');
 
 	if (Access::check(new Privilege(Privilege::ListPosts)))
 	{
 		$registerNavItem(
 			'Browse',
-			\Chibi\Router::linkTo(['PostController', 'listView']),
+			Core::getRouter()->linkTo(['PostController', 'listView']),
 			$activeController == 'post' and $activeAction != 'upload');
 	}
 
@@ -42,7 +42,7 @@
 	{
 		$registerNavItem(
 			'Upload',
-			\Chibi\Router::linkTo(['PostController', 'uploadView']),
+			Core::getRouter()->linkTo(['PostController', 'uploadView']),
 			$activeController == 'post' and $activeAction == 'upload');
 	}
 
@@ -50,7 +50,7 @@
 	{
 		$registerNavItem(
 			'Comments',
-			\Chibi\Router::linkTo(['CommentController', 'listView']),
+			Core::getRouter()->linkTo(['CommentController', 'listView']),
 			$activeController == 'comment');
 	}
 
@@ -58,7 +58,7 @@
 	{
 		$registerNavItem(
 			'Tags',
-			\Chibi\Router::linkTo(['TagController', 'listView']),
+			Core::getRouter()->linkTo(['TagController', 'listView']),
 			$activeController == 'tag');
 	}
 
@@ -66,7 +66,7 @@
 	{
 		$registerNavItem(
 			'Users',
-			\Chibi\Router::linkTo(['UserController', 'listView']),
+			Core::getRouter()->linkTo(['UserController', 'listView']),
 			$activeController == 'user' and $activeAction != 'registration' and
 				(!isset($this->context->route->arguments['identifier']) or
 					$this->context->route->arguments['identifier'] != Auth::getCurrentUser()->getName()));
@@ -76,32 +76,32 @@
 	{
 		$registerNavItem(
 			'Log in',
-			\Chibi\Router::linkTo(['AuthController', 'loginView']),
+			Core::getRouter()->linkTo(['AuthController', 'loginView']),
 			$activeController == 'auth' and $activeAction == 'login');
 
 		$registerNavItem(
 			'Register',
-			\Chibi\Router::linkTo(['UserController', 'registrationView']),
+			Core::getRouter()->linkTo(['UserController', 'registrationView']),
 			$activeController == 'user' and $activeAction == 'registration');
 	}
 	else
 	{
 		$registerNavItem(
 			'My account',
-			\Chibi\Router::linkTo(['UserController', 'genericView'], ['identifier' => Auth::getCurrentUser()->getName()]),
+			Core::getRouter()->linkTo(['UserController', 'genericView'], ['identifier' => Auth::getCurrentUser()->getName()]),
 			$activeController == 'user' and isset($this->context->route->arguments['identifier']) and
 				$this->context->route->arguments['identifier'] == Auth::getCurrentUser()->getName());
 
 		$registerNavItem(
 			'Log out',
-			\Chibi\Router::linkTo(['AuthController', 'logoutAction']));
+			Core::getRouter()->linkTo(['AuthController', 'logoutAction']));
 	}
 
 	if (!empty(Core::getConfig()->help->title))
 	{
 		$registerNavItem(
 			Core::getConfig()->help->title,
-			\Chibi\Router::linkTo(['StaticPagesController', 'helpView']),
+			Core::getRouter()->linkTo(['StaticPagesController', 'helpView']),
 			$activeController == 'static-pages' and $activeAction == 'help');
 	}
 
@@ -134,7 +134,7 @@
 							<a class="simple-action <?= Auth::getCurrentUser()->getSettings()->hasEnabledSafety($safety)
 									? 'enabled'
 									: 'disabled' ?>"
-								href="<?= \Chibi\Router::linkTo(
+								href="<?= Core::getRouter()->linkTo(
 									['UserController', 'toggleSafetyAction'],
 									['safety' => $safety->toInteger()]) ?>"
 								title="<?= sprintf('Searching %s posts: %s',
@@ -156,7 +156,7 @@
 
 	<li class="search">
 		<form method="post"
-			action="<?= \Chibi\Router::linkTo(['PostController', 'listRedirectAction']) ?>"
+			action="<?= Core::getRouter()->linkTo(['PostController', 'listRedirectAction']) ?>"
 			name="search">
 
 			<input

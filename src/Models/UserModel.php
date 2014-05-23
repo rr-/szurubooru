@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class UserModel extends AbstractCrudModel
 {
@@ -13,7 +12,7 @@ final class UserModel extends AbstractCrudModel
 	{
 		$user->validate();
 
-		Database::transaction(function() use ($user)
+		Core::getDatabase()->transaction(function() use ($user)
 		{
 			self::forgeId($user);
 
@@ -32,14 +31,14 @@ final class UserModel extends AbstractCrudModel
 				'avatar_style' => $user->getAvatarStyle()->toInteger(),
 				];
 
-			$stmt = (new Sql\UpdateStatement)
+			$stmt = Sql\Statements::update()
 				->setTable('user')
-				->setCriterion(new Sql\EqualsFunctor('id', new Sql\Binding($user->getId())));
+				->setCriterion(Sql\Functors::equals('id', new Sql\Binding($user->getId())));
 
 			foreach ($bindings as $key => $val)
 				$stmt->setColumn($key, new Sql\Binding($val));
 
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 		});
 
 		return $user;
@@ -47,33 +46,33 @@ final class UserModel extends AbstractCrudModel
 
 	protected static function removeSingle($user)
 	{
-		Database::transaction(function() use ($user)
+		Core::getDatabase()->transaction(function() use ($user)
 		{
 			$binding = new Sql\Binding($user->getId());
 
-			$stmt = new Sql\DeleteStatement();
+			$stmt = Sql\Statements::delete();
 			$stmt->setTable('post_score');
-			$stmt->setCriterion(new Sql\EqualsFunctor('user_id', $binding));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('user_id', $binding));
+			Core::getDatabase()->execute($stmt);
 
 			$stmt->setTable('favoritee');
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 
 			$stmt->setTable('user');
-			$stmt->setCriterion(new Sql\EqualsFunctor('id', $binding));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('id', $binding));
+			Core::getDatabase()->execute($stmt);
 
-			$stmt = new Sql\UpdateStatement();
+			$stmt = Sql\Statements::update();
 			$stmt->setTable('comment');
-			$stmt->setCriterion(new Sql\EqualsFunctor('commenter_id', $binding));
-			$stmt->setColumn('commenter_id', new Sql\NullFunctor());
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('commenter_id', $binding));
+			$stmt->setColumn('commenter_id', Sql\Functors::null());
+			Core::getDatabase()->execute($stmt);
 
-			$stmt = new Sql\UpdateStatement();
+			$stmt = Sql\Statements::update();
 			$stmt->setTable('post');
-			$stmt->setCriterion(new Sql\EqualsFunctor('uploader_id', $binding));
-			$stmt->setColumn('uploader_id', new Sql\NullFunctor());
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('uploader_id', $binding));
+			$stmt->setColumn('uploader_id', Sql\Functors::null());
+			Core::getDatabase()->execute($stmt);
 		});
 	}
 
@@ -89,12 +88,12 @@ final class UserModel extends AbstractCrudModel
 
 	public static function tryGetByName($key)
 	{
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('*');
 		$stmt->setTable('user');
-		$stmt->setCriterion(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('name', new Sql\Binding(trim($key)))));
+		$stmt->setCriterion(Sql\Functors::noCase(Sql\Functors::equals('name', new Sql\Binding(trim($key)))));
 
-		$row = Database::fetchOne($stmt);
+		$row = Core::getDatabase()->fetchOne($stmt);
 		return $row
 			? self::spawnFromDatabaseRow($row)
 			: null;
@@ -112,14 +111,14 @@ final class UserModel extends AbstractCrudModel
 	{
 		$key = trim($key);
 
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt->setColumn('*');
 		$stmt->setTable('user');
-		$stmt->setCriterion((new Sql\DisjunctionFunctor)
-			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('email_unconfirmed', new Sql\Binding($key))))
-			->add(new Sql\NoCaseFunctor(new Sql\EqualsFunctor('email_confirmed', new Sql\Binding($key)))));
+		$stmt->setCriterion(Sql\Functors::disjunction()
+			->add(Sql\Functors::noCase(Sql\Functors::equals('email_unconfirmed', new Sql\Binding($key))))
+			->add(Sql\Functors::noCase(Sql\Functors::equals('email_confirmed', new Sql\Binding($key)))));
 
-		$row = Database::fetchOne($stmt);
+		$row = Core::getDatabase()->fetchOne($stmt);
 		return $row
 			? self::spawnFromDatabaseRow($row)
 			: null;
@@ -129,56 +128,56 @@ final class UserModel extends AbstractCrudModel
 
 	public static function updateUserScore($user, $post, $score)
 	{
-		Database::transaction(function() use ($user, $post, $score)
+		Core::getDatabase()->transaction(function() use ($user, $post, $score)
 		{
 			$post->removeCache('score');
-			$stmt = new Sql\DeleteStatement();
+			$stmt = Sql\Statements::delete();
 			$stmt->setTable('post_score');
-			$stmt->setCriterion((new Sql\ConjunctionFunctor)
-				->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId())))
-				->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($user->getId()))));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::conjunction()
+				->add(Sql\Functors::equals('post_id', new Sql\Binding($post->getId())))
+				->add(Sql\Functors::equals('user_id', new Sql\Binding($user->getId()))));
+			Core::getDatabase()->execute($stmt);
 			$score = intval($score);
 			if (abs($score) > 1)
 				throw new SimpleException('Invalid score');
 			if ($score != 0)
 			{
-				$stmt = new Sql\InsertStatement();
+				$stmt = Sql\Statements::insert();
 				$stmt->setTable('post_score');
 				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
 				$stmt->setColumn('user_id', new Sql\Binding($user->getId()));
 				$stmt->setColumn('score', new Sql\Binding($score));
-				Database::exec($stmt);
+				Core::getDatabase()->execute($stmt);
 			}
 		});
 	}
 
 	public static function addToUserFavorites($user, $post)
 	{
-		Database::transaction(function() use ($user, $post)
+		Core::getDatabase()->transaction(function() use ($user, $post)
 		{
 			$post->removeCache('fav_count');
 			self::removeFromUserFavorites($user, $post);
-			$stmt = new Sql\InsertStatement();
+			$stmt = Sql\Statements::insert();
 			$stmt->setTable('favoritee');
 			$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
 			$stmt->setColumn('user_id', new Sql\Binding($user->getId()));
 			$stmt->setColumn('fav_date', time());
-			Database::exec($stmt);
+			Core::getDatabase()->execute($stmt);
 		});
 	}
 
 	public static function removeFromUserFavorites($user, $post)
 	{
-		Database::transaction(function() use ($user, $post)
+		Core::getDatabase()->transaction(function() use ($user, $post)
 		{
 			$post->removeCache('fav_count');
-			$stmt = new Sql\DeleteStatement();
+			$stmt = Sql\Statements::delete();
 			$stmt->setTable('favoritee');
-			$stmt->setCriterion((new Sql\ConjunctionFunctor)
-				->add(new Sql\EqualsFunctor('post_id', new Sql\Binding($post->getId())))
-				->add(new Sql\EqualsFunctor('user_id', new Sql\Binding($user->getId()))));
-			Database::exec($stmt);
+			$stmt->setCriterion(Sql\Functors::conjunction()
+				->add(Sql\Functors::equals('post_id', new Sql\Binding($post->getId())))
+				->add(Sql\Functors::equals('user_id', new Sql\Binding($user->getId()))));
+			Core::getDatabase()->execute($stmt);
 		});
 	}
 

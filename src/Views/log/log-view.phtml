@@ -5,7 +5,7 @@ $this->assets->addStylesheet('logs.css');
 
 <?php if (empty($this->context->transport->lines)): ?>
 	<p class="alert alert-warning">
-		This log is empty. <a href="<?= \Chibi\Router::linkTo(['LogController', 'listView']) ?>">Go back</a>
+		This log is empty. <a href="<?= Core::getRouter()->linkTo(['LogController', 'listView']) ?>">Go back</a>
 	</p>
 <?php else: ?>
 	<?php
@@ -14,7 +14,7 @@ $this->assets->addStylesheet('logs.css');
 	?>
 
 	<form method="get"
-		action="<?= \Chibi\Router::linkTo(
+		action="<?= Core::getRouter()->linkTo(
 			['LogController', 'logView'],
 			['name' => $this->context->transport->name]) ?>">
 

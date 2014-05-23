@@ -1,5 +1,5 @@
 <?php
-class View extends \Chibi\View
+class View extends \Chibi\Views\View
 {
 	public static function renderTopLevel($viewName, $assets)
 	{

@@ -1,5 +1,5 @@
 <form
-	action="<?= \Chibi\Router::linkTo(
+	action="<?= Core::getRouter()->linkTo(
 		['UserController', 'deleteAction'],
 		['identifier' => $this->context->transport->user->getName()]) ?>"
 	method="post"

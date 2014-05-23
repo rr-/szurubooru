@@ -11,10 +11,10 @@ class SzurubooruTestRunner implements ITestRunner
 			exit(0);
 		}
 
-		$this->resetEnvironment($options);
+		$this->connectToDatabase($options);
 		if ($options->cleanDatabase)
 			$this->cleanDatabase();
-		$this->resetEnvironment($options);
+		$this->connectToDatabase($options);
 
 		Core::upgradeDatabase();
 
@@ -33,7 +33,7 @@ class SzurubooruTestRunner implements ITestRunner
 
 		$testRunner->setTestWrapperAction(function($callback)
 			{
-				\Chibi\Database::rollback(function() use ($callback)
+				Core::getDatabase()->rollback(function() use ($callback)
 				{
 					$callback();
 				});
@@ -101,10 +101,10 @@ class SzurubooruTestRunner implements ITestRunner
 
 	private function cleanMysqlDatabase()
 	{
-		$stmt = new \Chibi\Sql\RawStatement('DROP DATABASE IF EXISTS ' . $this->getMysqlDatabaseName());
-		\Chibi\Database::exec($stmt);
-		$stmt = new \Chibi\Sql\RawStatement('CREATE DATABASE ' . $this->getMysqlDatabaseName());
-		\Chibi\Database::exec($stmt);
+		$stmt = \Chibi\Sql\Statements::raw('DROP DATABASE IF EXISTS ' . $this->getMysqlDatabaseName());
+		Core::getDatabase()->exec($stmt);
+		$stmt = \Chibi\Sql\Statements::raw('CREATE DATABASE ' . $this->getMysqlDatabaseName());
+		Core::getDatabase()->exec($stmt);
 	}
 
 	private function removeTestFolders()
@@ -142,10 +142,20 @@ class SzurubooruTestRunner implements ITestRunner
 		rmdir($folder);
 	}
 
-	private function resetEnvironment($options)
+	private function connectToDatabase($options)
 	{
-		$_SESSION = [];
+		$this->prepareTestConfig($options);
+		Core::prepareDatabase();
 
+		if ($options->dbDriver == 'mysql')
+		{
+			$stmt = \Chibi\Sql\Statements::raw('USE ' . $this->getMysqlDatabaseName());
+			Core::getDatabase()->executeUnprepared($stmt);
+		}
+	}
+
+	private function prepareTestConfig($options)
+	{
 		Core::prepareConfig(true);
 
 		Core::getConfig()->main->dbDriver = $options->dbDriver;
@@ -159,15 +169,15 @@ class SzurubooruTestRunner implements ITestRunner
 			Core::getConfig()->main->dbUser = 'test';
 			Core::getConfig()->main->dbPass = 'test';
 		}
+	}
+
+	private function resetEnvironment($options)
+	{
+		$_SESSION = [];
+		Auth::setCurrentUser(null);
 
 		$this->removeTestFolders();
-
-		Core::prepareEnvironment(true);
-
-		if ($options->dbDriver == 'mysql')
-		{
-			$stmt = new \Chibi\Sql\RawStatement('USE ' . $this->getMysqlDatabaseName());
-			\Chibi\Database::execUnprepared($stmt);
-		}
+		$this->prepareTestConfig($options);
+		Core::prepareEnvironment();
 	}
 }

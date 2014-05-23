@@ -1,6 +1,5 @@
 <?php
 use \Chibi\Sql as Sql;
-use \Chibi\Database as Database;
 
 final class PropertyModel implements IModel
 {
@@ -14,9 +13,11 @@ final class PropertyModel implements IModel
 
 	static $allProperties;
 	static $loaded;
+	static $database;
 
 	public static function init()
 	{
+		self::$database = Core::getDatabase();
 		self::$allProperties = null;
 		self::$loaded = false;
 	}
@@ -33,10 +34,10 @@ final class PropertyModel implements IModel
 
 		self::$loaded = true;
 		self::$allProperties = [];
-		$stmt = new Sql\SelectStatement();
+		$stmt = Sql\Statements::select();
 		$stmt ->setColumn('*');
 		$stmt ->setTable('property');
-		foreach (Database::fetchAll($stmt) as $row)
+		foreach (self::$database->fetchAll($stmt) as $row)
 			self::$allProperties[$row['prop_id']] = $row['value'];
 	}
 
@@ -51,28 +52,28 @@ final class PropertyModel implements IModel
 	public static function set($propertyId, $value)
 	{
 		self::loadIfNecessary();
-		Database::transaction(function() use ($propertyId, $value)
+		self::$database->transaction(function() use ($propertyId, $value)
 		{
-			$stmt = new Sql\SelectStatement();
+			$stmt = Sql\Statements::select();
 			$stmt->setColumn('id');
 			$stmt->setTable('property');
-			$stmt->setCriterion(new Sql\EqualsFunctor('prop_id', new Sql\Binding($propertyId)));
-			$row = Database::fetchOne($stmt);
+			$stmt->setCriterion(Sql\Functors::equals('prop_id', new Sql\Binding($propertyId)));
+			$row = self::$database->fetchOne($stmt);
 
 			if ($row)
 			{
-				$stmt = new Sql\UpdateStatement();
-				$stmt->setCriterion(new Sql\EqualsFunctor('prop_id', new Sql\Binding($propertyId)));
+				$stmt = Sql\Statements::update();
+				$stmt->setCriterion(Sql\Functors::equals('prop_id', new Sql\Binding($propertyId)));
 			}
 			else
 			{
-				$stmt = new Sql\InsertStatement();
+				$stmt = Sql\Statements::insert();
 				$stmt->setColumn('prop_id', new Sql\Binding($propertyId));
 			}
 			$stmt->setTable('property');
 			$stmt->setColumn('value', new Sql\Binding($value));
 
-			Database::exec($stmt);
+			self::$database->execute($stmt);
 
 			self::$allProperties[$propertyId] = $value;
 		});

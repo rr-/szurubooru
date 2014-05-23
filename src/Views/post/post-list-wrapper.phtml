@@ -4,26 +4,26 @@ $this->assets->setSubTitle('posts');
 $tabs = [];
 $activeTab = 0;
 if (Access::check(new Privilege(Privilege::ListPosts)))
-	$tabs []= ['All posts', \Chibi\Router::linkTo(['PostController', 'listView'])];
+	$tabs []= ['All posts', Core::getRouter()->linkTo(['PostController', 'listView'])];
 
 if (Access::check(new Privilege(Privilege::ListPosts)))
 {
-	$tabs []= ['Random', \Chibi\Router::linkTo(['PostController', 'randomView'])];
+	$tabs []= ['Random', Core::getRouter()->linkTo(['PostController', 'randomView'])];
 	if ($this->context->source == 'random')
 		$activeTab = count($tabs) - 1;
 
-	$tabs []= ['Favorites', \Chibi\Router::linkTo(['PostController', 'favoritesView'])];
+	$tabs []= ['Favorites', Core::getRouter()->linkTo(['PostController', 'favoritesView'])];
 	if ($this->context->source == 'favorites')
 		$activeTab = count($tabs) - 1;
 
-	$tabs []= ['Upvoted', \Chibi\Router::linkTo(['PostController', 'upvotedView'])];
+	$tabs []= ['Upvoted', Core::getRouter()->linkTo(['PostController', 'upvotedView'])];
 	if ($this->context->source == 'upvoted')
 		$activeTab = count($tabs) - 1;
 }
 
 if (Access::check(new Privilege(Privilege::MassTag)))
 {
-	$tabs []= ['Mass tag', \Chibi\Router::linkTo(['PostController', 'listView'], [
+	$tabs []= ['Mass tag', Core::getRouter()->linkTo(['PostController', 'listView'], [
 		'source' => 'mass-tag',
 		'query' => isset($this->context->transport->searchQuery)
 			? htmlspecialchars($this->context->transport->searchQuery)
