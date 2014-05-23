@@ -4,8 +4,12 @@
 		['identifier' => $this->context->transport->user->getName()]) ?>"
 	method="post"
 	class="user-delete simple-action confirmable"
-	autocomplete="off"
-	data-confirm-text="Are you sure you want to delete your account?">
+	<?php if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId()): ?>
+		data-confirm-text="Are you sure you want to delete your account?"
+	<?php else: ?>
+		data-confirm-text="Are you sure you want to delete this account?"
+	<?php endif ?>
+	autocomplete="off">
 
 	<?php
 		if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId())
