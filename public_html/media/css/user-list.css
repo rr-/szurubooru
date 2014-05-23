@@ -25,6 +25,7 @@ nav.sort-styles li.active {
 	margin-right: 1em;
 	float: left;
 	white-space: pre;
+	width: 20em;
 }
 
 .user a.avatar {
