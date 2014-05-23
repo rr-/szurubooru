@@ -25,7 +25,7 @@ class FeaturePostJob extends AbstractJob
 			: Auth::getCurrentUser()->getName());
 
 		Logger::log('{user} featured {post} on main page', [
-			'user' => TextHelper::reprPost(PropertyModel::get(PropertyModel::FeaturedPostUserName)),
+			'user' => TextHelper::reprUser(PropertyModel::get(PropertyModel::FeaturedPostUserName)),
 			'post' => TextHelper::reprPost($post)]);
 
 		return $post;
