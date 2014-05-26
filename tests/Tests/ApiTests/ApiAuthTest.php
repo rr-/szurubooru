@@ -61,7 +61,7 @@ class ApiAuthTest extends AbstractFullApiTest
 
 	public function testAuthEnforcing()
 	{
-		Core::getConfig()->registration->needEmailForCommenting = false;
+		Core::getConfig()->comments->needEmailForCommenting = false;
 		$this->grantAccess('addComment');
 
 		$comment = $this->commentMocker->mockSingle();

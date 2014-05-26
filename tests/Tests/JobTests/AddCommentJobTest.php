@@ -109,7 +109,7 @@ class AddCommentJobTest extends AbstractTest
 
 	protected function prepare()
 	{
-		Core::getConfig()->registration->needEmailForCommenting = false;
+		Core::getConfig()->comments->needEmailForCommenting = false;
 		$this->grantAccess('addComment');
 		$this->login($this->userMocker->mockSingle());
 	}

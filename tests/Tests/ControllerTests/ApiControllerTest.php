@@ -4,7 +4,7 @@ class ApiControllerTest extends AbstractTest
 	public function testRunning()
 	{
 		Core::getConfig()->registration->needEmailForRegistering = false;
-		Core::getConfig()->registration->needEmailForUploading = false;
+		Core::getConfig()->uploads->needEmailForUploading = false;
 
 		$user = $this->userMocker->mockSingle();
 		$this->grantAccess('addPost');

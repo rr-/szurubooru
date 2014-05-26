@@ -205,7 +205,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	public function testPrivilegeEnforcing()
 	{
 		$post = $this->postMocker->mockSingle();
-		Core::getConfig()->registration->needEmailForCommenting = false;
+		Core::getConfig()->comments->needEmailForCommenting = false;
 
 		$this->assert->throws(function() use ($post)
 		{
@@ -221,7 +221,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 	public function testComplexPrivilegeEnforcing()
 	{
 		$post = $this->postMocker->mockSingle();
-		Core::getConfig()->registration->needEmailForCommenting = false;
+		Core::getConfig()->comments->needEmailForCommenting = false;
 		$this->grantAccess('editPost.own');
 		$this->grantAccess('editPostTags.own');
 		$this->revokeAccess('editPost.all');

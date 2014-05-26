@@ -3,8 +3,8 @@ class ApiEmailRequirementsTest extends AbstractFullApiTest
 {
 	public function testRegularEmailRequirements()
 	{
-		Core::getConfig()->registration->needEmailForCommenting = true;
-		Core::getConfig()->registration->needEmailForUploading = true;
+		Core::getConfig()->comments->needEmailForCommenting = true;
+		Core::getConfig()->uploads->needEmailForUploading = true;
 
 		$this->testRegularEmailRequirement(new AcceptUserRegistrationJob());
 		$this->testRegularEmailRequirement(new ActivateUserEmailJob());
@@ -69,10 +69,10 @@ class ApiEmailRequirementsTest extends AbstractFullApiTest
 	{
 		$this->testedJobs []= $job;
 
-		Core::getConfig()->registration->needEmailForCommenting = false;
+		Core::getConfig()->comments->needEmailForCommenting = false;
 		$this->assert->areEqual(false, $job->isConfirmedEmailRequired());
 
-		Core::getConfig()->registration->needEmailForCommenting = true;
+		Core::getConfig()->comments->needEmailForCommenting = true;
 		$this->assert->areEqual(true, $job->isConfirmedEmailRequired());
 	}
 
@@ -82,10 +82,10 @@ class ApiEmailRequirementsTest extends AbstractFullApiTest
 
 		$this->testedJobs []= $job;
 
-		Core::getConfig()->registration->needEmailForUploading = false;
+		Core::getConfig()->uploads->needEmailForUploading = false;
 		$this->assert->areEqual(false, $job->isConfirmedEmailRequired());
 
-		Core::getConfig()->registration->needEmailForUploading = true;
+		Core::getConfig()->uploads->needEmailForUploading = true;
 		$this->assert->areEqual(true, $job->isConfirmedEmailRequired());
 	}
 
@@ -93,7 +93,7 @@ class ApiEmailRequirementsTest extends AbstractFullApiTest
 	{
 		$this->grantAccess('addComment');
 		$this->login($this->userMocker->mockSingle());
-		Core::getConfig()->registration->needEmailForCommenting = true;
+		Core::getConfig()->comments->needEmailForCommenting = true;
 		$this->assert->throws(function()
 		{
 			$post = $this->postMocker->mockSingle();
