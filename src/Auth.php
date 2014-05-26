@@ -50,7 +50,18 @@ class Auth
 		if (!isset($_COOKIE['auth']))
 			return;
 
-		$token = TextHelper::decrypt($_COOKIE['auth']);
+		try
+		{
+			$token = TextHelper::decrypt($_COOKIE['auth']);
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+
+		if (strpos($token, '|') === false)
+			return false;
+
 		list ($name, $password) = array_map('base64_decode', explode('|', $token));
 		try
 		{

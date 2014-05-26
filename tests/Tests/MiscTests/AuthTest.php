@@ -20,6 +20,66 @@ class AuthTest extends AbstractTest
 		$this->assert->areEqual(time(), $user->getLastLoginTime());
 	}
 
+	public function testAutoLogin()
+	{
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
+
+		$user = $this->prepareValidUser();
+		UserModel::save($user);
+
+		$token = base64_encode('existing') . '|' . base64_encode('bleee');
+		$_COOKIE['auth'] = TextHelper::encrypt($token);
+
+		$this->assert->doesNotThrow(function()
+		{
+			Auth::tryAutoLogin();
+		});
+
+		$this->assert->isTrue(Auth::isLoggedIn());
+
+		$user = UserModel::getByName($user->getName());
+		$this->assert->areEqual(time(), $user->getLastLoginTime());
+	}
+
+	public function testAutoLoginInvalidToken()
+	{
+		Core::getConfig()->registration->staffActivation = false;
+		Core::getConfig()->registration->needEmailForRegistering = false;
+
+		$user = $this->prepareValidUser();
+		UserModel::save($user);
+
+		$token = 'bleblebleąćęłóśńźż';
+		$_COOKIE['auth'] = TextHelper::encrypt($token);
+
+		$this->assert->doesNotThrow(function()
+		{
+			Auth::tryAutoLogin();
+		});
+
+		$this->assert->isFalse(Auth::isLoggedIn());
+
+		$token = 'bleblebleą|ćęłóśńźż';
+		$_COOKIE['auth'] = TextHelper::encrypt($token);
+
+		$this->assert->doesNotThrow(function()
+		{
+			Auth::tryAutoLogin();
+		});
+
+		$this->assert->isFalse(Auth::isLoggedIn());
+
+		$_COOKIE['auth'] = 'complete nonsense';
+
+		$this->assert->doesNotThrow(function()
+		{
+			Auth::tryAutoLogin();
+		});
+
+		$this->assert->isFalse(Auth::isLoggedIn());
+	}
+
 	public function testLoginViaEmail()
 	{
 		Core::getConfig()->registration->staffActivation = false;
