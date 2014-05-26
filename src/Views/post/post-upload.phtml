@@ -95,11 +95,13 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 								<?php $checked = true ?>
 							</label>
 						<?php endforeach ?>
-						<input type="hidden" name="anonymous" value="0"/>
-						<label>
-							<input type="checkbox" name="anonymous" value="1"/>
-							Upload anonymously
-						</label>
+						<?php if (Core::getConfig()->uploads->allowAnonymousUploads): ?>
+							<input type="hidden" name="anonymous" value="0"/>
+							<label>
+								<input type="checkbox" name="anonymous" value="1"/>
+								Upload anonymously
+							</label>
+						<?php endif ?>
 					</div>
 				</div>
 

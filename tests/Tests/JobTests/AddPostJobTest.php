@@ -87,6 +87,31 @@ class AddPostJobTest extends AbstractTest
 		$this->assert->isNull($post->getUploaderId());
 	}
 
+	public function testAnonymousUploadsPrivilegeFail()
+	{
+		$this->prepare();
+
+		$this->grantAccess('addPost');
+		$this->grantAccess('addPostTags');
+		$this->grantAccess('addPostContent');
+
+		Core::getConfig()->uploads->allowAnonymousUploads = false;
+
+		$this->login($this->userMocker->mockSingle());
+
+		$this->assert->throws(function()
+		{
+			return Api::run(
+				new AddPostJob(),
+				[
+					JobArgs::ARG_ANONYMOUS => '1',
+					JobArgs::ARG_NEW_TAG_NAMES => ['kamen', 'raider'],
+					JobArgs::ARG_NEW_POST_CONTENT =>
+						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
+				]);
+		}, 'Anonymous uploads are not allowed');
+	}
+
 	public function testPartialPrivilegeFail()
 	{
 		$this->prepare();

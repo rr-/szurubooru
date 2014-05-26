@@ -18,6 +18,8 @@ class AddPostJob extends AbstractJob
 		$anonymous = false;
 		if ($this->hasArgument(JobArgs::ARG_ANONYMOUS))
 			$anonymous = TextHelper::toBoolean($this->getArgument(JobArgs::ARG_ANONYMOUS));
+		if ($anonymous and !Core::getConfig()->uploads->allowAnonymousUploads)
+			throw new SimpleException('Anonymous uploads are not allowed');
 
 		if (Auth::isLoggedIn() and !$anonymous)
 			$post->setUploader(Auth::getCurrentUser());
@@ -48,7 +50,7 @@ class AddPostJob extends AbstractJob
 		PostModel::save($post);
 
 		Logger::log('{user} added {post} (tags: {tags}, safety: {safety}, source: {source})', [
-			'user' => ($anonymous and !Core::getConfig()->uploads->logAnonymousUploads)
+			'user' => ($anonymous and !Core::getConfig()->uploads->logAnonymousUploadsNicknames)
 				? TextHelper::reprUser(UserModel::getAnonymousName())
 				: TextHelper::reprUser(Auth::getCurrentUser()),
 			'post' => TextHelper::reprPost($post),
