@@ -36,9 +36,10 @@ class Auth
 			setcookie('auth', TextHelper::encrypt($token), time() + 365 * 24 * 3600, '/');
 		}
 
+		$user->setLastLoginTime(time());
+
 		self::setCurrentUser($user);
 
-		$user->setLastLoginTime(time());
 		UserModel::save($user);
 	}
 

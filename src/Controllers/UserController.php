@@ -147,7 +147,7 @@ class UserController extends AbstractController
 		$user = Api::run(
 			new EditUserSettingsJob(),
 			[
-				JobArgs::ARG_USER_ENTITY => Auth::getCurrentUser(),
+				JobArgs::ARG_USER_ENTITY => $user,
 				JobArgs::ARG_NEW_SETTINGS => [UserSettings::SETTING_SAFETY => $desiredSafety],
 			]);
 

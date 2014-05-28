@@ -16,8 +16,8 @@ class AuthTest extends AbstractTest
 
 		$this->assert->isTrue(Auth::isLoggedIn());
 
-		$user = UserModel::getByName($user->getName());
-		$this->assert->areEqual(time(), $user->getLastLoginTime());
+		$this->assertValidUser(UserModel::getByName($user->getName()));
+		$this->assertValidUser(Auth::getCurrentUser());
 	}
 
 	public function testAutoLogin()
@@ -27,6 +27,8 @@ class AuthTest extends AbstractTest
 
 		$user = $this->prepareValidUser();
 		UserModel::save($user);
+
+		$this->assert->isNull($user->getLastLoginTime());
 
 		$token = base64_encode('existing') . '|' . base64_encode('bleee');
 		$_COOKIE['auth'] = TextHelper::encrypt($token);
@@ -38,8 +40,8 @@ class AuthTest extends AbstractTest
 
 		$this->assert->isTrue(Auth::isLoggedIn());
 
-		$user = UserModel::getByName($user->getName());
-		$this->assert->areEqual(time(), $user->getLastLoginTime());
+		$this->assertValidUser(UserModel::getByName($user->getName()));
+		$this->assertValidUser(Auth::getCurrentUser());
 	}
 
 	public function testAutoLoginInvalidToken()
@@ -246,5 +248,11 @@ class AuthTest extends AbstractTest
 		$user->setName('existing');
 		$user->setPassword('bleee');
 		return $user;
+	}
+
+	private function assertValidUser($user)
+	{
+		$this->assert->areEqual('existing', $user->getName());
+		$this->assert->areEqual(time(), $user->getLastLoginTime());
 	}
 }
