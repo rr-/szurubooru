@@ -23,15 +23,26 @@ embed {
 	margin: 0;
 	padding: 0;
 }
+#sidebar .tags .tag-wrapper {
+	max-width: 100%;
+	position: relative;
+	display: inline-block;
+}
 #sidebar .tags li a {
+	padding-right: 2.75em;
+	box-sizing: border-box;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	white-space: nowrap;
 	display: inline-block;
-	max-width: 90%;
+	width: 100%;
 	vertical-align: text-bottom;
 }
 #sidebar .tags li .count {
-	padding-left: 0.5em;
+	position: absolute;
+	width: 2em;
+	right: 0;
+	top: 0;
 	color: silver;
 	vertical-align: text-bottom;
 }

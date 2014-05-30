@@ -75,12 +75,14 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->getName(), $b->getName()); }) ?>
 			<?php foreach ($tags as $tag): ?>
 				<li title="<?= $tag->getName() ?>">
-					<a href="<?= Core::getRouter()->linkTo(
-						['PostController', 'listView'],
-						['query' => $tag->getName()]) ?>"
-						><?= $tag->getName() ?>
-					</a>
-					<span class="count"><?= TextHelper::useDecimalUnits($tag->getPostCount()) ?></span>
+					<div class="tag-wrapper">
+						<a href="<?= Core::getRouter()->linkTo(
+							['PostController', 'listView'],
+							['query' => $tag->getName()]) ?>"
+							><?= $tag->getName() ?>
+						</a>
+						<span class="count"><?= TextHelper::useDecimalUnits($tag->getPostCount()) ?></span>
+					</div>
 				</li>
 			<?php endforeach ?>
 		</ul>
