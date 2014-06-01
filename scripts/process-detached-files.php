@@ -3,30 +3,34 @@ require_once __DIR__ . '/../src/core.php';
 
 Access::disablePrivilegeChecking();
 
-function usage()
+$usage = function()
 {
-	echo 'Usage: ' . basename(__FILE__);
-	echo ' -print|-purge|-move DIR' . PHP_EOL;
+	echo 'Usage: ' . basename(__FILE__) . PHP_EOL;
+	echo ' -p|--print OR' . PHP_EOL;
+	echo ' -d|--delete OR' . PHP_EOL;
+	echo ' -m|--move [TARGET]' . PHP_EOL;
 	return true;
-}
+};
 
 array_shift($argv);
 if (empty($argv))
-	usage() and die;
+	$usage() and die;
 
 $action = array_shift($argv);
 switch ($action)
 {
-	case '-print':
+	case '-p':
+	case '--print':
 		$func = function($name)
 		{
 			echo $name . PHP_EOL;
 		};
 		break;
 
-	case '-move':
+	case '-m':
+	case '--move':
 		if (empty($argv))
-			usage() and die;
+			$usage() and die;
 		$dir = array_shift($argv);
 		if (!file_exists($dir))
 			mkdir($dir, 0755, true);
@@ -41,7 +45,8 @@ switch ($action)
 		};
 		break;
 
-	case '-purge':
+	case '-d':
+	case '--delete':
 		$func = function($name)
 		{
 			echo $name . PHP_EOL;

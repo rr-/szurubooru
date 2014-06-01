@@ -4,8 +4,8 @@ require_once __DIR__ . '/../src/core.php';
 Access::disablePrivilegeChecking();
 
 array_shift($argv);
+$query = join(' ', $argv);
 
-$query = array_shift($argv);
 $posts = PostSearchService::getEntities($query, null, null);
 foreach ($posts as $post)
 {

@@ -3,13 +3,19 @@ require_once __DIR__ . '/../src/core.php';
 
 Access::disablePrivilegeChecking();
 
-$options = getopt('f', ['force']);
-$force = (isset($options['f']) or isset($options['force']));
+$query = [];
+$force = false;
 
-$args = array_search('--', $argv);
-$args = array_splice($argv, $args ? ++$args : (count($argv) - count($options)));
+array_shift($argv);
+foreach ($argv as $arg)
+{
+	if ($arg == '-f' or $arg == '--force')
+		$force = true;
+	else
+		$query []= $arg;
+}
+$query = join(' ', $query);
 
-$query = array_shift($args);
 $posts = PostSearchService::getEntities($query, null, null);
 $entityCount = PostSearchService::getEntityCount($query, null, null);
 $i = 0;

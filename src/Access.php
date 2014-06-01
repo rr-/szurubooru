@@ -1,12 +1,14 @@
 <?php
 class Access
 {
-	private static $privileges = [];
-	private static $checkPrivileges = true;
+	private static $privileges;
+	private static $checkPrivileges;
 
 	public static function init()
 	{
 		self::$privileges = [];
+		self::$checkPrivileges = true;
+
 		foreach (Core::getConfig()->privileges as $key => $minAccessRankName)
 		{
 			if (strpos($key, '.') === false)
