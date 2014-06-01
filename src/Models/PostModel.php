@@ -254,41 +254,6 @@ final class PostModel extends AbstractCrudModel
 
 
 
-	public static function tryGetWorkingThumbnailPath($name)
-	{
-		$path = PostModel::getThumbnailPath($name);
-		if (file_exists($path) and is_readable($path))
-			return $path;
-
-		return null;
-	}
-
-	public static function getCustomThumbnailSourcePath($name)
-	{
-		return Core::getConfig()->main->thumbnailsPath . DS . $name . '.thumb_source';
-	}
-
-	public static function getThumbnailPath($name)
-	{
-		return Core::getConfig()->main->thumbnailsPath . DS . $name . '.thumb';
-	}
-
-	public static function tryGetWorkingFullPath($name)
-	{
-		$path = self::getFullPath($name);
-		if (file_exists($path) and is_readable($path))
-			return $path;
-
-		return null;
-	}
-
-	public static function getFullPath($name)
-	{
-		return TextHelper::absolutePath(Core::getConfig()->main->filesPath . DS . $name);
-	}
-
-
-
 	public static function getSpaceUsage()
 	{
 		$unixTime = PropertyModel::get(PropertyModel::PostSpaceUsageUnixTime);

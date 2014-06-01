@@ -19,7 +19,7 @@ class EditPostThumbnailJobTest extends AbstractTest
 		});
 
 		$this->assert->isTrue($post->hasCustomThumbnail());
-		$img = imagecreatefromjpeg($post->tryGetWorkingThumbnailPath());
+		$img = imagecreatefromjpeg($post->getThumbnailPath());
 		$this->assert->areEqual(150, imagesx($img));
 		$this->assert->areEqual(150, imagesy($img));
 		imagedestroy($img);
@@ -43,7 +43,7 @@ class EditPostThumbnailJobTest extends AbstractTest
 		});
 
 		$this->assert->isTrue($post->hasCustomThumbnail());
-		$img = imagecreatefromjpeg($post->tryGetWorkingThumbnailPath());
+		$img = imagecreatefromjpeg($post->getThumbnailPath());
 		$this->assert->areEqual(150, imagesx($img));
 		$this->assert->areEqual(150, imagesy($img));
 		imagedestroy($img);

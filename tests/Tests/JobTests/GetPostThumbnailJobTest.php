@@ -15,7 +15,10 @@ class GetPostThumbnailJobTest extends AbstractTest
 				]);
 		});
 
-		$this->assert->isNotNull($post->tryGetWorkingFullPath());
+		$this->assert->isNotNull($post->getContentPath());
+		$this->assert->isNotNull($post->getThumbnailPath());
+		$this->assert->isTrue(file_exists($post->getContentPath()));
+		$this->assert->isTrue(file_exists($post->getThumbnailPath()));
 		$this->assert->areEqual('image/jpeg', $output->mimeType);
 		$this->assert->areNotEqual(
 			file_get_contents(Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg'),

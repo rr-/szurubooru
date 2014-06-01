@@ -39,7 +39,7 @@ switch ($action)
 		$func = function($name) use ($dir)
 		{
 			echo $name . PHP_EOL;
-			$srcPath = PostModel::getFullPath($name);
+			$srcPath = Core::getConfig()->main->filesPath . DS . $name;
 			$dstPath = $dir . DS . $name;
 			rename($srcPath, $dstPath);
 		};
@@ -50,7 +50,7 @@ switch ($action)
 		$func = function($name)
 		{
 			echo $name . PHP_EOL;
-			$srcPath = PostModel::getFullPath($name);
+			$srcPath = Core::getConfig()->main->filesPath . DS . $name;
 			unlink($srcPath);
 		};
 		break;

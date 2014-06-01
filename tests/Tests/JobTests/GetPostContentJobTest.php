@@ -15,7 +15,8 @@ class GetPostContentJobTest extends AbstractTest
 				]);
 		});
 
-		$this->assert->isNotNull($post->tryGetWorkingFullPath());
+		$this->assert->isNotNull($post->getContentPath());
+		$this->assert->isTrue(file_exists($post->getContentPath()));
 		$this->assert->areEqual(
 			file_get_contents($this->testSupport->getPath('image.jpg')),
 			$output->fileContent);

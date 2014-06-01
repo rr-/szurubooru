@@ -49,7 +49,7 @@ if ($masstag)
 
 		<img
 			class="thumb"
-			src="<?= Core::getRouter()->linkTo(['PostController', 'thumbnailView'], ['name' => $this->context->post->getName()]) ?>"
+			src="<?= $this->context->post->getThumbnailUrl() ?>"
 			alt="<?= TextHelper::reprPost($this->context->post) ?>"/>
 
 		<?php

@@ -27,7 +27,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		{
 			$this->setName(md5(mt_rand() . uniqid()));
 		}
-		while (file_exists($this->getFullPath()));
+		while (file_exists($this->getContentPath()));
 	}
 
 	public function fillFromDatabase($row)
@@ -78,8 +78,14 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		if (empty($this->getType()))
 			throw new SimpleException('No post type detected');
 
-		if (empty($this->tryGetWorkingFullPath()) and $this->type->toInteger() != PostType::Youtube)
-			throw new SimpleException('No post content');
+		if ($this->type->toInteger() != PostType::Youtube)
+		{
+			if (!file_exists($this->getContentPath()))
+				throw new SimpleException('No post content');
+
+			if (!is_readable($this->getContentPath()))
+				throw new SimpleException('Post content is not readable (check file permissions)');
+		}
 
 		if (empty($this->getTags()))
 			throw new SimpleException('No tags set');
@@ -340,29 +346,20 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		$this->source = $source === null ? null : trim($source);
 	}
 
-	public function tryGetWorkingFullPath()
-	{
-		return $this->model->tryGetWorkingFullPath($this->getName());
-	}
 
-	public function getFullPath()
+	public function getThumbnailUrl()
 	{
-		return $this->model->getFullPath($this->getName());
-	}
-
-	public function tryGetWorkingThumbnailPath()
-	{
-		return $this->model->tryGetWorkingThumbnailPath($this->getName());
+		return Core::getRouter()->linkTo(['PostController', 'thumbnailView'], ['name' => $this->getName()]);
 	}
 
 	public function getCustomThumbnailSourcePath()
 	{
-		return $this->model->getCustomThumbnailSourcePath($this->getName());
+		return Core::getConfig()->main->thumbnailsPath . DS . $this->name . '.thumb_source';
 	}
 
 	public function getThumbnailPath()
 	{
-		return $this->model->getThumbnailPath($this->getName());
+		return Core::getConfig()->main->thumbnailsPath . DS . $this->name . '.thumb';
 	}
 
 	public function hasCustomThumbnail()
@@ -374,15 +371,12 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 	public function setCustomThumbnailFromPath($srcPath)
 	{
 		$config = Core::getConfig();
-
 		$mimeType = mime_content_type($srcPath);
 		if (!in_array($mimeType, ['image/gif', 'image/png', 'image/jpeg']))
 			throw new SimpleException('Invalid file type "%s"', $mimeType);
 
 		$dstPath = $this->getCustomThumbnailSourcePath();
-
 		TransferHelper::copy($srcPath, $dstPath);
-
 		$this->generateThumbnail();
 	}
 
@@ -391,7 +385,6 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		$width = Core::getConfig()->browsing->thumbnailWidth;
 		$height = Core::getConfig()->browsing->thumbnailHeight;
 		$dstPath = $this->getThumbnailPath();
-
 		$thumbnailGenerator = new SmartThumbnailGenerator();
 
 		if (file_exists($this->getCustomThumbnailSourcePath()))
@@ -414,11 +407,17 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		else
 		{
 			return $thumbnailGenerator->generateFromFile(
-				$this->getFullPath(),
+				$this->getContentPath(),
 				$dstPath,
 				$width,
 				$height);
 		}
+	}
+
+
+	public function getContentPath()
+	{
+		return TextHelper::absolutePath(Core::getConfig()->main->filesPath . DS . $this->name);
 	}
 
 	public function setContentFromPath($srcPath, $origName)
@@ -470,8 +469,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 				TextHelper::reprPost($duplicatedPost));
 		}
 
-		$dstPath = $this->getFullPath();
-
+		$dstPath = $this->getContentPath();
 		TransferHelper::copy($srcPath, $dstPath);
 
 		$thumbnailPath = $this->getThumbnailPath();
@@ -511,13 +509,10 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		}
 
 		$tmpPath = tempnam(sys_get_temp_dir(), 'upload') . '.dat';
-
 		try
 		{
 			$maxBytes = TextHelper::stripBytesUnits(ini_get('upload_max_filesize'));
-
 			TransferHelper::download($srcUrl, $tmpPath, $maxBytes);
-
 			$this->setContentFromPath($tmpPath, basename($srcUrl));
 		}
 		finally

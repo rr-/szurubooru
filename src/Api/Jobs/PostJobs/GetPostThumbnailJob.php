@@ -10,25 +10,15 @@ class GetPostThumbnailJob extends AbstractJob
 
 	public function execute()
 	{
-		//optimize - save extra query to DB
-		if ($this->hasArgument(JobArgs::ARG_POST_NAME))
-			$name = $this->getArgument(JobArgs::ARG_POST_NAME);
-		else
-		{
-			$post = $this->postRetriever->retrieve();
-			$name = $post->getName();
-		}
+		$post = $this->postRetriever->retrieve();
 
-		$path = PostModel::tryGetWorkingThumbnailPath($name);
-		if (!$path)
+		$path = $post->getThumbnailPath();
+		if (!file_exists($path) or !is_readable($path))
 		{
-			$post = PostModel::getByName($name);
-			$post = $this->postRetriever->retrieve();
-
 			$post->generateThumbnail();
-			$path = PostModel::tryGetWorkingThumbnailPath($name);
+			$path = $post->getThumbnailPath();
 
-			if (!$path)
+			if (!file_exists($path) or !is_readable($path))
 			{
 				$path = Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumbnail.jpg';
 				$path = TextHelper::absolutePath($path);

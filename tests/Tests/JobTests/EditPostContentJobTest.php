@@ -197,10 +197,11 @@ class EditPostContentJobTest extends AbstractTest
 				JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
 			]);
 
-		$this->assert->isNotNull($post->tryGetWorkingFullPath());
+		$this->assert->isNotNull($post->getContentPath());
+		$this->assert->isTrue(file_exists($post->getContentPath()));
 		$this->assert->areEqual(
 			file_get_contents($this->testSupport->getPath($fileName)),
-			file_get_contents($post->tryGetWorkingFullPath()));
+			file_get_contents($post->getContentPath()));
 
 		return $post;
 	}
@@ -218,10 +219,11 @@ class EditPostContentJobTest extends AbstractTest
 					new ApiFileInput($this->testSupport->getPath($fileName), 'test.jpg'),
 			]);
 
-		$this->assert->isNotNull($post->tryGetWorkingFullPath());
+		$this->assert->isNotNull($post->getContentPath());
+		$this->assert->isTrue(file_exists($post->getContentPath()));
 		$this->assert->areEqual(
 			file_get_contents($this->testSupport->getPath($fileName)),
-			file_get_contents($post->tryGetWorkingFullPath()));
+			file_get_contents($post->getContentPath()));
 
 		return $post;
 	}

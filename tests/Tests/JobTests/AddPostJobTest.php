@@ -28,7 +28,7 @@ class AddPostJobTest extends AbstractTest
 		});
 
 		$this->assert->areEqual(
-			file_get_contents($post->getFullPath()),
+			file_get_contents($post->getContentPath()),
 			file_get_contents($this->testSupport->getPath('image.jpg')));
 		$this->assert->areEqual(Auth::getCurrentUser()->getId(), $post->getUploaderId());
 		$this->assert->isNotNull($post->getUploaderId());
@@ -81,7 +81,7 @@ class AddPostJobTest extends AbstractTest
 		});
 
 		$this->assert->areEqual(
-			file_get_contents($post->getFullPath()),
+			file_get_contents($post->getContentPath()),
 			file_get_contents($this->testSupport->getPath('image.jpg')));
 		$this->assert->areNotEqual(Auth::getCurrentUser()->getId(), $post->getUploaderId());
 		$this->assert->isNull($post->getUploaderId());

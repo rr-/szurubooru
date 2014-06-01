@@ -23,9 +23,11 @@ foreach ($posts as $post)
 {
 	++ $i;
 	printf('%s (%d/%d)' . PHP_EOL, TextHelper::reprPost($post), $i, $entityCount);
-	if ($post->tryGetWorkingThumbnailPath() and $force)
-		unlink($post->tryGetWorkingThumbnailPath());
-	if (!$post->tryGetWorkingThumbnailPath())
+
+	if (file_exists($post->getThumbnailPath()) and $force)
+		unlink($post->getThumbnailPath());
+
+	if (!file_exists($post->getThumbnailPath()))
 		$post->generateThumbnail();
 }
 

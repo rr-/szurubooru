@@ -13,7 +13,7 @@ foreach ($posts as $post)
 	[
 		$post->getId(),
 		$post->getName(),
-		$post->tryGetWorkingFullPath(),
+		$post->getContentPath(),
 		$post->getMimeType(),
 	]). PHP_EOL;
 }
