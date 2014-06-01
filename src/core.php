@@ -48,18 +48,17 @@ final class Core
 		return self::$database;
 	}
 
-	static function prepareConfig($testEnvironment)
+	static function setConfig(\Chibi\Config $config)
+	{
+		self::$config = $config;
+		self::$config->rootDir = self::$rootDir;
+	}
+
+	static function prepareConfig()
 	{
 		$configPaths = [];
-		if (!$testEnvironment)
-		{
-			$configPaths []= self::$rootDir . DS . 'data' . DS . 'config.ini';
-			$configPaths []= self::$rootDir . DS . 'data' . DS . 'local.ini';
-		}
-		else
-		{
-			$configPaths []= self::$rootDir . DS . 'tests' . DS . 'config.ini';
-		}
+		$configPaths []= self::$rootDir . DS . 'data' . DS . 'config.ini';
+		$configPaths []= self::$rootDir . DS . 'data' . DS . 'local.ini';
 
 		self::$config = new \Chibi\Config();
 		foreach ($configPaths as $path)
@@ -194,6 +193,6 @@ final class Core
 }
 
 Core::init();
-Core::prepareConfig(false);
+Core::prepareConfig();
 Core::prepareDatabase();
-Core::prepareEnvironment(false);
+Core::prepareEnvironment();

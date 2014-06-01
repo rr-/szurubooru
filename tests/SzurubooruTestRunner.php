@@ -11,6 +11,7 @@ class SzurubooruTestRunner implements ITestRunner
 			exit(0);
 		}
 
+		$this->prepareTestConfig($options);
 		$this->connectToDatabase($options);
 		if ($options->cleanDatabase)
 			$this->cleanDatabase();
@@ -144,7 +145,6 @@ class SzurubooruTestRunner implements ITestRunner
 
 	private function connectToDatabase($options)
 	{
-		$this->prepareTestConfig($options);
 		Core::prepareDatabase();
 
 		if ($options->dbDriver == 'mysql')
@@ -156,19 +156,23 @@ class SzurubooruTestRunner implements ITestRunner
 
 	private function prepareTestConfig($options)
 	{
-		Core::prepareConfig(true);
+		$config = new \Chibi\Config();
+		$config->loadIni(Core::getConfig()->rootDir . DS . 'tests' . DS . 'config.ini');
+		$config->isForTests = true;
 
-		Core::getConfig()->main->dbDriver = $options->dbDriver;
+		$config->main->dbDriver = $options->dbDriver;
 		if ($options->dbDriver == 'sqlite')
 		{
-			Core::getConfig()->main->dbLocation = $this->getSqliteDatabasePath();
+			$config->main->dbLocation = $this->getSqliteDatabasePath();
 		}
 		elseif ($options->dbDriver == 'mysql')
 		{
-			Core::getConfig()->main->dbLocation = $this->getMysqlDatabaseName();
-			Core::getConfig()->main->dbUser = 'test';
-			Core::getConfig()->main->dbPass = 'test';
+			$config->main->dbLocation = $this->getMysqlDatabaseName();
+			$config->main->dbUser = 'test';
+			$config->main->dbPass = 'test';
 		}
+
+		Core::setConfig($config);
 	}
 
 	private function resetEnvironment($options)
