@@ -9,11 +9,24 @@ $query = join(' ', $argv);
 $posts = PostSearchService::getEntities($query, null, null);
 foreach ($posts as $post)
 {
-	echo implode("\t",
+	$info =
 	[
 		$post->getId(),
 		$post->getName(),
-		$post->getContentPath(),
-		$post->getMimeType(),
-	]). PHP_EOL;
+		$post->getType()->toDisplayString(),
+	];
+
+	$additionalInfo = [];
+	if ($post->getType()->toInteger() != PostType::Youtube)
+	{
+		$additionalInfo =
+		[
+			file_exists($post->getContentPath())
+				? $post->getContentPath()
+				: 'DOES NOT EXIST',
+			$post->getMimeType(),
+		];
+	}
+
+	echo implode("\t", array_merge($info, $additionalInfo)) . PHP_EOL;
 }
