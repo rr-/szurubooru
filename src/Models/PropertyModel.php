@@ -13,11 +13,9 @@ final class PropertyModel implements IModel
 
 	static $allProperties;
 	static $loaded;
-	static $database;
 
 	public static function init()
 	{
-		self::$database = Core::getDatabase();
 		self::$allProperties = null;
 		self::$loaded = false;
 	}
@@ -37,7 +35,7 @@ final class PropertyModel implements IModel
 		$stmt = Sql\Statements::select();
 		$stmt ->setColumn('*');
 		$stmt ->setTable('property');
-		foreach (self::$database->fetchAll($stmt) as $row)
+		foreach (Core::getDatabase()->fetchAll($stmt) as $row)
 			self::$allProperties[$row['prop_id']] = $row['value'];
 	}
 
@@ -52,13 +50,13 @@ final class PropertyModel implements IModel
 	public static function set($propertyId, $value)
 	{
 		self::loadIfNecessary();
-		self::$database->transaction(function() use ($propertyId, $value)
+		Core::getDatabase()->transaction(function() use ($propertyId, $value)
 		{
 			$stmt = Sql\Statements::select();
 			$stmt->setColumn('id');
 			$stmt->setTable('property');
 			$stmt->setCriterion(Sql\Functors::equals('prop_id', new Sql\Binding($propertyId)));
-			$row = self::$database->fetchOne($stmt);
+			$row = Core::getDatabase()->fetchOne($stmt);
 
 			if ($row)
 			{
@@ -73,7 +71,7 @@ final class PropertyModel implements IModel
 			$stmt->setTable('property');
 			$stmt->setColumn('value', new Sql\Binding($value));
 
-			self::$database->execute($stmt);
+			Core::getDatabase()->execute($stmt);
 
 			self::$allProperties[$propertyId] = $value;
 		});

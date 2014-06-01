@@ -103,9 +103,9 @@ class SzurubooruTestRunner implements ITestRunner
 	private function cleanMysqlDatabase()
 	{
 		$stmt = \Chibi\Sql\Statements::raw('DROP DATABASE IF EXISTS ' . $this->getMysqlDatabaseName());
-		Core::getDatabase()->exec($stmt);
+		Core::getDatabase()->executeUnprepared($stmt);
 		$stmt = \Chibi\Sql\Statements::raw('CREATE DATABASE ' . $this->getMysqlDatabaseName());
-		Core::getDatabase()->exec($stmt);
+		Core::getDatabase()->executeUnprepared($stmt);
 	}
 
 	private function removeTestFolders()

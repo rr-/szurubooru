@@ -168,7 +168,7 @@ final class Core
 					{
 						try
 						{
-							Core::getDatabase()->executeUnprepared(new \Chibi\Sql\RawStatement($query));
+							Core::getDatabase()->executeUnprepared(\Chibi\Sql\Statements::raw($query));
 						}
 						catch (Exception $e)
 						{
