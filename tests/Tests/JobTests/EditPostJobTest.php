@@ -10,6 +10,7 @@ class EditPostJobTest extends AbstractTest
 		$this->grantAccess('editPostContent');
 
 		$post = $this->postMocker->mockSingle();
+		$this->assert->areEqual(1, $post->getRevision());
 
 		$args =
 		[
@@ -20,10 +21,12 @@ class EditPostJobTest extends AbstractTest
 				new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 		];
 
-		$this->assert->doesNotThrow(function() use ($args)
+		$post = $this->assert->doesNotThrow(function() use ($args)
 		{
-			Api::run(new EditPostJob(), $args);
+			return Api::run(new EditPostJob(), $args);
 		});
+
+		$this->assert->areEqual(2, $post->getRevision());
 	}
 
 	public function testPartialPrivilegeFail()

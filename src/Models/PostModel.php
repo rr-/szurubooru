@@ -30,6 +30,7 @@ final class PostModel extends AbstractCrudModel
 				'image_height' => $post->getImageHeight(),
 				'uploader_id' => $post->getUploaderId(),
 				'source' => $post->getSource(),
+				'revision' => $post->getRevision() + 1,
 				];
 
 			$stmt = Sql\Statements::update();

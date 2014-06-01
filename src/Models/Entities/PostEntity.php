@@ -47,6 +47,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		$this->setCache('comment_count', $row['comment_count']);
 		$this->setCache('fav_count', $row['fav_count']);
 		$this->setCache('score', $row['score']);
+		$this->setCache('revision', $row['revision']);
 		$this->setType(new PostType($row['type']));
 		$this->setSafety(new PostSafety($row['safety']));
 	}
@@ -70,6 +71,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 			'tags' => array_map(function($tag) { return $tag->getName(); }, $this->getTags()),
 			'type' => $this->getType()->toInteger(),
 			'safety' => $this->getSafety()->toInteger(),
+			'revision' => $this->getRevision(),
 		];
 	}
 
@@ -143,6 +145,11 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		$favorites = UserModel::spawnFromDatabaseRows($rows);
 		$this->setCache('favoritee', $favorites);
 		return $favorites;
+	}
+
+	public function getRevision()
+	{
+		return (int) $this->getColumnWithCache('revision');
 	}
 
 	public function getScore()
@@ -520,25 +527,5 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 			if (file_exists($tmpPath))
 				unlink($tmpPath);
 		}
-	}
-
-	public function getEditToken()
-	{
-		$x = [];
-
-		foreach ($this->getTags() as $tag)
-			$x []= TextHelper::reprTag($tag->getName());
-
-		foreach ($this->getRelations() as $relatedPost)
-			$x []= TextHelper::reprPost($relatedPost);
-
-		$x []= $this->getSafety()->toInteger();
-		$x []= $this->getSource();
-		$x []= $this->getFileHash();
-
-		natcasesort($x);
-
-		$x = join(' ', $x);
-		return md5($x);
 	}
 }

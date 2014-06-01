@@ -8,9 +8,9 @@
 	<h1>edit post</h1>
 
 	<input type="hidden"
-		name="edit-token"
-		id="edit-token"
-		value="<?= htmlspecialchars($this->context->transport->post->getEditToken()) ?>"/>
+		name="revision"
+		id="revision"
+		value="<?= htmlspecialchars($this->context->transport->post->getRevision()) ?>"/>
 
 	<?php
 		if (Access::check(new Privilege(

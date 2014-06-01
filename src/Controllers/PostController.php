@@ -157,8 +157,8 @@ class PostController extends AbstractController
 	{
 		$post = PostModel::getByIdOrName($identifier);
 
-		$editToken = InputHelper::get('edit-token');
-		if ($editToken != $post->getEditToken())
+		$revision = InputHelper::get('revision');
+		if ($revision != $post->getRevision())
 			throw new SimpleException('This post was already edited by someone else in the meantime');
 
 		$jobArgs =
