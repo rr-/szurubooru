@@ -20,7 +20,7 @@ class GetPostThumbnailJob extends AbstractJob
 
 			if (!file_exists($path) or !is_readable($path))
 			{
-				$path = Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumbnail.jpg';
+				$path = Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
 				$path = TextHelper::absolutePath($path);
 			}
 		}
