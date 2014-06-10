@@ -1,7 +1,11 @@
+<?php
+$post = $this->context->transport->post;
+?>
+
 <form method="post"
 	action="<?= Core::getRouter()->linkTo(
 		['PostController', 'editAction'],
-		['identifier' => $this->context->transport->post->getId()]) ?>"
+		['identifier' => $post->getId()]) ?>"
 	enctype="multipart/form-data"
 	class="edit-post">
 
@@ -10,12 +14,12 @@
 	<input type="hidden"
 		name="revision"
 		id="revision"
-		value="<?= htmlspecialchars($this->context->transport->post->getRevision()) ?>"/>
+		value="<?= htmlspecialchars($post->getRevision()) ?>"/>
 
 	<?php
 		if (Access::check(new Privilege(
 			Privilege::EditPostSafety,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			$safety = PostSafety::getAll();
 
@@ -24,13 +28,13 @@
 			$context->name = 'safety';
 			$context->optionValues = array_map(function($s) { return $s->toInteger(); }, $safety);
 			$context->optionLabels = array_map(function($s) { return ucfirst($s->toDisplayString()); }, $safety);
-			$context->activeOptionValue = $this->context->transport->post->getSafety()->toInteger();
+			$context->activeOptionValue = $post->getSafety()->toInteger();
 			$this->renderExternal('input-radioboxes', $context);
 		}
 
 		if (Access::check(new Privilege(
 			Privilege::EditPostTags,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			$context = new StdClass;
 			$context->label = 'Tags';
@@ -41,24 +45,24 @@
 				{
 					return htmlspecialchars($tag->getName());
 				},
-				$this->context->transport->post->getTags()));
+				$post->getTags()));
 			$this->renderExternal('input-text', $context);
 		}
 
 		if (Access::check(new Privilege(
 			Privilege::EditPostSource,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			$context = new StdClass;
 			$context->label = 'Source';
 			$context->name = 'source';
-			$context->value = htmlspecialchars($this->context->transport->post->getSource());
+			$context->value = htmlspecialchars($post->getSource());
 			$this->renderExternal('input-text', $context);
 		}
 
 		if (Access::check(new Privilege(
 			Privilege::EditPostRelations,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			$context = new StdClass;
 			$context->label = 'Relations';
@@ -69,13 +73,13 @@
 				{
 					return $post->getId();
 				},
-				$this->context->transport->post->getRelations()));
+				$post->getRelations()));
 			$this->renderExternal('input-text', $context);
 		}
 
 		if (Access::check(new Privilege(
 			Privilege::EditPostContent,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			$context = new StdClass;
 			$context->label = 'File';
@@ -90,12 +94,12 @@
 
 		if (Access::check(new Privilege(
 			Privilege::EditPostThumbnail,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			$context = new StdClass;
 			$context->name = 'thumbnail';
 			$context->label = 'Thumb';
-			if ($this->context->transport->post->hasCustomThumbnail())
+			if ($post->hasCustomThumbnail())
 				$context->additionalInfo = '(Currently using custom thumb)';
 			$this->renderExternal('input-file', $context);
 		}

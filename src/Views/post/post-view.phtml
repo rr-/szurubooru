@@ -1,7 +1,8 @@
 <?php
+$post = $this->context->transport->post;
 $subTitle = sprintf('showing %s&nbsp;&ndash;&nbsp;%s',
-	TextHelper::reprPost($this->context->transport->post),
-	TextHelper::reprTags($this->context->transport->post->getTags()));
+	TextHelper::reprPost($post),
+	TextHelper::reprTags($post->getTags()));
 $this->assets->setSubTitle($subTitle);
 $this->assets->addStylesheet('post-view.css');
 $this->assets->addScript('post-view.js');
@@ -19,7 +20,7 @@ foreach (array_keys($editPostPrivileges) as $privilege)
 {
 	if (Access::check(new Privilege(
 		$privilege,
-		Access::getIdentity($this->context->transport->post->getUploader()))))
+		Access::getIdentity($post->getUploader()))))
 
 		$editPostPrivileges[$privilege] = true;
 }
@@ -69,7 +70,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	</nav>
 
 	<div class="unit tags">
-		<?php $tags = $this->context->transport->post->getTags() ?>
+		<?php $tags = $post->getTags() ?>
 		<h1>tags (<?= count($tags) ?>)</h1>
 		<ul>
 			<?php uasort($tags, function($a, $b) { return strnatcasecmp($a->getName(), $b->getName()); }) ?>
@@ -92,7 +93,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<h1>details</h1>
 
 		<div class="uploader">
-			<?php $uploader = $this->context->transport->post->getUploader() ?>
+			<?php $uploader = $post->getUploader() ?>
 			<?php if ($uploader): ?>
 				<span class="value" title="<?= $val = $uploader->getName() ?>">
 					<a href="<?= Core::getRouter()->linkTo(
@@ -111,14 +112,14 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php endif ?>
 			<br>
 			<span class="date"
-				title="<?= TextHelper::formatDate($this->context->transport->post->getCreationTime(), true) ?>">
-				<?= TextHelper::formatDate($this->context->transport->post->getCreationTime(), false) ?>
+				title="<?= TextHelper::formatDate($post->getCreationTime(), true) ?>">
+				<?= TextHelper::formatDate($post->getCreationTime(), false) ?>
 			</span>
 		</div>
 
 		<div class="key-value safety">
 			<span class="key">Safety:</span>
-			<span class="value safety-<?= $val = $this->context->transport->post->getSafety()->toDisplayString() ?>"
+			<span class="value safety-<?= $val = $post->getSafety()->toDisplayString() ?>"
 				title="<?= $val ?>">
 				<?= $val ?>
 			</span>
@@ -127,8 +128,8 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="key-value source">
 			<span class="key">Source:</span>
 			<span class="value"
-				title="<?= $val = htmlspecialchars($this->context->transport->post->getSource() ?: 'unknown') ?>">
-				<?php if (preg_match('/^((https?|ftp):|)\/\//', $this->context->transport->post->getSource())): ?>
+				title="<?= $val = htmlspecialchars($post->getSource() ?: 'unknown') ?>">
+				<?php if (preg_match('/^((https?|ftp):|)\/\//', $post->getSource())): ?>
 					<a href="<?= $val ?>"><?= $val ?></a>
 				<?php else: ?>
 					<?= $val ?>
@@ -136,12 +137,12 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			</span>
 		</div>
 
-		<?php if ($this->context->transport->post->getImageWidth()): ?>
+		<?php if ($post->getImageWidth()): ?>
 			<div class="key-value dim">
 				<span class="key">Dimensions:</span>
 				<span class="value" title="<?= $val = sprintf('%dx%d',
-					$this->context->transport->post->getImageWidth(),
-					$this->context->transport->post->getImageHeight()) ?>">
+					$post->getImageWidth(),
+					$post->getImageHeight()) ?>">
 					<?= $val ?>
 				</span>
 			</div>
@@ -150,19 +151,19 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<div class="key-value score">
 			<span class="key">Score:</span>
 			<span class="value">
-				<?= $this->context->transport->post->getScore() ?>
+				<?= $post->getScore() ?>
 
 				<?php
-					$scoreLink = function($score)
+					$scoreLink = function($score) use ($post)
 					{
 						return Core::getRouter()->linkTo(
 							['PostController', 'scoreAction'],
-							['identifier' => $this->context->transport->post->getId(), 'score' => $score]);
+							['identifier' => $post->getId(), 'score' => $score]);
 					}
 				?>
 				<?php if (Access::check(new Privilege(
 					Privilege::ScorePost,
-					Access::getIdentity($this->context->transport->post->getUploader())))): ?>
+					Access::getIdentity($post->getUploader())))): ?>
 					<?php if ($this->context->userScore === 1): ?>
 						<a class="simple-action selected" href="<?= $scoreLink(0) ?>">
 					<?php else: ?>
@@ -186,19 +187,19 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	</div>
 
 	<div class="unit hl-options">
-		<?php if ($this->context->transport->post->getType()->toInteger() != PostType::Youtube): ?>
+		<?php if ($post->getType()->toInteger() != PostType::Youtube): ?>
 			<div class="hl-option">
 				<a title="Download" href="<?= Core::getRouter()->linkTo(
 					['PostController', 'fileView'],
-					['name' => $this->context->transport->post->getName()]) ?>">
+					['name' => $post->getName()]) ?>">
 					<i class="icon-dl"></i>
 					<span>
 						<?php
 							printf(
 								'Download %s (%s)',
-								strtoupper(TextHelper::resolveMimeType($this->context->transport->post->getMimeType()))
+								strtoupper(TextHelper::resolveMimeType($post->getMimeType()))
 									?: 'Unknown',
-								TextHelper::useBytesUnits($this->context->transport->post->getFileSize()));
+								TextHelper::useBytesUnits($post->getFileSize()));
 						?>
 					</span>
 				</a>
@@ -207,13 +208,13 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		<?php if (Access::check(new Privilege(
 			Privilege::FavoritePost,
-			Access::getIdentity($this->context->transport->post->getUploader())))): ?>
+			Access::getIdentity($post->getUploader())))): ?>
 			<div class="hl-option">
 				<?php if (!$this->context->isUserFavorite): ?>
 					<a class="add-fav icon simple-action"
 						href="<?= Core::getRouter()->linkTo(
 							['PostController', 'addFavoriteAction'],
-							['identifier' => $this->context->transport->post->getId()]) ?>">
+							['identifier' => $post->getId()]) ?>">
 						<i class="icon-fav"></i>
 						<span>Add to favorites</span>
 					</a>
@@ -221,7 +222,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					<a class="rem-fav icon simple-action"
 						href="<?= Core::getRouter()->linkTo(
 							['PostController', 'removeFavoriteAction'],
-							['identifier' => $this->context->transport->post->getId()]) ?>">
+							['identifier' => $post->getId()]) ?>">
 						<i class="icon-fav"></i>
 						<span>Remove from favorites</span>
 					</a>
@@ -233,7 +234,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<div class="hl-option">
 				<a class="edit-post icon" href="<?= Core::getRouter()->linkTo(
 					['PostController', 'editView'],
-					['identifier' => $this->context->transport->post->getId()]) ?>">
+					['identifier' => $post->getId()]) ?>">
 					<i class="icon-edit"></i>
 					<span>Edit</span>
 				</a>
@@ -241,11 +242,11 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		<?php endif ?>
 	</div>
 
-	<?php if (count($this->context->transport->post->getFavorites()) > 0): ?>
+	<?php if (count($post->getFavorites()) > 0): ?>
 		<div class="unit favorites">
-			<h1>favorites (<?= count($this->context->transport->post->getFavorites()) ?>)</h1>
+			<h1>favorites (<?= count($post->getFavorites()) ?>)</h1>
 			<ul>
-				<?php foreach ($this->context->transport->post->getFavorites() as $user): ?>
+				<?php foreach ($post->getFavorites() as $user): ?>
 					<li>
 						<a title="<?= $user->getName() ?>" href="<?= Core::getRouter()->linkTo(
 							['UserController', 'genericView'],
@@ -258,11 +259,11 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		</div>
 	<?php endif ?>
 
-	<?php if (count($this->context->transport->post->getRelations())): ?>
+	<?php if (count($post->getRelations())): ?>
 		<div class="unit relations">
 			<h1>related</h1>
 			<ul>
-				<?php foreach ($this->context->transport->post->getRelations() as $relatedPost): ?>
+				<?php foreach ($post->getRelations() as $relatedPost): ?>
 					<li>
 						<a href="<?= Core::getRouter()->linkTo(
 							['PostController', 'genericView'],
@@ -280,7 +281,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		if (Access::check(new Privilege(
 			Privilege::FeaturePost,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			$options []=
 			[
@@ -288,7 +289,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				'text' => 'Feature on main page',
 				'simple-action' => Core::getRouter()->linkTo(
 					['PostController', 'featureAction'],
-					['identifier' => $this->context->transport->post->getId()]),
+					['identifier' => $post->getId()]),
 				'data-confirm-text' => 'Are you sure you want to feature this post on the main page?',
 				'data-redirect-url' => Core::getRouter()->linkTo(['StaticPagesController', 'mainPageView']),
 			];
@@ -296,7 +297,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		if (Access::check(new Privilege(
 			Privilege::FlagPost,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			if ($this->context->flagged)
 			{
@@ -315,7 +316,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					'text' => 'Flag for moderator attention',
 					'simple-action' => Core::getRouter()->linkTo(
 						['PostController', 'flagAction'],
-						['identifier' => $this->context->transport->post->getId()]),
+						['identifier' => $post->getId()]),
 					'data-confirm-text' => 'Are you sure you want to flag this post?',
 				];
 			}
@@ -323,9 +324,9 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		if (Access::check(new Privilege(
 			Privilege::HidePost,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
-			if ($this->context->transport->post->isHidden())
+			if ($post->isHidden())
 			{
 				$options []=
 				[
@@ -333,7 +334,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					'text' => 'Unhide',
 					'simple-action' => Core::getRouter()->linkTo(
 						['PostController', 'unhideAction'],
-						['identifier' => $this->context->transport->post->getId()]),
+						['identifier' => $post->getId()]),
 				];
 			}
 			else
@@ -344,14 +345,14 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 					'text' => 'Hide',
 					'simple-action' => Core::getRouter()->linkTo(
 						['PostController', 'hideAction'],
-						['identifier' => $this->context->transport->post->getId()]),
+						['identifier' => $post->getId()]),
 				];
 			}
 		}
 
 		if (Access::check(new Privilege(
 			Privilege::DeletePost,
-			Access::getIdentity($this->context->transport->post->getUploader()))))
+			Access::getIdentity($post->getUploader()))))
 		{
 			$options []=
 			[
@@ -359,7 +360,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				'text' => 'Delete',
 				'simple-action' => Core::getRouter()->linkTo(
 					['PostController', 'deleteAction'],
-					['identifier' => $this->context->transport->post->getId()]),
+					['identifier' => $post->getId()]),
 				'data-confirm-text' => 'Are you sure you want to delete this post?',
 				'data-redirect-url' => Core::getRouter()->linkTo(['PostController', 'listView']),
 			];
@@ -377,7 +378,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 		</div>
 	<?php endif ?>
 
-	<div class="post-wrapper post-type-<?= $this->context->transport->post->getType()->toString() ?>">
+	<div class="post-wrapper post-type-<?= $post->getType()->toString() ?>">
 		<?php $this->renderExternal('post-file-render') ?>
 	</div>
 
@@ -387,11 +388,11 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	?>
 
 	<div class="comments-wrapper">
-		<?php if (!empty($this->context->transport->post->getComments())): ?>
+		<?php if (!empty($post->getComments())): ?>
 			<div class="unit comments">
-				<h1>comments (<?= count($this->context->transport->post->getComments()) ?>)</h1>
+				<h1>comments (<?= count($post->getComments()) ?>)</h1>
 				<div class="comments">
-					<?php foreach ($this->context->transport->post->getComments() as $comment): ?>
+					<?php foreach ($post->getComments() as $comment): ?>
 						<?php $this->context->comment = $comment ?>
 						<?php $this->renderExternal('comment-small') ?>
 					<?php endforeach ?>

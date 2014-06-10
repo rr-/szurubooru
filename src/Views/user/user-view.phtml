@@ -1,5 +1,6 @@
 <?php
-$this->assets->setSubTitle($this->context->transport->user->getName());
+$user = $this->context->transport->user;
+$this->assets->setSubTitle($user->getName());
 $this->assets->addStylesheet('user-view.css');
 ?>
 
@@ -7,13 +8,13 @@ $this->assets->addStylesheet('user-view.css');
 	<div class="avatar-wrapper">
 		<a href="<?= Core::getRouter()->linkTo(
 			['UserController', 'genericView'],
-			['identifier' => $this->context->transport->user->getName()]) ?>">
+			['identifier' => $user->getName()]) ?>">
 
 			<img
-				src="<?= htmlspecialchars($this->context->transport->user->getAvatarUrl(140)) ?>"
-				alt="<?= $this->context->transport->user->getName() ?>"/>
+				src="<?= htmlspecialchars($user->getAvatarUrl(140)) ?>"
+				alt="<?= $user->getName() ?>"/>
 		</a>
-		<h1><?= $this->context->transport->user->getName() ?></h1>
+		<h1><?= $user->getName() ?></h1>
 	</div>
 
 	<div class="unit details">
@@ -23,9 +24,9 @@ $this->assets->addStylesheet('user-view.css');
 			<span class="key">Joined:</span>
 			<span
 				class="value"
-				title="<?= TextHelper::formatDate($this->context->transport->user->getJoinTime(), true) ?>">
+				title="<?= TextHelper::formatDate($user->getJoinTime(), true) ?>">
 
-				<?= TextHelper::formatDate($this->context->transport->user->getJoinTime(), false) ?>
+				<?= TextHelper::formatDate($user->getJoinTime(), false) ?>
 
 			</span>
 		</div>
@@ -34,9 +35,9 @@ $this->assets->addStylesheet('user-view.css');
 			<span class="key">Last seen:</span>
 			<span
 				class="value"
-				title="<?= TextHelper::formatDate($this->context->transport->user->getLastLoginTime(), true) ?>">
+				title="<?= TextHelper::formatDate($user->getLastLoginTime(), true) ?>">
 
-				<?= TextHelper::formatDate($this->context->transport->user->getLastLoginTime(), false) ?>
+				<?= TextHelper::formatDate($user->getLastLoginTime(), false) ?>
 
 			</span>
 		</div>
@@ -45,7 +46,7 @@ $this->assets->addStylesheet('user-view.css');
 			<span class="key">Access rank:</span>
 			<span
 				class="value"
-				title="<?= $val = $this->context->transport->user->getAccessRank()->toDisplayString() ?>">
+				title="<?= $val = $user->getAccessRank()->toDisplayString() ?>">
 
 				<?= $val ?>
 
@@ -54,13 +55,13 @@ $this->assets->addStylesheet('user-view.css');
 
 		<?php if (Access::check(new Privilege(
 			Privilege::ViewUserEmail,
-			Access::getIdentity($this->context->transport->user)))): ?>
+			Access::getIdentity($user)))): ?>
 
 			<div class="key-value email">
 				<span class="key">E-mail:</span>
-				<span class="value" title="<?= $val = ($this->context->transport->user->getUnconfirmedEmail()
-						? '(unconfirmed) ' . $this->context->transport->user->getUnconfirmedEmail()
-						: $this->context->transport->user->getConfirmedEmail() ?: 'none specified') ?>">
+				<span class="value" title="<?= $val = ($user->getUnconfirmedEmail()
+						? '(unconfirmed) ' . $user->getUnconfirmedEmail()
+						: $user->getConfirmedEmail() ?: 'none specified') ?>">
 					<?= $val ?>
 				</span>
 				<br>(only you and staff can see this)
@@ -81,7 +82,7 @@ $this->assets->addStylesheet('user-view.css');
 
 			if (Access::check(new Privilege(
 				$privilege,
-				Access::getIdentity($this->context->transport->user))))
+				Access::getIdentity($user))))
 			{
 				$userModificationPrivileges[$privilege] = true;
 			}
@@ -98,12 +99,12 @@ $this->assets->addStylesheet('user-view.css');
 				'text' => 'Edit account settings',
 				'link' => Core::getRouter()->linkTo(
 					['UserController', 'editAction'],
-					['identifier' => $this->context->transport->user->getName(), 'tab' => 'edit']),
+					['identifier' => $user->getName(), 'tab' => 'edit']),
 			];
 		}
 
 		if (Access::check(new Privilege(Privilege::AcceptUserRegistration))
-			and !$this->context->transport->user->isStaffConfirmed()
+			and !$user->isStaffConfirmed()
 			and Core::getConfig()->registration->staffActivation)
 		{
 			$options []=
@@ -112,13 +113,13 @@ $this->assets->addStylesheet('user-view.css');
 				'text' => 'Accept registration',
 				'simple-action' => Core::getRouter()->linkTo(
 					['UserController', 'acceptRegistrationAction'],
-					['identifier' => $this->context->transport->user->getName()]),
+					['identifier' => $user->getName()]),
 			];
 		}
 
 		if (Access::check(new Privilege(
 			Privilege::FlagUser,
-			Access::getIdentity($this->context->transport->user))))
+			Access::getIdentity($user))))
 		{
 			if ($this->context->flagged)
 			{
@@ -137,7 +138,7 @@ $this->assets->addStylesheet('user-view.css');
 					'text' => 'Flag for moderator attention',
 					'simple-action' => Core::getRouter()->linkTo(
 						['UserController', 'flagAction'],
-						['identifier' => $this->context->transport->user->getName()]),
+						['identifier' => $user->getName()]),
 					'data-confirm-text' => 'Are you sure you want to flag this user?',
 				];
 			}
@@ -145,9 +146,9 @@ $this->assets->addStylesheet('user-view.css');
 
 		if (Access::check(new Privilege(
 			Privilege::BanUser,
-			Access::getIdentity($this->context->transport->user))))
+			Access::getIdentity($user))))
 		{
-			if (!$this->context->transport->user->isBanned())
+			if (!$user->isBanned())
 			{
 				$options []=
 				[
@@ -155,7 +156,7 @@ $this->assets->addStylesheet('user-view.css');
 					'text' => 'Ban user',
 					'simple-action' => Core::getRouter()->linkTo(
 						['UserController', 'banAction'],
-						['identifier' => $this->context->transport->user->getName()]),
+						['identifier' => $user->getName()]),
 					'data-confirm-text' => 'Are you sure you want to ban this user?',
 				];
 			}
@@ -167,7 +168,7 @@ $this->assets->addStylesheet('user-view.css');
 					'text' => 'Unban user',
 					'simple-action' => Core::getRouter()->linkTo(
 						['UserController', 'unbanAction'],
-						['identifier' => $this->context->transport->user->getName()]),
+						['identifier' => $user->getName()]),
 					'data-confirm-text' => 'Are you sure you want to unban this user?',
 				];
 			}
@@ -175,7 +176,7 @@ $this->assets->addStylesheet('user-view.css');
 
 		if (Access::check(new Privilege(
 			Privilege::DeleteUser,
-			Access::getIdentity($this->context->transport->user))))
+			Access::getIdentity($user))))
 		{
 			$options []=
 			[
@@ -183,7 +184,7 @@ $this->assets->addStylesheet('user-view.css');
 				'text' => 'Delete account',
 				'link' => Core::getRouter()->linkTo(
 					['UserController', 'deleteAction'],
-					['identifier' => $this->context->transport->user->getName(), 'tab' => 'delete']),
+					['identifier' => $user->getName(), 'tab' => 'delete']),
 			];
 		}
 
@@ -202,7 +203,7 @@ $this->assets->addStylesheet('user-view.css');
 			<?php endif ?>
 				<a href="<?= Core::getRouter()->linkTo(
 					['UserController', 'genericView'],
-					['identifier' => $this->context->transport->user->getName(),
+					['identifier' => $user->getName(),
 					'tab' => 'favs',
 					'page' => 1]) ?>">
 					Favs
@@ -216,7 +217,7 @@ $this->assets->addStylesheet('user-view.css');
 			<?php endif ?>
 				<a href="<?= Core::getRouter()->linkTo(
 					['UserController', 'genericView'],
-					['identifier' => $this->context->transport->user->getName(),
+					['identifier' => $user->getName(),
 					'tab' => 'uploads',
 					'page' => 1]) ?>">
 					Uploads
@@ -225,7 +226,7 @@ $this->assets->addStylesheet('user-view.css');
 
 			<?php if (Access::check(new Privilege(
 				Privilege::EditUserSettings,
-				Access::getIdentity($this->context->transport->user)))): ?>
+				Access::getIdentity($user)))): ?>
 
 				<?php if ($this->context->transport->tab == 'settings'): ?>
 					<li class="selected settings">
@@ -234,7 +235,7 @@ $this->assets->addStylesheet('user-view.css');
 				<?php endif ?>
 					<a href="<?= Core::getRouter()->linkTo(
 						['UserController', 'genericView'],
-						['identifier' => $this->context->transport->user->getName(),
+						['identifier' => $user->getName(),
 						'tab' => 'settings']) ?>">
 						Browsing settings
 					</a>
@@ -249,7 +250,7 @@ $this->assets->addStylesheet('user-view.css');
 				<?php endif ?>
 					<a href="<?= Core::getRouter()->linkTo(
 						['UserController', 'genericView'],
-						['identifier' => $this->context->transport->user->getName(),
+						['identifier' => $user->getName(),
 						'tab' => 'edit']) ?>">
 						Account settings
 					</a>
@@ -258,7 +259,7 @@ $this->assets->addStylesheet('user-view.css');
 
 			<?php if (Access::check(new Privilege(
 				Privilege::DeleteUser,
-				Access::getIdentity($this->context->transport->user)))): ?>
+				Access::getIdentity($user)))): ?>
 				<?php if ($this->context->transport->tab == 'delete'): ?>
 					<li class="selected delete">
 				<?php else: ?>
@@ -266,7 +267,7 @@ $this->assets->addStylesheet('user-view.css');
 				<?php endif ?>
 					<a href="<?= Core::getRouter()->linkTo(
 						['UserController', 'genericView'],
-						['identifier' => $this->context->transport->user->getName(),
+						['identifier' => $user->getName(),
 						'tab' => 'delete']) ?>">
 						Delete account
 					</a>

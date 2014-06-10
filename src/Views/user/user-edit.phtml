@@ -1,18 +1,19 @@
 <?php
 $this->assets->addScript('user-edit.js');
+$user = $this->context->transport->user;
 ?>
 
 <form
 	action="<?= Core::getRouter()->linkTo(
 		['UserController', 'editAction'],
-		['identifier' => $this->context->transport->user->getName()]) ?>"
+		['identifier' => $user->getName()]) ?>"
 	enctype="multipart/form-data"
 	method="post"
 	class="edit-user simple-action"
 	autocomplete="off">
 
 	<?php
-		if (Auth::getCurrentUser()->getId() == $this->context->transport->user->getId())
+		if (Auth::getCurrentUser()->getId() == $user->getId())
 		{
 			$context = new StdClass;
 			$context->label = 'Current password';
@@ -24,7 +25,7 @@ $this->assets->addScript('user-edit.js');
 
 		if (Access::check(new Privilege(
 			Privilege::EditUserAvatar,
-			Access::getIdentity($this->context->transport->user))))
+			Access::getIdentity($user))))
 		{
 			$styles = UserAvatarStyle::getAll();
 			$context = new StdClass;
@@ -32,7 +33,7 @@ $this->assets->addScript('user-edit.js');
 			$context->label = 'User picture';
 			$context->optionValues = array_map(function($s) { return $s->toInteger(); }, $styles);
 			$context->optionLabels = array_map(function($s) { return ucfirst($s->toDisplayString()); }, $styles);
-			$context->activeOptionValue = $this->context->transport->user->getAvatarStyle()->toInteger();
+			$context->activeOptionValue = $user->getAvatarStyle()->toInteger();
 			$context->inputClass = 'avatar-style';
 			$this->renderExternal('input-radioboxes', $context);
 
@@ -44,7 +45,7 @@ $this->assets->addScript('user-edit.js');
 
 		if (Access::check(new Privilege(
 			Privilege::EditUserName,
-			Access::getIdentity($this->context->transport->user))))
+			Access::getIdentity($user))))
 		{
 			$context = new StdClass;
 			$context->label = 'Name';
@@ -56,7 +57,7 @@ $this->assets->addScript('user-edit.js');
 
 		if (Access::check(new Privilege(
 			Privilege::EditUserEmail,
-			Access::getIdentity($this->context->transport->user))))
+			Access::getIdentity($user))))
 		{
 			$context = new StdClass;
 			$context->label = 'E-mail';
@@ -68,7 +69,7 @@ $this->assets->addScript('user-edit.js');
 
 		if (Access::check(new Privilege(
 			Privilege::EditUserPassword,
-			Access::getIdentity($this->context->transport->user))))
+			Access::getIdentity($user))))
 		{
 			$context = new StdClass;
 			$context->label = 'New password';
@@ -86,14 +87,11 @@ $this->assets->addScript('user-edit.js');
 
 		if (Access::check(new Privilege(
 			Privilege::EditUserAccessRank,
-			Access::getIdentity($this->context->transport->user))))
+			Access::getIdentity($user))))
 		{
 			$accessRanks = array_filter(
 				AccessRank::getAll(),
-				function($ar)
-				{
-					return $ar->toInteger() != AccessRank::Nobody;
-				});
+				function($ar) { return $ar->toInteger() != AccessRank::Nobody; });
 
 			$context = new StdClass;
 			$context->name = 'access-rank';
@@ -102,7 +100,7 @@ $this->assets->addScript('user-edit.js');
 			$context->optionValues = array_map(function($ar) { return $ar->toInteger(); }, $accessRanks);
 			$context->optionLabels = array_map(function($ar) { return $ar->toDisplayString(); }, $accessRanks);
 			$context->activeOptionValue = InputHelper::get('access-rank')
-				?: $this->context->transport->user->getAccessRank()->toInteger();
+				?: $user->getAccessRank()->toInteger();
 			$this->renderExternal('input-select', $context);
 		}
 
