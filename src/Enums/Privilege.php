@@ -3,6 +3,7 @@ class Privilege extends AbstractEnum implements IEnum
 {
 	const ListPosts = 'listPosts';
 	const ViewPost = 'viewPost';
+	const DownloadPost = 'downloadPost';
 	const RetrievePost = 'retrievePost';
 	const FavoritePost = 'favoritePost';
 	const HidePost = 'hidePost';

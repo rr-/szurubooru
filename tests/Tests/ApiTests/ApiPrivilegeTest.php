@@ -92,29 +92,38 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 
 	public function testDynamicPostRetrievalPrivileges()
 	{
-		$jobs =
-		[
-			new GetPostJob(),
-			new GetPostContentJob(),
-		];
+		$job = new GetPostJob();
+		$this->testedJobs []= $job;
 
 		$post = $this->postMocker->mockSingle();
+		$post->setHidden(true);
+		PostModel::save($post);
 
-		foreach ($jobs as $job)
-		{
-			$this->testedJobs []= $job;
+		$job->setArgument(JobArgs::ARG_POST_ID, $post->getId());
+		$job->setArgument(JobArgs::ARG_POST_NAME, $post->getName());
+		$job->prepare();
+		$this->assert->areEqual(Privilege::ViewPost, $job->getRequiredMainPrivilege());
+		$sub = $job->getRequiredSubPrivileges();
+		natcasesort($sub);
+		$this->assert->areEquivalent(['hidden', 'safe'], $sub);
+	}
 
-			$post->setHidden(true);
-			PostModel::save($post);
+	public function testDynamicPostContentRetrievalPrivileges()
+	{
+		$job = new GetPostContentJob();
+		$this->testedJobs []= $job;
 
-			$job->setArgument(JobArgs::ARG_POST_ID, $post->getId());
-			$job->setArgument(JobArgs::ARG_POST_NAME, $post->getName());
-			$job->prepare();
-			$this->assert->areEqual(Privilege::ViewPost, $job->getRequiredMainPrivilege());
-			$sub = $job->getRequiredSubPrivileges();
-			natcasesort($sub);
-			$this->assert->areEquivalent(['hidden', 'safe'], $sub);
-		}
+		$post = $this->postMocker->mockSingle();
+		$post->setHidden(true);
+		PostModel::save($post);
+
+		$job->setArgument(JobArgs::ARG_POST_ID, $post->getId());
+		$job->setArgument(JobArgs::ARG_POST_NAME, $post->getName());
+		$job->prepare();
+		$this->assert->areEqual(Privilege::DownloadPost, $job->getRequiredMainPrivilege());
+		$sub = $job->getRequiredSubPrivileges();
+		natcasesort($sub);
+		$this->assert->areEquivalent(['hidden', 'safe'], $sub);
 	}
 
 	public function testDynamicPostThumbnailPrivileges()

@@ -36,7 +36,7 @@ class GetPostContentJob extends AbstractJob
 
 	public function getRequiredMainPrivilege()
 	{
-		return Privilege::ViewPost;
+		return Privilege::DownloadPost;
 	}
 
 	public function getRequiredSubPrivileges()
