@@ -5,6 +5,12 @@ $this->assets->addScript('../lib/jquery/jquery.min.js');
 $this->assets->addScript('../lib/jquery-ui/jquery-ui.min.js');
 $this->assets->addScript('../lib/mousetrap/mousetrap.min.js');
 $this->assets->addScript('core.js');
+if (!empty(Core::getConfig()->appearance->extraScripts))
+	foreach (Core::getConfig()->appearance->extraScripts as $path)
+		$this->assets->addScriptFullPath($path);
+if (!empty(Core::getConfig()->appearance->extraStylesheets))
+	foreach (Core::getConfig()->appearance->extraStylesheets as $path)
+		$this->assets->addStylesheetFullPath($path);
 ?>
 
 <!DOCTYPE html>
@@ -12,6 +18,11 @@ $this->assets->addScript('core.js');
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"/>
+		<?php if (!empty(Core::getConfig()->appearance->favicon)): ?>
+			<link rel="shortcut icon"
+				type="image/png"
+				href="<?= \Chibi\Util\Url::makeAbsolute(Core::getConfig()->appearance->favicon) ?>"/>
+		<?php endif ?>
 	</head>
 
 	<body>

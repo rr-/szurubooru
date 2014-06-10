@@ -14,7 +14,7 @@ class AbstractController
 		$this->switchLayout('layout-normal');
 
 		$this->assets = new Assets();
-		$this->assets->setTitle(Core::getConfig()->main->title);
+		$this->assets->setTitle(Core::getConfig()->appearance->title);
 	}
 
 	public function renderAjax()

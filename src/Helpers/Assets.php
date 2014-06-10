@@ -16,12 +16,22 @@ class Assets extends \Chibi\Util\Assets
 
 	public function addStylesheet($path)
 	{
-		return parent::addStylesheet($this->decorateUrl('/media/css/' . $path));
+		return $this->addStylesheetFullPath($this->decorateUrl('/media/css/' . $path));
+	}
+
+	public function addStylesheetFullPath($path)
+	{
+		return parent::addStylesheet($path);
 	}
 
 	public function addScript($path)
 	{
-		return parent::addScript($this->decorateUrl('/media/js/' . $path));
+		return $this->addScriptFullPath($this->decorateUrl('/media/js/' . $path));
+	}
+
+	public function addScriptFullPath($path)
+	{
+		return parent::addScript($path);
 	}
 
 	public function transformHtml($html)

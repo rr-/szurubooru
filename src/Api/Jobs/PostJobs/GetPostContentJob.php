@@ -20,7 +20,7 @@ class GetPostContentJob extends AbstractJob
 			throw new SimpleException('Post file is not readable');
 
 		$fileName = sprintf('%s_%s_%s.%s',
-			$config->main->title,
+			$config->appearance->title,
 			$post->getId(),
 			join(',', array_map(function($tag) { return $tag->getName(); }, $post->getTags())),
 			TextHelper::resolveMimeType($post->getMimeType()) ?: 'dat');
