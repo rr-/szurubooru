@@ -1,10 +1,6 @@
 <?php
 abstract class AbstractJob implements IJob
 {
-	const CONTEXT_NORMAL = 1;
-	const CONTEXT_BATCH_EDIT = 2;
-	const CONTEXT_BATCH_ADD = 3;
-
 	protected $arguments = [];
 	protected $context = self::CONTEXT_NORMAL;
 	protected $subJobs;

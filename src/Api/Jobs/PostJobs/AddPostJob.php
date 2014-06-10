@@ -32,7 +32,7 @@ class AddPostJob extends AbstractJob
 		Logger::bufferChanges();
 		foreach ($this->getSubJobs() as $subJob)
 		{
-			$subJob->setContext(AbstractJob::CONTEXT_BATCH_ADD);
+			$subJob->setContext(self::CONTEXT_BATCH_ADD);
 			try
 			{
 				Api::run($subJob, $arguments);

@@ -53,7 +53,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 
 		$ctx = function($job)
 		{
-			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
+			$job->setContext(IJob::CONTEXT_BATCH_ADD);
 			return $job;
 		};
 		$this->testDynamicPostPrivilege($ctx(new EditPostContentJob), Privilege::AddPostContent);
@@ -139,7 +139,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 
 		$ctx = function($job)
 		{
-			$job->setContext(AbstractJob::CONTEXT_BATCH_ADD);
+			$job->setContext(IJob::CONTEXT_BATCH_ADD);
 			return $job;
 		};
 		$this->testDynamicUserPrivilege($ctx(new EditUserAccessRankJob()), Privilege::EditUserAccessRank);

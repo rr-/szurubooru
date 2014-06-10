@@ -1,8 +1,15 @@
 <?php
 interface IJob
 {
+	const CONTEXT_NORMAL = 1;
+	const CONTEXT_BATCH_EDIT = 2;
+	const CONTEXT_BATCH_ADD = 3;
+
 	public function prepare();
 	public function execute();
+
+	public function getContext();
+	public function setContext($context);
 
 	public function getRequiredArguments();
 	public function getRequiredMainPrivilege();
