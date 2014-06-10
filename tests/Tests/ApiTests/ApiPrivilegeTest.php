@@ -235,6 +235,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 				new EditPostTagsJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_TAG_NAMES => ['test1', 'test2'],
 				]);
 		}, 'Insufficient privileges');
@@ -248,6 +249,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 				new EditPostTagsJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_TAG_NAMES => ['test1', 'test2'],
 				]);
 		});

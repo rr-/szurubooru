@@ -35,11 +35,34 @@ class PostRetriever implements IEntityRetriever
 		throw new ApiJobUnsatisfiedException($this->job);
 	}
 
+	public function retrieveForEditing()
+	{
+		$post = $this->retrieve();
+		if ($this->job->getContext() === IJob::CONTEXT_BATCH_ADD)
+			return $post;
+
+		$expectedRevision = $this->job->getArgument(JobArgs::ARG_POST_REVISION);
+		if ($expectedRevision != $post->getRevision())
+			throw new SimpleException('This post was already edited by someone else in the meantime');
+
+		return $post;
+	}
+
 	public function getRequiredArguments()
 	{
 		return JobArgs::Alternative(
 			JobArgs::ARG_POST_ID,
 			JobArgs::ARG_POST_NAME,
 			JobArgs::ARG_POST_ENTITY);
+	}
+
+	public function getRequiredArgumentsForEditing()
+	{
+		if ($this->job->getContext() === IJob::CONTEXT_BATCH_ADD)
+			return $this->getRequiredArguments();
+
+		return JobArgs::Conjunction(
+			$this->getRequiredArguments(),
+			JobArgs::ARG_POST_REVISION);
 	}
 }

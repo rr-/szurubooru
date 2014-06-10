@@ -13,6 +13,7 @@ class EditPostSafetyJobTest extends AbstractTest
 				new EditPostSafetyJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_SAFETY => PostSafety::Sketchy,
 				]);
 		});
@@ -34,6 +35,7 @@ class EditPostSafetyJobTest extends AbstractTest
 				new EditPostSafetyJob(),
 				[
 					JobArgs::ARG_POST_ID => 100,
+					JobArgs::ARG_POST_REVISION => 1000,
 					JobArgs::ARG_NEW_SAFETY => PostSafety::Sketchy,
 				]);
 		}, 'Invalid post ID');
@@ -51,6 +53,7 @@ class EditPostSafetyJobTest extends AbstractTest
 				new EditPostSafetyJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_SAFETY => '',
 				]);
 		}, 'Invalid safety type');

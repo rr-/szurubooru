@@ -10,7 +10,7 @@ class EditPostSourceJob extends AbstractJob
 
 	public function execute()
 	{
-		$post = $this->postRetriever->retrieve();
+		$post = $this->postRetriever->retrieveForEditing();
 		$newSource = $this->getArgument(JobArgs::ARG_NEW_SOURCE);
 
 		$oldSource = $post->getSource();
@@ -33,7 +33,7 @@ class EditPostSourceJob extends AbstractJob
 	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
-			$this->postRetriever->getRequiredArguments(),
+			$this->postRetriever->getRequiredArgumentsForEditing(),
 			JobArgs::ARG_NEW_SOURCE);
 	}
 

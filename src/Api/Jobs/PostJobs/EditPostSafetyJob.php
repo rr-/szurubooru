@@ -10,7 +10,7 @@ class EditPostSafetyJob extends AbstractJob
 
 	public function execute()
 	{
-		$post = $this->postRetriever->retrieve();
+		$post = $this->postRetriever->retrieveForEditing();
 		$newSafety = new PostSafety($this->getArgument(JobArgs::ARG_NEW_SAFETY));
 
 		$oldSafety = $post->getSafety();
@@ -33,7 +33,7 @@ class EditPostSafetyJob extends AbstractJob
 	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
-			$this->postRetriever->getRequiredArguments(),
+			$this->postRetriever->getRequiredArgumentsForEditing(),
 			JobArgs::ARG_NEW_SAFETY);
 	}
 

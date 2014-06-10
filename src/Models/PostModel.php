@@ -11,6 +11,7 @@ final class PostModel extends AbstractCrudModel
 	protected static function saveSingle($post)
 	{
 		$post->validate();
+		$post->incRevision();
 
 		Core::getDatabase()->transaction(function() use ($post)
 		{
@@ -30,7 +31,7 @@ final class PostModel extends AbstractCrudModel
 				'image_height' => $post->getImageHeight(),
 				'uploader_id' => $post->getUploaderId(),
 				'source' => $post->getSource(),
-				'revision' => $post->getRevision() + 1,
+				'revision' => $post->getRevision(),
 				];
 
 			$stmt = Sql\Statements::update();

@@ -13,6 +13,7 @@ class EditPostThumbnailJobTest extends AbstractTest
 				new EditPostThumbnailJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_THUMBNAIL_CONTENT =>
 						new ApiFileInput($this->testSupport->getPath('thumb.jpg'), 'test.jpg'),
 				]);
@@ -37,6 +38,7 @@ class EditPostThumbnailJobTest extends AbstractTest
 				new EditPostThumbnailJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_THUMBNAIL_CONTENT =>
 						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
 				]);

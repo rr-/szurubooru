@@ -57,6 +57,7 @@ class EditPostSourceJobTest extends AbstractTest
 				new EditPostSourceJob(),
 				[
 					JobArgs::ARG_POST_ID => 100,
+					JobArgs::ARG_POST_REVISION => 1000,
 					JobArgs::ARG_NEW_SOURCE => 'alohaa',
 				]);
 		}, 'Invalid post ID');
@@ -70,6 +71,7 @@ class EditPostSourceJobTest extends AbstractTest
 			new EditPostSourceJob(),
 			[
 				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_POST_REVISION => $post->getRevision(),
 				JobArgs::ARG_NEW_SOURCE => $text
 			]);
 	}

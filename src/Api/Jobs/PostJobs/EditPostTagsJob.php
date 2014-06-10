@@ -10,7 +10,7 @@ class EditPostTagsJob extends AbstractJob
 
 	public function execute()
 	{
-		$post = $this->postRetriever->retrieve();
+		$post = $this->postRetriever->retrieveForEditing();
 		$tagNames = $this->getArgument(JobArgs::ARG_NEW_TAG_NAMES);
 
 		if (!is_array($tagNames))
@@ -50,7 +50,7 @@ class EditPostTagsJob extends AbstractJob
 	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
-			$this->postRetriever->getRequiredArguments(),
+			$this->postRetriever->getRequiredArgumentsForEditing(),
 			JobArgs::ARG_NEW_TAG_NAMES);
 	}
 

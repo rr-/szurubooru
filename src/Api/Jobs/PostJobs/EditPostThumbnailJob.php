@@ -10,7 +10,7 @@ class EditPostThumbnailJob extends AbstractJob
 
 	public function execute()
 	{
-		$post = $this->postRetriever->retrieve();
+		$post = $this->postRetriever->retrieveForEditing();
 		$file = $this->getArgument(JobArgs::ARG_NEW_THUMBNAIL_CONTENT);
 
 		$post->setCustomThumbnailFromPath($file->filePath);
@@ -28,7 +28,7 @@ class EditPostThumbnailJob extends AbstractJob
 	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
-			$this->postRetriever->getRequiredArguments(),
+			$this->postRetriever->getRequiredArgumentsForEditing(),
 			JobArgs::ARG_NEW_THUMBNAIL_CONTENT);
 	}
 

@@ -47,7 +47,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		$this->setCache('comment_count', $row['comment_count']);
 		$this->setCache('fav_count', $row['fav_count']);
 		$this->setCache('score', $row['score']);
-		$this->setCache('revision', $row['revision']);
+		$this->setCache('revision', TextHelper::toInteger($row['revision']));
 		$this->setType(new PostType($row['type']));
 		$this->setSafety(new PostSafety($row['safety']));
 	}
@@ -150,6 +150,11 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 	public function getRevision()
 	{
 		return (int) $this->getColumnWithCache('revision');
+	}
+
+	public function incRevision()
+	{
+		$this->setCache('revision', $this->getRevision() + 1);
 	}
 
 	public function getScore()

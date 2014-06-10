@@ -4,7 +4,6 @@ class EditPostContentJobTest extends AbstractTest
 	public function testFile()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromFile('image.jpg');
 		$this->assert->doesNotThrow(function() use ($post)
 		{
@@ -19,7 +18,6 @@ class EditPostContentJobTest extends AbstractTest
 	public function testFileJpeg()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromFile('image.jpg');
 		$this->assert->areEqual('image/jpeg', $post->getMimeType());
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
@@ -34,7 +32,6 @@ class EditPostContentJobTest extends AbstractTest
 	public function testFilePng()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromFile('image.png');
 		$this->assert->areEqual('image/png', $post->getMimeType());
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
@@ -49,7 +46,6 @@ class EditPostContentJobTest extends AbstractTest
 	public function testFileGif()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromFile('image.gif');
 		$this->assert->areEqual('image/gif', $post->getMimeType());
 		$this->assert->areEqual(PostType::Image, $post->getType()->toInteger());
@@ -64,7 +60,6 @@ class EditPostContentJobTest extends AbstractTest
 	public function testFileInvalid()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
 		$this->assert->throws(function()
 		{
 			$this->uploadFromFile('text.txt');
@@ -74,7 +69,6 @@ class EditPostContentJobTest extends AbstractTest
 	public function testUrl()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromUrl('image.jpg');
 		$this->assert->doesNotThrow(function() use ($post)
 		{
@@ -89,13 +83,12 @@ class EditPostContentJobTest extends AbstractTest
 	public function testUrlYoutube()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
-
 		$post = $this->postMocker->mockSingle();
 		$post = Api::run(
 			new EditPostContentJob(),
 			[
 				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_POST_REVISION => $post->getRevision(),
 				JobArgs::ARG_NEW_POST_CONTENT_URL => 'http://www.youtube.com/watch?v=qWq_jydCUw4',
 			]);
 		$this->assert->areEqual(PostType::Youtube, $post->getType()->toInteger());
@@ -119,17 +112,32 @@ class EditPostContentJobTest extends AbstractTest
 				new EditPostContentJob(),
 				[
 					JobArgs::ARG_POST_ID => 100,
-					JobArgs::ARG_NEW_POST_CONTENT =>
-						new ApiFileInput($this->testSupport->getPath('image.jpg'), 'test.jpg'),
+					JobArgs::ARG_POST_REVISION => 1,
+					JobArgs::ARG_NEW_POST_CONTENT_URL => 'irrelevant',
 				]);
 		}, 'Invalid post ID');
+	}
+
+	public function testWrongRevision()
+	{
+		$this->prepare();
+		$post = $this->postMocker->mockSingle();
+		$this->assert->throws(function() use ($post)
+		{
+			Api::run(
+				new EditPostContentJob(),
+				[
+					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => 100,
+					JobArgs::ARG_NEW_POST_CONTENT_URL => 'irrelevant',
+				]);
+		}, 'This post was already edited by someone else in the meantime');
 	}
 
 
 	public function testDuplicateFile()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromFile('image.png');
 		$this->assert->areEqual('image/png', $post->getMimeType());
 		$this->assert->throws(function()
@@ -141,7 +149,6 @@ class EditPostContentJobTest extends AbstractTest
 	public function testDuplicateUrl()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
 		$post = $this->uploadFromUrl('image.png');
 		$this->assert->areEqual('image/png', $post->getMimeType());
 		$this->assert->throws(function()
@@ -153,8 +160,6 @@ class EditPostContentJobTest extends AbstractTest
 	public function testDuplicateYoutube()
 	{
 		$this->prepare();
-		$this->grantAccess('editPostContent');
-
 		$url = 'http://www.youtube.com/watch?v=qWq_jydCUw4';
 
 		$post = $this->postMocker->mockSingle();
@@ -162,6 +167,7 @@ class EditPostContentJobTest extends AbstractTest
 			new EditPostContentJob(),
 			[
 				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_POST_REVISION => $post->getRevision(),
 				JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
 			]);
 
@@ -172,6 +178,7 @@ class EditPostContentJobTest extends AbstractTest
 				new EditPostContentJob(),
 				[
 					JobArgs::ARG_POST_ID => $anotherPost->getId(),
+					JobArgs::ARG_POST_REVISION => $anotherPost->getRevision(),
 					JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
 				]);
 		}, 'Duplicate upload: @' . $post->getId());
@@ -179,6 +186,7 @@ class EditPostContentJobTest extends AbstractTest
 
 	protected function prepare()
 	{
+		$this->grantAccess('editPostContent');
 		$this->login($this->userMocker->mockSingle());
 	}
 
@@ -194,6 +202,7 @@ class EditPostContentJobTest extends AbstractTest
 			new EditPostContentJob(),
 			[
 				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_POST_REVISION => $post->getRevision(),
 				JobArgs::ARG_NEW_POST_CONTENT_URL => $url,
 			]);
 
@@ -215,6 +224,7 @@ class EditPostContentJobTest extends AbstractTest
 			new EditPostContentJob(),
 			[
 				JobArgs::ARG_POST_ID => $post->getId(),
+				JobArgs::ARG_POST_REVISION => $post->getRevision(),
 				JobArgs::ARG_NEW_POST_CONTENT =>
 					new ApiFileInput($this->testSupport->getPath($fileName), 'test.jpg'),
 			]);

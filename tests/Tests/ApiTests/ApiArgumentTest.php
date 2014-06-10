@@ -65,7 +65,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new EditPostContentJob(),
 			JobArgs::Conjunction(
-				$this->getPostSelector(),
+				$this->getPostSelectorForEditing(),
 				JobArgs::Alternative(
 					JobArgs::ARG_NEW_POST_CONTENT,
 					JobArgs::ARG_NEW_POST_CONTENT_URL)));
@@ -74,14 +74,14 @@ class ApiArgumentTest extends AbstractFullApiTest
 	public function testEditPostJob()
 	{
 		$this->testArguments(new EditPostJob(),
-			$this->getPostSelector());
+			$this->getPostSelectorForEditing());
 	}
 
 	public function testEditPostRelationsJob()
 	{
 		$this->testArguments(new EditPostRelationsJob(),
 			JobArgs::Conjunction(
-				$this->getPostSelector(),
+				$this->getPostSelectorForEditing(),
 				JobArgs::ARG_NEW_RELATED_POST_IDS));
 	}
 
@@ -89,7 +89,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new EditPostSafetyJob(),
 			JobArgs::Conjunction(
-				$this->getPostSelector(),
+				$this->getPostSelectorForEditing(),
 				JobArgs::ARG_NEW_SAFETY));
 	}
 
@@ -97,7 +97,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new EditPostSourceJob(),
 			JobArgs::Conjunction(
-				$this->getPostSelector(),
+				$this->getPostSelectorForEditing(),
 				JobArgs::ARG_NEW_SOURCE));
 	}
 
@@ -105,7 +105,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new EditPostTagsJob(),
 			JobArgs::Conjunction(
-				$this->getPostSelector(),
+				$this->getPostSelectorForEditing(),
 				JobArgs::ARG_NEW_TAG_NAMES));
 	}
 
@@ -113,7 +113,7 @@ class ApiArgumentTest extends AbstractFullApiTest
 	{
 		$this->testArguments(new EditPostThumbnailJob(),
 			JobArgs::Conjunction(
-				$this->getPostSelector(),
+				$this->getPostSelectorForEditing(),
 				JobArgs::ARG_NEW_THUMBNAIL_CONTENT));
 	}
 
@@ -367,6 +367,13 @@ class ApiArgumentTest extends AbstractFullApiTest
 			JobArgs::ARG_POST_ENTITY,
 			JobArgs::ARG_POST_ID,
 			JobArgs::ARG_POST_NAME);
+	}
+
+	protected function getPostSelectorForEditing()
+	{
+		return JobArgs::Conjunction(
+			JobArgs::ARG_POST_REVISION,
+			$this->getPostSelector());
 	}
 
 	protected function getPostSafeSelector()

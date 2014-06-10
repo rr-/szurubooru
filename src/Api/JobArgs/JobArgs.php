@@ -15,6 +15,7 @@ class JobArgs
 	const ARG_POST_ENTITY = 'post';
 	const ARG_POST_ID = 'post-id';
 	const ARG_POST_NAME = 'post-name';
+	const ARG_POST_REVISION = 'post-revision';
 
 	const ARG_TAG_NAME = 'tag-name';
 	const ARG_TAG_NAMES = 'tag-names';

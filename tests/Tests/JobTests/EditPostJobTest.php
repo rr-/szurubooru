@@ -15,6 +15,7 @@ class EditPostJobTest extends AbstractTest
 		$args =
 		[
 			JobArgs::ARG_POST_ID => $post->getId(),
+			JobArgs::ARG_POST_REVISION => $post->getRevision(),
 			JobArgs::ARG_NEW_SAFETY => PostSafety::Sketchy,
 			JobArgs::ARG_NEW_SOURCE => 'some source huh',
 			JobArgs::ARG_NEW_POST_CONTENT =>
@@ -41,6 +42,7 @@ class EditPostJobTest extends AbstractTest
 		$args =
 		[
 			JobArgs::ARG_POST_ID => $post->getId(),
+			JobArgs::ARG_POST_REVISION => $post->getRevision(),
 			JobArgs::ARG_NEW_SAFETY => PostSafety::Safe,
 			JobArgs::ARG_NEW_SOURCE => 'this should make it fail',
 			JobArgs::ARG_NEW_POST_CONTENT =>

@@ -13,6 +13,7 @@ class EditPostTagsJobTest extends AbstractTest
 				new EditPostTagsJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_TAG_NAMES => $newTagNames,
 				]);
 		});
@@ -39,6 +40,7 @@ class EditPostTagsJobTest extends AbstractTest
 				new EditPostTagsJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_TAG_NAMES => [],
 				]);
 		}, 'No tags set');
@@ -56,6 +58,7 @@ class EditPostTagsJobTest extends AbstractTest
 				new EditPostTagsJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_TAG_NAMES => $newTagNames,
 				]);
 		}, 'Tag must have at least');
@@ -73,6 +76,7 @@ class EditPostTagsJobTest extends AbstractTest
 				new EditPostTagsJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_TAG_NAMES => $newTagNames,
 				]);
 		}, 'Tag must have at most');
@@ -90,6 +94,7 @@ class EditPostTagsJobTest extends AbstractTest
 				new EditPostTagsJob(),
 				[
 					JobArgs::ARG_POST_ID => $post->getId(),
+					JobArgs::ARG_POST_REVISION => $post->getRevision(),
 					JobArgs::ARG_NEW_TAG_NAMES => $newTagNames,
 				]);
 		}, 'Invalid tag');
@@ -106,6 +111,7 @@ class EditPostTagsJobTest extends AbstractTest
 				new EditPostTagsJob(),
 				[
 					JobArgs::ARG_POST_ID => 100,
+					JobArgs::ARG_POST_REVISION => 1000,
 					JobArgs::ARG_NEW_TAG_NAMES => $newTagNames,
 				]);
 		}, 'Invalid post ID');

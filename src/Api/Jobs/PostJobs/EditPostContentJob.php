@@ -10,8 +10,7 @@ class EditPostContentJob extends AbstractJob
 
 	public function execute()
 	{
-		$post = $this->postRetriever->retrieve();
-
+		$post = $this->postRetriever->retrieveForEditing();
 		if ($this->hasArgument(JobArgs::ARG_NEW_POST_CONTENT_URL))
 		{
 			$url = $this->getArgument(JobArgs::ARG_NEW_POST_CONTENT_URL);
@@ -36,7 +35,7 @@ class EditPostContentJob extends AbstractJob
 	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
-			$this->postRetriever->getRequiredArguments(),
+			$this->postRetriever->getRequiredArgumentsForEditing(),
 			JobArgs::Alternative(
 				JobArgs::ARG_NEW_POST_CONTENT,
 				JobArgs::ARG_NEW_POST_CONTENT_URL));

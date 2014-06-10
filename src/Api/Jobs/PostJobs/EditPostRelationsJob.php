@@ -10,7 +10,7 @@ class EditPostRelationsJob extends AbstractJob
 
 	public function execute()
 	{
-		$post = $this->postRetriever->retrieve();
+		$post = $this->postRetriever->retrieveForEditing();
 		$relatedPostIds = $this->getArgument(JobArgs::ARG_NEW_RELATED_POST_IDS);
 
 		if (!is_array($relatedPostIds))
@@ -47,7 +47,7 @@ class EditPostRelationsJob extends AbstractJob
 	public function getRequiredArguments()
 	{
 		return JobArgs::Conjunction(
-			$this->postRetriever->getRequiredArguments(),
+			$this->postRetriever->getRequiredArgumentsForEditing(),
 			JobArgs::ARG_NEW_RELATED_POST_IDS);
 	}
 

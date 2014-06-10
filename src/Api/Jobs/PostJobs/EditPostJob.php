@@ -16,8 +16,7 @@ class EditPostJob extends AbstractJob
 
 	public function execute()
 	{
-		$post = $this->postRetriever->retrieve();
-
+		$post = $this->postRetriever->retrieveForEditing();
 		$arguments = $this->getArguments();
 		$arguments[JobArgs::ARG_POST_ENTITY] = $post;
 
@@ -43,7 +42,7 @@ class EditPostJob extends AbstractJob
 
 	public function getRequiredArguments()
 	{
-		return $this->postRetriever->getRequiredArguments();
+		return $this->postRetriever->getRequiredArgumentsForEditing();
 	}
 
 	public function getRequiredMainPrivilege()

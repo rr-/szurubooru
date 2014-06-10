@@ -14,6 +14,7 @@ class EditPostRelationsJobTest extends AbstractTest
 				new EditPostRelationsJob(),
 				[
 					JobArgs::ARG_POST_ID => $basePost->getId(),
+					JobArgs::ARG_POST_REVISION => $basePost->getRevision(),
 					JobArgs::ARG_NEW_RELATED_POST_IDS =>
 					[
 						$post1->getId(),
@@ -46,6 +47,7 @@ class EditPostRelationsJobTest extends AbstractTest
 				new EditPostRelationsJob(),
 				[
 					JobArgs::ARG_POST_ID => $basePost->getId(),
+					JobArgs::ARG_POST_REVISION => $basePost->getRevision(),
 					JobArgs::ARG_NEW_RELATED_POST_IDS =>
 					[
 						$post2->getId(),
@@ -76,6 +78,7 @@ class EditPostRelationsJobTest extends AbstractTest
 				new EditPostRelationsJob(),
 				[
 					JobArgs::ARG_POST_ID => $basePost->getId(),
+					JobArgs::ARG_POST_REVISION => $basePost->getRevision(),
 					JobArgs::ARG_NEW_RELATED_POST_IDS =>
 					[
 					]

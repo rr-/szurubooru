@@ -157,16 +157,13 @@ class PostController extends AbstractController
 	{
 		$post = PostModel::getByIdOrName($identifier);
 
-		$revision = InputHelper::get('revision');
-		if ($revision != $post->getRevision())
-			throw new SimpleException('This post was already edited by someone else in the meantime');
-
 		$jobArgs =
 		[
 			JobArgs::ARG_NEW_SAFETY => InputHelper::get('safety'),
 			JobArgs::ARG_NEW_TAG_NAMES => $this->splitTags(InputHelper::get('tags')),
 			JobArgs::ARG_NEW_SOURCE => InputHelper::get('source'),
 			JobArgs::ARG_NEW_RELATED_POST_IDS => $this->splitPostIds(InputHelper::get('relations')),
+			JobArgs::ARG_POST_REVISION => InputHelper::get('revision'),
 		];
 		$jobArgs = $this->appendPostIdentifierArgument($jobArgs, $identifier);
 
