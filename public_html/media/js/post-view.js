@@ -114,7 +114,7 @@ $(function()
 				$.get(window.location.href).success(function(data)
 				{
 					$('#sidebar').replaceWith($(data).find('#sidebar'));
-					$('#edit-token').replaceWith($(data).find('#edit-token'));
+					$('#revision').replaceWith($(data).find('#revision'));
 					$('body').trigger('dom-update');
 				});
 				formDom.parents('.unit').hide();
