@@ -36,7 +36,7 @@ abstract class AbstractSearchService
 			new Sql\Binding(($page - 1) * $perPage));
 	}
 
-	public static function getEntitiesRows($searchQuery, $perPage = null, $page = 1)
+	public static function getEntities($searchQuery, $perPage = null, $page = 1)
 	{
 		$modelClassName = self::getModelClassName();
 		$table = $modelClassName::getTableName();
@@ -48,13 +48,8 @@ abstract class AbstractSearchService
 		static::decorateCustom($stmt);
 		static::decoratePager($stmt, $perPage, $page);
 
-		return Core::getDatabase()->fetchAll($stmt);
-	}
-
-	public static function getEntities($searchQuery, $perPage = null, $page = 1)
-	{
+		$rows = Core::getDatabase()->fetchAll($stmt);
 		$modelClassName = self::getModelClassName();
-		$rows = static::getEntitiesRows($searchQuery, $perPage, $page);
 		return $modelClassName::spawnFromDatabaseRows($rows);
 	}
 
