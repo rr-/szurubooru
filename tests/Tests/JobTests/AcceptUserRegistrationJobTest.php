@@ -6,7 +6,7 @@ class AcceptUserRegistrationJobTest extends AbstractTest
 		$this->grantAccess('acceptUserRegistration');
 
 		$user = $this->userMocker->mockSingle();
-		$this->assert->isFalse($user->isStaffConfirmed());
+		$this->assert->isNull($user->isStaffConfirmed());
 
 		$user = $this->assert->doesNotThrow(function() use ($user)
 		{

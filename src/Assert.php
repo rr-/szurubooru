@@ -49,12 +49,12 @@ class Assert
 
 	public function isTrue($actual)
 	{
-		return $this->areEqual(1, intval(boolval($actual)));
+		return $this->areEqual(true, $actual);
 	}
 
 	public function isFalse($actual)
 	{
-		return $this->areEqual(0, intval(boolval($actual)));
+		return $this->areEqual(false, $actual);
 	}
 
 	public function areEqual($expected, $actual)
