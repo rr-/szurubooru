@@ -55,9 +55,7 @@ final class TokenModel extends AbstractCrudModel
 		$stmt->setCriterion(Sql\Functors::equals('token', new Sql\Binding($key)));
 
 		$row = Core::getDatabase()->fetchOne($stmt);
-		return $row
-			? self::spawnFromDatabaseRow($row)
-			: null;
+		return self::spawnFromDatabaseRow($row);
 	}
 
 	public static function checkValidity($token)

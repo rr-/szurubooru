@@ -135,9 +135,7 @@ final class PostModel extends AbstractCrudModel
 		$stmt->setCriterion(Sql\Functors::equals('name', new Sql\Binding($key)));
 
 		$row = Core::getDatabase()->fetchOne($stmt);
-		return $row
-			? self::spawnFromDatabaseRow($row)
-			: null;
+		return self::spawnFromDatabaseRow($row);
 	}
 
 	public static function getByIdOrName($key)
@@ -165,9 +163,7 @@ final class PostModel extends AbstractCrudModel
 		$stmt->setCriterion(Sql\Functors::equals('file_hash', new Sql\Binding($key)));
 
 		$row = Core::getDatabase()->fetchOne($stmt);
-		return $row
-			? self::spawnFromDatabaseRow($row)
-			: null;
+		return self::spawnFromDatabaseRow($row);
 	}
 
 

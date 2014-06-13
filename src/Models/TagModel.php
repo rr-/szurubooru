@@ -120,9 +120,7 @@ final class TagModel extends AbstractCrudModel
 		$stmt->setCriterion(Sql\Functors::equals('post_tag.post_id', new Sql\Binding($key)));
 
 		$rows = Core::getDatabase()->fetchAll($stmt);
-		if ($rows)
-			return self::spawnFromDatabaseRows($rows);
-		return [];
+		return self::spawnFromDatabaseRows($rows);
 	}
 
 	public static function getByName($key)
@@ -141,9 +139,7 @@ final class TagModel extends AbstractCrudModel
 		$stmt->setCriterion(Sql\Functors::noCase(Sql\Functors::equals('name', new Sql\Binding($key))));
 
 		$row = Core::getDatabase()->fetchOne($stmt);
-		return $row
-			? self::spawnFromDatabaseRow($row)
-			: null;
+		return self::spawnFromDatabaseRow($row);
 	}
 
 

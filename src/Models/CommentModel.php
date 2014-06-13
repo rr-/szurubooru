@@ -58,9 +58,7 @@ final class CommentModel extends AbstractCrudModel
 		$stmt->setCriterion(Sql\Functors::equals('post_id', new Sql\Binding($key)));
 
 		$rows = Core::getDatabase()->fetchAll($stmt);
-		if ($rows)
-			return self::spawnFromDatabaseRows($rows);
-		return [];
+		return self::spawnFromDatabaseRows($rows);
 	}
 
 

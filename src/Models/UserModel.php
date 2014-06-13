@@ -94,9 +94,7 @@ final class UserModel extends AbstractCrudModel
 		$stmt->setCriterion(Sql\Functors::noCase(Sql\Functors::equals('name', new Sql\Binding(trim($key)))));
 
 		$row = Core::getDatabase()->fetchOne($stmt);
-		return $row
-			? self::spawnFromDatabaseRow($row)
-			: null;
+		return self::spawnFromDatabaseRow($row);
 	}
 
 	public static function getByEmail($key)
@@ -119,9 +117,7 @@ final class UserModel extends AbstractCrudModel
 			->add(Sql\Functors::noCase(Sql\Functors::equals('email_confirmed', new Sql\Binding($key)))));
 
 		$row = Core::getDatabase()->fetchOne($stmt);
-		return $row
-			? self::spawnFromDatabaseRow($row)
-			: null;
+		return self::spawnFromDatabaseRow($row);
 	}
 
 

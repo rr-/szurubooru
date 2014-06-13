@@ -15,11 +15,15 @@ abstract class AbstractCrudModel implements IModel
 
 	public static function spawnFromDatabaseRows($input)
 	{
+		if (!$input)
+			return [];
 		return array_map([get_called_class(), 'spawnFromDatabaseRow'], $input);
 	}
 
 	public static function spawnFromDatabaseRow($row)
 	{
+		if (!$row)
+			return null;
 		$entityClassName = static::getEntityClassName();
 		$entity = new $entityClassName(new static);
 		$entity->fillFromDatabase($row);
@@ -106,12 +110,8 @@ abstract class AbstractCrudModel implements IModel
 		$stmt->setColumn('*');
 		$stmt->setTable(static::getTableName());
 		$stmt->setCriterion(Sql\Functors::in('id', Sql\Binding::fromArray(array_unique($ids))));
-
 		$rows = Core::getDatabase()->fetchAll($stmt);
-		if ($rows)
-			return static::spawnFromDatabaseRows($rows);
-
-		return [];
+		return static::spawnFromDatabaseRows($rows);
 	}
 
 	public static function getCount()
