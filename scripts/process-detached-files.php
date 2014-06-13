@@ -60,7 +60,7 @@ switch ($action)
 }
 
 $names = [];
-foreach (PostSearchService::getEntities(null, null, null) as $post)
+foreach (PostModel::getAll() as $post)
 {
 	$names []= $post->getName();
 }

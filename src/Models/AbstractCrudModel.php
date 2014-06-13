@@ -104,6 +104,15 @@ abstract class AbstractCrudModel implements IModel
 			: null;
 	}
 
+	public static function getAll()
+	{
+		$stmt = Sql\Statements::select();
+		$stmt->setColumn('*');
+		$stmt->setTable(static::getTableName());
+		$rows = Core::getDatabase()->fetchAll($stmt);
+		return static::spawnFromDatabaseRows($rows);
+	}
+
 	public static function getAllByIds(array $ids)
 	{
 		$stmt = Sql\Statements::select();

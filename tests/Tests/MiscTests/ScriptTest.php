@@ -46,14 +46,18 @@ class ScriptTest extends AbstractTest
 	public function testDetachedFilesPrint()
 	{
 		$post = $this->postMocker->mockSingle();
+		$post->setHidden(true);
+		PostModel::save($post);
 		touch(Core::getConfig()->main->filesPath . DS . 'rubbish1');
 		touch(Core::getConfig()->main->filesPath . DS . 'rubbish2');
+		touch(Core::getConfig()->main->filesPath . DS . $post->getName());
 		$output = $this->execute($this->scriptsPath . 'process-detached-files.php', ['-p']);
 		$this->assert->isTrue(strpos($output, 'rubbish1') !== false);
 		$this->assert->isTrue(strpos($output, 'rubbish2') !== false);
 		$this->assert->isFalse(strpos($output, $post->getName()));
 		$this->assert->isTrue(file_exists(Core::getConfig()->main->filesPath . DS . 'rubbish1'));
 		$this->assert->isTrue(file_exists(Core::getConfig()->main->filesPath . DS . 'rubbish2'));
+		$this->assert->isTrue(file_exists(Core::getConfig()->main->filesPath . DS . $post->getName()));
 	}
 
 	public function testDetachedFilesRemove()
@@ -67,6 +71,7 @@ class ScriptTest extends AbstractTest
 		$this->assert->isFalse(strpos($output, $post->getName()));
 		$this->assert->isFalse(file_exists(Core::getConfig()->main->filesPath . DS . 'rubbish1'));
 		$this->assert->isFalse(file_exists(Core::getConfig()->main->filesPath . DS . 'rubbish2'));
+		$this->assert->isTrue(file_exists(Core::getConfig()->main->filesPath . DS . $post->getName()));
 	}
 
 	public function testDetachedFilesMove()
@@ -81,6 +86,8 @@ class ScriptTest extends AbstractTest
 		$this->assert->isFalse(strpos($output, $post->getName()));
 		$this->assert->isTrue(file_exists($target . DS . 'rubbish1'));
 		$this->assert->isTrue(file_exists($target . DS . 'rubbish2'));
+		$this->assert->isFalse(file_exists($target . DS . DS . $post->getName()));
+		$this->assert->isTrue(file_exists(Core::getConfig()->main->filesPath . DS . $post->getName()));
 		unlink($target . DS . 'rubbish1');
 		unlink($target . DS . 'rubbish2');
 	}
