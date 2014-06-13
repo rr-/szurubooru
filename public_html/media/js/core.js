@@ -346,7 +346,7 @@ function attachTagIt(target)
 				$.each(data.tags, function(i, tag)
 				{
 					var link = $('<a>');
-					link.attr('href', '/posts/' + tag.name + '/');
+					link.attr('href', tag['search-link']);
 					link.text('#' + tag.name);
 					link.click(function(e)
 					{

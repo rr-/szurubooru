@@ -64,8 +64,13 @@ class TagController extends AbstractController
 			array_values(array_map(
 				function($tag)
 				{
+					$searchLink = Core::getRouter()->linkTo(
+						['PostController', 'listView'],
+						['query' => $tag->getName(), 'page' => 1]);
+
 					return [
 						'name' => $tag->getName(),
+						'search-link' => $searchLink,
 						'count' => $tag->getPostCount(),
 					];
 				}, $ret->entities));
