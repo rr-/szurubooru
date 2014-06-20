@@ -189,7 +189,7 @@ $(function()
 	{
 		$(img)
 			.css('background-image', 'none')
-			.attr('src', '/posts/upload/thumb/' + btoa(url))
+			.attr('src', url)
 			.data('custom-thumb', true);
 	}
 
@@ -214,7 +214,7 @@ $(function()
 			else
 			{
 				postDom.find('.file-name strong').text(url);
-				changeThumb(postDom.find('img'), url);
+				changeThumb(postDom.find('img'), '/posts/upload/thumb/' + btoa(url));
 			}
 		});
 	}
