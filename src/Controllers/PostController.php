@@ -153,22 +153,17 @@ class PostController extends AbstractController
 			return;
 		}
 
-		$tmpPath = tempnam(sys_get_temp_dir(), 'thumb4upload');
-		try
-		{
+		$tmpPath = Core::getConfig()->main->cachePath . DS . md5($url) . '.upload-cache';
+		if (!file_exists($tmpPath))
 			TransferHelper::download($url, $tmpPath);
-			$options = new FileRendererOptions();
-			$options->lastModified = time();
-			$options->mimeType = mime_content_type($tmpPath);
-			$options->cacheDaysToLive = 0.5;
-			$options->fileHash = md5($url);
-			$options->fileContent = file_get_contents($tmpPath);
-			$this->renderFile($options);
-		}
-		finally
-		{
-			TransferHelper::remove($tmpPath);
-		}
+
+		$options = new FileRendererOptions();
+		$options->lastModified = time() - 3600;
+		$options->cacheDaysToLive = 0.5;
+		$options->mimeType = mime_content_type($tmpPath);
+		$options->fileHash = md5($url);
+		$options->fileContent = file_get_contents($tmpPath);
+		$this->renderFile($options);
 	}
 
 	public function editView($identifier)

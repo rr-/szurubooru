@@ -28,7 +28,10 @@ class FileRenderer
 				'inline; filename="' . $options->customFileName . '"');
 		}
 
-		\Chibi\Util\Headers::set('Content-Type', $options->mimeType);
+		if (isset($options->mimeType))
+		{
+			\Chibi\Util\Headers::set('Content-Type', $options->mimeType);
+		}
 
 		if (strtotime($ifModifiedSince) == $lastModified or $eTagHeader == $eTag)
 		{
