@@ -8,6 +8,7 @@ $placeholder = isset($this->context->placeholder) ? $this->context->placeholder 
 $additionalInfo = isset($this->context->additionalInfo) ? $this->context->additionalInfo : '';
 $inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '';
 $noAutocomplete = isset($this->context->noAutocomplete) ? true : false;
+$maxLength = isset($this->context->maxLength) ? intval($this->context->maxLength) : null;
 ?>
 
 <div class="form-row">
@@ -16,6 +17,9 @@ $noAutocomplete = isset($this->context->noAutocomplete) ? true : false;
 	</label>
 	<div class="input-wrapper">
 		<input
+			<?php if ($maxLength): ?>
+				maxlength="<?= $maxLength ?>"
+			<?php endif ?>
 			<?php if ($noAutocomplete): ?>
 				autocomplete="off"
 			<?php endif ?>

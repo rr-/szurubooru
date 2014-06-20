@@ -56,6 +56,7 @@ $post = $this->context->transport->post;
 			$context = new StdClass;
 			$context->label = 'Source';
 			$context->name = 'source';
+			$context->maxLength = Core::getConfig()->posts->maxSourceLength;
 			$context->value = htmlspecialchars($post->getSource());
 			$this->renderExternal('input-text', $context);
 		}

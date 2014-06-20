@@ -115,7 +115,10 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 				<div class="form-row source">
 					<label>Source:</label>
 					<div class="input-wrapper">
-						<input type="text" name="source" placeholder="where did you get this from? (optional)"/>
+						<input type="text"
+							maxlength="<?= Core::getConfig()->posts->maxSourceLength ?>"
+							name="source"
+							placeholder="where did you get this from? (optional)"/>
 					</div>
 				</div>
 			</form>

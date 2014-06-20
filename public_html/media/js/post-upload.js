@@ -199,7 +199,12 @@ $(function()
 		{
 			postDom.data('url', url);
 			postDom.data('file', '');
-			postDom.find('[name=source]').val(url);
+
+			var sourceInput = postDom.find('[name=source]');
+			sourceInput.val(url);
+			if (sourceInput.attr('maxlength'))
+				sourceInput.val(sourceInput.val().substring(0, sourceInput.attr('maxlength')));
+
 			if (matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/))
 			{
 				postDom.find('.file-name strong').text(url);
