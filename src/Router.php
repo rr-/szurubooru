@@ -56,6 +56,7 @@ class Router extends \Chibi\Routing\Router
 		$this->register(['PostController', 'editAction'], 'POST', '/post/{identifier}/edit', $postValidation);
 		$this->register(['PostController', 'deleteAction'], null, '/post/{identifier}/delete', $postValidation);
 
+		$this->register(['PostController', 'uploadThumbnailView'], 'GET', '/posts/upload/thumb/{url}', ['url' => '.*']);
 		$this->register(['PostController', 'listView'], 'GET', '/{source}', $postValidation);
 		$this->register(['PostController', 'listView'], 'GET', '/{source}/{page}', $postValidation);
 		$this->register(['PostController', 'listView'], 'GET', '/{source}/{query}/{page}', $postValidation);

@@ -143,6 +143,34 @@ class PostController extends AbstractController
 			$this->redirectToPostList();
 	}
 
+	public function uploadThumbnailView($url)
+	{
+		$url = base64_decode($url);
+
+		if (!Core::getConfig()->misc->proxyThumbsInUpload)
+		{
+			$this->redirect($url);
+			return;
+		}
+
+		$tmpPath = tempnam(sys_get_temp_dir(), 'thumb4upload');
+		try
+		{
+			TransferHelper::download($url, $tmpPath);
+			$context = Core::getContext();
+			$context->transport->lastModified = time();
+			$context->transport->mimeType = mime_content_type($tmpPath);
+			$context->transport->cacheDaysToLive = 0.5;
+			$context->transport->fileHash = md5($url);
+			$context->transport->fileContent = file_get_contents($tmpPath);
+			$this->renderFile();
+		}
+		finally
+		{
+			TransferHelper::remove($tmpPath);
+		}
+	}
+
 	public function editView($identifier)
 	{
 		$jobArgs = [];

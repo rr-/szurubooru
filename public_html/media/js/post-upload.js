@@ -189,7 +189,7 @@ $(function()
 	{
 		$(img)
 			.css('background-image', 'none')
-			.attr('src', url)
+			.attr('src', '/posts/upload/thumb/' + btoa(url))
 			.data('custom-thumb', true);
 	}
 
