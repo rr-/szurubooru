@@ -203,13 +203,8 @@ $(function()
 			if (matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/))
 			{
 				postDom.find('.file-name strong').text(url);
-				var url = 'http://gdata.youtube.com/feeds/api/videos/' + matches[1] + '?v=2&alt=jsonc';
-				getJSON({ url: url }).success(function(data)
-				{
-					postDom.find('.file-name strong')
-						.text(data.data.title);
-					changeThumb(postDom.find('img'), data.data.thumbnail.hqDefault);
-				});
+				var realUrl = 'http://img.youtube.com/vi/' + matches[1] + '/mqdefault.jpg';
+				changeThumb(postDom.find('img'), realUrl);
 			}
 			else
 			{
