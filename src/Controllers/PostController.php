@@ -157,13 +157,13 @@ class PostController extends AbstractController
 		try
 		{
 			TransferHelper::download($url, $tmpPath);
-			$context = Core::getContext();
-			$context->transport->lastModified = time();
-			$context->transport->mimeType = mime_content_type($tmpPath);
-			$context->transport->cacheDaysToLive = 0.5;
-			$context->transport->fileHash = md5($url);
-			$context->transport->fileContent = file_get_contents($tmpPath);
-			$this->renderFile();
+			$options = new FileRendererOptions();
+			$options->lastModified = time();
+			$options->mimeType = mime_content_type($tmpPath);
+			$options->cacheDaysToLive = 0.5;
+			$options->fileHash = md5($url);
+			$options->fileContent = file_get_contents($tmpPath);
+			$this->renderFile($options);
 		}
 		finally
 		{
@@ -336,28 +336,28 @@ class PostController extends AbstractController
 	{
 		$ret = Api::run(new GetPostContentJob(), [JobArgs::ARG_POST_NAME => $name]);
 
-		$context = Core::getContext();
-		$context->transport->cacheDaysToLive = 14;
-		$context->transport->customFileName = $ret->fileName;
-		$context->transport->mimeType = $ret->mimeType;
-		$context->transport->fileHash = 'post' . md5(substr($ret->fileContent, 0, 4096));
-		$context->transport->fileContent = $ret->fileContent;
-		$context->transport->lastModified = $ret->lastModified;
-		$this->renderFile();
+		$options = new FileRendererOptions();
+		$options->cacheDaysToLive = 14;
+		$options->customFileName = $ret->fileName;
+		$options->mimeType = $ret->mimeType;
+		$options->fileHash = 'post' . md5(substr($ret->fileContent, 0, 4096));
+		$options->fileContent = $ret->fileContent;
+		$options->lastModified = $ret->lastModified;
+		$this->renderFile($options);
 	}
 
 	public function thumbnailView($name)
 	{
 		$ret = Api::run(new GetPostThumbnailJob(), [JobArgs::ARG_POST_NAME => $name]);
 
-		$context = Core::getContext();
-		$context->transport->cacheDaysToLive = 365;
-		$context->transport->customFileName = $ret->fileName;
-		$context->transport->mimeType = 'image/jpeg';
-		$context->transport->fileHash = 'thumb' . md5(substr($ret->fileContent, 0, 4096));
-		$context->transport->fileContent = $ret->fileContent;
-		$context->transport->lastModified = $ret->lastModified;
-		$this->renderFile();
+		$options = new FileRendererOptions();
+		$options->cacheDaysToLive = 365;
+		$options->customFileName = $ret->fileName;
+		$options->mimeType = 'image/jpeg';
+		$options->fileHash = 'thumb' . md5(substr($ret->fileContent, 0, 4096));
+		$options->fileContent = $ret->fileContent;
+		$options->lastModified = $ret->lastModified;
+		$this->renderFile($options);
 	}
 
 

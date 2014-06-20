@@ -23,10 +23,10 @@ class AbstractController
 		$this->renderView(null);
 	}
 
-	public function renderFile()
+	public function renderFile(FileRendererOptions $options)
 	{
-		$this->switchLayout('layout-file');
-		$this->renderView(null);
+		$fileRenderer = new FileRenderer();
+		$fileRenderer->render($options);
 	}
 
 	public function renderView($viewName)
