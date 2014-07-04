@@ -16,6 +16,10 @@ $this->assets->setSubTitle('registration form');
 
 		<p>Registered users can view more content,<br/>upload files and add posts to favorites.</p>
 
+		<div style="display:none"><input name="username"/> Please leave this field blank.</div>
+		<div style="display:none"><input name="mail"/> Please leave this field blank.</div>
+		<div style="display:none"><input type="checkbox" name="agree"/> Please leave this field unchecked.</div>
+
 		<?php
 			$context = new StdClass;
 			$context->name = 'name';

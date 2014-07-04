@@ -202,6 +202,11 @@ class UserController extends AbstractController
 	{
 		$this->interceptErrors(function()
 		{
+			$honeypot = ['username', 'mail', 'agree'];
+			foreach ($honeypot as $f)
+				if (InputHelper::get($f))
+					throw new SimpleException('Human verification failed');
+
 			if (InputHelper::get('password1') != InputHelper::get('password2'))
 				throw new SimpleException('Specified passwords must be the same');
 
