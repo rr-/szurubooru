@@ -44,14 +44,14 @@ class TogglePostTagJob extends AbstractJob
 			Logger::log('{user} tagged {post} with {tag}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
-				'tag' => TextHelper::reprTag($tag)]);
+				'tag' => TextHelper::reprTag($tagName)]);
 		}
 		else
 		{
 			Logger::log('{user} untagged {post} with {tag}', [
 				'user' => TextHelper::reprUser(Auth::getCurrentUser()),
 				'post' => TextHelper::reprPost($post),
-				'tag' => TextHelper::reprTag($tag)]);
+				'tag' => TextHelper::reprTag($tagName)]);
 		}
 
 		return $post;
