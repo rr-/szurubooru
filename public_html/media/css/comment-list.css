@@ -1,3 +1,8 @@
+.post .thumb {
+	width: 150px;
+	height: 150px;
+}
+
 .comment-group .post-wrapper {
 	float: left;
 }

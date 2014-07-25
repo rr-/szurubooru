@@ -204,31 +204,10 @@ $(function()
 {
 	$(window).resize(function()
 	{
-		fixSize();
-		if ($('body').width() == $('body').data('last-width'))
-			return;
-		$('body').data('last-width', $('body').width());
 		$('body').trigger('dom-update');
 	});
 	$('body').bind('dom-update', processSidebar);
-	fixSize();
 });
-
-var fixedEvenOnce = false;
-function fixSize()
-{
-	if ($('#small-screen').is(':visible'))
-		return;
-	var multiply = 168;
-	var oldWidth = $('.main-wrapper:eq(0)').width();
-	$('.main-wrapper:eq(0)').width('');
-	var newWidth = $('.main-wrapper:eq(0)').width();
-	if (oldWidth != newWidth || !fixedEvenOnce)
-	{
-		$('.main-wrapper').width(multiply * Math.floor(newWidth / multiply));
-		fixedEvenOnce = true;
-	}
-}
 
 
 
@@ -416,40 +395,40 @@ Mousetrap.bind = function(key, func, args)
 $(function()
 {
 	Mousetrap.bind('q', function()
-		{
-			$('#top-nav input').focus();
-			return false;
-		}, 'keyup');
+	{
+		$('#top-nav input').focus();
+		return false;
+	}, 'keyup');
 
 	Mousetrap.bind('w', function()
-		{
-			$('body,html').animate({scrollTop: '-=150px'}, 200);
-		});
+	{
+		$('body,html').animate({scrollTop: '-=150px'}, 200);
+	});
 
 	Mousetrap.bind('s', function()
-		{
-			$('body,html').animate({scrollTop: '+=150px'}, 200);
-		});
+	{
+		$('body,html').animate({scrollTop: '+=150px'}, 200);
+	});
 
 	Mousetrap.bind('a', function()
-		{
-			var url = $('.paginator:visible .prev:not(.disabled) a').attr('href');
-			if (typeof url !== 'undefined')
-				window.location.href = url;
-		}, 'keyup');
+	{
+		var url = $('.paginator:visible .prev:not(.disabled) a').attr('href');
+		if (typeof url !== 'undefined')
+			window.location.href = url;
+	}, 'keyup');
 
 	Mousetrap.bind('d', function()
-		{
-			var url = $('.paginator:visible .next:not(.disabled) a').attr('href');
-			if (typeof url !== 'undefined')
-				window.location.href = url;
-		}, 'keyup');
+	{
+		var url = $('.paginator:visible .next:not(.disabled) a').attr('href');
+		if (typeof url !== 'undefined')
+			window.location.href = url;
+	}, 'keyup');
 
 	Mousetrap.bind('p', function()
-		{
-			$('.post a').eq(0).focus();
-			return false;
-		}, 'keyup');
+	{
+		$('.post a').eq(0).focus();
+		return false;
+	}, 'keyup');
 });
 
 

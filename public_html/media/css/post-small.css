@@ -17,10 +17,13 @@
 .post-type-3gp:after,
 .post-type-flv:after {
 	position: absolute;
-	right: 1px; /* border */
-	top: 1px; /* border */
-	width: 150px;
-	height: 150px;
+	/* border */
+	right: 1px;
+	top: 1px;
+	bottom: 1px;
+	left: 1px;
+	background-size: contain;
+	background-repeat: no-repeat;
 	content: ' ';
 	pointer-events: none;
 }
@@ -33,13 +36,13 @@
 .post-type-flv {
 	border-color: red;
 }
-.post-type-swf:after { background: url('../img/thumb-overlay-swf.png'); }
-.post-type-youtube:after { background: url('../img/thumb-overlay-yt.png'); }
-.post-type-mp4:after { background: url('../img/thumb-overlay-mp4.png'); }
-.post-type-webm:after { background: url('../img/thumb-overlay-webm.png'); }
-.post-type-ogg:after { background: url('../img/thumb-overlay-ogg.png'); }
-.post-type-3gp:after { background: url('../img/thumb-overlay-3gp.png'); }
-.post-type-flv:after { background: url('../img/thumb-overlay-flv.png'); }
+.post-type-swf:after { background-image: url('../img/thumb-overlay-swf.png'); }
+.post-type-youtube:after { background-image: url('../img/thumb-overlay-yt.png'); }
+.post-type-mp4:after { background-image: url('../img/thumb-overlay-mp4.png'); }
+.post-type-webm:after { background-image: url('../img/thumb-overlay-webm.png'); }
+.post-type-ogg:after { background-image: url('../img/thumb-overlay-ogg.png'); }
+.post-type-3gp:after { background-image: url('../img/thumb-overlay-3gp.png'); }
+.post-type-flv:after { background-image: url('../img/thumb-overlay-flv.png'); }
 
 
 .post .toggle-tag {
@@ -86,8 +89,6 @@
 }
 .post img.thumb {
 	display: inline-block;
-	width: 150px;
-	height: 150px;
 	vertical-align: top;
 }
 

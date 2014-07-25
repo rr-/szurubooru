@@ -31,6 +31,8 @@ if (!empty(Core::getConfig()->appearance->extraStylesheets))
 				isset($this->context->transport->lastSearchQuery)
 					? $this->context->transport->lastSearchQuery
 					:'') ?>;
+			var thumbnailWidth = <?= Core::getConfig()->browsing->thumbnailWidth ?>;
+			var thumbnailHeight = <?= Core::getConfig()->browsing->thumbnailHeight ?>;
 		</script>
 
 		<nav id="top-nav">

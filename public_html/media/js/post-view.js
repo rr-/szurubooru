@@ -135,30 +135,30 @@ $(function()
 	});
 
 	Mousetrap.bind('a', function()
+	{
+		var a = $('#sidebar .left a');
+		var url = a.attr('href');
+		if (typeof url !== 'undefined')
 		{
-			var a = $('#sidebar .left a');
-			var url = a.attr('href');
-			if (typeof url !== 'undefined')
-			{
-				a.click();
-				window.location.href = url;
-			}
-		}, 'keyup');
+			a.click();
+			window.location.href = url;
+		}
+	}, 'keyup');
 
 	Mousetrap.bind('d', function()
+	{
+		var a = $('#sidebar .right a');
+		var url = a.attr('href');
+		if (typeof url !== 'undefined')
 		{
-			var a = $('#sidebar .right a');
-			var url = a.attr('href');
-			if (typeof url !== 'undefined')
-			{
-				a.click();
-				window.location.href = url;
-			}
-		}, 'keyup');
+			a.click();
+			window.location.href = url;
+		}
+	}, 'keyup');
 
 	Mousetrap.bind('e', function()
-		{
-			$('a.edit-post').trigger('click');
-			return false;
-		}, 'keyup');
+	{
+		$('a.edit-post').trigger('click');
+		return false;
+	}, 'keyup');
 });
