@@ -5,18 +5,10 @@ class SmartThumbnailGenerator implements IThumbnailGenerator
 	{
 		$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.jpg';
 
-		try
-		{
-			TransferHelper::download(
-				$url,
-				$tmpPath,
-				null);
-		}
-		catch (SimpleException $e)
-		{
-			echo $e->getMessage();
-			return false;
-		}
+		TransferHelper::download(
+			$url,
+			$tmpPath,
+			null);
 
 		$ret = self::generateFromFile($tmpPath, $dstPath, $width, $height);
 

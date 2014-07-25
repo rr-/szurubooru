@@ -28,7 +28,16 @@ foreach ($posts as $post)
 		unlink($post->getThumbnailPath());
 
 	if (!file_exists($post->getThumbnailPath()))
-		$post->generateThumbnail();
+	{
+		try
+		{
+			$post->generateThumbnail();
+		}
+		catch (Exception $e)
+		{
+			echo $e->getMessage();
+		}
+	}
 }
 
 echo 'Don\'t forget to check access rights.' . PHP_EOL;

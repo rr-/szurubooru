@@ -13,19 +13,35 @@ class GetPostThumbnailJob extends AbstractJob
 		$post = $this->postRetriever->retrieve();
 
 		$path = $post->getThumbnailPath();
-		if (!file_exists($path) or !is_readable($path))
+		if (!$this->isValidThumbnailPath($path))
 		{
-			$post->generateThumbnail();
-			$path = $post->getThumbnailPath();
-
-			if (!file_exists($path) or !is_readable($path))
+			try
 			{
-				$path = Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
-				$path = TextHelper::absolutePath($path);
+				$post->generateThumbnail();
+				$path = $post->getThumbnailPath();
 			}
+			catch (Exception $e)
+			{
+				$path = null;
+			}
+
+			if (!$this->isValidThumbnailPath($path))
+				$path = $this->getDefaultThumbnailPath();
 		}
 
 		return new ApiFileOutput($path, 'thumbnail.jpg');
+	}
+
+	private function isValidThumbnailPath($path)
+	{
+		return file_exists($path) and is_readable($path);
+	}
+
+	private function getDefaultThumbnailPath()
+	{
+		$path = Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg';
+		$path = TextHelper::absolutePath($path);
+		return $path;
 	}
 
 	public function getRequiredArguments()
