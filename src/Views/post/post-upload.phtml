@@ -6,24 +6,17 @@ $this->assets->addStylesheet('../lib/tagit/jquery.tagit.css');
 $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 ?>
 
-<div id="sidebar">
-	<div class="unit">
-		<h1>file upload</h1>
-
-		<p>Use tags to describe uploaded images. Try to specify characters, their look and shows they are from.</p>
-		<p>Set proper visibility setting if the image isn&rsquo;t safe for work or you&rsquo;re not sure it&rsquo;s 100% <span class="safety-safe">safe</span>.</p>
-		<p>Only registered users can view <span class="safety-sketchy">sketchy</span> or <span class="safety-unsafe">NSFW</span> content.</p>
-		<p>Click submit when you&rsquo;re done.</p>
-	</div>
-</div>
-
 <div id="inner-content">
 	<div id="upload-step1">
 		<div id="file-handler-wrapper">
 			<input type=file multiple style="display: none"/>
 			<div id="file-handler">
-				Drop files here!<br>
+				Drop files here!<br/>
 				Or just click on this box.
+				<noscript>
+					<br/>
+					Note: this form needs Javascript to work.
+				</noscript>
 			</div>
 		</div>
 
@@ -40,90 +33,138 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 	<div id="upload-step2" data-redirect-url="<?= Core::getRouter()->linkTo(['PostController', 'listView']) ?>">
 		<hr>
 
-		<div class="posts">
-		</div>
+		<div id="hybrid-view">
 
-		<div class="submit-wrapper">
-			<button id="the-submit" class="submit" type="submit">Submit</button>
-		</div>
-	</div>
+		<div id="posts-wrapper">
+			<table id="posts">
+				<thead>
+					<tr>
+						<th class="checkbox">
+							<input type="checkbox" name="select-all"/>
+						</th>
+						<th class="thumbnail"></th>
+						<th class="tags">Tags</th>
+						<th class="safety">Safety</th>
+					</tr>
+				</thead>
 
-	<div id="post-template" class="post">
-		<p class="alert alert-error">Some kind of error</p>
+				<tbody>
+				</tbody>
 
-		<img class="thumbnail" src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+				<tfoot>
+					<tr class="template">
+						<td class="checkbox">
+							<input type="checkbox"/>
+						</td>
+						<td class="thumbnail">
+							<img src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
+						</td>
+						<td class="tags">
+						</td>
+						<td class="safety">
+							<div class="safety-template"></div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
 
-		<div class="form-wrapper">
-			<div class="ops">
-				<a class="move-up-trigger">
-					move up <span>&uarr;</span>
-				</a>
+			<ul id="post-ops">
+				<li>
+					<a href="#" class="btn move-up">Move selection up</a>
+				</li>
+				<li>
+					<a href="#" class="btn move-down">Move selection down</a>
+				</li>
+				<li>
+					<a href="#" class="btn remove">Remove selection</a>
+				</li>
+			</ul>
 
-				<a class="move-down-trigger">
-					move down <span>&darr;</span>
-				</a>
-
-				<a class="remove-trigger">
-					remove <span>&times;</span>
-				</a>
+			<div id="the-submit-wrapper">
+				<form action="<?= Core::getRouter()->linkTo(['PostController', 'uploadAction']) ?>" method="post">
+					<button id="the-submit" class="submit" type="submit">Submit</button>
+				</form>
 			</div>
+		</div>
 
-			<form action="<?= Core::getRouter()->linkTo(['PostController', 'uploadAction']) ?>" method="post">
-				<div class="form-row file-name">
-					<label>File:</label>
-					<div class="input-wrapper">
-						<strong>filename.jpg</strong>
-					</div>
+		<div id="post-edit-form-wrapper">
+
+			<p id="upload-error-alert" class="alert alert-error">
+				Some kind of error
+			</p>
+
+			<p id="uploading-alert" class="alert alert-warning">
+				Uploading in progress&hellip;
+			</p>
+
+			<div id="post-edit-form">
+				<div class="thumbnail">
+					<img src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Thumbnail"/>
 				</div>
 
-				<div class="form-row safety">
-					<label>Safety:</label>
-					<div class="input-wrapper">
-						<?php $checked = false ?>
-						<?php foreach (PostSafety::getAll() as $safety): ?>
-							<label>
-								<input
-									type="radio"
-									name="safety"
-									<?php if (!$checked): ?>
-										checked="checked"
-									<?php endif ?>
-									value="<?= $safety->toInteger() ?>" />
+				<div class="form-wrapper">
+					<form>
+						<div class="form-row file-name">
+							<label>File:</label>
+							<div class="input-wrapper">
+								<strong>filename.jpg</strong>
+							</div>
+						</div>
 
-								<?= ucfirst($safety->toDisplayString()) ?>
+						<div class="form-row safety">
+							<label>Safety:</label>
+							<div class="input-wrapper">
+								<?php $checked = false ?>
+								<?php foreach (PostSafety::getAll() as $safety): ?>
+									<label>
+										<input
+											type="radio"
+											name="safety"
+											<?php if (!$checked): ?>
+												checked="checked"
+											<?php endif ?>
+											value="<?= $safety->toInteger() ?>" />
 
-								<?php $checked = true ?>
-							</label>
-						<?php endforeach ?>
-						<?php if (Core::getConfig()->uploads->allowAnonymousUploads): ?>
-							<input type="hidden" name="anonymous" value="0"/>
-							<label>
-								<input type="checkbox" name="anonymous" value="1"/>
-								Upload anonymously
-							</label>
-						<?php endif ?>
-					</div>
+										<?= ucfirst($safety->toDisplayString()) ?>
+
+										<?php $checked = true ?>
+									</label>
+								<?php endforeach ?>
+								<?php if (Core::getConfig()->uploads->allowAnonymousUploads): ?>
+									<input type="hidden" name="anonymous" value="0"/>
+									<label>
+										<input type="checkbox" name="anonymous" value="1"/>
+										Upload anonymously
+									</label>
+								<?php endif ?>
+							</div>
+						</div>
+
+						<div class="form-row tags">
+							<label>Tags:</label>
+							<div class="input-wrapper">
+								<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
+							</div>
+						</div>
+
+						<div class="form-row source">
+							<label>Source:</label>
+							<div class="input-wrapper">
+								<input type="text"
+									maxlength="<?= Core::getConfig()->posts->maxSourceLength ?>"
+									name="source"
+									placeholder="where did you get this from? (optional)"/>
+							</div>
+						</div>
+					</form>
 				</div>
+			</div>
+		</div>
 
-				<div class="form-row tags">
-					<label>Tags:</label>
-					<div class="input-wrapper">
-						<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
-					</div>
-				</div>
+		</div>
 
-				<div class="form-row source">
-					<label>Source:</label>
-					<div class="input-wrapper">
-						<input type="text"
-							maxlength="<?= Core::getConfig()->posts->maxSourceLength ?>"
-							name="source"
-							placeholder="where did you get this from? (optional)"/>
-					</div>
-				</div>
-			</form>
+		<div id="lightbox">
+			<img src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Preview">
 		</div>
 	</div>
 </div>
-
-<img id="lightbox" src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Preview"/>

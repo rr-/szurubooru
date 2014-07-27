@@ -10,7 +10,8 @@
 
 #upload-step1 {
 	display: table;
-	width: 100%;
+	width: 50%;
+	margin: 0 auto;
 }
 #file-handler-wrapper {
 	display: table;
@@ -44,77 +45,85 @@
 	width: 8em;
 }
 
-.post .thumbnail {
-	width: 150px;
-	height: 150px;
-	line-height: 150px;
+#hybrid-view {
+	text-align: center;
+}
+.thumbnail img {
 	background-image: url('../img/thumb.jpg');
-	background-size: 150px 150px;
 	border: 1px solid black;
 	vertical-align: middle;
-	text-align: center;
 	display: block;
+}
+
+
+#posts-wrapper {
+	width: 40%;
+	margin-right: 1em;
 	float: left;
-	margin-right: 10px;
 }
-
-.post .alert,
-#upload-step2,
-#post-template {
-	display: none;
+#posts {
+	border-spacing: 0;
 }
-
-.post {
-	margin: 2em 0;
+#posts td,
+#posts th {
+	padding: 0.2em 0.5em;
 }
-
-.post .ops {
-	float: right;
+#posts th {
+	font-weight: normal;
+	text-align: left;
 }
-
-.post .ops a {
-	cursor: pointer;
-	margin-left: 1.5em;
-	vertical-align: middle;
+#posts tr.selected {
+	background: lemonchiffon;
 }
-.post a span {
-	margin-left: 0.25em;
-	vertical-align: middle;
+#posts .tags {
+	width: 100%;
+	text-align: left;
 }
-
-.post .move-up-trigger,
-.post .move-down-trigger {
-	color: rgba(0, 64, 128, 0.5);
+#posts .safety {
+	text-align: center;
 }
-.post .move-up-trigger:hover,
-.post .move-down-trigger:hover {
-	color: #00f;
+#posts .safety [class^=safety-] {
+	box-shadow: inset 0 0 0 3px rgba(0,0,0,0.1);
+	width: 25px;
+	height: 25px;
+	margin: 0 auto;
 }
-.post .move-up-trigger span,
-.post .move-down-trigger span {
-	color: rgba(0, 64, 128, 1);
+#posts .safety-safe    { background: #b2efa2; }
+#posts .safety-sketchy { background: #f0e4a8; }
+#posts .safety-unsafe  { background: #fbc6b6; }
+#posts .thumbnail img {
+	width: 30px;
+	height: 30px;
+	background-size: 30px 30px;
 }
-
-.post:first-child .move-up-trigger {
-	display: none;
+#post-ops {
+	list-style-type: none;
+	margin: 1em 0;
 }
-.post:last-child .move-down-trigger {
-	display: none;
+#post-ops li {
+	display: inline-block;
+	margin: 0 1em 0 0;
 }
 
 
-.post .remove-trigger {
-	color: rgba(128, 0, 0, 0.5);
+#post-edit-form-wrapper {
+	display: inline-block;
+	width: 57.5%;
 }
-.post .remove-trigger:hover {
-	color: #f00;
+#post-edit-form-wrapper p {
+	margin-top: 0;
 }
-.post .remove-trigger span {
-	color: rgba(128, 0, 0, 1);
-	font-size: 130%;
+#post-edit-form {
+	margin: 0 auto;
+	overflow: hidden;
+	text-align: left;
 }
-
-.post .file-name strong {
+#post-edit-form .thumbnail img {
+	max-width: 100%;
+	max-height: 300px;
+	margin: 0 auto 1em auto;
+}
+#post-edit-form .file-name strong {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: 100%;
@@ -124,14 +133,13 @@
 	line-height: 30px;
 }
 
-.safety-safe {
-	color: #43aa43;
-}
-.safety-sketchy {
-	color: #d4a627;
-}
-.safety-unsafe {
-	color: #df4b0d;
+
+#post-edit-form,
+#upload-step2,
+#posts-wrapper,
+.alert,
+.template {
+	display: none;
 }
 
 ul.tagit {
@@ -141,33 +149,48 @@ ul.tagit {
 	font-size: 1em;
 }
 
-.submit-wrapper {
+#the-submit-wrapper {
 	text-align: center;
+	clear: both;
 }
 #the-submit {
-	margin: 0 auto;
+	margin: 1em auto;
 	font-size: 14.5pt;
 	padding: 0.35em 2em;
 	height: auto;
 	line-height: auto;
 }
 
-.post .form-wrapper {
-	overflow: hidden;
-}
-.post form {
-	margin-top: 0;
-}
-
 #lightbox {
 	display: none;
 	position: absolute;
 	pointer-events: none;
+	position: absolute;
+	margin-left: 10px;
+}
+#lightbox img {
 	max-width: 400px;
 	max-height: 400px;
-	margin-top: -50%;
-	margin-left: -50%;
 	background: white;
 	border: 0.5em solid white;
-	box-shadow: 0 0 0 3px #eee;
+	box-shadow: 0 0 0 1px #eee;
+	position: relative;
+}
+#lightbox:after {
+	content: '';
+	position: absolute;
+	left: -8px;
+	top: 50%;
+	margin-top: -8px;
+	width: 12px;
+	height: 12px;
+	background: white;
+	border-left: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	transform: rotate(45deg);
+}
+
+#uploading-alert {
+	display: none;
+	text-align: left;
 }
