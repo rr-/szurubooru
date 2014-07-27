@@ -7,7 +7,7 @@ div.debug {
 	text-align: left;
 }
 div.debug pre {
-	margin-left: 1em;
+	margin: 0 1em 1em 1em;
 	white-space: normal;
 	text-indent: -1em;
 }
