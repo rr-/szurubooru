@@ -32,8 +32,8 @@ PropertyModel::set(PropertyModel::EngineVersion, $version . '@' . $branch);
 
 
 //jQuery
-download('http://code.jquery.com/jquery-2.0.3.min.js', $libPath . DS . 'jquery' . DS . 'jquery.min.js');
-download('http://code.jquery.com/jquery-2.0.3.min.map', $libPath . DS . 'jquery' . DS . 'jquery.min.map');
+download('http://code.jquery.com/jquery-2.1.1.min.js', $libPath . DS . 'jquery' . DS . 'jquery.min.js');
+download('http://code.jquery.com/jquery-2.1.1.min.map', $libPath . DS . 'jquery' . DS . 'jquery.min.map');
 
 //jQuery UI
 download('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js', $libPath . DS . 'jquery-ui' . DS . 'jquery-ui.min.js');
