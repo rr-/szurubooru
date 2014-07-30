@@ -44,7 +44,10 @@ function alignPosts()
 	var margin = thumbnailOuterWidth - thumbnailInnerWidth;
 	var numberOfThumbnailsToFitInRow = Math.ceil(containerWidth / thumbnailOuterWidth);
 	var newThumbnailWidth = Math.floor(containerWidth / numberOfThumbnailsToFitInRow) - margin;
-	container.find('.thumb').css('width', newThumbnailWidth + 'px');
+	var newThumbnailHeight = newThumbnailWidth * thumbnailHeight / thumbnailWidth;
+	container.find('.thumb').css({
+		width: newThumbnailWidth + 'px',
+		height: newThumbnailHeight + 'px'});
 }
 
 $(function()
