@@ -4,6 +4,8 @@ use \Chibi\Sql as Sql;
 final class TagEntity extends AbstractEntity implements IValidatable, ISerializable
 {
 	private $name;
+	private $creationDate;
+	private $updateDate;
 
 	public function fillNew()
 	{
@@ -13,6 +15,8 @@ final class TagEntity extends AbstractEntity implements IValidatable, ISerializa
 	{
 		$this->id = (int) $row['id'];
 		$this->name = $row['name'];
+		$this->creationDate = TextHelper::toIntegerOrNull($row['creation_date']);
+		$this->updateDate = TextHelper::toIntegerOrNull($row['update_date']);
 
 		if (isset($row['post_count']))
 			$this->setCache('post_count', (int) $row['post_count']);
@@ -55,6 +59,16 @@ final class TagEntity extends AbstractEntity implements IValidatable, ISerializa
 	public function getName()
 	{
 		return $this->name;
+	}
+
+	public function getCreationDate()
+	{
+		return $this->creationDate;
+	}
+
+	public function getUpdateDate()
+	{
+		return $this->updateDate;
 	}
 
 	public function getPostCount()

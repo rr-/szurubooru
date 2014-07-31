@@ -43,45 +43,67 @@ final class PostModel extends AbstractCrudModel
 			$stmt->setCriterion(Sql\Functors::equals('id', new Sql\Binding($post->getId())));
 			Core::getDatabase()->execute($stmt);
 
-			//tags
-			$tags = $post->getTags();
-
-			$stmt = Sql\Statements::delete();
-			$stmt->setTable('post_tag');
-			$stmt->setCriterion(Sql\Functors::equals('post_id', new Sql\Binding($post->getId())));
-			Core::getDatabase()->execute($stmt);
-
-			foreach ($tags as $postTag)
-			{
-				$stmt = Sql\Statements::insert();
-				$stmt->setTable('post_tag');
-				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
-				$stmt->setColumn('tag_id', new Sql\Binding($postTag->getId()));
-				Core::getDatabase()->execute($stmt);
-			}
-
-			//relations
-			$relations = $post->getRelations();
-
-			$stmt = Sql\Statements::delete();
-			$stmt->setTable('crossref');
-			$binding = new Sql\Binding($post->getId());
-			$stmt->setCriterion(Sql\Functors::disjunction()
-				->add(Sql\Functors::equals('post_id', $binding))
-				->add(Sql\Functors::equals('post2_id', $binding)));
-			Core::getDatabase()->execute($stmt);
-
-			foreach ($relations as $relatedPost)
-			{
-				$stmt = Sql\Statements::insert();
-				$stmt->setTable('crossref');
-				$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
-				$stmt->setColumn('post2_id', new Sql\Binding($relatedPost->getId()));
-				Core::getDatabase()->execute($stmt);
-			}
+			self::saveTags($post);
+			self::saveRelations($post);
 		});
 
 		return $post;
+	}
+
+	private static function saveTags($post)
+	{
+		$newTagIds = array_map(function($tag) { return $tag->getId(); }, $post->getTags());
+
+		$stmt = Sql\Statements::select();
+		$stmt->setTable('post_tag');
+		$stmt->setColumn('tag_id');
+		$stmt->setCriterion(Sql\Functors::equals('post_id', new Sql\Binding($post->getId())));
+		$rows = Core::getDatabase()->fetchAll($stmt);
+		$oldTagIds = array_map(function($row) { return $row['tag_id']; }, $rows);
+
+		$tagIdsToInsert = array_diff($newTagIds, $oldTagIds);
+		$tagIdsToDelete = array_diff($oldTagIds, $newTagIds);
+
+		if (count($tagIdsToDelete))
+		{
+			$stmt = Sql\Statements::delete();
+			$stmt->setTable('post_tag');
+			$stmt->setCriterion(Sql\Functors::conjunction()
+				->add(Sql\Functors::in('tag_id', Sql\Binding::fromArray($tagIdsToDelete)))
+				->add(Sql\Functors::equals('post_id', new Sql\Binding($post->getId()))));
+			Core::getDatabase()->execute($stmt);
+		}
+
+		foreach ($tagIdsToInsert as $tagIdToInsert)
+		{
+			$stmt = Sql\Statements::insert();
+			$stmt->setTable('post_tag');
+			$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
+			$stmt->setColumn('tag_id', new Sql\Binding($tagIdToInsert));
+			Core::getDatabase()->execute($stmt);
+		}
+	}
+
+	private static function saveRelations($post)
+	{
+		$relations = $post->getRelations();
+
+		$stmt = Sql\Statements::delete();
+		$stmt->setTable('crossref');
+		$binding = new Sql\Binding($post->getId());
+		$stmt->setCriterion(Sql\Functors::disjunction()
+			->add(Sql\Functors::equals('post_id', $binding))
+			->add(Sql\Functors::equals('post2_id', $binding)));
+		Core::getDatabase()->execute($stmt);
+
+		foreach ($relations as $relatedPost)
+		{
+			$stmt = Sql\Statements::insert();
+			$stmt->setTable('crossref');
+			$stmt->setColumn('post_id', new Sql\Binding($post->getId()));
+			$stmt->setColumn('post2_id', new Sql\Binding($relatedPost->getId()));
+			Core::getDatabase()->execute($stmt);
+		}
 	}
 
 	protected static function removeSingle($post)

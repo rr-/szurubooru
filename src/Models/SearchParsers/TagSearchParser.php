@@ -38,6 +38,10 @@ class TagSearchParser extends AbstractSearchParser
 	{
 		if ($orderByString == 'popularity')
 			$this->statement->setOrderBy('post_count', $orderDir);
+		elseif ($orderByString == 'creation_date')
+			$this->statement->setOrderBy('tag.creation_date', $orderDir);
+		elseif ($orderByString == 'update_date')
+			$this->statement->setOrderBy('tag.update_date', $orderDir);
 		elseif ($orderByString == 'alpha')
 			$this->statement->setOrderBy(Sql\Functors::{'case'}('tag.name'), $orderDir);
 		else
