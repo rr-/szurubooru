@@ -161,8 +161,17 @@ class PostController extends AbstractController
 		$options->lastModified = time() - 3600;
 		$options->cacheDaysToLive = 0.5;
 		$options->mimeType = mime_content_type($tmpPath);
-		$options->fileHash = md5($url);
-		$options->fileContent = file_get_contents($tmpPath);
+		if (strpos($options->mimeType, 'image/') !== 0) //not an image
+		{
+			$options->mimeType = 'image/jpeg';
+			$options->fileHash = 'thumb.jpg';
+			$options->fileContent = file_get_contents(Core::getConfig()->main->mediaPath . DS . 'img' . DS . 'thumb.jpg');
+		}
+		else
+		{
+			$options->fileHash = md5($url);
+			$options->fileContent = file_get_contents($tmpPath);
+		}
 		$this->renderFile($options);
 	}
 
