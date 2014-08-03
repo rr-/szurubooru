@@ -124,13 +124,7 @@
 	margin: 0 auto 1em auto;
 }
 #post-edit-form .file-name strong {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	max-width: 100%;
-	white-space: pre;
-	display: inline-block;
-	vertical-align: text-bottom;
-	line-height: 30px;
+	vertical-align: middle;
 }
 
 

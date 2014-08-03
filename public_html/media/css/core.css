@@ -274,9 +274,9 @@ input[type=radio],
 input[type=checkbox] {
 	width: auto;
 	max-width: auto;
-	margin: 0 10px 0 0;
+	margin: auto 10px auto 0;
 	padding: 0;
-	vertical-align: middle;
+	vertical-align: baseline;
 }
 
 button {
@@ -300,6 +300,8 @@ button:hover {
 .input-wrapper {
 	overflow: hidden;
 	display: block;
+	line-height: 30px;
+	text-overflow: ellipsis;
 }
 
 ul.tagit,
@@ -321,13 +323,15 @@ ul.tagit {
 }
 ul.tagit li.tagit-new {
 	padding: 1px 0 !important;
+	line-height: normal !important;
 }
 ul.tagit li.tagit-choice {
 	padding: 1px 20px 1px 5px !important;
+	line-height: normal !important;
 }
 ul.tagit input {
 	border: 0 !important;
-	line-height: auto !important;
+	line-height: normal !important;
 	height: auto !important;
 	padding: 0 !important;
 }
@@ -335,8 +339,8 @@ ul.tagit input {
 	padding: 0.5em;
 	background: rgba(255,255,255,0.7);
 	border-radius: 3px;
-	margin: 0.4em 0 0.2em 0;
 	font-size: 95%;
+	line-height: 180%;
 }
 .related-tags ul {
 	list-style-type: none;
