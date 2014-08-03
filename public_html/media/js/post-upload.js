@@ -57,6 +57,18 @@ function bindUrlHandlerEvents()
 		url = url.replace(/^\s+|\s+$/, '');
 		if (url == '')
 			return;
+		protocol = /^(\w+):\/\//.exec(url)
+		if (!protocol)
+			url = 'http://' + url;
+		else
+		{
+			protocol = protocol[1].toLowerCase();
+			if (protocol != 'http' && protocol != 'https')
+			{
+				alert('Unsupported protocol: ' + protocol);
+				return;
+			}
+		}
 		$('#url-handler-wrapper input').val('');
 		addURLs([url]);
 	});
