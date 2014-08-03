@@ -203,7 +203,8 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 				throw new Exception('All related posts must be saved');
 		$uniqueRelations = [];
 		foreach ($relations as $relatedPost)
-			$uniqueRelations[$relatedPost->getId()] = $relatedPost;
+			if ($relatedPost->getId() != $this->getId())
+				$uniqueRelations[$relatedPost->getId()] = $relatedPost;
 		$relations = array_values($uniqueRelations);
 		$this->setCache('relations', $relations);
 	}
