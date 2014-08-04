@@ -70,21 +70,6 @@ class PostController extends AbstractController
 		$this->redirect($url);
 	}
 
-	public function favoritesView($page = 1)
-	{
-		$this->listView('favmin:1', $page, 'favorites');
-	}
-
-	public function upvotedView($page = 1)
-	{
-		$this->listView('scoremin:1', $page, 'upvoted');
-	}
-
-	public function randomView($page = 1)
-	{
-		$this->listView('order:random', $page, 'random');
-	}
-
 	public function toggleTagAction($identifier, $tag, $enable)
 	{
 		Access::assert(new Privilege(

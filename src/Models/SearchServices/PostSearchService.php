@@ -20,7 +20,7 @@ class PostSearchService extends AbstractSearchService
 			$innerStmt = Sql\Statements::select();
 			$innerStmt->setColumn('post.id');
 			$innerStmt->setTable('post');
-			self::decorateParser($innerStmt, $searchQuery);
+			self::decorateFromParser($innerStmt, $searchQuery);
 			$stmt = Sql\Statements::insert();
 			$stmt->setTable('post_search');
 			$stmt->setSource(['post_id'], $innerStmt);

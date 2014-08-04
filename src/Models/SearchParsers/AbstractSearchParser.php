@@ -5,11 +5,41 @@ abstract class AbstractSearchParser
 {
 	protected $statement;
 
-	public function decorate($statement, $filterString)
+	public function disassembleTokens($searchString)
+	{
+		return preg_split('/\s+/', $searchString);
+	}
+
+	public function assembleTokens($tokens)
+	{
+		return implode(' ', $tokens);
+	}
+
+	public function addTokenToSearchString($searchString, $token)
+	{
+		$tokensToInclude = is_array($token)
+			? $token
+			: [$token];
+		$tokens = $this->disassembleTokens($searchString);
+		$newTokens = array_filter(array_unique(array_merge($tokens, $tokensToInclude)));
+		return $this->assembleTokens($newTokens);
+	}
+
+	public function removeTokenFromSearchString($searchString, $token)
+	{
+		$tokensToExclude = is_array($token)
+			? $token
+			: [$token];
+		$tokens = $this->disassembleTokens($searchString);
+		$newTokens = array_diff($tokens, $tokensToExclude);
+		return $this->assembleTokens($newTokens);
+	}
+
+	public function decorate($statement, $searchString)
 	{
 		$this->statement = $statement;
 
-		$tokens = preg_split('/\s+/', $filterString);
+		$tokens = $this->disassembleTokens($searchString);
 		$tokens = array_filter($tokens);
 		$tokens = array_unique($tokens);
 		$this->processSetup($tokens);

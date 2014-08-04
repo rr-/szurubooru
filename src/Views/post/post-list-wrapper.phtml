@@ -1,59 +1,81 @@
 <?php
 $this->assets->setSubTitle('posts');
+$searchQuery = isset($this->context->transport->searchQuery)
+	? htmlspecialchars($this->context->transport->searchQuery)
+	: '';
+
+$parser = PostSearchService::getParser();
+$newSearchQuery = PostSearchService::getParser()->removeTokenFromSearchString(
+	$searchQuery,
+	['favmin:1', 'scoremin:1', 'order:random']);
 
 $tabs = [];
 $activeTab = 0;
 if (Access::check(new Privilege(Privilege::ListPosts)))
-	$tabs []= ['All posts', Core::getRouter()->linkTo(['PostController', 'listView'])];
-
-if (Access::check(new Privilege(Privilege::ListPosts)))
 {
-	$tabs []= ['Random', Core::getRouter()->linkTo(['PostController', 'randomView'])];
-	if ($this->context->source == 'random')
-		$activeTab = count($tabs) - 1;
+	$tabs []= [
+		'title' => 'All posts',
+		'active' => function() { return true; },
+		'link' => Core::getRouter()->linkTo(
+			['PostController', 'listView'],
+			!trim($newSearchQuery) ? [] : ['query' => $newSearchQuery])];
 
-	$tabs []= ['Favorites', Core::getRouter()->linkTo(['PostController', 'favoritesView'])];
-	if ($this->context->source == 'favorites')
-		$activeTab = count($tabs) - 1;
+	$tabs []= [
+		'title' => 'Random',
+		'active' => function() use ($searchQuery) { return strpos($searchQuery, 'order:random') !== false; },
+		'link' => Core::getRouter()->linkTo(
+			['PostController', 'listView'],
+			['query' => $parser->addTokenToSearchString($newSearchQuery, 'order:random')])];
 
-	$tabs []= ['Upvoted', Core::getRouter()->linkTo(['PostController', 'upvotedView'])];
-	if ($this->context->source == 'upvoted')
-		$activeTab = count($tabs) - 1;
+	$tabs []= [
+		'title' => 'Favorites',
+		'active' => function() use ($searchQuery) { return strpos($searchQuery, 'favmin:1') !== false; },
+		'link' => Core::getRouter()->linkTo(
+			['PostController', 'listView'],
+			['query' => $parser->addTokenToSearchString($newSearchQuery, 'favmin:1')])];
+
+	$tabs []= [
+		'title' => 'Upvoted',
+		'active' => function() use ($searchQuery) { return strpos($searchQuery, 'scoremin:1') !== false; },
+		'link' => Core::getRouter()->linkTo(
+			['PostController', 'listView'],
+			['query' => $parser->addTokenToSearchString($newSearchQuery, 'scoremin:1')])];
 }
 
 if (Access::check(new Privilege(Privilege::MassTag)))
 {
-	$tabs []= ['Mass tag', Core::getRouter()->linkTo(['PostController', 'listView'], [
-		'source' => 'mass-tag',
-		'query' => isset($this->context->transport->searchQuery)
-			? htmlspecialchars($this->context->transport->searchQuery)
-			: '',
-		'page' => isset($this->context->transport->paginator)
-			? $this->context->transport->paginator->page
-			: 1])];
-
-	if ($this->context->source == 'mass-tag')
-		$activeTab = count($tabs) - 1;
+	$tabs []= [
+		'title' => 'Mass tag',
+		'active' => function() { return $this->context->source == 'mass-tag'; },
+		'link' => Core::getRouter()->linkTo(['PostController', 'listView'], [
+			'source' => 'mass-tag',
+			'query' => $searchQuery,
+			'page' => isset($this->context->transport->paginator)
+				? $this->context->transport->paginator->page
+				: 1])];
 }
 
+$activeTab = null;
+foreach ($tabs as $key => $tab)
+	if ($tab['active']())
+		$activeTab = $key;
 ?>
 
 <nav class="tabs">
 	<ul>
-		<?php foreach ($tabs as $i => $tab): ?>
+		<?php foreach ($tabs as $key => $tab): ?>
 			<?php
-				list($name, $url) = $tab;
 				$classes = [];
-				$classes []= TextCaseConverter::convert($name,
+				$classes []= TextCaseConverter::convert($tab['title'],
 					TextCaseConverter::BLANK_CASE,
 					TextCaseConverter::SPINAL_CASE);
-				if ($i == $activeTab)
+				if ($key == $activeTab)
 					$classes []= 'selected';
 			?>
 
 			<li class="<?= join(' ', $classes) ?>">
-				<a href="<?= $url ?>">
-					<?= $name ?>
+				<a href="<?= $tab['link'] ?>">
+					<?= $tab['title'] ?>
 				</a>
 			</li>
 		<?php endforeach  ?>

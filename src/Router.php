@@ -63,13 +63,6 @@ class Router extends \Chibi\Routing\Router
 		$this->register(['PostController', 'listView'], 'GET', '/{source}/{query}/{additionalInfo}/{page}', $postValidation);
 		$this->register(['PostController', 'listRedirectAction'], 'POST', '/{source}-redirect', $postValidation);
 
-		$this->register(['PostController', 'randomView'], 'GET', '/random', $postValidation);
-		$this->register(['PostController', 'randomView'], 'GET', '/random/{page}', $postValidation);
-		$this->register(['PostController', 'favoritesView'], 'GET', '/favorites', $postValidation);
-		$this->register(['PostController', 'favoritesView'], 'GET', '/favorites/{page}', $postValidation);
-		$this->register(['PostController', 'upvotedView'], 'GET', '/upvoted', $postValidation);
-		$this->register(['PostController', 'upvotedView'], 'GET', '/upvoted/{page}', $postValidation);
-
 		$this->register(['PostController', 'genericView'], 'GET', '/post/{identifier}', $postValidation);
 		$this->register(['PostController', 'fileView'], 'GET', '/post/{name}/retrieve', $postValidation);
 		$this->register(['PostController', 'thumbnailView'], 'GET', '/post/{name}/thumb', $postValidation);

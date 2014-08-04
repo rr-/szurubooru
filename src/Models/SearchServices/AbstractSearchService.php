@@ -3,38 +3,7 @@ use \Chibi\Sql as Sql;
 
 abstract class AbstractSearchService
 {
-	protected static function getModelClassName()
-	{
-		$searchServiceClassName = get_called_class();
-		$modelClassName = str_replace('SearchService', 'Model', $searchServiceClassName);
-		return $modelClassName;
-	}
-
-	protected static function getParserClassName()
-	{
-		$searchServiceClassName = get_called_class();
-		$parserClassName = str_replace('SearchService', 'SearchParser', $searchServiceClassName);
-		return $parserClassName;
-	}
-
-	protected static function decorateParser($stmt, $searchQuery)
-	{
-		$parserClassName = self::getParserClassName();
-		(new $parserClassName)->decorate($stmt, $searchQuery);
-	}
-
-	protected static function decorateCustom($stmt)
-	{
-	}
-
-	protected static function decoratePager($stmt, $perPage, $page)
-	{
-		if ($perPage === null)
-			return;
-		$stmt->setLimit(
-			new Sql\Binding($perPage),
-			new Sql\Binding(($page - 1) * $perPage));
-	}
+	protected static $parser;
 
 	public static function getEntities($searchQuery, $perPage = null, $page = 1)
 	{
@@ -44,7 +13,7 @@ abstract class AbstractSearchService
 		$stmt = Sql\Statements::select();
 		$stmt->setColumn($table . '.*');
 		$stmt->setTable($table);
-		static::decorateParser($stmt, $searchQuery);
+		static::decorateFromParser($stmt, $searchQuery);
 		static::decorateCustom($stmt);
 		static::decoratePager($stmt, $perPage, $page);
 
@@ -60,7 +29,7 @@ abstract class AbstractSearchService
 
 		$innerStmt = Sql\Statements::select();
 		$innerStmt->setTable($table);
-		static::decorateParser($innerStmt, $searchQuery);
+		static::decorateFromParser($innerStmt, $searchQuery);
 		static::decorateCustom($innerStmt);
 		$innerStmt->resetOrderBy();
 
@@ -70,4 +39,45 @@ abstract class AbstractSearchService
 
 		return Core::getDatabase()->fetchOne($stmt)['count'];
 	}
+
+	public static function getParser()
+	{
+		$parserClassName = self::getParserClassName();
+		if (self::$parser == null)
+			self::$parser = new $parserClassName();
+		return self::$parser;
+	}
+
+	protected static function getModelClassName()
+	{
+		$searchServiceClassName = get_called_class();
+		$modelClassName = str_replace('SearchService', 'Model', $searchServiceClassName);
+		return $modelClassName;
+	}
+
+	protected static function decorateFromParser($stmt, $searchQuery)
+	{
+		self::getParser()->decorate($stmt, $searchQuery);
+	}
+
+	protected static function decorateCustom($stmt)
+	{
+	}
+
+	protected static function decoratePager($stmt, $perPage, $page)
+	{
+		if ($perPage === null)
+			return;
+		$stmt->setLimit(
+			new Sql\Binding($perPage),
+			new Sql\Binding(($page - 1) * $perPage));
+	}
+
+	private static function getParserClassName()
+	{
+		$searchServiceClassName = get_called_class();
+		$parserClassName = str_replace('SearchService', 'SearchParser', $searchServiceClassName);
+		return $parserClassName;
+	}
+
 }
