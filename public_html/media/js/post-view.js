@@ -67,7 +67,7 @@ $(function()
 
 		$('.comments.unit a.simple-action').data('callback', function()
 		{
-			$.get(window.location.href).success(function(data)
+			getHtml(window.location.href).success(function(data)
 			{
 				$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
 				$('body').trigger('dom-update');
@@ -76,7 +76,7 @@ $(function()
 
 		$('#sidebar a.simple-action').data('callback', function()
 		{
-			$.get(window.location.href).success(function(data)
+			getHtml(window.location.href).success(function(data)
 			{
 				$('#sidebar').replaceWith($(data).find('#sidebar'));
 				$('body').trigger('dom-update');
@@ -89,7 +89,6 @@ $(function()
 	$('form.edit-post').submit(function(e)
 	{
 		e.preventDefault();
-		rememberLastSearchQuery();
 
 		var formDom = $(this);
 		if (formDom.hasClass('inactive'))
@@ -111,7 +110,7 @@ $(function()
 			{
 				disableExitConfirmation();
 
-				$.get(window.location.href).success(function(data)
+				getHtml(window.location.href).success(function(data)
 				{
 					$('#sidebar').replaceWith($(data).find('#sidebar'));
 					$('#revision').replaceWith($(data).find('#revision'));

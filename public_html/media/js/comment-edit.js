@@ -12,7 +12,6 @@ $(function()
 			.bindOnce('comment-submit', 'submit', function(e)
 		{
 			e.preventDefault();
-			rememberLastSearchQuery();
 
 			var formDom = $(this);
 			if (formDom.hasClass('inactive'))
@@ -50,7 +49,7 @@ $(function()
 						formDom.find('.preview').hide();
 						var cb = function()
 						{
-							$.get(window.location.href).success(function(data)
+							getHtml(window.location.href).success(function(data)
 							{
 								$('.comments-wrapper').replaceWith($(data).find('.comments-wrapper'));
 								$('body').trigger('dom-update');
@@ -99,7 +98,7 @@ $(function()
 
 			if (formDom.length == 0)
 			{
-				$.get($(this).attr('href')).success(function(data)
+				getHtml($(this).attr('href')).success(function(data)
 				{
 					var otherForm = $(data).find('form.edit-comment');
 					otherForm.hide();

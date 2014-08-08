@@ -50,6 +50,12 @@ function postJSON(data)
 	return $.ajax(data);
 };
 
+function getHtml(data)
+{
+	rememberLastSearchQuery();
+	return $.get(data);
+}
+
 $.fn.hasAttr = function(name)
 {
 	return this.attr(name) !== undefined;
@@ -71,6 +77,18 @@ $.fn.bindOnce = function(name, eventName, callback)
 //basic event listeners
 $(function()
 {
+	$(window).on('beforeunload', function()
+	{
+		rememberLastSearchQuery();
+	});
+	if (window.history && window.history.pushState)
+	{
+		$(window).on('popstate', function()
+		{
+			rememberLastSearchQuery();
+		});
+	}
+
 	$('body').bind('dom-update', function()
 	{
 		//event confirmations
@@ -93,9 +111,7 @@ $(function()
 		{
 			if (e.isPropagationStopped())
 				return;
-
 			e.preventDefault();
-			rememberLastSearchQuery();
 
 			var aDom = $(this);
 			if (aDom.hasClass('inactive'))
@@ -125,7 +141,6 @@ $(function()
 		$('form.simple-action').bindOnce('simple-action', 'submit', function(e)
 		{
 			e.preventDefault();
-			rememberLastSearchQuery();
 
 			var formDom = $(this);
 			if (formDom.hasClass('inactive'))
@@ -149,7 +164,6 @@ $(function()
 				{
 					if (data.message)
 						alert(data.message);
-					console.log(data);
 					disableExitConfirmation();
 					formDom.find(':input').attr('readonly', false);
 					formDom.removeClass('inactive');
@@ -184,10 +198,6 @@ $(function()
 			});
 		});
 	});
-
-
-	//try to remember last search query
-	window.onbeforeunload = rememberLastSearchQuery;
 });
 
 
