@@ -88,6 +88,7 @@ $(function()
 			rememberLastSearchQuery();
 		});
 	}
+	rememberLastSearchQuery();
 
 	$('body').bind('dom-update', function()
 	{
@@ -104,7 +105,6 @@ $(function()
 
 		$('form.confirmable').bindOnce('confirmation', 'submit', confirmEvent);
 		$('a.confirmable').bindOnce('confirmation', 'click', confirmEvent);
-
 
 		//simple action buttons
 		$('a.simple-action').bindOnce('simple-action', 'click', function(e)
