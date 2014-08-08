@@ -11,6 +11,9 @@ if (!empty(Core::getConfig()->appearance->extraScripts))
 if (!empty(Core::getConfig()->appearance->extraStylesheets))
 	foreach (Core::getConfig()->appearance->extraStylesheets as $path)
 		$this->assets->addStylesheetFullPath($path);
+$lastSearchQuery = isset($this->context->transport->lastSearchQuery)
+	? $this->context->transport->lastSearchQuery
+	: '';
 ?>
 
 <!DOCTYPE html>
@@ -26,14 +29,11 @@ if (!empty(Core::getConfig()->appearance->extraStylesheets))
 	</head>
 
 	<body>
-		<script type="text/javascript">
-			var lastSearchQuery = <?= json_encode(
-				isset($this->context->transport->lastSearchQuery)
-					? $this->context->transport->lastSearchQuery
-					:'') ?>;
-			var thumbnailWidth = <?= Core::getConfig()->browsing->thumbnailWidth ?>;
-			var thumbnailHeight = <?= Core::getConfig()->browsing->thumbnailHeight ?>;
-		</script>
+		<div id="settings"
+			data-last-search-query="<?= htmlspecialchars($lastSearchQuery) ?>"
+			data-thumbnail-width="<?= Core::getConfig()->browsing->thumbnailWidth ?>"
+			data-thumbnail-height="<?= Core::getConfig()->browsing->thumbnailHeight ?>">
+		</div>
 
 		<nav id="top-nav">
 			<div class="main-wrapper">

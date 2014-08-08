@@ -35,6 +35,8 @@ function toggleTagEventHandler(e)
 
 function alignPosts()
 {
+	var thumbnailWidth = $('#settings').attr('data-thumbnail-width');
+	var thumbnailHeight = $('#settings').attr('data-thumbnail-width');
 	var samplePost = $('.posts .post:last-child');
 	var container = $('.posts');
 	samplePost.find('.thumb').css('width', thumbnailWidth + 'px');

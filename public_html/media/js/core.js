@@ -27,7 +27,7 @@ function getCookie(name)
 
 function rememberLastSearchQuery()
 {
-	//lastSearchQuery variable is obtained from layout
+	var lastSearchQuery = $('#settings').attr('data-last-search-query');
 	setCookie('last-search-query', lastSearchQuery);
 }
 
