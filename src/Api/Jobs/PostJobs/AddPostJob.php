@@ -29,24 +29,7 @@ class AddPostJob extends AbstractJob
 		$arguments = $this->getArguments();
 		$arguments[JobArgs::ARG_POST_ENTITY] = $post;
 
-		Logger::bufferChanges();
-		foreach ($this->getSubJobs() as $subJob)
-		{
-			$subJob->setContext(self::CONTEXT_BATCH_ADD);
-			try
-			{
-				Api::run($subJob, $arguments);
-			}
-			catch (ApiJobUnsatisfiedException $e)
-			{
-			}
-			finally
-			{
-				Logger::discardBuffer();
-			}
-		}
-
-		//save the post to db if everything went okay
+		$this->runSubJobs($this->getSubJobs(), $arguments);
 		PostModel::save($post);
 
 		Logger::log('{user} added {post} (tags: {tags}, safety: {safety}, source: {source})', [
@@ -86,5 +69,25 @@ class AddPostJob extends AbstractJob
 	public function isConfirmedEmailRequired()
 	{
 		return Core::getConfig()->uploads->needEmailForUploading;
+	}
+
+	private function runSubJobs($subJobs, $arguments)
+	{
+		foreach ($subJobs as $subJob)
+		{
+			Logger::bufferChanges();
+			$subJob->setContext(self::CONTEXT_BATCH_ADD);
+			try
+			{
+				Api::run($subJob, $arguments);
+			}
+			catch (ApiJobUnsatisfiedException $e)
+			{
+			}
+			finally
+			{
+				Logger::discardBuffer();
+			}
+		}
 	}
 }

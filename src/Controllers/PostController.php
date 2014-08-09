@@ -129,7 +129,6 @@ class PostController extends AbstractController
 	public function uploadThumbnailView($url)
 	{
 		$url = base64_decode($url);
-
 		if (!Core::getConfig()->misc->proxyThumbsInUpload)
 		{
 			$this->redirect($url);
@@ -144,7 +143,7 @@ class PostController extends AbstractController
 		$options->lastModified = time() - 3600;
 		$options->cacheDaysToLive = 0.5;
 		$options->mimeType = mime_content_type($tmpPath);
-		if (strpos($options->mimeType, 'image/') !== 0) //not an image
+		if (strpos($options->mimeType, 'image/') !== 0)
 		{
 			$options->mimeType = 'image/jpeg';
 			$options->fileHash = 'thumb.jpg';

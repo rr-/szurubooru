@@ -23,18 +23,9 @@ class GetLogJob extends AbstractJob implements IPagedJob
 			? $this->getArgument(JobArgs::ARG_QUERY)
 			: '';
 
-		//parse input
 		$page = max(1, intval($page));
-		$name = str_replace(['/', '\\'], '', $name); //paranoia mode
-		$path = TextHelper::absolutePath(dirname(Core::getConfig()->main->logsPath) . DS . $name);
-		if (!file_exists($path))
-			throw new SimpleNotFoundException('Specified log doesn\'t exist');
-
-		//load lines
-		$lines = file_get_contents($path);
-		$lines = trim($lines);
-		$lines = explode(PHP_EOL, str_replace(["\r", "\n"], PHP_EOL, $lines));
-		$lines = array_reverse($lines);
+		$path = $this->getPath($name);
+		$lines = $this->loadLines($path);
 
 		if (!empty($query))
 		{
@@ -76,5 +67,23 @@ class GetLogJob extends AbstractJob implements IPagedJob
 	public function isConfirmedEmailRequired()
 	{
 		return false;
+	}
+
+	private function getPath($name)
+	{
+		$name = str_replace(['/', '\\'], '', $name);
+		return TextHelper::absolutePath(dirname(Core::getConfig()->main->logsPath) . DS . $name);
+	}
+
+	private function loadLines($path)
+	{
+		if (!file_exists($path))
+			throw new SimpleNotFoundException('Specified log doesn\'t exist');
+
+		$lines = file_get_contents($path);
+		$lines = trim($lines);
+		$lines = explode(PHP_EOL, str_replace(["\r", "\n"], PHP_EOL, $lines));
+		$lines = array_reverse($lines);
+		return $lines;
 	}
 }

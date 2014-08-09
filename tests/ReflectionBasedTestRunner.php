@@ -123,9 +123,7 @@ class ReflectionBasedTestRunner implements ITestRunner
 			}
 		};
 
-		//run all the methods
 		echo 'Starting tests' . PHP_EOL;
-
 		$success = true;
 		foreach ($testFixtures as $className => $testFixture)
 		{

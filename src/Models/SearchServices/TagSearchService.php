@@ -15,30 +15,11 @@ class TagSearchService extends AbstractSearchService
 			return [];
 		$parentTagId = $parentTagEntity->getId();
 
-		$punishCommonTags = false;
-
 		$rows = self::getSiblingTagsWithOccurences($parentTagId);
 		unset($rows[$parentTagId]);
 
-		if ($punishCommonTags)
-		{
-			$rowsGlobal = self::getGlobalOccurencesForTags(array_keys($rows));
-
-			foreach ($rows as $i => &$row)
-			{
-				//multiply own occurences by two because we are going to subtract them
-				$row['sort'] = $row['post_count'] * 2;
-				//subtract global occurencecount
-				$row['sort'] -= isset($rowsGlobal[$i]) ? $rowsGlobal[$i]['post_count'] : 0;
-			}
-		}
-		else
-		{
-			foreach ($rows as $i => &$row)
-			{
-				$row['sort'] = $row['post_count'];
-			}
-		}
+		foreach ($rows as $i => &$row)
+			$row['sort'] = $row['post_count'];
 
 		usort($rows, function($a, $b)
 		{

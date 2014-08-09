@@ -9,11 +9,8 @@ class ListLogsJob extends AbstractJob
 		foreach (glob(dirname($path) . DS . '*.log') as $log)
 			$logs []= basename($log);
 
-		usort($logs, function($a, $b)
-		{
-			return strnatcasecmp($b, $a); //reverse natcasesort
-		});
-
+		natcasesort($logs);
+		$logs = array_reverse($logs);
 		return $logs;
 	}
 

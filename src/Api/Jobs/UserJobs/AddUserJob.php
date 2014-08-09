@@ -30,25 +30,7 @@ class AddUserJob extends AbstractJob
 		$arguments = $this->getArguments();
 		$arguments[JobArgs::ARG_USER_ENTITY] = $user;
 
-		Logger::bufferChanges();
-		foreach ($this->getSubJobs() as $subJob)
-		{
-			$subJob->setContext(self::CONTEXT_BATCH_ADD);
-
-			try
-			{
-				Api::run($subJob, $arguments);
-			}
-			catch (ApiJobUnsatisfiedException $e)
-			{
-			}
-			finally
-			{
-				Logger::discardBuffer();
-			}
-		}
-
-		//save the user to db if everything went okay
+		$this->runSubJobs($this->getSubJobs(), $arguments);
 		UserModel::save($user);
 		EditUserEmailJob::observeSave($user);
 
@@ -83,5 +65,25 @@ class AddUserJob extends AbstractJob
 	public function isConfirmedEmailRequired()
 	{
 		return false;
+	}
+
+	private function runSubJobs($subJobs, $arguments)
+	{
+		foreach ($subJobs as $subJob)
+		{
+			Logger::bufferChanges();
+			$subJob->setContext(self::CONTEXT_BATCH_ADD);
+			try
+			{
+				Api::run($subJob, $arguments);
+			}
+			catch (ApiJobUnsatisfiedException $e)
+			{
+			}
+			finally
+			{
+				Logger::discardBuffer();
+			}
+		}
 	}
 }

@@ -1,10 +1,22 @@
 <?php
 require_once 'src/core.php';
-$config = Core::getConfig();
-$fontsPath = TextHelper::absolutePath($config->main->mediaPath . DS . 'fonts');
-$libPath = TextHelper::absolutePath($config->main->mediaPath . DS . 'lib');
 
+function updateVersion()
+{
+	$version = exec('git describe --tags --always --dirty');
+	$branch = exec('git rev-parse --abbrev-ref HEAD');
+	PropertyModel::set(PropertyModel::EngineVersion, $version . '@' . $branch);
+}
 
+function getLibPath()
+{
+	return TextHelper::absolutePath(Core::getConfig()->main->mediaPath . DS . 'lib');
+}
+
+function getFontsPath()
+{
+	return TextHelper::absolutePath(Core::getConfig()->main->mediaPath . DS . 'fonts');
+}
 
 function download($source, $destination = null)
 {
@@ -26,40 +38,54 @@ function download($source, $destination = null)
 	return $content;
 }
 
-$version = exec('git describe --tags --always --dirty');
-$branch = exec('git rev-parse --abbrev-ref HEAD');
-PropertyModel::set(PropertyModel::EngineVersion, $version . '@' . $branch);
-
-
-//jQuery
-download('http://code.jquery.com/jquery-2.1.1.min.js', $libPath . DS . 'jquery' . DS . 'jquery.min.js');
-download('http://code.jquery.com/jquery-2.1.1.min.map', $libPath . DS . 'jquery' . DS . 'jquery.min.map');
-
-//jQuery UI
-download('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js', $libPath . DS . 'jquery-ui' . DS . 'jquery-ui.min.js');
-$manifest = download('http://ajax.googleapis.com/ajax/libs/jqueryui/1/MANIFEST');
-$lines = explode("\n", str_replace("\r", '', $manifest));
-foreach ($lines as $line)
+function downloadJquery()
 {
-	if (preg_match('/themes\/flick\/(.*?) /', $line, $matches))
+	$libPath = getLibPath();
+	download('http://code.jquery.com/jquery-2.1.1.min.js', $libPath . DS . 'jquery' . DS . 'jquery.min.js');
+	download('http://code.jquery.com/jquery-2.1.1.min.map', $libPath . DS . 'jquery' . DS . 'jquery.min.map');
+}
+
+function downloadJqueryUi()
+{
+	$libPath = getLibPath();
+	download('http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js', $libPath . DS . 'jquery-ui' . DS . 'jquery-ui.min.js');
+	$manifest = download('http://ajax.googleapis.com/ajax/libs/jqueryui/1/MANIFEST');
+	$lines = explode("\n", str_replace("\r", '', $manifest));
+	foreach ($lines as $line)
 	{
-		$srcUrl = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/' . $matches[0];
-		$dstUrl = $libPath . DS . 'jquery-ui' . DS . $matches[1];
-		download($srcUrl, $dstUrl);
+		if (preg_match('/themes\/flick\/(.*?) /', $line, $matches))
+		{
+			$srcUrl = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/' . $matches[0];
+			$dstUrl = $libPath . DS . 'jquery-ui' . DS . $matches[1];
+			download($srcUrl, $dstUrl);
+		}
 	}
 }
 
-//jQuery Tag-it!
-download('http://raw.github.com/aehlke/tag-it/master/css/jquery.tagit.css', $libPath . DS . 'tagit' . DS . 'jquery.tagit.css');
-download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $libPath . DS . 'tagit' . DS . 'jquery.tagit.js');
+function downloadJqueryTagIt()
+{
+	$libPath = getLibPath();
+	download('http://raw.github.com/aehlke/tag-it/master/css/jquery.tagit.css', $libPath . DS . 'tagit' . DS . 'jquery.tagit.css');
+	download('http://raw.github.com/aehlke/tag-it/master/js/tag-it.min.js', $libPath . DS . 'tagit' . DS . 'jquery.tagit.js');
+}
 
-//Mousetrap
-download('http://raw.github.com/ccampbell/mousetrap/master/mousetrap.min.js', $libPath . DS . 'mousetrap' . DS . 'mousetrap.min.js');
+function downloadMousetrap()
+{
+	$libPath = getLibPath();
+	download('http://raw.github.com/ccampbell/mousetrap/master/mousetrap.min.js', $libPath . DS . 'mousetrap' . DS . 'mousetrap.min.js');
+}
 
-//fonts
-download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans.ttf', $fontsPath . DS . 'DroidSans.ttf');
-download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans-Bold.ttf', $fontsPath . DS . 'DroidSans-Bold.ttf');
+function downloadFonts()
+{
+	$fontsPath = getFontsPath();
+	download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans.ttf', $fontsPath . DS . 'DroidSans.ttf');
+	download('http://googlefontdirectory.googlecode.com/hg/apache/droidsans/DroidSans-Bold.ttf', $fontsPath . DS . 'DroidSans-Bold.ttf');
+}
 
-
+downloadJquery();
+downloadJqueryUi();
+downloadJqueryTagIt();
+downloadMousetrap();
+downloadFonts();
 
 require_once 'upgrade.php';

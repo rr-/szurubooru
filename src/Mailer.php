@@ -85,16 +85,20 @@ class Mailer
 		Mail $mail,
 		array $tokens = [])
 	{
-		//prepare unique user token
+		$userToken = self::prepareUniqueUserToken($user);
+		$userTokenText = $userToken->getText();
+		$replacementTokens['link'] = Core::getRouter()->linkTo($linkDestination, ['tokenText' => $userTokenText]);
+		$replacementTokens['token'] = $userTokenText;
+		return self::sendMail($mail, $replacementTokens);
+	}
+
+	private static function prepareUniqueUserToken($user)
+	{
 		$token = TokenModel::spawn();
 		$token->setUser($user);
 		$token->setUsed(false);
 		$token->setExpirationTime(null);
 		TokenModel::save($token);
-
-		$tokens['link'] = Core::getRouter()->linkTo($linkDestination, ['tokenText' => $token->getText()]);
-		$tokens['token'] = $token->getText(); //yeah
-
-		return self::sendMail($mail, $tokens);
+		return $token;
 	}
 }

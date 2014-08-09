@@ -315,23 +315,14 @@ final class PostModel extends AbstractCrudModel
 
 		$featuredPostId = PropertyModel::get(PropertyModel::FeaturedPostId);
 		$featuredPostUnixTime = PropertyModel::get(PropertyModel::FeaturedPostUnixTime);
+		$deleted = PostModel::tryGetById($featuredPostId) === null;
+		$expired = $featuredPostUnixTime + $featuredPostRotationTime < time();
+		$featuringNecessary = ($deleted or $expired);
 
-		//check if too old
-		if (!$featuredPostId or $featuredPostUnixTime + $featuredPostRotationTime < time())
-		{
+		if ($featuringNecessary)
 			self::featureRandomPost();
-			return true;
-		}
 
-		//check if post was deleted
-		$featuredPost = PostModel::tryGetById($featuredPostId);
-		if (!$featuredPost)
-		{
-			self::featureRandomPost();
-			return true;
-		}
-
-		return false;
+		return $featuringNecessary;
 	}
 
 	public static function featureRandomPost()

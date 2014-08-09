@@ -10,7 +10,7 @@ final class Core
 	private static $database;
 	private static $rootDir;
 
-	static function init()
+	public static function init()
 	{
 		self::$rootDir = __DIR__ . DS . '..' . DS;
 		chdir(self::$rootDir);
@@ -26,55 +26,37 @@ final class Core
 		\Chibi\AutoLoader::registerFilesystem(__DIR__);
 
 		self::$router = new Router();
+		self::prepareConfig();
+		self::checkExtensions();
 	}
 
-	static function getRouter()
+	public static function getRouter()
 	{
 		return self::$router;
 	}
 
-	static function getConfig()
+	public static function getConfig()
 	{
 		return self::$config;
 	}
 
-	static function getContext()
+	public static function getContext()
 	{
 		return self::$context;
 	}
 
-	static function getDatabase()
+	public static function getDatabase()
 	{
 		return self::$database;
 	}
 
-	static function setConfig(\Chibi\Config $config)
+	public static function setConfig(\Chibi\Config $config)
 	{
 		self::$config = $config;
 		self::$config->rootDir = self::$rootDir;
 	}
 
-	static function prepareConfig()
-	{
-		$configPaths = [];
-		$configPaths []= self::$rootDir . DS . 'data' . DS . 'config.ini';
-		$configPaths []= self::$rootDir . DS . 'data' . DS . 'local.ini';
-
-		self::$config = new \Chibi\Config();
-		foreach ($configPaths as $path)
-			if (file_exists($path))
-				self::$config->loadIni($path);
-		self::$config->rootDir = self::$rootDir;
-	}
-
-	static function prepareContext()
-	{
-		global $startTime;
-		self::$context = new StdClass;
-		self::$context->startTime = $startTime;
-	}
-
-	static function prepareDatabase()
+	public static function prepareDatabase()
 	{
 		$config = self::getConfig();
 		self::$database = new \Chibi\Db\Database(
@@ -85,7 +67,7 @@ final class Core
 		\Chibi\Sql\Config::setDriver(self::$database->getDriver());
 	}
 
-	static function prepareEnvironment()
+	public static function prepareEnvironment()
 	{
 		self::prepareContext();
 
@@ -95,46 +77,13 @@ final class Core
 		TransferHelper::createDirectory($config->main->thumbnailsPath);
 		TransferHelper::createDirectory($config->main->avatarsPath);
 
-		//extension sanity checks
-		$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'openssl', 'fileinfo'];
-		foreach ($requiredExtensions as $ext)
-			if (!extension_loaded($ext))
-				die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);
-
 		Access::init();
 		Logger::init();
 		Mailer::init();
 		PropertyModel::init();
 	}
 
-	static function getDbVersion()
-	{
-		try
-		{
-			$dbVersion = PropertyModel::get(PropertyModel::DbVersion);
-		}
-		catch (Exception $e)
-		{
-			return [null, null];
-		}
-		if (strpos($dbVersion, '.') !== false)
-		{
-			list ($dbVersionMajor, $dbVersionMinor) = explode('.', $dbVersion);
-		}
-		elseif ($dbVersion)
-		{
-			$dbVersionMajor = $dbVersion;
-			$dbVersionMinor = null;
-		}
-		else
-		{
-			$dbVersionMajor = 0;
-			$dbVersionMinor = 0;
-		}
-		return [$dbVersionMajor, $dbVersionMinor];
-	}
-
-	static function upgradeDatabase()
+	public static function upgradeDatabase()
 	{
 		$config = self::getConfig();
 		$upgradesPath = TextHelper::absolutePath($config->rootDir
@@ -190,9 +139,64 @@ final class Core
 		list ($dbVersionMajor, $dbVersionMinor) = self::getDbVersion();
 		printf('Database version: %d.%d' . PHP_EOL, $dbVersionMajor, $dbVersionMinor);
 	}
+
+	private static function checkExtensions()
+	{
+		$config = self::getConfig();
+		$requiredExtensions = ['pdo', 'pdo_' . $config->main->dbDriver, 'openssl', 'fileinfo'];
+		foreach ($requiredExtensions as $ext)
+			if (!extension_loaded($ext))
+				die('PHP extension "' . $ext . '" must be enabled to continue.' . PHP_EOL);
+	}
+
+	private static function prepareContext()
+	{
+		global $startTime;
+		self::$context = new StdClass;
+		self::$context->startTime = $startTime;
+	}
+
+	private static function prepareConfig()
+	{
+		$configPaths = [];
+		$configPaths []= self::$rootDir . DS . 'data' . DS . 'config.ini';
+		$configPaths []= self::$rootDir . DS . 'data' . DS . 'local.ini';
+
+		self::$config = new \Chibi\Config();
+		foreach ($configPaths as $path)
+			if (file_exists($path))
+				self::$config->loadIni($path);
+		self::$config->rootDir = self::$rootDir;
+	}
+
+	private static function getDbVersion()
+	{
+		try
+		{
+			$dbVersion = PropertyModel::get(PropertyModel::DbVersion);
+		}
+		catch (Exception $e)
+		{
+			return [null, null];
+		}
+		if (strpos($dbVersion, '.') !== false)
+		{
+			list ($dbVersionMajor, $dbVersionMinor) = explode('.', $dbVersion);
+		}
+		elseif ($dbVersion)
+		{
+			$dbVersionMajor = $dbVersion;
+			$dbVersionMinor = null;
+		}
+		else
+		{
+			$dbVersionMajor = 0;
+			$dbVersionMinor = 0;
+		}
+		return [$dbVersionMajor, $dbVersionMinor];
+	}
 }
 
 Core::init();
-Core::prepareConfig();
 Core::prepareDatabase();
 Core::prepareEnvironment();

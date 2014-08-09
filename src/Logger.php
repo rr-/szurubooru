@@ -64,7 +64,6 @@ class Logger
 			self::flush();
 	}
 
-	//methods for manipulating buffered logs
 	public static function getBuffer()
 	{
 		return self::$buffer;
