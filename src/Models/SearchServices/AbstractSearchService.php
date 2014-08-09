@@ -3,7 +3,7 @@ use \Chibi\Sql as Sql;
 
 abstract class AbstractSearchService
 {
-	protected static $parser;
+	private static $parsers = [];
 
 	public static function getEntities($searchQuery, $perPage = null, $page = 1)
 	{
@@ -42,10 +42,11 @@ abstract class AbstractSearchService
 
 	public static function getParser()
 	{
+		$key = get_called_class();
 		$parserClassName = self::getParserClassName();
-		if (self::$parser == null)
-			self::$parser = new $parserClassName();
-		return self::$parser;
+		if (!isset(self::$parsers[$key]))
+			self::$parsers[$key] = new $parserClassName();
+		return self::$parsers[$key];
 	}
 
 	protected static function getModelClassName()

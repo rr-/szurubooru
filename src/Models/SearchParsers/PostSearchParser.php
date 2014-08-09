@@ -4,14 +4,17 @@ use \Chibi\Sql as Sql;
 class PostSearchParser extends AbstractSearchParser
 {
 	private $tags;
-	private $showHidden = false;
-	private $showDisliked = false;
-	private $randomReset = true;
+	private $showHidden;
+	private $showDisliked;
+	private $randomReset;
 
 	protected function processSetup(&$tokens)
 	{
 		$config = Core::getConfig();
 
+		$this->showHidden = false;
+		$this->showDisliked = false;
+		$this->randomReset = true;
 		$this->tags = [];
 		$crit = Sql\Functors::conjunction();
 
