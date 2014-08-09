@@ -1,7 +1,21 @@
+function constrainFlashSize()
+{
+	var target = $('.post-type-flash object');
+	var container = $('#inner-content');
+	target.width('');
+	if (target.width() > container.width())
+	{
+		target.width(container.width())
+		target.height(container.width() * target.attr('height') / target.attr('width'));
+	}
+}
+
 $(function()
 {
 	function onDomUpdate()
 	{
+		constrainFlashSize();
+
 		$('#sidebar .permalink').bindOnce('select-link', 'click', function(e)
 		{
 			e.preventDefault();
