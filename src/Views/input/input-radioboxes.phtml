@@ -1,5 +1,4 @@
 <?php
-$id = uniqid();
 $name = $this->context->name;
 $label = isset($this->context->label) ? $this->context->label . ':' : '';
 $optionValues = $this->context->optionValues;
@@ -7,23 +6,20 @@ $optionLabels = $this->context->optionLabels;
 $activeOptionValue = $this->context->activeOptionValue;
 $keys = array_keys($optionValues);
 $inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '';
+$ids = array_map('uniqid', $optionValues);
 ?>
 
 <div class="form-row">
-	<label for="<?= $id ?>">
-		<?= $label ?>
-	</label>
+	<label><?= $label ?></label>
 	<div class="input-wrapper">
 
 		<?php foreach ($keys as $key): ?>
-			<label class="radiobox-wrapper">
+			<label class="radiobox-wrapper" for="<?= $ids[$key] ?>">
 				<input type="radio"
 					name="<?= $name ?>"
+					id="<?= $ids[$key] ?>"
 					<?php if ($inputClass): ?>
 						class="<?= $inputClass ?>"
-					<?php endif ?>
-					<?php if (count($keys) == 1): ?>
-						id="<?= $id ?>"
 					<?php endif ?>
 					<?php if ($optionValues[$key] == $activeOptionValue): ?>
 						checked="checked"

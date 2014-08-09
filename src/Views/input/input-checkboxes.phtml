@@ -1,5 +1,4 @@
 <?php
-$id = uniqid();
 $label = isset($this->context->label) ? $this->context->label . ':' : '';
 $optionValuesDisabled = $this->context->optionValuesDisabled;
 $optionValuesEnabled = $this->context->optionValuesEnabled;
@@ -8,10 +7,15 @@ $optionNames = $this->context->optionNames;
 $optionStates = $this->context->optionStates;
 $keys = array_keys($optionNames);
 $inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '';
+$ids = array_map('uniqid', $optionNames);
 ?>
 
 <div class="form-row">
-	<label for="<?= $id ?>">
+	<?php if (count($ids) == 1): ?>
+		<label for="<?= $ids[0] ?>">
+	<?php else: ?>
+		<label>
+	<?php endif ?>
 		<?= $label ?>
 	</label>
 	<div class="input-wrapper">
@@ -24,12 +28,10 @@ $inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '
 				name="<?= $optionNames[$key] ?>"
 				value="<?= $optionValuesDisabled[$key] ?>"/>
 
-			<label class="checkbox-wrapper">
+			<label class="checkbox-wrapper" for="<?= $ids[$key] ?>">
 				<input type="checkbox"
+					id="<?= $ids[$key] ?>"
 					name="<?= $optionNames[$key] ?>"
-					<?php if (count($keys) == 1): ?>
-						id="<?= $id ?>"
-					<?php endif ?>
 					<?php if ($optionStates[$key]): ?>
 						checked="checked"
 					<?php endif ?>
