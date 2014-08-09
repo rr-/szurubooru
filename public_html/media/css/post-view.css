@@ -120,6 +120,10 @@ sidebar {
 	cursor: text;
 	color: dimgray;
 	border: 1px solid #e0e0e0;
+	box-sizing: border-box;
+	text-overflow: ellipsis;
+	white-space: pre;
+	overflow: hidden;
 }
 
 #sidebar .left a,
