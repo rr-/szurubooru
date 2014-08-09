@@ -40,7 +40,10 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 				<thead>
 					<tr>
 						<th class="checkbox">
-							<input type="checkbox" name="select-all"/>
+							<label class="checkbox-wrapper">
+								<input type="checkbox" name="select-all"/>
+								<span></span>
+							</label>
 						</th>
 						<th class="thumbnail"></th>
 						<th class="tags">Tags</th>
@@ -54,7 +57,10 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 				<tfoot>
 					<tr class="template">
 						<td class="checkbox">
-							<input type="checkbox"/>
+							<label class="checkbox-wrapper">
+								<input type="checkbox"/>
+								<span></span>
+							</label>
 						</td>
 						<td class="thumbnail">
 							<img src="<?= \Chibi\Util\Url::makeAbsolute('/media/img/pixel.gif') ?>" alt="Thumbnail"/>

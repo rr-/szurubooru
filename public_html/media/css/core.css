@@ -240,6 +240,16 @@ a:hover i[class*='icon-'] {
 
 
 
+.form-row {
+	margin: 0 0 0.5em 0;
+	clear: left;
+}
+.input-wrapper {
+	overflow: hidden;
+	display: block;
+	line-height: 30px;
+	text-overflow: ellipsis;
+}
 .form-row>label {
 	display: inline-block;
 	text-align: right;
@@ -267,17 +277,6 @@ select {
 	font-family: inherit;
 	font-size: 11pt;
 }
-input[type=file] {
-	padding: 5px 0;
-}
-input[type=radio],
-input[type=checkbox] {
-	width: auto;
-	max-width: auto;
-	margin: auto 10px auto 0;
-	padding: 0;
-	vertical-align: baseline;
-}
 
 button {
 	font-size: 12pt;
@@ -293,16 +292,36 @@ button:hover {
 	cursor: pointer;
 }
 
-.form-row {
-	margin: 0 0 0.5em 0;
-	clear: left;
+input[type=file] {
+	padding: 5px 0;
 }
-.input-wrapper {
-	overflow: hidden;
-	display: block;
-	line-height: 30px;
-	text-overflow: ellipsis;
+input[type=radio],
+input[type=checkbox] {
+	width: auto;
+	max-width: auto;
+	margin: auto 10px auto 0;
+	padding: 0;
+	vertical-align: baseline;
 }
+.radiobox-wrapper input[type=radio],
+.checkbox-wrapper input[type=checkbox] {
+	display: none;
+}
+.radiobox-wrapper input[type=radio]+span,
+.checkbox-wrapper input[type=checkbox]+span {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	margin-right: 0.5em;
+	background-image: url('../img/icons.png');
+	background-repeat: none;
+	vertical-align: text-bottom;
+	content: '';
+}
+.radiobox-wrapper input[type=radio]+span { background-position: -126px -21px; }
+.radiobox-wrapper input[type=radio]:checked+span { background-position: -105px -21px; }
+.checkbox-wrapper input[type=checkbox]+span { background-position: -84px -21px; }
+.checkbox-wrapper input[type=checkbox]:checked+span { background-position: -63px -21px; }
 
 ul.tagit,
 select,

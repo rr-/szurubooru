@@ -16,7 +16,7 @@ $inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '
 	<div class="input-wrapper">
 
 		<?php foreach ($keys as $key): ?>
-			<label>
+			<label class="radiobox-wrapper">
 				<input type="radio"
 					name="<?= $name ?>"
 					<?php if ($inputClass): ?>
@@ -29,6 +29,7 @@ $inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '
 						checked="checked"
 					<?php endif ?>
 					value="<?= $optionValues[$key] ?>"/>
+				<span></span>
 
 				<?= $optionLabels[$key] ?>
 			</label>

@@ -24,7 +24,7 @@ $inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '
 				name="<?= $optionNames[$key] ?>"
 				value="<?= $optionValuesDisabled[$key] ?>"/>
 
-			<label>
+			<label class="checkbox-wrapper">
 				<input type="checkbox"
 					name="<?= $optionNames[$key] ?>"
 					<?php if (count($keys) == 1): ?>
@@ -34,6 +34,7 @@ $inputClass = isset($this->context->inputClass) ? $this->context->inputClass : '
 						checked="checked"
 					<?php endif ?>
 					value="<?= $optionValuesEnabled[$key] ?>"/>
+				<span></span>
 
 				<?= $optionLabels[$key] ?>
 			</label>
