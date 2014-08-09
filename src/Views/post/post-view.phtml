@@ -33,7 +33,10 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php if ($this->context->transport->nextPostId): ?>
 				<a href="<?= Core::getRouter()->linkTo(
 					['PostController', 'genericView'],
-					['identifier' => $this->context->transport->nextPostId]) ?>">
+					empty($this->context->transport->searchQuery)
+						? ['identifier' => $this->context->transport->nextPostId]
+						: ['identifier' => $this->context->transport->nextPostId,
+							'query' => $this->context->transport->searchQuery]) ?>">
 			<?php else: ?>
 				<a class="disabled">
 			<?php endif ?>
@@ -46,7 +49,10 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 			<?php if ($this->context->transport->prevPostId): ?>
 				<a href="<?= Core::getRouter()->linkTo(
 					['PostController', 'genericView'],
-					['identifier' => $this->context->transport->prevPostId]) ?>">
+					empty($this->context->transport->searchQuery)
+						? ['identifier' => $this->context->transport->prevPostId]
+						: ['identifier' => $this->context->transport->prevPostId,
+							'query' => $this->context->transport->searchQuery]) ?>">
 			<?php else: ?>
 				<a class="disabled">
 			<?php endif ?>
@@ -57,13 +63,13 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 
 		<div class="clear"></div>
 
-		<?php if (!empty($this->context->transport->lastSearchQuery)): ?>
+		<?php if (!empty($this->context->transport->searchQuery)): ?>
 			<div class="text">
 				Current&nbsp;search:<br/>
 				<a href="<?= Core::getRouter()->linkTo(
 					['PostController', 'listView'],
-					['query' => $this->context->transport->lastSearchQuery]) ?>">
-					<?= $this->context->transport->lastSearchQuery ?>
+					['query' => $this->context->transport->searchQuery]) ?>">
+					<?= $this->context->transport->searchQuery ?>
 				</a>
 			</div>
 		<?php endif ?>

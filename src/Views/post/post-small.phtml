@@ -45,7 +45,11 @@ if ($masstag)
 		<?php if (Auth::getCurrentUser()->getSettings()->hasEnabledPostTagTitles()): ?>
 			title="<?= TextHelper::reprTags($this->context->post->getTags()) ?>"
 		<?php endif ?>
-		href="<?= Core::getRouter()->linkTo(['PostController', 'genericView'], ['identifier' => $this->context->post->getId()]) ?>">
+		href="<?= Core::getRouter()->linkTo(['PostController', 'genericView'],
+			empty($this->context->transport->searchQuery)
+				? ['identifier' => $this->context->post->getId()]
+				: ['identifier' => $this->context->post->getId(),
+					'query' => $this->context->transport->searchQuery]) ?>">
 
 		<img
 			class="thumb"

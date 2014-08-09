@@ -25,12 +25,6 @@ function getCookie(name)
 	return unescape(value.substring(start, end));
 }
 
-function rememberLastSearchQuery()
-{
-	var lastSearchQuery = $('#settings').attr('data-last-search-query');
-	setCookie('last-search-query', lastSearchQuery);
-}
-
 //core functionalities, prototypes
 function getJSON(data)
 {
@@ -52,7 +46,6 @@ function postJSON(data)
 
 function getHtml(data)
 {
-	rememberLastSearchQuery();
 	return $.get(data);
 }
 
@@ -77,19 +70,6 @@ $.fn.bindOnce = function(name, eventName, callback)
 //basic event listeners
 $(function()
 {
-	$(window).on('beforeunload', function()
-	{
-		rememberLastSearchQuery();
-	});
-	if (window.history && window.history.pushState)
-	{
-		$(window).on('popstate', function()
-		{
-			rememberLastSearchQuery();
-		});
-	}
-	rememberLastSearchQuery();
-
 	$('body').bind('dom-update', function()
 	{
 		//event confirmations

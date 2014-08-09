@@ -11,7 +11,6 @@ class PostController extends AbstractController
 		{
 			$query = trim($query);
 			$context->transport->searchQuery = $query;
-			$context->transport->lastSearchQuery = $query;
 			if ($source == 'mass-tag')
 			{
 				Access::assert(new Privilege(Privilege::MassTag));
@@ -49,7 +48,6 @@ class PostController extends AbstractController
 		$additionalInfo = trim(InputHelper::get('tag'));
 
 		$context->transport->searchQuery = $query;
-		$context->transport->lastSearchQuery = $query;
 		if (strpos($query, '/') !== false)
 			throw new SimpleException('Search query contains invalid characters');
 
@@ -284,7 +282,7 @@ class PostController extends AbstractController
 		$this->redirectToGenericView($identifier);
 	}
 
-	public function genericView($identifier)
+	public function genericView($identifier, $query = null)
 	{
 		$context = Core::getContext();
 
@@ -294,17 +292,17 @@ class PostController extends AbstractController
 
 		try
 		{
-			$context->transport->lastSearchQuery = InputHelper::get('last-search-query');
+			$context->transport->searchQuery = $query;
 			list ($prevPostId, $nextPostId) =
 				PostSearchService::getPostIdsAround(
-					$context->transport->lastSearchQuery, $identifier);
+					$context->transport->searchQuery, $identifier);
 		}
 		#search for some reason was invalid, e.g. tag was deleted in the meantime
 		catch (Exception $e)
 		{
-			$context->transport->lastSearchQuery = '';
+			$context->transport->searchQuery = '';
 			list ($prevPostId, $nextPostId) =
-				PostSearchService::getPostIdsAround($context->transport->lastSearchQuery, $identifier);
+				PostSearchService::getPostIdsAround($context->transport->searchQuery, $identifier);
 		}
 
 		$isUserFavorite = Auth::getCurrentUser()->hasFavorited($post);
