@@ -1,20 +1,18 @@
-#sidebar {
+sidebar {
 	width: 224px;
 	line-height: 1.33em;
 	font-size: 90%;
 }
 
-img,
-embed {
+.post-type-image img,
+.post-type-video video {
 	max-width: 100%;
 }
 
-.post-type-image img {
-	/*background: url('../img/bk-image.png') lemonchiffon;*/
-}
-.post-type-flash iframe {
+.post-type-youtube iframe {
+	width: 800px;
+	height: 600px;
 	border: 0;
-	/*background: url('../img/bk-swf.png') lemonchiffon;*/
 }
 
 #sidebar .relations ul,

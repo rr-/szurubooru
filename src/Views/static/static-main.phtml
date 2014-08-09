@@ -18,12 +18,19 @@ $this->assets->addStylesheet('static-main.css');
 	<div class="body">
 		<?php
 			$this->context->transport->post = $this->context->featuredPost;
-			$this->context->imageLink = Core::getRouter()->linkTo(
-				['PostController', 'genericView'],
-				['identifier' => $this->context->featuredPost->getId()]);
 		?>
 
+		<?php if ($this->context->featuredPost->getType()->toInteger() == PostType::Image): ?>
+			<a href="<?= Core::getRouter()->linkTo(
+				['PostController', 'genericView'],
+				['identifier' => $this->context->featuredPost->getId()]) ?>">
+		<?php endif ?>
+
 		<?php $this->renderExternal('post-file-render') ?>
+
+		<?php if ($this->context->featuredPost->getType()->toInteger() == PostType::Image): ?>
+			</a>
+		<?php endif ?>
 	</div>
 
 	<div class="footer">

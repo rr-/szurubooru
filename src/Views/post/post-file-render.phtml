@@ -7,18 +7,10 @@ $post = $this->context->transport->post;
 
 <?php if ($post->getType()->toInteger() == PostType::Image): ?>
 
-	<?php if (!empty($this->context->imageLink)): ?>
-		<a href="<?= $this->context->imageLink ?>">
-	<?php endif ?>
-
 	<img alt="<?= $post->getName() ?>"
 		src="<?= Core::getRouter()->linkTo(
 			['PostController', 'fileView'],
 			['name' => $post->getName()]) ?>"/>
-
-	<?php if (!empty($this->context->imageLink)): ?>
-		</a>
-	<?php endif ?>
 
 <?php elseif ($post->getType()->toInteger() ==  PostType::Flash): ?>
 
@@ -39,16 +31,12 @@ $post = $this->context->transport->post;
 
 <?php elseif ($post->getType()->toInteger() == PostType::Youtube): ?>
 
-	<iframe
-		style="width: 800px; height: 600px; border: 0;"
-		src="//www.youtube.com/embed/<?= $post->getFileHash() ?>?wmode=opaque"
-		allowfullscreen>
-
+	<iframe src="//www.youtube.com/embed/<?= $post->getFileHash() ?>?wmode=opaque" allowfullscreen>
 	</iframe>
 
 <?php elseif ($post->getType()->toInteger() == PostType::Video): ?>
 
-	<video style="max-width: 100%" controls>
+	<video controls>
 		<source
 			type="<?= $post->getMimeType() ?>"
 			src="<?= Core::getRouter()->linkTo(
