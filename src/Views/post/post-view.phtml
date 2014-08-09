@@ -190,6 +190,10 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 				<?php endif ?>
 			</span>
 		</div>
+
+		<span class="permalink" title="Permalink">
+			<?= Core::getRouter()->linkTo(['PostController', 'genericView'], ['identifier' => $post->getId()]) ?>
+		</span>
 	</div>
 
 	<div class="unit hl-options">

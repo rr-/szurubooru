@@ -102,7 +102,6 @@ embed {
 #sidebar .score .selected {
 	font-weight: bold;
 }
-
 #sidebar .score a:first-of-type:before {
 	content: '[';
 	color: black;
@@ -110,6 +109,19 @@ embed {
 #sidebar .score a:last-of-type:after {
 	content: ']';
 	color: black;
+}
+
+#sidebar .permalink {
+	display: inline-block;
+	margin: 1em 0 0 -1px;
+	width: 100%;
+	font-size: 85%;
+	line-height: 150%;
+	height: auto;
+	padding: 0.2em 0.5em;
+	cursor: text;
+	color: dimgray;
+	border: 1px solid #e0e0e0;
 }
 
 #sidebar .left a,

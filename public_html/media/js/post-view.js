@@ -2,6 +2,26 @@ $(function()
 {
 	function onDomUpdate()
 	{
+		$('#sidebar .permalink').bindOnce('select-link', 'click', function(e)
+		{
+			e.preventDefault();
+			var node = $(this)[0];
+			if (document.body.createTextRange)
+			{
+				var range = document.body.createTextRange();
+				range.moveToElementText(node);
+				range.select();
+			}
+			else if (window.getSelection)
+			{
+				var selection = window.getSelection();
+				var range = document.createRange();
+				range.selectNodeContents(node);
+				selection.removeAllRanges();
+				selection.addRange(range);
+			}
+		});
+
 		$('#sidebar a.edit-post').bindOnce('edit-post', 'click', function(e)
 		{
 			e.preventDefault();
