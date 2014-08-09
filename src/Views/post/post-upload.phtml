@@ -111,57 +111,41 @@ $this->assets->addScript('../lib/tagit/jquery.tagit.js');
 							</div>
 						</div>
 
-						<div class="form-row safety">
-							<label>Safety:</label>
-							<div class="input-wrapper">
-								<?php $checked = false ?>
-								<?php foreach (PostSafety::getAll() as $safety): ?>
-									<label>
-										<input
-											type="radio"
-											name="safety"
-											<?php if (!$checked): ?>
-												checked="checked"
-											<?php endif ?>
-											value="<?= $safety->toInteger() ?>" />
+						<?php
+							$safety = PostSafety::getAll();
+							$context = new StdClass;
+							$context->label = 'Safety';
+							$context->name = 'safety';
+							$context->optionValues = array_map(function($s) { return $s->toInteger(); }, $safety);
+							$context->optionLabels = array_map(function($s) { return ucfirst($s->toDisplayString()); }, $safety);
+							$context->activeOptionValue = PostSafety::Safe;
+							$this->renderExternal('input-radioboxes', $context);
 
-										<?= ucfirst($safety->toDisplayString()) ?>
+							$context = new StdClass;
+							$context->label = 'Tags';
+							$context->name = 'tags';
+							$context->placeholder = 'Enter some tags&hellip;';
+							$this->renderExternal('input-text', $context);
 
-										<?php $checked = true ?>
-									</label>
-								<?php endforeach ?>
-							</div>
-						</div>
+							$context = new StdClass;
+							$context->label = 'Source';
+							$context->name = 'source';
+							$context->placeholder =' Where did you get this from? (optional)';
+							$context->maxLength = Core::getConfig()->posts->maxSourceLength;
+							$this->renderExternal('input-text', $context);
 
-						<div class="form-row tags">
-							<label>Tags:</label>
-							<div class="input-wrapper">
-								<input type="text" name="tags" placeholder="enter some tags&hellip;"/>
-							</div>
-						</div>
-
-						<div class="form-row source">
-							<label>Source:</label>
-							<div class="input-wrapper">
-								<input type="text"
-									maxlength="<?= Core::getConfig()->posts->maxSourceLength ?>"
-									name="source"
-									placeholder="where did you get this from? (optional)"/>
-							</div>
-						</div>
-
-						<?php if (Core::getConfig()->uploads->allowAnonymousUploads): ?>
-							<div class="form-row anonymous">
-								<label>Anonymity:</label>
-								<div class="input-wrapper">
-									<input type="hidden" name="anonymous" value="0"/>
-									<label>
-										<input type="checkbox" name="anonymous" value="1"/>
-										Don't show my name in this post
-									</label>
-								</div>
-							</div>
-						<?php endif ?>
+							if (Core::getConfig()->uploads->allowAnonymousUploads)
+							{
+								$context = new StdClass;
+								$context->label = 'Anonymity';
+								$context->optionNames = ['anonymous'];
+								$context->optionValuesDisabled = ['0'];
+								$context->optionValuesEnabled = ['1'];
+								$context->optionLabels = ['Don\'t show my name in this post'];
+								$context->optionStates = [false];
+								$this->renderExternal('input-checkboxes', $context);
+							}
+						?>
 					</form>
 				</div>
 			</div>
