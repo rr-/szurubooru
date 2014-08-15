@@ -154,12 +154,18 @@ class TextHelper
 
 	public static function stripBytesUnits($string)
 	{
-		return self::stripUnits($string, 1024, ['B', 'K', 'M', 'G']);
+		$string = strtoupper($string);
+		if (!preg_match('/^\d+[KMG]?B?$/', $string))
+			throw new SimpleException('Invalid format: ' . $string);
+		return self::stripUnits(strtoupper($string), 1024, ['B', 'K', 'M', 'G']);
 	}
 
 	public static function stripDecimalUnits($string)
 	{
-		return self::stripUnits($string, 1000, ['', 'K', 'M']);
+		$string = strtoupper($string);
+		if (!preg_match('/^\d+[KM]?$/', $string))
+			throw new SimpleException('Invalid format: ' . $string);
+		return self::stripUnits(strtoupper($string), 1000, ['', 'K', 'M']);
 	}
 
 	public static function parseMarkdown($text, $simple = false)

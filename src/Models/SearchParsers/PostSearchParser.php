@@ -162,6 +162,18 @@ class PostSearchParser extends AbstractSearchParser
 			return Sql\Functors::equalsOrLesser('post.upload_date', new Sql\Binding($dateMax));
 		}
 
+		elseif (in_array($key, ['filesizemin', 'filesize_min']))
+		{
+			$fileSizeMin = TextHelper::stripBytesUnits($value);
+			return Sql\Functors::equalsOrGreater('post.file_size', new Sql\Binding($fileSizeMin));
+		}
+
+		elseif (in_array($key, ['filesizemax', 'filesize_max']))
+		{
+			$fileSizeMax = TextHelper::stripBytesUnits($value);
+			return Sql\Functors::equalsOrLesser('post.file_size', new Sql\Binding($fileSizeMax));
+		}
+
 		elseif ($key == 'special')
 		{
 			$activeUser = Auth::getCurrentUser();

@@ -38,6 +38,8 @@ Command                           | Description                                 
 [search]date:2000-01-01[/search]  | posted on January 1st, 2000                               | -                                               |
 [search]datemin:...[/search]      | posted on `...` or later (format like in `date:`)         | `date_min`                                      |
 [search]datemax:...[/search]      | posted on `...` or earlier (format like in `date:`)       | `date_max`                                      |
+[search]filesizemin:7M[/search]   | has size of at least 7 megabytes                          | `filesize_min`                                  |
+[search]filesizemax:30K[/search]  | has size of at most 30 kilobytes                          | `filesize_max`                                  |
 [search]id:1,2,3[/search]         | having specific post ID                                   | `ids`                                           |
 [search]name:...[/search]         | having specific post name (hash in full URLs)             | `names`, `hash`, `hashes`                       |
 [search]idmin:5[/search]          | posts with ID greater than or equal to @5                 | `id_min`                                        |
