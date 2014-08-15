@@ -162,8 +162,7 @@ footer .right {
 	margin-bottom: 10px;
 }
 #sidebar+#inner-content {
-	margin-left: 255px;
-	overflow: hidden;
+	overflow: auto;
 }
 
 
