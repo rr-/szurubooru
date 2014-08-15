@@ -292,19 +292,31 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected static function parseDate($value)
 	{
-		list ($year, $month, $day) = explode('-', $value . '-0-0');
-		$year = intval($year);
-		$month = intval($month);
-		$day = intval($day);
-		$yearMin = $yearMax = $year;
-		$monthMin = $monthMax = $month;
-		$monthMin = $monthMin ?: 1;
-		$monthMax = $monthMax ?: 12;
-		$dayMin = $dayMax = $day;
-		$dayMin = $dayMin ?: 1;
-		$dayMax = $dayMax ?: intval(date('t', mktime(0, 0, 0, $monthMax, 1, $year)));
-		$timeMin = mktime(0, 0, 0, $monthMin, $dayMin, $yearMin);
-		$timeMax = mktime(0, 0, -1, $monthMax, $dayMax+1, $yearMax);
+		$value = trim($value);
+		if (preg_match('/^(\d{4})$/', $value, $matches))
+		{
+			$year = intval($matches[1]);
+			$timeMin = mktime(0, 0, 0, 1, 1, $year);
+			$timeMax = mktime(0, 0, -1, 1, 1, $year + 1);
+		}
+		elseif (preg_match('/^(\d{4})-(\d{1,2})$/', $value, $matches))
+		{
+			$year = intval($matches[1]);
+			$month = intval($matches[2]);
+			$timeMin = mktime(0, 0, 0, $month, 1, $year);
+			$timeMax = mktime(0, 0, -1, $month + 1, 1, $year);
+		}
+		elseif (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})$/', $value, $matches))
+		{
+			$year = intval($matches[1]);
+			$month = intval($matches[2]);
+			$day = intval($matches[3]);
+			$timeMin = mktime(0, 0, 0, $month, $day, $year);
+			$timeMax = mktime(0, 0, -1, $month, $day + 1, $year);
+		}
+		else
+			throw new SimpleException('Invalid date format: ' . $value);
+
 		return [$timeMin, $timeMax];
 	}
 }
