@@ -31,6 +31,8 @@ Command                           | Description                                 
 [search]scoremax:4[/search]       | having maximum score of 4                                 | `score_max`                                     |
 [search]tagmin:7[/search]         | tagged with at least seven tags                           | `tag_min`                                       |
 [search]tagmax:7[/search]         | tagged with at most seven tags                            | `tax_max`                                       |
+[search]date:today[/search]       | posted today                                              | -                                               |
+[search]date:yesterday[/search]   | posted yesterday                                          | -                                               |
 [search]date:2000[/search]        | posted in year 2000                                       | -                                               |
 [search]date:2000-01[/search]     | posted in January, 2000                                   | -                                               |
 [search]date:2000-01-01[/search]  | posted on January 1st, 2000                               | -                                               |

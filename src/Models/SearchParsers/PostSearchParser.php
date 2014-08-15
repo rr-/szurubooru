@@ -292,8 +292,18 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected static function parseDate($value)
 	{
-		$value = trim($value);
-		if (preg_match('/^(\d{4})$/', $value, $matches))
+		$value = strtolower(trim($value));
+		if ($value == 'today')
+		{
+			$timeMin = mktime(0, 0, 0);
+			$timeMax = mktime(24, 0, -1);
+		}
+		elseif ($value == 'yesterday')
+		{
+			$timeMin = mktime(-24, 0, 0);
+			$timeMax = mktime(0, 0, -1);
+		}
+		elseif (preg_match('/^(\d{4})$/', $value, $matches))
 		{
 			$year = intval($matches[1]);
 			$timeMin = mktime(0, 0, 0, 1, 1, $year);
