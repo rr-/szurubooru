@@ -9,4 +9,5 @@ form.edit-comment textarea,
 form.add-comment textarea {
 	width: 50em;
 	height: 8em;
+	box-sizing: border-box;
 }
