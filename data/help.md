@@ -40,6 +40,10 @@ Command                           | Description                                 
 [search]datemax:...[/search]      | posted on `...` or earlier (format like in `date:`)       | `date_max`                                      |
 [search]filesizemin:7M[/search]   | has size of at least 7 megabytes                          | `filesize_min`                                  |
 [search]filesizemax:30K[/search]  | has size of at most 30 kilobytes                          | `filesize_max`                                  |
+[search]imgsize:huge[/search]     | either dimension has at least 2001px                      | `img_size`, `imagesize`, `image_size`           |
+[search]imgsize:large[/search]    | either dimension has at least 801px and at most 2000px    | `img_size`, `imagesize`, `image_size`           |
+[search]imgsize:medium[/search]   | either dimension has at least 301px and at most 800px     | `img_size`, `imagesize`, `image_size`           |
+[search]imgsize:small[/search]    | either dimension has at most 300px                        | `img_size`, `imagesize`, `image_size`           |
 [search]id:1,2,3[/search]         | having specific post ID                                   | `ids`                                           |
 [search]name:...[/search]         | having specific post name (hash in full URLs)             | `names`, `hash`, `hashes`                       |
 [search]idmin:5[/search]          | posts with ID greater than or equal to @5                 | `id_min`                                        |

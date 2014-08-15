@@ -174,6 +174,15 @@ class PostSearchParser extends AbstractSearchParser
 			return Sql\Functors::equalsOrLesser('post.file_size', new Sql\Binding($fileSizeMax));
 		}
 
+		elseif (in_array($key, ['imagesize', 'imgsize', 'image_size', 'img_size']))
+		{
+			list ($dimensionMin, $dimensionMax) = self::parseImageSize($value);
+			$select = 'MAX(post.image_width, post.image_height)';
+			return Sql\Functors::conjunction()
+				->add(Sql\Functors::equalsOrGreater(Sql\Statements::raw($select), $dimensionMin))
+				->add(Sql\Functors::equalsOrLesser(Sql\Statements::raw($select), $dimensionMax));
+		}
+
 		elseif ($key == 'special')
 		{
 			$activeUser = Auth::getCurrentUser();
@@ -300,6 +309,30 @@ class PostSearchParser extends AbstractSearchParser
 
 		$this->statement->setOrderBy($orderColumn, $orderDir);
 		return true;
+	}
+
+	protected static function parseImageSize($value)
+	{
+		$sizes =
+		[
+			'huge' => 2001,
+			'large' => 801,
+			'medium' => 301,
+			'small' => 1
+		];
+
+		$value = strtolower(trim($value));
+		if (isset($sizes[$value]))
+		{
+			$dimensionMin = $sizes[$value];
+			$keys = array_keys($sizes);
+			$i = array_search($value, $keys) - 1;
+			$dimensionMax = $i >= 0 ? $sizes[$keys[$i]] - 1 : PHP_INT_MAX;
+		}
+		else
+			throw new SimpleException('Invalid format exception');
+
+		return [$dimensionMin, $dimensionMax];
 	}
 
 	protected static function parseDate($value)
