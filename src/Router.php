@@ -15,26 +15,26 @@ class Router extends \Chibi\Routing\Router
 
 	private function registerMisc()
 	{
-		$this->register(['ApiController', 'runAction'], null, '/api');
+		$this->any('/api', ['ApiController', 'runAction']);
 	}
 
 	private function registerStaticPages()
 	{
-		$this->register(['StaticPagesController', 'mainPageView'], 'GET', '');
-		$this->register(['StaticPagesController', 'mainPageView'], 'GET', '/index');
-		$this->register(['StaticPagesController', 'apiDocsView'], 'GET', '/api-docs');
-		$this->register(['StaticPagesController', 'helpView'], 'GET', '/help');
-		$this->register(['StaticPagesController', 'helpView'], 'GET', '/help/{tab}');
-		$this->register(['StaticPagesController', 'fatalErrorView'], 'POST', '/fatal-error/{code}');
-		$this->register(['StaticPagesController', 'fatalErrorView'], 'GET', '/fatal-error/{code}');
+		$this->get('', ['StaticPagesController', 'mainPageView']);
+		$this->get('/index', ['StaticPagesController', 'mainPageView']);
+		$this->get('/api-docs', ['StaticPagesController', 'apiDocsView']);
+		$this->get('/help', ['StaticPagesController', 'helpView']);
+		$this->get('/help/{tab}', ['StaticPagesController', 'helpView']);
+		$this->post('/fatal-error/{code}', ['StaticPagesController', 'fatalErrorView']);
+		$this->get('/fatal-error/{code}', ['StaticPagesController', 'fatalErrorView']);
 	}
 
 	private function registerAuth()
 	{
-		$this->register(['AuthController', 'loginView'], 'GET', '/auth/login');
-		$this->register(['AuthController', 'loginAction'], 'POST', '/auth/login');
-		$this->register(['AuthController', 'logoutAction'], 'POST', '/auth/logout');
-		$this->register(['AuthController', 'logoutAction'], 'GET', '/auth/logout');
+		$this->get('/auth/login', ['AuthController', 'loginView']);
+		$this->post('/auth/login', ['AuthController', 'loginAction']);
+		$this->post('/auth/logout', ['AuthController', 'logoutAction']);
+		$this->get('/auth/logout', ['AuthController', 'logoutAction']);
 	}
 
 	private function registerPostController()
@@ -50,32 +50,32 @@ class Router extends \Chibi\Routing\Router
 			'page' => '\d*',
 		];
 
-		$this->register(['PostController', 'uploadView'], 'GET', '/posts/upload', $postValidation);
-		$this->register(['PostController', 'uploadAction'], 'POST', '/posts/upload', $postValidation);
-		$this->register(['PostController', 'editView'], 'GET', '/post/{identifier}/edit', $postValidation);
-		$this->register(['PostController', 'editAction'], 'POST', '/post/{identifier}/edit', $postValidation);
-		$this->register(['PostController', 'deleteAction'], null, '/post/{identifier}/delete', $postValidation);
+		$this->get('/posts/upload', ['PostController', 'uploadView'], $postValidation);
+		$this->post('/posts/upload', ['PostController', 'uploadAction'], $postValidation);
+		$this->get('/post/{identifier}/edit', ['PostController', 'editView'], $postValidation);
+		$this->post('/post/{identifier}/edit', ['PostController', 'editAction'], $postValidation);
+		$this->any('/post/{identifier}/delete', ['PostController', 'deleteAction'], $postValidation);
 
-		$this->register(['PostController', 'uploadThumbnailView'], 'GET', '/posts/upload/thumb/{url}', ['url' => '.*']);
-		$this->register(['PostController', 'listView'], 'GET', '/{source}', $postValidation);
-		$this->register(['PostController', 'listView'], 'GET', '/{source}/{page}', $postValidation);
-		$this->register(['PostController', 'listView'], 'GET', '/{source}/{query}/{page}', $postValidation);
-		$this->register(['PostController', 'listView'], 'GET', '/{source}/{query}/{additionalInfo}/{page}', $postValidation);
-		$this->register(['PostController', 'listRedirectAction'], 'POST', '/{source}-redirect', $postValidation);
+		$this->get('/posts/upload/thumb/{url}', ['PostController', 'uploadThumbnailView'], ['url' => '.*']);
+		$this->get('/{source}', ['PostController', 'listView'], $postValidation);
+		$this->get('/{source}/{page}', ['PostController', 'listView'], $postValidation);
+		$this->get('/{source}/{query}/{page}', ['PostController', 'listView'], $postValidation);
+		$this->get('/{source}/{query}/{additionalInfo}/{page}', ['PostController', 'listView'], $postValidation);
+		$this->post('/{source}-redirect', ['PostController', 'listRedirectAction'], $postValidation);
 
-		$this->register(['PostController', 'fileView'], 'GET', '/post/{name}/retrieve', $postValidation);
-		$this->register(['PostController', 'genericView'], 'GET', '/post/{identifier}', $postValidation);
-		$this->register(['PostController', 'genericView'], 'GET', '/post/{identifier}/search={query}', $postValidation);
-		$this->register(['PostController', 'thumbnailView'], 'GET', '/post/{name}/thumb', $postValidation);
+		$this->get('/post/{name}/retrieve', ['PostController', 'fileView'], $postValidation);
+		$this->get('/post/{identifier}', ['PostController', 'genericView'], $postValidation);
+		$this->get('/post/{identifier}/search={query}', ['PostController', 'genericView'], $postValidation);
+		$this->get('/post/{name}/thumb', ['PostController', 'thumbnailView'], $postValidation);
 
-		$this->register(['PostController', 'toggleTagAction'], null, '/post/{identifier}/toggle-tag/{tag}/{enable}', $postValidation);
-		$this->register(['PostController', 'flagAction'], null, '/post/{identifier}/flag', $postValidation);
-		$this->register(['PostController', 'hideAction'], null, '/post/{identifier}/hide', $postValidation);
-		$this->register(['PostController', 'unhideAction'], null, '/post/{identifier}/unhide', $postValidation);
-		$this->register(['PostController', 'removeFavoriteAction'], null, '/post/{identifier}/rem-fav', $postValidation);
-		$this->register(['PostController', 'addFavoriteAction'], null, '/post/{identifier}/add-fav', $postValidation);
-		$this->register(['PostController', 'scoreAction'], null, '/post/{identifier}/score/{score}', $postValidation);
-		$this->register(['PostController', 'featureAction'], null, '/post/{identifier}/feature', $postValidation);
+		$this->any('/post/{identifier}/toggle-tag/{tag}/{enable}', ['PostController', 'toggleTagAction'], $postValidation);
+		$this->any('/post/{identifier}/flag', ['PostController', 'flagAction'], $postValidation);
+		$this->any('/post/{identifier}/hide', ['PostController', 'hideAction'], $postValidation);
+		$this->any('/post/{identifier}/unhide', ['PostController', 'unhideAction'], $postValidation);
+		$this->any('/post/{identifier}/rem-fav', ['PostController', 'removeFavoriteAction'], $postValidation);
+		$this->any('/post/{identifier}/add-fav', ['PostController', 'addFavoriteAction'], $postValidation);
+		$this->any('/post/{identifier}/score/{score}', ['PostController', 'scoreAction'], $postValidation);
+		$this->any('/post/{identifier}/feature', ['PostController', 'featureAction'], $postValidation);
 	}
 
 	private function registerUserController()
@@ -88,39 +88,46 @@ class Router extends \Chibi\Routing\Router
 			'filter' => '[^\/]+',
 		];
 
-		$this->register(['UserController', 'listView'], 'GET', '/users', $userValidation);
-		$this->register(['UserController', 'listView'], 'GET', '/users/{page}', $userValidation);
-		$this->register(['UserController', 'listView'], 'GET', '/users/{filter}/{page}', $userValidation);
-		$this->register(['UserController', 'genericView'], 'GET', '/user/{identifier}/{tab}', $userValidation);
-		$this->register(['UserController', 'genericView'], 'GET', '/user/{identifier}/{tab}/{page}', $userValidation);
+		$this->get('/users', ['UserController', 'listView'], $userValidation);
+		$this->get('/users/{page}', ['UserController', 'listView'], $userValidation);
+		$this->get('/users/{filter}/{page}', ['UserController', 'listView'], $userValidation);
+		$this->get('/user/{identifier}/{tab}', ['UserController', 'genericView'], $userValidation);
+		$this->get('/user/{identifier}/{tab}/{page}', ['UserController', 'genericView'], $userValidation);
 
-		$this->register(['UserController', 'editAction'], 'POST', '/user/{identifier}/edit', $userValidation);
+		$this->post('/user/{identifier}/edit', ['UserController', 'editAction'], $userValidation);
 
-		$this->register(['UserController', 'registrationView'], 'GET', '/register', $userValidation);
-		$this->register(['UserController', 'registrationAction'], 'POST', '/register', $userValidation);
+		$this->get('/register', ['UserController', 'registrationView'], $userValidation);
+		$this->post('/register', ['UserController', 'registrationAction'], $userValidation);
 
-		$this->register(['UserController', 'activationView'], 'GET', '/activation', $userValidation);
-		$this->register(['UserController', 'activationAction'], 'POST', '/activation', $userValidation);
-		$this->register(['UserController', 'activationAction'], 'GET', '/activation/{tokenText}', $userValidation);
-		$this->register(['UserController', 'passwordResetView'], 'GET', '/password-reset', $userValidation);
-		$this->register(['UserController', 'passwordResetAction'], 'POST', '/password-reset', $userValidation);
-		$this->register(['UserController', 'passwordResetAction'], 'GET', '/password-reset/{tokenText}', $userValidation);
+		$this->get('/activation', ['UserController', 'activationView'], $userValidation);
+		$this->post('/activation', ['UserController', 'activationAction'], $userValidation);
+		$this->get('/activation/{tokenText}', ['UserController', 'activationAction'], $userValidation);
+		$this->get('/password-reset', ['UserController', 'passwordResetView'], $userValidation);
+		$this->post('/password-reset', ['UserController', 'passwordResetAction'], $userValidation);
+		$this->get('/password-reset/{tokenText}', ['UserController', 'passwordResetAction'], $userValidation);
 
-		$this->register(['UserController', 'flagAction'], null, '/user/{identifier}/flag', $userValidation);
-		$this->register(['UserController', 'banAction'], null, '/user/{identifier}/ban', $userValidation);
-		$this->register(['UserController', 'unbanAction'], null, '/user/{identifier}/unban', $userValidation);
-		$this->register(['UserController', 'acceptRegistrationAction'], null, '/user/{identifier}/accept-registration', $userValidation);
-		$this->register(['UserController', 'deleteAction'], null, '/user/{identifier}/delete', $userValidation);
-		$this->register(['UserController', 'settingsAction'], null, '/user/{identifier}/settings', $userValidation);
-		$this->register(['UserController', 'toggleSafetyAction'], null, '/user/toggle-safety/{safety}', $userValidation);
+		$this->any('/user/{identifier}/flag', ['UserController', 'flagAction'], $userValidation);
+		$this->any('/user/{identifier}/ban', ['UserController', 'banAction'], $userValidation);
+		$this->any('/user/{identifier}/unban', ['UserController', 'unbanAction'], $userValidation);
+		$this->any('/user/{identifier}/accept-registration', ['UserController', 'acceptRegistrationAction'], $userValidation);
+		$this->any('/user/{identifier}/delete', ['UserController', 'deleteAction'], $userValidation);
+		$this->any('/user/{identifier}/settings', ['UserController', 'settingsAction'], $userValidation);
+		$this->any('/user/toggle-safety/{safety}', ['UserController', 'toggleSafetyAction'], $userValidation);
 	}
 
 	private function registerLogController()
 	{
-		$this->register(['LogController', 'listView'], 'GET', '/logs');
-		$this->register(['LogController', 'logView'], 'GET', '/log/{name}', ['name' => '[0-9a-zA-Z._-]+']);
-		$this->register(['LogController', 'logView'], 'GET', '/log/{name}/{page}', ['name' => '[0-9a-zA-Z._-]+', 'page' => '\d*']);
-		$this->register(['LogController', 'logView'], 'GET', '/log/{name}/{page}/{filter}', ['name' => '[0-9a-zA-Z._-]+', 'page' => '\d*', 'filter' => '.*']);
+		$logValidation =
+		[
+			'name' => '[0-9a-zA-Z._-]+',
+			'page' => '\d*',
+			'filter' => '.*',
+		];
+
+		$this->get('/logs', ['LogController', 'listView'], $logValidation);
+		$this->get('/log/{name}', ['LogController', 'logView'], $logValidation);
+		$this->get('/log/{name}/{page}', ['LogController', 'logView'], $logValidation);
+		$this->get('/log/{name}/{page}/{filter}', ['LogController', 'logView'], $logValidation);
 	}
 
 	private function registerTagController()
@@ -131,16 +138,16 @@ class Router extends \Chibi\Routing\Router
 			'filter' => '[^\/]+',
 		];
 
-		$this->register(['TagController', 'listView'], 'GET', '/tags', $tagValidation);
-		$this->register(['TagController', 'listView'], 'GET', '/tags/{page}', $tagValidation);
-		$this->register(['TagController', 'listView'], 'GET', '/tags/{filter}/{page}', $tagValidation);
-		$this->register(['TagController', 'autoCompleteView'], 'GET', '/tags-autocomplete', $tagValidation);
-		$this->register(['TagController', 'relatedView'], 'GET', '/tags-related', $tagValidation);
-		$this->register(['TagController', 'renameView'], 'GET', '/tags-rename', $tagValidation);
-		$this->register(['TagController', 'renameAction'], 'POST', '/tags-rename', $tagValidation);
-		$this->register(['TagController', 'mergeView'], 'GET', '/tags-merge', $tagValidation);
-		$this->register(['TagController', 'mergeAction'], 'POST', '/tags-merge', $tagValidation);
-		$this->register(['TagController', 'massTagRedirectView'], 'GET', '/mass-tag-redirect', $tagValidation);
+		$this->get('/tags', ['TagController', 'listView'], $tagValidation);
+		$this->get('/tags/{page}', ['TagController', 'listView'], $tagValidation);
+		$this->get('/tags/{filter}/{page}', ['TagController', 'listView'], $tagValidation);
+		$this->get('/tags-autocomplete', ['TagController', 'autoCompleteView'], $tagValidation);
+		$this->get('/tags-related', ['TagController', 'relatedView'], $tagValidation);
+		$this->get('/tags-rename', ['TagController', 'renameView'], $tagValidation);
+		$this->post('/tags-rename', ['TagController', 'renameAction'], $tagValidation);
+		$this->get('/tags-merge', ['TagController', 'mergeView'], $tagValidation);
+		$this->post('/tags-merge', ['TagController', 'mergeAction'], $tagValidation);
+		$this->get('/mass-tag-redirect', ['TagController', 'massTagRedirectView'], $tagValidation);
 	}
 
 	private function registerCommentController()
@@ -151,11 +158,11 @@ class Router extends \Chibi\Routing\Router
 			'page' => '\d+',
 		];
 
-		$this->register(['CommentController', 'listView'], 'GET', '/comments', $commentValidation);
-		$this->register(['CommentController', 'listView'], 'GET', '/comments/{page}', $commentValidation);
-		$this->register(['CommentController', 'addAction'], 'POST', '/comment/add', $commentValidation);
-		$this->register(['CommentController', 'deleteAction'], null, '/comment/{id}/delete', $commentValidation);
-		$this->register(['CommentController', 'editView'], 'GET', '/comment/{id}/edit', $commentValidation);
-		$this->register(['CommentController', 'editAction'], 'POST', '/comment/{id}/edit', $commentValidation);
+		$this->get('/comments', ['CommentController', 'listView'], $commentValidation);
+		$this->get('/comments/{page}', ['CommentController', 'listView'], $commentValidation);
+		$this->post('/comment/add', ['CommentController', 'addAction'], $commentValidation);
+		$this->any('/comment/{id}/delete', ['CommentController', 'deleteAction'], $commentValidation);
+		$this->get('/comment/{id}/edit', ['CommentController', 'editView'], $commentValidation);
+		$this->post('/comment/{id}/edit', ['CommentController', 'editAction'], $commentValidation);
 	}
 }
