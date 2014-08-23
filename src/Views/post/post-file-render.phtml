@@ -1,16 +1,11 @@
 <?php
-$this->assets->setPageThumbnail(Core::getRouter()->linkTo(
-	['PostController', 'thumbnailView'],
-	['name' => $this->context->transport->post->getName()]));
 $post = $this->context->transport->post;
+$this->assets->setPageThumbnail($post->getThumbnailUrl());
 ?>
 
 <?php if ($post->getType()->toInteger() == PostType::Image): ?>
 
-	<img alt="<?= $post->getName() ?>"
-		src="<?= Core::getRouter()->linkTo(
-			['PostController', 'fileView'],
-			['name' => $post->getName()]) ?>"/>
+	<img alt="<?= $post->getName() ?>" src="<?= $post->getContentUrl() ?>"/>
 
 <?php elseif ($post->getType()->toInteger() ==  PostType::Flash): ?>
 
@@ -18,14 +13,10 @@ $post = $this->context->transport->post;
 		type="<?= $post->getMimeType() ?>"
 		width="<?= $post->getImageWidth() ?>"
 		height="<?= $post->getImageHeight() ?>"
-		data="<?= Core::getRouter()->linkTo(
-			['PostController', 'fileView'],
-			['name' => $post->getName()]) ?>">
+		data="<?= $post->getContentUrl() ?>">
 
 		<param name="wmode" value="opaque"/>
-		<param name="movie" value="<?= Core::getRouter()->linkTo(
-			['PostController', 'fileView'],
-			['name' => $post->getName()]) ?>"/>
+		<param name="movie" value="<?= $post->getContentUrl() ?>"/>
 
 	</object>
 
@@ -39,9 +30,7 @@ $post = $this->context->transport->post;
 	<video controls>
 		<source
 			type="<?= $post->getMimeType() ?>"
-			src="<?= Core::getRouter()->linkTo(
-				['PostController', 'fileView'],
-				['name' => $post->getName()]) ?>">
+			src="<?= $post->getContentUrl() ?>"/>
 
 		Your browser doesn't support HTML5 &lt;video&gt; tag.
 	</video>

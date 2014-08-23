@@ -320,6 +320,7 @@ class PostController extends AbstractController
 
 	public function fileView($name)
 	{
+		die;
 		$ret = Api::run(new GetPostContentJob(), [JobArgs::ARG_POST_NAME => $name]);
 
 		$options = new FileRendererOptions();

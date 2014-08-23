@@ -63,9 +63,9 @@ class Router extends \Chibi\Routing\Router
 		$this->get('/{source}/{query}/{additionalInfo}/{page}', ['PostController', 'listView'], $postValidation);
 		$this->post('/{source}-redirect', ['PostController', 'listRedirectAction'], $postValidation);
 
-		$this->get('/post/{name}/retrieve', ['PostController', 'fileView'], $postValidation);
 		$this->get('/post/{identifier}', ['PostController', 'genericView'], $postValidation);
 		$this->get('/post/{identifier}/search={query}', ['PostController', 'genericView'], $postValidation);
+		$this->get('/post/{name}/retrieve', ['PostController', 'fileView'], $postValidation);
 		$this->get('/post/{name}/thumb', ['PostController', 'thumbnailView'], $postValidation);
 
 		$this->any('/post/{identifier}/toggle-tag/{tag}/{enable}', ['PostController', 'toggleTagAction'], $postValidation);

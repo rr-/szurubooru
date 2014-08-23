@@ -120,10 +120,8 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$job->setArgument(JobArgs::ARG_POST_ID, $post->getId());
 		$job->setArgument(JobArgs::ARG_POST_NAME, $post->getName());
 		$job->prepare();
-		$this->assert->areEqual(Privilege::DownloadPost, $job->getRequiredMainPrivilege());
-		$sub = $job->getRequiredSubPrivileges();
-		natcasesort($sub);
-		$this->assert->areEquivalent(['hidden', 'safe'], $sub);
+		$this->assert->isNull($job->getRequiredMainPrivilege());
+		$this->assert->isNull($job->getRequiredSubPrivileges());
 	}
 
 	public function testDynamicPostThumbnailPrivileges()
@@ -131,6 +129,7 @@ class ApiPrivilegeTest extends AbstractFullApiTest
 		$job = new GetPostThumbnailJob();
 		$this->testedJobs []= $job;
 		$this->assert->isNull($job->getRequiredMainPrivilege());
+		$this->assert->isNull($job->getRequiredSubPrivileges());
 	}
 
 	public function testDynamicUserPrivileges()

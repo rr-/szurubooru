@@ -360,6 +360,11 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 	}
 
 
+	public function getContentUrl()
+	{
+		return Core::getRouter()->linkTo(['PostController', 'fileView'], ['name' => $this->getName()]);
+	}
+
 	public function getThumbnailUrl()
 	{
 		return Core::getRouter()->linkTo(['PostController', 'thumbnailView'], ['name' => $this->getName()]);

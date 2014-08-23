@@ -3,7 +3,6 @@ class GetPostContentJobTest extends AbstractTest
 {
 	public function testPostRetrieval()
 	{
-		$this->grantAccess('downloadPost');
 		$post = $this->postMocker->mockSingle();
 
 		$output = $this->assert->doesNotThrow(function() use ($post)
@@ -24,8 +23,6 @@ class GetPostContentJobTest extends AbstractTest
 
 	public function testIdFail()
 	{
-		$this->grantAccess('downloadPost');
-
 		$this->assert->throws(function()
 		{
 			Api::run(
@@ -38,8 +35,6 @@ class GetPostContentJobTest extends AbstractTest
 
 	public function testInvalidName()
 	{
-		$this->grantAccess('downloadPost');
-
 		$this->assert->throws(function()
 		{
 			Api::run(

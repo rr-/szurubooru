@@ -199,9 +199,7 @@ $canEditAnything = count(array_filter($editPostPrivileges)) > 0;
 	<div class="unit hl-options">
 		<?php if ($post->getType()->toInteger() != PostType::Youtube): ?>
 			<div class="hl-option">
-				<a title="Download" href="<?= Core::getRouter()->linkTo(
-					['PostController', 'fileView'],
-					['name' => $post->getName()]) ?>">
+				<a title="Download" href="<?= $post->getContentUrl() ?>">
 					<i class="icon-dl"></i>
 					<span>
 						<?php

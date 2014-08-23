@@ -10,6 +10,10 @@ RewriteCond %{DOCUMENT_ROOT}/thumbs/$1.thumb -f
 RewriteRule ^/?post/(.*)/thumb/?$ /thumbs/$1.thumb
 RewriteRule ^/?thumbs/(.*).thumb - [L,T=image/jpeg]
 
+RewriteCond %{DOCUMENT_ROOT}/files/$1 -f
+RewriteRule ^/?post/(.*)/retrieve/?$ /files/$1
+RewriteRule ^/?files/(.*) - [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^.*$ /dispatch.php
