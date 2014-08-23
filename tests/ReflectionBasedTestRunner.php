@@ -11,8 +11,7 @@ class ReflectionBasedTestRunner implements ITestRunner
 	public function run()
 	{
 		$testFixtures = $this->getTestFixtures($this->filter);
-		$success = $this->runAll($testFixtures);
-		exit($success ? 0 : 1);
+		return $this->runAll($testFixtures);
 	}
 
 	public function setFilter($filter)

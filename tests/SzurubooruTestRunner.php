@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../src/core.php';
+\Chibi\Autoloader::registerFileSystem(__DIR__);
+
 class SzurubooruTestRunner implements ITestRunner
 {
 	public function run()
@@ -40,7 +43,21 @@ class SzurubooruTestRunner implements ITestRunner
 				});
 			});
 
-		$testRunner->run();
+		$success = $testRunner->run();
+		$this->removeCache();
+		return $success;
+	}
+
+	private function removeCache()
+	{
+		$cachePath = __DIR__
+			. DIRECTORY_SEPARATOR . '..'
+			. DIRECTORY_SEPARATOR . 'lib'
+			. DIRECTORY_SEPARATOR . 'chibi-core'
+			. DIRECTORY_SEPARATOR . 'cache';
+
+		foreach (glob($cachePath . DIRECTORY_SEPARATOR . '*.dat') as $fn)
+			unlink($fn);
 	}
 
 	private function printHelp()
@@ -157,7 +174,7 @@ class SzurubooruTestRunner implements ITestRunner
 	private function prepareTestConfig($options)
 	{
 		$config = new \Chibi\Config();
-		$config->loadIni(Core::getConfig()->rootDir . DS . 'tests' . DS . 'config.ini');
+		$config->loadIni(Core::getConfig()->rootDir . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'config.ini');
 		$config->isForTests = true;
 
 		$config->main->dbDriver = $options->dbDriver;
@@ -180,6 +197,7 @@ class SzurubooruTestRunner implements ITestRunner
 		$_SESSION = [];
 		Auth::setCurrentUser(null);
 
+		$this->removeCache();
 		$this->removeTestFolders();
 		$this->prepareTestConfig($options);
 		Core::prepareEnvironment();

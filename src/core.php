@@ -25,7 +25,7 @@ final class Core
 		require_once self::$rootDir . 'lib' . DS . 'chibi-sql' . DS . 'include.php';
 		\Chibi\AutoLoader::registerFilesystem(__DIR__);
 
-		self::$router = new Router();
+		self::$router = \Chibi\Cache::getCache('router', function() { return new Router(); });
 		self::prepareConfig();
 		self::checkExtensions();
 	}

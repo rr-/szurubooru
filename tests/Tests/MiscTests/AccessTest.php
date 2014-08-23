@@ -29,7 +29,7 @@ class AccessTest extends AbstractTest
 	public function testAccessRanks2()
 	{
 		Core::getConfig()->privileges->listPosts = 'power-user';
-		Access::init();
+		Access::initWithoutCache();
 
 		$user = $this->userMocker->mockSingle();
 		$user->setAccessRank(new AccessRank(AccessRank::Admin));
@@ -51,7 +51,7 @@ class AccessTest extends AbstractTest
 	public function testSubPrivilegesOnlySub()
 	{
 		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
-		Access::init();
+		Access::initWithoutCache();
 
 		$user = $this->userMocker->mockSingle();
 		$user->setAccessRank(new AccessRank(AccessRank::PowerUser));
@@ -64,7 +64,7 @@ class AccessTest extends AbstractTest
 	{
 		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		Core::getConfig()->privileges->{'listPosts'} = 'admin';
-		Access::init();
+		Access::initWithoutCache();
 		$this->testSubPrivilegesSubAndGeneral();
 	}
 
@@ -72,7 +72,7 @@ class AccessTest extends AbstractTest
 	{
 		Core::getConfig()->privileges->{'listPosts'} = 'admin';
 		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
-		Access::init();
+		Access::initWithoutCache();
 		$this->testSubPrivilegesSubAndGeneral();
 	}
 
@@ -95,7 +95,7 @@ class AccessTest extends AbstractTest
 		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		Core::getConfig()->privileges->{'listPosts.all'} = 'admin';
 		Core::getConfig()->privileges->{'listPosts'} = 'nobody';
-		Access::init();
+		Access::initWithoutCache();
 		$this->testSubPrivilegesMultipleSubAndGeneral();
 	}
 
@@ -104,7 +104,7 @@ class AccessTest extends AbstractTest
 		Core::getConfig()->privileges->{'listPosts'} = 'nobody';
 		Core::getConfig()->privileges->{'listPosts.own'} = 'power-user';
 		Core::getConfig()->privileges->{'listPosts.all'} = 'admin';
-		Access::init();
+		Access::initWithoutCache();
 		$this->testSubPrivilegesMultipleSubAndGeneral();
 	}
 

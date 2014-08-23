@@ -3,6 +3,12 @@ class Assets extends \Chibi\Util\Assets
 {
 	private $pageThumbnail = null;
 	private $subTitle = null;
+	private $engineVersion = null;
+
+	public function __construct()
+	{
+		$this->engineVersion = PropertyModel::get(PropertyModel::EngineVersion);
+	}
 
 	public function setSubTitle($text)
 	{
@@ -16,7 +22,7 @@ class Assets extends \Chibi\Util\Assets
 
 	public function addStylesheet($path)
 	{
-		return $this->addStylesheetFullPath($this->decorateUrl('/media/css/' . $path));
+		return parent::addStylesheet('/media/css/' . $path . '?' . $this->engineVersion);
 	}
 
 	public function addStylesheetFullPath($path)
@@ -26,7 +32,7 @@ class Assets extends \Chibi\Util\Assets
 
 	public function addScript($path)
 	{
-		return $this->addScriptFullPath($this->decorateUrl('/media/js/' . $path));
+		return $this->addScriptFullPath('/media/js/' . $path . '?' . $this->engineVersion);
 	}
 
 	public function addScriptFullPath($path)
@@ -56,11 +62,5 @@ class Assets extends \Chibi\Util\Assets
 		$html = str_replace('</head>', $headSnippet . '</head>', $html);
 		$html = str_replace('</body>', $bodySnippet . '</body>', $html);
 		return $html;
-	}
-
-
-	private function decorateUrl($url)
-	{
-		return $url . '?' . PropertyModel::get(PropertyModel::EngineVersion);
 	}
 }

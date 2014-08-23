@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . '/../src/core.php';
-\Chibi\Autoloader::registerFileSystem(__DIR__);
-
+require_once 'SzurubooruTestRunner.php';
 $runner = new SzurubooruTestRunner();
-$runner->run();
+$success = $runner->run();
+exit($success ? 0 : 1);

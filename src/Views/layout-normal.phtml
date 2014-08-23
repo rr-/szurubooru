@@ -11,9 +11,6 @@ if (!empty(Core::getConfig()->appearance->extraScripts))
 if (!empty(Core::getConfig()->appearance->extraStylesheets))
 	foreach (Core::getConfig()->appearance->extraStylesheets as $path)
 		$this->assets->addStylesheetFullPath($path);
-$lastSearchQuery = isset($this->context->transport->lastSearchQuery)
-	? $this->context->transport->lastSearchQuery
-	: '';
 ?>
 
 <!DOCTYPE html>
@@ -29,6 +26,11 @@ $lastSearchQuery = isset($this->context->transport->lastSearchQuery)
 	</head>
 
 	<body>
+		<?php
+			$lastSearchQuery = isset($this->context->transport->lastSearchQuery)
+				? $this->context->transport->lastSearchQuery
+				: '';
+		?>
 		<div id="settings"
 			data-last-search-query="<?= htmlspecialchars($lastSearchQuery) ?>"
 			data-thumbnail-width="<?= Core::getConfig()->browsing->thumbnailWidth ?>"

@@ -199,9 +199,19 @@ class TextHelper
 
 	public static function reprTags($tags)
 	{
+		if (empty($tags))
+			return '';
 		$x = [];
-		foreach ($tags as $tag)
-			$x []= self::reprTag($tag);
+		if (is_object($tags[0]))
+		{
+			foreach ($tags as $tag)
+				$x []= '#' . $tag->getName();
+		}
+		else
+		{
+			foreach ($tags as $tag)
+				$x []= '#' . $tag;
+		}
 		natcasesort($x);
 		return join(', ', $x);
 	}

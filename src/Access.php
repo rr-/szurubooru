@@ -6,9 +6,19 @@ class Access
 
 	public static function init()
 	{
-		self::$privileges = [];
 		self::$checkPrivileges = true;
+		self::$privileges = \Chibi\Cache::getCache('privileges', [get_called_class(), 'getPrivilegesFromConfig']);
+	}
 
+	public static function initWithoutCache()
+	{
+		self::$checkPrivileges = true;
+		self::$privileges = self::getPrivilegesFromConfig();
+	}
+
+	public static function getPrivilegesFromConfig()
+	{
+		$privileges = [];
 		foreach (Core::getConfig()->privileges as $key => $minAccessRankName)
 		{
 			if (strpos($key, '.') === false)
@@ -19,14 +29,15 @@ class Access
 			if (!in_array($privilegeName, Privilege::getAllConstants()))
 				throw new Exception('Invalid privilege name in config: ' . $privilegeName);
 
-			if (!isset(self::$privileges[$privilegeName]))
+			if (!isset($privileges[$privilegeName]))
 			{
-				self::$privileges[$privilegeName] = [];
-				self::$privileges[$privilegeName][null] = $minAccessRank;
+				$privileges[$privilegeName] = [];
+				$privileges[$privilegeName][null] = $minAccessRank;
 			}
 
-			self::$privileges[$privilegeName][$subPrivilegeName] = $minAccessRank;
+			$privileges[$privilegeName][$subPrivilegeName] = $minAccessRank;
 		}
+		return $privileges;
 	}
 
 	public static function check(Privilege $privilege, $user = null)
