@@ -76,6 +76,20 @@ function bindUrlHandlerEvents()
 
 function bindPostTableOperations()
 {
+	Mousetrap.bind('a', function()
+	{
+		var prevPost = $('#posts tbody tr.selected:eq(0)').prev().data('post');
+		if (prevPost)
+			selectPostTableRow(prevPost);
+	}, 'keyup');
+
+	Mousetrap.bind('d', function()
+	{
+		var nextPost = $('#posts tbody tr.selected:eq(0)').next().data('post');
+		if (nextPost)
+			selectPostTableRow(nextPost);
+	}, 'keyup');
+
 	$('#upload-step2').find('.remove').click(function(e)
 	{
 		e.preventDefault();
