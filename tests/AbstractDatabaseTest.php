@@ -12,10 +12,11 @@ abstract class AbstractDatabaseTest extends \PHPUnit_Framework_TestCase
 		$host = 'localhost';
 		$port = 27017;
 		$database = 'test';
-		$connectingString = sprintf('mongodb://%s:%d/%s', $host, $port, $database);
-		$this->connection = new \Mongo($connectingString);
-		$this->db = $this->connection->selectDb($database);
-		$this->upgradeService = new \Szurubooru\UpgradeService($this->db);
+		$this->config = new \Szurubooru\Config();
+		$this->config->databaseHost = 'localhost';
+		$this->config->databasePort = 27017;
+		$this->config->databaseName = 'test';
+		$this->upgradeService = new \Szurubooru\UpgradeService($this->config);
 		$this->upgradeService->prepareForUsage();
 	}
 

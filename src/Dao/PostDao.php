@@ -3,8 +3,8 @@ namespace Szurubooru\Dao;
 
 final class PostDao extends AbstractDao implements ICrudDao
 {
-	public function __construct(\MongoDB $mongoDb)
+	public function __construct(\Szurubooru\Config $config)
 	{
-		parent::__construct($mongoDb, 'posts', '\Szurubooru\Entities\Post');
+		parent::__construct($config, 'posts', '\Szurubooru\Entities\Post');
 	}
 }

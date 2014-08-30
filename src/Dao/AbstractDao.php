@@ -7,10 +7,10 @@ abstract class AbstractDao implements ICrudDao
 	protected $collection;
 	protected $entityName;
 
-	public function __construct(\MongoDB $mongoDb, $collectionName, $entityName)
+	public function __construct(\Szurubooru\Config $config, $collectionName, $entityName)
 	{
-		$this->db = $mongoDb;
-		$this->collection = $mongoDb->selectCollection($collectionName);
+		$this->db = (new \Szurubooru\DatabaseConnection($config))->getDatabase();
+		$this->collection = $this->db->selectCollection($collectionName);
 		$this->entityName = $entityName;
 	}
 

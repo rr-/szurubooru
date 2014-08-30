@@ -5,9 +5,9 @@ final class UpgradeService
 {
 	private $db;
 
-	public function __construct(\MongoDB $db)
+	public function __construct(\Szurubooru\Config $config)
 	{
-		$this->db = $db;
+		$this->db = (new DatabaseConnection($config))->getDatabase();
 	}
 
 	public function prepareForUsage()
