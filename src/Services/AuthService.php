@@ -55,7 +55,7 @@ final class AuthService
 	{
 		$loginToken = $this->tokenDao->getByName($loginTokenName);
 		if (!$loginToken)
-			throw new \Exception('Error while logging in (invalid token.)');
+			throw new \Exception('Invalid login token.');
 
 		$this->loginToken = $loginToken;
 		$this->loggedInUser = $this->userDao->getById($loginToken->additionalData);
