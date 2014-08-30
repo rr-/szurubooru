@@ -12,9 +12,10 @@ abstract class AbstractDatabaseTest extends \PHPUnit_Framework_TestCase
 		$port = 27017;
 		$database = 'test';
 		$config = new \Szurubooru\Config();
-		$config->databaseHost = 'localhost';
-		$config->databasePort = 27017;
-		$config->databaseName = 'test';
+		$config->database = new \StdClass;
+		$config->database->host = 'localhost';
+		$config->database->port = 27017;
+		$config->database->name = 'test';
 		$this->databaseConnection = new \Szurubooru\DatabaseConnection($config);
 		$this->upgradeService = new \Szurubooru\UpgradeService($this->databaseConnection);
 		$this->upgradeService->prepareForUsage();

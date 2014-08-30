@@ -10,7 +10,7 @@ final class DatabaseConnection
 	{
 		$connectionString = $this->getConnectionString($config);
 		$this->connection = new \MongoClient($connectionString);
-		$this->database = $this->connection->selectDb($config->databaseName);
+		$this->database = $this->connection->selectDb($config->database->name);
 	}
 
 	public function getConnection()
@@ -27,8 +27,8 @@ final class DatabaseConnection
 	{
 		return sprintf(
 			'mongodb://%s:%d/%s',
-			$config->databaseHost,
-			$config->databasePort,
-			$config->databaseName);
+			$config->database->host,
+			$config->database->port,
+			$config->database->name);
 	}
 }
