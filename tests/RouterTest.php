@@ -25,7 +25,7 @@ final class PostDaoTest extends \PHPUnit_Framework_TestCase
 	{
 		$router = new \Szurubooru\Router;
 		$router->get('/test', function() { $this->fail('Route shouldn\'t be executed'); });
-		$this->setExpectedException('\DomainException');
+		$this->setExpectedException(\DomainException::class);
 		$router->handle('POST', '/test');
 	}
 
@@ -33,7 +33,7 @@ final class PostDaoTest extends \PHPUnit_Framework_TestCase
 	{
 		$router = new \Szurubooru\Router;
 		$router->get('/test', function() { $this->fail('Route shouldn\'t be executed'); });
-		$this->setExpectedException('\DomainException');
+		$this->setExpectedException(\DomainException::class);
 		$router->handle('GET', '/test2');
 	}
 
@@ -104,5 +104,28 @@ final class PostDaoTest extends \PHPUnit_Framework_TestCase
 		$router->get('/test', function() { return 'ok'; });
 		$output = $router->handle('GET', '/test');
 		$this->assertEquals('ok', $output);
+	}
+
+	public function testRoutingToClassMethods()
+	{
+		$router = new \Szurubooru\Router;
+		$testController = new TestController();
+		$router->get('/normal', [$testController, 'normalRoute']);
+		$router->get('/static', [\Szurubooru\Tests\TestController::class, 'staticRoute']);
+		$this->assertEquals('normal', $router->handle('GET', '/normal'));
+		$this->assertEquals('static', $router->handle('GET', '/static'));
+	}
+}
+
+class TestController
+{
+	public function normalRoute()
+	{
+		return 'normal';
+	}
+
+	public static function staticRoute()
+	{
+		return 'static';
 	}
 }

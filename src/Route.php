@@ -31,7 +31,9 @@ final class Route
 
 	private function getRouteArguments($matches)
 	{
-		$reflectionFunction = new \ReflectionFunction($this->route);
+		$reflectionFunction = is_array($this->route)
+			? new \ReflectionMethod($this->route[0], $this->route[1])
+			: new \ReflectionFunction($this->route);
 		$arguments = [];
 		foreach ($reflectionFunction->getParameters() as $reflectionParameter)
 		{
