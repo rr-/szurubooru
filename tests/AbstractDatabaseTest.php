@@ -3,8 +3,7 @@ namespace Szurubooru\Tests;
 
 abstract class AbstractDatabaseTest extends \PHPUnit_Framework_TestCase
 {
-	protected $db;
-	protected $connection;
+	protected $databaseConnection;
 	protected $upgradeService;
 
 	public function setUp()
@@ -12,11 +11,12 @@ abstract class AbstractDatabaseTest extends \PHPUnit_Framework_TestCase
 		$host = 'localhost';
 		$port = 27017;
 		$database = 'test';
-		$this->config = new \Szurubooru\Config();
-		$this->config->databaseHost = 'localhost';
-		$this->config->databasePort = 27017;
-		$this->config->databaseName = 'test';
-		$this->upgradeService = new \Szurubooru\UpgradeService($this->config);
+		$config = new \Szurubooru\Config();
+		$config->databaseHost = 'localhost';
+		$config->databasePort = 27017;
+		$config->databaseName = 'test';
+		$this->databaseConnection = new \Szurubooru\DatabaseConnection($config);
+		$this->upgradeService = new \Szurubooru\UpgradeService($this->databaseConnection);
 		$this->upgradeService->prepareForUsage();
 	}
 

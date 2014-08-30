@@ -5,7 +5,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTest
 {
 	public function testSaving()
 	{
-		$postDao = new \Szurubooru\Dao\PostDao($this->config);
+		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post = new \Szurubooru\Entities\Post();
 		$post->name = 'test2';
@@ -24,7 +24,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTest
 
 	public function testGettingAll()
 	{
-		$postDao = new \Szurubooru\Dao\PostDao($this->config);
+		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post1 = new \Szurubooru\Entities\Post();
 		$post1->name = 'test2';
@@ -45,7 +45,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTest
 
 	public function testGettingById()
 	{
-		$postDao = new \Szurubooru\Dao\PostDao($this->config);
+		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post1 = new \Szurubooru\Entities\Post();
 		$post1->name = 'test2';
@@ -63,7 +63,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTest
 
 	public function testDeletingAll()
 	{
-		$postDao = new \Szurubooru\Dao\PostDao($this->config);
+		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post1 = new \Szurubooru\Entities\Post();
 		$post1->name = 'test2';
@@ -84,7 +84,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTest
 
 	public function testDeletingById()
 	{
-		$postDao = new \Szurubooru\Dao\PostDao($this->config);
+		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post1 = new \Szurubooru\Entities\Post();
 		$post1->name = 'test2';

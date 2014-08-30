@@ -5,9 +5,9 @@ final class UpgradeService
 {
 	private $db;
 
-	public function __construct(\Szurubooru\Config $config)
+	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		$this->db = (new DatabaseConnection($config))->getDatabase();
+		$this->db = $databaseConnection->getDatabase();
 	}
 
 	public function prepareForUsage()
