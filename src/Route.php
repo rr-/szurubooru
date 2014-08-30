@@ -13,13 +13,13 @@ final class Route
 		$this->regex = $this->getRegex();
 	}
 
-	public function handle($query)
+	public function handle($query, &$output)
 	{
 		$query = trim($query, '/');
 		if (!preg_match($this->regex, $query, $matches))
 			return false;
 		$routeArguments = $this->getRouteArguments($matches);
-		call_user_func_array($this->route, $routeArguments);
+		$output = call_user_func_array($this->route, $routeArguments);
 		return true;
 	}
 

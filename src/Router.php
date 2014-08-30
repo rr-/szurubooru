@@ -37,8 +37,10 @@ final class Router
 
 		foreach ($this->routes[$method] as $route)
 		{
-			if ($route->handle($request))
-				return;
+			if ($route->handle($request, $output))
+			{
+				return $output;
+				}
 		}
 
 		throw new \DomainException('Unhandled request address: ' . $request);

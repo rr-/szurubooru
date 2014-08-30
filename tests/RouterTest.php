@@ -97,4 +97,12 @@ final class PostDaoTest extends \PHPUnit_Framework_TestCase
 		$router->handle('GET', '/tests/test_id');
 		$this->assertTrue($testOk);
 	}
+
+	public function testOutputHandling()
+	{
+		$router = new \Szurubooru\Router;
+		$router->get('/test', function() { return 'ok'; });
+		$output = $router->handle('GET', '/test');
+		$this->assertEquals('ok', $output);
+	}
 }
