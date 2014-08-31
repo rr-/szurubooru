@@ -21,13 +21,8 @@ App.Bootstrap = function(auth, router) {
 		}
 	}
 
-	return {
-		startRouting: startRouting,
-	};
-
 };
 
 App.DI.registerSingleton('bootstrap', App.Bootstrap);
 App.DI.registerManual('jQuery', function() { return $; });
-
-var bootstrap = App.DI.get('bootstrap');
+App.DI.get('bootstrap');
