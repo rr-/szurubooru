@@ -3,6 +3,7 @@ namespace Szurubooru\ViewProxies;
 
 class User
 {
+	public $id;
 	public $name;
 
 	public function __construct($user)
@@ -10,6 +11,7 @@ class User
 		if (!$user)
 			return;
 
+		$this->id = $user->id;
 		$this->name = $user->name;
 	}
 }

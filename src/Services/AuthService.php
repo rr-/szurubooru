@@ -7,19 +7,21 @@ final class AuthService
 	private $loginToken = null;
 
 	private $passwordService;
+	private $timeService;
 	private $userDao;
 	private $tokenDao;
 
 	public function __construct(
 		\Szurubooru\Services\PasswordService $passwordService,
+		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Dao\TokenDao $tokenDao,
 		\Szurubooru\Dao\UserDao $userDao)
 	{
-		$this->loggedInUser = new \Szurubooru\Entities\User();
-		$this->loggedInUser->name = 'Anonymous';
-		$this->userDao = $userDao;
-		$this->tokenDao = $tokenDao;
+		$this->loggedInUser = $this->getAnonymousUser();
 		$this->passwordService = $passwordService;
+		$this->timeService = $timeService;
+		$this->tokenDao = $tokenDao;
+		$this->userDao = $userDao;
 	}
 
 	public function isLoggedIn()
@@ -47,8 +49,9 @@ final class AuthService
 		if ($user->passwordHash != $passwordHash)
 			throw new \InvalidArgumentException('Specified password is invalid.');
 
-		$this->loggedInUser = $user;
 		$this->loginToken = $this->createAndSaveLoginToken($user);
+		$this->loggedInUser = $user;
+		$this->updateLoginTime($user);
 	}
 
 	public function loginFromToken($loginTokenName)
@@ -59,6 +62,8 @@ final class AuthService
 
 		$this->loginToken = $loginToken;
 		$this->loggedInUser = $this->userDao->getById($loginToken->additionalData);
+		$this->updateLoginTime($this->loggedInUser);
+
 		if (!$this->loggedInUser)
 		{
 			$this->logout();
@@ -66,10 +71,18 @@ final class AuthService
 		}
 	}
 
+	public function getAnonymousUser()
+	{
+		$user = new \Szurubooru\Entities\User();
+		$user->name = 'Anonymous user';
+		$user->accessRank = \Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS;
+		return $user;
+	}
+
 	public function loginAnonymous()
 	{
 		$this->loginToken = null;
-		$this->loggedInUser = $this->userService->getAnonymousUser();
+		$this->loggedInUser = $this->getAnonymousUser();
 	}
 
 	public function logout()
@@ -89,5 +102,11 @@ final class AuthService
 		$loginToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
 		$this->tokenDao->save($loginToken);
 		return $loginToken;
+	}
+
+	private function updateLoginTime($user)
+	{
+		$user->lastLoginTime = $this->timeService->getCurrentTime();
+		$this->userDao->save($user);
 	}
 }

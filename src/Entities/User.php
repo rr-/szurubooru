@@ -12,4 +12,7 @@ final class User extends Entity
 
 	public $name;
 	public $passwordHash;
+	public $email;
+	public $registrationDate;
+	public $lastLoginTime;
 }

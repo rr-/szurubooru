@@ -3,34 +3,52 @@ namespace Szurubooru\Services;
 
 class UserService
 {
-	private $userDao;
 	private $config;
+	private $userDao;
+	private $passwordService;
+	private $emailService;
+	private $timeService;
 
 	public function __construct(
+		\Szurubooru\Config $config,
 		\Szurubooru\Dao\UserDao $userDao,
-		\Szurubooru\Config $config)
+		\Szurubooru\Services\PasswordService $passwordService,
+		\Szurubooru\Services\EmailService $emailService,
+		\Szurubooru\Services\TimeService $timeService)
 	{
-		$this->userDao = $userDao;
 		$this->config = $config;
+		$this->userDao = $userDao;
+		$this->passwordService = $passwordService;
+		$this->emailService = $emailService;
+		$this->timeService = $timeService;
 	}
 
-	public function getById($userId)
+	public function register(\Szurubooru\FormData\RegistrationFormData $formData)
 	{
-		return $this->userDao->getById($userId);
-	}
+		$this->validateUserName($formData->name);
+		$this->passwordService->validatePassword($formData->password);
+		$this->emailService->validateEmail($formData->email);
 
-	public function getByName($userName)
-	{
-		return $this->userDao->getByName($userName);
-	}
+		if ($this->userDao->getByName($formData->name))
+			throw new \DomainException('User with this name already exists.');
 
-	public function save($user)
-	{
+		//todo: privilege checking
+
+		$user = new \Szurubooru\Entities\User();
+		$user->name = $formData->name;
+		$user->email = $formData->email;
+		$user->passwordHash = $this->passwordService->getHash($formData->password);
+		$user->registrationTime = $this->timeService->getCurrentTime();
+
+		//todo: send activation mail if necessary
+
 		return $this->userDao->save($user);
 	}
 
-	public function validateUserName($userName)
+	public function validateUserName(&$userName)
 	{
+		$userName = trim($userName);
+
 		if (!$userName)
 			throw new \DomainException('User name cannot be empty.');
 
@@ -40,12 +58,5 @@ class UserService
 			throw new \DomainException('User name must have at least ' . $minUserNameLength . ' character(s).');
 		if (strlen($userName) < $maxUserNameLength)
 			throw new \DomainException('User name must have at most ' . $minUserNameLength . ' character(s).');
-	}
-
-	public function getAnonymousUser()
-	{
-		$user = new \Szurubooru\Entities\User();
-		$user->name = 'Anonymous user';
-		$user->accessRank = \Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS;
 	}
 }
