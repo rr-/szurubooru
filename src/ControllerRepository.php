@@ -5,10 +5,9 @@ final class ControllerRepository
 {
 	private $controllers = [];
 
-	public function __construct(
-		\Szurubooru\Controllers\AuthController $auth)
+	public function __construct(array $controllers)
 	{
-		$this->controllers = func_get_args();
+		$this->controllers = $controllers;
 	}
 
 	public function getControllers()
