@@ -1,6 +1,9 @@
 <?php
 namespace Szurubooru;
 
+//if script fails prematurely, mark it as fail from advance
+http_response_code(500);
+
 final class Dispatcher
 {
 	private $router;
