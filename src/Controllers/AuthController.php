@@ -4,15 +4,20 @@ namespace Szurubooru\Controllers;
 final class AuthController extends AbstractController
 {
 	private $authService;
+	private $userService;
+	private $passwordService;
 	private $inputReader;
 
 	public function __construct(
 		\Szurubooru\Services\AuthService $authService,
+		\Szurubooru\Services\UserService $userService,
+		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Helpers\InputReader $inputReader)
 	{
 		$this->authService = $authService;
+		$this->userService = $userService;
+		$this->passwordService = $passwordService;
 		$this->inputReader = $inputReader;
-
 	}
 
 	public function registerRoutes(\Szurubooru\Router $router)
@@ -25,10 +30,8 @@ final class AuthController extends AbstractController
 	{
 		if (isset($this->inputReader->userName) and isset($this->inputReader->password))
 		{
-			if (!$this->inputReader->userName)
-				throw new \DomainException('User name cannot be empty.');
-			else if (!$this->inputReader->password)
-				throw new \DomainException('Password cannot be empty.');
+			$this->userService->validateUserName($this->inputReader->userName);
+			$this->passwordService->validatePassword($this->inputReader->password);
 
 			$this->authService->loginFromCredentials($this->inputReader->userName, $this->inputReader->password);
 		}
