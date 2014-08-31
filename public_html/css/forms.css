@@ -1,0 +1,46 @@
+.form-wrapper {
+	display: table;
+}
+
+.form-row {
+	display: table-row;
+}
+
+.form-label,
+.form-input {
+	display: table-cell;
+	line-height: 37px;
+	vertical-align: text-bottom;
+}
+
+.form-input {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.form-row label {
+	padding-right: 1em;
+	text-align: right;
+}
+
+textarea,
+input[type=text],
+input[type=password] {
+	padding: 2px 4px;
+	border: 1px solid #eee;
+	background: #fafafa;
+	font-family: monospace;
+	font-size: 17px;
+	text-overflow: ellipsis;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+button,
+input[type=button] {
+	padding: 0.1em 0.5em;
+	border: 1px solid #eee;
+	background: #eee;
+	font-family: 'Droid Sans', sans-serif;
+	font-size: 17px;
+}

@@ -1,0 +1,38 @@
+#top-navigation {
+	width: 100%;
+}
+
+#top-navigation ul {
+	list-style-type: none;
+	padding: 0 2em;
+	margin: 0;
+}
+
+#top-navigation li {
+	display: inline-block;
+}
+
+#top-navigation li a {
+	display: inline-block;
+	padding: 0.5em 1em;
+	color: #000;
+}
+
+#top-navigation li.active a {
+	background: #faffca;
+}
+
+#top-navigation li a:focus,
+#top-navigation li a:hover {
+	outline: 0;
+	background: #efa;
+	color: #000;
+}
+
+#top-navigation li:first-child a {
+	margin-left: -1em;
+}
+
+#top-navigation li:last-child a {
+	margin-right: -1em;
+}

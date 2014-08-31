@@ -1,0 +1,15 @@
+.message {
+	margin-bottom: 0.2em;
+	padding: 0.4em 0.5em;
+	text-align: center;
+}
+
+.message.error {
+	background: #fdd;
+	box-shadow: 0 0 0 1px #fcc inset;
+}
+
+.message.info {
+	background: #def;
+	box-shadow: 0 0 0 1px #cdf inset;
+}

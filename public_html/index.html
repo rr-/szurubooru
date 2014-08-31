@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>szurubooru</title>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/path.js/0.8.4/path.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700"/>
+	<link rel="stylesheet" type="text/css" href="/css/core.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/forms.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/messages.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/top-navigation.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/login-form.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/registration-form.css"/>
+</head>
+
+<body>
+	<div id="main">
+		<div id="top-navigation"></div>
+		<div id="middle">
+			<div id="sidebar"></div>
+			<div id="content"></div>
+		</div>
+	</div>
+
+	<script type="text/template" id="top-navigation-template">
+		<ul>
+			<!-- todo: check privileges -->
+			<li class="users">
+				<a href="#/users">Users</a>
+			</li>
+			<% if (!loggedIn) { %>
+				<li class="login">
+					<a href="#/login">Login</a>
+				</li>
+				<li class="register">
+					<a href="#/register">Register</a>
+				</li>
+			<% } else { %>
+				<li class="logout">
+					<a href="#/logout">Logout</a>
+				</li>
+			<% } %>
+		</ul>
+	</script>
+
+	<script type="text/template" id="login-form-template">
+		<div id="login-form">
+			<p>
+				If you don't have an account yet,<br/>
+				<a href="#/register">click here</a> to create a new one.
+			</p>
+
+			<div class="messages"></div>
+
+			<form method="post" class="form-wrapper">
+				<div class="form-row">
+					<label for="login-user" class="form-label">User name:</label>
+					<div class="form-input">
+						<input autocomplete="off" type="text" name="user" id="login-user"/>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label for="login-password" class="form-label">Password:</label>
+					<div class="form-input">
+						<input autocomplete="off" type="password" name="password" id="login-password"/>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label class="form-label"></label>
+					<div class="form-input">
+						<button class="submit" type="submit">Log in</button>
+						&nbsp;
+						<input type="hidden" name="remember" value="0"/>
+						<label class="checkbox-wrapper">
+							<input type="checkbox" name="remember" value="1"/>
+							<span></span>
+							Remember me
+						</label>
+					</div>
+				</div>
+			</form>
+
+			<div class="help">
+				<p>Problems logging in?</p>
+				<ul>
+					<li><a href="#/password-reset">I don't remember my password</a></li>
+					<li><a href="#/activate-account">I haven't received activation e-mail</a></li>
+					<li><a href="#/register">I don't have an account</a></li>
+				</ul>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/template" id="registration-form-template">
+		<div id="registration-form">
+			<p>
+				Registered users can view more content,<br/>
+				upload files and add posts to favorites.
+			</p>
+
+			<div class="messages"></div>
+
+			<form method="post" class="form-wrapper">
+				<div class="form-row">
+					<label for="registration-user" class="form-label">User name:</label>
+					<div class="form-input">
+						<input autocomplete="off" type="text" name="user" id="registration-user" placeholder="e.g. darth_vader" value=""/>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label for="registration-password" class="form-label">Password:</label>
+					<div class="form-input">
+						<input autocomplete="off" type="password" name="password1" id="registration-password" placeholder="e.g. &#x25cf;&#x25cf;&#x25cf;&#x25cf;&#x25cf;&#x25cf;&#x25cf;&#x25cf;" value=""/>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label for="registration-password-confirm" class="form-label">Password (repeat):</label>
+					<div class="form-input">
+						<input autocomplete="off" type="password" name="password2" id="registration-password-confirm" placeholder="e.g. &#x25cf;&#x25cf;&#x25cf;&#x25cf;&#x25cf;&#x25cf;&#x25cf;&#x25cf;" value=""/>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label for="registration-email" class="form-label">E-mail address:</label>
+					<div class="form-input">
+						<input autocomplete="off" type="text" name="email" id="registration-email" placeholder="e.g. vader@empire.gov" value=""/>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label class="form-label"></label>
+					<div class="form-input">
+						<button class="submit" type="submit">Register</button>
+					</div>
+				</div>
+			</form>
+
+			<p id="email-info">
+				Your e-mail will be used to show your <a href="http://gravatar.com/">Gravatar</a>.<br/>
+				Leave blank for random Gravatar.
+			</p>
+		</div>
+	</script>
+
+	<script type="text/javascript" src="/js/DI.js"></script>
+	<script type="text/javascript" src="/js/State.js"></script>
+	<script type="text/javascript" src="/js/Api.js"></script>
+	<script type="text/javascript" src="/js/Auth.js"></script>
+	<script type="text/javascript" src="/js/Presenters/TopNavigationPresenter.js"></script>
+	<script type="text/javascript" src="/js/Presenters/LoginPresenter.js"></script>
+	<script type="text/javascript" src="/js/Presenters/LogoutPresenter.js"></script>
+	<script type="text/javascript" src="/js/Presenters/MessagePresenter.js"></script>
+	<script type="text/javascript" src="/js/Presenters/RegistrationPresenter.js"></script>
+	<script type="text/javascript" src="/js/Presenters/UserListPresenter.js"></script>
+	<script type="text/javascript" src="/js/Router.js"></script>
+	<script type="text/javascript" src="/js/Bootstrap.js"></script>
+
+</body>
+</html>

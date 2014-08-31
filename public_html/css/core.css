@@ -1,0 +1,25 @@
+body {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	background: #fff;
+	color: #000;
+	font-family: 'Droid Sans', sans-serif;
+	font-size: 17px;
+}
+
+#middle {
+	padding: 0 2em;
+}
+
+#content {
+	margin: 1.5em 0;
+	padding: 0;
+	display: inline-block;
+	text-align: left;
+}
+
+a {
+	color: #6a2;
+	text-decoration: none;
+}
