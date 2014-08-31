@@ -28,8 +28,8 @@ final class AuthController extends AbstractController
 			throw new \Szurubooru\MissingArgumentException();
 
 		return [
-			'token' => $this->authService->getLoginToken(),
-			'user' => $this->authService->getLoggedInUser()
+			'token' => new \Szurubooru\ViewProxies\Token($this->authService->getLoginToken()),
+			'user' => new \Szurubooru\ViewProxies\User($this->authService->getLoggedInUser()),
 		];
 	}
 }
