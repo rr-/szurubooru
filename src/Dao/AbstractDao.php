@@ -25,11 +25,11 @@ abstract class AbstractDao implements ICrudDao
 		if ($entity->id)
 		{
 			unset ($arrayEntity['_id']);
-			$this->collection->update(['_id' => new \MongoId($entity->id)], $arrayEntity, ['safe' => true]);
+			$this->collection->update(['_id' => new \MongoId($entity->id)], $arrayEntity, ['w' => true]);
 		}
 		else
 		{
-			$this->collection->insert($arrayEntity, ['safe' => true]);
+			$this->collection->insert($arrayEntity, ['w' => true]);
 		}
 		$entity = $this->entityConverter->toEntity($arrayEntity);
 		return $entity;
