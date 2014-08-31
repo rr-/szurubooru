@@ -34,7 +34,7 @@ final class AuthService
 
 	public function getLoginToken()
 	{
-		return $this->token;
+		return $this->loginToken;
 	}
 
 	public function loginFromCredentials($userName, $password)
@@ -64,6 +64,12 @@ final class AuthService
 			$this->logout();
 			throw new \RuntimeException('Token is correct, but user is not. Have you deleted your account?');
 		}
+	}
+
+	public function loginAnonymous()
+	{
+		$this->loginToken = null;
+		$this->loggedInUser = $this->userService->getAnonymousUser();
 	}
 
 	public function logout()

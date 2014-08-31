@@ -24,4 +24,11 @@ class UserService
 	{
 		return $this->userDao->save($user);
 	}
+
+	public function getAnonymousUser()
+	{
+		$user = new \Szurubooru\Entities\User();
+		$user->name = 'Anonymous user';
+		$user->accessRank = \Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS;
+	}
 }
