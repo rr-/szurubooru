@@ -1,18 +1,21 @@
 <?php
 namespace Szurubooru;
 
-//if script fails prematurely, mark it as fail from advance
-http_response_code(500);
-
 final class Dispatcher
 {
 	private $router;
 
 	public function __construct(
 		\Szurubooru\Router $router,
+		\Szurubooru\Helpers\HttpHelper $httpHelper,
 		\Szurubooru\ControllerRepository $controllerRepository)
 	{
 		$this->router = $router;
+		$this->httpHelper = $httpHelper;
+
+		//if script fails prematurely, mark it as fail from advance
+		$this->httpHelper->setResponseCode(500);
+
 		foreach ($controllerRepository->getControllers() as $controller)
 			$controller->registerRoutes($router);
 	}
@@ -23,7 +26,9 @@ final class Dispatcher
 		try
 		{
 			$code = 200;
-			$json = $this->router->handle($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+			$json = (array) $this->router->handle(
+				$this->httpHelper->getRequestMethod(),
+				$this->httpHelper->getRequestUri());
 		}
 		catch (\Exception $e)
 		{
@@ -36,8 +41,10 @@ final class Dispatcher
 		$end = microtime(true);
 		$json['__time'] = $end - $start;
 
-		http_response_code($code);
-		header('Content-Type: application/json');
-		echo json_encode($json);
+		$this->httpHelper->setResponseCode($code);
+		$this->httpHelper->setHeader('Content-Type', 'application/json');
+		$this->httpHelper->outputJSON($json);
+
+		return $json;
 	}
 }

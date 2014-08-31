@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru;
 
-final class ControllerRepository
+class ControllerRepository
 {
 	private $controllers = [];
 

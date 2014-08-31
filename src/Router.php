@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru;
 
-final class Router
+class Router
 {
 	private $routes;
 
