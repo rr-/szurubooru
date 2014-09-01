@@ -25,7 +25,8 @@ App.Presenters.RegistrationPresenter = function(
 				email: $el.find('[name=email]').val(),
 			};
 
-			validateRegistrationData(registrationData);
+			if (!validateRegistrationData(registrationData))
+				return;
 
 			api.post('/users', registrationData)
 				.then(function(response) {
@@ -61,18 +62,20 @@ App.Presenters.RegistrationPresenter = function(
 	function validateRegistrationData(registrationData) {
 		if (registrationData.userName.length == 0) {
 			messagePresenter.showError($messages, 'User name cannot be empty.');
-			return;
+			return false;
 		}
 
 		if (registrationData.password.length == 0) {
 			messagePresenter.showError($messages, 'Password cannot be empty.');
-			return;
+			return false;
 		}
 
 		if (registrationData.password != registrationData.passwordConfirmation) {
 			messagePresenter.showError($messages, 'Passwords must be the same.');
-			return;
+			return false;
 		}
+
+		return true;
 	};
 
 	return {
