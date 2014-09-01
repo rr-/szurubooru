@@ -18,36 +18,35 @@ App.Presenters.RegistrationPresenter = function(
 			e.preventDefault();
 			messagePresenter.hideMessages($messages);
 
-			var userName = $el.find('[name=user]').val();
-			var password = $el.find('[name=password1]').val();
-			var passwordConfirmation = $el.find('[name=password2]').val();
-			var email = $el.find('[name=email]').val();
+			registrationData = {
+				userName: $el.find('[name=user]').val(),
+				password: $el.find('[name=password1]').val(),
+				passwordConfirmation: $el.find('[name=password2]').val(),
+				email: $el.find('[name=email]').val(),
+			};
 
-			if (userName.length == 0) {
-				messagePresenter.showError($messages, 'User name cannot be empty.');
-				return;
-			}
+			validateRegistrationData(registrationData);
 
-			if (password.length == 0) {
-				messagePresenter.showError($messages, 'Password cannot be empty.');
-				return;
-			}
-
-			if (password != passwordConfirmation) {
-				messagePresenter.showError($messages, 'Passwords must be the same.');
-				return;
-			}
-
-			api.post('/users', {userName: userName, password: password, email: email})
+			api.post('/users', registrationData)
 				.then(function(response) {
-					//todo: show message about registration success
-					//if it turned out that user needs to confirm his e-mail, notify about it
-					//also, show link to login
+					eventHandlers.registrationSuccess(response);
 				}).catch(function(response) {
-					messagePresenter.showError($messages, response.json && response.json.error || response);
+					eventHandlers.registrationFailure(response);
 				});
-		}
+		},
 
+		registrationSuccess: function(apiResponse) {
+			//todo: tell user if it turned out that he needs to confirm his e-mail
+			$el.find('form').slideUp(function() {
+				var message = 'Registration complete! ';
+				message += '<a href="#/login">Click here</a> to login.';
+				messagePresenter.showInfo($messages, message);
+			});
+		},
+
+		registrationFailure: function(apiResponse) {
+			messagePresenter.showError($messages, apiResponse.json && apiResponse.json.error || apiResponse);
+		},
 	};
 
 	render();
@@ -57,6 +56,23 @@ App.Presenters.RegistrationPresenter = function(
 		$el.find('form').submit(eventHandlers.registrationFormSubmit);
 		$messages = $el.find('.messages');
 		$messages.width($el.find('form').width());
+	};
+
+	function validateRegistrationData(registrationData) {
+		if (registrationData.userName.length == 0) {
+			messagePresenter.showError($messages, 'User name cannot be empty.');
+			return;
+		}
+
+		if (registrationData.password.length == 0) {
+			messagePresenter.showError($messages, 'Password cannot be empty.');
+			return;
+		}
+
+		if (registrationData.password != registrationData.passwordConfirmation) {
+			messagePresenter.showError($messages, 'Passwords must be the same.');
+			return;
+		}
 	};
 
 	return {
