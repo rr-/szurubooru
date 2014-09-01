@@ -13,4 +13,9 @@ class UserDao extends AbstractDao implements ICrudDao
 		$arrayEntity = $this->collection->findOne(['name' => $userName]);
 		return $this->entityConverter->toEntity($arrayEntity);
 	}
+
+	public function hasAnyUsers()
+	{
+		return (bool) $this->collection->findOne();
+	}
 }

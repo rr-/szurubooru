@@ -38,13 +38,18 @@ class UserService
 		$user->name = $formData->name;
 		$user->email = $formData->email;
 		$user->passwordHash = $this->passwordService->getHash($formData->password);
+		$user->accessRank = $this->userDao->hasAnyUsers()
+			? \Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER
+			: \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR;
 		$user->registrationTime = $this->timeService->getCurrentTime();
+		$user->lastLoginTime = null;
 
 		//todo: send activation mail if necessary
 
 		return $this->userDao->save($user);
 	}
 
+	//todo: refactor this to generic validation
 	public function validateUserName(&$userName)
 	{
 		$userName = trim($userName);
@@ -53,10 +58,10 @@ class UserService
 			throw new \DomainException('User name cannot be empty.');
 
 		$minUserNameLength = intval($this->config->users->minUserNameLength);
-		$maxUserNameLength = intval($this->config->users->maxserNameLength);
+		$maxUserNameLength = intval($this->config->users->maxUserNameLength);
 		if (strlen($userName) < $minUserNameLength)
 			throw new \DomainException('User name must have at least ' . $minUserNameLength . ' character(s).');
-		if (strlen($userName) < $maxUserNameLength)
-			throw new \DomainException('User name must have at most ' . $minUserNameLength . ' character(s).');
+		if (strlen($userName) > $maxUserNameLength)
+			throw new \DomainException('User name must have at most ' . $maxUserNameLength . ' character(s).');
 	}
 }

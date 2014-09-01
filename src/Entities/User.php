@@ -11,8 +11,9 @@ final class User extends Entity
 	const ACCESS_RANK_ADMINISTRATOR = 5;
 
 	public $name;
-	public $passwordHash;
 	public $email;
-	public $registrationDate;
+	public $passwordHash;
+	public $accessRank;
+	public $registrationTime;
 	public $lastLoginTime;
 }

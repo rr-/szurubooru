@@ -3,6 +3,7 @@ namespace Szurubooru\Services;
 
 class EmailService
 {
+	//todo: refactor this to generic validation
 	public function validateEmail($email)
 	{
 		if (!$email)

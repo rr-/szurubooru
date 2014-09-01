@@ -10,6 +10,7 @@ class PasswordService
 		$this->config = $config;
 	}
 
+	//todo: refactor this to generic validation
 	public function validatePassword($password)
 	{
 		if (!$password)
