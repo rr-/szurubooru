@@ -6,9 +6,7 @@ App.Auth = function(jQuery, api, appState) {
 		return new Promise(function(resolve, reject) {
 			api.post('/login', {userName: userName, password: password})
 				.then(function(response) {
-					appState.set('loggedIn', true);
-					appState.set('loggedInUser', response.json.user);
-					appState.set('loginToken', response.json.token);
+					updateAppState(response);
 					jQuery.cookie(
 						'auth',
 						response.json.token.name,
@@ -24,9 +22,7 @@ App.Auth = function(jQuery, api, appState) {
 		return new Promise(function(resolve, reject) {
 			api.post('/login', {token: token})
 				.then(function(response) {
-					appState.set('loggedIn', response.json.user && response.json.user.id);
-					appState.set('loggedInUser', response.json.user);
-					appState.set('loginToken', response.json.token.name);
+					updateAppState(response);
 					resolve(response);
 				}).catch(function(response) {
 					reject(response);
@@ -38,9 +34,7 @@ App.Auth = function(jQuery, api, appState) {
 		return new Promise(function(resolve, reject) {
 			api.post('/login')
 				.then(function(response) {
-					appState.set('loggedIn', false);
-					appState.set('loggedInUser', response.json.user);
-					appState.set('loginToken', null);
+					updateAppState(response);
 					resolve(response);
 				}).catch(function(response) {
 					reject(response);
@@ -78,6 +72,12 @@ App.Auth = function(jQuery, api, appState) {
 			});
 		});
 	};
+
+	function updateAppState(response) {
+		appState.set('loggedIn', response.json.user && !!response.json.user.id);
+		appState.set('loginToken', response.json.token && response.json.token.name);
+		appState.set('loggedInUser', response.json.user);
+	}
 
 	return {
 		loginFromCredentials: loginFromCredentials,
