@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests;
 
-final class DispatcherTest extends \PHPUnit_Framework_TestCase
+final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 {
 	public function testDispatchingArrays()
 	{

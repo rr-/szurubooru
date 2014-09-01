@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests\Dao;
 
-final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTest
+final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
 	public function testSaving()
 	{

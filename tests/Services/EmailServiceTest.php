@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests\Services;
 
-class EmailServiceTest extends \PHPUnit_Framework_TestCase
+class EmailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 {
 	public function testEmailWithoutAt()
 	{

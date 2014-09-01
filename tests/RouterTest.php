@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests;
 
-final class PostDaoTest extends \PHPUnit_Framework_TestCase
+final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 {
 	public function testParameterlessHandling()
 	{

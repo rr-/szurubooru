@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests;
 
-final class ConfigTest extends \PHPUnit_Framework_TestCase
+final class ConfigTest extends \Szurubooru\Tests\AbstractTestCase
 {
 	private static $testFileName1;
 	private static $testFileName2;

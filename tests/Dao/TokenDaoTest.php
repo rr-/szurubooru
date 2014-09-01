@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests\Dao;
 
-final class TokenDaoTest extends \Szurubooru\Tests\AbstractDatabaseTest
+final class TokenDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
 	public function testRetrievingByValidName()
 	{

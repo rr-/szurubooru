@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests;
 
-abstract class AbstractDatabaseTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractDatabaseTestCase extends \Szurubooru\Tests\AbstractTestCase
 {
 	protected $databaseConnection;
 	protected $upgradeService;
