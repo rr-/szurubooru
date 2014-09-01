@@ -10,6 +10,8 @@ final class AutoLoader
 
 	public static function _include($className)
 	{
+		if (strpos($className, 'Szurubooru') === false)
+			return;
 		$className = str_replace('\\', DIRECTORY_SEPARATOR, $className);
 		$className = str_replace('Szurubooru', '', $className);
 		if (strpos($className, 'Tests') !== false)
