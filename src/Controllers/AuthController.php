@@ -30,15 +30,10 @@ final class AuthController extends AbstractController
 	{
 		if (isset($this->inputReader->userName) and isset($this->inputReader->password))
 		{
-			$this->userService->validateUserName($this->inputReader->userName);
-			$this->passwordService->validatePassword($this->inputReader->password);
-
 			$this->authService->loginFromCredentials($this->inputReader->userName, $this->inputReader->password);
 		}
 		elseif (isset($this->inputReader->token))
 		{
-			if (!$this->inputReader->token)
-				throw new \DomainException('Authentication token cannot be empty.');
 			$this->authService->loginFromToken($this->inputReader->token);
 		}
 		else

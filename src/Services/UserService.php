@@ -3,20 +3,20 @@ namespace Szurubooru\Services;
 
 class UserService
 {
-	private $config;
+	private $validator;
 	private $userDao;
 	private $passwordService;
 	private $emailService;
 	private $timeService;
 
 	public function __construct(
-		\Szurubooru\Config $config,
+		\Szurubooru\Validator $validator,
 		\Szurubooru\Dao\UserDao $userDao,
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\EmailService $emailService,
 		\Szurubooru\Services\TimeService $timeService)
 	{
-		$this->config = $config;
+		$this->validator = $validator;
 		$this->userDao = $userDao;
 		$this->passwordService = $passwordService;
 		$this->emailService = $emailService;
@@ -25,9 +25,9 @@ class UserService
 
 	public function register(\Szurubooru\FormData\RegistrationFormData $formData)
 	{
-		$this->validateUserName($formData->name);
-		$this->passwordService->validatePassword($formData->password);
-		$this->emailService->validateEmail($formData->email);
+		$this->validator->validateUserName($formData->name);
+		$this->validator->validatePassword($formData->password);
+		$this->validator->validateEmail($formData->email);
 
 		if ($this->userDao->getByName($formData->name))
 			throw new \DomainException('User with this name already exists.');
@@ -47,21 +47,5 @@ class UserService
 		//todo: send activation mail if necessary
 
 		return $this->userDao->save($user);
-	}
-
-	//todo: refactor this to generic validation
-	public function validateUserName(&$userName)
-	{
-		$userName = trim($userName);
-
-		if (!$userName)
-			throw new \DomainException('User name cannot be empty.');
-
-		$minUserNameLength = intval($this->config->users->minUserNameLength);
-		$maxUserNameLength = intval($this->config->users->maxUserNameLength);
-		if (strlen($userName) < $minUserNameLength)
-			throw new \DomainException('User name must have at least ' . $minUserNameLength . ' character(s).');
-		if (strlen($userName) > $maxUserNameLength)
-			throw new \DomainException('User name must have at most ' . $maxUserNameLength . ' character(s).');
 	}
 }

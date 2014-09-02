@@ -3,7 +3,7 @@ namespace Szurubooru\Tests\Services;
 
 final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 {
-	private $configMock;
+	private $validatorMock;
 	private $userDaoMock;
 	private $passwordServiceMock;
 	private $emailServiceMock;
@@ -11,7 +11,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function setUp()
 	{
-		$this->configMock = new \Szurubooru\Config;
+		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->emailServiceMock = $this->mock(\Szurubooru\Services\EmailService::class);
@@ -24,11 +24,6 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->name = 'user';
 		$formData->password = 'password';
 		$formData->email = 'email';
-
-		//todo: this shouldn't be needed. refactor validation
-		$this->configMock->users = new \StdClass;
-		$this->configMock->users->minUserNameLength = 0;
-		$this->configMock->users->maxUserNameLength = 50;
 
 		$this->passwordServiceMock->method('getHash')->willReturn('hash');
 		$this->timeServiceMock->method('getCurrentTime')->willReturn('now');
@@ -52,11 +47,6 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->password = 'password';
 		$formData->email = 'email';
 
-		//todo: this shouldn't be needed. refactor validation
-		$this->configMock->users = new \StdClass;
-		$this->configMock->users->minUserNameLength = 0;
-		$this->configMock->users->maxUserNameLength = 50;
-
 		$this->userDaoMock->method('hasAnyUsers')->willReturn(false);
 		$this->userDaoMock->method('save')->will($this->returnArgument(0));
 
@@ -73,11 +63,6 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->password = 'password';
 		$formData->email = 'email';
 
-		//todo: this shouldn't be needed. refactor validation
-		$this->configMock->users = new \StdClass;
-		$this->configMock->users->minUserNameLength = 0;
-		$this->configMock->users->maxUserNameLength = 50;
-
 		$this->userDaoMock->method('hasAnyUsers')->willReturn(true);
 		$this->userDaoMock->method('getByName')->willReturn(new \Szurubooru\Entities\User());
 		$this->userDaoMock->method('save')->will($this->returnArgument(0));
@@ -91,7 +76,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private function getUserService()
 	{
 		return new \Szurubooru\Services\UserService(
-			$this->configMock,
+			$this->validatorMock,
 			$this->userDaoMock,
 			$this->passwordServiceMock,
 			$this->emailServiceMock,

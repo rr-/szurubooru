@@ -6,18 +6,22 @@ final class AuthService
 	private $loggedInUser = null;
 	private $loginToken = null;
 
+	private $validator;
 	private $passwordService;
 	private $timeService;
 	private $userDao;
 	private $tokenDao;
 
 	public function __construct(
+		\Szurubooru\Validator $validator,
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Dao\TokenDao $tokenDao,
 		\Szurubooru\Dao\UserDao $userDao)
 	{
 		$this->loggedInUser = $this->getAnonymousUser();
+
+		$this->validator = $validator;
 		$this->passwordService = $passwordService;
 		$this->timeService = $timeService;
 		$this->tokenDao = $tokenDao;
@@ -41,6 +45,9 @@ final class AuthService
 
 	public function loginFromCredentials($userName, $password)
 	{
+		$this->validator->validateUserName($userName);
+		$this->validator->validatePassword($password);
+
 		$user = $this->userDao->getByName($userName);
 		if (!$user)
 			throw new \InvalidArgumentException('User not found.');
@@ -56,6 +63,8 @@ final class AuthService
 
 	public function loginFromToken($loginTokenName)
 	{
+		$this->validator->validateToken($loginTokenName);
+
 		$loginToken = $this->tokenDao->getByName($loginTokenName);
 		if (!$loginToken)
 			throw new \Exception('Invalid login token.');
