@@ -1,3 +1,6 @@
+DirectoryIndex index-compiled.html
+DirectoryIndex index.html
+
 RewriteEngine On
 RewriteRule ^/?api/(.*) api-dispatch.php?q=$1 [L]
 
