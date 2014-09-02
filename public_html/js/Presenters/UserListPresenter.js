@@ -7,7 +7,11 @@ App.Presenters.UserListPresenter = function(jQuery, topNavigationPresenter, appS
 
 	var $el = jQuery('#content');
 
-	render();
+	init();
+
+	function init() {
+		render();
+	}
 
 	function render() {
 		$el.html('Logged in: ' + appState.get('loggedIn'));

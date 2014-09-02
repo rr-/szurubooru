@@ -15,53 +15,54 @@ App.Presenters.RegistrationPresenter = function(
 
 	util.loadTemplate('registration-form').then(function(html) {
 		template = _.template(html);
-		render();
+		init();
 	});
 
-	var eventHandlers = {
-
-		registrationFormSubmit: function(e) {
-			e.preventDefault();
-			messagePresenter.hideMessages($messages);
-
-			registrationData = {
-				userName: $el.find('[name=user]').val(),
-				password: $el.find('[name=password1]').val(),
-				passwordConfirmation: $el.find('[name=password2]').val(),
-				email: $el.find('[name=email]').val(),
-			};
-
-			if (!validateRegistrationData(registrationData))
-				return;
-
-			api.post('/users', registrationData)
-				.then(function(response) {
-					eventHandlers.registrationSuccess(response);
-				}).catch(function(response) {
-					eventHandlers.registrationFailure(response);
-				});
-		},
-
-		registrationSuccess: function(apiResponse) {
-			//todo: tell user if it turned out that he needs to confirm his e-mail
-			$el.find('form').slideUp(function() {
-				var message = 'Registration complete! ';
-				message += '<a href="#/login">Click here</a> to login.';
-				messagePresenter.showInfo($messages, message);
-			});
-		},
-
-		registrationFailure: function(apiResponse) {
-			messagePresenter.showError($messages, apiResponse.json && apiResponse.json.error || apiResponse);
-		},
-	};
+	function init() {
+		render();
+	}
 
 	function render() {
 		$el.html(template());
-		$el.find('form').submit(eventHandlers.registrationFormSubmit);
+		$el.find('form').submit(registrationFormSubmitted);
 		$messages = $el.find('.messages');
 		$messages.width($el.find('form').width());
-	};
+	}
+
+	function registrationFormSubmitted(e) {
+		e.preventDefault();
+		messagePresenter.hideMessages($messages);
+
+		registrationData = {
+			userName: $el.find('[name=user]').val(),
+			password: $el.find('[name=password1]').val(),
+			passwordConfirmation: $el.find('[name=password2]').val(),
+			email: $el.find('[name=email]').val(),
+		};
+
+		if (!validateRegistrationData(registrationData))
+			return;
+
+		api.post('/users', registrationData)
+			.then(function(response) {
+				registrationSuccess(response);
+			}).catch(function(response) {
+				registrationFailure(response);
+			});
+	}
+
+	function registrationSuccess(apiResponse) {
+		//todo: tell user if it turned out that he needs to confirm his e-mail
+		$el.find('form').slideUp(function() {
+			var message = 'Registration complete! ';
+			message += '<a href="#/login">Click here</a> to login.';
+			messagePresenter.showInfo($messages, message);
+		});
+	}
+
+	function registrationFailure(apiResponse) {
+		messagePresenter.showError($messages, apiResponse.json && apiResponse.json.error || apiResponse);
+	}
 
 	function validateRegistrationData(registrationData) {
 		if (registrationData.userName.length == 0) {

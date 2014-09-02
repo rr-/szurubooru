@@ -12,22 +12,23 @@ App.Presenters.LogoutPresenter = function(
 
 	var $messages = jQuery('#content');
 
-	var eventHandlers = {
-		mainPageLinkClick: function(e) {
-			e.preventDefault();
-			router.navigateToMainPage();
-		},
-	};
+	init();
 
-	auth.logout().then(function() {
-		var $messageDiv = messagePresenter.showInfo($messages, 'Logged out. <a href="">Back to main page</a>');
-		$messageDiv.find('a').click(eventHandlers.mainPageLinkClick);
-	}).catch(function(response) {
-		messagePresenter.showError($messages, response.json && response.json.error || response);
-	});
+	function init() {
+		auth.logout().then(function() {
+			var $messageDiv = messagePresenter.showInfo($messages, 'Logged out. <a href="">Back to main page</a>');
+			$messageDiv.find('a').click(mainPageLinkClicked);
+		}).catch(function(response) {
+			messagePresenter.showError($messages, response.json && response.json.error || response);
+		});
+	}
 
-	return {
-	};
+	function mainPageLinkClicked(e) {
+		e.preventDefault();
+		router.navigateToMainPage();
+	}
+
+	return {};
 
 };
 

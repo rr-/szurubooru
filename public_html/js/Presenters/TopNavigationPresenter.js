@@ -4,27 +4,28 @@ App.Presenters = App.Presenters || {};
 App.Presenters.TopNavigationPresenter = function(util, jQuery, appState) {
 
 	var selectedElement = null;
+	var $el = jQuery('#top-navigation');
 	var template;
 
 	util.loadTemplate('top-navigation').then(function(html) {
 		template = _.template(html);
-		render();
+		init();
 	});
-	var $el = jQuery('#top-navigation');
 
-	var eventHandlers = {
-		loginStateChanged: function() {
-			render();
-		},
-	};
-
-	appState.startObserving('loggedIn', 'top-navigation', eventHandlers.loginStateChanged);
+	function init() {
+		render();
+		appState.startObserving('loggedIn', 'top-navigation', loginStateChanged);
+	}
 
 	function select(newSelectedElement) {
 		selectedElement = newSelectedElement;
 		$el.find('li').removeClass('active');
 		$el.find('li.' + selectedElement).addClass('active');
 	};
+
+	function loginStateChanged() {
+		render();
+	}
 
 	function render() {
 		$el.html(template({loggedIn: appState.get('loggedIn')}));
