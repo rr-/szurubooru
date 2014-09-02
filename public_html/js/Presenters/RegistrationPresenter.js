@@ -3,6 +3,7 @@ App.Presenters = App.Presenters || {};
 
 App.Presenters.RegistrationPresenter = function(
 	jQuery,
+	util,
 	topNavigationPresenter,
 	messagePresenter,
 	api) {
@@ -10,7 +11,12 @@ App.Presenters.RegistrationPresenter = function(
 	topNavigationPresenter.select('register');
 
 	var $el = jQuery('#content');
-	var template = _.template(jQuery('#registration-form-template').html());
+	var template;
+
+	util.loadTemplate('registration-form').then(function(html) {
+		template = _.template(html);
+		render();
+	});
 
 	var eventHandlers = {
 
@@ -49,8 +55,6 @@ App.Presenters.RegistrationPresenter = function(
 			messagePresenter.showError($messages, apiResponse.json && apiResponse.json.error || apiResponse);
 		},
 	};
-
-	render();
 
 	function render() {
 		$el.html(template());

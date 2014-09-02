@@ -3,6 +3,7 @@ App.Presenters = App.Presenters || {};
 
 App.Presenters.LoginPresenter = function(
 	jQuery,
+	util,
 	topNavigationPresenter,
 	messagePresenter,
 	auth,
@@ -13,7 +14,12 @@ App.Presenters.LoginPresenter = function(
 
 	var $el = jQuery('#content');
 	var $messages;
-	var template = _.template(jQuery('#login-form-template').html());
+	var template;
+
+	util.loadTemplate('login-form').then(function(html) {
+		template = _.template(html);
+		render();
+	});
 
 	var eventHandlers = {
 
@@ -40,8 +46,6 @@ App.Presenters.LoginPresenter = function(
 
 	if (appState.get('loggedIn'))
 		router.navigateToMainPage();
-
-	render();
 
 	function render() {
 		$el.html(template());

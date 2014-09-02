@@ -1,2 +1,6 @@
 RewriteEngine On
 RewriteRule ^/?api/(.*) api-dispatch.php?q=$1 [L]
+
+<IfModule mod_mime.c>
+AddType text/html .tpl
+</IfModule>
