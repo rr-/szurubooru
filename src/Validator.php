@@ -43,7 +43,7 @@ class Validator
 		$this->validateNonEmpty($userName, 'User name');
 		$this->validateLength($userName, $minUserNameLength, $maxUserNameLength, 'User name');
 
-		if (preg_match('/[^a-zA-Z_-]/', $userName))
+		if (preg_match('/[^a-zA-Z0-9_-]/', $userName))
 		{
 			throw new \DomainException('User name may contain only characters, numbers, underscore (_) and dash (-).');
 		}
