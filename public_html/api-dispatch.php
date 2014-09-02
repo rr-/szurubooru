@@ -7,7 +7,7 @@ require_once(__DIR__ . DS . '..' . DS . 'src' . DS . 'AutoLoader.php');
 
 $builder = new \DI\ContainerBuilder();
 $builder->setDefinitionCache(new Doctrine\Common\Cache\ArrayCache());
-$builder->addDefinitions(__DIR__ . DS . '..' . DS . 'di.php');
+$builder->addDefinitions(__DIR__ . DS . '..' . DS . 'src' . DS . 'di.php');
 $container = $builder->build();
 $dispatcher = $container->get('Szurubooru\Dispatcher');
 $dispatcher->run();
