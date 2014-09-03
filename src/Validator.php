@@ -10,6 +10,10 @@ class Validator
 		$this->config = $config;
 	}
 
+	public function validateNumber(&$subject) {
+		$subject = intval($subject);
+	}
+
 	public function validateNonEmpty($subject, $subjectName = 'Object')
 	{
 		if (!$subject)

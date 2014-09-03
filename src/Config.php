@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru;
 
-final class Config extends \ArrayObject
+class Config extends \ArrayObject
 {
 	public function __construct(array $configPaths = [])
 	{

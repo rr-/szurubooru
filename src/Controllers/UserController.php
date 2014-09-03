@@ -17,15 +17,36 @@ final class UserController extends AbstractController
 	public function registerRoutes(\Szurubooru\Router $router)
 	{
 		$router->post('/api/users', [$this, 'register']);
-		$router->get('/api/users', [$this, 'getAll']);
+		$router->get('/api/users', [$this, 'getFiltered']);
 		$router->get('/api/users/:id', [$this, 'getById']);
 		$router->put('/api/users/:id', [$this, 'update']);
 		$router->delete('/api/users/:id', [$this, 'delete']);
 	}
 
+	public function getFiltered()
+	{
+		//todo: move this to form data constructor
+		$searchFormData = new \Szurubooru\FormData\SearchFormData;
+		$searchFormData->query = $this->inputReader->query;
+		$searchFormData->order = $this->inputReader->order;
+		$searchFormData->pageNumber = $this->inputReader->page;
+		$searchResult = $this->userService->getFiltered($searchFormData);
+		$entities = array_map(function($user) { return new \Szurubooru\ViewProxies\User($user); }, $searchResult->entities);
+		return [
+			'data' => $entities,
+			'pageSize' => $searchResult->filter->pageSize,
+			'totalRecords' => $searchResult->totalRecords];
+	}
+
+	public function getById($id)
+	{
+		throw new \BadMethodCallException('Not implemented');
+	}
+
 	public function register()
 	{
 		$input = new \Szurubooru\FormData\RegistrationFormData;
+		//todo: move this to form data constructor
 		$input->name = $this->inputReader->userName;
 		$input->password = $this->inputReader->password;
 		$input->email = $this->inputReader->email;
@@ -36,16 +57,6 @@ final class UserController extends AbstractController
 	}
 
 	public function update($id)
-	{
-		throw new \BadMethodCallException('Not implemented');
-	}
-
-	public function getAll()
-	{
-		throw new \BadMethodCallException('Not implemented');
-	}
-
-	public function getById($id)
 	{
 		throw new \BadMethodCallException('Not implemented');
 	}

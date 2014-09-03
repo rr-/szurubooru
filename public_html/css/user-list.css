@@ -1,0 +1,27 @@
+#user-list {
+	min-width: 20em;
+}
+
+#user-list ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+#user-list ul.order {
+	margin: -0.5em -0.5em 0.5em -0.5em;
+}
+#user-list ul.order li {
+	display: inline-block;
+	margin: 0 0.5em;
+}
+
+#user-list ul.order li.active a {
+	background: #faffca;
+}
+
+#user-list ul.order a {
+	cursor: pointer;
+	display: inline-block;
+	padding: 0.2em 0.5em;
+}

@@ -5,7 +5,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
 	public function testRetrievingByValidName()
 	{
-		$userDao = new \Szurubooru\Dao\UserDao($this->databaseConnection);
+		$userDao = $this->getUserDao();
 
 		$user = new \Szurubooru\Entities\User();
 		$user->name = 'test';
@@ -19,7 +19,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testRetrievingByInvalidName()
 	{
-		$userDao = new \Szurubooru\Dao\UserDao($this->databaseConnection);
+		$userDao = $this->getUserDao();
 
 		$actual = $userDao->getByName('rubbish');
 
@@ -28,7 +28,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testCheckingUserPresence()
 	{
-		$userDao = new \Szurubooru\Dao\UserDao($this->databaseConnection);
+		$userDao = $this->getUserDao();
 
 		$this->assertFalse($userDao->hasAnyUsers());
 
@@ -37,5 +37,10 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$userDao->save($user);
 
 		$this->assertTrue($userDao->hasAnyUsers());
+	}
+
+	private function getUserDao()
+	{
+		return new \Szurubooru\Dao\UserDao($this->databaseConnection);
 	}
 }

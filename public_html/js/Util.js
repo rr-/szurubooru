@@ -4,6 +4,30 @@ App.Util = (function(jQuery) {
 
 	var templateCache = {};
 
+	function parseComplexRouteArgs(args) {
+		var result = {};
+		args = (args || '').split(/;/);
+		for (var i = 0; i < args.length; i ++) {
+			var arg = args[i];
+			if (!arg)
+				continue;
+			kv = arg.split(/=/);
+			result[kv[0]] = kv[1];
+		}
+		return result;
+	}
+
+	function compileComplexRouteArgs(baseUri, args) {
+		var result = baseUri + '/';
+		_.each(args, function(v, k) {
+			if (typeof(v) == 'undefined')
+				return;
+			result += k + '=' + v + ';'
+		});
+		result = result.slice(0, -1);
+		return result;
+	}
+
 	function loadTemplate(templateName) {
 		return loadTemplateFromCache(templateName)
 			|| loadTemplateFromDOM(templateName)
@@ -62,6 +86,8 @@ App.Util = (function(jQuery) {
 		loadTemplate: loadTemplate,
 		initPresenter : initPresenter,
 		initContentPresenter: initContentPresenter,
+		parseComplexRouteArgs: parseComplexRouteArgs,
+		compileComplexRouteArgs: compileComplexRouteArgs,
 	};
 });
 

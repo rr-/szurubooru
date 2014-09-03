@@ -3,24 +3,38 @@ namespace Szurubooru\Services;
 
 class UserService
 {
+	private $config;
 	private $validator;
 	private $userDao;
+	private $userSearchService;
 	private $passwordService;
 	private $emailService;
 	private $timeService;
 
 	public function __construct(
+		\Szurubooru\Config $config,
 		\Szurubooru\Validator $validator,
 		\Szurubooru\Dao\UserDao $userDao,
+		\Szurubooru\Dao\Services\UserSearchService $userSearchService,
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\EmailService $emailService,
 		\Szurubooru\Services\TimeService $timeService)
 	{
+		$this->config = $config;
 		$this->validator = $validator;
 		$this->userDao = $userDao;
+		$this->userSearchService = $userSearchService;
 		$this->passwordService = $passwordService;
 		$this->emailService = $emailService;
 		$this->timeService = $timeService;
+	}
+
+	public function getFiltered(\Szurubooru\FormData\SearchFormData $formData)
+	{
+		$pageSize = intval($this->config->users->usersPerPage);
+		$this->validator->validateNumber($formData->page);
+		$searchFilter = new \Szurubooru\Dao\SearchFilter($pageSize, $formData);
+		return $this->userSearchService->getFiltered($searchFilter);
 	}
 
 	public function register(\Szurubooru\FormData\RegistrationFormData $formData)

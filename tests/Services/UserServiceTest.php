@@ -3,19 +3,42 @@ namespace Szurubooru\Tests\Services;
 
 final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 {
+	private $configMock;
 	private $validatorMock;
 	private $userDaoMock;
+	private $userSearchServiceMock;
 	private $passwordServiceMock;
 	private $emailServiceMock;
 	private $timeServiceMock;
 
 	public function setUp()
 	{
+		$this->configMock = $this->mock(\Szurubooru\Config::class);
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
+		$this->userSearchService = $this->mock(\Szurubooru\Dao\Services\UserSearchService::class);
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->emailServiceMock = $this->mock(\Szurubooru\Services\EmailService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
+	}
+
+	public function testGettingFilteredUsers()
+	{
+		$mockUser = new \Szurubooru\Entities\User();
+		$mockUser->name = 'user';
+		$expected = [$mockUser];
+		$this->userSearchService->method('getFiltered')->willReturn($expected);
+
+		$this->configMock->users = new \StdClass;
+		$this->configMock->users->usersPerPage = 1;
+		$searchFormData = new \Szurubooru\FormData\SearchFormData;
+		$searchFormData->query = '';
+		$searchFormData->order = 'joined';
+		$searchFormData->page = 2;
+
+		$userService = $this->getUserService();
+		$actual = $userService->getFiltered($searchFormData);
+		$this->assertEquals($expected, $actual);
 	}
 
 	public function testValidRegistration()
@@ -76,8 +99,10 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private function getUserService()
 	{
 		return new \Szurubooru\Services\UserService(
+			$this->configMock,
 			$this->validatorMock,
 			$this->userDaoMock,
+			$this->userSearchService,
 			$this->passwordServiceMock,
 			$this->emailServiceMock,
 			$this->timeServiceMock);

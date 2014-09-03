@@ -8,3 +8,5 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 		return $this->getMockBuilder($className)->disableOriginalConstructor()->getMock();
 	}
 }
+
+date_default_timezone_set('UTC');

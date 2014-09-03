@@ -23,7 +23,8 @@ App.Router = function(jQuery, util) {
 		inject('#/logout', function() { return App.DI.get('logoutPresenter'); });
 		inject('#/register', function() { return App.DI.get('registrationPresenter'); });
 		inject('#/users', function() { return App.DI.get('userListPresenter'); });
-		inject('#/users/:userName', function() { return App.DI.get('userPresenter'); });
+		inject('#/users/:searchArgs', function() { return App.DI.get('userListPresenter'); });
+		inject('#/user/:userName', function() { return App.DI.get('userPresenter'); });
 		setRoot('#/users');
 	};
 

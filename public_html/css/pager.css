@@ -1,0 +1,27 @@
+.pager {
+	text-align: center;
+	margin-top: 1em;
+}
+
+.pager ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0 auto;
+	display: inline-block;
+}
+
+.pager li {
+	display: inline-block;
+}
+
+.pager li a {
+	display: inline-block;
+	padding: 0.4em 1.2em;
+}
+
+.pager li:hover a {
+	background: #efa;
+}
+.pager li.active a {
+	background: #faffca;
+}

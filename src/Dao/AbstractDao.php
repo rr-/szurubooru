@@ -19,6 +19,16 @@ abstract class AbstractDao implements ICrudDao
 		$this->entityName = $entityName;
 	}
 
+	public function getCollection()
+	{
+		return $this->collection;
+	}
+
+	public function getEntityConverter()
+	{
+		return $this->entityConverter;
+	}
+
 	public function save(&$entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);

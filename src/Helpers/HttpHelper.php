@@ -30,6 +30,8 @@ class HttpHelper
 
 	public function getRequestUri()
 	{
-		return $_SERVER['REQUEST_URI'];
+		$requestUri = $_SERVER['REQUEST_URI'];
+		$requestUri = preg_replace('/\?.*$/', '', $requestUri);
+		return $requestUri;
 	}
 }
