@@ -3,13 +3,10 @@ App.Presenters = App.Presenters || {};
 
 App.Presenters.UserListPresenter = function(jQuery, topNavigationPresenter, appState) {
 
-	topNavigationPresenter.select('users');
-
 	var $el = jQuery('#content');
 
-	init();
-
 	function init() {
+		topNavigationPresenter.select('users');
 		render();
 	}
 
@@ -18,6 +15,7 @@ App.Presenters.UserListPresenter = function(jQuery, topNavigationPresenter, appS
 	};
 
 	return {
+		init: init,
 		render: render
 	};
 

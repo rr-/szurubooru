@@ -10,22 +10,19 @@ App.Presenters.LoginPresenter = function(
 	router,
 	appState) {
 
-	topNavigationPresenter.select('login');
-
 	var $el = jQuery('#content');
 	var $messages;
 	var template;
 
-	util.loadTemplate('login-form').then(function(html) {
-		template = _.template(html);
-		init();
-	});
-
 	function init() {
-		if (appState.get('loggedIn'))
-			router.navigateToMainPage();
-		else
-			render();
+		topNavigationPresenter.select('login');
+		util.loadTemplate('login-form').then(function(html) {
+			template = _.template(html);
+			if (appState.get('loggedIn'))
+				router.navigateToMainPage();
+			else
+				render();
+		});
 	}
 
 	function render() {
@@ -55,6 +52,7 @@ App.Presenters.LoginPresenter = function(
 	}
 
 	return {
+		init: init,
 		render: render,
 	};
 

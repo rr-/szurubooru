@@ -74,9 +74,9 @@ App.Auth = function(jQuery, api, appState) {
 	};
 
 	function updateAppState(response) {
-		appState.set('loggedIn', response.json.user && !!response.json.user.id);
 		appState.set('loginToken', response.json.token && response.json.token.name);
 		appState.set('loggedInUser', response.json.user);
+		appState.set('loggedIn', response.json.user && !!response.json.user.id);
 	}
 
 	return {

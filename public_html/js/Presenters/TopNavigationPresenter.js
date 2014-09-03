@@ -7,14 +7,12 @@ App.Presenters.TopNavigationPresenter = function(util, jQuery, appState) {
 	var $el = jQuery('#top-navigation');
 	var template;
 
-	util.loadTemplate('top-navigation').then(function(html) {
-		template = _.template(html);
-		init();
-	});
-
 	function init() {
-		render();
-		appState.startObserving('loggedIn', 'top-navigation', loginStateChanged);
+		util.loadTemplate('top-navigation').then(function(html) {
+			template = _.template(html);
+			render();
+			appState.startObserving('loggedIn', 'top-navigation', loginStateChanged);
+		});
 	}
 
 	function select(newSelectedElement) {
@@ -28,11 +26,15 @@ App.Presenters.TopNavigationPresenter = function(util, jQuery, appState) {
 	}
 
 	function render() {
-		$el.html(template({loggedIn: appState.get('loggedIn')}));
+		$el.html(template({
+			loggedIn: appState.get('loggedIn'),
+			user: appState.get('loggedInUser'),
+		}));
 		$el.find('li.' + selectedElement).addClass('active');
 	};
 
 	return {
+		init: init,
 		render: render,
 		select: select,
 	};

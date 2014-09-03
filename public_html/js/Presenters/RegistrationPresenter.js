@@ -8,18 +8,15 @@ App.Presenters.RegistrationPresenter = function(
 	messagePresenter,
 	api) {
 
-	topNavigationPresenter.select('register');
-
 	var $el = jQuery('#content');
 	var template;
 
-	util.loadTemplate('registration-form').then(function(html) {
-		template = _.template(html);
-		init();
-	});
-
 	function init() {
-		render();
+		topNavigationPresenter.select('register');
+		util.loadTemplate('registration-form').then(function(html) {
+			template = _.template(html);
+			render();
+		});
 	}
 
 	function render() {
@@ -84,6 +81,7 @@ App.Presenters.RegistrationPresenter = function(
 	};
 
 	return {
+		init: init,
 		render: render,
 	};
 

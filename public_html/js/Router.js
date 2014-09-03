@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Router = function(jQuery) {
+App.Router = function(jQuery, util) {
 
 	var root = '#/';
 
@@ -18,16 +18,12 @@ App.Router = function(jQuery) {
 		Path.listen();
 	};
 
-	function changePresenter(presenterGetter) {
-		jQuery('#content').empty();
-		var presenter = presenterGetter();
-	};
-
 	function injectRoutes() {
-		inject('#/login', function() { return new App.DI.get('loginPresenter'); });
-		inject('#/logout', function() { return new App.DI.get('logoutPresenter'); });
-		inject('#/register', function() { return new App.DI.get('registrationPresenter'); });
+		inject('#/login', function() { return App.DI.get('loginPresenter'); });
+		inject('#/logout', function() { return App.DI.get('logoutPresenter'); });
+		inject('#/register', function() { return App.DI.get('registrationPresenter'); });
 		inject('#/users', function() { return App.DI.get('userListPresenter'); });
+		inject('#/users/:userName', function() { return App.DI.get('userPresenter'); });
 		setRoot('#/users');
 	};
 
@@ -38,7 +34,7 @@ App.Router = function(jQuery) {
 
 	function inject(path, presenterGetter) {
 		Path.map(path).to(function() {
-			changePresenter(presenterGetter);
+			util.initContentPresenter(presenterGetter, this.params);
 		});
 	};
 

@@ -28,6 +28,16 @@ App.Util = (function(jQuery) {
 		return null;
 	}
 
+	function initPresenter(presenterGetter, args) {
+		var presenter = presenterGetter();
+		presenter.init.call(presenter, args);
+	}
+
+	function initContentPresenter(presenterGetter, args) {
+		jQuery('#content').empty();
+		initPresenter(presenterGetter, args);
+	};
+
 	function loadTemplateWithAJAX(templateName) {
 		return new Promise(function(resolve, reject) {
 			var templatesDir = '/templates';
@@ -50,6 +60,8 @@ App.Util = (function(jQuery) {
 
 	return {
 		loadTemplate: loadTemplate,
+		initPresenter : initPresenter,
+		initContentPresenter: initContentPresenter,
 	};
 });
 

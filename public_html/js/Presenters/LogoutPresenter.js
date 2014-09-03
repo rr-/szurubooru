@@ -8,13 +8,10 @@ App.Presenters.LogoutPresenter = function(
 	auth,
 	router) {
 
-	topNavigationPresenter.select('logout');
-
 	var $messages = jQuery('#content');
 
-	init();
-
 	function init() {
+		topNavigationPresenter.select('logout');
 		auth.logout().then(function() {
 			var $messageDiv = messagePresenter.showInfo($messages, 'Logged out. <a href="">Back to main page</a>');
 			$messageDiv.find('a').click(mainPageLinkClicked);
@@ -28,7 +25,9 @@ App.Presenters.LogoutPresenter = function(
 		router.navigateToMainPage();
 	}
 
-	return {};
+	return {
+		init: init
+	};
 
 };
 
