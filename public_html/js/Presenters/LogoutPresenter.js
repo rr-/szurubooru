@@ -13,6 +13,7 @@ App.Presenters.LogoutPresenter = function(
 	function init() {
 		topNavigationPresenter.select('logout');
 		auth.logout().then(function() {
+			$messages.empty();
 			var $messageDiv = messagePresenter.showInfo($messages, 'Logged out. <a href="">Back to main page</a>');
 			$messageDiv.find('a').click(mainPageLinkClicked);
 		}).catch(function(response) {

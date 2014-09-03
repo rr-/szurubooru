@@ -34,7 +34,7 @@ App.Util = (function(jQuery) {
 	}
 
 	function initContentPresenter(presenterGetter, args) {
-		jQuery('#content').empty();
+		//jQuery('#content').empty();
 		initPresenter(presenterGetter, args);
 	};
 
