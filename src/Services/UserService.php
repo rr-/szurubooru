@@ -29,6 +29,11 @@ class UserService
 		$this->timeService = $timeService;
 	}
 
+	public function getByName($name)
+	{
+		return $this->userDao->getByName($name);
+	}
+
 	public function getFiltered(\Szurubooru\FormData\SearchFormData $formData)
 	{
 		$pageSize = intval($this->config->users->usersPerPage);
@@ -45,8 +50,6 @@ class UserService
 
 		if ($this->userDao->getByName($formData->name))
 			throw new \DomainException('User with this name already exists.');
-
-		//todo: privilege checking
 
 		$user = new \Szurubooru\Entities\User();
 		$user->name = $formData->name;

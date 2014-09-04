@@ -18,13 +18,14 @@ final class UserController extends AbstractController
 	{
 		$router->post('/api/users', [$this, 'register']);
 		$router->get('/api/users', [$this, 'getFiltered']);
-		$router->get('/api/users/:id', [$this, 'getById']);
-		$router->put('/api/users/:id', [$this, 'update']);
-		$router->delete('/api/users/:id', [$this, 'delete']);
+		$router->get('/api/users/:name', [$this, 'getByName']);
+		$router->put('/api/users/:name', [$this, 'update']);
+		$router->delete('/api/users/:name', [$this, 'delete']);
 	}
 
 	public function getFiltered()
 	{
+		//todo: privilege checking
 		//todo: move this to form data constructor
 		$searchFormData = new \Szurubooru\FormData\SearchFormData;
 		$searchFormData->query = $this->inputReader->query;
@@ -38,30 +39,33 @@ final class UserController extends AbstractController
 			'totalRecords' => $searchResult->totalRecords];
 	}
 
-	public function getById($id)
+	public function getByName($name)
 	{
-		throw new \BadMethodCallException('Not implemented');
+		//todo: privilege checking
+		$user = $this->userService->getByName($name);
+		if (!$user)
+			throw new \DomainException('User with name "' . $name . '" was not found.');
+		return new \Szurubooru\ViewProxies\User($user);
 	}
 
 	public function register()
 	{
+		//todo: privilege checking
 		$input = new \Szurubooru\FormData\RegistrationFormData;
 		//todo: move this to form data constructor
 		$input->name = $this->inputReader->userName;
 		$input->password = $this->inputReader->password;
 		$input->email = $this->inputReader->email;
-
 		$user = $this->userService->register($input);
-
 		return new \Szurubooru\ViewProxies\User($user);
 	}
 
-	public function update($id)
+	public function update($name)
 	{
 		throw new \BadMethodCallException('Not implemented');
 	}
 
-	public function delete($id)
+	public function delete($name)
 	{
 		throw new \BadMethodCallException('Not implemented');
 	}
