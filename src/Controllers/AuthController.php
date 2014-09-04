@@ -45,6 +45,7 @@ final class AuthController extends AbstractController
 		[
 			'token' => new \Szurubooru\ViewProxies\Token($this->authService->getLoginToken()),
 			'user' => new \Szurubooru\ViewProxies\User($this->authService->getLoggedInUser()),
+			'privileges' => $this->authService->getCurrentPrivileges(),
 		];
 	}
 }

@@ -3,15 +3,18 @@ namespace Szurubooru\Controllers;
 
 final class UserController extends AbstractController
 {
-	private $inputReader;
+	private $authService;
 	private $userService;
+	private $inputReader;
 
 	public function __construct(
+		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\UserService $userService,
 		\Szurubooru\Helpers\InputReader $inputReader)
 	{
-		$this->inputReader = $inputReader;
+		$this->authService = $authService;
 		$this->userService = $userService;
+		$this->inputReader = $inputReader;
 	}
 
 	public function registerRoutes(\Szurubooru\Router $router)
@@ -25,7 +28,8 @@ final class UserController extends AbstractController
 
 	public function getFiltered()
 	{
-		//todo: privilege checking
+		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_LIST_USERS);
+
 		//todo: move this to form data constructor
 		$searchFormData = new \Szurubooru\FormData\SearchFormData;
 		$searchFormData->query = $this->inputReader->query;
@@ -41,7 +45,8 @@ final class UserController extends AbstractController
 
 	public function getByName($name)
 	{
-		//todo: privilege checking
+		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_VIEW_USER);
+
 		$user = $this->userService->getByName($name);
 		if (!$user)
 			throw new \DomainException('User with name "' . $name . '" was not found.');
@@ -50,7 +55,8 @@ final class UserController extends AbstractController
 
 	public function register()
 	{
-		//todo: privilege checking
+		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_REGISTER);
+
 		$input = new \Szurubooru\FormData\RegistrationFormData;
 		//todo: move this to form data constructor
 		$input->name = $this->inputReader->userName;

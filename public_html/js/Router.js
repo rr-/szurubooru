@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Router = function(jQuery, util) {
+App.Router = function(jQuery, util, appState) {
 
 	var root = '#/';
 

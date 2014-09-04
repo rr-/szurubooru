@@ -44,10 +44,8 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 
 	function logout() {
 		return promise.make(function(resolve, reject) {
-			appState.set('loggedIn', false);
-			appState.set('loginToken', null);
 			jQuery.removeCookie('auth');
-			resolve();
+			return loginAnonymous().then(resolve).fail(reject);
 		});
 	};
 
@@ -75,6 +73,7 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 	};
 
 	function updateAppState(response) {
+		appState.set('privileges', response.json.privileges || []);
 		appState.set('loginToken', response.json.token && response.json.token.name);
 		appState.set('loggedInUser', response.json.user);
 		appState.set('loggedIn', response.json.user && !!response.json.user.id);

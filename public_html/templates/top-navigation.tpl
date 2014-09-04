@@ -1,8 +1,10 @@
 <ul>
 	<!-- todo: check privileges -->
-	<li class="users">
-		<a href="#/users">Users</a>
-	</li>
+	<% if (_.contains(privileges, 'listUsers')) { %>
+		<li class="users">
+			<a href="#/users">Users</a>
+		</li>
+	<% } %>
 	<% if (!loggedIn) { %>
 		<li class="login">
 			<a href="#/login">Login</a>

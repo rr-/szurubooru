@@ -7,7 +7,8 @@ App.Presenters.UserListPresenter = function(
 	promise,
 	router,
 	pagedCollectionPresenter,
-	topNavigationPresenter) {
+	topNavigationPresenter,
+	messagePresenter) {
 
 	var $el = jQuery('#content');
 	var template;
@@ -28,6 +29,10 @@ App.Presenters.UserListPresenter = function(
 				renderCallback: function updateCollection(data) {
 					userList = data.entities;
 					render();
+				},
+				failCallback: function(response) {
+					$el.empty();
+					messagePresenter.showError($el, response.json && response.json.error || response);
 				}});
 		});
 	}

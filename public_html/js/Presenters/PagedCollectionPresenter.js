@@ -9,6 +9,7 @@ App.Presenters.PagedCollectionPresenter = function(util, promise, api) {
 	var baseUri;
 	var backendUri;
 	var renderCallback;
+	var failCallback;
 
 	var template;
 	var pageSize;
@@ -19,11 +20,10 @@ App.Presenters.PagedCollectionPresenter = function(util, promise, api) {
 		baseUri = args.baseUri;
 		backendUri = args.backendUri;
 		renderCallback = args.renderCallback;
+		failCallback = args.failCallback;
 
 		promise.wait(util.promiseTemplate('pager')).then(function(html) {
 			template = _.template(html);
-			//renderCallback({entities: [], totalRecords: 0});
-
 			changePage(pageNumber);
 		});
 	}
@@ -44,7 +44,11 @@ App.Presenters.PagedCollectionPresenter = function(util, promise, api) {
 					entities: response.json.data,
 					totalRecords: response.json.totalRecords});
 			}).fail(function(response) {
-				console.log(Error(response.json && response.json.error || response));
+				if (typeof(failCallback) !== 'undefined') {
+					failCallback(response);
+				} else {
+					console.log(Error(response.json && response.json.error || response));
+				}
 			});
 	}
 
