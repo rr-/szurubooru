@@ -6,17 +6,18 @@ App.Presenters.LogoutPresenter = function(
 	topNavigationPresenter,
 	messagePresenter,
 	auth,
+	promise,
 	router) {
 
 	var $messages = jQuery('#content');
 
 	function init() {
 		topNavigationPresenter.select('logout');
-		auth.logout().then(function() {
+		promise.wait(auth.logout()).then(function() {
 			$messages.empty();
 			var $messageDiv = messagePresenter.showInfo($messages, 'Logged out. <a href="">Back to main page</a>');
 			$messageDiv.find('a').click(mainPageLinkClicked);
-		}).catch(function(response) {
+		}).fail(function(response) {
 			messagePresenter.showError($messages, response.json && response.json.error || response);
 		});
 	}

@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Util = (function(jQuery) {
+App.Util = (function(jQuery, promise) {
 
 	var templateCache = {};
 
@@ -28,30 +28,6 @@ App.Util = (function(jQuery) {
 		return result;
 	}
 
-	function loadTemplate(templateName) {
-		return loadTemplateFromCache(templateName)
-			|| loadTemplateFromDOM(templateName)
-			|| loadTemplateWithAJAX(templateName);
-	}
-
-	function loadTemplateFromCache(templateName) {
-		if (templateName in templateCache) {
-			return new Promise(function(resolve, reject) {
-				resolve(templateCache[templateName]);
-			});
-		}
-	}
-
-	function loadTemplateFromDOM(templateName) {
-		var $template = jQuery('#' + templateName + '-template');
-		if ($template.length) {
-			return new Promise(function(resolve, reject) {
-				resolve($template.html());
-			});
-		}
-		return null;
-	}
-
 	function initPresenter(presenterGetter, args) {
 		var presenter = presenterGetter();
 		presenter.init.call(presenter, args);
@@ -62,8 +38,32 @@ App.Util = (function(jQuery) {
 		initPresenter(presenterGetter, args);
 	};
 
-	function loadTemplateWithAJAX(templateName) {
-		return new Promise(function(resolve, reject) {
+	function promiseTemplate(templateName) {
+		return promiseTemplateFromCache(templateName)
+			|| promiseTemplateFromDOM(templateName)
+			|| promiseTemplateWithAJAX(templateName);
+	}
+
+	function promiseTemplateFromCache(templateName) {
+		if (templateName in templateCache) {
+			return promise.make(function(resolve, reject) {
+				resolve(templateCache[templateName]);
+			});
+		}
+	}
+
+	function promiseTemplateFromDOM(templateName) {
+		var $template = jQuery('#' + templateName + '-template');
+		if ($template.length) {
+			return promise.make(function(resolve, reject) {
+				resolve($template.html());
+			});
+		}
+		return null;
+	}
+
+	function promiseTemplateWithAJAX(templateName) {
+		return promise.make(function(resolve, reject) {
 			var templatesDir = '/templates';
 			var templateUrl = templatesDir + '/' + templateName + '.tpl';
 			var templateString;
@@ -83,7 +83,7 @@ App.Util = (function(jQuery) {
 	}
 
 	return {
-		loadTemplate: loadTemplate,
+		promiseTemplate: promiseTemplate,
 		initPresenter : initPresenter,
 		initContentPresenter: initContentPresenter,
 		parseComplexRouteArgs: parseComplexRouteArgs,

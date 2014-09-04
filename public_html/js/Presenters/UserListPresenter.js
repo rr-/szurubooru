@@ -4,6 +4,7 @@ App.Presenters = App.Presenters || {};
 App.Presenters.UserListPresenter = function(
 	jQuery,
 	util,
+	promise,
 	router,
 	pagedCollectionPresenter,
 	topNavigationPresenter) {
@@ -17,7 +18,7 @@ App.Presenters.UserListPresenter = function(
 		topNavigationPresenter.select('users');
 		activeSearchOrder = util.parseComplexRouteArgs(args.searchArgs).order;
 
-		util.loadTemplate('user-list').then(function(html) {
+		promise.wait(util.promiseTemplate('user-list')).then(function(html) {
 			template = _.template(html);
 
 			pagedCollectionPresenter.init({
@@ -37,7 +38,6 @@ App.Presenters.UserListPresenter = function(
 		}));
 		$el.find('.order a').click(orderLinkClicked);
 		$el.find('.order [data-order="' + activeSearchOrder + '"]').parent('li').addClass('active');
-		console.log(activeSearchOrder);
 
 		var $pager = $el.find('.pager');
 		pagedCollectionPresenter.render($pager);

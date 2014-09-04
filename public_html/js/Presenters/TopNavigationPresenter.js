@@ -1,14 +1,14 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.TopNavigationPresenter = function(util, jQuery, appState) {
+App.Presenters.TopNavigationPresenter = function(util, jQuery, appState, promise) {
 
 	var selectedElement = null;
 	var $el = jQuery('#top-navigation');
 	var template;
 
 	function init() {
-		util.loadTemplate('top-navigation').then(function(html) {
+		promise.wait(util.promiseTemplate('top-navigation')).then(function(html) {
 			template = _.template(html);
 			render();
 			appState.startObserving('loggedIn', 'top-navigation', loginStateChanged);

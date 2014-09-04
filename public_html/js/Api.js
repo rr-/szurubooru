@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.API = function() {
+App.API = function(promise) {
 
 	var baseUrl = '/api/';
 
@@ -24,7 +24,7 @@ App.API = function() {
 		var fullUrl = baseUrl + '/' + url;
 		fullUrl = fullUrl.replace(/\/{2,}/, '/');
 
-		return new Promise(function(resolve, reject) {
+		return promise.make(function(resolve, reject) {
 			$.ajax({
 				success: function(data, textStatus, xhr) {
 					resolve({

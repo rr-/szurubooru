@@ -8,6 +8,7 @@ App.Presenters.LoginPresenter = function(
 	messagePresenter,
 	auth,
 	router,
+	promise,
 	appState) {
 
 	var $el = jQuery('#content');
@@ -16,7 +17,7 @@ App.Presenters.LoginPresenter = function(
 
 	function init() {
 		topNavigationPresenter.select('login');
-		util.loadTemplate('login-form').then(function(html) {
+		promise.wait(util.promiseTemplate('login-form')).then(function(html) {
 			template = _.template(html);
 			if (appState.get('loggedIn'))
 				router.navigateToMainPage();
@@ -46,7 +47,7 @@ App.Presenters.LoginPresenter = function(
 			.then(function(response) {
 				router.navigateToMainPage();
 				//todo: "redirect" to main page
-			}).catch(function(response) {
+			}).fail(function(response) {
 				messagePresenter.showError($messages, response.json && response.json.error || response);
 			});
 	}

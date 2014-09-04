@@ -4,6 +4,7 @@ App.Presenters = App.Presenters || {};
 App.Presenters.RegistrationPresenter = function(
 	jQuery,
 	util,
+	promise,
 	topNavigationPresenter,
 	messagePresenter,
 	api) {
@@ -13,7 +14,7 @@ App.Presenters.RegistrationPresenter = function(
 
 	function init() {
 		topNavigationPresenter.select('register');
-		util.loadTemplate('registration-form').then(function(html) {
+		promise.wait(util.promiseTemplate('registration-form')).then(function(html) {
 			template = _.template(html);
 			render();
 		});

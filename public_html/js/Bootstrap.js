@@ -1,15 +1,15 @@
 var App = App || {};
 
-App.Bootstrap = function(auth, router, util) {
+App.Bootstrap = function(auth, router, util, promise) {
 
 	util.initPresenter(function() { return App.DI.get('topNavigationPresenter'); });
 
-	auth.tryLoginFromCookie()
+	promise.wait(auth.tryLoginFromCookie())
 		.then(startRouting)
-		.catch(function(error) {
-			auth.loginAnonymous()
+		.fail(function(error) {
+			promise.wait(auth.loginAnonymous())
 				.then(startRouting)
-				.catch(function(response) {
+				.fail(function(response) {
 					console.log(response);
 					alert('Fatal authentication error: ' + response.json.error);
 				});

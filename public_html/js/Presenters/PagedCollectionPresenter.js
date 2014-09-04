@@ -1,7 +1,7 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.PagedCollectionPresenter = function(api, util) {
+App.Presenters.PagedCollectionPresenter = function(api, util, promise) {
 
 	var searchOrder;
 	var searchQuery;
@@ -20,7 +20,7 @@ App.Presenters.PagedCollectionPresenter = function(api, util) {
 		backendUri = args.backendUri;
 		renderCallback = args.renderCallback;
 
-		util.loadTemplate('pager').then(function(html) {
+		promise.wait(util.promiseTemplate('pager')).then(function(html) {
 			template = _.template(html);
 			//renderCallback({entities: [], totalRecords: 0});
 
@@ -31,19 +31,21 @@ App.Presenters.PagedCollectionPresenter = function(api, util) {
 	function changePage(newPageNumber) {
 		pageNumber = newPageNumber;
 
-		api.get(backendUri, {
-			order: searchOrder,
-			query: searchQuery,
-			page: pageNumber
-		}).then(function(response) {
-			totalRecords = response.json.totalRecords;
-			pageSize = response.json.pageSize;
-			renderCallback({
-				entities: response.json.data,
-				totalRecords: response.json.totalRecords});
-		}).catch(function(response) {
-			console.log(Error(response.json && response.json.error || response));
-		});
+		promise.wait(
+			api.get(backendUri, {
+				order: searchOrder,
+				query: searchQuery,
+				page: pageNumber
+			}))
+			.then(function(response) {
+				totalRecords = response.json.totalRecords;
+				pageSize = response.json.pageSize;
+				renderCallback({
+					entities: response.json.data,
+					totalRecords: response.json.totalRecords});
+			}).fail(function(response) {
+				console.log(Error(response.json && response.json.error || response));
+			});
 	}
 
 	function render($target) {

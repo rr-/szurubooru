@@ -1,10 +1,10 @@
 var App = App || {};
 
-App.Auth = function(jQuery, api, appState) {
+App.Auth = function(jQuery, util, api, appState, promise) {
 
 	function loginFromCredentials(userName, password, remember) {
-		return new Promise(function(resolve, reject) {
-			api.post('/login', {userName: userName, password: password})
+		return promise.make(function(resolve, reject) {
+			promise.wait(api.post('/login', {userName: userName, password: password}))
 				.then(function(response) {
 					updateAppState(response);
 					jQuery.cookie(
@@ -12,38 +12,38 @@ App.Auth = function(jQuery, api, appState) {
 						response.json.token.name,
 						remember ? { expires: 365 } : {});
 					resolve(response);
-				}).catch(function(response) {
+				}).fail(function(response) {
 					reject(response);
 				});
 		});
 	};
 
 	function loginFromToken(token) {
-		return new Promise(function(resolve, reject) {
-			api.post('/login', {token: token})
+		return promise.make(function(resolve, reject) {
+			promise.wait(api.post('/login', {token: token}))
 				.then(function(response) {
 					updateAppState(response);
 					resolve(response);
-				}).catch(function(response) {
+				}).fail(function(response) {
 					reject(response);
 				});
 		});
 	};
 
 	function loginAnonymous() {
-		return new Promise(function(resolve, reject) {
-			api.post('/login')
+		return promise.make(function(resolve, reject) {
+			promise.wait(api.post('/login'))
 				.then(function(response) {
 					updateAppState(response);
 					resolve(response);
-				}).catch(function(response) {
+				}).fail(function(response) {
 					reject(response);
 				});
 		});
 	};
 
 	function logout() {
-		return new Promise(function(resolve, reject) {
+		return promise.make(function(resolve, reject) {
 			appState.set('loggedIn', false);
 			appState.set('loginToken', null);
 			jQuery.removeCookie('auth');
@@ -52,7 +52,7 @@ App.Auth = function(jQuery, api, appState) {
 	};
 
 	function tryLoginFromCookie() {
-		return new Promise(function(resolve, reject) {
+		return promise.make(function(resolve, reject) {
 			if (appState.get('loggedIn')) {
 				resolve();
 				return;
@@ -64,12 +64,13 @@ App.Auth = function(jQuery, api, appState) {
 				return;
 			}
 
-			loginFromToken(authCookie).then(function(response) {
-				resolve();
-			}).catch(function(response) {
-				jQuery.removeCookie('auth');
-				reject();
-			});
+			promise.wait(loginFromToken(authCookie))
+				.then(function(response) {
+					resolve();
+				}).fail(function(response) {
+					jQuery.removeCookie('auth');
+					reject();
+				});
 		});
 	};
 
