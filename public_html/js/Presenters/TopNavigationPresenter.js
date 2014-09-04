@@ -41,4 +41,4 @@ App.Presenters.TopNavigationPresenter = function(util, jQuery, appState, promise
 
 };
 
-App.DI.register('topNavigationPresenter', App.Presenters.TopNavigationPresenter);
+App.DI.registerSingleton('topNavigationPresenter', App.Presenters.TopNavigationPresenter);
