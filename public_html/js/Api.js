@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.API = function(promise) {
+App.API = function(promise, appState) {
 
 	var baseUrl = '/api/';
 
@@ -26,6 +26,9 @@ App.API = function(promise) {
 
 		return promise.make(function(resolve, reject) {
 			$.ajax({
+				headers: {
+					'X-Authorization-Token': appState.get('loginToken') || '',
+				},
 				success: function(data, textStatus, xhr) {
 					resolve({
 						status: xhr.status,

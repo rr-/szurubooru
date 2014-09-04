@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Services;
 
-final class AuthService
+class AuthService
 {
 	private $loggedInUser = null;
 	private $loginToken = null;

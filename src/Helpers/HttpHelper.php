@@ -23,6 +23,17 @@ class HttpHelper
 		$this->output(json_encode((array) $data));
 	}
 
+	public function getRequestHeaders()
+	{
+		return getallheaders();
+	}
+
+	public function getRequestHeader($key)
+	{
+		$headers = $this->getRequestHeaders();
+		return isset($headers[$key]) ? $headers[$key] : null;
+	}
+
 	public function getRequestMethod()
 	{
 		return $_SERVER['REQUEST_METHOD'];

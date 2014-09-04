@@ -3,23 +3,31 @@ namespace Szurubooru\Tests;
 
 final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 {
+	private $routerMock;
+	private $httpHelperMock;
+	private $authServiceMock;
+	private $controllerRepositoryMock;
+
+	public function setUp()
+	{
+		$this->routerMock = $this->mock(\Szurubooru\Router::class);
+		$this->httpHelperMock = $this->mock(\Szurubooru\Helpers\HttpHelper::class);
+		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
+		$this->controllerRepositoryMock = $this->mock(\Szurubooru\ControllerRepository::class);
+	}
+
 	public function testDispatchingArrays()
 	{
 		$expected = ['test' => 'toy'];
 
-		$httpHelperMock = $this->getHttpHelperMock();
-		$httpHelperMock
+		$this->httpHelperMock
 			->expects($this->exactly(2))
 			->method('setResponseCode')
 			->withConsecutive([$this->equalTo(500)], [$this->equalTo(200)]);
+		$this->routerMock->expects($this->once())->method('handle')->willReturn($expected);
+		$this->controllerRepositoryMock->method('getControllers')->willReturn([]);
 
-		$routerMock = $this->getRouterMock();
-		$routerMock->expects($this->once())->method('handle')->willReturn($expected);
-
-		$controllerRepositoryMock = $this->getControllerRepositoryMock();
-		$controllerRepositoryMock->method('getControllers')->willReturn([]);
-
-		$dispatcher = new \Szurubooru\Dispatcher($routerMock, $httpHelperMock, $controllerRepositoryMock);
+		$dispatcher = $this->getDispatcher();
 		$actual = $dispatcher->run();
 
 		unset($actual['__time']);
@@ -32,33 +40,22 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 		$classData->bunny = 5;
 		$expected = ['bunny' => 5];
 
-		$httpHelperMock = $this->getHttpHelperMock();
+		$this->routerMock->expects($this->once())->method('handle')->willReturn($classData);
+		$this->controllerRepositoryMock->method('getControllers')->willReturn([]);
 
-		$routerMock = $this->getRouterMock();
-		$routerMock->expects($this->once())->method('handle')->willReturn($classData);
-
-		$controllerRepositoryMock = $this->getControllerRepositoryMock();
-		$controllerRepositoryMock->method('getControllers')->willReturn([]);
-
-		$dispatcher = new \Szurubooru\Dispatcher($routerMock, $httpHelperMock, $controllerRepositoryMock);
+		$dispatcher = $this->getDispatcher();
 		$actual = $dispatcher->run();
 
 		unset($actual['__time']);
 		$this->assertEquals($expected, $actual);
 	}
 
-	private function getHttpHelperMock()
+	private function getDispatcher()
 	{
-		return $this->getMockBuilder(\Szurubooru\Helpers\HttpHelper::class)->disableOriginalConstructor()->getMock();
-	}
-
-	private function getRouterMock()
-	{
-		return $this->getMockBuilder(\Szurubooru\Router::class)->disableOriginalConstructor()->getMock();
-	}
-
-	private function getControllerRepositoryMock()
-	{
-		return $this->getMockBuilder(\Szurubooru\ControllerRepository::class)->disableOriginalConstructor()->getMock();
+		return new \Szurubooru\Dispatcher(
+			$this->routerMock,
+			$this->httpHelperMock,
+			$this->authServiceMock,
+			$this->controllerRepositoryMock);
 	}
 }
