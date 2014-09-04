@@ -1,7 +1,7 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.PagedCollectionPresenter = function(api, util, promise) {
+App.Presenters.PagedCollectionPresenter = function(util, promise, api) {
 
 	var searchOrder;
 	var searchQuery;

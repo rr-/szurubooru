@@ -3,11 +3,11 @@ App.Presenters = App.Presenters || {};
 
 App.Presenters.LogoutPresenter = function(
 	jQuery,
-	topNavigationPresenter,
-	messagePresenter,
-	auth,
 	promise,
-	router) {
+	router,
+	auth,
+	topNavigationPresenter,
+	messagePresenter) {
 
 	var $messages = jQuery('#content');
 

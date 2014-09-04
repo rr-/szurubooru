@@ -4,12 +4,12 @@ App.Presenters = App.Presenters || {};
 App.Presenters.LoginPresenter = function(
 	jQuery,
 	util,
-	topNavigationPresenter,
-	messagePresenter,
-	auth,
-	router,
 	promise,
-	appState) {
+	router,
+	auth,
+	appState,
+	topNavigationPresenter,
+	messagePresenter) {
 
 	var $el = jQuery('#content');
 	var $messages;

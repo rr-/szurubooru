@@ -5,9 +5,9 @@ App.Presenters.RegistrationPresenter = function(
 	jQuery,
 	util,
 	promise,
+	api,
 	topNavigationPresenter,
-	messagePresenter,
-	api) {
+	messagePresenter) {
 
 	var $el = jQuery('#content');
 	var template;

@@ -1,7 +1,11 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.TopNavigationPresenter = function(util, jQuery, appState, promise) {
+App.Presenters.TopNavigationPresenter = function(
+	jQuery,
+	util,
+	promise,
+	appState) {
 
 	var selectedElement = null;
 	var $el = jQuery('#top-navigation');
