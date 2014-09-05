@@ -7,17 +7,23 @@ final class AuthController extends AbstractController
 	private $userService;
 	private $passwordService;
 	private $inputReader;
+	private $userViewProxy;
+	private $tokenViewProxy;
 
 	public function __construct(
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\UserService $userService,
 		\Szurubooru\Services\PasswordService $passwordService,
-		\Szurubooru\Helpers\InputReader $inputReader)
+		\Szurubooru\Helpers\InputReader $inputReader,
+		\Szurubooru\Controllers\ViewProxies\UserViewProxy $userViewProxy,
+		\Szurubooru\Controllers\ViewProxies\TokenViewProxy $tokenViewProxy)
 	{
 		$this->authService = $authService;
 		$this->userService = $userService;
 		$this->passwordService = $passwordService;
 		$this->inputReader = $inputReader;
+		$this->userViewProxy = $userViewProxy;
+		$this->tokenViewProxy = $tokenViewProxy;
 	}
 
 	public function registerRoutes(\Szurubooru\Router $router)
@@ -43,8 +49,8 @@ final class AuthController extends AbstractController
 
 		return
 		[
-			'token' => new \Szurubooru\ViewProxies\Token($this->authService->getLoginToken()),
-			'user' => new \Szurubooru\ViewProxies\User($this->authService->getLoggedInUser()),
+			'token' => $this->tokenViewProxy->fromEntity($this->authService->getLoginToken()),
+			'user' => $this->userViewProxy->fromEntity($this->authService->getLoggedInUser()),
 			'privileges' => $this->authService->getCurrentPrivileges(),
 		];
 	}

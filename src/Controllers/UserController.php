@@ -6,15 +6,18 @@ final class UserController extends AbstractController
 	private $authService;
 	private $userService;
 	private $inputReader;
+	private $userViewProxy;
 
 	public function __construct(
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\UserService $userService,
-		\Szurubooru\Helpers\InputReader $inputReader)
+		\Szurubooru\Helpers\InputReader $inputReader,
+		\Szurubooru\Controllers\ViewProxies\UserViewProxy $userViewProxy)
 	{
 		$this->authService = $authService;
 		$this->userService = $userService;
 		$this->inputReader = $inputReader;
+		$this->userViewProxy = $userViewProxy;
 	}
 
 	public function registerRoutes(\Szurubooru\Router $router)
@@ -33,20 +36,16 @@ final class UserController extends AbstractController
 		$user = $this->userService->getByName($name);
 		if (!$user)
 			throw new \DomainException('User with name "' . $name . '" was not found.');
-		return new \Szurubooru\ViewProxies\User($user);
+		return $this->userViewProxy->fromEntity($user);
 	}
 
 	public function getFiltered()
 	{
 		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_LIST_USERS);
 
-		//todo: move this to form data constructor
-		$searchFormData = new \Szurubooru\FormData\SearchFormData;
-		$searchFormData->query = $this->inputReader->query;
-		$searchFormData->order = $this->inputReader->order;
-		$searchFormData->pageNumber = $this->inputReader->page;
+		$searchFormData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
 		$searchResult = $this->userService->getFiltered($searchFormData);
-		$entities = array_map(function($user) { return new \Szurubooru\ViewProxies\User($user); }, $searchResult->entities);
+		$entities = $this->userViewProxy->fromArray($searchResult->entities);
 		return [
 			'data' => $entities,
 			'pageSize' => $searchResult->filter->pageSize,
@@ -57,13 +56,9 @@ final class UserController extends AbstractController
 	{
 		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_REGISTER);
 
-		$input = new \Szurubooru\FormData\RegistrationFormData;
-		//todo: move this to form data constructor
-		$input->name = $this->inputReader->userName;
-		$input->password = $this->inputReader->password;
-		$input->email = $this->inputReader->email;
+		$input = new \Szurubooru\FormData\RegistrationFormData($this->inputReader);
 		$user = $this->userService->register($input);
-		return new \Szurubooru\ViewProxies\User($user);
+		return $this->userViewProxy->fromEntity($user);
 	}
 
 	public function update($name)
