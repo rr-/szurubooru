@@ -74,6 +74,8 @@ class AuthService
 
 		$this->loginToken = $loginToken;
 		$this->loggedInUser = $this->userDao->getById($loginToken->additionalData);
+		if (!$this->loggedInUser)
+			throw new \Exception('User was deleted.');
 		$this->updateLoginTime($this->loggedInUser);
 
 		if (!$this->loggedInUser)
@@ -133,6 +135,7 @@ class AuthService
 		$loginToken->name = hash('sha256', $user->name . '/' . microtime(true));
 		$loginToken->additionalData = $user->id;
 		$loginToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
+		$this->tokenDao->deleteByAdditionalData($loginToken->additionalData);
 		$this->tokenDao->save($loginToken);
 		return $loginToken;
 	}

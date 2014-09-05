@@ -18,4 +18,9 @@ class TokenDao extends AbstractDao
 	{
 		$this->collection->remove(['name' => $tokenName]);
 	}
+
+	public function deleteByAdditionalData($additionalData)
+	{
+		$this->collection->remove(['additionalData' => $additionalData]);
+	}
 }

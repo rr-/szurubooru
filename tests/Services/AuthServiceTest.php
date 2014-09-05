@@ -51,6 +51,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testUser->name = 'dummy';
 		$testUser->passwordHash = 'hash';
 		$this->userDaoMock->expects($this->once())->method('getByName')->willReturn($testUser);
+		$this->tokenDaoMock->expects($this->once())->method('deleteByAdditionalData')->with($testUser->id);
 
 		$authService = $this->getAuthService();
 		$authService->loginFromCredentials('dummy', 'godzilla');
