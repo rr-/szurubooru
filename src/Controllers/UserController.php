@@ -26,6 +26,16 @@ final class UserController extends AbstractController
 		$router->delete('/api/users/:name', [$this, 'delete']);
 	}
 
+	public function getByName($name)
+	{
+		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_VIEW_USER);
+
+		$user = $this->userService->getByName($name);
+		if (!$user)
+			throw new \DomainException('User with name "' . $name . '" was not found.');
+		return new \Szurubooru\ViewProxies\User($user);
+	}
+
 	public function getFiltered()
 	{
 		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_LIST_USERS);
@@ -41,16 +51,6 @@ final class UserController extends AbstractController
 			'data' => $entities,
 			'pageSize' => $searchResult->filter->pageSize,
 			'totalRecords' => $searchResult->totalRecords];
-	}
-
-	public function getByName($name)
-	{
-		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_VIEW_USER);
-
-		$user = $this->userService->getByName($name);
-		if (!$user)
-			throw new \DomainException('User with name "' . $name . '" was not found.');
-		return new \Szurubooru\ViewProxies\User($user);
 	}
 
 	public function register()
@@ -73,6 +73,10 @@ final class UserController extends AbstractController
 
 	public function delete($name)
 	{
-		throw new \BadMethodCallException('Not implemented');
+		if ($name == $this->authService->getLoggedInUser()->name)
+			$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_DELETE_OWN_ACCOUNT);
+		else
+			$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_DELETE_ACCOUNTS);
+		return $this->userService->deleteByName($name);
 	}
 }

@@ -19,4 +19,11 @@ class UserDao extends AbstractDao implements ICrudDao
 	{
 		return (bool) $this->collection->findOne();
 	}
+
+	public function deleteByName($userName)
+	{
+		$this->collection->remove(['name' => $userName]);
+		$tokens = $this->db->selectCollection('tokens');
+		$tokens->remove(['additionalData' => $userName]);
+	}
 }

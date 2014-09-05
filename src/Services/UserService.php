@@ -65,4 +65,10 @@ class UserService
 
 		return $this->userDao->save($user);
 	}
+
+	public function deleteByName($name)
+	{
+		$this->userDao->deleteByName($name);
+		return true;
+	}
 }

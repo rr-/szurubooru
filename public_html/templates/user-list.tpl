@@ -16,7 +16,7 @@
 
 	<% _.each(userList, function(user) { %>
 		<div class="user">
-			User name: <%= user.name %>
+			User name: <a href="#/user/<%= user.name %>"><%= user.name %></a>
 		</div>
 	<% }); %>
 
