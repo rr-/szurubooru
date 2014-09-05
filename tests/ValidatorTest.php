@@ -3,11 +3,11 @@ namespace Szurubooru\Tests;
 
 final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 {
-	private $config;
+	private $configMock;
 
 	public function setUp()
 	{
-		$this->config = new \Szurubooru\Config();
+		$this->configMock = $this->mockConfig();
 	}
 
 	public function testMinLengthName()
@@ -34,9 +34,8 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testEmptyUserName()
 	{
-		$this->config->users = new \StdClass;
-		$this->config->users->minUserNameLength = 0;
-		$this->config->users->maxUserNameLength = 1;
+		$this->configMock->set('users/minUserNameLength', 0);
+		$this->configMock->set('users/maxUserNameLength', 1);
 		$this->setExpectedException(\Exception::class, 'User name cannot be empty');
 		$userName = '';
 		$validator = $this->getValidator();
@@ -45,9 +44,8 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testTooShortUserName()
 	{
-		$this->config->users = new \StdClass;
-		$this->config->users->minUserNameLength = 30;
-		$this->config->users->maxUserNameLength = 50;
+		$this->configMock->set('users/minUserNameLength', 30);
+		$this->configMock->set('users/maxUserNameLength', 50);
 		$this->setExpectedException(\Exception::class, 'User name must have at least 30 character(s)');
 		$userName = 'godzilla';
 		$validator = $this->getValidator();
@@ -56,9 +54,8 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testTooLongUserName()
 	{
-		$this->config->users = new \StdClass;
-		$this->config->users->minUserNameLength = 30;
-		$this->config->users->maxUserNameLength = 50;
+		$this->configMock->set('users/minUserNameLength', 30);
+		$this->configMock->set('users/maxUserNameLength', 50);
 		$this->setExpectedException(\Exception::class, 'User name must have at most 50 character(s)');
 		$userName = 'godzilla' . str_repeat('a', 50);
 		$validator = $this->getValidator();
@@ -67,9 +64,8 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testUserNameWithSpaces()
 	{
-		$this->config->users = new \StdClass;
-		$this->config->users->minUserNameLength = 0;
-		$this->config->users->maxUserNameLength = 100;
+		$this->configMock->set('users/minUserNameLength', 0);
+		$this->configMock->set('users/maxUserNameLength', 100);
 		$userName = ' godzilla ';
 		$validator = $this->getValidator();
 		$validator->validateUserName($userName);
@@ -78,9 +74,8 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testUserNameWithInvalidCharacters()
 	{
-		$this->config->users = new \StdClass;
-		$this->config->users->minUserNameLength = 0;
-		$this->config->users->maxUserNameLength = 100;
+		$this->configMock->set('users/minUserNameLength', 0);
+		$this->configMock->set('users/maxUserNameLength', 100);
 		$userName = '..:xXx:godzilla:xXx:..';
 		$this->setExpectedException(\Exception::class, 'User name may contain only');
 		$validator = $this->getValidator();
@@ -109,8 +104,7 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testEmptyPassword()
 	{
-		$this->config->security = new \StdClass;
-		$this->config->security->minPasswordLength = 0;
+		$this->configMock->set('security/minPasswordLength', 0);
 		$this->setExpectedException(\Exception::class, 'Password cannot be empty');
 		$validator = $this->getValidator();
 		$validator->validatePassword('');
@@ -118,8 +112,7 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testTooShortPassword()
 	{
-		$this->config->security = new \StdClass;
-		$this->config->security->minPasswordLength = 10000;
+		$this->configMock->set('security/minPasswordLength', 10000);
 		$this->setExpectedException(\Exception::class, 'Password must have at least 10000 character(s)');
 		$validator = $this->getValidator();
 		$validator->validatePassword('password123');
@@ -127,8 +120,7 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testNonAsciiPassword()
 	{
-		$this->config->security = new \StdClass;
-		$this->config->security->minPasswordLength = 0;
+		$this->configMock->set('security/minPasswordLength', 0);
 		$this->setExpectedException(\Exception::class, 'Password may contain only');
 		$validator = $this->getValidator();
 		$validator->validatePassword('良いパスワード');
@@ -136,14 +128,13 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testValidPassword()
 	{
-		$this->config->security = new \StdClass;
-		$this->config->security->minPasswordLength = 0;
+		$this->configMock->set('security/minPasswordLength', 0);
 		$validator = $this->getValidator();
 		$this->assertNull($validator->validatePassword('password'));
 	}
 
 	private function getValidator()
 	{
-		return new \Szurubooru\Validator($this->config);
+		return new \Szurubooru\Validator($this->configMock);
 	}
 }

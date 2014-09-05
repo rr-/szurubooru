@@ -13,7 +13,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function setUp()
 	{
-		$this->configMock = $this->mock(\Szurubooru\Config::class);
+		$this->configMock = $this->mockConfig();
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
 		$this->userSearchService = $this->mock(\Szurubooru\Dao\Services\UserSearchService::class);
@@ -29,8 +29,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$expected = [$mockUser];
 		$this->userSearchService->method('getFiltered')->willReturn($expected);
 
-		$this->configMock->users = new \StdClass;
-		$this->configMock->users->usersPerPage = 1;
+		$this->configMock->set('users/usersPerPage', 1);
 		$searchFormData = new \Szurubooru\FormData\SearchFormData;
 		$searchFormData->query = '';
 		$searchFormData->order = 'joined';

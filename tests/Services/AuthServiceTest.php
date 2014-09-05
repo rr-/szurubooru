@@ -13,7 +13,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function setUp()
 	{
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
-		$this->configMock = $this->mock(\Szurubooru\Config::class);
+		$this->configMock = $this->mockConfig();
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 		$this->tokenDaoMock = $this->mock(\Szurubooru\Dao\TokenDao::class);
