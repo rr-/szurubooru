@@ -5,7 +5,7 @@ App.Presenters.TopNavigationPresenter = function(
 	jQuery,
 	util,
 	promise,
-	appState) {
+	auth) {
 
 	var selectedElement = null;
 	var $el = jQuery('#top-navigation');
@@ -15,7 +15,7 @@ App.Presenters.TopNavigationPresenter = function(
 		promise.wait(util.promiseTemplate('top-navigation')).then(function(html) {
 			template = _.template(html);
 			render();
-			appState.startObserving('loggedIn', 'top-navigation', loginStateChanged);
+			auth.startObservingLoginChanges('top-navigation', loginStateChanged);
 		});
 	}
 
@@ -31,9 +31,9 @@ App.Presenters.TopNavigationPresenter = function(
 
 	function render() {
 		$el.html(template({
-			loggedIn: appState.get('loggedIn'),
-			user: appState.get('loggedInUser'),
-			privileges: appState.get('privileges'),
+			loggedIn: auth.isLoggedIn(),
+			user: auth.getCurrentUser(),
+			canListUsers: auth.hasPrivilege('listUsers')
 		}));
 		$el.find('li.' + selectedElement).addClass('active');
 	};

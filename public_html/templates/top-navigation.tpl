@@ -1,6 +1,6 @@
 <ul>
 	<!-- todo: check privileges -->
-	<% if (_.contains(privileges, 'listUsers')) { %>
+	<% if (canListUsers) { %>
 		<li class="users">
 			<a href="#/users">Users</a>
 		</li>

@@ -7,7 +7,6 @@ App.Presenters.LoginPresenter = function(
 	promise,
 	router,
 	auth,
-	appState,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -19,7 +18,7 @@ App.Presenters.LoginPresenter = function(
 		topNavigationPresenter.select('login');
 		promise.wait(util.promiseTemplate('login-form')).then(function(html) {
 			template = _.template(html);
-			if (appState.get('loggedIn'))
+			if (auth.isLoggedIn())
 				router.navigateToMainPage();
 			else
 				render();

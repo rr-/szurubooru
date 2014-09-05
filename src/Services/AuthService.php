@@ -123,9 +123,14 @@ class AuthService
 		return array_filter(preg_split('/[;,\s]+/', $this->config->security->privileges[$keyName]));
 	}
 
+	public function hasPrivilege($privilege)
+	{
+		return in_array($privilege, $this->getCurrentPrivileges());
+	}
+
 	public function assertPrivilege($privilege)
 	{
-		if (!in_array($privilege, $this->getCurrentPrivileges()))
+		if (!$this->hasPrivilege($privilege))
 			throw new \DomainException('Unprivileged operation');
 	}
 

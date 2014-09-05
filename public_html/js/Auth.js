@@ -16,7 +16,7 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 					reject(response);
 				});
 		});
-	};
+	}
 
 	function loginFromToken(token) {
 		return promise.make(function(resolve, reject) {
@@ -28,7 +28,7 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 					reject(response);
 				});
 		});
-	};
+	}
 
 	function loginAnonymous() {
 		return promise.make(function(resolve, reject) {
@@ -40,18 +40,18 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 					reject(response);
 				});
 		});
-	};
+	}
 
 	function logout() {
 		return promise.make(function(resolve, reject) {
 			jQuery.removeCookie('auth');
 			return loginAnonymous().then(resolve).fail(reject);
 		});
-	};
+	}
 
 	function tryLoginFromCookie() {
 		return promise.make(function(resolve, reject) {
-			if (appState.get('loggedIn')) {
+			if (isLoggedIn()) {
 				resolve();
 				return;
 			}
@@ -70,7 +70,7 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 					reject();
 				});
 		});
-	};
+	}
 
 	function updateAppState(response) {
 		appState.set('privileges', response.json.privileges || []);
@@ -79,12 +79,37 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 		appState.set('loggedIn', response.json.user && !!response.json.user.id);
 	}
 
+	function isLoggedIn() {
+		return appState.get('loggedIn');
+	}
+
+	function getCurrentUser() {
+		return appState.get('loggedInUser');
+	}
+
+	function getCurrentPrivileges() {
+		return appState.get('privileges');
+	}
+
+	function hasPrivilege(privilege) {
+		return _.contains(getCurrentPrivileges(), privilege);
+	}
+
+	function startObservingLoginChanges(listenerName, callback) {
+		appState.startObserving('loggedIn', listenerName, callback);
+	}
+
 	return {
 		loginFromCredentials: loginFromCredentials,
 		loginFromToken: loginFromToken,
 		loginAnonymous: loginAnonymous,
 		tryLoginFromCookie: tryLoginFromCookie,
 		logout: logout,
+		isLoggedIn: isLoggedIn,
+		getCurrentUser: getCurrentUser,
+		getCurrentPrivileges: getCurrentPrivileges,
+		hasPrivilege: hasPrivilege,
+		startObservingLoginChanges: startObservingLoginChanges,
 	};
 
 };

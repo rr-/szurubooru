@@ -6,7 +6,7 @@ App.Presenters.UserPresenter = function(
 	util,
 	promise,
 	api,
-	appState,
+	auth,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -20,7 +20,7 @@ App.Presenters.UserPresenter = function(
 
 	function init(args) {
 		userName = args.userName;
-		topNavigationPresenter.select(appState.get('loggedIn') && appState.get('loggedInUser').name == userName ? 'my-account' : 'users');
+		topNavigationPresenter.select(auth.isLoggedIn() && auth.getCurrentUser().name == userName ? 'my-account' : 'users');
 
 		promise.waitAll(
 			util.promiseTemplate('user'),
