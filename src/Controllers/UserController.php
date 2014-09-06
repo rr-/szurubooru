@@ -39,7 +39,7 @@ final class UserController extends AbstractController
 
 	public function getFiltered()
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_LIST_USERS);
+		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_USERS);
 
 		$searchFormData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
 		$searchResult = $this->userService->getFiltered($searchFormData);
@@ -52,7 +52,7 @@ final class UserController extends AbstractController
 
 	public function register()
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_REGISTER);
+		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::REGISTER);
 
 		$input = new \Szurubooru\FormData\RegistrationFormData($this->inputReader);
 		$user = $this->userService->register($input);
@@ -68,8 +68,8 @@ final class UserController extends AbstractController
 	{
 		$this->privilegeService->assertPrivilege(
 			$this->privilegeService->isLoggedIn($name)
-				? \Szurubooru\Privilege::PRIVILEGE_DELETE_OWN_ACCOUNT
-				: \Szurubooru\Privilege::PRIVILEGE_DELETE_ACCOUNTS);
+				? \Szurubooru\Privilege::DELETE_OWN_ACCOUNT
+				: \Szurubooru\Privilege::DELETE_ACCOUNTS);
 
 		return $this->userService->deleteByName($name);
 	}

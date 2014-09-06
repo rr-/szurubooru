@@ -8,7 +8,7 @@ class PrivilegeTest extends \Szurubooru\Tests\AbstractTestCase
 		$refl = new \ReflectionClass(\Szurubooru\Privilege::class);
 		foreach ($refl->getConstants() as $key => $value)
 		{
-			$value = strtoupper('privilege_' . ltrim(preg_replace('/[A-Z]/', '_\0', $value), '_'));
+			$value = strtoupper(ltrim(preg_replace('/[A-Z]/', '_\0', $value), '_'));
 			$this->assertEquals($key, $value);
 		}
 	}

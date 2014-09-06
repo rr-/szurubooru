@@ -19,7 +19,7 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testUser->accessRank = \Szurubooru\Entities\User::ACCESS_RANK_POWER_USER;
 		$this->authServiceMock->method('getLoggedInUser')->willReturn($testUser);
 
-		$privilege = \Szurubooru\Privilege::PRIVILEGE_LIST_USERS;
+		$privilege = \Szurubooru\Privilege::LIST_USERS;
 		$this->configMock->set('security/privileges/' . $privilege, 'powerUser');
 
 		$privilegeService = $this->getPrivilegeService();
