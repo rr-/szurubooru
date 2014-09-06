@@ -7,9 +7,14 @@ final class Injector
 
 	public static function init()
 	{
+		$definitionsPath = __DIR__
+			. DIRECTORY_SEPARATOR . '..'
+			. DIRECTORY_SEPARATOR . 'src'
+			. DIRECTORY_SEPARATOR . 'di.php';
+
 		$builder = new \DI\ContainerBuilder();
 		$builder->setDefinitionCache(new \Doctrine\Common\Cache\ArrayCache());
-		$builder->addDefinitions(__DIR__ . DS . '..' . DS . 'src' . DS . 'di.php');
+		$builder->addDefinitions($definitionsPath);
 		self::$container = $builder->build();
 	}
 

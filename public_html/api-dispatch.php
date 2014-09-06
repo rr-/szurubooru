@@ -1,9 +1,8 @@
 <?php
 $start = microtime(true);
 
-define('DS', DIRECTORY_SEPARATOR);
-require_once(__DIR__ . DS . '..' . DS . 'vendor' . DS . 'autoload.php');
-require_once(__DIR__ . DS . '..' . DS . 'src' . DS . 'AutoLoader.php');
+require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'AutoLoader.php');
 
 $dispatcher = \Szurubooru\Injector::get(\Szurubooru\Dispatcher::class);
 $dispatcher->run();

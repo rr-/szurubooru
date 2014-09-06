@@ -1,8 +1,8 @@
 <?php
 return [
 	\Szurubooru\Config::class => DI\object()->constructor([
-		__DIR__ . DS . '..' . DS . 'data' . DS . 'config.ini',
-		__DIR__ . DS . '..' . DS . 'data' . DS . 'local.ini']),
+		__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'config.ini',
+		__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'local.ini']),
 
 	\Szurubooru\ControllerRepository::class => DI\object()->constructor(DI\link('controllers')),
 

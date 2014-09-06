@@ -6,7 +6,7 @@ final class InputReader
 	public function __construct()
 	{
 		$_PUT = [];
-		if ($_SERVER['REQUEST_METHOD'] == 'PUT')
+		if (isset($_SERVER['REQUEST_METHOD']) and $_SERVER['REQUEST_METHOD'] == 'PUT')
 			parse_str(file_get_contents('php://input'), $_PUT);
 
 		foreach ([$_GET, $_POST, $_PUT] as $source)
