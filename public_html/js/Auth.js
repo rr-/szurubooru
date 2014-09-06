@@ -2,6 +2,13 @@ var App = App || {};
 
 App.Auth = function(jQuery, util, api, appState, promise) {
 
+	var privileges = {
+		register: 'register',
+		listUsers: 'listUsers',
+		deleteOwnAccount: 'deleteOwnAccount',
+		deleteAllAccounts: 'deleteAllAccounts',
+	};
+
 	function loginFromCredentials(userName, password, remember) {
 		return promise.make(function(resolve, reject) {
 			promise.wait(api.post('/login', {userName: userName, password: password}))
@@ -79,8 +86,14 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 		appState.set('loggedIn', response.json.user && !!response.json.user.id);
 	}
 
-	function isLoggedIn() {
-		return appState.get('loggedIn');
+	function isLoggedIn(userName) {
+		if (!appState.get('loggedIn'))
+			return false;
+		if (typeof(userName) != 'undefined') {
+			if (getCurrentUser().name != userName)
+				return false;
+		}
+		return true;
 	}
 
 	function getCurrentUser() {
@@ -105,11 +118,14 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 		loginAnonymous: loginAnonymous,
 		tryLoginFromCookie: tryLoginFromCookie,
 		logout: logout,
+
+		startObservingLoginChanges: startObservingLoginChanges,
 		isLoggedIn: isLoggedIn,
 		getCurrentUser: getCurrentUser,
 		getCurrentPrivileges: getCurrentPrivileges,
 		hasPrivilege: hasPrivilege,
-		startObservingLoginChanges: startObservingLoginChanges,
+
+		privileges: privileges,
 	};
 
 };

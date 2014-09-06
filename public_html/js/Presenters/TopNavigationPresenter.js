@@ -33,7 +33,7 @@ App.Presenters.TopNavigationPresenter = function(
 		$el.html(template({
 			loggedIn: auth.isLoggedIn(),
 			user: auth.getCurrentUser(),
-			canListUsers: auth.hasPrivilege('listUsers')
+			canListUsers: auth.hasPrivilege(auth.privileges.listUsers)
 		}));
 		$el.find('li.' + selectedElement).addClass('active');
 	};

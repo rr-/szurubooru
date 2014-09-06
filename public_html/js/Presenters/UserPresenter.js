@@ -21,7 +21,7 @@ App.Presenters.UserPresenter = function(
 
 	function init(args) {
 		userName = args.userName;
-		topNavigationPresenter.select(auth.isLoggedIn() && auth.getCurrentUser().name == userName ? 'my-account' : 'users');
+		topNavigationPresenter.select(auth.isLoggedIn(userName) ? 'my-account' : 'users');
 
 		promise.waitAll(
 			util.promiseTemplate('user'),
@@ -51,8 +51,8 @@ App.Presenters.UserPresenter = function(
 	function render() {
 		var context = {
 			user: user,
-			canDeleteAccount: auth.hasPrivilege('deleteAccounts') ||
-				(auth.hasPrivilege('deleteOwnAccount') && auth.getCurrentUser().name == userName),
+			canDeleteAccount: auth.hasPrivilege(auth.privileges.deleteAllAccounts) ||
+				(auth.isLoggedIn(userName) && auth.hasPrivilege(auth.privileges.deleteOwnAccount)),
 		};
 		$el.html(template(context));
 		$el.find('.browsing-settings').html(browsingSettingsTemplate(context));

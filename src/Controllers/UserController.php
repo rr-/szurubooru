@@ -3,18 +3,18 @@ namespace Szurubooru\Controllers;
 
 final class UserController extends AbstractController
 {
-	private $authService;
+	private $privilegeService;
 	private $userService;
 	private $inputReader;
 	private $userViewProxy;
 
 	public function __construct(
-		\Szurubooru\Services\AuthService $authService,
+		\Szurubooru\Services\PrivilegeService $privilegeService,
 		\Szurubooru\Services\UserService $userService,
 		\Szurubooru\Helpers\InputReader $inputReader,
 		\Szurubooru\Controllers\ViewProxies\UserViewProxy $userViewProxy)
 	{
-		$this->authService = $authService;
+		$this->privilegeService = $privilegeService;
 		$this->userService = $userService;
 		$this->inputReader = $inputReader;
 		$this->userViewProxy = $userViewProxy;
@@ -31,8 +31,6 @@ final class UserController extends AbstractController
 
 	public function getByName($name)
 	{
-		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_VIEW_USER);
-
 		$user = $this->userService->getByName($name);
 		if (!$user)
 			throw new \DomainException('User with name "' . $name . '" was not found.');
@@ -41,7 +39,7 @@ final class UserController extends AbstractController
 
 	public function getFiltered()
 	{
-		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_LIST_USERS);
+		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_LIST_USERS);
 
 		$searchFormData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
 		$searchResult = $this->userService->getFiltered($searchFormData);
@@ -54,7 +52,7 @@ final class UserController extends AbstractController
 
 	public function register()
 	{
-		$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_REGISTER);
+		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_REGISTER);
 
 		$input = new \Szurubooru\FormData\RegistrationFormData($this->inputReader);
 		$user = $this->userService->register($input);
@@ -68,10 +66,11 @@ final class UserController extends AbstractController
 
 	public function delete($name)
 	{
-		if ($name == $this->authService->getLoggedInUser()->name)
-			$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_DELETE_OWN_ACCOUNT);
-		else
-			$this->authService->assertPrivilege(\Szurubooru\Privilege::PRIVILEGE_DELETE_ACCOUNTS);
+		$this->privilegeService->assertPrivilege(
+			$this->privilegeService->isLoggedIn($name)
+				? \Szurubooru\Privilege::PRIVILEGE_DELETE_OWN_ACCOUNT
+				: \Szurubooru\Privilege::PRIVILEGE_DELETE_ACCOUNTS);
+
 		return $this->userService->deleteByName($name);
 	}
 }

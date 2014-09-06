@@ -4,7 +4,6 @@ namespace Szurubooru\Tests\Services;
 class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 {
 	private $validatorMock;
-	private $configMock;
 	private $passwordServiceMock;
 	private $timeServiceMock;
 	private $tokenDaoMock;
@@ -13,7 +12,6 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function setUp()
 	{
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
-		$this->configMock = $this->mockConfig();
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 		$this->tokenDaoMock = $this->mock(\Szurubooru\Dao\TokenDao::class);
@@ -97,7 +95,6 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		return new \Szurubooru\Services\AuthService(
 			$this->validatorMock,
-			$this->configMock,
 			$this->passwordServiceMock,
 			$this->timeServiceMock,
 			$this->tokenDaoMock,

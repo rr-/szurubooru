@@ -3,6 +3,13 @@ namespace Szurubooru\Controllers\ViewProxies;
 
 class UserViewProxy extends AbstractViewProxy
 {
+	private $privilegeService;
+
+	public function __construct(\Szurubooru\Services\PrivilegeService $privilegeService)
+	{
+		$this->privilegeService = $privilegeService;
+	}
+
 	public function fromEntity($user)
 	{
 		$result = new \StdClass;
@@ -10,6 +17,15 @@ class UserViewProxy extends AbstractViewProxy
 		{
 			$result->id = $user->id;
 			$result->name = $user->name;
+			$result->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankToString($user->accessRank);
+			$result->registrationTime = $user->registrationTime;
+			$result->lastLoginTime = $user->lastLoginTime;
+
+			if ($this->privilegeService->hasPrivilege(\Szurubooru\Privilege::PRIVILEGE_VIEW_ALL_EMAIL_ADDRESSES) or
+				$this->privilegeService->isLoggedIn($user))
+			{
+				$result->email = $user->email;
+			}
 		}
 		return $result;
 	}

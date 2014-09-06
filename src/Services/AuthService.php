@@ -7,7 +7,6 @@ class AuthService
 	private $loginToken = null;
 
 	private $validator;
-	private $config;
 	private $passwordService;
 	private $timeService;
 	private $userDao;
@@ -15,7 +14,6 @@ class AuthService
 
 	public function __construct(
 		\Szurubooru\Validator $validator,
-		\Szurubooru\Config $config,
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Dao\TokenDao $tokenDao,
@@ -24,7 +22,6 @@ class AuthService
 		$this->loggedInUser = $this->getAnonymousUser();
 
 		$this->validator = $validator;
-		$this->config = $config;
 		$this->passwordService = $passwordService;
 		$this->timeService = $timeService;
 		$this->tokenDao = $tokenDao;
@@ -106,32 +103,6 @@ class AuthService
 
 		$this->tokenDao->deleteByName($this->loginToken);
 		$this->loginToken = null;
-	}
-
-	public function getCurrentPrivileges()
-	{
-		switch ($this->getLoggedInUser()->accessRank)
-		{
-			case \Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS: $keyName = 'anonymous'; break;
-			case \Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER: $keyName = 'regularUser'; break;
-			case \Szurubooru\Entities\User::ACCESS_RANK_POWER_USER: $keyName = 'powerUser'; break;
-			case \Szurubooru\Entities\User::ACCESS_RANK_MODERATOR: $keyName = 'moderator'; break;
-			case \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR: $keyName = 'administrator'; break;
-			default:
-				throw new \DomainException('Invalid access rank!');
-		}
-		return array_filter(preg_split('/[;,\s]+/', $this->config->security->privileges[$keyName]));
-	}
-
-	public function hasPrivilege($privilege)
-	{
-		return in_array($privilege, $this->getCurrentPrivileges());
-	}
-
-	public function assertPrivilege($privilege)
-	{
-		if (!$this->hasPrivilege($privilege))
-			throw new \DomainException('Unprivileged operation');
 	}
 
 	private function createAndSaveLoginToken(\Szurubooru\Entities\User $user)

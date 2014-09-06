@@ -5,6 +5,7 @@ App.Presenters.UserListPresenter = function(
 	jQuery,
 	util,
 	promise,
+	auth,
 	router,
 	pagedCollectionPresenter,
 	topNavigationPresenter,
