@@ -5,6 +5,16 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 	var privileges = {
 		register: 'register',
 		listUsers: 'listUsers',
+		viewAllEmailAddresses: 'viewAllEmailAddresses',
+		changeAccessRank: 'changeAccessRank',
+		changeOwnAvatarStyle: 'changeOwnAvatarStyle',
+		changeOwnEmailAddress: 'changeOwnEmailAddress',
+		changeOwnName: 'changeOwnName',
+		changeOwnPassword: 'changeOwnPassword',
+		changeAllAvatarStyles: 'changeAllAvatarStyles',
+		changeAllEmailAddresses: 'changeAllEmailAddresses',
+		changeAllNames: 'changeAllNames',
+		changeAllPasswords: 'changeAllPasswords',
 		deleteOwnAccount: 'deleteOwnAccount',
 		deleteAllAccounts: 'deleteAllAccounts',
 	};

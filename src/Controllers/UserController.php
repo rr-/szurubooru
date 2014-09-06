@@ -22,18 +22,18 @@ final class UserController extends AbstractController
 
 	public function registerRoutes(\Szurubooru\Router $router)
 	{
-		$router->post('/api/users', [$this, 'register']);
+		$router->post('/api/users', [$this, 'createUser']);
 		$router->get('/api/users', [$this, 'getFiltered']);
-		$router->get('/api/users/:name', [$this, 'getByName']);
-		$router->put('/api/users/:name', [$this, 'update']);
-		$router->delete('/api/users/:name', [$this, 'delete']);
+		$router->get('/api/users/:userName', [$this, 'getByName']);
+		$router->put('/api/users/:userName', [$this, 'updateUser']);
+		$router->delete('/api/users/:userName', [$this, 'deleteUser']);
 	}
 
-	public function getByName($name)
+	public function getByName($userName)
 	{
-		$user = $this->userService->getByName($name);
+		$user = $this->userService->getByName($userName);
 		if (!$user)
-			throw new \DomainException('User with name "' . $name . '" was not found.');
+			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
 		return $this->userViewProxy->fromEntity($user);
 	}
 
@@ -41,8 +41,8 @@ final class UserController extends AbstractController
 	{
 		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_USERS);
 
-		$searchFormData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
-		$searchResult = $this->userService->getFiltered($searchFormData);
+		$formData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
+		$searchResult = $this->userService->getFiltered($formData);
 		$entities = $this->userViewProxy->fromArray($searchResult->entities);
 		return [
 			'data' => $entities,
@@ -50,27 +50,66 @@ final class UserController extends AbstractController
 			'totalRecords' => $searchResult->totalRecords];
 	}
 
-	public function register()
+	public function createUser()
 	{
 		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::REGISTER);
-
-		$input = new \Szurubooru\FormData\RegistrationFormData($this->inputReader);
-		$user = $this->userService->register($input);
+		$formData = new \Szurubooru\FormData\RegistrationFormData($this->inputReader);
+		$user = $this->userService->createUser($formData);
 		return $this->userViewProxy->fromEntity($user);
 	}
 
-	public function update($name)
+	public function updateUser($userName)
 	{
-		throw new \BadMethodCallException('Not implemented');
+		$formData = new \Szurubooru\FormData\UserEditFormData($this->inputReader);
+
+		if ($formData->avatarStyle !== null)
+		{
+			$this->privilegeService->assertPrivilege(
+				$this->privilegeService->isLoggedIn($userName)
+					? \Szurubooru\Privilege::CHANGE_OWN_AVATAR_STYLE
+					: \Szurubooru\Privilege::CHANGE_ALL_AVATAR_STYLES);
+		}
+
+		if ($formData->userName !== null)
+		{
+			$this->privilegeService->assertPrivilege(
+				$this->privilegeService->isLoggedIn($userName)
+					? \Szurubooru\Privilege::CHANGE_OWN_NAME
+					: \Szurubooru\Privilege::CHANGE_ALL_NAMES);
+		}
+
+		if ($formData->password !== null)
+		{
+			$this->privilegeService->assertPrivilege(
+				$this->privilegeService->isLoggedIn($userName)
+					? \Szurubooru\Privilege::CHANGE_OWN_PASSWORD
+					: \Szurubooru\Privilege::CHANGE_ALL_PASSWORDS);
+		}
+
+		if ($formData->email !== null)
+		{
+			$this->privilegeService->assertPrivilege(
+				$this->privilegeService->isLoggedIn($userName)
+					? \Szurubooru\Privilege::CHANGE_OWN_EMAIL_ADDRESS
+					: \Szurubooru\Privilege::CHANGE_ALL_EMAIL_ADDRESSES);
+		}
+
+		if ($formData->accessRank)
+		{
+			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_ACCESS_RANK);
+		}
+
+		$user = $this->userService->updateUser($userName, $formData);
+		return $this->userViewProxy->fromEntity($user);
 	}
 
-	public function delete($name)
+	public function deleteUser($userName)
 	{
 		$this->privilegeService->assertPrivilege(
-			$this->privilegeService->isLoggedIn($name)
+			$this->privilegeService->isLoggedIn($userName)
 				? \Szurubooru\Privilege::DELETE_OWN_ACCOUNT
 				: \Szurubooru\Privilege::DELETE_ACCOUNTS);
 
-		return $this->userService->deleteByName($name);
+		return $this->userService->deleteUserByName($userName);
 	}
 }

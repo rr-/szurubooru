@@ -1,4 +1,6 @@
 <form class="browsing-settings">
+	<div class="messages"></div>
+
 	<div class="form-row">
 		<label class="form-label">Safety:</label>
 		<div class="form-input">
@@ -47,7 +49,7 @@
 	<div class="form-row">
 		<label class="form-label"></label>
 		<div class="form-input">
-			<button class="submit" type="submit">Update settings</button>
+			<button type="submit">Update settings</button>
 		</div>
 	</div>
 </form>

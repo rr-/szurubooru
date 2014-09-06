@@ -45,4 +45,10 @@ class HttpHelper
 		$requestUri = preg_replace('/\?.*$/', '', $requestUri);
 		return $requestUri;
 	}
+
+	public function nonCachedRedirect($destination)
+	{
+		$this->setResponseCode(303);
+		$this->setHeader('Location', $destination);
+	}
 }

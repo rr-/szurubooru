@@ -1,74 +1,94 @@
 <form class="account-settings">
-	<div class="form-row">
-		<label class="form-label">User picture:</label>
-		<div class="form-input">
-			<label for="account-settings-avatar-gravatar">
-				<input type="radio" name="avatar-style" id="account-settings-avatar-gravatar" class="avatar-style" value="gravatar"/>
-				Gravatar
-			</label>
-			<label for="account-settings-avatar-manual">
-				<input type="radio" name="avatar-style" id="account-settings-avatar-manual" class="avatar-style" value="manual"/>
-				Custom
-			</label>
-			<label for="account-settings-avatar-none">
-				<input type="radio" name="avatar-style" id="account-settings-avatar-none" class="avatar-style" value="none"/>
-				None
-			</label>
-		</div>
-	</div>
+	<div class="messages"></div>
 
-	<div class="form-row">
-		<label class="form-label" for="account-settings-avatar-content"></label>
-		<div class="form-input">
-			<input class="avatar-content" type="file" name="avatar-content" id="account-settings-avatar-content"/>
-		</div>
-	</div>
-
-	<div class="form-row">
-		<label class="form-label" for="account-settings-name">Name:</label>
+	<% if (canChangeAvatarStyle) { %>
+		<div class="form-row">
+			<label class="form-label">User picture:</label>
 			<div class="form-input">
-			<input type="text" name="name" id="account-settings-name" placeholder="New name&hellip;" value=""/>
+				<%
+					var avatarStyles = {
+						gravatar: 'Gravatar',
+						manual: 'Custom',
+						blank: 'Blank',
+					};
+				%>
+				<% _.each(avatarStyles, function(v, k) { %>
+					<label for="account-settings-avatar-<%= k %>">
+						<input <% print(user.avatarStyle == k ? 'checked="checked"' : '') %> type="radio" name="avatar-style" id="account-settings-avatar-<%= k %>" value="<%= k %>"/>
+						<%= v %>
+					</label>
+				<% }) %>
+			</div>
 		</div>
-	</div>
 
-	<div class="form-row">
-		<label class="form-label" for="account-settings-email">E-mail:</label>
-		<div class="form-input">
-			<input type="text" name="email" id="account-settings-email" placeholder="New e-mail&hellip;" value=""/>
+		<div class="form-row avatar-content">
+			<label class="form-label"></label>
+			<div class="form-input">
+				<input type="file" name="avatar-content" id="account-settings-avatar-content"/>
+			</div>
 		</div>
-	</div>
+	<% } %>
 
-	<div class="form-row">
-		<label class="form-label" for="account-settings-password1">New password:</label>
-		<div class="form-input">
-			<input type="password" name="password1" id="account-settings-password1" placeholder="New password&hellip;" value=""/>
+	<% if (canChangeName) { %>
+		<div class="form-row">
+			<label class="form-label" for="account-settings-name">Name:</label>
+				<div class="form-input">
+				<input type="text" name="userName" id="account-settings-name" placeholder="New name&hellip;" value="<%= user.name %>"/>
+			</div>
 		</div>
-	</div>
+	<% } %>
 
-	<div class="form-row">
-		<label class="form-label" for="account-settings-password2"></label>
-		<div class="form-input">
-			<input type="password" name="password2" id="account-settings-password2" placeholder="New password&hellip; (repeat)" value=""/>
+	<% if (canChangeEmailAddress) { %>
+		<div class="form-row">
+			<label class="form-label" for="account-settings-email">E-mail:</label>
+			<div class="form-input">
+				<input type="text" name="email" id="account-settings-email" placeholder="New e-mail&hellip;" value="<%= user.email %>"/>
+			</div>
 		</div>
-	</div>
+	<% } %>
 
-	<div class="form-row">
-		<label class="form-label" for="account-settings-access-rank">Access rank:</label>
-		<div class="form-input">
-			<select name="access-rank" id="account-settings-access-rank">
-			<option value="anonymous">anonymous</option>
-			<option value="regular-user">registered</option>
-			<option value="power-user">power user</option>
-			<option value="moderator">moderator</option>
-			<option value="administrator" selected="selected">admin</option>
-		</select>
+	<% if (canChangePassword) { %>
+		<div class="form-row">
+			<label class="form-label" for="account-settings-password">New password:</label>
+			<div class="form-input">
+				<input type="password" name="password" id="account-settings-password" placeholder="New password&hellip;" value=""/>
+			</div>
 		</div>
-	</div>
+
+		<div class="form-row">
+			<label class="form-label" for="account-settings-password-confirmation"></label>
+			<div class="form-input">
+				<input type="password" name="passwordConfirmation" id="account-settings-password-confirmation" placeholder="New password&hellip; (repeat)" value=""/>
+			</div>
+		</div>
+	<% } %>
+
+	<% if (canChangeAccessRank) { %>
+		<div class="form-row">
+			<label class="form-label" for="account-settings-access-rank">Access rank:</label>
+			<div class="form-input">
+				<select name="access-rank" id="account-settings-access-rank">
+					<%
+						var accessRanks = {
+							anonymous: 'Anonymous',
+							regularUser: 'Regular user',
+							powerUser: 'Power user',
+							moderator: 'Moderator',
+							administrator: 'Administrator'
+						};
+					%>
+					<% _.each(accessRanks, function(v, k) { %>
+						<option <% print(user.accessRank == k ? 'selected="selected"' : '') %> value="<%= k %>"><%= v %></option>
+					<% }) %>
+				</select>
+			</div>
+		</div>
+	<% } %>
 
 	<div class="form-row">
 		<label class="form-label"></label>
 		<div class="form-input">
-			<button class="submit" type="submit">Update settings</button>
+			<button type="submit">Update settings</button>
 		</div>
 	</div>
 </form>

@@ -20,8 +20,9 @@ class UserViewProxy extends AbstractViewProxy
 			$result->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankToString($user->accessRank);
 			$result->registrationTime = $user->registrationTime;
 			$result->lastLoginTime = $user->lastLoginTime;
+			$result->avatarStyle = $user->avatarStyle;
 
-			if ($this->privilegeService->hasPrivilege(\Szurubooru\Privilege::PRIVILEGE_VIEW_ALL_EMAIL_ADDRESSES) or
+			if ($this->privilegeService->hasPrivilege(\Szurubooru\Privilege::VIEW_ALL_EMAIL_ADDRESSES) or
 				$this->privilegeService->isLoggedIn($user))
 			{
 				$result->email = $user->email;

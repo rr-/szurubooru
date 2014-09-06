@@ -3,7 +3,7 @@ namespace Szurubooru\FormData;
 
 class RegistrationFormData
 {
-	public $name;
+	public $userName;
 	public $password;
 	public $email;
 
@@ -11,7 +11,7 @@ class RegistrationFormData
 	{
 		if ($inputReader !== null)
 		{
-			$this->name = $inputReader->userName;
+			$this->userName = $inputReader->userName;
 			$this->password = $inputReader->password;
 			$this->email = $inputReader->email;
 		}

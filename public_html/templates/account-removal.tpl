@@ -1,4 +1,4 @@
-<form class="account-settings">
+<form class="account-removal">
 	<div class="messages"></div>
 
 	<div class="form-row">
@@ -15,7 +15,7 @@
 	<div class="form-row">
 		<label class="form-label"></label>
 		<div class="form-input">
-			<button class="submit" type="submit">Delete account</button>
+			<button type="submit">Delete account</button>
 		</div>
 	</div>
 </form>

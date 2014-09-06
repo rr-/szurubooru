@@ -9,6 +9,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $userSearchServiceMock;
 	private $passwordServiceMock;
 	private $emailServiceMock;
+	private $fileServiceMock;
 	private $timeServiceMock;
 
 	public function setUp()
@@ -19,6 +20,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->userSearchService = $this->mock(\Szurubooru\Dao\Services\UserSearchService::class);
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->emailServiceMock = $this->mock(\Szurubooru\Services\EmailService::class);
+		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 	}
 
@@ -43,7 +45,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testValidRegistration()
 	{
 		$formData = new \Szurubooru\FormData\RegistrationFormData;
-		$formData->name = 'user';
+		$formData->userName = 'user';
 		$formData->password = 'password';
 		$formData->email = 'email';
 
@@ -53,7 +55,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->userDaoMock->method('save')->will($this->returnArgument(0));
 
 		$userService = $this->getUserService();
-		$savedUser = $userService->register($formData);
+		$savedUser = $userService->createUser($formData);
 
 		$this->assertEquals('user', $savedUser->name);
 		$this->assertEquals('email', $savedUser->email);
@@ -65,7 +67,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testAccessRankOfFirstUser()
 	{
 		$formData = new \Szurubooru\FormData\RegistrationFormData;
-		$formData->name = 'user';
+		$formData->userName = 'user';
 		$formData->password = 'password';
 		$formData->email = 'email';
 
@@ -73,7 +75,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->userDaoMock->method('save')->will($this->returnArgument(0));
 
 		$userService = $this->getUserService();
-		$savedUser = $userService->register($formData);
+		$savedUser = $userService->createUser($formData);
 
 		$this->assertEquals(\Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR, $savedUser->accessRank);
 	}
@@ -81,7 +83,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testRegistrationWhenUserExists()
 	{
 		$formData = new \Szurubooru\FormData\RegistrationFormData;
-		$formData->name = 'user';
+		$formData->userName = 'user';
 		$formData->password = 'password';
 		$formData->email = 'email';
 
@@ -92,7 +94,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$userService = $this->getUserService();
 
 		$this->setExpectedException(\Exception::class, 'User with this name already exists');
-		$savedUser = $userService->register($formData);
+		$savedUser = $userService->createUser($formData);
 	}
 
 	private function getUserService()
@@ -104,6 +106,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->userSearchService,
 			$this->passwordServiceMock,
 			$this->emailServiceMock,
+			$this->fileServiceMock,
 			$this->timeServiceMock);
 	}
 }

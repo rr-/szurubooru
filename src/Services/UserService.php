@@ -9,6 +9,7 @@ class UserService
 	private $userSearchService;
 	private $passwordService;
 	private $emailService;
+	private $fileService;
 	private $timeService;
 
 	public function __construct(
@@ -18,6 +19,7 @@ class UserService
 		\Szurubooru\Dao\Services\UserSearchService $userSearchService,
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\EmailService $emailService,
+		\Szurubooru\Services\FileService $fileService,
 		\Szurubooru\Services\TimeService $timeService)
 	{
 		$this->config = $config;
@@ -26,6 +28,7 @@ class UserService
 		$this->userSearchService = $userSearchService;
 		$this->passwordService = $passwordService;
 		$this->emailService = $emailService;
+		$this->fileService = $fileService;
 		$this->timeService = $timeService;
 	}
 
@@ -42,17 +45,17 @@ class UserService
 		return $this->userSearchService->getFiltered($searchFilter);
 	}
 
-	public function register(\Szurubooru\FormData\RegistrationFormData $formData)
+	public function createUser(\Szurubooru\FormData\RegistrationFormData $formData)
 	{
-		$this->validator->validateUserName($formData->name);
+		$this->validator->validateUserName($formData->userName);
 		$this->validator->validatePassword($formData->password);
 		$this->validator->validateEmail($formData->email);
 
-		if ($this->userDao->getByName($formData->name))
+		if ($this->userDao->getByName($formData->userName))
 			throw new \DomainException('User with this name already exists.');
 
 		$user = new \Szurubooru\Entities\User();
-		$user->name = $formData->name;
+		$user->name = $formData->userName;
 		$user->email = $formData->email;
 		$user->passwordHash = $this->passwordService->getHash($formData->password);
 		$user->accessRank = $this->userDao->hasAnyUsers()
@@ -60,15 +63,81 @@ class UserService
 			: \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR;
 		$user->registrationTime = $this->timeService->getCurrentTime();
 		$user->lastLoginTime = null;
+		$user->avatarStyle = \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR;
 
-		//todo: send activation mail if necessary
+		$this->sendActivationMailIfNeeded($user);
 
 		return $this->userDao->save($user);
 	}
 
-	public function deleteByName($name)
+	public function updateUser($userName, \Szurubooru\FormData\UserEditFormData $formData)
 	{
-		$this->userDao->deleteByName($name);
+		$user = $this->getByName($userName);
+		if (!$user)
+			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
+
+		if ($formData->avatarStyle !== null)
+		{
+			$user->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($formData->avatarStyle);
+			if ($formData->avatarContent)
+				$this->fileService->saveFromBase64($formData->avatarContent, $this->getCustomAvatarSourcePath($user));
+		}
+
+		if ($formData->userName !== null and $formData->userName != $user->name)
+		{
+			$this->validator->validateUserName($formData->userName);
+			if ($this->userDao->getByName($formData->userName))
+				throw new \DomainException('User with this name already exists.');
+
+			$user->name = $formData->userName;
+		}
+
+		if ($formData->password !== null)
+		{
+			$this->validator->validatePassword($formData->password);
+			$user->passwordHash = $this->passwordService->getHash($formData->password);
+		}
+
+		if ($formData->email !== null)
+		{
+			$this->validator->validateEmail($formData->email);
+			$user->email = $formData->email;
+		}
+
+		if ($formData->accessRank !== null)
+		{
+			$user->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankFromString($formData->accessRank);
+		}
+
+		if ($formData->email !== null)
+			$this->sendActivationMailIfNeeded($user);
+
+		return $this->userDao->save($user);
+	}
+
+	public function deleteUserByName($userName)
+	{
+		$user = $this->getByName($userName);
+		if (!$user)
+			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
+
+		$this->userDao->deleteByName($userName);
+		$this->fileService->delete($this->getCustomAvatarSourcePath($user));
 		return true;
+	}
+
+	public function getCustomAvatarSourcePath($user)
+	{
+		return 'avatars' . DIRECTORY_SEPARATOR . $user->id;
+	}
+
+	public function getBlankAvatarSourcePath()
+	{
+		return 'avatars' . DIRECTORY_SEPARATOR . 'blank.png';
+	}
+
+	private function sendActivationMailIfNeeded(\Szurubooru\Entities\User &$user)
+	{
+		//todo
 	}
 }

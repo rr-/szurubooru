@@ -44,3 +44,15 @@ input[type=button] {
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 17px;
 }
+
+.file-handler {
+	border: 3px dashed #eee;
+	padding: 0.3em 0.5em;
+	line-height: 140% !important;
+	text-align: center;
+	cursor: pointer;
+}
+.file-handler.active {
+	border-color: #6a2;
+	background-color: #eeffcc;
+}

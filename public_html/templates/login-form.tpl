@@ -8,14 +8,14 @@
 
 	<form method="post" class="form-wrapper">
 		<div class="form-row">
-			<label for="login-user" class="form-label">User name:</label>
+			<label class="form-label" for="login-user">User name:</label>
 			<div class="form-input">
 				<input autocomplete="off" type="text" name="user" id="login-user"/>
 			</div>
 		</div>
 
 		<div class="form-row">
-			<label for="login-password" class="form-label">Password:</label>
+			<label class="form-label" for="login-password">Password:</label>
 			<div class="form-input">
 				<input autocomplete="off" type="password" name="password" id="login-password"/>
 			</div>
@@ -24,12 +24,11 @@
 		<div class="form-row">
 			<label class="form-label"></label>
 			<div class="form-input">
-				<button class="submit" type="submit">Log in</button>
+				<button type="submit">Log in</button>
 				&nbsp;
 				<input type="hidden" name="remember" value="0"/>
-				<label class="checkbox-wrapper">
+				<label>
 					<input type="checkbox" name="remember" value="1"/>
-					<span></span>
 					Remember me
 				</label>
 			</div>

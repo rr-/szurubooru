@@ -44,7 +44,7 @@ App.Util = (function(jQuery, promise) {
 		} else {
 			lastContentPresenter.reinit.call(presenter, args);
 		}
-	};
+	}
 
 	function promiseTemplate(templateName) {
 		return promiseTemplateFromCache(templateName)
@@ -83,7 +83,7 @@ App.Util = (function(jQuery, promise) {
 					resolve(data);
 				},
 				error: function(xhr, textStatus, errorThrown) {
-					console.log(Error('Error while loading template ' +  templateName + ': ' + errorThrown));
+					console.log(Error('Error while loading template ' + templateName + ': ' + errorThrown));
 					reject();
 				},
 			});

@@ -8,14 +8,14 @@ App.Presenters.UserPresenter = function(
 	api,
 	auth,
 	topNavigationPresenter,
+	userBrowsingSettingsPresenter,
+	userAccountSettingsPresenter,
+	userAccountRemovalPresenter,
 	messagePresenter) {
 
 	var $el = jQuery('#content');
 	var $messages = $el;
 	var template;
-	var accountSettingsTemplate;
-	var accountRemovalTemplate;
-	var browsingSettingsTemplate;
 	var user;
 	var userName;
 
@@ -25,23 +25,22 @@ App.Presenters.UserPresenter = function(
 
 		promise.waitAll(
 			util.promiseTemplate('user'),
-			util.promiseTemplate('account-settings'),
-			util.promiseTemplate('account-removal'),
-			util.promiseTemplate('browsing-settings'),
 			api.get('/users/' + userName))
 		.then(function(
 				userHtml,
-				accountSettingsHtml,
-				accountRemovalHtml,
-				browsingSettingsHtml,
 				response) {
+			$messages = $el.find('.messages');
 			template = _.template(userHtml);
-			accountSettingsTemplate = _.template(accountSettingsHtml);
-			accountRemovalTemplate = _.template(accountRemovalHtml);
-			browsingSettingsTemplate = _.template(browsingSettingsHtml);
 
 			user = response.json;
-			render();
+			var extendedContext = _.extend(args, {user: user});
+
+			promise.waitAll(
+				userBrowsingSettingsPresenter.init(_.extend(extendedContext, {target: '#browsing-settings-target'})),
+				userAccountSettingsPresenter.init(_.extend(extendedContext, {target: '#account-settings-target'})),
+				userAccountRemovalPresenter.init(_.extend(extendedContext, {target: '#account-removal-target'})))
+			.then(render);
+
 		}).fail(function(response) {
 			$el.empty();
 			messagePresenter.showError($messages, response.json && response.json.error || response);
@@ -49,36 +48,15 @@ App.Presenters.UserPresenter = function(
 	}
 
 	function render() {
-		var context = {
+		$el.html(template({
 			user: user,
-			canDeleteAccount: auth.hasPrivilege(auth.privileges.deleteAllAccounts) ||
-				(auth.isLoggedIn(userName) && auth.hasPrivilege(auth.privileges.deleteOwnAccount)),
-		};
-		$el.html(template(context));
-		$el.find('.browsing-settings').html(browsingSettingsTemplate(context));
-		$el.find('.account-settings').html(accountSettingsTemplate(context));
-		$el.find('.account-removal').html(accountRemovalTemplate(context));
-		$el.find('.account-removal form').submit(accountRemovalFormSubmitted);
-		$messages = $el.find('.messages');
+			canChangeBrowsingSettings: userBrowsingSettingsPresenter.getPrivileges().canChangeBrowsingSettings,
+			canChangeAccountSettings: _.any(userAccountSettingsPresenter.getPrivileges()),
+			canDeleteAccount: userAccountRemovalPresenter.getPrivileges().canDeleteAccount}));
+		userBrowsingSettingsPresenter.render();
+		userAccountSettingsPresenter.render();
+		userAccountRemovalPresenter.render();
 	};
-
-	function accountRemovalFormSubmitted(e) {
-		e.preventDefault();
-		$messages = $el.find('.account-removal .messages');
-		messagePresenter.hideMessages($messages);
-		if (!$el.find('.account-removal input[name=confirmation]:visible').prop('checked')) {
-			messagePresenter.showError($messages, 'Must confirm to proceed.');
-			return;
-		}
-		api.delete('/users/' + user.name)
-			.then(function() {
-				auth.logout();
-				var $messageDiv = messagePresenter.showInfo($messages, 'Account deleted. <a href="">Back to main page</a>');
-				$messageDiv.find('a').click(mainPageLinkClicked);
-			}).fail(function(response) {
-				messagePresenter.showError($messages, response.json && response.json.error || response);
-			});
-	}
 
 	return {
 		init: init,

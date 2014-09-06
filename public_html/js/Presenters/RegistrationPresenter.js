@@ -31,20 +31,20 @@ App.Presenters.RegistrationPresenter = function(
 		e.preventDefault();
 		messagePresenter.hideMessages($messages);
 
-		registrationData = {
-			userName: $el.find('[name=user]').val(),
-			password: $el.find('[name=password1]').val(),
-			passwordConfirmation: $el.find('[name=password2]').val(),
+		formData = {
+			userName: $el.find('[name=userName]').val(),
+			password: $el.find('[name=password]').val(),
+			passwordConfirmation: $el.find('[name=passwordConfirmation]').val(),
 			email: $el.find('[name=email]').val(),
 		};
 
-		if (!validateRegistrationData(registrationData))
+		if (!validateRegistrationFormData(formData))
 			return;
 
-		api.post('/users', registrationData)
+		api.post('/users', formData)
 			.then(function(response) {
 				registrationSuccess(response);
-			}).catch(function(response) {
+			}).fail(function(response) {
 				registrationFailure(response);
 			});
 	}
@@ -62,18 +62,18 @@ App.Presenters.RegistrationPresenter = function(
 		messagePresenter.showError($messages, apiResponse.json && apiResponse.json.error || apiResponse);
 	}
 
-	function validateRegistrationData(registrationData) {
-		if (registrationData.userName.length == 0) {
+	function validateRegistrationFormData(formData) {
+		if (formData.userName.length == 0) {
 			messagePresenter.showError($messages, 'User name cannot be empty.');
 			return false;
 		}
 
-		if (registrationData.password.length == 0) {
+		if (formData.password.length == 0) {
 			messagePresenter.showError($messages, 'Password cannot be empty.');
 			return false;
 		}
 
-		if (registrationData.password != registrationData.passwordConfirmation) {
+		if (formData.password != formData.passwordConfirmation) {
 			messagePresenter.showError($messages, 'Passwords must be the same.');
 			return false;
 		}
