@@ -7,7 +7,7 @@ App.BrowsingSettings = function(
 
 	var settings = getDefaultSettings();
 
-	auth.startObservingLoginChanges('top-navigation', loginStateChanged);
+	auth.startObservingLoginChanges('browsing-settings', loginStateChanged);
 
 	readFromLocalStorage();
 	if (auth.isLoggedIn())
