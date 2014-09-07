@@ -18,24 +18,27 @@ App.Presenters.UserListPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('users');
-		activeSearchOrder = util.parseComplexRouteArgs(args.searchArgs).order;
 
 		promise.wait(util.promiseTemplate('user-list')).then(function(html) {
 			template = _.template(html);
-
-			pagedCollectionPresenter.init({
-				searchArgs: args.searchArgs,
-				baseUri: '#/users',
-				backendUri: '/users',
-				renderCallback: function updateCollection(data) {
-					userList = data.entities;
-					render();
-				},
-				failCallback: function(response) {
-					$el.empty();
-					messagePresenter.showError($el, response.json && response.json.error || response);
-				}});
+			initPaginator(args);
 		});
+	}
+
+	function initPaginator(args) {
+		activeSearchOrder = util.parseComplexRouteArgs(args.searchArgs).order;
+		pagedCollectionPresenter.init({
+			searchArgs: args.searchArgs,
+			baseUri: '#/users',
+			backendUri: '/users',
+			renderCallback: function updateCollection(data) {
+				userList = data.entities;
+				render();
+			},
+			failCallback: function(response) {
+				$el.empty();
+				messagePresenter.showError($el, response.json && response.json.error || response);
+			}});
 	}
 
 	function render() {
@@ -59,6 +62,7 @@ App.Presenters.UserListPresenter = function(
 
 	return {
 		init: init,
+		reinit: initPaginator,
 		render: render
 	};
 

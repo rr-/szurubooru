@@ -3,6 +3,8 @@ var App = App || {};
 App.Util = (function(jQuery, promise) {
 
 	var templateCache = {};
+	var lastContentPresenterName;
+	var lastContentPresenter;
 
 	function parseComplexRouteArgs(args) {
 		var result = {};
@@ -28,14 +30,20 @@ App.Util = (function(jQuery, promise) {
 		return result;
 	}
 
-	function initPresenter(presenterGetter, args) {
-		var presenter = presenterGetter();
+	function initPresenter(presenterName, args) {
+		var presenter = App.DI.get(presenterName);
 		presenter.init.call(presenter, args);
 	}
 
-	function initContentPresenter(presenterGetter, args) {
-		//jQuery('#content').empty();
-		initPresenter(presenterGetter, args);
+	function initContentPresenter(presenterName, args) {
+		if (lastContentPresenterName != presenterName) {
+			var presenter = App.DI.get(presenterName);
+			var initResult = presenter.init.call(presenter, args);
+			lastContentPresenterName = presenterName;
+			lastContentPresenter = presenter;
+		} else {
+			lastContentPresenter.reinit.call(presenter, args);
+		}
 	};
 
 	function promiseTemplate(templateName) {

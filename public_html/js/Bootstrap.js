@@ -2,7 +2,7 @@ var App = App || {};
 
 App.Bootstrap = function(auth, router, util, promise) {
 
-	util.initPresenter(function() { return App.DI.get('topNavigationPresenter'); });
+	util.initPresenter('topNavigationPresenter');
 
 	promise.wait(auth.tryLoginFromCookie())
 		.then(startRouting)

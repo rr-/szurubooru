@@ -19,12 +19,12 @@ App.Router = function(jQuery, util, appState) {
 	};
 
 	function injectRoutes() {
-		inject('#/login', function() { return App.DI.get('loginPresenter'); });
-		inject('#/logout', function() { return App.DI.get('logoutPresenter'); });
-		inject('#/register', function() { return App.DI.get('registrationPresenter'); });
-		inject('#/users', function() { return App.DI.get('userListPresenter'); });
-		inject('#/users/:searchArgs', function() { return App.DI.get('userListPresenter'); });
-		inject('#/user/:userName', function() { return App.DI.get('userPresenter'); });
+		inject('#/login', 'loginPresenter');
+		inject('#/logout', 'logoutPresenter');
+		inject('#/register', 'registrationPresenter');
+		inject('#/users', 'userListPresenter');
+		inject('#/users/:searchArgs', 'userListPresenter');
+		inject('#/user/:userName', 'userPresenter');
 		setRoot('#/users');
 	};
 
@@ -33,9 +33,9 @@ App.Router = function(jQuery, util, appState) {
 		Path.root(newRoot);
 	};
 
-	function inject(path, presenterGetter) {
+	function inject(path, presenterName) {
 		Path.map(path).to(function() {
-			util.initContentPresenter(presenterGetter, this.params);
+			util.initContentPresenter(presenterName, this.params);
 		});
 	};
 
