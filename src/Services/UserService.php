@@ -109,6 +109,15 @@ class UserService
 			$user->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankFromString($formData->accessRank);
 		}
 
+		if ($formData->browsingSettings !== null)
+		{
+			if (!is_string($formData->browsingSettings))
+				throw new \InvalidArgumentException('Browsing settings must be stringified JSON.');
+			if (strlen($formData->browsingSettings) > 2000)
+				throw new \InvalidArgumentException('Stringified browsing settings can have at most 2000 characters.');
+			$user->browsingSettings = $formData->browsingSettings;
+		}
+
 		if ($formData->email !== null)
 			$this->sendActivationMailIfNeeded($user);
 

@@ -21,4 +21,5 @@ final class User extends Entity
 	public $registrationTime;
 	public $lastLoginTime;
 	public $avatarStyle;
+	public $browsingSettings;
 }

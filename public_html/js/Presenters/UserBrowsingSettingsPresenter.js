@@ -5,7 +5,9 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 	jQuery,
 	util,
 	promise,
-	auth) {
+	auth,
+	browsingSettings,
+	messagePresenter) {
 
 	var target;
 	var template;
@@ -29,7 +31,27 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 
 	function render() {
 		var $el = jQuery(target);
-		$el.html(template({user: user}));
+		$el.html(template({user: user, settings: browsingSettings.getSettings()}));
+		$el.find('form').submit(browsingSettingsFormSubmitted);
+	}
+
+	function browsingSettingsFormSubmitted(e) {
+		e.preventDefault();
+		var $el = jQuery(target);
+		var $messages = $el.find('.messages');
+		messagePresenter.hideMessages($messages);
+		var newSettings = {
+			endlessScroll: $el.find('[name=endless-scroll]:visible').prop('checked'),
+			hideDownvoted: $el.find('[name=hide-downvoted]:visible').prop('checked'),
+			listPosts: {
+				safe: $el.find('[name=listSafePosts]:visible').prop('checked'),
+				sketchy: $el.find('[name=listSketchyPosts]:visible').prop('checked'),
+				unsafe: $el.find('[name=listUnsafePosts]:visible').prop('checked'),
+			},
+		};
+		browsingSettings.setSettings(newSettings).then(function() {
+			messagePresenter.showInfo($messages, 'Browsing settings updated!');
+		});
 	}
 
 	function getPrivileges() {

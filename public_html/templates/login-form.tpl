@@ -26,9 +26,8 @@
 			<div class="form-input">
 				<button type="submit">Log in</button>
 				&nbsp;
-				<input type="hidden" name="remember" value="0"/>
 				<label>
-					<input type="checkbox" name="remember" value="1"/>
+					<input type="checkbox" name="remember"/>
 					Remember me
 				</label>
 			</div>

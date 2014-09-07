@@ -8,6 +8,7 @@ class UserEditFormData
 	public $accessRank;
 	public $password;
 	public $avatarStyle;
+	public $browsingSettings;
 
 	public function __construct($inputReader = null)
 	{
@@ -19,6 +20,7 @@ class UserEditFormData
 			$this->accessRank = $inputReader->accessRank;
 			$this->avatarStyle = $inputReader->avatarStyle;
 			$this->avatarContent = $inputReader->avatarContent;
+			$this->browsingSettings = $inputReader->browsingSettings;
 		}
 	}
 }

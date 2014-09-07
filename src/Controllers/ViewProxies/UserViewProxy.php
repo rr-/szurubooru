@@ -22,6 +22,11 @@ class UserViewProxy extends AbstractViewProxy
 			$result->lastLoginTime = $user->lastLoginTime;
 			$result->avatarStyle = $user->avatarStyle;
 
+			if ($this->privilegeService->isLoggedIn($user))
+			{
+				$result->browsingSettings = $user->browsingSettings;
+			}
+
 			if ($this->privilegeService->hasPrivilege(\Szurubooru\Privilege::VIEW_ALL_EMAIL_ADDRESSES) or
 				$this->privilegeService->isLoggedIn($user))
 			{

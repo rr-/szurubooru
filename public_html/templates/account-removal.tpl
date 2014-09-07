@@ -4,9 +4,8 @@
 	<div class="form-row">
 		<label class="form-label" for="account-removal-confirmation">Confirmation:</label>
 		<div class="form-input">
-			<input type="hidden" name="confirmation" value="0"/>
 			<label for="account-removal-confirmation">
-				<input type="checkbox" id="account-removal-confirmation" name="confirmation" value="1"/>
+				<input type="checkbox" id="account-removal-confirmation" name="confirmation"/>
 				I confirm that I want to delete this account.
 			</label>
 		</div>

@@ -4,43 +4,38 @@
 	<div class="form-row">
 		<label class="form-label">Safety:</label>
 		<div class="form-input">
-			<input type="hidden" name="safety[]" value=""/>
 			<label for="browsing-settings-safety-safe">
-				<input type="checkbox" id="browsing-settings-safety-safe" name="safety[]" value="1"/>
+				<input <% print(settings.listPosts.safe ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-safe" name="listSafePosts" value="1"/>
 				Safe
 			</label>
 
-			<input type="hidden" name="safety[]" value=""/>
 			<label for="browsing-settings-safety-sketchy">
-				<input type="checkbox" id="browsing-settings-safety-sketchy" name="safety[]" value="2"/>
+				<input <% print(settings.listPosts.sketchy ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-sketchy" name="listSketchyPosts" value="2"/>
 				Sketchy
 			</label>
 
-			<input type="hidden" name="safety[]" value=""/>
 			<label for="browsing-settings-safety-unsafe">
-				<input type="checkbox" id="browsing-settings-safety-unsafe" name="safety[]" value="3"/>
+				<input <% print(settings.listPosts.unsafe ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-unsafe" name="listUnsafePosts" value="3"/>
 				Unsafe
 			</label>
 		</div>
 	</div>
 
 	<div class="form-row">
-		<label class="form-label" for="browsing-settings-endless-scrolling">Endless scrolling:</label>
+		<label class="form-label" for="browsing-settings-endless-scroll">Endless scroll:</label>
 		<div class="form-input">
-			<input type="hidden" name="endless-scrolling" value="0"/>
-			<label for="browsing-settings-endless-scrolling">
-				<input type="checkbox" id="browsing-settings-endless-scrolling" name="endless-scrolling" value="1"/>
+			<label for="browsing-settings-endless-scroll">
+				<input <% print(settings.endlessScroll ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-endless-scroll" name="endless-scroll" value="1"/>
 				Enabled
 			</label>
 		</div>
 	</div>
 
 	<div class="form-row">
-		<label class="form-label" for="browsing-settings-hide-disliked-posts">Hide down-voted:</label>
+		<label class="form-label" for="browsing-settings-hide-downvoted">Hide down-voted:</label>
 		<div class="form-input">
-			<input type="hidden" name="hide-disliked-posts" value="0"/>
-			<label for="browsing-settings-hide-disliked-posts">
-				<input type="checkbox" id="browsing-settings-hide-disliked-posts" name="hide-disliked-posts" value="1"/>
+			<label for="browsing-settings-hide-downvoted">
+				<input <% print(settings.hideDownvoted ? 'checked="checked"' : '') %>type="checkbox" id="browsing-settings-hide-downvoted" name="hide-downvoted" value="1"/>
 				Enabled
 			</label>
 		</div>

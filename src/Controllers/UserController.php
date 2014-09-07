@@ -99,6 +99,11 @@ final class UserController extends AbstractController
 			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_ACCESS_RANK);
 		}
 
+		if ($formData->browsingSettings)
+		{
+			$this->privilegeService->assertLoggedIn($userName);
+		}
+
 		$user = $this->userService->updateUser($userName, $formData);
 		return $this->userViewProxy->fromEntity($user);
 	}

@@ -47,6 +47,12 @@ class PrivilegeService
 			throw new \DomainException('Unprivileged operation');
 	}
 
+	public function assertLoggedIn($userIdentifier)
+	{
+		if (!$this->isLoggedIn($userIdentifier))
+			throw new \DomainException('Unprivileged operation');
+	}
+
 	public function isLoggedIn($userIdentifier)
 	{
 		$loggedInUser = $this->authService->getLoggedInUser();
