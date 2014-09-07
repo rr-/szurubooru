@@ -62,6 +62,7 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 	function logout() {
 		return promise.make(function(resolve, reject) {
 			jQuery.removeCookie('auth');
+			appState.set('loginToken', null);
 			return loginAnonymous().then(resolve).fail(reject);
 		});
 	}
