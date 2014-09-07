@@ -69,6 +69,9 @@ class AuthService
 		if (!$loginToken)
 			throw new \Exception('Invalid login token.');
 
+		if ($loginToken->purpose != \Szurubooru\Entities\Token::PURPOSE_LOGIN)
+			throw new \Exception('This token is not a login token.');
+
 		$this->loginToken = $loginToken;
 		$this->loggedInUser = $this->userDao->getById($loginToken->additionalData);
 		if (!$this->loggedInUser)

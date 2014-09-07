@@ -80,6 +80,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testToken = new \Szurubooru\Entities\Token();
 		$testToken->name = 'dummy_token';
 		$testToken->additionalData = $testUser->id;
+		$testToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
 		$this->tokenDaoMock->expects($this->once())->method('getByName')->willReturn($testToken);
 
 		$authService = $this->getAuthService();
