@@ -1,22 +1,73 @@
-<div id="user-view">
+<div id="user-view" class="tab-wrapper">
 	<div class="messages"></div>
 
-	<img src="/api/users/<%= user.name %>/avatar/50" alt="Avatar"/>
-	<%= user.name %>
+	<div class="top">
+		<div class="side">
+			<img src="/api/users/<%= user.name %>/avatar/100" alt="Avatar"/>
+			<br/>
+			<%= user.name %>
+		</div>
+
+		<ul>
+			<li>
+				<a href="#/user/<%= user.name %>" data-tab="basic-info">Basic information</a>
+			</li>
+
+			<% if (canChangeBrowsingSettings) { %>
+				<li>
+					<a href="#/user/<%= user.name %>/browsing-settings" data-tab="browsing-settings">Browsing settings</a>
+				</li>
+			<% } %>
+
+			<% if (canChangeAccountSettings) { %>
+				<li>
+					<a href="#/user/<%= user.name %>/account-settings" data-tab="account-settings">Account settings</a>
+				</li>
+			<% } %>
+
+			<% if (canDeleteAccount) { %>
+				<li>
+					<a href="#/user/<%= user.name %>/account-removal" data-tab="account-removal">Account removal</a>
+				</li>
+			<% } %>
+		</ul>
+	</div>
+
+	<div class="tab basic-info" data-tab="basic-info">
+		<h2>Basic information</h2>
+
+		<table>
+			<tr>
+				<td>Registered:</td>
+				<td><%= user.registrationTime %></td>
+			</tr>
+
+			<tr>
+				<td>Seen:</td>
+				<td><%= user.lastLoginTime %></td>
+			</tr>
+		</table>
+	</div>
 
 	<% if (canChangeBrowsingSettings) { %>
-		<h2>Browsing settings</h2>
-		<div id="browsing-settings-target"></div>
+		<div class="tab" data-tab="browsing-settings">
+			<h2>Browsing settings</h2>
+			<div id="browsing-settings-target"></div>
+		</div>
 	<% } %>
 
 	<% if (canChangeAccountSettings) { %>
-		<h2>Account settings</h2>
-		<div id="account-settings-target"></div>
+		<div class="tab" data-tab="account-settings">
+			<h2>Account settings</h2>
+			<div id="account-settings-target"></div>
+		</div>
 	<% } %>
 
 	<% if (canDeleteAccount) { %>
-		<h2>Account removal</h2>
-		<div id="account-removal-target"></div>
+		<div class="tab" data-tab="account-removal">
+			<h2>Account removal</h2>
+			<div id="account-removal-target"></div>
+		</div>
 	<% } %>
 
 </div>

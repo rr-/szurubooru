@@ -28,7 +28,7 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 	}
 
 	function render() {
-		$el = jQuery(target);
+		var $el = jQuery(target);
 		$el.html(template({user: user}));
 	}
 

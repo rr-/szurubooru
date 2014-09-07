@@ -16,7 +16,9 @@ App.Presenters.PagedCollectionPresenter = function(util, promise, api) {
 	var totalRecords;
 
 	function init(args) {
-		parseSearchArgs(args.searchArgs);
+		pageNumber = parseInt(args.page) || 1;
+		searchOrder = args.order;
+		searchQuery = args.query;
 		baseUri = args.baseUri;
 		backendUri = args.backendUri;
 		renderCallback = args.renderCallback;
@@ -97,13 +99,6 @@ App.Presenters.PagedCollectionPresenter = function(util, promise, api) {
 				order: searchOrder,
 				query: searchQuery,
 			});
-	}
-
-	function parseSearchArgs(searchArgs) {
-		var args = util.parseComplexRouteArgs(searchArgs);
-		pageNumber = parseInt(args.page) || 1;
-		searchOrder = args.order;
-		searchQuery = args.query;
 	}
 
 	return {

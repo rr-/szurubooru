@@ -6,7 +6,7 @@
 
 	<div class="messages"></div>
 
-	<form method="post" class="form-wrapper">
+	<form class="form-wrapper">
 		<div class="form-row">
 			<label class="form-label" for="login-user">User name:</label>
 			<div class="form-input">

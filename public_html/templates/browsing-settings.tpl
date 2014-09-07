@@ -1,6 +1,6 @@
-<form class="browsing-settings">
-	<div class="messages"></div>
+<div class="messages"></div>
 
+<form class="form-wrapper browsing-settings">
 	<div class="form-row">
 		<label class="form-label">Safety:</label>
 		<div class="form-input">

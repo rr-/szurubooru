@@ -13,26 +13,20 @@ App.Controls.FileDropper = function(
 	$fileInput.attr('multiple', allowMultiple);
 	$fileInput.hide();
 
-	$fileInput.change(function(e)
-	{
+	$fileInput.change(function(e) {
 		addFiles(this.files);
 	});
 
-	$dropDiv.on('dragenter', function(e)
-	{
+	$dropDiv.on('dragenter', function(e) {
 		$dropDiv.addClass('active');
-	}).on('dragleave', function(e)
-	{
+	}).on('dragleave', function(e) {
 		$dropDiv.removeClass('active');
-	}).on('dragover', function(e)
-	{
+	}).on('dragover', function(e) {
 		e.preventDefault();
-	}).on('drop', function(e)
-	{
+	}).on('drop', function(e) {
 		e.preventDefault();
 		addFiles(e.originalEvent.dataTransfer.files);
-	}).on('click', function(e)
-	{
+	}).on('click', function(e) {
 		$fileInput.show().focus().trigger('click').hide();
 		$dropDiv.addClass('active');
 	});

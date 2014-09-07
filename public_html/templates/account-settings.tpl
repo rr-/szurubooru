@@ -1,6 +1,6 @@
-<form class="account-settings">
-	<div class="messages"></div>
+<div class="messages"></div>
 
+<form class="form-wrapper account-settings">
 	<% if (canChangeAvatarStyle) { %>
 		<div class="form-row">
 			<label class="form-label">User picture:</label>

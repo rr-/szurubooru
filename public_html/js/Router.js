@@ -25,6 +25,7 @@ App.Router = function(jQuery, util, appState) {
 		inject('#/users', 'userListPresenter');
 		inject('#/users/:searchArgs', 'userListPresenter');
 		inject('#/user/:userName', 'userPresenter');
+		inject('#/user/:userName/:tab', 'userPresenter');
 		setRoot('#/users');
 	};
 

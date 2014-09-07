@@ -90,12 +90,64 @@ App.Util = (function(jQuery, promise) {
 		});
 	}
 
+	function formatRelativeTime(timeString) {
+		if (!timeString)
+			return 'never';
+
+		var time = Date.parse(timeString);
+		var now = Date.now();
+		var difference = Math.abs(now - time);
+		var future = now < time;
+
+		var text = (function(difference) {
+			var mul = 1000;
+			var prevMul;
+
+			mul *= 60;
+			if (difference < mul)
+				return 'a few seconds';
+			if (difference < mul * 2)
+				return 'a minute';
+
+			prevMul = mul; mul *= 60;
+			if (difference < mul)
+				return Math.round(difference / prevMul) + ' minutes';
+			if (difference < mul * 2)
+				return 'an hour';
+
+			prevMul = mul; mul *= 24;
+			if (difference < mul)
+				return Math.round(difference / prevMul) + ' hours';
+			if (difference < mul * 2)
+				return 'a day';
+
+			prevMul = mul; mul *= 30.42;
+			if (difference < mul)
+				return Math.round(difference / prevMul) + ' days';
+			if (difference < mul * 2)
+				return 'a month';
+
+			prevMul = mul; mul *= 12;
+			if (difference < mul)
+				return Math.round(difference / prevMul) + ' months';
+			if (difference < mul * 2)
+				return 'a year';
+
+			return Math.round(difference / mul) + ' years';
+		})(difference);
+
+		if (text == 'a day')
+			return future ? 'tomorrow' : 'yesterday';
+		return future ? 'in ' + text : text + ' ago';
+	}
+
 	return {
 		promiseTemplate: promiseTemplate,
 		initPresenter : initPresenter,
 		initContentPresenter: initContentPresenter,
 		parseComplexRouteArgs: parseComplexRouteArgs,
 		compileComplexRouteArgs: compileComplexRouteArgs,
+		formatRelativeTime: formatRelativeTime,
 	};
 });
 

@@ -1,6 +1,6 @@
-<form class="account-removal">
-	<div class="messages"></div>
+<div class="messages"></div>
 
+<form class="form-wrapper account-removal">
 	<div class="form-row">
 		<label class="form-label" for="account-removal-confirmation">Confirmation:</label>
 		<div class="form-input">

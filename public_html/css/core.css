@@ -8,6 +8,11 @@ body {
 	font-size: 17px;
 }
 
+h2 {
+	font-variant: small-caps;
+	font-weight: normal;
+}
+
 #middle {
 	padding: 0 2em;
 }

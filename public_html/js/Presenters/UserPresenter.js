@@ -18,6 +18,7 @@ App.Presenters.UserPresenter = function(
 	var template;
 	var user;
 	var userName;
+	var activeTab;
 
 	function init(args) {
 		userName = args.userName;
@@ -39,12 +40,19 @@ App.Presenters.UserPresenter = function(
 				userBrowsingSettingsPresenter.init(_.extend(extendedContext, {target: '#browsing-settings-target'})),
 				userAccountSettingsPresenter.init(_.extend(extendedContext, {target: '#account-settings-target'})),
 				userAccountRemovalPresenter.init(_.extend(extendedContext, {target: '#account-removal-target'})))
-			.then(render);
+			.then(function() {
+				initTabs(args);
+			})
 
 		}).fail(function(response) {
 			$el.empty();
 			messagePresenter.showError($messages, response.json && response.json.error || response);
 		});
+	}
+
+	function initTabs(args) {
+		activeTab = args.tab || 'basic-info';
+		render();
 	}
 
 	function render() {
@@ -56,10 +64,23 @@ App.Presenters.UserPresenter = function(
 		userBrowsingSettingsPresenter.render();
 		userAccountSettingsPresenter.render();
 		userAccountRemovalPresenter.render();
-	};
+		changeTab(activeTab);
+	}
+
+	function changeTab(targetTab) {
+		var $link = $el.find('a[data-tab=' + targetTab + ']');
+		var $links = $link.closest('ul').find('a[data-tab]');
+		var tab = $link.attr('data-tab');
+		var $tabs = $link.closest('.tab-wrapper').find('.tab');
+		$links.removeClass('active');
+		$link.addClass('active');
+		$tabs.removeClass('active');
+		$tabs.filter('[data-tab=' + tab + ']').addClass('active');
+	}
 
 	return {
 		init: init,
+		reinit: initTabs,
 		render: render
 	};
 

@@ -26,9 +26,13 @@ App.Presenters.UserListPresenter = function(
 	}
 
 	function initPaginator(args) {
-		activeSearchOrder = util.parseComplexRouteArgs(args.searchArgs).order;
+		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
+		searchArgs.order = searchArgs.order || 'name';
+		activeSearchOrder = searchArgs.order;
+
 		pagedCollectionPresenter.init({
-			searchArgs: args.searchArgs,
+			pageNumber: searchArgs.page,
+			order: searchArgs.order,
 			baseUri: '#/users',
 			backendUri: '/users',
 			renderCallback: function updateCollection(data) {
@@ -44,6 +48,7 @@ App.Presenters.UserListPresenter = function(
 	function render() {
 		$el.html(template({
 			userList: userList,
+			formatRelativeTime: util.formatRelativeTime,
 		}));
 		$el.find('.order a').click(orderLinkClicked);
 		$el.find('.order [data-order="' + activeSearchOrder + '"]').parent('li').addClass('active');
@@ -52,8 +57,7 @@ App.Presenters.UserListPresenter = function(
 		pagedCollectionPresenter.render($pager);
 	};
 
-	function orderLinkClicked(e)
-	{
+	function orderLinkClicked(e) {
 		e.preventDefault();
 		var $orderLink = jQuery(this);
 		activeSearchOrder = $orderLink.attr('data-order');

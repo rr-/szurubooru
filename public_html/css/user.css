@@ -1,0 +1,51 @@
+#user-view {
+	min-width: 30em;
+	text-align: center;
+}
+
+#user-view .side {
+	text-align: center;
+	width: 150px;
+	float: left;
+}
+
+#user-view .top {
+	display: inline-block;
+	margin: 0 auto;
+}
+
+#user-view ul {
+	display: inline-block;
+	list-style-type: none;
+	text-align: left;
+	margin: 0;
+	padding: 0;
+}
+
+#user-view ul a {
+	cursor: pointer;
+	display: inline-block;
+	padding: 0.2em 0.5em;
+}
+
+#user-view ul a.active {
+	background: #faffca;
+}
+
+#user-view .tab {
+	display: none;
+	margin-top: 1.5em;
+	clear: both;
+}
+
+#user-view .tab.active {
+	display: block;
+}
+
+#user-view .tab.basic-info table {
+	margin: 0 auto;
+	text-align: left;
+}
+#user-view .tab.basic-info td {
+	padding: 0.2em 0.5em;
+}

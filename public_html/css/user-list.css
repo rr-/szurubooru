@@ -1,5 +1,6 @@
 #user-list {
 	min-width: 20em;
+	text-align: center;
 }
 
 #user-list ul {
@@ -24,4 +25,35 @@
 	cursor: pointer;
 	display: inline-block;
 	padding: 0.2em 0.5em;
+}
+
+#user-list .users {
+	display: inline-block;
+	margin: 1em auto;
+}
+#user-list .users li {
+	text-align: left;
+	margin: 0.5em 0;
+}
+
+#user-list li:after {
+	clear: left;
+	content: '';
+	display: block;
+}
+
+#user-list .user img {
+	float: left;
+	vertical-align: top;
+	margin-right: 1em;
+}
+#user-list .user .details {
+	float: left;
+	vertical-align: top;
+}
+
+#user-list .user h1 {
+	margin-top: 0;
+	font-weight: normal;
+	font-size: 16pt;
 }
