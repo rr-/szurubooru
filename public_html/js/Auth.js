@@ -17,6 +17,13 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 		changeAllPasswords: 'changeAllPasswords',
 		deleteOwnAccount: 'deleteOwnAccount',
 		deleteAllAccounts: 'deleteAllAccounts',
+
+		listSafePosts: 'listSafePosts',
+		listSketchyPosts: 'listSketchyPosts',
+		listUnsafePosts: 'listUnsafePosts',
+		uploadPosts: 'uploadPosts',
+
+		listTags: 'listTags',
 	};
 
 	function loginFromCredentials(userName, password, remember) {

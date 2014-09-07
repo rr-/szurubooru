@@ -38,7 +38,7 @@
 		<p>Problems logging in?</p>
 		<ul>
 			<li><a href="#/password-reset">I don't remember my password</a></li>
-			<li><a href="#/activate-account">I haven't received activation e-mail</a></li>
+			<li><a href="#/activate">I haven't received activation e-mail</a></li>
 			<li><a href="#/register">I don't have an account</a></li>
 		</ul>
 	</div>

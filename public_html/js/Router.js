@@ -19,14 +19,20 @@ App.Router = function(jQuery, util, appState) {
 	};
 
 	function injectRoutes() {
+		inject('#/home', 'homePresenter');
 		inject('#/login', 'loginPresenter');
 		inject('#/logout', 'logoutPresenter');
 		inject('#/register', 'registrationPresenter');
-		inject('#/users', 'userListPresenter');
-		inject('#/users/:searchArgs', 'userListPresenter');
-		inject('#/user/:userName', 'userPresenter');
-		inject('#/user/:userName/:tab', 'userPresenter');
-		setRoot('#/users');
+		inject('#/upload', 'postUploadPresenter');
+		inject('#/password-reset(/:token)', 'passwordResetPresenter');
+		inject('#/activate(/:token)', 'userActivationPresenter');
+		inject('#/users(/:searchArgs)', 'userListPresenter');
+		inject('#/user/:userName(/:tab)', 'userPresenter');
+		inject('#/posts(/:searchArgs)', 'postListPresenter');
+		inject('#/comments(/:searchArgs)', 'commentListPresenter');
+		inject('#/tags(/:searchArgs)', 'tagListPresenter');
+		inject('#/help', 'helpPresenter');
+		setRoot('#/home');
 	};
 
 	function setRoot(newRoot) {

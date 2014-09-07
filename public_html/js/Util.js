@@ -41,7 +41,7 @@ App.Util = (function(jQuery, promise) {
 			var initResult = presenter.init.call(presenter, args);
 			lastContentPresenterName = presenterName;
 			lastContentPresenter = presenter;
-		} else {
+		} else if (lastContentPresenter.reinit) {
 			lastContentPresenter.reinit.call(presenter, args);
 		}
 	}

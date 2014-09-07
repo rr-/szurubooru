@@ -17,4 +17,11 @@ class Privilege
 	const CHANGE_ALL_PASSWORDS = 'changeAllPasswords';
 	const DELETE_OWN_ACCOUNT = 'deleteOwnAccount';
 	const DELETE_ALL_ACCOUNTS = 'deleteAllAccounts';
+
+	const LIST_SAFE_POSTS = 'listSafePosts';
+	const LIST_SKETCHY_POSTS = 'listSketchyPosts';
+	const LIST_UNSAFE_POSTS = 'listUnsafePosts';
+	const UPLOAD_POSTS = 'uploadPosts';
+
+	const LIST_TAGS = 'listTags';
 }

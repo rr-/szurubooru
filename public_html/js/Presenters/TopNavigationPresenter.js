@@ -33,7 +33,12 @@ App.Presenters.TopNavigationPresenter = function(
 		$el.html(template({
 			loggedIn: auth.isLoggedIn(),
 			user: auth.getCurrentUser(),
-			canListUsers: auth.hasPrivilege(auth.privileges.listUsers)
+			canListUsers: auth.hasPrivilege(auth.privileges.listUsers),
+			canListPosts: auth.hasPrivilege(auth.privileges.listSafePosts) ||
+				auth.hasPrivilege(auth.privileges.listSketchyPosts) ||
+				auth.hasPrivilege(auth.privileges.listUnsafePosts),
+			canListTags: auth.hasPrivilege(auth.privileges.listTags),
+			canUploadPosts: auth.hasPrivilege(auth.privileges.uploadPosts),
 		}));
 		$el.find('li.' + selectedElement).addClass('active');
 	};
