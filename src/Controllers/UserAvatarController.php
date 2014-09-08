@@ -53,7 +53,7 @@ final class UserAvatarController extends AbstractController
 
 	private function serveFromUrl($url)
 	{
-		$this->httpHelper->nonCachedRedirect($url);
+		$this->httpHelper->redirect($url);
 	}
 
 	private function serveFromFile($file, $size)

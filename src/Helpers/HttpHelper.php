@@ -46,6 +46,12 @@ class HttpHelper
 		return $requestUri;
 	}
 
+	public function redirect($destination)
+	{
+		$this->setResponseCode(307);
+		$this->setHeader('Location', $destination);
+	}
+
 	public function nonCachedRedirect($destination)
 	{
 		$this->setResponseCode(303);
