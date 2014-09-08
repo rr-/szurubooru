@@ -18,23 +18,23 @@ class TokenService
 		return $token;
 	}
 
-	public function invalidateByToken($tokenName)
+	public function invalidateByName($tokenName)
 	{
 		return $this->tokenDao->deleteByName($tokenName);
 	}
 
-	public function invalidateByUser(\Szurubooru\Entities\User $user)
+	public function invalidateByAdditionalData($additionalData)
 	{
-		return $this->tokenDao->deleteByAdditionalData($user->id);
+		return $this->tokenDao->deleteByAdditionalData($additionalData);
 	}
 
-	public function createAndSaveToken(\Szurubooru\Entities\User $user, $tokenPurpose)
+	public function createAndSaveToken($additionalData, $tokenPurpose)
 	{
 		$token = new \Szurubooru\Entities\Token();
-		$token->name = hash('sha256', $user->name . '/' . microtime(true));
-		$token->additionalData = $user->id;
+		$token->name = sha1(date('r') . uniqid() . microtime(true));
+		$token->additionalData = $additionalData;
 		$token->purpose = $tokenPurpose;
-		$this->invalidateByUser($user);
+		$this->invalidateByAdditionalData($additionalData);
 		$this->tokenDao->save($token);
 		return $token;
 	}

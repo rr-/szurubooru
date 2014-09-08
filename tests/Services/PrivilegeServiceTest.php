@@ -27,7 +27,7 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertTrue($privilegeService->hasPrivilege($privilege));
 	}
 
-	public function testIsLoggedInByString()
+	public function testIsLoggedInByNameString()
 	{
 		$testUser1 = new \Szurubooru\Entities\User();
 		$testUser1->name = 'dummy';
@@ -38,6 +38,21 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$privilegeService = $this->getPrivilegeService();
 		$this->assertTrue($privilegeService->isLoggedIn($testUser1->name));
 		$this->assertFalse($privilegeService->isLoggedIn($testUser2->name));
+	}
+
+	public function testIsLoggedInByEmailString()
+	{
+		$testUser1 = new \Szurubooru\Entities\User();
+		$testUser1->name = 'user1';
+		$testUser1->email = 'dummy';
+		$testUser2 = new \Szurubooru\Entities\User();
+		$testUser2->name = 'user2';
+		$testUser2->email = 'godzilla';
+		$this->authServiceMock->method('getLoggedInUser')->willReturn($testUser1);
+
+		$privilegeService = $this->getPrivilegeService();
+		$this->assertTrue($privilegeService->isLoggedIn($testUser1->email));
+		$this->assertFalse($privilegeService->isLoggedIn($testUser2->email));
 	}
 
 	public function testIsLoggedInByUser()

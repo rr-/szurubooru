@@ -11,6 +11,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $emailServiceMock;
 	private $fileServiceMock;
 	private $timeServiceMock;
+	private $tokenServiceMock;
 
 	public function setUp()
 	{
@@ -22,6 +23,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->emailServiceMock = $this->mock(\Szurubooru\Services\EmailService::class);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
+		$this->tokenServiceMock = $this->mock(\Szurubooru\Services\TokenService::class);
 	}
 
 	public function testGettingByName()
@@ -78,23 +80,56 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function testValidRegistration()
+	public function testValidRegistrationWithoutMailActivation()
 	{
 		$formData = new \Szurubooru\FormData\RegistrationFormData;
 		$formData->userName = 'user';
 		$formData->password = 'password';
-		$formData->email = 'email';
+		$formData->email = 'human@people.gov';
 
+		$this->configMock->set('security/needEmailActivationToRegister', false);
 		$this->passwordServiceMock->method('getHash')->willReturn('hash');
 		$this->timeServiceMock->method('getCurrentTime')->willReturn('now');
 		$this->userDaoMock->method('hasAnyUsers')->willReturn(true);
 		$this->userDaoMock->method('save')->will($this->returnArgument(0));
+		$this->emailServiceMock->expects($this->never())->method('sendActivationEmail');
 
 		$userService = $this->getUserService();
 		$savedUser = $userService->createUser($formData);
 
 		$this->assertEquals('user', $savedUser->name);
-		$this->assertEquals('email', $savedUser->email);
+		$this->assertEquals('human@people.gov', $savedUser->email);
+		$this->assertNull($savedUser->emailUnconfirmed);
+		$this->assertEquals('hash', $savedUser->passwordHash);
+		$this->assertEquals(\Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER, $savedUser->accessRank);
+		$this->assertEquals('now', $savedUser->registrationTime);
+	}
+
+	public function testValidRegistrationWithMailActivation()
+	{
+		$formData = new \Szurubooru\FormData\RegistrationFormData;
+		$formData->userName = 'user';
+		$formData->password = 'password';
+		$formData->email = 'human@people.gov';
+
+		$this->configMock->set('security/needEmailActivationToRegister', true);
+		$this->passwordServiceMock->method('getHash')->willReturn('hash');
+		$this->timeServiceMock->method('getCurrentTime')->willReturn('now');
+		$this->userDaoMock->method('hasAnyUsers')->willReturn(true);
+		$this->userDaoMock->method('save')->will($this->returnArgument(0));
+
+		$testToken = new \Szurubooru\Entities\Token();
+		$this->tokenServiceMock->expects($this->once())->method('createAndSaveToken')->willReturn($testToken);
+		$this->emailServiceMock->expects($this->once())->method('sendActivationEmail')->with(
+			$this->anything(),
+			$testToken);
+
+		$userService = $this->getUserService();
+		$savedUser = $userService->createUser($formData);
+
+		$this->assertEquals('user', $savedUser->name);
+		$this->assertNull($savedUser->email);
+		$this->assertEquals('human@people.gov', $savedUser->emailUnconfirmed);
 		$this->assertEquals('hash', $savedUser->passwordHash);
 		$this->assertEquals(\Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER, $savedUser->accessRank);
 		$this->assertEquals('now', $savedUser->registrationTime);
@@ -107,6 +142,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->password = 'password';
 		$formData->email = 'email';
 
+		$this->configMock->set('security/needEmailActivationToRegister', false);
 		$this->userDaoMock->method('hasAnyUsers')->willReturn(false);
 		$this->userDaoMock->method('save')->will($this->returnArgument(0));
 
@@ -143,6 +179,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->passwordServiceMock,
 			$this->emailServiceMock,
 			$this->fileServiceMock,
-			$this->timeServiceMock);
+			$this->timeServiceMock,
+			$this->tokenServiceMock);
 	}
 }

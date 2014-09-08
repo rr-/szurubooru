@@ -31,6 +31,7 @@ class UserViewProxy extends AbstractViewProxy
 				$this->privilegeService->isLoggedIn($user))
 			{
 				$result->email = $user->email;
+				$result->emailUnconfirmed = $user->emailUnconfirmed;
 			}
 		}
 		return $result;

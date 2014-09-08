@@ -57,10 +57,21 @@ class PrivilegeService
 	{
 		$loggedInUser = $this->authService->getLoggedInUser();
 		if ($userIdentifier instanceof \Szurubooru\Entities\User)
+		{
 			return $loggedInUser->name == $userIdentifier->name;
+		}
 		elseif (is_string($userIdentifier))
+		{
+			if ($loggedInUser->email)
+			{
+				if ($loggedInUser->email == $userIdentifier)
+					return true;
+			}
 			return $loggedInUser->name == $userIdentifier;
+		}
 		else
+		{
 			throw new \InvalidArgumentException('Invalid user identifier.');
+		}
 	}
 }

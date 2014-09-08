@@ -24,8 +24,8 @@ App.Router = function(jQuery, util, appState) {
 		inject('#/logout', 'logoutPresenter');
 		inject('#/register', 'registrationPresenter');
 		inject('#/upload', 'postUploadPresenter');
-		inject('#/password-reset(/:token)', 'passwordResetPresenter');
-		inject('#/activate(/:token)', 'userActivationPresenter');
+		inject('#/password-reset(/:token)', 'userActivationPresenter', {operation: 'passwordReset'});
+		inject('#/activate(/:token)', 'userActivationPresenter', {operation: 'activation'});
 		inject('#/users(/:searchArgs)', 'userListPresenter');
 		inject('#/user/:userName(/:tab)', 'userPresenter');
 		inject('#/posts(/:searchArgs)', 'postListPresenter');
@@ -40,9 +40,9 @@ App.Router = function(jQuery, util, appState) {
 		Path.root(newRoot);
 	};
 
-	function inject(path, presenterName) {
+	function inject(path, presenterName, additionalParams) {
 		Path.map(path).to(function() {
-			util.initContentPresenter(presenterName, this.params);
+			util.initContentPresenter(presenterName, _.extend(this.params, additionalParams));
 		});
 	};
 

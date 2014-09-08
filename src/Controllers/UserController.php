@@ -24,14 +24,18 @@ final class UserController extends AbstractController
 	{
 		$router->post('/api/users', [$this, 'createUser']);
 		$router->get('/api/users', [$this, 'getFiltered']);
-		$router->get('/api/users/:userName', [$this, 'getByName']);
-		$router->put('/api/users/:userName', [$this, 'updateUser']);
-		$router->delete('/api/users/:userName', [$this, 'deleteUser']);
+		$router->get('/api/users/:userNameOrEmail', [$this, 'getByNameOrEmail']);
+		$router->put('/api/users/:userNameOrEmail', [$this, 'updateUser']);
+		$router->delete('/api/users/:userNameOrEmail', [$this, 'deleteUser']);
+		$router->post('/api/password-reset/:userNameOrEmail', [$this, 'passwordReset']);
+		$router->post('/api/finish-password-reset/:tokenName', [$this, 'finishPasswordReset']);
+		$router->post('/api/activation/:userNameOrEmail', [$this, 'activation']);
+		$router->post('/api/finish-activation/:tokenName', [$this, 'finishActivation']);
 	}
 
-	public function getByName($userName)
+	public function getByNameOrEmail($userNameOrEmail)
 	{
-		$user = $this->userService->getByName($userName);
+		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
 		return $this->userViewProxy->fromEntity($user);
 	}
 
@@ -53,17 +57,18 @@ final class UserController extends AbstractController
 		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::REGISTER);
 		$formData = new \Szurubooru\FormData\RegistrationFormData($this->inputReader);
 		$user = $this->userService->createUser($formData);
-		return $this->userViewProxy->fromEntity($user);
+		return array_merge((array) $this->userViewProxy->fromEntity($user), ['confirmed' => $user->emailUnconfirmed == null]);
 	}
 
-	public function updateUser($userName)
+	public function updateUser($userNameOrEmail)
 	{
+		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
 		$formData = new \Szurubooru\FormData\UserEditFormData($this->inputReader);
 
 		if ($formData->avatarStyle !== null)
 		{
 			$this->privilegeService->assertPrivilege(
-				$this->privilegeService->isLoggedIn($userName)
+				$this->privilegeService->isLoggedIn($userNameOrEmail)
 					? \Szurubooru\Privilege::CHANGE_OWN_AVATAR_STYLE
 					: \Szurubooru\Privilege::CHANGE_ALL_AVATAR_STYLES);
 		}
@@ -71,7 +76,7 @@ final class UserController extends AbstractController
 		if ($formData->userName !== null)
 		{
 			$this->privilegeService->assertPrivilege(
-				$this->privilegeService->isLoggedIn($userName)
+				$this->privilegeService->isLoggedIn($userNameOrEmail)
 					? \Szurubooru\Privilege::CHANGE_OWN_NAME
 					: \Szurubooru\Privilege::CHANGE_ALL_NAMES);
 		}
@@ -79,7 +84,7 @@ final class UserController extends AbstractController
 		if ($formData->password !== null)
 		{
 			$this->privilegeService->assertPrivilege(
-				$this->privilegeService->isLoggedIn($userName)
+				$this->privilegeService->isLoggedIn($userNameOrEmail)
 					? \Szurubooru\Privilege::CHANGE_OWN_PASSWORD
 					: \Szurubooru\Privilege::CHANGE_ALL_PASSWORDS);
 		}
@@ -87,7 +92,7 @@ final class UserController extends AbstractController
 		if ($formData->email !== null)
 		{
 			$this->privilegeService->assertPrivilege(
-				$this->privilegeService->isLoggedIn($userName)
+				$this->privilegeService->isLoggedIn($userNameOrEmail)
 					? \Szurubooru\Privilege::CHANGE_OWN_EMAIL_ADDRESS
 					: \Szurubooru\Privilege::CHANGE_ALL_EMAIL_ADDRESSES);
 		}
@@ -99,20 +104,43 @@ final class UserController extends AbstractController
 
 		if ($formData->browsingSettings)
 		{
-			$this->privilegeService->assertLoggedIn($userName);
+			$this->privilegeService->assertLoggedIn($userNameOrEmail);
 		}
 
-		$user = $this->userService->updateUser($userName, $formData);
+		$user = $this->userService->updateUser($user, $formData);
 		return $this->userViewProxy->fromEntity($user);
 	}
 
-	public function deleteUser($userName)
+	public function deleteUser($userNameOrEmail)
 	{
 		$this->privilegeService->assertPrivilege(
-			$this->privilegeService->isLoggedIn($userName)
+			$this->privilegeService->isLoggedIn($userNameOrEmail)
 				? \Szurubooru\Privilege::DELETE_OWN_ACCOUNT
 				: \Szurubooru\Privilege::DELETE_ACCOUNTS);
 
-		return $this->userService->deleteUserByName($userName);
+		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
+		return $this->userService->deleteUser($user);
+	}
+
+	public function passwordReset($userNameOrEmail)
+	{
+		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
+		return $this->userService->sendPasswordResetEmail($user);
+	}
+
+	public function activation($userNameOrEmail)
+	{
+		$user = $this->userService->getByNameOrEmail($userNameOrEmail, true);
+		return $this->userService->sendActivationEmail($user);
+	}
+
+	public function finishPasswordReset($tokenName)
+	{
+		return ['newPassword' => $this->userService->finishPasswordReset($tokenName)];
+	}
+
+	public function finishActivation($tokenName)
+	{
+		$this->userService->finishActivation($tokenName);
 	}
 }

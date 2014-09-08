@@ -16,6 +16,7 @@ final class User extends Entity
 
 	public $name;
 	public $email;
+	public $emailUnconfirmed;
 	public $passwordHash;
 	public $accessRank;
 	public $registrationTime;

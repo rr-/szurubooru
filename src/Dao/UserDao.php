@@ -15,6 +15,14 @@ class UserDao extends AbstractDao implements ICrudDao
 		return $this->entityConverter->toEntity($arrayEntity);
 	}
 
+	public function getByEmail($userEmail, $allowUnconfirmed = false)
+	{
+		$arrayEntity = $this->collection->findOne(['email' => $userEmail]);
+		if (!$arrayEntity and $allowUnconfirmed)
+			$arrayEntity = $this->collection->findOne(['emailUnconfirmed' => $userEmail]);
+		return $this->entityConverter->toEntity($arrayEntity);
+	}
+
 	public function hasAnyUsers()
 	{
 		return (bool) $this->collection->findOne();

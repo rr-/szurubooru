@@ -6,20 +6,20 @@ class AuthService
 	private $loggedInUser = null;
 	private $loginToken = null;
 
-	private $validator;
+	private $config;
 	private $passwordService;
 	private $timeService;
 	private $userService;
 	private $tokenService;
 
 	public function __construct(
-		\Szurubooru\Validator $validator,
+		\Szurubooru\Config $config,
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Services\TokenService $tokenService,
 		\Szurubooru\Services\UserService $userService)
 	{
-		$this->validator = $validator;
+		$this->config = $config;
 		$this->passwordService = $passwordService;
 		$this->timeService = $timeService;
 		$this->tokenService = $tokenService;
@@ -43,12 +43,10 @@ class AuthService
 		return $this->loginToken;
 	}
 
-	public function loginFromCredentials($userName, $password)
+	public function loginFromCredentials($userNameOrEmail, $password)
 	{
-		$this->validator->validateUserName($userName);
-		$this->validator->validatePassword($password);
-
-		$user = $this->userService->getByName($userName);
+		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
+		$this->validateUser($user);
 
 		$passwordHash = $this->passwordService->getHash($password);
 		if ($user->passwordHash != $passwordHash)
@@ -61,13 +59,12 @@ class AuthService
 
 	public function loginFromToken($loginTokenName)
 	{
-		$this->validator->validateToken($loginTokenName);
-
 		$loginToken = $this->tokenService->getByName($loginTokenName);
 		if ($loginToken->purpose != \Szurubooru\Entities\Token::PURPOSE_LOGIN)
 			throw new \Exception('This token is not a login token.');
 
 		$user = $this->userService->getById($loginToken->additionalData);
+		$this->validateUser($user);
 
 		$this->loginToken = $loginToken;
 		$this->loggedInUser = $user;
@@ -93,12 +90,18 @@ class AuthService
 		if (!$this->isLoggedIn())
 			throw new \Exception('Not logged in.');
 
-		$this->tokenService->invalidateByToken($this->loginToken);
+		$this->tokenService->invalidateByName($this->loginToken);
 		$this->loginToken = null;
 	}
 
 	private function createAndSaveLoginToken(\Szurubooru\Entities\User $user)
 	{
-		return $this->tokenService->createAndSaveToken($user, \Szurubooru\Entities\Token::PURPOSE_LOGIN);
+		return $this->tokenService->createAndSaveToken($user->id, \Szurubooru\Entities\Token::PURPOSE_LOGIN);
+	}
+
+	private function validateUser($user)
+	{
+		if (!$user->email and $this->config->security->needEmailActivationToRegister)
+			throw new \DomainException('User didn\'t confirm mail yet.');
 	}
 }

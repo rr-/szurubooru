@@ -40,12 +40,19 @@ App.Presenters.LoginPresenter = function(
 		var password = $el.find('[name=password]').val();
 		var remember = $el.find('[name=remember]').val();
 
-		//todo: client side error reporting
+		if (userName.length == 0) {
+			messagePresenter.showError($messages, 'User name cannot be empty.');
+			return false;
+		}
+
+		if (password.length == 0) {
+			messagePresenter.showError($messages, 'Password cannot be empty.');
+			return false;
+		}
 
 		auth.loginFromCredentials(userName, password, remember)
 			.then(function(response) {
 				router.navigateToMainPage();
-				//todo: "redirect" to main page
 			}).fail(function(response) {
 				messagePresenter.showError($messages, response.json && response.json.error || response);
 			});

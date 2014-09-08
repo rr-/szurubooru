@@ -50,10 +50,13 @@ App.Presenters.RegistrationPresenter = function(
 	}
 
 	function registrationSuccess(apiResponse) {
-		//todo: tell user if it turned out that he needs to confirm his e-mail
 		$el.find('form').slideUp(function() {
 			var message = 'Registration complete! ';
-			message += '<a href="#/login">Click here</a> to login.';
+			if (!apiResponse.json.confirmed) {
+				message += '<br/>Check your inbox for activation e-mail.<br/>If e-mail doesn\'t show up, check your spam folder.';
+			} else {
+				message += '<a href="#/login">Click here</a> to login.';
+			}
 			messagePresenter.showInfo($messages, message);
 		});
 	}
