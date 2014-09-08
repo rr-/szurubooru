@@ -24,6 +24,42 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 	}
 
+	public function testGettingByName()
+	{
+		$testUser = new \Szurubooru\Entities\User();
+		$testUser->name = 'godzilla';
+		$this->userDaoMock->expects($this->once())->method('getByName')->willReturn($testUser);
+		$userService = $this->getUserService();
+		$expected = $testUser;
+		$actual = $userService->getByName('godzilla');
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testGettingByNameNonExistentUsers()
+	{
+		$this->setExpectedException(\Exception::class, 'User with name "godzilla" was not found.');
+		$userService = $this->getUserService();
+		$userService->getByName('godzilla');
+	}
+
+	public function testGettingById()
+	{
+		$testUser = new \Szurubooru\Entities\User();
+		$testUser->name = 'godzilla';
+		$this->userDaoMock->expects($this->once())->method('getById')->willReturn($testUser);
+		$userService = $this->getUserService();
+		$expected = $testUser;
+		$actual = $userService->getById('godzilla');
+		$this->assertEquals($expected, $actual);
+	}
+
+	public function testGettingByIdNonExistentUsers()
+	{
+		$this->setExpectedException(\Exception::class, 'User with id "godzilla" was not found.');
+		$userService = $this->getUserService();
+		$userService->getById('godzilla');
+	}
+
 	public function testGettingFilteredUsers()
 	{
 		$mockUser = new \Szurubooru\Entities\User();

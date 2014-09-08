@@ -10,23 +10,32 @@ class TokenService
 		$this->tokenDao = $tokenDao;
 	}
 
-	public function getById($tokenId)
-	{
-		return $this->tokenDao->getById($tokenId);
-	}
-
 	public function getByName($tokenName)
 	{
-		return $this->tokenDao->getByName($tokenName);
+		$token = $this->tokenDao->getByName($tokenName);
+		if (!$token)
+			throw new \InvalidArgumentException('Token with identifier "' . $tokenName . '" not found.');
+		return $token;
 	}
 
-	public function deleteByName($tokenName)
+	public function invalidateByToken($tokenName)
 	{
 		return $this->tokenDao->deleteByName($tokenName);
 	}
 
-	public function save($token)
+	public function invalidateByUser(\Szurubooru\Entities\User $user)
 	{
-		return $this->tokenDao->save($token);
+		return $this->tokenDao->deleteByAdditionalData($user->id);
+	}
+
+	public function createAndSaveToken(\Szurubooru\Entities\User $user, $tokenPurpose)
+	{
+		$token = new \Szurubooru\Entities\Token();
+		$token->name = hash('sha256', $user->name . '/' . microtime(true));
+		$token->additionalData = $user->id;
+		$token->purpose = $tokenPurpose;
+		$this->invalidateByUser($user);
+		$this->tokenDao->save($token);
+		return $token;
 	}
 }

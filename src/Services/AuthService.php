@@ -9,23 +9,23 @@ class AuthService
 	private $validator;
 	private $passwordService;
 	private $timeService;
-	private $userDao;
-	private $tokenDao;
+	private $userService;
+	private $tokenService;
 
 	public function __construct(
 		\Szurubooru\Validator $validator,
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\TimeService $timeService,
-		\Szurubooru\Dao\TokenDao $tokenDao,
-		\Szurubooru\Dao\UserDao $userDao)
+		\Szurubooru\Services\TokenService $tokenService,
+		\Szurubooru\Services\UserService $userService)
 	{
-		$this->loggedInUser = $this->getAnonymousUser();
-
 		$this->validator = $validator;
 		$this->passwordService = $passwordService;
 		$this->timeService = $timeService;
-		$this->tokenDao = $tokenDao;
-		$this->userDao = $userDao;
+		$this->tokenService = $tokenService;
+		$this->userService = $userService;
+
+		$this->loggedInUser = $this->getAnonymousUser();
 	}
 
 	public function isLoggedIn()
@@ -48,9 +48,7 @@ class AuthService
 		$this->validator->validateUserName($userName);
 		$this->validator->validatePassword($password);
 
-		$user = $this->userDao->getByName($userName);
-		if (!$user)
-			throw new \InvalidArgumentException('User not found.');
+		$user = $this->userService->getByName($userName);
 
 		$passwordHash = $this->passwordService->getHash($password);
 		if ($user->passwordHash != $passwordHash)
@@ -58,31 +56,22 @@ class AuthService
 
 		$this->loginToken = $this->createAndSaveLoginToken($user);
 		$this->loggedInUser = $user;
-		$this->updateLoginTime($user);
+		$this->userService->updateUserLastLoginTime($user);
 	}
 
 	public function loginFromToken($loginTokenName)
 	{
 		$this->validator->validateToken($loginTokenName);
 
-		$loginToken = $this->tokenDao->getByName($loginTokenName);
-		if (!$loginToken)
-			throw new \Exception('Invalid login token.');
-
+		$loginToken = $this->tokenService->getByName($loginTokenName);
 		if ($loginToken->purpose != \Szurubooru\Entities\Token::PURPOSE_LOGIN)
 			throw new \Exception('This token is not a login token.');
 
-		$this->loginToken = $loginToken;
-		$this->loggedInUser = $this->userDao->getById($loginToken->additionalData);
-		if (!$this->loggedInUser)
-			throw new \Exception('User was deleted.');
-		$this->updateLoginTime($this->loggedInUser);
+		$user = $this->userService->getById($loginToken->additionalData);
 
-		if (!$this->loggedInUser)
-		{
-			$this->logout();
-			throw new \RuntimeException('Token is correct, but user is not. Have you deleted your account?');
-		}
+		$this->loginToken = $loginToken;
+		$this->loggedInUser = $user;
+		$this->userService->updateUserLastLoginTime($this->loggedInUser);
 	}
 
 	public function getAnonymousUser()
@@ -104,24 +93,12 @@ class AuthService
 		if (!$this->isLoggedIn())
 			throw new \Exception('Not logged in.');
 
-		$this->tokenDao->deleteByName($this->loginToken);
+		$this->tokenService->invalidateByToken($this->loginToken);
 		$this->loginToken = null;
 	}
 
 	private function createAndSaveLoginToken(\Szurubooru\Entities\User $user)
 	{
-		$loginToken = new \Szurubooru\Entities\Token();
-		$loginToken->name = hash('sha256', $user->name . '/' . microtime(true));
-		$loginToken->additionalData = $user->id;
-		$loginToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
-		$this->tokenDao->deleteByAdditionalData($loginToken->additionalData);
-		$this->tokenDao->save($loginToken);
-		return $loginToken;
-	}
-
-	private function updateLoginTime($user)
-	{
-		$user->lastLoginTime = $this->timeService->getCurrentTime();
-		$this->userDao->save($user);
+		return $this->tokenService->createAndSaveToken($user, \Szurubooru\Entities\Token::PURPOSE_LOGIN);
 	}
 }

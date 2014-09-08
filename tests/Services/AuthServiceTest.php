@@ -6,24 +6,16 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $validatorMock;
 	private $passwordServiceMock;
 	private $timeServiceMock;
-	private $tokenDaoMock;
-	private $userDaoMock;
+	private $tokenServiceMock;
+	private $userServiceMock;
 
 	public function setUp()
 	{
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
-		$this->tokenDaoMock = $this->mock(\Szurubooru\Dao\TokenDao::class);
-		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
-	}
-
-	public function testInvalidUser()
-	{
-		$this->setExpectedException(\InvalidArgumentException::class, 'User not found');
-
-		$authService = $this->getAuthService();
-		$authService->loginFromCredentials('dummy', 'godzilla');
+		$this->tokenServiceMock = $this->mock(\Szurubooru\Services\TokenService::class);
+		$this->userServiceMock = $this->mock(\Szurubooru\Services\UserService::class);
 	}
 
 	public function testInvalidPassword()
@@ -33,23 +25,27 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testUser = new \Szurubooru\Entities\User();
 		$testUser->name = 'dummy';
 		$testUser->passwordHash = 'hash';
-		$this->userDaoMock->expects($this->once())->method('getByName')->willReturn($testUser);
+		$this->userServiceMock->expects($this->once())->method('getByName')->willReturn($testUser);
 
 		$authService = $this->getAuthService();
-		$this->setExpectedException(\InvalidArgumentException::class, 'Specified password is invalid');
+		$this->setExpectedException(\Exception::class, 'Specified password is invalid');
 		$authService->loginFromCredentials('dummy', 'godzilla');
 	}
 
 	public function testValidCredentials()
 	{
-		$this->tokenDaoMock->expects($this->once())->method('save');
 		$this->passwordServiceMock->method('getHash')->willReturn('hash');
 
 		$testUser = new \Szurubooru\Entities\User();
 		$testUser->name = 'dummy';
 		$testUser->passwordHash = 'hash';
-		$this->userDaoMock->expects($this->once())->method('getByName')->willReturn($testUser);
-		$this->tokenDaoMock->expects($this->once())->method('deleteByAdditionalData')->with($testUser->id);
+		$this->userServiceMock->expects($this->once())->method('getByName')->willReturn($testUser);
+
+		$testToken = new \Szurubooru\Entities\Token();
+		$testToken->name = 'mummy';
+		$this->tokenServiceMock->expects($this->once())->method('createAndSaveToken')->with(
+			$testUser,
+			\Szurubooru\Entities\Token::PURPOSE_LOGIN)->willReturn($testToken);
 
 		$authService = $this->getAuthService();
 		$authService->loginFromCredentials('dummy', 'godzilla');
@@ -57,12 +53,12 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertTrue($authService->isLoggedIn());
 		$this->assertEquals($testUser, $authService->getLoggedInUser());
 		$this->assertNotNull($authService->getLoginToken());
-		$this->assertNotNull($authService->getLoginToken()->name);
+		$this->assertEquals('mummy', $authService->getLoginToken()->name);
 	}
 
 	public function testInvalidToken()
 	{
-		$this->tokenDaoMock->expects($this->once())->method('getByName')->willReturn(null);
+		$this->tokenServiceMock->expects($this->once())->method('getByName')->willReturn(null);
 
 		$this->setExpectedException(\Exception::class);
 		$authService = $this->getAuthService();
@@ -74,14 +70,13 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testUser = new \Szurubooru\Entities\User();
 		$testUser->id = 5;
 		$testUser->name = 'dummy';
-		$testUser->passwordHash = 'hash';
-		$this->userDaoMock->expects($this->once())->method('getById')->willReturn($testUser);
+		$this->userServiceMock->expects($this->once())->method('getById')->willReturn($testUser);
 
 		$testToken = new \Szurubooru\Entities\Token();
 		$testToken->name = 'dummy_token';
 		$testToken->additionalData = $testUser->id;
 		$testToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
-		$this->tokenDaoMock->expects($this->once())->method('getByName')->willReturn($testToken);
+		$this->tokenServiceMock->expects($this->once())->method('getByName')->willReturn($testToken);
 
 		$authService = $this->getAuthService();
 		$authService->loginFromToken($testToken->name);
@@ -89,7 +84,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertTrue($authService->isLoggedIn());
 		$this->assertEquals($testUser, $authService->getLoggedInUser());
 		$this->assertNotNull($authService->getLoginToken());
-		$this->assertNotNull($authService->getLoginToken()->name);
+		$this->assertEquals('dummy_token', $authService->getLoginToken()->name);
 	}
 
 	private function getAuthService()
@@ -98,7 +93,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->validatorMock,
 			$this->passwordServiceMock,
 			$this->timeServiceMock,
-			$this->tokenDaoMock,
-			$this->userDaoMock);
+			$this->tokenServiceMock,
+			$this->userServiceMock);
 	}
 }

@@ -28,8 +28,6 @@ final class UserAvatarController extends AbstractController
 	public function getAvatarByName($userName, $size)
 	{
 		$user = $this->userService->getByName($userName);
-		if (!$user)
-			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
 
 		switch ($user->avatarStyle)
 		{

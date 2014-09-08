@@ -32,8 +32,6 @@ final class UserController extends AbstractController
 	public function getByName($userName)
 	{
 		$user = $this->userService->getByName($userName);
-		if (!$user)
-			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
 		return $this->userViewProxy->fromEntity($user);
 	}
 

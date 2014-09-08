@@ -32,9 +32,20 @@ class UserService
 		$this->timeService = $timeService;
 	}
 
-	public function getByName($name)
+	public function getByName($userName)
 	{
-		return $this->userDao->getByName($name);
+		$user = $this->userDao->getByName($userName);
+		if (!$user)
+			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
+		return $user;
+	}
+
+	public function getById($userId)
+	{
+		$user = $this->userDao->getById($userId);
+		if (!$user)
+			throw new \InvalidArgumentException('User with id "' . $userId . '" was not found.');
+		return $user;
 	}
 
 	public function getFiltered(\Szurubooru\FormData\SearchFormData $formData)
@@ -73,8 +84,6 @@ class UserService
 	public function updateUser($userName, \Szurubooru\FormData\UserEditFormData $formData)
 	{
 		$user = $this->getByName($userName);
-		if (!$user)
-			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
 
 		if ($formData->avatarStyle !== null)
 		{
@@ -127,15 +136,12 @@ class UserService
 	public function deleteUserByName($userName)
 	{
 		$user = $this->getByName($userName);
-		if (!$user)
-			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
-
 		$this->userDao->deleteByName($userName);
 		$this->fileService->delete($this->getCustomAvatarSourcePath($user));
 		return true;
 	}
 
-	public function getCustomAvatarSourcePath($user)
+	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)
 	{
 		return 'avatars' . DIRECTORY_SEPARATOR . $user->id;
 	}
@@ -143,6 +149,12 @@ class UserService
 	public function getBlankAvatarSourcePath()
 	{
 		return 'avatars' . DIRECTORY_SEPARATOR . 'blank.png';
+	}
+
+	public function updateUserLastLoginTime(\Szurubooru\Entities\User $user)
+	{
+		$user->lastLoginTime = $this->timeService->getCurrentTime();
+		$this->userDao->save($user);
 	}
 
 	private function sendActivationMailIfNeeded(\Szurubooru\Entities\User &$user)
