@@ -5,22 +5,22 @@ App.Presenters.MessagePresenter = function(jQuery) {
 
 	function showInfo($el, message) {
 		return showMessage($el, 'info', message);
-	};
+	}
 
 	function showError($el, message) {
 		return showMessage($el, 'error', message);
-	};
+	}
 
 	function hideMessages($el) {
 		$el.children('.message').each(function() {
-			$(this).slideUp('fast', function() {
-				$(this).remove();
+			jQuery(this).slideUp('fast', function() {
+				jQuery(this).remove();
 			});
 		});
-	};
+	}
 
 	function showMessage($el, className, message) {
-		var $messageDiv = $('<div>');
+		var $messageDiv = jQuery('<div>');
 		$messageDiv.addClass('message');
 		$messageDiv.addClass(className);
 		$messageDiv.html(message);
@@ -28,7 +28,7 @@ App.Presenters.MessagePresenter = function(jQuery) {
 		$el.append($messageDiv);
 		$messageDiv.slideDown('fast');
 		return $messageDiv;
-	};
+	}
 
 	return {
 		showInfo: showInfo,

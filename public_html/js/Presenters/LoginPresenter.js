@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.LoginPresenter = function(
+	_,
 	jQuery,
 	util,
 	promise,
@@ -18,10 +19,11 @@ App.Presenters.LoginPresenter = function(
 		topNavigationPresenter.select('login');
 		promise.wait(util.promiseTemplate('login-form')).then(function(html) {
 			template = _.template(html);
-			if (auth.isLoggedIn())
+			if (auth.isLoggedIn()) {
 				router.navigateToMainPage();
-			else
+			} else {
 				render();
+			}
 		});
 	}
 
@@ -30,7 +32,7 @@ App.Presenters.LoginPresenter = function(
 		$el.find('form').submit(loginFormSubmitted);
 		$messages = $el.find('.messages');
 		$messages.width($el.find('form').width());
-	};
+	}
 
 	function loginFormSubmitted(e) {
 		e.preventDefault();
@@ -40,12 +42,12 @@ App.Presenters.LoginPresenter = function(
 		var password = $el.find('[name=password]').val();
 		var remember = $el.find('[name=remember]').val();
 
-		if (userName.length == 0) {
+		if (userName.length === 0) {
 			messagePresenter.showError($messages, 'User name cannot be empty.');
 			return false;
 		}
 
-		if (password.length == 0) {
+		if (password.length === 0) {
 			messagePresenter.showError($messages, 'Password cannot be empty.');
 			return false;
 		}

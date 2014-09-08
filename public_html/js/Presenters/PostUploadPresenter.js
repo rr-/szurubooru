@@ -14,7 +14,7 @@ App.Presenters.PostUploadPresenter = function(
 
 	function render() {
 		$el.html('Post upload placeholder');
-	};
+	}
 
 	return {
 		init: init,

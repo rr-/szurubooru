@@ -14,7 +14,7 @@ App.Presenters.PostListPresenter = function(
 
 	function render() {
 		$el.html('Post list placeholder');
-	};
+	}
 
 	return {
 		init: init,

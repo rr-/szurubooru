@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.UserListPresenter = function(
+	_,
 	jQuery,
 	util,
 	promise,
@@ -55,7 +56,7 @@ App.Presenters.UserListPresenter = function(
 
 		var $pager = $el.find('.pager');
 		pagedCollectionPresenter.render($pager);
-	};
+	}
 
 	function orderLinkClicked(e) {
 		e.preventDefault();

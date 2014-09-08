@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.UserAccountRemovalPresenter = function(
+	_,
 	jQuery,
 	util,
 	promise,
@@ -48,7 +49,7 @@ App.Presenters.UserAccountRemovalPresenter = function(
 	function accountRemovalFormSubmitted(e) {
 		e.preventDefault();
 		var $el = jQuery(target);
-		$messages = $el.find('.messages');
+		var $messages = $el.find('.messages');
 		messagePresenter.hideMessages($messages);
 		if (!$el.find('input[name=confirmation]:visible').prop('checked')) {
 			messagePresenter.showError($messages, 'Must confirm to proceed.');
@@ -74,6 +75,7 @@ App.Presenters.UserAccountRemovalPresenter = function(
 		render: render,
 		getPrivileges: getPrivileges
 	};
+
 };
 
 App.DI.register('userAccountRemovalPresenter', App.Presenters.UserAccountRemovalPresenter);

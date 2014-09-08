@@ -1,7 +1,7 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.PagedCollectionPresenter = function(util, promise, api) {
+App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
 
 	var searchOrder;
 	var searchQuery;
@@ -58,16 +58,20 @@ App.Presenters.PagedCollectionPresenter = function(util, promise, api) {
 		var totalPages = Math.ceil(totalRecords / pageSize);
 		var pages = [1, totalPages];
 		var pagesAroundCurrent = 2;
-		for (var i = -pagesAroundCurrent; i <= pagesAroundCurrent; i ++)
-			if (pageNumber + i >= 1 && pageNumber + i <= totalPages)
+		for (var i = -pagesAroundCurrent; i <= pagesAroundCurrent; i ++) {
+			if (pageNumber + i >= 1 && pageNumber + i <= totalPages) {
 				pages.push(pageNumber + i);
-		if (pageNumber - pagesAroundCurrent - 1 == 2)
+			}
+		}
+		if (pageNumber - pagesAroundCurrent - 1 === 2) {
 			pages.push(2);
-		if (pageNumber + pagesAroundCurrent + 1 == totalPages - 1)
+		}
+		if (pageNumber + pagesAroundCurrent + 1 === totalPages - 1) {
 			pages.push(totalPages - 1);
+		}
 
 		pages = pages.sort(function(a, b) { return a - b; }).filter(function(item, pos) {
-			return !pos || item != pages[pos - 1];
+			return !pos || item !== pages[pos - 1];
 		});
 
 		$target.html(template({

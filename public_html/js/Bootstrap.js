@@ -11,7 +11,7 @@ App.Bootstrap = function(auth, router, util, promise) {
 				.then(startRouting)
 				.fail(function(response) {
 					console.log(response);
-					alert('Fatal authentication error: ' + response.json.error);
+					window.alert('Fatal authentication error: ' + response.json.error);
 				});
 		});
 
@@ -26,5 +26,7 @@ App.Bootstrap = function(auth, router, util, promise) {
 };
 
 App.DI.registerSingleton('bootstrap', App.Bootstrap);
-App.DI.registerManual('jQuery', function() { return $; });
+App.DI.registerManual('jQuery', function() { return window.$; });
+App.DI.registerManual('pathJs', function() { return window.Path; });
+App.DI.registerManual('_', function() { return window._; });
 App.DI.get('bootstrap');

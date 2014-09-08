@@ -10,8 +10,9 @@ App.BrowsingSettings = function(
 	auth.startObservingLoginChanges('browsing-settings', loginStateChanged);
 
 	readFromLocalStorage();
-	if (auth.isLoggedIn())
+	if (auth.isLoggedIn()) {
 		loginStateChanged();
+	}
 
 	function setSettings(newSettings) {
 		settings = newSettings;
@@ -47,8 +48,10 @@ App.BrowsingSettings = function(
 	}
 
 	function readFromString(string) {
-		if (!string)
+		if (!string) {
 			return;
+		}
+
 		try {
 			settings = JSON.parse(string);
 		} catch (e) {
@@ -81,6 +84,7 @@ App.BrowsingSettings = function(
 		getSettings: getSettings,
 		setSettings: setSettings,
 	};
-}
+
+};
 
 App.DI.registerSingleton('browsingSettings', App.BrowsingSettings);

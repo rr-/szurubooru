@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.UserActivationPresenter = function(
+	_,
 	jQuery,
 	promise,
 	util,
@@ -45,8 +46,9 @@ App.Presenters.UserActivationPresenter = function(
 	function render() {
 		$el.html(template());
 		$messages = $el.find('.messages');
-		if (formHidden)
+		if (formHidden) {
 			$el.find('form').hide();
+		}
 		$el.find('form').submit(userQueryFormSubmitted);
 	}
 
@@ -63,18 +65,18 @@ App.Presenters.UserActivationPresenter = function(
 		messagePresenter.hideMessages($messages);
 
 		var userNameOrEmail = $el.find('form input[name=user]').val();
-		if (userNameOrEmail.length == 0) {
+		if (userNameOrEmail.length === 0) {
 			messagePresenter.showError($messages, 'Field cannot be blank.');
 			return;
 		}
-		var url = operation == 'passwordReset'
-			? '/password-reset/' + userNameOrEmail
-			: '/activation/' + userNameOrEmail;
+		var url = operation === 'passwordReset' ?
+			'/password-reset/' + userNameOrEmail :
+			'/activation/' + userNameOrEmail;
 
 		api.post(url).then(function(response) {
-			var message = operation == 'passwordReset'
-				? 'Password reset request sent.'
-				: 'Activation e-mail resent.';
+			var message = operation === 'passwordReset' ?
+				'Password reset request sent.' :
+				'Activation e-mail resent.';
 			message += ' Check your inbox.<br/>If e-mail doesn\'t show up, check your spam folder.';
 
 			$el.find('#user-query-form').slideUp(function() {
@@ -88,14 +90,14 @@ App.Presenters.UserActivationPresenter = function(
 	function confirmToken(token) {
 		messagePresenter.hideMessages($messages);
 
-		var url = operation == 'passwordReset'
-			? '/finish-password-reset/' + token
-			: '/finish-activation/' + token;
+		var url = operation === 'passwordReset' ?
+			'/finish-password-reset/' + token :
+			'/finish-activation/' + token;
 
 		api.post(url).then(function(response) {
-			var message = operation == 'passwordReset'
-				? 'Your new password is <strong>' + response.json.newPassword + '</strong>.'
-				: 'E-mail activation successful.';
+			var message = operation === 'passwordReset' ?
+				'Your new password is <strong>' + response.json.newPassword + '</strong>.' :
+				'E-mail activation successful.';
 
 			$el.find('#user-query-form').slideUp(function() {
 				messagePresenter.showInfo($messages, message);

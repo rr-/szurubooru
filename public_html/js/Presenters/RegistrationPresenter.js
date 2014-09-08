@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.RegistrationPresenter = function(
+	_,
 	jQuery,
 	util,
 	promise,
@@ -11,6 +12,7 @@ App.Presenters.RegistrationPresenter = function(
 
 	var $el = jQuery('#content');
 	var template;
+	var $messages;
 
 	function init() {
 		topNavigationPresenter.select('register');
@@ -31,15 +33,16 @@ App.Presenters.RegistrationPresenter = function(
 		e.preventDefault();
 		messagePresenter.hideMessages($messages);
 
-		formData = {
+		var formData = {
 			userName: $el.find('[name=userName]').val(),
 			password: $el.find('[name=password]').val(),
 			passwordConfirmation: $el.find('[name=passwordConfirmation]').val(),
 			email: $el.find('[name=email]').val(),
 		};
 
-		if (!validateRegistrationFormData(formData))
+		if (!validateRegistrationFormData(formData)) {
 			return;
+		}
 
 		api.post('/users', formData)
 			.then(function(response) {
@@ -66,23 +69,23 @@ App.Presenters.RegistrationPresenter = function(
 	}
 
 	function validateRegistrationFormData(formData) {
-		if (formData.userName.length == 0) {
+		if (formData.userName.length === 0) {
 			messagePresenter.showError($messages, 'User name cannot be empty.');
 			return false;
 		}
 
-		if (formData.password.length == 0) {
+		if (formData.password.length === 0) {
 			messagePresenter.showError($messages, 'Password cannot be empty.');
 			return false;
 		}
 
-		if (formData.password != formData.passwordConfirmation) {
+		if (formData.password !== formData.passwordConfirmation) {
 			messagePresenter.showError($messages, 'Passwords must be the same.');
 			return false;
 		}
 
 		return true;
-	};
+	}
 
 	return {
 		init: init,

@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Router = function(jQuery, util, appState) {
+App.Router = function(pathJs, _, jQuery, util, appState) {
 
 	var root = '#/';
 
@@ -8,15 +8,15 @@ App.Router = function(jQuery, util, appState) {
 
 	function navigateToMainPage() {
 		window.location.href = root;
-	};
+	}
 
 	function navigate(url) {
 		window.location.href = url;
-	};
+	}
 
 	function start() {
-		Path.listen();
-	};
+		pathJs.listen();
+	}
 
 	function injectRoutes() {
 		inject('#/home', 'homePresenter');
@@ -33,18 +33,18 @@ App.Router = function(jQuery, util, appState) {
 		inject('#/tags(/:searchArgs)', 'tagListPresenter');
 		inject('#/help', 'helpPresenter');
 		setRoot('#/home');
-	};
+	}
 
 	function setRoot(newRoot) {
 		root = newRoot;
-		Path.root(newRoot);
-	};
+		pathJs.root(newRoot);
+	}
 
 	function inject(path, presenterName, additionalParams) {
-		Path.map(path).to(function() {
+		pathJs.map(path).to(function() {
 			util.initContentPresenter(presenterName, _.extend(this.params, additionalParams));
 		});
-	};
+	}
 
 	return {
 		start: start,

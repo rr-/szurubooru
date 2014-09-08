@@ -14,7 +14,7 @@ App.Presenters.CommentListPresenter = function(
 
 	function render() {
 		$el.html('Comment list placeholder');
-	};
+	}
 
 	return {
 		init: init,

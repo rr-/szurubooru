@@ -14,7 +14,7 @@ App.Presenters.TagListPresenter = function(
 
 	function render() {
 		$el.html('Tag list placeholder');
-	};
+	}
 
 	return {
 		init: init,

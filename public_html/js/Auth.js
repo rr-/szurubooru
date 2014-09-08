@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Auth = function(jQuery, util, api, appState, promise) {
+App.Auth = function(_, jQuery, util, api, appState, promise) {
 
 	var privileges = {
 		register: 'register',
@@ -105,11 +105,13 @@ App.Auth = function(jQuery, util, api, appState, promise) {
 	}
 
 	function isLoggedIn(userName) {
-		if (!appState.get('loggedIn'))
+		if (!appState.get('loggedIn')) {
 			return false;
-		if (typeof(userName) != 'undefined') {
-			if (getCurrentUser().name != userName)
+		}
+		if (typeof(userName) !== 'undefined') {
+			if (getCurrentUser().name !== userName) {
 				return false;
+			}
 		}
 		return true;
 	}

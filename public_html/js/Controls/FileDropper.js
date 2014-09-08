@@ -31,18 +31,15 @@ App.Controls.FileDropper = function(
 		$dropDiv.addClass('active');
 	});
 
-	function getFiles() {
-		return files;
-	}
-
 	function addFiles(files) {
 		$dropDiv.removeClass('active');
 		if (!allowMultiple && files.length > 1) {
-			alert('Cannot select multiple files.');
+			window.alert('Cannot select multiple files.');
 			return;
 		}
 		onChange(files);
 	}
-}
+
+};
 
 App.DI.register('fileDropper', App.Controls.FileDropper);

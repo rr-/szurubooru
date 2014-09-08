@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.UserPresenter = function(
+	_,
 	jQuery,
 	util,
 	promise,
@@ -42,7 +43,7 @@ App.Presenters.UserPresenter = function(
 				userAccountRemovalPresenter.init(_.extend(extendedContext, {target: '#account-removal-target'})))
 			.then(function() {
 				initTabs(args);
-			})
+			});
 
 		}).fail(function(response) {
 			$el.empty();

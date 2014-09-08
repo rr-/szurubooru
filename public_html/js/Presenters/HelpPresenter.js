@@ -14,7 +14,7 @@ App.Presenters.HelpPresenter = function(
 
 	function render() {
 		$el.html('Help placeholder');
-	};
+	}
 
 	return {
 		init: init,

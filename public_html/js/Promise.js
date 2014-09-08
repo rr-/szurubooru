@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Promise = (function(jQuery) {
+App.Promise = function(jQuery) {
 
 	function make(callback)
 	{
@@ -23,6 +23,6 @@ App.Promise = (function(jQuery) {
 		waitAll: waitAll,
 	};
 
-});
+};
 
 App.DI.registerSingleton('promise', App.Promise);

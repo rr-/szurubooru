@@ -1,31 +1,31 @@
 var App = App || {};
 
-App.API = function(promise, appState) {
+App.API = function(jQuery, promise, appState) {
 
 	var baseUrl = '/api/';
 
 	function get(url, data) {
 		return request('GET', url, data);
-	};
+	}
 
 	function post(url, data) {
 		return request('POST', url, data);
-	};
+	}
 
 	function put(url, data) {
 		return request('PUT', url, data);
-	};
+	}
 
 	function _delete(url, data) {
 		return request('DELETE', url, data);
-	};
+	}
 
 	function request(method, url, data) {
 		var fullUrl = baseUrl + '/' + url;
 		fullUrl = fullUrl.replace(/\/{2,}/, '/');
 
 		return promise.make(function(resolve, reject) {
-			$.ajax({
+			jQuery.ajax({
 				headers: {
 					'X-Authorization-Token': appState.get('loginToken') || '',
 				},
@@ -37,16 +37,16 @@ App.API = function(promise, appState) {
 				error: function(xhr, textStatus, errorThrown) {
 					reject({
 						status: xhr.status,
-						json: xhr.responseJSON
-							? xhr.responseJSON
-							: {error: errorThrown}});
+						json: xhr.responseJSON ?
+							xhr.responseJSON :
+							{error: errorThrown}});
 				},
 				type: method,
 				url: fullUrl,
 				data: data,
 			});
 		});
-	};
+	}
 
 	return {
 		get: get,

@@ -12,15 +12,17 @@ App.DI = (function() {
 		var instance = instances[key];
 		if (!instance) {
 			var factory = factories[key];
-			if (!factory)
+			if (!factory) {
 				throw new Error('Unregistered key: ' + key);
+			}
 			var objectInitializer = factory.initializer;
 			var singleton = factory.singleton;
 			var deps = resolveDependencies(objectInitializer);
-			var instance = {};
+			instance = {};
 			instance = objectInitializer.apply(instance, deps);
-			if (singleton)
+			if (singleton) {
 				instances[key] = instance;
+			}
 		}
 		return instance;
 	}
@@ -36,15 +38,15 @@ App.DI = (function() {
 
 	function register(key, objectInitializer) {
 		factories[key] = {initializer: objectInitializer, singleton: false};
-	};
+	}
 
 	function registerSingleton(key, objectInitializer) {
 		factories[key] = {initializer: objectInitializer, singleton: true};
-	};
+	}
 
 	function registerManual(key, objectInitializer) {
 		instances[key] = objectInitializer();
-	};
+	}
 
 	function getFunctionParameterNames(func) {
 		var fnStr = func.toString().replace(STRIP_COMMENTS, '');

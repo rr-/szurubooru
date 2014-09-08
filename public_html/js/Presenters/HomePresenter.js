@@ -14,7 +14,7 @@ App.Presenters.HomePresenter = function(
 
 	function render() {
 		$el.html('Home placeholder');
-	};
+	}
 
 	return {
 		init: init,

@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.TopNavigationPresenter = function(
+	_,
 	jQuery,
 	util,
 	promise,
@@ -23,7 +24,7 @@ App.Presenters.TopNavigationPresenter = function(
 		selectedElement = newSelectedElement;
 		$el.find('li').removeClass('active');
 		$el.find('li.' + selectedElement).addClass('active');
-	};
+	}
 
 	function loginStateChanged() {
 		render();
@@ -41,7 +42,7 @@ App.Presenters.TopNavigationPresenter = function(
 			canUploadPosts: auth.hasPrivilege(auth.privileges.uploadPosts),
 		}));
 		$el.find('li.' + selectedElement).addClass('active');
-	};
+	}
 
 	return {
 		init: init,

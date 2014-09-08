@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.UserBrowsingSettingsPresenter = function(
+	_,
 	jQuery,
 	util,
 	promise,
@@ -19,7 +20,7 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 			user = args.user;
 			target = args.target;
 
-			privileges.canChangeBrowsingSettings = auth.isLoggedIn(user.name) && user.name == auth.getCurrentUser().name;
+			privileges.canChangeBrowsingSettings = auth.isLoggedIn(user.name) && user.name === auth.getCurrentUser().name;
 
 			promise.wait(util.promiseTemplate('browsing-settings')).then(function(html) {
 				template = _.template(html);
@@ -63,6 +64,7 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 		render: render,
 		getPrivileges: getPrivileges,
 	};
-}
+
+};
 
 App.DI.register('userBrowsingSettingsPresenter', App.Presenters.UserBrowsingSettingsPresenter);

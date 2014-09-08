@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.UserAccountSettingsPresenter = function(
+	_,
 	jQuery,
 	util,
 	promise,
@@ -9,7 +10,6 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	auth,
 	messagePresenter) {
 
-	var $messages;
 	var target;
 	var template;
 	var user;
@@ -62,7 +62,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	function avatarStyleChanged(e) {
 		var $el = jQuery(target);
 		var $target = $el.find('.avatar-content .file-handler');
-		if ($el.find('[name=avatar-style]:checked').val() == 'manual') {
+		if ($el.find('[name=avatar-style]:checked').val() === 'manual') {
 			$target.show();
 		} else {
 			$target.hide();
@@ -70,14 +70,14 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	}
 
 	function avatarContentChanged(files) {
-		if (files.length == 1) {
+		if (files.length === 1) {
 			var reader = new FileReader();
 			reader.onloadend = function() {
 				avatarContent = reader.result;
 				var $el = jQuery(target);
 				var $target = $el.find('.avatar-content .file-handler');
 				$target.html(files[0].name);
-			}
+			};
 			reader.readAsDataURL(files[0]);
 		}
 	}
@@ -91,8 +91,9 @@ App.Presenters.UserAccountSettingsPresenter = function(
 
 		if (privileges.canChangeAvatarStyle) {
 			formData.avatarStyle = $el.find('[name=avatar-style]:checked').val();
-			if (avatarContent)
+			if (avatarContent) {
 				formData.avatarContent = avatarContent;
+			}
 		}
 		if (privileges.canChangeName) {
 			formData.userName = $el.find('[name=userName]').val();
@@ -136,7 +137,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	}
 
 	function validateAccountSettingsFormData($messages, formData) {
-		if (formData.password != formData.passwordConfirmation) {
+		if (formData.password !== formData.passwordConfirmation) {
 			messagePresenter.showError($messages, 'Passwords must be the same.');
 			return false;
 		}
@@ -149,6 +150,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 		render: render,
 		getPrivileges: getPrivileges,
 	};
-}
+
+};
 
 App.DI.register('userAccountSettingsPresenter', App.Presenters.UserAccountSettingsPresenter);
