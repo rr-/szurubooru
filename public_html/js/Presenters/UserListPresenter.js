@@ -31,7 +31,7 @@ App.Presenters.UserListPresenter = function(
 		activeSearchOrder = searchArgs.order;
 
 		pagedCollectionPresenter.init({
-			pageNumber: searchArgs.page,
+			page: searchArgs.page,
 			order: searchArgs.order,
 			baseUri: '#/users',
 			backendUri: '/users',
