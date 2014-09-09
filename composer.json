@@ -2,6 +2,7 @@
 	"require": {
 		"mnapoli/php-di": "~4.0",
 		"linkorb/jsmin-php": "1.*",
-		"natxet/CssMin": "3.*"
+		"natxet/CssMin": "3.*",
+		"phpcheckstyle/phpcheckstyle": "~0.14"
 	}
 }
