@@ -59,6 +59,13 @@ class FileService
 		exit;
 	}
 
+	public function createFolders($target)
+	{
+		$finalTarget = $this->getFullPath($target);
+		if (!file_exists($finalTarget))
+			mkdir($finalTarget, 0777, true);
+	}
+
 	public function exists($source)
 	{
 		$finalSource = $this->getFullPath($source);

@@ -10,6 +10,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $passwordServiceMock;
 	private $emailServiceMock;
 	private $fileServiceMock;
+	private $thumbnailServiceMock;
 	private $timeServiceMock;
 	private $tokenServiceMock;
 
@@ -22,6 +23,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->emailServiceMock = $this->mock(\Szurubooru\Services\EmailService::class);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
+		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 		$this->tokenServiceMock = $this->mock(\Szurubooru\Services\TokenService::class);
 	}
@@ -179,6 +181,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->passwordServiceMock,
 			$this->emailServiceMock,
 			$this->fileServiceMock,
+			$this->thumbnailServiceMock,
 			$this->timeServiceMock,
 			$this->tokenServiceMock);
 	}

@@ -10,6 +10,7 @@ class UserService
 	private $passwordService;
 	private $emailService;
 	private $fileService;
+	private $thumbnailService;
 	private $timeService;
 	private $tokenService;
 
@@ -21,6 +22,7 @@ class UserService
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\EmailService $emailService,
 		\Szurubooru\Services\FileService $fileService,
+		\Szurubooru\Services\ThumbnailService $thumbnailService,
 		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Services\TokenService $tokenService)
 	{
@@ -31,6 +33,7 @@ class UserService
 		$this->passwordService = $passwordService;
 		$this->emailService = $emailService;
 		$this->fileService = $fileService;
+		$this->thumbnailService = $thumbnailService;
 		$this->timeService = $timeService;
 		$this->tokenService = $tokenService;
 	}
@@ -106,7 +109,11 @@ class UserService
 		{
 			$user->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($formData->avatarStyle);
 			if ($formData->avatarContent)
-				$this->fileService->saveFromBase64($formData->avatarContent, $this->getCustomAvatarSourcePath($user));
+			{
+				$target = $this->getCustomAvatarSourcePath($user);
+				$this->fileService->saveFromBase64($formData->avatarContent, $target);
+				$this->thumbnailService->deleteUsedThumbnails($target);
+			}
 		}
 
 		if ($formData->userName !== null and $formData->userName !== $user->name)
@@ -155,7 +162,10 @@ class UserService
 	public function deleteUser(\Szurubooru\Entities\User $user)
 	{
 		$this->userDao->deleteById($user->id);
-		$this->fileService->delete($this->getCustomAvatarSourcePath($user));
+
+		$avatarSource = $this->getCustomAvatarSourcePath($user);
+		$this->fileService->delete($avatarSource);
+		$this->thumbnailService->deleteUsedThumbnails($avatarSource);
 	}
 
 	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)

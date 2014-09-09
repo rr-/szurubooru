@@ -61,7 +61,7 @@ final class UserAvatarController extends AbstractController
 		if (!$this->fileService->exists($file))
 			$file = $this->userService->getBlankAvatarSourcePath();
 
-		$sizedFile = $this->thumbnailService->generateFromFile($file, $size, $size);
+		$sizedFile = $this->thumbnailService->getOrGenerate($file, $size, $size);
 		$this->fileService->serve($sizedFile);
 	}
 }

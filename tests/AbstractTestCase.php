@@ -13,9 +13,12 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 		return new ConfigMock();
 	}
 
-	public function getTestDirectory()
+	public function createTestDirectory()
 	{
-		return __DIR__ . DIRECTORY_SEPARATOR . 'files';
+		$path = $this->getTestDirectoryPath();
+		if (!file_exists($path))
+			mkdir($path, 0777, true);
+		return $path;
 	}
 
 	protected function tearDown()
@@ -23,11 +26,31 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 		$this->cleanTestDirectory();
 	}
 
+	private function getTestDirectoryPath()
+	{
+		return __DIR__ . DIRECTORY_SEPARATOR . 'files';
+	}
+
 	private function cleanTestDirectory()
 	{
-		foreach (scandir($this->getTestDirectory()) as $fn)
-			if ($fn{0} != '.')
-				unlink($this->getTestDirectory() . DIRECTORY_SEPARATOR . $fn);
+		if (!file_exists($this->getTestDirectoryPath()))
+			return;
+
+		$dirIterator = new \RecursiveDirectoryIterator(
+			$this->getTestDirectoryPath(),
+			\RecursiveDirectoryIterator::SKIP_DOTS);
+
+		$files = new \RecursiveIteratorIterator(
+			$dirIterator,
+			\RecursiveIteratorIterator::CHILD_FIRST);
+
+		foreach ($files as $fileInfo)
+		{
+			if ($fileInfo->isDir())
+				rmdir($fileInfo->getRealPath());
+			else
+				unlink($fileInfo->getRealPath());
+		}
 	}
 }
 

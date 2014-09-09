@@ -3,5 +3,5 @@ namespace Szurubooru\Services\ThumbnailGenerators;
 
 interface IThumbnailGenerator
 {
-	public function generateFromFile($srcPath, $dstPath, $width, $height);
+	public function generate($srcPath, $dstPath, $width, $height);
 }

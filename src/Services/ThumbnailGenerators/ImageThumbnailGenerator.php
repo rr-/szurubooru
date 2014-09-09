@@ -14,7 +14,7 @@ class ImageThumbnailGenerator implements IThumbnailGenerator
 		$this->imageGdThumbnailGenerator = $imageGdThumbnailGenerator;
 	}
 
-	public function generateFromFile($srcPath, $dstPath, $width, $height)
+	public function generate($srcPath, $dstPath, $width, $height)
 	{
 		if (extension_loaded('imagick'))
 			$strategy = $this->imageImagickThumbnailGenerator;
@@ -23,6 +23,6 @@ class ImageThumbnailGenerator implements IThumbnailGenerator
 		else
 			throw new \Exception('Both imagick and gd extensions are disabled');
 
-		return $strategy->generateFromFile($srcPath, $dstPath, $width, $height);
+		return $strategy->generate($srcPath, $dstPath, $width, $height);
 	}
 }

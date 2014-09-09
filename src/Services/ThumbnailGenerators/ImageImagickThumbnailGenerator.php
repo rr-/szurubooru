@@ -10,7 +10,7 @@ class ImageImagickThumbnailGenerator implements IThumbnailGenerator
 		$this->config = $config;
 	}
 
-	public function generateFromFile($srcPath, $dstPath, $width, $height)
+	public function generate($srcPath, $dstPath, $width, $height)
 	{
 		if (!file_exists($srcPath))
 			throw new \InvalidArgumentException($srcPath . ' does not exist');
