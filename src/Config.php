@@ -38,14 +38,14 @@ class Config extends \ArrayObject
 
 				foreach (explode('.', $section) as $subSection)
 				{
-					if (!isset($ptr->$subSection))
-						$ptr->$subSection = new self();
+					if (!$ptr->offsetExists($subSection))
+						$ptr->offsetSet($subSection, new self());
 
 					$ptr = $ptr->$subSection;
 				}
 
 				foreach ($value as $sectionKey => $sectionValue)
-					$ptr->$sectionKey = $sectionValue;
+					$ptr->offsetSet($sectionKey, $sectionValue);
 			}
 		}
 	}

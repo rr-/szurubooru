@@ -17,8 +17,9 @@ class FileService
 		$finalSource = $this->getFullPath($source);
 
 		$daysToLive = isset($options->daysToLive)
-				? $options->daysToLive
-				: 7;
+			? $options->daysToLive
+			: 7;
+
 		$secondsToLive = $daysToLive * 24 * 60 * 60;
 		$lastModified = filemtime($finalSource);
 		$eTag = md5(file_get_contents($finalSource)); //todo: faster
@@ -29,7 +30,7 @@ class FileService
 
 		$eTagHeader = isset($_SERVER['HTTP_IF_NONE_MATCH'])
 			? trim($_SERVER['HTTP_IF_NONE_MATCH'], "\" \t\r\n")
-			: false;
+			: null;
 
 		$this->httpHelper->setHeader('ETag', '"' . $eTag . '"');
 		$this->httpHelper->setHeader('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $lastModified));
@@ -38,20 +39,15 @@ class FileService
 		$this->httpHelper->setHeader('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $secondsToLive));
 
 		if (isset($options->customFileName))
-		{
 			$this->httpHelper->setHeader('Content-Disposition', 'inline; filename="' . $options->customFileName . '"');
-		}
 
-		if (isset($options->mimeType))
-		{
-			$this->httpHelper->setHeader('Content-Type', $options->mimeType);
-		}
-		else
-		{
-			$this->httpHelper->setHeader('Content-Type', mime_content_type($finalSource));
-		}
+		$this->httpHelper->setHeader(
+			'Content-Type',
+			isset($options->mimeType)
+				? $options->mimeType
+				: mime_content_type($finalSource));
 
-		if (strtotime($ifModifiedSince) == $lastModified or $eTagHeader == $eTag)
+		if (strtotime($ifModifiedSince) === $lastModified or $eTagHeader === $eTag)
 		{
 			$this->httpHelper->setResponseCode(304);
 		}

@@ -1,23 +1,27 @@
 <?php
 namespace Szurubooru\Helpers;
 
-final class InputReader
+final class InputReader extends \ArrayObject
 {
 	public function __construct()
 	{
+		parent::setFlags(parent::ARRAY_AS_PROPS | parent::STD_PROP_LIST);
+
 		$_PUT = [];
-		if (isset($_SERVER['REQUEST_METHOD']) and $_SERVER['REQUEST_METHOD'] == 'PUT')
+		if (isset($_SERVER['REQUEST_METHOD']) and $_SERVER['REQUEST_METHOD'] === 'PUT')
 			parse_str(file_get_contents('php://input'), $_PUT);
 
 		foreach ([$_GET, $_POST, $_PUT] as $source)
 		{
 			foreach ($source as $key => $value)
-				$this->$key = $value;
+				$this->offsetSet($key, $value);
 		}
 	}
 
-	public function __get($key)
+	public function offsetGet($index)
 	{
-		return null;
+		if (!parent::offsetExists($index))
+			return null;
+		return parent::offsetGet($index);
 	}
 }

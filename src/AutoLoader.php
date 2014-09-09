@@ -5,10 +5,10 @@ final class AutoLoader
 {
 	public static function init()
 	{
-		spl_autoload_register([__CLASS__, '_include']);
+		spl_autoload_register([__CLASS__, 'includeClassName']);
 	}
 
-	public static function _include($className)
+	public static function includeClassName($className)
 	{
 		if (strpos($className, 'Szurubooru') === false)
 			return;
@@ -19,7 +19,7 @@ final class AutoLoader
 		else
 			$className = __DIR__ . DIRECTORY_SEPARATOR . $className;
 		$className .= '.php';
-		include $className;
+		include($className);
 	}
 }
 

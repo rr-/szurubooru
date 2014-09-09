@@ -10,7 +10,7 @@ class HttpHelper
 
 	public function setHeader($key, $value)
 	{
-		header("$key: $value");
+		header($key . ': ' . $value);
 	}
 
 	public function output($data)

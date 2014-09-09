@@ -7,6 +7,11 @@ abstract class AbstractViewProxy
 
 	public function fromArray($entities)
 	{
-		return array_map(function($entity) { return static::fromEntity($entity); }, $entities);
+		return array_map(
+			function($entity)
+			{
+				return static::fromEntity($entity);
+			},
+			$entities);
 	}
 }

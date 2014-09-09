@@ -41,19 +41,19 @@ class ImageImagickThumbnailGenerator implements IThumbnailGenerator
 
 		if (($dstHeight / $dstWidth) > ($srcHeight / $srcWidth))
 		{
-			$h = $dstHeight;
-			$w = $h * $srcWidth / $srcHeight;
+			$cropHeight = $dstHeight;
+			$cropWidth = $dstHeight * $srcWidth / $srcHeight;
 		}
 		else
 		{
-			$w = $dstWidth;
-			$h = $w * $srcHeight / $srcWidth;
+			$cropWidth = $dstWidth;
+			$cropHeight = $dstWidth * $srcHeight / $srcWidth;
 		}
-		$x = ($srcWidth - $w) / 2;
-		$y = ($srcHeight - $h) / 2;
+		$cropX = ($cropWidth - $dstWidth) >> 1;
+		$cropY = ($cropHeight - $dstHeight) >> 1;
 
-		$srcImage->resizeImage($w, $h, \imagick::FILTER_LANCZOS, 0.9);
-		$srcImage->cropImage($dstWidth, $dstHeight, ($w - $dstWidth) >> 1, ($h - $dstHeight) >> 1);
+		$srcImage->resizeImage($cropWidth, $cropHeight, \imagick::FILTER_LANCZOS, 0.9);
+		$srcImage->cropImage($dstWidth, $dstHeight, $cropX, $cropY);
 		$srcImage->setImagePage(0, 0, 0, 0);
 	}
 
@@ -64,15 +64,15 @@ class ImageImagickThumbnailGenerator implements IThumbnailGenerator
 
 		if (($dstHeight / $dstWidth) < ($srcHeight / $srcWidth))
 		{
-			$h = $dstHeight;
-			$w = $h * $srcWidth / $srcHeight;
+			$cropHeight = $dstHeight;
+			$cropWidth = $dstHeight * $srcWidth / $srcHeight;
 		}
 		else
 		{
-			$w = $dstWidth;
-			$h = $w * $srcHeight / $srcWidth;
+			$cropWidth = $dstWidth;
+			$cropHeight = $dstWidth * $srcHeight / $srcWidth;
 		}
 
-		$srcImage->resizeImage($w, $h, \imagick::FILTER_LANCZOS, 0.9);
+		$srcImage->resizeImage($cropWidth, $cropHeight, \imagick::FILTER_LANCZOS, 0.9);
 	}
 }

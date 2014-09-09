@@ -10,22 +10,12 @@ class UserSearchService extends AbstractSearchService
 
 	protected function getOrderColumn($token)
 	{
-		switch ($token)
-		{
-			case 'name':
-				return 'name';
+		if ($token === 'name')
+			return 'name';
 
-			case 'registrationDate':
-			case 'registrationTime':
-			case 'registered':
-			case 'joinDate':
-			case 'joinTime':
-			case 'joined':
-				return 'registrationTime';
+		if (in_array($token, ['registrationDate', 'registrationTime', 'registered', 'joinDate', 'joinTime', 'joined']))
+			return 'registrationTime';
 
-			default:
-				return null;
-		}
+		return null;
 	}
-
 }

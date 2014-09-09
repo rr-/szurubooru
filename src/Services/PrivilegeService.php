@@ -21,7 +21,7 @@ class PrivilegeService
 				{
 					if (!isset($this->privilegeMap[$allowedAccessRank]))
 						$this->privilegeMap[$allowedAccessRank] = [];
-					$this->privilegeMap[$allowedAccessRank] []= $privilegeName;
+					$this->privilegeMap[$allowedAccessRank][] = $privilegeName;
 				}
 			}
 		}
@@ -58,16 +58,16 @@ class PrivilegeService
 		$loggedInUser = $this->authService->getLoggedInUser();
 		if ($userIdentifier instanceof \Szurubooru\Entities\User)
 		{
-			return $loggedInUser->name == $userIdentifier->name;
+			return $loggedInUser->name === $userIdentifier->name;
 		}
 		elseif (is_string($userIdentifier))
 		{
 			if ($loggedInUser->email)
 			{
-				if ($loggedInUser->email == $userIdentifier)
+				if ($loggedInUser->email === $userIdentifier)
 					return true;
 			}
-			return $loggedInUser->name == $userIdentifier;
+			return $loggedInUser->name === $userIdentifier;
 		}
 		else
 		{

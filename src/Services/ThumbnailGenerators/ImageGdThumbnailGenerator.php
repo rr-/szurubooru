@@ -59,19 +59,19 @@ class ImageGdThumbnailGenerator implements IThumbnailGenerator
 
 		if (($dstHeight / $dstWidth) > ($srcHeight / $srcWidth))
 		{
-			$h = $srcHeight;
-			$w = $h * $dstWidth / $dstHeight;
+			$cropHeight = $srcHeight;
+			$cropWidth = $srcHeight * $dstWidth / $dstHeight;
 		}
 		else
 		{
-			$w = $srcWidth;
-			$h = $w * $dstHeight / $dstWidth;
+			$cropWidth = $srcWidth;
+			$cropHeight = $srcWidth * $dstHeight / $dstWidth;
 		}
-		$x = ($srcWidth - $w) / 2;
-		$y = ($srcHeight - $h) / 2;
+		$cropX = ($srcWidth - $cropWidth) / 2;
+		$cropY = ($srcHeight - $cropHeight) / 2;
 
 		$dstImage = imagecreatetruecolor($dstWidth, $dstHeight);
-		imagecopyresampled($dstImage, $srcImage, 0, 0, $x, $y, $dstWidth, $dstHeight, $w, $h);
+		imagecopyresampled($dstImage, $srcImage, 0, 0, $cropX, $cropY, $dstWidth, $dstHeight, $cropWidth, $cropHeight);
 		return $dstImage;
 	}
 
@@ -82,17 +82,17 @@ class ImageGdThumbnailGenerator implements IThumbnailGenerator
 
 		if (($dstHeight / $dstWidth) < ($srcHeight / $srcWidth))
 		{
-			$h = $dstHeight;
-			$w = $h * $srcWidth / $srcHeight;
+			$cropHeight = $dstHeight;
+			$cropWidth = $dstHeight * $srcWidth / $srcHeight;
 		}
 		else
 		{
-			$w = $dstWidth;
-			$h = $w * $srcHeight / $srcWidth;
+			$cropWidth = $dstWidth;
+			$cropHeight = $dstWidth * $srcHeight / $srcWidth;
 		}
 
-		$dstImage = imagecreatetruecolor($w, $h);
-		imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $w, $h, $srcWidth, $srcHeight);
+		$dstImage = imagecreatetruecolor($cropWidth, $cropHeight);
+		imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $cropWidth, $cropHeight, $srcWidth, $srcHeight);
 		return $dstImage;
 	}
 }

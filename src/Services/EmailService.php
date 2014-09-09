@@ -77,17 +77,17 @@ class EmailService
 		$messageId = sha1(date('r') . uniqid()) . '@' . $domain;
 
 		$headers = [];
-		$headers []= sprintf('MIME-Version: 1.0');
-		$headers []= sprintf('Content-Transfer-Encoding: 7bit');
-		$headers []= sprintf('Date: %s', date('r'));
-		$headers []= sprintf('Message-ID: <%s>', $messageId);
-		$headers []= sprintf('From: %s <%s>', $senderName, $senderEmail);
-		$headers []= sprintf('Reply-To: %s', $senderEmail);
-		$headers []= sprintf('Return-Path: %s', $senderEmail);
-		$headers []= sprintf('Subject: %s', $subject);
-		$headers []= sprintf('Content-Type: text/plain; charset=utf-8');
-		$headers []= sprintf('X-Mailer: PHP/%s', phpversion());
-		$headers []= sprintf('X-Originating-IP: %s', $clientIp);
+		$headers[] = sprintf('MIME-Version: 1.0');
+		$headers[] = sprintf('Content-Transfer-Encoding: 7bit');
+		$headers[] = sprintf('Date: %s', date('r'));
+		$headers[] = sprintf('Message-ID: <%s>', $messageId);
+		$headers[] = sprintf('From: %s <%s>', $senderName, $senderEmail);
+		$headers[] = sprintf('Reply-To: %s', $senderEmail);
+		$headers[] = sprintf('Return-Path: %s', $senderEmail);
+		$headers[] = sprintf('Subject: %s', $subject);
+		$headers[] = sprintf('Content-Type: text/plain; charset=utf-8');
+		$headers[] = sprintf('X-Mailer: PHP/%s', phpversion());
+		$headers[] = sprintf('X-Originating-IP: %s', $clientIp);
 
 		$senderEmail = $this->config->basic->emailAddress;
 		$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';

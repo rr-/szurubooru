@@ -27,7 +27,7 @@ class Router
 
 	private function route($method, $query, $route)
 	{
-		$this->routes[$method] []= new Route($query, $route);
+		$this->routes[$method][] = new Route($query, $route);
 	}
 
 	public function handle($method, $request)
@@ -40,7 +40,7 @@ class Router
 			if ($route->handle($request, $output))
 			{
 				return $output;
-				}
+			}
 		}
 
 		throw new \DomainException('Unhandled request address: ' . $request);

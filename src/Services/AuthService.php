@@ -49,7 +49,7 @@ class AuthService
 		$this->validateUser($user);
 
 		$passwordHash = $this->passwordService->getHash($password);
-		if ($user->passwordHash != $passwordHash)
+		if ($user->passwordHash !== $passwordHash)
 			throw new \InvalidArgumentException('Specified password is invalid.');
 
 		$this->loginToken = $this->createAndSaveLoginToken($user);
@@ -60,7 +60,7 @@ class AuthService
 	public function loginFromToken($loginTokenName)
 	{
 		$loginToken = $this->tokenService->getByName($loginTokenName);
-		if ($loginToken->purpose != \Szurubooru\Entities\Token::PURPOSE_LOGIN)
+		if ($loginToken->purpose !== \Szurubooru\Entities\Token::PURPOSE_LOGIN)
 			throw new \Exception('This token is not a login token.');
 
 		$user = $this->userService->getById($loginToken->additionalData);

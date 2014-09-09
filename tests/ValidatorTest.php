@@ -62,16 +62,6 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 		$validator->validateUserName($userName);
 	}
 
-	public function testUserNameWithSpaces()
-	{
-		$this->configMock->set('users/minUserNameLength', 0);
-		$this->configMock->set('users/maxUserNameLength', 100);
-		$userName = ' godzilla ';
-		$validator = $this->getValidator();
-		$validator->validateUserName($userName);
-		$this->assertEquals('godzilla', $userName);
-	}
-
 	public function testUserNameWithInvalidCharacters()
 	{
 		$this->configMock->set('users/minUserNameLength', 0);

@@ -67,7 +67,7 @@ class UserService
 	public function getFiltered(\Szurubooru\FormData\SearchFormData $formData)
 	{
 		$pageSize = intval($this->config->users->usersPerPage);
-		$this->validator->validateNumber($formData->page);
+		$this->validator->validateNumber($formData->pageNumber);
 		$searchFilter = new \Szurubooru\Dao\SearchFilter($pageSize, $formData);
 		return $this->userSearchService->getFiltered($searchFilter);
 	}
@@ -95,7 +95,7 @@ class UserService
 		$user->lastLoginTime = null;
 		$user->avatarStyle = \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR;
 
-		$this->sendActivationEmailIfNeeded($user);
+		$user = $this->sendActivationEmailIfNeeded($user);
 
 		return $this->userDao->save($user);
 	}
@@ -109,11 +109,11 @@ class UserService
 				$this->fileService->saveFromBase64($formData->avatarContent, $this->getCustomAvatarSourcePath($user));
 		}
 
-		if ($formData->userName !== null and $formData->userName != $user->name)
+		if ($formData->userName !== null and $formData->userName !== $user->name)
 		{
 			$this->validator->validateUserName($formData->userName);
 			$userWithThisEmail = $this->userDao->getByName($formData->userName);
-			if ($userWithThisEmail and $userWithThisEmail->id != $user->id)
+			if ($userWithThisEmail and $userWithThisEmail->id !== $user->id)
 				throw new \DomainException('User with this name already exists.');
 
 			$user->name = $formData->userName;
@@ -125,13 +125,14 @@ class UserService
 			$user->passwordHash = $this->passwordService->getHash($formData->password);
 		}
 
-		if ($formData->email !== null and $formData->email != $user->email)
+		if ($formData->email !== null and $formData->email !== $user->email)
 		{
 			$this->validator->validateEmail($formData->email);
 			if ($this->userDao->getByEmail($formData->email))
 				throw new \DomainException('User with this e-mail already exists.');
 
 			$user->emailUnconfirmed = $formData->email;
+			$user = $this->sendActivationEmailIfNeeded($user);
 		}
 
 		if ($formData->accessRank !== null)
@@ -147,9 +148,6 @@ class UserService
 				throw new \InvalidArgumentException('Stringified browsing settings can have at most 2000 characters.');
 			$user->browsingSettings = $formData->browsingSettings;
 		}
-
-		if ($formData->email !== null)
-			$this->sendActivationEmailIfNeeded($user);
 
 		return $this->userDao->save($user);
 	}
@@ -185,7 +183,7 @@ class UserService
 	public function finishPasswordReset($tokenName)
 	{
 		$token = $this->tokenService->getByName($tokenName);
-		if ($token->purpose != \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET)
+		if ($token->purpose !== \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET)
 			throw new \Exception('This token is not a password reset token.');
 
 		$user = $this->getByName($token->additionalData);
@@ -205,27 +203,29 @@ class UserService
 	public function finishActivation($tokenName)
 	{
 		$token = $this->tokenService->getByName($tokenName);
-		if ($token->purpose != \Szurubooru\Entities\Token::PURPOSE_ACTIVATE)
+		if ($token->purpose !== \Szurubooru\Entities\Token::PURPOSE_ACTIVATE)
 			throw new \Exception('This token is not an activation token.');
 
 		$user = $this->getByName($token->additionalData);
-		$this->confirmEmail($user);
+		$user = $this->confirmEmail($user);
+		$this->userDao->save($user);
 		$this->tokenService->invalidateByName($token->name);
 	}
 
-	private function sendActivationEmailIfNeeded(\Szurubooru\Entities\User &$user)
+	private function sendActivationEmailIfNeeded(\Szurubooru\Entities\User $user)
 	{
-		if ($user->accessRank == \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR or !$this->config->security->needEmailActivationToRegister)
+		if ($user->accessRank === \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR or !$this->config->security->needEmailActivationToRegister)
 		{
-			$this->confirmEmail($user);
+			$user = $this->confirmEmail($user);
 		}
 		else
 		{
 			$this->sendActivationEmail($user);
 		}
+		return $user;
 	}
 
-	private function confirmEmail(\Szurubooru\Entities\User &$user)
+	private function confirmEmail(\Szurubooru\Entities\User $user)
 	{
 		//security issue:
 		//1. two users set their unconfirmed mail to godzilla@empire.gov
@@ -240,6 +240,6 @@ class UserService
 
 		$user->email = $user->emailUnconfirmed;
 		$user->emailUnconfirmed = null;
-		$this->userDao->save($user);
+		return $user;
 	}
 }

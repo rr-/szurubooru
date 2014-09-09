@@ -39,17 +39,17 @@ abstract class AbstractSearchService
 
 		$entities = [];
 		foreach ($cursor as $arrayEntity)
-			$entities []= $this->entityConverter->toEntity($arrayEntity);
+			$entities[] = $this->entityConverter->toEntity($arrayEntity);
 
 		return new \Szurubooru\Dao\SearchResult($searchFilter, $entities, $totalRecords);
 	}
 
-	protected function decorateFilterWithBasicTokens(&$filter, $basicTokens)
+	protected function decorateFilterWithBasicTokens($filter, $basicTokens)
 	{
 		throw new \BadMethodCallException('Not supported');
 	}
 
-	protected function decorateFilterWithComplexTokens(&$filter, $complexTokens)
+	protected function decorateFilterWithComplexTokens($filter, $complexTokens)
 	{
 		throw new \BadMethodCallException('Not supported');
 	}
@@ -76,9 +76,9 @@ abstract class AbstractSearchService
 		foreach ($tokens as $token)
 		{
 			$token = preg_split('/,|\s+/', $token);
-			if (count($token) == 2)
+			if (count($token) === 2)
 			{
-				$orderDir = $token[1] == 'desc' ? self::ORDER_DESC : self::ORDER_ASC;
+				$orderDir = $token[1] === 'desc' ? self::ORDER_DESC : self::ORDER_ASC;
 				$orderToken = $token[0];
 			}
 			else
@@ -113,7 +113,7 @@ abstract class AbstractSearchService
 			}
 			else
 			{
-				$basicTokens []= $token;
+				$basicTokens[] = $token;
 			}
 		}
 

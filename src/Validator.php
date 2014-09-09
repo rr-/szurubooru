@@ -10,8 +10,10 @@ class Validator
 		$this->config = $config;
 	}
 
-	public function validateNumber(&$subject) {
-		$subject = intval($subject);
+	public function validateNumber($subject)
+	{
+		if (!preg_match('/^-?[0-9]+$/', $subject))
+			throw new \DomainException(subject . ' does not look like a number.');
 	}
 
 	public function validateNonEmpty($subject, $subjectName = 'Object')
@@ -38,10 +40,8 @@ class Validator
 			throw new \DomainException($subjectName . ' must have at most ' . $maxLength . ' character(s).');
 	}
 
-	public function validateUserName(&$userName)
+	public function validateUserName($userName)
 	{
-		$userName = trim($userName);
-
 		$minUserNameLength = intval($this->config->users->minUserNameLength);
 		$maxUserNameLength = intval($this->config->users->maxUserNameLength);
 		$this->validateNonEmpty($userName, 'User name');
