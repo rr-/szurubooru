@@ -40,11 +40,16 @@ module.exports = function(grunt) {
 				},
 				command: 'php run.php --config <%= phpCheckStyleConfigPath %> --src <%= phpSourcesDir %> --exclude di.php --format console',
 			},
+
+			tests: {
+				command: 'phpunit --strict --bootstrap src/AutoLoader.php tests/',
+			},
 		},
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-shell');
 	grunt.registerTask('default', ['jshint', 'shell']);
+	grunt.registerTask('tests', ['shell:tests']);
 
 };
