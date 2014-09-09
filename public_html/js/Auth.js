@@ -26,9 +26,9 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		listTags: 'listTags',
 	};
 
-	function loginFromCredentials(userName, password, remember) {
+	function loginFromCredentials(userNameOrEmail, password, remember) {
 		return promise.make(function(resolve, reject) {
-			promise.wait(api.post('/login', {userName: userName, password: password}))
+			promise.wait(api.post('/login', {userNameOrEmail: userNameOrEmail, password: password}))
 				.then(function(response) {
 					updateAppState(response);
 					jQuery.cookie(

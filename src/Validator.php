@@ -10,10 +10,15 @@ class Validator
 		$this->config = $config;
 	}
 
+	public function validate(\Szurubooru\IValidatable $validatable)
+	{
+		$validatable->validate($this);
+	}
+
 	public function validateNumber($subject)
 	{
 		if (!preg_match('/^-?[0-9]+$/', $subject))
-			throw new \DomainException(subject . ' does not look like a number.');
+			throw new \DomainException($subject . ' does not look like a number.');
 	}
 
 	public function validateNonEmpty($subject, $subjectName = 'Object')

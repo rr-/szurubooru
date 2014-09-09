@@ -69,17 +69,14 @@ class UserService
 
 	public function getFiltered(\Szurubooru\FormData\SearchFormData $formData)
 	{
-		$pageSize = intval($this->config->users->usersPerPage);
-		$this->validator->validateNumber($formData->pageNumber);
-		$searchFilter = new \Szurubooru\Dao\SearchFilter($pageSize, $formData);
+		$this->validator->validate($formData);
+		$searchFilter = new \Szurubooru\Dao\SearchFilter($this->config->users->usersPerPage, $formData);
 		return $this->userSearchService->getFiltered($searchFilter);
 	}
 
 	public function createUser(\Szurubooru\FormData\RegistrationFormData $formData)
 	{
-		$this->validator->validateUserName($formData->userName);
-		$this->validator->validatePassword($formData->password);
-		$this->validator->validateEmail($formData->email);
+		$formData->validate($this->validator);
 
 		if ($formData->email and $this->userDao->getByEmail($formData->email))
 			throw new \DomainException('User with this e-mail already exists.');
@@ -105,6 +102,8 @@ class UserService
 
 	public function updateUser(\Szurubooru\Entities\User $user, \Szurubooru\FormData\UserEditFormData $formData)
 	{
+		$this->validator->validate($formData);
+
 		if ($formData->avatarStyle !== null)
 		{
 			$user->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($formData->avatarStyle);
@@ -118,7 +117,6 @@ class UserService
 
 		if ($formData->userName !== null and $formData->userName !== $user->name)
 		{
-			$this->validator->validateUserName($formData->userName);
 			$userWithThisEmail = $this->userDao->getByName($formData->userName);
 			if ($userWithThisEmail and $userWithThisEmail->id !== $user->id)
 				throw new \DomainException('User with this name already exists.');
@@ -128,13 +126,11 @@ class UserService
 
 		if ($formData->password !== null)
 		{
-			$this->validator->validatePassword($formData->password);
 			$user->passwordHash = $this->passwordService->getHash($formData->password);
 		}
 
 		if ($formData->email !== null and $formData->email !== $user->email)
 		{
-			$this->validator->validateEmail($formData->email);
 			if ($this->userDao->getByEmail($formData->email))
 				throw new \DomainException('User with this e-mail already exists.');
 
@@ -149,14 +145,16 @@ class UserService
 
 		if ($formData->browsingSettings !== null)
 		{
-			if (!is_string($formData->browsingSettings))
-				throw new \InvalidArgumentException('Browsing settings must be stringified JSON.');
-			if (strlen($formData->browsingSettings) > 2000)
-				throw new \InvalidArgumentException('Stringified browsing settings can have at most 2000 characters.');
 			$user->browsingSettings = $formData->browsingSettings;
 		}
 
 		return $this->userDao->save($user);
+	}
+
+	public function updateUserLastLoginTime(\Szurubooru\Entities\User $user)
+	{
+		$user->lastLoginTime = $this->timeService->getCurrentTime();
+		$this->userDao->save($user);
 	}
 
 	public function deleteUser(\Szurubooru\Entities\User $user)
@@ -168,31 +166,14 @@ class UserService
 		$this->thumbnailService->deleteUsedThumbnails($avatarSource);
 	}
 
-	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)
-	{
-		return 'avatars' . DIRECTORY_SEPARATOR . $user->id;
-	}
-
-	public function getBlankAvatarSourcePath()
-	{
-		return 'avatars' . DIRECTORY_SEPARATOR . 'blank.png';
-	}
-
-	public function updateUserLastLoginTime(\Szurubooru\Entities\User $user)
-	{
-		$user->lastLoginTime = $this->timeService->getCurrentTime();
-		$this->userDao->save($user);
-	}
-
 	public function sendPasswordResetEmail(\Szurubooru\Entities\User $user)
 	{
 		$token = $this->tokenService->createAndSaveToken($user->name, \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET);
 		$this->emailService->sendPasswordResetEmail($user, $token);
 	}
 
-	public function finishPasswordReset($tokenName)
+	public function finishPasswordReset(\Szurubooru\Entities\Token $token)
 	{
-		$token = $this->tokenService->getByName($tokenName);
 		if ($token->purpose !== \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET)
 			throw new \Exception('This token is not a password reset token.');
 
@@ -210,23 +191,32 @@ class UserService
 		$this->emailService->sendActivationEmail($user, $token);
 	}
 
-	public function finishActivation($tokenName)
+	public function finishActivation(\Szurubooru\Entities\Token $token)
 	{
-		$token = $this->tokenService->getByName($tokenName);
 		if ($token->purpose !== \Szurubooru\Entities\Token::PURPOSE_ACTIVATE)
 			throw new \Exception('This token is not an activation token.');
 
 		$user = $this->getByName($token->additionalData);
-		$user = $this->confirmEmail($user);
+		$user = $this->confirmUserEmail($user);
 		$this->userDao->save($user);
 		$this->tokenService->invalidateByName($token->name);
+	}
+
+	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)
+	{
+		return 'avatars' . DIRECTORY_SEPARATOR . $user->id;
+	}
+
+	public function getBlankAvatarSourcePath()
+	{
+		return 'avatars' . DIRECTORY_SEPARATOR . 'blank.png';
 	}
 
 	private function sendActivationEmailIfNeeded(\Szurubooru\Entities\User $user)
 	{
 		if ($user->accessRank === \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR or !$this->config->security->needEmailActivationToRegister)
 		{
-			$user = $this->confirmEmail($user);
+			$user = $this->confirmUserEmail($user);
 		}
 		else
 		{
@@ -235,7 +225,7 @@ class UserService
 		return $user;
 	}
 
-	private function confirmEmail(\Szurubooru\Entities\User $user)
+	private function confirmUserEmail(\Szurubooru\Entities\User $user)
 	{
 		//security issue:
 		//1. two users set their unconfirmed mail to godzilla@empire.gov

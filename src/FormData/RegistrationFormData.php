@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\FormData;
 
-class RegistrationFormData
+class RegistrationFormData implements \Szurubooru\IValidatable
 {
 	public $userName;
 	public $password;
@@ -11,9 +11,16 @@ class RegistrationFormData
 	{
 		if ($inputReader !== null)
 		{
-			$this->userName = $inputReader->userName;
+			$this->userName = trim($inputReader->userName);
 			$this->password = $inputReader->password;
-			$this->email = $inputReader->email;
+			$this->email = trim($inputReader->email);
 		}
+	}
+
+	public function validate(\Szurubooru\Validator $validator)
+	{
+		$validator->validateUserName($this->userName);
+		$validator->validatePassword($this->password);
+		$validator->validateEmail($this->email);
 	}
 }

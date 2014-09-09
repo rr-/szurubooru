@@ -28,9 +28,12 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testUser->passwordHash = 'hash';
 		$this->userServiceMock->expects($this->once())->method('getByNameOrEmail')->willReturn($testUser);
 
-		$authService = $this->getAuthService();
 		$this->setExpectedException(\Exception::class, 'Specified password is invalid');
-		$authService->loginFromCredentials('dummy', 'godzilla');
+		$authService = $this->getAuthService();
+		$formData = new \Szurubooru\FormData\LoginFormData();
+		$formData->userNameOrEmail = 'dummy';
+		$formData->password = 'godzilla';
+		$authService->loginFromCredentials($formData);
 	}
 
 	public function testValidCredentials()
@@ -51,7 +54,10 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			\Szurubooru\Entities\Token::PURPOSE_LOGIN)->willReturn($testToken);
 
 		$authService = $this->getAuthService();
-		$authService->loginFromCredentials('dummy', 'godzilla');
+		$formData = new \Szurubooru\FormData\LoginFormData();
+		$formData->userNameOrEmail = 'dummy';
+		$formData->password = 'godzilla';
+		$authService->loginFromCredentials($formData);
 
 		$this->assertTrue($authService->isLoggedIn());
 		$this->assertEquals($testUser, $authService->getLoggedInUser());
@@ -71,7 +77,10 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 		$this->setExpectedException(\Exception::class, 'User didn\'t confirm mail yet');
 		$authService = $this->getAuthService();
-		$authService->loginFromCredentials('dummy', 'godzilla');
+		$formData = new \Szurubooru\FormData\LoginFormData();
+		$formData->userNameOrEmail = 'dummy';
+		$formData->password = 'godzilla';
+		$authService->loginFromCredentials($formData);
 
 		$this->assertFalse($authService->isLoggedIn());
 		$this->assertNull($testUser, $authService->getLoggedInUser());
@@ -81,11 +90,11 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testInvalidToken()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', false);
-		$this->tokenServiceMock->expects($this->once())->method('getByName')->willReturn(null);
 
 		$this->setExpectedException(\Exception::class);
 		$authService = $this->getAuthService();
-		$authService->loginFromToken('');
+		$testToken = new \Szurubooru\Entities\Token();
+		$authService->loginFromToken($testToken);
 	}
 
 	public function testValidToken()
@@ -100,10 +109,9 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testToken->name = 'dummy_token';
 		$testToken->additionalData = $testUser->id;
 		$testToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
-		$this->tokenServiceMock->expects($this->once())->method('getByName')->willReturn($testToken);
 
 		$authService = $this->getAuthService();
-		$authService->loginFromToken($testToken->name);
+		$authService->loginFromToken($testToken);
 
 		$this->assertTrue($authService->isLoggedIn());
 		$this->assertEquals($testUser, $authService->getLoggedInUser());
@@ -118,11 +126,10 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testToken->name = 'dummy_token';
 		$testToken->additionalData = 'whatever';
 		$testToken->purpose = null;
-		$this->tokenServiceMock->expects($this->once())->method('getByName')->willReturn($testToken);
 
 		$this->setExpectedException(\Exception::class, 'This token is not a login token');
 		$authService = $this->getAuthService();
-		$authService->loginFromToken($testToken->name);
+		$authService->loginFromToken($testToken);
 
 		$this->assertFalse($authService->isLoggedIn());
 		$this->assertNull($authService->getLoggedInUser());
@@ -141,11 +148,10 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testToken->name = 'dummy_token';
 		$testToken->additionalData = $testUser->id;
 		$testToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
-		$this->tokenServiceMock->expects($this->once())->method('getByName')->willReturn($testToken);
 
 		$this->setExpectedException(\Exception::class, 'User didn\'t confirm mail yet');
 		$authService = $this->getAuthService();
-		$authService->loginFromToken($testToken->name);
+		$authService->loginFromToken($testToken);
 
 		$this->assertFalse($authService->isLoggedIn());
 		$this->assertNull($testUser, $authService->getLoggedInUser());

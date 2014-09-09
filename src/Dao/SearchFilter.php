@@ -10,7 +10,7 @@ class SearchFilter
 
 	public function __construct($pageSize, \Szurubooru\FormData\SearchFormData $searchFormData = null)
 	{
-		$this->pageSize = $pageSize;
+		$this->pageSize = intval($pageSize);
 		if ($searchFormData)
 		{
 			$this->query = $searchFormData->query;

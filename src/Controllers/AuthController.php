@@ -4,6 +4,7 @@ namespace Szurubooru\Controllers;
 final class AuthController extends AbstractController
 {
 	private $authService;
+	private $tokenService;
 	private $privilegeService;
 	private $inputReader;
 	private $userViewProxy;
@@ -11,12 +12,14 @@ final class AuthController extends AbstractController
 
 	public function __construct(
 		\Szurubooru\Services\AuthService $authService,
+		\Szurubooru\Services\TokenService $tokenService,
 		\Szurubooru\Services\PrivilegeService $privilegeService,
 		\Szurubooru\Helpers\InputReader $inputReader,
 		\Szurubooru\Controllers\ViewProxies\UserViewProxy $userViewProxy,
 		\Szurubooru\Controllers\ViewProxies\TokenViewProxy $tokenViewProxy)
 	{
 		$this->authService = $authService;
+		$this->tokenService = $tokenService;
 		$this->privilegeService = $privilegeService;
 		$this->inputReader = $inputReader;
 		$this->userViewProxy = $userViewProxy;
@@ -33,11 +36,13 @@ final class AuthController extends AbstractController
 	{
 		if (isset($this->inputReader->userName) and isset($this->inputReader->password))
 		{
-			$this->authService->loginFromCredentials($this->inputReader->userName, $this->inputReader->password);
+			$formData = new \Szurubooru\FormData\LoginFormData($this->inputReader);
+			$this->authService->loginFromCredentials($formData);
 		}
 		elseif (isset($this->inputReader->token))
 		{
-			$this->authService->loginFromToken($this->inputReader->token);
+			$token = $this->tokenService->getByName($this->inputReader->token);
+			$this->authService->loginFromToken($token);
 		}
 		else
 		{

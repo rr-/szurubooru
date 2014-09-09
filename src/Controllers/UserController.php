@@ -5,17 +5,20 @@ final class UserController extends AbstractController
 {
 	private $privilegeService;
 	private $userService;
+	private $tokenService;
 	private $inputReader;
 	private $userViewProxy;
 
 	public function __construct(
 		\Szurubooru\Services\PrivilegeService $privilegeService,
 		\Szurubooru\Services\UserService $userService,
+		\Szurubooru\Services\TokenService $tokenService,
 		\Szurubooru\Helpers\InputReader $inputReader,
 		\Szurubooru\Controllers\ViewProxies\UserViewProxy $userViewProxy)
 	{
 		$this->privilegeService = $privilegeService;
 		$this->userService = $userService;
+		$this->tokenService = $tokenService;
 		$this->inputReader = $inputReader;
 		$this->userViewProxy = $userViewProxy;
 	}
@@ -136,11 +139,13 @@ final class UserController extends AbstractController
 
 	public function finishPasswordReset($tokenName)
 	{
-		return ['newPassword' => $this->userService->finishPasswordReset($tokenName)];
+		$token = $this->tokenService->getByName($tokenName);
+		return ['newPassword' => $this->userService->finishPasswordReset($token)];
 	}
 
 	public function finishActivation($tokenName)
 	{
-		$this->userService->finishActivation($tokenName);
+		$token = $this->tokenService->getByName($tokenName);
+		$this->userService->finishActivation($token);
 	}
 }

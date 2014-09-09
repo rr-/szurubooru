@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\FormData;
 
-class UserEditFormData
+class UserEditFormData implements \Szurubooru\IValidatable
 {
 	public $userName;
 	public $email;
@@ -21,6 +21,26 @@ class UserEditFormData
 			$this->avatarStyle = $inputReader->avatarStyle;
 			$this->avatarContent = $inputReader->avatarContent;
 			$this->browsingSettings = $inputReader->browsingSettings;
+		}
+	}
+
+	public function validate(\Szurubooru\Validator $validator)
+	{
+		if ($this->userName !== null)
+			$this->validator->validateUserName($formData->userName);
+
+		if ($formData->password !== null)
+			$this->validator->validatePassword($formData->password);
+
+		if ($formData->email !== null)
+			$this->validator->validateEmail($formData->email);
+
+		if ($formData->browsingSettings !== null)
+		{
+			if (!is_string($formData->browsingSettings))
+				throw new \InvalidArgumentException('Browsing settings must be stringified JSON.');
+			else if (strlen($formData->browsingSettings) > 2000)
+				throw new \InvalidArgumentException('Stringified browsing settings can have at most 2000 characters.');
 		}
 	}
 }

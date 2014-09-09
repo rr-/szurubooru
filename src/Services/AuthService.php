@@ -43,12 +43,12 @@ class AuthService
 		return $this->loginToken;
 	}
 
-	public function loginFromCredentials($userNameOrEmail, $password)
+	public function loginFromCredentials($formData)
 	{
-		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
-		$this->validateUser($user);
+		$user = $this->userService->getByNameOrEmail($formData->userNameOrEmail);
+		$this->doFinalChecksOnUser($user);
 
-		$passwordHash = $this->passwordService->getHash($password);
+		$passwordHash = $this->passwordService->getHash($formData->password);
 		if ($user->passwordHash !== $passwordHash)
 			throw new \InvalidArgumentException('Specified password is invalid.');
 
@@ -57,16 +57,15 @@ class AuthService
 		$this->userService->updateUserLastLoginTime($user);
 	}
 
-	public function loginFromToken($loginTokenName)
+	public function loginFromToken(\Szurubooru\Entities\Token $token)
 	{
-		$loginToken = $this->tokenService->getByName($loginTokenName);
-		if ($loginToken->purpose !== \Szurubooru\Entities\Token::PURPOSE_LOGIN)
+		if ($token->purpose !== \Szurubooru\Entities\Token::PURPOSE_LOGIN)
 			throw new \Exception('This token is not a login token.');
 
-		$user = $this->userService->getById($loginToken->additionalData);
-		$this->validateUser($user);
+		$user = $this->userService->getById($token->additionalData);
+		$this->doFinalChecksOnUser($user);
 
-		$this->loginToken = $loginToken;
+		$this->loginToken = $token;
 		$this->loggedInUser = $user;
 		$this->userService->updateUserLastLoginTime($this->loggedInUser);
 	}
@@ -99,7 +98,7 @@ class AuthService
 		return $this->tokenService->createAndSaveToken($user->id, \Szurubooru\Entities\Token::PURPOSE_LOGIN);
 	}
 
-	private function validateUser($user)
+	private function doFinalChecksOnUser($user)
 	{
 		if (!$user->email and $this->config->security->needEmailActivationToRegister)
 			throw new \DomainException('User didn\'t confirm mail yet.');

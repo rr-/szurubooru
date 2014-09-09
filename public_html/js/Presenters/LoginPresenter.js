@@ -38,11 +38,11 @@ App.Presenters.LoginPresenter = function(
 		e.preventDefault();
 		messagePresenter.hideMessages($messages);
 
-		var userName = $el.find('[name=user]').val();
+		var userNameOrEmail = $el.find('[name=user]').val();
 		var password = $el.find('[name=password]').val();
 		var remember = $el.find('[name=remember]').val();
 
-		if (userName.length === 0) {
+		if (userNameOrEmail.length === 0) {
 			messagePresenter.showError($messages, 'User name cannot be empty.');
 			return false;
 		}
@@ -52,7 +52,7 @@ App.Presenters.LoginPresenter = function(
 			return false;
 		}
 
-		auth.loginFromCredentials(userName, password, remember)
+		auth.loginFromCredentials(userNameOrEmail, password, remember)
 			.then(function(response) {
 				router.navigateToMainPage();
 			}).fail(function(response) {

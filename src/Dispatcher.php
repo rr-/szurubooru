@@ -5,11 +5,13 @@ final class Dispatcher
 {
 	private $router;
 	private $authService;
+	private $tokenService;
 
 	public function __construct(
 		\Szurubooru\Router $router,
 		\Szurubooru\Helpers\HttpHelper $httpHelper,
 		\Szurubooru\Services\AuthService $authService,
+		\Szurubooru\Services\TokenService $tokenService,
 		\Szurubooru\ControllerRepository $controllerRepository)
 	{
 		$this->router = $router;
@@ -18,6 +20,7 @@ final class Dispatcher
 		//if script fails prematurely, mark it as fail from advance
 		$this->httpHelper->setResponseCode(500);
 		$this->authService = $authService;
+		$this->tokenService = $tokenService;
 
 		foreach ($controllerRepository->getControllers() as $controller)
 			$controller->registerRoutes($router);
@@ -54,8 +57,11 @@ final class Dispatcher
 
 	private function authorizeFromRequestHeader()
 	{
-		$loginToken = $this->httpHelper->getRequestHeader('X-Authorization-Token');
-		if ($loginToken)
-			$this->authService->loginFromToken($loginToken);
+		$loginTokenName = $this->httpHelper->getRequestHeader('X-Authorization-Token');
+		if ($loginTokenName)
+		{
+			$token = $this->tokenService->getByName($loginTokenName);
+			$this->authService->loginFromToken($token);
+		}
 	}
 }

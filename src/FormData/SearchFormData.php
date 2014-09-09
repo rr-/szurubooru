@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\FormData;
 
-class SearchFormData
+class SearchFormData implements \Szurubooru\IValidatable
 {
 	public $query;
 	public $order;
@@ -11,9 +11,14 @@ class SearchFormData
 	{
 		if ($inputReader !== null)
 		{
-			$this->query = $inputReader->query;
-			$this->order = $inputReader->order;
-			$this->pageNumber = $inputReader->page;
+			$this->query = trim($inputReader->query);
+			$this->order = trim($inputReader->order);
+			$this->pageNumber = intval($inputReader->page);
 		}
+	}
+
+	public function validate(\Szurubooru\Validator $validator = null)
+	{
+		$validator->validateNumber($this->pageNumber);
 	}
 }
