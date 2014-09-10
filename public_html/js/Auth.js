@@ -100,8 +100,8 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 	function updateAppState(response) {
 		appState.set('privileges', response.json.privileges || []);
 		appState.set('loginToken', response.json.token && response.json.token.name);
-		appState.set('loggedInUser', response.json.user);
 		appState.set('loggedIn', response.json.user && !!response.json.user.id);
+		appState.set('loggedInUser', response.json.user);
 	}
 
 	function isLoggedIn(userName) {
@@ -124,12 +124,19 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		return appState.get('privileges');
 	}
 
+	function updateCurrentUser(user) {
+		if (user.id !== getCurrentUser().id) {
+			throw new Error('Cannot set current user to other user this way.');
+		}
+		appState.set('loggedInUser', user);
+	}
+
 	function hasPrivilege(privilege) {
 		return _.contains(getCurrentPrivileges(), privilege);
 	}
 
 	function startObservingLoginChanges(listenerName, callback) {
-		appState.startObserving('loggedIn', listenerName, callback);
+		appState.startObserving('loggedInUser', listenerName, callback);
 	}
 
 	return {
@@ -142,6 +149,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		startObservingLoginChanges: startObservingLoginChanges,
 		isLoggedIn: isLoggedIn,
 		getCurrentUser: getCurrentUser,
+		updateCurrentUser: updateCurrentUser,
 		getCurrentPrivileges: getCurrentPrivileges,
 		hasPrivilege: hasPrivilege,
 

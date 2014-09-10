@@ -58,7 +58,7 @@ class PrivilegeService
 		$loggedInUser = $this->authService->getLoggedInUser();
 		if ($userIdentifier instanceof \Szurubooru\Entities\User)
 		{
-			return $loggedInUser->name === $userIdentifier->name;
+			return $loggedInUser->id and ($loggedInUser->id === $userIdentifier->id);
 		}
 		elseif (is_string($userIdentifier))
 		{

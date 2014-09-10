@@ -127,8 +127,14 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	}
 
 	function editSuccess(apiResponse) {
+		var wasLoggedIn = auth.isLoggedIn(user.name);
 		user = apiResponse.json;
+		if (wasLoggedIn) {
+			auth.updateCurrentUser(user);
+		}
+
 		render();
+
 		var $messages = jQuery(target).find('.messages');
 		var message = 'Account settings updated!';
 		if (!apiResponse.json.confirmed) {
