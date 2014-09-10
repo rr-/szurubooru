@@ -7,6 +7,7 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function setUp()
 	{
+		parent::setUp();
 		$this->configMock = $this->mockConfig();
 	}
 

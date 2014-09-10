@@ -16,6 +16,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function setUp()
 	{
+		parent::setUp();
 		$this->configMock = $this->mockConfig();
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);

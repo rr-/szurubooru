@@ -11,6 +11,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function setUp()
 	{
+		parent::setUp();
 		$this->routerMock = $this->mock(\Szurubooru\Router::class);
 		$this->httpHelperMock = $this->mock(\Szurubooru\Helpers\HttpHelper::class);
 		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);

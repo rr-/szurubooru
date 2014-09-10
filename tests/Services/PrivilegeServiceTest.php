@@ -8,6 +8,7 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function setUp()
 	{
+		parent::setUp();
 		$this->configMock = $this->mockConfig();
 		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
 	}

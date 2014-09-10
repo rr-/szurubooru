@@ -11,6 +11,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function setUp()
 	{
+		parent::setUp();
 		$this->configMock = $this->mockConfig();
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
