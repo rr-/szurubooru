@@ -19,11 +19,6 @@ App.Presenters.UserActivationPresenter = function(
 	var operation;
 
 	function init(args) {
-		if (auth.isLoggedIn()) {
-			router.navigateToMainPage();
-			return;
-		}
-
 		topNavigationPresenter.select('login');
 		reinit(args);
 	}
