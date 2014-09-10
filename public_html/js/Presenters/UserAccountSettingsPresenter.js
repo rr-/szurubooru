@@ -109,7 +109,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 			formData.accessRank = $el.find('[name=access-rank]').val();
 		}
 
-		if (!validateAccountSettingsFormData($messages, formData)) {
+		if (!validateAccountSettingsFormData(formData)) {
 			return;
 		}
 
@@ -120,23 +120,30 @@ App.Presenters.UserAccountSettingsPresenter = function(
 
 		api.put('/users/' + user.name, formData)
 			.then(function(response) {
-				editSuccess($messages, response);
+				editSuccess(response);
 			}).fail(function(response) {
-				editFailure($messages, response);
+				editFailure(response);
 			});
 	}
 
-	function editSuccess($messages, apiResponse) {
-		//todo: tell user if it turned out that he needs to confirm his e-mail
+	function editSuccess(apiResponse) {
+		user = apiResponse.json;
+		render();
+		var $messages = jQuery(target).find('.messages');
 		var message = 'Account settings updated!';
+		if (!apiResponse.json.confirmed) {
+			message += '<br/>Check your inbox for activation e-mail.<br/>If e-mail doesn\'t show up, check your spam folder.';
+		}
 		messagePresenter.showInfo($messages, message);
 	}
 
-	function editFailure($messages, apiResponse) {
+	function editFailure(apiResponse) {
+		var $messages = jQuery(target).find('.messages');
 		messagePresenter.showError($messages, apiResponse.json && apiResponse.json.error || apiResponse);
 	}
 
-	function validateAccountSettingsFormData($messages, formData) {
+	function validateAccountSettingsFormData(formData) {
+		var $messages = jQuery(target).find('.messages');
 		if (formData.password !== formData.passwordConfirmation) {
 			messagePresenter.showError($messages, 'Passwords must be the same.');
 			return false;

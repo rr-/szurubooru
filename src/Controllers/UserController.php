@@ -60,7 +60,7 @@ final class UserController extends AbstractController
 		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::REGISTER);
 		$formData = new \Szurubooru\FormData\RegistrationFormData($this->inputReader);
 		$user = $this->userService->createUser($formData);
-		return array_merge((array) $this->userViewProxy->fromEntity($user), ['confirmed' => !$user->emailUnconfirmed]);
+		return $this->userViewProxy->fromEntity($user);
 	}
 
 	public function updateUser($userNameOrEmail)

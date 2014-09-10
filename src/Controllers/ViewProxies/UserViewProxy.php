@@ -33,6 +33,8 @@ class UserViewProxy extends AbstractViewProxy
 				$result->email = $user->email;
 				$result->emailUnconfirmed = $user->emailUnconfirmed;
 			}
+
+			$result->confirmed = !$user->emailUnconfirmed;
 		}
 		return $result;
 	}

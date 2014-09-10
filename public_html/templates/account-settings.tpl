@@ -43,6 +43,10 @@
 			<label class="form-label" for="account-settings-email">E-mail:</label>
 			<div class="form-input">
 				<input type="text" name="email" id="account-settings-email" placeholder="New e-mail&hellip;" value="<%= user.email %>"/>
+				<% if (user.emailUnconfirmed) { %>
+					<br/>
+					<span class="account-settings-email-unconfirmed">(unconfirmed) <%= user.emailUnconfirmed %></span>
+				<% } %>
 			</div>
 		</div>
 	<% } %>
