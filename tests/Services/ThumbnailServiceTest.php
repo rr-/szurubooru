@@ -15,8 +15,9 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		touch($tempDirectory . DS . 'thumbnails' . DS . '5x5' . DS . 'keep');
 		touch($tempDirectory . DS . 'thumbnails' . DS . '10x10' . DS . 'remove');
 
+		$configMock = $this->mockConfig($tempDirectory);
 		$httpHelperMock = $this->mock(\Szurubooru\Helpers\HttpHelper::class);
-		$fileService = new \Szurubooru\Services\FileService($tempDirectory, $httpHelperMock);
+		$fileService = new \Szurubooru\Services\FileService($configMock, $httpHelperMock);
 		$thumbnailGeneratorMock = $this->mock(\Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator::class);
 
 		$thumbnailService = new \Szurubooru\Services\ThumbnailService($fileService, $thumbnailGeneratorMock);

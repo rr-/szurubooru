@@ -3,15 +3,32 @@ namespace Szurubooru;
 
 class Config extends \ArrayObject
 {
-	public function __construct(array $configPaths = [])
+	private $dataDirectory;
+
+	public function __construct($dataDirectory)
 	{
-		parent::setFlags(parent::ARRAY_AS_PROPS | parent::STD_PROP_LIST);
+		$this->setFlags($this->getArrayObjectFlags());
+		$this->dataDirectory = $dataDirectory;
+		$this->tryLoadFromIni([
+			$dataDirectory . DIRECTORY_SEPARATOR . 'config.ini',
+			$dataDirectory . DIRECTORY_SEPARATOR . 'local.ini']);
+	}
+
+	public function tryLoadFromIni($configPaths)
+	{
+		if (!is_array($configPaths))
+			$configPaths = [$configPaths];
 
 		foreach ($configPaths as $configPath)
 		{
 			if (file_exists($configPath))
 				$this->loadFromIni($configPath);
 		}
+	}
+
+	public function getDataDirectory()
+	{
+		return $this->dataDirectory;
 	}
 
 	public function offsetGet($index)
@@ -29,7 +46,7 @@ class Config extends \ArrayObject
 		{
 			if (!is_array($value))
 			{
-				$this->$key = $value;
+				$this->offsetSet($key, $value);
 			}
 			else
 			{
@@ -39,7 +56,7 @@ class Config extends \ArrayObject
 				foreach (explode('.', $section) as $subSection)
 				{
 					if (!$ptr->offsetExists($subSection))
-						$ptr->offsetSet($subSection, new self());
+						$ptr->offsetSet($subSection, new \ArrayObject([], $this->getArrayObjectFlags()));
 
 					$ptr = $ptr->$subSection;
 				}
@@ -48,5 +65,10 @@ class Config extends \ArrayObject
 					$ptr->offsetSet($sectionKey, $sectionValue);
 			}
 		}
+	}
+
+	private function getArrayObjectFlags()
+	{
+		return parent::ARRAY_AS_PROPS | parent::STD_PROP_LIST;
 	}
 }

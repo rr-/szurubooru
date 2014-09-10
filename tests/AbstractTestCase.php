@@ -8,9 +8,9 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 		return $this->getMockBuilder($className)->disableOriginalConstructor()->getMock();
 	}
 
-	public function mockConfig()
+	public function mockConfig($path = null)
 	{
-		return new ConfigMock();
+		return new ConfigMock($path);
 	}
 
 	public function createTestDirectory()

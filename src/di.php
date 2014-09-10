@@ -2,11 +2,7 @@
 $dataDirectory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data';
 
 return [
-	\Szurubooru\Config::class => DI\object()->constructor([
-		$dataDirectory . DIRECTORY_SEPARATOR . 'config.ini',
-		$dataDirectory . DIRECTORY_SEPARATOR . 'local.ini']),
-
-	\Szurubooru\Services\FileService::class => DI\object()->constructor($dataDirectory),
+	\Szurubooru\Config::class => DI\object()->constructor($dataDirectory),
 
 	\Szurubooru\ControllerRepository::class => DI\object()->constructor(DI\link('controllers')),
 

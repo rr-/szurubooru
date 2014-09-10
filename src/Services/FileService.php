@@ -6,9 +6,9 @@ class FileService
 	private $dataDirectory;
 	private $httpHelper;
 
-	public function __construct($dataDirectory, \Szurubooru\Helpers\HttpHelper $httpHelper)
+	public function __construct(\Szurubooru\Config $config, \Szurubooru\Helpers\HttpHelper $httpHelper)
 	{
-		$this->dataDirectory = $dataDirectory;
+		$this->dataDirectory = $config->getDataDirectory();
 		$this->httpHelper = $httpHelper;
 	}
 
