@@ -34,8 +34,10 @@ abstract class AbstractDao implements ICrudDao
 		$arrayEntity = $this->entityConverter->toArray($entity);
 		if ($entity->id)
 		{
-			unset ($arrayEntity['_id']);
+			$savedId = $arrayEntity['_id'];
+			unset($arrayEntity['_id']);
 			$this->collection->update(['_id' => new \MongoId($entity->id)], $arrayEntity, ['w' => true]);
+			$arrayEntity['_id'] = $savedId;
 		}
 		else
 		{

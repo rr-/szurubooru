@@ -3,23 +3,28 @@ namespace Szurubooru\Tests\Dao;
 
 final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
-	public function testSaving()
+	public function testCreating()
 	{
 		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post = new \Szurubooru\Entities\Post();
-		$post->name = 'test2';
+		$post->name = 'test';
+		$savedPost = $postDao->save($post);
+		$this->assertEquals('test', $post->name);
+		$this->assertNotNull($savedPost->id);
+	}
 
-		$postDao->save($post);
-		$post->name .= '3';
-		$postDao->save($post);
-
-		$otherPost = new \Szurubooru\Entities\Post();
-		$otherPost->name = 'yo';
-		$postDao->save($otherPost);
-
-		$this->assertEquals('test23', $post->name);
-		$this->assertEquals('yo', $otherPost->name);
+	public function testUpdating()
+	{
+		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
+		$post = new \Szurubooru\Entities\Post();
+		$post->name = 'test';
+		$post = $postDao->save($post);
+		$id = $post->id;
+		$post->name .= '2';
+		$post = $postDao->save($post);
+		$this->assertEquals('test2', $post->name);
+		$this->assertEquals($id, $post->id);
 	}
 
 	public function testGettingAll()
