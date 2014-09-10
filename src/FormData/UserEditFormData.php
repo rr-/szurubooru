@@ -27,19 +27,19 @@ class UserEditFormData implements \Szurubooru\IValidatable
 	public function validate(\Szurubooru\Validator $validator)
 	{
 		if ($this->userName !== null)
-			$this->validator->validateUserName($formData->userName);
+			$validator->validateUserName($this->userName);
 
-		if ($formData->password !== null)
-			$this->validator->validatePassword($formData->password);
+		if ($this->password !== null)
+			$validator->validatePassword($this->password);
 
-		if ($formData->email !== null)
-			$this->validator->validateEmail($formData->email);
+		if ($this->email !== null)
+			$validator->validateEmail($this->email);
 
-		if ($formData->browsingSettings !== null)
+		if ($this->browsingSettings !== null)
 		{
-			if (!is_string($formData->browsingSettings))
+			if (!is_string($this->browsingSettings))
 				throw new \InvalidArgumentException('Browsing settings must be stringified JSON.');
-			else if (strlen($formData->browsingSettings) > 2000)
+			else if (strlen($this->browsingSettings) > 2000)
 				throw new \InvalidArgumentException('Stringified browsing settings can have at most 2000 characters.');
 		}
 	}
