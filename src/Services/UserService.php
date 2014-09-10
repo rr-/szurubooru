@@ -78,25 +78,17 @@ class UserService
 	{
 		$formData->validate($this->validator);
 
-		if ($formData->email and $this->userDao->getByEmail($formData->email))
-			throw new \DomainException('User with this e-mail already exists.');
-
-		if ($this->userDao->getByName($formData->userName))
-			throw new \DomainException('User with this name already exists.');
-
 		$user = new \Szurubooru\Entities\User();
-		$user->name = $formData->userName;
-		$user->emailUnconfirmed = $formData->email;
-		$user->passwordHash = $this->passwordService->getHash($formData->password);
+		$user->registrationTime = $this->timeService->getCurrentTime();
+		$user->lastLoginTime = null;
 		$user->accessRank = $this->userDao->hasAnyUsers()
 			? \Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER
 			: \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR;
-		$user->registrationTime = $this->timeService->getCurrentTime();
-		$user->lastLoginTime = null;
-		$user->avatarStyle = \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR;
 
-		$user = $this->sendActivationEmailIfNeeded($user);
-
+		$this->updateUserName($user, $formData->userName);
+		$this->updateUserPassword($user, $formData->password);
+		$this->updateUserAvatarStyle($user, \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR);
+		$this->updateUserEmail($user, $formData->email);
 		return $this->userDao->save($user);
 	}
 
@@ -106,49 +98,77 @@ class UserService
 
 		if ($formData->avatarStyle !== null)
 		{
-			$user->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($formData->avatarStyle);
-			if ($formData->avatarContent)
-			{
-				$target = $this->getCustomAvatarSourcePath($user);
-				$this->fileService->saveFromBase64($formData->avatarContent, $target);
-				$this->thumbnailService->deleteUsedThumbnails($target);
-			}
+			$this->updateUserAvatarStyle(
+				$user,
+				\Szurubooru\Helpers\EnumHelper::avatarStyleFromString($formData->avatarStyle));
 		}
 
-		if ($formData->userName !== null and $formData->userName !== $user->name)
-		{
-			$userWithThisEmail = $this->userDao->getByName($formData->userName);
-			if ($userWithThisEmail and $userWithThisEmail->id !== $user->id)
-				throw new \DomainException('User with this name already exists.');
+		if ($formData->avatarContent !== null)
+			$this->updateUserAvatarContent($user, $formData->avatarContent);
 
-			$user->name = $formData->userName;
-		}
+		if ($formData->userName !== null)
+			$this->updateUserName($user, $formData->userName);
 
 		if ($formData->password !== null)
-		{
-			$user->passwordHash = $this->passwordService->getHash($formData->password);
-		}
+			$this->updateUserPassword($user, $formData->password);
 
-		if ($formData->email !== null and $formData->email !== $user->email)
-		{
-			if ($this->userDao->getByEmail($formData->email))
-				throw new \DomainException('User with this e-mail already exists.');
-
-			$user->emailUnconfirmed = $formData->email;
-			$user = $this->sendActivationEmailIfNeeded($user);
-		}
+		if ($formData->email !== null)
+			$this->updateUserEmail($user, $formData->email);
 
 		if ($formData->accessRank !== null)
-		{
-			$user->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankFromString($formData->accessRank);
-		}
+			$this->updateUserAccessRank($user, \Szurubooru\Helpers\EnumHelper::accessRankFromString($formData->accessRank));
 
 		if ($formData->browsingSettings !== null)
-		{
-			$user->browsingSettings = $formData->browsingSettings;
-		}
+			$this->updateUserBrowsingSettings($user, $formData->browsingSettings);
 
 		return $this->userDao->save($user);
+	}
+
+	public function updateUserAvatarStyle(\Szurubooru\Entities\User $user, $newAvatarStyle)
+	{
+		$user->avatarStyle = $newAvatarStyle;
+	}
+
+	public function updateUserAvatarContent(\Szurubooru\Entities\User $user, $newAvatarContentInBase64)
+	{
+		$target = $this->getCustomAvatarSourcePath($user);
+		$this->fileService->saveFromBase64($newAvatarContentInBase64, $target);
+		$this->thumbnailService->deleteUsedThumbnails($target);
+	}
+
+	public function updateUserName(\Szurubooru\Entities\User $user, $newName)
+	{
+		$this->assertNoUserWithThisName($user, $newName);
+		$user->name = $newName;
+	}
+
+	public function updateUserPassword(\Szurubooru\Entities\User $user, $newPassword)
+	{
+		$user->passwordHash = $this->passwordService->getHash($newPassword);
+	}
+
+	public function updateUserEmail(\Szurubooru\Entities\User $user, $newEmail)
+	{
+		if ($user->email === $newEmail)
+		{
+			$user->emailUnconfirmed = null;
+		}
+		else
+		{
+			$this->assertNoUserWithThisEmail($user, $newEmail);
+			$user->emailUnconfirmed = $newEmail;
+			$user = $this->sendActivationEmailIfNeeded($user);
+		}
+	}
+
+	public function updateUserAccessRank(\Szurubooru\Entities\User $user, $newAccessRank)
+	{
+		$user->accessRank = $newAccessRank;
+	}
+
+	public function updateUserBrowsingSettings(\Szurubooru\Entities\User $user, $newBrowsingSettings)
+	{
+		$user->browsingSettings = $newBrowsingSettings;
 	}
 
 	public function updateUserLastLoginTime(\Szurubooru\Entities\User $user)
@@ -235,11 +255,27 @@ class UserService
 		//5. two users share the same mail --> problem.
 		//by checking here again for users with such mail, this problem is solved with first-come first-serve approach:
 		//whoever confirms e-mail first, wins.
-		if ($this->userDao->getByEmail($user->emailUnconfirmed))
-			throw new \DomainException('This e-mail was already confirmed by someone else in the meantime.');
+		$this->assertNoUserWithThisEmail($user, $user->emailUnconfirmed);
 
-		$user->email = $user->emailUnconfirmed;
-		$user->emailUnconfirmed = null;
+		if ($user->emailUnconfirmed)
+		{
+			$user->email = $user->emailUnconfirmed;
+			$user->emailUnconfirmed = null;
+		}
 		return $user;
+	}
+
+	private function assertNoUserWithThisName(\Szurubooru\Entities\User $owner, $nameToCheck)
+	{
+		$userWithThisName = $this->userDao->getByName($nameToCheck);
+		if ($userWithThisName and $userWithThisName->id !== $owner->id)
+			throw new \DomainException('User with this name already exists.');
+	}
+
+	private function assertNoUserWithThisEmail(\Szurubooru\Entities\User $owner, $emailToCheck)
+	{
+		$userWithThisEmail = $this->userDao->getByEmail($emailToCheck);
+		if ($userWithThisEmail and $userWithThisEmail->id !== $owner->id)
+			throw new \DomainException('User with this e-mail already exists.');
 	}
 }

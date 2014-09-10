@@ -5,9 +5,10 @@ class UserEditFormData implements \Szurubooru\IValidatable
 {
 	public $userName;
 	public $email;
-	public $accessRank;
 	public $password;
+	public $accessRank;
 	public $avatarStyle;
+	public $avatarContent;
 	public $browsingSettings;
 
 	public function __construct($inputReader = null)

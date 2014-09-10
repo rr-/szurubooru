@@ -31,7 +31,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testGettingByName()
 	{
-		$testUser = new \Szurubooru\Entities\User();
+		$testUser = new \Szurubooru\Entities\User;
 		$testUser->name = 'godzilla';
 		$this->userDaoMock->expects($this->once())->method('getByName')->willReturn($testUser);
 		$userService = $this->getUserService();
@@ -49,7 +49,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testGettingById()
 	{
-		$testUser = new \Szurubooru\Entities\User();
+		$testUser = new \Szurubooru\Entities\User;
 		$testUser->name = 'godzilla';
 		$this->userDaoMock->expects($this->once())->method('getById')->willReturn($testUser);
 		$userService = $this->getUserService();
@@ -67,7 +67,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testGettingFilteredUsers()
 	{
-		$mockUser = new \Szurubooru\Entities\User();
+		$mockUser = new \Szurubooru\Entities\User;
 		$mockUser->name = 'user';
 		$expected = [$mockUser];
 		$this->userSearchService->method('getFiltered')->willReturn($expected);
@@ -121,7 +121,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->userDaoMock->method('hasAnyUsers')->willReturn(true);
 		$this->userDaoMock->method('save')->will($this->returnArgument(0));
 
-		$testToken = new \Szurubooru\Entities\Token();
+		$testToken = new \Szurubooru\Entities\Token;
 		$this->tokenServiceMock->expects($this->once())->method('createAndSaveToken')->willReturn($testToken);
 		$this->emailServiceMock->expects($this->once())->method('sendActivationEmail')->with(
 			$this->anything(),
@@ -162,14 +162,124 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->password = 'password';
 		$formData->email = 'email';
 
+		$otherUser = new \Szurubooru\Entities\User;
+		$otherUser->id = 'yes, i exist in database';
+
 		$this->userDaoMock->method('hasAnyUsers')->willReturn(true);
-		$this->userDaoMock->method('getByName')->willReturn(new \Szurubooru\Entities\User());
+		$this->userDaoMock->method('getByName')->willReturn($otherUser);
 		$this->userDaoMock->method('save')->will($this->returnArgument(0));
 
 		$userService = $this->getUserService();
 
 		$this->setExpectedException(\Exception::class, 'User with this name already exists');
 		$savedUser = $userService->createUser($formData);
+	}
+
+	public function testUpdatingName()
+	{
+		$testUser = new \Szurubooru\Entities\User;
+		$testUser->name = 'wojtek';
+
+		$formData = new \Szurubooru\FormData\UserEditFormData;
+		$formData->userName = 'sebastian';
+
+		$this->userDaoMock->method('save')->will($this->returnArgument(0));
+
+		$userService = $this->getUserService();
+		$savedUser = $userService->updateUser($testUser, $formData);
+		$this->assertEquals('sebastian', $savedUser->name);
+	}
+
+	public function testUpdatingNameToExisting()
+	{
+		$testUser = new \Szurubooru\Entities\User;
+		$testUser->name = 'wojtek';
+
+		$formData = new \Szurubooru\FormData\UserEditFormData;
+		$formData->userName = 'sebastian';
+
+		$otherUser = new \Szurubooru\Entities\User;
+		$otherUser->id = 'yes, i exist in database';
+		$this->userDaoMock->method('getByName')->willReturn($otherUser);
+		$this->userDaoMock->method('save')->will($this->returnArgument(0));
+
+		$this->setExpectedException(\Exception::class, 'User with this name already exists');
+		$userService = $this->getUserService();
+		$savedUser = $userService->updateUser($testUser, $formData);
+	}
+
+	public function testUpdatingEmailWithoutConfirmation()
+	{
+		$testUser = new \Szurubooru\Entities\User;
+		$this->configMock->set('security/needEmailActivationToRegister', false);
+
+		$formData = new \Szurubooru\FormData\UserEditFormData;
+		$formData->email = 'hikari@geofront.gov';
+
+		$this->userDaoMock->method('save')->will($this->returnArgument(0));
+
+		$userService = $this->getUserService();
+		$savedUser = $userService->updateUser($testUser, $formData);
+		$this->assertEquals('hikari@geofront.gov', $savedUser->email);
+		$this->assertNull($savedUser->emailUnconfirmed);
+	}
+
+	public function testUpdatingEmailWithConfirmation()
+	{
+		$testUser = new \Szurubooru\Entities\User;
+		$this->configMock->set('security/needEmailActivationToRegister', true);
+
+		$formData = new \Szurubooru\FormData\UserEditFormData;
+		$formData->email = 'hikari@geofront.gov';
+
+		$this->tokenServiceMock->method('createAndSaveToken')->willReturn(new \Szurubooru\Entities\Token());
+		$this->userDaoMock->method('save')->will($this->returnArgument(0));
+
+		$userService = $this->getUserService();
+		$savedUser = $userService->updateUser($testUser, $formData);
+		$this->assertNull($savedUser->email);
+		$this->assertEquals('hikari@geofront.gov', $savedUser->emailUnconfirmed);
+	}
+
+	public function testUpdatingEmailWithConfirmationToExisting()
+	{
+		$testUser = new \Szurubooru\Entities\User;
+		$this->configMock->set('security/needEmailActivationToRegister', true);
+
+		$formData = new \Szurubooru\FormData\UserEditFormData;
+		$formData->email = 'hikari@geofront.gov';
+
+		$otherUser = new \Szurubooru\Entities\User;
+		$otherUser->id = 'yes, i exist in database';
+		$this->tokenServiceMock->method('createAndSaveToken')->willReturn(new \Szurubooru\Entities\Token());
+		$this->userDaoMock->method('getByEmail')->willReturn($otherUser);
+		$this->userDaoMock->method('save')->will($this->returnArgument(0));
+
+		$this->setExpectedException(\Exception::class, 'User with this e-mail already exists');
+		$userService = $this->getUserService();
+		$userService->updateUser($testUser, $formData);
+	}
+
+	public function testUpdatingEmailToAlreadyConfirmed()
+	{
+		$testUser = new \Szurubooru\Entities\User;
+		$testUser->email = 'hikari@geofront.gov';
+		$testUser->emailUnconfirmed = 'coolcat32@sakura.ne.jp';
+		$testUser->id = 5;
+
+		$formData = new \Szurubooru\FormData\UserEditFormData;
+		$formData->email = 'hikari@geofront.gov';
+
+		$otherUser = new \Szurubooru\Entities\User;
+		$otherUser->id = 5;
+		$this->tokenServiceMock->method('createAndSaveToken')->willReturn(new \Szurubooru\Entities\Token());
+		$this->userDaoMock->method('getByEmail')->willReturn($otherUser);
+		$this->userDaoMock->method('save')->will($this->returnArgument(0));
+
+		$userService = $this->getUserService();
+		$savedUser = $userService->updateUser($testUser, $formData);
+		$this->assertEquals('hikari@geofront.gov', $savedUser->email);
+		$this->assertNull($savedUser->emailUnconfirmed);
 	}
 
 	private function getUserService()
