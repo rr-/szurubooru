@@ -49,7 +49,7 @@ App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
 				if (typeof(failCallback) !== 'undefined') {
 					failCallback(response);
 				} else {
-					console.log(Error(response.json && response.json.error || response));
+					console.log(new Error(response.json && response.json.error || response));
 				}
 			});
 	}

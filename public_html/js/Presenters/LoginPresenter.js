@@ -14,13 +14,15 @@ App.Presenters.LoginPresenter = function(
 	var $el = jQuery('#content');
 	var $messages;
 	var template;
+	var previousRoute;
 
-	function init() {
+	function init(args) {
 		topNavigationPresenter.select('login');
+		previousRoute = args.previousRoute;
 		promise.wait(util.promiseTemplate('login-form')).then(function(html) {
 			template = _.template(html);
 			if (auth.isLoggedIn()) {
-				router.navigateToMainPage();
+				finishLogin();
 			} else {
 				render();
 			}
@@ -54,10 +56,18 @@ App.Presenters.LoginPresenter = function(
 
 		auth.loginFromCredentials(userNameOrEmail, password, remember)
 			.then(function(response) {
-				router.navigateToMainPage();
+				finishLogin();
 			}).fail(function(response) {
 				messagePresenter.showError($messages, response.json && response.json.error || response);
 			});
+	}
+
+	function finishLogin() {
+		if (previousRoute && !previousRoute.match(/logout|password-reset|activate|register/)) {
+			router.navigate(previousRoute);
+		} else {
+			router.navigateToMainPage();
+		}
 	}
 
 	return {

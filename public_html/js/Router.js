@@ -42,7 +42,12 @@ App.Router = function(pathJs, _, jQuery, util, appState) {
 
 	function inject(path, presenterName, additionalParams) {
 		pathJs.map(path).to(function() {
-			util.initContentPresenter(presenterName, _.extend(this.params, additionalParams));
+			var finalParams = _.extend(
+				this.params,
+				additionalParams,
+				{previousRoute: pathJs.routes.previous});
+
+			util.initContentPresenter( presenterName, finalParams);
 		});
 	}
 

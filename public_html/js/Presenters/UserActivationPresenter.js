@@ -30,7 +30,6 @@ App.Presenters.UserActivationPresenter = function(
 
 	function reinit(args) {
 		operation = args.operation;
-		console.log(operation);
 		promise.wait(util.promiseTemplate('user-query-form')).then(function(html) {
 			template = _.template(html);
 			if (args.token) {
