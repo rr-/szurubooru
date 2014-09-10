@@ -15,22 +15,14 @@ class EmailService
 		if (!$user->email)
 			throw new \BadMethodCall('An activated e-mail addreses is needed to reset the password.');
 
-		$recipientEmail = $user->email;
-		$senderName = $this->config->basic->serviceName . ' bot';
-		$subject = $this->config->basic->serviceName . ' password reset';
+		$mailSubject = $this->tokenize($this->config->mail->passwordResetSubject);
+		$mailBody = $this->tokenizeFile(
+			$this->config->mail->passwordResetBodyPath,
+			[
+				'link' => $this->config->basic->serviceBaseUrl . '#/password-reset/' . $token->name,
+			]);
 
-		$body =
-			'Hello,' .
-			PHP_EOL . PHP_EOL .
-			'Someone (probably you) requested to reset password for an account at ' . $this->config->basic->serviceName . '. ' .
-			'In order to proceed, please click this link or paste it in your browser address bar: ' .
-			PHP_EOL . PHP_EOL .
-			$this->config->basic->serviceBaseUrl . '#/password-reset/' . $token->name .
-			PHP_EOL . PHP_EOL .
-			'Otherwise please ignore this mail.' .
-			$this->getFooter();
-
-		$this->sendEmail($senderName, $recipientEmail, $subject, $body);
+		$this->sendEmail($user->email, $mailSubject, $mailBody);
 	}
 
 	public function sendActivationEmail(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Token $token)
@@ -43,28 +35,19 @@ class EmailService
 					: 'An e-mail address is needed to activate the account.');
 		}
 
-		$recipientEmail = $user->emailUnconfirmed;
-		$senderName = $this->config->basic->serviceName . ' bot';
-		$subject = $this->config->basic->serviceName . ' account activation';
+		$mailSubject = $this->tokenize($this->config->mail->activationSubject);
+		$mailBody = $this->tokenizeFile(
+			$this->config->mail->activationBodyPath,
+			[
+				'link' => $this->config->basic->serviceBaseUrl . '#/activate/' . $token->name,
+			]);
 
-		$body =
-			'Hello,' .
-			PHP_EOL . PHP_EOL .
-			'Someone (probably you) registered at ' . $this->config->basic->serviceName . ' an account with this e-mail address. ' .
-			'In order to finish activation, please click this link or paste it in your browser address bar: ' .
-			PHP_EOL . PHP_EOL .
-			$this->config->basic->serviceBaseUrl . '#/activate/' . $token->name .
-			PHP_EOL . PHP_EOL .
-			'Otherwise please ignore this mail.' .
-			$this->getFooter();
-
-		$this->sendEmail($senderName, $recipientEmail, $subject, $body);
+		$this->sendEmail($user->emailUnconfirmed, $mailSubject, $mailBody);
 	}
 
-	private function sendEmail($senderName, $recipientEmail, $subject, $body)
+	private function sendEmail($recipientEmail, $subject, $body)
 	{
-		$senderEmail = $this->config->basic->emailAddress;
-		$domain = substr($senderEmail, strpos($senderEmail, '@') + 1);
+		$domain = substr($this->config->mail->botEmail, strpos($this->config->mail->botEmail, '@') + 1);
 
 		$clientIp = isset($_SERVER['SERVER_ADDR'])
 			? $_SERVER['SERVER_ADDR']
@@ -81,26 +64,33 @@ class EmailService
 		$headers[] = sprintf('Content-Transfer-Encoding: 7bit');
 		$headers[] = sprintf('Date: %s', date('r'));
 		$headers[] = sprintf('Message-ID: <%s>', $messageId);
-		$headers[] = sprintf('From: %s <%s>', $senderName, $senderEmail);
-		$headers[] = sprintf('Reply-To: %s', $senderEmail);
-		$headers[] = sprintf('Return-Path: %s', $senderEmail);
+		$headers[] = sprintf('From: %s <%s>', $this->config->mail->botName, $this->config->mail->botEmail);
+		$headers[] = sprintf('Reply-To: %s', $this->config->mail->botEmail);
+		$headers[] = sprintf('Return-Path: %s', $this->config->mail->botEmail);
 		$headers[] = sprintf('Subject: %s', $subject);
 		$headers[] = sprintf('Content-Type: text/plain; charset=utf-8');
 		$headers[] = sprintf('X-Mailer: PHP/%s', phpversion());
 		$headers[] = sprintf('X-Originating-IP: %s', $clientIp);
 
-		$senderEmail = $this->config->basic->emailAddress;
 		$encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
 
-		$arguments = [$recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $senderEmail];
-		//throw new \RuntimeException(htmlentities(print_r($arguments, true)));
-		call_user_func_array('mail', $arguments);
+		mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $this->config->mail->botEmail);
 	}
 
-	private function getFooter()
+	private function tokenizeFile($templatePath, $tokens = [])
 	{
-		return PHP_EOL . PHP_EOL .
-			'Thank you and have a nice day,' . PHP_EOL .
-			$this->config->basic->serviceName . ' registration bot';
+		$text = file_get_contents($this->config->getDataDirectory() . DIRECTORY_SEPARATOR . $templatePath);
+		return $this->tokenize($text, $tokens);
+	}
+
+	private function tokenize($text, $tokens = [])
+	{
+		$tokens['serviceBaseUrl'] = $this->config->basic->serviceBaseUrl;
+		$tokens['serviceName'] = $this->config->basic->serviceName;
+
+		foreach ($tokens as $key => $value)
+			$text = str_ireplace('{' . $key . '}', $value, $text);
+
+		return $text;
 	}
 }

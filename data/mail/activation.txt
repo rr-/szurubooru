@@ -1,0 +1,11 @@
+Hello,
+
+Someone (probably you) registered an account at {serviceBaseUrl} and provided this e-mail address.
+In order to finish activation, please click this link or paste it in your browser address bar:
+
+{link}
+
+Otherwise please ignore this mail.
+
+Thank you and have a nice day,
+szuru2 registration bot
