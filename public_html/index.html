@@ -2,11 +2,20 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
-	<title>szurubooru</title>
+	<!-- build:remove -->
+	<title>szuru2</title>
+	<!-- /build -->
+	<!-- build:template
+	<title><%= serviceName %></title>
+	/build -->
 	<script src="//cdnjs.cloudflare.com/ajax/libs/path.js/0.8.4/path.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+	<!-- build:template
+		<link rel="stylesheet" type="text/css" href="app.min.css?<%= timestamp %>"/>
+	/build -->
+	<!-- build:remove -->
 	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans:400,700"/>
 	<link rel="stylesheet" type="text/css" href="/css/core.css"/>
 	<link rel="stylesheet" type="text/css" href="/css/forms.css"/>
@@ -17,6 +26,7 @@
 	<link rel="stylesheet" type="text/css" href="/css/registration-form.css"/>
 	<link rel="stylesheet" type="text/css" href="/css/user-list.css"/>
 	<link rel="stylesheet" type="text/css" href="/css/user.css"/>
+	<!-- /build -->
 </head>
 
 <body>
@@ -28,6 +38,18 @@
 		</div>
 	</div>
 
+	<!-- build:template
+	<% _.each(templates, function(templateString, templateName) { %>
+		<script type="text/template" id="<%= templateName %>-template">
+			<%= templateString %>
+		</script>
+	<% }) %>
+	/build -->
+
+	<!-- build:template
+		<script type="text/javascript" src="app.min.js?<%= timestamp %>"></script>
+	/build -->
+	<!-- build:remove -->
 	<script type="text/javascript" src="/js/DI.js"></script>
 	<script type="text/javascript" src="/js/Promise.js"></script>
 	<script type="text/javascript" src="/js/State.js"></script>
@@ -56,5 +78,6 @@
 	<script type="text/javascript" src="/js/Presenters/UserActivationPresenter.js"></script>
 	<script type="text/javascript" src="/js/Router.js"></script>
 	<script type="text/javascript" src="/js/Bootstrap.js"></script>
+	<!-- /build -->
 </body>
 </html>

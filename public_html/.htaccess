@@ -1,4 +1,4 @@
-DirectoryIndex index-compiled.html
+DirectoryIndex app.min.html
 DirectoryIndex index.html
 
 RewriteEngine On
