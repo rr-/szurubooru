@@ -9,6 +9,7 @@ App.Presenters.PostUploadPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('upload');
+		topNavigationPresenter.changeTitle('Upload');
 		render();
 	}
 

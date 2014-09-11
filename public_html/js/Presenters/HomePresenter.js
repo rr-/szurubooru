@@ -9,6 +9,7 @@ App.Presenters.HomePresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('home');
+		topNavigationPresenter.changeTitle('Home');
 		render();
 	}
 

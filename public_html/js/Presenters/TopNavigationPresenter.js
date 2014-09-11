@@ -11,6 +11,7 @@ App.Presenters.TopNavigationPresenter = function(
 	var selectedElement = null;
 	var $el = jQuery('#top-navigation');
 	var template;
+	var baseTitle = document.title;
 
 	function init() {
 		promise.wait(util.promiseTemplate('top-navigation')).then(function(html) {
@@ -44,10 +45,19 @@ App.Presenters.TopNavigationPresenter = function(
 		$el.find('li.' + selectedElement).addClass('active');
 	}
 
+	function changeTitle(subTitle) {
+		var newTitle = baseTitle;
+		if (subTitle) {
+			newTitle += ' - ' + subTitle;
+		}
+		document.title = newTitle;
+	}
+
 	return {
 		init: init,
 		render: render,
 		select: select,
+		changeTitle: changeTitle,
 	};
 
 };

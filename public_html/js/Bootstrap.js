@@ -1,8 +1,8 @@
 var App = App || {};
 
-App.Bootstrap = function(auth, router, util, promise) {
+App.Bootstrap = function(auth, router, util, promise, presenterManager) {
 
-	util.initPresenter('topNavigationPresenter');
+	presenterManager.init();
 
 	promise.wait(auth.tryLoginFromCookie())
 		.then(startRouting)
@@ -25,7 +25,7 @@ App.Bootstrap = function(auth, router, util, promise) {
 
 };
 
-App.DI.registerSingleton('bootstrap', ['auth', 'router', 'util', 'promise'], App.Bootstrap);
+App.DI.registerSingleton('bootstrap', ['auth', 'router', 'util', 'promise', 'presenterManager'], App.Bootstrap);
 App.DI.registerManual('jQuery', function() { return window.$; });
 App.DI.registerManual('pathJs', function() { return window.Path; });
 App.DI.registerManual('_', function() { return window._; });

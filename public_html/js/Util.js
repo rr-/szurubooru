@@ -3,8 +3,6 @@ var App = App || {};
 App.Util = function(_, jQuery, promise) {
 
 	var templateCache = {};
-	var lastContentPresenterName;
-	var lastContentPresenter;
 
 	function parseComplexRouteArgs(args) {
 		var result = {};
@@ -30,22 +28,6 @@ App.Util = function(_, jQuery, promise) {
 		});
 		result = result.slice(0, -1);
 		return result;
-	}
-
-	function initPresenter(presenterName, args) {
-		var presenter = App.DI.get(presenterName);
-		presenter.init.call(presenter, args);
-	}
-
-	function initContentPresenter(presenterName, args) {
-		if (lastContentPresenterName !== presenterName) {
-			var presenter = App.DI.get(presenterName);
-			presenter.init.call(presenter, args);
-			lastContentPresenterName = presenterName;
-			lastContentPresenter = presenter;
-		} else if (lastContentPresenter.reinit) {
-			lastContentPresenter.reinit.call(lastContentPresenter, args);
-		}
 	}
 
 	function promiseTemplate(templateName) {
@@ -151,8 +133,6 @@ App.Util = function(_, jQuery, promise) {
 
 	return {
 		promiseTemplate: promiseTemplate,
-		initPresenter : initPresenter,
-		initContentPresenter: initContentPresenter,
 		parseComplexRouteArgs: parseComplexRouteArgs,
 		compileComplexRouteArgs: compileComplexRouteArgs,
 		formatRelativeTime: formatRelativeTime,

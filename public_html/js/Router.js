@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Router = function(pathJs, _, jQuery, util, appState) {
+App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 
 	var root = '#/';
 
@@ -47,7 +47,7 @@ App.Router = function(pathJs, _, jQuery, util, appState) {
 				additionalParams,
 				{previousRoute: pathJs.routes.previous});
 
-			util.initContentPresenter( presenterName, finalParams);
+			presenterManager.switchContentPresenter( presenterName, finalParams);
 		});
 	}
 
@@ -59,4 +59,4 @@ App.Router = function(pathJs, _, jQuery, util, appState) {
 
 };
 
-App.DI.registerSingleton('router', ['pathJs', '_', 'jQuery', 'util', 'appState'], App.Router);
+App.DI.registerSingleton('router', ['pathJs', '_', 'jQuery', 'util', 'appState', 'presenterManager'], App.Router);

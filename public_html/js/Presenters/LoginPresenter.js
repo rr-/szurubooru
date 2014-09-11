@@ -18,6 +18,7 @@ App.Presenters.LoginPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('login');
+		topNavigationPresenter.changeTitle('Login');
 		previousRoute = args.previousRoute;
 		promise.wait(util.promiseTemplate('login-form')).then(function(html) {
 			template = _.template(html);

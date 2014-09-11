@@ -24,6 +24,7 @@ App.Presenters.UserPresenter = function(
 	function init(args) {
 		userName = args.userName;
 		topNavigationPresenter.select(auth.isLoggedIn(userName) ? 'my-account' : 'users');
+		topNavigationPresenter.changeTitle(userName);
 
 		promise.waitAll(
 			util.promiseTemplate('user'),

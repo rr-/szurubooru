@@ -9,6 +9,7 @@ App.Presenters.TagListPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('tags');
+		topNavigationPresenter.changeTitle('Tags');
 		render();
 	}
 

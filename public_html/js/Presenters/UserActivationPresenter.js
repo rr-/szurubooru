@@ -20,6 +20,7 @@ App.Presenters.UserActivationPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('login');
+		topNavigationPresenter.changeTitle('Account recovery');
 		reinit(args);
 	}
 

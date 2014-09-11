@@ -9,6 +9,7 @@ App.Presenters.PostListPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('posts');
+		topNavigationPresenter.changeTitle('Posts');
 		render();
 	}
 

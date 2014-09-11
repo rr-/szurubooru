@@ -19,6 +19,7 @@ App.Presenters.UserListPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('users');
+		topNavigationPresenter.changeTitle('Users');
 
 		promise.wait(util.promiseTemplate('user-list')).then(function(html) {
 			template = _.template(html);

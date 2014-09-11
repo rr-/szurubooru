@@ -9,6 +9,7 @@ App.Presenters.CommentListPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('comments');
+		topNavigationPresenter.changeTitle('Comments');
 		render();
 	}
 

@@ -9,6 +9,7 @@ App.Presenters.HelpPresenter = function(
 
 	function init(args) {
 		topNavigationPresenter.select('help');
+		topNavigationPresenter.changeTitle('Help');
 		render();
 	}
 

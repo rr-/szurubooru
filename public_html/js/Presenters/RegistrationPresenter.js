@@ -16,6 +16,7 @@ App.Presenters.RegistrationPresenter = function(
 
 	function init() {
 		topNavigationPresenter.select('register');
+		topNavigationPresenter.changeTitle('Registration');
 		promise.wait(util.promiseTemplate('registration-form')).then(function(html) {
 			template = _.template(html);
 			render();
