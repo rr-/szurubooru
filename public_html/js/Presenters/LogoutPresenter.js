@@ -33,4 +33,4 @@ App.Presenters.LogoutPresenter = function(
 
 };
 
-App.DI.register('logoutPresenter', App.Presenters.LogoutPresenter);
+App.DI.register('logoutPresenter', ['jQuery', 'promise', 'router', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.LogoutPresenter);

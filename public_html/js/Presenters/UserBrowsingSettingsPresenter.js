@@ -67,4 +67,4 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 
 };
 
-App.DI.register('userBrowsingSettingsPresenter', App.Presenters.UserBrowsingSettingsPresenter);
+App.DI.register('userBrowsingSettingsPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'browsingSettings', 'messagePresenter'], App.Presenters.UserBrowsingSettingsPresenter);

@@ -109,4 +109,4 @@ App.Presenters.UserActivationPresenter = function(
 
 };
 
-App.DI.register('userActivationPresenter', App.Presenters.UserActivationPresenter);
+App.DI.register('userActivationPresenter', ['_', 'jQuery', 'promise', 'util', 'auth', 'api', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.UserActivationPresenter);

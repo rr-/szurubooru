@@ -166,4 +166,4 @@ App.Presenters.UserAccountSettingsPresenter = function(
 
 };
 
-App.DI.register('userAccountSettingsPresenter', App.Presenters.UserAccountSettingsPresenter);
+App.DI.register('userAccountSettingsPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'messagePresenter'], App.Presenters.UserAccountSettingsPresenter);

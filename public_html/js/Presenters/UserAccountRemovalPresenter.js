@@ -78,4 +78,4 @@ App.Presenters.UserAccountRemovalPresenter = function(
 
 };
 
-App.DI.register('userAccountRemovalPresenter', App.Presenters.UserAccountRemovalPresenter);
+App.DI.register('userAccountRemovalPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'router', 'messagePresenter'], App.Presenters.UserAccountRemovalPresenter);

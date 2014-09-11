@@ -94,4 +94,4 @@ App.Presenters.RegistrationPresenter = function(
 
 };
 
-App.DI.register('registrationPresenter', App.Presenters.RegistrationPresenter);
+App.DI.register('registrationPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.RegistrationPresenter);

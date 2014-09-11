@@ -87,4 +87,4 @@ App.BrowsingSettings = function(
 
 };
 
-App.DI.registerSingleton('browsingSettings', App.BrowsingSettings);
+App.DI.registerSingleton('browsingSettings', ['promise', 'auth', 'api'], App.BrowsingSettings);

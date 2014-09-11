@@ -59,4 +59,4 @@ App.Router = function(pathJs, _, jQuery, util, appState) {
 
 };
 
-App.DI.registerSingleton('router', App.Router);
+App.DI.registerSingleton('router', ['pathJs', '_', 'jQuery', 'util', 'appState'], App.Router);

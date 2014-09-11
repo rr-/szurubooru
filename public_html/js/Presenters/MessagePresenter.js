@@ -38,4 +38,4 @@ App.Presenters.MessagePresenter = function(jQuery) {
 
 };
 
-App.DI.register('messagePresenter', App.Presenters.MessagePresenter);
+App.DI.register('messagePresenter', ['jQuery'], App.Presenters.MessagePresenter);

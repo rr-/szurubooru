@@ -25,4 +25,4 @@ App.Promise = function(jQuery) {
 
 };
 
-App.DI.registerSingleton('promise', App.Promise);
+App.DI.registerSingleton('promise', ['jQuery'], App.Promise);

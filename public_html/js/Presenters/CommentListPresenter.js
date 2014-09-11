@@ -23,4 +23,4 @@ App.Presenters.CommentListPresenter = function(
 
 };
 
-App.DI.register('commentListPresenter', App.Presenters.CommentListPresenter);
+App.DI.register('commentListPresenter', ['jQuery', 'topNavigationPresenter'], App.Presenters.CommentListPresenter);

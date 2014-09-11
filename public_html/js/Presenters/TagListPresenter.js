@@ -23,4 +23,4 @@ App.Presenters.TagListPresenter = function(
 
 };
 
-App.DI.register('tagListPresenter', App.Presenters.TagListPresenter);
+App.DI.register('tagListPresenter', ['jQuery', 'topNavigationPresenter'], App.Presenters.TagListPresenter);

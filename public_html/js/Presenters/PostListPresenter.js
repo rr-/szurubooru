@@ -23,4 +23,4 @@ App.Presenters.PostListPresenter = function(
 
 };
 
-App.DI.register('postListPresenter', App.Presenters.PostListPresenter);
+App.DI.register('postListPresenter', ['jQuery', 'topNavigationPresenter'], App.Presenters.PostListPresenter);

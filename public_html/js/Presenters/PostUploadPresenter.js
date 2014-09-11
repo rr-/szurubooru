@@ -23,4 +23,4 @@ App.Presenters.PostUploadPresenter = function(
 
 };
 
-App.DI.register('postUploadPresenter', App.Presenters.PostUploadPresenter);
+App.DI.register('postUploadPresenter', ['jQuery', 'topNavigationPresenter'], App.Presenters.PostUploadPresenter);

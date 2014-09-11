@@ -73,4 +73,4 @@ App.Presenters.UserListPresenter = function(
 
 };
 
-App.DI.register('userListPresenter', App.Presenters.UserListPresenter);
+App.DI.register('userListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'router', 'pagedCollectionPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.UserListPresenter);

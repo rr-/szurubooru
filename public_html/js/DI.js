@@ -2,9 +2,6 @@ var App = App || {};
 
 App.DI = (function() {
 
-	var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-	var ARGUMENT_NAMES = /([^\s,]+)/g;
-
 	var factories = {};
 	var instances = {};
 
@@ -17,7 +14,7 @@ App.DI = (function() {
 			}
 			var objectInitializer = factory.initializer;
 			var singleton = factory.singleton;
-			var deps = resolveDependencies(objectInitializer);
+			var deps = resolveDependencies(objectInitializer, factory.dependencies);
 			instance = {};
 			instance = objectInitializer.apply(instance, deps);
 			if (singleton) {
@@ -27,34 +24,24 @@ App.DI = (function() {
 		return instance;
 	}
 
-	function resolveDependencies(objectIntializer) {
+	function resolveDependencies(objectIntializer, depKeys) {
 		var deps = [];
-		var depKeys = getFunctionParameterNames(objectIntializer);
 		for (var i = 0; i < depKeys.length; i ++) {
 			deps[i] = get(depKeys[i]);
 		}
 		return deps;
 	}
 
-	function register(key, objectInitializer) {
-		factories[key] = {initializer: objectInitializer, singleton: false};
+	function register(key, dependencies, objectInitializer) {
+		factories[key] = {initializer: objectInitializer, singleton: false, dependencies: dependencies};
 	}
 
-	function registerSingleton(key, objectInitializer) {
-		factories[key] = {initializer: objectInitializer, singleton: true};
+	function registerSingleton(key, dependencies, objectInitializer) {
+		factories[key] = {initializer: objectInitializer, singleton: true, dependencies: dependencies};
 	}
 
 	function registerManual(key, objectInitializer) {
 		instances[key] = objectInitializer();
-	}
-
-	function getFunctionParameterNames(func) {
-		var fnStr = func.toString().replace(STRIP_COMMENTS, '');
-		var result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
-		if (result === null) {
-			result = [];
-		}
-		return result;
 	}
 
 	return {

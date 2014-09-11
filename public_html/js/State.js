@@ -49,4 +49,4 @@ App.State = function() {
 
 };
 
-App.DI.registerSingleton('appState', App.State);
+App.DI.registerSingleton('appState', [], App.State);

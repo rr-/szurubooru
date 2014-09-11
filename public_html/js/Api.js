@@ -57,4 +57,4 @@ App.API = function(jQuery, promise, appState) {
 
 };
 
-App.DI.registerSingleton('api', App.API);
+App.DI.registerSingleton('api', ['jQuery', 'promise', 'appState'], App.API);

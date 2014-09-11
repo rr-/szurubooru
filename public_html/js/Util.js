@@ -160,4 +160,4 @@ App.Util = function(_, jQuery, promise) {
 
 };
 
-App.DI.registerSingleton('util', App.Util);
+App.DI.registerSingleton('util', ['_', 'jQuery', 'promise'], App.Util);

@@ -158,4 +158,4 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 
 };
 
-App.DI.registerSingleton('auth', App.Auth);
+App.DI.registerSingleton('auth', ['_', 'jQuery', 'util', 'api', 'appState', 'promise'], App.Auth);

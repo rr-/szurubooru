@@ -116,4 +116,4 @@ App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
 
 };
 
-App.DI.register('pagedCollectionPresenter', App.Presenters.PagedCollectionPresenter);
+App.DI.register('pagedCollectionPresenter', ['_', 'util', 'promise', 'api'], App.Presenters.PagedCollectionPresenter);

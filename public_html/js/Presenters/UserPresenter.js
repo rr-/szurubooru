@@ -87,4 +87,4 @@ App.Presenters.UserPresenter = function(
 
 };
 
-App.DI.register('userPresenter', App.Presenters.UserPresenter);
+App.DI.register('userPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'userBrowsingSettingsPresenter', 'userAccountSettingsPresenter', 'userAccountRemovalPresenter', 'messagePresenter'], App.Presenters.UserPresenter);

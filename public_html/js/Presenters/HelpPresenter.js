@@ -23,4 +23,4 @@ App.Presenters.HelpPresenter = function(
 
 };
 
-App.DI.register('helpPresenter', App.Presenters.HelpPresenter);
+App.DI.register('helpPresenter', ['jQuery', 'topNavigationPresenter'], App.Presenters.HelpPresenter);

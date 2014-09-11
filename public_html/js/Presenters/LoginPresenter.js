@@ -77,4 +77,4 @@ App.Presenters.LoginPresenter = function(
 
 };
 
-App.DI.register('loginPresenter', App.Presenters.LoginPresenter);
+App.DI.register('loginPresenter', ['_', 'jQuery', 'util', 'promise', 'router', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.LoginPresenter);

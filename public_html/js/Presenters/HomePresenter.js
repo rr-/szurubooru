@@ -23,4 +23,4 @@ App.Presenters.HomePresenter = function(
 
 };
 
-App.DI.register('homePresenter', App.Presenters.HomePresenter);
+App.DI.register('homePresenter', ['jQuery', 'topNavigationPresenter'], App.Presenters.HomePresenter);
