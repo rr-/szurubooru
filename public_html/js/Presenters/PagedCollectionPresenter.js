@@ -1,7 +1,7 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
+App.Presenters.PagedCollectionPresenter = function(_, util, promise, api, mousetrap, router) {
 
 	var searchOrder;
 	var searchQuery;
@@ -13,6 +13,7 @@ App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
 
 	var template;
 	var pageSize;
+	var totalPages;
 	var totalRecords;
 
 	function init(args) {
@@ -27,7 +28,22 @@ App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
 		promise.wait(util.promiseTemplate('pager')).then(function(html) {
 			template = _.template(html);
 			changePage(pageNumber);
+
+			mousetrap.bind('a', prevPage);
+			mousetrap.bind('d', nextPage);
 		});
+	}
+
+	function prevPage() {
+		if (pageNumber > 1) {
+			router.navigate(getPageChangeLink(pageNumber - 1));
+		}
+	}
+
+	function nextPage() {
+		if (pageNumber < totalPages) {
+			router.navigate(getPageChangeLink(pageNumber + 1));
+		}
 	}
 
 	function changePage(newPageNumber) {
@@ -40,8 +56,9 @@ App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
 				page: pageNumber
 			}))
 			.then(function(response) {
-				totalRecords = response.json.totalRecords;
 				pageSize = response.json.pageSize;
+				totalRecords = response.json.totalRecords;
+				totalPages = Math.ceil(totalRecords / pageSize);
 				renderCallback({
 					entities: response.json.data,
 					totalRecords: response.json.totalRecords});
@@ -55,7 +72,6 @@ App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
 	}
 
 	function render($target) {
-		var totalPages = Math.ceil(totalRecords / pageSize);
 		var pages = [1, totalPages];
 		var pagesAroundCurrent = 2;
 		for (var i = -pagesAroundCurrent; i <= pagesAroundCurrent; i ++) {
@@ -116,4 +132,4 @@ App.Presenters.PagedCollectionPresenter = function(_, util, promise, api) {
 
 };
 
-App.DI.register('pagedCollectionPresenter', ['_', 'util', 'promise', 'api'], App.Presenters.PagedCollectionPresenter);
+App.DI.register('pagedCollectionPresenter', ['_', 'util', 'promise', 'api', 'mousetrap', 'router'], App.Presenters.PagedCollectionPresenter);
