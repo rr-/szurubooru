@@ -14,6 +14,15 @@ App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 		window.location.href = url;
 	}
 
+	function navigateInplace(url) {
+		if ('replaceState' in history) {
+			history.replaceState('', '', url);
+			pathJs.dispatch(document.location.hash);
+		} else {
+			navigate(url);
+		}
+	}
+
 	function start() {
 		pathJs.listen();
 	}
@@ -54,6 +63,7 @@ App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 	return {
 		start: start,
 		navigate: navigate,
+		navigateInplace: navigateInplace,
 		navigateToMainPage: navigateToMainPage,
 	};
 
