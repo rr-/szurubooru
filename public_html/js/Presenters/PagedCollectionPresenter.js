@@ -34,13 +34,19 @@ App.Presenters.PagedCollectionPresenter = function(_, util, promise, api, mouset
 		});
 	}
 
-	function prevPage() {
+	function prevPage(e) {
+		if (e.altKey || e.ctrlKey) {
+			return;
+		}
 		if (pageNumber > 1) {
 			router.navigate(getPageChangeLink(pageNumber - 1));
 		}
 	}
 
-	function nextPage() {
+	function nextPage(e) {
+		if (e.altKey || e.ctrlKey) {
+			return;
+		}
 		if (pageNumber < totalPages) {
 			router.navigate(getPageChangeLink(pageNumber + 1));
 		}
