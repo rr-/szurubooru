@@ -5,17 +5,17 @@
 		<label class="form-label">Safety:</label>
 		<div class="form-input">
 			<label for="browsing-settings-safety-safe">
-				<input <% print(settings.listPosts.safe ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-safe" name="listSafePosts" value="1"/>
+				<input <% print(settings.listPosts.safe ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-safe" name="listSafePosts" value="safe"/>
 				Safe
 			</label>
 
 			<label for="browsing-settings-safety-sketchy">
-				<input <% print(settings.listPosts.sketchy ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-sketchy" name="listSketchyPosts" value="2"/>
+				<input <% print(settings.listPosts.sketchy ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-sketchy" name="listSketchyPosts" value="sketchy"/>
 				Sketchy
 			</label>
 
 			<label for="browsing-settings-safety-unsafe">
-				<input <% print(settings.listPosts.unsafe ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-unsafe" name="listUnsafePosts" value="3"/>
+				<input <% print(settings.listPosts.unsafe ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-safety-unsafe" name="listUnsafePosts" value="unsafe"/>
 				Unsafe
 			</label>
 		</div>
@@ -25,7 +25,7 @@
 		<label class="form-label" for="browsing-settings-endless-scroll">Endless scroll:</label>
 		<div class="form-input">
 			<label for="browsing-settings-endless-scroll">
-				<input <% print(settings.endlessScroll ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-endless-scroll" name="endless-scroll" value="1"/>
+				<input <% print(settings.endlessScroll ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-endless-scroll" name="endless-scroll"/>
 				Enabled
 			</label>
 		</div>
@@ -35,7 +35,7 @@
 		<label class="form-label" for="browsing-settings-hide-downvoted">Hide down-voted:</label>
 		<div class="form-input">
 			<label for="browsing-settings-hide-downvoted">
-				<input <% print(settings.hideDownvoted ? 'checked="checked"' : '') %>type="checkbox" id="browsing-settings-hide-downvoted" name="hide-downvoted" value="1"/>
+				<input <% print(settings.hideDownvoted ? 'checked="checked"' : '') %>type="checkbox" id="browsing-settings-hide-downvoted" name="hide-downvoted"/>
 				Enabled
 			</label>
 		</div>
