@@ -4,6 +4,16 @@ App.Util = function(_, jQuery, promise) {
 
 	var templateCache = {};
 
+	function enableExitConfirmation() {
+		jQuery(window).bind('beforeunload', function(e) {
+			return 'There are unsaved changes.';
+		});
+	}
+
+	function disableExitConfirmation() {
+		jQuery(window).unbind('beforeunload');
+	}
+
 	function parseComplexRouteArgs(args) {
 		var result = {};
 		args = (args || '').split(/;/);
@@ -136,6 +146,8 @@ App.Util = function(_, jQuery, promise) {
 		parseComplexRouteArgs: parseComplexRouteArgs,
 		compileComplexRouteArgs: compileComplexRouteArgs,
 		formatRelativeTime: formatRelativeTime,
+		enableExitConfirmation: enableExitConfirmation,
+		disableExitConfirmation: disableExitConfirmation,
 	};
 
 };

@@ -1,0 +1,167 @@
+#post-upload-step1 {
+	display: table;
+	width: 30em;
+	margin: 0 auto;
+}
+
+#post-upload-step1 .file-handler {
+	padding: 3.5em;
+}
+
+#post-upload-step1 .url-handler {
+	margin-top: 0.5em;
+	position: relative;
+}
+#post-upload-step1 .url-handler .input-wrapper {
+	margin-right: 8.5em;
+}
+#post-upload-step1 .url-handler button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 8em;
+}
+
+#post-upload-step2 .hybrid-view {
+	text-align: center;
+}
+@media all and (min-width: 62.5em) {
+	#post-upload-step2 .hybrid-window:first-child {
+		width: 40%;
+		margin-right: 1em;
+		float: left;
+	}
+	#post-upload-step2 .hybrid-window:last-child {
+		display: inline-block;
+		width: 57.5%;
+	}
+}
+
+#post-upload-step2 .thumbnail img {
+	border: 1px solid black;
+	vertical-align: middle;
+	display: block;
+}
+
+#post-upload-step2 table {
+	border-spacing: 0;
+	table-layout: fixed;
+	width: 100%;
+}
+#post-upload-step2 table td,
+#post-upload-step2 table th {
+	padding: 0.2em 0.5em;
+	text-align: center;
+}
+#post-upload-step2 table th {
+	font-weight: normal;
+}
+#post-upload-step2 table tr.selected {
+	background: #faffca;
+}
+#post-upload-step2 table .checkbox {
+	width: 30px;
+	padding: 0.2em 0;
+}
+#post-upload-step2 table .checkbox input {
+	margin: 0 auto;
+}
+#post-upload-step2 table .thumbnail {
+	width: 40px;
+	padding: 0.2em 0;
+}
+#post-upload-step2 table .safety {
+	width: 60px;
+	padding: 0.2em 0;
+}
+#post-upload-step2 table .tags {
+	text-align: left;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#post-upload-step2 table .safety {
+	text-align: center;
+}
+#post-upload-step2 table .safety [class^=safety-] {
+	box-shadow: inset 0 0 0 3px rgba(0,0,0,0.1);
+	width: 25px;
+	height: 25px;
+	margin: 0 auto;
+}
+#post-upload-step2 table .safety-safe    { background: #b2efa2; }
+#post-upload-step2 table .safety-sketchy { background: #f0e4a8; }
+#post-upload-step2 table .safety-unsafe  { background: #fbc6b6; }
+#post-upload-step2 table .thumbnail img {
+	width: 30px;
+	height: 30px;
+	display: inline-block;
+	background-size: 30px 30px;
+}
+#post-upload-step2 .operations {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+#post-upload-step2 .operations li {
+	display: inline-block;
+	margin: 0.3em 0.3em 0 0;
+}
+
+#post-upload-step2 form {
+	width: 100%;
+	margin: 0 auto;
+	overflow: hidden;
+	text-align: left;
+}
+#post-upload-step2 .messages {
+	margin-bottom: 1em;
+}
+#post-upload-step2 .form-slider {
+	text-align: center;
+}
+#post-upload-step2 .form-slider .thumbnail img {
+	max-width: 100%;
+	max-height: 300px;
+	margin: 0 auto 1em auto;
+}
+
+
+
+#post-upload-step2,
+.template {
+	display: none;
+}
+
+#lightbox {
+	display: none;
+	position: absolute;
+	pointer-events: none;
+	position: absolute;
+	margin-left: 10px;
+}
+#lightbox img {
+	max-width: 400px;
+	max-height: 400px;
+	background: white;
+	border: 0.5em solid white;
+	box-shadow: 0 0 0 1px #eee;
+	position: relative;
+}
+#lightbox:after {
+	content: '';
+	position: absolute;
+	left: -8px;
+	top: 50%;
+	margin-top: -8px;
+	width: 12px;
+	height: 12px;
+	background: white;
+	border-left: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	transform: rotate(45deg);
+}
+
+#uploading-alert {
+	display: none;
+	text-align: left;
+}

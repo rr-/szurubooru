@@ -8,6 +8,11 @@
 	display: table-row;
 }
 
+.form-label {
+	width: 1%;
+	white-space: pre;
+}
+
 .form-label,
 .form-input {
 	display: table-cell;
@@ -25,6 +30,7 @@
 	text-align: right;
 }
 
+.tag-input,
 textarea,
 input[type=text],
 input[type=password] {
@@ -45,7 +51,22 @@ input[type=button] {
 	background: #eee;
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 17px;
+	cursor: pointer;
 }
+button:hover,
+input[type=button]:hover {
+	background: #f5f5f5;
+}
+
+button.highlight,
+input[type=button].highlight {
+	background: #ad5;
+}
+button:hover.highlight,
+input[type=button]:hover.highlight {
+	background: #dfa;
+}
+
 
 .file-handler {
 	border: 3px dashed #eee;
@@ -57,4 +78,33 @@ input[type=button] {
 .file-handler.active {
 	border-color: #6a2;
 	background-color: #eeffcc;
+}
+
+.tag-input {
+	padding: 1px;
+	line-height: normal !important;
+	cursor: text;
+}
+.tag-input ul {
+	list-style-type: none;
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+.tag-input li {
+	background: #ddd;
+	display: inline-block;
+	margin: 1px;
+	padding: 2px 4px;
+	font-size: 15px;
+}
+.tag-input input {
+	border: none;
+	width: auto;
+}
+.tag-input li a {
+	color: black;
+	font-size: 14px;
+	margin-left: 0.5em;
+	cursor: pointer;
 }
