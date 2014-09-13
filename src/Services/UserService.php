@@ -40,11 +40,11 @@ class UserService
 
 	public function getByNameOrEmail($userNameOrEmail, $allowUnconfirmed = false)
 	{
-		$user = $this->userDao->getByName($userNameOrEmail);
+		$user = $this->userDao->findByName($userNameOrEmail);
 		if ($user)
 			return $user;
 
-		$user = $this->userDao->getByEmail($userNameOrEmail, $allowUnconfirmed);
+		$user = $this->userDao->findByEmail($userNameOrEmail, $allowUnconfirmed);
 		if ($user)
 			return $user;
 
@@ -53,7 +53,7 @@ class UserService
 
 	public function getByName($userName)
 	{
-		$user = $this->userDao->getByName($userName);
+		$user = $this->userDao->findByName($userName);
 		if (!$user)
 			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
 		return $user;
@@ -61,7 +61,7 @@ class UserService
 
 	public function getById($userId)
 	{
-		$user = $this->userDao->getById($userId);
+		$user = $this->userDao->findById($userId);
 		if (!$user)
 			throw new \InvalidArgumentException('User with id "' . $userId . '" was not found.');
 		return $user;
@@ -79,11 +79,11 @@ class UserService
 		$formData->validate($this->validator);
 
 		$user = new \Szurubooru\Entities\User();
-		$user->registrationTime = $this->timeService->getCurrentTime();
-		$user->lastLoginTime = null;
-		$user->accessRank = $this->userDao->hasAnyUsers()
+		$user->setRegistrationTime($this->timeService->getCurrentTime());
+		$user->setLastLoginTime(null);
+		$user->setAccessRank($this->userDao->hasAnyUsers()
 			? \Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER
-			: \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR;
+			: \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR);
 
 		$this->updateUserName($user, $formData->userName);
 		$this->updateUserPassword($user, $formData->password);
@@ -122,7 +122,7 @@ class UserService
 
 	public function updateUserAvatarStyle(\Szurubooru\Entities\User $user, $newAvatarStyle)
 	{
-		$user->avatarStyle = $newAvatarStyle;
+		$user->setAvatarStyle($newAvatarStyle);
 	}
 
 	public function updateUserAvatarContent(\Szurubooru\Entities\User $user, $newAvatarContentInBase64)
@@ -135,47 +135,47 @@ class UserService
 	public function updateUserName(\Szurubooru\Entities\User $user, $newName)
 	{
 		$this->assertNoUserWithThisName($user, $newName);
-		$user->name = $newName;
+		$user->setName($newName);
 	}
 
 	public function updateUserPassword(\Szurubooru\Entities\User $user, $newPassword)
 	{
-		$user->passwordHash = $this->passwordService->getHash($newPassword);
+		$user->setPasswordHash($this->passwordService->getHash($newPassword));
 	}
 
 	public function updateUserEmail(\Szurubooru\Entities\User $user, $newEmail)
 	{
-		if ($user->email === $newEmail)
+		if ($user->getEmail() === $newEmail)
 		{
-			$user->emailUnconfirmed = null;
+			$user->setEmailUnconfirmed(null);
 		}
 		else
 		{
 			$this->assertNoUserWithThisEmail($user, $newEmail);
-			$user->emailUnconfirmed = $newEmail;
+			$user->setEmailUnconfirmed($newEmail);
 			$user = $this->sendActivationEmailIfNeeded($user);
 		}
 	}
 
 	public function updateUserAccessRank(\Szurubooru\Entities\User $user, $newAccessRank)
 	{
-		$user->accessRank = $newAccessRank;
+		$user->setAccessRank($newAccessRank);
 	}
 
 	public function updateUserBrowsingSettings(\Szurubooru\Entities\User $user, $newBrowsingSettings)
 	{
-		$user->browsingSettings = $newBrowsingSettings;
+		$user->setBrowsingSettings($newBrowsingSettings);
 	}
 
 	public function updateUserLastLoginTime(\Szurubooru\Entities\User $user)
 	{
-		$user->lastLoginTime = $this->timeService->getCurrentTime();
+		$user->setLastLoginTime($this->timeService->getCurrentTime());
 		$this->userDao->save($user);
 	}
 
 	public function deleteUser(\Szurubooru\Entities\User $user)
 	{
-		$this->userDao->deleteById($user->id);
+		$this->userDao->deleteById($user->getId());
 
 		$avatarSource = $this->getCustomAvatarSourcePath($user);
 		$this->fileService->delete($avatarSource);
@@ -184,43 +184,43 @@ class UserService
 
 	public function sendPasswordResetEmail(\Szurubooru\Entities\User $user)
 	{
-		$token = $this->tokenService->createAndSaveToken($user->name, \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET);
+		$token = $this->tokenService->createAndSaveToken($user->getName(), \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET);
 		$this->emailService->sendPasswordResetEmail($user, $token);
 	}
 
 	public function finishPasswordReset(\Szurubooru\Entities\Token $token)
 	{
-		if ($token->purpose !== \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET)
+		if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET)
 			throw new \Exception('This token is not a password reset token.');
 
-		$user = $this->getByName($token->additionalData);
+		$user = $this->getByName($token->getAdditionalData());
 		$newPassword = $this->passwordService->getRandomPassword();
-		$user->passwordHash = $this->passwordService->getHash($newPassword);
+		$user->setPasswordHash($this->passwordService->getHash($newPassword));
 		$this->userDao->save($user);
-		$this->tokenService->invalidateByName($token->name);
+		$this->tokenService->invalidateByName($token->getName());
 		return $newPassword;
 	}
 
 	public function sendActivationEmail(\Szurubooru\Entities\User $user)
 	{
-		$token = $this->tokenService->createAndSaveToken($user->name, \Szurubooru\Entities\Token::PURPOSE_ACTIVATE);
+		$token = $this->tokenService->createAndSaveToken($user->getName(), \Szurubooru\Entities\Token::PURPOSE_ACTIVATE);
 		$this->emailService->sendActivationEmail($user, $token);
 	}
 
 	public function finishActivation(\Szurubooru\Entities\Token $token)
 	{
-		if ($token->purpose !== \Szurubooru\Entities\Token::PURPOSE_ACTIVATE)
+		if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_ACTIVATE)
 			throw new \Exception('This token is not an activation token.');
 
-		$user = $this->getByName($token->additionalData);
+		$user = $this->getByName($token->getAdditionalData());
 		$user = $this->confirmUserEmail($user);
 		$this->userDao->save($user);
-		$this->tokenService->invalidateByName($token->name);
+		$this->tokenService->invalidateByName($token->getName());
 	}
 
 	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)
 	{
-		return 'avatars' . DIRECTORY_SEPARATOR . $user->id;
+		return 'avatars' . DIRECTORY_SEPARATOR . $user->getId();
 	}
 
 	public function getBlankAvatarSourcePath()
@@ -230,7 +230,7 @@ class UserService
 
 	private function sendActivationEmailIfNeeded(\Szurubooru\Entities\User $user)
 	{
-		if ($user->accessRank === \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR or !$this->config->security->needEmailActivationToRegister)
+		if ($user->getAccessRank() === \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR or !$this->config->security->needEmailActivationToRegister)
 		{
 			$user = $this->confirmUserEmail($user);
 		}
@@ -251,27 +251,27 @@ class UserService
 		//5. two users share the same mail --> problem.
 		//by checking here again for users with such mail, this problem is solved with first-come first-serve approach:
 		//whoever confirms e-mail first, wins.
-		$this->assertNoUserWithThisEmail($user, $user->emailUnconfirmed);
+		$this->assertNoUserWithThisEmail($user, $user->getEmailUnconfirmed());
 
-		if ($user->emailUnconfirmed)
+		if ($user->getEmailUnconfirmed())
 		{
-			$user->email = $user->emailUnconfirmed;
-			$user->emailUnconfirmed = null;
+			$user->setEmail($user->getEmailUnconfirmed());
+			$user->setEmailUnconfirmed(null);
 		}
 		return $user;
 	}
 
 	private function assertNoUserWithThisName(\Szurubooru\Entities\User $owner, $nameToCheck)
 	{
-		$userWithThisName = $this->userDao->getByName($nameToCheck);
-		if ($userWithThisName and $userWithThisName->id !== $owner->id)
+		$userWithThisName = $this->userDao->findByName($nameToCheck);
+		if ($userWithThisName and $userWithThisName->getId() !== $owner->getId())
 			throw new \DomainException('User with this name already exists.');
 	}
 
 	private function assertNoUserWithThisEmail(\Szurubooru\Entities\User $owner, $emailToCheck)
 	{
-		$userWithThisEmail = $this->userDao->getByEmail($emailToCheck);
-		if ($userWithThisEmail and $userWithThisEmail->id !== $owner->id)
+		$userWithThisEmail = $this->userDao->findByEmail($emailToCheck);
+		if ($userWithThisEmail and $userWithThisEmail->getId() !== $owner->getId())
 			throw new \DomainException('User with this e-mail already exists.');
 	}
 }

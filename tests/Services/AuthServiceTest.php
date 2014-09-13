@@ -22,11 +22,11 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testInvalidPassword()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', false);
-		$this->passwordServiceMock->method('getHash')->willReturn('unmatchingHash');
+		$this->passwordServiceMock->expects($this->once())->method('getHash')->willReturn('unmatchingHash');
 
 		$testUser = new \Szurubooru\Entities\User();
-		$testUser->name = 'dummy';
-		$testUser->passwordHash = 'hash';
+		$testUser->setName('dummy');
+		$testUser->setPasswordHash('hash');
 		$this->userServiceMock->expects($this->once())->method('getByNameOrEmail')->willReturn($testUser);
 
 		$this->setExpectedException(\Exception::class, 'Specified password is invalid');
@@ -40,18 +40,17 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testValidCredentials()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', false);
-		$this->passwordServiceMock->method('getHash')->willReturn('hash');
+		$this->passwordServiceMock->expects($this->once())->method('getHash')->willReturn('hash');
 
-		$testUser = new \Szurubooru\Entities\User();
-		$testUser->id = 'an unusual database identifier';
-		$testUser->name = 'dummy';
-		$testUser->passwordHash = 'hash';
+		$testUser = new \Szurubooru\Entities\User('an unusual database identifier');
+		$testUser->setName('dummy');
+		$testUser->setPasswordHash('hash');
 		$this->userServiceMock->expects($this->once())->method('getByNameOrEmail')->willReturn($testUser);
 
 		$testToken = new \Szurubooru\Entities\Token();
-		$testToken->name = 'mummy';
+		$testToken->setName('mummy');
 		$this->tokenServiceMock->expects($this->once())->method('createAndSaveToken')->with(
-			$testUser->id,
+			$testUser->getId(),
 			\Szurubooru\Entities\Token::PURPOSE_LOGIN)->willReturn($testToken);
 
 		$authService = $this->getAuthService();
@@ -63,17 +62,17 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertTrue($authService->isLoggedIn());
 		$this->assertEquals($testUser, $authService->getLoggedInUser());
 		$this->assertNotNull($authService->getLoginToken());
-		$this->assertEquals('mummy', $authService->getLoginToken()->name);
+		$this->assertEquals('mummy', $authService->getLoginToken()->getName());
 	}
 
 	public function testValidCredentialsUnconfirmedEmail()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', true);
-		$this->passwordServiceMock->method('getHash')->willReturn('hash');
+		$this->passwordServiceMock->expects($this->never())->method('getHash')->willReturn('hash');
 
 		$testUser = new \Szurubooru\Entities\User();
-		$testUser->name = 'dummy';
-		$testUser->passwordHash = 'hash';
+		$testUser->setName('dummy');
+		$testUser->setPasswordHash('hash');
 		$this->userServiceMock->expects($this->once())->method('getByNameOrEmail')->willReturn($testUser);
 
 		$this->setExpectedException(\Exception::class, 'User didn\'t confirm mail yet');
@@ -101,15 +100,14 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testValidToken()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', false);
-		$testUser = new \Szurubooru\Entities\User();
-		$testUser->id = 5;
-		$testUser->name = 'dummy';
+		$testUser = new \Szurubooru\Entities\User(5);
+		$testUser->setName('dummy');
 		$this->userServiceMock->expects($this->once())->method('getById')->willReturn($testUser);
 
 		$testToken = new \Szurubooru\Entities\Token();
-		$testToken->name = 'dummy_token';
-		$testToken->additionalData = $testUser->id;
-		$testToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
+		$testToken->setName('dummy_token');
+		$testToken->setAdditionalData($testUser->getId());
+		$testToken->setPurpose(\Szurubooru\Entities\Token::PURPOSE_LOGIN);
 
 		$authService = $this->getAuthService();
 		$authService->loginFromToken($testToken);
@@ -117,16 +115,16 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertTrue($authService->isLoggedIn());
 		$this->assertEquals($testUser, $authService->getLoggedInUser());
 		$this->assertNotNull($authService->getLoginToken());
-		$this->assertEquals('dummy_token', $authService->getLoginToken()->name);
+		$this->assertEquals('dummy_token', $authService->getLoginToken()->getName());
 	}
 
 	public function testValidTokenInvalidPurpose()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', false);
 		$testToken = new \Szurubooru\Entities\Token();
-		$testToken->name = 'dummy_token';
-		$testToken->additionalData = 'whatever';
-		$testToken->purpose = null;
+		$testToken->setName('dummy_token');
+		$testToken->setAdditionalData('whatever');
+		$testToken->setPurpose(null);
 
 		$this->setExpectedException(\Exception::class, 'This token is not a login token');
 		$authService = $this->getAuthService();
@@ -140,15 +138,14 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testValidTokenUnconfirmedEmail()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', true);
-		$testUser = new \Szurubooru\Entities\User();
-		$testUser->id = 5;
-		$testUser->name = 'dummy';
+		$testUser = new \Szurubooru\Entities\User(5);
+		$testUser->setName('dummy');
 		$this->userServiceMock->expects($this->once())->method('getById')->willReturn($testUser);
 
 		$testToken = new \Szurubooru\Entities\Token();
-		$testToken->name = 'dummy_token';
-		$testToken->additionalData = $testUser->id;
-		$testToken->purpose = \Szurubooru\Entities\Token::PURPOSE_LOGIN;
+		$testToken->setName('dummy_token');
+		$testToken->setAdditionalData($testUser->getId());
+		$testToken->setPurpose(\Szurubooru\Entities\Token::PURPOSE_LOGIN);
 
 		$this->setExpectedException(\Exception::class, 'User didn\'t confirm mail yet');
 		$authService = $this->getAuthService();

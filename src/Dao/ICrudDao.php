@@ -3,9 +3,9 @@ namespace Szurubooru\Dao;
 
 interface ICrudDao
 {
-	public function getAll();
+	public function findAll();
 
-	public function getById($objectId);
+	public function findById($objectId);
 
 	public function save(&$object);
 

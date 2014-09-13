@@ -9,13 +9,13 @@ class UserDao extends AbstractDao implements ICrudDao
 		parent::__construct($databaseConnection, 'users', '\Szurubooru\Entities\User');
 	}
 
-	public function getByName($userName)
+	public function findByName($userName)
 	{
 		$arrayEntity = $this->collection->findOne(['name' => $userName]);
 		return $this->entityConverter->toEntity($arrayEntity);
 	}
 
-	public function getByEmail($userEmail, $allowUnconfirmed = false)
+	public function findByEmail($userEmail, $allowUnconfirmed = false)
 	{
 		$arrayEntity = $this->collection->findOne(['email' => $userEmail]);
 		if (!$arrayEntity and $allowUnconfirmed)

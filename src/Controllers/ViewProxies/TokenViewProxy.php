@@ -8,8 +8,8 @@ class TokenViewProxy extends AbstractViewProxy
 		$result = new \StdClass;
 		if ($token)
 		{
-			$result->name = $token->name;
-			$result->purpose = $token->purpose;
+			$result->name = $token->getName();
+			$result->purpose = $token->getPurpose();
 		}
 		return $result;
 	}

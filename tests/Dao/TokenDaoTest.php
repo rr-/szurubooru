@@ -8,11 +8,11 @@ final class TokenDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$tokenDao = new \Szurubooru\Dao\TokenDao($this->databaseConnection);
 
 		$token = new \Szurubooru\Entities\Token();
-		$token->name = 'test';
+		$token->setName('test');
 
 		$tokenDao->save($token);
 		$expected = $token;
-		$actual = $tokenDao->getByName($token->name);
+		$actual = $tokenDao->findByName($token->getName());
 
 		$this->assertEquals($actual, $expected);
 	}
@@ -21,7 +21,7 @@ final class TokenDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$tokenDao = new \Szurubooru\Dao\TokenDao($this->databaseConnection);
 
-		$actual = $tokenDao->getByName('rubbish');
+		$actual = $tokenDao->findByName('rubbish');
 
 		$this->assertNull($actual);
 	}

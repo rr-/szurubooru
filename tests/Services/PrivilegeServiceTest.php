@@ -16,9 +16,9 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testReadingConfig()
 	{
 		$testUser = new \Szurubooru\Entities\User();
-		$testUser->name = 'dummy';
-		$testUser->accessRank = \Szurubooru\Entities\User::ACCESS_RANK_POWER_USER;
-		$this->authServiceMock->method('getLoggedInUser')->willReturn($testUser);
+		$testUser->setName('dummy');
+		$testUser->setAccessRank(\Szurubooru\Entities\User::ACCESS_RANK_POWER_USER);
+		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser);
 
 		$privilege = \Szurubooru\Privilege::LIST_USERS;
 		$this->configMock->set('security/privileges/' . $privilege, 'powerUser');
@@ -31,38 +31,36 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testIsLoggedInByNameString()
 	{
 		$testUser1 = new \Szurubooru\Entities\User();
-		$testUser1->name = 'dummy';
+		$testUser1->setName('dummy');
 		$testUser2 = new \Szurubooru\Entities\User();
-		$testUser2->name = 'godzilla';
-		$this->authServiceMock->method('getLoggedInUser')->willReturn($testUser1);
+		$testUser2->setName('godzilla');
+		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
 
 		$privilegeService = $this->getPrivilegeService();
-		$this->assertTrue($privilegeService->isLoggedIn($testUser1->name));
-		$this->assertFalse($privilegeService->isLoggedIn($testUser2->name));
+		$this->assertTrue($privilegeService->isLoggedIn($testUser1->getName()));
+		$this->assertFalse($privilegeService->isLoggedIn($testUser2->getName()));
 	}
 
 	public function testIsLoggedInByEmailString()
 	{
 		$testUser1 = new \Szurubooru\Entities\User();
-		$testUser1->name = 'user1';
-		$testUser1->email = 'dummy';
+		$testUser1->setName('user1');
+		$testUser1->setEmail('dummy');
 		$testUser2 = new \Szurubooru\Entities\User();
-		$testUser2->name = 'user2';
-		$testUser2->email = 'godzilla';
-		$this->authServiceMock->method('getLoggedInUser')->willReturn($testUser1);
+		$testUser2->setName('user2');
+		$testUser2->setEmail('godzilla');
+		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
 
 		$privilegeService = $this->getPrivilegeService();
-		$this->assertTrue($privilegeService->isLoggedIn($testUser1->email));
-		$this->assertFalse($privilegeService->isLoggedIn($testUser2->email));
+		$this->assertTrue($privilegeService->isLoggedIn($testUser1->getEmail()));
+		$this->assertFalse($privilegeService->isLoggedIn($testUser2->getEmail()));
 	}
 
 	public function testIsLoggedInByUserId()
 	{
-		$testUser1 = new \Szurubooru\Entities\User();
-		$testUser1->id = 'dummy';
-		$testUser2 = new \Szurubooru\Entities\User();
-		$testUser2->id = 'godzilla';
-		$this->authServiceMock->method('getLoggedInUser')->willReturn($testUser1);
+		$testUser1 = new \Szurubooru\Entities\User('dummy');
+		$testUser2 = new \Szurubooru\Entities\User('godzilla');
+		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
 
 		$privilegeService = $this->getPrivilegeService();
 		$this->assertTrue($privilegeService->isLoggedIn($testUser1));
@@ -72,10 +70,10 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testIsLoggedInByUserName()
 	{
 		$testUser1 = new \Szurubooru\Entities\User();
-		$testUser1->name = 'dummy';
+		$testUser1->setName('dummy');
 		$testUser2 = new \Szurubooru\Entities\User();
-		$testUser2->name = 'godzilla';
-		$this->authServiceMock->method('getLoggedInUser')->willReturn($testUser1);
+		$testUser2->setName('godzilla');
+		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
 
 		$privilegeService = $this->getPrivilegeService();
 		$this->assertFalse($privilegeService->isLoggedIn($testUser1));
@@ -85,8 +83,8 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testIsLoggedInByInvalidObject()
 	{
 		$testUser = new \Szurubooru\Entities\User();
-		$testUser->name = 'dummy';
-		$this->authServiceMock->method('getLoggedInUser')->willReturn($testUser);
+		$testUser->setName('dummy');
+		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser);
 
 		$rubbish = new \StdClass;
 		$privilegeService = $this->getPrivilegeService();

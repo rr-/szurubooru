@@ -8,11 +8,11 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$userDao = $this->getUserDao();
 
 		$user = new \Szurubooru\Entities\User();
-		$user->name = 'test';
+		$user->setName('test');
 
 		$userDao->save($user);
 		$expected = $user;
-		$actual = $userDao->getByName($user->name);
+		$actual = $userDao->findByName($user->getName());
 
 		$this->assertEquals($actual, $expected);
 	}
@@ -21,7 +21,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$userDao = $this->getUserDao();
 
-		$actual = $userDao->getByName('rubbish');
+		$actual = $userDao->findByName('rubbish');
 
 		$this->assertNull($actual);
 	}
@@ -33,7 +33,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertFalse($userDao->hasAnyUsers());
 
 		$user = new \Szurubooru\Entities\User();
-		$user->name = 'test';
+		$user->setName('test');
 		$userDao->save($user);
 
 		$this->assertTrue($userDao->hasAnyUsers());

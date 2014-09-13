@@ -29,10 +29,10 @@ final class UserAvatarController extends AbstractController
 	{
 		$user = $this->userService->getByName($userName);
 
-		switch ($user->avatarStyle)
+		switch ($user->getAvatarStyle())
 		{
 			case \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR:
-				$hash = md5(strtolower(trim($user->email ? $user->email : $user->id . $user->name)));
+				$hash = md5(strtolower(trim($user->getEmail() ? $user->getEmail() : $user->getId() . $user->getName())));
 				$url = 'https://www.gravatar.com/avatar/' . $hash . '?d=retro&s=' . $size;
 				$this->serveFromUrl($url);
 				break;

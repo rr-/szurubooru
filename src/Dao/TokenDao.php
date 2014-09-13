@@ -8,7 +8,7 @@ class TokenDao extends AbstractDao
 		parent::__construct($databaseConnection, 'tokens', '\Szurubooru\Entities\Token');
 	}
 
-	public function getByName($tokenName)
+	public function findByName($tokenName)
 	{
 		$arrayEntity = $this->collection->findOne(['name' => $tokenName]);
 		return $this->entityConverter->toEntity($arrayEntity);

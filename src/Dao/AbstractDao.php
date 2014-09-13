@@ -32,11 +32,11 @@ abstract class AbstractDao implements ICrudDao
 	public function save(&$entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);
-		if ($entity->id)
+		if ($entity->getId())
 		{
 			$savedId = $arrayEntity['_id'];
 			unset($arrayEntity['_id']);
-			$this->collection->update(['_id' => new \MongoId($entity->id)], $arrayEntity, ['w' => true]);
+			$this->collection->update(['_id' => new \MongoId($entity->getId())], $arrayEntity, ['w' => true]);
 			$arrayEntity['_id'] = $savedId;
 		}
 		else
@@ -47,7 +47,7 @@ abstract class AbstractDao implements ICrudDao
 		return $entity;
 	}
 
-	public function getAll()
+	public function findAll()
 	{
 		$entities = [];
 		foreach ($this->collection->find() as $key => $arrayEntity)
@@ -58,9 +58,9 @@ abstract class AbstractDao implements ICrudDao
 		return $entities;
 	}
 
-	public function getById($postId)
+	public function findById($entityId)
 	{
-		$arrayEntity = $this->collection->findOne(['_id' => new \MongoId($postId)]);
+		$arrayEntity = $this->collection->findOne(['_id' => new \MongoId($entityId)]);
 		return $this->entityConverter->toEntity($arrayEntity);
 	}
 
@@ -69,8 +69,8 @@ abstract class AbstractDao implements ICrudDao
 		$this->collection->remove();
 	}
 
-	public function deleteById($postId)
+	public function deleteById($entityId)
 	{
-		$this->collection->remove(['_id' => new \MongoId($postId)]);
+		$this->collection->remove(['_id' => new \MongoId($entityId)]);
 	}
 }

@@ -14,13 +14,103 @@ final class User extends Entity
 	const AVATAR_STYLE_MANUAL = 'manual';
 	const AVATAR_STYLE_BLANK = 'blank';
 
-	public $name;
-	public $email;
-	public $emailUnconfirmed;
-	public $passwordHash;
-	public $accessRank;
-	public $registrationTime;
-	public $lastLoginTime;
-	public $avatarStyle;
-	public $browsingSettings;
+	protected $name;
+	protected $email;
+	protected $emailUnconfirmed;
+	protected $passwordHash;
+	protected $accessRank;
+	protected $registrationTime;
+	protected $lastLoginTime;
+	protected $avatarStyle;
+	protected $browsingSettings;
+
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	public function setName($name)
+	{
+		$this->name = $name;
+	}
+
+	public function getEmail()
+	{
+		return $this->email;
+	}
+
+	public function setEmail($email)
+	{
+		$this->email = $email;
+	}
+
+	public function getEmailUnconfirmed()
+	{
+		return $this->emailUnconfirmed;
+	}
+
+	public function setEmailUnconfirmed($emailUnconfirmed)
+	{
+		$this->emailUnconfirmed = $emailUnconfirmed;
+	}
+
+	public function getPasswordHash()
+	{
+		return $this->passwordHash;
+	}
+
+	public function setPasswordHash($passwordHash)
+	{
+		$this->passwordHash = $passwordHash;
+	}
+
+	public function getAccessRank()
+	{
+		return $this->accessRank;
+	}
+
+	public function setAccessRank($accessRank)
+	{
+		$this->accessRank = $accessRank;
+	}
+
+	public function getRegistrationTime()
+	{
+		return $this->registrationTime;
+	}
+
+	public function setRegistrationTime($registrationTime)
+	{
+		$this->registrationTime = $registrationTime;
+	}
+
+	public function getLastLoginTime()
+	{
+		return $this->lastLoginTime;
+	}
+
+	public function setLastLoginTime($lastLoginTime)
+	{
+		$this->lastLoginTime = $lastLoginTime;
+	}
+
+	public function getAvatarStyle()
+	{
+		return $this->avatarStyle;
+	}
+
+	public function setAvatarStyle($avatarStyle)
+	{
+		$this->avatarStyle = $avatarStyle;
+	}
+
+	public function getBrowsingSettings()
+	{
+		return $this->browsingSettings;
+	}
+
+	public function setBrowsingSettings($browsingSettings)
+	{
+		$this->browsingSettings = $browsingSettings;
+	}
 }

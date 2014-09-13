@@ -12,7 +12,7 @@ class TokenService
 
 	public function getByName($tokenName)
 	{
-		$token = $this->tokenDao->getByName($tokenName);
+		$token = $this->tokenDao->findByName($tokenName);
 		if (!$token)
 			throw new \InvalidArgumentException('Token with identifier "' . $tokenName . '" not found.');
 		return $token;
@@ -31,9 +31,9 @@ class TokenService
 	public function createAndSaveToken($additionalData, $tokenPurpose)
 	{
 		$token = new \Szurubooru\Entities\Token();
-		$token->name = sha1(date('r') . uniqid() . microtime(true));
-		$token->additionalData = $additionalData;
-		$token->purpose = $tokenPurpose;
+		$token->setName(sha1(date('r') . uniqid() . microtime(true)));
+		$token->setAdditionalData($additionalData);
+		$token->setPurpose($tokenPurpose);
 		$this->invalidateByAdditionalData($additionalData);
 		$this->tokenDao->save($token);
 		return $token;

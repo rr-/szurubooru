@@ -3,5 +3,15 @@ namespace Szurubooru\Entities;
 
 abstract class Entity
 {
-	public $id = null;
+	protected $id = null;
+
+	public function __construct($id = null)
+	{
+		$this->id = $id;
+	}
+
+	public function getId()
+	{
+		return $this->id;
+	}
 }

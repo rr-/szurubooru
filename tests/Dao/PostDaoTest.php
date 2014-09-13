@@ -8,23 +8,24 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post = new \Szurubooru\Entities\Post();
-		$post->name = 'test';
+		$post->setName('test');
 		$savedPost = $postDao->save($post);
-		$this->assertEquals('test', $post->name);
-		$this->assertNotNull($savedPost->id);
+		$this->assertEquals('test', $post->getName());
+		$this->assertNotNull($savedPost->getId());
 	}
 
 	public function testUpdating()
 	{
 		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 		$post = new \Szurubooru\Entities\Post();
-		$post->name = 'test';
+		$post->setName('test');
 		$post = $postDao->save($post);
-		$id = $post->id;
-		$post->name .= '2';
+		$this->assertEquals('test', $post->getName());
+		$id = $post->getId();
+		$post->setName($post->getName() . '2');
 		$post = $postDao->save($post);
-		$this->assertEquals('test2', $post->name);
-		$this->assertEquals($id, $post->id);
+		$this->assertEquals('test2', $post->getName());
+		$this->assertEquals($id, $post->getId());
 	}
 
 	public function testGettingAll()
@@ -32,17 +33,17 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post1 = new \Szurubooru\Entities\Post();
-		$post1->name = 'test2';
+		$post1->setName('test2');
 		$post2 = new \Szurubooru\Entities\Post();
-		$post2->name = 'test2';
+		$post2->setName('test2');
 
 		$postDao->save($post1);
 		$postDao->save($post2);
 
-		$actual = $postDao->getAll();
+		$actual = $postDao->findAll();
 		$expected = [
-			$post1->id => $post1,
-			$post2->id => $post2,
+			$post1->getId() => $post1,
+			$post2->getId() => $post2,
 		];
 
 		$this->assertEquals($expected, $actual);
@@ -53,15 +54,15 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post1 = new \Szurubooru\Entities\Post();
-		$post1->name = 'test2';
+		$post1->setName('test2');
 		$post2 = new \Szurubooru\Entities\Post();
-		$post2->name = 'test2';
+		$post2->setName('test2');
 
 		$postDao->save($post1);
 		$postDao->save($post2);
 
-		$actualPost1 = $postDao->getById($post1->id);
-		$actualPost2 = $postDao->getById($post2->id);
+		$actualPost1 = $postDao->findById($post1->getId());
+		$actualPost2 = $postDao->findById($post2->getId());
 		$this->assertEquals($post1, $actualPost1);
 		$this->assertEquals($post2, $actualPost2);
 	}
@@ -71,20 +72,20 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post1 = new \Szurubooru\Entities\Post();
-		$post1->name = 'test2';
+		$post1->setName('test2');
 		$post2 = new \Szurubooru\Entities\Post();
-		$post2->name = 'test2';
+		$post2->setName('test2');
 
 		$postDao->save($post1);
 		$postDao->save($post2);
 
 		$postDao->deleteAll();
 
-		$actualPost1 = $postDao->getById($post1->id);
-		$actualPost2 = $postDao->getById($post2->id);
+		$actualPost1 = $postDao->findById($post1->getId());
+		$actualPost2 = $postDao->findById($post2->getId());
 		$this->assertEquals(null, $actualPost1);
 		$this->assertEquals(null, $actualPost2);
-		$this->assertEquals(0, count($postDao->getAll()));
+		$this->assertEquals(0, count($postDao->findAll()));
 	}
 
 	public function testDeletingById()
@@ -92,19 +93,19 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$postDao = new \Szurubooru\Dao\PostDao($this->databaseConnection);
 
 		$post1 = new \Szurubooru\Entities\Post();
-		$post1->name = 'test2';
+		$post1->setName('test2');
 		$post2 = new \Szurubooru\Entities\Post();
-		$post2->name = 'test2';
+		$post2->setName('test2');
 
 		$postDao->save($post1);
 		$postDao->save($post2);
 
-		$postDao->deleteById($post1->id);
+		$postDao->deleteById($post1->getId());
 
-		$actualPost1 = $postDao->getById($post1->id);
-		$actualPost2 = $postDao->getById($post2->id);
+		$actualPost1 = $postDao->findById($post1->getId());
+		$actualPost2 = $postDao->findById($post2->getId());
 		$this->assertEquals(null, $actualPost1);
 		$this->assertEquals($actualPost2, $actualPost2);
-		$this->assertEquals(1, count($postDao->getAll()));
+		$this->assertEquals(1, count($postDao->findAll()));
 	}
 }

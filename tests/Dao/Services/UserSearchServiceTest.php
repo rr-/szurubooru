@@ -24,11 +24,11 @@ class UserSearchServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testSorting()
 	{
 		$user1 = new \Szurubooru\Entities\User();
-		$user1->name = 'reginald';
-		$user1->registrationTime = date('c', mktime(3, 2, 1));
+		$user1->setName('reginald');
+		$user1->setRegistrationTime(date('c', mktime(3, 2, 1)));
 		$user2 = new \Szurubooru\Entities\User();
-		$user2->name = 'beartato';
-		$user2->registrationTime = date('c', mktime(1, 2, 3));
+		$user2->setName('beartato');
+		$user2->setRegistrationTime(date('c', mktime(1, 2, 3)));
 
 		$this->userDao->save($user1);
 		$this->userDao->save($user2);

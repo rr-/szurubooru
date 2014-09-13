@@ -12,25 +12,25 @@ class EmailService
 
 	public function sendPasswordResetEmail(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Token $token)
 	{
-		if (!$user->email)
+		if (!$user->getEmail())
 			throw new \BadMethodCall('An activated e-mail addreses is needed to reset the password.');
 
 		$mailSubject = $this->tokenize($this->config->mail->passwordResetSubject);
 		$mailBody = $this->tokenizeFile(
 			$this->config->mail->passwordResetBodyPath,
 			[
-				'link' => $this->config->basic->serviceBaseUrl . '#/password-reset/' . $token->name,
+				'link' => $this->config->basic->serviceBaseUrl . '#/password-reset/' . $token->getName(),
 			]);
 
-		$this->sendEmail($user->email, $mailSubject, $mailBody);
+		$this->sendEmail($user->getEmail(), $mailSubject, $mailBody);
 	}
 
 	public function sendActivationEmail(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Token $token)
 	{
-		if (!$user->emailUnconfirmed)
+		if (!$user->getEmailUnconfirmed())
 		{
 			throw new \BadMethodCallException(
-				$user->email
+				$user->getEmail()
 					? 'E-mail for this account is already confirmed.'
 					: 'An e-mail address is needed to activate the account.');
 		}
@@ -39,10 +39,10 @@ class EmailService
 		$mailBody = $this->tokenizeFile(
 			$this->config->mail->activationBodyPath,
 			[
-				'link' => $this->config->basic->serviceBaseUrl . '#/activate/' . $token->name,
+				'link' => $this->config->basic->serviceBaseUrl . '#/activate/' . $token->getName(),
 			]);
 
-		$this->sendEmail($user->emailUnconfirmed, $mailSubject, $mailBody);
+		$this->sendEmail($user->getEmailUnconfirmed(), $mailSubject, $mailBody);
 	}
 
 	private function sendEmail($recipientEmail, $subject, $body)

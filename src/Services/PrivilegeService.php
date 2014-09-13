@@ -29,7 +29,7 @@ class PrivilegeService
 
 	public function getCurrentPrivileges()
 	{
-		$currentAccessRank = $this->authService->getLoggedInUser()->accessRank;
+		$currentAccessRank = $this->authService->getLoggedInUser()->getAccessRank();
 		$currentAccessRankName = \Szurubooru\Helpers\EnumHelper::accessRankToString($currentAccessRank);
 		if (!isset($this->privilegeMap[$currentAccessRankName]))
 			return [];
@@ -58,16 +58,16 @@ class PrivilegeService
 		$loggedInUser = $this->authService->getLoggedInUser();
 		if ($userIdentifier instanceof \Szurubooru\Entities\User)
 		{
-			return $loggedInUser->id and ($loggedInUser->id === $userIdentifier->id);
+			return $loggedInUser->getId() and ($loggedInUser->getId() === $userIdentifier->getId());
 		}
 		elseif (is_string($userIdentifier))
 		{
-			if ($loggedInUser->email)
+			if ($loggedInUser->getEmail())
 			{
-				if ($loggedInUser->email === $userIdentifier)
+				if ($loggedInUser->getEmail() === $userIdentifier)
 					return true;
 			}
-			return $loggedInUser->name === $userIdentifier;
+			return $loggedInUser->getName() === $userIdentifier;
 		}
 		else
 		{

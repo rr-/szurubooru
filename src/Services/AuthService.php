@@ -49,7 +49,7 @@ class AuthService
 		$this->doFinalChecksOnUser($user);
 
 		$passwordHash = $this->passwordService->getHash($formData->password);
-		if ($user->passwordHash !== $passwordHash)
+		if ($user->getPasswordHash() !== $passwordHash)
 			throw new \InvalidArgumentException('Specified password is invalid.');
 
 		$this->loginToken = $this->createAndSaveLoginToken($user);
@@ -59,10 +59,10 @@ class AuthService
 
 	public function loginFromToken(\Szurubooru\Entities\Token $token)
 	{
-		if ($token->purpose !== \Szurubooru\Entities\Token::PURPOSE_LOGIN)
+		if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_LOGIN)
 			throw new \Exception('This token is not a login token.');
 
-		$user = $this->userService->getById($token->additionalData);
+		$user = $this->userService->getById($token->getAdditionalData());
 		$this->doFinalChecksOnUser($user);
 
 		$this->loginToken = $token;
@@ -73,8 +73,8 @@ class AuthService
 	public function getAnonymousUser()
 	{
 		$user = new \Szurubooru\Entities\User();
-		$user->name = 'Anonymous user';
-		$user->accessRank = \Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS;
+		$user->setName('Anonymous user');
+		$user->setAccessRank(\Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS);
 		return $user;
 	}
 
@@ -95,12 +95,12 @@ class AuthService
 
 	private function createAndSaveLoginToken(\Szurubooru\Entities\User $user)
 	{
-		return $this->tokenService->createAndSaveToken($user->id, \Szurubooru\Entities\Token::PURPOSE_LOGIN);
+		return $this->tokenService->createAndSaveToken($user->getId(), \Szurubooru\Entities\Token::PURPOSE_LOGIN);
 	}
 
 	private function doFinalChecksOnUser($user)
 	{
-		if (!$user->email and $this->config->security->needEmailActivationToRegister)
+		if (!$user->getEmail() and $this->config->security->needEmailActivationToRegister)
 			throw new \DomainException('User didn\'t confirm mail yet.');
 	}
 }
