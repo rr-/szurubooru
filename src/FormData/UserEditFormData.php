@@ -18,8 +18,10 @@ class UserEditFormData implements \Szurubooru\IValidatable
 			$this->userName = $inputReader->userName;
 			$this->email = $inputReader->email;
 			$this->password = $inputReader->password;
-			$this->accessRank = $inputReader->accessRank;
-			$this->avatarStyle = $inputReader->avatarStyle;
+			if ($inputReader->accessRank !== null)
+				$this->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankFromString($inputReader->accessRank);
+			if ($inputReader->avatarStyle !== null)
+				$this->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($inputReader->avatarStyle);
 			$this->avatarContent = $inputReader->avatarContent;
 			$this->browsingSettings = $inputReader->browsingSettings;
 		}

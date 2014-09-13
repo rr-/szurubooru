@@ -97,11 +97,7 @@ class UserService
 		$this->validator->validate($formData);
 
 		if ($formData->avatarStyle !== null)
-		{
-			$this->updateUserAvatarStyle(
-				$user,
-				\Szurubooru\Helpers\EnumHelper::avatarStyleFromString($formData->avatarStyle));
-		}
+			$this->updateUserAvatarStyle($user, $formData->avatarStyle);
 
 		if ($formData->avatarContent !== null)
 			$this->updateUserAvatarContent($user, $formData->avatarContent);
@@ -116,7 +112,7 @@ class UserService
 			$this->updateUserEmail($user, $formData->email);
 
 		if ($formData->accessRank !== null)
-			$this->updateUserAccessRank($user, \Szurubooru\Helpers\EnumHelper::accessRankFromString($formData->accessRank));
+			$this->updateUserAccessRank($user, $formData->accessRank);
 
 		if ($formData->browsingSettings !== null)
 			$this->updateUserBrowsingSettings($user, $formData->browsingSettings);
