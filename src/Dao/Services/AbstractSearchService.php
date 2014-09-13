@@ -76,19 +76,13 @@ abstract class AbstractSearchService
 		foreach ($tokens as $token)
 		{
 			$token = preg_split('/,|\s+/', $token);
-			if (count($token) === 2)
-			{
-				$orderDir = $token[1] === 'desc' ? self::ORDER_DESC : self::ORDER_ASC;
-				$orderToken = $token[0];
-			}
-			else
-			{
-				$orderDir = self::ORDER_ASC;
-				$orderToken = $token;
-			}
-			$orderColumn = $this->getOrderColumn($token[0]);
+			$orderToken = $token[0];
+			$orderDir = (count($token) === 2 and $token[1] === 'desc') ? self::ORDER_DESC : self::ORDER_ASC;
+
+			$orderColumn = $this->getOrderColumn($orderToken);
 			if ($orderColumn === null)
-				throw new \InvalidArgumentException('Invalid search order token: ' . $token);
+				throw new \InvalidArgumentException('Invalid search order token: ' . $orderToken);
+
 			$order[$orderColumn] = $orderDir;
 		}
 		$defaultOrderColumn = $this->getDefaultOrderColumn();
