@@ -52,7 +52,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 		$el.find('form').submit(accountSettingsFormSubmitted);
 		$el.find('form [name=avatar-style]').change(avatarStyleChanged);
 		avatarStyleChanged();
-		new App.Controls.FileDropper($el.find('[name=avatar-content]'), false, avatarContentChanged, jQuery);
+		new App.Controls.FileDropper($el.find('[name=avatar-content]'), avatarContentChanged, jQuery);
 	}
 
 	function getPrivileges() {

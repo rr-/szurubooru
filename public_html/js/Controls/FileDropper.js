@@ -3,11 +3,11 @@ App.Controls = App.Controls || {};
 
 App.Controls.FileDropper = function(
 	$fileInput,
-	allowMultiple,
 	onChange,
 	jQuery) {
 
 	var $dropDiv = jQuery('<div class="file-handler"></div>');
+	var allowMultiple = $fileInput.attr('multiple');
 	$dropDiv.html((allowMultiple ? 'Drop files here!' : 'Drop file here!') + '<br/>Or just click on this box.');
 	$dropDiv.insertBefore($fileInput);
 	$fileInput.attr('multiple', allowMultiple);
