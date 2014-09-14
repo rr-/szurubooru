@@ -5,6 +5,7 @@ class UserService
 {
 	private $config;
 	private $validator;
+	private $transactionManager;
 	private $userDao;
 	private $userSearchService;
 	private $passwordService;
@@ -17,6 +18,7 @@ class UserService
 	public function __construct(
 		\Szurubooru\Config $config,
 		\Szurubooru\Validator $validator,
+		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Dao\UserDao $userDao,
 		\Szurubooru\Dao\Services\UserSearchService $userSearchService,
 		\Szurubooru\Services\PasswordService $passwordService,
@@ -28,6 +30,7 @@ class UserService
 	{
 		$this->config = $config;
 		$this->validator = $validator;
+		$this->transactionManager = $transactionManager;
 		$this->userDao = $userDao;
 		$this->userSearchService = $userSearchService;
 		$this->passwordService = $passwordService;
@@ -40,110 +43,198 @@ class UserService
 
 	public function getByNameOrEmail($userNameOrEmail, $allowUnconfirmed = false)
 	{
-		$user = $this->userDao->findByName($userNameOrEmail);
-		if ($user)
-			return $user;
+		return $this->transactionManager->rollback(function() use ($userNameOrEmail, $allowUnconfirmed)
+		{
+			$user = $this->userDao->findByName($userNameOrEmail);
+			if ($user)
+				return $user;
 
-		$user = $this->userDao->findByEmail($userNameOrEmail, $allowUnconfirmed);
-		if ($user)
-			return $user;
+			$user = $this->userDao->findByEmail($userNameOrEmail, $allowUnconfirmed);
+			if ($user)
+				return $user;
 
-		throw new \InvalidArgumentException('User "' . $userNameOrEmail . '" was not found.');
+			throw new \InvalidArgumentException('User "' . $userNameOrEmail . '" was not found.');
+		});
 	}
 
 	public function getByName($userName)
 	{
-		$user = $this->userDao->findByName($userName);
-		if (!$user)
-			throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
-		return $user;
+		return $this->transactionManager->rollback(function() use ($userName)
+		{
+			$user = $this->userDao->findByName($userName);
+			if (!$user)
+				throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
+			return $user;
+		});
 	}
 
 	public function getById($userId)
 	{
-		$user = $this->userDao->findById($userId);
-		if (!$user)
-			throw new \InvalidArgumentException('User with id "' . $userId . '" was not found.');
-		return $user;
+		return $this->transactionManager->rollback(function() use ($userId)
+		{
+			$user = $this->userDao->findById($userId);
+			if (!$user)
+				throw new \InvalidArgumentException('User with id "' . $userId . '" was not found.');
+			return $user;
+		});
 	}
 
 	public function getFiltered(\Szurubooru\FormData\SearchFormData $formData)
 	{
-		$this->validator->validate($formData);
-		$searchFilter = new \Szurubooru\Dao\SearchFilter($this->config->users->usersPerPage, $formData);
-		return $this->userSearchService->getFiltered($searchFilter);
+		return $this->transactionManager->rollback(function() use ($formData)
+		{
+			$this->validator->validate($formData);
+			$searchFilter = new \Szurubooru\Dao\SearchFilter($this->config->users->usersPerPage, $formData);
+			return $this->userSearchService->getFiltered($searchFilter);
+		});
 	}
 
 	public function createUser(\Szurubooru\FormData\RegistrationFormData $formData)
 	{
-		$formData->validate($this->validator);
+		return $this->transactionManager->commit(function() use ($formData)
+		{
+			$formData->validate($this->validator);
 
-		$user = new \Szurubooru\Entities\User();
-		$user->setRegistrationTime($this->timeService->getCurrentTime());
-		$user->setLastLoginTime(null);
-		$user->setAccessRank($this->userDao->hasAnyUsers()
-			? \Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER
-			: \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR);
+			$user = new \Szurubooru\Entities\User();
+			$user->setRegistrationTime($this->timeService->getCurrentTime());
+			$user->setLastLoginTime(null);
+			$user->setAccessRank($this->userDao->hasAnyUsers()
+				? \Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER
+				: \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR);
 
-		$this->updateUserName($user, $formData->userName);
-		$this->updateUserPassword($user, $formData->password);
-		$this->updateUserAvatarStyle($user, \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR);
-		$this->updateUserEmail($user, $formData->email);
-		return $this->userDao->save($user);
+			$this->updateUserName($user, $formData->userName);
+			$this->updateUserPassword($user, $formData->password);
+			$this->updateUserAvatarStyle($user, \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR);
+			$this->updateUserEmail($user, $formData->email);
+			return $this->userDao->save($user);
+		});
 	}
 
 	public function updateUser(\Szurubooru\Entities\User $user, \Szurubooru\FormData\UserEditFormData $formData)
 	{
-		$this->validator->validate($formData);
+		return $this->transactionManager->commit(function() use ($user, $formData)
+		{
+			$this->validator->validate($formData);
 
-		if ($formData->avatarStyle !== null)
-			$this->updateUserAvatarStyle($user, $formData->avatarStyle);
+			if ($formData->avatarStyle !== null)
+				$this->updateUserAvatarStyle($user, $formData->avatarStyle);
 
-		if ($formData->avatarContent !== null)
-			$this->updateUserAvatarContent($user, $formData->avatarContent);
+			if ($formData->avatarContent !== null)
+				$this->updateUserAvatarContent($user, $formData->avatarContent);
 
-		if ($formData->userName !== null)
-			$this->updateUserName($user, $formData->userName);
+			if ($formData->userName !== null)
+				$this->updateUserName($user, $formData->userName);
 
-		if ($formData->password !== null)
-			$this->updateUserPassword($user, $formData->password);
+			if ($formData->password !== null)
+				$this->updateUserPassword($user, $formData->password);
 
-		if ($formData->email !== null)
-			$this->updateUserEmail($user, $formData->email);
+			if ($formData->email !== null)
+				$this->updateUserEmail($user, $formData->email);
 
-		if ($formData->accessRank !== null)
-			$this->updateUserAccessRank($user, $formData->accessRank);
+			if ($formData->accessRank !== null)
+				$this->updateUserAccessRank($user, $formData->accessRank);
 
-		if ($formData->browsingSettings !== null)
-			$this->updateUserBrowsingSettings($user, $formData->browsingSettings);
+			if ($formData->browsingSettings !== null)
+				$this->updateUserBrowsingSettings($user, $formData->browsingSettings);
 
-		return $this->userDao->save($user);
+			return $this->userDao->save($user);
+		});
 	}
 
-	public function updateUserAvatarStyle(\Szurubooru\Entities\User $user, $newAvatarStyle)
+	public function deleteUser(\Szurubooru\Entities\User $user)
+	{
+		$this->transactionManager->commit(function() use ($user)
+		{
+			$this->userDao->deleteById($user->getId());
+
+			$avatarSource = $this->getCustomAvatarSourcePath($user);
+			$this->fileService->delete($avatarSource);
+			$this->thumbnailService->deleteUsedThumbnails($avatarSource);
+		});
+	}
+
+	public function sendPasswordResetEmail(\Szurubooru\Entities\User $user)
+	{
+		$this->transactionManager->commit(function() use ($user)
+		{
+			$token = $this->tokenService->createAndSaveToken($user->getName(), \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET);
+			$this->emailService->sendPasswordResetEmail($user, $token);
+		});
+	}
+
+	public function finishPasswordReset(\Szurubooru\Entities\Token $token)
+	{
+		return $this->transactionManager->commit(function() use ($token)
+		{
+			if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET)
+				throw new \Exception('This token is not a password reset token.');
+
+			$user = $this->getByName($token->getAdditionalData());
+			$newPassword = $this->passwordService->getRandomPassword();
+			$user->setPasswordHash($this->passwordService->getHash($newPassword));
+			$this->userDao->save($user);
+			$this->tokenService->invalidateByName($token->getName());
+			return $newPassword;
+		});
+	}
+
+	public function sendActivationEmail(\Szurubooru\Entities\User $user)
+	{
+		$this->transactionManager->commit(function() use ($user)
+		{
+			$token = $this->tokenService->createAndSaveToken($user->getName(), \Szurubooru\Entities\Token::PURPOSE_ACTIVATE);
+			$this->emailService->sendActivationEmail($user, $token);
+		});
+	}
+
+	public function finishActivation(\Szurubooru\Entities\Token $token)
+	{
+		$this->transactionManager->commit(function() use ($token)
+		{
+			if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_ACTIVATE)
+				throw new \Exception('This token is not an activation token.');
+
+			$user = $this->getByName($token->getAdditionalData());
+			$user = $this->confirmUserEmail($user);
+			$this->userDao->save($user);
+			$this->tokenService->invalidateByName($token->getName());
+		});
+	}
+
+	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)
+	{
+		return 'avatars' . DIRECTORY_SEPARATOR . $user->getId();
+	}
+
+	public function getBlankAvatarSourcePath()
+	{
+		return 'avatars' . DIRECTORY_SEPARATOR . 'blank.png';
+	}
+
+	private function updateUserAvatarStyle(\Szurubooru\Entities\User $user, $newAvatarStyle)
 	{
 		$user->setAvatarStyle($newAvatarStyle);
 	}
 
-	public function updateUserAvatarContent(\Szurubooru\Entities\User $user, $newAvatarContentInBase64)
+	private function updateUserAvatarContent(\Szurubooru\Entities\User $user, $newAvatarContentInBase64)
 	{
 		$target = $this->getCustomAvatarSourcePath($user);
 		$this->fileService->saveFromBase64($newAvatarContentInBase64, $target);
 		$this->thumbnailService->deleteUsedThumbnails($target);
 	}
 
-	public function updateUserName(\Szurubooru\Entities\User $user, $newName)
+	private function updateUserName(\Szurubooru\Entities\User $user, $newName)
 	{
 		$this->assertNoUserWithThisName($user, $newName);
 		$user->setName($newName);
 	}
 
-	public function updateUserPassword(\Szurubooru\Entities\User $user, $newPassword)
+	private function updateUserPassword(\Szurubooru\Entities\User $user, $newPassword)
 	{
 		$user->setPasswordHash($this->passwordService->getHash($newPassword));
 	}
 
-	public function updateUserEmail(\Szurubooru\Entities\User $user, $newEmail)
+	private function updateUserEmail(\Szurubooru\Entities\User $user, $newEmail)
 	{
 		if ($user->getEmail() === $newEmail)
 		{
@@ -157,80 +248,29 @@ class UserService
 		}
 	}
 
-	public function updateUserAccessRank(\Szurubooru\Entities\User $user, $newAccessRank)
+	private function updateUserAccessRank(\Szurubooru\Entities\User $user, $newAccessRank)
 	{
 		$user->setAccessRank($newAccessRank);
 	}
 
-	public function updateUserBrowsingSettings(\Szurubooru\Entities\User $user, $newBrowsingSettings)
+	private function updateUserBrowsingSettings(\Szurubooru\Entities\User $user, $newBrowsingSettings)
 	{
 		$user->setBrowsingSettings($newBrowsingSettings);
 	}
 
 	public function updateUserLastLoginTime(\Szurubooru\Entities\User $user)
 	{
-		$user->setLastLoginTime($this->timeService->getCurrentTime());
-		$this->userDao->save($user);
-	}
-
-	public function deleteUser(\Szurubooru\Entities\User $user)
-	{
-		$this->userDao->deleteById($user->getId());
-
-		$avatarSource = $this->getCustomAvatarSourcePath($user);
-		$this->fileService->delete($avatarSource);
-		$this->thumbnailService->deleteUsedThumbnails($avatarSource);
-	}
-
-	public function sendPasswordResetEmail(\Szurubooru\Entities\User $user)
-	{
-		$token = $this->tokenService->createAndSaveToken($user->getName(), \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET);
-		$this->emailService->sendPasswordResetEmail($user, $token);
-	}
-
-	public function finishPasswordReset(\Szurubooru\Entities\Token $token)
-	{
-		if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET)
-			throw new \Exception('This token is not a password reset token.');
-
-		$user = $this->getByName($token->getAdditionalData());
-		$newPassword = $this->passwordService->getRandomPassword();
-		$user->setPasswordHash($this->passwordService->getHash($newPassword));
-		$this->userDao->save($user);
-		$this->tokenService->invalidateByName($token->getName());
-		return $newPassword;
-	}
-
-	public function sendActivationEmail(\Szurubooru\Entities\User $user)
-	{
-		$token = $this->tokenService->createAndSaveToken($user->getName(), \Szurubooru\Entities\Token::PURPOSE_ACTIVATE);
-		$this->emailService->sendActivationEmail($user, $token);
-	}
-
-	public function finishActivation(\Szurubooru\Entities\Token $token)
-	{
-		if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_ACTIVATE)
-			throw new \Exception('This token is not an activation token.');
-
-		$user = $this->getByName($token->getAdditionalData());
-		$user = $this->confirmUserEmail($user);
-		$this->userDao->save($user);
-		$this->tokenService->invalidateByName($token->getName());
-	}
-
-	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)
-	{
-		return 'avatars' . DIRECTORY_SEPARATOR . $user->getId();
-	}
-
-	public function getBlankAvatarSourcePath()
-	{
-		return 'avatars' . DIRECTORY_SEPARATOR . 'blank.png';
+		$this->transactionManager->commit(function() use ($user)
+		{
+			$user->setLastLoginTime($this->timeService->getCurrentTime());
+			$this->userDao->save($user);
+		});
 	}
 
 	private function sendActivationEmailIfNeeded(\Szurubooru\Entities\User $user)
 	{
-		if ($user->getAccessRank() === \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR or !$this->config->security->needEmailActivationToRegister)
+		if ($user->getAccessRank() === \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR
+			or !$this->config->security->needEmailActivationToRegister)
 		{
 			$user = $this->confirmUserEmail($user);
 		}

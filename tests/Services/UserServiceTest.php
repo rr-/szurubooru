@@ -5,6 +5,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 {
 	private $configMock;
 	private $validatorMock;
+	private $transactionManagerMock;
 	private $userDaoMock;
 	private $userSearchServiceMock;
 	private $passwordServiceMock;
@@ -18,6 +19,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		parent::setUp();
 		$this->configMock = $this->mockConfig();
+		$this->transactionManagerMock = $this->mockTransactionManager();
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
 		$this->userSearchService = $this->mock(\Szurubooru\Dao\Services\UserSearchService::class);
@@ -288,6 +290,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		return new \Szurubooru\Services\UserService(
 			$this->configMock,
 			$this->validatorMock,
+			$this->transactionManagerMock,
 			$this->userDaoMock,
 			$this->userSearchService,
 			$this->passwordServiceMock,

@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru;
 
-final class DatabaseConnection
+class DatabaseConnection
 {
 	private $pdo;
 	private $config;

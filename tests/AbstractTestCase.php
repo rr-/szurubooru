@@ -13,6 +13,11 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 		return new ConfigMock($path);
 	}
 
+	public function mockTransactionManager()
+	{
+		return new TransactionManagerMock($this->mock(\Szurubooru\DatabaseConnection::class));
+	}
+
 	public function createTestDirectory()
 	{
 		$path = $this->getTestDirectoryPath();
