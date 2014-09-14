@@ -6,14 +6,17 @@ abstract class AbstractSearchService
 	const ORDER_DESC = -1;
 	const ORDER_ASC = 1;
 
-	private $collection;
+	private $tableName;
 	private $entityConverter;
+	private $fpdo;
 
 	public function __construct(
+		\Szurubooru\DatabaseConnection $databaseConnection,
 		\Szurubooru\Dao\AbstractDao $dao)
 	{
-		$this->collection = $dao->getCollection();
+		$this->tableName = $dao->getTableName();
 		$this->entityConverter = $dao->getEntityConverter();
+		$this->fpdo = new \FluentPDO($databaseConnection->getPDO());
 	}
 
 	public function getFiltered(
@@ -31,16 +34,26 @@ abstract class AbstractSearchService
 		$pageSize = min(100, max(1, $searchFilter->pageSize));
 		$pageNumber = max(1, $searchFilter->pageNumber) - 1;
 
-		$cursor = $this->collection->find($filter);
-		$totalRecords = $cursor->count();
-		$cursor->sort($order);
-		$cursor->skip($pageSize * $pageNumber);
-		$cursor->limit($pageSize);
+		//todo: clean up
+		$orderByString = '';
+		foreach ($order as $orderColumn => $orderDir)
+		{
+			$orderByString .= $orderColumn . ' ' . ($orderDir === self::ORDER_DESC ? 'DESC' : 'ASC') . ', ';
+		}
+		$orderByString = substr($orderByString, 0, -2);
+
+		$query = $this->fpdo
+			->from($this->tableName)
+			->orderBy($orderByString)
+			->limit($pageSize)
+			->offset($pageSize * $pageNumber);
 
 		$entities = [];
-		foreach ($cursor as $arrayEntity)
+		foreach ($query as $arrayEntity)
 			$entities[] = $this->entityConverter->toEntity($arrayEntity);
 
+		$query->select('COUNT(1) AS c');
+		$totalRecords = intval(iterator_to_array($query)[0]['c']);
 		return new \Szurubooru\Dao\SearchResult($searchFilter, $entities, $totalRecords);
 	}
 
@@ -61,7 +74,7 @@ abstract class AbstractSearchService
 
 	protected function getDefaultOrderColumn()
 	{
-		return '_id';
+		return 'id';
 	}
 
 	protected function getDefaultOrderDir()

@@ -7,13 +7,11 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$userDao = $this->getUserDao();
 
-		$user = new \Szurubooru\Entities\User();
-		$user->setName('test');
-
+		$user = $this->getTestUser();
 		$userDao->save($user);
+
 		$expected = $user;
 		$actual = $userDao->findByName($user->getName());
-
 		$this->assertEquals($actual, $expected);
 	}
 
@@ -29,18 +27,26 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testCheckingUserPresence()
 	{
 		$userDao = $this->getUserDao();
-
 		$this->assertFalse($userDao->hasAnyUsers());
 
-		$user = new \Szurubooru\Entities\User();
-		$user->setName('test');
+		$user = $this->getTestUser();
 		$userDao->save($user);
-
 		$this->assertTrue($userDao->hasAnyUsers());
 	}
 
 	private function getUserDao()
 	{
 		return new \Szurubooru\Dao\UserDao($this->databaseConnection);
+	}
+
+	private function getTestUser()
+	{
+		$user = new \Szurubooru\Entities\User();
+		$user->setName('test');
+		$user->setPasswordHash('whatever');
+		$user->setLastLoginTime('whatever');
+		$user->setRegistrationTime('whatever');
+		$user->setAccessRank('whatever');
+		return $user;
 	}
 }

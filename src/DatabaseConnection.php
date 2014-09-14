@@ -3,32 +3,35 @@ namespace Szurubooru;
 
 final class DatabaseConnection
 {
-	private $database;
-	private $connection;
+	private $pdo;
+	private $config;
 
 	public function __construct(\Szurubooru\Config $config)
 	{
-		$connectionString = $this->getConnectionString($config);
-		$this->connection = new \MongoClient($connectionString);
-		$this->database = $this->connection->selectDb($config->database->name);
+		$this->config = $config;
 	}
 
-	public function getConnection()
+	public function getPDO()
 	{
-		return $this->connection;
+		if (!$this->pdo)
+		{
+			$this->createPDO();
+		}
+		return $this->pdo;
 	}
 
-	public function getDatabase()
+	public function close()
 	{
-		return $this->database;
+		$this->pdo = null;
 	}
 
-	private function getConnectionString(\Szurubooru\Config $config)
+	private function createPDO()
 	{
-		return sprintf(
-			'mongodb://%s:%d/%s',
-			$config->database->host,
-			$config->database->port,
-			$config->database->name);
+		$cwd = getcwd();
+		if ($this->config->getDataDirectory())
+			chdir($this->config->getDataDirectory());
+		$this->pdo = new \PDO($this->config->database->dsn);
+		$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		chdir($cwd);
 	}
 }

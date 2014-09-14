@@ -20,11 +20,6 @@ final class EntityConverter
 			$reflectionProperty->setAccessible(true);
 			$arrayEntity[$reflectionProperty->getName()] = $reflectionProperty->getValue($entity);
 		}
-		if ($entity->getId())
-		{
-			$arrayEntity['_id'] = $arrayEntity['id'];
-			unset($arrayEntity['id']);
-		}
 		return $arrayEntity;
 	}
 
@@ -45,12 +40,6 @@ final class EntityConverter
 				$reflectionProperty->setValue($entity, $arrayEntity[$reflectionProperty->getName()]);
 			}
 		}
-
-		$reflectionProperty = $reflectionClass->getProperty('id');
-		$reflectionProperty->setAccessible(true);
-		$reflectionProperty->setValue($entity, isset($arrayEntity['_id'])
-			? (string) $arrayEntity['_id']
-			: null);
 
 		return $entity;
 	}

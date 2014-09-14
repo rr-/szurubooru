@@ -3,25 +3,28 @@ namespace Szurubooru\Dao;
 
 abstract class AbstractDao implements ICrudDao
 {
-	protected $db;
-	protected $collection;
+	protected $pdo;
+	protected $fpdo;
+	protected $tableName;
 	protected $entityName;
 	protected $entityConverter;
 
 	public function __construct(
 		\Szurubooru\DatabaseConnection $databaseConnection,
-		$collectionName,
+		$tableName,
 		$entityName)
 	{
 		$this->entityConverter = new EntityConverter($entityName);
-		$this->db = $databaseConnection->getDatabase();
-		$this->collection = $this->db->selectCollection($collectionName);
 		$this->entityName = $entityName;
+		$this->tableName = $tableName;
+
+		$this->pdo = $databaseConnection->getPDO();
+		$this->fpdo = new \FluentPDO($this->pdo);
 	}
 
-	public function getCollection()
+	public function getTableName()
 	{
-		return $this->collection;
+		return $this->tableName;
 	}
 
 	public function getEntityConverter()
@@ -34,14 +37,12 @@ abstract class AbstractDao implements ICrudDao
 		$arrayEntity = $this->entityConverter->toArray($entity);
 		if ($entity->getId())
 		{
-			$savedId = $arrayEntity['_id'];
-			unset($arrayEntity['_id']);
-			$this->collection->update(['_id' => new \MongoId($entity->getId())], $arrayEntity, ['w' => true]);
-			$arrayEntity['_id'] = $savedId;
+			$this->fpdo->update($this->tableName)->set($arrayEntity)->where('id', $entity->getId())->execute();
 		}
 		else
 		{
-			$this->collection->insert($arrayEntity, ['w' => true]);
+			$this->fpdo->insertInto($this->tableName)->values($arrayEntity)->execute();
+			$arrayEntity['id'] = $this->pdo->lastInsertId();
 		}
 		$entity = $this->entityConverter->toEntity($arrayEntity);
 		return $entity;
@@ -50,27 +51,43 @@ abstract class AbstractDao implements ICrudDao
 	public function findAll()
 	{
 		$entities = [];
-		foreach ($this->collection->find() as $key => $arrayEntity)
+		$query = $this->fpdo->from($this->tableName);
+		foreach ($query as $arrayEntity)
 		{
 			$entity = $this->entityConverter->toEntity($arrayEntity);
-			$entities[$key] = $entity;
+			$entities[$entity->getId()] = $entity;
 		}
 		return $entities;
 	}
 
 	public function findById($entityId)
 	{
-		$arrayEntity = $this->collection->findOne(['_id' => new \MongoId($entityId)]);
-		return $this->entityConverter->toEntity($arrayEntity);
+		return $this->findOneBy('id', $entityId);
 	}
 
 	public function deleteAll()
 	{
-		$this->collection->remove();
+		$this->fpdo->deleteFrom($this->tableName)->execute();
 	}
 
 	public function deleteById($entityId)
 	{
-		$this->collection->remove(['_id' => new \MongoId($entityId)]);
+		return $this->deleteBy('id', $entityId);
+	}
+
+	protected function hasAnyRecords()
+	{
+		return count(iterator_to_array($this->fpdo->from($this->tableName)->limit(1))) > 0;
+	}
+
+	protected function findOneBy($columnName, $value)
+	{
+		$arrayEntity = iterator_to_array($this->fpdo->from($this->tableName)->where($columnName, $value));
+		return $arrayEntity ? $this->entityConverter->toEntity($arrayEntity[0]) : null;
+	}
+
+	protected function deleteBy($columnName, $value)
+	{
+		$this->fpdo->deleteFrom($this->tableName)->where($columnName, $value)->execute();
 	}
 }

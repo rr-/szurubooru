@@ -1,6 +1,7 @@
 {
 	"require": {
 		"mnapoli/php-di": "~4.0",
-		"jbrooksuk/phpcheckstyle": "dev-master"
+		"jbrooksuk/phpcheckstyle": "dev-master",
+		"lichtner/fluentpdo": "dev-master"
 	}
 }

@@ -5,6 +5,13 @@ return [
 	\Szurubooru\Config::class => DI\object()->constructor($dataDirectory),
 
 	\Szurubooru\ControllerRepository::class => DI\object()->constructor(DI\link('controllers')),
+	\Szurubooru\Upgrades\UpgradeRepository::class => DI\object()->constructor(DI\link('upgrades')),
+
+	'upgrades' => DI\factory(function (DI\container $container) {
+		return [
+			$container->get(\Szurubooru\Upgrades\Upgrade01::class),
+		];
+	}),
 
 	'controllers' => DI\factory(function (DI\container $container) {
 		return [

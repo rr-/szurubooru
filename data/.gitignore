@@ -1,2 +1,4 @@
+db.sqlite
+executed_upgrades.txt
 local.ini
 thumbnails

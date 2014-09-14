@@ -11,27 +11,27 @@ class UserDao extends AbstractDao implements ICrudDao
 
 	public function findByName($userName)
 	{
-		$arrayEntity = $this->collection->findOne(['name' => $userName]);
-		return $this->entityConverter->toEntity($arrayEntity);
+		return $this->findOneBy('name', $userName);
 	}
 
 	public function findByEmail($userEmail, $allowUnconfirmed = false)
 	{
-		$arrayEntity = $this->collection->findOne(['email' => $userEmail]);
-		if (!$arrayEntity and $allowUnconfirmed)
-			$arrayEntity = $this->collection->findOne(['emailUnconfirmed' => $userEmail]);
-		return $this->entityConverter->toEntity($arrayEntity);
+		$result = $this->findOneBy('email', $userEmail);
+		if (!$result and $allowUnconfirmed)
+		{
+			$result = $this->findOneBy('emailUnconfirmed', $userEmail);
+		}
+		return $result;
 	}
 
 	public function hasAnyUsers()
 	{
-		return (bool) $this->collection->findOne();
+		return $this->hasAnyRecords();
 	}
 
 	public function deleteByName($userName)
 	{
-		$this->collection->remove(['name' => $userName]);
-		$tokens = $this->db->selectCollection('tokens');
-		$tokens->remove(['additionalData' => $userName]);
+		$this->deleteBy('name', $userName);
+		$this->fpdo->deleteFrom('tokens')->where('additionalData', $userName);
 	}
 }

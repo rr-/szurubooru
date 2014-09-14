@@ -3,9 +3,9 @@ namespace Szurubooru\Entities;
 
 final class Token extends Entity
 {
-	const PURPOSE_LOGIN = 'login';
-	const PURPOSE_ACTIVATE = 'activate';
-	const PURPOSE_PASSWORD_RESET = 'passwordReset';
+	const PURPOSE_LOGIN = 0;
+	const PURPOSE_ACTIVATE = 1;
+	const PURPOSE_PASSWORD_RESET = 2;
 
 	protected $name;
 	protected $purpose;

@@ -54,4 +54,9 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 	}
 }
 
+require_once __DIR__
+	. DIRECTORY_SEPARATOR . '..'
+	. DIRECTORY_SEPARATOR . 'vendor'
+	. DIRECTORY_SEPARATOR . 'autoload.php';
+
 date_default_timezone_set('UTC');

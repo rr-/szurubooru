@@ -77,6 +77,10 @@ module.exports = function(grunt) {
 			tests: {
 				command: 'phpunit --strict --bootstrap src/AutoLoader.php tests/',
 			},
+
+			upgrade: {
+				command: 'php upgrade.php',
+			},
 		},
 
 		cssmin: {
@@ -130,6 +134,8 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', ['checkstyle', 'tests']);
 	grunt.registerTask('checkstyle', ['jshint', 'shell:phpcheckstyle']);
 	grunt.registerTask('tests', ['shell:tests']);
+	grunt.registerTask('update', ['shell:upgrade']);
+	grunt.registerTask('upgrade', ['shell:upgrade']);
 
 	grunt.registerTask('clean', function() {
 		fs.unlink('public_html/app.min.html');

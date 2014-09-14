@@ -23,11 +23,9 @@ class UserSearchServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testSorting()
 	{
-		$user1 = new \Szurubooru\Entities\User();
-		$user1->setName('reginald');
+		$user1 = $this->getTestUser('reginald');
+		$user2 = $this->getTestUser('beartato');
 		$user1->setRegistrationTime(date('c', mktime(3, 2, 1)));
-		$user2 = new \Szurubooru\Entities\User();
-		$user2->setName('beartato');
 		$user2->setRegistrationTime(date('c', mktime(1, 2, 3)));
 
 		$this->userDao->save($user1);
@@ -62,6 +60,17 @@ class UserSearchServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getUserSearchService()
 	{
-		return new \Szurubooru\Dao\Services\UserSearchService($this->userDao);
+		return new \Szurubooru\Dao\Services\UserSearchService($this->databaseConnection, $this->userDao);
+	}
+
+	private function getTestUser($userName)
+	{
+		$user = new \Szurubooru\Entities\User();
+		$user->setName($userName);
+		$user->setPasswordHash('whatever');
+		$user->setLastLoginTime('whatever');
+		$user->setRegistrationTime('whatever');
+		$user->setAccessRank('whatever');
+		return $user;
 	}
 }

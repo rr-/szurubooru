@@ -4,24 +4,24 @@ namespace Szurubooru\Tests;
 abstract class AbstractDatabaseTestCase extends \Szurubooru\Tests\AbstractTestCase
 {
 	protected $databaseConnection;
-	protected $upgradeService;
 
 	public function setUp()
 	{
-		$host = 'localhost';
-		$port = 27017;
-		$database = 'test';
-		$config = $this->mockConfig();
-		$config->set('database/host', 'localhost');
-		$config->set('database/port', '27017');
-		$config->set('database/name', 'test');
+		parent::setUp();
+		$config = $this->mockConfig($this->createTestDirectory());
+		$config->set('database/dsn', 'sqlite::memory:');
+
 		$this->databaseConnection = new \Szurubooru\DatabaseConnection($config);
-		$this->upgradeService = new \Szurubooru\UpgradeService($this->databaseConnection);
-		$this->upgradeService->prepareForUsage();
+
+		$upgradeRepository = \Szurubooru\Injector::get(\Szurubooru\Upgrades\UpgradeRepository::class);
+		$upgradeService = new \Szurubooru\Services\UpgradeService($config, $this->databaseConnection, $upgradeRepository);
+		$upgradeService->runUpgradesQuiet();
 	}
 
 	public function tearDown()
 	{
-		$this->upgradeService->removeAllData();
+		parent::tearDown();
+		if ($this->databaseConnection)
+			$this->databaseConnection->close();
 	}
 }

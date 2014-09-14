@@ -10,17 +10,16 @@ class TokenDao extends AbstractDao
 
 	public function findByName($tokenName)
 	{
-		$arrayEntity = $this->collection->findOne(['name' => $tokenName]);
-		return $this->entityConverter->toEntity($arrayEntity);
+		return $this->findOneBy('name', $tokenName);
 	}
 
 	public function deleteByName($tokenName)
 	{
-		$this->collection->remove(['name' => $tokenName]);
+		return $this->deleteBy('name', $tokenName);
 	}
 
 	public function deleteByAdditionalData($additionalData)
 	{
-		$this->collection->remove(['additionalData' => $additionalData]);
+		return $this->deleteBy('additionalData', $additionalData);
 	}
 }

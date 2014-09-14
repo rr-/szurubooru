@@ -9,6 +9,7 @@ final class TokenDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 		$token = new \Szurubooru\Entities\Token();
 		$token->setName('test');
+		$token->setPurpose(\Szurubooru\Entities\Token::PURPOSE_LOGIN);
 
 		$tokenDao->save($token);
 		$expected = $token;
