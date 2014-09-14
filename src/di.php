@@ -10,6 +10,7 @@ return [
 	'upgrades' => DI\factory(function (DI\container $container) {
 		return [
 			$container->get(\Szurubooru\Upgrades\Upgrade01::class),
+			$container->get(\Szurubooru\Upgrades\Upgrade02::class),
 		];
 	}),
 

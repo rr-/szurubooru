@@ -23,6 +23,7 @@ final class User extends Entity
 	protected $lastLoginTime;
 	protected $avatarStyle;
 	protected $browsingSettings;
+	protected $accountConfirmed = false;
 
 	public function getName()
 	{
@@ -52,6 +53,16 @@ final class User extends Entity
 	public function setEmailUnconfirmed($emailUnconfirmed)
 	{
 		$this->emailUnconfirmed = $emailUnconfirmed;
+	}
+
+	public function isAccountConfirmed()
+	{
+		return $this->accountConfirmed;
+	}
+
+	public function setAccountConfirmed($accountConfirmed)
+	{
+		$this->accountConfirmed = boolval($accountConfirmed);
 	}
 
 	public function getPasswordHash()

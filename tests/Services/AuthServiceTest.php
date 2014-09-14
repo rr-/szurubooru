@@ -75,7 +75,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testUser->setPasswordHash('hash');
 		$this->userServiceMock->expects($this->once())->method('getByNameOrEmail')->willReturn($testUser);
 
-		$this->setExpectedException(\Exception::class, 'User didn\'t confirm mail yet');
+		$this->setExpectedException(\Exception::class, 'User didn\'t confirm account yet');
 		$authService = $this->getAuthService();
 		$formData = new \Szurubooru\FormData\LoginFormData();
 		$formData->userNameOrEmail = 'dummy';
@@ -147,7 +147,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$testToken->setAdditionalData($testUser->getId());
 		$testToken->setPurpose(\Szurubooru\Entities\Token::PURPOSE_LOGIN);
 
-		$this->setExpectedException(\Exception::class, 'User didn\'t confirm mail yet');
+		$this->setExpectedException(\Exception::class, 'User didn\'t confirm account yet');
 		$authService = $this->getAuthService();
 		$authService->loginFromToken($testToken);
 

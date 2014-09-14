@@ -106,6 +106,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertEquals('hash', $savedUser->getPasswordHash());
 		$this->assertEquals(\Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER, $savedUser->getAccessRank());
 		$this->assertEquals('now', $savedUser->getRegistrationTime());
+		$this->assertTrue($savedUser->isAccountConfirmed());
 	}
 
 	public function testValidRegistrationWithMailActivation()
@@ -136,6 +137,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertEquals('hash', $savedUser->getPasswordHash());
 		$this->assertEquals(\Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER, $savedUser->getAccessRank());
 		$this->assertEquals('now', $savedUser->getRegistrationTime());
+		$this->assertFalse($savedUser->isAccountConfirmed());
 	}
 
 	public function testAccessRankOfFirstUser()
@@ -220,6 +222,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$savedUser = $userService->updateUser($testUser, $formData);
 		$this->assertEquals('hikari@geofront.gov', $savedUser->getEmail());
 		$this->assertNull($savedUser->getEmailUnconfirmed());
+		$this->assertTrue($savedUser->isAccountConfirmed());
 	}
 
 	public function testUpdatingEmailWithConfirmation()
@@ -237,6 +240,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$savedUser = $userService->updateUser($testUser, $formData);
 		$this->assertNull($savedUser->getEmail());
 		$this->assertEquals('hikari@geofront.gov', $savedUser->getEmailUnconfirmed());
+		$this->assertFalse($savedUser->isAccountConfirmed());
 	}
 
 	public function testUpdatingEmailWithConfirmationToExisting()
@@ -261,6 +265,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		$testUser = new \Szurubooru\Entities\User('yep, still me');
 		$testUser->setEmail('hikari@geofront.gov');
+		$testUser->setAccountConfirmed(true);
 		$testUser->setEmailUnconfirmed('coolcat32@sakura.ne.jp');
 
 		$formData = new \Szurubooru\FormData\UserEditFormData;
@@ -275,6 +280,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$savedUser = $userService->updateUser($testUser, $formData);
 		$this->assertEquals('hikari@geofront.gov', $savedUser->getEmail());
 		$this->assertNull($savedUser->getEmailUnconfirmed());
+		$this->assertTrue($savedUser->isAccountConfirmed());
 	}
 
 	private function getUserService()

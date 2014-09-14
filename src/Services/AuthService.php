@@ -100,7 +100,7 @@ class AuthService
 
 	private function doFinalChecksOnUser($user)
 	{
-		if (!$user->getEmail() and $this->config->security->needEmailActivationToRegister)
-			throw new \DomainException('User didn\'t confirm mail yet.');
+		if (!$user->isAccountConfirmed() and $this->config->security->needEmailActivationToRegister)
+			throw new \DomainException('User didn\'t confirm account yet.');
 	}
 }

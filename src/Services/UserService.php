@@ -253,6 +253,7 @@ class UserService
 		//whoever confirms e-mail first, wins.
 		$this->assertNoUserWithThisEmail($user, $user->getEmailUnconfirmed());
 
+		$user->setAccountConfirmed(true);
 		if ($user->getEmailUnconfirmed())
 		{
 			$user->setEmail($user->getEmailUnconfirmed());
