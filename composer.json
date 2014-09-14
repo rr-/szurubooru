@@ -1,6 +1,6 @@
 {
 	"require": {
 		"mnapoli/php-di": "~4.0",
-		"phpcheckstyle/phpcheckstyle": "~0.14"
+		"jbrooksuk/phpcheckstyle": "dev-master"
 	}
 }

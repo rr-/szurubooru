@@ -5,6 +5,6 @@ final class PostDao extends AbstractDao implements ICrudDao
 {
 	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		parent::__construct($databaseConnection, 'posts', '\Szurubooru\Entities\Post');
+		parent::__construct($databaseConnection, 'posts', \Szurubooru\Entities\Post::class);
 	}
 }

@@ -6,7 +6,7 @@ class UserDao extends AbstractDao implements ICrudDao
 	public function __construct(
 		\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		parent::__construct($databaseConnection, 'users', '\Szurubooru\Entities\User');
+		parent::__construct($databaseConnection, 'users', \Szurubooru\Entities\User::class);
 	}
 
 	public function findByName($userName)

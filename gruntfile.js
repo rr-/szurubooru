@@ -71,12 +71,7 @@ module.exports = function(grunt) {
 
 		shell: {
 			phpcheckstyle: {
-				options: {
-					execOptions: {
-						cwd: path.join(path.resolve(), 'vendor/phpcheckstyle/phpcheckstyle'),
-					},
-				},
-				command: 'php run.php --config <%= phpCheckStyleConfigPath %> --src <%= phpSourcesDir %> --exclude di.php --format console',
+				command: 'php vendor/jbrooksuk/phpcheckstyle/run.php --config <%= phpCheckStyleConfigPath %> --src <%= phpSourcesDir %> --exclude di.php --format console',
 			},
 
 			tests: {
