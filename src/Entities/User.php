@@ -10,9 +10,9 @@ final class User extends Entity
 	const ACCESS_RANK_MODERATOR = 4;
 	const ACCESS_RANK_ADMINISTRATOR = 5;
 
-	const AVATAR_STYLE_GRAVATAR = 'gravatar';
-	const AVATAR_STYLE_MANUAL = 'manual';
-	const AVATAR_STYLE_BLANK = 'blank';
+	const AVATAR_STYLE_GRAVATAR = 1;
+	const AVATAR_STYLE_MANUAL = 2;
+	const AVATAR_STYLE_BLANK = 3;
 
 	protected $name;
 	protected $email;
@@ -82,7 +82,7 @@ final class User extends Entity
 
 	public function setAccessRank($accessRank)
 	{
-		$this->accessRank = $accessRank;
+		$this->accessRank = intval($accessRank);
 	}
 
 	public function getRegistrationTime()
@@ -112,7 +112,7 @@ final class User extends Entity
 
 	public function setAvatarStyle($avatarStyle)
 	{
-		$this->avatarStyle = $avatarStyle;
+		$this->avatarStyle = intval($avatarStyle);
 	}
 
 	public function getBrowsingSettings()

@@ -7,7 +7,7 @@ abstract class Entity
 
 	public function __construct($id = null)
 	{
-		$this->id = $id;
+		$this->id = $id === null ? null : intval($id);
 	}
 
 	public function getId()

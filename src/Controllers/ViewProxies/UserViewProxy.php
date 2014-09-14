@@ -20,7 +20,7 @@ class UserViewProxy extends AbstractViewProxy
 			$result->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankToString($user->getAccessRank());
 			$result->registrationTime = $user->getRegistrationTime();
 			$result->lastLoginTime = $user->getLastLoginTime();
-			$result->avatarStyle = $user->getAvatarStyle();
+			$result->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleToString($user->getAvatarStyle());
 
 			if ($this->privilegeService->isLoggedIn($user))
 			{

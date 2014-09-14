@@ -58,8 +58,8 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testIsLoggedInByUserId()
 	{
-		$testUser1 = new \Szurubooru\Entities\User('dummy');
-		$testUser2 = new \Szurubooru\Entities\User('godzilla');
+		$testUser1 = new \Szurubooru\Entities\User(5);
+		$testUser2 = new \Szurubooru\Entities\User(13);
 		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
 
 		$privilegeService = $this->getPrivilegeService();

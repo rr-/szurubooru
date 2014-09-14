@@ -75,6 +75,7 @@ class AuthService
 		$user = new \Szurubooru\Entities\User();
 		$user->setName('Anonymous user');
 		$user->setAccessRank(\Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS);
+		$user->setAvatarStyle(\Szurubooru\Entities\User::AVATAR_STYLE_BLANK);
 		return $user;
 	}
 
