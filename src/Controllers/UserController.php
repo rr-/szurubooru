@@ -68,7 +68,7 @@ final class UserController extends AbstractController
 		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
 		$formData = new \Szurubooru\FormData\UserEditFormData($this->inputReader);
 
-		if ($formData->avatarStyle !== null)
+		if ($formData->avatarStyle !== null || $formData->avatarContent !== null)
 		{
 			$this->privilegeService->assertPrivilege(
 				$this->privilegeService->isLoggedIn($userNameOrEmail)
