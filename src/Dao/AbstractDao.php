@@ -6,17 +6,15 @@ abstract class AbstractDao implements ICrudDao
 	protected $pdo;
 	protected $fpdo;
 	protected $tableName;
-	protected $entityName;
 	protected $entityConverter;
 
 	public function __construct(
 		\Szurubooru\DatabaseConnection $databaseConnection,
 		$tableName,
-		$entityName)
+		\Szurubooru\Dao\EntityConverters\IEntityConverter $entityConverter)
 	{
-		$this->entityConverter = new EntityConverter($entityName);
-		$this->entityName = $entityName;
 		$this->tableName = $tableName;
+		$this->entityConverter = $entityConverter;
 
 		$this->pdo = $databaseConnection->getPDO();
 		$this->fpdo = new \FluentPDO($this->pdo);

@@ -3,8 +3,12 @@ namespace Szurubooru\Dao;
 
 final class PostDao extends AbstractDao implements ICrudDao
 {
-	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
+	public function __construct(
+		\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		parent::__construct($databaseConnection, 'posts', \Szurubooru\Entities\Post::class);
+		parent::__construct(
+			$databaseConnection,
+			'posts',
+			new \Szurubooru\Dao\EntityConverters\PostEntityConverter());
 	}
 }

@@ -5,7 +5,10 @@ class TokenDao extends AbstractDao
 {
 	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		parent::__construct($databaseConnection, 'tokens', \Szurubooru\Entities\Token::class);
+		parent::__construct(
+			$databaseConnection,
+			'tokens',
+			new \Szurubooru\Dao\EntityConverters\TokenEntityConverter());
 	}
 
 	public function findByName($tokenName)

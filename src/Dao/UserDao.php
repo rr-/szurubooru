@@ -3,10 +3,12 @@ namespace Szurubooru\Dao;
 
 class UserDao extends AbstractDao implements ICrudDao
 {
-	public function __construct(
-		\Szurubooru\DatabaseConnection $databaseConnection)
+	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		parent::__construct($databaseConnection, 'users', \Szurubooru\Entities\User::class);
+		parent::__construct(
+			$databaseConnection,
+			'users',
+			new \Szurubooru\Dao\EntityConverters\UserEntityConverter());
 	}
 
 	public function findByName($userName)
