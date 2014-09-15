@@ -216,10 +216,10 @@ class UserService
 		$user->setAvatarStyle($newAvatarStyle);
 	}
 
-	private function updateUserAvatarContent(\Szurubooru\Entities\User $user, $newAvatarContentInBase64)
+	private function updateUserAvatarContent(\Szurubooru\Entities\User $user, $newAvatarContent)
 	{
 		$target = $this->getCustomAvatarSourcePath($user);
-		$this->fileService->saveFromBase64($newAvatarContentInBase64, $target);
+		$this->fileService->save($target, $newAvatarContent);
 		$this->thumbnailService->deleteUsedThumbnails($target);
 	}
 

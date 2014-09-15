@@ -22,7 +22,7 @@ class UserEditFormData implements \Szurubooru\IValidatable
 				$this->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankFromString($inputReader->accessRank);
 			if ($inputReader->avatarStyle !== null)
 				$this->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($inputReader->avatarStyle);
-			$this->avatarContent = $inputReader->avatarContent;
+			$this->avatarContent = $inputReader->decodeBase64($inputReader->avatarContent);
 			$this->browsingSettings = $inputReader->browsingSettings;
 		}
 	}

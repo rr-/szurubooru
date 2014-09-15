@@ -24,4 +24,12 @@ final class InputReader extends \ArrayObject
 			return null;
 		return parent::offsetGet($index);
 	}
+
+	public function decodeBase64($base64string)
+	{
+		$commaPosition = strpos($base64string, ',');
+		if ($commaPosition !== null)
+			$base64string = substr($base64string, $commaPosition + 1);
+		return base64_decode($base64string);
+	}
 }

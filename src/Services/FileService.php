@@ -12,17 +12,17 @@ class FileService
 		$this->httpHelper = $httpHelper;
 	}
 
-	public function serve($source, $options = [])
+	public function serve($target, $options = [])
 	{
-		$finalSource = $this->getFullPath($source);
+		$fullPath = $this->getFullPath($target);
 
 		$daysToLive = isset($options->daysToLive)
 			? $options->daysToLive
 			: 7;
 
 		$secondsToLive = $daysToLive * 24 * 60 * 60;
-		$lastModified = filemtime($finalSource);
-		$eTag = md5(file_get_contents($finalSource)); //todo: faster
+		$lastModified = filemtime($fullPath);
+		$eTag = md5(file_get_contents($fullPath)); //todo: faster
 
 		$ifModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
 			? $_SERVER['HTTP_IF_MODIFIED_SINCE']
@@ -45,7 +45,7 @@ class FileService
 			'Content-Type',
 			isset($options->mimeType)
 				? $options->mimeType
-				: mime_content_type($finalSource));
+				: mime_content_type($fullPath));
 
 		if (strtotime($ifModifiedSince) === $lastModified or $eTagHeader === $eTag)
 		{
@@ -54,38 +54,34 @@ class FileService
 		else
 		{
 			$this->httpHelper->setResponseCode(200);
-			readfile($finalSource);
+			readfile($fullPath);
 		}
 		exit;
 	}
 
 	public function createFolders($target)
 	{
-		$finalTarget = $this->getFullPath($target);
-		if (!file_exists($finalTarget))
-			mkdir($finalTarget, 0777, true);
+		$fullPath = $this->getFullPath($target);
+		if (!file_exists($fullPath))
+			mkdir($fullPath, 0777, true);
 	}
 
-	public function exists($source)
+	public function exists($target)
 	{
-		$finalSource = $this->getFullPath($source);
-		return $source and file_exists($finalSource);
+		$fullPath = $this->getFullPath($target);
+		return $target and file_exists($fullPath);
 	}
 
-	public function delete($source)
+	public function delete($target)
 	{
-		$finalSource = $this->getFullPath($source);
-		if (file_exists($finalSource))
-			unlink($finalSource);
+		$fullPath = $this->getFullPath($target);
+		if (file_exists($fullPath))
+			unlink($fullPath);
 	}
 
-	public function saveFromBase64($base64string, $destination)
+	public function save($destination, $data)
 	{
 		$finalDestination = $this->getFullPath($destination);
-		$commaPosition = strpos($base64string, ',');
-		if ($commaPosition !== null)
-			$base64string = substr($base64string, $commaPosition + 1);
-		$data = base64_decode($base64string);
 		file_put_contents($finalDestination, $data);
 	}
 
