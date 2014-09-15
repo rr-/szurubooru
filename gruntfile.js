@@ -2,40 +2,40 @@ var path = require('path');
 var fs = require('fs');
 var ini = require('ini');
 
+var phpCheckStyleConfigPath = path.join(path.resolve(), 'phpcheckstyle.cfg');
+var phpSourcesDir = path.join(path.resolve(), 'src');
+var jsSourcesDir = path.join(path.resolve(), 'public_html/js');
+var cssSourcesDir = path.join(path.resolve(), 'public_html/css');
+var templatesDir = path.join(path.resolve(), 'public_html/templates');
+
+var config = readConfig([
+		path.join(path.resolve(), 'data/config.ini'),
+		path.join(path.resolve(), 'data/local.ini')
+	]);
+
+function readConfig(configPaths) {
+	var iniContent = '';
+	for (var i = 0; i < configPaths.length; i ++) {
+		var configPath = configPaths[i];
+		if (fs.existsSync(configPath)) {
+			iniContent += fs.readFileSync(configPath, 'utf-8');
+		}
+	}
+	var config = ini.parse(iniContent);
+	return config;
+}
+
+function readTemplates(grunt) {
+	var templatePaths = grunt.file.expand(templatesDir + '/**/*.tpl');
+	var templates = {};
+	for (var i = 0; i < templatePaths.length; i ++) {
+		var templatePath = templatePaths[i];
+		templates[path.basename(templatePath)] = fs.readFileSync(templatePath);
+	}
+	return templates;
+}
+
 module.exports = function(grunt) {
-
-	var phpCheckStyleConfigPath = path.join(path.resolve(), 'phpcheckstyle.cfg');
-	var phpSourcesDir = path.join(path.resolve(), 'src');
-	var jsSourcesDir = path.join(path.resolve(), 'public_html/js');
-	var cssSourcesDir = path.join(path.resolve(), 'public_html/css');
-	var templatesDir = path.join(path.resolve(), 'public_html/templates');
-
-	var config = readConfig([
-			path.join(path.resolve(), 'data/config.ini'),
-			path.join(path.resolve(), 'data/local.ini')
-		]);
-
-	function readConfig(configPaths) {
-		var iniContent = '';
-		for (var i = 0; i < configPaths.length; i ++) {
-			var configPath = configPaths[i];
-			if (fs.existsSync(configPath)) {
-				iniContent += fs.readFileSync(configPath, 'utf-8');
-			}
-		}
-		var config = ini.parse(iniContent);
-		return config;
-	}
-
-	function readTemplates() {
-		var templatePaths = grunt.file.expand(templatesDir + '/**/*.tpl');
-		var templates = {};
-		for (var i = 0; i < templatePaths.length; i ++) {
-			var templatePath = templatePaths[i];
-			templates[path.basename(templatePath)] = fs.readFileSync(templatePath);
-		}
-		return templates;
-	}
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -113,7 +113,7 @@ module.exports = function(grunt) {
 			options: {
 				data: {
 					serviceName: config.basic.serviceName,
-					templates: readTemplates(),
+					templates: readTemplates(grunt),
 					timestamp: grunt.template.today('isoDateTime'),
 				}
 			},
