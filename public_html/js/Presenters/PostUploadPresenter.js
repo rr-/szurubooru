@@ -33,28 +33,28 @@ App.Presenters.PostUploadPresenter = function(
 		$el.html(template());
 		$messages = $el.find('.messages');
 
-		new App.Controls.FileDropper($el.find('[name=post-content]'), fileHandlerChanged, jQuery);
+		tagInput = new App.Controls.TagInput($el.find('form [name=tags]'), _, jQuery);
+		App.Controls.FileDropper($el.find('[name=post-content]'), fileHandlerChanged, jQuery);
+
 		$el.find('.url-handler input').keydown(urlHandlerKeyPressed);
 		$el.find('.url-handler button').click(urlHandlerButtonClicked);
 		$el.find('thead th.checkbox').click(postTableSelectAllCheckboxClicked);
 
-		mousetrap.bind('a', function(e) {
-			if (!e.altKey && !e.ctrlKey) {
-				selectPrevPostInTable();
-			}
-		}, 'keyup');
-		mousetrap.bind('d', function(e) {
-			if (!e.altKey && !e.ctrlKey) {
-				selectNextPostInTable();
-			}
-		}, 'keyup');
+		mousetrap.bind('a', simpleKeyPressed(selectPrevPostTableRow), 'keyup');
+		mousetrap.bind('d', simpleKeyPressed(selectNextPostTableRow), 'keyup');
 
 		$el.find('.remove').click(removeButtonClicked);
 		$el.find('.move-up').click(moveUpButtonClicked);
 		$el.find('.move-down').click(moveDownButtonClicked);
 		$el.find('.submit').click(submitButtonClicked);
+	}
 
-		tagInput = new App.Controls.TagInput($el.find('form [name=tags]'), _, jQuery);
+	function simpleKeyPressed(callback) {
+		return function(e) {
+			if (!e.altKey && !e.ctrlKey) {
+				callback();
+			}
+		};
 	}
 
 	function getDefaultPost() {
@@ -143,7 +143,14 @@ App.Presenters.PostUploadPresenter = function(
 		var allPosts = getAllPosts();
 		allPosts.push(post);
 		setAllPosts(allPosts);
+		createPostTableRow(post);
+	}
 
+	function postChanged(post) {
+		updatePostTableRow(post);
+	}
+
+	function createPostTableRow(post) {
 		var $table = $el.find('table');
 		var $row = $table.find('.template').clone(true);
 
@@ -159,11 +166,11 @@ App.Presenters.PostUploadPresenter = function(
 
 		postChanged(post);
 
-		selectPostInTable(post);
+		selectPostTableRow(post);
 		showOrHidePostsTable();
 	}
 
-	function postChanged(post) {
+	function updatePostTableRow(post) {
 		var $row = post.$tableRow;
 		$row.find('.tags').text(post.tags.join(', ') || '-');
 		$row.find('.safety div').attr('class', 'safety-' + post.safety);
@@ -373,8 +380,6 @@ App.Presenters.PostUploadPresenter = function(
 			if (index === -1) {
 				post.tags.push(tag);
 			}
-		});
-		jQuery.each(posts, function(i, post) {
 			postChanged(post);
 		});
 	}
@@ -385,26 +390,22 @@ App.Presenters.PostUploadPresenter = function(
 			if (index !== -1) {
 				post.tags.splice(index, 1);
 			}
-		});
-		jQuery.each(posts, function(i, post) {
 			postChanged(post);
 		});
 	}
 
 	function postTableRowImageHovered(e) {
 		var $img = jQuery(this);
-		if (!$img.attr('src')) {
-			return;
+		if ($img.attr('src')) {
+			var $lightbox = jQuery('#lightbox');
+			$lightbox.find('img').attr('src', $img.attr('src'));
+			$lightbox
+				.show()
+				.css({
+					left: ($img.position().left + $img.outerWidth()) + 'px',
+					top: ($img.position().top + ($img.outerHeight() - $lightbox.outerHeight()) / 2) + 'px',
+				});
 		}
-
-		var $lightbox = jQuery('#lightbox');
-		$lightbox.find('img').attr('src', $img.attr('src'));
-		$lightbox
-			.show()
-			.css({
-				left: ($img.position().left + $img.outerWidth()) + 'px',
-				top: ($img.position().top + ($img.outerHeight() - $lightbox.outerHeight()) / 2) + 'px',
-			});
 	}
 
 	function postTableRowImageUnhovered(e) {
@@ -412,31 +413,27 @@ App.Presenters.PostUploadPresenter = function(
 		$lightbox.hide();
 	}
 
-	function selectPostInTable(post) {
-		var $table = $el.find('table');
-		$table.find('tbody input[type=checkbox]').prop('checked', false);
-		$table.find('tbody tr').each(function(i, row) {
-			var $row = jQuery(row);
-			if (post === $row.data('post')) {
-				$row.find('input[type=checkbox]').prop('checked', true);
-				return false;
-			}
-		});
-		postTableCheckboxesChanged();
-	}
-
-	function selectPrevPostInTable() {
-		var prevPost = $el.find('tbody tr.selected:eq(0)').prev().data('post');
-		if (prevPost) {
-			selectPostInTable(prevPost);
+	function selectPostTableRow(post) {
+		if (post) {
+			var $table = $el.find('table');
+			$table.find('tbody input[type=checkbox]').prop('checked', false);
+			$table.find('tbody tr').each(function(i, row) {
+				var $row = jQuery(row);
+				if (post === $row.data('post')) {
+					$row.find('input[type=checkbox]').prop('checked', true);
+					return false;
+				}
+			});
+			postTableCheckboxesChanged();
 		}
 	}
 
-	function selectNextPostInTable() {
-		var nextPost = $el.find('tbody tr.selected:eq(0)').next().data('post');
-		if (nextPost) {
-			selectPostInTable(nextPost);
-		}
+	function selectPrevPostTableRow() {
+		selectPostTableRow($el.find('tbody tr.selected:eq(0)').prev().data('post'));
+	}
+
+	function selectNextPostTableRow() {
+		selectPostTableRow($el.find('tbody tr.selected:eq(0)').next().data('post'));
 	}
 
 	function showOrHidePostsTable() {
