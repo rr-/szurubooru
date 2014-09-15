@@ -61,7 +61,7 @@ class FileService
 
 	public function createFolders($target)
 	{
-		$fullPath = $this->getFullPath($target);
+		$fullPath = $this->getFullPath(dirname($target));
 		if (!file_exists($fullPath))
 			mkdir($fullPath, 0777, true);
 	}
@@ -81,6 +81,7 @@ class FileService
 
 	public function save($destination, $data)
 	{
+		$this->createFolders($destination);
 		$finalDestination = $this->getFullPath($destination);
 		file_put_contents($finalDestination, $data);
 	}
@@ -88,5 +89,43 @@ class FileService
 	public function getFullPath($destination)
 	{
 		return $this->dataDirectory . DIRECTORY_SEPARATOR . $destination;
+	}
+
+	public function download($url, $maxBytes = null)
+	{
+		set_time_limit(60);
+		try
+		{
+			$srcHandle = fopen($url, 'rb');
+		}
+		catch (Exception $e)
+		{
+			throw new \Exception('Cannot open URL for reading: ' . $e->getMessage());
+		}
+
+		if (!$srcHandle)
+			throw new \Exception('Cannot open URL for reading');
+
+		$result = '';
+		try
+		{
+			while (!feof($srcHandle))
+			{
+				$buffer = fread($srcHandle, 4 * 1024);
+				if ($maxBytes !== null and ftell($dstHandle) > $maxBytes)
+				{
+					throw new \Exception(
+						'File is too big (maximum size: %s)',
+						TextHelper::useBytesUnits($maxBytes));
+				}
+				$result .= $buffer;
+			}
+		}
+		finally
+		{
+			fclose($srcHandle);
+		}
+
+		return $result;
 	}
 }

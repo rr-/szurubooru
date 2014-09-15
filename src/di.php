@@ -11,6 +11,7 @@ return [
 		return [
 			$container->get(\Szurubooru\Upgrades\Upgrade01::class),
 			$container->get(\Szurubooru\Upgrades\Upgrade02::class),
+			$container->get(\Szurubooru\Upgrades\Upgrade03::class),
 		];
 	}),
 
@@ -19,6 +20,7 @@ return [
 			$container->get(\Szurubooru\Controllers\AuthController::class),
 			$container->get(\Szurubooru\Controllers\UserController::class),
 			$container->get(\Szurubooru\Controllers\UserAvatarController::class),
+			$container->get(\Szurubooru\Controllers\PostController::class),
 		];
 	}),
 ];

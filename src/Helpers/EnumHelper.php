@@ -20,6 +20,21 @@ class EnumHelper
 		'blank' => \Szurubooru\Entities\User::AVATAR_STYLE_BLANK,
 	];
 
+	private static $postSafetyMap =
+	[
+		'safe' => \Szurubooru\Entities\Post::POST_SAFETY_SAFE,
+		'sketchy' => \Szurubooru\Entities\Post::POST_SAFETY_SKETCHY,
+		'unsafe' => \Szurubooru\Entities\Post::POST_SAFETY_UNSAFE,
+	];
+
+	private static $postTypeMap =
+	[
+		'image' => \Szurubooru\Entities\Post::POST_TYPE_IMAGE,
+		'video' => \Szurubooru\Entities\Post::POST_TYPE_VIDEO,
+		'flash' => \Szurubooru\Entities\Post::POST_TYPE_FLASH,
+		'youtube' => \Szurubooru\Entities\Post::POST_TYPE_YOUTUBE,
+	];
+
 	public static function accessRankToString($accessRank)
 	{
 		return self::enumToString(self::$accessRankMap, $accessRank);
@@ -40,6 +55,21 @@ class EnumHelper
 		return self::stringToEnum(self::$avatarStyleMap, $avatarStyleString);
 	}
 
+	public static function postSafetyToString($postSafety)
+	{
+		return self::enumToString(self::$postSafetyMap, $postSafety);
+	}
+
+	public static function postSafetyFromString($postSafetyString)
+	{
+		return self::stringToEnum(self::$postSafetyMap, $postSafetyString);
+	}
+
+	public static function postTypeToString($postType)
+	{
+		return self::enumToString(self::$postTypeMap, $postType);
+	}
+
 	private static function enumToString($enumMap, $enumValue)
 	{
 		$reverseMap = array_flip($enumMap);
@@ -53,7 +83,7 @@ class EnumHelper
 	{
 		$key = trim(strtolower($enumString));
 		if (!isset($enumMap[$key]))
-			throw new \DomainException('Unrecognized avatar style: ' . $enumString);
+			throw new \DomainException('Unrecognized value: ' . $enumString);
 
 		return $enumMap[$key];
 	}

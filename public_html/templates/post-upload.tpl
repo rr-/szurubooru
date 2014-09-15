@@ -47,13 +47,13 @@
 
 			<ul class="operations"><!--
 				--><li>
-					<button class="remove"><i class="fa fa-remove"></i> Remove</button>
+					<button class="post-table-op remove"><i class="fa fa-remove"></i> Remove</button>
 				</li><!--
 				--><li>
-					<button class="move-up"><i class="fa fa-chevron-up"></i> Move up</button>
+					<button class="post-table-op move-up"><i class="fa fa-chevron-up"></i> Move up</button>
 				</li><!--
 				--><li>
-					<button class="move-down"><i class="fa fa-chevron-down"></i> Move down</button>
+					<button class="post-table-op move-down"><i class="fa fa-chevron-down"></i> Move down</button>
 				</li><!--
 				--><li class="right">
 					<button class="submit highlight" type="submit"><i class="fa fa-upload"></i> Submit</button>
@@ -112,15 +112,17 @@
 						</div>
 					</div>
 
-					<div class="form-row">
-						<label class="form-label" for="post-anonymous">Anonymity:</label>
-						<div class="form-input">
-							<label for="post-anonymous">
-								<input type="checkbox" id="post-anonymous" name="anonymous"/>
-								Don't show my name in this post
-							</label>
+					<% if (canUploadPostsAnonymously) { %>
+						<div class="form-row">
+							<label class="form-label" for="post-anonymous">Anonymity:</label>
+							<div class="form-input">
+								<label for="post-anonymous">
+									<input type="checkbox" id="post-anonymous" name="anonymous"/>
+									Don't show my name in this post
+								</label>
+							</div>
 						</div>
-					</div>
+					<% } %>
 
 				</form>
 			</div>

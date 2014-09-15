@@ -7,6 +7,7 @@ App.Presenters.PostUploadPresenter = function(
 	mousetrap,
 	promise,
 	util,
+	auth,
 	api,
 	router,
 	topNavigationPresenter,
@@ -30,7 +31,9 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function render() {
-		$el.html(template());
+		$el.html(template({
+			canUploadPostsAnonymously: auth.hasPrivilege(auth.privileges.uploadPostsAnonymously)
+		}));
 		$messages = $el.find('.messages');
 
 		tagInput = new App.Controls.TagInput($el.find('form [name=tags]'), _, jQuery);
@@ -61,10 +64,10 @@ App.Presenters.PostUploadPresenter = function(
 		return {
 			safety: 'safe',
 			source: null,
-			fileName: null,
 			anonymous: false,
 			tags: [],
 
+			fileName: null,
 			content: null,
 			url: null,
 			thumbnail: null,
@@ -273,7 +276,9 @@ App.Presenters.PostUploadPresenter = function(
 			hidePostEditForm();
 		} else {
 			showPostEditForm(selectedPosts);
+			tagInput.focus();
 		}
+		$el.find('.post-table-op').prop('disabled', selectedPosts.length === 0);
 	}
 
 	function hidePostEditForm() {
@@ -292,7 +297,7 @@ App.Presenters.PostUploadPresenter = function(
 		} else {
 			var post = selectedPosts[0];
 			$postEditForm.parent('.form-slider').find('.thumbnail').slideDown();
-			$postEditForm.find('.file-name strong').text(post.fileName);
+			$postEditForm.find('.file-name strong').text(post.fileName || post.url);
 			updatePostThumbnailInForm(post);
 		}
 
@@ -488,6 +493,7 @@ App.Presenters.PostUploadPresenter = function(
 
 	function uploadNextPost() {
 		messagePresenter.hideMessages($messages);
+		messagePresenter.showInfo($messages, 'Uploading in progress&hellip;');
 
 		var posts = getAllPosts();
 		if (posts.length === 0) {
@@ -503,14 +509,16 @@ App.Presenters.PostUploadPresenter = function(
 		if (post.url) {
 			formData.url = post.url;
 		} else {
-			formData.file = post.content;
+			formData.content = post.content;
+			formData.contentFileName = post.fileName;
 		}
 		formData.source = post.source;
 		formData.safety = post.safety;
-		formData.anonymous = post.anonymous;
-		formData.tags = post.tags.join(', ');
+		formData.anonymous = (post.anonymous | 0);
+		formData.tags = post.tags.join(' ');
 
 		if (post.tags.length === 0) {
+			messagePresenter.hideMessages($messages);
 			messagePresenter.showError($messages, 'No tags set.');
 			interactionEnabled = true;
 			return;
@@ -519,9 +527,12 @@ App.Presenters.PostUploadPresenter = function(
 		promise.wait(api.post('/posts', formData)).then(function(response) {
 			$row.slideUp(function(response) {
 				$row.remove();
+				posts.shift();
+				setAllPosts(posts);
 				uploadNextPost();
 			});
 		}).fail(function(response) {
+			messagePresenter.hideMessages($messages);
 			messagePresenter.showError($messages, response.json && response.json.error || response);
 			interactionEnabled = true;
 		});
@@ -536,7 +547,6 @@ App.Presenters.PostUploadPresenter = function(
 		$el.find('tbody input[type=checkbox]').prop('checked', false);
 		postTableCheckboxesChanged();
 
-		messagePresenter.showInfo($messages, 'Uploading in progress&hellip;');
 		interactionEnabled = false;
 		uploadNextPost();
 
@@ -549,4 +559,4 @@ App.Presenters.PostUploadPresenter = function(
 
 };
 
-App.DI.register('postUploadPresenter', ['_', 'jQuery', 'mousetrap', 'promise', 'util', 'api', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostUploadPresenter);
+App.DI.register('postUploadPresenter', ['_', 'jQuery', 'mousetrap', 'promise', 'util', 'auth', 'api', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostUploadPresenter);

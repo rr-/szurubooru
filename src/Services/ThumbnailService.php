@@ -41,7 +41,7 @@ class ThumbnailService
 
 		$fullSource = $this->fileService->getFullPath($source);
 		$fullTarget = $this->fileService->getFullPath($target);
-		$this->fileService->createFolders(dirname($target));
+		$this->fileService->createFolders($target);
 		$this->thumbnailGenerator->generate($fullSource, $fullTarget, $width, $height);
 
 		return $target;

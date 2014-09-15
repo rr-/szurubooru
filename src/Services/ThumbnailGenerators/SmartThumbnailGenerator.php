@@ -22,32 +22,17 @@ class SmartThumbnailGenerator implements IThumbnailGenerator
 		if (!file_exists($srcPath))
 			throw new \InvalidArgumentException($srcPath . ' does not exist');
 
-		$mime = mime_content_type($srcPath);
+		$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromFile($srcPath);
 
-		if ($this->isFlash($mime))
+		if (\Szurubooru\Helpers\MimeHelper::isFlash($mime))
 			return $this->flashThumbnailGenerator->generate($srcPath, $dstPath, $width, $height);
 
-		if ($this->isVideo($mime))
+		if (\Szurubooru\Helpers\MimeHelper::isVideo($mime))
 			return $this->videoThumbnailGenerator->generate($srcPath, $dstPath, $width, $height);
 
-		if ($this->isImage($mime))
+		if (\Szurubooru\Helpers\MimeHelper::isImage($mime))
 			return $this->imageThumbnailGenerator->generate($srcPath, $dstPath, $width, $height);
 
 		throw new \InvalidArgumentException('Invalid thumbnail file type: ' . $mime);
-	}
-
-	private function isFlash($mime)
-	{
-		return $mime === 'application/x-shockwave-flash';
-	}
-
-	private function isVideo($mime)
-	{
-		return $mime === 'application/ogg' or preg_match('/video\//', $mime);
-	}
-
-	private function isImage($mime)
-	{
-		return in_array($mime, ['image/jpeg', 'image/png', 'image/gif']);
 	}
 }

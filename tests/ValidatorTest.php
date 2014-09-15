@@ -124,6 +124,33 @@ final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertNull($validator->validatePassword('password'));
 	}
 
+	public function testNoTags()
+	{
+		$this->setExpectedException(\Exception::class, 'Tags cannot be empty');
+		$validator = $this->getValidator();
+		$validator->validatePostTags([]);
+	}
+
+	public function testEmptyTags()
+	{
+		$this->setExpectedException(\Exception::class, 'Tags cannot be empty');
+		$validator = $this->getValidator();
+		$validator->validatePostTags(['good_tag', '']);
+	}
+
+	public function testTagsWithInvalidCharacters()
+	{
+		$this->setExpectedException(\Exception::class, 'Tags cannot contain any of following');
+		$validator = $this->getValidator();
+		$validator->validatePostTags(['good_tag', 'bad' . chr(160) . 'tag']);
+	}
+
+	public function testValidTags()
+	{
+		$validator = $this->getValidator();
+		$this->assertNull($validator->validatePostTags(['good_tag', 'good_tag2', 'góód_as_well', ':3']));
+	}
+
 	private function getValidator()
 	{
 		return new \Szurubooru\Validator($this->configMock);

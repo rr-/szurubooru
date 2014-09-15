@@ -26,6 +26,16 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 		return $path;
 	}
 
+	public function getTestFile($fileName)
+	{
+		return file_get_contents($this->getTestFilePath($fileName));
+	}
+
+	public function getTestFilePath($fileName)
+	{
+		return __DIR__ . DIRECTORY_SEPARATOR . 'test_files' . DIRECTORY_SEPARATOR . $fileName;
+	}
+
 	protected function tearDown()
 	{
 		$this->cleanTestDirectory();

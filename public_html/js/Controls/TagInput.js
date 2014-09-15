@@ -11,6 +11,7 @@ App.Controls.TagInput = function(
 	var KEY_RETURN = 13;
 	var KEY_SPACE = 32;
 	var KEY_BACKSPACE = 8;
+	var tagConfirmKeys = [KEY_RETURN, KEY_SPACE];
 
 	var tags = [];
 	var options = {
@@ -54,7 +55,7 @@ App.Controls.TagInput = function(
 	});
 
 	$input.unbind('keydown').bind('keydown', function(e) {
-		if (e.which === KEY_RETURN || e.which === KEY_SPACE) {
+		if (_.contains(tagConfirmKeys, e.which)) {
 			e.preventDefault();
 			var tag = $input.val();
 			addTag(tag);
@@ -128,11 +129,16 @@ App.Controls.TagInput = function(
 		return tags;
 	}
 
+	function focus() {
+		$input.focus();
+	}
+
 	_.extend(options, {
 		setTags: setTags,
 		getTags: getTags,
 		removeTag: removeTag,
 		addTag: addTag,
+		focus: focus,
 	});
 	return options;
 };

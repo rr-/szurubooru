@@ -6,6 +6,16 @@ final class Tag extends Entity
 	protected $name;
 	protected $usages;
 
+	public function getId()
+	{
+		return $this->name;
+	}
+
+	public function setId($id)
+	{
+		$this->name = $id;
+	}
+
 	public function getName()
 	{
 		return $this->name;

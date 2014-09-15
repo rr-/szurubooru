@@ -51,19 +51,25 @@ input[type=button] {
 	background: #eee;
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 17px;
+}
+button:not(:disabled),
+input[type=button]:not(:disabled) {
 	cursor: pointer;
 }
-button:hover,
-input[type=button]:hover {
+button:not(:disabled):hover,
+input[type=button]:not(:disabled):hover {
 	background: #f5f5f5;
+}
+button:disabled {
+	color: gray;
 }
 
 button.highlight,
 input[type=button].highlight {
 	background: #ad5;
 }
-button:hover.highlight,
-input[type=button]:hover.highlight {
+button:not(:disabled):hover.highlight,
+input[type=button]:not(:disabled):hover.highlight {
 	background: #dfa;
 }
 

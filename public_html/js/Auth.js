@@ -22,6 +22,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		listSketchyPosts: 'listSketchyPosts',
 		listUnsafePosts: 'listUnsafePosts',
 		uploadPosts: 'uploadPosts',
+		uploadPostsAnonymously: 'uploadPostsAnonymously',
 
 		listTags: 'listTags',
 	};

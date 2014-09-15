@@ -32,17 +32,15 @@ abstract class AbstractDao implements ICrudDao
 
 	public function save(&$entity)
 	{
-		$arrayEntity = $this->entityConverter->toArray($entity);
 		if ($entity->getId())
 		{
-			$this->fpdo->update($this->tableName)->set($arrayEntity)->where('id', $entity->getId())->execute();
+			$entity = $this->update($entity);
 		}
 		else
 		{
-			$this->fpdo->insertInto($this->tableName)->values($arrayEntity)->execute();
-			$arrayEntity['id'] = $this->pdo->lastInsertId();
+			$entity = $this->create($entity);
 		}
-		$entity = $this->entityConverter->toEntity($arrayEntity);
+		$this->afterSave($entity);
 		return $entity;
 	}
 
@@ -53,6 +51,7 @@ abstract class AbstractDao implements ICrudDao
 		foreach ($query as $arrayEntity)
 		{
 			$entity = $this->entityConverter->toEntity($arrayEntity);
+			$this->afterLoad($entity);
 			$entities[$entity->getId()] = $entity;
 		}
 		return $entities;
@@ -73,6 +72,21 @@ abstract class AbstractDao implements ICrudDao
 		return $this->deleteBy('id', $entityId);
 	}
 
+	protected function update(\Szurubooru\Entities\Entity $entity)
+	{
+		$arrayEntity = $this->entityConverter->toArray($entity);
+		$this->fpdo->update($this->tableName)->set($arrayEntity)->where('id', $entity->getId())->execute();
+		return $entity;
+	}
+
+	protected function create(\Szurubooru\Entities\Entity $entity)
+	{
+		$arrayEntity = $this->entityConverter->toArray($entity);
+		$this->fpdo->insertInto($this->tableName)->values($arrayEntity)->execute();
+		$entity->setId(intval($this->pdo->lastInsertId()));
+		return $entity;
+	}
+
 	protected function hasAnyRecords()
 	{
 		return count(iterator_to_array($this->fpdo->from($this->tableName)->limit(1))) > 0;
@@ -81,11 +95,24 @@ abstract class AbstractDao implements ICrudDao
 	protected function findOneBy($columnName, $value)
 	{
 		$arrayEntity = iterator_to_array($this->fpdo->from($this->tableName)->where($columnName, $value));
-		return $arrayEntity ? $this->entityConverter->toEntity($arrayEntity[0]) : null;
+		if (!$arrayEntity)
+			return null;
+
+		$entity = $this->entityConverter->toEntity($arrayEntity[0]);
+		$this->afterLoad($entity);
+		return $entity;
 	}
 
 	protected function deleteBy($columnName, $value)
 	{
 		$this->fpdo->deleteFrom($this->tableName)->where($columnName, $value)->execute();
+	}
+
+	protected function afterLoad(\Szurubooru\Entities\Entity $entity)
+	{
+	}
+
+	protected function afterSave(\Szurubooru\Entities\Entity $entity)
+	{
 	}
 }

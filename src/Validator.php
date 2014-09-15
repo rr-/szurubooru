@@ -80,6 +80,30 @@ class Validator
 		}
 	}
 
+	public function validatePostTags($tags)
+	{
+		if (empty($tags))
+			throw new \DomainException('Tags cannot be empty.');
+
+		$illegalCharacters = str_split("\r\n\t " . chr(160));
+		foreach ($tags as $tag)
+		{
+			if (empty($tag))
+			{
+				throw new \DomainException('Tags cannot be empty.');
+			}
+
+			foreach ($illegalCharacters as $char)
+			{
+				if (strpos($tag, $char) !== false)
+				{
+					throw new \DomainException(
+						'Tags cannot contain any of following characters: ' . implode(', ', $illegalCharacters));
+				}
+			}
+		}
+	}
+
 	public function validateToken($token)
 	{
 		$this->validateNonEmpty($token, 'Token');
