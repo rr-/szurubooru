@@ -31,7 +31,7 @@ class PostService
 
 	public function createPost(\Szurubooru\FormData\UploadFormData $formData)
 	{
-		return $this->transactionManager->commit(function() use ($formData)
+		$transactionFunc = function() use ($formData)
 		{
 			$formData->validate($this->validator);
 
@@ -48,7 +48,8 @@ class PostService
 			$this->updatePostContentFromStringOrUrl($post, $formData->content, $formData->url);
 
 			return $this->postDao->save($post);
-		});
+		};
+		return $this->transactionManager->commit($transactionFunc);
 	}
 
 	private function updatePostSafety(\Szurubooru\Entities\Post $post, $newSafety)

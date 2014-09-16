@@ -16,34 +16,37 @@ class TokenService
 
 	public function getByName($tokenName)
 	{
-		return $this->transactionManager->rollback(function() use ($tokenName)
+		$transactionFunc = function() use ($tokenName)
 		{
 			$token = $this->tokenDao->findByName($tokenName);
 			if (!$token)
 				throw new \InvalidArgumentException('Token with identifier "' . $tokenName . '" not found.');
 			return $token;
-		});
+		};
+		return $this->transactionManager->rollback($transactionFunc);
 	}
 
 	public function invalidateByName($tokenName)
 	{
-		$this->transactionManager->commit(function() use ($tokenName)
+		$transactionFunc = function() use ($tokenName)
 		{
 			$this->tokenDao->deleteByName($tokenName);
-		});
+		};
+		$this->transactionManager->commit($transactionFunc);
 	}
 
 	public function invalidateByAdditionalData($additionalData)
 	{
-		$this->transactionManager->commit(function() use ($additionalData)
+		$transactionFunc = function() use ($additionalData)
 		{
 			$this->tokenDao->deleteByAdditionalData($additionalData);
-		});
+		};
+		$this->transactionManager->commit($transactionFunc);
 	}
 
 	public function createAndSaveToken($additionalData, $tokenPurpose)
 	{
-		return $this->transactionManager->commit(function() use ($additionalData, $tokenPurpose)
+		$transactionFunc = function() use ($additionalData, $tokenPurpose)
 		{
 			$token = new \Szurubooru\Entities\Token();
 			$token->setName(sha1(date('r') . uniqid() . microtime(true)));
@@ -52,6 +55,7 @@ class TokenService
 			$this->invalidateByAdditionalData($additionalData);
 			$this->tokenDao->save($token);
 			return $token;
-		});
+		};
+		return $this->transactionManager->commit($transactionFunc);
 	}
 }

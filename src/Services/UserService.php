@@ -43,7 +43,7 @@ class UserService
 
 	public function getByNameOrEmail($userNameOrEmail, $allowUnconfirmed = false)
 	{
-		return $this->transactionManager->rollback(function() use ($userNameOrEmail, $allowUnconfirmed)
+		$transactionFunc = function() use ($userNameOrEmail, $allowUnconfirmed)
 		{
 			$user = $this->userDao->findByName($userNameOrEmail);
 			if ($user)
@@ -54,44 +54,48 @@ class UserService
 				return $user;
 
 			throw new \InvalidArgumentException('User "' . $userNameOrEmail . '" was not found.');
-		});
+		};
+		return $this->transactionManager->rollback($transactionFunc);
 	}
 
 	public function getByName($userName)
 	{
-		return $this->transactionManager->rollback(function() use ($userName)
+		$transactionFunc = function() use ($userName)
 		{
 			$user = $this->userDao->findByName($userName);
 			if (!$user)
 				throw new \InvalidArgumentException('User with name "' . $userName . '" was not found.');
 			return $user;
-		});
+		};
+		return $this->transactionManager->rollback($transactionFunc);
 	}
 
 	public function getById($userId)
 	{
-		return $this->transactionManager->rollback(function() use ($userId)
+		$transactionFunc = function() use ($userId)
 		{
 			$user = $this->userDao->findById($userId);
 			if (!$user)
 				throw new \InvalidArgumentException('User with id "' . $userId . '" was not found.');
 			return $user;
-		});
+		};
+		return $this->transactionManager->rollback($transactionFunc);
 	}
 
 	public function getFiltered(\Szurubooru\FormData\SearchFormData $formData)
 	{
-		return $this->transactionManager->rollback(function() use ($formData)
+		$transactionFunc = function() use ($formData)
 		{
 			$this->validator->validate($formData);
 			$searchFilter = new \Szurubooru\Dao\SearchFilter($this->config->users->usersPerPage, $formData);
 			return $this->userSearchService->getFiltered($searchFilter);
-		});
+		};
+		return $this->transactionManager->rollback($transactionFunc);
 	}
 
 	public function createUser(\Szurubooru\FormData\RegistrationFormData $formData)
 	{
-		return $this->transactionManager->commit(function() use ($formData)
+		$transactionFunc = function() use ($formData)
 		{
 			$formData->validate($this->validator);
 
@@ -107,12 +111,13 @@ class UserService
 			$this->updateUserAvatarStyle($user, \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR);
 			$this->updateUserEmail($user, $formData->email);
 			return $this->userDao->save($user);
-		});
+		};
+		return $this->transactionManager->commit($transactionFunc);
 	}
 
 	public function updateUser(\Szurubooru\Entities\User $user, \Szurubooru\FormData\UserEditFormData $formData)
 	{
-		return $this->transactionManager->commit(function() use ($user, $formData)
+		$transactionFunc = function() use ($user, $formData)
 		{
 			$this->validator->validate($formData);
 
@@ -138,33 +143,36 @@ class UserService
 				$this->updateUserBrowsingSettings($user, $formData->browsingSettings);
 
 			return $this->userDao->save($user);
-		});
+		};
+		return $this->transactionManager->commit($transactionFunc);
 	}
 
 	public function deleteUser(\Szurubooru\Entities\User $user)
 	{
-		$this->transactionManager->commit(function() use ($user)
+		$transactionFunc = function() use ($user)
 		{
 			$this->userDao->deleteById($user->getId());
 
 			$avatarSource = $this->getCustomAvatarSourcePath($user);
 			$this->fileService->delete($avatarSource);
 			$this->thumbnailService->deleteUsedThumbnails($avatarSource);
-		});
+		};
+		$this->transactionManager->commit($transactionFunc);
 	}
 
 	public function sendPasswordResetEmail(\Szurubooru\Entities\User $user)
 	{
-		$this->transactionManager->commit(function() use ($user)
+		$transactionFunc = function() use ($user)
 		{
 			$token = $this->tokenService->createAndSaveToken($user->getName(), \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET);
 			$this->emailService->sendPasswordResetEmail($user, $token);
-		});
+		};
+		$this->transactionManager->commit($transactionFunc);
 	}
 
 	public function finishPasswordReset(\Szurubooru\Entities\Token $token)
 	{
-		return $this->transactionManager->commit(function() use ($token)
+		$transactionFunc = function() use ($token)
 		{
 			if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_PASSWORD_RESET)
 				throw new \Exception('This token is not a password reset token.');
@@ -175,21 +183,23 @@ class UserService
 			$this->userDao->save($user);
 			$this->tokenService->invalidateByName($token->getName());
 			return $newPassword;
-		});
+		};
+		return $this->transactionManager->commit($transactionFunc);
 	}
 
 	public function sendActivationEmail(\Szurubooru\Entities\User $user)
 	{
-		$this->transactionManager->commit(function() use ($user)
+		$transactionFunc = function() use ($user)
 		{
 			$token = $this->tokenService->createAndSaveToken($user->getName(), \Szurubooru\Entities\Token::PURPOSE_ACTIVATE);
 			$this->emailService->sendActivationEmail($user, $token);
-		});
+		};
+		$this->transactionManager->commit($transactionFunc);
 	}
 
 	public function finishActivation(\Szurubooru\Entities\Token $token)
 	{
-		$this->transactionManager->commit(function() use ($token)
+		$transactionFunc = function() use ($token)
 		{
 			if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_ACTIVATE)
 				throw new \Exception('This token is not an activation token.');
@@ -198,7 +208,8 @@ class UserService
 			$user = $this->confirmUserEmail($user);
 			$this->userDao->save($user);
 			$this->tokenService->invalidateByName($token->getName());
-		});
+		};
+		$this->transactionManager->commit($transactionFunc);
 	}
 
 	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)
@@ -260,11 +271,12 @@ class UserService
 
 	public function updateUserLastLoginTime(\Szurubooru\Entities\User $user)
 	{
-		$this->transactionManager->commit(function() use ($user)
+		$transactionFunc = function() use ($user)
 		{
 			$user->setLastLoginTime($this->timeService->getCurrentTime());
 			$this->userDao->save($user);
-		});
+		};
+		$this->transactionManager->commit($transactionFunc);
 	}
 
 	private function sendActivationEmailIfNeeded(\Szurubooru\Entities\User $user)
