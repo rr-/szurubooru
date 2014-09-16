@@ -6,7 +6,7 @@ class MimeHelper
 	public static function getMimeTypeFromFile($path)
 	{
 		$finfo = new \finfo(FILEINFO_MIME);
-		return self::stripCharset($finfo->load($path));
+		return self::stripCharset($finfo->file($path));
 	}
 
 	public static function getMimeTypeFromBuffer($buffer)
