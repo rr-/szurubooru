@@ -20,6 +20,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
+		$this->configMock->set('database/maxPostSize', 1000000);
 	}
 
 
@@ -143,6 +144,19 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->postService->createPost($formData);
 	}
 
+	public function testTooBigUpload()
+	{
+		$formData = new \Szurubooru\FormData\UploadFormData;
+		$formData->safety = \Szurubooru\Entities\Post::POST_SAFETY_SAFE;
+		$formData->tags = ['test'];
+		$formData->content = 'aa';
+
+		$this->configMock->set('database/maxPostSize', 1);
+		$this->setExpectedException(\Exception::class, 'Upload is too big');
+
+		$this->postService = $this->getPostService();
+		$this->postService->createPost($formData);
+	}
 
 	public function testAnonymousUploads()
 	{

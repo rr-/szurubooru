@@ -77,6 +77,9 @@ class PostService
 		if (!$content)
 			throw new \DomainException('File cannot be empty.');
 
+		if (strlen($content) > $this->config->database->maxPostSize)
+			throw new \DomainException('Upload is too big.');
+
 		$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($content);
 
 		if (\Szurubooru\Helpers\MimeHelper::isFlash($mime))
