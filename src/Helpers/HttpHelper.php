@@ -20,7 +20,12 @@ class HttpHelper
 
 	public function outputJSON($data)
 	{
-		$this->output(json_encode((array) $data));
+		$encodedJson = json_encode((array) $data);
+		$lastError = json_last_error();
+		if ($lastError !== JSON_ERROR_NONE)
+			$this->output('Fatal error while encoding JSON: ' . $lastError . PHP_EOL . PHP_EOL . print_r($data, true));
+		else
+			$this->output($encodedJson);
 	}
 
 	public function getRequestHeaders()
