@@ -112,7 +112,7 @@ class FileService
 			while (!feof($srcHandle))
 			{
 				$buffer = fread($srcHandle, 4 * 1024);
-				if ($maxBytes !== null and ftell($dstHandle) > $maxBytes)
+				if ($maxBytes !== null and strlen($result) > $maxBytes)
 				{
 					throw new \Exception(
 						'File is too big (maximum size: %s)',
