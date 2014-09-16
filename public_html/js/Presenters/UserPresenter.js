@@ -60,6 +60,7 @@ App.Presenters.UserPresenter = function(
 	function render() {
 		$el.html(template({
 			user: user,
+			formatRelativeTime: util.formatRelativeTime,
 			canChangeBrowsingSettings: userBrowsingSettingsPresenter.getPrivileges().canChangeBrowsingSettings,
 			canChangeAccountSettings: _.any(userAccountSettingsPresenter.getPrivileges()),
 			canDeleteAccount: userAccountRemovalPresenter.getPrivileges().canDeleteAccount}));

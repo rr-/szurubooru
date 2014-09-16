@@ -43,12 +43,12 @@
 		<table>
 			<tr>
 				<td>Registered:</td>
-				<td><%= user.registrationTime %></td>
+				<td><%= formatRelativeTime(user.registrationTime) %></td>
 			</tr>
 
 			<tr>
 				<td>Seen:</td>
-				<td><%= user.lastLoginTime %></td>
+				<td><%= formatRelativeTime(user.lastLoginTime) %></td>
 			</tr>
 		</table>
 	</div>
