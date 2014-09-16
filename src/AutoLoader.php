@@ -26,3 +26,14 @@ final class AutoLoader
 AutoLoader::init();
 
 require_once(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+
+function turnErrorsIntoExceptions()
+{
+	set_error_handler(
+		function($errno, $errstr, $errfile, $errline, array $errcontext)
+		{
+			throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+		});
+}
+
+turnErrorsIntoExceptions();
