@@ -3,7 +3,7 @@ body {
 	padding: 0;
 	text-align: center;
 	background: #fff;
-	color: #000;
+	color: #555;
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 17px;
 }
@@ -25,12 +25,12 @@ h2 {
 }
 
 a {
-	color: #6a2;
+	color: #298;
 	text-decoration: none;
 }
 
 a:hover {
-	color: #7b3;
+	color: #4ba;
 }
 
 hr {

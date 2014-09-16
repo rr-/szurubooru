@@ -14,20 +14,23 @@
 
 #top-navigation li a {
 	display: inline-block;
+	text-transform: lowercase;
 	font-variant: small-caps;
 	padding: 0.5em 1em;
-	color: #000;
+	color: #aaa;
+	font-size: 15px;
 }
 
 #top-navigation li.active a {
-	background: #faffca;
+	color: #8ba;
+	background: #f7fbfc;
 }
 
 #top-navigation li a:focus,
 #top-navigation li a:hover {
 	outline: 0;
-	background: #efa;
-	color: #000;
+	background: #f3f7f8;
+	color: #7a9;
 }
 
 #top-navigation li:first-child a {
@@ -36,4 +39,9 @@
 
 #top-navigation li:last-child a {
 	margin-right: -1em;
+}
+
+#top-navigation i {
+	font-size: 40px;
+	margin: 0 10px 5px;
 }
