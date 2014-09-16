@@ -3,15 +3,22 @@ var App = App || {};
 App.Util = function(_, jQuery, promise) {
 
 	var templateCache = {};
+	var exitConfirmationEnabled = false;
 
 	function enableExitConfirmation() {
+		exitConfirmationEnabled = true;
 		jQuery(window).bind('beforeunload', function(e) {
 			return 'There are unsaved changes.';
 		});
 	}
 
 	function disableExitConfirmation() {
+		exitConfirmationEnabled = false;
 		jQuery(window).unbind('beforeunload');
+	}
+
+	function isExitConfirmationEnabled() {
+		return exitConfirmationEnabled;
 	}
 
 	function parseComplexRouteArgs(args) {
@@ -148,6 +155,7 @@ App.Util = function(_, jQuery, promise) {
 		formatRelativeTime: formatRelativeTime,
 		enableExitConfirmation: enableExitConfirmation,
 		disableExitConfirmation: disableExitConfirmation,
+		isExitConfirmationEnabled: isExitConfirmationEnabled,
 	};
 
 };

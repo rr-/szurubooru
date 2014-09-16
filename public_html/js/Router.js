@@ -3,6 +3,7 @@ var App = App || {};
 App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 
 	var root = '#/';
+	var previousLocation = window.location.href;
 
 	injectRoutes();
 
@@ -57,6 +58,18 @@ App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 				{previousRoute: pathJs.routes.previous});
 
 			presenterManager.switchContentPresenter( presenterName, finalParams);
+		}).enter(function(e) {
+			if (util.isExitConfirmationEnabled()) {
+				if (window.location.href !== previousLocation) {
+					if (!window.confirm('Are you sure you want to leave this page? Data will be lost.')) {
+						window.location.href = previousLocation;
+						return false;
+					} else {
+						util.disableExitConfirmation();
+					}
+				}
+			}
+			previousLocation = window.location.href;
 		});
 	}
 
