@@ -40,9 +40,12 @@ final class Dispatcher
 		catch (\Exception $e)
 		{
 			$code = 400;
+			$trace = $e->getTrace();
+			foreach ($trace as &$item)
+				unset($item['args']);
 			$json = [
 				'error' => $e->getMessage(),
-				'trace' => $e->getTrace(),
+				'trace' => $trace,
 			];
 		}
 		$end = microtime(true);
