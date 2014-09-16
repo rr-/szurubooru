@@ -143,6 +143,23 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->postService->createPost($formData);
 	}
 
+
+	public function testAnonymousUploads()
+	{
+		$formData = new \Szurubooru\FormData\UploadFormData;
+		$formData->safety = \Szurubooru\Entities\Post::POST_SAFETY_SAFE;
+		$formData->tags = ['test'];
+		$formData->url = 'https://www.youtube.com/watch?v=QYK2c4OVG6s';
+		$formData->anonymous = true;
+
+		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
+		$this->authServiceMock->expects($this->never())->method('getLoggedInUser');
+
+		$this->postService = $this->getPostService();
+		$savedPost = $this->postService->createPost($formData);
+		$this->assertNull($savedPost->getUserId());
+	}
+
 	private function getPostService()
 	{
 		return new \Szurubooru\Services\PostService(
