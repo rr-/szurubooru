@@ -23,15 +23,15 @@ class UserEntityConverter implements IEntityConverter
 
 	public function toEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\User($array['id']);
+		$entity = new \Szurubooru\Entities\User(intval($array['id']));
 		$entity->setName($array['name']);
 		$entity->setEmail($array['email']);
 		$entity->setEmailUnconfirmed($array['emailUnconfirmed']);
 		$entity->setPasswordHash($array['passwordHash']);
-		$entity->setAccessRank($array['accessRank']);
+		$entity->setAccessRank(intval($array['accessRank']));
 		$entity->setRegistrationTime($array['registrationTime']);
 		$entity->setLastLoginTime($array['lastLoginTime']);
-		$entity->setAvatarStyle($array['avatarStyle']);
+		$entity->setAvatarStyle(intval($array['avatarStyle']));
 		$entity->setBrowsingSettings($array['browsingSettings']);
 		$entity->setAccountConfirmed($array['accountConfirmed']);
 		return $entity;

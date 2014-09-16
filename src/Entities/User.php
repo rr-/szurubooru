@@ -82,7 +82,7 @@ final class User extends Entity
 
 	public function setAccessRank($accessRank)
 	{
-		$this->accessRank = intval($accessRank);
+		$this->accessRank = $accessRank;
 	}
 
 	public function getRegistrationTime()
@@ -112,7 +112,7 @@ final class User extends Entity
 
 	public function setAvatarStyle($avatarStyle)
 	{
-		$this->avatarStyle = intval($avatarStyle);
+		$this->avatarStyle = $avatarStyle;
 	}
 
 	public function getBrowsingSettings()

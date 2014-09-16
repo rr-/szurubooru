@@ -70,7 +70,7 @@ class UserSearchServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$user->setPasswordHash('whatever');
 		$user->setLastLoginTime('whatever');
 		$user->setRegistrationTime('whatever');
-		$user->setAccessRank('whatever');
+		$user->setAccessRank(\Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER);
 		return $user;
 	}
 }

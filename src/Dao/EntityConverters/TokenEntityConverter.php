@@ -16,7 +16,7 @@ class TokenEntityConverter implements IEntityConverter
 
 	public function toEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\Token($array['id']);
+		$entity = new \Szurubooru\Entities\Token(intval($array['id']));
 		$entity->setName($array['name']);
 		$entity->setPurpose($array['purpose']);
 		$entity->setAdditionalData($array['additionalData']);
