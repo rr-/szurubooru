@@ -8,6 +8,8 @@
 			<%= user.name %>
 		</div>
 
+		<% if ((canChangeBrowsingSettings || canChangeAccountSettings || canDeleteAccount)) { %>
+
 		<ul>
 			<li>
 				<a href="#/user/<%= user.name %>" data-tab="basic-info">Basic information</a>
@@ -31,6 +33,8 @@
 				</li>
 			<% } %>
 		</ul>
+
+		<% } %>
 	</div>
 
 	<div class="tab basic-info" data-tab="basic-info">

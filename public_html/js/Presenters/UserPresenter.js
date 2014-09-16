@@ -72,12 +72,11 @@ App.Presenters.UserPresenter = function(
 	function changeTab(targetTab) {
 		var $link = $el.find('a[data-tab=' + targetTab + ']');
 		var $links = $link.closest('ul').find('a[data-tab]');
-		var tab = $link.attr('data-tab');
-		var $tabs = $link.closest('.tab-wrapper').find('.tab');
+		var $tabs = $el.find('.tab-wrapper').find('.tab');
 		$links.removeClass('active');
 		$link.addClass('active');
 		$tabs.removeClass('active');
-		$tabs.filter('[data-tab=' + tab + ']').addClass('active');
+		$tabs.filter('[data-tab=' + targetTab + ']').addClass('active');
 	}
 
 	return {
