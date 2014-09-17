@@ -2,7 +2,17 @@ DirectoryIndex app.min.html
 DirectoryIndex index.html
 
 RewriteEngine On
-RewriteRule ^/?api/(.*) api-dispatch.php?q=$1 [QSA,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?data/posts/([^/]+)/? /api/posts/$1/content [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?data/thumbnails/(\d+)x(\d+)/posts/([^/]+)/? /api/posts/$3/thumbnail/$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?data/thumbnails/(\d+)x(\d+)/avatars/([^/]+)/? /api/users/$3/avatar/$1 [L]
+
+RewriteRule ^/?api/(.*) api-dispatch.php?q=$0 [QSA,L]
 
 <IfModule mod_mime.c>
 AddType text/html .tpl

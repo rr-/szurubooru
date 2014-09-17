@@ -6,7 +6,7 @@ class FileServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testSaving()
 	{
 		$testDirectory = $this->createTestDirectory();
-		$configMock = $this->mockConfig($testDirectory);
+		$configMock = $this->mockConfig(null, $testDirectory);
 		$httpHelper = $this->mock(\Szurubooru\Helpers\HttpHelper::class);
 		$fileService = new \Szurubooru\Services\FileService($configMock, $httpHelper);
 		$fileService->save('dog.txt', 'awesome dog');

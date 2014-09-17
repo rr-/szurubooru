@@ -26,16 +26,14 @@ final class Dispatcher
 			$controller->registerRoutes($router);
 	}
 
-	public function run()
+	public function run($requestMethod, $requestUri)
 	{
 		global $start;
 		try
 		{
 			$code = 200;
 			$this->authorizeFromRequestHeader();
-			$json = (array) $this->router->handle(
-				$this->httpHelper->getRequestMethod(),
-				$this->httpHelper->getRequestUri());
+			$json = (array) $this->router->handle($requestMethod, $requestUri);
 		}
 		catch (\Exception $e)
 		{

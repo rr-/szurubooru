@@ -1,6 +1,6 @@
 <li class="user">
 	<a href="#/user/<%= user.name %>">
-		<img src="/api/users/<%= user.name %>/avatar/80" alt="<%= user.name %>"/>
+		<img src="/data/thumbnails/80x80/avatars/<%= user.name %>" alt="<%= user.name %>"/>
 	</a>
 	<div class="details">
 		<h1>

@@ -31,7 +31,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->controllerRepositoryMock->method('getControllers')->willReturn([]);
 
 		$dispatcher = $this->getDispatcher();
-		$actual = $dispatcher->run();
+		$actual = $dispatcher->run('GET', '/');
 
 		unset($actual['__time']);
 		$this->assertEquals($expected, $actual);
@@ -47,7 +47,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->controllerRepositoryMock->method('getControllers')->willReturn([]);
 
 		$dispatcher = $this->getDispatcher();
-		$actual = $dispatcher->run();
+		$actual = $dispatcher->run('GET', '/');
 
 		unset($actual['__time']);
 		$this->assertEquals($expected, $actual);
@@ -60,7 +60,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->controllerRepositoryMock->method('getControllers')->willReturn([]);
 
 		$dispatcher = $this->getDispatcher();
-		$dispatcher->run();
+		$dispatcher->run('GET', '/');
 	}
 
 	private function getDispatcher()

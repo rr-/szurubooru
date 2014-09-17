@@ -4,11 +4,13 @@ namespace Szurubooru;
 class Config extends \ArrayObject
 {
 	private $dataDirectory;
+	private $publicDataDirectory;
 
-	public function __construct($dataDirectory)
+	public function __construct($dataDirectory, $publicDataDirectory)
 	{
 		$this->setFlags($this->getArrayObjectFlags());
 		$this->dataDirectory = $dataDirectory;
+		$this->publicDataDirectory = $publicDataDirectory;
 		$this->tryLoadFromIni([
 			$dataDirectory . DIRECTORY_SEPARATOR . 'config.ini',
 			$dataDirectory . DIRECTORY_SEPARATOR . 'local.ini']);
@@ -29,6 +31,11 @@ class Config extends \ArrayObject
 	public function getDataDirectory()
 	{
 		return $this->dataDirectory;
+	}
+
+	public function getPublicDataDirectory()
+	{
+		return $this->publicDataDirectory;
 	}
 
 	public function offsetGet($index)

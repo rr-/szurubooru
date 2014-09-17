@@ -18,21 +18,21 @@ final class ConfigTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testReadingNonSections()
 	{
 		file_put_contents($this->baseConfigFilePath, 'test=value');
-		$config = new \Szurubooru\Config($this->testDirectory);
+		$config = $this->getTestConfig();
 		$this->assertEquals('value', $config->test);
 	}
 
 	public function testReadingUnnestedSections()
 	{
 		file_put_contents($this->baseConfigFilePath, '[test]' . PHP_EOL . 'key=value');
-		$config = new \Szurubooru\Config($this->testDirectory);
+		$config = $this->getTestConfig();
 		$this->assertEquals('value', $config->test->key);
 	}
 
 	public function testReadingNestedSections()
 	{
 		file_put_contents($this->baseConfigFilePath, '[test.subtest]' . PHP_EOL . 'key=value');
-		$config = new \Szurubooru\Config($this->testDirectory);
+		$config = $this->getTestConfig();
 		$this->assertEquals('value', $config->test->subtest->key);
 	}
 
@@ -42,14 +42,14 @@ final class ConfigTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->baseConfigFilePath,
 			'[test.subtest]' . PHP_EOL . 'key=value' . PHP_EOL .
 				'[test.subtest.deeptest]' . PHP_EOL . 'key=zombie');
-		$config = new \Szurubooru\Config($this->testDirectory);
+		$config = $this->getTestConfig();
 		$this->assertEquals('value', $config->test->subtest->key);
 		$this->assertEquals('zombie', $config->test->subtest->deeptest->key);
 	}
 
 	public function testReadingNonExistentFiles()
 	{
-		$config = new \Szurubooru\Config($this->testDirectory);
+		$config = $this->getTestConfig();
 		$this->assertEquals(0, count(iterator_to_array($config->getIterator())));
 	}
 
@@ -57,22 +57,27 @@ final class ConfigTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		file_put_contents($this->baseConfigFilePath, 'test=trash');
 		file_put_contents($this->localConfigFilePath, 'test=overridden');
-		$config = new \Szurubooru\Config($this->testDirectory);
+		$config = $this->getTestConfig();
 		$this->assertEquals('overridden', $config->test);
 	}
 
 	public function testReadingUnexistingProperties()
 	{
 		file_put_contents($this->baseConfigFilePath, 'meh=value');
-		$config = new \Szurubooru\Config($this->testDirectory);
+		$config = $this->getTestConfig();
 		$this->assertNull($config->unexistingSection);
 	}
 
 	public function testOverwritingValues()
 	{
 		file_put_contents($this->baseConfigFilePath, 'meh=value');
-		$config = new \Szurubooru\Config($this->testDirectory);
+		$config = $this->getTestConfig();
 		$config->newKey = 'fast';
 		$this->assertEquals('fast', $config->newKey);
+	}
+
+	private function getTestConfig()
+	{
+		return new \Szurubooru\Config($this->testDirectory, null);
 	}
 }

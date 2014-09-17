@@ -18,11 +18,7 @@ class PrivilegeTest extends \Szurubooru\Tests\AbstractTestCase
 		$refl = new \ReflectionClass(\Szurubooru\Privilege::class);
 		$constants = array_values($refl->getConstants());
 
-		$dataPath = __DIR__
-			. DIRECTORY_SEPARATOR . '..'
-			. DIRECTORY_SEPARATOR . 'data';
-
-		$config = new \Szurubooru\Config($dataPath);
+		$config = \Szurubooru\Injector::get(\Szurubooru\Config::class);
 		foreach ($config->security->privileges as $key => $value)
 		{
 			$this->assertTrue(in_array($key, $constants), "$key not in constants");

@@ -1,8 +1,15 @@
 <?php
-$dataDirectory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'data';
+$dataDirectory = __DIR__
+	. DIRECTORY_SEPARATOR . '..'
+	. DIRECTORY_SEPARATOR . 'data';
+
+$publicDataDirectory = __DIR__
+	. DIRECTORY_SEPARATOR . '..'
+	. DIRECTORY_SEPARATOR . 'public_html'
+	. DIRECTORY_SEPARATOR . 'data';
 
 return [
-	\Szurubooru\Config::class => DI\object()->constructor($dataDirectory),
+	\Szurubooru\Config::class => DI\object()->constructor($dataDirectory, $publicDataDirectory),
 
 	\Szurubooru\ControllerRepository::class => DI\object()->constructor(DI\link('controllers')),
 	\Szurubooru\Upgrades\UpgradeRepository::class => DI\object()->constructor(DI\link('upgrades')),
