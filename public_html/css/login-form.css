@@ -4,3 +4,15 @@
 #login-form form {
 	width: 22.5em;
 }
+
+#login-form .help {
+	text-align: center;
+}
+#login-form .help ul {
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+	text-align: left;
+	list-style-position: inside;
+	white-space: nowrap;
+}
