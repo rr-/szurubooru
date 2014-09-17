@@ -41,3 +41,14 @@ hr {
 	border-top: 1px solid #eee;
 	box-sizing: content-box;
 }
+
+.big-button.active {
+	background: #f7fbfc;
+	color: #8ba !important;
+}
+
+.big-button:focus,
+.big-button:hover {
+	background: #f3f7f8;
+	color: #7a9 !important;
+}

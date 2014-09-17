@@ -17,10 +17,6 @@
 	margin: 0 0.5em;
 }
 
-#user-list ul.order li.active a {
-	background: #f7fbfc;
-}
-
 #user-list ul.order a {
 	cursor: pointer;
 	display: inline-block;

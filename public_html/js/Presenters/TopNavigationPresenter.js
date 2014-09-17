@@ -23,8 +23,8 @@ App.Presenters.TopNavigationPresenter = function(
 
 	function select(newSelectedElement) {
 		selectedElement = newSelectedElement;
-		$el.find('li').removeClass('active');
-		$el.find('li.' + selectedElement).addClass('active');
+		$el.find('li a').removeClass('active');
+		$el.find('li.' + selectedElement).find('a').addClass('active');
 	}
 
 	function loginStateChanged() {
@@ -42,7 +42,7 @@ App.Presenters.TopNavigationPresenter = function(
 			canListTags: auth.hasPrivilege(auth.privileges.listTags),
 			canUploadPosts: auth.hasPrivilege(auth.privileges.uploadPosts),
 		}));
-		$el.find('li.' + selectedElement).addClass('active');
+		$el.find('li.' + selectedElement).find('a').addClass('active');
 	}
 
 	function changeTitle(subTitle) {

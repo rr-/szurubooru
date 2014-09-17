@@ -21,16 +21,9 @@
 	font-size: 15px;
 }
 
-#top-navigation li.active a {
-	color: #8ba;
-	background: #f7fbfc;
-}
-
 #top-navigation li a:focus,
 #top-navigation li a:hover {
 	outline: 0;
-	background: #f3f7f8;
-	color: #7a9;
 }
 
 #top-navigation li:first-child a {

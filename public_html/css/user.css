@@ -28,10 +28,6 @@
 	padding: 0.2em 0.5em;
 }
 
-#user-view ul a.active {
-	background: #f7fbfc;
-}
-
 #user-view .tab {
 	display: none;
 	margin-top: 1.5em;

@@ -12,24 +12,32 @@
 
 		<ul>
 			<li>
-				<a href="#/user/<%= user.name %>" data-tab="basic-info">Basic information</a>
+				<a class="big-button" href="#/user/<%= user.name %>" data-tab="basic-info">
+					Basic information
+				</a>
 			</li>
 
 			<% if (canChangeBrowsingSettings) { %>
 				<li>
-					<a href="#/user/<%= user.name %>/browsing-settings" data-tab="browsing-settings">Browsing settings</a>
+					<a class="big-button" href="#/user/<%= user.name %>/browsing-settings" data-tab="browsing-settings">
+						Browsing settings
+					</a>
 				</li>
 			<% } %>
 
 			<% if (canChangeAccountSettings) { %>
 				<li>
-					<a href="#/user/<%= user.name %>/account-settings" data-tab="account-settings">Account settings</a>
+					<a class="big-button" href="#/user/<%= user.name %>/account-settings" data-tab="account-settings">
+						Account settings
+					</a>
 				</li>
 			<% } %>
 
 			<% if (canDeleteAccount) { %>
 				<li>
-					<a href="#/user/<%= user.name %>/account-removal" data-tab="account-removal">Account removal</a>
+					<a class="big-button" href="#/user/<%= user.name %>/account-removal" data-tab="account-removal">
+						Account removal
+					</a>
 				</li>
 			<% } %>
 		</ul>

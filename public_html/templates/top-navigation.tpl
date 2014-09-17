@@ -27,7 +27,7 @@
 	<% _.each(links, function(link) { %><!--
 		--><% var className = link[0], target=link[1], title=link[2], iconClassName=link[3] %><!--
 		--><li class="<%= className %>">
-			<a href="<%= target %>">
+			<a class="big-button" href="<%= target %>">
 				<i class="fa <%= iconClassName %>"></i><br/>
 				<%= title %>
 			</a>

@@ -61,8 +61,8 @@ App.Presenters.UserListPresenter = function(
 	}
 
 	function updateActiveOrder(activeOrder) {
-		$el.find('.order li').removeClass('active');
-		$el.find('.order [data-order="' + activeOrder + '"]').parent('li').addClass('active');
+		$el.find('.order li a').removeClass('active');
+		$el.find('.order [data-order="' + activeOrder + '"]').addClass('active');
 	}
 
 	function renderUsers(users, clear) {
