@@ -82,9 +82,10 @@ class EnumHelper
 	private static function stringToEnum($enumMap, $enumString)
 	{
 		$key = trim(strtolower($enumString));
-		if (!isset($enumMap[$key]))
+		$lowerEnumMap = array_change_key_case($enumMap, \CASE_LOWER);
+		if (!isset($lowerEnumMap[$key]))
 			throw new \DomainException('Unrecognized value: ' . $enumString);
 
-		return $enumMap[$key];
+		return $lowerEnumMap[$key];
 	}
 }
