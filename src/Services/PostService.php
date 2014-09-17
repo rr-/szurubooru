@@ -29,6 +29,18 @@ class PostService
 		$this->authService = $authService;
 	}
 
+	public function getByName($postName)
+	{
+		$transactionFunc = function() use ($postName)
+		{
+			$post = $this->postDao->findByName($postName);
+			if (!$post)
+				throw new \InvalidArgumentException('Post with name "' . $postName . '" was not found.');
+			return $post;
+		};
+		return $this->transactionManager->rollback($transactionFunc);
+	}
+
 	public function createPost(\Szurubooru\FormData\UploadFormData $formData)
 	{
 		$transactionFunc = function() use ($formData)
@@ -50,6 +62,16 @@ class PostService
 			return $this->postDao->save($post);
 		};
 		return $this->transactionManager->commit($transactionFunc);
+	}
+
+	public function getPostContentPath(\Szurubooru\Entities\Post $post)
+	{
+		return 'posts' . DIRECTORY_SEPARATOR . $post->getName();
+	}
+
+	public function getPostThumbnailSourcePath(\Szurubooru\Entities\Post $post)
+	{
+		return 'posts' . DIRECTORY_SEPARATOR . $post->getName() . '-custom-thumb';
 	}
 
 	private function updatePostSafety(\Szurubooru\Entities\Post $post, $newSafety)
@@ -166,15 +188,5 @@ class PostService
 			if (!$this->postDao->findByName($name))
 				return $name;
 		}
-	}
-
-	private function getPostContentPath(\Szurubooru\Entities\Post $post)
-	{
-		return 'posts' . DIRECTORY_SEPARATOR . $post->getName();
-	}
-
-	private function getPostThumbnailSourcePath(\Szuruboor\Entities\Post $post)
-	{
-		return 'posts' . DIRECTORY_SEPARATOR . $post->getName() . '-custom-thumb';
 	}
 }
