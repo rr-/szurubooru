@@ -71,20 +71,22 @@
 		<div class="form-row">
 			<label class="form-label" for="account-settings-access-rank">Access rank:</label>
 			<div class="form-input">
-				<select name="access-rank" id="account-settings-access-rank">
-					<%
-						var accessRanks = {
-							anonymous: 'Anonymous',
-							regularUser: 'Regular user',
-							powerUser: 'Power user',
-							moderator: 'Moderator',
-							administrator: 'Administrator'
-						};
-					%>
-					<% _.each(accessRanks, function(v, k) { %>
-						<option <% print(user.accessRank == k ? 'selected="selected"' : '') %> value="<%= k %>"><%= v %></option>
-					<% }) %>
-				</select>
+				<%
+					var accessRanks = {
+						anonymous: 'Anonymous',
+						regularUser: 'Regular user',
+						powerUser: 'Power user',
+						moderator: 'Moderator',
+						administrator: 'Administrator'
+					};
+				%>
+				<% _.each(accessRanks, function(v, k) { %>
+					<input name="access-rank" type="radio" value="<%= k %>" id="access-rank-<%= k %>" <% print(user.accessRank == k ? 'checked="checked"' : '') %>>
+					<label for="access-rank-<%= k %>">
+						<% print(user.accessRank == k ? v + ' (current)' : v) %>
+					</label>
+					<br/>
+				<% }) %>
 			</div>
 		</div>
 	<% } %>

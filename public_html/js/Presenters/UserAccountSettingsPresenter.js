@@ -106,7 +106,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 			formData.passwordConfirmation = $el.find('[name=passwordConfirmation]').val();
 		}
 		if (privileges.canChangeAccessRank) {
-			formData.accessRank = $el.find('[name=access-rank]').val();
+			formData.accessRank = $el.find('[name=access-rank]:checked').val();
 		}
 
 		if (!validateAccountSettingsFormData(formData)) {
