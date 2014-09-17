@@ -16,18 +16,20 @@ App.Presenters.LoginPresenter = function(
 	var template;
 	var previousRoute;
 
-	function init(args) {
+	function init(args, loaded) {
 		topNavigationPresenter.select('login');
 		topNavigationPresenter.changeTitle('Login');
 		previousRoute = args.previousRoute;
-		promise.wait(util.promiseTemplate('login-form')).then(function(html) {
-			template = _.template(html);
-			if (auth.isLoggedIn()) {
-				finishLogin();
-			} else {
-				render();
-			}
-		});
+		promise.wait(util.promiseTemplate('login-form'))
+			.then(function(html) {
+				template = _.template(html);
+				if (auth.isLoggedIn()) {
+					finishLogin();
+				} else {
+					render();
+				}
+				loaded();
+			});
 	}
 
 	function render() {

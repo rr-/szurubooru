@@ -57,7 +57,9 @@ App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 				additionalParams,
 				{previousRoute: pathJs.routes.previous});
 
-			presenterManager.switchContentPresenter( presenterName, finalParams);
+			var presenter = App.DI.get(presenterName);
+			presenter.name = presenterName;
+			presenterManager.switchContentPresenter(presenter, finalParams);
 		}).enter(function(e) {
 			if (util.isExitConfirmationEnabled()) {
 				if (window.location.href !== previousLocation) {

@@ -13,12 +13,14 @@ App.Presenters.TopNavigationPresenter = function(
 	var template;
 	var baseTitle = document.title;
 
-	function init() {
-		promise.wait(util.promiseTemplate('top-navigation')).then(function(html) {
-			template = _.template(html);
-			render();
-			auth.startObservingLoginChanges('top-navigation', loginStateChanged);
-		});
+	function init(args, loaded) {
+		promise.wait(util.promiseTemplate('top-navigation'))
+			.then(function(html) {
+				template = _.template(html);
+				render();
+				loaded();
+				auth.startObservingLoginChanges('top-navigation', loginStateChanged);
+			});
 	}
 
 	function select(newSelectedElement) {

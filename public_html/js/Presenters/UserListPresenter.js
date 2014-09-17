@@ -16,30 +16,31 @@ App.Presenters.UserListPresenter = function(
 	var listTemplate;
 	var itemTemplate;
 
-	function init(args) {
+	function init(args, loaded) {
 		topNavigationPresenter.select('users');
 		topNavigationPresenter.changeTitle('Users');
 
 		promise.waitAll(
-			util.promiseTemplate('user-list'),
-			util.promiseTemplate('user-list-item')).then(function(listHtml, itemHtml) {
-			listTemplate = _.template(listHtml);
-			itemTemplate = _.template(itemHtml);
+				util.promiseTemplate('user-list'),
+				util.promiseTemplate('user-list-item'))
+			.then(function(listHtml, itemHtml) {
+				listTemplate = _.template(listHtml);
+				itemTemplate = _.template(itemHtml);
 
-			render();
-			reinit(args);
-		});
+				render();
+				reinit(args, loaded);
+			});
 	}
 
-	function reinit(args) {
+	function reinit(args, loaded) {
 		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
 		searchArgs.order = searchArgs.order || 'name';
 
 		updateActiveOrder(searchArgs.order);
-		initPaginator(searchArgs);
+		initPaginator(searchArgs, loaded);
 	}
 
-	function initPaginator(searchArgs) {
+	function initPaginator(searchArgs, onLoad) {
 		pagedCollectionPresenter.init({
 			page: searchArgs.page,
 			searchParams: {order: searchArgs.order},
@@ -52,7 +53,7 @@ App.Presenters.UserListPresenter = function(
 			failCallback: function(response) {
 				$el.empty();
 				messagePresenter.showError($el, response.json && response.json.error || response);
-			}});
+			}}, onLoad);
 	}
 
 	function render() {

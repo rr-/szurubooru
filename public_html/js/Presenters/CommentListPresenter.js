@@ -7,10 +7,11 @@ App.Presenters.CommentListPresenter = function(
 
 	var $el = jQuery('#content');
 
-	function init(args) {
+	function init(args, loaded) {
 		topNavigationPresenter.select('comments');
 		topNavigationPresenter.changeTitle('Comments');
 		render();
+		loaded();
 	}
 
 	function render() {

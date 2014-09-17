@@ -24,7 +24,7 @@ App.Presenters.PagedCollectionPresenter = function(
 	var updateCallback;
 	var failCallback;
 
-	function init(args) {
+	function init(args, loaded) {
 		forceClear = !_.isEqual(args.searchParams, searchParams) || parseInt(args.page) !== pageNumber + 1;
 		searchParams = args.searchParams;
 		pageNumber = parseInt(args.page) || 1;
@@ -34,23 +34,26 @@ App.Presenters.PagedCollectionPresenter = function(
 		updateCallback = args.updateCallback;
 		failCallback = args.failCallback;
 
-		promise.wait(util.promiseTemplate('pager')).then(function(html) {
-			template = _.template(html);
-			softChangePage(pageNumber);
+		promise.wait(util.promiseTemplate('pager'))
+			.then(function(html) {
+				template = _.template(html);
+				softChangePage(pageNumber)
+					.then(loaded)
+					.fail(loaded);
 
-			if (!endlessScroll) {
-				mousetrap.bind('a', function(e) {
-					if (!e.altKey && !e.ctrlKey) {
-						prevPage();
-					}
-				});
-				mousetrap.bind('d', function(e) {
-					if (!e.altKey && !e.ctrlKey) {
-						nextPage();
-					}
-				});
-			}
-		});
+				if (!endlessScroll) {
+					mousetrap.bind('a', function(e) {
+						if (!e.altKey && !e.ctrlKey) {
+							prevPage();
+						}
+					});
+					mousetrap.bind('d', function(e) {
+						if (!e.altKey && !e.ctrlKey) {
+							nextPage();
+						}
+					});
+				}
+			});
 	}
 
 	function prevPage() {
@@ -82,27 +85,31 @@ App.Presenters.PagedCollectionPresenter = function(
 	function softChangePage(newPageNumber) {
 		pageNumber = newPageNumber;
 
-		promise.wait(
-			api.get(backendUri, _.extend({}, searchParams, {page: pageNumber})))
-			.then(function(response) {
-				var pageSize = response.json.pageSize;
-				var totalRecords = response.json.totalRecords;
-				totalPages = Math.ceil(totalRecords / pageSize);
+		return promise.make(function(resolve, reject) {
+			promise.wait(
+				api.get(backendUri, _.extend({}, searchParams, {page: pageNumber})))
+					.then(function(response) {
+						resolve(response);
+						var pageSize = response.json.pageSize;
+						var totalRecords = response.json.totalRecords;
+						totalPages = Math.ceil(totalRecords / pageSize);
 
-				var $target = updateCallback({
-					entities: response.json.data,
-					totalRecords: totalRecords},
-					forceClear || !endlessScroll);
-				forceClear = false;
+						var $target = updateCallback({
+							entities: response.json.data,
+							totalRecords: totalRecords},
+							forceClear || !endlessScroll);
+						forceClear = false;
 
-				render($target);
-			}).fail(function(response) {
-				if (typeof(failCallback) !== 'undefined') {
-					failCallback(response);
-				} else {
-					console.log(new Error(response.json && response.json.error || response));
-				}
-			});
+						render($target);
+					}).fail(function(response) {
+						reject(response);
+						if (typeof(failCallback) !== 'undefined') {
+							failCallback(response);
+						} else {
+							console.log(new Error(response.json && response.json.error || response));
+						}
+					});
+		});
 	}
 
 	function render($target) {

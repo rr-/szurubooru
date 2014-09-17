@@ -16,21 +16,20 @@ App.Presenters.UserAccountRemovalPresenter = function(
 	var user;
 	var privileges = {};
 
-	function init(args) {
-		return promise.make(function(resolve, reject) {
-			user = args.user;
-			target = args.target;
+	function init(args, loaded) {
+		user = args.user;
+		target = args.target;
 
-			privileges.canDeleteAccount =
-				auth.hasPrivilege(auth.privileges.deleteAllAccounts) ||
-				(auth.hasPrivilege(auth.privileges.deleteOwnAccount) && auth.isLoggedIn(user.name));
+		privileges.canDeleteAccount =
+			auth.hasPrivilege(auth.privileges.deleteAllAccounts) ||
+			(auth.hasPrivilege(auth.privileges.deleteOwnAccount) && auth.isLoggedIn(user.name));
 
-			promise.wait(util.promiseTemplate('account-removal')).then(function(html) {
+		promise.wait(util.promiseTemplate('account-removal'))
+			.then(function(html) {
 				template = _.template(html);
 				render();
-				resolve();
+				loaded();
 			});
-		});
 	}
 
 	function render() {

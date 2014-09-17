@@ -9,6 +9,7 @@ App.Presenters.UserPresenter = function(
 	api,
 	auth,
 	topNavigationPresenter,
+	presenterManager,
 	userBrowsingSettingsPresenter,
 	userAccountSettingsPresenter,
 	userAccountRemovalPresenter,
@@ -21,35 +22,40 @@ App.Presenters.UserPresenter = function(
 	var userName;
 	var activeTab;
 
-	function init(args) {
+	function init(args, loaded) {
 		userName = args.userName;
 		topNavigationPresenter.select(auth.isLoggedIn(userName) ? 'my-account' : 'users');
 		topNavigationPresenter.changeTitle(userName);
 
 		promise.waitAll(
-			util.promiseTemplate('user'),
-			api.get('/users/' + userName))
-		.then(function(
-				userHtml,
-				response) {
-			$messages = $el.find('.messages');
-			template = _.template(userHtml);
+				util.promiseTemplate('user'),
+				api.get('/users/' + userName))
+			.then(function(
+					userHtml,
+					response) {
+				$messages = $el.find('.messages');
+				template = _.template(userHtml);
 
-			user = response.json;
-			var extendedContext = _.extend(args, {user: user});
+				user = response.json;
+				var extendedContext = _.extend(args, {user: user});
 
-			promise.waitAll(
-				userBrowsingSettingsPresenter.init(_.extend(extendedContext, {target: '#browsing-settings-target'})),
-				userAccountSettingsPresenter.init(_.extend(extendedContext, {target: '#account-settings-target'})),
-				userAccountRemovalPresenter.init(_.extend(extendedContext, {target: '#account-removal-target'})))
-			.then(function() {
-				initTabs(args);
+				presenterManager.initPresenters([
+					[userBrowsingSettingsPresenter, _.extend({}, extendedContext, {target: '#browsing-settings-target'})],
+					[userAccountSettingsPresenter, _.extend({}, extendedContext, {target: '#account-settings-target'})],
+					[userAccountRemovalPresenter, _.extend({}, extendedContext, {target: '#account-removal-target'})]],
+					function() {
+						reinit(args, loaded);
+					});
+
+			}).fail(function(response) {
+				$el.empty();
+				messagePresenter.showError($messages, response.json && response.json.error || response);
 			});
+	}
 
-		}).fail(function(response) {
-			$el.empty();
-			messagePresenter.showError($messages, response.json && response.json.error || response);
-		});
+	function reinit(args, loaded) {
+		initTabs(args);
+		loaded();
 	}
 
 	function initTabs(args) {
@@ -82,10 +88,10 @@ App.Presenters.UserPresenter = function(
 
 	return {
 		init: init,
-		reinit: initTabs,
+		reinit: reinit,
 		render: render
 	};
 
 };
 
-App.DI.register('userPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'userBrowsingSettingsPresenter', 'userAccountSettingsPresenter', 'userAccountRemovalPresenter', 'messagePresenter'], App.Presenters.UserPresenter);
+App.DI.register('userPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'presenterManager', 'userBrowsingSettingsPresenter', 'userAccountSettingsPresenter', 'userAccountRemovalPresenter', 'messagePresenter'], App.Presenters.UserPresenter);

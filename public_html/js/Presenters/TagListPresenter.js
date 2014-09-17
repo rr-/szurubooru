@@ -7,10 +7,11 @@ App.Presenters.TagListPresenter = function(
 
 	var $el = jQuery('#content');
 
-	function init(args) {
+	function init(args, loaded) {
 		topNavigationPresenter.select('tags');
 		topNavigationPresenter.changeTitle('Tags');
 		render();
+		loaded();
 	}
 
 	function render() {

@@ -15,19 +15,18 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 	var user;
 	var privileges = {};
 
-	function init(args) {
-		return promise.make(function(resolve, reject) {
-			user = args.user;
-			target = args.target;
+	function init(args, loaded) {
+		user = args.user;
+		target = args.target;
 
-			privileges.canChangeBrowsingSettings = auth.isLoggedIn(user.name) && user.name === auth.getCurrentUser().name;
+		privileges.canChangeBrowsingSettings = auth.isLoggedIn(user.name) && user.name === auth.getCurrentUser().name;
 
-			promise.wait(util.promiseTemplate('browsing-settings')).then(function(html) {
+		promise.wait(util.promiseTemplate('browsing-settings'))
+			.then(function(html) {
 				template = _.template(html);
 				render();
-				resolve();
+				loaded();
 			});
-		});
 	}
 
 	function render() {
@@ -41,6 +40,7 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 		var $el = jQuery(target);
 		var $messages = $el.find('.messages');
 		messagePresenter.hideMessages($messages);
+
 		var newSettings = {
 			endlessScroll: $el.find('[name=endless-scroll]').is(':checked'),
 			hideDownvoted: $el.find('[name=hide-downvoted]').is(':checked'),
@@ -50,9 +50,11 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 				unsafe: $el.find('[name=listUnsafePosts]').is(':checked'),
 			},
 		};
-		browsingSettings.setSettings(newSettings).then(function() {
-			messagePresenter.showInfo($messages, 'Browsing settings updated!');
-		});
+
+		browsingSettings.setSettings(newSettings)
+			.then(function() {
+				messagePresenter.showInfo($messages, 'Browsing settings updated!');
+			});
 	}
 
 	function getPrivileges() {

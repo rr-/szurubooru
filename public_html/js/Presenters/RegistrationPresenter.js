@@ -14,13 +14,15 @@ App.Presenters.RegistrationPresenter = function(
 	var template;
 	var $messages;
 
-	function init() {
+	function init(args, loaded) {
 		topNavigationPresenter.select('register');
 		topNavigationPresenter.changeTitle('Registration');
-		promise.wait(util.promiseTemplate('registration-form')).then(function(html) {
-			template = _.template(html);
-			render();
-		});
+		promise.wait(util.promiseTemplate('registration-form'))
+			.then(function(html) {
+				template = _.template(html);
+				render();
+				loaded();
+			});
 	}
 
 	function render() {

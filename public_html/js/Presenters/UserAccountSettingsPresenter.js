@@ -16,34 +16,33 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	var privileges;
 	var avatarContent;
 
-	function init(args) {
-		return promise.make(function(resolve, reject) {
-			user = args.user;
-			target = args.target;
+	function init(args, loaded) {
+		user = args.user;
+		target = args.target;
 
-			privileges = {
-				canChangeAccessRank:
-					auth.hasPrivilege(auth.privileges.changeAccessRank),
-				canChangeAvatarStyle:
-					auth.hasPrivilege(auth.privileges.changeAllAvatarStyles) ||
-					(auth.hasPrivilege(auth.privileges.changeOwnAvatarStyle) && auth.isLoggedIn(user.name)),
-				canChangeName:
-					auth.hasPrivilege(auth.privileges.changeAllNames) ||
-					(auth.hasPrivilege(auth.privileges.changeOwnName) && auth.isLoggedIn(user.name)),
-				canChangeEmailAddress:
-					auth.hasPrivilege(auth.privileges.changeAllEmailAddresses) ||
-					(auth.hasPrivilege(auth.privileges.changeOwnEmailAddress) && auth.isLoggedIn(user.name)),
-				canChangePassword:
-					auth.hasPrivilege(auth.privileges.changeAllPasswords) ||
-					(auth.hasPrivilege(auth.privileges.changeOwnPassword) && auth.isLoggedIn(user.name)),
-			};
+		privileges = {
+			canChangeAccessRank:
+				auth.hasPrivilege(auth.privileges.changeAccessRank),
+			canChangeAvatarStyle:
+				auth.hasPrivilege(auth.privileges.changeAllAvatarStyles) ||
+				(auth.hasPrivilege(auth.privileges.changeOwnAvatarStyle) && auth.isLoggedIn(user.name)),
+			canChangeName:
+				auth.hasPrivilege(auth.privileges.changeAllNames) ||
+				(auth.hasPrivilege(auth.privileges.changeOwnName) && auth.isLoggedIn(user.name)),
+			canChangeEmailAddress:
+				auth.hasPrivilege(auth.privileges.changeAllEmailAddresses) ||
+				(auth.hasPrivilege(auth.privileges.changeOwnEmailAddress) && auth.isLoggedIn(user.name)),
+			canChangePassword:
+				auth.hasPrivilege(auth.privileges.changeAllPasswords) ||
+				(auth.hasPrivilege(auth.privileges.changeOwnPassword) && auth.isLoggedIn(user.name)),
+		};
 
-			promise.wait(util.promiseTemplate('account-settings')).then(function(html) {
+		promise.wait(util.promiseTemplate('account-settings'))
+			.then(function(html) {
 				template = _.template(html);
 				render();
-				resolve();
+				loaded();
 			});
-		});
 	}
 
 	function render() {

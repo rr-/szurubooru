@@ -18,24 +18,26 @@ App.Presenters.UserActivationPresenter = function(
 	var formHidden = false;
 	var operation;
 
-	function init(args) {
+	function init(args, loaded) {
 		topNavigationPresenter.select('login');
 		topNavigationPresenter.changeTitle('Account recovery');
-		reinit(args);
+		reinit(args, loaded);
 	}
 
-	function reinit(args) {
+	function reinit(args, loaded) {
 		operation = args.operation;
-		promise.wait(util.promiseTemplate('user-query-form')).then(function(html) {
-			template = _.template(html);
-			if (args.token) {
-				hideForm();
-				confirmToken(args.token);
-			} else {
-				showForm();
-			}
-			render();
-		});
+		promise.wait(util.promiseTemplate('user-query-form'))
+			.then(function(html) {
+				template = _.template(html);
+				if (args.token) {
+					hideForm();
+					confirmToken(args.token);
+				} else {
+					showForm();
+				}
+				render();
+				loaded();
+			});
 	}
 
 	function render() {
@@ -68,18 +70,19 @@ App.Presenters.UserActivationPresenter = function(
 			'/password-reset/' + userNameOrEmail :
 			'/activation/' + userNameOrEmail;
 
-		api.post(url).then(function(response) {
-			var message = operation === 'passwordReset' ?
-				'Password reset request sent.' :
-				'Activation e-mail resent.';
-			message += ' Check your inbox.<br/>If e-mail doesn\'t show up, check your spam folder.';
+		api.post(url)
+			.then(function(response) {
+				var message = operation === 'passwordReset' ?
+					'Password reset request sent.' :
+					'Activation e-mail resent.';
+				message += ' Check your inbox.<br/>If e-mail doesn\'t show up, check your spam folder.';
 
-			$el.find('#user-query-form').slideUp(function() {
-				messagePresenter.showInfo($messages, message);
+				$el.find('#user-query-form').slideUp(function() {
+					messagePresenter.showInfo($messages, message);
+				});
+			}).fail(function(response) {
+				messagePresenter.showError($messages, response.json && response.json.error || response);
 			});
-		}).fail(function(response) {
-			messagePresenter.showError($messages, response.json && response.json.error || response);
-		});
 	}
 
 	function confirmToken(token) {
@@ -89,17 +92,18 @@ App.Presenters.UserActivationPresenter = function(
 			'/finish-password-reset/' + token :
 			'/finish-activation/' + token;
 
-		api.post(url).then(function(response) {
-			var message = operation === 'passwordReset' ?
-				'Your new password is <strong>' + response.json.newPassword + '</strong>.' :
-				'E-mail activation successful.';
+		api.post(url)
+			.then(function(response) {
+				var message = operation === 'passwordReset' ?
+					'Your new password is <strong>' + response.json.newPassword + '</strong>.' :
+					'E-mail activation successful.';
 
-			$el.find('#user-query-form').slideUp(function() {
-				messagePresenter.showInfo($messages, message);
+				$el.find('#user-query-form').slideUp(function() {
+					messagePresenter.showInfo($messages, message);
+				});
+			}).fail(function(response) {
+				messagePresenter.showError($messages, response.json && response.json.error || response);
 			});
-		}).fail(function(response) {
-			messagePresenter.showError($messages, response.json && response.json.error || response);
-		});
 	}
 
 	return {

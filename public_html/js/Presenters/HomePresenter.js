@@ -7,10 +7,11 @@ App.Presenters.HomePresenter = function(
 
 	var $el = jQuery('#content');
 
-	function init(args) {
+	function init(args, loaded) {
 		topNavigationPresenter.select('home');
 		topNavigationPresenter.changeTitle('Home');
 		render();
+		loaded();
 	}
 
 	function render() {

@@ -20,14 +20,16 @@ App.Presenters.PostUploadPresenter = function(
 	var tagInput;
 	var interactionEnabled = true;
 
-	function init(args) {
+	function init(args, loaded) {
 		topNavigationPresenter.select('upload');
 		topNavigationPresenter.changeTitle('Upload');
 
-		promise.wait(util.promiseTemplate('post-upload')).then(function(html) {
-			template = _.template(html);
-			render();
-		});
+		promise.wait(util.promiseTemplate('post-upload'))
+			.then(function(html) {
+				template = _.template(html);
+				render();
+				loaded();
+			});
 	}
 
 	function render() {
@@ -524,18 +526,19 @@ App.Presenters.PostUploadPresenter = function(
 			return;
 		}
 
-		promise.wait(api.post('/posts', formData)).then(function(response) {
-			$row.slideUp(function(response) {
-				$row.remove();
-				posts.shift();
-				setAllPosts(posts);
-				uploadNextPost();
+		promise.wait(api.post('/posts', formData))
+			.then(function(response) {
+				$row.slideUp(function(response) {
+					$row.remove();
+					posts.shift();
+					setAllPosts(posts);
+					uploadNextPost();
+				});
+			}).fail(function(response) {
+				messagePresenter.hideMessages($messages);
+				messagePresenter.showError($messages, response.json && response.json.error || response);
+				interactionEnabled = true;
 			});
-		}).fail(function(response) {
-			messagePresenter.hideMessages($messages);
-			messagePresenter.showError($messages, response.json && response.json.error || response);
-			interactionEnabled = true;
-		});
 	}
 
 	function submitButtonClicked(e) {
