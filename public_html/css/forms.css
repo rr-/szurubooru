@@ -74,6 +74,12 @@ input[type=button]:not(:disabled):hover.highlight {
 	background: #dfa;
 }
 
+textarea:focus, input:focus{
+	outline: none;
+	box-shadow: 0 0 0 1px #5da inset;
+	border-color: #5da;
+}
+
 
 .file-handler {
 	border: 3px dashed #eee;
