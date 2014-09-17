@@ -28,12 +28,7 @@ class EmailService
 	public function sendActivationEmail(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Token $token)
 	{
 		if (!$user->getEmailUnconfirmed())
-		{
-			throw new \BadMethodCallException(
-				$user->getEmail()
-					? 'E-mail for this account is already confirmed.'
-					: 'An e-mail address is needed to activate the account.');
-		}
+			throw new \BadMethodCallException('An e-mail address is needed to activate the account.');
 
 		$mailSubject = $this->tokenize($this->config->mail->activationSubject);
 		$mailBody = $this->tokenizeFile(
