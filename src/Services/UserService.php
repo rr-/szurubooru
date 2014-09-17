@@ -306,11 +306,8 @@ class UserService
 		$this->assertNoUserWithThisEmail($user, $user->getEmailUnconfirmed());
 
 		$user->setAccountConfirmed(true);
-		if ($user->getEmailUnconfirmed())
-		{
-			$user->setEmail($user->getEmailUnconfirmed());
-			$user->setEmailUnconfirmed(null);
-		}
+		$user->setEmail($user->getEmailUnconfirmed());
+		$user->setEmailUnconfirmed(null);
 		return $user;
 	}
 
