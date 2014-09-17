@@ -2,26 +2,91 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.PostListPresenter = function(
+	_,
 	jQuery,
-	topNavigationPresenter) {
+	util,
+	promise,
+	auth,
+	router,
+	pagedCollectionPresenter,
+	topNavigationPresenter,
+	messagePresenter) {
 
 	var $el = jQuery('#content');
+	var listTemplate;
+	var itemTemplate;
 
 	function init(args) {
 		topNavigationPresenter.select('posts');
 		topNavigationPresenter.changeTitle('Posts');
-		render();
+
+		promise.waitAll(
+			util.promiseTemplate('post-list'),
+			util.promiseTemplate('post-list-item')).then(function(listHtml, itemHtml) {
+			listTemplate = _.template(listHtml);
+			itemTemplate = _.template(itemHtml);
+
+			render();
+			reinit(args);
+		});
+	}
+
+	function reinit(args) {
+		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
+		searchArgs.order = searchArgs.order;
+
+		updateActiveOrder(searchArgs.order);
+		initPaginator(searchArgs);
+	}
+
+	function initPaginator(searchArgs) {
+		pagedCollectionPresenter.init({
+			page: searchArgs.page,
+			searchParams: {order: searchArgs.order},
+			baseUri: '#/posts',
+			backendUri: '/posts',
+			updateCallback: function(data, clear) {
+				renderPosts(data.entities, clear);
+				return $el.find('.pagination-content');
+			},
+			failCallback: function(response) {
+				$el.empty();
+				messagePresenter.showError($el, response.json && response.json.error || response);
+			}});
 	}
 
 	function render() {
-		$el.html('Post list placeholder');
+		$el.html(listTemplate());
+	}
+
+	function updateActiveOrder(activeOrder) {
+		$el.find('.order li a').removeClass('active');
+		$el.find('.order [data-order="' + activeOrder + '"]').addClass('active');
+	}
+
+	function renderPosts(posts, clear) {
+		var $target = $el.find('.posts');
+
+		var all = '';
+		_.each(posts, function(post) {
+			all += itemTemplate({
+				post: post,
+			});
+		});
+
+		if (clear) {
+			$target.html(all);
+		} else {
+			$target.append(all);
+		}
 	}
 
 	return {
 		init: init,
+		reinit: reinit,
 		render: render,
 	};
 
 };
 
-App.DI.register('postListPresenter', ['jQuery', 'topNavigationPresenter'], App.Presenters.PostListPresenter);
+App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'router', 'pagedCollectionPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostListPresenter);

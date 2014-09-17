@@ -7,6 +7,7 @@ class PostService
 	private $validator;
 	private $transactionManager;
 	private $postDao;
+	private $postSearchService;
 	private $fileService;
 	private $timeService;
 	private $authService;
@@ -16,6 +17,7 @@ class PostService
 		\Szurubooru\Validator $validator,
 		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Dao\PostDao $postDao,
+		\Szurubooru\Dao\Services\PostSearchService $postSearchService,
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Services\FileService $fileService)
@@ -24,6 +26,7 @@ class PostService
 		$this->validator = $validator;
 		$this->transactionManager = $transactionManager;
 		$this->postDao = $postDao;
+		$this->postSearchService = $postSearchService;
 		$this->fileService = $fileService;
 		$this->timeService = $timeService;
 		$this->authService = $authService;
@@ -37,6 +40,17 @@ class PostService
 			if (!$post)
 				throw new \InvalidArgumentException('Post with name "' . $postName . '" was not found.');
 			return $post;
+		};
+		return $this->transactionManager->rollback($transactionFunc);
+	}
+
+	public function getFiltered(\Szurubooru\FormData\SearchFormData $formData)
+	{
+		$transactionFunc = function() use ($formData)
+		{
+			$this->validator->validate($formData);
+			$searchFilter = new \Szurubooru\Dao\SearchFilter($this->config->posts->postsPerPage, $formData);
+			return $this->postSearchService->getFiltered($searchFilter);
 		};
 		return $this->transactionManager->rollback($transactionFunc);
 	}

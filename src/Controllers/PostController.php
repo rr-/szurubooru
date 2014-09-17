@@ -22,7 +22,19 @@ final class PostController extends AbstractController
 
 	public function registerRoutes(\Szurubooru\Router $router)
 	{
+		$router->get('/api/posts', [$this, 'getFiltered']);
 		$router->post('/api/posts', [$this, 'createPost']);
+	}
+
+	public function getFiltered()
+	{
+		$formData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
+		$searchResult = $this->postService->getFiltered($formData);
+		$entities = $this->postViewProxy->fromArray($searchResult->entities);
+		return [
+			'data' => $entities,
+			'pageSize' => $searchResult->filter->pageSize,
+			'totalRecords' => $searchResult->totalRecords];
 	}
 
 	public function createPost()

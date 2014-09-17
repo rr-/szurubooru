@@ -1,0 +1,26 @@
+#post-list {
+	text-align: center;
+}
+
+#post-list .wrapper {
+	display: inline-block;
+	margin: 0 auto;
+}
+
+#post-list ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+#post-list li a {
+	display: block;
+	margin: 0.4em;
+}
+#post-list li img {
+	display: block;
+	box-shadow: 0 0 0 1px #999;
+}
