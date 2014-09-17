@@ -42,12 +42,12 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 		var $messages = $el.find('.messages');
 		messagePresenter.hideMessages($messages);
 		var newSettings = {
-			endlessScroll: $el.find('[name=endless-scroll]:visible').prop('checked'),
-			hideDownvoted: $el.find('[name=hide-downvoted]:visible').prop('checked'),
+			endlessScroll: $el.find('[name=endless-scroll]').is(':checked'),
+			hideDownvoted: $el.find('[name=hide-downvoted]').is(':checked'),
 			listPosts: {
-				safe: $el.find('[name=listSafePosts]:visible').prop('checked'),
-				sketchy: $el.find('[name=listSketchyPosts]:visible').prop('checked'),
-				unsafe: $el.find('[name=listUnsafePosts]:visible').prop('checked'),
+				safe: $el.find('[name=listSafePosts]').is(':checked'),
+				sketchy: $el.find('[name=listSketchyPosts]').is(':checked'),
+				unsafe: $el.find('[name=listUnsafePosts]').is(':checked'),
 			},
 		};
 		browsingSettings.setSettings(newSettings).then(function() {

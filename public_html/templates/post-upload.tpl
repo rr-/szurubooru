@@ -21,6 +21,7 @@
 					<tr>
 						<th class="checkbox">
 							<input type="checkbox" name="select-all"/>
+							<label></label>
 						</th>
 						<th class="thumbnail"></th>
 						<th class="tags">Tags</th>
@@ -35,6 +36,7 @@
 					<tr class="template">
 						<td class="checkbox">
 							<input type="checkbox"/>
+							<label></label>
 						</td>
 						<td class="thumbnail">
 							<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Thumbnail"/>
@@ -81,18 +83,18 @@
 					<div class="form-row">
 						<label class="form-label">Safety:</label>
 						<div class="form-input">
+							<input type="radio" id="post-safety-safe" name="safety" value="safe"/>
 							<label for="post-safety-safe">
-								<input type="radio" id="post-safety-safe" name="safety" value="safe"/>
 								Safe
 							</label>
 
+							<input type="radio" id="post-safety-sketchy" name="safety" value="sketchy"/>
 							<label for="post-safety-sketchy">
-								<input type="radio" id="post-safety-sketchy" name="safety" value="sketchy"/>
 								Sketchy
 							</label>
 
+							<input type="radio" id="post-safety-unsafe" name="safety" value="unsafe"/>
 							<label for="post-safety-unsafe">
-								<input type="radio" id="post-safety-unsafe" name="safety" value="unsafe"/>
 								Unsafe
 							</label>
 						</div>
@@ -116,8 +118,8 @@
 						<div class="form-row">
 							<label class="form-label" for="post-anonymous">Anonymity:</label>
 							<div class="form-input">
+								<input type="checkbox" id="post-anonymous" name="anonymous"/>
 								<label for="post-anonymous">
-									<input type="checkbox" id="post-anonymous" name="anonymous"/>
 									Don't show my name in this post
 								</label>
 							</div>

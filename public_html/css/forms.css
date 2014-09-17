@@ -80,6 +80,39 @@ textarea:focus, input:focus{
 	border-color: #5da;
 }
 
+input[type=radio],
+input[type=checkbox] {
+	display:none;
+}
+input[type=radio] + label,
+input[type=checkbox] + label {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+input[type=radio] + label:before,
+input[type=checkbox] + label:before {
+	font-family: 'FontAwesome';
+	display: inline-block;
+	width: 1em;
+	text-align: left;
+}
+input[type=radio] + label:before {
+	content: "\f1db";
+}
+input[type=radio]:checked + label:before {
+	content: "\f192";
+}
+input[type=checkbox] + label:before {
+	content: "\f096";
+}
+input[type=checkbox]:checked + label:before {
+	content: "\f046";
+}
+
+
 
 .file-handler {
 	border: 3px dashed #eee;

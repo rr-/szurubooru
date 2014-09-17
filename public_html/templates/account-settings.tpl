@@ -13,8 +13,8 @@
 					};
 				%>
 				<% _.each(avatarStyles, function(v, k) { %>
+					<input <% print(user.avatarStyle == k ? 'checked="checked"' : '') %> type="radio" name="avatar-style" id="account-settings-avatar-<%= k %>" value="<%= k %>"/>
 					<label for="account-settings-avatar-<%= k %>">
-						<input <% print(user.avatarStyle == k ? 'checked="checked"' : '') %> type="radio" name="avatar-style" id="account-settings-avatar-<%= k %>" value="<%= k %>"/>
 						<%= v %>
 					</label>
 				<% }) %>
