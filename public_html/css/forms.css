@@ -2,6 +2,7 @@
 	display: table;
 	margin: 0 auto;
 	text-align: left !important;
+	width: 30em;
 }
 
 .form-row {

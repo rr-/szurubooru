@@ -1,3 +1,6 @@
 #login-form p {
 	text-align: center;
 }
+#login-form form {
+	width: 22.5em;
+}

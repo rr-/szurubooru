@@ -1,3 +1,6 @@
 #registration-form p {
 	text-align: center;
 }
+#registration-form form {
+	width: 25em;
+}
