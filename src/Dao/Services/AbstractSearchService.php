@@ -52,7 +52,9 @@ abstract class AbstractSearchService
 		foreach ($query as $arrayEntity)
 			$entities[] = $this->entityConverter->toEntity($arrayEntity);
 
-		$query->select('COUNT(1) AS c');
+		$query = $this->fpdo
+			->from($this->tableName)
+			->select('COUNT(1) AS c');
 		$totalRecords = intval(iterator_to_array($query)[0]['c']);
 		return new \Szurubooru\Dao\SearchResult($searchFilter, $entities, $totalRecords);
 	}
