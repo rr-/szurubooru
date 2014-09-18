@@ -22,8 +22,15 @@ final class PostController extends AbstractController
 
 	public function registerRoutes(\Szurubooru\Router $router)
 	{
-		$router->get('/api/posts', [$this, 'getFiltered']);
 		$router->post('/api/posts', [$this, 'createPost']);
+		$router->get('/api/posts', [$this, 'getFiltered']);
+		$router->get('/api/posts/:postNameOrId', [$this, 'getByNameOrId']);
+	}
+
+	public function getByNameOrId($postNameOrId)
+	{
+		$post = $this->postService->getByNameOrId($postNameOrId);
+		return $this->postViewProxy->fromEntity($post);
 	}
 
 	public function getFiltered()

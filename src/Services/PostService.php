@@ -32,6 +32,20 @@ class PostService
 		$this->authService = $authService;
 	}
 
+	public function getByNameOrId($postNameOrId)
+	{
+		$transactionFunc = function() use ($postNameOrId)
+		{
+			$post = $this->postDao->findByName($postNameOrId);
+			if (!$post)
+				$post = $this->postDao->findById($postNameOrId);
+			if (!$post)
+				throw new \InvalidArgumentException('Post with name "' . $postName . '" was not found.');
+			return $post;
+		};
+		return $this->transactionManager->rollback($transactionFunc);
+	}
+
 	public function getByName($postName)
 	{
 		$transactionFunc = function() use ($postName)
