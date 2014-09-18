@@ -274,6 +274,7 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function postTableSelectionChanged(selectedPosts) {
+		messagePresenter.hideMessages($messages);
 		if (selectedPosts.length === 0) {
 			hidePostEditForm();
 		} else {
@@ -495,7 +496,6 @@ App.Presenters.PostUploadPresenter = function(
 
 	function uploadNextPost() {
 		messagePresenter.hideMessages($messages);
-		messagePresenter.showInfo($messages, 'Uploading in progress&hellip;');
 
 		var posts = getAllPosts();
 		if (posts.length === 0) {
@@ -504,6 +504,7 @@ App.Presenters.PostUploadPresenter = function(
 			return;
 		}
 
+		messagePresenter.showInfo($messages, 'Uploading in progress&hellip;');
 		var post = posts[0];
 		var $row = post.$tableRow;
 
