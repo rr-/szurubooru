@@ -13,6 +13,7 @@ App.Presenters.PagedCollectionPresenter = function(
 	browsingSettings) {
 
 	var $target;
+	var $pageList;
 	var targetContent;
 	var endlessScroll = browsingSettings.getSettings().endlessScroll;
 	var scrollInterval;
@@ -162,8 +163,14 @@ App.Presenters.PagedCollectionPresenter = function(
 
 	function refreshPageList() {
 		var pages = getVisiblePages();
-		$target.find('.page-list').empty();
+		$pageList.empty();
+		var lastPage = 0;
 		_.each(pages, function(page) {
+			if (page - lastPage > 1) {
+				$pageList.append(jQuery('<li><a>&hellip;</a></li>'));
+			}
+			lastPage = page;
+
 			var $a = jQuery('<a/>');
 			$a.addClass('big-button');
 			$a.attr('href', getPageChangeLink(page));
@@ -173,14 +180,15 @@ App.Presenters.PagedCollectionPresenter = function(
 			}
 			var $li = jQuery('<li/>');
 			$li.append($a);
-			$target.find('.page-list').append($li);
+			$pageList.append($li);
 		});
 	}
 
 	function render() {
 		$target.html(template({originalHtml: targetContent}));
+		$pageList = $target.find('.page-list');
 		if (endlessScroll) {
-			$target.find('.page-list').remove();
+			$pageList.remove();
 		} else {
 			refreshPageList();
 		}
