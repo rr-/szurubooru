@@ -74,8 +74,12 @@ input[type=button]:not(:disabled):hover.highlight {
 	background: #dfa;
 }
 
-textarea:focus, input:focus{
+textarea:focus, input:focus {
 	outline: none;
+}
+.tag-input.focused,
+textarea:focus,
+input:not(.tag-real-input):focus {
 	box-shadow: 0 0 0 1px #5da inset;
 	border-color: #5da;
 }

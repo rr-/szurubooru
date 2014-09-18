@@ -30,7 +30,7 @@ App.Controls.TagInput = function(
 
 	var $wrapper = jQuery('<div class="tag-input">');
 	var $tagList = jQuery('<ul class="tags">');
-	var $input = jQuery('<input type="text"/>');
+	var $input = jQuery('<input class="tag-real-input" type="text"/>');
 	$wrapper.append($tagList);
 	$wrapper.append($input);
 	$wrapper.insertAfter($underlyingInput);
@@ -39,6 +39,13 @@ App.Controls.TagInput = function(
 		$input.focus();
 	});
 	$input.attr('placeholder', $underlyingInput.attr('placeholder'));
+
+	$input.unbind('focus').bind('focus', function(e) {
+		$wrapper.addClass('focused');
+	});
+	$input.unbind('blur').bind('blur', function(e) {
+		$wrapper.removeClass('focused');
+	});
 
 	$input.unbind('paste').bind('paste', function(e) {
 		e.preventDefault();
