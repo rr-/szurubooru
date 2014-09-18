@@ -67,11 +67,11 @@ class TransactionManagerTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getTestDao()
 	{
-		return \Szurubooru\Injector::get(\Szurubooru\Dao\TokenDao::class);
+		return new \Szurubooru\Dao\TokenDao($this->databaseConnection);
 	}
 
 	private function getTransactionManager()
 	{
-		return \Szurubooru\Injector::get(\Szurubooru\Dao\TransactionManager::class);
+		return new \Szurubooru\Dao\TransactionManager($this->databaseConnection);
 	}
 }

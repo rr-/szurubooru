@@ -26,9 +26,9 @@ class TransactionManager
 		if ($pdo->inTransaction())
 			return $callback();
 
+		$pdo->beginTransaction();
 		try
 		{
-			$pdo->beginTransaction();
 			$ret = $callback();
 			$pdo->$operation();
 			return $ret;
