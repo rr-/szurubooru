@@ -28,41 +28,35 @@ App.Presenters.PostListPresenter = function(
 				itemTemplate = _.template(itemHtml);
 
 				render();
-				reinit(args, loaded);
+				loaded();
+
+				pagedCollectionPresenter.init({
+						baseUri: '#/posts',
+						backendUri: '/posts',
+						$target: $el.find('.pagination-target'),
+						updateCallback: function(data, clear) {
+							renderPosts(data.entities, clear);
+						},
+						failCallback: function(response) {
+							$el.empty();
+							messagePresenter.showError($el, response.json && response.json.error || response);
+						}
+					},
+					function() {
+						reinit(args, function() {});
+					});
 			});
 	}
 
 	function reinit(args, loaded) {
+		loaded();
+
 		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		searchArgs.order = searchArgs.order;
-
-		updateActiveOrder(searchArgs.order);
-		initPaginator(searchArgs, loaded);
-	}
-
-	function initPaginator(searchArgs, onLoad) {
-		pagedCollectionPresenter.init({
-			page: searchArgs.page,
-			searchParams: {order: searchArgs.order},
-			baseUri: '#/posts',
-			backendUri: '/posts',
-			updateCallback: function(data, clear) {
-				renderPosts(data.entities, clear);
-				return $el.find('.pagination-content');
-			},
-			failCallback: function(response) {
-				$el.empty();
-				messagePresenter.showError($el, response.json && response.json.error || response);
-			}}, onLoad);
+		pagedCollectionPresenter.reinit({page: searchArgs.page, searchParams: {order: searchArgs.order}});
 	}
 
 	function render() {
 		$el.html(listTemplate());
-	}
-
-	function updateActiveOrder(activeOrder) {
-		$el.find('.order li a').removeClass('active');
-		$el.find('.order [data-order="' + activeOrder + '"]').addClass('active');
 	}
 
 	function renderPosts(posts, clear) {

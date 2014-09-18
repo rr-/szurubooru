@@ -1,15 +1,11 @@
-<ul class="pager">
+<div class="pagination-content">
+	<%= originalHtml %>
+</div>
 
-	<% _.each(pages, function(page) { %>
-		<% if (page == pageNumber) { %>
-			<li class="active">
-		<% } else { %>
-			<li>
-		<% } %>
-			<a href="<%= link(page) %>">
-				<%= page %>
-			</a>
-		</li>
-	<% }); %>
+<div class="spinner">
+	<i class="fa fa-spin fa-circle-o-notch"></i>
+	<p>Loading&hellip;</p>
+</div>
 
+<ul class="page-list">
 </ul>

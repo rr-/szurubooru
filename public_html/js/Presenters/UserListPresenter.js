@@ -28,32 +28,34 @@ App.Presenters.UserListPresenter = function(
 				itemTemplate = _.template(itemHtml);
 
 				render();
-				reinit(args, loaded);
+				loaded();
+
+				pagedCollectionPresenter.init({
+						baseUri: '#/users',
+						backendUri: '/users',
+						$target: $el.find('.pagination-target'),
+						updateCallback: function(data, clear) {
+							renderUsers(data.entities, clear);
+						},
+						failCallback: function(response) {
+							$el.empty();
+							messagePresenter.showError($el, response.json && response.json.error || response);
+						}
+					},
+					function() {
+						reinit(args, function() {});
+					});
 			});
 	}
 
 	function reinit(args, loaded) {
+		loaded();
+
 		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
 		searchArgs.order = searchArgs.order || 'name';
-
 		updateActiveOrder(searchArgs.order);
-		initPaginator(searchArgs, loaded);
-	}
 
-	function initPaginator(searchArgs, onLoad) {
-		pagedCollectionPresenter.init({
-			page: searchArgs.page,
-			searchParams: {order: searchArgs.order},
-			baseUri: '#/users',
-			backendUri: '/users',
-			updateCallback: function(data, clear) {
-				renderUsers(data.entities, clear);
-				return $el.find('.pagination-content');
-			},
-			failCallback: function(response) {
-				$el.empty();
-				messagePresenter.showError($el, response.json && response.json.error || response);
-			}}, onLoad);
+		pagedCollectionPresenter.reinit({page: searchArgs.page, searchParams: {order: searchArgs.order}});
 	}
 
 	function render() {

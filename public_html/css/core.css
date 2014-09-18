@@ -6,6 +6,7 @@ body {
 	color: #555;
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 17px;
+	overflow-y: scroll;
 }
 
 h2 {
@@ -15,6 +16,7 @@ h2 {
 
 #middle {
 	padding: 0 2em;
+	position: relative;
 }
 
 #content {
@@ -55,19 +57,36 @@ hr {
 
 #wait-cover {
 	display: flex;
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(255, 255, 255, 0.9);
+	min-height: 25em;
+	background: rgba(255, 255, 255, 0.7);
 	z-index: 100;
 }
 #wait .spinner {
 	margin: auto;
+	padding: 1em 2em;
+	box-shadow: 0 0 1em 1em rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.5);
+	color: #888;
 }
 #wait .spinner .fa {
-	font-size: 40px;
+	font-size: 42px;
+}
+#wait p {
+	font-size: 15px;
+}
+
+.pagination-target .spinner {
+	display: none;
+	color: #888;
+	text-align: center;
+}
+.pagination-target .spinner .fa {
+	font-size: 28px;
 }

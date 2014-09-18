@@ -9,13 +9,16 @@ App.Presenters.PagedCollectionPresenter = function(
 	api,
 	mousetrap,
 	router,
+	presenterManager,
 	browsingSettings) {
 
+	var $target;
+	var targetContent;
 	var endlessScroll = browsingSettings.getSettings().endlessScroll;
 	var scrollInterval;
 	var template;
 	var totalPages;
-	var forceClear;
+	var forceClear = false;
 
 	var pageNumber;
 	var searchParams;
@@ -25,9 +28,8 @@ App.Presenters.PagedCollectionPresenter = function(
 	var failCallback;
 
 	function init(args, loaded) {
-		forceClear = !_.isEqual(args.searchParams, searchParams) || parseInt(args.page) !== pageNumber + 1;
-		searchParams = args.searchParams;
-		pageNumber = parseInt(args.page) || 1;
+		$target = args.$target;
+		targetContent = jQuery(args.$target).html();
 
 		baseUri = args.baseUri;
 		backendUri = args.backendUri;
@@ -37,23 +39,33 @@ App.Presenters.PagedCollectionPresenter = function(
 		promise.wait(util.promiseTemplate('pager'))
 			.then(function(html) {
 				template = _.template(html);
-				softChangePage(pageNumber)
-					.then(loaded)
-					.fail(loaded);
+				render();
+				loaded();
+			});
+	}
 
-				if (!endlessScroll) {
-					mousetrap.bind('a', function(e) {
-						if (!e.altKey && !e.ctrlKey) {
-							prevPage();
-						}
-					});
-					mousetrap.bind('d', function(e) {
-						if (!e.altKey && !e.ctrlKey) {
-							nextPage();
-						}
-					});
+	function reinit(args, loaded) {
+		forceClear = !_.isEqual(args.searchParams, searchParams) || parseInt(args.page) !== pageNumber + 1;
+
+		searchParams = args.searchParams;
+		pageNumber = parseInt(args.page) || 1;
+
+		softChangePage(pageNumber)
+			.then(loaded)
+			.fail(loaded);
+
+		if (!endlessScroll) {
+			mousetrap.bind('a', function(e) {
+				if (!e.altKey && !e.ctrlKey) {
+					prevPage();
 				}
 			});
+			mousetrap.bind('d', function(e) {
+				if (!e.altKey && !e.ctrlKey) {
+					nextPage();
+				}
+			});
+		}
 	}
 
 	function prevPage() {
@@ -82,8 +94,26 @@ App.Presenters.PagedCollectionPresenter = function(
 		router.navigate(getPageChangeLink(newPageNumber));
 	}
 
+	function showSpinner() {
+		if (endlessScroll) {
+			$target.find('.spinner').show();
+		} else {
+			presenterManager.showContentSpinner();
+		}
+	}
+
+	function hideSpinner() {
+		if (endlessScroll) {
+			$target.find('.spinner').hide();
+		} else {
+			presenterManager.hideContentSpinner();
+		}
+	}
+
 	function softChangePage(newPageNumber) {
 		pageNumber = newPageNumber;
+
+		showSpinner();
 
 		return promise.make(function(resolve, reject) {
 			promise.wait(
@@ -94,13 +124,15 @@ App.Presenters.PagedCollectionPresenter = function(
 						var totalRecords = response.json.totalRecords;
 						totalPages = Math.ceil(totalRecords / pageSize);
 
-						var $target = updateCallback({
+						updateCallback({
 							entities: response.json.data,
 							totalRecords: totalRecords},
 							forceClear || !endlessScroll);
 						forceClear = false;
 
-						render($target);
+						refreshPageList();
+						hideSpinner();
+						attachNextPageLoader();
 					}).fail(function(response) {
 						reject(response);
 						if (typeof(failCallback) !== 'undefined') {
@@ -112,31 +144,49 @@ App.Presenters.PagedCollectionPresenter = function(
 		});
 	}
 
-	function render($target) {
-		var pages = getVisiblePages();
-
+	function attachNextPageLoader() {
 		if (!endlessScroll) {
-			$target.find('.pager').remove();
-			$target.append(template({
-				pages: pages,
-				pageNumber: pageNumber,
-				link: getPageChangeLink,
-			}));
+			return;
+		}
+		var $scroller = jQuery('<div/>');
+		window.clearInterval(scrollInterval);
+		scrollInterval = window.setInterval(function() {
+			if ($scroller.is(':visible')) {
+				nextPageInplace();
+				window.clearInterval(scrollInterval);
+			}
+		}, 50);
+		$target.append($scroller);
+	}
+
+	function refreshPageList() {
+		var pages = getVisiblePages();
+		$target.find('.page-list').empty();
+		_.each(pages, function(page) {
+			var $a = jQuery('<a/>');
+			$a.addClass('big-button');
+			$a.attr('href', getPageChangeLink(page));
+			$a.text(page);
+			if (page === pageNumber) {
+				$a.addClass('active');
+			}
+			var $li = jQuery('<li/>');
+			$li.append($a);
+			$target.find('.page-list').append($li);
+		});
+	}
+
+	function render() {
+		$target.html(template({originalHtml: targetContent}));
+		if (endlessScroll) {
+			$target.find('.page-list').remove();
 		} else {
-			var $scroller = jQuery('<div/>');
-			window.clearInterval(scrollInterval);
-			scrollInterval = window.setInterval(function() {
-				if ($scroller.is(':visible')) {
-					nextPageInplace();
-					window.clearInterval(scrollInterval);
-				}
-			}, 50);
-			$target.append($scroller);
+			refreshPageList();
 		}
 	}
 
 	function getVisiblePages() {
-		var pages = [1, totalPages];
+		var pages = [1, totalPages || 1];
 		var pagesAroundCurrent = 2;
 		for (var i = -pagesAroundCurrent; i <= pagesAroundCurrent; i ++) {
 			if (pageNumber + i >= 1 && pageNumber + i <= totalPages) {
@@ -150,11 +200,9 @@ App.Presenters.PagedCollectionPresenter = function(
 			pages.push(totalPages - 1);
 		}
 
-		pages = pages.sort(function(a, b) { return a - b; }).filter(function(item, pos) {
+		return pages.sort(function(a, b) { return a - b; }).filter(function(item, pos) {
 			return !pos || item !== pages[pos - 1];
 		});
-
-		return pages;
 	}
 
 	function getSearchChangeLink(newSearchParams) {
@@ -167,7 +215,7 @@ App.Presenters.PagedCollectionPresenter = function(
 
 	return {
 		init: init,
-		render: render,
+		reinit: reinit,
 		changePage: changePage,
 		getSearchChangeLink: getSearchChangeLink,
 		getPageChangeLink: getPageChangeLink
@@ -175,4 +223,4 @@ App.Presenters.PagedCollectionPresenter = function(
 
 };
 
-App.DI.register('pagedCollectionPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'mousetrap', 'router', 'browsingSettings'], App.Presenters.PagedCollectionPresenter);
+App.DI.register('pagedCollectionPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'mousetrap', 'router', 'presenterManager', 'browsingSettings'], App.Presenters.PagedCollectionPresenter);

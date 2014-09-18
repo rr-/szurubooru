@@ -15,15 +15,23 @@ App.PresenterManager = function(jQuery, topNavigationPresenter) {
 		presenter.init.call(presenter, args, loaded);
 	}
 
+	function showContentSpinner() {
+		$spinner.show();
+	}
+
+	function hideContentSpinner() {
+		$spinner.hide();
+	}
+
 	function switchContentPresenter(presenter, args) {
 		var contentPresenterLoaded = function() {
 			window.clearTimeout(spinnerTimeout);
-			$spinner.hide();
+			hideContentSpinner();
 		};
 
 		spinnerTimeout = window.setTimeout(function() {
-			$spinner.stop().fadeIn('slow');
-		}, 300);
+			showContentSpinner();
+		}, 100);
 
 		if (lastContentPresenter === null || lastContentPresenter.name !== presenter.name) {
 			topNavigationPresenter.changeTitle(null);
@@ -53,6 +61,8 @@ App.PresenterManager = function(jQuery, topNavigationPresenter) {
 		initPresenter: initPresenter,
 		initPresenters: initPresenters,
 		switchContentPresenter: switchContentPresenter,
+		showContentSpinner: showContentSpinner,
+		hideContentSpinner: hideContentSpinner,
 	};
 
 };

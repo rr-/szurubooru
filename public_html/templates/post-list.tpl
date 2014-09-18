@@ -1,5 +1,5 @@
 <div id="post-list">
-	<div class="pagination-content">
+	<div class="pagination-target">
 		<div class="wrapper">
 			<ul class="posts">
 			</ul>

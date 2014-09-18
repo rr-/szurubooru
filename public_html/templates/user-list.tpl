@@ -14,7 +14,7 @@
 		</li>
 	</ul>
 
-	<div class="pagination-content">
+	<div class="pagination-target">
 		<ul class="users">
 		</ul>
 	</div>
