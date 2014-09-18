@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
 
-class TagEntityConverter implements IEntityConverter
+class TagEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
 	public function toArray(\Szurubooru\Entities\Entity $entity)
 	{
@@ -11,7 +11,7 @@ class TagEntityConverter implements IEntityConverter
 		];
 	}
 
-	public function toEntity(array $array)
+	public function toBasicEntity(array $array)
 	{
 		$entity = new \Szurubooru\Entities\Tag($array['name']);
 		$entity->setName($array['name']);

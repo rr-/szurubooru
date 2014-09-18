@@ -50,7 +50,10 @@ abstract class AbstractSearchService
 
 		$entities = [];
 		foreach ($query as $arrayEntity)
-			$entities[] = $this->entityConverter->toEntity($arrayEntity);
+		{
+			$entity =  $this->entityConverter->toEntity($arrayEntity);
+			$entities[] = $entity;
+		}
 
 		$query = $this->fpdo
 			->from($this->tableName)

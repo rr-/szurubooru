@@ -13,11 +13,14 @@ abstract class AbstractDao implements ICrudDao
 		$tableName,
 		\Szurubooru\Dao\EntityConverters\IEntityConverter $entityConverter)
 	{
-		$this->tableName = $tableName;
-		$this->entityConverter = $entityConverter;
-
 		$this->pdo = $databaseConnection->getPDO();
 		$this->fpdo = new \FluentPDO($this->pdo);
+		$this->tableName = $tableName;
+		$this->entityConverter = $entityConverter;
+		$this->entityConverter->setEntityDecorator(function($entity)
+			{
+				$this->afterLoad($entity);
+			});
 	}
 
 	public function getTableName()
@@ -51,7 +54,6 @@ abstract class AbstractDao implements ICrudDao
 		foreach ($query as $arrayEntity)
 		{
 			$entity = $this->entityConverter->toEntity($arrayEntity);
-			$this->afterLoad($entity);
 			$entities[$entity->getId()] = $entity;
 		}
 		return $entities;
@@ -98,9 +100,7 @@ abstract class AbstractDao implements ICrudDao
 		if (!$arrayEntity)
 			return null;
 
-		$entity = $this->entityConverter->toEntity($arrayEntity[0]);
-		$this->afterLoad($entity);
-		return $entity;
+		return $this->entityConverter->toEntity($arrayEntity[0]);
 	}
 
 	protected function deleteBy($columnName, $value)

@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
 
-class PostEntityConverter implements IEntityConverter
+class PostEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
 	public function toArray(\Szurubooru\Entities\Entity $entity)
 	{
@@ -23,7 +23,7 @@ class PostEntityConverter implements IEntityConverter
 		];
 	}
 
-	public function toEntity(array $array)
+	public function toBasicEntity(array $array)
 	{
 		$entity = new \Szurubooru\Entities\Post(intval($array['id']));
 		$entity->setName($array['name']);
