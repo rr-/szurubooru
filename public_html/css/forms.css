@@ -140,6 +140,7 @@ input[type=checkbox]:checked + label:before {
 .tag-input li {
 	background: #ddd;
 	display: inline-block;
+	font-family: 'Droid Sans', sans-serif;
 	margin: 1px;
 	padding: 2px 4px;
 	font-size: 15px;
