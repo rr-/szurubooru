@@ -11,7 +11,7 @@
 <% } else if (post.contentType == 'flash') { %>
 
 	<object
-			type="application/x-shockwave-flash"
+			type="<%= post.contentMimeType %>"
 			width="<%= post.imageWidth %>"
 			height="<%= post.imageHeight %>"
 			data="<%= postContentUrl %>">
@@ -22,7 +22,7 @@
 <% } else if (post.contentType == 'video') { %>
 
 	<video controls>
-		<source src="<%= postContentUrl %>"/>
+		<source type="<%= post.contentMimeType %>" src="<%= postContentUrl %>"/>
 
 		Your browser doesn't support HTML5 videos.
 	</video>

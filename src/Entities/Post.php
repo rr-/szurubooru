@@ -19,6 +19,7 @@ final class Post extends Entity
 	protected $safety;
 	protected $contentType;
 	protected $contentChecksum;
+	protected $contentMimeType;
 	protected $source;
 	protected $imageWidth;
 	protected $imageHeight;
@@ -110,6 +111,16 @@ final class Post extends Entity
 	public function setContentChecksum($contentChecksum)
 	{
 		$this->contentChecksum = $contentChecksum;
+	}
+
+	public function getContentMimeType()
+	{
+		return $this->contentMimeType;
+	}
+
+	public function setContentMimeType($contentMimeType)
+	{
+		$this->contentMimeType = $contentMimeType;
 	}
 
 	public function getSource()

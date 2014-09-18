@@ -131,6 +131,7 @@ class PostService
 			throw new \DomainException('Upload is too big.');
 
 		$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($content);
+		$post->setContentMimeType($mime);
 
 		if (\Szurubooru\Helpers\MimeHelper::isFlash($mime))
 			$post->setContentType(\Szurubooru\Entities\Post::POST_TYPE_FLASH);

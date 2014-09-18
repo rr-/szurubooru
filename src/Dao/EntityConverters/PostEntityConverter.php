@@ -15,6 +15,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'safety' => $entity->getSafety(),
 			'contentType' => $entity->getContentType(),
 			'contentChecksum' => $entity->getContentChecksum(),
+			'contentMimeType' => $entity->getContentMimeType(),
 			'source' => $entity->getSource(),
 			'imageWidth' => $entity->getImageWidth(),
 			'imageHeight' => $entity->getImageHeight(),
@@ -33,6 +34,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setSafety(intval($array['safety']));
 		$entity->setContentType(intval($array['contentType']));
 		$entity->setContentChecksum($array['contentChecksum']);
+		$entity->setContentMimeType($array['contentMimeType']);
 		$entity->setSource($array['source']);
 		$entity->setImageWidth($array['imageWidth']);
 		$entity->setImageHeight($array['imageHeight']);
