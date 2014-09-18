@@ -46,7 +46,12 @@ class PostDao extends AbstractDao implements ICrudDao
 
 	private function syncTags($postId, array $tags)
 	{
-		$existingTags = iterator_to_array($this->fpdo->from('postTags')->where('postId', $postId));
+		$existingTags = array_map(
+			function($arrayEntity)
+			{
+				return $arrayEntity['tagName'];
+			},
+			iterator_to_array($this->fpdo->from('postTags')->where('postId', $postId)));
 		$tagRelationsToInsert = array_diff($tags, $existingTags);
 		$tagRelationsToDelete = array_diff($existingTags, $tags);
 		$this->createMissingTags($tags);
