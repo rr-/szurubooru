@@ -148,15 +148,16 @@ App.Presenters.PagedCollectionPresenter = function(
 		if (!endlessScroll) {
 			return;
 		}
-		var $scroller = jQuery('<div/>');
+
 		window.clearInterval(scrollInterval);
 		scrollInterval = window.setInterval(function() {
-			if ($scroller.is(':visible')) {
+			var baseLine = $target.offset().top + $target.innerHeight();
+			var scrollY = jQuery(window).scrollTop() + jQuery(window).height();
+			if (scrollY > baseLine) {
 				nextPageInplace();
 				window.clearInterval(scrollInterval);
 			}
-		}, 50);
-		$target.append($scroller);
+		}, 100);
 	}
 
 	function refreshPageList() {
