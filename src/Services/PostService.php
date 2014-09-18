@@ -175,7 +175,9 @@ class PostService
 			$post->setContentChecksum($youtubeId);
 
 			$this->assertNoPostWithThisContentChecksum($post);
-			$this->removeThumbnail($post);
+			$youtubeThumbnailUrl = 'http://img.youtube.com/vi/' . $youtubeId . '/mqdefault.jpg';
+			$youtubeThumbnail = $this->fileService->download($youtubeThumbnailUrl);
+			$this->fileService->save($this->getPostThumbnailSourcePath($post), $youtubeThumbnail);
 		}
 		else
 		{
@@ -187,12 +189,6 @@ class PostService
 	private function updatePostTags(\Szurubooru\Entities\Post $post, array $newTags)
 	{
 		$post->setTags($newTags);
-	}
-
-	private function removeThumbnail(\Szurubooru\Entities\Post $post)
-	{
-		//...
-		//todo: remove thumbnail on upload
 	}
 
 	private function assertNoPostWithThisContentChecksum(\Szurubooru\Entities\Post $parent)
