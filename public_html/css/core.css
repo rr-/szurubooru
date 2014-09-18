@@ -44,6 +44,9 @@ hr {
 	box-sizing: content-box;
 }
 
+.big-button {
+	color: #aaa;
+}
 .big-button.active {
 	background: #f7fbfc;
 	color: #8ba !important;
