@@ -9,6 +9,7 @@
 		"grunt-contrib-uglify": "*",
 		"grunt-contrib-cssmin": "*",
 		"grunt-contrib-jshint": "~0.10.0",
-		"grunt-shell": "~1.1.1"
+		"grunt-shell": "~1.1.1",
+		"grunt-cli": "*"
 	}
 }
