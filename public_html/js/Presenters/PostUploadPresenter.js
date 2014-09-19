@@ -4,7 +4,7 @@ App.Presenters = App.Presenters || {};
 App.Presenters.PostUploadPresenter = function(
 	_,
 	jQuery,
-	mousetrap,
+	keyboard,
 	promise,
 	util,
 	auth,
@@ -45,21 +45,13 @@ App.Presenters.PostUploadPresenter = function(
 		$el.find('.url-handler button').click(urlHandlerButtonClicked);
 		$el.find('thead th.checkbox').click(postTableSelectAllCheckboxClicked);
 
-		mousetrap.bind('a', simpleKeyPressed(selectPrevPostTableRow), 'keyup');
-		mousetrap.bind('d', simpleKeyPressed(selectNextPostTableRow), 'keyup');
+		keyboard.keyup('a', selectPrevPostTableRow);
+		keyboard.keyup('d', selectNextPostTableRow);
 
 		$el.find('.remove').click(removeButtonClicked);
 		$el.find('.move-up').click(moveUpButtonClicked);
 		$el.find('.move-down').click(moveDownButtonClicked);
 		$el.find('.submit').click(submitButtonClicked);
-	}
-
-	function simpleKeyPressed(callback) {
-		return function(e) {
-			if (!e.altKey && !e.ctrlKey) {
-				callback();
-			}
-		};
 	}
 
 	function getDefaultPost() {
@@ -563,4 +555,4 @@ App.Presenters.PostUploadPresenter = function(
 
 };
 
-App.DI.register('postUploadPresenter', ['_', 'jQuery', 'mousetrap', 'promise', 'util', 'auth', 'api', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostUploadPresenter);
+App.DI.register('postUploadPresenter', ['_', 'jQuery', 'keyboard', 'promise', 'util', 'auth', 'api', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostUploadPresenter);

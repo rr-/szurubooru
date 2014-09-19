@@ -8,6 +8,7 @@ App.Presenters.PostListPresenter = function(
 	promise,
 	auth,
 	router,
+	keyboard,
 	pagedCollectionPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
@@ -57,6 +58,10 @@ App.Presenters.PostListPresenter = function(
 
 	function render() {
 		$el.html(listTemplate());
+
+		keyboard.keyup('p', function() {
+			$el.find('.posts li a').eq(0).focus();
+		});
 	}
 
 	function renderPosts(posts, clear) {
@@ -84,4 +89,4 @@ App.Presenters.PostListPresenter = function(
 
 };
 
-App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'router', 'pagedCollectionPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostListPresenter);
+App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'router', 'keyboard', 'pagedCollectionPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostListPresenter);

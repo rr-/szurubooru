@@ -7,7 +7,7 @@ App.Presenters.PagedCollectionPresenter = function(
 	util,
 	promise,
 	api,
-	mousetrap,
+	keyboard,
 	router,
 	presenterManager,
 	browsingSettings) {
@@ -56,16 +56,8 @@ App.Presenters.PagedCollectionPresenter = function(
 			.fail(loaded);
 
 		if (!endlessScroll) {
-			mousetrap.bind('a', function(e) {
-				if (!e.altKey && !e.ctrlKey) {
-					prevPage();
-				}
-			});
-			mousetrap.bind('d', function(e) {
-				if (!e.altKey && !e.ctrlKey) {
-					nextPage();
-				}
-			});
+			keyboard.keydown('a', prevPage);
+			keyboard.keydown('d', nextPage);
 		}
 	}
 
@@ -232,4 +224,4 @@ App.Presenters.PagedCollectionPresenter = function(
 
 };
 
-App.DI.register('pagedCollectionPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'mousetrap', 'router', 'presenterManager', 'browsingSettings'], App.Presenters.PagedCollectionPresenter);
+App.DI.register('pagedCollectionPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'keyboard', 'router', 'presenterManager', 'browsingSettings'], App.Presenters.PagedCollectionPresenter);

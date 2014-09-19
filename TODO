@@ -9,7 +9,6 @@ everything related to posts:
         - fix thumbnails for files that are neither youtube or images
 
     - post list
-        - add P hotkey to post list
         - add style for hovered and focused element
             - fav count
             - score
