@@ -1,0 +1,188 @@
+This is transient file that lists functionalities to be implemented before
+first major release.
+
+everything related to posts:
+    - uploads
+        - tag input: make tag of current text on input blur (e.g. user types
+          "tag" and submits the form, "tag" should appear on tag list)
+        - user shouldn't be able click form rows when upload is active
+        - fix thumbnails for files that are neither youtube or images
+
+    - post list
+        - add P hotkey to post list
+        - add style for hovered and focused element
+            - fav count
+            - score
+            - comment tcount
+        - fix broken thumbnails if no external software is installed
+
+    - single post view
+        - post content
+        - post tags
+            - number of tag usages
+        - basic information
+            - uploader's picture
+                - remember about support for anonymous uploads
+            - safety
+            - source
+            - image dimensions
+            - time of last edit
+            - time of upload
+            - time of last feature
+            - how many times the post was featured
+        - download
+            - permalink
+        - delete
+        - feature
+        - fav
+        - score (see notes about scoring)
+        - editing
+            - tags
+            - source
+            - safety
+            - content
+            - thumb
+            - relations
+            - ability to loop video posts
+        - relations
+        - previous and next post (difficult)
+            - remember last search
+            - take care of pages
+            - add A/D hotkeys
+        - hiding posts
+        - link to iqdb and/or tineye
+
+    - featured posts
+        - ability to feature the post
+        - show the post on main page
+        - tag list
+        - uploader
+
+    - random post
+        - regard safety settings
+
+    - ability to paste many urls in post upload
+
+    - post listing
+        - regard safety settings
+        - add warning if no posts were found
+        - search filters
+            - tag
+            - -tag
+            - submit:rr-
+            - comment:rr-
+            - comment: 3..5
+            - fav:rr-
+            - fav:3..5
+            - score:3..5
+            - tag:3..5
+            - date:today
+            - date:yesterday
+            - date:yyyy[-mm[-dd]]..yyyy[-mm[-dd]]
+            - filesize:3K..5M
+            - imgsize:huge/large/medium/small
+            - id:3,4,5
+            - hash:postName
+            - type:img/flash/yt/video
+            - special:liked
+            - special:disliked
+            - special:fav
+            - special:hidden
+        - search order
+            - order:id
+            - order:date
+            - order:score
+            - order:comments
+            - order:favs
+            - order:tags
+            - order:commentdate
+            - order:favdate
+            - order:filesize
+        - safe/sketchy/unsafe buttons and top navigation search goes to post
+          list presenter
+
+everything related to users:
+    - banning
+    - show link to user's uploads
+    - show link to user's favs
+    - show link to user's liked posts
+
+everything related to tags:
+    - tag autocompletion (difficult)
+    - time of last tag usage
+    - time of tag addition
+    - mass tag
+    - tag merging
+    - manual tag relations
+    - manual tag aliases
+    - tag categories (from config.ini)
+    - tag descriptions
+
+everything related to comments:
+    - adding comments
+    - listing comments in post view
+    - listing comments in comment list view
+    - deleting
+    - editing
+    - markdown
+    - score (see notes about scoring)
+
+refactors:
+    - make PostDao use TagDao when creating not existing tags (perhaps use
+      separate PostTagDao for this)
+    - post view proxy should retrieve full tags and full user
+    - centralize markdown prefix decorators
+    - move getPostContentPath i getAvatarSourcePath to Entity, include it in
+      ViewProxy and make presenters use it instead of duplicating the code
+    - after implementing Post::getPostContentPath, make paths include file
+      extensions so that apache can guess mime types when it serves the files
+    - add afterSave, afterDelete in Dao layer
+    - refactor to file content management
+        - move fileService dependency to Dao layer
+        - move setContent i getContent to entities
+        - add afterSave that talks to fileService to save the content
+        - inside afterLoad inject method wchi talks to fileService to read the
+          content
+    - add enum validation in IValidatables (needs refactors of enums and
+      possible disposal of EnumHelper in favor of something more subtle)
+    - (idea) keep denormalized data in separate tables, i.e. tag usages in
+      tag_meta or post favorite count in post_meta, so that it's obvious what
+      can be recalculated on demand and what is real data
+    - change AbstractSearchService to AbstractSearchParser
+    - embed AbstractSearchService into Dao (it sucks to include XSearchService
+      together with Dao)
+    - simplify template loading in presenters - right now template loading
+      requires _, util and promise:
+          promise.wait(util.loadTemplate('blah'))
+              .then(function(html) {
+                  template = _.template(html); });
+    - move content spinner code to separate module - it makes little sense for
+      individual presenters to use PresenterManager
+
+miscellaneous:
+    - remove dotted borders from active buttons
+    - add customizable favicon
+    - add add customizable logo
+    - add log engine and log everything that should be logged
+        - I don't think browsing online logs is very necessary
+    - add help, api documentation
+    - add version on homepage that reads version from package.json and git hash
+    - make script faster, right now every request to backend takes 200ms
+      (current suspect: dependency injector and sqlite)
+    - add tool for migrating szurubooru database
+    - endless pager should include information about page number
+    - add README and INSTALL - apache2 has good README:
+      http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
+    - add spinner to forms such as registration, user query, login, settings
+      etc. make sure the code isn't too duplicated.
+
+notes about scoring:
+    - anonymous users should be able to score posts
+    - anonymous users should be able to revoke and correct their scores
+    - it should be difficult to score post repeatedly (add protection in local
+      storage, anything more is probably an overkill)
+    - scored of authorized users should be persisted into database so it can be
+      searched for with special:liked and special:disliked
+
+some day:
+    - configure mails and ensure it works with gmail
