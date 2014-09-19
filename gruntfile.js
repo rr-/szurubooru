@@ -75,7 +75,7 @@ module.exports = function(grunt) {
 			},
 
 			tests: {
-				command: 'phpunit --strict --bootstrap src/AutoLoader.php tests/',
+				command: 'php vendor/phpunit/phpunit/phpunit --strict --bootstrap src/AutoLoader.php tests/',
 			},
 
 			upgrade: {
