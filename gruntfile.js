@@ -70,6 +70,10 @@ module.exports = function(grunt) {
 		},
 
 		shell: {
+			options: {
+				stdin: false
+			},
+
 			phpcheckstyle: {
 				command: 'php vendor/jbrooksuk/phpcheckstyle/run.php --config <%= phpCheckStyleConfigPath %> --src <%= phpSourcesDir %> --exclude di.php --format console',
 			},
