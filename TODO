@@ -123,10 +123,6 @@ refactors:
       separate PostTagDao for this)
     - post view proxy should retrieve full tags and full user
     - centralize markdown prefix decorators
-    - move getPostContentPath and getAvatarSourcePath to Entity, include it in
-      ViewProxy and make presenters use it instead of duplicating the code
-    - after implementing Post::getPostContentPath, make paths include file
-      extensions so that apache can guess mime types when it serves the files
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
     - (idea) keep denormalized data in separate tables, i.e. tag usages in
@@ -156,6 +152,7 @@ miscellaneous:
     - endless pager should include information about page number
     - add README and INSTALL - apache2 has good README:
       http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
+      remember to mention mod_mime_magic
     - add spinner to forms such as registration, user query, login, settings
       etc. make sure the code isn't too duplicated.
 
