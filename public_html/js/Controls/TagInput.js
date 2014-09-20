@@ -45,6 +45,9 @@ App.Controls.TagInput = function(
 	});
 	$input.unbind('blur').bind('blur', function(e) {
 		$wrapper.removeClass('focused');
+		var tag = $input.val();
+		addTag(tag);
+		$input.val('');
 	});
 
 	$input.unbind('paste').bind('paste', function(e) {

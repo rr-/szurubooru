@@ -3,8 +3,6 @@ first major release.
 
 everything related to posts:
     - uploads
-        - tag input: make tag of current text on input blur (e.g. user types
-          "tag" and submits the form, "tag" should appear on tag list)
         - user shouldn't be able click form rows when upload is active
         - fix thumbnails for files that are neither youtube or images
 
