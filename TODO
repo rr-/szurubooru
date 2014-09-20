@@ -2,11 +2,6 @@ This is transient file that lists functionalities to be implemented before
 first major release.
 
 everything related to posts:
-    - post list
-        - fav count
-        - score
-        - comment count
-
     - single post view
         - post content
         - post tags
@@ -35,6 +30,8 @@ everything related to posts:
             - thumb
             - relations
             - ability to loop video posts
+            - post edit history (think
+              http://konachan.com/history?search=post%3A188614)
         - relations
         - previous and next post (difficult)
             - remember last search
@@ -55,6 +52,11 @@ everything related to posts:
     - ability to paste many urls in post upload
 
     - post listing
+        - better thumbnail loading
+        - content type indicators (try to use CSS)
+        - fav count
+        - score
+        - comment count
         - regard safety settings
         - add warning if no posts were found
         - search filters
@@ -89,6 +91,7 @@ everything related to posts:
             - order:commentdate
             - order:favdate
             - order:filesize
+            - order:random (at least unstable version)
         - safe/sketchy/unsafe buttons and top navigation search goes to post
           list presenter
 
@@ -97,17 +100,21 @@ everything related to users:
     - show link to user's uploads
     - show link to user's favs
     - show link to user's liked posts
+    - better avatar loading
 
 everything related to tags:
+    - tag listing
     - tag autocompletion (difficult)
     - time of last tag usage
     - time of tag addition
     - mass tag
     - tag merging
-    - manual tag relations
-    - manual tag aliases
-    - tag categories (from config.ini)
-    - tag descriptions
+    - editing tags
+        - tag relations
+        - tag aliases
+        - tag categories (from config.ini)
+        - tag descriptions
+        - tag edit history
 
 everything related to comments:
     - adding comments
@@ -141,7 +148,7 @@ refactors:
 
 miscellaneous:
     - add customizable favicon
-    - add add customizable logo
+    - add customizable logo
     - add log engine and log everything that should be logged
         - I don't think browsing online logs is very necessary
     - add help, api documentation
