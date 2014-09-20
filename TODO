@@ -144,7 +144,6 @@ refactors:
       individual presenters to use PresenterManager
 
 miscellaneous:
-    - remove dotted borders from active buttons
     - add customizable favicon
     - add add customizable logo
     - add log engine and log everything that should be logged
