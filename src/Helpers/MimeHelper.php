@@ -17,17 +17,17 @@ class MimeHelper
 
 	public static function isFlash($mime)
 	{
-		return $mime === 'application/x-shockwave-flash';
+		return strtolower($mime) === 'application/x-shockwave-flash';
 	}
 
 	public static function isVideo($mime)
 	{
-		return $mime === 'application/ogg' or preg_match('/video\//', $mime);
+		return strtolower($mime) === 'application/ogg' or preg_match('/video\//i', $mime);
 	}
 
 	public static function isImage($mime)
 	{
-		return in_array($mime, ['image/jpeg', 'image/png', 'image/gif']);
+		return in_array(strtolower($mime), ['image/jpeg', 'image/png', 'image/gif']);
 	}
 
 	private static function stripCharset($mime)
