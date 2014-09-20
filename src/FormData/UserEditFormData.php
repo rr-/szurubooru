@@ -38,6 +38,16 @@ class UserEditFormData implements \Szurubooru\IValidatable
 		if ($this->email !== null)
 			$validator->validateEmail($this->email);
 
+		if (strlen($this->avatarContent) > 1024 * 512)
+			throw new \DomainException('Avatar content must have at most 512 kilobytes.');
+
+		if ($this->avatarContent)
+		{
+			$avatarContentMimeType = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($this->avatarContent);
+			if (!\Szurubooru\Helpers\MimeHelper::isImage($avatarContentMimeType))
+				throw new \DomainException('Avatar must be an image (detected: ' . $avatarContentMimeType . ').');
+		}
+
 		if ($this->browsingSettings !== null)
 		{
 			if (!is_string($this->browsingSettings))
