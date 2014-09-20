@@ -3,10 +3,9 @@ first major release.
 
 everything related to posts:
     - post list
-        - add style for hovered and focused element
-            - fav count
-            - score
-            - comment tcount
+        - fav count
+        - score
+        - comment count
         - fix broken thumbnails if no external software is installed
 
     - single post view

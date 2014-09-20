@@ -16,11 +16,24 @@
 	justify-content: center;
 }
 
-#post-list li a {
+#post-list .posts li a {
 	display: block;
 	margin: 0.4em;
+	border: 1px solid #999;
 }
-#post-list li img {
+#post-list .posts li img {
 	display: block;
-	box-shadow: 0 0 0 1px #999;
+}
+
+#post-list .posts li a:focus,
+#post-list .posts li a:hover {
+	background: #afe;
+	border-color: #5da;
+	box-shadow: 0 0 0 2px #5da;
+	outline: 0;
+}
+
+#post-list .posts li a:focus img,
+#post-list .posts li a:hover img {
+	opacity: .9;
 }
