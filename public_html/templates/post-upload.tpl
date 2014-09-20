@@ -20,8 +20,8 @@
 				<thead>
 					<tr>
 						<th class="checkbox">
-							<input type="checkbox" name="select-all"/>
-							<label></label>
+							<input id="post-upload-select-all" type="checkbox" name="select-all"/>
+							<label for="post-upload-select-all"></label>
 						</th>
 						<th class="thumbnail"></th>
 						<th class="tags">Tags</th>

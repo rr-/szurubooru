@@ -160,6 +160,8 @@ App.Presenters.PostUploadPresenter = function(
 		$row.find('img').mouseleave(postTableRowImageUnhovered);
 		$row.data('post', post);
 		$table.find('tbody').append($row);
+		$row.find('td.checkbox input').attr('id', _.uniqueId());
+		$row.find('td.checkbox label').attr('for', $row.find('td.checkbox input').attr('id'));
 
 		postChanged(post);
 
