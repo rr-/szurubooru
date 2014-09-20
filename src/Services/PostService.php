@@ -11,6 +11,7 @@ class PostService
 	private $timeService;
 	private $authService;
 	private $fileService;
+	private $imageManipulator;
 
 	public function __construct(
 		\Szurubooru\Config $config,
@@ -20,7 +21,8 @@ class PostService
 		\Szurubooru\Dao\Services\PostSearchService $postSearchService,
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\TimeService $timeService,
-		\Szurubooru\Services\FileService $fileService)
+		\Szurubooru\Services\FileService $fileService,
+		\Szurubooru\Services\ImageManipulation\ImageManipulator $imageManipulator)
 	{
 		$this->config = $config;
 		$this->validator = $validator;
@@ -30,6 +32,7 @@ class PostService
 		$this->timeService = $timeService;
 		$this->authService = $authService;
 		$this->fileService = $fileService;
+		$this->imageManipulator = $imageManipulator;
 	}
 
 	public function getByNameOrId($postNameOrId)
@@ -137,9 +140,9 @@ class PostService
 
 		$post->setContent($content);
 
-		list ($imageWidth, $imageHeight) = getimagesizefromstring($content);
-		$post->setImageWidth($imageWidth);
-		$post->setImageHeight($imageHeight);
+		$image = $this->imageManipulator->loadFromBuffer($content);
+		$post->setImageWidth($this->imageManipulator->getImageWidth($image));
+		$post->setImageHeight($this->imageManipulator->getImageHeight($image));
 
 		$post->setOriginalFileSize(strlen($content));
 	}

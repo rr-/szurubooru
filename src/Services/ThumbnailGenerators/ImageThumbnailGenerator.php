@@ -3,26 +3,77 @@ namespace Szurubooru\Services\ThumbnailGenerators;
 
 class ImageThumbnailGenerator implements IThumbnailGenerator
 {
-	private $imageImagickThumbnailGenerator;
-	private $imageGdThumbnailGenerator;
+	private $imageManipulator;
 
-	public function __construct(
-		ImageImagickThumbnailGenerator $imageImagickThumbnailGenerator,
-		ImageGdThumbnailGenerator $imageGdThumbnailGenerator)
+	public function __construct(\Szurubooru\Services\ImageManipulation\ImageManipulator $imageManipulator)
 	{
-		$this->imageImagickThumbnailGenerator = $imageImagickThumbnailGenerator;
-		$this->imageGdThumbnailGenerator = $imageGdThumbnailGenerator;
+		$this->imageManipulator = $imageManipulator;
 	}
 
-	public function generate($srcPath, $dstPath, $width, $height)
+	public function generate($source, $width, $height, $cropStyle)
 	{
-		if (extension_loaded('imagick'))
-			$strategy = $this->imageImagickThumbnailGenerator;
-		elseif (extension_loaded('gd'))
-			$strategy = $this->imageGdThumbnailGenerator;
-		else
-			throw new \Exception('Both imagick and gd extensions are disabled');
+		try
+		{
+			$image = $this->imageManipulator->loadFromBuffer($source);
+			$srcWidth = $this->imageManipulator->getImageWidth($image);
+			$srcHeight = $this->imageManipulator->getImageHeight($image);
 
-		return $strategy->generate($srcPath, $dstPath, $width, $height);
+			switch ($cropStyle)
+			{
+				case IThumbnailGenerator::CROP_OUTSIDE:
+					$this->cropOutside($image, $srcWidth, $srcHeight, $width, $height);
+					break;
+
+				case IThumbnailGenerator::CROP_INSIDE:
+					$this->cropInside($image, $srcWidth, $srcHeight, $width, $height);
+					break;
+
+				default:
+					throw new \InvalidArgumentException('Unknown thumbnail crop style');
+			}
+
+			return $this->imageManipulator->saveToBuffer(
+				$image,
+				\Szurubooru\Services\ImageManipulation\IImageManipulator::FORMAT_JPEG);
+		}
+		catch (\Exception $e)
+		{
+			return null;
+		}
+	}
+
+	private function cropOutside($image, $srcWidth, $srcHeight, $dstWidth, $dstHeight)
+	{
+		if (($dstHeight / $dstWidth) > ($srcHeight / $srcWidth))
+		{
+			$cropHeight = $dstHeight;
+			$cropWidth = $dstHeight * $srcWidth / $srcHeight;
+		}
+		else
+		{
+			$cropWidth = $dstWidth;
+			$cropHeight = $dstWidth * $srcHeight / $srcWidth;
+		}
+		$cropX = ($cropWidth - $dstWidth) >> 1;
+		$cropY = ($cropHeight - $dstHeight) >> 1;
+
+		$this->imageManipulator->resizeImage($image, $cropWidth, $cropHeight);
+		$this->imageManipulator->cropImage($image, $dstWidth, $dstHeight, $cropX, $cropY);
+	}
+
+	private function cropInside($image, $srcWidth, $srcHeight, $dstWidth, $dstHeight)
+	{
+		if (($dstHeight / $dstWidth) < ($srcHeight / $srcWidth))
+		{
+			$cropHeight = $dstHeight;
+			$cropWidth = $dstHeight * $srcWidth / $srcHeight;
+		}
+		else
+		{
+			$cropWidth = $dstWidth;
+			$cropHeight = $dstWidth * $srcHeight / $srcWidth;
+		}
+
+		$this->imageManipulator->resizeImage($image, $cropWidth, $cropHeight);
 	}
 }

@@ -3,6 +3,9 @@ namespace Szurubooru\Services\ThumbnailGenerators;
 
 class VideoThumbnailGenerator implements IThumbnailGenerator
 {
+	const PROGRAM_NAME_FFMPEG = 'ffmpeg';
+	const PROGRAM_NAME_FFMPEGTHUMBNAILER = 'ffmpegthumbnailer';
+
 	private $imageThumbnailGenerator;
 
 	public function __construct(ImageThumbnailGenerator $imageThumbnailGenerator)
@@ -10,39 +13,43 @@ class VideoThumbnailGenerator implements IThumbnailGenerator
 		$this->imageThumbnailGenerator = $imageThumbnailGenerator;
 	}
 
-	public function generate($srcPath, $dstPath, $width, $height)
+	public function generate($source, $width, $height, $cropStyle)
 	{
-		if (!file_exists($srcPath))
-			throw new \InvalidArgumentException($srcPath . ' does not exist');
+		$tmpSourcePath = tempnam(sys_get_temp_dir(), 'thumb') . '.dat';
+		$tmpTargetPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
+		file_put_contents($tmpSourcePath, $source);
 
-		$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.jpg';
-
-		$cmd = sprintf(
-			'ffmpegthumbnailer -i"%s" -o"%s" -s0 -t"12%%"',
-			$srcPath,
-			$tmpPath);
-		exec($cmd);
-
-		if (file_exists($tmpPath))
+		if (\Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEGTHUMBNAILER))
 		{
-			$this->imageThumbnailGenerator->generate($tmpPath, $dstPath, $width, $height);
-			unlink($tmpPath);
-			return;
+			\Szurubooru\Helpers\ProgramExecutor::run(
+				self::PROGRAM_NAME_FFMPEGTHUMBNAILER,
+				[
+					'-i' . $tmpSourcePath,
+					'-o' . $tmpTargetPath,
+					'-s0',
+					'-t12%%'
+				]);
 		}
 
-		$cmd = sprintf(
-			'ffmpeg -i "%s" -vframes 1 "%s"',
-			$srcPath,
-			$tmpPath);
-		exec($cmd);
-
-		if (file_exists($tmpPath))
+		if (!file_exists($tmpTargetPath) and \Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
 		{
-			$this->imageThumbnailGenerator->generate($tmpPath, $dstPath, $width, $height);
-			unlink($tmpPath);
-			return;
+			\Szurubooru\Helpers\ProgramExecutor::run(self::PROGRAM_NAME_FFMEPG,
+				[
+					'-i', $tmpSourcePath,
+					'-vframes', '1',
+					$tmpTargetPath
+				]);
 		}
 
-		throw new \RuntimeException('Failed to generate thumbnail');
+		if (!file_exists($tmpTargetPath))
+		{
+			unlink($tmpSourcePath);
+			return null;
+		}
+
+		$ret = $this->imageThumbnailGenerator->generate(file_get_contents($tmpTargetPath), $width, $height, $cropStyle);
+		unlink($tmpSourcePath);
+		unlink($tmpTargetPath);
+		return $ret;
 	}
 }

@@ -3,48 +3,69 @@ namespace Szurubooru\Services;
 
 class ThumbnailService
 {
+	private $config;
 	private $fileService;
 	private $thumbnailGenerator;
 
 	public function __construct(
-		FileService $fileService,
-		ThumbnailGenerators\SmartThumbnailGenerator $thumbnailGenerator)
+		\Szurubooru\Config $config,
+		\Szurubooru\Services\FileService $fileService,
+		\Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator $thumbnailGenerator)
 	{
+		$this->config = $config;
 		$this->fileService = $fileService;
 		$this->thumbnailGenerator = $thumbnailGenerator;
 	}
 
-	public function getOrGenerate($source, $width, $height)
-	{
-		$target = $this->getPath($source, $width, $height);
-
-		if (!$this->fileService->exists($target))
-			$this->generate($source, $width, $height);
-
-		return $target;
-	}
-
-	public function deleteUsedThumbnails($source)
+	public function deleteUsedThumbnails($sourceName)
 	{
 		foreach ($this->getUsedThumbnailSizes() as $size)
 		{
 			list ($width, $height) = $size;
-			$target = $this->getPath($source, $width, $height);
-			if ($this->fileService->exists($target))
-				$this->fileService->delete($target);
+			$target = $this->getThumbnailName($sourceName, $width, $height);
+			$this->fileService->delete($target);
 		}
 	}
 
-	public function generate($source, $width, $height)
+	public function generateIfNeeded($sourceName, $width, $height)
 	{
-		$target = $this->getPath($source, $width, $height);
+		$thumbnailName = $this->getThumbnailName($sourceName, $width, $height);
 
-		$fullSource = $this->fileService->getFullPath($source);
-		$fullTarget = $this->fileService->getFullPath($target);
-		$this->fileService->createFolders($target);
-		$this->thumbnailGenerator->generate($fullSource, $fullTarget, $width, $height);
+		if (!$this->fileService->exists($thumbnailName))
+			$this->generate($sourceName, $width, $height);
+	}
 
-		return $target;
+	public function generate($sourceName, $width, $height)
+	{
+		switch ($this->config->misc->thumbnailCropStyle)
+		{
+			case 'outside':
+				$cropStyle = \Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE;
+				break;
+
+			case 'inside':
+				$cropStyle = \Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_INSIDE;
+				break;
+
+			default:
+				throw new \InvalidArgumentException('Invalid thumbnail crop style');
+		}
+
+		$thumbnailName = $this->getThumbnailName($sourceName, $width, $height);
+
+		$source = $this->fileService->load($sourceName);
+		$result = null;
+
+		if (!$source)
+			$source = $this->fileService->load($this->getBlankThumbnailName());
+
+		if ($source)
+			$result = $this->thumbnailGenerator->generate($source, $width, $height, $cropStyle);
+
+		if (!$result)
+			$result = $this->fileService->load($this->getBlankThumbnailName());
+
+		$this->fileService->save($thumbnailName, $result);
 	}
 
 	public function getUsedThumbnailSizes()
@@ -64,8 +85,13 @@ class ThumbnailService
 		}
 	}
 
-	private function getPath($source, $width, $height)
+	public function getThumbnailName($source, $width, $height)
 	{
 		return 'thumbnails' . DIRECTORY_SEPARATOR . $width . 'x' . $height . DIRECTORY_SEPARATOR . $source;
+	}
+
+	public function getBlankThumbnailName()
+	{
+		return 'thumbnails' . DIRECTORY_SEPARATOR . 'blank.png';
 	}
 }

@@ -3,6 +3,9 @@ namespace Szurubooru\Services\ThumbnailGenerators;
 
 class FlashThumbnailGenerator implements IThumbnailGenerator
 {
+	const PROGRAM_NAME_DUMP_GNASH = 'dump-gnash';
+	const PROGRAM_NAME_SWFRENDER = 'swfrender';
+
 	private $imageThumbnailGenerator;
 
 	public function __construct(ImageThumbnailGenerator $imageThumbnailGenerator)
@@ -10,35 +13,47 @@ class FlashThumbnailGenerator implements IThumbnailGenerator
 		$this->imageThumbnailGenerator = $imageThumbnailGenerator;
 	}
 
-	public function generate($srcPath, $dstPath, $width, $height)
+	public function generate($source, $width, $height, $cropStyle)
 	{
-		if (!file_exists($srcPath))
-			throw new \InvalidArgumentException($srcPath . ' does not exist');
+		$tmpSourcePath = tempnam(sys_get_temp_dir(), 'thumb') . '.dat';
+		$tmpTargetPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
+		file_put_contents($tmpSourcePath, $source);
 
-		$tmpPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
-
-		$cmd = sprintf(
-			'dump-gnash --screenshot last --screenshot-file "%s" -1 -r1 --max-advances 15 "%s"',
-			$tmpPath,
-			$srcPath);
-		exec($cmd);
-
-		if (file_exists($tmpPath))
+		if (\Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_DUMP_GNASH))
 		{
-			$this->imageThumbnailGenerator->generate($tmpPath, $dstPath, $width, $height);
-			unlink($tmpPath);
-			return;
+			\Szurubooru\Helpers\ProgramExecutor::run(
+				self::PROGRAM_NAME_DUMP_GNASH,
+				[
+					'--screenshot', 'last',
+					'--screenshot-file', $tmpTargetPath,
+					'-1',
+					'-r1',
+					'--max-advances', '15',
+					$tmpSourcePath,
+				]);
 		}
 
-		exec('swfrender ' . $srcPath . ' -o ' . $tmpPath);
-
-		if (file_exists($tmpPath))
+		if (!file_exists($tmpTargetPath) and \Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_SWFRENDER))
 		{
-			$this->imageThumbnailGenerator->generate($tmpPath, $dstPath, $width, $height);
-			unlink($tmpPath);
-			return;
+			\Szurubooru\Helpers\ProgramExecutor::run(
+				self::PROGRAM_NAME_SWFRENDER,
+				[
+					'swfrender',
+					$tmpSourcePath,
+					'-o',
+					$tmpTargetPath,
+				]);
 		}
 
-		throw new \RuntimeException('Failed to generate thumbnail');
+		if (!file_exists($tmpTargetPath))
+		{
+			unlink($tmpSourcePath);
+			return null;
+		}
+
+		$ret = $this->imageThumbnailGenerator->generate(file_get_contents($tmpTargetPath), $width, $height, $cropStyle);
+		unlink($tmpSourcePath);
+		unlink($tmpTargetPath);
+		return $ret;
 	}
 }

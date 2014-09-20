@@ -11,6 +11,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $authServiceMock;
 	private $timeServiceMock;
 	private $fileServiceMock;
+	private $imageManipulatorMock;
 
 	public function setUp()
 	{
@@ -23,8 +24,8 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
 		$this->configMock->set('database/maxPostSize', 1000000);
+		$this->imageManipulatorMock = $this->mock(\Szurubooru\Services\ImageManipulation\ImageManipulator::class);
 	}
-
 
 	public function testCreatingYoutubePost()
 	{
@@ -60,15 +61,17 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->contentFileName = 'blah';
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
+		$this->imageManipulatorMock->expects($this->once())->method('getImageWidth')->willReturn(640);
+		$this->imageManipulatorMock->expects($this->once())->method('getImageHeight')->willReturn(480);
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
 		$this->assertEquals(\Szurubooru\Entities\Post::POST_TYPE_IMAGE, $savedPost->getContentType());
 		$this->assertEquals('24216edd12328de3a3c55e2f98220ee7613e3be1', $savedPost->getContentChecksum());
-		$this->assertEquals(640, $savedPost->getImageWidth());
-		$this->assertEquals(480, $savedPost->getImageHeight());
 		$this->assertEquals($formData->contentFileName, $savedPost->getOriginalFileName());
 		$this->assertEquals(687645, $savedPost->getOriginalFileSize());
+		$this->assertEquals(640, $savedPost->getImageWidth());
+		$this->assertEquals(480, $savedPost->getImageHeight());
 	}
 
 	public function testCreatingVideos()
@@ -85,8 +88,6 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$savedPost = $this->postService->createPost($formData);
 		$this->assertEquals(\Szurubooru\Entities\Post::POST_TYPE_VIDEO, $savedPost->getContentType());
 		$this->assertEquals('16dafaa07cda194d03d590529c06c6ec1a5b80b0', $savedPost->getContentChecksum());
-		$this->assertNull($savedPost->getImageWidth());
-		$this->assertNull($savedPost->getImageHeight());
 		$this->assertEquals($formData->contentFileName, $savedPost->getOriginalFileName());
 		$this->assertEquals(14667, $savedPost->getOriginalFileSize());
 	}
@@ -105,8 +106,6 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$savedPost = $this->postService->createPost($formData);
 		$this->assertEquals(\Szurubooru\Entities\Post::POST_TYPE_FLASH, $savedPost->getContentType());
 		$this->assertEquals('d897e044b801d892291b440534c3be3739034f68', $savedPost->getContentChecksum());
-		$this->assertEquals(320, $savedPost->getImageWidth());
-		$this->assertEquals(240, $savedPost->getImageHeight());
 		$this->assertEquals($formData->contentFileName, $savedPost->getOriginalFileName());
 		$this->assertEquals(226172, $savedPost->getOriginalFileSize());
 	}
@@ -180,6 +179,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->postSearchServiceMock,
 			$this->authServiceMock,
 			$this->timeServiceMock,
-			$this->fileServiceMock);
+			$this->fileServiceMock,
+			$this->imageManipulatorMock);
 	}
 }

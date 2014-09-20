@@ -3,5 +3,8 @@ namespace Szurubooru\Services\ThumbnailGenerators;
 
 interface IThumbnailGenerator
 {
-	public function generate($srcPath, $dstPath, $width, $height);
+	const CROP_OUTSIDE = 0;
+	const CROP_INSIDE = 1;
+
+	public function generate($sourceString, $width, $height, $cropStyle);
 }

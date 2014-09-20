@@ -3,29 +3,18 @@ namespace Szurubooru\Tests\Services;
 
 class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 {
-	public function testDeleteUsedThumbnails()
+	private $configMock;
+	private $fileServiceMock;
+	private $thumbnailGeneratorMock;
+
+	public function setUp()
 	{
-		define('DS', DIRECTORY_SEPARATOR);
+		parent::setUp();
 
-		$tempDirectory = $this->createTestDirectory();
-		mkdir($tempDirectory . DS . 'thumbnails');
-		mkdir($tempDirectory . DS . 'thumbnails' . DS . '5x5');
-		mkdir($tempDirectory . DS . 'thumbnails' . DS . '10x10');
-		touch($tempDirectory . DS . 'thumbnails' . DS . '5x5' . DS . 'remove');
-		touch($tempDirectory . DS . 'thumbnails' . DS . '5x5' . DS . 'keep');
-		touch($tempDirectory . DS . 'thumbnails' . DS . '10x10' . DS . 'remove');
-
-		$configMock = $this->mockConfig(null, $tempDirectory);
-		$httpHelperMock = $this->mock(\Szurubooru\Helpers\HttpHelper::class);
-		$fileService = new \Szurubooru\Services\FileService($configMock, $httpHelperMock);
-		$thumbnailGeneratorMock = $this->mock(\Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator::class);
-
-		$thumbnailService = new \Szurubooru\Services\ThumbnailService($fileService, $thumbnailGeneratorMock);
-		$thumbnailService->deleteUsedThumbnails('remove');
-
-		$this->assertFalse(file_exists($tempDirectory . DS . 'thumbnails' . DS . '5x5' . DS . 'remove'));
-		$this->assertTrue(file_exists($tempDirectory . DS . 'thumbnails' . DS . '5x5' . DS . 'keep'));
-		$this->assertFalse(file_exists($tempDirectory . DS . 'thumbnails' . DS . '10x10' . DS . 'remove'));
+		$this->configMock = $this->mockConfig();
+		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
+		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
+		$this->thumbnailGeneratorMock = $this->mock(\Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator::class);
 	}
 
 	public function testGetUsedThumbnailSizes()
@@ -36,11 +25,8 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		mkdir($tempDirectory . DIRECTORY_SEPARATOR . 'something unexpected');
 		touch($tempDirectory . DIRECTORY_SEPARATOR . '15x15');
 
-		$fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
-		$fileServiceMock->expects($this->once())->method('getFullPath')->willReturn($tempDirectory);
-		$thumbnailGeneratorMock = $this->mock(\Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator::class);
-
-		$thumbnailService = new \Szurubooru\Services\ThumbnailService($fileServiceMock, $thumbnailGeneratorMock);
+		$this->fileServiceMock->expects($this->once())->method('getFullPath')->with('thumbnails')->willReturn($tempDirectory);
+		$thumbnailService = $this->getThumbnailService();
 
 		$expected = [[5, 5], [10, 10]];
 		$actual = iterator_to_array($thumbnailService->getUsedThumbnailSizes());
@@ -48,5 +34,102 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertEquals(count($expected), count($actual));
 		foreach ($expected as $v)
 			$this->assertContains($v, $actual);
+	}
+
+	public function testDeleteUsedThumbnails()
+	{
+		$tempDirectory = $this->createTestDirectory();
+		mkdir($tempDirectory . DIRECTORY_SEPARATOR . '5x5');
+		mkdir($tempDirectory . DIRECTORY_SEPARATOR . '10x10');
+		touch($tempDirectory . DIRECTORY_SEPARATOR . '5x5' . DIRECTORY_SEPARATOR . 'remove');
+		touch($tempDirectory . DIRECTORY_SEPARATOR . '5x5' . DIRECTORY_SEPARATOR . 'keep');
+		touch($tempDirectory . DIRECTORY_SEPARATOR . '10x10' . DIRECTORY_SEPARATOR . 'remove');
+
+		$this->fileServiceMock->expects($this->once())->method('getFullPath')->with('thumbnails')->willReturn($tempDirectory);
+		$this->fileServiceMock->expects($this->exactly(2))->method('delete')->withConsecutive(
+			['thumbnails' . DIRECTORY_SEPARATOR . '10x10' . DIRECTORY_SEPARATOR . 'remove'],
+			['thumbnails' . DIRECTORY_SEPARATOR . '5x5' . DIRECTORY_SEPARATOR . 'remove']);
+		$thumbnailService = $this->getThumbnailService();
+
+		$thumbnailService->deleteUsedThumbnails('remove');
+	}
+
+	public function testGeneratingFromNonExistingSource()
+	{
+		$this->configMock->set('misc/thumbnailCropStyle', 'outside');
+
+		$this->fileServiceMock
+			->expects($this->exactly(2))
+			->method('load')
+			->withConsecutive(
+				['nope'],
+				['thumbnails/blank.png'])
+			->will(
+				$this->onConsecutiveCalls(
+					null,
+					'content of blank thumbnail'));
+
+		$this->thumbnailGeneratorMock
+			->expects($this->once())
+			->method('generate')
+			->with(
+				'content of blank thumbnail',
+				100,
+				100,
+				\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE)
+			->willReturn('generated thumbnail');
+
+		$this->fileServiceMock
+			->expects($this->once())
+			->method('save')
+			->with('thumbnails/100x100/nope', 'generated thumbnail');
+
+		$thumbnailService = $this->getThumbnailService();
+		$thumbnailService->generate('nope', 100, 100);
+	}
+
+	public function testThumbnailGeneratingFail()
+	{
+		$this->configMock->set('misc/thumbnailCropStyle', 'outside');
+
+		$this->fileServiceMock
+			->expects($this->exactly(3))
+			->method('load')
+			->withConsecutive(
+				['nope'],
+				['thumbnails/blank.png'],
+				['thumbnails/blank.png'])
+			->will(
+				$this->onConsecutiveCalls(
+					null,
+					'content of blank thumbnail',
+					'content of blank thumbnail (2)'));
+
+		$this->thumbnailGeneratorMock
+			->expects($this->once())
+			->method('generate')
+			->with(
+				'content of blank thumbnail',
+				100,
+				100,
+				\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE)
+			->willReturn(null);
+
+		$this->fileServiceMock
+			->expects($this->once())
+			->method('save')
+			->with('thumbnails/100x100/nope', 'content of blank thumbnail (2)');
+
+		$thumbnailService = $this->getThumbnailService();
+		$thumbnailService->generate('nope', 100, 100);
+	}
+
+
+	private function getThumbnailService()
+	{
+		return new \Szurubooru\Services\ThumbnailService(
+			$this->configMock,
+			$this->fileServiceMock,
+			$this->thumbnailGeneratorMock);
 	}
 }

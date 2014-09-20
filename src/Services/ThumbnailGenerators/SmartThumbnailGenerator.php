@@ -17,22 +17,19 @@ class SmartThumbnailGenerator implements IThumbnailGenerator
 		$this->imageThumbnailGenerator = $imageThumbnailGenerator;
 	}
 
-	public function generate($srcPath, $dstPath, $width, $height)
+	public function generate($source, $width, $height, $cropStyle)
 	{
-		if (!file_exists($srcPath))
-			throw new \InvalidArgumentException($srcPath . ' does not exist');
-
-		$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromFile($srcPath);
+		$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($source);
 
 		if (\Szurubooru\Helpers\MimeHelper::isFlash($mime))
-			return $this->flashThumbnailGenerator->generate($srcPath, $dstPath, $width, $height);
+			return $this->flashThumbnailGenerator->generate($source, $width, $height, $cropStyle);
 
 		if (\Szurubooru\Helpers\MimeHelper::isVideo($mime))
-			return $this->videoThumbnailGenerator->generate($srcPath, $dstPath, $width, $height);
+			return $this->videoThumbnailGenerator->generate($source, $width, $height, $cropStyle);
 
 		if (\Szurubooru\Helpers\MimeHelper::isImage($mime))
-			return $this->imageThumbnailGenerator->generate($srcPath, $dstPath, $width, $height);
+			return $this->imageThumbnailGenerator->generate($source, $width, $height, $cropStyle);
 
-		throw new \InvalidArgumentException('Invalid thumbnail file type: ' . $mime);
+		return null;
 	}
 }

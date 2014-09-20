@@ -6,11 +6,6 @@ everything related to posts:
         - fav count
         - score
         - comment count
-        - fix broken thumbnails if no external software is installed
-
-    - uploading post
-        - remove hard dependency on gd2 in PostService::setContentFromString
-          (getimagesizefromstring)
 
     - single post view
         - post content
