@@ -27,6 +27,8 @@ final class InputReader extends \ArrayObject
 
 	public function decodeBase64($base64string)
 	{
+		if ($base64string === null)
+			return null;
 		$commaPosition = strpos($base64string, ',');
 		if ($commaPosition !== null)
 			$base64string = substr($base64string, $commaPosition + 1);

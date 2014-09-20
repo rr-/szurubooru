@@ -10,4 +10,10 @@ class InputReaderTest extends \Szurubooru\Tests\AbstractTestCase
 		$expected = 'awesome dog';
 		$this->assertEquals($expected, $actual);
 	}
+
+	public function testDecodingEmptyBase64()
+	{
+		$inputReader = new \Szurubooru\Helpers\InputReader();
+		$this->assertNull($inputReader->decodeBase64($inputReader->iDontEvenExist));
+	}
 }

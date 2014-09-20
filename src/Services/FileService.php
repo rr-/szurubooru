@@ -79,6 +79,14 @@ class FileService
 			unlink($fullPath);
 	}
 
+	public function load($source)
+	{
+		if (!$this->exists($source))
+			return null;
+		$fullPath = $this->getFullPath($source);
+		return file_get_contents($fullPath);
+	}
+
 	public function save($destination, $data)
 	{
 		$this->createFolders($destination);

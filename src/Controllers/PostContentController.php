@@ -29,16 +29,16 @@ final class PostContentController extends AbstractController
 	public function getPostContent($postName)
 	{
 		$post = $this->postService->getByName($postName);
-		$source = $this->postService->getPostContentPath($post);
+		$source = $post->getContentPath();
 		$this->fileService->serve($source);
 	}
 
 	public function getPostThumbnail($postName, $size)
 	{
 		$post = $this->postService->getByName($postName);
-		$source = $this->postService->getPostThumbnailSourcePath($post);
+		$source = $post->getThumbnailSourceContentPath();
 		if (!$this->fileService->exists($source))
-			$source = $this->postService->getPostContentPath($post);
+			$source = $post->getContentPath();
 
 		$sizedSource = $this->thumbnailService->getOrGenerate($source, $size, $size);
 		$this->fileService->serve($sizedSource);

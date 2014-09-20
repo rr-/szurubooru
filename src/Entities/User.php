@@ -14,6 +14,8 @@ final class User extends Entity
 	const AVATAR_STYLE_MANUAL = 2;
 	const AVATAR_STYLE_BLANK = 3;
 
+	const LAZY_LOADER_CUSTOM_AVATAR_SOURCE_CONTENT = 'customAvatarContent';
+
 	protected $name;
 	protected $email;
 	protected $emailUnconfirmed;
@@ -123,5 +125,20 @@ final class User extends Entity
 	public function setBrowsingSettings($browsingSettings)
 	{
 		$this->browsingSettings = $browsingSettings;
+	}
+
+	public function getCustomAvatarSourceContent()
+	{
+		return $this->lazyLoad(self::LAZY_LOADER_CUSTOM_AVATAR_SOURCE_CONTENT, null);
+	}
+
+	public function setCustomAvatarSourceContent($content)
+	{
+		$this->lazySave(self::LAZY_LOADER_CUSTOM_AVATAR_SOURCE_CONTENT, $content);
+	}
+
+	public function getCustomAvatarSourceContentPath()
+	{
+		return 'avatars' . DIRECTORY_SEPARATOR . $this->getId();
 	}
 }

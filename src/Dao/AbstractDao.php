@@ -66,6 +66,10 @@ abstract class AbstractDao implements ICrudDao
 
 	public function deleteAll()
 	{
+		foreach ($this->findAll() as $entity)
+		{
+			$this->beforeDelete($entity);
+		}
 		$this->fpdo->deleteFrom($this->tableName)->execute();
 	}
 
@@ -94,17 +98,32 @@ abstract class AbstractDao implements ICrudDao
 		return count(iterator_to_array($this->fpdo->from($this->tableName)->limit(1))) > 0;
 	}
 
+	protected function findBy($columnName, $value)
+	{
+		$entities = [];
+		$query = $this->fpdo->from($this->tableName)->where($columnName, $value);
+		foreach ($query as $arrayEntity)
+		{
+			$entity = $this->entityConverter->toEntity($arrayEntity);
+			$entities[$entity->getId()] = $entity;
+		}
+		return $entities;
+	}
+
 	protected function findOneBy($columnName, $value)
 	{
-		$arrayEntity = iterator_to_array($this->fpdo->from($this->tableName)->where($columnName, $value));
-		if (!$arrayEntity)
+		$arrayEntities = $this->findBy($columnName, $value);
+		if (!$arrayEntities)
 			return null;
-
-		return $this->entityConverter->toEntity($arrayEntity[0]);
+		return array_shift($arrayEntities);
 	}
 
 	protected function deleteBy($columnName, $value)
 	{
+		foreach ($this->findBy($columnName, $value) as $entity)
+		{
+			$this->beforeDelete($entity);
+		}
 		$this->fpdo->deleteFrom($this->tableName)->where($columnName, $value)->execute();
 	}
 
@@ -113,6 +132,10 @@ abstract class AbstractDao implements ICrudDao
 	}
 
 	protected function afterSave(\Szurubooru\Entities\Entity $entity)
+	{
+	}
+
+	protected function beforeDelete(\Szurubooru\Entities\Entity $entity)
 	{
 	}
 }

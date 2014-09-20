@@ -3,12 +3,21 @@ namespace Szurubooru\Dao;
 
 class PostDao extends AbstractDao implements ICrudDao
 {
-	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
+	private $fileService;
+	private $thumbnailService;
+
+	public function __construct(
+		\Szurubooru\DatabaseConnection $databaseConnection,
+		\Szurubooru\Services\FileService $fileService,
+		\Szurubooru\Services\ThumbnailService $thumbnailService)
 	{
 		parent::__construct(
 			$databaseConnection,
 			'posts',
 			new \Szurubooru\Dao\EntityConverters\PostEntityConverter());
+
+		$this->fileService = $fileService;
+		$this->thumbnailService = $thumbnailService;
 	}
 
 	public function findByName($name)
@@ -21,17 +30,35 @@ class PostDao extends AbstractDao implements ICrudDao
 		return $this->findOneBy('contentChecksum', $checksum);
 	}
 
-	protected function afterLoad(\Szurubooru\Entities\Entity $entity)
+	protected function afterLoad(\Szurubooru\Entities\Entity $post)
 	{
-		$entity->setLazyLoader('tags', function(\Szurubooru\Entities\Post $post)
+		$post->setLazyLoader(
+			\Szurubooru\Entities\Post::LAZY_LOADER_CONTENT,
+			function(\Szurubooru\Entities\Post $post)
+			{
+				return $this->fileService->load($post->getContentPath());
+			});
+
+		$post->setLazyLoader(
+			\Szurubooru\Entities\Post::LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT,
+			function(\Szurubooru\Entities\Post $post)
+			{
+				return $this->fileService->load($post->getThumbnailSourceContentPath());
+			});
+
+		$post->setLazyLoader(
+			\Szurubooru\Entities\Post::LAZY_LOADER_TAGS,
+			function(\Szurubooru\Entities\Post $post)
 			{
 				return $this->getTags($post);
 			});
 	}
 
-	protected function afterSave(\Szurubooru\Entities\Entity $entity)
+	protected function afterSave(\Szurubooru\Entities\Entity $post)
 	{
-		$this->syncTags($entity->getId(), $entity->getTags());
+		$this->syncContent($post);
+		$this->syncThumbnailSourceContent($post);
+		$this->syncTags($post->getId(), $post->getTags());
 	}
 
 	private function getTags(\Szurubooru\Entities\Post $post)
@@ -42,6 +69,28 @@ class PostDao extends AbstractDao implements ICrudDao
 		foreach ($query as $arrayEntity)
 			$result[] = $arrayEntity['tagName'];
 		return $result;
+	}
+
+	private function syncContent(\Szurubooru\Entities\Post $post)
+	{
+		$targetPath = $post->getContentPath();
+		$content = $post->getContent();
+		if ($content)
+			$this->fileService->save($targetPath, $content);
+		else
+			$this->fileService->delete($targetPath, $content);
+		$this->thumbnailService->deleteUsedThumbnails($targetPath);
+	}
+
+	private function syncThumbnailSourceContent(\Szurubooru\Entities\Post $post)
+	{
+		$targetPath = $post->getThumbnailSourceContentPath();
+		$content = $post->getThumbnailSourceContent();
+		if ($content)
+			$this->fileService->save($targetPath, $content);
+		else
+			$this->fileService->delete($targetPath);
+		$this->thumbnailService->deleteUsedThumbnails($targetPath);
 	}
 
 	private function syncTags($postId, array $tags)

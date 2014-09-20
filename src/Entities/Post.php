@@ -12,6 +12,10 @@ final class Post extends Entity
 	const POST_TYPE_VIDEO = 3;
 	const POST_TYPE_YOUTUBE = 4;
 
+	const LAZY_LOADER_TAGS = 'tags';
+	const LAZY_LOADER_CONTENT = 'content';
+	const LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT = 'thumbnailSourceContent';
+
 	protected $name;
 	protected $userId;
 	protected $uploadTime;
@@ -175,11 +179,41 @@ final class Post extends Entity
 
 	public function getTags()
 	{
-		return $this->lazyLoad('tags', []);
+		return $this->lazyLoad(self::LAZY_LOADER_TAGS, []);
 	}
 
 	public function setTags(array $tags)
 	{
-		$this->lazySave('tags', $tags);
+		$this->lazySave(self::LAZY_LOADER_TAGS, $tags);
+	}
+
+	public function getContent()
+	{
+		return $this->lazyLoad(self::LAZY_LOADER_CONTENT, null);
+	}
+
+	public function setContent($content)
+	{
+		$this->lazySave(self::LAZY_LOADER_CONTENT, $content);
+	}
+
+	public function getThumbnailSourceContent()
+	{
+		return $this->lazyLoad(self::LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT, null);
+	}
+
+	public function setThumbnailSourceContent($content)
+	{
+		$this->lazySave(self::LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT, $content);
+	}
+
+	public function getContentPath()
+	{
+		return 'posts' . DIRECTORY_SEPARATOR . $this->getName();
+	}
+
+	public function getThumbnailSourceContentPath()
+	{
+		return 'posts' . DIRECTORY_SEPARATOR . $this->getName() . '-custom-thumb';
 	}
 }

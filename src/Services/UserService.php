@@ -152,10 +152,6 @@ class UserService
 		$transactionFunc = function() use ($user)
 		{
 			$this->userDao->deleteById($user->getId());
-
-			$avatarSource = $this->getCustomAvatarSourcePath($user);
-			$this->fileService->delete($avatarSource);
-			$this->thumbnailService->deleteUsedThumbnails($avatarSource);
 		};
 		$this->transactionManager->commit($transactionFunc);
 	}
@@ -212,16 +208,6 @@ class UserService
 		$this->transactionManager->commit($transactionFunc);
 	}
 
-	public function getCustomAvatarSourcePath(\Szurubooru\Entities\User $user)
-	{
-		return 'avatars' . DIRECTORY_SEPARATOR . $user->getId();
-	}
-
-	public function getBlankAvatarSourcePath()
-	{
-		return 'avatars' . DIRECTORY_SEPARATOR . 'blank.png';
-	}
-
 	private function updateUserAvatarStyle(\Szurubooru\Entities\User $user, $newAvatarStyle)
 	{
 		$user->setAvatarStyle($newAvatarStyle);
@@ -229,9 +215,7 @@ class UserService
 
 	private function updateUserAvatarContent(\Szurubooru\Entities\User $user, $newAvatarContent)
 	{
-		$target = $this->getCustomAvatarSourcePath($user);
-		$this->fileService->save($target, $newAvatarContent);
-		$this->thumbnailService->deleteUsedThumbnails($target);
+		$user->setCustomAvatarSourceContent($newAvatarContent);
 	}
 
 	private function updateUserName(\Szurubooru\Entities\User $user, $newName)

@@ -8,7 +8,13 @@ class UserSearchServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$this->userDao = new \Szurubooru\Dao\UserDao($this->databaseConnection);
+
+		$fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
+		$thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
+		$this->userDao = new \Szurubooru\Dao\UserDao(
+			$this->databaseConnection,
+			$fileServiceMock,
+			$thumbnailServiceMock);
 	}
 
 	public function testNothing()
@@ -21,40 +27,59 @@ class UserSearchServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function testSorting()
+	public function testDefaultOrder()
 	{
-		$user1 = $this->getTestUser('reginald');
-		$user2 = $this->getTestUser('beartato');
+		list ($user1, $user2) = $this->prepareUsers();
+		$this->doTestSorting(null, [$user2]);
+	}
+
+	public function testOrderByNameAscending()
+	{
+		list ($user1, $user2) = $this->prepareUsers();
+		$this->doTestSorting('name,asc', [$user1]);
+	}
+
+	public function testOrderByNameDescending()
+	{
+		list ($user1, $user2) = $this->prepareUsers();
+		$this->doTestSorting('name,desc', [$user2]);
+	}
+
+	public function testOrderByRegistrationTimeAscending()
+	{
+		list ($user1, $user2) = $this->prepareUsers();
+		$this->doTestSorting('registrationTime,asc', [$user2]);
+	}
+
+	public function testOrderByRegistrationTimeDescending()
+	{
+		list ($user1, $user2) = $this->prepareUsers();
+		$this->doTestSorting('registrationTime,desc', [$user1]);
+	}
+
+	private function prepareUsers()
+	{
+		$user1 = $this->getTestUser('beartato');
+		$user2 = $this->getTestUser('reginald');
 		$user1->setRegistrationTime(date('c', mktime(3, 2, 1)));
 		$user2->setRegistrationTime(date('c', mktime(1, 2, 3)));
 
 		$this->userDao->save($user1);
 		$this->userDao->save($user2);
+		return [$user1, $user2];
+	}
 
+	private function doTestSorting($order, $expectedUsers)
+	{
 		$userSearchService = $this->getUserSearchService();
 		$searchFilter = new \Szurubooru\Dao\SearchFilter(1);
-		$expected = new \Szurubooru\Dao\SearchResult($searchFilter, [$user2], 2);
-		$actual = $userSearchService->getFiltered($searchFilter);
-		$this->assertEquals($expected, $actual);
+		if ($order !== null)
+			$searchFilter->order = $order;
 
-		$searchFilter->order = 'name,asc';
-		$expected = new \Szurubooru\Dao\SearchResult($searchFilter, [$user2], 2);
+		$expected = new \Szurubooru\Dao\SearchResult($searchFilter, $expectedUsers, 2);
 		$actual = $userSearchService->getFiltered($searchFilter);
-		$this->assertEquals($expected, $actual);
-
-		$searchFilter->order = 'name,desc';
-		$expected = new \Szurubooru\Dao\SearchResult($searchFilter, [$user1], 2);
-		$actual = $userSearchService->getFiltered($searchFilter);
-		$this->assertEquals($expected, $actual);
-
-		$searchFilter->order = 'registrationTime,desc';
-		$expected = new \Szurubooru\Dao\SearchResult($searchFilter, [$user1], 2);
-		$actual = $userSearchService->getFiltered($searchFilter);
-		$this->assertEquals($expected, $actual);
-
-		$searchFilter->order = 'registrationTime';
-		$expected = new \Szurubooru\Dao\SearchResult($searchFilter, [$user2], 2);
-		$actual = $userSearchService->getFiltered($searchFilter);
+		foreach ($actual->entities as $entity)
+			$entity->resetLazyLoaders();
 		$this->assertEquals($expected, $actual);
 	}
 

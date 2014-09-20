@@ -3,6 +3,16 @@ namespace Szurubooru\Tests\Dao;
 
 final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
+	private $fileServiceMock;
+	private $thumbnailServiceMock;
+
+	public function setUp()
+	{
+		parent::setUp();
+		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
+		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
+	}
+
 	public function testCreating()
 	{
 		$postDao = $this->getPostDao();
@@ -116,9 +126,81 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEquals(2, count($tagDao->findAll()));
 	}
 
+	public function testNotLoadingContentForNewPosts()
+	{
+		$postDao = $this->getPostDao();
+		$newlyCreatedPost = $this->getPost();
+		$this->assertNull($newlyCreatedPost->getContent());
+	}
+
+	public function testLoadingContentPostsForExistingPosts()
+	{
+		$postDao = $this->getPostDao();
+		$post = $this->getPost();
+		$postDao->save($post);
+
+		$post = $postDao->findById($post->getId());
+
+		$this->fileServiceMock
+			->expects($this->once())
+			->method('load')
+			->with($post->getContentPath())
+			->willReturn('whatever');
+
+		$this->assertEquals('whatever', $post->getContent());
+	}
+
+	public function testSavingContent()
+	{
+		$postDao = $this->getPostDao();
+		$post = $this->getPost();
+		$post->setContent('whatever');
+
+		$this->thumbnailServiceMock
+			->expects($this->exactly(2))
+			->method('deleteUsedThumbnails')
+			->withConsecutive(
+				[$post->getContentPath()],
+				[$post->getThumbnailSourceContentPath()]);
+
+		$this->fileServiceMock
+			->expects($this->once())
+			->method('save')
+			->with($post->getContentPath(), 'whatever');
+
+		$postDao->save($post);
+	}
+	public function testSavingContentAndThumbnail()
+	{
+		$postDao = $this->getPostDao();
+		$post = $this->getPost();
+		$post->setContent('whatever');
+		$post->setThumbnailSourceContent('an image of sharks');
+
+		$this->thumbnailServiceMock
+			->expects($this->exactly(2))
+			->method('deleteUsedThumbnails')
+			->withConsecutive(
+				[$post->getContentPath()],
+				[$post->getThumbnailSourceContentPath()]);
+
+		$this->fileServiceMock
+			->expects($this->exactly(2))
+			->method('save')
+			->withConsecutive(
+				[$post->getContentPath(), 'whatever'],
+				[$post->getThumbnailSourceContentPath(), 'an image of sharks']);
+
+		$postDao->save($post);
+	}
+
+
 	private function getPostDao()
 	{
-		return new \Szurubooru\Dao\PostDao($this->databaseConnection);
+		return new \Szurubooru\Dao\PostDao(
+			$this->databaseConnection,
+			$this->fileServiceMock,
+			$this->thumbnailServiceMock);
 	}
 
 	private function getTagDao()

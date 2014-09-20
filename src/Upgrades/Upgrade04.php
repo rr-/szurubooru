@@ -5,20 +5,27 @@ class Upgrade04 implements IUpgrade
 {
 	private $postService;
 	private $fileService;
+	private $thumbnailService;
 
 	public function __construct(
 		\Szurubooru\Services\PostService $postService,
-		\Szurubooru\Services\FileService $fileService)
+		\Szurubooru\Services\FileService $fileService,
+		\Szurubooru\Services\ThumbnailService $thumbnailService)
 	{
 		$this->postService = $postService;
 		$this->fileService = $fileService;
+		$this->thumbnailService = $thumbnailService;
 	}
 
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
 		$databaseConnection->getPDO()->exec('ALTER TABLE "posts" ADD COLUMN contentMimeType TEXT DEFAULT NULL');
 
-		$postDao = new \Szurubooru\Dao\PostDao($databaseConnection);
+		$postDao = new \Szurubooru\Dao\PostDao(
+			$databaseConnection,
+			$this->fileService,
+			$this->thumbnailService);
+
 		$posts = $postDao->findAll();
 		foreach ($posts as $post)
 		{

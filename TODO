@@ -8,6 +8,10 @@ everything related to posts:
         - comment count
         - fix broken thumbnails if no external software is installed
 
+    - uploading post
+        - remove hard dependency on gd2 in PostService::setContentFromString
+          (getimagesizefromstring)
+
     - single post view
         - post content
         - post tags
@@ -124,17 +128,10 @@ refactors:
       separate PostTagDao for this)
     - post view proxy should retrieve full tags and full user
     - centralize markdown prefix decorators
-    - move getPostContentPath i getAvatarSourcePath to Entity, include it in
+    - move getPostContentPath and getAvatarSourcePath to Entity, include it in
       ViewProxy and make presenters use it instead of duplicating the code
     - after implementing Post::getPostContentPath, make paths include file
       extensions so that apache can guess mime types when it serves the files
-    - add afterSave, afterDelete in Dao layer
-    - refactor to file content management
-        - move fileService dependency to Dao layer
-        - move setContent i getContent to entities
-        - add afterSave that talks to fileService to save the content
-        - inside afterLoad inject method wchi talks to fileService to read the
-          content
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
     - (idea) keep denormalized data in separate tables, i.e. tag usages in

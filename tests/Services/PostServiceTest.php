@@ -60,8 +60,6 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->contentFileName = 'blah';
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
-		$this->fileServiceMock->expects($this->once())->method('save');
-		$this->fileServiceMock->expects($this->once())->method('getFullPath')->willReturn($this->getTestFilePath('image.jpg'));
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -82,8 +80,6 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->contentFileName = 'blah';
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
-		$this->fileServiceMock->expects($this->once())->method('save');
-		$this->fileServiceMock->expects($this->once())->method('getFullPath')->willReturn($this->getTestFilePath('video.mp4'));
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -104,8 +100,6 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->contentFileName = 'blah';
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
-		$this->fileServiceMock->expects($this->once())->method('save');
-		$this->fileServiceMock->expects($this->once())->method('getFullPath')->willReturn($this->getTestFilePath('flash.swf'));
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);

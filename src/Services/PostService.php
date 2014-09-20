@@ -8,9 +8,9 @@ class PostService
 	private $transactionManager;
 	private $postDao;
 	private $postSearchService;
-	private $fileService;
 	private $timeService;
 	private $authService;
+	private $fileService;
 
 	public function __construct(
 		\Szurubooru\Config $config,
@@ -27,9 +27,9 @@ class PostService
 		$this->transactionManager = $transactionManager;
 		$this->postDao = $postDao;
 		$this->postSearchService = $postSearchService;
-		$this->fileService = $fileService;
 		$this->timeService = $timeService;
 		$this->authService = $authService;
+		$this->fileService = $fileService;
 	}
 
 	public function getByNameOrId($postNameOrId)
@@ -92,16 +92,6 @@ class PostService
 		return $this->transactionManager->commit($transactionFunc);
 	}
 
-	public function getPostContentPath(\Szurubooru\Entities\Post $post)
-	{
-		return 'posts' . DIRECTORY_SEPARATOR . $post->getName();
-	}
-
-	public function getPostThumbnailSourcePath(\Szurubooru\Entities\Post $post)
-	{
-		return 'posts' . DIRECTORY_SEPARATOR . $post->getName() . '-custom-thumb';
-	}
-
 	private function updatePostSafety(\Szurubooru\Entities\Post $post, $newSafety)
 	{
 		$post->setSafety($newSafety);
@@ -145,15 +135,13 @@ class PostService
 		$post->setContentChecksum(sha1($content));
 		$this->assertNoPostWithThisContentChecksum($post);
 
-		$target = $this->getPostContentPath($post);
-		$this->fileService->save($target, $content);
-		$fullPath = $this->fileService->getFullPath($target);
+		$post->setContent($content);
 
-		list ($imageWidth, $imageHeight) = getimagesize($fullPath);
+		list ($imageWidth, $imageHeight) = getimagesizefromstring($content);
 		$post->setImageWidth($imageWidth);
 		$post->setImageHeight($imageHeight);
 
-		$post->setOriginalFileSize(filesize($fullPath));
+		$post->setOriginalFileSize(strlen($content));
 	}
 
 	private function updatePostContentFromUrl(\Szurubooru\Entities\Post $post, $url)
@@ -178,7 +166,7 @@ class PostService
 			$this->assertNoPostWithThisContentChecksum($post);
 			$youtubeThumbnailUrl = 'http://img.youtube.com/vi/' . $youtubeId . '/mqdefault.jpg';
 			$youtubeThumbnail = $this->fileService->download($youtubeThumbnailUrl);
-			$this->fileService->save($this->getPostThumbnailSourcePath($post), $youtubeThumbnail);
+			$post->setThumbnailSourceContent($youtubeThumbnail);
 		}
 		else
 		{

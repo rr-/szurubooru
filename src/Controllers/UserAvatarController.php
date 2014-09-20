@@ -38,15 +38,15 @@ final class UserAvatarController extends AbstractController
 				break;
 
 			case \Szurubooru\Entities\User::AVATAR_STYLE_BLANK:
-				$this->serveFromFile($this->userService->getBlankAvatarSourcePath(), $size);
+				$this->serveFromFile($this->getBlankAvatarSourcePath(), $size);
 				break;
 
 			case \Szurubooru\Entities\User::AVATAR_STYLE_MANUAL:
-				$this->serveFromFile($this->userService->getCustomAvatarSourcePath($user), $size);
+				$this->serveFromFile($user->getCustomAvatarSourceContentPath(), $size);
 				break;
 
 			default:
-				$this->serveFromFile($this->userService->getBlankAvatarSourcePath(), $size);
+				$this->serveFromFile($this->getBlankAvatarSourcePath(), $size);
 				break;
 		}
 	}
@@ -59,9 +59,14 @@ final class UserAvatarController extends AbstractController
 	private function serveFromFile($file, $size)
 	{
 		if (!$this->fileService->exists($file))
-			$file = $this->userService->getBlankAvatarSourcePath();
+			$file = $this->getBlankAvatarSourcePath();
 
 		$sizedFile = $this->thumbnailService->getOrGenerate($file, $size, $size);
 		$this->fileService->serve($sizedFile);
+	}
+
+	private function getBlankAvatarSourcePath()
+	{
+		return 'avatars' . DIRECTORY_SEPARATOR . 'blank.png';
 	}
 }
