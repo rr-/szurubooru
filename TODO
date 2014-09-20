@@ -2,9 +2,6 @@ This is transient file that lists functionalities to be implemented before
 first major release.
 
 everything related to posts:
-    - uploads
-        - fix thumbnails for files that are neither youtube or images
-
     - post list
         - add style for hovered and focused element
             - fav count

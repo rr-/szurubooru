@@ -5,6 +5,10 @@ App.Util = function(_, jQuery, promise) {
 	var templateCache = {};
 	var exitConfirmationEnabled = false;
 
+	function transparentPixel() {
+		return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+	}
+
 	function enableExitConfirmation() {
 		exitConfirmationEnabled = true;
 		jQuery(window).bind('beforeunload', function(e) {
@@ -156,6 +160,7 @@ App.Util = function(_, jQuery, promise) {
 		enableExitConfirmation: enableExitConfirmation,
 		disableExitConfirmation: disableExitConfirmation,
 		isExitConfirmationEnabled: isExitConfirmationEnabled,
+		transparentPixel: transparentPixel,
 	};
 
 };

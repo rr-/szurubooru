@@ -124,16 +124,17 @@ App.Presenters.PostUploadPresenter = function(
 
 	function addPostFromUrl(url) {
 		var post = _.extend({}, getDefaultPost(), {url: url, source: url, fileName: url});
+		postAdded(post);
 
 		var matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/);
 		if (matches) {
 			var youtubeThumbnailUrl = 'http://img.youtube.com/vi/' + matches[1] + '/mqdefault.jpg';
 			post.thumbnail = youtubeThumbnailUrl;
-		} else {
+			postThumbnailLoaded(post);
+		} else if (url.match(/image|img|jpg|png|gif/i)) {
 			post.thumbnail = url;
+			postThumbnailLoaded(post);
 		}
-		postAdded(post);
-		postThumbnailLoaded(post);
 	}
 
 	function postAdded(post) {
@@ -184,13 +185,19 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function updatePostThumbnailInForm(post) {
-		$el.find('.form-slider .thumbnail img')[0].setAttribute('src', post.thumbnail);
+		if (post.thumbnail === null) {
+			$el.find('.form-slider .thumbnail img').hide();
+		} else {
+			$el.find('.form-slider .thumbnail img').show()[0].setAttribute('src', post.thumbnail);
+		}
 	}
 
 	function updatePostThumbnailInTable(post) {
 		var $row = post.$tableRow;
+		if (post.thumbnail === null) {
+			$row.find('img')[0].setAttribute('src', util.transparentPixel());
 		//huge speedup thanks to this condition
-		if ($row.find('img').attr('src') !== post.thumbnail && post.thumbnail !== null) {
+		} else if ($row.find('img').attr('src') !== post.thumbnail) {
 			$row.find('img')[0].setAttribute('src', post.thumbnail);
 		}
 	}
@@ -409,7 +416,7 @@ App.Presenters.PostUploadPresenter = function(
 
 	function postTableRowImageHovered(e) {
 		var $img = jQuery(this);
-		if ($img.attr('src')) {
+		if ($img.parents('tr').data('post').thumbnail) {
 			var $lightbox = jQuery('#lightbox');
 			$lightbox.find('img').attr('src', $img.attr('src'));
 			$lightbox
