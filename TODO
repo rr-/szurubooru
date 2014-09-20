@@ -3,7 +3,6 @@ first major release.
 
 everything related to posts:
     - uploads
-        - user shouldn't be able click form rows when upload is active
         - fix thumbnails for files that are neither youtube or images
 
     - post list

@@ -197,6 +197,9 @@ App.Presenters.PostUploadPresenter = function(
 
 	function postTableRowClicked(e) {
 		e.preventDefault();
+		if (!interactionEnabled) {
+			return;
+		}
 		var $allCheckboxes = jQuery(this).parents('table').find('tbody input[type=checkbox]');
 		var $myCheckbox = jQuery(this).parents('tr').find('input[type=checkbox]');
 		$allCheckboxes.prop('checked', false);
@@ -205,6 +208,10 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function postTableCheckboxClicked(e) {
+		if (!interactionEnabled) {
+			e.preventDefault();
+			return;
+		}
 		if (e.target.nodeName === 'TD') {
 			var checkbox = jQuery(this).find('input[type=checkbox]');
 			checkbox.prop('checked', !checkbox.prop('checked'));
@@ -213,6 +220,10 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function postTableSelectAllCheckboxClicked(e) {
+		if (!interactionEnabled) {
+			e.preventDefault();
+			return;
+		}
 		var $checkbox = jQuery(this).find('input[type=checkbox]');
 		if (e.target.nodeName === 'TH') {
 			$checkbox.prop('checked', !$checkbox.prop('checked'));
