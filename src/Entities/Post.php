@@ -12,6 +12,7 @@ final class Post extends Entity
 	const POST_TYPE_VIDEO = 3;
 	const POST_TYPE_YOUTUBE = 4;
 
+	const LAZY_LOADER_USER = 'user';
 	const LAZY_LOADER_TAGS = 'tags';
 	const LAZY_LOADER_CONTENT = 'content';
 	const LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT = 'thumbnailSourceContent';
@@ -55,18 +56,6 @@ final class Post extends Entity
 	public function setUserId($userId)
 	{
 		$this->userId = $userId;
-	}
-
-	public function setUser(\Szurubooru\Entities\User $user = null)
-	{
-		if ($user)
-		{
-			$this->userId = $user->getId();
-		}
-		else
-		{
-			$this->userId = null;
-		}
 	}
 
 	public function getSafety()
@@ -188,6 +177,24 @@ final class Post extends Entity
 	{
 		$this->lazySave(self::LAZY_LOADER_TAGS, $tags);
 		$this->setMeta(self::META_TAG_COUNT, count($tags));
+	}
+
+	public function getUser()
+	{
+		return $this->lazyLoad(self::LAZY_LOADER_USER, null);
+	}
+
+	public function setUser(\Szurubooru\Entities\User $user = null)
+	{
+		$this->lazySave(self::LAZY_LOADER_USER, $user);
+		if ($user)
+		{
+			$this->userId = $user->getId();
+		}
+		else
+		{
+			$this->userId = null;
+		}
 	}
 
 	public function getContent()

@@ -4,12 +4,14 @@ namespace Szurubooru\Dao;
 class PostDao extends AbstractDao implements ICrudDao
 {
 	private $tagDao;
+	private $userDao;
 	private $fileService;
 	private $thumbnailService;
 
 	public function __construct(
 		\Szurubooru\DatabaseConnection $databaseConnection,
 		\Szurubooru\Dao\TagDao $tagDao,
+		\Szurubooru\Dao\UserDao $userDao,
 		\Szurubooru\Services\FileService $fileService,
 		\Szurubooru\Services\ThumbnailService $thumbnailService)
 	{
@@ -19,6 +21,7 @@ class PostDao extends AbstractDao implements ICrudDao
 			new \Szurubooru\Dao\EntityConverters\PostEntityConverter());
 
 		$this->tagDao = $tagDao;
+		$this->userDao = $userDao;
 		$this->fileService = $fileService;
 		$this->thumbnailService = $thumbnailService;
 	}
@@ -50,6 +53,13 @@ class PostDao extends AbstractDao implements ICrudDao
 			});
 
 		$post->setLazyLoader(
+			\Szurubooru\Entities\Post::LAZY_LOADER_USER,
+			function(\Szurubooru\Entities\Post $post)
+			{
+				return $this->getUser($post);
+			});
+
+		$post->setLazyLoader(
 			\Szurubooru\Entities\Post::LAZY_LOADER_TAGS,
 			function(\Szurubooru\Entities\Post $post)
 			{
@@ -67,6 +77,11 @@ class PostDao extends AbstractDao implements ICrudDao
 	private function getTags(\Szurubooru\Entities\Post $post)
 	{
 		return $this->tagDao->findByPostId($post->getId());
+	}
+
+	private function getUser(\Szurubooru\Entities\Post $post)
+	{
+		return $this->userDao->findById($post->getUserId());
 	}
 
 	private function syncContent(\Szurubooru\Entities\Post $post)

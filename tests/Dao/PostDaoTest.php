@@ -3,16 +3,21 @@ namespace Szurubooru\Tests\Dao;
 
 final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
-	private $tagDao;
 	private $fileServiceMock;
 	private $thumbnailServiceMock;
+	private $tagDao;
+	private $userDao;
 
 	public function setUp()
 	{
 		parent::setUp();
-		$this->tagDao = new \Szurubooru\Dao\TagDao($this->databaseConnection);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
 		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
+		$this->tagDao = new \Szurubooru\Dao\TagDao($this->databaseConnection);
+		$this->userDao = new \Szurubooru\Dao\UserDao(
+			$this->databaseConnection,
+			$this->fileServiceMock,
+			$this->thumbnailServiceMock);
 	}
 
 	public function testCreating()
@@ -132,6 +137,21 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEquals(2, count($tagDao->findAll()));
 	}
 
+	public function testSavingUser()
+	{
+		$testUser = new \Szurubooru\Entities\User(5);
+		$testUser->setName('it\'s me');
+		$postDao = $this->getPostDao();
+
+		$post = $this->getPost();
+		$post->setUser($testUser);
+		$postDao->save($post);
+
+		$savedPost = $postDao->findById($post->getId());
+		$this->assertEntitiesEqual($testUser, $post->getUser());
+		$this->assertEquals(5, $post->getUserId());
+	}
+
 	public function testNotLoadingContentForNewPosts()
 	{
 		$postDao = $this->getPostDao();
@@ -206,6 +226,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		return new \Szurubooru\Dao\PostDao(
 			$this->databaseConnection,
 			$this->tagDao,
+			$this->userDao,
 			$this->fileServiceMock,
 			$this->thumbnailServiceMock);
 	}

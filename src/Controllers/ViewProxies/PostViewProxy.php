@@ -4,10 +4,14 @@ namespace Szurubooru\Controllers\ViewProxies;
 class PostViewProxy extends AbstractViewProxy
 {
 	private $tagViewProxy;
+	private $userViewProxy;
 
-	public function __construct(TagViewProxy $tagViewProxy)
+	public function __construct(
+		TagViewProxy $tagViewProxy,
+		UserViewProxy $userViewProxy)
 	{
 		$this->tagViewProxy = $tagViewProxy;
+		$this->userViewProxy = $userViewProxy;
 	}
 
 	public function fromEntity($post)
@@ -17,7 +21,6 @@ class PostViewProxy extends AbstractViewProxy
 		{
 			$result->id = $post->getId();
 			$result->name = $post->getName();
-			$result->userId = $post->getUserId();
 			$result->uploadTime = $post->getUploadTime();
 			$result->lastEditTime = $post->getLastEditTime();
 			$result->safety = \Szurubooru\Helpers\EnumHelper::postSafetyToString($post->getSafety());
@@ -29,6 +32,7 @@ class PostViewProxy extends AbstractViewProxy
 			$result->imageHeight = $post->getImageHeight();
 			$result->tags = $this->tagViewProxy->fromArray($post->getTags());
 			$result->originalFileSize = $post->getOriginalFileSize();
+			$result->user = $this->userViewProxy->fromEntity($post->getUser());
 		}
 		return $result;
 	}
