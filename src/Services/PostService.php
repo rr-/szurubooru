@@ -43,7 +43,7 @@ class PostService
 			if (!$post)
 				$post = $this->postDao->findById($postNameOrId);
 			if (!$post)
-				throw new \InvalidArgumentException('Post with name "' . $postName . '" was not found.');
+				throw new \InvalidArgumentException('Post with name "' . $postNameOrId . '" was not found.');
 			return $post;
 		};
 		return $this->transactionManager->rollback($transactionFunc);
