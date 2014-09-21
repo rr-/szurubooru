@@ -16,7 +16,7 @@ class TransactionManagerTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		});
 
 		$this->assertNotNull($testEntity->getId());
-		$this->assertEquals($testEntity, $testDao->findById($testEntity->getId()));
+		$this->assertEntitiesEqual($testEntity, $testDao->findById($testEntity->getId()));
 	}
 
 	public function testRollback()
@@ -54,7 +54,7 @@ class TransactionManagerTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		});
 
 		$this->assertNotNull($testEntity->getId());
-		$this->assertEquals($testEntity, $testDao->findById($testEntity->getId()));
+		$this->assertEntitiesEqual($testEntity, $testDao->findById($testEntity->getId()));
 	}
 
 	private function getTestEntity()

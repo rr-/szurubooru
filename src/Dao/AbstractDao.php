@@ -13,14 +13,19 @@ abstract class AbstractDao implements ICrudDao
 		$tableName,
 		\Szurubooru\Dao\EntityConverters\IEntityConverter $entityConverter)
 	{
-		$this->pdo = $databaseConnection->getPDO();
-		$this->fpdo = new \FluentPDO($this->pdo);
+		$this->setDatabaseConnection($databaseConnection);
 		$this->tableName = $tableName;
 		$this->entityConverter = $entityConverter;
 		$this->entityConverter->setEntityDecorator(function($entity)
 			{
 				$this->afterLoad($entity);
 			});
+	}
+
+	public function setDatabaseConnection(\Szurubooru\DatabaseConnection $databaseConnection)
+	{
+		$this->pdo = $databaseConnection->getPDO();
+		$this->fpdo = new \FluentPDO($this->pdo);
 	}
 
 	public function getTableName()
@@ -61,7 +66,12 @@ abstract class AbstractDao implements ICrudDao
 
 	public function findById($entityId)
 	{
-		return $this->findOneBy('id', $entityId);
+		return $this->findOneBy($this->getIdColumn(), $entityId);
+	}
+
+	public function findByIds($entityIds)
+	{
+		return $this->findBy($this->getIdColumn(), $entityIds);
 	}
 
 	public function deleteAll()
@@ -75,13 +85,13 @@ abstract class AbstractDao implements ICrudDao
 
 	public function deleteById($entityId)
 	{
-		return $this->deleteBy('id', $entityId);
+		return $this->deleteBy($this->getIdColumn(), $entityId);
 	}
 
 	protected function update(\Szurubooru\Entities\Entity $entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);
-		$this->fpdo->update($this->tableName)->set($arrayEntity)->where('id', $entity->getId())->execute();
+		$this->fpdo->update($this->tableName)->set($arrayEntity)->where($this->getIdColumn(), $entity->getId())->execute();
 		return $entity;
 	}
 
@@ -91,6 +101,11 @@ abstract class AbstractDao implements ICrudDao
 		$this->fpdo->insertInto($this->tableName)->values($arrayEntity)->execute();
 		$entity->setId(intval($this->pdo->lastInsertId()));
 		return $entity;
+	}
+
+	protected function getIdColumn()
+	{
+		return 'id';
 	}
 
 	protected function hasAnyRecords()

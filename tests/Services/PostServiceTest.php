@@ -49,7 +49,9 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->assertNull($savedPost->getImageHeight());
 		$this->assertEquals($formData->url, $savedPost->getOriginalFileName());
 		$this->assertNull($savedPost->getOriginalFileSize());
-		$this->assertEquals(['test', 'test2'], $savedPost->getTags());
+		$this->assertEquals(2, count($savedPost->getTags()));
+		$this->assertEquals('test', $savedPost->getTags()[0]->getName());
+		$this->assertEquals('test2', $savedPost->getTags()[1]->getName());
 	}
 
 	public function testCreatingPosts()

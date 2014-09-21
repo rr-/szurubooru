@@ -126,9 +126,7 @@ everything related to comments:
     - score (see notes about scoring)
 
 refactors:
-    - make PostDao use TagDao when creating not existing tags (perhaps use
-      separate PostTagDao for this)
-    - post view proxy should retrieve full tags and full user
+    - post view proxy should retrieve full user
     - centralize markdown prefix decorators
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)

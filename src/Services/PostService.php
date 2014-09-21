@@ -178,9 +178,16 @@ class PostService
 		}
 	}
 
-	private function updatePostTags(\Szurubooru\Entities\Post $post, array $newTags)
+	private function updatePostTags(\Szurubooru\Entities\Post $post, array $newTagNames)
 	{
-		$post->setTags($newTags);
+		$tags = [];
+		foreach ($newTagNames as $tagName)
+		{
+			$tag = new \Szurubooru\Entities\Tag();
+			$tag->setName($tagName);
+			$tags[] = $tag;
+		}
+		$post->setTags($tags);
 	}
 
 	private function assertNoPostWithThisContentChecksum(\Szurubooru\Entities\Post $parent)

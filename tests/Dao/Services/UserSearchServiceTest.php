@@ -80,7 +80,9 @@ class UserSearchServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$actual = $userSearchService->getFiltered($searchFilter);
 		foreach ($actual->entities as $entity)
 			$entity->resetLazyLoaders();
-		$this->assertEquals($expected, $actual);
+		$this->assertEquals($expected->filter, $actual->filter);
+		$this->assertEquals($expected->totalRecords, $actual->totalRecords);
+		$this->assertEntitiesEqual($expected->entities, $actual->entities);
 	}
 
 	private function getUserSearchService()

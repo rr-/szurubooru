@@ -15,7 +15,7 @@ final class TokenDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$expected = $token;
 		$actual = $tokenDao->findByName($token->getName());
 
-		$this->assertEquals($actual, $expected);
+		$this->assertEntitiesEqual($actual, $expected);
 	}
 
 	public function testRetrievingByInvalidName()

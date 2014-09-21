@@ -3,11 +3,13 @@ namespace Szurubooru\Dao;
 
 class PostDao extends AbstractDao implements ICrudDao
 {
+	private $tagDao;
 	private $fileService;
 	private $thumbnailService;
 
 	public function __construct(
 		\Szurubooru\DatabaseConnection $databaseConnection,
+		\Szurubooru\Dao\TagDao $tagDao,
 		\Szurubooru\Services\FileService $fileService,
 		\Szurubooru\Services\ThumbnailService $thumbnailService)
 	{
@@ -16,6 +18,7 @@ class PostDao extends AbstractDao implements ICrudDao
 			'posts',
 			new \Szurubooru\Dao\EntityConverters\PostEntityConverter());
 
+		$this->tagDao = $tagDao;
 		$this->fileService = $fileService;
 		$this->thumbnailService = $thumbnailService;
 	}
@@ -58,17 +61,12 @@ class PostDao extends AbstractDao implements ICrudDao
 	{
 		$this->syncContent($post);
 		$this->syncThumbnailSourceContent($post);
-		$this->syncTags($post->getId(), $post->getTags());
+		$this->syncTags($post);
 	}
 
 	private function getTags(\Szurubooru\Entities\Post $post)
 	{
-		$postId = $post->getId();
-		$result = [];
-		$query = $this->fpdo->from('postTags')->where('postId', $postId)->select('tagName');
-		foreach ($query as $arrayEntity)
-			$result[] = $arrayEntity['tagName'];
-		return $result;
+		return $this->tagDao->findByPostId($post->getId());
 	}
 
 	private function syncContent(\Szurubooru\Entities\Post $post)
@@ -93,44 +91,41 @@ class PostDao extends AbstractDao implements ICrudDao
 		$this->thumbnailService->deleteUsedThumbnails($targetPath);
 	}
 
-	private function syncTags($postId, array $tags)
+	private function syncTags(\Szurubooru\Entities\Post $post)
 	{
-		$existingTags = array_map(
+		$tagNames = array_filter(array_unique(array_map(
+			function ($tag)
+			{
+				return $tag->getName();
+			},
+			$post->getTags())));
+
+		$this->tagDao->createMissingTags($tagNames);
+
+		$tagIds = array_map(
+			function($tag)
+			{
+				return $tag->getId();
+			},
+			$this->tagDao->findByNames($tagNames));
+
+		$existingTagRelationIds = array_map(
 			function($arrayEntity)
 			{
-				return $arrayEntity['tagName'];
+				return $arrayEntity['tagId'];
 			},
-			iterator_to_array($this->fpdo->from('postTags')->where('postId', $postId)));
-		$tagRelationsToInsert = array_diff($tags, $existingTags);
-		$tagRelationsToDelete = array_diff($existingTags, $tags);
-		$this->createMissingTags($tags);
-		foreach ($tagRelationsToInsert as $tag)
+			iterator_to_array($this->fpdo->from('postTags')->where('postId', $post->getId())));
+
+		$tagRelationsToInsert = array_diff($tagIds, $existingTagRelationIds);
+		$tagRelationsToDelete = array_diff($existingTagRelationIds, $tagIds);
+
+		foreach ($tagRelationsToInsert as $tagId)
 		{
-			$this->fpdo->insertInto('postTags')->values(['postId' => $postId, 'tagName' => $tag])->execute();
+			$this->fpdo->insertInto('postTags')->values(['postId' => $post->getId(), 'tagId' => $tagId])->execute();
 		}
-		foreach ($tagRelationsToDelete as $tag)
+		foreach ($tagRelationsToDelete as $tagId)
 		{
-			$this->fpdo->deleteFrom('postTags')->where('postId', $postId)->and('tagName', $tag)->execute();
-		}
-	}
-
-	private function createMissingTags(array $tags)
-	{
-		if (empty($tags))
-			return;
-
-		$tagsNotToCreate = array_map(
-			function($arrayEntity)
-			{
-				return $arrayEntity['name'];
-			},
-			iterator_to_array($this->fpdo->from('tags')->where('name', $tags)));
-
-		$tagsToCreate = array_diff($tags, $tagsNotToCreate);
-
-		foreach ($tagsToCreate as $tag)
-		{
-			$this->fpdo->insertInto('tags')->values(['name' => $tag])->execute();
+			$this->fpdo->deleteFrom('postTags')->where('postId', $post->getId())->and('tagId', $tagId)->execute();
 		}
 	}
 }

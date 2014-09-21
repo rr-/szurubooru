@@ -24,4 +24,28 @@ abstract class AbstractDatabaseTestCase extends \Szurubooru\Tests\AbstractTestCa
 		if ($this->databaseConnection)
 			$this->databaseConnection->close();
 	}
+
+	protected function assertEntitiesEqual($expected, $actual)
+	{
+		if (!is_array($expected))
+		{
+			$expected = [$expected];
+			$actual = [$actual];
+		}
+		$this->assertEquals(count($expected), count($actual));
+		$this->assertEquals(array_keys($expected), array_keys($actual));
+		foreach (array_keys($expected) as $key)
+		{
+			if ($expected[$key] === null)
+			{
+				$this->assertNull($actual[$key]);
+			}
+			else
+			{
+				$expected[$key]->resetLazyLoaders();
+				$actual[$key]->resetLazyLoaders();
+				$this->assertEquals($expected[$key], $actual[$key]);
+			}
+		}
+	}
 }

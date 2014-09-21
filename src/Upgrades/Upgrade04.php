@@ -3,30 +3,27 @@ namespace Szurubooru\Upgrades;
 
 class Upgrade04 implements IUpgrade
 {
+	private $postDao;
 	private $postService;
 	private $fileService;
-	private $thumbnailService;
 
 	public function __construct(
+		\Szurubooru\Dao\PostDao $postDao,
 		\Szurubooru\Services\PostService $postService,
-		\Szurubooru\Services\FileService $fileService,
-		\Szurubooru\Services\ThumbnailService $thumbnailService)
+		\Szurubooru\Services\FileService $fileService)
 	{
+		$this->postDao = $postDao;
 		$this->postService = $postService;
 		$this->fileService = $fileService;
-		$this->thumbnailService = $thumbnailService;
 	}
 
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
+		$this->postDao->setDatabaseConnection($databaseConnection);
+
 		$databaseConnection->getPDO()->exec('ALTER TABLE "posts" ADD COLUMN contentMimeType TEXT DEFAULT NULL');
 
-		$postDao = new \Szurubooru\Dao\PostDao(
-			$databaseConnection,
-			$this->fileService,
-			$this->thumbnailService);
-
-		$posts = $postDao->findAll();
+		$posts = $this->postDao->findAll();
 		foreach ($posts as $post)
 		{
 			if ($post->getContentType() !== \Szurubooru\Entities\Post::POST_TYPE_YOUTUBE)
@@ -34,7 +31,7 @@ class Upgrade04 implements IUpgrade
 				$fullPath = $this->fileService->getFullPath($this->postService->getPostContentPath($post));
 				$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromFile($fullPath);
 				$post->setContentMimeType($mime);
-				$postDao->save($post);
+				$this->postDao->save($post);
 			}
 		}
 	}

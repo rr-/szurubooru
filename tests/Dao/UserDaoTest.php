@@ -23,8 +23,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 		$expected = $user;
 		$actual = $userDao->findByName($user->getName());
-		$actual->resetLazyLoaders();
-		$this->assertEquals($actual, $expected);
+		$this->assertEntitiesEqual($actual, $expected);
 	}
 
 	public function testRetrievingByInvalidName()

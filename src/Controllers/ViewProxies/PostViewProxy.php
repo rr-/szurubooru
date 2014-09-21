@@ -3,6 +3,13 @@ namespace Szurubooru\Controllers\ViewProxies;
 
 class PostViewProxy extends AbstractViewProxy
 {
+	private $tagViewProxy;
+
+	public function __construct(TagViewProxy $tagViewProxy)
+	{
+		$this->tagViewProxy = $tagViewProxy;
+	}
+
 	public function fromEntity($post)
 	{
 		$result = new \StdClass;
@@ -20,7 +27,7 @@ class PostViewProxy extends AbstractViewProxy
 			$result->source = $post->getSource();
 			$result->imageWidth = $post->getImageWidth();
 			$result->imageHeight = $post->getImageHeight();
-			$result->tags = $post->getTags();
+			$result->tags = $this->tagViewProxy->fromArray($post->getTags());
 			$result->originalFileSize = $post->getOriginalFileSize();
 		}
 		return $result;

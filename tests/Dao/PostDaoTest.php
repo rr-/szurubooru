@@ -3,12 +3,14 @@ namespace Szurubooru\Tests\Dao;
 
 final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
+	private $tagDao;
 	private $fileServiceMock;
 	private $thumbnailServiceMock;
 
 	public function setUp()
 	{
 		parent::setUp();
+		$this->tagDao = new \Szurubooru\Dao\TagDao($this->databaseConnection);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
 		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
 	}
@@ -46,15 +48,13 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$postDao->save($post2);
 
 		$actual = $postDao->findAll();
-		foreach ($actual as $post)
-			$post->resetLazyLoaders();
 
 		$expected = [
 			$post1->getId() => $post1,
 			$post2->getId() => $post2,
 		];
 
-		$this->assertEquals($expected, $actual);
+		$this->assertEntitiesEqual($expected, $actual);
 	}
 
 	public function testGettingById()
@@ -68,10 +68,8 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 		$actualPost1 = $postDao->findById($post1->getId());
 		$actualPost2 = $postDao->findById($post2->getId());
-		$actualPost1->resetLazyLoaders();
-		$actualPost2->resetLazyLoaders();
-		$this->assertEquals($post1, $actualPost1);
-		$this->assertEquals($post2, $actualPost2);
+		$this->assertEntitiesEqual($post1, $actualPost1);
+		$this->assertEntitiesEqual($post2, $actualPost2);
 	}
 
 	public function testDeletingAll()
@@ -87,8 +85,8 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 		$actualPost1 = $postDao->findById($post1->getId());
 		$actualPost2 = $postDao->findById($post2->getId());
-		$this->assertEquals(null, $actualPost1);
-		$this->assertEquals(null, $actualPost2);
+		$this->assertNull($actualPost1);
+		$this->assertNull($actualPost2);
 		$this->assertEquals(0, count($postDao->findAll()));
 	}
 
@@ -105,22 +103,27 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 		$actualPost1 = $postDao->findById($post1->getId());
 		$actualPost2 = $postDao->findById($post2->getId());
-		$this->assertEquals(null, $actualPost1);
-		$this->assertEquals($actualPost2, $actualPost2);
+		$this->assertNull($actualPost1);
+		$this->assertEntitiesEqual($actualPost2, $actualPost2);
 		$this->assertEquals(1, count($postDao->findAll()));
 	}
 
 	public function testSavingTags()
 	{
-		$testTags = ['tag1', 'tag2'];
+		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1->setName('tag1');
+		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2->setName('tag2');
+		$testTags = ['tag1' => $tag1, 'tag2' => $tag2];
+
 		$postDao = $this->getPostDao();
 		$post = $this->getPost();
 		$post->setTags($testTags);
 		$postDao->save($post);
 
 		$savedPost = $postDao->findById($post->getId());
-		$this->assertEquals($testTags, $post->getTags());
-		$this->assertEquals($post->getTags(), $savedPost->getTags());
+		$this->assertEntitiesEqual($testTags, $post->getTags());
+		$this->assertEquals(2, count($savedPost->getTags()));
 
 		$tagDao = $this->getTagDao();
 		$this->assertEquals(2, count($tagDao->findAll()));
@@ -199,13 +202,14 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		return new \Szurubooru\Dao\PostDao(
 			$this->databaseConnection,
+			$this->tagDao,
 			$this->fileServiceMock,
 			$this->thumbnailServiceMock);
 	}
 
 	private function getTagDao()
 	{
-		return new \Szurubooru\Dao\TagDao($this->databaseConnection);
+		return $this->tagDao;
 	}
 
 	private function getPost()
