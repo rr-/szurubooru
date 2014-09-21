@@ -154,6 +154,9 @@ App.Presenters.PagedCollectionPresenter = function(
 	}
 
 	function refreshPageList() {
+		if (typeof(totalPages) === 'undefined') {
+			return;
+		}
 		var pages = getVisiblePages();
 		$pageList.empty();
 		var lastPage = 0;
