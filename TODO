@@ -34,6 +34,8 @@ everything related to posts:
               http://konachan.com/history?search=post%3A188614)
         - relations
         - previous and next post (difficult)
+            - extract Pager from PagedCollectionPresenter
+            - rename PagedCollectionPresenter to PagerPresenter
             - remember last search
             - take care of pages
             - add A/D hotkeys
@@ -141,10 +143,16 @@ refactors:
           promise.wait(util.loadTemplate('blah'))
               .then(function(html) {
                   template = _.template(html); });
-    - move content spinner code to separate module - it makes little sense for
-      individual presenters to use PresenterManager
+    - change content spinner to nprogress:
+      http://ricostacruz.com/nprogress/
 
 miscellaneous:
+    - fix mouse trap hotkeys when leaving page
+    - add hotkeys for focusing items in top navigation
+    - add ability to select tags text in tag input
+    - pasting tags should "soft-add" latest word in clipboard to input
+    - pasting tags should have protection against very long clipboard content
+    - add protection against ridiculously long tag names
     - add customizable favicon
     - add customizable logo
     - add log engine and log everything that should be logged
@@ -155,9 +163,8 @@ miscellaneous:
       (current suspect: dependency injector and sqlite)
     - add tool for migrating szurubooru database
     - endless pager should include information about page number
-    - add README and INSTALL - apache2 has good README:
+    - add README - apache2 has good README:
       http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
-      remember to mention mod_mime_magic
     - add spinner to forms such as registration, user query, login, settings
       etc. make sure the code isn't too duplicated.
 
