@@ -4,8 +4,8 @@ namespace Szurubooru\Entities;
 final class Tag extends Entity
 {
 	protected $name;
-	protected $usages;
 
+	const META_USAGES = 'usages';
 
 	public function getName()
 	{
@@ -19,11 +19,6 @@ final class Tag extends Entity
 
 	public function getUsages()
 	{
-		return $this->usages;
-	}
-
-	public function setUsages($usages)
-	{
-		$this->usages = $usages;
+		return $this->getMeta(self::META_USAGES);
 	}
 }

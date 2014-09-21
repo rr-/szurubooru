@@ -9,6 +9,7 @@ class TagViewProxy extends AbstractViewProxy
 		if ($tag)
 		{
 			$result->name = $tag->getName();
+			$result->usages = $tag->getUsages();
 		}
 		return $result;
 	}

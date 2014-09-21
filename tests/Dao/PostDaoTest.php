@@ -125,6 +125,9 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEntitiesEqual($testTags, $post->getTags());
 		$this->assertEquals(2, count($savedPost->getTags()));
 
+		$this->assertEquals(2, $post->getTagCount());
+		$this->assertEquals(2, $savedPost->getTagCount());
+
 		$tagDao = $this->getTagDao();
 		$this->assertEquals(2, count($tagDao->findAll()));
 	}

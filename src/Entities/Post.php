@@ -16,6 +16,8 @@ final class Post extends Entity
 	const LAZY_LOADER_CONTENT = 'content';
 	const LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT = 'thumbnailSourceContent';
 
+	const META_TAG_COUNT = 'tagCount';
+
 	protected $name;
 	protected $userId;
 	protected $uploadTime;
@@ -185,6 +187,7 @@ final class Post extends Entity
 	public function setTags(array $tags)
 	{
 		$this->lazySave(self::LAZY_LOADER_TAGS, $tags);
+		$this->setMeta(self::META_TAG_COUNT, count($tags));
 	}
 
 	public function getContent()
@@ -215,5 +218,10 @@ final class Post extends Entity
 	public function getThumbnailSourceContentPath()
 	{
 		return 'posts' . DIRECTORY_SEPARATOR . $this->getName() . '-custom-thumb';
+	}
+
+	public function getTagCount()
+	{
+		return $this->getMeta(self::META_TAG_COUNT, 0);
 	}
 }

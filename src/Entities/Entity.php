@@ -6,6 +6,7 @@ abstract class Entity
 	protected $id = null;
 	private $lazyLoaders = [];
 	private $lazyContainers = [];
+	private $meta;
 
 	public function __construct($id = null)
 	{
@@ -20,6 +21,23 @@ abstract class Entity
 	public function setId($id)
 	{
 		$this->id = $id;
+	}
+
+	public function getMeta($metaName, $default = null)
+	{
+		if (!isset($this->meta[$metaName]))
+			return $default;
+		return $this->meta[$metaName];
+	}
+
+	public function setMeta($metaName, $value)
+	{
+		$this->meta[$metaName] = $value;
+	}
+
+	public function resetMeta()
+	{
+		$this->meta = [];
 	}
 
 	public function resetLazyLoaders()

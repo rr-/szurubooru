@@ -40,6 +40,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setImageHeight($array['imageHeight']);
 		$entity->setOriginalFileSize($array['originalFileSize']);
 		$entity->setOriginalFileName($array['originalFileName']);
+		$entity->setMeta(\Szurubooru\Entities\Post::META_TAG_COUNT, intval($array['tagCount']));
 		return $entity;
 	}
 }

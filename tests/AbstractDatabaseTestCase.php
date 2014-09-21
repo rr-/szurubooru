@@ -43,7 +43,9 @@ abstract class AbstractDatabaseTestCase extends \Szurubooru\Tests\AbstractTestCa
 			else
 			{
 				$expected[$key]->resetLazyLoaders();
+				$expected[$key]->resetMeta();
 				$actual[$key]->resetLazyLoaders();
+				$actual[$key]->resetMeta();
 				$this->assertEquals($expected[$key], $actual[$key]);
 			}
 		}
