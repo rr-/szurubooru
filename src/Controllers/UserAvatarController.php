@@ -27,7 +27,14 @@ final class UserAvatarController extends AbstractController
 
 	public function getAvatarByName($userName, $size)
 	{
-		$user = $this->userService->getByName($userName);
+		try
+		{
+			$user = $this->userService->getByName($userName);
+		}
+		catch (\Exception $e)
+		{
+			$this->serveBlankFile($size);
+		}
 
 		switch ($user->getAvatarStyle())
 		{
@@ -38,7 +45,7 @@ final class UserAvatarController extends AbstractController
 				break;
 
 			case \Szurubooru\Entities\User::AVATAR_STYLE_BLANK:
-				$this->serveFromFile($this->getBlankAvatarSourceContentPath(), $size);
+				$this->serveBlankFile($size);
 				break;
 
 			case \Szurubooru\Entities\User::AVATAR_STYLE_MANUAL:
@@ -46,7 +53,7 @@ final class UserAvatarController extends AbstractController
 				break;
 
 			default:
-				$this->serveFromFile($this->getBlankAvatarSourceContentPath(), $size);
+				$this->serveBlankFile($size);
 				break;
 		}
 	}
@@ -61,6 +68,11 @@ final class UserAvatarController extends AbstractController
 		$this->thumbnailService->generateIfNeeded($sourceName, $size, $size);
 		$thumbnailName = $this->thumbnailService->getThumbnailName($sourceName, $size, $size);
 		$this->fileService->serve($thumbnailName);
+	}
+
+	private function serveBlankFile($size)
+	{
+		$this->serveFromFile($this->getBlankAvatarSourceContentPath(), $size);
 	}
 
 	private function getBlankAvatarSourceContentPath()

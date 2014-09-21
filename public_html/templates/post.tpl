@@ -11,6 +11,30 @@
 				</li>
 			<% }) %>
 		</ul>
+
+		<h1>Details</h1>
+
+		<div class="author-box">
+			<% if (post.user.name) { %>
+				<a href="#/user/<%= post.user.name %>">
+			<% } %>
+
+			<img class="author-avatar"
+				src="/data/thumbnails/40x40/avatars/<%= post.user.name || '!' %>"
+				alt="<%= post.user.name || 'Anonymous user' %>"/>
+
+			<span class="author-name">
+				<%= post.user.name || 'Anonymous user' %>
+			</span>
+
+			<% if (post.user.name) { %>
+				</a>
+			<% } %>
+
+			<br/>
+
+			<span class="date"><%= formatRelativeTime(post.uploadTime) %></span>
+		</div>
 	</div>
 
 	<div id="post-view">

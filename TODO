@@ -4,13 +4,10 @@ first major release.
 everything related to posts:
     - single post view
         - basic information
-            - uploader's picture
-                - remember about support for anonymous uploads
             - safety
             - source
             - image dimensions
             - time of last edit
-            - time of upload
             - time of last feature
             - how many times the post was featured
         - download
