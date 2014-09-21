@@ -3,9 +3,6 @@ first major release.
 
 everything related to posts:
     - single post view
-        - post content
-        - post tags
-            - number of tag usages
         - basic information
             - uploader's picture
                 - remember about support for anonymous uploads

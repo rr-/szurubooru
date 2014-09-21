@@ -12,7 +12,8 @@ App.Presenters.PostPresenter = function(
 
 	var $el = jQuery('#content');
 	var $messages = $el;
-	var template;
+	var postTemplate;
+	var postContentTemplate;
 	var post;
 	var postNameOrId;
 
@@ -22,12 +23,15 @@ App.Presenters.PostPresenter = function(
 
 		promise.waitAll(
 				util.promiseTemplate('post'),
+				util.promiseTemplate('post-content'),
 				api.get('/posts/' + postNameOrId))
 			.then(function(
-					templatehtml,
+					postTemplateHtml,
+					postContentTemplateHtml,
 					response) {
 				$messages = $el.find('.messages');
-				template = _.template(templatehtml);
+				postTemplate = _.template(postTemplateHtml);
+				postContentTemplate = _.template(postContentTemplateHtml);
 
 				post = response.json;
 				topNavigationPresenter.changeTitle('@' + post.id);
@@ -41,9 +45,10 @@ App.Presenters.PostPresenter = function(
 	}
 
 	function render() {
-		$el.html(template({
+		$el.html(postTemplate({
 			post: post,
 			formatRelativeTime: util.formatRelativeTime,
+			postContentTemplate: postContentTemplate,
 		}));
 	}
 
