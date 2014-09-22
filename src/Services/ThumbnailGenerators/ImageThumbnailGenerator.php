@@ -42,7 +42,7 @@ class ImageThumbnailGenerator implements IThumbnailGenerator
 		}
 	}
 
-	private function cropOutside($image, $srcWidth, $srcHeight, $dstWidth, $dstHeight)
+	private function cropOutside(&$image, $srcWidth, $srcHeight, $dstWidth, $dstHeight)
 	{
 		if (($dstHeight / $dstWidth) > ($srcHeight / $srcWidth))
 		{
@@ -61,7 +61,7 @@ class ImageThumbnailGenerator implements IThumbnailGenerator
 		$this->imageManipulator->cropImage($image, $dstWidth, $dstHeight, $cropX, $cropY);
 	}
 
-	private function cropInside($image, $srcWidth, $srcHeight, $dstWidth, $dstHeight)
+	private function cropInside(&$image, $srcWidth, $srcHeight, $dstWidth, $dstHeight)
 	{
 		if (($dstHeight / $dstWidth) < ($srcHeight / $srcWidth))
 		{
