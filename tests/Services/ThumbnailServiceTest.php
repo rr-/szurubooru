@@ -63,7 +63,7 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			->method('load')
 			->withConsecutive(
 				['nope'],
-				['thumbnails/blank.png'])
+				['thumbnails' . DIRECTORY_SEPARATOR . 'blank.png'])
 			->will(
 				$this->onConsecutiveCalls(
 					null,
@@ -82,7 +82,7 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->fileServiceMock
 			->expects($this->once())
 			->method('save')
-			->with('thumbnails/100x100/nope', 'generated thumbnail');
+			->with('thumbnails' . DIRECTORY_SEPARATOR . '100x100' . DIRECTORY_SEPARATOR . 'nope', 'generated thumbnail');
 
 		$thumbnailService = $this->getThumbnailService();
 		$thumbnailService->generate('nope', 100, 100);
@@ -97,8 +97,8 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			->method('load')
 			->withConsecutive(
 				['nope'],
-				['thumbnails/blank.png'],
-				['thumbnails/blank.png'])
+				['thumbnails' . DIRECTORY_SEPARATOR . 'blank.png'],
+				['thumbnails' . DIRECTORY_SEPARATOR . 'blank.png'])
 			->will(
 				$this->onConsecutiveCalls(
 					null,
@@ -118,7 +118,7 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->fileServiceMock
 			->expects($this->once())
 			->method('save')
-			->with('thumbnails/100x100/nope', 'content of blank thumbnail (2)');
+			->with('thumbnails' . DIRECTORY_SEPARATOR . '100x100' . DIRECTORY_SEPARATOR . 'nope', 'content of blank thumbnail (2)');
 
 		$thumbnailService = $this->getThumbnailService();
 		$thumbnailService->generate('nope', 100, 100);
