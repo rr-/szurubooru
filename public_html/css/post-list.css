@@ -20,6 +20,8 @@
 	display: block;
 	margin: 0.4em;
 	border: 1px solid #999;
+	z-index: 1;
+	position: relative;
 }
 #post-list .posts li img {
 	display: block;
@@ -36,4 +38,43 @@
 #post-list .posts li a:focus img,
 #post-list .posts li a:hover img {
 	opacity: .9;
+}
+
+#post-list .posts li:not(.post-type-image) a:before {
+	display: block;
+	content: '';
+	z-index: 2;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 0;
+	height: 0;
+	border-top: 50px solid red;
+	border-left: 50px solid transparent;
+}
+
+#post-list .posts li:not(.post-type-image) a:after {
+	display: block;
+	content: '...';
+	z-index: 3;
+	position: absolute;
+	top: -35px; /* 50 * sqrt(2) / 2 */
+	right: -35px;
+	width: 71px; /* 50 * sqrt(2) */
+	height: 71px;
+	line-height: 122px; /* 71 * 2 - 11 (font-size) - padding */
+	transform: rotate(45deg);
+
+	color: white;
+	font-size: 15px;
+}
+#post-list .posts li.post-type-youtube a:after {
+	font-size: 13px;
+	content: 'youtube';
+}
+#post-list .posts li.post-type-video a:after {
+	content: 'video';
+}
+#post-list .posts li.post-type-flash a:after {
+	content: 'flash';
 }

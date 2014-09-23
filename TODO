@@ -49,7 +49,6 @@ everything related to posts:
 
     - post listing
         - better thumbnail loading
-        - content type indicators (try to use CSS)
         - fav count
         - score
         - comment count
