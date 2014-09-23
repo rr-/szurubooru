@@ -74,7 +74,8 @@
 	display: inline-block;
 }
 #sidebar .tags li a {
-	display: block;
+	display: inline-block;
+	padding-left: 1em; /* ? */
 }
 #sidebar .tags li .usages {
 	color: silver;
