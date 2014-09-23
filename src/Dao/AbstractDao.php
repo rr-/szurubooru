@@ -54,14 +54,9 @@ abstract class AbstractDao implements ICrudDao
 
 	public function findAll()
 	{
-		$entities = [];
 		$query = $this->fpdo->from($this->tableName);
-		foreach ($query as $arrayEntity)
-		{
-			$entity = $this->entityConverter->toEntity($arrayEntity);
-			$entities[$entity->getId()] = $entity;
-		}
-		return $entities;
+		$arrayEntities = iterator_to_array($query);
+		return $this->arrayToEntities($arrayEntities);
 	}
 
 	public function findById($entityId)
@@ -72,6 +67,46 @@ abstract class AbstractDao implements ICrudDao
 	public function findByIds($entityIds)
 	{
 		return $this->findBy($this->getIdColumn(), $entityIds);
+	}
+
+	public function findFiltered(\Szurubooru\SearchServices\AbstractSearchFilter $searchFilter)
+	{
+		$orderByString = $this->compileOrderBy($searchFilter->order);
+
+		$query = $this->fpdo
+			->from($this->tableName)
+			->orderBy($orderByString);
+
+		$this->decorateQueryFromFilter($query, $searchFilter);
+
+		return $this->arrayToEntities(iterator_to_array($query));
+	}
+
+	public function findFilteredAndPaged(\Szurubooru\SearchServices\AbstractSearchFilter $searchFilter, $pageNumber, $pageSize)
+	{
+		$orderByString = $this->compileOrderBy($searchFilter->order);
+
+		$query = $this->fpdo
+			->from($this->tableName)
+			->orderBy($orderByString)
+			->limit($pageSize)
+			->offset($pageSize * ($pageNumber - 1));
+
+		$this->decorateQueryFromFilter($query, $searchFilter);
+
+		$entities = $this->arrayToEntities(iterator_to_array($query));
+		$query = $this->fpdo
+			->from($this->tableName)
+			->select('COUNT(1) AS c');
+		$totalRecords = intval(iterator_to_array($query)[0]['c']);
+
+		$pagedSearchResult = new \Szurubooru\SearchServices\PagedSearchResult();
+		$pagedSearchResult->setSearchFilter($searchFilter);
+		$pagedSearchResult->setEntities($entities);
+		$pagedSearchResult->setTotalRecords($totalRecords);
+		$pagedSearchResult->setPageNumber($pageNumber);
+		$pagedSearchResult->setPageSize($pageSize);
+		return $pagedSearchResult;
 	}
 
 	public function deleteAll()
@@ -152,5 +187,28 @@ abstract class AbstractDao implements ICrudDao
 
 	protected function beforeDelete(\Szurubooru\Entities\Entity $entity)
 	{
+	}
+
+	protected function decorateQueryFromFilter($query, \Szurubooru\SearchServices\AbstractSearchFilter $filter)
+	{
+	}
+
+	protected function arrayToEntities(array $arrayEntities)
+	{
+		$entities = [];
+		foreach ($arrayEntities as $arrayEntity)
+		{
+			$entity = $this->entityConverter->toEntity($arrayEntity);
+			$entities[$entity->getId()] = $entity;
+		}
+		return $entities;
+	}
+
+	private function compileOrderBy($order)
+	{
+		$orderByString = '';
+		foreach ($order as $orderColumn => $orderDir)
+			$orderByString .= $orderColumn . ' ' . ($orderDir === \Szurubooru\SearchServices\AbstractSearchFilter::ORDER_DESC ? 'DESC' : 'ASC') . ', ';
+		return substr($orderByString, 0, -2);
 	}
 }

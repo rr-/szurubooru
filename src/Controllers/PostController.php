@@ -38,11 +38,11 @@ final class PostController extends AbstractController
 	{
 		$formData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
 		$searchResult = $this->postService->getFiltered($formData);
-		$entities = $this->postViewProxy->fromArray($searchResult->entities);
+		$entities = $this->postViewProxy->fromArray($searchResult->getEntities());
 		return [
 			'data' => $entities,
-			'pageSize' => $searchResult->filter->pageSize,
-			'totalRecords' => $searchResult->totalRecords];
+			'pageSize' => $searchResult->getPageSize(),
+			'totalRecords' => $searchResult->getTotalRecords()];
 	}
 
 	public function createPost()

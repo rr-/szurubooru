@@ -48,11 +48,11 @@ final class UserController extends AbstractController
 
 		$formData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
 		$searchResult = $this->userService->getFiltered($formData);
-		$entities = $this->userViewProxy->fromArray($searchResult->entities);
+		$entities = $this->userViewProxy->fromArray($searchResult->getEntities());
 		return [
 			'data' => $entities,
-			'pageSize' => $searchResult->filter->pageSize,
-			'totalRecords' => $searchResult->totalRecords];
+			'pageSize' => $searchResult->getPageSize(),
+			'totalRecords' => $searchResult->getTotalRecords()];
 	}
 
 	public function createUser()

@@ -121,9 +121,6 @@ refactors:
     - (idea) keep denormalized data in separate tables, i.e. tag usages in
       tag_meta or post favorite count in post_meta, so that it's obvious what
       can be recalculated on demand and what is real data
-    - change AbstractSearchService to AbstractSearchParser
-    - embed AbstractSearchService into Dao (it sucks to include XSearchService
-      together with Dao)
     - simplify template loading in presenters - right now template loading
       requires _, util and promise:
           promise.wait(util.loadTemplate('blah'))
@@ -131,6 +128,12 @@ refactors:
                   template = _.template(html); });
     - change content spinner to nprogress:
       http://ricostacruz.com/nprogress/
+    - add fetchUsers to PostSearchFilter: when AbstractDao fetches entities
+      with query decorated by PostDao::decorateQueryFromFilter, call
+      PostDao::decorateEntitiesWithFilter that will optimally load users and
+      inject them using posts' lazy loaders.
+    - make view proxies less greedy, e.g. favs should be fetched only in post
+      view, not for each of 40 posts in post list. (same goes to other things)
 
 miscellaneous:
     - fix mouse trap hotkeys when leaving page

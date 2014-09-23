@@ -7,7 +7,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $validatorMock;
 	private $transactionManagerMock;
 	private $userDaoMock;
-	private $userSearchServiceMock;
+	private $userSearchParserMock;
 	private $passwordServiceMock;
 	private $emailServiceMock;
 	private $fileServiceMock;
@@ -22,7 +22,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->transactionManagerMock = $this->mockTransactionManager();
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
-		$this->userSearchService = $this->mock(\Szurubooru\Dao\Services\UserSearchService::class);
+		$this->userSearchParserMock = $this->mock(\Szurubooru\SearchServices\Parsers\UserSearchParser::class);
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->emailServiceMock = $this->mock(\Szurubooru\Services\EmailService::class);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
@@ -72,7 +72,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$mockUser = new \Szurubooru\Entities\User;
 		$mockUser->setName('user');
 		$expected = [$mockUser];
-		$this->userSearchService->method('getFiltered')->willReturn($expected);
+		$this->userDaoMock->method('getFiltered')->willReturn($expected);
 
 		$this->configMock->set('users/usersPerPage', 1);
 		$searchFormData = new \Szurubooru\FormData\SearchFormData;
@@ -292,7 +292,7 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->validatorMock,
 			$this->transactionManagerMock,
 			$this->userDaoMock,
-			$this->userSearchService,
+			$this->userSearchParserMock,
 			$this->passwordServiceMock,
 			$this->emailServiceMock,
 			$this->fileServiceMock,

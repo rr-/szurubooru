@@ -14,4 +14,3 @@ class SearchResult
 		$this->totalRecords = $totalRecords;
 	}
 }
-

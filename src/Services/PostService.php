@@ -7,7 +7,7 @@ class PostService
 	private $validator;
 	private $transactionManager;
 	private $postDao;
-	private $postSearchService;
+	private $postSearchParser;
 	private $timeService;
 	private $authService;
 	private $fileService;
@@ -18,7 +18,7 @@ class PostService
 		\Szurubooru\Validator $validator,
 		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Dao\PostDao $postDao,
-		\Szurubooru\Dao\Services\PostSearchService $postSearchService,
+		\Szurubooru\SearchServices\Parsers\PostSearchParser $postSearchParser,
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Services\FileService $fileService,
@@ -28,7 +28,7 @@ class PostService
 		$this->validator = $validator;
 		$this->transactionManager = $transactionManager;
 		$this->postDao = $postDao;
-		$this->postSearchService = $postSearchService;
+		$this->postSearchParser = $postSearchParser;
 		$this->timeService = $timeService;
 		$this->authService = $authService;
 		$this->fileService = $fileService;
@@ -66,8 +66,8 @@ class PostService
 		$transactionFunc = function() use ($formData)
 		{
 			$this->validator->validate($formData);
-			$searchFilter = new \Szurubooru\Dao\SearchFilter($this->config->posts->postsPerPage, $formData);
-			return $this->postSearchService->getFiltered($searchFilter);
+			$searchFilter = $this->postSearchParser->createFilterFromFormData($formData);
+			return $this->postDao->findFilteredAndPaged($searchFilter, $formData->pageNumber, $this->config->posts->postsPerPage);
 		};
 		return $this->transactionManager->rollback($transactionFunc);
 	}

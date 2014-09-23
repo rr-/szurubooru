@@ -45,7 +45,7 @@ App.Presenters.LoginPresenter = function(
 
 		var userNameOrEmail = $el.find('[name=user]').val();
 		var password = $el.find('[name=password]').val();
-		var remember = $el.find('[name=remember]').val();
+		var remember = $el.find('[name=remember]').is(':checked');
 
 		if (userNameOrEmail.length === 0) {
 			messagePresenter.showError($messages, 'User name cannot be empty.');

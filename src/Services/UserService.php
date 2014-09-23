@@ -7,7 +7,7 @@ class UserService
 	private $validator;
 	private $transactionManager;
 	private $userDao;
-	private $userSearchService;
+	private $userSearchParser;
 	private $passwordService;
 	private $emailService;
 	private $fileService;
@@ -20,7 +20,7 @@ class UserService
 		\Szurubooru\Validator $validator,
 		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Dao\UserDao $userDao,
-		\Szurubooru\Dao\Services\UserSearchService $userSearchService,
+		\Szurubooru\SearchServices\Parsers\UserSearchParser $userSearchParser,
 		\Szurubooru\Services\PasswordService $passwordService,
 		\Szurubooru\Services\EmailService $emailService,
 		\Szurubooru\Services\FileService $fileService,
@@ -32,7 +32,7 @@ class UserService
 		$this->validator = $validator;
 		$this->transactionManager = $transactionManager;
 		$this->userDao = $userDao;
-		$this->userSearchService = $userSearchService;
+		$this->userSearchParser = $userSearchParser;
 		$this->passwordService = $passwordService;
 		$this->emailService = $emailService;
 		$this->fileService = $fileService;
@@ -87,8 +87,8 @@ class UserService
 		$transactionFunc = function() use ($formData)
 		{
 			$this->validator->validate($formData);
-			$searchFilter = new \Szurubooru\Dao\SearchFilter($this->config->users->usersPerPage, $formData);
-			return $this->userSearchService->getFiltered($searchFilter);
+			$searchFilter = $this->userSearchParser->createFilterFromFormData($formData);
+			return $this->userDao->findFilteredAndPaged($searchFilter, $formData->pageNumber, $this->config->users->usersPerPage);
 		};
 		return $this->transactionManager->rollback($transactionFunc);
 	}
