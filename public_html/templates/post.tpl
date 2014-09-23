@@ -79,6 +79,21 @@
 			<% } %>
 
 		</ul>
+
+		<% if (_.any(privileges)) { %>
+			<h1>Options</h1>
+
+			<ul class="operations">
+				<% if (privileges.canDeletePosts) { %>
+					<li>
+						<a href="#" class="delete">
+							Delete
+						</a>
+					</li>
+				<% } %>
+			</ul>
+		<% } %>
+
 	</div>
 
 	<div id="post-view">

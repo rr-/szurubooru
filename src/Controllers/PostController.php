@@ -25,6 +25,7 @@ final class PostController extends AbstractController
 		$router->post('/api/posts', [$this, 'createPost']);
 		$router->get('/api/posts', [$this, 'getFiltered']);
 		$router->get('/api/posts/:postNameOrId', [$this, 'getByNameOrId']);
+		$router->delete('/api/posts/:postNameOrId', [$this, 'deletePost']);
 	}
 
 	public function getByNameOrId($postNameOrId)
@@ -56,5 +57,11 @@ final class PostController extends AbstractController
 
 		$post = $this->postService->createPost($formData);
 		return $this->postViewProxy->fromEntity($post);
+	}
+
+	public function deletePost($postNameOrId)
+	{
+		$post = $this->postService->getByNameOrId($postNameOrId);
+		$this->postService->deletePost($post);
 	}
 }

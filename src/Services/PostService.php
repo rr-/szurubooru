@@ -190,6 +190,15 @@ class PostService
 		$post->setTags($tags);
 	}
 
+	public function deletePost(\Szurubooru\Entities\Post $post)
+	{
+		$transactionFunc = function() use ($post)
+		{
+			$this->postDao->deleteById($post->getId());
+		};
+		$this->transactionManager->commit($transactionFunc);
+	}
+
 	private function assertNoPostWithThisContentChecksum(\Szurubooru\Entities\Post $parent)
 	{
 		$checksumToCheck = $parent->getContentChecksum();

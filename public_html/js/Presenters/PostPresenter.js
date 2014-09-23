@@ -7,6 +7,8 @@ App.Presenters.PostPresenter = function(
 	util,
 	promise,
 	api,
+	auth,
+	router,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -16,10 +18,13 @@ App.Presenters.PostPresenter = function(
 	var postContentTemplate;
 	var post;
 	var postNameOrId;
+	var privileges = {};
 
 	function init(args, loaded) {
 		postNameOrId = args.postNameOrId;
 		topNavigationPresenter.select('posts');
+
+		privileges.canDeletePosts = auth.hasPrivilege(auth.privileges.deletePosts);
 
 		promise.waitAll(
 				util.promiseTemplate('post'),
@@ -50,7 +55,25 @@ App.Presenters.PostPresenter = function(
 			formatRelativeTime: util.formatRelativeTime,
 			formatFileSize: util.formatFileSize,
 			postContentTemplate: postContentTemplate,
+			privileges: privileges,
 		}));
+
+		$el.find('.delete').click(deleteButtonClicked);
+	}
+
+	function deleteButtonClicked(e) {
+		e.preventDefault();
+		if (window.confirm('Do you really want to delete this post?')) {
+			deletePost();
+		}
+	}
+
+	function deletePost() {
+		api.delete('/posts/' + post.id).then(function(response) {
+			router.navigate('#/posts');
+		}).fail(function(response) {
+			messagePresenter.showError($messages, response.json && response.json.error || response);
+		});
 	}
 
 	return {
@@ -60,4 +83,4 @@ App.Presenters.PostPresenter = function(
 
 };
 
-App.DI.register('postPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostPresenter);
+App.DI.register('postPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostPresenter);

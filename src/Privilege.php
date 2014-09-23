@@ -23,6 +23,7 @@ class Privilege
 	const LIST_UNSAFE_POSTS = 'listUnsafePosts';
 	const UPLOAD_POSTS = 'uploadPosts';
 	const UPLOAD_POSTS_ANONYMOUSLY = 'uploadPostsAnonymously';
+	const DELETE_POSTS = 'deletePosts';
 
 	const LIST_TAGS = 'listTags';
 }
