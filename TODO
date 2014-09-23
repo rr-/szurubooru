@@ -145,8 +145,6 @@ miscellaneous:
         - I don't think browsing online logs is very necessary
     - add help, api documentation
     - add version on homepage that reads version from package.json and git hash
-    - make script faster, right now every request to backend takes 200ms
-      (current suspect: dependency injector and sqlite)
     - add tool for migrating szurubooru database
     - endless pager should include information about page number
     - add README - apache2 has good README:

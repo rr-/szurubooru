@@ -44,9 +44,13 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		});
 	}
 
-	function loginFromToken(token) {
+	function loginFromToken(token, isFromCookie) {
 		return promise.make(function(resolve, reject) {
-			promise.wait(api.post('/login', {token: token}))
+			var fd = {
+				token: token,
+				isFromCookie: isFromCookie
+			};
+			promise.wait(api.post('/login', fd))
 				.then(function(response) {
 					updateAppState(response);
 					resolve(response);
@@ -89,7 +93,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 				return;
 			}
 
-			promise.wait(loginFromToken(authCookie))
+			promise.wait(loginFromToken(authCookie, true))
 				.then(function(response) {
 					resolve();
 				}).fail(function(response) {

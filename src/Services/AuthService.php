@@ -54,7 +54,6 @@ class AuthService
 
 		$this->loginToken = $this->createAndSaveLoginToken($user);
 		$this->loggedInUser = $user;
-		$this->userService->updateUserLastLoginTime($user);
 	}
 
 	public function loginFromToken(\Szurubooru\Entities\Token $token)
@@ -67,7 +66,6 @@ class AuthService
 
 		$this->loginToken = $token;
 		$this->loggedInUser = $user;
-		$this->userService->updateUserLastLoginTime($this->loggedInUser);
 	}
 
 	public function getAnonymousUser()
