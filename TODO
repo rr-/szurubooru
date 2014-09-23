@@ -4,14 +4,9 @@ first major release.
 everything related to posts:
     - single post view
         - basic information
-            - safety
-            - source
-            - image dimensions
             - time of last edit
             - time of last feature
             - how many times the post was featured
-        - download
-            - permalink
         - delete
         - feature
         - fav

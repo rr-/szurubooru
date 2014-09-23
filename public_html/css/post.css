@@ -55,10 +55,17 @@
 }
 
 
-#post-view-wrapper #sidebar ul {
+#sidebar ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
+}
+#sidebar .tags li,
+#sidebar .other-info li {
+	display: block;
+	word-break: break-all;
+	padding-left: 1em;
+	text-indent: -1em;
 }
 
 #sidebar .tags .tag-wrapper {
@@ -68,9 +75,6 @@
 }
 #sidebar .tags li a {
 	display: block;
-	padding-left: 1em;
-	word-break: break-all;
-	text-indent: -1em;
 }
 #sidebar .tags li .usages {
 	color: silver;
@@ -83,4 +87,28 @@
 }
 #sidebar .author-box .author-name {
 	font-weight: bold;
+}
+
+#sidebar .other-info {
+	margin-top: 1em;
+	line-height: 150%;
+}
+
+#sidebar .essential {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 2em;
+}
+#sidebar .essential li {
+	display: block;
+	margin: 0 0.25em;
+	vertical-align: top;
+}
+#sidebar .essential li i.fa {
+	font-size: 30px;
+}
+#sidebar .essential li a {
+	display: block;
+	text-align: center;
+	font-size: 12px;
 }

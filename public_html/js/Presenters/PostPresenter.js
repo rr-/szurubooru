@@ -48,6 +48,7 @@ App.Presenters.PostPresenter = function(
 		$el.html(postTemplate({
 			post: post,
 			formatRelativeTime: util.formatRelativeTime,
+			formatFileSize: util.formatFileSize,
 			postContentTemplate: postContentTemplate,
 		}));
 	}

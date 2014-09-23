@@ -27,6 +27,7 @@ class PostViewProxy extends AbstractViewProxy
 			$result->contentType = \Szurubooru\Helpers\EnumHelper::postTypeToString($post->getContentType());
 			$result->contentChecksum = $post->getContentChecksum();
 			$result->contentMimeType = $post->getContentMimeType();
+			$result->contentExtension = \Szurubooru\Helpers\MimeHelper::getExtension($post->getContentMimeType());
 			$result->source = $post->getSource();
 			$result->imageWidth = $post->getImageWidth();
 			$result->imageHeight = $post->getImageHeight();

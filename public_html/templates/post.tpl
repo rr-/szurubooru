@@ -1,5 +1,15 @@
 <div id="post-view-wrapper">
 	<div id="sidebar">
+		<ul class="essential">
+			<li>
+				<a class="download" href="/data/posts/<%= post.name %>">
+					<i class="fa fa-download"></i>
+					<br/>
+					<%= post.contentExtension + ', ' + formatFileSize(post.originalFileSize) %>
+				</a>
+			</li>
+		</ul>
+
 		<h1>Tags (<%= _.size(post.tags) %>)</h1>
 		<ul class="tags">
 			<% _.each(post.tags, function(tag) { %>
@@ -35,6 +45,40 @@
 
 			<span class="date"><%= formatRelativeTime(post.uploadTime) %></span>
 		</div>
+
+		<ul class="other-info">
+
+			<li>
+				Rating:
+				<span class="safety-<%= post.safety %>">
+					<%= post.safety %>
+				</span>
+			</li>
+
+			<% if (post.originalFileSize) { %>
+				<li>
+					File size:
+					<%= formatFileSize(post.originalFileSize) %>
+				</li>
+			<% } %>
+
+			<% if (post.contentType == 'image') { %>
+				<li>
+					Image size:
+					<%= post.imageWidth + 'x' + post.imageHeight %>
+				</li>
+			<% } %>
+
+			<% if (post.source) { %>
+				<li>
+					Source:&nbsp;<!--
+					--><a href="<%= post.source %>"><!--
+						--><%= post.source.trim() %>
+					</a>
+				</li>
+			<% } %>
+
+		</ul>
 	</div>
 
 	<div id="post-view">

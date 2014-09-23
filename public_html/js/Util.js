@@ -152,11 +152,44 @@ App.Util = function(_, jQuery, promise) {
 		return future ? 'in ' + text : text + ' ago';
 	}
 
+	function formatUnits(number, base, suffixes, callback) {
+		if (!number) {
+			return NaN;
+		}
+		number *= 1.0;
+
+		var suffix = suffixes.shift();
+		while (number >= base && suffixes.length > 0) {
+			suffix = suffixes.shift();
+			number /= base;
+		}
+
+		if (typeof(callback) === 'undefined') {
+			callback = function(number, suffix) {
+				return suffix ? number.toFixed(1) + suffix : number;
+			};
+		}
+
+		return callback(number, suffix);
+	}
+
+	function formatFileSize(fileSize) {
+		return formatUnits(
+			fileSize,
+			1024,
+			['B', 'K', 'M', 'G'],
+			function(number, suffix) {
+				var decimalPlaces = number < 20 && suffix !== 'B' ? 1 : 0;
+				return number.toFixed(decimalPlaces) + suffix;
+			});
+	}
+
 	return {
 		promiseTemplate: promiseTemplate,
 		parseComplexRouteArgs: parseComplexRouteArgs,
 		compileComplexRouteArgs: compileComplexRouteArgs,
 		formatRelativeTime: formatRelativeTime,
+		formatFileSize: formatFileSize,
 		enableExitConfirmation: enableExitConfirmation,
 		disableExitConfirmation: disableExitConfirmation,
 		isExitConfirmationEnabled: isExitConfirmationEnabled,
