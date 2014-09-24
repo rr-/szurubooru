@@ -47,6 +47,10 @@ App.Presenters.TopNavigationPresenter = function(
 		$el.find('li.' + selectedElement).find('a').addClass('active');
 	}
 
+	function getBaseTitle() {
+		return baseTitle;
+	}
+
 	function changeTitle(subTitle) {
 		var newTitle = baseTitle;
 		if (subTitle) {
@@ -59,6 +63,7 @@ App.Presenters.TopNavigationPresenter = function(
 		init: init,
 		render: render,
 		select: select,
+		getBaseTitle: getBaseTitle,
 		changeTitle: changeTitle,
 	};
 

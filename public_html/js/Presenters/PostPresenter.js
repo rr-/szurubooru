@@ -25,6 +25,7 @@ App.Presenters.PostPresenter = function(
 		topNavigationPresenter.select('posts');
 
 		privileges.canDeletePosts = auth.hasPrivilege(auth.privileges.deletePosts);
+		privileges.canFeaturePosts = auth.hasPrivilege(auth.privileges.featurePosts);
 
 		promise.waitAll(
 				util.promiseTemplate('post'),
@@ -34,7 +35,6 @@ App.Presenters.PostPresenter = function(
 					postTemplateHtml,
 					postContentTemplateHtml,
 					response) {
-				$messages = $el.find('.messages');
 				postTemplate = _.template(postTemplateHtml);
 				postContentTemplate = _.template(postContentTemplateHtml);
 
@@ -45,7 +45,7 @@ App.Presenters.PostPresenter = function(
 
 			}).fail(function(response) {
 				$el.empty();
-				messagePresenter.showError($messages, response.json && response.json.error || response);
+				showGenericError(response);
 			});
 	}
 
@@ -57,23 +57,45 @@ App.Presenters.PostPresenter = function(
 			postContentTemplate: postContentTemplate,
 			privileges: privileges,
 		}));
+		$messages = $el.find('.messages');
 
 		$el.find('.delete').click(deleteButtonClicked);
+		$el.find('.feature').click(featureButtonClicked);
 	}
 
 	function deleteButtonClicked(e) {
 		e.preventDefault();
+		messagePresenter.hideMessages($messages);
 		if (window.confirm('Do you really want to delete this post?')) {
 			deletePost();
 		}
 	}
 
 	function deletePost() {
-		api.delete('/posts/' + post.id).then(function(response) {
-			router.navigate('#/posts');
-		}).fail(function(response) {
-			messagePresenter.showError($messages, response.json && response.json.error || response);
-		});
+		api.delete('/posts/' + post.id)
+			.then(function(response) {
+				router.navigate('#/posts');
+			}).fail(showGenericError);
+	}
+
+	function featureButtonClicked(e) {
+		e.preventDefault();
+		messagePresenter.hideMessages($messages);
+		if (window.confirm('Do you want to feature this post on fron page?')) {
+			featurePost();
+		}
+	}
+
+	function featurePost() {
+		api.post('/posts/' + post.id + '/feature')
+			.then(function(response) {
+				router.navigate('#/home');
+			})
+			.fail(showGenericError);
+	}
+
+	function showGenericError(response) {
+		messagePresenter.showError($messages, response.json && response.json.error || response);
 	}
 
 	return {

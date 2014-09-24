@@ -7,6 +7,7 @@ class PostService
 	private $validator;
 	private $transactionManager;
 	private $postDao;
+	private $globalParamDao;
 	private $postSearchParser;
 	private $timeService;
 	private $authService;
@@ -18,6 +19,7 @@ class PostService
 		\Szurubooru\Validator $validator,
 		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Dao\PostDao $postDao,
+		\Szurubooru\Dao\GlobalParamDao $globalParamDao,
 		\Szurubooru\SearchServices\Parsers\PostSearchParser $postSearchParser,
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\TimeService $timeService,
@@ -28,6 +30,7 @@ class PostService
 		$this->validator = $validator;
 		$this->transactionManager = $transactionManager;
 		$this->postDao = $postDao;
+		$this->globalParamDao = $globalParamDao;
 		$this->postSearchParser = $postSearchParser;
 		$this->timeService = $timeService;
 		$this->authService = $authService;
@@ -68,6 +71,18 @@ class PostService
 			$this->validator->validate($formData);
 			$searchFilter = $this->postSearchParser->createFilterFromFormData($formData);
 			return $this->postDao->findFilteredAndPaged($searchFilter, $formData->pageNumber, $this->config->posts->postsPerPage);
+		};
+		return $this->transactionManager->rollback($transactionFunc);
+	}
+
+	public function getFeatured()
+	{
+		$transactionFunc = function()
+		{
+			$globalParam = $this->globalParamDao->findByKey(\Szurubooru\Entities\GlobalParam::KEY_FEATURED_POST);
+			if (!$globalParam)
+				return null;
+			return $this->getByNameOrId($globalParam->getValue());
 		};
 		return $this->transactionManager->rollback($transactionFunc);
 	}
@@ -195,6 +210,21 @@ class PostService
 		$transactionFunc = function() use ($post)
 		{
 			$this->postDao->deleteById($post->getId());
+		};
+		$this->transactionManager->commit($transactionFunc);
+	}
+
+	public function featurePost(\Szurubooru\Entities\Post $post)
+	{
+		$transactionFunc = function() use ($post)
+		{
+			$post->setLastFeatureTime($this->timeService->getCurrentTime());
+			$post->setFeatureCount($post->getFeatureCount() + 1);
+			$this->postDao->save($post);
+			$globalParam = new \Szurubooru\Entities\GlobalParam();
+			$globalParam->setKey(\Szurubooru\Entities\GlobalParam::KEY_FEATURED_POST);
+			$globalParam->setValue($post->getId());
+			$this->globalParamDao->save($globalParam);
 		};
 		$this->transactionManager->commit($transactionFunc);
 	}

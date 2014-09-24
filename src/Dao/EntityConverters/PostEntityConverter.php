@@ -21,6 +21,8 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'imageHeight' => $entity->getImageHeight(),
 			'originalFileSize' => $entity->getOriginalFileSize(),
 			'originalFileName' => $entity->getOriginalFileName(),
+			'featureCount' => $entity->getFeatureCount(),
+			'lastFeatureTime' => $entity->getLastFeatureTime(),
 		];
 	}
 
@@ -40,6 +42,8 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setImageHeight($array['imageHeight']);
 		$entity->setOriginalFileSize($array['originalFileSize']);
 		$entity->setOriginalFileName($array['originalFileName']);
+		$entity->setFeatureCount(intval($array['featureCount']));
+		$entity->setLastFeatureTime($array['lastFeatureTime']);
 		$entity->setMeta(\Szurubooru\Entities\Post::META_TAG_COUNT, intval($array['tagCount']));
 		return $entity;
 	}

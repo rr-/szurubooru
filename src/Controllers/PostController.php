@@ -24,8 +24,17 @@ final class PostController extends AbstractController
 	{
 		$router->post('/api/posts', [$this, 'createPost']);
 		$router->get('/api/posts', [$this, 'getFiltered']);
+		$router->get('/api/posts/featured', [$this, 'getFeatured']);
 		$router->get('/api/posts/:postNameOrId', [$this, 'getByNameOrId']);
 		$router->delete('/api/posts/:postNameOrId', [$this, 'deletePost']);
+		$router->post('/api/posts/:postNameOrId/feature', [$this, 'featurePost']);
+		$router->put('/api/posts/:postNameOrId/feature', [$this, 'featurePost']);
+	}
+
+	public function getFeatured()
+	{
+		$post = $this->postService->getFeatured();
+		return $this->postViewProxy->fromEntity($post);
 	}
 
 	public function getByNameOrId($postNameOrId)
@@ -63,5 +72,11 @@ final class PostController extends AbstractController
 	{
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		$this->postService->deletePost($post);
+	}
+
+	public function featurePost($postNameOrId)
+	{
+		$post = $this->postService->getByNameOrId($postNameOrId);
+		$this->postService->featurePost($post);
 	}
 }

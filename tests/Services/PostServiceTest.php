@@ -7,6 +7,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $validatorMock;
 	private $transactionManagerMock;
 	private $postDaoMock;
+	private $globalParamDaoMock;
 	private $postSearchParserMock;
 	private $authServiceMock;
 	private $timeServiceMock;
@@ -19,6 +20,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->transactionManagerMock = $this->mockTransactionManager();
 		$this->postDaoMock = $this->mock(\Szurubooru\Dao\PostDao::class);
+		$this->globalParamDaoMock = $this->mock(\Szurubooru\Dao\GlobalParamDao::class);
 		$this->postSearchParserMock = $this->mock(\Szurubooru\SearchServices\Parsers\PostSearchParser::class);
 		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
@@ -178,6 +180,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->validatorMock,
 			$this->transactionManagerMock,
 			$this->postDaoMock,
+			$this->globalParamDaoMock,
 			$this->postSearchParserMock,
 			$this->authServiceMock,
 			$this->timeServiceMock,

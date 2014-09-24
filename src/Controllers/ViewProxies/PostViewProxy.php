@@ -20,6 +20,7 @@ class PostViewProxy extends AbstractViewProxy
 		if ($post)
 		{
 			$result->id = $post->getId();
+			$result->idMarkdown = $post->getIdMarkdown();
 			$result->name = $post->getName();
 			$result->uploadTime = $post->getUploadTime();
 			$result->lastEditTime = $post->getLastEditTime();
@@ -31,6 +32,8 @@ class PostViewProxy extends AbstractViewProxy
 			$result->source = $post->getSource();
 			$result->imageWidth = $post->getImageWidth();
 			$result->imageHeight = $post->getImageHeight();
+			$result->featureCount = $post->getFeatureCount();
+			$result->lastFeatureTime = $post->getLastFeatureTime();
 			$result->tags = $this->tagViewProxy->fromArray($post->getTags());
 			$result->originalFileSize = $post->getOriginalFileSize();
 			$result->user = $this->userViewProxy->fromEntity($post->getUser());

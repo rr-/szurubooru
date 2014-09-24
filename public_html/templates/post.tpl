@@ -69,6 +69,13 @@
 				</li>
 			<% } %>
 
+			<% if (post.featureCount > 0) { %>
+				<li>
+					Featured: <%= post.featureCount %> <%= post.featureCount < 2 ? 'time' : 'times' %>
+					<small>(<%= formatRelativeTime(post.lastFeatureTime) %>)</small>
+				</li>
+			<% } %>
+
 			<% if (post.source) { %>
 				<li>
 					Source:&nbsp;<!--
@@ -91,12 +98,22 @@
 						</a>
 					</li>
 				<% } %>
+
+				<% if (privileges.canFeaturePosts) { %>
+					<li>
+						<a href="#" class="feature">
+							Feature
+						</a>
+					</li>
+				<% } %>
 			</ul>
 		<% } %>
 
 	</div>
 
 	<div id="post-view">
+		<div class="messages"></div>
+
 		<%= postContentTemplate({post: post}) %>
 	</div>
 </div>

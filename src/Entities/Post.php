@@ -32,6 +32,8 @@ final class Post extends Entity
 	protected $imageHeight;
 	protected $originalFileSize;
 	protected $originalFileName;
+	protected $featureCount = 0;
+	protected $lastFeatureTime;
 
 	public function getIdMarkdown()
 	{
@@ -166,6 +168,26 @@ final class Post extends Entity
 	public function setOriginalFileName($originalFileName)
 	{
 		$this->originalFileName = $originalFileName;
+	}
+
+	public function getFeatureCount()
+	{
+		return $this->featureCount;
+	}
+
+	public function setFeatureCount($featureCount)
+	{
+		$this->featureCount = $featureCount;
+	}
+
+	public function getLastFeatureTime()
+	{
+		return $this->lastFeatureTime;
+	}
+
+	public function setLastFeatureTime($lastFeatureTime)
+	{
+		$this->lastFeatureTime = $lastFeatureTime;
 	}
 
 	public function getTags()
