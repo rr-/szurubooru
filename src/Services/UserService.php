@@ -304,6 +304,8 @@ class UserService
 
 	private function assertNoUserWithThisEmail(\Szurubooru\Entities\User $owner, $emailToCheck)
 	{
+		if (!$emailToCheck)
+			return;
 		$userWithThisEmail = $this->userDao->findByEmail($emailToCheck);
 		if ($userWithThisEmail and $userWithThisEmail->getId() !== $owner->getId())
 			throw new \DomainException('User with this e-mail already exists.');
