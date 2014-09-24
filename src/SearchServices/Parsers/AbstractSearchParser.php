@@ -6,7 +6,7 @@ abstract class AbstractSearchParser
 	public function createFilterFromFormData(\Szurubooru\FormData\SearchFormData $formData)
 	{
 		$filter = $this->createFilter();
-		$filter->order = $this->getOrder($formData->order);
+		$filter->setOrder(array_merge($this->getOrder($formData->order), $filter->getOrder()));
 
 		$tokens = $this->tokenize($formData->query);
 
@@ -31,16 +31,6 @@ abstract class AbstractSearchParser
 
 	protected abstract function getOrderColumn($token);
 
-	protected function getDefaultOrderColumn()
-	{
-		return 'id';
-	}
-
-	protected function getDefaultOrderDir()
-	{
-		return \Szurubooru\SearchServices\AbstractSearchFilter::ORDER_DESC;
-	}
-
 	private function getOrder($query)
 	{
 		$order = [];
@@ -61,11 +51,6 @@ abstract class AbstractSearchParser
 			$order[$orderColumn] = $orderDir;
 		}
 
-		$defaultOrderColumn = $this->getDefaultOrderColumn();
-		$defaultOrderDir = $this->getDefaultOrderDir();
-		if ($defaultOrderColumn)
-			$order[$defaultOrderColumn] = $defaultOrderDir;
-
 		return $order;
 	}
 
@@ -85,16 +70,17 @@ abstract class AbstractSearchParser
 			if (strpos($tokenText, ':') !== false)
 			{
 				$searchToken = new \Szurubooru\SearchServices\NamedSearchToken();
-				list ($searchToken->key, $searchToken->value) = explode(':', $tokenText, 1);
-
+				list ($tokenKey, $tokenValue) = explode(':', $tokenText, 1);
+				$searchToken->setKey($tokenKey);
+				$searchToken->setValue($tokenValue);
 			}
 			else
 			{
 				$searchToken = new \Szurubooru\SearchServices\SearchToken();
-				$searchToken->value = $tokenText;
+				$searchToken->setValue($tokenText);
 			}
 
-			$searchToken->negated = $negated;
+			$searchToken->setNegated($negated);
 			$searchTokens[] = $searchToken;
 		}
 

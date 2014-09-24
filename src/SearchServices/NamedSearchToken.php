@@ -3,5 +3,15 @@ namespace Szurubooru\SearchServices;
 
 class NamedSearchToken extends SearchToken
 {
-	public $key = false;
+	private $key = false;
+
+	public function setKey($key)
+	{
+		$this->key = $key;
+	}
+
+	public function getKey()
+	{
+		return $this->key;
+	}
 }

@@ -32,8 +32,8 @@ abstract class AbstractDatabaseTestCase extends \Szurubooru\Tests\AbstractTestCa
 			$expected = [$expected];
 			$actual = [$actual];
 		}
-		$this->assertEquals(count($expected), count($actual));
-		$this->assertEquals(array_keys($expected), array_keys($actual));
+		$this->assertEquals(count($expected), count($actual), 'Unmatching array sizes');
+		$this->assertEquals(array_keys($expected), array_keys($actual), 'Unmatching array keys');
 		foreach (array_keys($expected) as $key)
 		{
 			if ($expected[$key] === null)

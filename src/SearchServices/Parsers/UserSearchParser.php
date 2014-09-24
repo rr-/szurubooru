@@ -21,10 +21,10 @@ class UserSearchParser extends AbstractSearchParser
 	protected function getOrderColumn($token)
 	{
 		if ($token === 'name')
-			return 'name';
+			return \Szurubooru\SearchServices\UserSearchFilter::ORDER_NAME;
 
 		if (in_array($token, ['registrationDate', 'registrationTime', 'registered', 'joinDate', 'joinTime', 'joined']))
-			return 'registrationTime';
+			return \Szurubooru\SearchServices\UserSearchFilter::ORDER_REGISTRATION_TIME;
 
 		return null;
 	}

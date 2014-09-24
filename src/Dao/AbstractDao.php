@@ -71,34 +71,20 @@ abstract class AbstractDao implements ICrudDao
 
 	public function findFiltered(\Szurubooru\SearchServices\AbstractSearchFilter $searchFilter)
 	{
-		$orderByString = $this->compileOrderBy($searchFilter->order);
-
-		$query = $this->fpdo
-			->from($this->tableName)
-			->orderBy($orderByString);
-
-		$this->decorateQueryFromFilter($query, $searchFilter);
-
+		$query = $this->prepareBaseQuery($searchFilter);
 		return $this->arrayToEntities(iterator_to_array($query));
 	}
 
 	public function findFilteredAndPaged(\Szurubooru\SearchServices\AbstractSearchFilter $searchFilter, $pageNumber, $pageSize)
 	{
-		$orderByString = $this->compileOrderBy($searchFilter->order);
-
-		$query = $this->fpdo
-			->from($this->tableName)
-			->orderBy($orderByString)
-			->limit($pageSize)
-			->offset($pageSize * ($pageNumber - 1));
-
-		$this->decorateQueryFromFilter($query, $searchFilter);
-
+		$query = $this->prepareBaseQuery($searchFilter);
+		$query->limit($pageSize);
+		$query->offset($pageSize * ($pageNumber - 1));
 		$entities = $this->arrayToEntities(iterator_to_array($query));
-		$query = $this->fpdo
-			->from($this->tableName)
-			->select('COUNT(1) AS c');
-		$totalRecords = intval(iterator_to_array($query)[0]['c']);
+
+		$query = $this->prepareBaseQuery($searchFilter);
+		$query->orderBy(null);
+		$totalRecords = count($query);
 
 		$pagedSearchResult = new \Szurubooru\SearchServices\PagedSearchResult();
 		$pagedSearchResult->setSearchFilter($searchFilter);
@@ -204,7 +190,19 @@ abstract class AbstractDao implements ICrudDao
 		return $entities;
 	}
 
-	private function compileOrderBy($order)
+	private function prepareBaseQuery(\Szurubooru\SearchServices\AbstractSearchFilter $searchFilter)
+	{
+		$query = $this->fpdo->from($this->tableName);
+
+		$orderByString = self::compileOrderBy($searchFilter->getOrder());
+		if ($orderByString)
+			$query->orderBy($orderByString);
+
+		$this->decorateQueryFromFilter($query, $searchFilter);
+		return $query;
+	}
+
+	private static function compileOrderBy($order)
 	{
 		$orderByString = '';
 		foreach ($order as $orderColumn => $orderDir)

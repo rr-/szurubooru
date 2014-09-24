@@ -72,7 +72,8 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$mockUser = new \Szurubooru\Entities\User;
 		$mockUser->setName('user');
 		$expected = [$mockUser];
-		$this->userDaoMock->method('getFiltered')->willReturn($expected);
+		$this->userSearchParserMock->method('createFilterFromFormData')->willReturn(new \Szurubooru\SearchServices\UserSearchFilter());
+		$this->userDaoMock->method('findFilteredAndPaged')->willReturn($expected);
 
 		$this->configMock->set('users/usersPerPage', 1);
 		$searchFormData = new \Szurubooru\FormData\SearchFormData;
