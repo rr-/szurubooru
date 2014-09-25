@@ -12,11 +12,13 @@ App.Controls.TagInput = function(
 	var KEY_SPACE = 32;
 	var KEY_BACKSPACE = 8;
 	var tagConfirmKeys = [KEY_RETURN, KEY_SPACE];
+	var inputConfirmKeys = [KEY_RETURN];
 
 	var tags = [];
 	var options = {
 		beforeTagAdded: null,
 		beforeTagRemoved: null,
+		inputConfirmed: null,
 	};
 
 	if ($underlyingInput.length !== 1) {
@@ -40,6 +42,9 @@ App.Controls.TagInput = function(
 	});
 	$input.attr('placeholder', $underlyingInput.attr('placeholder'));
 
+	pasteText($underlyingInput.val());
+	$underlyingInput.val('');
+
 	$input.unbind('focus').bind('focus', function(e) {
 		$wrapper.addClass('focused');
 	});
@@ -58,16 +63,25 @@ App.Controls.TagInput = function(
 		} else {
 			pastedText = (e.originalEvent || e).clipboardData.getData('text/plain');
 		}
-		var patedTags = pastedText.split(/\s+/);
-		_.each(patedTags, function(tag) {
-			addTag(tag);
-		});
+		pasteText(pastedText);
 	});
 
+	function pasteText(pastedText) {
+		var pastedTags = pastedText.split(/\s+/);
+		_.each(pastedTags, function(tag) {
+			addTag(tag);
+		});
+	}
+
 	$input.unbind('keydown').bind('keydown', function(e) {
-		if (_.contains(tagConfirmKeys, e.which)) {
+		if (_.contains(inputConfirmKeys, e.which) && !$input.val()) {
 			e.preventDefault();
+			if (typeof(options.inputConfirmed) !== 'undefined') {
+				options.inputConfirmed();
+			}
+		} else if (_.contains(tagConfirmKeys, e.which)) {
 			var tag = $input.val();
+			e.preventDefault();
 			addTag(tag);
 			$input.val('');
 		} else if (e.which === KEY_BACKSPACE && jQuery(this).val().length === 0) {

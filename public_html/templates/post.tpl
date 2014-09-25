@@ -87,10 +87,18 @@
 
 		</ul>
 
-		<% if (_.any(privileges)) { %>
+		<% if (_.any(privileges) || _.any(editPrivileges)) { %>
 			<h1>Options</h1>
 
 			<ul class="operations">
+				<% if (_.any(editPrivileges)) { %>
+					<li>
+						<a href="#" class="edit">
+							Edit
+						</a>
+					</li>
+				<% } %>
+
 				<% if (privileges.canDeletePosts) { %>
 					<li>
 						<a href="#" class="delete">
@@ -113,6 +121,10 @@
 
 	<div id="post-view">
 		<div class="messages"></div>
+
+		<div class="post-edit-wrapper">
+			<%= postEditTemplate({post: post, privileges: editPrivileges}) %>
+		</div>
 
 		<%= postContentTemplate({post: post}) %>
 	</div>

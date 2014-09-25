@@ -215,6 +215,13 @@ class UserService
 
 	private function updateUserAvatarContent(\Szurubooru\Entities\User $user, $newAvatarContent)
 	{
+		$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($newAvatarContent);
+		if (!\Szurubooru\Helpers\MimeHelper::isImage($mime))
+			throw new \DomainException('Avatar must be an image.');
+
+		if (strlen($newAvatarContent) > $this->config->database->maxCustomThumbnailSize)
+			throw new \DomainException('Upload is too big.');
+
 		$user->setCustomAvatarSourceContent($newAvatarContent);
 	}
 

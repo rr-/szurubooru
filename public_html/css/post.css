@@ -113,3 +113,14 @@
 	text-align: center;
 	font-size: 12px;
 }
+
+#post-view-wrapper .post-edit-wrapper {
+	padding: 1em;
+	position: absolute;
+	background: rgba(255, 255, 255, 0.8);
+	display: none;
+}
+
+#post-view-wrapper .post-edit-wrapper .file-handler {
+	margin: 0.5em 0;
+}

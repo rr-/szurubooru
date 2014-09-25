@@ -104,6 +104,11 @@ class Validator
 		}
 	}
 
+	public function validatePostSource($source)
+	{
+		$this->validateMaxLength($source, 200, 'Source');
+	}
+
 	public function validateToken($token)
 	{
 		$this->validateNonEmpty($token, 'Token');

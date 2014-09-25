@@ -26,6 +26,7 @@ final class PostController extends AbstractController
 		$router->get('/api/posts', [$this, 'getFiltered']);
 		$router->get('/api/posts/featured', [$this, 'getFeatured']);
 		$router->get('/api/posts/:postNameOrId', [$this, 'getByNameOrId']);
+		$router->put('/api/posts/:postNameOrId', [$this, 'updatePost']);
 		$router->delete('/api/posts/:postNameOrId', [$this, 'deletePost']);
 		$router->post('/api/posts/:postNameOrId/feature', [$this, 'featurePost']);
 		$router->put('/api/posts/:postNameOrId/feature', [$this, 'featurePost']);
@@ -65,6 +66,31 @@ final class PostController extends AbstractController
 			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::UPLOAD_POSTS_ANONYMOUSLY);
 
 		$post = $this->postService->createPost($formData);
+		return $this->postViewProxy->fromEntity($post);
+	}
+
+	public function updatePost($postNameOrId)
+	{
+		$post = $this->postService->getByNameOrId($postNameOrId);
+		$formData = new \Szurubooru\FormData\PostEditFormData($this->inputReader);
+
+		if ($formData->content !== null)
+			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_CONTENT);
+
+		if ($formData->thumbnail !== null)
+			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_THUMBNAIL);
+
+		if ($formData->safety !== null)
+			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_SAFETY);
+
+		if ($formData->source !== null)
+			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_SOURCE);
+
+		if ($formData->tags !== null)
+			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_TAGS);
+
+		$this->postService->updatePost($post, $formData);
+		$post = $this->postService->getByNameOrId($postNameOrId);
 		return $this->postViewProxy->fromEntity($post);
 	}
 

@@ -8,11 +8,7 @@ everything related to posts:
         - fav
         - score (see notes about scoring)
         - editing
-            - tags
-            - source
-            - safety
-            - content
-            - thumb
+            - concurrency
             - relations
             - ability to loop video posts
             - post edit history (think

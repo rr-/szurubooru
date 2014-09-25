@@ -25,6 +25,11 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		uploadPostsAnonymously: 'uploadPostsAnonymously',
 		deletePosts: 'deletePosts',
 		featurePosts: 'featurePosts',
+		changePostSafety: 'changePostSafety',
+		changePostSource: 'changePostSource',
+		changePostTags: 'changePostTags',
+		changePostContent: 'changePostContent',
+		changePostThumbnail: 'changePostThumbnail',
 
 		listTags: 'listTags',
 	};

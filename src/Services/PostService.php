@@ -110,6 +110,32 @@ class PostService
 		return $this->transactionManager->commit($transactionFunc);
 	}
 
+	public function updatePost(\Szurubooru\Entities\Post $post, \Szurubooru\FormData\PostEditFormData $formData)
+	{
+		$transactionFunc = function() use ($post, $formData)
+		{
+			$this->validator->validate($formData);
+
+			if ($formData->content !== null)
+				$this->updatePostContentFromString($post, $formData->content);
+
+			if ($formData->thumbnail !== null)
+				$this->updatePostThumbnailFromString($post, $formData->thumbnail);
+
+			if ($formData->safety !== null)
+				$this->updatePostSafety($post, $formData->safety);
+
+			if ($formData->source !== null)
+				$this->updatePostSource($post, $formData->source);
+
+			if ($formData->tags !== null)
+				$this->updatePostTags($post, $formData->tags);
+
+			return $this->postDao->save($post);
+		};
+		return $this->transactionManager->commit($transactionFunc);
+	}
+
 	private function updatePostSafety(\Szurubooru\Entities\Post $post, $newSafety)
 	{
 		$post->setSafety($newSafety);
@@ -191,6 +217,14 @@ class PostService
 			$contents = $this->fileService->download($url);
 			$this->updatePostContentFromString($post, $contents);
 		}
+	}
+
+	private function updatePostThumbnailFromString(\Szurubooru\Entities\Post $post, $newThumbnail)
+	{
+		if (strlen($newThumbnail) > $this->config->database->maxCustomThumbnailSize)
+			throw new \DomainException('Thumbnail is too big.');
+
+		$post->setThumbnailSourceContent($newThumbnail);
 	}
 
 	private function updatePostTags(\Szurubooru\Entities\Post $post, array $newTagNames)

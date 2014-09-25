@@ -25,6 +25,11 @@ class Privilege
 	const UPLOAD_POSTS_ANONYMOUSLY = 'uploadPostsAnonymously';
 	const DELETE_POSTS = 'deletePosts';
 	const FEATURE_POSTS = 'featurePosts';
+	const CHANGE_POST_SAFETY = 'changePostSafety';
+	const CHANGE_POST_SOURCE = 'changePostSource';
+	const CHANGE_POST_TAGS = 'changePostTags';
+	const CHANGE_POST_CONTENT = 'changePostContent';
+	const CHANGE_POST_THUMBNAIL = 'changePostThumbnail';
 
 	const LIST_TAGS = 'listTags';
 }

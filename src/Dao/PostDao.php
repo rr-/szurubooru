@@ -151,7 +151,7 @@ class PostDao extends AbstractDao implements ICrudDao
 		}
 		foreach ($tagRelationsToDelete as $tagId)
 		{
-			$this->fpdo->deleteFrom('postTags')->where('postId', $post->getId())->and('tagId', $tagId)->execute();
+			$this->fpdo->deleteFrom('postTags')->where('postId', $post->getId())->where('tagId', $tagId)->execute();
 		}
 	}
 }
