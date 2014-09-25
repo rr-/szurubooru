@@ -83,7 +83,7 @@ module.exports = function(grunt) {
 			},
 
 			upgrade: {
-				command: 'php upgrade.php',
+				command: 'php scripts/upgrade.php',
 			},
 		},
 
