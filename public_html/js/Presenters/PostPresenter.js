@@ -168,6 +168,7 @@ App.Presenters.PostPresenter = function(
 	function editPost() {
 		var $form = $el.find('form');
 		var formData = {};
+		formData.seenEditTime = post.lastEditTime;
 
 		if (editPrivileges.canChangeContent && postContent) {
 			formData.content = postContent;

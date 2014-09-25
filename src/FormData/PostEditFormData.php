@@ -9,6 +9,8 @@ class PostEditFormData implements \Szurubooru\IValidatable
 	public $source;
 	public $tags;
 
+	public $seenEditTime;
+
 	public function __construct($inputReader = null)
 	{
 		if ($inputReader !== null)
@@ -18,6 +20,7 @@ class PostEditFormData implements \Szurubooru\IValidatable
 			$this->safety = \Szurubooru\Helpers\EnumHelper::postSafetyFromString($inputReader->safety);
 			$this->source = $inputReader->source;
 			$this->tags = preg_split('/[\s+]/', $inputReader->tags);
+			$this->seenEditTime = $inputReader->seenEditTime;
 		}
 	}
 

@@ -115,6 +115,10 @@ class PostService
 		$transactionFunc = function() use ($post, $formData)
 		{
 			$this->validator->validate($formData);
+
+			if ($post->getLastEditTime() !== $formData->seenEditTime)
+				throw new \DomainException('Someone has already edited this post in the meantime.');
+
 			$post->setLastEditTime($this->timeService->getCurrentTime());
 
 			if ($formData->content !== null)

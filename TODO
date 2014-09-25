@@ -6,7 +6,6 @@ everything related to posts:
         - fav
         - score (see notes about scoring)
         - editing
-            - concurrency
             - relations
             - ability to loop video posts
             - post edit history (think
