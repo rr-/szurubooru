@@ -115,6 +115,7 @@ class PostService
 		$transactionFunc = function() use ($post, $formData)
 		{
 			$this->validator->validate($formData);
+			$post->setLastEditTime($this->timeService->getCurrentTime());
 
 			if ($formData->content !== null)
 				$this->updatePostContentFromString($post, $formData->content);

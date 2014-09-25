@@ -69,6 +69,13 @@
 				</li>
 			<% } %>
 
+			<% if (post.lastEditTime !== post.uploadTime) { %>
+				<li>
+					Edited:
+					<%= formatRelativeTime(post.lastEditTime) %>
+				</li>
+			<% } %>
+
 			<% if (post.featureCount > 0) { %>
 				<li>
 					Featured: <%= post.featureCount %> <%= post.featureCount < 2 ? 'time' : 'times' %>

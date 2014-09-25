@@ -3,8 +3,6 @@ first major release.
 
 everything related to posts:
     - single post view
-        - basic information
-            - time of last edit
         - fav
         - score (see notes about scoring)
         - editing
