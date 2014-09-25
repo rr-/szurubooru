@@ -53,6 +53,20 @@ App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 
 	function inject(path, presenterName, additionalParams) {
 		pathJs.map(path).to(function() {
+			if (util.isExitConfirmationEnabled()) {
+				if (window.location.href === previousLocation) {
+					return;
+				} else {
+					if (window.confirm('Are you sure you want to leave this page? Data will be lost.')) {
+						util.disableExitConfirmation();
+					} else {
+						window.location.href = previousLocation;
+						return;
+					}
+				}
+			}
+			previousLocation = window.location.href;
+
 			var finalParams = _.extend(
 				this.params,
 				additionalParams,
@@ -61,18 +75,6 @@ App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 			var presenter = App.DI.get(presenterName);
 			presenter.name = presenterName;
 			presenterManager.switchContentPresenter(presenter, finalParams);
-		}).enter(function(e) {
-			if (util.isExitConfirmationEnabled()) {
-				if (window.location.href !== previousLocation) {
-					if (!window.confirm('Are you sure you want to leave this page? Data will be lost.')) {
-						window.location.href = previousLocation;
-						return false;
-					} else {
-						util.disableExitConfirmation();
-					}
-				}
-			}
-			previousLocation = window.location.href;
 		});
 	}
 
