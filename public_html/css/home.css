@@ -3,6 +3,10 @@
 }
 #home h1 {
 	margin-top: 0;
+	margin-bottom: 0;
+}
+#home h1+p {
+	margin-top: 0;
 }
 
 #home .post {

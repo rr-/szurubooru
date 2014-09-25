@@ -229,6 +229,23 @@ class PostService
 		$this->transactionManager->commit($transactionFunc);
 	}
 
+	public function updatePostGlobals()
+	{
+		$transactionFunc = function()
+		{
+			$countParam = new \Szurubooru\Entities\GlobalParam();
+			$countParam->setKey(\Szurubooru\Entities\GlobalParam::KEY_POST_COUNT);
+			$countParam->setValue($this->postDao->getCount());
+			$this->globalParamDao->save($countParam);
+
+			$fileSizeParam = new \Szurubooru\Entities\GlobalParam();
+			$fileSizeParam->setKey(\Szurubooru\Entities\GlobalParam::KEY_POST_SIZE);
+			$fileSizeParam->setValue($this->postDao->getTotalFileSize());
+			$this->globalParamDao->save($fileSizeParam);
+		};
+		$this->transactionManager->commit($transactionFunc);
+	}
+
 	private function assertNoPostWithThisContentChecksum(\Szurubooru\Entities\Post $parent)
 	{
 		$checksumToCheck = $parent->getContentChecksum();

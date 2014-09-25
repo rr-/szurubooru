@@ -60,6 +60,28 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		];
 
 		$this->assertEntitiesEqual($expected, $actual);
+		$this->assertEquals(count($expected), $postDao->getCount());
+	}
+
+	public function testGettingTotalFileSize()
+	{
+		$postDao = $this->getPostDao();
+
+		$post1 = $this->getPost();
+		$post2 = $this->getPost();
+		$post3 = $this->getPost();
+		$post1->setOriginalFileSize(1249812);
+		$post2->setOriginalFileSize(128);
+		$post3->setOriginalFileSize(null);
+		$postDao->save($post1);
+		$postDao->save($post2);
+		$postDao->save($post3);
+		$expectedFileSize =
+			$post1->getOriginalFileSize() +
+			$post2->getOriginalFileSize() +
+			$post3->getOriginalFileSize();
+		$this->assertGreaterThan(0, $expectedFileSize);
+		$this->assertEquals($expectedFileSize, $postDao->getTotalFileSize());
 	}
 
 	public function testGettingById()

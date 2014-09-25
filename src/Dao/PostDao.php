@@ -26,6 +26,17 @@ class PostDao extends AbstractDao implements ICrudDao
 		$this->thumbnailService = $thumbnailService;
 	}
 
+	public function getCount()
+	{
+		return count($this->fpdo->from($this->tableName));
+	}
+
+	public function getTotalFileSize()
+	{
+		$query = $this->fpdo->from($this->tableName)->select('SUM(originalFileSize) AS __sum');
+		return intval(iterator_to_array($query)[0]['__sum']);
+	}
+
 	public function findByName($name)
 	{
 		return $this->findOneBy('name', $name);

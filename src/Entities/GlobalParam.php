@@ -4,6 +4,8 @@ namespace Szurubooru\Entities;
 class GlobalParam extends Entity
 {
 	const KEY_FEATURED_POST = 'featuredPost';
+	const KEY_POST_SIZE = 'postSize';
+	const KEY_POST_COUNT = 'postCount';
 
 	private $key;
 	private $value;

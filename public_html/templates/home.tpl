@@ -1,5 +1,8 @@
 <div id="home">
 	<h1><%= title %></h1>
+	<p>
+		<small>Serving <%= globals.postCount %> posts (<%= formatFileSize(globals.postSize) %>)</small>
+	</p>
 
 	<% if (post) { %>
 		<div class="post">

@@ -13,6 +13,7 @@ App.Presenters.HomePresenter = function(
 	var $el = jQuery('#content');
     var homeTemplate;
     var postContentTemplate;
+	var globals;
     var post;
 
 	function init(args, loaded) {
@@ -22,15 +23,18 @@ App.Presenters.HomePresenter = function(
 		promise.waitAll(
 				util.promiseTemplate('home'),
 				util.promiseTemplate('post-content'),
+				api.get('/globals'),
 				api.get('/posts/featured'))
 			.then(function(
 					homeTemplateHtml,
 					postContentTemplateHtml,
-					response) {
+					globalsResponse,
+					featuredPostResponse) {
 				homeTemplate = _.template(homeTemplateHtml);
 				postContentTemplate = _.template(postContentTemplateHtml);
 
-				post = response.json;
+				globals = globalsResponse.json;
+				post = featuredPostResponse.json;
 				render();
 				loaded();
 
@@ -43,8 +47,10 @@ App.Presenters.HomePresenter = function(
 		$el.html(homeTemplate({
 			post: post,
 			postContentTemplate: postContentTemplate,
+			globals: globals,
 			title: topNavigationPresenter.getBaseTitle(),
 			formatRelativeTime: util.formatRelativeTime,
+			formatFileSize: util.formatFileSize,
 		}));
 	}
 
