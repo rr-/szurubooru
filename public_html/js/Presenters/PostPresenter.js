@@ -29,7 +29,6 @@ App.Presenters.PostPresenter = function(
 	var postThumbnail;
 
 	function init(args, loaded) {
-		postNameOrId = args.postNameOrId;
 		topNavigationPresenter.select('posts');
 
 		privileges.canDeletePosts = auth.hasPrivilege(auth.privileges.deletePosts);
@@ -44,8 +43,7 @@ App.Presenters.PostPresenter = function(
 		promise.waitAll(
 				util.promiseTemplate('post'),
 				util.promiseTemplate('post-edit'),
-				util.promiseTemplate('post-content'),
-				api.get('/posts/' + postNameOrId))
+				util.promiseTemplate('post-content'))
 			.then(function(
 					postTemplateHtml,
 					postEditTemplateHtml,
@@ -55,15 +53,20 @@ App.Presenters.PostPresenter = function(
 				postEditTemplate = _.template(postEditTemplateHtml);
 				postContentTemplate = _.template(postContentTemplateHtml);
 
+				reinit(args, loaded);
+			}).fail(showGenericError);
+	}
+
+	function reinit(args, loaded) {
+		postNameOrId = args.postNameOrId;
+
+		promise.wait(api.get('/posts/' + postNameOrId))
+			.then(function(response) {
 				post = response.json;
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
 				loaded();
-
-			}).fail(function(response) {
-				$el.empty();
-				showGenericError(response);
-			});
+			}).fail(showGenericError);
 	}
 
 	function render() {
@@ -232,6 +235,7 @@ App.Presenters.PostPresenter = function(
 
 	return {
 		init: init,
+		reinit: reinit,
 		render: render
 	};
 
