@@ -15,6 +15,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	var user;
 	var privileges;
 	var avatarContent;
+	var fileDropper;
 
 	function init(args, loaded) {
 		user = args.user;
@@ -51,7 +52,9 @@ App.Presenters.UserAccountSettingsPresenter = function(
 		$el.find('form').submit(accountSettingsFormSubmitted);
 		$el.find('form [name=avatar-style]').change(avatarStyleChanged);
 		avatarStyleChanged();
-		new App.Controls.FileDropper($el.find('[name=avatar-content]'), avatarContentChanged, jQuery);
+		fileDropper = new App.Controls.FileDropper($el.find('[name=avatar-content]'), _, jQuery);
+		fileDropper.onChange = avatarContentChanged;
+		fileDropper.setNames = true;
 	}
 
 	function getPrivileges() {
@@ -70,14 +73,9 @@ App.Presenters.UserAccountSettingsPresenter = function(
 
 	function avatarContentChanged(files) {
 		if (files.length === 1) {
-			var reader = new FileReader();
-			reader.onloadend = function() {
-				avatarContent = reader.result;
-				var $el = jQuery(target);
-				var $target = $el.find('.avatar-content .file-handler');
-				$target.html(files[0].name);
-			};
-			reader.readAsDataURL(files[0]);
+			fileDropper.readAsDataURL(files[0], function(content) {
+				avatarContent = content;
+			});
 		}
 	}
 

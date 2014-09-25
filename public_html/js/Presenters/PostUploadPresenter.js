@@ -18,6 +18,7 @@ App.Presenters.PostUploadPresenter = function(
 	var template;
 	var allPosts = [];
 	var tagInput;
+	var fileDropper;
 	var interactionEnabled = true;
 
 	function init(args, loaded) {
@@ -39,7 +40,8 @@ App.Presenters.PostUploadPresenter = function(
 		$messages = $el.find('.messages');
 
 		tagInput = new App.Controls.TagInput($el.find('form [name=tags]'), _, jQuery);
-		App.Controls.FileDropper($el.find('[name=post-content]'), fileHandlerChanged, jQuery);
+		fileDropper = App.Controls.FileDropper($el.find('[name=post-content]'), _, jQuery);
+		fileDropper.onChange = fileHandlerChanged;
 
 		$el.find('.url-handler input').keydown(urlHandlerKeyPressed);
 		$el.find('.url-handler button').click(urlHandlerButtonClicked);
@@ -109,15 +111,13 @@ App.Presenters.PostUploadPresenter = function(
 	function addPostFromFile(file) {
 		var post = _.extend({}, getDefaultPost(), {fileName: file.name});
 
-		var reader = new FileReader();
-		reader.onload = function(e) {
-			post.content = e.target.result;
+		fileDropper.readAsDataURL(file, function(content) {
+			post.content = content;
 			if (file.type.match('image.*')) {
-				post.thumbnail = e.target.result;
+				post.thumbnail = content;
 				postThumbnailLoaded(post);
 			}
-		};
-		reader.readAsDataURL(file);
+		});
 
 		postAdded(post);
 	}

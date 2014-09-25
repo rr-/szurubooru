@@ -3,8 +3,13 @@ App.Controls = App.Controls || {};
 
 App.Controls.FileDropper = function(
 	$fileInput,
-	onChange,
+	_,
 	jQuery) {
+
+	var options = {
+		onChange: null,
+		setNames: false,
+	};
 
 	var $dropDiv = jQuery('<div class="file-handler"></div>');
 	var allowMultiple = $fileInput.attr('multiple');
@@ -37,8 +42,27 @@ App.Controls.FileDropper = function(
 			window.alert('Cannot select multiple files.');
 			return;
 		}
-		onChange(files);
+		if (typeof(options.onChange) !== 'undefined') {
+			options.onChange(files);
+		}
+		if (options.setNames && !allowMultiple) {
+			$dropDiv.text(files[0].name);
+		}
 	}
+
+	function readAsDataURL(file, callback) {
+		var reader = new FileReader();
+		reader.onloadend = function() {
+			callback(reader.result);
+		};
+		reader.readAsDataURL(file);
+	}
+
+	_.extend(options, {
+		readAsDataURL: readAsDataURL,
+	});
+
+	return options;
 
 };
 
