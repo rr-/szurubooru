@@ -136,6 +136,9 @@ class PostService
 			if ($formData->tags !== null)
 				$this->updatePostTags($post, $formData->tags);
 
+			if ($formData->relations !== null)
+				$this->updatePostRelations($post, $formData->relations);
+
 			return $this->postDao->save($post);
 		};
 		return $this->transactionManager->commit($transactionFunc);
@@ -242,6 +245,16 @@ class PostService
 			$tags[] = $tag;
 		}
 		$post->setTags($tags);
+	}
+
+	private function updatePostRelations(\Szurubooru\Entities\Post $post, array $newRelatedPostIds)
+	{
+		$relatedPosts = $this->postDao->findByIds($newRelatedPostIds);
+		foreach ($newRelatedPostIds as $postId)
+			if (!isset($relatedPosts[$postId]))
+				throw new \DomainException('Post with id "' . $postId . '" was not found.');
+
+		$post->setRelatedPosts($relatedPosts);
 	}
 
 	public function deletePost(\Szurubooru\Entities\Post $post)

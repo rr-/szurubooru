@@ -35,20 +35,20 @@ final class PostController extends AbstractController
 	public function getFeatured()
 	{
 		$post = $this->postService->getFeatured();
-		return $this->postViewProxy->fromEntity($post);
+		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 
 	public function getByNameOrId($postNameOrId)
 	{
 		$post = $this->postService->getByNameOrId($postNameOrId);
-		return $this->postViewProxy->fromEntity($post);
+		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 
 	public function getFiltered()
 	{
 		$formData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
 		$searchResult = $this->postService->getFiltered($formData);
-		$entities = $this->postViewProxy->fromArray($searchResult->getEntities());
+		$entities = $this->postViewProxy->fromArray($searchResult->getEntities(), $this->getLightFetchConfig());
 		return [
 			'data' => $entities,
 			'pageSize' => $searchResult->getPageSize(),
@@ -66,7 +66,7 @@ final class PostController extends AbstractController
 			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::UPLOAD_POSTS_ANONYMOUSLY);
 
 		$post = $this->postService->createPost($formData);
-		return $this->postViewProxy->fromEntity($post);
+		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 
 	public function updatePost($postNameOrId)
@@ -91,7 +91,7 @@ final class PostController extends AbstractController
 
 		$this->postService->updatePost($post, $formData);
 		$post = $this->postService->getByNameOrId($postNameOrId);
-		return $this->postViewProxy->fromEntity($post);
+		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 
 	public function deletePost($postNameOrId)
@@ -104,5 +104,23 @@ final class PostController extends AbstractController
 	{
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		$this->postService->featurePost($post);
+	}
+
+	private function getFullFetchConfig()
+	{
+		return
+		[
+			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_RELATIONS => true,
+			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_TAGS => true,
+			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_USER => true,
+		];
+	}
+
+	private function getLightFetchConfig()
+	{
+		return
+		[
+			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_TAGS => true,
+		];
 	}
 }

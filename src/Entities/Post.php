@@ -16,6 +16,7 @@ final class Post extends Entity
 	const LAZY_LOADER_TAGS = 'tags';
 	const LAZY_LOADER_CONTENT = 'content';
 	const LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT = 'thumbnailSourceContent';
+	const LAZY_LOADER_RELATED_POSTS = 'relatedPosts';
 
 	const META_TAG_COUNT = 'tagCount';
 
@@ -199,6 +200,16 @@ final class Post extends Entity
 	{
 		$this->lazySave(self::LAZY_LOADER_TAGS, $tags);
 		$this->setMeta(self::META_TAG_COUNT, count($tags));
+	}
+
+	public function getRelatedPosts()
+	{
+		return $this->lazyLoad(self::LAZY_LOADER_RELATED_POSTS, []);
+	}
+
+	public function setRelatedPosts(array $relatedPosts)
+	{
+		$this->lazySave(self::LAZY_LOADER_RELATED_POSTS, $relatedPosts);
 	}
 
 	public function getUser()

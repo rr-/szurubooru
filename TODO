@@ -6,11 +6,9 @@ everything related to posts:
         - fav
         - score (see notes about scoring)
         - editing
-            - relations
             - ability to loop video posts
             - post edit history (think
               http://konachan.com/history?search=post%3A188614)
-        - relations
         - previous and next post (difficult)
             - extract Pager from PagedCollectionPresenter
             - rename PagedCollectionPresenter to PagerPresenter

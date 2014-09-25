@@ -3,7 +3,7 @@ namespace Szurubooru\Controllers\ViewProxies;
 
 class TokenViewProxy extends AbstractViewProxy
 {
-	public function fromEntity($token)
+	public function fromEntity($token, $config = [])
 	{
 		$result = new \StdClass;
 		if ($token)

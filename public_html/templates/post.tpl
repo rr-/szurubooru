@@ -94,6 +94,19 @@
 
 		</ul>
 
+		<% if (_.any(post.relations)) { %>
+			<h1>Related posts</h1>
+			<ul class="related">
+				<% _.each(post.relations, function(relatedPost) { %>
+					<li>
+						<a href="#/post/<%= relatedPost.id %>">
+							<%= relatedPost.idMarkdown %>
+						</a>
+					</li>
+				<% }) %>
+			</ul>
+		<% } %>
+
 		<% if (_.any(privileges) || _.any(editPrivileges)) { %>
 			<h1>Options</h1>
 

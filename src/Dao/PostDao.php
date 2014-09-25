@@ -76,6 +76,13 @@ class PostDao extends AbstractDao implements ICrudDao
 			{
 				return $this->getTags($post);
 			});
+
+		$post->setLazyLoader(
+			\Szurubooru\Entities\Post::LAZY_LOADER_RELATED_POSTS,
+			function(\Szurubooru\Entities\Post $post)
+			{
+				return $this->getRelatedPosts($post);
+			});
 	}
 
 	protected function afterSave(\Szurubooru\Entities\Entity $post)
@@ -83,6 +90,7 @@ class PostDao extends AbstractDao implements ICrudDao
 		$this->syncContent($post);
 		$this->syncThumbnailSourceContent($post);
 		$this->syncTags($post);
+		$this->syncPostRelations($post);
 	}
 
 	private function getTags(\Szurubooru\Entities\Post $post)
@@ -93,6 +101,28 @@ class PostDao extends AbstractDao implements ICrudDao
 	private function getUser(\Szurubooru\Entities\Post $post)
 	{
 		return $this->userDao->findById($post->getUserId());
+	}
+
+	private function getRelatedPosts(\Szurubooru\Entities\Post $post)
+	{
+		$query = $this->fpdo
+			->from('postRelations')
+			->where('post1id = :post1id OR post2id = :post2id', [
+				':post1id' => $post->getId(),
+				':post2id' => $post->getId()]);
+
+		$relatedPostIds = [];
+		foreach ($query as $arrayEntity)
+		{
+			$post1id = intval($arrayEntity['post1id']);
+			$post2id = intval($arrayEntity['post2id']);
+			if ($post1id !== $post->getId())
+				$relatedPostIds[] = $post1id;
+			if ($post2id !== $post->getId())
+				$relatedPostIds[] = $post2id;
+		}
+
+		return $this->findByIds($relatedPostIds);
 	}
 
 	private function syncContent(\Szurubooru\Entities\Post $post)
@@ -152,6 +182,31 @@ class PostDao extends AbstractDao implements ICrudDao
 		foreach ($tagRelationsToDelete as $tagId)
 		{
 			$this->fpdo->deleteFrom('postTags')->where('postId', $post->getId())->where('tagId', $tagId)->execute();
+		}
+	}
+
+	private function syncPostRelations(\Szurubooru\Entities\Post $post)
+	{
+		$this->fpdo->deleteFrom('postRelations')->where('post1id', $post->getId())->execute();
+		$this->fpdo->deleteFrom('postRelations')->where('post2id', $post->getId())->execute();
+
+		$relatedPostIds = array_filter(array_unique(array_map(
+			function ($post)
+			{
+				if (!$post->getId())
+					throw new \RuntimeException('Unsaved entities found');
+				return $post->getId();
+			},
+			$post->getRelatedPosts())));
+
+		foreach ($relatedPostIds as $postId)
+		{
+			$this->fpdo
+				->insertInto('postRelations')
+				->values([
+					'post1id' => $post->getId(),
+					'post2id' => $postId])
+				->execute();
 		}
 	}
 }

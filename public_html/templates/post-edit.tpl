@@ -39,6 +39,15 @@
 		</div>
 	<% } %>
 
+	<% if (privileges.canChangeRelations) { %>
+		<div class="form-row">
+			<label class="form-label" for="post-relations">Relations:</label>
+			<div class="form-input">
+				<input maxlength="200" type="text" name="relations" id="post-relations" placeholder="Post ids, separated with space" value="<%= _.pluck(post.relations, 'id').join(' ') %>"/>
+			</div>
+		</div>
+	<% } %>
+
 	<% if (privileges.canChangeContent) { %>
 		<div class="form-row">
 			<label class="form-label" for="post-content">Content:</label>

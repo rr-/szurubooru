@@ -3,7 +3,7 @@ namespace Szurubooru\Controllers\ViewProxies;
 
 class TagViewProxy extends AbstractViewProxy
 {
-	public function fromEntity($tag)
+	public function fromEntity($tag, $config = [])
 	{
 		$result = new \StdClass;
 		if ($tag)

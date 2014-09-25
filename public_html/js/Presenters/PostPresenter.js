@@ -39,6 +39,7 @@ App.Presenters.PostPresenter = function(
 		editPrivileges.canChangeTags = auth.hasPrivilege(auth.privileges.changePostTags);
 		editPrivileges.canChangeContent = auth.hasPrivilege(auth.privileges.changePostContent);
 		editPrivileges.canChangeThumbnail = auth.hasPrivilege(auth.privileges.changePostThumbnail);
+		editPrivileges.canChangeRelations = auth.hasPrivilege(auth.privileges.changePostRelations);
 
 		promise.waitAll(
 				util.promiseTemplate('post'),
@@ -188,6 +189,10 @@ App.Presenters.PostPresenter = function(
 
 		if (editPrivileges.canChangeTags) {
 			formData.tags = tagInput.getTags().join(' ');
+		}
+
+		if (editPrivileges.canChangeRelations) {
+			formData.relations = $form.find('[name=relations]').val();
 		}
 
 		if (post.tags.length === 0) {

@@ -3,6 +3,10 @@ namespace Szurubooru\Controllers\ViewProxies;
 
 class PostViewProxy extends AbstractViewProxy
 {
+	const FETCH_USER = 'fetchUser';
+	const FETCH_TAGS = 'fetchTags';
+	const FETCH_RELATIONS = 'fetchRelations';
+
 	private $tagViewProxy;
 	private $userViewProxy;
 
@@ -14,7 +18,7 @@ class PostViewProxy extends AbstractViewProxy
 		$this->userViewProxy = $userViewProxy;
 	}
 
-	public function fromEntity($post)
+	public function fromEntity($post, $config = [])
 	{
 		$result = new \StdClass;
 		if ($post)
@@ -34,9 +38,16 @@ class PostViewProxy extends AbstractViewProxy
 			$result->imageHeight = $post->getImageHeight();
 			$result->featureCount = $post->getFeatureCount();
 			$result->lastFeatureTime = $post->getLastFeatureTime();
-			$result->tags = $this->tagViewProxy->fromArray($post->getTags());
 			$result->originalFileSize = $post->getOriginalFileSize();
-			$result->user = $this->userViewProxy->fromEntity($post->getUser());
+
+			if (!empty($config[self::FETCH_TAGS]))
+				$result->tags = $this->tagViewProxy->fromArray($post->getTags());
+
+			if (!empty($config[self::FETCH_USER]))
+				$result->user = $this->userViewProxy->fromEntity($post->getUser());
+
+			if (!empty($config[self::FETCH_RELATIONS]))
+				$result->relations = $this->fromArray($post->getRelatedPosts());
 		}
 		return $result;
 	}

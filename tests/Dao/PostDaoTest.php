@@ -159,6 +159,37 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEquals(2, count($tagDao->findAll()));
 	}
 
+	public function testSavingUnsavedRelations()
+	{
+		$post1 = $this->getPost();
+		$post2 = $this->getPost();
+		$testPosts = [$post1, $post2];
+
+		$postDao = $this->getPostDao();
+		$post = $this->getPost();
+		$post->setRelatedPosts($testPosts);
+		$this->setExpectedException(\Exception::class, 'Unsaved entities found');
+		$postDao->save($post);
+	}
+
+	public function testSavingRelations()
+	{
+		$post1 = $this->getPost();
+		$post2 = $this->getPost();
+		$testPosts = [$post1, $post2];
+
+		$postDao = $this->getPostDao();
+		$postDao->save($post1);
+		$postDao->save($post2);
+		$post = $this->getPost();
+		$post->setRelatedPosts($testPosts);
+		$postDao->save($post);
+
+		$savedPost = $postDao->findById($post->getId());
+		$this->assertEntitiesEqual($testPosts, $post->getRelatedPosts());
+		$this->assertEquals(2, count($savedPost->getRelatedPosts()));
+	}
+
 	public function testSavingUser()
 	{
 		$testUser = new \Szurubooru\Entities\User(5);

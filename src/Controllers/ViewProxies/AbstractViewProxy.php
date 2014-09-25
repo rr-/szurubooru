@@ -3,14 +3,14 @@ namespace Szurubooru\Controllers\ViewProxies;
 
 abstract class AbstractViewProxy
 {
-	public abstract function fromEntity($entity);
+	public abstract function fromEntity($entity, $config = []);
 
-	public function fromArray($entities)
+	public function fromArray($entities, $config = [])
 	{
 		return array_values(array_map(
-			function($entity)
+			function($entity) use ($config)
 			{
-				return static::fromEntity($entity);
+				return static::fromEntity($entity, $config);
 			},
 			$entities));
 	}

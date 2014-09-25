@@ -10,7 +10,7 @@ class UserViewProxy extends AbstractViewProxy
 		$this->privilegeService = $privilegeService;
 	}
 
-	public function fromEntity($user)
+	public function fromEntity($user, $config = [])
 	{
 		$result = new \StdClass;
 		if ($user)

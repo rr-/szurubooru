@@ -8,6 +8,7 @@ class PostEditFormData implements \Szurubooru\IValidatable
 	public $safety;
 	public $source;
 	public $tags;
+	public $relations;
 
 	public $seenEditTime;
 
@@ -20,6 +21,7 @@ class PostEditFormData implements \Szurubooru\IValidatable
 			$this->safety = \Szurubooru\Helpers\EnumHelper::postSafetyFromString($inputReader->safety);
 			$this->source = $inputReader->source;
 			$this->tags = preg_split('/[\s+]/', $inputReader->tags);
+			$this->relations = array_filter(preg_split('/[\s+]/', $inputReader->relations));
 			$this->seenEditTime = $inputReader->seenEditTime;
 		}
 	}
@@ -30,5 +32,11 @@ class PostEditFormData implements \Szurubooru\IValidatable
 
 		if ($this->source !== null)
 			$validator->validatePostSource($this->source);
+
+		if ($this->relations)
+		{
+			foreach ($this->relations as $relatedPostId)
+				$validator->validateNumber($relatedPostId);
+		}
 	}
 }
