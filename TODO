@@ -4,7 +4,7 @@ first major release.
 everything related to posts:
     - single post view
         - fav
-        - score (see notes about scoring)
+        - score
         - editing
             - ability to loop video posts
             - post edit history (think
@@ -17,8 +17,6 @@ everything related to posts:
             - add A/D hotkeys
         - hiding posts
         - link to iqdb and/or tineye
-
-    - auto feature
 
     - random post
         - regard safety settings
@@ -96,7 +94,7 @@ everything related to comments:
     - deleting
     - editing
     - markdown
-    - score (see notes about scoring)
+    - score
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
@@ -117,6 +115,7 @@ refactors:
       inject them using posts' lazy loaders.
     - make view proxies less greedy, e.g. favs should be fetched only in post
       view, not for each of 40 posts in post list. (same goes to other things)
+    - reduce dependencies
 
 miscellaneous:
     - fix mouse trap hotkeys when leaving page
@@ -137,14 +136,7 @@ miscellaneous:
       http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
     - add spinner to forms such as registration, user query, login, settings
       etc. make sure the code isn't too duplicated.
-
-notes about scoring:
-    - anonymous users should be able to score posts
-    - anonymous users should be able to revoke and correct their scores
-    - it should be difficult to score post repeatedly (add protection in local
-      storage, anything more is probably an overkill)
-    - scored of authorized users should be persisted into database so it can be
-      searched for with special:liked and special:disliked
+    - add 404 pages
 
 some day:
     - configure mails and ensure it works with gmail
