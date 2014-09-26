@@ -220,14 +220,7 @@ final class Post extends Entity
 	public function setUser(\Szurubooru\Entities\User $user = null)
 	{
 		$this->lazySave(self::LAZY_LOADER_USER, $user);
-		if ($user)
-		{
-			$this->userId = $user->getId();
-		}
-		else
-		{
-			$this->userId = null;
-		}
+		$this->userId = $user ? $user->getId() : null;
 	}
 
 	public function getContent()

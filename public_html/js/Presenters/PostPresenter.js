@@ -15,13 +15,19 @@ App.Presenters.PostPresenter = function(
 
 	var $el = jQuery('#content');
 	var $messages = $el;
+
 	var postTemplate;
 	var postEditTemplate;
 	var postContentTemplate;
+	var historyTemplate;
+
 	var post;
+	var postHistory;
 	var postNameOrId;
+
 	var privileges = {};
 	var editPrivileges = {};
+
 	var tagInput;
 	var postContentFileDropper;
 	var postThumbnailFileDropper;
@@ -33,6 +39,7 @@ App.Presenters.PostPresenter = function(
 
 		privileges.canDeletePosts = auth.hasPrivilege(auth.privileges.deletePosts);
 		privileges.canFeaturePosts = auth.hasPrivilege(auth.privileges.featurePosts);
+		privileges.canViewHistory = auth.hasPrivilege(auth.privileges.viewHistory);
 		editPrivileges.canChangeSafety = auth.hasPrivilege(auth.privileges.changePostSafety);
 		editPrivileges.canChangeSource = auth.hasPrivilege(auth.privileges.changePostSource);
 		editPrivileges.canChangeTags = auth.hasPrivilege(auth.privileges.changePostTags);
@@ -43,15 +50,17 @@ App.Presenters.PostPresenter = function(
 		promise.waitAll(
 				util.promiseTemplate('post'),
 				util.promiseTemplate('post-edit'),
-				util.promiseTemplate('post-content'))
+				util.promiseTemplate('post-content'),
+				util.promiseTemplate('history'))
 			.then(function(
 					postTemplateHtml,
 					postEditTemplateHtml,
 					postContentTemplateHtml,
-					response) {
+					historyTemplateHtml) {
 				postTemplate = _.template(postTemplateHtml);
 				postEditTemplate = _.template(postEditTemplateHtml);
 				postContentTemplate = _.template(postContentTemplateHtml);
+				historyTemplate = _.template(historyTemplateHtml);
 
 				reinit(args, loaded);
 			}).fail(showGenericError);
@@ -60,9 +69,14 @@ App.Presenters.PostPresenter = function(
 	function reinit(args, loaded) {
 		postNameOrId = args.postNameOrId;
 
-		promise.wait(api.get('/posts/' + postNameOrId))
-			.then(function(response) {
-				post = response.json;
+		promise.waitAll(
+				api.get('/posts/' + postNameOrId),
+				privileges.canViewHistory ?
+					api.get('/posts/' + postNameOrId + '/history') :
+					null)
+			.then(function(postResponse, postHistoryResponse) {
+				post = postResponse.json;
+				postHistory = postHistoryResponse && postHistoryResponse.json && postHistoryResponse.json.data;
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
 				loaded();
@@ -92,9 +106,10 @@ App.Presenters.PostPresenter = function(
 		}
 
 		$el.find('.post-edit-wrapper form').submit(editFormSubmitted);
-		$el.find('.delete').click(deleteButtonClicked);
-		$el.find('.feature').click(featureButtonClicked);
-		$el.find('.edit').click(editButtonClicked);
+		$el.find('#sidebar .delete').click(deleteButtonClicked);
+		$el.find('#sidebar .feature').click(featureButtonClicked);
+		$el.find('#sidebar .edit').click(editButtonClicked);
+		$el.find('#sidebar .history').click(historyButtonClicked);
 	}
 
 	function renderSidebar() {
@@ -104,10 +119,12 @@ App.Presenters.PostPresenter = function(
 	function renderPostTemplate() {
 		return postTemplate({
 			post: post,
+			postHistory: postHistory,
 			formatRelativeTime: util.formatRelativeTime,
 			formatFileSize: util.formatFileSize,
 			postContentTemplate: postContentTemplate,
 			postEditTemplate: postEditTemplate,
+			historyTemplate: historyTemplate,
 			privileges: privileges,
 			editPrivileges: editPrivileges,
 		});
@@ -226,6 +243,23 @@ App.Presenters.PostPresenter = function(
 		postThumbnailFileDropper.readAsDataURL(files[0], function(content) {
 			postThumbnail = content;
 		});
+	}
+
+	function historyButtonClicked(e) {
+		e.preventDefault();
+		if ($el.find('.post-history-wrapper').is(':visible')) {
+			hideHistory();
+		} else {
+			showHistory();
+		}
+	}
+
+	function hideHistory() {
+		$el.find('.post-history-wrapper').slideUp('slow');
+	}
+
+	function showHistory() {
+		$el.find('.post-history-wrapper').slideDown('slow');
 	}
 
 	function showEditError(response) {

@@ -7,8 +7,6 @@ everything related to posts:
         - score
         - editing
             - ability to loop video posts
-            - post edit history (think
-              http://konachan.com/history?search=post%3A188614)
         - previous and next post (difficult)
             - extract Pager from PagedCollectionPresenter
             - rename PagedCollectionPresenter to PagerPresenter

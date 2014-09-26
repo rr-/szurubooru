@@ -16,4 +16,3 @@ class Upgrade08 implements IUpgrade
 			)');
 	}
 }
-

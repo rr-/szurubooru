@@ -35,6 +35,11 @@ class EnumHelper
 		'youtube' => \Szurubooru\Entities\Post::POST_TYPE_YOUTUBE,
 	];
 
+	private static $snapshotTypeMap =
+	[
+		'post' => \Szurubooru\Entities\Snapshot::TYPE_POST,
+	];
+
 	public static function accessRankToString($accessRank)
 	{
 		return self::enumToString(self::$accessRankMap, $accessRank);
@@ -68,6 +73,11 @@ class EnumHelper
 	public static function postTypeToString($postType)
 	{
 		return self::enumToString(self::$postTypeMap, $postType);
+	}
+
+	public static function snapshotTypeFromString($snapshotTypeString)
+	{
+		return self::stringToEnum(self::$snapshotTypeMap, $snapshotTypeString);
 	}
 
 	private static function enumToString($enumMap, $enumValue)

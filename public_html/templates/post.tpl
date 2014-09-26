@@ -134,6 +134,14 @@
 						</a>
 					</li>
 				<% } %>
+
+				<% if (privileges.canViewHistory) { %>
+					<li>
+						<a href="#" class="history">
+							History
+						</a>
+					</li>
+				<% } %>
 			</ul>
 		<% } %>
 
@@ -147,5 +155,14 @@
 		</div>
 
 		<%= postContentTemplate({post: post}) %>
+
+		<% if (privileges.canViewHistory) { %>
+			<div class="post-history-wrapper">
+				<%= historyTemplate({
+					history: postHistory,
+					formatRelativeTime: formatRelativeTime
+				}) %>
+			</div>
+		<% } %>
 	</div>
 </div>

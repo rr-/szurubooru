@@ -20,11 +20,20 @@
 
 				<span class="right">
 					featured by
+
+					<% if (post.user.name) { %>
+						<a href="#/user/<%= post.user.name %>">
+					<% } %>
+
 					<img class="author-avatar"
 						src="/data/thumbnails/25x25/avatars/<%= post.user.name || '!' %>"
 						alt="<%= post.user.name || 'Anonymous user' %>"/>
 
 					<%= post.user.name || 'Anonymous user' %>
+
+					<% if (post.user.name) { %>
+						</a>
+					<% } %>
 				</span>
 
 			</div>

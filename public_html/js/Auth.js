@@ -33,6 +33,8 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		changePostRelations: 'changePostRelations',
 
 		listTags: 'listTags',
+
+		viewHistory: 'viewHistory',
 	};
 
 	function loginFromCredentials(userNameOrEmail, password, remember) {

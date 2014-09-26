@@ -33,4 +33,6 @@ class Privilege
 	const CHANGE_POST_RELATIONS = 'changePostRelations';
 
 	const LIST_TAGS = 'listTags';
+
+	const VIEW_HISTORY = 'viewHistory';
 }

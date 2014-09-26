@@ -124,3 +124,8 @@
 #post-view-wrapper .post-edit-wrapper .file-handler {
 	margin: 0.5em 0;
 }
+
+#post-view-wrapper .post-history-wrapper {
+	padding: 1em;
+	display: none;
+}

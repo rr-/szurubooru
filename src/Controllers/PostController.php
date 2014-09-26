@@ -9,6 +9,7 @@ final class PostController extends AbstractController
 	private $postSearchParser;
 	private $inputReader;
 	private $postViewProxy;
+	private $snapshotViewProxy;
 
 	public function __construct(
 		\Szurubooru\Config $config,
@@ -16,7 +17,8 @@ final class PostController extends AbstractController
 		\Szurubooru\Services\PostService $postService,
 		\Szurubooru\SearchServices\Parsers\PostSearchParser $postSearchParser,
 		\Szurubooru\Helpers\InputReader $inputReader,
-		\Szurubooru\Controllers\ViewProxies\PostViewProxy $postViewProxy)
+		\Szurubooru\Controllers\ViewProxies\PostViewProxy $postViewProxy,
+		\Szurubooru\Controllers\ViewProxies\SnapshotViewProxy $snapshotViewProxy)
 	{
 		$this->config = $config;
 		$this->privilegeService = $privilegeService;
@@ -24,30 +26,31 @@ final class PostController extends AbstractController
 		$this->postSearchParser = $postSearchParser;
 		$this->inputReader = $inputReader;
 		$this->postViewProxy = $postViewProxy;
+		$this->snapshotViewProxy = $snapshotViewProxy;
 	}
 
 	public function registerRoutes(\Szurubooru\Router $router)
 	{
 		$router->post('/api/posts', [$this, 'createPost']);
 		$router->get('/api/posts', [$this, 'getFiltered']);
-		$router->get('/api/posts/featured', [$this, 'getFeatured']);
 		$router->get('/api/posts/:postNameOrId', [$this, 'getByNameOrId']);
+		$router->get('/api/posts/:postNameOrId/history', [$this, 'getHistory']);
 		$router->put('/api/posts/:postNameOrId', [$this, 'updatePost']);
 		$router->delete('/api/posts/:postNameOrId', [$this, 'deletePost']);
 		$router->post('/api/posts/:postNameOrId/feature', [$this, 'featurePost']);
 		$router->put('/api/posts/:postNameOrId/feature', [$this, 'featurePost']);
 	}
 
-	public function getFeatured()
+	public function getByNameOrId($postNameOrId)
 	{
-		$post = $this->postService->getFeatured();
+		$post = $this->getByNameOrIdWithoutProxy($postNameOrId);
 		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 
-	public function getByNameOrId($postNameOrId)
+	public function getHistory($postNameOrId)
 	{
-		$post = $this->postService->getByNameOrId($postNameOrId);
-		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
+		$post = $this->getByNameOrIdWithoutProxy($postNameOrId);
+		return ['data' => $this->snapshotViewProxy->fromArray($this->postService->getHistory($post))];
 	}
 
 	public function getFiltered()
@@ -111,6 +114,14 @@ final class PostController extends AbstractController
 	{
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		$this->postService->featurePost($post);
+	}
+
+	private function getByNameOrIdWithoutProxy($postNameOrId)
+	{
+		if ($postNameOrId === 'featured')
+			return $this->postService->getFeatured();
+		else
+			return $this->postService->getByNameOrId($postNameOrId);
 	}
 
 	private function getFullFetchConfig()

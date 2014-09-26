@@ -11,6 +11,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $authServiceMock;
 	private $timeServiceMock;
 	private $fileServiceMock;
+	private $historyServiceMock;
 	private $imageManipulatorMock;
 
 	public function setUp()
@@ -23,6 +24,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
+		$this->historyServiceMock = $this->mock(\Szurubooru\Services\HistoryService::class);
 		$this->configMock->set('database/maxPostSize', 1000000);
 		$this->imageManipulatorMock = $this->mock(\Szurubooru\Services\ImageManipulation\ImageManipulator::class);
 	}
@@ -37,6 +39,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
 		$this->authServiceMock->expects($this->once())->method('getLoggedInUser')->willReturn(new \Szurubooru\Entities\User(5));
+		$this->historyServiceMock->expects($this->once())->method('getPostChangeSnapshot')->willReturn(new \Szurubooru\Entities\Snapshot());
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -65,6 +68,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
 		$this->imageManipulatorMock->expects($this->once())->method('getImageWidth')->willReturn(640);
 		$this->imageManipulatorMock->expects($this->once())->method('getImageHeight')->willReturn(480);
+		$this->historyServiceMock->expects($this->once())->method('getPostChangeSnapshot')->willReturn(new \Szurubooru\Entities\Snapshot());
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -85,6 +89,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->contentFileName = 'blah';
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
+		$this->historyServiceMock->expects($this->once())->method('getPostChangeSnapshot')->willReturn(new \Szurubooru\Entities\Snapshot());
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -103,6 +108,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->contentFileName = 'blah';
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
+		$this->historyServiceMock->expects($this->once())->method('getPostChangeSnapshot')->willReturn(new \Szurubooru\Entities\Snapshot());
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -165,6 +171,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
 		$this->authServiceMock->expects($this->never())->method('getLoggedInUser');
+		$this->historyServiceMock->expects($this->once())->method('getPostChangeSnapshot')->willReturn(new \Szurubooru\Entities\Snapshot());
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -182,6 +189,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->authServiceMock,
 			$this->timeServiceMock,
 			$this->fileServiceMock,
+			$this->historyServiceMock,
 			$this->imageManipulatorMock);
 	}
 }

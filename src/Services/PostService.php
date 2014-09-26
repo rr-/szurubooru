@@ -11,6 +11,7 @@ class PostService
 	private $timeService;
 	private $authService;
 	private $fileService;
+	private $historyService;
 	private $imageManipulator;
 
 	public function __construct(
@@ -22,6 +23,7 @@ class PostService
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Services\FileService $fileService,
+		\Szurubooru\Services\HistoryService $historyService,
 		\Szurubooru\Services\ImageManipulation\ImageManipulator $imageManipulator)
 	{
 		$this->config = $config;
@@ -32,6 +34,7 @@ class PostService
 		$this->timeService = $timeService;
 		$this->authService = $authService;
 		$this->fileService = $fileService;
+		$this->historyService = $historyService;
 		$this->imageManipulator = $imageManipulator;
 	}
 
@@ -82,6 +85,27 @@ class PostService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
+	public function getHistory(\Szurubooru\Entities\Post $post)
+	{
+		$transactionFunc = function() use ($post)
+		{
+			$filter = new \Szurubooru\SearchServices\Filters\SnapshotFilter();
+
+			$requirement = new \Szurubooru\SearchServices\Requirement();
+			$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
+			$requirement->setValue($post->getId());
+			$filter->addRequirement($requirement);
+
+			$requirement = new \Szurubooru\SearchServices\Requirement();
+			$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_TYPE);
+			$requirement->setValue(\Szurubooru\Entities\Snapshot::TYPE_POST);
+			$filter->addRequirement($requirement);
+
+			return $this->historyService->getFiltered($filter)->getEntities();
+		};
+		return $this->transactionManager->rollback($transactionFunc);
+	}
+
 	public function createPost(\Szurubooru\FormData\UploadFormData $formData)
 	{
 		$transactionFunc = function() use ($formData)
@@ -100,7 +124,10 @@ class PostService
 			$this->updatePostTags($post, $formData->tags);
 			$this->updatePostContentFromStringOrUrl($post, $formData->content, $formData->url);
 
-			return $this->postDao->save($post);
+			$savedPost = $this->postDao->save($post);
+
+			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($savedPost));
+			return $savedPost;
 		};
 		return $this->transactionManager->commit($transactionFunc);
 	}
@@ -134,6 +161,7 @@ class PostService
 			if ($formData->relations !== null)
 				$this->updatePostRelations($post, $formData->relations);
 
+			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
 			return $this->postDao->save($post);
 		};
 		return $this->transactionManager->commit($transactionFunc);
@@ -246,8 +274,10 @@ class PostService
 	{
 		$relatedPosts = $this->postDao->findByIds($newRelatedPostIds);
 		foreach ($newRelatedPostIds as $postId)
+		{
 			if (!isset($relatedPosts[$postId]))
 				throw new \DomainException('Post with id "' . $postId . '" was not found.');
+		}
 
 		$post->setRelatedPosts($relatedPosts);
 	}
@@ -256,6 +286,7 @@ class PostService
 	{
 		$transactionFunc = function() use ($post)
 		{
+			$this->historyService->saveSnapshot($this->historyService->getPostDeleteSnapshot($post));
 			$this->postDao->deleteById($post->getId());
 		};
 		$this->transactionManager->commit($transactionFunc);
@@ -265,6 +296,8 @@ class PostService
 	{
 		$transactionFunc = function() use ($post)
 		{
+			$previousFeaturedPost = $this->getFeatured();
+
 			$post->setLastFeatureTime($this->timeService->getCurrentTime());
 			$post->setFeatureCount($post->getFeatureCount() + 1);
 			$this->postDao->save($post);
@@ -272,6 +305,10 @@ class PostService
 			$globalParam->setKey(\Szurubooru\Entities\GlobalParam::KEY_FEATURED_POST);
 			$globalParam->setValue($post->getId());
 			$this->globalParamDao->save($globalParam);
+
+			if ($previousFeaturedPost)
+				$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($previousFeaturedPost));
+			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
 		};
 		$this->transactionManager->commit($transactionFunc);
 	}

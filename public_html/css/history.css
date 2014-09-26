@@ -1,0 +1,50 @@
+table.history {
+	font-size: 80%;
+}
+table.history .addition {
+	color: forestgreen;
+}
+table.history .addition:before {
+	content: '+';
+}
+
+table.history .removal {
+	color: red;
+}
+table.history .removal:before {
+	content: '-';
+}
+
+table.history .time,
+table.history .user,
+table.history .subject {
+	white-space: nowrap;
+}
+
+table.history .user img {
+	vertical-align: middle;
+}
+
+table.history td {
+	padding: 0.1em 0.25em;
+}
+
+table.history ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	display: inline;
+}
+table.history ul:before {
+	content: ' (';
+}
+table.history ul:after {
+	content: ')';
+}
+
+table.history li {
+	display: inline;
+}
+table.history li:not(:last-of-type):after {
+	content: ', ';
+}
