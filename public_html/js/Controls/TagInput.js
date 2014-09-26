@@ -21,8 +21,11 @@ App.Controls.TagInput = function(
 		inputConfirmed: null,
 	};
 
-	if ($underlyingInput.length !== 1) {
-		throw new Error('Cannot set tag input to more than one elements at once');
+	if ($underlyingInput.length === 0) {
+		throw new Error('Tag input element was not found');
+	}
+	if ($underlyingInput.length > 1) {
+		throw new Error('Cannot set tag input to more than one element at once');
 	}
 	if ($underlyingInput.attr('data-tagged')) {
 		throw new Error('Tag input was already initialized for this element');

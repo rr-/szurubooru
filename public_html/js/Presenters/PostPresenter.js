@@ -73,8 +73,10 @@ App.Presenters.PostPresenter = function(
 		$el.html(renderPostTemplate());
 		$messages = $el.find('.messages');
 
-		tagInput = App.Controls.TagInput($el.find('form [name=tags]'), _, jQuery);
-		tagInput.inputConfirmed = editPost;
+		if (editPrivileges.canChangeTags) {
+			tagInput = App.Controls.TagInput($el.find('form [name=tags]'), _, jQuery);
+			tagInput.inputConfirmed = editPost;
+		}
 
 		postContentFileDropper = new App.Controls.FileDropper($el.find('form [name=content]'), _, jQuery);
 		postContentFileDropper.onChange = postContentChanged;
@@ -83,10 +85,11 @@ App.Presenters.PostPresenter = function(
 		postThumbnailFileDropper.onChange = postThumbnailChanged;
 		postThumbnailFileDropper.setNames = true;
 
-		keyboard.keyup('e', function() {
-			editButtonClicked(null);
-		});
-
+		if (_.any(editPrivileges)) {
+			keyboard.keyup('e', function() {
+				editButtonClicked(null);
+			});
+		}
 
 		$el.find('.post-edit-wrapper form').submit(editFormSubmitted);
 		$el.find('.delete').click(deleteButtonClicked);
