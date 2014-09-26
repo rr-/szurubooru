@@ -3,21 +3,27 @@ namespace Szurubooru\SearchServices\Parsers;
 
 abstract class AbstractSearchParser
 {
-	public function createFilterFromFormData(\Szurubooru\FormData\SearchFormData $formData)
+	public function createFilterFromInputReader(\Szurubooru\Helpers\InputReader $inputReader)
 	{
 		$filter = $this->createFilter();
-		$filter->setOrder(array_merge($this->getOrder($formData->order), $filter->getOrder()));
+		$filter->setOrder(array_merge($this->getOrder($inputReader->order), $filter->getOrder()));
 
-		$tokens = $this->tokenize($formData->query);
+		if ($inputReader->page)
+		{
+			$filter->setPageNumber($inputReader->page);
+			$filter->setPageSize(25);
+		}
+
+		$tokens = $this->tokenize($inputReader->query);
 
 		foreach ($tokens as $token)
 		{
 			if ($token instanceof \Szurubooru\SearchServices\NamedSearchToken)
 				$this->decorateFilterFromNamedToken($filter, $token);
-			elseif ($token instanceof \Szurubooru\SearchService\SearchToken)
+			elseif ($token instanceof \Szurubooru\SearchServices\SearchToken)
 				$this->decorateFilterFromToken($filter, $token);
 			else
-				throw new \RuntimeException('Invalid search token type');
+				throw new \RuntimeException('Invalid search token type: ' . get_class($token));
 		}
 
 		return $filter;
@@ -34,15 +40,15 @@ abstract class AbstractSearchParser
 	private function getOrder($query)
 	{
 		$order = [];
-		$tokens = array_filter(preg_split('/\s+/', $query));
+		$tokens = array_filter(preg_split('/\s+/', trim($query)));
 
 		foreach ($tokens as $token)
 		{
 			$token = preg_split('/,|\s+/', $token);
 			$orderToken = $token[0];
 			$orderDir = (count($token) === 2 and $token[1] === 'desc')
-				? \Szurubooru\SearchServices\AbstractSearchFilter::ORDER_DESC
-				: \Szurubooru\SearchServices\AbstractSearchFilter::ORDER_ASC;
+				? \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC
+				: \Szurubooru\SearchServices\Filters\IFilter::ORDER_ASC;
 
 			$orderColumn = $this->getOrderColumn($orderToken);
 			if ($orderColumn === null)
@@ -58,7 +64,7 @@ abstract class AbstractSearchParser
 	{
 		$searchTokens = [];
 
-		foreach (array_filter(preg_split('/\s+/', $query)) as $tokenText)
+		foreach (array_filter(preg_split('/\s+/', trim($query))) as $tokenText)
 		{
 			$negated = false;
 			if (substr($tokenText, 0, 1) === '-')

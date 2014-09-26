@@ -5,7 +5,7 @@ class UserSearchParser extends AbstractSearchParser
 {
 	protected function createFilter()
 	{
-		return new \Szurubooru\SearchServices\UserSearchFilter;
+		return new \Szurubooru\SearchServices\Filters\UserFilter;
 	}
 
 	protected function decorateFilterFromToken($filter, $token)
@@ -21,10 +21,10 @@ class UserSearchParser extends AbstractSearchParser
 	protected function getOrderColumn($token)
 	{
 		if ($token === 'name')
-			return \Szurubooru\SearchServices\UserSearchFilter::ORDER_NAME;
+			return \Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME;
 
 		if (in_array($token, ['registrationDate', 'registrationTime', 'registered', 'joinDate', 'joinTime', 'joined']))
-			return \Szurubooru\SearchServices\UserSearchFilter::ORDER_REGISTRATION_TIME;
+			return \Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME;
 
 		return null;
 	}

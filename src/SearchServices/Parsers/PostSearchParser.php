@@ -5,7 +5,7 @@ class PostSearchParser extends AbstractSearchParser
 {
 	protected function createFilter()
 	{
-		return new \Szurubooru\SearchServices\PostSearchFilter;
+		return new \Szurubooru\SearchServices\Filters\PostFilter;
 	}
 
 	protected function decorateFilterFromToken($filter, $token)

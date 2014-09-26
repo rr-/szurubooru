@@ -3,19 +3,25 @@ namespace Szurubooru\Controllers;
 
 final class PostController extends AbstractController
 {
+	private $config;
 	private $privilegeService;
 	private $postService;
+	private $postSearchParser;
 	private $inputReader;
 	private $postViewProxy;
 
 	public function __construct(
+		\Szurubooru\Config $config,
 		\Szurubooru\Services\PrivilegeService $privilegeService,
 		\Szurubooru\Services\PostService $postService,
+		\Szurubooru\SearchServices\Parsers\PostSearchParser $postSearchParser,
 		\Szurubooru\Helpers\InputReader $inputReader,
 		\Szurubooru\Controllers\ViewProxies\PostViewProxy $postViewProxy)
 	{
+		$this->config = $config;
 		$this->privilegeService = $privilegeService;
 		$this->postService = $postService;
+		$this->postSearchParser = $postSearchParser;
 		$this->inputReader = $inputReader;
 		$this->postViewProxy = $postViewProxy;
 	}
@@ -46,13 +52,14 @@ final class PostController extends AbstractController
 
 	public function getFiltered()
 	{
-		$formData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
-		$searchResult = $this->postService->getFiltered($formData);
-		$entities = $this->postViewProxy->fromArray($searchResult->getEntities(), $this->getLightFetchConfig());
+		$filter = $this->postSearchParser->createFilterFromInputReader($this->inputReader);
+		$filter->setPageSize($this->config->posts->postsPerPage);
+		$result = $this->postService->getFiltered($filter);
+		$entities = $this->postViewProxy->fromArray($result->getEntities(), $this->getLightFetchConfig());
 		return [
 			'data' => $entities,
-			'pageSize' => $searchResult->getPageSize(),
-			'totalRecords' => $searchResult->getTotalRecords()];
+			'pageSize' => $result->getPageSize(),
+			'totalRecords' => $result->getTotalRecords()];
 	}
 
 	public function createPost()

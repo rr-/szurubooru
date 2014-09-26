@@ -27,9 +27,11 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testNothing()
 	{
-		$searchFilter = new \Szurubooru\SearchServices\UserSearchFilter();
+		$searchFilter = new \Szurubooru\SearchServices\Filters\UserFilter();
+		$searchFilter->setPageNumber(1);
+		$searchFilter->setPageSize(2);
 		$userDao = $this->getUserDao();
-		$result = $userDao->findFilteredAndPaged($searchFilter, 1, 2);
+		$result = $userDao->findFiltered($searchFilter);
 		$this->assertEmpty($result->getEntities());
 		$this->assertEquals(0, $result->getTotalRecords());
 		$this->assertEquals(1, $result->getPageNumber());
@@ -51,12 +53,14 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 				$expectedUsers[] = $user;
 		}
 
-		$searchFilter = new \Szurubooru\SearchServices\UserSearchFilter();
+		$searchFilter = new \Szurubooru\SearchServices\Filters\UserFilter();
 		$searchFilter->setOrder([
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_NAME =>
-				\Szurubooru\SearchServices\UserSearchFilter::ORDER_DESC]);
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME =>
+				\Szurubooru\SearchServices\Filters\UserFilter::ORDER_DESC]);
+		$searchFilter->setPageNumber($pageNumber);
+		$searchFilter->setPageSize($pageSize);
 
-		$result = $userDao->findFilteredAndPaged($searchFilter, $pageNumber, $pageSize);
+		$result = $userDao->findFiltered($searchFilter);
 		$this->assertEquals(count($allUserNames), $result->getTotalRecords());
 		$this->assertEquals($pageNumber, $result->getPageNumber());
 		$this->assertEquals($pageSize, $result->getPageSize());
@@ -73,8 +77,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		list ($user1, $user2) = $this->prepareUsers();
 		$this->doTestSorting(
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_NAME,
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_ASC,
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME,
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_ASC,
 			[$user1, $user2]);
 	}
 
@@ -82,8 +86,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		list ($user1, $user2) = $this->prepareUsers();
 		$this->doTestSorting(
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_NAME,
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_DESC,
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME,
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_DESC,
 			[$user2, $user1]);
 	}
 
@@ -91,8 +95,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		list ($user1, $user2) = $this->prepareUsers();
 		$this->doTestSorting(
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_REGISTRATION_TIME,
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_ASC,
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME,
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_ASC,
 			[$user2, $user1]);
 	}
 
@@ -100,8 +104,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		list ($user1, $user2) = $this->prepareUsers();
 		$this->doTestSorting(
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_REGISTRATION_TIME,
-			\Szurubooru\SearchServices\UserSearchFilter::ORDER_DESC,
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME,
+			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_DESC,
 			[$user1, $user2]);
 	}
 
@@ -121,16 +125,17 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	private function doTestSorting($order, $orderDirection, $expectedUsers)
 	{
 		$userDao = $this->getUserDao();
-		$searchFilter = new \Szurubooru\SearchServices\UserSearchFilter();
+		$searchFilter = new \Szurubooru\SearchServices\Filters\UserFilter();
 		if ($order !== null)
 			$searchFilter->setOrder([$order => $orderDirection]);
 
-		$result = $userDao->findFilteredAndPaged($searchFilter, 1, 10);
-		$this->assertInstanceOf(\Szurubooru\SearchServices\PagedSearchResult::class, $result);
+		$result = $userDao->findFiltered($searchFilter, 1, 10);
+		$this->assertInstanceOf(\Szurubooru\SearchServices\Result::class, $result);
 		$this->assertEquals($searchFilter, $result->getSearchFilter());
 		$this->assertEntitiesEqual(array_values($expectedUsers), array_values($result->getEntities()));
 		$this->assertEquals(count($expectedUsers), $result->getTotalRecords());
-		$this->assertEquals(1, $result->getPageNumber());
+		$this->assertNull($result->getPageNumber());
+		$this->assertNull($result->getPageSize());
 	}
 
 	private function getUserDao()

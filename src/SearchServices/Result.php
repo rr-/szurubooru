@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\SearchServices;
 
-class PagedSearchResult
+class Result
 {
 	public $pageNumber;
 	public $pageSize;
@@ -9,7 +9,7 @@ class PagedSearchResult
 	public $entities;
 	public $totalRecords;
 
-	public function setSearchFilter(AbstractSearchFilter $searchFilter = null)
+	public function setSearchFilter(Filters\IFilter $searchFilter = null)
 	{
 		$this->searchFilter = $searchFilter;
 	}

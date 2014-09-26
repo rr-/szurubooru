@@ -69,30 +69,33 @@ abstract class AbstractDao implements ICrudDao
 		return $this->findBy($this->getIdColumn(), $entityIds);
 	}
 
-	public function findFiltered(\Szurubooru\SearchServices\AbstractSearchFilter $searchFilter)
+	public function findFiltered(\Szurubooru\SearchServices\Filters\IFilter $searchFilter)
 	{
-		$query = $this->prepareBaseQuery($searchFilter);
-		return $this->arrayToEntities(iterator_to_array($query));
-	}
+		$query = $this->fpdo->from($this->tableName);
 
-	public function findFilteredAndPaged(\Szurubooru\SearchServices\AbstractSearchFilter $searchFilter, $pageNumber, $pageSize)
-	{
-		$query = $this->prepareBaseQuery($searchFilter);
-		$query->limit($pageSize);
-		$query->offset($pageSize * ($pageNumber - 1));
+		$orderByString = self::compileOrderBy($searchFilter->getOrder());
+		if ($orderByString)
+			$query->orderBy($orderByString);
+
+		$this->decorateQueryFromFilter($query, $searchFilter);
+		if ($searchFilter->getPageSize() > 0)
+		{
+			$query->limit($searchFilter->getPageSize());
+			$query->offset($searchFilter->getPageSize() * ($searchFilter->getPageNumber() - 1));
+		}
 		$entities = $this->arrayToEntities(iterator_to_array($query));
 
-		$query = $this->prepareBaseQuery($searchFilter);
-		$query->orderBy(null);
+		$query = $this->fpdo->from($this->tableName);
+		$this->decorateQueryFromFilter($query, $searchFilter);
 		$totalRecords = count($query);
 
-		$pagedSearchResult = new \Szurubooru\SearchServices\PagedSearchResult();
-		$pagedSearchResult->setSearchFilter($searchFilter);
-		$pagedSearchResult->setEntities($entities);
-		$pagedSearchResult->setTotalRecords($totalRecords);
-		$pagedSearchResult->setPageNumber($pageNumber);
-		$pagedSearchResult->setPageSize($pageSize);
-		return $pagedSearchResult;
+		$searchResult = new \Szurubooru\SearchServices\Result();
+		$searchResult->setSearchFilter($searchFilter);
+		$searchResult->setEntities($entities);
+		$searchResult->setTotalRecords($totalRecords);
+		$searchResult->setPageNumber($searchFilter->getPageNumber());
+		$searchResult->setPageSize($searchFilter->getPageSize());
+		return $searchResult;
 	}
 
 	public function deleteAll()
@@ -175,10 +178,6 @@ abstract class AbstractDao implements ICrudDao
 	{
 	}
 
-	protected function decorateQueryFromFilter($query, \Szurubooru\SearchServices\AbstractSearchFilter $filter)
-	{
-	}
-
 	protected function arrayToEntities(array $arrayEntities)
 	{
 		$entities = [];
@@ -190,23 +189,22 @@ abstract class AbstractDao implements ICrudDao
 		return $entities;
 	}
 
-	private function prepareBaseQuery(\Szurubooru\SearchServices\AbstractSearchFilter $searchFilter)
+	private function decorateQueryFromFilter($query, \Szurubooru\SearchServices\Filters\IFilter $filter)
 	{
-		$query = $this->fpdo->from($this->tableName);
-
-		$orderByString = self::compileOrderBy($searchFilter->getOrder());
-		if ($orderByString)
-			$query->orderBy($orderByString);
-
-		$this->decorateQueryFromFilter($query, $searchFilter);
-		return $query;
+		foreach ($filter->getRequirements() as $requirement)
+		{
+			if ($requirement->isNegated())
+				$query->where('NOT ' . $requirement->getType(), $requirement->getValue());
+			else
+				$query->where($requirement->getType(), $requirement->getValue());
+		}
 	}
 
 	private static function compileOrderBy($order)
 	{
 		$orderByString = '';
 		foreach ($order as $orderColumn => $orderDir)
-			$orderByString .= $orderColumn . ' ' . ($orderDir === \Szurubooru\SearchServices\AbstractSearchFilter::ORDER_DESC ? 'DESC' : 'ASC') . ', ';
+			$orderByString .= $orderColumn . ' ' . ($orderDir === \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC ? 'DESC' : 'ASC') . ', ';
 		return substr($orderByString, 0, -2);
 	}
 }

@@ -7,7 +7,6 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $validatorMock;
 	private $transactionManagerMock;
 	private $userDaoMock;
-	private $userSearchParserMock;
 	private $passwordServiceMock;
 	private $emailServiceMock;
 	private $fileServiceMock;
@@ -22,7 +21,6 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->transactionManagerMock = $this->mockTransactionManager();
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
-		$this->userSearchParserMock = $this->mock(\Szurubooru\SearchServices\Parsers\UserSearchParser::class);
 		$this->passwordServiceMock = $this->mock(\Szurubooru\Services\PasswordService::class);
 		$this->emailServiceMock = $this->mock(\Szurubooru\Services\EmailService::class);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
@@ -65,25 +63,6 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->setExpectedException(\Exception::class, 'User with id "godzilla" was not found.');
 		$userService = $this->getUserService();
 		$userService->getById('godzilla');
-	}
-
-	public function testGettingFilteredUsers()
-	{
-		$mockUser = new \Szurubooru\Entities\User;
-		$mockUser->setName('user');
-		$expected = [$mockUser];
-		$this->userSearchParserMock->method('createFilterFromFormData')->willReturn(new \Szurubooru\SearchServices\UserSearchFilter());
-		$this->userDaoMock->method('findFilteredAndPaged')->willReturn($expected);
-
-		$this->configMock->set('users/usersPerPage', 1);
-		$searchFormData = new \Szurubooru\FormData\SearchFormData;
-		$searchFormData->query = '';
-		$searchFormData->order = 'joined';
-		$searchFormData->page = 2;
-
-		$userService = $this->getUserService();
-		$actual = $userService->getFiltered($searchFormData);
-		$this->assertEquals($expected, $actual);
 	}
 
 	public function testValidRegistrationWithoutMailActivation()
@@ -293,7 +272,6 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->validatorMock,
 			$this->transactionManagerMock,
 			$this->userDaoMock,
-			$this->userSearchParserMock,
 			$this->passwordServiceMock,
 			$this->emailServiceMock,
 			$this->fileServiceMock,

@@ -3,6 +3,9 @@ namespace Szurubooru\Dao;
 
 class UserDao extends AbstractDao implements ICrudDao
 {
+	const ORDER_NAME = 'name';
+	const ORDER_REGISTRATION_TIME = 'registrationTime';
+
 	private $fileService;
 	private $thumbnailService;
 

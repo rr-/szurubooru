@@ -3,22 +3,28 @@ namespace Szurubooru\Controllers;
 
 final class UserController extends AbstractController
 {
+	private $config;
 	private $privilegeService;
 	private $userService;
 	private $tokenService;
+	private $userSearchParser;
 	private $inputReader;
 	private $userViewProxy;
 
 	public function __construct(
+		\Szurubooru\Config $config,
 		\Szurubooru\Services\PrivilegeService $privilegeService,
 		\Szurubooru\Services\UserService $userService,
 		\Szurubooru\Services\TokenService $tokenService,
+		\Szurubooru\SearchServices\Parsers\UserSearchParser $userSearchParser,
 		\Szurubooru\Helpers\InputReader $inputReader,
 		\Szurubooru\Controllers\ViewProxies\UserViewProxy $userViewProxy)
 	{
+		$this->config = $config;
 		$this->privilegeService = $privilegeService;
 		$this->userService = $userService;
 		$this->tokenService = $tokenService;
+		$this->userSearchParser = $userSearchParser;
 		$this->inputReader = $inputReader;
 		$this->userViewProxy = $userViewProxy;
 	}
@@ -46,13 +52,14 @@ final class UserController extends AbstractController
 	{
 		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_USERS);
 
-		$formData = new \Szurubooru\FormData\SearchFormData($this->inputReader);
-		$searchResult = $this->userService->getFiltered($formData);
-		$entities = $this->userViewProxy->fromArray($searchResult->getEntities());
+		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+		$filter->setPageSize($this->config->users->usersPerPage);
+		$result = $this->userService->getFiltered($filter);
+		$entities = $this->userViewProxy->fromArray($result->getEntities());
 		return [
 			'data' => $entities,
-			'pageSize' => $searchResult->getPageSize(),
-			'totalRecords' => $searchResult->getTotalRecords()];
+			'pageSize' => $result->getPageSize(),
+			'totalRecords' => $result->getTotalRecords()];
 	}
 
 	public function createUser()
