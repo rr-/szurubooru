@@ -1,8 +1,10 @@
+<% var permaLink = (window.location.origin + '/' + window.location.pathname + '/data/posts/' + post.name).replace(/([^:])\/+/g, '$1/') %>
+
 <div id="post-view-wrapper">
 	<div id="sidebar">
 		<ul class="essential">
 			<li>
-				<a class="download" href="/data/posts/<%= post.name %>">
+				<a class="download" href="<%= permaLink %>">
 					<i class="fa fa-download"></i>
 					<br/>
 					<%= post.contentExtension + ', ' + formatFileSize(post.originalFileSize) %>
@@ -112,7 +114,7 @@
 			</ul>
 		<% } %>
 
-		<% if (_.any(privileges) || _.any(editPrivileges)) { %>
+		<% if (_.any(privileges) || _.any(editPrivileges) || post.contentType === 'image') { %>
 			<h1>Options</h1>
 
 			<ul class="operations">
@@ -144,6 +146,20 @@
 					<li>
 						<a href="#" class="history">
 							History
+						</a>
+					</li>
+				<% } %>
+
+				<% if (post.contentType === 'image') { %>
+					<li>
+						<a href="http://iqdb.org/?url=<%= permaLink %>">
+							Search on IQDB
+						</a>
+					</li>
+
+					<li>
+						<a href="https://www.google.com/searchbyimage?&image_url=<%= permaLink %>">
+							Search on Google Images
 						</a>
 					</li>
 				<% } %>
