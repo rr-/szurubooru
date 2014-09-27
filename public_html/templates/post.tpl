@@ -10,6 +10,20 @@
 					<%= post.contentExtension + ', ' + formatFileSize(post.originalFileSize) %>
 				</a>
 			</li>
+
+			<% if (isLoggedIn) { %>
+				<li>
+					<% if (hasFav) { %>
+						<a href="#" class="delete-favorite">
+							<i class="fa fa-heart"></i>
+						</a>
+					<% } else { %>
+						<a href="#" class="add-favorite">
+							<i class="fa fa-heart-o"></i>
+						</a>
+					<% } %>
+				</li>
+			<% } %>
 		</ul>
 
 		<h1>Tags (<%= _.size(post.tags) %>)</h1>
@@ -98,8 +112,23 @@
 					--><% } %><!--
 				--></li>
 			<% } %>
-
 		</ul>
+
+		<% if (_.any(postFavorites)) { %>
+			<p>Favorites:</p>
+
+			<ul class="favorites">
+				<% _.each(postFavorites, function(user) { %>
+					<li>
+						<a href="#/user/<%= user.name %>">
+							<img class="fav-avatar"
+								src="/data/thumbnails/25x25/avatars/<%= user.name || '!' %>"
+								alt="<%= user.name || 'Anonymous user' %>"/>
+						</a>
+					</li>
+				<% }) %>
+			</ul>
+		<% } %>
 
 		<% if (_.any(post.relations)) { %>
 			<h1>Related posts</h1>

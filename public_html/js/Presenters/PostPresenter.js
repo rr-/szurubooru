@@ -22,6 +22,7 @@ App.Presenters.PostPresenter = function(
 	var historyTemplate;
 
 	var post;
+	var postFavorites;
 	var postHistory;
 	var postNameOrId;
 
@@ -74,11 +75,16 @@ App.Presenters.PostPresenter = function(
 
 		promise.waitAll(
 				api.get('/posts/' + postNameOrId),
+				api.get('/posts/' + postNameOrId + '/favorites'),
 				privileges.canViewHistory ?
 					api.get('/posts/' + postNameOrId + '/history') :
 					null)
-			.then(function(postResponse, postHistoryResponse) {
+			.then(function(
+					postResponse,
+					postFavoritesResponse,
+					postHistoryResponse) {
 				post = postResponse.json;
+				postFavorites = postFavoritesResponse && postFavoritesResponse.json && postFavoritesResponse.json.data;
 				postHistory = postHistoryResponse && postHistoryResponse.json && postHistoryResponse.json.data;
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
@@ -112,28 +118,41 @@ App.Presenters.PostPresenter = function(
 		}
 
 		$el.find('.post-edit-wrapper form').submit(editFormSubmitted);
-		$el.find('#sidebar .delete').click(deleteButtonClicked);
-		$el.find('#sidebar .feature').click(featureButtonClicked);
-		$el.find('#sidebar .edit').click(editButtonClicked);
-		$el.find('#sidebar .history').click(historyButtonClicked);
+		attachSidebarEvents();
 	}
 
 	function renderSidebar() {
 		$el.find('#sidebar').html(jQuery(renderPostTemplate()).find('#sidebar').html());
+		attachSidebarEvents();
 	}
 
 	function renderPostTemplate() {
 		return postTemplate({
 			post: post,
+			postFavorites: postFavorites,
 			postHistory: postHistory,
+
 			formatRelativeTime: util.formatRelativeTime,
 			formatFileSize: util.formatFileSize,
+
 			postContentTemplate: postContentTemplate,
 			postEditTemplate: postEditTemplate,
 			historyTemplate: historyTemplate,
+
+			hasFav: _.any(postFavorites, function(favUser) { return favUser.id === auth.getCurrentUser().id; }),
+			isLoggedIn: auth.isLoggedIn(),
 			privileges: privileges,
 			editPrivileges: editPrivileges,
 		});
+	}
+
+	function attachSidebarEvents() {
+		$el.find('#sidebar .delete').click(deleteButtonClicked);
+		$el.find('#sidebar .feature').click(featureButtonClicked);
+		$el.find('#sidebar .edit').click(editButtonClicked);
+		$el.find('#sidebar .history').click(historyButtonClicked);
+		$el.find('#sidebar .add-favorite').click(addFavoriteButtonClicked);
+		$el.find('#sidebar .delete-favorite').click(deleteFavoriteButtonClicked);
 	}
 
 	function deleteButtonClicked(e) {
@@ -266,6 +285,34 @@ App.Presenters.PostPresenter = function(
 
 	function showHistory() {
 		$el.find('.post-history-wrapper').slideDown('slow');
+	}
+
+	function addFavoriteButtonClicked(e) {
+		e.preventDefault();
+		addFavorite();
+	}
+
+	function deleteFavoriteButtonClicked(e) {
+		e.preventDefault();
+		deleteFavorite();
+	}
+
+	function addFavorite() {
+		api.post('/posts/' + post.id + '/favorites')
+			.then(function(response) {
+				postFavorites = response.json.data;
+				renderSidebar();
+			})
+			.fail(showGenericError);
+	}
+
+	function deleteFavorite() {
+		api.delete('/posts/' + post.id + '/favorites')
+			.then(function(response) {
+				postFavorites = response.json.data;
+				renderSidebar();
+			})
+			.fail(showGenericError);
 	}
 
 	function showEditError(response) {

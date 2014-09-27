@@ -3,7 +3,6 @@ first major release.
 
 everything related to posts:
     - single post view
-        - fav
         - score
         - editing
             - ability to loop video posts
@@ -104,8 +103,6 @@ refactors:
       with query decorated by PostDao::decorateQueryFromFilter, call
       PostDao::decorateEntitiesWithFilter that will optimally load users and
       inject them using posts' lazy loaders.
-    - make view proxies less greedy, e.g. favs should be fetched only in post
-      view, not for each of 40 posts in post list. (same goes to other things)
     - reduce dependencies
 
 miscellaneous:

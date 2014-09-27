@@ -56,6 +56,10 @@
 	}
 }
 
+#post-view-wrapper .favorites li {
+	display: inline-block;
+	margin: 0 0.25em 0.25em 0;
+}
 
 #sidebar ul {
 	list-style-type: none;

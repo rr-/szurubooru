@@ -45,6 +45,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setFeatureCount(intval($array['featureCount']));
 		$entity->setLastFeatureTime($array['lastFeatureTime']);
 		$entity->setMeta(\Szurubooru\Entities\Post::META_TAG_COUNT, intval($array['tagCount']));
+		$entity->setMeta(\Szurubooru\Entities\Post::META_FAV_COUNT, intval($array['favCount']));
 		return $entity;
 	}
 }

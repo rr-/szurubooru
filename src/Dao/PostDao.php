@@ -51,35 +51,35 @@ class PostDao extends AbstractDao implements ICrudDao
 	{
 		$post->setLazyLoader(
 			\Szurubooru\Entities\Post::LAZY_LOADER_CONTENT,
-			function(\Szurubooru\Entities\Post $post)
+			function (\Szurubooru\Entities\Post $post)
 			{
 				return $this->fileService->load($post->getContentPath());
 			});
 
 		$post->setLazyLoader(
 			\Szurubooru\Entities\Post::LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT,
-			function(\Szurubooru\Entities\Post $post)
+			function (\Szurubooru\Entities\Post $post)
 			{
 				return $this->fileService->load($post->getThumbnailSourceContentPath());
 			});
 
 		$post->setLazyLoader(
 			\Szurubooru\Entities\Post::LAZY_LOADER_USER,
-			function(\Szurubooru\Entities\Post $post)
+			function (\Szurubooru\Entities\Post $post)
 			{
 				return $this->getUser($post);
 			});
 
 		$post->setLazyLoader(
 			\Szurubooru\Entities\Post::LAZY_LOADER_TAGS,
-			function(\Szurubooru\Entities\Post $post)
+			function (\Szurubooru\Entities\Post $post)
 			{
 				return $this->getTags($post);
 			});
 
 		$post->setLazyLoader(
 			\Szurubooru\Entities\Post::LAZY_LOADER_RELATED_POSTS,
-			function(\Szurubooru\Entities\Post $post)
+			function (\Szurubooru\Entities\Post $post)
 			{
 				return $this->getRelatedPosts($post);
 			});
@@ -179,14 +179,14 @@ class PostDao extends AbstractDao implements ICrudDao
 		$this->tagDao->createMissingTags($tagNames);
 
 		$tagIds = array_map(
-			function($tag)
+			function ($tag)
 			{
 				return $tag->getId();
 			},
 			$this->tagDao->findByNames($tagNames));
 
 		$existingTagRelationIds = array_map(
-			function($arrayEntity)
+			function ($arrayEntity)
 			{
 				return $arrayEntity['tagId'];
 			},

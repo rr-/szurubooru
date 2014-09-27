@@ -19,6 +19,7 @@ final class Post extends Entity
 	const LAZY_LOADER_RELATED_POSTS = 'relatedPosts';
 
 	const META_TAG_COUNT = 'tagCount';
+	const META_FAV_COUNT = 'favCount';
 
 	protected $name;
 	protected $userId;
@@ -256,5 +257,10 @@ final class Post extends Entity
 	public function getTagCount()
 	{
 		return $this->getMeta(self::META_TAG_COUNT, 0);
+	}
+
+	public function getFavoriteCount()
+	{
+		return $this->getMeta(self::META_FAV_COUNT, 0);
 	}
 }

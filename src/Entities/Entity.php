@@ -43,6 +43,7 @@ abstract class Entity
 	public function resetLazyLoaders()
 	{
 		$this->lazyLoaders = [];
+		$this->lazyContainers = [];
 	}
 
 	public function setLazyLoader($lazyContainerName, $getter)

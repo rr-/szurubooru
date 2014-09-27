@@ -44,13 +44,21 @@ class PrivilegeService
 	public function assertPrivilege($privilege)
 	{
 		if (!$this->hasPrivilege($privilege))
-			throw new \DomainException('Unprivileged operation');
+			$this->fail();
 	}
 
-	public function assertLoggedIn($userIdentifier)
+	public function assertLoggedIn($userIdentifier = null)
 	{
-		if (!$this->isLoggedIn($userIdentifier))
-			throw new \DomainException('Unprivileged operation');
+		if ($userIdentifier)
+		{
+			if (!$this->isLoggedIn($userIdentifier))
+				$this->fail();
+		}
+		else
+		{
+			if (!$this->authService->getLoggedInUser())
+				$this->fail();
+		}
 	}
 
 	public function isLoggedIn($userIdentifier)
@@ -73,5 +81,10 @@ class PrivilegeService
 		{
 			throw new \InvalidArgumentException('Invalid user identifier.');
 		}
+	}
+
+	private function fail()
+	{
+		throw new \DomainException('Unprivileged operation');
 	}
 }
