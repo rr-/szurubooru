@@ -37,9 +37,6 @@ everything related to posts:
             - fav:3..5
             - score:3..5
             - tag:3..5
-            - date:today
-            - date:yesterday
-            - date:yyyy[-mm[-dd]]..yyyy[-mm[-dd]]
             - filesize:3K..5M
             - imgsize:huge/large/medium/small
             - hash:postName
