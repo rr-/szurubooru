@@ -65,7 +65,7 @@ abstract class AbstractDao implements ICrudDao
 
 	public function findFiltered(\Szurubooru\SearchServices\Filters\IFilter $searchFilter)
 	{
-		$query = $this->fpdo->from($this->tableName);
+		$query = $this->fpdo->from($this->tableName)->disableSmartJoin();
 
 		$orderByString = self::compileOrderBy($searchFilter->getOrder());
 		if ($orderByString)
@@ -79,7 +79,7 @@ abstract class AbstractDao implements ICrudDao
 		}
 		$entities = $this->arrayToEntities(iterator_to_array($query));
 
-		$query = $this->fpdo->from($this->tableName);
+		$query = $this->fpdo->from($this->tableName)->disableSmartJoin();
 		$this->decorateQueryFromFilter($query, $searchFilter);
 		$totalRecords = count($query);
 
@@ -172,6 +172,52 @@ abstract class AbstractDao implements ICrudDao
 	{
 	}
 
+	protected function decorateQueryFromRequirement($query, \Szurubooru\SearchServices\Requirements\Requirement $requirement)
+	{
+		$value = $requirement->getValue();
+		$sqlColumn = $requirement->getType();
+
+		if ($value instanceof \Szurubooru\SearchServices\Requirements\RequirementCompositeValue)
+		{
+			$sql = $sqlColumn;
+			$bindings = [$value->getValues()];
+		}
+
+		else if ($value instanceof \Szurubooru\SearchServices\Requirements\RequirementRangedValue)
+		{
+			if ($value->getMinValue() and $value->getMaxValue())
+			{
+				$sql = $sqlColumn . ' >= ? AND ' . $sqlColumn . ' <= ?';
+				$bindings = [$value->getMinValue(), $value->getMaxValue()];
+			}
+			elseif ($value->getMinValue())
+			{
+				$sql = $sqlColumn . ' >= ?';
+				$bindings = [$value->getMinValue()];
+			}
+			elseif ($value->getMaxValue())
+			{
+				$sql = $sqlColumn . ' <= ?';
+				$bindings = [$value->getMaxValue()];
+			}
+			else
+				throw new \RuntimeException('Neither min or max value was supplied');
+		}
+
+		else if ($value instanceof \Szurubooru\SearchServices\Requirements\RequirementSingleValue)
+		{
+			$sql = $sqlColumn;
+			$bindings = [$value->getValue()];
+		}
+
+		else
+			throw new \Exception('Bad value: ' . get_class($value));
+
+		if ($requirement->isNegated())
+			$sql = 'NOT (' . $sql . ')';
+		call_user_func_array([$query, 'where'], array_merge([$sql], $bindings));
+	}
+
 	protected function arrayToEntities(array $arrayEntities)
 	{
 		$entities = [];
@@ -193,10 +239,7 @@ abstract class AbstractDao implements ICrudDao
 	{
 		foreach ($filter->getRequirements() as $requirement)
 		{
-			if ($requirement->isNegated())
-				$query->where('NOT ' . $requirement->getType(), $requirement->getValue());
-			else
-				$query->where($requirement->getType(), $requirement->getValue());
+			$this->decorateQueryFromRequirement($query, $requirement);
 		}
 	}
 

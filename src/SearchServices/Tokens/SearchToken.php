@@ -1,10 +1,9 @@
 <?php
-namespace Szurubooru\SearchServices;
+namespace Szurubooru\SearchServices\Tokens;
 
-class Requirement
+class SearchToken
 {
 	private $negated = false;
-	private $type;
 	private $value;
 
 	public function isNegated()
@@ -15,16 +14,6 @@ class Requirement
 	public function setNegated($negated)
 	{
 		$this->negated = $negated;
-	}
-
-	public function getType()
-	{
-		return $this->type;
-	}
-
-	public function setType($type)
-	{
-		$this->type = $type;
 	}
 
 	public function getValue()

@@ -23,7 +23,7 @@ class BasicFilter implements IFilter
 		$this->order = $order;
 	}
 
-	public function addRequirement(\Szurubooru\SearchServices\Requirement $requirement)
+	public function addRequirement(\Szurubooru\SearchServices\Requirements\Requirement $requirement)
 	{
 		$this->requirements[] = $requirement;
 	}

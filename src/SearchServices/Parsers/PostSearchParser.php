@@ -10,12 +10,27 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function decorateFilterFromToken($filter, $token)
 	{
-		throw new \BadMethodCallException('Not supported');
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TAG);
+		$requirement->setValue($this->createRequirementValue($token->getValue()));
+		$requirement->setNegated($token->isNegated());
+		$filter->addRequirement($requirement);
 	}
 
-	protected function decorateFilterFromNamedToken($filter, $namedToken)
+	protected function decorateFilterFromNamedToken($filter, $token)
 	{
-		throw new \BadMethodCallException('Not supported');
+		if ($token->getKey() === 'id')
+		{
+			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+			$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_ID);
+			$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE | self::ALLOW_RANGES));
+			$requirement->setNegated($token->isNegated());
+			$filter->addRequirement($requirement);
+		}
+		else
+		{
+			throw new \BadMethodCallException('Not supported');
+		}
 	}
 
 	protected function getOrderColumn($token)

@@ -54,7 +54,7 @@ App.Presenters.PostListPresenter = function(
 		loaded();
 
 		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		pagedCollectionPresenter.reinit({page: searchArgs.page, searchParams: {order: searchArgs.order}});
+		pagedCollectionPresenter.reinit({page: searchArgs.page, searchParams: {query: searchArgs.query, order: searchArgs.order}});
 	}
 
 	function render() {

@@ -16,7 +16,7 @@
 		<ul class="tags">
 			<% _.each(post.tags, function(tag) { %>
 				<li>
-					<a href="#/posts/search=<%= tag.name %>">
+					<a href="#/posts/query=<%= tag.name %>">
 						<%= tag.name %>
 						<span class="usages"><%= (tag.usages) %></span>
 					</a>

@@ -20,12 +20,12 @@ class SnapshotSearchParser extends AbstractSearchParser
 
 		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
 		$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
-		$requirement->setValue($primaryKey);
+		$requirement->setValue($this->createRequirementValue($primaryKey));
 		$filter->addRequirement($requirement);
 
 		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
 		$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_TYPE);
-		$requirement->setValue(\Szurubooru\Helpers\EnumHelper::snapshotTypeFromString($type));
+		$requirement->setValue($this->createRequirementValue(\Szurubooru\Helpers\EnumHelper::snapshotTypeFromString($type)));
 		$filter->addRequirement($requirement);
 	}
 

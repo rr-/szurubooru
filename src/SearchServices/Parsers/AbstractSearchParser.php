@@ -3,6 +3,9 @@ namespace Szurubooru\SearchServices\Parsers;
 
 abstract class AbstractSearchParser
 {
+	const ALLOW_COMPOSITE = 1;
+	const ALLOW_RANGES = 2;
+
 	public function createFilterFromInputReader(\Szurubooru\Helpers\InputReader $inputReader)
 	{
 		$filter = $this->createFilter();
@@ -18,9 +21,9 @@ abstract class AbstractSearchParser
 
 		foreach ($tokens as $token)
 		{
-			if ($token instanceof \Szurubooru\SearchServices\NamedSearchToken)
+			if ($token instanceof \Szurubooru\SearchServices\Tokens\NamedSearchToken)
 				$this->decorateFilterFromNamedToken($filter, $token);
-			elseif ($token instanceof \Szurubooru\SearchServices\SearchToken)
+			elseif ($token instanceof \Szurubooru\SearchServices\Tokens\SearchToken)
 				$this->decorateFilterFromToken($filter, $token);
 			else
 				throw new \RuntimeException('Invalid search token type: ' . get_class($token));
@@ -36,6 +39,27 @@ abstract class AbstractSearchParser
 	protected abstract function decorateFilterFromNamedToken($filter, $namedToken);
 
 	protected abstract function getOrderColumn($token);
+
+	protected function createRequirementValue($text, $flags = 0)
+	{
+		if ((($flags & self::ALLOW_RANGES) === self::ALLOW_RANGES) and substr_count($text, '..') === 1)
+		{
+			list ($minValue, $maxValue) = explode('..', $text);
+			$tokenValue = new \Szurubooru\SearchServices\Requirements\RequirementRangedValue();
+			$tokenValue->setMinValue($minValue);
+			$tokenValue->setMaxValue($maxValue);
+			return $tokenValue;
+		}
+		else if ((($flags & self::ALLOW_COMPOSITE) === self::ALLOW_COMPOSITE) and strpos($text, ',') !== false)
+		{
+			$values = explode(',', $text);
+			$tokenValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
+			$tokenValue->setValues($values);
+			return $tokenValue;
+		}
+
+		return new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($text);
+	}
 
 	private function getOrder($query)
 	{
@@ -75,14 +99,14 @@ abstract class AbstractSearchParser
 
 			if (strpos($tokenText, ':') !== false)
 			{
-				$searchToken = new \Szurubooru\SearchServices\NamedSearchToken();
-				list ($tokenKey, $tokenValue) = explode(':', $tokenText, 1);
+				$searchToken = new \Szurubooru\SearchServices\Tokens\NamedSearchToken();
+				list ($tokenKey, $tokenValue) = explode(':', $tokenText, 2);
 				$searchToken->setKey($tokenKey);
 				$searchToken->setValue($tokenValue);
 			}
 			else
 			{
-				$searchToken = new \Szurubooru\SearchServices\SearchToken();
+				$searchToken = new \Szurubooru\SearchServices\Tokens\SearchToken();
 				$searchToken->setValue($tokenText);
 			}
 

@@ -93,6 +93,26 @@ class PostDao extends AbstractDao implements ICrudDao
 		$this->syncPostRelations($post);
 	}
 
+	protected function decorateQueryFromRequirement($query, \Szurubooru\SearchServices\Requirements\Requirement $requirement)
+	{
+		if ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TAG)
+		{
+			$sql = 'EXISTS (
+				SELECT 1 FROM postTags
+				INNER JOIN tags ON postTags.tagId = tags.id
+				WHERE postTags.postId = posts.id
+					AND LOWER(tags.name) = LOWER(?))';
+
+			if ($requirement->isNegated())
+				$sql = 'NOT ' . $sql;
+
+			$query->where($sql, $requirement->getValue()->getValue());
+			return;
+		}
+
+		parent::decorateQueryFromRequirement($query, $requirement);
+	}
+
 	private function getTags(\Szurubooru\Entities\Post $post)
 	{
 		return $this->tagDao->findByPostId($post->getId());

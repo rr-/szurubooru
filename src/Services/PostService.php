@@ -91,14 +91,14 @@ class PostService
 		{
 			$filter = new \Szurubooru\SearchServices\Filters\SnapshotFilter();
 
-			$requirement = new \Szurubooru\SearchServices\Requirement();
+			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
 			$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
-			$requirement->setValue($post->getId());
+			$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($post->getId()));
 			$filter->addRequirement($requirement);
 
-			$requirement = new \Szurubooru\SearchServices\Requirement();
+			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
 			$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_TYPE);
-			$requirement->setValue(\Szurubooru\Entities\Snapshot::TYPE_POST);
+			$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue(\Szurubooru\Entities\Snapshot::TYPE_POST));
 			$filter->addRequirement($requirement);
 
 			return $this->historyService->getFiltered($filter)->getEntities();

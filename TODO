@@ -26,10 +26,10 @@ everything related to posts:
         - score
         - comment count
         - regard safety settings
+        - regard disliked settings
+        - add search form (query, order and safety) to post list presenter
         - add warning if no posts were found
         - search filters
-            - tag
-            - -tag
             - submit:rr-
             - comment:rr-
             - comment: 3..5
@@ -42,7 +42,6 @@ everything related to posts:
             - date:yyyy[-mm[-dd]]..yyyy[-mm[-dd]]
             - filesize:3K..5M
             - imgsize:huge/large/medium/small
-            - id:3,4,5
             - hash:postName
             - type:img/flash/yt/video
             - special:liked
@@ -60,8 +59,6 @@ everything related to posts:
             - order:favdate
             - order:filesize
             - order:random (at least unstable version)
-        - safe/sketchy/unsafe buttons and top navigation search goes to post
-          list presenter
 
 everything related to users:
     - banning

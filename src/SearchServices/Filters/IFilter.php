@@ -12,7 +12,7 @@ interface IFilter
 
 	public function getRequirements();
 
-	public function addRequirement(\Szurubooru\SearchServices\Requirement $requirement);
+	public function addRequirement(\Szurubooru\SearchServices\Requirements\Requirement $requirement);
 
 	public function getPageSize();
 
