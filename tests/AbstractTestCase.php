@@ -36,6 +36,11 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 		return __DIR__ . DIRECTORY_SEPARATOR . 'test_files' . DIRECTORY_SEPARATOR . $fileName;
 	}
 
+	protected function setUp()
+	{
+		\Szurubooru\Injector::init();
+	}
+
 	protected function tearDown()
 	{
 		$this->cleanTestDirectory();

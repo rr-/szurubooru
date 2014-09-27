@@ -22,12 +22,6 @@ abstract class AbstractDao implements ICrudDao
 			});
 	}
 
-	public function setDatabaseConnection(\Szurubooru\DatabaseConnection $databaseConnection)
-	{
-		$this->pdo = $databaseConnection->getPDO();
-		$this->fpdo = new \FluentPDO($this->pdo);
-	}
-
 	public function getTableName()
 	{
 		return $this->tableName;
@@ -187,6 +181,12 @@ abstract class AbstractDao implements ICrudDao
 			$entities[$entity->getId()] = $entity;
 		}
 		return $entities;
+	}
+
+	private function setDatabaseConnection(\Szurubooru\DatabaseConnection $databaseConnection)
+	{
+		$this->pdo = $databaseConnection->getPDO();
+		$this->fpdo = new \FluentPDO($this->pdo);
 	}
 
 	private function decorateQueryFromFilter($query, \Szurubooru\SearchServices\Filters\IFilter $filter)

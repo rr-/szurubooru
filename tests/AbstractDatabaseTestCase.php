@@ -12,6 +12,7 @@ abstract class AbstractDatabaseTestCase extends \Szurubooru\Tests\AbstractTestCa
 		$config->set('database/dsn', 'sqlite::memory:');
 
 		$this->databaseConnection = new \Szurubooru\DatabaseConnection($config);
+		\Szurubooru\Injector::set(\Szurubooru\DatabaseConnection::class, $this->databaseConnection);
 
 		$upgradeRepository = \Szurubooru\Injector::get(\Szurubooru\Upgrades\UpgradeRepository::class);
 		$upgradeService = new \Szurubooru\Services\UpgradeService($config, $this->databaseConnection, $upgradeRepository);

@@ -22,6 +22,11 @@ final class Injector
 	{
 		return self::$container->get($className);
 	}
+
+	public static function set($className, $object)
+	{
+		return self::$container->set($className, $object);
+	}
 }
 
 Injector::init();

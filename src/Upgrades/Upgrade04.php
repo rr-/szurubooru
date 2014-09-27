@@ -19,8 +19,6 @@ class Upgrade04 implements IUpgrade
 
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		$this->postDao->setDatabaseConnection($databaseConnection);
-
 		$databaseConnection->getPDO()->exec('ALTER TABLE "posts" ADD COLUMN contentMimeType TEXT DEFAULT NULL');
 
 		$posts = $this->postDao->findAll();
@@ -28,7 +26,7 @@ class Upgrade04 implements IUpgrade
 		{
 			if ($post->getContentType() !== \Szurubooru\Entities\Post::POST_TYPE_YOUTUBE)
 			{
-				$fullPath = $this->fileService->getFullPath($this->postService->getPostContentPath($post));
+				$fullPath = $this->fileService->getFullPath($post->getContentPath());
 				$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromFile($fullPath);
 				$post->setContentMimeType($mime);
 				$this->postDao->save($post);
