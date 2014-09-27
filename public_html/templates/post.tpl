@@ -84,12 +84,17 @@
 			<% } %>
 
 			<% if (post.source) { %>
-				<li>
-					Source:&nbsp;<!--
-					--><a href="<%= post.source %>"><!--
-						--><%= post.source.trim() %>
-					</a>
-				</li>
+				<li><!--
+					--><% var link = post.source.match(/^(\/\/|https?:\/\/)/); %><!--
+					-->Source:&nbsp;<!--
+					--><% if (link) { %><!--
+						--><a href="<%= post.source %>"><!--
+					--><% } %><!--
+						--><%= post.source.trim() %><!--
+					--><% if (link) { %><!--
+						--></a><!--
+					--><% } %><!--
+				--></li>
 			<% } %>
 
 		</ul>
