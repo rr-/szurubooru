@@ -26,6 +26,16 @@ h2 {
 	text-align: left;
 	max-width: 100%;
 }
+@media all and (max-width: 62.5em) {
+	#content {
+		width: 100%;
+	}
+}
+@media all and (min-width: 62.5em) {
+	#content {
+		width: 80%;
+	}
+}
 
 a {
 	color: #298;

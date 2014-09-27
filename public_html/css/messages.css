@@ -1,7 +1,8 @@
 .message {
-	margin-bottom: 0.2em;
+	margin: 0 auto 0.2em auto;
 	padding: 0.4em 0.5em;
 	text-align: center;
+	max-width: 40em;
 }
 
 .message.error {

@@ -36,20 +36,22 @@
 	}
 
 	#post-view-wrapper #post-view {
-		min-width: 40em;
 		flex: 5;
 	}
 }
 
 @media all and (max-width: 62.5em) {
 	#post-view-wrapper {
-		display: block;
+		display: flex;
+		flex-direction: column;
 	}
 	#post-view-wrapper #sidebar {
 		order: 2;
 		margin-bottom: 1em;
 	}
 	#post-view-wrapper #post-view {
+		margin: 0 auto;
+		max-width: 100%;
 		order: 1;
 	}
 }
@@ -128,4 +130,5 @@
 #post-view-wrapper .post-history-wrapper {
 	padding: 1em;
 	display: none;
+	word-break: break-all;
 }

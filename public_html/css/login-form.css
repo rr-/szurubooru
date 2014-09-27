@@ -16,3 +16,7 @@
 	list-style-position: inside;
 	white-space: nowrap;
 }
+
+#login-form .messages {
+	margin: 0 auto;
+}

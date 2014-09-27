@@ -4,3 +4,7 @@
 #registration-form form {
 	width: 25em;
 }
+
+#registration-form .messages {
+	margin: 0 auto;
+}
