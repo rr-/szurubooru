@@ -40,6 +40,7 @@ App.Presenters.HomePresenter = function(
 
 			}).fail(function(response) {
 				messagePresenter.showError($el, response.json && response.json.error || response);
+				loaded();
 			});
 	}
 

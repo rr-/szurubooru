@@ -41,6 +41,7 @@ App.Presenters.PostListPresenter = function(
 						failCallback: function(response) {
 							$el.empty();
 							messagePresenter.showError($el, response.json && response.json.error || response);
+							loaded();
 						}
 					},
 					function() {

@@ -50,6 +50,7 @@ App.Presenters.UserPresenter = function(
 			}).fail(function(response) {
 				$el.empty();
 				messagePresenter.showError($messages, response.json && response.json.error || response);
+				loaded();
 			});
 	}
 

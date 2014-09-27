@@ -40,6 +40,7 @@ App.Presenters.UserListPresenter = function(
 						failCallback: function(response) {
 							$el.empty();
 							messagePresenter.showError($el, response.json && response.json.error || response);
+							loaded();
 						}
 					},
 					function() {

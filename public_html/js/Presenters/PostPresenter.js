@@ -63,7 +63,10 @@ App.Presenters.PostPresenter = function(
 				historyTemplate = _.template(historyTemplateHtml);
 
 				reinit(args, loaded);
-			}).fail(showGenericError);
+			}).fail(function(response) {
+				showGenericError(response);
+				loaded();
+			});
 	}
 
 	function reinit(args, loaded) {
@@ -80,7 +83,10 @@ App.Presenters.PostPresenter = function(
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
 				loaded();
-			}).fail(showGenericError);
+			}).fail(function(response) {
+				showGenericError(response);
+				loaded();
+			});
 	}
 
 	function render() {
