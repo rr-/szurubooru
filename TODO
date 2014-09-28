@@ -2,22 +2,6 @@ This is transient file that lists functionalities to be implemented before
 first major release.
 
 everything related to posts:
-    - single post view
-        - editing
-            - ability to loop video posts
-        - previous and next post (difficult)
-            - extract Pager from PagedCollectionPresenter
-            - rename PagedCollectionPresenter to PagerPresenter
-            - remember last search
-            - take care of pages
-            - add A/D hotkeys
-        - hiding posts
-
-    - random post
-        - regard safety settings
-
-    - ability to paste many urls in post upload
-
     - post listing
         - better thumbnail loading
         - comment count
@@ -26,6 +10,7 @@ everything related to posts:
         - add search form (query, order and safety) to post list presenter
         - add warning if no posts were found
         - search filters
+            - safety:safe/sketchy/unsafe
             - submit:rr-
             - comment:rr-
             - comment_count: 3..5
@@ -40,7 +25,6 @@ everything related to posts:
             - special:liked
             - special:disliked
             - special:fav
-            - special:hidden
         - search order
             - order:id
             - order:time
@@ -50,6 +34,32 @@ everything related to posts:
             - order:comment_time
             - order:file_size
             - order:random (at least unstable version)
+
+    - single post view
+        - previous and next post (difficult)
+            - extract Pager from PagedCollectionPresenter
+            - rename PagedCollectionPresenter to PagerPresenter
+            - remember last search
+            - take care of pages
+            - add A/D hotkeys
+        - editing
+            - ability to loop video posts
+
+    - random post
+        - regard safety settings
+
+    - ability to paste many urls in post upload
+
+    - post notes
+        - "add note" in sidebar creates new note in the middle of image
+        - hovering notes shows note text
+        - dragging and resizing notes is always possible
+        - clicking note reveals modal popup with textarea to input text
+        - under textarea there are buttons for saving and/or deleting the note.
+        - post notes should have separate table and shouldn't be stored as json
+          column.
+        - post notes should be visible in post edit history.
+          (move post snapshot factory methods to PostService)
 
 everything related to users:
     - banning
@@ -94,13 +104,11 @@ refactors:
                   template = _.template(html); });
     - change content spinner to nprogress:
       http://ricostacruz.com/nprogress/
-    - add fetchUsers to PostSearchFilter: when AbstractDao fetches entities
-      with query decorated by PostDao::decorateQueryFromFilter, call
-      PostDao::decorateEntitiesWithFilter that will optimally load users and
-      inject them using posts' lazy loaders.
     - reduce dependencies
 
 miscellaneous:
+    - use 1 token for logins, so that session isn't killed
+    - endless pager should include information about page number
     - fix mouse trap hotkeys when leaving page
     - add hotkeys for focusing items in top navigation
     - add ability to select tags text in tag input
@@ -114,7 +122,6 @@ miscellaneous:
     - add help, api documentation
     - add version on homepage that reads version from package.json and git hash
     - add tool for migrating szurubooru database
-    - endless pager should include information about page number
     - add README - apache2 has good README:
       http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
     - add spinner to forms such as registration, user query, login, settings
@@ -123,3 +130,4 @@ miscellaneous:
 
 some day:
     - configure mails and ensure it works with gmail
+    - configure HTTPS
