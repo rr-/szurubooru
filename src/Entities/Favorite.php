@@ -5,6 +5,7 @@ class Favorite extends Entity
 {
 	private $postId;
 	private $userId;
+	private $time;
 
 	const LAZY_LOADER_USER = 'user';
 	const LAZY_LOADER_POST = 'post';
@@ -27,6 +28,16 @@ class Favorite extends Entity
 	public function setPostId($postId)
 	{
 		$this->postId = $postId;
+	}
+
+	public function getTime()
+	{
+		return $this->time;
+	}
+
+	public function setTime($time)
+	{
+		$this->time = $time;
 	}
 
 	public function getUser()

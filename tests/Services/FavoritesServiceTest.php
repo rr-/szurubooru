@@ -6,6 +6,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $favoritesDaoMock;
 	private $userDaoMock;
 	private $transactionManagerMock;
+	private $timeServiceMock;
 
 	public function setUp()
 	{
@@ -13,6 +14,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->favoritesDaoMock = $this->mock(\Szurubooru\Dao\FavoritesDao::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
 		$this->transactionManagerMock = $this->mockTransactionManager();
+		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 	}
 
 	public function testAddingExisting()
@@ -78,6 +80,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		return new \Szurubooru\Services\FavoritesService(
 			$this->favoritesDaoMock,
 			$this->userDaoMock,
-			$this->transactionManagerMock);
+			$this->transactionManagerMock,
+			$this->timeServiceMock);
 	}
 }

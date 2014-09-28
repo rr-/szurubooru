@@ -6,15 +6,18 @@ class FavoritesService
 	private $favoritesDao;
 	private $userDao;
 	private $transactionManager;
+	private $timeService;
 
 	public function __construct(
 		\Szurubooru\Dao\FavoritesDao $favoritesDao,
 		\Szurubooru\Dao\UserDao $userDao,
-		\Szurubooru\Dao\TransactionManager $transactionManager)
+		\Szurubooru\Dao\TransactionManager $transactionManager,
+		\Szurubooru\Services\TimeService $timeService)
 	{
 		$this->favoritesDao = $favoritesDao;
 		$this->userDao = $userDao;
 		$this->transactionManager = $transactionManager;
+		$this->timeService = $timeService;
 	}
 
 	public function getFavoriteUsers(\Szurubooru\Entities\Post $post)
@@ -42,6 +45,7 @@ class FavoritesService
 				$favorite = new \Szurubooru\Entities\Favorite();
 				$favorite->setUser($user);
 				$favorite->setPost($post);
+				$favorite->setTime($this->timeService->getCurrentTime());
 				$this->favoritesDao->save($favorite);
 			}
 		};

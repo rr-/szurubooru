@@ -48,10 +48,8 @@ everything related to posts:
             - order:time
             - order:score
             - order:comment_count
-            - order:fav_count
             - order:tag_count
             - order:comment_time
-            - order:fav_time
             - order:file_size
             - order:random (at least unstable version)
 

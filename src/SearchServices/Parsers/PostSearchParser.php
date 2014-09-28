@@ -64,6 +64,12 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function getOrderColumn($token)
 	{
+		if ($token === 'fav_time')
+			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_FAV_TIME;
+
+		elseif ($token === 'fav_count')
+			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_FAV_COUNT;
+
 		throw new \BadMethodCallException('Not supported');
 	}
 
