@@ -24,11 +24,11 @@ class GlobalParamDao extends AbstractDao implements ICrudDao
 
 	public function findByKey($key)
 	{
-		return $this->findOneBy('key', $key);
+		return $this->findOneBy('dataKey', $key);
 	}
 
 	public function deleteByKey($key)
 	{
-		return $this->deleteBy('key', $key);
+		return $this->deleteBy('dataKey', $key);
 	}
 }

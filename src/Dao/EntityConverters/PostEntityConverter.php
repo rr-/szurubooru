@@ -10,8 +10,8 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'id' => $entity->getId(),
 			'name' => $entity->getName(),
 			'userId' => $entity->getUserId(),
-			'uploadTime' => $entity->getUploadTime(),
-			'lastEditTime' => $entity->getLastEditTime(),
+			'uploadTime' => $this->entityTimeToDbTime($entity->getUploadTime()),
+			'lastEditTime' => $this->entityTimeToDbTime($entity->getLastEditTime()),
 			'safety' => $entity->getSafety(),
 			'contentType' => $entity->getContentType(),
 			'contentChecksum' => $entity->getContentChecksum(),
@@ -22,7 +22,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'originalFileSize' => $entity->getOriginalFileSize(),
 			'originalFileName' => $entity->getOriginalFileName(),
 			'featureCount' => $entity->getFeatureCount(),
-			'lastFeatureTime' => $entity->getLastFeatureTime(),
+			'lastFeatureTime' => $this->entityTimeToDbTime($entity->getLastFeatureTime()),
 		];
 	}
 
@@ -31,8 +31,8 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity = new \Szurubooru\Entities\Post(intval($array['id']));
 		$entity->setName($array['name']);
 		$entity->setUserId($array['userId']);
-		$entity->setUploadTime($array['uploadTime']);
-		$entity->setLastEditTime($array['lastEditTime']);
+		$entity->setUploadTime($this->dbTimeToEntityTime($array['uploadTime']));
+		$entity->setLastEditTime($this->dbTimeToEntityTime($array['lastEditTime']));
 		$entity->setSafety(intval($array['safety']));
 		$entity->setContentType(intval($array['contentType']));
 		$entity->setContentChecksum($array['contentChecksum']);
@@ -43,7 +43,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setOriginalFileSize($array['originalFileSize']);
 		$entity->setOriginalFileName($array['originalFileName']);
 		$entity->setFeatureCount(intval($array['featureCount']));
-		$entity->setLastFeatureTime($array['lastFeatureTime']);
+		$entity->setLastFeatureTime($this->dbTimeToEntityTime($array['lastFeatureTime']));
 		$entity->setMeta(\Szurubooru\Entities\Post::META_TAG_COUNT, intval($array['tagCount']));
 		$entity->setMeta(\Szurubooru\Entities\Post::META_FAV_COUNT, intval($array['favCount']));
 		$entity->setMeta(\Szurubooru\Entities\Post::META_SCORE, intval($array['score']));

@@ -19,4 +19,16 @@ abstract class AbstractEntityConverter implements IEntityConverter
 	}
 
 	protected abstract function toBasicEntity(array $array);
+
+	protected function dbTimeToEntityTime($time)
+	{
+		if ($time === null)
+			return null;
+		return date('c', strtotime($time));
+	}
+
+	protected function entityTimeToDbTime($time)
+	{
+		return $time;
+	}
 }

@@ -6,12 +6,13 @@ class Upgrade05 implements IUpgrade
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
 		$pdo = $databaseConnection->getPDO();
+		$driver = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
 
 		$pdo->exec('
 			CREATE TABLE tags2
 			(
-				id INTEGER PRIMARY KEY NOT NULL,
-				name TEXT UNIQUE NOT NULL,
+				id INTEGER PRIMARY KEY ' . ($driver === 'mysql' ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ',
+				name VARCHAR(64) UNIQUE NOT NULL,
 				usages INTEGER NOT NULL DEFAULT 0
 			)');
 		$pdo->exec('INSERT INTO tags2(name, usages) SELECT name, (SELECT COUNT(1) FROM postTags WHERE tagName = tags.name) FROM tags');

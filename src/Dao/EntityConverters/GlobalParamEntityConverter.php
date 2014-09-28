@@ -8,16 +8,16 @@ class GlobalParamEntityConverter extends AbstractEntityConverter implements IEnt
 		return
 		[
 			'id' => $entity->getId(),
-			'key' => $entity->getKey(),
-			'value' => $entity->getValue(),
+			'dataKey' => $entity->getKey(),
+			'dataValue' => $entity->getValue(),
 		];
 	}
 
 	public function toBasicEntity(array $array)
 	{
 		$entity = new \Szurubooru\Entities\GlobalParam($array['id']);
-		$entity->setKey($array['key']);
-		$entity->setValue($array['value']);
+		$entity->setKey($array['dataKey']);
+		$entity->setValue($array['dataValue']);
 		return $entity;
 	}
 }

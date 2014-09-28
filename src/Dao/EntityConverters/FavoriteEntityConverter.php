@@ -10,7 +10,7 @@ class FavoriteEntityConverter extends AbstractEntityConverter implements IEntity
 			'id' => $entity->getId(),
 			'userId' => $entity->getUserId(),
 			'postId' => $entity->getPostId(),
-			'time' => $entity->getTime(),
+			'time' => $this->entityTimeToDbTime($entity->getTime()),
 		];
 	}
 
@@ -19,7 +19,7 @@ class FavoriteEntityConverter extends AbstractEntityConverter implements IEntity
 		$entity = new \Szurubooru\Entities\Favorite($array['id']);
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
-		$entity->setTime($array['time']);
+		$entity->setTime($this->dbTimeToEntityTime($array['time']));
 		return $entity;
 	}
 }

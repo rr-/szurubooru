@@ -30,7 +30,8 @@ class DatabaseConnection
 		$cwd = getcwd();
 		if ($this->config->getDataDirectory())
 			chdir($this->config->getDataDirectory());
-		$this->pdo = new \PDO($this->config->database->dsn);
+		$this->pdo = new \PDO($this->config->database->dsn, $this->config->database->user,
+		$this->config->database->password);
 		$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		chdir($cwd);
 	}

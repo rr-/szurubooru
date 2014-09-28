@@ -7,8 +7,6 @@ class Upgrade06 implements IUpgrade
 	{
 		$pdo = $databaseConnection->getPDO();
 
-		$pdo->exec('ALTER TABLE posts ADD COLUMN tagCount INTEGER NOT NULL DEFAULT 0');
-
 		$pdo->exec('
 			CREATE TRIGGER postTagsDelete BEFORE DELETE ON postTags
 			FOR EACH ROW
@@ -34,5 +32,7 @@ class Upgrade06 implements IUpgrade
 				UPDATE tags SET usages = usages + 1 WHERE tags.id = NEW.tagId;
 				UPDATE tags SET usages = usages - 1 WHERE tags.id = OLD.tagId;
 			END');
+
+		$pdo->exec('ALTER TABLE posts ADD COLUMN tagCount INTEGER NOT NULL DEFAULT 0');
 	}
 }

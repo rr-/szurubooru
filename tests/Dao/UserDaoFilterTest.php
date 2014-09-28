@@ -151,8 +151,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$user = new \Szurubooru\Entities\User();
 		$user->setName($userName);
 		$user->setPasswordHash('whatever');
-		$user->setLastLoginTime('whatever');
-		$user->setRegistrationTime('whatever');
+		$user->setLastLoginTime(date('c', mktime(1, 2, 3)));
+		$user->setRegistrationTime(date('c', mktime(3, 2, 1)));
 		$user->setAccessRank(\Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER);
 		return $user;
 	}

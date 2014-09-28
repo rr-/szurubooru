@@ -8,7 +8,7 @@ class SnapshotEntityConverter extends AbstractEntityConverter implements IEntity
 		return
 		[
 			'id' => $entity->getId(),
-			'time' => $entity->getTime(),
+			'time' => $this->entityTimeToDbTime($entity->getTime()),
 			'type' => $entity->getType(),
 			'primaryKey' => $entity->getPrimaryKey(),
 			'userId' => $entity->getUserId(),
@@ -21,7 +21,7 @@ class SnapshotEntityConverter extends AbstractEntityConverter implements IEntity
 	public function toBasicEntity(array $array)
 	{
 		$entity = new \Szurubooru\Entities\Snapshot(intval($array['id']));
-		$entity->setTime($array['time']);
+		$entity->setTime($this->dbTimeToEntityTime($array['time']));
 		$entity->setType(intval($array['type']));
 		$entity->setPrimaryKey($array['primaryKey']);
 		$entity->setUserId($array['userId']);

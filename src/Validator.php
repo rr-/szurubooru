@@ -93,6 +93,8 @@ class Validator
 				throw new \DomainException('Tags cannot be empty.');
 			}
 
+			$this->validateMaxLength($tag, 64, 'Tag');
+
 			foreach ($illegalCharacters as $char)
 			{
 				if (strpos($tag, $char) !== false)

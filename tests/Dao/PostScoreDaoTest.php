@@ -26,7 +26,7 @@ class PostScoreDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$postScore = new \Szurubooru\Entities\PostScore();
 		$postScore->setUser($user);
 		$postScore->setPost($post);
-		$postScore->setTime('whatever');
+		$postScore->setTime(date('c'));
 		$postScore->setScore(1);
 		$postScoreDao = $this->getPostScoreDao();
 		$postScoreDao->save($postScore);
@@ -37,7 +37,7 @@ class PostScoreDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$savedPostScore = $postScoreDao->findById($postScore->getId());
 		$this->assertEquals(1, $savedPostScore->getUserId());
 		$this->assertEquals(2, $savedPostScore->getPostId());
-		$this->assertEquals('whatever', $savedPostScore->getTime());
+		$this->assertEquals($postScore->getTime(), $savedPostScore->getTime());
 		$this->assertEntitiesEqual($user, $savedPostScore->getUser());
 		$this->assertEntitiesEqual($post, $savedPostScore->getPost());
 	}
@@ -52,19 +52,19 @@ class PostScoreDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$postScore1 = new \Szurubooru\Entities\PostScore();
 		$postScore1->setUser($user1);
 		$postScore1->setPost($post1);
-		$postScore1->setTime('time1');
+		$postScore1->setTime(date('c', mktime(1)));
 		$postScore1->setScore(1);
 
 		$postScore2 = new \Szurubooru\Entities\PostScore();
 		$postScore2->setUser($user2);
 		$postScore2->setPost($post2);
-		$postScore2->setTime('time2');
+		$postScore2->setTime(date('c', mktime(2)));
 		$postScore2->setScore(0);
 
 		$postScore3 = new \Szurubooru\Entities\PostScore();
 		$postScore3->setUser($user1);
 		$postScore3->setPost($post2);
-		$postScore3->setTime('time3');
+		$postScore3->setTime(date('c', mktime(3)));
 		$postScore3->setScore(-1);
 
 		$postScoreDao = $this->getPostScoreDao();

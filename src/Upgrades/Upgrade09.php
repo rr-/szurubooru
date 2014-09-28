@@ -17,13 +17,14 @@ class Upgrade09 implements IUpgrade
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
 		$pdo = $databaseConnection->getPDO();
+		$driver = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
 
 		$pdo->exec('DROP TABLE IF EXISTS snapshots');
 
 		$pdo->exec('CREATE TABLE snapshots
 			(
-				id INTEGER PRIMARY KEY NOT NULL,
-				time TIMESTAMP NOT NULL,
+				id INTEGER PRIMARY KEY ' . ($driver === 'mysql' ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ',
+				time DATETIME NOT NULL,
 				type INTEGER NOT NULL,
 				primaryKey TEXT NOT NULL,
 				operation INTEGER NOT NULL,

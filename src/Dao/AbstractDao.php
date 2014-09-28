@@ -133,6 +133,8 @@ abstract class AbstractDao implements ICrudDao
 
 	protected function findBy($columnName, $value)
 	{
+		if (is_array($value) and empty($value))
+			return [];
 		$query = $this->fpdo->from($this->tableName)->where($columnName, $value);
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);

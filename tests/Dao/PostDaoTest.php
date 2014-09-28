@@ -293,7 +293,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$post = new \Szurubooru\Entities\Post();
 		$post->setName('test');
-		$post->setUploadTime('whatever');
+		$post->setUploadTime(date('c'));
 		$post->setSafety(\Szurubooru\Entities\Post::POST_SAFETY_SAFE);
 		$post->setContentType(\Szurubooru\Entities\Post::POST_TYPE_YOUTUBE);
 		$post->setContentChecksum('whatever');

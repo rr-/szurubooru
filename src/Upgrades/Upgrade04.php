@@ -19,7 +19,7 @@ class Upgrade04 implements IUpgrade
 
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		$databaseConnection->getPDO()->exec('ALTER TABLE "posts" ADD COLUMN contentMimeType TEXT DEFAULT NULL');
+		$databaseConnection->getPDO()->exec('ALTER TABLE posts ADD COLUMN contentMimeType VARCHAR(64) DEFAULT NULL');
 
 		$posts = $this->postDao->findAll();
 		foreach ($posts as $post)

@@ -5,37 +5,40 @@ class Upgrade03 implements IUpgrade
 {
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		$databaseConnection->getPDO()->exec('DROP TABLE "posts"');
+		$pdo = $databaseConnection->getPDO();
+		$driver = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
 
-		$databaseConnection->getPDO()->exec('
-			CREATE TABLE "posts"
+		$pdo->exec('DROP TABLE IF EXISTS posts');
+
+		$pdo->exec('
+			CREATE TABLE posts
 			(
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				name TEXT NOT NULL,
+				id INTEGER PRIMARY KEY ' . ($driver === 'mysql' ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ',
+				name VARCHAR(40) NOT NULL,
 				userId INTEGER,
-				uploadTime TIMESTAMP NOT NULL,
-				lastEditTime TIMESTAMP,
+				uploadTime DATETIME NOT NULL,
+				lastEditTime DATETIME,
 				safety INTEGER NOT NULL,
 				contentType INTEGER NOT NULL,
-				contentChecksum TEXT NOT NULL,
-				source TEXT,
+				contentChecksum VARCHAR(64) NOT NULL,
+				source VARCHAR(200),
 				imageWidth INTEGER,
 				imageHeight INTEGER,
 				originalFileSize INTEGER,
-				originalFileName TEXT
+				originalFileName VARCHAR(200)
 			)');
 
-		$databaseConnection->getPDO()->exec('
-			CREATE TABLE "tags"
+		$pdo->exec('
+			CREATE TABLE tags
 			(
-				name TEXT PRIMARY KEY NOT NULL
+				name VARCHAR(64) PRIMARY KEY NOT NULL
 			)');
 
-		$databaseConnection->getPDO()->exec('
-			CREATE TABLE "postTags"
+		$pdo->exec('
+			CREATE TABLE postTags
 			(
 				postId INTEGER NOT NULL,
-				tagName TEXT NOT NULL,
+				tagName VARCHAR(64) NOT NULL,
 				PRIMARY KEY (postId, tagName)
 			)');
 	}

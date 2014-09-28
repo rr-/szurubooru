@@ -13,8 +13,8 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'emailUnconfirmed' => $entity->getEmailUnconfirmed(),
 			'passwordHash' => $entity->getPasswordHash(),
 			'accessRank' => $entity->getAccessRank(),
-			'registrationTime' => $entity->getRegistrationTime(),
-			'lastLoginTime' => $entity->getLastLoginTime(),
+			'registrationTime' => $this->entityTimeToDbTime($entity->getRegistrationTime()),
+			'lastLoginTime' => $this->entityTimeToDbTime($entity->getLastLoginTime()),
 			'avatarStyle' => $entity->getAvatarStyle(),
 			'browsingSettings' => $entity->getBrowsingSettings(),
 			'accountConfirmed' => $entity->isAccountConfirmed(),
@@ -29,8 +29,8 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setEmailUnconfirmed($array['emailUnconfirmed']);
 		$entity->setPasswordHash($array['passwordHash']);
 		$entity->setAccessRank(intval($array['accessRank']));
-		$entity->setRegistrationTime($array['registrationTime']);
-		$entity->setLastLoginTime($array['lastLoginTime']);
+		$entity->setRegistrationTime($this->dbTimeToEntityTime($array['registrationTime']));
+		$entity->setLastLoginTime($this->dbTimeToEntityTime($array['lastLoginTime']));
 		$entity->setAvatarStyle(intval($array['avatarStyle']));
 		$entity->setBrowsingSettings($array['browsingSettings']);
 		$entity->setAccountConfirmed($array['accountConfirmed']);

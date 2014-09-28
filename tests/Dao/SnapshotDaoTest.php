@@ -40,7 +40,7 @@ class SnapshotDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$snapshot->setType(\Szurubooru\Entities\Snapshot::TYPE_POST);
 		$snapshot->setData(['wake up', 'neo', ['follow' => 'white rabbit']]);
 		$snapshot->setPrimaryKey(1);
-		$snapshot->setTime('whateveer');
+		$snapshot->setTime(date('c', mktime(1, 2, 3)));
 		$snapshot->setUserId(null);
 		$snapshot->setOperation(\Szurubooru\Entities\Snapshot::OPERATION_CHANGE);
 		return $snapshot;

@@ -10,6 +10,8 @@ abstract class AbstractDatabaseTestCase extends \Szurubooru\Tests\AbstractTestCa
 		parent::setUp();
 		$config = $this->mockConfig($this->createTestDirectory());
 		$config->set('database/dsn', 'sqlite::memory:');
+		$config->set('database/user', '');
+		$config->set('database/password', '');
 
 		$this->databaseConnection = new \Szurubooru\DatabaseConnection($config);
 		\Szurubooru\Injector::set(\Szurubooru\DatabaseConnection::class, $this->databaseConnection);

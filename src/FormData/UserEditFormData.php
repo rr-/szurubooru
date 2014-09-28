@@ -52,8 +52,8 @@ class UserEditFormData implements \Szurubooru\IValidatable
 		{
 			if (!is_string($this->browsingSettings))
 				throw new \InvalidArgumentException('Browsing settings must be stringified JSON.');
-			else if (strlen($this->browsingSettings) > 2000)
-				throw new \InvalidArgumentException('Stringified browsing settings can have at most 2000 characters.');
+			else if (strlen($this->browsingSettings) > 300)
+				throw new \InvalidArgumentException('Stringified browsing settings can have at most 300 characters.');
 		}
 	}
 }

@@ -10,7 +10,7 @@ class PostScoreEntityConverter extends AbstractEntityConverter implements IEntit
 			'id' => $entity->getId(),
 			'userId' => $entity->getUserId(),
 			'postId' => $entity->getPostId(),
-			'time' => $entity->getTime(),
+			'time' => $this->entityTimeToDbTime($entity->getTime()),
 			'score' => $entity->getScore(),
 		];
 	}
@@ -20,7 +20,7 @@ class PostScoreEntityConverter extends AbstractEntityConverter implements IEntit
 		$entity = new \Szurubooru\Entities\PostScore($array['id']);
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
-		$entity->setTime($array['time']);
+		$entity->setTime($this->dbTimeToEntityTime($array['time']));
 		$entity->setScore(intval($array['score']));
 		return $entity;
 	}

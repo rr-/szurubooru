@@ -5,36 +5,38 @@ class Upgrade01 implements IUpgrade
 {
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
+		$driver = $databaseConnection->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+
 		$databaseConnection->getPDO()->exec('
-			CREATE TABLE "users"
+			CREATE TABLE users
 			(
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				name TEXT NOT NULL,
-				passwordHash TEXT NOT NULL,
-				email TEXT,
-				emailUnconfirmed TEXT,
+				id INTEGER PRIMARY KEY ' . ($driver === 'mysql' ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ',
+				name VARCHAR(50) NOT NULL,
+				passwordHash VARCHAR(64) NOT NULL,
+				email VARCHAR(200),
+				emailUnconfirmed VARCHAR(200),
 				accessRank INTEGER NOT NULL,
-				browsingSettings TEXT,
-				banned INTEGER,
-				registrationTime INTEGER DEFAULT NULL,
-				lastLoginTime INTEGER DEFAULT NULL,
+				browsingSettings VARCHAR(300),
+				banned BOOLEAN DEFAULT FALSE,
+				registrationTime DATETIME DEFAULT NULL,
+				lastLoginTime DATETIME DEFAULT NULL,
 				avatarStyle INTEGER DEFAULT 1
 			);');
 
 		$databaseConnection->getPDO()->exec('
-			CREATE TABLE "tokens"
+			CREATE TABLE tokens
 			(
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				name TEXT NOT NULL,
+				id INTEGER PRIMARY KEY ' . ($driver === 'mysql' ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ',
+				name VARCHAR(200) NOT NULL,
 				purpose INTEGER NOT NULL,
-				additionalData TEXT
+				additionalData VARCHAR(200)
 			);');
 
 		$databaseConnection->getPDO()->exec('
-			CREATE TABLE "posts"
+			CREATE TABLE posts
 			(
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				name TEXT NOT NULL
+				id INTEGER PRIMARY KEY ' . ($driver === 'mysql' ? 'AUTO_INCREMENT' : 'AUTOINCREMENT') . ',
+				name VARCHAR(200) NOT NULL
 			);');
 	}
 }

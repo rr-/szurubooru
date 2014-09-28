@@ -26,7 +26,7 @@ class FavoritesDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$favorite = new \Szurubooru\Entities\Favorite();
 		$favorite->setUser($user);
 		$favorite->setPost($post);
-		$favorite->setTime('whatever');
+		$favorite->setTime(date('c'));
 		$favoritesDao = $this->getFavoritesDao();
 		$favoritesDao->save($favorite);
 
@@ -36,7 +36,7 @@ class FavoritesDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$savedFavorite = $favoritesDao->findById($favorite->getId());
 		$this->assertEquals(1, $savedFavorite->getUserId());
 		$this->assertEquals(2, $savedFavorite->getPostId());
-		$this->assertEquals('whatever', $savedFavorite->getTime());
+		$this->assertEquals($favorite->getTime(), $savedFavorite->getTime());
 		$this->assertEntitiesEqual($user, $savedFavorite->getUser());
 		$this->assertEntitiesEqual($post, $savedFavorite->getPost());
 	}
