@@ -22,6 +22,7 @@ App.Presenters.PostPresenter = function(
 	var historyTemplate;
 
 	var post;
+	var postScore;
 	var postFavorites;
 	var postHistory;
 	var postNameOrId;
@@ -73,26 +74,40 @@ App.Presenters.PostPresenter = function(
 	function reinit(args, loaded) {
 		postNameOrId = args.postNameOrId;
 
-		promise.waitAll(
-				api.get('/posts/' + postNameOrId),
-				api.get('/posts/' + postNameOrId + '/favorites'),
-				privileges.canViewHistory ?
-					api.get('/posts/' + postNameOrId + '/history') :
-					null)
-			.then(function(
-					postResponse,
-					postFavoritesResponse,
-					postHistoryResponse) {
-				post = postResponse.json;
-				postFavorites = postFavoritesResponse && postFavoritesResponse.json && postFavoritesResponse.json.data;
-				postHistory = postHistoryResponse && postHistoryResponse.json && postHistoryResponse.json.data;
+		refreshPost()
+			.then(function() {
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
 				loaded();
-			}).fail(function(response) {
-				showGenericError(response);
-				loaded();
 			});
+	}
+
+	function refreshPost() {
+		return promise.make(function(resolve, reject) {
+			promise.waitAll(
+					api.get('/posts/' + postNameOrId),
+					api.get('/posts/' + postNameOrId + '/favorites'),
+					auth.isLoggedIn() ?
+						api.get('/posts/' + postNameOrId + '/score') :
+						null,
+					privileges.canViewHistory ?
+						api.get('/posts/' + postNameOrId + '/history') :
+						null)
+				.then(function(
+						postResponse,
+						postFavoritesResponse,
+						postScoreResponse,
+						postHistoryResponse) {
+					post = postResponse.json;
+					postScore = postScoreResponse && postScoreResponse.json && postScoreResponse.json.score;
+					postFavorites = postFavoritesResponse && postFavoritesResponse.json && postFavoritesResponse.json.data;
+					postHistory = postHistoryResponse && postHistoryResponse.json && postHistoryResponse.json.data;
+					resolve();
+				}).fail(function(response) {
+					showGenericError(response);
+					reject();
+				});
+		});
 	}
 
 	function render() {
@@ -129,6 +144,7 @@ App.Presenters.PostPresenter = function(
 	function renderPostTemplate() {
 		return postTemplate({
 			post: post,
+			ownScore: postScore,
 			postFavorites: postFavorites,
 			postHistory: postHistory,
 
@@ -153,6 +169,8 @@ App.Presenters.PostPresenter = function(
 		$el.find('#sidebar .history').click(historyButtonClicked);
 		$el.find('#sidebar .add-favorite').click(addFavoriteButtonClicked);
 		$el.find('#sidebar .delete-favorite').click(deleteFavoriteButtonClicked);
+		$el.find('#sidebar .score-up').click(scoreUpButtonClicked);
+		$el.find('#sidebar .score-down').click(scoreDownButtonClicked);
 	}
 
 	function deleteButtonClicked(e) {
@@ -300,8 +318,7 @@ App.Presenters.PostPresenter = function(
 	function addFavorite() {
 		api.post('/posts/' + post.id + '/favorites')
 			.then(function(response) {
-				postFavorites = response.json.data;
-				renderSidebar();
+				refreshPost().then(renderSidebar);
 			})
 			.fail(showGenericError);
 	}
@@ -309,8 +326,27 @@ App.Presenters.PostPresenter = function(
 	function deleteFavorite() {
 		api.delete('/posts/' + post.id + '/favorites')
 			.then(function(response) {
-				postFavorites = response.json.data;
-				renderSidebar();
+				refreshPost().then(renderSidebar);
+			})
+			.fail(showGenericError);
+	}
+
+	function scoreUpButtonClicked(e) {
+		e.preventDefault();
+		var $target = jQuery(this);
+		score($target.hasClass('active') ? 0 : 1);
+	}
+
+	function scoreDownButtonClicked(e) {
+		e.preventDefault();
+		var $target = jQuery(this);
+		score($target.hasClass('active') ? 0 : -1);
+	}
+
+	function score(scoreValue) {
+		api.post('/posts/' + post.id + '/score', {score: scoreValue})
+			.then(function() {
+				refreshPost().then(renderSidebar);
 			})
 			.fail(showGenericError);
 	}

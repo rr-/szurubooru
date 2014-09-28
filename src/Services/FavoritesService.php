@@ -4,17 +4,20 @@ namespace Szurubooru\Services;
 class FavoritesService
 {
 	private $favoritesDao;
+	private $postScoreDao;
 	private $userDao;
 	private $transactionManager;
 	private $timeService;
 
 	public function __construct(
 		\Szurubooru\Dao\FavoritesDao $favoritesDao,
+		\Szurubooru\Dao\PostScoreDao $postScoreDao,
 		\Szurubooru\Dao\UserDao $userDao,
 		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Services\TimeService $timeService)
 	{
 		$this->favoritesDao = $favoritesDao;
+		$this->postScoreDao = $postScoreDao;
 		$this->userDao = $userDao;
 		$this->transactionManager = $transactionManager;
 		$this->timeService = $timeService;
@@ -39,15 +42,9 @@ class FavoritesService
 	{
 		$transactionFunc = function() use ($user, $post)
 		{
-			$favorite = $this->favoritesDao->findByUserAndPost($user, $post);
-			if (!$favorite)
-			{
-				$favorite = new \Szurubooru\Entities\Favorite();
-				$favorite->setUser($user);
-				$favorite->setPost($post);
-				$favorite->setTime($this->timeService->getCurrentTime());
-				$this->favoritesDao->save($favorite);
-			}
+			$this->postScoreDao->setScore($user, $post, 1);
+
+			return $this->favoritesDao->set($user, $post);
 		};
 		return $this->transactionManager->commit($transactionFunc);
 	}
@@ -56,9 +53,8 @@ class FavoritesService
 	{
 		$transactionFunc = function() use ($user, $post)
 		{
-			$favorite = $this->favoritesDao->findByUserAndPost($user, $post);
-			$this->favoritesDao->deleteById($favorite->getId());
+			$this->favoritesDao->delete($user, $post);
 		};
-		return $this->transactionManager->commit($transactionFunc);
+		$this->transactionManager->commit($transactionFunc);
 	}
 }

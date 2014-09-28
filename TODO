@@ -3,7 +3,7 @@ first major release.
 
 everything related to posts:
     - single post view
-        - score
+        - reduce requests to server
         - editing
             - ability to loop video posts
         - previous and next post (difficult)
@@ -21,7 +21,6 @@ everything related to posts:
 
     - post listing
         - better thumbnail loading
-        - score
         - comment count
         - regard safety settings
         - regard disliked settings

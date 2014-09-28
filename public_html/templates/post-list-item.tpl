@@ -5,13 +5,20 @@
 
 		<img class="thumb" src="/data/thumbnails/160x160/posts/<%= post.name %>" alt="<%= post.idMarkdown %>"/>
 
-		<% if (post.favoriteCount) { %>
+		<% if (post.favoriteCount || post.score) { %>
 			<div class="info">
 				<ul>
 					<% if (post.favoriteCount) { %>
 						<li>
-							<i class="fa fa-heart"></i>
+							<i class="fa fa-heart-o"></i>
 							<%= post.favoriteCount %>
+						</li>
+					<% } %>
+
+					<% if (post.score) { %>
+						<li>
+							<i class="fa fa-thumbs-o-up"></i>
+							<%= post.score %>
 						</li>
 					<% } %>
 				</ul>

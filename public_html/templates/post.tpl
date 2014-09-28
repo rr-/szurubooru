@@ -23,6 +23,26 @@
 						</a>
 					<% } %>
 				</li>
+
+				<li>
+					<a href="#" class="score-up <% print(ownScore === 1 ? 'active' : '') %>">
+						<% if (ownScore === 1) { %>
+							<i class="fa fa-thumbs-up"></i>
+						<% } else { %>
+							<i class="fa fa-thumbs-o-up"></i>
+						<% } %>
+					</a>
+				</li>
+
+				<li>
+					<a href="#" class="score-down <% print(ownScore === -1 ? 'active' : '') %>">
+						<% if (ownScore === -1) { %>
+							<i class="fa fa-thumbs-down"></i>
+						<% } else { %>
+							<i class="fa fa-thumbs-o-down"></i>
+						<% } %>
+					</a>
+				</li>
 			<% } %>
 		</ul>
 
@@ -112,6 +132,10 @@
 					--><% } %><!--
 				--></li>
 			<% } %>
+
+			<li>
+				Score: <%= post.score %>
+			</li>
 		</ul>
 
 		<% if (_.any(postFavorites)) { %>

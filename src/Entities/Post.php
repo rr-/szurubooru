@@ -20,6 +20,7 @@ final class Post extends Entity
 
 	const META_TAG_COUNT = 'tagCount';
 	const META_FAV_COUNT = 'favCount';
+	const META_SCORE = 'score';
 
 	protected $name;
 	protected $userId;
@@ -262,5 +263,10 @@ final class Post extends Entity
 	public function getFavoriteCount()
 	{
 		return $this->getMeta(self::META_FAV_COUNT, 0);
+	}
+
+	public function getScore()
+	{
+		return $this->getMeta(self::META_SCORE, 0);
 	}
 }

@@ -4,6 +4,7 @@ namespace Szurubooru\Tests\Services;
 final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 {
 	private $favoritesDaoMock;
+	private $postScoreDaoMock;
 	private $userDaoMock;
 	private $transactionManagerMock;
 	private $timeServiceMock;
@@ -12,21 +13,10 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		parent::setUp();
 		$this->favoritesDaoMock = $this->mock(\Szurubooru\Dao\FavoritesDao::class);
+		$this->postScoreDaoMock = $this->mock(\Szurubooru\Dao\PostScoreDao::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
 		$this->transactionManagerMock = $this->mockTransactionManager();
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
-	}
-
-	public function testAddingExisting()
-	{
-		$user = new \Szurubooru\Entities\User();
-		$post = new \Szurubooru\Entities\Post();
-		$fav = new \Szurubooru\Entities\Favorite(3);
-		$this->favoritesDaoMock->expects($this->once())->method('findByUserAndPost')->with($user, $post)->willReturn($fav);
-		$this->favoritesDaoMock->expects($this->never())->method('save');
-
-		$favoritesService = $this->getFavoritesService();
-		$favoritesService->addFavorite($user, $post);
 	}
 
 	public function testAdding()
@@ -36,13 +26,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$fav = new \Szurubooru\Entities\Favorite();
 		$fav->setUserId($user->getId());
 		$fav->setPostId($post->getId());
-		$this->favoritesDaoMock->expects($this->once())->method('findByUserAndPost')->with($user, $post)->willReturn(null);
-		$this->favoritesDaoMock->expects($this->once())->method('save')->with($this->callback(
-			function($subject) use ($fav)
-			{
-				$this->assertEntitiesEqual($fav, $subject);
-				return true;
-			}));
+		$this->favoritesDaoMock->expects($this->once())->method('set')->with($user, $post);
 
 		$favoritesService = $this->getFavoritesService();
 		$favoritesService->addFavorite($user, $post);
@@ -53,8 +37,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$user = new \Szurubooru\Entities\User();
 		$post = new \Szurubooru\Entities\Post();
 		$fav = new \Szurubooru\Entities\Favorite(3);
-		$this->favoritesDaoMock->expects($this->once())->method('findByUserAndPost')->with($user, $post)->willReturn($fav);
-		$this->favoritesDaoMock->expects($this->once())->method('deleteById')->with($fav->getId());
+		$this->favoritesDaoMock->expects($this->once())->method('delete')->with($user, $post);
 
 		$favoritesService = $this->getFavoritesService();
 		$favoritesService->deleteFavorite($user, $post);
@@ -79,6 +62,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		return new \Szurubooru\Services\FavoritesService(
 			$this->favoritesDaoMock,
+			$this->postScoreDaoMock,
 			$this->userDaoMock,
 			$this->transactionManagerMock,
 			$this->timeServiceMock);
