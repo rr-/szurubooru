@@ -53,7 +53,7 @@ App.Presenters.UserListPresenter = function(
 		loaded();
 
 		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		searchArgs.order = searchArgs.order || 'name';
+		searchArgs.order = searchArgs.order || 'name,asc';
 		updateActiveOrder(searchArgs.order);
 
 		pagedCollectionPresenter.reinit({page: searchArgs.page, searchParams: {order: searchArgs.order}});
