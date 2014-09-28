@@ -40,6 +40,24 @@
 	opacity: .9;
 }
 
+#post-list .posts li a .info {
+	display: none;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #5da;
+	color: black;
+}
+#post-list .posts li a .info li {
+	display: inline-block;
+	margin: 0.1em 0.5em;
+}
+#post-list .posts li a:focus .info,
+#post-list .posts li a:hover .info {
+	display: block;
+}
+
 #post-list .posts li:not(.post-type-image) a:before {
 	display: block;
 	content: '';

@@ -39,6 +39,7 @@ class PostViewProxy extends AbstractViewProxy
 			$result->featureCount = $post->getFeatureCount();
 			$result->lastFeatureTime = $post->getLastFeatureTime();
 			$result->originalFileSize = $post->getOriginalFileSize();
+			$result->favoriteCount = $post->getFavoriteCount();
 
 			if (!empty($config[self::FETCH_TAGS]))
 				$result->tags = $this->tagViewProxy->fromArray($post->getTags());

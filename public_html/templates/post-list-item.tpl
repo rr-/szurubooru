@@ -4,5 +4,18 @@
 		href="#/post/<%= post.id %>">
 
 		<img class="thumb" src="/data/thumbnails/160x160/posts/<%= post.name %>" alt="<%= post.idMarkdown %>"/>
+
+		<% if (post.favoriteCount) { %>
+			<div class="info">
+				<ul>
+					<% if (post.favoriteCount) { %>
+						<li>
+							<i class="fa fa-heart"></i>
+							<%= post.favoriteCount %>
+						</li>
+					<% } %>
+				</ul>
+			</div>
+		<% } %>
 	</a>
 </li>
