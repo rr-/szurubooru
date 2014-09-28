@@ -70,9 +70,9 @@ abstract class AbstractSearchParser
 		{
 			$token = preg_split('/,|\s+/', $token);
 			$orderToken = $token[0];
-			$orderDir = (count($token) === 2 and $token[1] === 'desc')
-				? \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC
-				: \Szurubooru\SearchServices\Filters\IFilter::ORDER_ASC;
+			$orderDir = (count($token) === 2 and $token[1] === 'asc')
+				? \Szurubooru\SearchServices\Filters\IFilter::ORDER_ASC
+				: \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC;
 
 			$orderColumn = $this->getOrderColumn($orderToken);
 			if ($orderColumn === null)
