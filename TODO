@@ -30,13 +30,13 @@ everything related to posts:
         - search filters
             - submit:rr-
             - comment:rr-
-            - comment: 3..5
+            - comment_count: 3..5
             - fav:rr-
-            - fav:3..5
+            - fav_count:3..5
             - score:3..5
-            - tag:3..5
-            - filesize:3K..5M
-            - imgsize:huge/large/medium/small
+            - tag_count:3..5
+            - file_size:3K..5M
+            - image_size:huge/large/medium/small
             - hash:postName
             - type:img/flash/yt/video
             - special:liked
@@ -45,14 +45,14 @@ everything related to posts:
             - special:hidden
         - search order
             - order:id
-            - order:date
+            - order:time
             - order:score
-            - order:comments
-            - order:favs
-            - order:tags
-            - order:commentdate
-            - order:favdate
-            - order:filesize
+            - order:comment_count
+            - order:fav_count
+            - order:tag_count
+            - order:comment_time
+            - order:fav_time
+            - order:file_size
             - order:random (at least unstable version)
 
 everything related to users:

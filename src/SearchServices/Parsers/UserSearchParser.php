@@ -23,7 +23,7 @@ class UserSearchParser extends AbstractSearchParser
 		if ($token === 'name')
 			return \Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME;
 
-		if (in_array($token, ['registrationDate', 'registrationTime', 'registered', 'joinDate', 'joinTime', 'joined']))
+		elseif ($token === 'registration_time')
 			return \Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME;
 
 		return null;

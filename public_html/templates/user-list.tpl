@@ -7,10 +7,10 @@
 			<a class="big-button" data-order="name,desc">Sort Z&rarr;A</a>
 		</li>
 		<li>
-			<a class="big-button" data-order="registrationTime,asc">Sort old&rarr;new</a>
+			<a class="big-button" data-order="registration_time,asc">Sort old&rarr;new</a>
 		</li>
 		<li>
-			<a class="big-button" data-order="registrationTime,desc">Sort new&rarr;old</a>
+			<a class="big-button" data-order="registration_time,desc">Sort new&rarr;old</a>
 		</li>
 	</ul>
 
