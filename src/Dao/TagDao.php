@@ -34,13 +34,13 @@ class TagDao extends AbstractDao implements ICrudDao
 			return;
 
 		$tagNamesNotToCreate = array_map(
-			function($arrayEntity)
+			function ($tag)
 			{
-				return $arrayEntity['name'];
+				return $tag->getName();
 			},
-			iterator_to_array($this->fpdo->from('tags')->where('name', $tagNames)));
+			$this->findByNames($tagNames));
 
-		$tagNamesToCreate = array_diff($tagNames, $tagNamesNotToCreate);
+		$tagNamesToCreate = array_udiff($tagNames, $tagNamesNotToCreate, 'strcasecmp');
 
 		foreach ($tagNamesToCreate as $tagName)
 		{
