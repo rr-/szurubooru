@@ -39,9 +39,13 @@
 }
 
 #user-list .user img {
-	float: left;
 	vertical-align: top;
 	margin-right: 1em;
+	display: block;
+}
+#user-list .user>a {
+	display: block;
+	float: left;
 }
 #user-list .user .details {
 	float: left;
