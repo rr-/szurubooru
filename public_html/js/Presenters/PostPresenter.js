@@ -84,24 +84,12 @@ App.Presenters.PostPresenter = function(
 
 	function refreshPost() {
 		return promise.make(function(resolve, reject) {
-			promise.waitAll(
-					api.get('/posts/' + postNameOrId),
-					api.get('/posts/' + postNameOrId + '/favorites'),
-					auth.isLoggedIn() ?
-						api.get('/posts/' + postNameOrId + '/score') :
-						null,
-					privileges.canViewHistory ?
-						api.get('/posts/' + postNameOrId + '/history') :
-						null)
-				.then(function(
-						postResponse,
-						postFavoritesResponse,
-						postScoreResponse,
-						postHistoryResponse) {
+			promise.waitAll(api.get('/posts/' + postNameOrId))
+				.then(function(postResponse) {
 					post = postResponse.json;
-					postScore = postScoreResponse && postScoreResponse.json && postScoreResponse.json.score;
-					postFavorites = postFavoritesResponse && postFavoritesResponse.json && postFavoritesResponse.json.data;
-					postHistory = postHistoryResponse && postHistoryResponse.json && postHistoryResponse.json.data;
+					postScore = postResponse.json.ownScore;
+					postFavorites = postResponse.json.favorites;
+					postHistory = postResponse.json.history;
 					resolve();
 				}).fail(function(response) {
 					showGenericError(response);

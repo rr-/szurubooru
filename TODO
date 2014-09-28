@@ -3,7 +3,6 @@ first major release.
 
 everything related to posts:
     - single post view
-        - reduce requests to server
         - editing
             - ability to loop video posts
         - previous and next post (difficult)

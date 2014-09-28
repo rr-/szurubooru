@@ -35,6 +35,23 @@ class HistoryService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
+	public function getPostHistory(\Szurubooru\Entities\Post $post)
+	{
+		$filter = new \Szurubooru\SearchServices\Filters\SnapshotFilter();
+
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
+		$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($post->getId()));
+		$filter->addRequirement($requirement);
+
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_TYPE);
+		$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue(\Szurubooru\Entities\Snapshot::TYPE_POST));
+		$filter->addRequirement($requirement);
+
+		return $this->getFiltered($filter)->getEntities();
+	}
+
 	public function saveSnapshot(\Szurubooru\Entities\Snapshot $snapshot)
 	{
 		$transactionFunc = function() use ($snapshot)

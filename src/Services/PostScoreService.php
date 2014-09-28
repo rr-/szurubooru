@@ -32,6 +32,14 @@ class PostScoreService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
+	public function getScoreValue(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post)
+	{
+		$score = $this->getScore($user, $post);
+		if (!$score)
+			return 0;
+		return $score->getScore();
+	}
+
 	public function setScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post, $scoreValue)
 	{
 		if ($scoreValue !== 1 and $scoreValue !== 0 and $scoreValue !== -1)

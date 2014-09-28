@@ -131,6 +131,9 @@ final class PostController extends AbstractController
 			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_RELATIONS => true,
 			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_TAGS => true,
 			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_USER => true,
+			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_HISTORY => true,
+			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_OWN_SCORE => true,
+			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_FAVORITES => true,
 		];
 	}
 

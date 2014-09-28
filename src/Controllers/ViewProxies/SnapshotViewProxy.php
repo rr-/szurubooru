@@ -26,4 +26,3 @@ class SnapshotViewProxy extends AbstractViewProxy
 		return $result;
 	}
 }
-
