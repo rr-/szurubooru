@@ -109,7 +109,6 @@ refactors:
 miscellaneous:
     - use 1 token for logins, so that session isn't killed
     - endless pager should include information about page number
-    - fix mouse trap hotkeys when leaving page
     - add hotkeys for focusing items in top navigation
     - add ability to select tags text in tag input
     - pasting tags should "soft-add" latest word in clipboard to input

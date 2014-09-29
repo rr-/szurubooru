@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.PresenterManager = function(jQuery, topNavigationPresenter) {
+App.PresenterManager = function(jQuery, topNavigationPresenter, keyboard) {
 
 	var lastContentPresenter = null;
 	var $spinner;
@@ -34,6 +34,7 @@ App.PresenterManager = function(jQuery, topNavigationPresenter) {
 		}, 100);
 
 		if (lastContentPresenter === null || lastContentPresenter.name !== presenter.name) {
+			keyboard.reset();
 			topNavigationPresenter.changeTitle(null);
 			presenter.init.call(presenter, args, contentPresenterLoaded);
 			lastContentPresenter = presenter;
@@ -67,4 +68,4 @@ App.PresenterManager = function(jQuery, topNavigationPresenter) {
 
 };
 
-App.DI.registerSingleton('presenterManager', ['jQuery', 'topNavigationPresenter'], App.PresenterManager);
+App.DI.registerSingleton('presenterManager', ['jQuery', 'topNavigationPresenter', 'keyboard'], App.PresenterManager);

@@ -18,9 +18,14 @@ App.Keyboard = function(mousetrap) {
 		};
 	}
 
+	function reset() {
+		mousetrap.reset();
+	}
+
 	return {
 		keydown: keydown,
 		keyup: keyup,
+		reset: reset,
 	};
 };
 
