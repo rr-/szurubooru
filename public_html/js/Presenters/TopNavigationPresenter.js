@@ -47,6 +47,13 @@ App.Presenters.TopNavigationPresenter = function(
 		$el.find('li.' + selectedElement).find('a').addClass('active');
 	}
 
+	function focus() {
+		var $tmp = jQuery('<a href="#"> </a>');
+		$el.prepend($tmp);
+		$tmp.focus();
+		$tmp.remove();
+	}
+
 	function getBaseTitle() {
 		return baseTitle;
 	}
@@ -63,6 +70,7 @@ App.Presenters.TopNavigationPresenter = function(
 		init: init,
 		render: render,
 		select: select,
+		focus: focus,
 		getBaseTitle: getBaseTitle,
 		changeTitle: changeTitle,
 	};
