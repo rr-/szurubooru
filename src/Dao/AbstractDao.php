@@ -34,16 +34,22 @@ abstract class AbstractDao implements ICrudDao
 
 	public function save(&$entity)
 	{
-		if ($entity->getId())
-		{
-			$entity = $this->update($entity);
-		}
-		else
-		{
-			$entity = $this->create($entity);
-		}
+		$entity = $this->upsert($entity);
 		$this->afterSave($entity);
+		$this->afterBatchSave([$entity]);
 		return $entity;
+	}
+
+	public function batchSave(array $entities)
+	{
+		foreach ($entities as $key => $entity)
+		{
+			$entities[$key] = $this->upsert($entity);
+			$this->afterSave($entity);
+		}
+		if (count($entities) > 0)
+			$this->afterBatchSave([$entity]);
+		return $entities;
 	}
 
 	public function findAll()
@@ -165,6 +171,10 @@ abstract class AbstractDao implements ICrudDao
 	{
 	}
 
+	protected function afterBatchSave(array $entities)
+	{
+	}
+
 	protected function beforeDelete(\Szurubooru\Entities\Entity $entity)
 	{
 	}
@@ -246,5 +256,17 @@ abstract class AbstractDao implements ICrudDao
 		foreach ($order as $orderColumn => $orderDir)
 			$orderByString .= $orderColumn . ' ' . ($orderDir === \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC ? 'DESC' : 'ASC') . ', ';
 		return substr($orderByString, 0, -2);
+	}
+
+	private function upsert(\Szurubooru\Entities\Entity $entity)
+	{
+		if ($entity->getId())
+		{
+			return $this->update($entity);
+		}
+		else
+		{
+			return $this->create($entity);
+		}
 	}
 }

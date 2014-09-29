@@ -3,6 +3,14 @@ namespace Szurubooru\Tests\Dao;
 
 final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
+	private $fileServiceMock;
+
+	public function setUp()
+	{
+		parent::setUp();
+		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
+	}
+
 	public function testFindByPostIds()
 	{
 		$pdo = $this->databaseConnection->getPDO();
@@ -29,8 +37,28 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEntitiesEqual($expected, $actual);
 	}
 
+	public function testExportSingle()
+	{
+		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1->setName('test');
+		$this->fileServiceMock->expects($this->once())->method('save')->with('tags.json', '{"test":0}');
+		$tagDao = $this->getTagDao();
+		$tagDao->save($tag1);
+	}
+
+	public function testExportMultiple()
+	{
+		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1->setName('test1');
+		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2->setName('test2');
+		$this->fileServiceMock->expects($this->once())->method('save')->with('tags.json', '{"test1":0,"test2":0}');
+		$tagDao = $this->getTagDao();
+		$tagDao->batchSave([$tag1, $tag2]);
+	}
+
 	private function getTagDao()
 	{
-		return new \Szurubooru\Dao\TagDao($this->databaseConnection);
+		return new \Szurubooru\Dao\TagDao($this->databaseConnection, $this->fileServiceMock);
 	}
 }

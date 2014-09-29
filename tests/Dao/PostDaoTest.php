@@ -13,7 +13,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		parent::setUp();
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
 		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
-		$this->tagDao = new \Szurubooru\Dao\TagDao($this->databaseConnection);
+		$this->tagDao = new \Szurubooru\Dao\TagDao($this->databaseConnection, $this->fileServiceMock);
 		$this->userDao = new \Szurubooru\Dao\UserDao(
 			$this->databaseConnection,
 			$this->fileServiceMock,
@@ -243,9 +243,11 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 				[$post->getThumbnailSourceContentPath()]);
 
 		$this->fileServiceMock
-			->expects($this->once())
+			->expects($this->exactly(2))
 			->method('save')
-			->with($post->getContentPath(), 'whatever');
+			->withConsecutive(
+				[$post->getContentPath(), 'whatever'],
+				['tags.json', '[]']);
 
 		$postDao->save($post);
 	}
@@ -264,11 +266,12 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 				[$post->getThumbnailSourceContentPath()]);
 
 		$this->fileServiceMock
-			->expects($this->exactly(2))
+			->expects($this->exactly(3))
 			->method('save')
 			->withConsecutive(
 				[$post->getContentPath(), 'whatever'],
-				[$post->getThumbnailSourceContentPath(), 'an image of sharks']);
+				[$post->getThumbnailSourceContentPath(), 'an image of sharks'],
+				['tags.json', '[]']);
 
 		$postDao->save($post);
 	}

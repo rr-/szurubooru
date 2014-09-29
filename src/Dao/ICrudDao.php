@@ -9,6 +9,8 @@ interface ICrudDao
 
 	public function save(&$object);
 
+	public function batchSave(array $object);
+
 	public function deleteById($objectId);
 
 	public function deleteAll();

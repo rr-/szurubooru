@@ -3,12 +3,18 @@ namespace Szurubooru\Dao;
 
 class TagDao extends AbstractDao implements ICrudDao
 {
-	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
+	private $fileService;
+
+	public function __construct(
+		\Szurubooru\DatabaseConnection $databaseConnection,
+		\Szurubooru\Services\FileService $fileService)
 	{
 		parent::__construct(
 			$databaseConnection,
 			'tags',
 			new \Szurubooru\Dao\EntityConverters\TagEntityConverter());
+
+		$this->fileService = $fileService;
 	}
 
 	public function findByNames($tagNames)
@@ -27,6 +33,17 @@ class TagDao extends AbstractDao implements ICrudDao
 		return $this->findByIds($tagIds);
 	}
 
+	public function exportJson()
+	{
+		$tags = [];
+		foreach ($this->findAll() as $tag)
+		{
+			$tags[$tag->getName()] = $tag->getUsages();
+		}
+		$json = json_encode($tags);
+		$this->fileService->save('tags.json', $json);
+	}
+
 	public function createMissingTags(array $tagNames)
 	{
 		$tagNames = array_filter(array_unique($tagNames));
@@ -42,11 +59,19 @@ class TagDao extends AbstractDao implements ICrudDao
 
 		$tagNamesToCreate = array_udiff($tagNames, $tagNamesNotToCreate, 'strcasecmp');
 
+		$tags = [];
 		foreach ($tagNamesToCreate as $tagName)
 		{
 			$tag = new \Szurubooru\Entities\Tag;
 			$tag->setName($tagName);
-			$this->save($tag);
+			$tags[] = $tag;
 		}
+		$this->batchSave($tags);
+	}
+
+	protected function afterBatchSave(array $entities)
+	{
+		if (count($entities) > 0)
+			$this->exportJson();
 	}
 }
