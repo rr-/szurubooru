@@ -67,15 +67,17 @@ App.Controls.TagInput = function(
 		} else {
 			pastedText = (e.originalEvent || e).clipboardData.getData('text/plain');
 		}
-		pasteText(pastedText);
-	});
 
-	function pasteText(pastedText) {
+		if (pastedText.length > 200) {
+			window.alert('Pasted text is too long.');
+			return;
+		}
+
 		var pastedTags = pastedText.split(/\s+/);
 		var lastTag = pastedTags.pop();
 		_.map(pastedTags, addTag);
 		$input.val(lastTag);
-	}
+	});
 
 	$input.unbind('keydown').bind('keydown', function(e) {
 		if (_.contains(inputConfirmKeys, e.which) && !$input.val()) {
@@ -86,8 +88,8 @@ App.Controls.TagInput = function(
 		} else if (_.contains(tagConfirmKeys, e.which)) {
 			var tag = $input.val();
 			e.preventDefault();
-			addTag(tag);
 			$input.val('');
+			addTag(tag);
 		} else if (e.which === KEY_BACKSPACE && jQuery(this).val().length === 0) {
 			e.preventDefault();
 			removeLastTag();
@@ -99,6 +101,16 @@ App.Controls.TagInput = function(
 		if (tag.length === 0) {
 			return;
 		}
+
+		if (tag.length > 64) {
+			//showing alert inside keydown event leads to mysterious behaviors
+			//in some browsers, hence the timeout
+			window.setTimeout(function() {
+				window.alert('Tag is too long.');
+			}, 10);
+			return;
+		}
+
 		var oldTags = getTags();
 		if (_.contains(_.map(oldTags, function(tag) { return tag.toLowerCase(); }), tag.toLowerCase())) {
 			flashTag(tag);
