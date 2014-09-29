@@ -111,7 +111,6 @@ miscellaneous:
     - endless pager should include information about page number
     - add hotkeys for focusing items in top navigation
     - add ability to select tags text in tag input
-    - pasting tags should "soft-add" latest word in clipboard to input
     - pasting tags should have protection against very long clipboard content
     - add protection against ridiculously long tag names
     - add customizable favicon

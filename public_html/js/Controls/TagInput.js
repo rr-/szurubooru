@@ -45,7 +45,8 @@ App.Controls.TagInput = function(
 	});
 	$input.attr('placeholder', $underlyingInput.attr('placeholder'));
 
-	pasteText($underlyingInput.val());
+	var tagsToAdd = $underlyingInput.val().split(/\s+/);
+	_.map(tagsToAdd, addTag);
 	$underlyingInput.val('');
 
 	$input.unbind('focus').bind('focus', function(e) {
@@ -71,9 +72,9 @@ App.Controls.TagInput = function(
 
 	function pasteText(pastedText) {
 		var pastedTags = pastedText.split(/\s+/);
-		_.each(pastedTags, function(tag) {
-			addTag(tag);
-		});
+		var lastTag = pastedTags.pop();
+		_.map(pastedTags, addTag);
+		$input.val(lastTag);
 	}
 
 	$input.unbind('keydown').bind('keydown', function(e) {
