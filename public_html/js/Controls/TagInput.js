@@ -40,6 +40,9 @@ App.Controls.TagInput = function(
 	$wrapper.append($input);
 	$wrapper.insertAfter($underlyingInput);
 	$wrapper.click(function(e) {
+		if (e.target.nodeName === 'LI') {
+			return;
+		}
 		e.preventDefault();
 		$input.focus();
 	});

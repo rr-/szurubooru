@@ -110,7 +110,6 @@ miscellaneous:
     - use 1 token for logins, so that session isn't killed
     - endless pager should include information about page number
     - add hotkeys for focusing items in top navigation
-    - add ability to select tags text in tag input
     - add customizable favicon
     - add customizable logo
     - add log engine and log everything that should be logged
