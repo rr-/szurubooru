@@ -20,7 +20,6 @@ everything related to posts:
             - tag_count:3..5
             - file_size:3K..5M
             - image_size:huge/large/medium/small
-            - hash:postName
             - type:img/flash/yt/video
             - special:liked
             - special:disliked

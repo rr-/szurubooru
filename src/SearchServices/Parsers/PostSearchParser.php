@@ -20,46 +20,16 @@ class PostSearchParser extends AbstractSearchParser
 	protected function decorateFilterFromNamedToken($filter, $token)
 	{
 		if ($token->getKey() === 'id')
-		{
-			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-			$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_ID);
-			$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE | self::ALLOW_RANGES));
-			$requirement->setNegated($token->isNegated());
-			$filter->addRequirement($requirement);
-		}
+			$this->addIdRequirement($filter, $token);
+
+		elseif ($token->getKey() === 'hash')
+			$this->addHashRequirement($filter, $token);
 
 		elseif ($token->getKey() === 'date')
-		{
-			if (substr_count($token->getValue(), '..') === 1)
-			{
-				list ($dateMin, $dateMax) = explode('..', $token->getValue());
-				$timeMin = $this->dateToTime($dateMin)[0];
-				$timeMax = $this->dateToTime($dateMax)[1];
-			}
-			else
-			{
-				$date = $token->getValue();
-				list ($timeMin, $timeMax) = $this->dateToTime($date);
-			}
-
-			$finalString = '';
-			if ($timeMin)
-				$finalString .= date('c', $timeMin);
-			$finalString .= '..';
-			if ($timeMax)
-				$finalString .= date('c', $timeMax);
-
-			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-			$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_DATE);
-			$requirement->setValue($this->createRequirementValue($finalString, self::ALLOW_RANGES));
-			$requirement->setNegated($token->isNegated());
-			$filter->addRequirement($requirement);
-		}
+			$this->addDateRequirement($filter, $token);
 
 		else
-		{
 			throw new \BadMethodCallException('Not supported');
-		}
 	}
 
 	protected function getOrderColumn($token)
@@ -71,6 +41,51 @@ class PostSearchParser extends AbstractSearchParser
 			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_FAV_COUNT;
 
 		throw new \BadMethodCallException('Not supported');
+	}
+
+	private function addIdRequirement($filter, $token)
+	{
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_ID);
+		$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE | self::ALLOW_RANGES));
+		$requirement->setNegated($token->isNegated());
+		$filter->addRequirement($requirement);
+	}
+
+	private function addHashRequirement($filter, $token)
+	{
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_HASH);
+		$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE));
+		$filter->addRequirement($requirement);
+	}
+
+	private function addDateRequirement($filter, $token)
+	{
+		if (substr_count($token->getValue(), '..') === 1)
+		{
+			list ($dateMin, $dateMax) = explode('..', $token->getValue());
+			$timeMin = $this->dateToTime($dateMin)[0];
+			$timeMax = $this->dateToTime($dateMax)[1];
+		}
+		else
+		{
+			$date = $token->getValue();
+			list ($timeMin, $timeMax) = $this->dateToTime($date);
+		}
+
+		$finalString = '';
+		if ($timeMin)
+			$finalString .= date('c', $timeMin);
+		$finalString .= '..';
+		if ($timeMax)
+			$finalString .= date('c', $timeMax);
+
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_DATE);
+		$requirement->setValue($this->createRequirementValue($finalString, self::ALLOW_RANGES));
+		$requirement->setNegated($token->isNegated());
+		$filter->addRequirement($requirement);
 	}
 
 	private function dateToTime($value)
