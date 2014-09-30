@@ -40,6 +40,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token === 'fav_count')
 			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_FAV_COUNT;
 
+		elseif ($token === 'tag_count')
+			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_TAG_COUNT;
+
 		throw new \BadMethodCallException('Not supported');
 	}
 
