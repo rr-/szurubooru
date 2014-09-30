@@ -27,7 +27,6 @@ everything related to posts:
         - search order
             - order:id
             - order:time
-            - order:score
             - order:comment_count
             - order:comment_time
             - order:file_size
