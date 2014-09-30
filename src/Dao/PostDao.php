@@ -110,6 +110,11 @@ class PostDao extends AbstractDao implements ICrudDao
 			return;
 		}
 
+		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_UPLOADER)
+		{
+			$query->innerJoin('users uploader ON uploader.id = userId');
+		}
+
 		parent::decorateQueryFromRequirement($query, $requirement);
 	}
 

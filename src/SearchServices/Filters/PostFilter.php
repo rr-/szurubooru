@@ -17,6 +17,7 @@ class PostFilter extends BasicFilter implements IFilter
 	const REQUIREMENT_TAG_COUNT = 'tagCount';
 	const REQUIREMENT_FAV_COUNT = 'favCount';
 	const REQUIREMENT_SCORE = 'score';
+	const REQUIREMENT_UPLOADER = 'uploader.name';
 
 	public function __construct()
 	{

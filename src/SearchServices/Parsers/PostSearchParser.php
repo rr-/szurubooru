@@ -37,6 +37,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'score')
 			$this->addScoreRequirement($filter, $token);
 
+		elseif ($token->getKey() === 'uploader')
+			$this->addUploaderRequirement($filter, $token);
+
 		else
 			throw new \BadMethodCallException('Not supported');
 	}
@@ -136,6 +139,15 @@ class PostSearchParser extends AbstractSearchParser
 			$token,
 			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SCORE,
 			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
+	}
+
+	private function addUploaderRequirement($filter, $token)
+	{
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_UPLOADER,
+			self::ALLOW_COMPOSITE);
 	}
 
 	private function dateToTime($value)
