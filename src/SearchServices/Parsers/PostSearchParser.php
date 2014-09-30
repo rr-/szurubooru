@@ -46,6 +46,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token === 'tag_count')
 			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_TAG_COUNT;
 
+		elseif ($token === 'time')
+			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_EDIT_TIME;
+
 		elseif ($token === 'score')
 			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_SCORE;
 

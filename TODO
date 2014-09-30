@@ -25,7 +25,6 @@ everything related to posts:
             - special:disliked
             - special:fav
         - search order
-            - order:time
             - order:comment_count
             - order:comment_time
             - order:file_size
