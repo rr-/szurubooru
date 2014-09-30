@@ -14,6 +14,7 @@ class PostFilter extends BasicFilter implements IFilter
 	const REQUIREMENT_ID = 'id';
 	const REQUIREMENT_DATE = 'uploadTime';
 	const REQUIREMENT_HASH = 'name';
+	const REQUIREMENT_TAG_COUNT = 'tagCount';
 
 	public function __construct()
 	{

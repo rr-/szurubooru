@@ -28,6 +28,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'date')
 			$this->addDateRequirement($filter, $token);
 
+		elseif ($token->getKey() === 'tag_count')
+			$this->addTagCountRequirement($filter, $token);
+
 		else
 			throw new \BadMethodCallException('Not supported');
 	}
@@ -97,6 +100,14 @@ class PostSearchParser extends AbstractSearchParser
 		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_DATE);
 		$requirement->setValue($this->createRequirementValue($finalString, self::ALLOW_RANGES));
 		$requirement->setNegated($token->isNegated());
+		$filter->addRequirement($requirement);
+	}
+
+	private function addTagCountRequirement($filter, $token)
+	{
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TAG_COUNT);
+		$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE | self::ALLOW_RANGES));
 		$filter->addRequirement($requirement);
 	}
 
