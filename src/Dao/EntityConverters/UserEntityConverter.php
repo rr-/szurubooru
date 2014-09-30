@@ -18,6 +18,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'avatarStyle' => $entity->getAvatarStyle(),
 			'browsingSettings' => $entity->getBrowsingSettings(),
 			'accountConfirmed' => $entity->isAccountConfirmed(),
+			'banned' => $entity->isBanned(),
 		];
 	}
 
@@ -34,6 +35,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setAvatarStyle(intval($array['avatarStyle']));
 		$entity->setBrowsingSettings($array['browsingSettings']);
 		$entity->setAccountConfirmed($array['accountConfirmed']);
+		$entity->setBanned($array['banned']);
 		return $entity;
 	}
 }

@@ -137,6 +137,9 @@ class UserService
 			if ($formData->browsingSettings !== null)
 				$this->updateUserBrowsingSettings($user, $formData->browsingSettings);
 
+			if ($formData->banned !== $user->isBanned())
+				$user->setBanned(boolval($formData->banned));
+
 			return $this->userDao->save($user);
 		};
 		return $this->transactionManager->commit($transactionFunc);

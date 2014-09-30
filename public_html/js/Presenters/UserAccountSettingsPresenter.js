@@ -22,6 +22,8 @@ App.Presenters.UserAccountSettingsPresenter = function(
 		target = args.target;
 
 		privileges = {
+			canBan:
+				auth.hasPrivilege(auth.privileges.ban),
 			canChangeAccessRank:
 				auth.hasPrivilege(auth.privileges.changeAccessRank),
 			canChangeAvatarStyle:
@@ -104,6 +106,9 @@ App.Presenters.UserAccountSettingsPresenter = function(
 		}
 		if (privileges.canChangeAccessRank) {
 			formData.accessRank = $el.find('[name=access-rank]:checked').val();
+		}
+		if (privileges.canBan) {
+			formData.banned = $el.find('[name=ban]').is(':checked') ? 1 : 0;
 		}
 
 		if (!validateAccountSettingsFormData(formData)) {

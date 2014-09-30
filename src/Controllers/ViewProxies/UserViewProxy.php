@@ -21,6 +21,7 @@ class UserViewProxy extends AbstractViewProxy
 			$result->registrationTime = $user->getRegistrationTime();
 			$result->lastLoginTime = $user->getLastLoginTime();
 			$result->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleToString($user->getAvatarStyle());
+			$result->banned = $user->isBanned();
 
 			if ($this->privilegeService->isLoggedIn($user))
 			{

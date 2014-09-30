@@ -26,6 +26,7 @@ final class User extends Entity
 	protected $avatarStyle;
 	protected $browsingSettings;
 	protected $accountConfirmed = false;
+	protected $banned = false;
 
 	public function getName()
 	{
@@ -55,6 +56,16 @@ final class User extends Entity
 	public function setEmailUnconfirmed($emailUnconfirmed)
 	{
 		$this->emailUnconfirmed = $emailUnconfirmed;
+	}
+
+	public function isBanned()
+	{
+		return $this->banned;
+	}
+
+	public function setBanned($banned)
+	{
+		$this->banned = boolval($banned);
 	}
 
 	public function isAccountConfirmed()

@@ -62,7 +62,6 @@ everything related to posts:
           (move post snapshot factory methods to PostService)
 
 everything related to users:
-    - banning
     - show link to user's uploads
     - show link to user's favs
     - show link to user's liked posts

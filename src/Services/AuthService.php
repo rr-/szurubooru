@@ -101,5 +101,8 @@ class AuthService
 	{
 		if (!$user->isAccountConfirmed() and $this->config->security->needEmailActivationToRegister)
 			throw new \DomainException('User didn\'t confirm account yet.');
+
+		if ($user->isBanned())
+			throw new \DomainException('Banned!');
 	}
 }

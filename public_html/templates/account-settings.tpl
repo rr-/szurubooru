@@ -67,6 +67,19 @@
 		</div>
 	<% } %>
 
+	<% if (canBan) { %>
+		<div class="form-row">
+			<label class="form-label" for="account-settings-ban">Ban:</label>
+			<div class="form-input">
+				<input name="ban" type="checkbox" id="ban" <% print(user.banned ? 'checked="checked"' : '') %>>
+				<label for="ban">
+					Enabled
+				</label>
+			</div>
+		</div>
+	<% } %>
+
+
 	<% if (canChangeAccessRank) { %>
 		<div class="form-row">
 			<label class="form-label" for="account-settings-access-rank">Access rank:</label>

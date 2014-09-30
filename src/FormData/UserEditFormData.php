@@ -10,6 +10,7 @@ class UserEditFormData implements \Szurubooru\IValidatable
 	public $avatarStyle;
 	public $avatarContent;
 	public $browsingSettings;
+	public $banned;
 
 	public function __construct($inputReader = null)
 	{
@@ -24,6 +25,7 @@ class UserEditFormData implements \Szurubooru\IValidatable
 				$this->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($inputReader->avatarStyle);
 			$this->avatarContent = $inputReader->decodeBase64($inputReader->avatarContent);
 			$this->browsingSettings = $inputReader->browsingSettings;
+			$this->banned = boolval($inputReader->banned);
 		}
 	}
 
