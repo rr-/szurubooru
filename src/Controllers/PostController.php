@@ -43,18 +43,23 @@ final class PostController extends AbstractController
 
 	public function getByNameOrId($postNameOrId)
 	{
+		if ($postNameOrId !== 'featured')
+			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::VIEW_POSTS);
+
 		$post = $this->getByNameOrIdWithoutProxy($postNameOrId);
 		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 
 	public function getHistory($postNameOrId)
 	{
+		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::VIEW_HISTORY);
 		$post = $this->getByNameOrIdWithoutProxy($postNameOrId);
 		return ['data' => $this->snapshotViewProxy->fromArray($this->postService->getHistory($post))];
 	}
 
 	public function getFiltered()
 	{
+		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_POSTS);
 		$filter = $this->postSearchParser->createFilterFromInputReader($this->inputReader);
 		$filter->setPageSize($this->config->posts->postsPerPage);
 		$result = $this->postService->getFiltered($filter);

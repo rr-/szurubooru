@@ -10,9 +10,17 @@
 			<div class="post-footer">
 
 				<span class="left">
-					<a href="#/post/<%= post.id %>">
-						<%= post.idMarkdown %>
-					</a>
+					<% var showLink = canViewPosts %>
+
+					<% if (showLink) { %>
+						<a href="#/post/<%= post.id %>">
+					<% } %>
+
+					<%= post.idMarkdown %>
+
+					<% if (showLink) { %>
+						</a>
+					<% } %>
 
 					uploaded
 					<%= formatRelativeTime(post.uploadTime) %>
@@ -21,7 +29,9 @@
 				<span class="right">
 					featured by
 
-					<% if (post.user.name) { %>
+					<% var showLink = canViewUsers && post.user.name %>
+
+					<% if (showLink) { %>
 						<a href="#/user/<%= post.user.name %>">
 					<% } %>
 
@@ -31,7 +41,7 @@
 
 					<%= post.user.name || 'Anonymous user' %>
 
-					<% if (post.user.name) { %>
+					<% if (showLink) { %>
 						</a>
 					<% } %>
 				</span>

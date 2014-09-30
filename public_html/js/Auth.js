@@ -5,6 +5,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 	var privileges = {
 		register: 'register',
 		listUsers: 'listUsers',
+		viewUsers: 'viewUsers',
 		viewAllEmailAddresses: 'viewAllEmailAddresses',
 		changeAccessRank: 'changeAccessRank',
 		changeOwnAvatarStyle: 'changeOwnAvatarStyle',
@@ -19,9 +20,8 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		deleteAllAccounts: 'deleteAllAccounts',
 		ban: 'ban',
 
-		listSafePosts: 'listSafePosts',
-		listSketchyPosts: 'listSketchyPosts',
-		listUnsafePosts: 'listUnsafePosts',
+		listPosts: 'listPosts',
+		viewPosts: 'viewPosts',
 		uploadPosts: 'uploadPosts',
 		uploadPostsAnonymously: 'uploadPostsAnonymously',
 		deletePosts: 'deletePosts',

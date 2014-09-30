@@ -7,6 +7,7 @@ App.Presenters.HomePresenter = function(
 	util,
 	promise,
 	api,
+	auth,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -50,6 +51,8 @@ App.Presenters.HomePresenter = function(
 			postContentTemplate: postContentTemplate,
 			globals: globals,
 			title: topNavigationPresenter.getBaseTitle(),
+			canViewUsers: auth.hasPrivilege(auth.privileges.viewUsers),
+			canViewPosts: auth.hasPrivilege(auth.privileges.viewPosts),
 			formatRelativeTime: util.formatRelativeTime,
 			formatFileSize: util.formatFileSize,
 		}));
@@ -62,4 +65,4 @@ App.Presenters.HomePresenter = function(
 
 };
 
-App.DI.register('homePresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.HomePresenter);
+App.DI.register('homePresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.HomePresenter);

@@ -79,7 +79,7 @@ App.Presenters.PostPresenter = function(
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
 				loaded();
-			});
+			}).fail(loaded);
 	}
 
 	function refreshPost() {
@@ -344,6 +344,9 @@ App.Presenters.PostPresenter = function(
 	}
 
 	function showGenericError(response) {
+		if ($messages === $el) {
+			$el.empty();
+		}
 		messagePresenter.showError($messages, response.json && response.json.error || response);
 	}
 

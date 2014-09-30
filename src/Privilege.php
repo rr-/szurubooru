@@ -5,6 +5,7 @@ class Privilege
 {
 	const REGISTER = 'register';
 	const LIST_USERS = 'listUsers';
+	const VIEW_USERS = 'viewUsers';
 	const VIEW_ALL_EMAIL_ADDRESSES = 'viewAllEmailAddresses';
 	const CHANGE_ACCESS_RANK = 'changeAccessRank';
 	const CHANGE_OWN_AVATAR_STYLE = 'changeOwnAvatarStyle';
@@ -19,9 +20,8 @@ class Privilege
 	const DELETE_ALL_ACCOUNTS = 'deleteAllAccounts';
 	const BAN = 'ban';
 
-	const LIST_SAFE_POSTS = 'listSafePosts';
-	const LIST_SKETCHY_POSTS = 'listSketchyPosts';
-	const LIST_UNSAFE_POSTS = 'listUnsafePosts';
+	const LIST_POSTS = 'listPosts';
+	const VIEW_POSTS = 'viewPosts';
 	const UPLOAD_POSTS = 'uploadPosts';
 	const UPLOAD_POSTS_ANONYMOUSLY = 'uploadPostsAnonymously';
 	const DELETE_POSTS = 'deletePosts';
