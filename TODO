@@ -107,7 +107,6 @@ refactors:
     - reduce dependencies
 
 miscellaneous:
-    - use 1 token for logins, so that session isn't killed
     - endless pager should include information about page number
     - add customizable favicon
     - add customizable logo

@@ -48,12 +48,17 @@ class TokenService
 	{
 		$transactionFunc = function() use ($additionalData, $tokenPurpose)
 		{
-			$token = new \Szurubooru\Entities\Token();
-			$token->setName(sha1(date('r') . uniqid() . microtime(true)));
-			$token->setAdditionalData($additionalData);
-			$token->setPurpose($tokenPurpose);
-			$this->invalidateByAdditionalData($additionalData);
-			$this->tokenDao->save($token);
+			$token = $this->tokenDao->findByAdditionalDataAndPurpose($additionalData, $tokenPurpose);
+
+			if (!$token)
+			{
+				$token = new \Szurubooru\Entities\Token();
+				$token->setName(sha1(date('r') . uniqid() . microtime(true)));
+				$token->setAdditionalData($additionalData);
+				$token->setPurpose($tokenPurpose);
+				$this->tokenDao->save($token);
+			}
+
 			return $token;
 		};
 		return $this->transactionManager->commit($transactionFunc);
