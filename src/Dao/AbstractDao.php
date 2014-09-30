@@ -81,7 +81,7 @@ abstract class AbstractDao implements ICrudDao
 		if ($searchFilter->getPageSize() > 0)
 		{
 			$query->limit($searchFilter->getPageSize());
-			$query->offset($searchFilter->getPageSize() * ($searchFilter->getPageNumber() - 1));
+			$query->offset($searchFilter->getPageSize() * max(0, $searchFilter->getPageNumber() - 1));
 		}
 		$entities = $this->arrayToEntities(iterator_to_array($query));
 
