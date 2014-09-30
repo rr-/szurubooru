@@ -34,6 +34,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'fav_count')
 			$this->addFavCountRequirement($filter, $token);
 
+		elseif ($token->getKey() === 'score')
+			$this->addScoreRequirement($filter, $token);
+
 		else
 			throw new \BadMethodCallException('Not supported');
 	}
@@ -63,19 +66,20 @@ class PostSearchParser extends AbstractSearchParser
 
 	private function addIdRequirement($filter, $token)
 	{
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_ID);
-		$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE | self::ALLOW_RANGES));
-		$requirement->setNegated($token->isNegated());
-		$filter->addRequirement($requirement);
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_ID,
+			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 
 	private function addHashRequirement($filter, $token)
 	{
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_HASH);
-		$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE));
-		$filter->addRequirement($requirement);
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_HASH,
+			self::ALLOW_COMPOSITE);
 	}
 
 	private function addDateRequirement($filter, $token)
@@ -99,27 +103,39 @@ class PostSearchParser extends AbstractSearchParser
 		if ($timeMax)
 			$finalString .= date('c', $timeMax);
 
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_DATE);
-		$requirement->setValue($this->createRequirementValue($finalString, self::ALLOW_RANGES));
-		$requirement->setNegated($token->isNegated());
-		$filter->addRequirement($requirement);
+		$token->setValue($finalString);
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_DATE,
+			self::ALLOW_RANGES);
 	}
 
 	private function addTagCountRequirement($filter, $token)
 	{
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TAG_COUNT);
-		$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE | self::ALLOW_RANGES));
-		$filter->addRequirement($requirement);
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TAG_COUNT,
+			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 
 	private function addFavCountRequirement($filter, $token)
 	{
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAV_COUNT);
-		$requirement->setValue($this->createRequirementValue($token->getValue(), self::ALLOW_COMPOSITE | self::ALLOW_RANGES));
-		$filter->addRequirement($requirement);
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAV_COUNT,
+			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
+	}
+
+	private function addScoreRequirement($filter, $token)
+	{
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SCORE,
+			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 
 	private function dateToTime($value)

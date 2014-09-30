@@ -61,6 +61,15 @@ abstract class AbstractSearchParser
 		return new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($text);
 	}
 
+	protected function addRequirementFromToken($filter, $token, $type, $flags)
+	{
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType($type, $flags);
+		$requirement->setValue($this->createRequirementValue($token->getValue(), $flags));
+		$requirement->setNegated($token->isNegated());
+		$filter->addRequirement($requirement);
+	}
+
 	private function getOrder($query)
 	{
 		$order = [];

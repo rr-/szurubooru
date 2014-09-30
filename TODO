@@ -15,7 +15,6 @@ everything related to posts:
             - comment:rr-
             - comment_count: 3..5
             - fav:rr-
-            - score:3..5
             - file_size:3K..5M
             - image_size:huge/large/medium/small
             - type:img/flash/yt/video
