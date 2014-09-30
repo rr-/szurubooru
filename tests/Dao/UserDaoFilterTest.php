@@ -70,7 +70,7 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testDefaultOrder()
 	{
 		list ($user1, $user2) = $this->prepareUsers();
-		$this->doTestSorting(null, null, [$user2, $user1]);
+		$this->doTestSorting(null, null, [$user1, $user2]);
 	}
 
 	public function testOrderByNameAscending()

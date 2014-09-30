@@ -3,15 +3,10 @@ namespace Szurubooru\SearchServices\Filters;
 
 class BasicFilter implements IFilter
 {
-	private $order;
+	private $order = [];
 	private $requirements = [];
 	private $pageNumber;
 	private $pageSize;
-
-	public function __construct()
-	{
-		$this->setOrder(['id' => self::ORDER_DESC]);
-	}
 
 	public function getOrder()
 	{
