@@ -10,7 +10,6 @@ everything related to posts:
         - add search form (query, order and safety) to post list presenter
         - add warning if no posts were found
         - search filters
-            - safety:safe/sketchy/unsafe
             - comment:rr-
             - comment_count: 3..5
             - fav:rr-

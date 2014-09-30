@@ -40,11 +40,21 @@ abstract class AbstractSearchParser
 
 	protected abstract function getOrderColumn($token);
 
-	protected function createRequirementValue($text, $flags = 0)
+	protected function createRequirementValue($text, $flags = 0, $valueDecorator = null)
 	{
+		if ($valueDecorator === null)
+		{
+			$valueDecorator = function($value)
+			{
+				return $value;
+			};
+		}
+
 		if ((($flags & self::ALLOW_RANGES) === self::ALLOW_RANGES) and substr_count($text, '..') === 1)
 		{
 			list ($minValue, $maxValue) = explode('..', $text);
+			$minValue = $valueDecorator($minValue);
+			$maxValue = $valueDecorator($maxValue);
 			$tokenValue = new \Szurubooru\SearchServices\Requirements\RequirementRangedValue();
 			$tokenValue->setMinValue($minValue);
 			$tokenValue->setMaxValue($maxValue);
@@ -53,19 +63,21 @@ abstract class AbstractSearchParser
 		else if ((($flags & self::ALLOW_COMPOSITE) === self::ALLOW_COMPOSITE) and strpos($text, ',') !== false)
 		{
 			$values = explode(',', $text);
+			$values = array_map($valueDecorator, $values);
 			$tokenValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
 			$tokenValue->setValues($values);
 			return $tokenValue;
 		}
 
-		return new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($text);
+		$value = $valueDecorator($text);
+		return new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($value);
 	}
 
-	protected function addRequirementFromToken($filter, $token, $type, $flags)
+	protected function addRequirementFromToken($filter, $token, $type, $flags, $valueDecorator = null)
 	{
 		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
 		$requirement->setType($type, $flags);
-		$requirement->setValue($this->createRequirementValue($token->getValue(), $flags));
+		$requirement->setValue($this->createRequirementValue($token->getValue(), $flags, $valueDecorator));
 		$requirement->setNegated($token->isNegated());
 		$filter->addRequirement($requirement);
 	}

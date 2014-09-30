@@ -40,6 +40,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'uploader')
 			$this->addUploaderRequirement($filter, $token);
 
+		elseif ($token->getKey() === 'safety')
+			$this->addSafetyRequirement($filter, $token);
+
 		else
 			throw new \BadMethodCallException('Not supported');
 	}
@@ -149,6 +152,20 @@ class PostSearchParser extends AbstractSearchParser
 			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_UPLOADER,
 			self::ALLOW_COMPOSITE);
 	}
+
+	private function addSafetyRequirement($filter, $token)
+	{
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SAFETY,
+			self::ALLOW_COMPOSITE,
+			function ($value)
+			{
+				return \Szurubooru\Helpers\EnumHelper::postSafetyFromString($value);
+			});
+	}
+
 
 	private function dateToTime($value)
 	{
