@@ -96,9 +96,22 @@ abstract class AbstractSearchParser
 		{
 			$token = preg_split('/,|\s+/', $token);
 			$orderToken = $token[0];
-			$orderDir = (count($token) === 2 and $token[1] === 'asc')
-				? \Szurubooru\SearchServices\Filters\IFilter::ORDER_ASC
-				: \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC;
+
+			if (count($token) === 1)
+			{
+				$orderDir = \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC;
+			}
+			elseif (count($token) === 2)
+			{
+				if ($token[1] === 'desc')
+					$orderDir = \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC;
+				elseif ($token[1] === 'asc')
+					$orderDir = \Szurubooru\SearchServices\Filters\IFilter::ORDER_ASC;
+				else
+					throw new \Exception('Wrong search order direction');
+			}
+			else
+				throw new \Exception('Wrong search order token');
 
 			$orderColumn = $this->getOrderColumn($orderToken);
 			if ($orderColumn === null)

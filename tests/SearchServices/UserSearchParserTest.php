@@ -24,6 +24,20 @@ class UserSearchParserTest extends AbstractTestCase
 		$this->assertEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_ASC], $filter->getOrder());
 	}
 
+	public function testInvalidOrder()
+	{
+		$this->inputReader->order = 'invalid,desc';
+		$this->setExpectedException(\Exception::class);
+		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+	}
+
+	public function testInvalidOrderDirection()
+	{
+		$this->inputReader->order = 'name,invalid';
+		$this->setExpectedException(\Exception::class);
+		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+	}
+
 	public function testParamOrder()
 	{
 		$this->inputReader->order = 'name,desc';
