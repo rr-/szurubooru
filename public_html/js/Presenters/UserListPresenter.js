@@ -7,7 +7,6 @@ App.Presenters.UserListPresenter = function(
 	util,
 	promise,
 	auth,
-	router,
 	pagedCollectionPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
@@ -56,7 +55,10 @@ App.Presenters.UserListPresenter = function(
 		searchArgs.order = searchArgs.order || 'name,asc';
 		updateActiveOrder(searchArgs.order);
 
-		pagedCollectionPresenter.reinit({page: searchArgs.page, searchParams: {order: searchArgs.order}});
+		pagedCollectionPresenter.reinit({
+			page: searchArgs.page,
+			searchParams: {
+				order: searchArgs.order}});
 	}
 
 	function render() {
@@ -91,7 +93,7 @@ App.Presenters.UserListPresenter = function(
 		e.preventDefault();
 		var $orderLink = jQuery(this);
 		var activeSearchOrder = $orderLink.attr('data-order');
-		router.navigate(pagedCollectionPresenter.getSearchChangeLink({order: activeSearchOrder}));
+		pagedCollectionPresenter.setSearchParams({order: activeSearchOrder});
 	}
 
 	return {
@@ -102,4 +104,4 @@ App.Presenters.UserListPresenter = function(
 
 };
 
-App.DI.register('userListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'router', 'pagedCollectionPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.UserListPresenter);
+App.DI.register('userListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'pagedCollectionPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.UserListPresenter);

@@ -42,10 +42,9 @@ App.Util = function(_, jQuery, promise) {
 	function compileComplexRouteArgs(baseUri, args) {
 		var result = baseUri + '/';
 		_.each(args, function(v, k) {
-			if (typeof(v) === 'undefined') {
-				return;
+			if (typeof(v) !== 'undefined') {
+				result += k + '=' + v + ';';
 			}
-			result += k + '=' + v + ';';
 		});
 		result = result.slice(0, -1);
 		return result;

@@ -26,7 +26,6 @@ everything related to posts:
 
     - single post view
         - previous and next post (difficult)
-            - extract Pager from PagedCollectionPresenter
             - rename PagedCollectionPresenter to PagerPresenter
             - remember last search
             - take care of pages
