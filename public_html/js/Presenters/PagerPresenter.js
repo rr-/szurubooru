@@ -11,10 +11,12 @@ App.Presenters.PagerPresenter = function(
 	router,
 	pager,
 	presenterManager,
+	messagePresenter,
 	browsingSettings) {
 
 	var $target;
 	var $pageList;
+	var $messages;
 	var targetContent;
 	var endlessScroll = browsingSettings.getSettings().endlessScroll;
 	var scrollInterval;
@@ -23,12 +25,12 @@ App.Presenters.PagerPresenter = function(
 
 	var baseUri;
 	var updateCallback;
-	var failCallback;
 
 	function init(args, loaded) {
 		baseUri = args.baseUri;
 		updateCallback = args.updateCallback;
-		failCallback = args.failCallback;
+
+		messagePresenter.instant = true;
 
 		$target = args.$target;
 		targetContent = jQuery(args.$target).html();
@@ -120,11 +122,13 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function retrieve() {
+		messagePresenter.hideMessages($messages);
 		showSpinner();
 
 		return promise.make(function(resolve, reject) {
 			pager.retrieve()
 				.then(function(response) {
+					showPageList();
 					updateCallback(response, forceClear || !endlessScroll);
 					forceClear = false;
 
@@ -133,11 +137,11 @@ App.Presenters.PagerPresenter = function(
 					attachNextPageLoader();
 					resolve();
 				}).fail(function(response) {
-					if (typeof(failCallback) !== 'undefined') {
-						failCallback(response);
-					} else {
-						console.log(new Error(response.json && response.json.error || response));
-					}
+					clearContent();
+					hidePageList();
+					hideSpinner();
+					messagePresenter.showError($messages, response.json && response.json.error || response);
+
 					reject();
 				});
 		});
@@ -161,6 +165,14 @@ App.Presenters.PagerPresenter = function(
 				window.clearInterval(scrollInterval);
 			}
 		}, 100);
+	}
+
+	function showPageList() {
+		$pageList.show();
+	}
+
+	function hidePageList() {
+		$pageList.hide();
 	}
 
 	function refreshPageList() {
@@ -191,6 +203,7 @@ App.Presenters.PagerPresenter = function(
 
 	function render() {
 		$target.html(template({originalHtml: targetContent}));
+		$messages = $target.find('.pagination-content');
 		$pageList = $target.find('.page-list');
 		if (endlessScroll) {
 			$pageList.remove();
@@ -208,4 +221,4 @@ App.Presenters.PagerPresenter = function(
 
 };
 
-App.DI.register('pagerPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'keyboard', 'router', 'pager', 'presenterManager', 'browsingSettings'], App.Presenters.PagerPresenter);
+App.DI.register('pagerPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'keyboard', 'router', 'pager', 'presenterManager', 'messagePresenter', 'browsingSettings'], App.Presenters.PagerPresenter);

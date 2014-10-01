@@ -8,8 +8,7 @@ App.Presenters.UserListPresenter = function(
 	promise,
 	auth,
 	pagerPresenter,
-	topNavigationPresenter,
-	messagePresenter) {
+	topNavigationPresenter) {
 
 	var $el = jQuery('#content');
 	var listTemplate;
@@ -36,11 +35,6 @@ App.Presenters.UserListPresenter = function(
 						updateCallback: function(data, clear) {
 							renderUsers(data.entities, clear);
 						},
-						failCallback: function(response) {
-							$el.empty();
-							messagePresenter.showError($el, response.json && response.json.error || response);
-							loaded();
-						}
 					},
 					function() {
 						reinit(args, function() {});
@@ -104,4 +98,4 @@ App.Presenters.UserListPresenter = function(
 
 };
 
-App.DI.register('userListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'pagerPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.UserListPresenter);
+App.DI.register('userListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.UserListPresenter);

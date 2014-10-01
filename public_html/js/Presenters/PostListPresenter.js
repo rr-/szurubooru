@@ -9,8 +9,7 @@ App.Presenters.PostListPresenter = function(
 	auth,
 	keyboard,
 	pagerPresenter,
-	topNavigationPresenter,
-	messagePresenter) {
+	topNavigationPresenter) {
 
 	var KEY_RETURN = 13;
 
@@ -43,11 +42,6 @@ App.Presenters.PostListPresenter = function(
 						updateCallback: function(data, clear) {
 							renderPosts(data.entities, clear);
 						},
-						failCallback: function(response) {
-							$el.empty();
-							messagePresenter.showError($el, response.json && response.json.error || response);
-							loaded();
-						}
 					},
 					function() {
 						reinit(args, function() {});
@@ -118,4 +112,4 @@ App.Presenters.PostListPresenter = function(
 
 };
 
-App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'keyboard', 'pagerPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostListPresenter);
+App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'keyboard', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.PostListPresenter);

@@ -1,7 +1,11 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.MessagePresenter = function(jQuery) {
+App.Presenters.MessagePresenter = function(_, jQuery) {
+
+	var options = {
+		instant: false
+	};
 
 	function showInfo($el, message) {
 		return showMessage($el, 'info', message);
@@ -12,11 +16,16 @@ App.Presenters.MessagePresenter = function(jQuery) {
 	}
 
 	function hideMessages($el) {
-		$el.children('.message').each(function() {
-			jQuery(this).slideUp('fast', function() {
-				jQuery(this).remove();
+		var $messages = $el.children('.message');
+		if (options.instant) {
+			$messages.each(function() {
+				jQuery(this).slideUp('fast', function() {
+					jQuery(this).remove();
+				});
 			});
-		});
+		} else {
+			$messages.remove();
+		}
 	}
 
 	function showMessage($el, className, message) {
@@ -24,18 +33,22 @@ App.Presenters.MessagePresenter = function(jQuery) {
 		$messageDiv.addClass('message');
 		$messageDiv.addClass(className);
 		$messageDiv.html(message);
-		$messageDiv.hide();
+		if (!options.instant) {
+			$messageDiv.hide();
+		}
 		$el.append($messageDiv);
-		$messageDiv.slideDown('fast');
+		if (!options.instant) {
+			$messageDiv.slideDown('fast');
+		}
 		return $messageDiv;
 	}
 
-	return {
+	return _.extend(options, {
 		showInfo: showInfo,
 		showError: showError,
 		hideMessages: hideMessages,
-	};
+	});
 
 };
 
-App.DI.register('messagePresenter', ['jQuery'], App.Presenters.MessagePresenter);
+App.DI.register('messagePresenter', ['_', 'jQuery'], App.Presenters.MessagePresenter);
