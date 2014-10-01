@@ -12,7 +12,6 @@ everything related to posts:
         - search filters
             - comment:rr-
             - comment_count: 3..5
-            - fav:rr-
             - file_size:3K..5M
             - image_size:huge/large/medium/small
             - type:img/flash/yt/video

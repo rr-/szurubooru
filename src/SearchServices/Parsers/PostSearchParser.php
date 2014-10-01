@@ -43,6 +43,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'safety')
 			$this->addSafetyRequirement($filter, $token);
 
+		elseif ($token->getKey() === 'fav')
+			$this->addFavRequirement($filter, $token);
+
 		else
 			throw new \BadMethodCallException('Not supported');
 	}
@@ -166,6 +169,14 @@ class PostSearchParser extends AbstractSearchParser
 			});
 	}
 
+	private function addFavRequirement($filter, $token)
+	{
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAVORITE,
+			self::ALLOW_COMPOSITE);
+	}
 
 	private function dateToTime($value)
 	{
