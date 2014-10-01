@@ -9,7 +9,7 @@ abstract class AbstractSearchParser
 	public function createFilterFromInputReader(\Szurubooru\Helpers\InputReader $inputReader)
 	{
 		$filter = $this->createFilter();
-		$filter->setOrder(array_merge($this->getOrder($inputReader->order), $filter->getOrder()));
+		$filter->setOrder(array_merge($filter->getOrder(), $this->getOrder($inputReader->order)));
 
 		if ($inputReader->page)
 		{
