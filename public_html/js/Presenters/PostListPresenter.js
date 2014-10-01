@@ -7,19 +7,24 @@ App.Presenters.PostListPresenter = function(
 	util,
 	promise,
 	auth,
-	router,
 	keyboard,
 	pagerPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
 
+	var KEY_RETURN = 13;
+
 	var $el = jQuery('#content');
+	var $searchInput;
 	var listTemplate;
 	var itemTemplate;
+
+	var searchArgs;
 
 	function init(args, loaded) {
 		topNavigationPresenter.select('posts');
 		topNavigationPresenter.changeTitle('Posts');
+		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
 
 		promise.waitAll(
 				util.promiseTemplate('post-list'),
@@ -53,15 +58,27 @@ App.Presenters.PostListPresenter = function(
 	function reinit(args, loaded) {
 		loaded();
 
-		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		pagerPresenter.reinit({page: searchArgs.page, searchParams: {query: searchArgs.query, order: searchArgs.order}});
+		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
+		pagerPresenter.reinit({
+			page: searchArgs.page,
+			searchParams: {
+				query: searchArgs.query,
+				order: searchArgs.order}});
 	}
 
 	function render() {
 		$el.html(listTemplate());
+		$searchInput = $el.find('input[name=query]');
+
+		$searchInput.val(searchArgs.query);
+		$searchInput.keydown(searchInputKeyPressed);
 
 		keyboard.keyup('p', function() {
 			$el.find('.posts li a').eq(0).focus();
+		});
+
+		keyboard.keyup('q', function() {
+			$searchInput.eq(0).focus();
 		});
 	}
 
@@ -82,6 +99,17 @@ App.Presenters.PostListPresenter = function(
 		}
 	}
 
+	function searchInputKeyPressed(e) {
+		if (e.which !== KEY_RETURN) {
+			return;
+		}
+
+		$searchInput.blur();
+		pagerPresenter.setSearchParams({
+			query: $searchInput.val(),
+			order: searchArgs.order});
+	}
+
 	return {
 		init: init,
 		reinit: reinit,
@@ -90,4 +118,4 @@ App.Presenters.PostListPresenter = function(
 
 };
 
-App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'router', 'keyboard', 'pagerPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostListPresenter);
+App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'keyboard', 'pagerPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostListPresenter);

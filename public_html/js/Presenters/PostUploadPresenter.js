@@ -13,6 +13,8 @@ App.Presenters.PostUploadPresenter = function(
 	topNavigationPresenter,
 	messagePresenter) {
 
+	var KEY_RETURN = 13;
+
 	var $el = jQuery('#content');
 	var $messages;
 	var template;
@@ -72,7 +74,7 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function urlHandlerKeyPressed(e) {
-		if (e.which !== 13) {
+		if (e.which !== KEY_RETURN) {
 			return;
 		}
 
