@@ -128,9 +128,18 @@ App.Presenters.PagerPresenter = function(
 		return promise.make(function(resolve, reject) {
 			pager.retrieve()
 				.then(function(response) {
-					showPageList();
 					updateCallback(response, forceClear || !endlessScroll);
 					forceClear = false;
+					if (!response.entities.length) {
+						messagePresenter.showInfo($messages, 'No data to show');
+						if (pager.getVisiblePages().length === 1) {
+							hidePageList();
+						} else  {
+							showPageList();
+						}
+					} else {
+						showPageList();
+					}
 
 					refreshPageList();
 					hideSpinner();

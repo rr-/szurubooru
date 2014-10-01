@@ -7,7 +7,6 @@ everything related to posts:
         - comment count
         - regard safety settings
         - regard disliked settings
-        - add warning if no posts were found
         - search filters
             - comment:rr-
             - comment_count: 3..5
