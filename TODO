@@ -26,7 +26,6 @@ everything related to posts:
 
     - single post view
         - previous and next post (difficult)
-            - rename PagedCollectionPresenter to PagerPresenter
             - remember last search
             - take care of pages
             - add A/D hotkeys

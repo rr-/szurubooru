@@ -1,7 +1,7 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.PagedCollectionPresenter = function(
+App.Presenters.PagerPresenter = function(
 	_,
 	jQuery,
 	util,
@@ -208,4 +208,4 @@ App.Presenters.PagedCollectionPresenter = function(
 
 };
 
-App.DI.register('pagedCollectionPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'keyboard', 'router', 'pager', 'presenterManager', 'browsingSettings'], App.Presenters.PagedCollectionPresenter);
+App.DI.register('pagerPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'keyboard', 'router', 'pager', 'presenterManager', 'browsingSettings'], App.Presenters.PagerPresenter);

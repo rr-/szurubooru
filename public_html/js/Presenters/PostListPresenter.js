@@ -9,7 +9,7 @@ App.Presenters.PostListPresenter = function(
 	auth,
 	router,
 	keyboard,
-	pagedCollectionPresenter,
+	pagerPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -31,7 +31,7 @@ App.Presenters.PostListPresenter = function(
 				render();
 				loaded();
 
-				pagedCollectionPresenter.init({
+				pagerPresenter.init({
 						baseUri: '#/posts',
 						backendUri: '/posts',
 						$target: $el.find('.pagination-target'),
@@ -54,7 +54,7 @@ App.Presenters.PostListPresenter = function(
 		loaded();
 
 		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		pagedCollectionPresenter.reinit({page: searchArgs.page, searchParams: {query: searchArgs.query, order: searchArgs.order}});
+		pagerPresenter.reinit({page: searchArgs.page, searchParams: {query: searchArgs.query, order: searchArgs.order}});
 	}
 
 	function render() {
@@ -90,4 +90,4 @@ App.Presenters.PostListPresenter = function(
 
 };
 
-App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'router', 'keyboard', 'pagedCollectionPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostListPresenter);
+App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'router', 'keyboard', 'pagerPresenter', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostListPresenter);
