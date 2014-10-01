@@ -52,7 +52,7 @@ App.Presenters.PagerPresenter = function(
 		pager.setSearchParams(args.searchParams);
 		pager.setPage(args.page || 1);
 
-		retrieve()
+		promise.wait(retrieve())
 			.then(loaded)
 			.fail(loaded);
 
@@ -60,6 +60,11 @@ App.Presenters.PagerPresenter = function(
 			keyboard.keydown('a', prevPage);
 			keyboard.keydown('d', nextPage);
 		}
+	}
+
+
+	function deinit() {
+		detachNextPageLoader();
 	}
 
 	function prevPage() {
@@ -126,7 +131,7 @@ App.Presenters.PagerPresenter = function(
 		showSpinner();
 
 		return promise.make(function(resolve, reject) {
-			pager.retrieve()
+			promise.wait(pager.retrieve())
 				.then(function(response) {
 					updateCallback(response, forceClear || !endlessScroll);
 					forceClear = false;
@@ -174,6 +179,10 @@ App.Presenters.PagerPresenter = function(
 				window.clearInterval(scrollInterval);
 			}
 		}, 100);
+	}
+
+	function detachNextPageLoader() {
+		window.clearInterval(scrollInterval);
 	}
 
 	function showPageList() {
@@ -224,6 +233,7 @@ App.Presenters.PagerPresenter = function(
 	return {
 		init: init,
 		reinit: reinit,
+		deinit: deinit,
 		setPage: setPage,
 		setSearchParams: setSearchParams,
 	};

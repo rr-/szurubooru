@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
+App.Router = function(pathJs, _, jQuery, promise, util, appState, presenterManager) {
 
 	var root = '#/';
 	var previousLocation = window.location.href;
@@ -65,6 +65,9 @@ App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 					}
 				}
 			}
+
+			//abort every operation that can be executed
+			promise.abortAll();
 			previousLocation = window.location.href;
 
 			var finalParams = _.extend(
@@ -87,4 +90,4 @@ App.Router = function(pathJs, _, jQuery, util, appState, presenterManager) {
 
 };
 
-App.DI.registerSingleton('router', ['pathJs', '_', 'jQuery', 'util', 'appState', 'presenterManager'], App.Router);
+App.DI.registerSingleton('router', ['pathJs', '_', 'jQuery', 'promise', 'util', 'appState', 'presenterManager'], App.Router);

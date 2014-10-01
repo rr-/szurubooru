@@ -120,7 +120,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 			delete formData.passwordConfirmation;
 		}
 
-		api.put('/users/' + user.name, formData)
+		promise.wait(api.put('/users/' + user.name, formData))
 			.then(function(response) {
 				editSuccess(response);
 			}).fail(function(response) {

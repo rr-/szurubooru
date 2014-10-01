@@ -58,7 +58,7 @@ App.Presenters.LoginPresenter = function(
 			return false;
 		}
 
-		auth.loginFromCredentials(userNameOrEmail, password, remember)
+		promise.wait(auth.loginFromCredentials(userNameOrEmail, password, remember))
 			.then(function(response) {
 				finishLogin();
 			}).fail(function(response) {

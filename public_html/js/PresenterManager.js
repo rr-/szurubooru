@@ -34,6 +34,9 @@ App.PresenterManager = function(jQuery, topNavigationPresenter, keyboard) {
 		}, 100);
 
 		if (lastContentPresenter === null || lastContentPresenter.name !== presenter.name) {
+			if (lastContentPresenter !== null && lastContentPresenter.deinit) {
+				lastContentPresenter.deinit();
+			}
 			keyboard.reset();
 			topNavigationPresenter.changeTitle(null);
 			topNavigationPresenter.focus();

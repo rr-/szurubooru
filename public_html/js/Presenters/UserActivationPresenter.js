@@ -70,7 +70,7 @@ App.Presenters.UserActivationPresenter = function(
 			'/password-reset/' + userNameOrEmail :
 			'/activation/' + userNameOrEmail;
 
-		api.post(url)
+		promise.wait(api.post(url))
 			.then(function(response) {
 				var message = operation === 'passwordReset' ?
 					'Password reset request sent.' :
@@ -92,7 +92,7 @@ App.Presenters.UserActivationPresenter = function(
 			'/finish-password-reset/' + token :
 			'/finish-activation/' + token;
 
-		api.post(url)
+		promise.wait(api.post(url))
 			.then(function(response) {
 				var message = operation === 'passwordReset' ?
 					'Your new password is <strong>' + response.json.newPassword + '</strong>.' :

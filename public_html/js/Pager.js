@@ -55,20 +55,19 @@ App.Pager = function(
 
 	function retrieve() {
 		return promise.make(function(resolve, reject) {
-			promise.wait(
-				api.get(url, _.extend({}, searchParams, {page: pageNumber})))
-					.then(function(response) {
-						var pageSize = response.json.pageSize;
-						var totalRecords = response.json.totalRecords;
-						totalPages = Math.ceil(totalRecords / pageSize);
+			promise.wait(api.get(url, _.extend({}, searchParams, {page: pageNumber})))
+				.then(function(response) {
+					var pageSize = response.json.pageSize;
+					var totalRecords = response.json.totalRecords;
+					totalPages = Math.ceil(totalRecords / pageSize);
 
-						resolve({
-							entities: response.json.data,
-							totalRecords: totalRecords});
+					resolve({
+						entities: response.json.data,
+						totalRecords: totalRecords});
 
-					}).fail(function(response) {
-						reject(response);
-					});
+				}).fail(function(response) {
+					reject(response);
+				});
 		});
 	}
 

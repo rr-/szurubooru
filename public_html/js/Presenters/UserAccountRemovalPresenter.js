@@ -54,7 +54,7 @@ App.Presenters.UserAccountRemovalPresenter = function(
 			messagePresenter.showError($messages, 'Must confirm to proceed.');
 			return;
 		}
-		api.delete('/users/' + user.name)
+		promise.wait(api.delete('/users/' + user.name))
 			.then(function() {
 				auth.logout();
 				var $messageDiv = messagePresenter.showInfo($messages, 'Account deleted. <a href="">Back to main page</a>');

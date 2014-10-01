@@ -18,7 +18,7 @@ App.Presenters.UserListPresenter = function(
 		topNavigationPresenter.select('users');
 		topNavigationPresenter.changeTitle('Users');
 
-		promise.waitAll(
+		promise.wait(
 				util.promiseTemplate('user-list'),
 				util.promiseTemplate('user-list-item'))
 			.then(function(listHtml, itemHtml) {
@@ -53,6 +53,10 @@ App.Presenters.UserListPresenter = function(
 			page: searchArgs.page,
 			searchParams: {
 				order: searchArgs.order}});
+	}
+
+	function deinit() {
+		pagerPresenter.deinit();
 	}
 
 	function render() {
@@ -93,6 +97,7 @@ App.Presenters.UserListPresenter = function(
 	return {
 		init: init,
 		reinit: reinit,
+		deinit: deinit,
 		render: render,
 	};
 

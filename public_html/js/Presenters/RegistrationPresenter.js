@@ -47,7 +47,7 @@ App.Presenters.RegistrationPresenter = function(
 			return;
 		}
 
-		api.post('/users', formData)
+		promise.wait(api.post('/users', formData))
 			.then(function(response) {
 				registrationSuccess(response);
 			}).fail(function(response) {

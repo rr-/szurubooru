@@ -51,7 +51,7 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 			},
 		};
 
-		browsingSettings.setSettings(newSettings)
+		promise.wait(browsingSettings.setSettings(newSettings))
 			.then(function() {
 				messagePresenter.showInfo($messages, 'Browsing settings updated!');
 			});

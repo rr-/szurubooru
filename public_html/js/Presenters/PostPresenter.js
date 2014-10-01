@@ -49,7 +49,7 @@ App.Presenters.PostPresenter = function(
 		editPrivileges.canChangeThumbnail = auth.hasPrivilege(auth.privileges.changePostThumbnail);
 		editPrivileges.canChangeRelations = auth.hasPrivilege(auth.privileges.changePostRelations);
 
-		promise.waitAll(
+		promise.wait(
 				util.promiseTemplate('post'),
 				util.promiseTemplate('post-edit'),
 				util.promiseTemplate('post-content'),
@@ -74,7 +74,7 @@ App.Presenters.PostPresenter = function(
 	function reinit(args, loaded) {
 		postNameOrId = args.postNameOrId;
 
-		refreshPost()
+		promise.wait(refreshPost())
 			.then(function() {
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
@@ -84,7 +84,7 @@ App.Presenters.PostPresenter = function(
 
 	function refreshPost() {
 		return promise.make(function(resolve, reject) {
-			promise.waitAll(api.get('/posts/' + postNameOrId))
+			promise.wait(api.get('/posts/' + postNameOrId))
 				.then(function(postResponse) {
 					post = postResponse.json;
 					postScore = postResponse.json.ownScore;
@@ -170,7 +170,7 @@ App.Presenters.PostPresenter = function(
 	}
 
 	function deletePost() {
-		api.delete('/posts/' + post.id)
+		promise.wait(api.delete('/posts/' + post.id))
 			.then(function(response) {
 				router.navigate('#/posts');
 			}).fail(showGenericError);
@@ -185,11 +185,10 @@ App.Presenters.PostPresenter = function(
 	}
 
 	function featurePost() {
-		api.post('/posts/' + post.id + '/feature')
+		promise.wait(api.post('/posts/' + post.id + '/feature'))
 			.then(function(response) {
 				router.navigate('#/home');
-			})
-			.fail(showGenericError);
+			}).fail(showGenericError);
 	}
 
 	function editButtonClicked(e) {
@@ -304,19 +303,17 @@ App.Presenters.PostPresenter = function(
 	}
 
 	function addFavorite() {
-		api.post('/posts/' + post.id + '/favorites')
+		promise.wait(api.post('/posts/' + post.id + '/favorites'))
 			.then(function(response) {
-				refreshPost().then(renderSidebar);
-			})
-			.fail(showGenericError);
+				promise.wait(refreshPost()).then(renderSidebar);
+			}).fail(showGenericError);
 	}
 
 	function deleteFavorite() {
-		api.delete('/posts/' + post.id + '/favorites')
+		promise.wait(api.delete('/posts/' + post.id + '/favorites'))
 			.then(function(response) {
-				refreshPost().then(renderSidebar);
-			})
-			.fail(showGenericError);
+				promise.wait(refreshPost()).then(renderSidebar);
+			}).fail(showGenericError);
 	}
 
 	function scoreUpButtonClicked(e) {
@@ -332,11 +329,10 @@ App.Presenters.PostPresenter = function(
 	}
 
 	function score(scoreValue) {
-		api.post('/posts/' + post.id + '/score', {score: scoreValue})
+		promise.wait(api.post('/posts/' + post.id + '/score', {score: scoreValue}))
 			.then(function() {
-				refreshPost().then(renderSidebar);
-			})
-			.fail(showGenericError);
+				promise.wait(refreshPost()).then(renderSidebar);
+			}).fail(showGenericError);
 	}
 
 	function showEditError(response) {

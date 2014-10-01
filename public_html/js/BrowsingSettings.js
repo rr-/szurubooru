@@ -73,7 +73,9 @@ App.BrowsingSettings = function(
 		return promise.make(function(resolve, reject) {
 			saveToLocalStorage();
 			if (auth.isLoggedIn()) {
-				saveToUser(auth.getCurrentUser()).then(resolve).fail(reject);
+				promise.wait(saveToUser(auth.getCurrentUser()))
+					.then(resolve)
+					.fail(reject);
 			} else {
 				resolve();
 			}

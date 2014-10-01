@@ -21,7 +21,7 @@ App.Presenters.HomePresenter = function(
 		topNavigationPresenter.select('home');
 		topNavigationPresenter.changeTitle('Home');
 
-		promise.waitAll(
+		promise.wait(
 				util.promiseTemplate('home'),
 				util.promiseTemplate('post-content'),
 				api.get('/globals'),

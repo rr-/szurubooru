@@ -25,7 +25,7 @@ App.Presenters.PostListPresenter = function(
 		topNavigationPresenter.changeTitle('Posts');
 		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
 
-		promise.waitAll(
+		promise.wait(
 				util.promiseTemplate('post-list'),
 				util.promiseTemplate('post-list-item'))
 			.then(function(listHtml, itemHtml) {
@@ -58,6 +58,10 @@ App.Presenters.PostListPresenter = function(
 			searchParams: {
 				query: searchArgs.query,
 				order: searchArgs.order}});
+	}
+
+	function deinit() {
+		pagerPresenter.deinit();
 	}
 
 	function render() {
@@ -107,6 +111,7 @@ App.Presenters.PostListPresenter = function(
 	return {
 		init: init,
 		reinit: reinit,
+		deinit: deinit,
 		render: render,
 	};
 

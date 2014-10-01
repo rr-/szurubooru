@@ -1,28 +1,57 @@
 var App = App || {};
 
-App.Promise = function(jQuery) {
+App.Promise = function(_, jQuery) {
 
-	function make(callback)
-	{
+	var active = [];
+
+	function make(callback) {
 		var deferred = jQuery.Deferred();
-		callback(deferred.resolve, deferred.reject);
-		return deferred.promise();
+		var promise = deferred.promise();
+
+		callback(function() {
+			deferred.resolve.apply(deferred, arguments);
+			active = _.without(active, promise);
+		}, function() {
+			deferred.reject.apply(deferred, arguments);
+			active = _.without(active, promise);
+		});
+
+		promise.then(function() {
+			if (!_.contains(active, promise)) {
+				throw new Error('Broken promise');
+			}
+		});
+
+		active.push(promise);
+		return promise;
 	}
 
-	function wait(promise) {
-		return jQuery.when(promise);
+	function wait() {
+		var promises = arguments;
+		var deferred = jQuery.Deferred();
+		return jQuery.when.apply(jQuery, promises)
+			.then(function() {
+				return deferred.resolve.apply(deferred, arguments);
+			}).fail(function() {
+				return deferred.reject.apply(deferred, arguments);
+			});
 	}
 
-	function waitAll() {
-		return jQuery.when.apply(jQuery, arguments);
+	function abortAll() {
+		active = [];
+	}
+
+	function getActive() {
+		return active.length;
 	}
 
 	return {
 		make: make,
 		wait: wait,
-		waitAll: waitAll,
+		getActive: getActive,
+		abortAll: abortAll,
 	};
 
 };
 
-App.DI.registerSingleton('promise', ['jQuery'], App.Promise);
+App.DI.registerSingleton('promise', ['_', 'jQuery'], App.Promise);
