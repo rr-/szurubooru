@@ -30,4 +30,22 @@ class UserSearchParserTest extends AbstractTestCase
 		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
 		$this->assertEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_DESC], $filter->getOrder());
 	}
+
+	public function testTokenOrder()
+	{
+		$this->inputReader->query = 'order:name,desc';
+		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+		$this->assertEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_DESC], $filter->getOrder());
+	}
+
+	public function testParamAndTokenOrder()
+	{
+		$this->inputReader->order = 'registration_time,desc';
+		$this->inputReader->query = 'order:name,desc';
+		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+		$this->assertEquals([
+			UserFilter::ORDER_REGISTRATION_TIME => UserFilter::ORDER_DESC,
+			UserFilter::ORDER_NAME => UserFilter::ORDER_DESC],
+			$filter->getOrder());
+	}
 }

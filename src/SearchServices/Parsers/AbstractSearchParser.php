@@ -22,7 +22,12 @@ abstract class AbstractSearchParser
 		foreach ($tokens as $token)
 		{
 			if ($token instanceof \Szurubooru\SearchServices\Tokens\NamedSearchToken)
-				$this->decorateFilterFromNamedToken($filter, $token);
+			{
+				if ($token->getKey() === 'order')
+					$filter->setOrder(array_merge($filter->getOrder(), $this->getOrder($token->getValue())));
+				else
+					$this->decorateFilterFromNamedToken($filter, $token);
+			}
 			elseif ($token instanceof \Szurubooru\SearchServices\Tokens\SearchToken)
 				$this->decorateFilterFromToken($filter, $token);
 			else
