@@ -7,5 +7,12 @@
 	"require-dev": {
 		"jbrooksuk/phpcheckstyle": "dev-master",
 		"phpunit/phpunit": "4.2.*"
+	},
+
+	"autoload": {
+		"psr-4": {
+			"Szurubooru\\Tests\\": "tests/",
+			"Szurubooru\\": "src/"
+		}
 	}
 }
