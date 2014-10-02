@@ -1,7 +1,7 @@
 {
 	"name": "szuru2",
 	"version": "0.0.0",
-	"devDependencies": {
+	"dependencies": {
 		"requirejs": "*",
 		"ini": "*",
 		"grunt": "~0.4.5",
