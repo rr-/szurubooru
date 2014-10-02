@@ -27,7 +27,7 @@ App.Bootstrap = function(auth, router, util, promise, presenterManager) {
 
 App.DI.registerSingleton('bootstrap', ['auth', 'router', 'util', 'promise', 'presenterManager'], App.Bootstrap);
 App.DI.registerManual('jQuery', function() { return window.$; });
-App.DI.registerManual('pathJs', function() { return window.Path; });
+App.DI.registerManual('pathJs', function() { return window.pathjs; });
 App.DI.registerManual('_', function() { return window._; });
 App.DI.registerManual('mousetrap', function() { return window.Mousetrap; });
 App.DI.get('bootstrap');

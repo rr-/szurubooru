@@ -1,12 +1,14 @@
 var path = require('path');
 var fs = require('fs');
 var ini = require('ini');
+var rmdir = require('rimraf');
 
 var phpCheckStyleConfigPath = path.join(path.resolve(), 'phpcheckstyle.cfg');
 var phpSourcesDir = path.join(path.resolve(), 'src');
-var jsSourcesDir = path.join(path.resolve(), 'public_html/js');
-var cssSourcesDir = path.join(path.resolve(), 'public_html/css');
-var templatesDir = path.join(path.resolve(), 'public_html/templates');
+var publicHtmlDir = path.join(path.resolve(), 'public_html');
+var jsSourcesDir = path.join(publicHtmlDir, 'js');
+var cssSourcesDir = path.join(publicHtmlDir, 'css');
+var templatesDir = path.join(publicHtmlDir, 'templates');
 
 var config = readConfig([
 		path.join(path.resolve(), 'data/config.ini'),
@@ -87,6 +89,18 @@ module.exports = function(grunt) {
 			},
 		},
 
+		copy: {
+			dist: {
+				files: [
+					{ src: 'node_modules/jquery/dist/jquery.min.js', dest: 'public_html/lib/jquery.min.js' },
+					{ src: 'node_modules/jquery.cookie/jquery.cookie.js', dest: 'public_html/lib/jquery.cookie.js' },
+					{ src: 'node_modules/mousetrap/mousetrap.min.js', dest: 'public_html/lib/mousetrap.min.js' },
+					{ src: 'node_modules/pathjs/path.js', dest: 'public_html/lib/path.js' },
+					{ src: 'node_modules/underscore/underscore-min.js', dest: 'public_html/lib/underscore.min.js' },
+				]
+			}
+		},
+
 		cssmin: {
 			combine: {
 				files: {
@@ -134,8 +148,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-shell');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 
-	grunt.registerTask('default', ['checkstyle', 'tests']);
+	grunt.registerTask('default', ['copy:dist', 'checkstyle', 'tests']);
 	grunt.registerTask('checkstyle', ['jshint', 'shell:phpcheckstyle']);
 	grunt.registerTask('tests', ['shell:tests']);
 	grunt.registerTask('update', ['shell:upgrade']);
@@ -147,6 +162,6 @@ module.exports = function(grunt) {
 		fs.unlink('public_html/app.min.js.map');
 		fs.unlink('public_html/app.min.css');
 	});
-	grunt.registerTask('build', ['clean', 'uglify', 'cssmin', 'processhtml']);
+	grunt.registerTask('build', ['clean', 'copy:dist', 'uglify', 'cssmin', 'processhtml']);
 
 };

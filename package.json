@@ -2,6 +2,12 @@
 	"name": "szuru2",
 	"version": "0.0.0",
 	"dependencies": {
+		"pathjs": "~0.8.1",
+		"jquery.cookie": "1.4.1",
+		"jquery": "~2.1.1",
+		"underscore": "1.7.0",
+		"mousetrap": "0.0.1",
+
 		"requirejs": "*",
 		"ini": "*",
 		"grunt": "~0.4.5",
@@ -9,7 +15,9 @@
 		"grunt-contrib-uglify": "*",
 		"grunt-contrib-cssmin": "*",
 		"grunt-contrib-jshint": "~0.10.0",
+		"grunt-contrib-copy": "*",
 		"grunt-shell": "~1.1.1",
-		"grunt-cli": "*"
+		"grunt-cli": "*",
+		"rimraf": "~2.1"
 	}
 }
