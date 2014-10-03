@@ -4,6 +4,7 @@ namespace Szurubooru\Controllers;
 final class PostController extends AbstractController
 {
 	private $config;
+	private $authService;
 	private $privilegeService;
 	private $postService;
 	private $postSearchParser;
@@ -13,6 +14,7 @@ final class PostController extends AbstractController
 
 	public function __construct(
 		\Szurubooru\Config $config,
+		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\PrivilegeService $privilegeService,
 		\Szurubooru\Services\PostService $postService,
 		\Szurubooru\SearchServices\Parsers\PostSearchParser $postSearchParser,
@@ -21,6 +23,7 @@ final class PostController extends AbstractController
 		\Szurubooru\Controllers\ViewProxies\SnapshotViewProxy $snapshotViewProxy)
 	{
 		$this->config = $config;
+		$this->authService = $authService;
 		$this->privilegeService = $privilegeService;
 		$this->postService = $postService;
 		$this->postSearchParser = $postSearchParser;
@@ -60,8 +63,11 @@ final class PostController extends AbstractController
 	public function getFiltered()
 	{
 		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_POSTS);
+
 		$filter = $this->postSearchParser->createFilterFromInputReader($this->inputReader);
 		$filter->setPageSize($this->config->posts->postsPerPage);
+		$this->decorateFilterFromBrowsingSettings($filter);
+
 		$result = $this->postService->getFiltered($filter);
 		$entities = $this->postViewProxy->fromArray($result->getEntities(), $this->getLightFetchConfig());
 		return [
@@ -148,5 +154,33 @@ final class PostController extends AbstractController
 		[
 			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_TAGS => true,
 		];
+	}
+
+	private function decorateFilterFromBrowsingSettings($filter)
+	{
+		$userSettings = $this->authService->getLoggedInUser()->getBrowsingSettings();
+		if (!$userSettings)
+			return;
+
+		if ($userSettings->listPosts and !count($filter->getRequirementsByType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SAFETY)))
+		{
+			$values = [];
+			if (!\Szurubooru\Helpers\TypeHelper::toBool($userSettings->listPosts->safe))
+				$values[] = \Szurubooru\Entities\Post::POST_SAFETY_SAFE;
+			if (!\Szurubooru\Helpers\TypeHelper::toBool($userSettings->listPosts->sketchy))
+				$values[] = \Szurubooru\Entities\Post::POST_SAFETY_SKETCHY;
+			if (!\Szurubooru\Helpers\TypeHelper::toBool($userSettings->listPosts->unsafe))
+				$values[] = \Szurubooru\Entities\Post::POST_SAFETY_UNSAFE;
+			if (count($values))
+			{
+				$requirementValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
+				$requirementValue->setValues($values);
+				$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+				$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SAFETY);
+				$requirement->setValue($requirementValue);
+				$requirement->setNegated(true);
+				$filter->addRequirement($requirement);
+			}
+		}
 	}
 }

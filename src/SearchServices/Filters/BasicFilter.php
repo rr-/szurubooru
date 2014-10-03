@@ -30,6 +30,17 @@ class BasicFilter implements IFilter
 		return $this->requirements;
 	}
 
+	public function getRequirementsByType($type)
+	{
+		$requirements = [];
+		foreach ($this->getRequirements() as $key => $requirement)
+		{
+			if ($requirement->getType() === $type)
+				$requirements[$key] = $requirement;
+		}
+		return $requirements;
+	}
+
 	public function getPageSize()
 	{
 		return $this->pageSize;
