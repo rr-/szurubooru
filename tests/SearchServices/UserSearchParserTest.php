@@ -21,7 +21,7 @@ class UserSearchParserTest extends AbstractTestCase
 	public function testDefaultOrder()
 	{
 		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
-		$this->assertEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_ASC], $filter->getOrder());
+		$this->assertOrderEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_ASC], $filter->getOrder());
 	}
 
 	public function testInvalidOrder()
@@ -42,24 +42,42 @@ class UserSearchParserTest extends AbstractTestCase
 	{
 		$this->inputReader->order = 'name,desc';
 		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
-		$this->assertEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_DESC], $filter->getOrder());
+		$this->assertOrderEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_DESC], $filter->getOrder());
+	}
+
+	public function testTokenOverwriteDefaultOrder()
+	{
+		$this->inputReader->query = 'order:name,desc';
+		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+		$this->assertOrderEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_DESC], $filter->getOrder());
 	}
 
 	public function testTokenOrder()
 	{
-		$this->inputReader->query = 'order:name,desc';
+		$this->inputReader->query = 'order:registration_time,desc';
 		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
-		$this->assertEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_DESC], $filter->getOrder());
+		$this->assertOrderEquals([
+			UserFilter::ORDER_REGISTRATION_TIME => UserFilter::ORDER_DESC,
+			UserFilter::ORDER_NAME => UserFilter::ORDER_ASC],
+			$filter->getOrder());
 	}
 
 	public function testParamAndTokenOrder()
 	{
-		$this->inputReader->order = 'registration_time,desc';
-		$this->inputReader->query = 'order:name,desc';
+		$this->inputReader->order = 'name,desc';
+		$this->inputReader->query = 'order:registration_time,desc';
 		$filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
-		$this->assertEquals([
+		$this->assertOrderEquals([
 			UserFilter::ORDER_REGISTRATION_TIME => UserFilter::ORDER_DESC,
 			UserFilter::ORDER_NAME => UserFilter::ORDER_DESC],
 			$filter->getOrder());
+	}
+
+	private function assertOrderEquals($expected, $actual)
+	{
+		$this->assertEquals($expected, $actual);
+		//also test associative array's key order - something that PHPUnit doesn't seem to do
+		$this->assertEquals(array_values($expected), array_values($actual));
+		$this->assertEquals(array_keys($expected), array_keys($actual));
 	}
 }

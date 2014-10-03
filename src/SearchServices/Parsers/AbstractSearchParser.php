@@ -9,7 +9,7 @@ abstract class AbstractSearchParser
 	public function createFilterFromInputReader(\Szurubooru\Helpers\InputReader $inputReader)
 	{
 		$filter = $this->createFilter();
-		$filter->setOrder(array_merge($filter->getOrder(), $this->getOrder($inputReader->order)));
+		$filter->setOrder($this->getOrder($inputReader->order) + $filter->getOrder());
 
 		if ($inputReader->page)
 		{
@@ -24,7 +24,7 @@ abstract class AbstractSearchParser
 			if ($token instanceof \Szurubooru\SearchServices\Tokens\NamedSearchToken)
 			{
 				if ($token->getKey() === 'order')
-					$filter->setOrder(array_merge($filter->getOrder(), $this->getOrder($token->getValue())));
+					$filter->setOrder($this->getOrder($token->getValue()) + $filter->getOrder());
 				else
 					$this->decorateFilterFromNamedToken($filter, $token);
 			}
