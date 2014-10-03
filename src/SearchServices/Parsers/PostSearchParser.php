@@ -3,6 +3,13 @@ namespace Szurubooru\SearchServices\Parsers;
 
 class PostSearchParser extends AbstractSearchParser
 {
+	private $authService;
+
+	public function __construct(\Szurubooru\Services\AuthService $authService)
+	{
+		$this->authService = $authService;
+	}
+
 	protected function createFilter()
 	{
 		return new \Szurubooru\SearchServices\Filters\PostFilter;
@@ -48,6 +55,12 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif ($token->getKey() === 'type')
 			$this->addTypeRequirement($filter, $token);
+
+		elseif ($token->getKey() === 'special' and $token->getValue() === 'liked' and $this->authService->isLoggedIn())
+			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), 1, $token->isNegated());
+
+		elseif ($token->getKey() === 'special' and $token->getValue() === 'disliked' and $this->authService->isLoggedIn())
+			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), -1, $token->isNegated());
 
 		else
 			throw new \BadMethodCallException('Not supported');
@@ -192,6 +205,17 @@ class PostSearchParser extends AbstractSearchParser
 			{
 				return \Szurubooru\Helpers\EnumHelper::postTypeFromSTring($value);
 			});
+	}
+
+	private function addUserScoreRequirement($filter, $userName, $score, $isNegated)
+	{
+		$tokenValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
+		$tokenValue->setValues([$userName, $score]);
+		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_USER_SCORE);
+		$requirement->setValue($tokenValue);
+		$requirement->setNegated($isNegated);
+		$filter->addRequirement($requirement);
 	}
 
 	private function dateToTime($value)

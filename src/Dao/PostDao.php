@@ -112,12 +112,30 @@ class PostDao extends AbstractDao implements ICrudDao
 
 		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAVORITE)
 		{
-			$query->innerJoin('favorites _fav ON _fav.postId = posts.id INNER JOIN users favorite ON favorite.id = _fav.userId');
+			$query->innerJoin('favorites _fav ON _fav.postId = posts.id');
+			$query->innerJoin('users favoritedBy ON favoritedBy.id = _fav.userId');
 		}
 
 		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_UPLOADER)
 		{
 			$query->innerJoin('users uploader ON uploader.id = userId');
+		}
+
+		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_USER_SCORE)
+		{
+			$values = $requirement->getValue()->getValues();
+			$userName = $values[0];
+			$score = $values[1];
+			$sql = 'EXISTS (
+				SELECT 1 FROM postScores
+				INNER JOIN users ON postScores.userId = users.id
+				WHERE postScores.postId = posts.id
+					AND LOWER(users.name) = LOWER(?)
+					AND postScores.score = ?)';
+			if ($requirement->isnegated())
+				$sql = 'NOT ' . $sql;
+			$query->where($sql, $userName, $score);
+			return;
 		}
 
 		parent::decorateQueryFromRequirement($query, $requirement);

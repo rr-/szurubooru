@@ -81,7 +81,7 @@ abstract class AbstractSearchParser
 	protected function addRequirementFromToken($filter, $token, $type, $flags, $valueDecorator = null)
 	{
 		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType($type, $flags);
+		$requirement->setType($type);
 		$requirement->setValue($this->createRequirementValue($token->getValue(), $flags, $valueDecorator));
 		$requirement->setNegated($token->isNegated());
 		$filter->addRequirement($requirement);
