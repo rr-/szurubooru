@@ -15,7 +15,6 @@ everything related to posts:
         - search order
             - order:comment_count
             - order:comment_time
-            - order:random (at least unstable version)
 
     - single post view
         - previous and next post (difficult)
@@ -24,9 +23,6 @@ everything related to posts:
             - add A/D hotkeys
         - editing
             - ability to loop video posts
-
-    - random post
-        - regard safety settings
 
     - ability to paste many urls in post upload
 

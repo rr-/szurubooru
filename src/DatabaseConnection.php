@@ -20,6 +20,11 @@ class DatabaseConnection
 		return $this->pdo;
 	}
 
+	public function getDriver()
+	{
+		return $this->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+	}
+
 	public function close()
 	{
 		$this->pdo = null;

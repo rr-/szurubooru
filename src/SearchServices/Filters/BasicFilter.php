@@ -3,6 +3,8 @@ namespace Szurubooru\SearchServices\Filters;
 
 class BasicFilter implements IFilter
 {
+	const ORDER_RANDOM = 'random';
+
 	private $order = [];
 	private $requirements = [];
 	private $pageNumber;

@@ -7,6 +7,7 @@ abstract class AbstractDao implements ICrudDao
 	protected $fpdo;
 	protected $tableName;
 	protected $entityConverter;
+	protected $driver;
 
 	public function __construct(
 		\Szurubooru\DatabaseConnection $databaseConnection,
@@ -240,6 +241,7 @@ abstract class AbstractDao implements ICrudDao
 	{
 		$this->pdo = $databaseConnection->getPDO();
 		$this->fpdo = new \FluentPDO($this->pdo);
+		$this->driver = $databaseConnection->getDriver();
 	}
 
 	private function decorateQueryFromFilter($query, \Szurubooru\SearchServices\Filters\IFilter $filter)
@@ -250,11 +252,25 @@ abstract class AbstractDao implements ICrudDao
 		}
 	}
 
-	private static function compileOrderBy($order)
+	private function compileOrderBy($order)
 	{
 		$orderByString = '';
 		foreach ($order as $orderColumn => $orderDir)
+		{
+			if ($orderColumn === \Szurubooru\SearchServices\Filters\BasicFilter::ORDER_RANDOM)
+			{
+				$driver = $this->driver;
+				if ($driver === 'sqlite')
+				{
+					$orderColumn = 'RANDOM()';
+				}
+				else
+				{
+					$orderColumn = 'RAND()';
+				}
+			}
 			$orderByString .= $orderColumn . ' ' . ($orderDir === \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC ? 'DESC' : 'ASC') . ', ';
+		}
 		return substr($orderByString, 0, -2);
 	}
 

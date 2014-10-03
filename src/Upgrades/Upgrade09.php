@@ -17,7 +17,7 @@ class Upgrade09 implements IUpgrade
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
 		$pdo = $databaseConnection->getPDO();
-		$driver = $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+		$driver = $databaseConnection->getDriver();
 
 		$pdo->exec('DROP TABLE IF EXISTS snapshots');
 
