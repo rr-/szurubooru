@@ -26,7 +26,7 @@ App.BrowsingSettings = function(
 	function getDefaultSettings() {
 		return {
 			hideDownvoted: true,
-			endlessScroll: true,
+			endlessScroll: false,
 			listPosts: {
 				safe: true,
 				sketchy: true,

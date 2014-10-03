@@ -24,7 +24,7 @@ class UserEditFormData implements \Szurubooru\IValidatable
 			if ($inputReader->avatarStyle !== null)
 				$this->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($inputReader->avatarStyle);
 			$this->avatarContent = $inputReader->decodeBase64($inputReader->avatarContent);
-			$this->browsingSettings = $inputReader->browsingSettings;
+			$this->browsingSettings = json_decode($inputReader->browsingSettings);
 			$this->banned = boolval($inputReader->banned);
 		}
 	}
@@ -52,9 +52,9 @@ class UserEditFormData implements \Szurubooru\IValidatable
 
 		if ($this->browsingSettings !== null)
 		{
-			if (!is_string($this->browsingSettings))
-				throw new \InvalidArgumentException('Browsing settings must be stringified JSON.');
-			else if (strlen($this->browsingSettings) > 300)
+			if (!is_object($this->browsingSettings))
+				throw new \InvalidArgumentException('Browsing settings must be valid JSON.');
+			else if (strlen(json_encode($this->browsingSettings)) > 300)
 				throw new \InvalidArgumentException('Stringified browsing settings can have at most 300 characters.');
 		}
 	}

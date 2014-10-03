@@ -16,7 +16,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'registrationTime' => $this->entityTimeToDbTime($entity->getRegistrationTime()),
 			'lastLoginTime' => $this->entityTimeToDbTime($entity->getLastLoginTime()),
 			'avatarStyle' => $entity->getAvatarStyle(),
-			'browsingSettings' => $entity->getBrowsingSettings(),
+			'browsingSettings' => json_encode($entity->getBrowsingSettings()),
 			'accountConfirmed' => $entity->isAccountConfirmed(),
 			'banned' => $entity->isBanned(),
 		];
@@ -33,7 +33,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setRegistrationTime($this->dbTimeToEntityTime($array['registrationTime']));
 		$entity->setLastLoginTime($this->dbTimeToEntityTime($array['lastLoginTime']));
 		$entity->setAvatarStyle(intval($array['avatarStyle']));
-		$entity->setBrowsingSettings($array['browsingSettings']);
+		$entity->setBrowsingSettings(json_decode($array['browsingSettings']));
 		$entity->setAccountConfirmed($array['accountConfirmed']);
 		$entity->setBanned($array['banned']);
 		return $entity;
