@@ -9,6 +9,7 @@ class PostFilter extends BasicFilter implements IFilter
 	const ORDER_TAG_COUNT = 'tagCount';
 	const ORDER_SCORE = 'score';
 	const ORDER_LAST_EDIT_TIME = 'lastEditTime';
+	const ORDER_FILE_SIZE = 'originalFileSize';
 
 	const REQUIREMENT_TAG = 'tag';
 	const REQUIREMENT_ID = 'id';

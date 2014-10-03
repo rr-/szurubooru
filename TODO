@@ -15,7 +15,6 @@ everything related to posts:
         - search order
             - order:comment_count
             - order:comment_time
-            - order:file_size
             - order:random (at least unstable version)
 
     - single post view

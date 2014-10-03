@@ -94,6 +94,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token === 'score')
 			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_SCORE;
 
+		elseif ($token === 'file_size')
+			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_FILE_SIZE;
+
 		throw new \BadMethodCallException('Not supported');
 	}
 
