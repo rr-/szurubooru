@@ -158,11 +158,12 @@ final class PostController extends AbstractController
 
 	private function decorateFilterFromBrowsingSettings($filter)
 	{
-		$userSettings = $this->authService->getLoggedInUser()->getBrowsingSettings();
+		$currentUser = $this->authService->getLoggedInUser();
+		$userSettings = $currentUser->getBrowsingSettings();
 		if (!$userSettings)
 			return;
 
-		if ($userSettings->listPosts and !count($filter->getRequirementsByType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SAFETY)))
+		if (!empty($userSettings->listPosts) and !count($filter->getRequirementsByType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SAFETY)))
 		{
 			$values = [];
 			if (!\Szurubooru\Helpers\TypeHelper::toBool($userSettings->listPosts->safe))
@@ -181,6 +182,17 @@ final class PostController extends AbstractController
 				$requirement->setNegated(true);
 				$filter->addRequirement($requirement);
 			}
+		}
+
+		if (!empty($userSettings->hideDownvoted) and !count($filter->getRequirementsByType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_USER_SCORE)))
+		{
+			$requirementValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
+			$requirementValue->setValues([$currentUser->getName(), -1]);
+			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+			$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_USER_SCORE);
+			$requirement->setValue($requirementValue);
+			$requirement->setNegated(true);
+			$filter->addRequirement($requirement);
 		}
 	}
 }

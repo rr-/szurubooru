@@ -5,7 +5,6 @@ everything related to posts:
     - post listing
         - better thumbnail loading
         - comment count
-        - regard disliked settings
         - search filters
             - comment:rr-
             - comment_count: 3..5
