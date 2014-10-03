@@ -62,6 +62,14 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'special' and $token->getValue() === 'disliked' and $this->authService->isLoggedIn())
 			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), -1, $token->isNegated());
 
+		elseif ($token->getKey() === 'special' and $token->getValue() === 'fav' and $this->authService->isLoggedIn())
+		{
+			$token = new \Szurubooru\SearchServices\Tokens\NamedSearchToken();
+			$token->setKey('fav');
+			$token->setValue($this->authService->getLoggedInUser()->getName());
+			$this->decorateFilterFromNamedToken($filter, $token);
+		}
+
 		else
 			throw new \BadMethodCallException('Not supported');
 	}
