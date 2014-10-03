@@ -1,8 +1,8 @@
 <div id="post-list">
-	<div class="search">
+	<form class="search">
 		<input type="text" name="query" placeholder="Search query..."/>
 		<button type="submit">Search</button>
-	</div>
+	</form>
 
 	<div class="pagination-target">
 		<div class="wrapper">

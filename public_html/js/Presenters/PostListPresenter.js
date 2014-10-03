@@ -70,6 +70,7 @@ App.Presenters.PostListPresenter = function(
 
 		$searchInput.val(searchArgs.query);
 		$searchInput.keydown(searchInputKeyPressed);
+		$el.find('form').submit(searchFormSubmitted);
 
 		keyboard.keyup('p', function() {
 			$el.find('.posts li a').eq(0).focus();
@@ -101,7 +102,15 @@ App.Presenters.PostListPresenter = function(
 		if (e.which !== KEY_RETURN) {
 			return;
 		}
+		updateSearch();
+	}
 
+	function searchFormSubmitted(e) {
+		e.preventDefault();
+		updateSearch();
+	}
+
+	function updateSearch() {
 		$searchInput.blur();
 		pagerPresenter.setSearchParams({
 			query: $searchInput.val(),
