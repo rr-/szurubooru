@@ -88,6 +88,9 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function setSearchParams(newSearchParams) {
+		if (_.isEqual(pager.getSearchParams(), newSearchParams)) {
+			return;
+		}
 		clearContent();
 		pager.setSearchParams(newSearchParams);
 		syncUrl();
