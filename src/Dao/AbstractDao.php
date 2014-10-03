@@ -189,6 +189,9 @@ abstract class AbstractDao implements ICrudDao
 		{
 			$sql = $sqlColumn;
 			$bindings = [$value->getValues()];
+
+			if ($requirement->isNegated())
+				$sql = 'NOT ' . $sql;
 		}
 
 		else if ($value instanceof \Szurubooru\SearchServices\Requirements\RequirementRangedValue)
@@ -210,19 +213,23 @@ abstract class AbstractDao implements ICrudDao
 			}
 			else
 				throw new \RuntimeException('Neither min or max value was supplied');
+
+			if ($requirement->isNegated())
+				$sql = 'NOT (' . $sql . ')';
 		}
 
 		else if ($value instanceof \Szurubooru\SearchServices\Requirements\RequirementSingleValue)
 		{
 			$sql = $sqlColumn;
 			$bindings = [$value->getValue()];
+
+			if ($requirement->isNegated())
+				$sql = 'NOT ' . $sql;
 		}
 
 		else
 			throw new \Exception('Bad value: ' . get_class($value));
 
-		if ($requirement->isNegated())
-			$sql = 'NOT (' . $sql . ')';
 		call_user_func_array([$query, 'where'], array_merge([$sql], $bindings));
 	}
 
