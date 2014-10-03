@@ -46,6 +46,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'fav')
 			$this->addFavRequirement($filter, $token);
 
+		elseif ($token->getKey() === 'type')
+			$this->addTypeRequirement($filter, $token);
+
 		else
 			throw new \BadMethodCallException('Not supported');
 	}
@@ -176,6 +179,19 @@ class PostSearchParser extends AbstractSearchParser
 			$token,
 			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAVORITE,
 			self::ALLOW_COMPOSITE);
+	}
+
+	private function addTypeRequirement($filter, $token)
+	{
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TYPE,
+			self::ALLOW_COMPOSITE,
+			function ($value)
+			{
+				return \Szurubooru\Helpers\EnumHelper::postTypeFromSTring($value);
+			});
 	}
 
 	private function dateToTime($value)

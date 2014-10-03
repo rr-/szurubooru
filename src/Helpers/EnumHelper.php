@@ -75,6 +75,11 @@ class EnumHelper
 		return self::enumToString(self::$postTypeMap, $postType);
 	}
 
+	public static function postTypeFromString($postTypeString)
+	{
+		return self::stringToEnum(self::$postTypeMap, $postTypeString);
+	}
+
 	public static function snapshotTypeFromString($snapshotTypeString)
 	{
 		return self::stringToEnum(self::$snapshotTypeMap, $snapshotTypeString);
