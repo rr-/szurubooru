@@ -1,12 +1,22 @@
 <?php
 namespace Szurubooru;
 
+$startTime = microtime(true);
+
 final class Bootstrap
 {
-	public static function init()
+	private static $startTime;
+
+	public static function init($startTime)
 	{
+		self::$startTime = $startTime;
 		self::turnErrorsIntoExceptions();
 		self::initAutoloader();
+	}
+
+	public static function getStartTime()
+	{
+		return self::$startTime;
 	}
 
 	private static function initAutoloader()
@@ -27,4 +37,4 @@ final class Bootstrap
 	}
 }
 
-Bootstrap::init();
+Bootstrap::init($startTime);

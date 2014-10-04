@@ -31,7 +31,6 @@ final class Dispatcher
 
 	public function run($requestMethod, $requestUri)
 	{
-		global $start;
 		try
 		{
 			$code = 200;
@@ -50,7 +49,7 @@ final class Dispatcher
 			];
 		}
 		$end = microtime(true);
-		$json['__time'] = $end - $start;
+		$json['__time'] = $end - \Szurubooru\Bootstrap::getStartTime();
 		$json['__queries'] = $this->databaseConnection->getPDO()->getQueryCount();
 
 		$this->httpHelper->setResponseCode($code);
