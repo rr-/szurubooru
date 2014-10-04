@@ -62,6 +62,7 @@ App.Util = function(_, jQuery, promise) {
 				resolve(templateCache[templateName]);
 			});
 		}
+		return null;
 	}
 
 	function promiseTemplateFromDOM(templateName) {

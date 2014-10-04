@@ -18,13 +18,14 @@ App.Promise = function(_, jQuery) {
 			active = _.without(active, promise.promiseId);
 		});
 
+		active.push(promise.promiseId);
+
 		promise.then(function() {
 			if (!_.contains(active, promise.promiseId)) {
-				throw new Error('Broken promise');
+				throw new Error('Broken promise (promise ID: ' + promise.promiseId + ')');
 			}
 		});
 
-		active.push(promise.promiseId);
 		return promise;
 	}
 

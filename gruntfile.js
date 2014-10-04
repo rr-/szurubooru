@@ -32,7 +32,7 @@ function readTemplates(grunt) {
 	var templates = {};
 	for (var i = 0; i < templatePaths.length; i ++) {
 		var templatePath = templatePaths[i];
-		templates[path.basename(templatePath)] = fs.readFileSync(templatePath);
+		templates[path.basename(templatePath).replace('.tpl', '')] = fs.readFileSync(templatePath);
 	}
 	return templates;
 }
