@@ -82,6 +82,7 @@ class HistoryService
 	public function getPostDeleteSnapshot(\Szurubooru\Entities\Post $post)
 	{
 		$snapshot = $this->getPostSnapshot($post);
+		$snapshot->setData([]);
 		$snapshot->setOperation(\Szurubooru\Entities\Snapshot::OPERATION_DELETE);
 		return $snapshot;
 	}
