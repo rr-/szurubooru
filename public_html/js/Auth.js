@@ -33,6 +33,13 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		changePostThumbnail: 'changePostThumbnail',
 		changePostRelations: 'changePostRelations',
 
+		listComments: 'listComments',
+		addComments: 'addComments',
+		editOwnComments: 'editOwnComments',
+		editAllComments: 'editAllComments',
+		deleteOwnComments: 'deleteOwnComments',
+		deleteAllComments: 'deleteAllComments',
+
 		listTags: 'listTags',
 
 		viewHistory: 'viewHistory',

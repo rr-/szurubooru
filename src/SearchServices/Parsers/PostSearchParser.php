@@ -41,6 +41,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'fav_count')
 			$this->addFavCountRequirement($filter, $token);
 
+		elseif ($token->getKey() === 'comment_count')
+			$this->addCommentCountRequirement($filter, $token);
+
 		elseif ($token->getKey() === 'score')
 			$this->addScoreRequirement($filter, $token);
 
@@ -177,6 +180,15 @@ class PostSearchParser extends AbstractSearchParser
 			$filter,
 			$token,
 			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAV_COUNT,
+			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
+	}
+
+	private function addCommentCountRequirement($filter, $token)
+	{
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_COMMENT_COUNT,
 			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 

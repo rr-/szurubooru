@@ -44,6 +44,7 @@ return [
 			$container->get(\Szurubooru\Controllers\HistoryController::class),
 			$container->get(\Szurubooru\Controllers\FavoritesController::class),
 			$container->get(\Szurubooru\Controllers\PostScoreController::class),
+			$container->get(\Szurubooru\Controllers\CommentController::class),
 		];
 	}),
 ];

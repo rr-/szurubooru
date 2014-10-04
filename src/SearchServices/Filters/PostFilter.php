@@ -20,6 +20,7 @@ class PostFilter extends BasicFilter implements IFilter
 	const REQUIREMENT_HASH = 'name';
 	const REQUIREMENT_TAG_COUNT = 'tagCount';
 	const REQUIREMENT_FAV_COUNT = 'favCount';
+	const REQUIREMENT_COMMENT_COUNT = 'commentCount';
 	const REQUIREMENT_SCORE = 'score';
 	const REQUIREMENT_UPLOADER = 'uploader.name';
 	const REQUIREMENT_SAFETY = 'safety';

@@ -35,5 +35,12 @@ class Privilege
 
 	const LIST_TAGS = 'listTags';
 
+	const LIST_COMMENTS = 'listComments';
+	const ADD_COMMENTS = 'addComments';
+	const EDIT_OWN_COMMENTS = 'editOwnComments';
+	const EDIT_ALL_COMMENTS = 'editAllComments';
+	const DELETE_OWN_COMMENTS = 'deleteOwnComments';
+	const DELETE_ALL_COMMENTS = 'deleteAllComments';
+
 	const VIEW_HISTORY = 'viewHistory';
 }

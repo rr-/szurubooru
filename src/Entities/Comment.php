@@ -67,10 +67,10 @@ class Comment extends Entity
 		return $this->lazyLoad(self::LAZY_LOADER_USER, null);
 	}
 
-	public function setUser(\Szurubooru\Entities\User $user)
+	public function setUser(\Szurubooru\Entities\User $user = null)
 	{
 		$this->lazySave(self::LAZY_LOADER_USER, $user);
-		$this->userId = $user->getId();
+		$this->userId = $user ? $user->getId() : null;
 	}
 
 	public function getPost()
