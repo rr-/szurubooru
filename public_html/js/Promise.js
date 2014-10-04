@@ -3,26 +3,28 @@ var App = App || {};
 App.Promise = function(_, jQuery) {
 
 	var active = [];
+	var promiseId = 0;
 
 	function make(callback) {
 		var deferred = jQuery.Deferred();
 		var promise = deferred.promise();
+		promise.promiseId = ++ promiseId;
 
 		callback(function() {
 			deferred.resolve.apply(deferred, arguments);
-			active = _.without(active, promise);
+			active = _.without(active, promise.promiseId);
 		}, function() {
 			deferred.reject.apply(deferred, arguments);
-			active = _.without(active, promise);
+			active = _.without(active, promise.promiseId);
 		});
 
 		promise.then(function() {
-			if (!_.contains(active, promise)) {
+			if (!_.contains(active, promise.promiseId)) {
 				throw new Error('Broken promise');
 			}
 		});
 
-		active.push(promise);
+		active.push(promise.promiseId);
 		return promise;
 	}
 
