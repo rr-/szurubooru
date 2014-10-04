@@ -4,9 +4,6 @@ first major release.
 everything related to posts:
     - post listing
         - better thumbnail loading
-        - search filters
-            - file_size:3K..5M
-            - image_size:huge/large/medium/small
 
     - single post view
         - previous and next post (difficult)
@@ -53,9 +50,6 @@ everything related to comments:
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
-    - (idea) keep denormalized data in separate tables, i.e. tag usages in
-      tag_meta or post favorite count in post_meta, so that it's obvious what
-      can be recalculated on demand and what is real data
     - simplify template loading in presenters - right now template loading
       requires _, util and promise:
           promise.wait(util.loadTemplate('blah'))
@@ -67,9 +61,7 @@ refactors:
 
 miscellaneous:
     - endless pager should include information about page number
-    - add customizable logo
     - add log engine and log everything that should be logged
-        - I don't think browsing online logs is very necessary
     - add help, api documentation
     - add version on homepage that reads version from package.json and git hash
     - add tool for migrating szurubooru database
@@ -78,6 +70,7 @@ miscellaneous:
     - add spinner to forms such as registration, user query, login, settings
       etc. make sure the code isn't too duplicated.
     - add 404 pages
+    - add history
 
 some day:
     - configure mails and ensure it works with gmail
