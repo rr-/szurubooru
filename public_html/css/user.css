@@ -22,6 +22,16 @@
 	padding: 0;
 }
 
+#user-view ul.links {
+	list-style-type: disc;
+	list-style-position: inside;
+	white-space: nowrap;
+}
+#user-view ul.links li a {
+	padding-left: 0;
+	margin-left: 0;
+}
+
 #user-view ul a {
 	cursor: pointer;
 	display: inline-block;
@@ -44,4 +54,5 @@
 }
 #user-view .tab.basic-info td {
 	padding: 0.2em 0.5em;
+	vertical-align: top;
 }

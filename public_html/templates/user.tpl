@@ -58,6 +58,39 @@
 				<td>Seen:</td>
 				<td><%= formatRelativeTime(user.lastLoginTime) %></td>
 			</tr>
+
+			<tr>
+				<td>Quick links:</td>
+				<td>
+					<ul class="links">
+						<li>
+							<a href="#/posts/query=fav:<%= user.name %>">
+								Favorites
+							</a>
+						</li>
+
+						<li>
+							<a href="#/posts/query=uploader:<%= user.name %>">
+								Uploads
+							</a>
+						</li>
+
+						<% if (isLoggedIn) { %>
+							<li>
+								<a href="#/posts/query=special:liked">
+									Upvoted posts
+								</a>
+							</li>
+
+							<li>
+								<a href="#/posts/query=special:disliked">
+									Downvoted posts
+								</a>
+							</li>
+						<% } %>
+					</ul>
+				</td>
+			</tr>
 		</table>
 	</div>
 
