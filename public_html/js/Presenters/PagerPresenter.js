@@ -100,9 +100,8 @@ App.Presenters.PagerPresenter = function(
 		return util.compileComplexRouteArgs(
 			baseUri,
 			_.extend(
-				{},
-				pager.getSearchParams(),
-				{page: pager.getPage()}));
+				{page: pager.getPage()},
+				pager.getSearchParams()));
 	}
 
 	function syncUrl() {

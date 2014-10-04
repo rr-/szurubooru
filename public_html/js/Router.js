@@ -40,7 +40,7 @@ App.Router = function(pathJs, _, jQuery, promise, util, appState, presenterManag
 		inject('#/user/:userName(/:tab)', 'userPresenter');
 		inject('#/posts(/:searchArgs)', 'postListPresenter');
 		inject('#/post(/:postNameOrId)', 'postPresenter');
-		inject('#/comments(/:searchArgs)', 'commentListPresenter');
+		inject('#/comments(/:searchArgs)', 'globalCommentListPresenter');
 		inject('#/tags(/:searchArgs)', 'tagListPresenter');
 		inject('#/help', 'helpPresenter');
 		setRoot('#/home');

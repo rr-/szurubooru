@@ -1,4 +1,4 @@
-<li class="user">
+<div class="user">
 	<a href="#/user/<%= user.name %>">
 		<img src="/data/thumbnails/80x80/avatars/<%= user.name %>" alt="<%= user.name %>"/>
 	</a>
@@ -15,4 +15,4 @@
 			Last seen: <%= formatRelativeTime(user.lastLoginTime) %>
 		</div>
 	</div>
-</li>
+</div>

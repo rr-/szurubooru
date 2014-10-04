@@ -230,6 +230,9 @@
 
 		<%= postContentTemplate({post: post}) %>
 
+		<div id="post-comments-target">
+		</div>
+
 		<% if (privileges.canViewHistory) { %>
 			<div class="post-history-wrapper">
 				<%= historyTemplate({

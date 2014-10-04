@@ -183,12 +183,18 @@ App.Util = function(_, jQuery, promise) {
 			});
 	}
 
+	function formatMarkdown(text) {
+		//todo
+		return text;
+	}
+
 	return {
 		promiseTemplate: promiseTemplate,
 		parseComplexRouteArgs: parseComplexRouteArgs,
 		compileComplexRouteArgs: compileComplexRouteArgs,
 		formatRelativeTime: formatRelativeTime,
 		formatFileSize: formatFileSize,
+		formatMarkdown: formatMarkdown,
 		enableExitConfirmation: enableExitConfirmation,
 		disableExitConfirmation: disableExitConfirmation,
 		isExitConfirmationEnabled: isExitConfirmationEnabled,

@@ -44,14 +44,17 @@ App.Presenters.PostListPresenter = function(
 						},
 					},
 					function() {
-						reinit(args, function() {});
+						onArgsChanged(args);
 					});
 			});
 	}
 
 	function reinit(args, loaded) {
 		loaded();
+		onArgsChanged(args);
+	}
 
+	function onArgsChanged(args) {
 		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
 		pagerPresenter.reinit({
 			page: searchArgs.page,
@@ -84,18 +87,15 @@ App.Presenters.PostListPresenter = function(
 	function renderPosts(posts, clear) {
 		var $target = $el.find('.posts');
 
-		var all = '';
-		_.each(posts, function(post) {
-			all += itemTemplate({
-				post: post,
-			});
-		});
-
 		if (clear) {
-			$target.html(all);
-		} else {
-			$target.append(all);
+			$target.empty();
 		}
+
+		_.each(posts, function(post) {
+			$target.append(jQuery('<li>' + itemTemplate({
+				post: post,
+			}) + '</li>'));
+		});
 	}
 
 	function searchInputKeyPressed(e) {

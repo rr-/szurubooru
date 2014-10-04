@@ -72,19 +72,16 @@ App.Presenters.UserListPresenter = function(
 	function renderUsers(users, clear) {
 		var $target = $el.find('.users');
 
-		var all = '';
+		if (clear) {
+			$target.empty();
+		}
+
 		_.each(users, function(user) {
-			all += itemTemplate({
+			$target.append(jQuery('<li>' + itemTemplate({
 				user: user,
 				formatRelativeTime: util.formatRelativeTime,
-			});
+			}) + '</li>'));
 		});
-
-		if (clear) {
-			$target.html(all);
-		} else {
-			$target.append(all);
-		}
 	}
 
 	function orderLinkClicked(e) {

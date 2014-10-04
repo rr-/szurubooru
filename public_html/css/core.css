@@ -9,6 +9,11 @@ body {
 	overflow-y: scroll;
 }
 
+h1 {
+	font-weight: normal;
+	font-size: 30px;
+}
+
 h2 {
 	font-variant: small-caps;
 	font-weight: normal;

@@ -10,6 +10,8 @@ App.Presenters.PostPresenter = function(
 	auth,
 	router,
 	keyboard,
+	presenterManager,
+	postCommentListPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -122,6 +124,10 @@ App.Presenters.PostPresenter = function(
 
 		$el.find('.post-edit-wrapper form').submit(editFormSubmitted);
 		attachSidebarEvents();
+
+		presenterManager.initPresenters([
+			[postCommentListPresenter, _.extend({post: post}, {$target: $el.find('#post-comments-target')})]],
+			function() { });
 	}
 
 	function renderSidebar() {
@@ -354,4 +360,17 @@ App.Presenters.PostPresenter = function(
 
 };
 
-App.DI.register('postPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'router', 'keyboard', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostPresenter);
+App.DI.register('postPresenter', [
+	'_',
+	'jQuery',
+	'util',
+	'promise',
+	'api',
+	'auth',
+	'router',
+	'keyboard',
+	'presenterManager',
+	'postCommentListPresenter',
+	'topNavigationPresenter',
+	'messagePresenter'],
+	App.Presenters.PostPresenter);

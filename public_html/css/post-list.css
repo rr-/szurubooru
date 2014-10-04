@@ -23,32 +23,33 @@
 	justify-content: center;
 }
 
-#post-list .posts li a {
-	display: block;
+.post-small a {
+	display: inline-block;
 	margin: 0.4em;
 	border: 1px solid #999;
 	z-index: 1;
 	position: relative;
 }
-#post-list .posts li img {
+.post-small img {
 	display: block;
 }
 
-#post-list .posts li a:focus,
-#post-list .posts li a:hover {
+.post-small a:focus,
+.post-small a:hover {
 	background: #afe;
 	border-color: #5da;
 	box-shadow: 0 0 0 2px #5da;
 	outline: 0;
 }
 
-#post-list .posts li a:focus img,
-#post-list .posts li a:hover img {
+.post-small a:focus img,
+.post-small a:hover img {
 	opacity: .9;
 }
 
-#post-list .posts li a .info {
+.post-small a .info {
 	display: none;
+	text-align: center;
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -56,16 +57,22 @@
 	background: #5da;
 	color: black;
 }
-#post-list .posts li a .info li {
+.post-small a .info ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+.post-small a .info li {
 	display: inline-block;
 	margin: 0.1em 0.5em;
+	padding: 0;
 }
-#post-list .posts li a:focus .info,
-#post-list .posts li a:hover .info {
+.post-small a:focus .info,
+.post-small a:hover .info {
 	display: block;
 }
 
-#post-list .posts li:not(.post-type-image) a:before {
+.post-small:not(.post-type-image) a:before {
 	display: block;
 	content: '';
 	z-index: 2;
@@ -78,7 +85,7 @@
 	border-left: 50px solid transparent;
 }
 
-#post-list .posts li:not(.post-type-image) a:after {
+.post-small:not(.post-type-image) a:after {
 	display: block;
 	content: '...';
 	z-index: 3;
@@ -93,13 +100,13 @@
 	color: white;
 	font-size: 15px;
 }
-#post-list .posts li.post-type-youtube a:after {
+.post-small.post-type-youtube a:after {
 	font-size: 13px;
 	content: 'youtube';
 }
-#post-list .posts li.post-type-video a:after {
+.post-small.post-type-video a:after {
 	content: 'video';
 }
-#post-list .posts li.post-type-flash a:after {
+.post-small.post-type-flash a:after {
 	content: 'flash';
 }

@@ -1,4 +1,4 @@
-<li class="post post-type-<%= post.contentType %> ">
+<div class="post-small post-type-<%= post.contentType %> ">
 	<a class="link"
 		title="<%= _.map(post.tags, function(tag) { return '#' + tag.name; }).join(', ') %>"
 		href="#/post/<%= post.id %>">
@@ -25,4 +25,4 @@
 			</div>
 		<% } %>
 	</a>
-</li>
+</div>

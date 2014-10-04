@@ -1,0 +1,92 @@
+.comment-form {
+	margin: 1em 0 2em;
+}
+
+.comment-form .preview {
+	background: lemonchiffon;
+	padding: 0.5em;
+	margin-bottom: 1em;
+	box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.5) inset;
+	display: none;
+}
+
+.comments ul {
+	list-style-type: none;
+	margin: 1em 0;
+	padding: 0;
+}
+
+.comment {
+	margin: 0 0 1em 0;
+	padding: 0;
+}
+
+.comment .body,
+.comment .avatar {
+	display: inline-block;
+}
+
+.comment .avatar {
+	margin-right: 0.5em;
+	vertical-align: top;
+}
+
+.comment .content {
+	margin-top: 0.25em;
+}
+
+.comment .header {
+	line-height: 16pt;
+	vertical-align: middle;
+}
+.comment .date {
+	color: silver;
+	font-size: 80%;
+	padding-left: 0.5em;
+}
+.comment .header .ops a {
+	color: silver;
+	font-size: 80%;
+}
+.comment .header .ops a:before {
+	content: '[';
+}
+.comment .header .ops a:after {
+	content: ']';
+}
+
+#global-comment-list {
+	text-align: center;
+}
+#global-comment-list .pagination-content {
+	text-align: left;
+}
+#global-comment-list .comments>ul {
+	margin-top: 0;
+}
+#global-comment-list ul.posts {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+#global-comment-list ul.posts>li>*:last-child:after {
+	display: block;
+	content: '';
+	clear: left;
+}
+#global-comment-list ul.posts>li {
+	margin-bottom: 2em;
+}
+#global-comment-list .post {
+	float: left;
+}
+#global-comment-list .comment-add,
+#global-comment-list h1 {
+	display: none;
+}
+#global-comment-list .comments {
+	float: left;
+}
+#global-comment-list .post-small a {
+	margin: 0 1em 0 0;
+}
