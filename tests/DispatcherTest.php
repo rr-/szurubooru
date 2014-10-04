@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests;
 
-final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
+final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
 	private $routerMock;
 	private $httpHelperMock;
@@ -34,6 +34,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 		$actual = $dispatcher->run('GET', '/');
 
 		unset($actual['__time']);
+		unset($actual['__queries']);
 		$this->assertEquals($expected, $actual);
 	}
 
@@ -50,6 +51,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 		$actual = $dispatcher->run('GET', '/');
 
 		unset($actual['__time']);
+		unset($actual['__queries']);
 		$this->assertEquals($expected, $actual);
 	}
 
@@ -67,6 +69,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		return new \Szurubooru\Dispatcher(
 			$this->routerMock,
+			$this->databaseConnection,
 			$this->httpHelperMock,
 			$this->authServiceMock,
 			$this->tokenServiceMock,
