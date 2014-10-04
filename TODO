@@ -4,7 +4,6 @@ first major release.
 everything related to posts:
     - post listing
         - better thumbnail loading
-        - comment count
         - search filters
             - file_size:3K..5M
             - image_size:huge/large/medium/small

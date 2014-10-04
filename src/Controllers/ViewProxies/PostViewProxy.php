@@ -63,6 +63,7 @@ class PostViewProxy extends AbstractViewProxy
 		$result->originalFileSize = $post->getOriginalFileSize();
 		$result->favoriteCount = $post->getFavoriteCount();
 		$result->score = $post->getScore();
+		$result->commentCount = $post->getCommentCount();
 
 		if (!empty($config[self::FETCH_TAGS]))
 			$result->tags = $this->tagViewProxy->fromArray($post->getTags());
