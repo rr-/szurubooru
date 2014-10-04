@@ -18,7 +18,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$userDao = $this->getUserDao();
 
-		$user = $this->getTestUser();
+		$user = self::getTestUser();
 		$userDao->save($user);
 
 		$expected = $user;
@@ -40,7 +40,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$userDao = $this->getUserDao();
 		$this->assertFalse($userDao->hasAnyUsers());
 
-		$user = $this->getTestUser();
+		$user = self::getTestUser();
 		$userDao->save($user);
 		$this->assertTrue($userDao->hasAnyUsers());
 	}
@@ -48,7 +48,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testNotLoadingAvatarContentForNewUsers()
 	{
 		$userDao = $this->getUserDao();
-		$user = $this->getTestUser();
+		$user = self::getTestUser();
 		$user->setAvatarStyle(\Szurubooru\Entities\User::AVATAR_STYLE_MANUAL);
 		$userDao->save($user);
 
@@ -58,7 +58,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testLoadingContentUsersForExistingUsers()
 	{
 		$userDao = $this->getUserDao();
-		$user = $this->getTestUser();
+		$user = self::getTestUser();
 		$user->setAvatarStyle(\Szurubooru\Entities\User::AVATAR_STYLE_MANUAL);
 		$userDao->save($user);
 
@@ -75,7 +75,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testSavingContent()
 	{
 		$userDao = $this->getUserDao();
-		$user = $this->getTestUser();
+		$user = self::getTestUser();
 		$user->setAvatarStyle(\Szurubooru\Entities\User::AVATAR_STYLE_MANUAL);
 		$user->setCustomAvatarSourceContent('whatever');
 
@@ -107,16 +107,5 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 			$this->databaseConnection,
 			$this->fileServiceMock,
 			$this->thumbnailServiceMock);
-	}
-
-	private function getTestUser()
-	{
-		$user = new \Szurubooru\Entities\User();
-		$user->setName('test');
-		$user->setPasswordHash('whatever');
-		$user->setLastLoginTime(date('c', mktime(1, 2, 3)));
-		$user->setRegistrationTime(date('c', mktime(3, 2, 1)));
-		$user->setAccessRank(\Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER);
-		return $user;
 	}
 }

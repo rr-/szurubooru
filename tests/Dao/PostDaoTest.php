@@ -24,7 +24,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$postDao = $this->getPostDao();
 
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$savedPost = $postDao->save($post);
 		$this->assertEquals('test', $post->getName());
 		$this->assertNotNull($savedPost->getId());
@@ -33,7 +33,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testUpdating()
 	{
 		$postDao = $this->getPostDao();
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$post = $postDao->save($post);
 		$this->assertEquals('test', $post->getName());
 		$id = $post->getId();
@@ -47,8 +47,8 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$postDao = $this->getPostDao();
 
-		$post1 = $this->getPost();
-		$post2 = $this->getPost();
+		$post1 = self::getTestPost();
+		$post2 = self::getTestPost();
 		$postDao->save($post1);
 		$postDao->save($post2);
 
@@ -67,9 +67,9 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$postDao = $this->getPostDao();
 
-		$post1 = $this->getPost();
-		$post2 = $this->getPost();
-		$post3 = $this->getPost();
+		$post1 = self::getTestPost();
+		$post2 = self::getTestPost();
+		$post3 = self::getTestPost();
 		$post1->setOriginalFileSize(1249812);
 		$post2->setOriginalFileSize(128);
 		$post3->setOriginalFileSize(null);
@@ -88,8 +88,8 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$postDao = $this->getPostDao();
 
-		$post1 = $this->getPost();
-		$post2 = $this->getPost();
+		$post1 = self::getTestPost();
+		$post2 = self::getTestPost();
 		$postDao->save($post1);
 		$postDao->save($post2);
 
@@ -103,8 +103,8 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$postDao = $this->getPostDao();
 
-		$post1 = $this->getPost();
-		$post2 = $this->getPost();
+		$post1 = self::getTestPost();
+		$post2 = self::getTestPost();
 		$postDao->save($post1);
 		$postDao->save($post2);
 
@@ -121,8 +121,8 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$postDao = $this->getPostDao();
 
-		$post1 = $this->getPost();
-		$post2 = $this->getPost();
+		$post1 = self::getTestPost();
+		$post2 = self::getTestPost();
 		$postDao->save($post1);
 		$postDao->save($post2);
 
@@ -144,7 +144,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$testTags = ['tag1' => $tag1, 'tag2' => $tag2];
 
 		$postDao = $this->getPostDao();
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$post->setTags($testTags);
 		$postDao->save($post);
 
@@ -161,12 +161,12 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testSavingUnsavedRelations()
 	{
-		$post1 = $this->getPost();
-		$post2 = $this->getPost();
+		$post1 = self::getTestPost();
+		$post2 = self::getTestPost();
 		$testPosts = [$post1, $post2];
 
 		$postDao = $this->getPostDao();
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$post->setRelatedPosts($testPosts);
 		$this->setExpectedException(\Exception::class, 'Unsaved entities found');
 		$postDao->save($post);
@@ -174,14 +174,14 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testSavingRelations()
 	{
-		$post1 = $this->getPost();
-		$post2 = $this->getPost();
+		$post1 = self::getTestPost();
+		$post2 = self::getTestPost();
 		$testPosts = [$post1, $post2];
 
 		$postDao = $this->getPostDao();
 		$postDao->save($post1);
 		$postDao->save($post2);
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$post->setRelatedPosts($testPosts);
 		$postDao->save($post);
 
@@ -196,7 +196,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$testUser->setName('it\'s me');
 		$postDao = $this->getPostDao();
 
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$post->setUser($testUser);
 		$postDao->save($post);
 
@@ -208,14 +208,14 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testNotLoadingContentForNewPosts()
 	{
 		$postDao = $this->getPostDao();
-		$newlyCreatedPost = $this->getPost();
+		$newlyCreatedPost = self::getTestPost();
 		$this->assertNull($newlyCreatedPost->getContent());
 	}
 
 	public function testLoadingContentPostsForExistingPosts()
 	{
 		$postDao = $this->getPostDao();
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$postDao->save($post);
 
 		$post = $postDao->findById($post->getId());
@@ -232,7 +232,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testSavingContent()
 	{
 		$postDao = $this->getPostDao();
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$post->setContent('whatever');
 
 		$this->thumbnailServiceMock
@@ -251,10 +251,11 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 		$postDao->save($post);
 	}
+
 	public function testSavingContentAndThumbnail()
 	{
 		$postDao = $this->getPostDao();
-		$post = $this->getPost();
+		$post = self::getTestPost();
 		$post->setContent('whatever');
 		$post->setThumbnailSourceContent('an image of sharks');
 
@@ -290,16 +291,5 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	private function getTagDao()
 	{
 		return $this->tagDao;
-	}
-
-	private function getPost()
-	{
-		$post = new \Szurubooru\Entities\Post();
-		$post->setName('test');
-		$post->setUploadTime(date('c'));
-		$post->setSafety(\Szurubooru\Entities\Post::POST_SAFETY_SAFE);
-		$post->setContentType(\Szurubooru\Entities\Post::POST_TYPE_YOUTUBE);
-		$post->setContentChecksum('whatever');
-		return $post;
 	}
 }
