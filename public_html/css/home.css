@@ -12,6 +12,7 @@
 #home .post {
 	text-align: left;
 	margin: 0 auto;
+	display: inline-block;
 	max-width: 60%;
 }
 #home .post .left {
