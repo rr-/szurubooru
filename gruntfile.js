@@ -130,6 +130,7 @@ module.exports = function(grunt) {
 		processhtml: {
 			options: {
 				data: {
+					customFaviconUrl: config.misc.customFaviconUrl,
 					serviceName: config.basic.serviceName,
 					templates: readTemplates(grunt),
 					timestamp: grunt.template.today('isoDateTime'),

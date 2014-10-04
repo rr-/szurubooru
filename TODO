@@ -67,7 +67,6 @@ refactors:
 
 miscellaneous:
     - endless pager should include information about page number
-    - add customizable favicon
     - add customizable logo
     - add log engine and log everything that should be logged
         - I don't think browsing online logs is very necessary
