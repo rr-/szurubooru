@@ -157,7 +157,7 @@ App.Presenters.PostCommentListPresenter = function(
 			} else {
 				comments.push(comment);
 			}
-			renderComments(comments, true);
+			render();
 		}).fail(function(response) {
 			window.alert(response.json && response.json.error || response);
 		});
