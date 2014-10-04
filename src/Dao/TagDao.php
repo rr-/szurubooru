@@ -24,13 +24,17 @@ class TagDao extends AbstractDao implements ICrudDao
 
 	public function findByPostId($postId)
 	{
-		$query = $this->fpdo->from('postTags')->where('postId', $postId);
-		$tagIds = array_map(function($arrayEntity)
-			{
-				return $arrayEntity['tagId'];
-			},
-			iterator_to_array($query));
-		return $this->findByIds($tagIds);
+		return $this->findByPostIds([$postId]);
+	}
+
+	public function findByPostIds($postIds)
+	{
+		$query = $this->fpdo->from($this->tableName)
+			->disableSmartJoin()
+			->innerJoin('postTags ON postTags.tagId = tags.id')
+			->where('postTags.postId', $postIds);
+		$arrayEntities = iterator_to_array($query);
+		return $this->arrayToEntities($arrayEntities);
 	}
 
 	public function exportJson()
