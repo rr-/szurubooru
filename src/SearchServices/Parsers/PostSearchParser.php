@@ -56,6 +56,9 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'type')
 			$this->addTypeRequirement($filter, $token);
 
+		elseif ($token->getKey() === 'comment')
+			$this->addCommentRequirement($filter, $token);
+
 		elseif ($token->getKey() === 'special' and $token->getValue() === 'liked' and $this->authService->isLoggedIn())
 			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), 1, $token->isNegated());
 
@@ -99,6 +102,15 @@ class PostSearchParser extends AbstractSearchParser
 
 		elseif ($token === 'random')
 			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_RANDOM;
+
+		elseif ($token === 'feature_time')
+			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_FEATURE_TIME;
+
+		elseif ($token === 'comment_time')
+			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_COMMENT_TIME;
+
+		elseif ($token === 'fav_time')
+			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_FAV_TIME;
 
 		throw new \BadMethodCallException('Not supported');
 	}
@@ -219,6 +231,15 @@ class PostSearchParser extends AbstractSearchParser
 			{
 				return \Szurubooru\Helpers\EnumHelper::postTypeFromSTring($value);
 			});
+	}
+
+	private function addCommentRequirement($filter, $token)
+	{
+		$this->addRequirementFromToken(
+			$filter,
+			$token,
+			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_COMMENT,
+			self::ALLOW_COMPOSITE);
 	}
 
 	private function addUserScoreRequirement($filter, $userName, $score, $isNegated)

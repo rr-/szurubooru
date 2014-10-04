@@ -10,6 +10,9 @@ class PostFilter extends BasicFilter implements IFilter
 	const ORDER_SCORE = 'score';
 	const ORDER_LAST_EDIT_TIME = 'lastEditTime';
 	const ORDER_FILE_SIZE = 'originalFileSize';
+	const ORDER_LAST_COMMENT_TIME = 'lastCommentTime';
+	const ORDER_LAST_FAV_TIME = 'lastFavTime';
+	const ORDER_LAST_FEATURE_TIME = 'lastFeatureTime';
 
 	const REQUIREMENT_TAG = 'tag';
 	const REQUIREMENT_ID = 'id';
@@ -21,6 +24,7 @@ class PostFilter extends BasicFilter implements IFilter
 	const REQUIREMENT_UPLOADER = 'uploader.name';
 	const REQUIREMENT_SAFETY = 'safety';
 	const REQUIREMENT_FAVORITE = 'favoritedBy.name';
+	const REQUIREMENT_COMMENT = 'commentedBy.name';
 	const REQUIREMENT_TYPE = 'contentType';
 	const REQUIREMENT_USER_SCORE = 'userScore';
 

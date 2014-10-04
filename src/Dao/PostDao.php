@@ -116,6 +116,12 @@ class PostDao extends AbstractDao implements ICrudDao
 			$query->innerJoin('users favoritedBy ON favoritedBy.id = _fav.userId');
 		}
 
+		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_COMMENT)
+		{
+			$query->innerJoin('comments _comment ON _comment.postId = posts.id');
+			$query->innerJoin('users commentedBy ON commentedBy.id = _comment.userId');
+		}
+
 		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_UPLOADER)
 		{
 			$query->innerJoin('users uploader ON uploader.id = userId');

@@ -6,13 +6,8 @@ everything related to posts:
         - better thumbnail loading
         - comment count
         - search filters
-            - comment:rr-
-            - comment_count: 3..5
             - file_size:3K..5M
             - image_size:huge/large/medium/small
-        - search order
-            - order:comment_count
-            - order:comment_time
 
     - single post view
         - previous and next post (difficult)
