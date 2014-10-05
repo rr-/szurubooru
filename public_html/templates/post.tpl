@@ -38,18 +38,18 @@
 			<% if (isLoggedIn) { %>
 				<li>
 					<% if (hasFav) { %>
-						<a href="#" class="delete-favorite">
+						<a class="delete-favorite">
 							<i class="fa fa-heart"></i>
 						</a>
 					<% } else { %>
-						<a href="#" class="add-favorite">
+						<a class="add-favorite">
 							<i class="fa fa-heart-o"></i>
 						</a>
 					<% } %>
 				</li>
 
 				<li>
-					<a href="#" class="score-up <% print(ownScore === 1 ? 'active' : '') %>">
+					<a class="score-up <% print(ownScore === 1 ? 'active' : '') %>">
 						<% if (ownScore === 1) { %>
 							<i class="fa fa-thumbs-up"></i>
 						<% } else { %>
@@ -59,7 +59,7 @@
 				</li>
 
 				<li>
-					<a href="#" class="score-down <% print(ownScore === -1 ? 'active' : '') %>">
+					<a class="score-down <% print(ownScore === -1 ? 'active' : '') %>">
 						<% if (ownScore === -1) { %>
 							<i class="fa fa-thumbs-down"></i>
 						<% } else { %>
@@ -197,7 +197,7 @@
 			<ul class="operations">
 				<% if (_.any(editPrivileges)) { %>
 					<li>
-						<a href="#" class="edit">
+						<a class="edit">
 							Edit
 						</a>
 					</li>
@@ -205,7 +205,7 @@
 
 				<% if (privileges.canDeletePosts) { %>
 					<li>
-						<a href="#" class="delete">
+						<a class="delete">
 							Delete
 						</a>
 					</li>
@@ -213,7 +213,7 @@
 
 				<% if (privileges.canFeaturePosts) { %>
 					<li>
-						<a href="#" class="feature">
+						<a class="feature">
 							Feature
 						</a>
 					</li>
@@ -221,7 +221,7 @@
 
 				<% if (privileges.canViewHistory) { %>
 					<li>
-						<a href="#" class="history">
+						<a class="history">
 							History
 						</a>
 					</li>

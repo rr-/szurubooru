@@ -78,6 +78,9 @@
 	margin: 0 0.25em 0.25em 0;
 }
 
+#sidebar a {
+	cursor: pointer;
+}
 #sidebar ul {
 	list-style-type: none;
 	margin: 0;
