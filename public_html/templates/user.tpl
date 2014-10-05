@@ -3,7 +3,7 @@
 
 	<div class="top">
 		<div class="side">
-			<img src="/data/thumbnails/100x100/avatars/<%= user.name %>" alt="Avatar"/>
+			<img width="100" height="100" src="/data/thumbnails/100x100/avatars/<%= user.name %>" alt="Avatar"/>
 			<br/>
 			<%= user.name %>
 		</div>

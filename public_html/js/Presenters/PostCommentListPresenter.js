@@ -100,6 +100,7 @@ App.Presenters.PostCommentListPresenter = function(
 			canEditComment: auth.isLoggedIn(comment.user.name) ? privileges.editOwnComments : privileges.editAllComments,
 			canDeleteComment: auth.isLoggedIn(comment.user.name) ? privileges.deleteOwnComments : privileges.deleteAllComments,
 		}) + '</li>');
+		util.loadImagesNicely($item.find('img'));
 		$targetList.append($item);
 		$item.find('a.edit').click(function(e) {
 			e.preventDefault();

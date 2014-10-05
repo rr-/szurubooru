@@ -70,6 +70,7 @@ App.Presenters.UserPresenter = function(
 			canChangeBrowsingSettings: userBrowsingSettingsPresenter.getPrivileges().canChangeBrowsingSettings,
 			canChangeAccountSettings: _.any(userAccountSettingsPresenter.getPrivileges()),
 			canDeleteAccount: userAccountRemovalPresenter.getPrivileges().canDeleteAccount}));
+		util.loadImagesNicely($el.find('img'));
 		userBrowsingSettingsPresenter.render();
 		userAccountSettingsPresenter.render();
 		userAccountRemovalPresenter.render();

@@ -77,10 +77,12 @@ App.Presenters.UserListPresenter = function(
 		}
 
 		_.each(users, function(user) {
-			$target.append(jQuery('<li>' + templates.listItem({
+			var $item = jQuery('<li>' + templates.listItem({
 				user: user,
 				formatRelativeTime: util.formatRelativeTime,
-			}) + '</li>'));
+			}) + '</li>');
+			util.loadImagesNicely($item.find('img'));
+			$target.append($item);
 		});
 	}
 

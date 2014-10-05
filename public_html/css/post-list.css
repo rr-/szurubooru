@@ -32,6 +32,8 @@
 }
 .post-small img {
 	display: block;
+	border: 0;
+	background: white;
 }
 
 .post-small a:focus,

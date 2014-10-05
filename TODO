@@ -2,9 +2,6 @@ This is transient file that lists functionalities to be implemented before
 first major release.
 
 everything related to posts:
-    - post listing
-        - better thumbnail loading
-
     - single post view
         - editing
             - ability to loop video posts
@@ -21,9 +18,6 @@ everything related to posts:
           column.
         - post notes should be visible in post edit history.
           (move post snapshot factory methods to PostService)
-
-everything related to users:
-    - better avatar loading
 
 everything related to tags:
     - tag listing

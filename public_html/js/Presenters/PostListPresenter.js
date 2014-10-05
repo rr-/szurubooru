@@ -92,10 +92,12 @@ App.Presenters.PostListPresenter = function(
 		}
 
 		_.each(posts, function(post) {
-			$target.append(jQuery('<li>' + templates.listItem({
+			var $post = jQuery('<li>' + templates.listItem({
 				searchArgs: searchArgs,
 				post: post,
-			}) + '</li>'));
+			}) + '</li>')
+			util.loadImagesNicely($post.find('img'));
+			$target.append($post);
 		});
 	}
 

@@ -4,7 +4,7 @@
 			<a href="#/user/<%= comment.user.name %>">
 		<% } %>
 
-		<img class="author-avatar"
+		<img width="40" height="40" class="author-avatar"
 			src="/data/thumbnails/40x40/avatars/<%= comment.user.name || '!' %>"
 			alt="<%= comment.user.name || 'Anonymous user' %>"/>
 

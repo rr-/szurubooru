@@ -13,7 +13,7 @@
 						<a href="#/user/<%= userName %>">
 					<% } %>
 
-					<img class="author-avatar"
+					<img width="20" height="20" class="author-avatar"
 						src="/data/thumbnails/20x20/avatars/<%= userName || '!' %>"
 						alt="<%= userName || 'Anonymous user' %>"/>
 

@@ -24,6 +24,13 @@ App.Util = function(_, jQuery, promise) {
 		return exitConfirmationEnabled;
 	}
 
+	function loadImagesNicely($img) {
+		$img.css('opacity', '0');
+		$img.bind('load', function() {
+			$img.animate({opacity: 1}, 'fast');
+		});
+	}
+
 	function parseComplexRouteArgs(args) {
 		var result = {};
 		args = (args || '').split(/;/);
@@ -189,6 +196,7 @@ App.Util = function(_, jQuery, promise) {
 		disableExitConfirmation: disableExitConfirmation,
 		isExitConfirmationEnabled: isExitConfirmationEnabled,
 		transparentPixel: transparentPixel,
+		loadImagesNicely: loadImagesNicely,
 	};
 
 };

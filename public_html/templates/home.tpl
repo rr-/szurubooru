@@ -35,7 +35,7 @@
 						<a href="#/user/<%= post.user.name %>">
 					<% } %>
 
-					<img class="author-avatar"
+					<img width="25" height="25" class="author-avatar"
 						src="/data/thumbnails/25x25/avatars/<%= post.user.name || '!' %>"
 						alt="<%= post.user.name || 'Anonymous user' %>"/>
 
