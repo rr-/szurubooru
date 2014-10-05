@@ -1,12 +1,9 @@
 var App = App || {};
 App.Controls = App.Controls || {};
 
-//todo: autocomplete
-
-App.Controls.TagInput = function(
-	$underlyingInput,
-	_,
-	jQuery) {
+App.Controls.TagInput = function($underlyingInput) {
+	var _ = App.DI.get('_');
+	var jQuery = App.DI.get('jQuery');
 
 	var KEY_RETURN = 13;
 	var KEY_SPACE = 32;
@@ -48,21 +45,36 @@ App.Controls.TagInput = function(
 	});
 	$input.attr('placeholder', $underlyingInput.attr('placeholder'));
 
-	var tagsToAdd = $underlyingInput.val().split(/\s+/);
-	_.map(tagsToAdd, addTag);
+	addTagsFromText($underlyingInput.val());
 	$underlyingInput.val('');
 
-	$input.unbind('focus').bind('focus', function(e) {
+	initAutocomplete();
+
+	function initAutocomplete() {
+		var autocomplete = new App.Controls.AutoCompleteInput($input);
+		autocomplete.onApply = function(text) {
+			addTagsFromText(text);
+			$input.val('');
+		};
+		autocomplete.additionalFilter = function(results) {
+			var tags = getTags();
+			return _.filter(results, function(resultItem) {
+				return !_.contains(tags, resultItem[0]);
+			});
+		};
+	}
+
+	$input.bind('focus', function(e) {
 		$wrapper.addClass('focused');
 	});
-	$input.unbind('blur').bind('blur', function(e) {
+	$input.bind('blur', function(e) {
 		$wrapper.removeClass('focused');
 		var tag = $input.val();
 		addTag(tag);
 		$input.val('');
 	});
 
-	$input.unbind('paste').bind('paste', function(e) {
+	$input.bind('paste', function(e) {
 		e.preventDefault();
 		var pastedText;
 		if (window.clipboardData) {
@@ -82,7 +94,7 @@ App.Controls.TagInput = function(
 		$input.val(lastTag);
 	});
 
-	$input.unbind('keydown').bind('keydown', function(e) {
+	$input.bind('keydown', function(e) {
 		if (_.contains(inputConfirmKeys, e.which) && !$input.val()) {
 			e.preventDefault();
 			if (typeof(options.inputConfirmed) !== 'undefined') {
@@ -98,6 +110,11 @@ App.Controls.TagInput = function(
 			removeLastTag();
 		}
 	});
+
+	function addTagsFromText(text) {
+		var tagsToAdd = text.split(/\s+/);
+		_.map(tagsToAdd, addTag);
+	}
 
 	function addTag(tag) {
 		tag = tag.trim();
@@ -185,5 +202,3 @@ App.Controls.TagInput = function(
 	});
 	return options;
 };
-
-App.DI.register('tagInput', App.Controls.TagInput);

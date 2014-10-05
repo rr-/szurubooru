@@ -1,10 +1,9 @@
 var App = App || {};
 App.Controls = App.Controls || {};
 
-App.Controls.FileDropper = function(
-	$fileInput,
-	_,
-	jQuery) {
+App.Controls.FileDropper = function($fileInput) {
+	var _ = App.DI.get('_');
+	var jQuery = App.DI.get('jQuery');
 
 	var options = {
 		onChange: null,
@@ -63,7 +62,4 @@ App.Controls.FileDropper = function(
 	});
 
 	return options;
-
 };
-
-App.DI.register('fileDropper', App.Controls.FileDropper);

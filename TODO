@@ -20,8 +20,9 @@ everything related to posts:
           (move post snapshot factory methods to PostService)
 
 everything related to tags:
+    - automatic tag removal
+    - tag refresh when editing post
     - tag listing
-    - tag autocompletion (difficult)
     - time of last tag usage
     - time of tag addition
     - mass tag

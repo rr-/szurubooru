@@ -135,14 +135,14 @@ App.Presenters.PostPresenter = function(
 		$messages = $el.find('.messages');
 
 		if (editPrivileges.canChangeTags) {
-			tagInput = App.Controls.TagInput($el.find('form [name=tags]'), _, jQuery);
+			tagInput = new App.Controls.TagInput($el.find('form [name=tags]'));
 			tagInput.inputConfirmed = editPost;
 		}
 
-		postContentFileDropper = new App.Controls.FileDropper($el.find('form [name=content]'), _, jQuery);
+		postContentFileDropper = new App.Controls.FileDropper($el.find('form [name=content]'));
 		postContentFileDropper.onChange = postContentChanged;
 		postContentFileDropper.setNames = true;
-		postThumbnailFileDropper = new App.Controls.FileDropper($el.find('form [name=thumbnail]'), _, jQuery);
+		postThumbnailFileDropper = new App.Controls.FileDropper($el.find('form [name=thumbnail]'));
 		postThumbnailFileDropper.onChange = postThumbnailChanged;
 		postThumbnailFileDropper.setNames = true;
 

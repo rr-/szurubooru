@@ -1,0 +1,23 @@
+.autocomplete {
+	position: absolute;
+	display: none;
+	z-index: 10;
+}
+.autocomplete ul {
+	list-style-type: none;
+	padding: 0 0 !important;
+	margin: 0 !important;
+	border: 2px solid #5da;
+	background: white;
+	display: block !important;
+	text-align: left;
+}
+
+.autocomplete li {
+	margin: 0;
+	padding: 0.1em 0.5em !important;
+}
+
+.autocomplete li.active {
+	background: #5da;
+}

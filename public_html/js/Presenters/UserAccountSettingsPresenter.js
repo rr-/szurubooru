@@ -54,7 +54,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 		$el.find('form').submit(accountSettingsFormSubmitted);
 		$el.find('form [name=avatar-style]').change(avatarStyleChanged);
 		avatarStyleChanged();
-		fileDropper = new App.Controls.FileDropper($el.find('[name=avatar-content]'), _, jQuery);
+		fileDropper = new App.Controls.FileDropper($el.find('[name=avatar-content]'));
 		fileDropper.onChange = avatarContentChanged;
 		fileDropper.setNames = true;
 	}

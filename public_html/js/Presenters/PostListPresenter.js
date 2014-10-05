@@ -70,6 +70,7 @@ App.Presenters.PostListPresenter = function(
 	function render() {
 		$el.html(templates.list());
 		$searchInput = $el.find('input[name=query]');
+		App.Controls.AutoCompleteInput($searchInput);
 
 		$searchInput.val(searchArgs.query);
 		$searchInput.keydown(searchInputKeyPressed);
@@ -80,7 +81,7 @@ App.Presenters.PostListPresenter = function(
 		});
 
 		keyboard.keyup('q', function() {
-			$searchInput.eq(0).focus();
+			$searchInput.eq(0).focus().select();
 		});
 	}
 
@@ -95,7 +96,7 @@ App.Presenters.PostListPresenter = function(
 			var $post = jQuery('<li>' + templates.listItem({
 				searchArgs: searchArgs,
 				post: post,
-			}) + '</li>')
+			}) + '</li>');
 			util.loadImagesNicely($post.find('img'));
 			$target.append($post);
 		});
@@ -116,7 +117,7 @@ App.Presenters.PostListPresenter = function(
 	function updateSearch() {
 		$searchInput.blur();
 		pagerPresenter.setSearchParams({
-			query: $searchInput.val(),
+			query: $searchInput.val().trim(),
 			order: searchArgs.order});
 	}
 

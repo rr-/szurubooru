@@ -41,8 +41,8 @@ App.Presenters.PostUploadPresenter = function(
 		}));
 		$messages = $el.find('.messages');
 
-		tagInput = new App.Controls.TagInput($el.find('form [name=tags]'), _, jQuery);
-		fileDropper = App.Controls.FileDropper($el.find('[name=post-content]'), _, jQuery);
+		tagInput = new App.Controls.TagInput($el.find('form [name=tags]'));
+		fileDropper = new App.Controls.FileDropper($el.find('[name=post-content]'));
 		fileDropper.onChange = fileHandlerChanged;
 
 		$el.find('.url-handler input').keydown(urlHandlerKeyPressed);
