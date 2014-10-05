@@ -1,14 +1,16 @@
 var App = App || {};
 
-App.PresenterManager = function(jQuery, topNavigationPresenter, keyboard) {
+App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboard) {
 
 	var lastContentPresenter = null;
 	var $spinner;
 	var spinnerTimeout;
 
 	function init() {
-		initPresenter(topNavigationPresenter, [], function() {});
 		$spinner = jQuery('body').find('#wait');
+		return promise.make(function(resolve, reject) {
+			initPresenter(topNavigationPresenter, [], resolve);
+		});
 	}
 
 	function initPresenter(presenter, args, loaded) {
@@ -72,4 +74,4 @@ App.PresenterManager = function(jQuery, topNavigationPresenter, keyboard) {
 
 };
 
-App.DI.registerSingleton('presenterManager', ['jQuery', 'topNavigationPresenter', 'keyboard'], App.PresenterManager);
+App.DI.registerSingleton('presenterManager', ['jQuery', 'promise', 'topNavigationPresenter', 'keyboard'], App.PresenterManager);

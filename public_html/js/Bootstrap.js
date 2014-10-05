@@ -2,9 +2,9 @@ var App = App || {};
 
 App.Bootstrap = function(auth, router, util, promise, presenterManager) {
 
-	presenterManager.init();
-
-	promise.wait(auth.tryLoginFromCookie())
+	promise.wait(
+			auth.tryLoginFromCookie(),
+			presenterManager.init())
 		.then(startRouting)
 		.fail(function(error) {
 			promise.wait(auth.loginAnonymous())
