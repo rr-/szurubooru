@@ -19,42 +19,48 @@ App.Presenters.UserPresenter = function(
 	var $messages = $el;
 	var templates = {};
 	var user;
-	var userName;
+	var userName = null;
 	var activeTab;
 
 	function init(args, loaded) {
-		userName = args.userName;
-		topNavigationPresenter.select(auth.isLoggedIn(userName) ? 'my-account' : 'users');
-		topNavigationPresenter.changeTitle(userName);
-
-		promise.wait(
-				util.promiseTemplate('user'),
-				api.get('/users/' + userName))
+		promise.wait(util.promiseTemplate('user'))
 			.then(function(template, response) {
 				$messages = $el.find('.messages');
 				templates.user = template;
-
-				user = response.json;
-				var extendedContext = _.extend(args, {user: user});
-
-				presenterManager.initPresenters([
-					[userBrowsingSettingsPresenter, _.extend({}, extendedContext, {target: '#browsing-settings-target'})],
-					[userAccountSettingsPresenter, _.extend({}, extendedContext, {target: '#account-settings-target'})],
-					[userAccountRemovalPresenter, _.extend({}, extendedContext, {target: '#account-removal-target'})]],
-					function() {
-						reinit(args, loaded);
-					});
-
-			}).fail(function(response) {
-				$el.empty();
-				messagePresenter.showError($messages, response.json && response.json.error || response);
-				loaded();
+				reinit(args, loaded);
 			});
 	}
 
 	function reinit(args, loaded) {
-		initTabs(args);
-		loaded();
+		if (args.userName !== userName) {
+			userName = args.userName;
+			topNavigationPresenter.select(auth.isLoggedIn(userName) ? 'my-account' : 'users');
+			topNavigationPresenter.changeTitle(userName);
+
+			promise.wait(api.get('/users/' + userName))
+				.then(function(response) {
+					user = response.json;
+					var extendedContext = _.extend(args, {user: user});
+
+					presenterManager.initPresenters([
+						[userBrowsingSettingsPresenter, _.extend({}, extendedContext, {target: '#browsing-settings-target'})],
+						[userAccountSettingsPresenter, _.extend({}, extendedContext, {target: '#account-settings-target'})],
+						[userAccountRemovalPresenter, _.extend({}, extendedContext, {target: '#account-removal-target'})]],
+						function() {
+							initTabs(args);
+							loaded();
+						});
+
+				}).fail(function(response) {
+					$el.empty();
+					messagePresenter.showError($messages, response.json && response.json.error || response);
+					loaded();
+				});
+
+		} else {
+			initTabs(args);
+			loaded();
+		}
 	}
 
 	function initTabs(args) {
