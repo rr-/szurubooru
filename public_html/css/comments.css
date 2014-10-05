@@ -34,6 +34,9 @@
 .comment .content {
 	margin-top: 0.25em;
 }
+.comment .content p:first-child {
+	margin-top: 0;
+}
 
 .comment .header {
 	line-height: 16pt;
@@ -92,7 +95,7 @@
 	float: left;
 }
 #global-comment-list .comment-add,
-#global-comment-list h1 {
+#global-comment-list .comments>h1 {
 	display: none;
 }
 #global-comment-list .comments {

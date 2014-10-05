@@ -97,6 +97,7 @@ module.exports = function(grunt) {
 					{ src: 'node_modules/mousetrap/mousetrap.min.js', dest: 'public_html/lib/mousetrap.min.js' },
 					{ src: 'node_modules/pathjs/path.js', dest: 'public_html/lib/path.js' },
 					{ src: 'node_modules/underscore/underscore-min.js', dest: 'public_html/lib/underscore.min.js' },
+					{ src: 'node_modules/marked/lib/marked.js', dest: 'public_html/lib/marked.js' },
 				]
 			}
 		},

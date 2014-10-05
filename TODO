@@ -34,9 +34,6 @@ everything related to tags:
         - tag descriptions
         - tag edit history
 
-everything related to comments:
-    - markdown
-
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)

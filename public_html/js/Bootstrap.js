@@ -30,4 +30,5 @@ App.DI.registerManual('jQuery', function() { return window.$; });
 App.DI.registerManual('pathJs', function() { return window.pathjs; });
 App.DI.registerManual('_', function() { return window._; });
 App.DI.registerManual('mousetrap', function() { return window.Mousetrap; });
+App.DI.registerManual('marked', function() { return window.marked; });
 App.DI.get('bootstrap');

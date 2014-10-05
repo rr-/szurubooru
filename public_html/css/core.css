@@ -110,3 +110,19 @@ hr {
 .pagination-target .spinner .fa {
 	font-size: 28px;
 }
+
+span.spoiler:before {
+	content: '[';
+	color: #000;
+}
+span.spoiler:after {
+	content: ']';
+	color: #000;
+}
+span.spoiler {
+	background: #eee;
+	color: #eee;
+}
+span.spoiler:hover {
+	color: dimgray;
+}

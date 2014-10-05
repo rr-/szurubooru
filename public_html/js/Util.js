@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Util = function(_, jQuery, promise) {
+App.Util = function(_, jQuery, marked, promise) {
 
 	var exitConfirmationEnabled = false;
 
@@ -181,8 +181,41 @@ App.Util = function(_, jQuery, promise) {
 	}
 
 	function formatMarkdown(text) {
-		//todo
-		return text;
+		var renderer = new marked.Renderer();
+
+		var options = {
+			renderer: renderer,
+			breaks: true,
+			sanitize: true,
+			smartypants: true,
+		};
+
+		var preDecorator = function(text) {
+			//prevent ^#... from being treated as headers, due to tag permalinks
+			text = text.replace(/^#/g, '%%%#');
+			return text;
+		};
+
+		var postDecorator = function(text) {
+			//restore headers
+			text = text.replace(/%%%/g, '');
+
+			//search permalinks
+			text = text.replace(/\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]/ig, '<a href="#/posts/query=$1"><code>$1</code></a>');
+			//spoilers
+			text = text.replace(/\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\]))+)\[\/spoiler\]/ig, '<span class="spoiler">$1</span>');
+			//strike-through
+			text = text.replace(/(~~|~)([^~]+)\1/g, '<del>$2</del>');
+			//post premalinks
+			text = text.replace(/(^|[\s<>\(\)\[\]])@(\d+)/g, '$1<a href="#/post/$2"><code>@$2</code></a>');
+			//user permalinks
+			text = text.replace(/(^|[\s<>\(\)\[\]])\+([a-zA-Z0-9_-]+)/g, '$1<a href="#/user/$2"><code>+$2</code></a>');
+			//tag permalinks
+			text = text.replace(/(^|[\s<>\(\)\[\]])\#([^\s<>/\\]+)/g, '$1<a href="#/posts/query=$2"><code>#$2</code></a>');
+			return text;
+		};
+
+		return postDecorator(marked(preDecorator(text), options));
 	}
 
 	return {
@@ -201,4 +234,4 @@ App.Util = function(_, jQuery, promise) {
 
 };
 
-App.DI.registerSingleton('util', ['_', 'jQuery', 'promise'], App.Util);
+App.DI.registerSingleton('util', ['_', 'jQuery', 'marked', 'promise'], App.Util);
