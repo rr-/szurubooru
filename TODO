@@ -36,7 +36,6 @@ everything related to tags:
 
 everything related to comments:
     - markdown
-    - score
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and

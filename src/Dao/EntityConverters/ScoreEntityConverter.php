@@ -10,6 +10,7 @@ class ScoreEntityConverter extends AbstractEntityConverter implements IEntityCon
 			'id' => $entity->getId(),
 			'userId' => $entity->getUserId(),
 			'postId' => $entity->getPostId(),
+			'commentId' => $entity->getCommentId(),
 			'time' => $this->entityTimeToDbTime($entity->getTime()),
 			'score' => $entity->getScore(),
 		];
@@ -20,6 +21,7 @@ class ScoreEntityConverter extends AbstractEntityConverter implements IEntityCon
 		$entity = new \Szurubooru\Entities\Score($array['id']);
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
+		$entity->setCommentId($array['commentId']);
 		$entity->setTime($this->dbTimeToEntityTime($array['time']));
 		$entity->setScore(intval($array['score']));
 		return $entity;

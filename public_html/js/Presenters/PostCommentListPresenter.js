@@ -97,18 +97,31 @@ App.Presenters.PostCommentListPresenter = function(
 			comment: comment,
 			formatRelativeTime: util.formatRelativeTime,
 			formatMarkdown: util.formatMarkdown,
+			canVote: auth.isLoggedIn(),
 			canEditComment: auth.isLoggedIn(comment.user.name) ? privileges.editOwnComments : privileges.editAllComments,
 			canDeleteComment: auth.isLoggedIn(comment.user.name) ? privileges.deleteOwnComments : privileges.deleteAllComments,
 		}) + '</li>');
 		util.loadImagesNicely($item.find('img'));
 		$targetList.append($item);
+
 		$item.find('a.edit').click(function(e) {
 			e.preventDefault();
 			editCommentStart($item, comment);
 		});
+
 		$item.find('a.delete').click(function(e) {
 			e.preventDefault();
-			deleteComment($item, comment);
+			deleteComment(comment);
+		});
+
+		$item.find('a.score-up').click(function(e) {
+			e.preventDefault();
+			score(comment, jQuery(this).hasClass('active') ? 0 : 1);
+		});
+
+		$item.find('a.score-down').click(function(e) {
+			e.preventDefault();
+			score(comment, jQuery(this).hasClass('active') ? 0 : -1);
 		});
 	}
 
@@ -132,6 +145,16 @@ App.Presenters.PostCommentListPresenter = function(
 		});
 	}
 
+	function updateComment(comment) {
+		comments = _.map(comments, function(c) { return c.id === comment.id ? comment : c; });
+		render();
+	}
+
+	function addComment(comment) {
+		comments.push(comment);
+		render();
+	}
+
 	function submitComment($form, commentToEdit) {
 		$form.find('.preview').slideUp();
 		var $textarea = $form.find('textarea');
@@ -152,14 +175,11 @@ App.Presenters.PostCommentListPresenter = function(
 				$form.slideUp(function() {
 					$form.remove();
 				});
-				comments = _.map(comments, function(c) { return c.id === commentToEdit.id ? comment : c; });
+				updateComment(comment);
 			} else {
-				comments.push(comment);
+				addComment(comment);
 			}
-			render();
-		}).fail(function(response) {
-			window.alert(response.json && response.json.error || response);
-		});
+		}).fail(showGenericError);
 	}
 
 	function editCommentStart($item, comment) {
@@ -171,7 +191,7 @@ App.Presenters.PostCommentListPresenter = function(
 		$item.find('form button[type=submit]').click(function(e) { commentFormSubmitted(e, comment); });
 	}
 
-	function deleteComment($item, comment) {
+	function deleteComment(comment) {
 		if (!window.confirm('Are you sure you want to delete this comment?')) {
 			return;
 		}
@@ -179,9 +199,20 @@ App.Presenters.PostCommentListPresenter = function(
 			.then(function(response) {
 				comments = _.filter(comments, function(c) { return c.id !== comment.id; });
 				renderComments(comments, true);
-			}).fail(function(response) {
-				window.alert(response.json && response.json.error || response);
-			});
+			}).fail(showGenericError);
+	}
+
+	function score(comment, scoreValue) {
+		promise.wait(api.post('/comments/' + comment.id + '/score', {score: scoreValue}))
+			.then(function(response) {
+				comment.score = response.json.score;
+				comment.ownScore = parseInt(response.json.score);
+				updateComment(comment);
+			}).fail(showGenericError);
+	}
+
+	function showGenericError(response) {
+		window.alert(response.json && response.json.error || response);
 	}
 
 	return {

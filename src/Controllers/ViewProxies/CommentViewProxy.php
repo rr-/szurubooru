@@ -3,14 +3,19 @@ namespace Szurubooru\Controllers\ViewProxies;
 
 class CommentViewProxy extends AbstractViewProxy
 {
-	private $postViewProxy;
+	private $authService;
+	private $scoreService;
 	private $userViewProxy;
 
+	const FETCH_OWN_SCORE = 'fetchOwnScore';
+
 	public function __construct(
-		PostViewProxy $postViewProxy,
+		\Szurubooru\Services\AuthService $authService,
+		\Szurubooru\Services\ScoreService $scoreService,
 		UserViewProxy $userViewProxy)
 	{
-		$this->postViewProxy = $postViewProxy;
+		$this->authService = $authService;
+		$this->scoreService = $scoreService;
 		$this->userViewProxy = $userViewProxy;
 	}
 
@@ -25,8 +30,11 @@ class CommentViewProxy extends AbstractViewProxy
 			$result->text = $comment->getText();
 			$result->postId = $comment->getPostId();
 			$result->user = $this->userViewProxy->fromEntity($comment->getUser());
+			$result->score = $comment->getScore();
+
+			if (!empty($config[self::FETCH_OWN_SCORE]) and $this->authService->isLoggedIn())
+				$result->ownScore = $this->scoreService->getScoreValue($this->authService->getLoggedInUser(), $comment);
 		}
 		return $result;
 	}
 }
-

@@ -39,19 +39,30 @@
 	line-height: 16pt;
 	vertical-align: middle;
 }
+.comment .score,
 .comment .date {
 	color: silver;
-	font-size: 80%;
+	font-size: 90%;
 	padding-left: 0.5em;
+}
+.comment .score-up.active,
+.comment .score-down.active {
+	font-weight: bold;
 }
 .comment .header .ops a {
 	color: silver;
 	font-size: 80%;
+	cursor: pointer;
 }
-.comment .header .ops a:before {
+.comment .header .ops a:first-of-type:before {
+	margin-left: 0.5em;
 	content: '[';
 }
-.comment .header .ops a:after {
+.comment .header .ops a:not(:first-of-type):before {
+	content: '|';
+	margin: 0 0.3em;
+}
+.comment .header .ops a:last-of-type:after {
 	content: ']';
 }
 

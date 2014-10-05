@@ -12,6 +12,8 @@ class Comment extends Entity
 	const LAZY_LOADER_USER = 'user';
 	const LAZY_LOADER_POST = 'post';
 
+	const META_SCORE = 'score';
+
 	public function getUserId()
 	{
 		return $this->userId;
@@ -82,5 +84,10 @@ class Comment extends Entity
 	{
 		$this->lazySave(self::LAZY_LOADER_POST, $post);
 		$this->postId = $post->getId();
+	}
+
+	public function getScore()
+	{
+		return $this->getMeta(self::META_SCORE, 0);
 	}
 }

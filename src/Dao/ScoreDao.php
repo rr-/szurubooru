@@ -23,6 +23,8 @@ class ScoreDao extends AbstractDao implements ICrudDao
 
 		if ($entity instanceof \Szurubooru\Entities\Post)
 			$query->where('postId', $entity->getId());
+		elseif ($entity instanceof \Szurubooru\Entities\Comment)
+			$query->where('commentId', $entity->getId());
 		else
 			throw new \InvalidArgumentException();
 
@@ -42,6 +44,8 @@ class ScoreDao extends AbstractDao implements ICrudDao
 
 			if ($entity instanceof \Szurubooru\Entities\Post)
 				$score->setPostId($entity->getId());
+			elseif ($entity instanceof \Szurubooru\Entities\Comment)
+				$score->setCommentId($entity->getId());
 			else
 				throw new \InvalidArgumentException();
 		}

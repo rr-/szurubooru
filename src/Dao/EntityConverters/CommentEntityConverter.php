@@ -24,6 +24,7 @@ class CommentEntityConverter extends AbstractEntityConverter implements IEntityC
 		$entity->setText($array['text']);
 		$entity->setCreationTime($this->dbTimeToEntityTime($array['creationTime']));
 		$entity->setLastEditTime($this->dbTimeToEntityTime($array['lastEditTime']));
+		$entity->setMeta(\Szurubooru\Entities\Comment::META_SCORE, intval($array['score']));
 		return $entity;
 	}
 }

@@ -5,6 +5,7 @@ class Score extends Entity
 {
 	private $postId;
 	private $userId;
+	private $commentId;
 	private $time;
 	private $score;
 
@@ -26,6 +27,16 @@ class Score extends Entity
 	public function setPostId($postId)
 	{
 		$this->postId = $postId;
+	}
+
+	public function getCommentId()
+	{
+		return $this->commentId;
+	}
+
+	public function setCommentId($commentId)
+	{
+		$this->commentId = $commentId;
 	}
 
 	public function getTime()

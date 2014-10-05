@@ -63,7 +63,10 @@ class CommentController extends AbstractController
 		{
 			$data[] = [
 				'post' => $this->postViewProxy->fromEntity($post),
-				'comments' => $this->commentViewProxy->fromArray($this->commentService->getByPost($post))];
+				'comments' => $this->commentViewProxy->fromArray(
+					$this->commentService->getByPost($post),
+					$this->getCommentsFetchConfig()),
+			];
 		}
 
 		return [
@@ -88,7 +91,7 @@ class CommentController extends AbstractController
 		$filter->addRequirement($requirement);
 
 		$result = $this->commentService->getFiltered($filter);
-		$entities = $this->commentViewProxy->fromArray($result->getEntities());
+		$entities = $this->commentViewProxy->fromArray($result->getEntities(), $this->getCommentsFetchConfig());
 		return ['data' => $entities];
 	}
 
@@ -98,7 +101,7 @@ class CommentController extends AbstractController
 
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		$comment = $this->commentService->createComment($post, $this->inputReader->text);
-		return $this->commentViewProxy->fromEntity($comment);
+		return $this->commentViewProxy->fromEntity($comment, $this->getCommentsFetchConfig());
 	}
 
 	public function editComment($commentId)
@@ -111,7 +114,7 @@ class CommentController extends AbstractController
 				: \Szurubooru\Privilege::EDIT_ALL_COMMENTS);
 
 		$comment = $this->commentService->updateComment($comment, $this->inputReader->text);
-		return $this->commentViewProxy->fromEntity($comment);
+		return $this->commentViewProxy->fromEntity($comment, $this->getCommentsFetchConfig());
 	}
 
 	public function deleteComment($commentId)
@@ -124,5 +127,13 @@ class CommentController extends AbstractController
 				: \Szurubooru\Privilege::DELETE_ALL_COMMENTS);
 
 		return $this->commentService->deleteComment($comment);
+	}
+
+	private function getCommentsFetchConfig()
+	{
+		return
+		[
+			\Szurubooru\Controllers\ViewProxies\CommentViewProxy::FETCH_OWN_SCORE => true,
+		];
 	}
 }

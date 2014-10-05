@@ -47,7 +47,7 @@ class ScoreService
 
 		$transactionFunc = function() use ($user, $entity, $scoreValue)
 		{
-			if ($scoreValue !== 1)
+			if (($scoreValue !== 1) and ($entity instanceof \Szurubooru\Entities\Post))
 				$this->favoritesDao->delete($user, $entity);
 
 			return $this->scoreDao->setScore($user, $entity, $scoreValue);
