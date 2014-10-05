@@ -41,11 +41,6 @@ class FavoritesDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEntitiesEqual($post, $savedFavorite->getPost());
 	}
 
-	public function findByPost(\Szurubooru\Entities\Post $post)
-	{
-		return $this->findOneBy('postId', $post->getId());
-	}
-
 	private function getFavoritesDao()
 	{
 		return new \Szurubooru\Dao\FavoritesDao(

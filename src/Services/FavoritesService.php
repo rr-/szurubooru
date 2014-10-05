@@ -4,30 +4,30 @@ namespace Szurubooru\Services;
 class FavoritesService
 {
 	private $favoritesDao;
-	private $postScoreDao;
+	private $scoreDao;
 	private $userDao;
 	private $transactionManager;
 	private $timeService;
 
 	public function __construct(
 		\Szurubooru\Dao\FavoritesDao $favoritesDao,
-		\Szurubooru\Dao\PostScoreDao $postScoreDao,
+		\Szurubooru\Dao\ScoreDao $scoreDao,
 		\Szurubooru\Dao\UserDao $userDao,
 		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Services\TimeService $timeService)
 	{
 		$this->favoritesDao = $favoritesDao;
-		$this->postScoreDao = $postScoreDao;
+		$this->scoreDao = $scoreDao;
 		$this->userDao = $userDao;
 		$this->transactionManager = $transactionManager;
 		$this->timeService = $timeService;
 	}
 
-	public function getFavoriteUsers(\Szurubooru\Entities\Post $post)
+	public function getFavoriteUsers(\Szurubooru\Entities\Entity $entity)
 	{
-		$transactionFunc = function() use ($post)
+		$transactionFunc = function() use ($entity)
 		{
-			$favorites = $this->favoritesDao->findByPost($post);
+			$favorites = $this->favoritesDao->findByEntity($entity);
 			$userIds = [];
 			foreach ($favorites as $favorite)
 			{
@@ -38,22 +38,22 @@ class FavoritesService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function addFavorite(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post)
+	public function addFavorite(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
 	{
-		$transactionFunc = function() use ($user, $post)
+		$transactionFunc = function() use ($user, $entity)
 		{
-			$this->postScoreDao->setScore($user, $post, 1);
+			$this->scoreDao->setScore($user, $entity, 1);
 
-			return $this->favoritesDao->set($user, $post);
+			return $this->favoritesDao->set($user, $entity);
 		};
 		return $this->transactionManager->commit($transactionFunc);
 	}
 
-	public function deleteFavorite(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post)
+	public function deleteFavorite(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
 	{
-		$transactionFunc = function() use ($user, $post)
+		$transactionFunc = function() use ($user, $entity)
 		{
-			$this->favoritesDao->delete($user, $post);
+			$this->favoritesDao->delete($user, $entity);
 		};
 		$this->transactionManager->commit($transactionFunc);
 	}

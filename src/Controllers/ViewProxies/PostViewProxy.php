@@ -14,7 +14,7 @@ class PostViewProxy extends AbstractViewProxy
 	private $authService;
 	private $historyService;
 	private $favoritesService;
-	private $postScoreService;
+	private $scoreService;
 	private $tagViewProxy;
 	private $userViewProxy;
 	private $snapshotViewProxy;
@@ -24,7 +24,7 @@ class PostViewProxy extends AbstractViewProxy
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\HistoryService $historyService,
 		\Szurubooru\Services\FavoritesService $favoritesService,
-		\Szurubooru\Services\PostScoreService $postScoreService,
+		\Szurubooru\Services\ScoreService $scoreService,
 		TagViewProxy $tagViewProxy,
 		UserViewProxy $userViewProxy,
 		SnapshotViewProxy $snapshotViewProxy)
@@ -33,7 +33,7 @@ class PostViewProxy extends AbstractViewProxy
 		$this->authService = $authService;
 		$this->historyService = $historyService;
 		$this->favoritesService = $favoritesService;
-		$this->postScoreService = $postScoreService;
+		$this->scoreService = $scoreService;
 		$this->tagViewProxy = $tagViewProxy;
 		$this->userViewProxy = $userViewProxy;
 		$this->snapshotViewProxy = $snapshotViewProxy;
@@ -83,7 +83,7 @@ class PostViewProxy extends AbstractViewProxy
 		}
 
 		if (!empty($config[self::FETCH_OWN_SCORE]) and $this->authService->isLoggedIn())
-			$result->ownScore = $this->postScoreService->getScoreValue($this->authService->getLoggedInUser(), $post);
+			$result->ownScore = $this->scoreService->getScoreValue($this->authService->getLoggedInUser(), $post);
 
 		if (!empty($config[self::FETCH_FAVORITES]))
 			$result->favorites = $this->userViewProxy->fromArray($this->favoritesService->getFavoriteUsers($post));

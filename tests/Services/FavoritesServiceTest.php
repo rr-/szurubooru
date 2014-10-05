@@ -4,7 +4,7 @@ namespace Szurubooru\Tests\Services;
 final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 {
 	private $favoritesDaoMock;
-	private $postScoreDaoMock;
+	private $scoreDaoMock;
 	private $userDaoMock;
 	private $transactionManagerMock;
 	private $timeServiceMock;
@@ -13,7 +13,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		parent::setUp();
 		$this->favoritesDaoMock = $this->mock(\Szurubooru\Dao\FavoritesDao::class);
-		$this->postScoreDaoMock = $this->mock(\Szurubooru\Dao\PostScoreDao::class);
+		$this->scoreDaoMock = $this->mock(\Szurubooru\Dao\ScoreDao::class);
 		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
 		$this->transactionManagerMock = $this->mockTransactionManager();
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
@@ -51,7 +51,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$fav1->setUser(new \Szurubooru\Entities\User(1));
 		$fav2->setUser(new \Szurubooru\Entities\User(2));
 
-		$this->favoritesDaoMock->expects($this->once())->method('findByPost')->with($post)->willReturn([$fav1, $fav2]);
+		$this->favoritesDaoMock->expects($this->once())->method('findByEntity')->with($post)->willReturn([$fav1, $fav2]);
 		$this->userDaoMock->expects($this->once())->method('findByIds')->with([1, 2]);
 
 		$favoritesService = $this->getFavoritesService();
@@ -62,7 +62,7 @@ final class FavoritesServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		return new \Szurubooru\Services\FavoritesService(
 			$this->favoritesDaoMock,
-			$this->postScoreDaoMock,
+			$this->scoreDaoMock,
 			$this->userDaoMock,
 			$this->transactionManagerMock,
 			$this->timeServiceMock);

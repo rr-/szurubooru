@@ -1,56 +1,56 @@
 <?php
 namespace Szurubooru\Services;
 
-class PostScoreService
+class ScoreService
 {
-	private $postScoreDao;
+	private $scoreDao;
 	private $favoritesDao;
 	private $userDao;
 	private $transactionManager;
 	private $timeService;
 
 	public function __construct(
-		\Szurubooru\Dao\PostScoreDao $postScoreDao,
+		\Szurubooru\Dao\ScoreDao $scoreDao,
 		\Szurubooru\Dao\FavoritesDao $favoritesDao,
 		\Szurubooru\Dao\UserDao $userDao,
 		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Services\TimeService $timeService)
 	{
-		$this->postScoreDao = $postScoreDao;
+		$this->scoreDao = $scoreDao;
 		$this->favoritesDao = $favoritesDao;
 		$this->userDao = $userDao;
 		$this->transactionManager = $transactionManager;
 		$this->timeService = $timeService;
 	}
 
-	public function getScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post)
+	public function getScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
 	{
-		$transactionFunc = function() use ($user, $post)
+		$transactionFunc = function() use ($user, $entity)
 		{
-			return $this->postScoreDao->getScore($user, $post);
+			return $this->scoreDao->getScore($user, $entity);
 		};
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getScoreValue(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post)
+	public function getScoreValue(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
 	{
-		$score = $this->getScore($user, $post);
+		$score = $this->getScore($user, $entity);
 		if (!$score)
 			return 0;
 		return $score->getScore();
 	}
 
-	public function setScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post, $scoreValue)
+	public function setScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity, $scoreValue)
 	{
 		if ($scoreValue !== 1 and $scoreValue !== 0 and $scoreValue !== -1)
 			throw new \DomainException('Bad score');
 
-		$transactionFunc = function() use ($user, $post, $scoreValue)
+		$transactionFunc = function() use ($user, $entity, $scoreValue)
 		{
 			if ($scoreValue !== 1)
-				$this->favoritesDao->delete($user, $post);
+				$this->favoritesDao->delete($user, $entity);
 
-			return $this->postScoreDao->setScore($user, $post, $scoreValue);
+			return $this->scoreDao->setScore($user, $entity, $scoreValue);
 		};
 		return $this->transactionManager->commit($transactionFunc);
 	}

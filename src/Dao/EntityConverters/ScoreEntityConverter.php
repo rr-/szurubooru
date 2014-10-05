@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
 
-class PostScoreEntityConverter extends AbstractEntityConverter implements IEntityConverter
+class ScoreEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
 	public function toArray(\Szurubooru\Entities\Entity $entity)
 	{
@@ -17,7 +17,7 @@ class PostScoreEntityConverter extends AbstractEntityConverter implements IEntit
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\PostScore($array['id']);
+		$entity = new \Szurubooru\Entities\Score($array['id']);
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
 		$entity->setTime($this->dbTimeToEntityTime($array['time']));

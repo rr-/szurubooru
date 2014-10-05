@@ -30,6 +30,7 @@ return [
 			$container->get(\Szurubooru\Upgrades\Upgrade12::class),
 			$container->get(\Szurubooru\Upgrades\Upgrade13::class),
 			$container->get(\Szurubooru\Upgrades\Upgrade14::class),
+			$container->get(\Szurubooru\Upgrades\Upgrade15::class),
 		];
 	}),
 
@@ -43,7 +44,7 @@ return [
 			$container->get(\Szurubooru\Controllers\GlobalParamController::class),
 			$container->get(\Szurubooru\Controllers\HistoryController::class),
 			$container->get(\Szurubooru\Controllers\FavoritesController::class),
-			$container->get(\Szurubooru\Controllers\PostScoreController::class),
+			$container->get(\Szurubooru\Controllers\ScoreController::class),
 			$container->get(\Szurubooru\Controllers\CommentController::class),
 		];
 	}),

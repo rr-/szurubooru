@@ -23,28 +23,36 @@ class FavoritesDao extends AbstractDao implements ICrudDao
 		$this->timeService = $timeService;
 	}
 
-	public function findByPost(\Szurubooru\Entities\Post $post)
+	public function findByEntity(\Szurubooru\Entities\Entity $entity)
 	{
-		return $this->findBy('postId', $post->getId());
+		if ($entity instanceof \Szurubooru\Entities\Post)
+			return $this->findBy('postId', $entity->getId());
+		else
+			throw new \InvalidArgumentException();
 	}
 
-	public function set(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post)
+	public function set(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
 	{
-		$favorite = $this->get($user, $post);
+		$favorite = $this->get($user, $entity);
 		if (!$favorite)
 		{
 			$favorite = new \Szurubooru\Entities\Favorite();
-			$favorite->setUser($user);
-			$favorite->setPost($post);
 			$favorite->setTime($this->timeService->getCurrentTime());
+			$favorite->setUser($user);
+
+			if ($entity instanceof \Szurubooru\Entities\Post)
+				$favorite->setPost($entity);
+			else
+				throw new \InvalidArgumentException();
+
 			$this->save($favorite);
 		}
 		return $favorite;
 	}
 
-	public function delete(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post)
+	public function delete(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
 	{
-		$favorite = $this->get($user, $post);
+		$favorite = $this->get($user, $entity);
 		if ($favorite)
 			$this->deleteById($favorite->getId());
 	}
@@ -66,11 +74,15 @@ class FavoritesDao extends AbstractDao implements ICrudDao
 			});
 	}
 
-	private function get(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Post $post)
+	private function get(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
 	{
-		$query = $this->fpdo->from($this->tableName)
-			->where('userId', $user->getId())
-			->where('postId', $post->getId());
+		$query = $this->fpdo->from($this->tableName)->where('userId', $user->getId());
+
+		if ($entity instanceof \Szurubooru\Entities\Post)
+			$query->where('postId', $entity->getId());
+		else
+			throw new \InvalidArgumentException();
+
 		$arrayEntities = iterator_to_array($query);
 		$entities = $this->arrayToEntities($arrayEntities);
 		return array_shift($entities);
