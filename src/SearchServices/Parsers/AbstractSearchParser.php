@@ -136,7 +136,8 @@ abstract class AbstractSearchParser
 				$tokenText = substr($tokenText, 1);
 			}
 
-			if (strpos($tokenText, ':') !== false)
+			$colonPosition = strpos($tokenText, ':');
+			if ($colonPosition !== false and $colonPosition > 0)
 			{
 				$searchToken = new \Szurubooru\SearchServices\Tokens\NamedSearchToken();
 				list ($tokenKey, $tokenValue) = explode(':', $tokenText, 2);

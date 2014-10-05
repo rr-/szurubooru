@@ -93,9 +93,11 @@ class Validator
 		foreach ($tags as $tag)
 		{
 			if (empty($tag))
-			{
 				throw new \DomainException('Tags cannot be empty.');
-			}
+
+			//: causes problems with complex search (e.g. id:5).
+			if (strpos($tag, ':') > 0)
+				throw new \DomainException('Colon in tag may appear only at the beginning.');
 
 			$this->validateMaxLength($tag, 64, 'Tag');
 
