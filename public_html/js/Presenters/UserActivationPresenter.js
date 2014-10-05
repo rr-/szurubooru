@@ -2,7 +2,6 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.UserActivationPresenter = function(
-	_,
 	jQuery,
 	promise,
 	util,
@@ -14,7 +13,7 @@ App.Presenters.UserActivationPresenter = function(
 
 	var $el = jQuery('#content');
 	var $messages = $el;
-	var template;
+	var templates = {};
 	var formHidden = false;
 	var operation;
 
@@ -27,8 +26,8 @@ App.Presenters.UserActivationPresenter = function(
 	function reinit(args, loaded) {
 		operation = args.operation;
 		promise.wait(util.promiseTemplate('user-query-form'))
-			.then(function(html) {
-				template = _.template(html);
+			.then(function(template) {
+				templates.userQuery = template;
 				if (args.token) {
 					hideForm();
 					confirmToken(args.token);
@@ -41,7 +40,7 @@ App.Presenters.UserActivationPresenter = function(
 	}
 
 	function render() {
-		$el.html(template());
+		$el.html(templates.userQuery());
 		$messages = $el.find('.messages');
 		if (formHidden) {
 			$el.find('form').hide();
@@ -114,4 +113,4 @@ App.Presenters.UserActivationPresenter = function(
 
 };
 
-App.DI.register('userActivationPresenter', ['_', 'jQuery', 'promise', 'util', 'auth', 'api', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.UserActivationPresenter);
+App.DI.register('userActivationPresenter', ['jQuery', 'promise', 'util', 'auth', 'api', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.UserActivationPresenter);

@@ -2,7 +2,6 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.LoginPresenter = function(
-	_,
 	jQuery,
 	util,
 	promise,
@@ -13,7 +12,7 @@ App.Presenters.LoginPresenter = function(
 
 	var $el = jQuery('#content');
 	var $messages;
-	var template;
+	var templates = {};
 	var previousRoute;
 
 	function init(args, loaded) {
@@ -21,8 +20,8 @@ App.Presenters.LoginPresenter = function(
 		topNavigationPresenter.changeTitle('Login');
 		previousRoute = args.previousRoute;
 		promise.wait(util.promiseTemplate('login-form'))
-			.then(function(html) {
-				template = _.template(html);
+			.then(function(template) {
+				templates.login = template;
 				if (auth.isLoggedIn()) {
 					finishLogin();
 				} else {
@@ -34,7 +33,7 @@ App.Presenters.LoginPresenter = function(
 	}
 
 	function render() {
-		$el.html(template());
+		$el.html(templates.login());
 		$el.find('form').submit(loginFormSubmitted);
 		$messages = $el.find('.messages');
 		$messages.width($el.find('form').width());
@@ -81,4 +80,4 @@ App.Presenters.LoginPresenter = function(
 
 };
 
-App.DI.register('loginPresenter', ['_', 'jQuery', 'util', 'promise', 'router', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.LoginPresenter);
+App.DI.register('loginPresenter', ['jQuery', 'util', 'promise', 'router', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.LoginPresenter);

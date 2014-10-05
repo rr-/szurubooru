@@ -2,7 +2,6 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.RegistrationPresenter = function(
-	_,
 	jQuery,
 	util,
 	promise,
@@ -11,22 +10,22 @@ App.Presenters.RegistrationPresenter = function(
 	messagePresenter) {
 
 	var $el = jQuery('#content');
-	var template;
+	var templates = {};
 	var $messages;
 
 	function init(args, loaded) {
 		topNavigationPresenter.select('register');
 		topNavigationPresenter.changeTitle('Registration');
 		promise.wait(util.promiseTemplate('registration-form'))
-			.then(function(html) {
-				template = _.template(html);
+			.then(function(template) {
+				templates.registration = template;
 				render();
 				loaded();
 			});
 	}
 
 	function render() {
-		$el.html(template());
+		$el.html(templates.registration());
 		$el.find('form').submit(registrationFormSubmitted);
 		$messages = $el.find('.messages');
 		$messages.width($el.find('form').width());
@@ -97,4 +96,4 @@ App.Presenters.RegistrationPresenter = function(
 
 };
 
-App.DI.register('registrationPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.RegistrationPresenter);
+App.DI.register('registrationPresenter', ['jQuery', 'util', 'promise', 'api', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.RegistrationPresenter);

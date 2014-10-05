@@ -20,7 +20,7 @@ App.Presenters.PagerPresenter = function(
 	var targetContent;
 	var endlessScroll = browsingSettings.getSettings().endlessScroll;
 	var scrollInterval;
-	var template;
+	var templates = {};
 	var forceClear = false;
 
 	var baseUri;
@@ -39,8 +39,8 @@ App.Presenters.PagerPresenter = function(
 		pager.setSearchParams(args.searchParams);
 
 		promise.wait(util.promiseTemplate('pager'))
-			.then(function(html) {
-				template = _.template(html);
+			.then(function(template) {
+				templates.pager = template;
 				render();
 				loaded();
 			});
@@ -222,7 +222,7 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function render() {
-		$target.html(template({originalHtml: targetContent}));
+		$target.html(templates.pager({originalHtml: targetContent}));
 		$messages = $target.find('.pagination-content');
 		$pageList = $target.find('.page-list');
 		if (endlessScroll) {

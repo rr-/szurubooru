@@ -2,7 +2,6 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.TopNavigationPresenter = function(
-	_,
 	jQuery,
 	util,
 	promise,
@@ -10,13 +9,13 @@ App.Presenters.TopNavigationPresenter = function(
 
 	var selectedElement = null;
 	var $el = jQuery('#top-navigation');
-	var template;
+	var templates = {};
 	var baseTitle = document.title;
 
 	function init(args, loaded) {
 		promise.wait(util.promiseTemplate('top-navigation'))
-			.then(function(html) {
-				template = _.template(html);
+			.then(function(template) {
+				templates.topNavigation = template;
 				render();
 				loaded();
 				auth.startObservingLoginChanges('top-navigation', loginStateChanged);
@@ -34,7 +33,7 @@ App.Presenters.TopNavigationPresenter = function(
 	}
 
 	function render() {
-		$el.html(template({
+		$el.html(templates.topNavigation({
 			loggedIn: auth.isLoggedIn(),
 			user: auth.getCurrentUser(),
 			canListUsers: auth.hasPrivilege(auth.privileges.listUsers),
@@ -75,4 +74,4 @@ App.Presenters.TopNavigationPresenter = function(
 
 };
 
-App.DI.registerSingleton('topNavigationPresenter', ['_', 'jQuery', 'util', 'promise', 'auth'], App.Presenters.TopNavigationPresenter);
+App.DI.registerSingleton('topNavigationPresenter', ['jQuery', 'util', 'promise', 'auth'], App.Presenters.TopNavigationPresenter);

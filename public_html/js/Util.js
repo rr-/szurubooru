@@ -2,7 +2,6 @@ var App = App || {};
 
 App.Util = function(_, jQuery, promise) {
 
-	var templateCache = {};
 	var exitConfirmationEnabled = false;
 
 	function transparentPixel() {
@@ -51,25 +50,15 @@ App.Util = function(_, jQuery, promise) {
 	}
 
 	function promiseTemplate(templateName) {
-		return promiseTemplateFromCache(templateName) ||
-			promiseTemplateFromDOM(templateName) ||
+		return promiseTemplateFromDOM(templateName) ||
 			promiseTemplateWithAJAX(templateName);
-	}
-
-	function promiseTemplateFromCache(templateName) {
-		if (templateName in templateCache) {
-			return promise.make(function(resolve, reject) {
-				resolve(templateCache[templateName]);
-			});
-		}
-		return null;
 	}
 
 	function promiseTemplateFromDOM(templateName) {
 		var $template = jQuery('#' + templateName + '-template');
 		if ($template.length) {
 			return promise.make(function(resolve, reject) {
-				resolve($template.html());
+				resolve(_.template($template.html()));
 			});
 		}
 		return null;
@@ -84,7 +73,7 @@ App.Util = function(_, jQuery, promise) {
 				url: templateUrl,
 				method: 'GET',
 				success: function(data, textStatus, xhr) {
-					resolve(data);
+					resolve(_.template(data));
 				},
 				error: function(xhr, textStatus, errorThrown) {
 					console.log(new Error('Error while loading template ' + templateName + ': ' + errorThrown));

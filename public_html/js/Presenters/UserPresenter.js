@@ -17,7 +17,7 @@ App.Presenters.UserPresenter = function(
 
 	var $el = jQuery('#content');
 	var $messages = $el;
-	var template;
+	var templates = {};
 	var user;
 	var userName;
 	var activeTab;
@@ -30,11 +30,9 @@ App.Presenters.UserPresenter = function(
 		promise.wait(
 				util.promiseTemplate('user'),
 				api.get('/users/' + userName))
-			.then(function(
-					userHtml,
-					response) {
+			.then(function(template, response) {
 				$messages = $el.find('.messages');
-				template = _.template(userHtml);
+				templates.user = template;
 
 				user = response.json;
 				var extendedContext = _.extend(args, {user: user});
@@ -65,7 +63,7 @@ App.Presenters.UserPresenter = function(
 	}
 
 	function render() {
-		$el.html(template({
+		$el.html(templates.user({
 			user: user,
 			isLoggedIn: auth.isLoggedIn(user.name),
 			formatRelativeTime: util.formatRelativeTime,

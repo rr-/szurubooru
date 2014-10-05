@@ -19,18 +19,11 @@ App.Presenters.PostPresenter = function(
 	var $el = jQuery('#content');
 	var $messages = $el;
 
-	var postTemplate;
-	var postEditTemplate;
-	var postContentTemplate;
-	var historyTemplate;
+	var templates = {};
 
 	var postNameOrId;
 	var searchArgs;
-
 	var post;
-	var postScore;
-	var postFavorites;
-	var postHistory;
 
 	var privileges = {};
 	var editPrivileges = {};
@@ -61,14 +54,14 @@ App.Presenters.PostPresenter = function(
 				util.promiseTemplate('post-content'),
 				util.promiseTemplate('history'))
 			.then(function(
-					postTemplateHtml,
-					postEditTemplateHtml,
-					postContentTemplateHtml,
-					historyTemplateHtml) {
-				postTemplate = _.template(postTemplateHtml);
-				postEditTemplate = _.template(postEditTemplateHtml);
-				postContentTemplate = _.template(postContentTemplateHtml);
-				historyTemplate = _.template(historyTemplateHtml);
+					postTemplate,
+					postEditTemplate,
+					postContentTemplate,
+					historyTemplate) {
+				templates.post = postTemplate;
+				templates.postEdit = postEditTemplate;
+				templates.postContent = postContentTemplate;
+				templates.history = historyTemplate;
 
 				reinit(args, loaded);
 			}).fail(function(response) {
@@ -129,9 +122,6 @@ App.Presenters.PostPresenter = function(
 			promise.wait(api.get('/posts/' + postNameOrId))
 				.then(function(postResponse) {
 					post = postResponse.json;
-					postScore = postResponse.json.ownScore;
-					postFavorites = postResponse.json.favorites;
-					postHistory = postResponse.json.history;
 					resolve();
 				}).fail(function(response) {
 					showGenericError(response);
@@ -178,21 +168,21 @@ App.Presenters.PostPresenter = function(
 	}
 
 	function renderPostTemplate() {
-		return postTemplate({
+		return templates.post({
 			searchArgs: searchArgs,
 			post: post,
-			ownScore: postScore,
-			postFavorites: postFavorites,
-			postHistory: postHistory,
+			ownScore: post.ownScore,
+			postFavorites: post.favorites,
+			postHistory: post.history,
 
 			formatRelativeTime: util.formatRelativeTime,
 			formatFileSize: util.formatFileSize,
 
-			postContentTemplate: postContentTemplate,
-			postEditTemplate: postEditTemplate,
-			historyTemplate: historyTemplate,
+			postContentTemplate: templates.postContent,
+			postEditTemplate: templates.postEdit,
+			historyTemplate: templates.history,
 
-			hasFav: _.any(postFavorites, function(favUser) { return favUser.id === auth.getCurrentUser().id; }),
+			hasFav: _.any(post.favorites, function(favUser) { return favUser.id === auth.getCurrentUser().id; }),
 			isLoggedIn: auth.isLoggedIn(),
 			privileges: privileges,
 			editPrivileges: editPrivileges,

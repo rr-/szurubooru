@@ -12,10 +12,8 @@ App.Presenters.PostCommentListPresenter = function(
 	messagePresenter) {
 
 	var $el;
-	var commentListTemplate;
-	var commentListItemTemplate;
-	var commentFormTemplate;
 	var privileges;
+	var templates = {};
 
 	var post;
 	var comments = [];
@@ -40,14 +38,14 @@ App.Presenters.PostCommentListPresenter = function(
 				util.promiseTemplate('comment-form'),
 				comments.length === 0 ? api.get('/comments/' + args.post.id) : null)
 			.then(function(
-					commentListHtml,
-					commentListItemHtml,
-					commentFormHtml,
+					commentListTemplate,
+					commentListItemTemplate,
+					commentFormTemplate,
 					commentsResponse)
 				{
-					commentListTemplate = _.template(commentListHtml);
-					commentListItemTemplate = _.template(commentListItemHtml);
-					commentFormTemplate = _.template(commentFormHtml);
+					templates.commentList = commentListTemplate;
+					templates.commentListItem = commentListItemTemplate;
+					templates.commentForm = commentFormTemplate;
 					if (commentsResponse) {
 						comments = commentsResponse.json.data;
 					}
@@ -59,11 +57,11 @@ App.Presenters.PostCommentListPresenter = function(
 	}
 
 	function render() {
-		$el.html(commentListTemplate(
+		$el.html(templates.commentList(
 			_.extend(
 				{
-					commentListItemTemplate: commentListItemTemplate,
-					commentFormTemplate: commentFormTemplate,
+					commentListItemTemplate: templates.commentListItem,
+					commentFormTemplate: templates.commentForm,
 					formatRelativeTime: util.formatRelativeTime,
 					formatMarkdown: util.formatMarkdown,
 					comments: comments,
@@ -95,7 +93,7 @@ App.Presenters.PostCommentListPresenter = function(
 	}
 
 	function renderComment($targetList, comment) {
-		var $item = jQuery('<li>' + commentListItemTemplate({
+		var $item = jQuery('<li>' + templates.commentListItem({
 			comment: comment,
 			formatRelativeTime: util.formatRelativeTime,
 			formatMarkdown: util.formatMarkdown,
@@ -167,7 +165,7 @@ App.Presenters.PostCommentListPresenter = function(
 		if ($item.find('.comment-form').length > 0) {
 			return;
 		}
-		var $form = jQuery(commentFormTemplate({title: 'Edit comment', text: comment.text}));
+		var $form = jQuery(templates.commentForm({title: 'Edit comment', text: comment.text}));
 		$item.find('.body').append($form);
 		$item.find('form button[type=submit]').click(function(e) { commentFormSubmitted(e, comment); });
 	}

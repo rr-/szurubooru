@@ -13,10 +13,9 @@ App.Presenters.PostListPresenter = function(
 
 	var KEY_RETURN = 13;
 
+	var templates = {};
 	var $el = jQuery('#content');
 	var $searchInput;
-	var listTemplate;
-	var itemTemplate;
 
 	var searchArgs;
 
@@ -29,9 +28,9 @@ App.Presenters.PostListPresenter = function(
 		promise.wait(
 				util.promiseTemplate('post-list'),
 				util.promiseTemplate('post-list-item'))
-			.then(function(listHtml, itemHtml) {
-				listTemplate = _.template(listHtml);
-				itemTemplate = _.template(itemHtml);
+			.then(function(listTemplate, listItemTemplate) {
+				templates.list = listTemplate;
+				templates.listItem = listItemTemplate;
 
 				render();
 				loaded();
@@ -69,7 +68,7 @@ App.Presenters.PostListPresenter = function(
 	}
 
 	function render() {
-		$el.html(listTemplate());
+		$el.html(templates.list());
 		$searchInput = $el.find('input[name=query]');
 
 		$searchInput.val(searchArgs.query);
@@ -93,7 +92,7 @@ App.Presenters.PostListPresenter = function(
 		}
 
 		_.each(posts, function(post) {
-			$target.append(jQuery('<li>' + itemTemplate({
+			$target.append(jQuery('<li>' + templates.listItem({
 				searchArgs: searchArgs,
 				post: post,
 			}) + '</li>'));

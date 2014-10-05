@@ -2,7 +2,6 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.HomePresenter = function(
-	_,
 	jQuery,
 	util,
 	promise,
@@ -12,10 +11,9 @@ App.Presenters.HomePresenter = function(
 	messagePresenter) {
 
 	var $el = jQuery('#content');
-    var homeTemplate;
-    var postContentTemplate;
+	var templates = {};
 	var globals;
-    var post;
+	var post;
 
 	function init(args, loaded) {
 		topNavigationPresenter.select('home');
@@ -27,12 +25,12 @@ App.Presenters.HomePresenter = function(
 				api.get('/globals'),
 				api.get('/posts/featured'))
 			.then(function(
-					homeTemplateHtml,
-					postContentTemplateHtml,
+					homeTemplate,
+					postContentTemplate,
 					globalsResponse,
 					featuredPostResponse) {
-				homeTemplate = _.template(homeTemplateHtml);
-				postContentTemplate = _.template(postContentTemplateHtml);
+				templates.home = homeTemplate;
+				templates.postContent = postContentTemplate;
 
 				globals = globalsResponse.json;
 				post = featuredPostResponse.json;
@@ -46,9 +44,9 @@ App.Presenters.HomePresenter = function(
 	}
 
 	function render() {
-		$el.html(homeTemplate({
+		$el.html(templates.home({
 			post: post,
-			postContentTemplate: postContentTemplate,
+			postContentTemplate: templates.postContent,
 			globals: globals,
 			title: topNavigationPresenter.getBaseTitle(),
 			canViewUsers: auth.hasPrivilege(auth.privileges.viewUsers),
@@ -65,4 +63,4 @@ App.Presenters.HomePresenter = function(
 
 };
 
-App.DI.register('homePresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.HomePresenter);
+App.DI.register('homePresenter', ['jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.HomePresenter);

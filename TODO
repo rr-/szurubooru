@@ -46,11 +46,6 @@ everything related to comments:
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
-    - simplify template loading in presenters - right now template loading
-      requires _, util and promise:
-          promise.wait(util.loadTemplate('blah'))
-              .then(function(html) {
-                  template = _.template(html); });
     - change content spinner to nprogress:
       http://ricostacruz.com/nprogress/
     - reduce dependencies

@@ -2,7 +2,6 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.UserAccountRemovalPresenter = function(
-	_,
 	jQuery,
 	util,
 	promise,
@@ -12,7 +11,7 @@ App.Presenters.UserAccountRemovalPresenter = function(
 	messagePresenter) {
 
 	var target;
-	var template;
+	var templates = {};
 	var user;
 	var privileges = {};
 
@@ -25,8 +24,8 @@ App.Presenters.UserAccountRemovalPresenter = function(
 			(auth.hasPrivilege(auth.privileges.deleteOwnAccount) && auth.isLoggedIn(user.name));
 
 		promise.wait(util.promiseTemplate('account-removal'))
-			.then(function(html) {
-				template = _.template(html);
+			.then(function(template) {
+				templates.accountRemoval = template;
 				render();
 				loaded();
 			});
@@ -34,7 +33,7 @@ App.Presenters.UserAccountRemovalPresenter = function(
 
 	function render() {
 		var $el = jQuery(target);
-		$el.html(template({
+		$el.html(templates.accountRemoval({
 			user: user,
 			canDeleteAccount: privileges.canDeleteAccount}));
 
@@ -77,4 +76,4 @@ App.Presenters.UserAccountRemovalPresenter = function(
 
 };
 
-App.DI.register('userAccountRemovalPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'router', 'messagePresenter'], App.Presenters.UserAccountRemovalPresenter);
+App.DI.register('userAccountRemovalPresenter', ['jQuery', 'util', 'promise', 'api', 'auth', 'router', 'messagePresenter'], App.Presenters.UserAccountRemovalPresenter);

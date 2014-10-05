@@ -11,8 +11,7 @@ App.Presenters.UserListPresenter = function(
 	topNavigationPresenter) {
 
 	var $el = jQuery('#content');
-	var listTemplate;
-	var itemTemplate;
+	var templates = {};
 
 	function init(args, loaded) {
 		topNavigationPresenter.select('users');
@@ -21,9 +20,9 @@ App.Presenters.UserListPresenter = function(
 		promise.wait(
 				util.promiseTemplate('user-list'),
 				util.promiseTemplate('user-list-item'))
-			.then(function(listHtml, itemHtml) {
-				listTemplate = _.template(listHtml);
-				itemTemplate = _.template(itemHtml);
+			.then(function(listTemplate, listItemTemplate) {
+				templates.list = listTemplate;
+				templates.listItem = listItemTemplate;
 
 				render();
 				loaded();
@@ -61,7 +60,7 @@ App.Presenters.UserListPresenter = function(
 	}
 
 	function render() {
-		$el.html(listTemplate());
+		$el.html(templates.list());
 		$el.find('.order a').click(orderLinkClicked);
 	}
 
@@ -78,7 +77,7 @@ App.Presenters.UserListPresenter = function(
 		}
 
 		_.each(users, function(user) {
-			$target.append(jQuery('<li>' + itemTemplate({
+			$target.append(jQuery('<li>' + templates.listItem({
 				user: user,
 				formatRelativeTime: util.formatRelativeTime,
 			}) + '</li>'));

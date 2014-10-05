@@ -17,7 +17,7 @@ App.Presenters.PostUploadPresenter = function(
 
 	var $el = jQuery('#content');
 	var $messages;
-	var template;
+	var templates = {};
 	var allPosts = [];
 	var tagInput;
 	var fileDropper;
@@ -28,15 +28,15 @@ App.Presenters.PostUploadPresenter = function(
 		topNavigationPresenter.changeTitle('Upload');
 
 		promise.wait(util.promiseTemplate('post-upload'))
-			.then(function(html) {
-				template = _.template(html);
+			.then(function(template) {
+				templates.upload = template;
 				render();
 				loaded();
 			});
 	}
 
 	function render() {
-		$el.html(template({
+		$el.html(templates.upload({
 			canUploadPostsAnonymously: auth.hasPrivilege(auth.privileges.uploadPostsAnonymously)
 		}));
 		$messages = $el.find('.messages');

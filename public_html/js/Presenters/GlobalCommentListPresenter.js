@@ -10,9 +10,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 	topNavigationPresenter) {
 
 	var $el;
-	var listTemplate;
-	var itemTemplate;
-	var postTemplate;
+	var templates = {};
 
 	function init(args, loaded) {
 		$el = jQuery('#content');
@@ -22,11 +20,11 @@ App.Presenters.GlobalCommentListPresenter = function(
 				util.promiseTemplate('global-comment-list'),
 				util.promiseTemplate('global-comment-list-item'),
 				util.promiseTemplate('post-list-item'))
-			.then(function(listHtml, listItemHtml, postItemHtml)
+			.then(function(listTemplate, listItemTemplate, postTemplate)
 				{
-					listTemplate = _.template(listHtml);
-					itemTemplate = _.template(listItemHtml);
-					postTemplate = _.template(postItemHtml);
+					templates.list = listTemplate;
+					templates.listItem = listItemTemplate;
+					templates.post = postTemplate;
 
 					render();
 					loaded();
@@ -66,7 +64,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 	}
 
 	function render() {
-		$el.html(listTemplate());
+		$el.html(templates.list());
 	}
 
 	function renderPosts(data, clear) {
@@ -80,9 +78,9 @@ App.Presenters.GlobalCommentListPresenter = function(
 			var post = data.post;
 			var comments = data.comments;
 
-			var $post = jQuery('<li>' + itemTemplate({
+			var $post = jQuery('<li>' + templates.listItem({
 				post: post,
-				postTemplate: postTemplate,
+				postTemplate: templates.post,
 			}) + '</li>');
 
 			var presenter = App.DI.get('postCommentListPresenter');

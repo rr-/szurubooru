@@ -11,7 +11,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	messagePresenter) {
 
 	var target;
-	var template;
+	var templates = {};
 	var user;
 	var privileges;
 	var avatarContent;
@@ -41,8 +41,8 @@ App.Presenters.UserAccountSettingsPresenter = function(
 		};
 
 		promise.wait(util.promiseTemplate('account-settings'))
-			.then(function(html) {
-				template = _.template(html);
+			.then(function(template) {
+				templates.accountRemoval = template;
 				render();
 				loaded();
 			});
@@ -50,7 +50,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 
 	function render() {
 		var $el = jQuery(target);
-		$el.html(template(_.extend({user: user}, privileges)));
+		$el.html(templates.accountRemoval(_.extend({user: user}, privileges)));
 		$el.find('form').submit(accountSettingsFormSubmitted);
 		$el.find('form [name=avatar-style]').change(avatarStyleChanged);
 		avatarStyleChanged();
