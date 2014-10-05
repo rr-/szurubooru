@@ -15,5 +15,5 @@ RewriteRule ^/?data/thumbnails/(\d+)x(\d+)/avatars/([^/]+)/? /api/users/$3/avata
 RewriteRule ^/?api/(.*) api-dispatch.php?q=$0 [QSA,L]
 
 <IfModule mod_mime.c>
-AddType text/html .tpl
+AddType text/plain .tpl
 </IfModule>
