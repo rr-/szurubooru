@@ -4,6 +4,7 @@ namespace Szurubooru\Tests;
 final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
 	private $routerMock;
+	private $configMock;
 	private $httpHelperMock;
 	private $authServiceMock;
 	private $tokenServiceMock;
@@ -13,10 +14,12 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		parent::setUp();
 		$this->routerMock = $this->mock(\Szurubooru\Router::class);
+		$this->configMock = $this->mockConfig();
 		$this->httpHelperMock = $this->mock(\Szurubooru\Helpers\HttpHelper::class);
 		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
 		$this->tokenServiceMock = $this->mock(\Szurubooru\Services\TokenService::class);
 		$this->controllerRepositoryMock = $this->mock(\Szurubooru\ControllerRepository::class);
+		$this->configMock->set('misc/dumpSqlIntoQueries', 0);
 	}
 
 	public function testDispatchingArrays()
@@ -34,7 +37,6 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$actual = $dispatcher->run('GET', '/');
 
 		unset($actual['__time']);
-		unset($actual['__queries']);
 		$this->assertEquals($expected, $actual);
 	}
 
@@ -51,7 +53,6 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$actual = $dispatcher->run('GET', '/');
 
 		unset($actual['__time']);
-		unset($actual['__queries']);
 		$this->assertEquals($expected, $actual);
 	}
 
@@ -69,6 +70,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		return new \Szurubooru\Dispatcher(
 			$this->routerMock,
+			$this->configMock,
 			$this->databaseConnection,
 			$this->httpHelperMock,
 			$this->authServiceMock,

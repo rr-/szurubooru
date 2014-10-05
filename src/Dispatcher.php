@@ -4,12 +4,14 @@ namespace Szurubooru;
 final class Dispatcher
 {
 	private $router;
+	private $config;
 	private $databaseConnection;
 	private $authService;
 	private $tokenService;
 
 	public function __construct(
 		\Szurubooru\Router $router,
+		\Szurubooru\Config $config,
 		\Szurubooru\DatabaseConnection $databaseConnection,
 		\Szurubooru\Helpers\HttpHelper $httpHelper,
 		\Szurubooru\Services\AuthService $authService,
@@ -17,6 +19,7 @@ final class Dispatcher
 		\Szurubooru\ControllerRepository $controllerRepository)
 	{
 		$this->router = $router;
+		$this->config = $config;
 		$this->databaseConnection = $databaseConnection;
 		$this->httpHelper = $httpHelper;
 
@@ -50,7 +53,11 @@ final class Dispatcher
 		}
 		$end = microtime(true);
 		$json['__time'] = $end - \Szurubooru\Bootstrap::getStartTime();
-		$json['__queries'] = $this->databaseConnection->getPDO()->getQueryCount();
+		if ($this->config->misc->dumpSqlIntoQueries)
+		{
+			$json['__queries'] = $this->databaseConnection->getPDO()->getQueryCount();
+			$json['__statements'] = $this->databaseConnection->getPDO()->getStatements();
+		}
 
 		$this->httpHelper->setResponseCode($code);
 		$this->httpHelper->setHeader('Content-Type', 'application/json');
