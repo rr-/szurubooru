@@ -210,7 +210,6 @@ App.Presenters.PagerPresenter = function(
 				setPage(page);
 			});
 			$a.addClass('big-button');
-			$a.attr('href', '#');
 			$a.text(page);
 			if (page === pager.getPage()) {
 				$a.addClass('active');

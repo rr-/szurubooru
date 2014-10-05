@@ -11,6 +11,7 @@
 }
 
 .page-list li a {
+	cursor: pointer;
 	display: inline-block;
 	padding: 0.4em 1.2em;
 }
