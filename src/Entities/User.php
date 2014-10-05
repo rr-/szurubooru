@@ -20,6 +20,7 @@ final class User extends Entity
 	protected $email;
 	protected $emailUnconfirmed;
 	protected $passwordHash;
+	protected $passwordSalt;
 	protected $accessRank;
 	protected $registrationTime;
 	protected $lastLoginTime;
@@ -86,6 +87,16 @@ final class User extends Entity
 	public function setPasswordHash($passwordHash)
 	{
 		$this->passwordHash = $passwordHash;
+	}
+
+	public function getPasswordSalt()
+	{
+		return $this->passwordSalt;
+	}
+
+	public function setPasswordSalt($passwordSalt)
+	{
+		$this->passwordSalt = $passwordSalt;
 	}
 
 	public function getAccessRank()

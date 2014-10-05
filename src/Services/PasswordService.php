@@ -19,9 +19,25 @@ class PasswordService
 		$this->pattern = str_split('cvcvnncvcv');
 	}
 
-	public function getHash($password)
+	public function getLegacyHash($password, $salt)
 	{
-		return hash('sha256', $this->config->security->secret . '/' . $password);
+		//hash used by old szurubooru version
+		return sha1('1A2/$_4xVa' . $salt . $password);
+	}
+
+	public function getHash($password, $salt)
+	{
+		return hash('sha256', $this->config->security->secret . $salt . $password);
+	}
+
+	public function isHashValid($password, $salt, $expectedPasswordHash)
+	{
+		$hashes =
+		[
+			$this->getLegacyHash($password, $salt),
+			$this->getHash($password, $salt),
+		];
+		return in_array($expectedPasswordHash, $hashes);
 	}
 
 	public function getRandomPassword()

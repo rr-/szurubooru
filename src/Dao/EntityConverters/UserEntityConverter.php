@@ -12,6 +12,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'email' => $entity->getEmail(),
 			'emailUnconfirmed' => $entity->getEmailUnconfirmed(),
 			'passwordHash' => $entity->getPasswordHash(),
+			'passwordSalt' => $entity->getPasswordSalt(),
 			'accessRank' => $entity->getAccessRank(),
 			'registrationTime' => $this->entityTimeToDbTime($entity->getRegistrationTime()),
 			'lastLoginTime' => $this->entityTimeToDbTime($entity->getLastLoginTime()),
@@ -29,6 +30,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setEmail($array['email']);
 		$entity->setEmailUnconfirmed($array['emailUnconfirmed']);
 		$entity->setPasswordHash($array['passwordHash']);
+		$entity->setPasswordSalt($array['passwordSalt']);
 		$entity->setAccessRank(intval($array['accessRank']));
 		$entity->setRegistrationTime($this->dbTimeToEntityTime($array['registrationTime']));
 		$entity->setLastLoginTime($this->dbTimeToEntityTime($array['lastLoginTime']));

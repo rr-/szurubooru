@@ -100,6 +100,7 @@ class UserService
 			$user->setAccessRank($this->userDao->hasAnyUsers()
 				? \Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER
 				: \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR);
+			$user->setPasswordSalt($this->passwordService->getRandomPassword());
 
 			$this->updateUserName($user, $formData->userName);
 			$this->updateUserPassword($user, $formData->password);
@@ -173,7 +174,7 @@ class UserService
 
 			$user = $this->getByName($token->getAdditionalData());
 			$newPassword = $this->passwordService->getRandomPassword();
-			$user->setPasswordHash($this->passwordService->getHash($newPassword));
+			$this->updateUserPassword($user, $newPassword);
 			$this->userDao->save($user);
 			$this->tokenService->invalidateByName($token->getName());
 			return $newPassword;
@@ -231,7 +232,7 @@ class UserService
 
 	private function updateUserPassword(\Szurubooru\Entities\User $user, $newPassword)
 	{
-		$user->setPasswordHash($this->passwordService->getHash($newPassword));
+		$user->setPasswordHash($this->passwordService->getHash($newPassword, $user->getPasswordSalt()));
 	}
 
 	private function updateUserEmail(\Szurubooru\Entities\User $user, $newEmail)

@@ -48,8 +48,12 @@ class AuthService
 		$user = $this->userService->getByNameOrEmail($formData->userNameOrEmail);
 		$this->doFinalChecksOnUser($user);
 
-		$passwordHash = $this->passwordService->getHash($formData->password);
-		if ($user->getPasswordHash() !== $passwordHash)
+		$hashValid = $this->passwordService->isHashValid(
+			$formData->password,
+			$user->getPasswordSalt(),
+			$user->getPasswordHash());
+
+		if (!$hashValid)
 			throw new \InvalidArgumentException('Specified password is invalid.');
 
 		$this->loginToken = $this->createAndSaveLoginToken($user);

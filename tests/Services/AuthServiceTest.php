@@ -22,11 +22,12 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testInvalidPassword()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', false);
-		$this->passwordServiceMock->expects($this->once())->method('getHash')->willReturn('unmatchingHash');
+		$this->passwordServiceMock->expects($this->once())->method('isHashValid')->with('godzilla', 'salt', 'hash')->willReturn(false);
 
 		$testUser = new \Szurubooru\Entities\User();
 		$testUser->setName('dummy');
 		$testUser->setPasswordHash('hash');
+		$testUser->setPasswordSalt('salt');
 		$this->userServiceMock->expects($this->once())->method('getByNameOrEmail')->willReturn($testUser);
 
 		$this->setExpectedException(\Exception::class, 'Specified password is invalid');
@@ -40,11 +41,12 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testValidCredentials()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', false);
-		$this->passwordServiceMock->expects($this->once())->method('getHash')->willReturn('hash');
+		$this->passwordServiceMock->expects($this->once())->method('isHashValid')->with('godzilla', 'salt', 'hash')->willReturn(true);
 
 		$testUser = new \Szurubooru\Entities\User('an unusual database identifier');
 		$testUser->setName('dummy');
 		$testUser->setPasswordHash('hash');
+		$testUser->setPasswordSalt('salt');
 		$this->userServiceMock->expects($this->once())->method('getByNameOrEmail')->willReturn($testUser);
 
 		$testToken = new \Szurubooru\Entities\Token();
@@ -68,7 +70,7 @@ class AuthServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testValidCredentialsUnconfirmedEmail()
 	{
 		$this->configMock->set('security/needEmailActivationToRegister', true);
-		$this->passwordServiceMock->expects($this->never())->method('getHash')->willReturn('hash');
+		$this->passwordServiceMock->expects($this->never())->method('isHashValid')->willReturn('hash');
 
 		$testUser = new \Szurubooru\Entities\User();
 		$testUser->setName('dummy');

@@ -73,7 +73,8 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->email = 'human@people.gov';
 
 		$this->configMock->set('security/needEmailActivationToRegister', false);
-		$this->passwordServiceMock->expects($this->once())->method('getHash')->willReturn('hash');
+		$this->passwordServiceMock->expects($this->once())->method('getRandomPassword')->willReturn('salt');
+		$this->passwordServiceMock->expects($this->once())->method('getHash')->with('password', 'salt')->willReturn('hash');
 		$this->timeServiceMock->expects($this->once())->method('getCurrentTime')->willReturn('now');
 		$this->userDaoMock->expects($this->once())->method('hasAnyUsers')->willReturn(true);
 		$this->userDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
@@ -99,7 +100,8 @@ final class UserServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$formData->email = 'human@people.gov';
 
 		$this->configMock->set('security/needEmailActivationToRegister', true);
-		$this->passwordServiceMock->expects($this->once())->method('getHash')->willReturn('hash');
+		$this->passwordServiceMock->expects($this->once())->method('getRandomPassword')->willReturn('salt');
+		$this->passwordServiceMock->expects($this->once())->method('getHash')->with('password', 'salt')->willReturn('hash');
 		$this->timeServiceMock->expects($this->once())->method('getCurrentTime')->willReturn('now');
 		$this->userDaoMock->expects($this->once())->method('hasAnyUsers')->willReturn(true);
 		$this->userDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));

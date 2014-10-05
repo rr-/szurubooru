@@ -32,6 +32,7 @@ return [
 			$container->get(\Szurubooru\Upgrades\Upgrade14::class),
 			$container->get(\Szurubooru\Upgrades\Upgrade15::class),
 			$container->get(\Szurubooru\Upgrades\Upgrade16::class),
+			$container->get(\Szurubooru\Upgrades\Upgrade17::class),
 		];
 	}),
 
