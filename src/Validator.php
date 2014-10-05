@@ -85,7 +85,11 @@ class Validator
 		if (empty($tags))
 			throw new \DomainException('Tags cannot be empty.');
 
-		$illegalCharacters = str_split("\r\n\t " . chr(160));
+		//<> causes HTML injection and problems with Markdown.
+		//\/ causes problems with URLs.
+		//; causes problems with search argument parsing in JS frontend.
+		//whitespace causes problems with search.
+		$illegalCharacters = str_split("<>;\\/\r\n\t " . chr(160));
 		foreach ($tags as $tag)
 		{
 			if (empty($tag))
@@ -100,7 +104,16 @@ class Validator
 				if (strpos($tag, $char) !== false)
 				{
 					throw new \DomainException(
-						'Tags cannot contain any of following characters: ' . implode(', ', $illegalCharacters));
+						sprintf('Tags cannot contain any of following characters: %s.',
+						implode(', ', array_map(function($char)
+							{
+								if ($char === "\n") return "new line";
+								if ($char === "\r") return "carriage return";
+								if ($char === "\t") return "tab";
+								if ($char === " ") return "space";
+								if ($char === chr(160)) return "hard space";
+								return $char;
+							}, $illegalCharacters))));
 				}
 			}
 		}
