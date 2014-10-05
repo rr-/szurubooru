@@ -1,3 +1,4 @@
+<h1>History</h1>
 <table class="history">
 	<tbody>
 		<% _.each(history, function( historyEntry) { %>

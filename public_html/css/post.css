@@ -152,7 +152,7 @@
 }
 
 #post-view-wrapper .post-history-wrapper {
-	padding: 1em;
+	padding: 1em 0;
 	display: none;
 	word-break: break-all;
 }
