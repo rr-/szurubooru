@@ -3,14 +3,10 @@ namespace Szurubooru\Dao;
 
 class ScoreDao extends AbstractDao implements ICrudDao
 {
-	private $userDao;
-	private $postDao;
 	private $timeService;
 
 	public function __construct(
 		\Szurubooru\DatabaseConnection $databaseConnection,
-		\Szurubooru\Dao\UserDao $userDao,
-		\Szurubooru\Dao\PostDao $postDao,
 		\Szurubooru\Services\TimeService $timeService)
 	{
 		parent::__construct(
@@ -18,8 +14,6 @@ class ScoreDao extends AbstractDao implements ICrudDao
 			'scores',
 			new \Szurubooru\Dao\EntityConverters\ScoreEntityConverter());
 
-		$this->userDao = $userDao;
-		$this->postDao = $postDao;
 		$this->timeService = $timeService;
 	}
 
@@ -44,32 +38,15 @@ class ScoreDao extends AbstractDao implements ICrudDao
 		{
 			$score = new \Szurubooru\Entities\Score();
 			$score->setTime($this->timeService->getCurrentTime());
-			$score->setUser($user);
+			$score->setUserId($user->getId());
 
 			if ($entity instanceof \Szurubooru\Entities\Post)
-				$score->setPost($entity);
+				$score->setPostId($entity->getId());
 			else
 				throw new \InvalidArgumentException();
 		}
 		$score->setScore($scoreValue);
 		$this->save($score);
 		return $score;
-	}
-
-	protected function afterLoad(\Szurubooru\Entities\Entity $score)
-	{
-		$score->setLazyLoader(
-			\Szurubooru\Entities\Score::LAZY_LOADER_USER,
-			function (\Szurubooru\Entities\Score $score)
-			{
-				return $this->userDao->findById($score->getUserId());
-			});
-
-		$score->setLazyLoader(
-			\Szurubooru\Entities\Score::LAZY_LOADER_POST,
-			function (\Szurubooru\Entities\Score $score)
-			{
-				return $this->postDao->findById($score->getPostId());
-			});
 	}
 }

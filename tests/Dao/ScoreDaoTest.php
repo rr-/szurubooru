@@ -3,15 +3,11 @@ namespace Szurubooru\Tests\Dao;
 
 class ScoreDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
-	private $userDaoMock;
-	private $postDaoMock;
 	private $timeServiceMock;
 
 	public function setUp()
 	{
 		parent::setUp();
-		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
-		$this->postDaoMock = $this->mock(\Szurubooru\Dao\PostDao::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 	}
 
@@ -24,22 +20,19 @@ class ScoreDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$post->setName('sword');
 
 		$score = new \Szurubooru\Entities\Score();
-		$score->setUser($user);
-		$score->setPost($post);
+		$score->setUserId($user->getId());
+		$score->setPostId($post->getId());
 		$score->setTime(date('c'));
 		$score->setScore(1);
 		$scoreDao = $this->getScoreDao();
 		$scoreDao->save($score);
 
-		$this->userDaoMock->expects($this->once())->method('findById')->with(1)->willReturn($user);
-		$this->postDaoMock->expects($this->once())->method('findById')->with(2)->willReturn($post);
-
 		$savedScore = $scoreDao->findById($score->getId());
 		$this->assertEquals(1, $savedScore->getUserId());
 		$this->assertEquals(2, $savedScore->getPostId());
 		$this->assertEquals($score->getTime(), $savedScore->getTime());
-		$this->assertEntitiesEqual($user, $savedScore->getUser());
-		$this->assertEntitiesEqual($post, $savedScore->getPost());
+		$this->assertEquals($user->getId(), $savedScore->getUserId());
+		$this->assertEquals($post->getId(), $savedScore->getPostId());
 	}
 
 	public function testFindingByUserAndPost()
@@ -50,20 +43,20 @@ class ScoreDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$user2 = new \Szurubooru\Entities\User(4);
 
 		$score1 = new \Szurubooru\Entities\Score();
-		$score1->setUser($user1);
-		$score1->setPost($post1);
+		$score1->setUserId($user1->getId());
+		$score1->setPostId($post1->getId());
 		$score1->setTime(date('c', mktime(1)));
 		$score1->setScore(1);
 
 		$score2 = new \Szurubooru\Entities\Score();
-		$score2->setUser($user2);
-		$score2->setPost($post2);
+		$score2->setUserId($user2->getId());
+		$score2->setPostId($post2->getId());
 		$score2->setTime(date('c', mktime(2)));
 		$score2->setScore(0);
 
 		$score3 = new \Szurubooru\Entities\Score();
-		$score3->setUser($user1);
-		$score3->setPost($post2);
+		$score3->setUserId($user1->getId());
+		$score3->setPostId($post2->getId());
 		$score3->setTime(date('c', mktime(3)));
 		$score3->setScore(-1);
 
@@ -87,8 +80,6 @@ class ScoreDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		return new \Szurubooru\Dao\ScoreDao(
 			$this->databaseConnection,
-			$this->userDaoMock,
-			$this->postDaoMock,
 			$this->timeServiceMock);
 	}
 }
