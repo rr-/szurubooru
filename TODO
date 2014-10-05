@@ -6,10 +6,6 @@ everything related to posts:
         - better thumbnail loading
 
     - single post view
-        - previous and next post (difficult)
-            - remember last search
-            - take care of pages
-            - add A/D hotkeys
         - editing
             - ability to loop video posts
 

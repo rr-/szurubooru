@@ -22,10 +22,15 @@ App.Keyboard = function(mousetrap) {
 		mousetrap.reset();
 	}
 
+	function unbind(key) {
+		mousetrap.unbind(key);
+	}
+
 	return {
 		keydown: keydown,
 		keyup: keyup,
 		reset: reset,
+		unbind: unbind,
 	};
 };
 

@@ -9,6 +9,25 @@
 	border: 0;
 }
 
+#post-current-search-wrapper {
+	text-align: center;
+}
+#post-current-search {
+	margin: 0 auto 1em auto;
+	display: inline-block;
+}
+
+#post-current-search a {
+	margin: 0 2em;
+}
+#post-current-search a,
+#post-current-search div {
+	display: inline-block;
+}
+#post-current-search a:not(.enabled) {
+	color: silver;
+}
+
 #post-view-wrapper #sidebar {
 	line-height: 1.33em;
 	font-size: 90%;

@@ -9,6 +9,7 @@ App.Pager = function(
 	var pageNumber;
 	var searchParams;
 	var url;
+	var cache = {};
 
 	function init(args) {
 		url = args.url;
@@ -55,7 +56,7 @@ App.Pager = function(
 
 	function retrieve() {
 		return promise.make(function(resolve, reject) {
-			promise.wait(api.get(url, _.extend({}, searchParams, {page: pageNumber})))
+			promise.wait(api.get(url, _.extend({page: pageNumber}, searchParams)))
 				.then(function(response) {
 					var pageSize = response.json.pageSize;
 					var totalRecords = response.json.totalRecords;
@@ -69,6 +70,27 @@ App.Pager = function(
 					reject(response);
 				});
 		});
+	}
+
+	function retrieveCached() {
+		return promise.make(function(resolve, reject) {
+			var cacheKey = JSON.stringify(_.extend({}, searchParams, {url: url, page: getPage()}));
+			if (cacheKey in cache) {
+				resolve.apply(this, cache[cacheKey]);
+			} else {
+				promise.wait(retrieve())
+					.then(function() {
+						cache[cacheKey] = arguments;
+						resolve.apply(this, arguments);
+					}).fail(function() {
+						reject.apply(this, arguments);
+					});
+			}
+		});
+	}
+
+	function resetCache() {
+		cache = {};
 	}
 
 	function getVisiblePages() {
@@ -100,7 +122,9 @@ App.Pager = function(
 		getSearchParams: getSearchParams,
 		setSearchParams: setSearchParams,
 		retrieve: retrieve,
+		retrieveCached: retrieveCached,
 		getVisiblePages: getVisiblePages,
+		resetCache: resetCache,
 	};
 
 };

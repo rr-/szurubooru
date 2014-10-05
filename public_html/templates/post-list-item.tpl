@@ -1,7 +1,11 @@
 <div class="post-small post-type-<%= post.contentType %> ">
 	<a class="link"
-		title="<%= _.map(post.tags, function(tag) { return '#' + tag.name; }).join(', ') %>"
-		href="#/post/<%= post.id %>">
+		<% if (typeof(searchArgs) !== 'undefined') { %>
+			href="#/post/<%= post.id %>/query=<%= searchArgs.query %>;order=<%= searchArgs.order %>;page=<%= searchArgs.page %>"
+		<% } else { %>
+			href="#/post/<%= post.id %>"
+		<% } %>
+		title="<%= _.map(post.tags, function(tag) { return '#' + tag.name; }).join(', ') %>">
 
 		<img class="thumb" src="/data/thumbnails/160x160/posts/<%= post.name %>" alt="<%= post.idMarkdown %>"/>
 

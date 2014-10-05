@@ -11,6 +11,7 @@ App.Presenters.PostPresenter = function(
 	router,
 	keyboard,
 	presenterManager,
+	postsAroundCalculator,
 	postCommentListPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
@@ -23,11 +24,13 @@ App.Presenters.PostPresenter = function(
 	var postContentTemplate;
 	var historyTemplate;
 
+	var postNameOrId;
+	var searchArgs;
+
 	var post;
 	var postScore;
 	var postFavorites;
 	var postHistory;
-	var postNameOrId;
 
 	var privileges = {};
 	var editPrivileges = {};
@@ -40,6 +43,7 @@ App.Presenters.PostPresenter = function(
 
 	function init(args, loaded) {
 		topNavigationPresenter.select('posts');
+		postsAroundCalculator.resetCache();
 
 		privileges.canDeletePosts = auth.hasPrivilege(auth.privileges.deletePosts);
 		privileges.canFeaturePosts = auth.hasPrivilege(auth.privileges.featurePosts);
@@ -76,12 +80,48 @@ App.Presenters.PostPresenter = function(
 	function reinit(args, loaded) {
 		postNameOrId = args.postNameOrId;
 
+		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
+		searchArgs.page = parseInt(searchArgs.page) || 1;
+
 		promise.wait(refreshPost())
 			.then(function() {
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
 				loaded();
 			}).fail(loaded);
+	}
+
+	function attachLinksToPostsAround() {
+		var searchParams = {query: searchArgs.query, order: searchArgs.order};
+		promise.wait(postsAroundCalculator.getLinksToPostsAround(searchParams, searchArgs.page, post.id))
+			.then(function(nextPostUrl, prevPostUrl) {
+				var $prevPost = $el.find('#post-current-search .right a');
+				var $nextPost = $el.find('#post-current-search .left a');
+
+				if (nextPostUrl) {
+					$nextPost.addClass('enabled');
+					$nextPost.attr('href', nextPostUrl);
+					keyboard.keyup('a', function() {
+						router.navigate(nextPostUrl);
+					});
+				} else {
+					$nextPost.removeClass('enabled');
+					$nextPost.removeAttr('href');
+					keyboard.unbind('a');
+				}
+
+				if (prevPostUrl) {
+					$prevPost.addClass('enabled');
+					$prevPost.attr('href', prevPostUrl);
+					keyboard.keyup('d', function() {
+						router.navigate(prevPostUrl);
+					});
+				} else {
+					$prevPost.removeClass('enabled');
+					$prevPost.removeAttr('href');
+					keyboard.unbind('d');
+				}
+			});
 	}
 
 	function refreshPost() {
@@ -128,6 +168,8 @@ App.Presenters.PostPresenter = function(
 		presenterManager.initPresenters([
 			[postCommentListPresenter, _.extend({post: post}, {$target: $el.find('#post-comments-target')})]],
 			function() { });
+
+		attachLinksToPostsAround();
 	}
 
 	function renderSidebar() {
@@ -137,6 +179,7 @@ App.Presenters.PostPresenter = function(
 
 	function renderPostTemplate() {
 		return postTemplate({
+			searchArgs: searchArgs,
 			post: post,
 			ownScore: postScore,
 			postFavorites: postFavorites,
@@ -370,6 +413,7 @@ App.DI.register('postPresenter', [
 	'router',
 	'keyboard',
 	'presenterManager',
+	'postsAroundCalculator',
 	'postCommentListPresenter',
 	'topNavigationPresenter',
 	'messagePresenter'],

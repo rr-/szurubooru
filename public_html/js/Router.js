@@ -39,7 +39,7 @@ App.Router = function(pathJs, _, jQuery, promise, util, appState, presenterManag
 		inject('#/users(/:searchArgs)', 'userListPresenter');
 		inject('#/user/:userName(/:tab)', 'userPresenter');
 		inject('#/posts(/:searchArgs)', 'postListPresenter');
-		inject('#/post(/:postNameOrId)', 'postPresenter');
+		inject('#/post(/:postNameOrId)(/:searchArgs)', 'postPresenter');
 		inject('#/comments(/:searchArgs)', 'globalCommentListPresenter');
 		inject('#/tags(/:searchArgs)', 'tagListPresenter');
 		inject('#/help', 'helpPresenter');

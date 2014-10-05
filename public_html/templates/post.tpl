@@ -1,5 +1,29 @@
 <% var permaLink = (window.location.origin + '/' + window.location.pathname + '/data/posts/' + post.name).replace(/([^:])\/+/g, '$1/') %>
 
+<div id="post-current-search-wrapper">
+	<div id="post-current-search">
+		<div class="left">
+			<a class="enabled">
+				<i class="fa fa-chevron-left"></i>
+				Next
+			</a>
+		</div>
+
+		<div class="search">
+			<a href="#/posts/query=<%= searchArgs.query %>;order=<%= searchArgs.order %>">
+				Current search: <%= searchArgs.query || '-' %>
+			</a>
+		</div>
+
+		<div class="right">
+			<a class="enabled">
+				Previous
+				<i class="fa fa-chevron-right"></i>
+			</a>
+		</div>
+	</div>
+</div>
+
 <div id="post-view-wrapper">
 	<div id="sidebar">
 		<ul class="essential">

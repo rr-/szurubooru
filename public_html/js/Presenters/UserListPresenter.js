@@ -47,6 +47,7 @@ App.Presenters.UserListPresenter = function(
 
 		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
 		searchArgs.order = searchArgs.order || 'name,asc';
+		searchArgs.page = parseInt(searchArgs.page) || 1;
 		updateActiveOrder(searchArgs.order);
 
 		pagerPresenter.reinit({

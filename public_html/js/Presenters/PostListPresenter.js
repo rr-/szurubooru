@@ -24,6 +24,7 @@ App.Presenters.PostListPresenter = function(
 		topNavigationPresenter.select('posts');
 		topNavigationPresenter.changeTitle('Posts');
 		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
+		searchArgs.page = parseInt(searchArgs.page) || 1;
 
 		promise.wait(
 				util.promiseTemplate('post-list'),
@@ -93,6 +94,7 @@ App.Presenters.PostListPresenter = function(
 
 		_.each(posts, function(post) {
 			$target.append(jQuery('<li>' + itemTemplate({
+				searchArgs: searchArgs,
 				post: post,
 			}) + '</li>'));
 		});
