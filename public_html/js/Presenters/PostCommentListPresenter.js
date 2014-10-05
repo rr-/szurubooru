@@ -35,23 +35,26 @@ App.Presenters.PostCommentListPresenter = function(
 		promise.wait(
 				util.promiseTemplate('post-comment-list'),
 				util.promiseTemplate('comment-list-item'),
-				util.promiseTemplate('comment-form'),
-				comments.length === 0 ? api.get('/comments/' + args.post.id) : null)
+				util.promiseTemplate('comment-form'))
 			.then(function(
 					commentListTemplate,
 					commentListItemTemplate,
-					commentFormTemplate,
-					commentsResponse)
+					commentFormTemplate)
 				{
 					templates.commentList = commentListTemplate;
 					templates.commentListItem = commentListItemTemplate;
 					templates.commentForm = commentFormTemplate;
-					if (commentsResponse) {
-						comments = commentsResponse.json.data;
-					}
 
 					render();
 					loaded();
+
+					if (comments.length === 0) {
+						promise.wait(api.get('/comments/' + args.post.id))
+							.then(function(response) {
+								comments = response.json.data;
+								render();
+							});
+					}
 				})
 			.fail(function() { console.log(new Error(arguments)); });
 	}
