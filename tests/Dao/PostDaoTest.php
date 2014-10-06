@@ -13,7 +13,11 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		parent::setUp();
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
 		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
-		$this->tagDao = new \Szurubooru\Dao\TagDao($this->databaseConnection, $this->fileServiceMock);
+
+		$this->tagDao = new \Szurubooru\Dao\TagDao(
+			$this->databaseConnection,
+			$this->fileServiceMock);
+
 		$this->userDao = new \Szurubooru\Dao\UserDao(
 			$this->databaseConnection,
 			$this->fileServiceMock,
@@ -141,6 +145,8 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$tag1->setName('tag1');
 		$tag2 = new \Szurubooru\Entities\Tag();
 		$tag2->setName('tag2');
+		$this->tagDao->save($tag1);
+		$this->tagDao->save($tag2);
 		$testTags = ['tag1' => $tag1, 'tag2' => $tag2];
 
 		$postDao = $this->getPostDao();

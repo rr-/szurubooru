@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Tests\Services;
 
-class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
+class PostServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 {
 	private $configMock;
 	private $validatorMock;
@@ -11,11 +11,13 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	private $authServiceMock;
 	private $timeServiceMock;
 	private $fileServiceMock;
+	private $tagService;
 	private $historyServiceMock;
 	private $imageManipulatorMock;
 
 	public function setUp()
 	{
+		parent::setUp();
 		$this->configMock = $this->mockConfig();
 		$this->validatorMock = $this->mock(\Szurubooru\Validator::class);
 		$this->transactionManagerMock = $this->mockTransactionManager();
@@ -24,6 +26,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
 		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
 		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
+		$this->tagService = \Szurubooru\Injector::get(\Szurubooru\Services\TagService::class);
 		$this->historyServiceMock = $this->mock(\Szurubooru\Services\HistoryService::class);
 		$this->configMock->set('database/maxPostSize', 1000000);
 		$this->imageManipulatorMock = $this->mock(\Szurubooru\Services\ImageManipulation\ImageManipulator::class);
@@ -189,6 +192,7 @@ class PostServiceTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->authServiceMock,
 			$this->timeServiceMock,
 			$this->fileServiceMock,
+			$this->tagService,
 			$this->historyServiceMock,
 			$this->imageManipulatorMock);
 	}

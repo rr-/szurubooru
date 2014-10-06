@@ -11,6 +11,7 @@ class PostService
 	private $timeService;
 	private $authService;
 	private $fileService;
+	private $tagService;
 	private $historyService;
 	private $imageManipulator;
 
@@ -23,6 +24,7 @@ class PostService
 		\Szurubooru\Services\AuthService $authService,
 		\Szurubooru\Services\TimeService $timeService,
 		\Szurubooru\Services\FileService $fileService,
+		\Szurubooru\Services\TagService $tagService,
 		\Szurubooru\Services\HistoryService $historyService,
 		\Szurubooru\Services\ImageManipulation\ImageManipulator $imageManipulator)
 	{
@@ -34,6 +36,7 @@ class PostService
 		$this->timeService = $timeService;
 		$this->authService = $authService;
 		$this->fileService = $fileService;
+		$this->tagService = $tagService;
 		$this->historyService = $historyService;
 		$this->imageManipulator = $imageManipulator;
 	}
@@ -267,6 +270,7 @@ class PostService
 			$tag->setName($tagName);
 			$tags[] = $tag;
 		}
+		$tags = $this->tagService->createTags($tags);
 		$post->setTags($tags);
 	}
 

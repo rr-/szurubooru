@@ -203,21 +203,14 @@ class PostDao extends AbstractDao implements ICrudDao
 
 	private function syncTags(\Szurubooru\Entities\Post $post)
 	{
-		$tagNames = array_filter(array_unique(array_map(
-			function ($tag)
-			{
-				return $tag->getName();
-			},
-			$post->getTags())));
-
-		$this->tagDao->createMissingTags($tagNames);
-
 		$tagIds = array_map(
 			function ($tag)
 			{
+				if (!$tag->getId())
+					throw new \RuntimeException('Unsaved entities found');
 				return $tag->getId();
 			},
-			$this->tagDao->findByNames($tagNames));
+			$post->getTags());
 
 		$existingTagRelationIds = array_map(
 			function ($arrayEntity)

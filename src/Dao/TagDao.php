@@ -48,31 +48,6 @@ class TagDao extends AbstractDao implements ICrudDao
 		$this->fileService->save('tags.json', $json);
 	}
 
-	public function createMissingTags(array $tagNames)
-	{
-		$tagNames = array_filter(array_unique($tagNames));
-		if (empty($tagNames))
-			return;
-
-		$tagNamesNotToCreate = array_map(
-			function ($tag)
-			{
-				return $tag->getName();
-			},
-			$this->findByNames($tagNames));
-
-		$tagNamesToCreate = array_udiff($tagNames, $tagNamesNotToCreate, 'strcasecmp');
-
-		$tags = [];
-		foreach ($tagNamesToCreate as $tagName)
-		{
-			$tag = new \Szurubooru\Entities\Tag;
-			$tag->setName($tagName);
-			$tags[] = $tag;
-		}
-		$this->batchSave($tags);
-	}
-
 	protected function afterBatchSave(array $entities)
 	{
 		if (count($entities) > 0)
