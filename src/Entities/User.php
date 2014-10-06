@@ -16,18 +16,18 @@ final class User extends Entity
 
 	const LAZY_LOADER_CUSTOM_AVATAR_SOURCE_CONTENT = 'customAvatarContent';
 
-	protected $name;
-	protected $email;
-	protected $emailUnconfirmed;
-	protected $passwordHash;
-	protected $passwordSalt;
-	protected $accessRank;
-	protected $registrationTime;
-	protected $lastLoginTime;
-	protected $avatarStyle;
-	protected $browsingSettings;
-	protected $accountConfirmed = false;
-	protected $banned = false;
+	private $name;
+	private $email;
+	private $emailUnconfirmed;
+	private $passwordHash;
+	private $passwordSalt;
+	private $accessRank;
+	private $registrationTime;
+	private $lastLoginTime;
+	private $avatarStyle;
+	private $browsingSettings;
+	private $accountConfirmed = false;
+	private $banned = false;
 
 	public function getName()
 	{

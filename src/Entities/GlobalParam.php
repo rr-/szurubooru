@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Entities;
 
-class GlobalParam extends Entity
+final class GlobalParam extends Entity
 {
 	const KEY_FEATURED_POST = 'featuredPost';
 	const KEY_POST_SIZE = 'postSize';

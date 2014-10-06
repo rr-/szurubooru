@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Entities;
 
-class Score extends Entity
+final class Score extends Entity
 {
 	private $postId;
 	private $userId;

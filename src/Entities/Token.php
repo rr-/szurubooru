@@ -7,9 +7,9 @@ final class Token extends Entity
 	const PURPOSE_ACTIVATE = 2;
 	const PURPOSE_PASSWORD_RESET = 3;
 
-	protected $name;
-	protected $purpose;
-	protected $additionalData;
+	private $name;
+	private $purpose;
+	private $additionalData;
 
 	public function getName()
 	{

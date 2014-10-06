@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Entities;
 
-class Favorite extends Entity
+final class Favorite extends Entity
 {
 	private $postId;
 	private $userId;

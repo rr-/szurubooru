@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Entities;
 
-class Comment extends Entity
+final class Comment extends Entity
 {
 	private $postId;
 	private $userId;

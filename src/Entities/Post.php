@@ -23,21 +23,21 @@ final class Post extends Entity
 	const META_COMMENT_COUNT = 'commentCount';
 	const META_SCORE = 'score';
 
-	protected $name;
-	protected $userId;
-	protected $uploadTime;
-	protected $lastEditTime;
-	protected $safety;
-	protected $contentType;
-	protected $contentChecksum;
-	protected $contentMimeType;
-	protected $source;
-	protected $imageWidth;
-	protected $imageHeight;
-	protected $originalFileSize;
-	protected $originalFileName;
-	protected $featureCount = 0;
-	protected $lastFeatureTime;
+	private $name;
+	private $userId;
+	private $uploadTime;
+	private $lastEditTime;
+	private $safety;
+	private $contentType;
+	private $contentChecksum;
+	private $contentMimeType;
+	private $source;
+	private $imageWidth;
+	private $imageHeight;
+	private $originalFileSize;
+	private $originalFileName;
+	private $featureCount = 0;
+	private $lastFeatureTime;
 
 	public function getIdMarkdown()
 	{

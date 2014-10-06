@@ -3,7 +3,7 @@ namespace Szurubooru\Entities;
 
 final class Tag extends Entity
 {
-	protected $name;
+	private $name;
 
 	const META_USAGES = 'usages';
 
