@@ -49,6 +49,7 @@ return [
 			$container->get(\Szurubooru\Controllers\FavoritesController::class),
 			$container->get(\Szurubooru\Controllers\ScoreController::class),
 			$container->get(\Szurubooru\Controllers\CommentController::class),
+			$container->get(\Szurubooru\Controllers\TagController::class),
 		];
 	}),
 ];

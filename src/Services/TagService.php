@@ -17,6 +17,15 @@ class TagService
 		$this->timeService = $timeService;
 	}
 
+	public function getFiltered(\Szurubooru\SearchServices\Filters\TagFilter $filter)
+	{
+		$transactionFunc = function() use ($filter)
+		{
+			return $this->tagDao->findFiltered($filter);
+		};
+		return $this->transactionManager->rollback($transactionFunc);
+	}
+
 	public function createTags(array $tags)
 	{
 		$transactionFunc = function() use ($tags)

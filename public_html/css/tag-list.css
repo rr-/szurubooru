@@ -1,0 +1,28 @@
+#tag-list {
+	text-align: center;
+}
+
+#tag-list ul {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+#ta-list ul.order {
+	margin: -0.5em -0.5em 0.5em -0.5em;
+}
+#tag-list ul.order li {
+	display: inline-block;
+	margin: 0 0.5em;
+}
+#tag-list ul.order a {
+	cursor: pointer;
+	display: inline-block;
+	padding: 0.2em 0.5em;
+}
+
+#tag-list table {
+	min-width: 20em;
+	text-align: left;
+	margin: 1em auto;
+}

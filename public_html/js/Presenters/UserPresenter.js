@@ -24,7 +24,7 @@ App.Presenters.UserPresenter = function(
 
 	function init(args, loaded) {
 		promise.wait(util.promiseTemplate('user'))
-			.then(function(template, response) {
+			.then(function(template) {
 				$messages = $el.find('.messages');
 				templates.user = template;
 				reinit(args, loaded);
