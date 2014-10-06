@@ -10,12 +10,12 @@ class UserSearchParser extends AbstractSearchParser
 
 	protected function decorateFilterFromToken($filter, $token)
 	{
-		throw new \BadMethodCallException('Not supported');
+		throw new \Szurubooru\NotSupportedException();
 	}
 
 	protected function decorateFilterFromNamedToken($filter, $namedToken)
 	{
-		throw new \BadMethodCallException('Not supported');
+		throw new \Szurubooru\NotSupportedException();
 	}
 
 	protected function getOrderColumn($token)
@@ -26,6 +26,6 @@ class UserSearchParser extends AbstractSearchParser
 		elseif ($token === 'registration_time')
 			return \Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME;
 
-		return null;
+		throw new \Szurubooru\NotSupportedException();
 	}
 }

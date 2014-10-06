@@ -76,8 +76,7 @@ class PostSearchParser extends AbstractSearchParser
 			$this->decorateFilterFromNamedToken($filter, $token);
 		}
 
-		else
-			throw new \BadMethodCallException('Not supported');
+		throw new \Szurubooru\NotSupportedException();
 	}
 
 	protected function getOrderColumn($token)
@@ -115,7 +114,7 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token === 'fav_time')
 			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_FAV_TIME;
 
-		throw new \BadMethodCallException('Not supported');
+		throw new \Szurubooru\NotSupportedException();
 	}
 
 	private function addIdRequirement($filter, $token)
