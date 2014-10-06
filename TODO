@@ -19,20 +19,46 @@ everything related to posts:
         - post notes should be visible in post edit history.
           (move post snapshot factory methods to PostService)
 
+everything related to users:
+    - fav tags / searches
+        - listing
+        - adding
+        - removing
+
 everything related to tags:
-    - automatic tag removal
-    - tag refresh when editing post
-    - tag listing
-    - time of last tag usage
-    - time of tag addition
-    - mass tag
-    - tag merging
-    - editing tags
-        - tag relations
-        - tag aliases
-        - tag categories (from config.ini)
-        - tag descriptions
-        - tag edit history
+    - automatic removal of unused tags in backend
+    - tags.json refresh when editing post
+    - basic tags
+        - listing
+            - sort alphabetically
+            - sort by time of addition
+        - mass tag
+        - merging
+        - tag editing
+            - name
+            - category (from config.ini)
+            - description
+        - related tags
+    - aliases
+        - take care of recursion
+        - listing
+            - sort alphabetically
+            - sort by time of addition
+        - adding
+        - removing
+        - editing
+            - from
+            - to (allow multiple)
+    - implications - when entering child tag, add parent tag
+        - take care of recursion
+        - listing
+            - sort alphabetically
+            - sort by time of addition
+        - adding
+        - removing
+        - editing
+            - source tag
+            - target tags (allow multiple)
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
