@@ -143,8 +143,10 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$tag1 = new \Szurubooru\Entities\Tag();
 		$tag1->setName('tag1');
+		$tag1->setCreationTime(date('c'));
 		$tag2 = new \Szurubooru\Entities\Tag();
 		$tag2->setName('tag2');
+		$tag2->setCreationTime(date('c'));
 		$this->tagDao->save($tag1);
 		$this->tagDao->save($tag2);
 		$testTags = ['tag1' => $tag1, 'tag2' => $tag2];

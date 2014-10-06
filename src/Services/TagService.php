@@ -38,6 +38,7 @@ class TagService
 			{
 				$tag = new \Szurubooru\Entities\Tag;
 				$tag->setName($tagName);
+				$tag->setCreationTime($this->timeService->getCurrentTime());
 				$tagsToCreate[] = $tag;
 			}
 			$createdTags = $this->tagDao->batchSave($tagsToCreate);

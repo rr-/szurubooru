@@ -15,8 +15,8 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$pdo = $this->databaseConnection->getPDO();
 
-		$pdo->exec('INSERT INTO tags(id, name) VALUES (1, \'test1\')');
-		$pdo->exec('INSERT INTO tags(id, name) VALUES (2, \'test2\')');
+		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (1, \'test1\', \'2014-10-01 00:00:00\')');
+		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (2, \'test2\', \'2014-10-01 00:00:00\')');
 		$pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (5, 1)');
 		$pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (6, 1)');
 		$pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (5, 2)');
@@ -24,8 +24,11 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 		$tag1 = new \Szurubooru\Entities\Tag(1);
 		$tag1->setName('test1');
+		$tag1->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
 		$tag2 = new \Szurubooru\Entities\Tag(2);
 		$tag2->setName('test2');
+		$tag2->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
+
 		$expected = [
 			$tag1->getId() => $tag1,
 			$tag2->getId() => $tag2,
@@ -39,6 +42,7 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$tag1 = new \Szurubooru\Entities\Tag();
 		$tag1->setName('test');
+		$tag1->setCreationTime(date('c'));
 		$this->fileServiceMock->expects($this->once())->method('save')->with('tags.json', '{"test":0}');
 		$tagDao = $this->getTagDao();
 		$tagDao->save($tag1);
@@ -48,8 +52,10 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$tag1 = new \Szurubooru\Entities\Tag();
 		$tag1->setName('test1');
+		$tag1->setCreationTime(date('c'));
 		$tag2 = new \Szurubooru\Entities\Tag();
 		$tag2->setName('test2');
+		$tag2->setCreationTime(date('c'));
 		$this->fileServiceMock->expects($this->once())->method('save')->with('tags.json', '{"test1":0,"test2":0}');
 		$tagDao = $this->getTagDao();
 		$tagDao->batchSave([$tag1, $tag2]);
