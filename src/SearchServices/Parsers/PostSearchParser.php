@@ -4,10 +4,14 @@ namespace Szurubooru\SearchServices\Parsers;
 class PostSearchParser extends AbstractSearchParser
 {
 	private $authService;
+	private $privilegeService;
 
-	public function __construct(\Szurubooru\Services\AuthService $authService)
+	public function __construct(
+		\Szurubooru\Services\AuthService $authService,
+		\Szurubooru\Services\PrivilegeService $privilegeService)
 	{
 		$this->authService = $authService;
+		$this->privilegeService = $privilegeService;
 	}
 
 	protected function createFilter()
@@ -62,14 +66,21 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'comment')
 			$this->addCommentRequirement($filter, $token);
 
-		elseif ($token->getKey() === 'special' and $token->getValue() === 'liked' and $this->authService->isLoggedIn())
-			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), 1, $token->isNegated());
-
-		elseif ($token->getKey() === 'special' and $token->getValue() === 'disliked' and $this->authService->isLoggedIn())
-			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), -1, $token->isNegated());
-
-		elseif ($token->getKey() === 'special' and $token->getValue() === 'fav' and $this->authService->isLoggedIn())
+		elseif ($token->getKey() === 'special' and $token->getValue() === 'liked')
 		{
+			$this->privilegeService->assertLoggedIn();
+			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), 1, $token->isNegated());
+		}
+
+		elseif ($token->getKey() === 'special' and $token->getValue() === 'disliked')
+		{
+			$this->privilegeService->assertLoggedIn();
+			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), -1, $token->isNegated());
+		}
+
+		elseif ($token->getKey() === 'special' and $token->getValue() === 'fav')
+		{
+			$this->privilegeService->assertLoggedIn();
 			$token = new \Szurubooru\SearchServices\Tokens\NamedSearchToken();
 			$token->setKey('fav');
 			$token->setValue($this->authService->getLoggedInUser()->getName());
