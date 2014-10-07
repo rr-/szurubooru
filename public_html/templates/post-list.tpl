@@ -1,4 +1,4 @@
-<div id="post-list">
+<div class="post-list">
 	<form class="search">
 		<input type="text" name="query" placeholder="Search query..."/>
 		<button type="submit">Search</button>

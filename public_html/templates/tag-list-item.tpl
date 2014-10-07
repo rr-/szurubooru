@@ -1,5 +1,8 @@
 <tr class="tag">
 	<td>
-		<%= tag.name %> (<%= tag.usages %>)
+		<a href="#/tag/<%= tag.name %>"><%= tag.name %></a>
+	</td>
+	<td>
+		<%= tag.usages %>
 	</td>
 </tr>

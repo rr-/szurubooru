@@ -19,6 +19,11 @@ h2 {
 	font-weight: normal;
 }
 
+h3 {
+	font-weight: normal;
+	font-size: 20px;
+}
+
 #middle {
 	padding: 0 2em;
 	position: relative;

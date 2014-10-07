@@ -42,6 +42,7 @@ App.Router = function(pathJs, _, jQuery, promise, util, appState, presenterManag
 		inject('#/post(/:postNameOrId)(/:searchArgs)', 'postPresenter');
 		inject('#/comments(/:searchArgs)', 'globalCommentListPresenter');
 		inject('#/tags(/:searchArgs)', 'tagListPresenter');
+		inject('#/tag(/:tagName)', 'tagPresenter');
 		inject('#/help', 'helpPresenter');
 		setRoot('#/home');
 	}

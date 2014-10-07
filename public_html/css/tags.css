@@ -1,23 +1,19 @@
-.autocomplete {
-	position: absolute;
-	display: none;
-	z-index: 10;
+#tag-view {
+	margin: 0 auto;
+	max-width: 45em;
+	text-align: center;
 }
-.autocomplete ul {
-	list-style-type: none;
-	padding: 0 0 !important;
-	margin: 0 !important;
-	border: 2px solid #5da;
-	background: white;
-	display: block !important;
+
+#tav-view .header {
 	text-align: left;
+	display: inline-block;
+	margin: 0 auto;
 }
 
-.autocomplete li {
-	margin: 0;
-	padding: 0.1em 0.5em !important;
+#tag-view .header h1 {
+	margin-top: 0;
 }
 
-.autocomplete li.active {
-	background: #5da;
+#tag-view h3 {
+	margin-bottom: 0.5em;
 }

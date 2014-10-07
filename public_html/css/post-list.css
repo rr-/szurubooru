@@ -1,20 +1,20 @@
-#post-list {
+.post-list {
 	text-align: center;
 }
 
-#post-list .wrapper {
+.post-list .wrapper {
 	display: inline-block;
 	margin: 0 auto;
 }
 
-#post-list .search {
+.post-list .search {
 	margin-bottom: 1em;
 }
-#post-list .search input {
+.post-list .search input {
 	max-width: 20em;
 }
 
-#post-list ul {
+.post-list ul {
 	list-style-type: none;
 	padding: 0;
 	margin: 0;

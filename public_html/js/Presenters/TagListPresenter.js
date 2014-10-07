@@ -6,6 +6,7 @@ App.Presenters.TagListPresenter = function(
 	jQuery,
 	util,
 	promise,
+	keyboard,
 	pagerPresenter,
 	topNavigationPresenter) {
 
@@ -52,6 +53,11 @@ App.Presenters.TagListPresenter = function(
 			page: searchArgs.page,
 			searchParams: {
 				order: searchArgs.order}});
+
+		keyboard.keyup('p', function() {
+			$el.find('table a').eq(0).focus();
+		});
+
 	}
 
 	function deinit() {
@@ -92,4 +98,4 @@ App.Presenters.TagListPresenter = function(
 
 };
 
-App.DI.register('tagListPresenter', ['_', 'jQuery', 'util', 'promise', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.TagListPresenter);
+App.DI.register('tagListPresenter', ['_', 'jQuery', 'util', 'promise', 'keyboard', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.TagListPresenter);
