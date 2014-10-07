@@ -3,15 +3,15 @@ namespace Szurubooru\Upgrades;
 
 class Upgrade12 implements IUpgrade
 {
-	private $tagDao;
+	private $tagService;
 
-	public function __construct(\Szurubooru\Dao\TagDao $tagDao)
+	public function __construct(\Szurubooru\Services\TagService $tagService)
 	{
-		$this->tagDao = $tagDao;
+		$this->tagService = $tagService;
 	}
 
 	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
 	{
-		$this->tagDao->exportJson();
+		$this->tagService->exportJson();
 	}
 }

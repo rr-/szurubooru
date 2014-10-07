@@ -5,16 +5,19 @@ class TagService
 {
 	private $transactionManager;
 	private $tagDao;
+	private $fileService;
 	private $timeService;
 
 	public function __construct(
 		\Szurubooru\Dao\TransactionManager $transactionManager,
 		\Szurubooru\Dao\TagDao $tagDao,
-		\Szurubooru\Services\TimeService $timeService)
+		\Szurubooru\Services\TimeService $timeService,
+		\Szurubooru\Services\FileService $fileService)
 	{
 		$this->transactionManager = $transactionManager;
 		$this->tagDao = $tagDao;
 		$this->timeService = $timeService;
+		$this->fileService = $fileService;
 	}
 
 	public function getFiltered(\Szurubooru\SearchServices\Filters\TagFilter $filter)
@@ -24,6 +27,17 @@ class TagService
 			return $this->tagDao->findFiltered($filter);
 		};
 		return $this->transactionManager->rollback($transactionFunc);
+	}
+
+	public function exportJson()
+	{
+		$tags = [];
+		foreach ($this->tagDao->findAll() as $tag)
+		{
+			$tags[$tag->getName()] = $tag->getUsages();
+		}
+		$json = json_encode($tags);
+		$this->fileService->save('tags.json', $json);
 	}
 
 	public function createTags(array $tags)

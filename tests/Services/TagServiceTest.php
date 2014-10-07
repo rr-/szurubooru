@@ -64,6 +64,38 @@ class TagServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEquals('test3', $result[1]->getName());
 	}
 
+	public function testExportSingle()
+	{
+		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1->setName('test');
+		$tag1->setCreationTime(date('c'));
+		$fileService = $this->getFileService();
+		$tagService = $this->getTagService();
+		$tagService->createTags([$tag1]);
+		$tagService->exportJson();
+		$this->assertEquals('{"test":0}', $fileService->load('tags.json'));
+	}
+
+	public function testExportMultiple()
+	{
+		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1->setName('test1');
+		$tag1->setCreationTime(date('c'));
+		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2->setName('test2');
+		$tag2->setCreationTime(date('c'));
+		$fileService = $this->getFileService();
+		$tagService = $this->getTagService();
+		$tagService->createTags([$tag1, $tag2]);
+		$tagService->exportJson();
+		$this->assertEquals('{"test1":0,"test2":0}', $fileService->load('tags.json'));
+	}
+
+	private function getFileService()
+	{
+		return \Szurubooru\Injector::get(\Szurubooru\Services\FileService::class);
+	}
+
 	private function getTagService()
 	{
 		return \Szurubooru\Injector::get(\Szurubooru\Services\TagService::class);

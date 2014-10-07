@@ -230,8 +230,6 @@ class PostDao extends AbstractDao implements ICrudDao
 		{
 			$this->fpdo->deleteFrom('postTags')->where('postId', $post->getId())->where('tagId', $tagId)->execute();
 		}
-
-		$this->tagDao->exportJson();
 	}
 
 	private function syncPostRelations(\Szurubooru\Entities\Post $post)

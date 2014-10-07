@@ -251,11 +251,10 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 				[$post->getThumbnailSourceContentPath()]);
 
 		$this->fileServiceMock
-			->expects($this->exactly(2))
+			->expects($this->exactly(1))
 			->method('save')
 			->withConsecutive(
-				[$post->getContentPath(), 'whatever'],
-				['tags.json', '[]']);
+				[$post->getContentPath(), 'whatever']);
 
 		$postDao->save($post);
 	}
@@ -275,12 +274,11 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 				[$post->getThumbnailSourceContentPath()]);
 
 		$this->fileServiceMock
-			->expects($this->exactly(3))
+			->expects($this->exactly(2))
 			->method('save')
 			->withConsecutive(
 				[$post->getContentPath(), 'whatever'],
-				[$post->getThumbnailSourceContentPath(), 'an image of sharks'],
-				['tags.json', '[]']);
+				[$post->getThumbnailSourceContentPath(), 'an image of sharks']);
 
 		$postDao->save($post);
 	}

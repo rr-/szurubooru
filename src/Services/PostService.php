@@ -271,6 +271,7 @@ class PostService
 			$tags[] = $tag;
 		}
 		$tags = $this->tagService->createTags($tags);
+		$this->tagService->exportJson();
 		$post->setTags($tags);
 	}
 
