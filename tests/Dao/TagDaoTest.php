@@ -35,6 +35,30 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEntitiesEqual($expected, $actual);
 	}
 
+	public function testRemovingUnused()
+	{
+		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1->setName('test1');
+		$tag1->setCreationTime(date('c'));
+		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2->setName('test2');
+		$tag2->setCreationTime(date('c'));
+		$tagDao = $this->getTagDao();
+		$tagDao->save($tag1);
+		$tagDao->save($tag2);
+		$pdo = $this->databaseConnection->getPDO();
+		$pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (1, 2)');
+		$tag1 = $tagDao->findById($tag1->getId());
+		$tag2 = $tagDao->findById($tag2->getId());
+		$this->assertEquals(2, count($tagDao->findAll()));
+		$this->assertEquals(0, $tag1->getUsages());
+		$this->assertEquals(1, $tag2->getUsages());
+		$tagDao->deleteUnused();
+		$this->assertEquals(1, count($tagDao->findAll()));
+		$this->assertNull($tagDao->findById($tag1->getId()));
+		$this->assertEntitiesEqual($tag2, $tagDao->findById($tag2->getId()));
+	}
+
 	private function getTagDao()
 	{
 		return new \Szurubooru\Dao\TagDao($this->databaseConnection);

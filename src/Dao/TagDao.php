@@ -31,4 +31,9 @@ class TagDao extends AbstractDao implements ICrudDao
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);
 	}
+
+	public function deleteUnused()
+	{
+		$this->deleteBy('usages', 0);
+	}
 }

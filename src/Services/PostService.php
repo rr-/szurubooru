@@ -132,7 +132,10 @@ class PostService
 			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($savedPost));
 			return $savedPost;
 		};
-		return $this->transactionManager->commit($transactionFunc);
+		$ret = $this->transactionManager->commit($transactionFunc);
+		$this->tagService->deleteUnusedTags();
+		$this->tagService->exportJson();
+		return $ret;
 	}
 
 	public function updatePost(\Szurubooru\Entities\Post $post, \Szurubooru\FormData\PostEditFormData $formData)
@@ -167,7 +170,10 @@ class PostService
 			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
 			return $this->postDao->save($post);
 		};
-		return $this->transactionManager->commit($transactionFunc);
+		$ret = $this->transactionManager->commit($transactionFunc);
+		$this->tagService->deleteUnusedTags();
+		$this->tagService->exportJson();
+		return $ret;
 	}
 
 	private function updatePostSafety(\Szurubooru\Entities\Post $post, $newSafety)
@@ -271,7 +277,6 @@ class PostService
 			$tags[] = $tag;
 		}
 		$tags = $this->tagService->createTags($tags);
-		$this->tagService->exportJson();
 		$post->setTags($tags);
 	}
 

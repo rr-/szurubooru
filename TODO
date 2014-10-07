@@ -26,7 +26,6 @@ everything related to users:
         - removing
 
 everything related to tags:
-    - automatic removal of unused tags in backend
     - tags.json refresh when editing post
     - basic tags
         - mass tag
