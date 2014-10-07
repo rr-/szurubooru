@@ -64,7 +64,7 @@ class CommentController extends AbstractController
 			$data[] = [
 				'post' => $this->postViewProxy->fromEntity($post),
 				'comments' => $this->commentViewProxy->fromArray(
-					$this->commentService->getByPost($post),
+					array_reverse($this->commentService->getByPost($post)),
 					$this->getCommentsFetchConfig()),
 			];
 		}
