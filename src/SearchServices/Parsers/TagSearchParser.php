@@ -32,6 +32,7 @@ class TagSearchParser extends AbstractSearchParser
 		elseif ($token === 'usage_count')
 			return \Szurubooru\SearchServices\Filters\TagFilter::ORDER_USAGE_COUNT;
 
-		throw new \Szurubooru\NotSupportedException();
+		else
+			throw new \Szurubooru\NotSupportedException();
 	}
 }

@@ -26,6 +26,7 @@ class UserSearchParser extends AbstractSearchParser
 		elseif ($token === 'registration_time')
 			return \Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME;
 
-		throw new \Szurubooru\NotSupportedException();
+		else
+			throw new \Szurubooru\NotSupportedException();
 	}
 }
