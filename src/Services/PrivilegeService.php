@@ -56,7 +56,7 @@ class PrivilegeService
 		}
 		else
 		{
-			if (!$this->authService->getLoggedInUser())
+			if (!$this->authService->isLoggedIn())
 				$this->fail();
 		}
 	}
