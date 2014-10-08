@@ -1,23 +1,18 @@
 <?php
 namespace Szurubooru\Services;
-use Szurubooru\Config;
 use Szurubooru\Helpers\HttpHelper;
 
-class FileService
+class NetworkingService
 {
-	private $dataDirectory;
 	private $httpHelper;
 
-	public function __construct(Config $config, HttpHelper $httpHelper)
+	public function __construct(HttpHelper $httpHelper)
 	{
-		$this->dataDirectory = $config->getPublicDataDirectory();
 		$this->httpHelper = $httpHelper;
 	}
 
-	public function serve($target, $options = [])
+	public function serve($fullPath, $options = [])
 	{
-		$fullPath = $this->getFullPath($target);
-
 		$daysToLive = isset($options->daysToLive)
 			? $options->daysToLive
 			: 7;
@@ -59,46 +54,6 @@ class FileService
 			readfile($fullPath);
 		}
 		exit;
-	}
-
-	public function createFolders($target)
-	{
-		$fullPath = $this->getFullPath(dirname($target));
-		if (!file_exists($fullPath))
-			mkdir($fullPath, 0777, true);
-	}
-
-	public function exists($target)
-	{
-		$fullPath = $this->getFullPath($target);
-		return $target and file_exists($fullPath);
-	}
-
-	public function delete($target)
-	{
-		$fullPath = $this->getFullPath($target);
-		if (file_exists($fullPath))
-			unlink($fullPath);
-	}
-
-	public function load($source)
-	{
-		if (!$this->exists($source))
-			return null;
-		$fullPath = $this->getFullPath($source);
-		return file_get_contents($fullPath);
-	}
-
-	public function save($destination, $data)
-	{
-		$this->createFolders($destination);
-		$finalDestination = $this->getFullPath($destination);
-		file_put_contents($finalDestination, $data);
-	}
-
-	public function getFullPath($destination)
-	{
-		return $this->dataDirectory . DIRECTORY_SEPARATOR . $destination;
 	}
 
 	public function download($url, $maxBytes = null)

@@ -1,11 +1,11 @@
 <?php
 namespace Szurubooru\Tests;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Post;
 use Szurubooru\Entities\User;
 use Szurubooru\Helpers\HttpHelper;
 use Szurubooru\Injector;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\UpgradeService;
 use Szurubooru\Tests\AbstractTestCase;
 use Szurubooru\Upgrades\UpgradeRepository;
@@ -22,22 +22,13 @@ abstract class AbstractDatabaseTestCase extends AbstractTestCase
 		$config->set('database/user', '');
 		$config->set('database/password', '');
 
-		$fileService = $this->prepareFileService();
 		$this->databaseConnection = new DatabaseConnection($config);
 		Injector::set(DatabaseConnection::class, $this->databaseConnection);
-		Injector::set(FileService::class, $fileService);
+		Injector::set(PublicFileDao::class, $this->preparePublicFileDao());
 
 		$upgradeRepository = Injector::get(UpgradeRepository::class);
 		$upgradeService = new UpgradeService($config, $this->databaseConnection, $upgradeRepository);
 		$upgradeService->runUpgradesQuiet();
-	}
-
-	private function prepareFileService()
-	{
-		$testDirectory = $this->createTestDirectory();
-		$configMock = $this->mockConfig(null, $testDirectory);
-		$httpHelper = Injector::get(HttpHelper::class);
-		return new FileService($configMock, $httpHelper);
 	}
 
 	public function tearDown()
@@ -67,5 +58,12 @@ abstract class AbstractDatabaseTestCase extends AbstractTestCase
 		$user->setRegistrationTime(date('c', mktime(3, 2, 1)));
 		$user->setAccessRank(User::ACCESS_RANK_REGULAR_USER);
 		return $user;
+	}
+
+	private function preparePublicFileDao()
+	{
+		$testDirectory = $this->createTestDirectory();
+		$configMock = $this->mockConfig(null, $testDirectory);
+		return new PublicFileDao($configMock);
 	}
 }

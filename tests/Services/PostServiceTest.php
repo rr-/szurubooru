@@ -8,9 +8,9 @@ use Szurubooru\Entities\User;
 use Szurubooru\FormData\UploadFormData;
 use Szurubooru\Injector;
 use Szurubooru\Services\AuthService;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\HistoryService;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
+use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\TagService;
 use Szurubooru\Services\TimeService;
@@ -26,7 +26,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 	private $globalParamDaoMock;
 	private $authServiceMock;
 	private $timeServiceMock;
-	private $fileServiceMock;
+	private $networkingServiceMock;
 	private $tagService;
 	private $historyServiceMock;
 	private $imageManipulatorMock;
@@ -41,7 +41,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 		$this->globalParamDaoMock = $this->mock(GlobalParamDao::class);
 		$this->authServiceMock = $this->mock(AuthService::class);
 		$this->timeServiceMock = $this->mock(TimeService::class);
-		$this->fileServiceMock = $this->mock(FileService::class);
+		$this->networkingServiceMock = $this->mock(NetworkingService::class);
 		$this->tagService = Injector::get(TagService::class);
 		$this->historyServiceMock = $this->mock(HistoryService::class);
 		$this->configMock->set('database/maxPostSize', 1000000);
@@ -207,7 +207,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 			$this->globalParamDaoMock,
 			$this->authServiceMock,
 			$this->timeServiceMock,
-			$this->fileServiceMock,
+			$this->networkingServiceMock,
 			$this->tagService,
 			$this->historyServiceMock,
 			$this->imageManipulatorMock);

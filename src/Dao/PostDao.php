@@ -1,6 +1,7 @@
 <?php
 namespace Szurubooru\Dao;
 use Szurubooru\Dao\EntityConverters\PostEntityConverter;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Dao\TagDao;
 use Szurubooru\Dao\UserDao;
 use Szurubooru\DatabaseConnection;
@@ -8,21 +9,20 @@ use Szurubooru\Entities\Entity;
 use Szurubooru\Entities\Post;
 use Szurubooru\SearchServices\Filters\PostFilter;
 use Szurubooru\SearchServices\Requirements\Requirement;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\ThumbnailService;
 
 class PostDao extends AbstractDao implements ICrudDao
 {
 	private $tagDao;
 	private $userDao;
-	private $fileService;
+	private $fileDao;
 	private $thumbnailService;
 
 	public function __construct(
 		DatabaseConnection $databaseConnection,
 		TagDao $tagDao,
 		UserDao $userDao,
-		FileService $fileService,
+		PublicFileDao $fileDao,
 		ThumbnailService $thumbnailService)
 	{
 		parent::__construct(
@@ -32,7 +32,7 @@ class PostDao extends AbstractDao implements ICrudDao
 
 		$this->tagDao = $tagDao;
 		$this->userDao = $userDao;
-		$this->fileService = $fileService;
+		$this->fileDao = $fileDao;
 		$this->thumbnailService = $thumbnailService;
 	}
 
@@ -63,14 +63,14 @@ class PostDao extends AbstractDao implements ICrudDao
 			Post::LAZY_LOADER_CONTENT,
 			function (Post $post)
 			{
-				return $this->fileService->load($post->getContentPath());
+				return $this->fileDao->load($post->getContentPath());
 			});
 
 		$post->setLazyLoader(
 			Post::LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT,
 			function (Post $post)
 			{
-				return $this->fileService->load($post->getThumbnailSourceContentPath());
+				return $this->fileDao->load($post->getThumbnailSourceContentPath());
 			});
 
 		$post->setLazyLoader(
@@ -194,9 +194,9 @@ class PostDao extends AbstractDao implements ICrudDao
 		$targetPath = $post->getContentPath();
 		$content = $post->getContent();
 		if ($content)
-			$this->fileService->save($targetPath, $content);
+			$this->fileDao->save($targetPath, $content);
 		else
-			$this->fileService->delete($targetPath, $content);
+			$this->fileDao->delete($targetPath, $content);
 		$this->thumbnailService->deleteUsedThumbnails($targetPath);
 	}
 
@@ -205,9 +205,9 @@ class PostDao extends AbstractDao implements ICrudDao
 		$targetPath = $post->getThumbnailSourceContentPath();
 		$content = $post->getThumbnailSourceContent();
 		if ($content)
-			$this->fileService->save($targetPath, $content);
+			$this->fileDao->save($targetPath, $content);
 		else
-			$this->fileService->delete($targetPath);
+			$this->fileDao->delete($targetPath);
 		$this->thumbnailService->deleteUsedThumbnails($targetPath);
 	}
 

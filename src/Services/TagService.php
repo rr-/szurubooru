@@ -1,29 +1,29 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Dao\TagDao;
 use Szurubooru\Dao\TransactionManager;
 use Szurubooru\Entities\Tag;
 use Szurubooru\SearchServices\Filters\TagFilter;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\TimeService;
 
 class TagService
 {
 	private $transactionManager;
 	private $tagDao;
-	private $fileService;
+	private $fileDao;
 	private $timeService;
 
 	public function __construct(
 		TransactionManager $transactionManager,
 		TagDao $tagDao,
-		TimeService $timeService,
-		FileService $fileService)
+		PublicFileDao $fileDao,
+		TimeService $timeService)
 	{
 		$this->transactionManager = $transactionManager;
 		$this->tagDao = $tagDao;
+		$this->fileDao = $fileDao;
 		$this->timeService = $timeService;
-		$this->fileService = $fileService;
 	}
 
 	public function getFiltered(TagFilter $filter)
@@ -43,7 +43,7 @@ class TagService
 			$tags[$tag->getName()] = $tag->getUsages();
 		}
 		$json = json_encode($tags);
-		$this->fileService->save('tags.json', $json);
+		$this->fileDao->save('tags.json', $json);
 	}
 
 	public function deleteUnusedTags()

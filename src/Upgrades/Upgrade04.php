@@ -1,26 +1,26 @@
 <?php
 namespace Szurubooru\Upgrades;
 use Szurubooru\Dao\PostDao;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Post;
 use Szurubooru\Helpers\MimeHelper;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\PostService;
 
 class Upgrade04 implements IUpgrade
 {
 	private $postDao;
 	private $postService;
-	private $fileService;
+	private $fileDao;
 
 	public function __construct(
 		PostDao $postDao,
 		PostService $postService,
-		FileService $fileService)
+		PublicFileDao $fileDao)
 	{
 		$this->postDao = $postDao;
 		$this->postService = $postService;
-		$this->fileService = $fileService;
+		$this->fileDao = $fileDao;
 	}
 
 	public function run(DatabaseConnection $databaseConnection)
@@ -32,7 +32,7 @@ class Upgrade04 implements IUpgrade
 		{
 			if ($post->getContentType() !== Post::POST_TYPE_YOUTUBE)
 			{
-				$fullPath = $this->fileService->getFullPath($post->getContentPath());
+				$fullPath = $this->fileDao->getFullPath($post->getContentPath());
 				$mime = MimeHelper::getMimeTypeFromFile($fullPath);
 				$post->setContentMimeType($mime);
 				$this->postDao->save($post);

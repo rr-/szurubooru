@@ -10,7 +10,7 @@ use Szurubooru\SearchServices\Requirements\RequirementRangedValue;
 use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
 use Szurubooru\SearchServices\Result;
 
-abstract class AbstractDao implements ICrudDao
+abstract class AbstractDao implements ICrudDao, IBatchDao
 {
 	protected $pdo;
 	protected $fpdo;

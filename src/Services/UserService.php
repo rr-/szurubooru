@@ -10,7 +10,6 @@ use Szurubooru\FormData\UserEditFormData;
 use Szurubooru\Helpers\MimeHelper;
 use Szurubooru\SearchServices\Filters\UserFilter;
 use Szurubooru\Services\EmailService;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\PasswordService;
 use Szurubooru\Services\ThumbnailService;
 use Szurubooru\Services\TimeService;
@@ -25,7 +24,6 @@ class UserService
 	private $userDao;
 	private $passwordService;
 	private $emailService;
-	private $fileService;
 	private $thumbnailService;
 	private $timeService;
 	private $tokenService;
@@ -37,7 +35,6 @@ class UserService
 		UserDao $userDao,
 		PasswordService $passwordService,
 		EmailService $emailService,
-		FileService $fileService,
 		ThumbnailService $thumbnailService,
 		TimeService $timeService,
 		TokenService $tokenService)
@@ -48,7 +45,6 @@ class UserService
 		$this->userDao = $userDao;
 		$this->passwordService = $passwordService;
 		$this->emailService = $emailService;
-		$this->fileService = $fileService;
 		$this->thumbnailService = $thumbnailService;
 		$this->timeService = $timeService;
 		$this->tokenService = $tokenService;

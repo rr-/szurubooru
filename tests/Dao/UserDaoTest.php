@@ -1,21 +1,21 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Dao\UserDao;
 use Szurubooru\Entities\User;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\ThumbnailService;
 use Szurubooru\Tests\AbstractDatabaseTestCase;
 
 final class UserDaoTest extends AbstractDatabaseTestCase
 {
-	private $fileServiceMock;
+	private $fileDaoMock;
 	private $thumbnailServiceMock;
 
 	public function setUp()
 	{
 		parent::setUp();
 
-		$this->fileServiceMock = $this->mock(FileService::class);
+		$this->fileDaoMock = $this->mock(PublicFileDao::class);
 		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
 	}
 
@@ -69,7 +69,7 @@ final class UserDaoTest extends AbstractDatabaseTestCase
 
 		$user = $userDao->findById($user->getId());
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->once())
 			->method('load')
 			->with($user->getCustomAvatarSourceContentPath())->willReturn('whatever');
@@ -93,7 +93,7 @@ final class UserDaoTest extends AbstractDatabaseTestCase
 					return $subject == $user->getCustomAvatarSourceContentPath();
 				}));
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->once())
 			->method('save')
 			->with($this->callback(
@@ -110,7 +110,7 @@ final class UserDaoTest extends AbstractDatabaseTestCase
 	{
 		return new UserDao(
 			$this->databaseConnection,
-			$this->fileServiceMock,
+			$this->fileDaoMock,
 			$this->thumbnailServiceMock);
 	}
 }

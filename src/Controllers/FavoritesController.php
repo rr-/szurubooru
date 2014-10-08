@@ -7,7 +7,7 @@ use Szurubooru\Services\FavoritesService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
 
-class FavoritesController extends AbstractController
+final class FavoritesController extends AbstractController
 {
 	private $privilegeService;
 	private $authService;

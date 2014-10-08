@@ -1,8 +1,8 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Entities\Tag;
 use Szurubooru\Injector;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\TagService;
 use Szurubooru\Tests\AbstractDatabaseTestCase;
 
@@ -74,11 +74,11 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$tag1 = new Tag();
 		$tag1->setName('test');
 		$tag1->setCreationTime(date('c'));
-		$fileService = $this->getFileService();
+		$fileDao = $this->getPublicFileDao();
 		$tagService = $this->getTagService();
 		$tagService->createTags([$tag1]);
 		$tagService->exportJson();
-		$this->assertEquals('{"test":0}', $fileService->load('tags.json'));
+		$this->assertEquals('{"test":0}', $fileDao->load('tags.json'));
 	}
 
 	public function testExportMultiple()
@@ -89,16 +89,16 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$tag2 = new Tag();
 		$tag2->setName('test2');
 		$tag2->setCreationTime(date('c'));
-		$fileService = $this->getFileService();
+		$fileDao = $this->getPublicFileDao();
 		$tagService = $this->getTagService();
 		$tagService->createTags([$tag1, $tag2]);
 		$tagService->exportJson();
-		$this->assertEquals('{"test1":0,"test2":0}', $fileService->load('tags.json'));
+		$this->assertEquals('{"test1":0,"test2":0}', $fileDao->load('tags.json'));
 	}
 
-	private function getFileService()
+	private function getPublicFileDao()
 	{
-		return Injector::get(FileService::class);
+		return Injector::get(PublicFileDao::class);
 	}
 
 	private function getTagService()

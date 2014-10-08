@@ -1,17 +1,17 @@
 <?php
 namespace Szurubooru\Tests\Dao;
 use Szurubooru\Dao\PostDao;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Dao\TagDao;
 use Szurubooru\Dao\UserDao;
 use Szurubooru\Entities\Tag;
 use Szurubooru\Entities\User;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\ThumbnailService;
 use Szurubooru\Tests\AbstractDatabaseTestCase;
 
 final class PostDaoTest extends AbstractDatabaseTestCase
 {
-	private $fileServiceMock;
+	private $fileDaoMock;
 	private $thumbnailServiceMock;
 	private $tagDao;
 	private $userDao;
@@ -19,16 +19,14 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$this->fileServiceMock = $this->mock(FileService::class);
+		$this->fileDaoMock = $this->mock(PublicFileDao::class);
 		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
 
-		$this->tagDao = new TagDao(
-			$this->databaseConnection,
-			$this->fileServiceMock);
+		$this->tagDao = new TagDao($this->databaseConnection);
 
 		$this->userDao = new UserDao(
 			$this->databaseConnection,
-			$this->fileServiceMock,
+			$this->fileDaoMock,
 			$this->thumbnailServiceMock);
 	}
 
@@ -236,7 +234,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
 		$post = $postDao->findById($post->getId());
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->once())
 			->method('load')
 			->with($post->getContentPath())
@@ -258,7 +256,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 				[$post->getContentPath()],
 				[$post->getThumbnailSourceContentPath()]);
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->exactly(1))
 			->method('save')
 			->withConsecutive(
@@ -281,7 +279,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 				[$post->getContentPath()],
 				[$post->getThumbnailSourceContentPath()]);
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->exactly(2))
 			->method('save')
 			->withConsecutive(
@@ -298,7 +296,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 			$this->databaseConnection,
 			$this->tagDao,
 			$this->userDao,
-			$this->fileServiceMock,
+			$this->fileDaoMock,
 			$this->thumbnailServiceMock);
 	}
 

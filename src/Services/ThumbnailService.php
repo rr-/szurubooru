@@ -1,23 +1,23 @@
 <?php
 namespace Szurubooru\Services;
 use Szurubooru\Config;
-use Szurubooru\Services\FileService;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator;
 use Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator;
 
 class ThumbnailService
 {
 	private $config;
-	private $fileService;
+	private $fileDao;
 	private $thumbnailGenerator;
 
 	public function __construct(
 		Config $config,
-		FileService $fileService,
+		PublicFileDao $fileDao,
 		SmartThumbnailGenerator $thumbnailGenerator)
 	{
 		$this->config = $config;
-		$this->fileService = $fileService;
+		$this->fileDao = $fileDao;
 		$this->thumbnailGenerator = $thumbnailGenerator;
 	}
 
@@ -27,7 +27,7 @@ class ThumbnailService
 		{
 			list ($width, $height) = $size;
 			$target = $this->getThumbnailName($sourceName, $width, $height);
-			$this->fileService->delete($target);
+			$this->fileDao->delete($target);
 		}
 	}
 
@@ -35,7 +35,7 @@ class ThumbnailService
 	{
 		$thumbnailName = $this->getThumbnailName($sourceName, $width, $height);
 
-		if (!$this->fileService->exists($thumbnailName))
+		if (!$this->fileDao->exists($thumbnailName))
 			$this->generate($sourceName, $width, $height);
 	}
 
@@ -57,24 +57,24 @@ class ThumbnailService
 
 		$thumbnailName = $this->getThumbnailName($sourceName, $width, $height);
 
-		$source = $this->fileService->load($sourceName);
+		$source = $this->fileDao->load($sourceName);
 		$result = null;
 
 		if (!$source)
-			$source = $this->fileService->load($this->getBlankThumbnailName());
+			$source = $this->fileDao->load($this->getBlankThumbnailName());
 
 		if ($source)
 			$result = $this->thumbnailGenerator->generate($source, $width, $height, $cropStyle);
 
 		if (!$result)
-			$result = $this->fileService->load($this->getBlankThumbnailName());
+			$result = $this->fileDao->load($this->getBlankThumbnailName());
 
-		$this->fileService->save($thumbnailName, $result);
+		$this->fileDao->save($thumbnailName, $result);
 	}
 
 	public function getUsedThumbnailSizes()
 	{
-		foreach (glob($this->fileService->getFullPath('thumbnails') . DIRECTORY_SEPARATOR . '*x*') as $fn)
+		foreach (glob($this->fileDao->getFullPath('thumbnails') . DIRECTORY_SEPARATOR . '*x*') as $fn)
 		{
 			if (!is_dir($fn))
 				continue;

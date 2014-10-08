@@ -15,9 +15,9 @@ use Szurubooru\SearchServices\Filters\SnapshotFilter;
 use Szurubooru\SearchServices\Requirements\Requirement;
 use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
 use Szurubooru\Services\AuthService;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\HistoryService;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
+use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\TagService;
 use Szurubooru\Services\TimeService;
 use Szurubooru\Validator;
@@ -31,7 +31,7 @@ class PostService
 	private $globalParamDao;
 	private $timeService;
 	private $authService;
-	private $fileService;
+	private $networkingService;
 	private $tagService;
 	private $historyService;
 	private $imageManipulator;
@@ -44,7 +44,7 @@ class PostService
 		GlobalParamDao $globalParamDao,
 		AuthService $authService,
 		TimeService $timeService,
-		FileService $fileService,
+		NetworkingService $networkingService,
 		TagService $tagService,
 		HistoryService $historyService,
 		ImageManipulator $imageManipulator)
@@ -56,7 +56,7 @@ class PostService
 		$this->globalParamDao = $globalParamDao;
 		$this->timeService = $timeService;
 		$this->authService = $authService;
-		$this->fileService = $fileService;
+		$this->networkingService = $networkingService;
 		$this->tagService = $tagService;
 		$this->historyService = $historyService;
 		$this->imageManipulator = $imageManipulator;
@@ -270,12 +270,12 @@ class PostService
 
 			$this->assertNoPostWithThisContentChecksum($post);
 			$youtubeThumbnailUrl = 'http://img.youtube.com/vi/' . $youtubeId . '/mqdefault.jpg';
-			$youtubeThumbnail = $this->fileService->download($youtubeThumbnailUrl);
+			$youtubeThumbnail = $this->networkingService->download($youtubeThumbnailUrl);
 			$post->setThumbnailSourceContent($youtubeThumbnail);
 		}
 		else
 		{
-			$contents = $this->fileService->download($url);
+			$contents = $this->networkingService->download($url);
 			$this->updatePostContentFromString($post, $contents);
 		}
 	}

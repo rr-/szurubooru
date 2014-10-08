@@ -1,6 +1,6 @@
 <?php
 namespace Szurubooru\Tests\Services;
-use Szurubooru\Services\FileService;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator;
 use Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator;
 use Szurubooru\Services\ThumbnailService;
@@ -9,7 +9,7 @@ use Szurubooru\Tests\AbstractTestCase;
 final class ThumbnailServiceTest extends AbstractTestCase
 {
 	private $configMock;
-	private $fileServiceMock;
+	private $fileDaoMock;
 	private $thumbnailGeneratorMock;
 
 	public function setUp()
@@ -17,7 +17,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 		parent::setUp();
 
 		$this->configMock = $this->mockConfig();
-		$this->fileServiceMock = $this->mock(FileService::class);
+		$this->fileDaoMock = $this->mock(PublicFileDao::class);
 		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
 		$this->thumbnailGeneratorMock = $this->mock(SmartThumbnailGenerator::class);
 	}
@@ -30,7 +30,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 		mkdir($tempDirectory . DIRECTORY_SEPARATOR . 'something unexpected');
 		touch($tempDirectory . DIRECTORY_SEPARATOR . '15x15');
 
-		$this->fileServiceMock->expects($this->once())->method('getFullPath')->with('thumbnails')->willReturn($tempDirectory);
+		$this->fileDaoMock->expects($this->once())->method('getFullPath')->with('thumbnails')->willReturn($tempDirectory);
 		$thumbnailService = $this->getThumbnailService();
 
 		$expected = [[5, 5], [10, 10]];
@@ -50,8 +50,8 @@ final class ThumbnailServiceTest extends AbstractTestCase
 		touch($tempDirectory . DIRECTORY_SEPARATOR . '5x5' . DIRECTORY_SEPARATOR . 'keep');
 		touch($tempDirectory . DIRECTORY_SEPARATOR . '10x10' . DIRECTORY_SEPARATOR . 'remove');
 
-		$this->fileServiceMock->expects($this->once())->method('getFullPath')->with('thumbnails')->willReturn($tempDirectory);
-		$this->fileServiceMock->expects($this->exactly(2))->method('delete')->withConsecutive(
+		$this->fileDaoMock->expects($this->once())->method('getFullPath')->with('thumbnails')->willReturn($tempDirectory);
+		$this->fileDaoMock->expects($this->exactly(2))->method('delete')->withConsecutive(
 			['thumbnails' . DIRECTORY_SEPARATOR . '10x10' . DIRECTORY_SEPARATOR . 'remove'],
 			['thumbnails' . DIRECTORY_SEPARATOR . '5x5' . DIRECTORY_SEPARATOR . 'remove']);
 		$thumbnailService = $this->getThumbnailService();
@@ -63,7 +63,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 	{
 		$this->configMock->set('misc/thumbnailCropStyle', 'outside');
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->exactly(2))
 			->method('load')
 			->withConsecutive(
@@ -84,7 +84,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 				IThumbnailGenerator::CROP_OUTSIDE)
 			->willReturn('generated thumbnail');
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->once())
 			->method('save')
 			->with('thumbnails' . DIRECTORY_SEPARATOR . '100x100' . DIRECTORY_SEPARATOR . 'nope', 'generated thumbnail');
@@ -97,7 +97,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 	{
 		$this->configMock->set('misc/thumbnailCropStyle', 'outside');
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->exactly(3))
 			->method('load')
 			->withConsecutive(
@@ -120,7 +120,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 				IThumbnailGenerator::CROP_OUTSIDE)
 			->willReturn(null);
 
-		$this->fileServiceMock
+		$this->fileDaoMock
 			->expects($this->once())
 			->method('save')
 			->with('thumbnails' . DIRECTORY_SEPARATOR . '100x100' . DIRECTORY_SEPARATOR . 'nope', 'content of blank thumbnail (2)');
@@ -134,7 +134,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 	{
 		return new ThumbnailService(
 			$this->configMock,
-			$this->fileServiceMock,
+			$this->fileDaoMock,
 			$this->thumbnailGeneratorMock);
 	}
 }

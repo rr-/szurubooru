@@ -1,10 +1,10 @@
 <?php
 namespace Szurubooru\Dao;
 use Szurubooru\Dao\EntityConverters\UserEntityConverter;
+use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Entity;
 use Szurubooru\Entities\User;
-use Szurubooru\Services\FileService;
 use Szurubooru\Services\ThumbnailService;
 
 class UserDao extends AbstractDao implements ICrudDao
@@ -12,12 +12,12 @@ class UserDao extends AbstractDao implements ICrudDao
 	const ORDER_NAME = 'name';
 	const ORDER_REGISTRATION_TIME = 'registrationTime';
 
-	private $fileService;
+	private $fileDao;
 	private $thumbnailService;
 
 	public function __construct(
 		DatabaseConnection $databaseConnection,
-		FileService $fileService,
+		PublicFileDao $fileDao,
 		ThumbnailService $thumbnailService)
 	{
 		parent::__construct(
@@ -25,7 +25,7 @@ class UserDao extends AbstractDao implements ICrudDao
 			'users',
 			new UserEntityConverter());
 
-		$this->fileService = $fileService;
+		$this->fileDao = $fileDao;
 		$this->thumbnailService = $thumbnailService;
 	}
 
@@ -62,7 +62,7 @@ class UserDao extends AbstractDao implements ICrudDao
 			function(User $user)
 			{
 				$avatarSource = $user->getCustomAvatarSourceContentPath();
-				return $this->fileService->load($avatarSource);
+				return $this->fileDao->load($avatarSource);
 			});
 	}
 
@@ -71,16 +71,16 @@ class UserDao extends AbstractDao implements ICrudDao
 		$targetPath = $user->getCustomAvatarSourceContentPath();
 		$content = $user->getCustomAvatarSourceContent();
 		if ($content)
-			$this->fileService->save($targetPath, $content);
+			$this->fileDao->save($targetPath, $content);
 		else
-			$this->fileService->delete($targetPath);
+			$this->fileDao->delete($targetPath);
 		$this->thumbnailService->deleteUsedThumbnails($targetPath);
 	}
 
 	protected function afterDelete(Entity $user)
 	{
 		$avatarSource = $user->getCustomAvatarSourceContentPath();
-		$this->fileService->delete($avatarSource);
+		$this->fileDao->delete($avatarSource);
 		$this->thumbnailService->deleteUsedThumbnails($avatarSource);
 	}
 }

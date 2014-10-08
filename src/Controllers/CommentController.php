@@ -15,7 +15,7 @@ use Szurubooru\Services\CommentService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
 
-class CommentController extends AbstractController
+final class CommentController extends AbstractController
 {
 	private $privilegeService;
 	private $authService;

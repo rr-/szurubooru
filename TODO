@@ -59,7 +59,6 @@ everything related to tags:
             - target tags (allow multiple)
 
 refactors:
-    - split FileService into FileService and FileDao
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
     - change content spinner to nprogress:
