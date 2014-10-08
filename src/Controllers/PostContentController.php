@@ -34,7 +34,7 @@ final class PostContentController extends AbstractController
 	public function getPostContent($postName)
 	{
 		$post = $this->postService->getByName($postName);
-		$this->networkingService->serve($this->fileDao->getFullPath($post->getContentPath()));
+		$this->networkingService->serveFile($this->fileDao->getFullPath($post->getContentPath()));
 	}
 
 	public function getPostThumbnail($postName, $size)
@@ -47,6 +47,6 @@ final class PostContentController extends AbstractController
 
 		$this->thumbnailService->generateIfNeeded($sourceName, $size, $size);
 		$thumbnailName = $this->thumbnailService->getThumbnailName($sourceName, $size, $size);
-		$this->networkingService->serve($this->fileDao->getFullPath($thumbnailName));
+		$this->networkingService->serveFile($this->fileDao->getFullPath($thumbnailName));
 	}
 }

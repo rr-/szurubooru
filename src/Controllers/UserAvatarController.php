@@ -2,7 +2,6 @@
 namespace Szurubooru\Controllers;
 use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Entities\User;
-use Szurubooru\Helpers\HttpHelper;
 use Szurubooru\Router;
 use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\ThumbnailService;
@@ -13,20 +12,17 @@ final class UserAvatarController extends AbstractController
 	private $fileDao;
 	private $userService;
 	private $networkingService;
-	private $httpHelper;
 	private $thumbnailService;
 
 	public function __construct(
 		PublicFileDao $fileDao,
 		UserService $userService,
 		NetworkingService $networkingService,
-		HttpHelper $httpHelper,
 		ThumbnailService $thumbnailService)
 	{
 		$this->fileDao = $fileDao;
 		$this->userService = $userService;
 		$this->networkingService = $networkingService;
-		$this->httpHelper = $httpHelper;
 		$this->thumbnailService = $thumbnailService;
 	}
 
@@ -70,14 +66,14 @@ final class UserAvatarController extends AbstractController
 
 	private function serveFromUrl($url)
 	{
-		$this->httpHelper->redirect($url);
+		$this->networkingService->redirect($url);
 	}
 
 	private function serveFromFile($sourceName, $size)
 	{
 		$this->thumbnailService->generateIfNeeded($sourceName, $size, $size);
 		$thumbnailName = $this->thumbnailService->getThumbnailName($sourceName, $size, $size);
-		$this->networkingService->serve($this->fileDao->getFullPath($thumbnailName));
+		$this->networkingService->serveFile($this->fileDao->getFullPath($thumbnailName));
 	}
 
 	private function serveBlankFile($size)

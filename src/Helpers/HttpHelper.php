@@ -13,11 +13,6 @@ class HttpHelper
 		header($key . ': ' . $value);
 	}
 
-	public function output($data)
-	{
-		echo $data;
-	}
-
 	public function outputJSON($data)
 	{
 		$encodedJson = json_encode((array) $data);
@@ -26,6 +21,11 @@ class HttpHelper
 			$this->output('Fatal error while encoding JSON: ' . $lastError . PHP_EOL . PHP_EOL . print_r($data, true));
 		else
 			$this->output($encodedJson);
+	}
+
+	public function output($data)
+	{
+		echo $data;
 	}
 
 	public function getRequestHeaders()
@@ -49,17 +49,5 @@ class HttpHelper
 		$requestUri = $_SERVER['REQUEST_URI'];
 		$requestUri = preg_replace('/\?.*$/', '', $requestUri);
 		return $requestUri;
-	}
-
-	public function redirect($destination)
-	{
-		$this->setResponseCode(307);
-		$this->setHeader('Location', $destination);
-	}
-
-	public function nonCachedRedirect($destination)
-	{
-		$this->setResponseCode(303);
-		$this->setHeader('Location', $destination);
 	}
 }

@@ -30,11 +30,11 @@ final class Dispatcher
 		$this->config = $config;
 		$this->databaseConnection = $databaseConnection;
 		$this->httpHelper = $httpHelper;
+		$this->authService = $authService;
+		$this->tokenService = $tokenService;
 
 		//if script fails prematurely, mark it as fail from advance
 		$this->httpHelper->setResponseCode(500);
-		$this->authService = $authService;
-		$this->tokenService = $tokenService;
 
 		foreach ($controllerRepository->getControllers() as $controller)
 			$controller->registerRoutes($router);

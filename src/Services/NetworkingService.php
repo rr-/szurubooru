@@ -11,7 +11,7 @@ class NetworkingService
 		$this->httpHelper = $httpHelper;
 	}
 
-	public function serve($fullPath, $options = [])
+	public function serveFile($fullPath, $options = [])
 	{
 		$daysToLive = isset($options->daysToLive)
 			? $options->daysToLive
@@ -92,5 +92,17 @@ class NetworkingService
 		}
 
 		return $result;
+	}
+
+	public function redirect($destination)
+	{
+		$this->httpHelper->setResponseCode(307);
+		$this->httpHelper->setHeader('Location', $destination);
+	}
+
+	public function nonCachedRedirect($destination)
+	{
+		$this->httpHelper->setResponseCode(303);
+		$this->httpHelper->setHeader('Location', $destination);
 	}
 }
