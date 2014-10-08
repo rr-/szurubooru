@@ -8,6 +8,8 @@ everything related to posts:
 
     - ability to paste many urls in post upload
 
+    - generate meaningful file name when saving posts
+
     - post notes
         - "add note" in sidebar creates new note in the middle of image
         - hovering notes shows note text
@@ -57,6 +59,7 @@ everything related to tags:
             - target tags (allow multiple)
 
 refactors:
+    - split FileService into FileService and FileDao
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
     - change content spinner to nprogress:
