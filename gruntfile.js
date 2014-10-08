@@ -87,6 +87,10 @@ module.exports = function(grunt) {
 			upgrade: {
 				command: 'php scripts/upgrade.php',
 			},
+
+			optimizeComposer: {
+				command: 'composer dumpautoload -o'
+			},
 		},
 
 		copy: {
@@ -164,6 +168,6 @@ module.exports = function(grunt) {
 		fs.unlink('public_html/app.min.js.map');
 		fs.unlink('public_html/app.min.css');
 	});
-	grunt.registerTask('build', ['clean', 'copy:dist', 'uglify', 'cssmin', 'processhtml']);
+	grunt.registerTask('build', ['clean', 'shell:optimizeComposer', 'copy:dist', 'uglify', 'cssmin', 'processhtml']);
 
 };

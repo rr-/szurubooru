@@ -17,6 +17,8 @@ final class Injector
 		$builder = new ContainerBuilder();
 		$builder->setDefinitionCache(new ArrayCache());
 		$builder->addDefinitions($definitionsPath);
+		$builder->useAutowiring(true);
+		$builder->useAnnotations(false);
 		self::$container = $builder->build();
 	}
 
