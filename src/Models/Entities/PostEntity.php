@@ -372,12 +372,12 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 
 	public function getCustomThumbnailSourcePath()
 	{
-		return Core::getConfig()->main->thumbnailsPath . DS . $this->name . '.thumb_source';
+		return TextHelper::absolutePath(Core::getConfig()->main->thumbnailsPath . DS . $this->name . '.thumb_source');
 	}
 
 	public function getThumbnailPath()
 	{
-		return Core::getConfig()->main->thumbnailsPath . DS . $this->name . '.thumb';
+		return TextHelper::absolutePath(Core::getConfig()->main->thumbnailsPath . DS . $this->name . '.thumb');
 	}
 
 	public function hasCustomThumbnail()
@@ -424,6 +424,7 @@ final class PostEntity extends AbstractEntity implements IValidatable, ISerializ
 		}
 		else
 		{
+				#var_dump( $this->getContentPath());die;
 			return $thumbnailGenerator->generateFromFile(
 				$this->getContentPath(),
 				$dstPath,
