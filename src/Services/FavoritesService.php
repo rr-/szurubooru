@@ -1,5 +1,12 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Dao\FavoritesDao;
+use Szurubooru\Dao\ScoreDao;
+use Szurubooru\Dao\TransactionManager;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\TimeService;
 
 class FavoritesService
 {
@@ -10,11 +17,11 @@ class FavoritesService
 	private $timeService;
 
 	public function __construct(
-		\Szurubooru\Dao\FavoritesDao $favoritesDao,
-		\Szurubooru\Dao\ScoreDao $scoreDao,
-		\Szurubooru\Dao\UserDao $userDao,
-		\Szurubooru\Dao\TransactionManager $transactionManager,
-		\Szurubooru\Services\TimeService $timeService)
+		FavoritesDao $favoritesDao,
+		ScoreDao $scoreDao,
+		UserDao $userDao,
+		TransactionManager $transactionManager,
+		TimeService $timeService)
 	{
 		$this->favoritesDao = $favoritesDao;
 		$this->scoreDao = $scoreDao;
@@ -23,7 +30,7 @@ class FavoritesService
 		$this->timeService = $timeService;
 	}
 
-	public function getFavoriteUsers(\Szurubooru\Entities\Entity $entity)
+	public function getFavoriteUsers(Entity $entity)
 	{
 		$transactionFunc = function() use ($entity)
 		{
@@ -38,7 +45,7 @@ class FavoritesService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function addFavorite(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
+	public function addFavorite(User $user, Entity $entity)
 	{
 		$transactionFunc = function() use ($user, $entity)
 		{
@@ -49,7 +56,7 @@ class FavoritesService
 		return $this->transactionManager->commit($transactionFunc);
 	}
 
-	public function deleteFavorite(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
+	public function deleteFavorite(User $user, Entity $entity)
 	{
 		$transactionFunc = function() use ($user, $entity)
 		{

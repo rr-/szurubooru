@@ -1,8 +1,11 @@
 <?php
 namespace Szurubooru\SearchServices\Filters;
+use Szurubooru\SearchServices\Requirements\Requirement;
 
 interface IFilter
 {
+	const ORDER_RANDOM = 'random';
+
 	const ORDER_ASC = 1;
 	const ORDER_DESC = -1;
 
@@ -12,7 +15,7 @@ interface IFilter
 
 	public function getRequirements();
 
-	public function addRequirement(\Szurubooru\SearchServices\Requirements\Requirement $requirement);
+	public function addRequirement(Requirement $requirement);
 
 	public function getPageSize();
 

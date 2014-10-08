@@ -1,5 +1,13 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Dao\CommentDao;
+use Szurubooru\Dao\TransactionManager;
+use Szurubooru\Entities\Comment;
+use Szurubooru\Entities\Post;
+use Szurubooru\SearchServices\Filters\CommentFilter;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\TimeService;
+use Szurubooru\Validator;
 
 class CommentService
 {
@@ -10,11 +18,11 @@ class CommentService
 	private $timeService;
 
 	public function __construct(
-		\Szurubooru\Validator $validator,
-		\Szurubooru\Dao\CommentDao $commentDao,
-		\Szurubooru\Dao\TransactionManager $transactionManager,
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\TimeService $timeService)
+		Validator $validator,
+		CommentDao $commentDao,
+		TransactionManager $transactionManager,
+		AuthService $authService,
+		TimeService $timeService)
 	{
 		$this->validator = $validator;
 		$this->commentDao = $commentDao;
@@ -35,7 +43,7 @@ class CommentService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getByPost(\Szurubooru\Entities\Post $post)
+	public function getByPost(Post $post)
 	{
 		$transactionFunc = function() use ($post)
 		{
@@ -44,7 +52,7 @@ class CommentService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getFiltered(\Szurubooru\SearchServices\Filters\CommentFilter $filter)
+	public function getFiltered(CommentFilter $filter)
 	{
 		$transactionFunc = function() use ($filter)
 		{
@@ -53,11 +61,11 @@ class CommentService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function createComment(\Szurubooru\Entities\Post $post, $text)
+	public function createComment(Post $post, $text)
 	{
 		$transactionFunc = function() use ($post, $text)
 		{
-			$comment = new \Szurubooru\Entities\Comment();
+			$comment = new Comment();
 			$comment->setCreationTime($this->timeService->getCurrentTime());
 			$comment->setLastEditTime($this->timeService->getCurrentTime());
 			$comment->setUser($this->authService->isLoggedIn() ? $this->authService->getLoggedInUser() : null);
@@ -70,7 +78,7 @@ class CommentService
 		return $this->transactionManager->commit($transactionFunc);
 	}
 
-	public function updateComment(\Szurubooru\Entities\Comment $comment, $newText)
+	public function updateComment(Comment $comment, $newText)
 	{
 		$transactionFunc = function() use ($comment, $newText)
 		{
@@ -82,7 +90,7 @@ class CommentService
 		return $this->transactionManager->commit($transactionFunc);
 	}
 
-	public function deleteComment(\Szurubooru\Entities\Comment $comment)
+	public function deleteComment(Comment $comment)
 	{
 		$transactionFunc = function() use ($comment)
 		{
@@ -91,7 +99,7 @@ class CommentService
 		$this->transactionManager->commit($transactionFunc);
 	}
 
-	private function updateCommentText(\Szurubooru\Entities\Comment $comment, $text)
+	private function updateCommentText(Comment $comment, $text)
 	{
 		$this->validator->validateLength($text, 5, 2000, 'Comment text');
 		$comment->setText($text);

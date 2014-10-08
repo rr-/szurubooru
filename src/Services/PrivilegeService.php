@@ -1,5 +1,9 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Config;
+use Szurubooru\Entities\User;
+use Szurubooru\Helpers\EnumHelper;
+use Szurubooru\Services\AuthService;
 
 class PrivilegeService
 {
@@ -7,8 +11,8 @@ class PrivilegeService
 	private $privilegeMap;
 
 	public function __construct(
-		\Szurubooru\Config $config,
-		\Szurubooru\Services\AuthService $authService)
+		Config $config,
+		AuthService $authService)
 	{
 		$this->authService = $authService;
 
@@ -30,7 +34,7 @@ class PrivilegeService
 	public function getCurrentPrivileges()
 	{
 		$currentAccessRank = $this->authService->getLoggedInUser()->getAccessRank();
-		$currentAccessRankName = \Szurubooru\Helpers\EnumHelper::accessRankToString($currentAccessRank);
+		$currentAccessRankName = EnumHelper::accessRankToString($currentAccessRank);
 		if (!isset($this->privilegeMap[$currentAccessRankName]))
 			return [];
 		return $this->privilegeMap[$currentAccessRankName];
@@ -64,7 +68,7 @@ class PrivilegeService
 	public function isLoggedIn($userIdentifier)
 	{
 		$loggedInUser = $this->authService->getLoggedInUser();
-		if ($userIdentifier instanceof \Szurubooru\Entities\User)
+		if ($userIdentifier instanceof User)
 		{
 			return $loggedInUser->getId() and ($loggedInUser->getId() === $userIdentifier->getId());
 		}

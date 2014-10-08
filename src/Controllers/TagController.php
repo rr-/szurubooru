@@ -1,5 +1,12 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Controllers\ViewProxies\TagViewProxy;
+use Szurubooru\Helpers\InputReader;
+use Szurubooru\Privilege;
+use Szurubooru\Router;
+use Szurubooru\SearchServices\Parsers\TagSearchParser;
+use Szurubooru\Services\PrivilegeService;
+use Szurubooru\Services\TagService;
 
 final class TagController extends AbstractController
 {
@@ -10,11 +17,11 @@ final class TagController extends AbstractController
 	private $inputReader;
 
 	public function __construct(
-		\Szurubooru\Services\PrivilegeService $privilegeService,
-		\Szurubooru\Services\TagService $tagService,
-		\Szurubooru\Controllers\ViewProxies\TagViewProxy $tagViewProxy,
-		\Szurubooru\SearchServices\Parsers\TagSearchParser $tagSearchParser,
-		\Szurubooru\Helpers\InputReader $inputReader)
+		PrivilegeService $privilegeService,
+		TagService $tagService,
+		TagViewProxy $tagViewProxy,
+		TagSearchParser $tagSearchParser,
+		InputReader $inputReader)
 	{
 		$this->privilegeService = $privilegeService;
 		$this->tagService = $tagService;
@@ -23,14 +30,14 @@ final class TagController extends AbstractController
 		$this->inputReader = $inputReader;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->get('/api/tags', [$this, 'getTags']);
 	}
 
 	public function getTags()
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_TAGS);
+		$this->privilegeService->assertPrivilege(Privilege::LIST_TAGS);
 
 		$filter = $this->tagSearchParser->createFilterFromInputReader($this->inputReader);
 		$filter->setPageSize(50);

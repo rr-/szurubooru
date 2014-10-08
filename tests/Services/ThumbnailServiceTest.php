@@ -1,7 +1,12 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator;
+use Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator;
+use Szurubooru\Services\ThumbnailService;
+use Szurubooru\Tests\AbstractTestCase;
 
-class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
+final class ThumbnailServiceTest extends AbstractTestCase
 {
 	private $configMock;
 	private $fileServiceMock;
@@ -12,9 +17,9 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 		parent::setUp();
 
 		$this->configMock = $this->mockConfig();
-		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
-		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
-		$this->thumbnailGeneratorMock = $this->mock(\Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator::class);
+		$this->fileServiceMock = $this->mock(FileService::class);
+		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
+		$this->thumbnailGeneratorMock = $this->mock(SmartThumbnailGenerator::class);
 	}
 
 	public function testGetUsedThumbnailSizes()
@@ -76,7 +81,7 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 				'content of blank thumbnail',
 				100,
 				100,
-				\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE)
+				IThumbnailGenerator::CROP_OUTSIDE)
 			->willReturn('generated thumbnail');
 
 		$this->fileServiceMock
@@ -112,7 +117,7 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 				'content of blank thumbnail',
 				100,
 				100,
-				\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE)
+				IThumbnailGenerator::CROP_OUTSIDE)
 			->willReturn(null);
 
 		$this->fileServiceMock
@@ -127,7 +132,7 @@ class ThumbnailServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	private function getThumbnailService()
 	{
-		return new \Szurubooru\Services\ThumbnailService(
+		return new ThumbnailService(
 			$this->configMock,
 			$this->fileServiceMock,
 			$this->thumbnailGeneratorMock);

@@ -1,17 +1,18 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Dao\GlobalParamDao;
+use Szurubooru\Router;
 
 final class GlobalParamController extends AbstractController
 {
 	private $globalParamDao;
 
-	public function __construct(
-		\Szurubooru\Dao\GlobalParamDao $globalParamDao)
+	public function __construct(GlobalParamDao $globalParamDao)
 	{
 		$this->globalParamDao = $globalParamDao;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->get('/api/globals', [$this, 'getGlobals']);
 	}

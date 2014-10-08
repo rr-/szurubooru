@@ -1,11 +1,13 @@
 <?php
 namespace Szurubooru\Services\ThumbnailGenerators;
+use Szurubooru\Services\ImageManipulation\IImageManipulator;
+use Szurubooru\Services\ImageManipulation\ImageManipulator;
 
 class ImageThumbnailGenerator implements IThumbnailGenerator
 {
 	private $imageManipulator;
 
-	public function __construct(\Szurubooru\Services\ImageManipulation\ImageManipulator $imageManipulator)
+	public function __construct(ImageManipulator $imageManipulator)
 	{
 		$this->imageManipulator = $imageManipulator;
 	}
@@ -34,7 +36,7 @@ class ImageThumbnailGenerator implements IThumbnailGenerator
 
 			return $this->imageManipulator->saveToBuffer(
 				$image,
-				\Szurubooru\Services\ImageManipulation\IImageManipulator::FORMAT_JPEG);
+				IImageManipulator::FORMAT_JPEG);
 		}
 		catch (\Exception $e)
 		{

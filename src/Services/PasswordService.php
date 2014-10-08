@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Config;
 
 class PasswordService
 {
@@ -7,7 +8,7 @@ class PasswordService
 	private $alphabet;
 	private $pattern;
 
-	public function __construct(\Szurubooru\Config $config)
+	public function __construct(Config $config)
 	{
 		$this->config = $config;
 		$this->alphabet =

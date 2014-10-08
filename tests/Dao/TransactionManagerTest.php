@@ -1,7 +1,11 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\TokenDao;
+use Szurubooru\Dao\TransactionManager;
+use Szurubooru\Entities\Token;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-class TransactionManagerTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class TransactionManagerTest extends AbstractDatabaseTestCase
 {
 	public function testCommit()
 	{
@@ -59,19 +63,19 @@ class TransactionManagerTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getTestEntity()
 	{
-		$token = new \Szurubooru\Entities\Token();
+		$token = new Token();
 		$token->setName('yo');
-		$token->setPurpose(\Szurubooru\Entities\Token::PURPOSE_ACTIVATE);
+		$token->setPurpose(Token::PURPOSE_ACTIVATE);
 		return $token;
 	}
 
 	private function getTestDao()
 	{
-		return new \Szurubooru\Dao\TokenDao($this->databaseConnection);
+		return new TokenDao($this->databaseConnection);
 	}
 
 	private function getTransactionManager()
 	{
-		return new \Szurubooru\Dao\TransactionManager($this->databaseConnection);
+		return new TransactionManager($this->databaseConnection);
 	}
 }

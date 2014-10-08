@@ -1,5 +1,7 @@
 <?php
 namespace Szurubooru;
+use DI\ContainerBuilder;
+use Doctrine\Common\Cache\ArrayCache;
 
 final class Injector
 {
@@ -12,8 +14,8 @@ final class Injector
 			. DIRECTORY_SEPARATOR . 'src'
 			. DIRECTORY_SEPARATOR . 'di.php';
 
-		$builder = new \DI\ContainerBuilder();
-		$builder->setDefinitionCache(new \Doctrine\Common\Cache\ArrayCache());
+		$builder = new ContainerBuilder();
+		$builder->setDefinitionCache(new ArrayCache());
 		$builder->addDefinitions($definitionsPath);
 		self::$container = $builder->build();
 	}

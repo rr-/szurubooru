@@ -1,12 +1,13 @@
 <?php
 namespace Szurubooru;
+use Szurubooru\Config;
 
 class DatabaseConnection
 {
 	private $pdo;
 	private $config;
 
-	public function __construct(\Szurubooru\Config $config)
+	public function __construct(Config $config)
 	{
 		$this->config = $config;
 	}

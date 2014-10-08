@@ -1,5 +1,13 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Dao\FavoritesDao;
+use Szurubooru\Dao\ScoreDao;
+use Szurubooru\Dao\TransactionManager;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\Post;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\TimeService;
 
 class ScoreService
 {
@@ -10,11 +18,11 @@ class ScoreService
 	private $timeService;
 
 	public function __construct(
-		\Szurubooru\Dao\ScoreDao $scoreDao,
-		\Szurubooru\Dao\FavoritesDao $favoritesDao,
-		\Szurubooru\Dao\UserDao $userDao,
-		\Szurubooru\Dao\TransactionManager $transactionManager,
-		\Szurubooru\Services\TimeService $timeService)
+		ScoreDao $scoreDao,
+		FavoritesDao $favoritesDao,
+		UserDao $userDao,
+		TransactionManager $transactionManager,
+		TimeService $timeService)
 	{
 		$this->scoreDao = $scoreDao;
 		$this->favoritesDao = $favoritesDao;
@@ -23,7 +31,7 @@ class ScoreService
 		$this->timeService = $timeService;
 	}
 
-	public function getScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
+	public function getScore(User $user, Entity $entity)
 	{
 		$transactionFunc = function() use ($user, $entity)
 		{
@@ -32,7 +40,7 @@ class ScoreService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getScoreValue(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
+	public function getScoreValue(User $user, Entity $entity)
 	{
 		$score = $this->getScore($user, $entity);
 		if (!$score)
@@ -40,14 +48,14 @@ class ScoreService
 		return $score->getScore();
 	}
 
-	public function setScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity, $scoreValue)
+	public function setScore(User $user, Entity $entity, $scoreValue)
 	{
 		if ($scoreValue !== 1 and $scoreValue !== 0 and $scoreValue !== -1)
 			throw new \DomainException('Bad score');
 
 		$transactionFunc = function() use ($user, $entity, $scoreValue)
 		{
-			if (($scoreValue !== 1) and ($entity instanceof \Szurubooru\Entities\Post))
+			if (($scoreValue !== 1) and ($entity instanceof Post))
 				$this->favoritesDao->delete($user, $entity);
 
 			return $this->scoreDao->setScore($user, $entity, $scoreValue);

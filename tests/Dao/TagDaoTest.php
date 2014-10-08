@@ -1,7 +1,10 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\TagDao;
+use Szurubooru\Entities\Tag;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class TagDaoTest extends AbstractDatabaseTestCase
 {
 	public function setUp()
 	{
@@ -19,10 +22,10 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (5, 2)');
 		$pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (6, 2)');
 
-		$tag1 = new \Szurubooru\Entities\Tag(1);
+		$tag1 = new Tag(1);
 		$tag1->setName('test1');
 		$tag1->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
-		$tag2 = new \Szurubooru\Entities\Tag(2);
+		$tag2 = new Tag(2);
 		$tag2->setName('test2');
 		$tag2->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
 
@@ -37,10 +40,10 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testRemovingUnused()
 	{
-		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1 = new Tag();
 		$tag1->setName('test1');
 		$tag1->setCreationTime(date('c'));
-		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2 = new Tag();
 		$tag2->setName('test2');
 		$tag2->setCreationTime(date('c'));
 		$tagDao = $this->getTagDao();
@@ -61,6 +64,6 @@ final class TagDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getTagDao()
 	{
-		return new \Szurubooru\Dao\TagDao($this->databaseConnection);
+		return new TagDao($this->databaseConnection);
 	}
 }

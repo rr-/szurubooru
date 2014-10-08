@@ -1,7 +1,8 @@
 <?php
 namespace Szurubooru\Tests;
+use Szurubooru\Tests\AbstractTestCase;
 
-final class ValidatorTest extends \Szurubooru\Tests\AbstractTestCase
+final class ValidatorTest extends AbstractTestCase
 {
 	private $configMock;
 

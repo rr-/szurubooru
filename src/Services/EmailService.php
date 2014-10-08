@@ -1,16 +1,19 @@
 <?php
 namespace Szurubooru\Services;
+use \Szurubooru\Config;
+use \Szurubooru\Entities\Token;
+use \Szurubooru\Entities\User;
 
 class EmailService
 {
 	private $config;
 
-	public function __construct(\Szurubooru\Config $config)
+	public function __construct(Config $config)
 	{
 		$this->config = $config;
 	}
 
-	public function sendPasswordResetEmail(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Token $token)
+	public function sendPasswordResetEmail(User $user, Token $token)
 	{
 		if (!$user->getEmail())
 			throw new \BadMethodCall('An activated e-mail addreses is needed to reset the password.');
@@ -25,7 +28,7 @@ class EmailService
 		$this->sendEmail($user->getEmail(), $mailSubject, $mailBody);
 	}
 
-	public function sendActivationEmail(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Token $token)
+	public function sendActivationEmail(User $user, Token $token)
 	{
 		if (!$user->getEmailUnconfirmed())
 			throw new \BadMethodCallException('An e-mail address is needed to activate the account.');

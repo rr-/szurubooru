@@ -1,11 +1,14 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\GlobalParamDao;
+use Szurubooru\Entities\GlobalParam;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-class GlobalParamDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class GlobalParamDaoTest extends AbstractDatabaseTestCase
 {
 	public function testSettingValues()
 	{
-		$expected = new \Szurubooru\Entities\GlobalParam();
+		$expected = new GlobalParam();
 		$expected->setKey('key');
 		$expected->setValue('test');
 
@@ -18,11 +21,11 @@ class GlobalParamDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testInsertingSameKeyTwice()
 	{
-		$param1 = new \Szurubooru\Entities\GlobalParam();
+		$param1 = new GlobalParam();
 		$param1->setKey('key');
 		$param1->setValue('value1');
 
-		$param2 = new \Szurubooru\Entities\GlobalParam();
+		$param2 = new GlobalParam();
 		$param2->setKey('key');
 		$param2->setValue('value2');
 
@@ -35,7 +38,7 @@ class GlobalParamDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testUpdatingValues()
 	{
-		$expected = new \Szurubooru\Entities\GlobalParam();
+		$expected = new GlobalParam();
 		$expected->setKey('key');
 		$expected->setValue('test');
 
@@ -59,6 +62,6 @@ class GlobalParamDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getGlobalParamDao()
 	{
-		return new \Szurubooru\Dao\GlobalParamDao($this->databaseConnection);
+		return new GlobalParamDao($this->databaseConnection);
 	}
 }

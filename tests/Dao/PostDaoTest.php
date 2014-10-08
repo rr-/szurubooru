@@ -1,7 +1,15 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\PostDao;
+use Szurubooru\Dao\TagDao;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\Entities\Tag;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\ThumbnailService;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class PostDaoTest extends AbstractDatabaseTestCase
 {
 	private $fileServiceMock;
 	private $thumbnailServiceMock;
@@ -11,14 +19,14 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
-		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
+		$this->fileServiceMock = $this->mock(FileService::class);
+		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
 
-		$this->tagDao = new \Szurubooru\Dao\TagDao(
+		$this->tagDao = new TagDao(
 			$this->databaseConnection,
 			$this->fileServiceMock);
 
-		$this->userDao = new \Szurubooru\Dao\UserDao(
+		$this->userDao = new UserDao(
 			$this->databaseConnection,
 			$this->fileServiceMock,
 			$this->thumbnailServiceMock);
@@ -141,10 +149,10 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testSavingTags()
 	{
-		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1 = new Tag();
 		$tag1->setName('tag1');
 		$tag1->setCreationTime(date('c'));
-		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2 = new Tag();
 		$tag2->setName('tag2');
 		$tag2->setCreationTime(date('c'));
 		$this->tagDao->save($tag1);
@@ -200,7 +208,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testSavingUser()
 	{
-		$testUser = new \Szurubooru\Entities\User(5);
+		$testUser = new User(5);
 		$testUser->setName('it\'s me');
 		$postDao = $this->getPostDao();
 
@@ -286,7 +294,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getPostDao()
 	{
-		return new \Szurubooru\Dao\PostDao(
+		return new PostDao(
 			$this->databaseConnection,
 			$this->tagDao,
 			$this->userDao,

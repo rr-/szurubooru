@@ -1,7 +1,13 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Helpers\MimeHelper;
+use Szurubooru\Services\ImageManipulation\GdImageManipulator;
+use Szurubooru\Services\ImageManipulation\IImageManipulator;
+use Szurubooru\Services\ImageManipulation\ImageManipulator;
+use Szurubooru\Services\ImageManipulation\ImagickImageManipulator;
+use Szurubooru\Tests\AbstractTestCase;
 
-class ImageManipulatorTest extends \Szurubooru\Tests\AbstractTestCase
+final class ImageManipulatorTest extends AbstractTestCase
 {
 	public static function imageManipulatorProvider()
 	{
@@ -108,16 +114,16 @@ class ImageManipulatorTest extends \Szurubooru\Tests\AbstractTestCase
 	public function testSaving($imageManipulator)
 	{
 		$image = $imageManipulator->loadFromBuffer($this->getTestFile('image.jpg'));
-		$jpegBuffer = $imageManipulator->saveToBuffer($image, \Szurubooru\Services\ImageManipulation\IImageManipulator::FORMAT_JPEG);
-		$pngBuffer = $imageManipulator->saveToBuffer($image, \Szurubooru\Services\ImageManipulation\IImageManipulator::FORMAT_PNG);
-		$this->assertEquals('image/jpeg', \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($jpegBuffer));
-		$this->assertEquals('image/png', \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($pngBuffer));
+		$jpegBuffer = $imageManipulator->saveToBuffer($image, IImageManipulator::FORMAT_JPEG);
+		$pngBuffer = $imageManipulator->saveToBuffer($image, IImageManipulator::FORMAT_PNG);
+		$this->assertEquals('image/jpeg', MimeHelper::getMimeTypeFromBuffer($jpegBuffer));
+		$this->assertEquals('image/png', MimeHelper::getMimeTypeFromBuffer($pngBuffer));
 	}
 
 	private static function getImagickImageManipulator()
 	{
 		if (extension_loaded('imagick'))
-			return new \Szurubooru\Services\ImageManipulation\ImagickImageManipulator();
+			return new ImagickImageManipulator();
 		else
 			return null;
 	}
@@ -125,7 +131,7 @@ class ImageManipulatorTest extends \Szurubooru\Tests\AbstractTestCase
 	private static function getGdImageManipulator()
 	{
 		if (extension_loaded('gd'))
-			return new \Szurubooru\Services\ImageManipulation\GdImageManipulator();
+			return new GdImageManipulator();
 		else
 			return null;
 	}
@@ -134,7 +140,7 @@ class ImageManipulatorTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		if (extension_loaded('gd') and extension_loaded('imagick'))
 		{
-			return new \Szurubooru\Services\ImageManipulation\ImageManipulator(
+			return new ImageManipulator(
 				self::getImagickImageManipulator(),
 				self::getGdImageManipulator());
 		}

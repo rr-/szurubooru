@@ -1,5 +1,9 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Config;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator;
+use Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator;
 
 class ThumbnailService
 {
@@ -8,9 +12,9 @@ class ThumbnailService
 	private $thumbnailGenerator;
 
 	public function __construct(
-		\Szurubooru\Config $config,
-		\Szurubooru\Services\FileService $fileService,
-		\Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator $thumbnailGenerator)
+		Config $config,
+		FileService $fileService,
+		SmartThumbnailGenerator $thumbnailGenerator)
 	{
 		$this->config = $config;
 		$this->fileService = $fileService;
@@ -40,11 +44,11 @@ class ThumbnailService
 		switch ($this->config->misc->thumbnailCropStyle)
 		{
 			case 'outside':
-				$cropStyle = \Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE;
+				$cropStyle = IThumbnailGenerator::CROP_OUTSIDE;
 				break;
 
 			case 'inside':
-				$cropStyle = \Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_INSIDE;
+				$cropStyle = IThumbnailGenerator::CROP_INSIDE;
 				break;
 
 			default:

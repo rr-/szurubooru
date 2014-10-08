@@ -1,7 +1,8 @@
 <?php
 namespace Szurubooru;
+use Szurubooru\Validator;
 
 interface IValidatable
 {
-	public function validate(\Szurubooru\Validator $validator);
+	public function validate(Validator $validator);
 }

@@ -1,5 +1,26 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Config;
+use Szurubooru\Dao\GlobalParamDao;
+use Szurubooru\Dao\PostDao;
+use Szurubooru\Dao\TransactionManager;
+use Szurubooru\Entities\GlobalParam;
+use Szurubooru\Entities\Post;
+use Szurubooru\Entities\Tag;
+use Szurubooru\FormData\PostEditFormData;
+use Szurubooru\FormData\UploadFormData;
+use Szurubooru\Helpers\MimeHelper;
+use Szurubooru\SearchServices\Filters\PostFilter;
+use Szurubooru\SearchServices\Filters\SnapshotFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\ImageManipulation\ImageManipulator;
+use Szurubooru\Services\TagService;
+use Szurubooru\Services\TimeService;
+use Szurubooru\Validator;
 
 class PostService
 {
@@ -16,17 +37,17 @@ class PostService
 	private $imageManipulator;
 
 	public function __construct(
-		\Szurubooru\Config $config,
-		\Szurubooru\Validator $validator,
-		\Szurubooru\Dao\TransactionManager $transactionManager,
-		\Szurubooru\Dao\PostDao $postDao,
-		\Szurubooru\Dao\GlobalParamDao $globalParamDao,
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\TimeService $timeService,
-		\Szurubooru\Services\FileService $fileService,
-		\Szurubooru\Services\TagService $tagService,
-		\Szurubooru\Services\HistoryService $historyService,
-		\Szurubooru\Services\ImageManipulation\ImageManipulator $imageManipulator)
+		Config $config,
+		Validator $validator,
+		TransactionManager $transactionManager,
+		PostDao $postDao,
+		GlobalParamDao $globalParamDao,
+		AuthService $authService,
+		TimeService $timeService,
+		FileService $fileService,
+		TagService $tagService,
+		HistoryService $historyService,
+		ImageManipulator $imageManipulator)
 	{
 		$this->config = $config;
 		$this->validator = $validator;
@@ -67,7 +88,7 @@ class PostService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getFiltered(\Szurubooru\SearchServices\Filters\PostFilter $filter)
+	public function getFiltered(PostFilter $filter)
 	{
 		$transactionFunc = function() use ($filter)
 		{
@@ -80,7 +101,7 @@ class PostService
 	{
 		$transactionFunc = function()
 		{
-			$globalParam = $this->globalParamDao->findByKey(\Szurubooru\Entities\GlobalParam::KEY_FEATURED_POST);
+			$globalParam = $this->globalParamDao->findByKey(GlobalParam::KEY_FEATURED_POST);
 			if (!$globalParam)
 				return null;
 			return $this->getByNameOrId($globalParam->getValue());
@@ -88,20 +109,20 @@ class PostService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getHistory(\Szurubooru\Entities\Post $post)
+	public function getHistory(Post $post)
 	{
 		$transactionFunc = function() use ($post)
 		{
-			$filter = new \Szurubooru\SearchServices\Filters\SnapshotFilter();
+			$filter = new SnapshotFilter();
 
-			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-			$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
-			$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($post->getId()));
+			$requirement = new Requirement();
+			$requirement->setType(SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
+			$requirement->setValue(new RequirementSingleValue($post->getId()));
 			$filter->addRequirement($requirement);
 
-			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-			$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_TYPE);
-			$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue(\Szurubooru\Entities\Snapshot::TYPE_POST));
+			$requirement = new Requirement();
+			$requirement->setType(SnapshotFilter::REQUIREMENT_TYPE);
+			$requirement->setValue(new RequirementSingleValue(Snapshot::TYPE_POST));
 			$filter->addRequirement($requirement);
 
 			return $this->historyService->getFiltered($filter)->getEntities();
@@ -109,13 +130,13 @@ class PostService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function createPost(\Szurubooru\FormData\UploadFormData $formData)
+	public function createPost(UploadFormData $formData)
 	{
 		$transactionFunc = function() use ($formData)
 		{
 			$formData->validate($this->validator);
 
-			$post = new \Szurubooru\Entities\Post();
+			$post = new Post();
 			$post->setUploadTime($this->timeService->getCurrentTime());
 			$post->setLastEditTime($this->timeService->getCurrentTime());
 			$post->setUser($formData->anonymous ? null : $this->authService->getLoggedInUser());
@@ -138,7 +159,7 @@ class PostService
 		return $ret;
 	}
 
-	public function updatePost(\Szurubooru\Entities\Post $post, \Szurubooru\FormData\PostEditFormData $formData)
+	public function updatePost(Post $post, PostEditFormData $formData)
 	{
 		$transactionFunc = function() use ($post, $formData)
 		{
@@ -176,17 +197,17 @@ class PostService
 		return $ret;
 	}
 
-	private function updatePostSafety(\Szurubooru\Entities\Post $post, $newSafety)
+	private function updatePostSafety(Post $post, $newSafety)
 	{
 		$post->setSafety($newSafety);
 	}
 
-	private function updatePostSource(\Szurubooru\Entities\Post $post, $newSource)
+	private function updatePostSource(Post $post, $newSource)
 	{
 		$post->setSource($newSource);
 	}
 
-	private function updatePostContentFromStringOrUrl(\Szurubooru\Entities\Post $post, $content, $url)
+	private function updatePostContentFromStringOrUrl(Post $post, $content, $url)
 	{
 		if ($url)
 			$this->updatePostContentFromUrl($post, $url);
@@ -196,7 +217,7 @@ class PostService
 			throw new \DomainException('No content specified');
 	}
 
-	private function updatePostContentFromString(\Szurubooru\Entities\Post $post, $content)
+	private function updatePostContentFromString(Post $post, $content)
 	{
 		if (!$content)
 			throw new \DomainException('File cannot be empty.');
@@ -204,15 +225,15 @@ class PostService
 		if (strlen($content) > $this->config->database->maxPostSize)
 			throw new \DomainException('Upload is too big.');
 
-		$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($content);
+		$mime = MimeHelper::getMimeTypeFromBuffer($content);
 		$post->setContentMimeType($mime);
 
-		if (\Szurubooru\Helpers\MimeHelper::isFlash($mime))
-			$post->setContentType(\Szurubooru\Entities\Post::POST_TYPE_FLASH);
-		elseif (\Szurubooru\Helpers\MimeHelper::isImage($mime))
-			$post->setContentType(\Szurubooru\Entities\Post::POST_TYPE_IMAGE);
-		elseif (\Szurubooru\Helpers\MimeHelper::isVideo($mime))
-			$post->setContentType(\Szurubooru\Entities\Post::POST_TYPE_VIDEO);
+		if (MimeHelper::isFlash($mime))
+			$post->setContentType(Post::POST_TYPE_FLASH);
+		elseif (MimeHelper::isImage($mime))
+			$post->setContentType(Post::POST_TYPE_IMAGE);
+		elseif (MimeHelper::isVideo($mime))
+			$post->setContentType(Post::POST_TYPE_VIDEO);
 		else
 			throw new \DomainException('Unhandled file type: "' . $mime . '"');
 
@@ -228,7 +249,7 @@ class PostService
 		$post->setOriginalFileSize(strlen($content));
 	}
 
-	private function updatePostContentFromUrl(\Szurubooru\Entities\Post $post, $url)
+	private function updatePostContentFromUrl(Post $post, $url)
 	{
 		if (!preg_match('/^https?:\/\//', $url))
 			throw new \InvalidArgumentException('Invalid URL "' . $url . '"');
@@ -239,7 +260,7 @@ class PostService
 
 		if ($youtubeId)
 		{
-			$post->setContentType(\Szurubooru\Entities\Post::POST_TYPE_YOUTUBE);
+			$post->setContentType(Post::POST_TYPE_YOUTUBE);
 			$post->setImageWidth(null);
 			$post->setImageHeight(null);
 			$post->setContentChecksum($url);
@@ -259,7 +280,7 @@ class PostService
 		}
 	}
 
-	private function updatePostThumbnailFromString(\Szurubooru\Entities\Post $post, $newThumbnail)
+	private function updatePostThumbnailFromString(Post $post, $newThumbnail)
 	{
 		if (strlen($newThumbnail) > $this->config->database->maxCustomThumbnailSize)
 			throw new \DomainException('Thumbnail is too big.');
@@ -267,12 +288,12 @@ class PostService
 		$post->setThumbnailSourceContent($newThumbnail);
 	}
 
-	private function updatePostTags(\Szurubooru\Entities\Post $post, array $newTagNames)
+	private function updatePostTags(Post $post, array $newTagNames)
 	{
 		$tags = [];
 		foreach ($newTagNames as $tagName)
 		{
-			$tag = new \Szurubooru\Entities\Tag();
+			$tag = new Tag();
 			$tag->setName($tagName);
 			$tags[] = $tag;
 		}
@@ -280,7 +301,7 @@ class PostService
 		$post->setTags($tags);
 	}
 
-	private function updatePostRelations(\Szurubooru\Entities\Post $post, array $newRelatedPostIds)
+	private function updatePostRelations(Post $post, array $newRelatedPostIds)
 	{
 		$relatedPosts = $this->postDao->findByIds($newRelatedPostIds);
 		foreach ($newRelatedPostIds as $postId)
@@ -292,7 +313,7 @@ class PostService
 		$post->setRelatedPosts($relatedPosts);
 	}
 
-	public function deletePost(\Szurubooru\Entities\Post $post)
+	public function deletePost(Post $post)
 	{
 		$transactionFunc = function() use ($post)
 		{
@@ -302,7 +323,7 @@ class PostService
 		$this->transactionManager->commit($transactionFunc);
 	}
 
-	public function featurePost(\Szurubooru\Entities\Post $post)
+	public function featurePost(Post $post)
 	{
 		$transactionFunc = function() use ($post)
 		{
@@ -311,8 +332,8 @@ class PostService
 			$post->setLastFeatureTime($this->timeService->getCurrentTime());
 			$post->setFeatureCount($post->getFeatureCount() + 1);
 			$this->postDao->save($post);
-			$globalParam = new \Szurubooru\Entities\GlobalParam();
-			$globalParam->setKey(\Szurubooru\Entities\GlobalParam::KEY_FEATURED_POST);
+			$globalParam = new GlobalParam();
+			$globalParam->setKey(GlobalParam::KEY_FEATURED_POST);
 			$globalParam->setValue($post->getId());
 			$this->globalParamDao->save($globalParam);
 
@@ -327,20 +348,20 @@ class PostService
 	{
 		$transactionFunc = function()
 		{
-			$countParam = new \Szurubooru\Entities\GlobalParam();
-			$countParam->setKey(\Szurubooru\Entities\GlobalParam::KEY_POST_COUNT);
+			$countParam = new GlobalParam();
+			$countParam->setKey(GlobalParam::KEY_POST_COUNT);
 			$countParam->setValue($this->postDao->getCount());
 			$this->globalParamDao->save($countParam);
 
-			$fileSizeParam = new \Szurubooru\Entities\GlobalParam();
-			$fileSizeParam->setKey(\Szurubooru\Entities\GlobalParam::KEY_POST_SIZE);
+			$fileSizeParam = new GlobalParam();
+			$fileSizeParam->setKey(GlobalParam::KEY_POST_SIZE);
 			$fileSizeParam->setValue($this->postDao->getTotalFileSize());
 			$this->globalParamDao->save($fileSizeParam);
 		};
 		$this->transactionManager->commit($transactionFunc);
 	}
 
-	private function assertNoPostWithThisContentChecksum(\Szurubooru\Entities\Post $parent)
+	private function assertNoPostWithThisContentChecksum(Post $parent)
 	{
 		$checksumToCheck = $parent->getContentChecksum();
 		$postWithThisChecksum = $this->postDao->findByContentChecksum($checksumToCheck);

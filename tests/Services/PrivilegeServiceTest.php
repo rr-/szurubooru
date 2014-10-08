@@ -1,7 +1,12 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Entities\User;
+use Szurubooru\Privilege;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\PrivilegeService;
+use Szurubooru\Tests\AbstractTestCase;
 
-class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
+final class PrivilegeServiceTest extends AbstractTestCase
 {
 	private $configMock;
 	private $authServiceMock;
@@ -10,17 +15,17 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	{
 		parent::setUp();
 		$this->configMock = $this->mockConfig();
-		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
+		$this->authServiceMock = $this->mock(AuthService::class);
 	}
 
 	public function testReadingConfig()
 	{
-		$testUser = new \Szurubooru\Entities\User();
+		$testUser = new User();
 		$testUser->setName('dummy');
-		$testUser->setAccessRank(\Szurubooru\Entities\User::ACCESS_RANK_POWER_USER);
+		$testUser->setAccessRank(User::ACCESS_RANK_POWER_USER);
 		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser);
 
-		$privilege = \Szurubooru\Privilege::LIST_USERS;
+		$privilege = Privilege::LIST_USERS;
 		$this->configMock->set('security/privileges/' . $privilege, 'powerUser');
 
 		$privilegeService = $this->getPrivilegeService();
@@ -30,9 +35,9 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testIsLoggedInByNameString()
 	{
-		$testUser1 = new \Szurubooru\Entities\User();
+		$testUser1 = new User();
 		$testUser1->setName('dummy');
-		$testUser2 = new \Szurubooru\Entities\User();
+		$testUser2 = new User();
 		$testUser2->setName('godzilla');
 		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
 
@@ -43,10 +48,10 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testIsLoggedInByEmailString()
 	{
-		$testUser1 = new \Szurubooru\Entities\User();
+		$testUser1 = new User();
 		$testUser1->setName('user1');
 		$testUser1->setEmail('dummy');
-		$testUser2 = new \Szurubooru\Entities\User();
+		$testUser2 = new User();
 		$testUser2->setName('user2');
 		$testUser2->setEmail('godzilla');
 		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
@@ -58,8 +63,8 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testIsLoggedInByUserId()
 	{
-		$testUser1 = new \Szurubooru\Entities\User(5);
-		$testUser2 = new \Szurubooru\Entities\User(13);
+		$testUser1 = new User(5);
+		$testUser2 = new User(13);
 		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
 
 		$privilegeService = $this->getPrivilegeService();
@@ -69,9 +74,9 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testIsLoggedInByUserName()
 	{
-		$testUser1 = new \Szurubooru\Entities\User();
+		$testUser1 = new User();
 		$testUser1->setName('dummy');
-		$testUser2 = new \Szurubooru\Entities\User();
+		$testUser2 = new User();
 		$testUser2->setName('godzilla');
 		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser1);
 
@@ -82,7 +87,7 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testIsLoggedInByInvalidObject()
 	{
-		$testUser = new \Szurubooru\Entities\User();
+		$testUser = new User();
 		$testUser->setName('dummy');
 		$this->authServiceMock->expects($this->atLeastOnce())->method('getLoggedInUser')->willReturn($testUser);
 
@@ -94,7 +99,7 @@ class PrivilegeServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	private function getPrivilegeService()
 	{
-		return new \Szurubooru\Services\PrivilegeService(
+		return new PrivilegeService(
 			$this->configMock,
 			$this->authServiceMock);
 	}

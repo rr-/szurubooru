@@ -1,7 +1,9 @@
 <?php
 namespace Szurubooru\Tests\Service;
+use Szurubooru\Services\PasswordService;
+use Szurubooru\Tests\AbstractTestCase;
 
-class PasswordServiceTest extends \Szurubooru\Tests\AbstractTestCase
+final class PasswordServiceTest extends AbstractTestCase
 {
 	private $configMock;
 
@@ -68,6 +70,6 @@ class PasswordServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	private function getPasswordService()
 	{
-		return new \Szurubooru\Services\PasswordService($this->configMock);
+		return new PasswordService($this->configMock);
 	}
 }

@@ -1,9 +1,11 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\Post;
 
 class PostEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(\Szurubooru\Entities\Entity $entity)
+	public function toArray(Entity $entity)
 	{
 		return
 		[
@@ -28,7 +30,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\Post(intval($array['id']));
+		$entity = new Post(intval($array['id']));
 		$entity->setName($array['name']);
 		$entity->setUserId($array['userId']);
 		$entity->setUploadTime($this->dbTimeToEntityTime($array['uploadTime']));
@@ -44,10 +46,10 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setOriginalFileName($array['originalFileName']);
 		$entity->setFeatureCount(intval($array['featureCount']));
 		$entity->setLastFeatureTime($this->dbTimeToEntityTime($array['lastFeatureTime']));
-		$entity->setMeta(\Szurubooru\Entities\Post::META_TAG_COUNT, intval($array['tagCount']));
-		$entity->setMeta(\Szurubooru\Entities\Post::META_FAV_COUNT, intval($array['favCount']));
-		$entity->setMeta(\Szurubooru\Entities\Post::META_COMMENT_COUNT, intval($array['commentCount']));
-		$entity->setMeta(\Szurubooru\Entities\Post::META_SCORE, intval($array['score']));
+		$entity->setMeta(Post::META_TAG_COUNT, intval($array['tagCount']));
+		$entity->setMeta(Post::META_FAV_COUNT, intval($array['favCount']));
+		$entity->setMeta(Post::META_COMMENT_COUNT, intval($array['commentCount']));
+		$entity->setMeta(Post::META_SCORE, intval($array['score']));
 		return $entity;
 	}
 }

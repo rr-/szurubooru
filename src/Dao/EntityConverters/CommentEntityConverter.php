@@ -1,9 +1,11 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
+use Szurubooru\Entities\Comment;
+use Szurubooru\Entities\Entity;
 
 class CommentEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(\Szurubooru\Entities\Entity $entity)
+	public function toArray(Entity $entity)
 	{
 		return
 		[
@@ -18,13 +20,13 @@ class CommentEntityConverter extends AbstractEntityConverter implements IEntityC
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\Comment($array['id']);
+		$entity = new Comment($array['id']);
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
 		$entity->setText($array['text']);
 		$entity->setCreationTime($this->dbTimeToEntityTime($array['creationTime']));
 		$entity->setLastEditTime($this->dbTimeToEntityTime($array['lastEditTime']));
-		$entity->setMeta(\Szurubooru\Entities\Comment::META_SCORE, intval($array['score']));
+		$entity->setMeta(Comment::META_SCORE, intval($array['score']));
 		return $entity;
 	}
 }

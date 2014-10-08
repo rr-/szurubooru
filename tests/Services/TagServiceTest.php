@@ -1,7 +1,12 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Entities\Tag;
+use Szurubooru\Injector;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\TagService;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-class TagServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class TagServiceTest extends AbstractDatabaseTestCase
 {
 	public function testCreatingEmpty()
 	{
@@ -14,7 +19,7 @@ class TagServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testCreatingTagsWhenNoneExist()
 	{
 		$pdo = $this->databaseConnection->getPDO();
-		$tag = new \Szurubooru\Entities\Tag();
+		$tag = new Tag();
 		$tag->setName('test');
 
 		$tagService = $this->getTagService();
@@ -30,9 +35,9 @@ class TagServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (1, \'test1\', \'2014-10-01 00:00:00\')');
 		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (2, \'test2\', \'2014-10-01 00:00:00\')');
 
-		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1 = new Tag();
 		$tag1->setName('test1');
-		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2 = new Tag();
 		$tag2->setName('test2');
 
 		$tagService = $this->getTagService();
@@ -50,9 +55,9 @@ class TagServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (1, \'test1\', \'2014-10-01 00:00:00\')');
 		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (2, \'test2\', \'2014-10-01 00:00:00\')');
 
-		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1 = new Tag();
 		$tag1->setName('test1');
-		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2 = new Tag();
 		$tag2->setName('test3');
 
 		$tagService = $this->getTagService();
@@ -66,7 +71,7 @@ class TagServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testExportSingle()
 	{
-		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1 = new Tag();
 		$tag1->setName('test');
 		$tag1->setCreationTime(date('c'));
 		$fileService = $this->getFileService();
@@ -78,10 +83,10 @@ class TagServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testExportMultiple()
 	{
-		$tag1 = new \Szurubooru\Entities\Tag();
+		$tag1 = new Tag();
 		$tag1->setName('test1');
 		$tag1->setCreationTime(date('c'));
-		$tag2 = new \Szurubooru\Entities\Tag();
+		$tag2 = new Tag();
 		$tag2->setName('test2');
 		$tag2->setCreationTime(date('c'));
 		$fileService = $this->getFileService();
@@ -93,11 +98,11 @@ class TagServiceTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getFileService()
 	{
-		return \Szurubooru\Injector::get(\Szurubooru\Services\FileService::class);
+		return Injector::get(FileService::class);
 	}
 
 	private function getTagService()
 	{
-		return \Szurubooru\Injector::get(\Szurubooru\Services\TagService::class);
+		return Injector::get(TagService::class);
 	}
 }

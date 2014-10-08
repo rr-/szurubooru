@@ -1,12 +1,17 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\SnapshotDao;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\Entities\Snapshot;
+use Szurubooru\Entities\User;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-class SnapshotDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class SnapshotDaoTest extends AbstractDatabaseTestCase
 {
 	public function setUp()
 	{
 		parent::setUp();
-		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
+		$this->userDaoMock = $this->mock(UserDao::class);
 	}
 
 	public function testSaving()
@@ -21,7 +26,7 @@ class SnapshotDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function testUserLazyLoader()
 	{
 		$snapshot = $this->getTestSnapshot();
-		$snapshot->setUser(new \Szurubooru\Entities\User(5));
+		$snapshot->setUser(new User(5));
 		$this->assertEquals(5, $snapshot->getUserId());
 		$snapshotDao = $this->getSnapshotDao();
 		$snapshotDao->save($snapshot);
@@ -36,19 +41,19 @@ class SnapshotDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getTestSnapshot()
 	{
-		$snapshot = new \Szurubooru\Entities\Snapshot();
-		$snapshot->setType(\Szurubooru\Entities\Snapshot::TYPE_POST);
+		$snapshot = new Snapshot();
+		$snapshot->setType(Snapshot::TYPE_POST);
 		$snapshot->setData(['wake up', 'neo', ['follow' => 'white rabbit']]);
 		$snapshot->setPrimaryKey(1);
 		$snapshot->setTime(date('c', mktime(1, 2, 3)));
 		$snapshot->setUserId(null);
-		$snapshot->setOperation(\Szurubooru\Entities\Snapshot::OPERATION_CHANGE);
+		$snapshot->setOperation(Snapshot::OPERATION_CHANGE);
 		return $snapshot;
 	}
 
 	private function getSnapshotDao()
 	{
-		return new \Szurubooru\Dao\SnapshotDao(
+		return new SnapshotDao(
 			$this->databaseConnection,
 			$this->userDaoMock);
 	}

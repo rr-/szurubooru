@@ -1,12 +1,20 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Helpers\ProgramExecutor;
+use Szurubooru\Injector;
+use Szurubooru\Services\ImageManipulation\ImageManipulator;
+use Szurubooru\Services\ThumbnailGenerators\FlashThumbnailGenerator;
+use Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator;
+use Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator;
+use Szurubooru\Services\ThumbnailGenerators\VideoThumbnailGenerator;
+use Szurubooru\Tests\AbstractTestCase;
 
-class ThumbnailGeneratorTest extends \Szurubooru\Tests\AbstractTestCase
+final class ThumbnailGeneratorTest extends AbstractTestCase
 {
 	public function testFlashThumbnails()
 	{
-		if (!\Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(\Szurubooru\Services\ThumbnailGenerators\FlashThumbnailGenerator::PROGRAM_NAME_DUMP_GNASH)
-			and !\Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(\Szurubooru\Services\ThumbnailGenerators\FlashThumbnailGenerator::PROGRAM_NAME_SWFRENDER))
+		if (!ProgramExecutor::isProgramAvailable(FlashThumbnailGenerator::PROGRAM_NAME_DUMP_GNASH)
+			and !ProgramExecutor::isProgramAvailable(FlashThumbnailGenerator::PROGRAM_NAME_SWFRENDER))
 		{
 			$this->markTestSkipped('External software necessary to run this test is missing.');
 		}
@@ -18,7 +26,7 @@ class ThumbnailGeneratorTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->getTestFile('flash.swf'),
 			150,
 			150,
-			\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE);
+			IThumbnailGenerator::CROP_OUTSIDE);
 
 		$image = $imageManipulator->loadFromBuffer($result);
 		$this->assertEquals(150, $imageManipulator->getImageWidth($image));
@@ -27,8 +35,8 @@ class ThumbnailGeneratorTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testVideoThumbnails()
 	{
-		if (!\Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(\Szurubooru\Services\ThumbnailGenerators\VideoThumbnailGenerator::PROGRAM_NAME_FFMPEG)
-			and !\Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(\Szurubooru\Services\ThumbnailGenerators\VideoThumbnailGenerator::PROGRAM_NAME_FFMPEGTHUMBNAILER))
+		if (!ProgramExecutor::isProgramAvailable(VideoThumbnailGenerator::PROGRAM_NAME_FFMPEG)
+			and !ProgramExecutor::isProgramAvailable(VideoThumbnailGenerator::PROGRAM_NAME_FFMPEGTHUMBNAILER))
 		{
 			$this->markTestSkipped('External software necessary to run this test is missing.');
 		}
@@ -40,7 +48,7 @@ class ThumbnailGeneratorTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->getTestFile('video.mp4'),
 			150,
 			150,
-			\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE);
+			IThumbnailGenerator::CROP_OUTSIDE);
 
 		$image = $imageManipulator->loadFromBuffer($result);
 		$this->assertEquals(150, $imageManipulator->getImageWidth($image));
@@ -56,7 +64,7 @@ class ThumbnailGeneratorTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->getTestFile('image.jpg'),
 			150,
 			150,
-			\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE);
+			IThumbnailGenerator::CROP_OUTSIDE);
 
 		$image = $imageManipulator->loadFromBuffer($result);
 		$this->assertEquals(150, $imageManipulator->getImageWidth($image));
@@ -66,7 +74,7 @@ class ThumbnailGeneratorTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->getTestFile('image.jpg'),
 			150,
 			150,
-			\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_INSIDE);
+			IThumbnailGenerator::CROP_INSIDE);
 
 		$image = $imageManipulator->loadFromBuffer($result);
 		$this->assertEquals(150, $imageManipulator->getImageWidth($image));
@@ -82,18 +90,18 @@ class ThumbnailGeneratorTest extends \Szurubooru\Tests\AbstractTestCase
 			$this->getTestFile('text.txt'),
 			150,
 			150,
-			\Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator::CROP_OUTSIDE);
+			IThumbnailGenerator::CROP_OUTSIDE);
 
 		$this->assertNull($result);
 	}
 
 	public function getImageManipulator()
 	{
-		return \Szurubooru\Injector::get(\Szurubooru\Services\ImageManipulation\ImageManipulator::class);
+		return Injector::get(ImageManipulator::class);
 	}
 
 	public function getThumbnailGenerator()
 	{
-		return \Szurubooru\Injector::get(\Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator::class);
+		return Injector::get(SmartThumbnailGenerator::class);
 	}
 }

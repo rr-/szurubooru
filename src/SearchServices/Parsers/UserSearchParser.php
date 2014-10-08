@@ -1,32 +1,37 @@
 <?php
 namespace Szurubooru\SearchServices\Parsers;
+use Szurubooru\NotSupportedException;
+use Szurubooru\SearchServices\Filters\IFilter;
+use Szurubooru\SearchServices\Filters\UserFilter;
+use Szurubooru\SearchServices\Tokens\NamedSearchToken;
+use Szurubooru\SearchServices\Tokens\SearchToken;
 
 class UserSearchParser extends AbstractSearchParser
 {
 	protected function createFilter()
 	{
-		return new \Szurubooru\SearchServices\Filters\UserFilter;
+		return new UserFilter;
 	}
 
-	protected function decorateFilterFromToken($filter, $token)
+	protected function decorateFilterFromToken(IFilter $filter, SearchToken $token)
 	{
-		throw new \Szurubooru\NotSupportedException();
+		throw new NotSupportedException();
 	}
 
-	protected function decorateFilterFromNamedToken($filter, $namedToken)
+	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
 	{
-		throw new \Szurubooru\NotSupportedException();
+		throw new NotSupportedException();
 	}
 
-	protected function getOrderColumn($token)
+	protected function getOrderColumn($tokenText)
 	{
-		if ($token === 'name')
-			return \Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME;
+		if ($tokenText === 'name')
+			return UserFilter::ORDER_NAME;
 
-		elseif ($token === 'registration_time')
-			return \Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME;
+		elseif ($tokenText === 'registration_time')
+			return UserFilter::ORDER_REGISTRATION_TIME;
 
 		else
-			throw new \Szurubooru\NotSupportedException();
+			throw new NotSupportedException();
 	}
 }

@@ -1,7 +1,16 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Dao\FavoritesDao;
+use Szurubooru\Dao\ScoreDao;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\Entities\Post;
+use Szurubooru\Entities\Score;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\ScoreService;
+use Szurubooru\Services\TimeService;
+use Szurubooru\Tests\AbstractTestCase;
 
-final class ScoreServiceTest extends \Szurubooru\Tests\AbstractTestCase
+final class ScoreServiceTest extends AbstractTestCase
 {
 	private $scoreDaoMock;
 	private $favoritesDaoMock;
@@ -12,18 +21,18 @@ final class ScoreServiceTest extends \Szurubooru\Tests\AbstractTestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$this->scoreDaoMock = $this->mock(\Szurubooru\Dao\ScoreDao::class);
-		$this->favoritesDaoMock = $this->mock(\Szurubooru\Dao\FavoritesDao::class);
-		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
+		$this->scoreDaoMock = $this->mock(ScoreDao::class);
+		$this->favoritesDaoMock = $this->mock(FavoritesDao::class);
+		$this->userDaoMock = $this->mock(UserDao::class);
 		$this->transactionManagerMock = $this->mockTransactionManager();
-		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
+		$this->timeServiceMock = $this->mock(TimeService::class);
 	}
 
 	public function testSetting()
 	{
-		$user = new \Szurubooru\Entities\User(1);
-		$post = new \Szurubooru\Entities\Post(2);
-		$score = new \Szurubooru\Entities\Score();
+		$user = new User(1);
+		$post = new Post(2);
+		$score = new Score();
 		$score->setUserId($user->getId());
 		$score->setPostId($post->getId());
 		$score->setScore(1);
@@ -35,8 +44,8 @@ final class ScoreServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testSettingInvalid()
 	{
-		$user = new \Szurubooru\Entities\User(1);
-		$post = new \Szurubooru\Entities\Post(2);
+		$user = new User(1);
+		$post = new Post(2);
 		$this->setExpectedException(\Exception::class);
 		$scoreService = $this->getScoreService();
 		$scoreService->setScore($user, $post, 2);
@@ -44,9 +53,9 @@ final class ScoreServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testGetting()
 	{
-		$user = new \Szurubooru\Entities\User();
-		$post = new \Szurubooru\Entities\Post();
-		$score = new \Szurubooru\Entities\Score(3);
+		$user = new User();
+		$post = new Post();
+		$score = new Score(3);
 		$this->scoreDaoMock->expects($this->once())->method('getScore')->with($user, $post)->willReturn($score);
 
 		$scoreService = $this->getScoreService();
@@ -56,7 +65,7 @@ final class ScoreServiceTest extends \Szurubooru\Tests\AbstractTestCase
 
 	private function getScoreService()
 	{
-		return new \Szurubooru\Services\ScoreService(
+		return new ScoreService(
 			$this->scoreDaoMock,
 			$this->favoritesDaoMock,
 			$this->userDaoMock,

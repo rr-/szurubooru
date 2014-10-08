@@ -1,5 +1,12 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Controllers\ViewProxies\SnapshotViewProxy;
+use Szurubooru\Helpers\InputReader;
+use Szurubooru\Privilege;
+use Szurubooru\Router;
+use Szurubooru\SearchServices\Parsers\SnapshotSearchParser;
+use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\PrivilegeService;
 
 final class HistoryController extends AbstractController
 {
@@ -10,11 +17,11 @@ final class HistoryController extends AbstractController
 	private $snapshotViewProxy;
 
 	public function __construct(
-		\Szurubooru\Services\HistoryService $historyService,
-		\Szurubooru\Services\PrivilegeService $privilegeService,
-		\Szurubooru\SearchServices\Parsers\SnapshotSearchParser $snapshotSearchParser,
-		\Szurubooru\Helpers\InputReader $inputReader,
-		\Szurubooru\Controllers\ViewProxies\SnapshotViewProxy $snapshotViewProxy)
+		HistoryService $historyService,
+		PrivilegeService $privilegeService,
+		SnapshotSearchParser $snapshotSearchParser,
+		InputReader $inputReader,
+		SnapshotViewProxy $snapshotViewProxy)
 	{
 		$this->historyService = $historyService;
 		$this->privilegeService = $privilegeService;
@@ -23,14 +30,14 @@ final class HistoryController extends AbstractController
 		$this->snapshotViewProxy = $snapshotViewProxy;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->get('/api/history', [$this, 'getFiltered']);
 	}
 
 	public function getFiltered()
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::VIEW_HISTORY);
+		$this->privilegeService->assertPrivilege(Privilege::VIEW_HISTORY);
 
 		$filter = $this->snapshotSearchParser->createFilterFromInputReader($this->inputReader);
 		$filter->setPageSize(50);

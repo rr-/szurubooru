@@ -6,7 +6,7 @@ final class Route
 	public $query;
 	public $route;
 
-	public function __construct($query, $route)
+	public function __construct($query, callable $route)
 	{
 		$this->query = $query;
 		$this->route = $route;
@@ -19,7 +19,8 @@ final class Route
 		if (!preg_match($this->regex, $query, $matches))
 			return false;
 		$routeArguments = $this->getRouteArguments($matches);
-		$output = call_user_func_array($this->route, $routeArguments);
+		$func = $this->route;
+		$output = $func(...array_values($routeArguments));
 		return true;
 	}
 

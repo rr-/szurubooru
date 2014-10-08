@@ -1,12 +1,14 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Config;
+use Szurubooru\Helpers\HttpHelper;
 
 class FileService
 {
 	private $dataDirectory;
 	private $httpHelper;
 
-	public function __construct(\Szurubooru\Config $config, \Szurubooru\Helpers\HttpHelper $httpHelper)
+	public function __construct(Config $config, HttpHelper $httpHelper)
 	{
 		$this->dataDirectory = $config->getPublicDataDirectory();
 		$this->httpHelper = $httpHelper;

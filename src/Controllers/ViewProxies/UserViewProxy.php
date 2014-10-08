@@ -1,11 +1,14 @@
 <?php
 namespace Szurubooru\Controllers\ViewProxies;
+use Szurubooru\Helpers\EnumHelper;
+use Szurubooru\Privilege;
+use Szurubooru\Services\PrivilegeService;
 
 class UserViewProxy extends AbstractViewProxy
 {
 	private $privilegeService;
 
-	public function __construct(\Szurubooru\Services\PrivilegeService $privilegeService)
+	public function __construct(PrivilegeService $privilegeService)
 	{
 		$this->privilegeService = $privilegeService;
 	}
@@ -17,10 +20,10 @@ class UserViewProxy extends AbstractViewProxy
 		{
 			$result->id = $user->getId();
 			$result->name = $user->getName();
-			$result->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankToString($user->getAccessRank());
+			$result->accessRank = EnumHelper::accessRankToString($user->getAccessRank());
 			$result->registrationTime = $user->getRegistrationTime();
 			$result->lastLoginTime = $user->getLastLoginTime();
-			$result->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleToString($user->getAvatarStyle());
+			$result->avatarStyle = EnumHelper::avatarStyleToString($user->getAvatarStyle());
 			$result->banned = $user->isBanned();
 
 			if ($this->privilegeService->isLoggedIn($user))
@@ -28,7 +31,7 @@ class UserViewProxy extends AbstractViewProxy
 				$result->browsingSettings = $user->getBrowsingSettings();
 			}
 
-			if ($this->privilegeService->hasPrivilege(\Szurubooru\Privilege::VIEW_ALL_EMAIL_ADDRESSES) or
+			if ($this->privilegeService->hasPrivilege(Privilege::VIEW_ALL_EMAIL_ADDRESSES) or
 				$this->privilegeService->isLoggedIn($user))
 			{
 				$result->email = $user->getEmail();

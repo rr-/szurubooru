@@ -1,7 +1,9 @@
 <?php
 namespace Szurubooru\Tests;
+use Szurubooru\Config;
+use Szurubooru\Tests\AbstractTestCase;
 
-final class ConfigTest extends \Szurubooru\Tests\AbstractTestCase
+final class ConfigTest extends AbstractTestCase
 {
 	private $testDirectory;
 	private $baseConfigFilePath;
@@ -78,6 +80,6 @@ final class ConfigTest extends \Szurubooru\Tests\AbstractTestCase
 
 	private function getTestConfig()
 	{
-		return new \Szurubooru\Config($this->testDirectory, null);
+		return new Config($this->testDirectory, null);
 	}
 }

@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Services\ThumbnailGenerators;
+use Szurubooru\Helpers\ProgramExecutor;
 
 class FlashThumbnailGenerator implements IThumbnailGenerator
 {
@@ -19,9 +20,9 @@ class FlashThumbnailGenerator implements IThumbnailGenerator
 		$tmpTargetPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
 		file_put_contents($tmpSourcePath, $source);
 
-		if (\Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_DUMP_GNASH))
+		if (ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_DUMP_GNASH))
 		{
-			\Szurubooru\Helpers\ProgramExecutor::run(
+			ProgramExecutor::run(
 				self::PROGRAM_NAME_DUMP_GNASH,
 				[
 					'--screenshot', 'last',
@@ -33,9 +34,9 @@ class FlashThumbnailGenerator implements IThumbnailGenerator
 				]);
 		}
 
-		if (!file_exists($tmpTargetPath) and \Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_SWFRENDER))
+		if (!file_exists($tmpTargetPath) and ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_SWFRENDER))
 		{
-			\Szurubooru\Helpers\ProgramExecutor::run(
+			ProgramExecutor::run(
 				self::PROGRAM_NAME_SWFRENDER,
 				[
 					'swfrender',

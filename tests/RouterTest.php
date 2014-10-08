@@ -1,11 +1,14 @@
 <?php
 namespace Szurubooru\Tests;
+use Szurubooru\Router;
+use Szurubooru\Tests\AbstractTestCase;
+use Szurubooru\Tests\TestController;
 
-final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
+final class PostDaoTest extends AbstractTestCase
 {
 	public function testParameterlessHandling()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$testOk = false;
 		$router->get('/test', function() use (&$testOk) { $testOk = true; });
 		$router->handle('GET', '/test');
@@ -14,7 +17,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testTrailingSlashes()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$testOk = false;
 		$router->get('/test', function() use (&$testOk) { $testOk = true; });
 		$router->handle('GET', '/test/');
@@ -23,7 +26,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testUnhandledMethod()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$router->get('/test', function() { $this->fail('Route shouldn\'t be executed'); });
 		$this->setExpectedException(\DomainException::class);
 		$router->handle('POST', '/test');
@@ -31,7 +34,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testUnhandledQuery()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$router->get('/test', function() { $this->fail('Route shouldn\'t be executed'); });
 		$this->setExpectedException(\DomainException::class);
 		$router->handle('GET', '/test2');
@@ -39,7 +42,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testTwoMethodsHandling()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$testOk = false;
 		$router->get('/test', function() { $this->fail('Route shouldn\'t be executed'); });
 		$router->post('/test', function() use (&$testOk) { $testOk = true; });
@@ -49,7 +52,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testParameterHandling()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$testOk = false;
 		$router->get('/tests/:id', function($id) use (&$testOk) {
 			$this->assertEquals($id, 'test_id');
@@ -61,7 +64,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testTwoParameterHandling()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$testOk = false;
 		$router->get('/tests/:id/:page', function($id, $page) use (&$testOk) {
 			$this->assertEquals($id, 'test_id');
@@ -74,7 +77,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testMissingParameterHandling()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$testOk = false;
 		$router->get('/tests/:id', function($id, $page) use (&$testOk) {
 			$this->assertEquals($id, 'test_id');
@@ -87,7 +90,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testMissingDefaultParameterHandling()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$testOk = false;
 		$router->get('/tests/:id', function($id, $page = 1) use (&$testOk) {
 			$this->assertEquals($id, 'test_id');
@@ -100,7 +103,7 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testOutputHandling()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$router->get('/test', function() { return 'ok'; });
 		$output = $router->handle('GET', '/test');
 		$this->assertEquals('ok', $output);
@@ -108,10 +111,10 @@ final class PostDaoTest extends \Szurubooru\Tests\AbstractTestCase
 
 	public function testRoutingToClassMethods()
 	{
-		$router = new \Szurubooru\Router;
+		$router = new Router;
 		$testController = new TestController();
 		$router->get('/normal', [$testController, 'normalRoute']);
-		$router->get('/static', [\Szurubooru\Tests\TestController::class, 'staticRoute']);
+		$router->get('/static', [TestController::class, 'staticRoute']);
 		$this->assertEquals('normal', $router->handle('GET', '/normal'));
 		$this->assertEquals('static', $router->handle('GET', '/static'));
 	}

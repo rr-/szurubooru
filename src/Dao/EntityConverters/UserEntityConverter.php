@@ -1,9 +1,11 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\User;
 
 class UserEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(\Szurubooru\Entities\Entity $entity)
+	public function toArray(Entity $entity)
 	{
 		return
 		[
@@ -25,7 +27,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\User(intval($array['id']));
+		$entity = new User(intval($array['id']));
 		$entity->setName($array['name']);
 		$entity->setEmail($array['email']);
 		$entity->setEmailUnconfirmed($array['emailUnconfirmed']);

@@ -1,7 +1,14 @@
 <?php
 namespace Szurubooru\Tests;
+use Szurubooru\ControllerRepository;
+use Szurubooru\Dispatcher;
+use Szurubooru\Helpers\HttpHelper;
+use Szurubooru\Router;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\TokenService;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class DispatcherTest extends AbstractDatabaseTestCase
 {
 	private $routerMock;
 	private $configMock;
@@ -13,12 +20,12 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$this->routerMock = $this->mock(\Szurubooru\Router::class);
+		$this->routerMock = $this->mock(Router::class);
 		$this->configMock = $this->mockConfig();
-		$this->httpHelperMock = $this->mock(\Szurubooru\Helpers\HttpHelper::class);
-		$this->authServiceMock = $this->mock(\Szurubooru\Services\AuthService::class);
-		$this->tokenServiceMock = $this->mock(\Szurubooru\Services\TokenService::class);
-		$this->controllerRepositoryMock = $this->mock(\Szurubooru\ControllerRepository::class);
+		$this->httpHelperMock = $this->mock(HttpHelper::class);
+		$this->authServiceMock = $this->mock(AuthService::class);
+		$this->tokenServiceMock = $this->mock(TokenService::class);
+		$this->controllerRepositoryMock = $this->mock(ControllerRepository::class);
 		$this->configMock->set('misc/dumpSqlIntoQueries', 0);
 	}
 
@@ -68,7 +75,7 @@ final class DispatcherTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getDispatcher()
 	{
-		return new \Szurubooru\Dispatcher(
+		return new Dispatcher(
 			$this->routerMock,
 			$this->configMock,
 			$this->databaseConnection,

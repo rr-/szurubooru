@@ -4,10 +4,10 @@ namespace Szurubooru\Entities;
 final class Score extends Entity
 {
 	private $postId;
-	private $userId;
 	private $commentId;
-	private $time;
 	private $score;
+	private $time;
+	private $userId;
 
 	public function getUserId()
 	{

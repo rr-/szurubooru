@@ -1,5 +1,7 @@
 <?php
 namespace Szurubooru\Controllers\ViewProxies;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\ScoreService;
 
 class CommentViewProxy extends AbstractViewProxy
 {
@@ -10,8 +12,8 @@ class CommentViewProxy extends AbstractViewProxy
 	const FETCH_OWN_SCORE = 'fetchOwnScore';
 
 	public function __construct(
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\ScoreService $scoreService,
+		AuthService $authService,
+		ScoreService $scoreService,
 		UserViewProxy $userViewProxy)
 	{
 		$this->authService = $authService;

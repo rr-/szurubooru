@@ -1,5 +1,19 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Controllers\ViewProxies\CommentViewProxy;
+use Szurubooru\Controllers\ViewProxies\PostViewProxy;
+use Szurubooru\Helpers\InputReader;
+use Szurubooru\Privilege;
+use Szurubooru\Router;
+use Szurubooru\SearchServices\Filters\CommentFilter;
+use Szurubooru\SearchServices\Filters\PostFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementRangedValue;
+use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\CommentService;
+use Szurubooru\Services\PostService;
+use Szurubooru\Services\PrivilegeService;
 
 class CommentController extends AbstractController
 {
@@ -12,13 +26,13 @@ class CommentController extends AbstractController
 	private $inputReader;
 
 	public function __construct(
-		\Szurubooru\Services\PrivilegeService $privilegeService,
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\PostService $postService,
-		\Szurubooru\Services\CommentService $commentService,
-		\Szurubooru\Controllers\ViewProxies\CommentViewProxy $commentViewProxy,
-		\Szurubooru\Controllers\ViewProxies\PostViewProxy $postViewProxy,
-		\Szurubooru\Helpers\InputReader $inputReader)
+		PrivilegeService $privilegeService,
+		AuthService $authService,
+		PostService $postService,
+		CommentService $commentService,
+		CommentViewProxy $commentViewProxy,
+		PostViewProxy $postViewProxy,
+		InputReader $inputReader)
 	{
 		$this->privilegeService = $privilegeService;
 		$this->authService = $authService;
@@ -29,7 +43,7 @@ class CommentController extends AbstractController
 		$this->inputReader = $inputReader;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->get('/api/comments', [$this, 'getComments']);
 		$router->get('/api/comments/:postNameOrId', [$this, 'getPostComments']);
@@ -40,19 +54,19 @@ class CommentController extends AbstractController
 
 	public function getComments()
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_COMMENTS);
+		$this->privilegeService->assertPrivilege(Privilege::LIST_COMMENTS);
 
-		$filter = new \Szurubooru\SearchServices\Filters\PostFilter();
+		$filter = new PostFilter();
 		$filter->setPageSize(10);
 		$filter->setPageNumber($this->inputReader->page);
 		$filter->setOrder([
-			\Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_COMMENT_TIME =>
-			\Szurubooru\SearchServices\Filters\PostFilter::ORDER_DESC]);
+			PostFilter::ORDER_LAST_COMMENT_TIME =>
+			PostFilter::ORDER_DESC]);
 
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementRangedValue());
+		$requirement = new Requirement();
+		$requirement->setValue(new RequirementRangedValue());
 		$requirement->getValue()->setMinValue(1);
-		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_COMMENT_COUNT);
+		$requirement->setType(PostFilter::REQUIREMENT_COMMENT_COUNT);
 		$filter->addRequirement($requirement);
 
 		$result = $this->postService->getFiltered($filter);
@@ -77,17 +91,17 @@ class CommentController extends AbstractController
 
 	public function getPostComments($postNameOrId)
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_COMMENTS);
+		$this->privilegeService->assertPrivilege(Privilege::LIST_COMMENTS);
 		$post = $this->postService->getByNameOrId($postNameOrId);
 
-		$filter = new \Szurubooru\SearchServices\Filters\CommentFilter();
+		$filter = new CommentFilter();
 		$filter->setOrder([
-			\Szurubooru\SearchServices\Filters\CommentFilter::ORDER_ID =>
-			\Szurubooru\SearchServices\Filters\CommentFilter::ORDER_ASC]);
+			CommentFilter::ORDER_ID =>
+			CommentFilter::ORDER_ASC]);
 
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($post->getId()));
-		$requirement->setType(\Szurubooru\SearchServices\Filters\CommentFilter::REQUIREMENT_POST_ID);
+		$requirement = new Requirement();
+		$requirement->setValue(new RequirementSingleValue($post->getId()));
+		$requirement->setType(CommentFilter::REQUIREMENT_POST_ID);
 		$filter->addRequirement($requirement);
 
 		$result = $this->commentService->getFiltered($filter);
@@ -97,7 +111,7 @@ class CommentController extends AbstractController
 
 	public function addComment($postNameOrId)
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::ADD_COMMENTS);
+		$this->privilegeService->assertPrivilege(Privilege::ADD_COMMENTS);
 
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		$comment = $this->commentService->createComment($post, $this->inputReader->text);
@@ -110,8 +124,8 @@ class CommentController extends AbstractController
 
 		$this->privilegeService->assertPrivilege(
 			($comment->getUser() and $this->privilegeService->isLoggedIn($comment->getUser()))
-				? \Szurubooru\Privilege::EDIT_OWN_COMMENTS
-				: \Szurubooru\Privilege::EDIT_ALL_COMMENTS);
+				? Privilege::EDIT_OWN_COMMENTS
+				: Privilege::EDIT_ALL_COMMENTS);
 
 		$comment = $this->commentService->updateComment($comment, $this->inputReader->text);
 		return $this->commentViewProxy->fromEntity($comment, $this->getCommentsFetchConfig());
@@ -123,8 +137,8 @@ class CommentController extends AbstractController
 
 		$this->privilegeService->assertPrivilege(
 			$this->privilegeService->isLoggedIn($comment->getUser())
-				? \Szurubooru\Privilege::DELETE_OWN_COMMENTS
-				: \Szurubooru\Privilege::DELETE_ALL_COMMENTS);
+				? Privilege::DELETE_OWN_COMMENTS
+				: Privilege::DELETE_ALL_COMMENTS);
 
 		return $this->commentService->deleteComment($comment);
 	}
@@ -133,7 +147,7 @@ class CommentController extends AbstractController
 	{
 		return
 		[
-			\Szurubooru\Controllers\ViewProxies\CommentViewProxy::FETCH_OWN_SCORE => true,
+			CommentViewProxy::FETCH_OWN_SCORE => true,
 		];
 	}
 }

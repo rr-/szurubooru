@@ -1,5 +1,8 @@
 <?php
 namespace Szurubooru\Upgrades;
+use Szurubooru\Dao\PostDao;
+use Szurubooru\DatabaseConnection;
+use Szurubooru\Services\HistoryService;
 
 class Upgrade09 implements IUpgrade
 {
@@ -7,14 +10,14 @@ class Upgrade09 implements IUpgrade
 	private $historyService;
 
 	public function __construct(
-		\Szurubooru\Dao\PostDao $postDao,
-		\Szurubooru\Services\HistoryService $historyService)
+		PostDao $postDao,
+		HistoryService $historyService)
 	{
 		$this->postDao = $postDao;
 		$this->historyService = $historyService;
 	}
 
-	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
+	public function run(DatabaseConnection $databaseConnection)
 	{
 		$pdo = $databaseConnection->getPDO();
 		$driver = $databaseConnection->getDriver();

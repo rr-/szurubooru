@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\SearchServices;
+use Szurubooru\SearchServices\Filters\IFilter;
 
 class Result
 {
@@ -9,7 +10,7 @@ class Result
 	public $entities;
 	public $totalRecords;
 
-	public function setSearchFilter(Filters\IFilter $searchFilter = null)
+	public function setSearchFilter(IFilter $searchFilter = null)
 	{
 		$this->searchFilter = $searchFilter;
 	}

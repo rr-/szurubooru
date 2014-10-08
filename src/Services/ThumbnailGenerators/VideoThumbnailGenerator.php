@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Services\ThumbnailGenerators;
+use \Szurubooru\Helpers\ProgramExecutor;
 
 class VideoThumbnailGenerator implements IThumbnailGenerator
 {
@@ -19,9 +20,9 @@ class VideoThumbnailGenerator implements IThumbnailGenerator
 		$tmpTargetPath = tempnam(sys_get_temp_dir(), 'thumb') . '.png';
 		file_put_contents($tmpSourcePath, $source);
 
-		if (\Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEGTHUMBNAILER))
+		if (ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEGTHUMBNAILER))
 		{
-			\Szurubooru\Helpers\ProgramExecutor::run(
+			ProgramExecutor::run(
 				self::PROGRAM_NAME_FFMPEGTHUMBNAILER,
 				[
 					'-i' . $tmpSourcePath,
@@ -31,9 +32,9 @@ class VideoThumbnailGenerator implements IThumbnailGenerator
 				]);
 		}
 
-		if (!file_exists($tmpTargetPath) and \Szurubooru\Helpers\ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
+		if (!file_exists($tmpTargetPath) and ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
 		{
-			\Szurubooru\Helpers\ProgramExecutor::run(self::PROGRAM_NAME_FFMEPG,
+			ProgramExecutor::run(self::PROGRAM_NAME_FFMEPG,
 				[
 					'-i', $tmpSourcePath,
 					'-vframes', '1',

@@ -1,12 +1,11 @@
 <?php
 namespace Szurubooru\Tests\SearchService;
-
-use \Szurubooru\Tests\AbstractTestCase;
 use \Szurubooru\Helpers\InputReader;
 use \Szurubooru\SearchServices\Filters\UserFilter;
 use \Szurubooru\SearchServices\Parsers\UserSearchParser;
+use \Szurubooru\Tests\AbstractTestCase;
 
-class UserSearchParserTest extends AbstractTestCase
+final class UserSearchParserTest extends AbstractTestCase
 {
 	private $inputReader;
 	private $userSearchParser;

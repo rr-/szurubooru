@@ -1,7 +1,8 @@
 <?php
 namespace Szurubooru\Tests;
+use Szurubooru\Config;
 
-class ConfigMock extends \Szurubooru\Config
+final class ConfigMock extends Config
 {
 	public function set($key, $value)
 	{

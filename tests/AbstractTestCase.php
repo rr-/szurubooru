@@ -1,11 +1,13 @@
 <?php
 namespace Szurubooru\Tests;
+use Szurubooru\DatabaseConnection;
+use Szurubooru\Injector;
 
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
 	protected function setUp()
 	{
-		\Szurubooru\Injector::init();
+		Injector::init();
 		date_default_timezone_set('UTC');
 	}
 
@@ -26,7 +28,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 
 	protected function mockTransactionManager()
 	{
-		return new TransactionManagerMock($this->mock(\Szurubooru\DatabaseConnection::class));
+		return new TransactionManagerMock($this->mock(DatabaseConnection::class));
 	}
 
 	protected function createTestDirectory()

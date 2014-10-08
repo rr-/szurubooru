@@ -1,38 +1,43 @@
 <?php
 namespace Szurubooru\SearchServices\Parsers;
+use Szurubooru\NotSupportedException;
+use Szurubooru\SearchServices\Filters\IFilter;
+use Szurubooru\SearchServices\Filters\TagFilter;
+use Szurubooru\SearchServices\Tokens\NamedSearchToken;
+use Szurubooru\SearchServices\Tokens\SearchToken;
 
 class TagSearchParser extends AbstractSearchParser
 {
 	protected function createFilter()
 	{
-		return new \Szurubooru\SearchServices\Filters\TagFilter;
+		return new TagFilter;
 	}
 
-	protected function decorateFilterFromToken($filter, $token)
+	protected function decorateFilterFromToken(IFilter $filter, SearchToken $token)
 	{
-		throw new \Szurubooru\NotSupportedException();
+		throw new NotSupportedException();
 	}
 
-	protected function decorateFilterFromNamedToken($filter, $namedToken)
+	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
 	{
-		throw new \Szurubooru\NotSupportedException();
+		throw new NotSupportedException();
 	}
 
-	protected function getOrderColumn($token)
+	protected function getOrderColumn($tokenText)
 	{
-		if ($token === 'id')
-			return \Szurubooru\SearchServices\Filters\TagFilter::ORDER_ID;
+		if ($tokenText === 'id')
+			return TagFilter::ORDER_ID;
 
-		elseif ($token === 'name')
-			return \Szurubooru\SearchServices\Filters\TagFilter::ORDER_NAME;
+		elseif ($tokenText === 'name')
+			return TagFilter::ORDER_NAME;
 
-		elseif ($token === 'creation_time')
-			return \Szurubooru\SearchServices\Filters\TagFilter::ORDER_CREATION_TIME;
+		elseif ($tokenText === 'creation_time')
+			return TagFilter::ORDER_CREATION_TIME;
 
-		elseif ($token === 'usage_count')
-			return \Szurubooru\SearchServices\Filters\TagFilter::ORDER_USAGE_COUNT;
+		elseif ($tokenText === 'usage_count')
+			return TagFilter::ORDER_USAGE_COUNT;
 
 		else
-			throw new \Szurubooru\NotSupportedException();
+			throw new NotSupportedException();
 	}
 }

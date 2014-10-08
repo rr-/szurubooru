@@ -1,9 +1,10 @@
 <?php
 namespace Szurubooru\Upgrades;
+use Szurubooru\DatabaseConnection;
 
 class Upgrade01 implements IUpgrade
 {
-	public function run(\Szurubooru\DatabaseConnection $databaseConnection)
+	public function run(DatabaseConnection $databaseConnection)
 	{
 		$driver = $databaseConnection->getDriver();
 

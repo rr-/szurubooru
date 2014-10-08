@@ -1,11 +1,13 @@
 <?php
 namespace Szurubooru\Tests;
+use Szurubooru\Injector;
+use Szurubooru\Tests\AbstractTestCase;
 
-class ControllerRepositoryTest extends \Szurubooru\Tests\AbstractTestCase
+final class ControllerRepositoryTest extends AbstractTestCase
 {
 	public function testInjection()
 	{
-		$controllerRepository = \Szurubooru\Injector::get(\Szurubooru\ControllerRepository::class);
+		$controllerRepository = Injector::get(\Szurubooru\ControllerRepository::class);
 		$this->assertNotEmpty($controllerRepository->getControllers());
 	}
 }

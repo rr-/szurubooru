@@ -1,7 +1,13 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\SearchServices\Filters\UserFilter;
+use Szurubooru\SearchServices\Result;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\ThumbnailService;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class UserDaoFilterTest extends AbstractDatabaseTestCase
 {
 	private $fileServiceMock;
 	private $thumbnailServiceMock;
@@ -9,8 +15,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
-		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
+		$this->fileServiceMock = $this->mock(FileService::class);
+		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
 	}
 
 	public function pagingProvider()
@@ -27,7 +33,7 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testNothing()
 	{
-		$searchFilter = new \Szurubooru\SearchServices\Filters\UserFilter();
+		$searchFilter = new UserFilter();
 		$searchFilter->setPageNumber(1);
 		$searchFilter->setPageSize(2);
 		$userDao = $this->getUserDao();
@@ -53,10 +59,10 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 				$expectedUsers[] = $user;
 		}
 
-		$searchFilter = new \Szurubooru\SearchServices\Filters\UserFilter();
+		$searchFilter = new UserFilter();
 		$searchFilter->setOrder([
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME =>
-				\Szurubooru\SearchServices\Filters\UserFilter::ORDER_DESC]);
+			UserFilter::ORDER_NAME =>
+				UserFilter::ORDER_DESC]);
 		$searchFilter->setPageNumber($pageNumber);
 		$searchFilter->setPageSize($pageSize);
 
@@ -77,8 +83,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		list ($user1, $user2) = $this->prepareUsers();
 		$this->doTestSorting(
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME,
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_ASC,
+			UserFilter::ORDER_NAME,
+			UserFilter::ORDER_ASC,
 			[$user1, $user2]);
 	}
 
@@ -86,8 +92,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		list ($user1, $user2) = $this->prepareUsers();
 		$this->doTestSorting(
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_NAME,
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_DESC,
+			UserFilter::ORDER_NAME,
+			UserFilter::ORDER_DESC,
 			[$user2, $user1]);
 	}
 
@@ -95,8 +101,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		list ($user1, $user2) = $this->prepareUsers();
 		$this->doTestSorting(
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME,
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_ASC,
+			UserFilter::ORDER_REGISTRATION_TIME,
+			UserFilter::ORDER_ASC,
 			[$user2, $user1]);
 	}
 
@@ -104,8 +110,8 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		list ($user1, $user2) = $this->prepareUsers();
 		$this->doTestSorting(
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_REGISTRATION_TIME,
-			\Szurubooru\SearchServices\Filters\UserFilter::ORDER_DESC,
+			UserFilter::ORDER_REGISTRATION_TIME,
+			UserFilter::ORDER_DESC,
 			[$user1, $user2]);
 	}
 
@@ -125,12 +131,12 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	private function doTestSorting($order, $orderDirection, $expectedUsers)
 	{
 		$userDao = $this->getUserDao();
-		$searchFilter = new \Szurubooru\SearchServices\Filters\UserFilter();
+		$searchFilter = new UserFilter();
 		if ($order !== null)
 			$searchFilter->setOrder([$order => $orderDirection]);
 
 		$result = $userDao->findFiltered($searchFilter, 1, 10);
-		$this->assertInstanceOf(\Szurubooru\SearchServices\Result::class, $result);
+		$this->assertInstanceOf(Result::class, $result);
 		$this->assertEquals($searchFilter, $result->getSearchFilter());
 		$this->assertEntitiesEqual(array_values($expectedUsers), array_values($result->getEntities()));
 		$this->assertEquals(count($expectedUsers), $result->getTotalRecords());
@@ -140,7 +146,7 @@ class UserDaoFilterTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getUserDao()
 	{
-		return new \Szurubooru\Dao\UserDao(
+		return new UserDao(
 			$this->databaseConnection,
 			$this->fileServiceMock,
 			$this->thumbnailServiceMock);

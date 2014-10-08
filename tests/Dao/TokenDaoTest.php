@@ -1,13 +1,16 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\TokenDao;
+use Szurubooru\Entities\Token;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-final class TokenDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class TokenDaoTest extends AbstractDatabaseTestCase
 {
 	public function testRetrievingByValidName()
 	{
-		$token = new \Szurubooru\Entities\Token();
+		$token = new Token();
 		$token->setName('test');
-		$token->setPurpose(\Szurubooru\Entities\Token::PURPOSE_LOGIN);
+		$token->setPurpose(Token::PURPOSE_LOGIN);
 
 		$tokenDao = $this->getTokenDao();
 		$tokenDao->save($token);
@@ -27,20 +30,20 @@ final class TokenDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testRetrievingByAdditionalDataAndPurpose()
 	{
-		$token = new \Szurubooru\Entities\Token();
+		$token = new Token();
 		$token->setName('test');
-		$token->setPurpose(\Szurubooru\Entities\Token::PURPOSE_LOGIN);
+		$token->setPurpose(Token::PURPOSE_LOGIN);
 
 		$tokenDao = $this->getTokenDao();
 		$tokenDao->save($token);
 		$expected = $token;
 
-		$this->assertEntitiesEqual($expected, $tokenDao->findByAdditionalDataAndPurpose(null, \Szurubooru\Entities\Token::PURPOSE_LOGIN));
-		$this->assertNull($tokenDao->findByAdditionalDataAndPurpose(null, \Szurubooru\Entities\Token::PURPOSE_ACTIVATE));
+		$this->assertEntitiesEqual($expected, $tokenDao->findByAdditionalDataAndPurpose(null, Token::PURPOSE_LOGIN));
+		$this->assertNull($tokenDao->findByAdditionalDataAndPurpose(null, Token::PURPOSE_ACTIVATE));
 	}
 
 	private function getTokenDao()
 	{
-		return new \Szurubooru\Dao\TokenDao($this->databaseConnection);
+		return new TokenDao($this->databaseConnection);
 	}
 }

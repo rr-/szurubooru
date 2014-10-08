@@ -1,7 +1,12 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\ThumbnailService;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class UserDaoTest extends AbstractDatabaseTestCase
 {
 	private $fileServiceMock;
 	private $thumbnailServiceMock;
@@ -10,8 +15,8 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		parent::setUp();
 
-		$this->fileServiceMock = $this->mock(\Szurubooru\Services\FileService::class);
-		$this->thumbnailServiceMock = $this->mock(\Szurubooru\Services\ThumbnailService::class);
+		$this->fileServiceMock = $this->mock(FileService::class);
+		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
 	}
 
 	public function testRetrievingByValidName()
@@ -49,7 +54,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$userDao = $this->getUserDao();
 		$user = self::getTestUser();
-		$user->setAvatarStyle(\Szurubooru\Entities\User::AVATAR_STYLE_MANUAL);
+		$user->setAvatarStyle(User::AVATAR_STYLE_MANUAL);
 		$userDao->save($user);
 
 		$this->assertNull($user->getCustomAvatarSourceContent());
@@ -59,7 +64,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$userDao = $this->getUserDao();
 		$user = self::getTestUser();
-		$user->setAvatarStyle(\Szurubooru\Entities\User::AVATAR_STYLE_MANUAL);
+		$user->setAvatarStyle(User::AVATAR_STYLE_MANUAL);
 		$userDao->save($user);
 
 		$user = $userDao->findById($user->getId());
@@ -76,7 +81,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	{
 		$userDao = $this->getUserDao();
 		$user = self::getTestUser();
-		$user->setAvatarStyle(\Szurubooru\Entities\User::AVATAR_STYLE_MANUAL);
+		$user->setAvatarStyle(User::AVATAR_STYLE_MANUAL);
 		$user->setCustomAvatarSourceContent('whatever');
 
 		$this->thumbnailServiceMock
@@ -103,7 +108,7 @@ final class UserDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getUserDao()
 	{
-		return new \Szurubooru\Dao\UserDao(
+		return new UserDao(
 			$this->databaseConnection,
 			$this->fileServiceMock,
 			$this->thumbnailServiceMock);

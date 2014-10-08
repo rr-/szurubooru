@@ -1,14 +1,16 @@
 <?php
 namespace Szurubooru\Dao;
+use Szurubooru\Dao\EntityConverters\GlobalParamEntityConverter;
+use Szurubooru\DatabaseConnection;
 
 class GlobalParamDao extends AbstractDao implements ICrudDao
 {
-	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
+	public function __construct(DatabaseConnection $databaseConnection)
 	{
 		parent::__construct(
 			$databaseConnection,
 			'globals',
-			new \Szurubooru\Dao\EntityConverters\GlobalParamEntityConverter());
+			new GlobalParamEntityConverter());
 	}
 
 	public function save(&$entity)

@@ -1,5 +1,13 @@
 <?php
 namespace Szurubooru\Controllers\ViewProxies;
+use Szurubooru\Helpers\EnumHelper;
+use Szurubooru\Helpers\MimeHelper;
+use Szurubooru\Privilege;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\FavoritesService;
+use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\PrivilegeService;
+use Szurubooru\Services\ScoreService;
 
 class PostViewProxy extends AbstractViewProxy
 {
@@ -20,11 +28,11 @@ class PostViewProxy extends AbstractViewProxy
 	private $snapshotViewProxy;
 
 	public function __construct(
-		\Szurubooru\Services\PrivilegeService $privilegeService,
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\HistoryService $historyService,
-		\Szurubooru\Services\FavoritesService $favoritesService,
-		\Szurubooru\Services\ScoreService $scoreService,
+		PrivilegeService $privilegeService,
+		AuthService $authService,
+		HistoryService $historyService,
+		FavoritesService $favoritesService,
+		ScoreService $scoreService,
 		TagViewProxy $tagViewProxy,
 		UserViewProxy $userViewProxy,
 		SnapshotViewProxy $snapshotViewProxy)
@@ -50,11 +58,11 @@ class PostViewProxy extends AbstractViewProxy
 		$result->name = $post->getName();
 		$result->uploadTime = $post->getUploadTime();
 		$result->lastEditTime = $post->getLastEditTime();
-		$result->safety = \Szurubooru\Helpers\EnumHelper::postSafetyToString($post->getSafety());
-		$result->contentType = \Szurubooru\Helpers\EnumHelper::postTypeToString($post->getContentType());
+		$result->safety = EnumHelper::postSafetyToString($post->getSafety());
+		$result->contentType = EnumHelper::postTypeToString($post->getContentType());
 		$result->contentChecksum = $post->getContentChecksum();
 		$result->contentMimeType = $post->getContentMimeType();
-		$result->contentExtension = \Szurubooru\Helpers\MimeHelper::getExtension($post->getContentMimeType());
+		$result->contentExtension = MimeHelper::getExtension($post->getContentMimeType());
 		$result->source = $post->getSource();
 		$result->imageWidth = $post->getImageWidth();
 		$result->imageHeight = $post->getImageHeight();
@@ -76,7 +84,7 @@ class PostViewProxy extends AbstractViewProxy
 
 		if (!empty($config[self::FETCH_HISTORY]))
 		{
-			if ($this->privilegeService->hasPrivilege(\Szurubooru\Privilege::VIEW_HISTORY))
+			if ($this->privilegeService->hasPrivilege(Privilege::VIEW_HISTORY))
 				$result->history = $this->snapshotViewProxy->fromArray($this->historyService->getPostHistory($post));
 			else
 				$result->history = [];

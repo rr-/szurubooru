@@ -1,5 +1,14 @@
 <?php
 namespace Szurubooru\Dao;
+use Szurubooru\Dao\EntityConverters\IEntityConverter;
+use Szurubooru\DatabaseConnection;
+use Szurubooru\Entities\Entity;
+use Szurubooru\SearchServices\Filters\IFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
+use Szurubooru\SearchServices\Requirements\RequirementRangedValue;
+use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
+use Szurubooru\SearchServices\Result;
 
 abstract class AbstractDao implements ICrudDao
 {
@@ -10,9 +19,9 @@ abstract class AbstractDao implements ICrudDao
 	protected $driver;
 
 	public function __construct(
-		\Szurubooru\DatabaseConnection $databaseConnection,
+		DatabaseConnection $databaseConnection,
 		$tableName,
-		\Szurubooru\Dao\EntityConverters\IEntityConverter $entityConverter)
+		IEntityConverter $entityConverter)
 	{
 		$this->setDatabaseConnection($databaseConnection);
 		$this->tableName = $tableName;
@@ -70,7 +79,7 @@ abstract class AbstractDao implements ICrudDao
 		return $this->findBy($this->getIdColumn(), $entityIds);
 	}
 
-	public function findFiltered(\Szurubooru\SearchServices\Filters\IFilter $searchFilter)
+	public function findFiltered(IFilter $searchFilter)
 	{
 		$query = $this->fpdo->from($this->tableName)->disableSmartJoin();
 
@@ -90,7 +99,7 @@ abstract class AbstractDao implements ICrudDao
 		$this->decorateQueryFromFilter($query, $searchFilter);
 		$totalRecords = count($query);
 
-		$searchResult = new \Szurubooru\SearchServices\Result();
+		$searchResult = new Result();
 		$searchResult->setSearchFilter($searchFilter);
 		$searchResult->setEntities($entities);
 		$searchResult->setTotalRecords($totalRecords);
@@ -113,14 +122,14 @@ abstract class AbstractDao implements ICrudDao
 		return $this->deleteBy($this->getIdColumn(), $entityId);
 	}
 
-	protected function update(\Szurubooru\Entities\Entity $entity)
+	protected function update(Entity $entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);
 		$this->fpdo->update($this->tableName)->set($arrayEntity)->where($this->getIdColumn(), $entity->getId())->execute();
 		return $entity;
 	}
 
-	protected function create(\Szurubooru\Entities\Entity $entity)
+	protected function create(Entity $entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);
 		$this->fpdo->insertInto($this->tableName)->values($arrayEntity)->execute();
@@ -164,11 +173,11 @@ abstract class AbstractDao implements ICrudDao
 		$this->fpdo->deleteFrom($this->tableName)->where($columnName, $value)->execute();
 	}
 
-	protected function afterLoad(\Szurubooru\Entities\Entity $entity)
+	protected function afterLoad(Entity $entity)
 	{
 	}
 
-	protected function afterSave(\Szurubooru\Entities\Entity $entity)
+	protected function afterSave(Entity $entity)
 	{
 	}
 
@@ -176,16 +185,16 @@ abstract class AbstractDao implements ICrudDao
 	{
 	}
 
-	protected function beforeDelete(\Szurubooru\Entities\Entity $entity)
+	protected function beforeDelete(Entity $entity)
 	{
 	}
 
-	protected function decorateQueryFromRequirement($query, \Szurubooru\SearchServices\Requirements\Requirement $requirement)
+	protected function decorateQueryFromRequirement($query, Requirement $requirement)
 	{
 		$value = $requirement->getValue();
 		$sqlColumn = $requirement->getType();
 
-		if ($value instanceof \Szurubooru\SearchServices\Requirements\RequirementCompositeValue)
+		if ($value instanceof RequirementCompositeValue)
 		{
 			$sql = $sqlColumn;
 			$bindings = [$value->getValues()];
@@ -194,7 +203,7 @@ abstract class AbstractDao implements ICrudDao
 				$sql = 'NOT ' . $sql;
 		}
 
-		else if ($value instanceof \Szurubooru\SearchServices\Requirements\RequirementRangedValue)
+		else if ($value instanceof RequirementRangedValue)
 		{
 			if ($value->getMinValue() and $value->getMaxValue())
 			{
@@ -218,7 +227,7 @@ abstract class AbstractDao implements ICrudDao
 				$sql = 'NOT (' . $sql . ')';
 		}
 
-		else if ($value instanceof \Szurubooru\SearchServices\Requirements\RequirementSingleValue)
+		else if ($value instanceof RequirementSingleValue)
 		{
 			$sql = $sqlColumn;
 			$bindings = [$value->getValue()];
@@ -230,7 +239,7 @@ abstract class AbstractDao implements ICrudDao
 		else
 			throw new \Exception('Bad value: ' . get_class($value));
 
-		call_user_func_array([$query, 'where'], array_merge([$sql], $bindings));
+		$query->where($sql, ...$bindings);
 	}
 
 	protected function arrayToEntities(array $arrayEntities)
@@ -244,14 +253,14 @@ abstract class AbstractDao implements ICrudDao
 		return $entities;
 	}
 
-	private function setDatabaseConnection(\Szurubooru\DatabaseConnection $databaseConnection)
+	private function setDatabaseConnection(DatabaseConnection $databaseConnection)
 	{
 		$this->pdo = $databaseConnection->getPDO();
 		$this->fpdo = new \FluentPDO($this->pdo);
 		$this->driver = $databaseConnection->getDriver();
 	}
 
-	private function decorateQueryFromFilter($query, \Szurubooru\SearchServices\Filters\IFilter $filter)
+	private function decorateQueryFromFilter($query, IFilter $filter)
 	{
 		foreach ($filter->getRequirements() as $requirement)
 		{
@@ -264,7 +273,7 @@ abstract class AbstractDao implements ICrudDao
 		$orderByString = '';
 		foreach ($order as $orderColumn => $orderDir)
 		{
-			if ($orderColumn === \Szurubooru\SearchServices\Filters\BasicFilter::ORDER_RANDOM)
+			if ($orderColumn === IFilter::ORDER_RANDOM)
 			{
 				$driver = $this->driver;
 				if ($driver === 'sqlite')
@@ -276,12 +285,12 @@ abstract class AbstractDao implements ICrudDao
 					$orderColumn = 'RAND()';
 				}
 			}
-			$orderByString .= $orderColumn . ' ' . ($orderDir === \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC ? 'DESC' : 'ASC') . ', ';
+			$orderByString .= $orderColumn . ' ' . ($orderDir === IFilter::ORDER_DESC ? 'DESC' : 'ASC') . ', ';
 		}
 		return substr($orderByString, 0, -2);
 	}
 
-	private function upsert(\Szurubooru\Entities\Entity $entity)
+	private function upsert(Entity $entity)
 	{
 		if ($entity->getId())
 		{

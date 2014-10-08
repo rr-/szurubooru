@@ -1,5 +1,22 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Config;
+use Szurubooru\Controllers\ViewProxies\PostViewProxy;
+use Szurubooru\Controllers\ViewProxies\SnapshotViewProxy;
+use Szurubooru\Entities\Post;
+use Szurubooru\FormData\PostEditFormData;
+use Szurubooru\FormData\UploadFormData;
+use Szurubooru\Helpers\InputReader;
+use Szurubooru\Helpers\TypeHelper;
+use Szurubooru\Privilege;
+use Szurubooru\Router;
+use Szurubooru\SearchServices\Filters\PostFilter;
+use Szurubooru\SearchServices\Parsers\PostSearchParser;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\PostService;
+use Szurubooru\Services\PrivilegeService;
 
 final class PostController extends AbstractController
 {
@@ -13,14 +30,14 @@ final class PostController extends AbstractController
 	private $snapshotViewProxy;
 
 	public function __construct(
-		\Szurubooru\Config $config,
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\PrivilegeService $privilegeService,
-		\Szurubooru\Services\PostService $postService,
-		\Szurubooru\SearchServices\Parsers\PostSearchParser $postSearchParser,
-		\Szurubooru\Helpers\InputReader $inputReader,
-		\Szurubooru\Controllers\ViewProxies\PostViewProxy $postViewProxy,
-		\Szurubooru\Controllers\ViewProxies\SnapshotViewProxy $snapshotViewProxy)
+		Config $config,
+		AuthService $authService,
+		PrivilegeService $privilegeService,
+		PostService $postService,
+		PostSearchParser $postSearchParser,
+		InputReader $inputReader,
+		PostViewProxy $postViewProxy,
+		SnapshotViewProxy $snapshotViewProxy)
 	{
 		$this->config = $config;
 		$this->authService = $authService;
@@ -32,7 +49,7 @@ final class PostController extends AbstractController
 		$this->snapshotViewProxy = $snapshotViewProxy;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->post('/api/posts', [$this, 'createPost']);
 		$router->get('/api/posts', [$this, 'getFiltered']);
@@ -47,7 +64,7 @@ final class PostController extends AbstractController
 	public function getByNameOrId($postNameOrId)
 	{
 		if ($postNameOrId !== 'featured')
-			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::VIEW_POSTS);
+			$this->privilegeService->assertPrivilege(Privilege::VIEW_POSTS);
 
 		$post = $this->getByNameOrIdWithoutProxy($postNameOrId);
 		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
@@ -55,14 +72,14 @@ final class PostController extends AbstractController
 
 	public function getHistory($postNameOrId)
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::VIEW_HISTORY);
+		$this->privilegeService->assertPrivilege(Privilege::VIEW_HISTORY);
 		$post = $this->getByNameOrIdWithoutProxy($postNameOrId);
 		return ['data' => $this->snapshotViewProxy->fromArray($this->postService->getHistory($post))];
 	}
 
 	public function getFiltered()
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::LIST_POSTS);
+		$this->privilegeService->assertPrivilege(Privilege::LIST_POSTS);
 
 		$filter = $this->postSearchParser->createFilterFromInputReader($this->inputReader);
 		$filter->setPageSize($this->config->posts->postsPerPage);
@@ -78,13 +95,13 @@ final class PostController extends AbstractController
 
 	public function createPost()
 	{
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::UPLOAD_POSTS);
-		$formData = new \Szurubooru\FormData\UploadFormData($this->inputReader);
+		$this->privilegeService->assertPrivilege(Privilege::UPLOAD_POSTS);
+		$formData = new UploadFormData($this->inputReader);
 
-		$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::UPLOAD_POSTS);
+		$this->privilegeService->assertPrivilege(Privilege::UPLOAD_POSTS);
 
 		if ($formData->anonymous)
-			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::UPLOAD_POSTS_ANONYMOUSLY);
+			$this->privilegeService->assertPrivilege(Privilege::UPLOAD_POSTS_ANONYMOUSLY);
 
 		$post = $this->postService->createPost($formData);
 		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
@@ -93,22 +110,22 @@ final class PostController extends AbstractController
 	public function updatePost($postNameOrId)
 	{
 		$post = $this->postService->getByNameOrId($postNameOrId);
-		$formData = new \Szurubooru\FormData\PostEditFormData($this->inputReader);
+		$formData = new PostEditFormData($this->inputReader);
 
 		if ($formData->content !== null)
-			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_CONTENT);
+			$this->privilegeService->assertPrivilege(Privilege::CHANGE_POST_CONTENT);
 
 		if ($formData->thumbnail !== null)
-			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_THUMBNAIL);
+			$this->privilegeService->assertPrivilege(Privilege::CHANGE_POST_THUMBNAIL);
 
 		if ($formData->safety !== null)
-			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_SAFETY);
+			$this->privilegeService->assertPrivilege(Privilege::CHANGE_POST_SAFETY);
 
 		if ($formData->source !== null)
-			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_SOURCE);
+			$this->privilegeService->assertPrivilege(Privilege::CHANGE_POST_SOURCE);
 
 		if ($formData->tags !== null)
-			$this->privilegeService->assertPrivilege(\Szurubooru\Privilege::CHANGE_POST_TAGS);
+			$this->privilegeService->assertPrivilege(Privilege::CHANGE_POST_TAGS);
 
 		$this->postService->updatePost($post, $formData);
 		$post = $this->postService->getByNameOrId($postNameOrId);
@@ -139,12 +156,12 @@ final class PostController extends AbstractController
 	{
 		return
 		[
-			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_RELATIONS => true,
-			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_TAGS => true,
-			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_USER => true,
-			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_HISTORY => true,
-			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_OWN_SCORE => true,
-			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_FAVORITES => true,
+			PostViewProxy::FETCH_RELATIONS => true,
+			PostViewProxy::FETCH_TAGS => true,
+			PostViewProxy::FETCH_USER => true,
+			PostViewProxy::FETCH_HISTORY => true,
+			PostViewProxy::FETCH_OWN_SCORE => true,
+			PostViewProxy::FETCH_FAVORITES => true,
 		];
 	}
 
@@ -152,7 +169,7 @@ final class PostController extends AbstractController
 	{
 		return
 		[
-			\Szurubooru\Controllers\ViewProxies\PostViewProxy::FETCH_TAGS => true,
+			PostViewProxy::FETCH_TAGS => true,
 		];
 	}
 
@@ -163,33 +180,33 @@ final class PostController extends AbstractController
 		if (!$userSettings)
 			return;
 
-		if (!empty($userSettings->listPosts) and !count($filter->getRequirementsByType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SAFETY)))
+		if (!empty($userSettings->listPosts) and !count($filter->getRequirementsByType(PostFilter::REQUIREMENT_SAFETY)))
 		{
 			$values = [];
-			if (!\Szurubooru\Helpers\TypeHelper::toBool($userSettings->listPosts->safe))
-				$values[] = \Szurubooru\Entities\Post::POST_SAFETY_SAFE;
-			if (!\Szurubooru\Helpers\TypeHelper::toBool($userSettings->listPosts->sketchy))
-				$values[] = \Szurubooru\Entities\Post::POST_SAFETY_SKETCHY;
-			if (!\Szurubooru\Helpers\TypeHelper::toBool($userSettings->listPosts->unsafe))
-				$values[] = \Szurubooru\Entities\Post::POST_SAFETY_UNSAFE;
+			if (!TypeHelper::toBool($userSettings->listPosts->safe))
+				$values[] = Post::POST_SAFETY_SAFE;
+			if (!TypeHelper::toBool($userSettings->listPosts->sketchy))
+				$values[] = Post::POST_SAFETY_SKETCHY;
+			if (!TypeHelper::toBool($userSettings->listPosts->unsafe))
+				$values[] = Post::POST_SAFETY_UNSAFE;
 			if (count($values))
 			{
-				$requirementValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
+				$requirementValue = new RequirementCompositeValue();
 				$requirementValue->setValues($values);
-				$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-				$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SAFETY);
+				$requirement = new Requirement();
+				$requirement->setType(PostFilter::REQUIREMENT_SAFETY);
 				$requirement->setValue($requirementValue);
 				$requirement->setNegated(true);
 				$filter->addRequirement($requirement);
 			}
 		}
 
-		if (!empty($userSettings->hideDownvoted) and !count($filter->getRequirementsByType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_USER_SCORE)))
+		if (!empty($userSettings->hideDownvoted) and !count($filter->getRequirementsByType(PostFilter::REQUIREMENT_USER_SCORE)))
 		{
-			$requirementValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
+			$requirementValue = new RequirementCompositeValue();
 			$requirementValue->setValues([$currentUser->getName(), -1]);
-			$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-			$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_USER_SCORE);
+			$requirement = new Requirement();
+			$requirement->setType(PostFilter::REQUIREMENT_USER_SCORE);
 			$requirement->setValue($requirementValue);
 			$requirement->setNegated(true);
 			$filter->addRequirement($requirement);

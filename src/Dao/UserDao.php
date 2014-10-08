@@ -1,5 +1,11 @@
 <?php
 namespace Szurubooru\Dao;
+use Szurubooru\Dao\EntityConverters\UserEntityConverter;
+use Szurubooru\DatabaseConnection;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\ThumbnailService;
 
 class UserDao extends AbstractDao implements ICrudDao
 {
@@ -10,14 +16,14 @@ class UserDao extends AbstractDao implements ICrudDao
 	private $thumbnailService;
 
 	public function __construct(
-		\Szurubooru\DatabaseConnection $databaseConnection,
-		\Szurubooru\Services\FileService $fileService,
-		\Szurubooru\Services\ThumbnailService $thumbnailService)
+		DatabaseConnection $databaseConnection,
+		FileService $fileService,
+		ThumbnailService $thumbnailService)
 	{
 		parent::__construct(
 			$databaseConnection,
 			'users',
-			new \Szurubooru\Dao\EntityConverters\UserEntityConverter());
+			new UserEntityConverter());
 
 		$this->fileService = $fileService;
 		$this->thumbnailService = $thumbnailService;
@@ -49,18 +55,18 @@ class UserDao extends AbstractDao implements ICrudDao
 		$this->fpdo->deleteFrom('tokens')->where('additionalData', $userName);
 	}
 
-	protected function afterLoad(\Szurubooru\Entities\Entity $user)
+	protected function afterLoad(Entity $user)
 	{
 		$user->setLazyLoader(
-			\Szurubooru\Entities\User::LAZY_LOADER_CUSTOM_AVATAR_SOURCE_CONTENT,
-			function(\Szurubooru\Entities\User $user)
+			User::LAZY_LOADER_CUSTOM_AVATAR_SOURCE_CONTENT,
+			function(User $user)
 			{
 				$avatarSource = $user->getCustomAvatarSourceContentPath();
 				return $this->fileService->load($avatarSource);
 			});
 	}
 
-	protected function afterSave(\Szurubooru\Entities\Entity $user)
+	protected function afterSave(Entity $user)
 	{
 		$targetPath = $user->getCustomAvatarSourceContentPath();
 		$content = $user->getCustomAvatarSourceContent();
@@ -71,7 +77,7 @@ class UserDao extends AbstractDao implements ICrudDao
 		$this->thumbnailService->deleteUsedThumbnails($targetPath);
 	}
 
-	protected function afterDelete(\Szurubooru\Entities\Entity $user)
+	protected function afterDelete(Entity $user)
 	{
 		$avatarSource = $user->getCustomAvatarSourceContentPath();
 		$this->fileService->delete($avatarSource);

@@ -5,7 +5,7 @@ abstract class AbstractEntityConverter implements IEntityConverter
 {
 	private $entityDecorator = null;
 
-	public function setEntityDecorator($entityDecorator)
+	public function setEntityDecorator(callable $entityDecorator)
 	{
 		$this->entityDecorator = $entityDecorator;
 	}
@@ -13,8 +13,9 @@ abstract class AbstractEntityConverter implements IEntityConverter
 	public function toEntity(array $array)
 	{
 		$entity = $this->toBasicEntity($array);
-		if ($this->entityDecorator !== null)
-			call_user_func($this->entityDecorator, $entity);
+		$func = $this->entityDecorator;
+		if ($func !== null)
+			$func($entity);
 		return $entity;
 	}
 

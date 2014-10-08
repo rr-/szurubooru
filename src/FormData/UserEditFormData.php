@@ -1,7 +1,11 @@
 <?php
 namespace Szurubooru\FormData;
+use Szurubooru\Helpers\EnumHelper;
+use Szurubooru\Helpers\MimeHelper;
+use Szurubooru\IValidatable;
+use Szurubooru\Validator;
 
-class UserEditFormData implements \Szurubooru\IValidatable
+class UserEditFormData implements IValidatable
 {
 	public $userName;
 	public $email;
@@ -20,16 +24,16 @@ class UserEditFormData implements \Szurubooru\IValidatable
 			$this->email = $inputReader->email;
 			$this->password = $inputReader->password;
 			if ($inputReader->accessRank !== null)
-				$this->accessRank = \Szurubooru\Helpers\EnumHelper::accessRankFromString($inputReader->accessRank);
+				$this->accessRank = EnumHelper::accessRankFromString($inputReader->accessRank);
 			if ($inputReader->avatarStyle !== null)
-				$this->avatarStyle = \Szurubooru\Helpers\EnumHelper::avatarStyleFromString($inputReader->avatarStyle);
+				$this->avatarStyle = EnumHelper::avatarStyleFromString($inputReader->avatarStyle);
 			$this->avatarContent = $inputReader->decodeBase64($inputReader->avatarContent);
 			$this->browsingSettings = json_decode($inputReader->browsingSettings);
 			$this->banned = boolval($inputReader->banned);
 		}
 	}
 
-	public function validate(\Szurubooru\Validator $validator)
+	public function validate(Validator $validator)
 	{
 		if ($this->userName !== null)
 			$validator->validateUserName($this->userName);
@@ -45,8 +49,8 @@ class UserEditFormData implements \Szurubooru\IValidatable
 
 		if ($this->avatarContent)
 		{
-			$avatarContentMimeType = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($this->avatarContent);
-			if (!\Szurubooru\Helpers\MimeHelper::isImage($avatarContentMimeType))
+			$avatarContentMimeType = MimeHelper::getMimeTypeFromBuffer($this->avatarContent);
+			if (!MimeHelper::isImage($avatarContentMimeType))
 				throw new \DomainException('Avatar must be an image (detected: ' . $avatarContentMimeType . ').');
 		}
 

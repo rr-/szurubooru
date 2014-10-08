@@ -1,41 +1,48 @@
 <?php
 namespace Szurubooru\SearchServices\Parsers;
+use Szurubooru\Helpers\EnumHelper;
+use Szurubooru\NotSupportedException;
+use Szurubooru\SearchServices\Filters\IFilter;
+use Szurubooru\SearchServices\Filters\SnapshotFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Tokens\NamedSearchToken;
+use Szurubooru\SearchServices\Tokens\SearchToken;
 
 class SnapshotSearchParser extends AbstractSearchParser
 {
 	protected function createFilter()
 	{
-		return new \Szurubooru\SearchServices\Filters\SnapshotFilter;
+		return new SnapshotFilter;
 	}
 
-	protected function decorateFilterFromToken($filter, $token)
+	protected function decorateFilterFromToken(IFilter $filter, SearchToken $token)
 	{
 		if (substr_count($token->getValue(), ',') !== 1)
-			throw new \BadMethodCallException('Not supported');
+			throw new NotSupportedException();
 
 		if ($token->isNegated())
-			throw new \BadMethodCallException('Not supported');
+			throw new NotSupportedException();
 
 		list ($type, $primaryKey) = explode(',', $token->getValue());
 
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
+		$requirement = new Requirement();
+		$requirement->setType(SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
 		$requirement->setValue($this->createRequirementValue($primaryKey));
 		$filter->addRequirement($requirement);
 
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_TYPE);
-		$requirement->setValue($this->createRequirementValue(\Szurubooru\Helpers\EnumHelper::snapshotTypeFromString($type)));
+		$requirement = new Requirement();
+		$requirement->setType(SnapshotFilter::REQUIREMENT_TYPE);
+		$requirement->setValue($this->createRequirementValue(EnumHelper::snapshotTypeFromString($type)));
 		$filter->addRequirement($requirement);
 	}
 
-	protected function decorateFilterFromNamedToken($filter, $namedToken)
+	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
 	{
-		throw new \BadMethodCallException('Not supported');
+		throw new NotSupportedException();
 	}
 
-	protected function getOrderColumn($token)
+	protected function getOrderColumn($tokenText)
 	{
-		throw new \BadMethodCallException('Not supported');
+		throw new NotSupportedException();
 	}
 }

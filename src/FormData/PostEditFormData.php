@@ -1,7 +1,10 @@
 <?php
 namespace Szurubooru\FormData;
+use Szurubooru\Helpers\EnumHelper;
+use Szurubooru\IValidatable;
+use Szurubooru\Validator;
 
-class PostEditFormData implements \Szurubooru\IValidatable
+class PostEditFormData implements IValidatable
 {
 	public $content;
 	public $thumbnail;
@@ -18,7 +21,7 @@ class PostEditFormData implements \Szurubooru\IValidatable
 		{
 			$this->content = $inputReader->decodeBase64($inputReader->content);
 			$this->thumbnail = $inputReader->decodebase64($inputReader->thumbnail);
-			$this->safety = \Szurubooru\Helpers\EnumHelper::postSafetyFromString($inputReader->safety);
+			$this->safety = EnumHelper::postSafetyFromString($inputReader->safety);
 			$this->source = $inputReader->source;
 			$this->tags = preg_split('/[\s+]/', $inputReader->tags);
 			$this->relations = array_filter(preg_split('/[\s+]/', $inputReader->relations));
@@ -26,7 +29,7 @@ class PostEditFormData implements \Szurubooru\IValidatable
 		}
 	}
 
-	public function validate(\Szurubooru\Validator $validator)
+	public function validate(Validator $validator)
 	{
 		$validator->validatePostTags($this->tags);
 

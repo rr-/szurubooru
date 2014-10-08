@@ -1,5 +1,15 @@
 <?php
 namespace Szurubooru\SearchServices\Parsers;
+use Szurubooru\Helpers\EnumHelper;
+use Szurubooru\NotSupportedException;
+use Szurubooru\SearchServices\Filters\IFilter;
+use Szurubooru\SearchServices\Filters\PostFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
+use Szurubooru\SearchServices\Tokens\NamedSearchToken;
+use Szurubooru\SearchServices\Tokens\SearchToken;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\PrivilegeService;
 
 class PostSearchParser extends AbstractSearchParser
 {
@@ -7,8 +17,8 @@ class PostSearchParser extends AbstractSearchParser
 	private $privilegeService;
 
 	public function __construct(
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\PrivilegeService $privilegeService)
+		AuthService $authService,
+		PrivilegeService $privilegeService)
 	{
 		$this->authService = $authService;
 		$this->privilegeService = $privilegeService;
@@ -16,19 +26,19 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function createFilter()
 	{
-		return new \Szurubooru\SearchServices\Filters\PostFilter;
+		return new PostFilter;
 	}
 
-	protected function decorateFilterFromToken($filter, $token)
+	protected function decorateFilterFromToken(IFilter $filter, SearchToken $token)
 	{
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TAG);
+		$requirement = new Requirement();
+		$requirement->setType(PostFilter::REQUIREMENT_TAG);
 		$requirement->setValue($this->createRequirementValue($token->getValue()));
 		$requirement->setNegated($token->isNegated());
 		$filter->addRequirement($requirement);
 	}
 
-	protected function decorateFilterFromNamedToken($filter, $token)
+	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $token)
 	{
 		if ($token->getKey() === 'id')
 			$this->addIdRequirement($filter, $token);
@@ -81,53 +91,53 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'special' and $token->getValue() === 'fav')
 		{
 			$this->privilegeService->assertLoggedIn();
-			$token = new \Szurubooru\SearchServices\Tokens\NamedSearchToken();
+			$token = new NamedSearchToken();
 			$token->setKey('fav');
 			$token->setValue($this->authService->getLoggedInUser()->getName());
 			$this->decorateFilterFromNamedToken($filter, $token);
 		}
 
 		else
-			throw new \Szurubooru\NotSupportedException();
+			throw new NotSupportedException();
 	}
 
-	protected function getOrderColumn($token)
+	protected function getOrderColumn($tokenText)
 	{
-		if ($token === 'id')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_ID;
+		if ($tokenText === 'id')
+			return PostFilter::ORDER_ID;
 
-		elseif ($token === 'fav_time')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_FAV_TIME;
+		elseif ($tokenText === 'fav_time')
+			return PostFilter::ORDER_FAV_TIME;
 
-		elseif ($token === 'fav_count')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_FAV_COUNT;
+		elseif ($tokenText === 'fav_count')
+			return PostFilter::ORDER_FAV_COUNT;
 
-		elseif ($token === 'tag_count')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_TAG_COUNT;
+		elseif ($tokenText === 'tag_count')
+			return PostFilter::ORDER_TAG_COUNT;
 
-		elseif ($token === 'time')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_EDIT_TIME;
+		elseif ($tokenText === 'time')
+			return PostFilter::ORDER_LAST_EDIT_TIME;
 
-		elseif ($token === 'score')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_SCORE;
+		elseif ($tokenText === 'score')
+			return PostFilter::ORDER_SCORE;
 
-		elseif ($token === 'file_size')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_FILE_SIZE;
+		elseif ($tokenText === 'file_size')
+			return PostFilter::ORDER_FILE_SIZE;
 
-		elseif ($token === 'random')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_RANDOM;
+		elseif ($tokenText === 'random')
+			return PostFilter::ORDER_RANDOM;
 
-		elseif ($token === 'feature_time')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_FEATURE_TIME;
+		elseif ($tokenText === 'feature_time')
+			return PostFilter::ORDER_LAST_FEATURE_TIME;
 
-		elseif ($token === 'comment_time')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_COMMENT_TIME;
+		elseif ($tokenText === 'comment_time')
+			return PostFilter::ORDER_LAST_COMMENT_TIME;
 
-		elseif ($token === 'fav_time')
-			return \Szurubooru\SearchServices\Filters\PostFilter::ORDER_LAST_FAV_TIME;
+		elseif ($tokenText === 'fav_time')
+			return PostFilter::ORDER_LAST_FAV_TIME;
 
 		else
-			throw new \Szurubooru\NotSupportedException();
+			throw new NotSupportedException();
 	}
 
 	private function addIdRequirement($filter, $token)
@@ -135,7 +145,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_ID,
+			PostFilter::REQUIREMENT_ID,
 			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 
@@ -144,7 +154,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_HASH,
+			PostFilter::REQUIREMENT_HASH,
 			self::ALLOW_COMPOSITE);
 	}
 
@@ -173,7 +183,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_DATE,
+			PostFilter::REQUIREMENT_DATE,
 			self::ALLOW_RANGES);
 	}
 
@@ -182,7 +192,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TAG_COUNT,
+			PostFilter::REQUIREMENT_TAG_COUNT,
 			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 
@@ -191,7 +201,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAV_COUNT,
+			PostFilter::REQUIREMENT_FAV_COUNT,
 			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 
@@ -200,7 +210,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_COMMENT_COUNT,
+			PostFilter::REQUIREMENT_COMMENT_COUNT,
 			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 
@@ -209,7 +219,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SCORE,
+			PostFilter::REQUIREMENT_SCORE,
 			self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
 	}
 
@@ -218,7 +228,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_UPLOADER,
+			PostFilter::REQUIREMENT_UPLOADER,
 			self::ALLOW_COMPOSITE);
 	}
 
@@ -227,11 +237,11 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_SAFETY,
+			PostFilter::REQUIREMENT_SAFETY,
 			self::ALLOW_COMPOSITE,
 			function ($value)
 			{
-				return \Szurubooru\Helpers\EnumHelper::postSafetyFromString($value);
+				return EnumHelper::postSafetyFromString($value);
 			});
 	}
 
@@ -240,7 +250,7 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAVORITE,
+			PostFilter::REQUIREMENT_FAVORITE,
 			self::ALLOW_COMPOSITE);
 	}
 
@@ -249,11 +259,11 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TYPE,
+			PostFilter::REQUIREMENT_TYPE,
 			self::ALLOW_COMPOSITE,
 			function ($value)
 			{
-				return \Szurubooru\Helpers\EnumHelper::postTypeFromSTring($value);
+				return EnumHelper::postTypeFromString($value);
 			});
 	}
 
@@ -262,16 +272,16 @@ class PostSearchParser extends AbstractSearchParser
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_COMMENT,
+			PostFilter::REQUIREMENT_COMMENT,
 			self::ALLOW_COMPOSITE);
 	}
 
 	private function addUserScoreRequirement($filter, $userName, $score, $isNegated)
 	{
-		$tokenValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
+		$tokenValue = new RequirementCompositeValue();
 		$tokenValue->setValues([$userName, $score]);
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_USER_SCORE);
+		$requirement = new Requirement();
+		$requirement->setType(PostFilter::REQUIREMENT_USER_SCORE);
 		$requirement->setValue($tokenValue);
 		$requirement->setNegated($isNegated);
 		$filter->addRequirement($requirement);

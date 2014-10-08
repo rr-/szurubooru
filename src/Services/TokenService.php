@@ -1,5 +1,8 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Dao\TokenDao;
+use Szurubooru\Dao\TransactionManager;
+use Szurubooru\Entities\Token;
 
 class TokenService
 {
@@ -7,8 +10,8 @@ class TokenService
 	private $tokenDao;
 
 	public function __construct(
-		\Szurubooru\Dao\TransactionManager $transactionManager,
-		\Szurubooru\Dao\TokenDao $tokenDao)
+		TransactionManager $transactionManager,
+		TokenDao $tokenDao)
 	{
 		$this->transactionManager = $transactionManager;
 		$this->tokenDao = $tokenDao;
@@ -52,7 +55,7 @@ class TokenService
 
 			if (!$token)
 			{
-				$token = new \Szurubooru\Entities\Token();
+				$token = new Token();
 				$token->setName(sha1(date('r') . uniqid() . microtime(true)));
 				$token->setAdditionalData($additionalData);
 				$token->setPurpose($tokenPurpose);

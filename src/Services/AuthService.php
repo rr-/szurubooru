@@ -1,5 +1,12 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Config;
+use Szurubooru\Entities\Token;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\PasswordService;
+use Szurubooru\Services\TimeService;
+use Szurubooru\Services\TokenService;
+use Szurubooru\Services\UserService;
 
 class AuthService
 {
@@ -13,11 +20,11 @@ class AuthService
 	private $tokenService;
 
 	public function __construct(
-		\Szurubooru\Config $config,
-		\Szurubooru\Services\PasswordService $passwordService,
-		\Szurubooru\Services\TimeService $timeService,
-		\Szurubooru\Services\TokenService $tokenService,
-		\Szurubooru\Services\UserService $userService)
+		Config $config,
+		PasswordService $passwordService,
+		TimeService $timeService,
+		TokenService $tokenService,
+		UserService $userService)
 	{
 		$this->config = $config;
 		$this->passwordService = $passwordService;
@@ -60,9 +67,9 @@ class AuthService
 		$this->loggedInUser = $user;
 	}
 
-	public function loginFromToken(\Szurubooru\Entities\Token $token)
+	public function loginFromToken(Token $token)
 	{
-		if ($token->getPurpose() !== \Szurubooru\Entities\Token::PURPOSE_LOGIN)
+		if ($token->getPurpose() !== Token::PURPOSE_LOGIN)
 			throw new \Exception('This token is not a login token.');
 
 		$user = $this->userService->getById($token->getAdditionalData());
@@ -74,10 +81,10 @@ class AuthService
 
 	public function getAnonymousUser()
 	{
-		$user = new \Szurubooru\Entities\User();
+		$user = new User();
 		$user->setName('Anonymous user');
-		$user->setAccessRank(\Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS);
-		$user->setAvatarStyle(\Szurubooru\Entities\User::AVATAR_STYLE_BLANK);
+		$user->setAccessRank(User::ACCESS_RANK_ANONYMOUS);
+		$user->setAvatarStyle(User::AVATAR_STYLE_BLANK);
 		return $user;
 	}
 
@@ -96,9 +103,9 @@ class AuthService
 		$this->loginToken = null;
 	}
 
-	private function createAndSaveLoginToken(\Szurubooru\Entities\User $user)
+	private function createAndSaveLoginToken(User $user)
 	{
-		return $this->tokenService->createAndSaveToken($user->getId(), \Szurubooru\Entities\Token::PURPOSE_LOGIN);
+		return $this->tokenService->createAndSaveToken($user->getId(), Token::PURPOSE_LOGIN);
 	}
 
 	private function doFinalChecksOnUser($user)

@@ -1,9 +1,11 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\Token;
 
 class TokenEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(\Szurubooru\Entities\Entity $entity)
+	public function toArray(Entity $entity)
 	{
 		return
 		[
@@ -16,7 +18,7 @@ class TokenEntityConverter extends AbstractEntityConverter implements IEntityCon
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\Token(intval($array['id']));
+		$entity = new Token(intval($array['id']));
 		$entity->setName($array['name']);
 		$entity->setPurpose($array['purpose']);
 		$entity->setAdditionalData($array['additionalData']);

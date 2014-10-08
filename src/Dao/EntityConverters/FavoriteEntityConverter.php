@@ -1,9 +1,11 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\Favorite;
 
 class FavoriteEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(\Szurubooru\Entities\Entity $entity)
+	public function toArray(Entity $entity)
 	{
 		return
 		[
@@ -16,7 +18,7 @@ class FavoriteEntityConverter extends AbstractEntityConverter implements IEntity
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\Favorite($array['id']);
+		$entity = new Favorite($array['id']);
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
 		$entity->setTime($this->dbTimeToEntityTime($array['time']));

@@ -1,7 +1,8 @@
 <?php
 namespace Szurubooru\Upgrades;
+use Szurubooru\DatabaseConnection;
 
 interface IUpgrade
 {
-	public function run(\Szurubooru\DatabaseConnection $databaseConnection);
+	public function run(DatabaseConnection $databaseConnection);
 }

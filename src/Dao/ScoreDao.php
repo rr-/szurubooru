@@ -1,29 +1,37 @@
 <?php
 namespace Szurubooru\Dao;
+use Szurubooru\Dao\EntityConverters\ScoreEntityConverter;
+use Szurubooru\DatabaseConnection;
+use Szurubooru\Entities\Comment;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\Post;
+use Szurubooru\Entities\Score;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\TimeService;
 
 class ScoreDao extends AbstractDao implements ICrudDao
 {
 	private $timeService;
 
 	public function __construct(
-		\Szurubooru\DatabaseConnection $databaseConnection,
-		\Szurubooru\Services\TimeService $timeService)
+		DatabaseConnection $databaseConnection,
+		TimeService $timeService)
 	{
 		parent::__construct(
 			$databaseConnection,
 			'scores',
-			new \Szurubooru\Dao\EntityConverters\ScoreEntityConverter());
+			new ScoreEntityConverter());
 
 		$this->timeService = $timeService;
 	}
 
-	public function getScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity)
+	public function getScore(User $user, Entity $entity)
 	{
 		$query = $this->fpdo->from($this->tableName)->where('userId', $user->getId());
 
-		if ($entity instanceof \Szurubooru\Entities\Post)
+		if ($entity instanceof Post)
 			$query->where('postId', $entity->getId());
-		elseif ($entity instanceof \Szurubooru\Entities\Comment)
+		elseif ($entity instanceof Comment)
 			$query->where('commentId', $entity->getId());
 		else
 			throw new \InvalidArgumentException();
@@ -33,18 +41,18 @@ class ScoreDao extends AbstractDao implements ICrudDao
 		return array_shift($entities);
 	}
 
-	public function setScore(\Szurubooru\Entities\User $user, \Szurubooru\Entities\Entity $entity, $scoreValue)
+	public function setScore(User $user, Entity $entity, $scoreValue)
 	{
 		$score = $this->getScore($user, $entity);
 		if (!$score)
 		{
-			$score = new \Szurubooru\Entities\Score();
+			$score = new Score();
 			$score->setTime($this->timeService->getCurrentTime());
 			$score->setUserId($user->getId());
 
-			if ($entity instanceof \Szurubooru\Entities\Post)
+			if ($entity instanceof Post)
 				$score->setPostId($entity->getId());
-			elseif ($entity instanceof \Szurubooru\Entities\Comment)
+			elseif ($entity instanceof Comment)
 				$score->setCommentId($entity->getId());
 			else
 				throw new \InvalidArgumentException();

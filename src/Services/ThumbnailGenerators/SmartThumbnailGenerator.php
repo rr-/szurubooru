@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Services\ThumbnailGenerators;
+use Szurubooru\Helpers\MimeHelper;
 
 class SmartThumbnailGenerator implements IThumbnailGenerator
 {
@@ -19,15 +20,15 @@ class SmartThumbnailGenerator implements IThumbnailGenerator
 
 	public function generate($source, $width, $height, $cropStyle)
 	{
-		$mime = \Szurubooru\Helpers\MimeHelper::getMimeTypeFromBuffer($source);
+		$mime = MimeHelper::getMimeTypeFromBuffer($source);
 
-		if (\Szurubooru\Helpers\MimeHelper::isFlash($mime))
+		if (MimeHelper::isFlash($mime))
 			return $this->flashThumbnailGenerator->generate($source, $width, $height, $cropStyle);
 
-		if (\Szurubooru\Helpers\MimeHelper::isVideo($mime))
+		if (MimeHelper::isVideo($mime))
 			return $this->videoThumbnailGenerator->generate($source, $width, $height, $cropStyle);
 
-		if (\Szurubooru\Helpers\MimeHelper::isImage($mime))
+		if (MimeHelper::isImage($mime))
 			return $this->imageThumbnailGenerator->generate($source, $width, $height, $cropStyle);
 
 		return null;

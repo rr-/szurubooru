@@ -1,5 +1,9 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Config;
+use Szurubooru\DatabaseConnection;
+use Szurubooru\Upgrades\IUpgrade;
+use Szurubooru\Upgrades\UpgradeRepository;
 
 final class UpgradeService
 {
@@ -9,9 +13,9 @@ final class UpgradeService
 	private $executedUpgradeNames = [];
 
 	public function __construct(
-		\Szurubooru\Config $config,
-		\Szurubooru\DatabaseConnection $databaseConnection,
-		\Szurubooru\Upgrades\UpgradeRepository $upgradeRepository)
+		Config $config,
+		DatabaseConnection $databaseConnection,
+		UpgradeRepository $upgradeRepository)
 	{
 		$this->config = $config;
 		$this->databaseConnection = $databaseConnection;
@@ -42,12 +46,12 @@ final class UpgradeService
 		}
 	}
 
-	private function isUpgradeNeeded(\Szurubooru\Upgrades\IUpgrade $upgrade)
+	private function isUpgradeNeeded(IUpgrade $upgrade)
 	{
 		return !in_array(get_class($upgrade), $this->executedUpgradeNames);
 	}
 
-	private function runUpgrade(\Szurubooru\Upgrades\IUpgrade $upgrade)
+	private function runUpgrade(IUpgrade $upgrade)
 	{
 		$upgrade->run($this->databaseConnection);
 		$this->executedUpgradeNames[] = get_class($upgrade);

@@ -1,12 +1,20 @@
 <?php
 namespace Szurubooru\SearchServices\Parsers;
+use Szurubooru\Helpers\InputReader;
+use Szurubooru\SearchServices\Filters\IFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
+use Szurubooru\SearchServices\Requirements\RequirementRangedValue;
+use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
+use Szurubooru\SearchServices\Tokens\NamedSearchToken;
+use Szurubooru\SearchServices\Tokens\SearchToken;
 
 abstract class AbstractSearchParser
 {
 	const ALLOW_COMPOSITE = 1;
 	const ALLOW_RANGES = 2;
 
-	public function createFilterFromInputReader(\Szurubooru\Helpers\InputReader $inputReader)
+	public function createFilterFromInputReader(InputReader $inputReader)
 	{
 		$filter = $this->createFilter();
 		$filter->setOrder($this->getOrder($inputReader->order) + $filter->getOrder());
@@ -21,14 +29,14 @@ abstract class AbstractSearchParser
 
 		foreach ($tokens as $token)
 		{
-			if ($token instanceof \Szurubooru\SearchServices\Tokens\NamedSearchToken)
+			if ($token instanceof NamedSearchToken)
 			{
 				if ($token->getKey() === 'order')
 					$filter->setOrder($this->getOrder($token->getValue()) + $filter->getOrder());
 				else
 					$this->decorateFilterFromNamedToken($filter, $token);
 			}
-			elseif ($token instanceof \Szurubooru\SearchServices\Tokens\SearchToken)
+			elseif ($token instanceof SearchToken)
 				$this->decorateFilterFromToken($filter, $token);
 			else
 				throw new \RuntimeException('Invalid search token type: ' . get_class($token));
@@ -39,13 +47,13 @@ abstract class AbstractSearchParser
 
 	protected abstract function createFilter();
 
-	protected abstract function decorateFilterFromToken($filter, $token);
+	protected abstract function decorateFilterFromToken(IFilter $filter, SearchToken $token);
 
-	protected abstract function decorateFilterFromNamedToken($filter, $namedToken);
+	protected abstract function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken);
 
-	protected abstract function getOrderColumn($token);
+	protected abstract function getOrderColumn($tokenText);
 
-	protected function createRequirementValue($text, $flags = 0, $valueDecorator = null)
+	protected function createRequirementValue($text, $flags = 0, callable $valueDecorator = null)
 	{
 		if ($valueDecorator === null)
 		{
@@ -60,7 +68,7 @@ abstract class AbstractSearchParser
 			list ($minValue, $maxValue) = explode('..', $text);
 			$minValue = $valueDecorator($minValue);
 			$maxValue = $valueDecorator($maxValue);
-			$tokenValue = new \Szurubooru\SearchServices\Requirements\RequirementRangedValue();
+			$tokenValue = new RequirementRangedValue();
 			$tokenValue->setMinValue($minValue);
 			$tokenValue->setMaxValue($maxValue);
 			return $tokenValue;
@@ -69,18 +77,18 @@ abstract class AbstractSearchParser
 		{
 			$values = explode(',', $text);
 			$values = array_map($valueDecorator, $values);
-			$tokenValue = new \Szurubooru\SearchServices\Requirements\RequirementCompositeValue();
+			$tokenValue = new RequirementCompositeValue();
 			$tokenValue->setValues($values);
 			return $tokenValue;
 		}
 
 		$value = $valueDecorator($text);
-		return new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($value);
+		return new RequirementSingleValue($value);
 	}
 
-	protected function addRequirementFromToken($filter, $token, $type, $flags, $valueDecorator = null)
+	protected function addRequirementFromToken($filter, $token, $type, $flags, callable $valueDecorator = null)
 	{
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
+		$requirement = new Requirement();
 		$requirement->setType($type);
 		$requirement->setValue($this->createRequirementValue($token->getValue(), $flags, $valueDecorator));
 		$requirement->setNegated($token->isNegated());
@@ -99,14 +107,14 @@ abstract class AbstractSearchParser
 
 			if (count($token) === 1)
 			{
-				$orderDir = \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC;
+				$orderDir = IFilter::ORDER_DESC;
 			}
 			elseif (count($token) === 2)
 			{
 				if ($token[1] === 'desc')
-					$orderDir = \Szurubooru\SearchServices\Filters\IFilter::ORDER_DESC;
+					$orderDir = IFilter::ORDER_DESC;
 				elseif ($token[1] === 'asc')
-					$orderDir = \Szurubooru\SearchServices\Filters\IFilter::ORDER_ASC;
+					$orderDir = IFilter::ORDER_ASC;
 				else
 					throw new \Exception('Wrong search order direction');
 			}
@@ -139,14 +147,14 @@ abstract class AbstractSearchParser
 			$colonPosition = strpos($tokenText, ':');
 			if (($colonPosition !== false) and ($colonPosition > 0))
 			{
-				$searchToken = new \Szurubooru\SearchServices\Tokens\NamedSearchToken();
+				$searchToken = new NamedSearchToken();
 				list ($tokenKey, $tokenValue) = explode(':', $tokenText, 2);
 				$searchToken->setKey($tokenKey);
 				$searchToken->setValue($tokenValue);
 			}
 			else
 			{
-				$searchToken = new \Szurubooru\SearchServices\Tokens\SearchToken();
+				$searchToken = new SearchToken();
 				$searchToken->setValue($tokenText);
 			}
 

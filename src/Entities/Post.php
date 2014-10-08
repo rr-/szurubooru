@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Entities;
+use Szurubooru\Entities\User;
 
 final class Post extends Entity
 {
@@ -220,7 +221,7 @@ final class Post extends Entity
 		return $this->lazyLoad(self::LAZY_LOADER_USER, null);
 	}
 
-	public function setUser(\Szurubooru\Entities\User $user = null)
+	public function setUser(User $user = null)
 	{
 		$this->lazySave(self::LAZY_LOADER_USER, $user);
 		$this->userId = $user ? $user->getId() : null;

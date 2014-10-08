@@ -1,13 +1,15 @@
 <?php
 namespace Szurubooru\Services\ImageManipulation;
+use Szurubooru\Services\ImageManipulation\GdImageManipulator;
+use Szurubooru\Services\ImageManipulation\ImagickImageManipulator;
 
 class ImageManipulator implements IImageManipulator
 {
 	private $strategy;
 
 	public function __construct(
-		\Szurubooru\Services\ImageManipulation\ImagickImageManipulator $imagickImageManipulator,
-		\Szurubooru\Services\ImageManipulation\GdImageManipulator $gdImageManipulator)
+		ImagickImageManipulator $imagickImageManipulator,
+		GdImageManipulator $gdImageManipulator)
 	{
 		if (extension_loaded('imagick'))
 		{

@@ -1,5 +1,15 @@
 <?php
 namespace Szurubooru\Dao;
+use Szurubooru\Dao\EntityConverters\PostEntityConverter;
+use Szurubooru\Dao\TagDao;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\DatabaseConnection;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\Post;
+use Szurubooru\SearchServices\Filters\PostFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\ThumbnailService;
 
 class PostDao extends AbstractDao implements ICrudDao
 {
@@ -9,16 +19,16 @@ class PostDao extends AbstractDao implements ICrudDao
 	private $thumbnailService;
 
 	public function __construct(
-		\Szurubooru\DatabaseConnection $databaseConnection,
-		\Szurubooru\Dao\TagDao $tagDao,
-		\Szurubooru\Dao\UserDao $userDao,
-		\Szurubooru\Services\FileService $fileService,
-		\Szurubooru\Services\ThumbnailService $thumbnailService)
+		DatabaseConnection $databaseConnection,
+		TagDao $tagDao,
+		UserDao $userDao,
+		FileService $fileService,
+		ThumbnailService $thumbnailService)
 	{
 		parent::__construct(
 			$databaseConnection,
 			'posts',
-			new \Szurubooru\Dao\EntityConverters\PostEntityConverter());
+			new PostEntityConverter());
 
 		$this->tagDao = $tagDao;
 		$this->userDao = $userDao;
@@ -47,45 +57,45 @@ class PostDao extends AbstractDao implements ICrudDao
 		return $this->findOneBy('contentChecksum', $checksum);
 	}
 
-	protected function afterLoad(\Szurubooru\Entities\Entity $post)
+	protected function afterLoad(Entity $post)
 	{
 		$post->setLazyLoader(
-			\Szurubooru\Entities\Post::LAZY_LOADER_CONTENT,
-			function (\Szurubooru\Entities\Post $post)
+			Post::LAZY_LOADER_CONTENT,
+			function (Post $post)
 			{
 				return $this->fileService->load($post->getContentPath());
 			});
 
 		$post->setLazyLoader(
-			\Szurubooru\Entities\Post::LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT,
-			function (\Szurubooru\Entities\Post $post)
+			Post::LAZY_LOADER_THUMBNAIL_SOURCE_CONTENT,
+			function (Post $post)
 			{
 				return $this->fileService->load($post->getThumbnailSourceContentPath());
 			});
 
 		$post->setLazyLoader(
-			\Szurubooru\Entities\Post::LAZY_LOADER_USER,
-			function (\Szurubooru\Entities\Post $post)
+			Post::LAZY_LOADER_USER,
+			function (Post $post)
 			{
 				return $this->getUser($post);
 			});
 
 		$post->setLazyLoader(
-			\Szurubooru\Entities\Post::LAZY_LOADER_TAGS,
-			function (\Szurubooru\Entities\Post $post)
+			Post::LAZY_LOADER_TAGS,
+			function (Post $post)
 			{
 				return $this->getTags($post);
 			});
 
 		$post->setLazyLoader(
-			\Szurubooru\Entities\Post::LAZY_LOADER_RELATED_POSTS,
-			function (\Szurubooru\Entities\Post $post)
+			Post::LAZY_LOADER_RELATED_POSTS,
+			function (Post $post)
 			{
 				return $this->getRelatedPosts($post);
 			});
 	}
 
-	protected function afterSave(\Szurubooru\Entities\Entity $post)
+	protected function afterSave(Entity $post)
 	{
 		$this->syncContent($post);
 		$this->syncThumbnailSourceContent($post);
@@ -93,9 +103,9 @@ class PostDao extends AbstractDao implements ICrudDao
 		$this->syncPostRelations($post);
 	}
 
-	protected function decorateQueryFromRequirement($query, \Szurubooru\SearchServices\Requirements\Requirement $requirement)
+	protected function decorateQueryFromRequirement($query, Requirement $requirement)
 	{
-		if ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_TAG)
+		if ($requirement->getType() === PostFilter::REQUIREMENT_TAG)
 		{
 			$sql = 'EXISTS (
 				SELECT 1 FROM postTags
@@ -110,24 +120,24 @@ class PostDao extends AbstractDao implements ICrudDao
 			return;
 		}
 
-		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_FAVORITE)
+		elseif ($requirement->getType() === PostFilter::REQUIREMENT_FAVORITE)
 		{
 			$query->innerJoin('favorites _fav ON _fav.postId = posts.id');
 			$query->innerJoin('users favoritedBy ON favoritedBy.id = _fav.userId');
 		}
 
-		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_COMMENT)
+		elseif ($requirement->getType() === PostFilter::REQUIREMENT_COMMENT)
 		{
 			$query->innerJoin('comments _comment ON _comment.postId = posts.id');
 			$query->innerJoin('users commentedBy ON commentedBy.id = _comment.userId');
 		}
 
-		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_UPLOADER)
+		elseif ($requirement->getType() === PostFilter::REQUIREMENT_UPLOADER)
 		{
 			$query->innerJoin('users uploader ON uploader.id = userId');
 		}
 
-		elseif ($requirement->getType() === \Szurubooru\SearchServices\Filters\PostFilter::REQUIREMENT_USER_SCORE)
+		elseif ($requirement->getType() === PostFilter::REQUIREMENT_USER_SCORE)
 		{
 			$values = $requirement->getValue()->getValues();
 			$userName = $values[0];
@@ -147,17 +157,17 @@ class PostDao extends AbstractDao implements ICrudDao
 		parent::decorateQueryFromRequirement($query, $requirement);
 	}
 
-	private function getTags(\Szurubooru\Entities\Post $post)
+	private function getTags(Post $post)
 	{
 		return $this->tagDao->findByPostId($post->getId());
 	}
 
-	private function getUser(\Szurubooru\Entities\Post $post)
+	private function getUser(Post $post)
 	{
 		return $this->userDao->findById($post->getUserId());
 	}
 
-	private function getRelatedPosts(\Szurubooru\Entities\Post $post)
+	private function getRelatedPosts(Post $post)
 	{
 		$query = $this->fpdo
 			->from('postRelations')
@@ -179,7 +189,7 @@ class PostDao extends AbstractDao implements ICrudDao
 		return $this->findByIds($relatedPostIds);
 	}
 
-	private function syncContent(\Szurubooru\Entities\Post $post)
+	private function syncContent(Post $post)
 	{
 		$targetPath = $post->getContentPath();
 		$content = $post->getContent();
@@ -190,7 +200,7 @@ class PostDao extends AbstractDao implements ICrudDao
 		$this->thumbnailService->deleteUsedThumbnails($targetPath);
 	}
 
-	private function syncThumbnailSourceContent(\Szurubooru\Entities\Post $post)
+	private function syncThumbnailSourceContent(Post $post)
 	{
 		$targetPath = $post->getThumbnailSourceContentPath();
 		$content = $post->getThumbnailSourceContent();
@@ -201,7 +211,7 @@ class PostDao extends AbstractDao implements ICrudDao
 		$this->thumbnailService->deleteUsedThumbnails($targetPath);
 	}
 
-	private function syncTags(\Szurubooru\Entities\Post $post)
+	private function syncTags(Post $post)
 	{
 		$tagIds = array_map(
 			function ($tag)
@@ -232,7 +242,7 @@ class PostDao extends AbstractDao implements ICrudDao
 		}
 	}
 
-	private function syncPostRelations(\Szurubooru\Entities\Post $post)
+	private function syncPostRelations(Post $post)
 	{
 		$this->fpdo->deleteFrom('postRelations')->where('post1id', $post->getId())->execute();
 		$this->fpdo->deleteFrom('postRelations')->where('post2id', $post->getId())->execute();

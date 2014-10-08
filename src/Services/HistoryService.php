@@ -1,5 +1,18 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Dao\GlobalParamDao;
+use Szurubooru\Dao\SnapshotDao;
+use Szurubooru\Dao\TransactionManager;
+use Szurubooru\Entities\GlobalParam;
+use Szurubooru\Entities\Post;
+use Szurubooru\Entities\Snapshot;
+use Szurubooru\Helpers\EnumHelper;
+use Szurubooru\SearchServices\Filters\SnapshotFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\TimeService;
+use Szurubooru\Validator;
 
 class HistoryService
 {
@@ -11,12 +24,12 @@ class HistoryService
 	private $transactionManager;
 
 	public function __construct(
-		\Szurubooru\Validator $validator,
-		\Szurubooru\Dao\SnapshotDao $snapshotDao,
-		\Szurubooru\Dao\GlobalParamDao $globalParamDao,
-		\Szurubooru\Dao\TransactionManager $transactionManager,
-		\Szurubooru\Services\TimeService $timeService,
-		\Szurubooru\Services\AuthService $authService)
+		Validator $validator,
+		SnapshotDao $snapshotDao,
+		GlobalParamDao $globalParamDao,
+		TransactionManager $transactionManager,
+		TimeService $timeService,
+		AuthService $authService)
 	{
 		$this->validator = $validator;
 		$this->snapshotDao = $snapshotDao;
@@ -26,7 +39,7 @@ class HistoryService
 		$this->transactionManager = $transactionManager;
 	}
 
-	public function getFiltered(\Szurubooru\SearchServices\Filters\SnapshotFilter $filter)
+	public function getFiltered(SnapshotFilter $filter)
 	{
 		$transactionFunc = function() use ($filter)
 		{
@@ -35,24 +48,24 @@ class HistoryService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getPostHistory(\Szurubooru\Entities\Post $post)
+	public function getPostHistory(Post $post)
 	{
-		$filter = new \Szurubooru\SearchServices\Filters\SnapshotFilter();
+		$filter = new SnapshotFilter();
 
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
-		$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue($post->getId()));
+		$requirement = new Requirement();
+		$requirement->setType(SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
+		$requirement->setValue(new RequirementSingleValue($post->getId()));
 		$filter->addRequirement($requirement);
 
-		$requirement = new \Szurubooru\SearchServices\Requirements\Requirement();
-		$requirement->setType(\Szurubooru\SearchServices\Filters\SnapshotFilter::REQUIREMENT_TYPE);
-		$requirement->setValue(new \Szurubooru\SearchServices\Requirements\RequirementSingleValue(\Szurubooru\Entities\Snapshot::TYPE_POST));
+		$requirement = new Requirement();
+		$requirement->setType(SnapshotFilter::REQUIREMENT_TYPE);
+		$requirement->setValue(new RequirementSingleValue(Snapshot::TYPE_POST));
 		$filter->addRequirement($requirement);
 
 		return $this->getFiltered($filter)->getEntities();
 	}
 
-	public function saveSnapshot(\Szurubooru\Entities\Snapshot $snapshot)
+	public function saveSnapshot(Snapshot $snapshot)
 	{
 		$transactionFunc = function() use ($snapshot)
 		{
@@ -79,23 +92,23 @@ class HistoryService
 		return $this->transactionManager->commit($transactionFunc);
 	}
 
-	public function getPostDeleteSnapshot(\Szurubooru\Entities\Post $post)
+	public function getPostDeleteSnapshot(Post $post)
 	{
 		$snapshot = $this->getPostSnapshot($post);
 		$snapshot->setData([]);
-		$snapshot->setOperation(\Szurubooru\Entities\Snapshot::OPERATION_DELETE);
+		$snapshot->setOperation(Snapshot::OPERATION_DELETE);
 		return $snapshot;
 	}
 
-	public function getPostChangeSnapshot(\Szurubooru\Entities\Post $post)
+	public function getPostChangeSnapshot(Post $post)
 	{
-		$featuredPostParam = $this->globalParamDao->findByKey(\Szurubooru\Entities\GlobalParam::KEY_FEATURED_POST);
+		$featuredPostParam = $this->globalParamDao->findByKey(GlobalParam::KEY_FEATURED_POST);
 		$isFeatured = ($featuredPostParam and intval($featuredPostParam->getValue()) === $post->getId());
 
 		$data =
 		[
 			'source' => $post->getSource(),
-			'safety' => \Szurubooru\Helpers\EnumHelper::postSafetyToString($post->getSafety()),
+			'safety' => EnumHelper::postSafetyToString($post->getSafety()),
 			'contentChecksum' => $post->getContentChecksum(),
 			'featured' => $isFeatured,
 
@@ -118,7 +131,7 @@ class HistoryService
 		];
 
 		$snapshot = $this->getPostSnapshot($post);
-		$snapshot->setOperation(\Szurubooru\Entities\Snapshot::OPERATION_CHANGE);
+		$snapshot->setOperation(Snapshot::OPERATION_CHANGE);
 		$snapshot->setData($data);
 		return $snapshot;
 	}
@@ -153,10 +166,10 @@ class HistoryService
 		];
 	}
 
-	private function getPostSnapshot(\Szurubooru\Entities\Post $post)
+	private function getPostSnapshot(Post $post)
 	{
-		$snapshot = new \Szurubooru\Entities\Snapshot();
-		$snapshot->setType(\Szurubooru\Entities\Snapshot::TYPE_POST);
+		$snapshot = new Snapshot();
+		$snapshot->setType(Snapshot::TYPE_POST);
 		$snapshot->setPrimaryKey($post->getId());
 		return $snapshot;
 	}

@@ -1,14 +1,16 @@
 <?php
 namespace Szurubooru\Dao;
+use Szurubooru\Dao\EntityConverters\TokenEntityConverter;
+use Szurubooru\DatabaseConnection;
 
 class TokenDao extends AbstractDao
 {
-	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
+	public function __construct(DatabaseConnection $databaseConnection)
 	{
 		parent::__construct(
 			$databaseConnection,
 			'tokens',
-			new \Szurubooru\Dao\EntityConverters\TokenEntityConverter());
+			new TokenEntityConverter());
 	}
 
 	public function findByName($tokenName)

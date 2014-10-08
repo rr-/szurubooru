@@ -1,9 +1,11 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\GlobalParam;
 
 class GlobalParamEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(\Szurubooru\Entities\Entity $entity)
+	public function toArray(Entity $entity)
 	{
 		return
 		[
@@ -15,7 +17,7 @@ class GlobalParamEntityConverter extends AbstractEntityConverter implements IEnt
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\GlobalParam($array['id']);
+		$entity = new GlobalParam($array['id']);
 		$entity->setKey($array['dataKey']);
 		$entity->setValue($array['dataValue']);
 		return $entity;

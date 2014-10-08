@@ -1,5 +1,11 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Controllers\ViewProxies\UserViewProxy;
+use Szurubooru\Router;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\FavoritesService;
+use Szurubooru\Services\PostService;
+use Szurubooru\Services\PrivilegeService;
 
 class FavoritesController extends AbstractController
 {
@@ -10,11 +16,11 @@ class FavoritesController extends AbstractController
 	private $userViewProxy;
 
 	public function __construct(
-		\Szurubooru\Services\PrivilegeService $privilegeService,
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\PostService $postService,
-		\Szurubooru\Services\FavoritesService $favoritesService,
-		\Szurubooru\Controllers\ViewProxies\UserViewProxy $userViewProxy)
+		PrivilegeService $privilegeService,
+		AuthService $authService,
+		PostService $postService,
+		FavoritesService $favoritesService,
+		UserViewProxy $userViewProxy)
 	{
 		$this->privilegeService = $privilegeService;
 		$this->authService = $authService;
@@ -23,7 +29,7 @@ class FavoritesController extends AbstractController
 		$this->userViewProxy = $userViewProxy;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->get('/api/posts/:postNameOrId/favorites', [$this, 'getFavoriteUsers']);
 		$router->post('/api/posts/:postNameOrId/favorites', [$this, 'addFavorite']);

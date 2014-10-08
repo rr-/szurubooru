@@ -1,7 +1,15 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\CommentDao;
+use Szurubooru\Dao\PostDao;
+use Szurubooru\Dao\UserDao;
+use Szurubooru\Entities\Comment;
+use Szurubooru\Entities\Post;
+use Szurubooru\Entities\User;
+use Szurubooru\Injector;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-class CommentDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class CommentDaoTest extends AbstractDatabaseTestCase
 {
 	private $userDaoMock;
 	private $postDaoMock;
@@ -9,19 +17,19 @@ class CommentDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$this->userDaoMock = $this->mock(\Szurubooru\Dao\UserDao::class);
-		$this->postDaoMock = $this->mock(\Szurubooru\Dao\PostDao::class);
+		$this->userDaoMock = $this->mock(UserDao::class);
+		$this->postDaoMock = $this->mock(PostDao::class);
 	}
 
 	public function testSaving()
 	{
-		$user = new \Szurubooru\Entities\User(1);
+		$user = new User(1);
 		$user->setName('olivia');
 
-		$post = new \Szurubooru\Entities\Post(2);
+		$post = new Post(2);
 		$post->setName('sword');
 
-		$comment = new \Szurubooru\Entities\Comment();
+		$comment = new Comment();
 		$comment->setUser($user);
 		$comment->setPost($post);
 		$comment->setCreationTime(date('c'));
@@ -45,9 +53,9 @@ class CommentDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	public function testPostMetadataSyncInsert()
 	{
-		$userDao = \Szurubooru\Injector::get(\Szurubooru\Dao\UserDao::class);
-		$postDao = \Szurubooru\Injector::get(\Szurubooru\Dao\PostDao::class);
-		$commentDao = \Szurubooru\Injector::get(\Szurubooru\Dao\CommentDao::class);
+		$userDao = Injector::get(UserDao::class);
+		$postDao = Injector::get(PostDao::class);
+		$commentDao = Injector::get(CommentDao::class);
 
 		$user = self::getTestUser('olivia');
 		$userDao->save($user);
@@ -58,7 +66,7 @@ class CommentDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEquals(0, $post->getCommentCount());
 		$this->assertNotNull($post->getId());
 
-		$comment = new \Szurubooru\Entities\Comment();
+		$comment = new Comment();
 		$comment->setUser($user);
 		$comment->setPost($post);
 		$comment->setCreationTime(date('c'));
@@ -87,14 +95,14 @@ class CommentDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 		$this->assertEquals(0, $post->getCommentCount());
 	}
 
-	public function findByPost(\Szurubooru\Entities\Post $post)
+	public function findByPost(Post $post)
 	{
 		return $this->findOneBy('postId', $post->getId());
 	}
 
 	private function getCommentDao()
 	{
-		return new \Szurubooru\Dao\CommentDao(
+		return new CommentDao(
 			$this->databaseConnection,
 			$this->userDaoMock,
 			$this->postDaoMock);

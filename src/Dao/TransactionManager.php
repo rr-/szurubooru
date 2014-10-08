@@ -1,11 +1,12 @@
 <?php
 namespace Szurubooru\Dao;
+use Szurubooru\DatabaseConnection;
 
 class TransactionManager
 {
 	private $databaseConnection;
 
-	public function __construct(\Szurubooru\DatabaseConnection $databaseConnection)
+	public function __construct(DatabaseConnection $databaseConnection)
 	{
 		$this->databaseConnection = $databaseConnection;
 	}

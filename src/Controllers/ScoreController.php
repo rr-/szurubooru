@@ -1,7 +1,15 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Helpers\InputReader;
+use Szurubooru\Router;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\CommentService;
+use Szurubooru\Services\PostService;
+use Szurubooru\Services\PrivilegeService;
+use Szurubooru\Services\ScoreService;
 
-class ScoreController extends AbstractController
+final class ScoreController extends AbstractController
 {
 	private $privilegeService;
 	private $authService;
@@ -11,12 +19,12 @@ class ScoreController extends AbstractController
 	private $inputReader;
 
 	public function __construct(
-		\Szurubooru\Services\PrivilegeService $privilegeService,
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\PostService $postService,
-		\Szurubooru\Services\CommentService $commentService,
-		\Szurubooru\Services\ScoreService $scoreService,
-		\Szurubooru\Helpers\InputReader $inputReader)
+		PrivilegeService $privilegeService,
+		AuthService $authService,
+		PostService $postService,
+		CommentService $commentService,
+		ScoreService $scoreService,
+		InputReader $inputReader)
 	{
 		$this->privilegeService = $privilegeService;
 		$this->authService = $authService;
@@ -26,7 +34,7 @@ class ScoreController extends AbstractController
 		$this->inputReader = $inputReader;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->get('/api/posts/:postNameOrId/score', [$this, 'getPostScore']);
 		$router->post('/api/posts/:postNameOrId/score', [$this, 'setPostScore']);
@@ -58,7 +66,7 @@ class ScoreController extends AbstractController
 		return $this->setScore($comment);
 	}
 
-	private function setScore(\Szurubooru\Entities\Entity $entity)
+	private function setScore(Entity $entity)
 	{
 		$this->privilegeService->assertLoggedIn();
 		$score = intval($this->inputReader->score);
@@ -67,7 +75,7 @@ class ScoreController extends AbstractController
 		return ['score' => $result->getScore()];
 	}
 
-	private function getScore(\Szurubooru\Entities\Entity $entity)
+	private function getScore(Entity $entity)
 	{
 		$this->privilegeService->assertLoggedIn();
 		$user = $this->authService->getLoggedInUser();

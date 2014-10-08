@@ -1,16 +1,18 @@
 <?php
 namespace Szurubooru;
+use Szurubooru\Config;
+use Szurubooru\IValidatable;
 
 class Validator
 {
 	private $config;
 
-	public function __construct(\Szurubooru\Config $config)
+	public function __construct(Config $config)
 	{
 		$this->config = $config;
 	}
 
-	public function validate(\Szurubooru\IValidatable $validatable)
+	public function validate(IValidatable $validatable)
 	{
 		$validatable->validate($this);
 	}

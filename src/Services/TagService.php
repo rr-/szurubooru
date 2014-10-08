@@ -1,5 +1,11 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Dao\TagDao;
+use Szurubooru\Dao\TransactionManager;
+use Szurubooru\Entities\Tag;
+use Szurubooru\SearchServices\Filters\TagFilter;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\TimeService;
 
 class TagService
 {
@@ -9,10 +15,10 @@ class TagService
 	private $timeService;
 
 	public function __construct(
-		\Szurubooru\Dao\TransactionManager $transactionManager,
-		\Szurubooru\Dao\TagDao $tagDao,
-		\Szurubooru\Services\TimeService $timeService,
-		\Szurubooru\Services\FileService $fileService)
+		TransactionManager $transactionManager,
+		TagDao $tagDao,
+		TimeService $timeService,
+		FileService $fileService)
 	{
 		$this->transactionManager = $transactionManager;
 		$this->tagDao = $tagDao;
@@ -20,7 +26,7 @@ class TagService
 		$this->fileService = $fileService;
 	}
 
-	public function getFiltered(\Szurubooru\SearchServices\Filters\TagFilter $filter)
+	public function getFiltered(TagFilter $filter)
 	{
 		$transactionFunc = function() use ($filter)
 		{
@@ -68,7 +74,7 @@ class TagService
 			$tagsToCreate = [];
 			foreach ($tagNamesToCreate as $tagName)
 			{
-				$tag = new \Szurubooru\Entities\Tag;
+				$tag = new Tag;
 				$tag->setName($tagName);
 				$tag->setCreationTime($this->timeService->getCurrentTime());
 				$tagsToCreate[] = $tag;

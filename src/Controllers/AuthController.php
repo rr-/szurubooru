@@ -1,5 +1,14 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Controllers\ViewProxies\TokenViewProxy;
+use Szurubooru\Controllers\ViewProxies\UserViewProxy;
+use Szurubooru\FormData\LoginFormData;
+use Szurubooru\Helpers\InputReader;
+use Szurubooru\Router;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\PrivilegeService;
+use Szurubooru\Services\TokenService;
+use Szurubooru\Services\UserService;
 
 final class AuthController extends AbstractController
 {
@@ -12,13 +21,13 @@ final class AuthController extends AbstractController
 	private $tokenViewProxy;
 
 	public function __construct(
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\UserService $userService,
-		\Szurubooru\Services\TokenService $tokenService,
-		\Szurubooru\Services\PrivilegeService $privilegeService,
-		\Szurubooru\Helpers\InputReader $inputReader,
-		\Szurubooru\Controllers\ViewProxies\UserViewProxy $userViewProxy,
-		\Szurubooru\Controllers\ViewProxies\TokenViewProxy $tokenViewProxy)
+		AuthService $authService,
+		UserService $userService,
+		TokenService $tokenService,
+		PrivilegeService $privilegeService,
+		InputReader $inputReader,
+		UserViewProxy $userViewProxy,
+		TokenViewProxy $tokenViewProxy)
 	{
 		$this->authService = $authService;
 		$this->userService = $userService;
@@ -29,7 +38,7 @@ final class AuthController extends AbstractController
 		$this->tokenViewProxy = $tokenViewProxy;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->post('/api/login', [$this, 'login']);
 		$router->put('/api/login', [$this, 'login']);
@@ -39,7 +48,7 @@ final class AuthController extends AbstractController
 	{
 		if (isset($this->inputReader->userNameOrEmail) and isset($this->inputReader->password))
 		{
-			$formData = new \Szurubooru\FormData\LoginFormData($this->inputReader);
+			$formData = new LoginFormData($this->inputReader);
 			$this->authService->loginFromCredentials($formData);
 
 			$user = $this->authService->getLoggedInUser();

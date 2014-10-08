@@ -1,7 +1,9 @@
 <?php
 namespace Szurubooru\FormData;
+use Szurubooru\IValidatable;
+use Szurubooru\Validator;
 
-class LoginFormData implements \Szurubooru\IValidatable
+class LoginFormData implements IValidatable
 {
 	public $userNameOrEmail;
 	public $password;
@@ -15,7 +17,7 @@ class LoginFormData implements \Szurubooru\IValidatable
 		}
 	}
 
-	public function validate(\Szurubooru\Validator $validator)
+	public function validate(Validator $validator)
 	{
 	}
 }

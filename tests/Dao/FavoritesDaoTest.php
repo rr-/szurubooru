@@ -1,25 +1,31 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\FavoritesDao;
+use Szurubooru\Entities\Favorite;
+use Szurubooru\Entities\Post;
+use Szurubooru\Entities\User;
+use Szurubooru\Services\TimeService;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-class FavoritesDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
+final class FavoritesDaoTest extends AbstractDatabaseTestCase
 {
 	private $timeServiceMock;
 
 	public function setUp()
 	{
 		parent::setUp();
-		$this->timeServiceMock = $this->mock(\Szurubooru\Services\TimeService::class);
+		$this->timeServiceMock = $this->mock(TimeService::class);
 	}
 
 	public function testSaving()
 	{
-		$user = new \Szurubooru\Entities\User(1);
+		$user = new User(1);
 		$user->setName('olivia');
 
-		$post = new \Szurubooru\Entities\Post(2);
+		$post = new Post(2);
 		$post->setName('sword');
 
-		$favorite = new \Szurubooru\Entities\Favorite();
+		$favorite = new Favorite();
 		$favorite->setUserId($user->getId());
 		$favorite->setPostId($post->getId());
 		$favorite->setTime(date('c'));
@@ -36,7 +42,7 @@ class FavoritesDaoTest extends \Szurubooru\Tests\AbstractDatabaseTestCase
 
 	private function getFavoritesDao()
 	{
-		return new \Szurubooru\Dao\FavoritesDao(
+		return new FavoritesDao(
 			$this->databaseConnection,
 			$this->timeServiceMock);
 	}

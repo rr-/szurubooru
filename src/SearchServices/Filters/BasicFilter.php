@@ -1,10 +1,9 @@
 <?php
 namespace Szurubooru\SearchServices\Filters;
+use Szurubooru\SearchServices\Requirements\Requirement;
 
 class BasicFilter implements IFilter
 {
-	const ORDER_RANDOM = 'random';
-
 	private $order = [];
 	private $requirements = [];
 	private $pageNumber;
@@ -20,7 +19,7 @@ class BasicFilter implements IFilter
 		$this->order = $order;
 	}
 
-	public function addRequirement(\Szurubooru\SearchServices\Requirements\Requirement $requirement)
+	public function addRequirement(Requirement $requirement)
 	{
 		$this->requirements[] = $requirement;
 	}

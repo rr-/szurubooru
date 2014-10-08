@@ -1,5 +1,13 @@
 <?php
 namespace Szurubooru;
+use Szurubooru\Bootstrap;
+use Szurubooru\Config;
+use Szurubooru\ControllerRepository;
+use Szurubooru\DatabaseConnection;
+use Szurubooru\Helpers\HttpHelper;
+use Szurubooru\Router;
+use Szurubooru\Services\AuthService;
+use Szurubooru\Services\TokenService;
 
 final class Dispatcher
 {
@@ -10,13 +18,13 @@ final class Dispatcher
 	private $tokenService;
 
 	public function __construct(
-		\Szurubooru\Router $router,
-		\Szurubooru\Config $config,
-		\Szurubooru\DatabaseConnection $databaseConnection,
-		\Szurubooru\Helpers\HttpHelper $httpHelper,
-		\Szurubooru\Services\AuthService $authService,
-		\Szurubooru\Services\TokenService $tokenService,
-		\Szurubooru\ControllerRepository $controllerRepository)
+		Router $router,
+		Config $config,
+		DatabaseConnection $databaseConnection,
+		HttpHelper $httpHelper,
+		AuthService $authService,
+		TokenService $tokenService,
+		ControllerRepository $controllerRepository)
 	{
 		$this->router = $router;
 		$this->config = $config;
@@ -52,7 +60,7 @@ final class Dispatcher
 			];
 		}
 		$end = microtime(true);
-		$json['__time'] = $end - \Szurubooru\Bootstrap::getStartTime();
+		$json['__time'] = $end - Bootstrap::getStartTime();
 		if ($this->config->misc->dumpSqlIntoQueries)
 		{
 			$json['__queries'] = $this->databaseConnection->getPDO()->getQueryCount();

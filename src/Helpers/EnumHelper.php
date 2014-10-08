@@ -1,43 +1,46 @@
 <?php
 namespace Szurubooru\Helpers;
+use Szurubooru\Entities\Post;
+use Szurubooru\Entities\Snapshot;
+use Szurubooru\Entities\User;
 
 class EnumHelper
 {
 	private static $accessRankMap =
 	[
-		'anonymous' => \Szurubooru\Entities\User::ACCESS_RANK_ANONYMOUS,
-		'regularUser' => \Szurubooru\Entities\User::ACCESS_RANK_REGULAR_USER,
-		'powerUser' => \Szurubooru\Entities\User::ACCESS_RANK_POWER_USER,
-		'moderator' => \Szurubooru\Entities\User::ACCESS_RANK_MODERATOR,
-		'administrator' => \Szurubooru\Entities\User::ACCESS_RANK_ADMINISTRATOR,
+		'anonymous' => User::ACCESS_RANK_ANONYMOUS,
+		'regularUser' => User::ACCESS_RANK_REGULAR_USER,
+		'powerUser' => User::ACCESS_RANK_POWER_USER,
+		'moderator' => User::ACCESS_RANK_MODERATOR,
+		'administrator' => User::ACCESS_RANK_ADMINISTRATOR,
 	];
 
 	private static $avatarStyleMap =
 	[
-		'gravatar' => \Szurubooru\Entities\User::AVATAR_STYLE_GRAVATAR,
-		'manual' => \Szurubooru\Entities\User::AVATAR_STYLE_MANUAL,
-		'none' => \Szurubooru\Entities\User::AVATAR_STYLE_BLANK,
-		'blank' => \Szurubooru\Entities\User::AVATAR_STYLE_BLANK,
+		'gravatar' => User::AVATAR_STYLE_GRAVATAR,
+		'manual' => User::AVATAR_STYLE_MANUAL,
+		'none' => User::AVATAR_STYLE_BLANK,
+		'blank' => User::AVATAR_STYLE_BLANK,
 	];
 
 	private static $postSafetyMap =
 	[
-		'safe' => \Szurubooru\Entities\Post::POST_SAFETY_SAFE,
-		'sketchy' => \Szurubooru\Entities\Post::POST_SAFETY_SKETCHY,
-		'unsafe' => \Szurubooru\Entities\Post::POST_SAFETY_UNSAFE,
+		'safe' => Post::POST_SAFETY_SAFE,
+		'sketchy' => Post::POST_SAFETY_SKETCHY,
+		'unsafe' => Post::POST_SAFETY_UNSAFE,
 	];
 
 	private static $postTypeMap =
 	[
-		'image' => \Szurubooru\Entities\Post::POST_TYPE_IMAGE,
-		'video' => \Szurubooru\Entities\Post::POST_TYPE_VIDEO,
-		'flash' => \Szurubooru\Entities\Post::POST_TYPE_FLASH,
-		'youtube' => \Szurubooru\Entities\Post::POST_TYPE_YOUTUBE,
+		'image' => Post::POST_TYPE_IMAGE,
+		'video' => Post::POST_TYPE_VIDEO,
+		'flash' => Post::POST_TYPE_FLASH,
+		'youtube' => Post::POST_TYPE_YOUTUBE,
 	];
 
 	private static $snapshotTypeMap =
 	[
-		'post' => \Szurubooru\Entities\Snapshot::TYPE_POST,
+		'post' => Snapshot::TYPE_POST,
 	];
 
 	public static function accessRankToString($accessRank)

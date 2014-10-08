@@ -1,5 +1,10 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Helpers\HttpHelper;
+use Szurubooru\Router;
+use Szurubooru\Services\FileService;
+use Szurubooru\Services\PostService;
+use Szurubooru\Services\ThumbnailService;
 
 final class PostContentController extends AbstractController
 {
@@ -9,10 +14,10 @@ final class PostContentController extends AbstractController
 	private $thumbnailService;
 
 	public function __construct(
-		\Szurubooru\Services\PostService $postService,
-		\Szurubooru\Services\FileService $fileService,
-		\Szurubooru\Helpers\HttpHelper $httpHelper,
-		\Szurubooru\Services\ThumbnailService $thumbnailService)
+		PostService $postService,
+		FileService $fileService,
+		HttpHelper $httpHelper,
+		ThumbnailService $thumbnailService)
 	{
 		$this->postService = $postService;
 		$this->fileService = $fileService;
@@ -20,7 +25,7 @@ final class PostContentController extends AbstractController
 		$this->thumbnailService = $thumbnailService;
 	}
 
-	public function registerRoutes(\Szurubooru\Router $router)
+	public function registerRoutes(Router $router)
 	{
 		$router->get('/api/posts/:postName/content', [$this, 'getPostContent']);
 		$router->get('/api/posts/:postName/thumbnail/:size', [$this, 'getPostThumbnail']);

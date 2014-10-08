@@ -1,9 +1,11 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\Snapshot;
 
 class SnapshotEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(\Szurubooru\Entities\Entity $entity)
+	public function toArray(Entity $entity)
 	{
 		return
 		[
@@ -20,7 +22,7 @@ class SnapshotEntityConverter extends AbstractEntityConverter implements IEntity
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new \Szurubooru\Entities\Snapshot(intval($array['id']));
+		$entity = new Snapshot(intval($array['id']));
 		$entity->setTime($this->dbTimeToEntityTime($array['time']));
 		$entity->setType(intval($array['type']));
 		$entity->setPrimaryKey($array['primaryKey']);
