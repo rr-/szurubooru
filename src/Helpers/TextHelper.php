@@ -218,24 +218,24 @@ class TextHelper
 
 	public static function encrypt($text)
 	{
-		$salt = Core::getConfig()->main->salt;
+		$key = self::getEncryptionKey();
 		$alg = MCRYPT_RIJNDAEL_256;
 		$mode = MCRYPT_MODE_CBC;
 		$iv = mcrypt_create_iv(mcrypt_get_iv_size($alg, $mode), MCRYPT_RAND);
-		return base64_encode($iv) . '|' . base64_encode(mcrypt_encrypt($alg, $salt, $text, $mode, $iv));
+		return base64_encode($iv) . '|' . base64_encode(mcrypt_encrypt($alg, $key, $text, $mode, $iv));
 	}
 
 	public static function decrypt($text)
 	{
 		try
 		{
-			$salt = Core::getConfig()->main->salt;
+			$key = self::getEncryptionKey();
 			list ($iv, $hash) = explode('|', $text, 2);
 			$iv = base64_decode($iv);
 			$hash = base64_decode($hash);
 			$alg = MCRYPT_RIJNDAEL_256;
 			$mode = MCRYPT_MODE_CBC;
-			$ret = mcrypt_decrypt($alg, $salt, $hash, $mode, $iv);
+			$ret = mcrypt_decrypt($alg, $key, $hash, $mode, $iv);
 			$pos = strpos($ret, "\0");
 			if ($pos !== false)
 				$ret = substr($ret, 0, $pos);
@@ -353,5 +353,11 @@ class TextHelper
 		return isset($mimeTypes[$mimeType])
 			? $mimeTypes[$mimeType]
 			: null;
+	}
+
+	private static function getEncryptionKey()
+	{
+		$salt = Core::getConfig()->main->salt;
+		return hex2bin(md5($salt));
 	}
 }
