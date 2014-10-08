@@ -19,7 +19,7 @@ class NetworkingService
 
 		$secondsToLive = $daysToLive * 24 * 60 * 60;
 		$lastModified = filemtime($fullPath);
-		$eTag = md5(file_get_contents($fullPath)); //todo: faster
+		$eTag = md5($fullPath . $lastModified);
 
 		$ifModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
 			? $_SERVER['HTTP_IF_MODIFIED_SINCE']
