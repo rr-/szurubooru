@@ -1,6 +1,8 @@
 <?php
 namespace Szurubooru\Controllers;
+use Szurubooru\Config;
 use Szurubooru\Dao\PublicFileDao;
+use Szurubooru\Helpers\MimeHelper;
 use Szurubooru\Router;
 use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\PostService;
@@ -8,17 +10,20 @@ use Szurubooru\Services\ThumbnailService;
 
 final class PostContentController extends AbstractController
 {
+	private $config;
 	private $fileDao;
 	private $postService;
 	private $networkingService;
 	private $thumbnailService;
 
 	public function __construct(
+		Config $config,
 		PublicFileDao $fileDao,
 		PostService $postService,
 		NetworkingService $networkingService,
 		ThumbnailService $thumbnailService)
 	{
+		$this->config = $config;
 		$this->fileDao = $fileDao;
 		$this->postService = $postService;
 		$this->networkingService = $networkingService;
@@ -34,7 +39,14 @@ final class PostContentController extends AbstractController
 	public function getPostContent($postName)
 	{
 		$post = $this->postService->getByName($postName);
-		$this->networkingService->serveFile($this->fileDao->getFullPath($post->getContentPath()));
+
+		$options = new \StdClass;
+		$options->customFileName = sprintf('%s_%s.%s',
+			$this->config->basic->serviceName,
+			$post->getName(),
+			strtolower(MimeHelper::getExtension($post->getContentMimeType())));
+
+		$this->networkingService->serveFile($this->fileDao->getFullPath($post->getContentPath()), $options);
 	}
 
 	public function getPostThumbnail($postName, $size)

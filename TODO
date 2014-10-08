@@ -8,8 +8,6 @@ everything related to posts:
 
     - ability to paste many urls in post upload
 
-    - generate meaningful file name when saving posts
-
     - post notes
         - "add note" in sidebar creates new note in the middle of image
         - hovering notes shows note text
