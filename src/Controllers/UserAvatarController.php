@@ -78,7 +78,7 @@ final class UserAvatarController extends AbstractController
 
 	private function serveBlankFile($size)
 	{
-		$this->serveFromFile($this->fileDao->getFullPath($this->getBlankAvatarSourceContentPath()), $size);
+		$this->serveFromFile($this->getBlankAvatarSourceContentPath(), $size);
 	}
 
 	private function getBlankAvatarSourceContentPath()

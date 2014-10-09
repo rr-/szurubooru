@@ -46,7 +46,7 @@ class FileDao implements IFileDao
 
 	private function createFolders($fileName)
 	{
-		$fullPath = $this->getFullPath(dirname($fileName));
+		$fullPath = dirname($this->getFullPath($fileName));
 		if (!file_exists($fullPath))
 			mkdir($fullPath, 0777, true);
 	}
