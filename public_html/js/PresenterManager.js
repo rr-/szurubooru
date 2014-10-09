@@ -18,22 +18,21 @@ App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboar
 	}
 
 	function showContentSpinner() {
-		$spinner.show();
+		if (spinnerTimeout !== null) {
+			spinnerTimeout = window.setTimeout(function() {
+				$spinner.show();
+			}, 150);
+		}
 	}
 
 	function hideContentSpinner() {
+		window.clearTimeout(spinnerTimeout);
+		spinnerTimeout = null;
 		$spinner.hide();
 	}
 
 	function switchContentPresenter(presenter, args) {
-		var contentPresenterLoaded = function() {
-			window.clearTimeout(spinnerTimeout);
-			hideContentSpinner();
-		};
-
-		spinnerTimeout = window.setTimeout(function() {
-			showContentSpinner();
-		}, 100);
+		showContentSpinner();
 
 		if (lastContentPresenter === null || lastContentPresenter.name !== presenter.name) {
 			if (lastContentPresenter !== null && lastContentPresenter.deinit) {
@@ -42,10 +41,10 @@ App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboar
 			keyboard.reset();
 			topNavigationPresenter.changeTitle(null);
 			topNavigationPresenter.focus();
-			presenter.init.call(presenter, args, contentPresenterLoaded);
+			presenter.init.call(presenter, args, hideContentSpinner);
 			lastContentPresenter = presenter;
 		} else if (lastContentPresenter.reinit) {
-			lastContentPresenter.reinit.call(lastContentPresenter, args, contentPresenterLoaded);
+			lastContentPresenter.reinit.call(lastContentPresenter, args, hideContentSpinner);
 		}
 	}
 
