@@ -42,6 +42,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		deleteAllComments: 'deleteAllComments',
 
 		listTags: 'listTags',
+		massTag: 'massTag',
 
 		viewHistory: 'viewHistory',
 	};

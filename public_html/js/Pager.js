@@ -57,7 +57,7 @@ App.Pager = function(
 
 	function retrieve() {
 		return promise.make(function(resolve, reject) {
-			promise.wait(api.get(url, _.extend({page: pageNumber}, searchParams)))
+			promise.wait(api.get(url, _.extend({}, searchParams, {page: pageNumber})))
 				.then(function(response) {
 					var pageSize = response.json.pageSize;
 					var totalRecords = response.json.totalRecords;

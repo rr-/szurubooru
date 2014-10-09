@@ -24,7 +24,6 @@ everything related to users:
 everything related to tags:
     - tags.json refresh when editing post
     - basic tags
-        - mass tag
         - merging
         - tag editing
             - name

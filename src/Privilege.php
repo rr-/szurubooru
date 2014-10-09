@@ -35,6 +35,7 @@ class Privilege
 	const CHANGE_POST_FLAGS = 'changePostFlags';
 
 	const LIST_TAGS = 'listTags';
+	const MASS_TAG = 'massTag';
 
 	const LIST_COMMENTS = 'listComments';
 	const ADD_COMMENTS = 'addComments';

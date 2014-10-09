@@ -32,4 +32,8 @@
 			</div>
 		<% } %>
 	</a>
+
+	<div class="action">
+		<button>Action</button>
+	</div>
 </div>

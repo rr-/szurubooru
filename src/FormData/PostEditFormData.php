@@ -22,7 +22,8 @@ class PostEditFormData implements IValidatable
 		{
 			$this->content = $inputReader->decodeBase64($inputReader->content);
 			$this->thumbnail = $inputReader->decodebase64($inputReader->thumbnail);
-			$this->safety = EnumHelper::postSafetyFromString($inputReader->safety);
+			if ($inputReader->safety)
+				$this->safety = EnumHelper::postSafetyFromString($inputReader->safety);
 			$this->source = $inputReader->source;
 			$this->tags = preg_split('/[\s+]/', $inputReader->tags);
 			$this->relations = array_filter(preg_split('/[\s+]/', $inputReader->relations));

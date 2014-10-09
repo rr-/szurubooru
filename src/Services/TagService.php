@@ -61,7 +61,7 @@ class TagService
 		{
 			$tagNameGetter = function($tag)
 				{
-					return $tag->getName();
+					return strtolower($tag->getName());
 				};
 
 			$tagNames = array_map($tagNameGetter, $tags);
@@ -86,10 +86,10 @@ class TagService
 			$result = [];
 			foreach ($tags as $key => $tag)
 			{
-				if (isset($tagsNotToCreate[$tag->getName()]))
-					$tag = $tagsNotToCreate[$tag->getName()];
+				if (isset($tagsNotToCreate[$tagNameGetter($tag)]))
+					$tag = $tagsNotToCreate[$tagNameGetter($tag)];
 				else
-					$tag = $createdTags[$tag->getName()];
+					$tag = $createdTags[$tagNameGetter($tag)];
 				$result[$key] = $tag;
 			}
 			return $result;
