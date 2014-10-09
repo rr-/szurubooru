@@ -2,10 +2,6 @@ This is transient file that lists functionalities to be implemented before
 first major release.
 
 everything related to posts:
-    - single post view
-        - editing
-            - ability to loop video posts
-
     - ability to paste many urls in post upload
 
     - post notes

@@ -135,6 +135,7 @@ final class HistoryServiceTest extends AbstractTestCase
 		$post->setContentChecksum('checksum');
 		$post->setSafety(Post::POST_SAFETY_SKETCHY);
 		$post->setSource('amazing source');
+		$post->setFlags(Post::FLAG_LOOP);
 
 		$historyService = $this->getHistoryService();
 		$snapshot = $historyService->getPostChangeSnapshot($post);
@@ -145,7 +146,8 @@ final class HistoryServiceTest extends AbstractTestCase
 			'contentChecksum' => 'checksum',
 			'featured' => false,
 			'tags' => ['tag1', 'tag2'],
-			'relations' => [1, 2]
+			'relations' => [1, 2],
+			'flags' => ['loop'],
 		], $snapshot->getData());
 
 		$this->assertEquals(Snapshot::TYPE_POST, $snapshot->getType());

@@ -32,6 +32,7 @@ class Privilege
 	const CHANGE_POST_CONTENT = 'changePostContent';
 	const CHANGE_POST_THUMBNAIL = 'changePostThumbnail';
 	const CHANGE_POST_RELATIONS = 'changePostRelations';
+	const CHANGE_POST_FLAGS = 'changePostFlags';
 
 	const LIST_TAGS = 'listTags';
 

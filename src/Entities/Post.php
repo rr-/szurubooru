@@ -13,6 +13,8 @@ final class Post extends Entity
 	const POST_TYPE_VIDEO = 3;
 	const POST_TYPE_YOUTUBE = 4;
 
+	const FLAG_LOOP = 1;
+
 	const LAZY_LOADER_USER = 'user';
 	const LAZY_LOADER_TAGS = 'tags';
 	const LAZY_LOADER_CONTENT = 'content';
@@ -39,6 +41,7 @@ final class Post extends Entity
 	private $originalFileName;
 	private $featureCount = 0;
 	private $lastFeatureTime;
+	private $flags = 0;
 
 	public function getIdMarkdown()
 	{
@@ -193,6 +196,16 @@ final class Post extends Entity
 	public function setLastFeatureTime($lastFeatureTime)
 	{
 		$this->lastFeatureTime = $lastFeatureTime;
+	}
+
+	public function getFlags()
+	{
+		return $this->flags;
+	}
+
+	public function setFlags($flags)
+	{
+		$this->flags = $flags;
 	}
 
 	public function getTags()

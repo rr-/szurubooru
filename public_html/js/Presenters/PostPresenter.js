@@ -47,6 +47,7 @@ App.Presenters.PostPresenter = function(
 		editPrivileges.canChangeContent = auth.hasPrivilege(auth.privileges.changePostContent);
 		editPrivileges.canChangeThumbnail = auth.hasPrivilege(auth.privileges.changePostThumbnail);
 		editPrivileges.canChangeRelations = auth.hasPrivilege(auth.privileges.changePostRelations);
+		editPrivileges.canChangeFlags = auth.hasPrivilege(auth.privileges.changePostFlags);
 
 		promise.wait(
 				util.promiseTemplate('post'),
@@ -162,6 +163,11 @@ App.Presenters.PostPresenter = function(
 		attachLinksToPostsAround();
 	}
 
+	function softRender() {
+		renderSidebar();
+		$el.find('video').prop('loop', post.flags.loop);
+	}
+
 	function renderSidebar() {
 		$el.find('#sidebar').html(jQuery(renderPostTemplate()).find('#sidebar').html());
 		attachSidebarEvents();
@@ -262,6 +268,7 @@ App.Presenters.PostPresenter = function(
 		var $form = $el.find('form');
 		var formData = {};
 		formData.seenEditTime = post.lastEditTime;
+		formData.flags = {};
 
 		if (editPrivileges.canChangeContent && postContent) {
 			formData.content = postContent;
@@ -287,6 +294,12 @@ App.Presenters.PostPresenter = function(
 			formData.relations = $form.find('[name=relations]').val();
 		}
 
+		if (editPrivileges.canChangeFlags) {
+			if (post.contentType === 'video') {
+				formData.flags.loop = $form.find('[name=loop]').is(':checked') ? 1 : 0;
+			}
+		}
+
 		if (post.tags.length === 0) {
 			showEditError('No tags set.');
 			return;
@@ -296,7 +309,7 @@ App.Presenters.PostPresenter = function(
 			.then(function(response) {
 				post = response.json;
 				hideEditForm();
-				renderSidebar();
+				softRender();
 			}).fail(function(response) {
 				showEditError(response);
 			});
@@ -344,14 +357,14 @@ App.Presenters.PostPresenter = function(
 	function addFavorite() {
 		promise.wait(api.post('/posts/' + post.id + '/favorites'))
 			.then(function(response) {
-				promise.wait(refreshPost()).then(renderSidebar);
+				promise.wait(refreshPost()).then(softRender);
 			}).fail(showGenericError);
 	}
 
 	function deleteFavorite() {
 		promise.wait(api.delete('/posts/' + post.id + '/favorites'))
 			.then(function(response) {
-				promise.wait(refreshPost()).then(renderSidebar);
+				promise.wait(refreshPost()).then(softRender);
 			}).fail(showGenericError);
 	}
 
@@ -370,7 +383,7 @@ App.Presenters.PostPresenter = function(
 	function score(scoreValue) {
 		promise.wait(api.post('/posts/' + post.id + '/score', {score: scoreValue}))
 			.then(function() {
-				promise.wait(refreshPost()).then(renderSidebar);
+				promise.wait(refreshPost()).then(softRender);
 			}).fail(showGenericError);
 	}
 

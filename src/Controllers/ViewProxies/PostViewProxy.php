@@ -8,6 +8,7 @@ use Szurubooru\Services\FavoritesService;
 use Szurubooru\Services\HistoryService;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\ScoreService;
+use Szurubooru\Entities\Post;
 
 class PostViewProxy extends AbstractViewProxy
 {
@@ -72,6 +73,8 @@ class PostViewProxy extends AbstractViewProxy
 		$result->favoriteCount = $post->getFavoriteCount();
 		$result->score = $post->getScore();
 		$result->commentCount = $post->getCommentCount();
+		$result->flags = new \StdClass;
+		$result->flags->loop = ($post->getFlags() & Post::FLAG_LOOP);
 
 		if (!empty($config[self::FETCH_TAGS]))
 			$result->tags = $this->tagViewProxy->fromArray($post->getTags());

@@ -188,6 +188,9 @@ class PostService
 			if ($formData->relations !== null)
 				$this->updatePostRelations($post, $formData->relations);
 
+			if (count($formData->flags) > 0)
+				$this->updatePostFlags($post, $formData->flags);
+
 			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
 			return $this->postDao->save($post);
 		};
@@ -311,6 +314,14 @@ class PostService
 		}
 
 		$post->setRelatedPosts($relatedPosts);
+	}
+
+	private function updatePostFlags(Post $post, \StdClass $flags)
+	{
+		$value = 0;
+		if (!empty($flags->loop))
+			$value |= Post::FLAG_LOOP;
+		$post->setFlags($value);
 	}
 
 	public function deletePost(Post $post)

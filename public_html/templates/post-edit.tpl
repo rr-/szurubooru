@@ -48,6 +48,18 @@
 		</div>
 	<% } %>
 
+	<% if (privileges.canChangeFlags && post.contentType === 'video') { %>
+		<div class="form-row">
+			<label class="form-label">Loop:</label>
+			<div class="form-input">
+				<input type="checkbox" id="post-loop" name="loop" value="loop" <%= post.flags.loop ? 'checked="checked"' : '' %>/>
+				<label for="post-loop">
+					Automatically repeat video after playback
+				</label>
+			</div>
+		</div>
+	<% } %>
+
 	<% if (privileges.canChangeContent) { %>
 		<div class="form-row">
 			<label class="form-label" for="post-content">Content:</label>

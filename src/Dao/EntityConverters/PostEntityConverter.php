@@ -25,6 +25,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'originalFileName' => $entity->getOriginalFileName(),
 			'featureCount' => $entity->getFeatureCount(),
 			'lastFeatureTime' => $this->entityTimeToDbTime($entity->getLastFeatureTime()),
+			'flags' => $entity->getFlags(),
 		];
 	}
 
@@ -46,6 +47,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
 		$entity->setOriginalFileName($array['originalFileName']);
 		$entity->setFeatureCount(intval($array['featureCount']));
 		$entity->setLastFeatureTime($this->dbTimeToEntityTime($array['lastFeatureTime']));
+		$entity->setFlags(intval($array['flags']));
 		$entity->setMeta(Post::META_TAG_COUNT, intval($array['tagCount']));
 		$entity->setMeta(Post::META_FAV_COUNT, intval($array['favCount']));
 		$entity->setMeta(Post::META_COMMENT_COUNT, intval($array['commentCount']));

@@ -105,6 +105,10 @@ class HistoryService
 		$featuredPostParam = $this->globalParamDao->findByKey(GlobalParam::KEY_FEATURED_POST);
 		$isFeatured = ($featuredPostParam and intval($featuredPostParam->getValue()) === $post->getId());
 
+		$flags = [];
+		if ($post->getFlags() & Post::FLAG_LOOP)
+			$flags []= 'loop';
+
 		$data =
 		[
 			'source' => $post->getSource(),
@@ -128,6 +132,7 @@ class HistoryService
 					},
 					$post->getRelatedPosts()),
 
+			'flags' => $flags,
 		];
 
 		$snapshot = $this->getPostSnapshot($post);
