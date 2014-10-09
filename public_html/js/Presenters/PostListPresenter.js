@@ -17,13 +17,13 @@ App.Presenters.PostListPresenter = function(
 	var $el = jQuery('#content');
 	var $searchInput;
 
-	var searchArgs;
+	var params;
 
-	function init(args, loaded) {
+	function init(_params, loaded) {
 		topNavigationPresenter.select('posts');
 		topNavigationPresenter.changeTitle('Posts');
-		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		searchArgs.page = parseInt(searchArgs.page) || 1;
+		params = _params;
+		params.query = params.query || {};
 
 		promise.wait(
 				util.promiseTemplate('post-list'),
@@ -44,23 +44,14 @@ App.Presenters.PostListPresenter = function(
 						},
 					},
 					function() {
-						onArgsChanged(args);
+						reinit(params, function() {});
 					});
 			});
 	}
 
-	function reinit(args, loaded) {
+	function reinit(params, loaded) {
+		pagerPresenter.reinit({query: params.query});
 		loaded();
-		onArgsChanged(args);
-	}
-
-	function onArgsChanged(args) {
-		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		pagerPresenter.reinit({
-			page: searchArgs.page,
-			searchParams: {
-				query: searchArgs.query,
-				order: searchArgs.order}});
 	}
 
 	function deinit() {
@@ -72,7 +63,7 @@ App.Presenters.PostListPresenter = function(
 		$searchInput = $el.find('input[name=query]');
 		App.Controls.AutoCompleteInput($searchInput);
 
-		$searchInput.val(searchArgs.query);
+		$searchInput.val(params.query.query);
 		$searchInput.keydown(searchInputKeyPressed);
 		$el.find('form').submit(searchFormSubmitted);
 
@@ -94,7 +85,8 @@ App.Presenters.PostListPresenter = function(
 
 		_.each(posts, function(post) {
 			var $post = jQuery('<li>' + templates.listItem({
-				searchArgs: searchArgs,
+				util: util,
+				query: params.query,
 				post: post,
 			}) + '</li>');
 			util.loadImagesNicely($post.find('img'));
@@ -116,9 +108,8 @@ App.Presenters.PostListPresenter = function(
 
 	function updateSearch() {
 		$searchInput.blur();
-		pagerPresenter.setSearchParams({
-			query: $searchInput.val().trim(),
-			order: searchArgs.order});
+		params.query.query = $searchInput.val().trim();
+		pagerPresenter.setQuery(params.query);
 	}
 
 	return {

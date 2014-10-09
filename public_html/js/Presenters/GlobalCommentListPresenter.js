@@ -12,7 +12,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 	var $el;
 	var templates = {};
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		$el = jQuery('#content');
 		topNavigationPresenter.select('comments');
 
@@ -38,25 +38,16 @@ App.Presenters.GlobalCommentListPresenter = function(
 							},
 						},
 						function() {
-							onArgsChanged(args);
+							reinit(params, function() {});
 						});
 				})
 			.fail(function() { console.log(new Error(arguments)); });
 	}
 
 
-	function reinit(args, loaded) {
+	function reinit(params, loaded) {
+		pagerPresenter.reinit({query: params.query});
 		loaded();
-		onArgsChanged(args);
-	}
-
-	function onArgsChanged(args) {
-		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		pagerPresenter.reinit({
-			page: searchArgs.page,
-			searchParams: {
-				query: searchArgs.query,
-				order: searchArgs.order}});
 	}
 
 	function deinit() {
@@ -79,6 +70,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 			var comments = data.comments;
 
 			var $post = jQuery('<li>' + templates.listItem({
+				util: util,
 				post: post,
 				postTemplate: templates.post,
 			}) + '</li>');
@@ -104,6 +96,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 		deinit: deinit,
 		render: render,
 	};
+
 };
 
 App.DI.register('globalCommentListPresenter', ['_', 'jQuery', 'util', 'promise', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.GlobalCommentListPresenter);

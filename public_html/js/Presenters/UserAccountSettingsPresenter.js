@@ -17,9 +17,9 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	var avatarContent;
 	var fileDropper;
 
-	function init(args, loaded) {
-		user = args.user;
-		target = args.target;
+	function init(params, loaded) {
+		user = params.user;
+		target = params.target;
 
 		privileges = {
 			canBan:

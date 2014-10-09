@@ -15,9 +15,9 @@ App.Presenters.UserAccountRemovalPresenter = function(
 	var user;
 	var privileges = {};
 
-	function init(args, loaded) {
-		user = args.user;
-		target = args.target;
+	function init(params, loaded) {
+		user = params.user;
+		target = params.target;
 
 		privileges.canDeleteAccount =
 			auth.hasPrivilege(auth.privileges.deleteAllAccounts) ||

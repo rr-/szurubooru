@@ -2,7 +2,6 @@
 	"name": "szuru2",
 	"version": "0.0.0",
 	"dependencies": {
-		"pathjs": "~0.8.1",
 		"jquery.cookie": "1.4.1",
 		"jquery": "~2.1.1",
 		"underscore": "1.7.0",

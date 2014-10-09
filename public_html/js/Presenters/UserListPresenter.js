@@ -12,8 +12,9 @@ App.Presenters.UserListPresenter = function(
 
 	var $el = jQuery('#content');
 	var templates = {};
+	var params;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('users');
 		topNavigationPresenter.changeTitle('Users');
 
@@ -36,23 +37,19 @@ App.Presenters.UserListPresenter = function(
 						},
 					},
 					function() {
-						reinit(args, function() {});
+						reinit(params, function() {});
 					});
 			});
 	}
 
-	function reinit(args, loaded) {
+	function reinit(_params, loaded) {
+		params = _params;
+		params.query = params.query || {};
+		params.query.order = params.query.order || 'name,asc';
+		updateActiveOrder(params.query.order);
+
+		pagerPresenter.reinit({query: params.query});
 		loaded();
-
-		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		searchArgs.order = searchArgs.order || 'name,asc';
-		searchArgs.page = parseInt(searchArgs.page) || 1;
-		updateActiveOrder(searchArgs.order);
-
-		pagerPresenter.reinit({
-			page: searchArgs.page,
-			searchParams: {
-				order: searchArgs.order}});
 	}
 
 	function deinit() {
@@ -90,7 +87,8 @@ App.Presenters.UserListPresenter = function(
 		e.preventDefault();
 		var $orderLink = jQuery(this);
 		var activeSearchOrder = $orderLink.attr('data-order');
-		pagerPresenter.setSearchParams({order: activeSearchOrder});
+		params.query.order = activeSearchOrder;
+		pagerPresenter.setQuery(params.query);
 	}
 
 	return {

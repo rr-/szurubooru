@@ -26,17 +26,20 @@ App.Presenters.PagerPresenter = function(
 	var baseUri;
 	var updateCallback;
 
-	function init(args, loaded) {
-		baseUri = args.baseUri;
-		updateCallback = args.updateCallback;
+	function init(params, loaded) {
+		baseUri = params.baseUri;
+		updateCallback = params.updateCallback;
 
 		messagePresenter.instant = true;
 
-		$target = args.$target;
-		targetContent = jQuery(args.$target).html();
+		$target = params.$target;
+		targetContent = jQuery(params.$target).html();
 
-		pager.init({url: args.backendUri});
-		pager.setSearchParams(args.searchParams);
+		if (forceClear) {
+			clearContent();
+		}
+		pager.init({url: params.backendUri});
+		setQuery(params.query);
 
 		promise.wait(util.promiseTemplate('pager'))
 			.then(function(template) {
@@ -46,62 +49,28 @@ App.Presenters.PagerPresenter = function(
 			});
 	}
 
-	function reinit(args, loaded) {
-		forceClear = !_.isEqual(args.searchParams, pager.getSearchParams()) || parseInt(args.page) !== pager.getPage();
-
-		pager.setSearchParams(args.searchParams);
-		pager.setPage(args.page || 1);
+	function reinit(params, loaded) {
+		if (forceClear) {
+			clearContent();
+		}
+		setQuery(params.query);
 
 		promise.wait(retrieve())
 			.then(loaded)
 			.fail(loaded);
 
 		if (!endlessScroll) {
-			keyboard.keydown('a', prevPage);
-			keyboard.keydown('d', nextPage);
+			keyboard.keydown('a', function() { pager.prevPage(); syncUrl(); });
+			keyboard.keydown('d', function() { pager.nextPage(); syncUrl(); });
 		}
 	}
-
 
 	function deinit() {
 		detachNextPageLoader();
 	}
 
-	function prevPage() {
-		pager.prevPage();
-		syncUrl();
-	}
-
-	function nextPage() {
-		pager.nextPage();
-		syncUrl();
-	}
-
-	function nextPageInplace() {
-		pager.nextPage();
-		syncUrlInplace();
-	}
-
-	function setPage(newPage) {
-		pager.setPage(newPage);
-		syncUrl();
-	}
-
-	function setSearchParams(newSearchParams) {
-		if (_.isEqual(pager.getSearchParams(), newSearchParams)) {
-			return;
-		}
-		clearContent();
-		pager.setSearchParams(newSearchParams);
-		syncUrl();
-	}
-
 	function getUrl() {
-		return util.compileComplexRouteArgs(
-			baseUri,
-			_.extend(
-				{page: pager.getPage()},
-				pager.getSearchParams()));
+		return util.appendComplexRouteParam(baseUri, _.extend({}, pager.getSearchParams(), {page: pager.getPage()}));
 	}
 
 	function syncUrl() {
@@ -148,9 +117,11 @@ App.Presenters.PagerPresenter = function(
 						showPageList();
 					}
 
+					if (pager.getPage() < response.totalPages) {
+						attachNextPageLoader();
+					}
 					refreshPageList();
 					hideSpinner();
-					attachNextPageLoader();
 					resolve();
 				}).fail(function(response) {
 					clearContent();
@@ -177,7 +148,8 @@ App.Presenters.PagerPresenter = function(
 			var baseLine = $target.offset().top + $target.innerHeight();
 			var scrollY = jQuery(window).scrollTop() + jQuery(window).height();
 			if (scrollY > baseLine) {
-				nextPageInplace();
+				pager.nextPage();
+				syncUrlInplace();
 				window.clearInterval(scrollInterval);
 			}
 		}, 100);
@@ -207,7 +179,8 @@ App.Presenters.PagerPresenter = function(
 
 			var $a = jQuery('<a/>');
 			$a.click(function() {
-				setPage(page);
+				pager.setPage(page);
+				syncUrl();
 			});
 			$a.addClass('big-button');
 			$a.text(page);
@@ -231,12 +204,32 @@ App.Presenters.PagerPresenter = function(
 		}
 	}
 
+	function setQuery(query) {
+		if (!query) {
+			return;
+		}
+		query.page = parseInt(query.page) || 1;
+		var page = query.page;
+		delete query.page;
+		forceClear =
+			query.query !== pager.getSearchParams().query ||
+			query.order !== pager.getSearchParams().order ||
+			parseInt(page) !== pager.getPage();
+		pager.setSearchParams(query);
+		pager.setPage(page);
+	}
+
+	function setQueryAndSyncUrl(query) {
+		setQuery(query);
+		syncUrl();
+	}
+
 	return {
 		init: init,
 		reinit: reinit,
 		deinit: deinit,
-		setPage: setPage,
-		setSearchParams: setSearchParams,
+		syncUrl: syncUrl,
+		setQuery: setQueryAndSyncUrl,
 	};
 
 };

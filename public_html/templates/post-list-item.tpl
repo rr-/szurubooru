@@ -1,10 +1,6 @@
 <div class="post-small post-type-<%= post.contentType %> ">
 	<a class="link"
-		<% if (typeof(searchArgs) !== 'undefined') { %>
-			href="#/post/<%= post.id %>/query=<%= searchArgs.query %>;order=<%= searchArgs.order %>;page=<%= searchArgs.page %>"
-		<% } else { %>
-			href="#/post/<%= post.id %>"
-		<% } %>
+		href="<%= util.appendComplexRouteParam('#/post/' + post.id, typeof(query) !== 'undefined' ? query : {}) %>"
 		title="<%= _.map(post.tags, function(tag) { return '#' + tag.name; }).join(', ') %>">
 
 		<img width="160" height="160" class="thumb" src="/data/thumbnails/160x160/posts/<%= post.name %>" alt="<%= post.idMarkdown %>"/>

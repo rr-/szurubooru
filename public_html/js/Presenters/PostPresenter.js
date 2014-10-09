@@ -20,9 +20,9 @@ App.Presenters.PostPresenter = function(
 	var $messages = $el;
 
 	var templates = {};
+	var params;
 
 	var postNameOrId;
-	var searchArgs;
 	var post;
 
 	var privileges = {};
@@ -34,7 +34,7 @@ App.Presenters.PostPresenter = function(
 	var postContent;
 	var postThumbnail;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('posts');
 		postsAroundCalculator.resetCache();
 
@@ -64,18 +64,19 @@ App.Presenters.PostPresenter = function(
 				templates.postContent = postContentTemplate;
 				templates.history = historyTemplate;
 
-				reinit(args, loaded);
+				reinit(params, loaded);
 			}).fail(function(response) {
 				showGenericError(response);
 				loaded();
 			});
 	}
 
-	function reinit(args, loaded) {
-		postNameOrId = args.postNameOrId;
+	function reinit(_params, loaded) {
+		params = _params;
+		params.query = params.query || {};
+		params.query.page = parseInt(params.query.page) || 1;
 
-		searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		searchArgs.page = parseInt(searchArgs.page) || 1;
+		postNameOrId = params.postNameOrId;
 
 		promise.wait(refreshPost())
 			.then(function() {
@@ -86,8 +87,7 @@ App.Presenters.PostPresenter = function(
 	}
 
 	function attachLinksToPostsAround() {
-		var searchParams = {query: searchArgs.query, order: searchArgs.order};
-		promise.wait(postsAroundCalculator.getLinksToPostsAround(searchParams, searchArgs.page, post.id))
+		promise.wait(postsAroundCalculator.getLinksToPostsAround(params.query, post.id))
 			.then(function(nextPostUrl, prevPostUrl) {
 				var $prevPost = $el.find('#post-current-search .right a');
 				var $nextPost = $el.find('#post-current-search .left a');
@@ -175,7 +175,7 @@ App.Presenters.PostPresenter = function(
 
 	function renderPostTemplate() {
 		return templates.post({
-			searchArgs: searchArgs,
+			query: params.query,
 			post: post,
 			ownScore: post.ownScore,
 			postFavorites: post.favorites,

@@ -31,31 +31,6 @@ App.Util = function(_, jQuery, marked, promise) {
 		});
 	}
 
-	function parseComplexRouteArgs(args) {
-		var result = {};
-		args = (args || '').split(/;/);
-		for (var i = 0; i < args.length; i ++) {
-			var arg = args[i];
-			if (!arg) {
-				continue;
-			}
-			var kv = arg.split(/=/);
-			result[kv[0]] = kv[1];
-		}
-		return result;
-	}
-
-	function compileComplexRouteArgs(baseUri, args) {
-		var result = baseUri + '/';
-		_.each(args, function(v, k) {
-			if (typeof(v) !== 'undefined') {
-				result += k + '=' + v + ';';
-			}
-		});
-		result = result.slice(0, -1);
-		return result;
-	}
-
 	function promiseTemplate(templateName) {
 		return promiseTemplateFromDOM(templateName) ||
 			promiseTemplateWithAJAX(templateName);
@@ -218,10 +193,18 @@ App.Util = function(_, jQuery, marked, promise) {
 		return postDecorator(marked(preDecorator(text), options));
 	}
 
+	function appendComplexRouteParam(baseUri, params) {
+		var result = baseUri + '/';
+		_.each(params, function(v, k) {
+			if (typeof(v) !== 'undefined') {
+				result += k + '=' + v + ';';
+			}
+		});
+		return result.slice(0, -1);
+	}
+
 	return {
 		promiseTemplate: promiseTemplate,
-		parseComplexRouteArgs: parseComplexRouteArgs,
-		compileComplexRouteArgs: compileComplexRouteArgs,
 		formatRelativeTime: formatRelativeTime,
 		formatFileSize: formatFileSize,
 		formatMarkdown: formatMarkdown,
@@ -230,6 +213,7 @@ App.Util = function(_, jQuery, marked, promise) {
 		isExitConfirmationEnabled: isExitConfirmationEnabled,
 		transparentPixel: transparentPixel,
 		loadImagesNicely: loadImagesNicely,
+		appendComplexRouteParam: appendComplexRouteParam,
 	};
 
 };

@@ -17,20 +17,20 @@ App.Presenters.UserActivationPresenter = function(
 	var formHidden = false;
 	var operation;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('login');
 		topNavigationPresenter.changeTitle('Account recovery');
-		reinit(args, loaded);
+		reinit(params, loaded);
 	}
 
-	function reinit(args, loaded) {
-		operation = args.operation;
+	function reinit(params, loaded) {
+		operation = params.operation;
 		promise.wait(util.promiseTemplate('user-query-form'))
 			.then(function(template) {
 				templates.userQuery = template;
-				if (args.token) {
+				if (params.token) {
 					hideForm();
-					confirmToken(args.token);
+					confirmToken(params.token);
 				} else {
 					showForm();
 				}

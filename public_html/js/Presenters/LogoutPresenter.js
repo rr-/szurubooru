@@ -11,7 +11,7 @@ App.Presenters.LogoutPresenter = function(
 
 	var $messages = jQuery('#content');
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('logout');
 		topNavigationPresenter.changeTitle('Logout');
 		promise.wait(auth.logout())

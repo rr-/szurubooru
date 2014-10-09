@@ -51,7 +51,8 @@ App.Pager = function(
 
 	function setSearchParams(newSearchParams) {
 		setPage(1);
-		searchParams = newSearchParams;
+		searchParams = _.extend({}, newSearchParams);
+		delete searchParams.page;
 	}
 
 	function retrieve() {
@@ -64,7 +65,8 @@ App.Pager = function(
 
 					resolve({
 						entities: response.json.data,
-						totalRecords: totalRecords});
+						totalRecords: totalRecords,
+						totalPages: totalPages});
 
 				}).fail(function(response) {
 					reject(response);

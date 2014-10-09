@@ -18,10 +18,10 @@ App.Presenters.PostCommentListPresenter = function(
 	var post;
 	var comments = [];
 
-	function init(args, loaded) {
-		$el = args.$target;
-		post = args.post;
-		comments = args.comments || [];
+	function init(params, loaded) {
+		$el = params.$target;
+		post = params.post;
+		comments = params.comments || [];
 
 		privileges = {
 			canListComments: auth.hasPrivilege(auth.privileges.listComments),
@@ -49,7 +49,7 @@ App.Presenters.PostCommentListPresenter = function(
 					loaded();
 
 					if (comments.length === 0) {
-						promise.wait(api.get('/comments/' + args.post.id))
+						promise.wait(api.get('/comments/' + params.post.id))
 							.then(function(response) {
 								comments = response.json.data;
 								render();
@@ -222,6 +222,7 @@ App.Presenters.PostCommentListPresenter = function(
 		init: init,
 		render: render,
 	};
+
 };
 
 App.DI.register('postCommentListPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostCommentListPresenter);

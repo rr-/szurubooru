@@ -1,34 +1,16 @@
 var App = App || {};
 
-App.Router = function(pathJs, _, jQuery, promise, util, appState, presenterManager) {
+App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
 
 	var root = '#/';
 	var previousLocation = window.location.href;
+	var routes = [];
 
 	injectRoutes();
 
-	function navigateToMainPage() {
-		window.location.href = root;
-	}
-
-	function navigate(url) {
-		window.location.href = url;
-	}
-
-	function navigateInplace(url) {
-		if ('replaceState' in history) {
-			history.replaceState('', '', url);
-			pathJs.dispatch(document.location.hash);
-		} else {
-			navigate(url);
-		}
-	}
-
-	function start() {
-		pathJs.listen();
-	}
-
 	function injectRoutes() {
+		inject('', 'homePresenter');
+		inject('#/', 'homePresenter');
 		inject('#/home', 'homePresenter');
 		inject('#/login', 'loginPresenter');
 		inject('#/logout', 'logoutPresenter');
@@ -36,24 +18,42 @@ App.Router = function(pathJs, _, jQuery, promise, util, appState, presenterManag
 		inject('#/upload', 'postUploadPresenter');
 		inject('#/password-reset(/:token)', 'userActivationPresenter', {operation: 'passwordReset'});
 		inject('#/activate(/:token)', 'userActivationPresenter', {operation: 'activation'});
-		inject('#/users(/:searchArgs)', 'userListPresenter');
+		inject('#/users(/:!query)', 'userListPresenter');
 		inject('#/user/:userName(/:tab)', 'userPresenter');
-		inject('#/posts(/:searchArgs)', 'postListPresenter');
-		inject('#/post(/:postNameOrId)(/:searchArgs)', 'postPresenter');
-		inject('#/comments(/:searchArgs)', 'globalCommentListPresenter');
-		inject('#/tags(/:searchArgs)', 'tagListPresenter');
-		inject('#/tag(/:tagName)', 'tagPresenter');
+		inject('#/posts(/:!query)', 'postListPresenter');
+		inject('#/post/:postNameOrId(/:!query)', 'postPresenter');
+		inject('#/comments(/:!query)', 'globalCommentListPresenter');
+		inject('#/tags(/:!query)', 'tagListPresenter');
+		inject('#/tag/:tagName', 'tagPresenter');
 		inject('#/help', 'helpPresenter');
-		setRoot('#/home');
 	}
 
-	function setRoot(newRoot) {
-		root = newRoot;
-		pathJs.root(newRoot);
+	function navigate(url) {
+		window.location.href = url;
 	}
 
-	function inject(path, presenterName, additionalParams) {
-		pathJs.map(path).to(function() {
+	function navigateToMainPage() {
+		navigate(root);
+	}
+
+	function navigateInplace(url) {
+		if ('replaceState' in history) {
+			history.replaceState('', '', url);
+			dispatch();
+		} else {
+			navigate(url);
+		}
+	}
+
+	function start() {
+		window.onpopstate = function() {
+			dispatch();
+		};
+		dispatch();
+	}
+
+	function inject(definition, presenterName, additionalParams) {
+		routes.push(new Route(definition, function(params) {
 			if (util.isExitConfirmationEnabled()) {
 				if (window.location.href === previousLocation) {
 					return;
@@ -67,20 +67,99 @@ App.Router = function(pathJs, _, jQuery, promise, util, appState, presenterManag
 				}
 			}
 
+			params = _.extend({}, params, additionalParams, {previousLocation: previousLocation});
+
 			//abort every operation that can be executed
 			promise.abortAll();
 			previousLocation = window.location.href;
 
-			var finalParams = _.extend(
-				this.params,
-				additionalParams,
-				{previousRoute: pathJs.routes.previous});
-
 			var presenter = App.DI.get(presenterName);
 			presenter.name = presenterName;
-			presenterManager.switchContentPresenter(presenter, finalParams);
-		});
+			presenterManager.switchContentPresenter(presenter, params);
+		}));
 	}
+
+	function dispatch() {
+		var url = document.location.hash;
+		for (var i = 0; i < routes.length; i ++) {
+			var route = routes[i];
+			if (route.match(url)) {
+				route.callback(route.params);
+				return true;
+			}
+		}
+		//todo: 404
+		console.log(new Error('Unhandled route: ' + url));
+		return false;
+	}
+
+	function parseComplexParamValue(value) {
+		var result = {};
+		var params = (value || '').split(/;/);
+		for (var i = 0; i < params.length; i ++) {
+			var param = params[i];
+			if (!param) {
+				continue;
+			}
+			var kv = param.split(/=/);
+			result[kv[0]] = kv[1];
+		}
+		return result;
+	}
+
+	function Route(definition, callback) {
+		var possibleRoutes = getPossibleRoutes(definition);
+
+		function getPossibleRoutes(routeDefinition) {
+			var parts = [];
+			var re = new RegExp('\\(([^}]+?)\\)', 'g');
+			while (true) {
+				var text = re.exec(routeDefinition);
+				if (!text) {
+					break;
+				}
+				parts.push(text[1]);
+			}
+			var possibleRoutes = [routeDefinition.split('(')[0]];
+			for (var i = 0; i < parts.length; i ++) {
+				possibleRoutes.push(possibleRoutes[possibleRoutes.length - 1] + parts[i]);
+			}
+			return possibleRoutes;
+		}
+
+		function match(url) {
+			var params = {};
+			for (var i = 0; i < possibleRoutes.length; i ++) {
+				var possibleRoute = possibleRoutes[i];
+				var compare = url;
+				var possibleRouteParts = possibleRoute.split('/');
+				var compareParts = compare.split('/');
+				if (possibleRoute.search(':') > 0) {
+					for (var j = 0; j < possibleRouteParts.length; j ++) {
+						if ((j < compareParts.length) && (possibleRouteParts[j].charAt(0) === ':')) {
+							var key = possibleRouteParts[j].substring(1);
+							var value = compareParts[j];
+							if (key.charAt(0) === '!') {
+								key = key.substring(1);
+								value = parseComplexParamValue(value);
+							}
+							params[key] = value;
+							compare = compare.replace(compareParts[j], possibleRouteParts[j]);
+						}
+					}
+				}
+				if (possibleRoute === compare) {
+					this.params = params;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		this.match = match;
+		this.callback = callback;
+	}
+
 
 	return {
 		start: start,
@@ -88,7 +167,6 @@ App.Router = function(pathJs, _, jQuery, promise, util, appState, presenterManag
 		navigateInplace: navigateInplace,
 		navigateToMainPage: navigateToMainPage,
 	};
-
 };
 
-App.DI.registerSingleton('router', ['pathJs', '_', 'jQuery', 'promise', 'util', 'appState', 'presenterManager'], App.Router);
+App.DI.registerSingleton('router', ['_', 'jQuery', 'promise', 'util', 'appState', 'presenterManager'], App.Router);

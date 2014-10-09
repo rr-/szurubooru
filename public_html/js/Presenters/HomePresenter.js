@@ -15,7 +15,7 @@ App.Presenters.HomePresenter = function(
 	var globals;
 	var post;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('home');
 		topNavigationPresenter.changeTitle('Home');
 

@@ -15,7 +15,7 @@ App.Presenters.TagPresenter = function(
 
 	var tagName;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('tags');
 		topNavigationPresenter.changeTitle('Tags');
 
@@ -26,12 +26,12 @@ App.Presenters.TagPresenter = function(
 				templates.tag = tagTemplate;
 				templates.postListItem = postListItemTemplate;
 
-				reinit(args, loaded);
+				reinit(params, loaded);
 			});
 	}
 
-	function reinit(args, loaded) {
-		tagName = args.tagName;
+	function reinit(params, loaded) {
+		tagName = params.tagName;
 
 		render();
 		loaded();
@@ -55,8 +55,9 @@ App.Presenters.TagPresenter = function(
 		var $target = $el.find('.post-list ul');
 		_.each(posts, function(post) {
 			var $post = jQuery('<li>' + templates.postListItem({
+				util: util,
 				post: post,
-				searchArgs: {query: tagName},
+				query: {query: tagName},
 			}) + '</li>');
 			$target.append($post);
 		});
@@ -72,6 +73,7 @@ App.Presenters.TagPresenter = function(
 		init: init,
 		reinit: reinit,
 	};
+
 };
 
 App.DI.register('tagPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'keyboard', 'topNavigationPresenter'], App.Presenters.TagPresenter);

@@ -13,7 +13,7 @@ App.Presenters.TagListPresenter = function(
 	var $el = jQuery('#content');
 	var templates = {};
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('tags');
 		topNavigationPresenter.changeTitle('Tags');
 
@@ -36,28 +36,23 @@ App.Presenters.TagListPresenter = function(
 						},
 					},
 					function() {
-						reinit(args, function() {});
+						reinit(params, function() {});
 					});
 			});
 	}
 
-	function reinit(args, loaded) {
-		loaded();
+	function reinit(params, loaded) {
+		params.query = params.query || {};
+		params.query.order = params.query.order || 'name,asc';
+		updateActiveOrder(params.query.order);
 
-		var searchArgs = util.parseComplexRouteArgs(args.searchArgs);
-		searchArgs.order = searchArgs.order || 'name,asc';
-		searchArgs.page = parseInt(searchArgs.page) || 1;
-		updateActiveOrder(searchArgs.order);
-
-		pagerPresenter.reinit({
-			page: searchArgs.page,
-			searchParams: {
-				order: searchArgs.order}});
+		pagerPresenter.reinit({query: params.query});
 
 		keyboard.keyup('p', function() {
 			$el.find('table a').eq(0).focus();
 		});
 
+		loaded();
 	}
 
 	function deinit() {

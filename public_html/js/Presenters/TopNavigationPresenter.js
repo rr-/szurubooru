@@ -12,7 +12,7 @@ App.Presenters.TopNavigationPresenter = function(
 	var templates = {};
 	var baseTitle = document.title;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		promise.wait(util.promiseTemplate('top-navigation'))
 			.then(function(template) {
 				templates.topNavigation = template;

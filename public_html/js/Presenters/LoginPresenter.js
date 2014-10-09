@@ -13,12 +13,12 @@ App.Presenters.LoginPresenter = function(
 	var $el = jQuery('#content');
 	var $messages;
 	var templates = {};
-	var previousRoute;
+	var previousLocation;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('login');
 		topNavigationPresenter.changeTitle('Login');
-		previousRoute = args.previousRoute;
+		previousLocation = params.previousLocation;
 		promise.wait(util.promiseTemplate('login-form'))
 			.then(function(template) {
 				templates.login = template;
@@ -66,8 +66,8 @@ App.Presenters.LoginPresenter = function(
 	}
 
 	function finishLogin() {
-		if (previousRoute && !previousRoute.match(/logout|password-reset|activate|register/)) {
-			router.navigate(previousRoute);
+		if (previousLocation && !previousLocation.match(/logout|password-reset|activate|register/)) {
+			router.navigate(previousLocation);
 		} else {
 			router.navigateToMainPage();
 		}

@@ -7,7 +7,7 @@ App.Presenters.HelpPresenter = function(
 
 	var $el = jQuery('#content');
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('help');
 		topNavigationPresenter.changeTitle('Help');
 		render();

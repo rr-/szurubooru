@@ -13,7 +13,7 @@ App.Presenters.RegistrationPresenter = function(
 	var templates = {};
 	var $messages;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('register');
 		topNavigationPresenter.changeTitle('Registration');
 		promise.wait(util.promiseTemplate('registration-form'))

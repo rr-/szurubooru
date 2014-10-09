@@ -23,7 +23,7 @@ App.Presenters.PostUploadPresenter = function(
 	var fileDropper;
 	var interactionEnabled = true;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		topNavigationPresenter.select('upload');
 		topNavigationPresenter.changeTitle('Upload');
 

@@ -22,32 +22,32 @@ App.Presenters.UserPresenter = function(
 	var userName = null;
 	var activeTab;
 
-	function init(args, loaded) {
+	function init(params, loaded) {
 		promise.wait(util.promiseTemplate('user'))
 			.then(function(template) {
 				$messages = $el.find('.messages');
 				templates.user = template;
-				reinit(args, loaded);
+				reinit(params, loaded);
 			});
 	}
 
-	function reinit(args, loaded) {
-		if (args.userName !== userName) {
-			userName = args.userName;
+	function reinit(params, loaded) {
+		if (params.userName !== userName) {
+			userName = params.userName;
 			topNavigationPresenter.select(auth.isLoggedIn(userName) ? 'my-account' : 'users');
 			topNavigationPresenter.changeTitle(userName);
 
 			promise.wait(api.get('/users/' + userName))
 				.then(function(response) {
 					user = response.json;
-					var extendedContext = _.extend(args, {user: user});
+					var extendedContext = _.extend(params, {user: user});
 
 					presenterManager.initPresenters([
 						[userBrowsingSettingsPresenter, _.extend({}, extendedContext, {target: '#browsing-settings-target'})],
 						[userAccountSettingsPresenter, _.extend({}, extendedContext, {target: '#account-settings-target'})],
 						[userAccountRemovalPresenter, _.extend({}, extendedContext, {target: '#account-removal-target'})]],
 						function() {
-							initTabs(args);
+							initTabs(params);
 							loaded();
 						});
 
@@ -58,13 +58,13 @@ App.Presenters.UserPresenter = function(
 				});
 
 		} else {
-			initTabs(args);
+			initTabs(params);
 			loaded();
 		}
 	}
 
-	function initTabs(args) {
-		activeTab = args.tab || 'basic-info';
+	function initTabs(params) {
+		activeTab = params.tab || 'basic-info';
 		render();
 	}
 

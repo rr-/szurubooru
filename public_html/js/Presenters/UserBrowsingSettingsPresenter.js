@@ -14,9 +14,9 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 	var user;
 	var privileges = {};
 
-	function init(args, loaded) {
-		user = args.user;
-		target = args.target;
+	function init(params, loaded) {
+		user = params.user;
+		target = params.target;
 
 		privileges.canChangeBrowsingSettings = auth.isLoggedIn(user.name) && user.name === auth.getCurrentUser().name;
 
