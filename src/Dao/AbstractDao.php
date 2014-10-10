@@ -242,12 +242,15 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		$query->where($sql, ...$bindings);
 	}
 
-	protected function arrayToEntities(array $arrayEntities)
+	protected function arrayToEntities(array $arrayEntities, $entityConverter = null)
 	{
+		if ($entityConverter === null)
+			$entityConverter = $this->entityConverter;
+
 		$entities = [];
 		foreach ($arrayEntities as $arrayEntity)
 		{
-			$entity = $this->entityConverter->toEntity($arrayEntity);
+			$entity = $entityConverter->toEntity($arrayEntity);
 			$entities[$entity->getId()] = $entity;
 		}
 		return $entities;

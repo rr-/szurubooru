@@ -36,6 +36,7 @@ class Privilege
 
 	const LIST_TAGS = 'listTags';
 	const MASS_TAG = 'massTag';
+	const CHANGE_TAG_NAME = 'changeTagName';
 
 	const LIST_COMMENTS = 'listComments';
 	const ADD_COMMENTS = 'addComments';

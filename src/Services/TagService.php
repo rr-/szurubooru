@@ -1,29 +1,53 @@
 <?php
 namespace Szurubooru\Services;
 use Szurubooru\Dao\PublicFileDao;
+use Szurubooru\Dao\PostDao;
 use Szurubooru\Dao\TagDao;
 use Szurubooru\Dao\TransactionManager;
 use Szurubooru\Entities\Tag;
+use Szurubooru\FormData\TagEditFormData;
 use Szurubooru\SearchServices\Filters\TagFilter;
 use Szurubooru\Services\TimeService;
+use Szurubooru\Validator;
 
 class TagService
 {
+	private $validator;
 	private $transactionManager;
+	private $postDao;
 	private $tagDao;
 	private $fileDao;
 	private $timeService;
+	private $historyService;
 
 	public function __construct(
+		Validator $validator,
 		TransactionManager $transactionManager,
+		PostDao $postDao,
 		TagDao $tagDao,
 		PublicFileDao $fileDao,
+		HistoryService $historyService,
 		TimeService $timeService)
 	{
+		$this->validator = $validator;
 		$this->transactionManager = $transactionManager;
+		$this->postDao = $postDao;
 		$this->tagDao = $tagDao;
 		$this->fileDao = $fileDao;
+		$this->historyService = $historyService;
 		$this->timeService = $timeService;
+	}
+
+	public function getByName($tagName)
+	{
+		$transactionFunc = function() use ($tagName)
+		{
+			$tag = $this->tagDao->findByName($tagName);
+			if (!$tag)
+				throw new \InvalidArgumentException('Tag with name "' . $tagName . '" was not found.');
+			return $tag;
+		};
+		return $this->transactionManager->rollback($transactionFunc);
 	}
 
 	public function getFiltered(TagFilter $filter)
@@ -95,5 +119,35 @@ class TagService
 			return $result;
 		};
 		return $this->transactionManager->commit($transactionFunc);
+	}
+
+	public function updateTag(Tag $tag, TagEditFormData $formData)
+	{
+		$transactionFunc = function() use ($tag, $formData)
+		{
+			$this->validator->validate($formData);
+
+			if ($formData->name !== null)
+				$this->updateTagName($tag, $formData->name);
+
+			return $this->tagDao->save($tag);
+		};
+		$ret = $this->transactionManager->commit($transactionFunc);
+
+		$transactionFunc = function() use ($tag)
+		{
+			$posts = $this->postDao->findByTagName($tag->getName());
+			foreach ($posts as $post)
+				$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
+		};
+		$this->transactionManager->commit($transactionFunc);
+
+		$this->exportJson();
+		return $ret;
+	}
+
+	private function updateTagName(Tag $tag, $newName)
+	{
+		$tag->setName($newName);
 	}
 }

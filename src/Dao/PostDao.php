@@ -52,6 +52,17 @@ class PostDao extends AbstractDao implements ICrudDao
 		return $this->findOneBy('name', $name);
 	}
 
+	public function findByTagName($tagName)
+	{
+		$query = $this->fpdo->from('posts')
+			->disableSmartJoin()
+			->innerJoin('postTags ON postTags.postId = posts.id')
+			->innerJoin('tags ON postTags.tagId = tags.id')
+			->where('tags.name', $tagName);
+		$arrayEntities = iterator_to_array($query);
+		return $this->arrayToEntities($arrayEntities);
+	}
+
 	public function findByContentChecksum($checksum)
 	{
 		return $this->findOneBy('contentChecksum', $checksum);

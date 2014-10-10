@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Dao;
+use Szurubooru\Dao\EntityConverters\PostEntityConverter;
 use Szurubooru\Dao\EntityConverters\TagEntityConverter;
 use Szurubooru\DatabaseConnection;
 
@@ -11,6 +12,11 @@ class TagDao extends AbstractDao implements ICrudDao
 			$databaseConnection,
 			'tags',
 			new TagEntityConverter());
+	}
+
+	public function findByName($tagName)
+	{
+		return $this->findOneBy('name', $tagName);
 	}
 
 	public function findByNames($tagNames)

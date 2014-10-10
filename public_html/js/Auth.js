@@ -43,6 +43,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 
 		listTags: 'listTags',
 		massTag: 'massTag',
+		changeTagName: 'changeTagName',
 
 		viewHistory: 'viewHistory',
 	};

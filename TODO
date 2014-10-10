@@ -26,7 +26,6 @@ everything related to tags:
     - basic tags
         - merging
         - tag editing
-            - name
             - category (from config.ini)
             - description
         - related tags

@@ -17,3 +17,9 @@
 #tag-view h3 {
 	margin-bottom: 0.5em;
 }
+
+#tag-view form {
+	text-align: left;
+	max-width: 20em;
+	margin: 0 auto;
+}

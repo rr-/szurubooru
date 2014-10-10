@@ -6,18 +6,27 @@ App.Presenters.TagPresenter = function(
 	jQuery,
 	util,
 	promise,
+	auth,
 	api,
+	router,
 	keyboard,
-	topNavigationPresenter) {
+	topNavigationPresenter,
+	messagePresenter) {
 
 	var $el = jQuery('#content');
+	var $messages = $el;
 	var templates = {};
 
+	var tag;
 	var tagName;
+
+	var privileges = {};
 
 	function init(params, loaded) {
 		topNavigationPresenter.select('tags');
 		topNavigationPresenter.changeTitle('Tags');
+
+		privileges.canChangeName = auth.hasPrivilege(auth.privileges.changeTagName);
 
 		promise.wait(
 				util.promiseTemplate('tag'),
@@ -33,22 +42,50 @@ App.Presenters.TagPresenter = function(
 	function reinit(params, loaded) {
 		tagName = params.tagName;
 
-		render();
-		loaded();
+		messagePresenter.hideMessages($messages);
 
-		promise.wait(api.get('posts', {query: tagName}))
-			.then(function(response) {
-				var posts = response.json.data;
+		promise.wait(
+				api.get('tags/' + tagName),
+				api.get('posts', {query: tagName}))
+			.then(function(tagResponse, postsResponse) {
+				tag = tagResponse.json;
+				var posts = postsResponse.json.data;
 				posts = posts.slice(0, 8);
+
+				render();
+				loaded();
+
 				renderPosts(posts);
-			}).fail(function(response) {
-				console.log(new Error(response));
+			}).fail(function(tagResponse, postsResponse) {
+				messagePresenter.showError($messages, tagResponse.json.error || postsResponse.json.error);
+				loaded();
 			});
 	}
 
 	function render() {
-		$el.html(templates.tag({tagName: tagName}));
+		$el.html(templates.tag({privileges: privileges, tag: tag, tagName: tagName}));
 		$el.find('.post-list').hide();
+		$el.find('form').submit(editFormSubmitted);
+	}
+
+	function editFormSubmitted(e) {
+		e.preventDefault();
+		var $form = $el.find('form');
+		var formData = {};
+
+		if (privileges.canChangeName) {
+			formData.name = $form.find('[name=name]').val();
+		}
+
+		promise.wait(api.put('/tags/' + tag.name, formData))
+			.then(function(response) {
+				tag = response.json;
+				render();
+				router.navigate('#/tag/' + tag.name);
+			}).fail(function(response) {
+				console.log(response);
+				window.alert('An error occurred');
+			});
 	}
 
 	function renderPosts(posts) {
@@ -76,4 +113,4 @@ App.Presenters.TagPresenter = function(
 
 };
 
-App.DI.register('tagPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'keyboard', 'topNavigationPresenter'], App.Presenters.TagPresenter);
+App.DI.register('tagPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'api', 'router', 'keyboard', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.TagPresenter);
