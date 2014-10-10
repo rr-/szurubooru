@@ -24,10 +24,11 @@ class TokenDao extends AbstractDao
 			->where('additionalData', $additionalData)
 			->where('purpose', $purpose);
 		$arrayEntities = iterator_to_array($query);
-		if (!$arrayEntities or !count($arrayEntities))
+		$entities = $this->arrayToEntities($arrayEntities);
+		if (!$entities or !count($entities))
 			return null;
-		$arrayEntity = array_shift($arrayEntities);
-		return $this->entityConverter->toEntity($arrayEntity);
+		$entity = array_shift($entities);
+		return $entity;
 	}
 
 	public function deleteByName($tokenName)

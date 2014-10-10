@@ -122,14 +122,14 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		return $this->deleteBy($this->getIdColumn(), $entityId);
 	}
 
-	protected function update(Entity $entity)
+	public function update(Entity $entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);
 		$this->fpdo->update($this->tableName)->set($arrayEntity)->where($this->getIdColumn(), $entity->getId())->execute();
 		return $entity;
 	}
 
-	protected function create(Entity $entity)
+	public function create(Entity $entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);
 		$this->fpdo->insertInto($this->tableName)->values($arrayEntity)->execute();
@@ -158,10 +158,10 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 
 	protected function findOneBy($columnName, $value)
 	{
-		$arrayEntities = $this->findBy($columnName, $value);
-		if (!$arrayEntities)
+		$entities = $this->findBy($columnName, $value);
+		if (!$entities)
 			return null;
-		return array_shift($arrayEntities);
+		return array_shift($entities);
 	}
 
 	protected function deleteBy($columnName, $value)
