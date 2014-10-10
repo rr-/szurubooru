@@ -4,11 +4,12 @@
 		<button type="submit" name="search">Search</button>
 
 		<% if (privileges.canMassTag) { %>
-			<button name="mass-tag">Mass tag</button>
+			<div class="mass-tag-wrapper">
+				<p class="mass-tag-info">Tagging with <span class="mass-tag"><%= massTag %></span></p>
+				<button name="mass-tag">Mass tag</button>
+			</div>
 		<% } %>
 	</form>
-
-	<p class="mass-tag-info">Tagging with <span class="mass-tag"><%= massTag %></span></p>
 
 	<div class="pagination-target">
 		<div class="wrapper">

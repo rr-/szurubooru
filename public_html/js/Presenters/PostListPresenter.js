@@ -51,6 +51,8 @@ App.Presenters.PostListPresenter = function(
 						reinit(params, function() {});
 					});
 			});
+
+		jQuery(window).on('resize', windowResized);
 	}
 
 	function reinit(params, loaded) {
@@ -61,6 +63,7 @@ App.Presenters.PostListPresenter = function(
 
 	function deinit() {
 		pagerPresenter.deinit();
+		jQuery(window).off('resize', windowResized);
 	}
 
 	function render() {
@@ -80,6 +83,8 @@ App.Presenters.PostListPresenter = function(
 		keyboard.keyup('q', function() {
 			$searchInput.eq(0).focus().select();
 		});
+
+		windowResized();
 	}
 
 	function softRender() {
@@ -107,6 +112,7 @@ App.Presenters.PostListPresenter = function(
 			softRenderPost($post);
 			$target.append($post);
 		});
+		windowResized();
 	}
 
 	function renderPost(post) {
@@ -134,6 +140,24 @@ App.Presenters.PostListPresenter = function(
 		$post.toggleClass('untagged', _.contains(classes, 'untagged'));
 		$post.find('.action').toggle(_.any(classes));
 		$post.find('.action button').text(_.contains(classes, 'tagged') ? 'Tagged' : 'Untagged').unbind('click').click(postTagButtonClicked);
+	}
+
+	function windowResized() {
+		var $list = $el.find('ul.posts');
+		var $posts = $list.find('.post-small');
+		var $firstPost = $posts.eq(0);
+		var $lastPost = $firstPost;
+		for (var i = 1; i < $posts.length; i ++) {
+			$lastPost = $posts.eq(i-1);
+			if ($posts.eq(i).offset().left < $lastPost.offset().left) {
+				break;
+			}
+		}
+		if ($firstPost.length === 0) {
+			return;
+		}
+		$el.find('.search').css('margin-left', $firstPost.offset().left - $list.offset().left);
+		$el.find('.search').css('margin-right', $list.width() - ($lastPost.offset().left - $list.offset().left + $lastPost.width()));
 	}
 
 	function postTagButtonClicked(e) {

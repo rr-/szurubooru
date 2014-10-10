@@ -48,12 +48,12 @@ h3 {
 }
 
 a {
-	color: #298;
+	color: #24A2DD;
 	text-decoration: none;
 }
 
 a:hover {
-	color: #4ba;
+	color: #34B2ED;
 }
 
 hr {
@@ -70,13 +70,13 @@ hr {
 }
 .big-button.active {
 	background: #f7fbfc;
-	color: #8ba !important;
+	color: #24A2DD !important;
 }
 
 .big-button:focus,
 .big-button:hover {
-	background: #f3f7f8;
-	color: #7a9 !important;
+	background: #f7fbfc;
+	color: #34B2ED !important;
 	outline: 0;
 }
 

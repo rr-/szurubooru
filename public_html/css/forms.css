@@ -35,10 +35,11 @@
 textarea,
 input[type=text],
 input[type=password] {
-	padding: 2px 4px;
+	padding: 3px 6px 4px 6px;
 	border: 1px solid #eee;
+	box-shadow: 0 1px 2px -1px #e0e0e0 inset;
 	background: #fafafa;
-	font-family: monospace;
+	font-family: 'Inconsolata', monospace;
 	font-size: 17px;
 	text-overflow: ellipsis;
 	width: 100%;
@@ -51,9 +52,12 @@ input:-webkit-autofill {
 
 button,
 input[type=button] {
-	padding: 0.1em 0.5em;
-	border: 1px solid #eee;
-	background: #eee;
+	padding: 2px 15px 3px 15px;
+	border: 1px solid #ccc;
+	box-shadow: 0 1px 1px 0 #e5e5e5;
+	background: linear-gradient(#f5f5f5, #e5e5e5);
+	color: #444;
+	text-shadow: 0 1px 1px #fafafa;
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 17px;
 }
@@ -63,7 +67,7 @@ input[type=button]:not(:disabled) {
 }
 button:not(:disabled):hover,
 input[type=button]:not(:disabled):hover {
-	background: #f5f5f5;
+	background: linear-gradient(#fafafa, #eaeaea);
 }
 button:disabled {
 	color: gray;
@@ -71,11 +75,12 @@ button:disabled {
 
 button.highlight,
 input[type=button].highlight {
-	background: #ad5;
+	background: linear-gradient(#74D2FD, #64C2ED);
+	text-shadow: 0 1px 1px #8ff;
 }
 button:not(:disabled):hover.highlight,
 input[type=button]:not(:disabled):hover.highlight {
-	background: #dfa;
+	background: linear-gradient(#84E2FF, #74D2FD);
 }
 
 button:focus,
@@ -91,8 +96,8 @@ input::-moz-focus-inner {
 button:focus,
 textarea:focus,
 input:not(.tag-real-input):focus {
-	box-shadow: 0 0 0 1px #5da inset;
-	border-color: #5da;
+	box-shadow: 0 0 0 1px #64C2ED inset;
+	border-color: #64C2ED;
 }
 
 input[type=radio],
@@ -180,7 +185,7 @@ input[type=checkbox]:checked + label:before {
 	list-style-type: none;
 	padding: 0 0 !important;
 	margin: 0 !important;
-	border: 2px solid #5da;
+	border: 2px solid #64C2ED;
 	background: white;
 	display: block !important;
 	text-align: left;
@@ -192,5 +197,5 @@ input[type=checkbox]:checked + label:before {
 }
 
 .autocomplete li.active {
-	background: #5da;
+	background: #64C2ED;
 }
