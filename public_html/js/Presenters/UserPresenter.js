@@ -25,7 +25,6 @@ App.Presenters.UserPresenter = function(
 	function init(params, loaded) {
 		promise.wait(util.promiseTemplate('user'))
 			.then(function(template) {
-				$messages = $el.find('.messages');
 				templates.user = template;
 				reinit(params, loaded);
 			}).fail(function() {
@@ -79,6 +78,7 @@ App.Presenters.UserPresenter = function(
 			canChangeBrowsingSettings: userBrowsingSettingsPresenter.getPrivileges().canChangeBrowsingSettings,
 			canChangeAccountSettings: _.any(userAccountSettingsPresenter.getPrivileges()),
 			canDeleteAccount: userAccountRemovalPresenter.getPrivileges().canDeleteAccount}));
+		$messages = $el.find('.messages');
 		util.loadImagesNicely($el.find('img'));
 		userBrowsingSettingsPresenter.render();
 		userAccountSettingsPresenter.render();
