@@ -37,3 +37,18 @@
 	font-size: 40px;
 	margin: 0 10px 5px;
 }
+
+#top-navigation .accesskey:before {
+	position: absolute;
+	display: inline-block;
+	right: 0;
+	left: 0;
+	content: '\a0';
+	border-bottom: 1px solid;
+	opacity: .35;
+	height: 90%;
+}
+#top-navigation .accesskey {
+	position: relative;
+	text-decoration: none;
+}

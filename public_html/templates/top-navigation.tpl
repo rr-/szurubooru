@@ -74,10 +74,13 @@
 				link.className = link.title.toLowerCase();
 			}
 			if (typeof(link.accessKey) === 'undefined') {
-				var accessKey = link.title.substring(0, 1);
-				if (!_.contains(takenAccessKeys, accessKey)) {
-					link.accessKey = accessKey;
-					takenAccessKeys.push(accessKey);
+				for (var i = 0; i < link.title.length; i ++) {
+					var accessKey = link.title.charAt(i);
+					if (!_.contains(takenAccessKeys, accessKey)) {
+						link.accessKey = accessKey;
+						takenAccessKeys.push(accessKey);
+						break;
+					}
 				}
 			}
 			return link;
@@ -88,7 +91,8 @@
 		--><li class="<%= link.className %>">
 			<a class="big-button" href="<%= link.target %>" <%= link.accessKey ? 'accessKey="' + link.accessKey + '"' : '' %>>
 				<i class="fa <%= link.icon %>"></i><br/>
-				<%= link.title %>
+				<% var pos = link.title.indexOf(link.accessKey) %>
+				<%= pos === -1 ? link.title : link.title.substring(0, pos) + '<span class="accesskey">' + link.accessKey + '</span>' + link.title.substring(pos + 1) %>
 			</a>
 		</li><!--
 	--><% }) %>
