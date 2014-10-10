@@ -46,9 +46,11 @@ App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
 	}
 
 	function start() {
-		window.onpopstate = function() {
-			dispatch();
-		};
+		if ('onhashchange' in window) {
+			window.onhashchange = dispatch;
+		} else {
+			window.onpopstate = dispatch;
+		}
 		dispatch();
 	}
 
