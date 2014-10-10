@@ -2,7 +2,9 @@
 require_once(__DIR__
 	. DIRECTORY_SEPARATOR . '..'
 	. DIRECTORY_SEPARATOR . 'src'
-	. DIRECTORY_SEPARATOR . 'AutoLoader.php');
+	. DIRECTORY_SEPARATOR . 'Bootstrap.php');
 
-$postService = Szurubooru\Injector::get(\Szurubooru\Services\PostService::class);
+use \Szurubooru\Services\PostService;
+
+$postService = Szurubooru\Injector::get(PostService::class);
 $postService->updatePostGlobals();
