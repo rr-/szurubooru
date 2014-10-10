@@ -124,7 +124,7 @@ App.Util = function(_, jQuery, marked, promise) {
 	}
 
 	function formatUnits(number, base, suffixes, callback) {
-		if (!number) {
+		if (!number && number !== 0) {
 			return NaN;
 		}
 		number *= 1.0;

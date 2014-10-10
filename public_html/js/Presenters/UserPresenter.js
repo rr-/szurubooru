@@ -28,6 +28,9 @@ App.Presenters.UserPresenter = function(
 				$messages = $el.find('.messages');
 				templates.user = template;
 				reinit(params, loaded);
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

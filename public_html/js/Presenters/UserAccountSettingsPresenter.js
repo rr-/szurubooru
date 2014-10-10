@@ -45,6 +45,9 @@ App.Presenters.UserAccountSettingsPresenter = function(
 				templates.accountRemoval = template;
 				render();
 				loaded();
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

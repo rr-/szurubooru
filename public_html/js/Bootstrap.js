@@ -2,17 +2,20 @@ var App = App || {};
 
 App.Bootstrap = function(auth, router, promise, presenterManager) {
 
-	promise.wait(
-			auth.tryLoginFromCookie(),
-			presenterManager.init())
-		.then(startRouting)
-		.fail(function(error) {
-			promise.wait(auth.loginAnonymous())
+	promise.wait(presenterManager.init())
+		.then(function() {
+			promise.wait(auth.tryLoginFromCookie())
 				.then(startRouting)
-				.fail(function(response) {
-					console.log(response);
-					window.alert('Fatal authentication error: ' + response.json.error);
+				.fail(function(error) {
+					promise.wait(auth.loginAnonymous())
+						.then(startRouting)
+						.fail(function() {
+							console.log(arguments);
+							window.alert('Fatal authentication error');
+						});
 				});
+		}).fail(function() {
+			console.log(arguments);
 		});
 
 	function startRouting() {

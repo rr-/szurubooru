@@ -83,7 +83,10 @@ App.Presenters.PostPresenter = function(
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
 				loaded();
-			}).fail(loaded);
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
+			});
 	}
 
 	function attachLinksToPostsAround() {

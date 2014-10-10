@@ -46,6 +46,9 @@ App.Presenters.PagerPresenter = function(
 				templates.pager = template;
 				render();
 				loaded();
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

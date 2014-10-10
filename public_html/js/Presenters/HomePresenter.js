@@ -33,7 +33,7 @@ App.Presenters.HomePresenter = function(
 				templates.postContent = postContentTemplate;
 
 				globals = globalsResponse.json;
-				post = featuredPostResponse.json;
+				post = featuredPostResponse.json.id ? featuredPostResponse.json : null;
 				render();
 				loaded();
 

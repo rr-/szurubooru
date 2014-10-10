@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.API = function(jQuery, promise, appState) {
+App.API = function(_, jQuery, promise, appState) {
 
 	var baseUrl = '/api/';
 
@@ -32,13 +32,13 @@ App.API = function(jQuery, promise, appState) {
 				success: function(data, textStatus, xhr) {
 					resolve({
 						status: xhr.status,
-						json: data});
+						json: stripMeta(data)});
 				},
 				error: function(xhr, textStatus, errorThrown) {
 					reject({
 						status: xhr.status,
 						json: xhr.responseJSON ?
-							xhr.responseJSON :
+							stripMeta(xhr.responseJSON) :
 							{error: errorThrown}});
 				},
 				type: method,
@@ -46,6 +46,16 @@ App.API = function(jQuery, promise, appState) {
 				data: data,
 			});
 		});
+	}
+
+	function stripMeta(data) {
+		var result = {};
+		_.each(data, function(v, k) {
+			if (!k.match(/^__/)) {
+				result[k] = v;
+			}
+		});
+		return result;
 	}
 
 	return {
@@ -57,4 +67,4 @@ App.API = function(jQuery, promise, appState) {
 
 };
 
-App.DI.registerSingleton('api', ['jQuery', 'promise', 'appState'], App.API);
+App.DI.registerSingleton('api', ['_', 'jQuery', 'promise', 'appState'], App.API);

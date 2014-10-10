@@ -36,6 +36,9 @@ App.Presenters.TagPresenter = function(
 				templates.postListItem = postListItemTemplate;
 
 				reinit(params, loaded);
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

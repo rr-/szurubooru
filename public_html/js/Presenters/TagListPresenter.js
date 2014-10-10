@@ -38,6 +38,9 @@ App.Presenters.TagListPresenter = function(
 					function() {
 						reinit(params, function() {});
 					});
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

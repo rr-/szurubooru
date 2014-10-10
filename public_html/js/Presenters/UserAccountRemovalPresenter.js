@@ -28,6 +28,9 @@ App.Presenters.UserAccountRemovalPresenter = function(
 				templates.accountRemoval = template;
 				render();
 				loaded();
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

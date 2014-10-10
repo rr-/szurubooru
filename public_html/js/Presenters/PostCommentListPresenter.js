@@ -53,10 +53,15 @@ App.Presenters.PostCommentListPresenter = function(
 							.then(function(response) {
 								comments = response.json.data;
 								render();
+							}).fail(function() {
+								console.log(arguments);
 							});
 					}
 				})
-			.fail(function() { console.log(new Error(arguments)); });
+			.fail(function() {
+				console.log(arguments);
+				loaded();
+			});
 	}
 
 	function render() {

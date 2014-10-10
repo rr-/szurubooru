@@ -20,7 +20,7 @@ App.Promise = function(_, jQuery) {
 
 		active.push(promise.promiseId);
 
-		promise.then(function() {
+		promise.always(function() {
 			if (!_.contains(active, promise.promiseId)) {
 				throw new Error('Broken promise (promise ID: ' + promise.promiseId + ')');
 			}

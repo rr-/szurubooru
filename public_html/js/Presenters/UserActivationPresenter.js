@@ -36,6 +36,9 @@ App.Presenters.UserActivationPresenter = function(
 				}
 				render();
 				loaded();
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

@@ -1,10 +1,10 @@
 <div id="home">
 	<h1><%= title %></h1>
 	<p>
-		<small>Serving <%= globals.postCount %> posts (<%= formatFileSize(globals.postSize) %>)</small>
+		<small>Serving <%= globals.postCount || 0 %> posts (<%= formatFileSize(globals.postSize || 0) %>)</small>
 	</p>
 
-	<% if (post) { %>
+	<% if (post && typeof(post) !== 'undefined') { %>
 		<div class="post">
 			<%= postContentTemplate({post: post}) %>
 			<div class="post-footer">

@@ -25,6 +25,9 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 				templates.browsingSettings = template;
 				render();
 				loaded();
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 
@@ -53,6 +56,8 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 		promise.wait(browsingSettings.setSettings(newSettings))
 			.then(function() {
 				messagePresenter.showInfo($messages, 'Browsing settings updated!');
+			}).fail(function() {
+				console.log(arguments);
 			});
 	}
 

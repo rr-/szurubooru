@@ -20,28 +20,29 @@ App.Presenters.GlobalCommentListPresenter = function(
 				util.promiseTemplate('global-comment-list'),
 				util.promiseTemplate('global-comment-list-item'),
 				util.promiseTemplate('post-list-item'))
-			.then(function(listTemplate, listItemTemplate, postTemplate)
-				{
-					templates.list = listTemplate;
-					templates.listItem = listItemTemplate;
-					templates.post = postTemplate;
+			.then(function(listTemplate, listItemTemplate, postTemplate) {
+				templates.list = listTemplate;
+				templates.listItem = listItemTemplate;
+				templates.post = postTemplate;
 
-					render();
-					loaded();
+				render();
+				loaded();
 
-					pagerPresenter.init({
-							baseUri: '#/comments',
-							backendUri: '/comments',
-							$target: $el.find('.pagination-target'),
-							updateCallback: function(data, clear) {
-								renderPosts(data.entities, clear);
-							},
+				pagerPresenter.init({
+						baseUri: '#/comments',
+						backendUri: '/comments',
+						$target: $el.find('.pagination-target'),
+						updateCallback: function(data, clear) {
+							renderPosts(data.entities, clear);
 						},
-						function() {
-							reinit(params, function() {});
-						});
-				})
-			.fail(function() { console.log(new Error(arguments)); });
+					},
+					function() {
+						reinit(params, function() {});
+					});
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
+			});
 	}
 
 

@@ -32,6 +32,9 @@ App.Presenters.PostUploadPresenter = function(
 				templates.upload = template;
 				render();
 				loaded();
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

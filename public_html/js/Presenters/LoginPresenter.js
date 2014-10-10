@@ -29,6 +29,9 @@ App.Presenters.LoginPresenter = function(
 					$el.find('input:eq(0)').focus();
 				}
 				loaded();
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

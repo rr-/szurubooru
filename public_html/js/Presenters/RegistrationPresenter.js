@@ -21,6 +21,9 @@ App.Presenters.RegistrationPresenter = function(
 				templates.registration = template;
 				render();
 				loaded();
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 

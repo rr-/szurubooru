@@ -21,8 +21,8 @@ App.Presenters.LogoutPresenter = function(
 				var $messageDiv = messagePresenter.showInfo($messages, 'Logged out. <a href="">Back to main page</a>');
 				$messageDiv.find('a').click(mainPageLinkClicked);
 			}).fail(function(response) {
-				loaded();
 				messagePresenter.showError(($messages, response.json && response.json.error || response) + '<br/>Reload the page to continue.');
+				loaded();
 			});
 	}
 

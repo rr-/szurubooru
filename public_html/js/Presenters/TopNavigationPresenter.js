@@ -19,6 +19,8 @@ App.Presenters.TopNavigationPresenter = function(
 				render();
 				loaded();
 				auth.startObservingLoginChanges('top-navigation', loginStateChanged);
+			}).fail(function() {
+				loaded();
 			});
 	}
 

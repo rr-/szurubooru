@@ -39,6 +39,9 @@ App.Presenters.UserListPresenter = function(
 					function() {
 						reinit(params, function() {});
 					});
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 	}
 
