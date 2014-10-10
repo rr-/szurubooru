@@ -7,7 +7,6 @@ use Szurubooru\FormData\RegistrationFormData;
 use Szurubooru\FormData\UserEditFormData;
 use Szurubooru\Services\EmailService;
 use Szurubooru\Services\PasswordService;
-use Szurubooru\Services\ThumbnailService;
 use Szurubooru\Services\TimeService;
 use Szurubooru\Services\TokenService;
 use Szurubooru\Services\UserService;
@@ -22,7 +21,6 @@ final class UserServiceTest extends AbstractTestCase
 	private $userDaoMock;
 	private $passwordServiceMock;
 	private $emailServiceMock;
-	private $thumbnailServiceMock;
 	private $timeServiceMock;
 	private $tokenServiceMock;
 
@@ -35,7 +33,6 @@ final class UserServiceTest extends AbstractTestCase
 		$this->userDaoMock = $this->mock(UserDao::class);
 		$this->passwordServiceMock = $this->mock(PasswordService::class);
 		$this->emailServiceMock = $this->mock(EmailService::class);
-		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
 		$this->timeServiceMock = $this->mock(TimeService::class);
 		$this->tokenServiceMock = $this->mock(TokenService::class);
 	}
@@ -287,7 +284,6 @@ final class UserServiceTest extends AbstractTestCase
 			$this->userDaoMock,
 			$this->passwordServiceMock,
 			$this->emailServiceMock,
-			$this->thumbnailServiceMock,
 			$this->timeServiceMock,
 			$this->tokenServiceMock);
 	}
