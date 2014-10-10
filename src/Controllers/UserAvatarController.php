@@ -71,8 +71,7 @@ final class UserAvatarController extends AbstractController
 
 	private function serveFromFile($sourceName, $size)
 	{
-		$this->thumbnailService->generateIfNeeded($sourceName, $size, $size);
-		$thumbnailName = $this->thumbnailService->getThumbnailName($sourceName, $size, $size);
+		$thumbnailName = $this->thumbnailService->generateIfNeeded($sourceName, $size, $size);
 		$this->networkingService->serveFile($this->fileDao->getFullPath($thumbnailName));
 	}
 

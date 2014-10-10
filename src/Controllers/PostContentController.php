@@ -57,8 +57,7 @@ final class PostContentController extends AbstractController
 		if (!$this->fileDao->exists($sourceName))
 			$sourceName = $post->getContentPath();
 
-		$this->thumbnailService->generateIfNeeded($sourceName, $size, $size);
-		$thumbnailName = $this->thumbnailService->getThumbnailName($sourceName, $size, $size);
+		$thumbnailName = $this->thumbnailService->generateIfNeeded($sourceName, $size, $size);
 		$this->networkingService->serveFile($this->fileDao->getFullPath($thumbnailName));
 	}
 }

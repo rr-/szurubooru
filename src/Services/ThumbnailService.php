@@ -26,17 +26,19 @@ class ThumbnailService
 		foreach ($this->getUsedThumbnailSizes() as $size)
 		{
 			list ($width, $height) = $size;
-			$target = $this->getThumbnailName($sourceName, $width, $height);
+			$target = $this->getTargetName($sourceName, $width, $height);
 			$this->fileDao->delete($target);
 		}
 	}
 
 	public function generateIfNeeded($sourceName, $width, $height)
 	{
-		$thumbnailName = $this->getThumbnailName($sourceName, $width, $height);
+		$targetName = $this->getTargetName($sourceName, $width, $height);
 
-		if (!$this->fileDao->exists($thumbnailName))
-			$this->generate($sourceName, $width, $height);
+		if (!$this->fileDao->exists($targetName))
+			return $this->generate($sourceName, $width, $height);
+
+		return $targetName;
 	}
 
 	public function generate($sourceName, $width, $height)
@@ -55,21 +57,19 @@ class ThumbnailService
 				throw new \InvalidArgumentException('Invalid thumbnail crop style');
 		}
 
-		$thumbnailName = $this->getThumbnailName($sourceName, $width, $height);
-
 		$source = $this->fileDao->load($sourceName);
-		$result = null;
-
-		if (!$source)
-			$source = $this->fileDao->load($this->getBlankThumbnailName());
-
 		if ($source)
-			$result = $this->thumbnailGenerator->generate($source, $width, $height, $cropStyle);
+		{
+			$thumbnailContent = $this->thumbnailGenerator->generate($source, $width, $height, $cropStyle);
+			if ($thumbnailContent)
+			{
+				$targetName = $this->getTargetName($sourceName, $width, $height);
+				$this->fileDao->save($targetName, $thumbnailContent);
+				return $targetName;
+			}
+		}
 
-		if (!$result)
-			$result = $this->fileDao->load($this->getBlankThumbnailName());
-
-		$this->fileDao->save($thumbnailName, $result);
+		return $this->getBlankThumbnailName();
 	}
 
 	public function getUsedThumbnailSizes()
@@ -89,7 +89,7 @@ class ThumbnailService
 		}
 	}
 
-	public function getThumbnailName($source, $width, $height)
+	public function getTargetName($source, $width, $height)
 	{
 		return 'thumbnails' . DIRECTORY_SEPARATOR . $width . 'x' . $height . DIRECTORY_SEPARATOR . $source;
 	}

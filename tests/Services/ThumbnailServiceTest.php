@@ -64,33 +64,23 @@ final class ThumbnailServiceTest extends AbstractTestCase
 		$this->configMock->set('misc/thumbnailCropStyle', 'outside');
 
 		$this->fileDaoMock
-			->expects($this->exactly(2))
+			->expects($this->once())
 			->method('load')
-			->withConsecutive(
-				['nope'],
-				['thumbnails' . DIRECTORY_SEPARATOR . 'blank.png'])
-			->will(
-				$this->onConsecutiveCalls(
-					null,
-					'content of blank thumbnail'));
+			->with('nope')
+			->willReturn(null);
 
 		$this->thumbnailGeneratorMock
-			->expects($this->once())
-			->method('generate')
-			->with(
-				'content of blank thumbnail',
-				100,
-				100,
-				IThumbnailGenerator::CROP_OUTSIDE)
-			->willReturn('generated thumbnail');
+			->expects($this->never())
+			->method('generate');
 
 		$this->fileDaoMock
-			->expects($this->once())
-			->method('save')
-			->with('thumbnails' . DIRECTORY_SEPARATOR . '100x100' . DIRECTORY_SEPARATOR . 'nope', 'generated thumbnail');
+			->expects($this->never())
+			->method('save');
 
 		$thumbnailService = $this->getThumbnailService();
-		$thumbnailService->generate('nope', 100, 100);
+		$this->assertEquals(
+			'thumbnails' . DIRECTORY_SEPARATOR . 'blank.png',
+			$thumbnailService->generate('nope', 100, 100));
 	}
 
 	public function testThumbnailGeneratingFail()
@@ -98,37 +88,63 @@ final class ThumbnailServiceTest extends AbstractTestCase
 		$this->configMock->set('misc/thumbnailCropStyle', 'outside');
 
 		$this->fileDaoMock
-			->expects($this->exactly(3))
+			->expects($this->once())
 			->method('load')
-			->withConsecutive(
-				['nope'],
-				['thumbnails' . DIRECTORY_SEPARATOR . 'blank.png'],
-				['thumbnails' . DIRECTORY_SEPARATOR . 'blank.png'])
-			->will(
-				$this->onConsecutiveCalls(
-					null,
-					'content of blank thumbnail',
-					'content of blank thumbnail (2)'));
+			->with('nope')
+			->willReturn('content of file');
 
 		$this->thumbnailGeneratorMock
 			->expects($this->once())
 			->method('generate')
 			->with(
-				'content of blank thumbnail',
+				'content of file',
 				100,
 				100,
 				IThumbnailGenerator::CROP_OUTSIDE)
 			->willReturn(null);
 
 		$this->fileDaoMock
-			->expects($this->once())
-			->method('save')
-			->with('thumbnails' . DIRECTORY_SEPARATOR . '100x100' . DIRECTORY_SEPARATOR . 'nope', 'content of blank thumbnail (2)');
+			->expects($this->never())
+			->method('save');
 
 		$thumbnailService = $this->getThumbnailService();
-		$thumbnailService->generate('nope', 100, 100);
+		$this->assertEquals(
+			'thumbnails' . DIRECTORY_SEPARATOR . 'blank.png',
+			$thumbnailService->generate('nope', 100, 100));
 	}
 
+	public function testThumbnailGeneratingSuccess()
+	{
+		$this->configMock->set('misc/thumbnailCropStyle', 'outside');
+
+		$this->fileDaoMock
+			->expects($this->once())
+			->method('load')
+			->with('okay')
+			->willReturn('content of file');
+
+		$this->thumbnailGeneratorMock
+			->expects($this->once())
+			->method('generate')
+			->with(
+				'content of file',
+				100,
+				100,
+				IThumbnailGenerator::CROP_OUTSIDE)
+			->willReturn('content of thumbnail');
+
+		$this->fileDaoMock
+			->expects($this->once())
+			->method('save')
+			->with(
+				'thumbnails' . DIRECTORY_SEPARATOR . '100x100' . DIRECTORY_SEPARATOR . 'okay',
+				'content of thumbnail');
+
+		$thumbnailService = $this->getThumbnailService();
+		$this->assertEquals(
+			'thumbnails' . DIRECTORY_SEPARATOR . '100x100' . DIRECTORY_SEPARATOR . 'okay',
+			$thumbnailService->generate('okay', 100, 100));
+	}
 
 	private function getThumbnailService()
 	{
