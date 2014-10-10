@@ -118,16 +118,20 @@ class PostDao extends AbstractDao implements ICrudDao
 	{
 		if ($requirement->getType() === PostFilter::REQUIREMENT_TAG)
 		{
+			$tagName = $requirement->getValue()->getValue();
+			$tag = $this->tagDao->findByName($tagName);
+			if (!$tag)
+				throw new \DomainException('Invalid tag: "' . $tagName . '"');
+
 			$sql = 'EXISTS (
 				SELECT 1 FROM postTags
-				INNER JOIN tags ON postTags.tagId = tags.id
 				WHERE postTags.postId = posts.id
-					AND LOWER(tags.name) = LOWER(?))';
+					AND postTags.tagId = ?)';
 
 			if ($requirement->isNegated())
 				$sql = 'NOT ' . $sql;
 
-			$query->where($sql, $requirement->getValue()->getValue());
+			$query->where($sql, $tag->getId());
 			return;
 		}
 
