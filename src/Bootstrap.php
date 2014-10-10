@@ -10,6 +10,7 @@ final class Bootstrap
 	public static function init($startTime)
 	{
 		self::$startTime = $startTime;
+		self::setTimezone();
 		self::turnErrorsIntoExceptions();
 		self::initAutoloader();
 	}
@@ -17,6 +18,11 @@ final class Bootstrap
 	public static function getStartTime()
 	{
 		return self::$startTime;
+	}
+
+	private static function setTimezone()
+	{
+		date_default_timezone_set('UTC');
 	}
 
 	private static function initAutoloader()
