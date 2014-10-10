@@ -13,8 +13,8 @@ class CommentEntityConverter extends AbstractEntityConverter implements IEntityC
 			'userId' => $entity->getUserId(),
 			'postId' => $entity->getPostId(),
 			'text' => $entity->getText(),
-			'lastEditTime' => $this->entityTimeToDbTime($entity->getCreationTime()),
-			'creationTime' => $this->entityTimeToDbTime($entity->getLastEditTime()),
+			'creationTime' => $this->entityTimeToDbTime($entity->getCreationTime()),
+			'lastEditTime' => $this->entityTimeToDbTime($entity->getLastEditTime()),
 		];
 	}
 
