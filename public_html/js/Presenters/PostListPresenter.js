@@ -55,7 +55,9 @@ App.Presenters.PostListPresenter = function(
 		jQuery(window).on('resize', windowResized);
 	}
 
-	function reinit(params, loaded) {
+	function reinit(_params, loaded) {
+		params = _params;
+		params.query = params.query || {};
 		pagerPresenter.reinit({query: params.query});
 		loaded();
 		softRender();
