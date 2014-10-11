@@ -141,7 +141,12 @@
 	padding: 1em;
 	position: absolute;
 	background: rgba(255, 255, 255, 0.8);
+	box-shadow: 0 0 1em 0.5em rgba(255, 255, 255, 0.8);
+	z-index: 0;
 	display: none;
+}
+#post-view>* {
+	z-index: -1;
 }
 
 #post-view-wrapper .post-edit-wrapper .file-handler {
