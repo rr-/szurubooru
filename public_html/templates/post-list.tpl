@@ -5,8 +5,8 @@
 
 		<% if (privileges.canMassTag) { %>
 			<div class="mass-tag-wrapper">
-				<p class="mass-tag-info">Tagging with <span class="mass-tag"><%= massTag %></span></p>
-				<button name="mass-tag">Mass tag</button>
+				<p class="mass-tag-info">Tagging with <span class="mass-tag"><%= massTag %></span></p><!--
+				--><button name="mass-tag">Mass tag</button>
 			</div>
 		<% } %>
 	</form>

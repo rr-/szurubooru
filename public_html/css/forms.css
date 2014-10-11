@@ -64,7 +64,8 @@ input[type=button]::before {
 }
 button,
 input[type=button] {
-	vertical-align: top;
+	vertical-align: middle;
+	line-height: normal;
 	background: transparent;
 	position: relative;
 	padding: 2px 15px 3px 15px;
@@ -95,7 +96,7 @@ input[type=button]:not(:disabled):active::before {
 }
 button:not(:disabled):focus,
 input[type=button]:not(:disabled):focus {
-	border-color: #64C2ED;
+	box-shadow: 0 1px 1px 0 #e5e5e5, 0 0 0 2px #64C2ED inset;
 }
 button:disabled {
 	color: gray;

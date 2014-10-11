@@ -2,9 +2,8 @@
 	text-align: center;
 }
 
-.post-list form input,
 .post-list form button {
-	font-size: 15px;
+	margin-left: 0.25em;
 }
 
 .post-list .search {
@@ -54,15 +53,15 @@
 
 .post-small a:focus,
 .post-small a:hover {
-	background: #afe;
-	border-color: #5da;
-	box-shadow: 0 0 0 2px #5da;
+	background: #64C2ED;
+	border-color: #64C2ED;
+	box-shadow: 0 0 0 2px #64C2ED;
 	outline: 0;
 }
 
 .post-small a:focus img,
 .post-small a:hover img {
-	opacity: .9;
+	opacity: .8 !important;
 }
 
 .post-small a .info {
@@ -72,7 +71,7 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: #5da;
+	background: #64C2ED;
 	color: black;
 }
 .post-small a .info ul {
@@ -90,7 +89,7 @@
 	display: block;
 }
 
-.post-small:not(.post-type-image) a:before {
+.post-small:not(.post-type-image) a::before {
 	display: block;
 	content: '';
 	z-index: 2;
@@ -103,7 +102,7 @@
 	border-left: 50px solid transparent;
 }
 
-.post-small:not(.post-type-image) a:after {
+.post-small:not(.post-type-image) a::after {
 	display: block;
 	content: '...';
 	z-index: 3;
@@ -118,14 +117,14 @@
 	color: white;
 	font-size: 15px;
 }
-.post-small.post-type-youtube a:after {
+.post-small.post-type-youtube a::after {
 	font-size: 13px;
 	content: 'youtube';
 }
-.post-small.post-type-video a:after {
+.post-small.post-type-video a::after {
 	content: 'video';
 }
-.post-small.post-type-flash a:after {
+.post-small.post-type-flash a::after {
 	content: 'flash';
 }
 
@@ -137,6 +136,7 @@
 	right: 0;
 	top: 50%;
 	bottom: 0;
+	pointer-events: none;
 }
 
 .post-small .action button {
@@ -147,23 +147,28 @@
 	margin: -1em auto 0 auto;
 	box-sizing: content-box;
 	opacity: .7;
+	box-shadow: none;
+	pointer-events: auto;
+}
+.post-small .action button:focus {
+	box-shadow: 0 0 0 2px #64C2ED inset !important;
 }
 
 .tagged .action button,
 .untagged .action button {
 	border: 1px solid black;
 	font-weight: bold;
-	box-shadow: none;
+	text-shadow: none;
+}
+.untagged .action button::before {
+	background: red;
 }
 .untagged .action button {
-	background: red;
 	color: white;
 }
-.tagged .action button {
+.tagged .action button::before {
 	background: lime;
-	color: black;
 }
-.untagged .post-small img,
-.tagged .post-small img {
-	opacity: .85;
+.tagged .action button {
+	color: black;
 }
