@@ -61,12 +61,11 @@ App.Presenters.UserListPresenter = function(
 
 	function render() {
 		$el.html(templates.list());
-		$el.find('.order a').click(orderLinkClicked);
 	}
 
 	function updateActiveOrder(activeOrder) {
-		$el.find('.order li a').removeClass('active');
-		$el.find('.order [data-order="' + activeOrder + '"]').addClass('active');
+		$el.find('.order li a.active').removeClass('active');
+		$el.find('.order [href*="' + activeOrder + '"]').addClass('active');
 	}
 
 	function renderUsers(users, clear) {
@@ -84,14 +83,6 @@ App.Presenters.UserListPresenter = function(
 			util.loadImagesNicely($item.find('img'));
 			$target.append($item);
 		});
-	}
-
-	function orderLinkClicked(e) {
-		e.preventDefault();
-		var $orderLink = jQuery(this);
-		var activeSearchOrder = $orderLink.attr('data-order');
-		params.query.order = activeSearchOrder;
-		pagerPresenter.setQuery(params.query);
 	}
 
 	return {

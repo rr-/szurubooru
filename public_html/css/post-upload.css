@@ -6,6 +6,7 @@
 
 #post-upload-step1 .file-handler {
 	padding: 3.5em;
+	width: 100%;
 }
 
 #post-upload-step1 .url-handler {

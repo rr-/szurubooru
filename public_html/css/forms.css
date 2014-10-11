@@ -129,7 +129,8 @@ input:not([type=button]):not(.tag-real-input):focus {
 
 input[type=radio],
 input[type=checkbox] {
-	display:none;
+	opacity: 0;
+	position: absolute;
 }
 input[type=radio] + label,
 input[type=checkbox] + label {
@@ -158,10 +159,18 @@ input[type=checkbox] + label::before {
 input[type=checkbox]:checked + label::before {
 	content: "\f046";
 }
+input[type=radio]:focus + label,
+input[type=checkbox]:focus + label {
+	color: #64C2ED;
+}
 
 
 
+.file-handler::before {
+	background: none;
+}
 .file-handler {
+	box-shadow: none;
 	border: 3px dashed #eee;
 	padding: 0.3em 0.5em;
 	line-height: 140% !important;
@@ -169,7 +178,7 @@ input[type=checkbox]:checked + label::before {
 	cursor: pointer;
 }
 .file-handler.active {
-	border-color: #6a2;
+	border-color: #64C2ED;
 	background-color: #eeffcc;
 }
 

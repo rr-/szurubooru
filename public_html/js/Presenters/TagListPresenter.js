@@ -67,7 +67,7 @@ App.Presenters.TagListPresenter = function(
 	}
 
 	function updateActiveOrder(activeOrder) {
-		$el.find('.order li a').removeClass('active');
+		$el.find('.order li a.active').removeClass('active');
 		$el.find('.order [href*="' + activeOrder + '"]').addClass('active');
 	}
 

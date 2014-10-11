@@ -42,7 +42,9 @@ a {
 	text-decoration: none;
 	cursor: pointer; /* for links without [href] */
 }
-
+a:focus {
+	outline: 2px solid #64C2ED;
+}
 a:hover {
 	color: #34B2ED;
 }

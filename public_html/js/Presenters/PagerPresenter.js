@@ -180,8 +180,9 @@ App.Presenters.PagerPresenter = function(
 			}
 			lastPage = page;
 
-			var $a = jQuery('<a/>');
-			$a.click(function() {
+			var $a = jQuery('<a href="#"/>');
+			$a.click(function(e) {
+				e.preventDefault();
 				pager.setPage(page);
 				syncUrl();
 			});
