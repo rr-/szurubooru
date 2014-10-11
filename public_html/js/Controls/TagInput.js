@@ -4,6 +4,8 @@ App.Controls = App.Controls || {};
 App.Controls.TagInput = function($underlyingInput) {
 	var _ = App.DI.get('_');
 	var jQuery = App.DI.get('jQuery');
+	var promise = App.DI.get('promise');
+	var api = App.DI.get('api');
 
 	var KEY_RETURN = 13;
 	var KEY_SPACE = 32;
@@ -18,37 +20,45 @@ App.Controls.TagInput = function($underlyingInput) {
 		inputConfirmed: null,
 	};
 
-	if ($underlyingInput.length === 0) {
-		throw new Error('Tag input element was not found');
-	}
-	if ($underlyingInput.length > 1) {
-		throw new Error('Cannot set tag input to more than one element at once');
-	}
-	if ($underlyingInput.attr('data-tagged')) {
-		throw new Error('Tag input was already initialized for this element');
-	}
-	$underlyingInput.attr('data-tagged', true);
-	$underlyingInput.hide();
-
 	var $wrapper = jQuery('<div class="tag-input">');
 	var $tagList = jQuery('<ul class="tags">');
 	var $input = jQuery('<input class="tag-real-input" type="text"/>');
-	$wrapper.append($tagList);
-	$wrapper.append($input);
-	$wrapper.insertAfter($underlyingInput);
-	$wrapper.click(function(e) {
-		if (e.target.nodeName === 'LI') {
-			return;
-		}
-		e.preventDefault();
-		$input.focus();
-	});
-	$input.attr('placeholder', $underlyingInput.attr('placeholder'));
-
-	addTagsFromText($underlyingInput.val());
-	$underlyingInput.val('');
-
+	var $related = jQuery('<div class="related-tags"><span>Related tags:</span><ul>');
+	init();
+	render();
 	initAutocomplete();
+
+	function init() {
+		if ($underlyingInput.length === 0) {
+			throw new Error('Tag input element was not found');
+		}
+		if ($underlyingInput.length > 1) {
+			throw new Error('Cannot set tag input to more than one element at once');
+		}
+		if ($underlyingInput.attr('data-tagged')) {
+			throw new Error('Tag input was already initialized for this element');
+		}
+		$underlyingInput.attr('data-tagged', true);
+	}
+
+	function render() {
+		$underlyingInput.hide();
+		$wrapper.append($tagList);
+		$wrapper.append($input);
+		$wrapper.insertAfter($underlyingInput);
+		$wrapper.click(function(e) {
+			if (e.target.nodeName === 'LI') {
+				return;
+			}
+			e.preventDefault();
+			$input.focus();
+		});
+		$input.attr('placeholder', $underlyingInput.attr('placeholder'));
+		$related.insertAfter($wrapper);
+
+		addTagsFromText($underlyingInput.val());
+		$underlyingInput.val('');
+	}
 
 	function initAutocomplete() {
 		var autocomplete = new App.Controls.AutoCompleteInput($input);
@@ -131,14 +141,13 @@ App.Controls.TagInput = function($underlyingInput) {
 			return;
 		}
 
-		var oldTags = getTags();
-		if (_.contains(_.map(oldTags, function(tag) { return tag.toLowerCase(); }), tag.toLowerCase())) {
+		if (isTaggedWith(tag)) {
 			flashTag(tag);
 		} else {
 			if (typeof(options.beforeTagAdded) === 'function') {
 				options.beforeTagAdded(tag);
 			}
-			var newTags = oldTags.slice();
+			var newTags = getTags().slice();
 			newTags.push(tag);
 			setTags(newTags);
 		}
@@ -153,6 +162,14 @@ App.Controls.TagInput = function($underlyingInput) {
 			}
 			setTags(newTags);
 		}
+	}
+
+	function isTaggedWith(tag) {
+		var tags = getTags();
+		var tagNames = _.map(tags, function(tag) {
+			return tag.toLowerCase();
+		});
+		return _.contains(tagNames, tag.toLowerCase());
 	}
 
 	function removeLastTag() {
@@ -170,11 +187,18 @@ App.Controls.TagInput = function($underlyingInput) {
 		$underlyingInput.val(newTags.join(' '));
 		_.each(newTags, function(tag) {
 			var $elem = jQuery('<li/>');
-			$elem.text(tag);
 			$elem.attr('data-tag', tag.toLowerCase());
 
-			var $deleteButton = jQuery('<a><i class="fa fa-remove"></i></a>');
-			$deleteButton.bind('click', function(e) {
+			var $tagLink = jQuery('<a class="tag">');
+			$tagLink.text(tag);
+			$tagLink.click(function(e) {
+				e.preventDefault();
+				showRelatedTags(tag);
+			});
+			$elem.append($tagLink);
+
+			var $deleteButton = jQuery('<a class="close"><i class="fa fa-remove"></i></a>');
+			$deleteButton.click(function(e) {
 				e.preventDefault();
 				removeTag(tag);
 				$input.focus();
@@ -182,6 +206,45 @@ App.Controls.TagInput = function($underlyingInput) {
 			$elem.append($deleteButton);
 
 			$tagList.append($elem);
+		});
+	}
+
+	function showRelatedTags(tag) {
+		if ($related.data('lastTag') === tag) {
+			$related.slideUp('fast');
+			$related.data('lastTag', null);
+			return;
+		}
+
+		$related.slideUp('fast', function() {
+			$related.data('lastTag', tag);
+			var $list = $related.find('ul');
+			promise.wait(api.get('/tags/' + tag + '/siblings'))
+				.then(function(response) {
+					$list.empty();
+
+					var relatedTags = response.json.data;
+					relatedTags = _.filter(relatedTags, function(tag) {
+						return !isTaggedWith(tag.name);
+					});
+					relatedTags = relatedTags.slice(0, 20);
+					_.each(relatedTags, function(tag) {
+						var $li = jQuery('<li>');
+						var $a = jQuery('<a href="#/posts/query=' + tag.name + '">');
+						$a.text(tag.name);
+						$a.click(function(e) {
+							e.preventDefault();
+							addTag(tag.name);
+						});
+						$li.append($a);
+						$list.append($li);
+					});
+					if (_.size(relatedTags)) {
+						$related.slideDown('fast');
+					}
+				}).fail(function() {
+					console.log(arguments);
+				});
 		});
 	}
 

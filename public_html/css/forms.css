@@ -197,9 +197,31 @@ input[type=checkbox]:checked + label::before {
 }
 .tag-input li a {
 	color: black;
+}
+.tag-input li a.close {
 	font-size: 14px;
-	margin-left: 0.5em;
-	cursor: pointer;
+	margin-left: 0.75em;
+}
+
+.related-tags {
+	line-height: 200%;
+	font-size: 15px;
+	display: none;
+	margin: 0.5em 0.5em 1em 0.5em;
+}
+.related-tags span {
+	float: left;
+}
+.related-tags ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+.related-tags li {
+	display: inline-block;
+	margin: 0 0.5em;
+	padding: 0;
 }
 
 .autocomplete {

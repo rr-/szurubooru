@@ -28,7 +28,6 @@ everything related to tags:
         - tag editing
             - category (from config.ini)
             - description
-        - related tags
     - aliases
         - take care of recursion
         - listing
