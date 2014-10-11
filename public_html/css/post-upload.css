@@ -106,6 +106,9 @@
 	display: inline-block;
 	margin: 0.3em 0.3em 0 0;
 }
+#post-upload-step2 .operations .stop {
+	display: none;
+}
 
 #post-upload-step2 form {
 	width: 100%;

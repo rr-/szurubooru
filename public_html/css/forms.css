@@ -69,7 +69,9 @@ input[type=button] {
 	position: relative;
 	padding: 2px 15px 3px 15px;
 	border: 0;
-	box-shadow: 0 1px 1px 0 #e5e5e5, 0 0 0 1px rgba(0, 0, 0, 0.15) inset;
+	box-shadow: 0 1px 1px 0 #e5e5e5,
+		0 0 0 1px rgba(0, 0, 0, 0.15) inset,
+		0 5px 1px -4px white inset;
 	color: #444;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 1px rgba(255, 255, 255, 0.5);
 	font-family: 'Droid Sans', sans-serif;
@@ -102,6 +104,10 @@ button:disabled {
 button.highlight::before,
 input[type=button].highlight::before {
 	background: linear-gradient(rgb(160, 221, 251), rgb(101, 188, 239));
+}
+button.highlight-red::before,
+input[type=button].highlight-red::before {
+	background: linear-gradient(rgba(255, 181, 143, 1), rgba(255, 148, 122, 1));
 }
 
 button:focus,

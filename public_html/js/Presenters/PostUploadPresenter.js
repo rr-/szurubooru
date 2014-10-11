@@ -22,6 +22,7 @@ App.Presenters.PostUploadPresenter = function(
 	var tagInput;
 	var fileDropper;
 	var interactionEnabled = true;
+	var stopNextUpload = false;
 
 	function init(params, loaded) {
 		topNavigationPresenter.select('upload');
@@ -58,7 +59,8 @@ App.Presenters.PostUploadPresenter = function(
 		$el.find('.remove').click(removeButtonClicked);
 		$el.find('.move-up').click(moveUpButtonClicked);
 		$el.find('.move-down').click(moveDownButtonClicked);
-		$el.find('.submit').click(submitButtonClicked);
+		$el.find('.upload').click(uploadButtonClicked);
+		$el.find('.stop').click(stopButtonClicked);
 	}
 
 	function getDefaultPost() {
@@ -113,35 +115,6 @@ App.Presenters.PostUploadPresenter = function(
 		}
 	}
 
-	function addPostFromFile(file) {
-		var post = _.extend({}, getDefaultPost(), {fileName: file.name});
-
-		fileDropper.readAsDataURL(file, function(content) {
-			post.content = content;
-			if (file.type.match('image.*')) {
-				post.thumbnail = content;
-				postThumbnailLoaded(post);
-			}
-		});
-
-		postAdded(post);
-	}
-
-	function addPostFromUrl(url) {
-		var post = _.extend({}, getDefaultPost(), {url: url, source: url, fileName: url});
-		postAdded(post);
-
-		var matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/);
-		if (matches) {
-			var youtubeThumbnailUrl = 'http://img.youtube.com/vi/' + matches[1] + '/mqdefault.jpg';
-			post.thumbnail = youtubeThumbnailUrl;
-			postThumbnailLoaded(post);
-		} else if (url.match(/image|img|jpg|png|gif/i)) {
-			post.thumbnail = url;
-			postThumbnailLoaded(post);
-		}
-	}
-
 	function postAdded(post) {
 		var allPosts = getAllPosts();
 		allPosts.push(post);
@@ -153,58 +126,12 @@ App.Presenters.PostUploadPresenter = function(
 		updatePostTableRow(post);
 	}
 
-	function createPostTableRow(post) {
-		var $table = $el.find('table');
-		var $row = $table.find('.template').clone(true);
-
-		post.$tableRow = $row;
-
-		$row.removeClass('template');
-		$row.find('td:not(.checkbox)').click(postTableRowClicked);
-		$row.find('td.checkbox').click(postTableCheckboxClicked);
-		$row.find('img').mouseenter(postTableRowImageHovered);
-		$row.find('img').mouseleave(postTableRowImageUnhovered);
-		$row.data('post', post);
-		$table.find('tbody').append($row);
-		$row.find('td.checkbox input').attr('id', _.uniqueId());
-		$row.find('td.checkbox label').attr('for', $row.find('td.checkbox input').attr('id'));
-
-		postChanged(post);
-
-		selectPostTableRow(post);
-		showOrHidePostsTable();
-	}
-
-	function updatePostTableRow(post) {
-		var $row = post.$tableRow;
-		$row.find('.tags').text(post.tags.join(', ') || '-');
-		$row.find('.safety div').attr('class', 'safety-' + post.safety);
-	}
-
 	function postThumbnailLoaded(post) {
 		var selectedPosts = getSelectedPosts();
 		if (selectedPosts.length === 1 && selectedPosts[0] === post && post.thumbnail !== null) {
 			updatePostThumbnailInForm(post);
 		}
 		updatePostThumbnailInTable(post);
-	}
-
-	function updatePostThumbnailInForm(post) {
-		if (post.thumbnail === null) {
-			$el.find('.form-slider .thumbnail img').hide();
-		} else {
-			$el.find('.form-slider .thumbnail img').show()[0].setAttribute('src', post.thumbnail);
-		}
-	}
-
-	function updatePostThumbnailInTable(post) {
-		var $row = post.$tableRow;
-		if (post.thumbnail === null) {
-			$row.find('img')[0].setAttribute('src', util.transparentPixel());
-		//huge speedup thanks to this condition
-		} else if ($row.find('img').attr('src') !== post.thumbnail) {
-			$row.find('img')[0].setAttribute('src', post.thumbnail);
-		}
 	}
 
 	function postTableRowClicked(e) {
@@ -245,7 +172,6 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function postTableCheckboxesChanged(e) {
-		var $table = $el.find('table');
 		if (!interactionEnabled) {
 			if (typeof(e) !== 'undefined') {
 				e.preventDefault();
@@ -253,6 +179,7 @@ App.Presenters.PostUploadPresenter = function(
 			return;
 		}
 
+		var $table = $el.find('table');
 		$table.find('tbody tr').each(function(i, row) {
 			var $row = jQuery(row);
 			var checked = $row.find('input[type=checkbox]').prop('checked');
@@ -265,6 +192,129 @@ App.Presenters.PostUploadPresenter = function(
 		postTableSelectionChanged(selectedPosts);
 	}
 
+	function postTableRowImageHovered(e) {
+		var $img = jQuery(this);
+		if ($img.parents('tr').data('post').thumbnail) {
+			var $lightbox = jQuery('#lightbox');
+			$lightbox.find('img').attr('src', $img.attr('src'));
+			$lightbox
+				.show()
+				.css({
+					left: ($img.position().left + $img.outerWidth()) + 'px',
+					top: ($img.position().top + ($img.outerHeight() - $lightbox.outerHeight()) / 2) + 'px',
+				});
+		}
+	}
+
+	function postTableRowImageUnhovered(e) {
+		jQuery('#lightbox').hide();
+	}
+
+	function removeButtonClicked(e) {
+		e.preventDefault();
+		removePosts(getSelectedPosts());
+	}
+
+	function moveUpButtonClicked(e) {
+		e.preventDefault();
+		movePostsUp(getSelectedPosts());
+	}
+
+	function moveDownButtonClicked(e) {
+		e.preventDefault();
+		movePostsDown(getSelectedPosts());
+	}
+
+	function uploadButtonClicked(e) {
+		e.preventDefault();
+		if (!interactionEnabled) {
+			return;
+		}
+		startUpload();
+	}
+
+	function stopButtonClicked(e) {
+		e.preventDefault();
+		if (!uploadStopped()) {
+			stopUpload();
+		}
+	}
+
+	function addPostFromFile(file) {
+		var post = _.extend({}, getDefaultPost(), {fileName: file.name});
+
+		fileDropper.readAsDataURL(file, function(content) {
+			post.content = content;
+			if (file.type.match('image.*')) {
+				post.thumbnail = content;
+				postThumbnailLoaded(post);
+			}
+		});
+
+		postAdded(post);
+	}
+
+	function addPostFromUrl(url) {
+		var post = _.extend({}, getDefaultPost(), {url: url, source: url, fileName: url});
+		postAdded(post);
+
+		var matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/);
+		if (matches) {
+			var youtubeThumbnailUrl = 'http://img.youtube.com/vi/' + matches[1] + '/mqdefault.jpg';
+			post.thumbnail = youtubeThumbnailUrl;
+			postThumbnailLoaded(post);
+		} else if (url.match(/image|img|jpg|png|gif/i)) {
+			post.thumbnail = url;
+			postThumbnailLoaded(post);
+		}
+	}
+
+	function createPostTableRow(post) {
+		var $table = $el.find('table');
+		var $row = $table.find('.template').clone(true);
+
+		post.$tableRow = $row;
+
+		$row.removeClass('template');
+		$row.find('td:not(.checkbox)').click(postTableRowClicked);
+		$row.find('td.checkbox').click(postTableCheckboxClicked);
+		$row.find('img').mouseenter(postTableRowImageHovered);
+		$row.find('img').mouseleave(postTableRowImageUnhovered);
+		$row.data('post', post);
+		$table.find('tbody').append($row);
+		$row.find('td.checkbox input').attr('id', _.uniqueId());
+		$row.find('td.checkbox label').attr('for', $row.find('td.checkbox input').attr('id'));
+
+		postChanged(post);
+
+		selectPostTableRow(post);
+		showOrHidePostsTable();
+	}
+
+	function updatePostTableRow(post) {
+		var $row = post.$tableRow;
+		$row.find('.tags').text(post.tags.join(', ') || '-');
+		$row.find('.safety div').attr('class', 'safety-' + post.safety);
+	}
+
+	function updatePostThumbnailInForm(post) {
+		if (post.thumbnail === null) {
+			$el.find('.form-slider .thumbnail img').hide();
+		} else {
+			$el.find('.form-slider .thumbnail img').show()[0].setAttribute('src', post.thumbnail);
+		}
+	}
+
+	function updatePostThumbnailInTable(post) {
+		var $row = post.$tableRow;
+		if (post.thumbnail === null) {
+			$row.find('img')[0].setAttribute('src', util.transparentPixel());
+		//huge speedup thanks to this condition
+		} else if ($row.find('img').attr('src') !== post.thumbnail) {
+			$row.find('img')[0].setAttribute('src', post.thumbnail);
+		}
+	}
+
 	function getAllPosts() {
 		return allPosts;
 	}
@@ -273,21 +323,16 @@ App.Presenters.PostUploadPresenter = function(
 		allPosts = newPosts;
 	}
 
-	function setAllPostsFromTable() {
-		var newPosts = _.map($el.find('tbody tr'), function(row) {
-			var $row = jQuery(row);
-			return $row.data('post');
-		});
-		setAllPosts(newPosts);
+	function syncPostsWithTable() {
+		setAllPosts(_.map($el.find('tbody tr'), function(row) {
+			return jQuery(row).data('post');
+		}));
 	}
 
 	function getSelectedPosts() {
-		var selectedPosts = [];
-		$el.find('tbody tr.selected').each(function(i, row) {
-			var $row = jQuery(row);
-			selectedPosts.push($row.data('post'));
+		return _.map($el.find('tbody tr.selected'), function(row) {
+			return jQuery(row).data('post');
 		});
-		return selectedPosts;
 	}
 
 	function postTableSelectionChanged(selectedPosts) {
@@ -419,25 +464,6 @@ App.Presenters.PostUploadPresenter = function(
 		});
 	}
 
-	function postTableRowImageHovered(e) {
-		var $img = jQuery(this);
-		if ($img.parents('tr').data('post').thumbnail) {
-			var $lightbox = jQuery('#lightbox');
-			$lightbox.find('img').attr('src', $img.attr('src'));
-			$lightbox
-				.show()
-				.css({
-					left: ($img.position().left + $img.outerWidth()) + 'px',
-					top: ($img.position().top + ($img.outerHeight() - $lightbox.outerHeight()) / 2) + 'px',
-				});
-		}
-	}
-
-	function postTableRowImageUnhovered(e) {
-		var $lightbox = jQuery('#lightbox');
-		$lightbox.hide();
-	}
-
 	function selectPostTableRow(post) {
 		if (post) {
 			var $table = $el.find('table');
@@ -471,26 +497,11 @@ App.Presenters.PostUploadPresenter = function(
 		}
 	}
 
-	function removeButtonClicked(e) {
-		e.preventDefault();
-		removePosts(getSelectedPosts());
-	}
-
-	function moveUpButtonClicked(e) {
-		e.preventDefault();
-		movePostsUp(getSelectedPosts());
-	}
-
-	function moveDownButtonClicked(e) {
-		e.preventDefault();
-		movePostsDown(getSelectedPosts());
-	}
-
 	function removePosts(posts) {
 		_.each(posts, function(post) {
 			post.$tableRow.remove();
 		});
-		setAllPostsFromTable();
+		syncPostsWithTable();
 		showOrHidePostsTable();
 		postTableCheckboxesChanged();
 	}
@@ -500,7 +511,7 @@ App.Presenters.PostUploadPresenter = function(
 			var $row = post.$tableRow;
 			$row.insertBefore($row.prev('tr:not(.selected)'));
 		});
-		setAllPostsFromTable();
+		syncPostsWithTable();
 	}
 
 	function movePostsDown(posts) {
@@ -508,16 +519,38 @@ App.Presenters.PostUploadPresenter = function(
 			var $row = post.$tableRow;
 			$row.insertAfter($row.next('tr:not(.selected)'));
 		});
-		setAllPostsFromTable();
+		syncPostsWithTable();
+	}
+
+	function startUpload() {
+		$el.find('tbody input[type=checkbox]').prop('checked', false);
+		postTableCheckboxesChanged();
+
+		$el.find('.upload').hide();
+		$el.find('.stop').show();
+		interactionEnabled = false;
+		uploadNextPost();
+	}
+
+	function uploadStopped() {
+		return stopNextUpload;
+	}
+
+	function stopUpload() {
+		stopNextUpload = true;
 	}
 
 	function uploadNextPost() {
 		messagePresenter.hideMessages($messages);
 
+		if (uploadStopped()) {
+			showUploadError('Upload stopped.');
+			return;
+		}
+
 		var posts = getAllPosts();
 		if (posts.length === 0) {
-			util.disableExitConfirmation();
-			router.navigate('#/posts');
+			onUploadCompleted();
 			return;
 		}
 
@@ -538,9 +571,7 @@ App.Presenters.PostUploadPresenter = function(
 		formData.tags = post.tags.join(' ');
 
 		if (post.tags.length === 0) {
-			messagePresenter.hideMessages($messages);
-			messagePresenter.showError($messages, 'No tags set.');
-			interactionEnabled = true;
+			showUploadError('No tags set.');
 			return;
 		}
 
@@ -553,24 +584,22 @@ App.Presenters.PostUploadPresenter = function(
 					uploadNextPost();
 				});
 			}).fail(function(response) {
-				messagePresenter.hideMessages($messages);
-				messagePresenter.showError($messages, response.json && response.json.error || response);
-				interactionEnabled = true;
+				showUploadError(response.json && response.json.error || response);
 			});
 	}
 
-	function submitButtonClicked(e) {
-		e.preventDefault();
-		if (!interactionEnabled) {
-			return;
-		}
+	function onUploadCompleted() {
+		util.disableExitConfirmation();
+		router.navigate('#/posts');
+	}
 
-		$el.find('tbody input[type=checkbox]').prop('checked', false);
-		postTableCheckboxesChanged();
-
-		interactionEnabled = false;
-		uploadNextPost();
-
+	function showUploadError(message) {
+		$el.find('.upload').show();
+		$el.find('.stop').hide();
+		messagePresenter.hideMessages($messages);
+		messagePresenter.showError($messages, message);
+		interactionEnabled = true;
+		stopNextUpload = false;
 	}
 
 	return {

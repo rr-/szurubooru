@@ -57,8 +57,11 @@
 				--><li>
 					<button class="post-table-op move-down"><i class="fa fa-chevron-down"></i> Move down</button>
 				</li><!--
-				--><li class="right">
-					<button class="submit highlight" type="submit"><i class="fa fa-upload"></i> Submit</button>
+				--><li>
+					<button class="upload highlight" type="submit"><i class="fa fa-upload"></i> Submit</button>
+				</li><!--
+				--><li>
+					<button class="stop highlight-red" type="submit"><i class="fa fa-times-circle"></i> Stop</button>
 				</li><!--
 			--></ul>
 
