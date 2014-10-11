@@ -55,7 +55,6 @@
 .comment .header .ops a {
 	color: silver;
 	font-size: 80%;
-	cursor: pointer;
 }
 .comment .header .ops a:first-of-type:before {
 	margin-left: 0.5em;

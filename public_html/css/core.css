@@ -40,6 +40,7 @@ h3 {
 a {
 	color: #24A2DD;
 	text-decoration: none;
+	cursor: pointer; /* for links without [href] */
 }
 
 a:hover {
