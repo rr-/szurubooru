@@ -50,14 +50,28 @@ input:-webkit-autofill {
 	-webkit-box-shadow: 0 0 0px 1000px #fafafa inset;
 }
 
+button::before,
+input[type=button]::before {
+	z-index: -1;
+	background: linear-gradient(#f5f5f5, #e5e5e5);
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	content: '\a0';
+}
 button,
 input[type=button] {
+	vertical-align: top;
+	background: transparent;
+	position: relative;
 	padding: 2px 15px 3px 15px;
-	border: 1px solid #ccc;
-	box-shadow: 0 1px 1px 0 #e5e5e5;
-	background: linear-gradient(#f5f5f5, #e5e5e5);
+	border: 0;
+	box-shadow: 0 1px 1px 0 #e5e5e5, 0 0 0 1px rgba(0, 0, 0, 0.15) inset;
 	color: #444;
-	text-shadow: 0 1px 1px #fafafa;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 1px rgba(255, 255, 255, 0.5);
 	font-family: 'Droid Sans', sans-serif;
 	font-size: 17px;
 }
@@ -65,22 +79,29 @@ button:not(:disabled),
 input[type=button]:not(:disabled) {
 	cursor: pointer;
 }
-button:not(:disabled):hover,
-input[type=button]:not(:disabled):hover {
-	background: linear-gradient(#fafafa, #eaeaea);
+button:not(:disabled):hover::before,
+input[type=button]:not(:disabled):hover::before {
+	opacity: .65;
+}
+button:not(:disabled):active,
+input[type=button]:not(:disabled):active {
+	padding: 3px 15px 2px 15px;
+}
+button:not(:disabled):active::before,
+input[type=button]:not(:disabled):active::before {
+	transform: rotate(180deg);
+}
+button:not(:disabled):focus,
+input[type=button]:not(:disabled):focus {
+	border-color: #64C2ED;
 }
 button:disabled {
 	color: gray;
 }
 
-button.highlight,
-input[type=button].highlight {
-	background: linear-gradient(#74D2FD, #64C2ED);
-	text-shadow: 0 1px 1px #8ff;
-}
-button:not(:disabled):hover.highlight,
-input[type=button]:not(:disabled):hover.highlight {
-	background: linear-gradient(#84E2FF, #74D2FD);
+button.highlight::before,
+input[type=button].highlight::before {
+	background: linear-gradient(rgb(160, 221, 251), rgb(101, 188, 239));
 }
 
 button:focus,
@@ -93,9 +114,8 @@ input::-moz-focus-inner {
 	border: 0;
 }
 .tag-input.focused,
-button:focus,
 textarea:focus,
-input:not(.tag-real-input):focus {
+input:not([type=button]):not(.tag-real-input):focus {
 	box-shadow: 0 0 0 1px #64C2ED inset;
 	border-color: #64C2ED;
 }
@@ -112,23 +132,23 @@ input[type=checkbox] + label {
 	-o-user-select: none;
 	user-select: none;
 }
-input[type=radio] + label:before,
-input[type=checkbox] + label:before {
+input[type=radio] + label::before,
+input[type=checkbox] + label::before {
 	font-family: 'FontAwesome';
 	display: inline-block;
 	width: 1em;
 	text-align: left;
 }
-input[type=radio] + label:before {
+input[type=radio] + label::before {
 	content: "\f1db";
 }
-input[type=radio]:checked + label:before {
+input[type=radio]:checked + label::before {
 	content: "\f192";
 }
-input[type=checkbox] + label:before {
+input[type=checkbox] + label::before {
 	content: "\f096";
 }
-input[type=checkbox]:checked + label:before {
+input[type=checkbox]:checked + label::before {
 	content: "\f046";
 }
 
