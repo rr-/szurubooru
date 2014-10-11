@@ -35,6 +35,7 @@ final class TagController extends AbstractController
 	{
 		$router->get('/api/tags', [$this, 'getTags']);
 		$router->get('/api/tags/:tagName', [$this, 'getTag']);
+		$router->get('/api/tags/:tagName/siblings', [$this, 'getTagSiblings']);
 		$router->put('/api/tags/:tagName', [$this, 'updateTag']);
 	}
 
@@ -59,6 +60,17 @@ final class TagController extends AbstractController
 			'data' => $entities,
 			'pageSize' => $result->getPageSize(),
 			'totalRecords' => $result->getTotalRecords()];
+	}
+
+	public function getTagSiblings($tagName)
+	{
+		$this->privilegeService->assertPrivilege(Privilege::LIST_TAGS);
+		$tag = $this->tagService->getByName($tagName);
+		$result = $this->tagService->getSiblings($tagName);
+		$entities = $this->tagViewProxy->fromArray($result);
+		return [
+			'data' => $entities,
+		];
 	}
 
 	public function updateTag($tagName)

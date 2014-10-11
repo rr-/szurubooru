@@ -59,6 +59,15 @@ class TagService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
+	public function getSiblings($tagName)
+	{
+		$transactionFunc = function() use ($tagName)
+		{
+			return $this->tagDao->findSiblings($tagName);
+		};
+		return $this->transactionManager->rollback($transactionFunc);
+	}
+
 	public function exportJson()
 	{
 		$tags = [];
