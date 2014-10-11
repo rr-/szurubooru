@@ -198,10 +198,21 @@ App.Controls.AutoCompleteInput = function($input) {
 		}
 
 		$list.empty();
-		_.each(results, function(resultItem) {
+		_.each(results, function(resultItem, resultIndex) {
 			var $listItem = jQuery('<li/>');
 			$listItem.text(resultItem[1]);
 			$listItem.attr('data-key', resultItem[0]);
+			$listItem.hover(function(e) {
+				e.preventDefault();
+				activeResult = resultIndex;
+				refreshActiveResult();
+			});
+			$listItem.mousedown(function(e) {
+				e.preventDefault();
+				activeResult = resultIndex;
+				applyAutocomplete();
+				hide();
+			});
 			$list.append($listItem);
 		});
 		refreshActiveResult();

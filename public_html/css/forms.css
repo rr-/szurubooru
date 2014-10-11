@@ -242,6 +242,7 @@ input[type=checkbox]:checked + label::before {
 .autocomplete li {
 	margin: 0;
 	padding: 0.1em 0.5em !important;
+	cursor: pointer;
 }
 
 .autocomplete li.active {
