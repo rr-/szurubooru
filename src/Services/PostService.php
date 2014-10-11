@@ -10,9 +10,11 @@ use Szurubooru\Entities\Tag;
 use Szurubooru\FormData\PostEditFormData;
 use Szurubooru\FormData\UploadFormData;
 use Szurubooru\Helpers\MimeHelper;
+use Szurubooru\Helpers\TypeHelper;
 use Szurubooru\SearchServices\Filters\PostFilter;
 use Szurubooru\SearchServices\Filters\SnapshotFilter;
 use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
 use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\HistoryService;
@@ -370,6 +372,46 @@ class PostService
 			$this->globalParamDao->save($fileSizeParam);
 		};
 		$this->transactionManager->commit($transactionFunc);
+	}
+
+	public function decorateFilterFromBrowsingSettings(PostFilter $filter)
+	{
+		$currentUser = $this->authService->getLoggedInUser();
+		$userSettings = $currentUser->getBrowsingSettings();
+		if (!$userSettings)
+			return;
+
+		if (!empty($userSettings->listPosts) and !count($filter->getRequirementsByType(PostFilter::REQUIREMENT_SAFETY)))
+		{
+			$values = [];
+			if (!TypeHelper::toBool($userSettings->listPosts->safe))
+				$values[] = Post::POST_SAFETY_SAFE;
+			if (!TypeHelper::toBool($userSettings->listPosts->sketchy))
+				$values[] = Post::POST_SAFETY_SKETCHY;
+			if (!TypeHelper::toBool($userSettings->listPosts->unsafe))
+				$values[] = Post::POST_SAFETY_UNSAFE;
+			if (count($values))
+			{
+				$requirementValue = new RequirementCompositeValue();
+				$requirementValue->setValues($values);
+				$requirement = new Requirement();
+				$requirement->setType(PostFilter::REQUIREMENT_SAFETY);
+				$requirement->setValue($requirementValue);
+				$requirement->setNegated(true);
+				$filter->addRequirement($requirement);
+			}
+		}
+
+		if (!empty($userSettings->hideDownvoted) and !count($filter->getRequirementsByType(PostFilter::REQUIREMENT_USER_SCORE)))
+		{
+			$requirementValue = new RequirementCompositeValue();
+			$requirementValue->setValues([$currentUser->getName(), -1]);
+			$requirement = new Requirement();
+			$requirement->setType(PostFilter::REQUIREMENT_USER_SCORE);
+			$requirement->setValue($requirementValue);
+			$requirement->setNegated(true);
+			$filter->addRequirement($requirement);
+		}
 	}
 
 	private function assertNoPostWithThisContentChecksum(Post $parent)

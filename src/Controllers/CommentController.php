@@ -63,6 +63,8 @@ final class CommentController extends AbstractController
 			PostFilter::ORDER_LAST_COMMENT_TIME =>
 			PostFilter::ORDER_DESC]);
 
+		$this->postService->decorateFilterFromBrowsingSettings($filter);
+
 		$requirement = new Requirement();
 		$requirement->setValue(new RequirementRangedValue());
 		$requirement->getValue()->setMinValue(1);
