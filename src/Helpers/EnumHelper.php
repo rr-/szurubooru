@@ -9,6 +9,7 @@ class EnumHelper
 	private static $accessRankMap =
 	[
 		'anonymous' => User::ACCESS_RANK_ANONYMOUS,
+		'restrictedUser' => User::ACCESS_RANK_RESTRICTED_USER,
 		'regularUser' => User::ACCESS_RANK_REGULAR_USER,
 		'powerUser' => User::ACCESS_RANK_POWER_USER,
 		'moderator' => User::ACCESS_RANK_MODERATOR,

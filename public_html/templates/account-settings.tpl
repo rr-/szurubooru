@@ -87,6 +87,7 @@
 				<%
 					var accessRanks = {
 						anonymous: 'Anonymous',
+						restrictedUser: 'Restricted user',
 						regularUser: 'Regular user',
 						powerUser: 'Power user',
 						moderator: 'Moderator',

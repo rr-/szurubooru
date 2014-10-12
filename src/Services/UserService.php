@@ -8,6 +8,7 @@ use Szurubooru\Entities\User;
 use Szurubooru\FormData\RegistrationFormData;
 use Szurubooru\FormData\UserEditFormData;
 use Szurubooru\Helpers\MimeHelper;
+use Szurubooru\Helpers\EnumHelper;
 use Szurubooru\SearchServices\Filters\UserFilter;
 use Szurubooru\Services\EmailService;
 use Szurubooru\Services\PasswordService;
@@ -106,7 +107,7 @@ class UserService
 			$user->setRegistrationTime($this->timeService->getCurrentTime());
 			$user->setLastLoginTime(null);
 			$user->setAccessRank($this->userDao->hasAnyUsers()
-				? User::ACCESS_RANK_REGULAR_USER
+				? $this->getDefaultAccessRank()
 				: User::ACCESS_RANK_ADMINISTRATOR);
 			$user->setPasswordSalt($this->passwordService->getRandomPassword());
 
@@ -323,5 +324,10 @@ class UserService
 		$userWithThisEmail = $this->userDao->findByEmail($emailToCheck);
 		if ($userWithThisEmail and $userWithThisEmail->getId() !== $owner->getId())
 			throw new \DomainException('User with this e-mail already exists.');
+	}
+
+	private function getDefaultAccessRank()
+	{
+		return EnumHelper::accessRankFromString($this->config->security->defaultAccessRank);
 	}
 }

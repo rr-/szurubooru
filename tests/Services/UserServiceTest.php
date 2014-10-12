@@ -81,6 +81,7 @@ final class UserServiceTest extends AbstractTestCase
 		$formData->email = 'human@people.gov';
 
 		$this->configMock->set('security/needEmailActivationToRegister', false);
+		$this->configMock->set('security/defaultAccessRank', 'regularUser');
 		$this->passwordServiceMock->expects($this->once())->method('getRandomPassword')->willReturn('salt');
 		$this->passwordServiceMock->expects($this->once())->method('getHash')->with('password', 'salt')->willReturn('hash');
 		$this->timeServiceMock->expects($this->once())->method('getCurrentTime')->willReturn('now');
@@ -108,6 +109,7 @@ final class UserServiceTest extends AbstractTestCase
 		$formData->email = 'human@people.gov';
 
 		$this->configMock->set('security/needEmailActivationToRegister', true);
+		$this->configMock->set('security/defaultAccessRank', 'powerUser');
 		$this->passwordServiceMock->expects($this->once())->method('getRandomPassword')->willReturn('salt');
 		$this->passwordServiceMock->expects($this->once())->method('getHash')->with('password', 'salt')->willReturn('hash');
 		$this->timeServiceMock->expects($this->once())->method('getCurrentTime')->willReturn('now');
@@ -127,7 +129,7 @@ final class UserServiceTest extends AbstractTestCase
 		$this->assertNull($savedUser->getEmail());
 		$this->assertEquals('human@people.gov', $savedUser->getEmailUnconfirmed());
 		$this->assertEquals('hash', $savedUser->getPasswordHash());
-		$this->assertEquals(User::ACCESS_RANK_REGULAR_USER, $savedUser->getAccessRank());
+		$this->assertEquals(User::ACCESS_RANK_POWER_USER, $savedUser->getAccessRank());
 		$this->assertEquals('now', $savedUser->getRegistrationTime());
 		$this->assertFalse($savedUser->isAccountConfirmed());
 	}
@@ -158,6 +160,7 @@ final class UserServiceTest extends AbstractTestCase
 
 		$otherUser = new User('yes, i exist in database');
 
+		$this->configMock->set('security/defaultAccessRank', 'restrictedUser');
 		$this->userDaoMock->expects($this->once())->method('hasAnyUsers')->willReturn(true);
 		$this->userDaoMock->expects($this->once())->method('findByName')->willReturn($otherUser);
 		$this->userDaoMock->expects($this->never())->method('save');
