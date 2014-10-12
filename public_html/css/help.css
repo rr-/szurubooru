@@ -1,0 +1,32 @@
+#help-view {
+	max-width: 40em;
+	margin: 0 auto;
+}
+
+#help-view div[data-tab] {
+	display: none;
+}
+
+#help-view ul.tabs {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+#help-view ul.tabs {
+	margin: -0.5em -0.5em 0.5em -0.5em;
+}
+#help-view ul.tabs li {
+	display: inline-block;
+	margin: 0 0.5em;
+}
+
+#help-view ul.tabs a {
+	display: inline-block;
+	padding: 0.2em 0.5em;
+}
+
+#help-view table td,
+#help-view table th {
+	padding-right: 1.5em;
+}

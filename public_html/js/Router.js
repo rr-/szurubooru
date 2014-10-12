@@ -25,7 +25,7 @@ App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
 		inject('#/comments(/:!query)', 'globalCommentListPresenter');
 		inject('#/tags(/:!query)', 'tagListPresenter');
 		inject('#/tag/:tagName', 'tagPresenter');
-		inject('#/help', 'helpPresenter');
+		inject('#/help(/:tab)', 'helpPresenter');
 	}
 
 	function navigate(url) {
