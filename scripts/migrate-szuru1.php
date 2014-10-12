@@ -124,27 +124,18 @@ abstract class SourcePdoTask extends PdoTask
 	}
 }
 
-class RemoveAllTablesTask extends Task
+class EmptyRemainingTablesTask extends Task
 {
 	protected function getDescription()
 	{
-		return 'truncating tables in target database';
+		return 'truncating remaining tables in target database';
 	}
 
 	protected function run()
 	{
 		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
 		$targetPdo->exec('DELETE FROM globals');
-		$targetPdo->exec('DELETE FROM postRelations');
-		$targetPdo->exec('DELETE FROM postTags');
-		$targetPdo->exec('DELETE FROM scores');
-		$targetPdo->exec('DELETE FROM favorites');
-		$targetPdo->exec('DELETE FROM snapshots');
-		$targetPdo->exec('DELETE FROM comments');
-		$targetPdo->exec('DELETE FROM posts');
-		$targetPdo->exec('DELETE FROM users');
 		$targetPdo->exec('DELETE FROM tokens');
-		$targetPdo->exec('DELETE FROM tags');
 	}
 }
 
@@ -170,18 +161,39 @@ class RemoveAllThumbnailsTask extends Task
 	}
 }
 
-class RemoveAllPostContentTask extends Task
+class RemoveUnusedPostContentTask extends Task
 {
+	private $sourceDir;
+
+	public function __construct($publicHtmlDir)
+	{
+		$this->sourceDir = $publicHtmlDir . DIRECTORY_SEPARATOR . 'files';
+	}
+
 	protected function getDescription()
 	{
-		return 'removing post content in target dir';
+		return 'removing unused post content in target dir';
 	}
 
 	protected function run()
 	{
 		$publicFileDao = Injector::get(PublicFileDao::class);
 		$dir = $publicFileDao->getFullPath('posts');
-		removeRecursively($dir);
+
+		$files = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::CHILD_FIRST);
+
+		foreach ($files as $fileinfo)
+		{
+			if (!$fileinfo->isFile())
+				continue;
+			$targetFile = $fileinfo->getRealPath();
+			$sourceFile = $this->sourceDir . DIRECTORY_SEPARATOR . basename($targetFile);
+			if (!file_exists($sourceFile))
+				unlink($targetFile);
+		}
+
 	}
 }
 
@@ -211,7 +223,8 @@ class CopyPostContentTask extends Task
 			function ($sourcePath) use ($targetDir)
 			{
 				$targetPath = $targetDir . DIRECTORY_SEPARATOR . basename($sourcePath);
-				copy($sourcePath, $targetPath);
+				if (!file_exists($targetPath))
+					copy($sourcePath, $targetPath);
 			},
 			100);
 	}
@@ -258,6 +271,9 @@ class CopyUsersTask extends SourcePdoTask
 
 	protected function run()
 	{
+		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM users');
+
 		$userDao = Injector::get(UserDao::class);
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM user'), function($arr) use ($userDao)
 		{
@@ -318,6 +334,9 @@ class CopyPostsTask extends SourcePdoTask
 
 	protected function run()
 	{
+		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM posts');
+
 		$postDao = Injector::get(PostDao::class);
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM post'), function($arr) use ($postDao)
 		{
@@ -377,6 +396,8 @@ class CopyCommentsTask extends SourcePdoTask
 
 	protected function run()
 	{
+		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM comments');
 		$commentDao = Injector::get(CommentDao::class);
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM comment'), function($arr) use ($commentDao)
 		{
@@ -400,6 +421,8 @@ class CopyTagsTask extends SourcePdoTask
 
 	protected function run()
 	{
+		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM tags');
 		$tagDao = Injector::get(TagDao::class);
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM tag'), function($arr) use ($tagDao)
 		{
@@ -422,6 +445,7 @@ class CopyPostRelationsTask extends SourcePdoTask
 	protected function run()
 	{
 		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM postRelations');
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM crossref'), function($arr) use ($targetPdo)
 		{
 			$targetPdo->exec(
@@ -442,6 +466,7 @@ class CopyPostFavoritesTask extends SourcePdoTask
 	protected function run()
 	{
 		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM favorites');
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM favoritee'), function($arr) use ($targetPdo)
 		{
 			$targetPdo->exec(
@@ -462,6 +487,7 @@ class CopyPostScoresTask extends SourcePdoTask
 	protected function run()
 	{
 		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM scores');
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM post_score'), function($arr) use ($targetPdo)
 		{
 			$targetPdo->exec(
@@ -483,6 +509,7 @@ class CopyPostTagRelationsTask extends SourcePdoTask
 	protected function run()
 	{
 		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM postTags');
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM post_tag'), function($arr) use ($targetPdo)
 		{
 			$targetPdo->exec(
@@ -502,11 +529,14 @@ class PreparePostHistoryTask extends PdoTask
 
 	protected function run()
 	{
+		$targetPdo = Injector::get(DatabaseConnection::class)->getPDO();
+		$targetPdo->exec('DELETE FROM snapshots');
 		$postDao = Injector::get(PostDao::class);
 		$historyService = Injector::get(HistoryService::class);
 		$this->commitInChunks($postDao->findAll(), function($post) use ($postDao, $historyService)
 		{
-			$historyService->saveSnapshot($historyService->getPostChangeSnapshot($post));
+			$snapshot = $historyService->getPostChangeSnapshot($post);
+			$historyService->saveSnapshot($snapshot);
 		});
 	}
 }
@@ -559,10 +589,9 @@ class DownloadYoutubeThumbnailsTask extends PdoTask
 
 $tasks =
 [
-	new RemoveAllTablesTask(),
-	new RemoveAllThumbnailsTask(),
-	new RemoveAllPostContentTask(),
 	new CopyPostContentTask($sourcePublicHtmlDirectory),
+	new RemoveUnusedPostContentTask($sourcePublicHtmlDirectory),
+	new RemoveAllThumbnailsTask(),
 	new CopyPostThumbSourceTask($sourcePublicHtmlDirectory),
 	new CopyUsersTask($sourcePdo),
 	new CopyPostsTask($sourcePdo),
@@ -575,6 +604,7 @@ $tasks =
 	new PreparePostHistoryTask(),
 	new ExportTagsTask(),
 	new DownloadYoutubeThumbnailsTask(),
+	new EmptyRemainingTablesTask(),
 ];
 
 foreach ($tasks as $task)

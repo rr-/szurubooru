@@ -73,7 +73,7 @@ class HistoryService
 			if ($otherSnapshots)
 			{
 				$lastSnapshot = array_shift($otherSnapshots);
-				if ($lastSnapshot->getData() === $snapshot->getData())
+				if (md5(json_encode($lastSnapshot->getData())) === md5(json_encode($snapshot->getData())))
 					return $lastSnapshot;
 
 				$dataDifference = $this->getSnapshotDataDifference($snapshot->getData(), $lastSnapshot->getData());
@@ -102,12 +102,14 @@ class HistoryService
 
 	public function getPostChangeSnapshot(Post $post)
 	{
-		$featuredPostParam = $this->globalParamDao->findByKey(GlobalParam::KEY_FEATURED_POST);
+		static $featuredPostParam = null;
+		if ($featuredPostParam === null)
+			$featuredPostParam = $this->globalParamDao->findByKey(GlobalParam::KEY_FEATURED_POST);
 		$isFeatured = ($featuredPostParam and intval($featuredPostParam->getValue()) === $post->getId());
 
 		$flags = [];
 		if ($post->getFlags() & Post::FLAG_LOOP)
-			$flags []= 'loop';
+			$flags[] = 'loop';
 
 		$data =
 		[
