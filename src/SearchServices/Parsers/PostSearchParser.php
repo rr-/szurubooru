@@ -109,7 +109,7 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($tokenText === 'id')
 			return PostFilter::ORDER_ID;
 
-		elseif ($tokenText === 'time')
+		elseif ($tokenText === 'time' or $tokenText === 'date')
 			return PostFilter::ORDER_LAST_EDIT_TIME;
 
 		elseif ($tokenText === 'score')
@@ -127,13 +127,13 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($tokenText === 'comment_count')
 			return PostFilter::ORDER_COMMENT_COUNT;
 
-		elseif ($tokenText === 'fav_time')
+		elseif ($tokenText === 'fav_time' or $tokenText === 'fav_date')
 			return PostFilter::ORDER_LAST_FAV_TIME;
 
-		elseif ($tokenText === 'comment_time')
+		elseif ($tokenText === 'comment_time' or $tokenText === 'comment_date')
 			return PostFilter::ORDER_LAST_COMMENT_TIME;
 
-		elseif ($tokenText === 'feature_time')
+		elseif ($tokenText === 'feature_time' or $tokenText === 'feature_date')
 			return PostFilter::ORDER_LAST_FEATURE_TIME;
 
 		else

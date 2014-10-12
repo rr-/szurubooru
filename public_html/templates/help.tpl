@@ -159,17 +159,17 @@
 				var table = [
 					{search: 'order:random', description: 'as random as it can get'},
 					{search: 'order:id', description: 'highest to lowest post ID (default browse view)'},
-					{search: 'order:time', description: 'newest to oldest (pretty much same as above)'},
-					{search: '-order:time', description: 'oldest to newest'},
-					{search: 'order:time,asc', description: 'oldest to newest (ascending order, default = descending)'},
+					{search: 'order:date', description: 'newest to oldest (pretty much same as above)'},
+					{search: '-order:date', description: 'oldest to newest'},
+					{search: 'order:date,asc', description: 'oldest to newest (ascending order, default = descending)'},
 					{search: 'order:score', description: 'highest scored'},
 					{search: 'order:file_size', description: 'largest files first'},
 					{search: 'order:tag_count', description: 'with most tags'},
 					{search: 'order:fav_count', description: 'loved by most'},
 					{search: 'order:comment_count', description: 'most commented first'},
-					{search: 'order:fav_time', description: 'recently added to favorites'},
-					{search: 'order:comment_time', description: 'recently commented'},
-					{search: 'order:feature_time', description: 'recently featured'},
+					{search: 'order:fav_date', description: 'recently added to favorites'},
+					{search: 'order:comment_date', description: 'recently commented'},
+					{search: 'order:feature_date', description: 'recently featured'},
 				];
 				_.each(table, function(row) { %>
 				<tr>
@@ -181,7 +181,7 @@
 	</table>
 
 	<p>As shown with <a
-	href="#/posts/query=-order:time"><code>-order:time</code></a>, any of them
+	href="#/posts/query=-order:date"><code>-order:date</code></a>, any of them
 	can be reversed in the same way as negating other tags: by placing a dash
 	before the tag.</p>
 </div>

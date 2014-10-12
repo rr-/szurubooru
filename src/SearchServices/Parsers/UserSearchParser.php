@@ -28,7 +28,7 @@ class UserSearchParser extends AbstractSearchParser
 		if ($tokenText === 'name')
 			return UserFilter::ORDER_NAME;
 
-		elseif ($tokenText === 'registration_time')
+		elseif ($tokenText === 'registration_time' or $tokenText === 'registration_date')
 			return UserFilter::ORDER_REGISTRATION_TIME;
 
 		else
