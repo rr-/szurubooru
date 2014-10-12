@@ -16,8 +16,8 @@
 		"grunt-contrib-cssmin": "*",
 		"grunt-contrib-jshint": "~0.10.0",
 		"grunt-contrib-copy": "*",
-		"grunt-shell": "~1.1.1",
 		"grunt-cli": "*",
+		"shelljs": "~0.3.0",
 		"rimraf": "~2.1"
 	}
 }

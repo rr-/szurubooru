@@ -2,6 +2,7 @@ var path = require('path');
 var fs = require('fs');
 var ini = require('ini');
 var rmdir = require('rimraf');
+require('shelljs/global');
 
 var phpCheckStyleConfigPath = path.join(path.resolve(), 'phpcheckstyle.cfg');
 var phpSourcesDir = path.join(path.resolve(), 'src');
@@ -71,28 +72,6 @@ module.exports = function(grunt) {
 			},
 		},
 
-		shell: {
-			options: {
-				stdin: false
-			},
-
-			phpcheckstyle: {
-				command: 'php vendor/jbrooksuk/phpcheckstyle/run.php --config <%= phpCheckStyleConfigPath %> --src <%= phpSourcesDir %> --exclude di.php --format console',
-			},
-
-			tests: {
-				command: 'php vendor/phpunit/phpunit/phpunit -v --strict --bootstrap src/Bootstrap.php tests/',
-			},
-
-			upgrade: {
-				command: 'php scripts/upgrade.php',
-			},
-
-			optimizeComposer: {
-				command: 'composer dumpautoload -o'
-			},
-		},
-
 		copy: {
 			dist: {
 				files: [
@@ -156,11 +135,22 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 
-	grunt.registerTask('default', ['copy:dist', 'checkstyle', 'tests']);
-	grunt.registerTask('checkstyle', ['jshint', 'shell:phpcheckstyle']);
-	grunt.registerTask('tests', ['shell:tests']);
-	grunt.registerTask('update', ['shell:upgrade']);
-	grunt.registerTask('upgrade', ['shell:upgrade']);
+	grunt.registerTask('phpcheckstyle', function() {
+		exec('php vendor/jbrooksuk/phpcheckstyle/run.php --config ' + phpCheckStyleConfigPath + ' --src ' + phpSourcesDir + ' --exclude di.php --format console');
+	});
+
+	grunt.registerTask('tests', function() {
+		exec('php vendor/phpunit/phpunit/phpunit -v --strict --bootstrap src/Bootstrap.php tests/');
+	});
+
+	grunt.registerTask('update', ['upgrade']);
+	grunt.registerTask('update', function() {
+		exec('php scripts/upgrade.php');
+	});
+
+	grunt.registerTask('optimizeComposer', function() {
+		exec('composer dumpautoload -o');
+	});
 
 	grunt.registerTask('clean', function() {
 		fs.unlink('public_html/app.min.html');
@@ -168,6 +158,9 @@ module.exports = function(grunt) {
 		fs.unlink('public_html/app.min.js.map');
 		fs.unlink('public_html/app.min.css');
 	});
-	grunt.registerTask('build', ['clean', 'shell:optimizeComposer', 'copy:dist', 'uglify', 'cssmin', 'processhtml']);
+
+	grunt.registerTask('build', ['clean', 'optimizeComposer', 'copy:dist', 'uglify', 'cssmin', 'processhtml']);
+	grunt.registerTask('checkstyle', ['jshint', 'phpcheckstyle']);
+	grunt.registerTask('default', ['copy:dist', 'checkstyle', 'tests']);
 
 };
