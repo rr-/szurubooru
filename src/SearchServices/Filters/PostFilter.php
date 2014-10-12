@@ -4,9 +4,9 @@ namespace Szurubooru\SearchServices\Filters;
 class PostFilter extends BasicFilter implements IFilter
 {
 	const ORDER_ID = 'id';
-	const ORDER_FAV_TIME = 'lastFavTime';
 	const ORDER_FAV_COUNT = 'favCount';
 	const ORDER_TAG_COUNT = 'tagCount';
+	const ORDER_COMMENT_COUNT = 'commentCount';
 	const ORDER_SCORE = 'score';
 	const ORDER_LAST_EDIT_TIME = 'lastEditTime';
 	const ORDER_FILE_SIZE = 'originalFileSize';

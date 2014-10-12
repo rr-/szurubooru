@@ -103,17 +103,11 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function getOrderColumn($tokenText)
 	{
-		if ($tokenText === 'id')
+		if ($tokenText === 'random')
+			return PostFilter::ORDER_RANDOM;
+
+		elseif ($tokenText === 'id')
 			return PostFilter::ORDER_ID;
-
-		elseif ($tokenText === 'fav_time')
-			return PostFilter::ORDER_FAV_TIME;
-
-		elseif ($tokenText === 'fav_count')
-			return PostFilter::ORDER_FAV_COUNT;
-
-		elseif ($tokenText === 'tag_count')
-			return PostFilter::ORDER_TAG_COUNT;
 
 		elseif ($tokenText === 'time')
 			return PostFilter::ORDER_LAST_EDIT_TIME;
@@ -124,17 +118,23 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($tokenText === 'file_size')
 			return PostFilter::ORDER_FILE_SIZE;
 
-		elseif ($tokenText === 'random')
-			return PostFilter::ORDER_RANDOM;
+		elseif ($tokenText === 'tag_count')
+			return PostFilter::ORDER_TAG_COUNT;
 
-		elseif ($tokenText === 'feature_time')
-			return PostFilter::ORDER_LAST_FEATURE_TIME;
+		elseif ($tokenText === 'fav_count')
+			return PostFilter::ORDER_FAV_COUNT;
+
+		elseif ($tokenText === 'comment_count')
+			return PostFilter::ORDER_COMMENT_COUNT;
+
+		elseif ($tokenText === 'fav_time')
+			return PostFilter::ORDER_LAST_FAV_TIME;
 
 		elseif ($tokenText === 'comment_time')
 			return PostFilter::ORDER_LAST_COMMENT_TIME;
 
-		elseif ($tokenText === 'fav_time')
-			return PostFilter::ORDER_LAST_FAV_TIME;
+		elseif ($tokenText === 'feature_time')
+			return PostFilter::ORDER_LAST_FEATURE_TIME;
 
 		else
 			throw new NotSupportedException();
