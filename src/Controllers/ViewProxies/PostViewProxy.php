@@ -77,7 +77,13 @@ class PostViewProxy extends AbstractViewProxy
 		$result->flags->loop = ($post->getFlags() & Post::FLAG_LOOP);
 
 		if (!empty($config[self::FETCH_TAGS]))
+		{
 			$result->tags = $this->tagViewProxy->fromArray($post->getTags());
+			usort($result->tags, function($tag1, $tag2)
+				{
+					return strcasecmp($tag1->name, $tag2->name);
+				});
+		}
 
 		if (!empty($config[self::FETCH_USER]))
 			$result->user = $this->userViewProxy->fromEntity($post->getUser());
