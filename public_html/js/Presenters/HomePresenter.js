@@ -53,6 +53,8 @@ App.Presenters.HomePresenter = function(
 			canViewPosts: auth.hasPrivilege(auth.privileges.viewPosts),
 			formatRelativeTime: util.formatRelativeTime,
 			formatFileSize: util.formatFileSize,
+			version: jQuery('head').attr('data-version'),
+			buildTime: jQuery('head').attr('data-build-time'),
 		}));
 	}
 

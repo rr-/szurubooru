@@ -32,3 +32,8 @@
 #home .post-footer img {
 	margin-left: 0.5em;
 }
+
+#home .version {
+	opacity: .4;
+	font-size: 12px;
+}

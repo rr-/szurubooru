@@ -40,8 +40,10 @@ function readTemplates(grunt) {
 
 module.exports = function(grunt) {
 
+	var pkg = grunt.file.readJSON('package.json');
+
 	grunt.initConfig({
-		pkg: grunt.file.readJSON('package.json'),
+		pkg: pkg,
 
 		phpCheckStyleConfigPath: phpCheckStyleConfigPath,
 		phpSourcesDir: phpSourcesDir,
@@ -114,6 +116,7 @@ module.exports = function(grunt) {
 		processhtml: {
 			options: {
 				data: {
+					version: pkg.version + '@' + exec('git rev-parse --short HEAD', {silent: true}).output.trim(),
 					customFaviconUrl: config.misc.customFaviconUrl,
 					serviceName: config.basic.serviceName,
 					templates: readTemplates(grunt),

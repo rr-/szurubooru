@@ -59,7 +59,6 @@ refactors:
 miscellaneous:
     - endless pager should include information about page number
     - add log engine and log everything that should be logged
-    - add version on homepage that reads version from package.json and git hash
     - add README - apache2 has good README:
       http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
     - add spinner to forms such as registration, user query, login, settings
