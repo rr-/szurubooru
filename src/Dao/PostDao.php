@@ -149,7 +149,7 @@ class PostDao extends AbstractDao implements ICrudDao
 
 		elseif ($requirement->getType() === PostFilter::REQUIREMENT_UPLOADER)
 		{
-			$query->innerJoin('users uploader ON uploader.id = userId');
+			$query->innerJoin('users uploader ON uploader.id = posts.userId');
 		}
 
 		elseif ($requirement->getType() === PostFilter::REQUIREMENT_USER_SCORE)
