@@ -59,6 +59,23 @@
 				<td><%= formatRelativeTime(user.lastLoginTime) %></td>
 			</tr>
 
+			<% if (user.accessRank) { %>
+				<tr>
+					<td>Access rank:</td>
+					<%
+						var accessRanks = {
+							anonymous: 'anonymous',
+							restrictedUser: 'restricted user',
+							regularUser: 'regular user',
+							powerUser: 'power user',
+							moderator: 'moderator',
+							administrator: 'administrator'
+						};
+					%>
+					<td><%= accessRanks[user.accessRank] %></td>
+				</tr>
+			<% } %>
+
 			<tr>
 				<td>Quick links:</td>
 				<td>

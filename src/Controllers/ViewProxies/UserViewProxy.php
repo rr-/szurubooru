@@ -20,7 +20,6 @@ class UserViewProxy extends AbstractViewProxy
 		{
 			$result->id = $user->getId();
 			$result->name = $user->getName();
-			$result->accessRank = EnumHelper::accessRankToString($user->getAccessRank());
 			$result->registrationTime = $user->getRegistrationTime();
 			$result->lastLoginTime = $user->getLastLoginTime();
 			$result->avatarStyle = EnumHelper::avatarStyleToString($user->getAvatarStyle());
@@ -29,6 +28,12 @@ class UserViewProxy extends AbstractViewProxy
 			if ($this->privilegeService->isLoggedIn($user))
 			{
 				$result->browsingSettings = $user->getBrowsingSettings();
+			}
+
+			if ($this->privilegeService->hasPrivilege(Privilege::VIEW_ALL_ACCESS_RANKS) or
+				$this->privilegeService->isLoggedin($user))
+			{
+				$result->accessRank = EnumHelper::accessRankToString($user->getAccessRank());
 			}
 
 			if ($this->privilegeService->hasPrivilege(Privilege::VIEW_ALL_EMAIL_ADDRESSES) or

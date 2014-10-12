@@ -7,6 +7,7 @@ class Privilege
 	const LIST_USERS = 'listUsers';
 	const VIEW_USERS = 'viewUsers';
 	const VIEW_ALL_EMAIL_ADDRESSES = 'viewAllEmailAddresses';
+	const VIEW_ALL_ACCESS_RANKS = 'viewAllAccessRanks';
 	const CHANGE_ACCESS_RANK = 'changeAccessRank';
 	const CHANGE_OWN_AVATAR_STYLE = 'changeOwnAvatarStyle';
 	const CHANGE_OWN_EMAIL_ADDRESS = 'changeOwnEmailAddress';

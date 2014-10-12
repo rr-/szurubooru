@@ -6,6 +6,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		register: 'register',
 		listUsers: 'listUsers',
 		viewUsers: 'viewUsers',
+		viewAllAccessRanks: 'viewAllAccessRanks',
 		viewAllEmailAddresses: 'viewAllEmailAddresses',
 		changeAccessRank: 'changeAccessRank',
 		changeOwnAvatarStyle: 'changeOwnAvatarStyle',
