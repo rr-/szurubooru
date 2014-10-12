@@ -55,7 +55,8 @@ final class UserController extends AbstractController
 
 	public function getByNameOrEmail($userNameOrEmail)
 	{
-		$this->privilegeService->assertPrivilege(Privilege::VIEW_USERS);
+		if (!$this->privilegeService->isLoggedIn($userNameOrEmail))
+			$this->privilegeService->assertPrivilege(Privilege::VIEW_USERS);
 		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
 		return $this->userViewProxy->fromEntity($user);
 	}
