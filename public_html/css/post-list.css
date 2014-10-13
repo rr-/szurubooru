@@ -21,7 +21,7 @@
 	margin-right: 1em;
 }
 
-.post-list .posts {
+.post-list ul {
 	display: flex;
 	justify-content: center;
 	align-content: center;
