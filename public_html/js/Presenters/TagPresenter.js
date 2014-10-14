@@ -19,6 +19,7 @@ App.Presenters.TagPresenter = function(
 
 	var tag;
 	var tagName;
+	var posts;
 
 	var privileges = {};
 
@@ -52,7 +53,7 @@ App.Presenters.TagPresenter = function(
 				api.get('posts', {query: tagName}))
 			.then(function(tagResponse, postsResponse) {
 				tag = tagResponse.json;
-				var posts = postsResponse.json.data;
+				posts = postsResponse.json.data;
 				posts = posts.slice(0, 8);
 
 				render();
@@ -84,7 +85,7 @@ App.Presenters.TagPresenter = function(
 			.then(function(response) {
 				tag = response.json;
 				render();
-				router.navigate('#/tag/' + tag.name);
+				renderPosts(posts);
 			}).fail(function(response) {
 				console.log(response);
 				window.alert('An error occurred');
