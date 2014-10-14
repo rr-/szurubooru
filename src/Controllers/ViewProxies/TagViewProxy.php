@@ -10,6 +10,7 @@ class TagViewProxy extends AbstractViewProxy
 		{
 			$result->name = $tag->getName();
 			$result->usages = $tag->getUsages();
+			$result->banned = $tag->isBanned();
 		}
 		return $result;
 	}

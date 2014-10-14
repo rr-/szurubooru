@@ -303,6 +303,11 @@ class PostService
 			$tags[] = $tag;
 		}
 		$tags = $this->tagService->createTags($tags);
+		foreach ($tags as $tag)
+		{
+			if ($tag->isBanned())
+				throw new \DomainException('Cannot use banned tag "' . $tag->getName() . '"');
+		}
 		$post->setTags($tags);
 	}
 

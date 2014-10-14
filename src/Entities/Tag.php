@@ -5,6 +5,7 @@ final class Tag extends Entity
 {
 	private $name;
 	private $creationTime;
+	private $banned = false;
 
 	const META_USAGES = 'usages';
 
@@ -21,6 +22,16 @@ final class Tag extends Entity
 	public function getCreationTime()
 	{
 		return $this->creationTime;
+	}
+
+	public function isBanned()
+	{
+		return $this->banned;
+	}
+
+	public function setBanned($banned)
+	{
+		$this->banned = boolval($banned);
 	}
 
 	public function setCreationTime($creationTime)

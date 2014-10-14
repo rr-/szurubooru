@@ -75,7 +75,8 @@ class TagService
 		{
 			$tags[$tag->getId()] = [
 				'name' => $tag->getName(),
-				'usages' => $tag->getUsages()];
+				'usages' => $tag->getUsages(),
+				'banned' => $tag->isBanned()];
 		}
 		$json = json_encode($tags);
 		$this->fileDao->save('tags.json', $json);
@@ -140,6 +141,9 @@ class TagService
 
 			if ($formData->name !== null)
 				$this->updateTagName($tag, $formData->name);
+
+			if ($formData->banned !== $tag->isBanned())
+				$tag->setBanned(boolval($formData->banned));
 
 			return $this->tagDao->save($tag);
 		};

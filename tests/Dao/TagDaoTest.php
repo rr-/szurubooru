@@ -11,6 +11,20 @@ final class TagDaoTest extends AbstractDatabaseTestCase
 		parent::setUp();
 	}
 
+	public function testSaving()
+	{
+		$tag = new Tag();
+		$tag->setName('test1');
+		$tag->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
+		$this->assertFalse($tag->isBanned());
+		$tag->setBanned(true);
+
+		$tagDao = $this->getTagDao();
+		$tagDao->save($tag);
+		$actualTag = $tagDao->findById($tag->getId());
+		$this->assertEntitiesEqual($tag, $actualTag);
+	}
+
 	public function testFindByPostIds()
 	{
 		$pdo = $this->databaseConnection->getPDO();

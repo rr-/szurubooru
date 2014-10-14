@@ -12,6 +12,7 @@ class TagEntityConverter extends AbstractEntityConverter implements IEntityConve
 			'id' => $entity->getId(),
 			'name' => $entity->getName(),
 			'creationTime' => $this->entityTimeToDbTime($entity->getCreationTime()),
+			'banned' => $entity->isBanned(),
 		];
 	}
 
@@ -21,6 +22,7 @@ class TagEntityConverter extends AbstractEntityConverter implements IEntityConve
 		$entity->setName($array['name']);
 		$entity->setCreationTime($this->dbTimeToEntityTime($array['creationTime']));
 		$entity->setMeta(Tag::META_USAGES, intval($array['usages']));
+		$entity->setBanned($array['banned']);
 		return $entity;
 	}
 }

@@ -14,6 +14,18 @@
 				</div>
 			<% } %>
 
+			<% if (privileges.canBan) { %>
+				<div class="form-row">
+					<label class="form-label" for="tag-ban">Ban:</label>
+					<div class="form-input">
+						<input name="ban" type="checkbox" id="ban" <% print(tag.banned ? 'checked="checked"' : '') %>>
+						<label for="ban">
+							Prevent tag from being used
+						</label>
+					</div>
+				</div>
+			<% } %>
+
 			<div class="form-row">
 				<label class="form-label"></label>
 				<div class="form-input">

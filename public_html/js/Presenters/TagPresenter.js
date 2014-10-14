@@ -28,6 +28,7 @@ App.Presenters.TagPresenter = function(
 		topNavigationPresenter.changeTitle('Tags');
 
 		privileges.canChangeName = auth.hasPrivilege(auth.privileges.changeTagName);
+		privileges.canBan = auth.hasPrivilege(auth.privileges.banTags);
 
 		promise.wait(
 				util.promiseTemplate('tag'),
@@ -79,6 +80,10 @@ App.Presenters.TagPresenter = function(
 
 		if (privileges.canChangeName) {
 			formData.name = $form.find('[name=name]').val();
+		}
+
+		if (privileges.canBan) {
+			formData.banned = $form.find('[name=ban]').is(':checked') ? 1 : 0;
 		}
 
 		promise.wait(api.put('/tags/' + tag.name, formData))

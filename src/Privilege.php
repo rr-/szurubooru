@@ -38,6 +38,7 @@ class Privilege
 	const LIST_TAGS = 'listTags';
 	const MASS_TAG = 'massTag';
 	const CHANGE_TAG_NAME = 'changeTagName';
+	const BAN_TAGS = 'banTags';
 
 	const LIST_COMMENTS = 'listComments';
 	const ADD_COMMENTS = 'addComments';
