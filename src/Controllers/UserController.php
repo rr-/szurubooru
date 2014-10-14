@@ -130,6 +130,11 @@ final class UserController extends AbstractController
 			$this->privilegeService->assertLoggedIn($userNameOrEmail);
 		}
 
+		if ($formData->banned !== null)
+		{
+			$this->privilegeService->assertPrivilege(Privilege::BAN_USERS);
+		}
+
 		$user = $this->userService->updateUser($user, $formData);
 		return $this->userViewProxy->fromEntity($user);
 	}

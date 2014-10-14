@@ -23,7 +23,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 
 		privileges = {
 			canBan:
-				auth.hasPrivilege(auth.privileges.ban),
+				auth.hasPrivilege(auth.privileges.banUsers),
 			canChangeAccessRank:
 				auth.hasPrivilege(auth.privileges.changeAccessRank),
 			canChangeAvatarStyle:

@@ -19,7 +19,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		changeAllPasswords: 'changeAllPasswords',
 		deleteOwnAccount: 'deleteOwnAccount',
 		deleteAllAccounts: 'deleteAllAccounts',
-		ban: 'ban',
+		banUsers: 'banUsers',
 
 		listPosts: 'listPosts',
 		viewPosts: 'viewPosts',

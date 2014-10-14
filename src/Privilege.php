@@ -19,7 +19,7 @@ class Privilege
 	const CHANGE_ALL_PASSWORDS = 'changeAllPasswords';
 	const DELETE_OWN_ACCOUNT = 'deleteOwnAccount';
 	const DELETE_ALL_ACCOUNTS = 'deleteAllAccounts';
-	const BAN = 'ban';
+	const BAN_USERS = 'banUsers';
 
 	const LIST_POSTS = 'listPosts';
 	const VIEW_POSTS = 'viewPosts';
