@@ -99,33 +99,33 @@ class TagService
 					return strtolower($tag->getName());
 				};
 
+			$tagsNotToCreate = [];
 			$tagNames = array_map($tagNameGetter, $tags);
 			$tagNames = array_filter(array_unique($tagNames));
-
-			$tagsNotToCreate = $this->tagDao->findByNames($tagNames);
-			$tagNamesNotToCreate = array_map($tagNameGetter, $tagsNotToCreate);
-			$tagNamesToCreate = array_udiff($tagNames, $tagNamesNotToCreate, 'strcasecmp');
+			foreach ($this->tagDao->findByNames($tagNames) as $tag)
+				$tagsNotToCreate[$tagNameGetter($tag)] = $tag;
 
 			$tagsToCreate = [];
-			foreach ($tagNamesToCreate as $tagName)
-			{
-				$tag = new Tag;
-				$tag->setName($tagName);
-				$tag->setCreationTime($this->timeService->getCurrentTime());
-				$tagsToCreate[] = $tag;
-			}
-			$createdTags = $this->tagDao->batchSave($tagsToCreate);
-
-			$tagsNotToCreate = array_combine($tagNamesNotToCreate, $tagsNotToCreate);
-			$createdTags = array_combine($tagNamesToCreate, $createdTags);
-			$result = [];
 			foreach ($tags as $key => $tag)
 			{
 				if (isset($tagsNotToCreate[$tagNameGetter($tag)]))
-					$tag = $tagsNotToCreate[$tagNameGetter($tag)];
-				else
-					$tag = $createdTags[$tagNameGetter($tag)];
-				$result[$key] = $tag;
+					continue;
+
+				$tag->setCreationTime($this->timeService->getCurrentTime());
+				$tagsToCreate[$tagNameGetter($tag)] = $tag;
+			}
+
+			$createdTags = [];
+			foreach ($this->tagDao->batchSave($tagsToCreate) as $tag)
+				$createdTags[$tagNameGetter($tag)] = $tag;
+
+			$result = [];
+			foreach ($tags as $key => $tag)
+			{
+				$result[$key] =
+					isset($tagsToCreate[$tagNameGetter($tag)])
+						? $createdTags[$tagNameGetter($tag)]
+						: $tagsNotToCreate[$tagNameGetter($tag)];
 			}
 			return $result;
 		};
