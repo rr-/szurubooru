@@ -46,11 +46,15 @@ App.Controls.AutoCompleteInput = function($input) {
 		if (cachedSource) {
 			return cachedSource;
 		} else {
-			var source = source || tagList.getTags();
-			source = _.pairs(source);
-			source = _.sortBy(source, function(a) { return -a[1]; });
-			source = _.filter(source, function(a) { return a[1] > 0; });
-			source = _.map(source, function(a) { return [a[0], a[0] + ' (' + a[1] + ')']; });
+			var source = tagList.getTags();
+			source = _.sortBy(source, function(a) { return -a.usages; });
+			source = _.filter(source, function(a) { return a.usages > 0; });
+			source = _.map(source, function(a) {
+				return {
+					tag: a.name,
+					caption: a.name + ' (' + a.usages + ')',
+				};
+			});
 			cachedSource = source;
 			return source;
 		}
@@ -152,12 +156,12 @@ App.Controls.AutoCompleteInput = function($input) {
 	function getResultsFilter(textToFind) {
 		if (textToFind.length < options.minLengthToArbitrarySearch) {
 			return options.caseSensitive ?
-				function(resultItem) { return resultItem[0].indexOf(textToFind) === 0; } :
-				function(resultItem) { return resultItem[0].toLowerCase().indexOf(textToFind.toLowerCase()) === 0; };
+				function(resultItem) { return resultItem.tag.indexOf(textToFind) === 0; } :
+				function(resultItem) { return resultItem.tag.toLowerCase().indexOf(textToFind.toLowerCase()) === 0; };
 		} else {
 			return options.caseSensitive ?
-				function(resultItem) { return resultItem[0].indexOf(textToFind) >= 0; } :
-				function(resultItem) { return resultItem[0].toLowerCase().indexOf(textToFind.toLowerCase()) >= 0; };
+				function(resultItem) { return resultItem.tag.indexOf(textToFind) >= 0; } :
+				function(resultItem) { return resultItem.tag.toLowerCase().indexOf(textToFind.toLowerCase()) >= 0; };
 		}
 	}
 
@@ -174,7 +178,7 @@ App.Controls.AutoCompleteInput = function($input) {
 
 	function applyAutocomplete() {
 		if (options.onApply) {
-			options.onApply(results[activeResult][0]);
+			options.onApply(results[activeResult].tag);
 		} else {
 			var val = $input.val();
 			var start = getSelectionStart();
@@ -186,7 +190,7 @@ App.Controls.AutoCompleteInput = function($input) {
 				prefix = val.substring(0, index + 1);
 				middle = val.substring(index + 1);
 			}
-			$input.val(prefix + results[activeResult][0] + ' ' + suffix.trimLeft());
+			$input.val(prefix + results[activeResult].tag + ' ' + suffix.trimLeft());
 			$input.focus();
 		}
 	}
@@ -200,8 +204,8 @@ App.Controls.AutoCompleteInput = function($input) {
 		$list.empty();
 		_.each(results, function(resultItem, resultIndex) {
 			var $listItem = jQuery('<li/>');
-			$listItem.text(resultItem[1]);
-			$listItem.attr('data-key', resultItem[0]);
+			$listItem.text(resultItem.caption);
+			$listItem.attr('data-key', resultItem.tag);
 			$listItem.hover(function(e) {
 				e.preventDefault();
 				activeResult = resultIndex;

@@ -73,7 +73,9 @@ class TagService
 		$tags = [];
 		foreach ($this->tagDao->findAll() as $tag)
 		{
-			$tags[$tag->getName()] = $tag->getUsages();
+			$tags[$tag->getId()] = [
+				'name' => $tag->getName(),
+				'usages' => $tag->getUsages()];
 		}
 		$json = json_encode($tags);
 		$this->fileDao->save('tags.json', $json);
