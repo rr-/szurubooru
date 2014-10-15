@@ -78,7 +78,7 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$tagService = $this->getTagService();
 		$tagService->createTags([$tag1]);
 		$tagService->exportJson();
-		$this->assertEquals('{"1":{"name":"test","usages":0,"banned":false}}', $fileDao->load('tags.json'));
+		$this->assertEquals('[{"name":"test","usages":0,"banned":false}]', $fileDao->load('tags.json'));
 	}
 
 	public function testExportMultiple()
@@ -94,7 +94,7 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$tagService = $this->getTagService();
 		$tagService->createTags([$tag1, $tag2]);
 		$tagService->exportJson();
-		$this->assertEquals('{"1":{"name":"test1","usages":0,"banned":false},"2":{"name":"test2","usages":0,"banned":true}}', $fileDao->load('tags.json'));
+		$this->assertEquals('[{"name":"test1","usages":0,"banned":false},{"name":"test2","usages":0,"banned":true}]', $fileDao->load('tags.json'));
 	}
 
 	private function getPublicFileDao()
