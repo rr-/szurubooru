@@ -137,6 +137,52 @@ class TagDao extends AbstractDao implements ICrudDao
 		}
 	}
 
+	public function export()
+	{
+		$exported = [];
+		foreach ($this->fpdo->from('tags') as $arrayEntity)
+		{
+			$exported[$arrayEntity['id']] = [
+				'name' => $arrayEntity['name'],
+				'usages' => intval($arrayEntity['usages']),
+				'banned' => boolval($arrayEntity['banned'])
+			];
+		}
+
+		//upgrades on old databases
+		try
+		{
+			$relations = iterator_to_array($this->fpdo->from('tagRelations'));
+		}
+		catch (\Exception $e)
+		{
+			$relations = [];
+		}
+
+		foreach ($relations as $arrayEntity)
+		{
+			$key1 = $arrayEntity['tag1id'];
+			$key2 = $arrayEntity['tag2id'];
+			$type = intval($arrayEntity['type']);
+			if ($type === self::TAG_RELATION_IMPLICATION)
+				$target = 'implications';
+			elseif ($type === self::TAG_RELATION_SUGGESTION)
+				$target = 'suggestions';
+			else
+				continue;
+
+			if (!isset($exported[$key1]) or !isset($exported[$key2]))
+				continue;
+
+			if (!isset($exported[$key1][$target]))
+				$exported[$key1][$target] = [];
+
+			$exported[$key1][$target][] = $exported[$key2]['name'];
+		}
+
+		return array_values($exported);
+	}
+
 	private function findRelatedTagsByType(Tag $tag, $type)
 	{
 		$tagId = $tag->getId();
