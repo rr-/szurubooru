@@ -26,6 +26,26 @@
 				</div>
 			<% } %>
 
+			<% if (privileges.canChangeImplications) { %>
+				<div class="form-row">
+					<label class="form-label" for="tag-implications">Implications:</label>
+					<div class="form-input">
+						<input maxlength="200" type="text" name="implications" id="tag-implications" placeholder="tag1, tag2&hellip;" value="<%= _.pluck(tag.implications, 'name').join(' ') %>"/>
+						<p><small>Added automatically when tagging with <strong><%= tagName %></strong>.</small></p>
+					</div>
+				</div>
+			<% } %>
+
+			<% if (privileges.canChangeSuggestions) { %>
+				<div class="form-row">
+					<label class="form-label" for="tag-suggestions">Suggestions:</label>
+					<div class="form-input">
+						<input maxlength="200" type="text" name="suggestions" id="tag-suggestions" placeholder="tag1, tag2&hellip;" value="<%= _.pluck(tag.suggestions, 'name').join(' ') %>"/>
+						<p><small>Suggested when tagging with <strong><%= tagName %></strong>.</small></p>
+					</div>
+				</div>
+			<% } %>
+
 			<div class="form-row">
 				<label class="form-label"></label>
 				<div class="form-input">

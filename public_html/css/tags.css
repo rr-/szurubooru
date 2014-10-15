@@ -20,6 +20,13 @@
 
 #tag-view form {
 	text-align: left;
-	max-width: 20em;
+	max-width: 30em;
 	margin: 0 auto;
+}
+#tag-view p {
+	margin: 0 0 0.5em 0;
+	line-height: normal;
+}
+#tag-view small {
+	font-size: 12px;
 }

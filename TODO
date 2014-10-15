@@ -29,10 +29,6 @@ everything related to tags:
             - category (from config.ini)
             - description
     - relations
-        - handle tag relations editing in frontend
-            - privileges
-            - template
-            - ajax
         - handle relations in autocomplete
 
 refactors:
