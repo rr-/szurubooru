@@ -14,18 +14,6 @@
 				</div>
 			<% } %>
 
-			<% if (privileges.canBan) { %>
-				<div class="form-row">
-					<label class="form-label" for="tag-ban">Ban:</label>
-					<div class="form-input">
-						<input name="ban" type="checkbox" id="ban" <% print(tag.banned ? 'checked="checked"' : '') %>>
-						<label for="ban">
-							Prevent tag from being used
-						</label>
-					</div>
-				</div>
-			<% } %>
-
 			<% if (privileges.canChangeImplications) { %>
 				<div class="form-row">
 					<label class="form-label" for="tag-implications">Implications:</label>
@@ -42,6 +30,18 @@
 					<div class="form-input">
 						<input maxlength="200" type="text" name="suggestions" id="tag-suggestions" placeholder="tag1, tag2&hellip;" value="<%= _.pluck(tag.suggestions, 'name').join(' ') %>"/>
 						<p><small>Suggested when tagging with <strong><%= tagName %></strong>.</small></p>
+					</div>
+				</div>
+			<% } %>
+
+			<% if (privileges.canBan) { %>
+				<div class="form-row">
+					<label class="form-label" for="tag-ban">Ban:</label>
+					<div class="form-input">
+						<input name="ban" type="checkbox" id="ban" <% print(tag.banned ? 'checked="checked"' : '') %>>
+						<label for="ban">
+							Prevent tag from being used
+						</label>
 					</div>
 				</div>
 			<% } %>
