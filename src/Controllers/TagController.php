@@ -55,7 +55,7 @@ final class TagController extends AbstractController
 		$filter->setPageSize(50);
 
 		$result = $this->tagService->getFiltered($filter);
-		$entities = $this->tagViewProxy->fromArray($result->getEntities());
+		$entities = $this->tagViewProxy->fromArray($result->getEntities(), $this->getFullFetchConfig());
 		return [
 			'data' => $entities,
 			'pageSize' => $result->getPageSize(),

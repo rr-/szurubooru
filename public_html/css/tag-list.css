@@ -25,3 +25,21 @@
 	text-align: left;
 	margin: 1em auto;
 }
+
+#tag-list th,
+#tag-list td {
+	padding-right: 1.5em;
+}
+
+#tag-list th {
+	font-weight: normal;
+}
+
+#tag-list .fa-check {
+	opacity: .2;
+}
+
+#tag-list .banned,
+#tag-list .usages {
+	text-align: center;
+}

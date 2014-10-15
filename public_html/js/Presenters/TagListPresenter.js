@@ -72,7 +72,7 @@ App.Presenters.TagListPresenter = function(
 	}
 
 	function renderTags(tags, clear) {
-		var $target = $el.find('.tags');
+		var $target = $el.find('tbody');
 
 		if (clear) {
 			$target.empty();
