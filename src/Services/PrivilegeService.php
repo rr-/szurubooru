@@ -48,7 +48,7 @@ class PrivilegeService
 	public function assertPrivilege($privilege)
 	{
 		if (!$this->hasPrivilege($privilege))
-			$this->fail();
+			$this->fail($privilege);
 	}
 
 	public function assertLoggedIn($userIdentifier = null)
@@ -56,12 +56,12 @@ class PrivilegeService
 		if ($userIdentifier)
 		{
 			if (!$this->isLoggedIn($userIdentifier))
-				$this->fail();
+				$this->fail('not logged in');
 		}
 		else
 		{
 			if (!$this->authService->isLoggedIn())
-				$this->fail();
+				$this->fail('not logged in');
 		}
 	}
 
@@ -87,8 +87,8 @@ class PrivilegeService
 		}
 	}
 
-	private function fail()
+	private function fail($reason)
 	{
-		throw new \DomainException('Unprivileged operation');
+		throw new \DomainException('Unprivileged operation' . ($reason ? ' (' . $reason . ')' : ''));
 	}
 }
