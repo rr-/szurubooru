@@ -67,11 +67,13 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 			else
 			{
 				$this->assertNotNull($actual[$key]);
-				$expected[$key]->resetLazyLoaders();
-				$expected[$key]->resetMeta();
-				$actual[$key]->resetLazyLoaders();
-				$actual[$key]->resetMeta();
-				$this->assertEquals($expected[$key], $actual[$key]);
+				$expectedEntity = clone($expected[$key]);
+				$actualEntity = clone($actual[$key]);
+				$expectedEntity->resetLazyLoaders();
+				$expectedEntity->resetMeta();
+				$actualEntity->resetLazyLoaders();
+				$actualEntity->resetMeta();
+				$this->assertEquals($expectedEntity, $actualEntity);
 			}
 		}
 	}
