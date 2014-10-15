@@ -51,12 +51,13 @@ class TagDao extends AbstractDao implements ICrudDao
 			return [];
 		$tagId = $tag->getId();
 		$query = $this->fpdo->from($this->tableName)
+			->select('COUNT(pt2.postId) AS postCount')
 			->disableSmartJoin()
 			->innerJoin('postTags pt1 ON pt1.tagId = tags.id')
 			->innerJoin('postTags pt2 ON pt2.postId = pt1.postId')
 			->where('pt2.tagId', $tagId)
 			->groupBy('tags.id')
-			->orderBy('tags.usages DESC, name ASC');
+			->orderBy('postCount DESC, name ASC');
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);
 	}
