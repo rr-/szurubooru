@@ -69,6 +69,39 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$this->assertEquals('test3', $result[1]->getName());
 	}
 
+	public function testExportRelations()
+	{
+		$fileDao = $this->getPublicFileDao();
+		$tagService = $this->getTagService();
+
+		$tag1 = new Tag();
+		$tag1->setName('test');
+		$tag1->setCreationTime(date('c'));
+
+		$tag2 = new Tag();
+		$tag2->setName('test 2');
+		$tag3 = new Tag();
+		$tag3->setName('test 3');
+		$tag4 = new Tag();
+		$tag4->setName('test 4');
+		$tag5 = new Tag();
+		$tag5->setName('test 5');
+		$tagService->createTags([$tag2, $tag3, $tag4, $tag5]);
+
+		$tag1->setImpliedTags([$tag2, $tag3]);
+		$tag1->setSuggestedTags([$tag4, $tag5]);
+
+		$tagService->createTags([$tag1]);
+		$tagService->exportJson();
+		$this->assertEquals('[' .
+			'{"name":"test 2","usages":0,"banned":false},' .
+			'{"name":"test 3","usages":0,"banned":false},' .
+			'{"name":"test 4","usages":0,"banned":false},' .
+			'{"name":"test 5","usages":0,"banned":false},' .
+			'{"name":"test","usages":0,"banned":false,"implications":["test 2","test 3"],"suggestions":["test 4","test 5"]}]',
+			$fileDao->load('tags.json'));
+	}
+
 	public function testExportSingle()
 	{
 		$tag1 = new Tag();

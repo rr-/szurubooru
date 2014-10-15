@@ -77,7 +77,23 @@ class TagService
 				'name' => $tag->getName(),
 				'usages' => $tag->getUsages(),
 				'banned' => $tag->isBanned(),
+				'implications' => array_values(array_map(
+					function ($subTag)
+					{
+						return $subTag->getName();
+					},
+					$tag->getImpliedTags())),
+				'suggestions' => array_values(array_map(
+					function ($subTag)
+					{
+						return $subTag->getName();
+					},
+					$tag->getSuggestedTags())),
 			];
+			if (empty($item['implications']))
+				unset($item['implications']);
+			if (empty($item['suggestions']))
+				unset($item['suggestions']);
 			$tags[] = $item;
 		}
 		$json = json_encode($tags);
