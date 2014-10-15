@@ -28,8 +28,6 @@ everything related to tags:
         - tag editing
             - category (from config.ini)
             - description
-    - relations
-        - handle relations in autocomplete
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and

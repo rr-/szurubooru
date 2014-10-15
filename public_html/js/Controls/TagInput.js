@@ -6,6 +6,7 @@ App.Controls.TagInput = function($underlyingInput) {
 	var jQuery = App.DI.get('jQuery');
 	var promise = App.DI.get('promise');
 	var api = App.DI.get('api');
+	var tagList = App.DI.get('tagList');
 
 	var KEY_RETURN = 13;
 	var KEY_SPACE = 32;
@@ -23,7 +24,8 @@ App.Controls.TagInput = function($underlyingInput) {
 	var $wrapper = jQuery('<div class="tag-input">');
 	var $tagList = jQuery('<ul class="tags">');
 	var $input = jQuery('<input class="tag-real-input" type="text"/>');
-	var $related = jQuery('<div class="related-tags"><span>Related tags:</span><ul>');
+	var $siblings = jQuery('<div class="related-tags"><span>Sibling tags:</span><ul>');
+	var $suggestions = jQuery('<div class="related-tags"><span>Suggested tags:</span><ul>');
 	init();
 	render();
 	initAutocomplete();
@@ -54,7 +56,8 @@ App.Controls.TagInput = function($underlyingInput) {
 			$input.focus();
 		});
 		$input.attr('placeholder', $underlyingInput.attr('placeholder'));
-		$related.insertAfter($wrapper);
+		$suggestions.insertAfter($wrapper);
+		$siblings.insertAfter($wrapper);
 
 		addTagsFromText($underlyingInput.val());
 		$underlyingInput.val('');
@@ -67,9 +70,8 @@ App.Controls.TagInput = function($underlyingInput) {
 			$input.val('');
 		};
 		autocomplete.additionalFilter = function(results) {
-			var tags = getTags();
 			return _.filter(results, function(resultItem) {
-				return !_.contains(tags, resultItem[0]);
+				return !_.contains(getTags(), resultItem[0]);
 			});
 		};
 	}
@@ -79,8 +81,8 @@ App.Controls.TagInput = function($underlyingInput) {
 	});
 	$input.bind('blur', function(e) {
 		$wrapper.removeClass('focused');
-		var tag = $input.val();
-		addTag(tag);
+		var tagName = $input.val();
+		addTag(tagName);
 		$input.val('');
 	});
 
@@ -98,10 +100,7 @@ App.Controls.TagInput = function($underlyingInput) {
 			return;
 		}
 
-		var pastedTags = pastedText.split(/\s+/);
-		var lastTag = pastedTags.pop();
-		_.map(pastedTags, addTag);
-		$input.val(lastTag);
+		addTagsFromTextWithoutLast(pastedText);
 	});
 
 	$input.bind('keydown', function(e) {
@@ -111,10 +110,10 @@ App.Controls.TagInput = function($underlyingInput) {
 				options.inputConfirmed();
 			}
 		} else if (_.contains(tagConfirmKeys, e.which)) {
-			var tag = $input.val();
+			var tagName = $input.val();
 			e.preventDefault();
 			$input.val('');
-			addTag(tag);
+			addTag(tagName);
 		} else if (e.which === KEY_BACKSPACE && jQuery(this).val().length === 0) {
 			e.preventDefault();
 			removeLastTag();
@@ -122,17 +121,24 @@ App.Controls.TagInput = function($underlyingInput) {
 	});
 
 	function addTagsFromText(text) {
-		var tagsToAdd = text.split(/\s+/);
-		_.map(tagsToAdd, addTag);
+		var tagNamesToAdd = text.split(/\s+/);
+		_.map(tagNamesToAdd, addTag);
 	}
 
-	function addTag(tag) {
-		tag = tag.trim();
-		if (tag.length === 0) {
+	function addTagsFromTextWithoutLast(text) {
+		var tagNamesToAdd = text.split(/\s+/);
+		var lastTagName = tagNamesToAdd.pop();
+		_.map(tagNamesToAdd, addTag);
+		$input.val(lastTagName);
+	}
+
+	function addTag(tagName) {
+		tagName = tagName.trim();
+		if (tagName.length === 0) {
 			return;
 		}
 
-		if (tag.length > 64) {
+		if (tagName.length > 64) {
 			//showing alert inside keydown event leads to mysterious behaviors
 			//in some browsers, hence the timeout
 			window.setTimeout(function() {
@@ -141,109 +147,182 @@ App.Controls.TagInput = function($underlyingInput) {
 			return;
 		}
 
-		if (isTaggedWith(tag)) {
-			flashTag(tag);
+		if (isTaggedWith(tagName)) {
+			flashTagRed(tagName);
 		} else {
-			if (typeof(options.beforeTagAdded) === 'function') {
-				options.beforeTagAdded(tag);
-			}
-			var newTags = getTags().slice();
-			newTags.push(tag);
-			setTags(newTags);
+			beforeTagAdded(tagName);
+			tags.push(tagName);
+			var $elem = createListElement(tagName);
+			$tagList.append($elem);
+			afterTagAdded(tagName);
 		}
 	}
 
-	function removeTag(tag) {
-		var oldTags = getTags();
-		var newTags = _.without(oldTags, tag);
-		if (newTags.length !== oldTags.length) {
+	function beforeTagAdded(tagName) {
+		if (typeof(options.beforeTagAdded) === 'function') {
+			options.beforeTagAdded(tagName);
+		}
+	}
+
+	function afterTagAdded(tagName) {
+		var tag = getExportedTag(tagName);
+		if (tag) {
+			_.each(tag.implications, function(impliedTagName) {
+				addTag(impliedTagName);
+				flashTagYellow(impliedTagName);
+			});
+			showOrHideSuggestions(tag.suggestions);
+		}
+	}
+
+	function getExportedTag(tagName) {
+		return _.first(_.filter(
+			tagList.getTags(),
+			function(t) {
+				return t.name.toLowerCase() === tagName.toLowerCase();
+			}));
+	}
+
+	function removeTag(tagName) {
+		var oldTagNames = getTags();
+		var newTagNames = _.without(oldTagNames, tagName);
+		if (newTagNames.length !== oldTagNames.length) {
 			if (typeof(options.beforeTagRemoved) === 'function') {
-				options.beforeTagRemoved(tag);
+				options.beforeTagRemoved(tagName);
 			}
-			setTags(newTags);
+			setTags(newTagNames);
 		}
 	}
 
-	function isTaggedWith(tag) {
-		var tags = getTags();
-		var tagNames = _.map(tags, function(tag) {
-			return tag.toLowerCase();
+	function isTaggedWith(tagName) {
+		var tagNames = _.map(getTags(), function(tagName) {
+			return tagName.toLowerCase();
 		});
-		return _.contains(tagNames, tag.toLowerCase());
+		return _.contains(tagNames, tagName.toLowerCase());
 	}
 
 	function removeLastTag() {
 		removeTag(_.last(getTags()));
 	}
 
-	function flashTag(tag) {
-		var $elem = $tagList.find('li[data-tag="' + tag.toLowerCase() + '"]');
+	function flashTagRed(tagName) {
+		var $elem = getListElement(tagName);
 		$elem.css({backgroundColor: 'rgba(255, 200, 200, 1)'});
 	}
 
-	function setTags(newTags) {
-		tags = newTags.slice();
+	function flashTagYellow(tagName) {
+		var $elem = getListElement(tagName);
+		$elem.css({backgroundColor: 'rgba(255, 255, 200, 1)'});
+	}
+
+	function getListElement(tagName) {
+		return $tagList.find('li[data-tag="' + tagName.toLowerCase() + '"]');
+	}
+
+	function setTags(newTagNames) {
+		tags = newTagNames.slice();
 		$tagList.empty();
-		$underlyingInput.val(newTags.join(' '));
-		_.each(newTags, function(tag) {
-			var $elem = jQuery('<li/>');
-			$elem.attr('data-tag', tag.toLowerCase());
-
-			var $tagLink = jQuery('<a class="tag">');
-			$tagLink.text(tag);
-			$tagLink.click(function(e) {
-				e.preventDefault();
-				showRelatedTags(tag);
-			});
-			$elem.append($tagLink);
-
-			var $deleteButton = jQuery('<a class="close"><i class="fa fa-remove"></i></a>');
-			$deleteButton.click(function(e) {
-				e.preventDefault();
-				removeTag(tag);
-				$input.focus();
-			});
-			$elem.append($deleteButton);
-
+		$underlyingInput.val(newTagNames.join(' '));
+		_.each(newTagNames, function(tagName) {
+			var $elem = createListElement(tagName);
 			$tagList.append($elem);
 		});
 	}
 
-	function showRelatedTags(tag) {
-		if ($related.data('lastTag') === tag) {
-			$related.slideUp('fast');
-			$related.data('lastTag', null);
+	function createListElement(tagName) {
+		var $elem = jQuery('<li/>');
+		$elem.attr('data-tag', tagName.toLowerCase());
+
+		var $tagLink = jQuery('<a class="tag">');
+		$tagLink.text(tagName);
+		$tagLink.click(function(e) {
+			e.preventDefault();
+			showOrHideTagSiblings(tagName);
+		});
+		$elem.append($tagLink);
+
+		var $deleteButton = jQuery('<a class="close"><i class="fa fa-remove"></i></a>');
+		$deleteButton.click(function(e) {
+			e.preventDefault();
+			removeTag(tagName);
+			$input.focus();
+		});
+		$elem.append($deleteButton);
+		return $elem;
+	}
+
+	function showOrHideSuggestions(suggestedTagNames) {
+		if (_.size(suggestedTagNames) === 0) {
 			return;
 		}
 
-		$related.slideUp('fast', function() {
-			$related.data('lastTag', tag);
-			var $list = $related.find('ul');
-			promise.wait(api.get('/tags/' + tag + '/siblings'))
-				.then(function(response) {
-					$list.empty();
+		var suggestions = filterSuggestions(suggestedTagNames);
+		if (suggestions.length > 0) {
+			attachTagsToSuggestionList($suggestions.find('ul'), suggestions);
+			$suggestions.slideDown('fast');
+		}
+	}
 
-					var relatedTags = response.json.data;
-					relatedTags = _.filter(relatedTags, function(tag) {
-						return !isTaggedWith(tag.name);
-					});
-					relatedTags = relatedTags.slice(0, 20);
-					_.each(relatedTags, function(tag) {
-						var $li = jQuery('<li>');
-						var $a = jQuery('<a href="#/posts/query=' + tag.name + '">');
-						$a.text(tag.name);
-						$a.click(function(e) {
-							e.preventDefault();
-							addTag(tag.name);
-						});
-						$li.append($a);
-						$list.append($li);
-					});
-					if (_.size(relatedTags)) {
-						$related.slideDown('fast');
+	function showOrHideTagSiblings(tagName) {
+		if ($siblings.data('lastTag') === tagName) {
+			$siblings.slideUp('fast');
+			$siblings.data('lastTag', null);
+			return;
+		}
+
+		promise.wait(getSiblings(tagName), promise.make(function(resolve, reject) {
+			$siblings.slideUp('fast', resolve);
+		})).then(function(siblings) {
+			$siblings.data('lastTag', tagName);
+
+			if (!_.size(siblings)) {
+				return;
+			}
+
+			var suggestions = filterSuggestions(_.pluck(siblings, 'name'));
+			if (suggestions.length > 0) {
+				attachTagsToSuggestionList($siblings.find('ul'), suggestions);
+				$siblings.slideDown('fast');
+			}
+		});
+	}
+
+	function filterSuggestions(sourceTagNames) {
+		var tagNames = _.filter(sourceTagNames.slice(), function(tagName) {
+			return !isTaggedWith(tagName);
+		});
+		tagNames = tagNames.slice(0, 20);
+		return tagNames;
+	}
+
+	function attachTagsToSuggestionList($list, tagNames) {
+		$list.empty();
+		_.each(tagNames, function(tagName) {
+			var $li = jQuery('<li>');
+			var $a = jQuery('<a href="#/posts/query=' + tagName + '">');
+			$a.text(tagName);
+			$a.click(function(e) {
+				e.preventDefault();
+				addTag(tagName);
+				$li.fadeOut('fast', function() {
+					$li.remove();
+					if ($list.children().length === 0) {
+						$list.parent('div').slideUp('fast');
 					}
+				});
+			});
+			$li.append($a);
+			$list.append($li);
+		});
+	}
+
+	function getSiblings(tagName) {
+		return promise.make(function(resolve, reject) {
+			promise.wait(api.get('/tags/' + tagName + '/siblings'))
+				.then(function(response) {
+					resolve(response.json.data);
 				}).fail(function() {
-					console.log(arguments);
+					reject();
 				});
 		});
 	}
