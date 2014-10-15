@@ -90,7 +90,7 @@ class TagService
 		{
 			$tagNameGetter = function($tag)
 				{
-					return strtolower($tag->getName());
+					return strtolower(is_string($tag) ? $tag : $tag->getName());
 				};
 
 			$tagsNotToCreate = [];
@@ -105,6 +105,12 @@ class TagService
 				if (isset($tagsNotToCreate[$tagNameGetter($tag)]))
 					continue;
 
+				if (is_string($tag))
+				{
+					$tagName = $tag;
+					$tag = new Tag();
+					$tag->setName($tagName);
+				}
 				$tag->setCreationTime($this->timeService->getCurrentTime());
 				$tagsToCreate[$tagNameGetter($tag)] = $tag;
 			}
@@ -168,5 +174,15 @@ class TagService
 	private function updateTagName(Tag $tag, $newName)
 	{
 		$tag->setName($newName);
+	}
+
+	private function updateImplications(Tag $tag, array $relatedNames)
+	{
+		$tag->setImpliedTags($this->createTags($relatedNames));
+	}
+
+	private function updateSuggestions(Tag $tag, array $relatedNames)
+	{
+		$tag->setSuggestedTags($this->createTags($relatedNames));
 	}
 }

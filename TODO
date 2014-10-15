@@ -33,11 +33,6 @@ everything related to tags:
             - privileges
             - template
             - ajax
-        - handle tag relations editing in backend
-            - tagservice::update
-            - tageditformdata
-            - tagcontroller
-            - privileges
         - handle relations in autocomplete
 
 refactors:

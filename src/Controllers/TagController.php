@@ -44,7 +44,7 @@ final class TagController extends AbstractController
 		$this->privilegeService->assertPrivilege(Privilege::LIST_TAGS);
 
 		$tag = $this->tagService->getByName($tagName);
-		return $this->tagViewProxy->fromEntity($tag);
+		return $this->tagViewProxy->fromEntity($tag, $this->getFullFetchConfig());
 	}
 
 	public function getTags()
@@ -84,7 +84,22 @@ final class TagController extends AbstractController
 		if ($formData->banned !== null)
 			$this->privilegeService->assertPrivilege(Privilege::BAN_TAGS);
 
+		if ($formData->implications !== null)
+			$this->privilegeService->assertPrivilege(Privilege::CHANGE_TAG_IMPLICATIONS);
+
+		if ($formData->suggestions !== null)
+			$this->privilegeService->assertPrivilege(Privilege::CHANGE_TAG_SUGGESTIONS);
+
 		$tag = $this->tagService->updateTag($tag, $formData);
-		return $this->tagViewProxy->fromEntity($tag);
+		return $this->tagViewProxy->fromEntity($tag, $this->getFullFetchConfig());
+	}
+
+	private function getFullFetchConfig()
+	{
+		return
+		[
+			TagViewProxy::FETCH_IMPLICATIONS => true,
+			TagViewProxy::FETCH_SUGGESTIONS => true,
+		];
 	}
 }
