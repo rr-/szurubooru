@@ -128,6 +128,8 @@ class TagService
 
 	public function updateTag(Tag $tag, TagEditFormData $formData)
 	{
+		$oldName = $tag->getName();
+
 		$transactionFunc = function() use ($tag, $formData)
 		{
 			$this->validator->validate($formData);
@@ -138,17 +140,26 @@ class TagService
 			if ($formData->banned !== $tag->isBanned())
 				$tag->setBanned(boolval($formData->banned));
 
+			if ($formData->implications !== null)
+				$this->updateImplications($tag, $formData->implications);
+
+			if ($formData->suggestions !== null)
+				$this->updateSuggestions($tag, $formData->suggestions);
+
 			return $this->tagDao->save($tag);
 		};
 		$ret = $this->transactionManager->commit($transactionFunc);
 
-		$transactionFunc = function() use ($tag)
+		if ($oldName !== $tag->getName())
 		{
-			$posts = $this->postDao->findByTagName($tag->getName());
-			foreach ($posts as $post)
-				$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
-		};
-		$this->transactionManager->commit($transactionFunc);
+			$transactionFunc = function() use ($tag)
+			{
+				$posts = $this->postDao->findByTagName($tag->getName());
+				foreach ($posts as $post)
+					$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
+			};
+			$this->transactionManager->commit($transactionFunc);
+		}
 
 		$this->exportJson();
 		return $ret;
