@@ -3,9 +3,14 @@ namespace Szurubooru\Dao;
 use Szurubooru\Dao\EntityConverters\PostEntityConverter;
 use Szurubooru\Dao\EntityConverters\TagEntityConverter;
 use Szurubooru\DatabaseConnection;
+use Szurubooru\Entities\Entity;
+use Szurubooru\Entities\Tag;
 
 class TagDao extends AbstractDao implements ICrudDao
 {
+	const TAG_RELATION_IMPLICATION = 1;
+	const TAG_RELATION_SUGGESTION = 2;
+
 	public function __construct(DatabaseConnection $databaseConnection)
 	{
 		parent::__construct(
@@ -49,7 +54,7 @@ class TagDao extends AbstractDao implements ICrudDao
 			->disableSmartJoin()
 			->innerJoin('postTags pt1 ON pt1.tagId = tags.id')
 			->innerJoin('postTags pt2 ON pt2.postId = pt1.postId')
-			->where('pt2.tagId = ?', $tagId)
+			->where('pt2.tagId', $tagId)
 			->groupBy('tags.id')
 			->orderBy('tags.usages DESC, name ASC');
 		$arrayEntities = iterator_to_array($query);
@@ -59,5 +64,88 @@ class TagDao extends AbstractDao implements ICrudDao
 	public function deleteUnused()
 	{
 		$this->deleteBy('usages', 0);
+	}
+
+	protected function afterLoad(Entity $tag)
+	{
+		$tag->setLazyLoader(
+			Tag::LAZY_LOADER_IMPLIED_TAGS,
+			function (Tag $tag)
+			{
+				return $this->findImpliedTags($tag);
+			});
+
+		$tag->setLazyLoader(
+			Tag::LAZY_LOADER_SUGGESTED_TAGS,
+			function (Tag $tag)
+			{
+				return $this->findSuggested($tag);
+			});
+	}
+
+	protected function afterSave(Entity $tag)
+	{
+		$this->syncImpliedTags($tag);
+		$this->syncSuggestedTags($tag);
+	}
+
+	private function findImpliedTags(Tag $tag)
+	{
+		return $this->findRelatedTagsByType($tag, self::TAG_RELATION_IMPLICATION);
+	}
+
+	private function findSuggested(Tag $tag)
+	{
+		return $this->findRelatedTagsByType($tag, self::TAG_RELATION_SUGGESTION);
+	}
+
+	private function syncImpliedTags($tag)
+	{
+		$this->syncRelatedTagsByType($tag, $tag->getImpliedTags(), self::TAG_RELATION_IMPLICATION);
+	}
+
+	private function syncSuggestedTags($tag)
+	{
+		$this->syncRelatedTagsByType($tag, $tag->getSuggestedTags(), self::TAG_RELATION_SUGGESTION);
+	}
+
+	private function syncRelatedTagsByType(Tag $tag, array $relatedTags, $type)
+	{
+		$this->fpdo->deleteFrom('tagRelations')
+			->where('tag1id', $tag->getId())
+			->where('type', $type)
+			->execute();
+
+		$relatedTagIds = array_filter(array_unique(array_map(
+			function ($tag)
+			{
+				if (!$tag->getId())
+					throw new \RuntimeException('Unsaved entities found');
+				return $tag->getId();
+			},
+			$relatedTags)));
+
+		foreach ($relatedTagIds as $tagId)
+		{
+			$this->fpdo
+				->insertInto('tagRelations')
+				->values([
+					'tag1id' => $tag->getId(),
+					'tag2id' => $tagId,
+					'type' => $type])
+				->execute();
+		}
+	}
+
+	private function findRelatedTagsByType(Tag $tag, $type)
+	{
+		$tagId = $tag->getId();
+		$query = $this->fpdo->from($this->tableName)
+			->disableSmartJoin()
+			->innerJoin('tagRelations tr ON tags.id = tr.tag2id')
+			->where('tr.type', $type)
+			->where('tr.tag1id', $tagId);
+		$arrayEntities = iterator_to_array($query);
+		return $this->arrayToEntities($arrayEntities);
 	}
 }

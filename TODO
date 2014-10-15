@@ -28,16 +28,17 @@ everything related to tags:
         - tag editing
             - category (from config.ini)
             - description
-    - implications - when entering child tag, add parent tag
-        - take care of recursion
-        - listing
-            - sort alphabetically
-            - sort by time of addition
-        - adding
-        - removing
-        - editing
-            - source tag
-            - target tags (allow multiple)
+    - relations
+        - handle tag relations editing in frontend
+            - privileges
+            - template
+            - ajax
+        - handle tag relations editing in backend
+            - tagservice::update
+            - tageditformdata
+            - tagcontroller
+            - privileges
+        - handle relations in autocomplete
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
