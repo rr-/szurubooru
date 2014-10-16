@@ -5,6 +5,8 @@ use Szurubooru\Dao\EntityConverters\TagEntityConverter;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Entity;
 use Szurubooru\Entities\Tag;
+use Szurubooru\SearchServices\Filters\TagFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
 
 class TagDao extends AbstractDao implements ICrudDao
 {
@@ -67,6 +69,52 @@ class TagDao extends AbstractDao implements ICrudDao
 		$this->deleteBy('usages', 0);
 	}
 
+	public function export()
+	{
+		$exported = [];
+		foreach ($this->fpdo->from('tags') as $arrayEntity)
+		{
+			$exported[$arrayEntity['id']] = [
+				'name' => $arrayEntity['name'],
+				'usages' => intval($arrayEntity['usages']),
+				'banned' => boolval($arrayEntity['banned'])
+			];
+		}
+
+		//upgrades on old databases
+		try
+		{
+			$relations = iterator_to_array($this->fpdo->from('tagRelations'));
+		}
+		catch (\Exception $e)
+		{
+			$relations = [];
+		}
+
+		foreach ($relations as $arrayEntity)
+		{
+			$key1 = $arrayEntity['tag1id'];
+			$key2 = $arrayEntity['tag2id'];
+			$type = intval($arrayEntity['type']);
+			if ($type === self::TAG_RELATION_IMPLICATION)
+				$target = 'implications';
+			elseif ($type === self::TAG_RELATION_SUGGESTION)
+				$target = 'suggestions';
+			else
+				continue;
+
+			if (!isset($exported[$key1]) or !isset($exported[$key2]))
+				continue;
+
+			if (!isset($exported[$key1][$target]))
+				$exported[$key1][$target] = [];
+
+			$exported[$key1][$target][] = $exported[$key2]['name'];
+		}
+
+		return array_values($exported);
+	}
+
 	protected function afterLoad(Entity $tag)
 	{
 		$tag->setLazyLoader(
@@ -88,6 +136,22 @@ class TagDao extends AbstractDao implements ICrudDao
 	{
 		$this->syncImpliedTags($tag);
 		$this->syncSuggestedTags($tag);
+	}
+
+	protected function decorateQueryFromRequirement($query, Requirement $requirement)
+	{
+		if ($requirement->getType() === TagFilter::REQUIREMENT_PARTIAL_TAG_NAME)
+		{
+			$sql = 'INSTR(LOWER(tags.name), LOWER(?)) > 0';
+
+			if ($requirement->isNegated())
+				$sql = 'NOT ' . $sql;
+
+			$query->where($sql, $requirement->getValue()->getValue());
+			return;
+		}
+
+		parent::decorateQueryFromRequirement($query, $requirement);
 	}
 
 	private function findImpliedTags(Tag $tag)
@@ -136,52 +200,6 @@ class TagDao extends AbstractDao implements ICrudDao
 					'type' => $type])
 				->execute();
 		}
-	}
-
-	public function export()
-	{
-		$exported = [];
-		foreach ($this->fpdo->from('tags') as $arrayEntity)
-		{
-			$exported[$arrayEntity['id']] = [
-				'name' => $arrayEntity['name'],
-				'usages' => intval($arrayEntity['usages']),
-				'banned' => boolval($arrayEntity['banned'])
-			];
-		}
-
-		//upgrades on old databases
-		try
-		{
-			$relations = iterator_to_array($this->fpdo->from('tagRelations'));
-		}
-		catch (\Exception $e)
-		{
-			$relations = [];
-		}
-
-		foreach ($relations as $arrayEntity)
-		{
-			$key1 = $arrayEntity['tag1id'];
-			$key2 = $arrayEntity['tag2id'];
-			$type = intval($arrayEntity['type']);
-			if ($type === self::TAG_RELATION_IMPLICATION)
-				$target = 'implications';
-			elseif ($type === self::TAG_RELATION_SUGGESTION)
-				$target = 'suggestions';
-			else
-				continue;
-
-			if (!isset($exported[$key1]) or !isset($exported[$key2]))
-				continue;
-
-			if (!isset($exported[$key1][$target]))
-				$exported[$key1][$target] = [];
-
-			$exported[$key1][$target][] = $exported[$key2]['name'];
-		}
-
-		return array_values($exported);
 	}
 
 	private function findRelatedTagsByType(Tag $tag, $type)

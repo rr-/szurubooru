@@ -11,11 +11,16 @@ App.Presenters.TagListPresenter = function(
 	topNavigationPresenter) {
 
 	var $el = jQuery('#content');
+	var $searchInput;
 	var templates = {};
 
-	function init(params, loaded) {
+	var params;
+
+	function init(_params, loaded) {
 		topNavigationPresenter.select('tags');
 		topNavigationPresenter.changeTitle('Tags');
+		params = _params;
+		params.query = params.query || {};
 
 		promise.wait(
 				util.promiseTemplate('tag-list'),
@@ -44,7 +49,8 @@ App.Presenters.TagListPresenter = function(
 			});
 	}
 
-	function reinit(params, loaded) {
+	function reinit(_params, loaded) {
+		params = _params;
 		params.query = params.query || {};
 		params.query.order = params.query.order || 'name,asc';
 		updateActiveOrder(params.query.order);
@@ -55,7 +61,12 @@ App.Presenters.TagListPresenter = function(
 			$el.find('table a').eq(0).focus();
 		});
 
+		keyboard.keyup('q', function() {
+			$searchInput.eq(0).focus().select();
+		});
+
 		loaded();
+		softRender();
 	}
 
 	function deinit() {
@@ -64,6 +75,33 @@ App.Presenters.TagListPresenter = function(
 
 	function render() {
 		$el.html(templates.list());
+		$searchInput = $el.find('input[name=query]');
+		$searchInput.keydown(searchInputKeyPressed);
+		$el.find('form').submit(searchFormSubmitted);
+		softRender();
+	}
+
+	function softRender() {
+		$searchInput.val(params.query.query);
+	}
+
+
+	function searchInputKeyPressed(e) {
+		if (e.which !== KEY_RETURN) {
+			return;
+		}
+		updateSearch();
+	}
+
+	function searchFormSubmitted(e) {
+		e.preventDefault();
+		updateSearch();
+	}
+
+	function updateSearch() {
+		$searchInput.blur();
+		params.query.query = $searchInput.val().trim();
+		pagerPresenter.setQuery(params.query);
 	}
 
 	function updateActiveOrder(activeOrder) {

@@ -8,6 +8,8 @@ class TagFilter extends BasicFilter implements IFilter
 	const ORDER_CREATION_TIME = 'creationTime';
 	const ORDER_USAGE_COUNT = 'usages';
 
+	const REQUIREMENT_PARTIAL_TAG_NAME = 'partialTagName';
+
 	public function __construct()
 	{
 		$this->setOrder([self::ORDER_ID => self::ORDER_DESC]);

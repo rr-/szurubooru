@@ -3,6 +3,8 @@ namespace Szurubooru\SearchServices\Parsers;
 use Szurubooru\NotSupportedException;
 use Szurubooru\SearchServices\Filters\IFilter;
 use Szurubooru\SearchServices\Filters\TagFilter;
+use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
 use Szurubooru\SearchServices\Tokens\NamedSearchToken;
 use Szurubooru\SearchServices\Tokens\SearchToken;
 
@@ -15,7 +17,11 @@ class TagSearchParser extends AbstractSearchParser
 
 	protected function decorateFilterFromToken(IFilter $filter, SearchToken $token)
 	{
-		throw new NotSupportedException();
+		$requirement = new Requirement();
+		$requirement->setType(TagFilter::REQUIREMENT_PARTIAL_TAG_NAME);
+		$requirement->setValue(new RequirementSingleValue($token->getValue()));
+		$requirement->setNegated($token->isNegated());
+		$filter->addRequirement($requirement);
 	}
 
 	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)

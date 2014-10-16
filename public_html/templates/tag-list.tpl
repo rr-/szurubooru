@@ -1,15 +1,22 @@
 <div id="tag-list">
-	<ul class="order">
-		<li>
-			<a class="big-button" href="#/tags/order=name,asc">Tags</a>
-		</li>
-		<li>
-			<a class="big-button" href="#/tags/order=creation_time,desc">Recent</a>
-		</li>
-		<li>
-			<a class="big-button" href="#/tags/order=usage_count,desc">Popular</a>
-		</li>
-	</ul>
+	<div class="search">
+		<form>
+			<input type="text" name="query" placeholder="Search tags..."/>
+			<button type="submit" name="search">Search</button>
+		</form>
+
+		<ul class="order">
+			<li>
+				<a class="big-button" href="#/tags/order=name,asc">Tags</a>
+			</li>
+			<li>
+				<a class="big-button" href="#/tags/order=creation_time,desc">Recent</a>
+			</li>
+			<li>
+				<a class="big-button" href="#/tags/order=usage_count,desc">Popular</a>
+			</li>
+		</ul>
+	</div>
 
 	<div class="pagination-target">
 		<table class="tags">
