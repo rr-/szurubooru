@@ -9,6 +9,9 @@
 	float: left;
 	white-space: nowrap;
 }
+#tag-list form input {
+	width: 10em;
+}
 #tag-list ul {
 	float: right;
 	list-style-type: none;
