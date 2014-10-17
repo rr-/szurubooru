@@ -10,6 +10,8 @@ App.Presenters.TagListPresenter = function(
 	pagerPresenter,
 	topNavigationPresenter) {
 
+	var KEY_RETURN = 13;
+
 	var $el = jQuery('#content');
 	var $searchInput;
 	var templates = {};
