@@ -55,16 +55,26 @@ function removeRecursively($dir)
 
 abstract class Task
 {
+	private $warnings = [];
+
 	public function execute()
 	{
 		echo $this->getDescription() . '...';
 		$this->run();
 		echo PHP_EOL;
+
+		foreach ($this->warnings as $message)
+			echo 'Warning: ' . $message . PHP_EOL;
 	}
 
 	protected function progress()
 	{
 		echo '.';
+	}
+
+	protected function warn($message)
+	{
+		$this->warnings[] = $message;
 	}
 
 	protected function withProgress($source, $callback, $chunkSize = 666, callable $callbackLoopRunner = null)
