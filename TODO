@@ -1,50 +1,44 @@
 This is transient file that lists functionalities to be implemented before
 first major release.
 
-everything related to posts:
-    - ability to paste many urls in post upload
+- autocomplete: don't reset active item if suggestions stay the same
+- autocomplete: don't show items that are already used in tag list (unsure)
+- posts/upload: fix scrolling due to focus when selecting multiple posts
+- posts/upload: when adding multiple files, select first one, not last one
+- posts/upload: better hotkeys for going to next post
+- posts/upload: get rid of suggested tags after selecting next post
+- posts/upload: ability to paste many urls (unsure)
+- posts/listing: add buttons for toggling safety
+- posts: fix empty edit snapshots when changing only thumbnail content
+- users: add user-configurable "about me" (should support Markdown)
+- tags: suggestions and implications should be changed to tag inputs
+- tags: refresh tags.json when editing post
+- tags: add tag merging
+- tags: add tag categories
+- tags: add tag descriptions
+- tags: add tag edit snapshots (backed-only)
+- misc: endless pager should include information about page number
+- misc: add README - apache2 has good README:
+  http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
+- misc: add spinner to forms such as registration, login, settings...
+- misc: add 404 pages
+- misc: improve throbber appearance
+- misc: try not to fade in images that are already in browser cache
 
-    - post notes
-        - "add note" in sidebar creates new note in the middle of image
-        - hovering notes shows note text
-        - dragging and resizing notes is always possible
-        - clicking note reveals modal popup with textarea to input text
-        - under textarea there are buttons for saving and/or deleting the note.
-        - post notes should have separate table and shouldn't be stored as json
-          column.
-        - post notes should be visible in post edit history.
-          (move post snapshot factory methods to PostService)
-
-everything related to users:
-    - fav tags / searches
-        - listing
-        - adding
-        - removing
-
-everything related to tags:
-    - tags.json refresh when editing post
-    - basic tags
-        - merging
-        - tag editing
-            - category (from config.ini)
-            - description
+- post notes
+    - "add note" in sidebar creates new note in the middle of image
+    - hovering notes shows note text
+    - dragging and resizing notes is always possible
+    - clicking note reveals modal popup with textarea to input text
+    - under textarea there are buttons for saving and/or deleting the note.
+    - post notes should have separate table and shouldn't be stored as json
+      column.
+    - post notes should be visible in post edit history.
+      (move post snapshot factory methods to PostService)
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
-    - change content spinner to nprogress:
-      http://ricostacruz.com/nprogress/
+    - change content spinner to nprogress: http://ricostacruz.com/nprogress/
+      (unsure)
     - reduce dependencies
-
-miscellaneous:
-    - endless pager should include information about page number
-    - add log engine and log everything that should be logged
-    - add README - apache2 has good README:
-      http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
-    - add spinner to forms such as registration, user query, login, settings
-      etc. make sure the code isn't too duplicated.
-    - add 404 pages
-    - add history
-
-some day:
-    - configure mails and ensure it works with gmail
