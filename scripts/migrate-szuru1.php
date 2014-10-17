@@ -411,6 +411,11 @@ class CopyCommentsTask extends SourcePdoTask
 		$commentDao = Injector::get(CommentDao::class);
 		$this->commitInChunks($this->sourcePdo->query('SELECT * FROM comment'), function($arr) use ($commentDao)
 		{
+			if (!$arr['post_id'])
+			{
+				$this->warn('Missing ID for comment #' . $arr['id']);
+				return;
+			}
 			$comment = new Comment();
 			$comment->setPostId($arr['post_id']);
 			$comment->setUserId($arr['commenter_id']);
