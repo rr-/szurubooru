@@ -64,7 +64,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 
 	public function findAll()
 	{
-		$query = $this->fpdo->from($this->tableName);
+		$query = $this->fpdo->from($this->tableName)->disableSmartJoin();
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);
 	}
@@ -151,7 +151,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 	{
 		if (is_array($value) and empty($value))
 			return [];
-		$query = $this->fpdo->from($this->tableName)->where($columnName, $value);
+		$query = $this->fpdo->from($this->tableName)->disableSmartJoin()->where($columnName, $value);
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);
 	}
@@ -170,7 +170,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		{
 			$this->beforeDelete($entity);
 		}
-		$this->fpdo->deleteFrom($this->tableName)->where($columnName, $value)->execute();
+		$this->fpdo->deleteFrom($this->tableName)->disableSmartJoin()->where($columnName, $value)->execute();
 	}
 
 	protected function afterLoad(Entity $entity)
