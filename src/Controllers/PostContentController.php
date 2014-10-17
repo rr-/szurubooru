@@ -6,7 +6,7 @@ use Szurubooru\Helpers\MimeHelper;
 use Szurubooru\Router;
 use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\PostService;
-use Szurubooru\Services\ThumbnailService;
+use Szurubooru\Services\PostThumbnailService;
 
 final class PostContentController extends AbstractController
 {
@@ -14,20 +14,20 @@ final class PostContentController extends AbstractController
 	private $fileDao;
 	private $postService;
 	private $networkingService;
-	private $thumbnailService;
+	private $postThumbnailService;
 
 	public function __construct(
 		Config $config,
 		PublicFileDao $fileDao,
 		PostService $postService,
 		NetworkingService $networkingService,
-		ThumbnailService $thumbnailService)
+		PostThumbnailService $postThumbnailService)
 	{
 		$this->config = $config;
 		$this->fileDao = $fileDao;
 		$this->postService = $postService;
 		$this->networkingService = $networkingService;
-		$this->thumbnailService = $thumbnailService;
+		$this->postThumbnailService = $postThumbnailService;
 	}
 
 	public function registerRoutes(Router $router)
@@ -52,12 +52,7 @@ final class PostContentController extends AbstractController
 	public function getPostThumbnail($postName, $size)
 	{
 		$post = $this->postService->getByName($postName);
-
-		$sourceName = $post->getThumbnailSourceContentPath();
-		if (!$this->fileDao->exists($sourceName))
-			$sourceName = $post->getContentPath();
-
-		$thumbnailName = $this->thumbnailService->generateIfNeeded($sourceName, $size, $size);
+		$thumbnailName = $this->postThumbnailService->generateIfNeeded($post, $size, $size);
 		$this->networkingService->serveFile($this->fileDao->getFullPath($thumbnailName));
 	}
 }
