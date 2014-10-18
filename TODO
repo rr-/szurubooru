@@ -3,7 +3,6 @@ first major release.
 
 - autocomplete: don't show items that are already used in tag list (unsure)
 - posts/upload: better hotkeys for going to next post
-- posts/upload: get rid of suggested tags after selecting next post
 - posts/upload: ability to paste many urls (unsure)
 - posts/listing: add buttons for toggling safety
 - posts: fix empty edit snapshots when changing only thumbnail content

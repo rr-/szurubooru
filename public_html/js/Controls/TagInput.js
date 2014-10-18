@@ -264,7 +264,7 @@ App.Controls.TagInput = function($underlyingInput) {
 	}
 
 	function showOrHideTagSiblings(tagName) {
-		if ($siblings.data('lastTag') === tagName) {
+		if ($siblings.data('lastTag') === tagName && $siblings.is(':visible')) {
 			$siblings.slideUp('fast');
 			$siblings.data('lastTag', null);
 			return;
@@ -335,12 +335,18 @@ App.Controls.TagInput = function($underlyingInput) {
 		$input.focus();
 	}
 
+	function hideSuggestions() {
+		$siblings.hide();
+		$suggestions.hide();
+	}
+
 	_.extend(options, {
 		setTags: setTags,
 		getTags: getTags,
 		removeTag: removeTag,
 		addTag: addTag,
 		focus: focus,
+		hideSuggestions: hideSuggestions,
 	});
 	return options;
 };

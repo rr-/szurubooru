@@ -346,6 +346,7 @@ App.Presenters.PostUploadPresenter = function(
 		if (selectedPosts.length === 0) {
 			hidePostEditForm();
 		} else {
+			tagInput.hideSuggestions();
 			showPostEditForm(selectedPosts);
 		}
 		$el.find('.post-table-op').prop('disabled', selectedPosts.length === 0);
