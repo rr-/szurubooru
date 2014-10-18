@@ -106,8 +106,7 @@ App.Presenters.TagPresenter = function(
 				render();
 				renderPosts(posts);
 			}).fail(function(response) {
-				console.log(response);
-				window.alert('An error occurred');
+				window.alert(response.json && response.json.error || 'An error occured.');
 			});
 	}
 
