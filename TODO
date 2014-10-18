@@ -12,8 +12,6 @@ first major release.
 - tags: add tag descriptions
 - tags: add tag edit snapshots (backed-only)
 - misc: endless pager should include information about page number
-- misc: add README - apache2 has good README:
-  http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
 - misc: add spinner to forms such as registration, login, settings...
 - misc: improve throbber appearance
 
