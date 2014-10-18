@@ -107,12 +107,18 @@ App.Presenters.PostUploadPresenter = function(
 			}
 		}
 		$input.val('');
-		addPostFromUrl(url);
+		var post = addPostFromUrl(url);
+		selectPostTableRow(post);
 	}
 
 	function fileHandlerChanged(files) {
-		for (var i = 0; i < files.length; i ++) {
-			addPostFromFile(files[i]);
+		if (files.length > 0) {
+			var posts = [];
+			for (var i = 0; i < files.length; i ++) {
+				var post = addPostFromFile(files[i]);
+				posts.push(post);
+			}
+			selectPostTableRow(_.first(posts));
 		}
 	}
 
@@ -251,6 +257,7 @@ App.Presenters.PostUploadPresenter = function(
 		});
 
 		postAdded(post);
+		return post;
 	}
 
 	function addPostFromUrl(url) {
@@ -266,6 +273,7 @@ App.Presenters.PostUploadPresenter = function(
 			post.thumbnail = url;
 			postThumbnailLoaded(post);
 		}
+		return post;
 	}
 
 	function createPostTableRow(post) {
@@ -286,7 +294,6 @@ App.Presenters.PostUploadPresenter = function(
 
 		postChanged(post);
 
-		selectPostTableRow(post);
 		showOrHidePostsTable();
 	}
 
