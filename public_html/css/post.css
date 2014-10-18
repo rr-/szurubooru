@@ -26,6 +26,7 @@
 }
 #post-current-search a:not(.enabled) {
 	color: silver;
+	cursor: text;
 }
 
 #post-view-wrapper #sidebar {
