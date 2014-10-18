@@ -53,6 +53,7 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function reinit(params, loaded) {
+		window.clearInterval(scrollInterval);
 		if (forceClear) {
 			clearContent();
 		}
