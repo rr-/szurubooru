@@ -17,7 +17,7 @@
 			<label class="form-label" for="tag-implications">Implications:</label>
 			<div class="form-input">
 				<% if (privileges.canChangeImplications) { %>
-					<input maxlength="200" type="text" name="implications" id="tag-implications" placeholder="tag1, tag2&hellip;" value="<%= _.pluck(tag.implications, 'name').join(' ') %>"/>
+					<input maxlength="200" type="text" name="implications" id="tag-implications" placeholder="some tag&hellip;" value="<%= _.pluck(tag.implications, 'name').join(' ') %>"/>
 					<p><small>Added automatically when tagging with <strong><%= tagName %></strong>.</small></p>
 				<% } else { %>
 					<%= _.pluck(tag.implications, 'name').join(' ') || '-' %></p>
@@ -29,7 +29,7 @@
 			<label class="form-label" for="tag-suggestions">Suggestions:</label>
 			<div class="form-input">
 				<% if (privileges.canChangeSuggestions) { %>
-					<input maxlength="200" type="text" name="suggestions" id="tag-suggestions" placeholder="tag1, tag2&hellip;" value="<%= _.pluck(tag.suggestions, 'name').join(' ') %>"/>
+					<input maxlength="200" type="text" name="suggestions" id="tag-suggestions" placeholder="some tag&hellip;" value="<%= _.pluck(tag.suggestions, 'name').join(' ') %>"/>
 					<p><small>Suggested when tagging with <strong><%= tagName %></strong>.</small></p>
 				<% } else { %>
 					<%= _.pluck(tag.suggestions, 'name').join(' ') || '-' %>

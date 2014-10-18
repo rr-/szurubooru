@@ -10,7 +10,6 @@ first major release.
 - posts/listing: add buttons for toggling safety
 - posts: fix empty edit snapshots when changing only thumbnail content
 - users: add user-configurable "about me" (should support Markdown)
-- tags: suggestions and implications should be changed to tag inputs
 - tags: refresh tags.json when editing post
 - tags: add tag merging
 - tags: add tag categories

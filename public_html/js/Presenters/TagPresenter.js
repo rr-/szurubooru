@@ -16,6 +16,8 @@ App.Presenters.TagPresenter = function(
 	var $el = jQuery('#content');
 	var $messages = $el;
 	var templates = {};
+	var implicationsTagInput;
+	var suggestionsTagInput;
 
 	var tag;
 	var tagName;
@@ -73,6 +75,8 @@ App.Presenters.TagPresenter = function(
 		$el.html(templates.tag({privileges: privileges, tag: tag, tagName: tagName}));
 		$el.find('.post-list').hide();
 		$el.find('form').submit(editFormSubmitted);
+		implicationsTagInput = App.Controls.TagInput($el.find('[name=implications]'));
+		suggestionsTagInput = App.Controls.TagInput($el.find('[name=suggestions]'));
 	}
 
 	function editFormSubmitted(e) {
@@ -89,11 +93,11 @@ App.Presenters.TagPresenter = function(
 		}
 
 		if (privileges.canChangeImplications) {
-			formData.implications = $form.find('[name=implications]').val();
+			formData.implications = implicationsTagInput.getTags().join(' ');
 		}
 
 		if (privileges.canChangeSuggestions) {
-			formData.suggestions = $form.find('[name=suggestions]').val();
+			formData.suggestions = suggestionsTagInput.getTags().join(' ');
 		}
 
 		promise.wait(api.put('/tags/' + tag.name, formData))
