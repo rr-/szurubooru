@@ -54,8 +54,9 @@ App.Presenters.PostUploadPresenter = function(
 		$el.find('.url-handler button').click(urlHandlerButtonClicked);
 		$el.find('thead th.checkbox').click(postTableSelectAllCheckboxClicked);
 
-		keyboard.keyup('a', selectPrevPostTableRow);
-		keyboard.keyup('d', selectNextPostTableRow);
+		keyboard.keydown('ctrl+up', selectPrevPostTableRow);
+		keyboard.keydown('ctrl+down', selectNextPostTableRow);
+		keyboard.keyup('q', tagInput.focus);
 
 		$el.find('.remove').click(removeButtonClicked);
 		$el.find('.move-up').click(moveUpButtonClicked);
