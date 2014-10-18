@@ -13,11 +13,11 @@ scraping or scrubbing. It is pronounced *"shoorubooru"* [ˌʃuruˈburu].
 
 ## Licensing
 
-Please see the file named `LICENSE`.
+Please see the file named [`LICENSE`](https://github.com/rr-/szurubooru/blob/master/LICENSE).
 
 ## Installation
 
-Please see the file named `INSTALL.md`.
+Please see the file named [`INSTALL.md`](https://github.com/rr-/szurubooru/blob/master/INSTALL.md).
 
 ## Bugs and feature requests
 
@@ -40,14 +40,14 @@ Here are some guidelines on how to contribute:
  - Respect coding standards - be consistent with existing code base.
  - Watch your whitespace - don't leave any characters at the end of the lines.
  - Always run tests before pushing.
- - Before starting, see `INSTALL.md`.
- - Use `grunt` to do automatic tasks like minifying `JS` files or running
+ - Before starting, see [`INSTALL.md`](https://github.com/rr-/szurubooru/blob/master/INSTALL.md).
+ - Use `grunt` to do automatic tasks like minifying Javascript files or running
    tests. Run `grunt --help` to see full list of available tasks.
 
 ## API
 
 Szurubooru from version 0.9+ uses REST API. Currently there is no formal
-documentation; source code behind REST layer lies in `src/controllers/`
+documentation; source code behind REST layer lies in `src/Controllers/`
 directory. In order to use the API, bear in mind that you need to:
 
  1. Have actual user account on the server to do most things (depending on
