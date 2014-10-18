@@ -3,6 +3,11 @@ var App = App || {};
 App.API = function(_, jQuery, promise, appState) {
 
 	var baseUrl = '/api/';
+	var AJAX_UNSENT = 0;
+	var AJAX_OPENED = 1;
+	var AJAX_HEADERS_RECEIVED = 2;
+	var AJAX_LOADING = 3;
+	var AJAX_DONE = 4;
 
 	function get(url, data) {
 		return request('GET', url, data);
@@ -24,8 +29,9 @@ App.API = function(_, jQuery, promise, appState) {
 		var fullUrl = baseUrl + '/' + url;
 		fullUrl = fullUrl.replace(/\/{2,}/, '/');
 
-		return promise.make(function(resolve, reject) {
-			jQuery.ajax({
+		var xhr = null;
+		var apiPromise = promise.make(function(resolve, reject) {
+			xhr = jQuery.ajax({
 				headers: {
 					'X-Authorization-Token': appState.get('loginToken') || '',
 				},
@@ -46,6 +52,8 @@ App.API = function(_, jQuery, promise, appState) {
 				data: data,
 			});
 		});
+		apiPromise.xhr = xhr;
+		return apiPromise;
 	}
 
 	function stripMeta(data) {
@@ -62,7 +70,13 @@ App.API = function(_, jQuery, promise, appState) {
 		get: get,
 		post: post,
 		put: put,
-		delete: _delete
+		delete: _delete,
+
+		AJAX_UNSENT: AJAX_UNSENT,
+		AJAX_OPENED: AJAX_OPENED,
+		AJAX_HEADERS_RECEIVED: AJAX_HEADERS_RECEIVED,
+		AJAX_LOADING: AJAX_LOADING,
+		AJAX_DONE: AJAX_DONE,
 	};
 
 };

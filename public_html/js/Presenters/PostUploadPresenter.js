@@ -23,6 +23,7 @@ App.Presenters.PostUploadPresenter = function(
 	var fileDropper;
 	var interactionEnabled = true;
 	var currentUploadId = null;
+	var currentUploadXhr = null;
 
 	function init(params, loaded) {
 		topNavigationPresenter.select('upload');
@@ -533,6 +534,9 @@ App.Presenters.PostUploadPresenter = function(
 	function stopUpload() {
 		currentUploadId = null;
 		showUploadError('Upload stopped.');
+		if (currentUploadXhr && currentUploadXhr.readystate !== api.AJAX_DONE) {
+			currentUploadXhr.abort();
+		}
 	}
 
 	function uploadNextPost() {
@@ -566,7 +570,10 @@ App.Presenters.PostUploadPresenter = function(
 			return;
 		}
 
-		promise.wait(api.post('/posts', formData))
+		var apiPromise = api.post('/posts', formData);
+		currentUploadXhr = apiPromise.xhr;
+
+		promise.wait(apiPromise)
 			.then(function(response) {
 				$row.slideUp(function(response) {
 					if (priorUploadId === currentUploadId) {
