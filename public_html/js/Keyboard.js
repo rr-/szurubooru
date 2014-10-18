@@ -4,20 +4,12 @@ App.Keyboard = function(mousetrap) {
 
 	function keyup(key, callback) {
 		unbind(key);
-		mousetrap.bind(key, simpleKeyPressed(callback), 'keyup');
+		mousetrap.bind(key, callback, 'keyup');
 	}
 
 	function keydown(key, callback) {
 		unbind(key);
-		mousetrap.bind(key, simpleKeyPressed(callback));
-	}
-
-	function simpleKeyPressed(callback) {
-		return function(e) {
-			if (!e.altKey && !e.ctrlKey) {
-				callback();
-			}
-		};
+		mousetrap.bind(key, callback);
 	}
 
 	function reset() {

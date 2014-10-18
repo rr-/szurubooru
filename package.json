@@ -5,7 +5,7 @@
 		"jquery.cookie": "1.4.1",
 		"jquery": "~2.1.1",
 		"underscore": "1.7.0",
-		"mousetrap": "0.0.1",
+		"mousetrap": "git://github.com/ccampbell/mousetrap.git",
 		"marked": "~0.3.2",
 
 		"requirejs": "*",
