@@ -178,11 +178,13 @@ class TagService
 
 	private function updateImplications(Tag $tag, array $relatedNames)
 	{
+		$relatedNames = array_udiff($relatedNames, [$tag->getName()], 'strnatcasecmp');
 		$tag->setImpliedTags($this->createTags($relatedNames));
 	}
 
 	private function updateSuggestions(Tag $tag, array $relatedNames)
 	{
+		$relatedNames = array_udiff($relatedNames, [$tag->getName()], 'strnatcasecmp');
 		$tag->setSuggestedTags($this->createTags($relatedNames));
 	}
 }
