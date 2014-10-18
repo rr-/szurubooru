@@ -341,7 +341,6 @@ App.Presenters.PostUploadPresenter = function(
 			hidePostEditForm();
 		} else {
 			showPostEditForm(selectedPosts);
-			tagInput.focus();
 		}
 		$el.find('.post-table-op').prop('disabled', selectedPosts.length === 0);
 	}
