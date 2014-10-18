@@ -166,6 +166,7 @@ App.Controls.AutoCompleteInput = function($input) {
 	}
 
 	function updateResults(textToFind) {
+		var oldResults = results.slice();
 		var source = getSource();
 		var filter = getResultsFilter(textToFind);
 		results = _.filter(source, filter);
@@ -173,7 +174,9 @@ App.Controls.AutoCompleteInput = function($input) {
 			results = options.additionalFilter(results);
 		}
 		results = results.slice(0, options.maxResults);
-		activeResult = -1;
+		if (!_.isEqual(oldResults, results)) {
+			activeResult = -1;
+		}
 	}
 
 	function applyAutocomplete() {

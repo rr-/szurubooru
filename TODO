@@ -1,7 +1,6 @@
 This is transient file that lists functionalities to be implemented before
 first major release.
 
-- autocomplete: don't reset active item if suggestions stay the same
 - autocomplete: don't show items that are already used in tag list (unsure)
 - posts/upload: when adding multiple files, select first one, not last one
 - posts/upload: better hotkeys for going to next post
