@@ -6,13 +6,12 @@ App.Presenters.PagerPresenter = function(
 	jQuery,
 	util,
 	promise,
-	api,
 	keyboard,
 	router,
 	pager,
-	presenterManager,
 	messagePresenter,
-	browsingSettings) {
+	browsingSettings,
+	nprogress) {
 
 	var $target;
 	var $pageList;
@@ -85,25 +84,9 @@ App.Presenters.PagerPresenter = function(
 		router.navigateInplace(getUrl());
 	}
 
-	function showSpinner() {
-		if (endlessScroll) {
-			$target.find('.spinner').show();
-		} else {
-			presenterManager.showContentSpinner();
-		}
-	}
-
-	function hideSpinner() {
-		if (endlessScroll) {
-			$target.find('.spinner').hide();
-		} else {
-			presenterManager.hideContentSpinner();
-		}
-	}
-
 	function retrieve() {
 		messagePresenter.hideMessages($messages);
-		showSpinner();
+		nprogress.start();
 
 		return promise.make(function(resolve, reject) {
 			promise.wait(pager.retrieve())
@@ -125,12 +108,12 @@ App.Presenters.PagerPresenter = function(
 						attachNextPageLoader();
 					}
 					refreshPageList();
-					hideSpinner();
+					nprogress.done();
 					resolve();
 				}).fail(function(response) {
 					clearContent();
 					hidePageList();
-					hideSpinner();
+					nprogress.done();
 					messagePresenter.showError($messages, response.json && response.json.error || response);
 
 					reject();
@@ -239,4 +222,4 @@ App.Presenters.PagerPresenter = function(
 
 };
 
-App.DI.register('pagerPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'keyboard', 'router', 'pager', 'presenterManager', 'messagePresenter', 'browsingSettings'], App.Presenters.PagerPresenter);
+App.DI.register('pagerPresenter', ['_', 'jQuery', 'util', 'promise', 'keyboard', 'router', 'pager', 'messagePresenter', 'browsingSettings', 'nprogress'], App.Presenters.PagerPresenter);

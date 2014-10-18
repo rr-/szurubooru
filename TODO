@@ -13,7 +13,6 @@ first major release.
 - tags: add tag edit snapshots (backed-only)
 - misc: endless pager should include information about page number
 - misc: add spinner to forms such as registration, login, settings...
-- misc: improve throbber appearance
 
 - post notes
     - "add note" in sidebar creates new note in the middle of image
@@ -29,6 +28,4 @@ first major release.
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
-    - change content spinner to nprogress: http://ricostacruz.com/nprogress/
-      (unsure)
     - reduce dependencies

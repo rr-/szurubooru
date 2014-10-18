@@ -1,13 +1,10 @@
 var App = App || {};
 
-App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboard) {
+App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboard, nprogress) {
 
 	var lastContentPresenter = null;
-	var $spinner;
-	var spinnerTimeout;
 
 	function init() {
-		$spinner = jQuery('body').find('#wait');
 		return promise.make(function(resolve, reject) {
 			initPresenter(topNavigationPresenter, [], resolve);
 		});
@@ -17,22 +14,8 @@ App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboar
 		presenter.init.call(presenter, args, loaded);
 	}
 
-	function showContentSpinner() {
-		if (spinnerTimeout !== null) {
-			spinnerTimeout = window.setTimeout(function() {
-				$spinner.show();
-			}, 150);
-		}
-	}
-
-	function hideContentSpinner() {
-		window.clearTimeout(spinnerTimeout);
-		spinnerTimeout = null;
-		$spinner.hide();
-	}
-
 	function switchContentPresenter(presenter, args) {
-		showContentSpinner();
+		nprogress.start();
 
 		if (lastContentPresenter === null || lastContentPresenter.name !== presenter.name) {
 			if (lastContentPresenter !== null && lastContentPresenter.deinit) {
@@ -41,10 +24,10 @@ App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboar
 			keyboard.reset();
 			topNavigationPresenter.changeTitle(null);
 			topNavigationPresenter.focus();
-			presenter.init.call(presenter, args, hideContentSpinner);
+			presenter.init.call(presenter, args, nprogress.done);
 			lastContentPresenter = presenter;
 		} else if (lastContentPresenter.reinit) {
-			lastContentPresenter.reinit.call(lastContentPresenter, args, hideContentSpinner);
+			lastContentPresenter.reinit.call(lastContentPresenter, args, nprogress.done);
 		}
 	}
 
@@ -67,10 +50,8 @@ App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboar
 		initPresenter: initPresenter,
 		initPresenters: initPresenters,
 		switchContentPresenter: switchContentPresenter,
-		showContentSpinner: showContentSpinner,
-		hideContentSpinner: hideContentSpinner,
 	};
 
 };
 
-App.DI.registerSingleton('presenterManager', ['jQuery', 'promise', 'topNavigationPresenter', 'keyboard'], App.PresenterManager);
+App.DI.registerSingleton('presenterManager', ['jQuery', 'promise', 'topNavigationPresenter', 'keyboard', 'nprogress'], App.PresenterManager);

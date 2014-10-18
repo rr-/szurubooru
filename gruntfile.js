@@ -83,6 +83,8 @@ module.exports = function(grunt) {
 					{ src: 'node_modules/pathjs/path.js', dest: 'public_html/lib/path.js' },
 					{ src: 'node_modules/underscore/underscore-min.js', dest: 'public_html/lib/underscore.min.js' },
 					{ src: 'node_modules/marked/lib/marked.js', dest: 'public_html/lib/marked.js' },
+					{ src: 'node_modules/nprogress/nprogress.js', dest: 'public_html/lib/nprogress.js' },
+					{ src: 'node_modules/nprogress/nprogress.css', dest: 'public_html/lib/nprogress.css' },
 				]
 			}
 		},

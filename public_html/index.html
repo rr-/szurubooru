@@ -20,6 +20,8 @@
 	<script type="text/javascript" src="/lib/underscore.min.js"></script>
 	<script type="text/javascript" src="/lib/mousetrap.min.js"></script>
 	<script type="text/javascript" src="/lib/marked.js"></script>
+	<script type="text/javascript" src="/lib/nprogress.js"></script>
+	<link rel="stylesheet" type="text/css" href="/lib/nprogress.css"/>
 
 	<!-- build:template
 		<link rel="stylesheet" type="text/css" href="app.min.css?<%= timestamp %>"/>
@@ -61,15 +63,6 @@
 	<div id="main">
 		<div id="top-navigation"></div>
 		<div id="middle">
-			<div id="wait">
-				<div id="wait-cover">
-					<div class="spinner">
-						<i class="fa fa-spin fa-circle-o-notch"></i>
-						<p>Loading&hellip;</p>
-					</div>
-				</div>
-			</div>
-
 			<div id="content"></div>
 		</div>
 	</div>
