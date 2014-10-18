@@ -25,10 +25,12 @@ App.Util = function(_, jQuery, marked, promise) {
 	}
 
 	function loadImagesNicely($img) {
-		$img.css('opacity', '0');
-		$img.bind('load', function() {
-			$img.animate({opacity: 1}, 'fast');
-		});
+		if (!$img.get(0).complete) {
+			$img.css('opacity', '0');
+			$img.bind('load', function() {
+				$img.animate({opacity: 1}, 'fast');
+			});
+		}
 	}
 
 	function promiseTemplate(templateName) {

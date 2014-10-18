@@ -16,7 +16,6 @@ first major release.
   http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
 - misc: add spinner to forms such as registration, login, settings...
 - misc: improve throbber appearance
-- misc: try not to fade in images that are already in browser cache
 
 - post notes
     - "add note" in sidebar creates new note in the middle of image
