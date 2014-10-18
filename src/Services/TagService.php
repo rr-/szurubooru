@@ -173,6 +173,9 @@ class TagService
 
 	private function updateTagName(Tag $tag, $newName)
 	{
+		$otherTag = $this->tagDao->findByName($newName);
+		if ($otherTag and $otherTag->getId() !== $tag->getId())
+			throw new \DomainException('Tag with this name already exists.');
 		$tag->setName($newName);
 	}
 
