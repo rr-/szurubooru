@@ -3,10 +3,12 @@ var App = App || {};
 App.Keyboard = function(mousetrap) {
 
 	function keyup(key, callback) {
+		unbind(key);
 		mousetrap.bind(key, simpleKeyPressed(callback), 'keyup');
 	}
 
 	function keydown(key, callback) {
+		unbind(key);
 		mousetrap.bind(key, simpleKeyPressed(callback));
 	}
 
@@ -23,6 +25,7 @@ App.Keyboard = function(mousetrap) {
 	}
 
 	function unbind(key) {
+		mousetrap.unbind(key, 'keyup');
 		mousetrap.unbind(key);
 	}
 
