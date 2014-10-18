@@ -1,5 +1,7 @@
+![szurubooru](https://raw.githubusercontent.com/rr-/szurubooru/master/public_html/img/shrine.png)
+
 szurubooru
-========
+==========
 
 ## What is it?
 
