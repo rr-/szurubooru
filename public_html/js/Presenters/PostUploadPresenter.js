@@ -22,7 +22,7 @@ App.Presenters.PostUploadPresenter = function(
 	var tagInput;
 	var fileDropper;
 	var interactionEnabled = true;
-	var stopNextUpload = false;
+	var currentUploadId = null;
 
 	function init(params, loaded) {
 		topNavigationPresenter.select('upload');
@@ -235,9 +235,7 @@ App.Presenters.PostUploadPresenter = function(
 
 	function stopButtonClicked(e) {
 		e.preventDefault();
-		if (!uploadStopped()) {
-			stopUpload();
-		}
+		stopUpload();
 	}
 
 	function addPostFromFile(file) {
@@ -528,24 +526,18 @@ App.Presenters.PostUploadPresenter = function(
 		$el.find('.upload').hide();
 		$el.find('.stop').show();
 		interactionEnabled = false;
+		currentUploadId = Math.random();
 		uploadNextPost();
 	}
 
-	function uploadStopped() {
-		return stopNextUpload;
-	}
-
 	function stopUpload() {
-		stopNextUpload = true;
+		currentUploadId = null;
+		showUploadError('Upload stopped.');
 	}
 
 	function uploadNextPost() {
+		var priorUploadId = currentUploadId;
 		messagePresenter.hideMessages($messages);
-
-		if (uploadStopped()) {
-			showUploadError('Upload stopped.');
-			return;
-		}
 
 		var posts = getAllPosts();
 		if (posts.length === 0) {
@@ -577,13 +569,17 @@ App.Presenters.PostUploadPresenter = function(
 		promise.wait(api.post('/posts', formData))
 			.then(function(response) {
 				$row.slideUp(function(response) {
-					$row.remove();
-					posts.shift();
-					setAllPosts(posts);
-					uploadNextPost();
+					if (priorUploadId === currentUploadId) {
+						$row.remove();
+						posts.shift();
+						setAllPosts(posts);
+						uploadNextPost();
+					}
 				});
 			}).fail(function(response) {
-				showUploadError(response.json && response.json.error || response);
+				if (priorUploadId === currentUploadId) {
+					showUploadError(response.json && response.json.error || response);
+				}
 			});
 	}
 
@@ -598,7 +594,6 @@ App.Presenters.PostUploadPresenter = function(
 		messagePresenter.hideMessages($messages);
 		messagePresenter.showError($messages, message);
 		interactionEnabled = true;
-		stopNextUpload = false;
 	}
 
 	return {
