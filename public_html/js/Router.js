@@ -11,6 +11,7 @@ App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
 	function injectRoutes() {
 		inject('', 'homePresenter');
 		inject('#/', 'homePresenter');
+		inject('#/404', 'httpErrorPresenter', {error: 404});
 		inject('#/home', 'homePresenter');
 		inject('#/login', 'loginPresenter');
 		inject('#/logout', 'logoutPresenter');
@@ -28,20 +29,29 @@ App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
 		inject('#/help(/:tab)', 'helpPresenter');
 	}
 
-	function navigate(url) {
-		window.location.href = url;
+	function navigate(url, useBrowserDispatcher) {
+		if (('pushState' in history) && !useBrowserDispatcher) {
+			history.pushState('', '', url);
+			dispatch();
+		} else {
+			window.location.href = url;
+		}
 	}
 
 	function navigateToMainPage() {
 		navigate(root);
 	}
 
-	function navigateInplace(url) {
+	function navigateInplace(url, useBrowserDispatcher) {
 		if ('replaceState' in history) {
 			history.replaceState('', '', url);
-			dispatch();
+			if (!useBrowserDispatcher) {
+				dispatch();
+			} else {
+				location.reload();
+			}
 		} else {
-			navigate(url);
+			navigate(url, useBrowserDispatcher);
 		}
 	}
 
@@ -90,8 +100,7 @@ App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
 				return true;
 			}
 		}
-		//todo: 404
-		console.log(new Error('Unhandled route: ' + url));
+		navigateInplace('#/404', true);
 		return false;
 	}
 

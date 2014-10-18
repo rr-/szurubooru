@@ -1,7 +1,11 @@
 DirectoryIndex app.min.html
 DirectoryIndex index.html
 
+ErrorDocument 404 /404.html
+
 RewriteEngine On
+
+RewriteRule  ^/?404.html$ /#/404 [NE,R,L]
 
 #RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^/?data/posts/([^/]+)/? /api/posts/$1/content [L]

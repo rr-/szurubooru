@@ -20,7 +20,6 @@ first major release.
 - misc: add README - apache2 has good README:
   http://svn.apache.org/repos/asf/httpd/httpd/trunk/README
 - misc: add spinner to forms such as registration, login, settings...
-- misc: add 404 pages
 - misc: improve throbber appearance
 - misc: try not to fade in images that are already in browser cache
 
