@@ -137,31 +137,32 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 
-	grunt.registerTask('phpcheckstyle', function() {
+	grunt.registerTask('phpcheckstyle', 'Validate files with PHPCheckstyle.', function() {
 		exec('php vendor/jbrooksuk/phpcheckstyle/run.php --config ' + phpCheckStyleConfigPath + ' --src ' + phpSourcesDir + ' --exclude di.php --format console');
 	});
 
-	grunt.registerTask('tests', function() {
+	grunt.registerTask('tests', 'Run all tests.', function() {
 		exec('php vendor/phpunit/phpunit/phpunit -v --strict --bootstrap src/Bootstrap.php tests/');
 	});
 
-	grunt.registerTask('update', ['upgrade']);
-	grunt.registerTask('update', function() {
+	grunt.registerTask('update', 'Upgrade database to newest version.', function() {
 		exec('php scripts/upgrade.php');
 	});
+	grunt.registerTask('upgrade', ['update']);
 
-	grunt.registerTask('optimizeComposer', function() {
+	grunt.registerTask('optimizeComposer', 'Optimize Composer autoloader.', function() {
 		exec('composer dumpautoload -o');
 	});
 
-	grunt.registerTask('clean', function() {
+	grunt.registerTask('build', ['clean', 'optimizeComposer', 'copy:dist', 'uglify', 'cssmin', 'processhtml']);
+
+	grunt.registerTask('clean', 'Clean files produced with build task.', function() {
 		fs.unlink('public_html/app.min.html');
 		fs.unlink('public_html/app.min.js');
 		fs.unlink('public_html/app.min.js.map');
 		fs.unlink('public_html/app.min.css');
 	});
 
-	grunt.registerTask('build', ['clean', 'optimizeComposer', 'copy:dist', 'uglify', 'cssmin', 'processhtml']);
 	grunt.registerTask('checkstyle', ['jshint', 'phpcheckstyle']);
 	grunt.registerTask('default', ['copy:dist', 'checkstyle', 'tests']);
 
