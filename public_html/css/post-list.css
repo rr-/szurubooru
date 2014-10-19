@@ -3,8 +3,18 @@
 }
 
 .post-list .search {
-	margin-bottom: 1em;
+	margin: 0 auto 1em auto;
 	text-align: left;
+}
+@media all and (min-width: 57em) {
+	.post-list .search {
+		min-width: 50em;
+	}
+}
+@media all and (max-width: 57em) {
+	.post-list .search {
+		min-width: 100%;
+	}
 }
 .post-list .search:after {
 	display: block;
@@ -12,7 +22,7 @@
 	clear: both;
 }
 .post-list .search input {
-	width: 20em;
+	max-width: 20em;
 }
 .post-list .search button {
 	margin-left: 0.25em;

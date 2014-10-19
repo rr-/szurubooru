@@ -158,8 +158,7 @@ App.Presenters.PostListPresenter = function(
 		if ($firstPost.length === 0) {
 			return;
 		}
-		$el.find('.search').css('margin-left', $firstPost.offset().left - $list.offset().left);
-		$el.find('.search').css('margin-right', $list.width() - ($lastPost.offset().left - $list.offset().left + $lastPost.width()));
+		$el.find('.search').width($lastPost.offset().left + $lastPost.width() - $firstPost.offset().left);
 	}
 
 	function postTagButtonClicked(e) {
