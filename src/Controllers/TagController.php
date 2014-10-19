@@ -81,6 +81,9 @@ final class TagController extends AbstractController
 		if ($formData->name !== null)
 			$this->privilegeService->assertPrivilege(Privilege::CHANGE_TAG_NAME);
 
+		if ($formData->category !== null)
+			$this->privilegeService->assertPrivilege(Privilege::CHANGE_TAG_CATEGORY);
+
 		if ($formData->banned !== null)
 			$this->privilegeService->assertPrivilege(Privilege::BAN_TAGS);
 

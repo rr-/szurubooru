@@ -1,7 +1,6 @@
 <?php
 namespace Szurubooru\Upgrades;
 use Szurubooru\DatabaseConnection;
-use Szurubooru\Services\TagService;
 
 class Upgrade24 implements IUpgrade
 {

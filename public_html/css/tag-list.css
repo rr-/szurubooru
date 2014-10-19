@@ -66,3 +66,20 @@
 		display: none;
 	}
 }
+
+.tag-category-character,
+.tag-category-character a {
+	color: #0a0;
+}
+.tag-category-copyright,
+.tag-category-copyright a {
+	color: #a0a;
+}
+.tag-category-artist,
+.tag-category-artist a {
+	color: #a00;
+}
+.tag-category-meta,
+.tag-category-meta a {
+	color: #aaa;
+}

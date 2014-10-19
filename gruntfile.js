@@ -123,6 +123,7 @@ module.exports = function(grunt) {
 					serviceName: config.basic.serviceName,
 					templates: readTemplates(grunt),
 					timestamp: grunt.template.today('isoDateTime'),
+					tagCategories: config.tags.categories,
 				}
 			},
 			dist: {

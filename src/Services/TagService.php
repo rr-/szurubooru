@@ -143,6 +143,9 @@ class TagService
 			if ($formData->name !== null)
 				$this->updateTagName($tag, $formData->name);
 
+			if ($formData->category !== null)
+				$this->updateTagCategory($tag, $formData->category);
+
 			if ($formData->banned !== $tag->isBanned())
 				$tag->setBanned(boolval($formData->banned));
 
@@ -177,6 +180,14 @@ class TagService
 		if ($otherTag and $otherTag->getId() !== $tag->getId())
 			throw new \DomainException('Tag with this name already exists.');
 		$tag->setName($newName);
+	}
+
+	private function updateTagCategory(Tag $tag, $newCategory)
+	{
+		if ($newCategory === 'default')
+			$tag->setCategory($newCategory);
+		else
+			$tag->setCategory($newCategory);
 	}
 
 	private function updateImplications(Tag $tag, array $relatedNames)

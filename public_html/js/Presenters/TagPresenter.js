@@ -30,6 +30,7 @@ App.Presenters.TagPresenter = function(
 		topNavigationPresenter.changeTitle('Tags');
 
 		privileges.canChangeName = auth.hasPrivilege(auth.privileges.changeTagName);
+		privileges.canChangeCategory = auth.hasPrivilege(auth.privileges.changeTagCategory);
 		privileges.canChangeImplications = auth.hasPrivilege(auth.privileges.changeTagImplications);
 		privileges.canChangeSuggestions = auth.hasPrivilege(auth.privileges.changeTagSuggestions);
 		privileges.canBan = auth.hasPrivilege(auth.privileges.banTags);
@@ -72,7 +73,12 @@ App.Presenters.TagPresenter = function(
 	}
 
 	function render() {
-		$el.html(templates.tag({privileges: privileges, tag: tag, tagName: tagName}));
+		$el.html(templates.tag({
+			privileges: privileges,
+			tag: tag,
+			tagName: tagName,
+			tagCategories: JSON.parse(jQuery('head').attr('data-tag-categories')),
+		}));
 		$el.find('.post-list').hide();
 		$el.find('form').submit(editFormSubmitted);
 		implicationsTagInput = App.Controls.TagInput($el.find('[name=implications]'));
@@ -86,6 +92,10 @@ App.Presenters.TagPresenter = function(
 
 		if (privileges.canChangeName) {
 			formData.name = $form.find('[name=name]').val();
+		}
+
+		if (privileges.canChangeCategory) {
+			formData.category = $form.find('[name=category]:checked').val();
 		}
 
 		if (privileges.canBan) {

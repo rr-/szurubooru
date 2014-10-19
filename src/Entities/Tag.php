@@ -6,6 +6,7 @@ final class Tag extends Entity
 	private $name;
 	private $creationTime;
 	private $banned = false;
+	private $category;
 
 	const LAZY_LOADER_IMPLIED_TAGS = 'implications';
 	const LAZY_LOADER_SUGGESTED_TAGS = 'suggestions';
@@ -27,6 +28,11 @@ final class Tag extends Entity
 		return $this->creationTime;
 	}
 
+	public function setCreationTime($creationTime)
+	{
+		$this->creationTime = $creationTime;
+	}
+
 	public function isBanned()
 	{
 		return $this->banned;
@@ -37,9 +43,14 @@ final class Tag extends Entity
 		$this->banned = boolval($banned);
 	}
 
-	public function setCreationTime($creationTime)
+	public function getCategory()
 	{
-		$this->creationTime = $creationTime;
+		return $this->category;
+	}
+
+	public function setCategory($category)
+	{
+		$this->category = $category;
 	}
 
 	public function getUsages()

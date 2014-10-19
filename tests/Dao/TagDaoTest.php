@@ -13,8 +13,7 @@ final class TagDaoTest extends AbstractDatabaseTestCase
 
 	public function testSaving()
 	{
-		$tag = new Tag();
-		$tag->setName('test1');
+		$tag = $this->getTestTag('test');
 		$tag->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
 		$this->assertFalse($tag->isBanned());
 		$tag->setBanned(true);
@@ -27,27 +26,17 @@ final class TagDaoTest extends AbstractDatabaseTestCase
 
 	public function testSavingRelations()
 	{
-		$tag1 = new Tag();
-		$tag1->setName('test 1');
-		$tag1->setCreationTime(date('c'));
-		$tag2 = new Tag();
-		$tag2->setName('test 2');
-		$tag2->setCreationTime(date('c'));
-		$tag3 = new Tag();
-		$tag3->setName('test 3');
-		$tag3->setCreationTime(date('c'));
-		$tag4 = new Tag();
-		$tag4->setName('test 4');
-		$tag4->setCreationTime(date('c'));
+		$tag1 = $this->getTestTag('test 1');
+		$tag2 = $this->getTestTag('test 2');
+		$tag3 = $this->getTestTag('test 3');
+		$tag4 = $this->getTestTag('test 4');
 		$tagDao = $this->getTagDao();
 		$tagDao->save($tag1);
 		$tagDao->save($tag2);
 		$tagDao->save($tag3);
 		$tagDao->save($tag4);
 
-		$tag = new Tag();
-		$tag->setName('test1');
-		$tag->setCreationTime(date('c'));
+		$tag = $this->getTestTag('test');
 		$tag->setImpliedTags([$tag1, $tag3]);
 		$tag->setSuggestedTags([$tag2, $tag4]);
 
@@ -118,5 +107,14 @@ final class TagDaoTest extends AbstractDatabaseTestCase
 	private function getTagDao()
 	{
 		return new TagDao($this->databaseConnection);
+	}
+
+	private function getTestTag($name)
+	{
+		$tag = new Tag();
+		$tag->setName($name);
+		$tag->setCreationTime(date('c'));
+		$tag->setCategory('default');
+		return $tag;
 	}
 }

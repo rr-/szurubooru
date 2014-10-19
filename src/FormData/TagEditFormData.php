@@ -7,6 +7,7 @@ class TagEditFormData implements IValidatable
 {
 	public $name;
 	public $banned;
+	public $category;
 	public $implications;
 	public $suggestions;
 
@@ -14,7 +15,8 @@ class TagEditFormData implements IValidatable
 	{
 		if ($inputReader !== null)
 		{
-			$this->name = $inputReader->name;
+			$this->name = trim($inputReader->name);
+			$this->category = strtolower(trim($inputReader->category));
 
 			if ($inputReader->banned !== null)
 				$this->banned = boolval($inputReader->banned);
@@ -26,6 +28,9 @@ class TagEditFormData implements IValidatable
 
 	public function validate(Validator $validator)
 	{
+		if ($this->category !== null)
+			$validator->validateLength($this->category, 1, 25, 'Tag category');
+
 		if ($this->name !== null)
 			$validator->validatePostTags([$this->name]);
 

@@ -45,6 +45,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		listTags: 'listTags',
 		massTag: 'massTag',
 		changeTagName: 'changeTagName',
+		changeTagCategory: 'changeTagCategory',
 		changeTagImplications: 'changeTagImplications',
 		changeTagSuggestions: 'changeTagSuggestions',
 		banTags: 'banTags',

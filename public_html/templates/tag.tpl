@@ -8,7 +8,7 @@
 			<div class="form-row">
 				<label class="form-label" for="tag-name">Name:</label>
 				<div class="form-input">
-						<input maxlength="200" type="text" name="name" id="tag-name" placeholder="New tag name" value="<%= tag.name %>"/>
+					<input maxlength="200" type="text" name="name" id="tag-name" placeholder="New tag name" value="<%= tag.name %>"/>
 				</div>
 			</div>
 		<% } %>
@@ -36,6 +36,21 @@
 				<% } %>
 			</div>
 		</div>
+
+		<% if (privileges.canChangeCategory) { %>
+			<div class="form-row">
+				<label class="form-label" for="tag-category">Category:</label>
+				<div class="form-input">
+					<% _.each(_.extend({'default': 'default'}, _.object(tagCategories, tagCategories)), function(v, k) { %>
+						<input name="category" type="radio" value="<%= k %>" id="category-<%= k %>" <% print(tag.category === k ? 'checked="checked"' : '') %>>
+						<label for="category-<%= k %>">
+							<% print(tag.category === k ? v + ' (current)' : v) %>
+						</label>
+						<br/>
+					<% }) %>
+				</div>
+			</div>
+		<% } %>
 
 		<div class="form-row">
 			<label class="form-label" for="tag-ban">Ban:</label>
