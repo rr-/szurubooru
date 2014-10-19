@@ -20,8 +20,8 @@ App.Presenters.TagPresenter = function(
 	var suggestionsTagInput;
 
 	var tag;
-	var tagName;
 	var posts;
+	var siblings;
 
 	var privileges = {};
 
@@ -50,15 +50,17 @@ App.Presenters.TagPresenter = function(
 	}
 
 	function reinit(params, loaded) {
-		tagName = params.tagName;
+		var tagName = params.tagName;
 
 		messagePresenter.hideMessages($messages);
 
 		promise.wait(
 				api.get('tags/' + tagName),
+				api.get('tags/' + tagName + '/siblings'),
 				api.get('posts', {query: tagName}))
-			.then(function(tagResponse, postsResponse) {
+			.then(function(tagResponse, siblingsResponse, postsResponse) {
 				tag = tagResponse.json;
+				siblings = siblingsResponse.json.data;
 				posts = postsResponse.json.data;
 				posts = posts.slice(0, 8);
 
@@ -66,8 +68,8 @@ App.Presenters.TagPresenter = function(
 				loaded();
 
 				renderPosts(posts);
-			}).fail(function(tagResponse, postsResponse) {
-				messagePresenter.showError($messages, tagResponse.json.error || postsResponse.json.error);
+			}).fail(function(tagResponse, siblingsResponse, postsResponse) {
+				messagePresenter.showError($messages, tagResponse.json.error || siblingsResponse.json.error || postsResponse.json.error);
 				loaded();
 			});
 	}
@@ -76,7 +78,7 @@ App.Presenters.TagPresenter = function(
 		$el.html(templates.tag({
 			privileges: privileges,
 			tag: tag,
-			tagName: tagName,
+			siblings: siblings,
 			tagCategories: JSON.parse(jQuery('head').attr('data-tag-categories')),
 		}));
 		$el.find('.post-list').hide();
@@ -126,7 +128,7 @@ App.Presenters.TagPresenter = function(
 			var $post = jQuery('<li>' + templates.postListItem({
 				util: util,
 				post: post,
-				query: {query: tagName},
+				query: {query: tag.name},
 			}) + '</li>');
 			$target.append($post);
 		});

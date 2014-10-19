@@ -1,6 +1,6 @@
 <div id="tag-view">
 	<div class="header">
-		<h1><%= tagName %></h1>
+		<h1><%= tag.name %></h1>
 	</div>
 
 	<form class="edit">
@@ -18,7 +18,7 @@
 			<div class="form-input">
 				<% if (privileges.canChangeImplications) { %>
 					<input maxlength="200" type="text" name="implications" id="tag-implications" placeholder="some tag&hellip;" value="<%= _.pluck(tag.implications, 'name').join(' ') %>"/>
-					<p><small>Added automatically when tagging with <strong><%= tagName %></strong>.</small></p>
+					<p><small>Added automatically when tagging with <strong><%= tag.name %></strong>.</small></p>
 				<% } else { %>
 					<%= _.pluck(tag.implications, 'name').join(' ') || '-' %></p>
 				<% } %>
@@ -30,7 +30,7 @@
 			<div class="form-input">
 				<% if (privileges.canChangeSuggestions) { %>
 					<input maxlength="200" type="text" name="suggestions" id="tag-suggestions" placeholder="some tag&hellip;" value="<%= _.pluck(tag.suggestions, 'name').join(' ') %>"/>
-					<p><small>Suggested when tagging with <strong><%= tagName %></strong>.</small></p>
+					<p><small>Suggested when tagging with <strong><%= tag.name %></strong>.</small></p>
 				<% } else { %>
 					<%= _.pluck(tag.suggestions, 'name').join(' ') || '-' %>
 				<% } %>
@@ -76,12 +76,26 @@
 		<% } %>
 	</form>
 
+	<div class="siblings">
+		<h3>Siblings</h3>
+
+		<ul>
+			<% _.each(siblings.slice(0, 50), function(tag) { %>
+				<li class="tag-category-<%= tag.category %>">
+					<a href="#/tag/<%= tag.name %>
+						"><%= tag.name %>
+					</a>
+				</li>
+			<% }) %>
+		</ul>
+	</div>
+
 	<div class="post-list">
 		<h3>Example usages</h3>
 
 		<ul>
 		</ul>
 
-		<a href="#/posts/query=<%= tagName %>">Search for more</a>
+		<a href="#/posts/query=<%= tag.name %>">Search for more</a>
 	</div>
 </div>

@@ -30,3 +30,14 @@
 #tag-view small {
 	font-size: 12px;
 }
+
+#tag-view .siblings ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+#tag-view .siblings ul li {
+	display: inline-block;
+	margin: 0em 0.5em;
+	line-height: normal;
+}
