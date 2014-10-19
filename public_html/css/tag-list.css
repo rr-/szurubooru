@@ -1,8 +1,21 @@
-#tag-list {
-	min-width: 15em;
-	max-width: 40em;
-	margin: 0 auto;
+#tag-list-wrapper {
 	text-align: center;
+}
+#tag-list {
+	width: 100%;
+	display: inline-block;
+	margin: 0 auto;
+}
+@media all and (min-width: 67em) {
+	#tag-list {
+		width: 60em;
+	}
+}
+@media all and (max-width: 40em) {
+	#tag-list .implications,
+	#tag-list .suggestions {
+		display: none;
+	}
 }
 
 #tag-list form {
@@ -10,13 +23,13 @@
 	white-space: nowrap;
 }
 #tag-list form input {
-	width: 10em;
+	width: 15em;
 }
-#tag-list ul {
+#tag-list ul.order {
 	float: right;
 	list-style-type: none;
 	padding: 0;
-	margin: 0;
+	margin: 0 -0.5em 0 0;
 }
 #tag-list .search:after {
 	display: block;
@@ -60,11 +73,9 @@
 	text-align: center;
 }
 
-@media all and (max-width: 40em) {
-	#tag-list .implications,
-	#tag-list .suggestions {
-		display: none;
-	}
+#tag-list .implications,
+#tag-list .suggestions {
+	word-break: break-all;
 }
 
 .tag-category-character,
