@@ -60,8 +60,14 @@ class TagDao extends AbstractDao implements ICrudDao
 			->where('pt2.tagId', $tagId)
 			->groupBy('tags.id')
 			->orderBy('postCount DESC, name ASC');
-		$arrayEntities = iterator_to_array($query);
-		array_shift($arrayEntities); //don't show input tag itself
+
+		$arrayEntities = array_filter(
+			iterator_to_array($query),
+			function($arrayEntity) use ($tagName)
+			{
+				return strcasecmp($arrayEntity['name'], $tagName) !== 0;
+			});
+
 		return $this->arrayToEntities($arrayEntities);
 	}
 
