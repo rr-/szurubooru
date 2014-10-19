@@ -8,7 +8,7 @@ App.Keyboard = function(mousetrap) {
 			return false;
 		}
 		return oldStopCallback.apply(mousetrap, arguments);
-	}
+	};
 
 	function keyup(key, callback) {
 		unbind(key);
