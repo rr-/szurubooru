@@ -9,6 +9,8 @@ App.API = function(_, jQuery, promise, appState) {
 	var AJAX_LOADING = 3;
 	var AJAX_DONE = 4;
 
+	var cache = {};
+
 	function get(url, data) {
 		return request('GET', url, data);
 	}
@@ -25,7 +27,47 @@ App.API = function(_, jQuery, promise, appState) {
 		return request('DELETE', url, data);
 	}
 
+	function getCacheKey(method, url, data) {
+		return JSON.stringify({method: method, url: url, data: data});
+	}
+
+	function clearCache() {
+		cache = {};
+	}
+
 	function request(method, url, data) {
+		if (method === 'GET') {
+			return requestWithCache(method, url, data);
+		}
+		clearCache();
+		return requestWithAjax(method, url, data);
+	}
+
+	function requestWithCache(method, url, data) {
+		var cacheKey = getCacheKey(method, url, data);
+		if (_.has(cache, cacheKey)) {
+			return promise.make(function(resolve, reject) {
+				resolve(cache[cacheKey]);
+			});
+		}
+
+		return promise.make(function(resolve, reject) {
+			promise.wait(requestWithAjax(method, url, data))
+				.then(function(response) {
+					setCache(method, url, data, response);
+					resolve(response);
+				}).fail(function(response) {
+					reject(response);
+				});
+		});
+	}
+
+	function setCache(method, url, data, response) {
+		var cacheKey = getCacheKey(method, url, data);
+		cache[cacheKey] = response;
+	}
+
+	function requestWithAjax(method, url, data) {
 		var fullUrl = baseUrl + '/' + url;
 		fullUrl = fullUrl.replace(/\/{2,}/, '/');
 
