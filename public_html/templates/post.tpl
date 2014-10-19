@@ -73,10 +73,14 @@
 		<h1>Tags (<%= _.size(post.tags) %>)</h1>
 		<ul class="tags">
 			<% _.each(post.tags, function(tag) { %>
-				<li class="tag-category-<%= tag.category %>">
-					<a href="#/posts/query=<%= tag.name %>">
-						<%= tag.name %>
-						<span class="usages"><%= (tag.usages) %></span>
+				<li class="tag-category-<%= tag.category %>"><!--
+					--><a class="tag-edit" href="#/tag/<%= tag.name %>"><!--
+						--><i class="fa fa-tag"></i><!--
+					--></a><!--
+
+					--><a class="post-search" href="#/posts/query=<%= tag.name %>"><!--
+						--><span class="tag-name"><%= tag.name %></span><!--
+						--><span class="usages"><%= (tag.usages) %></span>
 					</a>
 				</li>
 			<% }) %>
