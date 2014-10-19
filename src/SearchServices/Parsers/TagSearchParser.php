@@ -26,7 +26,17 @@ class TagSearchParser extends AbstractSearchParser
 
 	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
 	{
-		throw new NotSupportedException();
+		if ($namedToken->getKey() === 'category')
+		{
+			$this->addRequirementFromToken(
+				$filter,
+				$namedToken,
+				TagFilter::REQUIREMENT_CATEGORY,
+				self::ALLOW_COMPOSITE);
+		}
+
+		else
+			throw new NotSupportedException();
 	}
 
 	protected function getOrderColumn($tokenText)

@@ -158,6 +158,13 @@ class TagDao extends AbstractDao implements ICrudDao
 			return;
 		}
 
+		elseif ($requirement->getType() === TagFilter::REQUIREMENT_CATEGORY)
+		{
+			$sql = 'IFNULL(category, \'default\') = ?';
+			$requirement->setType($sql);
+			return parent::decorateQueryFromRequirement($query, $requirement);
+		}
+
 		parent::decorateQueryFromRequirement($query, $requirement);
 	}
 
