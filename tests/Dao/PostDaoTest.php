@@ -145,6 +145,29 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 		$this->assertEquals(1, count($postDao->findAll()));
 	}
 
+	public function testFindingByTagName()
+	{
+		$tag1 = new Tag();
+		$tag1->setName('tag1');
+		$tag1->setCreationTime(date('c'));
+		$tag2 = new Tag();
+		$tag2->setName('tag2');
+		$tag2->setCreationTime(date('c'));
+		$this->tagDao->save($tag1);
+		$this->tagDao->save($tag2);
+
+		$postDao = $this->getPostDao();
+		$post1 = self::getTestPost();
+		$post1->setTags([$tag1]);
+		$postDao->save($post1);
+		$post2 = self::getTestPost();
+		$post2->setTags([$tag2]);
+		$postDao->save($post2);
+
+		$this->assertEntitiesEqual([$post1], array_values($postDao->findByTagName('tag1')));
+		$this->assertEntitiesEqual([$post2], array_values($postDao->findByTagName('tag2')));
+	}
+
 	public function testSavingTags()
 	{
 		$tag1 = new Tag();

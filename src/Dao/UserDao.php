@@ -52,7 +52,7 @@ class UserDao extends AbstractDao implements ICrudDao
 	public function deleteByName($userName)
 	{
 		$this->deleteBy('name', $userName);
-		$this->fpdo->deleteFrom('tokens')->where('additionalData', $userName);
+		$this->pdo->deleteFrom('tokens')->where('additionalData', $userName);
 	}
 
 	protected function afterLoad(Entity $user)

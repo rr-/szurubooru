@@ -38,12 +38,12 @@ class PostDao extends AbstractDao implements ICrudDao
 
 	public function getCount()
 	{
-		return count($this->fpdo->from($this->tableName));
+		return count($this->pdo->from($this->tableName));
 	}
 
 	public function getTotalFileSize()
 	{
-		$query = $this->fpdo->from($this->tableName)->select('SUM(originalFileSize) AS __sum');
+		$query = $this->pdo->from($this->tableName)->select('SUM(originalFileSize) AS __sum');
 		return intval(iterator_to_array($query)[0]['__sum']);
 	}
 
@@ -54,10 +54,9 @@ class PostDao extends AbstractDao implements ICrudDao
 
 	public function findByTagName($tagName)
 	{
-		$query = $this->fpdo->from('posts')
-			->disableSmartJoin()
-			->innerJoin('postTags ON postTags.postId = posts.id')
-			->innerJoin('tags ON postTags.tagId = tags.id')
+		$query = $this->pdo->from('posts')
+			->innerJoin('postTags', 'postTags.postId = posts.id')
+			->innerJoin('tags', 'postTags.tagId = tags.id')
 			->where('tags.name', $tagName);
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);
@@ -184,21 +183,20 @@ class PostDao extends AbstractDao implements ICrudDao
 
 	private function getRelatedPosts(Post $post)
 	{
-		$query = $this->fpdo
-			->from('postRelations')
-			->where('post1id = :post1id OR post2id = :post2id', [
-				':post1id' => $post->getId(),
-				':post2id' => $post->getId()]);
-
 		$relatedPostIds = [];
-		foreach ($query as $arrayEntity)
+
+		foreach ($this->pdo->from('postRelations')->where('post1id', $post->getId()) as $arrayEntity)
 		{
-			$post1id = intval($arrayEntity['post1id']);
-			$post2id = intval($arrayEntity['post2id']);
-			if ($post1id !== $post->getId())
-				$relatedPostIds[] = $post1id;
-			if ($post2id !== $post->getId())
-				$relatedPostIds[] = $post2id;
+			$postId = intval($arrayEntity['post2id']);
+			if ($postId !== $post->getId())
+				$relatedPostIds[] = $postId;
+		}
+
+		foreach ($this->pdo->from('postRelations')->where('post2id', $post->getId()) as $arrayEntity)
+		{
+			$postId = intval($arrayEntity['post1id']);
+			if ($postId !== $post->getId())
+				$relatedPostIds[] = $postId;
 		}
 
 		return $this->findByIds($relatedPostIds);
@@ -242,25 +240,25 @@ class PostDao extends AbstractDao implements ICrudDao
 			{
 				return $arrayEntity['tagId'];
 			},
-			iterator_to_array($this->fpdo->from('postTags')->where('postId', $post->getId())));
+			iterator_to_array($this->pdo->from('postTags')->where('postId', $post->getId())));
 
 		$tagRelationsToInsert = array_diff($tagIds, $existingTagRelationIds);
 		$tagRelationsToDelete = array_diff($existingTagRelationIds, $tagIds);
 
 		foreach ($tagRelationsToInsert as $tagId)
 		{
-			$this->fpdo->insertInto('postTags')->values(['postId' => $post->getId(), 'tagId' => $tagId])->execute();
+			$this->pdo->insertInto('postTags')->values(['postId' => $post->getId(), 'tagId' => $tagId])->execute();
 		}
 		foreach ($tagRelationsToDelete as $tagId)
 		{
-			$this->fpdo->deleteFrom('postTags')->where('postId', $post->getId())->where('tagId', $tagId)->execute();
+			$this->pdo->deleteFrom('postTags')->where('postId', $post->getId())->where('tagId', $tagId)->execute();
 		}
 	}
 
 	private function syncPostRelations(Post $post)
 	{
-		$this->fpdo->deleteFrom('postRelations')->where('post1id', $post->getId())->execute();
-		$this->fpdo->deleteFrom('postRelations')->where('post2id', $post->getId())->execute();
+		$this->pdo->deleteFrom('postRelations')->where('post1id', $post->getId())->execute();
+		$this->pdo->deleteFrom('postRelations')->where('post2id', $post->getId())->execute();
 
 		$relatedPostIds = array_filter(array_unique(array_map(
 			function ($post)
@@ -273,7 +271,7 @@ class PostDao extends AbstractDao implements ICrudDao
 
 		foreach ($relatedPostIds as $postId)
 		{
-			$this->fpdo
+			$this->pdo
 				->insertInto('postRelations')
 				->values([
 					'post1id' => $post->getId(),

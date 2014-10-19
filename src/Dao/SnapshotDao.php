@@ -24,7 +24,7 @@ class SnapshotDao extends AbstractDao
 
 	public function findByTypeAndKey($type, $primaryKey)
 	{
-		$query = $this->fpdo
+		$query = $this->pdo
 			->from($this->tableName)
 			->where('type', $type)
 			->where('primaryKey', $primaryKey)

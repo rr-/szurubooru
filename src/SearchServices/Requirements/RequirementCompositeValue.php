@@ -4,6 +4,12 @@ namespace Szurubooru\SearchServices\Requirements;
 class RequirementCompositeValue implements IRequirementValue
 {
 	private $values = [];
+
+	public function __construct(array $values = [])
+	{
+		$this->setValues($values);
+	}
+
 	public function getValues()
 	{
 		return $this->values;

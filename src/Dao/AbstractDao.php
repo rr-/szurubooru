@@ -13,7 +13,6 @@ use Szurubooru\SearchServices\Result;
 abstract class AbstractDao implements ICrudDao, IBatchDao
 {
 	protected $pdo;
-	protected $fpdo;
 	protected $tableName;
 	protected $entityConverter;
 	protected $driver;
@@ -64,7 +63,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 
 	public function findAll()
 	{
-		$query = $this->fpdo->from($this->tableName)->disableSmartJoin();
+		$query = $this->pdo->from($this->tableName);
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);
 	}
@@ -81,7 +80,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 
 	public function findFiltered(IFilter $searchFilter)
 	{
-		$query = $this->fpdo->from($this->tableName)->disableSmartJoin();
+		$query = $this->pdo->from($this->tableName);
 
 		$orderByString = self::compileOrderBy($searchFilter->getOrder());
 		if ($orderByString)
@@ -95,7 +94,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		}
 		$entities = $this->arrayToEntities(iterator_to_array($query));
 
-		$query = $this->fpdo->from($this->tableName)->disableSmartJoin();
+		$query = $this->pdo->from($this->tableName);
 		$this->decorateQueryFromFilter($query, $searchFilter);
 		$totalRecords = count($query);
 
@@ -114,7 +113,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		{
 			$this->beforeDelete($entity);
 		}
-		$this->fpdo->deleteFrom($this->tableName)->execute();
+		$this->pdo->deleteFrom($this->tableName)->execute();
 	}
 
 	public function deleteById($entityId)
@@ -125,14 +124,15 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 	public function update(Entity $entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);
-		$this->fpdo->update($this->tableName)->set($arrayEntity)->where($this->getIdColumn(), $entity->getId())->execute();
+		unset($arrayEntity['id']);
+		$this->pdo->update($this->tableName)->set($arrayEntity)->where($this->getIdColumn(), $entity->getId())->execute();
 		return $entity;
 	}
 
 	public function create(Entity $entity)
 	{
 		$arrayEntity = $this->entityConverter->toArray($entity);
-		$this->fpdo->insertInto($this->tableName)->values($arrayEntity)->execute();
+		$this->pdo->insertInto($this->tableName)->values($arrayEntity)->execute();
 		$entity->setId(intval($this->pdo->lastInsertId()));
 		return $entity;
 	}
@@ -144,14 +144,14 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 
 	protected function hasAnyRecords()
 	{
-		return count(iterator_to_array($this->fpdo->from($this->tableName)->limit(1))) > 0;
+		return count(iterator_to_array($this->pdo->from($this->tableName)->limit(1))) > 0;
 	}
 
 	protected function findBy($columnName, $value)
 	{
 		if (is_array($value) and empty($value))
 			return [];
-		$query = $this->fpdo->from($this->tableName)->disableSmartJoin()->where($columnName, $value);
+		$query = $this->pdo->from($this->tableName)->where($columnName, $value);
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);
 	}
@@ -170,7 +170,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		{
 			$this->beforeDelete($entity);
 		}
-		$this->fpdo->deleteFrom($this->tableName)->disableSmartJoin()->where($columnName, $value)->execute();
+		$this->pdo->deleteFrom($this->tableName)->where($columnName, $value)->execute();
 	}
 
 	protected function afterLoad(Entity $entity)
@@ -197,7 +197,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		if ($value instanceof RequirementCompositeValue)
 		{
 			$sql = $sqlColumn;
-			$bindings = [$value->getValues()];
+			$bindings = $value->getValues();
 
 			if ($requirement->isNegated())
 				$sql = 'NOT ' . $sql;
@@ -239,7 +239,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		else
 			throw new \Exception('Bad value: ' . get_class($value));
 
-		$query->where($sql, ...$bindings);
+		$query->where($sql, $bindings);
 	}
 
 	protected function arrayToEntities(array $arrayEntities, $entityConverter = null)
@@ -259,7 +259,6 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 	private function setDatabaseConnection(DatabaseConnection $databaseConnection)
 	{
 		$this->pdo = $databaseConnection->getPDO();
-		$this->fpdo = new \FluentPDO($this->pdo);
 		$this->driver = $databaseConnection->getDriver();
 	}
 

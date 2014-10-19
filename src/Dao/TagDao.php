@@ -38,9 +38,8 @@ class TagDao extends AbstractDao implements ICrudDao
 
 	public function findByPostIds($postIds)
 	{
-		$query = $this->fpdo->from($this->tableName)
-			->disableSmartJoin()
-			->innerJoin('postTags ON postTags.tagId = tags.id')
+		$query = $this->pdo->from($this->tableName)
+			->innerJoin('postTags', 'postTags.tagId = tags.id')
 			->where('postTags.postId', $postIds);
 		$arrayEntities = iterator_to_array($query);
 		return $this->arrayToEntities($arrayEntities);
@@ -52,11 +51,10 @@ class TagDao extends AbstractDao implements ICrudDao
 		if (!$tag)
 			return [];
 		$tagId = $tag->getId();
-		$query = $this->fpdo->from($this->tableName)
+		$query = $this->pdo->from($this->tableName)
 			->select('COUNT(pt2.postId) AS postCount')
-			->disableSmartJoin()
-			->innerJoin('postTags pt1 ON pt1.tagId = tags.id')
-			->innerJoin('postTags pt2 ON pt2.postId = pt1.postId')
+			->innerJoin('postTags pt1', 'pt1.tagId = tags.id')
+			->innerJoin('postTags pt2', 'pt2.postId = pt1.postId')
 			->where('pt2.tagId', $tagId)
 			->groupBy('tags.id')
 			->orderBy('postCount DESC, name ASC');
@@ -79,7 +77,7 @@ class TagDao extends AbstractDao implements ICrudDao
 	public function export()
 	{
 		$exported = [];
-		foreach ($this->fpdo->from('tags') as $arrayEntity)
+		foreach ($this->pdo->from($this->tableName) as $arrayEntity)
 		{
 			$exported[$arrayEntity['id']] = [
 				'name' => $arrayEntity['name'],
@@ -91,7 +89,7 @@ class TagDao extends AbstractDao implements ICrudDao
 		//upgrades on old databases
 		try
 		{
-			$relations = iterator_to_array($this->fpdo->from('tagRelations'));
+			$relations = iterator_to_array($this->pdo->from('tagRelations'));
 		}
 		catch (\Exception $e)
 		{
@@ -160,7 +158,7 @@ class TagDao extends AbstractDao implements ICrudDao
 
 		elseif ($requirement->getType() === TagFilter::REQUIREMENT_CATEGORY)
 		{
-			$sql = 'IFNULL(category, \'default\') = ?';
+			$sql = 'IFNULL(category, \'default\')';
 			$requirement->setType($sql);
 			return parent::decorateQueryFromRequirement($query, $requirement);
 		}
@@ -190,7 +188,7 @@ class TagDao extends AbstractDao implements ICrudDao
 
 	private function syncRelatedTagsByType(Tag $tag, array $relatedTags, $type)
 	{
-		$this->fpdo->deleteFrom('tagRelations')
+		$this->pdo->deleteFrom('tagRelations')
 			->where('tag1id', $tag->getId())
 			->where('type', $type)
 			->execute();
@@ -206,7 +204,7 @@ class TagDao extends AbstractDao implements ICrudDao
 
 		foreach ($relatedTagIds as $tagId)
 		{
-			$this->fpdo
+			$this->pdo
 				->insertInto('tagRelations')
 				->values([
 					'tag1id' => $tag->getId(),
@@ -219,9 +217,8 @@ class TagDao extends AbstractDao implements ICrudDao
 	private function findRelatedTagsByType(Tag $tag, $type)
 	{
 		$tagId = $tag->getId();
-		$query = $this->fpdo->from($this->tableName)
-			->disableSmartJoin()
-			->innerJoin('tagRelations tr ON tags.id = tr.tag2id')
+		$query = $this->pdo->from($this->tableName)
+			->innerJoin('tagRelations tr', 'tags.id = tr.tag2id')
 			->where('tr.type', $type)
 			->where('tr.tag1id', $tagId);
 		$arrayEntities = iterator_to_array($query);

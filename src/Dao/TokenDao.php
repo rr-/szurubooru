@@ -20,7 +20,7 @@ class TokenDao extends AbstractDao
 
 	public function findByAdditionalDataAndPurpose($additionalData, $purpose)
 	{
-		$query = $this->fpdo->from($this->tableName)
+		$query = $this->pdo->from($this->tableName)
 			->where('additionalData', $additionalData)
 			->where('purpose', $purpose);
 		$arrayEntities = iterator_to_array($query);

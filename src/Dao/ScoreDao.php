@@ -27,7 +27,7 @@ class ScoreDao extends AbstractDao implements ICrudDao
 
 	public function getScore(User $user, Entity $entity)
 	{
-		$query = $this->fpdo->from($this->tableName)->where('userId', $user->getId());
+		$query = $this->pdo->from($this->tableName)->where('userId', $user->getId());
 
 		if ($entity instanceof Post)
 			$query->where('postId', $entity->getId());

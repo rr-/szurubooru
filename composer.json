@@ -1,7 +1,6 @@
 {
 	"require": {
-		"mnapoli/php-di": "~4.0",
-		"lichtner/fluentpdo": "dev-master"
+		"mnapoli/php-di": "~4.0"
 	},
 
 	"require-dev": {

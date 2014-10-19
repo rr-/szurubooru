@@ -1,6 +1,7 @@
 <?php
 namespace Szurubooru;
 use Szurubooru\Config;
+use Szurubooru\PDOEx\PDOEx;
 
 class DatabaseConnection
 {
