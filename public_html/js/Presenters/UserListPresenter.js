@@ -80,9 +80,9 @@ App.Presenters.UserListPresenter = function(
 				user: user,
 				formatRelativeTime: util.formatRelativeTime,
 			}) + '</li>');
-			util.loadImagesNicely($item.find('img'));
 			$target.append($item);
 		});
+		_.map(_.map($target.find('img'), jQuery), util.loadImagesNicely);
 	}
 
 	return {

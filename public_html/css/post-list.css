@@ -55,6 +55,7 @@
 	background: white;
 }
 
+
 .post-small a:focus,
 .post-small a:hover {
 	background: #64C2ED;
@@ -63,8 +64,8 @@
 	outline: 0;
 }
 
-.post-small a:focus img,
-.post-small a:hover img {
+.post-small a:focus img:not(.loading),
+.post-small a:hover img:not(.loading) {
 	opacity: .8 !important;
 }
 

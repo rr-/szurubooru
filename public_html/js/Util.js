@@ -26,9 +26,29 @@ App.Util = function(_, jQuery, marked, promise) {
 
 	function loadImagesNicely($img) {
 		if (!$img.get(0).complete) {
-			$img.css('opacity', '0');
+			$img.addClass('loading');
+			$img.css({opacity: 0});
+			var $div = jQuery('<div>Loading ' + $img.attr('alt') + '&hellip;</div>');
+			var width = $img.width();
+			var height = $img.height();
+			if (width > 50 && height > 50) {
+				$div.css({
+					position: 'absolute',
+					width: width + 'px',
+					height: height + 'px',
+					color: 'rgba(0, 0, 0, 0.15)',
+					zIndex: -1,
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					textAlign: 'center'});
+				$div.insertBefore($img);
+				$div.offset($img.offset());
+			}
 			$img.bind('load', function() {
 				$img.animate({opacity: 1}, 'fast');
+				$img.removeClass('loading');
+				$div.fadeOut($div.remove);
 			});
 		}
 	}
