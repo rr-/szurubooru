@@ -164,7 +164,7 @@ class PostDao extends AbstractDao implements ICrudDao
 					AND scores.score = ?)';
 			if ($requirement->isnegated())
 				$sql = 'NOT ' . $sql;
-			$query->where($sql, $userName, $score);
+			$query->where($sql, [$userName, $score]);
 			return;
 		}
 
