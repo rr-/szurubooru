@@ -51,6 +51,6 @@
 	<% } %>
 
 	<p>
-		<small class="version">Version: <a href="//github.com/rr-/szuru2/commits/master"><%= version %></a> (built <%= formatRelativeTime(buildTime) %>)</small>
+		<small class="version">Version: <a href="//github.com/rr-/szurubooru/commits/master"><%= version %></a> (built <%= formatRelativeTime(buildTime) %>)</small>
 	</p>
 </div>
