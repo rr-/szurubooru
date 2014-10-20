@@ -32,8 +32,8 @@ App.Presenters.GlobalCommentListPresenter = function(
 						baseUri: '#/comments',
 						backendUri: '/comments',
 						$target: $el.find('.pagination-target'),
-						updateCallback: function(data, clear) {
-							renderPosts(data.entities, clear);
+						updateCallback: function($page, data) {
+							renderPosts($page, data.entities);
 						},
 					},
 					function() {
@@ -59,13 +59,8 @@ App.Presenters.GlobalCommentListPresenter = function(
 		$el.html(templates.list());
 	}
 
-	function renderPosts(data, clear) {
-		var $target = $el.find('.posts');
-
-		if (clear) {
-			$target.empty();
-		}
-
+	function renderPosts($page, data) {
+		var $target = $page.find('.posts');
 		_.each(data, function(data) {
 			var post = data.post;
 			var comments = data.comments;

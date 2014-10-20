@@ -43,8 +43,8 @@ App.Presenters.PostListPresenter = function(
 						baseUri: '#/posts',
 						backendUri: '/posts',
 						$target: $el.find('.pagination-target'),
-						updateCallback: function(data, clear) {
-							renderPosts(data.entities, clear);
+						updateCallback: function($page, data) {
+							renderPosts($page, data.entities);
 						},
 					},
 					function() {
@@ -102,13 +102,8 @@ App.Presenters.PostListPresenter = function(
 		_.map($el.find('.posts .post-small'), function(postNode) { softRenderPost(jQuery(postNode).parents('li')); });
 	}
 
-	function renderPosts(posts, clear) {
-		var $target = $el.find('.posts');
-
-		if (clear) {
-			$target.empty();
-		}
-
+	function renderPosts($page, posts) {
+		var $target = $page.find('.posts');
 		_.each(posts, function(post) {
 			var $post = renderPost(post);
 			softRenderPost($post);

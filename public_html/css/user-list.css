@@ -24,7 +24,7 @@
 
 #user-list .users {
 	display: inline-block;
-	margin: 1em auto;
+	margin: 0 auto;
 }
 #user-list .users li {
 	text-align: left;

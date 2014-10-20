@@ -78,10 +78,10 @@ App.Presenters.PostCommentListPresenter = function(
 				privileges)));
 
 		$el.find('.comment-add form button[type=submit]').click(function(e) { commentFormSubmitted(e, null); });
-		renderComments(comments, true);
+		renderComments(comments);
 	}
 
-	function renderComments(comments, clear) {
+	function renderComments(comments) {
 		var $target = $el.find('.comments');
 		var $targetList = $el.find('ul');
 
@@ -91,10 +91,7 @@ App.Presenters.PostCommentListPresenter = function(
 			$target.hide();
 		}
 
-		if (clear) {
-			$targetList.empty();
-		}
-
+		$targetList.empty();
 		_.each(comments, function(comment) {
 			renderComment($targetList, comment);
 		});
@@ -206,7 +203,7 @@ App.Presenters.PostCommentListPresenter = function(
 		promise.wait(api.delete('/comments/' + comment.id))
 			.then(function(response) {
 				comments = _.filter(comments, function(c) { return c.id !== comment.id; });
-				renderComments(comments, true);
+				renderComments(comments);
 			}).fail(showGenericError);
 	}
 

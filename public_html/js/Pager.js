@@ -26,6 +26,10 @@ App.Pager = function(
 		return pageNumber;
 	}
 
+	function getTotalPages() {
+		return totalPages;
+	}
+
 	function prevPage() {
 		if (pageNumber > 1) {
 			setPage(pageNumber - 1);
@@ -118,6 +122,7 @@ App.Pager = function(
 	return {
 		init: init,
 		getPage: getPage,
+		getTotalPages: getTotalPages,
 		prevPage: prevPage,
 		nextPage: nextPage,
 		setPage: setPage,

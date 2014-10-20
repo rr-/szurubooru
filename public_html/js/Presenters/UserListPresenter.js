@@ -32,8 +32,8 @@ App.Presenters.UserListPresenter = function(
 						baseUri: '#/users',
 						backendUri: '/users',
 						$target: $el.find('.pagination-target'),
-						updateCallback: function(data, clear) {
-							renderUsers(data.entities, clear);
+						updateCallback: function($page, data) {
+							renderUsers($page, data.entities);
 						},
 					},
 					function() {
@@ -68,13 +68,8 @@ App.Presenters.UserListPresenter = function(
 		$el.find('.order [href*="' + activeOrder + '"]').addClass('active');
 	}
 
-	function renderUsers(users, clear) {
-		var $target = $el.find('.users');
-
-		if (clear) {
-			$target.empty();
-		}
-
+	function renderUsers($page, users) {
+		var $target = $page.find('.users');
 		_.each(users, function(user) {
 			var $item = jQuery('<li>' + templates.listItem({
 				user: user,

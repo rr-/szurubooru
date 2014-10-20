@@ -38,8 +38,8 @@ App.Presenters.TagListPresenter = function(
 						baseUri: '#/tags',
 						backendUri: '/tags',
 						$target: $el.find('.pagination-target'),
-						updateCallback: function(data, clear) {
-							renderTags(data.entities, clear);
+						updateCallback: function($page, data) {
+							renderTags($page, data.entities);
 						},
 					},
 					function() {
@@ -111,13 +111,8 @@ App.Presenters.TagListPresenter = function(
 		$el.find('.order [href*="' + activeOrder + '"]').addClass('active');
 	}
 
-	function renderTags(tags, clear) {
-		var $target = $el.find('tbody');
-
-		if (clear) {
-			$target.empty();
-		}
-
+	function renderTags($page, tags) {
+		var $target = $page.find('tbody');
 		_.each(tags, function(tag) {
 			var $item = jQuery(templates.listItem({
 				tag: tag,

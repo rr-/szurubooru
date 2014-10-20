@@ -10,7 +10,6 @@ first major release.
 - tags: add tag merging
 - tags: add tag descriptions
 - tags: add tag edit snapshots (backed-only)
-- misc: endless pager should include information about page number
 - misc: add spinner to forms such as registration, login, settings...
 
 - post notes

@@ -91,7 +91,18 @@ App.Presenters.PagerPresenter = function(
 			promise.wait(pager.retrieve())
 				.then(function(response) {
 					progress.done();
-					updateCallback(response, forceClear || !endlessScroll);
+
+					if (forceClear || !endlessScroll) {
+						clearContent();
+					}
+					var $page = jQuery('<div class="page">');
+					if (endlessScroll && pager.getTotalPages() > 1) {
+						$page.append('<p>Page ' + pager.getPage() + ' of ' + pager.getTotalPages() + '</p>');
+					}
+					$page.append(targetContent);
+					$target.find('.pagination-content').append($page);
+					updateCallback($page, response);
+
 					forceClear = false;
 					if (!response.entities.length) {
 						messagePresenter.showInfo($messages, 'No data to show');
@@ -122,7 +133,7 @@ App.Presenters.PagerPresenter = function(
 
 	function clearContent() {
 		detachNextPageLoader();
-		updateCallback({entities: [], totalRecords: 0}, true);
+		$target.find('.pagination-content').empty();
 	}
 
 	function attachNextPageLoader() {
@@ -183,7 +194,7 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function render() {
-		$target.html(templates.pager({originalHtml: targetContent}));
+		$target.html(templates.pager());
 		$messages = $target.find('.pagination-content');
 		$pageList = $target.find('.page-list');
 		if (endlessScroll) {
