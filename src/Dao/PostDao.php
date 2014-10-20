@@ -156,15 +156,15 @@ class PostDao extends AbstractDao implements ICrudDao
 			$values = $requirement->getValue()->getValues();
 			$userName = $values[0];
 			$score = $values[1];
+			$userId = $this->userDao->findByName($userName)->getId();
 			$sql = 'EXISTS (
 				SELECT 1 FROM scores
-				INNER JOIN users ON scores.userId = users.id
 				WHERE scores.postId = posts.id
-					AND LOWER(users.name) = LOWER(?)
+					AND scores.userId = ?
 					AND scores.score = ?)';
-			if ($requirement->isnegated())
+			if ($requirement->isNegated())
 				$sql = 'NOT ' . $sql;
-			$query->where($sql, [$userName, $score]);
+			$query->where($sql, [$userId, $score]);
 			return;
 		}
 
