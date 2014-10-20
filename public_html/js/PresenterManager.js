@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboard, nprogress) {
+App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboard, progress) {
 
 	var lastContentPresenter = null;
 
@@ -15,7 +15,7 @@ App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboar
 	}
 
 	function switchContentPresenter(presenter, args) {
-		nprogress.start();
+		progress.start();
 
 		if (lastContentPresenter === null || lastContentPresenter.name !== presenter.name) {
 			if (lastContentPresenter !== null && lastContentPresenter.deinit) {
@@ -24,10 +24,10 @@ App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboar
 			keyboard.reset();
 			topNavigationPresenter.changeTitle(null);
 			topNavigationPresenter.focus();
-			presenter.init.call(presenter, args, nprogress.done);
+			presenter.init.call(presenter, args, progress.done);
 			lastContentPresenter = presenter;
 		} else if (lastContentPresenter.reinit) {
-			lastContentPresenter.reinit.call(lastContentPresenter, args, nprogress.done);
+			lastContentPresenter.reinit.call(lastContentPresenter, args, progress.done);
 		}
 	}
 
@@ -54,4 +54,4 @@ App.PresenterManager = function(jQuery, promise, topNavigationPresenter, keyboar
 
 };
 
-App.DI.registerSingleton('presenterManager', ['jQuery', 'promise', 'topNavigationPresenter', 'keyboard', 'nprogress'], App.PresenterManager);
+App.DI.registerSingleton('presenterManager', ['jQuery', 'promise', 'topNavigationPresenter', 'keyboard', 'progress'], App.PresenterManager);

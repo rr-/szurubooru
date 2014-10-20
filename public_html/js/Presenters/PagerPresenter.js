@@ -11,7 +11,7 @@ App.Presenters.PagerPresenter = function(
 	pager,
 	messagePresenter,
 	browsingSettings,
-	nprogress) {
+	progress) {
 
 	var $target;
 	var $pageList;
@@ -85,11 +85,12 @@ App.Presenters.PagerPresenter = function(
 
 	function retrieve() {
 		messagePresenter.hideMessages($messages);
-		nprogress.start();
+		progress.start();
 
 		return promise.make(function(resolve, reject) {
 			promise.wait(pager.retrieve())
 				.then(function(response) {
+					progress.done();
 					updateCallback(response, forceClear || !endlessScroll);
 					forceClear = false;
 					if (!response.entities.length) {
@@ -107,12 +108,11 @@ App.Presenters.PagerPresenter = function(
 						attachNextPageLoader();
 					}
 					refreshPageList();
-					nprogress.done();
 					resolve();
 				}).fail(function(response) {
+					progress.done();
 					clearContent();
 					hidePageList();
-					nprogress.done();
 					messagePresenter.showError($messages, response.json && response.json.error || response);
 
 					reject();
@@ -223,4 +223,4 @@ App.Presenters.PagerPresenter = function(
 
 };
 
-App.DI.register('pagerPresenter', ['_', 'jQuery', 'util', 'promise', 'keyboard', 'router', 'pager', 'messagePresenter', 'browsingSettings', 'nprogress'], App.Presenters.PagerPresenter);
+App.DI.register('pagerPresenter', ['_', 'jQuery', 'util', 'promise', 'keyboard', 'router', 'pager', 'messagePresenter', 'browsingSettings', 'progress'], App.Presenters.PagerPresenter);
