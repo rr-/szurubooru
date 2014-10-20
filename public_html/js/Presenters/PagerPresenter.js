@@ -52,7 +52,6 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function reinit(params, loaded) {
-		window.clearInterval(scrollInterval);
 		if (forceClear) {
 			clearContent();
 		}
@@ -122,6 +121,7 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function clearContent() {
+		detachNextPageLoader();
 		updateCallback({entities: [], totalRecords: 0}, true);
 	}
 
@@ -130,14 +130,15 @@ App.Presenters.PagerPresenter = function(
 			return;
 		}
 
-		window.clearInterval(scrollInterval);
+		detachNextPageLoader();
 		scrollInterval = window.setInterval(function() {
+			var myScrollInterval = scrollInterval;
 			var baseLine = $target.offset().top + $target.innerHeight();
 			var scrollY = jQuery(window).scrollTop() + jQuery(window).height();
 			if (scrollY > baseLine) {
 				pager.nextPage();
 				syncUrlInplace();
-				window.clearInterval(scrollInterval);
+				window.clearInterval(myScrollInterval);
 			}
 		}, 100);
 	}
