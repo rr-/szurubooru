@@ -18,7 +18,9 @@
 					title: 'Upload',
 					icon: 'fa-upload'});
 			}
+		}
 
+		if (canListComments) {
 			links.push({
 				target: '#/comments',
 				title: 'Comments',

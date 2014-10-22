@@ -40,6 +40,7 @@ App.Presenters.TopNavigationPresenter = function(
 			user: auth.getCurrentUser(),
 			canListUsers: auth.hasPrivilege(auth.privileges.listUsers),
 			canListPosts: auth.hasPrivilege(auth.privileges.listPosts),
+			canListComments: auth.hasPrivilege(auth.privileges.listComments),
 			canListTags: auth.hasPrivilege(auth.privileges.listTags),
 			canUploadPosts: auth.hasPrivilege(auth.privileges.uploadPosts),
 		}));
