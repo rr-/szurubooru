@@ -33,7 +33,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 						backendUri: '/comments',
 						$target: $el.find('.pagination-target'),
 						updateCallback: function($page, data) {
-							renderPosts($page, data.entities);
+							renderComments($page, data.entities);
 						},
 					},
 					function() {
@@ -59,7 +59,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 		$el.html(templates.list());
 	}
 
-	function renderPosts($page, data) {
+	function renderComments($page, data) {
 		var $target = $page.find('.posts');
 		_.each(data, function(data) {
 			var post = data.post;
@@ -84,6 +84,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 
 			$target.append($post);
 		});
+		window.scrollTo(0, 0);
 	}
 
 	return {

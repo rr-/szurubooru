@@ -120,6 +120,7 @@ App.Presenters.TagListPresenter = function(
 			}));
 			$target.append($item);
 		});
+		window.scrollTo(0, 0);
 	}
 
 	return {
