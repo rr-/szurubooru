@@ -10,6 +10,7 @@ App.Presenters.PostListPresenter = function(
 	api,
 	keyboard,
 	pagerPresenter,
+	browsingSettings,
 	topNavigationPresenter) {
 
 	var KEY_RETURN = 13;
@@ -105,11 +106,30 @@ App.Presenters.PostListPresenter = function(
 	function renderPosts($page, posts) {
 		var $target = $page.find('.posts');
 		_.each(posts, function(post) {
-			var $post = renderPost(post);
-			softRenderPost($post);
-			$target.append($post);
+			if (!shouldSkipPost(post)) {
+				var $post = renderPost(post);
+				softRenderPost($post);
+				$target.append($post);
+			}
 		});
 		windowResized();
+	}
+
+	function shouldSkipPost(post) {
+		var settings = browsingSettings.getSettings();
+		if (post.ownScore < 0 && settings.hideDownvoted) {
+			return true;
+		}
+		if (settings.listPosts) {
+			if (post.safety === 'safe' && !settings.listPosts.safe) {
+				return true;
+			} else if (post.safety === 'sketchy' && !settings.listPosts.sketchy) {
+				return true;
+			} else if (post.safety === 'unsafe' && !settings.listPosts.unsafe) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	function renderPost(post) {
@@ -212,4 +232,4 @@ App.Presenters.PostListPresenter = function(
 
 };
 
-App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'api', 'keyboard', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.PostListPresenter);
+App.DI.register('postListPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'api', 'keyboard', 'pagerPresenter', 'browsingSettings', 'topNavigationPresenter'], App.Presenters.PostListPresenter);
