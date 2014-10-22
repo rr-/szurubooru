@@ -252,8 +252,7 @@
 	<div id="post-view">
 		<div class="messages"></div>
 
-		<div class="post-edit-wrapper">
-			<%= postEditTemplate({post: post, privileges: editPrivileges}) %>
+		<div id="post-edit-target">
 		</div>
 
 		<%= postContentTemplate({post: post}) %>

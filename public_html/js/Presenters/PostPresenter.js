@@ -12,6 +12,7 @@ App.Presenters.PostPresenter = function(
 	keyboard,
 	presenterManager,
 	postsAroundCalculator,
+	postEditPresenter,
 	postCommentListPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
@@ -26,13 +27,6 @@ App.Presenters.PostPresenter = function(
 	var post;
 
 	var privileges = {};
-	var editPrivileges = {};
-
-	var tagInput;
-	var postContentFileDropper;
-	var postThumbnailFileDropper;
-	var postContent;
-	var postThumbnail;
 
 	function init(params, loaded) {
 		topNavigationPresenter.select('posts');
@@ -41,26 +35,16 @@ App.Presenters.PostPresenter = function(
 		privileges.canDeletePosts = auth.hasPrivilege(auth.privileges.deletePosts);
 		privileges.canFeaturePosts = auth.hasPrivilege(auth.privileges.featurePosts);
 		privileges.canViewHistory = auth.hasPrivilege(auth.privileges.viewHistory);
-		editPrivileges.canChangeSafety = auth.hasPrivilege(auth.privileges.changePostSafety);
-		editPrivileges.canChangeSource = auth.hasPrivilege(auth.privileges.changePostSource);
-		editPrivileges.canChangeTags = auth.hasPrivilege(auth.privileges.changePostTags);
-		editPrivileges.canChangeContent = auth.hasPrivilege(auth.privileges.changePostContent);
-		editPrivileges.canChangeThumbnail = auth.hasPrivilege(auth.privileges.changePostThumbnail);
-		editPrivileges.canChangeRelations = auth.hasPrivilege(auth.privileges.changePostRelations);
-		editPrivileges.canChangeFlags = auth.hasPrivilege(auth.privileges.changePostFlags);
 
 		promise.wait(
 				util.promiseTemplate('post'),
-				util.promiseTemplate('post-edit'),
 				util.promiseTemplate('post-content'),
 				util.promiseTemplate('history'))
 			.then(function(
 					postTemplate,
-					postEditTemplate,
 					postContentTemplate,
 					historyTemplate) {
 				templates.post = postTemplate;
-				templates.postEdit = postEditTemplate;
 				templates.postContent = postContentTemplate;
 				templates.history = historyTemplate;
 
@@ -83,10 +67,17 @@ App.Presenters.PostPresenter = function(
 				topNavigationPresenter.changeTitle('@' + post.id);
 				render();
 				loaded();
+
+				presenterManager.initPresenters([
+					[postEditPresenter, {post: post, $target: $el.find('#post-edit-target'), updateCallback: postEdited}],
+					[postCommentListPresenter, {post: post, $target: $el.find('#post-comments-target')}]],
+					function() {});
+
 			}).fail(function() {
 				console.log(arguments);
 				loaded();
 			});
+
 	}
 
 	function attachLinksToPostsAround() {
@@ -138,32 +129,19 @@ App.Presenters.PostPresenter = function(
 		$el.html(renderPostTemplate());
 		$messages = $el.find('.messages');
 
-		if (editPrivileges.canChangeTags) {
-			tagInput = new App.Controls.TagInput($el.find('form [name=tags]'));
-			tagInput.inputConfirmed = editPost;
-		}
+		keyboard.keyup('e', function() {
+			editButtonClicked(null);
+		});
 
-		postContentFileDropper = new App.Controls.FileDropper($el.find('form [name=content]'));
-		postContentFileDropper.onChange = postContentChanged;
-		postContentFileDropper.setNames = true;
-		postThumbnailFileDropper = new App.Controls.FileDropper($el.find('form [name=thumbnail]'));
-		postThumbnailFileDropper.onChange = postThumbnailChanged;
-		postThumbnailFileDropper.setNames = true;
-
-		if (_.any(editPrivileges)) {
-			keyboard.keyup('e', function() {
-				editButtonClicked(null);
-			});
-		}
-
-		$el.find('.post-edit-wrapper form').submit(editFormSubmitted);
 		attachSidebarEvents();
 
-		presenterManager.initPresenters([
-			[postCommentListPresenter, _.extend({post: post}, {$target: $el.find('#post-comments-target')})]],
-			function() { });
-
 		attachLinksToPostsAround();
+	}
+
+	function postEdited(newPost) {
+		post = newPost;
+		hideEditForm();
+		softRender();
 	}
 
 	function softRender() {
@@ -188,13 +166,12 @@ App.Presenters.PostPresenter = function(
 			formatFileSize: util.formatFileSize,
 
 			postContentTemplate: templates.postContent,
-			postEditTemplate: templates.postEdit,
 			historyTemplate: templates.history,
 
 			hasFav: _.any(post.favorites, function(favUser) { return favUser.id === auth.getCurrentUser().id; }),
 			isLoggedIn: auth.isLoggedIn(),
 			privileges: privileges,
-			editPrivileges: editPrivileges,
+			editPrivileges: postEditPresenter.getPrivileges(),
 		});
 	}
 
@@ -244,90 +221,22 @@ App.Presenters.PostPresenter = function(
 			e.preventDefault();
 		}
 		messagePresenter.hideMessages($messages);
-		if ($el.find('.post-edit-wrapper').is(':visible')) {
+		if ($el.find('#post-edit-target').is(':visible')) {
 			hideEditForm();
 		} else {
 			showEditForm();
 		}
 	}
 
-	function editFormSubmitted(e) {
-		e.preventDefault();
-		editPost();
-	}
-
 	function showEditForm() {
-		$el.find('.post-edit-wrapper').slideDown('fast');
+		$el.find('#post-edit-target').slideDown('fast');
 		util.enableExitConfirmation();
-		tagInput.focus();
+		postEditPresenter.focus();
 	}
 
 	function hideEditForm() {
-		$el.find('.post-edit-wrapper').slideUp('fast');
+		$el.find('#post-edit-target').slideUp('fast');
 		util.disableExitConfirmation();
-	}
-
-	function editPost() {
-		var $form = $el.find('form');
-		var formData = {};
-		formData.seenEditTime = post.lastEditTime;
-		formData.flags = {};
-
-		if (editPrivileges.canChangeContent && postContent) {
-			formData.content = postContent;
-		}
-
-		if (editPrivileges.canChangeThumbnail && postThumbnail) {
-			formData.thumbnail = postThumbnail;
-		}
-
-		if (editPrivileges.canChangeSource) {
-			formData.source = $form.find('[name=source]').val();
-		}
-
-		if (editPrivileges.canChangeSafety) {
-			formData.safety = $form.find('[name=safety]:checked').val();
-		}
-
-		if (editPrivileges.canChangeTags) {
-			formData.tags = tagInput.getTags().join(' ');
-		}
-
-		if (editPrivileges.canChangeRelations) {
-			formData.relations = $form.find('[name=relations]').val();
-		}
-
-		if (editPrivileges.canChangeFlags) {
-			if (post.contentType === 'video') {
-				formData.flags.loop = $form.find('[name=loop]').is(':checked') ? 1 : 0;
-			}
-		}
-
-		if (post.tags.length === 0) {
-			showEditError('No tags set.');
-			return;
-		}
-
-		promise.wait(api.put('/posts/' + post.id, formData))
-			.then(function(response) {
-				post = response.json;
-				hideEditForm();
-				softRender();
-			}).fail(function(response) {
-				showEditError(response);
-			});
-	}
-
-	function postContentChanged(files) {
-		postContentFileDropper.readAsDataURL(files[0], function(content) {
-			postContent = content;
-		});
-	}
-
-	function postThumbnailChanged(files) {
-		postThumbnailFileDropper.readAsDataURL(files[0], function(content) {
-			postThumbnail = content;
-		});
 	}
 
 	function historyButtonClicked(e) {
@@ -390,10 +299,6 @@ App.Presenters.PostPresenter = function(
 			}).fail(showGenericError);
 	}
 
-	function showEditError(response) {
-		window.alert(response.json && response.json.error || response);
-	}
-
 	function showGenericError(response) {
 		if ($messages === $el) {
 			$el.empty();
@@ -420,6 +325,7 @@ App.DI.register('postPresenter', [
 	'keyboard',
 	'presenterManager',
 	'postsAroundCalculator',
+	'postEditPresenter',
 	'postCommentListPresenter',
 	'topNavigationPresenter',
 	'messagePresenter'],

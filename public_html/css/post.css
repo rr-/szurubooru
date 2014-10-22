@@ -144,7 +144,7 @@
 	font-size: 12px;
 }
 
-#post-view-wrapper .post-edit-wrapper {
+#post-view #post-edit-target {
 	padding: 1em;
 	position: absolute;
 	background: rgba(255, 255, 255, 0.8);
@@ -156,7 +156,7 @@
 	z-index: -1;
 }
 
-#post-view-wrapper .post-edit-wrapper .file-handler {
+#post-edit-target .file-handler {
 	margin: 0.5em 0;
 }
 
