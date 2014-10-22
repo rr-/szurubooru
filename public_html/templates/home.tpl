@@ -6,7 +6,9 @@
 
 	<% if (post && typeof(post) !== 'undefined') { %>
 		<div class="post">
-			<%= postContentTemplate({post: post}) %>
+			<div id="post-content-target">
+			</div>
+
 			<div class="post-footer">
 
 				<span class="left">

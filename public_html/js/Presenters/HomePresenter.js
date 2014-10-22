@@ -7,6 +7,8 @@ App.Presenters.HomePresenter = function(
 	promise,
 	api,
 	auth,
+	presenterManager,
+	postContentPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -21,21 +23,22 @@ App.Presenters.HomePresenter = function(
 
 		promise.wait(
 				util.promiseTemplate('home'),
-				util.promiseTemplate('post-content'),
 				api.get('/globals'),
 				api.get('/posts/featured'))
 			.then(function(
 					homeTemplate,
-					postContentTemplate,
 					globalsResponse,
 					featuredPostResponse) {
 				templates.home = homeTemplate;
-				templates.postContent = postContentTemplate;
 
 				globals = globalsResponse.json;
 				post = featuredPostResponse.json.id ? featuredPostResponse.json : null;
 				render();
 				loaded();
+
+				presenterManager.initPresenters([
+					[postContentPresenter, {post: post, $target: $el.find('#post-content-target')}]],
+					function() {});
 
 			}).fail(function(response) {
 				messagePresenter.showError($el, response.json && response.json.error || response);
@@ -46,7 +49,6 @@ App.Presenters.HomePresenter = function(
 	function render() {
 		$el.html(templates.home({
 			post: post,
-			postContentTemplate: templates.postContent,
 			globals: globals,
 			title: topNavigationPresenter.getBaseTitle(),
 			canViewUsers: auth.hasPrivilege(auth.privileges.viewUsers),
@@ -65,4 +67,14 @@ App.Presenters.HomePresenter = function(
 
 };
 
-App.DI.register('homePresenter', ['jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.HomePresenter);
+App.DI.register('homePresenter', [
+	'jQuery',
+	'util',
+	'promise',
+	'api',
+	'auth',
+	'presenterManager',
+	'postContentPresenter',
+	'topNavigationPresenter',
+	'messagePresenter'],
+	App.Presenters.HomePresenter);

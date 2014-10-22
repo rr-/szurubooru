@@ -13,6 +13,7 @@ App.Presenters.PostPresenter = function(
 	presenterManager,
 	postsAroundCalculator,
 	postEditPresenter,
+	postContentPresenter,
 	postCommentListPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
@@ -38,14 +39,11 @@ App.Presenters.PostPresenter = function(
 
 		promise.wait(
 				util.promiseTemplate('post'),
-				util.promiseTemplate('post-content'),
 				util.promiseTemplate('history'))
 			.then(function(
 					postTemplate,
-					postContentTemplate,
 					historyTemplate) {
 				templates.post = postTemplate;
-				templates.postContent = postContentTemplate;
 				templates.history = historyTemplate;
 
 				reinit(params, loaded);
@@ -69,6 +67,7 @@ App.Presenters.PostPresenter = function(
 				loaded();
 
 				presenterManager.initPresenters([
+					[postContentPresenter, {post: post, $target: $el.find('#post-content-target')}],
 					[postEditPresenter, {post: post, $target: $el.find('#post-edit-target'), updateCallback: postEdited}],
 					[postCommentListPresenter, {post: post, $target: $el.find('#post-comments-target')}]],
 					function() {});
@@ -165,7 +164,6 @@ App.Presenters.PostPresenter = function(
 			formatRelativeTime: util.formatRelativeTime,
 			formatFileSize: util.formatFileSize,
 
-			postContentTemplate: templates.postContent,
 			historyTemplate: templates.history,
 
 			hasFav: _.any(post.favorites, function(favUser) { return favUser.id === auth.getCurrentUser().id; }),
@@ -326,6 +324,7 @@ App.DI.register('postPresenter', [
 	'presenterManager',
 	'postsAroundCalculator',
 	'postEditPresenter',
+	'postContentPresenter',
 	'postCommentListPresenter',
 	'topNavigationPresenter',
 	'messagePresenter'],

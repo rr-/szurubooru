@@ -255,7 +255,8 @@
 		<div id="post-edit-target">
 		</div>
 
-		<%= postContentTemplate({post: post}) %>
+		<div id="post-content-target">
+		</div>
 
 		<% if (privileges.canViewHistory) { %>
 			<div class="post-history-wrapper">
