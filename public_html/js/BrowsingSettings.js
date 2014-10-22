@@ -53,7 +53,11 @@ App.BrowsingSettings = function(
 		}
 
 		try {
-			settings = JSON.parse(string);
+			if (typeof(string) === 'string' || string instanceof String) {
+				settings = JSON.parse(string);
+			} else {
+				settings = string;
+			}
 		} catch (e) {
 		}
 	}
