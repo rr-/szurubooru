@@ -12,10 +12,16 @@ App.Presenters.ProgressPresenter = function(nprogress) {
 		}
 	}
 
-	function done() {
-		nesting --;
+	function reset() {
+		nesting = 0;
+	}
 
-		if (nesting === 0) {
+	function done() {
+		if (nesting) {
+			nesting --;
+		}
+
+		if (nesting <= 0) {
 			nprogress.done();
 		} else {
 			nprogress.inc();
@@ -25,6 +31,7 @@ App.Presenters.ProgressPresenter = function(nprogress) {
 	return {
 		start: start,
 		done: done,
+		reset: reset,
 	};
 
 };

@@ -10,12 +10,23 @@ App.Promise = function(_, jQuery, progress) {
 		var promise = deferred.promise();
 		promise.promiseId = ++ promiseId;
 
+		progress.start();
 		callback(function() {
-			deferred.resolve.apply(deferred, arguments);
-			active = _.without(active, promise.promiseId);
+			try {
+				deferred.resolve.apply(deferred, arguments);
+				active = _.without(active, promise.promiseId);
+				progress.done();
+			} catch (e) {
+				progress.reset();
+			}
 		}, function() {
-			deferred.reject.apply(deferred, arguments);
-			active = _.without(active, promise.promiseId);
+			try {
+				deferred.reject.apply(deferred, arguments);
+				active = _.without(active, promise.promiseId);
+				progress.done();
+			} catch (e) {
+				progress.reset();
+			}
 		});
 
 		active.push(promise.promiseId);
@@ -30,7 +41,6 @@ App.Promise = function(_, jQuery, progress) {
 	}
 
 	function wait() {
-		progress.start();
 		var promises = arguments;
 		var deferred = jQuery.Deferred();
 		return jQuery.when.apply(jQuery, promises)
@@ -38,8 +48,6 @@ App.Promise = function(_, jQuery, progress) {
 				return deferred.resolve.apply(deferred, arguments);
 			}).fail(function() {
 				return deferred.reject.apply(deferred, arguments);
-			}).always(function() {
-				progress.done();
 			});
 	}
 
