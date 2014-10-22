@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Promise = function(_, jQuery) {
+App.Promise = function(_, jQuery, progress) {
 
 	var active = [];
 	var promiseId = 0;
@@ -30,6 +30,7 @@ App.Promise = function(_, jQuery) {
 	}
 
 	function wait() {
+		progress.start();
 		var promises = arguments;
 		var deferred = jQuery.Deferred();
 		return jQuery.when.apply(jQuery, promises)
@@ -37,6 +38,8 @@ App.Promise = function(_, jQuery) {
 				return deferred.resolve.apply(deferred, arguments);
 			}).fail(function() {
 				return deferred.reject.apply(deferred, arguments);
+			}).always(function() {
+				progress.done();
 			});
 	}
 
@@ -57,4 +60,4 @@ App.Promise = function(_, jQuery) {
 
 };
 
-App.DI.registerSingleton('promise', ['_', 'jQuery'], App.Promise);
+App.DI.registerSingleton('promise', ['_', 'jQuery', 'progress'], App.Promise);
