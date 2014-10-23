@@ -10,7 +10,6 @@ first major release.
 - tags: add tag merging
 - tags: add tag descriptions
 - tags: add tag edit snapshots (backed-only)
-- misc: add spinner to forms such as registration, login, settings...
 
 - post notes
     - "add note" in sidebar creates new note in the middle of image
