@@ -1,7 +1,7 @@
 <% if (canListComments && comments.length) { %>
 	<div class="comments">
 		<h1>Comments</h1>
-		<ul>
+		<ul class="comments">
 		</ul>
 	</div>
 <% } %>

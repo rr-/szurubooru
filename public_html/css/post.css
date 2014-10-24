@@ -129,6 +129,7 @@
 	display: flex;
 	justify-content: space-around;
 	margin-bottom: 2em;
+	max-width: 30em;
 }
 #sidebar .essential li {
 	display: block;

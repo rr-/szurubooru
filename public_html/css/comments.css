@@ -19,15 +19,12 @@
 .comment {
 	margin: 0 0 1em 0;
 	padding: 0;
-}
-
-.comment .body,
-.comment .avatar {
-	display: inline-block;
+	display: flex;
 }
 
 .comment .avatar {
 	margin-right: 0.5em;
+	flex-shrink: 0;
 	vertical-align: top;
 }
 
@@ -82,24 +79,27 @@
 	margin: 0;
 	padding: 0;
 }
-#global-comment-list ul.posts>li>*:last-child:after {
-	display: block;
-	content: '';
-	clear: left;
-}
 #global-comment-list ul.posts>li {
 	margin-bottom: 2em;
 }
+#global-comment-list .post-comment {
+	display: flex;
+}
+@media all and (max-width: 40em) {
+	#global-comment-list .post-comment {
+		flex-direction: column;
+	}
+}
 #global-comment-list .post {
-	float: left;
+	flex-shrink: 0;
+	flex-grow: 0;
+	margin-right: 1em;
+	margin-bottom: 1em;
 }
 #global-comment-list .comment-add,
 #global-comment-list .comments>h1 {
 	display: none;
 }
-#global-comment-list .comments {
-	float: left;
-}
 #global-comment-list .post-small a {
-	margin: 0 1em 0 0;
+	margin: 0;
 }

@@ -53,7 +53,7 @@
 	position: relative;
 }
 .post-small a {
-	display: block;
+	display: inline-block;
 	margin: 0.2em;
 	border: 1px solid #999;
 	z-index: 1;
