@@ -9,6 +9,7 @@ use Szurubooru\FormData\UploadFormData;
 use Szurubooru\Injector;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\ImageConverter;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
 use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\PostService;
@@ -29,6 +30,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 	private $networkingServiceMock;
 	private $tagService;
 	private $historyServiceMock;
+	private $imageConverterMock;
 	private $imageManipulatorMock;
 
 	public function setUp()
@@ -45,6 +47,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 		$this->tagService = Injector::get(TagService::class);
 		$this->historyServiceMock = $this->mock(HistoryService::class);
 		$this->configMock->set('database/maxPostSize', 1000000);
+		$this->imageConverterMock = $this->mock(ImageConverter::class);
 		$this->imageManipulatorMock = $this->mock(ImageManipulator::class);
 	}
 
@@ -59,6 +62,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
 		$this->authServiceMock->expects($this->once())->method('getLoggedInUser')->willReturn(new User(5));
 		$this->historyServiceMock->expects($this->once())->method('getPostChangeSnapshot')->willReturn(new Snapshot());
+		$this->imageConverterMock->expects($this->never())->method('createImageFromBuffer');
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -109,6 +113,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
 		$this->historyServiceMock->expects($this->once())->method('getPostChangeSnapshot')->willReturn(new Snapshot());
+		$this->imageConverterMock->expects($this->once())->method('createImageFromBuffer');
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -128,6 +133,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
 		$this->historyServiceMock->expects($this->once())->method('getPostChangeSnapshot')->willReturn(new Snapshot());
+		$this->imageConverterMock->expects($this->once())->method('createImageFromBuffer');
 
 		$this->postService = $this->getPostService();
 		$savedPost = $this->postService->createPost($formData);
@@ -210,6 +216,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 			$this->networkingServiceMock,
 			$this->tagService,
 			$this->historyServiceMock,
+			$this->imageConverterMock,
 			$this->imageManipulatorMock);
 	}
 }

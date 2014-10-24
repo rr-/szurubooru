@@ -1,8 +1,7 @@
 <?php
 namespace Szurubooru\Tests\Services;
 use Szurubooru\Dao\PublicFileDao;
-use Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator;
-use Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator;
+use Szurubooru\Services\ThumbnailGenerator;
 use Szurubooru\Services\ThumbnailService;
 use Szurubooru\Tests\AbstractTestCase;
 
@@ -19,7 +18,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 		$this->configMock = $this->mockConfig();
 		$this->fileDaoMock = $this->mock(PublicFileDao::class);
 		$this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
-		$this->thumbnailGeneratorMock = $this->mock(SmartThumbnailGenerator::class);
+		$this->thumbnailGeneratorMock = $this->mock(ThumbnailGenerator::class);
 	}
 
 	public function testGetUsedThumbnailSizes()
@@ -100,7 +99,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 				'content of file',
 				100,
 				100,
-				IThumbnailGenerator::CROP_OUTSIDE)
+				ThumbnailGenerator::CROP_OUTSIDE)
 			->willReturn(null);
 
 		$this->fileDaoMock
@@ -130,7 +129,7 @@ final class ThumbnailServiceTest extends AbstractTestCase
 				'content of file',
 				100,
 				100,
-				IThumbnailGenerator::CROP_OUTSIDE)
+				ThumbnailGenerator::CROP_OUTSIDE)
 			->willReturn('content of thumbnail');
 
 		$this->fileDaoMock

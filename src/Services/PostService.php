@@ -18,6 +18,7 @@ use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
 use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\ImageConverter;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
 use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\TagService;
@@ -36,6 +37,7 @@ class PostService
 	private $networkingService;
 	private $tagService;
 	private $historyService;
+	private $imageConverter;
 	private $imageManipulator;
 
 	public function __construct(
@@ -49,6 +51,7 @@ class PostService
 		NetworkingService $networkingService,
 		TagService $tagService,
 		HistoryService $historyService,
+		ImageConverter $imageConverter,
 		ImageManipulator $imageManipulator)
 	{
 		$this->config = $config;
@@ -61,6 +64,7 @@ class PostService
 		$this->networkingService = $networkingService;
 		$this->tagService = $tagService;
 		$this->historyService = $historyService;
+		$this->imageConverter = $imageConverter;
 		$this->imageManipulator = $imageManipulator;
 	}
 
@@ -247,9 +251,17 @@ class PostService
 
 		$post->setContent($content);
 
-		$image = $this->imageManipulator->loadFromBuffer($content);
-		$post->setImageWidth($this->imageManipulator->getImageWidth($image));
-		$post->setImageHeight($this->imageManipulator->getImageHeight($image));
+		try
+		{
+			$image = $this->imageConverter->createImageFromBuffer($content);
+			$post->setImageWidth($this->imageManipulator->getImageWidth($image));
+			$post->setImageHeight($this->imageManipulator->getImageHeight($image));
+		}
+		catch (\Exception $e)
+		{
+			$post->setImageWidth(null);
+			$post->setImageHeight(null);
+		}
 
 		$post->setOriginalFileSize(strlen($content));
 	}

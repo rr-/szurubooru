@@ -1,47 +1,48 @@
 <?php
-namespace Szurubooru\Services\ThumbnailGenerators;
+namespace Szurubooru\Services;
 use Szurubooru\Services\ImageManipulation\IImageManipulator;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
 
-class ImageThumbnailGenerator implements IThumbnailGenerator
+class ThumbnailGenerator
 {
-	private $imageManipulator;
+	const CROP_OUTSIDE = 0;
+	const CROP_INSIDE = 1;
 
-	public function __construct(ImageManipulator $imageManipulator)
+	private $imageManipulator;
+	private $imageConverter;
+
+	public function __construct(ImageManipulator $imageManipulator, ImageConverter $imageConverter)
 	{
 		$this->imageManipulator = $imageManipulator;
+		$this->imageConverter = $imageConverter;
 	}
 
 	public function generate($source, $width, $height, $cropStyle)
 	{
-		try
+		$image = $this->imageConverter->createImageFromBuffer($source);
+		if (!$image)
+			throw new \Exception('Error while loading supplied image');
+
+		$srcWidth = $this->imageManipulator->getImageWidth($image);
+		$srcHeight = $this->imageManipulator->getImageHeight($image);
+
+		switch ($cropStyle)
 		{
-			$image = $this->imageManipulator->loadFromBuffer($source);
-			$srcWidth = $this->imageManipulator->getImageWidth($image);
-			$srcHeight = $this->imageManipulator->getImageHeight($image);
+			case ThumbnailGenerator::CROP_OUTSIDE:
+				$this->cropOutside($image, $srcWidth, $srcHeight, $width, $height);
+				break;
 
-			switch ($cropStyle)
-			{
-				case IThumbnailGenerator::CROP_OUTSIDE:
-					$this->cropOutside($image, $srcWidth, $srcHeight, $width, $height);
-					break;
+			case ThumbnailGenerator::CROP_INSIDE:
+				$this->cropInside($image, $srcWidth, $srcHeight, $width, $height);
+				break;
 
-				case IThumbnailGenerator::CROP_INSIDE:
-					$this->cropInside($image, $srcWidth, $srcHeight, $width, $height);
-					break;
-
-				default:
-					throw new \InvalidArgumentException('Unknown thumbnail crop style');
-			}
-
-			return $this->imageManipulator->saveToBuffer(
-				$image,
-				IImageManipulator::FORMAT_JPEG);
+			default:
+				throw new \InvalidArgumentException('Unknown thumbnail crop style');
 		}
-		catch (\Exception $e)
-		{
-			return null;
-		}
+
+		return $this->imageManipulator->saveToBuffer(
+			$image,
+			IImageManipulator::FORMAT_JPEG);
 	}
 
 	private function cropOutside(&$image, $srcWidth, $srcHeight, $dstWidth, $dstHeight)

@@ -2,19 +2,17 @@
 namespace Szurubooru\Tests\Services;
 use Szurubooru\Helpers\ProgramExecutor;
 use Szurubooru\Injector;
+use Szurubooru\Services\ImageConverter;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
-use Szurubooru\Services\ThumbnailGenerators\FlashThumbnailGenerator;
-use Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator;
-use Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator;
-use Szurubooru\Services\ThumbnailGenerators\VideoThumbnailGenerator;
+use Szurubooru\Services\ThumbnailGenerator;
 use Szurubooru\Tests\AbstractTestCase;
 
 final class ThumbnailGeneratorTest extends AbstractTestCase
 {
 	public function testFlashThumbnails()
 	{
-		if (!ProgramExecutor::isProgramAvailable(FlashThumbnailGenerator::PROGRAM_NAME_DUMP_GNASH)
-			and !ProgramExecutor::isProgramAvailable(FlashThumbnailGenerator::PROGRAM_NAME_SWFRENDER))
+		if (!ProgramExecutor::isProgramAvailable(ImageConverter::PROGRAM_NAME_DUMP_GNASH)
+			and !ProgramExecutor::isProgramAvailable(ImageConverter::PROGRAM_NAME_SWFRENDER))
 		{
 			$this->markTestSkipped('External software necessary to run this test is missing.');
 		}
@@ -26,7 +24,7 @@ final class ThumbnailGeneratorTest extends AbstractTestCase
 			$this->getTestFile('flash.swf'),
 			150,
 			150,
-			IThumbnailGenerator::CROP_OUTSIDE);
+			ThumbnailGenerator::CROP_OUTSIDE);
 
 		$image = $imageManipulator->loadFromBuffer($result);
 		$this->assertEquals(150, $imageManipulator->getImageWidth($image));
@@ -35,8 +33,8 @@ final class ThumbnailGeneratorTest extends AbstractTestCase
 
 	public function testVideoThumbnails()
 	{
-		if (!ProgramExecutor::isProgramAvailable(VideoThumbnailGenerator::PROGRAM_NAME_FFMPEG)
-			and !ProgramExecutor::isProgramAvailable(VideoThumbnailGenerator::PROGRAM_NAME_FFMPEGTHUMBNAILER))
+		if (!ProgramExecutor::isProgramAvailable(ImageConverter::PROGRAM_NAME_FFMPEG)
+			and !ProgramExecutor::isProgramAvailable(ImageConverter::PROGRAM_NAME_FFMPEGTHUMBNAILER))
 		{
 			$this->markTestSkipped('External software necessary to run this test is missing.');
 		}
@@ -48,7 +46,7 @@ final class ThumbnailGeneratorTest extends AbstractTestCase
 			$this->getTestFile('video.mp4'),
 			150,
 			150,
-			IThumbnailGenerator::CROP_OUTSIDE);
+			ThumbnailGenerator::CROP_OUTSIDE);
 
 		$image = $imageManipulator->loadFromBuffer($result);
 		$this->assertEquals(150, $imageManipulator->getImageWidth($image));
@@ -64,7 +62,7 @@ final class ThumbnailGeneratorTest extends AbstractTestCase
 			$this->getTestFile('image.jpg'),
 			150,
 			150,
-			IThumbnailGenerator::CROP_OUTSIDE);
+			ThumbnailGenerator::CROP_OUTSIDE);
 
 		$image = $imageManipulator->loadFromBuffer($result);
 		$this->assertEquals(150, $imageManipulator->getImageWidth($image));
@@ -74,7 +72,7 @@ final class ThumbnailGeneratorTest extends AbstractTestCase
 			$this->getTestFile('image.jpg'),
 			150,
 			150,
-			IThumbnailGenerator::CROP_INSIDE);
+			ThumbnailGenerator::CROP_INSIDE);
 
 		$image = $imageManipulator->loadFromBuffer($result);
 		$this->assertEquals(150, $imageManipulator->getImageWidth($image));
@@ -86,13 +84,12 @@ final class ThumbnailGeneratorTest extends AbstractTestCase
 		$thumbnailGenerator = $this->getThumbnailGenerator();
 		$imageManipulator = $this->getImageManipulator();
 
-		$result = $thumbnailGenerator->generate(
+		$this->setExpectedException(\Exception::class);
+		$thumbnailGenerator->generate(
 			$this->getTestFile('text.txt'),
 			150,
 			150,
-			IThumbnailGenerator::CROP_OUTSIDE);
-
-		$this->assertNull($result);
+			ThumbnailGenerator::CROP_OUTSIDE);
 	}
 
 	public function getImageManipulator()
@@ -102,6 +99,6 @@ final class ThumbnailGeneratorTest extends AbstractTestCase
 
 	public function getThumbnailGenerator()
 	{
-		return Injector::get(SmartThumbnailGenerator::class);
+		return Injector::get(ThumbnailGenerator::class);
 	}
 }

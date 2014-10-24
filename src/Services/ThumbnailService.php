@@ -2,8 +2,7 @@
 namespace Szurubooru\Services;
 use Szurubooru\Config;
 use Szurubooru\Dao\PublicFileDao;
-use Szurubooru\Services\ThumbnailGenerators\IThumbnailGenerator;
-use Szurubooru\Services\ThumbnailGenerators\SmartThumbnailGenerator;
+use Szurubooru\Services\ThumbnailGenerator;
 
 class ThumbnailService
 {
@@ -14,7 +13,7 @@ class ThumbnailService
 	public function __construct(
 		Config $config,
 		PublicFileDao $fileDao,
-		SmartThumbnailGenerator $thumbnailGenerator)
+		ThumbnailGenerator $thumbnailGenerator)
 	{
 		$this->config = $config;
 		$this->fileDao = $fileDao;
@@ -46,11 +45,11 @@ class ThumbnailService
 		switch ($this->config->misc->thumbnailCropStyle)
 		{
 			case 'outside':
-				$cropStyle = IThumbnailGenerator::CROP_OUTSIDE;
+				$cropStyle = ThumbnailGenerator::CROP_OUTSIDE;
 				break;
 
 			case 'inside':
-				$cropStyle = IThumbnailGenerator::CROP_INSIDE;
+				$cropStyle = humbnailGenerator::CROP_INSIDE;
 				break;
 
 			default:
