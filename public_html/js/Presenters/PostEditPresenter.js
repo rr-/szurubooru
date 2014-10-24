@@ -59,7 +59,7 @@ App.Presenters.PostEditPresenter = function(
 			tagInput.inputConfirmed = editPost;
 		}
 
-		$target.find('.post-edit-wrapper form').submit(editFormSubmitted);
+		$target.find('form').submit(editFormSubmitted);
 	}
 
 	function focus() {
