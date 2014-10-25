@@ -257,9 +257,6 @@ class PostDao extends AbstractDao implements ICrudDao
 
 	private function syncPostRelations(Post $post)
 	{
-		$this->pdo->deleteFrom('postRelations')->where('post1id', $post->getId())->execute();
-		$this->pdo->deleteFrom('postRelations')->where('post2id', $post->getId())->execute();
-
 		$relatedPostIds = array_filter(array_unique(array_map(
 			function ($post)
 			{
@@ -269,6 +266,8 @@ class PostDao extends AbstractDao implements ICrudDao
 			},
 			$post->getRelatedPosts())));
 
+		$this->pdo->deleteFrom('postRelations')->where('post1id', $post->getId())->execute();
+		$this->pdo->deleteFrom('postRelations')->where('post2id', $post->getId())->execute();
 		foreach ($relatedPostIds as $postId)
 		{
 			$this->pdo

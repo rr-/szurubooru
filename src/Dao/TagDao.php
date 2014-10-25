@@ -188,11 +188,6 @@ class TagDao extends AbstractDao implements ICrudDao
 
 	private function syncRelatedTagsByType(Tag $tag, array $relatedTags, $type)
 	{
-		$this->pdo->deleteFrom('tagRelations')
-			->where('tag1id', $tag->getId())
-			->where('type', $type)
-			->execute();
-
 		$relatedTagIds = array_filter(array_unique(array_map(
 			function ($tag)
 			{
@@ -201,6 +196,11 @@ class TagDao extends AbstractDao implements ICrudDao
 				return $tag->getId();
 			},
 			$relatedTags)));
+
+		$this->pdo->deleteFrom('tagRelations')
+			->where('tag1id', $tag->getId())
+			->where('type', $type)
+			->execute();
 
 		foreach ($relatedTagIds as $tagId)
 		{
