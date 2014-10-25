@@ -34,23 +34,26 @@ class PostSnapshotProvider
 			'featured' => $isFeatured,
 
 			'tags' =>
-				array_map(
+				array_values(array_map(
 					function ($tag)
 					{
 						return $tag->getName();
 					},
-					$post->getTags()),
+					$post->getTags())),
 
 			'relations' =>
-				array_map(
+				array_values(array_map(
 					function ($post)
 					{
 						return $post->getId();
 					},
-					$post->getRelatedPosts()),
+					$post->getRelatedPosts())),
 
 			'flags' => $flags,
 		];
+
+		sort($data['tags']);
+		sort($data['relations']);
 
 		$snapshot = $this->getPostSnapshot($post);
 		$snapshot->setOperation(Snapshot::OPERATION_CHANGE);
