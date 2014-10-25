@@ -59,7 +59,11 @@ App.Controls.TagInput = function($underlyingInput) {
 		$suggestions.insertAfter($wrapper);
 		$siblings.insertAfter($wrapper);
 
-		addTagsFromText($underlyingInput.val());
+		addTagsFromText(
+			$underlyingInput.val(), {
+				disableImplications: true,
+				disableSuggestions: true});
+
 		$underlyingInput.val('');
 	}
 
@@ -120,19 +124,19 @@ App.Controls.TagInput = function($underlyingInput) {
 		}
 	});
 
-	function addTagsFromText(text) {
+	function addTagsFromText(text, options) {
 		var tagNamesToAdd = text.split(/\s+/);
-		_.map(tagNamesToAdd, addTag);
+		_.map(tagNamesToAdd, function(tagName) { addTag(tagName, options); });
 	}
 
 	function addTagsFromTextWithoutLast(text) {
 		var tagNamesToAdd = text.split(/\s+/);
 		var lastTagName = tagNamesToAdd.pop();
-		_.map(tagNamesToAdd, addTag);
+		_.map(tagNamesToAdd, function(tagName) { addTag(tagName, options); });
 		$input.val(lastTagName);
 	}
 
-	function addTag(tagName) {
+	function addTag(tagName, options) {
 		tagName = tagName.trim();
 		if (tagName.length === 0) {
 			return;
@@ -150,11 +154,11 @@ App.Controls.TagInput = function($underlyingInput) {
 		if (isTaggedWith(tagName)) {
 			flashTagRed(tagName);
 		} else {
-			beforeTagAdded(tagName);
+			beforeTagAdded(tagName, options);
 			tags.push(tagName);
 			var $elem = createListElement(tagName);
 			$tagList.append($elem);
-			afterTagAdded(tagName);
+			afterTagAdded(tagName, options);
 		}
 	}
 
@@ -164,14 +168,19 @@ App.Controls.TagInput = function($underlyingInput) {
 		}
 	}
 
-	function afterTagAdded(tagName) {
+	function afterTagAdded(tagName, options) {
 		var tag = getExportedTag(tagName);
 		if (tag) {
-			_.each(tag.implications, function(impliedTagName) {
-				addTag(impliedTagName);
-				flashTagYellow(impliedTagName);
-			});
-			showOrHideSuggestions(tag.suggestions);
+			if (!options || !options.disableImplications) {
+				_.each(tag.implications, function(impliedTagName) {
+					addTag(impliedTagName);
+					flashTagYellow(impliedTagName);
+				});
+			}
+
+			if (!options || !options.disableSuggestions) {
+				showOrHideSuggestions(tag.suggestions);
+			}
 		}
 	}
 
@@ -206,13 +215,16 @@ App.Controls.TagInput = function($underlyingInput) {
 	}
 
 	function flashTagRed(tagName) {
-		var $elem = getListElement(tagName);
-		$elem.css({backgroundColor: 'rgba(255, 200, 200, 1)'});
+		flashTag(tagName, 'rgba(255, 200, 200, 1)');
 	}
 
 	function flashTagYellow(tagName) {
+		flashTag(tagName, 'rgba(255, 255, 200, 1)');
+	}
+
+	function flashTag(tagName, color) {
 		var $elem = getListElement(tagName);
-		$elem.css({backgroundColor: 'rgba(255, 255, 200, 1)'});
+		$elem.css({backgroundColor: color});
 	}
 
 	function getListElement(tagName) {
