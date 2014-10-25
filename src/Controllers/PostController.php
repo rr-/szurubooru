@@ -158,6 +158,7 @@ final class PostController extends AbstractController
 			PostViewProxy::FETCH_HISTORY => true,
 			PostViewProxy::FETCH_OWN_SCORE => true,
 			PostViewProxy::FETCH_FAVORITES => true,
+			PostViewProxy::FETCH_NOTES => true,
 		];
 	}
 

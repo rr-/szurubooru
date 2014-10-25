@@ -12,4 +12,9 @@ class PostNoteDao extends AbstractDao implements ICrudDao
 			'postNotes',
 			new PostNoteEntityConverter());
 	}
+
+	public function findByPostId($postId)
+	{
+		return $this->findBy('postId', $postId);
+	}
 }

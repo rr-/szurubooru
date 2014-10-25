@@ -1,14 +1,15 @@
 <?php
 namespace Szurubooru\Controllers\ViewProxies;
+use Szurubooru\Entities\Post;
 use Szurubooru\Helpers\EnumHelper;
 use Szurubooru\Helpers\MimeHelper;
 use Szurubooru\Privilege;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\FavoritesService;
 use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\PostNotesService;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\ScoreService;
-use Szurubooru\Entities\Post;
 
 class PostViewProxy extends AbstractViewProxy
 {
@@ -18,15 +19,18 @@ class PostViewProxy extends AbstractViewProxy
 	const FETCH_HISTORY = 'fetchHistory';
 	const FETCH_OWN_SCORE = 'fetchOwnScore';
 	const FETCH_FAVORITES = 'fetchFavorites';
+	const FETCH_NOTES = 'fetchNotes';
 
 	private $privilegeService;
 	private $authService;
 	private $historyService;
 	private $favoritesService;
 	private $scoreService;
+	private $postNotesService;
 	private $tagViewProxy;
 	private $userViewProxy;
 	private $snapshotViewProxy;
+	private $postNoteViewProxy;
 
 	public function __construct(
 		PrivilegeService $privilegeService,
@@ -34,18 +38,22 @@ class PostViewProxy extends AbstractViewProxy
 		HistoryService $historyService,
 		FavoritesService $favoritesService,
 		ScoreService $scoreService,
+		PostNotesService $postNotesService,
 		TagViewProxy $tagViewProxy,
 		UserViewProxy $userViewProxy,
-		SnapshotViewProxy $snapshotViewProxy)
+		SnapshotViewProxy $snapshotViewProxy,
+		PostNoteViewProxy $postNoteViewProxy)
 	{
 		$this->privilegeService = $privilegeService;
 		$this->authService = $authService;
 		$this->historyService = $historyService;
 		$this->favoritesService = $favoritesService;
 		$this->scoreService = $scoreService;
+		$this->postNotesService = $postNotesService;
 		$this->tagViewProxy = $tagViewProxy;
 		$this->userViewProxy = $userViewProxy;
 		$this->snapshotViewProxy = $snapshotViewProxy;
+		$this->postNoteViewProxy = $postNoteViewProxy;
 	}
 
 	public function fromEntity($post, $config = [])
@@ -105,6 +113,8 @@ class PostViewProxy extends AbstractViewProxy
 		if (!empty($config[self::FETCH_FAVORITES]))
 			$result->favorites = $this->userViewProxy->fromArray($this->favoritesService->getFavoriteUsers($post));
 
+		if (!empty($config[self::FETCH_NOTES]))
+			$result->notes = $this->postNoteViewProxy->fromArray($this->postNotesService->getPostNotes($post));
 
 		return $result;
 	}
