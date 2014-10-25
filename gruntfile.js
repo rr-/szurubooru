@@ -7,6 +7,7 @@ require('shelljs/global');
 var phpCheckStyleConfigPath = path.join(path.resolve(), 'phpcheckstyle.cfg');
 var phpSourcesDir = path.join(path.resolve(), 'src');
 var publicHtmlDir = path.join(path.resolve(), 'public_html');
+var libSourcesDir = path.join(publicHtmlDir, 'lib');
 var jsSourcesDir = path.join(publicHtmlDir, 'js');
 var cssSourcesDir = path.join(publicHtmlDir, 'css');
 var templatesDir = path.join(publicHtmlDir, 'templates');
@@ -47,6 +48,7 @@ module.exports = function(grunt) {
 
 		phpCheckStyleConfigPath: phpCheckStyleConfigPath,
 		phpSourcesDir: phpSourcesDir,
+		libSourcesDir: libSourcesDir,
 		jsSourcesDir: jsSourcesDir,
 		cssSourcesDir: cssSourcesDir,
 
@@ -92,7 +94,9 @@ module.exports = function(grunt) {
 		cssmin: {
 			combine: {
 				files: {
-					'public_html/app.min.css': [cssSourcesDir + '/**/*.css'],
+					'public_html/app.min.css': [
+						libSourcesDir + '/nprogress.css',
+						cssSourcesDir + '/**/*.css'],
 				},
 			},
 		},
@@ -103,13 +107,21 @@ module.exports = function(grunt) {
 					sourceMap: true,
 				},
 				files: {
-					'public_html/app.min.js': [].concat(
-						[jsSourcesDir + '/DI.js'],
+					'public_html/app.min.js': [].concat([
+						libSourcesDir + '/jquery.min.js',
+						libSourcesDir + '/jquery.cookie.js',
+						libSourcesDir + '/underscore.min.js',
+						libSourcesDir + '/mousetrap.min.js',
+						libSourcesDir + '/marked.js',
+						libSourcesDir + '/nprogress.js',
+						jsSourcesDir + '/DI.js'],
+
 						grunt.file.expand({
 							filter: function(src) {
 								return !src.match(/(DI|Bootstrap)\.js/);
 							}
 						}, jsSourcesDir + '/**/*.js'),
+
 						[jsSourcesDir + '/Bootstrap.js']),
 				},
 			},
