@@ -1,3 +1,12 @@
+<%
+var reprValue = function(value) {
+	if (typeof(value) === 'string' || value instanceof String) {
+		return value;
+	}
+	return JSON.stringify(value);
+};
+%>
+
 <h1>History</h1>
 <table class="history">
 	<tbody>
@@ -45,13 +54,13 @@
 							<ul><!--
 								--><% _.each(historyEntry.dataDifference['+'], function (difference) { %><!--
 									--><li class="addition difference-<%= difference[0] %>"><!--
-										--><%= difference[0] + ':' + difference[1] %><!--
+										--><%= difference[0] + ':' + reprValue(difference[1]) %><!--
 									--></li><!--
 								--><% }) %><!--
 
 								--><% _.each(historyEntry.dataDifference['-'], function (difference) { %><!--
 									--><li class="removal difference-<%= difference[0] %>"><!--
-										--><%= difference[0] + ':' + difference[1] %><!--
+										--><%= difference[0] + ':' + reprValue(difference[1]) %><!--
 									--></li><!--
 								--><% }) %><!--
 							--></ul>
