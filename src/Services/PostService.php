@@ -17,7 +17,7 @@ use Szurubooru\SearchServices\Requirements\Requirement;
 use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
 use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
 use Szurubooru\Services\AuthService;
-use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\PostHistoryService;
 use Szurubooru\Services\ImageConverter;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
 use Szurubooru\Services\NetworkingService;
@@ -36,7 +36,7 @@ class PostService
 	private $authService;
 	private $networkingService;
 	private $tagService;
-	private $historyService;
+	private $postHistoryService;
 	private $imageConverter;
 	private $imageManipulator;
 
@@ -50,7 +50,7 @@ class PostService
 		TimeService $timeService,
 		NetworkingService $networkingService,
 		TagService $tagService,
-		HistoryService $historyService,
+		PostHistoryService $postHistoryService,
 		ImageConverter $imageConverter,
 		ImageManipulator $imageManipulator)
 	{
@@ -63,7 +63,7 @@ class PostService
 		$this->authService = $authService;
 		$this->networkingService = $networkingService;
 		$this->tagService = $tagService;
-		$this->historyService = $historyService;
+		$this->postHistoryService = $postHistoryService;
 		$this->imageConverter = $imageConverter;
 		$this->imageManipulator = $imageManipulator;
 	}
@@ -103,27 +103,6 @@ class PostService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getHistory(Post $post)
-	{
-		$transactionFunc = function() use ($post)
-		{
-			$filter = new SnapshotFilter();
-
-			$requirement = new Requirement();
-			$requirement->setType(SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
-			$requirement->setValue(new RequirementSingleValue($post->getId()));
-			$filter->addRequirement($requirement);
-
-			$requirement = new Requirement();
-			$requirement->setType(SnapshotFilter::REQUIREMENT_TYPE);
-			$requirement->setValue(new RequirementSingleValue(Snapshot::TYPE_POST));
-			$filter->addRequirement($requirement);
-
-			return $this->historyService->getFiltered($filter)->getEntities();
-		};
-		return $this->transactionManager->rollback($transactionFunc);
-	}
-
 	public function createPost(UploadFormData $formData)
 	{
 		$transactionFunc = function() use ($formData)
@@ -144,7 +123,7 @@ class PostService
 
 			$savedPost = $this->postDao->save($post);
 
-			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($savedPost));
+			$this->postHistoryService->savePostChange($savedPost);
 			return $savedPost;
 		};
 		$ret = $this->transactionManager->commit($transactionFunc);
@@ -185,7 +164,7 @@ class PostService
 			if (count($formData->flags) > 0)
 				$this->updatePostFlags($post, $formData->flags);
 
-			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
+			$this->postHistoryService->savePostChange($post);
 			return $this->postDao->save($post);
 		};
 		$ret = $this->transactionManager->commit($transactionFunc);
@@ -335,7 +314,7 @@ class PostService
 	{
 		$transactionFunc = function() use ($post)
 		{
-			$this->historyService->saveSnapshot($this->historyService->getPostDeleteSnapshot($post));
+			$this->postHistoryService->savePostDeletion($post);
 			$this->postDao->deleteById($post->getId());
 		};
 		$this->transactionManager->commit($transactionFunc);

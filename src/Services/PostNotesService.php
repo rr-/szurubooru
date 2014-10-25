@@ -5,7 +5,7 @@ use Szurubooru\Dao\PostNoteDao;
 use Szurubooru\Entities\Post;
 use Szurubooru\Entities\PostNote;
 use Szurubooru\FormData\PostNoteFormData;
-use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\PostHistoryService;
 use Szurubooru\Validator;
 
 class PostNotesService
@@ -13,18 +13,18 @@ class PostNotesService
 	private $validator;
 	private $transactionManager;
 	private $postNoteDao;
-	private $historyService;
+	private $postHistoryService;
 
 	public function __construct(
 		Validator $validator,
 		TransactionManager $transactionManager,
 		PostNoteDao $postNoteDao,
-		HistoryService $historyService)
+		PostHistoryService $postHistoryService)
 	{
 		$this->validator = $validator;
 		$this->transactionManager = $transactionManager;
 		$this->postNoteDao = $postNoteDao;
-		$this->historyService = $historyService;
+		$this->postHistoryService = $postHistoryService;
 	}
 
 	public function getById($postNoteId)
@@ -58,7 +58,7 @@ class PostNotesService
 			$this->updatePostNoteWithFormData($postNote, $formData);
 			$this->postNoteDao->save($postNote);
 
-			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
+			$this->postHistoryService->savePostChange($post);
 			return $postNote;
 		};
 		return $this->transactionManager->commit($transactionFunc);
@@ -71,7 +71,7 @@ class PostNotesService
 			$this->updatePostNoteWithFormData($postNote, $formData);
 			$this->postNoteDao->save($postNote);
 
-			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($postNote->getPost()));
+			$this->postHistoryService->savePostChange($postNote->getPost());
 			return $postNote;
 		};
 		return $this->transactionManager->commit($transactionFunc);

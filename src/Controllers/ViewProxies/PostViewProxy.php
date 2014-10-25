@@ -6,7 +6,7 @@ use Szurubooru\Helpers\MimeHelper;
 use Szurubooru\Privilege;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\FavoritesService;
-use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\PostHistoryService;
 use Szurubooru\Services\PostNotesService;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\ScoreService;
@@ -23,7 +23,7 @@ class PostViewProxy extends AbstractViewProxy
 
 	private $privilegeService;
 	private $authService;
-	private $historyService;
+	private $postHistoryService;
 	private $favoritesService;
 	private $scoreService;
 	private $postNotesService;
@@ -35,7 +35,7 @@ class PostViewProxy extends AbstractViewProxy
 	public function __construct(
 		PrivilegeService $privilegeService,
 		AuthService $authService,
-		HistoryService $historyService,
+		PostHistoryService $postHistoryService,
 		FavoritesService $favoritesService,
 		ScoreService $scoreService,
 		PostNotesService $postNotesService,
@@ -46,7 +46,7 @@ class PostViewProxy extends AbstractViewProxy
 	{
 		$this->privilegeService = $privilegeService;
 		$this->authService = $authService;
-		$this->historyService = $historyService;
+		$this->postHistoryService = $postHistoryService;
 		$this->favoritesService = $favoritesService;
 		$this->scoreService = $scoreService;
 		$this->postNotesService = $postNotesService;
@@ -102,7 +102,7 @@ class PostViewProxy extends AbstractViewProxy
 		if (!empty($config[self::FETCH_HISTORY]))
 		{
 			if ($this->privilegeService->hasPrivilege(Privilege::VIEW_HISTORY))
-				$result->history = $this->snapshotViewProxy->fromArray($this->historyService->getPostHistory($post));
+				$result->history = $this->snapshotViewProxy->fromArray($this->postHistoryService->getPostHistory($post));
 			else
 				$result->history = [];
 		}
