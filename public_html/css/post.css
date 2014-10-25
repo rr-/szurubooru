@@ -174,6 +174,10 @@
 .post-content {
 	position: relative;
 }
+.post-notes-target,
+.post-notes {
+	pointer-events: none;
+}
 .post-notes {
 	position: absolute;
 	left: 0;
@@ -181,16 +185,34 @@
 	right: 0;
 	bottom: 0;
 }
+
+.post-note-edit {
+	pointer-events: auto;
+	display: none;
+	position: absolute;
+	z-index: 2;
+	background: white;
+	border: 1px solid black;
+	padding: 1em;
+	left: 10%;
+	top: 10%;
+}
+.post-note-edit textarea {
+	width: 20em;
+	height: 5em;
+}
+.post-note-edit .actions {
+	margin-top: 0.5em;
+}
+.post-note-edit .actions button:not(:last-child) {
+	margin-right: 0.5em;
+}
+
 .post-note {
+	pointer-events: auto;
 	position: absolute;
 	background: rgba(255, 255, 255, 0.3);
 	border: 1px solid rgba(0, 0, 0, 0.3);
-}
-.post-note .dragger {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	cursor: move;
 }
 .post-note .text-wrapper {
 	position: absolute;
@@ -199,6 +221,9 @@
 	left: -1px;
 	padding-top: 0.5em;
 	cursor: pointer;
+	width: -webkit-max-content;
+	width: -moz-max-content;
+	width: max-content;
 }
 .post-note .text {
 	padding: 0.5em;
@@ -209,6 +234,19 @@
 	display: block;
 }
 
+.post-note .text p:first-of-type {
+	margin-top: 0;
+}
+.post-note .text p:last-of-type {
+	margin-bottom: 0;
+}
+
+.post-note .dragger {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	cursor: move;
+}
 .post-note .resizer {
 	position: absolute;
 	cursor: nwse-resize;

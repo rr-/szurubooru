@@ -4,17 +4,24 @@ App.Presenters = App.Presenters || {};
 App.Presenters.PostNotesPresenter = function(
 	jQuery,
 	util,
-	promise) {
+	promise,
+	api,
+	auth) {
 
 	var post;
 	var notes;
 	var templates = {};
 	var $target;
+	var $form;
+	var privileges = {};
 
 	function init(params, loaded) {
 		$target = params.$target;
 		post = params.post;
 		notes = params.notes || [];
+
+		privileges.canDeletePostNotes = auth.hasPrivilege(auth.privileges.deletePostNotes);
+		privileges.canEditPostNotes = auth.hasPrivilege(auth.privileges.editPostNotes);
 
 		promise.wait(util.promiseTemplate('post-notes'))
 			.then(function(postNotesTemplate) {
@@ -27,26 +34,100 @@ App.Presenters.PostNotesPresenter = function(
 			});
 	}
 
-	function addNewNote() {
-		notes.push({left: 50, top: 50, width: 50, height: 50, text: '&hellip;'});
+	function addNewPostNote() {
+		notes.push({left: 50, top: 50, width: 50, height: 50, text: '…'});
 	}
 
-	function addNewNoteAndRender() {
-		addNewNote();
+	function addNewPostNoteAndRender() {
+		addNewPostNote();
 		render();
 	}
 
 	function render() {
-		$target.html(templates.postNotes({post: post, notes: notes}));
+		$target.html(templates.postNotes({
+			privileges: privileges,
+			post: post,
+			notes: notes,
+			formatMarkdown: util.formatMarkdown}));
+
+		$form = $target.find('.post-note-edit');
 		var $postNotes = $target.find('.post-note');
 
 		$postNotes.each(function(i) {
+			var postNote = notes[i];
 			var $postNote = jQuery(this);
-			$postNote.data('postNote', notes[i]);
-			$postNote.find('.text-wrapper').mouseup(postNoteClicked);
+			$postNote.data('postNote', postNote);
+			$postNote.find('.text-wrapper').click(postNoteClicked);
+			postNote.$element = $postNote;
 			makeDraggable($postNote);
 			makeResizable($postNote);
 		});
+
+		$form.find('button').click(formSubmitted);
+	}
+
+	function formSubmitted(e) {
+		e.preventDefault();
+		var $button = jQuery(e.target);
+		var sender = $button.val();
+
+		var postNote = $form.data('postNote');
+		postNote.left = postNote.$element.offset().left - $target.offset().left;
+		postNote.top = postNote.$element.offset().top - $target.offset().top;
+		postNote.width = postNote.$element.width();
+		postNote.height = postNote.$element.height();
+		postNote.text = $form.find('textarea').val();
+
+		if (sender === 'cancel') {
+			hideForm();
+		} else if (sender === 'remove') {
+			removePostNote(postNote);
+		} else if (sender === 'save') {
+			savePostNote(postNote);
+		}
+	}
+
+	function removePostNote(postNote) {
+		if (postNote.id) {
+			if (window.confirm('Are you sure you want to delete this note?')) {
+				promise.wait(api.delete('/notes/' + postNote.id))
+					.then(function() {
+						hideForm();
+						postNote.$element.remove();
+					}).fail(function(response) {
+						window.alert(response.json && response.json.error || response);
+					});
+			}
+		} else {
+			postNote.$element.remove();
+			hideForm();
+		}
+	}
+
+	function savePostNote(postNote) {
+		if (window.confirm('Are you sure you want to save this note?')) {
+			var formData = {
+				left: postNote.left,
+				top: postNote.top,
+				width: postNote.width,
+				height: postNote.height,
+				text: postNote.text,
+			};
+
+			var p = postNote.id ?
+				api.put('/notes/' + postNote.id, formData) :
+				api.post('/notes/' + post.id, formData);
+
+			promise.wait(p)
+				.then(function(response) {
+					hideForm();
+					postNote.id = response.json.id;
+					postNote.$element.data('postNote', postNote);
+					render();
+				}).fail(function(response) {
+					window.alert(response.json && response.json.error || response);
+				});
+		}
 	}
 
 	function postNoteClicked(e) {
@@ -55,8 +136,19 @@ App.Presenters.PostNotesPresenter = function(
 		if ($postNote.hasClass('resizing') || $postNote.hasClass('dragging')) {
 			return;
 		}
+		showFormForPostNote($postNote);
 	}
 
+	function showFormForPostNote($postNote) {
+		var postNote = $postNote.data('postNote');
+		$form.data('postNote', postNote);
+		$form.find('textarea').val(postNote.text);
+		$form.show();
+	}
+
+	function hideForm() {
+		$form.hide();
+	}
 
 	function makeDraggable($element) {
 		var $dragger = jQuery('<div class="dragger"></div>');
@@ -103,7 +195,6 @@ App.Presenters.PostNotesPresenter = function(
 			e.stopPropagation();
 			$element.addClass('resizing');
 
-			var $parent = $element.parent();
 			var deltaX = $element.width() - e.clientX;
 			var deltaY = $element.height() - e.clientY;
 
@@ -129,7 +220,7 @@ App.Presenters.PostNotesPresenter = function(
 	return {
 		init: init,
 		render: render,
-		addNewNote: addNewNoteAndRender,
+		addNewPostNote: addNewPostNoteAndRender,
 	};
 
 };
@@ -137,5 +228,7 @@ App.Presenters.PostNotesPresenter = function(
 App.DI.register('postNotesPresenter', [
 	'jQuery',
 	'util',
-	'promise'],
+	'promise',
+	'api',
+	'auth'],
 	App.Presenters.PostNotesPresenter);

@@ -11,15 +11,7 @@ first major release.
 - tags: add tag edit snapshots (backed-only)
 
 - post notes
-    - "add note" in sidebar creates new note in the middle of image
-    - hovering notes shows note text
-    - dragging and resizing notes is always possible
-    - clicking note reveals modal popup with textarea to input text
-    - under textarea there are buttons for saving and/or deleting the note.
-    - post notes should have separate table and shouldn't be stored as json
-      column.
-    - post notes should be visible in post edit history.
-      (move post snapshot factory methods to PostService)
+    - post notes history
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and

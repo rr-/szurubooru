@@ -40,9 +40,14 @@ App.Presenters.PostContentPresenter = function(
 			function() {});
 	}
 
+	function addNewPostNote() {
+		postNotesPresenter.addNewPostNote();
+	}
+
 	return {
 		init: init,
 		render: render,
+		addNewPostNote: addNewPostNote,
 	};
 
 };

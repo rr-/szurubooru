@@ -36,6 +36,7 @@ App.Presenters.PostPresenter = function(
 		privileges.canDeletePosts = auth.hasPrivilege(auth.privileges.deletePosts);
 		privileges.canFeaturePosts = auth.hasPrivilege(auth.privileges.featurePosts);
 		privileges.canViewHistory = auth.hasPrivilege(auth.privileges.viewHistory);
+		privileges.canAddPostNotes = auth.hasPrivilege(auth.privileges.addPostNotes);
 
 		promise.wait(
 				util.promiseTemplate('post'),
@@ -70,7 +71,7 @@ App.Presenters.PostPresenter = function(
 					[postContentPresenter, {post: post, $target: $el.find('#post-content-target')}],
 					[postEditPresenter, {post: post, $target: $el.find('#post-edit-target'), updateCallback: postEdited}],
 					[postCommentListPresenter, {post: post, $target: $el.find('#post-comments-target')}]],
-					function() {});
+					function() { });
 
 			}).fail(function() {
 				console.log(arguments);
@@ -182,6 +183,12 @@ App.Presenters.PostPresenter = function(
 		$el.find('#sidebar .delete-favorite').click(deleteFavoriteButtonClicked);
 		$el.find('#sidebar .score-up').click(scoreUpButtonClicked);
 		$el.find('#sidebar .score-down').click(scoreDownButtonClicked);
+		$el.find('#sidebar .add-note').click(addNoteButtonClicked);
+	}
+
+	function addNoteButtonClicked(e) {
+		e.preventDefault();
+		postContentPresenter.addNewPostNote();
 	}
 
 	function deleteButtonClicked(e) {

@@ -207,6 +207,14 @@
 					</li>
 				<% } %>
 
+				<% if (privileges.canAddPostNotes) { %>
+					<li>
+						<a class="add-note" href="#">
+							Add new note
+						</a>
+					</li>
+				<% } %>
+
 				<% if (privileges.canDeletePosts) { %>
 					<li>
 						<a class="delete" href="#">
