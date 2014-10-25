@@ -5,7 +5,7 @@
 }
 
 #post-upload-step1 .file-handler {
-	padding: 3.5em;
+	padding: 3.5em !important;
 	width: 100%;
 }
 

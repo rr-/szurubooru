@@ -170,15 +170,16 @@ input[type=checkbox]:focus + label {
 	background: none;
 }
 .file-handler {
-	box-shadow: none;
-	border: 3px dashed #eee;
-	padding: 0.3em 0.5em;
+	box-shadow: none !important;
+	outline: none !important;
+	border: 3px dashed #eee !important;
+	padding: 0.3em 0.5em !Important;
 	line-height: 140% !important;
 	text-align: center;
 	cursor: pointer;
 }
 .file-handler.active {
-	border-color: #64C2ED;
+	border-color: #64C2ED !important;
 	background-color: #eeffcc;
 }
 
