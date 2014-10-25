@@ -1,6 +1,6 @@
 <% var postContentUrl = '/data/posts/' + post.name + '?x=' + Math.random() /* reset gif animations */ %>
 
-<div class="post-type-<%= post.contentType %>">
+<div class="post-content post-type-<%= post.contentType %>">
 	<div class="post-notes-target">
 	</div>
 
