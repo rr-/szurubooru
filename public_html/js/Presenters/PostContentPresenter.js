@@ -3,7 +3,9 @@ App.Presenters = App.Presenters || {};
 
 App.Presenters.PostContentPresenter = function(
 	util,
-	promise) {
+	promise,
+	presenterManager,
+	postNotesPresenter) {
 
 	var post;
 	var templates = {};
@@ -18,6 +20,11 @@ App.Presenters.PostContentPresenter = function(
 				templates.postContent = postContentTemplate;
 				render();
 				loaded();
+
+				presenterManager.initPresenters([
+					[postNotesPresenter, {post: post, notes: post.notes, $target: $target.find('.post-notes-target')}]],
+					function() {});
+
 			}).fail(function() {
 				console.log(arguments);
 				loaded();
@@ -37,5 +44,7 @@ App.Presenters.PostContentPresenter = function(
 
 App.DI.register('postContentPresenter', [
 	'util',
-	'promise'],
+	'promise',
+	'presenterManager',
+	'postNotesPresenter'],
 	App.Presenters.PostContentPresenter);

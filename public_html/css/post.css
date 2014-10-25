@@ -166,3 +166,24 @@
 	display: none;
 	word-break: break-all;
 }
+
+.post-notes-target {
+	position: absolute;
+}
+.post-note {
+	position: absolute;
+	background: rgba(255, 255, 255, 0.7);
+	border: 1px solid rgba(0, 0, 0, 0.5);
+}
+.post-note .text-wrapper {
+	position: absolute;
+	background: lemonchiffon;
+	border: 1px solid black;
+	padding: 0.5em;
+	display: none;
+	bottom: calc(-100% + 5px);
+	left: -1px;
+}
+.post-note:hover .text-wrapper {
+	display: block;
+}
