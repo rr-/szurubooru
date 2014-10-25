@@ -35,3 +35,8 @@ AddType text/plain .tpl
 	ExpiresByType application/javascript "access plus 1 year"
 	ExpiresByType application/x-javascript "access plus 1 year"
 </IfModule>
+
+<ifModule mod_deflate.c>
+	AddOutputFilterByType DEFLATE text/html text/xml text/css text/plain
+	AddOutputFilterByType DEFLATE text/javascript application/javascript application/x-javascript application/json
+</ifModule>
