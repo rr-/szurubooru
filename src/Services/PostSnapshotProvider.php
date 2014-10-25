@@ -1,18 +1,25 @@
 <?php
 namespace Szurubooru\Services;
 use Szurubooru\Dao\GlobalParamDao;
+use Szurubooru\Dao\PostNoteDao;
 use Szurubooru\Entities\GlobalParam;
 use Szurubooru\Entities\Post;
+use Szurubooru\Entities\PostNote;
 use Szurubooru\Entities\Snapshot;
+use Szurubooru\Entities\Tag;
 use Szurubooru\Helpers\EnumHelper;
 
 class PostSnapshotProvider
 {
 	private $globalParamDao;
+	private $postNoteDao;
 
-	public function __construct(GlobalParamDao $globalParamDao)
+	public function __construct(
+		GlobalParamDao $globalParamDao,
+		PostNoteDao $postNoteDao)
 	{
 		$this->globalParamDao = $globalParamDao;
+		$this->postNoteDao = $postNoteDao;
 	}
 
 	public function getPostChangeSnapshot(Post $post)
@@ -33,9 +40,21 @@ class PostSnapshotProvider
 			'contentChecksum' => $post->getContentChecksum(),
 			'featured' => $isFeatured,
 
+			'notes' => array_values(array_map(function (PostNote $note)
+				{
+					return [
+						'x' => intval($note->getLeft()),
+						'y' => intval($note->getTop()),
+						'w' => intval($note->getWidth()),
+						'h' => intval($note->getHeight()),
+						'text' => trim($note->getText()),
+					];
+				},
+				$this->postNoteDao->findByPostId($post->getId()))),
+
 			'tags' =>
 				array_values(array_map(
-					function ($tag)
+					function (Tag $tag)
 					{
 						return $tag->getName();
 					},
@@ -43,7 +62,7 @@ class PostSnapshotProvider
 
 			'relations' =>
 				array_values(array_map(
-					function ($post)
+					function (Post $post)
 					{
 						return $post->getId();
 					},
@@ -54,6 +73,7 @@ class PostSnapshotProvider
 
 		sort($data['tags']);
 		sort($data['relations']);
+		usort($data['notes'], function ($note1, $note2) { return $note1['x'] - $note2['x']; });
 
 		$snapshot = $this->getPostSnapshot($post);
 		$snapshot->setOperation(Snapshot::OPERATION_CHANGE);

@@ -10,9 +10,6 @@ first major release.
 - tags: add tag descriptions
 - tags: add tag edit snapshots (backed-only)
 
-- post notes
-    - post notes history
-
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)

@@ -1,8 +1,10 @@
 <?php
 namespace Szurubooru\Tests\Services;
 use Szurubooru\Dao\GlobalParamDao;
+use Szurubooru\Dao\PostNoteDao;
 use Szurubooru\Entities\GlobalParam;
 use Szurubooru\Entities\Post;
+use Szurubooru\Entities\PostNote;
 use Szurubooru\Entities\Snapshot;
 use Szurubooru\Entities\Tag;
 use Szurubooru\Services\PostSnapshotProvider;
@@ -16,6 +18,7 @@ class PostSnapshotProviderTest extends AbstractTestCase
 	{
 		parent::setUp();
 		$this->globalParamDaoMock = $this->mock(GlobalParamDao::class);
+		$this->postNoteDaoMock = $this->mock(PostNoteDao::class);
 	}
 
 	public function testPostChangeSnapshot()
@@ -35,6 +38,11 @@ class PostSnapshotProviderTest extends AbstractTestCase
 		$post->setSource('amazing source');
 		$post->setFlags(Post::FLAG_LOOP);
 
+		$this->postNoteDaoMock
+			->method('findByPostId')
+			->with($post->getId())
+			->willReturn([$this->getTestPostNote()]);
+
 		$postSnapshotProvider = $this->getPostSnapshotProvider();
 		$snapshot = $postSnapshotProvider->getPostChangeSnapshot($post);
 
@@ -46,6 +54,7 @@ class PostSnapshotProviderTest extends AbstractTestCase
 			'tags' => ['tag1', 'tag2'],
 			'relations' => [1, 2],
 			'flags' => ['loop'],
+			'notes' => [['x' => 5, 'y' => 6, 'w' => 7, 'h' => 8, 'text' => 'text']],
 		], $snapshot->getData());
 
 		$this->assertEquals(Snapshot::TYPE_POST, $snapshot->getType());
@@ -67,6 +76,11 @@ class PostSnapshotProviderTest extends AbstractTestCase
 			->with(GlobalParam::KEY_FEATURED_POST)
 			->willReturn($param);
 
+		$this->postNoteDaoMock
+			->method('findByPostId')
+			->with($post->getId())
+			->willReturn([]);
+
 		$postSnapshotProvider = $this->getPostSnapshotProvider();
 		$snapshot = $postSnapshotProvider->getPostChangeSnapshot($post);
 
@@ -75,6 +89,17 @@ class PostSnapshotProviderTest extends AbstractTestCase
 
 	private function getPostSnapshotProvider()
 	{
-		return new PostSnapshotProvider($this->globalParamDaoMock);
+		return new PostSnapshotProvider($this->globalParamDaoMock, $this->postNoteDaoMock);
+	}
+
+	private function getTestPostNote()
+	{
+		$postNote = new PostNote();
+		$postNote->setLeft(5);
+		$postNote->setTop(6);
+		$postNote->setWidth(7);
+		$postNote->setHeight(8);
+		$postNote->setText('text');
+		return $postNote;
 	}
 }
