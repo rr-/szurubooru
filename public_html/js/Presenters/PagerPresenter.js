@@ -94,6 +94,7 @@ App.Presenters.PagerPresenter = function(
 
 					if (forceClear || !endlessScroll) {
 						clearContent();
+						window.scrollTo(0, 0);
 					}
 					var $page = jQuery('<div class="page">');
 					if (endlessScroll && pager.getTotalPages() > 1) {

@@ -78,7 +78,6 @@ App.Presenters.UserListPresenter = function(
 			$target.append($item);
 		});
 		_.map(_.map($target.find('img'), jQuery), util.loadImagesNicely);
-		window.scrollTo(0, 0);
 	}
 
 	return {

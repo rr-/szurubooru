@@ -84,7 +84,6 @@ App.Presenters.GlobalCommentListPresenter = function(
 
 			$target.append($post);
 		});
-		window.scrollTo(0, 0);
 	}
 
 	return {

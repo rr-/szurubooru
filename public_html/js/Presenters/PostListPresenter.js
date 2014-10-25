@@ -113,7 +113,6 @@ App.Presenters.PostListPresenter = function(
 			}
 		});
 		windowResized();
-		window.scrollTo(0, 0);
 	}
 
 	function shouldSkipPost(post) {
