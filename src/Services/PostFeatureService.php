@@ -69,9 +69,12 @@ class PostFeatureService
 		{
 			$previousFeaturedPost = $this->getFeaturedPost();
 
-			$post->setLastFeatureTime($this->timeService->getCurrentTime());
-			$post->setFeatureCount($post->getFeatureCount() + 1);
-			$this->postDao->save($post);
+			if ($previousFeaturedPost->getId() !== $post->getId())
+			{
+				$post->setLastFeatureTime($this->timeService->getCurrentTime());
+				$post->setFeatureCount($post->getFeatureCount() + 1);
+				$this->postDao->save($post);
+			}
 
 			$globalParam = new GlobalParam();
 			$globalParam->setKey(GlobalParam::KEY_FEATURED_POST);
