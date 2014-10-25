@@ -5,14 +5,17 @@ class MimeHelper
 {
 	public static function getMimeTypeFromFile($path)
 	{
-		$finfo = new \finfo(FILEINFO_MIME);
-		return self::stripCharset($finfo->file($path));
+		$fh = fopen($path, 'rb');
+		if (!$fh)
+			throw new \Exception('Cannot open ' . $path . ' for reading');
+		$bytes = fread($fh, 16);
+		fclose($fh);
+		return self::getMimeTypeFrom16Bytes($bytes);
 	}
 
 	public static function getMimeTypeFromBuffer($buffer)
 	{
-		$finfo = new \finfo(FILEINFO_MIME);
-		return self::stripCharset($finfo->buffer($buffer));
+		return self::getMimeTypeFrom16Bytes(substr($buffer, 0, 16));
 	}
 
 	public static function isFlash($mime)
@@ -38,36 +41,55 @@ class MimeHelper
 			'image/jpeg' => 'JPG',
 			'image/png' => 'PNG',
 			'image/gif' => 'GIF',
-			'video/3gpp' => '3GP',
-			'video/annodex' => 'AXV',
-			'video/dl' => 'DL',
-			'video/dv' => 'dif DV',
-			'video/fli' => 'FLI',
-			'video/gl' => 'GL',
-			'video/mpeg' => 'mpeg mpg MPE',
-			'video/MP2T' => 'TS',
-			'video/mp4' => 'MP4',
-			'video/quicktime' => 'qt MOV',
-			'video/ogg' => 'OGV',
 			'video/webm' => 'WEBM',
-			'video/vnd.mpegurl' => 'MXU',
+			'video/mp4' => 'MP4',
+			'video/mpeg' => 'MPEG MPG MPE',
 			'video/x-flv' => 'FLV',
-			'video/x-mng' => 'MNG',
-			'video/x-ms-asf' => 'asf ASX',
-			'video/x-ms-wm' => 'WM',
-			'video/x-ms-wmv' => 'WMV',
-			'video/x-ms-wmx' => 'WMX',
-			'video/x-ms-wvx' => 'WVX',
-			'video/x-msvideo' => 'AVI',
 			'video/x-matroska' => 'MKV',
+			'video/3gpp' => '3GP',
+			'video/quicktime' => 'QT MOV',
 			'text/plain' => 'TXT',
 		];
 		$key = strtolower(trim($mime));
 		return isset($map[$key]) ? $map[$key] : null;
 	}
 
-	private static function stripCharset($mime)
+	private static function getMimeTypeFrom16Bytes($bytes)
 	{
-		return preg_replace('/;\s*charset.*$/', '', $mime);
+		if ($bytes === false)
+			return false;
+
+		if (strncmp($bytes, 'CWS', 3) === 0 or strncmp($bytes, 'FWS', 3) === 0 or strncmp($bytes, 'ZWS', 3) === 0)
+			return 'application/x-shockwave-flash';
+
+		if (strncmp($bytes, "\xff\xd8\xff", 3) === 0)
+			return 'image/jpeg';
+
+		if (strncmp($bytes, "\x89PNG\x0d\x0a", 6) === 0)
+			return 'image/png';
+
+		if (strncmp($bytes, 'GIF87a', 6) === 0 or strncmp($bytes, 'GIF89a', 6) === 0)
+			return 'image/gif';
+
+		if (strncmp($bytes, "\x1a\x45\xdf\xa3", 4) === 0)
+			return 'video/webm';
+
+		if (strncmp(substr($bytes, 4), 'ftypisom', 8) === 0 or strncmp(substr($bytes, 4), 'ftypmp42', 8) === 0)
+			return 'video/mp4';
+
+		if (strncmp($bytes, "\x46\x4c\x56\x01", 4) === 0)
+			return 'video/x-flv';
+
+		if (strncmp($bytes, "\x1a\x45\xdf\xa3\x93\x42\x82\x88\x6d\x61\x74\x72\x6f\x73\x6b\x61", 16) === 0)
+			return 'video/x-matroska';
+
+		if (strncmp($bytes, "\x00\x00\x00\x14\x66\x74\x79\x70\x33\x67\x70", 12) === 0 or
+			strncmp($bytes, "\x00\x00\x00\x20\x66\x74\x79\x70\x33\x67\x70", 12) === 0)
+			return 'video/3gpp';
+
+		if (strncmp(substr($bytes, 4), 'ftypqt  ', 8) === 0)
+			return 'video/quicktime';
+
+		return 'application/octet-stream';
 	}
 }

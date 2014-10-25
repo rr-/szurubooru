@@ -8,7 +8,6 @@ In order to run szurubooru, you need to have installed following software:
     - mod_mime_magic (recommended)
 - PHP 5.6.0
     - pdo_sqlite
-    - fileinfo
     - imagick or gd
 - composer (PHP package manager)
 - npm (node.js package manager)
@@ -58,11 +57,9 @@ your setup):
 
     ;Linux
     extension=pdo_sqlite.so
-    ;Linux has php_fileinfo enabled by default
 
     ;Windows
     extension=php_pdo_sqlite.dll
-    extension=php_fileinfo.dll
 
 In order to draw thumbnails, szurubooru needs either imagick or gd2:
 
