@@ -10,6 +10,8 @@ final class PostNote extends Entity
 	private $height;
 	private $text;
 
+	const LAZY_LOADER_POST = 'post';
+
 	public function getPostId()
 	{
 		return $this->postId;
@@ -68,5 +70,16 @@ final class PostNote extends Entity
 	public function setText($text)
 	{
 		$this->text = $text;
+	}
+
+	public function getPost()
+	{
+		return $this->lazyLoad(self::LAZY_LOADER_POST, null);
+	}
+
+	public function setPost(Post $post)
+	{
+		$this->lazySave(self::LAZY_LOADER_POST, $post);
+		$this->postId = $post->getId();
 	}
 }

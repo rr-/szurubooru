@@ -35,6 +35,10 @@ class Privilege
 	const CHANGE_POST_RELATIONS = 'changePostRelations';
 	const CHANGE_POST_FLAGS = 'changePostFlags';
 
+	const ADD_POST_NOTES = 'addPostNotes';
+	const EDIT_POST_NOTES = 'editPostNotes';
+	const DELETE_POST_NOTES = 'deletePostNotes';
+
 	const LIST_TAGS = 'listTags';
 	const MASS_TAG = 'massTag';
 	const CHANGE_TAG_NAME = 'changeTagName';

@@ -114,7 +114,7 @@ class PostViewProxy extends AbstractViewProxy
 			$result->favorites = $this->userViewProxy->fromArray($this->favoritesService->getFavoriteUsers($post));
 
 		if (!empty($config[self::FETCH_NOTES]))
-			$result->notes = $this->postNoteViewProxy->fromArray($this->postNotesService->getPostNotes($post));
+			$result->notes = $this->postNoteViewProxy->fromArray($this->postNotesService->getByPost($post));
 
 		return $result;
 	}

@@ -53,6 +53,7 @@ return [
 			$container->get(\Szurubooru\Controllers\UserAvatarController::class),
 			$container->get(\Szurubooru\Controllers\PostController::class),
 			$container->get(\Szurubooru\Controllers\PostContentController::class),
+			$container->get(\Szurubooru\Controllers\PostNotesController::class),
 			$container->get(\Szurubooru\Controllers\GlobalParamController::class),
 			$container->get(\Szurubooru\Controllers\HistoryController::class),
 			$container->get(\Szurubooru\Controllers\FavoritesController::class),
