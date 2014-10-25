@@ -20,7 +20,7 @@ App.Presenters.PagerPresenter = function(
 	var endlessScroll = browsingSettings.getSettings().endlessScroll;
 	var scrollInterval;
 	var templates = {};
-	var forceClear = false;
+	var forceClear = !endlessScroll;
 
 	var baseUri;
 	var updateCallback;
@@ -34,11 +34,11 @@ App.Presenters.PagerPresenter = function(
 		$target = params.$target;
 		targetContent = jQuery(params.$target).html();
 
+		pager.init({url: params.backendUri});
+		setQuery(params.query);
 		if (forceClear) {
 			clearContent();
 		}
-		pager.init({url: params.backendUri});
-		setQuery(params.query);
 
 		promise.wait(util.promiseTemplate('pager'))
 			.then(function(template) {
@@ -52,18 +52,18 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function reinit(params, loaded) {
+		setQuery(params.query);
 		if (forceClear) {
 			clearContent();
 		}
-		setQuery(params.query);
 
 		promise.wait(retrieve())
 			.then(loaded)
 			.fail(loaded);
 
 		if (!endlessScroll) {
-			keyboard.keydown('a', function() { pager.prevPage(); syncUrl(); });
-			keyboard.keydown('d', function() { pager.nextPage(); syncUrl(); });
+			keyboard.keydown('a', function() { syncUrl({page: pager.getPage() - 1}); });
+			keyboard.keydown('d', function() { syncUrl({page: pager.getPage() + 1}); });
 		}
 	}
 
@@ -71,16 +71,22 @@ App.Presenters.PagerPresenter = function(
 		detachNextPageLoader();
 	}
 
-	function getUrl() {
-		return util.appendComplexRouteParam(baseUri, _.extend({}, pager.getSearchParams(), {page: pager.getPage()}));
+	function getUrl(options) {
+		return util.appendComplexRouteParam(
+			baseUri,
+			_.extend(
+				{},
+				pager.getSearchParams(),
+				{page: pager.getPage()},
+				options));
 	}
 
-	function syncUrl() {
-		router.navigate(getUrl());
+	function syncUrl(options) {
+		router.navigate(getUrl(options));
 	}
 
-	function syncUrlInplace() {
-		router.navigateInplace(getUrl());
+	function syncUrlInplace(options) {
+		router.navigateInplace(getUrl(options));
 	}
 
 	function retrieve() {
@@ -92,7 +98,7 @@ App.Presenters.PagerPresenter = function(
 				.then(function(response) {
 					progress.done();
 
-					if (forceClear || !endlessScroll) {
+					if (forceClear) {
 						clearContent();
 						window.scrollTo(0, 0);
 					}
@@ -104,7 +110,7 @@ App.Presenters.PagerPresenter = function(
 					$target.find('.pagination-content').append($page);
 					updateCallback($page, response);
 
-					forceClear = false;
+					refreshPageList();
 					if (!response.entities.length) {
 						messagePresenter.showInfo($messages, 'No data to show');
 						if (pager.getVisiblePages().length === 1) {
@@ -119,7 +125,7 @@ App.Presenters.PagerPresenter = function(
 					if (pager.getPage() < response.totalPages) {
 						attachNextPageLoader();
 					}
-					refreshPageList();
+
 					resolve();
 				}).fail(function(response) {
 					progress.done();
@@ -148,8 +154,7 @@ App.Presenters.PagerPresenter = function(
 			var baseLine = $target.offset().top + $target.innerHeight();
 			var scrollY = jQuery(window).scrollTop() + jQuery(window).height();
 			if (scrollY > baseLine) {
-				pager.nextPage();
-				syncUrlInplace();
+				syncUrlInplace({page: pager.getPage() + 1});
 				window.clearInterval(myScrollInterval);
 			}
 		}, 100);
@@ -180,8 +185,7 @@ App.Presenters.PagerPresenter = function(
 			var $a = jQuery('<a href="#"/>');
 			$a.click(function(e) {
 				e.preventDefault();
-				pager.setPage(page);
-				syncUrl();
+				syncUrl({page: page});
 			});
 			$a.addClass('big-button');
 			$a.text(page);
@@ -215,7 +219,8 @@ App.Presenters.PagerPresenter = function(
 		forceClear =
 			query.query !== pager.getSearchParams().query ||
 			query.order !== pager.getSearchParams().order ||
-			parseInt(page) !== pager.getPage();
+			parseInt(page) !== pager.getPage() + 1 ||
+			!endlessScroll;
 		pager.setSearchParams(query);
 		pager.setPage(page);
 	}
