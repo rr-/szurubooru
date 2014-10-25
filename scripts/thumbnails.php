@@ -14,7 +14,7 @@ $size = isset($argv[1]) ? $argv[1] : 160;
 $postDao = Injector::get(PostDao::class);
 $postThumbnailService = Injector::get(PostThumbnailService::class);
 
-foreach ($postDao->findAll() as $post)
+foreach (array_reverse($postDao->findAll()) as $post)
 {
 	try
 	{
