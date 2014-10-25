@@ -202,7 +202,7 @@ App.Presenters.PostPresenter = function(
 	function featureButtonClicked(e) {
 		e.preventDefault();
 		messagePresenter.hideMessages($messages);
-		if (window.confirm('Do you want to feature this post on fron page?')) {
+		if (window.confirm('Do you want to feature this post on the front page?')) {
 			featurePost();
 		}
 	}
