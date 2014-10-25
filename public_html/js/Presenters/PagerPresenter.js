@@ -94,6 +94,8 @@ App.Presenters.PagerPresenter = function(
 		progress.start();
 
 		return promise.make(function(resolve, reject) {
+			hidePageList();
+
 			promise.wait(pager.retrieve())
 				.then(function(response) {
 					progress.done();
