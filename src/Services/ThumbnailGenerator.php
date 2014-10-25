@@ -1,6 +1,5 @@
 <?php
 namespace Szurubooru\Services;
-use Szurubooru\Services\ImageManipulation\IImageManipulator;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
 
 class ThumbnailGenerator
@@ -17,7 +16,7 @@ class ThumbnailGenerator
 		$this->imageConverter = $imageConverter;
 	}
 
-	public function generate($source, $width, $height, $cropStyle)
+	public function generate($source, $width, $height, $cropStyle, $format)
 	{
 		$image = $this->imageConverter->createImageFromBuffer($source);
 		if (!$image)
@@ -40,9 +39,7 @@ class ThumbnailGenerator
 				throw new \InvalidArgumentException('Unknown thumbnail crop style');
 		}
 
-		return $this->imageManipulator->saveToBuffer(
-			$image,
-			IImageManipulator::FORMAT_JPEG);
+		return $this->imageManipulator->saveToBuffer($image, $format);
 	}
 
 	private function cropOutside(&$image, $srcWidth, $srcHeight, $dstWidth, $dstHeight)

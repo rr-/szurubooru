@@ -81,6 +81,7 @@ class GdImageManipulator implements IImageManipulator
 				break;
 
 			default:
+				throw new \InvalidArgumentException('Not supported');
 		}
 
 		$buffer = ob_get_contents();

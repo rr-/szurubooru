@@ -18,7 +18,6 @@ class ImageConverter
 		$this->imageManipulator = $imageManipulator;
 	}
 
-
 	public function createImageFromBuffer($source)
 	{
 		$tmpSourcePath = tempnam(sys_get_temp_dir(), 'thumb') . '.dat';

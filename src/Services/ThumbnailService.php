@@ -2,10 +2,15 @@
 namespace Szurubooru\Services;
 use Szurubooru\Config;
 use Szurubooru\Dao\PublicFileDao;
+use Szurubooru\Helpers\ProgramExecutor;
+use Szurubooru\Services\ImageManipulation\IImageManipulator;
 use Szurubooru\Services\ThumbnailGenerator;
 
 class ThumbnailService
 {
+	const PROGRAM_NAME_JPEGOPTIM = 'jpegoptim';
+	const PROGRAM_NAME_OPTIPNG = 'optipng';
+
 	private $config;
 	private $fileDao;
 	private $thumbnailGenerator;
@@ -59,11 +64,13 @@ class ThumbnailService
 		$source = $this->fileDao->load($sourceName);
 		if ($source)
 		{
-			$thumbnailContent = $this->thumbnailGenerator->generate($source, $width, $height, $cropStyle);
+			$format = $this->getFormat();
+			$thumbnailContent = $this->thumbnailGenerator->generate($source, $width, $height, $cropStyle, $format);
 			if ($thumbnailContent)
 			{
 				$targetName = $this->getTargetName($sourceName, $width, $height);
 				$this->fileDao->save($targetName, $thumbnailContent);
+				$this->optimize($targetName, $format);
 				return $targetName;
 			}
 		}
@@ -96,5 +103,36 @@ class ThumbnailService
 	public function getBlankThumbnailName()
 	{
 		return 'thumbnails' . DIRECTORY_SEPARATOR . 'blank.png';
+	}
+
+	private function getFormat()
+	{
+		return IImageManipulator::FORMAT_JPEG;
+	}
+
+	private function optimize($sourceName, $format)
+	{
+		$sourcePath = $this->fileDao->getFullPath($sourceName);
+
+		if ($format === IImageManipulator::FORMAT_JPEG and ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_JPEGOPTIM))
+		{
+			ProgramExecutor::run(
+				self::PROGRAM_NAME_JPEGOPTIM,
+				[
+					'--quiet',
+					'--strip-all',
+					$sourcePath,
+				]);
+		}
+
+		elseif ($format === IImageManipulator::FORMAT_PNG and ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_OPTIPNG))
+		{
+			ProgramExecutor::run(
+				self::PROGRAM_NAME_OPTIPNG,
+				[
+					'-o2',
+					$sourcePath,
+				]);
+		}
 	}
 }
