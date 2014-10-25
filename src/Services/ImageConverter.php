@@ -25,8 +25,7 @@ class ImageConverter
 		try
 		{
 			file_put_contents($tmpSourcePath, $source);
-			if (!$this->convert($tmpSourcePath, $tmpTargetPath))
-				throw new \Exception('Error while converting supplied file to image');
+			$this->convert($tmpSourcePath, $tmpTargetPath);
 
 			$tmpSource = file_get_contents($tmpTargetPath);
 			return $this->imageManipulator->loadFromBuffer($tmpSource);
@@ -43,18 +42,16 @@ class ImageConverter
 		$mime = MimeHelper::getMimeTypeFromFile($sourcePath);
 
 		if (MimeHelper::isImage($mime))
-		{
 			copy($sourcePath, $targetPath);
-			return true;
-		}
 
-		if (MimeHelper::isFlash($mime))
-			return $this->convertFromFlash($sourcePath, $targetPath);
+		elseif (MimeHelper::isFlash($mime))
+			$this->convertFromFlash($sourcePath, $targetPath);
 
-		if (MimeHelper::isVideo($mime))
-			return $this->convertFromVideo($sourcePath, $targetPath);
+		elseif (MimeHelper::isVideo($mime))
+			$this->convertFromVideo($sourcePath, $targetPath);
 
-		return false;
+		else
+			throw new \Exception('Error while converting file to image - unrecognized MIME: ' . $mime);
 	}
 
 	private function convertFromFlash($sourcePath, $targetPath)
@@ -86,9 +83,7 @@ class ImageConverter
 		}
 
 		if (!file_exists($targetPath))
-			return false;
-
-		return true;
+			throw new \Exception('Error while converting Flash file to image');
 	}
 
 	private function convertFromVideo($sourcePath, $targetPath)
@@ -116,9 +111,7 @@ class ImageConverter
 		}
 
 		if (!file_exists($targetPath))
-			return false;
-
-		return true;
+			throw new \Exception('Error while converting video file to image');
 	}
 
 	private function deleteIfExists($path)
