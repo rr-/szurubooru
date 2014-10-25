@@ -16,6 +16,7 @@ App.Presenters.HomePresenter = function(
 	var templates = {};
 	var globals;
 	var post;
+	var user;
 
 	function init(params, loaded) {
 		topNavigationPresenter.select('home');
