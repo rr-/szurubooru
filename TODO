@@ -9,8 +9,12 @@ first major release.
 - tags: add tag merging
 - tags: add tag descriptions
 - tags: add tag edit snapshots (backed-only)
+- add /history
+- fix post notes on scaled posts
+- fix image size not being respected
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
       possible disposal of EnumHelper in favor of something more subtle)
     - reduce dependencies
+    - split PostService into PostSearchService and PostEditService
