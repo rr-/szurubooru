@@ -34,4 +34,4 @@ AddType text/plain .tpl
 	ExpiresByType text/javascript "access plus 1 year"
 	ExpiresByType application/javascript "access plus 1 year"
 	ExpiresByType application/x-javascript "access plus 1 year"
-</IFMOdule>
+</IfModule>
