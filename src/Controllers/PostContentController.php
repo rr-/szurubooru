@@ -40,13 +40,12 @@ final class PostContentController extends AbstractController
 	{
 		$post = $this->postService->getByName($postName);
 
-		$options = new \StdClass;
-		$options->customFileName = sprintf('%s_%s.%s',
+		$customFileName = sprintf('%s_%s.%s',
 			$this->config->basic->serviceName,
 			$post->getName(),
 			strtolower(MimeHelper::getExtension($post->getContentMimeType())));
 
-		$this->networkingService->serveFile($this->fileDao->getFullPath($post->getContentPath()), $options);
+		$this->networkingService->serveFile($this->fileDao->getFullPath($post->getContentPath()), $customFileName);
 	}
 
 	public function getPostThumbnail($postName, $size)

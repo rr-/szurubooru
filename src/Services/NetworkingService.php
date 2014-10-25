@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Helpers\MimeHelper;
 use Szurubooru\Helpers\HttpHelper;
 
 class NetworkingService
@@ -11,12 +12,9 @@ class NetworkingService
 		$this->httpHelper = $httpHelper;
 	}
 
-	public function serveFile($fullPath, $options = [])
+	public function serveFile($fullPath, $customFileName = null)
 	{
-		$daysToLive = isset($options->daysToLive)
-			? $options->daysToLive
-			: 7;
-
+		$daysToLive = 7;
 		$secondsToLive = $daysToLive * 24 * 60 * 60;
 		$lastModified = filemtime($fullPath);
 		$eTag = md5($fullPath . $lastModified);
@@ -34,15 +32,10 @@ class NetworkingService
 		$this->httpHelper->setHeader('Pragma', 'public');
 		$this->httpHelper->setHeader('Cache-Control', 'public, max-age=' . $secondsToLive);
 		$this->httpHelper->setHeader('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $secondsToLive));
+		$this->httpHelper->setHeader( 'Content-Type', MimeHelper::getMimeTypeFromFile($fullPath));
 
-		if (isset($options->customFileName))
-			$this->httpHelper->setHeader('Content-Disposition', 'inline; filename="' . $options->customFileName . '"');
-
-		$this->httpHelper->setHeader(
-			'Content-Type',
-			isset($options->mimeType)
-				? $options->mimeType
-				: mime_content_type($fullPath));
+		if ($customFileName)
+			$this->httpHelper->setHeader('Content-Disposition', 'inline; filename="' . $customFileName . '"');
 
 		if (strtotime($ifModifiedSince) === $lastModified or $eTagHeader === $eTag)
 		{
