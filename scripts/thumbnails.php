@@ -16,7 +16,14 @@ $postThumbnailService = Injector::get(PostThumbnailService::class);
 
 foreach ($postDao->findAll() as $post)
 {
-	$thumbnailName = $postThumbnailService->generateIfNeeded($post, $size, $size);
-	echo '.';
+	try
+	{
+		$thumbnailName = $postThumbnailService->generateIfNeeded($post, $size, $size);
+		echo '.';
+	}
+	catch (Exception $e)
+	{
+		echo PHP_EOL . $post->getId() . ': ' . $e->getMessage() . PHP_EOL;
+	}
 }
 echo PHP_EOL;
