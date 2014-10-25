@@ -103,18 +103,6 @@ class PostService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getFeatured()
-	{
-		$transactionFunc = function()
-		{
-			$globalParam = $this->globalParamDao->findByKey(GlobalParam::KEY_FEATURED_POST);
-			if (!$globalParam)
-				return null;
-			return $this->getByNameOrId($globalParam->getValue());
-		};
-		return $this->transactionManager->rollback($transactionFunc);
-	}
-
 	public function getHistory(Post $post)
 	{
 		$transactionFunc = function() use ($post)
@@ -349,27 +337,6 @@ class PostService
 		{
 			$this->historyService->saveSnapshot($this->historyService->getPostDeleteSnapshot($post));
 			$this->postDao->deleteById($post->getId());
-		};
-		$this->transactionManager->commit($transactionFunc);
-	}
-
-	public function featurePost(Post $post)
-	{
-		$transactionFunc = function() use ($post)
-		{
-			$previousFeaturedPost = $this->getFeatured();
-
-			$post->setLastFeatureTime($this->timeService->getCurrentTime());
-			$post->setFeatureCount($post->getFeatureCount() + 1);
-			$this->postDao->save($post);
-			$globalParam = new GlobalParam();
-			$globalParam->setKey(GlobalParam::KEY_FEATURED_POST);
-			$globalParam->setValue($post->getId());
-			$this->globalParamDao->save($globalParam);
-
-			if ($previousFeaturedPost)
-				$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($previousFeaturedPost));
-			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
 		};
 		$this->transactionManager->commit($transactionFunc);
 	}

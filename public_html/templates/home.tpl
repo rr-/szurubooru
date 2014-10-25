@@ -31,17 +31,17 @@
 				<span class="right">
 					featured by
 
-					<% var showLink = canViewUsers && post.user.name %>
+					<% var showLink = canViewUsers && user.name %>
 
 					<% if (showLink) { %>
-						<a href="#/user/<%= post.user.name %>">
+						<a href="#/user/<%= user.name %>">
 					<% } %>
 
 					<img width="25" height="25" class="author-avatar"
-						src="/data/thumbnails/25x25/avatars/<%= post.user.name || '!' %>"
-						alt="<%= post.user.name || 'Anonymous user' %>"/>
+						src="/data/thumbnails/25x25/avatars/<%= user.name || '!' %>"
+						alt="<%= user.name || 'Anonymous user' %>"/>
 
-					<%= post.user.name || 'Anonymous user' %>
+					<%= user.name || 'Anonymous user' %>
 
 					<% if (showLink) { %>
 						</a>

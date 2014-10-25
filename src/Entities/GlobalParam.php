@@ -3,6 +3,7 @@ namespace Szurubooru\Entities;
 
 final class GlobalParam extends Entity
 {
+	const KEY_FEATURED_POST_USER = 'featuredPostUser';
 	const KEY_FEATURED_POST = 'featuredPost';
 	const KEY_POST_SIZE = 'postSize';
 	const KEY_POST_COUNT = 'postCount';

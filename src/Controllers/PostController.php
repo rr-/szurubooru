@@ -3,6 +3,7 @@ namespace Szurubooru\Controllers;
 use Szurubooru\Config;
 use Szurubooru\Controllers\ViewProxies\PostViewProxy;
 use Szurubooru\Controllers\ViewProxies\SnapshotViewProxy;
+use Szurubooru\Controllers\ViewProxies\UserViewProxy;
 use Szurubooru\Entities\Post;
 use Szurubooru\FormData\PostEditFormData;
 use Szurubooru\FormData\UploadFormData;
@@ -11,6 +12,7 @@ use Szurubooru\Privilege;
 use Szurubooru\Router;
 use Szurubooru\SearchServices\Parsers\PostSearchParser;
 use Szurubooru\Services\AuthService;
+use Szurubooru\Services\PostFeatureService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
 
@@ -20,6 +22,7 @@ final class PostController extends AbstractController
 	private $authService;
 	private $privilegeService;
 	private $postService;
+	private $postFeatureService;
 	private $postSearchParser;
 	private $inputReader;
 	private $postViewProxy;
@@ -30,8 +33,10 @@ final class PostController extends AbstractController
 		AuthService $authService,
 		PrivilegeService $privilegeService,
 		PostService $postService,
+		PostFeatureService $postFeatureService,
 		PostSearchParser $postSearchParser,
 		InputReader $inputReader,
+		UserViewProxy $userViewProxy,
 		PostViewProxy $postViewProxy,
 		SnapshotViewProxy $snapshotViewProxy)
 	{
@@ -39,8 +44,10 @@ final class PostController extends AbstractController
 		$this->authService = $authService;
 		$this->privilegeService = $privilegeService;
 		$this->postService = $postService;
+		$this->postFeatureService = $postFeatureService;
 		$this->postSearchParser = $postSearchParser;
 		$this->inputReader = $inputReader;
+		$this->userViewProxy = $userViewProxy;
 		$this->postViewProxy = $postViewProxy;
 		$this->snapshotViewProxy = $snapshotViewProxy;
 	}
@@ -49,6 +56,7 @@ final class PostController extends AbstractController
 	{
 		$router->post('/api/posts', [$this, 'createPost']);
 		$router->get('/api/posts', [$this, 'getFiltered']);
+		$router->get('/api/posts/featured', [$this, 'getFeatured']);
 		$router->get('/api/posts/:postNameOrId', [$this, 'getByNameOrId']);
 		$router->get('/api/posts/:postNameOrId/history', [$this, 'getHistory']);
 		$router->put('/api/posts/:postNameOrId', [$this, 'updatePost']);
@@ -57,19 +65,26 @@ final class PostController extends AbstractController
 		$router->put('/api/posts/:postNameOrId/feature', [$this, 'featurePost']);
 	}
 
+	public function getFeatured()
+	{
+		$post = $this->postFeatureService->getFeaturedPost();
+		$user = $this->postFeatureService->getFeaturedPostUser();
+		return [
+			'user' => $this->userViewProxy->fromEntity($user),
+			'post' => $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig()),
+		];
+	}
+
 	public function getByNameOrId($postNameOrId)
 	{
-		if ($postNameOrId !== 'featured')
-			$this->privilegeService->assertPrivilege(Privilege::VIEW_POSTS);
-
-		$post = $this->getByNameOrIdWithoutProxy($postNameOrId);
+		$post = $this->postService->getByNameOrId($postNameOrId);
 		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 
 	public function getHistory($postNameOrId)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::VIEW_HISTORY);
-		$post = $this->getByNameOrIdWithoutProxy($postNameOrId);
+		$post = $this->getByNameOrId($postNameOrId);
 		return ['data' => $this->snapshotViewProxy->fromArray($this->postService->getHistory($post))];
 	}
 
@@ -137,15 +152,7 @@ final class PostController extends AbstractController
 	public function featurePost($postNameOrId)
 	{
 		$post = $this->postService->getByNameOrId($postNameOrId);
-		$this->postService->featurePost($post);
-	}
-
-	private function getByNameOrIdWithoutProxy($postNameOrId)
-	{
-		if ($postNameOrId === 'featured')
-			return $this->postService->getFeatured();
-		else
-			return $this->postService->getByNameOrId($postNameOrId);
+		$this->postFeatureService->featurePost($post);
 	}
 
 	private function getFullFetchConfig()

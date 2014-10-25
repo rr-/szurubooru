@@ -32,7 +32,8 @@ App.Presenters.HomePresenter = function(
 				templates.home = homeTemplate;
 
 				globals = globalsResponse.json;
-				post = featuredPostResponse.json.id ? featuredPostResponse.json : null;
+				post = featuredPostResponse.json.post;
+				user = featuredPostResponse.json.user;
 				render();
 				loaded();
 
@@ -49,6 +50,7 @@ App.Presenters.HomePresenter = function(
 	function render() {
 		$el.html(templates.home({
 			post: post,
+			user: user,
 			globals: globals,
 			title: topNavigationPresenter.getBaseTitle(),
 			canViewUsers: auth.hasPrivilege(auth.privileges.viewUsers),
