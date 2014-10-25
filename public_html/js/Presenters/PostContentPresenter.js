@@ -20,11 +20,6 @@ App.Presenters.PostContentPresenter = function(
 				templates.postContent = postContentTemplate;
 				render();
 				loaded();
-
-				presenterManager.initPresenters([
-					[postNotesPresenter, {post: post, notes: post.notes, $target: $target.find('.post-notes-target')}]],
-					function() {});
-
 			}).fail(function() {
 				console.log(arguments);
 				loaded();
@@ -33,6 +28,16 @@ App.Presenters.PostContentPresenter = function(
 
 	function render() {
 		$target.html(templates.postContent({post: post}));
+
+		if (post.contentType === 'image') {
+			loadPostNotes();
+		}
+	}
+
+	function loadPostNotes() {
+		presenterManager.initPresenters([
+			[postNotesPresenter, {post: post, notes: post.notes, $target: $target.find('.post-notes-target')}]],
+			function() {});
 	}
 
 	return {
