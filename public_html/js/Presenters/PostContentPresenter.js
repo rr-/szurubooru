@@ -31,6 +31,8 @@ App.Presenters.PostContentPresenter = function(
 
 		if (post.contentType === 'image') {
 			loadPostNotes();
+			$target.find('.post-notes-target').width($target.find('.image-wrapper').outerWidth());
+			$target.find('.post-notes-target').height($target.find('.image-wrapper').outerHeight());
 		}
 	}
 

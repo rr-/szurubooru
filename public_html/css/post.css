@@ -181,12 +181,12 @@
 	position: relative;
 	margin-bottom: 0.5em;
 }
-.post-notes-target,
-.post-notes {
+.post-notes-target {
+	position: absolute;
 	pointer-events: none;
+	z-index: 1;
 }
 .post-notes {
-	z-index: 1;
 	position: absolute;
 	left: 0;
 	top: 0;
