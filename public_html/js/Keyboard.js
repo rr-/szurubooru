@@ -1,11 +1,15 @@
 var App = App || {};
 
-App.Keyboard = function(mousetrap) {
+App.Keyboard = function(jQuery, mousetrap) {
 
 	var oldStopCallback = mousetrap.stopCallback;
 	mousetrap.stopCallback = function(e, element, combo, sequence) {
 		if (combo.indexOf('ctrl') !== -1) {
 			return false;
+		}
+		var $focused = jQuery(':focus').eq(0);
+		if ($focused.length && $focused.prop('tagName').match(/embed|object/i)) {
+			return true;
 		}
 		return oldStopCallback.apply(mousetrap, arguments);
 	};
@@ -37,4 +41,4 @@ App.Keyboard = function(mousetrap) {
 	};
 };
 
-App.DI.register('keyboard', ['mousetrap'], App.Keyboard);
+App.DI.register('keyboard', ['jQuery', 'mousetrap'], App.Keyboard);
