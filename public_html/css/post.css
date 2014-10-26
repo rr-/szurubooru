@@ -2,9 +2,15 @@
 	max-width: 100%;
 }
 
-.post-type-image img {
-	display: block;
+.post-type-image .image-wrapper {
 	max-width: 100%;
+	position: relative;
+}
+.post-type-image .image-wrapper img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
 }
 
 .post-type-youtube iframe {
@@ -154,7 +160,7 @@
 	position: absolute;
 	background: rgba(255, 255, 255, 0.8);
 	box-shadow: 0 0 1em 0.5em rgba(255, 255, 255, 0.8);
-	z-index: 1;
+	z-index: 2;
 	display: none;
 }
 #post-view>* {
@@ -173,12 +179,14 @@
 
 .post-content {
 	position: relative;
+	margin-bottom: 0.5em;
 }
 .post-notes-target,
 .post-notes {
 	pointer-events: none;
 }
 .post-notes {
+	z-index: 1;
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -190,7 +198,7 @@
 	pointer-events: auto;
 	display: none;
 	position: absolute;
-	z-index: 2;
+	z-index: 3;
 	background: white;
 	border: 1px solid black;
 	padding: 1em;

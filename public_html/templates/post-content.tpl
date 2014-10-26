@@ -6,7 +6,10 @@
 
 	<%  if (post.contentType === 'image') { %>
 
-		<img alt="<%= post.name %>" src="<%= postContentUrl %>"/>
+		<div class="image-wrapper" style="width: <%= post.imageWidth %>px">
+			<img alt="<%= post.name %>" src="<%= postContentUrl %>"/>
+			<div style="padding-top: calc(100% * <%= post.imageHeight %> / <%= post.imageWidth %>)"></div>
+		</div>
 
 	<% } else if (post.contentType === 'youtube') { %>
 

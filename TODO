@@ -11,7 +11,6 @@ first major release.
 - tags: add tag edit snapshots (backed-only)
 - add /history
 - fix post notes on scaled posts
-- fix image size not being respected
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and
