@@ -10,7 +10,6 @@ first major release.
 - tags: add tag descriptions
 - tags: add tag edit snapshots (backed-only)
 - add /history
-- fix post notes on scaled posts
 
 refactors:
     - add enum validation in IValidatables (needs refactors of enums and

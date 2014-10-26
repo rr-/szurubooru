@@ -1,10 +1,10 @@
 <div class="post-notes">
 	<% _.each(notes, function(note) { %>
 		<div class="post-note"
-			style="left: <%= note.left %>px;
-				top: <%= note.top %>px;
-				width: <%= note.width %>px;
-				height: <%= note.height %>px">
+			style="left: <%= note.left %>%;
+				top: <%= note.top %>%;
+				width: <%= note.width %>%;
+				height: <%= note.height %>%">
 
 			<div class="text-wrapper">
 				<div class="text">

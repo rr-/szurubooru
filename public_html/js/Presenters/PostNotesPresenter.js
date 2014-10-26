@@ -35,7 +35,7 @@ App.Presenters.PostNotesPresenter = function(
 	}
 
 	function addNewPostNote() {
-		notes.push({left: 50, top: 50, width: 50, height: 50, text: '…'});
+		notes.push({left: 10.0, top: 10.0, width: 10.0, height: 10.0, text: '…'});
 	}
 
 	function addNewPostNoteAndRender() {
@@ -72,10 +72,10 @@ App.Presenters.PostNotesPresenter = function(
 		var sender = $button.val();
 
 		var postNote = $form.data('postNote');
-		postNote.left = postNote.$element.offset().left - $target.offset().left;
-		postNote.top = postNote.$element.offset().top - $target.offset().top;
-		postNote.width = postNote.$element.width();
-		postNote.height = postNote.$element.height();
+		postNote.left = (postNote.$element.offset().left - $target.offset().left) * 100.0 / $target.outerWidth();
+		postNote.top = (postNote.$element.offset().top - $target.offset().top) * 100.0 / $target.outerHeight();
+		postNote.width = postNote.$element.width() * 100.0 / $target.outerWidth();
+		postNote.height = postNote.$element.height() * 100.0 / $target.outerHeight();
 		postNote.text = $form.find('textarea').val();
 
 		if (sender === 'cancel') {
@@ -161,17 +161,17 @@ App.Presenters.PostNotesPresenter = function(
 			var $parent = $element.parent();
 			var deltaX = $element.offset().left - e.clientX;
 			var deltaY = $element.offset().top - e.clientY;
-			var minX = $parent.offset().left;
-			var minY = $parent.offset().top;
-			var maxX = minX + $parent.outerWidth() - $element.outerWidth();
-			var maxY = minY + $parent.outerHeight() - $element.outerHeight();
 
 			var update = function(e) {
-				var x = e.clientX + deltaX;
-				var y = e.clientY + deltaY;
-				x = Math.min(Math.max(x, minX), maxX);
-				y = Math.min(Math.max(y, minY), maxY);
-				$element.offset({left: x, top: y});
+				var x = e.clientX + deltaX - $parent.offset().left;
+				var y = e.clientY + deltaY - $parent.offset().top;
+				x = Math.min(Math.max(x, 0), $parent.outerWidth() - $element.outerWidth());
+				y = Math.min(Math.max(y, 0), $parent.outerHeight() - $element.outerHeight());
+				x *= 100.0 / $parent.outerWidth();
+				y *= 100.0 / $parent.outerHeight();
+				$element.css({
+					left: x + '%',
+					top: y + '%'});
 			};
 
 			jQuery(window).bind('mousemove.elemmove', function(e) {
@@ -195,14 +195,20 @@ App.Presenters.PostNotesPresenter = function(
 			e.stopPropagation();
 			$element.addClass('resizing');
 
+			var $parent = $element.parent();
 			var deltaX = $element.width() - e.clientX;
 			var deltaY = $element.height() - e.clientY;
 
 			var update = function(e) {
-				var w = Math.max(20, e.clientX + deltaX);
-				var h = Math.max(20, e.clientY + deltaY);
-				$element.width(w);
-				$element.height(h);
+				var w = e.clientX + deltaX;
+				var h = e.clientY + deltaY;
+				w = Math.min(Math.max(w, 20), $parent.outerWidth() + $parent.offset().left - $element.offset().left);
+				h = Math.min(Math.max(h, 20), $parent.outerHeight() + $parent.offset().top - $element.offset().top);
+				w *= 100.0 / $parent.outerWidth();
+				h *= 100.0 / $parent.outerHeight();
+				$element.css({
+					width: w + '%',
+					height: h + '%'});
 			};
 
 			jQuery(window).bind('mousemove.elemsize', function(e) {

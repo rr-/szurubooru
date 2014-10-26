@@ -15,10 +15,10 @@ class PostNoteFormData implements IValidatable
 	{
 		if ($inputReader !== null)
 		{
-			$this->left = intval($inputReader->left);
-			$this->top = intval($inputReader->top);
-			$this->width = intval($inputReader->width);
-			$this->height = intval($inputReader->height);
+			$this->left = floatval($inputReader->left);
+			$this->top = floatval($inputReader->top);
+			$this->width = floatval($inputReader->width);
+			$this->height = floatval($inputReader->height);
 			$this->text = trim($inputReader->text);
 		}
 	}

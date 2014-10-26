@@ -43,10 +43,10 @@ class PostSnapshotProvider
 			'notes' => array_values(array_map(function (PostNote $note)
 				{
 					return [
-						'x' => intval($note->getLeft()),
-						'y' => intval($note->getTop()),
-						'w' => intval($note->getWidth()),
-						'h' => intval($note->getHeight()),
+						'x' => round(floatval($note->getLeft()), 2),
+						'y' => round(floatval($note->getTop()), 2),
+						'w' => round(floatval($note->getWidth()), 2),
+						'h' => round(floatval($note->getHeight()), 2),
 						'text' => trim($note->getText()),
 					];
 				},

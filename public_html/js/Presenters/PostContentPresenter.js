@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.PostContentPresenter = function(
+	jQuery,
 	util,
 	promise,
 	presenterManager,
@@ -31,15 +32,21 @@ App.Presenters.PostContentPresenter = function(
 
 		if (post.contentType === 'image') {
 			loadPostNotes();
-			$target.find('.post-notes-target').width($target.find('.image-wrapper').outerWidth());
-			$target.find('.post-notes-target').height($target.find('.image-wrapper').outerHeight());
+			updatePostNotesSize();
 		}
+
+		jQuery(window).resize(updatePostNotesSize);
 	}
 
 	function loadPostNotes() {
 		presenterManager.initPresenters([
 			[postNotesPresenter, {post: post, notes: post.notes, $target: $target.find('.post-notes-target')}]],
 			function() {});
+	}
+
+	function updatePostNotesSize() {
+		$target.find('.post-notes-target').width($target.find('.image-wrapper').outerWidth());
+		$target.find('.post-notes-target').height($target.find('.image-wrapper').outerHeight());
 	}
 
 	function addNewPostNote() {
@@ -55,6 +62,7 @@ App.Presenters.PostContentPresenter = function(
 };
 
 App.DI.register('postContentPresenter', [
+	'jQuery',
 	'util',
 	'promise',
 	'presenterManager',

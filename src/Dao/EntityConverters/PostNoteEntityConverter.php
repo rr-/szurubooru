@@ -23,10 +23,10 @@ class PostNoteEntityConverter extends AbstractEntityConverter implements IEntity
 	{
 		$entity = new PostNote($array['id']);
 		$entity->setPostId($array['postId']);
-		$entity->setLeft(intval($array['x']));
-		$entity->setTop(intval($array['y']));
-		$entity->setWidth(intval($array['width']));
-		$entity->setHeight(intval($array['height']));
+		$entity->setLeft(floatval($array['x']));
+		$entity->setTop(floatval($array['y']));
+		$entity->setWidth(floatval($array['width']));
+		$entity->setHeight(floatval($array['height']));
 		$entity->setText($array['text']);
 		return $entity;
 	}
