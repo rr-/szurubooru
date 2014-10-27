@@ -4,6 +4,12 @@ App.Keyboard = function(jQuery, mousetrap) {
 
 	var oldStopCallback = mousetrap.stopCallback;
 	mousetrap.stopCallback = function(e, element, combo, sequence) {
+		if (combo.indexOf('ctrl') === -1 && combo.ctrlKey) {
+			return true;
+		}
+		if (combo.indexOf('alt') === -1 && combo.altKey) {
+			return true;
+		}
 		if (combo.indexOf('ctrl') !== -1) {
 			return false;
 		}
