@@ -7,7 +7,7 @@ use Szurubooru\Dao\TransactionManager;
 use Szurubooru\Entities\GlobalParam;
 use Szurubooru\Entities\Post;
 use Szurubooru\Services\AuthService;
-use Szurubooru\Services\HistoryService;
+use Szurubooru\Services\PostHistoryService;
 use Szurubooru\Services\TimeService;
 use Szurubooru\Validator;
 
@@ -19,7 +19,7 @@ class PostFeatureService
 	private $globalParamDao;
 	private $authService;
 	private $timeService;
-	private $historyService;
+	private $postHistoryService;
 
 	public function __construct(
 		TransactionManager $transactionManager,
@@ -28,7 +28,7 @@ class PostFeatureService
 		GlobalParamDao $globalParamDao,
 		AuthService $authService,
 		TimeService $timeService,
-		HistoryService $historyService)
+		PostHistoryService $postHistoryService)
 	{
 		$this->transactionManager = $transactionManager;
 		$this->postDao = $postDao;
@@ -36,7 +36,7 @@ class PostFeatureService
 		$this->globalParamDao = $globalParamDao;
 		$this->authService = $authService;
 		$this->timeService = $timeService;
-		$this->historyService = $historyService;
+		$this->postHistoryService = $postHistoryService;
 	}
 
 	public function getFeaturedPost()
@@ -87,8 +87,8 @@ class PostFeatureService
 			$this->globalParamDao->save($globalParam);
 
 			if ($previousFeaturedPost)
-				$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($previousFeaturedPost));
-			$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
+				$this->postHistoryService->savePostChange($previousFeaturedPost);
+			$this->postHistoryService->savePostChange($post);
 		};
 		$this->transactionManager->commit($transactionFunc);
 	}
