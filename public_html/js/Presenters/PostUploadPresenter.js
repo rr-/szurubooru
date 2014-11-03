@@ -262,8 +262,9 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function addPostFromUrl(url) {
-		var post = _.extend({}, getDefaultPost(), {url: url, source: url, fileName: url});
+		var post = _.extend({}, getDefaultPost(), {url: url, fileName: url});
 		postAdded(post);
+		setPostsSource([post], url);
 
 		var matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/);
 		if (matches) {
@@ -431,7 +432,11 @@ App.Presenters.PostUploadPresenter = function(
 
 	function setPostsSource(posts, newSource) {
 		_.each(posts, function(post) {
-			//todo: take care of max source length
+			var maxSourceLength = 200;
+			console.log(newSource);
+			if (newSource.length > maxSourceLength) {
+				newSource = newSource.substring(0, maxSourceLength - 5) + '(...)';
+			}
 			post.source = newSource;
 			postChanged(post);
 		});
