@@ -27,7 +27,11 @@ App.Services.PostsAroundCalculator = function(_, promise, util, pager) {
 							getLinkToPostAround(postIds, position, query.page, 1))
 						.then(function(nextPostUrl, prevPostUrl) {
 							resolve(nextPostUrl, prevPostUrl);
+						}).fail(function() {
+							reject();
 						});
+				}).fail(function() {
+					reject();
 				});
 		});
 	}
@@ -41,20 +45,23 @@ App.Services.PostsAroundCalculator = function(_, promise, util, pager) {
 				resolve(url);
 			} else if (page + direction >= 1) {
 				pager.setPage(page + direction);
-				promise.wait(pager.retrieveCached()).then(function(response) {
-					if (response.entities.length) {
-						var post = direction === - 1 ?
-							_.last(response.entities) :
-							_.first(response.entities);
+				promise.wait(pager.retrieveCached())
+					.then(function(response) {
+						if (response.entities.length) {
+							var post = direction === - 1 ?
+								_.last(response.entities) :
+								_.first(response.entities);
 
-						var url = util.appendComplexRouteParam(
-							'#/post/' + post.id,
-							_.extend({page: page + direction}, pager.getSearchParams()));
-						resolve(url);
-					} else {
-						resolve(null);
-					}
-				});
+							var url = util.appendComplexRouteParam(
+								'#/post/' + post.id,
+								_.extend({page: page + direction}, pager.getSearchParams()));
+							resolve(url);
+						} else {
+							resolve(null);
+						}
+					}).fail(function() {
+						reject();
+					});
 			} else {
 				resolve(null);
 			}

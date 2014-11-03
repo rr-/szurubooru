@@ -109,6 +109,7 @@ App.Presenters.PostPresenter = function(
 					$prevPost.removeAttr('href');
 					keyboard.unbind('d');
 				}
+			}).fail(function() {
 			});
 	}
 

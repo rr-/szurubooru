@@ -296,6 +296,7 @@ App.Controls.TagInput = function($underlyingInput) {
 				attachTagsToSuggestionList($siblings.find('ul'), suggestions);
 				$siblings.slideDown('fast');
 			}
+		}).fail(function() {
 		});
 	}
 

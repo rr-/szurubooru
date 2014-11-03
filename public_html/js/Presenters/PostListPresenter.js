@@ -51,6 +51,9 @@ App.Presenters.PostListPresenter = function(
 					function() {
 						reinit(params, function() {});
 					});
+			}).fail(function() {
+				console.log(arguments);
+				loaded();
 			});
 
 		jQuery(window).on('resize', windowResized);
