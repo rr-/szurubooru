@@ -115,10 +115,6 @@ App.Presenters.TagPresenter = function(
 
 		promise.wait(api.put('/tags/' + tag.name, formData))
 			.then(function(response) {
-				tag = response.json;
-				render();
-				renderPosts(posts);
-				tagList.refreshTags();
 				router.navigateInplace('#/tag/' + tag.name);
 			}).fail(function(response) {
 				window.alert(response.json && response.json.error || 'An error occured.');
