@@ -155,9 +155,14 @@ App.Controls.TagInput = function($underlyingInput) {
 			flashTagRed(tagName);
 		} else {
 			beforeTagAdded(tagName, options);
-			tags.push(tagName);
-			var $elem = createListElement(tagName);
-			$tagList.append($elem);
+
+			var exportedTag = getExportedTag(tagName);
+			if (!exportedTag || !exportedTag.banned) {
+				tags.push(tagName);
+				var $elem = createListElement(tagName);
+				$tagList.append($elem);
+			}
+
 			afterTagAdded(tagName, options);
 		}
 	}
