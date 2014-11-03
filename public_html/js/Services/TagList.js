@@ -21,6 +21,8 @@ App.Services.TagList = function(jQuery) {
 		return tags;
 	}
 
+	refreshTags();
+
 	return {
 		refreshTags: refreshTags,
 		getTags: getTags,
