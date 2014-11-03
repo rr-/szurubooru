@@ -18,7 +18,7 @@ class TagService
 	private $tagDao;
 	private $fileDao;
 	private $timeService;
-	private $historyService;
+	private $postHistoryService;
 
 	public function __construct(
 		Validator $validator,
@@ -26,7 +26,7 @@ class TagService
 		PostDao $postDao,
 		TagDao $tagDao,
 		PublicFileDao $fileDao,
-		HistoryService $historyService,
+		PostHistoryService $postHistoryService,
 		TimeService $timeService)
 	{
 		$this->validator = $validator;
@@ -34,7 +34,7 @@ class TagService
 		$this->postDao = $postDao;
 		$this->tagDao = $tagDao;
 		$this->fileDao = $fileDao;
-		$this->historyService = $historyService;
+		$this->postHistoryService = $postHistoryService;
 		$this->timeService = $timeService;
 	}
 
@@ -165,7 +165,7 @@ class TagService
 			{
 				$posts = $this->postDao->findByTagName($tag->getName());
 				foreach ($posts as $post)
-					$this->historyService->saveSnapshot($this->historyService->getPostChangeSnapshot($post));
+					$this->postHistoryService->savePostChange($post);
 			};
 			$this->transactionManager->commit($transactionFunc);
 		}
