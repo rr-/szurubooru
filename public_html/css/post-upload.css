@@ -129,6 +129,10 @@
 	margin: 0 auto 1em auto;
 }
 
+#post-upload-step2 .file-name .form-input {
+	word-break: break-all;
+}
+
 
 
 #post-upload-step2,
