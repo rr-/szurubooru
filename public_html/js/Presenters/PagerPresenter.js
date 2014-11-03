@@ -217,6 +217,7 @@ App.Presenters.PagerPresenter = function(
 		}
 		query.page = parseInt(query.page) || 1;
 		var page = query.page;
+		query = _.extend({}, query);
 		delete query.page;
 		forceClear =
 			query.query !== pager.getSearchParams().query ||
