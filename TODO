@@ -5,7 +5,6 @@ first major release.
 - posts/upload: ability to paste many urls (unsure)
 - posts/listing: add buttons for toggling safety
 - users: add user-configurable "about me" (should support Markdown)
-- tags: refresh tags.json when editing post
 - tags: add tag merging
 - tags: add tag descriptions
 - tags: add tag edit snapshots (backed-only)

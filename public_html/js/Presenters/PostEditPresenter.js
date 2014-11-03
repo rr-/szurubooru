@@ -5,7 +5,8 @@ App.Presenters.PostEditPresenter = function(
 	util,
 	promise,
 	api,
-	auth) {
+	auth,
+	tagList) {
 
 	var $target;
 	var post;
@@ -132,6 +133,7 @@ App.Presenters.PostEditPresenter = function(
 
 		promise.wait(api.put('/posts/' + post.id, formData))
 			.then(function(response) {
+				tagList.refreshTags();
 				if (typeof(updateCallback) !== 'undefined') {
 					updateCallback(post = response.json);
 				}
@@ -153,4 +155,4 @@ App.Presenters.PostEditPresenter = function(
 
 };
 
-App.DI.register('postEditPresenter', ['util', 'promise', 'api', 'auth'], App.Presenters.PostEditPresenter);
+App.DI.register('postEditPresenter', ['util', 'promise', 'api', 'auth', 'tagList'], App.Presenters.PostEditPresenter);

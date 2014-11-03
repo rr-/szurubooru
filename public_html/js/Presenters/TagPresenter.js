@@ -8,6 +8,7 @@ App.Presenters.TagPresenter = function(
 	promise,
 	auth,
 	api,
+	tagList,
 	router,
 	keyboard,
 	topNavigationPresenter,
@@ -117,6 +118,7 @@ App.Presenters.TagPresenter = function(
 				tag = response.json;
 				render();
 				renderPosts(posts);
+				tagList.refreshTags();
 			}).fail(function(response) {
 				window.alert(response.json && response.json.error || 'An error occured.');
 			});
@@ -147,4 +149,4 @@ App.Presenters.TagPresenter = function(
 
 };
 
-App.DI.register('tagPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'api', 'router', 'keyboard', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.TagPresenter);
+App.DI.register('tagPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'api', 'tagList', 'router', 'keyboard', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.TagPresenter);
