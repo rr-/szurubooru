@@ -119,6 +119,7 @@ App.Presenters.TagPresenter = function(
 				render();
 				renderPosts(posts);
 				tagList.refreshTags();
+				router.navigateInplace('#/tag/' + tag.name);
 			}).fail(function(response) {
 				window.alert(response.json && response.json.error || 'An error occured.');
 			});
