@@ -127,7 +127,6 @@ class PostService
 			return $savedPost;
 		};
 		$ret = $this->transactionManager->commit($transactionFunc);
-		$this->tagService->deleteUnusedTags();
 		$this->tagService->exportJson();
 		return $ret;
 	}
@@ -168,7 +167,6 @@ class PostService
 			return $this->postDao->save($post);
 		};
 		$ret = $this->transactionManager->commit($transactionFunc);
-		$this->tagService->deleteUnusedTags();
 		$this->tagService->exportJson();
 		return $ret;
 	}

@@ -69,11 +69,6 @@ class TagDao extends AbstractDao implements ICrudDao
 		return $this->arrayToEntities($arrayEntities);
 	}
 
-	public function deleteUnused()
-	{
-		$this->pdo->deleteFrom($this->tableName)->where('usages = 0 AND banned != 1')->execute();
-	}
-
 	public function export()
 	{
 		$exported = [];

@@ -75,15 +75,6 @@ class TagService
 		$this->fileDao->save('tags.json', $json);
 	}
 
-	public function deleteUnusedTags()
-	{
-		$transactionFunc = function()
-		{
-			$this->tagDao->deleteUnused();
-		};
-		$this->transactionManager->commit($transactionFunc);
-	}
-
 	public function createTags(array $tags)
 	{
 		$transactionFunc = function() use ($tags)
