@@ -62,8 +62,16 @@ App.Presenters.PagerPresenter = function(
 			.fail(loaded);
 
 		if (!endlessScroll) {
-			keyboard.keydown('a', function() { syncUrl({page: pager.getPage() - 1}); });
-			keyboard.keydown('d', function() { syncUrl({page: pager.getPage() + 1}); });
+			keyboard.keydown('a', function() {
+				if (pager.prevPage()) {
+					syncUrl({page: pager.getPage()});
+				}
+			});
+			keyboard.keydown('d', function() {
+				if (pager.nextPage()) {
+					syncUrl({page: pager.getPage()});
+				}
+			});
 		}
 	}
 

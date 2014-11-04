@@ -33,13 +33,17 @@ App.Pager = function(
 	function prevPage() {
 		if (pageNumber > 1) {
 			setPage(pageNumber - 1);
+			return true;
 		}
+		return false;
 	}
 
 	function nextPage() {
 		if (pageNumber < totalPages) {
 			setPage(pageNumber + 1);
+			return true;
 		}
+		return false;
 	}
 
 	function setPage(newPageNumber) {
