@@ -77,19 +77,21 @@
 		<% } %>
 	</form>
 
-	<div class="siblings">
-		<h3>Siblings</h3>
+	<% if (siblings.length) { %>
+		<div class="siblings">
+			<h3>Siblings</h3>
 
-		<ul>
-			<% _.each(siblings.slice(0, 50), function(tag) { %>
-				<li class="tag-category-<%= tag.category %>">
-					<a href="#/tag/<%= tag.name %>
-						"><%= tag.name %>
-					</a>
-				</li>
-			<% }) %>
-		</ul>
-	</div>
+			<ul>
+				<% _.each(siblings.slice(0, 50), function(tag) { %>
+					<li class="tag-category-<%= tag.category %>">
+						<a href="#/tag/<%= tag.name %>
+							"><%= tag.name %>
+						</a>
+					</li>
+				<% }) %>
+			</ul>
+		</div>
+	<% } %>
 
 	<div class="post-list">
 		<h3>Example usages</h3>
