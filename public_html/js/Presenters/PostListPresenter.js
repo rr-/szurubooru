@@ -223,6 +223,7 @@ App.Presenters.PostListPresenter = function(
 	function updateSearch() {
 		$searchInput.blur();
 		params.query.query = $searchInput.val().trim();
+		params.query.page = 1;
 		pagerPresenter.setQuery(params.query);
 	}
 
