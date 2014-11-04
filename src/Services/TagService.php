@@ -165,6 +165,19 @@ class TagService
 		return $ret;
 	}
 
+	public function deleteTag(Tag $tag)
+	{
+		if ($tag->getUsages() !== 0)
+			throw new \DomainException('Only tags with no usages can be deleted.');
+
+		$transactionFunc = function() use ($tag)
+		{
+			$this->tagDao->deleteById($tag->getId());
+		};
+
+		$this->transactionManager->commit($transactionFunc);
+	}
+
 	private function updateTagName(Tag $tag, $newName)
 	{
 		$otherTag = $this->tagDao->findByName($newName);

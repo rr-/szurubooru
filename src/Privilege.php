@@ -46,6 +46,7 @@ class Privilege
 	const CHANGE_TAG_IMPLICATIONS = 'changeTagImplications';
 	const CHANGE_TAG_SUGGESTIONS = 'changeTagSuggestions';
 	const BAN_TAGS = 'banTags';
+	const DELETE_TAGS = 'deleteTags';
 
 	const LIST_COMMENTS = 'listComments';
 	const ADD_COMMENTS = 'addComments';

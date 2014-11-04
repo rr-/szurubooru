@@ -83,12 +83,14 @@ App.Presenters.TagPresenter = function(
 			tagCategories: JSON.parse(jQuery('head').attr('data-tag-categories')),
 		}));
 		$el.find('.post-list').hide();
-		$el.find('form').submit(editFormSubmitted);
+		$el.find('form').submit(function(e) { e.preventDefault(); });
+		$el.find('form button[name=update]').click(updateButtonClicked);
+		$el.find('form button[name=delete]').click(deleteButtonClicked);
 		implicationsTagInput = App.Controls.TagInput($el.find('[name=implications]'));
 		suggestionsTagInput = App.Controls.TagInput($el.find('[name=suggestions]'));
 	}
 
-	function editFormSubmitted(e) {
+	function updateButtonClicked(e) {
 		e.preventDefault();
 		var $form = $el.find('form');
 		var formData = {};
@@ -116,6 +118,18 @@ App.Presenters.TagPresenter = function(
 		promise.wait(api.put('/tags/' + tag.name, formData))
 			.then(function(response) {
 				router.navigateInplace('#/tag/' + tag.name);
+			}).fail(function(response) {
+				window.alert(response.json && response.json.error || 'An error occured.');
+			});
+	}
+
+	function deleteButtonClicked(e) {
+		if (!window.confirm('Are you sure you want to delete this tag?')) {
+			return;
+		}
+		promise.wait(api.delete('/tags/' + tag.name))
+			.then(function(response) {
+				router.navigate('#/tags');
 			}).fail(function(response) {
 				window.alert(response.json && response.json.error || 'An error occured.');
 			});

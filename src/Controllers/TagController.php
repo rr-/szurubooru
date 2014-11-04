@@ -37,6 +37,7 @@ final class TagController extends AbstractController
 		$router->get('/api/tags/:tagName', [$this, 'getTag']);
 		$router->get('/api/tags/:tagName/siblings', [$this, 'getTagSiblings']);
 		$router->put('/api/tags/:tagName', [$this, 'updateTag']);
+		$router->delete('/api/tags/:tagName', [$this, 'deleteTag']);
 	}
 
 	public function getTag($tagName)
@@ -95,6 +96,13 @@ final class TagController extends AbstractController
 
 		$tag = $this->tagService->updateTag($tag, $formData);
 		return $this->tagViewProxy->fromEntity($tag, $this->getFullFetchConfig());
+	}
+
+	public function deleteTag($tagName)
+	{
+		$tag = $this->tagService->getByName($tagName);
+		$this->privilegeService->assertPrivilege(Privilege::DELETE_TAGS);
+		return $this->tagService->deleteTag($tag);
 	}
 
 	private function getFullFetchConfig()
