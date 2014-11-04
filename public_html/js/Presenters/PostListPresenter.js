@@ -198,7 +198,7 @@ App.Presenters.PostListPresenter = function(
 				$post.data('post', post);
 				softRenderPost($post);
 			}).fail(function(response) {
-				console.log(response);
+				window.alert(response.json && response.json.error || response);
 			});
 	}
 
