@@ -138,11 +138,13 @@ class PostDao extends AbstractDao implements ICrudDao
 		{
 			foreach ($requirement->getValue()->getValues() as $userName)
 			{
-				$userId = $this->userDao->findByName($userName)->getId();
-				$sql = 'EXISTS (SELECT 1 FROM favorites f WHERE f.postId = posts.id AND f.userId = ?)';
+				$sql = 'EXISTS (
+					SELECT 1 FROM favorites f
+					WHERE f.postId = posts.id
+						AND f.userId = (SELECT id FROM users WHERE name = ?))';
 				if ($requirement->isNegated())
 					$sql = 'NOT ' . $sql;
-				$query->where($sql, [$userId]);
+				$query->where($sql, [$userName]);
 			}
 			return;
 		}
@@ -151,11 +153,13 @@ class PostDao extends AbstractDao implements ICrudDao
 		{
 			foreach ($requirement->getValue()->getValues() as $userName)
 			{
-				$userId = $this->userDao->findByName($userName)->getId();
-				$sql = 'EXISTS (SELECT 1 FROM comments c WHERE c.postId = posts.id AND c.userId = ?)';
+				$sql = 'EXISTS (
+					SELECT 1 FROM comments c
+					WHERE c.postId = posts.id
+						AND c.userId = (SELECT id FROM users WHERE name = ?))';
 				if ($requirement->isNegated())
 					$sql = 'NOT ' . $sql;
-				$query->where($sql, [$userId]);
+				$query->where($sql, [$userName]);
 			}
 			return;
 		}
@@ -170,15 +174,14 @@ class PostDao extends AbstractDao implements ICrudDao
 			$values = $requirement->getValue()->getValues();
 			$userName = $values[0];
 			$score = $values[1];
-			$userId = $this->userDao->findByName($userName)->getId();
 			$sql = 'EXISTS (
 				SELECT 1 FROM scores
 				WHERE scores.postId = posts.id
-					AND scores.userId = ?
+					AND scores.userId = (SELECT id FROM users WHERE name = ?)
 					AND scores.score = ?)';
 			if ($requirement->isNegated())
 				$sql = 'NOT ' . $sql;
-			$query->where($sql, [$userId, $score]);
+			$query->where($sql, [$userName, $score]);
 			return;
 		}
 
