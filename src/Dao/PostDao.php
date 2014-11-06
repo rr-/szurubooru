@@ -136,14 +136,28 @@ class PostDao extends AbstractDao implements ICrudDao
 
 		elseif ($requirement->getType() === PostFilter::REQUIREMENT_FAVORITE)
 		{
-			$query->innerJoin('favorites _fav', '_fav.postId = posts.id');
-			$query->innerJoin('users favoritedBy', 'favoritedBy.id = _fav.userId');
+			foreach ($requirement->getValue()->getValues() as $userName)
+			{
+				$userId = $this->userDao->findByName($userName)->getId();
+				$sql = 'EXISTS (SELECT 1 FROM favorites f WHERE f.postId = posts.id AND f.userId = ?)';
+				if ($requirement->isNegated())
+					$sql = 'NOT ' . $sql;
+				$query->where($sql, [$userId]);
+			}
+			return;
 		}
 
 		elseif ($requirement->getType() === PostFilter::REQUIREMENT_COMMENT)
 		{
-			$query->innerJoin('comments _comment', '_comment.postId = posts.id');
-			$query->innerJoin('users commentedBy', 'commentedBy.id = _comment.userId');
+			foreach ($requirement->getValue()->getValues() as $userName)
+			{
+				$userId = $this->userDao->findByName($userName)->getId();
+				$sql = 'EXISTS (SELECT 1 FROM comments c WHERE c.postId = posts.id AND c.userId = ?)';
+				if ($requirement->isNegated())
+					$sql = 'NOT ' . $sql;
+				$query->where($sql, [$userId]);
+			}
+			return;
 		}
 
 		elseif ($requirement->getType() === PostFilter::REQUIREMENT_UPLOADER)

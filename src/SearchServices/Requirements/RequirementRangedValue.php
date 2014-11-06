@@ -25,4 +25,9 @@ class RequirementRangedValue implements IRequirementValue
 	{
 		$this->maxValue = $maxValue;
 	}
+
+	public function getValues()
+	{
+		return range($this->minValue, $this->maxValue);
+	}
 }

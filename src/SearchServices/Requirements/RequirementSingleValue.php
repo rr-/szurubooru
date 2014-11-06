@@ -19,4 +19,9 @@ class RequirementSingleValue implements IRequirementValue
 	{
 		$this->value = $value;
 	}
+
+	public function getValues()
+	{
+		return [$this->value];
+	}
 }
