@@ -19,6 +19,7 @@ class TagService
 	private $fileDao;
 	private $timeService;
 	private $postHistoryService;
+	private $tagHistoryService;
 
 	public function __construct(
 		Validator $validator,
@@ -27,6 +28,7 @@ class TagService
 		TagDao $tagDao,
 		PublicFileDao $fileDao,
 		PostHistoryService $postHistoryService,
+		TagHistoryService $tagHistoryService,
 		TimeService $timeService)
 	{
 		$this->validator = $validator;
@@ -35,6 +37,7 @@ class TagService
 		$this->tagDao = $tagDao;
 		$this->fileDao = $fileDao;
 		$this->postHistoryService = $postHistoryService;
+		$this->tagHistoryService = $tagHistoryService;
 		$this->timeService = $timeService;
 	}
 
@@ -108,7 +111,10 @@ class TagService
 
 			$createdTags = [];
 			foreach ($this->tagDao->batchSave($tagsToCreate) as $tag)
+			{
 				$createdTags[$tagNameGetter($tag)] = $tag;
+				$this->tagHistoryService->saveTagChange($tag);
+			}
 
 			$result = [];
 			foreach ($tags as $key => $tag)
@@ -146,6 +152,7 @@ class TagService
 			if ($formData->suggestions !== null)
 				$this->updateSuggestions($tag, $formData->suggestions);
 
+			$this->tagHistoryService->saveTagChange($tag);
 			return $this->tagDao->save($tag);
 		};
 		$ret = $this->transactionManager->commit($transactionFunc);
@@ -173,6 +180,7 @@ class TagService
 		$transactionFunc = function() use ($tag)
 		{
 			$this->tagDao->deleteById($tag->getId());
+			$this->tagHistoryService->saveTagDeletion($tag);
 		};
 
 		$this->transactionManager->commit($transactionFunc);
