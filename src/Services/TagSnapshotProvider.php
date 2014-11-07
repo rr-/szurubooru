@@ -36,7 +36,7 @@ class TagSnapshotProvider
 	public function getTagDeleteSnapshot(Tag $tag)
 	{
 		$snapshot = $this->getTagSnapshot($tag);
-		$snapshot->setData([]);
+		$snapshot->setData(['name' => $tag->getName()]);
 		$snapshot->setOperation(Snapshot::OPERATION_DELETE);
 		return $snapshot;
 	}
