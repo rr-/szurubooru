@@ -96,7 +96,7 @@
 	<div class="post-list">
 		<h3>Example usages</h3>
 
-		<ul>
+		<ul class="posts">
 		</ul>
 
 		<a href="#/posts/query=<%= tag.name %>">Search for more</a>
