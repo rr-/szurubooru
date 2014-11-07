@@ -35,13 +35,16 @@ App.Presenters.TagPresenter = function(
 		privileges.canChangeImplications = auth.hasPrivilege(auth.privileges.changeTagImplications);
 		privileges.canChangeSuggestions = auth.hasPrivilege(auth.privileges.changeTagSuggestions);
 		privileges.canBan = auth.hasPrivilege(auth.privileges.banTags);
+		privileges.canViewHistory = auth.hasPrivilege(auth.privileges.viewHistory);
 
 		promise.wait(
 				util.promiseTemplate('tag'),
-				util.promiseTemplate('post-list-item'))
-			.then(function(tagTemplate, postListItemTemplate) {
+				util.promiseTemplate('post-list-item'),
+				util.promiseTemplate('history'))
+			.then(function(tagTemplate, postListItemTemplate, historyTemplate) {
 				templates.tag = tagTemplate;
 				templates.postListItem = postListItemTemplate;
+				templates.history = historyTemplate;
 
 				reinit(params, loaded);
 			}).fail(function() {
@@ -81,6 +84,8 @@ App.Presenters.TagPresenter = function(
 			tag: tag,
 			siblings: siblings,
 			tagCategories: JSON.parse(jQuery('head').attr('data-tag-categories')),
+			formatRelativeTime: util.formatRelativeTime,
+			historyTemplate: templates.history,
 		}));
 		$el.find('.post-list').hide();
 		$el.find('form').submit(function(e) { e.preventDefault(); });

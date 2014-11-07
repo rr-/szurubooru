@@ -7,7 +7,6 @@ var reprValue = function(value) {
 };
 %>
 
-<h1>History</h1>
 <table class="history">
 	<tbody>
 		<% _.each(history, function( historyEntry) { %>
@@ -35,9 +34,13 @@ var reprValue = function(value) {
 				</td>
 
 				<td class="subject">
-					<% if (historyEntry.type == 0) { %>
+					<% if (historyEntry.type === 0) { %>
 						<a href="#/post/<%= historyEntry.primaryKey %>">
 							@<%= historyEntry.primaryKey %>
+						</a>
+					<% } else if (historyEntry.type === 1) { %>
+						<a href="#/tag/<%= historyEntry.data.name %>">
+							#<%= historyEntry.data.name %>
 						</a>
 					<% } else { %>
 						?

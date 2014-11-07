@@ -268,6 +268,7 @@
 
 		<% if (privileges.canViewHistory) { %>
 			<div class="post-history-wrapper">
+				<h1>History</h1>
 				<%= historyTemplate({
 					history: postHistory,
 					formatRelativeTime: formatRelativeTime

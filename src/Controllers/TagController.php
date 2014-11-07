@@ -111,6 +111,7 @@ final class TagController extends AbstractController
 		[
 			TagViewProxy::FETCH_IMPLICATIONS => true,
 			TagViewProxy::FETCH_SUGGESTIONS => true,
+			TagViewProxy::FETCH_HISTORY => true,
 		];
 	}
 }

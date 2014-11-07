@@ -93,6 +93,16 @@
 		</div>
 	<% } %>
 
+	<% if (privileges.canViewHistory) { %>
+		<div class="post-history-wrapper">
+			<h3>History</h3>
+			<%= historyTemplate({
+				history: tag.history,
+				formatRelativeTime: formatRelativeTime
+			}) %>
+		</div>
+	<% } %>
+
 	<div class="post-list">
 		<h3>Example usages</h3>
 
