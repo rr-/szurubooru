@@ -27,6 +27,7 @@ table.history .user img {
 
 table.history td {
 	padding: 0.1em 0.25em;
+	word-break: break-all;
 }
 
 table.history ul {
@@ -47,4 +48,22 @@ table.history li {
 }
 table.history li:not(:last-of-type):after {
 	content: ', ';
+}
+
+#history-wrapper {
+	text-align: center;
+}
+#history-wrapper table {
+	margin: 0 auto;
+	text-align: left;
+}
+@media all and (min-width: 77em) {
+	#history-wrapper table {
+		width: 70em;
+	}
+}
+@media all and (max-width: 77em) {
+	#history-wrapper table {
+		width: 100%;
+	}
 }

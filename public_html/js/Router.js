@@ -27,6 +27,7 @@ App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
 		inject('#/tags(/:!query)', 'tagListPresenter');
 		inject('#/tag/:tagName', 'tagPresenter');
 		inject('#/help(/:tab)', 'helpPresenter');
+		inject('#/history(/:!query)', 'historyPresenter');
 	}
 
 	function navigate(url, useBrowserDispatcher) {

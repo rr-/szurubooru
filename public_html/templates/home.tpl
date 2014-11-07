@@ -53,6 +53,10 @@
 	<% } %>
 
 	<p>
-		<small class="version">Version: <a href="//github.com/rr-/szurubooru/commits/master"><%= version %></a> (built <%= formatRelativeTime(buildTime) %>)</small>
+		<small class="version">
+			Version: <a href="//github.com/rr-/szurubooru/commits/master"><%= version %></a> (built <%= formatRelativeTime(buildTime) %>)
+			|
+			<a href="#/history">Recent tag and post edits</a>
+		</small>
 	</p>
 </div>
