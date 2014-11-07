@@ -73,7 +73,10 @@ App.Presenters.PostListPresenter = function(
 	}
 
 	function render() {
-		$el.html(templates.list({massTag: params.query.massTag, privileges: privileges}));
+		$el.html(templates.list({
+			massTag: params.query.massTag,
+			privileges: privileges,
+			browsingSettings: browsingSettings.getSettings()}));
 		$searchInput = $el.find('input[name=query]');
 		App.Controls.AutoCompleteInput($searchInput);
 
@@ -81,6 +84,7 @@ App.Presenters.PostListPresenter = function(
 		$searchInput.keydown(searchInputKeyPressed);
 		$el.find('form').submit(searchFormSubmitted);
 		$el.find('[name=mass-tag]').click(massTagButtonClicked);
+		$el.find('.safety button').click(safetyButtonClicked);
 
 		keyboard.keyup('p', function() {
 			$el.find('.posts li a').eq(0).focus();
@@ -91,6 +95,27 @@ App.Presenters.PostListPresenter = function(
 		});
 
 		windowResized();
+	}
+
+	function safetyButtonClicked(e) {
+		e.preventDefault();
+		var settings = browsingSettings.getSettings();
+		var buttonClass = jQuery(e.currentTarget).attr('class').split(' ')[0];
+		var enabled = jQuery(e.currentTarget).hasClass('disabled');
+		jQuery(e.currentTarget).toggleClass('disabled');
+		if (buttonClass === 'safety-unsafe') {
+			settings.listPosts.unsafe = enabled;
+		} else if (buttonClass === 'safety-sketchy') {
+			settings.listPosts.sketchy = enabled;
+		} else if (buttonClass === 'safety-safe') {
+			settings.listPosts.safe = enabled;
+		}
+		promise.wait(browsingSettings.setSettings(settings))
+			.then(function() {
+				reinit(params, function() {});
+			}).fail(function() {
+				console.log(arguments);
+			});
 	}
 
 	function softRender() {
