@@ -121,13 +121,19 @@ App.Controls.TagInput = function($underlyingInput) {
 		}
 	});
 
+	function explodeText(text) {
+		return _.filter(text.trim().split(/\s+/), function(item) {
+			return item.length > 0;
+		});
+	}
+
 	function processText(text, callback) {
-		var tagNamesToAdd = text.split(/\s+/);
+		var tagNamesToAdd = explodeText(text);
 		_.map(tagNamesToAdd, function(tagName) { callback(tagName); });
 	}
 
 	function processTextWithoutLast(text, callback) {
-		var tagNamesToAdd = text.split(/\s+/);
+		var tagNamesToAdd = explodeText(text);
 		var lastTagName = tagNamesToAdd.pop();
 		_.map(tagNamesToAdd, function(tagName) { callback(tagName); });
 		$input.val(lastTagName);
