@@ -32,7 +32,7 @@ class TagViewProxy extends AbstractViewProxy
 			$result->name = $tag->getName();
 			$result->usages = $tag->getUsages();
 			$result->banned = $tag->isBanned();
-			$result->category = !empty($tag->getCategory()) ? $tag->getCategory() : 'default';
+			$result->category = $tag->getCategory();
 
 			if (!empty($config[self::FETCH_IMPLICATIONS]))
 				$result->implications = $this->fromArray($tag->getImpliedTags());

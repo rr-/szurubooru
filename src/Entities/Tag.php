@@ -6,7 +6,7 @@ final class Tag extends Entity
 	private $name;
 	private $creationTime;
 	private $banned = false;
-	private $category;
+	private $category = 'default';
 
 	const LAZY_LOADER_IMPLIED_TAGS = 'implications';
 	const LAZY_LOADER_SUGGESTED_TAGS = 'suggestions';
