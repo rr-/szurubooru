@@ -167,7 +167,10 @@ smallest possible packages, run following command:
 
 This should create public_html/app.min.js, public_html/app.min.css and
 public_html/app.min.html. .htaccess is configured so that if these files exist,
-it will load them instead of development environment. To delete these conveniently, you can run  After running
+it will load them instead of development environment. To delete these
+conveniently, you can run:
+
+    grunt clean
 
 
 
