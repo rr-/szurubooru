@@ -14,8 +14,8 @@ class SnapshotEntityConverter extends AbstractEntityConverter implements IEntity
 			'primaryKey' => $entity->getPrimaryKey(),
 			'userId' => $entity->getUserId(),
 			'operation' => $entity->getOperation(),
-			'data' => serialize($entity->getData()),
-			'dataDifference' => serialize($entity->getDataDifference()),
+			'data' => json_encode($entity->getData()),
+			'dataDifference' => json_encode($entity->getDataDifference()),
 		];
 	}
 
@@ -27,8 +27,8 @@ class SnapshotEntityConverter extends AbstractEntityConverter implements IEntity
 		$entity->setPrimaryKey($array['primaryKey']);
 		$entity->setUserId($array['userId']);
 		$entity->setOperation($array['operation']);
-		$entity->setData(unserialize($array['data']));
-		$entity->setDataDifference(unserialize($array['dataDifference']));
+		$entity->setData(json_decode($array['data'], true));
+		$entity->setDataDifference(json_decode($array['dataDifference'], true));
 		return $entity;
 	}
 }
