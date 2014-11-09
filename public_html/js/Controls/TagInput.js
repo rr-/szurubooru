@@ -182,6 +182,8 @@ App.Controls.TagInput = function($underlyingInput) {
 				flashTagYellow(impliedTagName);
 			});
 			showOrHideSuggestions(tag.suggestions);
+		} else {
+			flashTagGreen(tagName);
 		}
 	}
 
@@ -221,6 +223,10 @@ App.Controls.TagInput = function($underlyingInput) {
 
 	function flashTagYellow(tagName) {
 		flashTag(tagName, 'rgba(255, 255, 200, 1)');
+	}
+
+	function flashTagGreen(tagName) {
+		flashTag(tagName, 'rgba(200, 255, 200, 1)');
 	}
 
 	function flashTag(tagName, color) {
