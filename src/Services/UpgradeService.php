@@ -25,6 +25,7 @@ final class UpgradeService
 
 	public function runUpgradesVerbose()
 	{
+		echo $this->config->database->user . '@' . $this->config->database->dsn . PHP_EOL;
 		$this->runUpgrades(true);
 	}
 
