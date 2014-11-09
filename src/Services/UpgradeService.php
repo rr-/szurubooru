@@ -10,7 +10,7 @@ final class UpgradeService
 	private $config;
 	private $upgrades;
 	private $databaseConnection;
-	private $executedUpgradeNames = [];
+	private $executedUpgradeNumbers = [];
 
 	public function __construct(
 		Config $config,
@@ -20,7 +20,7 @@ final class UpgradeService
 		$this->config = $config;
 		$this->databaseConnection = $databaseConnection;
 		$this->upgrades = $upgradeRepository->getUpgrades();
-		$this->loadExecutedUpgradeNames();
+		$this->loadExecutedUpgradeNumbers();
 	}
 
 	public function runUpgradesVerbose()
@@ -48,32 +48,37 @@ final class UpgradeService
 
 	private function isUpgradeNeeded(IUpgrade $upgrade)
 	{
-		return !in_array(get_class($upgrade), $this->executedUpgradeNames);
+		return !in_array($this->getUpgradeNumber($upgrade), $this->executedUpgradeNumbers);
 	}
 
 	private function runUpgrade(IUpgrade $upgrade)
 	{
 		$upgrade->run($this->databaseConnection);
-		$this->executedUpgradeNames[] = get_class($upgrade);
-		$this->saveExecutedUpgradeNames();
+		$number = $this->getUpgradeNumber($upgrade);
+		$this->executedUpgradeNumbers[] = $number;
+		$this->databaseConnection->getPDO()->insertInto('executedUpgrades')->values(['number' => $number])->execute();
 	}
 
-	private function loadExecutedUpgradeNames()
+	private function loadExecutedUpgradeNumbers()
 	{
-		$infoFilePath = $this->getExecutedUpgradeNamesFilePath();
-		if (!file_exists($infoFilePath))
-			return;
-		$this->executedUpgradeNames = explode("\n", file_get_contents($infoFilePath));
+		$this->executedUpgradeNumbers = [];
+		try
+		{
+			foreach ($this->databaseConnection->getPDO()->from('executedUpgrades') as $row)
+			{
+				$this->executedUpgradeNumbers[] = intval($row['number']);
+			}
+		}
+		catch (\Exception $e)
+		{
+			//most probably, no table found - need to execute all upgrades
+		}
 	}
 
-	private function saveExecutedUpgradeNames()
+	private function getUpgradeNumber(IUpgrade $upgrade)
 	{
-		$infoFilePath = $this->getExecutedUpgradeNamesFilePath();
-		file_put_contents($infoFilePath, implode("\n", $this->executedUpgradeNames));
-	}
-
-	private function getExecutedUpgradeNamesFilePath()
-	{
-		return $this->config->getDataDirectory() . DIRECTORY_SEPARATOR . 'executed_upgrades.txt';
+		$className = get_class($upgrade);
+		preg_match('/(\d+)/', $className, $matches);
+		return intval($matches[1]);
 	}
 }
