@@ -77,19 +77,34 @@ final class CommentDaoTest extends AbstractDatabaseTestCase
 		$post = $postDao->findById($post->getId());
 		$this->assertNotNull($post);
 		$this->assertEquals(1, $post->getCommentCount());
-
-		return [$postDao, $commentDao, $post, $comment];
 	}
 
-	/**
-	 * @depends testPostMetadataSyncInsert
-	 */
-	public function testPostMetadataSyncDelete($args)
+	public function testPostMetadataSyncDelete()
 	{
-		list ($postDao, $commentDao, $post, $comment) = $args;
+		$userDao = Injector::get(UserDao::class);
+		$postDao = Injector::get(PostDao::class);
+		$commentDao = Injector::get(CommentDao::class);
+
+		$user = self::getTestUser('olivia');
+		$userDao->save($user);
+
+		$post = self::getTestPost();
+		$postDao->save($post);
+
+		$this->assertEquals(0, $post->getCommentCount());
+		$this->assertNotNull($post->getId());
+
+		$comment = new Comment();
+		$comment->setUser($user);
+		$comment->setPost($post);
+		$comment->setCreationTime(date('c'));
+		$comment->setLastEditTime(date('c'));
+		$comment->setText('whatever');
+		$commentDao->save($comment);
 
 		$commentDao->deleteById($comment->getId());
 
+		$this->assertNotNull($post->getId());
 		$post = $postDao->findById($post->getId());
 		$this->assertNotNull($post);
 		$this->assertEquals(0, $post->getCommentCount());

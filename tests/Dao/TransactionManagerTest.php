@@ -38,6 +38,9 @@ final class TransactionManagerTest extends AbstractDatabaseTestCase
 		//ids that could be forged in transaction get left behind after rollback
 		$this->assertNotNull($testEntity->getId());
 
+		$this->databaseConnection->getPDO()->rollBack();
+		$this->databaseConnection->getPDO()->beginTransaction();
+
 		//but entities shouldn't be saved to database
 		$this->assertNull($testDao->findById($testEntity->getId()));
 	}

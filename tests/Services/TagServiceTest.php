@@ -25,7 +25,7 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$tagService = $this->getTagService();
 		$result = $tagService->createTags([$tag]);
 		$this->assertEquals(1, count($result));
-		$this->assertEquals(1, $result[0]->getId());
+		$this->assertNotNull($result[0]->getId());
 		$this->assertEquals('test', $result[0]->getName());
 	}
 
@@ -64,7 +64,7 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$result = $tagService->createTags([$tag1, $tag2]);
 		$this->assertEquals(2, count($result));
 		$this->assertEquals(1, $result[0]->getId());
-		$this->assertEquals(3, $result[1]->getId());
+		$this->assertNotNull($result[1]->getId());
 		$this->assertEquals('test1', $result[0]->getName());
 		$this->assertEquals('test3', $result[1]->getName());
 	}
