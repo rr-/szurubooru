@@ -21,12 +21,14 @@ class PostEditFormData implements IValidatable
 		if ($inputReader !== null)
 		{
 			$this->content = $inputReader->decodeBase64($inputReader->content);
-			$this->thumbnail = $inputReader->decodebase64($inputReader->thumbnail);
+			$this->thumbnail = $inputReader->decodeBase64($inputReader->thumbnail);
 			if ($inputReader->safety)
 				$this->safety = EnumHelper::postSafetyFromString($inputReader->safety);
-			$this->source = $inputReader->source;
+			if ($inputReader->source !== null)
+				$this->source = $inputReader->source;
 			$this->tags = preg_split('/[\s+]/', $inputReader->tags);
-			$this->relations = array_filter(preg_split('/[\s+]/', $inputReader->relations));
+			if ($inputReader->relations !== null)
+				$this->relations = array_filter(preg_split('/[\s+]/', $inputReader->relations));
 			$this->seenEditTime = $inputReader->seenEditTime;
 			$this->flags = new \StdClass;
 			$this->flags->loop = !empty($inputReader->flags['loop']);
