@@ -7,9 +7,10 @@ App.Presenters.PostUploadPresenter = function(
 	keyboard,
 	promise,
 	util,
-	auth,
 	api,
+	auth,
 	router,
+	tagList,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -606,6 +607,7 @@ App.Presenters.PostUploadPresenter = function(
 
 	function onUploadCompleted() {
 		util.disableExitConfirmation();
+		tagList.refreshTags();
 		router.navigate('#/posts');
 	}
 
@@ -624,4 +626,15 @@ App.Presenters.PostUploadPresenter = function(
 
 };
 
-App.DI.register('postUploadPresenter', ['_', 'jQuery', 'keyboard', 'promise', 'util', 'auth', 'api', 'router', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostUploadPresenter);
+App.DI.register('postUploadPresenter', [
+	'_',
+	'jQuery',
+	'keyboard',
+	'promise',
+	'util',
+	'api',
+	'auth',
+	'router',
+	'tagList',
+	'topNavigationPresenter',
+	'messagePresenter'], App.Presenters.PostUploadPresenter);
