@@ -157,7 +157,7 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('tests', 'Run all tests.', function() {
-		exec('php vendor/phpunit/phpunit/phpunit -v --strict --bootstrap src/Bootstrap.php tests/');
+		exec('php vendor/phpunit/phpunit/phpunit');
 	});
 
 	grunt.registerTask('update', 'Upgrade database to newest version.', function() {
