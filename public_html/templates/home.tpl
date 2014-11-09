@@ -4,7 +4,7 @@
 		<small>Serving <%= globals.postCount || 0 %> posts (<%= formatFileSize(globals.postSize || 0) %>)</small>
 	</p>
 
-	<% if (post && typeof(post) !== 'undefined') { %>
+	<% if (post && post.id) { %>
 		<div class="post">
 			<div id="post-content-target">
 			</div>
