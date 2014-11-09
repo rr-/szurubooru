@@ -1,6 +1,8 @@
 <?php
 namespace Szurubooru\Dao\EntityConverters;
 
+use Szurubooru\Entities\Entity;
+
 abstract class AbstractEntityConverter implements IEntityConverter
 {
 	private $entityDecorator = null;
@@ -19,7 +21,17 @@ abstract class AbstractEntityConverter implements IEntityConverter
 		return $entity;
 	}
 
+	public function toArray(Entity $entity)
+	{
+		$array = $this->toBasicArray($entity);
+		if ($entity->getId() !== null)
+			$array['id'] = $entity->getId();
+		return $array;
+	}
+
 	protected abstract function toBasicEntity(array $array);
+
+	protected abstract function toBasicArray(Entity $entity);
 
 	protected function dbTimeToEntityTime($time)
 	{

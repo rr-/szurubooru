@@ -5,11 +5,10 @@ use Szurubooru\Entities\Score;
 
 class ScoreEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'userId' => $entity->getUserId(),
 			'postId' => $entity->getPostId(),
 			'commentId' => $entity->getCommentId(),

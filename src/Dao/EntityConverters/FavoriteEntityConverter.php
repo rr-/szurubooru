@@ -5,11 +5,10 @@ use Szurubooru\Entities\Favorite;
 
 class FavoriteEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'userId' => $entity->getUserId(),
 			'postId' => $entity->getPostId(),
 			'time' => $this->entityTimeToDbTime($entity->getTime()),

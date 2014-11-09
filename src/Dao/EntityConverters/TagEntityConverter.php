@@ -5,11 +5,10 @@ use Szurubooru\Entities\Tag;
 
 class TagEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'name' => $entity->getName(),
 			'creationTime' => $this->entityTimeToDbTime($entity->getCreationTime()),
 			'banned' => $entity->isBanned(),

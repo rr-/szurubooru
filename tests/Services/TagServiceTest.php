@@ -34,6 +34,7 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$pdo = $this->databaseConnection->getPDO();
 		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (1, \'test1\', \'2014-10-01 00:00:00\')');
 		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (2, \'test2\', \'2014-10-01 00:00:00\')');
+		$pdo->exec('UPDATE sequencer SET lastUsedId = 2 WHERE tableName = \'tags\'');
 
 		$tag1 = new Tag();
 		$tag1->setName('test1');
@@ -54,6 +55,7 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$pdo = $this->databaseConnection->getPDO();
 		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (1, \'test1\', \'2014-10-01 00:00:00\')');
 		$pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (2, \'test2\', \'2014-10-01 00:00:00\')');
+		$pdo->exec('UPDATE sequencer SET lastUsedId = 2 WHERE tableName = \'tags\'');
 
 		$tag1 = new Tag();
 		$tag1->setName('test1');

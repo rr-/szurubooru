@@ -5,11 +5,10 @@ use Szurubooru\Entities\PostNote;
 
 class PostNoteEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'postId' => $entity->getPostId(),
 			'x' => $entity->getLeft(),
 			'y' => $entity->getTop(),

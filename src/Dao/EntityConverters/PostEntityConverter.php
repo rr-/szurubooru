@@ -5,11 +5,10 @@ use Szurubooru\Entities\Post;
 
 class PostEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'name' => $entity->getName(),
 			'userId' => $entity->getUserId(),
 			'uploadTime' => $this->entityTimeToDbTime($entity->getUploadTime()),

@@ -5,11 +5,10 @@ use Szurubooru\Entities\Token;
 
 class TokenEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'name' => $entity->getName(),
 			'purpose' => $entity->getPurpose(),
 			'additionalData' => $entity->getAdditionalData(),

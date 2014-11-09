@@ -61,6 +61,9 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 		$post2 = self::getTestPost();
 		$postDao->save($post1);
 		$postDao->save($post2);
+		$this->assertNotNull($post1->getId());
+		$this->assertNotNull($post2->getId());
+		$this->assertNotEquals($post1->getId(), $post2->getId());
 
 		$actual = $postDao->findAll();
 

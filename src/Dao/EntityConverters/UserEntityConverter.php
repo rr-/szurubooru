@@ -5,11 +5,10 @@ use Szurubooru\Entities\User;
 
 class UserEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'name' => $entity->getName(),
 			'email' => $entity->getEmail(),
 			'emailUnconfirmed' => $entity->getEmailUnconfirmed(),

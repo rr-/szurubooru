@@ -5,11 +5,10 @@ use Szurubooru\Entities\Snapshot;
 
 class SnapshotEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'time' => $this->entityTimeToDbTime($entity->getTime()),
 			'type' => $entity->getType(),
 			'primaryKey' => $entity->getPrimaryKey(),

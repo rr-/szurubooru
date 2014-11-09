@@ -5,11 +5,10 @@ use Szurubooru\Entities\GlobalParam;
 
 class GlobalParamEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toArray(Entity $entity)
+	public function toBasicArray(Entity $entity)
 	{
 		return
 		[
-			'id' => $entity->getId(),
 			'dataKey' => $entity->getKey(),
 			'dataValue' => $entity->getValue(),
 		];
