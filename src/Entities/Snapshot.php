@@ -7,8 +7,9 @@ final class Snapshot extends Entity
 	const TYPE_POST = 0;
 	const TYPE_TAG = 1;
 
-	const OPERATION_CHANGE = 0;
-	const OPERATION_DELETE = 1;
+	const OPERATION_CREATION = 0;
+	const OPERATION_CHANGE = 1;
+	const OPERATION_DELETE = 2;
 
 	const LAZY_LOADER_USER = 'user';
 

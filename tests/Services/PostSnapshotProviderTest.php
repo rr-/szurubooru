@@ -44,7 +44,7 @@ class PostSnapshotProviderTest extends AbstractTestCase
 			->willReturn([$this->getTestPostNote()]);
 
 		$postSnapshotProvider = $this->getPostSnapshotProvider();
-		$snapshot = $postSnapshotProvider->getPostChangeSnapshot($post);
+		$snapshot = $postSnapshotProvider->getChangeSnapshot($post);
 
 		$this->assertEquals([
 			'source' => 'amazing source',
@@ -82,7 +82,7 @@ class PostSnapshotProviderTest extends AbstractTestCase
 			->willReturn([]);
 
 		$postSnapshotProvider = $this->getPostSnapshotProvider();
-		$snapshot = $postSnapshotProvider->getPostChangeSnapshot($post);
+		$snapshot = $postSnapshotProvider->getChangeSnapshot($post);
 
 		$this->assertTrue($snapshot->getData()['featured']);
 	}

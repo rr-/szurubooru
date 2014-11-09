@@ -123,7 +123,7 @@ class PostService
 
 			$savedPost = $this->postDao->save($post);
 
-			$this->postHistoryService->savePostChange($savedPost);
+			$this->postHistoryService->savePostCreation($savedPost);
 			return $savedPost;
 		};
 		$ret = $this->transactionManager->commit($transactionFunc);

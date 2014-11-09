@@ -48,10 +48,14 @@ var reprValue = function(value) {
 				</td>
 
 				<td class="difference">
-					<% if (historyEntry.operation == 1) { %>
+					<% if (historyEntry.operation == 2) { %>
 						deleted
 					<% } else { %>
-						changed
+						<% if (historyEntry.operation == 0) { %>
+							added
+						<% } else { %>
+							changed
+						<% } %>
 
 						<% if (historyEntry.dataDifference) { %>
 							<ul><!--

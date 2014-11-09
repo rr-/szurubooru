@@ -2,6 +2,7 @@
 namespace Szurubooru\Services;
 use Szurubooru\Dao\GlobalParamDao;
 use Szurubooru\Dao\PostNoteDao;
+use Szurubooru\Entities\Entity;
 use Szurubooru\Entities\GlobalParam;
 use Szurubooru\Entities\Post;
 use Szurubooru\Entities\PostNote;
@@ -9,7 +10,7 @@ use Szurubooru\Entities\Snapshot;
 use Szurubooru\Entities\Tag;
 use Szurubooru\Helpers\EnumHelper;
 
-class PostSnapshotProvider
+class PostSnapshotProvider implements ISnapshotProvider
 {
 	private $globalParamDao;
 	private $postNoteDao;
@@ -22,7 +23,39 @@ class PostSnapshotProvider
 		$this->postNoteDao = $postNoteDao;
 	}
 
-	public function getPostChangeSnapshot(Post $post)
+	public function getCreationSnapshot(Entity $post)
+	{
+		$snapshot = $this->getPostSnapshot($post);
+		$snapshot->setOperation(Snapshot::OPERATION_CREATION);
+		$snapshot->setData($this->getFullData($post));
+		return $snapshot;
+	}
+
+	public function getChangeSnapshot(Entity $post)
+	{
+		$snapshot = $this->getPostSnapshot($post);
+		$snapshot->setOperation(Snapshot::OPERATION_CHANGE);
+		$snapshot->setData($this->getFullData($post));
+		return $snapshot;
+	}
+
+	public function getDeleteSnapshot(Entity $post)
+	{
+		$snapshot = $this->getPostSnapshot($post);
+		$snapshot->setData([]);
+		$snapshot->setOperation(Snapshot::OPERATION_DELETE);
+		return $snapshot;
+	}
+
+	private function getPostSnapshot(Post $post)
+	{
+		$snapshot = new Snapshot();
+		$snapshot->setType(Snapshot::TYPE_POST);
+		$snapshot->setPrimaryKey($post->getId());
+		return $snapshot;
+	}
+
+	private function getFullData(Post $post)
 	{
 		static $featuredPostParam = null;
 		if ($featuredPostParam === null)
@@ -75,25 +108,6 @@ class PostSnapshotProvider
 		sort($data['relations']);
 		usort($data['notes'], function ($note1, $note2) { return $note1['x'] - $note2['x']; });
 
-		$snapshot = $this->getPostSnapshot($post);
-		$snapshot->setOperation(Snapshot::OPERATION_CHANGE);
-		$snapshot->setData($data);
-		return $snapshot;
-	}
-
-	public function getPostDeleteSnapshot(Post $post)
-	{
-		$snapshot = $this->getPostSnapshot($post);
-		$snapshot->setData([]);
-		$snapshot->setOperation(Snapshot::OPERATION_DELETE);
-		return $snapshot;
-	}
-
-	private function getPostSnapshot(Post $post)
-	{
-		$snapshot = new Snapshot();
-		$snapshot->setType(Snapshot::TYPE_POST);
-		$snapshot->setPrimaryKey($post->getId());
-		return $snapshot;
+		return $data;
 	}
 }

@@ -46,13 +46,18 @@ class PostHistoryService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
+	public function savePostCreation(Post $post)
+	{
+		$this->historyService->saveSnapshot($this->postSnapshotProvider->getCreationSnapshot($post));
+	}
+
 	public function savePostChange(Post $post)
 	{
-		$this->historyService->saveSnapshot($this->postSnapshotProvider->getPostChangeSnapshot($post));
+		$this->historyService->saveSnapshot($this->postSnapshotProvider->getChangeSnapshot($post));
 	}
 
 	public function savePostDeletion(Post $post)
 	{
-		$this->historyService->saveSnapshot($this->postSnapshotProvider->getPostDeleteSnapshot($post));
+		$this->historyService->saveSnapshot($this->postSnapshotProvider->getDeleteSnapshot($post));
 	}
 }

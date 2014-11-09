@@ -113,7 +113,7 @@ class TagService
 			foreach ($this->tagDao->batchSave($tagsToCreate) as $tag)
 			{
 				$createdTags[$tagNameGetter($tag)] = $tag;
-				$this->tagHistoryService->saveTagChange($tag);
+				$this->tagHistoryService->saveTagCreation($tag);
 			}
 
 			$result = [];

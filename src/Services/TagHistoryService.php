@@ -46,14 +46,19 @@ class TagHistoryService
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
+	public function saveTagCreation(Tag $tag)
+	{
+		$this->historyService->saveSnapshot($this->tagSnapshotProvider->getCreationSnapshot($tag));
+	}
+
 	public function saveTagChange(Tag $tag)
 	{
-		$this->historyService->saveSnapshot($this->tagSnapshotProvider->getTagChangeSnapshot($tag));
+		$this->historyService->saveSnapshot($this->tagSnapshotProvider->getChangeSnapshot($tag));
 	}
 
 	public function saveTagDeletion(Tag $tag)
 	{
-		$this->historyService->saveSnapshot($this->tagSnapshotProvider->getTagDeleteSnapshot($tag));
+		$this->historyService->saveSnapshot($this->tagSnapshotProvider->getDeleteSnapshot($tag));
 	}
 }
 

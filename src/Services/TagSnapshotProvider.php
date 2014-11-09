@@ -1,11 +1,44 @@
 <?php
 namespace Szurubooru\Services;
+use Szurubooru\Entities\Entity;
 use Szurubooru\Entities\Snapshot;
 use Szurubooru\Entities\Tag;
 
-class TagSnapshotProvider
+class TagSnapshotProvider implements ISnapshotProvider
 {
-	public function getTagChangeSnapshot(Tag $tag)
+	public function getCreationSnapshot(Entity $tag)
+	{
+		$snapshot = $this->getTagSnapshot($tag);
+		$snapshot->setOperation(Snapshot::OPERATION_CREATION);
+		$snapshot->setData($this->getFullData($tag));
+		return $snapshot;
+	}
+
+	public function getChangeSnapshot(Entity $tag)
+	{
+		$snapshot = $this->getTagSnapshot($tag);
+		$snapshot->setOperation(Snapshot::OPERATION_CHANGE);
+		$snapshot->setData($this->getFullData($tag));
+		return $snapshot;
+	}
+
+	public function getDeleteSnapshot(Entity $tag)
+	{
+		$snapshot = $this->getTagSnapshot($tag);
+		$snapshot->setData(['name' => $tag->getName()]);
+		$snapshot->setOperation(Snapshot::OPERATION_DELETE);
+		return $snapshot;
+	}
+
+	private function getTagSnapshot(Tag $tag)
+	{
+		$snapshot = new Snapshot();
+		$snapshot->setType(Snapshot::TYPE_TAG);
+		$snapshot->setPrimaryKey($tag->getId());
+		return $snapshot;
+	}
+
+	private function getFullData(Tag $tag)
 	{
 		$data =
 		[
@@ -26,26 +59,6 @@ class TagSnapshotProvider
 
 		sort($data['implications']);
 		sort($data['suggestions']);
-
-		$snapshot = $this->getTagSnapshot($tag);
-		$snapshot->setOperation(Snapshot::OPERATION_CHANGE);
-		$snapshot->setData($data);
-		return $snapshot;
-	}
-
-	public function getTagDeleteSnapshot(Tag $tag)
-	{
-		$snapshot = $this->getTagSnapshot($tag);
-		$snapshot->setData(['name' => $tag->getName()]);
-		$snapshot->setOperation(Snapshot::OPERATION_DELETE);
-		return $snapshot;
-	}
-
-	private function getTagSnapshot(Tag $tag)
-	{
-		$snapshot = new Snapshot();
-		$snapshot->setType(Snapshot::TYPE_TAG);
-		$snapshot->setPrimaryKey($tag->getId());
-		return $snapshot;
+		return $data;
 	}
 }
