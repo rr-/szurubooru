@@ -38,9 +38,11 @@ App.Presenters.HomePresenter = function(
 				render();
 				loaded();
 
-				presenterManager.initPresenters([
-					[postContentPresenter, {post: post, $target: $el.find('#post-content-target')}]],
-					function() {});
+				if ($el.find('#post-content-target').length > 0) {
+					presenterManager.initPresenters([
+						[postContentPresenter, {post: post, $target: $el.find('#post-content-target')}]],
+						function() {});
+				}
 
 			}).fail(function(response) {
 				messagePresenter.showError($el, response.json && response.json.error || response);
