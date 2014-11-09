@@ -29,7 +29,9 @@
 				</span>
 
 				<span class="right">
-					featured by
+					featured
+					<%= formatRelativeTime(post.lastFeatureTime) %>
+					by
 
 					<% var showLink = canViewUsers && user.name %>
 
