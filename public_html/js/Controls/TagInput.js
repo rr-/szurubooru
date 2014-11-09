@@ -67,7 +67,7 @@ App.Controls.TagInput = function($underlyingInput) {
 	function initAutoComplete() {
 		var autoComplete = new App.Controls.AutoCompleteInput($input);
 		autoComplete.onApply = function(text) {
-			processText(text, addTagDirectly);
+			processText(text, addTag);
 			$input.val('');
 		};
 		autoComplete.additionalFilter = function(results) {
