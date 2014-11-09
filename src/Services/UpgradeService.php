@@ -40,7 +40,12 @@ final class UpgradeService
 			if ($this->isUpgradeNeeded($upgrade))
 			{
 				if ($verbose)
+				{
 					echo 'Running ' . get_class($upgrade) . PHP_EOL;
+					if (ob_get_level())
+						ob_flush();
+					flush();
+				}
 				$this->runUpgrade($upgrade);
 			}
 		}
