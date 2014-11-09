@@ -189,7 +189,9 @@ App.Util = function(_, jQuery, marked, promise) {
 
 		var preDecorator = function(text) {
 			//prevent ^#... from being treated as headers, due to tag permalinks
-			text = text.replace(/^#/g, '%%%#');
+			text = text.replace(/^#/g, '%%%\0');
+			//fix \ before ~ being stripped away
+			text = text.replace(/\\~/g, '%%%\0');
 			return text;
 		};
 
@@ -202,7 +204,7 @@ App.Util = function(_, jQuery, marked, promise) {
 			//spoilers
 			text = text.replace(/\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\]))+)\[\/spoiler\]/ig, '<span class="spoiler">$1</span>');
 			//strike-through
-			text = text.replace(/(~~|~)([^~]+)\1/g, '<del>$2</del>');
+			text = text.replace(/(^|[^\\])(~~|~)([^~]+)\2/g, '$1<del>$3</del>');
 			//post premalinks
 			text = text.replace(/(^|[\s<>\(\)\[\]])@(\d+)/g, '$1<a href="#/post/$2"><code>@$2</code></a>');
 			//user permalinks
