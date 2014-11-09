@@ -527,7 +527,7 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function movePostsDown(posts) {
-		_.each(posts, function(post) {
+		_.each(posts.reverse(), function(post) {
 			var $row = post.$tableRow;
 			$row.insertAfter($row.next('tr:not(.selected)'));
 		});
