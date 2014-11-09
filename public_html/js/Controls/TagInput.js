@@ -28,7 +28,7 @@ App.Controls.TagInput = function($underlyingInput) {
 	var $suggestions = jQuery('<div class="related-tags"><span>Suggested tags:</span><ul>');
 	init();
 	render();
-	initAutocomplete();
+	initAutoComplete();
 
 	function init() {
 		if ($underlyingInput.length === 0) {
@@ -59,21 +59,18 @@ App.Controls.TagInput = function($underlyingInput) {
 		$suggestions.insertAfter($wrapper);
 		$siblings.insertAfter($wrapper);
 
-		addTagsFromText(
-			$underlyingInput.val(), {
-				disableImplications: true,
-				disableSuggestions: true});
+		processText($underlyingInput.val(), addTagDirectly);
 
 		$underlyingInput.val('');
 	}
 
-	function initAutocomplete() {
-		var autocomplete = new App.Controls.AutoCompleteInput($input);
-		autocomplete.onApply = function(text) {
-			addTagsFromText(text);
+	function initAutoComplete() {
+		var autoComplete = new App.Controls.AutoCompleteInput($input);
+		autoComplete.onApply = function(text) {
+			processText(text, addTagDirectly);
 			$input.val('');
 		};
-		autocomplete.additionalFilter = function(results) {
+		autoComplete.additionalFilter = function(results) {
 			return _.filter(results, function(resultItem) {
 				return !_.contains(getTags(), resultItem[0]);
 			});
@@ -104,7 +101,7 @@ App.Controls.TagInput = function($underlyingInput) {
 			return;
 		}
 
-		addTagsFromTextWithoutLast(pastedText);
+		processTextWithoutLast(pastedText, addTag);
 	});
 
 	$input.bind('keydown', function(e) {
@@ -124,19 +121,19 @@ App.Controls.TagInput = function($underlyingInput) {
 		}
 	});
 
-	function addTagsFromText(text, options) {
+	function processText(text, callback) {
 		var tagNamesToAdd = text.split(/\s+/);
-		_.map(tagNamesToAdd, function(tagName) { addTag(tagName, options); });
+		_.map(tagNamesToAdd, function(tagName) { callback(tagName); });
 	}
 
-	function addTagsFromTextWithoutLast(text) {
+	function processTextWithoutLast(text, callback) {
 		var tagNamesToAdd = text.split(/\s+/);
 		var lastTagName = tagNamesToAdd.pop();
-		_.map(tagNamesToAdd, function(tagName) { addTag(tagName, options); });
+		_.map(tagNamesToAdd, function(tagName) { callback(tagName); });
 		$input.val(lastTagName);
 	}
 
-	function addTag(tagName, options) {
+	function addTag(tagName) {
 		tagName = tagName.trim();
 		if (tagName.length === 0) {
 			return;
@@ -154,17 +151,21 @@ App.Controls.TagInput = function($underlyingInput) {
 		if (isTaggedWith(tagName)) {
 			flashTagRed(tagName);
 		} else {
-			beforeTagAdded(tagName, options);
+			beforeTagAdded(tagName);
 
 			var exportedTag = getExportedTag(tagName);
 			if (!exportedTag || !exportedTag.banned) {
-				tags.push(tagName);
-				var $elem = createListElement(tagName);
-				$tagList.append($elem);
+				addTagDirectly(tagName);
 			}
 
-			afterTagAdded(tagName, options);
+			afterTagAdded(tagName);
 		}
+	}
+
+	function addTagDirectly(tagName) {
+		tags.push(tagName);
+		var $elem = createListElement(tagName);
+		$tagList.append($elem);
 	}
 
 	function beforeTagAdded(tagName) {
@@ -173,19 +174,14 @@ App.Controls.TagInput = function($underlyingInput) {
 		}
 	}
 
-	function afterTagAdded(tagName, options) {
+	function afterTagAdded(tagName) {
 		var tag = getExportedTag(tagName);
 		if (tag) {
-			if (!options || !options.disableImplications) {
-				_.each(tag.implications, function(impliedTagName) {
-					addTag(impliedTagName);
-					flashTagYellow(impliedTagName);
-				});
-			}
-
-			if (!options || !options.disableSuggestions) {
-				showOrHideSuggestions(tag.suggestions);
-			}
+			_.each(tag.implications, function(impliedTagName) {
+				addTag(impliedTagName);
+				flashTagYellow(impliedTagName);
+			});
+			showOrHideSuggestions(tag.suggestions);
 		}
 	}
 
