@@ -13,7 +13,7 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 
 	protected function tearDown()
 	{
-		$this->cleanTestDirectory();
+		TestHelper::cleanTestDirectory();
 	}
 
 	protected function mock($className)
@@ -21,32 +21,29 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 		return $this->getMockBuilder($className)->disableOriginalConstructor()->getMock();
 	}
 
-	protected function mockConfig($dataPath = null, $publicDataPath = null)
-	{
-		return new ConfigMock($dataPath, $publicDataPath);
-	}
-
 	protected function mockTransactionManager()
 	{
 		return new TransactionManagerMock($this->mock(DatabaseConnection::class));
 	}
 
+	protected function mockConfig($dataPath = null, $publicDataPath = null)
+	{
+		return TestHelper::mockConfig($dataPath, $publicDataPath);
+	}
+
 	protected function createTestDirectory()
 	{
-		$path = $this->getTestDirectoryPath();
-		if (!file_exists($path))
-			mkdir($path, 0777, true);
-		return $path;
+		return TestHelper::createTestDirectory();
 	}
 
 	protected function getTestFile($fileName)
 	{
-		return file_get_contents($this->getTestFilePath($fileName));
+		return TestHelper::getTestFile($fileName);
 	}
 
 	protected function getTestFilePath($fileName)
 	{
-		return __DIR__ . DIRECTORY_SEPARATOR . 'test_files' . DIRECTORY_SEPARATOR . $fileName;
+		return TestHelper::getTestFilePath($fileName);
 	}
 
 	protected function assertEntitiesEqual($expected, $actual)
@@ -75,33 +72,6 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 				$actualEntity->resetMeta();
 				$this->assertEquals($expectedEntity, $actualEntity);
 			}
-		}
-	}
-
-	private function getTestDirectoryPath()
-	{
-		return __DIR__ . DIRECTORY_SEPARATOR . 'files';
-	}
-
-	private function cleanTestDirectory()
-	{
-		if (!file_exists($this->getTestDirectoryPath()))
-			return;
-
-		$dirIterator = new \RecursiveDirectoryIterator(
-			$this->getTestDirectoryPath(),
-			\RecursiveDirectoryIterator::SKIP_DOTS);
-
-		$files = new \RecursiveIteratorIterator(
-			$dirIterator,
-			\RecursiveIteratorIterator::CHILD_FIRST);
-
-		foreach ($files as $fileInfo)
-		{
-			if ($fileInfo->isDir())
-				rmdir($fileInfo->getRealPath());
-			else
-				unlink($fileInfo->getRealPath());
 		}
 	}
 }
