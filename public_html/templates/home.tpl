@@ -11,7 +11,7 @@
 
 			<div class="post-footer">
 
-				<span class="left">
+				<small class="left">
 					<% var showLink = canViewPosts %>
 
 					<% if (showLink) { %>
@@ -26,9 +26,9 @@
 
 					uploaded
 					<%= formatRelativeTime(post.uploadTime) %>
-				</span>
+				</small>
 
-				<span class="right">
+				<small class="right">
 					featured
 					<%= formatRelativeTime(post.lastFeatureTime) %>
 					by
@@ -48,7 +48,7 @@
 					<% if (showLink) { %>
 						</a>
 					<% } %>
-				</span>
+				</small>
 
 			</div>
 		</div>
