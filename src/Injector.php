@@ -6,6 +6,7 @@ use Doctrine\Common\Cache\ArrayCache;
 final class Injector
 {
 	private static $container;
+	private static $definitionCache;
 
 	public static function init()
 	{
@@ -14,8 +15,9 @@ final class Injector
 			. DIRECTORY_SEPARATOR . 'src'
 			. DIRECTORY_SEPARATOR . 'di.php';
 
+		self::$definitionCache = new ArrayCache();
 		$builder = new ContainerBuilder();
-		$builder->setDefinitionCache(new ArrayCache());
+		$builder->setDefinitionCache(self::$definitionCache);
 		$builder->addDefinitions($definitionsPath);
 		$builder->useAutowiring(true);
 		$builder->useAnnotations(false);
@@ -29,7 +31,9 @@ final class Injector
 
 	public static function set($className, $object)
 	{
-		return self::$container->set($className, $object);
+		self::$container->set($className, $object);
+		self::$definitionCache->delete($className);
+		self::$definitionCache->flushAll();
 	}
 }
 
