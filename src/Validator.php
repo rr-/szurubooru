@@ -88,10 +88,10 @@ class Validator
 			throw new \DomainException('Tags cannot be empty.');
 
 		//<> causes HTML injection and problems with Markdown.
-		//\/ causes problems with URLs.
-		//; causes problems with search argument parsing in JS frontend.
+		//\/?& causes problems with URLs.
+		//#; causes problems with search argument parsing in JS frontend.
 		//whitespace causes problems with search.
-		$illegalCharacters = str_split("<>;\\/\r\n\t " . chr(160));
+		$illegalCharacters = str_split("<>#;\\/?&\r\n\t " . chr(160));
 		foreach ($tags as $tag)
 		{
 			if (empty($tag))
