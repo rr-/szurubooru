@@ -28,6 +28,12 @@ App.Presenters.ProgressPresenter = function(nprogress) {
 		}
 	}
 
+	window.setInterval(function() {
+		if (nesting <= 0) {
+			nprogress.done();
+		}
+	}, 1000);
+
 	return {
 		start: start,
 		done: done,
