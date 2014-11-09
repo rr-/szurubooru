@@ -1,11 +1,11 @@
 {
 	"require": {
-		"mnapoli/php-di": "~4.0"
+		"mnapoli/php-di": "~4.4"
 	},
 
 	"require-dev": {
 		"jbrooksuk/phpcheckstyle": "dev-master",
-		"phpunit/phpunit": "4.2.*"
+		"phpunit/phpunit": "4.3.*"
 	},
 
 	"autoload": {
