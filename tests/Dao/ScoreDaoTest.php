@@ -71,10 +71,10 @@ final class ScoreDaoTest extends AbstractDatabaseTestCase
 		$scoreDao->save($score2);
 		$scoreDao->save($score3);
 
-		$this->assertEntitiesEqual($score1, $scoreDao->getScore($user1, $post1));
-		$this->assertEntitiesEqual($score2, $scoreDao->getScore($user2, $post2));
-		$this->assertEntitiesEqual($score3, $scoreDao->getScore($user1, $post2));
-		$this->assertNull($scoreDao->getScore($user2, $post1));
+		$this->assertEntitiesEqual($score1, $scoreDao->getUserScore($user1, $post1));
+		$this->assertEntitiesEqual($score2, $scoreDao->getUserScore($user2, $post2));
+		$this->assertEntitiesEqual($score3, $scoreDao->getUserScore($user1, $post2));
+		$this->assertNull($scoreDao->getUserScore($user2, $post1));
 	}
 
 	public function findByPost(Post $post)

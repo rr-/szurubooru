@@ -210,8 +210,8 @@ App.Presenters.PostCommentListPresenter = function(
 	function score(comment, scoreValue) {
 		promise.wait(api.post('/comments/' + comment.id + '/score', {score: scoreValue}))
 			.then(function(response) {
-				comment.score = response.json.score;
-				comment.ownScore = parseInt(response.json.score);
+				comment.score = parseInt(response.json.score);
+				comment.ownScore = parseInt(response.json.ownScore);
 				updateComment(comment);
 			}).fail(showGenericError);
 	}

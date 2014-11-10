@@ -25,25 +25,27 @@ class ScoreDao extends AbstractDao implements ICrudDao
 		$this->timeService = $timeService;
 	}
 
-	public function getScore(User $user, Entity $entity)
+	public function getScoreValue(Entity $entity)
 	{
-		$query = $this->pdo->from($this->tableName)->where('userId', $user->getId());
+		$query = $this->getBaseQuery($entity);
+		$query->select(null);
+		$query->select('SUM(score) AS score');
+		return iterator_to_array($query)[0]['score'];
+	}
 
-		if ($entity instanceof Post)
-			$query->where('postId', $entity->getId());
-		elseif ($entity instanceof Comment)
-			$query->where('commentId', $entity->getId());
-		else
-			throw new \InvalidArgumentException();
+	public function getUserScore(User $user, Entity $entity)
+	{
+		$query = $this->getBaseQuery($entity);
+		$query->where('userId', $user->getId());
 
 		$arrayEntities = iterator_to_array($query);
 		$entities = $this->arrayToEntities($arrayEntities);
 		return array_shift($entities);
 	}
 
-	public function setScore(User $user, Entity $entity, $scoreValue)
+	public function setUserScore(User $user, Entity $entity, $scoreValue)
 	{
-		$score = $this->getScore($user, $entity);
+		$score = $this->getUserScore($user, $entity);
 		if (!$score)
 		{
 			$score = new Score();
@@ -60,5 +62,19 @@ class ScoreDao extends AbstractDao implements ICrudDao
 		$score->setScore($scoreValue);
 		$this->save($score);
 		return $score;
+	}
+
+	private function getBaseQuery($entity)
+	{
+		$query = $this->pdo->from($this->tableName);
+
+		if ($entity instanceof Post)
+			$query->where('postId', $entity->getId());
+		elseif ($entity instanceof Comment)
+			$query->where('commentId', $entity->getId());
+		else
+			throw new \InvalidArgumentException();
+
+		return $query;
 	}
 }

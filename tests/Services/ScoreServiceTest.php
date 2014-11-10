@@ -36,10 +36,10 @@ final class ScoreServiceTest extends AbstractTestCase
 		$score->setUserId($user->getId());
 		$score->setPostId($post->getId());
 		$score->setScore(1);
-		$this->scoreDaoMock->expects($this->once())->method('setScore')->with($user, $post)->willReturn(null);
+		$this->scoreDaoMock->expects($this->once())->method('setUserScore')->with($user, $post)->willReturn(null);
 
 		$scoreService = $this->getScoreService();
-		$scoreService->setScore($user, $post, 1);
+		$scoreService->setUserScore($user, $post, 1);
 	}
 
 	public function testSettingInvalid()
@@ -48,7 +48,7 @@ final class ScoreServiceTest extends AbstractTestCase
 		$post = new Post(2);
 		$this->setExpectedException(\Exception::class);
 		$scoreService = $this->getScoreService();
-		$scoreService->setScore($user, $post, 2);
+		$scoreService->setUserScore($user, $post, 2);
 	}
 
 	public function testGetting()
@@ -56,10 +56,10 @@ final class ScoreServiceTest extends AbstractTestCase
 		$user = new User();
 		$post = new Post();
 		$score = new Score(3);
-		$this->scoreDaoMock->expects($this->once())->method('getScore')->with($user, $post)->willReturn($score);
+		$this->scoreDaoMock->expects($this->once())->method('getUserScore')->with($user, $post)->willReturn($score);
 
 		$scoreService = $this->getScoreService();
-		$retrievedScore = $scoreService->getScore($user, $post);
+		$retrievedScore = $scoreService->getUserScore($user, $post);
 		$this->assertEquals($score, $retrievedScore);
 	}
 

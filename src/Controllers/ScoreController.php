@@ -71,15 +71,19 @@ final class ScoreController extends AbstractController
 		$this->privilegeService->assertLoggedIn();
 		$score = intval($this->inputReader->score);
 		$user = $this->authService->getLoggedInUser();
-		$result = $this->scoreService->setScore($user, $entity, $score);
-		return ['score' => $result->getScore()];
+		$result = $this->scoreService->setUserScore($user, $entity, $score);
+		return [
+			'score' => $this->scoreService->getScoreValue($entity),
+			'ownScore' => $result->getScore(),
+		];
 	}
 
 	private function getScore(Entity $entity)
 	{
-		$this->privilegeService->assertLoggedIn();
 		$user = $this->authService->getLoggedInUser();
-		$result = $this->scoreService->getScore($user, $entity);
-		return ['score' => $result ? $result->getScore() : 0];
+		return [
+			'score' => $this->scoreService->getScoreValue($entity),
+			'ownScore' => $this->scoreService->getUserScoreValue($user, $entity),
+		];
 	}
 }

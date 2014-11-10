@@ -31,24 +31,33 @@ class ScoreService
 		$this->timeService = $timeService;
 	}
 
-	public function getScore(User $user, Entity $entity)
+	public function getScoreValue(Entity $entity)
 	{
-		$transactionFunc = function() use ($user, $entity)
+		$transactionFunc = function() use ($entity)
 		{
-			return $this->scoreDao->getScore($user, $entity);
+			return $this->scoreDao->getScoreValue($entity);
 		};
 		return $this->transactionManager->rollback($transactionFunc);
 	}
 
-	public function getScoreValue(User $user, Entity $entity)
+	public function getUserScore(User $user, Entity $entity)
 	{
-		$score = $this->getScore($user, $entity);
+		$transactionFunc = function() use ($user, $entity)
+		{
+			return $this->scoreDao->getUserScore($user, $entity);
+		};
+		return $this->transactionManager->rollback($transactionFunc);
+	}
+
+	public function getUserScoreValue(User $user, Entity $entity)
+	{
+		$score = $this->getUserScore($user, $entity);
 		if (!$score)
 			return 0;
 		return $score->getScore();
 	}
 
-	public function setScore(User $user, Entity $entity, $scoreValue)
+	public function setUserScore(User $user, Entity $entity, $scoreValue)
 	{
 		if ($scoreValue !== 1 and $scoreValue !== 0 and $scoreValue !== -1)
 			throw new \DomainException('Bad score');
@@ -58,7 +67,7 @@ class ScoreService
 			if (($scoreValue !== 1) and ($entity instanceof Post))
 				$this->favoritesDao->delete($user, $entity);
 
-			return $this->scoreDao->setScore($user, $entity, $scoreValue);
+			return $this->scoreDao->setUserScore($user, $entity, $scoreValue);
 		};
 		return $this->transactionManager->commit($transactionFunc);
 	}

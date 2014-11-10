@@ -108,7 +108,7 @@ class PostViewProxy extends AbstractViewProxy
 		}
 
 		if (!empty($config[self::FETCH_OWN_SCORE]) and $this->authService->isLoggedIn())
-			$result->ownScore = $this->scoreService->getScoreValue($this->authService->getLoggedInUser(), $post);
+			$result->ownScore = $this->scoreService->getUserScoreValue($this->authService->getLoggedInUser(), $post);
 
 		if (!empty($config[self::FETCH_FAVORITES]))
 			$result->favorites = $this->userViewProxy->fromArray($this->favoritesService->getFavoriteUsers($post));

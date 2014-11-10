@@ -49,7 +49,7 @@ class FavoritesService
 	{
 		$transactionFunc = function() use ($user, $entity)
 		{
-			$this->scoreDao->setScore($user, $entity, 1);
+			$this->scoreDao->setUserScore($user, $entity, 1);
 
 			return $this->favoritesDao->set($user, $entity);
 		};

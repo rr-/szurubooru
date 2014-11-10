@@ -35,7 +35,7 @@ class CommentViewProxy extends AbstractViewProxy
 			$result->score = $comment->getScore();
 
 			if (!empty($config[self::FETCH_OWN_SCORE]) and $this->authService->isLoggedIn())
-				$result->ownScore = $this->scoreService->getScoreValue($this->authService->getLoggedInUser(), $comment);
+				$result->ownScore = $this->scoreService->getUserScoreValue($this->authService->getLoggedInUser(), $comment);
 		}
 		return $result;
 	}
