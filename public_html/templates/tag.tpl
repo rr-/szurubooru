@@ -71,7 +71,9 @@
 				<label class="form-label"></label>
 				<div class="form-input">
 					<button type="submit" name="update">Update</button>
-					<button type="submit" name="delete">Delete</button>
+					<% if (privileges.canDelete) { %>
+						<button type="submit" name="delete">Delete</button>
+					<% } %>
 				</div>
 			</div>
 		<% } %>

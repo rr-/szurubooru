@@ -36,6 +36,7 @@ App.Presenters.TagPresenter = function(
 		privileges.canChangeSuggestions = auth.hasPrivilege(auth.privileges.changeTagSuggestions);
 		privileges.canBan = auth.hasPrivilege(auth.privileges.banTags);
 		privileges.canViewHistory = auth.hasPrivilege(auth.privileges.viewHistory);
+		privileges.canDelete = auth.hasPrivilege(auth.privileges.deleteTags);
 
 		promise.wait(
 				util.promiseTemplate('tag'),
