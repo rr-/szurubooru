@@ -144,7 +144,7 @@
 	height: 71px;
 	line-height: 122px; /* 71 * 2 - 11 (font-size) - padding */
 	transform: rotate(45deg);
-
+	text-align: center;
 	color: white;
 	font-size: 15px;
 }
