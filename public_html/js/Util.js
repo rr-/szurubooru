@@ -189,15 +189,16 @@ App.Util = function(_, jQuery, marked, promise) {
 
 		var preDecorator = function(text) {
 			//prevent ^#... from being treated as headers, due to tag permalinks
-			text = text.replace(/^#/g, '%%%\0');
+			text = text.replace(/^#/g, '%%%#');
 			//fix \ before ~ being stripped away
-			text = text.replace(/\\~/g, '%%%\0');
+			text = text.replace(/\\~/g, '%%%T');
 			return text;
 		};
 
 		var postDecorator = function(text) {
-			//restore headers
-			text = text.replace(/%%%/g, '');
+			//restore fixes
+			text = text.replace(/%%%T/g, '\\~');
+			text = text.replace(/%%%#/g, '#');
 
 			//search permalinks
 			text = text.replace(/\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]/ig, '<a href="#/posts/query=$1"><code>$1</code></a>');
@@ -205,6 +206,7 @@ App.Util = function(_, jQuery, marked, promise) {
 			text = text.replace(/\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\]))+)\[\/spoiler\]/ig, '<span class="spoiler">$1</span>');
 			//strike-through
 			text = text.replace(/(^|[^\\])(~~|~)([^~]+)\2/g, '$1<del>$3</del>');
+			text = text.replace(/\\~/g, '~');
 			//post premalinks
 			text = text.replace(/(^|[\s<>\(\)\[\]])@(\d+)/g, '$1<a href="#/post/$2"><code>@$2</code></a>');
 			//user permalinks
