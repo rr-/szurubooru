@@ -1,6 +1,9 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Dao\PostDao;
 use Szurubooru\Dao\PublicFileDao;
+use Szurubooru\Dao\TagDao;
+use Szurubooru\Entities\Post;
 use Szurubooru\Entities\Tag;
 use Szurubooru\Injector;
 use Szurubooru\Services\TagService;
@@ -114,6 +117,43 @@ final class TagServiceTest extends AbstractDatabaseTestCase
 		$tagService->createTags([$tag1]);
 		$tagService->exportJson();
 		$this->assertEquals('[{"name":"test","usages":0,"banned":false}]', $fileDao->load('tags.json'));
+	}
+
+	public function testMerging()
+	{
+		$tag1 = self::getTestTag('test 1');
+		$tag2 = self::getTestTag('test 2');
+		$tag3 = self::getTestTag('test 3');
+
+		$tagDao = Injector::get(TagDao::class);
+		$tagDao->save($tag1);
+		$tagDao->save($tag2);
+		$tagDao->save($tag3);
+
+		$post1 = self::getTestPost();
+		$post2 = self::getTestPost();
+		$post3 = self::getTestPost();
+		$post1->setTags([$tag1]);
+		$post2->setTags([$tag1, $tag3]);
+		$post3->setTags([$tag2, $tag3]);
+
+		$postDao = Injector::get(PostDao::class);
+		$postDao->save($post1);
+		$postDao->save($post2);
+		$postDao->save($post3);
+
+		$tagService = $this->getTagService();
+		$tagService->mergeTag($tag1, $tag2);
+
+		$this->assertNull($tagDao->findByName($tag1->getName()));
+		$this->assertNotNull($tagDao->findByName($tag2->getName()));
+
+		$post1 = $postDao->findById($post1->getId());
+		$post2 = $postDao->findById($post2->getId());
+		$post3 = $postDao->findById($post3->getId());
+		$this->assertEntitiesEqual([$tag2], array_values($post1->getTags()));
+		$this->assertEntitiesEqual([$tag2, $tag3], array_values($post2->getTags()));
+		$this->assertEntitiesEqual([$tag2, $tag3], array_values($post3->getTags()));
 	}
 
 	public function testExportMultiple()

@@ -13,9 +13,9 @@ final class TagDaoFilterTest extends AbstractDatabaseTestCase
 {
 	public function testCategories()
 	{
-		$tag1 = $this->getTestTag('test 1');
-		$tag2 = $this->getTestTag('test 2');
-		$tag3 = $this->getTestTag('test 3');
+		$tag1 = self::getTestTag('test 1');
+		$tag2 = self::getTestTag('test 2');
+		$tag3 = self::getTestTag('test 3');
 		$tag2->setCategory('misc');
 		$tag3->setCategory('other');
 		$tagDao = $this->getTagDao();
@@ -36,9 +36,9 @@ final class TagDaoFilterTest extends AbstractDatabaseTestCase
 
 	public function testCompositeCategories()
 	{
-		$tag1 = $this->getTestTag('test 1');
-		$tag2 = $this->getTestTag('test 2');
-		$tag3 = $this->getTestTag('test 3');
+		$tag1 = self::getTestTag('test 1');
+		$tag2 = self::getTestTag('test 2');
+		$tag3 = self::getTestTag('test 3');
 		$tag2->setCategory('misc');
 		$tag3->setCategory('other');
 		$tagDao = $this->getTagDao();
@@ -60,13 +60,5 @@ final class TagDaoFilterTest extends AbstractDatabaseTestCase
 	private function getTagDao()
 	{
 		return new TagDao($this->databaseConnection);
-	}
-
-	private function getTestTag($name)
-	{
-		$tag = new Tag();
-		$tag->setName($name);
-		$tag->setCreationTime(date('c'));
-		return $tag;
 	}
 }

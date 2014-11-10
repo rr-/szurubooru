@@ -186,6 +186,29 @@ class TagService
 		$this->transactionManager->commit($transactionFunc);
 	}
 
+	public function mergeTag(Tag $sourceTag, Tag $targetTag)
+	{
+		$transactionFunc = function() use ($sourceTag, $targetTag)
+		{
+			$posts = $this->postDao->findByTagName($sourceTag->getName());
+			foreach ($posts as $post)
+			{
+				$newTags = $post->getTags();
+				$newTags = array_filter($newTags, function(Tag $tag) use ($sourceTag) {
+					return $tag->getId() !== $sourceTag->getId();
+				});
+				$newTags []= $targetTag;
+				$post->setTags($newTags);
+				$this->postDao->save($post);
+				$this->postHistoryService->savePostChange($post);
+			}
+
+			$this->tagHistoryService->saveTagDeletion($sourceTag);
+			$this->tagDao->deleteById($sourceTag->getId());
+		};
+		$this->transactionManager->commit($transactionFunc);
+	}
+
 	private function updateTagName(Tag $tag, $newName)
 	{
 		$otherTag = $this->tagDao->findByName($newName);

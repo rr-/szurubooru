@@ -4,6 +4,7 @@ use Szurubooru\Config;
 use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Post;
+use Szurubooru\Entities\Tag;
 use Szurubooru\Entities\User;
 use Szurubooru\Injector;
 use Szurubooru\Tests\AbstractTestCase;
@@ -33,6 +34,14 @@ abstract class AbstractDatabaseTestCase extends AbstractTestCase
 		parent::tearDown();
 		if ($this->databaseConnection)
 			$this->databaseConnection->close();
+	}
+
+	protected static function getTestTag($name = 'test')
+	{
+		$tag = new Tag();
+		$tag->setName($name);
+		$tag->setCreationTime(date('c'));
+		return $tag;
 	}
 
 	protected static function getTestPost()

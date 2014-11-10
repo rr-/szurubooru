@@ -37,6 +37,7 @@ final class TagController extends AbstractController
 		$router->get('/api/tags/:tagName', [$this, 'getTag']);
 		$router->get('/api/tags/:tagName/siblings', [$this, 'getTagSiblings']);
 		$router->put('/api/tags/:tagName', [$this, 'updateTag']);
+		$router->put('/api/tags/:tagName/merge', [$this, 'mergeTag']);
 		$router->delete('/api/tags/:tagName', [$this, 'deleteTag']);
 	}
 
@@ -103,6 +104,15 @@ final class TagController extends AbstractController
 		$tag = $this->tagService->getByName($tagName);
 		$this->privilegeService->assertPrivilege(Privilege::DELETE_TAGS);
 		return $this->tagService->deleteTag($tag);
+	}
+
+	public function mergeTag($tagName)
+	{
+		$targetTagName = $this->inputReader->targetTag;
+		$sourceTag = $this->tagService->getByName($tagName);
+		$targetTag = $this->tagService->getByName($targetTagName);
+		$this->privilegeService->assertPrivilege(Privilege::MERGE_TAGS);
+		return $this->tagService->mergeTag($sourceTag, $targetTag);
 	}
 
 	private function getFullFetchConfig()

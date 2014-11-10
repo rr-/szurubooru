@@ -46,6 +46,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
 		deleteOwnComments: 'deleteOwnComments',
 		deleteAllComments: 'deleteAllComments',
 		deleteTags: 'deleteTags',
+		mergeTags: 'mergeTags',
 
 		listTags: 'listTags',
 		massTag: 'massTag',

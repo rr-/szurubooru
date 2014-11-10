@@ -74,6 +74,9 @@
 					<% if (privileges.canDelete) { %>
 						<button type="submit" name="delete">Delete</button>
 					<% } %>
+					<% if (privileges.canMerge) { %>
+						<button type="submit" name="merge">Merge with&hellip;</button>
+					<% } %>
 				</div>
 			</div>
 		<% } %>

@@ -37,6 +37,7 @@ App.Presenters.TagPresenter = function(
 		privileges.canBan = auth.hasPrivilege(auth.privileges.banTags);
 		privileges.canViewHistory = auth.hasPrivilege(auth.privileges.viewHistory);
 		privileges.canDelete = auth.hasPrivilege(auth.privileges.deleteTags);
+		privileges.canMerge = auth.hasPrivilege(auth.privileges.mergeTags);
 
 		promise.wait(
 				util.promiseTemplate('tag'),
@@ -92,6 +93,7 @@ App.Presenters.TagPresenter = function(
 		$el.find('form').submit(function(e) { e.preventDefault(); });
 		$el.find('form button[name=update]').click(updateButtonClicked);
 		$el.find('form button[name=delete]').click(deleteButtonClicked);
+		$el.find('form button[name=merge]').click(mergeButtonClicked);
 		implicationsTagInput = App.Controls.TagInput($el.find('[name=implications]'));
 		suggestionsTagInput = App.Controls.TagInput($el.find('[name=suggestions]'));
 	}
@@ -139,6 +141,17 @@ App.Presenters.TagPresenter = function(
 			}).fail(function(response) {
 				window.alert(response.json && response.json.error || 'An error occured.');
 			});
+	}
+
+	function mergeButtonClicked(e) {
+		if (targetTag = window.prompt('What tag should this be merged to?')) {
+			promise.wait(api.put('/tags/' + tag.name + '/merge', {targetTag: targetTag}))
+				.then(function(response) {
+					router.navigate('#/tags');
+				}).fail(function(response) {
+					window.alert(response.json && response.json.error || 'An error occured.');
+				});
+		}
 	}
 
 	function renderPosts(posts) {
