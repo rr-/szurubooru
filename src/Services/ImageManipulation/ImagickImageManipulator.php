@@ -44,8 +44,11 @@ class ImagickImageManipulator implements IImageManipulator
 		switch ($format)
 		{
 			case self::FORMAT_JPEG:
-				$imageResource->setImageBackgroundColor('white');
-				$imageResource = $imageResource->flattenImages();
+				$matte = new \Imagick();
+				$matte->newImage($imageResource->getImageWidth(), $imageResource->getImageHeight(), 'white');
+				$matte->compositeimage($imageResource, \Imagick::COMPOSITE_OVER, 0, 0);
+				$imageResource->destroy();
+				$imageResource = $matte;
 				$imageResource->setImageFormat('jpeg');
 				break;
 
