@@ -48,7 +48,7 @@ App.Controls.AutoCompleteInput = function($input) {
 		} else {
 			var source = tagList.getTags();
 			source = _.sortBy(source, function(a) { return -a.usages; });
-			source = _.filter(source, function(a) { return a.usages > 0; });
+			source = _.filter(source, function(a) { return a.usages >= 0; });
 			source = _.map(source, function(a) {
 				return {
 					tag: a.name,
