@@ -4,7 +4,6 @@ first major release.
 - autocomplete: don't show items that are already used in tag list (unsure)
 - posts/upload: ability to paste many urls (unsure)
 - users: add user-configurable "about me" (should support Markdown)
-- tags: add tag merging
 - tags: add tag descriptions
 
 refactors:
