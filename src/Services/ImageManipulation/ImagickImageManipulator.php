@@ -44,6 +44,8 @@ class ImagickImageManipulator implements IImageManipulator
 		switch ($format)
 		{
 			case self::FORMAT_JPEG:
+				$imageResource->setImageBackgroundColor('white');
+				$imageResource = $imageResource->flattenImages();
 				$imageResource->setImageFormat('jpeg');
 				break;
 
