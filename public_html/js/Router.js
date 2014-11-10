@@ -156,7 +156,8 @@ App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
 								value = parseComplexParamValue(value);
 							}
 							params[key] = value;
-							compare = compare.replace(compareParts[j], possibleRouteParts[j]);
+							compareParts[j] = possibleRouteParts[j];
+							compare = compareParts.join('/');
 						}
 					}
 				}
