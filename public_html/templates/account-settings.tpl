@@ -33,7 +33,7 @@
 		<div class="form-row">
 			<label class="form-label" for="account-settings-name">Name:</label>
 				<div class="form-input">
-				<input type="text" name="userName" id="account-settings-name" placeholder="New name&hellip;" value="<%= user.name %>"/>
+				<input autocomplete="off" type="text" name="userName" id="account-settings-name" placeholder="New name&hellip;" value="<%= user.name %>"/>
 			</div>
 		</div>
 	<% } %>
@@ -42,7 +42,7 @@
 		<div class="form-row">
 			<label class="form-label" for="account-settings-email">E-mail:</label>
 			<div class="form-input">
-				<input type="text" name="email" id="account-settings-email" placeholder="New e-mail&hellip;" value="<%= user.email %>"/>
+				<input autocomplete="off" type="text" name="email" id="account-settings-email" placeholder="New e-mail&hellip;" value="<%= user.email %>"/>
 				<% if (user.emailUnconfirmed) { %>
 					<br/>
 					<span class="account-settings-email-unconfirmed">(unconfirmed) <%= user.emailUnconfirmed %></span>
@@ -55,14 +55,14 @@
 		<div class="form-row">
 			<label class="form-label" for="account-settings-password">New password:</label>
 			<div class="form-input">
-				<input type="password" name="password" id="account-settings-password" placeholder="New password&hellip;" value=""/>
+				<input autocomplete="off" type="password" name="password" id="account-settings-password" placeholder="New password&hellip;" value=""/>
 			</div>
 		</div>
 
 		<div class="form-row">
 			<label class="form-label" for="account-settings-password-confirmation"></label>
 			<div class="form-input">
-				<input type="password" name="passwordConfirmation" id="account-settings-password-confirmation" placeholder="New password&hellip; (repeat)" value=""/>
+				<input autocomplete="off" type="password" name="passwordConfirmation" id="account-settings-password-confirmation" placeholder="New password&hellip; (repeat)" value=""/>
 			</div>
 		</div>
 	<% } %>
