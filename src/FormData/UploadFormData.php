@@ -30,7 +30,7 @@ class UploadFormData implements IValidatable
 
 	public function validate(Validator $validator)
 	{
-		if ($this->content === null and $this->url === null)
+		if ($this->content === null && $this->url === null)
 			throw new \DomainException('Neither data or URL provided.');
 
 		$validator->validatePostTags($this->tags);

@@ -138,7 +138,7 @@ final class ImageManipulatorTest extends AbstractTestCase
 
 	private static function getAutoImageManipulator()
 	{
-		if (extension_loaded('gd') and extension_loaded('imagick'))
+		if (extension_loaded('gd') && extension_loaded('imagick'))
 		{
 			return new ImageManipulator(
 				self::getImagickImageManipulator(),

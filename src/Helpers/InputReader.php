@@ -8,7 +8,7 @@ final class InputReader extends \ArrayObject
 		parent::setFlags(parent::ARRAY_AS_PROPS | parent::STD_PROP_LIST);
 
 		$_PUT = [];
-		if (isset($_SERVER['REQUEST_METHOD']) and $_SERVER['REQUEST_METHOD'] === 'PUT')
+		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'PUT')
 			parse_str(file_get_contents('php://input'), $_PUT);
 
 		foreach ([$_GET, $_POST, $_PUT] as $source)

@@ -70,7 +70,7 @@ class ImageConverter
 				]);
 		}
 
-		if (!file_exists($targetPath) and ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_SWFRENDER))
+		if (!file_exists($targetPath) && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_SWFRENDER))
 		{
 			ProgramExecutor::run(
 				self::PROGRAM_NAME_SWFRENDER,
@@ -100,7 +100,7 @@ class ImageConverter
 				]);
 		}
 
-		if (!file_exists($targetPath) and ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
+		if (!file_exists($targetPath) && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
 		{
 			ProgramExecutor::run(self::PROGRAM_NAME_FFMEPG,
 				[

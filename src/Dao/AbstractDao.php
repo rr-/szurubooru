@@ -154,7 +154,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 
 	protected function findBy($columnName, $value)
 	{
-		if (is_array($value) and empty($value))
+		if (is_array($value) && empty($value))
 			return [];
 		$query = $this->pdo->from($this->tableName)->where($columnName, $value);
 		$arrayEntities = iterator_to_array($query);
@@ -210,7 +210,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 
 		else if ($value instanceof RequirementRangedValue)
 		{
-			if ($value->getMinValue() and $value->getMaxValue())
+			if ($value->getMinValue() && $value->getMaxValue())
 			{
 				$sql = $sqlColumn . ' >= ? AND ' . $sqlColumn . ' <= ?';
 				$bindings = [$value->getMinValue(), $value->getMaxValue()];

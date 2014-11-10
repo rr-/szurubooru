@@ -46,7 +46,7 @@ final class AuthController extends AbstractController
 
 	public function login()
 	{
-		if (isset($this->inputReader->userNameOrEmail) and isset($this->inputReader->password))
+		if (isset($this->inputReader->userNameOrEmail) && isset($this->inputReader->password))
 		{
 			$formData = new LoginFormData($this->inputReader);
 			$this->authService->loginFromCredentials($formData);

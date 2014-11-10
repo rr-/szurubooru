@@ -103,7 +103,7 @@ class TagDao extends AbstractDao implements ICrudDao
 			else
 				continue;
 
-			if (!isset($exported[$key1]) or !isset($exported[$key2]))
+			if (!isset($exported[$key1]) || !isset($exported[$key2]))
 				continue;
 
 			if (!isset($exported[$key1][$target]))

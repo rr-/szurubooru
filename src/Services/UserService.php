@@ -313,7 +313,7 @@ class UserService
 	private function assertNoUserWithThisName(User $owner, $nameToCheck)
 	{
 		$userWithThisName = $this->userDao->findByName($nameToCheck);
-		if ($userWithThisName and $userWithThisName->getId() !== $owner->getId())
+		if ($userWithThisName && $userWithThisName->getId() !== $owner->getId())
 			throw new \DomainException('User with this name already exists.');
 	}
 
@@ -322,7 +322,7 @@ class UserService
 		if (!$emailToCheck)
 			return;
 		$userWithThisEmail = $this->userDao->findByEmail($emailToCheck);
-		if ($userWithThisEmail and $userWithThisEmail->getId() !== $owner->getId())
+		if ($userWithThisEmail && $userWithThisEmail->getId() !== $owner->getId())
 			throw new \DomainException('User with this e-mail already exists.');
 	}
 

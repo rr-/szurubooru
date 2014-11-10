@@ -110,7 +110,7 @@ class AuthService
 
 	private function doFinalChecksOnUser($user)
 	{
-		if (!$user->isAccountConfirmed() and $this->config->security->needEmailActivationToRegister)
+		if (!$user->isAccountConfirmed() && $this->config->security->needEmailActivationToRegister)
 			throw new \DomainException('User didn\'t confirm account yet.');
 
 		if ($user->isBanned())

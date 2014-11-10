@@ -63,7 +63,7 @@ abstract class AbstractSearchParser
 			};
 		}
 
-		if ((($flags & self::ALLOW_RANGES) === self::ALLOW_RANGES) and substr_count($text, '..') === 1)
+		if ((($flags & self::ALLOW_RANGES) === self::ALLOW_RANGES) && substr_count($text, '..') === 1)
 		{
 			list ($minValue, $maxValue) = explode('..', $text);
 			$minValue = $valueDecorator($minValue);
@@ -73,7 +73,7 @@ abstract class AbstractSearchParser
 			$tokenValue->setMaxValue($maxValue);
 			return $tokenValue;
 		}
-		else if ((($flags & self::ALLOW_COMPOSITE) === self::ALLOW_COMPOSITE) and strpos($text, ',') !== false)
+		else if ((($flags & self::ALLOW_COMPOSITE) === self::ALLOW_COMPOSITE) && strpos($text, ',') !== false)
 		{
 			$values = explode(',', $text);
 			$values = array_map($valueDecorator, $values);
@@ -145,7 +145,7 @@ abstract class AbstractSearchParser
 			}
 
 			$colonPosition = strpos($tokenText, ':');
-			if (($colonPosition !== false) and ($colonPosition > 0))
+			if (($colonPosition !== false) && ($colonPosition > 0))
 			{
 				$searchToken = new NamedSearchToken();
 				list ($tokenKey, $tokenValue) = explode(':', $tokenText, 2);

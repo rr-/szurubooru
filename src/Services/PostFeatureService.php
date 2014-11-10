@@ -69,7 +69,7 @@ class PostFeatureService
 		{
 			$previousFeaturedPost = $this->getFeaturedPost();
 
-			if (($previousFeaturedPost === null) or ($previousFeaturedPost->getId() !== $post->getId()))
+			if (($previousFeaturedPost === null) || ($previousFeaturedPost->getId() !== $post->getId()))
 			{
 				$post->setLastFeatureTime($this->timeService->getCurrentTime());
 				$post->setFeatureCount($post->getFeatureCount() + 1);

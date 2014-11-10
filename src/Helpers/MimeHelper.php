@@ -25,7 +25,7 @@ class MimeHelper
 
 	public static function isVideo($mime)
 	{
-		return strtolower($mime) === 'application/ogg' or preg_match('/video\//i', $mime);
+		return strtolower($mime) === 'application/ogg' || preg_match('/video\//i', $mime);
 	}
 
 	public static function isImage($mime)
@@ -59,7 +59,7 @@ class MimeHelper
 		if ($bytes === false)
 			return false;
 
-		if (strncmp($bytes, 'CWS', 3) === 0 or strncmp($bytes, 'FWS', 3) === 0 or strncmp($bytes, 'ZWS', 3) === 0)
+		if (strncmp($bytes, 'CWS', 3) === 0 || strncmp($bytes, 'FWS', 3) === 0 || strncmp($bytes, 'ZWS', 3) === 0)
 			return 'application/x-shockwave-flash';
 
 		if (strncmp($bytes, "\xff\xd8\xff", 3) === 0)
@@ -68,13 +68,13 @@ class MimeHelper
 		if (strncmp($bytes, "\x89PNG\x0d\x0a", 6) === 0)
 			return 'image/png';
 
-		if (strncmp($bytes, 'GIF87a', 6) === 0 or strncmp($bytes, 'GIF89a', 6) === 0)
+		if (strncmp($bytes, 'GIF87a', 6) === 0 || strncmp($bytes, 'GIF89a', 6) === 0)
 			return 'image/gif';
 
 		if (strncmp($bytes, "\x1a\x45\xdf\xa3", 4) === 0)
 			return 'video/webm';
 
-		if (strncmp(substr($bytes, 4), 'ftypisom', 8) === 0 or strncmp(substr($bytes, 4), 'ftypmp42', 8) === 0)
+		if (strncmp(substr($bytes, 4), 'ftypisom', 8) === 0 || strncmp(substr($bytes, 4), 'ftypmp42', 8) === 0)
 			return 'video/mp4';
 
 		if (strncmp($bytes, "\x46\x4c\x56\x01", 4) === 0)

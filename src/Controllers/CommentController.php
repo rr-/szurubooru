@@ -125,7 +125,7 @@ final class CommentController extends AbstractController
 		$comment = $this->commentService->getById($commentId);
 
 		$this->privilegeService->assertPrivilege(
-			($comment->getUser() and $this->privilegeService->isLoggedIn($comment->getUser()))
+			($comment->getUser() && $this->privilegeService->isLoggedIn($comment->getUser()))
 				? Privilege::EDIT_OWN_COMMENTS
 				: Privilege::EDIT_ALL_COMMENTS);
 

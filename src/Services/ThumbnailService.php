@@ -114,7 +114,7 @@ class ThumbnailService
 	{
 		$sourcePath = $this->fileDao->getFullPath($sourceName);
 
-		if ($format === IImageManipulator::FORMAT_JPEG and ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_JPEGOPTIM))
+		if ($format === IImageManipulator::FORMAT_JPEG && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_JPEGOPTIM))
 		{
 			ProgramExecutor::run(
 				self::PROGRAM_NAME_JPEGOPTIM,
@@ -125,7 +125,7 @@ class ThumbnailService
 				]);
 		}
 
-		elseif ($format === IImageManipulator::FORMAT_PNG and ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_OPTIPNG))
+		elseif ($format === IImageManipulator::FORMAT_PNG && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_OPTIPNG))
 		{
 			ProgramExecutor::run(
 				self::PROGRAM_NAME_OPTIPNG,

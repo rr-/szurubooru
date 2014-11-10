@@ -37,7 +37,7 @@ class UserDao extends AbstractDao implements ICrudDao
 	public function findByEmail($userEmail, $allowUnconfirmed = false)
 	{
 		$result = $this->findOneBy('email', $userEmail);
-		if (!$result and $allowUnconfirmed)
+		if (!$result && $allowUnconfirmed)
 		{
 			$result = $this->findOneBy('emailUnconfirmed', $userEmail);
 		}

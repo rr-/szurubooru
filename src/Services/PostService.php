@@ -342,7 +342,7 @@ class PostService
 		if (!$userSettings)
 			return;
 
-		if (!empty($userSettings->listPosts) and !count($filter->getRequirementsByType(PostFilter::REQUIREMENT_SAFETY)))
+		if (!empty($userSettings->listPosts) && !count($filter->getRequirementsByType(PostFilter::REQUIREMENT_SAFETY)))
 		{
 			$values = [];
 			if (!TypeHelper::toBool($userSettings->listPosts->safe))
@@ -363,7 +363,7 @@ class PostService
 			}
 		}
 
-		if (!empty($userSettings->hideDownvoted) and !count($filter->getRequirementsByType(PostFilter::REQUIREMENT_USER_SCORE)))
+		if (!empty($userSettings->hideDownvoted) && !count($filter->getRequirementsByType(PostFilter::REQUIREMENT_USER_SCORE)))
 		{
 			$requirementValue = new RequirementCompositeValue();
 			$requirementValue->setValues([$currentUser->getName(), -1]);
@@ -379,7 +379,7 @@ class PostService
 	{
 		$checksumToCheck = $parent->getContentChecksum();
 		$postWithThisChecksum = $this->postDao->findByContentChecksum($checksumToCheck);
-		if ($postWithThisChecksum and $postWithThisChecksum->getId() !== $parent->getId())
+		if ($postWithThisChecksum && $postWithThisChecksum->getId() !== $parent->getId())
 			throw new \DomainException('Duplicate post: ' . $postWithThisChecksum->getIdMarkdown());
 	}
 

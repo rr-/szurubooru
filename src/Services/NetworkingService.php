@@ -37,7 +37,7 @@ class NetworkingService
 		if ($customFileName)
 			$this->httpHelper->setHeader('Content-Disposition', 'inline; filename="' . $customFileName . '"');
 
-		if (strtotime($ifModifiedSince) === $lastModified or $eTagHeader === $eTag)
+		if (strtotime($ifModifiedSince) === $lastModified || $eTagHeader === $eTag)
 		{
 			$this->httpHelper->setResponseCode(304);
 		}
@@ -70,7 +70,7 @@ class NetworkingService
 			while (!feof($srcHandle))
 			{
 				$buffer = fread($srcHandle, 4 * 1024);
-				if ($maxBytes !== null and strlen($result) > $maxBytes)
+				if ($maxBytes !== null && strlen($result) > $maxBytes)
 				{
 					throw new \Exception(
 						'File is too big (maximum size: %s)',

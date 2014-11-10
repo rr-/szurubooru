@@ -59,12 +59,12 @@ class ScoreService
 
 	public function setUserScore(User $user, Entity $entity, $scoreValue)
 	{
-		if ($scoreValue !== 1 and $scoreValue !== 0 and $scoreValue !== -1)
+		if ($scoreValue !== 1 && $scoreValue !== 0 && $scoreValue !== -1)
 			throw new \DomainException('Bad score');
 
 		$transactionFunc = function() use ($user, $entity, $scoreValue)
 		{
-			if (($scoreValue !== 1) and ($entity instanceof Post))
+			if (($scoreValue !== 1) && ($entity instanceof Post))
 				$this->favoritesDao->delete($user, $entity);
 
 			return $this->scoreDao->setUserScore($user, $entity, $scoreValue);

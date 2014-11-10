@@ -60,7 +60,7 @@ class PostSnapshotProvider implements ISnapshotProvider
 		static $featuredPostParam = null;
 		if ($featuredPostParam === null)
 			$featuredPostParam = $this->globalParamDao->findByKey(GlobalParam::KEY_FEATURED_POST);
-		$isFeatured = ($featuredPostParam and intval($featuredPostParam->getValue()) === $post->getId());
+		$isFeatured = ($featuredPostParam && intval($featuredPostParam->getValue()) === $post->getId());
 
 		$flags = [];
 		if ($post->getFlags() & Post::FLAG_LOOP)

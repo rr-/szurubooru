@@ -47,7 +47,7 @@ class TagSearchParser extends AbstractSearchParser
 		elseif ($tokenText === 'name')
 			return TagFilter::ORDER_NAME;
 
-		elseif ($tokenText === 'creation_time' or $tokenText === 'creation_date')
+		elseif ($tokenText === 'creation_time' || $tokenText === 'creation_date')
 			return TagFilter::ORDER_CREATION_TIME;
 
 		elseif ($tokenText === 'usage_count')

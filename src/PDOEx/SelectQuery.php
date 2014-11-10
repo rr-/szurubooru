@@ -10,7 +10,7 @@ class SelectQuery extends BaseQuery implements \Countable
 
 	public function limit($limit)
 	{
-		if ($limit === null or $limit === false)
+		if ($limit === null || $limit === false)
 			$this->limit = null;
 		else
 			$this->limit = intval($limit);
@@ -87,7 +87,7 @@ class SelectQuery extends BaseQuery implements \Countable
 		if ($this->limit !== null)
 		{
 			$sql .= 'LIMIT ' . $this->limit;
-			if ($this->offset !== null and $this->offset !== 0)
+			if ($this->offset !== null && $this->offset !== 0)
 				$sql .= ' OFFSET ' . intval($this->offset);
 		}
 		$this->clauses[self::CLAUSE_LIMIT] = $sql;

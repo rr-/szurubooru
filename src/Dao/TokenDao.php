@@ -25,7 +25,7 @@ class TokenDao extends AbstractDao
 			->where('purpose', $purpose);
 		$arrayEntities = iterator_to_array($query);
 		$entities = $this->arrayToEntities($arrayEntities);
-		if (!$entities or !count($entities))
+		if (!$entities || !count($entities))
 			return null;
 		$entity = array_shift($entities);
 		return $entity;

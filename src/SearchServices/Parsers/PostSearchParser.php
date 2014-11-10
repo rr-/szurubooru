@@ -76,19 +76,19 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($token->getKey() === 'comment')
 			$this->addCommentRequirement($filter, $token);
 
-		elseif ($token->getKey() === 'special' and $token->getValue() === 'liked')
+		elseif ($token->getKey() === 'special' && $token->getValue() === 'liked')
 		{
 			$this->privilegeService->assertLoggedIn();
 			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), 1, $token->isNegated());
 		}
 
-		elseif ($token->getKey() === 'special' and $token->getValue() === 'disliked')
+		elseif ($token->getKey() === 'special' && $token->getValue() === 'disliked')
 		{
 			$this->privilegeService->assertLoggedIn();
 			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), -1, $token->isNegated());
 		}
 
-		elseif ($token->getKey() === 'special' and $token->getValue() === 'fav')
+		elseif ($token->getKey() === 'special' && $token->getValue() === 'fav')
 		{
 			$this->privilegeService->assertLoggedIn();
 			$token = new NamedSearchToken();
@@ -109,7 +109,7 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($tokenText === 'id')
 			return PostFilter::ORDER_ID;
 
-		elseif ($tokenText === 'time' or $tokenText === 'date')
+		elseif ($tokenText === 'time' || $tokenText === 'date')
 			return PostFilter::ORDER_LAST_EDIT_TIME;
 
 		elseif ($tokenText === 'score')
@@ -127,13 +127,13 @@ class PostSearchParser extends AbstractSearchParser
 		elseif ($tokenText === 'comment_count')
 			return PostFilter::ORDER_COMMENT_COUNT;
 
-		elseif ($tokenText === 'fav_time' or $tokenText === 'fav_date')
+		elseif ($tokenText === 'fav_time' || $tokenText === 'fav_date')
 			return PostFilter::ORDER_LAST_FAV_TIME;
 
-		elseif ($tokenText === 'comment_time' or $tokenText === 'comment_date')
+		elseif ($tokenText === 'comment_time' || $tokenText === 'comment_date')
 			return PostFilter::ORDER_LAST_COMMENT_TIME;
 
-		elseif ($tokenText === 'feature_time' or $tokenText === 'feature_date')
+		elseif ($tokenText === 'feature_time' || $tokenText === 'feature_date')
 			return PostFilter::ORDER_LAST_FEATURE_TIME;
 
 		else

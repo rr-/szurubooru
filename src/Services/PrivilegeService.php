@@ -70,7 +70,7 @@ class PrivilegeService
 		$loggedInUser = $this->authService->getLoggedInUser();
 		if ($userIdentifier instanceof User)
 		{
-			return $loggedInUser->getId() and ($loggedInUser->getId() === $userIdentifier->getId());
+			return $loggedInUser->getId() && ($loggedInUser->getId() === $userIdentifier->getId());
 		}
 		elseif (is_string($userIdentifier))
 		{

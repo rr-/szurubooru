@@ -11,7 +11,7 @@ class TypeHelper
 			return false;
 		if ($value === false)
 			return false;
-		if (is_array($value) and count($value) === 1)
+		if (is_array($value) && count($value) === 1)
 			return false;
 		if ($value === null)
 			return false;
