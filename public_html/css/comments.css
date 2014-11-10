@@ -103,9 +103,3 @@
 #global-comment-list .post-small a {
 	margin: 0;
 }
-
-blockquote {
-	border-left: 3px solid #eee;
-	margin-left: 0;
-	padding-left: 0.7em;
-}
