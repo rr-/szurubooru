@@ -26,34 +26,32 @@ class TagSearchParser extends AbstractSearchParser
 
 	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
 	{
-		if ($namedToken->getKey() === 'category')
+		if ($this->matches($namedToken->getKey(), ['category']))
 		{
-			$this->addRequirementFromToken(
+			return $this->addRequirementFromToken(
 				$filter,
 				$namedToken,
 				TagFilter::REQUIREMENT_CATEGORY,
 				self::ALLOW_COMPOSITE);
 		}
 
-		else
-			throw new NotSupportedException();
+		throw new NotSupportedException();
 	}
 
 	protected function getOrderColumn($tokenText)
 	{
-		if ($tokenText === 'id')
+		if ($this->matches($tokenText, ['id']))
 			return TagFilter::ORDER_ID;
 
-		elseif ($tokenText === 'name')
+		if ($this->matches($tokenText, ['name']))
 			return TagFilter::ORDER_NAME;
 
-		elseif ($tokenText === 'creation_time' || $tokenText === 'creation_date')
+		if ($this->matches($tokenText, ['creation_time', 'creation_date']))
 			return TagFilter::ORDER_CREATION_TIME;
 
-		elseif ($tokenText === 'usage_count')
+		if ($this->matches($tokenText, ['usage_count', 'usages']))
 			return TagFilter::ORDER_USAGE_COUNT;
 
-		else
-			throw new NotSupportedException();
+		throw new NotSupportedException();
 	}
 }

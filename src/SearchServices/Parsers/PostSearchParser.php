@@ -40,104 +40,113 @@ class PostSearchParser extends AbstractSearchParser
 
 	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $token)
 	{
-		if ($token->getKey() === 'id')
-			$this->addIdRequirement($filter, $token);
+		$tokenKey = $token->getKey();
+		$tokenValue = $token->getValue();
 
-		elseif ($token->getKey() === 'hash')
-			$this->addHashRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'date')
-			$this->addDateRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'tag_count')
-			$this->addTagCountRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'fav_count')
-			$this->addFavCountRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'comment_count')
-			$this->addCommentCountRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'score')
-			$this->addScoreRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'uploader')
-			$this->addUploaderRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'safety')
-			$this->addSafetyRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'fav')
-			$this->addFavRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'type')
-			$this->addTypeRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'comment')
-			$this->addCommentRequirement($filter, $token);
-
-		elseif ($token->getKey() === 'special' && $token->getValue() === 'liked')
+		if ($this->matches($tokenKey, ['tag_min', 'tag_max', 'fav_min', 'fav_max', 'score_min', 'score_max']))
 		{
-			$this->privilegeService->assertLoggedIn();
-			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), 1, $token->isNegated());
-		}
-
-		elseif ($token->getKey() === 'special' && $token->getValue() === 'disliked')
-		{
-			$this->privilegeService->assertLoggedIn();
-			$this->addUserScoreRequirement($filter, $this->authService->getLoggedInUser()->getName(), -1, $token->isNegated());
-		}
-
-		elseif ($token->getKey() === 'special' && $token->getValue() === 'fav')
-		{
-			$this->privilegeService->assertLoggedIn();
 			$token = new NamedSearchToken();
-			$token->setKey('fav');
-			$token->setValue($this->authService->getLoggedInUser()->getName());
-			$this->decorateFilterFromNamedToken($filter, $token);
+			$token->setKey(str_replace('__', '_', str_replace(['min', 'max'], '_count', $tokenKey)));
+			$token->setValue(strpos($tokenKey, 'min') !== false ? $tokenValue . '..' : '..' . $tokenValue);
+			return $this->decorateFilterFromNamedToken($filter, $token);
 		}
 
-		else
-			throw new NotSupportedException();
+		$map =
+		[
+			[['id'], [$this, 'addIdRequirement']],
+			[['hash', 'name'], [$this, 'addHashRequirement']],
+			[['date', 'time'], [$this, 'addDateRequirement']],
+			[['tag_count'], [$this, 'addTagCountRequirement']],
+			[['fav_count'], [$this, 'addFavCountRequirement']],
+			[['comment_count'], [$this, 'addCommentCountRequirement']],
+			[['score'], [$this, 'addScoreRequirement']],
+			[['uploader', 'submit', 'up'], [$this, 'addUploaderRequirement']],
+			[['safety', 'rating'], [$this, 'addSafetyRequirement']],
+			[['fav'], [$this, 'addFavRequirement']],
+			[['type'], [$this, 'addTypeRequirement']],
+			[['comment'], [$this, 'addCommentRequirement']],
+		];
+
+		foreach ($map as $item)
+		{
+			list ($aliases, $callback) = $item;
+			if ($this->matches($tokenKey, $aliases))
+			{
+				return $callback($filter, $token);
+			}
+		}
+
+		if ($this->matches($tokenKey, ['special']))
+		{
+			if ($this->matches($tokenValue, ['liked']))
+			{
+				$this->privilegeService->assertLoggedIn();
+				return $this->addUserScoreRequirement(
+					$filter,
+					$this->authService->getLoggedInUser()->getName(),
+					1,
+					$token->isNegated());
+			}
+
+			if ($this->matches($tokenValue, ['disliked']))
+			{
+				$this->privilegeService->assertLoggedIn();
+				return $this->addUserScoreRequirement(
+					$filter,
+					$this->authService->getLoggedInUser()->getName(),
+					-1,
+					$token->isNegated());
+			}
+
+			if ($this->matches($tokenValue, ['fav']))
+			{
+				$this->privilegeService->assertLoggedIn();
+				$token = new NamedSearchToken();
+				$token->setKey('fav');
+				$token->setValue($this->authService->getLoggedInUser()->getName());
+				return $this->decorateFilterFromNamedToken($filter, $token);
+			}
+		}
+
+		throw new NotSupportedException();
 	}
 
 	protected function getOrderColumn($tokenText)
 	{
-		if ($tokenText === 'random')
+		if ($this->matches($tokenText, ['random']))
 			return PostFilter::ORDER_RANDOM;
 
-		elseif ($tokenText === 'id')
+		if ($this->matches($tokenText, ['id']))
 			return PostFilter::ORDER_ID;
 
-		elseif ($tokenText === 'time' || $tokenText === 'date')
+		if ($this->matches($tokenText, ['time', 'date']))
 			return PostFilter::ORDER_LAST_EDIT_TIME;
 
-		elseif ($tokenText === 'score')
+		if ($this->matches($tokenText, ['score']))
 			return PostFilter::ORDER_SCORE;
 
-		elseif ($tokenText === 'file_size')
+		if ($this->matches($tokenText, ['file_size']))
 			return PostFilter::ORDER_FILE_SIZE;
 
-		elseif ($tokenText === 'tag_count')
+		if ($this->matches($tokenText, ['tag_count', 'tags', 'tag']))
 			return PostFilter::ORDER_TAG_COUNT;
 
-		elseif ($tokenText === 'fav_count')
+		if ($this->matches($tokenText, ['fav_count', 'fags', 'fav']))
 			return PostFilter::ORDER_FAV_COUNT;
 
-		elseif ($tokenText === 'comment_count')
+		if ($this->matches($tokenText, ['comment_count', 'comments', 'comment']))
 			return PostFilter::ORDER_COMMENT_COUNT;
 
-		elseif ($tokenText === 'fav_time' || $tokenText === 'fav_date')
+		if ($this->matches($tokenText, ['fav_time', 'fav_date']))
 			return PostFilter::ORDER_LAST_FAV_TIME;
 
-		elseif ($tokenText === 'comment_time' || $tokenText === 'comment_date')
+		if ($this->matches($tokenText, ['comment_time', 'comment_date']))
 			return PostFilter::ORDER_LAST_COMMENT_TIME;
 
-		elseif ($tokenText === 'feature_time' || $tokenText === 'feature_date')
+		if ($this->matches($tokenText, ['feature_time', 'feature_date', 'featured', 'feature']))
 			return PostFilter::ORDER_LAST_FEATURE_TIME;
 
-		else
-			throw new NotSupportedException();
+		throw new NotSupportedException();
 	}
 
 	private function addIdRequirement($filter, $token)

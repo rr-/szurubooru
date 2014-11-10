@@ -164,4 +164,20 @@ abstract class AbstractSearchParser
 
 		return $searchTokens;
 	}
+
+	protected function matches($text, $array)
+	{
+		$transform = function($text)
+		{
+			return str_replace('_', '', strtolower($text));
+		};
+
+		$text = $transform($text);
+		foreach ($array as $elem)
+		{
+			if ($transform($elem) == $text)
+				return true;
+		}
+		return false;
+	}
 }
