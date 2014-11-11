@@ -17,7 +17,6 @@ class Upgrade29 implements IUpgrade
 
 	public function run(DatabaseConnection $databaseConnection)
 	{
-		$pdo = $databaseConnection->getPDO();
 		foreach ($this->tagDao->findAll() as $tag)
 		{
 			$this->tagHistoryService->saveTagChange($tag);
