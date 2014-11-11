@@ -43,11 +43,10 @@ class HistoryService
 			if ($otherSnapshots)
 			{
 				$lastSnapshot = array_shift($otherSnapshots);
-				if (md5(json_encode($lastSnapshot->getData())) === md5(json_encode($snapshot->getData())))
-					return $lastSnapshot;
-
 				$dataDifference = $this->getSnapshotDataDifference($snapshot->getData(), $lastSnapshot->getData());
 				$snapshot->setDataDifference($dataDifference);
+				if (empty($dataDifference['+']) && empty($dataDifference['-']))
+					return $lastSnapshot;
 			}
 			else
 			{
