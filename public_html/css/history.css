@@ -1,18 +1,23 @@
 table.history {
 	font-size: 80%;
+	border-spacing: 0;
 }
 table.history .addition {
-	color: forestgreen;
+	color: #228022;
 }
 table.history .addition:before {
 	content: '+';
 }
 
 table.history .removal {
-	color: red;
+	color: #e02222;
 }
 table.history .removal:before {
 	content: '-';
+}
+
+table.history .user img {
+	vertical-align: middle;
 }
 
 table.history .time,
@@ -20,14 +25,18 @@ table.history .user,
 table.history .subject {
 	white-space: nowrap;
 }
-
-table.history .user img {
-	vertical-align: middle;
+table.history .difference {
+	word-break: break-all;
 }
 
 table.history td {
-	padding: 0.1em 0.25em;
-	word-break: break-all;
+	padding: 0.3em 0.5em 0.3em 0.25em;
+	word-break: break-word;
+	word-wrap: break-word;
+	vertical-align: top;
+}
+table.history tr:nth-child(2n+1) td {
+	background: #fafafa;
 }
 
 table.history ul {
