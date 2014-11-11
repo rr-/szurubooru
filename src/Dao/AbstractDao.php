@@ -131,14 +131,15 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 
 	public function create(Entity $entity)
 	{
-		$sequencerQuery = $this->pdo->from('sequencer')->where('tableName', $this->tableName);
-		$lastUsedId = intval(iterator_to_array($sequencerQuery)[0]['lastUsedId']);
-		$lastUsedId ++;
+		$sql = 'UPDATE sequencer SET lastUsedId = (@lastUsedId := (lastUsedId + 1)) WHERE tableName = :tableName';
+		$query = $this->pdo->prepare($sql);
+		$query->bindValue(':tableName', $this->tableName);
+		$query->execute();
+		$lastUsedId = $this->pdo->query('SELECT @lastUsedId')->fetchColumn();
 
 		$entity->setId($lastUsedId);
 		$arrayEntity = $this->entityConverter->toArray($entity);
 		$this->pdo->insertInto($this->tableName)->values($arrayEntity)->execute();
-		$this->pdo->update('sequencer')->set(['lastUsedId' => $lastUsedId])->where('tableName', $this->tableName)->execute();
 		return $entity;
 	}
 
