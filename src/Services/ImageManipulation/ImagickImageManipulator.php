@@ -47,7 +47,6 @@ class ImagickImageManipulator implements IImageManipulator
 				$matte = new \Imagick();
 				$matte->newImage($imageResource->getImageWidth(), $imageResource->getImageHeight(), 'white');
 				$matte->compositeimage($imageResource, \Imagick::COMPOSITE_OVER, 0, 0);
-				$imageResource->destroy();
 				$imageResource = $matte;
 				$imageResource->setImageFormat('jpeg');
 				break;
