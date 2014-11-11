@@ -144,7 +144,8 @@ App.Presenters.TagPresenter = function(
 	}
 
 	function mergeButtonClicked(e) {
-		if (targetTag = window.prompt('What tag should this be merged to?')) {
+		var targetTag = window.prompt('What tag should this be merged to?');
+		if (targetTag) {
 			promise.wait(api.put('/tags/' + tag.name + '/merge', {targetTag: targetTag}))
 				.then(function(response) {
 					router.navigate('#/tags');
