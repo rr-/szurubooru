@@ -9,7 +9,8 @@ class ImagickImageManipulator implements IImageManipulator
 		{
 			$image = new \Imagick();
 			$image->readImageBlob($source);
-			$image = $image->coalesceImages();
+			if ($image->getImageFormat() == 'GIF')
+				$image = $image->coalesceImages();
 			return $image;
 		}
 		catch (\Exception $e)
