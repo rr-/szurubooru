@@ -106,7 +106,11 @@ class PostSnapshotProvider implements ISnapshotProvider
 
 		sort($data['tags']);
 		sort($data['relations']);
-		usort($data['notes'], function ($note1, $note2) { return $note1['x'] - $note2['x']; });
+		usort($data['notes'],
+			function ($note1, $note2)
+			{
+				return $note1['x'] - $note2['x'];
+			});
 
 		return $data;
 	}

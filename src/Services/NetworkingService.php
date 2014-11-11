@@ -32,7 +32,7 @@ class NetworkingService
 		$this->httpHelper->setHeader('Pragma', 'public');
 		$this->httpHelper->setHeader('Cache-Control', 'public, max-age=' . $secondsToLive);
 		$this->httpHelper->setHeader('Expires', gmdate('D, d M Y H:i:s \G\M\T', time() + $secondsToLive));
-		$this->httpHelper->setHeader( 'Content-Type', MimeHelper::getMimeTypeFromFile($fullPath));
+		$this->httpHelper->setHeader('Content-Type', MimeHelper::getMimeTypeFromFile($fullPath));
 
 		if ($customFileName)
 			$this->httpHelper->setHeader('Content-Disposition', 'inline; filename="' . $customFileName . '"');

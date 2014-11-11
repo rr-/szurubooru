@@ -167,17 +167,18 @@ abstract class AbstractSearchParser
 
 	protected function matches($text, $array)
 	{
-		$transform = function($text)
-		{
-			return str_replace('_', '', strtolower($text));
-		};
-
-		$text = $transform($text);
+		$text = $this->transformText($text);
 		foreach ($array as $elem)
 		{
-			if ($transform($elem) == $text)
+			if ($this->transformText($elem) === $text)
 				return true;
 		}
 		return false;
 	}
+
+	protected function transformText($text)
+	{
+		return str_replace('_', '', strtolower($text));
+	}
+
 }

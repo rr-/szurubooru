@@ -194,10 +194,15 @@ class TagService
 			foreach ($posts as $post)
 			{
 				$newTags = $post->getTags();
-				$newTags = array_filter($newTags, function(Tag $tag) use ($sourceTag) {
-					return $tag->getId() !== $sourceTag->getId();
-				});
-				$newTags []= $targetTag;
+				$newTags[] = $targetTag;
+
+				$newTags = array_filter(
+					$newTags,
+					function(Tag $tag) use ($sourceTag)
+					{
+						return $tag->getId() !== $sourceTag->getId();
+					});
+
 				$post->setTags($newTags);
 				$this->postDao->save($post);
 				$this->postHistoryService->savePostChange($post);
