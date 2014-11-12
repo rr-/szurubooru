@@ -25,10 +25,12 @@ App.Presenters.PostUploadPresenter = function(
 	var interactionEnabled = true;
 	var currentUploadId = null;
 	var currentUploadXhr = null;
+	var maxPostSize = 0;
 
 	function init(params, loaded) {
 		topNavigationPresenter.select('upload');
 		topNavigationPresenter.changeTitle('Upload');
+		maxPostSize = parseInt(jQuery('head').attr('data-max-post-size'));
 
 		promise.wait(util.promiseTemplate('post-upload'))
 			.then(function(template) {
@@ -117,6 +119,12 @@ App.Presenters.PostUploadPresenter = function(
 		if (files.length > 0) {
 			var posts = [];
 			for (var i = 0; i < files.length; i ++) {
+				if (files[i].size > maxPostSize) {
+					window.alert('File "' + files[i].name + '" is too big - ignoring.' +
+						String.fromCharCode(10) +
+						'(max allowed file size = ' + maxPostSize + ' bytes)');
+					continue;
+				}
 				var post = addPostFromFile(files[i]);
 				posts.push(post);
 			}

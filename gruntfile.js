@@ -135,6 +135,7 @@ module.exports = function(grunt) {
 					serviceName: config.basic.serviceName,
 					templates: readTemplates(grunt),
 					timestamp: grunt.template.today('isoDateTime'),
+					maxPostSize: config.database.maxPostSize,
 					tagCategories: config.tags.categories,
 				}
 			},
