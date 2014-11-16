@@ -86,6 +86,8 @@ App.Presenters.PostNotesPresenter = function(
 			removePostNote(postNote);
 		} else if (sender === 'save') {
 			savePostNote(postNote);
+		} else if (sender === 'preview') {
+			previewPostNote(postNote);
 		}
 	}
 
@@ -132,6 +134,20 @@ App.Presenters.PostNotesPresenter = function(
 		}
 	}
 
+	function previewPostNote(postNote) {
+		var previewText = $form.find('textarea').val();
+		postNote.$element.find('.text').html(util.formatMarkdown(previewText));
+		showPostNoteText(postNote);
+	}
+
+	function showPostNoteText(postNote) {
+		postNote.$element.find('.text-wrapper').show();
+	}
+
+	function hidePostNoteText(postNote) {
+		postNote.$element.find('.text-wrapper').css('display', '');
+	}
+
 	function postNoteClicked(e) {
 		e.preventDefault();
 		var $postNote = jQuery(e.currentTarget).parents('.post-note');
@@ -142,6 +158,7 @@ App.Presenters.PostNotesPresenter = function(
 	}
 
 	function showFormForPostNote($postNote) {
+		hideForm();
 		var postNote = $postNote.data('postNote');
 		$form.data('postNote', postNote);
 		$form.find('textarea').val(postNote.text);
@@ -150,6 +167,10 @@ App.Presenters.PostNotesPresenter = function(
 	}
 
 	function hideForm() {
+		var previousPostNote = $form.data('post-note');
+		if (previousPostNote) {
+			hidePostNoteText(previousPostNote);
+		}
 		$form.hide();
 	}
 

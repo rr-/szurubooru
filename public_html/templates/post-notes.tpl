@@ -21,6 +21,7 @@
 	<div class="actions"><!--
 		--><% if (privileges.canEditPostNotes) { %><!--
 			--><button type="submit" name="sender" value="save">Save</button><!--
+			--><button type="submit" name="sender" value="preview">Preview</button><!--
 		--><% } %><!--
 		--><button type="submit" name="sender" value="cancel">Cancel</button><!--
 		--><% if (privileges.canDeletePostNotes) { %><!--
