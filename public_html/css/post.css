@@ -195,7 +195,7 @@
 .post-note-edit {
 	pointer-events: auto;
 	display: none;
-	position: fixed;
+	position: absolute;
 	z-index: 3;
 	background: white;
 	border: 1px solid black;
@@ -206,8 +206,13 @@
 .post-note-edit textarea {
 	width: 20em;
 	height: 5em;
+	display: block;
 }
 .post-note-edit .actions {
+	pointer-events: none;
+}
+.post-note-edit button {
+	pointer-events: auto;
 	margin-top: 0.5em;
 }
 .post-note-edit .actions button:not(:last-child) {
@@ -246,20 +251,4 @@
 }
 .post-note .text p:last-of-type {
 	margin-bottom: 0;
-}
-
-.post-note .dragger {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	cursor: move;
-}
-.post-note .resizer {
-	position: absolute;
-	cursor: nwse-resize;
-	border: 0.25em solid rgba(0, 0, 0, 0.3);
-	border-top: 0.25em solid transparent;
-	border-left: 0.25em solid transparent;
-	right: 0;
-	bottom: 0;
 }

@@ -99,3 +99,16 @@ blockquote {
 blockquote :last-child {
 	margin-bottom: 0;
 }
+
+.draggable {
+	cursor: move;
+}
+.resizer {
+	position: absolute;
+	cursor: nwse-resize;
+	border: 0.25em solid rgba(0, 0, 0, 0.3);
+	border-top: 0.25em solid transparent;
+	border-left: 0.25em solid transparent;
+	right: 0;
+	bottom: 0;
+}

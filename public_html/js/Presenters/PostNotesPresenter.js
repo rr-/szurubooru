@@ -6,7 +6,9 @@ App.Presenters.PostNotesPresenter = function(
 	util,
 	promise,
 	api,
-	auth) {
+	auth,
+	draggable,
+	resizable) {
 
 	var post;
 	var notes;
@@ -59,8 +61,8 @@ App.Presenters.PostNotesPresenter = function(
 			$postNote.data('postNote', postNote);
 			$postNote.find('.text-wrapper').click(postNoteClicked);
 			postNote.$element = $postNote;
-			makeDraggable($postNote);
-			makeResizable($postNote);
+			draggable.makeDraggable($postNote, draggable.relativeDragStrategy);
+			resizable.makeResizable($postNote);
 		});
 
 		$form.find('button').click(formSubmitted);
@@ -144,83 +146,11 @@ App.Presenters.PostNotesPresenter = function(
 		$form.data('postNote', postNote);
 		$form.find('textarea').val(postNote.text);
 		$form.show();
+		draggable.makeDraggable($form, draggable.absoluteDragStrategy);
 	}
 
 	function hideForm() {
 		$form.hide();
-	}
-
-	function makeDraggable($element) {
-		var $dragger = jQuery('<div class="dragger"></div>');
-		$element.prepend($dragger);
-
-		$dragger.mousedown(function(e) {
-			e.preventDefault();
-			$element.addClass('dragging');
-
-			var $parent = $element.parent();
-			var deltaX = $element.offset().left - e.clientX;
-			var deltaY = $element.offset().top - e.clientY;
-
-			var update = function(e) {
-				var x = e.clientX + deltaX - $parent.offset().left;
-				var y = e.clientY + deltaY - $parent.offset().top;
-				x = Math.min(Math.max(x, 0), $parent.outerWidth() - $element.outerWidth());
-				y = Math.min(Math.max(y, 0), $parent.outerHeight() - $element.outerHeight());
-				x *= 100.0 / $parent.outerWidth();
-				y *= 100.0 / $parent.outerHeight();
-				$element.css({
-					left: x + '%',
-					top: y + '%'});
-			};
-
-			jQuery(window).bind('mousemove.elemmove', function(e) {
-				update(e);
-			}).bind('mouseup.elemmove', function(e) {
-				e.preventDefault();
-				update(e);
-				$element.removeClass('dragging');
-				jQuery(window).unbind('mousemove.elemmove');
-				jQuery(window).unbind('mouseup.elemmove');
-			});
-		});
-	}
-
-	function makeResizable($element) {
-		var $resizer = jQuery('<div class="resizer"></div>');
-		$element.append($resizer);
-
-		$resizer.mousedown(function(e) {
-			e.preventDefault();
-			e.stopPropagation();
-			$element.addClass('resizing');
-
-			var $parent = $element.parent();
-			var deltaX = $element.width() - e.clientX;
-			var deltaY = $element.height() - e.clientY;
-
-			var update = function(e) {
-				var w = e.clientX + deltaX;
-				var h = e.clientY + deltaY;
-				w = Math.min(Math.max(w, 20), $parent.outerWidth() + $parent.offset().left - $element.offset().left);
-				h = Math.min(Math.max(h, 20), $parent.outerHeight() + $parent.offset().top - $element.offset().top);
-				w *= 100.0 / $parent.outerWidth();
-				h *= 100.0 / $parent.outerHeight();
-				$element.css({
-					width: w + '%',
-					height: h + '%'});
-			};
-
-			jQuery(window).bind('mousemove.elemsize', function(e) {
-				update(e);
-			}).bind('mouseup.elemsize', function(e) {
-				e.preventDefault();
-				update(e);
-				$element.removeClass('resizing');
-				jQuery(window).unbind('mousemove.elemsize');
-				jQuery(window).unbind('mouseup.elemsize');
-			});
-		});
 	}
 
 	return {
@@ -236,5 +166,7 @@ App.DI.register('postNotesPresenter', [
 	'util',
 	'promise',
 	'api',
-	'auth'],
+	'auth',
+	'draggable',
+	'resizable'],
 	App.Presenters.PostNotesPresenter);

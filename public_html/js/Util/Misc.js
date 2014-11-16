@@ -1,6 +1,7 @@
 var App = App || {};
+App.Util = App.Util || {};
 
-App.Util = function(_, jQuery, marked, promise) {
+App.Util.Misc = function(_, jQuery, marked, promise) {
 
 	var exitConfirmationEnabled = false;
 
@@ -244,4 +245,4 @@ App.Util = function(_, jQuery, marked, promise) {
 
 };
 
-App.DI.registerSingleton('util', ['_', 'jQuery', 'marked', 'promise'], App.Util);
+App.DI.registerSingleton('util', ['_', 'jQuery', 'marked', 'promise'], App.Util.Misc);
