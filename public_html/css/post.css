@@ -195,7 +195,7 @@
 .post-note-edit {
 	pointer-events: auto;
 	display: none;
-	position: absolute;
+	position: fixed;
 	z-index: 3;
 	background: white;
 	border: 1px solid black;
