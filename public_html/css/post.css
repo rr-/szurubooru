@@ -223,7 +223,7 @@
 .post-note .text-wrapper {
 	position: absolute;
 	display: none;
-	z-index: 10;
+	z-index: 1;
 	top: calc(100%);
 	left: -1px;
 	padding-top: 0.5em;
