@@ -43,12 +43,16 @@ class PostSearchParser extends AbstractSearchParser
 		$tokenKey = $token->getKey();
 		$tokenValue = $token->getValue();
 
-		if ($this->matches($tokenKey, ['tag_min', 'tag_max', 'fav_min', 'fav_max', 'score_min', 'score_max']))
+		$countAliases = ['tag_count' => 'tag', 'fav_count' => 'fav', 'score' => 'score'];
+		foreach ($countAliases as $realKey => $baseAlias)
 		{
-			$token = new NamedSearchToken();
-			$token->setKey(str_replace('__', '_', str_replace(['min', 'max'], '_count', $tokenKey)));
-			$token->setValue(strpos($tokenKey, 'min') !== false ? $tokenValue . '..' : '..' . $tokenValue);
-			return $this->decorateFilterFromNamedToken($filter, $token);
+			if ($this->matches($tokenKey, [$baseAlias . '_min', $baseAlias . '_max']))
+			{
+				$token = new NamedSearchToken();
+				$token->setKey($realKey);
+				$token->setValue(strpos($tokenKey, 'min') !== false ? $tokenValue . '..' : '..' . $tokenValue);
+				return $this->decorateFilterFromNamedToken($filter, $token);
+			}
 		}
 
 		$map =
