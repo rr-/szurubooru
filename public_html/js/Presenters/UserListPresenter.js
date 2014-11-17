@@ -13,10 +13,13 @@ App.Presenters.UserListPresenter = function(
 	var $el = jQuery('#content');
 	var templates = {};
 	var params;
+	var privileges = {};
 
 	function init(params, loaded) {
 		topNavigationPresenter.select('users');
 		topNavigationPresenter.changeTitle('Users');
+
+		privileges.canViewUsers = auth.hasPrivilege(auth.privileges.viewUsers);
 
 		promise.wait(
 				util.promiseTemplate('user-list'),
@@ -60,7 +63,7 @@ App.Presenters.UserListPresenter = function(
 	}
 
 	function render() {
-		$el.html(templates.list());
+		$el.html(templates.list(privileges));
 	}
 
 	function updateActiveOrder(activeOrder) {
@@ -71,10 +74,10 @@ App.Presenters.UserListPresenter = function(
 	function renderUsers($page, users) {
 		var $target = $page.find('.users');
 		_.each(users, function(user) {
-			var $item = jQuery('<li>' + templates.listItem({
+			var $item = jQuery('<li>' + templates.listItem(_.extend({
 				user: user,
 				formatRelativeTime: util.formatRelativeTime,
-			}) + '</li>');
+			}, privileges)) + '</li>');
 			$target.append($item);
 		});
 		_.map(_.map($target.find('img'), jQuery), util.loadImagesNicely);

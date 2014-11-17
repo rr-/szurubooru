@@ -39,12 +39,14 @@
 
 #user-list .user img {
 	vertical-align: top;
-	margin-right: 1em;
 	display: block;
 }
-#user-list .user>a {
-	display: block;
+#user-list .user .avatar {
 	float: left;
+	margin-right: 1em;
+}
+#user-list .user .avatar a {
+	display: block;
 }
 #user-list .user .details {
 	float: left;
