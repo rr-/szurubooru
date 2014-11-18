@@ -10,7 +10,7 @@
 		</div>
 
 		<div class="search">
-			<a href="#/posts/query=<%= query.query %>;order=<%= query.order %>">
+			<a class="enabled" href="#/posts/query=<%= query.query %>;order=<%= query.order %>">
 				Current search: <%= query.query || '-' %>
 			</a>
 		</div>
