@@ -25,7 +25,7 @@ class SnapshotEntityConverter extends AbstractEntityConverter implements IEntity
 		$entity->setTime($this->dbTimeToEntityTime($array['time']));
 		$entity->setType(intval($array['type']));
 		$entity->setPrimaryKey($array['primaryKey']);
-		$entity->setUserId($array['userId']);
+		$entity->setUserId(intval($array['userId']));
 		$entity->setOperation($array['operation']);
 		$entity->setData(json_decode($array['data'], true));
 		$entity->setDataDifference(json_decode($array['dataDifference'], true));

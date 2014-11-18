@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Tests\Services;
+use Szurubooru\Entities\Snapshot;
 use Szurubooru\Dao\SnapshotDao;
 use Szurubooru\Dao\TransactionManager;
 use Szurubooru\Services\AuthService;
@@ -14,20 +15,20 @@ final class HistoryServiceTest extends AbstractTestCase
 	private $authServiceMock;
 	private $transactionManagerMock;
 
-	public static function snapshotDataDifferenceProvider()
+	public static function dataDifferenceProvider()
 	{
 		yield
 		[
-				[],
-				[],
-				['+' => [], '-' => []]
+			[],
+			[],
+			['+' => [], '-' => []]
 		];
 
 		yield
 		[
-				['key' => 'unchangedValue'],
-				['key' => 'unchangedValue'],
-				['+' => [], '-' => []]
+			['key' => 'unchangedValue'],
+			['key' => 'unchangedValue'],
+			['+' => [], '-' => []]
 		];
 
 		yield
@@ -105,18 +106,121 @@ final class HistoryServiceTest extends AbstractTestCase
 	{
 		parent::setUp();
 		$this->snapshotDaoMock = $this->mock(SnapshotDao::class);
-		$this->transactionManagerMock = $this->mock(TransactionManager::class);
+		$this->transactionManagerMock = $this->mockTransactionManager();
 		$this->timeServiceMock = $this->mock(TimeService::class);
 		$this->authServiceMock = $this->mock(AuthService::class);
 	}
 
 	/**
-	 * @dataProvider snapshotDataDifferenceProvider
+	 * @dataProvider dataDifferenceProvider
 	 */
-	public function testSnapshotDataDifference($newData, $oldData, $expectedResult)
+	public function testDataDifference($newData, $oldData, $expectedResult)
 	{
 		$historyService = $this->getHistoryService();
-		$this->assertEquals($expectedResult, $historyService->getSnapshotDataDifference($newData, $oldData));
+		$this->assertEquals($expectedResult, $historyService->getDataDifference($newData, $oldData));
+	}
+
+	public static function mergingProvider()
+	{
+		{
+			$oldSnapshot = new Snapshot(1);
+			$oldSnapshot->setTime(date('c', 1));
+			$oldSnapshot->setOperation(Snapshot::OPERATION_CREATION);
+			$oldSnapshot->setData(['old' => '1']);
+
+			$newSnapshot = new Snapshot(2);
+			$newSnapshot->setTime(date('c', 2));
+			$newSnapshot->setOperation(Snapshot::OPERATION_CHANGE);
+			$newSnapshot->setData(['new' => '2']);
+
+			$expectedSnapshot = new Snapshot(1);
+			$expectedSnapshot->setTime(date('c', 3));
+			$expectedSnapshot->setOperation(Snapshot::OPERATION_CREATION);
+			$expectedSnapshot->setData(['new' => '2']);
+			$expectedSnapshot->setDataDifference(['+' => [['new', '2']], '-' => []]);
+
+			yield [$oldSnapshot, $newSnapshot, $expectedSnapshot, date('c', 3)];
+		}
+
+		{
+			$oldSnapshot = new Snapshot(1);
+			$oldSnapshot->setOperation(Snapshot::OPERATION_CREATION);
+			$oldSnapshot->setData(['old' => '1']);
+
+			$newSnapshot = new Snapshot(2);
+			$newSnapshot->setOperation(Snapshot::OPERATION_CHANGE);
+			$newSnapshot->setData(['new' => '2']);
+
+			$expectedSnapshot = new Snapshot(2);
+			$expectedSnapshot->setTime(date('c', 3000));
+			$expectedSnapshot->setOperation(Snapshot::OPERATION_CHANGE);
+			$expectedSnapshot->setData(['new' => '2']);
+			$expectedSnapshot->setDataDifference(['+' => [['new', '2']], '-' => [['old', '1']]]);
+
+			yield [$oldSnapshot, $newSnapshot, $expectedSnapshot, date('c', 3000)];
+		}
+
+		{
+			$oldSnapshot = new Snapshot(1);
+			$oldSnapshot->setOperation(Snapshot::OPERATION_CREATION);
+			$oldSnapshot->setData(['old' => '1']);
+			$oldSnapshot->setUserId(1);
+
+			$newSnapshot = new Snapshot(2);
+			$newSnapshot->setOperation(Snapshot::OPERATION_CHANGE);
+			$newSnapshot->setData(['new' => '2']);
+			$newSnapshot->setUserId(2);
+
+			$expectedSnapshot = new Snapshot(2);
+			$expectedSnapshot->setOperation(Snapshot::OPERATION_CHANGE);
+			$expectedSnapshot->setData(['new' => '2']);
+			$expectedSnapshot->setDataDifference(['+' => [['new', '2']], '-' => [['old', '1']]]);
+			$expectedSnapshot->setUserId(null);
+
+			yield [$oldSnapshot, $newSnapshot, $expectedSnapshot, null];
+		}
+
+		{
+			$oldSnapshot = new Snapshot(1);
+			$oldSnapshot->setOperation(Snapshot::OPERATION_CREATION);
+			$oldSnapshot->setData(['old' => '1']);
+
+			$newSnapshot = new Snapshot(2);
+			$newSnapshot->setOperation(Snapshot::OPERATION_DELETE);
+			$newSnapshot->setData(['new' => '2']);
+
+			$expectedSnapshot = new Snapshot(2);
+			$expectedSnapshot->setOperation(Snapshot::OPERATION_DELETE);
+			$expectedSnapshot->setData(['new' => '2']);
+			$expectedSnapshot->setDataDifference(['+' => [['new', '2']], '-' => [['old', '1']]]);
+
+			yield [$oldSnapshot, $newSnapshot, $expectedSnapshot, null];
+		}
+	}
+
+	/**
+	 * @dataProvider mergingProvider
+	 */
+	public function testMerging($oldSnapshot, $newSnapshot, $expectedSnapshot, $currentTime)
+	{
+		$this->timeServiceMock->method('getCurrentTime')->willReturn($currentTime);
+
+		$this->snapshotDaoMock
+			->method('findEarlierSnapshots')
+			->will(
+				$this->onConsecutiveCalls([$oldSnapshot], null));
+
+		$this->snapshotDaoMock
+			->expects($this->once())
+			->method('save')
+			->will($this->returnCallback(function($param) use (&$actualSnapshot)
+				{
+					$actualSnapshot = $param;
+				}));
+
+		$historyService = $this->getHistoryService();
+		$historyService->saveSnapshot($newSnapshot);
+		$this->assertEntitiesEqual($expectedSnapshot, $actualSnapshot);
 	}
 
 	private function getHistoryService()

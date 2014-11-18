@@ -22,13 +22,17 @@ class SnapshotDao extends AbstractDao
 		$this->userDao = $userDao;
 	}
 
-	public function findByTypeAndKey($type, $primaryKey)
+	public function findEarlierSnapshots(Snapshot $snapshot)
 	{
 		$query = $this->pdo
 			->from($this->tableName)
-			->where('type', $type)
-			->where('primaryKey', $primaryKey)
+			->where('type', $snapshot->getType())
+			->where('primaryKey', $snapshot->getPrimaryKey())
 			->orderBy('time DESC');
+
+		if ($snapshot->getId())
+			$query->where('id < ?', $snapshot->getId());
+
 		return $this->arrayToEntities(iterator_to_array($query));
 	}
 

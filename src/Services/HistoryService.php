@@ -39,29 +39,46 @@ class HistoryService
 	{
 		$transactionFunc = function() use ($snapshot)
 		{
-			$otherSnapshots = $this->snapshotDao->findByTypeAndKey($snapshot->getType(), $snapshot->getPrimaryKey());
-			if ($otherSnapshots)
-			{
-				$lastSnapshot = array_shift($otherSnapshots);
-				$dataDifference = $this->getSnapshotDataDifference($snapshot->getData(), $lastSnapshot->getData());
-				$snapshot->setDataDifference($dataDifference);
-				if (empty($dataDifference['+']) && empty($dataDifference['-']))
-					return $lastSnapshot;
-			}
-			else
-			{
-				$dataDifference = $this->getSnapshotDataDifference($snapshot->getData(), []);
-				$snapshot->setDataDifference($dataDifference);
-			}
-
 			$snapshot->setTime($this->timeService->getCurrentTime());
 			$snapshot->setUser($this->authService->getLoggedInUser());
+
+			$lastSnapshot = $this->getLastSnapshot($snapshot);
+
+			$dataDifference = $this->getSnapshotDataDifference($snapshot, $lastSnapshot);
+			$snapshot->setDataDifference($dataDifference);
+
+			if ($snapshot->getOperation() !== Snapshot::OPERATION_DELETE && $lastSnapshot !== null)
+			{
+				//don't save if nothing changed
+				if (empty($dataDifference['+']) && empty($dataDifference['-']))
+				{
+					if ($snapshot->getId())
+						$this->snapshotDao->deleteById($snapshot->getId());
+					return $lastSnapshot;
+				}
+
+				//merge recent edits
+				$isFresh = ((strtotime($snapshot->getTime()) - strtotime($lastSnapshot->getTime())) <= 5 * 60);
+				if ($isFresh && $lastSnapshot->getUserId() === $snapshot->getUserId())
+				{
+					$lastSnapshot->setData($snapshot->getData());
+					return $this->saveSnapshot($lastSnapshot);
+				}
+			}
+
 			return $this->snapshotDao->save($snapshot);
 		};
 		return $this->transactionManager->commit($transactionFunc);
 	}
 
-	public function getSnapshotDataDifference($newData, $oldData)
+	public function getSnapshotDataDifference(Snapshot $newSnapshot, Snapshot $oldSnapshot = null)
+	{
+		return $this->getDataDifference(
+			$newSnapshot->getData(),
+			$oldSnapshot ? $oldSnapshot->getData() : []);
+	}
+
+	public function getDataDifference($newData, $oldData)
 	{
 		$diffFunction = function($base, $other)
 		{
@@ -89,5 +106,11 @@ class HistoryService
 			'+' => $diffFunction($newData, $oldData),
 			'-' => $diffFunction($oldData, $newData),
 		];
+	}
+
+	private function getLastSnapshot(Snapshot $reference)
+	{
+		$earlierSnapshots = $this->snapshotDao->findEarlierSnapshots($reference);
+		return empty($earlierSnapshots) ? null : array_shift($earlierSnapshots);
 	}
 }
