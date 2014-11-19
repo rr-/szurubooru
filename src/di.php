@@ -11,6 +11,7 @@ $publicDataDirectory = __DIR__
 return [
 	\Szurubooru\Config::class => DI\object()->constructor($dataDirectory, $publicDataDirectory),
 
+	\Szurubooru\RouteRepository::class => DI\object()->constructor(DI\link('routes')),
 	\Szurubooru\ControllerRepository::class => DI\object()->constructor(DI\link('controllers')),
 	\Szurubooru\Upgrades\UpgradeRepository::class => DI\object()->constructor(DI\link('upgrades')),
 
@@ -56,7 +57,6 @@ return [
 
 	'controllers' => DI\factory(function (DI\container $container) {
 		return [
-			$container->get(\Szurubooru\Controllers\AuthController::class),
 			$container->get(\Szurubooru\Controllers\UserController::class),
 			$container->get(\Szurubooru\Controllers\UserAvatarController::class),
 			$container->get(\Szurubooru\Controllers\PostController::class),
@@ -68,6 +68,12 @@ return [
 			$container->get(\Szurubooru\Controllers\ScoreController::class),
 			$container->get(\Szurubooru\Controllers\CommentController::class),
 			$container->get(\Szurubooru\Controllers\TagController::class),
+		];
+	}),
+
+	'routes' => DI\factory(function (DI\container $container) {
+		return [
+			$container->get(\Szurubooru\Routes\Login::class),
 		];
 	}),
 ];

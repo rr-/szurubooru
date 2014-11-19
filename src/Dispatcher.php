@@ -24,6 +24,7 @@ final class Dispatcher
 		HttpHelper $httpHelper,
 		AuthService $authService,
 		TokenService $tokenService,
+		RouteRepository $routeRepository,
 		ControllerRepository $controllerRepository)
 	{
 		$this->router = $router;
@@ -38,6 +39,8 @@ final class Dispatcher
 
 		foreach ($controllerRepository->getControllers() as $controller)
 			$controller->registerRoutes($router);
+
+		$routeRepository->injectRoutes($router);
 	}
 
 	public function run($requestMethod, $requestUri)

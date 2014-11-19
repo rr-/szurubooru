@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\Controllers;
+namespace Szurubooru\Routes;
 use Szurubooru\Controllers\ViewProxies\TokenViewProxy;
 use Szurubooru\Controllers\ViewProxies\UserViewProxy;
 use Szurubooru\FormData\LoginFormData;
@@ -10,7 +10,7 @@ use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\TokenService;
 use Szurubooru\Services\UserService;
 
-final class AuthController extends AbstractController
+class Login extends AbstractRoute
 {
 	private $authService;
 	private $userService;
@@ -38,13 +38,17 @@ final class AuthController extends AbstractController
 		$this->tokenViewProxy = $tokenViewProxy;
 	}
 
-	public function registerRoutes(Router $router)
+	public function getMethods()
 	{
-		$router->post('/api/login', [$this, 'login']);
-		$router->put('/api/login', [$this, 'login']);
+		return ['POST', 'PUT'];
 	}
 
-	public function login()
+	public function getUrl()
+	{
+		return '/api/login';
+	}
+
+	public function work()
 	{
 		if (isset($this->inputReader->userNameOrEmail) && isset($this->inputReader->password))
 		{
