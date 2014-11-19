@@ -27,13 +27,15 @@
 <div id="post-view-wrapper">
 	<div id="sidebar">
 		<ul class="essential">
-			<li>
-				<a class="download" href="<%= permaLink %>">
-					<i class="fa fa-download"></i>
-					<br/>
-					<%= post.contentExtension + ', ' + formatFileSize(post.originalFileSize) %>
-				</a>
-			</li>
+			<% if (post.contentType !== 'youtube') { %>
+				<li>
+					<a class="download" href="<%= permaLink %>">
+						<i class="fa fa-download"></i>
+						<br/>
+						<%= post.contentExtension + ', ' + formatFileSize(post.originalFileSize) %>
+					</a>
+				</li>
+			<% } %>
 
 			<% if (isLoggedIn) { %>
 				<li>
