@@ -36,7 +36,7 @@ final class HistoryServiceTest extends AbstractTestCase
 			['key' => 'newValue'],
 			[],
 			[
-				'+' => [['key', 'newValue']],
+				'+' => ['key' => 'newValue'],
 				'-' => []
 			]
 		];
@@ -47,7 +47,7 @@ final class HistoryServiceTest extends AbstractTestCase
 			['key' => 'deletedValue'],
 			[
 				'+' => [],
-				'-' => [['key', 'deletedValue']]
+				'-' => ['key' => 'deletedValue']
 			]
 		];
 
@@ -56,8 +56,8 @@ final class HistoryServiceTest extends AbstractTestCase
 			['key' => 'changedValue'],
 			['key' => 'oldValue'],
 			[
-				'+' => [['key', 'changedValue']],
-				'-' => [['key', 'oldValue']]
+				'+' => ['key' => 'changedValue'],
+				'-' => ['key' => 'oldValue']
 			]
 		];
 
@@ -76,7 +76,7 @@ final class HistoryServiceTest extends AbstractTestCase
 			['key' => ['newArrayElement']],
 			['key' => []],
 			[
-				'+' => [['key', 'newArrayElement']],
+				'+' => ['key' => ['newArrayElement']],
 				'-' => []
 			]
 		];
@@ -87,17 +87,17 @@ final class HistoryServiceTest extends AbstractTestCase
 			['key' => ['removedArrayElement']],
 			[
 				'+' => [],
-				'-' => [['key', 'removedArrayElement']]
+				'-' => ['key' => ['removedArrayElement']]
 			]
 		];
 
 		yield
 		[
-			['key' => ['unchangedValue', 'newValue']],
-			['key' => ['unchangedValue', 'oldValue']],
+			['key' => ['unchangedArrayElement', 'newArrayElement']],
+			['key' => ['unchangedArrayElement', 'oldArrayElement']],
 			[
-				'+' => [['key', 'newValue']],
-				'-' => [['key', 'oldValue']]
+				'+' => ['key' => ['newArrayElement']],
+				'-' => ['key' => ['oldArrayElement']]
 			]
 		];
 	}
@@ -137,7 +137,7 @@ final class HistoryServiceTest extends AbstractTestCase
 			$expectedSnapshot->setTime(date('c', 3));
 			$expectedSnapshot->setOperation(Snapshot::OPERATION_CREATION);
 			$expectedSnapshot->setData(['new' => '2']);
-			$expectedSnapshot->setDataDifference(['+' => [['new', '2']], '-' => []]);
+			$expectedSnapshot->setDataDifference(['+' => ['new' => '2'], '-' => []]);
 
 			yield [$oldSnapshot, $newSnapshot, $expectedSnapshot, date('c', 3)];
 		}
@@ -155,7 +155,7 @@ final class HistoryServiceTest extends AbstractTestCase
 			$expectedSnapshot->setTime(date('c', 3000));
 			$expectedSnapshot->setOperation(Snapshot::OPERATION_CHANGE);
 			$expectedSnapshot->setData(['new' => '2']);
-			$expectedSnapshot->setDataDifference(['+' => [['new', '2']], '-' => [['old', '1']]]);
+			$expectedSnapshot->setDataDifference(['+' => ['new' => '2'], '-' => ['old' => '1']]);
 
 			yield [$oldSnapshot, $newSnapshot, $expectedSnapshot, date('c', 3000)];
 		}
@@ -174,7 +174,7 @@ final class HistoryServiceTest extends AbstractTestCase
 			$expectedSnapshot = new Snapshot(2);
 			$expectedSnapshot->setOperation(Snapshot::OPERATION_CHANGE);
 			$expectedSnapshot->setData(['new' => '2']);
-			$expectedSnapshot->setDataDifference(['+' => [['new', '2']], '-' => [['old', '1']]]);
+			$expectedSnapshot->setDataDifference(['+' => ['new' => '2'], '-' => ['old' => '1']]);
 			$expectedSnapshot->setUserId(null);
 
 			yield [$oldSnapshot, $newSnapshot, $expectedSnapshot, null];
@@ -192,7 +192,7 @@ final class HistoryServiceTest extends AbstractTestCase
 			$expectedSnapshot = new Snapshot(2);
 			$expectedSnapshot->setOperation(Snapshot::OPERATION_DELETE);
 			$expectedSnapshot->setData(['new' => '2']);
-			$expectedSnapshot->setDataDifference(['+' => [['new', '2']], '-' => [['old', '1']]]);
+			$expectedSnapshot->setDataDifference(['+' => ['new' => '2'], '-' => ['old' => '1']]);
 
 			yield [$oldSnapshot, $newSnapshot, $expectedSnapshot, null];
 		}

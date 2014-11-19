@@ -5,6 +5,17 @@ var reprValue = function(value) {
 	}
 	return JSON.stringify(value);
 };
+
+var showDifference = function(className, difference) {
+	_.each(difference, function(value, key) {
+		if (!Array.isArray(value)) {
+			value = [value];
+		}
+		_.each(value, function(v) {
+			%><li class="<%= className %> difference-<%= key %>"><%= key + ':' + reprValue(v) %></li><%
+		});
+	});
+};
 %>
 
 <table class="history">
@@ -59,17 +70,8 @@ var reprValue = function(value) {
 
 						<% if (historyEntry.dataDifference) { %>
 							<ul><!--
-								--><% _.each(historyEntry.dataDifference['+'], function (difference) { %><!--
-									--><li class="addition difference-<%= difference[0] %>"><!--
-										--><%= difference[0] + ':' + reprValue(difference[1]) %><!--
-									--></li><!--
-								--><% }) %><!--
-
-								--><% _.each(historyEntry.dataDifference['-'], function (difference) { %><!--
-									--><li class="removal difference-<%= difference[0] %>"><!--
-										--><%= difference[0] + ':' + reprValue(difference[1]) %><!--
-									--></li><!--
-								--><% }) %><!--
+								--><% showDifference('addition', historyEntry.dataDifference['+']) %><!--
+								--><% showDifference('removal', historyEntry.dataDifference['-']) %><!--
 							--></ul>
 						<% } %>
 					<% } %>
