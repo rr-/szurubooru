@@ -82,6 +82,7 @@ class PostNotesService
 		$transactionFunc = function() use ($postNote)
 		{
 			$this->postNoteDao->deleteById($postNote->getId());
+			$this->postHistoryService->savePostChange($postNote->getPost());
 		};
 		$this->transactionManager->commit($transactionFunc);
 	}
