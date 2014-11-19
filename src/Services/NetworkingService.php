@@ -14,6 +14,9 @@ class NetworkingService
 
 	public function serveFile($fullPath, $customFileName = null)
 	{
+		if (!file_exists($fullPath))
+			throw new \Exception('File "' . $fullPath . '" does not exist.');
+
 		$daysToLive = 7;
 		$secondsToLive = $daysToLive * 24 * 60 * 60;
 		$lastModified = filemtime($fullPath);
