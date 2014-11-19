@@ -48,7 +48,7 @@ class SnapshotDao extends AbstractDao
 
 	private function getUser(Snapshot $snapshot)
 	{
-		$userId =  $snapshot->getUserId();
+		$userId = $snapshot->getUserId();
 		return $this->userDao->findById($userId);
 	}
 }

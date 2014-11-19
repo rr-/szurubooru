@@ -42,28 +42,43 @@ class HistoryService
 			$snapshot->setTime($this->timeService->getCurrentTime());
 			$snapshot->setUser($this->authService->getLoggedInUser());
 
-			$lastSnapshot = $this->getLastSnapshot($snapshot);
+			$earlierSnapshots = array_values($this->snapshotDao->findEarlierSnapshots($snapshot));
+			$snapshotsLeft = count($earlierSnapshots);
 
-			$dataDifference = $this->getSnapshotDataDifference($snapshot, $lastSnapshot);
-			$snapshot->setDataDifference($dataDifference);
-
-			if ($snapshot->getOperation() !== Snapshot::OPERATION_DELETE && $lastSnapshot !== null)
+			while (true)
 			{
-				//don't save if nothing changed
-				if (empty($dataDifference['+']) && empty($dataDifference['-']))
-				{
-					if ($snapshot->getId())
-						$this->snapshotDao->deleteById($snapshot->getId());
-					return $lastSnapshot;
-				}
+				$lastSnapshot = array_shift($earlierSnapshots);
+				$dataDifference = $this->getSnapshotDataDifference($snapshot, $lastSnapshot);
+				$snapshot->setDataDifference($dataDifference);
 
-				//merge recent edits
+				if ($lastSnapshot === null)
+					break;
+
+				//recent snapshots should be merged
 				$isFresh = ((strtotime($snapshot->getTime()) - strtotime($lastSnapshot->getTime())) <= 5 * 60);
-				if ($isFresh && $lastSnapshot->getUserId() === $snapshot->getUserId())
-				{
-					$lastSnapshot->setData($snapshot->getData());
-					return $this->saveSnapshot($lastSnapshot);
-				}
+				if (!$isFresh || $lastSnapshot->getUserId() !== $snapshot->getUserId())
+					break;
+
+				//delete the current snapshot
+				if ($snapshot->getId())
+					$this->snapshotDao->deleteById($snapshot->getId());
+
+				//become previous snapshot, but keep the current data
+				$snapshot->setId($lastSnapshot->getId());
+				if ($snapshot->getOperation() !== Snapshot::OPERATION_DELETE)
+					$snapshot->setOperation($lastSnapshot->getOperation());
+
+				-- $snapshotsLeft;
+			}
+
+			$onlyRemovalLeft = (!$snapshotsLeft && $snapshot->getOperation() === Snapshot::OPERATION_DELETE);
+
+			$emptyDiff = (empty($dataDifference['+']) && empty($dataDifference['-']));
+			if ($onlyRemovalLeft || $emptyDiff)
+			{
+				if ($snapshot->getId())
+					$this->snapshotDao->deleteById($snapshot->getId());
+				return array_shift($earlierSnapshots);
 			}
 
 			return $this->snapshotDao->save($snapshot);
@@ -109,11 +124,5 @@ class HistoryService
 			'+' => $diffFunction($newData, $oldData),
 			'-' => $diffFunction($oldData, $newData),
 		];
-	}
-
-	private function getLastSnapshot(Snapshot $reference)
-	{
-		$earlierSnapshots = $this->snapshotDao->findEarlierSnapshots($reference);
-		return empty($earlierSnapshots) ? null : array_shift($earlierSnapshots);
 	}
 }
