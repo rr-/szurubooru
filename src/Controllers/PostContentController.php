@@ -2,6 +2,7 @@
 namespace Szurubooru\Controllers;
 use Szurubooru\Config;
 use Szurubooru\Dao\PublicFileDao;
+use Szurubooru\Entities\Post;
 use Szurubooru\Helpers\MimeHelper;
 use Szurubooru\Router;
 use Szurubooru\Services\NetworkingService;
@@ -44,6 +45,12 @@ final class PostContentController extends AbstractController
 			$this->config->basic->serviceName,
 			$post->getName(),
 			strtolower(MimeHelper::getExtension($post->getContentMimeType())));
+
+		if ($post->getContentType() === Post::POST_TYPE_YOUTUBE)
+		{
+			$this->networkingService->nonCachedRedirect($post->getOriginalFileName());
+			return;
+		}
 
 		$this->networkingService->serveFile($this->fileDao->getFullPath($post->getContentPath()), $customFileName);
 	}
