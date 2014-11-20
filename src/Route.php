@@ -19,8 +19,19 @@ final class Route
 		if (!preg_match($this->regex, $query, $matches))
 			return false;
 		$routeArguments = $this->getRouteArguments($matches);
+
 		$func = $this->route;
-		$output = $func(...array_values($routeArguments));
+		if (is_array($this->route) && $this->route[1] === 'work')
+		{
+			foreach ($matches as $key => $value)
+				$this->route[0]->setArgument($key, $value);
+			$output = $func();
+		}
+		else
+		{
+			$output = $func(...array_values($routeArguments));
+		}
+
 		return true;
 	}
 
