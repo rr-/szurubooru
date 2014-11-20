@@ -64,7 +64,6 @@ return [
 			$container->get(\Szurubooru\Controllers\PostNotesController::class),
 			$container->get(\Szurubooru\Controllers\GlobalParamController::class),
 			$container->get(\Szurubooru\Controllers\HistoryController::class),
-			$container->get(\Szurubooru\Controllers\FavoritesController::class),
 			$container->get(\Szurubooru\Controllers\ScoreController::class),
 			$container->get(\Szurubooru\Controllers\TagController::class),
 		];
@@ -78,6 +77,9 @@ return [
 			$container->get(\Szurubooru\Routes\Comments\DeleteComment::class),
 			$container->get(\Szurubooru\Routes\Comments\GetComments::class),
 			$container->get(\Szurubooru\Routes\Comments\GetPostComments::class),
+			$container->get(\Szurubooru\Routes\Favorites\GetFavoriteUsers::class),
+			$container->get(\Szurubooru\Routes\Favorites\AddToFavorites::class),
+			$container->get(\Szurubooru\Routes\Favorites\RemoveFromFavorites::class),
 		];
 	}),
 ];
