@@ -137,7 +137,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		$query->execute();
 		$lastUsedId = $this->pdo->query('SELECT @lastUsedId')->fetchColumn();
 
-		$entity->setId($lastUsedId);
+		$entity->setId(intval($lastUsedId));
 		$arrayEntity = $this->entityConverter->toArray($entity);
 		$this->pdo->insertInto($this->tableName)->values($arrayEntity)->execute();
 		return $entity;

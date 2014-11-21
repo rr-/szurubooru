@@ -16,7 +16,7 @@ class GlobalParamEntityConverter extends AbstractEntityConverter implements IEnt
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new GlobalParam($array['id']);
+		$entity = new GlobalParam(intval($array['id']));
 		$entity->setKey($array['dataKey']);
 		$entity->setValue($array['dataValue']);
 		return $entity;
