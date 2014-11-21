@@ -58,7 +58,6 @@ return [
 	'controllers' => DI\factory(function (DI\container $container) {
 		return [
 			$container->get(\Szurubooru\Controllers\UserAvatarController::class),
-			$container->get(\Szurubooru\Controllers\ScoreController::class),
 		];
 	}),
 
@@ -103,6 +102,10 @@ return [
 			$container->get(\Szurubooru\Routes\Users\GetUsers::class),
 			$container->get(\Szurubooru\Routes\Users\PasswordReset::class),
 			$container->get(\Szurubooru\Routes\Users\UpdateUser::class),
+			$container->get(\Szurubooru\Routes\Scores\GetCommentScore::class),
+			$container->get(\Szurubooru\Routes\Scores\SetCommentScore::class),
+			$container->get(\Szurubooru\Routes\Scores\GetPostScore::class),
+			$container->get(\Szurubooru\Routes\Scores\SetPostScore::class),
 		];
 	}),
 ];
