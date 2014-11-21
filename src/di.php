@@ -62,7 +62,6 @@ return [
 			$container->get(\Szurubooru\Controllers\PostController::class),
 			$container->get(\Szurubooru\Controllers\PostContentController::class),
 			$container->get(\Szurubooru\Controllers\PostNotesController::class),
-			$container->get(\Szurubooru\Controllers\GlobalParamController::class),
 			$container->get(\Szurubooru\Controllers\HistoryController::class),
 			$container->get(\Szurubooru\Controllers\ScoreController::class),
 			$container->get(\Szurubooru\Controllers\TagController::class),
@@ -72,6 +71,7 @@ return [
 	'routes' => DI\factory(function (DI\container $container) {
 		return [
 			$container->get(\Szurubooru\Routes\Login::class),
+			$container->get(\Szurubooru\Routes\GetGlobals::class),
 			$container->get(\Szurubooru\Routes\Comments\AddComment::class),
 			$container->get(\Szurubooru\Routes\Comments\EditComment::class),
 			$container->get(\Szurubooru\Routes\Comments\DeleteComment::class),
