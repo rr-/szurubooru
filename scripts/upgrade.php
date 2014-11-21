@@ -25,7 +25,7 @@ if ($testMode)
 
 	$databaseConnection = \Szurubooru\Injector::get(\Szurubooru\DatabaseConnection::class);
 	$pdo = $databaseConnection->getPDO();
-	$pdo->exec('DROP DATABASE szuru_test');
+	$pdo->exec('DROP DATABASE IF EXISTS szuru_test');
 	$pdo->exec('CREATE DATABASE szuru_test');
 	$pdo->exec('USE szuru_test');
 }
