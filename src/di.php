@@ -57,7 +57,6 @@ return [
 
 	'controllers' => DI\factory(function (DI\container $container) {
 		return [
-			$container->get(\Szurubooru\Controllers\UserAvatarController::class),
 		];
 	}),
 
@@ -99,6 +98,7 @@ return [
 			$container->get(\Szurubooru\Routes\Users\FinishActivation::class),
 			$container->get(\Szurubooru\Routes\Users\FinishPasswordReset::class),
 			$container->get(\Szurubooru\Routes\Users\GetUser::class),
+			$container->get(\Szurubooru\Routes\Users\GetUserAvatar::class),
 			$container->get(\Szurubooru\Routes\Users\GetUsers::class),
 			$container->get(\Szurubooru\Routes\Users\PasswordReset::class),
 			$container->get(\Szurubooru\Routes\Users\UpdateUser::class),

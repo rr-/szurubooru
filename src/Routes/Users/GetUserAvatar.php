@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\Controllers;
+namespace Szurubooru\Routes\Users;
 use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Entities\User;
 use Szurubooru\Router;
@@ -7,7 +7,7 @@ use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\ThumbnailService;
 use Szurubooru\Services\UserService;
 
-final class UserAvatarController extends AbstractController
+class GetUserAvatar extends AbstractUserRoute
 {
 	private $fileDao;
 	private $userService;
@@ -26,13 +26,21 @@ final class UserAvatarController extends AbstractController
 		$this->thumbnailService = $thumbnailService;
 	}
 
-	public function registerRoutes(Router $router)
+	public function getMethods()
 	{
-		$router->get('/api/users/:userName/avatar/:size', [$this, 'getAvatarByName']);
+		return ['GET'];
 	}
 
-	public function getAvatarByName($userName, $size)
+	public function getUrl()
 	{
+		return '/api/users/:userName/avatar/:size';
+	}
+
+	public function work()
+	{
+		$userName = $this->getArgument('userName');
+		$size = $this->getArgument('size');
+
 		try
 		{
 			$user = $this->userService->getByName($userName);
