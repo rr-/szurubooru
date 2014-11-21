@@ -22,6 +22,8 @@ class UpdatePost extends AbstractPostRoute
 	{
 		$this->privilegeService = $privilegeService;
 		$this->postService = $postService;
+		$this->inputReader = $inputReader;
+		$this->postViewProxy = $postViewProxy;
 	}
 
 	public function getMethods()
