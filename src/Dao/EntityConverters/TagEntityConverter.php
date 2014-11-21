@@ -11,7 +11,7 @@ class TagEntityConverter extends AbstractEntityConverter implements IEntityConve
 		[
 			'name' => $entity->getName(),
 			'creationTime' => $this->entityTimeToDbTime($entity->getCreationTime()),
-			'banned' => $entity->isBanned(),
+			'banned' => intval($entity->isBanned()),
 			'category' => $entity->getCategory(),
 		];
 	}

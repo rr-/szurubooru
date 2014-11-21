@@ -42,6 +42,6 @@ abstract class AbstractEntityConverter implements IEntityConverter
 
 	protected function entityTimeToDbTime($time)
 	{
-		return $time;
+		return $time === null ? null : date('Y-m-d H:i:s', strtotime($time));
 	}
 }

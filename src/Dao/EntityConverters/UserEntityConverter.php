@@ -19,8 +19,8 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
 			'lastLoginTime' => $this->entityTimeToDbTime($entity->getLastLoginTime()),
 			'avatarStyle' => $entity->getAvatarStyle(),
 			'browsingSettings' => json_encode($entity->getBrowsingSettings()),
-			'accountConfirmed' => $entity->isAccountConfirmed(),
-			'banned' => $entity->isBanned(),
+			'accountConfirmed' => intval($entity->isAccountConfirmed()),
+			'banned' => intval($entity->isBanned()),
 		];
 	}
 
