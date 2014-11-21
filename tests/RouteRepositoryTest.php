@@ -4,9 +4,9 @@ use Szurubooru\Injector;
 use Szurubooru\RouteRepository;
 use Szurubooru\Router;
 use Szurubooru\Routes\AbstractRoute;
-use Szurubooru\Tests\AbstractTestCase;
+use Szurubooru\Tests\AbstractDatabaseTestCase;
 
-final class RouteRepositoryTest extends AbstractTestCase
+final class RouteRepositoryTest extends AbstractDatabaseTestCase
 {
 	public function testFactory()
 	{
