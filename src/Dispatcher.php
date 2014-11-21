@@ -2,7 +2,6 @@
 namespace Szurubooru;
 use Szurubooru\Bootstrap;
 use Szurubooru\Config;
-use Szurubooru\ControllerRepository;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Helpers\HttpHelper;
 use Szurubooru\Router;
@@ -24,8 +23,7 @@ final class Dispatcher
 		HttpHelper $httpHelper,
 		AuthService $authService,
 		TokenService $tokenService,
-		RouteRepository $routeRepository,
-		ControllerRepository $controllerRepository)
+		RouteRepository $routeRepository)
 	{
 		$this->router = $router;
 		$this->config = $config;
@@ -36,9 +34,6 @@ final class Dispatcher
 
 		//if script fails prematurely, mark it as fail from advance
 		$this->httpHelper->setResponseCode(500);
-
-		foreach ($controllerRepository->getControllers() as $controller)
-			$controller->registerRoutes($router);
 
 		$routeRepository->injectRoutes($router);
 	}

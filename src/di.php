@@ -12,7 +12,6 @@ return [
 	\Szurubooru\Config::class => DI\object()->constructor($dataDirectory, $publicDataDirectory),
 
 	\Szurubooru\RouteRepository::class => DI\object()->constructor(DI\link('routes')),
-	\Szurubooru\ControllerRepository::class => DI\object()->constructor(DI\link('controllers')),
 	\Szurubooru\Upgrades\UpgradeRepository::class => DI\object()->constructor(DI\link('upgrades')),
 
 	'upgrades' => DI\factory(function (DI\container $container) {
@@ -52,11 +51,6 @@ return [
 			$container->get(\Szurubooru\Upgrades\Upgrade32::class),
 			$container->get(\Szurubooru\Upgrades\Upgrade33::class),
 			$container->get(\Szurubooru\Upgrades\Upgrade34::class),
-		];
-	}),
-
-	'controllers' => DI\factory(function (DI\container $container) {
-		return [
 		];
 	}),
 

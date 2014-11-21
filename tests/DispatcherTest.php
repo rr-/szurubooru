@@ -1,6 +1,5 @@
 <?php
 namespace Szurubooru\Tests;
-use Szurubooru\ControllerRepository;
 use Szurubooru\Dispatcher;
 use Szurubooru\Helpers\HttpHelper;
 use Szurubooru\RouteRepository;
@@ -16,7 +15,6 @@ final class DispatcherTest extends AbstractDatabaseTestCase
 	private $httpHelperMock;
 	private $authServiceMock;
 	private $tokenServiceMock;
-	private $controllerRepositoryMock;
 	private $routeRepositoryMock;
 
 	public function setUp()
@@ -27,7 +25,6 @@ final class DispatcherTest extends AbstractDatabaseTestCase
 		$this->httpHelperMock = $this->mock(HttpHelper::class);
 		$this->authServiceMock = $this->mock(AuthService::class);
 		$this->tokenServiceMock = $this->mock(TokenService::class);
-		$this->controllerRepositoryMock = $this->mock(ControllerRepository::class);
 		$this->routeRepositoryMock = $this->mock(RouteRepository::class);
 		$this->configMock->set('misc/dumpSqlIntoQueries', 0);
 	}
@@ -41,7 +38,6 @@ final class DispatcherTest extends AbstractDatabaseTestCase
 			->method('setResponseCode')
 			->withConsecutive([$this->equalTo(500)], [$this->equalTo(200)]);
 		$this->routerMock->expects($this->once())->method('handle')->willReturn($expected);
-		$this->controllerRepositoryMock->method('getControllers')->willReturn([]);
 		$this->routeRepositoryMock->expects($this->once())->method('injectRoutes');
 
 		$dispatcher = $this->getDispatcher();
@@ -58,7 +54,6 @@ final class DispatcherTest extends AbstractDatabaseTestCase
 		$expected = ['bunny' => 5];
 
 		$this->routerMock->expects($this->once())->method('handle')->willReturn($classData);
-		$this->controllerRepositoryMock->method('getControllers')->willReturn([]);
 		$this->routeRepositoryMock->expects($this->once())->method('injectRoutes');
 
 		$dispatcher = $this->getDispatcher();
@@ -72,7 +67,6 @@ final class DispatcherTest extends AbstractDatabaseTestCase
 	{
 		$this->httpHelperMock->expects($this->once())->method('getRequestHeader')->with($this->equalTo('X-Authorization-Token'))->willReturn('test');
 		$this->tokenServiceMock->expects($this->once())->method('getByName');
-		$this->controllerRepositoryMock->method('getControllers')->willReturn([]);
 		$this->routeRepositoryMock->expects($this->once())->method('injectRoutes');
 
 		$dispatcher = $this->getDispatcher();
@@ -88,7 +82,6 @@ final class DispatcherTest extends AbstractDatabaseTestCase
 			$this->httpHelperMock,
 			$this->authServiceMock,
 			$this->tokenServiceMock,
-			$this->routeRepositoryMock,
-			$this->controllerRepositoryMock);
+			$this->routeRepositoryMock);
 	}
 }
