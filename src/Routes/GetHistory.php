@@ -1,14 +1,14 @@
 <?php
-namespace Szurubooru\Controllers;
+namespace Szurubooru\Routes;
 use Szurubooru\Controllers\ViewProxies\SnapshotViewProxy;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
-use Szurubooru\Router;
+use Szurubooru\Routes\AbstractRoute;
 use Szurubooru\SearchServices\Parsers\SnapshotSearchParser;
 use Szurubooru\Services\HistoryService;
 use Szurubooru\Services\PrivilegeService;
 
-final class HistoryController extends AbstractController
+class GetHistory extends AbstractRoute
 {
 	private $historyService;
 	private $privilegeService;
@@ -30,12 +30,17 @@ final class HistoryController extends AbstractController
 		$this->snapshotViewProxy = $snapshotViewProxy;
 	}
 
-	public function registerRoutes(Router $router)
+	public function getMethods()
 	{
-		$router->get('/api/history', [$this, 'getFiltered']);
+		return ['GET'];
 	}
 
-	public function getFiltered()
+	public function getUrl()
+	{
+		return '/api/history';
+	}
+
+	public function work()
 	{
 		$this->privilegeService->assertPrivilege(Privilege::VIEW_HISTORY);
 
