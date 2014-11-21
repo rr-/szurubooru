@@ -20,7 +20,7 @@ class PostNoteEntityConverter extends AbstractEntityConverter implements IEntity
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new PostNote($array['id']);
+		$entity = new PostNote(intval($array['id']));
 		$entity->setPostId($array['postId']);
 		$entity->setLeft(floatval($array['x']));
 		$entity->setTop(floatval($array['y']));

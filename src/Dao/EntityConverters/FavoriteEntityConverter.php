@@ -17,7 +17,7 @@ class FavoriteEntityConverter extends AbstractEntityConverter implements IEntity
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new Favorite($array['id']);
+		$entity = new Favorite(intval($array['id']));
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
 		$entity->setTime($this->dbTimeToEntityTime($array['time']));

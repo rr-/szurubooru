@@ -19,7 +19,7 @@ class ScoreEntityConverter extends AbstractEntityConverter implements IEntityCon
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new Score($array['id']);
+		$entity = new Score(intval($array['id']));
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
 		$entity->setCommentId($array['commentId']);

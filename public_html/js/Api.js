@@ -92,6 +92,7 @@ App.API = function(_, jQuery, promise, appState) {
 				type: method,
 				url: fullUrl,
 				data: data,
+				cache: false,
 			});
 		});
 		apiPromise.xhr = xhr;

@@ -18,7 +18,7 @@ class TagEntityConverter extends AbstractEntityConverter implements IEntityConve
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new Tag($array['id']);
+		$entity = new Tag(intval($array['id']));
 		$entity->setName($array['name']);
 		$entity->setCreationTime($this->dbTimeToEntityTime($array['creationTime']));
 		$entity->setMeta(Tag::META_USAGES, intval($array['usages']));

@@ -19,7 +19,7 @@ class CommentEntityConverter extends AbstractEntityConverter implements IEntityC
 
 	public function toBasicEntity(array $array)
 	{
-		$entity = new Comment($array['id']);
+		$entity = new Comment(intval($array['id']));
 		$entity->setUserId($array['userId']);
 		$entity->setPostId($array['postId']);
 		$entity->setText($array['text']);
