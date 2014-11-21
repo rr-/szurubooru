@@ -60,7 +60,6 @@ return [
 			$container->get(\Szurubooru\Controllers\UserController::class),
 			$container->get(\Szurubooru\Controllers\UserAvatarController::class),
 			$container->get(\Szurubooru\Controllers\ScoreController::class),
-			$container->get(\Szurubooru\Controllers\TagController::class),
 		];
 	}),
 
@@ -90,6 +89,12 @@ return [
 			$container->get(\Szurubooru\Routes\Posts\Notes\DeletePostNote::class),
 			$container->get(\Szurubooru\Routes\Posts\Notes\GetPostNotes::class),
 			$container->get(\Szurubooru\Routes\Posts\Notes\UpdatePostNote::class),
+			$container->get(\Szurubooru\Routes\Tags\DeleteTag::class),
+			$container->get(\Szurubooru\Routes\Tags\GetTag::class),
+			$container->get(\Szurubooru\Routes\Tags\GetTagSiblings::class),
+			$container->get(\Szurubooru\Routes\Tags\GetTags::class),
+			$container->get(\Szurubooru\Routes\Tags\MergeTags::class),
+			$container->get(\Szurubooru\Routes\Tags\UpdateTag::class),
 		];
 	}),
 ];
