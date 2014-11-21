@@ -4,11 +4,10 @@ use Szurubooru\Config;
 use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Entities\Post;
 use Szurubooru\Helpers\MimeHelper;
-use Szurubooru\Routes\AbstractRoute;
 use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\PostService;
 
-class GetPostContent extends AbstractRoute
+class GetPostContent extends AbstractPostRoute
 {
 	private $config;
 	private $fileDao;

@@ -59,7 +59,6 @@ return [
 		return [
 			$container->get(\Szurubooru\Controllers\UserController::class),
 			$container->get(\Szurubooru\Controllers\UserAvatarController::class),
-			$container->get(\Szurubooru\Controllers\PostController::class),
 			$container->get(\Szurubooru\Controllers\PostNotesController::class),
 			$container->get(\Szurubooru\Controllers\ScoreController::class),
 			$container->get(\Szurubooru\Controllers\TagController::class),
@@ -79,8 +78,15 @@ return [
 			$container->get(\Szurubooru\Routes\Favorites\GetFavoriteUsers::class),
 			$container->get(\Szurubooru\Routes\Favorites\AddToFavorites::class),
 			$container->get(\Szurubooru\Routes\Favorites\RemoveFromFavorites::class),
+			$container->get(\Szurubooru\Routes\Posts\CreatePost::class),
+			$container->get(\Szurubooru\Routes\Posts\DeletePost::class),
+			$container->get(\Szurubooru\Routes\Posts\FeaturePost::class),
+			$container->get(\Szurubooru\Routes\Posts\GetFeaturedPost::class),
+			$container->get(\Szurubooru\Routes\Posts\GetPost::class),
 			$container->get(\Szurubooru\Routes\Posts\GetPostContent::class),
 			$container->get(\Szurubooru\Routes\Posts\GetPostThumbnail::class),
+			$container->get(\Szurubooru\Routes\Posts\GetPosts::class),
+			$container->get(\Szurubooru\Routes\Posts\UpdatePost::class),
 		];
 	}),
 ];

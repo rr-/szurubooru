@@ -3,12 +3,11 @@ namespace Szurubooru\Routes\Posts;
 use Szurubooru\Config;
 use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Entities\Post;
-use Szurubooru\Routes\AbstractRoute;
 use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PostThumbnailService;
 
-class GetPostThumbnail extends AbstractRoute
+class GetPostThumbnail extends AbstractPostRoute
 {
 	private $config;
 	private $fileDao;
