@@ -14,6 +14,27 @@ final class RouteRepositoryTest extends AbstractDatabaseTestCase
 		$this->assertNotEmpty($routeRepository->getRoutes());
 	}
 
+	public function testRouteMethods()
+	{
+		$routeRepository = Injector::get(RouteRepository::class);
+		foreach ($routeRepository->getRoutes() as $route)
+		{
+			foreach ($route->getMethods() as $method)
+			{
+				$this->assertContains($method, ['GET', 'POST', 'PUT', 'DELETE']);
+			}
+		}
+	}
+
+	public function testRouteUrls()
+	{
+		$routeRepository = Injector::get(RouteRepository::class);
+		foreach ($routeRepository->getRoutes() as $route)
+		{
+			$this->assertEquals(0, strpos($route->getUrl(), '/api/'));
+		}
+	}
+
 	public function testRouteInjection()
 	{
 		$routerMock = $this->mock(Router::class);
