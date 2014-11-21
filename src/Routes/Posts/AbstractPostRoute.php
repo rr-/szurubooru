@@ -5,7 +5,7 @@ use Szurubooru\Controllers\ViewProxies\PostViewProxy;
 
 abstract class AbstractPostRoute extends AbstractRoute
 {
-	private function getFullFetchConfig()
+	protected function getFullFetchConfig()
 	{
 		return
 		[
@@ -19,7 +19,7 @@ abstract class AbstractPostRoute extends AbstractRoute
 		];
 	}
 
-	private function getLightFetchConfig()
+	protected function getLightFetchConfig()
 	{
 		return
 		[
