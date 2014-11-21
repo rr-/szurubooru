@@ -35,7 +35,7 @@ class GetPost extends AbstractPostRoute
 	{
 		$this->privilegeService->assertPrivilege(Privilege::VIEW_POSTS);
 
-		$post = $this->postService->getByNameOrId($this->getArgument(postNameOrId));
+		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
 		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 }
