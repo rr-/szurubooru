@@ -1,45 +1,45 @@
 <?php
-namespace Szurubooru\Controllers;
+namespace Szurubooru\Routes\Posts;
 use Szurubooru\Config;
 use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Entities\Post;
 use Szurubooru\Helpers\MimeHelper;
-use Szurubooru\Router;
+use Szurubooru\Routes\AbstractRoute;
 use Szurubooru\Services\NetworkingService;
 use Szurubooru\Services\PostService;
-use Szurubooru\Services\PostThumbnailService;
 
-final class PostContentController extends AbstractController
+class GetPostContent extends AbstractRoute
 {
 	private $config;
 	private $fileDao;
 	private $postService;
 	private $networkingService;
-	private $postThumbnailService;
 
 	public function __construct(
 		Config $config,
 		PublicFileDao $fileDao,
 		PostService $postService,
-		NetworkingService $networkingService,
-		PostThumbnailService $postThumbnailService)
+		NetworkingService $networkingService)
 	{
 		$this->config = $config;
 		$this->fileDao = $fileDao;
 		$this->postService = $postService;
 		$this->networkingService = $networkingService;
-		$this->postThumbnailService = $postThumbnailService;
 	}
 
-	public function registerRoutes(Router $router)
+	public function getMethods()
 	{
-		$router->get('/api/posts/:postName/content', [$this, 'getPostContent']);
-		$router->get('/api/posts/:postName/thumbnail/:size', [$this, 'getPostThumbnail']);
+		return ['GET'];
 	}
 
-	public function getPostContent($postName)
+	public function getUrl()
 	{
-		$post = $this->postService->getByName($postName);
+		return '/api/posts/:postName/content';
+	}
+
+	public function work()
+	{
+		$post = $this->postService->getByName($this->getArgument('postName'));
 
 		$customFileName = sprintf('%s_%s.%s',
 			$this->config->basic->serviceName,
@@ -53,12 +53,5 @@ final class PostContentController extends AbstractController
 		}
 
 		$this->networkingService->serveFile($this->fileDao->getFullPath($post->getContentPath()), $customFileName);
-	}
-
-	public function getPostThumbnail($postName, $size)
-	{
-		$post = $this->postService->getByName($postName);
-		$thumbnailName = $this->postThumbnailService->generateIfNeeded($post, $size, $size);
-		$this->networkingService->serveFile($this->fileDao->getFullPath($thumbnailName));
 	}
 }
