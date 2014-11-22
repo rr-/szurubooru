@@ -581,7 +581,7 @@ App.Presenters.PostUploadPresenter = function(
 			formData.append('content', post.file);
 			formData.append('contentFileName', post.fileName);
 		}
-		formData.append('source', post.source);
+		formData.append('source', post.source || '');
 		formData.append('safety', post.safety);
 		formData.append('anonymous', (post.anonymous | 0));
 		formData.append('tags', post.tags.join(' '));
