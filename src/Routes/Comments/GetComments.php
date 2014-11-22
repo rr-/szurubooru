@@ -46,7 +46,7 @@ class GetComments extends AbstractCommentRoute
 		return '/api/comments';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::LIST_COMMENTS);
 

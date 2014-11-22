@@ -36,9 +36,9 @@ class UpdateTag extends AbstractTagRoute
 		return '/api/tags/:tagName';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$tag = $this->tagService->getByName($this->getArgument('tagName'));
+		$tag = $this->tagService->getByName($args['tagName']);
 		$formData = new TagEditFormData($this->inputReader);
 
 		if ($formData->name !== null)

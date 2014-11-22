@@ -36,7 +36,7 @@ class CreateUser extends AbstractUserRoute
 		return '/api/users';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::REGISTER);
 		$formData = new RegistrationFormData($this->inputReader);

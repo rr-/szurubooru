@@ -30,7 +30,7 @@ class GetFeaturedPost extends AbstractPostRoute
 		return '/api/posts/featured';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$post = $this->postFeatureService->getFeaturedPost();
 		$user = $this->postFeatureService->getFeaturedPostUser();

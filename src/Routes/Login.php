@@ -48,7 +48,7 @@ class Login extends AbstractRoute
 		return '/api/login';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		if (isset($this->inputReader->userNameOrEmail) && isset($this->inputReader->password))
 		{

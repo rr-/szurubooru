@@ -31,11 +31,11 @@ class GetTag extends AbstractTagRoute
 		return '/api/tags/:tagName';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::LIST_TAGS);
 
-		$tag = $this->tagService->getByName($this->getArgument('tagName'));
+		$tag = $this->tagService->getByName($args['tagName']);
 		return $this->tagViewProxy->fromEntity($tag, $this->getFullFetchConfig());
 	}
 }

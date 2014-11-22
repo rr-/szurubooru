@@ -37,9 +37,9 @@ class SetCommentScore extends AbstractScoreRoute
 		return '/api/comments/:commentId/score';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$comment = $this->commentService->getById($this->getArgument('commentId'));
+		$comment = $this->commentService->getById($args['commentId']);
 		return $this->setScore($comment);
 	}
 }

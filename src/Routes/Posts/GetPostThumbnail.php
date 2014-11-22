@@ -39,10 +39,10 @@ class GetPostThumbnail extends AbstractPostRoute
 		return '/api/posts/:postName/thumbnail/:size';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$size = $this->getArgument('size');
-		$post = $this->postService->getByName($this->getArgument('postName'));
+		$size = $args['size'];
+		$post = $this->postService->getByName($args['postName']);
 		$thumbnailName = $this->postThumbnailService->generateIfNeeded($post, $size, $size);
 		$this->networkingService->serveFile($this->fileDao->getFullPath($thumbnailName));
 	}

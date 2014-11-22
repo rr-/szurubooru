@@ -19,9 +19,9 @@ class PasswordReset extends AbstractUserRoute
 		return '/api/password-reset/:userNameOrEmail';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$user = $this->userService->getByNameOrEmail($this->getArgument('userNameOrEmail'));
+		$user = $this->userService->getByNameOrEmail($args['userNameOrEmail']);
 		return $this->userService->sendPasswordResetEmail($user);
 	}
 }

@@ -31,9 +31,9 @@ class GetTagSiblings extends AbstractTagRoute
 		return '/api/tags/:tagName/siblings';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$tagName = $this->getArgument('tagName');
+		$tagName = $args['tagName'];
 		$this->privilegeService->assertPrivilege(Privilege::LIST_TAGS);
 		$tag = $this->tagService->getByName($tagName);
 		$result = $this->tagService->getSiblings($tagName);

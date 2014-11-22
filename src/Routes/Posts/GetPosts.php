@@ -43,7 +43,7 @@ class GetPosts extends AbstractPostRoute
 		return '/api/posts';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::LIST_POSTS);
 

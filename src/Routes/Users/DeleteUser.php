@@ -28,9 +28,9 @@ class DeleteUser extends AbstractUserRoute
 		return '/api/users/:userNameOrEmail';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$userNameOrEmail = $this->getArgument('userNameOrEmail');
+		$userNameOrEmail = $args['userNameOrEmail'];
 
 		$this->privilegeService->assertPrivilege(
 			$this->privilegeService->isLoggedIn($userNameOrEmail)

@@ -27,9 +27,9 @@ class DeleteTag extends AbstractTagRoute
 		return '/api/tags/:tagName';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$tag = $this->tagService->getByName($this->getArgument('tagName'));
+		$tag = $this->tagService->getByName($args['tagName']);
 		$this->privilegeService->assertPrivilege(Privilege::DELETE_TAGS);
 		return $this->tagService->deleteTag($tag);
 	}

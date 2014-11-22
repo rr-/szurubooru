@@ -39,11 +39,11 @@ class RemoveFromFavorites extends AbstractRoute
 		return '/api/posts/:postNameOrId/favorites';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertLoggedIn();
 		$user = $this->authService->getLoggedInUser();
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 		$this->favoritesService->deleteFavorite($user, $post);
 
 		$users = $this->favoritesService->getFavoriteUsers($post);

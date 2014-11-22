@@ -36,10 +36,10 @@ class GetUserAvatar extends AbstractUserRoute
 		return '/api/users/:userName/avatar/:size';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$userName = $this->getArgument('userName');
-		$size = $this->getArgument('size');
+		$userName = $args['userName'];
+		$size = $args['size'];
 
 		try
 		{

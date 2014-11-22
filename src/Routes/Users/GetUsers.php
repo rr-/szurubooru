@@ -43,7 +43,7 @@ class GetUsers extends AbstractUserRoute
 		return '/api/users';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::LIST_USERS);
 

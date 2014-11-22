@@ -39,9 +39,9 @@ class GetFavoriteUsers extends AbstractRoute
 		return '/api/posts/:postNameOrId/favorites';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 		$users = $this->favoritesService->getFavoriteUsers($post);
 		return ['data' => $this->userViewProxy->fromArray($users)];
 	}

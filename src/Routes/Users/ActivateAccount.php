@@ -21,9 +21,9 @@ class ActivateAccount extends AbstractUserRoute
 		return '/api/activation/:userNameOrEmail';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$user = $this->userService->getByNameOrEmail($this->getArgument('userNameOrEmail'), true);
+		$user = $this->userService->getByNameOrEmail($args['userNameOrEmail'], true);
 		return $this->userService->sendActivationEmail($user);
 	}
 }

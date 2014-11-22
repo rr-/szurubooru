@@ -26,9 +26,9 @@ class FinishActivation extends AbstractUserRoute
 		return '/api/finish-activation/:tokenName';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$token = $this->tokenService->getByName($this->getArgument('tokenName'));
+		$token = $this->tokenService->getByName($args['tokenName']);
 		$this->userService->finishActivation($token);
 	}
 }

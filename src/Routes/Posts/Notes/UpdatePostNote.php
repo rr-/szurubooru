@@ -37,9 +37,9 @@ class UpdatePostNote extends AbstractPostRoute
 		return '/api/notes/:postNoteId';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$postNote = $this->postNotesService->getById($this->getArgument('postNoteId'));
+		$postNote = $this->postNotesService->getById($args['postNoteId']);
 
 		$this->privilegeService->assertPrivilege(Privilege::EDIT_POST_NOTES);
 

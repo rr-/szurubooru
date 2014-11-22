@@ -21,7 +21,7 @@ class GetGlobals extends AbstractRoute
 		return '/api/globals';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$globals = $this->globalParamDao->findAll();
 		$result = [];

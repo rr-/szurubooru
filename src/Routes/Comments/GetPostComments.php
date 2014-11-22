@@ -46,10 +46,10 @@ class GetPostComments extends AbstractCommentRoute
 		return '/api/comments/:postNameOrId';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::LIST_COMMENTS);
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 
 		$filter = new CommentFilter();
 		$filter->setOrder([

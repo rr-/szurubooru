@@ -31,11 +31,11 @@ class FeaturePost extends AbstractPostRoute
 		return '/api/posts/:postNameOrId/feature';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::FEATURE_POSTS);
 
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 		$this->postFeatureService->featurePost($post);
 	}
 }

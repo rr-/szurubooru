@@ -37,9 +37,9 @@ class SetPostScore extends AbstractScoreRoute
 		return '/api/posts/:postNameOrId/score';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 		return $this->setScore($post);
 	}
 }

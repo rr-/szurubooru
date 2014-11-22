@@ -41,9 +41,9 @@ class AddPostNote extends AbstractPostRoute
 		return '/api/notes/:postNameOrId';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 
 		$this->privilegeService->assertPrivilege(Privilege::ADD_POST_NOTES);
 

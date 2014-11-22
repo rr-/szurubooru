@@ -31,11 +31,11 @@ class GetPost extends AbstractPostRoute
 		return '/api/posts/:postNameOrId';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::VIEW_POSTS);
 
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
 }

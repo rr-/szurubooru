@@ -28,9 +28,9 @@ class DeletePostNote extends AbstractPostRoute
 		return '/api/notes/:postNoteId';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$postNote = $this->postNotesService->getById($this->getArgument('postNoteId'));
+		$postNote = $this->postNotesService->getById($args['postNoteId']);
 		$this->privilegeService->assertPrivilege(Privilege::DELETE_POST_NOTES);
 		return $this->postNotesService->deletePostNote($postNote);
 	}

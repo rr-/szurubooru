@@ -36,9 +36,9 @@ class UpdateUser extends AbstractUserRoute
 		return '/api/users/:userNameOrEmail';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$userNameOrEmail = $this->getArgument('userNameOrEmail');
+		$userNameOrEmail = $args['userNameOrEmail'];
 
 		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
 		$formData = new UserEditFormData($this->inputReader);

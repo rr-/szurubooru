@@ -39,7 +39,7 @@ class GetTags extends AbstractTagRoute
 		return '/api/tags';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::LIST_TAGS);
 

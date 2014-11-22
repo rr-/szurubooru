@@ -36,9 +36,9 @@ class GetPostContent extends AbstractPostRoute
 		return '/api/posts/:postName/content';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$post = $this->postService->getByName($this->getArgument('postName'));
+		$post = $this->postService->getByName($args['postName']);
 
 		$customFileName = sprintf('%s_%s.%s',
 			$this->config->basic->serviceName,

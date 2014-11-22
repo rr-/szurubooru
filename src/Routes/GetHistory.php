@@ -40,7 +40,7 @@ class GetHistory extends AbstractRoute
 		return '/api/history';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::VIEW_HISTORY);
 

@@ -27,11 +27,11 @@ class DeletePost extends AbstractPostRoute
 		return '/api/posts/:postNameOrId';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::DELETE_POSTS);
 
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 		$this->postService->deletePost($post);
 	}
 }

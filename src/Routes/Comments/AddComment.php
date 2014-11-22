@@ -43,11 +43,11 @@ class AddComment extends AbstractCommentRoute
 		return '/api/comments/:postNameOrId';
 	}
 
-	public function work()
+	public function work($args)
 	{
 		$this->privilegeService->assertPrivilege(Privilege::ADD_COMMENTS);
 
-		$post = $this->postService->getByNameOrId($this->getArgument('postNameOrId'));
+		$post = $this->postService->getByNameOrId($args['postNameOrId']);
 		$comment = $this->commentService->createComment($post, $this->inputReader->text);
 		return $this->commentViewProxy->fromEntity($comment, $this->getCommentsFetchConfig());
 	}

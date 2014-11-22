@@ -26,9 +26,9 @@ class FinishPasswordReset extends AbstractUserRoute
 		return '/api/finish-password-reset/:tokenName';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$token = $this->tokenService->getByName($this->getArgument('tokenName'));
+		$token = $this->tokenService->getByName($args['tokenName']);
 		return ['newPassword' => $this->userService->finishPasswordReset($token)];
 	}
 }

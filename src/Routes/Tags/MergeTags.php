@@ -31,9 +31,9 @@ class MergeTags extends AbstractTagRoute
 		return '/api/tags/:tagName/merge';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$tagName = $this->getArgument('tagName');
+		$tagName = $args['tagName'];
 		$targetTagName = $this->inputReader->targetTag;
 		$sourceTag = $this->tagService->getByName($tagName);
 		$targetTag = $this->tagService->getByName($targetTagName);

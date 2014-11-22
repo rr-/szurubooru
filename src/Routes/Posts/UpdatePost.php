@@ -36,9 +36,9 @@ class UpdatePost extends AbstractPostRoute
 		return '/api/posts/:postNameOrId';
 	}
 
-	public function work()
+	public function work($args)
 	{
-		$postNameOrId = $this->getArgument('postNameOrId');
+		$postNameOrId = $args['postNameOrId'];
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		$formData = new PostEditFormData($this->inputReader);
 
