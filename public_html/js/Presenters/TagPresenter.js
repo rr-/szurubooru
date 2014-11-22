@@ -38,6 +38,7 @@ App.Presenters.TagPresenter = function(
 		privileges.canViewHistory = auth.hasPrivilege(auth.privileges.viewHistory);
 		privileges.canDelete = auth.hasPrivilege(auth.privileges.deleteTags);
 		privileges.canMerge = auth.hasPrivilege(auth.privileges.mergeTags);
+		privileges.canViewPosts = auth.hasPrivilege(auth.privileges.viewPosts);
 
 		promise.wait(
 				util.promiseTemplate('tag'),
@@ -162,6 +163,7 @@ App.Presenters.TagPresenter = function(
 				util: util,
 				post: post,
 				query: {query: tag.name},
+				canViewPosts: privileges.canViewPosts,
 			}) + '</li>');
 			$target.append($post);
 		});
