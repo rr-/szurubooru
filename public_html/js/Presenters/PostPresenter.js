@@ -14,7 +14,7 @@ App.Presenters.PostPresenter = function(
 	postsAroundCalculator,
 	postEditPresenter,
 	postContentPresenter,
-	postCommentListPresenter,
+	commentListPresenter,
 	topNavigationPresenter,
 	messagePresenter) {
 
@@ -70,7 +70,7 @@ App.Presenters.PostPresenter = function(
 				presenterManager.initPresenters([
 					[postContentPresenter, {post: post, $target: $el.find('#post-content-target')}],
 					[postEditPresenter, {post: post, $target: $el.find('#post-edit-target'), updateCallback: postEdited}],
-					[postCommentListPresenter, {post: post, $target: $el.find('#post-comments-target')}]],
+					[commentListPresenter, {post: post, $target: $el.find('#post-comments-target')}]],
 					function() { });
 
 			}).fail(function() {
@@ -333,7 +333,7 @@ App.DI.register('postPresenter', [
 	'postsAroundCalculator',
 	'postEditPresenter',
 	'postContentPresenter',
-	'postCommentListPresenter',
+	'commentListPresenter',
 	'topNavigationPresenter',
 	'messagePresenter'],
 	App.Presenters.PostPresenter);

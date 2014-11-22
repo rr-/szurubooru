@@ -72,7 +72,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 			}) + '</li>');
 
 			util.loadImagesNicely($post.find('img'));
-			var presenter = App.DI.get('postCommentListPresenter');
+			var presenter = App.DI.get('commentListPresenter');
 
 			presenter.init({
 				post: post,

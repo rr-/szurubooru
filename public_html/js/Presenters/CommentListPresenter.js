@@ -1,7 +1,7 @@
 var App = App || {};
 App.Presenters = App.Presenters || {};
 
-App.Presenters.PostCommentListPresenter = function(
+App.Presenters.CommentListPresenter = function(
 	_,
 	jQuery,
 	util,
@@ -26,14 +26,16 @@ App.Presenters.PostCommentListPresenter = function(
 		privileges = {
 			canListComments: auth.hasPrivilege(auth.privileges.listComments),
 			canAddComments: auth.hasPrivilege(auth.privileges.addComments),
-			editOwnComments: auth.hasPrivilege(auth.privileges.editOwnComments),
-			editAllComments: auth.hasPrivilege(auth.privileges.editAllComments),
-			deleteOwnComments: auth.hasPrivilege(auth.privileges.deleteOwnComments),
-			deleteAllComments: auth.hasPrivilege(auth.privileges.deleteAllComments),
+			canEditOwnComments: auth.hasPrivilege(auth.privileges.editOwnComments),
+			canEditAllComments: auth.hasPrivilege(auth.privileges.editAllComments),
+			canDeleteOwnComments: auth.hasPrivilege(auth.privileges.deleteOwnComments),
+			canDeleteAllComments: auth.hasPrivilege(auth.privileges.deleteAllComments),
+			canViewUsers: auth.hasPrivilege(auth.privileges.viewUsers),
+			canViewPosts: auth.hasPrivilege(auth.privileges.viewPosts),
 		};
 
 		promise.wait(
-				util.promiseTemplate('post-comment-list'),
+				util.promiseTemplate('comment-list'),
 				util.promiseTemplate('comment-list-item'),
 				util.promiseTemplate('comment-form'))
 			.then(function(
@@ -103,8 +105,10 @@ App.Presenters.PostCommentListPresenter = function(
 			formatRelativeTime: util.formatRelativeTime,
 			formatMarkdown: util.formatMarkdown,
 			canVote: auth.isLoggedIn(),
-			canEditComment: auth.isLoggedIn(comment.user.name) ? privileges.editOwnComments : privileges.editAllComments,
-			canDeleteComment: auth.isLoggedIn(comment.user.name) ? privileges.deleteOwnComments : privileges.deleteAllComments,
+			canEditComment: auth.isLoggedIn(comment.user.name) ? privileges.canEditOwnComments : privileges.canEditAllComments,
+			canDeleteComment: auth.isLoggedIn(comment.user.name) ? privileges.canDeleteOwnComments : privileges.canDeleteAllComments,
+			canViewUsers: privileges.canViewUsers,
+			canViewPosts: privileges.canViewPosts,
 		}) + '</li>');
 		util.loadImagesNicely($item.find('img'));
 		$targetList.append($item);
@@ -227,4 +231,4 @@ App.Presenters.PostCommentListPresenter = function(
 
 };
 
-App.DI.register('postCommentListPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.PostCommentListPresenter);
+App.DI.register('commentListPresenter', ['_', 'jQuery', 'util', 'promise', 'api', 'auth', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.CommentListPresenter);

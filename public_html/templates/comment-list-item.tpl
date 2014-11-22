@@ -1,6 +1,6 @@
 <div class="comment">
 	<div class="avatar">
-		<% if (comment.user.name) { %>
+		<% if (comment.user.name && canViewUsers) { %>
 			<a href="#/user/<%= comment.user.name %>">
 		<% } %>
 
@@ -8,7 +8,7 @@
 			src="/data/thumbnails/40x40/avatars/<%= comment.user.name || '!' %>"
 			alt="<%= comment.user.name || 'Anonymous user' %>"/>
 
-		<% if (comment.user.name) { %>
+		<% if (comment.user.name && canViewUsers) { %>
 			</a>
 		<% } %>
 	</div>
@@ -16,13 +16,13 @@
 	<div class="body">
 		<div class="header">
 			<span class="nickname">
-				<% if (comment.user.name) { %>
+				<% if (comment.user.name && canViewUsers) { %>
 					<a href="#/user/<%= comment.user.name %>">
 				<% } %>
 
 				<%= comment.user.name || 'Anonymous user' %>
 
-				<% if (comment.user.name) { %>
+				<% if (comment.user.name && canViewUsers) { %>
 					</a>
 				<% } %>
 			</span>
