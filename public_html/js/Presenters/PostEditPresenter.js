@@ -75,15 +75,11 @@ App.Presenters.PostEditPresenter = function(
 	}
 
 	function postContentChanged(files) {
-		postContentFileDropper.readAsDataURL(files[0], function(content) {
-			postContent = content;
-		});
+		postContent = files[0];
 	}
 
 	function postThumbnailChanged(files) {
-		postThumbnailFileDropper.readAsDataURL(files[0], function(content) {
-			postThumbnail = content;
-		});
+		postThumbnail = files[0];
 	}
 
 	function getPrivileges() {
@@ -92,37 +88,36 @@ App.Presenters.PostEditPresenter = function(
 
 	function editPost() {
 		var $form = $target.find('form');
-		var formData = {};
-		formData.seenEditTime = post.lastEditTime;
-		formData.flags = {};
+		var formData = new FormData();
+		formData.append('seenEditTime', post.lastEditTime);
 
 		if (privileges.canChangeContent && postContent) {
-			formData.content = postContent;
+			formData.append('content', postContent);
 		}
 
 		if (privileges.canChangeThumbnail && postThumbnail) {
-			formData.thumbnail = postThumbnail;
+			formData.append('thumbnail', postThumbnail);
 		}
 
 		if (privileges.canChangeSource) {
-			formData.source = $form.find('[name=source]').val();
+			formData.append('source', $form.find('[name=source]').val());
 		}
 
 		if (privileges.canChangeSafety) {
-			formData.safety = $form.find('[name=safety]:checked').val();
+			formData.append('safety', $form.find('[name=safety]:checked').val());
 		}
 
 		if (privileges.canChangeTags) {
-			formData.tags = tagInput.getTags().join(' ');
+			formData.append('tags', tagInput.getTags().join(' '));
 		}
 
 		if (privileges.canChangeRelations) {
-			formData.relations = $form.find('[name=relations]').val();
+			formData.append('relations', $form.find('[name=relations]').val());
 		}
 
 		if (privileges.canChangeFlags) {
 			if (post.contentType === 'video') {
-				formData.flags.loop = $form.find('[name=loop]').is(':checked') ? 1 : 0;
+				formData.append('loop', $form.find('[name=loop]').is(':checked') ? 1 : 0);
 			}
 		}
 

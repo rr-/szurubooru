@@ -20,8 +20,8 @@ class PostEditFormData implements IValidatable
 	{
 		if ($inputReader !== null)
 		{
-			$this->content = $inputReader->decodeBase64($inputReader->content);
-			$this->thumbnail = $inputReader->decodeBase64($inputReader->thumbnail);
+			$this->content = $inputReader->readFile('content');
+			$this->thumbnail = $inputReader->readFile('thumbnail');
 			if ($inputReader->safety)
 				$this->safety = EnumHelper::postSafetyFromString($inputReader->safety);
 			if ($inputReader->source !== null)
@@ -31,7 +31,7 @@ class PostEditFormData implements IValidatable
 				$this->relations = array_filter(preg_split('/[\s+]/', $inputReader->relations));
 			$this->seenEditTime = $inputReader->seenEditTime;
 			$this->flags = new \StdClass;
-			$this->flags->loop = !empty($inputReader->flags['loop']);
+			$this->flags->loop = !empty($inputReader->loop);
 		}
 	}
 
