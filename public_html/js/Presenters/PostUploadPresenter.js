@@ -442,7 +442,6 @@ App.Presenters.PostUploadPresenter = function(
 	function setPostsSource(posts, newSource) {
 		_.each(posts, function(post) {
 			var maxSourceLength = 200;
-			console.log(newSource);
 			if (newSource.length > maxSourceLength) {
 				newSource = newSource.substring(0, maxSourceLength - 5) + '(...)';
 			}
