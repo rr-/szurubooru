@@ -44,7 +44,7 @@ class PostDao extends AbstractDao implements ICrudDao
 	public function getTotalFileSize()
 	{
 		$query = $this->pdo->from($this->tableName)->select('SUM(originalFileSize) AS __sum');
-		return intval(iterator_to_array($query)[0]['__sum']);
+		return iterator_to_array($query)[0]['__sum'];
 	}
 
 	public function findByName($name)
