@@ -73,7 +73,7 @@ App.API = function(_, jQuery, promise, appState) {
 
 		var xhr = null;
 		var apiPromise = promise.make(function(resolve, reject) {
-			xhr = jQuery.ajax({
+			var options = {
 				headers: {
 					'X-Authorization-Token': appState.get('loginToken') || '',
 				},
@@ -93,7 +93,12 @@ App.API = function(_, jQuery, promise, appState) {
 				url: fullUrl,
 				data: data,
 				cache: false,
-			});
+			};
+			if (data instanceof FormData) {
+				options.processData = false;
+				options.contentType = false;
+			}
+			xhr = jQuery.ajax(options);
 		});
 		apiPromise.xhr = xhr;
 		return apiPromise;
