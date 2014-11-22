@@ -256,10 +256,9 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function addPostFromFile(file) {
-		var post = _.extend({}, getDefaultPost(), {fileName: file.name});
+		var post = _.extend({}, getDefaultPost(), {fileName: file.name, file: file});
 
 		fileDropper.readAsDataURL(file, function(content) {
-			post.content = content;
 			if (file.type.match('image.*')) {
 				post.thumbnail = content;
 				postThumbnailLoaded(post);
@@ -575,17 +574,17 @@ App.Presenters.PostUploadPresenter = function(
 		var post = posts[0];
 		var $row = post.$tableRow;
 
-		var formData = {};
+		var formData = new FormData();
 		if (post.url) {
-			formData.url = post.url;
+			formData.append('url', post.url);
 		} else {
-			formData.content = post.content;
-			formData.contentFileName = post.fileName;
+			formData.append('content', post.file);
+			formData.append('contentFileName', post.fileName);
 		}
-		formData.source = post.source;
-		formData.safety = post.safety;
-		formData.anonymous = (post.anonymous | 0);
-		formData.tags = post.tags.join(' ');
+		formData.append('source', post.source);
+		formData.append('safety', post.safety);
+		formData.append('anonymous', (post.anonymous | 0));
+		formData.append('tags', post.tags.join(' '));
 
 		if (post.tags.length === 0) {
 			showUploadError('No tags set.');

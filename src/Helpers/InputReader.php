@@ -34,4 +34,12 @@ final class InputReader extends \ArrayObject
 			$base64string = substr($base64string, $commaPosition + 1);
 		return base64_decode($base64string);
 	}
+
+	public function readFile($fileName)
+	{
+		if (!isset($_FILES[$fileName]))
+			return null;
+
+		return file_get_contents($_FILES[$fileName]['tmp_name']);
+	}
 }

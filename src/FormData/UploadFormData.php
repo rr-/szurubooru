@@ -19,7 +19,7 @@ class UploadFormData implements IValidatable
 		if ($inputReader !== null)
 		{
 			$this->contentFileName = $inputReader->contentFileName;
-			$this->content = $inputReader->decodeBase64($inputReader->content);
+			$this->content = $inputReader->readFile('content');
 			$this->url = $inputReader->url;
 			$this->anonymous = $inputReader->anonymous;
 			$this->safety = EnumHelper::postSafetyFromString($inputReader->safety);
