@@ -25,16 +25,6 @@ final class InputReader extends \ArrayObject
 		return parent::offsetGet($index);
 	}
 
-	public function decodeBase64($base64string)
-	{
-		if ($base64string === null)
-			return null;
-		$commaPosition = strpos($base64string, ',');
-		if ($commaPosition !== null)
-			$base64string = substr($base64string, $commaPosition + 1);
-		return base64_decode($base64string);
-	}
-
 	public function readFile($fileName)
 	{
 		if (!isset($_FILES[$fileName]))
