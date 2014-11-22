@@ -77,6 +77,7 @@ final class PostController extends AbstractController
 
 	public function getByNameOrId($postNameOrId)
 	{
+		$this->privilegeService->assertPrivilege(Privilege::VIEW_POSTS);
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
 	}
