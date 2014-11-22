@@ -131,7 +131,7 @@ App.Presenters.PostEditPresenter = function(
 			return;
 		}
 
-		promise.wait(api.put('/posts/' + post.id, formData))
+		promise.wait(api.post('/posts/' + post.id, formData))
 			.then(function(response) {
 				tagList.refreshTags();
 				if (typeof(updateCallback) !== 'undefined') {

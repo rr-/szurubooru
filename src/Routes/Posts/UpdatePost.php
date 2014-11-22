@@ -28,7 +28,7 @@ class UpdatePost extends AbstractPostRoute
 
 	public function getMethods()
 	{
-		return ['PUT'];
+		return ['POST'];
 	}
 
 	public function getUrl()
