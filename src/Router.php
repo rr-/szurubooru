@@ -5,29 +5,24 @@ class Router
 {
 	private $routes;
 
-	public function get($query, callable $route)
+	public function get($url, callable $function)
 	{
-		$this->route('GET', $query, $route);
+		$this->inject('GET', $url, $function);
 	}
 
-	public function put($query, callable $route)
+	public function post($url, callable $function)
 	{
-		$this->route('PUT', $query, $route);
+		$this->inject('POST', $url, $function);
 	}
 
-	public function delete($query, callable $route)
+	public function put($url, callable $function)
 	{
-		$this->route('DELETE', $query, $route);
+		$this->inject('PUT', $url, $function);
 	}
 
-	public function post($query, callable $route)
+	public function delete($url, callable $function)
 	{
-		$this->route('POST', $query, $route);
-	}
-
-	private function route($method, $query, callable $route)
-	{
-		$this->routes[$method][] = new Route($query, $route);
+		$this->inject('DELETE', $url, $function);
 	}
 
 	public function handle($method, $request)
@@ -35,14 +30,28 @@ class Router
 		if (!isset($this->routes[$method]))
 			throw new \DomainException('Unhandled request method: ' . $method);
 
-		foreach ($this->routes[$method] as $route)
+		$request = trim($request, '/');
+		foreach ($this->routes[$method] as $url => $callback)
 		{
-			if ($route->handle($request, $output))
-			{
-				return $output;
-			}
+			if (!preg_match(self::getRegex($url), $request, $matches))
+				continue;
+
+			return $callback($matches);
 		}
 
 		throw new \DomainException('Unhandled request address: ' . $request);
+	}
+
+	private function inject($method, $url, callable $function)
+	{
+		if (!isset($this->routes[$method]))
+			$this->routes[$method] = [];
+		$this->routes[$method][$url] = $function;
+	}
+
+	private static function getRegex($url)
+	{
+		$quotedQuery = preg_quote(trim($url, '/'), '/');
+		return '/^' . preg_replace('/\\\?\:([a-zA-Z_-]*)/', '(?P<\1>[^\/]+)', $quotedQuery) . '$/i';
 	}
 }

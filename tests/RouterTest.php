@@ -54,7 +54,8 @@ final class PostDaoTest extends AbstractTestCase
 	{
 		$router = new Router;
 		$testOk = false;
-		$router->get('/tests/:id', function($id) use (&$testOk) {
+		$router->get('/tests/:id', function($args) use (&$testOk) {
+			extract($args);
 			$this->assertEquals($id, 'test_id');
 			$testOk = true; });
 
@@ -66,7 +67,8 @@ final class PostDaoTest extends AbstractTestCase
 	{
 		$router = new Router;
 		$testOk = false;
-		$router->get('/tests/:id/:page', function($id, $page) use (&$testOk) {
+		$router->get('/tests/:id/:page', function($args) use (&$testOk) {
+			extract($args);
 			$this->assertEquals($id, 'test_id');
 			$this->assertEquals($page, 'test_page');
 			$testOk = true; });
@@ -79,22 +81,10 @@ final class PostDaoTest extends AbstractTestCase
 	{
 		$router = new Router;
 		$testOk = false;
-		$router->get('/tests/:id', function($id, $page) use (&$testOk) {
+		$router->get('/tests/:id', function($args) use (&$testOk) {
+			extract($args);
 			$this->assertEquals($id, 'test_id');
-			$this->assertNull($page);
-			$testOk = true; });
-
-		$router->handle('GET', '/tests/test_id');
-		$this->assertTrue($testOk);
-	}
-
-	public function testMissingDefaultParameterHandling()
-	{
-		$router = new Router;
-		$testOk = false;
-		$router->get('/tests/:id', function($id, $page = 1) use (&$testOk) {
-			$this->assertEquals($id, 'test_id');
-			$this->assertEquals(1, $page);
+			$this->assertFalse(isset($page));
 			$testOk = true; });
 
 		$router->handle('GET', '/tests/test_id');
