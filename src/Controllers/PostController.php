@@ -152,6 +152,7 @@ final class PostController extends AbstractController
 
 	public function featurePost($postNameOrId)
 	{
+		$this->privilegeService->assertPrivilege(Privilege::FEATURE_POSTS);
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		$this->postFeatureService->featurePost($post);
 	}
