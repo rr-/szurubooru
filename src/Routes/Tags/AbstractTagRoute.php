@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Routes\Tags;
 use Szurubooru\Routes\AbstractRoute;
-use Szurubooru\Controllers\ViewProxies\TagViewProxy;
+use Szurubooru\ViewProxies\TagViewProxy;
 
 abstract class AbstractTagRoute extends AbstractRoute
 {

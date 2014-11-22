@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Routes\Comments;
 use Szurubooru\Routes\AbstractRoute;
-use Szurubooru\Controllers\ViewProxies\CommentViewProxy;
+use Szurubooru\ViewProxies\CommentViewProxy;
 
 abstract class AbstractCommentRoute extends AbstractRoute
 {

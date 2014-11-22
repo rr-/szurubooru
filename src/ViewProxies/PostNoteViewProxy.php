@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\Controllers\ViewProxies;
+namespace Szurubooru\ViewProxies;
 
 class PostNoteViewProxy extends AbstractViewProxy
 {

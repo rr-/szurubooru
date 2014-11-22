@@ -1,9 +1,9 @@
 <?php
 namespace Szurubooru\Routes\Posts;
-use Szurubooru\Controllers\ViewProxies\PostViewProxy;
-use Szurubooru\Controllers\ViewProxies\UserViewProxy;
 use Szurubooru\Entities\Post;
 use Szurubooru\Services\PostFeatureService;
+use Szurubooru\ViewProxies\PostViewProxy;
+use Szurubooru\ViewProxies\UserViewProxy;
 
 class GetFeaturedPost extends AbstractPostRoute
 {

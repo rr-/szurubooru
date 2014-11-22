@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\Controllers\ViewProxies;
+namespace Szurubooru\ViewProxies;
 
 abstract class AbstractViewProxy
 {

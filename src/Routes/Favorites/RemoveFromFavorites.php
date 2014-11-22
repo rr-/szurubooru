@@ -1,11 +1,11 @@
 <?php
 namespace Szurubooru\Routes\Favorites;
-use Szurubooru\Controllers\ViewProxies\UserViewProxy;
 use Szurubooru\Routes\AbstractRoute;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\FavoritesService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
+use Szurubooru\ViewProxies\UserViewProxy;
 
 class RemoveFromFavorites extends AbstractRoute
 {

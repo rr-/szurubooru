@@ -1,7 +1,5 @@
 <?php
 namespace Szurubooru\Routes;
-use Szurubooru\Controllers\ViewProxies\TokenViewProxy;
-use Szurubooru\Controllers\ViewProxies\UserViewProxy;
 use Szurubooru\FormData\LoginFormData;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Router;
@@ -9,6 +7,8 @@ use Szurubooru\Services\AuthService;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\TokenService;
 use Szurubooru\Services\UserService;
+use Szurubooru\ViewProxies\TokenViewProxy;
+use Szurubooru\ViewProxies\UserViewProxy;
 
 class Login extends AbstractRoute
 {

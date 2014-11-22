@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\Controllers\ViewProxies;
+namespace Szurubooru\ViewProxies;
 use Szurubooru\Entities\Post;
 use Szurubooru\Helpers\EnumHelper;
 use Szurubooru\Helpers\MimeHelper;

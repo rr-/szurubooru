@@ -1,12 +1,12 @@
 <?php
 namespace Szurubooru\Routes\Comments;
-use Szurubooru\Controllers\ViewProxies\CommentViewProxy;
-use Szurubooru\Controllers\ViewProxies\PostViewProxy;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
 use Szurubooru\Services\CommentService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
+use Szurubooru\ViewProxies\CommentViewProxy;
+use Szurubooru\ViewProxies\PostViewProxy;
 
 class DeleteComment extends AbstractCommentRoute
 {

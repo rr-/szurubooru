@@ -1,9 +1,9 @@
 <?php
 namespace Szurubooru\Routes\Posts;
-use Szurubooru\Controllers\ViewProxies\PostViewProxy;
 use Szurubooru\Privilege;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
+use Szurubooru\ViewProxies\PostViewProxy;
 
 class GetPost extends AbstractPostRoute
 {

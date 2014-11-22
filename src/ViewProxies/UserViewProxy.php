@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\Controllers\ViewProxies;
+namespace Szurubooru\ViewProxies;
 use Szurubooru\Helpers\EnumHelper;
 use Szurubooru\Privilege;
 use Szurubooru\Services\PrivilegeService;

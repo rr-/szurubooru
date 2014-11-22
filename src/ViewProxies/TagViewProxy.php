@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\Controllers\ViewProxies;
+namespace Szurubooru\ViewProxies;
 use Szurubooru\Privilege;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\TagHistoryService;

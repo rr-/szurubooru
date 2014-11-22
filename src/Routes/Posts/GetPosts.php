@@ -1,12 +1,12 @@
 <?php
 namespace Szurubooru\Routes\Posts;
 use Szurubooru\Config;
-use Szurubooru\Controllers\ViewProxies\PostViewProxy;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
 use Szurubooru\SearchServices\Parsers\PostSearchParser;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
+use Szurubooru\ViewProxies\PostViewProxy;
 
 class GetPosts extends AbstractPostRoute
 {

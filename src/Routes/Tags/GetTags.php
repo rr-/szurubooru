@@ -1,11 +1,11 @@
 <?php
 namespace Szurubooru\Routes\Tags;
-use Szurubooru\Controllers\ViewProxies\TagViewProxy;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
 use Szurubooru\SearchServices\Parsers\TagSearchParser;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\TagService;
+use Szurubooru\ViewProxies\TagViewProxy;
 
 class GetTags extends AbstractTagRoute
 {

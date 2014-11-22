@@ -1,9 +1,9 @@
 <?php
 namespace Szurubooru\Routes\Tags;
-use Szurubooru\Controllers\ViewProxies\TagViewProxy;
 use Szurubooru\Privilege;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\TagService;
+use Szurubooru\ViewProxies\TagViewProxy;
 
 class GetTagSiblings extends AbstractTagRoute
 {

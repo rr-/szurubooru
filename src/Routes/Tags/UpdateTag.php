@@ -1,11 +1,11 @@
 <?php
 namespace Szurubooru\Routes\Tags;
-use Szurubooru\Controllers\ViewProxies\TagViewProxy;
 use Szurubooru\FormData\TagEditFormData;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\TagService;
+use Szurubooru\ViewProxies\TagViewProxy;
 
 class UpdateTag extends AbstractTagRoute
 {

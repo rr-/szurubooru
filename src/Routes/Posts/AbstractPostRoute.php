@@ -1,7 +1,7 @@
 <?php
 namespace Szurubooru\Routes\Posts;
 use Szurubooru\Routes\AbstractRoute;
-use Szurubooru\Controllers\ViewProxies\PostViewProxy;
+use Szurubooru\ViewProxies\PostViewProxy;
 
 abstract class AbstractPostRoute extends AbstractRoute
 {

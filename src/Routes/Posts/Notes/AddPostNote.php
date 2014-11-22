@@ -1,6 +1,5 @@
 <?php
 namespace Szurubooru\Routes\Posts\Notes;
-use Szurubooru\Controllers\ViewProxies\PostNoteViewProxy;
 use Szurubooru\FormData\PostNoteFormData;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
@@ -8,6 +7,7 @@ use Szurubooru\Routes\Posts\AbstractPostRoute;
 use Szurubooru\Services\PostNotesService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
+use Szurubooru\ViewProxies\PostNoteViewProxy;
 
 class AddPostNote extends AbstractPostRoute
 {

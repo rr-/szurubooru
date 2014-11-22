@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\Controllers\ViewProxies;
+namespace Szurubooru\ViewProxies;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\ScoreService;
 

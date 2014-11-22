@@ -1,11 +1,11 @@
 <?php
 namespace Szurubooru\Routes\Users;
-use Szurubooru\Controllers\ViewProxies\UserViewProxy;
 use Szurubooru\FormData\UserEditFormData;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\UserService;
+use Szurubooru\ViewProxies\UserViewProxy;
 
 class UpdateUser extends AbstractUserRoute
 {

@@ -1,11 +1,11 @@
 <?php
 namespace Szurubooru\Routes\Posts;
-use Szurubooru\Controllers\ViewProxies\PostViewProxy;
 use Szurubooru\FormData\PostEditFormData;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
+use Szurubooru\ViewProxies\PostViewProxy;
 
 class UpdatePost extends AbstractPostRoute
 {
