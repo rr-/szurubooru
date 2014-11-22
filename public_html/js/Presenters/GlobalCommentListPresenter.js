@@ -5,16 +5,22 @@ App.Presenters.GlobalCommentListPresenter = function(
 	_,
 	jQuery,
 	util,
+	auth,
 	promise,
 	pagerPresenter,
 	topNavigationPresenter) {
 
 	var $el;
+	var privileges;
 	var templates = {};
 
 	function init(params, loaded) {
 		$el = jQuery('#content');
 		topNavigationPresenter.select('comments');
+
+		privileges = {
+			canViewPosts: auth.hasPrivilege(auth.privileges.viewPosts),
+		};
 
 		promise.wait(
 				util.promiseTemplate('global-comment-list'),
@@ -69,6 +75,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 				util: util,
 				post: post,
 				postTemplate: templates.post,
+				canViewPosts: privileges.canViewPosts,
 			}) + '</li>');
 
 			util.loadImagesNicely($post.find('img'));
@@ -95,4 +102,4 @@ App.Presenters.GlobalCommentListPresenter = function(
 
 };
 
-App.DI.register('globalCommentListPresenter', ['_', 'jQuery', 'util', 'promise', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.GlobalCommentListPresenter);
+App.DI.register('globalCommentListPresenter', ['_', 'jQuery', 'util', 'auth', 'promise', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.GlobalCommentListPresenter);

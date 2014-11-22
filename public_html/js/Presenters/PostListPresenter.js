@@ -29,6 +29,7 @@ App.Presenters.PostListPresenter = function(
 		params.query = params.query || {};
 
 		privileges.canMassTag = auth.hasPrivilege(auth.privileges.massTag);
+		privileges.canViewPosts = auth.hasPrivilege(auth.privileges.viewPosts);
 
 		promise.wait(
 				util.promiseTemplate('post-list'),
@@ -165,6 +166,7 @@ App.Presenters.PostListPresenter = function(
 			util: util,
 			query: params.query,
 			post: post,
+			canViewPosts: privileges.canViewPosts,
 		}) + '</li>');
 		$post.data('post', post);
 		util.loadImagesNicely($post.find('img'));

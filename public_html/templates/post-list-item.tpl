@@ -1,7 +1,12 @@
 <div class="post-small post-type-<%= post.contentType %> ">
-	<a class="link"
-		href="<%= util.appendComplexRouteParam('#/post/' + post.id, typeof(query) !== 'undefined' ? query : {}) %>"
-		title="<%= _.map(post.tags, function(tag) { return '#' + tag.name; }).join(', ') %>">
+
+	<% if (canViewPosts) { %>
+		<a class="link"
+			href="<%= util.appendComplexRouteParam('#/post/' + post.id, typeof(query) !== 'undefined' ? query : {}) %>"
+			title="<%= _.map(post.tags, function(tag) { return '#' + tag.name; }).join(', ') %>">
+	<% } else { %>
+		<span class="link">
+	<% } %>
 
 		<img width="160" height="160" class="thumb" src="/data/thumbnails/160x160/posts/<%= post.name %>" alt="<%= post.idMarkdown %>"/>
 
@@ -31,7 +36,12 @@
 				</ul>
 			</div>
 		<% } %>
-	</a>
+
+	<% if (canViewPosts) { %>
+		</a>
+	<% } else { %>
+		</span>
+	<% } %>
 
 	<div class="action">
 		<button>Action</button>

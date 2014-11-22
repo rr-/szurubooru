@@ -68,7 +68,7 @@
 .post-small {
 	position: relative;
 }
-.post-small a {
+.post-small .link {
 	display: inline-block;
 	margin: 0.2em;
 	border: 1px solid #999;
@@ -82,20 +82,20 @@
 }
 
 
-.post-small a:focus,
-.post-small a:hover {
+.post-small .link:focus,
+.post-small .link:hover {
 	background: #64C2ED;
 	border-color: #64C2ED;
 	box-shadow: 0 0 0 2px #64C2ED;
 	outline: 0;
 }
 
-.post-small a:focus img:not(.loading),
-.post-small a:hover img:not(.loading) {
+.post-small .link:focus img:not(.loading),
+.post-small .link:hover img:not(.loading) {
 	opacity: .8 !important;
 }
 
-.post-small a .info {
+.post-small .link .info {
 	display: none;
 	text-align: center;
 	position: absolute;
@@ -105,22 +105,22 @@
 	background: #64C2ED;
 	color: black;
 }
-.post-small a .info ul {
+.post-small .link .info ul {
 	list-style-type: none;
 	padding: 0;
 	margin: 0;
 }
-.post-small a .info li {
+.post-small .link .info li {
 	display: inline-block;
 	margin: 0.1em 0.5em;
 	padding: 0;
 }
-.post-small a:focus .info,
-.post-small a:hover .info {
+.post-small .link:focus .info,
+.post-small .link:hover .info {
 	display: block;
 }
 
-.post-small:not(.post-type-image) a::before {
+.post-small:not(.post-type-image) .link::before {
 	display: block;
 	content: '';
 	z-index: 2;
@@ -133,7 +133,7 @@
 	border-left: 50px solid transparent;
 }
 
-.post-small:not(.post-type-image) a::after {
+.post-small:not(.post-type-image) .link::after {
 	display: block;
 	content: '...';
 	z-index: 3;
@@ -148,14 +148,14 @@
 	color: white;
 	font-size: 15px;
 }
-.post-small.post-type-youtube a::after {
+.post-small.post-type-youtube .link::after {
 	font-size: 13px;
 	content: 'youtube';
 }
-.post-small.post-type-video a::after {
+.post-small.post-type-video .link::after {
 	content: 'video';
 }
-.post-small.post-type-flash a::after {
+.post-small.post-type-flash .link::after {
 	content: 'flash';
 }
 
