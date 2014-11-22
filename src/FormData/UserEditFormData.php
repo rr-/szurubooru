@@ -27,7 +27,7 @@ class UserEditFormData implements IValidatable
 				$this->accessRank = EnumHelper::accessRankFromString($inputReader->accessRank);
 			if ($inputReader->avatarStyle !== null)
 				$this->avatarStyle = EnumHelper::avatarStyleFromString($inputReader->avatarStyle);
-			$this->avatarContent = $inputReader->decodeBase64($inputReader->avatarContent);
+			$this->avatarContent = $inputReader->readFile('avatarContent');
 			$this->browsingSettings = json_decode($inputReader->browsingSettings);
 			if ($inputReader->banned !== null)
 				$this->banned = boolval($inputReader->banned);

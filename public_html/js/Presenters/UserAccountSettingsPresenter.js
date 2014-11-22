@@ -77,11 +77,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	}
 
 	function avatarContentChanged(files) {
-		if (files.length === 1) {
-			fileDropper.readAsDataURL(files[0], function(content) {
-				avatarContent = content;
-			});
-		}
+		avatarContent = files[0];
 	}
 
 	function accountSettingsFormSubmitted(e) {
@@ -89,38 +85,42 @@ App.Presenters.UserAccountSettingsPresenter = function(
 		var $el = jQuery(target);
 		var $messages = jQuery(target).find('.messages');
 		messagePresenter.hideMessages($messages);
-		var formData = {};
+		var formData = new FormData();
 
 		if (privileges.canChangeAvatarStyle) {
-			formData.avatarStyle = $el.find('[name=avatar-style]:checked').val();
+			formData.append('avatarStyle', $el.find('[name=avatar-style]:checked').val());
 			if (avatarContent) {
-				formData.avatarContent = avatarContent;
+				formData.append('avatarContent', avatarContent);
 			}
 		}
 		if (privileges.canChangeName) {
-			formData.userName = $el.find('[name=userName]').val();
+			formData.append('userName', $el.find('[name=userName]').val());
 		}
+
 		if (privileges.canChangeEmailAddress) {
-			formData.email = $el.find('[name=email]').val();
+			formData.append('email', $el.find('[name=email]').val());
 		}
+
 		if (privileges.canChangePassword) {
-			formData.password = $el.find('[name=password]').val();
-			formData.passwordConfirmation = $el.find('[name=passwordConfirmation]').val();
+			var password = $el.find('[name=password]').val();
+			var passwordConfirmation = $el.find('[name=passwordConfirmation]').val();
+
+			if (password) {
+				if (password !== passwordConfirmation) {
+					messagePresenter.showError($messages, 'Passwords must be the same.');
+					return;
+				}
+
+				formData.append('password', password);
+			}
 		}
+
 		if (privileges.canChangeAccessRank) {
-			formData.accessRank = $el.find('[name=access-rank]:checked').val();
+			formData.append('accessRank', $el.find('[name=access-rank]:checked').val());
 		}
+
 		if (privileges.canBan) {
-			formData.banned = $el.find('[name=ban]').is(':checked') ? 1 : 0;
-		}
-
-		if (!validateAccountSettingsFormData(formData)) {
-			return;
-		}
-
-		if (!formData.password) {
-			delete formData.password;
-			delete formData.passwordConfirmation;
+			formData.append('banned', $el.find('[name=ban]').is(':checked') ? 1 : 0);
 		}
 
 		promise.wait(api.post('/users/' + user.name, formData))
@@ -151,16 +151,6 @@ App.Presenters.UserAccountSettingsPresenter = function(
 	function editFailure(apiResponse) {
 		var $messages = jQuery(target).find('.messages');
 		messagePresenter.showError($messages, apiResponse.json && apiResponse.json.error || apiResponse);
-	}
-
-	function validateAccountSettingsFormData(formData) {
-		var $messages = jQuery(target).find('.messages');
-		if (formData.password !== formData.passwordConfirmation) {
-			messagePresenter.showError($messages, 'Passwords must be the same.');
-			return false;
-		}
-
-		return true;
 	}
 
 	return {
