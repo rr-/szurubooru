@@ -2,9 +2,9 @@
 namespace Szurubooru\Routes\Comments;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
-use Szurubooru\SearchServices\Filters\PostFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
-use Szurubooru\SearchServices\Requirements\RequirementRangedValue;
+use Szurubooru\Search\Filters\PostFilter;
+use Szurubooru\Search\Requirements\Requirement;
+use Szurubooru\Search\Requirements\RequirementRangedValue;
 use Szurubooru\Services\CommentService;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;

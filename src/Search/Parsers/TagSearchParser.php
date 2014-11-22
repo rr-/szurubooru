@@ -1,12 +1,12 @@
 <?php
-namespace Szurubooru\SearchServices\Parsers;
+namespace Szurubooru\Search\Parsers;
 use Szurubooru\NotSupportedException;
-use Szurubooru\SearchServices\Filters\IFilter;
-use Szurubooru\SearchServices\Filters\TagFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
-use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
-use Szurubooru\SearchServices\Tokens\NamedSearchToken;
-use Szurubooru\SearchServices\Tokens\SearchToken;
+use Szurubooru\Search\Filters\IFilter;
+use Szurubooru\Search\Filters\TagFilter;
+use Szurubooru\Search\Requirements\Requirement;
+use Szurubooru\Search\Requirements\RequirementSingleValue;
+use Szurubooru\Search\Tokens\NamedSearchToken;
+use Szurubooru\Search\Tokens\SearchToken;
 
 class TagSearchParser extends AbstractSearchParser
 {

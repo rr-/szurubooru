@@ -6,7 +6,7 @@ use Szurubooru\Dao\TagDao;
 use Szurubooru\Dao\TransactionManager;
 use Szurubooru\Entities\Tag;
 use Szurubooru\FormData\TagEditFormData;
-use Szurubooru\SearchServices\Filters\TagFilter;
+use Szurubooru\Search\Filters\TagFilter;
 use Szurubooru\Services\TimeService;
 use Szurubooru\Validator;
 

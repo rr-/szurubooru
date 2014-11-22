@@ -9,7 +9,7 @@ use Szurubooru\FormData\RegistrationFormData;
 use Szurubooru\FormData\UserEditFormData;
 use Szurubooru\Helpers\MimeHelper;
 use Szurubooru\Helpers\EnumHelper;
-use Szurubooru\SearchServices\Filters\UserFilter;
+use Szurubooru\Search\Filters\UserFilter;
 use Szurubooru\Services\EmailService;
 use Szurubooru\Services\PasswordService;
 use Szurubooru\Services\TimeService;

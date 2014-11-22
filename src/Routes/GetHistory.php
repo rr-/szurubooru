@@ -3,7 +3,7 @@ namespace Szurubooru\Routes;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
 use Szurubooru\Routes\AbstractRoute;
-use Szurubooru\SearchServices\Parsers\SnapshotSearchParser;
+use Szurubooru\Search\Parsers\SnapshotSearchParser;
 use Szurubooru\Services\HistoryService;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\ViewProxies\SnapshotViewProxy;

@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\SearchServices\Filters;
+namespace Szurubooru\Search\Filters;
 
 class CommentFilter extends BasicFilter implements IFilter
 {

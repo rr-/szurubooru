@@ -1,13 +1,13 @@
 <?php
-namespace Szurubooru\SearchServices\Parsers;
+namespace Szurubooru\Search\Parsers;
 use Szurubooru\Helpers\InputReader;
-use Szurubooru\SearchServices\Filters\IFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
-use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
-use Szurubooru\SearchServices\Requirements\RequirementRangedValue;
-use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
-use Szurubooru\SearchServices\Tokens\NamedSearchToken;
-use Szurubooru\SearchServices\Tokens\SearchToken;
+use Szurubooru\Search\Filters\IFilter;
+use Szurubooru\Search\Requirements\Requirement;
+use Szurubooru\Search\Requirements\RequirementCompositeValue;
+use Szurubooru\Search\Requirements\RequirementRangedValue;
+use Szurubooru\Search\Requirements\RequirementSingleValue;
+use Szurubooru\Search\Tokens\NamedSearchToken;
+use Szurubooru\Search\Tokens\SearchToken;
 
 abstract class AbstractSearchParser
 {

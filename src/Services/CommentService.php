@@ -4,7 +4,7 @@ use Szurubooru\Dao\CommentDao;
 use Szurubooru\Dao\TransactionManager;
 use Szurubooru\Entities\Comment;
 use Szurubooru\Entities\Post;
-use Szurubooru\SearchServices\Filters\CommentFilter;
+use Szurubooru\Search\Filters\CommentFilter;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\TimeService;
 use Szurubooru\Validator;

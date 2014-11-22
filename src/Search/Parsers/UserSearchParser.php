@@ -1,10 +1,10 @@
 <?php
-namespace Szurubooru\SearchServices\Parsers;
+namespace Szurubooru\Search\Parsers;
 use Szurubooru\NotSupportedException;
-use Szurubooru\SearchServices\Filters\IFilter;
-use Szurubooru\SearchServices\Filters\UserFilter;
-use Szurubooru\SearchServices\Tokens\NamedSearchToken;
-use Szurubooru\SearchServices\Tokens\SearchToken;
+use Szurubooru\Search\Filters\IFilter;
+use Szurubooru\Search\Filters\UserFilter;
+use Szurubooru\Search\Tokens\NamedSearchToken;
+use Szurubooru\Search\Tokens\SearchToken;
 
 class UserSearchParser extends AbstractSearchParser
 {

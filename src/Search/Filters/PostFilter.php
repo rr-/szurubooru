@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\SearchServices\Filters;
+namespace Szurubooru\Search\Filters;
 
 class PostFilter extends BasicFilter implements IFilter
 {

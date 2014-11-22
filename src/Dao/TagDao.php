@@ -5,8 +5,8 @@ use Szurubooru\Dao\EntityConverters\TagEntityConverter;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Entity;
 use Szurubooru\Entities\Tag;
-use Szurubooru\SearchServices\Filters\TagFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\Search\Filters\TagFilter;
+use Szurubooru\Search\Requirements\Requirement;
 
 class TagDao extends AbstractDao implements ICrudDao
 {

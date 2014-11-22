@@ -1,6 +1,6 @@
 <?php
-namespace Szurubooru\SearchServices\Filters;
-use Szurubooru\SearchServices\Requirements\Requirement;
+namespace Szurubooru\Search\Filters;
+use Szurubooru\Search\Requirements\Requirement;
 
 interface IFilter
 {

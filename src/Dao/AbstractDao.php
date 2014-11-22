@@ -3,12 +3,12 @@ namespace Szurubooru\Dao;
 use Szurubooru\Dao\EntityConverters\IEntityConverter;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Entity;
-use Szurubooru\SearchServices\Filters\IFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
-use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
-use Szurubooru\SearchServices\Requirements\RequirementRangedValue;
-use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
-use Szurubooru\SearchServices\Result;
+use Szurubooru\Search\Filters\IFilter;
+use Szurubooru\Search\Requirements\Requirement;
+use Szurubooru\Search\Requirements\RequirementCompositeValue;
+use Szurubooru\Search\Requirements\RequirementRangedValue;
+use Szurubooru\Search\Requirements\RequirementSingleValue;
+use Szurubooru\Search\Result;
 
 abstract class AbstractDao implements ICrudDao, IBatchDao
 {

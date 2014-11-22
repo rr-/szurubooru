@@ -2,8 +2,8 @@
 namespace Szurubooru\Tests\Dao;
 use Szurubooru\Dao\PublicFileDao;
 use Szurubooru\Dao\UserDao;
-use Szurubooru\SearchServices\Filters\UserFilter;
-use Szurubooru\SearchServices\Result;
+use Szurubooru\Search\Filters\UserFilter;
+use Szurubooru\Search\Result;
 use Szurubooru\Services\ThumbnailService;
 use Szurubooru\Tests\AbstractDatabaseTestCase;
 

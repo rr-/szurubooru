@@ -3,7 +3,7 @@ namespace Szurubooru\Routes\Users;
 use Szurubooru\Config;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
-use Szurubooru\SearchServices\Parsers\UserSearchParser;
+use Szurubooru\Search\Parsers\UserSearchParser;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\UserService;
 use Szurubooru\ViewProxies\UserViewProxy;

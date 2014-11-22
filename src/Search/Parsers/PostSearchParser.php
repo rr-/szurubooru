@@ -1,13 +1,13 @@
 <?php
-namespace Szurubooru\SearchServices\Parsers;
+namespace Szurubooru\Search\Parsers;
 use Szurubooru\Helpers\EnumHelper;
 use Szurubooru\NotSupportedException;
-use Szurubooru\SearchServices\Filters\IFilter;
-use Szurubooru\SearchServices\Filters\PostFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
-use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
-use Szurubooru\SearchServices\Tokens\NamedSearchToken;
-use Szurubooru\SearchServices\Tokens\SearchToken;
+use Szurubooru\Search\Filters\IFilter;
+use Szurubooru\Search\Filters\PostFilter;
+use Szurubooru\Search\Requirements\Requirement;
+use Szurubooru\Search\Requirements\RequirementCompositeValue;
+use Szurubooru\Search\Tokens\NamedSearchToken;
+use Szurubooru\Search\Tokens\SearchToken;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\PrivilegeService;
 

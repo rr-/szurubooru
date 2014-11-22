@@ -3,7 +3,7 @@ namespace Szurubooru\Services;
 use Szurubooru\Dao\SnapshotDao;
 use Szurubooru\Dao\TransactionManager;
 use Szurubooru\Entities\Snapshot;
-use Szurubooru\SearchServices\Filters\SnapshotFilter;
+use Szurubooru\Search\Filters\SnapshotFilter;
 use Szurubooru\Services\AuthService;
 use Szurubooru\Services\TimeService;
 

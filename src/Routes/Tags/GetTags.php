@@ -2,7 +2,7 @@
 namespace Szurubooru\Routes\Tags;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
-use Szurubooru\SearchServices\Parsers\TagSearchParser;
+use Szurubooru\Search\Parsers\TagSearchParser;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\TagService;
 use Szurubooru\ViewProxies\TagViewProxy;

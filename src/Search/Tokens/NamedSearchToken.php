@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\SearchServices\Tokens;
+namespace Szurubooru\Search\Tokens;
 
 class NamedSearchToken extends SearchToken
 {

@@ -2,11 +2,11 @@
 namespace Szurubooru\Tests\Dao;
 use Szurubooru\Dao\TagDao;
 use Szurubooru\Entities\Tag;
-use Szurubooru\SearchServices\Filters\TagFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
-use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
-use Szurubooru\SearchServices\Requirements\RequirementCompositeValue;
-use Szurubooru\SearchServices\Result;
+use Szurubooru\Search\Filters\TagFilter;
+use Szurubooru\Search\Requirements\Requirement;
+use Szurubooru\Search\Requirements\RequirementSingleValue;
+use Szurubooru\Search\Requirements\RequirementCompositeValue;
+use Szurubooru\Search\Result;
 use Szurubooru\Tests\AbstractDatabaseTestCase;
 
 final class TagDaoFilterTest extends AbstractDatabaseTestCase

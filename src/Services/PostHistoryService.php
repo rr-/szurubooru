@@ -3,9 +3,9 @@ namespace Szurubooru\Services;
 use Szurubooru\Dao\TransactionManager;
 use Szurubooru\Entities\Post;
 use Szurubooru\Entities\Snapshot;
-use Szurubooru\SearchServices\Filters\SnapshotFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
-use Szurubooru\SearchServices\Requirements\RequirementSingleValue;
+use Szurubooru\Search\Filters\SnapshotFilter;
+use Szurubooru\Search\Requirements\Requirement;
+use Szurubooru\Search\Requirements\RequirementSingleValue;
 use Szurubooru\Services\HistoryService;
 use Szurubooru\Services\PostSnapshotProvider;
 

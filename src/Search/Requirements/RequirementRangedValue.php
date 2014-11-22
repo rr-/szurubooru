@@ -1,5 +1,5 @@
 <?php
-namespace Szurubooru\SearchServices\Requirements;
+namespace Szurubooru\Search\Requirements;
 
 class RequirementRangedValue implements IRequirementValue
 {

@@ -3,7 +3,7 @@ namespace Szurubooru\Routes\Posts;
 use Szurubooru\Config;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
-use Szurubooru\SearchServices\Parsers\PostSearchParser;
+use Szurubooru\Search\Parsers\PostSearchParser;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\ViewProxies\PostViewProxy;

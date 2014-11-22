@@ -7,8 +7,8 @@ use Szurubooru\Dao\UserDao;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Entity;
 use Szurubooru\Entities\Post;
-use Szurubooru\SearchServices\Filters\PostFilter;
-use Szurubooru\SearchServices\Requirements\Requirement;
+use Szurubooru\Search\Filters\PostFilter;
+use Szurubooru\Search\Requirements\Requirement;
 use Szurubooru\Services\ThumbnailService;
 
 class PostDao extends AbstractDao implements ICrudDao

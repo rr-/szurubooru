@@ -1,6 +1,6 @@
 <?php
-namespace Szurubooru\SearchServices;
-use Szurubooru\SearchServices\Filters\IFilter;
+namespace Szurubooru\Search;
+use Szurubooru\Search\Filters\IFilter;
 
 class Result
 {
