@@ -145,6 +145,7 @@ final class PostController extends AbstractController
 
 	public function deletePost($postNameOrId)
 	{
+		$this->privilegeService->assertPrivilege(Privilege::DELETE_POSTS);
 		$post = $this->postService->getByNameOrId($postNameOrId);
 		$this->postService->deletePost($post);
 	}
