@@ -164,6 +164,7 @@ App.Presenters.PostPresenter = function(
 			postHistory: post.history,
 
 			formatRelativeTime: util.formatRelativeTime,
+			formatAbsoluteTime: util.formatAbsoluteTime,
 			formatFileSize: util.formatFileSize,
 
 			historyTemplate: templates.history,

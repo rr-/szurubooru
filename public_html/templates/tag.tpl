@@ -103,7 +103,8 @@
 			<h3>History</h3>
 			<%= historyTemplate({
 				history: tag.history,
-				formatRelativeTime: formatRelativeTime
+				formatRelativeTime: formatRelativeTime,
+				formatAbsoluteTime: formatAbsoluteTime,
 			}) %>
 		</div>
 	<% } %>

@@ -109,7 +109,9 @@
 
 			<br/>
 
-			<span class="date"><%= formatRelativeTime(post.uploadTime) %></span>
+			<span class="date" title="<%= formatAbsoluteTime(post.uploadTime) %>">
+				<%= formatRelativeTime(post.uploadTime) %>
+			</span>
 		</div>
 
 		<ul class="other-info">
@@ -138,7 +140,9 @@
 			<% if (post.lastEditTime !== post.uploadTime) { %>
 				<li>
 					Edited:
-					<%= formatRelativeTime(post.lastEditTime) %>
+					<span title="<%= formatAbsoluteTime(post.lastEditTime) %>">
+						<%= formatRelativeTime(post.lastEditTime) %>
+					</span>
 				</li>
 			<% } %>
 
@@ -273,7 +277,8 @@
 				<h1>History</h1>
 				<%= historyTemplate({
 					history: postHistory,
-					formatRelativeTime: formatRelativeTime
+					formatRelativeTime: formatRelativeTime,
+					formatAbsoluteTime: formatAbsoluteTime,
 				}) %>
 			</div>
 		<% } %>

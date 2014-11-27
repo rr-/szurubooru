@@ -27,7 +27,7 @@
 				<% } %>
 			</span>
 
-			<span class="date" title="<%= comment.creationTime %>">
+			<span class="date" title="<%= formatAbsoluteTime(comment.creationTime) %>">
 				<%= formatRelativeTime(comment.creationTime) %>
 			</span>
 

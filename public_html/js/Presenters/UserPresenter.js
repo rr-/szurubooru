@@ -75,6 +75,7 @@ App.Presenters.UserPresenter = function(
 			user: user,
 			isLoggedIn: auth.isLoggedIn(user.name),
 			formatRelativeTime: util.formatRelativeTime,
+			formatAbsoluteTime: util.formatAbsoluteTime,
 			canChangeBrowsingSettings: userBrowsingSettingsPresenter.getPrivileges().canChangeBrowsingSettings,
 			canChangeAccountSettings: _.any(userAccountSettingsPresenter.getPrivileges()),
 			canDeleteAccount: userAccountRemovalPresenter.getPrivileges().canDeleteAccount}));

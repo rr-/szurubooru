@@ -51,12 +51,16 @@
 		<table>
 			<tr>
 				<td>Registered:</td>
-				<td><%= formatRelativeTime(user.registrationTime) %></td>
+				<td title="<%= formatAbsoluteTime(user.registrationTime) %>">
+					<%= formatRelativeTime(user.registrationTime) %>
+				</td>
 			</tr>
 
 			<tr>
 				<td>Seen:</td>
-				<td><%= formatRelativeTime(user.lastLoginTime) %></td>
+				<td title="<%= formatAbsoluteTime(user.lastLoginTime) %>">
+					<%= formatRelativeTime(user.lastLoginTime) %>
+				</td>
 			</tr>
 
 			<% if (user.accessRank) { %>

@@ -146,6 +146,11 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
 		return future ? 'in ' + text : text + ' ago';
 	}
 
+	function formatAbsoluteTime(timeString) {
+		var time = new Date(Date.parse(timeString));
+		return time.toString();
+	}
+
 	function formatUnits(number, base, suffixes, callback) {
 		if (!number && number !== 0) {
 			return NaN;
@@ -233,6 +238,7 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
 	return {
 		promiseTemplate: promiseTemplate,
 		formatRelativeTime: formatRelativeTime,
+		formatAbsoluteTime: formatAbsoluteTime,
 		formatFileSize: formatFileSize,
 		formatMarkdown: formatMarkdown,
 		enableExitConfirmation: enableExitConfirmation,

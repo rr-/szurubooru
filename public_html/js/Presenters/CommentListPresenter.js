@@ -103,6 +103,7 @@ App.Presenters.CommentListPresenter = function(
 		var $item = jQuery('<li>' + templates.commentListItem({
 			comment: comment,
 			formatRelativeTime: util.formatRelativeTime,
+			formatAbsoluteTime: util.formatAbsoluteTime,
 			formatMarkdown: util.formatMarkdown,
 			canVote: auth.isLoggedIn(),
 			canEditComment: auth.isLoggedIn(comment.user.name) ? privileges.canEditOwnComments : privileges.canEditAllComments,

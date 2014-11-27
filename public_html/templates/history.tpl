@@ -22,7 +22,7 @@ var showDifference = function(className, difference) {
 	<tbody>
 		<% _.each(history, function( historyEntry) { %>
 			<tr>
-				<td class="time">
+				<td class="time" title="<%= formatAbsoluteTime(historyEntry.time) %>">
 					<%= formatRelativeTime(historyEntry.time) %>
 				</td>
 
