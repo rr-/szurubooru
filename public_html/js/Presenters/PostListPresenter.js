@@ -219,7 +219,7 @@ App.Presenters.PostListPresenter = function(
 		var formData = {};
 		formData.seenEditTime = post.lastEditTime;
 		formData.tags = tags.join(' ');
-		promise.wait(api.put('/posts/' + post.id, formData))
+		promise.wait(api.post('/posts/' + post.id, formData))
 			.then(function(response) {
 				post = response.json;
 				$post.data('post', post);
