@@ -23,7 +23,7 @@ class MergeTags extends AbstractTagRoute
 
 	public function getMethods()
 	{
-		return ['PUT'];
+		return ['POST', 'PUT'];
 	}
 
 	public function getUrl()
