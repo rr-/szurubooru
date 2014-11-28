@@ -70,7 +70,7 @@ App.BrowsingSettings = function(
 		var formData = {
 			browsingSettings: JSON.stringify(settings),
 		};
-		return api.put('/users/' + user.name, formData);
+		return api.post('/users/' + user.name, formData);
 	}
 
 	function save() {
