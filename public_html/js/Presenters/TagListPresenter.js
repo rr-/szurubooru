@@ -10,8 +10,6 @@ App.Presenters.TagListPresenter = function(
 	pagerPresenter,
 	topNavigationPresenter) {
 
-	var KEY_RETURN = 13;
-
 	var $el = jQuery('#content');
 	var $searchInput;
 	var templates = {};
@@ -78,8 +76,8 @@ App.Presenters.TagListPresenter = function(
 	function render() {
 		$el.html(templates.list());
 		$searchInput = $el.find('input[name=query]');
-		$searchInput.keydown(searchInputKeyPressed);
 		$el.find('form').submit(searchFormSubmitted);
+		App.Controls.AutoCompleteInput($searchInput);
 		softRender();
 	}
 
@@ -87,13 +85,6 @@ App.Presenters.TagListPresenter = function(
 		$searchInput.val(params.query.query);
 	}
 
-
-	function searchInputKeyPressed(e) {
-		if (e.which !== KEY_RETURN) {
-			return;
-		}
-		updateSearch();
-	}
 
 	function searchFormSubmitted(e) {
 		e.preventDefault();
