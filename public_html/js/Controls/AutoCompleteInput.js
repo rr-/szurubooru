@@ -24,6 +24,7 @@ App.Controls.AutoCompleteInput = function($input) {
 	var cachedSource = null;
 	var results = [];
 	var activeResult = -1;
+	var monitorInputHidingInterval = null;
 
 	if ($input.length === 0) {
 		throw new Error('Input element was not found');
@@ -134,6 +135,7 @@ App.Controls.AutoCompleteInput = function($input) {
 
 	function hide() {
 		$div.hide();
+		window.clearInterval(monitorInputHidingInterval);
 	}
 
 	function selectPrevious() {
@@ -232,6 +234,7 @@ App.Controls.AutoCompleteInput = function($input) {
 			top: ($input.offset().top + $input.outerHeight() - 2) + 'px',
 		});
 		$div.show();
+		monitorInputHiding();
 	}
 
 	function refreshActiveResult() {
@@ -239,6 +242,14 @@ App.Controls.AutoCompleteInput = function($input) {
 		if (activeResult >= 0) {
 			$list.find('li').eq(activeResult).addClass('active');
 		}
+	}
+
+	function monitorInputHiding() {
+		monitorInputHidingInterval = window.setInterval(function() {
+			if (!$input.is(':visible')) {
+				hide();
+			}
+		}, 100);
 	}
 
 	return options;
