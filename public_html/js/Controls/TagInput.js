@@ -202,7 +202,9 @@ App.Controls.TagInput = function($underlyingInput) {
 		var tag = getExportedTag(tagName);
 		if (tag) {
 			_.each(tag.implications, function(impliedTagName) {
-				addTag(impliedTagName, SOURCE_IMPLICATIONS);
+				if (!isTaggedWith(impliedTagName)) {
+					addTag(impliedTagName, SOURCE_IMPLICATIONS);
+				}
 			});
 			if (source !== SOURCE_IMPLICATIONS && source !== SOURCE_SUGGESTIONS) {
 				showOrHideSuggestions(tagName);
