@@ -17,6 +17,7 @@ App.Controls.AutoCompleteInput = function($input) {
 		maxResults: 15,
 		minLengthToArbitrarySearch: 3,
 		onApply: null,
+		onRender: null,
 		additionalFilter: null,
 	};
 	var showTimeout = null;
@@ -222,6 +223,9 @@ App.Controls.AutoCompleteInput = function($input) {
 			});
 			$list.append($listItem);
 		});
+		if (options.onRender) {
+			options.onRender($list);
+		}
 		refreshActiveResult();
 		$div.css({
 			left: ($input.offset().left) + 'px',

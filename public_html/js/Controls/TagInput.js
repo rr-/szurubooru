@@ -83,6 +83,14 @@ App.Controls.TagInput = function($underlyingInput) {
 				return !_.contains(getTags(), resultItem[0]);
 			});
 		};
+		autoComplete.onRender = function($list) {
+			$list.find('li').each(function() {
+				var $li = jQuery(this);
+				if (isTaggedWith($li.attr('data-key'))) {
+					$li.css('opacity', '0.5');
+				}
+			});
+		};
 	}
 
 	$input.bind('focus', function(e) {
