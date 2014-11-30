@@ -174,6 +174,16 @@ App.Controls.TagInput = function($underlyingInput) {
 		$tagList.append($elem);
 	}
 
+	function beforeTagRemoved(tagName) {
+		if (typeof(options.beforeTagRemoved) === 'function') {
+			options.beforeTagRemoved(tagName);
+		}
+	}
+
+	function afterTagRemoved(tagName) {
+		refreshShownSiblings();
+	}
+
 	function beforeTagAdded(tagName) {
 		if (typeof(options.beforeTagAdded) === 'function') {
 			options.beforeTagAdded(tagName);
@@ -188,6 +198,7 @@ App.Controls.TagInput = function($underlyingInput) {
 				flashTagYellow(impliedTagName);
 			});
 			showOrHideSuggestions(tagName);
+			refreshShownSiblings();
 		} else {
 			flashTagGreen(tagName);
 		}
@@ -205,10 +216,9 @@ App.Controls.TagInput = function($underlyingInput) {
 		var oldTagNames = getTags();
 		var newTagNames = _.without(oldTagNames, tagName);
 		if (newTagNames.length !== oldTagNames.length) {
-			if (typeof(options.beforeTagRemoved) === 'function') {
-				options.beforeTagRemoved(tagName);
-			}
+			beforeTagRemoved(tagName);
 			setTags(newTagNames);
+			afterTagRemoved(tagName);
 		}
 	}
 
@@ -295,9 +305,14 @@ App.Controls.TagInput = function($underlyingInput) {
 		})).then(function(siblings) {
 			siblings = _.pluck(siblings, 'name');
 			$siblings.data('lastTag', tagName);
+			$siblings.data('siblings', siblings);
 			updateSuggestions($siblings, siblings);
 		}).fail(function() {
 		});
+	}
+
+	function refreshShownSiblings() {
+		updateSuggestions($siblings, $siblings.data('siblings'));
 	}
 
 	function updateSuggestions($target, siblings) {
