@@ -128,6 +128,7 @@ App.Presenters.TagPresenter = function(
 		promise.wait(api.put('/tags/' + tag.name, formData))
 			.then(function(response) {
 				router.navigateInplace('#/tag/' + response.json.name);
+				tagList.refreshTags();
 			}).fail(function(response) {
 				window.alert(response.json && response.json.error || 'An error occured.');
 			});
@@ -140,6 +141,7 @@ App.Presenters.TagPresenter = function(
 		promise.wait(api.delete('/tags/' + tag.name))
 			.then(function(response) {
 				router.navigate('#/tags');
+				tagList.refreshTags();
 			}).fail(function(response) {
 				window.alert(response.json && response.json.error || 'An error occured.');
 			});
@@ -151,6 +153,7 @@ App.Presenters.TagPresenter = function(
 			promise.wait(api.put('/tags/' + tag.name + '/merge', {targetTag: targetTag}))
 				.then(function(response) {
 					router.navigate('#/tags');
+					tagList.refreshTags();
 				}).fail(function(response) {
 					window.alert(response.json && response.json.error || 'An error occured.');
 				});
@@ -183,4 +186,16 @@ App.Presenters.TagPresenter = function(
 
 };
 
-App.DI.register('tagPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'api', 'tagList', 'router', 'keyboard', 'topNavigationPresenter', 'messagePresenter'], App.Presenters.TagPresenter);
+App.DI.register('tagPresenter', [
+	'_',
+	'jQuery',
+	'util',
+	'promise',
+	'auth',
+	'api',
+	'tagList',
+	'router',
+	'keyboard',
+	'topNavigationPresenter',
+	'messagePresenter'],
+App.Presenters.TagPresenter);
