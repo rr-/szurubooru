@@ -157,11 +157,16 @@
 
 #post-view #post-edit-target {
 	padding: 1em;
+	width: 50%;
+	min-width: 30em;
 	position: absolute;
 	background: rgba(255, 255, 255, 0.8);
 	box-shadow: 0 0 1em 0.5em rgba(255, 255, 255, 0.8);
 	z-index: 2;
 	display: none;
+}
+#post-edit-target .form-wrapper {
+	min-width: 100%;
 }
 #post-view>* {
 	z-index: -1;
