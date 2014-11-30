@@ -279,15 +279,8 @@ App.Controls.TagInput = function($underlyingInput) {
 
 	function showOrHideSuggestions(tagName) {
 		var tag = getExportedTag(tagName);
-		if (tag && _.size(tag.suggestions) > 0) {
-			var suggestions = filterSuggestions(tag.suggestions);
-			if (suggestions.length > 0) {
-				attachTagsToSuggestionList($suggestions.find('ul'), suggestions);
-				$suggestions.slideDown('fast');
-				return;
-			}
-		}
-		$suggestions.slideUp('fast');
+		var suggestions = tag ? tag.suggestions : [];
+		updateSuggestions($suggestions, suggestions);
 	}
 
 	function showOrHideSiblings(tagName) {
@@ -300,48 +293,53 @@ App.Controls.TagInput = function($underlyingInput) {
 		promise.wait(getSiblings(tagName), promise.make(function(resolve, reject) {
 			$siblings.slideUp('fast', resolve);
 		})).then(function(siblings) {
+			siblings = _.pluck(siblings, 'name');
 			$siblings.data('lastTag', tagName);
-
-			if (!_.size(siblings)) {
-				return;
-			}
-
-			var suggestions = filterSuggestions(_.pluck(siblings, 'name'));
-			if (suggestions.length > 0) {
-				attachTagsToSuggestionList($siblings.find('ul'), suggestions);
-				$siblings.slideDown('fast');
-			}
+			updateSuggestions($siblings, siblings);
 		}).fail(function() {
 		});
 	}
 
-	function filterSuggestions(sourceTagNames) {
-		var tagNames = _.filter(sourceTagNames.slice(), function(tagName) {
-			return !isTaggedWith(tagName);
-		});
-		tagNames = tagNames.slice(0, 20);
-		return tagNames;
-	}
-
-	function attachTagsToSuggestionList($list, tagNames) {
-		$list.empty();
-		_.each(tagNames, function(tagName) {
-			var $li = jQuery('<li>');
-			var $a = jQuery('<a href="#/posts/query=' + tagName + '">');
-			$a.text(tagName);
-			$a.click(function(e) {
-				e.preventDefault();
-				addTag(tagName);
-				$li.fadeOut('fast', function() {
-					$li.remove();
-					if ($list.children().length === 0) {
-						$list.parent('div').slideUp('fast');
-					}
-				});
+	function updateSuggestions($target, siblings) {
+		function filterSuggestions(sourceTagNames) {
+			if (!sourceTagNames) {
+				return [];
+			}
+			var tagNames = _.filter(sourceTagNames.slice(), function(tagName) {
+				return !isTaggedWith(tagName);
 			});
-			$li.append($a);
-			$list.append($li);
-		});
+			tagNames = tagNames.slice(0, 20);
+			return tagNames;
+		}
+
+		function attachTagsToSuggestionList($list, tagNames) {
+			$list.empty();
+			_.each(tagNames, function(tagName) {
+				var $li = jQuery('<li>');
+				var $a = jQuery('<a href="#/posts/query=' + tagName + '">');
+				$a.text(tagName);
+				$a.click(function(e) {
+					e.preventDefault();
+					addTag(tagName);
+					$li.fadeOut('fast', function() {
+						$li.remove();
+						if ($list.children().length === 0) {
+							$list.parent('div').slideUp('fast');
+						}
+					});
+				});
+				$li.append($a);
+				$list.append($li);
+			});
+		}
+
+		var suggestions = filterSuggestions(siblings);
+		if (suggestions.length > 0) {
+			attachTagsToSuggestionList($target.find('ul'), suggestions);
+			$target.slideDown('fast');
+		} else {
+			$target.slideUp('fast');
+		}
 	}
 
 	function getSiblings(tagName) {
