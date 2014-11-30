@@ -56,8 +56,8 @@ App.Controls.TagInput = function($underlyingInput) {
 			$input.focus();
 		});
 		$input.attr('placeholder', $underlyingInput.attr('placeholder'));
-		$suggestions.insertAfter($wrapper);
 		$siblings.insertAfter($wrapper);
+		$suggestions.insertAfter($wrapper);
 
 		processText($underlyingInput.val(), addTagDirectly);
 
