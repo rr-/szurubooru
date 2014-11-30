@@ -14,6 +14,14 @@ App.Controls.TagInput = function($underlyingInput) {
 	var tagConfirmKeys = [KEY_RETURN, KEY_SPACE];
 	var inputConfirmKeys = [KEY_RETURN];
 
+	var SOURCE_INITIAL_TEXT = 1;
+	var SOURCE_AUTOCOMPLETION = 2;
+	var SOURCE_PASTE = 3;
+	var SOURCE_IMPLICATIONS = 4;
+	var SOURCE_INPUT_BLUR = 5;
+	var SOURCE_INPUT_ENTER = 6;
+	var SOURCE_SUGGESTIONS = 7;
+
 	var tags = [];
 	var options = {
 		beforeTagAdded: null,
@@ -59,7 +67,7 @@ App.Controls.TagInput = function($underlyingInput) {
 		$siblings.insertAfter($wrapper);
 		$suggestions.insertAfter($wrapper);
 
-		processText($underlyingInput.val(), addTagDirectly);
+		processText($underlyingInput.val(), SOURCE_INITIAL_TEXT);
 
 		$underlyingInput.val('');
 	}
@@ -67,7 +75,7 @@ App.Controls.TagInput = function($underlyingInput) {
 	function initAutoComplete() {
 		var autoComplete = new App.Controls.AutoCompleteInput($input);
 		autoComplete.onApply = function(text) {
-			processText(text, addTag);
+			processText(text, SOURCE_AUTOCOMPLETION);
 			$input.val('');
 		};
 		autoComplete.additionalFilter = function(results) {
@@ -83,7 +91,7 @@ App.Controls.TagInput = function($underlyingInput) {
 	$input.bind('blur', function(e) {
 		$wrapper.removeClass('focused');
 		var tagName = $input.val();
-		addTag(tagName);
+		addTag(tagName, SOURCE_INPUT_BLUR);
 		$input.val('');
 	});
 
@@ -101,7 +109,7 @@ App.Controls.TagInput = function($underlyingInput) {
 			return;
 		}
 
-		processTextWithoutLast(pastedText, addTag);
+		processTextWithoutLast(pastedText, SOURCE_PASTE);
 	});
 
 	$input.bind('keydown', function(e) {
@@ -114,7 +122,7 @@ App.Controls.TagInput = function($underlyingInput) {
 			var tagName = $input.val();
 			e.preventDefault();
 			$input.val('');
-			addTag(tagName);
+			addTag(tagName, SOURCE_INPUT_ENTER);
 		} else if (e.which === KEY_BACKSPACE && jQuery(this).val().length === 0) {
 			e.preventDefault();
 			removeLastTag();
@@ -127,19 +135,19 @@ App.Controls.TagInput = function($underlyingInput) {
 		});
 	}
 
-	function processText(text, callback) {
+	function processText(text, source) {
 		var tagNamesToAdd = explodeText(text);
-		_.map(tagNamesToAdd, function(tagName) { callback(tagName); });
+		_.map(tagNamesToAdd, function(tagName) { addTag(tagName, source); });
 	}
 
-	function processTextWithoutLast(text, callback) {
+	function processTextWithoutLast(text, source) {
 		var tagNamesToAdd = explodeText(text);
 		var lastTagName = tagNamesToAdd.pop();
-		_.map(tagNamesToAdd, function(tagName) { callback(tagName); });
+		_.map(tagNamesToAdd, function(tagName) { addTag(tagName, source); });
 		$input.val(lastTagName);
 	}
 
-	function addTag(tagName) {
+	function addTag(tagName, source) {
 		tagName = tagName.trim();
 		if (tagName.length === 0) {
 			return;
@@ -157,21 +165,17 @@ App.Controls.TagInput = function($underlyingInput) {
 		if (isTaggedWith(tagName)) {
 			flashTagRed(tagName);
 		} else {
-			beforeTagAdded(tagName);
+			beforeTagAdded(tagName, source);
 
 			var exportedTag = getExportedTag(tagName);
 			if (!exportedTag || !exportedTag.banned) {
-				addTagDirectly(tagName);
+				tags.push(tagName);
+				var $elem = createListElement(tagName);
+				$tagList.append($elem);
 			}
 
-			afterTagAdded(tagName);
+			afterTagAdded(tagName, source);
 		}
-	}
-
-	function addTagDirectly(tagName) {
-		tags.push(tagName);
-		var $elem = createListElement(tagName);
-		$tagList.append($elem);
 	}
 
 	function beforeTagRemoved(tagName) {
@@ -184,21 +188,26 @@ App.Controls.TagInput = function($underlyingInput) {
 		refreshShownSiblings();
 	}
 
-	function beforeTagAdded(tagName) {
+	function beforeTagAdded(tagName, source) {
 		if (typeof(options.beforeTagAdded) === 'function') {
 			options.beforeTagAdded(tagName);
 		}
 	}
 
-	function afterTagAdded(tagName) {
+	function afterTagAdded(tagName, source) {
+		if (source === SOURCE_IMPLICATIONS) {
+			flashTagYellow(tagName);
+		}
+
 		var tag = getExportedTag(tagName);
 		if (tag) {
 			_.each(tag.implications, function(impliedTagName) {
-				addTag(impliedTagName);
-				flashTagYellow(impliedTagName);
+				addTag(impliedTagName, SOURCE_IMPLICATIONS);
 			});
-			showOrHideSuggestions(tagName);
-			refreshShownSiblings();
+			if (source !== SOURCE_IMPLICATIONS && source !== SOURCE_SUGGESTIONS) {
+				showOrHideSuggestions(tagName);
+				refreshShownSiblings();
+			}
 		} else {
 			flashTagGreen(tagName);
 		}
@@ -335,7 +344,7 @@ App.Controls.TagInput = function($underlyingInput) {
 				$a.text(tagName);
 				$a.click(function(e) {
 					e.preventDefault();
-					addTag(tagName);
+					addTag(tagName, SOURCE_SUGGESTIONS);
 					$li.fadeOut('fast', function() {
 						$li.remove();
 						if ($list.children().length === 0) {
