@@ -205,21 +205,21 @@ App.Controls.TagInput = function($underlyingInput) {
 	function afterTagAdded(tagName, source) {
 		if (source === SOURCE_IMPLICATIONS) {
 			flashTagYellow(tagName);
-		}
-
-		var tag = getExportedTag(tagName);
-		if (tag) {
-			_.each(tag.implications, function(impliedTagName) {
-				if (!isTaggedWith(impliedTagName)) {
-					addTag(impliedTagName, SOURCE_IMPLICATIONS);
+		} else if (source !== SOURCE_INITIAL_TEXT) {
+			var tag = getExportedTag(tagName);
+			if (tag) {
+				_.each(tag.implications, function(impliedTagName) {
+					if (!isTaggedWith(impliedTagName)) {
+						addTag(impliedTagName, SOURCE_IMPLICATIONS);
+					}
+				});
+				if (source !== SOURCE_IMPLICATIONS && source !== SOURCE_SUGGESTIONS) {
+					showOrHideSuggestions(tagName);
+					refreshShownSiblings();
 				}
-			});
-			if (source !== SOURCE_IMPLICATIONS && source !== SOURCE_SUGGESTIONS) {
-				showOrHideSuggestions(tagName);
-				refreshShownSiblings();
+			} else {
+				flashTagGreen(tagName);
 			}
-		} else {
-			flashTagGreen(tagName);
 		}
 	}
 
