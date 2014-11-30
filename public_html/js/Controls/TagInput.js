@@ -187,7 +187,7 @@ App.Controls.TagInput = function($underlyingInput) {
 				addTag(impliedTagName);
 				flashTagYellow(impliedTagName);
 			});
-			showOrHideSuggestions(tag.suggestions);
+			showOrHideSuggestions(tagName);
 		} else {
 			flashTagGreen(tagName);
 		}
@@ -262,7 +262,8 @@ App.Controls.TagInput = function($underlyingInput) {
 		$tagLink.text(tagName);
 		$tagLink.click(function(e) {
 			e.preventDefault();
-			showOrHideTagSiblings(tagName);
+			showOrHideSiblings(tagName);
+			showOrHideSuggestions(tagName);
 		});
 		$elem.append($tagLink);
 
@@ -276,19 +277,20 @@ App.Controls.TagInput = function($underlyingInput) {
 		return $elem;
 	}
 
-	function showOrHideSuggestions(suggestedTagNames) {
-		if (_.size(suggestedTagNames) === 0) {
-			return;
+	function showOrHideSuggestions(tagName) {
+		var tag = getExportedTag(tagName);
+		if (tag && _.size(tag.suggestions) > 0) {
+			var suggestions = filterSuggestions(tag.suggestions);
+			if (suggestions.length > 0) {
+				attachTagsToSuggestionList($suggestions.find('ul'), suggestions);
+				$suggestions.slideDown('fast');
+				return;
+			}
 		}
-
-		var suggestions = filterSuggestions(suggestedTagNames);
-		if (suggestions.length > 0) {
-			attachTagsToSuggestionList($suggestions.find('ul'), suggestions);
-			$suggestions.slideDown('fast');
-		}
+		$suggestions.slideUp('fast');
 	}
 
-	function showOrHideTagSiblings(tagName) {
+	function showOrHideSiblings(tagName) {
 		if ($siblings.data('lastTag') === tagName && $siblings.is(':visible')) {
 			$siblings.slideUp('fast');
 			$siblings.data('lastTag', null);
