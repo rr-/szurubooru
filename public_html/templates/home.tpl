@@ -1,7 +1,7 @@
 <div id="home">
 	<h1><%= title %></h1>
-	<p>
-		<small>Serving <%= globals.postCount || 0 %> posts (<%= formatFileSize(globals.postSize || 0) %>)</small>
+	<p class="subheader">
+		Serving <%= globals.postCount || 0 %> posts (<%= formatFileSize(globals.postSize || 0) %>)
 	</p>
 
 	<% if (post && post.id) { %>
@@ -11,7 +11,7 @@
 
 			<div class="post-footer">
 
-				<small class="left">
+				<span class="left">
 					<% var showLink = canViewPosts %>
 
 					<% if (showLink) { %>
@@ -26,9 +26,9 @@
 
 					uploaded
 					<%= formatRelativeTime(post.uploadTime) %>
-				</small>
+				</span>
 
-				<small class="right">
+				<span class="right">
 					featured
 					<%= formatRelativeTime(post.lastFeatureTime) %>
 					by
@@ -48,7 +48,7 @@
 					<% if (showLink) { %>
 						</a>
 					<% } %>
-				</small>
+				</span>
 
 			</div>
 		</div>

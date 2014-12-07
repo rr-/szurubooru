@@ -18,10 +18,12 @@
 #home .post .left {
 	display: inline-block;
 	float: left;
+	margin-right: 0.5em;
 }
 #home .post .right {
 	display: inline-block;
 	float: right;
+	margin-left: 0.5em;
 }
 
 #home .post-footer,
@@ -35,5 +37,7 @@
 
 #home .version {
 	opacity: .4;
-	font-size: 12px;
+}
+#home .subheader, #home .post-footer {
+	font-size: 85%;
 }

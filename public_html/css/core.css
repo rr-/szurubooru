@@ -24,6 +24,10 @@ h3 {
 	font-size: 20px;
 }
 
+small {
+	font-size: 13px;
+}
+
 #middle {
 	padding: 0 2em;
 	position: relative;
