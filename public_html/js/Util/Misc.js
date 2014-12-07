@@ -210,6 +210,8 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
 			text = text.replace(/\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]/ig, '<a href="#/posts/query=$1"><code>$1</code></a>');
 			//spoilers
 			text = text.replace(/\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\]))+)\[\/spoiler\]/ig, '<span class="spoiler">$1</span>');
+			//[small]
+			text = text.replace(/\[small\]((?:[^\[]|\[(?!\/?small\]))+)\[\/small\]/ig, '<small>$1</small>');
 			//strike-through
 			text = text.replace(/(^|[^\\])(~~|~)([^~]+)\2/g, '$1<del>$3</del>');
 			text = text.replace(/\\~/g, '~');
