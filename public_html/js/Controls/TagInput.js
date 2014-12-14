@@ -334,7 +334,7 @@ App.Controls.TagInput = function($underlyingInput) {
 		updateSuggestions($siblings, $siblings.data('siblings'));
 	}
 
-	function updateSuggestions($target, siblings) {
+	function updateSuggestions($target, suggestedTagNames) {
 		function filterSuggestions(sourceTagNames) {
 			if (!sourceTagNames) {
 				return [];
@@ -367,7 +367,7 @@ App.Controls.TagInput = function($underlyingInput) {
 			});
 		}
 
-		var suggestions = filterSuggestions(siblings);
+		var suggestions = filterSuggestions(suggestedTagNames);
 		if (suggestions.length > 0) {
 			attachTagsToSuggestionList($target.find('ul'), suggestions);
 			$target.slideDown('fast');
@@ -398,6 +398,7 @@ App.Controls.TagInput = function($underlyingInput) {
 	function hideSuggestions() {
 		$siblings.hide();
 		$suggestions.hide();
+		$siblings.data('siblings', []);
 	}
 
 	_.extend(options, {
