@@ -109,10 +109,13 @@ class PostService
 		{
 			$formData->validate($this->validator);
 
+			if ($formData->anonymous)
+				$this->authService->loginAnonymous();
+
 			$post = new Post();
 			$post->setUploadTime($this->timeService->getCurrentTime());
 			$post->setLastEditTime($this->timeService->getCurrentTime());
-			$post->setUser($formData->anonymous ? null : $this->authService->getLoggedInUser());
+			$post->setUser($this->authService->getLoggedInUser());
 			$post->setOriginalFileName($formData->contentFileName);
 			$post->setName($this->getUniqueRandomPostName());
 
