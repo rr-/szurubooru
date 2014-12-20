@@ -8,7 +8,7 @@
 
 			<div class="text-wrapper">
 				<div class="text">
-					<%= formatMarkdown(note.text) %>
+					<%= util.formatMarkdown(note.text) %>
 				</div>
 			</div>
 

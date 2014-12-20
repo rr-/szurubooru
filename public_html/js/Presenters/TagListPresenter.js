@@ -108,7 +108,7 @@ App.Presenters.TagListPresenter = function(
 		_.each(tags, function(tag) {
 			var $item = jQuery(templates.listItem({
 				tag: tag,
-				formatRelativeTime: util.formatRelativeTime,
+				util: util,
 			}));
 			$target.append($item);
 		});

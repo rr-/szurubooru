@@ -62,8 +62,7 @@ App.Presenters.HistoryPresenter = function(
 
 	function renderHistory($page, historyItems) {
 		$page.append(templates.history({
-			formatRelativeTime: util.formatRelativeTime,
-			formatAbsoluteTime: util.formatAbsoluteTime,
+			util: util,
 			history: historyItems}));
 	}
 

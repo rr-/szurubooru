@@ -50,7 +50,7 @@ App.Presenters.PostNotesPresenter = function(
 			privileges: privileges,
 			post: post,
 			notes: notes,
-			formatMarkdown: util.formatMarkdown}));
+			util: util}));
 
 		$form = $target.find('.post-note-edit');
 		var $postNotes = $target.find('.post-note');

@@ -51,15 +51,15 @@
 		<table>
 			<tr>
 				<td>Registered:</td>
-				<td title="<%= formatAbsoluteTime(user.registrationTime) %>">
-					<%= formatRelativeTime(user.registrationTime) %>
+				<td title="<%= util.formatAbsoluteTime(user.registrationTime) %>">
+					<%= util.formatRelativeTime(user.registrationTime) %>
 				</td>
 			</tr>
 
 			<tr>
 				<td>Seen:</td>
-				<td title="<%= formatAbsoluteTime(user.lastLoginTime) %>">
-					<%= formatRelativeTime(user.lastLoginTime) %>
+				<td title="<%= util.formatAbsoluteTime(user.lastLoginTime) %>">
+					<%= util.formatRelativeTime(user.lastLoginTime) %>
 				</td>
 			</tr>
 

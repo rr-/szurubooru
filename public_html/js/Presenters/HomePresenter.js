@@ -58,8 +58,7 @@ App.Presenters.HomePresenter = function(
 			title: topNavigationPresenter.getBaseTitle(),
 			canViewUsers: auth.hasPrivilege(auth.privileges.viewUsers),
 			canViewPosts: auth.hasPrivilege(auth.privileges.viewPosts),
-			formatRelativeTime: util.formatRelativeTime,
-			formatFileSize: util.formatFileSize,
+			util: util,
 			version: jQuery('head').attr('data-version'),
 			buildTime: jQuery('head').attr('data-build-time'),
 		}));

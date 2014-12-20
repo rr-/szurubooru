@@ -27,8 +27,8 @@
 				<% } %>
 			</span>
 
-			<span class="date" title="<%= formatAbsoluteTime(comment.creationTime) %>">
-				<%= formatRelativeTime(comment.creationTime) %>
+			<span class="date" title="<%= util.formatAbsoluteTime(comment.creationTime) %>">
+				<%= util.formatRelativeTime(comment.creationTime) %>
 			</span>
 
 			<span class="score">
@@ -60,7 +60,7 @@
 		</div>
 
 		<div class="content">
-			<%= formatMarkdown(comment.text) %>
+			<%= util.formatMarkdown(comment.text) %>
 		</div>
 	</div>
 </div>

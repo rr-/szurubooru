@@ -76,8 +76,7 @@ App.Presenters.UserListPresenter = function(
 		_.each(users, function(user) {
 			var $item = jQuery('<li>' + templates.listItem(_.extend({
 				user: user,
-				formatRelativeTime: util.formatRelativeTime,
-				formatAbsoluteTime: util.formatAbsoluteTime,
+				util: util,
 			}, privileges)) + '</li>');
 			$target.append($item);
 		});

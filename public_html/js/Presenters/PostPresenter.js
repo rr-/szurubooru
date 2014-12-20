@@ -163,9 +163,7 @@ App.Presenters.PostPresenter = function(
 			postFavorites: post.favorites,
 			postHistory: post.history,
 
-			formatRelativeTime: util.formatRelativeTime,
-			formatAbsoluteTime: util.formatAbsoluteTime,
-			formatFileSize: util.formatFileSize,
+			util: util,
 
 			historyTemplate: templates.history,
 

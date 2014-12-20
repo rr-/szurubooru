@@ -72,8 +72,7 @@ App.Presenters.CommentListPresenter = function(
 				{
 					commentListItemTemplate: templates.commentListItem,
 					commentFormTemplate: templates.commentForm,
-					formatRelativeTime: util.formatRelativeTime,
-					formatMarkdown: util.formatMarkdown,
+					util: util,
 					comments: comments,
 					post: post,
 				},
@@ -102,9 +101,7 @@ App.Presenters.CommentListPresenter = function(
 	function renderComment($targetList, comment) {
 		var $item = jQuery('<li>' + templates.commentListItem({
 			comment: comment,
-			formatRelativeTime: util.formatRelativeTime,
-			formatAbsoluteTime: util.formatAbsoluteTime,
-			formatMarkdown: util.formatMarkdown,
+			util: util,
 			canVote: auth.isLoggedIn(),
 			canEditComment: auth.isLoggedIn(comment.user.name) ? privileges.canEditOwnComments : privileges.canEditAllComments,
 			canDeleteComment: auth.isLoggedIn(comment.user.name) ? privileges.canDeleteOwnComments : privileges.canDeleteAllComments,

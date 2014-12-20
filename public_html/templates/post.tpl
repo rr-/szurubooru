@@ -10,7 +10,7 @@
 		</div>
 
 		<div class="search">
-			<a class="enabled" href="#/posts/query=<%= query.query %>;order=<%= query.order %>">
+			<a class="enabled" href="<%= util.appendComplexRouteParam('#/posts', {query: query.query, order: query.order}) %>">
 				Current search: <%= query.query || '-' %>
 			</a>
 		</div>
@@ -32,7 +32,7 @@
 					<a class="download" href="<%= permaLink %>">
 						<i class="fa fa-download"></i>
 						<br/>
-						<%= post.contentExtension + ', ' + formatFileSize(post.originalFileSize) %>
+						<%= post.contentExtension + ', ' + util.formatFileSize(post.originalFileSize) %>
 					</a>
 				</li>
 			<% } %>
@@ -109,8 +109,8 @@
 
 			<br/>
 
-			<span class="date" title="<%= formatAbsoluteTime(post.uploadTime) %>">
-				<%= formatRelativeTime(post.uploadTime) %>
+			<span class="date" title="<%= util.formatAbsoluteTime(post.uploadTime) %>">
+				<%= util.formatRelativeTime(post.uploadTime) %>
 			</span>
 		</div>
 
@@ -126,7 +126,7 @@
 			<% if (post.originalFileSize) { %>
 				<li>
 					File size:
-					<%= formatFileSize(post.originalFileSize) %>
+					<%= util.formatFileSize(post.originalFileSize) %>
 				</li>
 			<% } %>
 
@@ -140,8 +140,8 @@
 			<% if (post.lastEditTime !== post.uploadTime) { %>
 				<li>
 					Edited:
-					<span title="<%= formatAbsoluteTime(post.lastEditTime) %>">
-						<%= formatRelativeTime(post.lastEditTime) %>
+					<span title="<%= util.formatAbsoluteTime(post.lastEditTime) %>">
+						<%= util.formatRelativeTime(post.lastEditTime) %>
 					</span>
 				</li>
 			<% } %>
@@ -149,7 +149,7 @@
 			<% if (post.featureCount > 0) { %>
 				<li>
 					Featured: <%= post.featureCount %> <%= post.featureCount < 2 ? 'time' : 'times' %>
-					<small>(<%= formatRelativeTime(post.lastFeatureTime) %>)</small>
+					<small>(<%= util.formatRelativeTime(post.lastFeatureTime) %>)</small>
 				</li>
 			<% } %>
 
@@ -277,8 +277,7 @@
 				<h1>History</h1>
 				<%= historyTemplate({
 					history: postHistory,
-					formatRelativeTime: formatRelativeTime,
-					formatAbsoluteTime: formatAbsoluteTime,
+					util: util,
 				}) %>
 			</div>
 		<% } %>

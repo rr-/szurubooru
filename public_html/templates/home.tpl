@@ -1,7 +1,7 @@
 <div id="home">
 	<h1><%= title %></h1>
 	<p class="subheader">
-		Serving <%= globals.postCount || 0 %> posts (<%= formatFileSize(globals.postSize || 0) %>)
+		Serving <%= globals.postCount || 0 %> posts (<%= util.formatFileSize(globals.postSize || 0) %>)
 	</p>
 
 	<% if (post && post.id) { %>
@@ -25,12 +25,12 @@
 					<% } %>
 
 					uploaded
-					<%= formatRelativeTime(post.uploadTime) %>
+					<%= util.formatRelativeTime(post.uploadTime) %>
 				</span>
 
 				<span class="right">
 					featured
-					<%= formatRelativeTime(post.lastFeatureTime) %>
+					<%= util.formatRelativeTime(post.lastFeatureTime) %>
 					by
 
 					<% var showLink = canViewUsers && user.name %>
@@ -56,7 +56,7 @@
 
 	<p>
 		<small class="version">
-			Version: <a href="//github.com/rr-/szurubooru/commits/master"><%= version %></a> (built <%= formatRelativeTime(buildTime) %>)
+			Version: <a href="//github.com/rr-/szurubooru/commits/master"><%= version %></a> (built <%= util.formatRelativeTime(buildTime) %>)
 			|
 			<a href="#/history">Recent tag and post edits</a>
 		</small>

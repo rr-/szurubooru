@@ -87,8 +87,7 @@ App.Presenters.TagPresenter = function(
 			tag: tag,
 			siblings: siblings,
 			tagCategories: JSON.parse(jQuery('head').attr('data-tag-categories')),
-			formatRelativeTime: util.formatRelativeTime,
-			formatAbsoluteTime: util.formatAbsoluteTime,
+			util: util,
 			historyTemplate: templates.history,
 		}));
 		$el.find('.post-list').hide();
