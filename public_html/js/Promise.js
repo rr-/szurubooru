@@ -2,6 +2,12 @@ var App = App || {};
 
 App.Promise = function(_, jQuery, progress) {
 
+	function BrokenPromiseError(promiseId) {
+		this.name = 'BrokenPromiseError';
+		this.message = 'Broken promise (promise ID: ' + promiseId + ')';
+	}
+	BrokenPromiseError.prototype = new Error();
+
 	var active = [];
 	var promiseId = 0;
 
@@ -17,6 +23,9 @@ App.Promise = function(_, jQuery, progress) {
 				active = _.without(active, promise.promiseId);
 				progress.done();
 			} catch (e) {
+				if (!(e instanceof BrokenPromiseError)) {
+					console.log(e);
+				}
 				progress.reset();
 			}
 		}, function() {
@@ -25,6 +34,9 @@ App.Promise = function(_, jQuery, progress) {
 				active = _.without(active, promise.promiseId);
 				progress.done();
 			} catch (e) {
+				if (!(e instanceof BrokenPromiseError)) {
+					console.log(e);
+				}
 				progress.reset();
 			}
 		});
@@ -33,7 +45,7 @@ App.Promise = function(_, jQuery, progress) {
 
 		promise.always(function() {
 			if (!_.contains(active, promise.promiseId)) {
-				throw new Error('Broken promise (promise ID: ' + promise.promiseId + ')');
+				throw new BrokenPromiseError(promise.promiseId);
 			}
 		});
 
