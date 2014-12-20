@@ -10,7 +10,7 @@
 		</div>
 
 		<div class="search">
-			<a class="enabled" href="<%= util.appendComplexRouteParam('#/posts', {query: query.query, order: query.order}) %>">
+			<a class="enabled" href="<%= util.appendComplexRouteParam('#/posts', util.simplifySearchQuery({query: query.query, order: query.order})) %>">
 				Current search: <%= query.query || '-' %>
 			</a>
 		</div>

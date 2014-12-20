@@ -237,6 +237,17 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
 		return result.slice(0, -1);
 	}
 
+	function simplifySearchQuery(query) {
+		if (typeof(query) === 'undefined') {
+			return {};
+		}
+		if (query.page === 1) {
+			delete query.page;
+		}
+		query = _.pick(query, _.identity); //remove falsy values
+		return query;
+	}
+
 	return {
 		promiseTemplate: promiseTemplate,
 		formatRelativeTime: formatRelativeTime,
@@ -249,6 +260,7 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
 		transparentPixel: transparentPixel,
 		loadImagesNicely: loadImagesNicely,
 		appendComplexRouteParam: appendComplexRouteParam,
+		simplifySearchQuery: simplifySearchQuery,
 	};
 
 };

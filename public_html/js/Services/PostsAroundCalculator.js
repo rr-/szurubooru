@@ -41,7 +41,11 @@ App.Services.PostsAroundCalculator = function(_, promise, util, pager) {
 			if (position + direction >= 0 && position + direction < postIds.length) {
 				var url = util.appendComplexRouteParam(
 					'#/post/' + postIds[position + direction],
-					_.extend({page: page}, pager.getSearchParams()));
+					util.simplifySearchQuery(
+						_.extend(
+							{page: page},
+							pager.getSearchParams())));
+
 				resolve(url);
 			} else if (page + direction >= 1) {
 				pager.setPage(page + direction);
@@ -54,7 +58,11 @@ App.Services.PostsAroundCalculator = function(_, promise, util, pager) {
 
 							var url = util.appendComplexRouteParam(
 								'#/post/' + post.id,
-								_.extend({page: page + direction}, pager.getSearchParams()));
+								util.simplifySearchQuery(
+									_.extend(
+										{page: page + direction},
+										pager.getSearchParams())));
+
 							resolve(url);
 						} else {
 							resolve(null);

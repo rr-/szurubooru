@@ -82,11 +82,12 @@ App.Presenters.PagerPresenter = function(
 	function getUrl(options) {
 		return util.appendComplexRouteParam(
 			baseUri,
-			_.extend(
-				{},
-				pager.getSearchParams(),
-				{page: pager.getPage()},
-				options));
+			util.simplifySearchQuery(
+				_.extend(
+					{},
+					pager.getSearchParams(),
+					{page: pager.getPage()},
+					options)));
 	}
 
 	function syncUrl(options) {

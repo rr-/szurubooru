@@ -2,7 +2,7 @@
 
 	<% if (canViewPosts) { %>
 		<a class="link"
-			href="<%= util.appendComplexRouteParam('#/post/' + post.id, typeof(query) !== 'undefined' ? query : {}) %>"
+			href="<%= util.appendComplexRouteParam('#/post/' + post.id, util.simplifySearchQuery(query)) %>"
 			title="<%= _.map(post.tags, function(tag) { return '#' + tag.name; }).join(', ') %>">
 	<% } else { %>
 		<span class="link">
