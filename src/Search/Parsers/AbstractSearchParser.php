@@ -17,7 +17,7 @@ abstract class AbstractSearchParser
 	public function createFilterFromInputReader(InputReader $inputReader)
 	{
 		$filter = $this->createFilter();
-		$filter->setOrder($this->getOrder($inputReader->order) + $filter->getOrder());
+		$filter->setOrder($this->getOrder($inputReader->order, false) + $filter->getOrder());
 
 		if ($inputReader->page)
 		{
@@ -32,7 +32,7 @@ abstract class AbstractSearchParser
 			if ($token instanceof NamedSearchToken)
 			{
 				if ($token->getKey() === 'order')
-					$filter->setOrder($this->getOrder($token->getValue()) + $filter->getOrder());
+					$filter->setOrder($this->getOrder($token->getValue(), $token->isNegated()) + $filter->getOrder());
 				else
 					$this->decorateFilterFromNamedToken($filter, $token);
 			}
@@ -95,7 +95,7 @@ abstract class AbstractSearchParser
 		$filter->addRequirement($requirement);
 	}
 
-	private function getOrder($query)
+	private function getOrder($query, $negated)
 	{
 		$order = [];
 		$tokens = array_filter(preg_split('/\s+/', trim($query)));
@@ -124,6 +124,12 @@ abstract class AbstractSearchParser
 			$orderColumn = $this->getOrderColumn($orderToken);
 			if ($orderColumn === null)
 				throw new \InvalidArgumentException('Invalid search order token: ' . $orderToken);
+
+			if ($negated)
+			{
+				$orderDir = $orderDir == IFilter::ORDER_DESC ? IFilter::ORDER_ASC : IFilter::ORDER_DESC;
+			}
+
 
 			$order[$orderColumn] = $orderDir;
 		}
