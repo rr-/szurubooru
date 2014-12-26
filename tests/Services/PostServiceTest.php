@@ -195,7 +195,7 @@ final class PostServiceTest extends AbstractDatabaseTestCase
 		$formData->anonymous = true;
 
 		$this->postDaoMock->expects($this->once())->method('save')->will($this->returnArgument(0));
-		$this->authServiceMock->expects($this->never())->method('getLoggedInUser');
+		$this->authServiceMock->expects($this->once())->method('loginAnonymous');
 		$this->postHistoryServiceMock->expects($this->once())->method('savePostCreation')->willReturn(new Snapshot());
 
 		$this->postService = $this->getPostService();
