@@ -9,9 +9,15 @@ body {
 	overflow-y: scroll;
 }
 
+@media all and (max-width: 40em) {
+	body {
+		font-size: 15px;
+	}
+}
+
 h1 {
 	font-weight: normal;
-	font-size: 30px;
+	font-size: 160%;
 }
 
 h2 {
@@ -21,11 +27,11 @@ h2 {
 
 h3 {
 	font-weight: normal;
-	font-size: 20px;
+	font-size: 120%;
 }
 
 small {
-	font-size: 13px;
+	font-size: 87%;
 }
 
 #middle {

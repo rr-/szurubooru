@@ -147,12 +147,12 @@
 	vertical-align: top;
 }
 #sidebar .essential li i.fa {
-	font-size: 30px;
+	font-size: 200%;
 }
 #sidebar .essential li a {
 	display: block;
 	text-align: center;
-	font-size: 12px;
+	font-size: 87%;
 }
 
 #post-view #post-edit-target {

@@ -17,7 +17,7 @@
 	text-transform: lowercase;
 	font-variant: small-caps;
 	padding: 0.5em 1em;
-	font-size: 15px;
+	font-size: 0.9em;
 }
 
 #top-navigation li a:focus,
@@ -34,7 +34,7 @@
 }
 
 #top-navigation i {
-	font-size: 40px;
+	font-size: 3em;
 	margin: 0 10px 5px;
 }
 

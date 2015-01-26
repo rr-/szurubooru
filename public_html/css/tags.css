@@ -28,7 +28,7 @@
 	line-height: normal;
 }
 #tag-view small {
-	font-size: 12px;
+	font-size: 0.85em;
 }
 
 #tag-view .siblings ul {
