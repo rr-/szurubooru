@@ -40,7 +40,7 @@ input[type=password] {
 	box-shadow: 0 1px 2px -1px #e0e0e0 inset;
 	background: #fafafa;
 	font-family: 'Inconsolata', monospace;
-	font-size: 110%;
+	font-size: 100%;
 	text-overflow: ellipsis;
 	width: 100%;
 	box-sizing: border-box;
@@ -200,7 +200,6 @@ input[type=checkbox]:focus + label {
 	font-family: 'Droid Sans', sans-serif;
 	margin: 1px;
 	padding: 2px 4px;
-	font-size: 15px;
 }
 .tag-input input {
 	border: none;
@@ -210,13 +209,13 @@ input[type=checkbox]:focus + label {
 	color: black;
 }
 .tag-input li a.close {
-	font-size: 14px;
+	font-size: 85%;
 	margin-left: 0.75em;
 }
 
 .related-tags {
 	line-height: 200%;
-	font-size: 15px;
+	font-size: 95%;
 	display: none;
 	margin: 0.5em 0.5em 1em 0.5em;
 }
