@@ -5,13 +5,13 @@ body {
 	background: #fff;
 	color: #555;
 	font-family: 'Droid Sans', sans-serif;
-	font-size: 17px;
+	font-size: 15px;
 	overflow-y: scroll;
 }
 
 @media all and (max-width: 40em) {
 	body {
-		font-size: 15px;
+		font-size: 13px;
 	}
 }
 
