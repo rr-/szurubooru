@@ -112,7 +112,7 @@ App.Controls.TagInput = function($underlyingInput) {
 			pastedText = (e.originalEvent || e).clipboardData.getData('text/plain');
 		}
 
-		if (pastedText.length > 200) {
+		if (pastedText.length > 2000) {
 			window.alert('Pasted text is too long.');
 			return;
 		}
