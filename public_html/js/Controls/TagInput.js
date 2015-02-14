@@ -288,7 +288,7 @@ App.Controls.TagInput = function($underlyingInput) {
 		$elem.attr('data-tag', tagName.toLowerCase());
 
 		var $tagLink = jQuery('<a class="tag">');
-		$tagLink.text(tagName);
+		$tagLink.text(tagName + ' ' /* for easy copying */);
 		$tagLink.click(function(e) {
 			e.preventDefault();
 			showOrHideSiblings(tagName);

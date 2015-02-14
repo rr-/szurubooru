@@ -210,7 +210,7 @@ input[type=checkbox]:focus + label {
 }
 .tag-input li a.close {
 	font-size: 85%;
-	margin-left: 0.75em;
+	margin-left: 0.5em;
 }
 
 .related-tags {
