@@ -48,7 +48,7 @@ App.Util.Resizable = function(jQuery) {
 		};
 	}
 
-	function makeResizable($element) {
+	function makeResizable($element, enableHotkeys) {
 		var $resizer = jQuery('<div class="resizer"></div>');
 		var strategy = relativeResizeStrategy($element);
 		$element.append($resizer);
@@ -72,31 +72,33 @@ App.Util.Resizable = function(jQuery) {
 			});
 		});
 
-		$element.keydown(function(e) {
-			var size = strategy.getSize();
-			var oldSize = {width: size.width, height: size.height};
-			if (!e.shiftKey) {
-				return;
-			}
+		if (enableHotkeys) {
+			$element.keydown(function(e) {
+				var size = strategy.getSize();
+				var oldSize = {width: size.width, height: size.height};
+				if (!e.shiftKey) {
+					return;
+				}
 
-			var delta = e.ctrlKey ? 10 : 1;
-			if (e.which === KEY_LEFT) {
-				size.width -= delta;
-			} else if (e.which === KEY_RIGHT) {
-				size.width += delta;
-			} else if (e.which === KEY_UP) {
-				size.height -= delta;
-			} else if (e.which === KEY_DOWN) {
-				size.height += delta;
-			}
+				var delta = e.ctrlKey ? 10 : 1;
+				if (e.which === KEY_LEFT) {
+					size.width -= delta;
+				} else if (e.which === KEY_RIGHT) {
+					size.width += delta;
+				} else if (e.which === KEY_UP) {
+					size.height -= delta;
+				} else if (e.which === KEY_DOWN) {
+					size.height += delta;
+				}
 
-			if (size.width !== oldSize.width || size.height !== oldSize.height) {
-				e.stopPropagation();
-				e.stopImmediatePropagation();
-				e.preventDefault();
-				strategy.setSize(size.width, size.height);
-			}
-		});
+				if (size.width !== oldSize.width || size.height !== oldSize.height) {
+					e.stopPropagation();
+					e.stopImmediatePropagation();
+					e.preventDefault();
+					strategy.setSize(size.width, size.height);
+				}
+			});
+		}
 	}
 
 	return {

@@ -61,8 +61,8 @@ App.Presenters.PostNotesPresenter = function(
 			$postNote.data('postNote', postNote);
 			$postNote.find('.text-wrapper').click(postNoteClicked);
 			postNote.$element = $postNote;
-			draggable.makeDraggable($postNote, draggable.relativeDragStrategy);
-			resizable.makeResizable($postNote);
+			draggable.makeDraggable($postNote, draggable.relativeDragStrategy, true);
+			resizable.makeResizable($postNote, true);
 		});
 
 		$form.find('button').click(formSubmitted);
@@ -163,7 +163,7 @@ App.Presenters.PostNotesPresenter = function(
 		$form.data('postNote', postNote);
 		$form.find('textarea').val(postNote.text);
 		$form.show();
-		draggable.makeDraggable($form, draggable.absoluteDragStrategy);
+		draggable.makeDraggable($form, draggable.absoluteDragStrategy, false);
 	}
 
 	function hideForm() {

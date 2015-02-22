@@ -82,7 +82,7 @@ App.Util.Draggable = function(jQuery) {
 		};
 	}
 
-	function makeDraggable($element, dragStrategy) {
+	function makeDraggable($element, dragStrategy, enableHotkeys) {
 		var strategy = dragStrategy($element);
 		$element.data('drag-strategy', strategy);
 
@@ -108,31 +108,33 @@ App.Util.Draggable = function(jQuery) {
 			});
 		});
 
-		$element.keydown(function(e) {
-			var position = strategy.getPosition();
-			var oldPosition = {x: position.x, y: position.y};
-			if (e.shiftKey) {
-				return;
-			}
+		if (enableHotkeys) {
+			$element.keydown(function(e) {
+				var position = strategy.getPosition();
+				var oldPosition = {x: position.x, y: position.y};
+				if (e.shiftKey) {
+					return;
+				}
 
-			var delta = e.ctrlKey ? 10 : 1;
-			if (e.which === KEY_LEFT) {
-				position.x -= delta;
-			} else if (e.which === KEY_RIGHT) {
-				position.x += delta;
-			} else if (e.which === KEY_UP) {
-				position.y -= delta;
-			} else if (e.which === KEY_DOWN) {
-				position.y += delta;
-			}
+				var delta = e.ctrlKey ? 10 : 1;
+				if (e.which === KEY_LEFT) {
+					position.x -= delta;
+				} else if (e.which === KEY_RIGHT) {
+					position.x += delta;
+				} else if (e.which === KEY_UP) {
+					position.y -= delta;
+				} else if (e.which === KEY_DOWN) {
+					position.y += delta;
+				}
 
-			if (position.x !== oldPosition.x || position.y !== oldPosition.y) {
-				e.stopPropagation();
-				e.stopImmediatePropagation();
-				e.preventDefault();
-				strategy.setPosition(position.x, position.y);
-			}
-		});
+				if (position.x !== oldPosition.x || position.y !== oldPosition.y) {
+					e.stopPropagation();
+					e.stopImmediatePropagation();
+					e.preventDefault();
+					strategy.setPosition(position.x, position.y);
+				}
+			});
+		}
 	}
 
 	return {
