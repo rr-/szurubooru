@@ -69,8 +69,8 @@
 	position: relative;
 }
 .post-small .link {
-	display: inline-block;
-	margin: 0.2em;
+	display: block;
+	margin: 0.3em;
 	border: 1px solid #999;
 	z-index: 1;
 	position: relative;

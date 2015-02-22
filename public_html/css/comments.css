@@ -100,6 +100,6 @@
 #global-comment-list .comments>h1 {
 	display: none;
 }
-#global-comment-list .post-small a {
+#global-comment-list .post-small .link {
 	margin: 0;
 }
