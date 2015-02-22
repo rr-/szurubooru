@@ -74,6 +74,10 @@ App.Controls.TagInput = function($underlyingInput) {
 
 	function initAutoComplete() {
 		var autoComplete = new App.Controls.AutoCompleteInput($input);
+		autoComplete.onDelete = function(text) {
+			removeTag(text);
+			$input.val('');
+		};
 		autoComplete.onApply = function(text) {
 			processText(text, SOURCE_AUTOCOMPLETION);
 			$input.val('');

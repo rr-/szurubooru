@@ -7,6 +7,7 @@ App.Controls.AutoCompleteInput = function($input) {
 	var tagList = App.DI.get('tagList');
 
 	var KEY_RETURN = 13;
+	var KEY_DELETE = 46;
 	var KEY_ESCAPE = 27;
 	var KEY_UP = 38;
 	var KEY_DOWN = 40;
@@ -17,6 +18,7 @@ App.Controls.AutoCompleteInput = function($input) {
 		maxResults: 15,
 		minLengthToArbitrarySearch: 3,
 		onApply: null,
+		onDelete: null,
 		onRender: null,
 		additionalFilter: null,
 	};
@@ -63,27 +65,24 @@ App.Controls.AutoCompleteInput = function($input) {
 	}
 
 	$input.bind('keydown', function(e) {
+		var func = null;
 		if (isShown() && e.which === KEY_ESCAPE) {
-			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
-			hide();
+			func = hide;
 		} else if (isShown() && e.which === KEY_DOWN) {
-			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
-			selectNext();
+			func = selectNext;
 		} else if (isShown() && e.which === KEY_UP) {
-			e.preventDefault();
-			e.stopPropagation();
-			e.stopImmediatePropagation();
-			selectPrevious();
+			func = selectPrevious;
 		} else if (isShown() && e.which === KEY_RETURN && activeResult >= 0) {
+			func = function() { applyAutocomplete(); hide(); };
+		} else if (isShown() && e.which === KEY_DELETE && activeResult >= 0) {
+			func = function() { applyDelete(); hide(); };
+		}
+
+		if (func !== null) {
 			e.preventDefault();
 			e.stopPropagation();
 			e.stopImmediatePropagation();
-			applyAutocomplete();
-			hide();
+			func();
 		} else {
 			window.clearTimeout(showTimeout);
 			showTimeout = window.setTimeout(showOrHide, 250);
@@ -179,6 +178,12 @@ App.Controls.AutoCompleteInput = function($input) {
 		results = results.slice(0, options.maxResults);
 		if (!_.isEqual(oldResults, results)) {
 			activeResult = -1;
+		}
+	}
+
+	function applyDelete() {
+		if (options.onDelete) {
+			options.onDelete(results[activeResult].tag);
 		}
 	}
 
