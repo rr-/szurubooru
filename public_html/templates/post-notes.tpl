@@ -1,6 +1,6 @@
 <div class="post-notes">
 	<% _.each(notes, function(note) { %>
-		<div class="post-note"
+		<div tabindex="0" class="post-note"
 			style="left: <%= note.left %>%;
 				top: <%= note.top %>%;
 				width: <%= note.width %>%;

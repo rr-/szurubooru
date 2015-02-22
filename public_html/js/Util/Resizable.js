@@ -2,6 +2,11 @@ var App = App || {};
 App.Util = App.Util || {};
 
 App.Util.Resizable = function(jQuery) {
+	var KEY_LEFT = 37;
+	var KEY_UP = 38;
+	var KEY_RIGHT = 39;
+	var KEY_DOWN = 40;
+
 	function relativeResizeStrategy($element) {
 		var $parent = $element.parent();
 		var delta;
@@ -51,6 +56,7 @@ App.Util.Resizable = function(jQuery) {
 		$resizer.mousedown(function(e) {
 			e.preventDefault();
 			e.stopPropagation();
+			$element.focus();
 			$element.addClass('resizing');
 
 			strategy.mouseClicked(e);
@@ -64,6 +70,32 @@ App.Util.Resizable = function(jQuery) {
 				jQuery(window).unbind('mousemove.elemsize');
 				jQuery(window).unbind('mouseup.elemsize');
 			});
+		});
+
+		$element.keydown(function(e) {
+			var size = strategy.getSize();
+			var oldSize = {width: size.width, height: size.height};
+			if (!e.shiftKey) {
+				return;
+			}
+
+			var delta = e.ctrlKey ? 10 : 1;
+			if (e.which === KEY_LEFT) {
+				size.width -= delta;
+			} else if (e.which === KEY_RIGHT) {
+				size.width += delta;
+			} else if (e.which === KEY_UP) {
+				size.height -= delta;
+			} else if (e.which === KEY_DOWN) {
+				size.height += delta;
+			}
+
+			if (size.width !== oldSize.width || size.height !== oldSize.height) {
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				e.preventDefault();
+				strategy.setSize(size.width, size.height);
+			}
 		});
 	}
 
