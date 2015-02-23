@@ -90,10 +90,10 @@ class Upgrade35 implements IUpgrade
 
 		$pdo->exec('
 			DELETE FROM postRelations
-			WHERE (SELECT COUNT(1) FROM posts WHERE (posts.id = post1id) OR (posts.id = post2id) = 0)');
+			WHERE (SELECT COUNT(1) FROM posts WHERE (posts.id = post1id) OR (posts.id = post2id)) = 0');
 
 		$pdo->exec('
 			DELETE FROM tagRelations
-			WHERE (SELECT COUNT(1) FROM tags WHERE (tags.id = tag1id) OR (tags.id = tag2id) = 0)');
+			WHERE (SELECT COUNT(1) FROM tags WHERE (tags.id = tag1id) OR (tags.id = tag2id)) = 0');
 	}
 }
