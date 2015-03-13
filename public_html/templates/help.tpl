@@ -65,6 +65,11 @@
 			</tr>
 
 			<tr>
+				<td><code>[F]</code></td>
+				<td>Toggle full post size</td>
+			</tr>
+
+			<tr>
 				<td><code>[E]</code></td>
 				<td>Edit post</td>
 			</tr>
