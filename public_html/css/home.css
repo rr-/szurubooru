@@ -10,10 +10,11 @@
 }
 
 #home .post {
-	text-align: left;
+	text-align: center;
 	margin: 0 auto;
 	display: inline-block;
 	max-width: 60%;
+	min-width: 32em;
 }
 #home .post .left {
 	display: inline-block;

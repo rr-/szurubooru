@@ -41,7 +41,14 @@ App.Presenters.HomePresenter = function(
 				if ($el.find('#post-content-target').length > 0) {
 					presenterManager.initPresenters([
 						[postContentPresenter, {post: post, $target: $el.find('#post-content-target')}]],
-						function() {});
+						function() {
+							var $wrapper = $el.find('.object-wrapper');
+							$wrapper.css({
+								maxWidth: $wrapper.attr('data-width') + 'px',
+								width: 'auto',
+								margin: '0 auto'});
+							postContentPresenter.updatePostNotesSize();
+						});
 				}
 
 			}).fail(function(response) {

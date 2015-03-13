@@ -45,8 +45,14 @@ App.Presenters.PostContentPresenter = function(
 	}
 
 	function updatePostNotesSize() {
-		$target.find('.post-notes-target').width($target.find('.object-wrapper').outerWidth());
-		$target.find('.post-notes-target').height($target.find('.object-wrapper').outerHeight());
+		var $postNotes = $target.find('.post-notes-target');
+		var $objectWrapper = $target.find('.object-wrapper');
+		$postNotes.css({
+			width: $objectWrapper.outerWidth() + 'px',
+			height: $objectWrapper.outerHeight() + 'px',
+			left: ($objectWrapper.offset().left - $objectWrapper.parent().offset().left) + 'px',
+			top: ($objectWrapper.offset().top - $objectWrapper.parent().offset().top) + 'px',
+		});
 	}
 
 	function addNewPostNote() {

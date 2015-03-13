@@ -5,7 +5,7 @@
 	</p>
 
 	<% if (post && post.id) { %>
-		<div class="post">
+		<div class="post" style="width: <%= post.imageWidth || 800 %>px">
 			<div id="post-content-target">
 			</div>
 
