@@ -1,3 +1,21 @@
+<% function showUser(name) { %>
+	<% var showLink = canViewUsers && name %>
+
+	<% if (showLink) { %>
+		<a href="#/user/<%= name %>">
+	<% } %>
+
+	<img width="25" height="25" class="author-avatar"
+		src="/data/thumbnails/25x25/avatars/<%= name || '!' %>"
+		alt="<%= name || 'Anonymous user' %>"/>
+
+	<%= name || 'Anonymous user' %>
+
+	<% if (showLink) { %>
+		</a>
+	<% } %>
+<% } %>
+
 <div id="home">
 	<h1><%= title %></h1>
 	<p class="subheader">
@@ -26,28 +44,15 @@
 
 					uploaded
 					<%= util.formatRelativeTime(post.uploadTime) %>
+					by
+					<% showUser(post.user.name) %>
 				</span>
 
 				<span class="right">
 					featured
 					<%= util.formatRelativeTime(post.lastFeatureTime) %>
 					by
-
-					<% var showLink = canViewUsers && user.name %>
-
-					<% if (showLink) { %>
-						<a href="#/user/<%= user.name %>">
-					<% } %>
-
-					<img width="25" height="25" class="author-avatar"
-						src="/data/thumbnails/25x25/avatars/<%= user.name || '!' %>"
-						alt="<%= user.name || 'Anonymous user' %>"/>
-
-					<%= user.name || 'Anonymous user' %>
-
-					<% if (showLink) { %>
-						</a>
-					<% } %>
+					<% showUser(user.name) %>
 				</span>
 
 			</div>
