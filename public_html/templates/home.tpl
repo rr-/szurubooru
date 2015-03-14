@@ -1,5 +1,5 @@
 <% function showUser(name) { %>
-	<% var showLink = canViewUsers && name %>
+	<% var showLink = typeof(canViewUsers) !== 'undefined' && canViewUsers && name %>
 
 	<% if (showLink) { %>
 		<a href="#/user/<%= name %>">
