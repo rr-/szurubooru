@@ -73,6 +73,7 @@
 			<div class="form-slider">
 				<div class="thumbnail">
 					<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Thumbnail"/>
+					<a href="#" target="_blank">Open preview in a new tab</a>
 				</div>
 
 				<form class="form-wrapper">
