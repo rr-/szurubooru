@@ -531,10 +531,12 @@ App.Presenters.PostUploadPresenter = function(
 
 	function selectPrevPostTableRow() {
 		selectPostTableRow($el.find('tbody tr.selected:eq(0)').prev().data('post'));
+		return false;
 	}
 
 	function selectNextPostTableRow() {
 		selectPostTableRow($el.find('tbody tr.selected:eq(0)').next().data('post'));
+		return false;
 	}
 
 	function showOrHidePostsTable() {
