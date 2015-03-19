@@ -202,25 +202,6 @@ App.Presenters.PostUploadPresenter = function(
 		postTableSelectionChanged(selectedPosts);
 	}
 
-	function postTableRowImageHovered(e) {
-		var $img = jQuery(this);
-		var post = $img.parents('tr').data('post');
-		post.getThumbnail(null, null).then(function(thumbnailDataURL) {
-			var $lightbox = jQuery('#lightbox');
-			$lightbox.find('img').attr('src', thumbnailDataURL);
-			$lightbox
-				.show()
-				.css({
-					left: ($img.position().left + $img.outerWidth()) + 'px',
-					top: ($img.position().top + ($img.outerHeight() - $lightbox.outerHeight()) / 2) + 'px',
-				});
-		});
-	}
-
-	function postTableRowImageUnhovered(e) {
-		jQuery('#lightbox').hide();
-	}
-
 	function removeButtonClicked(e) {
 		e.preventDefault();
 		removePosts(getSelectedPosts());
@@ -336,8 +317,6 @@ App.Presenters.PostUploadPresenter = function(
 		$row.removeClass('template');
 		$row.find('td:not(.checkbox)').click(postTableRowClicked);
 		$row.find('td.checkbox').click(postTableCheckboxClicked);
-		$row.find('img').mouseenter(postTableRowImageHovered);
-		$row.find('img').mouseleave(postTableRowImageUnhovered);
 		$row.data('post', post);
 		$table.find('tbody').append($row);
 		$row.find('td.checkbox input').attr('id', _.uniqueId());

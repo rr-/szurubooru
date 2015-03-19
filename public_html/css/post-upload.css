@@ -140,35 +140,6 @@
 	display: none;
 }
 
-#lightbox {
-	display: none;
-	position: absolute;
-	pointer-events: none;
-	position: absolute;
-	margin-left: 10px;
-}
-#lightbox img {
-	max-width: 800px;
-	max-height: 800px;
-	background: white;
-	border: 0.5em solid white;
-	box-shadow: 0 0 0 1px #eee;
-	position: relative;
-}
-#lightbox:after {
-	content: '';
-	position: absolute;
-	left: -8px;
-	top: 50%;
-	margin-top: -8px;
-	width: 12px;
-	height: 12px;
-	background: white;
-	border-left: 1px solid #eee;
-	border-bottom: 1px solid #eee;
-	transform: rotate(45deg);
-}
-
 #uploading-alert {
 	display: none;
 	text-align: left;
