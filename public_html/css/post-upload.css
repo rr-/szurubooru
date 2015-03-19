@@ -125,7 +125,7 @@
 }
 #post-upload-step2 .form-slider .thumbnail img {
 	max-width: 100%;
-	max-height: 300px;
+	max-height: 450px;
 	margin: 0 auto 1em auto;
 }
 
@@ -148,8 +148,8 @@
 	margin-left: 10px;
 }
 #lightbox img {
-	max-width: 400px;
-	max-height: 400px;
+	max-width: 800px;
+	max-height: 800px;
 	background: white;
 	border: 0.5em solid white;
 	box-shadow: 0 0 0 1px #eee;
