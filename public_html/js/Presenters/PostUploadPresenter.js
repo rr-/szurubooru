@@ -78,7 +78,7 @@ App.Presenters.PostUploadPresenter = function(
 			fileName: null,
 			content: null,
 			url: null,
-			thumbnail: null,
+			getThumbnail: function() { return promise.makeSilent(function(resolve, reject) { resolve(null); }); },
 			$tableRow: null,
 		};
 	}
@@ -111,7 +111,7 @@ App.Presenters.PostUploadPresenter = function(
 			}
 		}
 		$input.val('');
-		var post = addPostFromUrl(url);
+		var post = addPostFromURL(url);
 		selectPostTableRow(post);
 	}
 
@@ -137,18 +137,11 @@ App.Presenters.PostUploadPresenter = function(
 		allPosts.push(post);
 		setAllPosts(allPosts);
 		createPostTableRow(post);
+		updatePostThumbnailInTable(post);
 	}
 
 	function postChanged(post) {
 		updatePostTableRow(post);
-	}
-
-	function postThumbnailLoaded(post) {
-		var selectedPosts = getSelectedPosts();
-		if (selectedPosts.length === 1 && selectedPosts[0] === post && post.thumbnail !== null) {
-			updatePostThumbnailInForm(post);
-		}
-		updatePostThumbnailInTable(post);
 	}
 
 	function postTableRowClicked(e) {
@@ -211,16 +204,17 @@ App.Presenters.PostUploadPresenter = function(
 
 	function postTableRowImageHovered(e) {
 		var $img = jQuery(this);
-		if ($img.parents('tr').data('post').thumbnail) {
+		var post = $img.parents('tr').data('post');
+		post.getThumbnail(null, null).then(function(thumbnailDataURL) {
 			var $lightbox = jQuery('#lightbox');
-			$lightbox.find('img').attr('src', $img.attr('src'));
+			$lightbox.find('img').attr('src', thumbnailDataURL);
 			$lightbox
 				.show()
 				.css({
 					left: ($img.position().left + $img.outerWidth()) + 'px',
 					top: ($img.position().top + ($img.outerHeight() - $lightbox.outerHeight()) / 2) + 'px',
 				});
-		}
+		});
 	}
 
 	function postTableRowImageUnhovered(e) {
@@ -255,34 +249,81 @@ App.Presenters.PostUploadPresenter = function(
 		stopUpload();
 	}
 
-	function addPostFromFile(file) {
-		var post = _.extend({}, getDefaultPost(), {fileName: file.name, file: file});
+	function makeThumbnailFromDataURL(dataURL, thumbnailWidth, thumbnailHeight) {
+		return promise.makeSilent(function(resolve, reject) {
+			var img = new Image();
+			img.src = dataURL;
+			img.onload = function() {
+				var canvas = document.createElement('canvas');
+				var context = canvas.getContext('2d');
+				canvas.width = thumbnailWidth;
+				canvas.height = thumbnailHeight;
+				context.drawImage(
+					img,
+					0,
+					0,
+					canvas.width,
+					canvas.height);
+				resolve(canvas.toDataURL());
+				canvas = null;
+			};
+		});
+	}
 
-		fileDropper.readAsDataURL(file, function(content) {
-			if (file.type.match('image.*')) {
-				post.thumbnail = content;
-				postThumbnailLoaded(post);
-			}
+	function addPostFromFile(file) {
+		var post = _.extend({}, getDefaultPost(), {
+			fileName: file.name,
+			file: file,
+			getThumbnail: function(thumbnailWidth, thumbnailHeight) {
+				if (file.type.match('image.*')) {
+					return promise.makeSilent(function(resolve, reject) {
+						fileDropper.readAsDataURL(file, function(contentDataURL) {
+							if (thumbnailWidth === null || thumbnailHeight === null) {
+								resolve(contentDataURL);
+								return;
+							}
+							makeThumbnailFromDataURL(contentDataURL, thumbnailWidth, thumbnailHeight)
+								.then(function(thumbnailDataURL) {
+									resolve(thumbnailDataURL);
+								});
+							});
+						});
+				} else {
+					return promise.makeSilent(function(resolve, reject) {
+						resolve(null);
+					});
+				}
+			},
 		});
 
 		postAdded(post);
 		return post;
 	}
 
-	function addPostFromUrl(url) {
-		var post = _.extend({}, getDefaultPost(), {url: url, fileName: url});
-		postAdded(post);
-		setPostsSource([post], url);
+	function addPostFromURL(url) {
+		var post = _.extend({}, getDefaultPost(), {
+			url: url,
+			fileName: url,
+		});
 
 		var matches = url.match(/watch.*?=([a-zA-Z0-9_-]+)/);
 		if (matches) {
-			var youtubeThumbnailUrl = 'http://img.youtube.com/vi/' + matches[1] + '/mqdefault.jpg';
-			post.thumbnail = youtubeThumbnailUrl;
-			postThumbnailLoaded(post);
+			var youtubeThumbnailURL = 'http://img.youtube.com/vi/' + matches[1] + '/mqdefault.jpg';
+			post.getThumbnail = function(thumbnailWidth, thumbnailHeight) {
+				return promise.makeSilent(function(resolve, reject) {
+					resolve(youtubeThumbnailURL);
+				});
+			};
 		} else if (url.match(/image|img|jpg|png|gif/i)) {
-			post.thumbnail = url;
-			postThumbnailLoaded(post);
+			post.getThumbnail = function(thumbnailWidth, thumbnailHeight) {
+				return promise.makeSilent(function(resolve, reject) {
+					resolve(url);
+				});
+			};
 		}
+
+		postAdded(post);
+		setPostsSource([post], url);
 		return post;
 	}
 
@@ -314,21 +355,24 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function updatePostThumbnailInForm(post) {
-		if (post.thumbnail === null) {
-			$el.find('.form-slider .thumbnail img').hide();
-		} else {
-			$el.find('.form-slider .thumbnail img').show()[0].setAttribute('src', post.thumbnail);
-		}
+		post.getThumbnail(null, null).then(function(thumbnailDataURL) {
+			if (thumbnailDataURL === null) {
+				$el.find('.form-slider .thumbnail img').hide();
+			} else {
+				$el.find('.form-slider .thumbnail img').show()[0].setAttribute('src', thumbnailDataURL);
+			}
+		});
 	}
 
 	function updatePostThumbnailInTable(post) {
-		var $row = post.$tableRow;
-		if (post.thumbnail === null) {
-			$row.find('img')[0].setAttribute('src', util.transparentPixel());
-		//huge speedup thanks to this condition
-		} else if ($row.find('img').attr('src') !== post.thumbnail) {
-			$row.find('img')[0].setAttribute('src', post.thumbnail);
-		}
+		post.getThumbnail(30, 30).then(function(thumbnailDataURL) {
+			var $row = post.$tableRow;
+			if (thumbnailDataURL === null) {
+				$row.find('img')[0].setAttribute('src', util.transparentPixel());
+			} else if ($row.find('img').attr('src') !== thumbnailDataURL) {
+				$row.find('img')[0].setAttribute('src', thumbnailDataURL);
+			}
+		});
 	}
 
 	function getAllPosts() {
@@ -360,6 +404,9 @@ App.Presenters.PostUploadPresenter = function(
 			showPostEditForm(selectedPosts);
 		}
 		$el.find('.post-table-op').prop('disabled', selectedPosts.length === 0);
+		if (selectedPosts.length === 1) {
+			updatePostThumbnailInForm(selectedPosts[0]);
+		}
 	}
 
 	function hidePostEditForm() {

@@ -11,12 +11,14 @@ App.Promise = function(_, jQuery, progress) {
 	var active = [];
 	var promiseId = 0;
 
-	function make(callback) {
+	function make(callback, useProgress) {
 		var deferred = jQuery.Deferred();
 		var promise = deferred.promise();
 		promise.promiseId = ++ promiseId;
 
-		progress.start();
+		if (useProgress === true) {
+			progress.start();
+		}
 		callback(function() {
 			try {
 				deferred.resolve.apply(deferred, arguments);
@@ -72,7 +74,8 @@ App.Promise = function(_, jQuery, progress) {
 	}
 
 	return {
-		make: make,
+		make: function(callback) { return make(callback, true); },
+		makeSilent: function(callback) { return make(callback, false); },
 		wait: wait,
 		getActive: getActive,
 		abortAll: abortAll,
