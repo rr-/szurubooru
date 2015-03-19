@@ -14,8 +14,14 @@ App.Keyboard = function(jQuery, mousetrap) {
 			return false;
 		}
 		var $focused = jQuery(':focus').eq(0);
-		if ($focused.length && $focused.prop('tagName').match(/embed|object/i)) {
-			return true;
+		if ($focused.length) {
+			if ($focused.prop('tagName').match(/embed|object/i)) {
+				return true;
+			}
+			if ($focused.prop('tagName').toLowerCase() === 'input'
+			&& $focused.attr('type').match(/checkbox|radio/i)) {
+				return false;
+			}
 		}
 		return oldStopCallback.apply(mousetrap, arguments);
 	};
