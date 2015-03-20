@@ -342,9 +342,9 @@ App.Presenters.PostUploadPresenter = function(
 			}
 			$el.find('.form-slider .thumbnail a').attr(
 				'href',
-				post.file !== null ?
-					URL.createObjectURL(post.file)
-					: thumbnailDataURL);
+				post.url !== null ?
+					thumbnailDataURL :
+					URL.createObjectURL(post.file));
 		});
 	}
 
