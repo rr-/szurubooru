@@ -230,24 +230,22 @@ App.Presenters.PostUploadPresenter = function(
 		stopUpload();
 	}
 
-	function makeThumbnailFromDataURL(dataURL, thumbnailWidth, thumbnailHeight) {
+	function makeThumbnail(thumbnailWidth, thumbnailHeight, file) {
 		return promise.makeSilent(function(resolve, reject) {
+			var canvas = document.createElement('canvas');
 			var img = new Image();
-			img.src = dataURL;
+			canvas.width = thumbnailWidth;
+			canvas.height = thumbnailHeight;
+			var context = canvas.getContext('2d');
 			img.onload = function() {
-				var canvas = document.createElement('canvas');
-				var context = canvas.getContext('2d');
-				canvas.width = thumbnailWidth;
-				canvas.height = thumbnailHeight;
-				context.drawImage(
-					img,
-					0,
-					0,
-					canvas.width,
-					canvas.height);
+				//memory still leaks...
+				img.onload = null;
+				context.drawImage(img, 0, 0, thumbnailWidth, thumbnailHeight);
+				URL.revokeObjectURL(img.src);
+				img.src = null;
 				resolve(canvas.toDataURL());
-				canvas = null;
 			};
+			img.src = URL.createObjectURL(file);
 		});
 	}
 
@@ -256,24 +254,20 @@ App.Presenters.PostUploadPresenter = function(
 			fileName: file.name,
 			file: file,
 			getThumbnail: function(thumbnailWidth, thumbnailHeight) {
-				if (file.type.match('image.*')) {
-					return promise.makeSilent(function(resolve, reject) {
-						fileDropper.readAsDataURL(file, function(contentDataURL) {
-							if (thumbnailWidth === null || thumbnailHeight === null) {
-								resolve(contentDataURL);
-								return;
-							}
-							makeThumbnailFromDataURL(contentDataURL, thumbnailWidth, thumbnailHeight)
-								.then(function(thumbnailDataURL) {
-									resolve(thumbnailDataURL);
-								});
-							});
-						});
-				} else {
-					return promise.makeSilent(function(resolve, reject) {
+				return promise.makeSilent(function(resolve, reject) {
+					if (!file.type.match('image.*')) {
 						resolve(null);
-					});
-				}
+						return;
+					}
+					if (thumbnailWidth === null || thumbnailHeight === null) {
+						resolve(URL.createObjectURL(post.file));
+						return;
+					}
+					makeThumbnail(thumbnailWidth, thumbnailHeight, post.file)
+						.then(function(thumbnailDataURL) {
+							resolve(thumbnailDataURL);
+						});
+				});
 			},
 		});
 
@@ -335,16 +329,15 @@ App.Presenters.PostUploadPresenter = function(
 
 	function updatePostThumbnailInForm(post) {
 		post.getThumbnail(null, null).then(function(thumbnailDataURL) {
+			var $thumbnail = $el.find('.form-slider .thumbnail');
+			var $img = $thumbnail.find('img');
 			if (thumbnailDataURL === null) {
-				$el.find('.form-slider .thumbnail img').hide();
+				$img.hide();
 			} else {
-				$el.find('.form-slider .thumbnail img').show()[0].setAttribute('src', thumbnailDataURL);
+				$img.show();
+				$img.attr('src', thumbnailDataURL);
 			}
-			$el.find('.form-slider .thumbnail a').attr(
-				'href',
-				post.url !== null ?
-					thumbnailDataURL :
-					URL.createObjectURL(post.file));
+			$el.find('.form-slider .thumbnail a').attr('href', thumbnailDataURL);
 		});
 	}
 
@@ -352,9 +345,9 @@ App.Presenters.PostUploadPresenter = function(
 		post.getThumbnail(30, 30).then(function(thumbnailDataURL) {
 			var $row = post.$tableRow;
 			if (thumbnailDataURL === null) {
-				$row.find('img')[0].setAttribute('src', util.transparentPixel());
-			} else if ($row.find('img').attr('src') !== thumbnailDataURL) {
-				$row.find('img')[0].setAttribute('src', thumbnailDataURL);
+				$row.find('img').attr('src', util.transparentPixel());
+			} else {
+				$row.find('img').attr('src', thumbnailDataURL);
 			}
 		});
 	}
