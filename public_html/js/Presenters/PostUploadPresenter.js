@@ -331,13 +331,16 @@ App.Presenters.PostUploadPresenter = function(
 		post.getThumbnail(null, null).then(function(thumbnailDataURL) {
 			var $thumbnail = $el.find('.form-slider .thumbnail');
 			var $img = $thumbnail.find('img');
+			var $link = $thumbnail.find('a');
 			if (thumbnailDataURL === null) {
 				$img.hide();
+				$link.hide();
 			} else {
 				$img.show();
 				$img.attr('src', thumbnailDataURL);
+				$link.show();
+				$link.attr('href', thumbnailDataURL);
 			}
-			$el.find('.form-slider .thumbnail a').attr('href', thumbnailDataURL);
 		});
 	}
 
