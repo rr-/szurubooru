@@ -18,8 +18,8 @@ App.Keyboard = function(jQuery, mousetrap) {
 			if ($focused.prop('tagName').match(/embed|object/i)) {
 				return true;
 			}
-			if ($focused.prop('tagName').toLowerCase() === 'input'
-			&& $focused.attr('type').match(/checkbox|radio/i)) {
+			if ($focused.prop('tagName').toLowerCase() === 'input' &&
+				$focused.attr('type').match(/checkbox|radio/i)) {
 				return false;
 			}
 		}
