@@ -234,9 +234,15 @@ App.Controls.AutoCompleteInput = function($input) {
 			options.onRender($list);
 		}
 		refreshActiveResult();
+
+		var x = $input.offset().left;
+		var y = $input.offset().top + $input.outerHeight() - 2;
+		if (y + $div.height() > window.innerHeight) {
+			y = $input.offset().top - $div.height();
+		}
 		$div.css({
-			left: ($input.offset().left) + 'px',
-			top: ($input.offset().top + $input.outerHeight() - 2) + 'px',
+			left: x + 'px',
+			top: y + 'px',
 		});
 		$div.show();
 		monitorInputHiding();
