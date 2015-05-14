@@ -184,12 +184,14 @@ App.Presenters.PagerPresenter = function(
 	}
 
 	function refreshPageList() {
+		var $lastItem = $pageList.find('li:last-child');
+		var currentPage = pager.getPage();
 		var pages = pager.getVisiblePages();
-		$pageList.empty();
+		$pageList.find('li.page').remove();
 		var lastPage = 0;
 		_.each(pages, function(page) {
 			if (page - lastPage > 1) {
-				$pageList.append(jQuery('<li><a>&hellip;</a></li>'));
+				jQuery('<li class="page ellipsis"><a>&hellip;</a></li>').insertBefore($lastItem);
 			}
 			lastPage = page;
 
@@ -200,12 +202,23 @@ App.Presenters.PagerPresenter = function(
 			});
 			$a.addClass('big-button');
 			$a.text(page);
-			if (page === pager.getPage()) {
+			if (page === currentPage) {
 				$a.addClass('active');
 			}
-			var $li = jQuery('<li/>');
-			$li.append($a);
-			$pageList.append($li);
+			jQuery('<li class="page"/>').append($a).insertBefore($lastItem);
+		});
+
+		$pageList.find('li.next a').click(function(e) {
+			e.preventDefault();
+			if (currentPage + 1 < pages.length) {
+				syncUrl({page: currentPage + 1});
+			}
+		});
+		$pageList.find('li.prev a').click(function(e) {
+			e.preventDefault();
+			if (currentPage - 1 >= 1) {
+				syncUrl({page: currentPage - 1});
+			}
 		});
 	}
 
