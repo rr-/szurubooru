@@ -126,6 +126,8 @@ App.Presenters.PostEditPresenter = function(
 			return;
 		}
 
+		$(document.activeElement).blur();
+
 		promise.wait(api.post('/posts/' + post.id, formData))
 			.then(function(response) {
 				tagList.refreshTags();
