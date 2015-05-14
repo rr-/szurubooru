@@ -1,7 +1,8 @@
 var App = App || {};
 
-App.Keyboard = function(jQuery, mousetrap) {
+App.Keyboard = function(jQuery, mousetrap, browsingSettings) {
 
+	var enabled = browsingSettings.getSettings().keyboardShortcuts;
 	var oldStopCallback = mousetrap.stopCallback;
 	mousetrap.stopCallback = function(e, element, combo, sequence) {
 		if (combo.indexOf('ctrl') === -1 && e.ctrlKey) {
@@ -28,12 +29,16 @@ App.Keyboard = function(jQuery, mousetrap) {
 
 	function keyup(key, callback) {
 		unbind(key);
-		mousetrap.bind(key, callback, 'keyup');
+		if (enabled) {
+			mousetrap.bind(key, callback, 'keyup');
+		}
 	}
 
 	function keydown(key, callback) {
 		unbind(key);
-		mousetrap.bind(key, callback);
+		if (enabled) {
+			mousetrap.bind(key, callback);
+		}
 	}
 
 	function reset() {
@@ -53,4 +58,4 @@ App.Keyboard = function(jQuery, mousetrap) {
 	};
 };
 
-App.DI.register('keyboard', ['jQuery', 'mousetrap'], App.Keyboard);
+App.DI.register('keyboard', ['jQuery', 'mousetrap', 'browsingSettings'], App.Keyboard);

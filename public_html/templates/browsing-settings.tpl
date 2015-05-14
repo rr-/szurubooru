@@ -42,6 +42,16 @@
 	</div>
 
 	<div class="form-row">
+		<label class="form-label" for="browsing-settings-keyboard-shortcuts">Keyboard shortcuts:</label>
+		<div class="form-input">
+			<input <% print(settings.keyboardShortcuts ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-keyboard-shortcuts" name="keyboardShortcuts"/>
+			<label for="browsing-settings-keyboard-shortcuts">
+				Enabled
+			</label>
+		</div>
+	</div>
+
+	<div class="form-row">
 		<label class="form-label"></label>
 		<div class="form-input">
 			<button type="submit">Update settings</button>

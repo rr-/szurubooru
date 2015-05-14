@@ -32,6 +32,7 @@ App.BrowsingSettings = function(
 				sketchy: true,
 				unsafe: true,
 			},
+			keyboardShortcuts: true,
 		};
 	}
 

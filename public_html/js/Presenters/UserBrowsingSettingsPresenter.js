@@ -51,6 +51,7 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
 				sketchy: $el.find('[name=listSketchyPosts]').is(':checked'),
 				unsafe: $el.find('[name=listUnsafePosts]').is(':checked'),
 			},
+			keyboardShortcuts: $el.find('[name=keyboardShortcuts]').is(':checked'),
 		};
 
 		promise.wait(browsingSettings.setSettings(newSettings))
