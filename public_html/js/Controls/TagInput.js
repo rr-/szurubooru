@@ -31,7 +31,9 @@ App.Controls.TagInput = function($underlyingInput) {
 
 	var $wrapper = jQuery('<div class="tag-input">');
 	var $tagList = jQuery('<ul class="tags">');
-	var $input = jQuery('<input class="tag-real-input" type="text"/>');
+	var tagInputId = 'tags' + Math.random();
+	var $label = jQuery('<label for="' + tagInputId + '" style="display: none">Tags:</label>');
+	var $input = jQuery('<input class="tag-real-input" type="text" id="' + tagInputId + '"/>');
 	var $siblings = jQuery('<div class="related-tags"><span>Sibling tags:</span><ul>');
 	var $suggestions = jQuery('<div class="related-tags"><span>Suggested tags:</span><ul>');
 	init();
@@ -54,6 +56,7 @@ App.Controls.TagInput = function($underlyingInput) {
 	function render() {
 		$underlyingInput.hide();
 		$wrapper.append($tagList);
+		$wrapper.append($label);
 		$wrapper.append($input);
 		$wrapper.insertAfter($underlyingInput);
 		$wrapper.click(function(e) {
