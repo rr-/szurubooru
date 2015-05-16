@@ -156,6 +156,7 @@ App.Presenters.PostUploadPresenter = function(
 		$allCheckboxes.prop('checked', false);
 		$myCheckbox.prop('checked', true);
 		postTableCheckboxesChanged(e);
+		tagInput.focus();
 	}
 
 	function postTableCheckboxClicked(e) {
@@ -312,6 +313,7 @@ App.Presenters.PostUploadPresenter = function(
 
 		$row.removeClass('template');
 		$row.find('td:not(.checkbox)').click(postTableRowClicked);
+		$row.find('a').click(postTableRowClicked);
 		$row.find('td.checkbox').click(postTableCheckboxClicked);
 		$row.data('post', post);
 		$table.find('tbody').append($row);

@@ -39,7 +39,9 @@
 							<label></label>
 						</td>
 						<td class="thumbnail">
-							<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Thumbnail"/>
+							<a href="#"/>
+								<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Thumbnail"/>
+							</a>
 						</td>
 						<td class="tags"></td>
 						<td class="safety"><div class="safety-template"></div></td>
