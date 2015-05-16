@@ -52,10 +52,16 @@
 					<button class="post-table-op remove"><i class="fa fa-remove"></i> Remove</button>
 				</li><!--
 				--><li>
-					<button class="post-table-op move-up"><i class="fa fa-chevron-up"></i> Move up</button>
+					<button class="post-table-op previous"><i class="fa fa-chevron-up"></i> Previous</button>
 				</li><!--
 				--><li>
-					<button class="post-table-op move-down"><i class="fa fa-chevron-down"></i> Move down</button>
+					<button class="post-table-op next"><i class="fa fa-chevron-down"></i> Next</button>
+				</li><!--
+				--><li>
+					<button class="post-table-op move-up"><i class="fa fa-arrow-up"></i> Move up</button>
+				</li><!--
+				--><li>
+					<button class="post-table-op move-down"><i class="fa fa-arrow-down"></i> Move down</button>
 				</li><!--
 				--><li>
 					<button class="upload highlight" type="submit"><i class="fa fa-upload"></i> Submit</button>

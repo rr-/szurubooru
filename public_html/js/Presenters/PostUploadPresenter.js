@@ -64,6 +64,8 @@ App.Presenters.PostUploadPresenter = function(
 		$el.find('.remove').click(removeButtonClicked);
 		$el.find('.move-up').click(moveUpButtonClicked);
 		$el.find('.move-down').click(moveDownButtonClicked);
+		$el.find('.previous').click(selectPrevPostTableRow);
+		$el.find('.next').click(selectNextPostTableRow);
 		$el.find('.upload').click(uploadButtonClicked);
 		$el.find('.stop').click(stopButtonClicked);
 	}
