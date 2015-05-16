@@ -2,6 +2,7 @@ var App = App || {};
 App.Presenters = App.Presenters || {};
 
 App.Presenters.PostEditPresenter = function(
+	jQuery,
 	util,
 	promise,
 	api,
@@ -126,7 +127,7 @@ App.Presenters.PostEditPresenter = function(
 			return;
 		}
 
-		$(document.activeElement).blur();
+		jQuery(document.activeElement).blur();
 
 		promise.wait(api.post('/posts/' + post.id, formData))
 			.then(function(response) {
@@ -152,4 +153,4 @@ App.Presenters.PostEditPresenter = function(
 
 };
 
-App.DI.register('postEditPresenter', ['util', 'promise', 'api', 'auth', 'tagList'], App.Presenters.PostEditPresenter);
+App.DI.register('postEditPresenter', ['jQuery', 'util', 'promise', 'api', 'auth', 'tagList'], App.Presenters.PostEditPresenter);
