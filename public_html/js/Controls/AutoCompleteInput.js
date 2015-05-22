@@ -6,6 +6,7 @@ App.Controls.AutoCompleteInput = function($input) {
 	var jQuery = App.DI.get('jQuery');
 	var tagList = App.DI.get('tagList');
 
+	var KEY_TAB = 9;
 	var KEY_RETURN = 13;
 	var KEY_DELETE = 46;
 	var KEY_ESCAPE = 27;
@@ -68,6 +69,12 @@ App.Controls.AutoCompleteInput = function($input) {
 		var func = null;
 		if (isShown() && e.which === KEY_ESCAPE) {
 			func = hide;
+		} else if (isShown() && e.which === KEY_TAB) {
+			if (e.shiftKey) {
+				func = selectPrevious;
+			} else {
+				func = selectNext;
+			}
 		} else if (isShown() && e.which === KEY_DOWN) {
 			func = selectNext;
 		} else if (isShown() && e.which === KEY_UP) {
