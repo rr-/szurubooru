@@ -149,7 +149,7 @@ class PostDao extends AbstractDao implements ICrudDao
 			return;
 		}
 
-		elseif ($requirement->getType() === PostFilter::REQUIREMENT_COMMENT)
+		elseif ($requirement->getType() === PostFilter::REQUIREMENT_COMMENT_AUTHOR)
 		{
 			foreach ($requirement->getValue()->getValues() as $userName)
 			{

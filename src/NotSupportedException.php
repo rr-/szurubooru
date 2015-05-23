@@ -3,8 +3,8 @@ namespace Szurubooru;
 
 class NotSupportedException extends \BadMethodCallException
 {
-	public function __construct()
+	public function __construct($message = null)
 	{
-		parent::__construct('Not supported');
+		parent::__construct($message === null ? 'Not supported' : $message);
 	}
 }

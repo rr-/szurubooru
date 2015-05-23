@@ -104,7 +104,12 @@ class EnumHelper
 		$key = trim(strtolower($enumString));
 		$lowerEnumMap = array_change_key_case($enumMap, \CASE_LOWER);
 		if (!isset($lowerEnumMap[$key]))
-			throw new \DomainException('Unrecognized value: ' . $enumString);
+		{
+			throw new \DomainException(sprintf(
+				'Unrecognized value: %s.' . PHP_EOL . 'Possible values: %s',
+				$enumString,
+				join(', ', array_keys($lowerEnumMap))));
+		}
 
 		return $lowerEnumMap[$key];
 	}

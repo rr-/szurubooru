@@ -43,7 +43,13 @@ class PostSearchParser extends AbstractSearchParser
 		$tokenKey = $token->getKey();
 		$tokenValue = $token->getValue();
 
-		$countAliases = ['tag_count' => 'tag', 'fav_count' => 'fav', 'score' => 'score'];
+		$countAliases =
+		[
+			'tag_count' => 'tags',
+			'fav_count' => 'favs',
+			'score' => 'score',
+			'comment_count' => 'comments',
+		];
 		foreach ($countAliases as $realKey => $baseAlias)
 		{
 			if ($this->matches($tokenKey, [$baseAlias . '_min', $baseAlias . '_max']))
@@ -60,59 +66,49 @@ class PostSearchParser extends AbstractSearchParser
 			[['id'], [$this, 'addIdRequirement']],
 			[['hash', 'name'], [$this, 'addHashRequirement']],
 			[['date', 'time'], [$this, 'addDateRequirement']],
-			[['tag_count'], [$this, 'addTagCountRequirement']],
-			[['fav_count'], [$this, 'addFavCountRequirement']],
-			[['comment_count'], [$this, 'addCommentCountRequirement']],
+			[['tag_count', 'tags'], [$this, 'addTagCountRequirement']],
+			[['fav_count', 'favs'], [$this, 'addFavCountRequirement']],
+			[['comment_count', 'comments'], [$this, 'addCommentCountRequirement']],
 			[['score'], [$this, 'addScoreRequirement']],
-			[['uploader', 'submit', 'up'], [$this, 'addUploaderRequirement']],
+			[['uploader', 'uploader', 'uploaded', 'submit', 'submitter', 'submitted'], [$this, 'addUploaderRequirement']],
 			[['safety', 'rating'], [$this, 'addSafetyRequirement']],
 			[['fav'], [$this, 'addFavRequirement']],
 			[['type'], [$this, 'addTypeRequirement']],
-			[['comment'], [$this, 'addCommentRequirement']],
+			[['comment', 'comment_author', 'commented'], [$this, 'addCommentAuthorRequirement']],
 		];
 
 		foreach ($map as $item)
 		{
 			list ($aliases, $callback) = $item;
 			if ($this->matches($tokenKey, $aliases))
-			{
 				return $callback($filter, $token);
-			}
 		}
 
 		if ($this->matches($tokenKey, ['special']))
 		{
-			if ($this->matches($tokenValue, ['liked']))
+			$specialMap =
+			[
+				[['liked'], [$this, 'addOwnLikedRequirement']],
+				[['disliked'], [$this, 'addOwnDislikedRequirement']],
+				[['fav'], [$this, 'addOwnFavRequirement']],
+			];
+
+			foreach ($specialMap as $item)
 			{
-				$this->privilegeService->assertLoggedIn();
-				return $this->addUserScoreRequirement(
-					$filter,
-					$this->authService->getLoggedInUser()->getName(),
-					1,
-					$token->isNegated());
+				list ($aliases, $callback) = $item;
+				if ($this->matches($token->getValue(), $aliases))
+					return $callback($filter, $token);
 			}
 
-			if ($this->matches($tokenValue, ['disliked']))
-			{
-				$this->privilegeService->assertLoggedIn();
-				return $this->addUserScoreRequirement(
-					$filter,
-					$this->authService->getLoggedInUser()->getName(),
-					-1,
-					$token->isNegated());
-			}
-
-			if ($this->matches($tokenValue, ['fav']))
-			{
-				$this->privilegeService->assertLoggedIn();
-				$token = new NamedSearchToken();
-				$token->setKey('fav');
-				$token->setValue($this->authService->getLoggedInUser()->getName());
-				return $this->decorateFilterFromNamedToken($filter, $token);
-			}
+			throw new NotSupportedException(
+				'Unknown value for special search term: ' . $token->getValue()
+				. '. Possible search terms: '
+				. join(', ', array_map(function($term) { return join('/', $term[0]); }, $specialMap)));
 		}
 
-		throw new NotSupportedException();
+		throw new NotSupportedException('Unknown search term: ' . $token->getKey()
+			. '. Possible search terms: special, '
+			. join(', ', array_map(function($term) { return join('/', $term[0]); }, $map)));
 	}
 
 	protected function getOrderColumn($tokenText)
@@ -151,6 +147,35 @@ class PostSearchParser extends AbstractSearchParser
 			return PostFilter::ORDER_LAST_FEATURE_TIME;
 
 		throw new NotSupportedException();
+	}
+
+	private function addOwnLikedRequirement($filter, $token)
+	{
+		$this->privilegeService->assertLoggedIn();
+		$this->addUserScoreRequirement(
+			$filter,
+			$this->authService->getLoggedInUser()->getName(),
+			1,
+			$token->isNegated());
+	}
+
+	private function addOwnDislikedRequirement($filter, $token)
+	{
+		$this->privilegeService->assertLoggedIn();
+		$this->addUserScoreRequirement(
+			$filter,
+			$this->authService->getLoggedInUser()->getName(),
+			-1,
+			$token->isNegated());
+	}
+
+	private function addOwnFavRequirement($filter, $token)
+	{
+		$this->privilegeService->assertLoggedIn();
+		$token = new NamedSearchToken();
+		$token->setKey('fav');
+		$token->setValue($this->authService->getLoggedInUser()->getName());
+		$this->decorateFilterFromNamedToken($filter, $token);
 	}
 
 	private function addIdRequirement($filter, $token)
@@ -280,12 +305,12 @@ class PostSearchParser extends AbstractSearchParser
 			});
 	}
 
-	private function addCommentRequirement($filter, $token)
+	private function addCommentAuthorRequirement($filter, $token)
 	{
 		$this->addRequirementFromToken(
 			$filter,
 			$token,
-			PostFilter::REQUIREMENT_COMMENT,
+			PostFilter::REQUIREMENT_COMMENT_AUTHOR,
 			self::ALLOW_COMPOSITE);
 	}
 
