@@ -37,6 +37,7 @@ class EnumHelper
 		'video' => Post::POST_TYPE_VIDEO,
 		'flash' => Post::POST_TYPE_FLASH,
 		'youtube' => Post::POST_TYPE_YOUTUBE,
+		'animation' => Post::POST_TYPE_ANIMATED_IMAGE,
 	];
 
 	private static $snapshotTypeMap =

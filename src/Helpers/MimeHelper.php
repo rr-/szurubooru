@@ -18,6 +18,12 @@ class MimeHelper
 		return self::getMimeTypeFrom16Bytes(substr($buffer, 0, 16));
 	}
 
+	public static function isBufferAnimatedGif($buffer)
+	{
+		return strtolower(self::getMimeTypeFromBuffer($buffer)) === 'image/gif'
+		and preg_match_all('#\x21\xf9\x04.{4}\x00[\x2c\x21]#s', $buffer) > 1;
+	}
+
 	public static function isFlash($mime)
 	{
 		return strtolower($mime) === 'application/x-shockwave-flash';

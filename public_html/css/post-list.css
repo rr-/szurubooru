@@ -158,6 +158,9 @@
 .post-small.post-type-flash .link::after {
 	content: 'flash';
 }
+.post-small.post-type-animation .link::after {
+	content: 'anim';
+}
 
 .post-small .action {
 	display: none;

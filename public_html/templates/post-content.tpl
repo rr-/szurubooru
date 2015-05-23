@@ -2,7 +2,7 @@
 	var postContentUrl = '/data/posts/' + post.name + '?' + Math.round(Math.random() * 1000) /* reset gif animations */
 	var width;
 	var height;
-	if (post.contentType === 'image' || post.contentType === 'flash') {
+	if (post.contentType === 'image' || post.contentType === 'animation' || post.contentType === 'flash') {
 		width = post.imageWidth;
 		height = post.imageHeight;
 	} else {
@@ -21,7 +21,7 @@
 		data-height="<%= height %>"
 		style="max-width: <%= width %>px">
 
-		<%  if (post.contentType === 'image') { %>
+		<% if (post.contentType === 'image' || post.contentType === 'animation') { %>
 
 			<img alt="<%= post.name %>" src="<%= postContentUrl %>"/>
 

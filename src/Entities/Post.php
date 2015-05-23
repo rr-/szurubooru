@@ -12,6 +12,7 @@ final class Post extends Entity
 	const POST_TYPE_FLASH = 2;
 	const POST_TYPE_VIDEO = 3;
 	const POST_TYPE_YOUTUBE = 4;
+	const POST_TYPE_ANIMATED_IMAGE = 5;
 
 	const FLAG_LOOP = 1;
 

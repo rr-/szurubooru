@@ -206,13 +206,24 @@ class PostService
 		$post->setContentMimeType($mime);
 
 		if (MimeHelper::isFlash($mime))
+		{
 			$post->setContentType(Post::POST_TYPE_FLASH);
+		}
 		elseif (MimeHelper::isImage($mime))
-			$post->setContentType(Post::POST_TYPE_IMAGE);
+		{
+			$post->setContentType(
+				MimeHelper::isBufferAnimatedGif($content)
+					? Post::POST_TYPE_ANIMATED_IMAGE
+					: Post::POST_TYPE_IMAGE);
+		}
 		elseif (MimeHelper::isVideo($mime))
+		{
 			$post->setContentType(Post::POST_TYPE_VIDEO);
+		}
 		else
+		{
 			throw new \DomainException('Unhandled file type: "' . $mime . '"');
+		}
 
 		$post->setContentChecksum(sha1($content));
 		$this->assertNoPostWithThisContentChecksum($post);

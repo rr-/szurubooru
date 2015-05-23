@@ -41,13 +41,10 @@ final class UpgradeService
 			if ($this->isUpgradeNeeded($upgrade))
 			{
 				if ($verbose)
-				{
-					echo 'Running ' . get_class($upgrade) . PHP_EOL;
-					if (ob_get_level())
-						ob_flush();
-					flush();
-				}
+					$this->log('Running ' . get_class($upgrade));
 				$this->runUpgrade($upgrade);
+				if ($verbose)
+					$this->log(PHP_EOL);
 			}
 		}
 	}
@@ -86,5 +83,13 @@ final class UpgradeService
 		$className = get_class($upgrade);
 		preg_match('/(\d+)/', $className, $matches);
 		return intval($matches[1]);
+	}
+
+	private function log($message)
+	{
+		echo $message;
+		if (ob_get_level())
+			ob_flush();
+		flush();
 	}
 }
