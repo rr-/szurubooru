@@ -62,16 +62,8 @@ App.Presenters.PagerPresenter = function(
 			.fail(loaded);
 
 		if (!endlessScroll) {
-			keyboard.keydown('a', function() {
-				if (pager.prevPage()) {
-					syncUrl({page: pager.getPage()});
-				}
-			});
-			keyboard.keydown('d', function() {
-				if (pager.nextPage()) {
-					syncUrl({page: pager.getPage()});
-				}
-			});
+			keyboard.keydown('a', navigateToPrevPage);
+			keyboard.keydown('d', navigateToNextPage);
 		}
 	}
 
@@ -183,6 +175,19 @@ App.Presenters.PagerPresenter = function(
 		$pageList.hide();
 	}
 
+	function navigateToPrevPage() {
+		console.log('!');
+		if (pager.prevPage()) {
+			syncUrl({page: pager.getPage()});
+		}
+	}
+
+	function navigateToNextPage() {
+		if (pager.nextPage()) {
+			syncUrl({page: pager.getPage()});
+		}
+	}
+
 	function refreshPageList() {
 		var $lastItem = $pageList.find('li:last-child');
 		var currentPage = pager.getPage();
@@ -208,17 +213,13 @@ App.Presenters.PagerPresenter = function(
 			jQuery('<li class="page"/>').append($a).insertBefore($lastItem);
 		});
 
-		$pageList.find('li.next a').click(function(e) {
+		$pageList.find('li.next a').unbind('click').bind('click', function(e) {
 			e.preventDefault();
-			if (currentPage + 1 < pages.length) {
-				syncUrl({page: currentPage + 1});
-			}
+			navigateToNextPage();
 		});
-		$pageList.find('li.prev a').click(function(e) {
+		$pageList.find('li.prev a').unbind('click').bind('click', function(e) {
 			e.preventDefault();
-			if (currentPage - 1 >= 1) {
-				syncUrl({page: currentPage - 1});
-			}
+			navigateToPrevPage();
 		});
 	}
 
