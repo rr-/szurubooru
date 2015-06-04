@@ -53,7 +53,7 @@ App.Presenters.GlobalCommentListPresenter = function(
 
 
 	function reinit(params, loaded) {
-		pagerPresenter.reinit({query: params.query});
+		pagerPresenter.reinit({query: params.query || {}});
 		loaded();
 	}
 
