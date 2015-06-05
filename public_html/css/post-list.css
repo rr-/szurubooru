@@ -134,6 +134,7 @@
 }
 
 .post-small:not(.post-type-image) .link::after {
+	pointer-events: none;
 	display: block;
 	content: '...';
 	z-index: 3;
