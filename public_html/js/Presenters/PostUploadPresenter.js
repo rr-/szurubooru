@@ -440,6 +440,15 @@ App.Presenters.PostUploadPresenter = function(
 		};
 	}
 
+	function getTagIndex(post, tag) {
+		var tags = jQuery.map(post.tags, String.toLowerCase);
+		return tags.indexOf(tag.toLowerCase());
+	}
+
+	function hasTag(post, tag) {
+		return getTagIndex(post, tag) !== -1;
+	}
+
 	function getCombinedPost(posts) {
 		var combinedPost = _.extend({}, getDefaultPost());
 		if (posts.length === 0) {
@@ -449,7 +458,7 @@ App.Presenters.PostUploadPresenter = function(
 
 		var tagFilter = function(post) {
 			return function(tag) {
-				return post.tags.indexOf(tag) !== -1;
+				return hasTag(post, tag);
 			};
 		};
 
@@ -496,8 +505,7 @@ App.Presenters.PostUploadPresenter = function(
 
 	function addTagToPosts(posts, tag) {
 		jQuery.each(posts, function(i, post) {
-			var index = post.tags.indexOf(tag);
-			if (index === -1) {
+			if (!hasTag(post, tag)) {
 				post.tags.push(tag);
 			}
 			postChanged(post);
@@ -506,9 +514,8 @@ App.Presenters.PostUploadPresenter = function(
 
 	function removeTagFromPosts(posts, tag) {
 		jQuery.each(posts, function(i, post) {
-			var index = post.tags.indexOf(tag);
-			if (index !== -1) {
-				post.tags.splice(index, 1);
+			if (hasTag(post, tag)) {
+				post.tags.splice(getTagIndex(post, tag), 1);
 			}
 			postChanged(post);
 		});
