@@ -441,7 +441,9 @@ App.Presenters.PostUploadPresenter = function(
 	}
 
 	function getTagIndex(post, tag) {
-		var tags = jQuery.map(post.tags, String.toLowerCase);
+		var tags = jQuery.map(post.tags, function(tag) {
+			return tag.toLowerCase();
+		});
 		return tags.indexOf(tag.toLowerCase());
 	}
 
