@@ -102,7 +102,7 @@ class ImageConverter
 
 		if (!file_exists($targetPath) && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
 		{
-			ProgramExecutor::run(self::PROGRAM_NAME_FFMEPG,
+			ProgramExecutor::run(self::PROGRAM_NAME_FFMPEG,
 				[
 					'-i', $sourcePath,
 					'-vframes', '1',
