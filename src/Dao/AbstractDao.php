@@ -64,8 +64,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 	public function findAll()
 	{
 		$query = $this->pdo->from($this->tableName);
-		$arrayEntities = iterator_to_array($query);
-		return $this->arrayToEntities($arrayEntities);
+		return $this->arrayToEntities($query);
 	}
 
 	public function findById($entityId)
@@ -248,7 +247,7 @@ abstract class AbstractDao implements ICrudDao, IBatchDao
 		$query->where($sql, $bindings);
 	}
 
-	protected function arrayToEntities(array $arrayEntities, $entityConverter = null)
+	protected function arrayToEntities($arrayEntities, $entityConverter = null)
 	{
 		if ($entityConverter === null)
 			$entityConverter = $this->entityConverter;
