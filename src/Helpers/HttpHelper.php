@@ -30,7 +30,24 @@ class HttpHelper
 
 	public function getRequestHeaders()
 	{
-		return getallheaders();
+		if (function_exists('getallheaders'))
+		{
+			return getallheaders();
+		}
+		$result = [];
+		foreach ($_SERVER as $key => $value)
+		{
+			if (substr($key, 0, 5) == "HTTP_")
+			{
+				$key = str_replace(" ", "-", ucwords(strtolower(str_replace("_", " ", substr($key, 5)))));
+				$result[$key] = $value;
+			}
+			else
+			{
+				$result[$key] = $value;
+			}
+		}
+		return $result;
 	}
 
 	public function getRequestHeader($key)
