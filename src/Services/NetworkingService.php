@@ -92,13 +92,11 @@ class NetworkingService
 
 	public function redirect($destination)
 	{
-		$this->httpHelper->setResponseCode(307);
-		$this->httpHelper->setHeader('Location', $destination);
+		$this->httpHelper->redirect($destination);
 	}
 
 	public function nonCachedRedirect($destination)
 	{
-		$this->httpHelper->setResponseCode(303);
-		$this->httpHelper->setHeader('Location', $destination);
+		$this->httpHelper->nonCachedRedirect($destination);
 	}
 }

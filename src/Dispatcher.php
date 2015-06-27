@@ -65,9 +65,12 @@ final class Dispatcher
 			$json['__statements'] = $this->databaseConnection->getPDO()->getStatements();
 		}
 
-		$this->httpHelper->setResponseCode($code);
-		$this->httpHelper->setHeader('Content-Type', 'application/json');
-		$this->httpHelper->outputJSON($json);
+		if (!$this->httpHelper->isRedirecting())
+		{
+			$this->httpHelper->setResponseCode($code);
+			$this->httpHelper->setHeader('Content-Type', 'application/json');
+			$this->httpHelper->outputJSON($json);
+		}
 
 		return $json;
 	}

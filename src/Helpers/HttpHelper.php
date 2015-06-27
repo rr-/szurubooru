@@ -3,6 +3,8 @@ namespace Szurubooru\Helpers;
 
 class HttpHelper
 {
+	private $redirected = false;
+
 	public function setResponseCode($code)
 	{
 		http_response_code($code);
@@ -66,5 +68,24 @@ class HttpHelper
 		$requestUri = $_SERVER['REQUEST_URI'];
 		$requestUri = preg_replace('/\?.*$/', '', $requestUri);
 		return $requestUri;
+	}
+
+	public function redirect($destination)
+	{
+		$this->setResponseCode(307);
+		$this->setHeader('Location', $destination);
+		$this->redirected = true;
+	}
+
+	public function nonCachedRedirect($destination)
+	{
+		$this->setResponseCode(303);
+		$this->setHeader('Location', $destination);
+		$this->redirected = true;
+	}
+
+	public function isRedirecting()
+	{
+		return $this->redirected;
 	}
 }
