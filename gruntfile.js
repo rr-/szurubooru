@@ -162,7 +162,7 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('update', 'Upgrade database to newest version.', function() {
-		exec('php scripts/upgrade.php');
+		exec('php scripts/upgrade');
 	});
 	grunt.registerTask('upgrade', ['update']);
 
