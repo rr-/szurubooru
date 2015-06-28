@@ -30,6 +30,9 @@ final class InputReader extends \ArrayObject
 		if (!isset($_FILES[$fileName]))
 			return null;
 
+		if (!$_FILES[$fileName]['tmp_name'])
+			throw new \Exception('File is probably too big.');
+
 		return file_get_contents($_FILES[$fileName]['tmp_name']);
 	}
 }
