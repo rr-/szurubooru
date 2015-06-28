@@ -55,6 +55,7 @@ return [
             $container->get(\Szurubooru\Upgrades\Upgrade36::class),
             $container->get(\Szurubooru\Upgrades\Upgrade37::class),
             $container->get(\Szurubooru\Upgrades\Upgrade38::class),
+            $container->get(\Szurubooru\Upgrades\Upgrade39::class),
         ];
     }),
 
