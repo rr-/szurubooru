@@ -1,96 +1,96 @@
 var App = App || {};
 
 App.BrowsingSettings = function(
-	promise,
-	auth,
-	api) {
+    promise,
+    auth,
+    api) {
 
-	var settings = getDefaultSettings();
+    var settings = getDefaultSettings();
 
-	auth.startObservingLoginChanges('browsing-settings', loginStateChanged);
+    auth.startObservingLoginChanges('browsing-settings', loginStateChanged);
 
-	readFromLocalStorage();
-	if (auth.isLoggedIn()) {
-		loginStateChanged();
-	}
+    readFromLocalStorage();
+    if (auth.isLoggedIn()) {
+        loginStateChanged();
+    }
 
-	function setSettings(newSettings) {
-		settings = newSettings;
-		return save();
-	}
+    function setSettings(newSettings) {
+        settings = newSettings;
+        return save();
+    }
 
-	function getSettings() {
-		return settings;
-	}
+    function getSettings() {
+        return settings;
+    }
 
-	function getDefaultSettings() {
-		return {
-			hideDownvoted: true,
-			endlessScroll: false,
-			listPosts: {
-				safe: true,
-				sketchy: true,
-				unsafe: true,
-			},
-			keyboardShortcuts: true,
-		};
-	}
+    function getDefaultSettings() {
+        return {
+            hideDownvoted: true,
+            endlessScroll: false,
+            listPosts: {
+                safe: true,
+                sketchy: true,
+                unsafe: true,
+            },
+            keyboardShortcuts: true,
+        };
+    }
 
-	function loginStateChanged() {
-		readFromUser(auth.getCurrentUser());
-	}
+    function loginStateChanged() {
+        readFromUser(auth.getCurrentUser());
+    }
 
-	function readFromLocalStorage() {
-		readFromString(localStorage.getItem('browsingSettings'));
-	}
+    function readFromLocalStorage() {
+        readFromString(localStorage.getItem('browsingSettings'));
+    }
 
-	function readFromUser(user) {
-		readFromString(user.browsingSettings);
-	}
+    function readFromUser(user) {
+        readFromString(user.browsingSettings);
+    }
 
-	function readFromString(string) {
-		if (!string) {
-			return;
-		}
+    function readFromString(string) {
+        if (!string) {
+            return;
+        }
 
-		try {
-			if (typeof(string) === 'string' || string instanceof String) {
-				settings = JSON.parse(string);
-			} else {
-				settings = string;
-			}
-		} catch (e) {
-		}
-	}
+        try {
+            if (typeof(string) === 'string' || string instanceof String) {
+                settings = JSON.parse(string);
+            } else {
+                settings = string;
+            }
+        } catch (e) {
+        }
+    }
 
-	function saveToLocalStorage() {
-		localStorage.setItem('browsingSettings', JSON.stringify(settings));
-	}
+    function saveToLocalStorage() {
+        localStorage.setItem('browsingSettings', JSON.stringify(settings));
+    }
 
-	function saveToUser(user) {
-		var formData = {
-			browsingSettings: JSON.stringify(settings),
-		};
-		return api.post('/users/' + user.name, formData);
-	}
+    function saveToUser(user) {
+        var formData = {
+            browsingSettings: JSON.stringify(settings),
+        };
+        return api.post('/users/' + user.name, formData);
+    }
 
-	function save() {
-		return promise.make(function(resolve, reject) {
-			saveToLocalStorage();
-			if (auth.isLoggedIn()) {
-				promise.wait(saveToUser(auth.getCurrentUser()))
-					.then(resolve)
-					.fail(reject);
-			} else {
-				resolve();
-			}
-		});
-	}
+    function save() {
+        return promise.make(function(resolve, reject) {
+            saveToLocalStorage();
+            if (auth.isLoggedIn()) {
+                promise.wait(saveToUser(auth.getCurrentUser()))
+                    .then(resolve)
+                    .fail(reject);
+            } else {
+                resolve();
+            }
+        });
+    }
 
-	return {
-		getSettings: getSettings,
-		setSettings: setSettings,
-	};
+    return {
+        getSettings: getSettings,
+        setSettings: setSettings,
+    };
 
 };
 

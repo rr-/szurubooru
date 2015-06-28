@@ -7,37 +7,37 @@ use Szurubooru\Services\TagService;
 
 class MergeTags extends AbstractTagRoute
 {
-	private $privilegeService;
-	private $tagService;
-	private $inputReader;
+    private $privilegeService;
+    private $tagService;
+    private $inputReader;
 
-	public function __construct(
-		PrivilegeService $privilegeService,
-		TagService $tagService,
-		InputReader $inputReader)
-	{
-		$this->privilegeService = $privilegeService;
-		$this->tagService = $tagService;
-		$this->inputReader = $inputReader;
-	}
+    public function __construct(
+        PrivilegeService $privilegeService,
+        TagService $tagService,
+        InputReader $inputReader)
+    {
+        $this->privilegeService = $privilegeService;
+        $this->tagService = $tagService;
+        $this->inputReader = $inputReader;
+    }
 
-	public function getMethods()
-	{
-		return ['POST', 'PUT'];
-	}
+    public function getMethods()
+    {
+        return ['POST', 'PUT'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/tags/:tagName/merge';
-	}
+    public function getUrl()
+    {
+        return '/api/tags/:tagName/merge';
+    }
 
-	public function work($args)
-	{
-		$tagName = $args['tagName'];
-		$targetTagName = $this->inputReader->targetTag;
-		$sourceTag = $this->tagService->getByName($tagName);
-		$targetTag = $this->tagService->getByName($targetTagName);
-		$this->privilegeService->assertPrivilege(Privilege::MERGE_TAGS);
-		return $this->tagService->mergeTag($sourceTag, $targetTag);
-	}
+    public function work($args)
+    {
+        $tagName = $args['tagName'];
+        $targetTagName = $this->inputReader->targetTag;
+        $sourceTag = $this->tagService->getByName($tagName);
+        $targetTag = $this->tagService->getByName($targetTagName);
+        $this->privilegeService->assertPrivilege(Privilege::MERGE_TAGS);
+        return $this->tagService->mergeTag($sourceTag, $targetTag);
+    }
 }

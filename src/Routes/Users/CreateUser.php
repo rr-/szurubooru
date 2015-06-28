@@ -9,38 +9,38 @@ use Szurubooru\ViewProxies\UserViewProxy;
 
 class CreateUser extends AbstractUserRoute
 {
-	private $privilegeService;
-	private $userService;
-	private $inputReader;
-	private $userViewProxy;
+    private $privilegeService;
+    private $userService;
+    private $inputReader;
+    private $userViewProxy;
 
-	public function __construct(
-		PrivilegeService $privilegeService,
-		UserService $userService,
-		InputReader $inputReader,
-		UserViewProxy $userViewProxy)
-	{
-		$this->privilegeService = $privilegeService;
-		$this->userService = $userService;
-		$this->inputReader = $inputReader;
-		$this->userViewProxy = $userViewProxy;
-	}
+    public function __construct(
+        PrivilegeService $privilegeService,
+        UserService $userService,
+        InputReader $inputReader,
+        UserViewProxy $userViewProxy)
+    {
+        $this->privilegeService = $privilegeService;
+        $this->userService = $userService;
+        $this->inputReader = $inputReader;
+        $this->userViewProxy = $userViewProxy;
+    }
 
-	public function getMethods()
-	{
-		return ['POST'];
-	}
+    public function getMethods()
+    {
+        return ['POST'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/users';
-	}
+    public function getUrl()
+    {
+        return '/api/users';
+    }
 
-	public function work($args)
-	{
-		$this->privilegeService->assertPrivilege(Privilege::REGISTER);
-		$formData = new RegistrationFormData($this->inputReader);
-		$user = $this->userService->createUser($formData);
-		return $this->userViewProxy->fromEntity($user);
-	}
+    public function work($args)
+    {
+        $this->privilegeService->assertPrivilege(Privilege::REGISTER);
+        $formData = new RegistrationFormData($this->inputReader);
+        $user = $this->userService->createUser($formData);
+        return $this->userViewProxy->fromEntity($user);
+    }
 }

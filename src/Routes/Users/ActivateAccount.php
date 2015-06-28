@@ -4,26 +4,26 @@ use Szurubooru\Services\UserService;
 
 class ActivateAccount extends AbstractUserRoute
 {
-	private $userService;
+    private $userService;
 
-	public function __construct(UserService $userService)
-	{
-		$this->userService = $userService;
-	}
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
 
-	public function getMethods()
-	{
-		return ['POST', 'PUT'];
-	}
+    public function getMethods()
+    {
+        return ['POST', 'PUT'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/activation/:userNameOrEmail';
-	}
+    public function getUrl()
+    {
+        return '/api/activation/:userNameOrEmail';
+    }
 
-	public function work($args)
-	{
-		$user = $this->userService->getByNameOrEmail($args['userNameOrEmail'], true);
-		return $this->userService->sendActivationEmail($user);
-	}
+    public function work($args)
+    {
+        $user = $this->userService->getByNameOrEmail($args['userNameOrEmail'], true);
+        return $this->userService->sendActivationEmail($user);
+    }
 }

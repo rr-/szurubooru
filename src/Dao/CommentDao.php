@@ -10,42 +10,42 @@ use Szurubooru\Entities\Post;
 
 class CommentDao extends AbstractDao implements ICrudDao
 {
-	private $userDao;
-	private $postDao;
+    private $userDao;
+    private $postDao;
 
-	public function __construct(
-		DatabaseConnection $databaseConnection,
-		UserDao $userDao,
-		PostDao $postDao)
-	{
-		parent::__construct(
-			$databaseConnection,
-			'comments',
-			new CommentEntityConverter());
+    public function __construct(
+        DatabaseConnection $databaseConnection,
+        UserDao $userDao,
+        PostDao $postDao)
+    {
+        parent::__construct(
+            $databaseConnection,
+            'comments',
+            new CommentEntityConverter());
 
-		$this->userDao = $userDao;
-		$this->postDao = $postDao;
-	}
+        $this->userDao = $userDao;
+        $this->postDao = $postDao;
+    }
 
-	public function findByPost(Post $post)
-	{
-		return $this->findBy('postId', $post->getId());
-	}
+    public function findByPost(Post $post)
+    {
+        return $this->findBy('postId', $post->getId());
+    }
 
-	protected function afterLoad(Entity $comment)
-	{
-		$comment->setLazyLoader(
-			Comment::LAZY_LOADER_USER,
-			function (Comment $comment)
-			{
-				return $this->userDao->findById($comment->getUserId());
-			});
+    protected function afterLoad(Entity $comment)
+    {
+        $comment->setLazyLoader(
+            Comment::LAZY_LOADER_USER,
+            function (Comment $comment)
+            {
+                return $this->userDao->findById($comment->getUserId());
+            });
 
-		$comment->setLazyLoader(
-			Comment::LAZY_LOADER_POST,
-			function (Comment $comment)
-			{
-				return $this->postDao->findById($comment->getPostId());
-			});
-	}
+        $comment->setLazyLoader(
+            Comment::LAZY_LOADER_POST,
+            function (Comment $comment)
+            {
+                return $this->postDao->findById($comment->getPostId());
+            });
+    }
 }

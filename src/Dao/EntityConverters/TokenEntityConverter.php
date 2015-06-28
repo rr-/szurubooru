@@ -5,22 +5,22 @@ use Szurubooru\Entities\Token;
 
 class TokenEntityConverter extends AbstractEntityConverter implements IEntityConverter
 {
-	public function toBasicArray(Entity $entity)
-	{
-		return
-		[
-			'name' => $entity->getName(),
-			'purpose' => $entity->getPurpose(),
-			'additionalData' => $entity->getAdditionalData(),
-		];
-	}
+    public function toBasicArray(Entity $entity)
+    {
+        return
+        [
+            'name' => $entity->getName(),
+            'purpose' => $entity->getPurpose(),
+            'additionalData' => $entity->getAdditionalData(),
+        ];
+    }
 
-	public function toBasicEntity(array $array)
-	{
-		$entity = new Token(intval($array['id']));
-		$entity->setName($array['name']);
-		$entity->setPurpose($array['purpose']);
-		$entity->setAdditionalData($array['additionalData']);
-		return $entity;
-	}
+    public function toBasicEntity(array $array)
+    {
+        $entity = new Token(intval($array['id']));
+        $entity->setName($array['name']);
+        $entity->setPurpose($array['purpose']);
+        $entity->setAdditionalData($array['additionalData']);
+        return $entity;
+    }
 }

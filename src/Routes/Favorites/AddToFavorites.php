@@ -9,44 +9,44 @@ use Szurubooru\ViewProxies\UserViewProxy;
 
 class AddToFavorites extends AbstractRoute
 {
-	private $privilegeService;
-	private $authService;
-	private $postService;
-	private $favoritesService;
-	private $userViewProxy;
+    private $privilegeService;
+    private $authService;
+    private $postService;
+    private $favoritesService;
+    private $userViewProxy;
 
-	public function __construct(
-		PrivilegeService $privilegeService,
-		AuthService $authService,
-		PostService $postService,
-		FavoritesService $favoritesService,
-		UserViewProxy $userViewProxy)
-	{
-		$this->privilegeService = $privilegeService;
-		$this->authService = $authService;
-		$this->postService = $postService;
-		$this->favoritesService = $favoritesService;
-		$this->userViewProxy = $userViewProxy;
-	}
+    public function __construct(
+        PrivilegeService $privilegeService,
+        AuthService $authService,
+        PostService $postService,
+        FavoritesService $favoritesService,
+        UserViewProxy $userViewProxy)
+    {
+        $this->privilegeService = $privilegeService;
+        $this->authService = $authService;
+        $this->postService = $postService;
+        $this->favoritesService = $favoritesService;
+        $this->userViewProxy = $userViewProxy;
+    }
 
-	public function getMethods()
-	{
-		return ['POST', 'PUT'];
-	}
+    public function getMethods()
+    {
+        return ['POST', 'PUT'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/posts/:postNameOrId/favorites';
-	}
+    public function getUrl()
+    {
+        return '/api/posts/:postNameOrId/favorites';
+    }
 
-	public function work($args)
-	{
-		$this->privilegeService->assertLoggedIn();
-		$user = $this->authService->getLoggedInUser();
-		$post = $this->postService->getByNameOrId($args['postNameOrId']);
-		$this->favoritesService->addFavorite($user, $post);
+    public function work($args)
+    {
+        $this->privilegeService->assertLoggedIn();
+        $user = $this->authService->getLoggedInUser();
+        $post = $this->postService->getByNameOrId($args['postNameOrId']);
+        $this->favoritesService->addFavorite($user, $post);
 
-		$users = $this->favoritesService->getFavoriteUsers($post);
-		return ['data' => $this->userViewProxy->fromArray($users)];
-	}
+        $users = $this->favoritesService->getFavoriteUsers($post);
+        return ['data' => $this->userViewProxy->fromArray($users)];
+    }
 }

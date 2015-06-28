@@ -7,37 +7,37 @@ use Szurubooru\Services\UserService;
 
 class DeleteUser extends AbstractUserRoute
 {
-	private $privilegeService;
-	private $userService;
+    private $privilegeService;
+    private $userService;
 
-	public function __construct(
-		PrivilegeService $privilegeService,
-		UserService $userService)
-	{
-		$this->privilegeService = $privilegeService;
-		$this->userService = $userService;
-	}
+    public function __construct(
+        PrivilegeService $privilegeService,
+        UserService $userService)
+    {
+        $this->privilegeService = $privilegeService;
+        $this->userService = $userService;
+    }
 
-	public function getMethods()
-	{
-		return ['DELETE'];
-	}
+    public function getMethods()
+    {
+        return ['DELETE'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/users/:userNameOrEmail';
-	}
+    public function getUrl()
+    {
+        return '/api/users/:userNameOrEmail';
+    }
 
-	public function work($args)
-	{
-		$userNameOrEmail = $args['userNameOrEmail'];
+    public function work($args)
+    {
+        $userNameOrEmail = $args['userNameOrEmail'];
 
-		$this->privilegeService->assertPrivilege(
-			$this->privilegeService->isLoggedIn($userNameOrEmail)
-				? Privilege::DELETE_OWN_ACCOUNT
-				: Privilege::DELETE_ALL_ACCOUNTS);
+        $this->privilegeService->assertPrivilege(
+            $this->privilegeService->isLoggedIn($userNameOrEmail)
+                ? Privilege::DELETE_OWN_ACCOUNT
+                : Privilege::DELETE_ALL_ACCOUNTS);
 
-		$user = $this->userService->getByNameOrEmail($userNameOrEmail);
-		return $this->userService->deleteUser($user);
-	}
+        $user = $this->userService->getByNameOrEmail($userNameOrEmail);
+        return $this->userService->deleteUser($user);
+    }
 }

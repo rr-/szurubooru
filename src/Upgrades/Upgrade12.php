@@ -5,15 +5,15 @@ use Szurubooru\Services\TagService;
 
 class Upgrade12 implements IUpgrade
 {
-	private $tagService;
+    private $tagService;
 
-	public function __construct(TagService $tagService)
-	{
-		$this->tagService = $tagService;
-	}
+    public function __construct(TagService $tagService)
+    {
+        $this->tagService = $tagService;
+    }
 
-	public function run(DatabaseConnection $databaseConnection)
-	{
-		$this->tagService->exportJson();
-	}
+    public function run(DatabaseConnection $databaseConnection)
+    {
+        $this->tagService->exportJson();
+    }
 }

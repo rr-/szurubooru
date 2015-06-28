@@ -4,7 +4,7 @@ use Szurubooru\Entities\Entity;
 
 interface IEntityConverter
 {
-	public function toArray(Entity $entity);
+    public function toArray(Entity $entity);
 
-	public function toEntity(array $array);
+    public function toEntity(array $array);
 }

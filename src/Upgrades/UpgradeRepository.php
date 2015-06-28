@@ -3,15 +3,15 @@ namespace Szurubooru\Upgrades;
 
 class UpgradeRepository
 {
-	private $upgrades = [];
+    private $upgrades = [];
 
-	public function __construct(array $upgrades)
-	{
-		$this->upgrades = $upgrades;
-	}
+    public function __construct(array $upgrades)
+    {
+        $this->upgrades = $upgrades;
+    }
 
-	public function getUpgrades()
-	{
-		return $this->upgrades;
-	}
+    public function getUpgrades()
+    {
+        return $this->upgrades;
+    }
 }

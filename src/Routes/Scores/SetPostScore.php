@@ -9,37 +9,37 @@ use Szurubooru\Services\ScoreService;
 
 class SetPostScore extends AbstractScoreRoute
 {
-	private $postService;
+    private $postService;
 
-	public function __construct(
-		PrivilegeService $privilegeService,
-		AuthService $authService,
-		PostService $postService,
-		ScoreService $scoreService,
-		InputReader $inputReader)
-	{
-		parent::__construct(
-			$authService,
-			$inputReader,
-			$privilegeService,
-			$scoreService);
+    public function __construct(
+        PrivilegeService $privilegeService,
+        AuthService $authService,
+        PostService $postService,
+        ScoreService $scoreService,
+        InputReader $inputReader)
+    {
+        parent::__construct(
+            $authService,
+            $inputReader,
+            $privilegeService,
+            $scoreService);
 
-		$this->postService = $postService;
-	}
+        $this->postService = $postService;
+    }
 
-	public function getMethods()
-	{
-		return ['POST', 'PUT'];
-	}
+    public function getMethods()
+    {
+        return ['POST', 'PUT'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/posts/:postNameOrId/score';
-	}
+    public function getUrl()
+    {
+        return '/api/posts/:postNameOrId/score';
+    }
 
-	public function work($args)
-	{
-		$post = $this->postService->getByNameOrId($args['postNameOrId']);
-		return $this->setScore($post);
-	}
+    public function work($args)
+    {
+        $post = $this->postService->getByNameOrId($args['postNameOrId']);
+        return $this->setScore($post);
+    }
 }

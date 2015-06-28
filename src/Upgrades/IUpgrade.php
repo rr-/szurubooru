@@ -4,5 +4,5 @@ use Szurubooru\DatabaseConnection;
 
 interface IUpgrade
 {
-	public function run(DatabaseConnection $databaseConnection);
+    public function run(DatabaseConnection $databaseConnection);
 }

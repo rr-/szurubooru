@@ -4,31 +4,31 @@ use Szurubooru\Dao\GlobalParamDao;
 
 class GetGlobals extends AbstractRoute
 {
-	private $globalParamDao;
+    private $globalParamDao;
 
-	public function __construct(GlobalParamDao $globalParamDao)
-	{
-		$this->globalParamDao = $globalParamDao;
-	}
+    public function __construct(GlobalParamDao $globalParamDao)
+    {
+        $this->globalParamDao = $globalParamDao;
+    }
 
-	public function getMethods()
-	{
-		return ['GET'];
-	}
+    public function getMethods()
+    {
+        return ['GET'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/globals';
-	}
+    public function getUrl()
+    {
+        return '/api/globals';
+    }
 
-	public function work($args)
-	{
-		$globals = $this->globalParamDao->findAll();
-		$result = [];
-		foreach ($globals as $global)
-		{
-			$result[$global->getKey()] = $global->getValue();
-		}
-		return $result;
-	}
+    public function work($args)
+    {
+        $globals = $this->globalParamDao->findAll();
+        $result = [];
+        foreach ($globals as $global)
+        {
+            $result[$global->getKey()] = $global->getValue();
+        }
+        return $result;
+    }
 }

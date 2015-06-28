@@ -9,37 +9,37 @@ use Szurubooru\Services\ScoreService;
 
 class GetCommentScore extends AbstractScoreRoute
 {
-	private $commentService;
+    private $commentService;
 
-	public function __construct(
-		PrivilegeService $privilegeService,
-		AuthService $authService,
-		CommentService $commentService,
-		ScoreService $scoreService,
-		InputReader $inputReader)
-	{
-		parent::__construct(
-			$authService,
-			$inputReader,
-			$privilegeService,
-			$scoreService);
+    public function __construct(
+        PrivilegeService $privilegeService,
+        AuthService $authService,
+        CommentService $commentService,
+        ScoreService $scoreService,
+        InputReader $inputReader)
+    {
+        parent::__construct(
+            $authService,
+            $inputReader,
+            $privilegeService,
+            $scoreService);
 
-		$this->commentService = $commentService;
-	}
+        $this->commentService = $commentService;
+    }
 
-	public function getMethods()
-	{
-		return ['GET'];
-	}
+    public function getMethods()
+    {
+        return ['GET'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/comments/:commentId/score';
-	}
+    public function getUrl()
+    {
+        return '/api/comments/:commentId/score';
+    }
 
-	public function work($args)
-	{
-		$comment = $this->commentService->getById($args['commentId']);
-		return $this->getScore($comment);
-	}
+    public function work($args)
+    {
+        $comment = $this->commentService->getById($args['commentId']);
+        return $this->getScore($comment);
+    }
 }

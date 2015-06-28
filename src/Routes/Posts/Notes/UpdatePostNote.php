@@ -10,41 +10,41 @@ use Szurubooru\ViewProxies\PostNoteViewProxy;
 
 class UpdatePostNote extends AbstractPostRoute
 {
-	private $inputReader;
-	private $postNotesService;
-	private $privilegeService;
-	private $postNoteViewProxy;
+    private $inputReader;
+    private $postNotesService;
+    private $privilegeService;
+    private $postNoteViewProxy;
 
-	public function __construct(
-		InputReader $inputReader,
-		PostNotesService $postNotesService,
-		PrivilegeService $privilegeService,
-		PostNoteViewProxy $postNoteViewProxy)
-	{
-		$this->inputReader = $inputReader;
-		$this->postNotesService = $postNotesService;
-		$this->privilegeService = $privilegeService;
-		$this->postNoteViewProxy = $postNoteViewProxy;
-	}
+    public function __construct(
+        InputReader $inputReader,
+        PostNotesService $postNotesService,
+        PrivilegeService $privilegeService,
+        PostNoteViewProxy $postNoteViewProxy)
+    {
+        $this->inputReader = $inputReader;
+        $this->postNotesService = $postNotesService;
+        $this->privilegeService = $privilegeService;
+        $this->postNoteViewProxy = $postNoteViewProxy;
+    }
 
-	public function getMethods()
-	{
-		return ['PUT'];
-	}
+    public function getMethods()
+    {
+        return ['PUT'];
+    }
 
-	public function getUrl()
-	{
-		return '/api/notes/:postNoteId';
-	}
+    public function getUrl()
+    {
+        return '/api/notes/:postNoteId';
+    }
 
-	public function work($args)
-	{
-		$postNote = $this->postNotesService->getById($args['postNoteId']);
+    public function work($args)
+    {
+        $postNote = $this->postNotesService->getById($args['postNoteId']);
 
-		$this->privilegeService->assertPrivilege(Privilege::EDIT_POST_NOTES);
+        $this->privilegeService->assertPrivilege(Privilege::EDIT_POST_NOTES);
 
-		$formData = new PostNoteFormData($this->inputReader);
-		$postNote = $this->postNotesService->updatePostNote($postNote, $formData);
-		return $this->postNoteViewProxy->fromEntity($postNote);
-	}
+        $formData = new PostNoteFormData($this->inputReader);
+        $postNote = $this->postNotesService->updatePostNote($postNote, $formData);
+        return $this->postNoteViewProxy->fromEntity($postNote);
+    }
 }

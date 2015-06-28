@@ -8,32 +8,32 @@ use Szurubooru\Entities\PostNote;
 
 class PostNoteDao extends AbstractDao implements ICrudDao
 {
-	private $postDao;
+    private $postDao;
 
-	public function __construct(
-		DatabaseConnection $databaseConnection,
-		PostDao $postDao)
-	{
-		parent::__construct(
-			$databaseConnection,
-			'postNotes',
-			new PostNoteEntityConverter());
+    public function __construct(
+        DatabaseConnection $databaseConnection,
+        PostDao $postDao)
+    {
+        parent::__construct(
+            $databaseConnection,
+            'postNotes',
+            new PostNoteEntityConverter());
 
-		$this->postDao = $postDao;
-	}
+        $this->postDao = $postDao;
+    }
 
-	public function findByPostId($postId)
-	{
-		return $this->findBy('postId', $postId);
-	}
+    public function findByPostId($postId)
+    {
+        return $this->findBy('postId', $postId);
+    }
 
-	protected function afterLoad(Entity $postNote)
-	{
-		$postNote->setLazyLoader(
-			PostNote::LAZY_LOADER_POST,
-			function (PostNote $postNote)
-			{
-				return $this->postDao->findById($postNote->getPostId());
-			});
-	}
+    protected function afterLoad(Entity $postNote)
+    {
+        $postNote->setLazyLoader(
+            PostNote::LAZY_LOADER_POST,
+            function (PostNote $postNote)
+            {
+                return $this->postDao->findById($postNote->getPostId());
+            });
+    }
 }

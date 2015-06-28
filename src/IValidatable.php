@@ -4,5 +4,5 @@ use Szurubooru\Validator;
 
 interface IValidatable
 {
-	public function validate(Validator $validator);
+    public function validate(Validator $validator);
 }

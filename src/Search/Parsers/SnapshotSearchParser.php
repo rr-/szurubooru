@@ -10,39 +10,39 @@ use Szurubooru\Search\Tokens\SearchToken;
 
 class SnapshotSearchParser extends AbstractSearchParser
 {
-	protected function createFilter()
-	{
-		return new SnapshotFilter;
-	}
+    protected function createFilter()
+    {
+        return new SnapshotFilter;
+    }
 
-	protected function decorateFilterFromToken(IFilter $filter, SearchToken $token)
-	{
-		if (substr_count($token->getValue(), ',') !== 1)
-			throw new NotSupportedException();
+    protected function decorateFilterFromToken(IFilter $filter, SearchToken $token)
+    {
+        if (substr_count($token->getValue(), ',') !== 1)
+            throw new NotSupportedException();
 
-		if ($token->isNegated())
-			throw new NotSupportedException();
+        if ($token->isNegated())
+            throw new NotSupportedException();
 
-		list ($type, $primaryKey) = explode(',', $token->getValue());
+        list ($type, $primaryKey) = explode(',', $token->getValue());
 
-		$requirement = new Requirement();
-		$requirement->setType(SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
-		$requirement->setValue($this->createRequirementValue($primaryKey));
-		$filter->addRequirement($requirement);
+        $requirement = new Requirement();
+        $requirement->setType(SnapshotFilter::REQUIREMENT_PRIMARY_KEY);
+        $requirement->setValue($this->createRequirementValue($primaryKey));
+        $filter->addRequirement($requirement);
 
-		$requirement = new Requirement();
-		$requirement->setType(SnapshotFilter::REQUIREMENT_TYPE);
-		$requirement->setValue($this->createRequirementValue(EnumHelper::snapshotTypeFromString($type)));
-		$filter->addRequirement($requirement);
-	}
+        $requirement = new Requirement();
+        $requirement->setType(SnapshotFilter::REQUIREMENT_TYPE);
+        $requirement->setValue($this->createRequirementValue(EnumHelper::snapshotTypeFromString($type)));
+        $filter->addRequirement($requirement);
+    }
 
-	protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
-	{
-		throw new NotSupportedException();
-	}
+    protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
+    {
+        throw new NotSupportedException();
+    }
 
-	protected function getOrderColumn($tokenText)
-	{
-		throw new NotSupportedException();
-	}
+    protected function getOrderColumn($tokenText)
+    {
+        throw new NotSupportedException();
+    }
 }
