@@ -43,36 +43,27 @@ class EmailService
         $this->sendEmail($user->getEmailUnconfirmed(), $mailSubject, $mailBody);
     }
 
-    private function sendEmail($recipientEmail, $subject, $body)
+    public function sendEmail($recipientEmail, $subject, $body)
     {
-        $domain = substr($this->config->mail->botEmail, strpos($this->config->mail->botEmail, '@') + 1);
+        $mail = new \PHPMailer();
+        $mail->IsSMTP();
+        $mail->CharSet = 'UTF-8';
 
-        $clientIp = isset($_SERVER['SERVER_ADDR'])
-            ? $_SERVER['SERVER_ADDR']
-            : '';
+        $mail->SMTPDebug  = 0;
+        $mail->SMTPAuth   = true;
+        $mail->Host       = $this->config->mail->smtpHost;
+        $mail->Port       = $this->config->mail->smtpPort;
+        $mail->Username   = $this->config->mail->smtpUserName;
+        $mail->Password   = $this->config->mail->smtpUserPass;
+        $mail->From       = $this->config->mail->smtpFrom;
+        $mail->FromName   = $this->config->mail->smtpFromName;
+        $mail->Subject    = $subject;
+        $mail->Body       = str_replace("\n", '<br>', $body);
+        $mail->AltBody    = $body;
+        $mail->addAddress($recipientEmail);
 
-        $body = wordwrap($body, 70);
-        if (empty($recipientEmail))
-            throw new \InvalidArgumentException('Destination e-mail address was not found');
-
-        $messageId = sha1(date('r') . uniqid()) . '@' . $domain;
-
-        $headers = [];
-        $headers[] = sprintf('MIME-Version: 1.0');
-        $headers[] = sprintf('Content-Transfer-Encoding: 7bit');
-        $headers[] = sprintf('Date: %s', date('r'));
-        $headers[] = sprintf('Message-ID: <%s>', $messageId);
-        $headers[] = sprintf('From: %s <%s>', $this->config->mail->botName, $this->config->mail->botEmail);
-        $headers[] = sprintf('Reply-To: %s', $this->config->mail->botEmail);
-        $headers[] = sprintf('Return-Path: %s', $this->config->mail->botEmail);
-        $headers[] = sprintf('Subject: %s', $subject);
-        $headers[] = sprintf('Content-Type: text/plain; charset=utf-8');
-        $headers[] = sprintf('X-Mailer: PHP/%s', phpversion());
-        $headers[] = sprintf('X-Originating-IP: %s', $clientIp);
-
-        $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-
-        mail($recipientEmail, $encodedSubject, $body, implode("\r\n", $headers), '-f' . $this->config->mail->botEmail);
+        if (!$mail->send())
+            throw new \Exception('Couldn\'t send mail to ' . $recipientEmail . ': ' . $mail->ErrorInfo);
     }
 
     private function tokenizeFile($templatePath, $tokens = [])

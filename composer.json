@@ -1,6 +1,7 @@
 {
 	"require": {
-		"mnapoli/php-di": "~4.4"
+		"mnapoli/php-di": "~4.4",
+		"phpmailer/phpmailer": "~5.2"
 	},
 
 	"require-dev": {
