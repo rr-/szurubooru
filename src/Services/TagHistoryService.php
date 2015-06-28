@@ -61,4 +61,3 @@ class TagHistoryService
         $this->historyService->saveSnapshot($this->tagSnapshotProvider->getDeleteSnapshot($tag));
     }
 }
-

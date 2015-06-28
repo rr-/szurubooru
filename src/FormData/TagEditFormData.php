@@ -41,4 +41,3 @@ class TagEditFormData implements IValidatable
             $validator->validatePostTags($this->suggestions);
     }
 }
-

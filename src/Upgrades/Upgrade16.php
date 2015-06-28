@@ -55,4 +55,3 @@ class Upgrade16 implements IUpgrade
             END');
     }
 }
-

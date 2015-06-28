@@ -39,4 +39,3 @@ class UploadFormData implements IValidatable
             $validator->validatePostSource($this->source);
     }
 }
-
