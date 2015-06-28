@@ -1,57 +1,57 @@
 #user-view {
-	min-width: 30em;
-	text-align: center;
+    min-width: 30em;
+    text-align: center;
 }
 
 #user-view .side {
-	text-align: center;
-	width: 150px;
-	float: left;
+    text-align: center;
+    width: 150px;
+    float: left;
 }
 
 #user-view .top {
-	display: inline-block;
-	margin: 0 auto;
+    display: inline-block;
+    margin: 0 auto;
 }
 
 #user-view ul {
-	display: inline-block;
-	list-style-type: none;
-	text-align: left;
-	margin: 0;
-	padding: 0;
+    display: inline-block;
+    list-style-type: none;
+    text-align: left;
+    margin: 0;
+    padding: 0;
 }
 
 #user-view ul.links {
-	list-style-type: disc;
-	list-style-position: inside;
-	white-space: nowrap;
+    list-style-type: disc;
+    list-style-position: inside;
+    white-space: nowrap;
 }
 #user-view ul.links li a {
-	padding-left: 0;
-	margin-left: 0;
+    padding-left: 0;
+    margin-left: 0;
 }
 
 #user-view ul a {
-	display: inline-block;
-	padding: 0.2em 0.5em;
+    display: inline-block;
+    padding: 0.2em 0.5em;
 }
 
 #user-view .tab {
-	display: none;
-	margin-top: 1.5em;
-	clear: both;
+    display: none;
+    margin-top: 1.5em;
+    clear: both;
 }
 
 #user-view .tab.active {
-	display: block;
+    display: block;
 }
 
 #user-view .tab.basic-info table {
-	margin: 0 auto;
-	text-align: left;
+    margin: 0 auto;
+    text-align: left;
 }
 #user-view .tab.basic-info td {
-	padding: 0.2em 0.5em;
-	vertical-align: top;
+    padding: 0.2em 0.5em;
+    vertical-align: top;
 }

@@ -1,48 +1,48 @@
 .post-list {
-	text-align: center;
+    text-align: center;
 }
 
 .post-list .search {
-	margin: 0 auto 1em auto;
-	text-align: left;
+    margin: 0 auto 1em auto;
+    text-align: left;
 }
 @media all and (min-width: 57em) {
-	.post-list .search {
-		min-width: 50em;
-	}
+    .post-list .search {
+        min-width: 50em;
+    }
 }
 @media all and (max-width: 57em) {
-	.post-list .search {
-		min-width: 100%;
-	}
+    .post-list .search {
+        min-width: 100%;
+    }
 }
 .post-list .search:after {
-	display: block;
-	content: '';
-	clear: both;
+    display: block;
+    content: '';
+    clear: both;
 }
 .post-list .search input {
-	max-width: 20em;
+    max-width: 20em;
 }
 .post-list .search button {
-	margin-left: 0.25em;
+    margin-left: 0.25em;
 }
 .post-list .search .mass-tag-wrapper {
-	float: right;
+    float: right;
 }
 .post-list .search .mass-tag-wrapper p {
-	display: inline;
-	margin-right: 1em;
+    display: inline;
+    margin-right: 1em;
 }
 
 .post-list ul.safety {
-	display: inline-block;
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
+    display: inline-block;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 .post-list ul.safety li {
-	display: inline-block;
+    display: inline-block;
 }
 .post-list ul.safety .safety-safe:before             { background: linear-gradient(rgb(224, 248, 218), rgb(213, 233, 208)); }
 .post-list ul.safety .safety-sketchy:before          { background: linear-gradient(rgb(252, 252, 230), rgb(245, 236, 194)); }
@@ -52,158 +52,158 @@
 .post-list ul.safety .safety-unsafe.disabled:before  { background: linear-gradient(#DDB7B7, #C9A195); }
 
 .post-list ul.posts {
-	display: flex;
-	justify-content: center;
-	align-content: center;
-	flex-wrap: wrap;
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 .post-list ul.posts .post-small {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .post-small {
-	position: relative;
+    position: relative;
 }
 .post-small .link {
-	display: block;
-	margin: 0.3em;
-	border: 1px solid #999;
-	z-index: 1;
-	position: relative;
+    display: block;
+    margin: 0.3em;
+    border: 1px solid #999;
+    z-index: 1;
+    position: relative;
 }
 .post-small img {
-	display: block;
-	border: 0;
-	background: white;
+    display: block;
+    border: 0;
+    background: white;
 }
 
 
 .post-small .link:focus,
 .post-small .link:hover {
-	background: #64C2ED;
-	border-color: #64C2ED;
-	box-shadow: 0 0 0 2px #64C2ED;
-	outline: 0;
+    background: #64C2ED;
+    border-color: #64C2ED;
+    box-shadow: 0 0 0 2px #64C2ED;
+    outline: 0;
 }
 
 .post-small .link:focus img:not(.loading),
 .post-small .link:hover img:not(.loading) {
-	opacity: .8 !important;
+    opacity: .8 !important;
 }
 
 .post-small .link .info {
-	display: none;
-	text-align: center;
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background: #64C2ED;
-	color: black;
+    display: none;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #64C2ED;
+    color: black;
 }
 .post-small .link .info ul {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 .post-small .link .info li {
-	display: inline-block;
-	margin: 0.1em 0.5em;
-	padding: 0;
+    display: inline-block;
+    margin: 0.1em 0.5em;
+    padding: 0;
 }
 .post-small .link:focus .info,
 .post-small .link:hover .info {
-	display: block;
+    display: block;
 }
 
 .post-small:not(.post-type-image) .link::before {
-	display: block;
-	content: '';
-	z-index: 2;
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 0;
-	height: 0;
-	border-top: 50px solid red;
-	border-left: 50px solid transparent;
+    display: block;
+    content: '';
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-top: 50px solid red;
+    border-left: 50px solid transparent;
 }
 
 .post-small:not(.post-type-image) .link::after {
-	pointer-events: none;
-	display: block;
-	content: '...';
-	z-index: 3;
-	position: absolute;
-	top: -35px; /* 50 * sqrt(2) / 2 */
-	right: -35px;
-	width: 71px; /* 50 * sqrt(2) */
-	height: 71px;
-	line-height: 122px; /* 71 * 2 - 11 (font-size) - padding */
-	transform: rotate(45deg);
-	text-align: center;
-	color: white;
-	font-size: 15px;
+    pointer-events: none;
+    display: block;
+    content: '...';
+    z-index: 3;
+    position: absolute;
+    top: -35px; /* 50 * sqrt(2) / 2 */
+    right: -35px;
+    width: 71px; /* 50 * sqrt(2) */
+    height: 71px;
+    line-height: 122px; /* 71 * 2 - 11 (font-size) - padding */
+    transform: rotate(45deg);
+    text-align: center;
+    color: white;
+    font-size: 15px;
 }
 .post-small.post-type-youtube .link::after {
-	font-size: 13px;
-	content: 'youtube';
+    font-size: 13px;
+    content: 'youtube';
 }
 .post-small.post-type-video .link::after {
-	content: 'video';
+    content: 'video';
 }
 .post-small.post-type-flash .link::after {
-	content: 'flash';
+    content: 'flash';
 }
 .post-small.post-type-animation .link::after {
-	content: 'anim';
+    content: 'anim';
 }
 
 .post-small .action {
-	display: none;
-	position: absolute;
-	z-index: 3;
-	left: 0;
-	right: 0;
-	top: 50%;
-	bottom: 0;
-	pointer-events: none;
+    display: none;
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    top: 50%;
+    bottom: 0;
+    pointer-events: none;
 }
 
 .post-small .action button {
-	padding: 0.5em 1em;
-	height: 1em;
-	line-height: 1em;
-	display: block;
-	margin: -1em auto 0 auto;
-	box-sizing: content-box;
-	opacity: .7;
-	box-shadow: none;
-	pointer-events: auto;
+    padding: 0.5em 1em;
+    height: 1em;
+    line-height: 1em;
+    display: block;
+    margin: -1em auto 0 auto;
+    box-sizing: content-box;
+    opacity: .7;
+    box-shadow: none;
+    pointer-events: auto;
 }
 .post-small .action button:focus {
-	box-shadow: 0 0 0 2px #64C2ED inset !important;
+    box-shadow: 0 0 0 2px #64C2ED inset !important;
 }
 
 .tagged .action button,
 .untagged .action button {
-	border: 1px solid black;
-	font-weight: bold;
-	text-shadow: none;
+    border: 1px solid black;
+    font-weight: bold;
+    text-shadow: none;
 }
 .untagged .action button::before {
-	background: red;
+    background: red;
 }
 .untagged .action button {
-	color: white;
+    color: white;
 }
 .tagged .action button::before {
-	background: lime;
+    background: lime;
 }
 .tagged .action button {
-	color: black;
+    color: black;
 }

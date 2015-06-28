@@ -1,10 +1,10 @@
 #registration-form p {
-	text-align: center;
+    text-align: center;
 }
 #registration-form form {
-	width: 25em;
+    width: 25em;
 }
 
 #registration-form .messages {
-	margin: 0 auto;
+    margin: 0 auto;
 }

@@ -1,124 +1,124 @@
 body {
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	background: #fff;
-	color: #555;
-	font-family: 'Droid Sans', sans-serif;
-	font-size: 15px;
-	overflow-y: scroll;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background: #fff;
+    color: #555;
+    font-family: 'Droid Sans', sans-serif;
+    font-size: 15px;
+    overflow-y: scroll;
 }
 
 @media all and (max-width: 40em) {
-	body {
-		font-size: 13px;
-	}
+    body {
+        font-size: 13px;
+    }
 }
 
 h1 {
-	font-weight: normal;
-	font-size: 160%;
+    font-weight: normal;
+    font-size: 160%;
 }
 
 h2 {
-	font-variant: small-caps;
-	font-weight: normal;
+    font-variant: small-caps;
+    font-weight: normal;
 }
 
 h3 {
-	font-weight: normal;
-	font-size: 120%;
+    font-weight: normal;
+    font-size: 120%;
 }
 
 small {
-	font-size: 87%;
+    font-size: 87%;
 }
 
 #middle {
-	padding: 0 2em;
-	position: relative;
+    padding: 0 2em;
+    position: relative;
 }
 
 #content {
-	margin: 1.5em 0;
-	padding: 0;
-	display: inline-block;
-	text-align: left;
-	width: 100%;
+    margin: 1.5em 0;
+    padding: 0;
+    display: inline-block;
+    text-align: left;
+    width: 100%;
 }
 
 a {
-	color: #24A2DD;
-	text-decoration: none;
-	cursor: pointer; /* for links without [href] */
+    color: #24A2DD;
+    text-decoration: none;
+    cursor: pointer; /* for links without [href] */
 }
 a:focus {
-	outline: 2px solid #64C2ED;
+    outline: 2px solid #64C2ED;
 }
 a:hover {
-	color: #34B2ED;
+    color: #34B2ED;
 }
 
 hr {
-	margin: 1.5em auto;
-	height: 1px;
-	border: 0;
-	border-bottom: 1px solid #eee;
-	border-top: 1px solid #eee;
-	box-sizing: content-box;
+    margin: 1.5em auto;
+    height: 1px;
+    border: 0;
+    border-bottom: 1px solid #eee;
+    border-top: 1px solid #eee;
+    box-sizing: content-box;
 }
 
 .big-button {
-	color: #aaa;
+    color: #aaa;
 }
 .big-button.active {
-	background: #f7fbfc;
-	color: #24A2DD !important;
+    background: #f7fbfc;
+    color: #24A2DD !important;
 }
 
 .big-button:focus,
 .big-button:hover {
-	background: #f7fbfc;
-	color: #34B2ED !important;
-	outline: 0;
+    background: #f7fbfc;
+    color: #34B2ED !important;
+    outline: 0;
 }
 
 span.spoiler:before {
-	content: '[';
-	color: #000;
+    content: '[';
+    color: #000;
 }
 span.spoiler:after {
-	content: ']';
-	color: #000;
+    content: ']';
+    color: #000;
 }
 span.spoiler {
-	background: #eee;
-	color: #eee;
+    background: #eee;
+    color: #eee;
 }
 span.spoiler:hover {
-	color: dimgray;
+    color: dimgray;
 }
 
 blockquote {
-	border-left: 3px solid #eee;
-	margin-left: 0;
-	padding: 0.3em 0.3em 0.3em 0.7em;
-	background: #fafafa;
-	color: #444;
+    border-left: 3px solid #eee;
+    margin-left: 0;
+    padding: 0.3em 0.3em 0.3em 0.7em;
+    background: #fafafa;
+    color: #444;
 }
 blockquote :last-child {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .draggable {
-	cursor: move;
+    cursor: move;
 }
 .resizer {
-	position: absolute;
-	cursor: nwse-resize;
-	border: 0.25em solid rgba(0, 0, 0, 0.3);
-	border-top: 0.25em solid transparent;
-	border-left: 0.25em solid transparent;
-	right: 0;
-	bottom: 0;
+    position: absolute;
+    cursor: nwse-resize;
+    border: 0.25em solid rgba(0, 0, 0, 0.3);
+    border-top: 0.25em solid transparent;
+    border-left: 0.25em solid transparent;
+    right: 0;
+    bottom: 0;
 }

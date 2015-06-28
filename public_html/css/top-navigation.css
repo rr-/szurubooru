@@ -1,54 +1,54 @@
 #top-navigation {
-	width: 100%;
+    width: 100%;
 }
 
 #top-navigation ul {
-	list-style-type: none;
-	padding: 0 2em;
-	margin: 0;
+    list-style-type: none;
+    padding: 0 2em;
+    margin: 0;
 }
 
 #top-navigation li {
-	display: inline-block;
+    display: inline-block;
 }
 
 #top-navigation li a {
-	display: inline-block;
-	text-transform: lowercase;
-	font-variant: small-caps;
-	padding: 0.5em 1em;
-	font-size: 0.9em;
+    display: inline-block;
+    text-transform: lowercase;
+    font-variant: small-caps;
+    padding: 0.5em 1em;
+    font-size: 0.9em;
 }
 
 #top-navigation li a:focus,
 #top-navigation li a:hover {
-	outline: 0;
+    outline: 0;
 }
 
 #top-navigation li:first-child a {
-	margin-left: -1em;
+    margin-left: -1em;
 }
 
 #top-navigation li:last-child a {
-	margin-right: -1em;
+    margin-right: -1em;
 }
 
 #top-navigation i {
-	font-size: 3em;
-	margin: 0 10px 5px;
+    font-size: 3em;
+    margin: 0 10px 5px;
 }
 
 #top-navigation .accesskey:before {
-	position: absolute;
-	display: inline-block;
-	right: 0;
-	left: 0;
-	content: '\a0';
-	border-bottom: 1px solid;
-	opacity: .35;
-	height: 90%;
+    position: absolute;
+    display: inline-block;
+    right: 0;
+    left: 0;
+    content: '\a0';
+    border-bottom: 1px solid;
+    opacity: .35;
+    height: 90%;
 }
 #top-navigation .accesskey {
-	position: relative;
-	text-decoration: none;
+    position: relative;
+    text-decoration: none;
 }

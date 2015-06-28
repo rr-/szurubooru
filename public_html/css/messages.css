@@ -1,16 +1,16 @@
 .message {
-	margin: 0 auto 0.2em auto;
-	padding: 0.4em 0.5em;
-	text-align: center;
-	max-width: 40em;
+    margin: 0 auto 0.2em auto;
+    padding: 0.4em 0.5em;
+    text-align: center;
+    max-width: 40em;
 }
 
 .message.error {
-	background: #fdd;
-	box-shadow: 0 0 0 1px #fcc inset;
+    background: #fdd;
+    box-shadow: 0 0 0 1px #fcc inset;
 }
 
 .message.info {
-	background: #def;
-	box-shadow: 0 0 0 1px #cdf inset;
+    background: #def;
+    box-shadow: 0 0 0 1px #cdf inset;
 }

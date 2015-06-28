@@ -1,44 +1,44 @@
 #home {
-	text-align: center;
+    text-align: center;
 }
 #home h1 {
-	margin-top: 0;
-	margin-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 #home h1+p {
-	margin-top: 0;
+    margin-top: 0;
 }
 
 #home .post {
-	text-align: center;
-	margin: 0 auto;
-	display: inline-block;
-	max-width: 60%;
-	min-width: 40em;
+    text-align: center;
+    margin: 0 auto;
+    display: inline-block;
+    max-width: 60%;
+    min-width: 40em;
 }
 #home .post .left {
-	display: inline-block;
-	float: left;
-	margin-right: 0.5em;
+    display: inline-block;
+    float: left;
+    margin-right: 0.5em;
 }
 #home .post .right {
-	display: inline-block;
-	float: right;
-	margin-left: 0.5em;
+    display: inline-block;
+    float: right;
+    margin-left: 0.5em;
 }
 
 #home .post-footer,
 #home .post-footer img {
-	vertical-align: middle;
+    vertical-align: middle;
 }
 
 #home .post-footer img {
-	margin-left: 0.5em;
+    margin-left: 0.5em;
 }
 
 #home .version {
-	opacity: .4;
+    opacity: .4;
 }
 #home .subheader, #home .post-footer {
-	font-size: 85%;
+    font-size: 85%;
 }

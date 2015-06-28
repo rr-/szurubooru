@@ -1,22 +1,22 @@
 #login-form p {
-	text-align: center;
+    text-align: center;
 }
 #login-form form {
-	width: 22.5em;
+    width: 22.5em;
 }
 
 #login-form .help {
-	text-align: center;
+    text-align: center;
 }
 #login-form .help ul {
-	margin: 0;
-	padding: 0;
-	display: inline-block;
-	text-align: left;
-	list-style-position: inside;
-	white-space: nowrap;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    text-align: left;
+    list-style-position: inside;
+    white-space: nowrap;
 }
 
 #login-form .messages {
-	margin: 0 auto;
+    margin: 0 auto;
 }

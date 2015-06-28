@@ -1,78 +1,78 @@
 table.history {
-	font-size: 80%;
-	border-spacing: 0;
+    font-size: 80%;
+    border-spacing: 0;
 }
 table.history .addition {
-	color: #228022;
+    color: #228022;
 }
 table.history .addition:before {
-	content: '+';
+    content: '+';
 }
 
 table.history .removal {
-	color: #e02222;
+    color: #e02222;
 }
 table.history .removal:before {
-	content: '-';
+    content: '-';
 }
 
 table.history .user img {
-	vertical-align: middle;
+    vertical-align: middle;
 }
 
 table.history .time,
 table.history .user,
 table.history .subject {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 table.history .difference {
-	word-break: break-all;
+    word-break: break-all;
 }
 
 table.history td {
-	padding: 0.3em 0.5em 0.3em 0.25em;
-	word-break: break-word;
-	word-wrap: break-word;
-	vertical-align: top;
+    padding: 0.3em 0.5em 0.3em 0.25em;
+    word-break: break-word;
+    word-wrap: break-word;
+    vertical-align: top;
 }
 table.history tr:nth-child(2n+1) td {
-	background: #fafafa;
+    background: #fafafa;
 }
 
 table.history ul {
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
-	display: inline;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    display: inline;
 }
 table.history ul:before {
-	content: ' (';
+    content: ' (';
 }
 table.history ul:after {
-	content: ')';
+    content: ')';
 }
 
 table.history li {
-	display: inline;
+    display: inline;
 }
 table.history li:not(:last-of-type):after {
-	content: ', ';
+    content: ', ';
 }
 
 #history-wrapper {
-	text-align: center;
+    text-align: center;
 }
 #history-wrapper table {
-	margin: 0 auto;
-	text-align: left;
+    margin: 0 auto;
+    text-align: left;
 }
 @media all and (min-width: 77em) {
-	#history-wrapper table {
-		width: 70em;
-	}
+    #history-wrapper table {
+        width: 70em;
+    }
 }
 @media all and (max-width: 77em) {
-	#history-wrapper table {
-		width: 100%;
-	}
+    #history-wrapper table {
+        width: 100%;
+    }
 }

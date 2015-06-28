@@ -1,260 +1,260 @@
 .form-wrapper {
-	display: table;
-	margin: 0 auto;
-	text-align: left !important;
-	width: 30em;
+    display: table;
+    margin: 0 auto;
+    text-align: left !important;
+    width: 30em;
 }
 
 .form-row {
-	display: table-row;
+    display: table-row;
 }
 
 .form-label {
-	width: 1%;
-	white-space: pre;
+    width: 1%;
+    white-space: pre;
 }
 
 .form-label,
 .form-input {
-	display: table-cell;
-	line-height: 37px;
-	vertical-align: text-bottom;
+    display: table-cell;
+    line-height: 37px;
+    vertical-align: text-bottom;
 }
 
 .form-input {
-	overflow: hidden;
-	text-overflow: ellipsis;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .form-row label {
-	padding-right: 1em;
-	text-align: right;
+    padding-right: 1em;
+    text-align: right;
 }
 
 .tag-input,
 textarea,
 input[type=text],
 input[type=password] {
-	padding: 3px 6px 4px 6px;
-	border: 1px solid #eee;
-	box-shadow: 0 1px 2px -1px #e0e0e0 inset;
-	background: #fafafa;
-	font-family: 'Inconsolata', monospace;
-	font-size: 100%;
-	text-overflow: ellipsis;
-	width: 100%;
-	box-sizing: border-box;
+    padding: 3px 6px 4px 6px;
+    border: 1px solid #eee;
+    box-shadow: 0 1px 2px -1px #e0e0e0 inset;
+    background: #fafafa;
+    font-family: 'Inconsolata', monospace;
+    font-size: 100%;
+    text-overflow: ellipsis;
+    width: 100%;
+    box-sizing: border-box;
 }
 /* remove chrome yellow background for inputs with autocompletion */
 input:-webkit-autofill {
-	-webkit-box-shadow: 0 0 0px 1000px #fafafa inset;
+    -webkit-box-shadow: 0 0 0px 1000px #fafafa inset;
 }
 
 button::before,
 input[type=button]::before {
-	z-index: -1;
-	background: linear-gradient(#f5f5f5, #e5e5e5);
-	display: block;
-	position: absolute;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	content: '\a0';
+    z-index: -1;
+    background: linear-gradient(#f5f5f5, #e5e5e5);
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    content: '\a0';
 }
 button,
 input[type=button] {
-	vertical-align: middle;
-	line-height: normal;
-	background: transparent;
-	position: relative;
-	padding: 2px 15px 3px 15px;
-	border: 0;
-	box-shadow: 0 1px 1px 0 #e5e5e5,
-		0 0 0 1px rgba(0, 0, 0, 0.15) inset,
-		0 5px 1px -4px white inset;
-	color: #444;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 1px rgba(255, 255, 255, 0.5);
-	font-family: 'Droid Sans', sans-serif;
-	font-size: 17px;
+    vertical-align: middle;
+    line-height: normal;
+    background: transparent;
+    position: relative;
+    padding: 2px 15px 3px 15px;
+    border: 0;
+    box-shadow: 0 1px 1px 0 #e5e5e5,
+        0 0 0 1px rgba(0, 0, 0, 0.15) inset,
+        0 5px 1px -4px white inset;
+    color: #444;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 1px rgba(255, 255, 255, 0.5);
+    font-family: 'Droid Sans', sans-serif;
+    font-size: 17px;
 }
 button:not(:disabled),
 input[type=button]:not(:disabled) {
-	cursor: pointer;
+    cursor: pointer;
 }
 button:not(:disabled):hover::before,
 input[type=button]:not(:disabled):hover::before {
-	opacity: .65;
+    opacity: .65;
 }
 button:not(:disabled):active,
 input[type=button]:not(:disabled):active {
-	padding: 3px 15px 2px 15px;
+    padding: 3px 15px 2px 15px;
 }
 button:not(:disabled):active::before,
 input[type=button]:not(:disabled):active::before {
-	transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 button:not(:disabled):focus,
 input[type=button]:not(:disabled):focus {
-	box-shadow: 0 1px 1px 0 #e5e5e5, 0 0 0 2px #64C2ED inset;
+    box-shadow: 0 1px 1px 0 #e5e5e5, 0 0 0 2px #64C2ED inset;
 }
 button:disabled {
-	color: gray;
+    color: gray;
 }
 
 button.highlight::before,
 input[type=button].highlight::before {
-	background: linear-gradient(rgb(160, 221, 251), rgb(101, 188, 239));
+    background: linear-gradient(rgb(160, 221, 251), rgb(101, 188, 239));
 }
 button.highlight-red::before,
 input[type=button].highlight-red::before {
-	background: linear-gradient(rgba(255, 181, 143, 1), rgba(255, 148, 122, 1));
+    background: linear-gradient(rgba(255, 181, 143, 1), rgba(255, 148, 122, 1));
 }
 
 button:focus,
 textarea:focus,
 input:focus {
-	outline: none;
+    outline: none;
 }
 button::-moz-focus-inner,
 input::-moz-focus-inner {
-	border: 0;
+    border: 0;
 }
 .tag-input.focused,
 textarea:focus,
 input:not([type=button]):not(.tag-real-input):focus {
-	box-shadow: 0 0 0 1px #64C2ED inset;
-	border-color: #64C2ED;
+    box-shadow: 0 0 0 1px #64C2ED inset;
+    border-color: #64C2ED;
 }
 
 input[type=radio],
 input[type=checkbox] {
-	opacity: 0;
-	position: absolute;
+    opacity: 0;
+    position: absolute;
 }
 input[type=radio] + label,
 input[type=checkbox] + label {
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-o-user-select: none;
-	user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 input[type=radio] + label::before,
 input[type=checkbox] + label::before {
-	font-family: 'FontAwesome';
-	display: inline-block;
-	width: 1em;
-	text-align: left;
+    font-family: 'FontAwesome';
+    display: inline-block;
+    width: 1em;
+    text-align: left;
 }
 input[type=radio] + label::before {
-	content: "\f1db";
+    content: "\f1db";
 }
 input[type=radio]:checked + label::before {
-	content: "\f192";
+    content: "\f192";
 }
 input[type=checkbox] + label::before {
-	content: "\f096";
+    content: "\f096";
 }
 input[type=checkbox]:checked + label::before {
-	content: "\f046";
+    content: "\f046";
 }
 input[type=radio]:focus + label,
 input[type=checkbox]:focus + label {
-	color: #64C2ED;
+    color: #64C2ED;
 }
 
 
 
 .file-handler::before {
-	background: none;
+    background: none;
 }
 .file-handler {
-	box-shadow: none !important;
-	outline: none !important;
-	border: 3px dashed #eee !important;
-	padding: 0.3em 0.5em !Important;
-	line-height: 140% !important;
-	text-align: center;
-	cursor: pointer;
+    box-shadow: none !important;
+    outline: none !important;
+    border: 3px dashed #eee !important;
+    padding: 0.3em 0.5em !Important;
+    line-height: 140% !important;
+    text-align: center;
+    cursor: pointer;
 }
 .file-handler.active {
-	border-color: #64C2ED !important;
-	background-color: #eeffcc;
+    border-color: #64C2ED !important;
+    background-color: #eeffcc;
 }
 
 .tag-input {
-	padding: 1px;
-	line-height: normal !important;
-	cursor: text;
+    padding: 1px;
+    line-height: normal !important;
+    cursor: text;
 }
 .tag-input ul {
-	list-style-type: none;
-	display: inline;
-	margin: 0;
-	padding: 0;
+    list-style-type: none;
+    display: inline;
+    margin: 0;
+    padding: 0;
 }
 .tag-input li {
-	background: #ddd;
-	display: inline-block;
-	font-family: 'Droid Sans', sans-serif;
-	margin: 1px;
-	padding: 2px 4px;
+    background: #ddd;
+    display: inline-block;
+    font-family: 'Droid Sans', sans-serif;
+    margin: 1px;
+    padding: 2px 4px;
 }
 .tag-input input {
-	border: none;
-	width: auto;
+    border: none;
+    width: auto;
 }
 .tag-input li a {
-	color: black;
+    color: black;
 }
 .tag-input li a.close {
-	font-size: 85%;
-	margin-left: 0.5em;
+    font-size: 85%;
+    margin-left: 0.5em;
 }
 
 .related-tags {
-	line-height: 200%;
-	font-size: 95%;
-	display: none;
-	margin: 0.5em 0.5em 1em 0.5em;
+    line-height: 200%;
+    font-size: 95%;
+    display: none;
+    margin: 0.5em 0.5em 1em 0.5em;
 }
 .related-tags span {
-	float: left;
+    float: left;
 }
 .related-tags ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 .related-tags li {
-	display: inline-block;
-	margin: 0 0.5em;
-	padding: 0;
+    display: inline-block;
+    margin: 0 0.5em;
+    padding: 0;
 }
 
 .autocomplete {
-	position: absolute;
-	display: none;
-	z-index: 10;
+    position: absolute;
+    display: none;
+    z-index: 10;
 }
 .autocomplete ul {
-	list-style-type: none;
-	padding: 0 0 !important;
-	margin: 0 !important;
-	border: 2px solid #64C2ED;
-	background: white;
-	display: block !important;
-	text-align: left;
+    list-style-type: none;
+    padding: 0 0 !important;
+    margin: 0 !important;
+    border: 2px solid #64C2ED;
+    background: white;
+    display: block !important;
+    text-align: left;
 }
 
 .autocomplete li {
-	margin: 0;
-	padding: 0.1em 0.5em !important;
-	cursor: pointer;
+    margin: 0;
+    padding: 0.1em 0.5em !important;
+    cursor: pointer;
 }
 
 .autocomplete li.active {
-	background: #64C2ED;
+    background: #64C2ED;
 }

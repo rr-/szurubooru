@@ -1,16 +1,16 @@
 .page-list {
-	text-align: center;
-	list-style-type: none;
-	padding: 0;
-	margin: 1em auto 0 auto;
-	display: inline-block;
+    text-align: center;
+    list-style-type: none;
+    padding: 0;
+    margin: 1em auto 0 auto;
+    display: inline-block;
 }
 
 .page-list li {
-	display: inline-block;
+    display: inline-block;
 }
 
 .page-list li a {
-	display: inline-block;
-	padding: 0.4em 1.2em;
+    display: inline-block;
+    padding: 0.4em 1.2em;
 }

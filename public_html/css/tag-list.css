@@ -1,96 +1,96 @@
 #tag-list-wrapper {
-	text-align: center;
+    text-align: center;
 }
 #tag-list {
-	width: 100%;
-	display: inline-block;
-	margin: 0 auto;
+    width: 100%;
+    display: inline-block;
+    margin: 0 auto;
 }
 @media all and (min-width: 67em) {
-	#tag-list {
-		width: 60em;
-	}
+    #tag-list {
+        width: 60em;
+    }
 }
 @media all and (max-width: 40em) {
-	#tag-list .implications,
-	#tag-list .suggestions {
-		display: none;
-	}
+    #tag-list .implications,
+    #tag-list .suggestions {
+        display: none;
+    }
 }
 
 #tag-list form {
-	float: left;
-	white-space: nowrap;
+    float: left;
+    white-space: nowrap;
 }
 #tag-list form input {
-	width: 15em;
+    width: 15em;
 }
 #tag-list ul.order {
-	float: right;
-	list-style-type: none;
-	padding: 0;
-	margin: 0 -0.5em 0 0;
+    float: right;
+    list-style-type: none;
+    padding: 0;
+    margin: 0 -0.5em 0 0;
 }
 #tag-list .search:after {
-	display: block;
-	content: '';
-	clear: both;
+    display: block;
+    content: '';
+    clear: both;
 }
 
 #ta-list ul.order {
-	margin: -0.5em -0.5em 0.5em -0.5em;
+    margin: -0.5em -0.5em 0.5em -0.5em;
 }
 #tag-list ul.order li {
-	display: inline-block;
-	margin: 0 0.5em;
+    display: inline-block;
+    margin: 0 0.5em;
 }
 #tag-list ul.order a {
-	display: inline-block;
-	padding: 0.2em 0.5em;
+    display: inline-block;
+    padding: 0.2em 0.5em;
 }
 
 #tag-list table {
-	width: 100%;
-	text-align: left;
-	margin: 1em auto;
+    width: 100%;
+    text-align: left;
+    margin: 1em auto;
 }
 
 #tag-list th:not(:last-child),
 #tag-list td:not(:last-child) {
-	padding-right: 1.5em;
+    padding-right: 1.5em;
 }
 
 #tag-list th {
-	font-weight: normal;
+    font-weight: normal;
 }
 
 #tag-list .fa-check {
-	opacity: .2;
+    opacity: .2;
 }
 
 #tag-list .banned,
 #tag-list .usages {
-	text-align: center;
+    text-align: center;
 }
 
 #tag-list .implications,
 #tag-list .suggestions {
-	word-break: break-all;
+    word-break: break-all;
 }
 
 .tag-category-character,
 .tag-category-character a {
-	color: #0a0;
+    color: #0a0;
 }
 .tag-category-copyright,
 .tag-category-copyright a {
-	color: #a0a;
+    color: #a0a;
 }
 .tag-category-artist,
 .tag-category-artist a {
-	color: #a00;
+    color: #a00;
 }
 .tag-category-meta,
 .tag-category-meta a {
-	color: #aaa;
+    color: #aaa;
 }

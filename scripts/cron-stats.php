@@ -1,8 +1,8 @@
 <?php
 require_once(__DIR__
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'src'
-	. DIRECTORY_SEPARATOR . 'Bootstrap.php');
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'src'
+    . DIRECTORY_SEPARATOR . 'Bootstrap.php');
 
 // Why this exists:
 // 1. Some entities store a few basic stats in special columns for performance reasons. The benefit of such

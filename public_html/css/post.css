@@ -1,262 +1,262 @@
 #post-current-search-wrapper {
-	text-align: center;
+    text-align: center;
 }
 #post-current-search {
-	margin: 0 auto 1em auto;
-	display: inline-block;
+    margin: 0 auto 1em auto;
+    display: inline-block;
 }
 
 #post-current-search a {
-	margin: 0 2em;
+    margin: 0 2em;
 }
 #post-current-search a,
 #post-current-search div {
-	display: inline-block;
+    display: inline-block;
 }
 #post-current-search a:not(.enabled) {
-	color: silver;
-	cursor: text;
+    color: silver;
+    cursor: text;
 }
 
 #post-view-wrapper #sidebar {
-	line-height: 1.33em;
+    line-height: 1.33em;
 }
 
 #post-view-wrapper #sidebar h1 {
-	margin-top: 1.5em;
+    margin-top: 1.5em;
 }
 
 #post-view-wrapper #sidebar h1:first-of-type {
-	margin-top: 0;
+    margin-top: 0;
 }
 
 @media all and (min-width: 62.5em) {
-	#post-view-wrapper {
-		display: flex;
-	}
+    #post-view-wrapper {
+        display: flex;
+    }
 
-	#post-view-wrapper #sidebar {
-		min-width: 15em;
-		margin-right: 1em;
-		flex: 1;
-	}
+    #post-view-wrapper #sidebar {
+        min-width: 15em;
+        margin-right: 1em;
+        flex: 1;
+    }
 
-	#post-view-wrapper #post-view {
-		flex: 5;
-	}
+    #post-view-wrapper #post-view {
+        flex: 5;
+    }
 }
 
 @media all and (max-width: 62.5em) {
-	#post-view-wrapper {
-		display: flex;
-		flex-direction: column;
-	}
-	#post-view-wrapper #sidebar {
-		order: 2;
-		margin-bottom: 1em;
-	}
-	#post-view-wrapper #post-view {
-		margin: 0 auto;
-		max-width: 100%;
-		order: 1;
-	}
+    #post-view-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    #post-view-wrapper #sidebar {
+        order: 2;
+        margin-bottom: 1em;
+    }
+    #post-view-wrapper #post-view {
+        margin: 0 auto;
+        max-width: 100%;
+        order: 1;
+    }
 }
 
 #post-view-wrapper .favorites li {
-	display: inline-block;
-	margin: 0 0.25em 0.25em 0;
+    display: inline-block;
+    margin: 0 0.25em 0.25em 0;
 }
 
 #sidebar ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 #sidebar .other-info li {
-	display: block;
-	word-break: break-all;
-	padding-left: 1em;
-	text-indent: -1em;
+    display: block;
+    word-break: break-all;
+    padding-left: 1em;
+    text-indent: -1em;
 }
 
 #sidebar .tags li {
-	display: block;
-	word-break: break-all;
-	padding-left: 20px;
-	text-indent: -20px;
+    display: block;
+    word-break: break-all;
+    padding-left: 20px;
+    text-indent: -20px;
 }
 #sidebar .tags .tag-wrapper {
-	max-width: 100%;
-	position: relative;
-	display: inline-block;
+    max-width: 100%;
+    position: relative;
+    display: inline-block;
 }
 #sidebar .tags li a.tag-edit {
-	margin-left: 20px;
+    margin-left: 20px;
 }
 #sidebar .tags li .tag-name {
-	margin-right: 0.8em;
+    margin-right: 0.8em;
 }
 #sidebar .tags li .usages {
-	color: silver;
+    color: silver;
 }
 
 #sidebar .author-box img {
-	float: left;
-	margin-right: 0.5em;
+    float: left;
+    margin-right: 0.5em;
 }
 #sidebar .author-box .author-name {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 #sidebar .other-info {
-	margin-top: 1em;
-	line-height: 150%;
+    margin-top: 1em;
+    line-height: 150%;
 }
 
 #sidebar .essential {
-	display: flex;
-	justify-content: space-around;
-	margin-bottom: 2em;
-	max-width: 30em;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2em;
+    max-width: 30em;
 }
 #sidebar .essential li {
-	display: block;
-	margin: 0 0.25em;
-	vertical-align: top;
+    display: block;
+    margin: 0 0.25em;
+    vertical-align: top;
 }
 #sidebar .essential li i.fa {
-	font-size: 200%;
+    font-size: 200%;
 }
 #sidebar .essential li a {
-	display: block;
-	text-align: center;
-	font-size: 87%;
+    display: block;
+    text-align: center;
+    font-size: 87%;
 }
 
 #post-view #post-edit-target {
-	padding: 1em;
-	width: 50%;
-	min-width: 30em;
-	position: absolute;
-	background: rgba(255, 255, 255, 0.8);
-	box-shadow: 0 0 1em 0.5em rgba(255, 255, 255, 0.8);
-	z-index: 2;
-	display: none;
+    padding: 1em;
+    width: 50%;
+    min-width: 30em;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 1em 0.5em rgba(255, 255, 255, 0.8);
+    z-index: 2;
+    display: none;
 }
 #post-edit-target .form-wrapper {
-	min-width: 100%;
+    min-width: 100%;
 }
 #post-view>* {
-	z-index: -1;
+    z-index: -1;
 }
 
 #post-edit-target .file-handler {
-	margin: 0.5em 0;
+    margin: 0.5em 0;
 }
 
 #post-view-wrapper .post-history-wrapper {
-	padding: 1em 0;
-	display: none;
-	word-break: break-all;
+    padding: 1em 0;
+    display: none;
+    word-break: break-all;
 }
 
 .post-content {
-	position: relative;
-	margin-bottom: 0.5em;
+    position: relative;
+    margin-bottom: 0.5em;
 }
 .post-content .object-wrapper {
-	max-width: 100%;
-	position: relative;
+    max-width: 100%;
+    position: relative;
 }
 .post-content .object-wrapper img,
 .post-content .object-wrapper object,
 .post-content .object-wrapper iframe,
 .post-content .object-wrapper video {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	left: 0;
-	top: 0;
-	border: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    border: 0;
 }
 .post-content .object-wrapper video {
-	background: black;
+    background: black;
 }
 
 .post-notes-target {
-	position: absolute;
-	pointer-events: none;
-	z-index: 1;
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
 }
 .post-notes {
-	position: relative;
-	width: 100%;
-	height: 100%;
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .post-note-edit {
-	pointer-events: auto;
-	display: none;
-	position: fixed;
-	z-index: 3;
-	background: white;
-	border: 1px solid black;
-	padding: 1em;
-	left: 30%;
-	top: 20%;
+    pointer-events: auto;
+    display: none;
+    position: fixed;
+    z-index: 3;
+    background: white;
+    border: 1px solid black;
+    padding: 1em;
+    left: 30%;
+    top: 20%;
 }
 .post-note-edit textarea {
-	width: 25em;
-	height: 5em;
-	display: block;
+    width: 25em;
+    height: 5em;
+    display: block;
 }
 .post-note-edit .actions {
-	pointer-events: none;
+    pointer-events: none;
 }
 .post-note-edit button {
-	pointer-events: auto;
-	margin-top: 0.5em;
+    pointer-events: auto;
+    margin-top: 0.5em;
 }
 .post-note-edit .actions button:not(:last-child) {
-	margin-right: 0.5em;
+    margin-right: 0.5em;
 }
 
 .post-note {
-	outline: 0;
-	pointer-events: auto;
-	position: absolute;
-	background: rgba(255, 255, 255, 0.3);
-	border: 1px solid rgba(0, 0, 0, 0.3);
-	font-size: 12pt;
+    outline: 0;
+    pointer-events: auto;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    font-size: 12pt;
 }
 .post-note:focus {
-	border-color: rgba(255, 0, 0, 0.3);
-	background-color: rgba(255, 225, 225, 0.3);
+    border-color: rgba(255, 0, 0, 0.3);
+    background-color: rgba(255, 225, 225, 0.3);
 }
 .post-note .text-wrapper {
-	position: absolute;
-	display: none;
-	z-index: 1;
-	top: calc(100%);
-	left: -1px;
-	padding-top: 0.5em;
-	cursor: pointer;
-	width: -webkit-max-content;
-	width: -moz-max-content;
-	width: max-content;
+    position: absolute;
+    display: none;
+    z-index: 1;
+    top: calc(100%);
+    left: -1px;
+    padding-top: 0.5em;
+    cursor: pointer;
+    width: -webkit-max-content;
+    width: -moz-max-content;
+    width: max-content;
 }
 .post-note .text {
-	padding: 0.5em;
-	background: lemonchiffon;
-	border: 1px solid black;
+    padding: 0.5em;
+    background: lemonchiffon;
+    border: 1px solid black;
 }
 .post-note:hover .text-wrapper {
-	display: block;
+    display: block;
 }
 
 .post-note .text p:first-of-type {
-	margin-top: 0;
+    margin-top: 0;
 }
 .post-note .text p:last-of-type {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }

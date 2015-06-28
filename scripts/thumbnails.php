@@ -1,8 +1,8 @@
 <?php
 require_once(__DIR__
-	. DIRECTORY_SEPARATOR . '..'
-	. DIRECTORY_SEPARATOR . 'src'
-	. DIRECTORY_SEPARATOR . 'Bootstrap.php');
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'src'
+    . DIRECTORY_SEPARATOR . 'Bootstrap.php');
 
 use Szurubooru\Injector;
 use Szurubooru\Dao\PublicFileDao;
@@ -16,14 +16,14 @@ $postThumbnailService = Injector::get(PostThumbnailService::class);
 
 foreach (array_reverse($postDao->findAll()) as $post)
 {
-	try
-	{
-		$thumbnailName = $postThumbnailService->generateIfNeeded($post, $size, $size);
-		echo '.';
-	}
-	catch (Exception $e)
-	{
-		echo PHP_EOL . $post->getId() . ': ' . $e->getMessage() . PHP_EOL;
-	}
+    try
+    {
+        $thumbnailName = $postThumbnailService->generateIfNeeded($post, $size, $size);
+        echo '.';
+    }
+    catch (Exception $e)
+    {
+        echo PHP_EOL . $post->getId() . ': ' . $e->getMessage() . PHP_EOL;
+    }
 }
 echo PHP_EOL;

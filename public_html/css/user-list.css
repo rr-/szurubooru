@@ -1,60 +1,60 @@
 #user-list {
-	min-width: 20em;
-	text-align: center;
+    min-width: 20em;
+    text-align: center;
 }
 
 #user-list ul {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }
 
 #user-list ul.order {
-	margin: -0.5em -0.5em 0.5em -0.5em;
+    margin: -0.5em -0.5em 0.5em -0.5em;
 }
 #user-list ul.order li {
-	display: inline-block;
-	margin: 0 0.5em;
+    display: inline-block;
+    margin: 0 0.5em;
 }
 
 #user-list ul.order a {
-	display: inline-block;
-	padding: 0.2em 0.5em;
+    display: inline-block;
+    padding: 0.2em 0.5em;
 }
 
 #user-list .users {
-	display: inline-block;
-	margin: 0 auto;
+    display: inline-block;
+    margin: 0 auto;
 }
 #user-list .users li {
-	text-align: left;
-	margin: 0.5em 0;
+    text-align: left;
+    margin: 0.5em 0;
 }
 
 #user-list li:after {
-	clear: left;
-	content: '';
-	display: block;
+    clear: left;
+    content: '';
+    display: block;
 }
 
 #user-list .user img {
-	vertical-align: top;
-	display: block;
+    vertical-align: top;
+    display: block;
 }
 #user-list .user .avatar {
-	float: left;
-	margin-right: 1em;
+    float: left;
+    margin-right: 1em;
 }
 #user-list .user .avatar a {
-	display: block;
+    display: block;
 }
 #user-list .user .details {
-	float: left;
-	vertical-align: top;
+    float: left;
+    vertical-align: top;
 }
 
 #user-list .user h1 {
-	margin-top: 0;
-	font-weight: normal;
-	font-size: 1.25em;
+    margin-top: 0;
+    font-weight: normal;
+    font-size: 1.25em;
 }

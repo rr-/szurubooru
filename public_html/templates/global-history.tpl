@@ -1,4 +1,4 @@
 <div id="history-wrapper">
-	<div class="pagination-target">
-	</div>
+    <div class="pagination-target">
+    </div>
 </div>
