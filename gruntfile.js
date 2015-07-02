@@ -87,6 +87,7 @@ module.exports = function(grunt) {
 					{ src: 'node_modules/marked/lib/marked.js', dest: 'public_html/lib/marked.js' },
 					{ src: 'node_modules/nprogress/nprogress.js', dest: 'public_html/lib/nprogress.js' },
 					{ src: 'node_modules/nprogress/nprogress.css', dest: 'public_html/lib/nprogress.css' },
+					{ cwd: 'node_modules', src: 'font-awesome/**/*', dest: 'public_html/lib/', expand: true },
 				]
 			}
 		},
