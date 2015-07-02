@@ -4,6 +4,7 @@ App.Presenters = App.Presenters || {};
 App.Presenters.PostPresenter = function(
     _,
     jQuery,
+    appState,
     util,
     promise,
     api,
@@ -171,6 +172,7 @@ App.Presenters.PostPresenter = function(
         return templates.post({
             query: params.query,
             post: post,
+            forceHttpInPermalinks: appState.get('config')['forceHttpInPermalinks'],
             ownScore: post.ownScore,
             postFavorites: post.favorites,
             postHistory: post.history,
@@ -334,6 +336,7 @@ App.Presenters.PostPresenter = function(
 App.DI.register('postPresenter', [
     '_',
     'jQuery',
+    'appState',
     'util',
     'promise',
     'api',

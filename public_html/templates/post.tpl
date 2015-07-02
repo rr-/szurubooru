@@ -1,4 +1,13 @@
-<% var permaLink = (window.location.origin + '/' + window.location.pathname + '/data/posts/' + post.name).replace(/([^:])\/+/g, '$1/') %>
+<%
+var permaLink = '';
+permaLink += window.location.origin + '/';
+permaLink += window.location.pathname + '/';
+permaLink += 'data/posts/' + post.name;
+permaLink = permaLink.replace(/([^:])\/+/g, '$1/');
+if (forceHttpInPermalinks > 0) {
+    permaLink = permaLink.replace('https', 'http');
+}
+%>
 
 <div id="post-current-search-wrapper">
     <div id="post-current-search">

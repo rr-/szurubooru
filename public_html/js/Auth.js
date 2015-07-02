@@ -141,6 +141,7 @@ App.Auth = function(_, jQuery, util, api, appState, promise) {
         appState.set('loginToken', response.json.token && response.json.token.name);
         appState.set('loggedIn', response.json.user && !!response.json.user.id);
         appState.set('loggedInUser', response.json.user);
+        appState.set('config', response.json.config);
     }
 
     function isLoggedIn(userName) {

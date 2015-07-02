@@ -1,5 +1,6 @@
 <?php
 namespace Szurubooru\Routes;
+use Szurubooru\Config;
 use Szurubooru\FormData\LoginFormData;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Router;
@@ -12,6 +13,7 @@ use Szurubooru\ViewProxies\UserViewProxy;
 
 class Login extends AbstractRoute
 {
+    private $config;
     private $authService;
     private $userService;
     private $tokenService;
@@ -21,6 +23,7 @@ class Login extends AbstractRoute
     private $tokenViewProxy;
 
     public function __construct(
+        Config $config,
         AuthService $authService,
         UserService $userService,
         TokenService $tokenService,
@@ -29,6 +32,7 @@ class Login extends AbstractRoute
         UserViewProxy $userViewProxy,
         TokenViewProxy $tokenViewProxy)
     {
+        $this->config = $config;
         $this->authService = $authService;
         $this->userService = $userService;
         $this->tokenService = $tokenService;
@@ -79,6 +83,9 @@ class Login extends AbstractRoute
             'token' => $this->tokenViewProxy->fromEntity($this->authService->getLoginToken()),
             'user' => $this->userViewProxy->fromEntity($user),
             'privileges' => $this->privilegeService->getCurrentPrivileges(),
+            'config' => [
+                'forceHttpInPermalinks' => $this->config->security->forceHttpInPermalinks,
+            ],
         ];
     }
 }
