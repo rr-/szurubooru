@@ -52,10 +52,16 @@
 .post-list ul.safety .safety-unsafe.disabled:before  { background: linear-gradient(#DDB7B7, #C9A195); }
 
 .post-list ul.posts {
+    display: -webkit-flex;
+    -webkit-justify-content: center;
+    -webkit-align-content: center;
+    -webkit-flex-wrap: wrap;
+
     display: flex;
     justify-content: center;
     align-content: center;
     flex-wrap: wrap;
+
     list-style-type: none;
     padding: 0;
     margin: 0;

@@ -32,22 +32,27 @@
 
 @media all and (min-width: 62.5em) {
     #post-view-wrapper {
+        display: -webkit-flex;
         display: flex;
     }
 
     #post-view-wrapper #sidebar {
         min-width: 15em;
         margin-right: 1em;
+        -webkit-flex: 1;
         flex: 1;
     }
 
     #post-view-wrapper #post-view {
+        -webkit-flex: 5;
         flex: 5;
     }
 }
 
 @media all and (max-width: 62.5em) {
     #post-view-wrapper {
+        display: -webkit-flex;
+        -webkit-flex-direction: column;
         display: flex;
         flex-direction: column;
     }
@@ -114,6 +119,8 @@
 }
 
 #sidebar .essential {
+    display: -webkit-flex;
+    -webkit-justify-content: space-around;
     display: flex;
     justify-content: space-around;
     margin-bottom: 2em;

@@ -19,11 +19,13 @@
 .comment {
     margin: 0 0 1em 0;
     padding: 0;
+    display: -webkit-flex;
     display: flex;
 }
 
 .comment .avatar {
     margin-right: 0.5em;
+    -webkit-flex-shrink: 0;
     flex-shrink: 0;
     vertical-align: top;
 }
@@ -83,14 +85,18 @@
     margin-bottom: 2em;
 }
 #global-comment-list .post-comment {
+    display: -webkit-flex;
     display: flex;
 }
 @media all and (max-width: 40em) {
     #global-comment-list .post-comment {
+        -webkit-flex-direction: column;
         flex-direction: column;
     }
 }
 #global-comment-list .post {
+    -webkit-flex-shrink: 0;
+    -webkit-flex-grow: 0;
     flex-shrink: 0;
     flex-grow: 0;
     margin-right: 1em;
