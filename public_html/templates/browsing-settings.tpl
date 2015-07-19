@@ -56,25 +56,25 @@
         <div class="form-input">
             <input <% print(settings.fitMode === 'fit-width' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-width" name="fitMode" value="fit-width"/>
             <label for="browsing-settings-fit-width">
-                Fit to width
+                Fit to window width
             </label>
             <br/>
 
             <input <% print(settings.fitMode === 'fit-height' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-height" name="fitMode" value="fit-height"/>
             <label for="browsing-settings-fit-height">
-                Fit to height
+                Fit to window height
             </label>
             <br/>
 
             <input <% print(settings.fitMode === 'fit-both' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-both" name="fitMode" value="fit-both"/>
             <label for="browsing-settings-fit-both">
-                Fit width and height
+                Fit to both width and height
             </label>
             <br/>
 
             <input <% print(settings.fitMode === 'original' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-original" name="fitMode" value="original"/>
             <label for="browsing-settings-fit-original">
-                Original
+                Show at original size
             </label>
             <br/>
 
