@@ -66,7 +66,7 @@
 
             <tr>
                 <td><code>[F]</code></td>
-                <td>Toggle full post size</td>
+                <td>Cycle post fit mode</td>
             </tr>
 
             <tr>

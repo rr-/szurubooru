@@ -28,6 +28,42 @@ App.Presenters.PostContentPresenter = function(
             });
     }
 
+    var fitters = {
+        'fit-height': function($wrapper) {
+            var originalWidth = $wrapper.attr('data-width');
+            var originalHeight = $wrapper.attr('data-height');
+            var ratio = originalWidth / originalHeight;
+            var height = jQuery(window).height() - $wrapper.offset().top;
+            var width = (height - 10) * ratio;
+            $wrapper.css({maxWidth: width + 'px'});
+        },
+        'fit-width': function($wrapper) {
+            var originalWidth = $wrapper.attr('data-width');
+            $wrapper.css({maxWidth: originalWidth + 'px', width: 'auto'});
+        },
+        'original': function($wrapper) {
+            var originalWidth = $wrapper.attr('data-width');
+            $wrapper.css({maxWidth: null, width: originalWidth + 'px'});
+        }
+    };
+    var fitterNames = Object.keys(fitters);
+
+    function changeFitMode(mode) {
+        var $wrapper = $target.find('.object-wrapper');
+
+        $wrapper.data('current-fit', mode);
+        fitters[$wrapper.data('current-fit')]($wrapper);
+    }
+
+    function cycleFitMode() {
+        var $wrapper = $target.find('.object-wrapper');
+        var mode = $wrapper.data('current-fit');
+        var newMode = fitterNames[(fitterNames.indexOf(mode) + 1) % fitterNames.length];
+        $wrapper.data('current-fit', newMode);
+        fitters[$wrapper.data('current-fit')]($wrapper);
+        updatePostNotesSize();
+    }
+
     function render() {
         $target.html(templates.postContent({post: post}));
 
@@ -36,17 +72,8 @@ App.Presenters.PostContentPresenter = function(
             updatePostNotesSize();
         }
 
-        keyboard.keyup('f', function() {
-            var $wrapper = $target.find('.object-wrapper');
-            if ($wrapper.data('full')) {
-                $wrapper.css({maxWidth: $wrapper.attr('data-width') + 'px', width: 'auto'});
-                $wrapper.data('full', false);
-            } else {
-                $wrapper.css({maxWidth: null, width: $wrapper.attr('data-width')});
-                $wrapper.data('full', true);
-            }
-            updatePostNotesSize();
-        });
+        changeFitMode('fit-width');
+        keyboard.keyup('f', cycleFitMode);
 
         jQuery(window).resize(updatePostNotesSize);
     }
@@ -59,12 +86,12 @@ App.Presenters.PostContentPresenter = function(
 
     function updatePostNotesSize() {
         var $postNotes = $target.find('.post-notes-target');
-        var $objectWrapper = $target.find('.object-wrapper');
+        var $wrapper = $target.find('.object-wrapper');
         $postNotes.css({
-            width: $objectWrapper.outerWidth() + 'px',
-            height: $objectWrapper.outerHeight() + 'px',
-            left: ($objectWrapper.offset().left - $objectWrapper.parent().offset().left) + 'px',
-            top: ($objectWrapper.offset().top - $objectWrapper.parent().offset().top) + 'px',
+            width: $wrapper.outerWidth() + 'px',
+            height: $wrapper.outerHeight() + 'px',
+            left: ($wrapper.offset().left - $wrapper.parent().offset().left) + 'px',
+            top: ($wrapper.offset().top - $wrapper.parent().offset().top) + 'px',
         });
     }
 
@@ -78,7 +105,6 @@ App.Presenters.PostContentPresenter = function(
         addNewPostNote: addNewPostNote,
         updatePostNotesSize: updatePostNotesSize,
     };
-
 };
 
 App.DI.register('postContentPresenter', [
