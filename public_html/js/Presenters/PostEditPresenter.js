@@ -47,7 +47,20 @@ App.Presenters.PostEditPresenter = function(
     }
 
     function render() {
-        $target.html(templates.postEdit({post: post, privileges: privileges}));
+        var $template = jQuery(templates.postEdit({post: post, privileges: privileges}));
+
+        var $advanced = $template.find('.advanced');
+        var $advancedTrigger = $template.find('.advanced-trigger');
+        $advanced.hide();
+        if (!$advanced.length) {
+            $advancedTrigger.hide();
+        } else {
+            $advancedTrigger.find('a').click(function(e) {
+                advancedTriggerClicked(e, $advanced, $advancedTrigger);
+            });
+        }
+
+        $target.html($template);
 
         postContentFileDropper = new App.Controls.FileDropper($target.find('form [name=content]'));
         postContentFileDropper.onChange = postContentChanged;
@@ -62,6 +75,12 @@ App.Presenters.PostEditPresenter = function(
         }
 
         $target.find('form').submit(editFormSubmitted);
+    }
+
+    function advancedTriggerClicked(e, $advanced, $advancedTrigger) {
+        $advancedTrigger.hide();
+        $advanced.show();
+        e.preventDefault();
     }
 
     function focus() {

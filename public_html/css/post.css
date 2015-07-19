@@ -166,6 +166,9 @@
     z-index: -1;
 }
 
+#post-edit-target .advanced-trigger .form-input {
+    overflow: auto; /* fix browser's outline around the link being cut due to overflow: hidden; */
+}
 #post-edit-target .file-handler {
     margin: 0.5em 0;
 }

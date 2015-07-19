@@ -30,8 +30,15 @@
         </div>
     <% } %>
 
+    <div class="form-row advanced-trigger">
+        <label></label>
+        <div class="form-input">
+            <a href="#">Advanced&hellip;</a>
+        </div>
+    </div>
+
     <% if (privileges.canChangeSource) { %>
-        <div class="form-row">
+        <div class="form-row advanced">
             <label class="form-label" for="post-source">Source:</label>
             <div class="form-input">
                 <input maxlength="200" type="text" name="source" id="post-source" placeholder="Where did you get this? (optional)" value="<%= post.source %>"/>
@@ -40,7 +47,7 @@
     <% } %>
 
     <% if (privileges.canChangeRelations) { %>
-        <div class="form-row">
+        <div class="form-row advanced">
             <label class="form-label" for="post-relations">Relations:</label>
             <div class="form-input">
                 <input maxlength="200" type="text" name="relations" id="post-relations" placeholder="Post ids, separated with space" value="<%= _.pluck(post.relations, 'id').join(' ') %>"/>
@@ -49,7 +56,7 @@
     <% } %>
 
     <% if (privileges.canChangeFlags && post.contentType === 'video') { %>
-        <div class="form-row">
+        <div class="form-row advanced">
             <label class="form-label">Loop:</label>
             <div class="form-input">
                 <input type="checkbox" id="post-loop" name="loop" value="loop" <%= post.flags.loop ? 'checked="checked"' : '' %>/>
@@ -61,7 +68,7 @@
     <% } %>
 
     <% if (privileges.canChangeContent) { %>
-        <div class="form-row">
+        <div class="form-row advanced">
             <label class="form-label" for="post-content">Content:</label>
             <div class="form-input">
                 <input type="file" id="post-content" name="content"/>
@@ -70,7 +77,7 @@
     <% } %>
 
     <% if (privileges.canChangeThumbnail) { %>
-        <div class="form-row">
+        <div class="form-row advanced">
             <label class="form-label" for="post-thumbnail">Thumbnail:</label>
             <div class="form-input">
                 <input type="file" id="post-thumbnail" name="thumbnail"/>
