@@ -7,7 +7,8 @@ App.Presenters.PostContentPresenter = function(
     promise,
     keyboard,
     presenterManager,
-    postNotesPresenter) {
+    postNotesPresenter,
+    browsingSettings) {
 
     var post;
     var templates = {};
@@ -72,7 +73,7 @@ App.Presenters.PostContentPresenter = function(
             updatePostNotesSize();
         }
 
-        changeFitMode('fit-width');
+        changeFitMode(browsingSettings.getSettings().fitMode);
         keyboard.keyup('f', cycleFitMode);
 
         jQuery(window).resize(updatePostNotesSize);
@@ -114,5 +115,6 @@ App.DI.register('postContentPresenter', [
     'promise',
     'keyboard',
     'presenterManager',
-    'postNotesPresenter'],
+    'postNotesPresenter',
+    'browsingSettings'],
     App.Presenters.PostContentPresenter);

@@ -52,11 +52,29 @@
     </div>
 
     <div class="form-row">
+        <label class="form-label">Default fit mode:</label>
+        <div class="form-input">
+            <input <% print(settings.fitMode === 'fit-width' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-width" name="fitMode" value="fit-width"/>
+            <label for="browsing-settings-fit-width">
+                Fit width
+            </label>
+
+            <input <% print(settings.fitMode === 'fit-height' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-height" name="fitMode" value="fit-height"/>
+            <label for="browsing-settings-fit-height">
+                Fit height
+            </label>
+
+            <input <% print(settings.fitMode === 'original' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-original" name="fitMode" value="original"/>
+            <label for="browsing-settings-fit-original">
+                Original
+            </label>
+        </div>
+    </div>
+
+    <div class="form-row">
         <label class="form-label"></label>
         <div class="form-input">
             <button type="submit">Update settings</button>
         </div>
     </div>
 </form>
-
-

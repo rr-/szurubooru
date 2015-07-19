@@ -52,6 +52,7 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
                 unsafe: $el.find('[name=listUnsafePosts]').is(':checked'),
             },
             keyboardShortcuts: $el.find('[name=keyboardShortcuts]').is(':checked'),
+            fitMode: $el.find('[name=fitMode]:checked').val(),
         };
 
         promise.wait(browsingSettings.setSettings(newSettings))

@@ -33,6 +33,7 @@ App.BrowsingSettings = function(
                 unsafe: true,
             },
             keyboardShortcuts: true,
+            fitMode: 'fit-width',
         };
     }
 
@@ -91,7 +92,6 @@ App.BrowsingSettings = function(
         getSettings: getSettings,
         setSettings: setSettings,
     };
-
 };
 
 App.DI.registerSingleton('browsingSettings', ['promise', 'auth', 'api'], App.BrowsingSettings);

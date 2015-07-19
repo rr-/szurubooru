@@ -3,7 +3,7 @@ namespace Szurubooru\Upgrades;
 use Szurubooru\Dao\UserDao;
 use Szurubooru\DatabaseConnection;
 
-class Upgrade37 implements IUpgrade
+class Upgrade40 implements IUpgrade
 {
     private $userDao;
 
@@ -19,7 +19,7 @@ class Upgrade37 implements IUpgrade
             $browsingSettings = $user->getBrowsingSettings();
             if ($browsingSettings === null)
                 $browsingSettings = new \StdClass;
-            $browsingSettings->keyboardShortcuts = true;
+            $browsingSettings->fitMode = 'fit-width';
             $user->setBrowsingSettings($browsingSettings);
             $this->userDao->save($user);
         }
