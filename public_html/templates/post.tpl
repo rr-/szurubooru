@@ -81,203 +81,207 @@ if (forceHttpInPermalinks > 0) {
             <% } %>
         </ul>
 
-        <h1>Tags (<%= _.size(post.tags) %>)</h1>
-        <ul class="tags">
-            <% _.each(post.tags, function(tag) { %>
-                <li class="tag-category-<%= tag.category %>"><!--
-                    --><a class="tag-edit" href="#/tag/<%= tag.name %>"><!--
-                        --><i class="fa fa-tag"></i><!--
-                    --></a><!--
+        <div class="box">
+            <h1>Tags (<%= _.size(post.tags) %>)</h1>
+            <ul class="tags">
+                <% _.each(post.tags, function(tag) { %>
+                    <li class="tag-category-<%= tag.category %>"><!--
+                        --><a class="tag-edit" href="#/tag/<%= tag.name %>"><!--
+                            --><i class="fa fa-tag"></i><!--
+                        --></a><!--
 
-                    --><a class="post-search" href="#/posts/query=<%= tag.name %>"><!--
-                        --><span class="tag-name"><%= tag.name %></span><!--
-                        --><span class="usages"><%= (tag.usages) %></span>
-                    </a>
-                </li>
-            <% }) %>
-        </ul>
-
-        <h1>Details</h1>
-
-        <div class="author-box">
-            <% if (post.user.name) { %>
-                <a href="#/user/<%= post.user.name %>">
-            <% } %>
-
-            <img width="40" height="40" class="author-avatar"
-                src="/data/thumbnails/40x40/avatars/<%= post.user.name || '!' %>"
-                alt="<%= post.user.name || 'Anonymous user' %>"/>
-
-            <span class="author-name">
-                <%= post.user.name || 'Anonymous user' %>
-            </span>
-
-            <% if (post.user.name) { %>
-                </a>
-            <% } %>
-
-            <br/>
-
-            <span class="date" title="<%= util.formatAbsoluteTime(post.uploadTime) %>">
-                <%= util.formatRelativeTime(post.uploadTime) %>
-            </span>
+                        --><a class="post-search" href="#/posts/query=<%= tag.name %>"><!--
+                            --><span class="tag-name"><%= tag.name %></span><!--
+                            --><span class="usages"><%= (tag.usages) %></span>
+                        </a>
+                    </li>
+                <% }) %>
+            </ul>
         </div>
 
-        <ul class="other-info">
+        <div class="box">
+            <h1>Details</h1>
+            <div class="author-box">
+                <% if (post.user.name) { %>
+                    <a href="#/user/<%= post.user.name %>">
+                <% } %>
 
-            <li>
-                Rating:
-                <span class="safety-<%= post.safety %>">
-                    <%= post.safety %>
+                <img width="40" height="40" class="author-avatar"
+                    src="/data/thumbnails/40x40/avatars/<%= post.user.name || '!' %>"
+                    alt="<%= post.user.name || 'Anonymous user' %>"/>
+
+                <span class="author-name">
+                    <%= post.user.name || 'Anonymous user' %>
                 </span>
-            </li>
 
-            <% if (post.originalFileSize) { %>
-                <li>
-                    File size:
-                    <%= util.formatFileSize(post.originalFileSize) %>
-                </li>
-            <% } %>
+                <% if (post.user.name) { %>
+                    </a>
+                <% } %>
 
-            <% if (post.contentType == 'image') { %>
-                <li>
-                    Image size:
-                    <%= post.imageWidth + 'x' + post.imageHeight %>
-                </li>
-            <% } %>
+                <br/>
 
-            <% if (post.lastEditTime !== post.uploadTime) { %>
+                <span class="date" title="<%= util.formatAbsoluteTime(post.uploadTime) %>">
+                    <%= util.formatRelativeTime(post.uploadTime) %>
+                </span>
+            </div>
+
+            <ul class="other-info">
                 <li>
-                    Edited:
-                    <span title="<%= util.formatAbsoluteTime(post.lastEditTime) %>">
-                        <%= util.formatRelativeTime(post.lastEditTime) %>
+                    Rating:
+                    <span class="safety-<%= post.safety %>">
+                        <%= post.safety %>
                     </span>
                 </li>
-            <% } %>
 
-            <% if (post.featureCount > 0) { %>
-                <li>
-                    Featured: <%= post.featureCount %> <%= post.featureCount < 2 ? 'time' : 'times' %>
-                    <small>(<%= util.formatRelativeTime(post.lastFeatureTime) %>)</small>
-                </li>
-            <% } %>
-
-            <% if (post.source) { %>
-                <li><!--
-                    --><% var link = post.source.match(/^(\/\/|https?:\/\/)/); %><!--
-                    -->Source:&nbsp;<!--
-                    --><% if (link) { %><!--
-                        --><a href="<%= post.source %>"><!--
-                    --><% } %><!--
-                        --><%= post.source.trim() %><!--
-                    --><% if (link) { %><!--
-                        --></a><!--
-                    --><% } %><!--
-                --></li>
-            <% } %>
-
-            <li>
-                Score: <%= post.score %>
-            </li>
-        </ul>
-
-        <% if (_.any(postFavorites)) { %>
-            <p>Favorites:</p>
-
-            <ul class="favorites">
-                <% _.each(postFavorites, function(user) { %>
+                <% if (post.originalFileSize) { %>
                     <li>
-                        <a href="#/user/<%= user.name %>">
-                            <img class="fav-avatar"
-                                src="/data/thumbnails/25x25/avatars/<%= user.name || '!' %>"
-                                alt="<%= user.name || 'Anonymous user' %>"/>
-                        </a>
+                        File size:
+                        <%= util.formatFileSize(post.originalFileSize) %>
                     </li>
-                <% }) %>
+                <% } %>
+
+                <% if (post.contentType == 'image') { %>
+                    <li>
+                        Image size:
+                        <%= post.imageWidth + 'x' + post.imageHeight %>
+                    </li>
+                <% } %>
+
+                <% if (post.lastEditTime !== post.uploadTime) { %>
+                    <li>
+                        Edited:
+                        <span title="<%= util.formatAbsoluteTime(post.lastEditTime) %>">
+                            <%= util.formatRelativeTime(post.lastEditTime) %>
+                        </span>
+                    </li>
+                <% } %>
+
+                <% if (post.featureCount > 0) { %>
+                    <li>
+                        Featured: <%= post.featureCount %> <%= post.featureCount < 2 ? 'time' : 'times' %>
+                        <small>(<%= util.formatRelativeTime(post.lastFeatureTime) %>)</small>
+                    </li>
+                <% } %>
+
+                <% if (post.source) { %>
+                    <li><!--
+                        --><% var link = post.source.match(/^(\/\/|https?:\/\/)/); %><!--
+                        -->Source:&nbsp;<!--
+                        --><% if (link) { %><!--
+                            --><a href="<%= post.source %>"><!--
+                        --><% } %><!--
+                            --><%= post.source.trim() %><!--
+                        --><% if (link) { %><!--
+                            --></a><!--
+                        --><% } %><!--
+                    --></li>
+                <% } %>
+
+                <li>
+                    Score: <%= post.score %>
+                </li>
             </ul>
-        <% } %>
+
+            <% if (_.any(postFavorites)) { %>
+                <p>Favorites:</p>
+
+                <ul class="favorites">
+                    <% _.each(postFavorites, function(user) { %>
+                        <li>
+                            <a href="#/user/<%= user.name %>">
+                                <img class="fav-avatar"
+                                    src="/data/thumbnails/25x25/avatars/<%= user.name || '!' %>"
+                                    alt="<%= user.name || 'Anonymous user' %>"/>
+                            </a>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        </div>
 
         <% if (_.any(post.relations)) { %>
-            <h1>Related posts</h1>
-            <ul class="related">
-                <% _.each(post.relations, function(relatedPost) { %>
-                    <li>
-                        <a href="#/post/<%= relatedPost.id %>">
-                            <%= relatedPost.idMarkdown %>
-                        </a>
-                    </li>
-                <% }) %>
-            </ul>
+            <div class="box">
+                <h1>Related posts</h1>
+                <ul class="related">
+                    <% _.each(post.relations, function(relatedPost) { %>
+                        <li>
+                            <a href="#/post/<%= relatedPost.id %>">
+                                <%= relatedPost.idMarkdown %>
+                            </a>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
         <% } %>
 
         <% if (_.any(privileges) || _.any(editPrivileges) || post.contentType === 'image') { %>
-            <h1>Options</h1>
+            <div class="box">
+                <h1>Options</h1>
+                <ul class="operations">
+                    <% if (_.any(editPrivileges)) { %>
+                        <li>
+                            <a class="edit" href="#">
+                                Edit
+                            </a>
+                        </li>
+                    <% } %>
 
-            <ul class="operations">
-                <% if (_.any(editPrivileges)) { %>
-                    <li>
-                        <a class="edit" href="#">
-                            Edit
-                        </a>
+                    <% if (privileges.canAddPostNotes) { %>
+                        <li>
+                            <a class="add-note" href="#">
+                                Add new note
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% if (privileges.canDeletePosts) { %>
+                        <li>
+                            <a class="delete" href="#">
+                                Delete
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% if (privileges.canFeaturePosts) { %>
+                        <li>
+                            <a class="feature" href="#">
+                                Feature
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% if (privileges.canViewHistory) { %>
+                        <li>
+                            <a class="history" href="#">
+                                History
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <% if (post.contentType === 'image') { %>
+                        <li>
+                            <a href="http://iqdb.org/?url=<%= permaLink %>">
+                                Search on IQDB
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="https://www.google.com/searchbyimage?&image_url=<%= permaLink %>">
+                                Search on Google Images
+                            </a>
+                        </li>
+                    <% } %>
+
+                    <li class="fit-mode">
+                        Fit:
+                        <a data-fit-mode="fit-width" href="#">width</a>,
+                        <a data-fit-mode="fit-height" href="#">height</a>,
+                        <a data-fit-mode="fit-both" href="#">both</a>,
+                        <a data-fit-mode="original" href="#">original</a>
                     </li>
-                <% } %>
-
-                <% if (privileges.canAddPostNotes) { %>
-                    <li>
-                        <a class="add-note" href="#">
-                            Add new note
-                        </a>
-                    </li>
-                <% } %>
-
-                <% if (privileges.canDeletePosts) { %>
-                    <li>
-                        <a class="delete" href="#">
-                            Delete
-                        </a>
-                    </li>
-                <% } %>
-
-                <% if (privileges.canFeaturePosts) { %>
-                    <li>
-                        <a class="feature" href="#">
-                            Feature
-                        </a>
-                    </li>
-                <% } %>
-
-                <% if (privileges.canViewHistory) { %>
-                    <li>
-                        <a class="history" href="#">
-                            History
-                        </a>
-                    </li>
-                <% } %>
-
-                <% if (post.contentType === 'image') { %>
-                    <li>
-                        <a href="http://iqdb.org/?url=<%= permaLink %>">
-                            Search on IQDB
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="https://www.google.com/searchbyimage?&image_url=<%= permaLink %>">
-                            Search on Google Images
-                        </a>
-                    </li>
-                <% } %>
-
-                <li class="fit-mode">
-                    Fit:
-                    <a data-fit-mode="fit-width" href="#">width</a>,
-                    <a data-fit-mode="fit-height" href="#">height</a>,
-                    <a data-fit-mode="fit-both" href="#">both</a>,
-                    <a data-fit-mode="original" href="#">original</a>
-                </li>
-            </ul>
+                </ul>
+            </div>
         <% } %>
-
     </div>
 
     <div id="post-view">

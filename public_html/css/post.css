@@ -22,12 +22,9 @@
     line-height: 1.33em;
 }
 
-#post-view-wrapper #sidebar h1 {
-    margin-top: 1.5em;
-}
-
-#post-view-wrapper #sidebar h1:first-of-type {
-    margin-top: 0;
+#post-view-wrapper #sidebar .box {
+    margin-bottom: 1.5em;
+    text-align: left;
 }
 
 @media all and (min-width: 62.5em) {
@@ -59,10 +56,16 @@
     #post-view-wrapper #sidebar {
         order: 2;
         margin-bottom: 1em;
+        text-align: center;
+    }
+    #post-view-wrapper #sidebar .box {
+        display: inline-block;
+        width: 15em;
+        vertical-align: top;
     }
     #post-view-wrapper #post-view {
         margin: 0 auto;
-        max-width: 100%;
+        width: 100%;
         order: 1;
     }
 }
@@ -131,7 +134,6 @@
     display: flex;
     justify-content: space-around;
     margin-bottom: 2em;
-    max-width: 30em;
 }
 #sidebar .essential li {
     display: block;
