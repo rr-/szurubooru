@@ -56,18 +56,16 @@ App.Presenters.PostContentPresenter = function(
 
     function changeFitMode(mode) {
         var $wrapper = $target.find('.object-wrapper');
-
         $wrapper.data('current-fit', mode);
         fitters[$wrapper.data('current-fit')]($wrapper);
+        updatePostNotesSize();
     }
 
     function cycleFitMode() {
         var $wrapper = $target.find('.object-wrapper');
         var oldMode = getFitMode();
         var newMode = fitterNames[(fitterNames.indexOf(oldMode) + 1) % fitterNames.length];
-        $wrapper.data('current-fit', newMode);
-        fitters[$wrapper.data('current-fit')]($wrapper);
-        updatePostNotesSize();
+        changeFitMode(newMode);
     }
 
     function render() {
