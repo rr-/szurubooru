@@ -34,6 +34,7 @@ App.BrowsingSettings = function(
             },
             keyboardShortcuts: true,
             fitMode: 'fit-width',
+            upscale: false,
         };
     }
 

@@ -212,10 +212,10 @@ App.Presenters.PostPresenter = function(
     }
 
     function syncFitModeButtons() {
-        var fitMode = postContentPresenter.getFitMode();
+        var fitStyle = postContentPresenter.getFitMode().style;
         $el.find('#sidebar .fit-mode a').each(function(i, item) {
             var $item = jQuery(item);
-            $item.toggleClass('active', $item.attr('data-fit-mode') === fitMode);
+            $item.toggleClass('active', $item.attr('data-fit-mode') === fitStyle);
         });
     }
 
@@ -229,7 +229,12 @@ App.Presenters.PostPresenter = function(
 
     function fitModeButtonsClicked(e) {
         e.preventDefault();
-        postContentPresenter.changeFitMode(jQuery(e.target).attr('data-fit-mode'));
+        var oldMode = postContentPresenter.getFitMode();
+        var newMode = {
+            style: jQuery(e.target).attr('data-fit-mode'),
+            upscale: oldMode.upscale,
+        };
+        postContentPresenter.changeFitMode(newMode);
         syncFitModeButtons();
     }
 

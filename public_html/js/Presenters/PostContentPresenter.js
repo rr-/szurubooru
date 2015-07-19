@@ -13,6 +13,7 @@ App.Presenters.PostContentPresenter = function(
     var post;
     var templates = {};
     var $target;
+    var $wrapper;
 
     function init(params, loaded) {
         $target = params.$target;
@@ -29,57 +30,67 @@ App.Presenters.PostContentPresenter = function(
             });
     }
 
-    var fitters = {
-        'fit-height': function($wrapper) {
-            var originalWidth = $wrapper.attr('data-width');
-            var originalHeight = $wrapper.attr('data-height');
-            var ratio = originalWidth / originalHeight;
-            var height = jQuery(window).height() - $wrapper.offset().top;
-            var width = (height - 10) * ratio;
-            if (width > originalWidth) {
-                width = originalWidth;
-            }
-            $wrapper.css({maxWidth: width + 'px', width: ''});
-        },
-        'fit-width': function($wrapper) {
-            var originalWidth = $wrapper.attr('data-width');
-            $wrapper.css({maxWidth: originalWidth + 'px', width: ''});
-        },
-        'original': function($wrapper) {
-            var originalWidth = $wrapper.attr('data-width');
-            $wrapper.css({maxWidth: '', width: originalWidth + 'px'});
-        }
-    };
-    var fitterNames = Object.keys(fitters);
+    function getFitters() {
+        var originalWidth = $wrapper.attr('data-width');
+        var originalHeight = $wrapper.attr('data-height');
+        var ratio = originalWidth / originalHeight;
+        var containerHeight = jQuery(window).height() - $wrapper.offset().top - 10;
+        var containerWidth = $wrapper.parent().outerWidth() - 10;
 
-    function getFitMode() {
-        var $wrapper = $target.find('.object-wrapper');
-        return $wrapper.data('current-fit');
+        return {
+            'fit-height': function(allowUpscale) {
+                var width = containerHeight * ratio;
+                if (width > originalWidth && !allowUpscale) {
+                    width = originalWidth;
+                }
+                $wrapper.css({maxWidth: width + 'px', width: ''});
+            },
+            'fit-width': function(allowUpscale) {
+                if (allowUpscale) {
+                    $wrapper.css({maxWidth: containerWidth + 'px', width: ''});
+                } else {
+                    $wrapper.css({maxWidth: originalWidth + 'px', width: ''});
+                }
+            },
+            'original': function(allowUpscale) {
+                $wrapper.css({maxWidth: '', width: originalWidth + 'px'});
+            }
+        };
     }
 
-    function changeFitMode(mode) {
-        var $wrapper = $target.find('.object-wrapper');
-        $wrapper.data('current-fit', mode);
-        fitters[$wrapper.data('current-fit')]($wrapper);
+    function getFitMode() {
+        return $wrapper.data('fit-mode');
+    }
+
+    function changeFitMode(fitMode) {
+        $wrapper.data('fit-mode', fitMode);
+        getFitters()[fitMode.style](fitMode.upscale);
         updatePostNotesSize();
     }
 
     function cycleFitMode() {
-        var $wrapper = $target.find('.object-wrapper');
         var oldMode = getFitMode();
-        var newMode = fitterNames[(fitterNames.indexOf(oldMode) + 1) % fitterNames.length];
+        var fitterNames = Object.keys(getFitters());
+        var newMode = {
+            style: fitterNames[(fitterNames.indexOf(oldMode.style) + 1) % fitterNames.length],
+            upscale: oldMode.upscale,
+        };
         changeFitMode(newMode);
     }
 
     function render() {
         $target.html(templates.postContent({post: post}));
+        $wrapper = $target.find('.object-wrapper');
 
         if (post.contentType === 'image') {
             loadPostNotes();
             updatePostNotesSize();
         }
 
-        changeFitMode(browsingSettings.getSettings().fitMode);
+        changeFitMode({
+            style: browsingSettings.getSettings().fitMode,
+            upscale: browsingSettings.getSettings().upscale,
+        });
         keyboard.keyup('f', cycleFitMode);
 
         jQuery(window).resize(updatePostNotesSize);
@@ -111,9 +122,6 @@ App.Presenters.PostContentPresenter = function(
         render: render,
         addNewPostNote: addNewPostNote,
         updatePostNotesSize: updatePostNotesSize,
-        fitWidth: function() { changeFitMode('fit-width'); },
-        fitHeight: function() { changeFitMode('fit-height'); },
-        fitOriginal: function() { changeFitMode('original'); },
         getFitMode: getFitMode,
         changeFitMode: changeFitMode,
         cycleFitMode: cycleFitMode,

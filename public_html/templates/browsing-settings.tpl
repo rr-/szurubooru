@@ -58,15 +58,23 @@
             <label for="browsing-settings-fit-width">
                 Fit width
             </label>
+            <br/>
 
             <input <% print(settings.fitMode === 'fit-height' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-height" name="fitMode" value="fit-height"/>
             <label for="browsing-settings-fit-height">
                 Fit height
             </label>
+            <br/>
 
             <input <% print(settings.fitMode === 'original' ? 'checked="checked"' : '') %> type="radio" id="browsing-settings-fit-original" name="fitMode" value="original"/>
             <label for="browsing-settings-fit-original">
                 Original
+            </label>
+            <br/>
+
+            <input <% print(settings.upscale ? 'checked="checked"' : '') %> type="checkbox" id="browsing-settings-upscale" name="upscale" value="upscale"/>
+            <label for="browsing-settings-upscale">
+                Upscale small posts
             </label>
         </div>
     </div>

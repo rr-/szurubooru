@@ -53,6 +53,7 @@ App.Presenters.UserBrowsingSettingsPresenter = function(
             },
             keyboardShortcuts: $el.find('[name=keyboardShortcuts]').is(':checked'),
             fitMode: $el.find('[name=fitMode]:checked').val(),
+            upscale: $el.find('[name=upscale]').is(':checked'),
         };
 
         promise.wait(browsingSettings.setSettings(newSettings))
