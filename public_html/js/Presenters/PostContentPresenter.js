@@ -5,6 +5,7 @@ App.Presenters.PostContentPresenter = function(
     jQuery,
     util,
     promise,
+    keyboard,
     presenterManager,
     postNotesPresenter) {
 
@@ -34,6 +35,18 @@ App.Presenters.PostContentPresenter = function(
             loadPostNotes();
             updatePostNotesSize();
         }
+
+        keyboard.keyup('f', function() {
+            var $wrapper = $target.find('.object-wrapper');
+            if ($wrapper.data('full')) {
+                $wrapper.css({maxWidth: $wrapper.attr('data-width') + 'px', width: 'auto'});
+                $wrapper.data('full', false);
+            } else {
+                $wrapper.css({maxWidth: null, width: $wrapper.attr('data-width')});
+                $wrapper.data('full', true);
+            }
+            updatePostNotesSize();
+        });
 
         jQuery(window).resize(updatePostNotesSize);
     }
@@ -72,6 +85,7 @@ App.DI.register('postContentPresenter', [
     'jQuery',
     'util',
     'promise',
+    'keyboard',
     'presenterManager',
     'postNotesPresenter'],
     App.Presenters.PostContentPresenter);

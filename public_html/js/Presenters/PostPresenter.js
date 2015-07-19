@@ -135,20 +135,7 @@ App.Presenters.PostPresenter = function(
             editButtonClicked(null);
         });
 
-        keyboard.keyup('f', function() {
-            var $wrapper = $el.find('.object-wrapper');
-            if ($wrapper.data('full')) {
-                $wrapper.css({maxWidth: $wrapper.attr('data-width') + 'px', width: 'auto'});
-                $wrapper.data('full', false);
-            } else {
-                $wrapper.css({maxWidth: null, width: $wrapper.attr('data-width')});
-                $wrapper.data('full', true);
-            }
-            postContentPresenter.updatePostNotesSize();
-        });
-
         attachSidebarEvents();
-
         attachLinksToPostsAround();
     }
 
