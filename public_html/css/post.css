@@ -118,6 +118,13 @@
     line-height: 150%;
 }
 
+#sidebar .fit-mode a {
+    opacity: .25;
+}
+#sidebar .fit-mode a.active {
+    opacity: 1;
+}
+
 #sidebar .essential {
     display: -webkit-flex;
     -webkit-justify-content: space-around;

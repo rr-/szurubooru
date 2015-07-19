@@ -72,7 +72,9 @@ App.Presenters.PostPresenter = function(
                     [postContentPresenter, {post: post, $target: $el.find('#post-content-target')}],
                     [postEditPresenter, {post: post, $target: $el.find('#post-edit-target'), updateCallback: postEdited}],
                     [commentListPresenter, {post: post, $target: $el.find('#post-comments-target')}]],
-                    function() { });
+                    function() {
+                        syncFitModeButtons();
+                    });
 
             }).fail(function() {
                 console.log(arguments);
@@ -178,7 +180,7 @@ App.Presenters.PostPresenter = function(
     function attachSidebarEvents() {
         $el.find('#sidebar .delete').click(deleteButtonClicked);
         $el.find('#sidebar .feature').click(featureButtonClicked);
-        $el.find('#sidebar .fit-mode').click(fitModeButtonClicked);
+        $el.find('#sidebar .fit-mode a').click(fitModeButtonsClicked);
         $el.find('#sidebar .edit').click(editButtonClicked);
         $el.find('#sidebar .history').click(historyButtonClicked);
         $el.find('#sidebar .add-favorite').click(addFavoriteButtonClicked);
@@ -208,6 +210,14 @@ App.Presenters.PostPresenter = function(
             }).fail(showGenericError);
     }
 
+    function syncFitModeButtons() {
+        var fitMode = postContentPresenter.getFitMode();
+        $el.find('#sidebar .fit-mode a').each(function(i, item) {
+            var $item = jQuery(item);
+            $item.toggleClass('active', $item.attr('data-fit-mode') === fitMode);
+        });
+    }
+
     function featureButtonClicked(e) {
         e.preventDefault();
         messagePresenter.hideMessages($messages);
@@ -216,9 +226,10 @@ App.Presenters.PostPresenter = function(
         }
     }
 
-    function fitModeButtonClicked(e) {
+    function fitModeButtonsClicked(e) {
         e.preventDefault();
-        postContentPresenter.cycleFitMode();
+        postContentPresenter.changeFitMode(jQuery(e.target).attr('data-fit-mode'));
+        syncFitModeButtons();
     }
 
     function featurePost() {

@@ -36,18 +36,23 @@ App.Presenters.PostContentPresenter = function(
             var ratio = originalWidth / originalHeight;
             var height = jQuery(window).height() - $wrapper.offset().top;
             var width = (height - 10) * ratio;
-            $wrapper.css({maxWidth: width + 'px'});
+            $wrapper.css({maxWidth: width + 'px', width: ''});
         },
         'fit-width': function($wrapper) {
             var originalWidth = $wrapper.attr('data-width');
-            $wrapper.css({maxWidth: originalWidth + 'px', width: 'auto'});
+            $wrapper.css({maxWidth: originalWidth + 'px', width: ''});
         },
         'original': function($wrapper) {
             var originalWidth = $wrapper.attr('data-width');
-            $wrapper.css({maxWidth: null, width: originalWidth + 'px'});
+            $wrapper.css({maxWidth: '', width: originalWidth + 'px'});
         }
     };
     var fitterNames = Object.keys(fitters);
+
+    function getFitMode() {
+        var $wrapper = $target.find('.object-wrapper');
+        return $wrapper.data('current-fit');
+    }
 
     function changeFitMode(mode) {
         var $wrapper = $target.find('.object-wrapper');
@@ -58,8 +63,8 @@ App.Presenters.PostContentPresenter = function(
 
     function cycleFitMode() {
         var $wrapper = $target.find('.object-wrapper');
-        var mode = $wrapper.data('current-fit');
-        var newMode = fitterNames[(fitterNames.indexOf(mode) + 1) % fitterNames.length];
+        var oldMode = getFitMode();
+        var newMode = fitterNames[(fitterNames.indexOf(oldMode) + 1) % fitterNames.length];
         $wrapper.data('current-fit', newMode);
         fitters[$wrapper.data('current-fit')]($wrapper);
         updatePostNotesSize();
@@ -105,6 +110,11 @@ App.Presenters.PostContentPresenter = function(
         render: render,
         addNewPostNote: addNewPostNote,
         updatePostNotesSize: updatePostNotesSize,
+        fitWidth: function() { changeFitMode('fit-width'); },
+        fitHeight: function() { changeFitMode('fit-height'); },
+        fitOriginal: function() { changeFitMode('original'); },
+        getFitMode: getFitMode,
+        changeFitMode: changeFitMode,
         cycleFitMode: cycleFitMode,
     };
 };
