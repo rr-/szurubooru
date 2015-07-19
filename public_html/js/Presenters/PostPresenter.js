@@ -149,6 +149,7 @@ App.Presenters.PostPresenter = function(
 
     function softRender() {
         renderSidebar();
+        syncFitModeButtons();
         $el.find('video').prop('loop', post.flags.loop);
     }
 
