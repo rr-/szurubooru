@@ -38,6 +38,25 @@ App.Presenters.PostContentPresenter = function(
         var containerWidth = $wrapper.parent().outerWidth() - 10;
 
         return {
+            'fit-both': function(allowUpscale) {
+                var width = containerWidth;
+                var height = containerWidth / ratio;
+                if (height > containerHeight) {
+                    width = containerHeight * ratio;
+                    height = containerHeight;
+                }
+                if (!allowUpscale) {
+                    if (width > originalWidth) {
+                        width = originalWidth;
+                        height = originalWidth / ratio;
+                    }
+                    if (height > originalHeight) {
+                        width = originalHeight * ratio;
+                        height = originalHeight;
+                    }
+                }
+                $wrapper.css({maxWidth: width + 'px', width: ''});
+            },
             'fit-height': function(allowUpscale) {
                 var width = containerHeight * ratio;
                 if (width > originalWidth && !allowUpscale) {

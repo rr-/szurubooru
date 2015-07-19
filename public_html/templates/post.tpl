@@ -272,6 +272,7 @@ if (forceHttpInPermalinks > 0) {
                     Fit:
                     <a data-fit-mode="fit-width" href="#">width</a>,
                     <a data-fit-mode="fit-height" href="#">height</a>,
+                    <a data-fit-mode="fit-both" href="#">both</a>,
                     <a data-fit-mode="original" href="#">original</a>
                 </li>
             </ul>
