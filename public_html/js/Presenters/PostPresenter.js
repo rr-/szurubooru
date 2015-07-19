@@ -178,6 +178,7 @@ App.Presenters.PostPresenter = function(
     function attachSidebarEvents() {
         $el.find('#sidebar .delete').click(deleteButtonClicked);
         $el.find('#sidebar .feature').click(featureButtonClicked);
+        $el.find('#sidebar .fit-mode').click(fitModeButtonClicked);
         $el.find('#sidebar .edit').click(editButtonClicked);
         $el.find('#sidebar .history').click(historyButtonClicked);
         $el.find('#sidebar .add-favorite').click(addFavoriteButtonClicked);
@@ -213,6 +214,11 @@ App.Presenters.PostPresenter = function(
         if (window.confirm('Do you want to feature this post on the front page?')) {
             featurePost();
         }
+    }
+
+    function fitModeButtonClicked(e) {
+        e.preventDefault();
+        postContentPresenter.cycleFitMode();
     }
 
     function featurePost() {

@@ -267,6 +267,12 @@ if (forceHttpInPermalinks > 0) {
                         </a>
                     </li>
                 <% } %>
+
+                <li>
+                    <a class="fit-mode" href="#">
+                        Cycle fit mode
+                    </a>
+                </li>
             </ul>
         <% } %>
 

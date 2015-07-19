@@ -104,6 +104,7 @@ App.Presenters.PostContentPresenter = function(
         render: render,
         addNewPostNote: addNewPostNote,
         updatePostNotesSize: updatePostNotesSize,
+        cycleFitMode: cycleFitMode,
     };
 };
 
