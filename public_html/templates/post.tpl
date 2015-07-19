@@ -214,74 +214,72 @@ if (forceHttpInPermalinks > 0) {
             </div>
         <% } %>
 
-        <% if (_.any(privileges) || _.any(editPrivileges) || post.contentType === 'image') { %>
-            <div class="box">
-                <h1>Options</h1>
-                <ul class="operations">
-                    <% if (_.any(editPrivileges)) { %>
-                        <li>
-                            <a class="edit" href="#">
-                                Edit
-                            </a>
-                        </li>
-                    <% } %>
-
-                    <% if (privileges.canAddPostNotes) { %>
-                        <li>
-                            <a class="add-note" href="#">
-                                Add new note
-                            </a>
-                        </li>
-                    <% } %>
-
-                    <% if (privileges.canDeletePosts) { %>
-                        <li>
-                            <a class="delete" href="#">
-                                Delete
-                            </a>
-                        </li>
-                    <% } %>
-
-                    <% if (privileges.canFeaturePosts) { %>
-                        <li>
-                            <a class="feature" href="#">
-                                Feature
-                            </a>
-                        </li>
-                    <% } %>
-
-                    <% if (privileges.canViewHistory) { %>
-                        <li>
-                            <a class="history" href="#">
-                                History
-                            </a>
-                        </li>
-                    <% } %>
-
-                    <% if (post.contentType === 'image') { %>
-                        <li>
-                            <a href="http://iqdb.org/?url=<%= permaLink %>">
-                                Search on IQDB
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="https://www.google.com/searchbyimage?&image_url=<%= permaLink %>">
-                                Search on Google Images
-                            </a>
-                        </li>
-                    <% } %>
-
-                    <li class="fit-mode">
-                        Fit:
-                        <a data-fit-mode="fit-width" href="#">width</a>,
-                        <a data-fit-mode="fit-height" href="#">height</a>,
-                        <a data-fit-mode="fit-both" href="#">both</a>,
-                        <a data-fit-mode="original" href="#">original</a>
+        <div class="box">
+            <h1>Options</h1>
+            <ul class="operations">
+                <% if (_.any(editPrivileges)) { %>
+                    <li>
+                        <a class="edit" href="#">
+                            Edit
+                        </a>
                     </li>
-                </ul>
-            </div>
-        <% } %>
+                <% } %>
+
+                <% if (privileges.canAddPostNotes) { %>
+                    <li>
+                        <a class="add-note" href="#">
+                            Add new note
+                        </a>
+                    </li>
+                <% } %>
+
+                <% if (privileges.canDeletePosts) { %>
+                    <li>
+                        <a class="delete" href="#">
+                            Delete
+                        </a>
+                    </li>
+                <% } %>
+
+                <% if (privileges.canFeaturePosts) { %>
+                    <li>
+                        <a class="feature" href="#">
+                            Feature
+                        </a>
+                    </li>
+                <% } %>
+
+                <% if (privileges.canViewHistory) { %>
+                    <li>
+                        <a class="history" href="#">
+                            History
+                        </a>
+                    </li>
+                <% } %>
+
+                <% if (post.contentType === 'image') { %>
+                    <li>
+                        <a href="http://iqdb.org/?url=<%= permaLink %>">
+                            Search on IQDB
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="https://www.google.com/searchbyimage?&image_url=<%= permaLink %>">
+                            Search on Google Images
+                        </a>
+                    </li>
+                <% } %>
+
+                <li class="fit-mode">
+                    Fit:
+                    <a data-fit-mode="fit-width" href="#">width</a>,
+                    <a data-fit-mode="fit-height" href="#">height</a>,
+                    <a data-fit-mode="fit-both" href="#">both</a>,
+                    <a data-fit-mode="original" href="#">original</a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <div id="post-view">
