@@ -36,6 +36,9 @@ App.Presenters.PostContentPresenter = function(
             var ratio = originalWidth / originalHeight;
             var height = jQuery(window).height() - $wrapper.offset().top;
             var width = (height - 10) * ratio;
+            if (width > originalWidth) {
+                width = originalWidth;
+            }
             $wrapper.css({maxWidth: width + 'px', width: ''});
         },
         'fit-width': function($wrapper) {
