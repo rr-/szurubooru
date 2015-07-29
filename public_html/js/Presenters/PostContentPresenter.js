@@ -55,24 +55,26 @@ App.Presenters.PostContentPresenter = function(
                         height = originalHeight;
                     }
                 }
-                $wrapper.css({maxWidth: width + 'px', width: ''});
+                $wrapper.css({maxWidth: width + 'px'});
             },
             'fit-height': function(allowUpscale) {
                 var width = containerHeight * ratio;
                 if (width > originalWidth && !allowUpscale) {
                     width = originalWidth;
                 }
-                $wrapper.css({maxWidth: width + 'px', width: ''});
+                $wrapper.css({maxWidth: width + 'px'});
             },
             'fit-width': function(allowUpscale) {
                 if (allowUpscale) {
-                    $wrapper.css({maxWidth: containerWidth + 'px', width: ''});
+                    $wrapper.css({maxWidth: containerWidth + 'px'});
                 } else {
-                    $wrapper.css({maxWidth: originalWidth + 'px', width: ''});
+                    $wrapper.css({maxWidth: originalWidth + 'px'});
                 }
             },
             'original': function(allowUpscale) {
-                $wrapper.css({maxWidth: '', width: originalWidth + 'px'});
+                $wrapper.css({
+                    minWidth: originalWidth + 'px',
+                    width: originalWidth + 'px'});
             }
         };
     }
@@ -83,6 +85,11 @@ App.Presenters.PostContentPresenter = function(
 
     function changeFitMode(fitMode) {
         $wrapper.data('fit-mode', fitMode);
+        $wrapper.css({
+            width: '', height: '',
+            minWidth: '', minHeight: '',
+            maxWidth: '', maxHeight: '',
+        });
         getFitters()[fitMode.style](fitMode.upscale);
         updatePostNotesSize();
     }
