@@ -59,6 +59,6 @@ class UpdatePost extends AbstractPostRoute
 
         $this->postService->updatePost($post, $formData);
         $post = $this->postService->getByNameOrId($postNameOrId);
-        return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
+        return ['post' => $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig())];
     }
 }

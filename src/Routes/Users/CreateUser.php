@@ -41,6 +41,6 @@ class CreateUser extends AbstractUserRoute
         $this->privilegeService->assertPrivilege(Privilege::REGISTER);
         $formData = new RegistrationFormData($this->inputReader);
         $user = $this->userService->createUser($formData);
-        return $this->userViewProxy->fromEntity($user);
+        return ['user' => $this->userViewProxy->fromEntity($user)];
     }
 }

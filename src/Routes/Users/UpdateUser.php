@@ -91,6 +91,6 @@ class UpdateUser extends AbstractUserRoute
         }
 
         $user = $this->userService->updateUser($user, $formData);
-        return $this->userViewProxy->fromEntity($user);
+        return ['user' => $this->userViewProxy->fromEntity($user)];
     }
 }

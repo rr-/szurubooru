@@ -47,6 +47,6 @@ class CreatePost extends AbstractPostRoute
             $this->privilegeService->assertPrivilege(Privilege::UPLOAD_POSTS_ANONYMOUSLY);
 
         $post = $this->postService->createPost($formData);
-        return $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig());
+        return ['post' => $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig())];
     }
 }

@@ -38,6 +38,6 @@ class MergeTags extends AbstractTagRoute
         $sourceTag = $this->tagService->getByName($tagName);
         $targetTag = $this->tagService->getByName($targetTagName);
         $this->privilegeService->assertPrivilege(Privilege::MERGE_TAGS);
-        return $this->tagService->mergeTag($sourceTag, $targetTag);
+        $this->tagService->mergeTag($sourceTag, $targetTag);
     }
 }

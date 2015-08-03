@@ -133,7 +133,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 
     function editSuccess(apiResponse) {
         var wasLoggedIn = auth.isLoggedIn(user.name);
-        user = apiResponse.json;
+        user = apiResponse.json.user;
         if (wasLoggedIn) {
             auth.updateCurrentUser(user);
         }
@@ -142,7 +142,7 @@ App.Presenters.UserAccountSettingsPresenter = function(
 
         var $messages = jQuery(target).find('.messages');
         var message = 'Account settings updated!';
-        if (!apiResponse.json.confirmed) {
+        if (!apiResponse.json.user.confirmed) {
             message += '<br/>Check your inbox for activation e-mail.<br/>If e-mail doesn\'t show up, check your spam folder.';
         }
         messagePresenter.showInfo($messages, message);

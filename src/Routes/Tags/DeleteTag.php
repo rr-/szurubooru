@@ -31,6 +31,6 @@ class DeleteTag extends AbstractTagRoute
     {
         $tag = $this->tagService->getByName($args['tagName']);
         $this->privilegeService->assertPrivilege(Privilege::DELETE_TAGS);
-        return $this->tagService->deleteTag($tag);
+        $this->tagService->deleteTag($tag);
     }
 }

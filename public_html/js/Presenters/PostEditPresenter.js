@@ -151,8 +151,9 @@ App.Presenters.PostEditPresenter = function(
         promise.wait(api.post('/posts/' + post.id, formData))
             .then(function(response) {
                 tagList.refreshTags();
+                post = response.json.post;
                 if (typeof(updateCallback) !== 'undefined') {
-                    updateCallback(post = response.json);
+                    updateCallback(post);
                 }
             }).fail(function(response) {
                 showEditError(response);

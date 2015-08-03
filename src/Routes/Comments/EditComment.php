@@ -53,6 +53,6 @@ class EditComment extends AbstractCommentRoute
                 : Privilege::EDIT_ALL_COMMENTS);
 
         $comment = $this->commentService->updateComment($comment, $this->inputReader->text);
-        return $this->commentViewProxy->fromEntity($comment, $this->getCommentsFetchConfig());
+        return ['comment' => $this->commentViewProxy->fromEntity($comment, $this->getCommentsFetchConfig())];
     }
 }

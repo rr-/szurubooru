@@ -41,7 +41,7 @@ App.Presenters.UserPresenter = function(
 
             promise.wait(api.get('/users/' + userName))
                 .then(function(response) {
-                    user = response.json;
+                    user = response.json.user;
                     var extendedContext = _.extend(params, {user: user});
 
                     presenterManager.initPresenters([

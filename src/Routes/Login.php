@@ -78,8 +78,7 @@ class Login extends AbstractRoute
             $user = $this->authService->getLoggedInUser();
         }
 
-        return
-        [
+        return [
             'token' => $this->tokenViewProxy->fromEntity($this->authService->getLoginToken()),
             'user' => $this->userViewProxy->fromEntity($user),
             'privileges' => $this->privilegeService->getCurrentPrivileges(),

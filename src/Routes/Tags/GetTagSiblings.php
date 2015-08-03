@@ -38,8 +38,6 @@ class GetTagSiblings extends AbstractTagRoute
         $tag = $this->tagService->getByName($tagName);
         $result = $this->tagService->getSiblings($tagName);
         $entities = $this->tagViewProxy->fromArray($result);
-        return [
-            'data' => $entities,
-        ];
+        return ['tags' => $entities];
     }
 }

@@ -35,8 +35,8 @@ App.Presenters.UserListPresenter = function(
                         baseUri: '#/users',
                         backendUri: '/users',
                         $target: $el.find('.pagination-target'),
-                        updateCallback: function($page, data) {
-                            renderUsers($page, data.entities);
+                        updateCallback: function($page, response) {
+                            renderUsers($page, response.json.users);
                         },
                     },
                     function() {

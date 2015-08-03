@@ -45,8 +45,8 @@ App.Presenters.PostListPresenter = function(
                         baseUri: '#/posts',
                         backendUri: '/posts',
                         $target: $el.find('.pagination-target'),
-                        updateCallback: function($page, data) {
-                            renderPosts($page, data.entities);
+                        updateCallback: function($page, response) {
+                            renderPosts($page, response.json.posts);
                         },
                     },
                     function() {
@@ -221,7 +221,7 @@ App.Presenters.PostListPresenter = function(
         formData.tags = tags.join(' ');
         promise.wait(api.post('/posts/' + post.id, formData))
             .then(function(response) {
-                post = response.json;
+                post = response.json.post;
                 $post.data('post', post);
                 softRenderPost($post);
             }).fail(function(response) {

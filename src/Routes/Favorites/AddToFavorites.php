@@ -47,6 +47,6 @@ class AddToFavorites extends AbstractRoute
         $this->favoritesService->addFavorite($user, $post);
 
         $users = $this->favoritesService->getFavoriteUsers($post);
-        return ['data' => $this->userViewProxy->fromArray($users)];
+        return ['users' => $this->userViewProxy->fromArray($users)];
     }
 }

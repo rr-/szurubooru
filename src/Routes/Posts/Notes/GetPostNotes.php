@@ -44,6 +44,6 @@ class GetPostNotes extends AbstractPostRoute
     {
         $post = $this->postService->getByNameOrId($args['postNameOrId']);
         $postNotes = $this->postNotesService->getByPost($post);
-        return $this->postNoteViewProxy->fromArray($postNotes);
+        return ['notes' => $this->postNoteViewProxy->fromArray($postNotes)];
     }
 }

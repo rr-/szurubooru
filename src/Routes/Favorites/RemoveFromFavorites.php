@@ -47,6 +47,6 @@ class RemoveFromFavorites extends AbstractRoute
         $this->favoritesService->deleteFavorite($user, $post);
 
         $users = $this->favoritesService->getFavoriteUsers($post);
-        return ['data' => $this->userViewProxy->fromArray($users)];
+        return ['users' => $this->userViewProxy->fromArray($users)];
     }
 }

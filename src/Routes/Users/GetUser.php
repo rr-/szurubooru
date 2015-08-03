@@ -41,6 +41,6 @@ class GetUser extends AbstractUserRoute
         if (!$this->privilegeService->isLoggedIn($userNameOrEmail))
             $this->privilegeService->assertPrivilege(Privilege::VIEW_USERS);
         $user = $this->userService->getByNameOrEmail($userNameOrEmail);
-        return $this->userViewProxy->fromEntity($user);
+        return ['user' => $this->userViewProxy->fromEntity($user)];
     }
 }

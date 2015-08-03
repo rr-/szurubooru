@@ -53,7 +53,7 @@ App.Presenters.CommentListPresenter = function(
                     if (comments.length === 0) {
                         promise.wait(api.get('/comments/' + params.post.id))
                             .then(function(response) {
-                                comments = response.json.data;
+                                comments = response.json.comments;
                                 render();
                             }).fail(function() {
                                 console.log(arguments);
@@ -176,7 +176,7 @@ App.Presenters.CommentListPresenter = function(
 
         p.then(function(response) {
             $textarea.val('');
-            var comment = response.json;
+            var comment = response.json.comment;
 
             if (commentToEdit) {
                 $form.slideUp(function() {

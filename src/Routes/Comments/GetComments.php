@@ -80,7 +80,7 @@ class GetComments extends AbstractCommentRoute
         }
 
         return [
-            'data' => $data,
+            'comments' => $data,
             'pageSize' => $result->getPageSize(),
             'totalRecords' => $result->getTotalRecords()];
     }

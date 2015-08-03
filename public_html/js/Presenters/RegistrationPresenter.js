@@ -60,7 +60,7 @@ App.Presenters.RegistrationPresenter = function(
     function registrationSuccess(apiResponse) {
         $el.find('form').slideUp(function() {
             var message = 'Registration complete! ';
-            if (!apiResponse.json.confirmed) {
+            if (!apiResponse.json.user.confirmed) {
                 message += '<br/>Check your inbox for activation e-mail.<br/>If e-mail doesn\'t show up, check your spam folder.';
             } else {
                 message += '<a href="#/login">Click here</a> to login.';

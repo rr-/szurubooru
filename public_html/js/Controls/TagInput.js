@@ -387,7 +387,7 @@ App.Controls.TagInput = function($underlyingInput) {
         return promise.make(function(resolve, reject) {
             promise.wait(api.get('/tags/' + tagName + '/siblings'))
                 .then(function(response) {
-                    resolve(response.json.data);
+                    resolve(response.json.tags);
                 }).fail(function() {
                     reject();
                 });

@@ -36,6 +36,6 @@ class GetTag extends AbstractTagRoute
         $this->privilegeService->assertPrivilege(Privilege::LIST_TAGS);
 
         $tag = $this->tagService->getByName($args['tagName']);
-        return $this->tagViewProxy->fromEntity($tag, $this->getFullFetchConfig());
+        return ['tag' => $this->tagViewProxy->fromEntity($tag, $this->getFullFetchConfig())];
     }
 }

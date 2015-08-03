@@ -66,9 +66,9 @@ App.Presenters.TagPresenter = function(
                 api.get('tags/' + tagName + '/siblings'),
                 api.get('posts', {query: tagName}))
             .then(function(tagResponse, siblingsResponse, postsResponse) {
-                tag = tagResponse.json;
-                siblings = siblingsResponse.json.data;
-                posts = postsResponse.json.data;
+                tag = tagResponse.json.tag;
+                siblings = siblingsResponse.json.tags;
+                posts = postsResponse.json.posts;
                 posts = posts.slice(0, 8);
 
                 render();

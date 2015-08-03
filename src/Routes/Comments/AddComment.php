@@ -49,6 +49,6 @@ class AddComment extends AbstractCommentRoute
 
         $post = $this->postService->getByNameOrId($args['postNameOrId']);
         $comment = $this->commentService->createComment($post, $this->inputReader->text);
-        return $this->commentViewProxy->fromEntity($comment, $this->getCommentsFetchConfig());
+        return ['comment' => $this->commentViewProxy->fromEntity($comment, $this->getCommentsFetchConfig())];
     }
 }

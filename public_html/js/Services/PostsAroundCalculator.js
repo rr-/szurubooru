@@ -15,7 +15,7 @@ App.Services.PostsAroundCalculator = function(_, promise, util, pager) {
             pager.setPage(query.page);
             promise.wait(pager.retrieveCached())
                 .then(function(response) {
-                    var postIds = _.pluck(response.entities, 'id');
+                    var postIds = _.pluck(response.json.posts, 'id');
                     var position = _.indexOf(postIds, postId);
 
                     if (position === -1) {
@@ -51,10 +51,10 @@ App.Services.PostsAroundCalculator = function(_, promise, util, pager) {
                 pager.setPage(page + direction);
                 promise.wait(pager.retrieveCached())
                     .then(function(response) {
-                        if (response.entities.length) {
+                        if (response.json.posts.length) {
                             var post = direction === - 1 ?
-                                _.last(response.entities) :
-                                _.first(response.entities);
+                                _.last(response.json.posts) :
+                                _.first(response.json.posts);
 
                             var url = util.appendComplexRouteParam(
                                 '#/post/' + post.id,

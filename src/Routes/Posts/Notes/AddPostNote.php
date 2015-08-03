@@ -49,6 +49,6 @@ class AddPostNote extends AbstractPostRoute
 
         $formData = new PostNoteFormData($this->inputReader);
         $postNote = $this->postNotesService->createPostNote($post, $formData);
-        return $this->postNoteViewProxy->fromEntity($postNote);
+        return ['note' => $this->postNoteViewProxy->fromEntity($postNote)];
     }
 }

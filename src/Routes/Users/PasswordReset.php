@@ -22,6 +22,6 @@ class PasswordReset extends AbstractUserRoute
     public function work($args)
     {
         $user = $this->userService->getByNameOrEmail($args['userNameOrEmail']);
-        return $this->userService->sendPasswordResetEmail($user);
+        $this->userService->sendPasswordResetEmail($user);
     }
 }

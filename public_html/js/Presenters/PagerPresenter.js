@@ -114,7 +114,14 @@ App.Presenters.PagerPresenter = function(
                     updateCallback($page, response);
 
                     refreshPageList();
-                    if (!response.entities.length) {
+
+                    var entities =
+                        response.json.posts ||
+                        response.json.users ||
+                        response.json.comments ||
+                        response.json.tags;
+
+                    if (!entities.length) {
                         messagePresenter.showInfo($messages, 'No data to show');
                         if (pager.getVisiblePages().length === 1) {
                             hidePageList();
@@ -125,7 +132,7 @@ App.Presenters.PagerPresenter = function(
                         showPageList();
                     }
 
-                    if (pager.getPage() < response.totalPages) {
+                    if (pager.getPage() < pager.getTotalPages()) {
                         attachNextPageLoader();
                     }
 

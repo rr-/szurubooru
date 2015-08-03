@@ -42,7 +42,6 @@ abstract class AbstractScoreRoute extends AbstractRoute
         $result = $this->scoreService->setUserScore($user, $entity, $score);
         return [
             'score' => $this->scoreService->getScoreValue($entity),
-            'ownScore' => $result->getScore(),
-        ];
+            'ownScore' => $result->getScore()];
     }
 }

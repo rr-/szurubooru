@@ -63,6 +63,6 @@ class GetPostComments extends AbstractCommentRoute
 
         $result = $this->commentService->getFiltered($filter);
         $entities = $this->commentViewProxy->fromArray($result->getEntities(), $this->getCommentsFetchConfig());
-        return ['data' => $entities];
+        return ['comments' => $entities];
     }
 }

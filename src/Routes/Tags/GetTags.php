@@ -49,7 +49,7 @@ class GetTags extends AbstractTagRoute
         $result = $this->tagService->getFiltered($filter);
         $entities = $this->tagViewProxy->fromArray($result->getEntities(), $this->getFullFetchConfig());
         return [
-            'data' => $entities,
+            'tags' => $entities,
             'pageSize' => $result->getPageSize(),
             'totalRecords' => $result->getTotalRecords()];
     }

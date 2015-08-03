@@ -57,6 +57,6 @@ class UpdateTag extends AbstractTagRoute
             $this->privilegeService->assertPrivilege(Privilege::CHANGE_TAG_SUGGESTIONS);
 
         $tag = $this->tagService->updateTag($tag, $formData);
-        return $this->tagViewProxy->fromEntity($tag, $this->getFullFetchConfig());
+        return ['tag' => $this->tagViewProxy->fromEntity($tag, $this->getFullFetchConfig())];
     }
 }

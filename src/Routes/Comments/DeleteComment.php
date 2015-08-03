@@ -52,6 +52,6 @@ class DeleteComment extends AbstractCommentRoute
                 ? Privilege::DELETE_OWN_COMMENTS
                 : Privilege::DELETE_ALL_COMMENTS);
 
-        return $this->commentService->deleteComment($comment);
+        $this->commentService->deleteComment($comment);
     }
 }

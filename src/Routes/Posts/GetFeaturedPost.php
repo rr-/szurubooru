@@ -36,7 +36,6 @@ class GetFeaturedPost extends AbstractPostRoute
         $user = $this->postFeatureService->getFeaturedPostUser();
         return [
             'user' => $this->userViewProxy->fromEntity($user),
-            'post' => $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig()),
-        ];
+            'post' => $this->postViewProxy->fromEntity($post, $this->getFullFetchConfig())];
     }
 }

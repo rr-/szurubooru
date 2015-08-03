@@ -120,7 +120,7 @@ App.Presenters.PostPresenter = function(
         return promise.make(function(resolve, reject) {
             promise.wait(api.get('/posts/' + postNameOrId))
                 .then(function(postResponse) {
-                    post = postResponse.json;
+                    post = postResponse.json.post;
                     resolve();
                 }).fail(function(response) {
                     showGenericError(response);

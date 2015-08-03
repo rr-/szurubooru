@@ -31,8 +31,8 @@ App.Presenters.HistoryPresenter = function(
                         baseUri: '#/history',
                         backendUri: '/history',
                         $target: $el.find('.pagination-target'),
-                        updateCallback: function($page, data) {
-                            renderHistory($page, data.entities);
+                        updateCallback: function($page, response) {
+                            renderHistory($page, response.json.history);
                         },
                     },
                     function() {

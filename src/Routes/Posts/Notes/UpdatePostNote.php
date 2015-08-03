@@ -45,6 +45,6 @@ class UpdatePostNote extends AbstractPostRoute
 
         $formData = new PostNoteFormData($this->inputReader);
         $postNote = $this->postNotesService->updatePostNote($postNote, $formData);
-        return $this->postNoteViewProxy->fromEntity($postNote);
+        return ['note' => $this->postNoteViewProxy->fromEntity($postNote)];
     }
 }

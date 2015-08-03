@@ -71,10 +71,7 @@ App.Pager = function(
                     var totalRecords = response.json.totalRecords;
                     totalPages = Math.ceil(totalRecords / pageSize);
 
-                    resolve({
-                        entities: response.json.data,
-                        totalRecords: totalRecords,
-                        totalPages: totalPages});
+                    resolve(response);
 
                 }).fail(function(response) {
                     reject(response);

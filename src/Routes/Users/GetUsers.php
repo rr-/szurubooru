@@ -52,7 +52,7 @@ class GetUsers extends AbstractUserRoute
         $result = $this->userService->getFiltered($filter);
         $entities = $this->userViewProxy->fromArray($result->getEntities());
         return [
-            'data' => $entities,
+            'users' => $entities,
             'pageSize' => $result->getPageSize(),
             'totalRecords' => $result->getTotalRecords()];
     }

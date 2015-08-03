@@ -49,7 +49,7 @@ class GetHistory extends AbstractRoute
         $result = $this->historyService->getFiltered($filter);
         $entities = $this->snapshotViewProxy->fromArray($result->getEntities());
         return [
-            'data' => $entities,
+            'history' => $entities,
             'pageSize' => $result->getPageSize(),
             'totalRecords' => $result->getTotalRecords()];
     }

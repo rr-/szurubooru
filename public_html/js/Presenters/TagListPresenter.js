@@ -36,8 +36,8 @@ App.Presenters.TagListPresenter = function(
                         baseUri: '#/tags',
                         backendUri: '/tags',
                         $target: $el.find('.pagination-target'),
-                        updateCallback: function($page, data) {
-                            renderTags($page, data.entities);
+                        updateCallback: function($page, response) {
+                            renderTags($page, response.json.tags);
                         },
                     },
                     function() {

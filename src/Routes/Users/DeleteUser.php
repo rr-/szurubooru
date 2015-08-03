@@ -38,6 +38,6 @@ class DeleteUser extends AbstractUserRoute
                 : Privilege::DELETE_ALL_ACCOUNTS);
 
         $user = $this->userService->getByNameOrEmail($userNameOrEmail);
-        return $this->userService->deleteUser($user);
+        $this->userService->deleteUser($user);
     }
 }

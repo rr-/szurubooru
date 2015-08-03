@@ -54,7 +54,7 @@ class GetPosts extends AbstractPostRoute
         $result = $this->postService->getFiltered($filter);
         $entities = $this->postViewProxy->fromArray($result->getEntities(), $this->getLightFetchConfig());
         return [
-            'data' => $entities,
+            'posts' => $entities,
             'pageSize' => $result->getPageSize(),
             'totalRecords' => $result->getTotalRecords()];
     }
