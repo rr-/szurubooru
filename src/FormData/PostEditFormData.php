@@ -14,7 +14,7 @@ class PostEditFormData implements IValidatable
     public $relations;
     public $flags;
 
-    public $seenEditTime;
+    public $lastEditTime;
 
     public function __construct($inputReader = null)
     {
@@ -29,7 +29,7 @@ class PostEditFormData implements IValidatable
             $this->tags = preg_split('/[\s+]/', $inputReader->tags);
             if ($inputReader->relations !== null)
                 $this->relations = array_filter(preg_split('/[\s+]/', $inputReader->relations));
-            $this->seenEditTime = $inputReader->seenEditTime;
+            $this->lastEditTime = $inputReader->lastEditTime;
             $this->flags = new \StdClass;
             $this->flags->loop = !empty($inputReader->loop);
         }

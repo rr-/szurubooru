@@ -140,7 +140,10 @@ class PostService
         {
             $this->validator->validate($formData);
 
-            if ($post->getLastEditTime() !== $formData->seenEditTime)
+            if (!$formData->lastEditTime)
+                throw new \DomainException('Last edit time was not provided; cannot edit post.');
+
+            if ($post->getLastEditTime() !== $formData->lastEditTime)
                 throw new \DomainException('Someone has already edited this post in the meantime.');
 
             $post->setLastEditTime($this->timeService->getCurrentTime());

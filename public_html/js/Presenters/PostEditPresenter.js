@@ -109,7 +109,7 @@ App.Presenters.PostEditPresenter = function(
     function editPost() {
         var $form = $target.find('form');
         var formData = new FormData();
-        formData.append('seenEditTime', post.lastEditTime);
+        formData.append('lastEditTime', post.lastEditTime);
 
         if (privileges.canChangeContent && postContent) {
             formData.append('content', postContent);
