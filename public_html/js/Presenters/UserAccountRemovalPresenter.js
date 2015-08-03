@@ -58,7 +58,9 @@ App.Presenters.UserAccountRemovalPresenter = function(
         }
         promise.wait(api.delete('/users/' + user.name))
             .then(function() {
-                auth.logout();
+                if (user.name === auth.getCurrentUser().name) {
+                    auth.logout();
+                }
                 var $messageDiv = messagePresenter.showInfo($messages, 'Account deleted. <a href="">Back to main page</a>');
                 $messageDiv.find('a').click(mainPageLinkClicked);
             }).fail(function(response) {
