@@ -217,7 +217,7 @@ App.Presenters.PostListPresenter = function(
             tags.push(params.query.massTag);
         }
         var formData = {};
-        formData.seenEditTime = post.lastEditTime;
+        formData.lastEditTime = post.lastEditTime;
         formData.tags = tags.join(' ');
         promise.wait(api.post('/posts/' + post.id, formData))
             .then(function(response) {
