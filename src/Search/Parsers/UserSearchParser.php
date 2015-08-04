@@ -23,14 +23,12 @@ class UserSearchParser extends AbstractSearchParser
         throw new NotSupportedException();
     }
 
-    protected function getOrderColumn($tokenText)
+    protected function getOrderColumnMap()
     {
-        if ($this->matches($tokenText, ['name']))
-            return UserFilter::ORDER_NAME;
-
-        if ($this->matches($tokenText, ['registration_time', 'registration_date']))
-            return UserFilter::ORDER_REGISTRATION_TIME;
-
-        throw new NotSupportedException();
+        return
+        [
+            [['name'], UserFilter::ORDER_NAME],
+            [['registration_time', 'registration_date'], UserFilter::ORDER_REGISTRATION_TIME],
+        ];
     }
 }

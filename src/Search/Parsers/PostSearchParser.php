@@ -113,45 +113,23 @@ class PostSearchParser extends AbstractSearchParser
             . join(', ', array_map(function($term) { return join('/', $term[0]); }, $map)));
     }
 
-    protected function getOrderColumn($tokenText)
+    protected function getOrderColumnMap()
     {
-        if ($this->matches($tokenText, ['random']))
-            return PostFilter::ORDER_RANDOM;
-
-        if ($this->matches($tokenText, ['id']))
-            return PostFilter::ORDER_ID;
-
-        if ($this->matches($tokenText, ['time', 'date']))
-            return PostFilter::ORDER_LAST_EDIT_TIME;
-
-        if ($this->matches($tokenText, ['score']))
-            return PostFilter::ORDER_SCORE;
-
-        if ($this->matches($tokenText, ['file_size']))
-            return PostFilter::ORDER_FILE_SIZE;
-
-        if ($this->matches($tokenText, ['tag_count', 'tags', 'tag']))
-            return PostFilter::ORDER_TAG_COUNT;
-
-        if ($this->matches($tokenText, ['fav_count', 'fags', 'fav']))
-            return PostFilter::ORDER_FAV_COUNT;
-
-        if ($this->matches($tokenText, ['comment_count', 'comments', 'comment']))
-            return PostFilter::ORDER_COMMENT_COUNT;
-
-        if ($this->matches($tokenText, ['note_count', 'notes', 'note']))
-            return PostFilter::ORDER_NOTE_COUNT;
-
-        if ($this->matches($tokenText, ['fav_time', 'fav_date']))
-            return PostFilter::ORDER_LAST_FAV_TIME;
-
-        if ($this->matches($tokenText, ['comment_time', 'comment_date']))
-            return PostFilter::ORDER_LAST_COMMENT_TIME;
-
-        if ($this->matches($tokenText, ['feature_time', 'feature_date', 'featured', 'feature']))
-            return PostFilter::ORDER_LAST_FEATURE_TIME;
-
-        throw new NotSupportedException();
+        return
+        [
+            [['id'],                                                  PostFilter::ORDER_ID],
+            [['random'],                                              PostFilter::ORDER_RANDOM],
+            [['time', 'date'],                                        PostFilter::ORDER_LAST_EDIT_TIME],
+            [['score'],                                               PostFilter::ORDER_SCORE],
+            [['file_size'],                                           PostFilter::ORDER_FILE_SIZE],
+            [['tag_count', 'tags', 'tag'],                            PostFilter::ORDER_TAG_COUNT],
+            [['fav_count', 'fags', 'fav'],                            PostFilter::ORDER_FAV_COUNT],
+            [['comment_count', 'comments', 'comment'],                PostFilter::ORDER_COMMENT_COUNT],
+            [['note_count', 'notes', 'note'],                         PostFilter::ORDER_NOTE_COUNT],
+            [['fav_time', 'fav_date'],                                PostFilter::ORDER_LAST_FAV_TIME],
+            [['comment_time', 'comment_date'],                        PostFilter::ORDER_LAST_COMMENT_TIME],
+            [['feature_time', 'feature_date', 'featured', 'feature'], PostFilter::ORDER_LAST_FEATURE_TIME],
+        ];
     }
 
     private function addOwnLikedRequirement($filter, $token)

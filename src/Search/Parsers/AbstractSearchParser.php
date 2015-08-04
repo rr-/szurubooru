@@ -1,6 +1,7 @@
 <?php
 namespace Szurubooru\Search\Parsers;
 use Szurubooru\Helpers\InputReader;
+use Szurubooru\NotSupportedException;
 use Szurubooru\Search\Filters\IFilter;
 use Szurubooru\Search\Requirements\Requirement;
 use Szurubooru\Search\Requirements\RequirementCompositeValue;
@@ -51,7 +52,7 @@ abstract class AbstractSearchParser
 
     protected abstract function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken);
 
-    protected abstract function getOrderColumn($tokenText);
+    protected abstract function getOrderColumnMap();
 
     protected function createRequirementValue($text, $flags = 0, callable $valueDecorator = null)
     {
@@ -93,6 +94,22 @@ abstract class AbstractSearchParser
         $requirement->setValue($this->createRequirementValue($token->getValue(), $flags, $valueDecorator));
         $requirement->setNegated($token->isNegated());
         $filter->addRequirement($requirement);
+    }
+
+    private function getOrderColumn($tokenText)
+    {
+        $map = $this->getOrderColumnMap();
+
+        foreach ($map as $item)
+        {
+            list ($aliases, $value) = $item;
+            if ($this->matches($tokenText, $aliases))
+                return $value;
+        }
+
+        throw new NotSupportedException('Unknown order term: ' . $tokenText
+            . '. Possible order terms: '
+            . join(', ', array_map(function($term) { return join('/', $term[0]); }, $map)));
     }
 
     private function getOrder($query, $negated)

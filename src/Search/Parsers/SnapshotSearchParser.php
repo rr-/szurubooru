@@ -41,7 +41,7 @@ class SnapshotSearchParser extends AbstractSearchParser
         throw new NotSupportedException();
     }
 
-    protected function getOrderColumn($tokenText)
+    protected function getOrderColumnMap()
     {
         throw new NotSupportedException();
     }

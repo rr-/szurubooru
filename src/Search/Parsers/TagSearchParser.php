@@ -38,20 +38,14 @@ class TagSearchParser extends AbstractSearchParser
         throw new NotSupportedException();
     }
 
-    protected function getOrderColumn($tokenText)
+    protected function getOrderColumnMap()
     {
-        if ($this->matches($tokenText, ['id']))
-            return TagFilter::ORDER_ID;
-
-        if ($this->matches($tokenText, ['name']))
-            return TagFilter::ORDER_NAME;
-
-        if ($this->matches($tokenText, ['creation_time', 'creation_date']))
-            return TagFilter::ORDER_CREATION_TIME;
-
-        if ($this->matches($tokenText, ['usage_count', 'usages']))
-            return TagFilter::ORDER_USAGE_COUNT;
-
-        throw new NotSupportedException();
+        return
+        [
+            [['id'],                             TagFilter::ORDER_ID],
+            [['name'],                           TagFilter::ORDER_NAME],
+            [['creation_time', 'creation_date'], TagFilter::ORDER_CREATION_TIME],
+            [['usage_count', 'usages'],          TagFilter::ORDER_USAGE_COUNT],
+        ];
     }
 }
