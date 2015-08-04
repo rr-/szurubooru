@@ -126,7 +126,7 @@ App.Presenters.TagPresenter = function(
 
         promise.wait(api.put('/tags/' + tag.name, formData))
             .then(function(response) {
-                router.navigateInplace('#/tag/' + response.json.name);
+                router.navigateInplace('#/tag/' + response.json.tag.name);
                 tagList.refreshTags();
             }).fail(function(response) {
                 window.alert(response.json && response.json.error || 'An error occured.');
