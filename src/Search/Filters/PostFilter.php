@@ -7,6 +7,7 @@ class PostFilter extends BasicFilter implements IFilter
     const ORDER_FAV_COUNT = 'favCount';
     const ORDER_TAG_COUNT = 'tagCount';
     const ORDER_COMMENT_COUNT = 'commentCount';
+    const ORDER_NOTE_COUNT = 'noteCount';
     const ORDER_SCORE = 'score';
     const ORDER_LAST_EDIT_TIME = 'lastEditTime';
     const ORDER_FILE_SIZE = 'originalFileSize';
@@ -21,6 +22,7 @@ class PostFilter extends BasicFilter implements IFilter
     const REQUIREMENT_TAG_COUNT = 'tagCount';
     const REQUIREMENT_FAV_COUNT = 'favCount';
     const REQUIREMENT_COMMENT_COUNT = 'commentCount';
+    const REQUIREMENT_NOTE_COUNT = 'noteCount';
     const REQUIREMENT_SCORE = 'score';
     const REQUIREMENT_UPLOADER = 'uploader.name';
     const REQUIREMENT_SAFETY = 'safety';

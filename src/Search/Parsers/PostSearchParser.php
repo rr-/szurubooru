@@ -49,6 +49,7 @@ class PostSearchParser extends AbstractSearchParser
             'fav_count' => 'favs',
             'score' => 'score',
             'comment_count' => 'comments',
+            'note_count' => 'notes',
         ];
         foreach ($countAliases as $realKey => $baseAlias)
         {
@@ -69,6 +70,7 @@ class PostSearchParser extends AbstractSearchParser
             [['tag_count', 'tags'], [$this, 'addTagCountRequirement']],
             [['fav_count', 'favs'], [$this, 'addFavCountRequirement']],
             [['comment_count', 'comments'], [$this, 'addCommentCountRequirement']],
+            [['note_count', 'notes'], [$this, 'addNoteCountRequirement']],
             [['score'], [$this, 'addScoreRequirement']],
             [['uploader', 'uploader', 'uploaded', 'submit', 'submitter', 'submitted'], [$this, 'addUploaderRequirement']],
             [['safety', 'rating'], [$this, 'addSafetyRequirement']],
@@ -136,6 +138,9 @@ class PostSearchParser extends AbstractSearchParser
 
         if ($this->matches($tokenText, ['comment_count', 'comments', 'comment']))
             return PostFilter::ORDER_COMMENT_COUNT;
+
+        if ($this->matches($tokenText, ['note_count', 'notes', 'note']))
+            return PostFilter::ORDER_NOTE_COUNT;
 
         if ($this->matches($tokenText, ['fav_time', 'fav_date']))
             return PostFilter::ORDER_LAST_FAV_TIME;
@@ -249,6 +254,15 @@ class PostSearchParser extends AbstractSearchParser
             $filter,
             $token,
             PostFilter::REQUIREMENT_COMMENT_COUNT,
+            self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
+    }
+
+    private function addNoteCountRequirement($filter, $token)
+    {
+        $this->addRequirementFromToken(
+            $filter,
+            $token,
+            PostFilter::REQUIREMENT_NOTE_COUNT,
             self::ALLOW_COMPOSITE | self::ALLOW_RANGES);
     }
 

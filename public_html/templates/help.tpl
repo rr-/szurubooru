@@ -114,6 +114,7 @@
                     {search: 'comment_count:3', description: 'having exactly three comments'},
                     {search: 'score:4', description: 'having score of 4'},
                     {search: 'tag_count:7', description: 'tagged with exactly seven tags'},
+                    {search: 'note_count:1..', description: 'having at least one post note'},
                     {search: 'date:today', description: 'posted today'},
                     {search: 'date:yesterday', description: 'posted yesterday'},
                     {search: 'date:2000', description: 'posted in year 2000'},
