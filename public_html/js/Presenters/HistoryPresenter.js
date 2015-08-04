@@ -72,7 +72,6 @@ App.Presenters.HistoryPresenter = function(
         deinit: deinit,
         render: render,
     };
-
 };
 
 App.DI.register('historyPresenter', ['_', 'jQuery', 'util', 'promise', 'auth', 'pagerPresenter', 'topNavigationPresenter'], App.Presenters.HistoryPresenter);

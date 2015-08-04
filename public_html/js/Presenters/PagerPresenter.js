@@ -119,7 +119,8 @@ App.Presenters.PagerPresenter = function(
                         response.json.posts ||
                         response.json.users ||
                         response.json.comments ||
-                        response.json.tags;
+                        response.json.tags ||
+                        response.json.history;
 
                     if (!entities.length) {
                         messagePresenter.showInfo($messages, 'No data to show');
