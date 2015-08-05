@@ -35,7 +35,7 @@ class TagSearchParser extends AbstractSearchParser
                 self::ALLOW_COMPOSITE);
         }
 
-        throw new NotSupportedException();
+        throw new NotSupportedException('Unknown token: ' . $namedToken->getKey());
     }
 
     protected function getOrderColumnMap()

@@ -18,10 +18,10 @@ class SnapshotSearchParser extends AbstractSearchParser
     protected function decorateFilterFromToken(IFilter $filter, SearchToken $token)
     {
         if (substr_count($token->getValue(), ',') !== 1)
-            throw new NotSupportedException();
+            throw new NotSupportedException('Expected token in form of "type,id"');
 
         if ($token->isNegated())
-            throw new NotSupportedException();
+            throw new NotSupportedException('Negative searches are not supported in this context');
 
         list ($type, $primaryKey) = explode(',', $token->getValue());
 
@@ -38,11 +38,11 @@ class SnapshotSearchParser extends AbstractSearchParser
 
     protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
     {
-        throw new NotSupportedException();
+        throw new NotSupportedException('Named tokens are not supported in this context');
     }
 
     protected function getOrderColumnMap()
     {
-        throw new NotSupportedException();
+        throw new NotSupportedException('Search order is not supported in this context');
     }
 }
