@@ -5,7 +5,7 @@
 	data-version="dev"
 	data-build-time=""
 	data-max-post-size="10485760"
-	data-tag-categories='["meta","character","artist","copyright"]'>
+	data-tag-categories='[["meta","meta","#aaa"],["character","character","#0a0"],["artist","artist","#a00"],["copyright","copyright","#a0a"]]'>
 <!-- /build -->
 <!-- build:template
 <head
@@ -24,8 +24,23 @@
 	<title><%= serviceName %></title>
 	/build -->
 
+	<!-- build:remove -->
+	<style type="text/css">
+		.tag-category-character { color: #0a0; }
+		.tag-category-copyright { color: #a0a; }
+		.tag-category-artist { color: #a00; }
+		.tag-category-meta { color: #aaa; }
+	</style>
+	<!-- /build -->
 	<!-- build:template
 		<link rel="stylesheet" type="text/css" href="app.min.css?<%= timestamp %>"/>
+		<style type="text/css">
+			<% _.each(tagCategories, function(item) {
+				var type = item[0];
+				var color = item[2];
+				%>.tag-category-<%= type %>{color:<%=color%>;}<%
+			}); %>
+		</style>
 	/build -->
 
 	<link rel="stylesheet" type="text/css" href="/lib/font-awesome/css/font-awesome.min.css"/>

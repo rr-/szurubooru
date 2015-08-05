@@ -81,12 +81,21 @@ App.Presenters.TagPresenter = function(
             });
     }
 
+    function getTagCategories() {
+        var tagCategories = JSON.parse(jQuery('head').attr('data-tag-categories'));
+        var result = {};
+        jQuery.each(tagCategories, function(i, item) {
+            result[item[0]] = item[1];
+        });
+        return result;
+    }
+
     function render() {
         $el.html(templates.tag({
             privileges: privileges,
             tag: tag,
             siblings: siblings,
-            tagCategories: JSON.parse(jQuery('head').attr('data-tag-categories')),
+            tagCategories: getTagCategories(),
             util: util,
             historyTemplate: templates.history,
         }));

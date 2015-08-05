@@ -41,7 +41,7 @@
             <div class="form-row">
                 <label class="form-label" for="tag-category">Category:</label>
                 <div class="form-input">
-                    <% _.each(_.extend({'default': 'default'}, _.object(tagCategories, tagCategories)), function(v, k) { %>
+                    <% _.each(_.extend({'default': 'default'}, tagCategories), function(v, k) { %>
                         <input name="category" type="radio" value="<%= k %>" id="category-<%= k %>" <% print(tag.category === k ? 'checked="checked"' : '') %>>
                         <label for="category-<%= k %>">
                             <% print(tag.category === k ? v + ' (current)' : v) %>

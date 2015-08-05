@@ -137,7 +137,7 @@ module.exports = function(grunt) {
 					templates: readTemplates(grunt),
 					timestamp: grunt.template.today('isoDateTime'),
 					maxPostSize: config.database.maxPostSize,
-					tagCategories: config.tags.categories,
+					tagCategories: config.tags.categories.map(function(s) { return s.split(/,\s*/); }),
 				}
 			},
 			dist: {
