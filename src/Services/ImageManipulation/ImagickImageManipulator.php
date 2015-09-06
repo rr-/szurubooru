@@ -5,18 +5,11 @@ class ImagickImageManipulator implements IImageManipulator
 {
     public function loadFromBuffer($source)
     {
-        try
-        {
-            $image = new \Imagick();
-            $image->readImageBlob($source);
-            if ($image->getImageFormat() == 'GIF')
-                $image = $image->coalesceImages();
-            return $image;
-        }
-        catch (\Exception $e)
-        {
-            return null;
-        }
+        $image = new \Imagick();
+        $image->readImageBlob($source);
+        if ($image->getImageFormat() == 'GIF')
+            $image = $image->coalesceImages();
+        return $image;
     }
 
     public function getImageWidth($imageResource)

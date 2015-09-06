@@ -5,14 +5,7 @@ class GdImageManipulator implements IImageManipulator
 {
     public function loadFromBuffer($source)
     {
-        try
-        {
-            return imagecreatefromstring($source);
-        }
-        catch (\Exception $e)
-        {
-            return null;
-        }
+        return imagecreatefromstring($source);
     }
 
     public function getImageWidth($imageResource)
