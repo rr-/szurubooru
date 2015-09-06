@@ -2,6 +2,7 @@
 namespace Szurubooru\Services\ImageManipulation;
 use Szurubooru\Services\ImageManipulation\GdImageManipulator;
 use Szurubooru\Services\ImageManipulation\ImagickImageManipulator;
+use Szurubooru\Config;
 
 class ImageManipulator implements IImageManipulator
 {
@@ -9,14 +10,19 @@ class ImageManipulator implements IImageManipulator
 
     public function __construct(
         ImagickImageManipulator $imagickImageManipulator,
-        GdImageManipulator $gdImageManipulator)
+        GdImageManipulator $gdImageManipulator,
+        Config $config)
     {
-        if (extension_loaded('imagick'))
+        if ($config->misc->imageExtension === 'imagick')
         {
+            if (!extension_loaded('imagick'))
+                throw new \RuntimeException('Plugin set to imagick, but not enabled in PHP');
             $this->strategy = $imagickImageManipulator;
         }
-        else if (extension_loaded('gd'))
+        else if ($config->misc->imageExtension === 'gd')
         {
+            if (!extension_loaded('gd'))
+                throw new \RuntimeException('Plugin set to gd, but not enabled in PHP');
             $this->strategy = $gdImageManipulator;
         }
         else
