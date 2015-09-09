@@ -59,9 +59,9 @@ class NetworkingService
         {
             $srcHandle = fopen($url, 'rb');
         }
-        catch (Exception $e)
+        catch (\Exception $e)
         {
-            throw new \Exception('Cannot open URL for reading: ' . $e->getMessage());
+            throw new \Exception('Cannot open URL "' . $url . '" for reading: ' . $e->getMessage());
         }
 
         if (!$srcHandle)
