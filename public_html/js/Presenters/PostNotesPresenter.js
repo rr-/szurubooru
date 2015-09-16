@@ -125,7 +125,7 @@ App.Presenters.PostNotesPresenter = function(
             promise.wait(p)
                 .then(function(response) {
                     hideForm();
-                    postNote.id = response.json.id;
+                    postNote.id = response.json.note.id;
                     postNote.$element.data('postNote', postNote);
                     render();
                 }).fail(function(response) {
