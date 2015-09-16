@@ -97,7 +97,10 @@ App.Presenters.PostNotesPresenter = function(
                 promise.wait(api.delete('/notes/' + postNote.id))
                     .then(function() {
                         hideForm();
-                        postNote.$element.remove();
+                        notes = jQuery.grep(notes, function(otherNote) {
+                            return otherNote.id !== postNote.id;
+                        });
+                        render();
                     }).fail(function(response) {
                         window.alert(response.json && response.json.error || response);
                     });
