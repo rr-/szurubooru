@@ -93,7 +93,7 @@ App.Router = function(_, jQuery, promise, util, appState, presenterManager) {
     }
 
     function dispatch() {
-        var url = document.location.hash;
+        var url = decodeURI(document.location.hash);
         for (var i = 0; i < routes.length; i ++) {
             var route = routes[i];
             if (route.match(url)) {
