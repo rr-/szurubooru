@@ -82,6 +82,18 @@ class ImageConverter
                 ]);
         }
 
+        if (!file_exists($targetPath) && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
+        {
+            ProgramExecutor::run(
+                self::PROGRAM_NAME_FFMPEG,
+                [
+                    '-i',
+                    $sourcePath,
+                    '-vframes', '1',
+                    $targetPath,
+                ]);
+        }
+
         if (!file_exists($targetPath))
             throw new \Exception('Error while converting Flash file to image');
     }
