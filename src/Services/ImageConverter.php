@@ -56,10 +56,9 @@ class ImageConverter
 
     private function convertFromFlash($sourcePath, $targetPath)
     {
-        if (ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_DUMP_GNASH))
-        {
-            ProgramExecutor::run(
-                self::PROGRAM_NAME_DUMP_GNASH,
+        $this->convertWithPrograms(
+            [
+                self::PROGRAM_NAME_DUMP_GNASH =>
                 [
                     '--screenshot', 'last',
                     '--screenshot-file', $targetPath,
@@ -67,63 +66,68 @@ class ImageConverter
                     '-r1',
                     '--max-advances', '15',
                     $sourcePath,
-                ]);
-        }
+                ],
 
-        if (!file_exists($targetPath) && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_SWFRENDER))
-        {
-            ProgramExecutor::run(
-                self::PROGRAM_NAME_SWFRENDER,
+                self::PROGRAM_NAME_SWFRENDER =>
                 [
-                    'swfrender',
                     $sourcePath,
                     '-o',
                     $targetPath,
-                ]);
-        }
+                ],
 
-        if (!file_exists($targetPath) && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
-        {
-            ProgramExecutor::run(
-                self::PROGRAM_NAME_FFMPEG,
+                self::PROGRAM_NAME_FFMPEG =>
                 [
                     '-i',
                     $sourcePath,
                     '-vframes', '1',
                     $targetPath,
-                ]);
-        }
-
-        if (!file_exists($targetPath))
-            throw new \Exception('Error while converting Flash file to image');
+                ],
+            ],
+            $targetPath);
     }
 
     private function convertFromVideo($sourcePath, $targetPath)
     {
-        if (ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEGTHUMBNAILER))
-        {
-            ProgramExecutor::run(
-                self::PROGRAM_NAME_FFMPEGTHUMBNAILER,
+        $this->convertWithPrograms(
+            [
+                self::PROGRAM_NAME_FFMPEGTHUMBNAILER =>
                 [
                     '-i' . $sourcePath,
                     '-o' . $targetPath,
                     '-s0',
                     '-t12%%'
-                ]);
-        }
+                ],
 
-        if (!file_exists($targetPath) && ProgramExecutor::isProgramAvailable(self::PROGRAM_NAME_FFMPEG))
-        {
-            ProgramExecutor::run(self::PROGRAM_NAME_FFMPEG,
+                self::PROGRAM_NAME_FFMPEG =>
                 [
                     '-i', $sourcePath,
                     '-vframes', '1',
                     $targetPath
-                ]);
+                ]
+            ],
+            $targetPath);
+    }
+
+    private function convertWithPrograms($programs, $targetPath)
+    {
+        $any_program_available = false;
+        foreach ($programs as $program => $args)
+            $any_program_available |= ProgramExecutor::isProgramAvailable($program);
+        if (!$any_program_available)
+            throw new \Exception('No converter available (tried ' . join(', ', array_keys($programs)) . ')');
+
+        $errors = [];
+        foreach ($programs as $program => $args)
+        {
+            if (ProgramExecutor::isProgramAvailable($program))
+            {
+                $errors[] = ProgramExecutor::run($program, $args);
+                if (file_exists($targetPath))
+                    return;
+            }
         }
 
-        if (!file_exists($targetPath))
-            throw new \Exception('Error while converting video file to image');
+        throw new \Exception('Error while converting file to image: ' . join(', ', $errors));
     }
 
     private function deleteIfExists($path)
