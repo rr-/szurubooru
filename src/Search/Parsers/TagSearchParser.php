@@ -24,18 +24,33 @@ class TagSearchParser extends AbstractSearchParser
         $filter->addRequirement($requirement);
     }
 
-    protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $namedToken)
+    protected function decorateFilterFromNamedToken(IFilter $filter, NamedSearchToken $token)
     {
-        if ($this->matches($namedToken->getKey(), ['category']))
+        if ($this->matches($token->getKey(), ['creation_time', 'creation_date', 'date']))
         {
-            return $this->addRequirementFromToken(
-                $filter,
-                $namedToken,
-                TagFilter::REQUIREMENT_CATEGORY,
-                self::ALLOW_COMPOSITE);
+            $this->addRequirementFromDateRangeToken(
+                $filter, $token, TagFilter::REQUIREMENT_CREATION_TIME);
+            return;
         }
 
-        throw new NotSupportedException('Unknown token: ' . $namedToken->getKey());
+        if ($this->matches($token->getKey(), ['edit_time', 'edit_date']))
+        {
+            $this->addRequirementFromDateRangeToken(
+                $filter, $token, TagFilter::REQUIREMENT_LAST_EDIT_TIME);
+            return;
+        }
+
+        if ($this->matches($token->getKey(), ['category']))
+        {
+            $this->addRequirementFromToken(
+                $filter,
+                $token,
+                TagFilter::REQUIREMENT_CATEGORY,
+                self::ALLOW_COMPOSITE);
+            return;
+        }
+
+        throw new NotSupportedException('Unknown token: ' . $token->getKey());
     }
 
     protected function getOrderColumnMap()

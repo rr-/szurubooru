@@ -10,6 +10,8 @@ class TagFilter extends BasicFilter implements IFilter
     const ORDER_USAGE_COUNT = 'usages';
 
     const REQUIREMENT_PARTIAL_TAG_NAME = 'partialTagName';
+    const REQUIREMENT_CREATION_TIME = 'creationTime';
+    const REQUIREMENT_LAST_EDIT_TIME = 'lastEditTime';
     const REQUIREMENT_CATEGORY = 'category';
 
     public function __construct()
