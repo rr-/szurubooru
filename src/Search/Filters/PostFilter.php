@@ -14,6 +14,7 @@ class PostFilter extends BasicFilter implements IFilter
     const ORDER_LAST_COMMENT_TIME = 'lastCommentCreationTime';
     const ORDER_LAST_FAV_TIME = 'lastFavTime';
     const ORDER_LAST_FEATURE_TIME = 'lastFeatureTime';
+    const ORDER_FEATURE_COUNT = 'featureCount';
 
     const REQUIREMENT_TAG = 'tag';
     const REQUIREMENT_ID = 'id';

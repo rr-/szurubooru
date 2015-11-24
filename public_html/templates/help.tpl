@@ -176,6 +176,7 @@
                     {search: 'order:fav_date', description: 'recently added to favorites'},
                     {search: 'order:comment_date', description: 'recently commented'},
                     {search: 'order:feature_date', description: 'recently featured'},
+                    {search: 'order:feature_count', description: 'most often featured'},
                 ];
                 _.each(table, function(row) { %>
                 <tr>
