@@ -117,19 +117,20 @@ class PostSearchParser extends AbstractSearchParser
     {
         return
         [
-            [['id'],                                    PostFilter::ORDER_ID],
-            [['random'],                                PostFilter::ORDER_RANDOM],
-            [['edit_time', 'edit_date'],                PostFilter::ORDER_LAST_EDIT_TIME],
-            [['score'],                                 PostFilter::ORDER_SCORE],
-            [['file_size'],                             PostFilter::ORDER_FILE_SIZE],
-            [['tag_count', 'tags', 'tag'],              PostFilter::ORDER_TAG_COUNT],
-            [['fav_count', 'fags', 'fav'],              PostFilter::ORDER_FAV_COUNT],
-            [['comment_count', 'comments', 'comment'],  PostFilter::ORDER_COMMENT_COUNT],
-            [['note_count', 'notes', 'note'],           PostFilter::ORDER_NOTE_COUNT],
-            [['fav_time', 'fav_date'],                  PostFilter::ORDER_LAST_FAV_TIME],
-            [['comment_time', 'comment_date'],          PostFilter::ORDER_LAST_COMMENT_TIME],
-            [['feature_time', 'feature_date'],          PostFilter::ORDER_LAST_FEATURE_TIME],
-            [['feature_count', 'features', 'featured'], PostFilter::ORDER_FEATURE_COUNT],
+            [['id'],                                     PostFilter::ORDER_ID],
+            [['random'],                                 PostFilter::ORDER_RANDOM],
+            [['creation_time', 'creation_date', 'date'], PostFilter::ORDER_CREATION_TIME],
+            [['edit_time', 'edit_date'],                 PostFilter::ORDER_LAST_EDIT_TIME],
+            [['score'],                                  PostFilter::ORDER_SCORE],
+            [['file_size'],                              PostFilter::ORDER_FILE_SIZE],
+            [['tag_count', 'tags', 'tag'],               PostFilter::ORDER_TAG_COUNT],
+            [['fav_count', 'fags', 'fav'],               PostFilter::ORDER_FAV_COUNT],
+            [['comment_count', 'comments', 'comment'],   PostFilter::ORDER_COMMENT_COUNT],
+            [['note_count', 'notes', 'note'],            PostFilter::ORDER_NOTE_COUNT],
+            [['fav_time', 'fav_date'],                   PostFilter::ORDER_LAST_FAV_TIME],
+            [['comment_time', 'comment_date'],           PostFilter::ORDER_LAST_COMMENT_TIME],
+            [['feature_time', 'feature_date'],           PostFilter::ORDER_LAST_FEATURE_TIME],
+            [['feature_count', 'features', 'featured'],  PostFilter::ORDER_FEATURE_COUNT],
         ];
     }
 

@@ -9,6 +9,7 @@ class PostFilter extends BasicFilter implements IFilter
     const ORDER_COMMENT_COUNT = 'commentCount';
     const ORDER_NOTE_COUNT = 'noteCount';
     const ORDER_SCORE = 'score';
+    const ORDER_CREATION_TIME = 'creationTime';
     const ORDER_LAST_EDIT_TIME = 'lastEditTime';
     const ORDER_FILE_SIZE = 'originalFileSize';
     const ORDER_LAST_COMMENT_TIME = 'lastCommentCreationTime';

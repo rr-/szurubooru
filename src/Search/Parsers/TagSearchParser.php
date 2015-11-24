@@ -42,10 +42,10 @@ class TagSearchParser extends AbstractSearchParser
     {
         return
         [
-            [['id'],                             TagFilter::ORDER_ID],
-            [['name'],                           TagFilter::ORDER_NAME],
-            [['creation_time', 'creation_date'], TagFilter::ORDER_CREATION_TIME],
-            [['usage_count', 'usages'],          TagFilter::ORDER_USAGE_COUNT],
+            [['id'],                                     TagFilter::ORDER_ID],
+            [['name'],                                   TagFilter::ORDER_NAME],
+            [['creation_time', 'creation_date', 'date'], TagFilter::ORDER_CREATION_TIME],
+            [['usage_count', 'usages'],                  TagFilter::ORDER_USAGE_COUNT],
         ];
     }
 }

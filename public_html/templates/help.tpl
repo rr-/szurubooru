@@ -165,9 +165,10 @@
                 var table = [
                     {search: 'order:random', description: 'as random as it can get'},
                     {search: 'order:id', description: 'highest to lowest post ID (default browse view)'},
-                    {search: 'order:edit_date', description: 'newest to oldest (pretty much same as above)'},
-                    {search: '-order:edit_date', description: 'oldest to newest'},
-                    {search: 'order:edit_date,asc', description: 'oldest to newest (ascending order, default = descending)'},
+                    {search: 'order:creation_date', description: 'newest to oldest (pretty much same as above)'},
+                    {search: '-order:creation_date', description: 'oldest to newest'},
+                    {search: 'order:creation_date,asc', description: 'oldest to newest (ascending order, default = descending)'},
+                    {search: 'order:edit_date', description: 'like <code>creation_date</code>, only looks at last edit time'},
                     {search: 'order:score', description: 'highest scored'},
                     {search: 'order:file_size', description: 'largest files first'},
                     {search: 'order:tag_count', description: 'with most tags'},
@@ -188,7 +189,7 @@
     </table>
 
     <p>As shown with <a
-    href="#/posts/query=-order:edit_date"><code>-order:edit_date</code></a>,
+    href="#/posts/query=-order:creation_date"><code>-order:creation_date</code></a>,
     any of them can be reversed in the same way as negating other tags: by
     placing a dash before the tag.</p>
 </div>
