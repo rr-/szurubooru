@@ -13,6 +13,7 @@ class TagFilter extends BasicFilter implements IFilter
     const REQUIREMENT_CREATION_TIME = 'creationTime';
     const REQUIREMENT_LAST_EDIT_TIME = 'lastEditTime';
     const REQUIREMENT_CATEGORY = 'category';
+    const REQUIREMENT_USAGE_COUNT = 'usages';
 
     public function __construct()
     {

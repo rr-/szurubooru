@@ -40,6 +40,16 @@ class TagSearchParser extends AbstractSearchParser
             return;
         }
 
+        if ($this->matches($token->getKey(), ['usage_count', 'usages', 'usage']))
+        {
+            $this->addRequirementFromToken(
+                $filter,
+                $token,
+                TagFilter::REQUIREMENT_USAGE_COUNT,
+                self::ALLOW_RANGES | self::ALLOW_COMPOSITE);
+            return;
+        }
+
         if ($this->matches($token->getKey(), ['category']))
         {
             $this->addRequirementFromToken(
