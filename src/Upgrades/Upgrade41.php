@@ -7,7 +7,6 @@ class Upgrade41 implements IUpgrade
     public function run(DatabaseConnection $databaseConnection)
     {
         $pdo = $databaseConnection->getPDO();
-        $driver = $databaseConnection->getDriver();
 
         $pdo->exec('
             CREATE TRIGGER postNotesDelete AFTER DELETE ON postNotes

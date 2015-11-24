@@ -11,7 +11,7 @@ class PostFilter extends BasicFilter implements IFilter
     const ORDER_SCORE = 'score';
     const ORDER_LAST_EDIT_TIME = 'lastEditTime';
     const ORDER_FILE_SIZE = 'originalFileSize';
-    const ORDER_LAST_COMMENT_TIME = 'lastCommentTime';
+    const ORDER_LAST_COMMENT_TIME = 'lastCommentCreationTime';
     const ORDER_LAST_FAV_TIME = 'lastFavTime';
     const ORDER_LAST_FEATURE_TIME = 'lastFeatureTime';
 
