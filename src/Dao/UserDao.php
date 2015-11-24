@@ -10,7 +10,7 @@ use Szurubooru\Services\ThumbnailService;
 class UserDao extends AbstractDao implements ICrudDao
 {
     const ORDER_NAME = 'name';
-    const ORDER_REGISTRATION_TIME = 'registrationTime';
+    const ORDER_CREATION_TIME = 'creationTime';
 
     private $fileDao;
     private $thumbnailService;

@@ -4,7 +4,7 @@ namespace Szurubooru\Search\Filters;
 class UserFilter extends BasicFilter implements IFilter
 {
     const ORDER_NAME = 'name';
-    const ORDER_REGISTRATION_TIME = 'registrationTime';
+    const ORDER_CREATION_TIME = 'creationTime';
 
     public function __construct()
     {

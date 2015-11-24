@@ -19,8 +19,8 @@
                 <%= user.name %>
             <% } %>
         </h1>
-        <div class="date-joined" title="<%= util.formatAbsoluteTime(user.registrationTime) %>">
-            Joined: <%= util.formatRelativeTime(user.registrationTime) %>
+        <div class="date-joined" title="<%= util.formatAbsoluteTime(user.creationTime) %>">
+            Joined: <%= util.formatRelativeTime(user.creationTime) %>
         </div>
         <div class="date-seen" title="<%= util.formatAbsoluteTime(user.lastLoginTime) %>">
             Last seen: <%= util.formatRelativeTime(user.lastLoginTime) %>

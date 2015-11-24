@@ -29,7 +29,7 @@ final class Post extends Entity
 
     private $name;
     private $userId;
-    private $uploadTime;
+    private $creationTime;
     private $lastEditTime;
     private $safety;
     private $contentType;
@@ -79,14 +79,14 @@ final class Post extends Entity
         $this->safety = $safety;
     }
 
-    public function getUploadTime()
+    public function getCreationTime()
     {
-        return $this->uploadTime;
+        return $this->creationTime;
     }
 
-    public function setUploadTime($uploadTime)
+    public function setCreationTime($creationTime)
     {
-        $this->uploadTime = $uploadTime;
+        $this->creationTime = $creationTime;
     }
 
     public function getLastEditTime()

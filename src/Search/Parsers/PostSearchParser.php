@@ -119,7 +119,7 @@ class PostSearchParser extends AbstractSearchParser
         [
             [['id'],                                    PostFilter::ORDER_ID],
             [['random'],                                PostFilter::ORDER_RANDOM],
-            [['time', 'date'],                          PostFilter::ORDER_LAST_EDIT_TIME],
+            [['edit_time', 'edit_date'],                PostFilter::ORDER_LAST_EDIT_TIME],
             [['score'],                                 PostFilter::ORDER_SCORE],
             [['file_size'],                             PostFilter::ORDER_FILE_SIZE],
             [['tag_count', 'tags', 'tag'],              PostFilter::ORDER_TAG_COUNT],
@@ -205,7 +205,7 @@ class PostSearchParser extends AbstractSearchParser
         $this->addRequirementFromToken(
             $filter,
             $token,
-            PostFilter::REQUIREMENT_DATE,
+            PostFilter::REQUIREMENT_CREATION_TIME,
             self::ALLOW_RANGES);
     }
 

@@ -120,8 +120,8 @@ if (forceHttpInPermalinks > 0) {
 
                 <br/>
 
-                <span class="date" title="<%= util.formatAbsoluteTime(post.uploadTime) %>">
-                    <%= util.formatRelativeTime(post.uploadTime) %>
+                <span class="date" title="<%= util.formatAbsoluteTime(post.creationTime) %>">
+                    <%= util.formatRelativeTime(post.creationTime) %>
                 </span>
             </div>
 
@@ -147,7 +147,7 @@ if (forceHttpInPermalinks > 0) {
                     </li>
                 <% } %>
 
-                <% if (post.lastEditTime !== post.uploadTime) { %>
+                <% if (post.lastEditTime !== post.creationTime) { %>
                     <li>
                         Edited:
                         <span title="<%= util.formatAbsoluteTime(post.lastEditTime) %>">

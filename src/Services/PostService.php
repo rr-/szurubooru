@@ -113,7 +113,7 @@ class PostService
                 $this->authService->loginAnonymous();
 
             $post = new Post();
-            $post->setUploadTime($this->timeService->getCurrentTime());
+            $post->setCreationTime($this->timeService->getCurrentTime());
             $post->setLastEditTime($this->timeService->getCurrentTime());
             $post->setUser($this->authService->getLoggedInUser());
             $post->setOriginalFileName($formData->contentFileName);

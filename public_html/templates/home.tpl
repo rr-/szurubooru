@@ -43,7 +43,7 @@
                     <% } %>
 
                     uploaded
-                    <%= util.formatRelativeTime(post.uploadTime) %>
+                    <%= util.formatRelativeTime(post.creationTime) %>
                     by
                     <% showUser(post.user.name) %>
                 </span>

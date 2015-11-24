@@ -20,7 +20,7 @@ class UserViewProxy extends AbstractViewProxy
         {
             $result->id = $user->getId();
             $result->name = $user->getName();
-            $result->registrationTime = $user->getRegistrationTime();
+            $result->creationTime = $user->getCreationTime();
             $result->lastLoginTime = $user->getLastLoginTime();
             $result->avatarStyle = EnumHelper::avatarStyleToString($user->getAvatarStyle());
             $result->banned = $user->isBanned();

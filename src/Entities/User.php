@@ -23,7 +23,7 @@ final class User extends Entity
     private $passwordHash;
     private $passwordSalt;
     private $accessRank;
-    private $registrationTime;
+    private $creationTime;
     private $lastLoginTime;
     private $avatarStyle;
     private $browsingSettings;
@@ -110,14 +110,14 @@ final class User extends Entity
         $this->accessRank = $accessRank;
     }
 
-    public function getRegistrationTime()
+    public function getCreationTime()
     {
-        return $this->registrationTime;
+        return $this->creationTime;
     }
 
-    public function setRegistrationTime($registrationTime)
+    public function setCreationTime($creationTime)
     {
-        $this->registrationTime = $registrationTime;
+        $this->creationTime = $creationTime;
     }
 
     public function getLastLoginTime()

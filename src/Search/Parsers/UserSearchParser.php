@@ -28,7 +28,7 @@ class UserSearchParser extends AbstractSearchParser
         return
         [
             [['name'], UserFilter::ORDER_NAME],
-            [['registration_time', 'registration_date'], UserFilter::ORDER_REGISTRATION_TIME],
+            [['creation_time', 'creation_date'], UserFilter::ORDER_CREATION_TIME],
         ];
     }
 }

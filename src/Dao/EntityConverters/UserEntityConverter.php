@@ -15,7 +15,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
             'passwordHash' => $entity->getPasswordHash(),
             'passwordSalt' => $entity->getPasswordSalt(),
             'accessRank' => $entity->getAccessRank(),
-            'registrationTime' => $this->entityTimeToDbTime($entity->getRegistrationTime()),
+            'creationTime' => $this->entityTimeToDbTime($entity->getCreationTime()),
             'lastLoginTime' => $this->entityTimeToDbTime($entity->getLastLoginTime()),
             'avatarStyle' => $entity->getAvatarStyle(),
             'browsingSettings' => json_encode($entity->getBrowsingSettings()),
@@ -33,7 +33,7 @@ class UserEntityConverter extends AbstractEntityConverter implements IEntityConv
         $entity->setPasswordHash($array['passwordHash']);
         $entity->setPasswordSalt($array['passwordSalt']);
         $entity->setAccessRank(intval($array['accessRank']));
-        $entity->setRegistrationTime($this->dbTimeToEntityTime($array['registrationTime']));
+        $entity->setCreationTime($this->dbTimeToEntityTime($array['creationTime']));
         $entity->setLastLoginTime($this->dbTimeToEntityTime($array['lastLoginTime']));
         $entity->setAvatarStyle(intval($array['avatarStyle']));
         $entity->setBrowsingSettings(json_decode($array['browsingSettings']));

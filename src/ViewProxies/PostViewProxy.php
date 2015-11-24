@@ -65,7 +65,7 @@ class PostViewProxy extends AbstractViewProxy
         $result->id = $post->getId();
         $result->idMarkdown = $post->getIdMarkdown();
         $result->name = $post->getName();
-        $result->uploadTime = $post->getUploadTime();
+        $result->creationTime = $post->getCreationTime();
         $result->lastEditTime = $post->getLastEditTime();
         $result->safety = EnumHelper::postSafetyToString($post->getSafety());
         $result->contentType = EnumHelper::postTypeToString($post->getContentType());

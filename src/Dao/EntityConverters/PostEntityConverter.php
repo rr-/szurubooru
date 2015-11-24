@@ -11,7 +11,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
         [
             'name' => $entity->getName(),
             'userId' => $entity->getUserId(),
-            'uploadTime' => $this->entityTimeToDbTime($entity->getUploadTime()),
+            'creationTime' => $this->entityTimeToDbTime($entity->getCreationTime()),
             'lastEditTime' => $this->entityTimeToDbTime($entity->getLastEditTime()),
             'safety' => $entity->getSafety(),
             'contentType' => $entity->getContentType(),
@@ -33,7 +33,7 @@ class PostEntityConverter extends AbstractEntityConverter implements IEntityConv
         $entity = new Post(intval($array['id']));
         $entity->setName($array['name']);
         $entity->setUserId($array['userId']);
-        $entity->setUploadTime($this->dbTimeToEntityTime($array['uploadTime']));
+        $entity->setCreationTime($this->dbTimeToEntityTime($array['creationTime']));
         $entity->setLastEditTime($this->dbTimeToEntityTime($array['lastEditTime']));
         $entity->setSafety(intval($array['safety']));
         $entity->setContentType(intval($array['contentType']));

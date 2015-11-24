@@ -104,7 +104,7 @@ class UserService
             $formData->validate($this->validator);
 
             $user = new User();
-            $user->setRegistrationTime($this->timeService->getCurrentTime());
+            $user->setCreationTime($this->timeService->getCurrentTime());
             $user->setLastLoginTime(null);
             $user->setAccessRank($this->userDao->hasAnyUsers()
                 ? $this->getDefaultAccessRank()
