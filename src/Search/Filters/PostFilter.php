@@ -20,6 +20,7 @@ class PostFilter extends BasicFilter implements IFilter
     const REQUIREMENT_TAG = 'tag';
     const REQUIREMENT_ID = 'id';
     const REQUIREMENT_CREATION_TIME = 'creationTime';
+    const REQUIREMENT_LAST_EDIT_TIME = 'lastEditTime';
     const REQUIREMENT_HASH = 'name';
     const REQUIREMENT_TAG_COUNT = 'tagCount';
     const REQUIREMENT_FAV_COUNT = 'favCount';
