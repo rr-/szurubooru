@@ -106,6 +106,7 @@ class TagService
                     $tag->setName($tagName);
                 }
                 $tag->setCreationTime($this->timeService->getCurrentTime());
+                $tag->setLastEditTime($this->timeService->getCurrentTime());
                 $tagsToCreate[$tagNameGetter($tag)] = $tag;
             }
 
@@ -136,6 +137,8 @@ class TagService
         $transactionFunc = function() use ($tag, $formData)
         {
             $this->validator->validate($formData);
+
+            $tag->setLastEditTime($this->timeService->getCurrentTime());
 
             if ($formData->name !== null)
                 $this->updateTagName($tag, $formData->name);

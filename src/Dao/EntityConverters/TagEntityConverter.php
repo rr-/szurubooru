@@ -11,6 +11,7 @@ class TagEntityConverter extends AbstractEntityConverter implements IEntityConve
         [
             'name' => $entity->getName(),
             'creationTime' => $this->entityTimeToDbTime($entity->getCreationTime()),
+            'lastEditTime' => $this->entityTimeToDbTime($entity->getLastEditTime()),
             'banned' => intval($entity->isBanned()),
             'category' => $entity->getCategory(),
         ];
@@ -21,6 +22,7 @@ class TagEntityConverter extends AbstractEntityConverter implements IEntityConve
         $entity = new Tag(intval($array['id']));
         $entity->setName($array['name']);
         $entity->setCreationTime($this->dbTimeToEntityTime($array['creationTime']));
+        $entity->setLastEditTime($this->dbTimeToEntityTime($array['lastEditTime']));
         $entity->setMeta(Tag::META_USAGES, intval($array['usages']));
         $entity->setBanned($array['banned']);
         $entity->setCategory($array['category']);

@@ -45,6 +45,7 @@ class TagSearchParser extends AbstractSearchParser
             [['id'],                                     TagFilter::ORDER_ID],
             [['name'],                                   TagFilter::ORDER_NAME],
             [['creation_time', 'creation_date', 'date'], TagFilter::ORDER_CREATION_TIME],
+            [['edit_time', 'edit_date'],                 TagFilter::ORDER_LAST_EDIT_TIME],
             [['usage_count', 'usages'],                  TagFilter::ORDER_USAGE_COUNT],
         ];
     }

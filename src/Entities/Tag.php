@@ -5,6 +5,7 @@ final class Tag extends Entity
 {
     private $name;
     private $creationTime;
+    private $lastEditTime;
     private $banned = false;
     private $category = 'default';
 
@@ -31,6 +32,16 @@ final class Tag extends Entity
     public function setCreationTime($creationTime)
     {
         $this->creationTime = $creationTime;
+    }
+
+    public function getLastEditTime()
+    {
+        return $this->lastEditTime;
+    }
+
+    public function setLastEditTime($lastEditTime)
+    {
+        $this->lastEditTime = $lastEditTime;
     }
 
     public function isBanned()
