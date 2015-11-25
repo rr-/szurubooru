@@ -3,7 +3,8 @@ namespace Szurubooru\Routes\Posts;
 use Szurubooru\Config;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
-use Szurubooru\Search\Parsers\PostSearchParser;
+use Szurubooru\Search\SearchParser;
+use Szurubooru\Search\ParserConfigs\PostSearchParserConfig;
 use Szurubooru\Services\PostService;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\ViewProxies\PostViewProxy;
@@ -13,7 +14,7 @@ class GetPosts extends AbstractPostRoute
     private $config;
     private $privilegeService;
     private $postService;
-    private $postSearchParser;
+    private $searchParser;
     private $inputReader;
     private $postViewProxy;
 
@@ -21,14 +22,14 @@ class GetPosts extends AbstractPostRoute
         Config $config,
         PrivilegeService $privilegeService,
         PostService $postService,
-        PostSearchParser $postSearchParser,
+        PostSearchParserConfig $searchParserConfig,
         InputReader $inputReader,
         PostViewProxy $postViewProxy)
     {
         $this->config = $config;
         $this->privilegeService = $privilegeService;
         $this->postService = $postService;
-        $this->postSearchParser = $postSearchParser;
+        $this->searchParser = new SearchParser($searchParserConfig);
         $this->inputReader = $inputReader;
         $this->postViewProxy = $postViewProxy;
     }
@@ -47,7 +48,7 @@ class GetPosts extends AbstractPostRoute
     {
         $this->privilegeService->assertPrivilege(Privilege::LIST_POSTS);
 
-        $filter = $this->postSearchParser->createFilterFromInputReader($this->inputReader);
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
         $filter->setPageSize($this->config->posts->postsPerPage);
         $this->postService->decorateFilterFromBrowsingSettings($filter);
 

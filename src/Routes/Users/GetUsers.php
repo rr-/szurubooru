@@ -3,7 +3,8 @@ namespace Szurubooru\Routes\Users;
 use Szurubooru\Config;
 use Szurubooru\Helpers\InputReader;
 use Szurubooru\Privilege;
-use Szurubooru\Search\Parsers\UserSearchParser;
+use Szurubooru\Search\ParserConfigs\UserSearchParserConfig;
+use Szurubooru\Search\SearchParser;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\UserService;
 use Szurubooru\ViewProxies\UserViewProxy;
@@ -13,7 +14,7 @@ class GetUsers extends AbstractUserRoute
     private $config;
     private $privilegeService;
     private $userService;
-    private $userSearchParser;
+    private $searchParser;
     private $inputReader;
     private $userViewProxy;
 
@@ -21,14 +22,14 @@ class GetUsers extends AbstractUserRoute
         Config $config,
         PrivilegeService $privilegeService,
         UserService $userService,
-        UserSearchParser $userSearchParser,
+        UserSearchParserConfig $searchParserConfig,
         InputReader $inputReader,
         UserViewProxy $userViewProxy)
     {
         $this->config = $config;
         $this->privilegeService = $privilegeService;
         $this->userService = $userService;
-        $this->userSearchParser = $userSearchParser;
+        $this->searchParser = new SearchParser($searchParserConfig);
         $this->inputReader = $inputReader;
         $this->userViewProxy = $userViewProxy;
     }
@@ -47,7 +48,7 @@ class GetUsers extends AbstractUserRoute
     {
         $this->privilegeService->assertPrivilege(Privilege::LIST_USERS);
 
-        $filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
         $filter->setPageSize($this->config->users->usersPerPage);
         $result = $this->userService->getFiltered($filter);
         $entities = $this->userViewProxy->fromArray($result->getEntities());

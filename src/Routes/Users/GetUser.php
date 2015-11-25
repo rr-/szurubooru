@@ -1,7 +1,8 @@
 <?php
 namespace Szurubooru\Routes\Users;
 use Szurubooru\Privilege;
-use Szurubooru\Search\Parsers\UserSearchParser;
+use Szurubooru\Search\ParserConfigs\UserSearchParserConfig;
+use Szurubooru\Search\SearchParser;
 use Szurubooru\Services\PrivilegeService;
 use Szurubooru\Services\UserService;
 use Szurubooru\ViewProxies\UserViewProxy;
@@ -10,18 +11,18 @@ class GetUser extends AbstractUserRoute
 {
     private $privilegeService;
     private $userService;
-    private $userSearchParser;
+    private $searchParserConfig;
     private $userViewProxy;
 
     public function __construct(
         PrivilegeService $privilegeService,
         UserService $userService,
-        UserSearchParser $userSearchParser,
+        UserSearchParserConfig $searchParserConfig,
         UserViewProxy $userViewProxy)
     {
         $this->privilegeService = $privilegeService;
         $this->userService = $userService;
-        $this->userSearchParser = $userSearchParser;
+        $this->searchParser = new SearchParser($searchParserConfig);
         $this->userViewProxy = $userViewProxy;
     }
 
