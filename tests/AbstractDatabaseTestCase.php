@@ -41,6 +41,7 @@ abstract class AbstractDatabaseTestCase extends AbstractTestCase
         $tag = new Tag();
         $tag->setName($name);
         $tag->setCreationTime(date('c'));
+        $tag->setLastEditTime(date('c'));
         return $tag;
     }
 
@@ -48,7 +49,8 @@ abstract class AbstractDatabaseTestCase extends AbstractTestCase
     {
         $post = new Post();
         $post->setName('test');
-        $post->setUploadTime(date('c'));
+        $post->setCreationTime(date('c'));
+        $post->setLastEditTime(date('c'));
         $post->setSafety(Post::POST_SAFETY_SAFE);
         $post->setContentType(Post::POST_TYPE_YOUTUBE);
         $post->setContentChecksum('whatever');
@@ -61,7 +63,7 @@ abstract class AbstractDatabaseTestCase extends AbstractTestCase
         $user->setName($userName);
         $user->setPasswordHash('whatever');
         $user->setLastLoginTime(date('c', mktime(1, 2, 3)));
-        $user->setRegistrationTime(date('c', mktime(3, 2, 1)));
+        $user->setCreationTime(date('c', mktime(3, 2, 1)));
         $user->setAccessRank(User::ACCESS_RANK_REGULAR_USER);
         return $user;
     }

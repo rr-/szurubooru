@@ -6,6 +6,7 @@ use Szurubooru\Services\ImageManipulation\IImageManipulator;
 use Szurubooru\Services\ImageManipulation\ImageManipulator;
 use Szurubooru\Services\ImageManipulation\ImagickImageManipulator;
 use Szurubooru\Tests\AbstractTestCase;
+use Szurubooru\Tests\ConfigMock;
 
 final class ImageManipulatorTest extends AbstractTestCase
 {
@@ -47,10 +48,11 @@ final class ImageManipulatorTest extends AbstractTestCase
 
     /**
      * @dataProvider imageManipulatorProvider
+     * @expectedException Exception
      */
     public function testNonImage($imageManipulator)
     {
-        $this->assertNull($imageManipulator->loadFromBuffer($this->getTestFile('flash.swf')));
+        $imageManipulator->loadFromBuffer($this->getTestFile('flash.swf'));
     }
 
     /**
@@ -138,12 +140,18 @@ final class ImageManipulatorTest extends AbstractTestCase
 
     private static function getAutoImageManipulator()
     {
-        if (extension_loaded('gd') && extension_loaded('imagick'))
-        {
-            return new ImageManipulator(
-                self::getImagickImageManipulator(),
-                self::getGdImageManipulator());
-        }
-        return null;
+        $configMock = new ConfigMock(null, null);
+
+        if (extension_loaded('imagick'))
+            $configMock->set('misc/imageExtension', 'imagick');
+        elseif (extension_loaded('gd'))
+            $configMock->set('misc/imageExtension', 'gd');
+        else
+            return null;
+
+        return new ImageManipulator(
+            self::getImagickImageManipulator(),
+            self::getGdImageManipulator(),
+            $configMock);
     }
 }

@@ -1,41 +1,38 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\PostDao;
 use Szurubooru\Dao\ScoreDao;
+use Szurubooru\Dao\UserDao;
 use Szurubooru\Entities\Post;
 use Szurubooru\Entities\Score;
 use Szurubooru\Entities\User;
-use Szurubooru\Services\TimeService;
+use Szurubooru\Injector;
 use Szurubooru\Tests\AbstractDatabaseTestCase;
 
 final class ScoreDaoTest extends AbstractDatabaseTestCase
 {
-    private $timeServiceMock;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->timeServiceMock = $this->mock(TimeService::class);
-    }
-
     public function testSaving()
     {
-        $user = new User(1);
-        $user->setName('olivia');
+        $userDao = Injector::get(UserDao::class);
+        $postDao = Injector::get(PostDao::class);
+        $scoreDao = Injector::get(ScoreDao::class);
 
-        $post = new Post(2);
-        $post->setName('sword');
+        $user = self::getTestUser('olivia');
+        $userDao->save($user);
+
+        $post = self::getTestPost();
+        $postDao->save($post);
 
         $score = new Score();
         $score->setUserId($user->getId());
         $score->setPostId($post->getId());
         $score->setTime(date('c'));
         $score->setScore(1);
-        $scoreDao = $this->getScoreDao();
         $scoreDao->save($score);
 
         $savedScore = $scoreDao->findById($score->getId());
-        $this->assertEquals(1, $savedScore->getUserId());
-        $this->assertEquals(2, $savedScore->getPostId());
+        $this->assertNotNull($savedScore->getUserId());
+        $this->assertNotNull($savedScore->getPostId());
         $this->assertEquals($score->getTime(), $savedScore->getTime());
         $this->assertEquals($user->getId(), $savedScore->getUserId());
         $this->assertEquals($post->getId(), $savedScore->getPostId());
@@ -43,14 +40,23 @@ final class ScoreDaoTest extends AbstractDatabaseTestCase
 
     public function testFindingByUserAndPost()
     {
-        $post1 = new Post(1);
-        $post2 = new Post(2);
-        $user1 = new User(3);
-        $user2 = new User(4);
+        $userDao = Injector::get(UserDao::class);
+        $postDao = Injector::get(PostDao::class);
+        $scoreDao = Injector::get(ScoreDao::class);
+
+        $user1 = self::getTestUser('olivia');
+        $user2 = self::getTestUser('victoria');
+        $userDao->save($user1);
+        $userDao->save($user2);
+
+        $post1 = self::getTestPost();
+        $post2 = self::getTestPost();
+        $postDao->save($post1);
+        $postDao->save($post2);
 
         $score1 = new Score();
         $score1->setUserId($user1->getId());
-        $score1->setPostId($post1->getId());
+        $score1->setPostId($post1->geTId());
         $score1->setTime(date('c', mktime(1)));
         $score1->setScore(1);
 
@@ -66,7 +72,6 @@ final class ScoreDaoTest extends AbstractDatabaseTestCase
         $score3->setTime(date('c', mktime(3)));
         $score3->setScore(-1);
 
-        $scoreDao = $this->getScoreDao();
         $scoreDao->save($score1);
         $scoreDao->save($score2);
         $scoreDao->save($score3);
@@ -75,17 +80,5 @@ final class ScoreDaoTest extends AbstractDatabaseTestCase
         $this->assertEntitiesEqual($score2, $scoreDao->getUserScore($user2, $post2));
         $this->assertEntitiesEqual($score3, $scoreDao->getUserScore($user1, $post2));
         $this->assertNull($scoreDao->getUserScore($user2, $post1));
-    }
-
-    public function findByPost(Post $post)
-    {
-        return $this->findOneBy('postId', $post->getId());
-    }
-
-    private function getScoreDao()
-    {
-        return new ScoreDao(
-            $this->databaseConnection,
-            $this->timeServiceMock);
     }
 }

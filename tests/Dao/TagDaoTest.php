@@ -1,24 +1,22 @@
 <?php
 namespace Szurubooru\Tests\Dao;
+use Szurubooru\Dao\PostDao;
 use Szurubooru\Dao\TagDao;
 use Szurubooru\Entities\Tag;
+use Szurubooru\Injector;
 use Szurubooru\Tests\AbstractDatabaseTestCase;
 
 final class TagDaoTest extends AbstractDatabaseTestCase
 {
-    public function setUp()
-    {
-        parent::setUp();
-    }
-
     public function testSaving()
     {
+        $tagDao = Injector::get(TagDao::class);
+
         $tag = self::getTestTag('test');
         $tag->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
         $this->assertFalse($tag->isBanned());
         $tag->setBanned(true);
 
-        $tagDao = $this->getTagDao();
         $tagDao->save($tag);
         $actualTag = $tagDao->findById($tag->getId());
         $this->assertEntitiesEqual($tag, $actualTag);
@@ -26,11 +24,12 @@ final class TagDaoTest extends AbstractDatabaseTestCase
 
     public function testSavingRelations()
     {
+        $tagDao = Injector::get(TagDao::class);
+
         $tag1 = self::getTestTag('test 1');
         $tag2 = self::getTestTag('test 2');
         $tag3 = self::getTestTag('test 3');
         $tag4 = self::getTestTag('test 4');
-        $tagDao = $this->getTagDao();
         $tagDao->save($tag1);
         $tagDao->save($tag2);
         $tagDao->save($tag3);
@@ -55,33 +54,30 @@ final class TagDaoTest extends AbstractDatabaseTestCase
 
     public function testFindByPostIds()
     {
+        $postDao = Injector::get(PostDao::class);
+        $tagDao = Injector::get(TagDao::class);
+
+        $post1 = self::getTestPost();
+        $post2 = self::getTestPost();
+        $postDao->save($post1);
+        $postDao->save($post2);
+
+        $tag1 = self::getTestTag('test1');
+        $tag2 = self::getTestTag('test2');
+        $tagDao->save($tag1);
+        $tagDao->save($tag2);
+
         $pdo = $this->databaseConnection->getPDO();
-
-        $pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (1, \'test1\', \'2014-10-01 00:00:00\')');
-        $pdo->exec('INSERT INTO tags(id, name, creationTime) VALUES (2, \'test2\', \'2014-10-01 00:00:00\')');
-        $pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (5, 1)');
-        $pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (6, 1)');
-        $pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (5, 2)');
-        $pdo->exec('INSERT INTO postTags(postId, tagId) VALUES (6, 2)');
-
-        $tag1 = new Tag(1);
-        $tag1->setName('test1');
-        $tag1->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
-        $tag2 = new Tag(2);
-        $tag2->setName('test2');
-        $tag2->setCreationTime(date('c', mktime(0, 0, 0, 10, 1, 2014)));
+        $pdo->exec(sprintf('INSERT INTO postTags(postId, tagId) VALUES (%d, %d)', $post1->getId(), $tag1->getId()));
+        $pdo->exec(sprintf('INSERT INTO postTags(postId, tagId) VALUES (%d, %d)', $post2->getId(), $tag1->getId()));
+        $pdo->exec(sprintf('INSERT INTO postTags(postId, tagId) VALUES (%d, %d)', $post1->getId(), $tag2->getId()));
+        $pdo->exec(sprintf('INSERT INTO postTags(postId, tagId) VALUES (%d, %d)', $post2->getId(), $tag2->getId()));
 
         $expected = [
             $tag1->getId() => $tag1,
             $tag2->getId() => $tag2,
         ];
-        $tagDao = $this->getTagDao();
-        $actual = $tagDao->findByPostId(5);
+        $actual = $tagDao->findByPostId($post1->getId());
         $this->assertEntitiesEqual($expected, $actual);
-    }
-
-    private function getTagDao()
-    {
-        return new TagDao($this->databaseConnection);
     }
 }

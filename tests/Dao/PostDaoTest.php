@@ -6,6 +6,7 @@ use Szurubooru\Dao\TagDao;
 use Szurubooru\Dao\UserDao;
 use Szurubooru\Entities\Tag;
 use Szurubooru\Entities\User;
+use Szurubooru\Injector;
 use Szurubooru\Services\ThumbnailService;
 use Szurubooru\Tests\AbstractDatabaseTestCase;
 
@@ -19,20 +20,15 @@ final class PostDaoTest extends AbstractDatabaseTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->fileDaoMock = $this->mock(PublicFileDao::class);
-        $this->thumbnailServiceMock = $this->mock(ThumbnailService::class);
 
         $this->tagDao = new TagDao($this->databaseConnection);
 
-        $this->userDao = new UserDao(
-            $this->databaseConnection,
-            $this->fileDaoMock,
-            $this->thumbnailServiceMock);
+        $fileDaoMock = $this->mock(PublicFileDao::class);
     }
 
     public function testCreating()
     {
-        $postDao = $this->getPostDao();
+        $postDao = Injector::get(PostDao::class);
 
         $post = self::getTestPost();
         $savedPost = $postDao->save($post);
@@ -42,7 +38,8 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testUpdating()
     {
-        $postDao = $this->getPostDao();
+        $postDao = Injector::get(PostDao::class);
+
         $post = self::getTestPost();
         $post = $postDao->save($post);
         $this->assertEquals('test', $post->getName());
@@ -55,7 +52,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testGettingAll()
     {
-        $postDao = $this->getPostDao();
+        $postDao = Injector::get(PostDao::class);
 
         $post1 = self::getTestPost();
         $post2 = self::getTestPost();
@@ -78,7 +75,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testGettingTotalFileSize()
     {
-        $postDao = $this->getPostDao();
+        $postDao = Injector::get(PostDao::class);
 
         $post1 = self::getTestPost();
         $post2 = self::getTestPost();
@@ -99,7 +96,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testGettingById()
     {
-        $postDao = $this->getPostDao();
+        $postDao = Injector::get(PostDao::class);
 
         $post1 = self::getTestPost();
         $post2 = self::getTestPost();
@@ -114,7 +111,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testDeletingAll()
     {
-        $postDao = $this->getPostDao();
+        $postDao = Injector::get(PostDao::class);
 
         $post1 = self::getTestPost();
         $post2 = self::getTestPost();
@@ -132,7 +129,7 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testDeletingById()
     {
-        $postDao = $this->getPostDao();
+        $postDao = Injector::get(PostDao::class);
 
         $post1 = self::getTestPost();
         $post2 = self::getTestPost();
@@ -150,16 +147,18 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testFindingByTagName()
     {
+        $tagDao = Injector::get(TagDao::class);
+        $postDao = Injector::get(PostDao::class);
+
         $tag1 = new Tag();
         $tag1->setName('tag1');
         $tag1->setCreationTime(date('c'));
         $tag2 = new Tag();
         $tag2->setName('tag2');
         $tag2->setCreationTime(date('c'));
-        $this->tagDao->save($tag1);
-        $this->tagDao->save($tag2);
+        $tagDao->save($tag1);
+        $tagDao->save($tag2);
 
-        $postDao = $this->getPostDao();
         $post1 = self::getTestPost();
         $post1->setTags([$tag1]);
         $postDao->save($post1);
@@ -173,6 +172,9 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testSavingTags()
     {
+        $tagDao = Injector::get(TagDao::class);
+        $postDao = Injector::get(PostDao::class);
+
         $tag1 = new Tag();
         $tag1->setName('tag1');
         $tag1->setCreationTime(date('c'));
@@ -183,7 +185,6 @@ final class PostDaoTest extends AbstractDatabaseTestCase
         $this->tagDao->save($tag2);
         $testTags = ['tag1' => $tag1, 'tag2' => $tag2];
 
-        $postDao = $this->getPostDao();
         $post = self::getTestPost();
         $post->setTags($testTags);
         $postDao->save($post);
@@ -195,17 +196,17 @@ final class PostDaoTest extends AbstractDatabaseTestCase
         $this->assertEquals(2, $post->getTagCount());
         $this->assertEquals(2, $savedPost->getTagCount());
 
-        $tagDao = $this->getTagDao();
         $this->assertEquals(2, count($tagDao->findAll()));
     }
 
     public function testSavingUnsavedRelations()
     {
+        $postDao = Injector::get(PostDao::class);
+
         $post1 = self::getTestPost();
         $post2 = self::getTestPost();
         $testPosts = [$post1, $post2];
 
-        $postDao = $this->getPostDao();
         $post = self::getTestPost();
         $post->setRelatedPosts($testPosts);
         $this->setExpectedException(\Exception::class, 'Unsaved entities found');
@@ -214,11 +215,12 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testSavingRelations()
     {
+        $postDao = Injector::get(PostDao::class);
+
         $post1 = self::getTestPost();
         $post2 = self::getTestPost();
         $testPosts = [$post1, $post2];
 
-        $postDao = $this->getPostDao();
         $postDao->save($post1);
         $postDao->save($post2);
         $post = self::getTestPost();
@@ -232,35 +234,45 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testSavingUser()
     {
-        $testUser = new User(5);
-        $testUser->setName('it\'s me');
-        $postDao = $this->getPostDao();
+        $userDao = Injector::get(UserDao::class);
+        $postDao = Injector::get(PostDao::class);
+
+        $user = self::getTestUser('uploader');
+        $userDao->save($user);
 
         $post = self::getTestPost();
-        $post->setUser($testUser);
+        $post->setUser($user);
         $postDao->save($post);
 
         $savedPost = $postDao->findById($post->getId());
-        $this->assertEntitiesEqual($testUser, $post->getUser());
-        $this->assertEquals(5, $post->getUserId());
+        $this->assertNotNull($post->getUserId());
+        $this->assertEntitiesEqual($user, $post->getUser());
     }
 
     public function testNotLoadingContentForNewPosts()
     {
-        $postDao = $this->getPostDao();
+        $postDao = Injector::get(PostDao::class);
         $newlyCreatedPost = self::getTestPost();
         $this->assertNull($newlyCreatedPost->getContent());
     }
 
     public function testLoadingContentPostsForExistingPosts()
     {
-        $postDao = $this->getPostDao();
+        $thumbnailServiceMock = $this->mock(ThumbnailService::class);
+        $fileDaoMock = $this->mock(PublicFileDao::class);
+
+        $tagDao = Injector::get(TagDao::class);
+        $userDao = Injector::get(UserDao::class);
+        $postDao = new PostDao(
+            $this->databaseConnection,
+            $tagDao, $userDao, $fileDaoMock, $thumbnailServiceMock);
+
         $post = self::getTestPost();
         $postDao->save($post);
 
         $post = $postDao->findById($post->getId());
 
-        $this->fileDaoMock
+        $fileDaoMock
             ->expects($this->once())
             ->method('load')
             ->with($post->getContentPath())
@@ -271,18 +283,26 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testSavingContent()
     {
-        $postDao = $this->getPostDao();
+        $thumbnailServiceMock = $this->mock(ThumbnailService::class);
+        $fileDaoMock = $this->mock(PublicFileDao::class);
+
+        $tagDao = Injector::get(TagDao::class);
+        $userDao = Injector::get(UserDao::class);
+        $postDao = new PostDao(
+            $this->databaseConnection,
+            $tagDao, $userDao, $fileDaoMock, $thumbnailServiceMock);
+
         $post = self::getTestPost();
         $post->setContent('whatever');
 
-        $this->thumbnailServiceMock
+        $thumbnailServiceMock
             ->expects($this->exactly(2))
             ->method('deleteUsedThumbnails')
             ->withConsecutive(
                 [$post->getContentPath()],
                 [$post->getThumbnailSourceContentPath()]);
 
-        $this->fileDaoMock
+        $fileDaoMock
             ->expects($this->exactly(1))
             ->method('save')
             ->withConsecutive(
@@ -293,19 +313,27 @@ final class PostDaoTest extends AbstractDatabaseTestCase
 
     public function testSavingContentAndThumbnail()
     {
-        $postDao = $this->getPostDao();
+        $thumbnailServiceMock = $this->mock(ThumbnailService::class);
+        $fileDaoMock = $this->mock(PublicFileDao::class);
+
+        $tagDao = Injector::get(TagDao::class);
+        $userDao = Injector::get(UserDao::class);
+        $postDao = new PostDao(
+            $this->databaseConnection,
+            $tagDao, $userDao, $fileDaoMock, $thumbnailServiceMock);
+
         $post = self::getTestPost();
         $post->setContent('whatever');
         $post->setThumbnailSourceContent('an image of sharks');
 
-        $this->thumbnailServiceMock
+        $thumbnailServiceMock
             ->expects($this->exactly(2))
             ->method('deleteUsedThumbnails')
             ->withConsecutive(
                 [$post->getContentPath()],
                 [$post->getThumbnailSourceContentPath()]);
 
-        $this->fileDaoMock
+        $fileDaoMock
             ->expects($this->exactly(2))
             ->method('save')
             ->withConsecutive(
@@ -313,21 +341,5 @@ final class PostDaoTest extends AbstractDatabaseTestCase
                 [$post->getThumbnailSourceContentPath(), 'an image of sharks']);
 
         $postDao->save($post);
-    }
-
-
-    private function getPostDao()
-    {
-        return new PostDao(
-            $this->databaseConnection,
-            $this->tagDao,
-            $this->userDao,
-            $this->fileDaoMock,
-            $this->thumbnailServiceMock);
-    }
-
-    private function getTagDao()
-    {
-        return $this->tagDao;
     }
 }

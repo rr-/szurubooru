@@ -101,7 +101,7 @@ final class UserDaoFilterTest extends AbstractDatabaseTestCase
     {
         list ($user1, $user2) = $this->prepareUsers();
         $this->doTestSorting(
-            UserFilter::ORDER_REGISTRATION_TIME,
+            UserFilter::ORDER_CREATION_TIME,
             UserFilter::ORDER_ASC,
             [$user2, $user1]);
     }
@@ -110,7 +110,7 @@ final class UserDaoFilterTest extends AbstractDatabaseTestCase
     {
         list ($user1, $user2) = $this->prepareUsers();
         $this->doTestSorting(
-            UserFilter::ORDER_REGISTRATION_TIME,
+            UserFilter::ORDER_CREATION_TIME,
             UserFilter::ORDER_DESC,
             [$user1, $user2]);
     }
@@ -119,8 +119,8 @@ final class UserDaoFilterTest extends AbstractDatabaseTestCase
     {
         $user1 = self::getTestUser('beartato');
         $user2 = self::getTestUser('reginald');
-        $user1->setRegistrationTime(date('c', mktime(3, 2, 1)));
-        $user2->setRegistrationTime(date('c', mktime(1, 2, 3)));
+        $user1->setCreationTime(date('c', mktime(3, 2, 1)));
+        $user2->setCreationTime(date('c', mktime(1, 2, 3)));
 
         $userDao = $this->getUserDao();
         $userDao->save($user1);

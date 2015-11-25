@@ -2,24 +2,25 @@
 namespace Szurubooru\Tests\SearchService;
 use \Szurubooru\Helpers\InputReader;
 use \Szurubooru\Search\Filters\UserFilter;
-use \Szurubooru\Search\Parsers\UserSearchParser;
+use \Szurubooru\Search\ParserConfigs\UserSearchParserConfig;
+use \Szurubooru\Search\SearchParser;
 use \Szurubooru\Tests\AbstractTestCase;
 
 final class UserSearchParserTest extends AbstractTestCase
 {
     private $inputReader;
-    private $userSearchParser;
+    private $searchParser;
 
     public function setUp()
     {
         parent::setUp();
         $this->inputReader = new InputReader;
-        $this->userSearchParser = new UserSearchParser();
+        $this->searchParser = new SearchParser(new UserSearchParserConfig);
     }
 
     public function testDefaultOrder()
     {
-        $filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
         $this->assertOrderEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_ASC], $filter->getOrder());
     }
 
@@ -27,36 +28,36 @@ final class UserSearchParserTest extends AbstractTestCase
     {
         $this->inputReader->order = 'invalid,desc';
         $this->setExpectedException(\Exception::class);
-        $filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
     }
 
     public function testInvalidOrderDirection()
     {
         $this->inputReader->order = 'name,invalid';
         $this->setExpectedException(\Exception::class);
-        $filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
     }
 
     public function testParamOrder()
     {
         $this->inputReader->order = 'name,desc';
-        $filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
         $this->assertOrderEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_DESC], $filter->getOrder());
     }
 
     public function testTokenOverwriteDefaultOrder()
     {
         $this->inputReader->query = 'order:name,desc';
-        $filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
         $this->assertOrderEquals([UserFilter::ORDER_NAME => UserFilter::ORDER_DESC], $filter->getOrder());
     }
 
     public function testTokenOrder()
     {
-        $this->inputReader->query = 'order:registration_time,desc';
-        $filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+        $this->inputReader->query = 'order:creation_time,desc';
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
         $this->assertOrderEquals([
-            UserFilter::ORDER_REGISTRATION_TIME => UserFilter::ORDER_DESC,
+            UserFilter::ORDER_CREATION_TIME => UserFilter::ORDER_DESC,
             UserFilter::ORDER_NAME => UserFilter::ORDER_ASC],
             $filter->getOrder());
     }
@@ -64,10 +65,10 @@ final class UserSearchParserTest extends AbstractTestCase
     public function testParamAndTokenOrder()
     {
         $this->inputReader->order = 'name,desc';
-        $this->inputReader->query = 'order:registration_time,desc';
-        $filter = $this->userSearchParser->createFilterFromInputReader($this->inputReader);
+        $this->inputReader->query = 'order:creation_time,desc';
+        $filter = $this->searchParser->createFilterFromInputReader($this->inputReader);
         $this->assertOrderEquals([
-            UserFilter::ORDER_REGISTRATION_TIME => UserFilter::ORDER_DESC,
+            UserFilter::ORDER_CREATION_TIME => UserFilter::ORDER_DESC,
             UserFilter::ORDER_NAME => UserFilter::ORDER_DESC],
             $filter->getOrder());
     }
