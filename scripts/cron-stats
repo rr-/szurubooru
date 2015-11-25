@@ -39,4 +39,5 @@ $pdo->exec('UPDATE posts SET score = (SELECT SUM(score) FROM scores WHERE postId
 $pdo->exec('UPDATE posts SET favCount = (SELECT COUNT(1) FROM favorites WHERE postId = posts.id)');
 $pdo->exec('UPDATE posts SET lastFavTime = (SELECT MAX(time) FROM favorites WHERE postId = posts.id)');
 $pdo->exec('UPDATE posts SET commentCount = (SELECT COUNT(1) FROM comments WHERE postId = posts.id)');
-$pdo->exec('UPDATE posts SET lastCommentTime = (SELECT MAX(lastEditTime) FROM comments WHERE postId = posts.id)');
+$pdo->exec('UPDATE posts SET lastCommentCreationTime = (SELECT MAX(creationTime) FROM comments WHERE postId = posts.id)');
+$pdo->exec('UPDATE posts SET lastCommentEditTime = (SELECT MAX(lastEditTime) FROM comments WHERE postId = posts.id)');
