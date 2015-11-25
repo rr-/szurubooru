@@ -7,10 +7,10 @@
             <a class="big-button" href="#/users/order=name,desc">Sort Z&rarr;A</a>
         </li>
         <li>
-            <a class="big-button" href="#/users/order=registration_time,asc">Sort old&rarr;new</a>
+            <a class="big-button" href="#/users/order=creation_time,asc">Sort old&rarr;new</a>
         </li>
         <li>
-            <a class="big-button" href="#/users/order=registration_time,desc">Sort new&rarr;old</a>
+            <a class="big-button" href="#/users/order=creation_time,desc">Sort new&rarr;old</a>
         </li>
     </ul>
 
