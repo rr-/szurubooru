@@ -110,11 +110,11 @@ class ImageConverter
 
     private function convertWithPrograms($programs, $targetPath)
     {
-        $any_program_available = false;
+        $anyProgramAvailable = false;
         foreach ($programs as $program => $args)
-            $any_program_available |= ProgramExecutor::isProgramAvailable($program);
-        if (!$any_program_available)
-            throw new \Exception('No converter available (tried ' . join(', ', array_keys($programs)) . ')');
+            $anyProgramAvailable |= ProgramExecutor::isProgramAvailable($program);
+        if (!$anyProgramAvailable)
+            throw new \Exception('No converter available (tried ' . implode(', ', array_keys($programs)) . ')');
 
         $errors = [];
         foreach ($programs as $program => $args)
@@ -127,7 +127,7 @@ class ImageConverter
             }
         }
 
-        throw new \Exception('Error while converting file to image: ' . join(', ', $errors));
+        throw new \Exception('Error while converting file to image: ' . implode(', ', $errors));
     }
 
     private function deleteIfExists($path)

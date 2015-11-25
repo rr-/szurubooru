@@ -41,7 +41,9 @@ class Upgrade38 implements IUpgrade
                     $post->setContentType(Post::POST_TYPE_ANIMATED_IMAGE);
                     $this->postDao->save($post);
                 }
-                if (++ $progress == 100)
+
+                $progress++;
+                if ($progress === 100)
                 {
                     echo '.';
                     $progress = 0;

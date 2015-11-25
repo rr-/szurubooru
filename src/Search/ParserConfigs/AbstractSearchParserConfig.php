@@ -33,7 +33,12 @@ abstract class AbstractSearchParserConfig
 
         throw new NotSupportedException('Unknown order term: ' . $tokenValue
             . '. Possible order terms: '
-            . join(', ', array_map(function($term) { return join('/', $term[0]); }, $map)));
+            . implode(
+                ', ',
+                array_map(function($term)
+                {
+                    return implode('/', $term[0]);
+                }, $map)));
     }
 
     public function getRequirementForBasicToken(SearchToken $token)
@@ -118,7 +123,7 @@ abstract class AbstractSearchParserConfig
 
     protected function defineOrder($columnName, array $aliases)
     {
-        $this->orderAliasMap []= [$aliases, $columnName];
+        $this->orderAliasMap[] = [$aliases, $columnName];
     }
 
     protected function defineBasicTokenParser($parser)
@@ -135,7 +140,7 @@ abstract class AbstractSearchParserConfig
         $item->columnName = $columnName;
         $item->aliases = $aliases;
         $item->flagsOrCallback = $flagsOrCallback;
-        $this->namedTokenParsers []= $item;
+        $this->namedTokenParsers[] = $item;
     }
 
     protected function defineSpecialTokenParser(
@@ -145,7 +150,7 @@ abstract class AbstractSearchParserConfig
         $item = new \StdClass;
         $item->aliases = $aliases;
         $item->callback = $callback;
-        $this->specialTokenParsers []= $item;
+        $this->specialTokenParsers[] = $item;
     }
 
     protected static function createRequirementValue(
@@ -261,6 +266,11 @@ abstract class AbstractSearchParserConfig
         throw new NotSupportedException(
             'Unknown search key: ' . $key
             . '. Possible search keys: '
-            . join(', ', array_map(function($item) { return join('/', $item->aliases); }, $parsers)));
+            . implode(
+                ', ',
+                array_map(function($item)
+                {
+                    return implode('/', $item->aliases);
+                }, $parsers)));
     }
 }

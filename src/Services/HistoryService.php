@@ -106,7 +106,7 @@ class HistoryService
                     foreach ($base[$key] as $subValue)
                     {
                         if (!isset($other[$key]) || !in_array($subValue, $other[$key]))
-                            $result[$key] []= $subValue;
+                            $result[$key][] = $subValue;
                     }
                     if (empty($result[$key]))
                         unset($result[$key]);

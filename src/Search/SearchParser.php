@@ -90,7 +90,7 @@ class SearchParser
 
             if ($negated)
             {
-                $orderDir = $orderDir == IFilter::ORDER_DESC
+                $orderDir = $orderDir === IFilter::ORDER_DESC
                     ? IFilter::ORDER_ASC
                     : IFilter::ORDER_DESC;
             }

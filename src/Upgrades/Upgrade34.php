@@ -22,7 +22,7 @@ class Upgrade34 implements IUpgrade
                     {
                         if (!is_array($target))
                             $target = [$target];
-                        $target []= $item[1];
+                        $target[] = $item[1];
                     }
                     else
                     {

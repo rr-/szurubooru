@@ -108,7 +108,7 @@ class EnumHelper
             throw new \DomainException(sprintf(
                 'Unrecognized value: %s.' . PHP_EOL . 'Possible values: %s',
                 $enumString,
-                join(', ', array_keys($lowerEnumMap))));
+                implode(', ', array_keys($lowerEnumMap))));
         }
 
         return $lowerEnumMap[$key];

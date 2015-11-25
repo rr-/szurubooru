@@ -70,9 +70,9 @@ class FileDao implements IFileDao
         $from = explode('/', str_replace('\\', '/', $from));
         $to = explode('/', str_replace('\\', '/', $to));
         $relPath = $to;
-        foreach($from as $depth => $dir)
+        foreach ($from as $depth => $dir)
         {
-            if($dir === $to[$depth])
+            if ($dir === $to[$depth])
             {
                 array_shift($relPath);
             }
