@@ -1,6 +1,8 @@
 <?php
 namespace Szurubooru\Dao;
 use Szurubooru\Dao\EntityConverters\FavoriteEntityConverter;
+use Szurubooru\Dao\PostDao;
+use Szurubooru\Dao\UserDao;
 use Szurubooru\DatabaseConnection;
 use Szurubooru\Entities\Entity;
 use Szurubooru\Entities\Favorite;
@@ -10,10 +12,14 @@ use Szurubooru\Services\TimeService;
 
 class FavoritesDao extends AbstractDao implements ICrudDao
 {
+    private $userDao;
+    private $postDao;
     private $timeService;
 
     public function __construct(
         DatabaseConnection $databaseConnection,
+        UserDao $userDao,
+        PostDao $postDao,
         TimeService $timeService)
     {
         parent::__construct(
@@ -21,6 +27,8 @@ class FavoritesDao extends AbstractDao implements ICrudDao
             'favorites',
             new FavoriteEntityConverter());
 
+        $this->userDao = $userDao;
+        $this->postDao = $postDao;
         $this->timeService = $timeService;
     }
 
@@ -56,6 +64,23 @@ class FavoritesDao extends AbstractDao implements ICrudDao
         $favorite = $this->get($user, $entity);
         if ($favorite)
             $this->deleteById($favorite->getId());
+    }
+
+    protected function afterLoad(Entity $favorite)
+    {
+        $favorite->setLazyLoader(
+            Favorite::LAZY_LOADER_USER,
+            function (Favorite $favorite)
+            {
+                return $this->userDao->findById($favorite->getUserId());
+            });
+
+        $favorite->setLazyLoader(
+            Favorite::LAZY_LOADER_POST,
+            function (Favorite $favorite)
+            {
+                return $this->postDao->findById($favorite->getPostId());
+            });
     }
 
     private function get(User $user, Entity $entity)

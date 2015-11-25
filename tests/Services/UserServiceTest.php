@@ -97,7 +97,7 @@ final class UserServiceTest extends AbstractTestCase
         $this->assertNull($savedUser->getEmailUnconfirmed());
         $this->assertEquals('hash', $savedUser->getPasswordHash());
         $this->assertEquals(User::ACCESS_RANK_REGULAR_USER, $savedUser->getAccessRank());
-        $this->assertEquals('now', $savedUser->getRegistrationTime());
+        $this->assertEquals('now', $savedUser->getCreationTime());
         $this->assertTrue($savedUser->isAccountConfirmed());
     }
 
@@ -130,7 +130,7 @@ final class UserServiceTest extends AbstractTestCase
         $this->assertEquals('human@people.gov', $savedUser->getEmailUnconfirmed());
         $this->assertEquals('hash', $savedUser->getPasswordHash());
         $this->assertEquals(User::ACCESS_RANK_POWER_USER, $savedUser->getAccessRank());
-        $this->assertEquals('now', $savedUser->getRegistrationTime());
+        $this->assertEquals('now', $savedUser->getCreationTime());
         $this->assertFalse($savedUser->isAccountConfirmed());
     }
 
