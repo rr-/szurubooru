@@ -103,7 +103,7 @@ class PostSearchParserConfig extends AbstractSearchParserConfig
 
         $this->defineNamedTokenParser(
             PostFilter::REQUIREMENT_UPLOADER,
-            ['uploader', 'uploader', 'uploaded', 'submit', 'submitter', 'submitted'],
+            ['upload', 'uploader', 'uploader', 'uploaded', 'submit', 'submitter', 'submitted'],
             self::ALLOW_COMPOSITE);
 
         $this->defineNamedTokenParser(
