@@ -1,5 +1,5 @@
 <%
-    var postContentUrl = '/data/posts/' + post.name + '?' + Math.round(Math.random() * 1000) /* reset gif animations */
+    var postContentUrl = '/data/posts/' + post.name;
     var width;
     var height;
     if (post.contentType === 'image' || post.contentType === 'animation' || post.contentType === 'flash') {
