@@ -5,7 +5,7 @@ class CommentFilter extends BasicFilter implements IFilter
 {
     const ORDER_ID = 'id';
 
-    const REQUIREMENT_POST_ID = 'postId';
+    const REQUIREMENT_POST_ID = 'comments.postId';
 
     public function __construct()
     {

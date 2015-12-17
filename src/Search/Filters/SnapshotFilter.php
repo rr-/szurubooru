@@ -5,8 +5,8 @@ class SnapshotFilter extends BasicFilter implements IFilter
 {
     const ORDER_ID = 'id';
 
-    const REQUIREMENT_PRIMARY_KEY = 'primaryKey';
-    const REQUIREMENT_TYPE = 'type';
+    const REQUIREMENT_PRIMARY_KEY = 'snapshots.primaryKey';
+    const REQUIREMENT_TYPE = 'snapshots.type';
 
     public function __construct()
     {

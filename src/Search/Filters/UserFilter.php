@@ -3,8 +3,8 @@ namespace Szurubooru\Search\Filters;
 
 class UserFilter extends BasicFilter implements IFilter
 {
-    const ORDER_NAME = 'name';
-    const ORDER_CREATION_TIME = 'creationTime';
+    const ORDER_NAME = 'users.name';
+    const ORDER_CREATION_TIME = 'users.creationTime';
 
     public function __construct()
     {
