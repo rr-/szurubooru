@@ -63,6 +63,8 @@ App.Presenters.PostNotesPresenter = function(
             postNote.$element = $postNote;
             draggable.makeDraggable($postNote, draggable.relativeDragStrategy, true);
             resizable.makeResizable($postNote, true);
+            $postNote.mouseenter(function() { postNoteMouseEnter(postNote); });
+            $postNote.mouseleave(function() { postNoteMouseLeave(postNote); });
         });
 
         $form.find('button').click(formSubmitted);
@@ -144,11 +146,23 @@ App.Presenters.PostNotesPresenter = function(
     }
 
     function showPostNoteText(postNote) {
-        postNote.$element.find('.text-wrapper').show();
+        var $textWrapper = postNote.$element.find('.text-wrapper');
+        $textWrapper.show();
+        if ($textWrapper.offset().left + $textWrapper.width() > jQuery(window).outerWidth()) {
+            $textWrapper.offset({left: jQuery(window).outerWidth() - $textWrapper.width()});
+        }
     }
 
     function hidePostNoteText(postNote) {
         postNote.$element.find('.text-wrapper').css('display', '');
+    }
+
+    function postNoteMouseEnter(postNote) {
+        showPostNoteText(postNote);
+    }
+
+    function postNoteMouseLeave(postNote) {
+        hidePostNoteText(postNote);
     }
 
     function postNoteClicked(e) {

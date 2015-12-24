@@ -269,9 +269,6 @@
     background: lemonchiffon;
     border: 1px solid black;
 }
-.post-note:hover .text-wrapper {
-    display: block;
-}
 
 .post-note .text p:first-of-type {
     margin-top: 0;
