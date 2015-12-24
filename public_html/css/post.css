@@ -263,6 +263,7 @@
     width: -webkit-max-content;
     width: -moz-max-content;
     width: max-content;
+    max-width: 22.5em;
 }
 .post-note .text {
     padding: 0.5em;
