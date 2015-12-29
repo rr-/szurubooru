@@ -10,8 +10,14 @@
     display: none;
 }
 
-.comments ul {
+ul.comments {
     list-style-type: none;
+    margin: 1em 0;
+    padding: 0;
+}
+
+.comment ul {
+    list-style-position: inside;
     margin: 1em 0;
     padding: 0;
 }
