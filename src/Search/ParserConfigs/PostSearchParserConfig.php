@@ -97,6 +97,11 @@ class PostSearchParserConfig extends AbstractSearchParserConfig
             self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
 
         $this->defineNamedTokenParser(
+            PostFilter::REQUIREMENT_FEATURE_COUNT,
+            ['feature_count', 'featured'],
+            self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
+
+        $this->defineNamedTokenParser(
             PostFilter::REQUIREMENT_SCORE,
             ['score'],
             self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
