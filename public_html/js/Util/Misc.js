@@ -198,6 +198,11 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
             text = text.replace(/^#/g, '%%%#');
             //fix \ before ~ being stripped away
             text = text.replace(/\\~/g, '%%%T');
+            //post, user and tags premalinks
+            text = text.replace(/(^|^\(|(?:[^\]])\(|[\s<>\[\]\)])([+#@][a-zA-Z0-9_-]+)/g, '$1[$2]($2)');
+            text = text.replace(/\]\(@(\d+)\)/g, '](#/post/$1)');
+            text = text.replace(/\]\(+([a-zA-Z0-9_-]+)\)/g, '](#/user/$1)');
+            text = text.replace(/\]\(#([a-zA-Z0-9_-]+)\)/g, '](#/posts/query=$1)');
             return text;
         };
 
@@ -215,12 +220,6 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
             //strike-through
             text = text.replace(/(^|[^\\])(~~|~)([^~]+)\2/g, '$1<del>$3</del>');
             text = text.replace(/\\~/g, '~');
-            //post premalinks
-            text = text.replace(/(^|[\s<>\(\)\[\]])@(\d+)/g, '$1<a href="#/post/$2"><code>@$2</code></a>');
-            //user permalinks
-            text = text.replace(/(^|[\s<>\(\)\[\]])\+([a-zA-Z0-9_-]+)/g, '$1<a href="#/user/$2"><code>+$2</code></a>');
-            //tag permalinks
-            text = text.replace(/(^|[\s<>\(\)\[\]])\#([^\s<>/\\]+)/g, '$1<a href="#/posts/query=$2"><code>#$2</code></a>');
             return text;
         };
 
