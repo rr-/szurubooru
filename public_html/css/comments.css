@@ -30,15 +30,13 @@ ul.comments {
 }
 
 .comment .avatar {
-    margin-right: 0.5em;
+    margin-top: 0.2em;
+    margin-right: 0.75em;
     -webkit-flex-shrink: 0;
     flex-shrink: 0;
     vertical-align: top;
 }
 
-.comment .content {
-    margin-top: 0.25em;
-}
 .comment .content p:first-child {
     margin-top: 0;
 }
