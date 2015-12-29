@@ -165,6 +165,16 @@ class PostSearchParserConfig extends AbstractSearchParserConfig
                 $token->setValue($this->authService->getLoggedInUser()->getName());
                 return $this->getRequirementForNamedToken($token);
             });
+
+        $this->defineSpecialTokenParser(
+            ['tumbleweed'],
+            function (SearchToken $token)
+            {
+                $requirement = new Requirement();
+                $requirement->setType(PostFilter::REQUIREMENT_TUMBLEWEED);
+                $requirement->setNegated($token->isNegated());
+                return $requirement;
+            });
     }
 
     public function createFilter()

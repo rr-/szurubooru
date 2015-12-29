@@ -34,6 +34,7 @@ class PostFilter extends BasicFilter implements IFilter
     const REQUIREMENT_COMMENT_AUTHOR = 'commentedBy.name';
     const REQUIREMENT_TYPE = 'posts.contentType';
     const REQUIREMENT_USER_SCORE = 'posts.userScore';
+    const REQUIREMENT_TUMBLEWEED = 'tumbleweed';
 
     public function __construct()
     {

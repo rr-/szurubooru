@@ -130,6 +130,7 @@
                     {search: 'special:liked', description: 'posts liked by currently logged in user'},
                     {search: 'special:disliked', description: 'posts disliked by currently logged in user'},
                     {search: 'special:fav', description: 'posts added to favorites by currently logged in user'},
+                    {search: 'special:tumbleweed', description: 'posts with score of 0, without comments and without favorites'},
                 ];
                 _.each(table, function(row) { %>
                     <tr>

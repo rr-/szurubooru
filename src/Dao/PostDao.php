@@ -194,6 +194,17 @@ class PostDao extends AbstractDao implements ICrudDao
             return;
         }
 
+        elseif ($requirement->getType() === PostFilter::REQUIREMENT_TUMBLEWEED)
+        {
+            $sql = 'posts.score = 0
+                AND posts.commentCount = 0
+                AND posts.favCount = 0';
+            if ($requirement->isNegated())
+                $sql = 'NOT (' . $sql . ')';
+            $query->where($sql, true);
+            return;
+        }
+
         parent::decorateQueryFromRequirement($query, $requirement);
     }
 
