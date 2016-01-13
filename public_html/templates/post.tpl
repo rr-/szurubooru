@@ -225,7 +225,7 @@ if (forceHttpInPermalinks > 0) {
                     </li>
                 <% } %>
 
-                <% if (privileges.canAddPostNotes) { %>
+                <% if (privileges.canAddPostNotes && (post.contentType === 'image' || post.contentType === 'animation')) { %>
                     <li>
                         <a class="add-note" href="#">
                             Add new note
