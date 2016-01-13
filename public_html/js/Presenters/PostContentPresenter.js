@@ -108,7 +108,7 @@ App.Presenters.PostContentPresenter = function(
         $target.html(templates.postContent({post: post}));
         $wrapper = $target.find('.object-wrapper');
 
-        if (post.contentType === 'image') {
+        if (post.contentType === 'image' || post.contentType === 'animation') {
             loadPostNotes();
             updatePostNotesSize();
         }
