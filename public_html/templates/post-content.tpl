@@ -5,10 +5,9 @@
     if (post.contentType === 'image' || post.contentType === 'animation' || post.contentType === 'flash') {
         width = post.imageWidth;
         height = post.imageHeight;
-    } else {
-        width = 800;
-        height = 450;
     }
+    if (!width) { width = 800; }
+    if (!height) { height = 450; }
 %>
 
 <div class="post-content post-type-<%= post.contentType %>">
