@@ -257,7 +257,7 @@ if (forceHttpInPermalinks > 0) {
                     </li>
                 <% } %>
 
-                <% if (post.contentType === 'image') { %>
+                <% if (post.contentType === 'image' || post.contentType === 'animation') { %>
                     <li>
                         <a href="http://iqdb.org/?url=<%= permaLink %>">
                             Search on IQDB
