@@ -16,6 +16,9 @@ class PostFilter extends BasicFilter implements IFilter
     const ORDER_LAST_FAV_TIME = 'posts.lastFavTime';
     const ORDER_LAST_FEATURE_TIME = 'posts.lastFeatureTime';
     const ORDER_FEATURE_COUNT = 'posts.featureCount';
+    const ORDER_IMAGE_WIDTH = 'posts.imageWidth';
+    const ORDER_IMAGE_HEIGHT = 'posts.imageHeight';
+    const ORDER_IMAGE_AREA = 'posts.imageWidth*posts.imageHeight';
 
     const REQUIREMENT_TAG = 'posts.tag';
     const REQUIREMENT_ID = 'posts.id';

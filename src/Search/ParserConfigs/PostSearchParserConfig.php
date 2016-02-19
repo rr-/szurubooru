@@ -39,6 +39,9 @@ class PostSearchParserConfig extends AbstractSearchParserConfig
         $this->defineOrder(PostFilter::ORDER_LAST_COMMENT_TIME, ['comment_time', 'comment_date']);
         $this->defineOrder(PostFilter::ORDER_LAST_FEATURE_TIME, ['feature_time', 'feature_date']);
         $this->defineOrder(PostFilter::ORDER_FEATURE_COUNT, ['feature_count', 'features', 'featured']);
+        $this->defineOrder(PostFilter::ORDER_IMAGE_WIDTH, ['image_width', 'width']);
+        $this->defineOrder(PostFilter::ORDER_IMAGE_HEIGHT, ['image_height', 'height']);
+        $this->defineOrder(PostFilter::ORDER_IMAGE_AREA, ['image_area', 'area']);
 
         $this->defineBasicTokenParser(
             function(SearchToken $token)
@@ -178,17 +181,17 @@ class PostSearchParserConfig extends AbstractSearchParserConfig
 
         $this->defineNamedTokenParser(
             PostFilter::REQUIREMENT_IMAGE_WIDTH,
-            ['image_width', 'posts'],
+            ['image_width', 'width'],
             self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
 
         $this->defineNamedTokenParser(
             PostFilter::REQUIREMENT_IMAGE_HEIGHT,
-            ['image_height', 'posts'],
+            ['image_height', 'height'],
             self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
 
         $this->defineNamedTokenParser(
             PostFilter::REQUIREMENT_IMAGE_AREA,
-            ['image_area', 'posts'],
+            ['image_area', 'area'],
             self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
     }
 
