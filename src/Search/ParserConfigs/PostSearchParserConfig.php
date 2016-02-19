@@ -175,6 +175,21 @@ class PostSearchParserConfig extends AbstractSearchParserConfig
                 $requirement->setNegated($token->isNegated());
                 return $requirement;
             });
+
+        $this->defineNamedTokenParser(
+            PostFilter::REQUIREMENT_IMAGE_WIDTH,
+            ['image_width', 'posts'],
+            self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
+
+        $this->defineNamedTokenParser(
+            PostFilter::REQUIREMENT_IMAGE_HEIGHT,
+            ['image_height', 'posts'],
+            self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
+
+        $this->defineNamedTokenParser(
+            PostFilter::REQUIREMENT_IMAGE_AREA,
+            ['image_area', 'posts'],
+            self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
     }
 
     public function createFilter()
