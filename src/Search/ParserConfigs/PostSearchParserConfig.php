@@ -180,6 +180,11 @@ class PostSearchParserConfig extends AbstractSearchParserConfig
             });
 
         $this->defineNamedTokenParser(
+            PostFilter::REQUIREMENT_FILE_SIZE,
+            ['file_size'],
+            self::ALLOW_COMPOSITE | self::ALLOW_RANGE);
+
+        $this->defineNamedTokenParser(
             PostFilter::REQUIREMENT_IMAGE_WIDTH,
             ['image_width', 'width'],
             self::ALLOW_COMPOSITE | self::ALLOW_RANGE);

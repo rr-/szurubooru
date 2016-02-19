@@ -38,6 +38,7 @@ class PostFilter extends BasicFilter implements IFilter
     const REQUIREMENT_TYPE = 'posts.contentType';
     const REQUIREMENT_USER_SCORE = 'posts.userScore';
     const REQUIREMENT_TUMBLEWEED = 'tumbleweed';
+    const REQUIREMENT_FILE_SIZE = 'posts.originalFileSize';
     const REQUIREMENT_IMAGE_WIDTH = 'posts.imageWidth';
     const REQUIREMENT_IMAGE_HEIGHT = 'posts.imageHeight';
     const REQUIREMENT_IMAGE_AREA = 'posts.imageWidth*posts.imageHeight';
