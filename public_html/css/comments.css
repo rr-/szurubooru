@@ -113,3 +113,16 @@ ul.comments {
 #global-comment-list .post-small .link {
     margin: 0;
 }
+
+.sjis {
+    font-family: 'MS PGothic', 'ＭＳ Ｐゴシック', 'IPAMonaPGothic', 'Trebuchet MS', Verdana, Futura, Arial, Helvetica, sans-serif;
+    border: solid 4px #ccc;
+    color: #111;
+    font-size: 12pt;
+    line-height: 1;
+    margin: 0;
+    padding: 4px;
+    overflow: auto;
+    white-space: pre;
+    word-wrap: normal;
+}

@@ -193,7 +193,14 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
             smartypants: true,
         };
 
+        var sjis = [];
+
         var preDecorator = function(text) {
+            text = text.replace(/\[sjis\]((?:[^\[]|\[(?!\/?sjis\]))+)\[\/sjis\]/ig, function(match, capture) {
+                var ret = '%%%SJIS' + sjis.length;
+                sjis.push(capture);
+                return ret;
+            });
             //prevent ^#... from being treated as headers, due to tag permalinks
             text = text.replace(/^#/g, '%%%#');
             //fix \ before ~ being stripped away
@@ -210,6 +217,8 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
             //restore fixes
             text = text.replace(/%%%T/g, '\\~');
             text = text.replace(/%%%#/g, '#');
+
+            text = text.replace(/%%%SJIS(\d+)/, function(match, capture) { return '<div class="sjis">' + sjis[capture] + '</div>'; });
 
             //search permalinks
             text = text.replace(/\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]/ig, '<a href="#/posts/query=$1"><code>$1</code></a>');

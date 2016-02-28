@@ -229,6 +229,10 @@
                 <td><code>[spoiler]Lelouch survives[/spoiler]</td>
                 <td>marks text as spoiler and hides it</td>
             </tr>
+            <tr>
+                <td><code>[sjis](´･ω･`)[/sjis]</td>
+                <td>adds SJIS art</td>
+            </tr>
         </tbody>
     </table>
 </div>
