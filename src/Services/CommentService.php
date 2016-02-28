@@ -101,7 +101,7 @@ class CommentService
 
     private function updateCommentText(Comment $comment, $text)
     {
-        $this->validator->validateLength($text, 5, 2000, 'Comment text');
+        $this->validator->validateLength($text, 5, 5000, 'Comment text');
         $comment->setText($text);
     }
 }
