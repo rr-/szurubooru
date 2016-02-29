@@ -116,7 +116,7 @@ ul.comments {
 
 .sjis {
     font-family: 'MS PGothic', 'ＭＳ Ｐゴシック', 'IPAMonaPGothic', 'Trebuchet MS', Verdana, Futura, Arial, Helvetica, sans-serif;
-    border: solid 4px #ccc;
+    background: #fbfbfb;
     color: #111;
     font-size: 12pt;
     line-height: 1;
