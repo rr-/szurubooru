@@ -9,6 +9,7 @@ In order to run `szurubooru`, you need to have installed following software:
 - `PHP` 5.6.0+
     - `pdo_mysql`
     - `imagick` or `gd`
+- `MySQL` or `MariaDB`
 - `composer` (`PHP` package manager)
 - `npm` (`node.js` package manager)
 
