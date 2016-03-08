@@ -3,11 +3,11 @@ Prerequisites
 
 In order to run `szurubooru`, you need to have installed following software:
 
-- `Apache2`
+- `Apache` 2.4+
     - `mod_rewrite`
     - `mod_mime_magic` (recommended)
-- `PHP` 5.6.0
-    - `pdo_sqlite`
+- `PHP` 5.6.0+
+    - `pdo_mysql`
     - `imagick` or `gd`
 - `composer` (`PHP` package manager)
 - `npm` (`node.js` package manager)
@@ -56,10 +56,10 @@ Enable required modules in `php.ini` (or other configuration file, depending on
 your setup):
 
     ;Linux
-    extension=pdo_sqlite.so
+    extension=pdo_mysql.so
 
     ;Windows
-    extension=php_pdo_sqlite.dll
+    extension=php_pdo_mysql.dll
 
 In order to draw thumbnails, `szurubooru` needs either `Imagick` or `gd2`:
 
@@ -213,16 +213,3 @@ Troubleshooting
 
     Then, run it in your browser and inspect the output, looking for missing
     modules that were supposed to be loaded.
-
- 3. `Attempt to write to read-only database`
-
-    Make sure `Apache` has permission to access the database file **and**
-    directory it's stored in. (SQLite writes temporary journal files to the
-    parent database directory). If you're the only user of the system, you can
-    run these commands without worrying too much:
-
-        chmod 0777 data/
-        chmod 0777 data/db.sqlite
-
-    Otherwise, if you're feeling fancy, you can experiment with setfacl on
-    Linux or group policies on Windows.
