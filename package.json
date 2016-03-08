@@ -1,6 +1,7 @@
 {
   "name": "szurubooru",
   "version": "0.9.2",
+  "private": true,
   "dependencies": {
     "Mousetrap": "git://github.com/ccampbell/mousetrap.git",
     "font-awesome": "^4.3.0",
