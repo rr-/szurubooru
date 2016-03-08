@@ -19,6 +19,17 @@ Optional software:
 
 
 
+Cloning the repository
+----------------------
+
+Download the repository somewhere you will it run from, or better yet, clone it
+with `git`:
+
+    cd /srv/www/
+    git clone https://github.com/rr-/szurubooru booru-test
+
+
+
 Fetching dependencies
 ---------------------
 
@@ -31,7 +42,7 @@ commands in the terminal:
 
 
 Running `grunt` tasks
--------------------
+---------------------
 
 `szurubooru` uses `grunt` to run tasks like database upgrades and tests. In
 order to use `grunt` from the terminal, you can use:
@@ -73,16 +84,6 @@ In order to draw thumbnails, `szurubooru` needs either `Imagick` or `gd2`:
 
 
 
-Upgrading the database
-----------------------
-
-Every time database schema changes, you should upgrade the database by running
-following grunt task in the terminal:
-
-    grunt upgrade
-
-
-
 Creating virtual server in Apache
 ---------------------------------
 
@@ -103,6 +104,10 @@ need is the most basic configuration:
 `ServerName` specifies the domain under which `szurubooru` will be hosted.
 `DocumentRoot` should point to the `public_html/` directory.
 
+Some environments / configurations require extra steps to make things work - in
+case you experience any problems, please consult the troubleshooting section
+later in this file.
+
 
 
 Enabling required modules in Apache
@@ -121,9 +126,9 @@ Enable `PHP` support:
     AddType application/x-httpd-php .php
     PHPIniDir /path/to/php/
 
-Enable MIME auto-detection (not required, but recommended - `szurubooru` doesn't
-use file extensions, and reporting correct Content-Type to browser is always a
-good thing):
+Enable MIME auto-detection (not required, but recommended - `szurubooru`
+doesn't use file extensions, and reporting correct `Content-Type` to browser is
+always a good thing):
 
     ;Linux
     LoadModule mime_magic_module mod_mime_magic.so
@@ -138,21 +143,40 @@ good thing):
     </IfModule>
 
 
-Creating administrator account
-------------------------------
-
-By now, you should be able to view `szurubooru` in the browser. Registering
-administrator account is simple - the first user to create an account
-automatically becomes administrator and doesn't need e-mail activation.
-
-
 
 Overwriting configuration
 -------------------------
 
 Everything that can be configured is stored in `data/config.ini` file. In order
-to make changes there, copy the file and name it `local`.ini. Make sure you
-don't edit the file itself, especially if you want to contribute.
+to make changes there, copy the file and name it `local.ini` and place it in
+`data/` directory as well. Make sure you don't edit the `data/config.ini` file
+itself, especially if you want to contribute.
+
+
+
+Setting up the database
+-----------------------
+
+Before running `szurubooru` for first time, you need to set up the database.
+`szurubooru` uses MySQL, so let's fire `mysql` and type following:
+
+    create user 'maria' identified by 'arkadia';
+    create database booru_test;
+    grant all privileges on *.* to 'maria'@'%' with grant option;
+
+Then you need to provide the above credentials in the configuration files as
+described in the previous section. Example `local.ini` file:
+
+    [database]
+    dsn = mysql:dbname=booru_test
+    user = maria
+    password = arkadia
+
+After that, upgrade the database using following command:
+
+    grunt upgrade
+
+This should be also executed every time database schema changes.
 
 
 
@@ -172,6 +196,21 @@ exist, it will load them instead of development environment. To delete these
 conveniently, you can run:
 
     grunt clean
+
+If, for any reason, you do not wish to minify the resources, you should at
+least copy the dependencies fetched before to the `public_html/` directory with
+following:
+
+    grunt copy
+
+
+
+Creating administrator account
+------------------------------
+
+By now, you should be able to view `szurubooru` in the browser. Registering
+administrator account is simple - the first user to create an account
+automatically becomes administrator and doesn't need e-mail activation.
 
 
 
