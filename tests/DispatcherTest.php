@@ -1,6 +1,7 @@
 <?php
 namespace Szurubooru\Tests;
 use Szurubooru\Dispatcher;
+use Szurubooru\Entities\Token;
 use Szurubooru\Helpers\HttpHelper;
 use Szurubooru\RouteRepository;
 use Szurubooru\Router;
@@ -66,7 +67,7 @@ final class DispatcherTest extends AbstractDatabaseTestCase
     public function testAuthorization()
     {
         $this->httpHelperMock->expects($this->once())->method('getRequestHeader')->with($this->equalTo('X-Authorization-Token'))->willReturn('test');
-        $this->tokenServiceMock->expects($this->once())->method('getByName');
+        $this->tokenServiceMock->expects($this->once())->method('getByName')->willReturn(new Token());
         $this->routeRepositoryMock->expects($this->once())->method('injectRoutes');
 
         $dispatcher = $this->getDispatcher();
