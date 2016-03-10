@@ -50,6 +50,7 @@ class NetworkingService
             $this->httpHelper->setHeader('Content-Length', $fileSize);
             $this->httpHelper->setResponseCode(200);
             readfile($fullPath);
+            exit;
         }
 
         list ($param, $range) = explode('=', $range);
