@@ -208,7 +208,7 @@ App.Util.Misc = function(_, jQuery, marked, promise) {
             //post, user and tags premalinks
             text = text.replace(/(^|^\(|(?:[^\]])\(|[\s<>\[\]\)])([+#@][a-zA-Z0-9_-]+)/g, '$1[$2]($2)');
             text = text.replace(/\]\(@(\d+)\)/g, '](#/post/$1)');
-            text = text.replace(/\]\(+([a-zA-Z0-9_-]+)\)/g, '](#/user/$1)');
+            text = text.replace(/\]\(\+([a-zA-Z0-9_-]+)\)/g, '](#/user/$1)');
             text = text.replace(/\]\(#([a-zA-Z0-9_-]+)\)/g, '](#/posts/query=$1)');
             return text;
         };
