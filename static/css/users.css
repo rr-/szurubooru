@@ -1,0 +1,16 @@
+#user-registration form {
+    display: block;
+    width: 20em;
+    float: left;
+}
+#user-registration div.info {
+    float: left;
+    margin-left: 3em;
+    border-radius: 0.2em;
+    width: 20em;
+}
+#user-registration .info p:first-child,
+#user-registration form li:first-child label {
+    padding-top: 0;
+    margin-top: 0;
+}

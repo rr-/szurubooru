@@ -1,0 +1,79 @@
+form fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+form fieldset legend {
+    display: block;
+    text-align: center;
+    width: 100%;
+    font-size: 17pt;
+}
+
+form ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+form.tabular ul {
+    display: table;
+    border-spacing: 0.5em;
+    margin: 0.5em -0.5em;
+    width: 100%;
+}
+form.tabular ul li {
+    display: table-row;
+}
+form.tabular ul li label {
+    display: table-cell;
+    width: 33%;
+    padding: 0;
+}
+form.tabular .buttons {
+    margin-left: 33%;
+}
+
+form:not(.tabular) ul li label {
+    display: block;
+    padding: 0.5em 0;
+}
+
+textarea,
+input[type=text],
+input[type=email],
+input[type=password] {
+    font-size: 100%;
+    font-family: 'Inconsolata', monospace;
+    padding: 0.3em;
+    border: 1px solid #EEE;
+    background: #FAFAFA;
+    text-overflow: ellipsis;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: none; /* :-moz-submit-invalid on FF */
+}
+
+form.show-validation fieldset.input input:invalid {
+    outline: none;
+    border: 1px solid #FCC;
+    background: #FFF5F5;
+}
+form.show-validation fieldset.input input:valid {
+    outline: none;
+    border: 1px solid #D3E3D3;
+    background: #F5FFF5;
+}
+
+button,
+input[type=button],
+input[type=submit] {
+    cursor: pointer;
+    font-size: 100%;
+    line-height: 100%;
+    padding: 0.3em 0.7em;
+    border: 1px solid #24AADD;
+    background: #24AADD;
+    color: white;
+}

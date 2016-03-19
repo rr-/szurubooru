@@ -1,0 +1,5 @@
+{
+    "preset": "google",
+    "fileExtensions": [".js", "jscs"],
+    "validateIndentation": 4,
+}

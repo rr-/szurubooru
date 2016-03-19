@@ -1,0 +1,90 @@
+# rather than editing this file, it is strongly suggested to create config.ini
+# and override only what you need.
+
+[basic]
+name = szurubooru
+debug = 0
+secret = change
+api_url = http://api.example.com/ # see INSTALL.md
+
+[database]
+schema = postgres
+host = localhost
+port = 5432
+user = szuru
+pass = dog
+name = szuru
+
+[smtp]
+# used to send password reminders
+host = localhost
+port = 25
+user = bot
+pass = groovy123
+
+[service]
+# note: anonymous, admin and nobody are always reserved
+user_ranks = regular_user, power_user, mod
+default_user_rank = regular_user
+users_per_page = 20
+posts_per_page = 40
+max_comment_length = 5000
+tag_categories = meta, artist, character, copyright, other unique
+
+# don't change these regexes, unless you want to annoy people. but if you do
+# customize them, make sure to update the instructions in the registration form
+# template as well.
+password_regex = ^.{5,}$
+user_name_regex = ^[a-zA-Z0-9_-]{1,32}$
+
+[privileges]
+users:create = anonymous
+users:list = regular_user
+users:view = regular_user
+users:edit:any:name = mod
+users:edit:any:pass = mod
+users:edit:any:email = mod
+users:edit:any:avatar = mod
+# note: promoting people to higher rank than one's own is always impossible
+users:edit:any:rank = mod
+users:edit:self:name = regular_user
+users:edit:self:pass = regular_user
+users:edit:self:email = regular_user
+users:edit:self:avatar = regular_user
+users:edit:self:rank = mod
+users:delete:any = admin
+users:delete:self = restricted_user
+
+posts:create:anonymous = regular_user
+posts:create:identified = regular_user
+posts:list = anonymous
+posts:view = anonymous
+posts:edit:content = power_user
+posts:edit:flags = regular_user
+posts:edit:notes = regular_user
+posts:edit:relations = regular_user
+posts:edit:safety = power_user
+posts:edit:source = regular_user
+posts:edit:tags = regular_user
+posts:edit:thumbnail = power_user
+posts:feature = mod
+posts:delete = mod
+
+tags:create = regular_user
+tags:edit:name = power_user
+tags:edit:category = power_user
+tags:edit:implications = power_user
+tags:edit:suggestions = power_user
+tags:list = regular_user
+tags:masstag = power_user
+tags:merge = mod
+tags:delete = mod
+
+comments:create = regular_user
+comments:delete:any = mod
+comments:delete:own = regular_user
+comments:edit:any = mod
+comments:edit:own = regular_user
+comments:list = regular_user
+
+history:view = power_user
