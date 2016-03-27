@@ -1,7 +1,9 @@
 'use strict';
 
-const glob = require('glob');
 const fs = require('fs');
+const glob = require('glob');
+const path = require('path');
+const util = require('util');
 
 function getConfig() {
     const ini = require('ini');
@@ -36,18 +38,35 @@ function getConfig() {
     return config;
 }
 
-function bundleHtml() {
+function bundleHtml(config) {
     const minify = require('html-minifier').minify;
-    const html = fs.readFileSync('./static/html/index.htm', 'utf-8');
-    fs.writeFileSync(
-        './public/index.htm',
-        minify(html, {removeComments: true, collapseWhitespace: true}));
-    console.info('Bundled HTML');
+    const baseHtml = fs.readFileSync('./static/html/index.htm', 'utf-8');
+    glob('static/html/**/*.tpl', {}, (er, files) => {
+        let templatesHtml = '';
+        for (const file of files) {
+            templatesHtml += util.format(
+                '<template id=\'%s-template\'>%s</template>',
+                path.basename(file, '.tpl').replace('_', '-'),
+                fs.readFileSync(file));
+        }
+
+        const finalHtml = baseHtml
+            .replace(/(<\/head>)/, templatesHtml + '$1')
+            .replace(
+                /(<title>)(.*)(<\/title>)/,
+                util.format('$1%s$3', config.basic.name));
+
+        fs.writeFileSync(
+            './public/index.htm',
+            minify(
+                finalHtml, {removeComments: true, collapseWhitespace: true}));
+        console.info('Bundled HTML');
+    });
 }
 
 function bundleCss() {
     const minify = require('cssmin');
-    glob('static/**/*.css', {}, (er, files) => {
+    glob('static/css/**/*.css', {}, (er, files) => {
         let css = '';
         for (const file of files) {
             css += fs.readFileSync(file);
@@ -78,6 +97,6 @@ function bundleConfig(config) {
 
 const config = getConfig();
 bundleConfig(config);
-bundleHtml();
+bundleHtml(config);
 bundleCss();
 bundleJs();

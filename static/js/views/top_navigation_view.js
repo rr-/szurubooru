@@ -5,7 +5,7 @@ const BaseView = require('./base_view.js');
 class TopNavigationView extends BaseView {
     constructor(handlebars) {
         super(handlebars);
-        this.template = this.getTemplate('top-nav-template');
+        this.template = this.getTemplate('top-navigation-template');
         this.navHolder = document.getElementById('top-nav-holder');
     }
 
