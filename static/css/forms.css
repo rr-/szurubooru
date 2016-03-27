@@ -47,8 +47,8 @@ input[type=password] {
     font-size: 100%;
     font-family: 'Inconsolata', monospace;
     padding: 0.3em;
-    border: 1px solid #EEE;
-    background: #FAFAFA;
+    border: 2px solid var(--input-background-color);
+    background: var(--input-border-color);
     text-overflow: ellipsis;
     width: 100%;
     box-sizing: border-box;
@@ -57,13 +57,13 @@ input[type=password] {
 
 form.show-validation fieldset.input input:invalid {
     outline: none;
-    border: 1px solid #FCC;
-    background: #FFF5F5;
+    border: 2px solid var(--input-bad-border-color);
+    background: var(--input-bad-background-color);
 }
 form.show-validation fieldset.input input:valid {
     outline: none;
-    border: 1px solid #D3E3D3;
-    background: #F5FFF5;
+    border: 2px solid var(--input-good-border-color);
+    background: var(--input-good-background-color);
 }
 
 button,
@@ -73,7 +73,7 @@ input[type=submit] {
     font-size: 100%;
     line-height: 100%;
     padding: 0.3em 0.7em;
-    border: 1px solid #24AADD;
-    background: #24AADD;
+    border: 1px solid var(--main-color);
+    background: var(--main-color);
     color: white;
 }

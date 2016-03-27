@@ -1,12 +1,26 @@
+* {
+    --main-color: #24AADD;
+    --top-nav-color: #F5F5F5;
+    --text-color: #111;
+    --inactive-link-color: #888;
+    --line-color: #DDD;
+    --input-bad-border-color: #FCC;
+    --input-bad-background-color: #FFF5F5;
+    --input-good-border-color: #D3E3D3;
+    --input-good-background-color: #F5FFF5;
+    --input-background-color: #EEE;
+    --input-border-color: #FAFAFA;
+}
+
 body {
     margin: 0;
-    color: #111;
+    color: var(--text-color);
     font-family: 'Droid Sans' !important;
     font-size: 12pt;
 }
 
 a {
-    color: #24AADD;
+    color: var(--main-color);
 }
 
 #content-holder {
@@ -20,7 +34,7 @@ a {
 }
 hr {
     border: 0;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--line-color);
     margin: 1em 0;
     padding: 0;
 }
@@ -52,15 +66,15 @@ nav.text-nav ul li a {
     text-decoration: none;
 }
 nav.text-nav ul li:not(.active) a {
-    color: #888;
+    color: var(--inactive-link-color);
 }
 nav.text-nav ul li.active a {
-    background: #24AADD;
+    background: var(--main-color);
     color: white;
 }
 
 #top-nav {
-    background: #F5F5F5;
+    background: var(--top-nav-color);
     margin: 0;
 }
 #top-nav ul {
