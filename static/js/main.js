@@ -6,6 +6,7 @@
 const page = require('page');
 const handlebars = require('handlebars');
 
+const LoginView = require('./views/login_view.js');
 const RegistrationView = require('./views/registration_view.js');
 const TopNavigationView = require('./views/top_navigation_view.js');
 const TopNavigationController
@@ -24,9 +25,10 @@ const TagsController = require('./controllers/tags_controller.js');
 // - resolve objects -
 // -------------------
 const topNavigationView = new TopNavigationView(handlebars);
+const loginView = new LoginView(handlebars);
 const registrationView = new RegistrationView(handlebars);
 
-const authController = new AuthController(null);
+const authController = new AuthController(null, loginView);
 const topNavigationController
     = new TopNavigationController(topNavigationView, authController);
 // break cyclic dependency topNavigationView<->authController

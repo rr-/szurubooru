@@ -1,6 +1,5 @@
 <div class='center' id='user-registration'>
     <h1>Registration</h1>
-    <br/>
     <form autocomplete='off'>
         <fieldset class='input'>
             <ul>

@@ -1,16 +1,14 @@
 #user-registration form {
-    display: block;
-    width: 20em;
     float: left;
 }
 #user-registration .info {
-    line-height: 1.8em;
     float: left;
     margin-left: 3em;
     border-radius: 0.2em;
     width: 20em;
 }
 #user-registration .info ul {
+    line-height: 1.8em;
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -28,15 +26,13 @@
 #user-registration .info p:first-child {
     margin: 0 0 0.5em 0;
 }
-#user-registration .input li:first-child label {
-    padding-top: 0;
-    margin-top: 0;
-}
-#user-registration .buttons {
-    margin-top: 1em;
-}
 #user-registration p.hint {
     margin-top: 0.5em;
     color: var(--inactive-link-color);
     font-size: 80%;
+    line-height: 120%;
+}
+
+#login .buttons a {
+    margin-left: 1em;
 }

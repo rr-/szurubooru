@@ -1,20 +1,33 @@
+form {
+    display: block;
+    width: 20em;
+}
 form fieldset {
     margin: 0;
     padding: 0;
     border: 0;
 }
-
 form fieldset legend {
     display: block;
     text-align: center;
     width: 100%;
     font-size: 17pt;
 }
-
 form ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+form ul li {
+    margin-top: 0.5em;
+}
+form .buttons {
+    margin-top: 1em;
+}
+form .input li:first-child label,
+form .input li:first-child {
+    padding-top: 0;
+    margin-top: 0;
 }
 
 form.tabular ul {
@@ -37,13 +50,81 @@ form.tabular .buttons {
 
 form:not(.tabular) ul li label {
     display: block;
-    padding: 1em 0 0.5em 0;
+    padding: 0.5em 0;
+}
+
+input[type=radio], input[type=checkbox] {
+    float: left;
+    display: none;
+}
+
+.radio, .checkbox {
+    box-sizing: border-box;
+    position: relative;
+    display: inline-block;
+    padding-left: calc(20px + 0.5em) !important;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.radio:hover:before, .checkbox:hover:before {
+    border-color: var(--main-color);
+}
+.radio:before, .checkbox:before {
+    transition: border-color 0.1s linear;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    display: block;
+    margin-top: -10px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--input-background-color);
+    background: var(--input-border-color);
+    content: '';
+}
+input[type=radio]:checked + .radio:before,
+input[type=checkbox]:checked + .checkbox:before {
+    border-color: var(--main-color);
+}
+input[type=radio]:checked + .radio:after,
+input[type=checkbox]:checked + .checkbox:after {
+    opacity: 1;
+}
+
+.radio:after {
+    transition: opacity 0.1s linear;
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    display: block;
+    margin-top: -5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    content: '';
+    opacity: 0;
+}
+.checkbox:after {
+    transition: opacity 0.1s linear;
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    display: block;
+    margin-top: -7px;
+    width: 5px;
+    height: 9px;
+    border-right: 3px solid var(--main-color);
+    border-bottom: 3px solid var(--main-color);
+    content: '';
+    opacity: 0;
+    transform: rotate(45deg);
 }
 
 textarea,
 input[type=text],
 input[type=email],
 input[type=password] {
+    transition: border-color 0.1s linear, background-color 0.1s linear;
     font-size: 100%;
     font-family: 'Inconsolata', monospace;
     padding: 0.3em;
@@ -53,6 +134,13 @@ input[type=password] {
     width: 100%;
     box-sizing: border-box;
     box-shadow: none; /* :-moz-submit-invalid on FF */
+}
+
+textarea:focus,
+input[type=text]:focus,
+input[type=email]:focus,
+input[type=password]:focus {
+    border-color: var(--main-color);
 }
 
 form.show-validation fieldset.input input:invalid {

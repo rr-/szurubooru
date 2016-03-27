@@ -15,7 +15,7 @@ class UsersController {
         const self = this;
         this.topNavigationController.activate('register');
         this.registrationView.render({
-            onRegistered: (user) => {
+            register: (user) => {
                 alert(user);
                 self.authController.login(user);
             }});

@@ -17,6 +17,7 @@ body {
     color: var(--text-color);
     font-family: 'Droid Sans' !important;
     font-size: 12pt;
+    line-height: 20pt;
 }
 
 a {

@@ -22,7 +22,7 @@ class TopNavigationController {
             'users':    new NavigationItem('Users',    '/users'),
             'account':  new NavigationItem('Account',  '/user/{me}'),
             'register': new NavigationItem('Register', '/register'),
-            'login':    new NavigationItem('Login',    '/login'),
+            'login':    new NavigationItem('Log in',   '/login'),
             'logout':   new NavigationItem('Logout',   '/logout'),
             'help':     new NavigationItem('Help',     '/help'),
         };

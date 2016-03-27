@@ -1,8 +1,9 @@
 'use strict';
 
 class AuthController {
-    constructor(topNavigationController) {
+    constructor(topNavigationController, loginView) {
         this.topNavigationController = topNavigationController;
+        this.loginView = loginView;
         this.currentUser = null;
     }
 
@@ -24,6 +25,11 @@ class AuthController {
 
     loginRoute() {
         this.topNavigationController.activate('login');
+        this.loginView.render({
+            login: (user, password) => {
+                alert(user, password);
+                //self.authController.login(user);
+            }});
     }
 
     logoutRoute() {
