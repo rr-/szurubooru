@@ -5,6 +5,10 @@ body {
     font-size: 12pt;
 }
 
+a {
+    color: #24AADD;
+}
+
 #content-holder {
     margin-top: 1em;
     text-align: center;

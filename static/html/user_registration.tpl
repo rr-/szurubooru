@@ -5,22 +5,20 @@
         <fieldset class='input'>
             <ul>
                 <li>
-                    <label for='user-name'>User name:</label>
-                    <input id='user-name' name='user-name' type='text' autocomplete='off' placeholder='e.g. darth_vader' required/>
+                    <label for='user-name'>User name</label>
+                    <input id='user-name' name='user-name' type='text' autocomplete='off' placeholder='letters, digits, _, -' required/>
                 </li>
                 <li>
-                    <label for='user-password'>Password:</label>
-                    <input id='user-password' name='user-password' type='password' autocomplete='off' placeholder='e.g. cupcake' required/>
+                    <label for='user-password'>Password</label>
+                    <input id='user-password' name='user-password' type='password' autocomplete='off' placeholder='5+ characters' required/>
                 </li>
                 <li>
-                    <label for='user-email'>Email (optional):</label>
-                    <input id='user-email' name='user-email' type='email' autocomplete='off' placeholder='e.g. vader@empire.gov'/>
+                    <label for='user-email'>Email</label>
+                    <input id='user-email' name='user-email' type='email' autocomplete='off' placeholder='optional'/>
+                    <p class="hint">Used for password reminder and to show a <a href='http://gravatar.com/'>Gravatar</a>. Leave blank for random Gravatar.</p>
                 </li>
             </ul>
         </fieldset>
-        <hr/>
-        <p>By clicking "Create an account" button below, you are agreeing to the <a href='/help/tos'>Terms of Service</a>.</p>
-        <hr/>
         <fieldset class='buttons'>
             <input type='submit' value='Create an account'/>
         </fieldset>
@@ -28,11 +26,12 @@
     <div class='info'>
         <p>Registered users can:</p>
         <ul>
-            <li>upload new posts</li>
-            <li>mark them as favorite</li>
-            <li>add comments</li>
-            <li>vote up/down on posts and comments</li>
+            <li><i class="fa fa-upload"></i> upload new posts</li>
+            <li><i class="fa fa-heart"></i> mark them as favorite</li>
+            <li><i class="fa fa-commenting-o"></i> add comments</li>
+            <li><i class="fa fa-star-half-o"></i> vote up/down on posts and comments</li>
         </ul>
-        <p>Your e-mail will be used to show your <a href='http://gravatar.com/'>Gravatar</a> and for password reminders only. Leave blank for random Gravatar.</p>
+        <hr/>
+        <p>By creating an account, you are agreeing to the <a href='/help/tos'>Terms of Service</a>.</p>
     </div>
 </div>

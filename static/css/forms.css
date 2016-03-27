@@ -37,7 +37,7 @@ form.tabular .buttons {
 
 form:not(.tabular) ul li label {
     display: block;
-    padding: 0.5em 0;
+    padding: 1em 0 0.5em 0;
 }
 
 textarea,
