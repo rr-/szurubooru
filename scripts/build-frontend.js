@@ -65,7 +65,7 @@ function bundleHtml(config) {
 }
 
 function bundleCss() {
-    const minify = require('cssmin');
+    const minify = require('csso').minify;
     glob('static/css/**/*.css', {}, (er, files) => {
         let css = '';
         for (const file of files) {

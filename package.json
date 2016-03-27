@@ -8,7 +8,7 @@
   "dependencies": {
     "browserify": "^13.0.0",
     "camelcase-keys": "^2.1.0",
-    "cssmin": "^0.4.3",
+    "csso": "^1.8.0",
     "glob": "^7.0.3",
     "handlebars": "^4.0.5",
     "html-minifier": "^1.3.1",
