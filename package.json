@@ -2,22 +2,22 @@
   "name": "szurubooru",
   "private": true,
   "scripts": {
-    "browserify": "browserify static/js/*.js -o public/bundle.js",
-    "build:html": "cat static/html/index.htm >public/index.htm",
-    "build:css": "cat static/css/*.css >public/bundle.css && cssmin public/bundle.css >public/bundle.min.css",
-    "build:js": "node static/prepare_config.js && npm run browserify -o public/bundle.js && uglifyjs <public/bundle.js >public/bundle.min.js",
-    "build": "npm run build:html && npm run build:js && npm run build:css",
+    "build": "node scripts/build-frontend.js",
     "watch": "watch 'npm run build' static --wait=0 --ignoreDotFiles"
   },
   "dependencies": {
     "browserify": "^13.0.0",
     "camelcase-keys": "^2.1.0",
     "cssmin": "^0.4.3",
+    "glob": "^7.0.3",
     "handlebars": "^4.0.5",
+    "html-minifier": "^1.3.1",
     "ini": "^1.3.4",
     "merge": "^1.2.0",
     "page": "^1.7.1",
-    "uglify-js": "git://github.com/mishoo/UglifyJS2.git#harmony",
+    "uglify-js": "git://github.com/mishoo/UglifyJS2.git#harmony"
+  },
+  "devDependencies": {
     "watch": "latest"
   }
 }
