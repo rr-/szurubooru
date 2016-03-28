@@ -1,8 +1,14 @@
+''' Exports User. '''
+
 import sqlalchemy as sa
 from szurubooru.model.base import Base
 
 class User(Base):
+    ''' Database representation of an user. '''
     __tablename__ = 'user'
+
+    AVATAR_GRAVATAR = 1
+    AVATAR_MANUAL = 2
 
     user_id = sa.Column('id', sa.Integer, primary_key=True)
     name = sa.Column('name', sa.String(50), nullable=False, unique=True)
@@ -11,8 +17,5 @@ class User(Base):
     email = sa.Column('email', sa.String(200), nullable=True)
     access_rank = sa.Column('access_rank', sa.String(32), nullable=False)
     creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
-    last_login_time = sa.Column('last_login_time', sa.DateTime, nullable=False)
+    last_login_time = sa.Column('last_login_time', sa.DateTime)
     avatar_style = sa.Column('avatar_style', sa.Integer, nullable=False)
-
-    def has_password(self, password):
-        return self.password == password

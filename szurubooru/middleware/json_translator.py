@@ -1,8 +1,24 @@
+''' Exports JsonTranslator. '''
+
 import json
 import falcon
+from datetime import datetime
+
+def json_serial(obj):
+    ''' JSON serializer for objects not serializable by default JSON code '''
+    if isinstance(obj, datetime):
+        serial = obj.isoformat()
+        return serial
+    raise TypeError('Type not serializable')
 
 class JsonTranslator(object):
+    '''
+    Translates API requests and API responses to JSON using requests'
+    context.
+    '''
+
     def process_request(self, request, response):
+        ''' Executed before passing the request to the API. '''
         if request.content_length in (None, 0):
             return
 
@@ -22,6 +38,8 @@ class JsonTranslator(object):
                 'JSON was incorrect or not encoded as UTF-8.')
 
     def process_response(self, request, response, resource):
+        ''' Executed before passing the response to falcon. '''
         if 'result' not in request.context:
             return
-        response.body = json.dumps(request.context['result'])
+        response.body = json.dumps(
+            request.context['result'], default=json_serial)

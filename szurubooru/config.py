@@ -1,7 +1,10 @@
+''' Exports Config. '''
+
 import os
 import configobj
 
 class Config(object):
+    ''' INI config parser and container. '''
     def __init__(self):
         self.config = configobj.ConfigObj('config.ini.dist')
         if os.path.exists('config.ini'):

@@ -34,8 +34,8 @@ tag_categories = meta, artist, character, copyright, other unique
 # don't change these regexes, unless you want to annoy people. but if you do
 # customize them, make sure to update the instructions in the registration form
 # template as well.
-password_regex = ^.{5,}$
-user_name_regex = ^[a-zA-Z0-9_-]{1,32}$
+password_regex = "^.{5,}$"
+user_name_regex = "^[a-zA-Z0-9_-]{1,32}$"
 
 [privileges]
 users:create = anonymous
