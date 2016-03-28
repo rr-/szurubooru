@@ -1,8 +1,8 @@
 ''' Exports JsonTranslator. '''
 
 import json
-import falcon
 from datetime import datetime
+import falcon
 
 def json_serial(obj):
     ''' JSON serializer for objects not serializable by default JSON code '''

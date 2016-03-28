@@ -2,6 +2,7 @@
 
 import re
 import falcon
+from szurubooru.services.errors import IntegrityError
 
 def _serialize_user(user):
     return {
@@ -24,7 +25,7 @@ class UserListApi(object):
     def on_get(self, request, response):
         ''' Retrieves a list of users. '''
         self._auth_service.verify_privilege(request.context['user'], 'users:list')
-        request.context['reuslt'] = {'message': 'Searching for users'}
+        request.context['result'] = {'message': 'Searching for users'}
 
     def on_post(self, request, response):
         ''' Creates a new user. '''
@@ -33,7 +34,7 @@ class UserListApi(object):
         password_regex = self._config['service']['password_regex']
 
         try:
-            name = request.context['doc']['user']
+            name = request.context['doc']['name']
             password = request.context['doc']['password']
             email = request.context['doc']['email'].strip()
             if not email:
@@ -52,7 +53,12 @@ class UserListApi(object):
                 'Malformed data',
                 'Password must validate %r expression' % password_regex)
 
-        user = self._user_service.create_user(name, password, email)
+        session = request.context['session']
+        try:
+            user = self._user_service.create_user(session, name, password, email)
+            session.commit()
+        except:
+            raise IntegrityError('User %r already exists.' % name)
         request.context['result'] = {'user': _serialize_user(user)}
 
 class UserDetailApi(object):
@@ -65,7 +71,8 @@ class UserDetailApi(object):
     def on_get(self, request, response, user_name):
         ''' Retrieves an user. '''
         self._auth_service.verify_privilege(request.context['user'], 'users:view')
-        user = self._user_service.get_by_name(user_name)
+        session = request.context['session']
+        user = self._user_service.get_by_name(session, user_name)
         request.context['result'] = _serialize_user(user)
 
     def on_put(self, request, response, user_name):

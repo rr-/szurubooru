@@ -6,7 +6,6 @@ import sqlalchemy
 import sqlalchemy.orm
 import szurubooru.api
 import szurubooru.config
-import szurubooru.db
 import szurubooru.middleware
 import szurubooru.services
 
@@ -30,15 +29,13 @@ def create_app():
             host=config['database']['host'],
             port=config['database']['port'],
             name=config['database']['name']))
-    session_factory = sqlalchemy.orm.sessionmaker(bind=engine)
-    transaction_manager = szurubooru.db.TransactionManager(session_factory)
+    session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
+    scoped_session = sqlalchemy.orm.scoped_session(session_maker)
 
     # TODO: is there a better way?
     password_service = szurubooru.services.PasswordService(config)
-    user_service = szurubooru.services.UserService(
-        config, transaction_manager, password_service)
-    auth_service = szurubooru.services.AuthService(
-        config, user_service, password_service)
+    auth_service = szurubooru.services.AuthService(config, password_service)
+    user_service = szurubooru.services.UserService(config, password_service)
 
     user_list = szurubooru.api.UserListApi(config, auth_service, user_service)
     user = szurubooru.api.UserDetailApi(config, auth_service, user_service)
@@ -46,7 +43,8 @@ def create_app():
     app = falcon.API(middleware=[
         szurubooru.middleware.RequireJson(),
         szurubooru.middleware.JsonTranslator(),
-        szurubooru.middleware.Authenticator(auth_service),
+        szurubooru.middleware.DbSession(session_maker),
+        szurubooru.middleware.Authenticator(auth_service, user_service),
     ])
 
     app.add_error_handler(szurubooru.services.AuthError, _on_auth_error)
