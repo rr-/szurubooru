@@ -5,7 +5,7 @@ class User(Base):
     __tablename__ = 'user'
 
     user_id = sa.Column('id', sa.Integer, primary_key=True)
-    name = sa.Column('name', sa.String(50), nullable=False)
+    name = sa.Column('name', sa.String(50), nullable=False, unique=True)
     password_hash = sa.Column('password_hash', sa.String(64), nullable=False)
     password_salt = sa.Column('pasword_salt', sa.String(32))
     email = sa.Column('email', sa.String(200), nullable=True)
