@@ -8,7 +8,11 @@ class DbSession(object):
 
     def process_request(self, request, response):
         ''' Executed before passing the request to the API. '''
-        request.context['session'] = self._session_factory()
+        request.context.session = self._session_factory()
 
     def process_response(self, request, response, resource):
-        request.context['session'].close()
+        '''
+        Executed before passing the response to falcon.
+        Any commits to database need to happen explicitly in the API layer.
+        '''
+        request.context.session.close()

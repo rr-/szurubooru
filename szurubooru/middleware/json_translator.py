@@ -29,7 +29,7 @@ class JsonTranslator(object):
                 'A valid JSON document is required.')
 
         try:
-            request.context['doc'] = json.loads(body.decode('utf-8'))
+            request.context.request = json.loads(body.decode('utf-8'))
         except (ValueError, UnicodeDecodeError):
             raise falcon.HTTPError(
                 falcon.HTTP_401,
@@ -41,5 +41,4 @@ class JsonTranslator(object):
         ''' Executed before passing the response to falcon. '''
         if 'result' not in request.context:
             return
-        response.body = json.dumps(
-            request.context['result'], default=json_serial)
+        response.body = json.dumps(request.context.result, default=json_serial)

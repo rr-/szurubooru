@@ -24,19 +24,19 @@ class UserListApi(object):
 
     def on_get(self, request, response):
         ''' Retrieves a list of users. '''
-        self._auth_service.verify_privilege(request.context['user'], 'users:list')
-        request.context['result'] = {'message': 'Searching for users'}
+        self._auth_service.verify_privilege(request.context.user, 'users:list')
+        request.context.result = {'message': 'Searching for users'}
 
     def on_post(self, request, response):
         ''' Creates a new user. '''
-        self._auth_service.verify_privilege(request.context['user'], 'users:create')
+        self._auth_service.verify_privilege(request.context.user, 'users:create')
         name_regex = self._config['service']['user_name_regex']
         password_regex = self._config['service']['password_regex']
 
         try:
-            name = request.context['doc']['name']
-            password = request.context['doc']['password']
-            email = request.context['doc']['email'].strip()
+            name = request.context.request['name']
+            password = request.context.request['password']
+            email = request.context.request['email'].strip()
             if not email:
                 email = None
         except KeyError as ex:
@@ -53,13 +53,13 @@ class UserListApi(object):
                 'Malformed data',
                 'Password must validate %r expression' % password_regex)
 
-        session = request.context['session']
+        session = request.context.session
         try:
             user = self._user_service.create_user(session, name, password, email)
             session.commit()
         except:
             raise IntegrityError('User %r already exists.' % name)
-        request.context['result'] = {'user': _serialize_user(user)}
+        request.context.result = {'user': _serialize_user(user)}
 
 class UserDetailApi(object):
     ''' API for individual users. '''
@@ -70,12 +70,12 @@ class UserDetailApi(object):
 
     def on_get(self, request, response, user_name):
         ''' Retrieves an user. '''
-        self._auth_service.verify_privilege(request.context['user'], 'users:view')
-        session = request.context['session']
+        self._auth_service.verify_privilege(request.context.user, 'users:view')
+        session = request.context.session
         user = self._user_service.get_by_name(session, user_name)
-        request.context['result'] = _serialize_user(user)
+        request.context.result = _serialize_user(user)
 
     def on_put(self, request, response, user_name):
         ''' Updates an existing user. '''
-        self._auth_service.verify_privilege(request.context['user'], 'users:edit')
-        request.context['result'] = {'message': 'Updating user ' + user_name}
+        self._auth_service.verify_privilege(request.context.user, 'users:edit')
+        request.context.result = {'message': 'Updating user ' + user_name}

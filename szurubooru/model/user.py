@@ -1,3 +1,5 @@
+# pylint: disable=too-many-instance-attributes,too-few-public-methods
+
 ''' Exports User. '''
 
 import sqlalchemy as sa
