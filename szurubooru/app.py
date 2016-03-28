@@ -41,7 +41,7 @@ def create_app():
         config, user_service, password_service)
 
     user_list = szurubooru.api.UserListApi(config, auth_service, user_service)
-    user = szurubooru.api.UserDetailApi(config, auth_service)
+    user = szurubooru.api.UserDetailApi(config, auth_service, user_service)
 
     app = falcon.API(middleware=[
         szurubooru.middleware.RequireJson(),
@@ -53,6 +53,6 @@ def create_app():
     app.add_error_handler(szurubooru.services.IntegrityError, _on_integrity_error)
 
     app.add_route('/users/', user_list)
-    app.add_route('/user/{user_id}', user)
+    app.add_route('/user/{user_name}', user)
 
     return app

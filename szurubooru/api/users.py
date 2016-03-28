@@ -57,16 +57,18 @@ class UserListApi(object):
 
 class UserDetailApi(object):
     ''' API for individual users. '''
-    def __init__(self, config, auth_service):
+    def __init__(self, config, auth_service, user_service):
         self._config = config
         self._auth_service = auth_service
+        self._user_service = user_service
 
-    def on_get(self, request, response, user_id):
+    def on_get(self, request, response, user_name):
         ''' Retrieves an user. '''
         self._auth_service.verify_privilege(request.context['user'], 'users:view')
-        request.context['result'] = {'message': 'Getting user ' + user_id}
+        user = self._user_service.get_by_name(user_name)
+        request.context['result'] = _serialize_user(user)
 
-    def on_put(self, request, response, user_id):
+    def on_put(self, request, response, user_name):
         ''' Updates an existing user. '''
         self._auth_service.verify_privilege(request.context['user'], 'users:edit')
-        request.context['result'] = {'message': 'Updating user ' + user_id}
+        request.context['result'] = {'message': 'Updating user ' + user_name}
