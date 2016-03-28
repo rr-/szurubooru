@@ -6,6 +6,7 @@
 const page = require('page');
 const handlebars = require('handlebars');
 
+const Api = require('./api.js');
 const LoginView = require('./views/login_view.js');
 const RegistrationView = require('./views/registration_view.js');
 const TopNavigationView = require('./views/top_navigation_view.js');
@@ -24,11 +25,13 @@ const TagsController = require('./controllers/tags_controller.js');
 // -------------------
 // - resolve objects -
 // -------------------
+const api = new Api();
+
 const topNavigationView = new TopNavigationView(handlebars);
 const loginView = new LoginView(handlebars);
 const registrationView = new RegistrationView(handlebars);
 
-const authController = new AuthController(null, loginView);
+const authController = new AuthController(api, null, loginView);
 const topNavigationController
     = new TopNavigationController(topNavigationView, authController);
 // break cyclic dependency topNavigationView<->authController
@@ -37,6 +40,7 @@ authController.topNavigationController = topNavigationController;
 const homeController = new HomeController(topNavigationController);
 const postsController = new PostsController(topNavigationController);
 const usersController = new UsersController(
+    api,
     topNavigationController,
     authController,
     registrationView);
@@ -52,13 +56,13 @@ page('/', () => { homeController.indexRoute(); });
 
 page('/upload', () => { postsController.uploadPostsRoute(); });
 page('/posts', () => { postsController.listPostsRoute(); });
-page('/post/:id', (id) => { postsController.showPostRoute(id); });
-page('/post/:id/edit', (id) => { postsController.editPostRoute(id); });
+page('/post/:id', id => { postsController.showPostRoute(id); });
+page('/post/:id/edit', id => { postsController.editPostRoute(id); });
 
 page('/register', () => { usersController.createUserRoute(); });
 page('/users', () => { usersController.listUsersRoute(); });
-page('/user/:user', (user) => { usersController.showUserRoute(user); });
-page('/user/:user/edit', (user) => { usersController.editUserRoute(user); });
+page('/user/:user', user => { usersController.showUserRoute(user); });
+page('/user/:user/edit', user => { usersController.editUserRoute(user); });
 
 page('/history', () => { historyController.showHistoryRoute(); });
 page('/tags', () => { tagsController.listTagsRoute(); });

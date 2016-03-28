@@ -18,6 +18,7 @@
                 </li>
             </ul>
         </fieldset>
+        <fieldset class='messages'></fieldset>
         <fieldset class='buttons'>
             <input type='submit' value='Create an account'/>
         </fieldset>

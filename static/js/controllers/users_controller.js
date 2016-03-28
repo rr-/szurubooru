@@ -1,7 +1,11 @@
 'use strict';
 
+const page = require('page');
+
 class UsersController {
-    constructor(topNavigationController, authController, registrationView) {
+    constructor(
+            api, topNavigationController, authController, registrationView) {
+        this.api = api;
         this.topNavigationController = topNavigationController;
         this.authController = authController;
         this.registrationView = registrationView;
@@ -12,12 +16,31 @@ class UsersController {
     }
 
     createUserRoute() {
-        const self = this;
         this.topNavigationController.activate('register');
         this.registrationView.render({
-            register: (user) => {
-                alert(user);
-                self.authController.login(user);
+            register: (userName, userPassword, userEmail) => {
+                const data = {
+                    'name': userName,
+                    'password': userPassword,
+                    'email': userEmail
+                };
+                // TODO: reduce callback hell
+                return new Promise((resolve, reject) => {
+                    this.api.post('/users/', data)
+                        .then(() => {
+                            this.authController.login(userName, userPassword)
+                                .then(() => {
+                                    resolve();
+                                    page('/');
+                                })
+                                .catch(response => {
+                                    reject(response.description);
+                                });
+                        })
+                        .catch(response => {
+                            reject(response.description);
+                        });
+                });
             }});
     }
 

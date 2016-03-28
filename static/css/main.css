@@ -4,6 +4,8 @@
     --text-color: #111;
     --inactive-link-color: #888;
     --line-color: #DDD;
+    --message-error-border-color: #FCC;
+    --message-error-background-color: #FFF5F5;
     --input-bad-border-color: #FCC;
     --input-bad-background-color: #FFF5F5;
     --input-good-border-color: #D3E3D3;
@@ -90,4 +92,12 @@ nav.text-nav ul li.active a {
 #top-nav ul li[data-name=logout],
 #top-nav ul li[data-name=help] {
     float: none;
+}
+
+.messages .message {
+    padding: 0.5em;
+}
+.message.error {
+    border: 1px solid var(--message-error-border-color);
+    background: var(--message-error-background-color);
 }

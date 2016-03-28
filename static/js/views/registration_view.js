@@ -11,6 +11,7 @@ class RegistrationView extends BaseView {
 
     render(options) {
         this.showView(this.template());
+        const messagesHolder = this.contentHolder.querySelector('.messages');
         const form = document.querySelector('#content-holder form');
         this.decorateValidator(form);
 
@@ -20,14 +21,22 @@ class RegistrationView extends BaseView {
         userNameField.setAttribute('pattern', config.service.userNameRegex);
         passwordField.setAttribute('pattern', config.service.passwordRegex);
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', e => {
             e.preventDefault();
-            const user = {
-                name: userNameField.value,
-                password: passwordField.value,
-                email: emailField.value,
-            };
-            options.register(user);
+            this.clearMessages(messagesHolder);
+            form.setAttribute('disabled', true);
+            options
+                .register(
+                    userNameField.value,
+                    passwordField.value,
+                    emailField.value)
+                .then(() => {
+                    form.setAttribute('disabled', false);
+                })
+                .catch(errorMessage => {
+                    form.setAttribute('disabled', false);
+                    this.showError(messagesHolder, errorMessage);
+                });
         });
     }
 }
