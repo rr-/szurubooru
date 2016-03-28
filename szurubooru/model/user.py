@@ -9,7 +9,7 @@ class User(Base):
     password_hash = sa.Column('password_hash', sa.String(64), nullable=False)
     password_salt = sa.Column('pasword_salt', sa.String(32))
     email = sa.Column('email', sa.String(200), nullable=True)
-    access_rank = sa.Column('access_rank', sa.Integer, nullable=False)
+    access_rank = sa.Column('access_rank', sa.String(32), nullable=False)
     creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
     last_login_time = sa.Column('last_login_time', sa.DateTime, nullable=False)
     avatar_style = sa.Column('avatar_style', sa.Integer, nullable=False)
