@@ -40,15 +40,15 @@ class AuthService(object):
             + ['admin', 'nobody']
 
         assert privilege_name in self._config['privileges']
-        assert user.rank in all_ranks
+        assert user.access_rank in all_ranks
         minimal_rank = self._config['privileges'][privilege_name]
         good_ranks = all_ranks[all_ranks.index(minimal_rank):]
-        if user.rank not in good_ranks:
+        if user.access_rank not in good_ranks:
             raise AuthError('Insufficient privileges to do this.')
 
     def _create_anonymous_user(self):
         user = User()
         user.name = None
-        user.rank = 'anonymous'
+        user.access_rank = 'anonymous'
         user.password = None
         return user
