@@ -1,12 +1,14 @@
 'use strict';
 
 class HelpController {
-    constructor(topNavigationController) {
+    constructor(topNavigationController, helpView) {
         this.topNavigationController = topNavigationController;
+        this.helpView = helpView;
     }
 
-    showHelpRoute() {
+    showHelpRoute(section) {
         this.topNavigationController.activate('help');
+        this.helpView.render(section);
     }
 }
 
