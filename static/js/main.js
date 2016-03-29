@@ -60,8 +60,18 @@ page('/post/:id/edit', id => { postsController.editPostRoute(id); });
 
 page('/register', () => { usersController.createUserRoute(); });
 page('/users', () => { usersController.listUsersRoute(); });
-page('/user/:user', user => { usersController.showUserRoute(user); });
-page('/user/:user/edit', user => { usersController.editUserRoute(user); });
+
+page(
+    '/user/:name',
+    (ctx, next) => {
+        usersController.showUserRoute(ctx.params.name);
+    });
+
+page(
+    '/user/:name/edit',
+    (ctx, next) => {
+        usersController.editUserRoute(ctx.params.name);
+    });
 
 page('/history', () => { historyController.showHistoryRoute(); });
 page('/tags', () => { tagsController.listTagsRoute(); });
