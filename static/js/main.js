@@ -3,9 +3,6 @@
 // ------------------
 // - import objects -
 // ------------------
-const page = require('page');
-const handlebars = require('handlebars');
-
 const Api = require('./api.js');
 const LoginView = require('./views/login_view.js');
 const RegistrationView = require('./views/registration_view.js');
@@ -27,9 +24,9 @@ const TagsController = require('./controllers/tags_controller.js');
 // -------------------
 const api = new Api();
 
-const topNavigationView = new TopNavigationView(handlebars);
-const loginView = new LoginView(handlebars);
-const registrationView = new RegistrationView(handlebars);
+const topNavigationView = new TopNavigationView();
+const loginView = new LoginView();
+const registrationView = new RegistrationView();
 
 const authController = new AuthController(api, null, loginView);
 const topNavigationController
@@ -52,6 +49,8 @@ const tagsController = new TagsController(topNavigationController);
 // -----------------
 // - setup routing -
 // -----------------
+const page = require('page');
+
 page('/', () => { homeController.indexRoute(); });
 
 page('/upload', () => { postsController.uploadPostsRoute(); });

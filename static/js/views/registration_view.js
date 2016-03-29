@@ -4,8 +4,8 @@ const config = require('../config.js');
 const BaseView = require('./base_view.js');
 
 class RegistrationView extends BaseView {
-    constructor(handlebars) {
-        super(handlebars);
+    constructor() {
+        super();
         this.template = this.getTemplate('user-registration-template');
     }
 

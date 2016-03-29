@@ -1,11 +1,12 @@
 'use strict';
 
+const handlebars = require('handlebars');
+
 // fix iterating over NodeList in Chrome and Opera
 NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 
 class BaseView {
-    constructor(handlebars) {
-        this.handlebars = handlebars;
+    constructor() {
         this.contentHolder = document.getElementById('content-holder');
     }
 
@@ -16,7 +17,7 @@ class BaseView {
             return null;
         }
         const templateText = templateElement.innerHTML;
-        return this.handlebars.compile(templateText);
+        return handlebars.compile(templateText);
     }
 
     showError(messagesHolder, errorMessage) {
