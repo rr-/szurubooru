@@ -1,4 +1,4 @@
-<div class='center' id='user-registration'>
+<div class='content-wrapper' id='user-registration'>
     <h1>Registration</h1>
     <form autocomplete='off'>
         <fieldset class='input'>

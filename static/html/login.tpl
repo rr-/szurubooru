@@ -1,4 +1,4 @@
-<div class='center' id='login'>
+<div class='content-wrapper' id='login'>
     <h1>Log in</h1>
     <form>
         <fieldset class='input'>

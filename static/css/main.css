@@ -19,18 +19,23 @@ body {
     color: var(--text-color);
     font-family: 'Droid Sans' !important;
     font-size: 12pt;
-    line-height: 20pt;
+    line-height: 18pt;
+}
+
+h1, h2, h3 {
+    font-weight: 400;
 }
 
 a {
     color: var(--main-color);
+    text-decoration: none;
 }
 
 #content-holder {
     margin-top: 1em;
     text-align: center;
 }
-#content-holder>.center {
+#content-holder>.content-wrapper {
     text-align: left;
     display: inline-block;
     margin: 0 auto;
@@ -66,7 +71,6 @@ nav.text-nav {
 }
 nav.text-nav ul li a {
     padding: 0.3em 1.2em;
-    text-decoration: none;
 }
 nav.text-nav ul li:not(.active) a {
     color: var(--inactive-link-color);
