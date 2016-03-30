@@ -22,9 +22,7 @@ class AuthService(object):
         '''
         Throws an AuthError if the given user doesn't have given privilege.
         '''
-        all_ranks = ['anonymous'] \
-            + self._config['service']['user_ranks'] \
-            + ['admin', 'nobody']
+        all_ranks = self._config['service']['user_ranks']
 
         assert privilege_name in self._config['privileges']
         assert user.access_rank in all_ranks
