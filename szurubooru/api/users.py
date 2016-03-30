@@ -73,7 +73,7 @@ class UserDetailApi(object):
         self._auth_service.verify_privilege(request.context.user, 'users:view')
         session = request.context.session
         user = self._user_service.get_by_name(session, user_name)
-        request.context.result = _serialize_user(user)
+        request.context.result = {'user': _serialize_user(user)}
 
     def on_put(self, request, response, user_name):
         ''' Updates an existing user. '''

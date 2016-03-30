@@ -12,6 +12,7 @@ class TopNavigationController {
     constructor(topNavigationView, api) {
         this.api = api;
         this.topNavigationView = topNavigationView;
+        this.activeItem = null;
 
         this.items = {
             'home':     new NavigationItem('Home',     '/'),
@@ -27,9 +28,15 @@ class TopNavigationController {
             'help':     new NavigationItem('Help',     '/help'),
         };
 
-        this.updateVisibility();
+        this.api.authenticated.listen(() => {
+            this.updateVisibility();
+            this.topNavigationView.render(this.items, this.activeItem);
+            this.topNavigationView.activate(this.activeItem);
+        });
 
-        this.topNavigationView.render(this.items);
+        this.updateVisibility();
+        this.topNavigationView.render(this.items, this.activeItem);
+        this.topNavigationView.activate(this.activeItem);
     }
 
     updateVisibility() {
@@ -40,7 +47,7 @@ class TopNavigationController {
         if (!this.api.hasPrivilege('posts:list')) {
             this.items.posts.available = false;
         }
-        if (!this.api.hasPrivilege('posts:upload')) {
+        if (!this.api.hasPrivilege('posts:create')) {
             this.items.upload.available = false;
         }
         if (!this.api.hasPrivilege('comments:list')) {
@@ -62,7 +69,8 @@ class TopNavigationController {
     }
 
     activate(itemName) {
-        this.topNavigationView.activate(itemName);
+        this.activeItem = itemName;
+        this.topNavigationView.activate(this.activeItem);
     }
 }
 

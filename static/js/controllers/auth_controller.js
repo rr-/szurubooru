@@ -36,7 +36,7 @@ class AuthController {
                                 options);
                             resolve();
                             page('/');
-                            /* TODO: notify top navigation */
+                            /* TODO: notify about login */
                         }).catch(errorMessage => { reject(errorMessage); });
                 });
             }});
@@ -46,7 +46,7 @@ class AuthController {
         this.api.logout();
         cookies.remove('auth');
         page('/');
-        /* TODO: notify top navigation */
+        /* TODO: notify about logout */
     }
 }
 
