@@ -30,12 +30,10 @@ const helpView = new HelpView();
 const loginView = new LoginView();
 const registrationView = new RegistrationView();
 
-const authController = new AuthController(api, null, loginView);
 const topNavigationController
-    = new TopNavigationController(topNavigationView, authController);
-// break cyclic dependency topNavigationView<->authController
-authController.topNavigationController = topNavigationController;
-
+    = new TopNavigationController(topNavigationView, api);
+const authController = new AuthController(
+    api, topNavigationController, loginView);
 const homeController = new HomeController(topNavigationController);
 const postsController = new PostsController(topNavigationController);
 const usersController = new UsersController(

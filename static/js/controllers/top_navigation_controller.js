@@ -9,8 +9,8 @@ class NavigationItem {
 }
 
 class TopNavigationController {
-    constructor(topNavigationView, authController) {
-        this.authController = authController;
+    constructor(topNavigationView, api) {
+        this.api = api;
         this.topNavigationView = topNavigationView;
 
         this.items = {
@@ -37,22 +37,22 @@ class TopNavigationController {
         for (let key of b) {
             this.items[key].available = true;
         }
-        if (!this.authController.hasPrivilege('posts:list')) {
+        if (!this.api.hasPrivilege('posts:list')) {
             this.items.posts.available = false;
         }
-        if (!this.authController.hasPrivilege('posts:upload')) {
+        if (!this.api.hasPrivilege('posts:upload')) {
             this.items.upload.available = false;
         }
-        if (!this.authController.hasPrivilege('comments:list')) {
+        if (!this.api.hasPrivilege('comments:list')) {
             this.items.comments.available = false;
         }
-        if (!this.authController.hasPrivilege('tags:list')) {
+        if (!this.api.hasPrivilege('tags:list')) {
             this.items.tags.available = false;
         }
-        if (!this.authController.hasPrivilege('users:list')) {
+        if (!this.api.hasPrivilege('users:list')) {
             this.items.users.available = false;
         }
-        if (this.authController.isLoggedIn()) {
+        if (this.api.isLoggedIn()) {
             this.items.register.available = false;
             this.items.login.available = false;
         } else {
