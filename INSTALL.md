@@ -8,6 +8,7 @@ user@host:~$ sudo pacman -S postgres
 user@host:~$ sudo pacman -S python
 user@host:~$ sudo pacman -S python-pip
 user@host:~$ sudo pacman -S npm
+user@host:~$ sudo pip install virtualenv
 user@host:~$ python --version
 Python 3.5.1
 ```
@@ -40,9 +41,22 @@ user@host:~$ sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
 
 #### Installing soft dependencies
 
+Installing frontend dependencies:
+
 ```console
-user@host:path/to/szurubooru$ sudo pip install -r requirements.txt # installs backend deps
-user@host:path/to/szurubooru$ npm install # installs frontend deps
+user@host:path/to/szurubooru$ npm install
+```
+
+`npm` sandboxes dependencies by default, i.e. installs them to
+`./node_modules`. This is good, because it avoids polluting the system with the
+project's dependencies. To make Python work the same way, we'll use
+`virtualenv`. Installing backend dependencies with `virtualenv` looks like
+this:
+
+```console
+user@host:path/to/szurubooru$ virtualenv python_modules # consistent with node_modules
+user@host:path/to/szurubooru$ source python_modules/bin/activate # enters the sandbox
+(python_modules) user@host:path/to/szurubooru$ pip install -r requirements.txt # installs the dependencies
 ```
 
 
@@ -62,8 +76,9 @@ Pay extra attention to the `[database]` and `[smtp]` sections, and API URL in
 Then update the database and compile the frontend:
 
 ```console
-user@host:path/to/szurubooru$ alembic update head # runs all DB upgrades
 user@host:path/to/szurubooru$ npm run build # compiles frontend
+user@host:path/to/szurubooru$ source python_modules/bin/activate # enters python sandbox
+(python_modules) user@host:path/to/szurubooru$ alembic update head # runs all DB upgrades
 ```
 
 `alembic` should have been installed during installation of `szurubooru`'s
@@ -82,11 +97,11 @@ user's responsibility to wire these to their web server.
 Below are described the methods to integrate the API into a web server:
 
 1. Run API locally with `waitress`, and bind it with a reverse proxy. In this
-   approach, the user needs to install `waitress` with `pip install waitress`
-   and then start `szurubooru` with `./scripts/host-waitress` (see `--help` for
-   details). Then the user needs to add a virtual host that delegates the API
-   requests to the local API server, and the browser requests to the `public/`
-   directory.
+   approach, the user needs to (from within `virtualenv`) install `waitress`
+   with `pip install waitress` and then start `szurubooru` with
+   `./scripts/host-waitress` (see `--help` for details). Then the user needs to
+   add a virtual host that delegates the API requests to the local API server,
+   and the browser requests to the `public/` directory.
 2. Alternatively, Apache users can use `mod_wsgi`.
 3. Alternatively, users can use other WSGI frontends such as `gunicorn` or
    `uwsgi`, but they'll need to write wrapper scripts themselves.
@@ -104,10 +119,10 @@ server {
     listen 80;
     server_name great.dude;
 
-    location = /api {
+    location ~ ^/api$ {
         return 302 /api/;
     }
-    location ~ ^/api(/?)(.*)$ {
+    location ~ ^/api/(.*)$ {
         proxy_pass http://127.0.0.1:6666/$2$is_args$args;
     }
     location / {
@@ -124,4 +139,5 @@ server {
 api_url = http://big.dude/api/
 ```
 
-Then the backend is started with `./scripts/host-waitress`.
+Then the backend is started with `./scripts/host-waitress` from within
+`virtualenv`.
