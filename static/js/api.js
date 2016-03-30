@@ -11,15 +11,15 @@ class Api {
 
     get(url) {
         const fullUrl = this.getFullUrl(url);
-        return this.process(fullUrl, () => request.get(fullUrl));
+        return this._process(fullUrl, () => request.get(fullUrl));
     }
 
     post(url, data) {
         const fullUrl = this.getFullUrl(url);
-        return this.process(fullUrl, () => request.post(fullUrl).send(data));
+        return this._process(fullUrl, () => request.post(fullUrl).send(data));
     }
 
-    process(url, requestFactory) {
+    _process(url, requestFactory) {
         return new Promise((resolve, reject) => {
             let req = requestFactory();
             if (this.userName && this.userPassword) {
@@ -42,8 +42,16 @@ class Api {
     }
 
     login(userName, userPassword) {
-        this.userName = userName;
-        this.userPassword = userPassword;
+        return new Promise((resolve, reject) => {
+            this.userName = userName;
+            this.userPassword = userPassword;
+            this.get('/user/' + userName)
+                .then(() => { resolve(); })
+                .catch(response => {
+                    reject(response.description);
+                    this.logout();
+                });
+        });
     }
 
     logout() {

@@ -1,5 +1,6 @@
 'use strict';
 
+const cookies = require('js-cookie');
 const page = require('page');
 const config = require('../config.js');
 
@@ -8,32 +9,44 @@ class AuthController {
         this.api = api;
         this.topNavigationController = topNavigationController;
         this.loginView = loginView;
-        /* TODO: load from cookies */
+
+        const auth = cookies.getJSON('auth');
+        if (auth && auth.user && auth.password) {
+            this.api.login(auth.user, auth.password).catch(() => {
+                cookies.remove('auth');
+                /* TODO: notify the user what just happened */
+            });
+        }
     }
 
     loginRoute() {
         this.topNavigationController.activate('login');
         this.loginView.render({
-            login: (userName, userPassword, doRemember) => {
+            login: (name, password, doRemember) => {
                 return new Promise((resolve, reject) => {
-                    this.api.login(userName, userPassword);
-                    this.api.get('/user/' + userName)
-                        .then(response => {
+                    this.api.login(name, password)
+                        .then(() => {
+                            const options = {};
                             if (doRemember) {
-                                /* TODO: set cookie */
+                                options.expires = 365;
                             }
+                            cookies.set(
+                                'auth',
+                                {'user': name, 'password': password},
+                                options);
                             resolve();
                             page('/');
-                            /* TODO: update top navigation */
-                        })
-                        .catch(response => { reject(response.description); });
+                            /* TODO: notify top navigation */
+                        }).catch(errorMessage => { reject(errorMessage); });
                 });
             }});
     }
 
     logoutRoute() {
-        this.topNavigationController.activate('logout');
-        /* TODO: clear cookie */
+        this.api.logout();
+        cookies.remove('auth');
+        page('/');
+        /* TODO: notify top navigation */
     }
 }
 
