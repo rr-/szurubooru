@@ -59,7 +59,10 @@ function bundleHtml(config) {
         fs.writeFileSync(
             './public/index.htm',
             minify(
-                finalHtml, {removeComments: true, collapseWhitespace: true}));
+                finalHtml, {
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    conservativeCollapse: true}));
         console.info('Bundled HTML');
     });
 }
