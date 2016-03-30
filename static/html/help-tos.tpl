@@ -17,7 +17,7 @@ the Site.</p>
     stumble upon.</li>
 </ul>
 
-<p id='section-prohibited-content'><strong>Prohibited content</strong></p>
+<p class="section" id='section-prohibited-content'><strong>Prohibited content</strong></p>
 
 <ul>
     <li>Child pornography: any photograph or photorealistic drawing or movie
@@ -36,7 +36,7 @@ the Site.</p>
     signatures.</li>
 </ul>
 
-<p id='section-privacy-policy'><strong>Privacy policy</strong></p>
+<p class="section" id='section-privacy-policy'><strong>Privacy policy</strong></p>
 
 <p>The Site will not disclose the IP address or email address of any user
 except to the staff.</p>
