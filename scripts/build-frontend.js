@@ -95,8 +95,13 @@ function bundleConfig(config) {
         './static/js/.config.autogen.json', JSON.stringify(config));
 }
 
+function copyFile(source, target) {
+    fs.createReadStream(source).pipe(fs.createWriteStream(target));
+}
+
 const config = getConfig();
 bundleConfig(config);
 bundleHtml(config);
 bundleCss();
 bundleJs();
+copyFile('static/favicon.png', 'public/favicon.png');
