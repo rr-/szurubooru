@@ -4,6 +4,11 @@ const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
 const util = require('util');
+const execSync = require('child_process').execSync;
+
+function getVersion() {
+    return execSync('git describe --always --dirty --long --tags').toString();
+}
 
 function getConfig() {
     const ini = require('ini');
@@ -34,6 +39,10 @@ function getConfig() {
     delete config.database;
     config.service.userRanks = config.service.userRanks.split(/,\s*/);
     config.service.tagCategories = config.service.tagCategories.split(/,\s*/);
+    config.meta = {
+        version: getVersion(),
+        buildDate: new Date().toUTCString(),
+    };
 
     return config;
 }
