@@ -4,6 +4,7 @@
 // - import objects -
 // ------------------
 const Api = require('./api.js');
+const HomeView = require('./views/home_view.js');
 const HelpView = require('./views/help_view.js');
 const LoginView = require('./views/login_view.js');
 const RegistrationView = require('./views/registration_view.js');
@@ -26,6 +27,7 @@ const TagsController = require('./controllers/tags_controller.js');
 const api = new Api();
 
 const topNavigationView = new TopNavigationView();
+const homeView = new HomeView();
 const helpView = new HelpView();
 const loginView = new LoginView();
 const registrationView = new RegistrationView();
@@ -34,7 +36,7 @@ const topNavigationController
     = new TopNavigationController(topNavigationView, api);
 const authController = new AuthController(
     api, topNavigationController, loginView);
-const homeController = new HomeController(topNavigationController);
+const homeController = new HomeController(topNavigationController, homeView);
 const postsController = new PostsController(topNavigationController);
 const usersController = new UsersController(
     api,

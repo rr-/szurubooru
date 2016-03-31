@@ -20,16 +20,26 @@ class BaseView {
         return handlebars.compile(templateText);
     }
 
-    showError(messagesHolder, errorMessage) {
+    notifyError(message) {
+        this.notify(message, 'error');
+    }
+
+    notifySuccess(message) {
+        this.notify(message, 'success');
+    }
+
+    notify(message, className) {
+        const messagesHolder = this.contentHolder.querySelector('.messages');
         /* TODO: animate this */
         const node = document.createElement('div');
-        node.innerHTML = errorMessage;
+        node.innerHTML = message;
         node.classList.add('message');
-        node.classList.add('error');
+        node.classList.add(className);
         messagesHolder.appendChild(node);
     }
 
-    clearMessages(messagesHolder) {
+    clearMessages() {
+        const messagesHolder = this.contentHolder.querySelector('.messages');
         /* TODO: animate that */
         while (messagesHolder.lastChild) {
             messagesHolder.removeChild(messagesHolder.lastChild);

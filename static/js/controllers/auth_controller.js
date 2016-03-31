@@ -2,7 +2,6 @@
 
 const cookies = require('js-cookie');
 const page = require('page');
-const config = require('../config.js');
 
 class AuthController {
     constructor(api, topNavigationController, loginView) {
@@ -12,9 +11,12 @@ class AuthController {
 
         const auth = cookies.getJSON('auth');
         if (auth && auth.user && auth.password) {
-            this.api.login(auth.user, auth.password).catch(() => {
+            this.api.login(auth.user, auth.password).catch(errorMessage => {
                 cookies.remove('auth');
-                /* TODO: notify the user what just happened */
+                page('/');
+                this.loginView.notifyError(
+                    'An error happened while trying to log you in: ' +
+                    errorMessage);
             });
         }
     }
@@ -36,7 +38,7 @@ class AuthController {
                                 options);
                             resolve();
                             page('/');
-                            /* TODO: notify about login */
+                            this.loginView.notifySuccess('Logged in');
                         }).catch(errorMessage => { reject(errorMessage); });
                 });
             }});
@@ -46,7 +48,7 @@ class AuthController {
         this.api.logout();
         cookies.remove('auth');
         page('/');
-        /* TODO: notify about logout */
+        this.loginView.notifySuccess('Logged out');
     }
 }
 

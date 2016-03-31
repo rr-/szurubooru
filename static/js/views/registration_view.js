@@ -11,7 +11,6 @@ class RegistrationView extends BaseView {
 
     render(options) {
         this.showView(this.template());
-        const messagesHolder = this.contentHolder.querySelector('.messages');
         const form = document.querySelector('#content-holder form');
         this.decorateValidator(form);
 
@@ -23,7 +22,7 @@ class RegistrationView extends BaseView {
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-            this.clearMessages(messagesHolder);
+            this.clearMessages();
             form.setAttribute('disabled', true);
             options
                 .register(
@@ -35,7 +34,7 @@ class RegistrationView extends BaseView {
                 })
                 .catch(errorMessage => {
                     form.setAttribute('disabled', false);
-                    this.showError(messagesHolder, errorMessage);
+                    this.notifyError(errorMessage);
                 });
         });
     }

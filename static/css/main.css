@@ -6,6 +6,8 @@
     --line-color: #DDD;
     --message-error-border-color: #FCC;
     --message-error-background-color: #FFF5F5;
+    --message-success-border-color: #D3E3D3;
+    --message-success-background-color: #F5FFF5;
     --input-bad-border-color: #FCC;
     --input-bad-background-color: #FFF5F5;
     --input-good-border-color: #D3E3D3;
@@ -39,6 +41,8 @@ a {
     text-align: left;
     display: inline-block;
     margin: 0 auto;
+}
+#content-holder>.content-wrapper:not(.transparent) {
     background: var(--top-nav-color);
     padding: 2em;
 }
@@ -106,10 +110,19 @@ nav.text-nav ul li.active a {
     text-decoration: underline;
 }
 
+.messages {
+    width: 30em;
+}
 .messages .message {
-    padding: 0.5em;
+    display: inline-block;
+    text-align: left;
+    padding: 0.5em 1em;
 }
 .message.error {
     border: 1px solid var(--message-error-border-color);
     background: var(--message-error-background-color);
+}
+.message.success {
+    border: 1px solid var(--message-success-border-color);
+    background: var(--message-success-background-color);
 }
