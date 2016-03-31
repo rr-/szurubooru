@@ -11,6 +11,13 @@ class TopNavigationView extends BaseView {
 
     render(items) {
         this.navHolder.innerHTML = this.template({items: items});
+        for (let link of this.navHolder.querySelectorAll('a')) {
+            const regex = new RegExp(
+                '(' + link.getAttribute('accesskey') + ')', 'i');
+            link.innerHTML = link.textContent.replace(
+                regex,
+                '<span class="access-key" data-accesskey="$1">$1</span>');
+        }
     }
 
     activate(itemName) {

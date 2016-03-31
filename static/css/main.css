@@ -102,6 +102,9 @@ nav.text-nav ul li.active a {
 #top-nav ul li[data-name=help] {
     float: none;
 }
+#top-nav .access-key {
+    text-decoration: underline;
+}
 
 .messages .message {
     padding: 0.5em;

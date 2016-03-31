@@ -1,7 +1,8 @@
 'use strict';
 
 class NavigationItem {
-    constructor(name, url) {
+    constructor(accessKey, name, url) {
+        this.accessKey = accessKey;
         this.name = name;
         this.url = url;
         this.available = true;
@@ -15,17 +16,17 @@ class TopNavigationController {
         this.activeItem = null;
 
         this.items = {
-            'home':     new NavigationItem('Home',     '/'),
-            'posts':    new NavigationItem('Posts',    '/posts'),
-            'upload':   new NavigationItem('Upload',   '/upload'),
-            'comments': new NavigationItem('Comments', '/comments'),
-            'tags':     new NavigationItem('Tags',     '/tags'),
-            'users':    new NavigationItem('Users',    '/users'),
-            'account':  new NavigationItem('Account',  '/user/{me}'),
-            'register': new NavigationItem('Register', '/register'),
-            'login':    new NavigationItem('Log in',   '/login'),
-            'logout':   new NavigationItem('Logout',   '/logout'),
-            'help':     new NavigationItem('Help',     '/help'),
+            'home':     new NavigationItem('H', 'Home',     '/'),
+            'posts':    new NavigationItem('P', 'Posts',    '/posts'),
+            'upload':   new NavigationItem('U', 'Upload',   '/upload'),
+            'comments': new NavigationItem('C', 'Comments', '/comments'),
+            'tags':     new NavigationItem('T', 'Tags',     '/tags'),
+            'users':    new NavigationItem('S', 'Users',    '/users'),
+            'account':  new NavigationItem('A', 'Account',  '/user/{me}'),
+            'register': new NavigationItem('R', 'Register', '/register'),
+            'login':    new NavigationItem('L', 'Log in',   '/login'),
+            'logout':   new NavigationItem('O', 'Logout',   '/logout'),
+            'help':     new NavigationItem('E', 'Help',     '/help'),
         };
 
         this.api.authenticated.listen(() => {
