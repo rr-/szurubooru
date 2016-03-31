@@ -2,16 +2,17 @@
 
 const cookies = require('js-cookie');
 const page = require('page');
+const api = require('../api.js');
+const topNavController = require('../controllers/top_nav_controller.js');
+const LoginView = require('../views/login_view.js');
 
 class AuthController {
-    constructor(api, topNavigationController, loginView) {
-        this.api = api;
-        this.topNavigationController = topNavigationController;
-        this.loginView = loginView;
+    constructor() {
+        this.loginView = new LoginView();
 
         const auth = cookies.getJSON('auth');
         if (auth && auth.user && auth.password) {
-            this.api.login(auth.user, auth.password).catch(errorMessage => {
+            api.login(auth.user, auth.password).catch(errorMessage => {
                 cookies.remove('auth');
                 page('/');
                 this.loginView.notifyError(
@@ -22,11 +23,11 @@ class AuthController {
     }
 
     loginRoute() {
-        this.topNavigationController.activate('login');
+        topNavController.activate('login');
         this.loginView.render({
             login: (name, password, doRemember) => {
                 return new Promise((resolve, reject) => {
-                    this.api.login(name, password)
+                    api.login(name, password)
                         .then(() => {
                             const options = {};
                             if (doRemember) {
@@ -45,11 +46,11 @@ class AuthController {
     }
 
     logoutRoute() {
-        this.api.logout();
+        api.logout();
         cookies.remove('auth');
         page('/');
         this.loginView.notifySuccess('Logged out');
     }
 }
 
-module.exports = AuthController;
+module.exports = new AuthController();

@@ -1,15 +1,17 @@
 'use strict';
 
+const topNavController = require('../controllers/top_nav_controller.js');
+const HelpView = require('../views/help_view.js');
+
 class HelpController {
-    constructor(topNavigationController, helpView) {
-        this.topNavigationController = topNavigationController;
-        this.helpView = helpView;
+    constructor() {
+        this.helpView = new HelpView();
     }
 
     showHelpRoute(section) {
-        this.topNavigationController.activate('help');
+        topNavController.activate('help');
         this.helpView.render(section);
     }
 }
 
-module.exports = HelpController;
+module.exports = new HelpController();

@@ -1,5 +1,8 @@
 'use strict';
 
+const api = require('../api.js');
+const TopNavView = require('../views/top_nav_view.js');
+
 class NavigationItem {
     constructor(accessKey, name, url) {
         this.accessKey = accessKey;
@@ -9,10 +12,9 @@ class NavigationItem {
     }
 }
 
-class TopNavigationController {
-    constructor(topNavigationView, api) {
-        this.api = api;
-        this.topNavigationView = topNavigationView;
+class TopNavController {
+    constructor() {
+        this.topNavView = new TopNavView();
         this.activeItem = null;
 
         this.items = {
@@ -29,15 +31,15 @@ class TopNavigationController {
             'help':     new NavigationItem('E', 'Help',     '/help'),
         };
 
-        this.api.authenticated.listen(() => {
+        api.authenticated.listen(() => {
             this.updateVisibility();
-            this.topNavigationView.render(this.items, this.activeItem);
-            this.topNavigationView.activate(this.activeItem);
+            this.topNavView.render(this.items, this.activeItem);
+            this.topNavView.activate(this.activeItem);
         });
 
         this.updateVisibility();
-        this.topNavigationView.render(this.items, this.activeItem);
-        this.topNavigationView.activate(this.activeItem);
+        this.topNavView.render(this.items, this.activeItem);
+        this.topNavView.activate(this.activeItem);
     }
 
     updateVisibility() {
@@ -45,22 +47,22 @@ class TopNavigationController {
         for (let key of b) {
             this.items[key].available = true;
         }
-        if (!this.api.hasPrivilege('posts:list')) {
+        if (!api.hasPrivilege('posts:list')) {
             this.items.posts.available = false;
         }
-        if (!this.api.hasPrivilege('posts:create')) {
+        if (!api.hasPrivilege('posts:create')) {
             this.items.upload.available = false;
         }
-        if (!this.api.hasPrivilege('comments:list')) {
+        if (!api.hasPrivilege('comments:list')) {
             this.items.comments.available = false;
         }
-        if (!this.api.hasPrivilege('tags:list')) {
+        if (!api.hasPrivilege('tags:list')) {
             this.items.tags.available = false;
         }
-        if (!this.api.hasPrivilege('users:list')) {
+        if (!api.hasPrivilege('users:list')) {
             this.items.users.available = false;
         }
-        if (this.api.isLoggedIn()) {
+        if (api.isLoggedIn()) {
             this.items.register.available = false;
             this.items.login.available = false;
         } else {
@@ -71,8 +73,8 @@ class TopNavigationController {
 
     activate(itemName) {
         this.activeItem = itemName;
-        this.topNavigationView.activate(this.activeItem);
+        this.topNavView.activate(this.activeItem);
     }
 }
 
-module.exports = TopNavigationController;
+module.exports = new TopNavController();

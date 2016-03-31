@@ -1,19 +1,21 @@
 'use strict';
 
+const topNavController = require('../controllers/top_nav_controller.js');
+const HomeView = require('../views/home_view.js');
+
 class HomeController {
-    constructor(topNavigationController, homeView) {
-        this.topNavigationController = topNavigationController;
-        this.homeView = homeView;
+    constructor() {
+        this.homeView = new HomeView();
     }
 
     indexRoute() {
-        this.topNavigationController.activate('home');
+        topNavController.activate('home');
         this.homeView.render();
     }
 
     notFoundRoute() {
-        this.topNavigationController.activate('');
+        topNavController.activate('');
     }
 }
 
-module.exports = HomeController;
+module.exports = new HomeController();

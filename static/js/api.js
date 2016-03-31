@@ -92,4 +92,4 @@ class Api {
     }
 }
 
-module.exports = Api;
+module.exports = new Api();

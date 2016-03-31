@@ -1,25 +1,23 @@
 'use strict';
 
-class PostsController {
-    constructor(topNavigationController) {
-        this.topNavigationController = topNavigationController;
-    }
+const topNavController = require('../controllers/top_nav_controller.js');
 
+class PostsController {
     uploadPostsRoute() {
-        this.topNavigationController.activate('upload');
+        topNavController.activate('upload');
     }
 
     listPostsRoute() {
-        this.topNavigationController.activate('posts');
+        topNavController.activate('posts');
     }
 
     showPostRoute(id) {
-        this.topNavigationController.activate('posts');
+        topNavController.activate('posts');
     }
 
     editPostRoute(id) {
-        this.topNavigationController.activate('posts');
+        topNavController.activate('posts');
     }
 }
 
-module.exports = PostsController;
+module.exports = new PostsController();

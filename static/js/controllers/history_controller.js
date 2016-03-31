@@ -1,13 +1,11 @@
 'use strict';
 
-class HistoryController {
-    constructor(topNavigationController) {
-        this.topNavigationController = topNavigationController;
-    }
+const topNavController = require('../controllers/top_nav_controller.js');
 
+class HistoryController {
     listHistoryRoute() {
-        this.topNavigationController.activate('');
+        topNavController.activate('');
     }
 }
 
-module.exports = HistoryController;
+module.exports = new HistoryController();

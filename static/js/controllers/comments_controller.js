@@ -1,13 +1,11 @@
 'use strict';
 
-class CommentsController {
-    constructor(topNavigationController) {
-        this.topNavigationController = topNavigationController;
-    }
+const topNavController = require('../controllers/top_nav_controller.js');
 
+class CommentsController {
     listCommentsRoute() {
-        this.topNavigationController.activate('comments');
+        topNavController.activate('comments');
     }
 }
 
-module.exports = CommentsController;
+module.exports = new CommentsController();

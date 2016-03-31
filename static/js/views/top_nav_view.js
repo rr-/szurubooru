@@ -2,10 +2,10 @@
 
 const BaseView = require('./base_view.js');
 
-class TopNavigationView extends BaseView {
+class TopNavView extends BaseView {
     constructor() {
         super();
-        this.template = this.getTemplate('top-navigation-template');
+        this.template = this.getTemplate('top-nav-template');
         this.navHolder = document.getElementById('top-nav-holder');
     }
 
@@ -34,4 +34,4 @@ class TopNavigationView extends BaseView {
     }
 }
 
-module.exports = TopNavigationView;
+module.exports = TopNavView;

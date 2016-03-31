@@ -1,13 +1,11 @@
 'use strict';
 
-class TagsController {
-    constructor(topNavigationController) {
-        this.topNavigationController = topNavigationController;
-    }
+const topNavController = require('../controllers/top_nav_controller.js');
 
+class TagsController {
     listTagsRoute() {
-        this.topNavigationController.activate('tags');
+        topNavController.activate('tags');
     }
 }
 
-module.exports = TagsController;
+module.exports = new TagsController();
