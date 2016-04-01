@@ -1,7 +1,7 @@
 This guide assumes Arch Linux. Although exact instructions for other
 distributions are different, the steps stay roughly the same.
 
-#### Installing hard dependencies
+### Installing hard dependencies
 
 ```console
 user@host:~$ sudo pacman -S postgres
@@ -15,7 +15,7 @@ Python 3.5.1
 
 
 
-#### Setting up a database
+### Setting up a database
 
 First, basic `postgres` configuration:
 
@@ -39,7 +39,7 @@ user@host:~$ sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
 
 
 
-#### Installing soft dependencies
+### Installing soft dependencies
 
 Installing frontend dependencies:
 
@@ -61,7 +61,7 @@ user@host:path/to/szurubooru$ source python_modules/bin/activate # enters the sa
 
 
 
-#### Preparing `szurubooru` for first run
+### Preparing `szurubooru` for first run
 
 Configure things:
 
