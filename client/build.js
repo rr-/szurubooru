@@ -25,10 +25,10 @@ function getConfig() {
         return result;
     }
 
-    let config = parseIniFile('./config.ini.dist');
+    let config = parseIniFile('../config.ini.dist');
 
     try {
-        const localConfig = parseIniFile('./config.ini');
+        const localConfig = parseIniFile('../config.ini');
         config = merge.recursive(config, localConfig);
     } catch (e) {
         console.warn('Local config does not exist, ignoring');
@@ -49,8 +49,8 @@ function getConfig() {
 
 function bundleHtml(config) {
     const minify = require('html-minifier').minify;
-    const baseHtml = fs.readFileSync('./static/html/index.htm', 'utf-8');
-    glob('static/html/**/*.hbs', {}, (er, files) => {
+    const baseHtml = fs.readFileSync('./html/index.htm', 'utf-8');
+    glob('./html/**/*.hbs', {}, (er, files) => {
         let templatesHtml = '';
         for (const file of files) {
             templatesHtml += util.format(
@@ -78,7 +78,7 @@ function bundleHtml(config) {
 
 function bundleCss() {
     const minify = require('csso').minify;
-    glob('static/css/**/*.css', {}, (er, files) => {
+    glob('./css/**/*.css', {}, (er, files) => {
         let css = '';
         for (const file of files) {
             css += fs.readFileSync(file);
@@ -91,7 +91,7 @@ function bundleCss() {
 function bundleJs() {
     const browserify = require('browserify');
     const uglifyjs = require('uglify-js');
-    glob('./static/js/**/*.js', {}, function(er, files) {
+    glob('./js/**/*.js', {}, function(er, files) {
         const outputFile = fs.createWriteStream('./public/bundle.min.js');
         browserify().add(files).bundle().pipe(outputFile);
         outputFile.on('finish', function() {
@@ -104,7 +104,7 @@ function bundleJs() {
 
 function bundleConfig(config) {
     fs.writeFileSync(
-        './static/js/.config.autogen.json', JSON.stringify(config));
+        './js/.config.autogen.json', JSON.stringify(config));
 }
 
 function copyFile(source, target) {
@@ -116,4 +116,4 @@ bundleConfig(config);
 bundleHtml(config);
 bundleCss();
 bundleJs();
-copyFile('static/favicon.png', 'public/favicon.png');
+copyFile('./img/favicon.png', './public/favicon.png');

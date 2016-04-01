@@ -2,8 +2,8 @@
   "name": "szurubooru",
   "private": true,
   "scripts": {
-    "build": "node scripts/build-frontend.js",
-    "watch": "watch 'npm run build' static --wait=0 --ignoreDotFiles"
+    "build": "node build.js",
+    "watch": "watch 'npm run build' html js css img --wait=0 --ignoreDotFiles"
   },
   "dependencies": {
     "browserify": "^13.0.0",

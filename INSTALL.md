@@ -39,12 +39,20 @@ user@host:~$ sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
 
 
 
-### Installing soft dependencies
+### Preparing environment
+
+Getting `szurubooru`:
+
+```console
+user@host:~$ git clone https://github.com/rr-/szurubooru2 szuru
+user@host:~$ cd szuru
+```
 
 Installing frontend dependencies:
 
 ```console
-user@host:path/to/szurubooru$ npm install
+user@host:szuru$ cd client
+user@host:szuru/client$ npm install
 ```
 
 `npm` sandboxes dependencies by default, i.e. installs them to
@@ -54,35 +62,43 @@ project's dependencies. To make Python work the same way, we'll use
 this:
 
 ```console
-user@host:path/to/szurubooru$ virtualenv python_modules # consistent with node_modules
-user@host:path/to/szurubooru$ source python_modules/bin/activate # enters the sandbox
-(python_modules) user@host:path/to/szurubooru$ pip install -r requirements.txt # installs the dependencies
+user@host:szuru/client$ cd ../server
+user@host:szuru/server$ virtualenv python_modules # consistent with node_modules
+user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
+(python_modules) user@host:szuru/server$ pip install -r requirements.txt # installs the dependencies
 ```
 
 
 
 ### Preparing `szurubooru` for first run
 
-Configure things:
+1. Configure things:
 
-```console
-user@host:path/to/szurubooru$ cp config.ini.dist config.ini
-user@host:path/to/szurubooru$ vim config.ini
-```
+    ```console
+    user@host:szuru$ cp config.ini.dist config.ini
+    user@host:szuru$ vim config.ini
+    ```
 
-Pay extra attention to the `[database]` and `[smtp]` sections, and API URL in
-`[basic]`.
+    Pay extra attention to the `[database]` and `[smtp]` sections, and API URL in
+    `[basic]`.
 
-Then update the database and compile the frontend:
+2. Compile the frontend:
 
-```console
-user@host:path/to/szurubooru$ npm run build # compiles frontend
-user@host:path/to/szurubooru$ source python_modules/bin/activate # enters python sandbox
-(python_modules) user@host:path/to/szurubooru$ alembic update head # runs all DB upgrades
-```
+    ```console
+    user@host:szuru$ cd client
+    user@host:szuru/client$ npm run build
+    ```
 
-`alembic` should have been installed during installation of `szurubooru`'s
-dependencies.
+3. Upgrade the database:
+
+    ```console
+    user@host:szuru/client$ cd ../server
+    user@host:szuru/server$ source python_modules/bin/activate
+    (python_modules) user@host:szuru/server$ alembic update head
+    ```
+
+    `alembic` should have been installed during installation of `szurubooru`'s
+    dependencies.
 
 It is recommended to rebuild the frontend after each change to configuration.
 
@@ -99,9 +115,9 @@ Below are described the methods to integrate the API into a web server:
 1. Run API locally with `waitress`, and bind it with a reverse proxy. In this
    approach, the user needs to (from within `virtualenv`) install `waitress`
    with `pip install waitress` and then start `szurubooru` with
-   `./scripts/host-waitress` (see `--help` for details). Then the user needs to
+   `./server/host-waitress` (see `--help` for details). Then the user needs to
    add a virtual host that delegates the API requests to the local API server,
-   and the browser requests to the `public/` directory.
+   and the browser requests to the `client/public/` directory.
 2. Alternatively, Apache users can use `mod_wsgi`.
 3. Alternatively, users can use other WSGI frontends such as `gunicorn` or
    `uwsgi`, but they'll need to write wrapper scripts themselves.
@@ -126,7 +142,7 @@ server {
         proxy_pass http://127.0.0.1:6666/$1$is_args$args;
     }
     location / {
-        root /home/rr-/src/maintained/szurubooru/public;
+        root /home/rr-/src/maintained/szurubooru/client/public;
         try_files $uri /index.htm;
     }
 }
@@ -139,5 +155,5 @@ server {
 api_url = http://big.dude/api/
 ```
 
-Then the backend is started with `./scripts/host-waitress` from within
+Then the backend is started with `./server/host-waitress` from within
 `virtualenv`.

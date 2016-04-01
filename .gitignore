@@ -1,5 +1,2 @@
 config.ini
-node_modules
-
-# name used in INSTALL.md
-python_modules
+*/*_modules/
