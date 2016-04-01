@@ -123,7 +123,7 @@ server {
         return 302 /api/;
     }
     location ~ ^/api/(.*)$ {
-        proxy_pass http://127.0.0.1:6666/$2$is_args$args;
+        proxy_pass http://127.0.0.1:6666/$1$is_args$args;
     }
     location / {
         root /home/rr-/src/maintained/szurubooru/public;
