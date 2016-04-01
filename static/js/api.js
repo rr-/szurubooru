@@ -78,6 +78,7 @@ class Api {
     }
 
     logout() {
+        this.user = null;
         this.userName = null;
         this.userPassword = null;
         this.authenticated.fire();

@@ -1,5 +1,6 @@
 'use strict';
 
+const cookies = require('js-cookie');
 const page = require('page');
 const api = require('../api.js');
 const topNavController = require('../controllers/top_nav_controller.js');
@@ -16,7 +17,9 @@ class UsersController {
 
     createUserRoute() {
         topNavController.activate('register');
-        this.registrationView.render({register: this._register});
+        this.registrationView.render({register: (...args) => {
+            return this._register(...args);
+        }});
     }
 
     _register(name, password, email) {
@@ -29,8 +32,10 @@ class UsersController {
         return new Promise((resolve, reject) => {
             api.post('/users/', data).then(() => {
                 api.login(name, password).then(() => {
+                    cookies.set('auth', {'user': name, 'password': password});
                     resolve();
                     page('/');
+                    this.registrationView.notifySuccess('Welcome aboard!');
                 }).catch(response => {
                     reject(response.description);
                 });
@@ -41,8 +46,7 @@ class UsersController {
     }
 
     showUserRoute(user) {
-        if (api.isLoggedIn() &&
-                user == api.getCurrentUser().name) {
+        if (api.isLoggedIn() && user == api.userName) {
             topNavController.activate('account');
         } else {
             topNavController.activate('users');
