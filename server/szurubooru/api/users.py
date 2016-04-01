@@ -4,16 +4,18 @@ import re
 import falcon
 from szurubooru.services.errors import IntegrityError
 
-def _serialize_user(user):
-    return {
+def _serialize_user(authenticated_user, user):
+    ret = {
         'id': user.user_id,
         'name': user.name,
-        'email': user.email, # TODO: secure this
         'accessRank': user.access_rank,
         'creationTime': user.creation_time,
         'lastLoginTime': user.last_login_time,
         'avatarStyle': user.avatar_style
     }
+    if authenticated_user.user_id == user.user_id:
+        ret['email'] = user.email
+    return ret
 
 class UserListApi(object):
     ''' API for lists of users. '''
@@ -59,7 +61,8 @@ class UserListApi(object):
             session.commit()
         except:
             raise IntegrityError('User %r already exists.' % name)
-        request.context.result = {'user': _serialize_user(user)}
+        request.context.result = {
+            'user': _serialize_user(request.context.user, user)}
 
 class UserDetailApi(object):
     ''' API for individual users. '''
@@ -73,7 +76,8 @@ class UserDetailApi(object):
         self._auth_service.verify_privilege(request.context.user, 'users:view')
         session = request.context.session
         user = self._user_service.get_by_name(session, user_name)
-        request.context.result = {'user': _serialize_user(user)}
+        request.context.result = {
+            'user': _serialize_user(request.context.user, user)}
 
     def on_put(self, request, response, user_name):
         ''' Updates an existing user. '''
