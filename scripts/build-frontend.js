@@ -50,12 +50,12 @@ function getConfig() {
 function bundleHtml(config) {
     const minify = require('html-minifier').minify;
     const baseHtml = fs.readFileSync('./static/html/index.htm', 'utf-8');
-    glob('static/html/**/*.tpl', {}, (er, files) => {
+    glob('static/html/**/*.hbs', {}, (er, files) => {
         let templatesHtml = '';
         for (const file of files) {
             templatesHtml += util.format(
                 '<template id=\'%s-template\'>%s</template>',
-                path.basename(file, '.tpl').replace('_', '-'),
+                path.basename(file, '.hbs').replace('_', '-'),
                 fs.readFileSync(file));
         }
 
