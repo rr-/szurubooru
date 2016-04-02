@@ -41,4 +41,5 @@ class JsonTranslator(object):
         ''' Executed before passing the response to falcon. '''
         if 'result' not in request.context:
             return
-        response.body = json.dumps(request.context.result, default=json_serial)
+        response.body = json.dumps(
+            request.context.result, default=json_serial, indent=2)
