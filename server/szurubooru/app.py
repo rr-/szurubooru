@@ -8,17 +8,34 @@ import szurubooru.api
 import szurubooru.config
 import szurubooru.middleware
 import szurubooru.services
+import szurubooru.services.search
 import szurubooru.util
 from szurubooru.errors import *
 
 class _CustomRequest(falcon.Request):
     context_type = szurubooru.util.dotdict
 
+    def get_param_as_string(self, name, required=False, store=None, default=None):
+        params = self._params
+        if name in params:
+            param = params[name]
+            if isinstance(param, list):
+                param = ','.join(param)
+            if store is not None:
+                store[name] = param
+            return param
+        if not required:
+            return default
+        raise falcon.HTTPMissingParam(name)
+
 def _on_auth_error(ex, request, response, params):
     raise falcon.HTTPForbidden('Authentication error', str(ex))
 
 def _on_validation_error(ex, request, response, params):
     raise falcon.HTTPBadRequest('Validation error', str(ex))
+
+def _on_search_error(ex, request, response, params):
+    raise falcon.HTTPBadRequest('Search error', str(ex))
 
 def _on_integrity_error(ex, request, response, params):
     raise falcon.HTTPConflict('Integrity violation', ex.args[0])
@@ -60,6 +77,7 @@ def create_app():
     app.add_error_handler(szurubooru.errors.AuthError, _on_auth_error)
     app.add_error_handler(szurubooru.errors.IntegrityError, _on_integrity_error)
     app.add_error_handler(szurubooru.errors.ValidationError, _on_validation_error)
+    app.add_error_handler(szurubooru.errors.SearchError, _on_search_error)
 
     app.add_route('/users/', user_list)
     app.add_route('/user/{user_name}', user)

@@ -1,8 +1,9 @@
 ''' Users public API. '''
 
 import sqlalchemy
-from szurubooru.errors import IntegrityError, ValidationError
 from szurubooru.api.base_api import BaseApi
+from szurubooru.errors import IntegrityError, ValidationError
+from szurubooru.services.search import UserSearchConfig, SearchExecutor
 
 def _serialize_user(authenticated_user, user):
     ret = {
@@ -23,13 +24,23 @@ class UserListApi(BaseApi):
         super().__init__()
         self._auth_service = auth_service
         self._user_service = user_service
+        self._search_executor = SearchExecutor(UserSearchConfig())
 
-    def get(self, context):
+    def get(self, request, context):
         ''' Retrieves a list of users. '''
         self._auth_service.verify_privilege(context.user, 'users:list')
-        return {'message': 'Searching for users'}
+        query = request.get_param_as_string('query')
+        page = request.get_param_as_int('page', 1)
+        count, users = self._search_executor.execute(context.session, query, page)
+        return {
+            'query': query,
+            'page': page,
+            'page_size': self._search_executor.page_size,
+            'total': count,
+            'users': [_serialize_user(context.user, user) for user in users],
+        }
 
-    def post(self, context):
+    def post(self, request, context):
         ''' Creates a new user. '''
         self._auth_service.verify_privilege(context.user, 'users:create')
 
@@ -55,13 +66,13 @@ class UserDetailApi(BaseApi):
         self._auth_service = auth_service
         self._user_service = user_service
 
-    def get(self, context, user_name):
+    def get(self, request, context, user_name):
         ''' Retrieves an user. '''
         self._auth_service.verify_privilege(context.user, 'users:view')
         user = self._user_service.get_by_name(context.session, user_name)
         return {'user': _serialize_user(context.user, user)}
 
-    def put(self, context, user_name):
+    def put(self, request, context, user_name):
         ''' Updates an existing user. '''
         self._auth_service.verify_privilege(context.user, 'users:edit')
         return {'message': 'Updating user ' + user_name}

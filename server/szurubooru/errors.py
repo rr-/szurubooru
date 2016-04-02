@@ -8,3 +8,6 @@ class IntegrityError(RuntimeError):
 
 class ValidationError(RuntimeError):
     ''' Validation error (e.g. trying to create user with invalid name) '''
+
+class SearchError(RuntimeError):
+    ''' Search error (e.g. trying to use special: where it doesn't make sense) '''
