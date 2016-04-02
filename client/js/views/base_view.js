@@ -32,7 +32,7 @@ class BaseView {
         const messagesHolder = this.contentHolder.querySelector('.messages');
         /* TODO: animate this */
         const node = document.createElement('div');
-        node.innerHTML = message;
+        node.innerHTML = message.replace(/\n/g, '<br/>');
         node.classList.add('message');
         node.classList.add(className);
         messagesHolder.appendChild(node);

@@ -31,7 +31,9 @@ class Api {
             req.set('Accept', 'application/json')
                 .end((error, response) => {
                     if (error) {
-                        reject(response.body);
+                        reject(response && response.body ? response.body : {
+                            'title': 'Networking error',
+                            'description': error.message});
                     } else {
                         resolve(response.body);
                     }

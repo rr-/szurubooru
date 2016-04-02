@@ -112,6 +112,7 @@ nav.text-nav ul li.active a {
 
 .messages {
     width: 30em;
+    max-width: 100%;
 }
 .messages .message {
     display: inline-block;
