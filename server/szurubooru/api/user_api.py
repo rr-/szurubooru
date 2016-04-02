@@ -1,8 +1,7 @@
 ''' Users public API. '''
 
-import re
-import falcon
-from szurubooru.services.errors import IntegrityError
+import sqlalchemy
+from szurubooru.services.errors import IntegrityError, ValidationError
 from szurubooru.api.base_api import BaseApi
 
 def _serialize_user(authenticated_user, user):
@@ -20,9 +19,8 @@ def _serialize_user(authenticated_user, user):
 
 class UserListApi(BaseApi):
     ''' API for lists of users. '''
-    def __init__(self, config, auth_service, user_service):
+    def __init__(self, auth_service, user_service):
         super().__init__()
-        self._config = config
         self._auth_service = auth_service
         self._user_service = user_service
 
@@ -34,42 +32,26 @@ class UserListApi(BaseApi):
     def post(self, context):
         ''' Creates a new user. '''
         self._auth_service.verify_privilege(context.user, 'users:create')
-        name_regex = self._config['service']['user_name_regex']
-        password_regex = self._config['service']['password_regex']
 
         try:
             name = context.request['name']
             password = context.request['password']
             email = context.request['email'].strip()
-            if not email:
-                email = None
         except KeyError as ex:
-            raise falcon.HTTPBadRequest(
-                'Malformed data', 'Field %r not found' % ex.args[0])
+            raise ValidationError('Field %r not found.' % ex.args[0])
 
-        if not re.match(name_regex, name):
-            raise falcon.HTTPBadRequest(
-                'Malformed data',
-                'Name must validate %r expression' % name_regex)
-
-        if not re.match(password_regex, password):
-            raise falcon.HTTPBadRequest(
-                'Malformed data',
-                'Password must validate %r expression' % password_regex)
-
+        user = self._user_service.create_user(
+            context.session, name, password, email)
         try:
-            user = self._user_service.create_user(
-                context.session, name, password, email)
             context.session.commit()
-        except:
+        except sqlalchemy.exc.IntegrityError:
             raise IntegrityError('User %r already exists.' % name)
         return {'user': _serialize_user(context.user, user)}
 
 class UserDetailApi(BaseApi):
     ''' API for individual users. '''
-    def __init__(self, config, auth_service, user_service):
+    def __init__(self, auth_service, user_service):
         super().__init__()
-        self._config = config
         self._auth_service = auth_service
         self._user_service = user_service
 

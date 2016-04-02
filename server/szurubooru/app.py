@@ -13,10 +13,13 @@ import szurubooru.util
 class _CustomRequest(falcon.Request):
     context_type = szurubooru.util.dotdict
 
-def _on_auth_error(ex, req, resp, params):
+def _on_auth_error(ex, request, response, params):
     raise falcon.HTTPForbidden('Authentication error', str(ex))
 
-def _on_integrity_error(ex, req, resp, params):
+def _on_validation_error(ex, request, response, params):
+    raise falcon.HTTPBadRequest('Validation error', str(ex))
+
+def _on_integrity_error(ex, request, response, params):
     raise falcon.HTTPConflict('Integrity violation', ex.args[0])
 
 def create_app():
@@ -41,8 +44,8 @@ def create_app():
     auth_service = szurubooru.services.AuthService(config, password_service)
     user_service = szurubooru.services.UserService(config, password_service)
 
-    user_list = szurubooru.api.UserListApi(config, auth_service, user_service)
-    user = szurubooru.api.UserDetailApi(config, auth_service, user_service)
+    user_list = szurubooru.api.UserListApi(auth_service, user_service)
+    user = szurubooru.api.UserDetailApi(auth_service, user_service)
 
     app = falcon.API(
         request_type=_CustomRequest,
@@ -55,6 +58,7 @@ def create_app():
 
     app.add_error_handler(szurubooru.services.AuthError, _on_auth_error)
     app.add_error_handler(szurubooru.services.IntegrityError, _on_integrity_error)
+    app.add_error_handler(szurubooru.services.ValidationError, _on_validation_error)
 
     app.add_route('/users/', user_list)
     app.add_route('/user/{user_name}', user)

@@ -1,6 +1,8 @@
 ''' Exports UserService. '''
 
+import re
 from datetime import datetime
+from szurubooru.services.errors import ValidationError
 from szurubooru.model.user import User
 
 class UserService(object):
@@ -9,9 +11,24 @@ class UserService(object):
     def __init__(self, config, password_service):
         self._config = config
         self._password_service = password_service
+        self._name_regex = self._config['service']['user_name_regex']
+        self._password_regex = self._config['service']['password_regex']
 
     def create_user(self, session, name, password, email):
         ''' Creates an user with given parameters and returns it. '''
+
+        if not re.match(self._name_regex, name):
+            raise ValidationError(
+                'Name must satisfy regex %r.' % self._name_regex)
+
+        if not re.match(self._password_regex, password):
+            raise ValidationError(
+                'Password must satisfy regex %r.' % self._password_regex)
+
+        # prefer nulls to empty strings in the DB
+        if not email:
+            email = None
+
         user = User()
         user.name = name
         user.password = password
