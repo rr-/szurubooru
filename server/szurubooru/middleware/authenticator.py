@@ -3,7 +3,7 @@
 import base64
 import falcon
 from szurubooru.model.user import User
-from szurubooru.services.errors import AuthError
+from szurubooru.errors import AuthError
 
 class Authenticator(object):
     '''

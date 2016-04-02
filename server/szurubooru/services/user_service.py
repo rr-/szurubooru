@@ -2,7 +2,7 @@
 
 import re
 from datetime import datetime
-from szurubooru.services.errors import ValidationError
+from szurubooru.errors import ValidationError
 from szurubooru.model.user import User
 
 class UserService(object):

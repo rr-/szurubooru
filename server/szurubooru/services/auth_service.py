@@ -1,6 +1,6 @@
 ''' Exports AuthService. '''
 
-from szurubooru.services.errors import AuthError
+from szurubooru.errors import AuthError
 
 class AuthService(object):
     ''' Services related to user authentication '''

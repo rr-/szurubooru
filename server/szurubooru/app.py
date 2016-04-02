@@ -9,6 +9,7 @@ import szurubooru.config
 import szurubooru.middleware
 import szurubooru.services
 import szurubooru.util
+from szurubooru.errors import *
 
 class _CustomRequest(falcon.Request):
     context_type = szurubooru.util.dotdict
@@ -56,9 +57,9 @@ def create_app():
             szurubooru.middleware.Authenticator(auth_service, user_service),
         ])
 
-    app.add_error_handler(szurubooru.services.AuthError, _on_auth_error)
-    app.add_error_handler(szurubooru.services.IntegrityError, _on_integrity_error)
-    app.add_error_handler(szurubooru.services.ValidationError, _on_validation_error)
+    app.add_error_handler(szurubooru.errors.AuthError, _on_auth_error)
+    app.add_error_handler(szurubooru.errors.IntegrityError, _on_integrity_error)
+    app.add_error_handler(szurubooru.errors.ValidationError, _on_validation_error)
 
     app.add_route('/users/', user_list)
     app.add_route('/user/{user_name}', user)

@@ -1,7 +1,7 @@
 ''' Users public API. '''
 
 import sqlalchemy
-from szurubooru.services.errors import IntegrityError, ValidationError
+from szurubooru.errors import IntegrityError, ValidationError
 from szurubooru.api.base_api import BaseApi
 
 def _serialize_user(authenticated_user, user):
