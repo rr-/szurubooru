@@ -100,6 +100,15 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
     `alembic` should have been installed during installation of `szurubooru`'s
     dependencies.
 
+4. Run the tests:
+
+    ```console
+    (python_modules) user@host:szuru/server$ green
+    ```
+
+    `green` should have been installed during installation of `szurubooru`'s
+    dependencies.
+
 It is recommended to rebuild the frontend after each change to configuration.
 
 
