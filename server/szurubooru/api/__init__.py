@@ -1,3 +1,3 @@
 ''' Falcon-compatible API facades. '''
 
-from szurubooru.api.users import UserListApi, UserDetailApi
+from szurubooru.api.user_api import UserListApi, UserDetailApi
