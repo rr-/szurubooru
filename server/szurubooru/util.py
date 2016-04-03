@@ -4,8 +4,12 @@ import datetime
 import re
 from szurubooru.errors import ValidationError
 
+def is_valid_email(email):
+    ''' Validates given email address. '''
+    return not email or re.match('^[^@]*@[^@]*\.[^@]*$', email)
+
 class dotdict(dict): # pylint: disable=invalid-name
-    '''dot.notation access to dictionary attributes'''
+    ''' dot.notation access to dictionary attributes. '''
     def __getattr__(self, attr):
         return self.get(attr)
     __setattr__ = dict.__setitem__

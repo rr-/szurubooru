@@ -67,8 +67,9 @@ def create_app():
     auth_service = szurubooru.services.AuthService(config, password_service)
     user_service = szurubooru.services.UserService(config, password_service)
 
-    user_list = szurubooru.api.UserListApi(auth_service, user_service)
-    user = szurubooru.api.UserDetailApi(auth_service, user_service)
+    user_list_api = szurubooru.api.UserListApi(auth_service, user_service)
+    user_detail_api = szurubooru.api.UserDetailApi(
+        config, auth_service, password_service, user_service)
 
     app = falcon.API(
         request_type=_CustomRequest,
@@ -85,7 +86,7 @@ def create_app():
     app.add_error_handler(szurubooru.errors.SearchError, _on_search_error)
     app.add_error_handler(szurubooru.errors.NotFoundError, _on_not_found_error)
 
-    app.add_route('/users/', user_list)
-    app.add_route('/user/{user_name}', user)
+    app.add_route('/users/', user_list_api)
+    app.add_route('/user/{user_name}', user_detail_api)
 
     return app

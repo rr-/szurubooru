@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from szurubooru.errors import ValidationError
 from szurubooru.model.user import User
+from szurubooru.util import is_valid_email
 
 class UserService(object):
     ''' User management '''
@@ -24,6 +25,9 @@ class UserService(object):
         if not re.match(self._password_regex, password):
             raise ValidationError(
                 'Password must satisfy regex %r.' % self._password_regex)
+
+        if not is_valid_email(email):
+            raise ValidationError('%r is not a vaild email address.' % email)
 
         # prefer nulls to empty strings in the DB
         if not email:
