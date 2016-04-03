@@ -66,7 +66,7 @@ class Api {
         return new Promise((resolve, reject) => {
             this.userName = userName;
             this.userPassword = userPassword;
-            this.get('/user/' + userName)
+            this.get('/user/' + userName + '?bump-login=true')
                 .then(response => {
                     this.user = response.user;
                     resolve();

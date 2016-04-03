@@ -43,6 +43,9 @@ class UserService(object):
         session.add(user)
         return user
 
+    def bump_login_time(self, user):
+        user.last_login_time = datetime.now()
+
     def get_by_name(self, session, name):
         ''' Retrieves an user by its name. '''
         return session.query(User).filter_by(name=name).first()
