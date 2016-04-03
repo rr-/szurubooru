@@ -1,18 +1,16 @@
-''' Exports SearchExecutor. '''
-
 import re
 import sqlalchemy
 from szurubooru import errors
-from szurubooru.services.search import criteria
+from szurubooru.search import criteria
 
 class SearchExecutor(object):
-    ORDER_DESC = 1
-    ORDER_ASC = 2
-
     '''
     Class for search parsing and execution. Handles plaintext parsing and
     delegates sqlalchemy filter decoration to SearchConfig instances.
     '''
+
+    ORDER_DESC = 1
+    ORDER_ASC = 2
 
     def __init__(self, search_config):
         self.page_size = 100

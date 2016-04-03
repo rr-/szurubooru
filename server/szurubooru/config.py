@@ -1,6 +1,6 @@
 import os
 import configobj
-import szurubooru.errors
+from szurubooru import errors
 
 class Config(object):
     ''' INI config parser and container. '''
@@ -15,20 +15,22 @@ class Config(object):
 
     def _validate(self):
         '''
-        Checks whether config.ini doesn't contain errors that might prove
+        Check whether config.ini doesn't contain errors that might prove
         lethal at runtime.
         '''
         all_ranks = self['service']['user_ranks']
         for privilege, rank in self['privileges'].items():
             if rank not in all_ranks:
-                raise szurubooru.errors.ConfigError(
+                raise errors.ConfigError(
                     'Rank %r for privilege %r is missing from user_ranks' % (
                         rank, privilege))
         for rank in ['anonymous', 'admin', 'nobody']:
             if rank not in all_ranks:
-                raise szurubooru.errors.ConfigError(
+                raise errors.ConfigError(
                     'Fixed rank %r is missing from user_ranks' % rank)
         if self['service']['default_user_rank'] not in all_ranks:
-            raise szurubooru.errors.ConfigError(
+            raise errors.ConfigError(
                 'Default rank %r is missing from user_ranks' % (
                     self['service']['default_user_rank']))
+
+config = Config() # pylint: disable=invalid-name

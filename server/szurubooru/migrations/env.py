@@ -9,13 +9,13 @@ import logging.config
 dir_to_self = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_to_self, *[os.pardir] * 2))
 
-import szurubooru.model.base
+import szurubooru.db.base
 import szurubooru.config
 
 alembic_config = alembic.context.config
 logging.config.fileConfig(alembic_config.config_file_name)
 
-szuru_config = szurubooru.config.Config()
+szuru_config = szurubooru.config.config
 alembic_config.set_main_option(
     'sqlalchemy.url',
     '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
@@ -26,7 +26,7 @@ alembic_config.set_main_option(
         port=szuru_config['database']['port'],
         name=szuru_config['database']['name']))
 
-target_metadata = szurubooru.model.Base.metadata
+target_metadata = szurubooru.db.Base.metadata
 
 def run_migrations_offline():
     '''

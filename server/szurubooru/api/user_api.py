@@ -1,9 +1,7 @@
-import re
 import sqlalchemy
-from szurubooru import errors
-from szurubooru import util
+from szurubooru import errors, search
+from szurubooru.util import auth, users
 from szurubooru.api.base_api import BaseApi
-from szurubooru.services import search
 
 def _serialize_user(authenticated_user, user):
     ret = {
@@ -21,29 +19,27 @@ def _serialize_user(authenticated_user, user):
 class UserListApi(BaseApi):
     ''' API for lists of users. '''
 
-    def __init__(self, auth_service, user_service):
+    def __init__(self):
         super().__init__()
-        self._auth_service = auth_service
-        self._user_service = user_service
         self._search_executor = search.SearchExecutor(search.UserSearchConfig())
 
     def get(self, context):
-        ''' Retrieves a list of users. '''
-        self._auth_service.verify_privilege(context.user, 'users:list')
+        ''' Retrieve a list of users. '''
+        auth.verify_privilege(context.user, 'users:list')
         query = context.get_param_as_string('query')
         page = context.get_param_as_int('page', 1)
-        count, users = self._search_executor.execute(context.session, query, page)
+        count, user_list = self._search_executor.execute(context.session, query, page)
         return {
             'query': query,
             'page': page,
             'page_size': self._search_executor.page_size,
             'total': count,
-            'users': [_serialize_user(context.user, user) for user in users],
+            'users': [_serialize_user(context.user, user) for user in user_list],
         }
 
     def post(self, context):
-        ''' Creates a new user. '''
-        self._auth_service.verify_privilege(context.user, 'users:create')
+        ''' Create a new user. '''
+        auth.verify_privilege(context.user, 'users:create')
 
         try:
             name = context.request['name'].strip()
@@ -52,9 +48,9 @@ class UserListApi(BaseApi):
         except KeyError as ex:
             raise errors.ValidationError('Field %r not found.' % ex.args[0])
 
-        user = self._user_service.create_user(
-            context.session, name, password, email)
+        user = users.create_user(name, password, email)
         try:
+            context.session.add(user)
             context.session.commit()
         except sqlalchemy.exc.IntegrityError:
             raise errors.IntegrityError('User %r already exists.' % name)
@@ -63,26 +59,17 @@ class UserListApi(BaseApi):
 class UserDetailApi(BaseApi):
     ''' API for individual users. '''
 
-    def __init__(self, config, auth_service, password_service, user_service):
-        super().__init__()
-        self._available_access_ranks = config['service']['user_ranks']
-        self._name_regex = config['service']['user_name_regex']
-        self._password_regex = config['service']['password_regex']
-        self._password_service = password_service
-        self._auth_service = auth_service
-        self._user_service = user_service
-
     def get(self, context, user_name):
-        ''' Retrieves an user. '''
-        self._auth_service.verify_privilege(context.user, 'users:view')
-        user = self._user_service.get_by_name(context.session, user_name)
+        ''' Retrieve an user. '''
+        auth.verify_privilege(context.user, 'users:view')
+        user = users.get_by_name(context.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
         return {'user': _serialize_user(context.user, user)}
 
     def put(self, context, user_name):
-        ''' Updates an existing user. '''
-        user = self._user_service.get_by_name(context.session, user_name)
+        ''' Update an existing user. '''
+        user = users.get_by_name(context.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
 
@@ -92,53 +79,26 @@ class UserDetailApi(BaseApi):
             infix = 'any'
 
         if 'name' in context.request:
-            self._auth_service.verify_privilege(
-                context.user, 'users:edit:%s:name' % infix)
-            name = context.request['name'].strip()
-            if not re.match(self._name_regex, name):
-                raise errors.ValidationError(
-                    'Name must satisfy regex %r.' % self._name_regex)
-            user.name = name
+            auth.verify_privilege(context.user, 'users:edit:%s:name' % infix)
+            users.update_name(user, context.request['name'])
 
         if 'password' in context.request:
-            password = context.request['password']
-            self._auth_service.verify_privilege(
-                context.user, 'users:edit:%s:pass' % infix)
-            if not re.match(self._password_regex, password):
-                raise errors.ValidationError(
-                    'Password must satisfy regex %r.' % self._password_regex)
-            user.password_salt = self._password_service.create_password()
-            user.password_hash = self._password_service.get_password_hash(
-                user.password_salt, password)
+            auth.verify_privilege(context.user, 'users:edit:%s:pass' % infix)
+            users.update_password(user, context.request['password'])
 
         if 'email' in context.request:
-            self._auth_service.verify_privilege(
-                context.user, 'users:edit:%s:email' % infix)
-            email = context.request['email'].strip() or None
-            if not util.is_valid_email(email):
-                raise errors.ValidationError(
-                    '%r is not a vaild email address.' % email)
-            user.email = email
+            auth.verify_privilege(context.user, 'users:edit:%s:email' % infix)
+            users.update_email(user, context.request['email'])
 
         if 'accessRank' in context.request:
-            self._auth_service.verify_privilege(
-                context.user, 'users:edit:%s:rank' % infix)
-            rank = context.request['accessRank'].strip()
-            if not rank in self._available_access_ranks:
-                raise errors.ValidationError(
-                    'Bad access rank. Valid access ranks: %r' \
-                        % self._available_access_ranks)
-            if self._available_access_ranks.index(context.user.access_rank) \
-                    < self._available_access_ranks.index(rank):
-                raise errors.AuthError(
-                    'Trying to set higher access rank than one has')
-            user.access_rank = rank
+            auth.verify_privilege(context.user, 'users:edit:%s:rank' % infix)
+            users.update_rank(user, context.request['accessRank'], context.user)
 
         # TODO: avatar
 
         try:
             context.session.commit()
         except sqlalchemy.exc.IntegrityError:
-            raise errors.IntegrityError('User %r already exists.' % name)
+            raise errors.IntegrityError('User %r already exists.' % user.name)
 
         return {'user': _serialize_user(context.user, user)}

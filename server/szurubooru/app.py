@@ -3,16 +3,11 @@
 import falcon
 import sqlalchemy
 import sqlalchemy.orm
-import szurubooru.api
-import szurubooru.config
-import szurubooru.errors
-import szurubooru.middleware
-import szurubooru.services
-import szurubooru.services.search
-import szurubooru.util
+from szurubooru import api, config, errors, middleware
+from szurubooru.util import misc
 
 class _CustomRequest(falcon.Request):
-    context_type = szurubooru.util.dotdict
+    context_type = misc.dotdict
 
     def get_param_as_string(self, name, required=False, store=None, default=None):
         params = self._params
@@ -45,47 +40,37 @@ def _on_not_found_error(ex, _request, _response, _params):
     raise falcon.HTTPNotFound(title='Not found', description=str(ex))
 
 def create_app():
-    ''' Creates a WSGI compatible App object. '''
-    config = szurubooru.config.Config()
-
+    ''' Create a WSGI compatible App object. '''
     engine = sqlalchemy.create_engine(
         '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
-            schema=config['database']['schema'],
-            user=config['database']['user'],
-            password=config['database']['pass'],
-            host=config['database']['host'],
-            port=config['database']['port'],
-            name=config['database']['name']))
+            schema=config.config['database']['schema'],
+            user=config.config['database']['user'],
+            password=config.config['database']['pass'],
+            host=config.config['database']['host'],
+            port=config.config['database']['port'],
+            name=config.config['database']['name']))
     session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
     scoped_session = sqlalchemy.orm.scoped_session(session_maker)
-
-    # TODO: is there a better way?
-    mailer = szurubooru.services.Mailer(config)
-    password_service = szurubooru.services.PasswordService(config)
-    auth_service = szurubooru.services.AuthService(config, password_service)
-    user_service = szurubooru.services.UserService(config, password_service)
-
-    user_list_api = szurubooru.api.UserListApi(auth_service, user_service)
-    user_detail_api = szurubooru.api.UserDetailApi(
-        config, auth_service, password_service, user_service)
-    password_reminder_api = szurubooru.api.PasswordReminderApi(
-        config, mailer, user_service)
 
     app = falcon.API(
         request_type=_CustomRequest,
         middleware=[
-            szurubooru.middleware.ImbueContext(),
-            szurubooru.middleware.RequireJson(),
-            szurubooru.middleware.JsonTranslator(),
-            szurubooru.middleware.DbSession(scoped_session),
-            szurubooru.middleware.Authenticator(auth_service, user_service),
+            middleware.ImbueContext(),
+            middleware.RequireJson(),
+            middleware.JsonTranslator(),
+            middleware.DbSession(scoped_session),
+            middleware.Authenticator(),
         ])
 
-    app.add_error_handler(szurubooru.errors.AuthError, _on_auth_error)
-    app.add_error_handler(szurubooru.errors.IntegrityError, _on_integrity_error)
-    app.add_error_handler(szurubooru.errors.ValidationError, _on_validation_error)
-    app.add_error_handler(szurubooru.errors.SearchError, _on_search_error)
-    app.add_error_handler(szurubooru.errors.NotFoundError, _on_not_found_error)
+    user_list_api = api.UserListApi()
+    user_detail_api = api.UserDetailApi()
+    password_reminder_api = api.PasswordReminderApi()
+
+    app.add_error_handler(errors.AuthError, _on_auth_error)
+    app.add_error_handler(errors.IntegrityError, _on_integrity_error)
+    app.add_error_handler(errors.ValidationError, _on_validation_error)
+    app.add_error_handler(errors.SearchError, _on_search_error)
+    app.add_error_handler(errors.NotFoundError, _on_not_found_error)
 
     app.add_route('/users/', user_list_api)
     app.add_route('/user/{user_name}', user_detail_api)

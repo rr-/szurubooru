@@ -3,7 +3,7 @@ import re
 from szurubooru.errors import ValidationError
 
 def is_valid_email(email):
-    ''' Validates given email address. '''
+    ''' Return whether given email address is valid or empty. '''
     return not email or re.match(r'^[^@]*@[^@]*\.[^@]*$', email)
 
 class dotdict(dict): # pylint: disable=invalid-name
@@ -14,7 +14,7 @@ class dotdict(dict): # pylint: disable=invalid-name
     __delattr__ = dict.__delitem__
 
 def parse_time_range(value, timezone=datetime.timezone(datetime.timedelta())):
-    ''' Returns tuple containing min/max time for given text representation. '''
+    ''' Return tuple containing min/max time for given text representation. '''
     one_day = datetime.timedelta(days=1)
     one_second = datetime.timedelta(seconds=1)
 

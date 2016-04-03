@@ -16,7 +16,6 @@ class JsonTranslator(object):
     '''
 
     def process_request(self, request, _response):
-        ''' Executed before passing the request to the API. '''
         if request.content_length in (None, 0):
             return
 
@@ -36,7 +35,6 @@ class JsonTranslator(object):
                 'JSON was incorrect or not encoded as UTF-8.')
 
     def process_response(self, request, response, _resource):
-        ''' Executed before passing the response to falcon. '''
         if 'result' not in request.context:
             return
         response.body = json.dumps(

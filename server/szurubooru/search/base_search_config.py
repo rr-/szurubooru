@@ -1,11 +1,11 @@
 import sqlalchemy
 import szurubooru.errors
-from szurubooru import util
-from szurubooru.services.search import criteria
+from szurubooru.util import misc
+from szurubooru.search import criteria
 
 def _apply_criterion_to_column(
         column, query, criterion, allow_composite=True, allow_ranged=True):
-    ''' Decorates SQLAlchemy filter on given column using supplied criterion. '''
+    ''' Decorate SQLAlchemy filter on given column using supplied criterion. '''
     if isinstance(criterion, criteria.StringSearchCriterion):
         expr = column == criterion.value
         if criterion.negated:
@@ -32,11 +32,11 @@ def _apply_criterion_to_column(
 
 def _apply_date_criterion_to_column(column, query, criterion):
     '''
-    Decorates SQLAlchemy filter on given column using supplied criterion.
-    Parses the datetime inside the criterion.
+    Decorate SQLAlchemy filter on given column using supplied criterion.
+    Parse the datetime inside the criterion.
     '''
     if isinstance(criterion, criteria.StringSearchCriterion):
-        min_date, max_date = util.parse_time_range(criterion.value)
+        min_date, max_date = misc.parse_time_range(criterion.value)
         expr = column.between(min_date, max_date)
         if criterion.negated:
             expr = ~expr
@@ -44,7 +44,7 @@ def _apply_date_criterion_to_column(column, query, criterion):
     elif isinstance(criterion, criteria.ArraySearchCriterion):
         expr = sqlalchemy.sql.false()
         for value in criterion.values:
-            min_date, max_date = util.parse_time_range(value)
+            min_date, max_date = misc.parse_time_range(value)
             expr = expr | column.between(min_date, max_date)
         if criterion.negated:
             expr = ~expr
@@ -52,14 +52,14 @@ def _apply_date_criterion_to_column(column, query, criterion):
     elif isinstance(criterion, criteria.RangedSearchCriterion):
         assert criterion.min_value or criterion.max_value
         if criterion.min_value and criterion.max_value:
-            min_date = util.parse_time_range(criterion.min_value)[0]
-            max_date = util.parse_time_range(criterion.max_value)[1]
+            min_date = misc.parse_time_range(criterion.min_value)[0]
+            max_date = misc.parse_time_range(criterion.max_value)[1]
             expr = column.between(min_date, max_date)
         elif criterion.min_value:
-            min_date = util.parse_time_range(criterion.min_value)[0]
+            min_date = misc.parse_time_range(criterion.min_value)[0]
             expr = column >= min_date
         elif criterion.max_value:
-            max_date = util.parse_time_range(criterion.max_value)[1]
+            max_date = misc.parse_time_range(criterion.max_value)[1]
             expr = column <= max_date
         if criterion.negated:
             expr = ~expr

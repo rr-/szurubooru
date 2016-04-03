@@ -1,7 +1,5 @@
 from datetime import datetime
-from szurubooru import errors
-from szurubooru import model
-from szurubooru.services import search
+from szurubooru import db, errors, search
 from szurubooru.tests.database_test_case import DatabaseTestCase
 
 class TestUserSearchExecutor(DatabaseTestCase):
@@ -11,7 +9,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         self.executor = search.SearchExecutor(self.search_config)
 
     def _create_user(self, name):
-        user = model.User()
+        user = db.User()
         user.name = name
         user.password = 'dummy'
         user.password_salt = 'dummy'
@@ -19,7 +17,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user.email = 'dummy'
         user.access_rank = 'dummy'
         user.creation_time = datetime.now()
-        user.avatar_style = model.User.AVATAR_GRAVATAR
+        user.avatar_style = db.User.AVATAR_GRAVATAR
         return user
 
     def _test(self, query, page, expected_count, expected_user_names):

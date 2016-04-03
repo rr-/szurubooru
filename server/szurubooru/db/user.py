@@ -1,7 +1,5 @@
-# pylint: disable=too-many-instance-attributes,too-few-public-methods
-
 import sqlalchemy as sa
-from szurubooru.model.base import Base
+from szurubooru.db.base import Base
 
 class User(Base):
     __tablename__ = 'user'
