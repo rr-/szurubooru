@@ -63,6 +63,7 @@ def create_app():
     scoped_session = sqlalchemy.orm.scoped_session(session_maker)
 
     # TODO: is there a better way?
+    mailer = szurubooru.services.Mailer(config)
     password_service = szurubooru.services.PasswordService(config)
     auth_service = szurubooru.services.AuthService(config, password_service)
     user_service = szurubooru.services.UserService(config, password_service)
@@ -70,6 +71,8 @@ def create_app():
     user_list_api = szurubooru.api.UserListApi(auth_service, user_service)
     user_detail_api = szurubooru.api.UserDetailApi(
         config, auth_service, password_service, user_service)
+    password_reminder_api = szurubooru.api.PasswordReminderApi(
+        config, mailer, user_service)
 
     app = falcon.API(
         request_type=_CustomRequest,
@@ -88,5 +91,6 @@ def create_app():
 
     app.add_route('/users/', user_list_api)
     app.add_route('/user/{user_name}', user_detail_api)
+    app.add_route('/password_reminder/{user_name}', password_reminder_api)
 
     return app

@@ -79,8 +79,8 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
     user@host:szuru$ vim config.ini
     ```
 
-    Pay extra attention to the `[database]` and `[smtp]` sections, and API URL in
-    `[basic]`.
+    Pay extra attention to the `[database]` section, `[smtp]` section, API URL
+    and base URL in `[basic]`.
 
 2. Compile the frontend:
 
@@ -162,6 +162,7 @@ server {
 ```ini
 [basic]
 api_url = http://big.dude/api/
+base_url = http://big.dude/
 ```
 
 Then the backend is started with `./server/host-waitress` from within

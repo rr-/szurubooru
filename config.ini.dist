@@ -5,7 +5,8 @@
 name = szurubooru
 debug = 0
 secret = change
-api_url = http://api.example.com/ # see INSTALL.md
+api_url = "http://api.example.com/" # where frontend connects to
+base_url = "http://example.com/" # used in absolute links (e.g. password reminder)
 
 [database]
 schema = postgres

@@ -35,10 +35,9 @@ class UserService(object):
 
         user = User()
         user.name = name
-        user.password = password
         user.password_salt = self._password_service.create_password()
         user.password_hash = self._password_service.get_password_hash(
-            user.password_salt, user.password)
+            user.password_salt, password)
         user.email = email
         user.access_rank = self._config['service']['default_user_rank']
         user.creation_time = datetime.now()
@@ -49,6 +48,13 @@ class UserService(object):
 
     def bump_login_time(self, user):
         user.last_login_time = datetime.now()
+
+    def reset_password(self, user):
+        password = self._password_service.create_password()
+        user.password_salt = self._password_service.create_password()
+        user.password_hash = self._password_service.get_password_hash(
+            user.password_salt, password)
+        return password
 
     def get_by_name(self, session, name):
         ''' Retrieves an user by its name. '''

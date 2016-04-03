@@ -12,7 +12,7 @@ class Config(object):
     def __init__(self):
         self.config = configobj.ConfigObj('../config.ini.dist')
         if os.path.exists('../config.ini'):
-            self.config.merge(configobj.ConfigObj('config.ini'))
+            self.config.merge(configobj.ConfigObj('../config.ini'))
         self._validate()
 
     def __getitem__(self, key):
