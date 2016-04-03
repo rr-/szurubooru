@@ -1,8 +1,8 @@
-''' Users public API. '''
+''' Exports UserListApi and UserDetailApi. '''
 
 import sqlalchemy
 from szurubooru.api.base_api import BaseApi
-from szurubooru.errors import IntegrityError, ValidationError
+from szurubooru.errors import IntegrityError, ValidationError, NotFoundError
 from szurubooru.services.search import UserSearchConfig, SearchExecutor
 
 def _serialize_user(authenticated_user, user):
@@ -70,6 +70,8 @@ class UserDetailApi(BaseApi):
         ''' Retrieves an user. '''
         self._auth_service.verify_privilege(context.user, 'users:view')
         user = self._user_service.get_by_name(context.session, user_name)
+        if not user:
+            raise NotFoundError('User %r not found.' % user_name)
         return {'user': _serialize_user(context.user, user)}
 
     def put(self, request, context, user_name):

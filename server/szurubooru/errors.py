@@ -11,3 +11,6 @@ class ValidationError(RuntimeError):
 
 class SearchError(RuntimeError):
     ''' Search error (e.g. trying to use special: where it doesn't make sense) '''
+
+class NotFoundError(RuntimeError):
+    ''' Error thrown when a resource (usually DB) couldn't be found. '''

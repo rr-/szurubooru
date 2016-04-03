@@ -29,16 +29,21 @@ class _CustomRequest(falcon.Request):
         raise falcon.HTTPMissingParam(name)
 
 def _on_auth_error(ex, request, response, params):
-    raise falcon.HTTPForbidden('Authentication error', str(ex))
+    raise falcon.HTTPForbidden(
+        title='Authentication error', description=str(ex))
 
 def _on_validation_error(ex, request, response, params):
-    raise falcon.HTTPBadRequest('Validation error', str(ex))
+    raise falcon.HTTPBadRequest(title='Validation error', description=str(ex))
 
 def _on_search_error(ex, request, response, params):
-    raise falcon.HTTPBadRequest('Search error', str(ex))
+    raise falcon.HTTPBadRequest(title='Search error', description=str(ex))
 
 def _on_integrity_error(ex, request, response, params):
-    raise falcon.HTTPConflict('Integrity violation', ex.args[0])
+    raise falcon.HTTPConflict(
+        title='Integrity violation', description=ex.args[0])
+
+def _on_not_found_error(ex, request, response, params):
+    raise falcon.HTTPNotFound(title='Not found', description=str(ex))
 
 def create_app():
     ''' Creates a WSGI compatible App object. '''
@@ -78,6 +83,7 @@ def create_app():
     app.add_error_handler(szurubooru.errors.IntegrityError, _on_integrity_error)
     app.add_error_handler(szurubooru.errors.ValidationError, _on_validation_error)
     app.add_error_handler(szurubooru.errors.SearchError, _on_search_error)
+    app.add_error_handler(szurubooru.errors.NotFoundError, _on_not_found_error)
 
     app.add_route('/users/', user_list)
     app.add_route('/user/{user_name}', user)
