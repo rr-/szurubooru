@@ -1,12 +1,10 @@
-''' Exports BaseApi. '''
-
 import types
 
 def _bind_method(target, desired_method_name):
     actual_method = getattr(target, desired_method_name)
-    def _wrapper_method(self, request, response, *args, **kwargs):
+    def _wrapper_method(_self, request, _response, *args, **kwargs):
         request.context.result = actual_method(
-            request, request.context, *args, **kwargs)
+            request.context, *args, **kwargs)
     return types.MethodType(_wrapper_method, target)
 
 class BaseApi(object):

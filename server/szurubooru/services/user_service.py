@@ -1,10 +1,8 @@
-''' Exports UserService. '''
-
 import re
 from datetime import datetime
-from szurubooru.errors import ValidationError
-from szurubooru.model.user import User
-from szurubooru.util import is_valid_email
+from szurubooru import errors
+from szurubooru import model
+from szurubooru import util
 
 class UserService(object):
     ''' User management '''
@@ -19,29 +17,26 @@ class UserService(object):
         ''' Creates an user with given parameters and returns it. '''
 
         if not re.match(self._name_regex, name):
-            raise ValidationError(
+            raise errors.ValidationError(
                 'Name must satisfy regex %r.' % self._name_regex)
 
         if not re.match(self._password_regex, password):
-            raise ValidationError(
+            raise errors.ValidationError(
                 'Password must satisfy regex %r.' % self._password_regex)
 
-        if not is_valid_email(email):
-            raise ValidationError('%r is not a vaild email address.' % email)
+        if not util.is_valid_email(email):
+            raise errors.ValidationError(
+                '%r is not a vaild email address.' % email)
 
-        # prefer nulls to empty strings in the DB
-        if not email:
-            email = None
-
-        user = User()
+        user = model.User()
         user.name = name
         user.password_salt = self._password_service.create_password()
         user.password_hash = self._password_service.get_password_hash(
             user.password_salt, password)
-        user.email = email
+        user.email = email or None
         user.access_rank = self._config['service']['default_user_rank']
         user.creation_time = datetime.now()
-        user.avatar_style = User.AVATAR_GRAVATAR
+        user.avatar_style = model.User.AVATAR_GRAVATAR
 
         session.add(user)
         return user
@@ -58,4 +53,4 @@ class UserService(object):
 
     def get_by_name(self, session, name):
         ''' Retrieves an user by its name. '''
-        return session.query(User).filter_by(name=name).first()
+        return session.query(model.User).filter_by(name=name).first()

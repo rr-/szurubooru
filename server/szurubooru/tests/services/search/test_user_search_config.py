@@ -1,18 +1,17 @@
 from datetime import datetime
-from szurubooru.errors import SearchError
-from szurubooru.model.user import User
-from szurubooru.services.search.search_executor import SearchExecutor
-from szurubooru.services.search.user_search_config import UserSearchConfig
+from szurubooru import errors
+from szurubooru import model
+from szurubooru.services import search
 from szurubooru.tests.database_test_case import DatabaseTestCase
 
 class TestUserSearchExecutor(DatabaseTestCase):
     def setUp(self):
         super().setUp()
-        self.search_config = UserSearchConfig()
-        self.executor = SearchExecutor(self.search_config)
+        self.search_config = search.UserSearchConfig()
+        self.executor = search.SearchExecutor(self.search_config)
 
     def _create_user(self, name):
-        user = User()
+        user = model.User()
         user.name = name
         user.password = 'dummy'
         user.password_salt = 'dummy'
@@ -20,7 +19,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user.email = 'dummy'
         user.access_rank = 'dummy'
         user.creation_time = datetime.now()
-        user.avatar_style = User.AVATAR_GRAVATAR
+        user.avatar_style = model.User.AVATAR_GRAVATAR
         return user
 
     def _test(self, query, page, expected_count, expected_user_names):
@@ -60,7 +59,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
             self._test('%s:2014-06..' % alias, 1, 2, ['u2', 'u3'])
             self._test('%s:..2014-06' % alias, 1, 2, ['u1', 'u2'])
             self.assertRaises(
-                SearchError, self.executor.execute, self.session, '%s:..', 1)
+                errors.SearchError, self.executor.execute, self.session, '%s:..', 1)
 
     def test_filter_by_negated_ranged_creation_time(self):
         user1 = self._create_user('u1')
@@ -116,7 +115,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
 
     def test_filter_by_ranged_name(self):
         self.assertRaises(
-            SearchError, self.executor.execute, self.session, 'name:u1..u2', 1)
+            errors.SearchError, self.executor.execute, self.session, 'name:u1..u2', 1)
 
     def test_paging(self):
         self.executor.page_size = 1
@@ -161,4 +160,4 @@ class TestUserSearchExecutor(DatabaseTestCase):
 
     def test_special(self):
         self.assertRaises(
-            SearchError, self.executor.execute, self.session, 'special:-', 1)
+            errors.SearchError, self.executor.execute, self.session, 'special:-', 1)

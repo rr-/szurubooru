@@ -1,10 +1,6 @@
-''' Exports AuthService. '''
-
-from szurubooru.errors import AuthError
+from szurubooru import errors
 
 class AuthService(object):
-    ''' Services related to user authentication '''
-
     def __init__(self, config, password_service):
         self._config = config
         self._password_service = password_service
@@ -29,4 +25,4 @@ class AuthService(object):
         minimal_rank = self._config['privileges'][privilege_name]
         good_ranks = all_ranks[all_ranks.index(minimal_rank):]
         if user.access_rank not in good_ranks:
-            raise AuthError('Insufficient privileges to do this.')
+            raise errors.AuthError('Insufficient privileges to do this.')

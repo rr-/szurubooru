@@ -1,12 +1,12 @@
 import smtplib
-from email.mime.text import MIMEText
+import email.mime.text
 
 class Mailer(object):
     def __init__(self, config):
         self._config = config
 
     def send(self, sender, recipient, subject, body):
-        msg = MIMEText(body)
+        msg = email.mime.text.MIMEText(body)
         msg['Subject'] = subject
         msg['From'] = sender
         msg['To'] = recipient

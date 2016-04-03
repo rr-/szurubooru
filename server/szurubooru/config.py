@@ -1,11 +1,6 @@
-''' Exports Config. '''
-
 import os
 import configobj
-
-class ConfigurationError(RuntimeError):
-    ''' A problem with config.ini file. '''
-    pass
+import szurubooru.errors
 
 class Config(object):
     ''' INI config parser and container. '''
@@ -26,13 +21,14 @@ class Config(object):
         all_ranks = self['service']['user_ranks']
         for privilege, rank in self['privileges'].items():
             if rank not in all_ranks:
-                raise ConfigurationError(
+                raise szurubooru.errors.ConfigError(
                     'Rank %r for privilege %r is missing from user_ranks' % (
                         rank, privilege))
         for rank in ['anonymous', 'admin', 'nobody']:
             if rank not in all_ranks:
-                raise ConfigurationError('Fixed rank %r is missing from user_ranks' % rank)
+                raise szurubooru.errors.ConfigError(
+                    'Fixed rank %r is missing from user_ranks' % rank)
         if self['service']['default_user_rank'] not in all_ranks:
-            raise ConfigurationError(
+            raise szurubooru.errors.ConfigError(
                 'Default rank %r is missing from user_ranks' % (
                     self['service']['default_user_rank']))

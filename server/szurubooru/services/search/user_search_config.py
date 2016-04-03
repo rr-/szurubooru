@@ -1,7 +1,6 @@
 ''' Exports UserSearchConfig. '''
 
 from sqlalchemy.sql.expression import func
-from szurubooru.errors import SearchError
 from szurubooru.model import User
 from szurubooru.services.search.base_search_config import BaseSearchConfig
 

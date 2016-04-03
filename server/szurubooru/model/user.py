@@ -1,12 +1,9 @@
 # pylint: disable=too-many-instance-attributes,too-few-public-methods
 
-''' Exports User. '''
-
 import sqlalchemy as sa
 from szurubooru.model.base import Base
 
 class User(Base):
-    ''' Database representation of an user. '''
     __tablename__ = 'user'
 
     AVATAR_GRAVATAR = 1

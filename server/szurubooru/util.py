@@ -1,12 +1,10 @@
-''' Exports miscellaneous functions and data structures. '''
-
 import datetime
 import re
 from szurubooru.errors import ValidationError
 
 def is_valid_email(email):
     ''' Validates given email address. '''
-    return not email or re.match('^[^@]*@[^@]*\.[^@]*$', email)
+    return not email or re.match(r'^[^@]*@[^@]*\.[^@]*$', email)
 
 class dotdict(dict): # pylint: disable=invalid-name
     ''' dot.notation access to dictionary attributes. '''
@@ -28,24 +26,24 @@ def parse_time_range(value, timezone=datetime.timezone(datetime.timedelta())):
         now = datetime.datetime.now(tz=timezone)
         return (
             datetime.datetime(now.year, now.month, now.day, 0, 0, 0),
-            datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
+            datetime.datetime(now.year, now.month, now.day, 0, 0, 0) \
                 + one_day - one_second)
 
     if value == 'yesterday':
         now = datetime.datetime.now(tz=timezone)
         return (
             datetime.datetime(now.year, now.month, now.day, 0, 0, 0) - one_day,
-            datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
+            datetime.datetime(now.year, now.month, now.day, 0, 0, 0) \
                 - one_second)
 
-    match = re.match('^(\d{4})$', value)
+    match = re.match(r'^(\d{4})$', value)
     if match:
         year = int(match.group(1))
         return (
             datetime.datetime(year, 1, 1),
             datetime.datetime(year + 1, 1, 1) - one_second)
 
-    match = re.match('^(\d{4})-(\d{1,2})$', value)
+    match = re.match(r'^(\d{4})-(\d{1,2})$', value)
     if match:
         year = int(match.group(1))
         month = int(match.group(2))
@@ -53,7 +51,7 @@ def parse_time_range(value, timezone=datetime.timezone(datetime.timedelta())):
             datetime.datetime(year, month, 1),
             datetime.datetime(year, month + 1, 1) - one_second)
 
-    match = re.match('^(\d{4})-(\d{1,2})-(\d{1,2})$', value)
+    match = re.match(r'^(\d{4})-(\d{1,2})-(\d{1,2})$', value)
     if match:
         year = int(match.group(1))
         month = int(match.group(2))

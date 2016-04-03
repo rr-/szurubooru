@@ -1,16 +1,15 @@
 ''' Exports create_app. '''
 
-import os
 import falcon
 import sqlalchemy
 import sqlalchemy.orm
 import szurubooru.api
 import szurubooru.config
+import szurubooru.errors
 import szurubooru.middleware
 import szurubooru.services
 import szurubooru.services.search
 import szurubooru.util
-from szurubooru.errors import *
 
 class _CustomRequest(falcon.Request):
     context_type = szurubooru.util.dotdict
@@ -28,28 +27,26 @@ class _CustomRequest(falcon.Request):
             return default
         raise falcon.HTTPMissingParam(name)
 
-def _on_auth_error(ex, request, response, params):
+def _on_auth_error(ex, _request, _response, _params):
     raise falcon.HTTPForbidden(
         title='Authentication error', description=str(ex))
 
-def _on_validation_error(ex, request, response, params):
+def _on_validation_error(ex, _request, _response, _params):
     raise falcon.HTTPBadRequest(title='Validation error', description=str(ex))
 
-def _on_search_error(ex, request, response, params):
+def _on_search_error(ex, _request, _response, _params):
     raise falcon.HTTPBadRequest(title='Search error', description=str(ex))
 
-def _on_integrity_error(ex, request, response, params):
+def _on_integrity_error(ex, _request, _response, _params):
     raise falcon.HTTPConflict(
         title='Integrity violation', description=ex.args[0])
 
-def _on_not_found_error(ex, request, response, params):
+def _on_not_found_error(ex, _request, _response, _params):
     raise falcon.HTTPNotFound(title='Not found', description=str(ex))
 
 def create_app():
     ''' Creates a WSGI compatible App object. '''
     config = szurubooru.config.Config()
-    root_dir = os.path.dirname(__file__)
-    static_dir = os.path.join(root_dir, os.pardir, 'static')
 
     engine = sqlalchemy.create_engine(
         '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
@@ -77,9 +74,10 @@ def create_app():
     app = falcon.API(
         request_type=_CustomRequest,
         middleware=[
+            szurubooru.middleware.ImbueContext(),
             szurubooru.middleware.RequireJson(),
             szurubooru.middleware.JsonTranslator(),
-            szurubooru.middleware.DbSession(session_maker),
+            szurubooru.middleware.DbSession(scoped_session),
             szurubooru.middleware.Authenticator(auth_service, user_service),
         ])
 

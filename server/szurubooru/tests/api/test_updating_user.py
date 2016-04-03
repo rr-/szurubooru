@@ -39,8 +39,6 @@ class TestUserDetailApi(DatabaseTestCase):
         self.context = dotdict()
         self.context.session = self.session
         self.context.request = {}
-        self.request = dotdict()
-        self.request.context = self.context
 
     def _create_user(self, name, rank='admin'):
         user = User()
@@ -58,7 +56,7 @@ class TestUserDetailApi(DatabaseTestCase):
         admin_user = self._create_user('u1', 'admin')
         self.session.add(admin_user)
         self.context.user = admin_user
-        self.api.put(self.request, self.context, 'u1')
+        self.api.put(self.context, 'u1')
         admin_user = self.session.query(User).filter_by(name='u1').one()
         self.assertEqual(admin_user.name, 'u1')
         self.assertEqual(admin_user.email, 'dummy')
@@ -74,7 +72,7 @@ class TestUserDetailApi(DatabaseTestCase):
             'password': 'valid',
             'accessRank': 'mod',
         }
-        self.api.put(self.request, self.context, 'u1')
+        self.api.put(self.context, 'u1')
         admin_user = self.session.query(User).filter_by(name='chewie').one()
         self.assertEqual(admin_user.name, 'chewie')
         self.assertEqual(admin_user.email, 'asd@asd.asd')
@@ -87,7 +85,7 @@ class TestUserDetailApi(DatabaseTestCase):
         self.session.add(admin_user)
         self.context.user = admin_user
         self.context.request = {'email': ''}
-        self.api.put(self.request, self.context, 'u1')
+        self.api.put(self.context, 'u1')
         admin_user = self.session.query(User).filter_by(name='u1').one()
         self.assertEqual(admin_user.email, None)
 
@@ -97,16 +95,16 @@ class TestUserDetailApi(DatabaseTestCase):
         self.context.user = admin_user
         self.context.request = {'name': '.'}
         self.assertRaises(
-            ValidationError, self.api.put, self.request, self.context, 'u1')
+            ValidationError, self.api.put, self.context, 'u1')
         self.context.request = {'password': '.'}
         self.assertRaises(
-            ValidationError, self.api.put, self.request, self.context, 'u1')
+            ValidationError, self.api.put, self.context, 'u1')
         self.context.request = {'accessRank': '.'}
         self.assertRaises(
-            ValidationError, self.api.put, self.request, self.context, 'u1')
+            ValidationError, self.api.put, self.context, 'u1')
         self.context.request = {'email': '.'}
         self.assertRaises(
-            ValidationError, self.api.put, self.request, self.context, 'u1')
+            ValidationError, self.api.put, self.context, 'u1')
 
     def test_user_trying_to_update_someone_else(self):
         user1 = self._create_user('u1', 'regular_user')
@@ -120,7 +118,7 @@ class TestUserDetailApi(DatabaseTestCase):
                 {'password': 'whatever'}]:
             self.context.request = request
             self.assertRaises(
-                AuthError, self.api.put, self.request, self.context, user2.name)
+                AuthError, self.api.put, self.context, user2.name)
 
     def test_user_trying_to_become_someone_else(self):
         user1 = self._create_user('u1', 'regular_user')
@@ -129,7 +127,7 @@ class TestUserDetailApi(DatabaseTestCase):
         self.context.user = user1
         self.context.request = {'name': 'u2'}
         self.assertRaises(
-            ValidationError, self.api.put, self.request, self.context, 'u1')
+            ValidationError, self.api.put, self.context, 'u1')
 
     def test_mods_trying_to_become_admin(self):
         user1 = self._create_user('u1', 'mod')
@@ -138,6 +136,6 @@ class TestUserDetailApi(DatabaseTestCase):
         self.context.user = user1
         self.context.request = {'accessRank': 'admin'}
         self.assertRaises(
-            AuthError, self.api.put, self.request, self.context, user1.name)
+            AuthError, self.api.put, self.context, user1.name)
         self.assertRaises(
-            AuthError, self.api.put, self.request, self.context, user2.name)
+            AuthError, self.api.put, self.context, user2.name)

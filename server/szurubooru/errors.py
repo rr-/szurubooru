@@ -1,4 +1,5 @@
-''' Exports custom errors. '''
+class ConfigError(RuntimeError):
+    ''' A problem with config.ini file. '''
 
 class AuthError(RuntimeError):
     ''' Generic authentication error '''

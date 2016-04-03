@@ -2,8 +2,8 @@
 
 import re
 import sqlalchemy
-from szurubooru.errors import SearchError
-from szurubooru.services.search.criteria import *
+from szurubooru import errors
+from szurubooru.services.search import criteria
 
 class SearchExecutor(object):
     ORDER_DESC = 1
@@ -62,9 +62,11 @@ class SearchExecutor(object):
                 elif order_str == 'desc':
                     order = self.ORDER_DESC
                 else:
-                    raise SearchError('Unknown search direction: %r.' % order_str)
+                    raise errors.SearchError(
+                        'Unknown search direction: %r.' % order_str)
             else:
-                raise SearchError('Too many commas in order search token.')
+                raise errors.SearchError(
+                    'Too many commas in order search token.')
             if negated:
                 if order == self.ORDER_DESC:
                     order = self.ORDER_ASC
@@ -79,21 +81,22 @@ class SearchExecutor(object):
 
     def _handle_anonymous(self, query, criterion):
         if not self._search_config.anonymous_filter:
-            raise SearchError(
+            raise errors.SearchError(
                 'Anonymous tokens are not valid in this context.')
         return self._search_config.anonymous_filter(query, criterion)
 
     def _handle_named(self, query, key, criterion):
         if key in self._search_config.named_filters:
             return self._search_config.named_filters[key](query, criterion)
-        raise SearchError(
+        raise errors.SearchError(
             'Unknown named token: %r. Available named tokens: %r.' % (
                 key, list(self._search_config.named_filters.keys())))
 
     def _handle_special(self, query, value, negated):
         if value in self._search_config.special_filters:
-            return self._search_config.special_filters[value](query, criterion)
-        raise SearchError(
+            return self._search_config.special_filters[value](
+                query, value, negated)
+        raise errors.SearchError(
             'Unknown special token: %r. Available special tokens: %r.' % (
                 value, list(self._search_config.special_filters.keys())))
 
@@ -105,7 +108,7 @@ class SearchExecutor(object):
             else:
                 column = column.desc()
             return query.order_by(column)
-        raise SearchError(
+        raise errors.SearchError(
             'Unknown search order: %r. Available search orders: %r.' % (
                 value, list(self._search_config.order_columns.keys())))
 
@@ -113,8 +116,9 @@ class SearchExecutor(object):
         if '..' in value:
             low, high = value.split('..')
             if not low and not high:
-                raise SearchError('Empty ranged value')
-            return RangedSearchCriterion(value, negated, low, high)
+                raise errors.SearchError('Empty ranged value')
+            return criteria.RangedSearchCriterion(value, negated, low, high)
         if ',' in value:
-            return ArraySearchCriterion(value, negated, value.split(','))
-        return StringSearchCriterion(value, negated, value)
+            return criteria.ArraySearchCriterion(
+                value, negated, value.split(','))
+        return criteria.StringSearchCriterion(value, negated, value)

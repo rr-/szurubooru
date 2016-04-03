@@ -1,9 +1,7 @@
-''' Exports Authenticator. '''
-
 import base64
 import falcon
-from szurubooru.model.user import User
-from szurubooru.errors import AuthError
+from szurubooru import errors
+from szurubooru import model
 
 class Authenticator(object):
     '''
@@ -15,7 +13,7 @@ class Authenticator(object):
         self._auth_service = auth_service
         self._user_service = user_service
 
-    def process_request(self, request, response):
+    def process_request(self, request, _response):
         ''' Executed before passing the request to the API. '''
         request.context.user = self._get_user(request)
         if request.get_param_as_bool('bump-login') \
@@ -51,13 +49,13 @@ class Authenticator(object):
         ''' Tries to authenticate user. Throws AuthError for invalid users. '''
         user = self._user_service.get_by_name(session, username)
         if not user:
-            raise AuthError('No such user.')
+            raise errors.AuthError('No such user.')
         if not self._auth_service.is_valid_password(user, password):
-            raise AuthError('Invalid password.')
+            raise errors.AuthError('Invalid password.')
         return user
 
     def _create_anonymous_user(self):
-        user = User()
+        user = model.User()
         user.name = None
         user.access_rank = 'anonymous'
         user.password = None

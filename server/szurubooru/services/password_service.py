@@ -1,5 +1,3 @@
-''' Exports PasswordService. '''
-
 import hashlib
 import random
 
