@@ -13,7 +13,6 @@ class AuthController {
         const auth = cookies.getJSON('auth');
         if (auth && auth.user && auth.password) {
             api.login(auth.user, auth.password).catch(errorMessage => {
-                cookies.remove('auth');
                 page('/');
                 this.loginView.notifyError(
                     'An error happened while trying to log you in: ' +
@@ -27,6 +26,7 @@ class AuthController {
         this.loginView.render({
             login: (name, password, doRemember) => {
                 return new Promise((resolve, reject) => {
+                    cookies.remove('auth');
                     api.login(name, password)
                         .then(() => {
                             const options = {};
