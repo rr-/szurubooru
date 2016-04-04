@@ -111,6 +111,12 @@ class TestUserSearchExecutor(DatabaseTestCase):
         self.session.add(self._create_user('u3'))
         self._test('name:u1,u2', 1, 2, ['u1', 'u2'])
 
+    def test_filter_by_negated_composite_name(self):
+        self.session.add(self._create_user('u1'))
+        self.session.add(self._create_user('u2'))
+        self.session.add(self._create_user('u3'))
+        self._test('-name:u1,u3', 1, 1, ['u2'])
+
     def test_filter_by_ranged_name(self):
         self.assertRaises(
             errors.SearchError, self.executor.execute, self.session, 'name:u1..u2', 1)
@@ -131,6 +137,17 @@ class TestUserSearchExecutor(DatabaseTestCase):
         self._test('order:name,desc', 1, 2, ['u2', 'u1'])
         self._test('-order:name,asc', 1, 2, ['u2', 'u1'])
         self._test('-order:name,desc', 1, 2, ['u1', 'u2'])
+
+    def test_invalid_tokens(self):
+        for query in [
+                'order:',
+                'order:nam',
+                'order:name,as',
+                'order:name,asc,desc',
+                'bad:x',
+                'special:unsupported']:
+            self.assertRaises(
+                errors.SearchError, self.executor.execute, self.session, query, 1)
 
     def test_anonymous(self):
         self.session.add(self._create_user('u1'))
