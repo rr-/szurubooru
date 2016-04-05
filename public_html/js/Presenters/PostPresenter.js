@@ -92,25 +92,25 @@ App.Presenters.PostPresenter = function(
                 if (nextPostUrl) {
                     $nextPost.addClass('enabled');
                     $nextPost.attr('href', nextPostUrl);
-                    keyboard.keyup('a', function() {
+                    keyboard.keyup(['a', 'left'], function() {
                         router.navigate(nextPostUrl);
                     });
                 } else {
                     $nextPost.removeClass('enabled');
                     $nextPost.removeAttr('href');
-                    keyboard.unbind('a');
+                    keyboard.unbind(['a', 'left']);
                 }
 
                 if (prevPostUrl) {
                     $prevPost.addClass('enabled');
                     $prevPost.attr('href', prevPostUrl);
-                    keyboard.keyup('d', function() {
+                    keyboard.keyup(['d', 'right'], function() {
                         router.navigate(prevPostUrl);
                     });
                 } else {
                     $prevPost.removeClass('enabled');
                     $prevPost.removeAttr('href');
-                    keyboard.unbind('d');
+                    keyboard.unbind(['d', 'right']);
                 }
             }).fail(function() {
             });

@@ -60,7 +60,7 @@
             </tr>
 
             <tr>
-                <td><code>[A]</code> and <code>[D]</code></td>
+                <td><code>[A]</code> and <code>[D]</code><br/><code>[Left]</code> and <code>[Right]</code> arrow keys</td>
                 <td>Go to newer/older page or post</td>
             </tr>
 
