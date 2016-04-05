@@ -11,17 +11,17 @@ function formatRelativeTime(timeString) {
     const future = now < then;
 
     const descriptions = [
-        [60,                        'a few seconds',    null],
-        [60*2,                      'a minute',         null],
-        [60*60,                     '% minutes',        60],
-        [60*60*2,                   'an hour',          null],
-        [60*60*24,                  '% hours',          60*60],
-        [60*60*24*2,                'a day',            null],
-        [60*60*24*30.42,            '% days',           60*60*24],
-        [60*60*24*30.42*2,          'a month',          null],
-        [60*60*24*30.42*12,         '% months',         60*60*24*30.42],
-        [60*60*24*30.42*12*2,       'a year',           null],
-        [8640000000000000/*max*/,   '% years',          60*60*24*30.42*12],
+        [60,                            'a few seconds', null],
+        [60 * 2,                        'a minute',      null],
+        [60 * 60,                       '% minutes',     60],
+        [60 * 60 * 2,                   'an hour',       null],
+        [60 * 60 * 24,                  '% hours',       60 * 60],
+        [60 * 60 * 24 * 2,              'a day',         null],
+        [60 * 60 * 24 * 30.42,          '% days',        60 * 60 * 24],
+        [60 * 60 * 24 * 30.42 * 2,      'a month',       null],
+        [60 * 60 * 24 * 30.42 * 12,     '% months',      60 * 60 * 24 * 30.42],
+        [60 * 60 * 24 * 30.42 * 12 * 2, 'a year',        null],
+        [8640000000000000 /*max*/, '% years', 60 * 60 * 24 * 30.42 * 12],
     ];
 
     let text = null;

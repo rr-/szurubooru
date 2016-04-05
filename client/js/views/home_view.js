@@ -1,6 +1,5 @@
 'use strict';
 
-const util = require('../util.js');
 const config = require('../config.js');
 const BaseView = require('./base_view.js');
 
@@ -14,7 +13,7 @@ class HomeView extends BaseView {
         this.showView(this.template({
             name: config.basic.name,
             version: config.meta.version,
-            buildDate: util.formatRelativeTime(config.meta.buildDate),
+            buildDate: config.meta.buildDate,
         }));
     }
 }

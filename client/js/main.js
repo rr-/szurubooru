@@ -1,5 +1,7 @@
 'use strict';
 
+require('./util/handlebars-helpers.js');
+
 // ----------------------
 // - import controllers -
 // ----------------------
