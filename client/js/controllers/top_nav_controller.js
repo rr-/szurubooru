@@ -43,6 +43,8 @@ class TopNavController {
     }
 
     updateVisibility() {
+        this.items['account'].url =  '/user/' + api.userName;
+
         const b = Object.keys(this.items);
         for (let key of b) {
             this.items[key].available = true;
