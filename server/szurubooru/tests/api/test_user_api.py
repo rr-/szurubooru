@@ -13,7 +13,9 @@ class TestRetrievingUsers(DatabaseTestCase):
                 'users:view': 'regular_user',
                 'users:create': 'regular_user',
             },
+            'avatar_thumbnail_size': 200,
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
+            'rank_names': {},
         })
         util.mock_context(self)
 
@@ -71,7 +73,9 @@ class TestCreatingUser(DatabaseTestCase):
             'user_name_regex': '.{3,}',
             'password_regex': '.{3,}',
             'default_rank': 'regular_user',
+            'avatar_thumbnail_size': 200,
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
+            'rank_names': {},
             'privileges': {
                 'users:create': 'anonymous',
             },
@@ -130,7 +134,9 @@ class TestUpdatingUser(DatabaseTestCase):
             'secret': '',
             'user_name_regex': '.{3,}',
             'password_regex': '.{3,}',
+            'avatar_thumbnail_size': 200,
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
+            'rank_names': {},
             'privileges': {
                 'users:edit:self:name': 'regular_user',
                 'users:edit:self:pass': 'regular_user',

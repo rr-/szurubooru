@@ -7,6 +7,9 @@ secret: change
 api_url: # where frontend connects to, example: http://api.example.com/
 base_url: # used to form absolute links, example: http://example.com/
 
+avatar_thumbnail_size: 200
+post_thumbnail_size: 300
+
 database:
     schema: postgres
     host: # example: localhost
@@ -42,6 +45,13 @@ ranks:
     - mod
     - admin
     - nobody
+rank_names:
+    anonymous:      'Anonymous user'
+    regular_user:   'Regular user'
+    power_user:     'Power user'
+    mod:            'Moderator'
+    admin:          'Administrator'
+    nobody:         'God'
 default_rank: regular_user
 
 # don't change these, unless you want to annoy people. if you do customize

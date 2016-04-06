@@ -83,6 +83,13 @@ nav ul li img {
     vertical-align: top; /* fix ghost margin under the image */
 }
 
+nav.plain-nav ul li {
+    display: block;
+}
+nav.plain-nav ul li a {
+    display: inline;
+}
+
 nav.text-nav {
     margin: 1em 0;
 }

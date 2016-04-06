@@ -1,0 +1,29 @@
+<div id='user-summary'>
+    <img src='{{this.user.avatarUrl}}' alt='{{this.user.name}}&rsquo;s avatar'/>
+    <ul class='basic-info'>
+        <li>Registered: {{reltime this.user.creationTime}}</li>
+        <li>Last seen: {{reltime this.user.lastLoginTime}}</li>
+        <li>Rank: {{toLowerCase this.user.rankName}}</li>
+    </ul>
+
+    <div>
+        <nav class='plain-nav'>
+            <p><strong>Quick links</strong></p>
+            <ul>
+                <li><a href='/posts/submit:{{this.user.name}}'>Uploads</a></li>
+                <li><a href='/posts/fav:{{this.user.name}}'>Favorites</a></li>
+                <li><a href='/posts/commented:{{this.user.name}}'>Posts commented on</a></li>
+            </ul>
+        </nav>
+
+        {{#if this.isPrivate}}
+            <nav class='plain-nav'>
+                <p><strong>Only visible to you</strong></p>
+                <ul>
+                    <li><a href='/posts/special:liked'>Liked posts</a></li>
+                    <li><a href='/posts/special:disliked'>Disliked posts</a></li>
+                </ul>
+            </nav>
+        {{/if}}
+    </div>
+</div>

@@ -36,3 +36,27 @@
 #login .buttons a {
     margin-left: 1em;
 }
+
+#user {
+    width: 30em;
+}
+#user .text-nav {
+    margin-bottom: 1.5em;
+}
+#user-summary img {
+    width: 6em;
+    margin: 0 1.5em 1.5em 0;
+    float: left;
+}
+#user-summary div {
+    clear: both;
+}
+#user-summary .basic-info {
+    list-style-type: none;
+    margin: 0;
+}
+#user-summary nav {
+    float: left;
+    width: 45%;
+    margin-right: 1em;
+}

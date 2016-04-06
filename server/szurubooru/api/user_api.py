@@ -1,4 +1,5 @@
-from szurubooru import errors, search
+import hashlib
+from szurubooru import config, errors, search
 from szurubooru.util import auth, users
 from szurubooru.api.base_api import BaseApi
 
@@ -7,12 +8,23 @@ def _serialize_user(authenticated_user, user):
         'id': user.user_id,
         'name': user.name,
         'rank': user.rank,
+        'rankName': config.config['rank_names'].get(user.rank, 'Unknown'),
         'creationTime': user.creation_time,
         'lastLoginTime': user.last_login_time,
         'avatarStyle': user.avatar_style
     }
+
+    if user.avatar_style == user.AVATAR_GRAVATAR:
+        md5 = hashlib.md5()
+        md5.update((user.email or user.name).lower().encode('utf-8'))
+        digest = md5.hexdigest()
+        ret['avatarUrl'] = 'http://gravatar.com/avatar/%s?s=%d' % (
+            digest, config.config['avatar_thumbnail_size'])
+    # TODO: else construct a link
+
     if authenticated_user.user_id == user.user_id:
         ret['email'] = user.email
+
     return ret
 
 class UserListApi(BaseApi):

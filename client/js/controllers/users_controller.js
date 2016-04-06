@@ -18,10 +18,13 @@ class UsersController {
         page('/users', () => { this.listUsersRoute(); });
         page(
             '/user/:name',
-            (ctx, next) => { this.showUserRoute(ctx.params.name); });
+            (ctx, next) => { this.loadUserRoute(ctx, next); },
+            (ctx, next) => { this.showUserRoute(ctx, next); });
         page(
             '/user/:name/edit',
-            (ctx, next) => { this.editUserRoute(ctx.params.name); });
+            (ctx, next) => { this.loadUserRoute(ctx, next); },
+            (ctx, next) => { this.editUserRoute(ctx, next); });
+        page.exit('/user/', (ctx, next) => { this.user = null; });
     }
 
     listUsersRoute() {
@@ -57,22 +60,42 @@ class UsersController {
         });
     }
 
-    showUserRoute(name) {
-        if (api.isLoggedIn() && name == api.userName) {
+    loadUserRoute(ctx, next) {
+        if (ctx.state.user) {
+            next();
+        } else if (this.user && this.user.name == ctx.params.name) {
+            ctx.state.user = this.user;
+            next();
+        } else {
+            api.get('/user/' + ctx.params.name).then(response => {
+                ctx.state.user = response.user;
+                ctx.save();
+                this.user = response.user;
+                next();
+            }).catch(response => {
+                this.userView.empty();
+                this.userView.notifyError(response.description);
+            });
+        }
+    }
+
+    _show(user, section) {
+        const isPrivate = api.isLoggedIn() && user.name == api.userName;
+        if (isPrivate) {
             topNavController.activate('account');
         } else {
             topNavController.activate('users');
         }
-        this.userView.empty();
-        api.get('/user/' + name).then(response => {
-            this.userView.render({user: response.user});
-        }).catch(response => {
-            this.userView.notifyError(response.description);
-        });
+        this.userView.render({
+            user: user, section: section, isPrivate: isPrivate});
     }
 
-    editUserRoute(user) {
-        topNavController.activate('users');
+    showUserRoute(ctx, next) {
+        this._show(ctx.state.user, 'summary');
+    }
+
+    editUserRoute(ctx, next) {
+        this._show(ctx.state.user, 'edit');
     }
 }
 
