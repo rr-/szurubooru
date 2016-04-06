@@ -70,6 +70,10 @@ class BaseView {
         }
     }
 
+    empty() {
+        this.showView('<div class="messages"></div>');
+    }
+
     showView(html) {
         this.contentHolder.innerHTML = html;
     }

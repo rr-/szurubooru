@@ -25,7 +25,7 @@ class HelpView extends BaseView {
         }
 
         const content = this.sectionTemplates[section]({
-            'name': config.name,
+            name: config.name,
         });
 
         this.showView(this.template({'content': content}));

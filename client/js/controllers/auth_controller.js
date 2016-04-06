@@ -23,6 +23,16 @@ class AuthController {
         }
     }
 
+    registerRoutes() {
+        page(/\/password-reset\/([^:]+):([^:]+)$/,
+            (ctx, next) => {
+                this.passwordResetFinishRoute(ctx.params[0], ctx.params[1]);
+            });
+        page('/password-reset', (ctx, next) => { this.passwordResetRoute(); });
+        page('/login', (ctx, next) => { this.loginRoute(); });
+        page('/logout', (ctx, next) => { this.logoutRoute(); });
+    }
+
     loginRoute() {
         topNavController.activate('login');
         this.loginView.render({

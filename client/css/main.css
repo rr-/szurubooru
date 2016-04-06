@@ -119,6 +119,7 @@ nav.text-nav ul li.active a {
 }
 
 .messages {
+    margin: 0 auto;
     width: 30em;
     max-width: 100%;
 }
