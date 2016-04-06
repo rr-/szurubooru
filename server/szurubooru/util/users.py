@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from sqlalchemy import func
 from szurubooru import config, db, errors
 from szurubooru.util import auth, misc
 
@@ -64,4 +65,6 @@ def reset_password(user):
 
 def get_by_name(session, name):
     ''' Retrieve an user by its name. '''
-    return session.query(db.User).filter_by(name=name).first()
+    return session.query(db.User) \
+        .filter(func.lower(db.User.name) == func.lower(name)) \
+        .first()

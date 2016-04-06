@@ -48,12 +48,11 @@ class UserListApi(BaseApi):
         except KeyError as ex:
             raise errors.ValidationError('Field %r not found.' % ex.args[0])
 
-        user = users.create_user(name, password, email)
-        try:
-            context.session.add(user)
-            context.session.commit()
-        except sqlalchemy.exc.IntegrityError:
+        if users.get_by_name(context.session, name):
             raise errors.IntegrityError('User %r already exists.' % name)
+        user = users.create_user(name, password, email)
+        context.session.add(user)
+        context.session.commit()
         return {'user': _serialize_user(context.user, user)}
 
 class UserDetailApi(BaseApi):
@@ -80,6 +79,9 @@ class UserDetailApi(BaseApi):
 
         if 'name' in context.request:
             auth.verify_privilege(context.user, 'users:edit:%s:name' % infix)
+            other_user = users.get_by_name(context.session, context.request['name'])
+            if other_user and other_user.user_id != user.user_id:
+                raise errors.IntegrityError('User %r already exists.' % user.name)
             users.update_name(user, context.request['name'])
 
         if 'password' in context.request:
@@ -96,9 +98,5 @@ class UserDetailApi(BaseApi):
 
         # TODO: avatar
 
-        try:
-            context.session.commit()
-        except sqlalchemy.exc.IntegrityError:
-            raise errors.IntegrityError('User %r already exists.' % user.name)
-
+        context.session.commit()
         return {'user': _serialize_user(context.user, user)}

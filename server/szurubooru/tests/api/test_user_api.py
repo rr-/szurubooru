@@ -145,6 +145,16 @@ class TestCreatingUser(DatabaseTestCase):
         self.api.post(self.context)
         self.assertRaises(errors.IntegrityError, self.api.post, self.context)
 
+    def test_creating_user_that_already_exists_insensitive(self):
+        self.context.request = {
+            'name': 'chewie',
+            'email': 'asd@asd.asd',
+            'password': 'oks',
+        }
+        self.api.post(self.context)
+        self.context.name = 'chewie'
+        self.assertRaises(errors.IntegrityError, self.api.post, self.context)
+
     def test_missing_field(self):
         for key in ['name', 'email', 'password']:
             self.context.request = {
@@ -269,6 +279,15 @@ class TestUpdatingUser(DatabaseTestCase):
         self.session.add_all([user1, user2])
         self.context.user = user1
         self.context.request = {'name': 'her'}
+        self.assertRaises(
+            errors.IntegrityError, self.api.put, self.context, 'me')
+
+    def test_user_trying_to_become_someone_else_insensitive(self):
+        user1 = _create_user('me', 'regular_user')
+        user2 = _create_user('her', 'regular_user')
+        self.session.add_all([user1, user2])
+        self.context.user = user1
+        self.context.request = {'name': 'HER'}
         self.assertRaises(
             errors.IntegrityError, self.api.put, self.context, 'me')
 
