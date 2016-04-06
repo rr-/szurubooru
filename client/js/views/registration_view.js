@@ -23,17 +23,17 @@ class RegistrationView extends BaseView {
         form.addEventListener('submit', e => {
             e.preventDefault();
             this.clearMessages();
-            form.setAttribute('disabled', true);
+            this.disableForm(form);
             options
                 .register(
                     userNameField.value,
                     passwordField.value,
                     emailField.value)
                 .then(() => {
-                    form.setAttribute('disabled', false);
+                    this.enableForm(form);
                 })
                 .catch(errorMessage => {
-                    form.setAttribute('disabled', false);
+                    this.enableForm(form);
                     this.notifyError(errorMessage);
                 });
         });

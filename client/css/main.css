@@ -12,8 +12,16 @@
     --input-bad-background-color: #FFF5F5;
     --input-good-border-color: #D3E3D3;
     --input-good-background-color: #F5FFF5;
-    --input-background-color: #EEE;
-    --input-border-color: #FAFAFA;
+    --input-enabled-background-color: #FAFAFA;
+    --input-enabled-border-color: #EEE;
+    --input-enabled-text-color: var(--text-color);
+    --input-disabled-background-color: #FAFAFA;
+    --input-disabled-border-color: #EEE;
+    --input-disabled-text-color: #888;
+    --button-enabled-text-color: white;
+    --button-enabled-background-color: var(--main-color);
+    --button-disabled-text-color: #666;
+    --button-disabled-background-color: #CCC;
 }
 
 body {

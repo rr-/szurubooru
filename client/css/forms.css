@@ -78,8 +78,8 @@ input[type=radio], input[type=checkbox] {
     margin-top: -10px;
     width: 16px;
     height: 16px;
-    border: 2px solid var(--input-background-color);
-    background: var(--input-border-color);
+    background: var(--input-enabled-background-color);
+    border: 2px solid var(--input-enabled-border-color);
     content: '';
 }
 input[type=radio]:checked + .radio:before,
@@ -89,6 +89,16 @@ input[type=checkbox]:checked + .checkbox:before {
 input[type=radio]:checked + .radio:after,
 input[type=checkbox]:checked + .checkbox:after {
     opacity: 1;
+}
+input[type=radio]:disabled + .radio:before,
+input[type=checkbox]:disabled + .checkbox:before,
+input[type=radio]:disabled + .radio:after,
+input[type=checkbox]:disabled + .checkbox:after {
+    border-color: var(--input-disabled-text-color);
+}
+input[type=radio]:disabled + .radio,
+input[type=checkbox]:disabled + .checkbox {
+    border-color: var(--input-disabled-font-color);
 }
 
 .radio:after {
@@ -124,16 +134,26 @@ textarea,
 input[type=text],
 input[type=email],
 input[type=password] {
-    transition: border-color 0.1s linear, background-color 0.1s linear;
-    font-size: 100%;
     font-family: 'Inconsolata', monospace;
+    font-size: 100%;
     padding: 0.3em;
-    border: 2px solid var(--input-background-color);
-    background: var(--input-border-color);
     text-overflow: ellipsis;
     width: 100%;
     box-sizing: border-box;
+    border: 2px solid var(--input-enabled-border-color);
+    background: var(--input-enabled-background-color);
+    color: var(--input-enabled-text-color);
     box-shadow: none; /* :-moz-submit-invalid on FF */
+    transition: border-color 0.1s linear, background-color 0.1s linear;
+}
+
+textarea:disabled,
+input[type=text]:disabled,
+input[type=email]:disabled,
+input[type=password]:disabled {
+    border: 2px solid var(--input-disabled-border-color);
+    background: var(--input-disabled-background-color);
+    color: var(--input-disabled-text-color);
 }
 
 textarea:focus,
@@ -161,7 +181,16 @@ input[type=submit] {
     font-size: 100%;
     line-height: 100%;
     padding: 0.3em 0.7em;
-    border: 1px solid var(--main-color);
-    background: var(--main-color);
-    color: white;
+    border: 1px solid var(--button-enabled-background-color);
+    background: var(--button-enabled-background-color);
+    color: var(--button-enabled-text-color);
+}
+
+button:disabled,
+input[type=button]:disabled,
+input[type=submit]:disabled {
+    cursor: default;
+    border-color: var(--button-disabled-background-color);
+    background-color: var(--button-disabled-background-color);
+    color: var(--button-disabled-text-color);
 }

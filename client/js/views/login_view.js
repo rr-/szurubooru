@@ -23,17 +23,17 @@ class LoginView extends BaseView {
         form.addEventListener('submit', e => {
             e.preventDefault();
             this.clearMessages();
-            form.setAttribute('disabled', true);
+            this.disableForm(form);
             options
                 .login(
                     userNameField.value,
                     passwordField.value,
                     rememberUserField.checked)
                 .then(() => {
-                    form.setAttribute('disabled', false);
+                    this.enableForm(form);
                 })
                 .catch(errorMessage => {
-                    form.setAttribute('disabled', false);
+                    this.enableForm(form);
                     this.notifyError(errorMessage);
                 });
         });

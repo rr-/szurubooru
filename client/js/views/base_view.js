@@ -58,6 +58,18 @@ class BaseView {
         });
     }
 
+    disableForm(form) {
+        for (let input of form.querySelectorAll('input')) {
+            input.disabled = true;
+        }
+    }
+
+    enableForm(form) {
+        for (let input of form.querySelectorAll('input')) {
+            input.disabled = false;
+        }
+    }
+
     showView(html) {
         this.contentHolder.innerHTML = html;
     }
