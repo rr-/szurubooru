@@ -44,6 +44,11 @@ page(
 page('/history', () => { historyController.showHistoryRoute(); });
 page('/tags', () => { tagsController.listTagsRoute(); });
 page('/comments', () => { commentsController.listCommentsRoute(); });
+page(/\/password-reset\/([^:]+):([^:]+)$/,
+    (ctx, next) => {
+        authController.passwordResetFinishRoute(ctx.params[0], ctx.params[1]);
+    });
+page('/password-reset', () => { authController.passwordResetRoute(); });
 page('/login', () => { authController.loginRoute(); });
 page('/logout', () => { authController.logoutRoute(); });
 

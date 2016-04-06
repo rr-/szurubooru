@@ -1,4 +1,3 @@
-import sqlalchemy
 from szurubooru import errors, search
 from szurubooru.util import auth, users
 from szurubooru.api.base_api import BaseApi

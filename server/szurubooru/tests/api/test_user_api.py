@@ -2,30 +2,7 @@ from datetime import datetime
 from szurubooru import api, db, errors, config
 from szurubooru.util import auth, misc
 from szurubooru.tests.database_test_case import DatabaseTestCase
-
-def _create_user(name, rank='admin'):
-    user = db.User()
-    user.name = name
-    user.password = 'dummy'
-    user.password_salt = 'dummy'
-    user.password_hash = 'dummy'
-    user.email = 'dummy'
-    user.access_rank = rank
-    user.creation_time = datetime(1997, 1, 1)
-    user.avatar_style = db.User.AVATAR_GRAVATAR
-    return user
-
-def _mock_params(context, params):
-    def get_param_as_string(key, default=None):
-        if key not in params:
-            return default
-        return params[key]
-    def get_param_as_int(key, default=None):
-        if key not in params:
-            return default
-        return int(params[key])
-    context.get_param_as_string = get_param_as_string
-    context.get_param_as_int = get_param_as_int
+from szurubooru.tests.api import util
 
 class TestRetrievingUsers(DatabaseTestCase):
     def setUp(self):
@@ -48,10 +25,10 @@ class TestRetrievingUsers(DatabaseTestCase):
         self.context.user = db.User()
 
     def test_retrieving_multiple(self):
-        user1 = _create_user('u1', 'mod')
-        user2 = _create_user('u2', 'mod')
+        user1 = util.mock_user('u1', 'mod')
+        user2 = util.mock_user('u2', 'mod')
         self.session.add_all([user1, user2])
-        _mock_params(self.context, {'query': '', 'page': 1})
+        util.mock_params(self.context, {'query': '', 'page': 1})
         self.context.user.access_rank = 'regular_user'
         api_ = api.UserListApi()
         result = api_.get(self.context)
@@ -63,15 +40,15 @@ class TestRetrievingUsers(DatabaseTestCase):
 
     def test_retrieving_multiple_without_privileges(self):
         self.context.user.access_rank = 'anonymous'
-        _mock_params(self.context, {'query': '', 'page': 1})
+        util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserListApi()
         self.assertRaises(errors.AuthError, api_.get, self.context)
 
     def test_retrieving_single(self):
-        user = _create_user('u1', 'regular_user')
+        user = util.mock_user('u1', 'regular_user')
         self.session.add(user)
         self.context.user.access_rank = 'regular_user'
-        _mock_params(self.context, {'query': '', 'page': 1})
+        util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserDetailApi()
         result = api_.get(self.context, 'u1')
         self.assertEqual(result['user']['id'], user.user_id)
@@ -83,13 +60,13 @@ class TestRetrievingUsers(DatabaseTestCase):
 
     def test_retrieving_non_existing(self):
         self.context.user.access_rank = 'regular_user'
-        _mock_params(self.context, {'query': '', 'page': 1})
+        util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserDetailApi()
         self.assertRaises(errors.NotFoundError, api_.get, self.context, '-')
 
     def test_retrieving_single_without_privileges(self):
         self.context.user.access_rank = 'anonymous'
-        _mock_params(self.context, {'query': '', 'page': 1})
+        util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserDetailApi()
         self.assertRaises(errors.AuthError, api_.get, self.context, '-')
 
@@ -200,7 +177,7 @@ class TestUpdatingUser(DatabaseTestCase):
         config.config = self.old_config
 
     def test_update_changing_nothing(self):
-        admin_user = _create_user('u1', 'admin')
+        admin_user = util.mock_user('u1', 'admin')
         self.session.add(admin_user)
         self.context.user = admin_user
         self.api.put(self.context, 'u1')
@@ -210,13 +187,13 @@ class TestUpdatingUser(DatabaseTestCase):
         self.assertEqual(admin_user.access_rank, 'admin')
 
     def test_updating_non_existing_user(self):
-        admin_user = _create_user('u1', 'admin')
+        admin_user = util.mock_user('u1', 'admin')
         self.session.add(admin_user)
         self.context.user = admin_user
         self.assertRaises(errors.NotFoundError, self.api.put, self.context, 'u2')
 
     def test_admin_updating_everything_for_themselves(self):
-        admin_user = _create_user('u1', 'admin')
+        admin_user = util.mock_user('u1', 'admin')
         self.session.add(admin_user)
         self.context.user = admin_user
         self.context.request = {
@@ -234,7 +211,7 @@ class TestUpdatingUser(DatabaseTestCase):
         self.assertFalse(auth.is_valid_password(admin_user, 'invalid'))
 
     def test_removing_email(self):
-        admin_user = _create_user('u1', 'admin')
+        admin_user = util.mock_user('u1', 'admin')
         self.session.add(admin_user)
         self.context.user = admin_user
         self.context.request = {'email': ''}
@@ -243,7 +220,7 @@ class TestUpdatingUser(DatabaseTestCase):
         self.assertEqual(admin_user.email, None)
 
     def test_invalid_inputs(self):
-        admin_user = _create_user('u1', 'admin')
+        admin_user = util.mock_user('u1', 'admin')
         self.session.add(admin_user)
         self.context.user = admin_user
         self.context.request = {'name': '.'}
@@ -260,8 +237,8 @@ class TestUpdatingUser(DatabaseTestCase):
             errors.ValidationError, self.api.put, self.context, 'u1')
 
     def test_user_trying_to_update_someone_else(self):
-        user1 = _create_user('u1', 'regular_user')
-        user2 = _create_user('u2', 'regular_user')
+        user1 = util.mock_user('u1', 'regular_user')
+        user2 = util.mock_user('u2', 'regular_user')
         self.session.add_all([user1, user2])
         self.context.user = user1
         for request in [
@@ -274,26 +251,28 @@ class TestUpdatingUser(DatabaseTestCase):
                 errors.AuthError, self.api.put, self.context, user2.name)
 
     def test_user_trying_to_become_someone_else(self):
-        user1 = _create_user('me', 'regular_user')
-        user2 = _create_user('her', 'regular_user')
+        user1 = util.mock_user('me', 'regular_user')
+        user2 = util.mock_user('her', 'regular_user')
         self.session.add_all([user1, user2])
         self.context.user = user1
         self.context.request = {'name': 'her'}
         self.assertRaises(
             errors.IntegrityError, self.api.put, self.context, 'me')
+        self.session.rollback()
 
     def test_user_trying_to_become_someone_else_insensitive(self):
-        user1 = _create_user('me', 'regular_user')
-        user2 = _create_user('her', 'regular_user')
+        user1 = util.mock_user('me', 'regular_user')
+        user2 = util.mock_user('her', 'regular_user')
         self.session.add_all([user1, user2])
         self.context.user = user1
         self.context.request = {'name': 'HER'}
         self.assertRaises(
             errors.IntegrityError, self.api.put, self.context, 'me')
+        self.session.rollback()
 
     def test_mods_trying_to_become_admin(self):
-        user1 = _create_user('u1', 'mod')
-        user2 = _create_user('u2', 'mod')
+        user1 = util.mock_user('u1', 'mod')
+        user2 = util.mock_user('u2', 'mod')
         self.session.add_all([user1, user2])
         self.context.user = user1
         self.context.request = {'accessRank': 'admin'}

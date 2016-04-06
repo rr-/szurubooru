@@ -68,3 +68,11 @@ def get_by_name(session, name):
     return session.query(db.User) \
         .filter(func.lower(db.User.name) == func.lower(name)) \
         .first()
+
+def get_by_name_or_email(session, name_or_email):
+    ''' Retrieve an user by its name or email. '''
+    return session.query(db.User) \
+        .filter(
+            (func.lower(db.User.name) == func.lower(name_or_email))
+            | (func.lower(db.User.email) == func.lower(name_or_email))) \
+        .first()

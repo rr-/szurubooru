@@ -64,7 +64,7 @@ def create_app():
 
     user_list_api = api.UserListApi()
     user_detail_api = api.UserDetailApi()
-    password_reminder_api = api.PasswordReminderApi()
+    password_reset_api = api.PasswordResetApi()
 
     app.add_error_handler(errors.AuthError, _on_auth_error)
     app.add_error_handler(errors.IntegrityError, _on_integrity_error)
@@ -74,6 +74,6 @@ def create_app():
 
     app.add_route('/users/', user_list_api)
     app.add_route('/user/{user_name}', user_detail_api)
-    app.add_route('/password_reminder/{user_name}', password_reminder_api)
+    app.add_route('/password-reset/{user_name}', password_reset_api)
 
     return app

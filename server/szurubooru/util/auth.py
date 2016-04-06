@@ -53,7 +53,7 @@ def verify_privilege(user, privilege_name):
 
 def generate_authentication_token(user):
     ''' Generate nonguessable challenge (e.g. links in password reminder). '''
-    digest = hashlib.sha256()
+    digest = hashlib.md5()
     digest.update(config.config['basic']['secret'].encode('utf8'))
     digest.update(user.password_salt.encode('utf8'))
     return digest.hexdigest()

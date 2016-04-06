@@ -8,18 +8,18 @@ MAIL_BODY = \
     'If you wish to proceed, click this link: {url}\n' \
     'Otherwise, please ignore this email.'
 
-class PasswordReminderApi(BaseApi):
+class PasswordResetApi(BaseApi):
     def get(self, context, user_name):
         ''' Send a mail with secure token to the correlated user. '''
-        user = users.get_by_name(context.session, user_name)
+        user = users.get_by_name_or_email(context.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
         if not user.email:
             raise errors.ValidationError(
                 'User %r hasn\'t supplied email. Cannot reset password.' % user_name)
         token = auth.generate_authentication_token(user)
-        url = '%s/password-reset/%s' % (
-            config.config['basic']['base_url'].rstrip('/'), token)
+        url = '%s/password-reset/%s:%s' % (
+            config.config['basic']['base_url'].rstrip('/'), user.name, token)
         mailer.send_mail(
             'noreply@%s' % config.config['basic']['name'],
             user.email,
@@ -29,7 +29,7 @@ class PasswordReminderApi(BaseApi):
 
     def post(self, context, user_name):
         ''' Verify token from mail, generate a new password and return it. '''
-        user = users.get_by_name(context.session, user_name)
+        user = users.get_by_name_or_email(context.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
         good_token = auth.generate_authentication_token(user)
