@@ -17,8 +17,8 @@ class RegistrationView extends BaseView {
         const userNameField = document.getElementById('user-name');
         const passwordField = document.getElementById('user-password');
         const emailField = document.getElementById('user-email');
-        userNameField.setAttribute('pattern', config.service.userNameRegex);
-        passwordField.setAttribute('pattern', config.service.passwordRegex);
+        userNameField.setAttribute('pattern', config.userNameRegex);
+        passwordField.setAttribute('pattern', config.passwordRegex);
 
         form.addEventListener('submit', e => {
             e.preventDefault();

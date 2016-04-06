@@ -5,40 +5,47 @@ const glob = require('glob');
 const path = require('path');
 const util = require('util');
 const execSync = require('child_process').execSync;
+const camelcase = require('camelcase');
+
+function convertKeysToCamelCase(input) {
+    let result = {};
+    Object.keys(input).map((key, _) => {
+        const value = input[key];
+        if (value !== null && value.constructor == Object) {
+            result[camelcase(key)] = convertKeysToCamelCase(value);
+        } else {
+            result[camelcase(key)] = value;
+        }
+    });
+    return result;
+}
 
 function getVersion() {
     return execSync('git describe --always --dirty --long --tags').toString();
 }
 
 function getConfig() {
-    const ini = require('ini');
+    const yaml = require('js-yaml');
     const merge = require('merge');
     const camelcaseKeys = require('camelcase-keys');
 
-    function parseIniFile(path) {
-        let result = ini.parse(fs.readFileSync(path, 'utf-8')
-            .replace(/#.+$/gm, '')
-            .replace(/\s+$/gm, ''));
-        Object.keys(result).map((key, _) => {
-            result[key] = camelcaseKeys(result[key]);
-        });
-        return result;
+    function parseConfigFile(path) {
+        let result = yaml.load(fs.readFileSync(path, 'utf-8'));
+        return convertKeysToCamelCase(result);
     }
 
-    let config = parseIniFile('../config.ini.dist');
+    let config = parseConfigFile('../config.yaml.dist');
 
     try {
-        const localConfig = parseIniFile('../config.ini');
+        const localConfig = parseConfigFile('../config.yaml');
         config = merge.recursive(config, localConfig);
     } catch (e) {
         console.warn('Local config does not exist, ignoring');
     }
 
-    delete config.basic.secret;
+    delete config.secret;
     delete config.smtp;
     delete config.database;
-    config.service.userRanks = config.service.userRanks.split(/,\s*/);
-    config.service.tagCategories = config.service.tagCategories.split(/,\s*/);
     config.meta = {
         version: getVersion(),
         buildDate: new Date().toUTCString(),
@@ -63,7 +70,7 @@ function bundleHtml(config) {
             .replace(/(<\/head>)/, templatesHtml + '$1')
             .replace(
                 /(<title>)(.*)(<\/title>)/,
-                util.format('$1%s$3', config.basic.name));
+                util.format('$1%s$3', config.name));
 
         fs.writeFileSync(
             './public/index.htm',

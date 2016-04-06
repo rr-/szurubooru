@@ -9,11 +9,9 @@ class TestPasswordReset(DatabaseTestCase):
     def setUp(self):
         super().setUp()
         config_mock = {
-            'basic': {
-                'secret': 'x',
-                'base_url': 'http://example.com/',
-                'name': 'Test instance',
-            },
+            'secret': 'x',
+            'base_url': 'http://example.com/',
+            'name': 'Test instance',
         }
         self.old_config = config.config
         config.config = config_mock

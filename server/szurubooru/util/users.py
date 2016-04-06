@@ -10,7 +10,7 @@ def create_user(name, password, email):
     update_name(user, name)
     update_password(user, password)
     update_email(user, email)
-    user.rank = config.config['service']['default_user_rank']
+    user.rank = config.config['default_rank']
     user.creation_time = datetime.now()
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
@@ -18,7 +18,7 @@ def create_user(name, password, email):
 def update_name(user, name):
     ''' Validate and update user's name. '''
     name = name.strip()
-    name_regex = config.config['service']['user_name_regex']
+    name_regex = config.config['user_name_regex']
     if not re.match(name_regex, name):
         raise errors.ValidationError(
             'Name must satisfy regex %r.' % name_regex)
@@ -26,7 +26,7 @@ def update_name(user, name):
 
 def update_password(user, password):
     ''' Validate and update user's password. '''
-    password_regex = config.config['service']['password_regex']
+    password_regex = config.config['password_regex']
     if not re.match(password_regex, password):
         raise errors.ValidationError(
             'Password must satisfy regex %r.' % password_regex)
@@ -43,10 +43,10 @@ def update_email(user, email):
 
 def update_rank(user, rank, authenticated_user):
     rank = rank.strip()
-    available_ranks = config.config['service']['user_ranks']
+    available_ranks = config.config['ranks']
     if not rank in available_ranks:
         raise errors.ValidationError(
-            'Bad rank. Valid ranks: %r' % available_ranks)
+            'Bad rank %r. Valid ranks: %r' % (rank, available_ranks))
     if available_ranks.index(authenticated_user.rank) \
             < available_ranks.index(rank):
         raise errors.AuthError('Trying to set higher rank than your own')

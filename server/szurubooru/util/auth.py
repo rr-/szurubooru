@@ -6,7 +6,7 @@ from szurubooru import errors
 def get_password_hash(salt, password):
     ''' Retrieve new-style password hash. '''
     digest = hashlib.sha256()
-    digest.update(config.config['basic']['secret'].encode('utf8'))
+    digest.update(config.config['secret'].encode('utf8'))
     digest.update(salt.encode('utf8'))
     digest.update(password.encode('utf8'))
     return digest.hexdigest()
@@ -42,7 +42,7 @@ def verify_privilege(user, privilege_name):
     '''
     Throw an AuthError if the given user doesn't have given privilege.
     '''
-    all_ranks = config.config['service']['user_ranks']
+    all_ranks = config.config['ranks']
 
     assert privilege_name in config.config['privileges']
     assert user.rank in all_ranks
@@ -54,6 +54,6 @@ def verify_privilege(user, privilege_name):
 def generate_authentication_token(user):
     ''' Generate nonguessable challenge (e.g. links in password reminder). '''
     digest = hashlib.md5()
-    digest.update(config.config['basic']['secret'].encode('utf8'))
+    digest.update(config.config['secret'].encode('utf8'))
     digest.update(user.password_salt.encode('utf8'))
     return digest.hexdigest()

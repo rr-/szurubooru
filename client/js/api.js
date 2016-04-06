@@ -48,7 +48,7 @@ class Api {
                 continue;
             }
             const rankName = config.privileges[privilege];
-            const rankIndex = config.service.userRanks.indexOf(rankName);
+            const rankIndex = config.ranks.indexOf(rankName);
             if (minViableRank === null || rankIndex < minViableRank) {
                 minViableRank = rankIndex;
             }
@@ -57,7 +57,7 @@ class Api {
             console.error('Bad privilege name: ' + lookup);
         }
         let myRank = this.user !== null ?
-            config.service.userRanks.indexOf(this.user.accessRank) :
+            config.ranks.indexOf(this.user.rank) :
             0;
         return myRank >= minViableRank;
     }
@@ -91,7 +91,7 @@ class Api {
     }
 
     getFullUrl(url) {
-        return (config.basic.apiUrl + '/' + url).replace(/([^:])\/+/g, '$1/');
+        return (config.apiUrl + '/' + url).replace(/([^:])\/+/g, '$1/');
     }
 }
 

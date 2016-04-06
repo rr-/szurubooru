@@ -75,12 +75,12 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
 1. Configure things:
 
     ```console
-    user@host:szuru$ cp config.ini.dist config.ini
-    user@host:szuru$ vim config.ini
+    user@host:szuru$ cp config.yaml.dist config.yaml
+    user@host:szuru$ vim config.yaml
     ```
 
-    Pay extra attention to the `[database]` section, `[smtp]` section, API URL
-    and base URL in `[basic]`.
+    Pay extra attention to API URL, base URL, the `database` section and the
+    `smtp` section.
 
 2. Compile the frontend:
 
@@ -132,7 +132,7 @@ Below are described the methods to integrate the API into a web server:
    `uwsgi`, but they'll need to write wrapper scripts themselves.
 
 Note that the API URL in the virtual host configuration needs to be the same as
-the one in the `config.ini`, so that client knows how to access the backend!
+the one in the `config.yaml`, so that client knows how to access the backend!
 
 #### Example
 
@@ -157,12 +157,11 @@ server {
 }
 ```
 
-**`config.ini`**:
+**`config.yaml`**:
 
-```ini
-[basic]
-api_url = http://big.dude/api/
-base_url = http://big.dude/
+```yaml
+api_url: 'http://big.dude/api/'
+base_url: 'http://big.dude/'
 ```
 
 Then the backend is started with `./server/host-waitress` from within

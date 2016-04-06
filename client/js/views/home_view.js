@@ -11,7 +11,7 @@ class HomeView extends BaseView {
 
     render(section) {
         this.showView(this.template({
-            name: config.basic.name,
+            name: config.name,
             version: config.meta.version,
             buildDate: config.meta.buildDate,
         }));

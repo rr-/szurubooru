@@ -17,8 +17,8 @@ class LoginView extends BaseView {
         const userNameField = document.getElementById('user-name');
         const passwordField = document.getElementById('user-password');
         const rememberUserField = document.getElementById('remember-user');
-        userNameField.setAttribute('pattern', config.service.userNameRegex);
-        passwordField.setAttribute('pattern', config.service.passwordRegex);
+        userNameField.setAttribute('pattern', config.userNameRegex);
+        passwordField.setAttribute('pattern', config.passwordRegex);
 
         form.addEventListener('submit', e => {
             e.preventDefault();

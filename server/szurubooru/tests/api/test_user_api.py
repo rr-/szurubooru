@@ -13,9 +13,7 @@ class TestRetrievingUsers(DatabaseTestCase):
                 'users:view': 'regular_user',
                 'users:create': 'regular_user',
             },
-            'service': {
-                'user_ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-            },
+            'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
         }
         self.old_config = config.config
         config.config = config_mock
@@ -74,15 +72,11 @@ class TestCreatingUser(DatabaseTestCase):
     def setUp(self):
         super().setUp()
         config_mock = {
-            'basic': {
-                'secret': '',
-            },
-            'service': {
-                'user_name_regex': '.{3,}',
-                'password_regex': '.{3,}',
-                'user_ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-                'default_user_rank': 'regular_user',
-            },
+            'secret': '',
+            'user_name_regex': '.{3,}',
+            'password_regex': '.{3,}',
+            'default_rank': 'regular_user',
+            'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
             'privileges': {
                 'users:create': 'anonymous',
             },
@@ -146,14 +140,10 @@ class TestUpdatingUser(DatabaseTestCase):
     def setUp(self):
         super().setUp()
         config_mock = {
-            'basic': {
-                'secret': '',
-            },
-            'service': {
-                'user_name_regex': '.{3,}',
-                'password_regex': '.{3,}',
-                'user_ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-            },
+            'secret': '',
+            'user_name_regex': '.{3,}',
+            'password_regex': '.{3,}',
+            'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
             'privileges': {
                 'users:edit:self:name': 'regular_user',
                 'users:edit:self:pass': 'regular_user',

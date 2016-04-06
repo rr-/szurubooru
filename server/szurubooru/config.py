@@ -1,13 +1,26 @@
 import os
-import configobj
+import yaml
 from szurubooru import errors
 
+def merge(left, right):
+    for key in right:
+        if key in left:
+            if isinstance(left[key], dict) and isinstance(right[key], dict):
+                merge(left[key], right[key])
+            elif left[key] != right[key]:
+                left[key] = right[key]
+        else:
+            left[key] = right[key]
+    return left
+
 class Config(object):
-    ''' INI config parser and container. '''
+    ''' Config parser and container. '''
     def __init__(self):
-        self.config = configobj.ConfigObj('../config.ini.dist')
-        if os.path.exists('../config.ini'):
-            self.config.merge(configobj.ConfigObj('../config.ini'))
+        with open('../config.yaml.dist') as handle:
+            self.config = yaml.load(handle.read())
+        if os.path.exists('../config.yaml'):
+            with open('../config.yaml') as handle:
+                self.config = merge(self.config, yaml.load(handle.read()))
         self._validate()
 
     def __getitem__(self, key):
@@ -15,22 +28,25 @@ class Config(object):
 
     def _validate(self):
         '''
-        Check whether config.ini doesn't contain errors that might prove
+        Check whether config doesn't contain errors that might prove
         lethal at runtime.
         '''
-        all_ranks = self['service']['user_ranks']
+        all_ranks = self['ranks']
         for privilege, rank in self['privileges'].items():
             if rank not in all_ranks:
                 raise errors.ConfigError(
-                    'Rank %r for privilege %r is missing from user_ranks' % (
-                        rank, privilege))
+                    'Rank %r for privilege %r is missing' % (rank, privilege))
         for rank in ['anonymous', 'admin', 'nobody']:
             if rank not in all_ranks:
-                raise errors.ConfigError(
-                    'Fixed rank %r is missing from user_ranks' % rank)
-        if self['service']['default_user_rank'] not in all_ranks:
+                raise errors.ConfigError('Protected rank %r is missing' % rank)
+        if self['default_rank'] not in all_ranks:
             raise errors.ConfigError(
-                'Default rank %r is missing from user_ranks' % (
-                    self['service']['default_user_rank']))
+                'Default rank %r is not on the list of known ranks' % (
+                    self['default_rank']))
+
+        for key in ['schema', 'host', 'port', 'user', 'pass', 'name']:
+            if not self['database'][key]:
+                raise errors.ConfigError(
+                    'Database is not configured: %r is missing' % key)
 
 config = Config() # pylint: disable=invalid-name

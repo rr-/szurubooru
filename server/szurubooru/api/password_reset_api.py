@@ -19,12 +19,12 @@ class PasswordResetApi(BaseApi):
                 'User %r hasn\'t supplied email. Cannot reset password.' % user_name)
         token = auth.generate_authentication_token(user)
         url = '%s/password-reset/%s:%s' % (
-            config.config['basic']['base_url'].rstrip('/'), user.name, token)
+            config.config['base_url'].rstrip('/'), user.name, token)
         mailer.send_mail(
-            'noreply@%s' % config.config['basic']['name'],
+            'noreply@%s' % config.config['name'],
             user.email,
-            MAIL_SUBJECT.format(name=config.config['basic']['name']),
-            MAIL_BODY.format(name=config.config['basic']['name'], url=url))
+            MAIL_SUBJECT.format(name=config.config['name']),
+            MAIL_BODY.format(name=config.config['name'], url=url))
         return {}
 
     def post(self, context, user_name):

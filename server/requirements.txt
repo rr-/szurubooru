@@ -1,5 +1,5 @@
 alembic>=0.8.5
-configobj>=5.0.6
+pyyaml>=3.11
 falcon>=0.3.0
 psycopg2>=2.6.1
 SQLAlchemy>=1.0.12
