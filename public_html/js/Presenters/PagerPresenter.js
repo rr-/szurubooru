@@ -62,8 +62,8 @@ App.Presenters.PagerPresenter = function(
             .fail(loaded);
 
         if (!endlessScroll) {
-            keyboard.keydown('a', navigateToPrevPage);
-            keyboard.keydown('d', navigateToNextPage);
+            keyboard.keydown(['a', 'left'], navigateToPrevPage);
+            keyboard.keydown(['d', 'right'], navigateToNextPage);
         }
     }
 
