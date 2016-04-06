@@ -45,10 +45,10 @@ def verify_privilege(user, privilege_name):
     all_ranks = config.config['service']['user_ranks']
 
     assert privilege_name in config.config['privileges']
-    assert user.access_rank in all_ranks
+    assert user.rank in all_ranks
     minimal_rank = config.config['privileges'][privilege_name]
     good_ranks = all_ranks[all_ranks.index(minimal_rank):]
-    if user.access_rank not in good_ranks:
+    if user.rank not in good_ranks:
         raise errors.AuthError('Insufficient privileges to do this.')
 
 def generate_authentication_token(user):

@@ -29,7 +29,7 @@ class TestRetrievingUsers(DatabaseTestCase):
         user2 = util.mock_user('u2', 'mod')
         self.session.add_all([user1, user2])
         util.mock_params(self.context, {'query': '', 'page': 1})
-        self.context.user.access_rank = 'regular_user'
+        self.context.user.rank = 'regular_user'
         api_ = api.UserListApi()
         result = api_.get(self.context)
         self.assertEqual(result['query'], '')
@@ -39,7 +39,7 @@ class TestRetrievingUsers(DatabaseTestCase):
         self.assertEqual([u['name'] for u in result['users']], ['u1', 'u2'])
 
     def test_retrieving_multiple_without_privileges(self):
-        self.context.user.access_rank = 'anonymous'
+        self.context.user.rank = 'anonymous'
         util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserListApi()
         self.assertRaises(errors.AuthError, api_.get, self.context)
@@ -47,25 +47,25 @@ class TestRetrievingUsers(DatabaseTestCase):
     def test_retrieving_single(self):
         user = util.mock_user('u1', 'regular_user')
         self.session.add(user)
-        self.context.user.access_rank = 'regular_user'
+        self.context.user.rank = 'regular_user'
         util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserDetailApi()
         result = api_.get(self.context, 'u1')
         self.assertEqual(result['user']['id'], user.user_id)
         self.assertEqual(result['user']['name'], 'u1')
-        self.assertEqual(result['user']['accessRank'], 'regular_user')
+        self.assertEqual(result['user']['rank'], 'regular_user')
         self.assertEqual(result['user']['creationTime'], datetime(1997, 1, 1))
         self.assertEqual(result['user']['lastLoginTime'], None)
         self.assertEqual(result['user']['avatarStyle'], 1) # i.e. integer
 
     def test_retrieving_non_existing(self):
-        self.context.user.access_rank = 'regular_user'
+        self.context.user.rank = 'regular_user'
         util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserDetailApi()
         self.assertRaises(errors.NotFoundError, api_.get, self.context, '-')
 
     def test_retrieving_single_without_privileges(self):
-        self.context.user.access_rank = 'anonymous'
+        self.context.user.rank = 'anonymous'
         util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserDetailApi()
         self.assertRaises(errors.AuthError, api_.get, self.context, '-')
@@ -94,7 +94,7 @@ class TestCreatingUser(DatabaseTestCase):
         self.context.session = self.session
         self.context.request = {}
         self.context.user = db.User()
-        self.context.user.access_rank = 'anonymous'
+        self.context.user.rank = 'anonymous'
 
     def tearDown(self):
         config.config = self.old_config
@@ -109,7 +109,7 @@ class TestCreatingUser(DatabaseTestCase):
         created_user = self.session.query(db.User).filter_by(name='chewie').one()
         self.assertEqual(created_user.name, 'chewie')
         self.assertEqual(created_user.email, 'asd@asd.asd')
-        self.assertEqual(created_user.access_rank, 'regular_user')
+        self.assertEqual(created_user.rank, 'regular_user')
         self.assertTrue(auth.is_valid_password(created_user, 'oks'))
         self.assertFalse(auth.is_valid_password(created_user, 'invalid'))
 
@@ -184,7 +184,7 @@ class TestUpdatingUser(DatabaseTestCase):
         admin_user = self.session.query(db.User).filter_by(name='u1').one()
         self.assertEqual(admin_user.name, 'u1')
         self.assertEqual(admin_user.email, 'dummy')
-        self.assertEqual(admin_user.access_rank, 'admin')
+        self.assertEqual(admin_user.rank, 'admin')
 
     def test_updating_non_existing_user(self):
         admin_user = util.mock_user('u1', 'admin')
@@ -200,13 +200,13 @@ class TestUpdatingUser(DatabaseTestCase):
             'name': 'chewie',
             'email': 'asd@asd.asd',
             'password': 'oks',
-            'accessRank': 'mod',
+            'rank': 'mod',
         }
         self.api.put(self.context, 'u1')
         admin_user = self.session.query(db.User).filter_by(name='chewie').one()
         self.assertEqual(admin_user.name, 'chewie')
         self.assertEqual(admin_user.email, 'asd@asd.asd')
-        self.assertEqual(admin_user.access_rank, 'mod')
+        self.assertEqual(admin_user.rank, 'mod')
         self.assertTrue(auth.is_valid_password(admin_user, 'oks'))
         self.assertFalse(auth.is_valid_password(admin_user, 'invalid'))
 
@@ -229,7 +229,7 @@ class TestUpdatingUser(DatabaseTestCase):
         self.context.request = {'password': '.'}
         self.assertRaises(
             errors.ValidationError, self.api.put, self.context, 'u1')
-        self.context.request = {'accessRank': '.'}
+        self.context.request = {'rank': '.'}
         self.assertRaises(
             errors.ValidationError, self.api.put, self.context, 'u1')
         self.context.request = {'email': '.'}
@@ -244,7 +244,7 @@ class TestUpdatingUser(DatabaseTestCase):
         for request in [
                 {'name': 'whatever'},
                 {'email': 'whatever'},
-                {'accessRank': 'whatever'},
+                {'rank': 'whatever'},
                 {'password': 'whatever'}]:
             self.context.request = request
             self.assertRaises(
@@ -275,7 +275,7 @@ class TestUpdatingUser(DatabaseTestCase):
         user2 = util.mock_user('u2', 'mod')
         self.session.add_all([user1, user2])
         self.context.user = user1
-        self.context.request = {'accessRank': 'admin'}
+        self.context.request = {'rank': 'admin'}
         self.assertRaises(
             errors.AuthError, self.api.put, self.context, user1.name)
         self.assertRaises(

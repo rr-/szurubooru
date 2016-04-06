@@ -50,6 +50,6 @@ class Authenticator(object):
     def _create_anonymous_user(self):
         user = db.User()
         user.name = None
-        user.access_rank = 'anonymous'
+        user.rank = 'anonymous'
         user.password = None
         return user

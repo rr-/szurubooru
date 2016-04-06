@@ -8,7 +8,7 @@ def mock_user(name, rank='admin'):
     user.password_salt = 'dummy'
     user.password_hash = 'dummy'
     user.email = 'dummy'
-    user.access_rank = rank
+    user.rank = rank
     user.creation_time = datetime(1997, 1, 1)
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user

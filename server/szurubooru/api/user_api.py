@@ -6,7 +6,7 @@ def _serialize_user(authenticated_user, user):
     ret = {
         'id': user.user_id,
         'name': user.name,
-        'accessRank': user.access_rank,
+        'rank': user.rank,
         'creationTime': user.creation_time,
         'lastLoginTime': user.last_login_time,
         'avatarStyle': user.avatar_style
@@ -91,9 +91,9 @@ class UserDetailApi(BaseApi):
             auth.verify_privilege(context.user, 'users:edit:%s:email' % infix)
             users.update_email(user, context.request['email'])
 
-        if 'accessRank' in context.request:
+        if 'rank' in context.request:
             auth.verify_privilege(context.user, 'users:edit:%s:rank' % infix)
-            users.update_rank(user, context.request['accessRank'], context.user)
+            users.update_rank(user, context.request['rank'], context.user)
 
         # TODO: avatar
 

@@ -10,7 +10,7 @@ def create_user(name, password, email):
     update_name(user, name)
     update_password(user, password)
     update_email(user, email)
-    user.access_rank = config.config['service']['default_user_rank']
+    user.rank = config.config['service']['default_user_rank']
     user.creation_time = datetime.now()
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
@@ -43,14 +43,14 @@ def update_email(user, email):
 
 def update_rank(user, rank, authenticated_user):
     rank = rank.strip()
-    available_access_ranks = config.config['service']['user_ranks']
-    if not rank in available_access_ranks:
+    available_ranks = config.config['service']['user_ranks']
+    if not rank in available_ranks:
         raise errors.ValidationError(
-            'Bad access rank. Valid access ranks: %r' % available_access_ranks)
-    if available_access_ranks.index(authenticated_user.access_rank) \
-            < available_access_ranks.index(rank):
-        raise errors.AuthError('Trying to set higher access rank than one has')
-    user.access_rank = rank
+            'Bad rank. Valid ranks: %r' % available_ranks)
+    if available_ranks.index(authenticated_user.rank) \
+            < available_ranks.index(rank):
+        raise errors.AuthError('Trying to set higher rank than your own')
+    user.rank = rank
 
 def bump_login_time(user):
     ''' Update user's login time to current date. '''
