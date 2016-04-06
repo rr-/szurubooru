@@ -1,26 +1,21 @@
 from datetime import datetime
-from szurubooru import api, db, errors, config
-from szurubooru.util import auth, misc
+from szurubooru import api, db, errors
+from szurubooru.util import auth
 from szurubooru.tests.database_test_case import DatabaseTestCase
 from szurubooru.tests.api import util
 
 class TestRetrievingUsers(DatabaseTestCase):
     def setUp(self):
         super().setUp()
-        config_mock = {
+        util.mock_config({
             'privileges': {
                 'users:list': 'regular_user',
                 'users:view': 'regular_user',
                 'users:create': 'regular_user',
             },
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        }
-        self.old_config = config.config
-        config.config = config_mock
-        self.context = misc.dotdict()
-        self.context.session = self.session
-        self.context.request = {}
-        self.context.user = db.User()
+        })
+        util.mock_context(self)
 
     def test_retrieving_multiple(self):
         user1 = util.mock_user('u1', 'mod')
@@ -71,7 +66,7 @@ class TestRetrievingUsers(DatabaseTestCase):
 class TestCreatingUser(DatabaseTestCase):
     def setUp(self):
         super().setUp()
-        config_mock = {
+        util.mock_config({
             'secret': '',
             'user_name_regex': '.{3,}',
             'password_regex': '.{3,}',
@@ -80,18 +75,10 @@ class TestCreatingUser(DatabaseTestCase):
             'privileges': {
                 'users:create': 'anonymous',
             },
-        }
-        self.old_config = config.config
-        config.config = config_mock
+        })
         self.api = api.UserListApi()
-        self.context = misc.dotdict()
-        self.context.session = self.session
-        self.context.request = {}
-        self.context.user = db.User()
+        util.mock_context(self)
         self.context.user.rank = 'anonymous'
-
-    def tearDown(self):
-        config.config = self.old_config
 
     def test_creating_valid_user(self):
         self.context.request = {
@@ -139,7 +126,7 @@ class TestCreatingUser(DatabaseTestCase):
 class TestUpdatingUser(DatabaseTestCase):
     def setUp(self):
         super().setUp()
-        config_mock = {
+        util.mock_config({
             'secret': '',
             'user_name_regex': '.{3,}',
             'password_regex': '.{3,}',
@@ -155,16 +142,9 @@ class TestUpdatingUser(DatabaseTestCase):
                 'users:edit:any:email': 'mod',
                 'users:edit:any:rank': 'admin',
             },
-        }
-        self.old_config = config.config
-        config.config = config_mock
+        })
+        util.mock_context(self)
         self.api = api.UserDetailApi()
-        self.context = misc.dotdict()
-        self.context.session = self.session
-        self.context.request = {}
-
-    def tearDown(self):
-        config.config = self.old_config
 
     def test_update_changing_nothing(self):
         admin_user = util.mock_user('u1', 'admin')

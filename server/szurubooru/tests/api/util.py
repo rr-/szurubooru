@@ -1,5 +1,9 @@
 from datetime import datetime
-from szurubooru import db
+from szurubooru import config, db
+from szurubooru.util import misc
+
+def mock_config(config_mock):
+    config.config = config_mock
 
 def mock_user(name, rank='admin'):
     user = db.User()
@@ -12,6 +16,13 @@ def mock_user(name, rank='admin'):
     user.creation_time = datetime(1997, 1, 1)
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
+
+def mock_context(parent):
+    context = misc.dotdict()
+    context.session = parent.session
+    context.request = {}
+    context.user = db.User()
+    parent.context = context
 
 def mock_params(context, params):
     def get_param_as_string(key, default=None):

@@ -1,5 +1,5 @@
 from datetime import datetime
-from szurubooru import db, errors, search
+from szurubooru import errors, search
 from szurubooru.tests.database_test_case import DatabaseTestCase
 from szurubooru.tests.api import util
 
