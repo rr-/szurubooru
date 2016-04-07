@@ -53,11 +53,16 @@ form:not(.tabular) ul li label {
     padding: 0.5em 0;
 }
 
+
+
+/*
+ * Radio buttons and checkboxes
+ */
 input[type=radio], input[type=checkbox] {
     float: left;
-    display: none;
+    position: absolute;
+    opacity: 0;
 }
-
 .radio, .checkbox {
     box-sizing: border-box;
     position: relative;
@@ -82,25 +87,6 @@ input[type=radio], input[type=checkbox] {
     border: 2px solid var(--input-enabled-border-color);
     content: '';
 }
-input[type=radio]:checked + .radio:before,
-input[type=checkbox]:checked + .checkbox:before {
-    border-color: var(--main-color);
-}
-input[type=radio]:checked + .radio:after,
-input[type=checkbox]:checked + .checkbox:after {
-    opacity: 1;
-}
-input[type=radio]:disabled + .radio:before,
-input[type=checkbox]:disabled + .checkbox:before,
-input[type=radio]:disabled + .radio:after,
-input[type=checkbox]:disabled + .checkbox:after {
-    border-color: var(--input-disabled-text-color);
-}
-input[type=radio]:disabled + .radio,
-input[type=checkbox]:disabled + .checkbox {
-    border-color: var(--input-disabled-font-color);
-}
-
 .radio:after {
     transition: opacity 0.1s linear;
     position: absolute;
@@ -130,6 +116,34 @@ input[type=checkbox]:disabled + .checkbox {
     transform: rotate(45deg);
 }
 
+input[type=radio]:checked + .radio:before,
+input[type=checkbox]:checked + .checkbox:before {
+    border-color: var(--main-color);
+}
+input[type=radio]:checked + .radio:after,
+input[type=checkbox]:checked + .checkbox:after {
+    opacity: 1;
+}
+input[type=radio]:disabled + .radio:before,
+input[type=checkbox]:disabled + .checkbox:before,
+input[type=radio]:disabled + .radio:after,
+input[type=checkbox]:disabled + .checkbox:after {
+    border-color: var(--input-disabled-text-color);
+}
+input[type=radio]:disabled + .radio,
+input[type=checkbox]:disabled + .checkbox {
+    border-color: var(--input-disabled-font-color);
+}
+input[type=radio]:focus + .radio:before,
+input[type=checkbox]:focus + .checkbox:before {
+    border-color: var(--main-color);
+}
+
+
+
+/*
+ * Regular inputs
+ */
 textarea,
 input[type=text],
 input[type=email],
@@ -174,6 +188,11 @@ form.show-validation fieldset.input input:valid {
     background: var(--input-good-background-color);
 }
 
+
+
+/*
+ * Buttons
+ */
 button,
 input[type=button],
 input[type=submit] {
@@ -185,7 +204,6 @@ input[type=submit] {
     background: var(--button-enabled-background-color);
     color: var(--button-enabled-text-color);
 }
-
 button:disabled,
 input[type=button]:disabled,
 input[type=submit]:disabled {
