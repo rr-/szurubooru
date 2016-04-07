@@ -3,6 +3,7 @@
 const handlebars = require('handlebars');
 const events = require('../events.js');
 const contentHolder = document.getElementById('content-holder');
+require('../util/polyfill.js');
 
 function messageHandler(message, className) {
     const messagesHolder = contentHolder.querySelector('.messages');
@@ -20,9 +21,6 @@ function messageHandler(message, className) {
 
 events.listen(events.Success, msg => { messageHandler(msg, 'success'); });
 events.listen(events.Error, msg => { messageHandler(msg, 'error'); });
-
-// fix iterating over NodeList in Chrome and Opera
-NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 
 class BaseView {
     constructor() {

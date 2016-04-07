@@ -1,5 +1,6 @@
 'use strict';
 
+require('./util/polyfill.js');
 require('./util/handlebars-helpers.js');
 
 let controllers = [];
