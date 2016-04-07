@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const events = require('../events.js');
 const TopNavView = require('../views/top_nav_view.js');
 
 class NavigationItem {
@@ -31,11 +32,13 @@ class TopNavController {
             'help':     new NavigationItem('E', 'Help',     '/help'),
         };
 
-        api.authenticated.listen(() => {
-            this.updateVisibility();
-            this.topNavView.render(this.items, this.activeItem);
-            this.topNavView.activate(this.activeItem);
-        });
+        events.listen(
+            events.Authentication,
+            () => {
+                this.updateVisibility();
+                this.topNavView.render(this.items, this.activeItem);
+                this.topNavView.activate(this.activeItem);
+            });
 
         this.updateVisibility();
         this.topNavView.render(this.items, this.activeItem);

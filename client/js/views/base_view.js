@@ -1,13 +1,32 @@
 'use strict';
 
 const handlebars = require('handlebars');
+const events = require('../events.js');
+const contentHolder = document.getElementById('content-holder');
+
+function messageHandler(message, className) {
+    const messagesHolder = contentHolder.querySelector('.messages');
+    if (!messagesHolder) {
+        alert(message);
+        return;
+    }
+    /* TODO: animate this */
+    const node = document.createElement('div');
+    node.innerHTML = message.replace(/\n/g, '<br/>');
+    node.classList.add('message');
+    node.classList.add(className);
+    messagesHolder.appendChild(node);
+}
+
+events.listen(events.Success, msg => { messageHandler(msg, 'success'); });
+events.listen(events.Error, msg => { messageHandler(msg, 'error'); });
 
 // fix iterating over NodeList in Chrome and Opera
 NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 
 class BaseView {
     constructor() {
-        this.contentHolder = document.getElementById('content-holder');
+        this.contentHolder = contentHolder;
     }
 
     getTemplate(templatePath) {
@@ -18,24 +37,6 @@ class BaseView {
         }
         const templateText = templateElement.innerHTML;
         return handlebars.compile(templateText);
-    }
-
-    notifyError(message) {
-        this.notify(message, 'error');
-    }
-
-    notifySuccess(message) {
-        this.notify(message, 'success');
-    }
-
-    notify(message, className) {
-        const messagesHolder = this.contentHolder.querySelector('.messages');
-        /* TODO: animate this */
-        const node = document.createElement('div');
-        node.innerHTML = message.replace(/\n/g, '<br/>');
-        node.classList.add('message');
-        node.classList.add(className);
-        messagesHolder.appendChild(node);
     }
 
     clearMessages() {

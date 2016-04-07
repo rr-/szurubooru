@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('../config.js');
+const events = require('../events.js');
 const BaseView = require('./base_view.js');
 
 class LoginView extends BaseView {
@@ -34,7 +35,7 @@ class LoginView extends BaseView {
                 })
                 .catch(errorMessage => {
                     this.enableForm(form);
-                    this.notifyError(errorMessage);
+                    events.notify(events.Error, errorMessage);
                 });
         });
     }

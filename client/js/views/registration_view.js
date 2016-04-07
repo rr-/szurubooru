@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('../config.js');
+const events = require('../events.js');
 const BaseView = require('./base_view.js');
 
 class RegistrationView extends BaseView {
@@ -11,12 +12,13 @@ class RegistrationView extends BaseView {
 
     render(options) {
         this.showView(this.template());
-        const form = document.querySelector('#content-holder form');
-        this.decorateValidator(form);
 
-        const userNameField = document.getElementById('user-name');
-        const passwordField = document.getElementById('user-password');
-        const emailField = document.getElementById('user-email');
+        const form = this.contentHolder.querySelector('form');
+        const userNameField = this.contentHolder.querySelector('#user-name');
+        const passwordField = this.contentHolder.querySelector('#user-password');
+        const emailField = this.contentHolder.querySelector('#user-email');
+
+        this.decorateValidator(form);
         userNameField.setAttribute('pattern', config.userNameRegex);
         passwordField.setAttribute('pattern', config.passwordRegex);
 
@@ -34,7 +36,7 @@ class RegistrationView extends BaseView {
                 })
                 .catch(errorMessage => {
                     this.enableForm(form);
-                    this.notifyError(errorMessage);
+                    events.notify(events.Error, errorMessage);
                 });
         });
     }

@@ -3,6 +3,7 @@
 const cookies = require('js-cookie');
 const page = require('page');
 const api = require('../api.js');
+const events = require('../events.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const RegistrationView = require('../views/registration_view.js');
 const UserView = require('../views/user_view.js');
@@ -50,7 +51,7 @@ class UsersController {
                     cookies.set('auth', {'user': name, 'password': password});
                     resolve();
                     page('/');
-                    this.registrationView.notifySuccess('Welcome aboard!');
+                    events.notify(events.Success, 'Welcome aboard!');
                 }).catch(response => {
                     reject(response.description);
                 });
@@ -74,7 +75,7 @@ class UsersController {
                 next();
             }).catch(response => {
                 this.userView.empty();
-                this.userView.notifyError(response.description);
+                events.notify(events.Error, response.description);
             });
         }
     }

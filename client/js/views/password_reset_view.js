@@ -1,5 +1,6 @@
 'use strict';
 
+const events = require('../events.js');
 const BaseView = require('./base_view.js');
 
 class PasswordResetView extends BaseView {
@@ -22,13 +23,14 @@ class PasswordResetView extends BaseView {
             options
                 .proceed(userNameOrEmailField.value)
                 .then(() => {
-                    this.notifySuccess(
+                    events.notify(
+                        events.Success,
                         'E-mail has been sent. To finish the procedure, ' +
                         'please click the link it contains.');
                 })
                 .catch(errorMessage => {
                     this.enableForm(form);
-                    this.notifyError(errorMessage);
+                    events.notify(events.Error, errorMessage);
                 });
         });
     }

@@ -3,6 +3,7 @@
 const cookies = require('js-cookie');
 const page = require('page');
 const api = require('../api.js');
+const events = require('../events.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const LoginView = require('../views/login_view.js');
 const PasswordResetView = require('../views/password_reset_view.js');
@@ -11,16 +12,21 @@ class AuthController {
     constructor() {
         this.loginView = new LoginView();
         this.passwordResetView = new PasswordResetView();
+    }
 
-        const auth = cookies.getJSON('auth');
-        if (auth && auth.user && auth.password) {
-            api.login(auth.user, auth.password).catch(errorMessage => {
-                page('/');
-                this.loginView.notifyError(
-                    'An error happened while trying to log you in: ' +
-                    errorMessage);
-            });
-        }
+    login() {
+        return new Promise((resolve, reject) => {
+            const auth = cookies.getJSON('auth');
+            if (auth && auth.user && auth.password) {
+                api.login(auth.user, auth.password)
+                    .then(resolve)
+                    .catch(errorMessage => {
+                        reject(errorMessage);
+                    });
+            } else {
+                resolve();
+            }
+        });
     }
 
     registerRoutes() {
@@ -51,7 +57,7 @@ class AuthController {
                                 options);
                             resolve();
                             page('/');
-                            this.loginView.notifySuccess('Logged in');
+                            events.notify(events.Success, 'Logged in');
                         }).catch(errorMessage => { reject(errorMessage); });
                 });
             }});
@@ -61,7 +67,7 @@ class AuthController {
         api.logout();
         cookies.remove('auth');
         page('/');
-        this.loginView.notifySuccess('Logged out');
+        events.notify(events.Success, 'Logged out');
     }
 
     passwordResetRoute() {
@@ -89,15 +95,15 @@ class AuthController {
                         cookies.set(
                             'auth', {'user': name, 'password': password}, {});
                         page('/');
-                        this.passwordResetView.notifySuccess(
+                        events.notify(events.Success,
                             'New password: ' + password);
                     }).catch(errorMessage => {
                         page('/');
-                        this.passwordResetView.notifyError(errorMessage);
+                        events.notify(events.Error, errorMessage);
                     });
             }).catch(response => {
                 page('/');
-                this.passwordResetView.notifyError(response.description);
+                events.notify(events.Error, response.description);
             });
     }
 }

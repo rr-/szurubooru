@@ -2,14 +2,13 @@
 
 const request = require('superagent');
 const config = require('./config.js');
-const EventListener = require('./event_listener.js');
+const events = require('./events.js');
 
 class Api {
     constructor() {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
-        this.authenticated = new EventListener();
     }
 
     get(url) {
@@ -70,11 +69,11 @@ class Api {
                 .then(response => {
                     this.user = response.user;
                     resolve();
-                    this.authenticated.fire();
+                    events.notify(events.Authentication);
                 }).catch(response => {
                     reject(response.description);
                     this.logout();
-                    this.authenticated.fire();
+                    events.notify(events.Authentication);
                 });
         });
     }
@@ -83,7 +82,7 @@ class Api {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
-        this.authenticated.fire();
+        events.notify(events.Authentication);
     }
 
     isLoggedIn() {
