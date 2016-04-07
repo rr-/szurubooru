@@ -4,6 +4,9 @@
     --text-color: #111;
     --inactive-link-color: #888;
     --line-color: #DDD;
+    --inactive-tab-text-color: var(--inactive-link-color);
+    --active-tab-text-color: var(--text-color);
+    --active-tab-background-color: #E5E5E5;
     --message-error-border-color: #FCC;
     --message-error-background-color: #FFF5F5;
     --message-success-border-color: #D3E3D3;
@@ -97,11 +100,11 @@ nav.text-nav ul li a {
     padding: 0.3em 1.2em;
 }
 nav.text-nav ul li:not(.active) a {
-    color: var(--inactive-link-color);
+    color: var(--inactive-tab-text-color);
 }
 nav.text-nav ul li.active a {
-    background: var(--main-color);
-    color: white;
+    background: var(--active-tab-background-color);
+    color: var(--active-tab-text-color);
 }
 
 #top-nav {
