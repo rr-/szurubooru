@@ -100,7 +100,7 @@ function bundleJs(config) {
     const uglifyjs = require('uglify-js');
     glob('./js/**/*.js', {}, function(er, files) {
         const outputFile = fs.createWriteStream('./public/bundle.min.js');
-        browserify().add(files).bundle().pipe(outputFile);
+        browserify({debug: config.debug}).add(files).bundle().pipe(outputFile);
         outputFile.on('finish', function() {
             if (!config.debug) {
                 const result = uglifyjs.minify('./public/bundle.min.js');
