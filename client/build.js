@@ -95,15 +95,17 @@ function bundleCss() {
     });
 }
 
-function bundleJs() {
+function bundleJs(config) {
     const browserify = require('browserify');
     const uglifyjs = require('uglify-js');
     glob('./js/**/*.js', {}, function(er, files) {
         const outputFile = fs.createWriteStream('./public/bundle.min.js');
         browserify().add(files).bundle().pipe(outputFile);
         outputFile.on('finish', function() {
-            const result = uglifyjs.minify('./public/bundle.min.js');
-            fs.writeFileSync('./public/bundle.min.js', result.code);
+            if (!config.debug) {
+                const result = uglifyjs.minify('./public/bundle.min.js');
+                fs.writeFileSync('./public/bundle.min.js', result.code);
+            }
             console.info('Bundled JS');
         });
     });
@@ -122,5 +124,5 @@ const config = getConfig();
 bundleConfig(config);
 bundleHtml(config);
 bundleCss();
-bundleJs();
+bundleJs(config);
 copyFile('./img/favicon.png', './public/favicon.png');
