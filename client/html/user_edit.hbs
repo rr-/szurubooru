@@ -1,3 +1,45 @@
 <div id='user-edit'>
-    <strong>Placeholder for account settings form</strong>
+    <form>
+        <fieldset class='input'>
+            <ul>
+                {{#if this.canEditName}}
+                    <li>
+                        <label for='user-name'>User name</label>
+                        <input id='user-name' name='name' type='text' value='{{this.user.name}}'/>
+                    </li>
+                {{/if}}
+
+                {{#if this.canEditPassword}}
+                    <li>
+                        <label for='user-password'>Password</label>
+                        <input id='user-password' name='password' type='password'/>
+                        <p class='hint'>Leave empty to keep the password unchanged.</p>
+                    </li>
+                {{/if}}
+
+                {{#if this.canEditEmail}}
+                    <li>
+                        <label for='user-email'>Email</label>
+                        <input id='user-email' name='email' type='email' value='{{this.user.email}}'/>
+                    </li>
+                {{/if}}
+
+                {{#if this.canEditRank}}
+                    <li>
+                        <label for='user-rank'>Rank</label>
+                        <select id='user-rank' name='rank'>
+                            {{#each this.ranks}}
+                                <option value='{{@key}}'>{{this}}</option>
+                            {{/each}}
+                        </select>
+                    </li>
+                {{/if}}
+            </ul>
+            <!-- TODO: avatar -->
+        </fieldset>
+        <fieldset class='messages'></fieldset>
+        <fieldset class='buttons'>
+            <input type='submit' value='Save settings'/>
+        </fieldset>
+    </form>
 </div>

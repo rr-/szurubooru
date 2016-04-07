@@ -1,5 +1,16 @@
 'use strict';
 
+function* range(start=0, end=null, step=1) {
+    if (end == null) {
+        end = start;
+        start = 0;
+    }
+
+    for (let i = start; i < end; i += step) {
+        yield i;
+    }
+}
+
 function formatRelativeTime(timeString) {
     if (!timeString) {
         return 'never';
@@ -41,4 +52,7 @@ function formatRelativeTime(timeString) {
     return future ? 'in ' + text : text + ' ago';
 }
 
-module.exports = {formatRelativeTime: formatRelativeTime};
+module.exports = {
+    range: range,
+    formatRelativeTime: formatRelativeTime,
+};

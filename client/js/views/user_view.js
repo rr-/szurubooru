@@ -25,7 +25,7 @@ class UserView extends BaseView {
             view = this.summaryView;
         }
 
-        this.showView(this.template(options.user));
+        this.showView(this.template(options));
 
         options.target = this.contentHolder.querySelector(
             '#user-content-holder');

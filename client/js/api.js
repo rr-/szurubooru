@@ -22,6 +22,11 @@ class Api {
         return this._process(fullUrl, () => request.post(fullUrl).send(data));
     }
 
+    put(url, data) {
+        const fullUrl = this.getFullUrl(url);
+        return this._process(fullUrl, () => request.put(fullUrl).send(data));
+    }
+
     _process(url, requestFactory) {
         return new Promise((resolve, reject) => {
             let req = requestFactory();

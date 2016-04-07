@@ -21,6 +21,9 @@ form ul {
 form ul li {
     margin-top: 0.5em;
 }
+form .input {
+    margin-bottom: 1em;
+}
 form .buttons {
     margin-top: 1em;
 }
@@ -144,6 +147,7 @@ input[type=checkbox]:focus + .checkbox:before {
 /*
  * Regular inputs
  */
+select,
 textarea,
 input[type=text],
 input[type=email],
@@ -161,6 +165,7 @@ input[type=password] {
     transition: border-color 0.1s linear, background-color 0.1s linear;
 }
 
+select:disabled,
 textarea:disabled,
 input[type=text]:disabled,
 input[type=email]:disabled,
@@ -170,6 +175,7 @@ input[type=password]:disabled {
     color: var(--input-disabled-text-color);
 }
 
+select:focus,
 textarea:focus,
 input[type=text]:focus,
 input[type=email]:focus,
@@ -216,6 +222,9 @@ button:focus,
 input[type=button]:focus,
 input[type=submit]:focus {
     outline: 2px solid var(--text-color);
+}
+select:-moz-focusring {
+    text-shadow: 0;
 }
 button::-moz-focus-inner,
 input::-moz-focus-inner {

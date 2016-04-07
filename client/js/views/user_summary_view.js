@@ -9,8 +9,7 @@ class UserSummaryView extends BaseView {
     }
 
     render(options) {
-        options.target.innerHTML = this.template({
-            user: options.user, isPrivate: options.isPrivate});
+        options.target.innerHTML = this.template(options);
     }
 }
 

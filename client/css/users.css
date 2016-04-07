@@ -26,8 +26,10 @@
 #user-registration .info p:first-child {
     margin: 0 0 0.5em 0;
 }
-#user-registration p.hint {
+#user .hint,
+#user-registration .hint {
     margin-top: 0.5em;
+    margin-bottom: 0;
     color: var(--inactive-link-color);
     font-size: 80%;
     line-height: 120%;
@@ -45,6 +47,7 @@
 }
 #user-summary img {
     width: 6em;
+    height: 6em;
     margin: 0 1.5em 1.5em 0;
     float: left;
 }

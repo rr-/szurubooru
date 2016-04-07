@@ -38,6 +38,7 @@ body {
 
 h1, h2, h3 {
     font-weight: normal;
+    margin-bottom: 1em;
 }
 
 a {
