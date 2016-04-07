@@ -212,3 +212,12 @@ input[type=submit]:disabled {
     background-color: var(--button-disabled-background-color);
     color: var(--button-disabled-text-color);
 }
+button:focus,
+input[type=button]:focus,
+input[type=submit]:focus {
+    outline: 2px solid var(--text-color);
+}
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+}
