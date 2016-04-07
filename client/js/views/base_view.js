@@ -6,6 +6,9 @@ const contentHolder = document.getElementById('content-holder');
 require('../util/polyfill.js');
 
 function messageHandler(message, className) {
+    if (!message) {
+        message = 'Unknown message';
+    }
     const messagesHolder = contentHolder.querySelector('.messages');
     if (!messagesHolder) {
         alert(message);
