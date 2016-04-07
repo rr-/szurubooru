@@ -28,6 +28,7 @@
 }
 
 body {
+    overflow-y: scroll;
     margin: 0;
     color: var(--text-color);
     font-family: 'Droid Sans' !important;
