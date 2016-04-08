@@ -10,13 +10,14 @@ class RegistrationView extends BaseView {
         this.template = this.getTemplate('user-registration-template');
     }
 
-    render(options) {
-        this.showView(this.template());
+    render(ctx) {
+        const target = this.contentHolder;
+        const source = this.template();
 
-        const form = this.contentHolder.querySelector('form');
-        const userNameField = this.contentHolder.querySelector('#user-name');
-        const passwordField = this.contentHolder.querySelector('#user-password');
-        const emailField = this.contentHolder.querySelector('#user-email');
+        const form = source.querySelector('form');
+        const userNameField = source.querySelector('#user-name');
+        const passwordField = source.querySelector('#user-password');
+        const emailField = source.querySelector('#user-email');
 
         this.decorateValidator(form);
         userNameField.setAttribute('pattern', config.userNameRegex);
@@ -26,8 +27,7 @@ class RegistrationView extends BaseView {
             e.preventDefault();
             this.clearMessages();
             this.disableForm(form);
-            options
-                .register(
+            ctx.register(
                     userNameField.value,
                     passwordField.value,
                     emailField.value)
@@ -39,6 +39,8 @@ class RegistrationView extends BaseView {
                     events.notify(events.Error, errorMessage);
                 });
         });
+
+        this.showView(target, source);
     }
 }
 

@@ -28,16 +28,27 @@ events.listen(events.Error, msg => { messageHandler(msg, 'error'); });
 class BaseView {
     constructor() {
         this.contentHolder = contentHolder;
+        this.domParser = new DOMParser();
+    }
+
+    htmlToDom(html) {
+        const parsed = this.domParser.parseFromString(html, 'text/html').body;
+        return parsed.childNodes.length > 1 ?
+            parsed.childNodes :
+            parsed.firstChild;
     }
 
     getTemplate(templatePath) {
         const templateElement = document.getElementById(templatePath);
         if (!templateElement) {
-            console.log('Missing template: ' + templatePath);
+            console.error('Missing template: ' + templatePath);
             return null;
         }
-        const templateText = templateElement.innerHTML;
-        return handlebars.compile(templateText);
+        const templateText = templateElement.innerHTML.trim();
+        const templateFactory = handlebars.compile(templateText);
+        return (...args) => {
+            return this.htmlToDom(templateFactory(...args));
+        };
     }
 
     clearMessages() {
@@ -72,12 +83,32 @@ class BaseView {
         }
     }
 
-    empty() {
-        this.showView('<div class="messages"></div>');
+    emptyView(target) {
+        return this.showView(
+            target,
+            this.htmlToDom('<div class="messages"></div>'));
     }
 
-    showView(html) {
-        this.contentHolder.innerHTML = html;
+    showView(target, source) {
+        return new Promise((resolve, reject) => {
+            let observer = new MutationObserver(mutations => {
+                resolve();
+                observer.disconnect();
+            });
+            observer.observe(target, {childList: true});
+            while (target.lastChild) {
+                target.removeChild(target.lastChild);
+            }
+            if (source instanceof NodeList) {
+                for (let child of source) {
+                    target.appendChild(child);
+                }
+            } else if (source instanceof Node) {
+                target.appendChild(source);
+            } else {
+                console.error('Invalid view source', source);
+            }
+        });
     }
 }
 

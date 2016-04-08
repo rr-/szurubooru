@@ -18,7 +18,9 @@ class HelpController {
 
     showHelpRoute(section) {
         topNavController.activate('help');
-        this.helpView.render(section);
+        this.helpView.render({
+            section: section,
+        });
     }
 }
 

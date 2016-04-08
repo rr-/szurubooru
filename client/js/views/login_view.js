@@ -10,14 +10,16 @@ class LoginView extends BaseView {
         this.template = this.getTemplate('login-template');
     }
 
-    render(options) {
-        this.showView(this.template());
-        const form = this.contentHolder.querySelector('form');
-        this.decorateValidator(form);
+    render(ctx) {
+        const target = this.contentHolder;
+        const source = this.template();
 
-        const userNameField = document.getElementById('user-name');
-        const passwordField = document.getElementById('user-password');
-        const rememberUserField = document.getElementById('remember-user');
+        const form = source.querySelector('form');
+        const userNameField = source.querySelector('#user-name');
+        const passwordField = source.querySelector('#user-password');
+        const rememberUserField = source.querySelector('#remember-user');
+
+        this.decorateValidator(form);
         userNameField.setAttribute('pattern', config.userNameRegex);
         passwordField.setAttribute('pattern', config.passwordRegex);
 
@@ -25,8 +27,7 @@ class LoginView extends BaseView {
             e.preventDefault();
             this.clearMessages();
             this.disableForm(form);
-            options
-                .login(
+            ctx.login(
                     userNameField.value,
                     passwordField.value,
                     rememberUserField.checked)
@@ -38,6 +39,8 @@ class LoginView extends BaseView {
                     events.notify(events.Error, errorMessage);
                 });
         });
+
+        this.showView(target, source);
     }
 }
 

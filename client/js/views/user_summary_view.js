@@ -8,8 +8,10 @@ class UserSummaryView extends BaseView {
         this.template = this.getTemplate('user-summary-template');
     }
 
-    render(options) {
-        options.target.innerHTML = this.template(options);
+    render(ctx) {
+        const target = ctx.target;
+        const source = this.template(ctx);
+        this.showView(target, source);
     }
 }
 

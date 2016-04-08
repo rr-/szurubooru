@@ -15,29 +15,32 @@ class HelpView extends BaseView {
         }
     }
 
-    render(section) {
-        if (!section) {
-            section = 'about';
-        }
-        if (!(section in this.sectionTemplates)) {
-            this.showView('');
+    render(ctx) {
+        const target = this.contentHolder;
+        const source = this.template();
+
+        ctx.section = ctx.section || 'about';
+        if (!(ctx.section in this.sectionTemplates)) {
+            this.emptyView(this.contentHolder);
             return;
         }
 
-        const content = this.sectionTemplates[section]({
-            name: config.name,
-        });
+        this.showView(
+            source.querySelector('.content'),
+            this.sectionTemplates[ctx.section]({
+                name: config.name,
+            }));
 
-        this.showView(this.template({'content': content}));
-
-        const allItemsSelector = '#content-holder [data-name]';
-        for (let item of document.querySelectorAll(allItemsSelector)) {
-            if (item.getAttribute('data-name') === section) {
+        const allItemsSelector = '[data-name]';
+        for (let item of source.querySelectorAll(allItemsSelector)) {
+            if (item.getAttribute('data-name') === ctx.section) {
                 item.className = 'active';
             } else {
                 item.className = '';
             }
         }
+
+        this.showView(target, source);
     }
 }
 

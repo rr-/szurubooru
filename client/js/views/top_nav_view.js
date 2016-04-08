@@ -9,15 +9,19 @@ class TopNavView extends BaseView {
         this.navHolder = document.getElementById('top-nav-holder');
     }
 
-    render(items) {
-        this.navHolder.innerHTML = this.template({items: items});
-        for (let link of this.navHolder.querySelectorAll('a')) {
+    render(ctx) {
+        const target = this.navHolder;
+        const source = this.template(ctx);
+
+        for (let link of source.querySelectorAll('a')) {
             const regex = new RegExp(
                 '(' + link.getAttribute('accesskey') + ')', 'i');
             link.innerHTML = link.textContent.replace(
                 regex,
                 '<span class="access-key" data-accesskey="$1">$1</span>');
         }
+
+        this.showView(this.navHolder, source);
     }
 
     activate(itemName) {

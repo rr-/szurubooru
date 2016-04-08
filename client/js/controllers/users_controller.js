@@ -54,7 +54,7 @@ class UsersController {
                 this.user = response.user;
                 next();
             }).catch(response => {
-                this.userView.empty();
+                this.userView.emptyView(this.userView.contentHolder);
                 events.notify(events.Error, response.description);
             });
         }

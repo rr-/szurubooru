@@ -16,7 +16,7 @@ class HomeController {
 
     indexRoute() {
         topNavController.activate('home');
-        this.homeView.render();
+        this.homeView.render({});
     }
 
     notFoundRoute() {

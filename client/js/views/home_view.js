@@ -9,12 +9,14 @@ class HomeView extends BaseView {
         this.template = this.getTemplate('home-template');
     }
 
-    render(section) {
-        this.showView(this.template({
+    render(ctx) {
+        const target = this.contentHolder;
+        const source = this.template({
             name: config.name,
             version: config.meta.version,
             buildDate: config.meta.buildDate,
-        }));
+        });
+        this.showView(target, source);
     }
 }
 

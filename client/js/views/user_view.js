@@ -12,33 +12,30 @@ class UserView extends BaseView {
         this.editView = new UserEditView();
     }
 
-    render(options) {
-        let section = options.section;
-        if (!section) {
-            section = 'summary';
-        }
+    render(ctx) {
+        const target = this.contentHolder;
+        const source = this.template(ctx);
 
-        let view = null;
-        if (section == 'edit') {
-            view = this.editView;
-        } else {
-            view = this.summaryView;
-        }
+        ctx.section = ctx.section || 'summary';
 
-        this.showView(this.template(options));
-
-        options.target = this.contentHolder.querySelector(
-            '#user-content-holder');
-        view.render(options);
-
-        const allItemsSelector = '#content-holder [data-name]';
-        for (let item of document.querySelectorAll(allItemsSelector)) {
-            if (item.getAttribute('data-name') === section) {
+        for (let item of source.querySelectorAll('[data-name]')) {
+            if (item.getAttribute('data-name') === ctx.section) {
                 item.className = 'active';
             } else {
                 item.className = '';
             }
         }
+
+        let view = null;
+        if (ctx.section == 'edit') {
+            view = this.editView;
+        } else {
+            view = this.summaryView;
+        }
+        ctx.target = source.querySelector('#user-content-holder');
+        view.render(ctx);
+
+        this.showView(target, source);
     }
 }
 

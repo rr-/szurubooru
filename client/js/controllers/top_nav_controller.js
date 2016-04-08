@@ -32,17 +32,16 @@ class TopNavController {
             'help':     new NavigationItem('E', 'Help',     '/help'),
         };
 
-        events.listen(
-            events.Authentication,
-            () => {
-                this.updateVisibility();
-                this.topNavView.render(this.items, this.activeItem);
-                this.topNavView.activate(this.activeItem);
-            });
+        const rerender = () => {
+            this.updateVisibility();
+            this.topNavView.render({
+                items: this.items,
+                activeItem: this.activeItem});
+            this.topNavView.activate(this.activeItem);
+        };
 
-        this.updateVisibility();
-        this.topNavView.render(this.items, this.activeItem);
-        this.topNavView.activate(this.activeItem);
+        events.listen(events.Authentication, rerender);
+        rerender();
     }
 
     updateVisibility() {

@@ -9,19 +9,20 @@ class PasswordResetView extends BaseView {
         this.template = this.getTemplate('password-reset-template');
     }
 
-    render(options) {
-        this.showView(this.template());
-        const form = this.contentHolder.querySelector('form');
-        this.decorateValidator(form);
+    render(ctx) {
+        const target = this.contentHolder;
+        const source = this.template();
 
-        const userNameOrEmailField = document.getElementById('user-name');
+        const form = source.querySelector('form');
+        const userNameOrEmailField = source.querySelector('#user-name');
+
+        this.decorateValidator(form);
 
         form.addEventListener('submit', e => {
             e.preventDefault();
             this.clearMessages();
             this.disableForm(form);
-            options
-                .proceed(userNameOrEmailField.value)
+            ctx.proceed(userNameOrEmailField.value)
                 .then(() => {
                     events.notify(
                         events.Success,
@@ -33,6 +34,8 @@ class PasswordResetView extends BaseView {
                     events.notify(events.Error, errorMessage);
                 });
         });
+
+        this.showView(target, source);
     }
 }
 

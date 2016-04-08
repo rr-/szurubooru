@@ -9,14 +9,15 @@ class UserEditView extends BaseView {
         this.template = this.getTemplate('user-edit-template');
     }
 
-    render(options) {
-        options.target.innerHTML = this.template(options);
+    render(ctx) {
+        const target = ctx.target;
+        const source = this.template(ctx);
 
-        const form = options.target.querySelector('form');
-        const rankField = options.target.querySelector('#user-rank');
-        const emailField = options.target.querySelector('#user-email');
-        const userNameField = options.target.querySelector('#user-name');
-        const passwordField = options.target.querySelector('#user-password');
+        const form = source.querySelector('form');
+        const rankField = source.querySelector('#user-rank');
+        const emailField = source.querySelector('#user-email');
+        const userNameField = source.querySelector('#user-name');
+        const passwordField = source.querySelector('#user-password');
 
         this.decorateValidator(form);
 
@@ -33,7 +34,7 @@ class UserEditView extends BaseView {
         }
 
         if (rankField) {
-            rankField.value = options.user.rank;
+            rankField.value = ctx.user.rank;
         }
 
         /* TODO: avatar */
@@ -42,8 +43,7 @@ class UserEditView extends BaseView {
             e.preventDefault();
             this.clearMessages();
             this.disableForm(form);
-            options
-                .edit(
+            ctx.edit(
                     userNameField.value,
                     passwordField.value,
                     emailField.value,
@@ -51,6 +51,8 @@ class UserEditView extends BaseView {
                 .then(user => { this.enableForm(form); })
                 .catch(() => { this.enableForm(form); });
         });
+
+        this.showView(target, source);
     }
 }
 
