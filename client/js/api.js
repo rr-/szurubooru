@@ -1,5 +1,6 @@
 'use strict';
 
+const cookies = require('js-cookie');
 const request = require('superagent');
 const config = require('./config.js');
 const events = require('./events.js');
@@ -61,12 +62,36 @@ class Api {
         return myRank >= minViableRank;
     }
 
-    login(userName, userPassword) {
+    loginFromCookies() {
+        return new Promise((resolve, reject) => {
+            const auth = cookies.getJSON('auth');
+            if (auth && auth.user && auth.password) {
+                this.login(auth.user, auth.password, true)
+                    .then(resolve)
+                    .catch(errorMessage => {
+                        reject(errorMessage);
+                    });
+            } else {
+                resolve();
+            }
+        });
+    }
+
+    login(userName, userPassword, doRemember) {
+        cookies.remove('auth');
         return new Promise((resolve, reject) => {
             this.userName = userName;
             this.userPassword = userPassword;
             this.get('/user/' + userName + '?bump-login=true')
                 .then(response => {
+                    const options = {};
+                    if (doRemember) {
+                        options.expires = 365;
+                    }
+                    cookies.set(
+                        'auth',
+                        {'user': userName, 'password': userPassword},
+                        options);
                     this.user = response.user;
                     resolve();
                     events.notify(events.Authentication);
@@ -79,6 +104,7 @@ class Api {
     }
 
     logout() {
+        cookies.remove('auth');
         this.user = null;
         this.userName = null;
         this.userPassword = null;

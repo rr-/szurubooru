@@ -4,8 +4,7 @@ require('./util/polyfill.js');
 require('./util/handlebars-helpers.js');
 
 let controllers = [];
-const authController = require('./controllers/auth_controller.js');
-controllers.push(authController);
+controllers.push(require('./controllers/auth_controller.js'));
 controllers.push(require('./controllers/posts_controller.js'));
 controllers.push(require('./controllers/users_controller.js'));
 controllers.push(require('./controllers/help_controller.js'));
@@ -21,7 +20,8 @@ for (let controller of controllers) {
     controller.registerRoutes();
 }
 
-authController.login().then(() => {
+const api = require('./api.js');
+api.loginFromCookies().then(() => {
     page();
 }).catch(errorMessage => {
     page();

@@ -1,6 +1,5 @@
 'use strict';
 
-const cookies = require('js-cookie');
 const page = require('page');
 const api = require('../api.js');
 const events = require('../events.js');
@@ -12,21 +11,6 @@ class AuthController {
     constructor() {
         this.loginView = new LoginView();
         this.passwordResetView = new PasswordResetView();
-    }
-
-    login() {
-        return new Promise((resolve, reject) => {
-            const auth = cookies.getJSON('auth');
-            if (auth && auth.user && auth.password) {
-                api.login(auth.user, auth.password)
-                    .then(resolve)
-                    .catch(errorMessage => {
-                        reject(errorMessage);
-                    });
-            } else {
-                resolve();
-            }
-        });
     }
 
     registerRoutes() {
@@ -44,17 +28,8 @@ class AuthController {
         this.loginView.render({
             login: (name, password, doRemember) => {
                 return new Promise((resolve, reject) => {
-                    cookies.remove('auth');
-                    api.login(name, password)
+                    api.login(name, password, doRemember)
                         .then(() => {
-                            const options = {};
-                            if (doRemember) {
-                                options.expires = 365;
-                            }
-                            cookies.set(
-                                'auth',
-                                {'user': name, 'password': password},
-                                options);
                             resolve();
                             page('/');
                             events.notify(events.Success, 'Logged in');
@@ -65,7 +40,6 @@ class AuthController {
 
     logoutRoute() {
         api.logout();
-        cookies.remove('auth');
         page('/');
         events.notify(events.Success, 'Logged out');
     }
@@ -75,7 +49,6 @@ class AuthController {
         this.passwordResetView.render({
             proceed: nameOrEmail => {
                 api.logout();
-                cookies.remove('auth');
                 return new Promise((resolve, reject) => {
                     api.get('/password-reset/' + nameOrEmail)
                         .then(() => { resolve(); })
@@ -86,17 +59,14 @@ class AuthController {
 
     passwordResetFinishRoute(name, token) {
         api.logout();
-        cookies.remove('auth');
         api.post('/password-reset/' + name, {token: token})
             .then(response => {
                 const password = response.password;
-                api.login(name, password)
+                api.login(name, password, false)
                     .then(() => {
-                        cookies.set(
-                            'auth', {'user': name, 'password': password}, {});
                         page('/');
-                        events.notify(events.Success,
-                            'New password: ' + password);
+                        events.notify(
+                            events.Success, 'New password: ' + password);
                     }).catch(errorMessage => {
                         page('/');
                         events.notify(events.Error, errorMessage);

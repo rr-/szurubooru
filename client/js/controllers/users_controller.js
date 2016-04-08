@@ -1,6 +1,5 @@
 'use strict';
 
-const cookies = require('js-cookie');
 const page = require('page');
 const api = require('../api.js');
 const events = require('../events.js');
@@ -41,14 +40,13 @@ class UsersController {
 
     _register(name, password, email) {
         const data = {
-            'name': name,
-            'password': password,
-            'email': email
+            name: name,
+            password: password,
+            email: email
         };
         return new Promise((resolve, reject) => {
             api.post('/users/', data).then(() => {
-                api.login(name, password).then(() => {
-                    cookies.set('auth', {'user': name, 'password': password});
+                api.login(name, password, false).then(() => {
                     resolve();
                     page('/');
                     events.notify(events.Success, 'Welcome aboard!');
