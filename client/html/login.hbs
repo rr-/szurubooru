@@ -20,7 +20,9 @@
         <fieldset class='messages'></fieldset>
         <fieldset class='buttons'>
             <input type='submit' value='Log in'/>
-            <a href='/password-reset'>Forgot the password?</a>
+            {{#if this.canSendMails}}
+                <a href='/password-reset'>Forgot the password?</a>
+            {{/if}}
         </fieldset>
     </form>
 </div>

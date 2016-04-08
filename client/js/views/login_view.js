@@ -12,7 +12,7 @@ class LoginView extends BaseView {
 
     render(ctx) {
         const target = this.contentHolder;
-        const source = this.template();
+        const source = this.template({canSendMails: config.canSendMails});
 
         const form = source.querySelector('form');
         const userNameField = source.querySelector('#user-name');

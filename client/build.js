@@ -43,6 +43,7 @@ function getConfig() {
         console.warn('Local config does not exist, ignoring');
     }
 
+    config.canSendMails = !!config.smtp.host;
     delete config.secret;
     delete config.smtp;
     delete config.database;
