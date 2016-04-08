@@ -1,3 +1,4 @@
+import cgi
 import datetime
 import json
 import falcon
@@ -19,14 +20,28 @@ class JsonTranslator(object):
         if request.content_length in (None, 0):
             return
 
-        body = request.stream.read()
+        request.context.files = {}
+        if 'multipart/form-data' in (request.content_type or ''):
+            # obscure, claims to "avoid a bug in cgi.FieldStorage"
+            request.env.setdefault('QUERY_STRING', '')
+
+            form = cgi.FieldStorage(fp=request.stream, environ=request.env)
+            for key in form:
+                if key != 'metadata':
+                    request.context.files[key] = (
+                        form.getvalue(key),
+                        getattr(form[key], 'filename', None))
+            body = form.getvalue('metadata')
+        else:
+            body = request.stream.read().decode('utf-8')
+
         if not body:
             raise falcon.HTTPBadRequest(
                 'Empty request body',
                 'A valid JSON document is required.')
 
         try:
-            request.context.request = json.loads(body.decode('utf-8'))
+            request.context.request = json.loads(body)
         except (ValueError, UnicodeDecodeError):
             raise falcon.HTTPError(
                 falcon.HTTP_401,
