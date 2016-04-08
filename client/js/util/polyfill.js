@@ -27,3 +27,13 @@ if (!Object.entries) {
 
 // fix iterating over NodeList in Chrome and Opera
 NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+
+// non standard
+Promise.prototype.always = function(onResolveOrReject) {
+    return this.then(
+        onResolveOrReject,
+        reason => {
+            onResolveOrReject(reason);
+            throw reason;
+        });
+};

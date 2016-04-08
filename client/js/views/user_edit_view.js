@@ -48,8 +48,7 @@ class UserEditView extends BaseView {
                     passwordField.value,
                     emailField.value,
                     rankField.value)
-                .then(user => { this.enableForm(form); })
-                .catch(() => { this.enableForm(form); });
+                .always(() => { this.enableForm(form); });
         });
 
         this.showView(target, source);

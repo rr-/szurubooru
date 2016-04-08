@@ -23,16 +23,7 @@ class PasswordResetView extends BaseView {
             this.clearMessages();
             this.disableForm(form);
             ctx.proceed(userNameOrEmailField.value)
-                .then(() => {
-                    events.notify(
-                        events.Success,
-                        'E-mail has been sent. To finish the procedure, ' +
-                        'please click the link it contains.');
-                })
-                .catch(errorMessage => {
-                    this.enableForm(form);
-                    events.notify(events.Error, errorMessage);
-                });
+                .catch(() => { this.enableForm(form); });
         });
 
         this.showView(target, source);

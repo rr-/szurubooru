@@ -31,13 +31,7 @@ class RegistrationView extends BaseView {
                     userNameField.value,
                     passwordField.value,
                     emailField.value)
-                .then(() => {
-                    this.enableForm(form);
-                })
-                .catch(errorMessage => {
-                    this.enableForm(form);
-                    events.notify(events.Error, errorMessage);
-                });
+                .always(() => { this.enableForm(form); });
         });
 
         this.showView(target, source);

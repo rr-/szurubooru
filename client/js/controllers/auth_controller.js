@@ -33,7 +33,10 @@ class AuthController {
                             resolve();
                             page('/');
                             events.notify(events.Success, 'Logged in');
-                        }).catch(errorMessage => { reject(errorMessage); });
+                        }).catch(errorMessage => {
+                            reject(errorMessage);
+                            events.notify(events.Error, errorMessage);
+                        });
                 });
             }});
     }
@@ -47,13 +50,8 @@ class AuthController {
     passwordResetRoute() {
         topNavController.activate('login');
         this.passwordResetView.render({
-            proceed: nameOrEmail => {
-                api.logout();
-                return new Promise((resolve, reject) => {
-                    api.get('/password-reset/' + nameOrEmail)
-                        .then(() => { resolve(); })
-                        .catch(errorMessage => { reject(errorMessage); });
-                });
+            proceed: (...args) => {
+                return this._passwordReset(...args);
             }});
     }
 
@@ -75,6 +73,23 @@ class AuthController {
                 page('/');
                 events.notify(events.Error, response.description);
             });
+    }
+
+    _passwordReset(nameOrEmail) {
+        api.logout();
+        return new Promise((resolve, reject) => {
+            api.get('/password-reset/' + nameOrEmail)
+                .then(() => {
+                    resolve();
+                    events.notify(
+                        events.Success,
+                        'E-mail has been sent. To finish the procedure, ' +
+                        'please click the link it contains.');
+                }).catch(response => {
+                    reject();
+                    events.notify(events.Error, response.description);
+                });
+        });
     }
 }
 

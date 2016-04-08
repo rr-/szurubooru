@@ -72,11 +72,13 @@ class UsersController {
                     resolve();
                     page('/');
                     events.notify(events.Success, 'Welcome aboard!');
-                }).catch(response => {
-                    reject(response.description);
+                }).catch(errorMessage => {
+                    reject();
+                    events.notify(events.Error, errorMessage);
                 });
             }).catch(response => {
-                reject(response.description);
+                reject();
+                events.notify(events.Error, response.description);
             });
         });
     }
@@ -103,10 +105,9 @@ class UsersController {
                                 newPassword || api.userPassword,
                                 false)
                             .then(next)
-                            .catch(response => {
+                            .catch(errorMessage => {
                                 reject();
-                                events.notify(
-                                    events.Error, response.description);
+                                events.notify(events.Error, errorMessage);
                             });
                     } else {
                         next();
