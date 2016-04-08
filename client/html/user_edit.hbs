@@ -1,5 +1,5 @@
 <div id='user-edit'>
-    <form>
+    <form class='tabular'>
         <fieldset class='input'>
             <ul>
                 {{#if this.canEditName}}
@@ -12,8 +12,7 @@
                 {{#if this.canEditPassword}}
                     <li>
                         <label for='user-password'>Password</label>
-                        <input id='user-password' name='password' type='password'/>
-                        <p class='hint'>Leave empty to keep the password unchanged.</p>
+                        <input id='user-password' name='password' type='password' placeholder='leave blank if not changing'/>
                     </li>
                 {{/if}}
 
