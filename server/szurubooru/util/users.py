@@ -4,13 +4,16 @@ from sqlalchemy import func
 from szurubooru import config, db, errors
 from szurubooru.util import auth, misc
 
-def create_user(name, password, email):
+def create_user(session, name, password, email):
     ''' Create an user with given parameters and returns it. '''
     user = db.User()
     update_name(user, name)
     update_password(user, password)
     update_email(user, email)
-    user.rank = config.config['default_rank']
+    if not session.query(db.User).count():
+        user.rank = config.config['ranks'][-1]
+    else:
+        user.rank = config.config['default_rank']
     user.creation_time = datetime.now()
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user

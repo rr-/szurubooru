@@ -84,7 +84,7 @@ class TestCreatingUser(DatabaseTestCase):
         util.mock_context(self)
         self.context.user.rank = 'anonymous'
 
-    def test_creating_valid_user(self):
+    def test_first_user_becomes_admin(self):
         self.context.request = {
             'name': 'chewie',
             'email': 'asd@asd.asd',
@@ -93,6 +93,22 @@ class TestCreatingUser(DatabaseTestCase):
         self.api.post(self.context)
         created_user = self.session.query(db.User).filter_by(name='chewie').one()
         self.assertEqual(created_user.name, 'chewie')
+        self.assertEqual(created_user.email, 'asd@asd.asd')
+        self.assertEqual(created_user.rank, 'admin')
+        self.assertTrue(auth.is_valid_password(created_user, 'oks'))
+        self.assertFalse(auth.is_valid_password(created_user, 'invalid'))
+
+    def test_subsequent_users_are_created_normally(self):
+        self.context.request = {
+            'name': 'chewie',
+            'email': 'asd@asd.asd',
+            'password': 'oks',
+        }
+        self.api.post(self.context)
+        self.context.request['name'] = 'chewie2'
+        self.api.post(self.context)
+        created_user = self.session.query(db.User).filter_by(name='chewie2').one()
+        self.assertEqual(created_user.name, 'chewie2')
         self.assertEqual(created_user.email, 'asd@asd.asd')
         self.assertEqual(created_user.rank, 'regular_user')
         self.assertTrue(auth.is_valid_password(created_user, 'oks'))

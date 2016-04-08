@@ -61,7 +61,7 @@ class UserListApi(BaseApi):
 
         if users.get_by_name(context.session, name):
             raise errors.IntegrityError('User %r already exists.' % name)
-        user = users.create_user(name, password, email)
+        user = users.create_user(context.session, name, password, email)
         context.session.add(user)
         context.session.commit()
         return {'user': _serialize_user(context.user, user)}
