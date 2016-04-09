@@ -19,16 +19,13 @@ class HelpView {
         const source = this.template();
 
         ctx.section = ctx.section || 'about';
-        if (!(ctx.section in this.sectionTemplates)) {
-            views.emptyView(target);
-            return;
+        if (ctx.section in this.sectionTemplates) {
+            views.showView(
+                source.querySelector('.content'),
+                this.sectionTemplates[ctx.section]({
+                    name: config.name,
+                }));
         }
-
-        views.showView(
-            source.querySelector('.content'),
-            this.sectionTemplates[ctx.section]({
-                name: config.name,
-            }));
 
         const allItemsSelector = '[data-name]';
         for (let item of source.querySelectorAll(allItemsSelector)) {

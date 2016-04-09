@@ -84,12 +84,6 @@ function enableForm(form) {
     }
 }
 
-function emptyView(target) {
-    const ret = showView(target, htmlToDom('<div class="messages"></div>'));
-    listenToMessages(target);
-    return ret;
-}
-
 function showView(target, source) {
     return new Promise((resolve, reject) => {
         let observer = new MutationObserver(mutations => {
@@ -116,7 +110,6 @@ module.exports = {
     htmlToDom: htmlToDom,
     getTemplate: getTemplate,
     showView: showView,
-    emptyView: emptyView,
     enableForm: enableForm,
     disableForm: disableForm,
     listenToMessages: listenToMessages,

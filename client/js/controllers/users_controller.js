@@ -9,11 +9,13 @@ const views = require('../util/views.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const RegistrationView = require('../views/registration_view.js');
 const UserView = require('../views/user_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 class UsersController {
     constructor() {
         this.registrationView = new RegistrationView();
         this.userView = new UserView();
+        this.emptyView = new EmptyView();
     }
 
     registerRoutes() {
@@ -59,7 +61,7 @@ class UsersController {
                 this.user = response.user;
                 next();
             }).catch(response => {
-                views.emptyView(document.getElementById('content-holder'));
+                this.emptyView.render();
                 events.notify(events.Error, response.description);
             });
         }
