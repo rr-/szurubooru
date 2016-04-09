@@ -11,7 +11,7 @@ def create_user(session, name, password, email):
     update_password(user, password)
     update_email(user, email)
     if not session.query(db.User).count():
-        user.rank = config.config['ranks'][-1]
+        user.rank = 'admin'
     else:
         user.rank = config.config['default_rank']
     user.creation_time = datetime.now()
