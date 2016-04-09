@@ -20,12 +20,12 @@ class UserSearchConfig(BaseSearchConfig):
     def named_filters(self):
         return {
             'name': self._create_basic_filter(db.User.name, allow_ranged=False),
-            'creation_date': self._create_date_filter(db.User.creation_time),
-            'creation_time': self._create_date_filter(db.User.creation_time),
-            'last_login_date': self._create_date_filter(db.User.last_login_time),
-            'last_login_time': self._create_date_filter(db.User.last_login_time),
-            'login_date': self._create_date_filter(db.User.last_login_time),
-            'login_time': self._create_date_filter(db.User.last_login_time),
+            'creation-date': self._create_date_filter(db.User.creation_time),
+            'creation-time': self._create_date_filter(db.User.creation_time),
+            'last-login-date': self._create_date_filter(db.User.last_login_time),
+            'last-login-time': self._create_date_filter(db.User.last_login_time),
+            'login-date': self._create_date_filter(db.User.last_login_time),
+            'login-time': self._create_date_filter(db.User.last_login_time),
         }
 
     @property
@@ -33,10 +33,10 @@ class UserSearchConfig(BaseSearchConfig):
         return {
             'random': func.random(),
             'name': db.User.name,
-            'creation_date': db.User.creation_time,
-            'creation_time': db.User.creation_time,
-            'last_login_date': db.User.last_login_time,
-            'last_login_time': db.User.last_login_time,
-            'login_date': db.User.last_login_time,
-            'login_time': db.User.last_login_time,
+            'creation-date': db.User.creation_time,
+            'creation-time': db.User.creation_time,
+            'last-login-date': db.User.last_login_time,
+            'last-login-time': db.User.last_login_time,
+            'login-date': db.User.last_login_time,
+            'login-time': db.User.last_login_time,
         }

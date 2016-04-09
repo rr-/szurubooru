@@ -28,27 +28,27 @@
             <td>favorited by David</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=fav_count:4'><code>fav_count:4</code></a></td>
+            <td><a href='/posts/query=fav-count:4'><code>fav-count:4</code></a></td>
             <td>favorited by exactly four users</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=fav_count:4,5'><code>fav_count:4,5</code></a></td>
+            <td><a href='/posts/query=fav-count:4,5'><code>fav-count:4,5</code></a></td>
             <td>favorited by four or five users</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=fav_count:4..'><code>fav_count:4..</code></a></td>
+            <td><a href='/posts/query=fav-count:4..'><code>fav-count:4..</code></a></td>
             <td>favorited by at least four users</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=fav_count:..4'><code>fav_count:..4</code></a></td>
+            <td><a href='/posts/query=fav-count:..4'><code>fav-count:..4</code></a></td>
             <td>favorited by at most four users</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=fav_count:4..6'><code>fav_count:4..6</code></a></td>
+            <td><a href='/posts/query=fav-count:4..6'><code>fav-count:4..6</code></a></td>
             <td>favorited by at least four, but no more than six users</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=comment_count:3'><code>comment_count:3</code></a></td>
+            <td><a href='/posts/query=comment-count:3'><code>comment-count:3</code></a></td>
             <td>having exactly three comments</td>
         </tr>
         <tr>
@@ -56,15 +56,15 @@
             <td>having score of 4</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=tag_count:7'><code>tag_count:7</code></a></td>
+            <td><a href='/posts/query=tag-count:7'><code>tag-count:7</code></a></td>
             <td>tagged with exactly seven tags</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=note_count:1..'><code>note_count:1..</code></a></td>
+            <td><a href='/posts/query=note-count:1..'><code>note-count:1..</code></a></td>
             <td>having at least one post note</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=feature_count:1..'><code>feature_count:1..</code></a></td>
+            <td><a href='/posts/query=feature-count:1..'><code>feature-count:1..</code></a></td>
             <td>having been featured at least once</td>
         </tr>
         <tr>
@@ -96,19 +96,19 @@
             <td>having specific post name (hash in full URLs)</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=file_size:100..'><code>file_size:100..</code></a></td>
+            <td><a href='/posts/query=file-size:100..'><code>file-size:100..</code></a></td>
             <td>having at least 100 bytes</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=image_width:100..'><code>image_width:100..</code></a></td>
+            <td><a href='/posts/query=image-width:100..'><code>image-width:100..</code></a></td>
             <td>being at least 100 pixels wide</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=image_height:100..'><code>image_height:100..</code></a></td>
+            <td><a href='/posts/query=image-height:100..'><code>image-height:100..</code></a></td>
             <td>being at least 100 pixels tall</td>
         </tr>
         <tr>
-            <td><a href='/posts/query=image_area:10000..'><code>image_area:10000..</code></a></td>
+            <td><a href='/posts/query=image-area:10000..'><code>image-area:10000..</code></a></td>
             <td>having at least 10000 pixels</td>
         </tr>
         <tr>
@@ -151,7 +151,7 @@
 <a href='/posts/query=id:5..7'><code>id:5..7</code></a> and
 <a href='/posts/query=id:5,10,15'><code>id:5,10,15</code></a>.
 You can combine tags and negate any of them for interesting results.
-<a href='/posts/query=sea -fav_count:..8 type:flash uploader:Pirate'><code>sea -fav_count:8.. type:swf uploader:Pirate</code></a>
+<a href='/posts/query=sea -fav-count:..8 type:flash uploader:Pirate'><code>sea -fav-count:8.. type:swf uploader:Pirate</code></a>
 will show you flash files tagged as sea, that were liked by seven people at
 most, uploaded by user Pirate.</p>
 
@@ -178,23 +178,23 @@ most, uploaded by user Pirate.</p>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:creation_date'><code>order:creation_date</code></a></td>
+        <td><a href='/posts/query=order:creation-date'><code>order:creation-date</code></a></td>
         <td>newest to oldest (pretty much same as above)</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=-order:creation_date'><code>-order:creation_date</code></a></td>
+        <td><a href='/posts/query=-order:creation-date'><code>-order:creation-date</code></a></td>
         <td>oldest to newest</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:creation_date,asc'><code>order:creation_date,asc</code></a></td>
+        <td><a href='/posts/query=order:creation-date,asc'><code>order:creation-date,asc</code></a></td>
         <td>oldest to newest (ascending order, default = descending)</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:edit_date'><code>order:edit_date</code></a></td>
-        <td>like <code>creation_date</code>, only looks at last edit time</td>
+        <td><a href='/posts/query=order:edit-date'><code>order:edit-date</code></a></td>
+        <td>like <code>creation-date</code>, only looks at last edit time</td>
     </tr>
 
     <tr>
@@ -203,63 +203,63 @@ most, uploaded by user Pirate.</p>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:file_size'><code>order:file_size</code></a></td>
+        <td><a href='/posts/query=order:file-size'><code>order:file-size</code></a></td>
         <td>largest files first</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:image_width'><code>order:image_width</code></a></td>
+        <td><a href='/posts/query=order:image-width'><code>order:image-width</code></a></td>
         <td>widest images first</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:image_height'><code>order:image_height</code></a></td>
+        <td><a href='/posts/query=order:image-height'><code>order:image-height</code></a></td>
         <td>tallest images first</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:image_area'><code>order:image_area</code></a></td>
+        <td><a href='/posts/query=order:image-area'><code>order:image-area</code></a></td>
         <td>largest images first</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:tag_count'><code>order:tag_count</code></a></td>
+        <td><a href='/posts/query=order:tag-count'><code>order:tag-count</code></a></td>
         <td>with most tags</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:fav_count'><code>order:fav_count</code></a></td>
+        <td><a href='/posts/query=order:fav-count'><code>order:fav-count</code></a></td>
         <td>loved by most</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:comment_count'><code>order:comment_count</code></a></td>
+        <td><a href='/posts/query=order:comment-count'><code>order:comment-count</code></a></td>
         <td>most commented first</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:fav_date'><code>order:fav_date</code></a></td>
+        <td><a href='/posts/query=order:fav-date'><code>order:fav-date</code></a></td>
         <td>recently added to favorites</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:comment_date'><code>order:comment_date</code></a></td>
+        <td><a href='/posts/query=order:comment-date'><code>order:comment-date</code></a></td>
         <td>recently commented</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:feature_date'><code>order:feature_date</code></a></td>
+        <td><a href='/posts/query=order:feature-date'><code>order:feature-date</code></a></td>
         <td>recently featured</td>
     </tr>
 
     <tr>
-        <td><a href='/posts/query=order:feature_count'><code>order:feature_count</code></a></td>
+        <td><a href='/posts/query=order:feature-count'><code>order:feature-count</code></a></td>
         <td>most often featured</td>
     </tr>
     </tbody>
 </table>
 
 <p>As shown with <a
-href='/posts/query=-order:creation_date'><code>-order:creation_date</code></a>,
+href='/posts/query=-order:creation-date'><code>-order:creation-date</code></a>,
 any of them can be reversed in the same way as negating other tags: by placing
 a dash before the tag.</p>

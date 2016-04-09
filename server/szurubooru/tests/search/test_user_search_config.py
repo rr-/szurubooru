@@ -20,7 +20,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user1.creation_time = datetime(2014, 1, 1)
         user2.creation_time = datetime(2015, 1, 1)
         self.session.add_all([user1, user2])
-        for alias in ['creation_time', 'creation_date']:
+        for alias in ['creation-time', 'creation-date']:
             self._test('%s:2014' % alias, 1, 1, ['u1'])
 
     def test_filter_by_negated_creation_time(self):
@@ -29,7 +29,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user1.creation_time = datetime(2014, 1, 1)
         user2.creation_time = datetime(2015, 1, 1)
         self.session.add_all([user1, user2])
-        for alias in ['creation_time', 'creation_date']:
+        for alias in ['creation-time', 'creation-date']:
             self._test('-%s:2014' % alias, 1, 1, ['u2'])
 
     def test_filter_by_ranged_creation_time(self):
@@ -40,7 +40,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user2.creation_time = datetime(2014, 6, 1)
         user3.creation_time = datetime(2015, 1, 1)
         self.session.add_all([user1, user2, user3])
-        for alias in ['creation_time', 'creation_date']:
+        for alias in ['creation-time', 'creation-date']:
             self._test('%s:2014..2014-06' % alias, 1, 2, ['u1', 'u2'])
             self._test('%s:2014-06..2015-01-01' % alias, 1, 2, ['u2', 'u3'])
             self._test('%s:2014-06..' % alias, 1, 2, ['u2', 'u3'])
@@ -56,7 +56,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user2.creation_time = datetime(2014, 6, 1)
         user3.creation_time = datetime(2015, 1, 1)
         self.session.add_all([user1, user2, user3])
-        for alias in ['creation_time', 'creation_date']:
+        for alias in ['creation-time', 'creation-date']:
             self._test('-%s:2014..2014-06' % alias, 1, 1, ['u3'])
             self._test('-%s:2014-06..2015-01-01' % alias, 1, 1, ['u1'])
 
@@ -68,7 +68,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user2.creation_time = datetime(2014, 6, 1)
         user3.creation_time = datetime(2015, 1, 1)
         self.session.add_all([user1, user2, user3])
-        for alias in ['creation_time', 'creation_date']:
+        for alias in ['creation-time', 'creation-date']:
             self._test('%s:2014-01,2015' % alias, 1, 2, ['u1', 'u3'])
 
     def test_filter_by_negated_composite_creation_time(self):
@@ -79,7 +79,7 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user2.creation_time = datetime(2014, 6, 1)
         user3.creation_time = datetime(2015, 1, 1)
         self.session.add_all([user1, user2, user3])
-        for alias in ['creation_time', 'creation_date']:
+        for alias in ['creation-time', 'creation-date']:
             self._test('-%s:2014-01,2015' % alias, 1, 1, ['u2'])
 
     def test_filter_by_name(self):
@@ -158,9 +158,9 @@ class TestUserSearchExecutor(DatabaseTestCase):
         user2.creation_time = datetime(2014, 6, 1)
         user3.creation_time = datetime(2015, 1, 1)
         self.session.add_all([user1, user2, user3])
-        self._test('creation_time:2014 u1', 1, 1, ['u1'])
-        self._test('creation_time:2014 u2', 1, 1, ['u2'])
-        self._test('creation_time:2016 u2', 1, 0, [])
+        self._test('creation-time:2014 u1', 1, 1, ['u1'])
+        self._test('creation-time:2014 u2', 1, 1, ['u2'])
+        self._test('creation-time:2016 u2', 1, 0, [])
 
     def test_special(self):
         self.assertRaises(
