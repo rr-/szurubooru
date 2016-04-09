@@ -20,7 +20,7 @@ form .input {
 form .buttons {
     margin-top: 1em;
 }
-form .input li:first-child label,
+form .input li:first-child label:not(.radio):not(.checkbox),
 form .input li:first-child {
     padding-top: 0;
     margin-top: 0;
@@ -33,7 +33,7 @@ form.tabular ul {
 form.tabular ul li {
     display: table-row;
 }
-form.tabular ul li label {
+form.tabular ul li label:not(.radio):not(.checkbox) {
     display: table-cell;
     width: 33%;
 }
@@ -48,7 +48,6 @@ form.tabular .buttons {
  * Radio buttons and checkboxes
  */
 input[type=radio], input[type=checkbox] {
-    float: left;
     position: absolute;
     opacity: 0;
 }
@@ -62,6 +61,9 @@ input[type=radio], input[type=checkbox] {
 }
 .radio:hover:before, .checkbox:hover:before {
     border-color: var(--main-color);
+}
+.radio:before {
+    border-radius: 100%;
 }
 .radio:before, .checkbox:before {
     transition: border-color 0.1s linear;
@@ -77,6 +79,7 @@ input[type=radio], input[type=checkbox] {
     content: '';
 }
 .radio:after {
+    background: var(--main-color);
     transition: opacity 0.1s linear;
     position: absolute;
     top: 50%;
