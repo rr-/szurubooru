@@ -88,7 +88,6 @@ class Api {
     }
 
     login(userName, userPassword, doRemember) {
-        cookies.remove('auth');
         return new Promise((resolve, reject) => {
             this.userName = userName;
             this.userPassword = userPassword;
@@ -114,11 +113,14 @@ class Api {
     }
 
     logout() {
-        cookies.remove('auth');
         this.user = null;
         this.userName = null;
         this.userPassword = null;
         events.notify(events.Authentication);
+    }
+
+    forget() {
+        cookies.remove('auth');
     }
 
     isLoggedIn() {

@@ -85,6 +85,7 @@ class UsersController {
         };
         return new Promise((resolve, reject) => {
             api.post('/users/', data).then(() => {
+                api.forget();
                 api.login(name, password, false).then(() => {
                     resolve();
                     page('/');
@@ -142,6 +143,7 @@ class UsersController {
             api.delete('/user/' + user.name)
                 .then(response => {
                     if (isLoggedIn) {
+                        api.forget();
                         api.logout();
                     }
                     resolve();

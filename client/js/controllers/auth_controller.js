@@ -28,6 +28,7 @@ class AuthController {
         this.loginView.render({
             login: (name, password, doRemember) => {
                 return new Promise((resolve, reject) => {
+                    api.forget();
                     api.login(name, password, doRemember)
                         .then(() => {
                             resolve();
@@ -42,6 +43,7 @@ class AuthController {
     }
 
     logoutRoute() {
+        api.forget();
         api.logout();
         page('/');
         events.notify(events.Success, 'Logged out');
@@ -56,6 +58,7 @@ class AuthController {
     }
 
     passwordResetFinishRoute(name, token) {
+        api.forget();
         api.logout();
         api.post('/password-reset/' + name, {token: token})
             .then(response => {
@@ -76,6 +79,7 @@ class AuthController {
     }
 
     _passwordReset(nameOrEmail) {
+        api.forget();
         api.logout();
         return new Promise((resolve, reject) => {
             api.get('/password-reset/' + nameOrEmail)
