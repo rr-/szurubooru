@@ -17,6 +17,7 @@
    - [Creating user](#creating-user)
    - [Updating user](#updating-user)
    - [Getting user](#getting-user)
+   - [Removing user](#removing-user)
    - [Password reset - step 1: mail request](#password-reset---step-2-confirmation)
    - [Password reset - step 2: confirmation](#password-reset---step-2-confirmation)
 
@@ -95,6 +96,7 @@ Output:
 ```
 ...where `<user>` is an [user resource](#user) and `query` contains standard
 [search query](#search).
+Errors: if privileges are too low.
 
 Searches for users.
 
@@ -143,7 +145,7 @@ Output:
 ```
 ...where `<user>` is an [user resource](#user).  
 Errors: if such user already exists (names are case insensitive), or either of
-user name, password and email are invalid.
+user name, password and email are invalid, or privileges are too low.
 
 Creates a new user using specified parameters. Names and passwords must match
 `user_name_regex` and `password_regex` from server's configuration,
@@ -174,7 +176,7 @@ Output:
 Errors: if the user does not exist, or the user with new name already exists
 (names are case insensitive), or either of user name, password, email or rank
 are invalid, or the user is trying to update their or someone else's rank to
-higher than their own.
+higher than their own, or privileges are too low.
 
 Updates an existing user using specified parameters. Names and passwords must
 match `user_name_regex` and `password_regex` from server's configuration,
@@ -191,9 +193,20 @@ Output:
 }
 ```
 ...where `<user>` is an [user resource](#user).  
-Errors: if the user does not exist.
+Errors: if the user does not exist or privileges are too low.
 
 Retrieves information about an existing user.
+
+
+### Removing user
+Request: `DELETE /user/<name>`  
+Output:
+```json5
+{}
+```
+Errors: if the user does not exist or privileges are too low.
+
+Deletes existing user.
 
 
 ### Password reset - step 1: mail request

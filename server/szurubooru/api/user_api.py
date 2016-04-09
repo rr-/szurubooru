@@ -111,3 +111,19 @@ class UserDetailApi(BaseApi):
 
         context.session.commit()
         return {'user': _serialize_user(context.user, user)}
+
+    def delete(self, context, user_name):
+        ''' Delete an existing user. '''
+        user = users.get_by_name(context.session, user_name)
+        if not user:
+            raise errors.NotFoundError('User %r not found.' % user_name)
+
+        if context.user.user_id == user.user_id:
+            infix = 'self'
+        else:
+            infix = 'any'
+
+        auth.verify_privilege(context.user, 'users:delete:%s' % infix)
+        context.session.delete(user)
+        context.session.commit()
+        return {}

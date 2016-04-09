@@ -10,8 +10,6 @@ class TestRetrievingUsers(DatabaseTestCase):
         util.mock_config({
             'privileges': {
                 'users:list': 'regular_user',
-                'users:view': 'regular_user',
-                'users:create': 'regular_user',
             },
             'avatar_thumbnail_size': 200,
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
@@ -39,6 +37,30 @@ class TestRetrievingUsers(DatabaseTestCase):
         api_ = api.UserListApi()
         self.assertRaises(errors.AuthError, api_.get, self.context)
 
+    def test_retrieving_non_existing(self):
+        self.context.user.rank = 'regular_user'
+        util.mock_params(self.context, {'query': 'asd', 'page': 1})
+        api_ = api.UserListApi()
+        result = api_.get(self.context)
+        self.assertEqual(result['query'], 'asd')
+        self.assertEqual(result['page'], 1)
+        self.assertEqual(result['pageSize'], 100)
+        self.assertEqual(result['total'], 0)
+        self.assertEqual([u['name'] for u in result['users']], [])
+
+class TestRetrievingUser(DatabaseTestCase):
+    def setUp(self):
+        super().setUp()
+        util.mock_config({
+            'privileges': {
+                'users:view': 'regular_user',
+            },
+            'avatar_thumbnail_size': 200,
+            'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
+            'rank_names': {},
+        })
+        util.mock_context(self)
+
     def test_retrieving_single(self):
         user = util.mock_user('u1', 'regular_user')
         self.session.add(user)
@@ -64,6 +86,48 @@ class TestRetrievingUsers(DatabaseTestCase):
         util.mock_params(self.context, {'query': '', 'page': 1})
         api_ = api.UserDetailApi()
         self.assertRaises(errors.AuthError, api_.get, self.context, '-')
+
+class TestDeletingUser(DatabaseTestCase):
+    def setUp(self):
+        super().setUp()
+        util.mock_config({
+            'privileges': {
+                'users:delete:self': 'regular_user',
+                'users:delete:any': 'mod',
+            },
+            'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
+            'rank_names': {},
+        })
+        util.mock_context(self)
+
+    def test_removing_oneself(self):
+        user1 = util.mock_user('u1', 'regular_user')
+        user2 = util.mock_user('u2', 'regular_user')
+        self.session.add_all([user1, user2])
+        self.session.commit()
+        self.context.user.user_id = user1.user_id
+        self.context.user.rank = 'regular_user'
+        api_ = api.UserDetailApi()
+        self.assertRaises(errors.AuthError, api_.delete, self.context, 'u2')
+        api_.delete(self.context, 'u1')
+        self.assertEqual(self.session.query(db.User).filter_by(name='u1').all(), [])
+
+    def test_removing_someone_else(self):
+        user1 = util.mock_user('u1', 'regular_user')
+        user2 = util.mock_user('u2', 'regular_user')
+        self.session.add_all([user1, user2])
+        self.session.commit()
+        self.context.user.rank = 'mod'
+        api_ = api.UserDetailApi()
+        api_.delete(self.context, 'u1')
+        api_.delete(self.context, 'u2')
+        self.assertEqual(self.session.query(db.User).filter_by(name='u1').all(), [])
+        self.assertEqual(self.session.query(db.User).filter_by(name='u2').all(), [])
+
+    def test_removing_non_existing(self):
+        self.context.user.rank = 'regular_user'
+        api_ = api.UserDetailApi()
+        self.assertRaises(errors.NotFoundError, api_.delete, self.context, 'bad')
 
 class TestCreatingUser(DatabaseTestCase):
     def setUp(self):
