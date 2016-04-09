@@ -20,7 +20,6 @@ def get_legacy_password_hash(salt, password):
     return digest.hexdigest()
 
 def create_password():
-    ''' Create an easy-to-remember password. '''
     alphabet = {
         'c': list('bcdfghijklmnpqrstvwxyz'),
         'v': list('aeiou'),
@@ -30,7 +29,6 @@ def create_password():
     return ''.join(random.choice(alphabet[l]) for l in list(pattern))
 
 def is_valid_password(user, password):
-    ''' Return whether the given password for a given user is valid. '''
     salt, valid_hash = user.password_salt, user.password_hash
     possible_hashes = [
         get_password_hash(salt, password),
@@ -39,9 +37,7 @@ def is_valid_password(user, password):
     return valid_hash in possible_hashes
 
 def verify_privilege(user, privilege_name):
-    '''
-    Throw an AuthError if the given user doesn't have given privilege.
-    '''
+    ''' Throw an AuthError if the given user doesn't have given privilege. '''
     all_ranks = config.config['ranks']
 
     assert privilege_name in config.config['privileges']

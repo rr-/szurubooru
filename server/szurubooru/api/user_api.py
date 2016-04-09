@@ -30,14 +30,11 @@ def _serialize_user(authenticated_user, user):
     return ret
 
 class UserListApi(BaseApi):
-    ''' API for lists of users. '''
-
     def __init__(self):
         super().__init__()
         self._search_executor = search.SearchExecutor(search.UserSearchConfig())
 
     def get(self, context):
-        ''' Retrieve a list of users. '''
         auth.verify_privilege(context.user, 'users:list')
         query = context.get_param_as_string('query')
         page = context.get_param_as_int('page', 1)
@@ -51,7 +48,6 @@ class UserListApi(BaseApi):
         }
 
     def post(self, context):
-        ''' Create a new user. '''
         auth.verify_privilege(context.user, 'users:create')
 
         try:
@@ -69,10 +65,7 @@ class UserListApi(BaseApi):
         return {'user': _serialize_user(context.user, user)}
 
 class UserDetailApi(BaseApi):
-    ''' API for individual users. '''
-
     def get(self, context, user_name):
-        ''' Retrieve an user. '''
         auth.verify_privilege(context.user, 'users:view')
         user = users.get_by_name(context.session, user_name)
         if not user:
@@ -80,7 +73,6 @@ class UserDetailApi(BaseApi):
         return {'user': _serialize_user(context.user, user)}
 
     def put(self, context, user_name):
-        ''' Update an existing user. '''
         user = users.get_by_name(context.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
@@ -120,7 +112,6 @@ class UserDetailApi(BaseApi):
         return {'user': _serialize_user(context.user, user)}
 
     def delete(self, context, user_name):
-        ''' Delete an existing user. '''
         user = users.get_by_name(context.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)

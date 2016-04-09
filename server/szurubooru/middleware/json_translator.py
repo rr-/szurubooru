@@ -3,7 +3,7 @@ import datetime
 import json
 import falcon
 
-def json_serial(obj):
+def json_serializer(obj):
     ''' JSON serializer for objects not serializable by default JSON code '''
     if isinstance(obj, datetime.datetime):
         serial = obj.isoformat()
@@ -52,4 +52,4 @@ class JsonTranslator(object):
         if 'result' not in request.context:
             return
         response.body = json.dumps(
-            request.context.result, default=json_serial, indent=2)
+            request.context.result, default=json_serializer, indent=2)
