@@ -1,7 +1,7 @@
 <div class='content-wrapper' id='login'>
     <h1>Log in</h1>
     <form>
-        <fieldset class='input'>
+        <div class='input'>
             <ul>
                 <li>
                     <label for='user-name'>User name</label>
@@ -16,13 +16,13 @@
                     <label for='remember-user' class='checkbox'>Remember me</label>
                 </li>
             </ul>
-        </fieldset>
-        <fieldset class='messages'></fieldset>
-        <fieldset class='buttons'>
+        </div>
+        <div class='messages'></div>
+        <div class='buttons'>
             <input type='submit' value='Log in'/>
             {{#if this.canSendMails}}
                 <a href='/password-reset'>Forgot the password?</a>
             {{/if}}
-        </fieldset>
+        </div>
     </form>
 </div>

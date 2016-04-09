@@ -1,6 +1,6 @@
 <div id='user-edit'>
     <form class='tabular'>
-        <fieldset class='input'>
+        <div class='input'>
             <ul>
                 {{#if this.canEditName}}
                     <li>
@@ -35,10 +35,10 @@
                 {{/if}}
             </ul>
             <!-- TODO: avatar -->
-        </fieldset>
-        <fieldset class='messages'></fieldset>
-        <fieldset class='buttons'>
+        </div>
+        <div class='messages'></div>
+        <div class='buttons'>
             <input type='submit' value='Save settings'/>
-        </fieldset>
+        </div>
     </form>
 </div>

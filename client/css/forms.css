@@ -2,17 +2,6 @@ form {
     display: block;
     width: 20em;
 }
-form fieldset {
-    margin: 0;
-    padding: 0;
-    border: 0;
-}
-form fieldset legend {
-    display: block;
-    text-align: center;
-    width: 100%;
-    font-size: 17pt;
-}
 form ul {
     list-style-type: none;
     margin: 0;
@@ -180,12 +169,12 @@ input[type=password]:focus {
     border-color: var(--main-color);
 }
 
-form.show-validation fieldset.input input:invalid {
+form.show-validation .input input:invalid {
     outline: none;
     border: 2px solid var(--input-bad-border-color);
     background: var(--input-bad-background-color);
 }
-form.show-validation fieldset.input input:valid {
+form.show-validation .input input:valid {
     outline: none;
     border: 2px solid var(--input-good-border-color);
     background: var(--input-good-background-color);
