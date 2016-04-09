@@ -15,3 +15,6 @@ class SearchError(RuntimeError):
 
 class NotFoundError(RuntimeError):
     ''' Error thrown when a resource (usually DB) couldn't be found. '''
+
+class ProcessingError(RuntimeError):
+    ''' Error thrown by things such as thumbnail generator. '''

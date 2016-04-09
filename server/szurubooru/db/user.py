@@ -4,8 +4,8 @@ from szurubooru.db.base import Base
 class User(Base):
     __tablename__ = 'user'
 
-    AVATAR_GRAVATAR = 1
-    AVATAR_MANUAL = 2
+    AVATAR_GRAVATAR = 'gravatar'
+    AVATAR_MANUAL = 'manual'
 
     user_id = sa.Column('id', sa.Integer, primary_key=True)
     name = sa.Column('name', sa.String(50), nullable=False, unique=True)
@@ -15,4 +15,5 @@ class User(Base):
     rank = sa.Column('rank', sa.String(32), nullable=False)
     creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
     last_login_time = sa.Column('last_login_time', sa.DateTime)
-    avatar_style = sa.Column('avatar_style', sa.String(32), nullable=False)
+    avatar_style = sa.Column(
+        'avatar_style', sa.String(32), nullable=False, default=AVATAR_GRAVATAR)

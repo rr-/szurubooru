@@ -2,10 +2,9 @@ import re
 from datetime import datetime
 from sqlalchemy import func
 from szurubooru import config, db, errors
-from szurubooru.util import auth, misc
+from szurubooru.util import auth, misc, files, images
 
 def create_user(session, name, password, email):
-    ''' Create an user with given parameters and returns it. '''
     user = db.User()
     update_name(user, name)
     update_password(user, password)
@@ -19,7 +18,6 @@ def create_user(session, name, password, email):
     return user
 
 def update_name(user, name):
-    ''' Validate and update user's name. '''
     name = name.strip()
     name_regex = config.config['user_name_regex']
     if not re.match(name_regex, name):
@@ -28,7 +26,6 @@ def update_name(user, name):
     user.name = name
 
 def update_password(user, password):
-    ''' Validate and update user's password. '''
     password_regex = config.config['password_regex']
     if not re.match(password_regex, password):
         raise errors.ValidationError(
@@ -37,7 +34,6 @@ def update_password(user, password):
     user.password_hash = auth.get_password_hash(user.password_salt, password)
 
 def update_email(user, email):
-    ''' Validate and update user's email. '''
     email = email.strip() or None
     if not misc.is_valid_email(email):
         raise errors.ValidationError(
@@ -52,28 +48,39 @@ def update_rank(user, rank, authenticated_user):
             'Bad rank %r. Valid ranks: %r' % (rank, available_ranks))
     if available_ranks.index(authenticated_user.rank) \
             < available_ranks.index(rank):
-        raise errors.AuthError('Trying to set higher rank than your own')
+        raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank
 
+def update_avatar(user, avatar_style, avatar_content):
+    if avatar_style == 'gravatar':
+        user.avatar_style = user.AVATAR_GRAVATAR
+    elif avatar_style == 'manual':
+        user.avatar_style = user.AVATAR_MANUAL
+        if not avatar_content:
+            raise errors.ValidationError('Avatar content missing.')
+        image = images.Image(avatar_content)
+        image.resize_fill(
+            int(config.config['thumbnails']['avatar_width']),
+            int(config.config['thumbnails']['avatar_height']))
+        files.save('avatars/' + user.name.lower() + '.jpg', image.to_jpeg())
+    else:
+        raise errors.ValidationError('Unknown avatar style: %r' % avatar_style)
+
 def bump_login_time(user):
-    ''' Update user's login time to current date. '''
     user.last_login_time = datetime.now()
 
 def reset_password(user):
-    ''' Reset password for an user. '''
     password = auth.create_password()
     user.password_salt = auth.create_password()
     user.password_hash = auth.get_password_hash(user.password_salt, password)
     return password
 
 def get_by_name(session, name):
-    ''' Retrieve an user by its name. '''
     return session.query(db.User) \
         .filter(func.lower(db.User.name) == func.lower(name)) \
         .first()
 
 def get_by_name_or_email(session, name_or_email):
-    ''' Retrieve an user by its name or email. '''
     return session.query(db.User) \
         .filter(
             (func.lower(db.User.name) == func.lower(name_or_email))

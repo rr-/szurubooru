@@ -7,11 +7,15 @@ distributions are different, the steps stay roughly the same.
 user@host:~$ sudo pacman -S postgres
 user@host:~$ sudo pacman -S python
 user@host:~$ sudo pacman -S python-pip
+user@host:~$ sudo pacman -S ffmpeg
 user@host:~$ sudo pacman -S npm
 user@host:~$ sudo pip install virtualenv
 user@host:~$ python --version
 Python 3.5.1
 ```
+
+The reason `ffmpeg` is used over, say, `ImageMagick` or even `PIL` is because of
+Flash and video posts.
 
 
 

@@ -163,9 +163,11 @@ Input:
     "name": <user-name>,
     "password": <user-password>,
     "email": <email>,
-    "rank": <rank>
+    "rank": <rank>,
+    "avatar_style": <avatar-style>
 }
 ```
+Files: `avatar` - the content of the new avatar.  
 Output:
 ```json5
 {
@@ -176,12 +178,15 @@ Output:
 Errors: if the user does not exist, or the user with new name already exists
 (names are case insensitive), or either of user name, password, email or rank
 are invalid, or the user is trying to update their or someone else's rank to
-higher than their own, or privileges are too low.
+higher than their own, or privileges are too low, or avatar is missing for
+manual avatar style.
 
 Updates an existing user using specified parameters. Names and passwords must
 match `user_name_regex` and `password_regex` from server's configuration,
 respectively. All fields are optional - update concerns only provided fields.
-To update last login time, see [authentication](#authentication).
+To update last login time, see [authentication](#authentication). Avatar style
+can be either `gravatar` or `manual`. `manual` avatar style requires client to
+pass also `avatar` file - see [file uploads](#file-uploads) for details.
 
 
 ### Getting user

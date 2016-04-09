@@ -44,6 +44,15 @@ class Config(object):
                 'Default rank %r is not on the list of known ranks' % (
                     self['default_rank']))
 
+        for key in ['base_url', 'api_url', 'data_url', 'data_dir']:
+            if not self[key]:
+                raise errors.ConfigError(
+                    'Service is not configured: %r is missing' % key)
+
+        if not os.path.isabs(self['data_dir']):
+            raise errors.ConfigError(
+                'data_dir must be an absolute path')
+
         for key in ['schema', 'host', 'port', 'user', 'pass', 'name']:
             if not self['database'][key]:
                 raise errors.ConfigError(

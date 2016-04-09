@@ -28,9 +28,8 @@ class JsonTranslator(object):
             form = cgi.FieldStorage(fp=request.stream, environ=request.env)
             for key in form:
                 if key != 'metadata':
-                    request.context.files[key] = (
-                        form.getvalue(key),
-                        getattr(form[key], 'filename', None))
+                    _original_file_name = getattr(form[key], 'filename', None)
+                    request.context.files[key] = form.getvalue(key)
             body = form.getvalue('metadata')
         else:
             body = request.stream.read().decode('utf-8')

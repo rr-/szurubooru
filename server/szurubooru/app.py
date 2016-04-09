@@ -39,6 +39,9 @@ def _on_integrity_error(ex, _request, _response, _params):
 def _on_not_found_error(ex, _request, _response, _params):
     raise falcon.HTTPNotFound(title='Not found', description=str(ex))
 
+def _on_processing_error(ex, _request, _response, _params):
+    raise falcon.HTTPNotFound(title='Processing error', description=str(ex))
+
 def create_app():
     ''' Create a WSGI compatible App object. '''
     engine = sqlalchemy.create_engine(
@@ -71,6 +74,7 @@ def create_app():
     app.add_error_handler(errors.ValidationError, _on_validation_error)
     app.add_error_handler(errors.SearchError, _on_search_error)
     app.add_error_handler(errors.NotFoundError, _on_not_found_error)
+    app.add_error_handler(errors.ProcessingError, _on_processing_error)
 
     app.add_route('/users/', user_list_api)
     app.add_route('/user/{user_name}', user_detail_api)

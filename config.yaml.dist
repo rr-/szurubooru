@@ -5,10 +5,15 @@ name: szurubooru
 debug: 0
 secret: change
 api_url: # where frontend connects to, example: http://api.example.com/
-base_url: # used to form absolute links, example: http://example.com/
+base_url: # used to form links to frontend, example: http://example.com/
+data_url: # used to form links to posts and avatars, example: http://example.com/data/
+data_dir: # absolute path for posts and avatars storage, example: /srv/www/booru/client/public/data/
 
-avatar_thumbnail_size: 200
-post_thumbnail_size: 300
+thumbnails:
+    avatar_width: 300
+    avatar_height: 300
+    post_width: 300
+    post_height: 300
 
 database:
     schema: postgres

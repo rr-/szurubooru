@@ -19,8 +19,10 @@ def _serialize_user(authenticated_user, user):
         md5.update((user.email or user.name).lower().encode('utf-8'))
         digest = md5.hexdigest()
         ret['avatarUrl'] = 'http://gravatar.com/avatar/%s?s=%d' % (
-            digest, config.config['avatar_thumbnail_size'])
-    # TODO: else construct a link
+            digest, config.config['thumbnails']['avatar_width'])
+    else:
+        ret['avatarUrl'] = '%s/avatars/%s.jpg' % (
+            config.config['data_url'].rstrip('/'), user.name.lower())
 
     if authenticated_user.user_id == user.user_id:
         ret['email'] = user.email
@@ -107,7 +109,12 @@ class UserDetailApi(BaseApi):
             auth.verify_privilege(context.user, 'users:edit:%s:rank' % infix)
             users.update_rank(user, context.request['rank'], context.user)
 
-        # TODO: avatar
+        if 'avatar_style' in context.request:
+            auth.verify_privilege(context.user, 'users:edit:%s:avatar' % infix)
+            users.update_avatar(
+                user,
+                context.request['avatar_style'],
+                context.files.get('avatar') or None)
 
         context.session.commit()
         return {'user': _serialize_user(context.user, user)}

@@ -11,7 +11,7 @@ class TestRetrievingUsers(DatabaseTestCase):
             'privileges': {
                 'users:list': 'regular_user',
             },
-            'avatar_thumbnail_size': 200,
+            'thumbnails': {'avatar_width': 200},
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
             'rank_names': {},
         })
@@ -55,7 +55,7 @@ class TestRetrievingUser(DatabaseTestCase):
             'privileges': {
                 'users:view': 'regular_user',
             },
-            'avatar_thumbnail_size': 200,
+            'thumbnails': {'avatar_width': 200},
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
             'rank_names': {},
         })
@@ -73,7 +73,7 @@ class TestRetrievingUser(DatabaseTestCase):
         self.assertEqual(result['user']['rank'], 'regular_user')
         self.assertEqual(result['user']['creationTime'], datetime(1997, 1, 1))
         self.assertEqual(result['user']['lastLoginTime'], None)
-        self.assertEqual(result['user']['avatarStyle'], 1) # i.e. integer
+        self.assertEqual(result['user']['avatarStyle'], 'gravatar')
 
     def test_retrieving_non_existing(self):
         self.context.user.rank = 'regular_user'
@@ -137,7 +137,7 @@ class TestCreatingUser(DatabaseTestCase):
             'user_name_regex': '.{3,}',
             'password_regex': '.{3,}',
             'default_rank': 'regular_user',
-            'avatar_thumbnail_size': 200,
+            'thumbnails': {'avatar_width': 200},
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
             'rank_names': {},
             'privileges': {
@@ -214,7 +214,7 @@ class TestUpdatingUser(DatabaseTestCase):
             'secret': '',
             'user_name_regex': '.{3,}',
             'password_regex': '.{3,}',
-            'avatar_thumbnail_size': 200,
+            'thumbnails': {'avatar_width': 200},
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
             'rank_names': {},
             'privileges': {
@@ -222,7 +222,6 @@ class TestUpdatingUser(DatabaseTestCase):
                 'users:edit:self:pass': 'regular_user',
                 'users:edit:self:email': 'regular_user',
                 'users:edit:self:rank': 'mod',
-
                 'users:edit:any:name': 'mod',
                 'users:edit:any:pass': 'mod',
                 'users:edit:any:email': 'mod',
