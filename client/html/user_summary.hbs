@@ -1,5 +1,5 @@
 <div id='user-summary'>
-    <img src='{{this.user.avatarUrl}}' alt='{{this.user.name}}&rsquo;s avatar'/>
+    {{thumbnail this.user.avatarUrl}}
     <ul class='basic-info'>
         <li>Registered: {{reltime this.user.creationTime}}</li>
         <li>Last seen: {{reltime this.user.lastLoginTime}}</li>

@@ -148,3 +148,15 @@ nav.text-nav ul li.active a {
     border: 1px solid var(--message-success-border-color);
     background: var(--message-success-background-color);
 }
+
+.thumbnail {
+    /*background-image: attr(data-src url);*/ /* not available yet */
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.thumbnail img {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+}

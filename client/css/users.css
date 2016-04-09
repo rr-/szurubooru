@@ -45,7 +45,7 @@
 #user .text-nav {
     margin-bottom: 1.5em;
 }
-#user-summary img {
+#user-summary .thumbnail {
     width: 6em;
     height: 6em;
     margin: 0 1.5em 1.5em 0;

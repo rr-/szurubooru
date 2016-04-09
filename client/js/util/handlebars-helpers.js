@@ -10,6 +10,14 @@ handlebars.registerHelper('reltime', function(time) {
         '</time>');
 });
 
+handlebars.registerHelper('thumbnail', function(url) {
+    return new handlebars.SafeString(
+        '<div class="thumbnail" ' +
+        'style="background-image: url(\'' + url + '\')">' +
+        '<img alt="thumbnail" src="' + url + '"/>' +
+        '</div>');
+});
+
 handlebars.registerHelper('toLowerCase', function(str) {
     return str.toLowerCase();
 });
