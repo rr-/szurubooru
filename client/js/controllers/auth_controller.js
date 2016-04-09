@@ -34,7 +34,7 @@ class AuthController {
                             resolve();
                             page('/');
                             events.notify(events.Success, 'Logged in');
-                        }).catch(errorMessage => {
+                        }, errorMessage => {
                             reject(errorMessage);
                             events.notify(events.Error, errorMessage);
                         });
@@ -63,18 +63,15 @@ class AuthController {
         api.post('/password-reset/' + name, {token: token})
             .then(response => {
                 const password = response.password;
-                api.login(name, password, false)
-                    .then(() => {
-                        page('/');
-                        events.notify(
-                            events.Success, 'New password: ' + password);
-                    }).catch(errorMessage => {
-                        page('/');
-                        events.notify(events.Error, errorMessage);
-                    });
-            }).catch(response => {
+                return api.login(name, password, false);
+            }, response => {
+                return Promise.reject(response.description);
+            }).then(() => {
                 page('/');
-                events.notify(events.Error, response.description);
+                events.notify(events.Success, 'New password: ' + password);
+            }, errorMessage => {
+                page('/');
+                events.notify(events.Error, errorMessage);
             });
     }
 
@@ -89,7 +86,7 @@ class AuthController {
                         events.Success,
                         'E-mail has been sent. To finish the procedure, ' +
                         'please click the link it contains.');
-                }).catch(response => {
+                }, response => {
                     reject();
                     events.notify(events.Error, response.description);
                 });

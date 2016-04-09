@@ -22,7 +22,6 @@ function _messageHandler(target, message, className) {
     messagesHolder.appendChild(node);
 }
 
-
 function listenToMessages(target) {
     events.unlisten(events.Success);
     events.unlisten(events.Error);

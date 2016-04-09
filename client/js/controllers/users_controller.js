@@ -60,7 +60,7 @@ class UsersController {
                 ctx.save();
                 this.user = response.user;
                 next();
-            }).catch(response => {
+            }, response => {
                 this.emptyView.render();
                 events.notify(events.Error, response.description);
             });
@@ -88,17 +88,16 @@ class UsersController {
         return new Promise((resolve, reject) => {
             api.post('/users/', data).then(() => {
                 api.forget();
-                api.login(name, password, false).then(() => {
-                    resolve();
-                    page('/');
-                    events.notify(events.Success, 'Welcome aboard!');
-                }).catch(errorMessage => {
-                    reject();
-                    events.notify(events.Error, errorMessage);
-                });
-            }).catch(response => {
+                return api.login(name, password, false);
+            }, response => {
+                return Promise.reject(response.description);
+            }).then(() => {
+                resolve();
+                page('/');
+                events.notify(events.Success, 'Welcome aboard!');
+            }, errorMessage => {
                 reject();
-                events.notify(events.Error, response.description);
+                events.notify(events.Error, errorMessage);
             });
         });
     }
@@ -114,27 +113,21 @@ class UsersController {
         return new Promise((resolve, reject) => {
             api.put('/user/' + user.name, data)
                 .then(response => {
-                    const next = () => {
-                        resolve();
-                        page('/user/' + newName + '/edit');
-                        events.notify(events.Success, 'Settings updated');
-                    };
-                    if (isLoggedIn) {
+                    return isLoggedIn ?
                         api.login(
-                                newName,
-                                newPassword || api.userPassword,
-                                false)
-                            .then(next)
-                            .catch(errorMessage => {
-                                reject();
-                                events.notify(events.Error, errorMessage);
-                            });
-                    } else {
-                        next();
+                            newName, newPassword || api.userPassword, false) :
+                        Promise.fulfill();
+                }, response => {
+                    return Promise.reject(response.description);
+                }).then(() => {
+                    resolve();
+                    if (newName !== user.name) {
+                        page('/user/' + newName + '/edit');
                     }
-                }).catch(response => {
+                    events.notify(events.Success, 'Settings updated.');
+                }, errorMessage => {
                     reject();
-                    events.notify(events.Error, response.description);
+                    events.notify(events.Error, errorMessage);
                 });
         });
     }
@@ -155,7 +148,7 @@ class UsersController {
                         page('/');
                     }
                     events.notify(events.Success, 'Account deleted');
-                }).catch(response => {
+                }, response => {
                     reject();
                     events.notify(events.Error, response.description);
                 });
