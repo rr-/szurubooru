@@ -6,6 +6,9 @@
             -->{{#if this.canEditAnything}}<!--
             --><li data-name='edit'><a href='/user/{{this.user.name}}/edit'>Account settings</a></li><!--
             -->{{/if}}<!--
+            -->{{#if this.canDelete}}<!--
+            --><li data-name='delete'><a href='/user/{{this.user.name}}/delete'>Account deletion</a></li><!--
+            -->{{/if}}<!--
         --></ul><!--
     --></nav>
     <div id='user-content-holder'></div>

@@ -26,6 +26,10 @@ class UsersController {
             '/user/:name/edit',
             (ctx, next) => { this.loadUserRoute(ctx, next); },
             (ctx, next) => { this.editUserRoute(ctx, next); });
+        page(
+            '/user/:name/delete',
+            (ctx, next) => { this.loadUserRoute(ctx, next); },
+            (ctx, next) => { this.deleteUserRoute(ctx, next); });
         page.exit('/user/', (ctx, next) => { this.user = null; });
     }
 
@@ -58,6 +62,18 @@ class UsersController {
                 events.notify(events.Error, response.description);
             });
         }
+    }
+
+    showUserRoute(ctx, next) {
+        this._show(ctx.state.user, 'summary');
+    }
+
+    editUserRoute(ctx, next) {
+        this._show(ctx.state.user, 'edit');
+    }
+
+    deleteUserRoute(ctx, next) {
+        this._show(ctx.state.user, 'delete');
     }
 
     _register(name, password, email) {
@@ -119,6 +135,28 @@ class UsersController {
         });
     }
 
+    _delete(user) {
+        const isLoggedIn = api.isLoggedIn() && api.user.id == user.id;
+        return new Promise((resolve, reject) => {
+            api.delete('/user/' + user.name)
+                .then(response => {
+                    if (isLoggedIn) {
+                        api.logout();
+                    }
+                    resolve();
+                    if (api.hasPrivilege('users:list')) {
+                        page('/users');
+                    } else {
+                        page('/');
+                    }
+                    events.notify(events.Success, 'Account deleted');
+                }).catch(response => {
+                    reject();
+                    events.notify(events.Error, response.description);
+                });
+        });
+    }
+
     _show(user, section) {
         const isLoggedIn = api.isLoggedIn() && api.user.id == user.id;
         const infix = isLoggedIn ? 'self' : 'any';
@@ -152,17 +190,11 @@ class UsersController {
             canEditRank: api.hasPrivilege('users:edit:' + infix + ':rank'),
             canEditAvatar: api.hasPrivilege('users:edit:' + infix + ':avatar'),
             canEditAnything: api.hasPrivilege('users:edit:' + infix),
+            canDelete: api.hasPrivilege('users:delete:' + infix),
             ranks: ranks,
             edit: (...args) => { return this._edit(user, ...args); },
+            delete: (...args) => { return this._delete(user, ...args); },
         });
-    }
-
-    showUserRoute(ctx, next) {
-        this._show(ctx.state.user, 'summary');
-    }
-
-    editUserRoute(ctx, next) {
-        this._show(ctx.state.user, 'edit');
     }
 }
 

@@ -1,0 +1,18 @@
+<div id='user-delete'>
+    <form>
+        <fieldset class='input'>
+            <ul>
+                <li>
+                    <input id='confirm-deletion' name='confirm-deletion' type='checkbox' required/>
+                    <label for='confirm-deletion' class='checkbox'>
+                        I confirm that I want to delete {{#if this.isLoggedIn}}my{{else}}this{{/if}} account.
+                    </label>
+                </li>
+            </ul>
+        </fieldset>
+        <fieldset class='messages'></fieldset>
+        <fieldset class='buttons'>
+            <input type='submit' value='Delete account'/>
+        </fieldset>
+    </form>
+</div>

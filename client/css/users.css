@@ -66,3 +66,6 @@
 #user-edit form {
     width: 22.5em;
 }
+#user-delete form {
+    width: 100%;
+}

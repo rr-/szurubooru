@@ -1,6 +1,7 @@
 'use strict';
 
 const BaseView = require('./base_view.js');
+const UserDeletionView = require('./user_deletion_view.js');
 const UserSummaryView = require('./user_summary_view.js');
 const UserEditView = require('./user_edit_view.js');
 
@@ -8,6 +9,7 @@ class UserView extends BaseView {
     constructor() {
         super();
         this.template = this.getTemplate('user-template');
+        this.deletionView = new UserDeletionView();
         this.summaryView = new UserSummaryView();
         this.editView = new UserEditView();
     }
@@ -29,6 +31,8 @@ class UserView extends BaseView {
         let view = null;
         if (ctx.section == 'edit') {
             view = this.editView;
+        } else if (ctx.section == 'delete') {
+            view = this.deletionView;
         } else {
             view = this.summaryView;
         }
