@@ -29,7 +29,7 @@ class TestRetrievingUsers(DatabaseTestCase):
         result = api_.get(self.context)
         self.assertEqual(result['query'], '')
         self.assertEqual(result['page'], 1)
-        self.assertEqual(result['page_size'], 100)
+        self.assertEqual(result['pageSize'], 100)
         self.assertEqual(result['total'], 2)
         self.assertEqual([u['name'] for u in result['users']], ['u1', 'u2'])
 

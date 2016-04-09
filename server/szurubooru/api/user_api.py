@@ -43,7 +43,7 @@ class UserListApi(BaseApi):
         return {
             'query': query,
             'page': page,
-            'page_size': self._search_executor.page_size,
+            'pageSize': self._search_executor.page_size,
             'total': count,
             'users': [_serialize_user(context.user, user) for user in user_list],
         }
