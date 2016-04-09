@@ -1,11 +1,10 @@
 'use strict';
 
-const BaseView = require('./base_view.js');
+const views = require('../util/views.js');
 
-class UserDeletionView extends BaseView {
+class UserDeletionView {
     constructor() {
-        super();
-        this.template = this.getTemplate('user-deletion-template');
+        this.template = views.getTemplate('user-deletion');
     }
 
     render(ctx) {
@@ -14,16 +13,17 @@ class UserDeletionView extends BaseView {
 
         const form = source.querySelector('form');
 
-        this.decorateValidator(form);
+        views.decorateValidator(form);
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-            this.clearMessages();
-            this.disableForm(form);
+            views.clearMessages(target);
+            views.disableForm(form);
             ctx.delete();
         });
 
-        this.showView(target, source);
+        views.listenToMessages(target);
+        views.showView(target, source);
     }
 }
 

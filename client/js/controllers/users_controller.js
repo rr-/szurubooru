@@ -5,6 +5,7 @@ const api = require('../api.js');
 const config = require('../config.js');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
+const views = require('../util/views.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const RegistrationView = require('../views/registration_view.js');
 const UserView = require('../views/user_view.js');
@@ -58,7 +59,7 @@ class UsersController {
                 this.user = response.user;
                 next();
             }).catch(response => {
-                this.userView.emptyView(this.userView.contentHolder);
+                views.emptyView(document.getElementById('content-holder'));
                 events.notify(events.Error, response.description);
             });
         }

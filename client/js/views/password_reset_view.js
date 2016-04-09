@@ -1,32 +1,31 @@
 'use strict';
 
-const events = require('../events.js');
-const BaseView = require('./base_view.js');
+const views = require('../util/views.js');
 
-class PasswordResetView extends BaseView {
+class PasswordResetView {
     constructor() {
-        super();
-        this.template = this.getTemplate('password-reset-template');
+        this.template = views.getTemplate('password-reset');
     }
 
     render(ctx) {
-        const target = this.contentHolder;
+        const target = document.getElementById('content-holder');
         const source = this.template();
 
         const form = source.querySelector('form');
         const userNameOrEmailField = source.querySelector('#user-name');
 
-        this.decorateValidator(form);
+        views.decorateValidator(form);
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-            this.clearMessages();
-            this.disableForm(form);
+            views.clearMessages(target);
+            views.disableForm(form);
             ctx.proceed(userNameOrEmailField.value)
-                .catch(() => { this.enableForm(form); });
+                .catch(() => { views.enableForm(form); });
         });
 
-        this.showView(target, source);
+        views.listenToMessages(target);
+        views.showView(target, source);
     }
 }
 

@@ -1,17 +1,15 @@
 'use strict';
 
 const config = require('../config.js');
-const events = require('../events.js');
-const BaseView = require('./base_view.js');
+const views = require('../util/views.js');
 
-class RegistrationView extends BaseView {
+class RegistrationView {
     constructor() {
-        super();
-        this.template = this.getTemplate('user-registration-template');
+        this.template = views.getTemplate('user-registration');
     }
 
     render(ctx) {
-        const target = this.contentHolder;
+        const target = document.getElementById('content-holder');
         const source = this.template();
 
         const form = source.querySelector('form');
@@ -19,22 +17,23 @@ class RegistrationView extends BaseView {
         const passwordField = source.querySelector('#user-password');
         const emailField = source.querySelector('#user-email');
 
-        this.decorateValidator(form);
+        views.decorateValidator(form);
         userNameField.setAttribute('pattern', config.userNameRegex);
         passwordField.setAttribute('pattern', config.passwordRegex);
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-            this.clearMessages();
-            this.disableForm(form);
+            views.clearMessages(target);
+            views.disableForm(form);
             ctx.register(
                     userNameField.value,
                     passwordField.value,
                     emailField.value)
-                .always(() => { this.enableForm(form); });
+                .always(() => { views.enableForm(form); });
         });
 
-        this.showView(target, source);
+        views.listenToMessages(target);
+        views.showView(target, source);
     }
 }
 

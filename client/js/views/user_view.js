@@ -1,21 +1,20 @@
 'use strict';
 
-const BaseView = require('./base_view.js');
+const views = require('../util/views.js');
 const UserDeletionView = require('./user_deletion_view.js');
 const UserSummaryView = require('./user_summary_view.js');
 const UserEditView = require('./user_edit_view.js');
 
-class UserView extends BaseView {
+class UserView {
     constructor() {
-        super();
-        this.template = this.getTemplate('user-template');
+        this.template = views.getTemplate('user');
         this.deletionView = new UserDeletionView();
         this.summaryView = new UserSummaryView();
         this.editView = new UserEditView();
     }
 
     render(ctx) {
-        const target = this.contentHolder;
+        const target = document.getElementById('content-holder');
         const source = this.template(ctx);
 
         ctx.section = ctx.section || 'summary';
@@ -39,7 +38,8 @@ class UserView extends BaseView {
         ctx.target = source.querySelector('#user-content-holder');
         view.render(ctx);
 
-        this.showView(target, source);
+        views.listenToMessages(target);
+        views.showView(target, source);
     }
 }
 

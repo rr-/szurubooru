@@ -1,11 +1,10 @@
 'use strict';
 
-const BaseView = require('./base_view.js');
+const views = require('../util/views.js');
 
-class TopNavView extends BaseView {
+class TopNavView {
     constructor() {
-        super();
-        this.template = this.getTemplate('top-nav-template');
+        this.template = views.getTemplate('top-nav');
         this.navHolder = document.getElementById('top-nav-holder');
     }
 
@@ -21,7 +20,7 @@ class TopNavView extends BaseView {
                 '<span class="access-key" data-accesskey="$1">$1</span>');
         }
 
-        this.showView(this.navHolder, source);
+        views.showView(this.navHolder, source);
     }
 
     activate(itemName) {

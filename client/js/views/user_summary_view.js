@@ -1,17 +1,17 @@
 'use strict';
 
-const BaseView = require('./base_view.js');
+const views = require('../util/views.js');
 
-class UserSummaryView extends BaseView {
+class UserSummaryView {
     constructor() {
-        super();
-        this.template = this.getTemplate('user-summary-template');
+        this.template = views.getTemplate('user-summary');
     }
 
     render(ctx) {
         const target = ctx.target;
         const source = this.template(ctx);
-        this.showView(target, source);
+        views.listenToMessages(target);
+        views.showView(target, source);
     }
 }
 

@@ -1,12 +1,11 @@
 'use strict';
 
 const config = require('../config.js');
-const BaseView = require('./base_view.js');
+const views = require('../util/views.js');
 
-class UserEditView extends BaseView {
+class UserEditView {
     constructor() {
-        super();
-        this.template = this.getTemplate('user-edit-template');
+        this.template = views.getTemplate('user-edit');
     }
 
     render(ctx) {
@@ -19,7 +18,7 @@ class UserEditView extends BaseView {
         const userNameField = source.querySelector('#user-name');
         const passwordField = source.querySelector('#user-password');
 
-        this.decorateValidator(form);
+        views.decorateValidator(form);
 
         if (userNameField) {
             userNameField.setAttribute(
@@ -41,17 +40,18 @@ class UserEditView extends BaseView {
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-            this.clearMessages();
-            this.disableForm(form);
+            views.clearMessages(target);
+            views.disableForm(form);
             ctx.edit(
                     userNameField.value,
                     passwordField.value,
                     emailField.value,
                     rankField.value)
-                .always(() => { this.enableForm(form); });
+                .always(() => { views.enableForm(form); });
         });
 
-        this.showView(target, source);
+        views.listenToMessages(target);
+        views.showView(target, source);
     }
 }
 

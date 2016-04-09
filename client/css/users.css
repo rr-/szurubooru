@@ -69,3 +69,6 @@
 #user-delete form {
     width: 100%;
 }
+#user-delete form label {
+    padding: 0;
+}

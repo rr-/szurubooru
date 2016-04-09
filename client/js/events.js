@@ -2,6 +2,10 @@
 
 let listeners = [];
 
+function unlisten(messageClass) {
+    listeners[messageClass] = [];
+}
+
 function listen(messageClass, handler) {
     if (!(messageClass in listeners)) {
         listeners[messageClass] = [];
@@ -25,4 +29,5 @@ module.exports = {
 
     notify: notify,
     listen: listen,
+    unlisten: unlisten,
 };

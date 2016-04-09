@@ -1,31 +1,30 @@
 'use strict';
 
 const config = require('../config.js');
-const BaseView = require('./base_view.js');
+const views = require('../util/views.js');
 
-class HelpView extends BaseView {
+class HelpView {
     constructor() {
-        super();
-        this.template = this.getTemplate('help-template');
+        this.template = views.getTemplate('help');
         this.sectionTemplates = {};
         const sectionKeys = ['about', 'keyboard', 'search', 'comments', 'tos'];
         for (let section of sectionKeys) {
-            const templateName = 'help-' + section + '-template';
-            this.sectionTemplates[section] = this.getTemplate(templateName);
+            const templateName = 'help-' + section;
+            this.sectionTemplates[section] = views.getTemplate(templateName);
         }
     }
 
     render(ctx) {
-        const target = this.contentHolder;
+        const target = document.getElementById('content-holder');
         const source = this.template();
 
         ctx.section = ctx.section || 'about';
         if (!(ctx.section in this.sectionTemplates)) {
-            this.emptyView(this.contentHolder);
+            views.emptyView(target);
             return;
         }
 
-        this.showView(
+        views.showView(
             source.querySelector('.content'),
             this.sectionTemplates[ctx.section]({
                 name: config.name,
@@ -40,7 +39,8 @@ class HelpView extends BaseView {
             }
         }
 
-        this.showView(target, source);
+        views.listenToMessages(target);
+        views.showView(target, source);
     }
 }
 
