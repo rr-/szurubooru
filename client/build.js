@@ -63,7 +63,7 @@ function bundleHtml(config) {
         for (const file of files) {
             templatesHtml += util.format(
                 '<template id=\'%s-template\'>%s</template>',
-                path.basename(file, '.hbs').replace('_', '-'),
+                path.basename(file, '.hbs').replace(/_/g, '-'),
                 fs.readFileSync(file));
         }
 
