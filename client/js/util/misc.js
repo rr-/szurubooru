@@ -52,7 +52,25 @@ function formatRelativeTime(timeString) {
     return future ? 'in ' + text : text + ' ago';
 }
 
+function parseSearchQuery(query) {
+    let result = {};
+    for (let word of (query || '').split(/;/)) {
+        const [key, value] = word.split(/=/, 2);
+        result[key] = value;
+    }
+    result.text = result.text || '';
+    result.page = parseInt(result.page || '1');
+    return result;
+}
+
+function parseSearchQueryRoute(ctx, next) {
+    ctx.searchQuery = parseSearchQuery(ctx.params.query || '');
+    next();
+}
+
 module.exports = {
     range: range,
+    parseSearchQuery: parseSearchQuery,
+    parseSearchQueryRoute: parseSearchQueryRoute,
     formatRelativeTime: formatRelativeTime,
 };

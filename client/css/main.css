@@ -47,7 +47,7 @@ a {
 }
 
 #content-holder {
-    margin-top: 2em;
+    margin: 2em;
     text-align: center;
 }
 #content-holder>.content-wrapper {
@@ -154,9 +154,30 @@ nav.text-nav ul li.active a {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    display: inline-block;
 }
 .thumbnail img {
     opacity: 0;
     width: 100%;
     height: 100%;
+}
+
+.flexbox-dummy {
+    height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.pager nav .disabled {
+    opacity: .5;
+}
+.pager nav .prev span,
+.pager nav .next span {
+    opacity: 0;
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
 }

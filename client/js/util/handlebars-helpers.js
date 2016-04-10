@@ -14,7 +14,7 @@ handlebars.registerHelper('reltime', function(time) {
 
 handlebars.registerHelper('thumbnail', function(url) {
     return new handlebars.SafeString(
-        views.makeNonVoidElement('div', {
+        views.makeNonVoidElement('span', {
             class: 'thumbnail',
             style: 'background-image: url(\'{0}\')'.format(url)
         }, views.makeVoidElement('img', {alt: 'thumbnail', src: url})));
@@ -99,4 +99,10 @@ handlebars.registerHelper('passwordInput', function(options) {
 handlebars.registerHelper('emailInput', function(options) {
     options.hash.inputType = 'email';
     return handlebars.helpers.input(options);
+});
+
+handlebars.registerHelper('alignFlexbox', function(options) {
+    return new handlebars.SafeString(
+        Array.from(misc.range(20))
+            .map(() => '<li class="flexbox-dummy"></li>').join(''));
 });

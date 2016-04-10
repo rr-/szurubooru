@@ -7,20 +7,26 @@ const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const topNavController = require('../controllers/top_nav_controller.js');
+const pageController = require('../controllers/page_controller.js');
 const RegistrationView = require('../views/registration_view.js');
 const UserView = require('../views/user_view.js');
+const UserListView = require('../views/user_list_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 class UsersController {
     constructor() {
         this.registrationView = new RegistrationView();
         this.userView = new UserView();
+        this.userListView = new UserListView();
         this.emptyView = new EmptyView();
     }
 
     registerRoutes() {
         page('/register', () => { this.createUserRoute(); });
-        page('/users', () => { this.listUsersRoute(); });
+        page(
+            '/users/:query?',
+            (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+            (ctx, next) => { this.listUsersRoute(ctx, next); });
         page(
             '/user/:name',
             (ctx, next) => { this.loadUserRoute(ctx, next); },
@@ -36,8 +42,21 @@ class UsersController {
         page.exit('/user/', (ctx, next) => { this.user = null; });
     }
 
-    listUsersRoute() {
+    listUsersRoute(ctx, next) {
         topNavController.activate('users');
+
+        pageController.run({
+            requestPage: page => {
+                return api.get(
+                    '/users/?query={text}&page={page}&pageSize=30'.format({
+                        text: ctx.searchQuery.text,
+                        page: page}));
+            },
+            clientUrl: '/users/text={text};page={page}'.format({
+                text: ctx.searchQuery.text}),
+            initialPage: ctx.searchQuery.page,
+            pageRenderer: this.userListView,
+        });
     }
 
     createUserRoute() {

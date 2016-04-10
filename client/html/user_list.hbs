@@ -1,0 +1,17 @@
+<div class='user-list'>
+    <ul><!--
+        -->{{#each this.users}}<!--
+            --><li>
+                <div class='wrapper'>
+                    <a class='image' href='/user/{{this.name}}'>{{thumbnail this.avatarUrl}}</a>
+                    <div class='details'>
+                        <a href='/user/{{this.name}}'>{{this.name}}</a><br/>
+                        Registered: {{reltime this.creationTime}}<br/>
+                        Last seen: {{reltime this.lastLoginTime}}
+                    </div>
+                </div>
+            </li><!--
+        -->{{/each}}<!--
+        -->{{alignFlexbox}}<!--
+    --></ul>
+</div>
