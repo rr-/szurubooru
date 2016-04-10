@@ -25,12 +25,16 @@ def mock_context(parent):
     parent.context = context
 
 def mock_params(context, params):
-    def get_param_as_string(key, default=None):
+    def get_param_as_string(key, default=None, required=False):
         if key not in params:
+            if required:
+                raise RuntimeError('Param is missing!')
             return default
         return params[key]
-    def get_param_as_int(key, default=None):
+    def get_param_as_int(key, default=None, required=False):
         if key not in params:
+            if required:
+                raise RuntimeError('Param is missing!')
             return default
         return int(params[key])
     context.get_param_as_string = get_param_as_string

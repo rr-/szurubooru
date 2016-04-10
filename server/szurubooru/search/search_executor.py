@@ -13,17 +13,16 @@ class SearchExecutor(object):
     ORDER_ASC = 2
 
     def __init__(self, search_config):
-        self.page_size = 100
         self._search_config = search_config
 
-    def execute(self, session, query_text, page):
+    def execute(self, session, query_text, page, page_size):
         '''
         Parse input and return tuple containing total record count and filtered
         entities.
         '''
         filter_query = self._prepare(session, query_text)
         entities = filter_query \
-            .offset((page - 1) * self.page_size).limit(self.page_size).all()
+            .offset((page - 1) * page_size).limit(page_size).all()
         count_query = filter_query.statement \
             .with_only_columns([sqlalchemy.func.count()]).order_by(None)
         count = filter_query.session.execute(count_query).scalar()

@@ -38,11 +38,13 @@ class UserListApi(BaseApi):
         auth.verify_privilege(context.user, 'users:list')
         query = context.get_param_as_string('query')
         page = context.get_param_as_int('page', 1)
-        count, user_list = self._search_executor.execute(context.session, query, page)
+        page_size = min(100, context.get_param_as_int('pageSize', required=False) or 100)
+        count, user_list = self._search_executor.execute(
+            context.session, query, page, page_size)
         return {
             'query': query,
             'page': page,
-            'pageSize': self._search_executor.page_size,
+            'pageSize': page_size,
             'total': count,
             'users': [_serialize_user(context.user, user) for user in user_list],
         }

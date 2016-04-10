@@ -77,7 +77,7 @@ data.
 
 
 ### Listing users
-Request: `GET /users/?page=<page>&query=<query>`  
+Request: `GET /users/?page=<page>&pageSize=<page-size>&query=<query>`  
 Output:
 ```json5
 {
