@@ -38,11 +38,12 @@ class Image(object):
 
     def _execute(self, cli):
         proc = subprocess.Popen(
-            ['ffmpeg'] + cli,
+            ['ffmpeg', '-loglevel', '24'] + cli,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.PIPE)
         out, err = proc.communicate(input=self.content)
         if proc.returncode != 0:
-            raise errors.ConversionError(err)
+            raise errors.ProcessingError(
+                'Error while processing image.\n' + err.decode('utf-8'))
         return out

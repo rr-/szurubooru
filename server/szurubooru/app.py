@@ -40,7 +40,7 @@ def _on_not_found_error(ex, _request, _response, _params):
     raise falcon.HTTPNotFound(title='Not found', description=str(ex))
 
 def _on_processing_error(ex, _request, _response, _params):
-    raise falcon.HTTPNotFound(title='Processing error', description=str(ex))
+    raise falcon.HTTPBadRequest(title='Processing error', description=str(ex))
 
 def create_app():
     ''' Create a WSGI compatible App object. '''
