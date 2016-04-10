@@ -20,7 +20,7 @@ form .input {
 form .buttons {
     margin-top: 1em;
 }
-form .input li:first-child label:not(.radio):not(.checkbox),
+form .input li:first-child label:not(.radio):not(.checkbox):not(.file-dropper),
 form .input li:first-child {
     padding-top: 0;
     margin-top: 0;
@@ -33,7 +33,7 @@ form.tabular ul {
 form.tabular ul li {
     display: table-row;
 }
-form.tabular ul li label:not(.radio):not(.checkbox) {
+form.tabular ul li label:not(.radio):not(.checkbox):not(.file-dropper) {
     display: table-cell;
     width: 33%;
 }
@@ -218,4 +218,28 @@ select:-moz-focusring {
 button::-moz-focus-inner,
 input::-moz-focus-inner {
     border: 0;
+}
+
+
+
+/*
+ * File dropper
+ */
+.file-dropper {
+    background: white;
+    border: 3px dashed #eee;
+    padding: 0.3em 0.5em;
+    line-height: 140%;
+    text-align: center;
+    cursor: pointer;
+    word-wrap: break-word;
+}
+input[type=file]:disabled+.file-dropper {
+    cursor: default;
+    opacity: .5;
+}
+input[type=file]:active+.file-dropper,
+input[type=file]:focus+.file-dropper,
+.file-dropper.active {
+    border-color: var(--main-color);
 }

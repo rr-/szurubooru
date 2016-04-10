@@ -64,11 +64,26 @@
     margin-right: 1em;
 }
 #user-edit form {
-    width: 22.5em;
+    width: 100%;
+}
+#user-edit form {
+    display: flex;
+}
+#user-edit .left {
+    width: 65%;
+}
+#user-edit .right {
+    width: 35%;
+    margin-left: 1em;
+}
+#user-edit .file-dropper-holder {
+    position: relative;
+}
+#user-edit .file-dropper {
+    position: absolute;
+    left: 0;
+    right: 0;
 }
 #user-delete form {
     width: 100%;
-}
-#user-delete form label {
-    padding: 0;
 }

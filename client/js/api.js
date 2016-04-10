@@ -13,28 +13,33 @@ class Api {
     }
 
     get(url) {
-        const fullUrl = this.getFullUrl(url);
-        return this._process(fullUrl, () => request.get(fullUrl));
+        return this._process(url, request.get);
     }
 
-    post(url, data) {
-        const fullUrl = this.getFullUrl(url);
-        return this._process(fullUrl, () => request.post(fullUrl).send(data));
+    post(url, data, files) {
+        return this._process(url, request.post, data, files);
     }
 
-    put(url, data) {
-        const fullUrl = this.getFullUrl(url);
-        return this._process(fullUrl, () => request.put(fullUrl).send(data));
+    put(url, data, files) {
+        return this._process(url, request.put, data, files);
     }
 
-    delete(url, data) {
-        const fullUrl = this.getFullUrl(url);
-        return this._process(fullUrl, () => request.delete(fullUrl).send(data));
+    delete(url) {
+        return this._process(url, request.delete);
     }
 
-    _process(url, requestFactory) {
+    _process(url, requestFactory, data, files) {
+        const fullUrl = this.getFullUrl(url);
         return new Promise((resolve, reject) => {
-            let req = requestFactory();
+            let req = requestFactory(fullUrl);
+            if (data) {
+                req.attach('metadata', new Blob([JSON.stringify(data)]));
+            }
+            if (files) {
+                for (let key of Object.keys(files)) {
+                    req.attach(key, files[key]);
+                }
+            }
             if (this.userName && this.userPassword) {
                 req.auth(this.userName, this.userPassword);
             }

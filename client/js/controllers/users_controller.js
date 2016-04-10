@@ -102,27 +102,46 @@ class UsersController {
         });
     }
 
-    _edit(user, newName, newPassword, newEmail, newRank) {
-        const data = {};
-        if (newName) { data.name = newName; }
-        if (newPassword) { data.password = newPassword; }
-        if (newEmail) { data.email = newEmail; }
-        if (newRank) { data.rank = newRank; }
-        /* TODO: avatar */
+    _edit(user, data) {
+        let files = [];
+
+        if (!data.name) {
+            delete data.name;
+        }
+        if (!data.password) {
+            delete data.password;
+        }
+        if (!data.email) {
+            delete data.email;
+        }
+        if (!data.rank) {
+            delete data.rank;
+        }
+        if (!data.avatarStyle ||
+                (data.avatarStyle == user.avatarStyle && !data.avatarContent)) {
+            delete data.avatarStyle;
+        }
+        if (data.avatarContent) {
+            files.avatar = data.avatarContent;
+        }
+
         const isLoggedIn = api.isLoggedIn() && api.user.id == user.id;
         return new Promise((resolve, reject) => {
-            api.put('/user/' + user.name, data)
+            api.put('/user/' + user.name, data, files)
                 .then(response => {
+                    this.user = response.user;
                     return isLoggedIn ?
                         api.login(
-                            newName, newPassword || api.userPassword, false) :
+                            data.name || api.userName,
+                            data.password || api.userPassword,
+                            false) :
                         Promise.fulfill();
                 }, response => {
                     return Promise.reject(response.description);
                 }).then(() => {
                     resolve();
-                    if (newName !== user.name) {
-                        page('/user/' + newName + '/edit');
+                    if (data.name && data.name !== user.name) {
+                        page('/user/' + data.name + '/edit');
                     }
                     events.notify(events.Success, 'Settings updated.');
                 }, errorMessage => {

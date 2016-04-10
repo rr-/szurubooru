@@ -31,6 +31,7 @@ handlebars.registerHelper('radio', function(options) {
             name: options.hash.name,
             value: options.hash.value,
             type: 'radio',
+            checked: options.hash.selectedValue === options.hash.value,
             required: options.hash.required,
         }),
         views.makeNonVoidElement('label', {
