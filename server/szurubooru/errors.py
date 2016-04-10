@@ -1,5 +1,5 @@
 class ConfigError(RuntimeError):
-    ''' A problem with config.ini file. '''
+    ''' A problem with configuration file. '''
 
 class AuthError(RuntimeError):
     ''' Generic authentication error '''
