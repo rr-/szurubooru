@@ -18,7 +18,7 @@ def _serialize_user(authenticated_user, user):
         md5 = hashlib.md5()
         md5.update((user.email or user.name).lower().encode('utf-8'))
         digest = md5.hexdigest()
-        ret['avatarUrl'] = 'http://gravatar.com/avatar/%s?s=%d' % (
+        ret['avatarUrl'] = 'http://gravatar.com/avatar/%s?d=retro&s=%d' % (
             digest, config.config['thumbnails']['avatar_width'])
     else:
         ret['avatarUrl'] = '%s/avatars/%s.jpg' % (
