@@ -32,7 +32,7 @@ class JsonTranslator(object):
                     request.context.files[key] = form.getvalue(key)
             body = form.getvalue('metadata')
         else:
-            body = request.stream.read().decode('utf-8')
+            body = request.stream.read()
 
         if not body:
             raise falcon.HTTPBadRequest(
@@ -40,6 +40,9 @@ class JsonTranslator(object):
                 'A valid JSON document is required.')
 
         try:
+            if isinstance(body, bytes):
+                body = body.decode('utf-8')
+
             request.context.request = json.loads(body)
         except (ValueError, UnicodeDecodeError):
             raise falcon.HTTPError(
