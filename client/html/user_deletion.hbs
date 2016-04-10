@@ -3,10 +3,7 @@
         <div class='input'>
             <ul>
                 <li>
-                    <input id='confirm-deletion' name='confirm-deletion' type='checkbox' required/>
-                    <label for='confirm-deletion' class='checkbox'>
-                        I confirm that I want to delete {{#if this.isLoggedIn}}my{{else}}this{{/if}} account.
-                    </label>
+                    {{checkbox id='confirm-deletion' name='confirm-deletion' required=true text='I confirm that I want to delete this account.'}}
                 </li>
             </ul>
         </div>

@@ -37,3 +37,21 @@ Promise.prototype.always = function(onResolveOrReject) {
             throw reason;
         });
 };
+
+if (!String.prototype.format) {
+    String.prototype.format = function() {
+        let str = this.toString();
+        if (!arguments.length) {
+            return str;
+        }
+        const type = typeof arguments[0];
+        const args = (type == 'string' || type == 'number') ?
+            arguments : arguments[0];
+        for (let arg in args) {
+            str = str.replace(
+                new RegExp('\\{' + arg + '\\}', 'gi'),
+                () => { return args[arg]; });
+        }
+        return str;
+    };
+}

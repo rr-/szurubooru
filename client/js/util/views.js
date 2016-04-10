@@ -22,6 +22,29 @@ function _messageHandler(target, message, className) {
     messagesHolder.appendChild(node);
 }
 
+function _serializeElement(name, attributes) {
+    return [name]
+        .concat(Object.keys(attributes).map(key => {
+            if (attributes[key] === true) {
+                return key;
+            } else if (attributes[key] === false ||
+                    attributes[key] === undefined) {
+                return '';
+            }
+            return '{0}="{1}"'.format(key, attributes[key]);
+        }))
+        .join(' ');
+}
+
+function makeNonVoidElement(name, attributes, content) {
+    return '<{0}>{1}</{0}>'.format(
+        _serializeElement(name, attributes), content);
+}
+
+function makeVoidElement(name, attributes) {
+    return '<{0}/>'.format(_serializeElement(name, attributes));
+}
+
 function listenToMessages(target) {
     events.unlisten(events.Success);
     events.unlisten(events.Error);
@@ -114,4 +137,6 @@ module.exports = {
     listenToMessages: listenToMessages,
     clearMessages: clearMessages,
     decorateValidator: decorateValidator,
+    makeVoidElement: makeVoidElement,
+    makeNonVoidElement: makeNonVoidElement,
 };

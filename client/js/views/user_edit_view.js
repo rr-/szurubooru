@@ -9,6 +9,9 @@ class UserEditView {
     }
 
     render(ctx) {
+        ctx.userNamePattern = config.userNameRegex + /|^$/.source;
+        ctx.passwordPattern = config.passwordRegex + /|^$/.source;
+
         const target = ctx.target;
         const source = this.template(ctx);
 
@@ -17,24 +20,9 @@ class UserEditView {
         const emailField = source.querySelector('#user-email');
         const userNameField = source.querySelector('#user-name');
         const passwordField = source.querySelector('#user-password');
+        const avatarStyleField = source.querySelector('#avatar-style');
 
         views.decorateValidator(form);
-
-        if (userNameField) {
-            userNameField.setAttribute(
-                'pattern',
-                config.userNameRegex + /|^$/.source);
-        }
-
-        if (passwordField) {
-            passwordField.setAttribute(
-                'pattern',
-                config.passwordRegex + /|^$/.source);
-        }
-
-        if (rankField) {
-            rankField.value = ctx.user.rank;
-        }
 
         /* TODO: avatar */
 

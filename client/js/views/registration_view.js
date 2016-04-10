@@ -9,8 +9,11 @@ class RegistrationView {
     }
 
     render(ctx) {
+        ctx.userNamePattern = config.userNameRegex;
+        ctx.passwordPattern = config.passwordRegex;
+
         const target = document.getElementById('content-holder');
-        const source = this.template();
+        const source = this.template(ctx);
 
         const form = source.querySelector('form');
         const userNameField = source.querySelector('#user-name');
@@ -18,8 +21,6 @@ class RegistrationView {
         const emailField = source.querySelector('#user-email');
 
         views.decorateValidator(form);
-        userNameField.setAttribute('pattern', config.userNameRegex);
-        passwordField.setAttribute('pattern', config.passwordRegex);
 
         form.addEventListener('submit', e => {
             e.preventDefault();

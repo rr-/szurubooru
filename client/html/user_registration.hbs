@@ -4,16 +4,13 @@
         <div class='input'>
             <ul>
                 <li>
-                    <label for='user-name'>User name</label>
-                    <input id='user-name' name='user-name' type='text' autocomplete='off' placeholder='letters, digits, _, -' required/>
+                    {{textInput text='User name' id='user-name' name='user-name' placeholder='letters, digits, _, -' required=true pattern=this.userNamePattern}}
                 </li>
                 <li>
-                    <label for='user-password'>Password</label>
-                    <input id='user-password' name='user-password' type='password' autocomplete='off' placeholder='5+ characters' required/>
+                    {{passwordInput text='Password' id='user-password' name='user-password' placeholder='5+ characters' required=true pattern=this.passwordPattern}}
                 </li>
                 <li>
-                    <label for='user-email'>Email</label>
-                    <input id='user-email' name='user-email' type='email' autocomplete='off' placeholder='optional'/>
+                    {{emailInput text='Email' id='user-email' name='user-email' placeholder='optional'}}
                     <p class='hint'>Used for password reminder and to show a <a href='http://gravatar.com/'>Gravatar</a>. Leave blank for random Gravatar.</p>
                 </li>
             </ul>
