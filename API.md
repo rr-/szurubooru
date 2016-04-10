@@ -164,7 +164,7 @@ Input:
     "password": <user-password>,
     "email": <email>,
     "rank": <rank>,
-    "avatar_style": <avatar-style>
+    "avatarStyle": <avatar-style>
 }
 ```
 Files: `avatar` - the content of the new avatar.  

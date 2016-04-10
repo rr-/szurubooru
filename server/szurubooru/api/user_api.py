@@ -101,11 +101,11 @@ class UserDetailApi(BaseApi):
             auth.verify_privilege(context.user, 'users:edit:%s:rank' % infix)
             users.update_rank(user, context.request['rank'], context.user)
 
-        if 'avatar_style' in context.request:
+        if 'avatarStyle' in context.request:
             auth.verify_privilege(context.user, 'users:edit:%s:avatar' % infix)
             users.update_avatar(
                 user,
-                context.request['avatar_style'],
+                context.request['avatarStyle'],
                 context.files.get('avatar') or None)
 
         context.session.commit()
