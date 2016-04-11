@@ -44,6 +44,7 @@ h1, h2, h3 {
 a {
     color: var(--main-color);
     text-decoration: none;
+    transition: color 0.1s linear;
 }
 
 #content-holder {
@@ -105,6 +106,9 @@ nav.text-nav ul li a {
 }
 nav.text-nav ul li:not(.active) a {
     color: var(--inactive-tab-text-color);
+}
+nav.text-nav ul li:hover:not(.active) a {
+    color: var(--active-tab-text-color);
 }
 nav.text-nav ul li.active a {
     background: var(--active-tab-background-color);
