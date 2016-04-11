@@ -23,7 +23,6 @@ const api = require('./api.js');
 api.loginFromCookies().then(() => {
     page();
 }).catch(errorMessage => {
-    page();
     page('/');
     events.notify(
         events.Error,
