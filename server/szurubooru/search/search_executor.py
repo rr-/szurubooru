@@ -46,6 +46,7 @@ class SearchExecutor(object):
                 query = self._handle_anonymous(
                     query, self._create_criterion(token, negated))
 
+        query = self._search_config.finalize_query(query)
         return query
 
     def _handle_key_value(self, query, key, value, negated):

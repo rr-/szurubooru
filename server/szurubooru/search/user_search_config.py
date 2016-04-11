@@ -8,6 +8,9 @@ class UserSearchConfig(BaseSearchConfig):
     def create_query(self, session):
         return session.query(db.User)
 
+    def finalize_query(self, query):
+        return query.order_by(db.User.name.asc())
+
     @property
     def anonymous_filter(self):
         return self._create_basic_filter(db.User.name, allow_ranged=False)
