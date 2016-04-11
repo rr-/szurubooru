@@ -10,21 +10,33 @@ class Api {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
+        this.cache = {};
     }
 
     get(url) {
-        return this._process(url, request.get);
+        if (url in this.cache) {
+            return new Promise((resolve, reject) => {
+                resolve(this.cache[url]);
+            });
+        }
+        return this._process(url, request.get).then(response => {
+            this.cache[url] = response;
+            return Promise.resolve(response);
+        });
     }
 
     post(url, data, files) {
+        this.cache = {};
         return this._process(url, request.post, data, files);
     }
 
     put(url, data, files) {
+        this.cache = {};
         return this._process(url, request.put, data, files);
     }
 
     delete(url) {
+        this.cache = {};
         return this._process(url, request.delete);
     }
 
