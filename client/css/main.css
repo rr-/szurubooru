@@ -130,6 +130,7 @@ nav.text-nav ul li.active a {
 #top-nav ul li[data-name=register],
 #top-nav ul li[data-name=login],
 #top-nav ul li[data-name=logout],
+#top-nav ul li[data-name=settings],
 #top-nav ul li[data-name=help] {
     float: none;
 }

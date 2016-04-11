@@ -31,6 +31,8 @@ class TopNavController {
             'login':    new NavigationItem('L', 'Log in',   '/login'),
             'logout':   new NavigationItem('O', 'Logout',   '/logout'),
             'help':     new NavigationItem('E', 'Help',     '/help'),
+            'settings': new NavigationItem(
+                null, '<i class=\'fa fa-cog\'></i>', '/settings'),
         };
 
         const rerender = () => {

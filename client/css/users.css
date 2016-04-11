@@ -26,14 +26,6 @@
 #user-registration .info p:first-child {
     margin: 0 0 0.5em 0;
 }
-#user .hint,
-#user-registration .hint {
-    margin-top: 0.5em;
-    margin-bottom: 0;
-    color: var(--inactive-link-color);
-    font-size: 80%;
-    line-height: 120%;
-}
 
 #login .buttons a {
     margin-left: 1em;

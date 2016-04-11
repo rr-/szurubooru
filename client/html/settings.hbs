@@ -1,0 +1,18 @@
+<div class='content-wrapper' id='settings'>
+    <form>
+        <strong>Browsing settings</strong>
+        <p>These settings are saved to the browser's local storage and are not coupled to the user account, so they don't apply to other devices or browsers alike.</p>
+        <div class='input'>
+            <ul>
+                <li>
+                    {{checkbox text='Endless scroll' id='endless-scroll' name='endless-scroll' checked=this.browsingSettings.endlessScroll}}
+                    <p class='hint'>Rather than using a paged navigation, smoothly scroll through the content.</p>
+                </li>
+            </ul>
+        </div>
+        <div class='messages'></div>
+        <div class='buttons'>
+            <input type='submit' value='Save settings'/>
+        </div>
+    </form>
+</div>

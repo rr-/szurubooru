@@ -47,6 +47,8 @@ handlebars.registerHelper('checkbox', function(options) {
             name: options.hash.name,
             value: options.hash.value,
             type: 'checkbox',
+            checked: options.hash.checked !== undefined ?
+                options.hash.checked : false,
             required: options.hash.required,
         }),
         views.makeNonVoidElement('label', {

@@ -10,6 +10,7 @@ controllers.push(require('./controllers/help_controller.js'));
 controllers.push(require('./controllers/comments_controller.js'));
 controllers.push(require('./controllers/history_controller.js'));
 controllers.push(require('./controllers/tags_controller.js'));
+controllers.push(require('./controllers/settings_controller.js'));
 
 controllers.push(require('./controllers/home_controller.js'));
 
