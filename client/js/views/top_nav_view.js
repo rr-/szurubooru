@@ -1,5 +1,6 @@
 'use strict';
 
+require('../util/handlebars-helpers.js');
 const views = require('../util/views.js');
 
 class TopNavView {

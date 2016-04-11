@@ -37,8 +37,8 @@ function _serializeElement(name, attributes) {
 }
 
 function makeNonVoidElement(name, attributes, content) {
-    return '<{0}>{1}</{0}>'.format(
-        _serializeElement(name, attributes), content);
+    return '<{0}>{1}</{2}>'.format(
+        _serializeElement(name, attributes), content, name);
 }
 
 function makeVoidElement(name, attributes) {

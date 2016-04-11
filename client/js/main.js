@@ -1,7 +1,6 @@
 'use strict';
 
 require('./util/polyfill.js');
-require('./util/handlebars-helpers.js');
 
 let controllers = [];
 controllers.push(require('./controllers/auth_controller.js'));
