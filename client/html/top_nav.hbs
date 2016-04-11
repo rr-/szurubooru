@@ -3,7 +3,10 @@
         -->{{#each items}}<!--
             -->{{#if this.available}}<!--
                 --><li data-name='{{@key}}'><!--
-                    --><a href='{{this.url}}' accesskey='{{this.accessKey}}'>{{this.name}}</a><!--
+                    --><a href='{{this.url}}' accesskey='{{this.accessKey}}'><!--
+                        -->{{#if this.imageUrl}}{{thumbnail this.imageUrl}}{{/if}}<!--
+                        --><span class='text'>{{this.name}}</span><!--
+                    --></a><!--
                 --></li><!--
             -->{{/if}}<!--
         -->{{/each}}<!--

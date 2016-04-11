@@ -13,7 +13,7 @@ class TopNavView {
         const target = this.navHolder;
         const source = this.template(ctx);
 
-        for (let link of source.querySelectorAll('a')) {
+        for (let link of source.querySelectorAll('a span.text')) {
             const regex = new RegExp(
                 '(' + link.getAttribute('accesskey') + ')', 'i');
             link.innerHTML = link.textContent.replace(

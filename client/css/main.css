@@ -97,9 +97,11 @@ nav.plain-nav ul li a {
 
 nav.text-nav {
     margin: 1em 0;
+    line-height: 2.3em;
+    vertical-align: middle;
 }
 nav.text-nav ul li a {
-    padding: 0.3em 1.2em;
+    padding: 0 1.2em;
 }
 nav.text-nav ul li:not(.active) a {
     color: var(--inactive-tab-text-color);
@@ -120,6 +122,7 @@ nav.text-nav ul li.active a {
 #top-nav ul li {
     float: left;
 }
+#top-nav ul li[data-name=account],
 #top-nav ul li[data-name=register],
 #top-nav ul li[data-name=login],
 #top-nav ul li[data-name=logout],
@@ -128,6 +131,17 @@ nav.text-nav ul li.active a {
 }
 #top-nav .access-key {
     text-decoration: underline;
+}
+#top-nav .thumbnail, #top-nav span {
+    vertical-align: middle;
+}
+#top-nav .thumbnail {
+    width: 1.5em;
+    height: 1.5em;
+    margin: calc((2.3em - 1.5em) / 2);
+    margin-right: 0.6em;
+    margin-left: calc(0.6em - 1.2em);
+    float: left;
 }
 
 .messages {

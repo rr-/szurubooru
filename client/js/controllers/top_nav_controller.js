@@ -10,6 +10,7 @@ class NavigationItem {
         this.name = name;
         this.url = url;
         this.available = true;
+        this.imageUrl = null;
     }
 }
 
@@ -46,6 +47,7 @@ class TopNavController {
 
     updateVisibility() {
         this.items.account.url =  '/user/' + api.userName;
+        this.items.account.imageUrl = api.user ? api.user.avatarUrl : null;
 
         const b = Object.keys(this.items);
         for (let key of b) {
