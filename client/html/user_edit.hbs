@@ -5,13 +5,13 @@
                 <ul>
                     {{#if this.canEditName}}
                         <li>
-                            {{textInput text='User name' id='user-name' name='name' value=this.user.name}}
+                            {{textInput text='User name' id='user-name' name='name' value=this.user.name pattern=this.userNamePattern}}
                         </li>
                     {{/if}}
 
                     {{#if this.canEditPassword}}
                         <li>
-                            {{passwordInput text='Password' id='user-password' name='password' placeholder='leave blank if not changing'}}
+                            {{passwordInput text='Password' id='user-password' name='password' placeholder='leave blank if not changing' pattern=this.passwordPattern}}
                         </li>
                     {{/if}}
 
