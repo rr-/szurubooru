@@ -21,8 +21,9 @@ class ManualPageView {
         const source = this.holderTemplate();
         const pageContentHolder = source.querySelector('.page-content-holder');
         const pageNav = source.querySelector('.page-nav');
+        const currentPage = ctx.initialPage;
 
-        ctx.requestPage(ctx.initialPage).then(response => {
+        ctx.requestPage(currentPage).then(response => {
             let pageRendererCtx = response;
             pageRendererCtx.target = pageContentHolder;
             ctx.pageRenderer.render(pageRendererCtx);
@@ -37,8 +38,8 @@ class ManualPageView {
             for (let i = totalPages - threshold; i <= totalPages; i++) {
                 pagesVisible.push(i);
             }
-            for (let i = ctx.initialPage - threshold;
-                    i <= ctx.initialPage + threshold;
+            for (let i = currentPage - threshold;
+                    i <= currentPage + threshold;
                     i++) {
                 pagesVisible.push(i);
             }
@@ -57,19 +58,26 @@ class ManualPageView {
                 pages.push({
                     number: page,
                     link: ctx.clientUrl.format({page: page}),
-                    active: ctx.initialPage === page,
+                    active: currentPage === page,
                 });
                 lastPage = page;
             }
-            views.showView(pageNav, this.navTemplate({
-                prevLink: ctx.clientUrl.format({page: ctx.initialPage - 1}),
-                nextLink: ctx.clientUrl.format({page: ctx.initialPage + 1}),
-                prevLinkActive: ctx.initialPage > 1,
-                nextLinkActive: ctx.initialPage < totalPages,
-                pages: pages,
-            }));
+
+            if (response.total) {
+                views.showView(pageNav, this.navTemplate({
+                    prevLink: ctx.clientUrl.format({page: currentPage - 1}),
+                    nextLink: ctx.clientUrl.format({page: currentPage + 1}),
+                    prevLinkActive: currentPage > 1,
+                    nextLinkActive: currentPage < totalPages,
+                    pages: pages,
+                }));
+            }
+
             views.listenToMessages(target);
             views.showView(target, source);
+            if (response.total < (currentPage - 1) * response.pageSize) {
+                events.notify(events.Info, 'No data to show');
+            }
         }, response => {
             views.listenToMessages(target);
             views.showView(target, source);

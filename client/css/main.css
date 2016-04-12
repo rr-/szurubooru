@@ -7,6 +7,8 @@
     --inactive-tab-text-color: var(--inactive-link-color);
     --active-tab-text-color: var(--text-color);
     --active-tab-background-color: #E5E5E5;
+    --message-info-border-color: #BDF;
+    --message-info-background-color: #E3EFF9;
     --message-error-border-color: #FCC;
     --message-error-background-color: #FFF5F5;
     --message-success-border-color: #D3E3D3;
@@ -158,6 +160,10 @@ nav.text-nav ul li.active a {
     display: inline-block;
     text-align: left;
     padding: 0.5em 1em;
+}
+.message.info {
+    border: 1px solid var(--message-info-border-color);
+    background: var(--message-info-background-color);
 }
 .message.error {
     border: 1px solid var(--message-error-border-color);

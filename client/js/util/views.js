@@ -48,10 +48,13 @@ function makeVoidElement(name, attributes) {
 function listenToMessages(target) {
     events.unlisten(events.Success);
     events.unlisten(events.Error);
+    events.unlisten(events.Info);
     events.listen(
         events.Success, msg => { _messageHandler(target, msg, 'success'); });
     events.listen(
         events.Error, msg => { _messageHandler(target, msg, 'error'); });
+    events.listen(
+        events.Info, msg => { _messageHandler(target, msg, 'info'); });
 }
 
 function clearMessages(target) {

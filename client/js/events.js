@@ -25,7 +25,8 @@ function notify(messageClass, message) {
 module.exports = {
     Success: 1,
     Error: 2,
-    Authentication: 3,
+    Info: 3,
+    Authentication: 4,
 
     notify: notify,
     listen: listen,
