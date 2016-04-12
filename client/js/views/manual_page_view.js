@@ -75,7 +75,7 @@ class ManualPageView {
 
             views.listenToMessages(target);
             views.showView(target, source);
-            if (response.total < (currentPage - 1) * response.pageSize) {
+            if (response.total <= (currentPage - 1) * response.pageSize) {
                 events.notify(events.Info, 'No data to show');
             }
         }, response => {
@@ -83,6 +83,9 @@ class ManualPageView {
             views.showView(target, source);
             events.notify(events.Error, response.description);
         });
+    }
+
+    unrender() {
     }
 }
 

@@ -29,6 +29,14 @@ if (!Object.entries) {
 NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 
 // non standard
+Node.prototype.prependChild = function(child) {
+    if (this.firstChild) {
+        this.insertBefore(child, this.firstChild);
+    } else {
+        this.appendChild(child);
+    }
+};
+
 Promise.prototype.always = function(onResolveOrReject) {
     return this.then(
         onResolveOrReject,

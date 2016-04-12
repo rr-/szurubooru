@@ -39,7 +39,14 @@ class UsersController {
             '/user/:name/delete',
             (ctx, next) => { this.loadUserRoute(ctx, next); },
             (ctx, next) => { this.deleteUserRoute(ctx, next); });
-        page.exit('/user/', (ctx, next) => { this.user = null; });
+        page.exit(/\/users\/.*/, (ctx, next) => {
+            pageController.stop();
+            next();
+        });
+        page.exit(/\/user\/.*/, (ctx, next) => {
+            this.user = null;
+            next();
+        });
     }
 
     listUsersRoute(ctx, next) {

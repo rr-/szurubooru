@@ -25,6 +25,7 @@ class SettingsController {
     saveSettings(browsingSettings) {
         localStorage.setItem('settings', JSON.stringify(browsingSettings));
         events.notify(events.Success, 'Settings saved');
+        events.notify(events.SettingsChange);
     }
 
     getSettings(settings) {

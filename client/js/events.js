@@ -27,6 +27,7 @@ module.exports = {
     Error: 2,
     Info: 3,
     Authentication: 4,
+    SettingsChange: 5,
 
     notify: notify,
     listen: listen,
