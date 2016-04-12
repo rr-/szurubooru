@@ -19,7 +19,10 @@ function _messageHandler(target, message, className) {
     node.innerHTML = message.replace(/\n/g, '<br/>');
     node.classList.add('message');
     node.classList.add(className);
-    messagesHolder.appendChild(node);
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('message-wrapper');
+    wrapper.appendChild(node);
+    messagesHolder.appendChild(wrapper);
 }
 
 function _serializeElement(name, attributes) {

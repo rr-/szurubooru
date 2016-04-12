@@ -157,6 +157,7 @@ nav.text-nav ul li.active a {
     max-width: 100%;
 }
 .messages .message {
+    margin: 0.25em 0;
     display: inline-block;
     text-align: left;
     padding: 0.5em 1em;
