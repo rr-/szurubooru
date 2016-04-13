@@ -76,12 +76,11 @@ function htmlToDom(html) {
 }
 
 function getTemplate(templatePath) {
-    const templateElement = document.getElementById(templatePath + '-template');
-    if (!templateElement) {
+    if (!(templatePath in templates)) {
         console.error('Missing template: ' + templatePath);
         return null;
     }
-    const templateText = templateElement.innerHTML.trim();
+    const templateText = templates[templatePath].trim();
     const templateFactory = handlebars.compile(templateText);
     return (...args) => {
         return htmlToDom(templateFactory(...args));

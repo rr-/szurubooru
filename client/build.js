@@ -58,28 +58,33 @@ function getConfig() {
 function bundleHtml(config) {
     const minify = require('html-minifier').minify;
     const baseHtml = fs.readFileSync('./html/index.htm', 'utf-8');
+    const minifyOptions = {
+        removeComments: true,
+        collapseWhitespace: true,
+        conservativeCollapse: true,
+    };
     glob('./html/**/*.hbs', {}, (er, files) => {
-        let templatesHtml = '';
+        let templates = {};
         for (const file of files) {
-            templatesHtml += util.format(
-                '<template id=\'%s-template\'>%s</template>',
-                path.basename(file, '.hbs').replace(/_/g, '-'),
-                fs.readFileSync(file));
+            const name = path.basename(file, '.hbs').replace(/_/g, '-');
+            templates[name] = minify(
+                fs.readFileSync(file, 'utf-8'), minifyOptions);
         }
 
+        const templatesHolder = util.format(
+            '<script type=\'text/javascript\'>' +
+            'const templates = %s;' +
+            '</script>',
+            JSON.stringify(templates));
+
         const finalHtml = baseHtml
-            .replace(/(<\/head>)/, templatesHtml + '$1')
+            .replace(/(<\/head>)/, templatesHolder + '$1')
             .replace(
                 /(<title>)(.*)(<\/title>)/,
                 util.format('$1%s$3', config.name));
 
         fs.writeFileSync(
-            './public/index.htm',
-            minify(
-                finalHtml, {
-                    removeComments: true,
-                    collapseWhitespace: true,
-                    conservativeCollapse: true}));
+            './public/index.htm', minify(finalHtml, minifyOptions));
         console.info('Bundled HTML');
     });
 }
