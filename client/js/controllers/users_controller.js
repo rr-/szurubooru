@@ -59,8 +59,8 @@ class UsersController {
                         text: ctx.searchQuery.text,
                         page: page}));
             },
-            clientUrl: '/users/text={text};page={page}'.format({
-                text: ctx.searchQuery.text}),
+            clientUrl: '/users/' + misc.formatSearchQuery({
+                text: ctx.searchQuery.text, page: '{page}'}),
             initialPage: ctx.searchQuery.page,
             pageRenderer: this.userListView,
         });

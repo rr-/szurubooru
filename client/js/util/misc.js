@@ -52,6 +52,17 @@ function formatRelativeTime(timeString) {
     return future ? 'in ' + text : text + ' ago';
 }
 
+function formatSearchQuery(dict) {
+    let result = [];
+    for (let key of Object.keys(dict)) {
+        const value = dict[key];
+        if (value) {
+            result.push('{0}={1}'.format(key, value));
+        }
+    }
+    return result.join('');
+}
+
 function parseSearchQuery(query) {
     let result = {};
     for (let word of (query || '').split(/;/)) {
@@ -70,6 +81,7 @@ function parseSearchQueryRoute(ctx, next) {
 
 module.exports = {
     range: range,
+    formatSearchQuery: formatSearchQuery,
     parseSearchQuery: parseSearchQuery,
     parseSearchQueryRoute: parseSearchQueryRoute,
     formatRelativeTime: formatRelativeTime,
