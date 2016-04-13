@@ -77,9 +77,12 @@ data.
 
 
 ### Listing users
-Request: `GET /users/?page=<page>&pageSize=<page-size>&query=<query>`
+**Request**
 
-Output:
+`GET /users/?page=<page>&pageSize=<page-size>&query=<query>`
+
+**Output**
+
 ```json5
 {
     "query": "rr-",
@@ -98,7 +101,11 @@ Output:
 ...where `<user>` is an [user resource](#user) and `query` contains standard
 [search query](#search).
 
-Errors: if privileges are too low.
+**Errors**
+
+- privileges are too low
+
+**Description**
 
 Searches for users.
 
@@ -130,9 +137,12 @@ Available search orders:
 
 
 ### Creating user
-Request: `POST /users`
+**Request**
 
-Input:
+`POST /users`
+
+**Input**
+
 ```json5
 {
     "name": <user-name>,
@@ -141,7 +151,8 @@ Input:
 }
 ```
 
-Output:
+**Output**
+
 ```json5
 {
     "user": <user>
@@ -149,8 +160,13 @@ Output:
 ```
 ...where `<user>` is an [user resource](#user).
 
-Errors: if such user already exists (names are case insensitive), or either of
-user name, password and email are invalid, or privileges are too low.
+**Errors**
+
+- such user already exists (names are case insensitive)
+- either of user name, password and email are invalid
+- privileges are too low
+
+**Description**
 
 Creates a new user using specified parameters. Names and passwords must match
 `user_name_regex` and `password_regex` from server's configuration,
@@ -160,10 +176,14 @@ administrator. Subsequent users will be given the rank indicated by
 `default_rank` in the server's configuration.
 
 
-### Updating user
-Request: `PUT /user/<name>`
 
-Input:
+### Updating user
+**Request**
+
+`PUT /user/<name>`
+
+**Input**
+
 ```json5
 {
     "name": <user-name>,
@@ -174,9 +194,12 @@ Input:
 }
 ```
 
-Files: `avatar` - the content of the new avatar.
+**Files**
 
-Output:
+- `avatar` - the content of the new avatar.
+
+**Output**
+
 ```json5
 {
     "user": <user>
@@ -184,11 +207,17 @@ Output:
 ```
 ...where `<user>` is an [user resource](#user).
 
-Errors: if the user does not exist, or the user with new name already exists
-(names are case insensitive), or either of user name, password, email or rank
-are invalid, or the user is trying to update their or someone else's rank to
-higher than their own, or privileges are too low, or avatar is missing for
-manual avatar style.
+**Errors**
+
+- the user does not exist
+- the user with new name already exists (names are case insensitive)
+- either of user name, password, email or rank are invalid
+- the user is trying to update their or someone else's rank to higher than
+  their own
+- privileges are too low
+- avatar is missing for manual avatar style
+
+**Description**
 
 Updates an existing user using specified parameters. Names and passwords must
 match `user_name_regex` and `password_regex` from server's configuration,
@@ -198,10 +227,14 @@ can be either `gravatar` or `manual`. `manual` avatar style requires client to
 pass also `avatar` file - see [file uploads](#file-uploads) for details.
 
 
-### Getting user
-Request: `GET /user/<name>`
 
-Output:
+### Getting user
+**Request**
+
+`GET /user/<name>`
+
+**Output**
+
 ```json5
 {
     "user": <user>
@@ -209,33 +242,55 @@ Output:
 ```
 ...where `<user>` is an [user resource](#user).
 
-Errors: if the user does not exist or privileges are too low.
+**Errors**
 
+- the user does not exist
+- privileges are too low
+
+**Description**
 Retrieves information about an existing user.
 
 
-### Removing user
-Request: `DELETE /user/<name>`
 
-Output:
+### Removing user
+**Request**
+
+`DELETE /user/<name>`
+
+**Output**
+
 ```json5
 {}
 ```
 
-Errors: if the user does not exist or privileges are too low.
+**Errors**
+
+- the user does not exist
+- privileges are too low
+
+**Description**
 
 Deletes existing user.
 
 
-### Password reset - step 1: mail request
-Request: `GET /password-reset/<email-or-name>`
 
-Output:
+### Password reset - step 1: mail request
+**Request**
+
+`GET /password-reset/<email-or-name>`
+
+**Output**
+
 ```
 {}
-````
+```
 
-Errors: if the user does not exist, or they haven't provided an email address.
+**Errors**
+
+- the user does not exist
+- the user haven't provided an email address
+
+**Description**
 
 Sends a confirmation email to given user. The email contains link containing a
 token. The token cannot be guessed, thus using such link proves that the person
@@ -243,25 +298,35 @@ who requested to reset the password, also owns the mailbox, which is a strong
 indication they are the rightful owner of the account.
 
 
-### Password reset - step 2: confirmation
-Request: `POST /password-reset/<email-or-name>`
 
-Input:
+### Password reset - step 2: confirmation
+**Request**
+
+`POST /password-reset/<email-or-name>`
+
+**Input**
+
 ```json5
 {
     "token": <token-from-email>
 }
 ```
 
-Output:
+**Output**
+
 ```json5
 {
     "password": <new-password>
 }
 ```
 
-Errors: if the token is missing, the token is invalid or the user does not
-exist.
+**Errors**
+
+- the token is missing
+- the token is invalid
+- the user does not exist
+
+**Description**
 
 Generates a new password for given user. Password is sent as plain-text, so it
 is recommended to connect through HTTPS.
