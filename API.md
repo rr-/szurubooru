@@ -77,7 +77,8 @@ data.
 
 
 ### Listing users
-Request: `GET /users/?page=<page>&pageSize=<page-size>&query=<query>`  
+Request: `GET /users/?page=<page>&pageSize=<page-size>&query=<query>`
+
 Output:
 ```json5
 {
@@ -96,6 +97,7 @@ Output:
 ```
 ...where `<user>` is an [user resource](#user) and `query` contains standard
 [search query](#search).
+
 Errors: if privileges are too low.
 
 Searches for users.
@@ -128,7 +130,8 @@ Available search orders:
 
 
 ### Creating user
-Request: `POST /users`  
+Request: `POST /users`
+
 Input:
 ```json5
 {
@@ -137,13 +140,15 @@ Input:
     "email": <email>
 }
 ```
+
 Output:
 ```json5
 {
     "user": <user>
 }
 ```
-...where `<user>` is an [user resource](#user).  
+...where `<user>` is an [user resource](#user).
+
 Errors: if such user already exists (names are case insensitive), or either of
 user name, password and email are invalid, or privileges are too low.
 
@@ -156,7 +161,8 @@ administrator. Subsequent users will be given the rank indicated by
 
 
 ### Updating user
-Request: `PUT /user/<name>`  
+Request: `PUT /user/<name>`
+
 Input:
 ```json5
 {
@@ -167,14 +173,17 @@ Input:
     "avatarStyle": <avatar-style>
 }
 ```
-Files: `avatar` - the content of the new avatar.  
+
+Files: `avatar` - the content of the new avatar.
+
 Output:
 ```json5
 {
     "user": <user>
 }
 ```
-...where `<user>` is an [user resource](#user).  
+...where `<user>` is an [user resource](#user).
+
 Errors: if the user does not exist, or the user with new name already exists
 (names are case insensitive), or either of user name, password, email or rank
 are invalid, or the user is trying to update their or someone else's rank to
@@ -190,36 +199,42 @@ pass also `avatar` file - see [file uploads](#file-uploads) for details.
 
 
 ### Getting user
-Request: `GET /user/<name>`  
+Request: `GET /user/<name>`
+
 Output:
 ```json5
 {
     "user": <user>
 }
 ```
-...where `<user>` is an [user resource](#user).  
+...where `<user>` is an [user resource](#user).
+
 Errors: if the user does not exist or privileges are too low.
 
 Retrieves information about an existing user.
 
 
 ### Removing user
-Request: `DELETE /user/<name>`  
+Request: `DELETE /user/<name>`
+
 Output:
 ```json5
 {}
 ```
+
 Errors: if the user does not exist or privileges are too low.
 
 Deletes existing user.
 
 
 ### Password reset - step 1: mail request
-Request: `GET /password-reset/<email-or-name>`  
+Request: `GET /password-reset/<email-or-name>`
+
 Output:
 ```
 {}
 ````
+
 Errors: if the user does not exist, or they haven't provided an email address.
 
 Sends a confirmation email to given user. The email contains link containing a
@@ -229,19 +244,22 @@ indication they are the rightful owner of the account.
 
 
 ### Password reset - step 2: confirmation
-Request: `POST /password-reset/<email-or-name>`  
+Request: `POST /password-reset/<email-or-name>`
+
 Input:
 ```json5
 {
     "token": <token-from-email>
 }
 ```
+
 Output:
 ```json5
 {
     "password": <new-password>
 }
 ```
+
 Errors: if the token is missing, the token is invalid or the user does not
 exist.
 
