@@ -2,7 +2,7 @@
 
 
 
-## Table of contents
+# Table of contents
 
 1. [General rules](#general-rules)
 
@@ -29,9 +29,9 @@
 
 
 
-## General rules
+# General rules
 
-### Authentication
+## Authentication
 
 Authentication is achieved by means of [basic HTTP
 auth](https://en.wikipedia.org/wiki/Basic_access_authentication). For this
@@ -44,18 +44,18 @@ It is recommended to add `?bump-login` GET parameter to the first request in a
 client "session" (where the definition of a session is up to the client), so
 that the user's last login time is kept up to date.
 
-### Basic requests
+## Basic requests
 
 Every request must use `Content-Type: application/json` and `Accept:
 application/json`. An exception to this rule are requests that upload files.
 
-### File uploads
+## File uploads
 
 Requests that upload files must use `multipart/form-data` encoding. JSON
 metadata must then be included as field of name `metadata`, whereas files must
 be included as separate fields with names specific to each request type.
 
-### Error handling
+## Error handling
 
 All errors (except for unhandled fatal server errors) send relevant HTTP status
 code together with JSON of following structure:
@@ -69,16 +69,20 @@ code together with JSON of following structure:
 
 
 
-## API reference
+# API reference
 
 Depending on the deployment, the URLs might be relative to some base path such
-as `/api/`. Values denoted in diamond braces (`<like this>`) signify variable
+as `/api/`. Values denoted with diamond braces (`<like this>`) signify variable
 data.
 
 
-### Listing users
-Request: `GET /users/?page=<page>&pageSize=<page-size>&query=<query>`  
-Output:
+## Listing users
+**Request**
+
+`GET /users/?page=<page>&pageSize=<page-size>&query=<query>`
+
+**Output**
+
 ```json5
 {
     "query": "rr-",
@@ -96,7 +100,12 @@ Output:
 ```
 ...where `<user>` is an [user resource](#user) and `query` contains standard
 [search query](#search).
-Errors: if privileges are too low.
+
+**Errors**
+
+- privileges are too low
+
+**Description**
 
 Searches for users.
 
@@ -127,9 +136,13 @@ Available search orders:
 - `login-time`
 
 
-### Creating user
-Request: `POST /users`  
-Input:
+## Creating user
+**Request**
+
+`POST /users`
+
+**Input**
+
 ```json5
 {
     "name": <user-name>,
@@ -137,15 +150,23 @@ Input:
     "email": <email>
 }
 ```
-Output:
+
+**Output**
+
 ```json5
 {
     "user": <user>
 }
 ```
-...where `<user>` is an [user resource](#user).  
-Errors: if such user already exists (names are case insensitive), or either of
-user name, password and email are invalid, or privileges are too low.
+...where `<user>` is an [user resource](#user).
+
+**Errors**
+
+- such user already exists (names are case insensitive)
+- either user name, password or email are invalid
+- privileges are too low
+
+**Description**
 
 Creates a new user using specified parameters. Names and passwords must match
 `user_name_regex` and `password_regex` from server's configuration,
@@ -155,9 +176,14 @@ administrator. Subsequent users will be given the rank indicated by
 `default_rank` in the server's configuration.
 
 
-### Updating user
-Request: `PUT /user/<name>`  
-Input:
+
+## Updating user
+**Request**
+
+`PUT /user/<name>`
+
+**Input**
+
 ```json5
 {
     "name": <user-name>,
@@ -167,19 +193,31 @@ Input:
     "avatarStyle": <avatar-style>
 }
 ```
-Files: `avatar` - the content of the new avatar.  
-Output:
+
+**Files**
+
+- `avatar` - the content of the new avatar.
+
+**Output**
+
 ```json5
 {
     "user": <user>
 }
 ```
-...where `<user>` is an [user resource](#user).  
-Errors: if the user does not exist, or the user with new name already exists
-(names are case insensitive), or either of user name, password, email or rank
-are invalid, or the user is trying to update their or someone else's rank to
-higher than their own, or privileges are too low, or avatar is missing for
-manual avatar style.
+...where `<user>` is an [user resource](#user).
+
+**Errors**
+
+- the user does not exist
+- the user with new name already exists (names are case insensitive)
+- either user name, password, email or rank are invalid
+- the user is trying to update their or someone else's rank to higher than
+  their own
+- privileges are too low
+- avatar is missing for manual avatar style
+
+**Description**
 
 Updates an existing user using specified parameters. Names and passwords must
 match `user_name_regex` and `password_regex` from server's configuration,
@@ -189,70 +227,116 @@ can be either `gravatar` or `manual`. `manual` avatar style requires client to
 pass also `avatar` file - see [file uploads](#file-uploads) for details.
 
 
-### Getting user
-Request: `GET /user/<name>`  
-Output:
+
+## Getting user
+**Request**
+
+`GET /user/<name>`
+
+**Output**
+
 ```json5
 {
     "user": <user>
 }
 ```
-...where `<user>` is an [user resource](#user).  
-Errors: if the user does not exist or privileges are too low.
+...where `<user>` is an [user resource](#user).
+
+**Errors**
+
+- the user does not exist
+- privileges are too low
+
+**Description**
 
 Retrieves information about an existing user.
 
 
-### Removing user
-Request: `DELETE /user/<name>`  
-Output:
+
+## Removing user
+**Request**
+
+`DELETE /user/<name>`
+
+**Output**
+
 ```json5
 {}
 ```
-Errors: if the user does not exist or privileges are too low.
+
+**Errors**
+
+- the user does not exist
+- privileges are too low
+
+**Description**
 
 Deletes existing user.
 
 
-### Password reset - step 1: mail request
-Request: `GET /password-reset/<email-or-name>`  
-Output:
+
+## Password reset - step 1: mail request
+**Request**
+
+`GET /password-reset/<email-or-name>`
+
+**Output**
+
 ```
 {}
-````
-Errors: if the user does not exist, or they haven't provided an email address.
+```
+
+**Errors**
+
+- the user does not exist
+- the user hasn't provided an email address
+
+**Description**
 
 Sends a confirmation email to given user. The email contains link containing a
 token. The token cannot be guessed, thus using such link proves that the person
-who requested to reset the password, also owns the mailbox, which is a strong
+who requested to reset the password also owns the mailbox, which is a strong
 indication they are the rightful owner of the account.
 
 
-### Password reset - step 2: confirmation
-Request: `POST /password-reset/<email-or-name>`  
-Input:
+
+## Password reset - step 2: confirmation
+**Request**
+
+`POST /password-reset/<email-or-name>`
+
+**Input**
+
 ```json5
 {
     "token": <token-from-email>
 }
 ```
-Output:
+
+**Output**
+
 ```json5
 {
     "password": <new-password>
 }
 ```
-Errors: if the token is missing, the token is invalid or the user does not
-exist.
+
+**Errors**
+
+- the token is missing
+- the token is invalid
+- the user does not exist
+
+**Description**
 
 Generates a new password for given user. Password is sent as plain-text, so it
 is recommended to connect through HTTPS.
 
 
 
-## Resources
+# Resources
 
-### User
+## User
 
 ```json5
 {
@@ -268,25 +352,30 @@ is recommended to connect through HTTPS.
 }
 ```
 
-## Search
+# Search
 
 Nomenclature:
 
 - Tokens - search terms inside a query, separated by white space.
-- Anonymous tokens - tokens of form `value`, used to filter the search results.
-- Named tokens - tokens of form `key:value`, used to filter the search results.
-- Special tokens - tokens of form `special:value`, used to filter the search results.
-- Order tokens - tokens of form `order:value`, used to sort the search results.
+- Anonymous tokens - tokens of form `<value>`, used to filter the search
+  results.
+- Named tokens - tokens of form `<key>:<value>`, used to filter the search
+  results.
+- Special tokens - tokens of form `special:<value>`, used to filter the search
+  results.
+- Order tokens - tokens of form `order:<value>`, used to sort the search
+  results.
 
 Features:
 
-- Most of tokens can be negated like so: `-token`. For order token it flips the
-  sort direction.
+- Most tokens can be negated like so: `-token`. Used with order tokens, it
+  flips the sort direction.
 - Some tokens support multiple values like so: `3,4,5`.
 - Some tokens support ranges like so: `100..`, `..200`, `100..200`.
 - Date token values can contain following values: `today`, `yesterday`,
   `<year>`, `<year>-<month>`, `<year>-<month>-<day>`.
-- Order token values can be suffixed with `,asc` or `,desc`.
+- Order token values can be appended with `,asc` and `,desc` suffixes, which
+  control the sort direction.
 
 Example how it works:
 
