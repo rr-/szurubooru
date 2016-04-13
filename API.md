@@ -2,7 +2,7 @@
 
 
 
-## Table of contents
+# Table of contents
 
 1. [General rules](#general-rules)
 
@@ -29,9 +29,9 @@
 
 
 
-## General rules
+# General rules
 
-### Authentication
+## Authentication
 
 Authentication is achieved by means of [basic HTTP
 auth](https://en.wikipedia.org/wiki/Basic_access_authentication). For this
@@ -44,18 +44,18 @@ It is recommended to add `?bump-login` GET parameter to the first request in a
 client "session" (where the definition of a session is up to the client), so
 that the user's last login time is kept up to date.
 
-### Basic requests
+## Basic requests
 
 Every request must use `Content-Type: application/json` and `Accept:
 application/json`. An exception to this rule are requests that upload files.
 
-### File uploads
+## File uploads
 
 Requests that upload files must use `multipart/form-data` encoding. JSON
 metadata must then be included as field of name `metadata`, whereas files must
 be included as separate fields with names specific to each request type.
 
-### Error handling
+## Error handling
 
 All errors (except for unhandled fatal server errors) send relevant HTTP status
 code together with JSON of following structure:
@@ -69,14 +69,14 @@ code together with JSON of following structure:
 
 
 
-## API reference
+# API reference
 
 Depending on the deployment, the URLs might be relative to some base path such
-as `/api/`. Values denoted in diamond braces (`<like this>`) signify variable
+as `/api/`. Values denoted with diamond braces (`<like this>`) signify variable
 data.
 
 
-### Listing users
+## Listing users
 **Request**
 
 `GET /users/?page=<page>&pageSize=<page-size>&query=<query>`
@@ -136,7 +136,7 @@ Available search orders:
 - `login-time`
 
 
-### Creating user
+## Creating user
 **Request**
 
 `POST /users`
@@ -177,7 +177,7 @@ administrator. Subsequent users will be given the rank indicated by
 
 
 
-### Updating user
+## Updating user
 **Request**
 
 `PUT /user/<name>`
@@ -228,7 +228,7 @@ pass also `avatar` file - see [file uploads](#file-uploads) for details.
 
 
 
-### Getting user
+## Getting user
 **Request**
 
 `GET /user/<name>`
@@ -252,7 +252,7 @@ Retrieves information about an existing user.
 
 
 
-### Removing user
+## Removing user
 **Request**
 
 `DELETE /user/<name>`
@@ -274,7 +274,7 @@ Deletes existing user.
 
 
 
-### Password reset - step 1: mail request
+## Password reset - step 1: mail request
 **Request**
 
 `GET /password-reset/<email-or-name>`
@@ -299,7 +299,7 @@ indication they are the rightful owner of the account.
 
 
 
-### Password reset - step 2: confirmation
+## Password reset - step 2: confirmation
 **Request**
 
 `POST /password-reset/<email-or-name>`
@@ -333,9 +333,9 @@ is recommended to connect through HTTPS.
 
 
 
-## Resources
+# Resources
 
-### User
+## User
 
 ```json5
 {
@@ -351,25 +351,30 @@ is recommended to connect through HTTPS.
 }
 ```
 
-## Search
+# Search
 
 Nomenclature:
 
 - Tokens - search terms inside a query, separated by white space.
-- Anonymous tokens - tokens of form `value`, used to filter the search results.
-- Named tokens - tokens of form `key:value`, used to filter the search results.
-- Special tokens - tokens of form `special:value`, used to filter the search results.
-- Order tokens - tokens of form `order:value`, used to sort the search results.
+- Anonymous tokens - tokens of form `<value>`, used to filter the search
+  results.
+- Named tokens - tokens of form `<key>:<value>`, used to filter the search
+  results.
+- Special tokens - tokens of form `special:<value>`, used to filter the search
+  results.
+- Order tokens - tokens of form `order:<value>`, used to sort the search
+  results.
 
 Features:
 
-- Most of tokens can be negated like so: `-token`. For order token it flips the
-  sort direction.
+- Most of tokens can be negated like so: `-token`. Used with order tokens, it
+  flips the sort direction.
 - Some tokens support multiple values like so: `3,4,5`.
 - Some tokens support ranges like so: `100..`, `..200`, `100..200`.
 - Date token values can contain following values: `today`, `yesterday`,
   `<year>`, `<year>-<month>`, `<year>-<month>-<day>`.
-- Order token values can be suffixed with `,asc` or `,desc`.
+- Order token values can be appended with `,asc` and `,desc` suffixes, which
+  control the sort direction.
 
 Example how it works:
 
