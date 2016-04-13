@@ -91,10 +91,12 @@ function bundleHtml(config) {
 
 function bundleCss() {
     const minify = require('csso').minify;
-    glob('./css/**/*.css', {}, (er, files) => {
+    const stylus = require('stylus');
+    glob('./css/**/*.styl', {}, (er, files) => {
         let css = '';
         for (const file of files) {
-            css += fs.readFileSync(file);
+            css += stylus.render(
+                fs.readFileSync(file, 'utf-8'), {filename: file});
         }
         fs.writeFileSync('./public/bundle.min.css', minify(css));
         console.info('Bundled CSS');

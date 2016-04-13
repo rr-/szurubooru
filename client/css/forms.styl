@@ -1,0 +1,233 @@
+@import colors
+
+form
+    display: block
+    width: 20em
+
+    ul
+        list-style-type: none
+        margin: 0
+        padding: 0
+
+        li
+            margin-top: 0.5em
+
+        label
+            display: block
+            padding: 0.5em 0
+
+    .input
+        margin-bottom: 1em
+
+    .buttons
+        margin-top: 1em
+
+    .input li:first-child label:not(.radio):not(.checkbox):not(.file-dropper),
+    .input li:first-child
+        padding-top: 0
+        margin-top: 0
+
+    .hint
+        margin-top: 0.5em
+        margin-bottom: 0
+        color: $inactive-link-color
+        font-size: 80%
+        line-height: 120%
+
+form.tabular
+    ul
+        display: table
+        width: 100%
+
+        li
+            display: table-row
+
+            label:not(.radio):not(.checkbox):not(.file-dropper)
+                display: table-cell
+                width: 33%
+
+    .messages, .buttons
+        margin-left: 33%
+
+
+
+/*
+ * Radio buttons and checkboxes
+ */
+input[type=radio], input[type=checkbox]
+    position: absolute
+    opacity: 0
+
+.radio, .checkbox
+    box-sizing: border-box
+    position: relative
+    display: inline-block
+    padding-left: calc(20px + 0.5em) !important
+    vertical-align: middle
+    cursor: pointer
+
+    &:hover:before
+        border-color: $main-color
+
+.radio:before
+    border-radius: 100%
+
+.radio:before, .checkbox:before
+    transition: border-color 0.1s linear
+    position: absolute
+    top: 50%
+    left: 0
+    display: block
+    margin-top: -10px
+    width: 16px
+    height: 16px
+    background: $input-enabled-background-color
+    border: 2px solid $input-enabled-border-color
+    content: ''
+
+.radio:after
+    background: $main-color
+    transition: opacity 0.1s linear
+    position: absolute
+    top: 50%
+    left: 5px
+    display: block
+    margin-top: -5px
+    width: 10px
+    height: 10px
+    border-radius: 50%
+    content: ''
+    opacity: 0
+
+.checkbox:after
+    transition: opacity 0.1s linear
+    position: absolute
+    top: 50%
+    left: 6px
+    display: block
+    margin-top: -7px
+    width: 5px
+    height: 9px
+    border-right: 3px solid $main-color
+    border-bottom: 3px solid $main-color
+    content: ''
+    opacity: 0
+    transform: rotate(45deg)
+
+
+input[type=radio]:checked + .radio:before,
+input[type=checkbox]:checked + .checkbox:before
+    border-color: $main-color
+
+input[type=radio]:checked + .radio:after,
+input[type=checkbox]:checked + .checkbox:after
+    opacity: 1
+
+input[type=radio]:disabled + .radio:before,
+input[type=checkbox]:disabled + .checkbox:before,
+input[type=radio]:disabled + .radio:after,
+input[type=checkbox]:disabled + .checkbox:after
+    border-color: $input-disabled-text-color
+
+input[type=radio]:disabled + .radio,
+input[type=checkbox]:disabled + .checkbox
+    border-color: $input-disabled-text-color
+
+input[type=radio]:focus + .radio:before,
+input[type=checkbox]:focus + .checkbox:before
+    border-color: $main-color
+
+
+
+/*
+ * Regular inputs
+ */
+select,
+textarea,
+input[type=text],
+input[type=email],
+input[type=password]
+    font-family: 'Inconsolata', monospace
+    font-size: 100%
+    padding: 0.3em
+    text-overflow: ellipsis
+    width: 100%
+    box-sizing: border-box
+    border: 2px solid $input-enabled-border-color
+    background: $input-enabled-background-color
+    color: $input-enabled-text-color
+    box-shadow: none; /* :-moz-submit-invalid on FF */
+    transition: border-color 0.1s linear, background-color 0.1s linear
+
+    &:disabled
+        border: 2px solid $input-disabled-border-color
+        background: $input-disabled-background-color
+        color: $input-disabled-text-color
+
+    &:focus
+        border-color: $main-color
+
+form.show-validation .input
+    input:invalid
+        outline: none
+        border: 2px solid $input-bad-border-color
+        background: $input-bad-background-color
+    input:valid
+        outline: none
+        border: 2px solid $input-good-border-color
+        background: $input-good-background-color
+
+
+
+/*
+ * Buttons
+ */
+button,
+input[type=button],
+input[type=submit]
+    cursor: pointer
+    font-size: 100%
+    line-height: 100%
+    padding: 0.3em 0.7em
+    border: 1px solid $button-enabled-background-color
+    background: $button-enabled-background-color
+    color: $button-enabled-text-color
+
+    &:disabled
+        cursor: default
+        border-color: $button-disabled-background-color
+        background-color: $button-disabled-background-color
+        color: $button-disabled-text-color
+
+    &:focus
+        outline: 2px solid $text-color
+
+select:-moz-focusring
+    text-shadow: 0
+
+button::-moz-focus-inner,
+input::-moz-focus-inner
+    border: 0
+
+
+
+/*
+ * File dropper
+ */
+.file-dropper
+    background: white
+    border: 3px dashed #eee
+    padding: 0.3em 0.5em
+    line-height: 140%
+    text-align: center
+    cursor: pointer
+    word-wrap: break-word
+
+input[type=file]:disabled+.file-dropper
+    cursor: default
+    opacity: .5
+
+input[type=file]:active+.file-dropper,
+input[type=file]:focus+.file-dropper,
+.file-dropper.active
+    border-color: $main-color

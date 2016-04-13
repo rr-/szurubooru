@@ -1,0 +1,150 @@
+@import colors
+
+body
+    overflow-y: scroll
+    margin: 0
+    color: $text-color
+    font-family: 'Droid Sans' !important
+    font-size: 12pt
+    line-height: 18pt
+
+h1, h2, h3
+    font-weight: normal
+    margin-bottom: 1em
+
+a
+    color: $main-color
+    text-decoration: none
+    transition: color 0.1s linear
+
+#content-holder
+    margin: 2em
+    text-align: center
+    >.content-wrapper
+        text-align: left
+        display: inline-block
+        margin: 0 auto
+        >*:first-child
+            margin-top: 0
+    >.content-wrapper:not(.transparent)
+        background: $top-nav-color
+        padding: 2em
+
+hr
+    border: 0
+    border-top: 1px solid $line-color
+    margin: 1em 0
+    padding: 0
+
+nav ul
+    list-style-type: none
+    padding: 0
+    margin: 0
+    display: inline-block
+    li
+        display: inline-block
+        padding: 0
+        margin: 0
+        a
+            display: inline-block
+        img
+            margin: 0
+            vertical-align: top; /* fix ghost margin under the image */
+
+nav.plain-nav ul li
+    display: block
+    a
+        display: inline
+
+nav.text-nav
+    margin: 1em 0
+    line-height: 2.3em
+    vertical-align: middle
+    ul
+        li a
+            padding: 0 1.2em
+        li:not(.active) a
+            color: $inactive-tab-text-color
+        li:hover:not(.active) a
+            color: $active-tab-text-color
+        li.active a
+            background: $active-tab-background-color
+            color: $active-tab-text-color
+
+#top-nav
+    background: $top-nav-color
+    margin: 0
+    ul
+        display: block
+        text-align: right
+        li
+            float: left
+    ul li[data-name=account],
+    ul li[data-name=register],
+    ul li[data-name=login],
+    ul li[data-name=logout],
+    ul li[data-name=settings],
+    ul li[data-name=help]
+        float: none
+    .access-key
+        text-decoration: underline
+    .thumbnail
+        vertical-align: middle
+        width: 1.5em
+        height: 1.5em
+        margin: calc((2.3em - 1.5em) / 2)
+        margin-right: 0.6em
+        margin-left: calc(0.6em - 1.2em)
+        float: left
+    span
+        vertical-align: middle
+
+.messages
+    margin: 0 auto
+    width: 30em
+    max-width: 100%
+    .message
+        margin: 0.25em 0
+        display: inline-block
+        text-align: left
+        padding: 0.5em 1em
+    .message.info
+        border: 1px solid $message-info-border-color
+        background: $message-info-background-color
+    .message.error
+        border: 1px solid $message-error-border-color
+        background: $message-error-background-color
+    .message.success
+        border: 1px solid $message-success-border-color
+        background: $message-success-background-color
+
+.thumbnail
+    /*background-image: attr(data-src url);*/ /* not available yet */
+    background-repeat: no-repeat
+    background-size: cover
+    background-position: center
+    display: inline-block
+
+.thumbnail img
+    opacity: 0
+    width: 100%
+    height: 100%
+
+.flexbox-dummy
+    height: 0 !important
+    padding-top: 0 !important
+    padding-bottom: 0 !important
+    margin-top: 0 !important
+    margin-bottom: 0 !important
+
+.pager
+    nav
+        .disabled
+            opacity: .5
+        .prev span,
+        .next span
+            opacity: 0
+            position: absolute
+            display: block
+            width: 0
+            height: 0
