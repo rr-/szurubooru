@@ -1,5 +1,6 @@
 'use strict';
 
+const page = require('page');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
@@ -29,8 +30,27 @@ class EndlessPageView {
         this.maxPageShown = null;
         this.totalPages = null;
         this.fetching = false;
+        this.currentPage = null;
 
         this.updater = () => {
+            let topPage = null;
+            let allPageNodes =
+                pagesHolder.querySelectorAll('.page');
+            for (let pageNode of allPageNodes) {
+                if (pageNode.getBoundingClientRect().bottom >= 0) {
+                    topPage = parseInt(pageNode.getAttribute('data-page'));
+                    break;
+                }
+            }
+            if (topPage !== this.currentPage) {
+                page.replace(
+                    ctx.clientUrl.format({page: topPage}),
+                    null,
+                    false,
+                    false);
+                this.currentPage = topPage;
+            }
+
             if (this.fetching || this.totalPages === null) {
                 return;
             }
@@ -54,42 +74,44 @@ class EndlessPageView {
         window.removeEventListener('scroll', this.updater, true);
     }
 
-    loadPage(pagesHolder, ctx, currentPage, append) {
+    loadPage(pagesHolder, ctx, pageNumber, append) {
         this.fetching = true;
 
-        if (currentPage < this.minPageShown || this.minPageShown === null) {
-            this.minPageShown = currentPage;
+        if (pageNumber < this.minPageShown || this.minPageShown === null) {
+            this.minPageShown = pageNumber;
         }
-        if (currentPage > this.maxPageShown || this.maxPageShown === null) {
-            this.maxPageShown = currentPage;
+        if (pageNumber > this.maxPageShown || this.maxPageShown === null) {
+            this.maxPageShown = pageNumber;
         }
 
-        ctx.requestPage(currentPage).then(response => {
+        ctx.requestPage(pageNumber).then(response => {
             this.totalPages = Math.ceil(response.total / response.pageSize);
             if (response.total) {
-                const page = this.pageTemplate({
-                    page: currentPage,
+                const pageNode = this.pageTemplate({
+                    page: pageNumber,
                     totalPages: this.totalPages,
                 });
+                pageNode.setAttribute('data-page', pageNumber);
 
                 let pageRendererCtx = response;
-                pageRendererCtx.target = page.querySelector(
+                pageRendererCtx.target = pageNode.querySelector(
                     '.page-content-holder');
                 ctx.pageRenderer.render(pageRendererCtx);
 
                 if (append) {
-                    pagesHolder.appendChild(page);
+                    pagesHolder.appendChild(pageNode);
                 } else {
-                    pagesHolder.prependChild(page);
+                    pagesHolder.prependChild(pageNode);
                     window.scroll(
-                        window.scrollX, window.scrollY + page.offsetHeight);
+                        window.scrollX,
+                        window.scrollY + pageNode.offsetHeight);
                 }
             }
 
             this.fetching = false;
             this.updater();
 
-            if (response.total <= (currentPage - 1) * response.pageSize) {
+            if (response.total <= (pageNumber - 1) * response.pageSize) {
                 events.notify(events.Info, 'No data to show');
             }
         }, response => {
