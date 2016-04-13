@@ -5,12 +5,6 @@ const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
-function removeConsecutiveDuplicates(a) {
-    return a.filter((item, pos, ary) => {
-        return !pos || item != ary[pos - 1];
-    });
-}
-
 class EndlessPageView {
     constructor() {
         this.holderTemplate = views.getTemplate('endless-pager');
@@ -26,11 +20,19 @@ class EndlessPageView {
 
         const threshold = window.innerHeight / 3;
 
-        this.minPageShown = null;
-        this.maxPageShown = null;
-        this.totalPages = null;
+        if (ctx.state && ctx.state.html) {
+            console.log('Loading from state');
+            this.minPageShown = ctx.state.minPageShown;
+            this.maxPageShown = ctx.state.maxPageShown;
+            this.totalPages = ctx.state.totalPages;
+            this.currentPage = ctx.state.currentPage;
+        } else {
+            this.minPageShown = null;
+            this.maxPageShown = null;
+            this.totalPages = null;
+            this.currentPage = null;
+        }
         this.fetching = false;
-        this.currentPage = null;
 
         this.updater = () => {
             let topPage = null;
@@ -45,7 +47,15 @@ class EndlessPageView {
             if (topPage !== this.currentPage) {
                 page.replace(
                     ctx.clientUrl.format({page: topPage}),
-                    null,
+                    {
+                        minPageShown: this.minPageShown,
+                        maxPageShown: this.maxPageShown,
+                        totalPages: this.totalPages,
+                        currentPage: this.currentPage,
+                        html: pagesHolder.innerHTML,
+                        scrollX: window.scrollX,
+                        scrollY: window.scrollY,
+                    },
                     false,
                     false);
                 this.currentPage = topPage;
@@ -66,7 +76,12 @@ class EndlessPageView {
             }
         };
 
-        this.loadPage(pagesHolder, ctx, ctx.initialPage, true);
+        if (ctx.state && ctx.state.html) {
+            pagesHolder.innerHTML = ctx.state.html;
+            window.scroll(ctx.state.scrollX, ctx.state.scrollY);
+        } else {
+            this.loadPage(pagesHolder, ctx, ctx.initialPage, true);
+        }
         window.addEventListener('scroll', this.updater, true);
     }
 
@@ -102,6 +117,10 @@ class EndlessPageView {
                     pagesHolder.appendChild(pageNode);
                 } else {
                     pagesHolder.prependChild(pageNode);
+
+                    // note: with probability of 75%, if the user has scrolled
+                    // with a mouse wheel, chrome 49 doesn't give a slightest
+                    // fuck about this and loads all the way to page 1 at once
                     window.scroll(
                         window.scrollX,
                         window.scrollY + pageNode.offsetHeight);

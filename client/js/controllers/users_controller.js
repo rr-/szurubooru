@@ -53,6 +53,7 @@ class UsersController {
         topNavController.activate('users');
 
         pageController.run({
+            state: ctx.state,
             requestPage: page => {
                 return api.get(
                     '/users/?query={text}&page={page}&pageSize=30'.format({
