@@ -163,7 +163,7 @@ Available search orders:
 **Errors**
 
 - such user already exists (names are case insensitive)
-- either of user name, password and email are invalid
+- either user name, password or email are invalid
 - privileges are too low
 
 **Description**
@@ -211,7 +211,7 @@ administrator. Subsequent users will be given the rank indicated by
 
 - the user does not exist
 - the user with new name already exists (names are case insensitive)
-- either of user name, password, email or rank are invalid
+- either user name, password, email or rank are invalid
 - the user is trying to update their or someone else's rank to higher than
   their own
 - privileges are too low
@@ -248,6 +248,7 @@ pass also `avatar` file - see [file uploads](#file-uploads) for details.
 - privileges are too low
 
 **Description**
+
 Retrieves information about an existing user.
 
 
@@ -288,13 +289,13 @@ Deletes existing user.
 **Errors**
 
 - the user does not exist
-- the user haven't provided an email address
+- the user hasn't provided an email address
 
 **Description**
 
 Sends a confirmation email to given user. The email contains link containing a
 token. The token cannot be guessed, thus using such link proves that the person
-who requested to reset the password, also owns the mailbox, which is a strong
+who requested to reset the password also owns the mailbox, which is a strong
 indication they are the rightful owner of the account.
 
 
@@ -367,7 +368,7 @@ Nomenclature:
 
 Features:
 
-- Most of tokens can be negated like so: `-token`. Used with order tokens, it
+- Most tokens can be negated like so: `-token`. Used with order tokens, it
   flips the sort direction.
 - Some tokens support multiple values like so: `3,4,5`.
 - Some tokens support ranges like so: `100..`, `..200`, `100..200`.
