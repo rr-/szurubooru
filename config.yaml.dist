@@ -2,7 +2,8 @@
 # and override only what you need.
 
 name: szurubooru
-debug: 0
+debug: 0 # generate source maps for JS debugging?
+transpile: 1 # generate bigger JS to support older browsers?
 secret: change
 api_url: # where frontend connects to, example: http://api.example.com/
 base_url: # used to form links to frontend, example: http://example.com/

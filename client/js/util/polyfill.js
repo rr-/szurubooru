@@ -1,5 +1,7 @@
 'use strict';
 
+require('babel-polyfill');
+
 const keys = Reflect.ownKeys;
 const reduce = Function.bind.call(Function.call, Array.prototype.reduce);
 const concat = Function.bind.call(Function.call, Array.prototype.concat);

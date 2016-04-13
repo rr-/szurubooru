@@ -102,11 +102,16 @@ function bundleCss() {
 }
 
 function bundleJs(config) {
+    const babelify = require('babelify');
     const browserify = require('browserify');
     const uglifyjs = require('uglify-js');
     glob('./js/**/*.js', {}, function(er, files) {
         const outputFile = fs.createWriteStream('./public/bundle.min.js');
-        browserify({debug: config.debug}).add(files).bundle().pipe(outputFile);
+        let b = browserify({debug: config.debug});
+        if (config.transpile) {
+            b = b.transform(babelify);
+        }
+        b.add(files).bundle().pipe(outputFile);
         outputFile.on('finish', function() {
             if (!config.debug) {
                 const result = uglifyjs.minify('./public/bundle.min.js');
