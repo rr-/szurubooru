@@ -166,6 +166,8 @@ server {
 ```yaml
 api_url: 'http://big.dude/api/'
 base_url: 'http://big.dude/'
+data_url: 'http://big.dude/data/'
+data_dir: '/home/rr-/src/maintained/szurubooru/client/public/data'
 ```
 
 Then the backend is started with `./server/host-waitress` from within
