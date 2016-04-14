@@ -77,260 +77,268 @@ data.
 
 
 ## Listing users
-**Request**
+- **Request**
 
-`GET /users/?page=<page>&pageSize=<page-size>&query=<query>`
+    `GET /users/?page=<page>&pageSize=<page-size>&query=<query>`
 
-**Output**
+- **Output**
 
-```json5
-{
-    "query": "rr-",
-    "users": [
-        <user>,
-        <user>,
-        <user>,
-        <user>,
-        <user>
-    ],
-    "page": 1,
-    "pageSize": 5,
-    "total": 7
-}
-```
-...where `<user>` is an [user resource](#user) and `query` contains standard
-[search query](#search).
+    ```json5
+    {
+        "query": "rr-",
+        "users": [
+            <user>,
+            <user>,
+            <user>,
+            <user>,
+            <user>
+        ],
+        "page": 1,
+        "pageSize": 5,
+        "total": 7
+    }
+    ```
+    ...where `<user>` is an [user resource](#user) and `query` contains standard
+    [search query](#search).
 
-**Errors**
+- **Errors**
 
-- privileges are too low
+    - privileges are too low
 
-**Description**
+- **Description**
 
-Searches for users.
+    Searches for users.
 
-Available search named tokens:
+    **Anonymous tokens**
 
-| name              | ranged? | array? |
-| ----------------- | ------- | ------ |
-| (anonymous)       |         | ✓      |
-| `name`            |         | ✓      |
-| `creation-date`   | ✓       | ✓      |
-| `creation-time`   | ✓       | ✓      |
-| `last-login-date` | ✓       | ✓      |
-| `last-login-time` | ✓       | ✓      |
-| `login-date`      | ✓       | ✓      |
-| `login-time`      | ✓       | ✓      |
+    Same as `name` token.
 
-Anonymous search tokens are equivalent to `name` token.
+    **Named tokens**
 
-Available search orders:
+    | `<value>`         | Description                                      |
+    | ----------------- | ------------------------------------------------ |
+    | `name`            | having given name (doesn't accept wildcards yet) |
+    | `creation-date`   | registered at given date                         |
+    | `creation-time`   | alias of `creation-date`                         |
+    | `last-login-date` | whose most recent login date matches given date  |
+    | `last-login-time` | alias of `last-login-date`                       |
+    | `login-date`      | alias of `last-login-date`                       |
+    | `login-time`      | alias of `last-login-date`                       |
 
-- `random`
-- `name`
-- `creation-date`
-- `creation-time`
-- `last-login-date`
-- `last-login-time`
-- `login-date`
-- `login-time`
+    **Order tokens**
 
+    | `<value>`         | Description                |
+    | ----------------- | -------------------------- |
+    | `random`          | as random as it can get    |
+    | `name`            | A to Z                     |
+    | `creation-date`   | newest to oldest           |
+    | `creation-time`   | alias of `creation-date`   |
+    | `last-login-date` | recently active first      |
+    | `last-login-time` | alias of `last-login-date` |
+    | `login-date`      | alias of `last-login-date` |
+    | `login-time`      | alias of `last-login-date` |
+
+    **Special tokens**
+
+    None.
 
 ## Creating user
-**Request**
+- **Request**
 
-`POST /users`
+    `POST /users`
 
-**Input**
+- **Input**
 
-```json5
-{
-    "name": <user-name>,
-    "password": <user-password>,
-    "email": <email>
-}
-```
+    ```json5
+    {
+        "name": <user-name>,
+        "password": <user-password>,
+        "email": <email>
+    }
+    ```
 
-**Output**
+- **Output**
 
-```json5
-{
-    "user": <user>
-}
-```
-...where `<user>` is an [user resource](#user).
+    ```json5
+    {
+        "user": <user>
+    }
+    ```
+    ...where `<user>` is an [user resource](#user).
 
-**Errors**
+- **Errors**
 
-- such user already exists (names are case insensitive)
-- either user name, password or email are invalid
-- privileges are too low
+    - such user already exists (names are case insensitive)
+    - either user name, password or email are invalid
+    - privileges are too low
 
-**Description**
+- **Description**
 
-Creates a new user using specified parameters. Names and passwords must match
-`user_name_regex` and `password_regex` from server's configuration,
-respectively. Email address is optional. If the user happens to be the first
-user ever created, they're granted highest available rank, becoming an
-administrator. Subsequent users will be given the rank indicated by
-`default_rank` in the server's configuration.
+    Creates a new user using specified parameters. Names and passwords must
+    match `user_name_regex` and `password_regex` from server's configuration,
+    respectively. Email address is optional. If the user happens to be the
+    first user ever created, they're granted highest available rank, becoming
+    an administrator. Subsequent users will be given the rank indicated by
+    `default_rank` in the server's configuration.
 
 
 
 ## Updating user
-**Request**
+- **Request**
 
-`PUT /user/<name>`
+    `PUT /user/<name>`
 
-**Input**
+- **Input**
 
-```json5
-{
-    "name": <user-name>,
-    "password": <user-password>,
-    "email": <email>,
-    "rank": <rank>,
-    "avatarStyle": <avatar-style>
-}
-```
+    ```json5
+    {
+        "name": <user-name>,
+        "password": <user-password>,
+        "email": <email>,
+        "rank": <rank>,
+        "avatarStyle": <avatar-style>
+    }
+    ```
 
-**Files**
+- **Files**
 
-- `avatar` - the content of the new avatar.
+    - `avatar` - the content of the new avatar.
 
-**Output**
+- **Output**
 
-```json5
-{
-    "user": <user>
-}
-```
-...where `<user>` is an [user resource](#user).
+    ```json5
+    {
+        "user": <user>
+    }
+    ```
+    ...where `<user>` is an [user resource](#user).
 
-**Errors**
+- **Errors**
 
-- the user does not exist
-- the user with new name already exists (names are case insensitive)
-- either user name, password, email or rank are invalid
-- the user is trying to update their or someone else's rank to higher than
-  their own
-- privileges are too low
-- avatar is missing for manual avatar style
+    - the user does not exist
+    - the user with new name already exists (names are case insensitive)
+    - either user name, password, email or rank are invalid
+    - the user is trying to update their or someone else's rank to higher than
+      their own
+    - privileges are too low
+    - avatar is missing for manual avatar style
 
-**Description**
+- **Description**
 
-Updates an existing user using specified parameters. Names and passwords must
-match `user_name_regex` and `password_regex` from server's configuration,
-respectively. All fields are optional - update concerns only provided fields.
-To update last login time, see [authentication](#authentication). Avatar style
-can be either `gravatar` or `manual`. `manual` avatar style requires client to
-pass also `avatar` file - see [file uploads](#file-uploads) for details.
+    Updates an existing user using specified parameters. Names and passwords
+    must match `user_name_regex` and `password_regex` from server's
+    configuration, respectively. All fields are optional - update concerns only
+    provided fields. To update last login time, see
+    [authentication](#authentication). Avatar style can be either `gravatar` or
+    `manual`. `manual` avatar style requires client to pass also `avatar`
+    file - see [file uploads](#file-uploads) for details.
 
 
 
 ## Getting user
-**Request**
+- **Request**
 
-`GET /user/<name>`
+    `GET /user/<name>`
 
-**Output**
+- **Output**
 
-```json5
-{
-    "user": <user>
-}
-```
-...where `<user>` is an [user resource](#user).
+    ```json5
+    {
+        "user": <user>
+    }
+    ```
+    ...where `<user>` is an [user resource](#user).
 
-**Errors**
+- **Errors**
 
-- the user does not exist
-- privileges are too low
+    - the user does not exist
+    - privileges are too low
 
-**Description**
+- **Description**
 
-Retrieves information about an existing user.
+    Retrieves information about an existing user.
 
 
 
 ## Removing user
-**Request**
+- **Request**
 
-`DELETE /user/<name>`
+    `DELETE /user/<name>`
 
-**Output**
+- **Output**
 
-```json5
-{}
-```
+    ```json5
+    {}
+    ```
 
-**Errors**
+- **Errors**
 
-- the user does not exist
-- privileges are too low
+    - the user does not exist
+    - privileges are too low
 
-**Description**
+- **Description**
 
-Deletes existing user.
+    Deletes existing user.
 
 
 
 ## Password reset - step 1: mail request
-**Request**
+- **Request**
 
-`GET /password-reset/<email-or-name>`
+    `GET /password-reset/<email-or-name>`
 
-**Output**
+- **Output**
 
-```
-{}
-```
+    ```
+    {}
+    ```
 
-**Errors**
+- **Errors**
 
-- the user does not exist
-- the user hasn't provided an email address
+    - the user does not exist
+    - the user hasn't provided an email address
 
-**Description**
+- **Description**
 
-Sends a confirmation email to given user. The email contains link containing a
-token. The token cannot be guessed, thus using such link proves that the person
-who requested to reset the password also owns the mailbox, which is a strong
-indication they are the rightful owner of the account.
+    Sends a confirmation email to given user. The email contains link
+    containing a token. The token cannot be guessed, thus using such link
+    proves that the person who requested to reset the password also owns the
+    mailbox, which is a strong indication they are the rightful owner of the
+    account.
 
 
 
 ## Password reset - step 2: confirmation
-**Request**
+- **Request**
 
-`POST /password-reset/<email-or-name>`
+    `POST /password-reset/<email-or-name>`
 
-**Input**
+- **Input**
 
-```json5
-{
-    "token": <token-from-email>
-}
-```
+    ```json5
+    {
+        "token": <token-from-email>
+    }
+    ```
 
-**Output**
+- **Output**
 
-```json5
-{
-    "password": <new-password>
-}
-```
+    ```json5
+    {
+        "password": <new-password>
+    }
+    ```
 
-**Errors**
+- **Errors**
 
-- the token is missing
-- the token is invalid
-- the user does not exist
+    - the token is missing
+    - the token is invalid
+    - the user does not exist
 
-**Description**
+- **Description**
 
-Generates a new password for given user. Password is sent as plain-text, so it
-is recommended to connect through HTTPS.
+    Generates a new password for given user. Password is sent as plain-text, so
+    it is recommended to connect through HTTPS.
 
 
 
@@ -354,29 +362,39 @@ is recommended to connect through HTTPS.
 
 # Search
 
-Nomenclature:
+Search queries are built of tokens that are separated by spaces. Each token can
+be of following form:
 
-- Tokens - search terms inside a query, separated by white space.
-- Anonymous tokens - tokens of form `<value>`, used to filter the search
-  results.
-- Named tokens - tokens of form `<key>:<value>`, used to filter the search
-  results.
-- Special tokens - tokens of form `special:<value>`, used to filter the search
-  results.
-- Order tokens - tokens of form `order:<value>`, used to sort the search
-  results.
+| Syntax            | Token type        | Description                                |
+| ----------------- | ----------------- | ------------------------------------------ |
+| `<value>`         | anonymous tokens  | basic filters                              |
+| `<key>:<value>`   | named tokens      | advanced filters                           |
+| `order:<style>`   | order tokens      | sort results                               |
+| `special:<value>` | special tokens    | filters usually tied to the logged in user |
 
-Features:
+Most of anonymous and named tokens support ranged and composite values that
+take following form:
 
-- Most tokens can be negated like so: `-token`. Used with order tokens, it
-  flips the sort direction.
-- Some tokens support multiple values like so: `3,4,5`.
-- Some tokens support ranges like so: `100..`, `..200`, `100..200`.
-- Date token values can contain following values: `today`, `yesterday`,
-  `<year>`, `<year>-<month>`, `<year>-<month>-<day>`.
-- Order token values can be appended with `,asc` and `,desc` suffixes, which
-  control the sort direction.
+| `<value>` | Description                                           |
+| --------- | ----------------------------------------------------- |
+| `a,b,c`   | will show things that satisfy either `a`, `b` or `c`. |
+| `1..`     | will show things that are equal to or greater than 1. |
+| `..4`     | will show things that are equal to at most 4.         |
+| `1..4`    | will show things that are equal to 1, 2, 3 or 4.      |
 
-Example how it works:
+Date/time values can be of following form:
 
-    haruhi -kyon fav-count:3.. order:fav-count,desc -special:liked
+- `today`
+- `yesterday`
+- `<year>`
+- `<year>-<month>`
+- `<year>-<month>-<day>`
+
+**Example**
+
+Searching for posts with following query:
+
+    sea -fav-count:8.. type:swf uploader:Pirate
+
+will show flash files tagged as sea, that were liked by seven people at most,
+uploaded by user Pirate.

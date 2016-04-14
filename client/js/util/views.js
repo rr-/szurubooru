@@ -126,6 +126,19 @@ function showView(target, source) {
     }
 }
 
+function scrollToHash() {
+    window.setTimeout(() => {
+        if (!window.location.hash) {
+            return;
+        }
+        const el = document.getElementById(
+            window.location.hash.replace(/#/, ''));
+        if (el) {
+            el.scrollIntoView();
+        }
+    }, 10);
+}
+
 module.exports = {
     htmlToDom: htmlToDom,
     getTemplate: getTemplate,
@@ -137,4 +150,5 @@ module.exports = {
     decorateValidator: decorateValidator,
     makeVoidElement: makeVoidElement,
     makeNonVoidElement: makeNonVoidElement,
+    scrollToHash: scrollToHash,
 };

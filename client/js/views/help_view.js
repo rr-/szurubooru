@@ -38,6 +38,8 @@ class HelpView {
 
         views.listenToMessages(target);
         views.showView(target, source);
+
+        views.scrollToHash();
     }
 }
 
