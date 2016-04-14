@@ -19,6 +19,15 @@ a
     color: $main-color
     text-decoration: none
     transition: color 0.1s linear
+    &.icon
+        color: $inactive-link-color
+        opacity: .5
+
+a.append
+    margin-left: 1em
+form .fa-question-circle-o
+    font-size: 110%
+    vertical-align: middle
 
 #content-holder
     margin: 2em
@@ -52,7 +61,7 @@ nav ul
             display: inline-block
         img
             margin: 0
-            vertical-align: top; /* fix ghost margin under the image */
+            vertical-align: top /* fix ghost margin under the image */
 
 nav.plain-nav ul li
     display: block
@@ -122,7 +131,7 @@ nav.text-nav
         background: $message-success-background-color
 
 .thumbnail
-    /*background-image: attr(data-src url);*/ /* not available yet */
+    /*background-image: attr(data-src url)*/ /* not available yet */
     background-repeat: no-repeat
     background-size: cover
     background-position: center

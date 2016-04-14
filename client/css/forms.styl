@@ -17,10 +17,6 @@ form
         margin-bottom: 1em
     .buttons
         margin-top: 1em
-        a
-            margin-left: 1em
-            .fa-question-circle-o
-                font-size: 120%
     .input li:first-child label:not(.radio):not(.checkbox):not(.file-dropper),
     .input li:first-child
         padding-top: 0
@@ -49,8 +45,11 @@ form.horizontal
     margin-bottom: 1em
     .input, .buttons, ul
         display: inline-block
+        vertical-align: middle
         margin: 0
         padding: 0
+        input
+            vertical-align: middle
     .buttons
         margin-right: 0.5em
 
@@ -162,7 +161,7 @@ input[type=password]
     border: 2px solid $input-enabled-border-color
     background: $input-enabled-background-color
     color: $input-enabled-text-color
-    box-shadow: none; /* :-moz-submit-invalid on FF */
+    box-shadow: none /* :-moz-submit-invalid on FF */
     transition: border-color 0.1s linear, background-color 0.1s linear
 
     &:disabled
