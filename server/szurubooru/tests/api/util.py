@@ -21,6 +21,7 @@ def mock_context(parent):
     context = misc.dotdict()
     context.session = parent.session
     context.request = {}
+    context.files = {}
     context.user = db.User()
     parent.context = context
 

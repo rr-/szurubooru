@@ -1,3 +1,4 @@
+import tempfile
 from datetime import datetime
 from szurubooru import api, db, errors
 from szurubooru.util import auth
@@ -214,7 +215,9 @@ class TestUpdatingUser(DatabaseTestCase):
             'secret': '',
             'user_name_regex': '.{3,}',
             'password_regex': '.{3,}',
-            'thumbnails': {'avatar_width': 200},
+            'data_dir': tempfile.gettempdir(),
+            'data_url': 'http://example.com/data/',
+            'thumbnails': {'avatar_width': 200, 'avatar_height': 200},
             'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
             'rank_names': {},
             'privileges': {
@@ -222,10 +225,12 @@ class TestUpdatingUser(DatabaseTestCase):
                 'users:edit:self:pass': 'regular_user',
                 'users:edit:self:email': 'regular_user',
                 'users:edit:self:rank': 'mod',
+                'users:edit:self:avatar': 'mod',
                 'users:edit:any:name': 'mod',
                 'users:edit:any:pass': 'mod',
                 'users:edit:any:email': 'mod',
                 'users:edit:any:rank': 'admin',
+                'users:edit:any:avatar': 'admin',
             },
         })
         util.mock_context(self)
@@ -256,12 +261,14 @@ class TestUpdatingUser(DatabaseTestCase):
             'email': 'asd@asd.asd',
             'password': 'oks',
             'rank': 'mod',
+            'avatarStyle': 'gravatar',
         }
         self.api.put(self.context, 'u1')
         admin_user = self.session.query(db.User).filter_by(name='chewie').one()
         self.assertEqual(admin_user.name, 'chewie')
         self.assertEqual(admin_user.email, 'asd@asd.asd')
         self.assertEqual(admin_user.rank, 'mod')
+        self.assertEqual(admin_user.avatar_style, admin_user.AVATAR_GRAVATAR)
         self.assertTrue(auth.is_valid_password(admin_user, 'oks'))
         self.assertFalse(auth.is_valid_password(admin_user, 'invalid'))
 
@@ -288,6 +295,9 @@ class TestUpdatingUser(DatabaseTestCase):
         self.assertRaises(
             errors.ValidationError, self.api.put, self.context, 'u1')
         self.context.request = {'email': '.'}
+        self.assertRaises(
+            errors.ValidationError, self.api.put, self.context, 'u1')
+        self.context.request = {'avatarStyle': 'manual'}
         self.assertRaises(
             errors.ValidationError, self.api.put, self.context, 'u1')
 
@@ -335,3 +345,22 @@ class TestUpdatingUser(DatabaseTestCase):
             errors.AuthError, self.api.put, self.context, user1.name)
         self.assertRaises(
             errors.AuthError, self.api.put, self.context, user2.name)
+
+    def test_uploading_avatar(self):
+        user = util.mock_user('u1', 'mod')
+        self.session.add(user)
+        self.context.user = user
+        self.context.request = {
+            'avatarStyle': 'manual',
+        }
+        empty_pixel = \
+            b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
+            b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
+            b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
+        self.context.files['avatar'] = empty_pixel
+        response = self.api.put(self.context, 'u1')
+        user = self.session.query(db.User).filter_by(name='u1').one()
+        self.assertEqual(user.avatar_style, user.AVATAR_MANUAL)
+        self.assertEqual(
+            response['user']['avatarUrl'],
+            'http://example.com/data/avatars/u1.jpg')
