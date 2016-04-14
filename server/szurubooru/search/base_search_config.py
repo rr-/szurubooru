@@ -3,32 +3,19 @@ import szurubooru.errors
 from szurubooru.util import misc
 from szurubooru.search import criteria
 
-def _apply_criterion_to_column(
-        column, query, criterion, allow_composite=True, allow_ranged=True):
+def _apply_num_criterion_to_column(column, query, criterion):
     ''' Decorate SQLAlchemy filter on given column using supplied criterion. '''
     if isinstance(criterion, criteria.StringSearchCriterion):
         expr = column == criterion.value
-        if criterion.negated:
-            expr = ~expr
-        return query.filter(expr)
     elif isinstance(criterion, criteria.ArraySearchCriterion):
-        if not allow_composite:
-            raise szurubooru.errors.SearchError(
-                'Composite token %r is invalid in this context.' % (criterion,))
         expr = column.in_(criterion.values)
-        if criterion.negated:
-            expr = ~expr
-        return query.filter(expr)
     elif isinstance(criterion, criteria.RangedSearchCriterion):
-        if not allow_ranged:
-            raise szurubooru.errors.SearchError(
-                'Ranged token %r is invalid in this context.' % (criterion,))
         expr = column.between(criterion.min_value, criterion.max_value)
-        if criterion.negated:
-            expr = ~expr
-        return query.filter(expr)
     else:
-        raise RuntimeError('Invalid search type: %r.' % (criterion,))
+        assert False
+    if criterion.negated:
+        expr = ~expr
+    return query.filter(expr)
 
 def _apply_date_criterion_to_column(column, query, criterion):
     '''
@@ -38,17 +25,11 @@ def _apply_date_criterion_to_column(column, query, criterion):
     if isinstance(criterion, criteria.StringSearchCriterion):
         min_date, max_date = misc.parse_time_range(criterion.value)
         expr = column.between(min_date, max_date)
-        if criterion.negated:
-            expr = ~expr
-        return query.filter(expr)
     elif isinstance(criterion, criteria.ArraySearchCriterion):
         expr = sqlalchemy.sql.false()
         for value in criterion.values:
             min_date, max_date = misc.parse_time_range(value)
             expr = expr | column.between(min_date, max_date)
-        if criterion.negated:
-            expr = ~expr
-        return query.filter(expr)
     elif isinstance(criterion, criteria.RangedSearchCriterion):
         assert criterion.min_value or criterion.max_value
         if criterion.min_value and criterion.max_value:
@@ -61,9 +42,31 @@ def _apply_date_criterion_to_column(column, query, criterion):
         elif criterion.max_value:
             max_date = misc.parse_time_range(criterion.max_value)[1]
             expr = column <= max_date
-        if criterion.negated:
-            expr = ~expr
-        return query.filter(expr)
+    else:
+        assert False
+    if criterion.negated:
+        expr = ~expr
+    return query.filter(expr)
+
+def _apply_str_criterion_to_column(column, query, criterion):
+    '''
+    Decorate SQLAlchemy filter on given column using supplied criterion.
+    Parse potential wildcards inside the criterion.
+    '''
+    if isinstance(criterion, criteria.StringSearchCriterion):
+        expr = column.like(criterion.value.replace('*', '%'))
+    elif isinstance(criterion, criteria.ArraySearchCriterion):
+        expr = sqlalchemy.sql.false()
+        for value in criterion.values:
+            expr = expr | column.like(value.replace('*', '%'))
+    elif isinstance(criterion, criteria.RangedSearchCriterion):
+        raise szurubooru.errors.SearchError(
+            'Composite token %r is invalid in this context.' % (criterion,))
+    else:
+        assert False
+    if criterion.negated:
+        expr = ~expr
+    return query.filter(expr)
 
 class BaseSearchConfig(object):
     def create_query(self, session):
@@ -85,11 +88,14 @@ class BaseSearchConfig(object):
     def order_columns(self):
         raise NotImplementedError()
 
-    def _create_basic_filter(
-            self, column, allow_composite=True, allow_ranged=True):
-        return lambda query, criterion: _apply_criterion_to_column(
-            column, query, criterion, allow_composite, allow_ranged)
+    def _create_num_filter(self, column):
+        return lambda query, criterion: _apply_num_criterion_to_column(
+            column, query, criterion)
 
     def _create_date_filter(self, column):
         return lambda query, criterion: _apply_date_criterion_to_column(
+            column, query, criterion)
+
+    def _create_str_filter(self, column):
+        return lambda query, criterion: _apply_str_criterion_to_column(
             column, query, criterion)

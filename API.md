@@ -117,7 +117,7 @@ data.
 
     | `<value>`         | Description                                      |
     | ----------------- | ------------------------------------------------ |
-    | `name`            | having given name (doesn't accept wildcards yet) |
+    | `name`            | having given name (accepts wildcards)            |
     | `creation-date`   | registered at given date                         |
     | `creation-time`   | alias of `creation-date`                         |
     | `last-login-date` | whose most recent login date matches given date  |
@@ -389,6 +389,8 @@ Date/time values can be of following form:
 - `<year>`
 - `<year>-<month>`
 - `<year>-<month>-<day>`
+
+Some fields, such as user names, can take wildcards (`*`).
 
 **Example**
 

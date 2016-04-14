@@ -13,7 +13,7 @@ class UserSearchConfig(BaseSearchConfig):
 
     @property
     def anonymous_filter(self):
-        return self._create_basic_filter(db.User.name, allow_ranged=False)
+        return self._create_str_filter(db.User.name)
 
     @property
     def special_filters(self):
@@ -22,7 +22,7 @@ class UserSearchConfig(BaseSearchConfig):
     @property
     def named_filters(self):
         return {
-            'name': self._create_basic_filter(db.User.name, allow_ranged=False),
+            'name': self._create_str_filter(db.User.name),
             'creation-date': self._create_date_filter(db.User.creation_time),
             'creation-time': self._create_date_filter(db.User.creation_time),
             'last-login-date': self._create_date_filter(db.User.last_login_time),

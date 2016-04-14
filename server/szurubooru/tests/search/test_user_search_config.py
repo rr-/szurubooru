@@ -96,6 +96,18 @@ class TestUserSearchExecutor(DatabaseTestCase):
         self._test('name:u1', 1, 100, 1, ['u1'])
         self._test('name:u2', 1, 100, 1, ['u2'])
 
+    def test_filter_by_name_wildcards(self):
+        self.session.add(util.mock_user('user1'))
+        self.session.add(util.mock_user('user2'))
+        self._test('name:*1', 1, 100, 1, ['user1'])
+        self._test('name:*2', 1, 100, 1, ['user2'])
+        self._test('name:*', 1, 100, 2, ['user1', 'user2'])
+        self._test('name:u*', 1, 100, 2, ['user1', 'user2'])
+        self._test('name:*ser*', 1, 100, 2, ['user1', 'user2'])
+        self._test('name:*zer*', 1, 100, 0, [])
+        self._test('name:zer*', 1, 100, 0, [])
+        self._test('name:*zer', 1, 100, 0, [])
+
     def test_filter_by_negated_name(self):
         self.session.add(util.mock_user('u1'))
         self.session.add(util.mock_user('u2'))
