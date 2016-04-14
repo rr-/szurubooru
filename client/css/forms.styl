@@ -8,25 +8,19 @@ form
         list-style-type: none
         margin: 0
         padding: 0
-
         li
             margin-top: 0.5em
-
         label
             display: block
             padding: 0.5em 0
-
     .input
         margin-bottom: 1em
-
     .buttons
         margin-top: 1em
-
     .input li:first-child label:not(.radio):not(.checkbox):not(.file-dropper),
     .input li:first-child
         padding-top: 0
         margin-top: 0
-
     .hint
         margin-top: 0.5em
         margin-bottom: 0
@@ -38,16 +32,23 @@ form.tabular
     ul
         display: table
         width: 100%
-
         li
             display: table-row
-
             label:not(.radio):not(.checkbox):not(.file-dropper)
                 display: table-cell
                 width: 33%
-
     .messages, .buttons
         margin-left: 33%
+
+form.horizontal
+    display: inline-block
+    margin-bottom: 1em
+    .input, .buttons, ul
+        display: inline-block
+        margin: 0
+        padding: 0
+    .buttons
+        margin-right: 0.5em
 
 
 

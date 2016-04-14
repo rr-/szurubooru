@@ -2,7 +2,6 @@
 
 const page = require('page');
 const events = require('../events.js');
-const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
 class EndlessPageView {
@@ -85,7 +84,7 @@ class EndlessPageView {
             pagesHolder.innerHTML = ctx.state.html;
             window.scroll(ctx.state.scrollX, ctx.state.scrollY);
         } else {
-            this.loadPage(pagesHolder, ctx, ctx.initialPage, true);
+            this.loadPage(pagesHolder, ctx, ctx.searchQuery.page, true);
         }
         window.addEventListener('scroll', this.updater, true);
     }

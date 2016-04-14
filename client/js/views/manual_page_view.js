@@ -20,8 +20,13 @@ class ManualPageView {
         const target = document.getElementById('content-holder');
         const source = this.holderTemplate();
         const pageContentHolder = source.querySelector('.page-content-holder');
+        const pageHeaderHolder = source.querySelector('.page-header-holder');
         const pageNav = source.querySelector('.page-nav');
-        const currentPage = ctx.initialPage;
+        const currentPage = ctx.searchQuery.page;
+
+        let headerRendererCtx = ctx;
+        headerRendererCtx.target = pageHeaderHolder;
+        ctx.headerRenderer.render(headerRendererCtx);
 
         ctx.requestPage(currentPage).then(response => {
             let pageRendererCtx = response;

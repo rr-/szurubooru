@@ -10,14 +10,16 @@ const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
 const RegistrationView = require('../views/registration_view.js');
 const UserView = require('../views/user_view.js');
-const UserListView = require('../views/user_list_view.js');
+const UserListHeaderView = require('../views/user_list_header_view.js');
+const UserListPageView = require('../views/user_list_page_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 class UsersController {
     constructor() {
         this.registrationView = new RegistrationView();
         this.userView = new UserView();
-        this.userListView = new UserListView();
+        this.userListHeaderView = new UserListHeaderView();
+        this.userListPageView = new UserListPageView();
         this.emptyView = new EmptyView();
     }
 
@@ -62,8 +64,9 @@ class UsersController {
             },
             clientUrl: '/users/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
-            initialPage: ctx.searchQuery.page,
-            pageRenderer: this.userListView,
+            searchQuery: ctx.searchQuery,
+            headerRenderer: this.userListHeaderView,
+            pageRenderer: this.userListPageView,
         });
     }
 

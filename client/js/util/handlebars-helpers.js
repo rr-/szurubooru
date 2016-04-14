@@ -4,6 +4,17 @@ const views = require('../util/views.js');
 const handlebars = require('handlebars');
 const misc = require('./misc.js');
 
+function makeLabel(options, attrs) {
+    if (!options.hash.text) {
+        return '';
+    }
+    if (!attrs) {
+        attrs = {};
+    }
+    attrs.for = options.hash.id;
+    return views.makeNonVoidElement('label', attrs, options.hash.text);
+}
+
 handlebars.registerHelper('reltime', function(time) {
     return new handlebars.SafeString(
         views.makeNonVoidElement(
@@ -34,10 +45,7 @@ handlebars.registerHelper('radio', function(options) {
             checked: options.hash.selectedValue === options.hash.value,
             required: options.hash.required,
         }),
-        views.makeNonVoidElement('label', {
-            for: options.hash.id,
-            class: 'radio',
-        }, options.hash.text)));
+        makeLabel(options, {class: 'radio'})));
 });
 
 handlebars.registerHelper('checkbox', function(options) {
@@ -51,16 +59,12 @@ handlebars.registerHelper('checkbox', function(options) {
                 options.hash.checked : false,
             required: options.hash.required,
         }),
-        views.makeNonVoidElement('label', {
-            for: options.hash.id,
-            class: 'checkbox',
-        }, options.hash.text)));
+        makeLabel(options, {class: 'checkbox'})));
 });
 
 handlebars.registerHelper('select', function(options) {
     return new handlebars.SafeString('{0}{1}'.format(
-        views.makeNonVoidElement(
-            'label', {for: options.hash.id}, options.hash.text),
+        makeLabel(options),
         views.makeNonVoidElement(
             'select',
             {id: options.hash.id, name: options.hash.name},
@@ -74,8 +78,7 @@ handlebars.registerHelper('select', function(options) {
 
 handlebars.registerHelper('input', function(options) {
     return new handlebars.SafeString('{0}{1}'.format(
-        views.makeNonVoidElement(
-            'label', {for: options.hash.id}, options.hash.text),
+        makeLabel(options),
         views.makeVoidElement(
             'input', {
                 type: options.hash.inputType,
