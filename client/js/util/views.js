@@ -112,25 +112,18 @@ function enableForm(form) {
 }
 
 function showView(target, source) {
-    return new Promise((resolve, reject) => {
-        let observer = new MutationObserver(mutations => {
-            resolve();
-            observer.disconnect();
-        });
-        observer.observe(target, {childList: true});
-        while (target.lastChild) {
-            target.removeChild(target.lastChild);
+    while (target.lastChild) {
+        target.removeChild(target.lastChild);
+    }
+    if (source instanceof NodeList) {
+        for (let child of source) {
+            target.appendChild(child);
         }
-        if (source instanceof NodeList) {
-            for (let child of source) {
-                target.appendChild(child);
-            }
-        } else if (source instanceof Node) {
-            target.appendChild(source);
-        } else {
-            console.error('Invalid view source', source);
-        }
-    });
+    } else if (source instanceof Node) {
+        target.appendChild(source);
+    } else {
+        console.error('Invalid view source', source);
+    }
 }
 
 module.exports = {

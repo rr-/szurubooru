@@ -73,7 +73,7 @@ function bundleHtml(config) {
 
         const templatesHolder = util.format(
             '<script type=\'text/javascript\'>' +
-            'const templates = %s;' +
+            'var templates = %s;' +
             '</script>',
             JSON.stringify(templates));
 
