@@ -134,6 +134,9 @@ class TestUserSearchExecutor(DatabaseTestCase):
         self.session.add(util.mock_user('u2'))
         self._test('', 1, 1, 2, ['u1'])
         self._test('', 2, 1, 2, ['u2'])
+        self._test('', 3, 1, 2, [])
+        self._test('', 0, 1, 2, ['u1'])
+        self._test('', 0, 0, 2, ['u1'])
 
     def test_order_by_name(self):
         self.session.add(util.mock_user('u2'))

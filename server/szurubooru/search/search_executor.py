@@ -20,6 +20,8 @@ class SearchExecutor(object):
         Parse input and return tuple containing total record count and filtered
         entities.
         '''
+        page = max(1, int(page))
+        page_size = max(1, int(page_size))
         filter_query = self._prepare(session, query_text)
         entities = filter_query \
             .offset((page - 1) * page_size).limit(page_size).all()
