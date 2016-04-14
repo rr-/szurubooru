@@ -2,6 +2,13 @@
 
 require('./util/polyfill.js');
 
+const page = require('page');
+const mousetrap = require('mousetrap');
+page(/.*/, (ctx, next) => {
+    mousetrap.reset();
+    next();
+});
+
 let controllers = [];
 controllers.push(require('./controllers/auth_controller.js'));
 controllers.push(require('./controllers/posts_controller.js'));
@@ -15,7 +22,6 @@ controllers.push(require('./controllers/settings_controller.js'));
 controllers.push(require('./controllers/home_controller.js'));
 
 const events = require('./events.js');
-const page = require('page');
 for (let controller of controllers) {
     controller.registerRoutes();
 }

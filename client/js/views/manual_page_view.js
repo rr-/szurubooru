@@ -1,6 +1,8 @@
 'use strict';
 
+const page = require('page');
 const events = require('../events.js');
+const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
@@ -75,6 +77,17 @@ class ManualPageView {
             const totalPages = Math.ceil(response.total / response.pageSize);
             const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
             const pages = getPages(currentPage, pageNumbers, ctx.clientUrl);
+
+            keyboard.bind(['a', 'left'], () => {
+                if (currentPage > 1) {
+                    page.show(ctx.clientUrl.format({page: currentPage - 1}));
+                }
+            });
+            keyboard.bind(['d', 'right'], () => {
+                if (currentPage < totalPages) {
+                    page.show(ctx.clientUrl.format({page: currentPage + 1}));
+                }
+            });
 
             if (response.total) {
                 views.showView(pageNav, this.navTemplate({

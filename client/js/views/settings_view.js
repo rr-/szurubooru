@@ -18,7 +18,10 @@ class SettingsView {
             e.preventDefault();
             views.clearMessages(source);
             ctx.saveSettings({
-                endlessScroll: form.querySelector('#endless-scroll').checked,
+                endlessScroll:
+                    form.querySelector('#endless-scroll').checked,
+                keyboardShortcuts:
+                    form.querySelector('#keyboard-shortcuts').checked,
             });
         });
 

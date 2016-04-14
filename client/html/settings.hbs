@@ -8,6 +8,10 @@
                     {{checkbox text='Endless scroll' id='endless-scroll' name='endless-scroll' checked=this.browsingSettings.endlessScroll}}
                     <p class='hint'>Rather than using a paged navigation, smoothly scroll through the content.</p>
                 </li>
+                <li>
+                    {{checkbox text='Enable keyboard shortcuts' id='keyboard-shortcuts' name='keyboard-shortcuts' checked=this.browsingSettings.keyboardShortcuts}}
+                    <a class='append icon' href='/help/keyboard'><i class='fa fa-question-circle-o'></i></a>
+                </li>
             </ul>
         </div>
         <div class='messages'></div>

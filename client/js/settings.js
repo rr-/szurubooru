@@ -11,6 +11,7 @@ function saveSettings(browsingSettings) {
 function getSettings(settings) {
     const defaultSettings = {
         endlessScroll: false,
+        keyboardShortcuts: true,
     };
     let ret = {};
     let userSettings = localStorage.getItem('settings');
