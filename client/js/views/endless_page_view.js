@@ -14,9 +14,14 @@ class EndlessPageView {
     render(ctx) {
         const target = document.getElementById('content-holder');
         const source = this.holderTemplate();
+        const pageHeaderHolder = source.querySelector('.page-header-holder');
         const pagesHolder = source.querySelector('.pages-holder');
         views.listenToMessages(target);
         views.showView(target, source);
+
+        let headerRendererCtx = ctx;
+        headerRendererCtx.target = pageHeaderHolder;
+        ctx.headerRenderer.render(headerRendererCtx);
 
         const threshold = window.innerHeight / 3;
 

@@ -60,7 +60,7 @@ function formatSearchQuery(dict) {
             result.push('{0}={1}'.format(key, value));
         }
     }
-    return result.join('');
+    return result.join(';');
 }
 
 function parseSearchQuery(query) {
