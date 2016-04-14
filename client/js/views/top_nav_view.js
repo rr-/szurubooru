@@ -13,10 +13,11 @@ class TopNavView {
         const target = this.navHolder;
         const source = this.template(ctx);
 
-        for (let link of source.querySelectorAll('a span.text')) {
+        for (let link of source.querySelectorAll('a')) {
             const regex = new RegExp(
                 '(' + link.getAttribute('accesskey') + ')', 'i');
-            link.innerHTML = link.textContent.replace(
+            const span = link.querySelector('span.text');
+            span.innerHTML = span.textContent.replace(
                 regex,
                 '<span class="access-key" data-accesskey="$1">$1</span>');
         }
