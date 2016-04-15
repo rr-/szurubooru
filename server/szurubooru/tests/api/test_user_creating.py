@@ -26,7 +26,7 @@ def test_creating_users(
 
     user_list_api.post(
         context_factory(
-            request={
+            input={
                 'name': 'chewie1',
                 'email': 'asd@asd.asd',
                 'password': 'oks',
@@ -34,7 +34,7 @@ def test_creating_users(
             user=user_factory(rank='regular_user')))
     user_list_api.post(
         context_factory(
-            request={
+            input={
                 'name': 'chewie2',
                 'email': 'asd@asd.asd',
                 'password': 'sok',
@@ -68,7 +68,7 @@ def test_creating_user_that_already_exists(
     })
     user_list_api.post(
         context_factory(
-            request={
+            input={
                 'name': 'chewie',
                 'email': 'asd@asd.asd',
                 'password': 'oks',
@@ -77,7 +77,7 @@ def test_creating_user_that_already_exists(
     with pytest.raises(errors.IntegrityError):
         user_list_api.post(
             context_factory(
-                request={
+                input={
                     'name': 'chewie',
                     'email': 'asd@asd.asd',
                     'password': 'oks',
@@ -86,7 +86,7 @@ def test_creating_user_that_already_exists(
     with pytest.raises(errors.IntegrityError):
         user_list_api.post(
             context_factory(
-                request={
+                input={
                     'name': 'CHEWIE',
                     'email': 'asd@asd.asd',
                     'password': 'oks',
@@ -109,4 +109,4 @@ def test_missing_field(
     with pytest.raises(errors.ValidationError):
         user_list_api.post(
             context_factory(
-                request=request, user=user_factory(rank='regular_user')))
+                input=request, user=user_factory(rank='regular_user')))

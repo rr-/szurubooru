@@ -123,7 +123,7 @@ def test_combining_tokens(session, verify_unpaged, input, expected_user_names):
         (2, 1, 2, ['u2']),
         (3, 1, 2, []),
         (0, 1, 2, ['u1']),
-        (0, 0, 2, ['u1']),
+        (0, 0, 2, []),
     ])
 def test_paging(
         session, executor, page, page_size,

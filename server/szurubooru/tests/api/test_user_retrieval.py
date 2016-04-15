@@ -27,7 +27,7 @@ def test_retrieving_multiple(
     session.add_all([user1, user2])
     result = user_list_api.get(
         context_factory(
-            params={'query': '', 'page': 1},
+            input={'query': '', 'page': 1},
             user=user_factory(rank='regular_user')))
     assert result['query'] == ''
     assert result['page'] == 1
@@ -44,7 +44,7 @@ def test_retrieving_multiple_without_privileges(
     with pytest.raises(errors.AuthError):
         user_list_api.get(
             context_factory(
-                params={'query': '', 'page': 1},
+                input={'query': '', 'page': 1},
                 user=user_factory(rank='anonymous')))
 
 def test_retrieving_multiple_with_privileges(
@@ -55,7 +55,7 @@ def test_retrieving_multiple_with_privileges(
     })
     result = user_list_api.get(
         context_factory(
-            params={'query': 'asd', 'page': 1},
+            input={'query': 'asd', 'page': 1},
             user=user_factory(rank='regular_user')))
     assert result['query'] == 'asd'
     assert result['page'] == 1
@@ -79,7 +79,7 @@ def test_retrieving_single(
     session.add(user)
     result = user_detail_api.get(
         context_factory(
-            params={'query': '', 'page': 1},
+            input={'query': '', 'page': 1},
             user=user_factory(rank='regular_user')),
         'u1')
     assert result['user']['id'] == user.user_id
@@ -98,7 +98,7 @@ def test_retrieving_non_existing(
     with pytest.raises(errors.NotFoundError):
         user_detail_api.get(
             context_factory(
-                params={'query': '', 'page': 1},
+                input={'query': '', 'page': 1},
                 user=user_factory(rank='regular_user')),
             '-')
 
@@ -111,6 +111,6 @@ def test_retrieving_single_without_privileges(
     with pytest.raises(errors.AuthError):
         user_detail_api.get(
             context_factory(
-                params={'query': '', 'page': 1},
+                input={'query': '', 'page': 1},
                 user=user_factory(rank='anonymous')),
             '-')

@@ -9,9 +9,9 @@ MAIL_BODY = \
     'Otherwise, please ignore this email.'
 
 class PasswordResetApi(BaseApi):
-    def get(self, context, user_name):
+    def get(self, ctx, user_name):
         ''' Send a mail with secure token to the correlated user. '''
-        user = users.get_by_name_or_email(context.session, user_name)
+        user = users.get_by_name_or_email(ctx.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
         if not user.email:
@@ -27,17 +27,15 @@ class PasswordResetApi(BaseApi):
             MAIL_BODY.format(name=config.config['name'], url=url))
         return {}
 
-    def post(self, context, user_name):
+    def post(self, ctx, user_name):
         ''' Verify token from mail, generate a new password and return it. '''
-        user = users.get_by_name_or_email(context.session, user_name)
+        user = users.get_by_name_or_email(ctx.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
         good_token = auth.generate_authentication_token(user)
-        if not 'token' in context.request:
-            raise errors.ValidationError('Missing password reset token.')
-        token = context.request['token']
+        token = ctx.get_param_as_string('token', required=True)
         if token != good_token:
             raise errors.ValidationError('Invalid password reset token.')
         new_password = users.reset_password(user)
-        context.session.commit()
+        ctx.session.commit()
         return {'password': new_password}

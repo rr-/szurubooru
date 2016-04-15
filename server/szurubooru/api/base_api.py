@@ -3,13 +3,13 @@ import types
 def _bind_method(target, desired_method_name):
     actual_method = getattr(target, desired_method_name)
     def _wrapper_method(_self, request, _response, *args, **kwargs):
-        request.context.result = actual_method(
-            request.context, *args, **kwargs)
+        request.context.output = \
+            actual_method(request.context, *args, **kwargs)
     return types.MethodType(_wrapper_method, target)
 
 class BaseApi(object):
     '''
-    A wrapper around falcon's API interface that eases context and result
+    A wrapper around falcon's API interface that eases input and output
     management.
     '''
 

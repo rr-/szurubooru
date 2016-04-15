@@ -10,17 +10,23 @@ def json_serializer(obj):
         return serial
     raise TypeError('Type not serializable')
 
-class JsonTranslator(object):
+class ContextAdapter(object):
     '''
-    Translates API requests and API responses to JSON using requests'
-    context.
+    1. Deserialize API requests into the context:
+        - Pass GET parameters
+        - Handle multipart/form-data file uploads
+        - Handle JSON requests
+    2. Serialize API responses from the context as JSON.
     '''
-
     def process_request(self, request, _response):
+        request.context.files = {}
+        request.context.input = {}
+        for key, value in request._params.items():
+            request.context.input[key] = value
+
         if request.content_length in (None, 0):
             return
 
-        request.context.files = {}
         if 'multipart/form-data' in (request.content_type or ''):
             # obscure, claims to "avoid a bug in cgi.FieldStorage"
             request.env.setdefault('QUERY_STRING', '')
@@ -43,7 +49,8 @@ class JsonTranslator(object):
             if isinstance(body, bytes):
                 body = body.decode('utf-8')
 
-            request.context.request = json.loads(body)
+            for key, value in json.loads(body).items():
+                request.context.input[key] = value
         except (ValueError, UnicodeDecodeError):
             raise falcon.HTTPError(
                 falcon.HTTP_401,
@@ -52,7 +59,7 @@ class JsonTranslator(object):
                 'JSON was incorrect or not encoded as UTF-8.')
 
     def process_response(self, request, response, _resource):
-        if 'result' not in request.context:
+        if not request.context.output:
             return
         response.body = json.dumps(
-            request.context.result, default=json_serializer, indent=2)
+            request.context.output, default=json_serializer, indent=2)

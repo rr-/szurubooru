@@ -58,21 +58,21 @@ def test_confirmation_no_token(password_reset_api, context_factory, session):
     user = mock_user('u1', 'regular_user', 'user@example.com')
     session.add(user)
     with pytest.raises(errors.ValidationError):
-        password_reset_api.post(context_factory(request={}), 'u1')
+        password_reset_api.post(context_factory(input={}), 'u1')
 
 def test_confirmation_bad_token(password_reset_api, context_factory, session):
     user = mock_user('u1', 'regular_user', 'user@example.com')
     session.add(user)
     with pytest.raises(errors.ValidationError):
         password_reset_api.post(
-            context_factory(request={'token': 'bad'}), 'u1')
+            context_factory(input={'token': 'bad'}), 'u1')
 
 def test_confirmation_good_token(password_reset_api, context_factory, session):
     user = mock_user('u1', 'regular_user', 'user@example.com')
     old_hash = user.password_hash
     session.add(user)
     context = context_factory(
-        request={'token': '4ac0be176fb364f13ee6b634c43220e2'})
+        input={'token': '4ac0be176fb364f13ee6b634c43220e2'})
     result = password_reset_api.post(context, 'u1')
     assert user.password_hash != old_hash
     assert auth.is_valid_password(user, result['password']) is True

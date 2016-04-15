@@ -31,7 +31,7 @@ def test_updating_user(
     session.add(user)
     user_detail_api.put(
         context_factory(
-            request={
+            input={
                 'name': 'chewie',
                 'email': 'asd@asd.asd',
                 'password': 'oks',
@@ -96,7 +96,7 @@ def test_removing_email(
     user = user_factory(name='u1', rank='admin')
     session.add(user)
     user_detail_api.put(
-        context_factory(request={'email': ''}, user=user), 'u1')
+        context_factory(input={'email': ''}, user=user), 'u1')
     assert session.query(db.User).filter_by(name='u1').one().email is None
 
 @pytest.mark.parametrize('request', [
@@ -128,7 +128,7 @@ def test_invalid_inputs(
     user = user_factory(name='u1', rank='admin')
     session.add(user)
     with pytest.raises(errors.ValidationError):
-        user_detail_api.put(context_factory(request=request, user=user), 'u1')
+        user_detail_api.put(context_factory(input=request, user=user), 'u1')
 
 @pytest.mark.parametrize('request', [
     {'name': 'whatever'},
@@ -159,7 +159,7 @@ def test_user_trying_to_update_someone_else(
     session.add_all([user1, user2])
     with pytest.raises(errors.AuthError):
         user_detail_api.put(
-            context_factory(request=request, user=user1), user2.name)
+            context_factory(input=request, user=user1), user2.name)
 
 def test_user_trying_to_become_someone_else(
         session,
@@ -176,11 +176,11 @@ def test_user_trying_to_become_someone_else(
     session.add_all([user1, user2])
     with pytest.raises(errors.IntegrityError):
         user_detail_api.put(
-            context_factory(request={'name': 'her'}, user=user1),
+            context_factory(input={'name': 'her'}, user=user1),
             'me')
     with pytest.raises(errors.IntegrityError):
         user_detail_api.put(
-            context_factory(request={'name': 'HER'}, user=user1), 'me')
+            context_factory(input={'name': 'HER'}, user=user1), 'me')
 
 def test_mods_trying_to_become_admin(
         session,
@@ -198,7 +198,7 @@ def test_mods_trying_to_become_admin(
     user1 = user_factory(name='u1', rank='mod')
     user2 = user_factory(name='u2', rank='mod')
     session.add_all([user1, user2])
-    context = context_factory(request={'rank': 'admin'}, user=user1)
+    context = context_factory(input={'rank': 'admin'}, user=user1)
     with pytest.raises(errors.AuthError):
         user_detail_api.put(context, user1.name)
     with pytest.raises(errors.AuthError):
@@ -227,7 +227,7 @@ def test_uploading_avatar(
         b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
     response = user_detail_api.put(
         context_factory(
-            request={'avatarStyle': 'manual'},
+            input={'avatarStyle': 'manual'},
             files={'avatar': empty_pixel},
             user=user),
         'u1')

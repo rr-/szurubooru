@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 import sqlalchemy
-from szurubooru import db, config
+from szurubooru import api, config, db
 from szurubooru.util import misc
 
 @pytest.fixture
@@ -15,28 +15,14 @@ def session():
 
 @pytest.fixture
 def context_factory(session):
-    def factory(request=None, params=None, files=None, user=None):
-        params = params or {}
-        def get_param_as_string(key, default=None, required=False):
-            if key not in params:
-                if required:
-                    raise RuntimeError('Param is missing!')
-                return default
-            return params[key]
-        def get_param_as_int(key, default=None, required=False):
-            if key not in params:
-                if required:
-                    raise RuntimeError('Param is missing!')
-                return default
-            return int(params[key])
-        context = misc.dotdict()
-        context.session = session
-        context.request = request or {}
-        context.files = files or {}
-        context.user = user or db.User()
-        context.get_param_as_string = get_param_as_string
-        context.get_param_as_int = get_param_as_int
-        return context
+    def factory(request=None, input=None, files=None, user=None):
+        ctx = api.Context()
+        ctx.input = input or {}
+        ctx.session = session
+        ctx.request = request or {}
+        ctx.files = files or {}
+        ctx.user = user or db.User()
+        return ctx
     return factory
 
 @pytest.fixture

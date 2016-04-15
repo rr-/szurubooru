@@ -6,22 +6,6 @@ import sqlalchemy.orm
 from szurubooru import api, config, errors, middleware
 from szurubooru.util import misc
 
-class _CustomRequest(falcon.Request):
-    context_type = misc.dotdict
-
-    def get_param_as_string(self, name, required=False, store=None, default=None):
-        params = self._params
-        if name in params:
-            param = params[name]
-            if isinstance(param, list):
-                param = ','.join(param)
-            if store is not None:
-                store[name] = param
-            return param
-        if not required:
-            return default
-        raise falcon.HTTPMissingParam(name)
-
 def _on_auth_error(ex, _request, _response, _params):
     raise falcon.HTTPForbidden(
         title='Authentication error', description=str(ex))
@@ -56,11 +40,10 @@ def create_app():
     scoped_session = sqlalchemy.orm.scoped_session(session_maker)
 
     app = falcon.API(
-        request_type=_CustomRequest,
+        request_type=api.Request,
         middleware=[
-            middleware.ImbueContext(),
             middleware.RequireJson(),
-            middleware.JsonTranslator(),
+            middleware.ContextAdapter(),
             middleware.DbSession(scoped_session),
             middleware.Authenticator(),
         ])
