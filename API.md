@@ -13,6 +13,11 @@
 
 2. [API reference](#api-reference)
 
+   - [Listing tags](#listing-tags)
+   - [Creating tag](#creating-tag)
+   - [Updating tag](#updating-tag)
+   - [Getting tag](#getting-tag)
+   - [Removing tag](#removing-tag)
    - [Listing users](#listing-users)
    - [Creating user](#creating-user)
    - [Updating user](#updating-user)
@@ -24,6 +29,7 @@
 3. [Resources](#resources)
 
    - [User](#user)
+   - [Tag](#tag)
 
 4. [Search](#search)
 
@@ -76,6 +82,62 @@ as `/api/`. Values denoted with diamond braces (`<like this>`) signify variable
 data.
 
 
+## Listing tags
+Not yet implemented.
+
+## Creating tag
+- **Request**
+
+    `POST /tags`
+
+- **Input**
+
+    ```json5
+    {
+        "names":        [<name1>, <name2>, ...],
+        "category":     <category>,
+        "implications": [<name1>, <name2>, ...],
+        "suggestions":  [<name1>, <name2>, ...]
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "tag": <tag>
+    }
+    ```
+    ...where `<tag>` is a [tag resource](#tag).
+
+- **Errors**
+
+    - any name is used by an existing tag (names are case insensitive)
+    - any name, implication or suggestion has invalid name
+    - category is invalid
+    - no name was specified
+    - privileges are too low
+
+- **Description**
+
+    Creates a new tag using specified parameters. Names, suggestions and
+    implications must match `tag_name_regex` from server's configuration.
+    Category must be one of `tag_categories` from server's configuration.
+    If specified implied tags or suggested tags do not exist yet, they will
+    be automatically created. Tags created automatically have no implications,
+    no suggestions, one name and their category is set to the first item of
+    `tag_categories` from server's configuration.
+
+## Updating tag
+Not yet implemented.
+
+## Getting tag
+Not yet implemented.
+
+## Removing tag
+Not yet implemented.
+
+
 ## Listing users
 - **Request**
 
@@ -98,7 +160,7 @@ data.
         "total": 7
     }
     ```
-    ...where `<user>` is an [user resource](#user) and `query` contains standard
+    ...where `<user>` is a [user resource](#user) and `query` contains standard
     [search query](#search).
 
 - **Errors**
@@ -164,7 +226,7 @@ data.
         "user": <user>
     }
     ```
-    ...where `<user>` is an [user resource](#user).
+    ...where `<user>` is a [user resource](#user).
 
 - **Errors**
 
@@ -211,7 +273,7 @@ data.
         "user": <user>
     }
     ```
-    ...where `<user>` is an [user resource](#user).
+    ...where `<user>` is a [user resource](#user).
 
 - **Errors**
 
@@ -247,7 +309,7 @@ data.
         "user": <user>
     }
     ```
-    ...where `<user>` is an [user resource](#user).
+    ...where `<user>` is a [user resource](#user).
 
 - **Errors**
 
@@ -357,6 +419,17 @@ data.
     "creationTime":  "2016-03-28T13:37:01.755461",
     "avatarStyle":   "gravatar",        // "gravatar" or "manual"
     "avatarUrl":     "http://gravatar.com/(...)"
+}
+```
+
+## Tag
+
+```json5
+{
+    "names":        ["tag1", "tag2", "tag3"],
+    "category":     "plain", // one of values controlled by server's configuration
+    "implications": ["implied-tag1", "implied-tag2", "implied-tag3"],
+    "suggestions":  ["suggested-tag1", "suggested-tag2", "suggested-tag3"]
 }
 ```
 

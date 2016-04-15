@@ -58,4 +58,7 @@ class Config(object):
                 raise errors.ConfigError(
                     'Database is not configured: %r is missing' % key)
 
+        if not len(self['tag_categories']):
+            raise errors.ConfigError('Must have at least one tag category')
+
 config = Config() # pylint: disable=invalid-name

@@ -110,3 +110,7 @@ def test_missing_field(
         user_list_api.post(
             context_factory(
                 input=request, user=user_factory(rank='regular_user')))
+
+# TODO: test too long name
+# TODO: test bad password, email or name
+# TODO: support avatar and avatarStyle

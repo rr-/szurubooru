@@ -36,7 +36,9 @@ limits:
     posts_per_page: 40
     max_comment_length: 5000
 
+tag_name_regex: ^:?[a-zA-Z0-9_-]+$
 tag_categories:
+    - plain
     - meta
     - artist
     - character
@@ -99,7 +101,7 @@ privileges:
     'posts:delete':            mod
 
     'tags:create':             regular_user
-    'tags:edit:name':          power_user
+    'tags:edit:names':         power_user
     'tags:edit:category':      power_user
     'tags:edit:implications':  power_user
     'tags:edit:suggestions':   power_user

@@ -235,3 +235,5 @@ def test_uploading_avatar(
     assert user.avatar_style == user.AVATAR_MANUAL
     assert response['user']['avatarUrl'] == \
         'http://example.com/data/avatars/u1.jpg'
+
+# TODO: test too long name

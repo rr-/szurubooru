@@ -4,7 +4,6 @@ import falcon
 import sqlalchemy
 import sqlalchemy.orm
 from szurubooru import api, config, errors, middleware
-from szurubooru.util import misc
 
 def _on_auth_error(ex, _request, _response, _params):
     raise falcon.HTTPForbidden(
@@ -50,6 +49,8 @@ def create_app():
 
     user_list_api = api.UserListApi()
     user_detail_api = api.UserDetailApi()
+    tag_list_api = api.TagListApi()
+    tag_detail_api = api.TagDetailApi()
     password_reset_api = api.PasswordResetApi()
 
     app.add_error_handler(errors.AuthError, _on_auth_error)
@@ -61,6 +62,8 @@ def create_app():
 
     app.add_route('/users/', user_list_api)
     app.add_route('/user/{user_name}', user_detail_api)
+    app.add_route('/tags/', tag_list_api)
+    app.add_route('/tag/{tag_name}', tag_detail_api)
     app.add_route('/password-reset/{user_name}', password_reset_api)
 
     return app
