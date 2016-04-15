@@ -15,6 +15,16 @@ class Context(object):
     def get_file(self, name):
         return self.files.get(name, None)
 
+    def get_param_as_list(self, name, required=False, default=None):
+        if name in self.input:
+            param = self.input[name]
+            if not isinstance(param, list):
+                return [param]
+            return param
+        if not required:
+            return default
+        raise errors.ValidationError('Required paramter %r is missing.' % name)
+
     def get_param_as_string(self, name, required=False, default=None):
         if name in self.input:
             param = self.input[name]

@@ -13,6 +13,16 @@ def test_get_file():
     assert ctx.get_file('key') == b'content'
     assert ctx.get_file('key2') is None
 
+def test_getting_list_parameter():
+    ctx = api.Context()
+    ctx.input = {'key': 'value', 'list': ['1', '2', '3']}
+    assert ctx.get_param_as_list('key') == ['value']
+    assert ctx.get_param_as_list('key2') is None
+    assert ctx.get_param_as_list('key2', default=['def']) == ['def']
+    assert ctx.get_param_as_list('list') == ['1', '2', '3']
+    with pytest.raises(errors.ValidationError):
+        ctx.get_param_as_list('key2', required=True)
+
 def test_getting_string_parameter():
     ctx = api.Context()
     ctx.input = {'key': 'value', 'list': ['1', '2', '3']}
