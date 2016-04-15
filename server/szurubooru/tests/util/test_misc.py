@@ -28,3 +28,14 @@ def test_parsing_empty_date_time():
 def test_parsing_date_time(input, output):
     misc.datetime.datetime = FakeDatetime
     assert misc.parse_time_range(input) == output
+
+@pytest.mark.parametrize('input,output', [
+    ([], []),
+    (['a', 'b', 'c'], ['a', 'b', 'c']),
+    (['a', 'b', 'a'], ['a', 'b']),
+    (['a', 'a', 'b'], ['a', 'b']),
+    (['a', 'A', 'b'], ['a', 'b']),
+    (['a', 'A', 'b', 'B'], ['a', 'b']),
+])
+def test_icase_unique(input, output):
+    assert misc.icase_unique(input) == output

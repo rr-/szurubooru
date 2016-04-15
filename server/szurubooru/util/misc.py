@@ -61,3 +61,12 @@ def parse_time_range(value, timezone=datetime.timezone(datetime.timedelta())):
             datetime.datetime(year, month, day + 1) - one_second)
 
     raise ValidationError('Invalid date format: %r.' % value)
+
+def icase_unique(source):
+    target = []
+    target_low = []
+    for source_item in source:
+        if source_item.lower() not in target_low:
+            target.append(source_item)
+            target_low.append(source_item.lower())
+    return target
