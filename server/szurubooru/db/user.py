@@ -1,4 +1,4 @@
-import sqlalchemy as sa
+from sqlalchemy import Column, Integer, String, DateTime
 from szurubooru.db.base import Base
 
 class User(Base):
@@ -7,13 +7,13 @@ class User(Base):
     AVATAR_GRAVATAR = 'gravatar'
     AVATAR_MANUAL = 'manual'
 
-    user_id = sa.Column('id', sa.Integer, primary_key=True)
-    name = sa.Column('name', sa.String(50), nullable=False, unique=True)
-    password_hash = sa.Column('password_hash', sa.String(64), nullable=False)
-    password_salt = sa.Column('password_salt', sa.String(32))
-    email = sa.Column('email', sa.String(200), nullable=True)
-    rank = sa.Column('rank', sa.String(32), nullable=False)
-    creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
-    last_login_time = sa.Column('last_login_time', sa.DateTime)
-    avatar_style = sa.Column(
-        'avatar_style', sa.String(32), nullable=False, default=AVATAR_GRAVATAR)
+    user_id = Column('id', Integer, primary_key=True)
+    name = Column('name', String(50), nullable=False, unique=True)
+    password_hash = Column('password_hash', String(64), nullable=False)
+    password_salt = Column('password_salt', String(32))
+    email = Column('email', String(200), nullable=True)
+    rank = Column('rank', String(32), nullable=False)
+    creation_time = Column('creation_time', DateTime, nullable=False)
+    last_login_time = Column('last_login_time', DateTime)
+    avatar_style = Column(
+        'avatar_style', String(32), nullable=False, default=AVATAR_GRAVATAR)

@@ -48,3 +48,13 @@ def user_factory():
         user.avatar_style = db.User.AVATAR_GRAVATAR
         return user
     return factory
+
+@pytest.fixture
+def tag_factory():
+    def factory(names=None, category='dummy'):
+        tag = db.Tag()
+        tag.names = [db.TagName(name) for name in (names or ['dummy'])]
+        tag.category = category
+        tag.creation_time = datetime(1996, 1, 1)
+        return tag
+    return factory
