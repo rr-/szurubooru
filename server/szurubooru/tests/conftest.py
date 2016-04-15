@@ -6,6 +6,9 @@ from szurubooru.util import misc
 
 @pytest.fixture
 def session():
+    import logging
+    logging.basicConfig()
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
     engine = sqlalchemy.create_engine('sqlite:///:memory:')
     session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
     session_instance = sqlalchemy.orm.scoped_session(session_maker)
