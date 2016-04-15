@@ -1,42 +1,30 @@
-import unittest
+import pytest
 from datetime import datetime
 from szurubooru import errors
 from szurubooru.util import misc
+
+dt = datetime
 
 class FakeDatetime(datetime):
     @staticmethod
     def now(tz=None):
         return datetime(1997, 1, 2, 3, 4, 5, tzinfo=tz)
 
-class TestParseTime(unittest.TestCase):
-    def test_empty(self):
-        self.assertRaises(errors.ValidationError, misc.parse_time_range, '')
+def test_parsing_empty_date_time():
+    with pytest.raises(errors.ValidationError):
+        misc.parse_time_range('')
 
-    def test_today(self):
-        misc.datetime.datetime = FakeDatetime
-        date_min, date_max = misc.parse_time_range('today')
-        self.assertEqual(date_min, datetime(1997, 1, 2, 0, 0, 0))
-        self.assertEqual(date_max, datetime(1997, 1, 2, 23, 59, 59))
-
-    def test_yesterday(self):
-        misc.datetime.datetime = FakeDatetime
-        date_min, date_max = misc.parse_time_range('yesterday')
-        self.assertEqual(date_min, datetime(1997, 1, 1, 0, 0, 0))
-        self.assertEqual(date_max, datetime(1997, 1, 1, 23, 59, 59))
-
-    def test_year(self):
-        date_min, date_max = misc.parse_time_range('1999')
-        self.assertEqual(date_min, datetime(1999, 1, 1, 0, 0, 0))
-        self.assertEqual(date_max, datetime(1999, 12, 31, 23, 59, 59))
-
-    def test_month(self):
-        for text in ['1999-2', '1999-02']:
-            date_min, date_max = misc.parse_time_range(text)
-            self.assertEqual(date_min, datetime(1999, 2, 1, 0, 0, 0))
-            self.assertEqual(date_max, datetime(1999, 2, 28, 23, 59, 59))
-
-    def test_day(self):
-        for text in ['1999-2-6', '1999-02-6', '1999-2-06', '1999-02-06']:
-            date_min, date_max = misc.parse_time_range(text)
-            self.assertEqual(date_min, datetime(1999, 2, 6, 0, 0, 0))
-            self.assertEqual(date_max, datetime(1999, 2, 6, 23, 59, 59))
+@pytest.mark.parametrize('input,output', [
+    ('today',       (dt(1997, 1, 2, 0, 0, 0), dt(1997, 1, 2, 23, 59, 59))),
+    ('yesterday',   (dt(1997, 1, 1, 0, 0, 0), dt(1997, 1, 1, 23, 59, 59))),
+    ('1999',        (dt(1999, 1, 1, 0, 0, 0), dt(1999, 12, 31, 23, 59, 59))),
+    ('1999-2',      (dt(1999, 2, 1, 0, 0, 0), dt(1999, 2, 28, 23, 59, 59))),
+    ('1999-02',     (dt(1999, 2, 1, 0, 0, 0), dt(1999, 2, 28, 23, 59, 59))),
+    ('1999-2-6',    (dt(1999, 2, 6, 0, 0, 0), dt(1999, 2, 6, 23, 59, 59))),
+    ('1999-02-6',   (dt(1999, 2, 6, 0, 0, 0), dt(1999, 2, 6, 23, 59, 59))),
+    ('1999-2-06',   (dt(1999, 2, 6, 0, 0, 0), dt(1999, 2, 6, 23, 59, 59))),
+    ('1999-02-06',  (dt(1999, 2, 6, 0, 0, 0), dt(1999, 2, 6, 23, 59, 59))),
+])
+def test_parsing_date_time(input, output):
+    misc.datetime.datetime = FakeDatetime
+    assert misc.parse_time_range(input) == output

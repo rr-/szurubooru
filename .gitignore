@@ -1,2 +1,4 @@
 config.yaml
 */*_modules/
+.coverage
+.cache

@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+import pytest
+import sys
+pytest.main(' '.join([
+    '--cov-report=term-missing',
+    '--cov=szurubooru',
+    'szurubooru'] + sys.argv[1:]))
