@@ -19,7 +19,7 @@ def test_ctx(
     config_injector({
         'tag_categories': ['meta', 'character', 'copyright'],
         'tag_name_regex': '^[^!]*$',
-        'ranks': ['regular_user'],
+        'ranks': ['anonymous', 'regular_user'],
         'privileges': {
             'tags:edit:names': 'regular_user',
             'tags:edit:category': 'regular_user',
@@ -110,6 +110,7 @@ def test_duplicating_names(test_ctx):
 @pytest.mark.parametrize('input', [
     {'names': []},
     {'names': ['!']},
+    {'names': ['x' * 65]},
 ])
 def test_trying_to_set_invalid_name(test_ctx, input):
     test_ctx.session.add(test_ctx.tag_factory(names=['tag1'], category='meta'))
@@ -252,5 +253,18 @@ def test_tag_trying_to_relate_to_itself(test_ctx, input):
                 input=input, user=test_ctx.user_factory(rank='regular_user')),
             'tag1')
 
-# TODO: test bad privileges
-# TODO: test max length
+@pytest.mark.parametrize('input', [
+    {'names': 'whatever'},
+    {'category': 'whatever'},
+    {'suggestions': ['whatever']},
+    {'implications': ['whatever']},
+])
+def test_trying_to_update_tag_without_privileges(test_ctx, input):
+    test_ctx.session.add(test_ctx.tag_factory(names=['tag'], category='meta'))
+    test_ctx.session.commit()
+    with pytest.raises(errors.AuthError):
+        test_ctx.api.put(
+            test_ctx.context_factory(
+                input=input,
+                user=test_ctx.user_factory(rank='anonymous')),
+            'tag')

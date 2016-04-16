@@ -1,11 +1,10 @@
 import hashlib
-from szurubooru import config, errors, search
+from szurubooru import config, search
 from szurubooru.util import auth, users
 from szurubooru.api.base_api import BaseApi
 
 def _serialize_user(authenticated_user, user):
     ret = {
-        'id': user.user_id,
         'name': user.name,
         'rank': user.rank,
         'rankName': config.config['rank_names'].get(user.rank, 'Unknown'),
@@ -57,9 +56,7 @@ class UserListApi(BaseApi):
         password = ctx.get_param_as_string('password', required=True)
         email = ctx.get_param_as_string('email', required=True)
 
-        if users.get_by_name(ctx.session, name):
-            raise errors.IntegrityError('User %r already exists.' % name)
-        user = users.create_user(ctx.session, name, password, email)
+        user = users.create_user(ctx.session, name, password, email, ctx.user)
         ctx.session.add(user)
         ctx.session.commit()
         return {'user': _serialize_user(ctx.user, user)}
@@ -69,13 +66,13 @@ class UserDetailApi(BaseApi):
         auth.verify_privilege(ctx.user, 'users:view')
         user = users.get_by_name(ctx.session, user_name)
         if not user:
-            raise errors.NotFoundError('User %r not found.' % user_name)
+            raise users.UserNotFoundError('User %r not found.' % user_name)
         return {'user': _serialize_user(ctx.user, user)}
 
     def put(self, ctx, user_name):
         user = users.get_by_name(ctx.session, user_name)
         if not user:
-            raise errors.NotFoundError('User %r not found.' % user_name)
+            raise users.UserNotFoundError('User %r not found.' % user_name)
 
         if ctx.user.user_id == user.user_id:
             infix = 'self'
@@ -84,10 +81,8 @@ class UserDetailApi(BaseApi):
 
         if ctx.has_param('name'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:name' % infix)
-            other_user = users.get_by_name(ctx.session, ctx.get_param_as_string('name'))
-            if other_user and other_user.user_id != user.user_id:
-                raise errors.IntegrityError('User %r already exists.' % user.name)
-            users.update_name(user, ctx.get_param_as_string('name'))
+            users.update_name(
+                ctx.session, user, ctx.get_param_as_string('name'), ctx.user)
 
         if ctx.has_param('password'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:pass' % infix)
@@ -114,7 +109,7 @@ class UserDetailApi(BaseApi):
     def delete(self, ctx, user_name):
         user = users.get_by_name(ctx.session, user_name)
         if not user:
-            raise errors.NotFoundError('User %r not found.' % user_name)
+            raise users.UserNotFoundError('User %r not found.' % user_name)
 
         if ctx.user.user_id == user.user_id:
             infix = 'self'

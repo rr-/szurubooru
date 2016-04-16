@@ -4,27 +4,11 @@ import sqlalchemy
 from szurubooru import config, db, errors
 from szurubooru.util import misc
 
-class TagNotFoundError(errors.NotFoundError):
-    def __init__(self, tag):
-        super().__init__('Tag %r not found')
-
-class TagAlreadyExistsError(errors.ValidationError):
-    def __init__(self):
-        super().__init__('One of names is already used by another tag.')
-
-class InvalidNameError(errors.ValidationError):
-    def __init__(self, message):
-        super().__init__(message)
-
-class InvalidCategoryError(errors.ValidationError):
-    def __init__(self, category, valid_categories):
-        super().__init__(
-            'Category %r is invalid. Valid categories: %r.' % (
-                category, valid_categories))
-
-class RelationError(errors.ValidationError):
-    def __init__(self, message):
-        super().__init__(message)
+class TagNotFoundError(errors.NotFoundError): pass
+class TagAlreadyExistsError(errors.ValidationError): pass
+class InvalidNameError(errors.ValidationError): pass
+class InvalidCategoryError(errors.ValidationError): pass
+class RelationError(errors.ValidationError): pass
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']
@@ -82,14 +66,16 @@ def create_tag(session, names, category, suggestions, implications):
     tag = db.Tag()
     tag.creation_time = datetime.datetime.now()
     update_names(session, tag, names)
-    update_category(session, tag, category)
+    update_category(tag, category)
     update_suggestions(session, tag, suggestions)
     update_implications(session, tag, implications)
     return tag
 
-def update_category(session, tag, category):
+def update_category(tag, category):
     if not category in config.config['tag_categories']:
-        raise InvalidCategoryError(category, config.config['tag_categories'])
+        raise InvalidCategoryError(
+            'Category %r is invalid. Valid categories: %r.' % (
+                category, config.config['tag_categories']))
     tag.category = category
 
 def update_names(session, tag, names):
@@ -100,23 +86,24 @@ def update_names(session, tag, names):
         _verify_name_validity(name)
     expr = sqlalchemy.sql.false()
     for name in names:
+        if misc.value_exceeds_column_size(name, db.TagName.name):
+            raise InvalidNameError('Name is too long.')
         expr = expr | db.TagName.name.ilike(name)
     if tag.tag_id:
         expr = expr & (db.TagName.tag_id != tag.tag_id)
     existing_tags = session.query(db.TagName).filter(expr).all()
     if len(existing_tags):
-        raise TagAlreadyExistsError()
+        raise TagAlreadyExistsError(
+            'One of names is already used by another tag.')
     tag_names_to_remove = []
     for tag_name in tag.names:
-        if tag_name.name.lower() not in [name.lower() for name in names]:
+        if not _check_name_intersection([tag_name.name], names):
             tag_names_to_remove.append(tag_name)
     for tag_name in tag_names_to_remove:
         tag.names.remove(tag_name)
     for name in names:
-        if name.lower() not in [tag_name.name.lower() for tag_name in tag.names]:
-            tag_name = db.TagName(name)
-            session.add(tag_name)
-            tag.names.append(tag_name)
+        if not _check_name_intersection(_get_plain_names(tag), [name]):
+            tag.names.append(db.TagName(name))
 
 def update_implications(session, tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):

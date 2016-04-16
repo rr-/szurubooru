@@ -53,7 +53,7 @@ class TagName(Base):
     __tablename__ = 'tag_name'
     tag_name_id = Column('tag_name_id', Integer, primary_key=True)
     tag_id = Column('tag_id', Integer, ForeignKey('tag.id'))
-    name = Column('name', String(50), nullable=False, unique=True)
+    name = Column('name', String(64), nullable=False, unique=True)
 
     def __init__(self, name):
         self.name = name

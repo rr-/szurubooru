@@ -11,7 +11,7 @@ class User(Base):
     name = Column('name', String(50), nullable=False, unique=True)
     password_hash = Column('password_hash', String(64), nullable=False)
     password_salt = Column('password_salt', String(32))
-    email = Column('email', String(200), nullable=True)
+    email = Column('email', String(64), nullable=True)
     rank = Column('rank', String(32), nullable=False)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_login_time = Column('last_login_time', DateTime)

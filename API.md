@@ -459,7 +459,6 @@ Not yet implemented.
 
 ```json5
 {
-    "id":            2,
     "name":          "rr-",
     "email":         "rr-@sakuya.pl",    // available only if the request is authenticated by the same user
     "rank":          "admin",            // controlled by server's configuration

@@ -35,6 +35,7 @@ class Context(object):
             return default
         raise errors.ValidationError('Required paramter %r is missing.' % name)
 
+    # pylint: disable=redefined-builtin,too-many-arguments
     def get_param_as_int(
             self, name, required=False, min=None, max=None, default=None):
         if name in self.input:

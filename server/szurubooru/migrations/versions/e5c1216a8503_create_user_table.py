@@ -20,7 +20,7 @@ def upgrade():
         sa.Column('name', sa.String(length=50), nullable=False),
         sa.Column('password_hash', sa.String(length=64), nullable=False),
         sa.Column('password_salt', sa.String(length=32), nullable=True),
-        sa.Column('email', sa.String(length=200), nullable=True),
+        sa.Column('email', sa.String(length=64), nullable=True),
         sa.Column('rank', sa.String(length=32), nullable=False),
         sa.Column('creation_time', sa.DateTime(), nullable=False),
         sa.Column('last_login_time', sa.DateTime()),

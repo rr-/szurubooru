@@ -27,7 +27,7 @@ def upgrade():
         'tag_name',
         sa.Column('tag_name_id', sa.Integer(), nullable=False),
         sa.Column('tag_id', sa.Integer(), nullable=True),
-        sa.Column('name', sa.String(length=50), nullable=False),
+        sa.Column('name', sa.String(length=64), nullable=False),
         sa.ForeignKeyConstraint(['tag_id'], ['tag.id']),
         sa.PrimaryKeyConstraint('tag_name_id'),
         sa.UniqueConstraint('name'))

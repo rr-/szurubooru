@@ -1,116 +1,91 @@
+import datetime
 import pytest
-from datetime import datetime
 from szurubooru import api, db, errors
+from szurubooru.util import misc, users
 
 @pytest.fixture
-def user_list_api():
-    return api.UserListApi()
-
-@pytest.fixture
-def user_detail_api():
-    return api.UserDetailApi()
-
-def test_retrieving_multiple(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_list_api):
+def test_ctx(session, context_factory, config_injector, user_factory):
     config_injector({
-        'privileges': {'users:list': 'regular_user'},
+        'privileges': {
+            'users:list': 'regular_user',
+            'users:view': 'regular_user',
+        },
         'thumbnails': {'avatar_width': 200},
         'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {},
+        'rank_names': {'regular_user': 'Peasant'},
     })
-    user1 = user_factory(name='u1', rank='mod')
-    user2 = user_factory(name='u2', rank='mod')
-    session.add_all([user1, user2])
-    result = user_list_api.get(
-        context_factory(
+    ret = misc.dotdict()
+    ret.session = session
+    ret.context_factory = context_factory
+    ret.user_factory = user_factory
+    ret.list_api = api.UserListApi()
+    ret.detail_api = api.UserDetailApi()
+    return ret
+
+def test_retrieving_multiple(test_ctx):
+    user1 = test_ctx.user_factory(name='u1', rank='mod')
+    user2 = test_ctx.user_factory(name='u2', rank='mod')
+    test_ctx.session.add_all([user1, user2])
+    result = test_ctx.list_api.get(
+        test_ctx.context_factory(
             input={'query': '', 'page': 1},
-            user=user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank='regular_user')))
     assert result['query'] == ''
     assert result['page'] == 1
     assert result['pageSize'] == 100
     assert result['total'] == 2
     assert [u['name'] for u in result['users']] == ['u1', 'u2']
 
-def test_retrieving_multiple_without_privileges(
-        context_factory, config_injector, user_factory, user_list_api):
-    config_injector({
-        'privileges': {'users:list': 'regular_user'},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-    })
+def test_retrieving_multiple_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
-        user_list_api.get(
-            context_factory(
+        test_ctx.list_api.get(
+            test_ctx.context_factory(
                 input={'query': '', 'page': 1},
-                user=user_factory(rank='anonymous')))
+                user=test_ctx.user_factory(rank='anonymous')))
 
-def test_retrieving_multiple_with_privileges(
-        context_factory, config_injector, user_factory, user_list_api):
-    config_injector({
-        'privileges': {'users:list': 'regular_user'},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-    })
-    result = user_list_api.get(
-        context_factory(
+def test_retrieving_multiple_with_privileges(test_ctx):
+    result = test_ctx.list_api.get(
+        test_ctx.context_factory(
             input={'query': 'asd', 'page': 1},
-            user=user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank='regular_user')))
     assert result['query'] == 'asd'
     assert result['page'] == 1
     assert result['pageSize'] == 100
     assert result['total'] == 0
     assert [u['name'] for u in result['users']] == []
 
-def test_retrieving_single(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api):
-    config_injector({
-        'privileges': {'users:view': 'regular_user'},
-        'thumbnails': {'avatar_width': 200},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {},
-    })
-    user = user_factory(name='u1', rank='regular_user')
-    session.add(user)
-    result = user_detail_api.get(
-        context_factory(
+def test_retrieving_single(test_ctx):
+    test_ctx.session.add(test_ctx.user_factory(name='u1', rank='regular_user'))
+    result = test_ctx.detail_api.get(
+        test_ctx.context_factory(
             input={'query': '', 'page': 1},
-            user=user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank='regular_user')),
         'u1')
-    assert result['user']['id'] == user.user_id
-    assert result['user']['name'] == 'u1'
-    assert result['user']['rank'] == 'regular_user'
-    assert result['user']['creationTime'] == datetime(1997, 1, 1)
-    assert result['user']['lastLoginTime'] == None
-    assert result['user']['avatarStyle'] == 'gravatar'
+    assert result == {
+        'user': {
+            'name': 'u1',
+            'rank': 'regular_user',
+            'rankName': 'Peasant',
+            'creationTime': datetime.datetime(1997, 1, 1),
+            'lastLoginTime': None,
+            'avatarStyle': 'gravatar',
+            'avatarUrl': 'http://gravatar.com/avatar/' +
+                '275876e34cf609db118f3d84b799a790?d=retro&s=200',
+        }
+    }
 
-def test_retrieving_non_existing(
-        context_factory, config_injector, user_factory, user_detail_api):
-    config_injector({
-        'privileges': {'users:view': 'regular_user'},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-    })
-    with pytest.raises(errors.NotFoundError):
-        user_detail_api.get(
-            context_factory(
+def test_retrieving_non_existing(test_ctx):
+    with pytest.raises(users.UserNotFoundError):
+        test_ctx.detail_api.get(
+            test_ctx.context_factory(
                 input={'query': '', 'page': 1},
-                user=user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank='regular_user')),
             '-')
 
-def test_retrieving_single_without_privileges(
-        context_factory, config_injector, user_factory, user_detail_api):
-    config_injector({
-        'privileges': {'users:view': 'regular_user'},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-    })
+def test_retrieving_single_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
-        user_detail_api.get(
-            context_factory(
+        test_ctx.detail_api.get(
+            test_ctx.context_factory(
                 input={'query': '', 'page': 1},
-                user=user_factory(rank='anonymous')),
+                user=test_ctx.user_factory(rank='anonymous')),
             '-')

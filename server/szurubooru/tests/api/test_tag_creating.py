@@ -19,7 +19,7 @@ def test_ctx(
     config_injector({
         'tag_categories': ['meta', 'character', 'copyright'],
         'tag_name_regex': '^[^!]*$',
-        'ranks': ['regular_user'],
+        'ranks': ['anonymous', 'regular_user'],
         'privileges': {'tags:create': 'regular_user'},
     })
     ret = misc.dotdict()
@@ -86,12 +86,13 @@ def test_trying_to_create_tag_without_names(test_ctx):
                 },
                 user=test_ctx.user_factory(rank='regular_user')))
 
-def test_trying_to_create_tag_with_invalid_name(test_ctx):
+@pytest.mark.parametrize('names', [['!'], ['x' * 65]])
+def test_trying_to_create_tag_with_invalid_name(test_ctx, names):
     with pytest.raises(tags.InvalidNameError):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={
-                    'names': ['!'],
+                    'names': names,
                     'category': 'meta',
                     'suggestions': [],
                     'implications': [],
@@ -244,7 +245,6 @@ def test_trying_to_create_tag_with_invalid_relation(test_ctx, input):
     }
 ])
 def test_tag_trying_to_relate_to_itself(test_ctx, input):
-    assert get_tag(test_ctx.session, 'tag') is None
     with pytest.raises(tags.RelationError):
         test_ctx.api.post(
             test_ctx.context_factory(
@@ -252,5 +252,14 @@ def test_tag_trying_to_relate_to_itself(test_ctx, input):
                 user=test_ctx.user_factory(rank='regular_user')))
     assert get_tag(test_ctx.session, 'tag') is None
 
-# TODO: test bad privileges
-# TODO: test max length
+def test_trying_to_create_tag_without_privileges(test_ctx):
+    with pytest.raises(errors.AuthError):
+        test_ctx.api.post(
+            test_ctx.context_factory(
+                input={
+                    'names': ['tag'],
+                    'category': 'meta',
+                    'suggestions': ['tag'],
+                    'implications': [],
+                },
+                user=test_ctx.user_factory(rank='anonymous')))

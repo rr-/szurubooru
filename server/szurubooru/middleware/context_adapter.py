@@ -21,13 +21,14 @@ class ContextAdapter(object):
     def process_request(self, request, _response):
         request.context.files = {}
         request.context.input = {}
+        # pylint: disable=protected-access
         for key, value in request._params.items():
             request.context.input[key] = value
 
         if request.content_length in (None, 0):
             return
 
-        if 'multipart/form-data' in (request.content_type or ''):
+        if request.content_type and 'multipart/form-data' in request.content_type:
             # obscure, claims to "avoid a bug in cgi.FieldStorage"
             request.env.setdefault('QUERY_STRING', '')
 

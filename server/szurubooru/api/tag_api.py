@@ -1,5 +1,4 @@
 import datetime
-from szurubooru import errors
 from szurubooru.util import auth, tags
 from szurubooru.api.base_api import BaseApi
 
@@ -49,8 +48,7 @@ class TagDetailApi(BaseApi):
 
         if ctx.has_param('category'):
             auth.verify_privilege(ctx.user, 'tags:edit:category')
-            tags.update_category(
-                ctx.session, tag, ctx.get_param_as_string('category'))
+            tags.update_category(tag, ctx.get_param_as_string('category'))
 
         if ctx.has_param('suggestions'):
             auth.verify_privilege(ctx.user, 'tags:edit:suggestions')

@@ -70,3 +70,6 @@ def icase_unique(source):
             target.append(source_item)
             target_low.append(source_item.lower())
     return target
+
+def value_exceeds_column_size(value, column):
+    return len(value) > column.property.columns[0].type.length

@@ -140,8 +140,13 @@ class Api {
         cookies.remove('auth');
     }
 
-    isLoggedIn() {
-        return this.userName !== null;
+    isLoggedIn(user) {
+        if (user) {
+            return this.userName !== null &&
+                this.userName.toLowerCase() === user.name.toLowerCase();
+        } else {
+            return this.userName !== null;
+        }
     }
 
     getFullUrl(url) {

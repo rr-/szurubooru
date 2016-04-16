@@ -1,22 +1,19 @@
+import datetime
 import pytest
-from szurubooru import api, db, errors
-from szurubooru.util import auth
+from szurubooru import api, config, db, errors
+from szurubooru.util import auth, misc, users
+
+def get_user(session, name):
+    return session.query(db.User).filter_by(name=name).first()
 
 @pytest.fixture
-def user_detail_api():
-    return api.UserDetailApi()
-
-def test_updating_user(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api):
+def test_ctx(
+        session, config_injector, context_factory, user_factory):
     config_injector({
         'secret': '',
         'user_name_regex': '.{3,}',
         'password_regex': '.{3,}',
-        'thumbnails': {'avatar_width': 200},
+        'thumbnails': {'avatar_width': 200, 'avatar_height': 200},
         'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
         'rank_names': {},
         'privileges': {
@@ -25,12 +22,25 @@ def test_updating_user(
             'users:edit:self:email': 'regular_user',
             'users:edit:self:rank': 'mod',
             'users:edit:self:avatar': 'mod',
+            'users:edit:any:name': 'mod',
+            'users:edit:any:pass': 'mod',
+            'users:edit:any:email': 'mod',
+            'users:edit:any:rank': 'admin',
+            'users:edit:any:avatar': 'admin',
         },
     })
-    user = user_factory(name='u1', rank='admin')
-    session.add(user)
-    user_detail_api.put(
-        context_factory(
+    ret = misc.dotdict()
+    ret.session = session
+    ret.context_factory = context_factory
+    ret.user_factory = user_factory
+    ret.api = api.UserDetailApi()
+    return ret
+
+def test_updating_user(test_ctx):
+    user = test_ctx.user_factory(name='u1', rank='admin')
+    test_ctx.session.add(user)
+    result = test_ctx.api.put(
+        test_ctx.context_factory(
             input={
                 'name': 'chewie',
                 'email': 'asd@asd.asd',
@@ -40,7 +50,20 @@ def test_updating_user(
             },
             user=user),
         'u1')
-    user = session.query(db.User).filter_by(name='chewie').one()
+    assert result == {
+        'user': {
+            'avatarStyle': 'gravatar',
+            'avatarUrl': 'http://gravatar.com/avatar/' +
+                '6f370c8c7109534c3d5c394123a477d7?d=retro&s=200',
+            'creationTime': datetime.datetime(1997, 1, 1),
+            'lastLoginTime': None,
+            'email': 'asd@asd.asd',
+            'name': 'chewie',
+            'rank': 'mod',
+            'rankName': 'Unknown',
+        }
+    }
+    user = get_user(test_ctx.session, 'chewie')
     assert user.name == 'chewie'
     assert user.email == 'asd@asd.asd'
     assert user.rank == 'mod'
@@ -48,192 +71,98 @@ def test_updating_user(
     assert auth.is_valid_password(user, 'oks') is True
     assert auth.is_valid_password(user, 'invalid') is False
 
-def test_update_changing_nothing(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api):
-    config_injector({
-        'thumbnails': {'avatar_width': 200},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {},
-    })
-    user = user_factory(name='u1', rank='admin')
-    session.add(user)
-    user_detail_api.put(context_factory(user=user), 'u1')
-    user = session.query(db.User).filter_by(name='u1').one()
+def test_update_changing_nothing(test_ctx):
+    user = test_ctx.user_factory(name='u1', rank='admin')
+    test_ctx.session.add(user)
+    test_ctx.api.put(test_ctx.context_factory(user=user), 'u1')
+    user = get_user(test_ctx.session, 'u1')
     assert user.name == 'u1'
     assert user.email == 'dummy'
     assert user.rank == 'admin'
 
-def test_updating_non_existing_user(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api):
-    config_injector({
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-    })
-    user = user_factory(name='u1', rank='admin')
-    session.add(user)
-    with pytest.raises(errors.NotFoundError):
-        user_detail_api.put(context_factory(user=user), 'u2')
+def test_updating_non_existing_user(test_ctx):
+    user = test_ctx.user_factory(name='u1', rank='admin')
+    test_ctx.session.add(user)
+    with pytest.raises(users.UserNotFoundError):
+        test_ctx.api.put(test_ctx.context_factory(user=user), 'u2')
 
-def test_removing_email(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api):
-    config_injector({
-        'thumbnails': {'avatar_width': 200},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {},
-        'privileges': {'users:edit:self:email': 'regular_user'},
-    })
-    user = user_factory(name='u1', rank='admin')
-    session.add(user)
-    user_detail_api.put(
-        context_factory(input={'email': ''}, user=user), 'u1')
-    assert session.query(db.User).filter_by(name='u1').one().email is None
+def test_removing_email(test_ctx):
+    user = test_ctx.user_factory(name='u1', rank='admin')
+    test_ctx.session.add(user)
+    test_ctx.api.put(
+        test_ctx.context_factory(input={'email': ''}, user=user), 'u1')
+    assert get_user(test_ctx.session, 'u1').email is None
 
-@pytest.mark.parametrize('request', [
+@pytest.mark.parametrize('input', [
     {'name': '.'},
+    {'name': 'x' * 51},
     {'password': '.'},
     {'rank': '.'},
     {'email': '.'},
+    {'email': 'x' * 65},
     {'avatarStyle': 'manual'},
 ])
-def test_invalid_inputs(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api,
-        request):
-    config_injector({
-        'user_name_regex': '.{3,}',
-        'password_regex': '.{3,}',
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'privileges': {
-            'users:edit:self:name': 'regular_user',
-            'users:edit:self:pass': 'regular_user',
-            'users:edit:self:email': 'regular_user',
-            'users:edit:self:rank': 'mod',
-            'users:edit:self:avatar': 'mod',
-        },
-    })
-    user = user_factory(name='u1', rank='admin')
-    session.add(user)
+def test_invalid_inputs(test_ctx, input):
+    user = test_ctx.user_factory(name='u1', rank='admin')
+    test_ctx.session.add(user)
     with pytest.raises(errors.ValidationError):
-        user_detail_api.put(context_factory(input=request, user=user), 'u1')
+        test_ctx.api.put(
+            test_ctx.context_factory(input=input, user=user), 'u1')
 
-@pytest.mark.parametrize('request', [
+@pytest.mark.parametrize('input', [
     {'name': 'whatever'},
     {'email': 'whatever'},
     {'rank': 'whatever'},
     {'password': 'whatever'},
     {'avatarStyle': 'whatever'},
 ])
-def test_user_trying_to_update_someone_else(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api,
-        request):
-    config_injector({
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'privileges': {
-            'users:edit:any:name': 'mod',
-            'users:edit:any:pass': 'mod',
-            'users:edit:any:email': 'mod',
-            'users:edit:any:rank': 'admin',
-            'users:edit:any:avatar': 'admin',
-        },
-    })
-    user1 = user_factory(name='u1', rank='regular_user')
-    user2 = user_factory(name='u2', rank='regular_user')
-    session.add_all([user1, user2])
+def test_user_trying_to_update_someone_else(test_ctx, input):
+    user1 = test_ctx.user_factory(name='u1', rank='regular_user')
+    user2 = test_ctx.user_factory(name='u2', rank='regular_user')
+    test_ctx.session.add_all([user1, user2])
     with pytest.raises(errors.AuthError):
-        user_detail_api.put(
-            context_factory(input=request, user=user1), user2.name)
+        test_ctx.api.put(
+            test_ctx.context_factory(input=input, user=user1), user2.name)
 
-def test_user_trying_to_become_someone_else(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api):
-    config_injector({
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'privileges': {'users:edit:self:name': 'regular_user'},
-    })
-    user1 = user_factory(name='me', rank='regular_user')
-    user2 = user_factory(name='her', rank='regular_user')
-    session.add_all([user1, user2])
-    with pytest.raises(errors.IntegrityError):
-        user_detail_api.put(
-            context_factory(input={'name': 'her'}, user=user1),
+def test_user_trying_to_become_someone_else(test_ctx):
+    user1 = test_ctx.user_factory(name='me', rank='regular_user')
+    user2 = test_ctx.user_factory(name='her', rank='regular_user')
+    test_ctx.session.add_all([user1, user2])
+    with pytest.raises(users.UserAlreadyExistsError):
+        test_ctx.api.put(
+            test_ctx.context_factory(input={'name': 'her'}, user=user1),
             'me')
-    with pytest.raises(errors.IntegrityError):
-        user_detail_api.put(
-            context_factory(input={'name': 'HER'}, user=user1), 'me')
+    with pytest.raises(users.UserAlreadyExistsError):
+        test_ctx.api.put(
+            test_ctx.context_factory(input={'name': 'HER'}, user=user1), 'me')
 
-def test_mods_trying_to_become_admin(
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api):
-    config_injector({
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'privileges': {
-            'users:edit:self:rank': 'mod',
-            'users:edit:any:rank': 'admin',
-        },
-    })
-    user1 = user_factory(name='u1', rank='mod')
-    user2 = user_factory(name='u2', rank='mod')
-    session.add_all([user1, user2])
-    context = context_factory(input={'rank': 'admin'}, user=user1)
+def test_mods_trying_to_become_admin(test_ctx):
+    user1 = test_ctx.user_factory(name='u1', rank='mod')
+    user2 = test_ctx.user_factory(name='u2', rank='mod')
+    test_ctx.session.add_all([user1, user2])
+    context = test_ctx.context_factory(input={'rank': 'admin'}, user=user1)
     with pytest.raises(errors.AuthError):
-        user_detail_api.put(context, user1.name)
+        test_ctx.api.put(context, user1.name)
     with pytest.raises(errors.AuthError):
-        user_detail_api.put(context, user2.name)
+        test_ctx.api.put(context, user2.name)
 
-def test_uploading_avatar(
-        tmpdir,
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        user_detail_api):
-    config_injector({
-        'data_dir': str(tmpdir.mkdir('data')),
-        'data_url': 'http://example.com/data/',
-        'thumbnails': {'avatar_width': 200, 'avatar_height': 200},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {},
-        'privileges': {'users:edit:self:avatar': 'mod'},
-    })
-    user = user_factory(name='u1', rank='mod')
-    session.add(user)
+def test_uploading_avatar(test_ctx, tmpdir):
+    config.config['data_dir'] = str(tmpdir.mkdir('data'))
+    config.config['data_url'] = 'http://example.com/data/'
+
+    user = test_ctx.user_factory(name='u1', rank='mod')
+    test_ctx.session.add(user)
     empty_pixel = \
         b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
         b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
         b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
-    response = user_detail_api.put(
-        context_factory(
+    response = test_ctx.api.put(
+        test_ctx.context_factory(
             input={'avatarStyle': 'manual'},
             files={'avatar': empty_pixel},
             user=user),
         'u1')
-    user = session.query(db.User).filter_by(name='u1').one()
+    user = get_user(test_ctx.session, 'u1')
     assert user.avatar_style == user.AVATAR_MANUAL
     assert response['user']['avatarUrl'] == \
         'http://example.com/data/avatars/u1.jpg'
-
-# TODO: test too long name

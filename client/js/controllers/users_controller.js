@@ -155,7 +155,7 @@ class UsersController {
             files.avatar = data.avatarContent;
         }
 
-        const isLoggedIn = api.isLoggedIn() && api.user.id == user.id;
+        const isLoggedIn = api.isLoggedIn(user);
         return new Promise((resolve, reject) => {
             api.put('/user/' + user.name, data, files)
                 .then(response => {
@@ -182,7 +182,7 @@ class UsersController {
     }
 
     _delete(user) {
-        const isLoggedIn = api.isLoggedIn() && api.user.id == user.id;
+        const isLoggedIn = api.isLoggedIn(user);
         return new Promise((resolve, reject) => {
             api.delete('/user/' + user.name)
                 .then(response => {
@@ -205,7 +205,7 @@ class UsersController {
     }
 
     _show(user, section) {
-        const isLoggedIn = api.isLoggedIn() && api.user.id == user.id;
+        const isLoggedIn = api.isLoggedIn(user);
         const infix = isLoggedIn ? 'self' : 'any';
 
         const myRankIdx = api.user ? config.ranks.indexOf(api.user.rank) : 0;
