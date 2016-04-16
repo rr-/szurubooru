@@ -48,6 +48,7 @@ class TagListApi(BaseApi):
             ctx.session, names, category, suggestions, implications)
         ctx.session.add(tag)
         ctx.session.commit()
+        tags.export_to_json(ctx.session)
         return {'tag': _serialize_tag(tag)}
 
 class TagDetailApi(BaseApi):
@@ -84,6 +85,7 @@ class TagDetailApi(BaseApi):
 
         tag.last_edit_time = datetime.datetime.now()
         ctx.session.commit()
+        tags.export_to_json(ctx.session)
         return {'tag': _serialize_tag(tag)}
 
     def delete(self, ctx, tag_name):
@@ -98,4 +100,5 @@ class TagDetailApi(BaseApi):
         auth.verify_privilege(ctx.user, 'tags:delete')
         ctx.session.delete(tag)
         ctx.session.commit()
+        tags.export_to_json(ctx.session)
         return {}

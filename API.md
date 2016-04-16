@@ -115,6 +115,12 @@ data.
 
     Searches for tags.
 
+    **Note**: independently, the server exports current tag list snapshots to
+    the data directory under `tags.json` name. Its purpose is to reduce the
+    trips frontend needs to make when doing autocompletion, and ease caching.
+    The data directory and its URL are controlled with `data_dir` and
+    `data_url` variables in server's configuration.
+
     **Anonymous tokens**
 
     Same as `name` token.

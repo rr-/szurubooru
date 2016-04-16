@@ -1,6 +1,7 @@
 import datetime
+import os
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, config, db, errors
 from szurubooru.util import misc, tags
 
 def get_tag(session, name):
@@ -15,8 +16,14 @@ def assert_relations(relations, expected_tag_names):
 
 @pytest.fixture
 def test_ctx(
-        session, config_injector, context_factory, user_factory, tag_factory):
+        tmpdir,
+        session,
+        config_injector,
+        context_factory,
+        user_factory,
+        tag_factory):
     config_injector({
+        'data_dir': str(tmpdir),
         'tag_categories': ['meta', 'character', 'copyright'],
         'tag_name_regex': '^[^!]*$',
         'ranks': ['anonymous', 'regular_user'],
@@ -66,6 +73,7 @@ def test_simple_updating(test_ctx, fake_datetime):
     assert tag.category == 'character'
     assert tag.suggestions == []
     assert tag.implications == []
+    assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
 def test_trying_to_update_non_existing_tag(test_ctx):
     with pytest.raises(tags.TagNotFoundError):

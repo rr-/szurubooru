@@ -1,12 +1,19 @@
 import pytest
+import os
 from datetime import datetime
-from szurubooru import api, db, errors
+from szurubooru import api, config, db, errors
 from szurubooru.util import misc, tags
 
 @pytest.fixture
 def test_ctx(
-        session, config_injector, context_factory, tag_factory, user_factory):
+        tmpdir,
+        session,
+        config_injector,
+        context_factory,
+        tag_factory,
+        user_factory):
     config_injector({
+        'data_dir': str(tmpdir),
         'privileges': {
             'tags:delete': 'regular_user',
         },
@@ -29,6 +36,7 @@ def test_removing_tags(test_ctx):
         'tag')
     assert result == {}
     assert test_ctx.session.query(db.Tag).count() == 0
+    assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
 def test_removing_tags_without_privileges(test_ctx):
     test_ctx.session.add(test_ctx.tag_factory(names=['tag']))

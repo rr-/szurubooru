@@ -1,4 +1,6 @@
 import datetime
+import os
+import json
 import re
 import sqlalchemy
 from szurubooru import config, db, errors
@@ -24,6 +26,24 @@ def _lower_list(names):
 
 def _check_name_intersection(names1, names2):
     return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
+
+def export_to_json(session):
+    output = []
+    for tag in session.query(db.Tag).all():
+        item = {
+            'names': [tag_name.name for tag_name in tag.names],
+            'usages': tag.post_count
+        }
+        if len(tag.suggestions):
+            item['suggestions'] = \
+                [rel.child_tag.names[0].name for rel in tag.suggestions]
+        if len(tag.implications):
+            item['implications'] = \
+                [rel.child_tag.names[0].name for rel in tag.implications]
+        output.append(item)
+    export_path = os.path.join(config.config['data_dir'], 'tags.json')
+    with open(export_path, 'w') as handle:
+        handle.write(json.dumps(output, separators=(',', ':')))
 
 def get_by_name(session, name):
     return session.query(db.Tag) \

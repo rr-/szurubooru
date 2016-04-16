@@ -1,6 +1,7 @@
 import datetime
+import os
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, config, db, errors
 from szurubooru.util import misc, tags
 
 def get_tag(session, name):
@@ -15,8 +16,14 @@ def assert_relations(relations, expected_tag_names):
 
 @pytest.fixture
 def test_ctx(
-        session, config_injector, context_factory, user_factory, tag_factory):
+        tmpdir,
+        session,
+        config_injector,
+        context_factory,
+        user_factory,
+        tag_factory):
     config_injector({
+        'data_dir': str(tmpdir),
         'tag_categories': ['meta', 'character', 'copyright'],
         'tag_name_regex': '^[^!]*$',
         'ranks': ['anonymous', 'regular_user'],
@@ -58,6 +65,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
     assert tag.post_count == 0
     assert_relations(tag.suggestions, [])
     assert_relations(tag.implications, [])
+    assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
 def test_duplicating_names(test_ctx):
     result = test_ctx.api.post(
