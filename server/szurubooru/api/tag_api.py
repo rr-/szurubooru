@@ -33,8 +33,12 @@ class TagListApi(BaseApi):
         return {'tag': _serialize_tag(tag)}
 
 class TagDetailApi(BaseApi):
-    def get(self, ctx):
-        raise NotImplementedError()
+    def get(self, ctx, tag_name):
+        auth.verify_privilege(ctx.user, 'tags:view')
+        tag = tags.get_by_name(ctx.session, tag_name)
+        if not tag:
+            raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
+        return {'tag': _serialize_tag(tag)}
 
     def put(self, ctx, tag_name):
         tag = tags.get_by_name(ctx.session, tag_name)

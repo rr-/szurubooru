@@ -180,7 +180,27 @@ Not yet implemented.
 
 
 ## Getting tag
-Not yet implemented.
+- **Request**
+
+    `GET /tag/<name>`
+
+- **Output**
+
+    ```json5
+    {
+        "tag": <tag>
+    }
+    ```
+    ...where `<tag>` is a [tag resource](#tag).
+
+- **Errors**
+
+    - the tag does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves information about an existing tag.
 
 
 ## Deleting tag
