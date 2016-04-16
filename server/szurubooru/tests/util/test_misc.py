@@ -1,14 +1,9 @@
 import pytest
-from datetime import datetime
 from szurubooru import errors
 from szurubooru.util import misc
+from datetime import datetime
 
 dt = datetime
-
-class FakeDatetime(datetime):
-    @staticmethod
-    def now(tz=None):
-        return datetime(1997, 1, 2, 3, 4, 5, tzinfo=tz)
 
 def test_parsing_empty_date_time():
     with pytest.raises(errors.ValidationError):
@@ -25,8 +20,8 @@ def test_parsing_empty_date_time():
     ('1999-2-06',   (dt(1999, 2, 6, 0, 0, 0), dt(1999, 2, 6, 23, 59, 59))),
     ('1999-02-06',  (dt(1999, 2, 6, 0, 0, 0), dt(1999, 2, 6, 23, 59, 59))),
 ])
-def test_parsing_date_time(input, output):
-    misc.datetime.datetime = FakeDatetime
+def test_parsing_date_time(fake_datetime, input, output):
+    fake_datetime(datetime(1997, 1, 2, 3, 4, 5))
     assert misc.parse_time_range(input) == output
 
 @pytest.mark.parametrize('input,output', [

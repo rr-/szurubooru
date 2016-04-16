@@ -1,3 +1,4 @@
+import datetime
 from szurubooru import errors
 from szurubooru.util import auth, tags
 from szurubooru.api.base_api import BaseApi
@@ -10,6 +11,8 @@ def _serialize_tag(tag):
             relation.child_tag.names[0].name for relation in tag.suggestions],
         'implications': [
             relation.child_tag.names[0].name for relation in tag.implications],
+        'creationTime': tag.creation_time,
+        'lastEditTime': tag.last_edit_time,
     }
 
 class TagListApi(BaseApi):
@@ -27,7 +30,6 @@ class TagListApi(BaseApi):
         tag = tags.create_tag(
             ctx.session, names, category, suggestions, implications)
         ctx.session.add(tag)
-        ctx.session.flush()
         ctx.session.commit()
         return {'tag': _serialize_tag(tag)}
 
@@ -35,8 +37,34 @@ class TagDetailApi(BaseApi):
     def get(self, ctx):
         raise NotImplementedError()
 
-    def put(self, ctx):
-        raise NotImplementedError()
+    def put(self, ctx, tag_name):
+        tag = tags.get_by_name(ctx.session, tag_name)
+        if not tag:
+            raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
+
+        if ctx.has_param('names'):
+            auth.verify_privilege(ctx.user, 'tags:edit:names')
+            tags.update_names(
+                ctx.session, tag, ctx.get_param_as_list('names'))
+
+        if ctx.has_param('category'):
+            auth.verify_privilege(ctx.user, 'tags:edit:category')
+            tags.update_category(
+                ctx.session, tag, ctx.get_param_as_string('category'))
+
+        if ctx.has_param('suggestions'):
+            auth.verify_privilege(ctx.user, 'tags:edit:suggestions')
+            tags.update_suggestions(
+                ctx.session, tag, ctx.get_param_as_list('suggestions'))
+
+        if ctx.has_param('implications'):
+            auth.verify_privilege(ctx.user, 'tags:edit:implications')
+            tags.update_implications(
+                ctx.session, tag, ctx.get_param_as_list('implications'))
+
+        tag.last_edit_time = datetime.datetime.now()
+        ctx.session.commit()
+        return {'tag': _serialize_tag(tag)}
 
     def delete(self, ctx):
         raise NotImplementedError()

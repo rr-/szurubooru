@@ -85,6 +85,7 @@ data.
 ## Listing tags
 Not yet implemented.
 
+
 ## Creating tag
 - **Request**
 
@@ -116,6 +117,8 @@ Not yet implemented.
     - any name, implication or suggestion has invalid name
     - category is invalid
     - no name was specified
+    - implications or suggestions contain any item from names (e.g. there's a
+      shallow cyclic dependency)
     - privileges are too low
 
 - **Description**
@@ -128,11 +131,57 @@ Not yet implemented.
     no suggestions, one name and their category is set to the first item of
     `tag_categories` from server's configuration.
 
+
 ## Updating tag
-Not yet implemented.
+- **Request**
+
+    `PUT /tags/<name>`
+
+- **Input**
+
+    ```json5
+    {
+        "names":        [<name1>, <name2>, ...],
+        "category":     <category>,
+        "implications": [<name1>, <name2>, ...],
+        "suggestions":  [<name1>, <name2>, ...]
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "tag": <tag>
+    }
+    ```
+    ...where `<tag>` is a [tag resource](#tag).
+
+- **Errors**
+
+    - any name is used by an existing tag (names are case insensitive)
+    - any name, implication or suggestion has invalid name
+    - category is invalid
+    - no name was specified
+    - implications or suggestions contain any item from names (e.g. there's a
+      shallow cyclic dependency)
+    - privileges are too low
+
+- **Description**
+
+    Updates an existing tag using specified parameters. Names, suggestions and
+    implications must match `tag_name_regex` from server's configuration.
+    Category must be one of `tag_categories` from server's configuration.
+    If specified implied tags or suggested tags do not exist yet, they will
+    be automatically created. Tags created automatically have no implications,
+    no suggestions, one name and their category is set to the first item of
+    `tag_categories` from server's configuration. All fields are optional -
+    update concerns only provided fields.
+
 
 ## Getting tag
 Not yet implemented.
+
 
 ## Removing tag
 Not yet implemented.
@@ -429,7 +478,9 @@ Not yet implemented.
     "names":        ["tag1", "tag2", "tag3"],
     "category":     "plain", // one of values controlled by server's configuration
     "implications": ["implied-tag1", "implied-tag2", "implied-tag3"],
-    "suggestions":  ["suggested-tag1", "suggested-tag2", "suggested-tag3"]
+    "suggestions":  ["suggested-tag1", "suggested-tag2", "suggested-tag3"],
+    "creationTime": "2016-03-28T13:37:01.755461",
+    "lastEditTime": "2016-04-08T20:20:16.570517"
 }
 ```
 

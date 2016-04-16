@@ -1,8 +1,18 @@
-from datetime import datetime
+import datetime
 import pytest
 import sqlalchemy
 from szurubooru import api, config, db
 from szurubooru.util import misc
+
+@pytest.fixture
+def fake_datetime(monkeypatch):
+    def injector(now):
+        class mydatetime(datetime.datetime):
+            @staticmethod
+            def now(tz=None):
+                return now
+        monkeypatch.setattr(datetime, 'datetime', mydatetime)
+    return injector
 
 @pytest.fixture
 def session():
@@ -44,7 +54,7 @@ def user_factory():
         user.password_hash = 'dummy'
         user.email = 'dummy'
         user.rank = rank
-        user.creation_time = datetime(1997, 1, 1)
+        user.creation_time = datetime.datetime(1997, 1, 1)
         user.avatar_style = db.User.AVATAR_GRAVATAR
         return user
     return factory
@@ -55,6 +65,6 @@ def tag_factory():
         tag = db.Tag()
         tag.names = [db.TagName(name) for name in (names or ['dummy'])]
         tag.category = category
-        tag.creation_time = datetime(1996, 1, 1)
+        tag.creation_time = datetime.datetime(1996, 1, 1)
         return tag
     return factory
