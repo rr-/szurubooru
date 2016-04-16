@@ -1,4 +1,5 @@
 import datetime
+from szurubooru import search
 from szurubooru.util import auth, tags
 from szurubooru.api.base_api import BaseApi
 
@@ -15,8 +16,25 @@ def _serialize_tag(tag):
     }
 
 class TagListApi(BaseApi):
+    def __init__(self):
+        super().__init__()
+        self._search_executor = search.SearchExecutor(search.TagSearchConfig())
+
     def get(self, ctx):
-        raise NotImplementedError()
+        auth.verify_privilege(ctx.user, 'tags:list')
+        query = ctx.get_param_as_string('query')
+        page = ctx.get_param_as_int('page', default=1, min=1)
+        page_size = ctx.get_param_as_int(
+            'pageSize', default=100, min=1, max=100)
+        count, tag_list = self._search_executor.execute(
+            ctx.session, query, page, page_size)
+        return {
+            'query': query,
+            'page': page,
+            'pageSize': page_size,
+            'total': count,
+            'tags': [_serialize_tag(tag) for tag in tag_list],
+        }
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:create')

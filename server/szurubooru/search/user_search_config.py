@@ -34,7 +34,7 @@ class UserSearchConfig(BaseSearchConfig):
     @property
     def order_columns(self):
         return {
-            'random': func.random(),
+            'random': (None, func.random()),
             'name': (db.User.name, self.ORDER_ASC),
             'creation-date': (db.User.creation_time, self.ORDER_DESC),
             'creation-time': (db.User.creation_time, self.ORDER_DESC),

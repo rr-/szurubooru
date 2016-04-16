@@ -48,28 +48,7 @@ class SearchExecutor(object):
 
     def _handle_key_value(self, query, key, value, negated):
         if key == 'order':
-            if value.count(',') == 0:
-                order = None
-            elif value.count(',') == 1:
-                value, order_str = value.split(',')
-                if order_str == 'asc':
-                    order = self._search_config.ORDER_ASC
-                elif order_str == 'desc':
-                    order = self._search_config.ORDER_DESC
-                else:
-                    raise errors.SearchError(
-                        'Unknown search direction: %r.' % order_str)
-            else:
-                raise errors.SearchError(
-                    'Too many commas in order search token.')
-            if negated:
-                if order == self._search_config.ORDER_DESC:
-                    order = self._search_config.ORDER_ASC
-                elif order == self._search_config.ORDER_ASC:
-                    order = self._search_config.ORDER_DESC
-                else:
-                    order = -1
-            return self._handle_order(query, value, order)
+            return self._handle_order(query, value, negated)
         elif key == 'special':
             return self._handle_special(query, value, negated)
         else:
@@ -97,26 +76,40 @@ class SearchExecutor(object):
             'Unknown special token: %r. Available special tokens: %r.' % (
                 value, list(self._search_config.special_filters.keys())))
 
-    def _handle_order(self, query, value, order):
-        if value in self._search_config.order_columns:
-            column, default_order = self._search_config.order_columns[value]
-            if order is None:
-                order = default_order
-            elif order == -1:
-                if default_order == self._search_config.ORDER_ASC:
-                    order = self._search_config.ORDER_DESC
-                elif default_order == self._search_config.ORDER_DESC:
-                    order = self._search_config.ORDER_ASC
-                else:
-                    order = self._search_config.ORDER_ASC
+    def _handle_order(self, query, value, negated):
+        if value.count(',') == 0:
+            order_str = None
+        elif value.count(',') == 1:
+            value, order_str = value.split(',')
+        else:
+            raise errors.SearchError(
+                'Too many commas in order search token.')
+
+        if value not in self._search_config.order_columns:
+            raise errors.SearchError(
+                'Unknown search order: %r. Available search orders: %r.' % (
+                    value, list(self._search_config.order_columns.keys())))
+
+        column, default_order = self._search_config.order_columns[value]
+        if order_str == 'asc':
+            order = self._search_config.ORDER_ASC
+        elif order_str == 'desc':
+            order = self._search_config.ORDER_DESC
+        elif order_str is None:
+            order = default_order
+        else:
+            raise errors.SearchError(
+                'Unknown search direction: %r.' % order_str)
+        if negated:
             if order == self._search_config.ORDER_ASC:
-                column = column.asc()
-            else:
-                column = column.desc()
-            return query.order_by(column)
-        raise errors.SearchError(
-            'Unknown search order: %r. Available search orders: %r.' % (
-                value, list(self._search_config.order_columns.keys())))
+                order = self._search_config.ORDER_DESC
+            elif order == self._search_config.ORDER_DESC:
+                order = self._search_config.ORDER_ASC
+        if order == self._search_config.ORDER_ASC:
+            column = column.asc()
+        elif order == self._search_config.ORDER_DESC:
+            column = column.desc()
+        return query.order_by(column)
 
     def _create_criterion(self, value, negated):
         if '..' in value:

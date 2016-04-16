@@ -83,7 +83,82 @@ data.
 
 
 ## Listing tags
-Not yet implemented.
+- **Request**
+
+    `GET /tags/?page=<page>&pageSize=<page-size>&query=<query>`
+
+- **Output**
+
+    ```json5
+    {
+        "query": "haruhi",
+        "tags": [
+            <tag>,
+            <tag>,
+            <tag>,
+            <tag>,
+            <tag>
+        ],
+        "page": 1,
+        "pageSize": 5,
+        "total": 7
+    }
+    ```
+    ...where `<tag>` is a [tag resource](#tag) and `query` contains standard
+    [search query](#search).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Searches for tags.
+
+    **Anonymous tokens**
+
+    Same as `name` token.
+
+    **Named tokens**
+
+    | `<value>`           | Description                           |
+    | ------------------- | ------------------------------------- |
+    | `name`              | having given name (accepts wildcards) |
+    | `category`          | having given category                 |
+    | `creation-date`     | created at given date                 |
+    | `creation-time`     | alias of `creation-date`              |
+    | `last-edit-date`    | edited at given date                  |
+    | `last-edit-time`    | alias of `last-edit-date`             |
+    | `edit-date`         | alias of `last-edit-date`             |
+    | `edit-time`         | alias of `last-edit-date`             |
+    | `usages`            | used in given number of posts         |
+    | `usage-count`       | alias of `usages`                     |
+    | `post-count`        | alias of `usages`                     |
+    | `suggestion-count`  | with given number of suggestions      |
+    | `implication-count` | with given number of implications     |
+
+    **Order tokens**
+
+    | `<value>`           | Description                  |
+    | ------------------- | ---------------------------- |
+    | `random`            | as random as it can get      |
+    | `name`              | A to Z                       |
+    | `category`          | category (A to Z)            |
+    | `creation-date`     | recently created first       |
+    | `creation-time`     | alias of `creation-date`     |
+    | `last-edit-date`    | recently edited first        |
+    | `last-edit-time`    | alias of `creation-time`     |
+    | `edit-date`         | alias of `creation-time`     |
+    | `edit-time`         | alias of `creation-time`     |
+    | `usages`            | used in most posts first     |
+    | `usage-count`       | alias of `usages`            |
+    | `post-count`        | alias of `usages`            |
+    | `suggestion-count`  | with most suggestions first  |
+    | `implication-count` | with most implications first |
+
+    **Special tokens**
+
+    None.
 
 
 ## Creating tag
@@ -264,15 +339,15 @@ Not yet implemented.
 
     **Named tokens**
 
-    | `<value>`         | Description                                      |
-    | ----------------- | ------------------------------------------------ |
-    | `name`            | having given name (accepts wildcards)            |
-    | `creation-date`   | registered at given date                         |
-    | `creation-time`   | alias of `creation-date`                         |
-    | `last-login-date` | whose most recent login date matches given date  |
-    | `last-login-time` | alias of `last-login-date`                       |
-    | `login-date`      | alias of `last-login-date`                       |
-    | `login-time`      | alias of `last-login-date`                       |
+    | `<value>`         | Description                                     |
+    | ----------------- | ----------------------------------------------- |
+    | `name`            | having given name (accepts wildcards)           |
+    | `creation-date`   | registered at given date                        |
+    | `creation-time`   | alias of `creation-date`                        |
+    | `last-login-date` | whose most recent login date matches given date |
+    | `last-login-time` | alias of `last-login-date`                      |
+    | `login-date`      | alias of `last-login-date`                      |
+    | `login-time`      | alias of `last-login-date`                      |
 
     **Order tokens**
 
