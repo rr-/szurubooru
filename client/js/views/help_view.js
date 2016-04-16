@@ -12,6 +12,14 @@ class HelpView {
             const templateName = 'help-' + section;
             this.sectionTemplates[section] = views.getTemplate(templateName);
         }
+        this.subsectionTemplates = {
+            'search': {
+                'default': views.getTemplate('help-search-general'),
+                'posts': views.getTemplate('help-search-posts'),
+                'users': views.getTemplate('help-search-users'),
+                'tags': views.getTemplate('help-search-tags'),
+            }
+        }
     }
 
     render(ctx) {
@@ -27,9 +35,26 @@ class HelpView {
                 }));
         }
 
-        const allItemsSelector = '[data-name]';
-        for (let item of source.querySelectorAll(allItemsSelector)) {
+        ctx.subsection = ctx.subsection || 'default';
+        if (ctx.section in this.subsectionTemplates &&
+                ctx.subsection in this.subsectionTemplates[ctx.section]) {
+            views.showView(
+                source.querySelector('.subcontent'),
+                this.subsectionTemplates[ctx.section][ctx.subsection]({
+                    name: config.name,
+                }));
+        }
+
+        for (let item of source.querySelectorAll('.primary [data-name]')) {
             if (item.getAttribute('data-name') === ctx.section) {
+                item.className = 'active';
+            } else {
+                item.className = '';
+            }
+        }
+
+        for (let item of source.querySelectorAll('.secondary [data-name]')) {
+            if (item.getAttribute('data-name') === ctx.subsection) {
                 item.className = 'active';
             } else {
                 item.className = '';

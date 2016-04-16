@@ -14,12 +14,18 @@ class HelpController {
         page(
             '/help/:section',
             (ctx, next) => { this.showHelpRoute(ctx.params.section); });
+        page(
+            '/help/:section/:subsection',
+            (ctx, next) => {
+                this.showHelpRoute(ctx.params.section, ctx.params.subsection);
+            });
     }
 
-    showHelpRoute(section) {
+    showHelpRoute(section, subsection) {
         topNavController.activate('help');
         this.helpView.render({
             section: section,
+            subsection: subsection,
         });
     }
 }

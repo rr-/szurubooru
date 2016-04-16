@@ -1,0 +1,172 @@
+<p><strong>Anonymous tokens</strong></p>
+
+<p>Filter posts tagged with given <code>&lt;value&gt;</code>.</p>
+
+<p><strong>Named tokens</strong></p>
+
+<table>
+    <tbody>
+        <tr>
+            <td><code>id</code></td>
+            <td>having specific post ID</td>
+        </tr>
+        <tr>
+            <td><code>score</code></td>
+            <td>having given score</td>
+        </tr>
+        <tr>
+            <td><code>uploader</code></td>
+            <td>uploaded by given user</td>
+        </tr>
+        <tr>
+            <td><code>comment</code></td>
+            <td>commented by given user</td>
+        </tr>
+        <tr>
+            <td><code>fav</code></td>
+            <td>favorited by given user</td>
+        </tr>
+        <tr>
+            <td><code>fav-count</code></td>
+            <td>favorited by given number of users</td>
+        </tr>
+        <tr>
+            <td><code>comment-count</code></td>
+            <td>having given number of comments</td>
+        </tr>
+        <tr>
+            <td><code>tag-count</code></td>
+            <td>having given number of tags</td>
+        </tr>
+        <tr>
+            <td><code>note-count</code></td>
+            <td>having given number of annotations</td>
+        </tr>
+        <tr>
+            <td><code>feature-count</code></td>
+            <td>having been featured given number of times</td>
+        </tr>
+        <tr>
+            <td><code>date</code></td>
+            <td>posted at given date</td>
+        </tr>
+        <tr>
+            <td><code>file-size</code></td>
+            <td>having given file size (in bytes)</td>
+        </tr>
+        <tr>
+            <td><code>image-width</code></td>
+            <td>having given image width (where applicable)</td>
+        </tr>
+        <tr>
+            <td><code>image-height</code></td>
+            <td>having given image height (where applicable)</td>
+        </tr>
+        <tr>
+            <td><code>image-area</code></td>
+            <td>having given number of pixels (image width * image height)</td>
+        </tr>
+        <tr>
+            <td><code>type</code></td>
+            <td>given type of posts (<code>&lt;value&gt;</code> can be either <code>image</code>, <code>flash</code>/<code>swf</code>, <code>youtube</code>/<code>yt</code>, <code>video</code> or <code>animation</code>)</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><strong>Order tokens</strong></p>
+
+<table>
+    <tbody>
+        <tr>
+            <td><code>random</code></td>
+            <td>as random as it can get</td>
+        </tr>
+        <tr>
+            <td><code>id</code></td>
+            <td>highest to lowest post ID</td>
+        </tr>
+        <tr>
+            <td><code>score</code></td>
+            <td>highest scored</td>
+        </tr>
+        <tr>
+            <td><code>fav-count</code></td>
+            <td>loved by most</td>
+        </tr>
+        <tr>
+            <td><code>comment-count</code></td>
+            <td>most commented first</td>
+        </tr>
+        <tr>
+            <td><code>tag-count</code></td>
+            <td>with most tags</td>
+        </tr>
+        <tr>
+            <td><code>note-count</code></td>
+            <td>with most annotations</td>
+        </tr>
+        <tr>
+            <td><code>file-size</code></td>
+            <td>largest files first</td>
+        </tr>
+        <tr>
+            <td><code>image-width</code></td>
+            <td>widest images first</td>
+        </tr>
+        <tr>
+            <td><code>image-height</code></td>
+            <td>tallest images first</td>
+        </tr>
+        <tr>
+            <td><code>image-area</code></td>
+            <td>largest images first</td>
+        </tr>
+        <tr>
+            <td><code>creation-date</code></td>
+            <td>newest to oldest (pretty much same as <code>id</code>)</td>
+        </tr>
+        <tr>
+            <td><code>edit-date</code></td>
+            <td>like <code>creation-date</code>, only looks at last edit time</td>
+        </tr>
+        <tr>
+            <td><code>fav-date</code></td>
+            <td>recently added to favorites by anyone</td>
+        </tr>
+        <tr>
+            <td><code>comment-date</code></td>
+            <td>recently commented by anyone</td>
+        </tr>
+        <tr>
+            <td><code>feature-date</code></td>
+            <td>recently featured</td>
+        </tr>
+        <tr>
+            <td><code>feature-count</code></td>
+            <td>most often featured</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><strong>Special tokens</strong></p>
+
+<table>
+    <tbody>
+        <tr>
+            <td><code>liked</code></td>
+            <td>posts liked by currently logged in user</td>
+        </tr>
+        <tr>
+            <td><code>disliked</code></td>
+            <td>posts disliked by currently logged in user</td>
+        </tr>
+        <tr>
+            <td><code>fav</code></td>
+            <td>posts added to favorites by currently logged in user</td>
+        </tr>
+        <tr>
+            <td><code>tumbleweed</code></td>
+            <td>posts with score of 0, without comments and without favorites</td>
+        </tr>
+    </tbody>
+</table>
