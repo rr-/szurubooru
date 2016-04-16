@@ -35,11 +35,11 @@ class UserSearchConfig(BaseSearchConfig):
     def order_columns(self):
         return {
             'random': func.random(),
-            'name': db.User.name,
-            'creation-date': db.User.creation_time,
-            'creation-time': db.User.creation_time,
-            'last-login-date': db.User.last_login_time,
-            'last-login-time': db.User.last_login_time,
-            'login-date': db.User.last_login_time,
-            'login-time': db.User.last_login_time,
+            'name': (db.User.name, self.ORDER_ASC),
+            'creation-date': (db.User.creation_time, self.ORDER_DESC),
+            'creation-time': (db.User.creation_time, self.ORDER_DESC),
+            'last-login-date': (db.User.last_login_time, self.ORDER_DESC),
+            'last-login-time': (db.User.last_login_time, self.ORDER_DESC),
+            'login-date': (db.User.last_login_time, self.ORDER_DESC),
+            'login-time': (db.User.last_login_time, self.ORDER_DESC),
         }

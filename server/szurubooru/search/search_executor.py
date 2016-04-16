@@ -9,9 +9,6 @@ class SearchExecutor(object):
     delegates sqlalchemy filter decoration to SearchConfig instances.
     '''
 
-    ORDER_DESC = 1
-    ORDER_ASC = 2
-
     def __init__(self, search_config):
         self._search_config = search_config
 
@@ -52,13 +49,13 @@ class SearchExecutor(object):
     def _handle_key_value(self, query, key, value, negated):
         if key == 'order':
             if value.count(',') == 0:
-                order = self.ORDER_ASC
+                order = None
             elif value.count(',') == 1:
                 value, order_str = value.split(',')
                 if order_str == 'asc':
-                    order = self.ORDER_ASC
+                    order = self._search_config.ORDER_ASC
                 elif order_str == 'desc':
-                    order = self.ORDER_DESC
+                    order = self._search_config.ORDER_DESC
                 else:
                     raise errors.SearchError(
                         'Unknown search direction: %r.' % order_str)
@@ -66,10 +63,12 @@ class SearchExecutor(object):
                 raise errors.SearchError(
                     'Too many commas in order search token.')
             if negated:
-                if order == self.ORDER_DESC:
-                    order = self.ORDER_ASC
+                if order == self._search_config.ORDER_DESC:
+                    order = self._search_config.ORDER_ASC
+                elif order == self._search_config.ORDER_ASC:
+                    order = self._search_config.ORDER_DESC
                 else:
-                    order = self.ORDER_DESC
+                    order = -1
             return self._handle_order(query, value, order)
         elif key == 'special':
             return self._handle_special(query, value, negated)
@@ -100,8 +99,17 @@ class SearchExecutor(object):
 
     def _handle_order(self, query, value, order):
         if value in self._search_config.order_columns:
-            column = self._search_config.order_columns[value]
-            if order == self.ORDER_ASC:
+            column, default_order = self._search_config.order_columns[value]
+            if order is None:
+                order = default_order
+            elif order == -1:
+                if default_order == self._search_config.ORDER_ASC:
+                    order = self._search_config.ORDER_DESC
+                elif default_order == self._search_config.ORDER_DESC:
+                    order = self._search_config.ORDER_ASC
+                else:
+                    order = self._search_config.ORDER_ASC
+            if order == self._search_config.ORDER_ASC:
                 column = column.asc()
             else:
                 column = column.desc()

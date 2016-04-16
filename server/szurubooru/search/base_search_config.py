@@ -69,6 +69,9 @@ def _apply_str_criterion_to_column(column, query, criterion):
     return query.filter(expr)
 
 class BaseSearchConfig(object):
+    ORDER_DESC = 1
+    ORDER_ASC = 2
+
     def create_query(self, session):
         raise NotImplementedError()
 
