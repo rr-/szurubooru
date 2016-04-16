@@ -64,5 +64,16 @@ class TagDetailApi(BaseApi):
         ctx.session.commit()
         return {'tag': _serialize_tag(tag)}
 
-    def delete(self, ctx):
-        raise NotImplementedError()
+    def delete(self, ctx, tag_name):
+        tag = tags.get_by_name(ctx.session, tag_name)
+        if not tag:
+            raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
+        if tag.post_count > 0:
+            raise tags.TagIsInUseError(
+                'Tag has some usages and cannot be deleted. ' +
+                'Please untag relevant posts first.')
+
+        auth.verify_privilege(ctx.user, 'tags:delete')
+        ctx.session.delete(tag)
+        ctx.session.commit()
+        return {}

@@ -9,6 +9,7 @@ class TagAlreadyExistsError(errors.ValidationError): pass
 class InvalidNameError(errors.ValidationError): pass
 class InvalidCategoryError(errors.ValidationError): pass
 class RelationError(errors.ValidationError): pass
+class TagIsInUseError(errors.ValidationError): pass
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']

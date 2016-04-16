@@ -17,12 +17,12 @@
    - [Creating tag](#creating-tag)
    - [Updating tag](#updating-tag)
    - [Getting tag](#getting-tag)
-   - [Removing tag](#removing-tag)
+   - [Deleting tag](#deleting-tag)
    - [Listing users](#listing-users)
    - [Creating user](#creating-user)
    - [Updating user](#updating-user)
    - [Getting user](#getting-user)
-   - [Removing user](#removing-user)
+   - [Deleting user](#deleting-user)
    - [Password reset - step 1: mail request](#password-reset---step-2-confirmation)
    - [Password reset - step 2: confirmation](#password-reset---step-2-confirmation)
 
@@ -183,8 +183,26 @@ Not yet implemented.
 Not yet implemented.
 
 
-## Removing tag
-Not yet implemented.
+## Deleting tag
+- **Request**
+
+    `DELETE /tag/<name>`
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the tag does not exist
+    - the tag is used by some posts
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing tag.
 
 
 ## Listing users
@@ -253,6 +271,7 @@ Not yet implemented.
 
     None.
 
+
 ## Creating user
 - **Request**
 
@@ -291,7 +310,6 @@ Not yet implemented.
     first user ever created, they're granted highest available rank, becoming
     an administrator. Subsequent users will be given the rank indicated by
     `default_rank` in the server's configuration.
-
 
 
 ## Updating user
@@ -345,7 +363,6 @@ Not yet implemented.
     file - see [file uploads](#file-uploads) for details.
 
 
-
 ## Getting user
 - **Request**
 
@@ -370,8 +387,7 @@ Not yet implemented.
     Retrieves information about an existing user.
 
 
-
-## Removing user
+## Deleting user
 - **Request**
 
     `DELETE /user/<name>`
@@ -390,7 +406,6 @@ Not yet implemented.
 - **Description**
 
     Deletes existing user.
-
 
 
 ## Password reset - step 1: mail request
@@ -416,7 +431,6 @@ Not yet implemented.
     proves that the person who requested to reset the password also owns the
     mailbox, which is a strong indication they are the rightful owner of the
     account.
-
 
 
 ## Password reset - step 2: confirmation
@@ -482,6 +496,8 @@ Not yet implemented.
     "lastEditTime": "2016-04-08T20:20:16.570517"
 }
 ```
+
+
 
 # Search
 

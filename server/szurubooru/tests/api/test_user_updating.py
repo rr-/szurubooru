@@ -149,7 +149,6 @@ def test_mods_trying_to_become_admin(test_ctx):
 def test_uploading_avatar(test_ctx, tmpdir):
     config.config['data_dir'] = str(tmpdir.mkdir('data'))
     config.config['data_url'] = 'http://example.com/data/'
-
     user = test_ctx.user_factory(name='u1', rank='mod')
     test_ctx.session.add(user)
     empty_pixel = \
