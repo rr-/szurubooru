@@ -31,7 +31,7 @@ class BaseSearchConfig(object):
         '''
         Decorate SQLAlchemy filter on given column using supplied criterion.
         '''
-        if isinstance(criterion, criteria.StringSearchCriterion):
+        if isinstance(criterion, criteria.PlainSearchCriterion):
             expr = column == int(criterion.value)
         elif isinstance(criterion, criteria.ArraySearchCriterion):
             expr = column.in_(int(value) for value in criterion.values)
@@ -55,7 +55,7 @@ class BaseSearchConfig(object):
         Decorate SQLAlchemy filter on given column using supplied criterion.
         Parse potential wildcards inside the criterion.
         '''
-        if isinstance(criterion, criteria.StringSearchCriterion):
+        if isinstance(criterion, criteria.PlainSearchCriterion):
             expr = column.like(criterion.value.replace('*', '%'))
         elif isinstance(criterion, criteria.ArraySearchCriterion):
             expr = sqlalchemy.sql.false()
@@ -81,7 +81,7 @@ class BaseSearchConfig(object):
         Decorate SQLAlchemy filter on given column using supplied criterion.
         Parse the datetime inside the criterion.
         '''
-        if isinstance(criterion, criteria.StringSearchCriterion):
+        if isinstance(criterion, criteria.PlainSearchCriterion):
             min_date, max_date = misc.parse_time_range(criterion.value)
             expr = column.between(min_date, max_date)
         elif isinstance(criterion, criteria.ArraySearchCriterion):

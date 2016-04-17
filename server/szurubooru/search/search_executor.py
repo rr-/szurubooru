@@ -126,4 +126,4 @@ class SearchExecutor(object):
         if ',' in value:
             return criteria.ArraySearchCriterion(
                 value, negated, value.split(','))
-        return criteria.StringSearchCriterion(value, negated, value)
+        return criteria.PlainSearchCriterion(value, negated, value)

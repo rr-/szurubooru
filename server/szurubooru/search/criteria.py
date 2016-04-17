@@ -12,7 +12,7 @@ class RangedSearchCriterion(_BaseSearchCriterion):
         self.min_value = min_value
         self.max_value = max_value
 
-class StringSearchCriterion(_BaseSearchCriterion):
+class PlainSearchCriterion(_BaseSearchCriterion):
     def __init__(self, original_text, negated, value):
         super().__init__(original_text, negated)
         self.value = value
