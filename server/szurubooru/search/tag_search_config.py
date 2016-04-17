@@ -4,11 +4,7 @@ from szurubooru import db
 from szurubooru.search.base_search_config import BaseSearchConfig
 
 class TagSearchConfig(BaseSearchConfig):
-    def __init__(self):
-        self._session = None
-
     def create_query(self, session):
-        self._session = session
         return session.query(db.Tag)
 
     def finalize_query(self, query):
@@ -65,7 +61,7 @@ class TagSearchConfig(BaseSearchConfig):
         str_filter = self._create_str_filter(db.TagName.name)
         return query.filter(
             db.Tag.tag_id.in_(
-                str_filter(self._session.query(db.TagName.tag_id), criterion)))
+                str_filter(query.session.query(db.TagName.tag_id), criterion)))
 
     def _suggestion_count_filter(self, query, criterion):
         return query.filter(

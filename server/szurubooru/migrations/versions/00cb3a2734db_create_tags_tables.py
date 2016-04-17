@@ -20,7 +20,6 @@ def upgrade():
         sa.Column('category', sa.String(length=32), nullable=False),
         sa.Column('creation_time', sa.DateTime(), nullable=False),
         sa.Column('last_edit_time', sa.DateTime(), nullable=True),
-        sa.Column('auto_post_count', sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint('id'))
 
     op.create_table(

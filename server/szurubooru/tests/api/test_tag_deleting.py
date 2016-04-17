@@ -48,10 +48,11 @@ def test_removing_tags_without_privileges(test_ctx):
             'tag')
     assert test_ctx.session.query(db.Tag).count() == 1
 
-def test_removing_tags_with_usages(test_ctx):
+def test_removing_tags_with_usages(test_ctx, post_factory):
     tag = test_ctx.tag_factory(names=['tag'])
-    tag.post_count = 5
-    test_ctx.session.add(tag)
+    post = post_factory()
+    post.tags.append(tag)
+    test_ctx.session.add_all([tag, post])
     test_ctx.session.commit()
     with pytest.raises(tags.TagIsInUseError):
         test_ctx.api.delete(

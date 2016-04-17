@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, column_property
+from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
+from szurubooru.db.post import PostTag
 
 class TagSuggestion(Base):
     __tablename__ = 'tag_suggestion'
@@ -52,5 +54,11 @@ class Tag(Base):
         primaryjoin=tag_id == TagImplication.parent_id,
         secondaryjoin=tag_id == TagImplication.child_id)
 
-    # TODO: wire this
-    post_count = Column('auto_post_count', Integer, nullable=False, default=0)
+    post_count = column_property(
+        select(
+            [func.count('Post.post_id')],
+            PostTag.tag_id == tag_id
+        ) \
+        .correlate('Tag') \
+        .label('post_count')
+    )

@@ -71,3 +71,18 @@ def tag_factory():
         tag.creation_time = datetime.datetime(1996, 1, 1)
         return tag
     return factory
+
+@pytest.fixture
+def post_factory():
+    def factory(
+            safety=db.Post.SAFETY_SAFE,
+            type=db.Post.TYPE_IMAGE,
+            checksum='...'):
+        post = db.Post()
+        post.safety = safety
+        post.type = type
+        post.checksum = checksum
+        post.flags = 0
+        post.creation_time = datetime.datetime(1996, 1, 1)
+        return post
+    return factory
