@@ -1,6 +1,7 @@
 This repository is under the process of being rewritten. Stay tuned! You can
-check the current progress at the
-[roadmap](https://github.com/rr-/szurubooru/wiki/Roadmap).
+check the current progress on client
+[here](https://github.com/rr-/szurubooru/issues/84) and server
+[here](https://github.com/rr-/szurubooru/issues/83).
 
 The reasons behind this rewrite include:
 
