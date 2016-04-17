@@ -55,10 +55,25 @@ class Tag(Base):
         secondaryjoin=tag_id == TagImplication.child_id)
 
     post_count = column_property(
-        select(
-            [func.count('Post.post_id')],
-            PostTag.tag_id == tag_id
-        ) \
-        .correlate('Tag') \
-        .label('post_count')
-    )
+        select([func.count('Post.post_id')]) \
+        .where(PostTag.tag_id == tag_id) \
+        .correlate('Tag'))
+
+    first_name = column_property(
+        select([TagName.name]) \
+            .where(TagName.tag_id == tag_id) \
+            .limit(1) \
+            .as_scalar(),
+        deferred=True)
+
+    suggestion_count = column_property(
+        select([func.count(TagSuggestion.child_id)]) \
+            .where(TagSuggestion.parent_id == tag_id) \
+            .as_scalar(),
+        deferred=True)
+
+    implication_count = column_property(
+        select([func.count(TagImplication.child_id)]) \
+            .where(TagImplication.parent_id == tag_id) \
+            .as_scalar(),
+        deferred=True)

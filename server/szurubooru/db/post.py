@@ -58,13 +58,9 @@ class Post(Base):
         secondaryjoin=post_id == PostRelation.child_id)
 
     tag_count = column_property(
-        select(
-            [func.count('1')],
-            PostTag.post_id == post_id
-        ) \
-        .correlate('Post') \
-        .label('tag_count')
-    )
+        select([func.count('1')])
+        .where(PostTag.post_id == post_id) \
+        .correlate('Post'))
 
     # TODO: wire these
     fav_count = Column('auto_fav_count', Integer, nullable=False, default=0)
