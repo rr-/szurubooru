@@ -26,6 +26,8 @@ def verify_unpaged(session, executor):
     ('creation-time:2014-06..2015-01-01', ['u2', 'u3']),
     ('creation-time:2014-06..', ['u2', 'u3']),
     ('creation-time:..2014-06', ['u1', 'u2']),
+    ('creation-time-min:2014-06', ['u2', 'u3']),
+    ('creation-time-max:2014-06', ['u1', 'u2']),
     ('-creation-time:2014..2014-06', ['u3']),
     ('-creation-time:2014-06..2015-01-01', ['u1']),
     ('creation-date:2014..2014-06', ['u1', 'u2']),
@@ -192,6 +194,12 @@ def test_random_order(session, executor, user_factory):
 
 @pytest.mark.parametrize('input,expected_error', [
     ('creation-date:..', errors.SearchError),
+    ('creation-date-min:..', errors.ValidationError),
+    ('creation-date-min:..2014-01-01', errors.ValidationError),
+    ('creation-date-min:2014-01-01..', errors.ValidationError),
+    ('creation-date-max:..2014-01-01', errors.ValidationError),
+    ('creation-date-max:2014-01-01..', errors.ValidationError),
+    ('creation-date-max:yesterday,today', errors.ValidationError),
     ('creation-date:bad..', errors.ValidationError),
     ('creation-date:..bad', errors.ValidationError),
     ('creation-date:bad..bad', errors.ValidationError),

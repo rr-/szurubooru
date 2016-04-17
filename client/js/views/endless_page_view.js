@@ -25,7 +25,6 @@ class EndlessPageView {
         const threshold = window.innerHeight / 3;
 
         if (ctx.state && ctx.state.html) {
-            console.log('Loading from state');
             this.minPageShown = ctx.state.minPageShown;
             this.maxPageShown = ctx.state.maxPageShown;
             this.totalPages = ctx.state.totalPages;
@@ -83,6 +82,7 @@ class EndlessPageView {
         if (ctx.state && ctx.state.html) {
             pagesHolder.innerHTML = ctx.state.html;
             window.scroll(ctx.state.scrollX, ctx.state.scrollY);
+            this.updater();
         } else {
             this.loadPage(pagesHolder, ctx, ctx.searchQuery.page, true);
         }

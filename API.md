@@ -622,6 +622,9 @@ take following form:
 | `..4`     | will show things that are equal to at most 4.         |
 | `1..4`    | will show things that are equal to 1, 2, 3 or 4.      |
 
+Ranged values can be also supplied by appending `-min` or `-max` to the key,
+for example like this: `score-min:1`.
+
 Date/time values can be of following form:
 
 - `today`

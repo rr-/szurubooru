@@ -52,8 +52,7 @@ class SearchExecutor(object):
         elif key == 'special':
             return self._handle_special(query, value, negated)
         else:
-            return self._handle_named(
-                query, key, self._create_criterion(value, negated))
+            return self._handle_named(query, key, value, negated)
 
     def _handle_anonymous(self, query, criterion):
         if not self._search_config.anonymous_filter:
@@ -61,7 +60,14 @@ class SearchExecutor(object):
                 'Anonymous tokens are not valid in this context.')
         return self._search_config.anonymous_filter(query, criterion)
 
-    def _handle_named(self, query, key, criterion):
+    def _handle_named(self, query, key, value, negated):
+        if key.endswith('-min'):
+            key = key[:-4]
+            value += '..'
+        elif key.endswith('-max'):
+            key = key[:-4]
+            value = '..' + value
+        criterion = self._create_criterion(value, negated)
         if key in self._search_config.named_filters:
             return self._search_config.named_filters[key](query, criterion)
         raise errors.SearchError(
@@ -113,7 +119,7 @@ class SearchExecutor(object):
 
     def _create_criterion(self, value, negated):
         if '..' in value:
-            low, high = value.split('..')
+            low, high = value.split('..', 1)
             if not low and not high:
                 raise errors.SearchError('Empty ranged value')
             return criteria.RangedSearchCriterion(value, negated, low, high)
