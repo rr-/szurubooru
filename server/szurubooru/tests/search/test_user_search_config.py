@@ -167,7 +167,7 @@ def test_order_by_creation_time(
     ('order:login-date', ['u3', 'u2', 'u1']),
     ('order:login-time', ['u3', 'u2', 'u1']),
 ])
-def test_order_by_name(
+def test_order_by_last_login_time(
         session, verify_unpaged, input, expected_user_names, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
