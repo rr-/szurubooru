@@ -22,6 +22,7 @@ class PageController {
     }
 
     run(ctx) {
+        this.pageView.unrender();
         this.pageView.render(ctx);
     }
 

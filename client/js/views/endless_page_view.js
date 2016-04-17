@@ -17,6 +17,7 @@ class EndlessPageView {
         const pagesHolder = source.querySelector('.pages-holder');
         views.listenToMessages(target);
         views.showView(target, source);
+        this.active = true;
 
         let headerRendererCtx = ctx;
         headerRendererCtx.target = pageHeaderHolder;
@@ -90,6 +91,7 @@ class EndlessPageView {
     }
 
     unrender() {
+        this.active = false;
         window.removeEventListener('scroll', this.updater, true);
     }
 
@@ -104,6 +106,9 @@ class EndlessPageView {
         }
 
         ctx.requestPage(pageNumber).then(response => {
+            if (!this.active) {
+                return;
+            }
             this.totalPages = Math.ceil(response.total / response.pageSize);
             if (response.total) {
                 const pageNode = this.pageTemplate({
@@ -132,7 +137,7 @@ class EndlessPageView {
             }
 
             this.fetching = false;
-            this.updater();
+            window.setTimeout(() => { this.updater(); }, 10);
 
             if (response.total <= (pageNumber - 1) * response.pageSize) {
                 events.notify(events.Info, 'No data to show');
