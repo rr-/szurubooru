@@ -24,7 +24,7 @@ class Tag(Base):
     category = Column('category', String(32), nullable=False)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
-    post_count = Column('post_count', Integer, nullable=False, default=0)
+    post_count = Column('auto_post_count', Integer, nullable=False, default=0)
     names = relationship('TagName', cascade='all, delete-orphan')
 
     suggestions = relationship(
