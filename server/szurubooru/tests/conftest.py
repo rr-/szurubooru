@@ -1,8 +1,12 @@
 import datetime
+import uuid
 import pytest
 import sqlalchemy
 from szurubooru import api, config, db
 from szurubooru.util import misc
+
+def get_unique_name():
+    return str(uuid.uuid4())
 
 @pytest.fixture
 def fake_datetime(monkeypatch):
@@ -46,13 +50,12 @@ def config_injector():
 
 @pytest.fixture
 def user_factory():
-    def factory(name='dummy', rank='regular_user'):
+    def factory(name=None, rank='regular_user', email='dummy'):
         user = db.User()
-        user.name = name
-        user.password = 'dummy'
+        user.name = name or get_unique_name()
         user.password_salt = 'dummy'
         user.password_hash = 'dummy'
-        user.email = 'dummy'
+        user.email = email
         user.rank = rank
         user.creation_time = datetime.datetime(1997, 1, 1)
         user.avatar_style = db.User.AVATAR_GRAVATAR
@@ -63,7 +66,7 @@ def user_factory():
 def tag_factory():
     def factory(names=None, category='dummy'):
         tag = db.Tag()
-        tag.names = [db.TagName(name) for name in (names or ['dummy'])]
+        tag.names = [db.TagName(name) for name in (names or [get_unique_name()])]
         tag.category = category
         tag.creation_time = datetime.datetime(1996, 1, 1)
         return tag
