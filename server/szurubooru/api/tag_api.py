@@ -8,9 +8,9 @@ def _serialize_tag(tag):
         'names': [tag_name.name for tag_name in tag.names],
         'category': tag.category,
         'suggestions': [
-            relation.child_tag.names[0].name for relation in tag.suggestions],
+            relation.names[0].name for relation in tag.suggestions],
         'implications': [
-            relation.child_tag.names[0].name for relation in tag.implications],
+            relation.names[0].name for relation in tag.implications],
         'creationTime': tag.creation_time,
         'lastEditTime': tag.last_edit_time,
     }

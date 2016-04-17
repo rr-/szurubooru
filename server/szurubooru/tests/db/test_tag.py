@@ -23,10 +23,10 @@ def test_saving_tag(session, tag_factory):
     assert suggested_tag2.tag_id is not None
     assert implied_tag1.tag_id is not None
     assert implied_tag2.tag_id is not None
-    tag.suggestions.append(db.TagSuggestion(tag.tag_id, suggested_tag1.tag_id))
-    tag.suggestions.append(db.TagSuggestion(tag.tag_id, suggested_tag2.tag_id))
-    tag.implications.append(db.TagImplication(tag.tag_id, implied_tag1.tag_id))
-    tag.implications.append(db.TagImplication(tag.tag_id, implied_tag2.tag_id))
+    tag.suggestions.append(suggested_tag1)
+    tag.suggestions.append(suggested_tag2)
+    tag.implications.append(implied_tag1)
+    tag.implications.append(implied_tag2)
     session.commit()
 
     tag = session.query(db.Tag) \
@@ -38,9 +38,9 @@ def test_saving_tag(session, tag_factory):
     assert tag.creation_time == datetime(1997, 1, 1)
     assert tag.last_edit_time == datetime(1998, 1, 1)
     assert tag.post_count == 1
-    assert [relation.child_tag.names[0].name for relation in tag.suggestions] \
+    assert [relation.names[0].name for relation in tag.suggestions] \
         == ['suggested1', 'suggested2']
-    assert [relation.child_tag.names[0].name for relation in tag.implications] \
+    assert [relation.names[0].name for relation in tag.implications] \
         == ['implied1', 'implied2']
 
 def test_cascade_deletions(session, tag_factory):
@@ -65,10 +65,10 @@ def test_cascade_deletions(session, tag_factory):
     assert suggested_tag2.tag_id is not None
     assert implied_tag1.tag_id is not None
     assert implied_tag2.tag_id is not None
-    tag.suggestions.append(db.TagSuggestion(tag.tag_id, suggested_tag1.tag_id))
-    tag.suggestions.append(db.TagSuggestion(tag.tag_id, suggested_tag2.tag_id))
-    tag.implications.append(db.TagImplication(tag.tag_id, implied_tag1.tag_id))
-    tag.implications.append(db.TagImplication(tag.tag_id, implied_tag2.tag_id))
+    tag.suggestions.append(suggested_tag1)
+    tag.suggestions.append(suggested_tag2)
+    tag.implications.append(implied_tag1)
+    tag.implications.append(implied_tag2)
     session.commit()
 
     session.delete(tag)

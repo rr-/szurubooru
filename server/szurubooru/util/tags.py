@@ -36,10 +36,10 @@ def export_to_json(session):
         }
         if len(tag.suggestions):
             item['suggestions'] = \
-                [rel.child_tag.names[0].name for rel in tag.suggestions]
+                [rel.names[0].name for rel in tag.suggestions]
         if len(tag.implications):
             item['implications'] = \
-                [rel.child_tag.names[0].name for rel in tag.implications]
+                [rel.names[0].name for rel in tag.implications]
         output.append(item)
     export_path = os.path.join(config.config['data_dir'], 'tags.json')
     with open(export_path, 'w') as handle:
@@ -131,15 +131,11 @@ def update_implications(session, tag, relations):
         raise RelationError('Tag cannot imply itself.')
     related_tags, new_tags = get_or_create_by_names(session, relations)
     session.flush()
-    tag.implications = [
-        db.TagImplication(tag.tag_id, other_tag.tag_id) \
-            for other_tag in related_tags + new_tags]
+    tag.implications = related_tags + new_tags
 
 def update_suggestions(session, tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise RelationError('Tag cannot suggest itself.')
     related_tags, new_tags = get_or_create_by_names(session, relations)
     session.flush()
-    tag.suggestions = [
-        db.TagSuggestion(tag.tag_id, other_tag.tag_id) \
-            for other_tag in related_tags + new_tags]
+    tag.suggestions = related_tags + new_tags

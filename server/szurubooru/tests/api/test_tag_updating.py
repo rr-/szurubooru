@@ -11,7 +11,7 @@ def get_tag(session, name):
         .first()
 
 def assert_relations(relations, expected_tag_names):
-    actual_names = [rel.child_tag.names[0].name for rel in relations]
+    actual_names = [rel.names[0].name for rel in relations]
     assert actual_names == expected_tag_names
 
 @pytest.fixture

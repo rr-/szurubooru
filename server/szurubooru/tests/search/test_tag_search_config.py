@@ -133,9 +133,9 @@ def test_order_by_suggestion_count(
     tag2 = tag_factory(names=['t2'])
     session.add_all([sug1, sug3, tag2, sug2, tag1])
     session.commit()
-    tag1.suggestions.append(db.TagSuggestion(tag1.tag_id, sug1.tag_id))
-    tag1.suggestions.append(db.TagSuggestion(tag1.tag_id, sug2.tag_id))
-    tag2.suggestions.append(db.TagSuggestion(tag2.tag_id, sug3.tag_id))
+    tag1.suggestions.append(sug1)
+    tag1.suggestions.append(sug2)
+    tag2.suggestions.append(sug3)
     verify_unpaged(input, expected_tag_names)
 
 @pytest.mark.parametrize('input,expected_tag_names', [
@@ -150,9 +150,9 @@ def test_order_by_implication_count(
     tag2 = tag_factory(names=['t2'])
     session.add_all([sug1, sug3, tag2, sug2, tag1])
     session.commit()
-    tag1.implications.append(db.TagImplication(tag1.tag_id, sug1.tag_id))
-    tag1.implications.append(db.TagImplication(tag1.tag_id, sug2.tag_id))
-    tag2.implications.append(db.TagImplication(tag2.tag_id, sug3.tag_id))
+    tag1.implications.append(sug1)
+    tag1.implications.append(sug2)
+    tag2.implications.append(sug3)
     verify_unpaged(input, expected_tag_names)
 
 def test_filter_by_relation_count(session, verify_unpaged, tag_factory):
