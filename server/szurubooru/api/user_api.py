@@ -54,9 +54,20 @@ class UserListApi(BaseApi):
 
         name = ctx.get_param_as_string('name', required=True)
         password = ctx.get_param_as_string('password', required=True)
-        email = ctx.get_param_as_string('email', required=True)
+        email = ctx.get_param_as_string('email', required=False, default='')
 
         user = users.create_user(ctx.session, name, password, email, ctx.user)
+
+        if ctx.has_param('rank'):
+            users.update_rank(
+                ctx.session, user, ctx.get_param_as_string('rank'), ctx.user)
+
+        if ctx.has_param('avatarStyle'):
+            users.update_avatar(
+                user,
+                ctx.get_param_as_string('avatarStyle'),
+                ctx.get_file('avatar'))
+
         ctx.session.add(user)
         ctx.session.commit()
         return {'user': _serialize_user(ctx.user, user)}
@@ -94,7 +105,8 @@ class UserDetailApi(BaseApi):
 
         if ctx.has_param('rank'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:rank' % infix)
-            users.update_rank(user, ctx.get_param_as_string('rank'), ctx.user)
+            users.update_rank(
+                ctx.session, user, ctx.get_param_as_string('rank'), ctx.user)
 
         if ctx.has_param('avatarStyle'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:avatar' % infix)

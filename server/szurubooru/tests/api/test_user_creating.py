@@ -1,7 +1,12 @@
 import datetime
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, config, db, errors
 from szurubooru.util import auth, misc, users
+
+EMPTY_PIXEL = \
+    b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
+    b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
+    b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
 
 def get_user(session, name):
     return session.query(db.User).filter_by(name=name).first()
@@ -14,7 +19,7 @@ def test_ctx(
         'user_name_regex': '.{3,}',
         'password_regex': '.{3,}',
         'default_rank': 'regular_user',
-        'thumbnails': {'avatar_width': 200},
+        'thumbnails': {'avatar_width': 200, 'avatar_height': 200},
         'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
         'rank_names': {},
         'privileges': {'users:create': 'anonymous'},
@@ -63,7 +68,7 @@ def test_first_user_becomes_admin_others_not(test_ctx):
                 'email': 'asd@asd.asd',
                 'password': 'oks',
             },
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank='anonymous')))
     result2 = test_ctx.api.post(
         test_ctx.context_factory(
             input={
@@ -71,13 +76,25 @@ def test_first_user_becomes_admin_others_not(test_ctx):
                 'email': 'asd@asd.asd',
                 'password': 'sok',
             },
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank='anonymous')))
     assert result1['user']['rank'] == 'admin'
     assert result2['user']['rank'] == 'regular_user'
     first_user = get_user(test_ctx.session, 'chewie1')
     other_user = get_user(test_ctx.session, 'chewie2')
     assert first_user.rank == 'admin'
     assert other_user.rank == 'regular_user'
+
+def test_first_user_does_not_become_admin_if_they_dont_wish_so(test_ctx):
+    result = test_ctx.api.post(
+        test_ctx.context_factory(
+            input={
+                'name': 'chewie1',
+                'email': 'asd@asd.asd',
+                'password': 'oks',
+                'rank': 'regular_user',
+            },
+            user=test_ctx.user_factory(rank='anonymous')))
+    assert result['user']['rank'] == 'regular_user'
 
 def test_creating_user_that_already_exists(test_ctx):
     test_ctx.api.post(
@@ -107,8 +124,8 @@ def test_creating_user_that_already_exists(test_ctx):
                 },
                 user=test_ctx.user_factory(rank='regular_user')))
 
-@pytest.mark.parametrize('field', ['name', 'email', 'password'])
-def test_missing_field(test_ctx, field):
+@pytest.mark.parametrize('field', ['name', 'password'])
+def test_missing_mandatory_field(test_ctx, field):
     input = {
         'name': 'chewie',
         'email': 'asd@asd.asd',
@@ -120,6 +137,24 @@ def test_missing_field(test_ctx, field):
             test_ctx.context_factory(
                 input=input,
                 user=test_ctx.user_factory(rank='regular_user')))
+
+@pytest.mark.parametrize('field', ['rank', 'email', 'avatarStyle'])
+def test_missing_optional_field(test_ctx, tmpdir, field):
+    config.config['data_dir'] = str(tmpdir.mkdir('data'))
+    config.config['data_url'] = 'http://example.com/data/'
+    input = {
+        'name': 'chewie',
+        'email': 'asd@asd.asd',
+        'password': 'oks',
+        'rank': 'mod',
+        'avatarStyle': 'manual',
+    }
+    del input[field]
+    test_ctx.api.post(
+        test_ctx.context_factory(
+            input=input,
+            files={'avatar': EMPTY_PIXEL},
+            user=test_ctx.user_factory(rank='mod')))
 
 @pytest.mark.parametrize('input', [
     {'name': '.'},
@@ -134,7 +169,55 @@ def test_invalid_inputs(test_ctx, input):
     user = test_ctx.user_factory(name='u1', rank='admin')
     test_ctx.session.add(user)
     with pytest.raises(errors.ValidationError):
+        real_input={
+            'name': 'chewie',
+            'email': 'asd@asd.asd',
+            'password': 'oks',
+        }
+        for key, value in input.items():
+            real_input[key] = value
         test_ctx.api.post(
-            test_ctx.context_factory(input=input, user=user))
+            test_ctx.context_factory(input=real_input, user=user))
 
-# TODO: support avatar and avatarStyle
+def test_mods_trying_to_become_admin(test_ctx):
+    user1 = test_ctx.user_factory(name='u1', rank='mod')
+    user2 = test_ctx.user_factory(name='u2', rank='mod')
+    test_ctx.session.add_all([user1, user2])
+    context = test_ctx.context_factory(input={
+            'name': 'chewie',
+            'email': 'asd@asd.asd',
+            'password': 'oks',
+            'rank': 'admin',
+        }, user=user1)
+    with pytest.raises(errors.AuthError):
+        test_ctx.api.post(context)
+
+def test_admin_creating_mod_account(test_ctx):
+    user = test_ctx.user_factory(rank='admin')
+    test_ctx.session.add(user)
+    context = test_ctx.context_factory(input={
+            'name': 'chewie',
+            'email': 'asd@asd.asd',
+            'password': 'oks',
+            'rank': 'mod',
+        }, user=user)
+    result = test_ctx.api.post(context)
+    assert result['user']['rank'] == 'mod'
+
+def test_uploading_avatar(test_ctx, tmpdir):
+    config.config['data_dir'] = str(tmpdir.mkdir('data'))
+    config.config['data_url'] = 'http://example.com/data/'
+    response = test_ctx.api.post(
+        test_ctx.context_factory(
+            input={
+                'name': 'chewie',
+                'email': 'asd@asd.asd',
+                'password': 'oks',
+                'avatarStyle': 'manual',
+            },
+            files={'avatar': EMPTY_PIXEL},
+            user=test_ctx.user_factory(rank='mod')))
+    user = get_user(test_ctx.session, 'chewie')
+    assert user.avatar_style == user.AVATAR_MANUAL
+    assert response['user']['avatarUrl'] == \
+        'http://example.com/data/avatars/chewie.jpg'

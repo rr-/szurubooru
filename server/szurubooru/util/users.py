@@ -66,14 +66,14 @@ def update_email(user, email):
         raise InvalidEmailError('E-mail is invalid.')
     user.email = email
 
-def update_rank(user, rank, authenticated_user):
+def update_rank(session, user, rank, authenticated_user):
     rank = rank.strip()
     available_ranks = config.config['ranks']
     if not rank in available_ranks:
         raise InvalidRankError(
             'Rank %r is invalid. Valid ranks: %r' % (rank, available_ranks))
     if available_ranks.index(authenticated_user.rank) \
-            < available_ranks.index(rank):
+            < available_ranks.index(rank) and session.query(db.User).count() > 0:
         raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank
 

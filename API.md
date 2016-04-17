@@ -222,10 +222,10 @@ data.
 
     ```json5
     {
-        "names":        [<name1>, <name2>, ...],
-        "category":     <category>,
-        "implications": [<name1>, <name2>, ...],
-        "suggestions":  [<name1>, <name2>, ...]
+        "names":        [<name1>, <name2>, ...],    // optional
+        "category":     <category>,                 // optional
+        "implications": [<name1>, <name2>, ...],    // optional
+        "suggestions":  [<name1>, <name2>, ...]     // optional
     }
     ```
 
@@ -384,9 +384,15 @@ data.
     {
         "name": <user-name>,
         "password": <user-password>,
-        "email": <email>
+        "email": <email>,               // optional
+        "rank": <rank>,                 // optional
+        "avatarStyle": <avatar-style>   // optional
     }
     ```
+
+- **Files**
+
+    - `avatar` - the content of the new avatar (optional).
 
 - **Output**
 
@@ -399,17 +405,23 @@ data.
 
 - **Errors**
 
-    - such user already exists (names are case insensitive)
-    - either user name, password or email are invalid
+    - a user with such name already exists (names are case insensitive)
+    - either user name, password, email or rank are invalid
+    - the user is trying to update their or someone else's rank to higher than
+      their own
+    - avatar is missing for manual avatar style
     - privileges are too low
 
 - **Description**
 
     Creates a new user using specified parameters. Names and passwords must
     match `user_name_regex` and `password_regex` from server's configuration,
-    respectively. Email address is optional. If the user happens to be the
-    first user ever created, they're granted highest available rank, becoming
-    an administrator. Subsequent users will be given the rank indicated by
+    respectively. Email address, rank and avatar fields are optional. Avatar
+    style can be either `gravatar` or `manual`. `manual` avatar style requires
+    client to pass also `avatar` file - see [file uploads](#file-uploads) for
+    details. If the rank is empty and the user happens to be the first user
+    ever created, they're granted highest available rank, becoming an
+    administrator, whereas subsequent users will be given the rank indicated by
     `default_rank` in the server's configuration.
 
 
@@ -422,17 +434,17 @@ data.
 
     ```json5
     {
-        "name": <user-name>,
-        "password": <user-password>,
-        "email": <email>,
-        "rank": <rank>,
-        "avatarStyle": <avatar-style>
+        "name": <user-name>,            // optional
+        "password": <user-password>,    // optional
+        "email": <email>,               // optional
+        "rank": <rank>,                 // optional
+        "avatarStyle": <avatar-style>   // optional
     }
     ```
 
 - **Files**
 
-    - `avatar` - the content of the new avatar.
+    - `avatar` - the content of the new avatar (optional).
 
 - **Output**
 
@@ -446,12 +458,12 @@ data.
 - **Errors**
 
     - the user does not exist
-    - the user with new name already exists (names are case insensitive)
+    - a user with new name already exists (names are case insensitive)
     - either user name, password, email or rank are invalid
     - the user is trying to update their or someone else's rank to higher than
       their own
-    - privileges are too low
     - avatar is missing for manual avatar style
+    - privileges are too low
 
 - **Description**
 
