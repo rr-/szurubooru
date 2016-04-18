@@ -53,8 +53,5 @@ def validate_config(src):
             raise errors.ConfigError(
                 'Database is not configured: %r is missing' % key)
 
-    if not len(src['tag_categories']):
-        raise errors.ConfigError('Must have at least one tag category')
-
 config = read_config() # pylint: disable=invalid-name
 validate_config(config)

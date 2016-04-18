@@ -24,7 +24,6 @@ def test_ctx(
         tag_factory):
     config_injector({
         'data_dir': str(tmpdir),
-        'tag_categories': ['meta', 'character', 'copyright'],
         'tag_name_regex': '^[^!]*$',
         'ranks': ['anonymous', 'regular_user'],
         'privileges': {
@@ -34,6 +33,10 @@ def test_ctx(
             'tags:edit:implications': 'regular_user',
         },
     })
+    session.add_all([
+        db.TagCategory(name) for name in [
+            'meta', 'character', 'copyright']])
+    session.flush()
     ret = misc.dotdict()
     ret.session = session
     ret.context_factory = context_factory
@@ -43,7 +46,7 @@ def test_ctx(
     return ret
 
 def test_simple_updating(test_ctx, fake_datetime):
-    tag = test_ctx.tag_factory(names=['tag1', 'tag2'], category='meta')
+    tag = test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta')
     test_ctx.session.add(tag)
     test_ctx.session.commit()
     with fake_datetime('1997-12-01'):
@@ -70,7 +73,7 @@ def test_simple_updating(test_ctx, fake_datetime):
     tag = get_tag(test_ctx.session, 'tag3')
     assert tag is not None
     assert [tag_name.name for tag_name in tag.names] == ['tag3']
-    assert tag.category == 'character'
+    assert tag.category.name == 'character'
     assert tag.suggestions == []
     assert tag.implications == []
     assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
@@ -86,7 +89,7 @@ def test_trying_to_update_non_existing_tag(test_ctx):
 @pytest.mark.parametrize('dup_name', ['tag1', 'TAG1'])
 def test_reusing_own_name(test_ctx, dup_name):
     test_ctx.session.add(
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category='meta'))
+        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'))
     test_ctx.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
@@ -102,7 +105,7 @@ def test_reusing_own_name(test_ctx, dup_name):
 
 def test_duplicating_names(test_ctx):
     test_ctx.session.add(
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category='meta'))
+        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'))
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input={'names': ['tag3', 'TAG3']},
@@ -121,7 +124,8 @@ def test_duplicating_names(test_ctx):
     {'names': ['x' * 65]},
 ])
 def test_trying_to_set_invalid_name(test_ctx, input):
-    test_ctx.session.add(test_ctx.tag_factory(names=['tag1'], category='meta'))
+    test_ctx.session.add(
+        test_ctx.tag_factory(names=['tag1'], category_name='meta'))
     test_ctx.session.commit()
     with pytest.raises(tags.InvalidNameError):
         test_ctx.api.put(
@@ -133,8 +137,8 @@ def test_trying_to_set_invalid_name(test_ctx, input):
 @pytest.mark.parametrize('dup_name', ['tag1', 'TAG1', 'tag2', 'TAG2'])
 def test_trying_to_use_existing_name(test_ctx, dup_name):
     test_ctx.session.add_all([
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category='meta'),
-        test_ctx.tag_factory(names=['tag3', 'tag4'], category='meta')])
+        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'),
+        test_ctx.tag_factory(names=['tag3', 'tag4'], category_name='meta')])
     test_ctx.session.commit()
     with pytest.raises(tags.TagAlreadyExistsError):
         test_ctx.api.put(
@@ -144,7 +148,8 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
             'tag3')
 
 def test_trying_to_update_tag_with_invalid_category(test_ctx):
-    test_ctx.session.add(test_ctx.tag_factory(names=['tag1'], category='meta'))
+    test_ctx.session.add(
+        test_ctx.tag_factory(names=['tag1'], category_name='meta'))
     test_ctx.session.commit()
     with pytest.raises(tags.InvalidCategoryError):
         test_ctx.api.put(
@@ -182,7 +187,8 @@ def test_trying_to_update_tag_with_invalid_category(test_ctx):
 ])
 def test_updating_new_suggestions_and_implications(
         test_ctx, input, expected_suggestions, expected_implications):
-    test_ctx.session.add(test_ctx.tag_factory(names=['main'], category='meta'))
+    test_ctx.session.add(
+        test_ctx.tag_factory(names=['main'], category_name='meta'))
     test_ctx.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
@@ -198,9 +204,9 @@ def test_updating_new_suggestions_and_implications(
 
 def test_reusing_suggestions_and_implications(test_ctx):
     test_ctx.session.add_all([
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category='meta'),
-        test_ctx.tag_factory(names=['tag3'], category='meta'),
-        test_ctx.tag_factory(names=['tag4'], category='meta'),
+        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'),
+        test_ctx.tag_factory(names=['tag3'], category_name='meta'),
+        test_ctx.tag_factory(names=['tag4'], category_name='meta'),
     ])
     test_ctx.session.commit()
     result = test_ctx.api.put(
@@ -225,7 +231,8 @@ def test_reusing_suggestions_and_implications(test_ctx):
     {'names': ['ok'], 'implications': ['ok2', '!']},
 ])
 def test_trying_to_update_tag_with_invalid_relation(test_ctx, input):
-    test_ctx.session.add(test_ctx.tag_factory(names=['tag'], category='meta'))
+    test_ctx.session.add(
+        test_ctx.tag_factory(names=['tag'], category_name='meta'))
     test_ctx.session.commit()
     with pytest.raises(tags.InvalidNameError):
         test_ctx.api.put(
@@ -253,7 +260,8 @@ def test_trying_to_update_tag_with_invalid_relation(test_ctx, input):
     }
 ])
 def test_tag_trying_to_relate_to_itself(test_ctx, input):
-    test_ctx.session.add(test_ctx.tag_factory(names=['tag1'], category='meta'))
+    test_ctx.session.add(
+        test_ctx.tag_factory(names=['tag1'], category_name='meta'))
     test_ctx.session.commit()
     with pytest.raises(tags.RelationError):
         test_ctx.api.put(
@@ -268,7 +276,8 @@ def test_tag_trying_to_relate_to_itself(test_ctx, input):
     {'implications': ['whatever']},
 ])
 def test_trying_to_update_tag_without_privileges(test_ctx, input):
-    test_ctx.session.add(test_ctx.tag_factory(names=['tag'], category='meta'))
+    test_ctx.session.add(
+        test_ctx.tag_factory(names=['tag'], category_name='meta'))
     test_ctx.session.commit()
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(

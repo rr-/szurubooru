@@ -37,13 +37,6 @@ limits:
     max_comment_length: 5000
 
 tag_name_regex: ^:?[a-zA-Z0-9_-]+$
-tag_categories:
-    - plain
-    - meta
-    - artist
-    - character
-    - copyright
-    - other unique
 
 # changing ranks after deployment may require manual tweaks to the database.
 ranks:

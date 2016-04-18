@@ -40,7 +40,7 @@ class Authenticator(object):
 
     def _authenticate(self, session, username, password):
         ''' Try to authenticate user. Throw AuthError for invalid users. '''
-        user = users.get_by_name(session, username)
+        user = users.get_user_by_name(session, username)
         if not user:
             raise errors.AuthError('No such user.')
         if not auth.is_valid_password(user, password):

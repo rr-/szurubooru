@@ -15,17 +15,25 @@ depends_on = None
 
 def upgrade():
     op.create_table(
+        'tag_category',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=32), nullable=False),
+        sa.Column('color', sa.String(length=32), nullable=False),
+        sa.PrimaryKeyConstraint('id'))
+
+    op.create_table(
         'tag',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('category', sa.String(length=32), nullable=False),
+        sa.Column('category_id', sa.Integer(), nullable=False),
         sa.Column('creation_time', sa.DateTime(), nullable=False),
         sa.Column('last_edit_time', sa.DateTime(), nullable=True),
+        sa.ForeignKeyConstraint(['category_id'], ['tag_category.id']),
         sa.PrimaryKeyConstraint('id'))
 
     op.create_table(
         'tag_name',
         sa.Column('tag_name_id', sa.Integer(), nullable=False),
-        sa.Column('tag_id', sa.Integer(), nullable=True),
+        sa.Column('tag_id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(length=64), nullable=False),
         sa.ForeignKeyConstraint(['tag_id'], ['tag.id']),
         sa.PrimaryKeyConstraint('tag_name_id'),
@@ -49,6 +57,7 @@ def upgrade():
 
 def downgrade():
     op.drop_table('tag_suggestion')
-    op.drop_table('tag_name')
     op.drop_table('tag_implication')
+    op.drop_table('tag_name')
     op.drop_table('tag')
+    op.drop_table('tag_category')

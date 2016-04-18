@@ -45,13 +45,19 @@ def export_to_json(session):
     with open(export_path, 'w') as handle:
         handle.write(json.dumps(output, separators=(',', ':')))
 
-def get_by_name(session, name):
+def get_tag_by_name(session, name):
     return session.query(db.Tag) \
         .join(db.TagName) \
         .filter(db.TagName.name.ilike(name)) \
         .first()
 
-def get_by_names(session, names):
+def get_default_category(session):
+    return session.query(db.TagCategory) \
+        .order_by(db.TagCategory.tag_category_id.asc()) \
+        .limit(1) \
+        .one()
+
+def get_tags_by_names(session, names):
     names = misc.icase_unique(names)
     if len(names) == 0:
         return []
@@ -60,11 +66,11 @@ def get_by_names(session, names):
         expr = expr | db.TagName.name.ilike(name)
     return session.query(db.Tag).join(db.TagName).filter(expr).all()
 
-def get_or_create_by_names(session, names):
+def get_or_create_tags_by_names(session, names):
     names = misc.icase_unique(names)
     for name in names:
         _verify_name_validity(name)
-    related_tags = get_by_names(session, names)
+    related_tags = get_tags_by_names(session, names)
     new_tags = []
     for name in names:
         found = False
@@ -76,27 +82,32 @@ def get_or_create_by_names(session, names):
             new_tag = create_tag(
                 session,
                 names=[name],
-                category=config.config['tag_categories'][0],
+                category_name=get_default_category(session).name,
                 suggestions=[],
                 implications=[])
             session.add(new_tag)
             new_tags.append(new_tag)
     return related_tags, new_tags
 
-def create_tag(session, names, category, suggestions, implications):
+def create_tag(session, names, category_name, suggestions, implications):
     tag = db.Tag()
     tag.creation_time = datetime.datetime.now()
     update_names(session, tag, names)
-    update_category(tag, category)
+    update_category_name(session, tag, category_name)
     update_suggestions(session, tag, suggestions)
     update_implications(session, tag, implications)
     return tag
 
-def update_category(tag, category):
-    if not category in config.config['tag_categories']:
+def update_category_name(session, tag, category_name):
+    category = session.query(db.TagCategory) \
+        .filter(db.TagCategory.name == category_name) \
+        .first()
+    if not category:
+        category_names = [
+            name[0] for name in session.query(db.TagCategory.name).all()]
         raise InvalidCategoryError(
             'Category %r is invalid. Valid categories: %r.' % (
-                category, config.config['tag_categories']))
+                category_name, category_names))
     tag.category = category
 
 def update_names(session, tag, names):
@@ -129,13 +140,13 @@ def update_names(session, tag, names):
 def update_implications(session, tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise RelationError('Tag cannot imply itself.')
-    related_tags, new_tags = get_or_create_by_names(session, relations)
+    related_tags, new_tags = get_or_create_tags_by_names(session, relations)
     session.flush()
     tag.implications = related_tags + new_tags
 
 def update_suggestions(session, tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise RelationError('Tag cannot suggest itself.')
-    related_tags, new_tags = get_or_create_by_names(session, relations)
+    related_tags, new_tags = get_or_create_tags_by_names(session, relations)
     session.flush()
     tag.suggestions = related_tags + new_tags

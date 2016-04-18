@@ -66,8 +66,10 @@ def user_factory():
     return factory
 
 @pytest.fixture
-def tag_factory():
-    def factory(names=None, category='dummy'):
+def tag_factory(session):
+    def factory(names=None, category_name='dummy'):
+        category = db.TagCategory(category_name)
+        session.add(category)
         tag = db.Tag()
         tag.names = [db.TagName(name) for name in (names or [get_unique_name()])]
         tag.category = category

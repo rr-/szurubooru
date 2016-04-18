@@ -4,13 +4,13 @@ from szurubooru import db
 from szurubooru.util import snapshots
 
 def test_serializing_tag(session, tag_factory):
-    tag = tag_factory(names=['main_name', 'alias'], category='dummy')
+    tag = tag_factory(names=['main_name', 'alias'], category_name='dummy')
     assert snapshots.get_tag_snapshot(tag) == {
         'names': ['main_name', 'alias'],
         'category': 'dummy'
     }
 
-    tag = tag_factory(names=['main_name', 'alias'], category='dummy')
+    tag = tag_factory(names=['main_name', 'alias'], category_name='dummy')
     imp1 = tag_factory(names=['imp1_main_name', 'imp1_alias'])
     imp2 = tag_factory(names=['imp2_main_name', 'imp2_alias'])
     sug1 = tag_factory(names=['sug1_main_name', 'sug1_alias'])
@@ -27,7 +27,7 @@ def test_serializing_tag(session, tag_factory):
     }
 
 def test_merging_modification_to_creation(session, tag_factory, user_factory):
-    tag = tag_factory(names=['dummy'], category='dummy')
+    tag = tag_factory(names=['dummy'])
     user = user_factory()
     session.add_all([tag, user])
     session.flush()
@@ -43,7 +43,7 @@ def test_merging_modification_to_creation(session, tag_factory, user_factory):
 
 def test_merging_modifications(
         fake_datetime, session, tag_factory, user_factory):
-    tag = tag_factory(names=['dummy'], category='dummy')
+    tag = tag_factory(names=['dummy'])
     user = user_factory()
     session.add_all([tag, user])
     session.flush()
@@ -67,7 +67,7 @@ def test_merging_modifications(
 
 def test_not_adding_snapshot_if_data_doesnt_change(
         fake_datetime, session, tag_factory, user_factory):
-    tag = tag_factory(names=['dummy'], category='dummy')
+    tag = tag_factory(names=['dummy'])
     user = user_factory()
     session.add_all([tag, user])
     session.flush()
@@ -84,7 +84,7 @@ def test_not_adding_snapshot_if_data_doesnt_change(
 
 def test_not_merging_due_to_time_difference(
         fake_datetime, session, tag_factory, user_factory):
-    tag = tag_factory(names=['dummy'], category='dummy')
+    tag = tag_factory(names=['dummy'])
     user = user_factory()
     session.add_all([tag, user])
     session.flush()
@@ -99,7 +99,7 @@ def test_not_merging_due_to_time_difference(
 
 def test_not_merging_operations_by_different_users(
         fake_datetime, session, tag_factory, user_factory):
-    tag = tag_factory(names=['dummy'], category='dummy')
+    tag = tag_factory(names=['dummy'])
     user1, user2 = [user_factory(), user_factory()]
     session.add_all([tag, user1, user2])
     session.flush()
@@ -113,7 +113,7 @@ def test_not_merging_operations_by_different_users(
 
 def test_merging_resets_merging_time_window(
         fake_datetime, session, tag_factory, user_factory):
-    tag = tag_factory(names=['dummy'], category='dummy')
+    tag = tag_factory(names=['dummy'])
     user = user_factory()
     session.add_all([tag, user])
     session.flush()
@@ -136,7 +136,7 @@ def test_merging_resets_merging_time_window(
     'initial_operation', [snapshots.create, snapshots.modify])
 def test_merging_deletion_to_modification_or_creation(
         fake_datetime, session, tag_factory, user_factory, initial_operation):
-    tag = tag_factory(names=['dummy'], category='dummy')
+    tag = tag_factory(names=['dummy'], category_name='dummy')
     user = user_factory()
     session.add_all([tag, user])
     session.flush()
@@ -162,7 +162,7 @@ def test_merging_deletion_to_modification_or_creation(
     'expected_operation', [snapshots.create, snapshots.modify])
 def test_merging_deletion_all_the_way_deletes_all_snapshots(
         fake_datetime, session, tag_factory, user_factory, expected_operation):
-    tag = tag_factory(names=['dummy'], category='dummy')
+    tag = tag_factory(names=['dummy'])
     user = user_factory()
     session.add_all([tag, user])
     session.flush()

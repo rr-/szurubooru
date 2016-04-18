@@ -11,7 +11,7 @@ MAIL_BODY = \
 class PasswordResetApi(BaseApi):
     def get(self, ctx, user_name):
         ''' Send a mail with secure token to the correlated user. '''
-        user = users.get_by_name_or_email(ctx.session, user_name)
+        user = users.get_user_by_name_or_email(ctx.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
         if not user.email:
@@ -29,7 +29,7 @@ class PasswordResetApi(BaseApi):
 
     def post(self, ctx, user_name):
         ''' Verify token from mail, generate a new password and return it. '''
-        user = users.get_by_name_or_email(ctx.session, user_name)
+        user = users.get_user_by_name_or_email(ctx.session, user_name)
         if not user:
             raise errors.NotFoundError('User %r not found.' % user_name)
         good_token = auth.generate_authentication_token(user)

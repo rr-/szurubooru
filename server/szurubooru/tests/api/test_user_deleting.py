@@ -19,7 +19,7 @@ def test_ctx(session, config_injector, context_factory, user_factory):
     ret.api = api.UserDetailApi()
     return ret
 
-def test_removing_oneself(test_ctx):
+def test_deleting_oneself(test_ctx):
     user1 = test_ctx.user_factory(name='u1', rank='regular_user')
     user2 = test_ctx.user_factory(name='u2', rank='regular_user')
     test_ctx.session.add_all([user1, user2])
@@ -30,7 +30,7 @@ def test_removing_oneself(test_ctx):
     assert result == {}
     assert [u.name for u in test_ctx.session.query(db.User).all()] == ['u2']
 
-def test_removing_someone_else(test_ctx):
+def test_deleting_someone_else(test_ctx):
     user1 = test_ctx.user_factory(name='u1', rank='regular_user')
     user2 = test_ctx.user_factory(name='u2', rank='regular_user')
     mod_user = test_ctx.user_factory(rank='mod')
@@ -40,7 +40,7 @@ def test_removing_someone_else(test_ctx):
     test_ctx.api.delete(test_ctx.context_factory(user=mod_user), 'u2')
     assert test_ctx.session.query(db.User).all() == []
 
-def test_removing_non_existing(test_ctx):
+def test_deleting_non_existing(test_ctx):
     with pytest.raises(users.UserNotFoundError):
         test_ctx.api.delete(
             test_ctx.context_factory(

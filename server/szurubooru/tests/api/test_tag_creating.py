@@ -24,11 +24,14 @@ def test_ctx(
         tag_factory):
     config_injector({
         'data_dir': str(tmpdir),
-        'tag_categories': ['meta', 'character', 'copyright'],
         'tag_name_regex': '^[^!]*$',
         'ranks': ['anonymous', 'regular_user'],
         'privileges': {'tags:create': 'regular_user'},
     })
+    session.add_all([
+        db.TagCategory(name) for name in [
+            'meta', 'character', 'copyright']])
+    session.flush()
     ret = misc.dotdict()
     ret.session = session
     ret.context_factory = context_factory
@@ -60,7 +63,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
     }
     tag = get_tag(test_ctx.session, 'tag1')
     assert [tag_name.name for tag_name in tag.names] == ['tag1', 'tag2']
-    assert tag.category == 'meta'
+    assert tag.category.name == 'meta'
     assert tag.last_edit_time is None
     assert tag.post_count == 0
     assert_relations(tag.suggestions, [])
@@ -111,8 +114,8 @@ def test_trying_to_create_tag_with_invalid_name(test_ctx, names):
 
 def test_trying_to_use_existing_name(test_ctx):
     test_ctx.session.add_all([
-        test_ctx.tag_factory(names=['used1'], category='meta'),
-        test_ctx.tag_factory(names=['used2'], category='meta'),
+        test_ctx.tag_factory(names=['used1'], category_name='meta'),
+        test_ctx.tag_factory(names=['used2'], category_name='meta'),
     ])
     test_ctx.session.commit()
     with pytest.raises(tags.TagAlreadyExistsError):
@@ -195,8 +198,8 @@ def test_creating_new_suggestions_and_implications(
 
 def test_reusing_suggestions_and_implications(test_ctx):
     test_ctx.session.add_all([
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category='meta'),
-        test_ctx.tag_factory(names=['tag3'], category='meta'),
+        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'),
+        test_ctx.tag_factory(names=['tag3'], category_name='meta'),
     ])
     test_ctx.session.commit()
     result = test_ctx.api.post(

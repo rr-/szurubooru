@@ -12,12 +12,12 @@ class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
 
-def get_by_name(session, name):
+def get_user_by_name(session, name):
     return session.query(db.User) \
         .filter(func.lower(db.User.name) == func.lower(name)) \
         .first()
 
-def get_by_name_or_email(session, name_or_email):
+def get_user_by_name_or_email(session, name_or_email):
     return session.query(db.User) \
         .filter(
             (func.lower(db.User.name) == func.lower(name_or_email))
@@ -40,7 +40,7 @@ def create_user(session, name, password, email, auth_user):
 def update_name(session, user, name, auth_user):
     if misc.value_exceeds_column_size(name, db.User.name):
         raise InvalidNameError('User name is too long.')
-    other_user = get_by_name(session, name)
+    other_user = get_user_by_name(session, name)
     if other_user and other_user.user_id != auth_user.user_id:
         raise UserAlreadyExistsError('User %r already exists.' % name)
     name = name.strip()

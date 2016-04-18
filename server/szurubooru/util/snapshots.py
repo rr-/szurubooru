@@ -5,7 +5,7 @@ from szurubooru import db
 def get_tag_snapshot(tag):
     ret = {
         'names': [tag_name.name for tag_name in tag.names],
-        'category': tag.category
+        'category': tag.category.name
     }
     if tag.suggestions:
         ret['suggestions'] = sorted(rel.first_name for rel in tag.suggestions)

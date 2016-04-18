@@ -75,13 +75,13 @@ class UserListApi(BaseApi):
 class UserDetailApi(BaseApi):
     def get(self, ctx, user_name):
         auth.verify_privilege(ctx.user, 'users:view')
-        user = users.get_by_name(ctx.session, user_name)
+        user = users.get_user_by_name(ctx.session, user_name)
         if not user:
             raise users.UserNotFoundError('User %r not found.' % user_name)
         return {'user': _serialize_user(ctx.user, user)}
 
     def put(self, ctx, user_name):
-        user = users.get_by_name(ctx.session, user_name)
+        user = users.get_user_by_name(ctx.session, user_name)
         if not user:
             raise users.UserNotFoundError('User %r not found.' % user_name)
 
@@ -119,7 +119,7 @@ class UserDetailApi(BaseApi):
         return {'user': _serialize_user(ctx.user, user)}
 
     def delete(self, ctx, user_name):
-        user = users.get_by_name(ctx.session, user_name)
+        user = users.get_user_by_name(ctx.session, user_name)
         if not user:
             raise users.UserNotFoundError('User %r not found.' % user_name)
 
