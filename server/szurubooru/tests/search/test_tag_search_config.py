@@ -43,11 +43,11 @@ def test_filter_by_creation_time(
         verify_unpaged, session, tag_factory, input, expected_tag_names):
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
-    tat3 = tag_factory(names=['t3'])
+    tag3 = tag_factory(names=['t3'])
     tag1.creation_time = datetime.datetime(2014, 1, 1)
     tag2.creation_time = datetime.datetime(2014, 6, 1)
-    tat3.creation_time = datetime.datetime(2015, 1, 1)
-    session.add_all([tag1, tag2, tat3])
+    tag3.creation_time = datetime.datetime(2015, 1, 1)
+    session.add_all([tag1, tag2, tag3])
     verify_unpaged(input, expected_tag_names)
 
 @pytest.mark.parametrize('input,expected_tag_names', [

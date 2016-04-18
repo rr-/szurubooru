@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, table
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
@@ -60,7 +60,7 @@ class Post(Base):
     tag_count = column_property(
         select([func.count('1')])
         .where(PostTag.post_id == post_id) \
-        .correlate('Post'))
+        .correlate(table('Post')))
 
     # TODO: wire these
     fav_count = Column('auto_fav_count', Integer, nullable=False, default=0)

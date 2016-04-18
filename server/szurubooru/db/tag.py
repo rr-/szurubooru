@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, table
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
@@ -57,7 +57,7 @@ class Tag(Base):
     post_count = column_property(
         select([func.count('Post.post_id')]) \
         .where(PostTag.tag_id == tag_id) \
-        .correlate('Tag'))
+        .correlate(table('Tag')))
 
     first_name = column_property(
         select([TagName.name]) \
