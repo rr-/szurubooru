@@ -70,6 +70,35 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
     assert_relations(tag.implications, [])
     assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
+@pytest.mark.parametrize('field', ['names', 'category'])
+def test_missing_mandatory_field(test_ctx, field):
+    input = {
+        'names': ['tag1', 'tag2'],
+        'category': 'meta',
+        'suggestions': [],
+        'implications': [],
+    }
+    del input[field]
+    with pytest.raises(errors.ValidationError):
+        test_ctx.api.post(
+            test_ctx.context_factory(
+                input=input,
+                user=test_ctx.user_factory(rank='regular_user')))
+
+@pytest.mark.parametrize('field', ['implications', 'suggestions'])
+def test_missing_optional_field(test_ctx, tmpdir, field):
+    input = {
+        'names': ['tag1', 'tag2'],
+        'category': 'meta',
+        'suggestions': [],
+        'implications': [],
+    }
+    del input[field]
+    test_ctx.api.post(
+        test_ctx.context_factory(
+            input=input,
+            user=test_ctx.user_factory(rank='regular_user')))
+
 def test_duplicating_names(test_ctx):
     result = test_ctx.api.post(
         test_ctx.context_factory(
@@ -86,7 +115,7 @@ def test_duplicating_names(test_ctx):
     assert [tag_name.name for tag_name in tag.names] == ['tag1']
 
 def test_trying_to_create_tag_without_names(test_ctx):
-    with pytest.raises(tags.InvalidNameError):
+    with pytest.raises(tags.InvalidTagNameError):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={
@@ -99,7 +128,7 @@ def test_trying_to_create_tag_without_names(test_ctx):
 
 @pytest.mark.parametrize('names', [['!'], ['x' * 65]])
 def test_trying_to_create_tag_with_invalid_name(test_ctx, names):
-    with pytest.raises(tags.InvalidNameError):
+    with pytest.raises(tags.InvalidTagNameError):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={
@@ -141,7 +170,7 @@ def test_trying_to_use_existing_name(test_ctx):
     assert get_tag(test_ctx.session, 'unused') is None
 
 def test_trying_to_create_tag_with_invalid_category(test_ctx):
-    with pytest.raises(tags.InvalidCategoryError):
+    with pytest.raises(tags.InvalidTagCategoryError):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={
@@ -233,7 +262,7 @@ def test_reusing_suggestions_and_implications(test_ctx):
     }
 ])
 def test_trying_to_create_tag_with_invalid_relation(test_ctx, input):
-    with pytest.raises(tags.InvalidNameError):
+    with pytest.raises(tags.InvalidTagNameError):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input=input, user=test_ctx.user_factory(rank='regular_user')))

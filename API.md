@@ -13,18 +13,27 @@
 
 2. [API reference](#api-reference)
 
-   - [Listing tags](#listing-tags)
-   - [Creating tag](#creating-tag)
-   - [Updating tag](#updating-tag)
-   - [Getting tag](#getting-tag)
-   - [Deleting tag](#deleting-tag)
-   - [Listing users](#listing-users)
-   - [Creating user](#creating-user)
-   - [Updating user](#updating-user)
-   - [Getting user](#getting-user)
-   - [Deleting user](#deleting-user)
-   - [Password reset - step 1: mail request](#password-reset---step-2-confirmation)
-   - [Password reset - step 2: confirmation](#password-reset---step-2-confirmation)
+    - Tag categories
+        - [Listing tag categories](#listing-tags-category)
+        - [Creating tag category](#creating-tag-category)
+        - [Updating tag category](#updating-tag-category)
+        - [Getting tag category](#getting-tag-category)
+        - [Deleting tag category](#deleting-tag-category)
+    - Tags
+        - [Listing tags](#listing-tags)
+        - [Creating tag](#creating-tag)
+        - [Updating tag](#updating-tag)
+        - [Getting tag](#getting-tag)
+        - [Deleting tag](#deleting-tag)
+    - Users
+        - [Listing users](#listing-users)
+        - [Creating user](#creating-user)
+        - [Updating user](#updating-user)
+        - [Getting user](#getting-user)
+        - [Deleting user](#deleting-user)
+    - Password reset
+        - [Password reset - step 1: mail request](#password-reset---step-2-confirmation)
+        - [Password reset - step 2: confirmation](#password-reset---step-2-confirmation)
 
 3. [Resources](#resources)
 
@@ -80,6 +89,31 @@ code together with JSON of following structure:
 Depending on the deployment, the URLs might be relative to some base path such
 as `/api/`. Values denoted with diamond braces (`<like this>`) signify variable
 data.
+
+
+## Listing tag categories
+
+Not implemented yet.
+
+
+## Creating tag category
+
+Not implemented yet.
+
+
+## Updating tag category
+
+Not implemented yet.
+
+
+## Getting tag category
+
+Not implemented yet.
+
+
+## Deleting tag category
+
+Not implemented yet.
 
 
 ## Listing tags
@@ -178,8 +212,8 @@ data.
     {
         "names":        [<name1>, <name2>, ...],
         "category":     <category>,
-        "implications": [<name1>, <name2>, ...],
-        "suggestions":  [<name1>, <name2>, ...]
+        "implications": [<name1>, <name2>, ...],    // optional
+        "suggestions":  [<name1>, <name2>, ...]     // optional
     }
     ```
 
@@ -206,11 +240,12 @@ data.
 
     Creates a new tag using specified parameters. Names, suggestions and
     implications must match `tag_name_regex` from server's configuration.
-    Category must be one of `tag_categories` from server's configuration.
-    If specified implied tags or suggested tags do not exist yet, they will
-    be automatically created. Tags created automatically have no implications,
-    no suggestions, one name and their category is set to the first item of
-    `tag_categories` from server's configuration.
+    Category must exist and is the same as `name` field within
+    [`<tag-category>` resource](#tag-category). Suggestions and implications
+    are optional. If specified implied tags or suggested tags do not exist yet,
+    they will be automatically created. Tags created automatically have no
+    implications, no suggestions, one name and their category is set to the
+    first item of `tag_categories` from server's configuration.
 
 
 ## Updating tag
@@ -592,8 +627,17 @@ data.
     "rankName":      "Administrator",    // controlled by server's configuration
     "lastLoginTime": "2016-04-08T20:20:16.570517",
     "creationTime":  "2016-03-28T13:37:01.755461",
-    "avatarStyle":   "gravatar",        // "gravatar" or "manual"
+    "avatarStyle":   "gravatar",         // "gravatar" or "manual"
     "avatarUrl":     "http://gravatar.com/(...)"
+}
+```
+
+## Tag category
+
+```json5
+{
+    "name":  "character",
+    "color": "#FF0000",     // used to colorize certain tag types in the web client
 }
 ```
 

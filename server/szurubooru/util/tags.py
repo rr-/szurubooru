@@ -8,15 +8,15 @@ from szurubooru.util import misc
 
 class TagNotFoundError(errors.NotFoundError): pass
 class TagAlreadyExistsError(errors.ValidationError): pass
-class InvalidNameError(errors.ValidationError): pass
-class InvalidCategoryError(errors.ValidationError): pass
-class RelationError(errors.ValidationError): pass
 class TagIsInUseError(errors.ValidationError): pass
+class InvalidTagNameError(errors.ValidationError): pass
+class InvalidTagCategoryError(errors.ValidationError): pass
+class RelationError(errors.ValidationError): pass
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']
     if not re.match(name_regex, name):
-        raise InvalidNameError('Name must satisfy regex %r.' % name_regex)
+        raise InvalidTagNameError('Name must satisfy regex %r.' % name_regex)
 
 def _get_plain_names(tag):
     return [tag_name.name for tag_name in tag.names]
@@ -105,7 +105,7 @@ def update_category_name(tag, category_name):
     if not category:
         category_names = [
             name[0] for name in session.query(db.TagCategory.name).all()]
-        raise InvalidCategoryError(
+        raise InvalidTagCategoryError(
             'Category %r is invalid. Valid categories: %r.' % (
                 category_name, category_names))
     tag.category = category
@@ -113,13 +113,13 @@ def update_category_name(tag, category_name):
 def update_names(tag, names):
     names = misc.icase_unique(names)
     if not len(names):
-        raise InvalidNameError('At least one name must be specified.')
+        raise InvalidTagNameError('At least one name must be specified.')
     for name in names:
         _verify_name_validity(name)
     expr = sqlalchemy.sql.false()
     for name in names:
         if misc.value_exceeds_column_size(name, db.TagName.name):
-            raise InvalidNameError('Name is too long.')
+            raise InvalidTagNameError('Name is too long.')
         expr = expr | db.TagName.name.ilike(name)
     if tag.tag_id:
         expr = expr & (db.TagName.tag_id != tag.tag_id)

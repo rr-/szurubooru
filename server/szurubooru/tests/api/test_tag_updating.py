@@ -127,7 +127,7 @@ def test_trying_to_set_invalid_name(test_ctx, input):
     test_ctx.session.add(
         test_ctx.tag_factory(names=['tag1'], category_name='meta'))
     test_ctx.session.commit()
-    with pytest.raises(tags.InvalidNameError):
+    with pytest.raises(tags.InvalidTagNameError):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input=input,
@@ -151,7 +151,7 @@ def test_trying_to_update_tag_with_invalid_category(test_ctx):
     test_ctx.session.add(
         test_ctx.tag_factory(names=['tag1'], category_name='meta'))
     test_ctx.session.commit()
-    with pytest.raises(tags.InvalidCategoryError):
+    with pytest.raises(tags.InvalidTagCategoryError):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={
@@ -234,7 +234,7 @@ def test_trying_to_update_tag_with_invalid_relation(test_ctx, input):
     test_ctx.session.add(
         test_ctx.tag_factory(names=['tag'], category_name='meta'))
     test_ctx.session.commit()
-    with pytest.raises(tags.InvalidNameError):
+    with pytest.raises(tags.InvalidTagNameError):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input=input, user=test_ctx.user_factory(rank='regular_user')),

@@ -40,8 +40,10 @@ class TagListApi(BaseApi):
 
         names = ctx.get_param_as_list('names', required=True)
         category = ctx.get_param_as_string('category', required=True)
-        suggestions = ctx.get_param_as_list('suggestions', required=True)
-        implications = ctx.get_param_as_list('implications', required=True)
+        suggestions = ctx.get_param_as_list(
+            'suggestions', required=False, default=[])
+        implications = ctx.get_param_as_list(
+            'implications', required=False, default=[])
 
         tag = tags.create_tag(names, category, suggestions, implications)
         ctx.session.add(tag)
