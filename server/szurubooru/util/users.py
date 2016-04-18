@@ -12,35 +12,38 @@ class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
 
-def get_user_by_name(session, name):
-    return session.query(db.User) \
+def get_user_count():
+    return db.session.query(db.User).count()
+
+def get_user_by_name(name):
+    return db.session.query(db.User) \
         .filter(func.lower(db.User.name) == func.lower(name)) \
         .first()
 
-def get_user_by_name_or_email(session, name_or_email):
-    return session.query(db.User) \
+def get_user_by_name_or_email(name_or_email):
+    return db.session.query(db.User) \
         .filter(
             (func.lower(db.User.name) == func.lower(name_or_email))
             | (func.lower(db.User.email) == func.lower(name_or_email))) \
         .first()
 
-def create_user(session, name, password, email, auth_user):
+def create_user(name, password, email, auth_user):
     user = db.User()
-    update_name(session, user, name, auth_user)
+    update_name(user, name, auth_user)
     update_password(user, password)
     update_email(user, email)
-    if not session.query(db.User).count():
-        user.rank = 'admin'
-    else:
+    if get_user_count() > 0:
         user.rank = config.config['default_rank']
+    else:
+        user.rank = 'admin'
     user.creation_time = datetime.datetime.now()
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
 
-def update_name(session, user, name, auth_user):
+def update_name(user, name, auth_user):
     if misc.value_exceeds_column_size(name, db.User.name):
         raise InvalidNameError('User name is too long.')
-    other_user = get_user_by_name(session, name)
+    other_user = get_user_by_name(name)
     if other_user and other_user.user_id != auth_user.user_id:
         raise UserAlreadyExistsError('User %r already exists.' % name)
     name = name.strip()
@@ -66,14 +69,14 @@ def update_email(user, email):
         raise InvalidEmailError('E-mail is invalid.')
     user.email = email
 
-def update_rank(session, user, rank, authenticated_user):
+def update_rank(user, rank, authenticated_user):
     rank = rank.strip()
     available_ranks = config.config['ranks']
     if not rank in available_ranks:
         raise InvalidRankError(
             'Rank %r is invalid. Valid ranks: %r' % (rank, available_ranks))
     if available_ranks.index(authenticated_user.rank) \
-            < available_ranks.index(rank) and session.query(db.User).count() > 0:
+            < available_ranks.index(rank) and get_user_count() > 0:
         raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank
 

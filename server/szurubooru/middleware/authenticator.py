@@ -29,8 +29,7 @@ class Authenticator(object):
                     'Only basic authorization is supported.')
             username, password = base64.decodebytes(
                 user_and_password.encode('ascii')).decode('utf8').split(':')
-            return self._authenticate(
-                request.context.session, username, password)
+            return self._authenticate(username, password)
         except ValueError as err:
             msg = 'Basic authentication header value not properly formed. ' \
                 + 'Supplied header {0}. Got error: {1}'
@@ -38,9 +37,9 @@ class Authenticator(object):
                 'Malformed authentication request',
                 msg.format(request.auth, str(err)))
 
-    def _authenticate(self, session, username, password):
+    def _authenticate(self, username, password):
         ''' Try to authenticate user. Throw AuthError for invalid users. '''
-        user = users.get_user_by_name(session, username)
+        user = users.get_user_by_name(username)
         if not user:
             raise errors.AuthError('No such user.')
         if not auth.is_valid_password(user, password):

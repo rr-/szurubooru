@@ -1,9 +1,7 @@
 ''' Exports create_app. '''
 
 import falcon
-import sqlalchemy
-import sqlalchemy.orm
-from szurubooru import api, config, errors, middleware
+from szurubooru import api, errors, middleware
 
 def _on_auth_error(ex, _request, _response, _params):
     raise falcon.HTTPForbidden(
@@ -27,23 +25,12 @@ def _on_processing_error(ex, _request, _response, _params):
 
 def create_app():
     ''' Create a WSGI compatible App object. '''
-    engine = sqlalchemy.create_engine(
-        '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
-            schema=config.config['database']['schema'],
-            user=config.config['database']['user'],
-            password=config.config['database']['pass'],
-            host=config.config['database']['host'],
-            port=config.config['database']['port'],
-            name=config.config['database']['name']))
-    session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
-    scoped_session = sqlalchemy.orm.scoped_session(session_maker)
-
     app = falcon.API(
         request_type=api.Request,
         middleware=[
             middleware.RequireJson(),
             middleware.ContextAdapter(),
-            middleware.DbSession(scoped_session),
+            middleware.DbSession(),
             middleware.Authenticator(),
         ])
 

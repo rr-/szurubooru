@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from contextlib import contextmanager
 import pytest
 import freezegun
 import sqlalchemy
@@ -11,27 +12,27 @@ def get_unique_name():
 
 @pytest.fixture
 def fake_datetime():
+    @contextmanager
     def injector(now):
-        class scope():
-            def __enter__(self):
-                self.freezer = freezegun.freeze_time(now)
-                self.freezer.start()
-            def __exit__(self, type, value, trackback):
-                self.freezer.stop()
-        return scope()
+        freezer = freezegun.freeze_time(now)
+        freezer.start()
+        yield
+        freezer.stop()
     return injector
 
-@pytest.fixture
-def session():
+@pytest.yield_fixture
+def session(autoload=True):
     import logging
     logging.basicConfig()
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
     engine = sqlalchemy.create_engine('sqlite:///:memory:')
     session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
-    session_instance = sqlalchemy.orm.scoped_session(session_maker)
-    db.Base.query = session_instance.query_property()
+    session = sqlalchemy.orm.scoped_session(session_maker)
+    db.Base.query = session.query_property()
     db.Base.metadata.create_all(bind=engine)
-    return session_instance
+    db.session = session
+    yield session
+    session.remove()
 
 @pytest.fixture
 def context_factory(session):

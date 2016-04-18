@@ -3,15 +3,15 @@ import pytest
 from szurubooru import db, errors, search
 
 @pytest.fixture
-def executor(session):
+def executor():
     search_config = search.TagSearchConfig()
     return search.SearchExecutor(search_config)
 
 @pytest.fixture
-def verify_unpaged(session, executor):
+def verify_unpaged(executor):
     def verify(input, expected_tag_names):
         actual_count, actual_tags = executor.execute(
-            session, input, page=1, page_size=100)
+            input, page=1, page_size=100)
         actual_tag_names = [u.names[0].name for u in actual_tags]
         assert actual_count == len(expected_tag_names)
         assert actual_tag_names == expected_tag_names

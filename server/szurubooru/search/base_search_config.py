@@ -7,7 +7,7 @@ class BaseSearchConfig(object):
     ORDER_DESC = 0
     ORDER_ASC = 1
 
-    def create_query(self, session):
+    def create_query(self):
         raise NotImplementedError()
 
     @property

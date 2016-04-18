@@ -13,11 +13,12 @@ def get_tag_snapshot(tag):
         ret['implications'] = sorted(rel.first_name for rel in tag.implications)
     return ret
 
+# pylint: disable=invalid-name
 serializers = {
     'tag': get_tag_snapshot,
 }
 
-def save(session, operation, entity, auth_user):
+def save(operation, entity, auth_user):
     table_name = entity.__table__.name
     primary_key = inspect(entity).identity
     assert table_name in serializers
@@ -33,6 +34,7 @@ def save(session, operation, entity, auth_user):
     snapshot.data = serializers[table_name](entity)
     snapshot.user = auth_user
 
+    session = db.session()
     earlier_snapshots = session.query(db.Snapshot) \
         .filter(db.Snapshot.resource_type == table_name) \
         .filter(db.Snapshot.resource_id == primary_key) \
@@ -57,11 +59,11 @@ def save(session, operation, entity, auth_user):
     else:
         session.add(snapshot)
 
-def create(session, entity, auth_user):
-    save(session, db.Snapshot.OPERATION_CREATED, entity, auth_user)
+def create(entity, auth_user):
+    save(db.Snapshot.OPERATION_CREATED, entity, auth_user)
 
-def modify(session, entity, auth_user):
-    save(session, db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
+def modify(entity, auth_user):
+    save(db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
 
-def delete(session, entity, auth_user):
-    save(session, db.Snapshot.OPERATION_DELETED, entity, auth_user)
+def delete(entity, auth_user):
+    save(db.Snapshot.OPERATION_DELETED, entity, auth_user)

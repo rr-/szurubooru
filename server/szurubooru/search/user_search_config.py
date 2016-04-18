@@ -5,8 +5,8 @@ from szurubooru.search.base_search_config import BaseSearchConfig
 class UserSearchConfig(BaseSearchConfig):
     ''' Executes searches related to the users. '''
 
-    def create_query(self, session):
-        return session.query(db.User)
+    def create_query(self):
+        return db.session().query(db.User)
 
     def finalize_query(self, query):
         return query.order_by(db.User.name.asc())

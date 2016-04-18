@@ -27,9 +27,9 @@ def _lower_list(names):
 def _check_name_intersection(names1, names2):
     return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
 
-def export_to_json(session):
+def export_to_json():
     output = []
-    for tag in session.query(db.Tag).all():
+    for tag in db.session().query(db.Tag).all():
         item = {
             'names': [tag_name.name for tag_name in tag.names],
             'usages': tag.post_count
@@ -45,32 +45,32 @@ def export_to_json(session):
     with open(export_path, 'w') as handle:
         handle.write(json.dumps(output, separators=(',', ':')))
 
-def get_tag_by_name(session, name):
-    return session.query(db.Tag) \
+def get_tag_by_name(name):
+    return db.session().query(db.Tag) \
         .join(db.TagName) \
         .filter(db.TagName.name.ilike(name)) \
         .first()
 
-def get_default_category(session):
-    return session.query(db.TagCategory) \
+def get_default_category():
+    return db.session().query(db.TagCategory) \
         .order_by(db.TagCategory.tag_category_id.asc()) \
         .limit(1) \
         .one()
 
-def get_tags_by_names(session, names):
+def get_tags_by_names(names):
     names = misc.icase_unique(names)
     if len(names) == 0:
         return []
     expr = sqlalchemy.sql.false()
     for name in names:
         expr = expr | db.TagName.name.ilike(name)
-    return session.query(db.Tag).join(db.TagName).filter(expr).all()
+    return db.session().query(db.Tag).join(db.TagName).filter(expr).all()
 
-def get_or_create_tags_by_names(session, names):
+def get_or_create_tags_by_names(names):
     names = misc.icase_unique(names)
     for name in names:
         _verify_name_validity(name)
-    related_tags = get_tags_by_names(session, names)
+    related_tags = get_tags_by_names(names)
     new_tags = []
     for name in names:
         found = False
@@ -80,25 +80,25 @@ def get_or_create_tags_by_names(session, names):
                 break
         if not found:
             new_tag = create_tag(
-                session,
                 names=[name],
-                category_name=get_default_category(session).name,
+                category_name=get_default_category().name,
                 suggestions=[],
                 implications=[])
-            session.add(new_tag)
+            db.session().add(new_tag)
             new_tags.append(new_tag)
     return related_tags, new_tags
 
-def create_tag(session, names, category_name, suggestions, implications):
+def create_tag(names, category_name, suggestions, implications):
     tag = db.Tag()
     tag.creation_time = datetime.datetime.now()
-    update_names(session, tag, names)
-    update_category_name(session, tag, category_name)
-    update_suggestions(session, tag, suggestions)
-    update_implications(session, tag, implications)
+    update_names(tag, names)
+    update_category_name(tag, category_name)
+    update_suggestions(tag, suggestions)
+    update_implications(tag, implications)
     return tag
 
-def update_category_name(session, tag, category_name):
+def update_category_name(tag, category_name):
+    session = db.session()
     category = session.query(db.TagCategory) \
         .filter(db.TagCategory.name == category_name) \
         .first()
@@ -110,7 +110,7 @@ def update_category_name(session, tag, category_name):
                 category_name, category_names))
     tag.category = category
 
-def update_names(session, tag, names):
+def update_names(tag, names):
     names = misc.icase_unique(names)
     if not len(names):
         raise InvalidNameError('At least one name must be specified.')
@@ -123,7 +123,7 @@ def update_names(session, tag, names):
         expr = expr | db.TagName.name.ilike(name)
     if tag.tag_id:
         expr = expr & (db.TagName.tag_id != tag.tag_id)
-    existing_tags = session.query(db.TagName).filter(expr).all()
+    existing_tags = db.session().query(db.TagName).filter(expr).all()
     if len(existing_tags):
         raise TagAlreadyExistsError(
             'One of names is already used by another tag.')
@@ -137,16 +137,16 @@ def update_names(session, tag, names):
         if not _check_name_intersection(_get_plain_names(tag), [name]):
             tag.names.append(db.TagName(name))
 
-def update_implications(session, tag, relations):
+def update_implications(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise RelationError('Tag cannot imply itself.')
-    related_tags, new_tags = get_or_create_tags_by_names(session, relations)
-    session.flush()
+    related_tags, new_tags = get_or_create_tags_by_names(relations)
+    db.session().flush()
     tag.implications = related_tags + new_tags
 
-def update_suggestions(session, tag, relations):
+def update_suggestions(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise RelationError('Tag cannot suggest itself.')
-    related_tags, new_tags = get_or_create_tags_by_names(session, relations)
-    session.flush()
+    related_tags, new_tags = get_or_create_tags_by_names(relations)
+    db.session().flush()
     tag.suggestions = related_tags + new_tags

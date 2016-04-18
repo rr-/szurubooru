@@ -3,15 +3,15 @@ import pytest
 from szurubooru import db, errors, search
 
 @pytest.fixture
-def executor(session):
+def executor():
     search_config = search.UserSearchConfig()
     return search.SearchExecutor(search_config)
 
 @pytest.fixture
-def verify_unpaged(session, executor):
+def verify_unpaged(executor):
     def verify(input, expected_user_names):
         actual_count, actual_users = executor.execute(
-            session, input, page=1, page_size=100)
+            input, page=1, page_size=100)
         actual_user_names = [u.name for u in actual_users]
         assert actual_count == len(expected_user_names)
         assert actual_user_names == expected_user_names
@@ -119,7 +119,7 @@ def test_paging(
     session.add(user_factory(name='u1'))
     session.add(user_factory(name='u2'))
     actual_count, actual_users = executor.execute(
-        session, '', page=page, page_size=page_size)
+        '', page=page, page_size=page_size)
     actual_user_names = [u.name for u in actual_users]
     assert actual_count == expected_total_count
     assert actual_user_names == expected_user_names
@@ -184,7 +184,7 @@ def test_random_order(session, executor, user_factory):
     user3 = user_factory(name='u3')
     session.add_all([user3, user1, user2])
     actual_count, actual_users = executor.execute(
-        session, 'order:random', page=1, page_size=100)
+        'order:random', page=1, page_size=100)
     actual_user_names = [u.name for u in actual_users]
     assert actual_count == 3
     assert len(actual_user_names) == 3
@@ -211,6 +211,6 @@ def test_random_order(session, executor, user_factory):
     ('bad:x', errors.SearchError),
     ('special:unsupported', errors.SearchError),
 ])
-def test_bad_tokens(executor, session, input, expected_error):
+def test_bad_tokens(executor, input, expected_error):
     with pytest.raises(expected_error):
-        executor.execute(session, input, page=1, page_size=100)
+        executor.execute(input, page=1, page_size=100)

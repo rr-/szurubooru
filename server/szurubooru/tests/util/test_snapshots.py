@@ -31,10 +31,10 @@ def test_merging_modification_to_creation(session, tag_factory, user_factory):
     user = user_factory()
     session.add_all([tag, user])
     session.flush()
-    snapshots.create(session, tag, user)
+    snapshots.create(tag, user)
     session.flush()
     tag.names = [db.TagName('changed')]
-    snapshots.modify(session, tag, user)
+    snapshots.modify(tag, user)
     session.flush()
     results = session.query(db.Snapshot).all()
     assert len(results) == 1
@@ -48,15 +48,15 @@ def test_merging_modifications(
     session.add_all([tag, user])
     session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(session, tag, user)
+        snapshots.create(tag, user)
     session.flush()
     tag.names = [db.TagName('changed')]
     with fake_datetime('14:00:00'):
-        snapshots.modify(session, tag, user)
+        snapshots.modify(tag, user)
     session.flush()
     tag.names = [db.TagName('changed again')]
     with fake_datetime('14:00:01'):
-        snapshots.modify(session, tag, user)
+        snapshots.modify(tag, user)
     session.flush()
     results = session.query(db.Snapshot).all()
     assert len(results) == 2
@@ -72,10 +72,10 @@ def test_not_adding_snapshot_if_data_doesnt_change(
     session.add_all([tag, user])
     session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(session, tag, user)
+        snapshots.create(tag, user)
     session.flush()
     with fake_datetime('14:00:00'):
-        snapshots.modify(session, tag, user)
+        snapshots.modify(tag, user)
     session.flush()
     results = session.query(db.Snapshot).all()
     assert len(results) == 1
@@ -89,11 +89,11 @@ def test_not_merging_due_to_time_difference(
     session.add_all([tag, user])
     session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(session, tag, user)
+        snapshots.create(tag, user)
     session.flush()
     tag.names = [db.TagName('changed')]
     with fake_datetime('13:10:01'):
-        snapshots.modify(session, tag, user)
+        snapshots.modify(tag, user)
     session.flush()
     assert session.query(db.Snapshot).count() == 2
 
@@ -104,10 +104,10 @@ def test_not_merging_operations_by_different_users(
     session.add_all([tag, user1, user2])
     session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(session, tag, user1)
+        snapshots.create(tag, user1)
         session.flush()
         tag.names = [db.TagName('changed')]
-        snapshots.modify(session, tag, user2)
+        snapshots.modify(tag, user2)
         session.flush()
     assert session.query(db.Snapshot).count() == 2
 
@@ -118,15 +118,15 @@ def test_merging_resets_merging_time_window(
     session.add_all([tag, user])
     session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(session, tag, user)
+        snapshots.create(tag, user)
     session.flush()
     tag.names = [db.TagName('changed')]
     with fake_datetime('13:09:59'):
-        snapshots.modify(session, tag, user)
+        snapshots.modify(tag, user)
     session.flush()
     tag.names = [db.TagName('changed again')]
     with fake_datetime('13:19:59'):
-        snapshots.modify(session, tag, user)
+        snapshots.modify(tag, user)
     session.flush()
     results = session.query(db.Snapshot).all()
     assert len(results) == 1
@@ -141,15 +141,15 @@ def test_merging_deletion_to_modification_or_creation(
     session.add_all([tag, user])
     session.flush()
     with fake_datetime('13:00:00'):
-        initial_operation(session, tag, user)
+        initial_operation(tag, user)
     session.flush()
     tag.names = [db.TagName('changed')]
     with fake_datetime('14:00:00'):
-        snapshots.modify(session, tag, user)
+        snapshots.modify(tag, user)
     session.flush()
     tag.names = [db.TagName('changed again')]
     with fake_datetime('14:00:01'):
-        snapshots.delete(session, tag, user)
+        snapshots.delete(tag, user)
     session.flush()
     assert session.query(db.Snapshot).count() == 2
     results = session.query(db.Snapshot) \
@@ -167,14 +167,14 @@ def test_merging_deletion_all_the_way_deletes_all_snapshots(
     session.add_all([tag, user])
     session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(session, tag, user)
+        snapshots.create(tag, user)
     session.flush()
     tag.names = [db.TagName('changed')]
     with fake_datetime('13:00:01'):
-        snapshots.modify(session, tag, user)
+        snapshots.modify(tag, user)
     session.flush()
     tag.names = [db.TagName('changed again')]
     with fake_datetime('13:00:02'):
-        snapshots.delete(session, tag, user)
+        snapshots.delete(tag, user)
     session.flush()
     assert session.query(db.Snapshot).count() == 0

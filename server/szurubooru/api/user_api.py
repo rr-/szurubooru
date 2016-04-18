@@ -39,8 +39,7 @@ class UserListApi(BaseApi):
         page = ctx.get_param_as_int('page', default=1, min=1)
         page_size = ctx.get_param_as_int(
             'pageSize', default=100, min=1, max=100)
-        count, user_list = self._search_executor.execute(
-            ctx.session, query, page, page_size)
+        count, user_list = self._search_executor.execute(query, page, page_size)
         return {
             'query': query,
             'page': page,
@@ -56,11 +55,10 @@ class UserListApi(BaseApi):
         password = ctx.get_param_as_string('password', required=True)
         email = ctx.get_param_as_string('email', required=False, default='')
 
-        user = users.create_user(ctx.session, name, password, email, ctx.user)
+        user = users.create_user(name, password, email, ctx.user)
 
         if ctx.has_param('rank'):
-            users.update_rank(
-                ctx.session, user, ctx.get_param_as_string('rank'), ctx.user)
+            users.update_rank(user, ctx.get_param_as_string('rank'), ctx.user)
 
         if ctx.has_param('avatarStyle'):
             users.update_avatar(
@@ -75,13 +73,13 @@ class UserListApi(BaseApi):
 class UserDetailApi(BaseApi):
     def get(self, ctx, user_name):
         auth.verify_privilege(ctx.user, 'users:view')
-        user = users.get_user_by_name(ctx.session, user_name)
+        user = users.get_user_by_name(user_name)
         if not user:
             raise users.UserNotFoundError('User %r not found.' % user_name)
         return {'user': _serialize_user(ctx.user, user)}
 
     def put(self, ctx, user_name):
-        user = users.get_user_by_name(ctx.session, user_name)
+        user = users.get_user_by_name(user_name)
         if not user:
             raise users.UserNotFoundError('User %r not found.' % user_name)
 
@@ -92,8 +90,7 @@ class UserDetailApi(BaseApi):
 
         if ctx.has_param('name'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:name' % infix)
-            users.update_name(
-                ctx.session, user, ctx.get_param_as_string('name'), ctx.user)
+            users.update_name(user, ctx.get_param_as_string('name'), ctx.user)
 
         if ctx.has_param('password'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:pass' % infix)
@@ -105,8 +102,7 @@ class UserDetailApi(BaseApi):
 
         if ctx.has_param('rank'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:rank' % infix)
-            users.update_rank(
-                ctx.session, user, ctx.get_param_as_string('rank'), ctx.user)
+            users.update_rank(user, ctx.get_param_as_string('rank'), ctx.user)
 
         if ctx.has_param('avatarStyle'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:avatar' % infix)
@@ -119,7 +115,7 @@ class UserDetailApi(BaseApi):
         return {'user': _serialize_user(ctx.user, user)}
 
     def delete(self, ctx, user_name):
-        user = users.get_user_by_name(ctx.session, user_name)
+        user = users.get_user_by_name(user_name)
         if not user:
             raise users.UserNotFoundError('User %r not found.' % user_name)
 

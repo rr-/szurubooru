@@ -26,8 +26,7 @@ class TagListApi(BaseApi):
         page = ctx.get_param_as_int('page', default=1, min=1)
         page_size = ctx.get_param_as_int(
             'pageSize', default=100, min=1, max=100)
-        count, tag_list = self._search_executor.execute(
-            ctx.session, query, page, page_size)
+        count, tag_list = self._search_executor.execute(query, page, page_size)
         return {
             'query': query,
             'page': page,
@@ -44,56 +43,51 @@ class TagListApi(BaseApi):
         suggestions = ctx.get_param_as_list('suggestions', required=True)
         implications = ctx.get_param_as_list('implications', required=True)
 
-        tag = tags.create_tag(
-            ctx.session, names, category, suggestions, implications)
+        tag = tags.create_tag(names, category, suggestions, implications)
         ctx.session.add(tag)
         ctx.session.flush()
-        snapshots.create(ctx.session, tag, ctx.user)
+        snapshots.create(tag, ctx.user)
         ctx.session.commit()
-        tags.export_to_json(ctx.session)
+        tags.export_to_json()
         return {'tag': _serialize_tag(tag)}
 
 class TagDetailApi(BaseApi):
     def get(self, ctx, tag_name):
         auth.verify_privilege(ctx.user, 'tags:view')
-        tag = tags.get_tag_by_name(ctx.session, tag_name)
+        tag = tags.get_tag_by_name(tag_name)
         if not tag:
             raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
         return {'tag': _serialize_tag(tag)}
 
     def put(self, ctx, tag_name):
-        tag = tags.get_tag_by_name(ctx.session, tag_name)
+        tag = tags.get_tag_by_name(tag_name)
         if not tag:
             raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
 
         if ctx.has_param('names'):
             auth.verify_privilege(ctx.user, 'tags:edit:names')
-            tags.update_names(
-                ctx.session, tag, ctx.get_param_as_list('names'))
+            tags.update_names(tag, ctx.get_param_as_list('names'))
 
         if ctx.has_param('category'):
             auth.verify_privilege(ctx.user, 'tags:edit:category')
-            tags.update_category_name(
-                ctx.session, tag, ctx.get_param_as_string('category'))
+            tags.update_category_name(tag, ctx.get_param_as_string('category'))
 
         if ctx.has_param('suggestions'):
             auth.verify_privilege(ctx.user, 'tags:edit:suggestions')
-            tags.update_suggestions(
-                ctx.session, tag, ctx.get_param_as_list('suggestions'))
+            tags.update_suggestions(tag, ctx.get_param_as_list('suggestions'))
 
         if ctx.has_param('implications'):
             auth.verify_privilege(ctx.user, 'tags:edit:implications')
-            tags.update_implications(
-                ctx.session, tag, ctx.get_param_as_list('implications'))
+            tags.update_implications(tag, ctx.get_param_as_list('implications'))
 
         tag.last_edit_time = datetime.datetime.now()
-        snapshots.modify(ctx.session, tag, ctx.user)
+        snapshots.modify(tag, ctx.user)
         ctx.session.commit()
-        tags.export_to_json(ctx.session)
+        tags.export_to_json()
         return {'tag': _serialize_tag(tag)}
 
     def delete(self, ctx, tag_name):
-        tag = tags.get_tag_by_name(ctx.session, tag_name)
+        tag = tags.get_tag_by_name(tag_name)
         if not tag:
             raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
         if tag.post_count > 0:
@@ -102,8 +96,8 @@ class TagDetailApi(BaseApi):
                 'Please untag relevant posts first.')
 
         auth.verify_privilege(ctx.user, 'tags:delete')
-        snapshots.delete(ctx.session, tag, ctx.user)
+        snapshots.delete(tag, ctx.user)
         ctx.session.delete(tag)
         ctx.session.commit()
-        tags.export_to_json(ctx.session)
+        tags.export_to_json()
         return {}

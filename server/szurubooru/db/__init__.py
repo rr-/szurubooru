@@ -4,3 +4,4 @@ from szurubooru.db.tag import Tag, TagName, TagSuggestion, TagImplication
 from szurubooru.db.tag_category import TagCategory
 from szurubooru.db.post import Post, PostTag, PostRelation
 from szurubooru.db.snapshot import Snapshot
+from szurubooru.db.session import session

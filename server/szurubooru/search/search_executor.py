@@ -12,12 +12,12 @@ class SearchExecutor(object):
     def __init__(self, search_config):
         self._search_config = search_config
 
-    def execute(self, session, query_text, page, page_size):
+    def execute(self, query_text, page, page_size):
         '''
         Parse input and return tuple containing total record count and filtered
         entities.
         '''
-        filter_query = self._prepare(session, query_text)
+        filter_query = self._prepare(query_text)
         entities = filter_query \
             .offset((page - 1) * page_size).limit(page_size).all()
         count_query = filter_query.statement \
@@ -25,9 +25,9 @@ class SearchExecutor(object):
         count = filter_query.session.execute(count_query).scalar()
         return (count, entities)
 
-    def _prepare(self, session, query_text):
+    def _prepare(self, query_text):
         ''' Parse input and return SQLAlchemy query. '''
-        query = self._search_config.create_query(session)
+        query = self._search_config.create_query()
         for token in re.split(r'\s+', (query_text or '').lower()):
             if not token:
                 continue

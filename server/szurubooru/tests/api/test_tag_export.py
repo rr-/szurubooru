@@ -24,7 +24,7 @@ def test_export(tmpdir, session, config_injector, tag_factory):
     ])
     session.flush()
 
-    tags.export_to_json(session)
+    tags.export_to_json()
     export_path = os.path.join(config.config['data_dir'], 'tags.json')
     assert os.path.exists(export_path)
     with open(export_path, 'r') as handle:
