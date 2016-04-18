@@ -1,6 +1,6 @@
 import datetime
 from szurubooru import search
-from szurubooru.util import auth, tags
+from szurubooru.util import auth, tags, snapshots
 from szurubooru.api.base_api import BaseApi
 
 def _serialize_tag(tag):
@@ -49,6 +49,7 @@ class TagListApi(BaseApi):
         ctx.session.add(tag)
         ctx.session.commit()
         tags.export_to_json(ctx.session)
+        snapshots.create(ctx.session, tag, ctx.user)
         return {'tag': _serialize_tag(tag)}
 
 class TagDetailApi(BaseApi):
@@ -86,6 +87,7 @@ class TagDetailApi(BaseApi):
         tag.last_edit_time = datetime.datetime.now()
         ctx.session.commit()
         tags.export_to_json(ctx.session)
+        snapshots.modify(ctx.session, tag, ctx.user)
         return {'tag': _serialize_tag(tag)}
 
     def delete(self, ctx, tag_name):
@@ -100,5 +102,6 @@ class TagDetailApi(BaseApi):
         auth.verify_privilege(ctx.user, 'tags:delete')
         ctx.session.delete(tag)
         ctx.session.commit()
+        snapshots.delete(ctx.session, tag, ctx.user)
         tags.export_to_json(ctx.session)
         return {}
