@@ -32,15 +32,15 @@ def test_ctx(
     return ret
 
 def test_creating_user(test_ctx, fake_datetime):
-    fake_datetime(datetime.datetime(1969, 2, 12))
-    result = test_ctx.api.post(
-        test_ctx.context_factory(
-            input={
-                'name': 'chewie1',
-                'email': 'asd@asd.asd',
-                'password': 'oks',
-            },
-            user=test_ctx.user_factory(rank='regular_user')))
+    with fake_datetime('1969-02-12'):
+        result = test_ctx.api.post(
+            test_ctx.context_factory(
+                input={
+                    'name': 'chewie1',
+                    'email': 'asd@asd.asd',
+                    'password': 'oks',
+                },
+                user=test_ctx.user_factory(rank='regular_user')))
     assert result == {
         'user': {
             'avatarStyle': 'gravatar',

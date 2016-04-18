@@ -43,18 +43,18 @@ def test_ctx(
     return ret
 
 def test_simple_updating(test_ctx, fake_datetime):
-    fake_datetime(datetime.datetime(1997, 12, 1))
     tag = test_ctx.tag_factory(names=['tag1', 'tag2'], category='meta')
     test_ctx.session.add(tag)
     test_ctx.session.commit()
-    result = test_ctx.api.put(
-        test_ctx.context_factory(
-            input={
-                'names': ['tag3'],
-                'category': 'character',
-            },
-            user=test_ctx.user_factory(rank='regular_user')),
-        'tag1')
+    with fake_datetime('1997-12-01'):
+        result = test_ctx.api.put(
+            test_ctx.context_factory(
+                input={
+                    'names': ['tag3'],
+                    'category': 'character',
+                },
+                user=test_ctx.user_factory(rank='regular_user')),
+            'tag1')
     assert result == {
         'tag': {
             'names': ['tag3'],

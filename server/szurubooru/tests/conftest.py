@@ -1,6 +1,7 @@
 import datetime
 import uuid
 import pytest
+import freezegun
 import sqlalchemy
 from szurubooru import api, config, db
 from szurubooru.util import misc
@@ -9,13 +10,15 @@ def get_unique_name():
     return str(uuid.uuid4())
 
 @pytest.fixture
-def fake_datetime(monkeypatch):
+def fake_datetime():
     def injector(now):
-        class mydatetime(datetime.datetime):
-            @staticmethod
-            def now(tz=None):
-                return now
-        monkeypatch.setattr(datetime, 'datetime', mydatetime)
+        class scope():
+            def __enter__(self):
+                self.freezer = freezegun.freeze_time(now)
+                self.freezer.start()
+            def __exit__(self, type, value, trackback):
+                self.freezer.stop()
+        return scope()
     return injector
 
 @pytest.fixture

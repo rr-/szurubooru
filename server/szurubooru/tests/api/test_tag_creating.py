@@ -38,16 +38,16 @@ def test_ctx(
     return ret
 
 def test_creating_simple_tags(test_ctx, fake_datetime):
-    fake_datetime(datetime.datetime(1997, 12, 1))
-    result = test_ctx.api.post(
-        test_ctx.context_factory(
-            input={
-                'names': ['tag1', 'tag2'],
-                'category': 'meta',
-                'suggestions': [],
-                'implications': [],
-            },
-            user=test_ctx.user_factory(rank='regular_user')))
+    with fake_datetime('1997-12-01'):
+        result = test_ctx.api.post(
+            test_ctx.context_factory(
+                input={
+                    'names': ['tag1', 'tag2'],
+                    'category': 'meta',
+                    'suggestions': [],
+                    'implications': [],
+                },
+                user=test_ctx.user_factory(rank='regular_user')))
     assert result == {
         'tag': {
             'names': ['tag1', 'tag2'],
