@@ -36,6 +36,8 @@ def create_app():
 
     user_list_api = api.UserListApi()
     user_detail_api = api.UserDetailApi()
+    tag_category_list_api = api.TagCategoryListApi()
+    tag_category_detail_api = api.TagCategoryDetailApi()
     tag_list_api = api.TagListApi()
     tag_detail_api = api.TagDetailApi()
     password_reset_api = api.PasswordResetApi()
@@ -49,6 +51,8 @@ def create_app():
 
     app.add_route('/users/', user_list_api)
     app.add_route('/user/{user_name}', user_detail_api)
+    app.add_route('/tag-categories/', tag_category_list_api)
+    app.add_route('/tag-category/{category_name}', tag_category_detail_api)
     app.add_route('/tags/', tag_list_api)
     app.add_route('/tag/{tag_name}', tag_detail_api)
     app.add_route('/password-reset/{user_name}', password_reset_api)

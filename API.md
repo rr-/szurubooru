@@ -92,28 +92,151 @@ data.
 
 
 ## Listing tag categories
+- **Request**
 
-Not implemented yet.
+    `GET /tag-categories`
+
+- **Output**
+
+    ```json5
+    {
+        "tagCategories": [
+            <tag-category>,
+            <tag-category>,
+            <tag-category>
+        ]
+    }
+    ```
+    ...where `<tag-category>` is a [tag category resource](#tag-category).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Lists all tag categories. Doesn't support paging.
 
 
 ## Creating tag category
+- **Request**
 
-Not implemented yet.
+    `POST /tag-categories`
+
+- **Input**
+
+    ```json5
+    {
+        "name":  <name>,
+        "color": <color>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "tagCategory": <tag-category>
+    }
+    ```
+    ...where `<tag-category>` is a [tag category resource](#tag-category).
+
+- **Errors**
+
+    - the name is used by an existing tag category (names are case insensitive)
+    - the name is invalid or missing
+    - the color is invalid or missing
+    - privileges are too low
+
+- **Description**
+
+    Creates a new tag category using specified parameters. Name must match
+    `tag_category_name_regex` from server's configuration.
 
 
 ## Updating tag category
+- **Request**
 
-Not implemented yet.
+    `PUT /tag-category/<name>`
+
+- **Input**
+
+    ```json5
+    {
+        "name":  <name>,    // optional
+        "color": <color>,   // optional
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "tagCategory": <tag-category>
+    }
+    ```
+    ...where `<tag-category>` is a [tag category resource](#tag-category).
+
+- **Errors**
+
+    - the tag category does not exist
+    - the name is used by an existing tag category (names are case insensitive)
+    - the name is invalid
+    - the color is invalid
+    - privileges are too low
+
+- **Description**
+
+    Updates an existing tag category using specified parameters. Name must
+    match `tag_category_name_regex` from server's configuration. All fields are
+    optional - update concerns only provided fields.
 
 
 ## Getting tag category
+- **Request**
 
-Not implemented yet.
+    `GET /tag-category/<name>`
+
+- **Output**
+
+    ```json5
+    {
+        "tagCategory": <tag-category>
+    }
+    ```
+    ...where `<tag-category>` is a [tag category resource](#tag-category).
+
+- **Errors**
+
+    - the tag category does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves information about an existing tag category.
 
 
 ## Deleting tag category
+- **Request**
 
-Not implemented yet.
+    `DELETE /tag-category/<name>`
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the tag category does not exist
+    - the tag category is used by some tags
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing tag category. The tag category to be deleted must have no
+    usages.
 
 
 ## Listing tags

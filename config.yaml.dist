@@ -37,6 +37,7 @@ limits:
     max_comment_length: 5000
 
 tag_name_regex: ^:?[a-zA-Z0-9_-]+$
+tag_category_name_regex: ^.{1,}$
 
 # changing ranks after deployment may require manual tweaks to the database.
 ranks:
@@ -102,6 +103,12 @@ privileges:
     'tags:masstag':            power_user
     'tags:merge':              mod
     'tags:delete':             mod
+
+    'tag_categories:create':        mod
+    'tag_categories:edit:name':     mod
+    'tag_categories:edit:color':    mod
+    'tag_categories:list':          anonymous
+    'tag_categories:delete':        mod
 
     'comments:create':         regular_user
     'comments:delete:any':     mod

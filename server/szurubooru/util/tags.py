@@ -4,7 +4,7 @@ import os
 import re
 import sqlalchemy
 from szurubooru import config, db, errors
-from szurubooru.util import misc
+from szurubooru.util import misc, tag_categories
 
 class TagNotFoundError(errors.NotFoundError): pass
 class TagAlreadyExistsError(errors.ValidationError): pass
@@ -51,12 +51,6 @@ def get_tag_by_name(name):
         .filter(db.TagName.name.ilike(name)) \
         .first()
 
-def get_default_category():
-    return db.session().query(db.TagCategory) \
-        .order_by(db.TagCategory.tag_category_id.asc()) \
-        .limit(1) \
-        .one()
-
 def get_tags_by_names(names):
     names = misc.icase_unique(names)
     if len(names) == 0:
@@ -81,7 +75,7 @@ def get_or_create_tags_by_names(names):
         if not found:
             new_tag = create_tag(
                 names=[name],
-                category_name=get_default_category().name,
+                category_name=tag_categories.get_default_category().name,
                 suggestions=[],
                 implications=[])
             db.session().add(new_tag)
@@ -103,8 +97,7 @@ def update_category_name(tag, category_name):
         .filter(db.TagCategory.name == category_name) \
         .first()
     if not category:
-        category_names = [
-            name[0] for name in session.query(db.TagCategory.name).all()]
+        category_names = tag_categories.get_all_category_names()
         raise InvalidTagCategoryError(
             'Category %r is invalid. Valid categories: %r.' % (
                 category_name, category_names))
