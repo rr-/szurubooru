@@ -28,8 +28,8 @@ def test_ctx(
 
 def test_simple_updating(test_ctx):
     category = test_ctx.tag_category_factory(name='name', color='black')
-    db.session().add(category)
-    db.session().commit()
+    db.session.add(category)
+    db.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input={
@@ -59,8 +59,8 @@ def test_simple_updating(test_ctx):
     {'color': ''},
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input):
-    db.session().add(test_ctx.tag_category_factory(name='meta', color='black'))
-    db.session().commit()
+    db.session.add(test_ctx.tag_category_factory(name='meta', color='black'))
+    db.session.commit()
     with pytest.raises(tag_categories.InvalidTagCategoryNameError):
         test_ctx.api.put(
             test_ctx.context_factory(
@@ -70,8 +70,8 @@ def test_trying_to_pass_invalid_input(test_ctx, input):
 
 @pytest.mark.parametrize('field', ['name', 'color'])
 def test_omitting_optional_field(test_ctx, tmpdir, field):
-    db.session().add(test_ctx.tag_category_factory(name='name', color='black'))
-    db.session().commit()
+    db.session.add(test_ctx.tag_category_factory(name='name', color='black'))
+    db.session.commit()
     input = {
         'name': 'changed',
         'color': 'white',
@@ -94,8 +94,8 @@ def test_trying_to_update_non_existing(test_ctx):
 
 @pytest.mark.parametrize('new_name', ['cat', 'CAT'])
 def test_reusing_own_name(test_ctx, new_name):
-    db.session().add(test_ctx.tag_category_factory(name='cat', color='black'))
-    db.session().commit()
+    db.session.add(test_ctx.tag_category_factory(name='cat', color='black'))
+    db.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input={'name': new_name},
@@ -107,10 +107,10 @@ def test_reusing_own_name(test_ctx, new_name):
 
 @pytest.mark.parametrize('dup_name', ['cat1', 'CAT1'])
 def test_trying_to_use_existing_name(test_ctx, dup_name):
-    db.session().add_all([
+    db.session.add_all([
         test_ctx.tag_category_factory(name='cat1', color='black'),
         test_ctx.tag_category_factory(name='cat2', color='black')])
-    db.session().commit()
+    db.session.commit()
     with pytest.raises(tag_categories.TagCategoryAlreadyExistsError):
         test_ctx.api.put(
             test_ctx.context_factory(
@@ -123,8 +123,8 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
     {'color': 'whatever'},
 ])
 def test_trying_to_update_without_privileges(test_ctx, input):
-    db.session().add(test_ctx.tag_category_factory(name='dummy'))
-    db.session().commit()
+    db.session.add(test_ctx.tag_category_factory(name='dummy'))
+    db.session.commit()
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(
             test_ctx.context_factory(

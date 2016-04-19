@@ -23,8 +23,8 @@ class SearchExecutor(object):
         count_query = filter_query.statement \
             .with_only_columns([sqlalchemy.func.count()]) \
             .order_by(None)
-        count = filter_query \
-            .session.execute(count_query) \
+        count = filter_query.session \
+            .execute(count_query) \
             .scalar()
         return (count, entities)
 

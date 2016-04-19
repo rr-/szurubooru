@@ -4,7 +4,7 @@ from szurubooru.search.base_search_config import BaseSearchConfig
 
 class TagSearchConfig(BaseSearchConfig):
     def create_query(self):
-        return db.session().query(db.Tag)
+        return db.session.query(db.Tag)
 
     def finalize_query(self, query):
         return query.order_by(db.Tag.first_name.asc())

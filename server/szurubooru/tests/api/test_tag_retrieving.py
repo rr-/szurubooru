@@ -4,8 +4,7 @@ from szurubooru import api, db, errors
 from szurubooru.util import misc, tags
 
 @pytest.fixture
-def test_ctx(
-        session, context_factory, config_injector, user_factory, tag_factory):
+def test_ctx(context_factory, config_injector, user_factory, tag_factory):
     config_injector({
         'privileges': {
             'tags:list': 'regular_user',
@@ -16,7 +15,6 @@ def test_ctx(
         'rank_names': {'regular_user': 'Peasant'},
     })
     ret = misc.dotdict()
-    ret.session = session
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.tag_factory = tag_factory
@@ -27,7 +25,7 @@ def test_ctx(
 def test_retrieving_multiple(test_ctx):
     tag1 = test_ctx.tag_factory(names=['t1'])
     tag2 = test_ctx.tag_factory(names=['t2'])
-    test_ctx.session.add_all([tag1, tag2])
+    db.session.add_all([tag1, tag2])
     result = test_ctx.list_api.get(
         test_ctx.context_factory(
             input={'query': '', 'page': 1},
@@ -46,7 +44,7 @@ def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
                 user=test_ctx.user_factory(rank='anonymous')))
 
 def test_retrieving_single(test_ctx):
-    test_ctx.session.add(test_ctx.tag_factory(names=['tag']))
+    db.session.add(test_ctx.tag_factory(names=['tag']))
     result = test_ctx.detail_api.get(
         test_ctx.context_factory(
             input={'query': '', 'page': 1},

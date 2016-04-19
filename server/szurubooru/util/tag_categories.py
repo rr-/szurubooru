@@ -26,7 +26,7 @@ def update_name(category, name):
     expr = db.TagCategory.name.ilike(name)
     if category.tag_category_id:
         expr = expr & (db.TagCategory.tag_category_id != category.tag_category_id)
-    already_exists = db.session().query(db.TagCategory).filter(expr).count() > 0
+    already_exists = db.session.query(db.TagCategory).filter(expr).count() > 0
     if already_exists:
         raise TagCategoryAlreadyExistsError(
             'A category with this name already exists.')
@@ -43,7 +43,8 @@ def update_color(category, color):
     category.color = color
 
 def get_category_by_name(name):
-    return db.session.query(db.TagCategory) \
+    return db.session \
+        .query(db.TagCategory) \
         .filter(db.TagCategory.name.ilike(name)) \
         .first()
 
@@ -54,7 +55,8 @@ def get_all_categories():
     return db.session.query(db.TagCategory).all()
 
 def get_default_category():
-    return db.session().query(db.TagCategory) \
+    return db.session \
+        .query(db.TagCategory) \
         .order_by(db.TagCategory.tag_category_id.asc()) \
         .limit(1) \
         .one()

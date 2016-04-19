@@ -34,8 +34,8 @@ def save(operation, entity, auth_user):
     snapshot.data = serializers[table_name](entity)
     snapshot.user = auth_user
 
-    session = db.session()
-    earlier_snapshots = session.query(db.Snapshot) \
+    earlier_snapshots = db.session \
+        .query(db.Snapshot) \
         .filter(db.Snapshot.resource_type == table_name) \
         .filter(db.Snapshot.resource_id == primary_key) \
         .order_by(db.Snapshot.creation_time.desc()) \
@@ -49,7 +49,7 @@ def save(operation, entity, auth_user):
         if snapshot.data != last_snapshot.data:
             if not is_fresh or last_snapshot.user != auth_user:
                 break
-        session.delete(last_snapshot)
+        db.session.delete(last_snapshot)
         if snapshot.operation != db.Snapshot.OPERATION_DELETED:
             snapshot.operation = last_snapshot.operation
         snapshots_left -= 1
@@ -57,7 +57,7 @@ def save(operation, entity, auth_user):
     if not snapshots_left and operation == db.Snapshot.OPERATION_DELETED:
         pass
     else:
-        session.add(snapshot)
+        db.session.add(snapshot)
 
 def create(entity, auth_user):
     save(db.Snapshot.OPERATION_CREATED, entity, auth_user)

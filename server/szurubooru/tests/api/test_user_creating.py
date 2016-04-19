@@ -8,12 +8,11 @@ EMPTY_PIXEL = \
     b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
     b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
 
-def get_user(session, name):
-    return session.query(db.User).filter_by(name=name).first()
+def get_user(name):
+    return db.session.query(db.User).filter_by(name=name).first()
 
 @pytest.fixture
-def test_ctx(
-        session, config_injector, context_factory, user_factory):
+def test_ctx(config_injector, context_factory, user_factory):
     config_injector({
         'secret': '',
         'user_name_regex': '[^!]{3,}',
@@ -25,7 +24,6 @@ def test_ctx(
         'privileges': {'users:create': 'anonymous'},
     })
     ret = misc.dotdict()
-    ret.session = session
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.api = api.UserListApi()
@@ -53,7 +51,7 @@ def test_creating_user(test_ctx, fake_datetime):
             'rankName': 'Unknown',
         }
     }
-    user = get_user(test_ctx.session, 'chewie1')
+    user = get_user('chewie1')
     assert user.name == 'chewie1'
     assert user.email == 'asd@asd.asd'
     assert user.rank == 'admin'
@@ -79,8 +77,8 @@ def test_first_user_becomes_admin_others_not(test_ctx):
             user=test_ctx.user_factory(rank='anonymous')))
     assert result1['user']['rank'] == 'admin'
     assert result2['user']['rank'] == 'regular_user'
-    first_user = get_user(test_ctx.session, 'chewie1')
-    other_user = get_user(test_ctx.session, 'chewie2')
+    first_user = get_user('chewie1')
+    other_user = get_user('chewie2')
     assert first_user.rank == 'admin'
     assert other_user.rank == 'regular_user'
 
@@ -192,7 +190,7 @@ def test_omitting_optional_field(test_ctx, tmpdir, field):
 def test_mods_trying_to_become_admin(test_ctx):
     user1 = test_ctx.user_factory(name='u1', rank='mod')
     user2 = test_ctx.user_factory(name='u2', rank='mod')
-    test_ctx.session.add_all([user1, user2])
+    db.session.add_all([user1, user2])
     context = test_ctx.context_factory(input={
             'name': 'chewie',
             'email': 'asd@asd.asd',
@@ -204,7 +202,7 @@ def test_mods_trying_to_become_admin(test_ctx):
 
 def test_admin_creating_mod_account(test_ctx):
     user = test_ctx.user_factory(rank='admin')
-    test_ctx.session.add(user)
+    db.session.add(user)
     context = test_ctx.context_factory(input={
             'name': 'chewie',
             'email': 'asd@asd.asd',
@@ -227,7 +225,7 @@ def test_uploading_avatar(test_ctx, tmpdir):
             },
             files={'avatar': EMPTY_PIXEL},
             user=test_ctx.user_factory(rank='mod')))
-    user = get_user(test_ctx.session, 'chewie')
+    user = get_user('chewie')
     assert user.avatar_style == user.AVATAR_MANUAL
     assert response['user']['avatarUrl'] == \
         'http://example.com/data/avatars/chewie.jpg'

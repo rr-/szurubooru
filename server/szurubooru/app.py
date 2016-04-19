@@ -1,6 +1,5 @@
 ''' Exports create_app. '''
 
-import json
 import falcon
 from szurubooru import api, errors, middleware
 
@@ -26,15 +25,13 @@ def _on_processing_error(ex, _request, _response, _params):
 
 def create_method_not_allowed(allowed_methods):
     allowed = ', '.join(allowed_methods)
-
-    def method_not_allowed(request, response, **kwargs):
+    def method_not_allowed(request, response, **_kwargs):
         response.status = falcon.status_codes.HTTP_405
         response.set_header('Allow', allowed)
         request.context.output = {
             'title': 'Method not allowed',
             'description': 'Allowed methods: %r' % allowed_methods,
         }
-
     return method_not_allowed
 
 def create_app():

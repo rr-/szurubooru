@@ -42,14 +42,14 @@ def verify_unpaged(executor):
     ('-creation-date:2014-01,2015', ['u2']),
 ])
 def test_filter_by_creation_time(
-        verify_unpaged, session, input, expected_user_names, user_factory):
+        verify_unpaged, input, expected_user_names, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
     user1.creation_time = datetime.datetime(2014, 1, 1)
     user2.creation_time = datetime.datetime(2014, 6, 1)
     user3.creation_time = datetime.datetime(2015, 1, 1)
-    session.add_all([user1, user2, user3])
+    db.session.add_all([user1, user2, user3])
     verify_unpaged(input, expected_user_names)
 
 @pytest.mark.parametrize('input,expected_user_names', [
@@ -71,10 +71,10 @@ def test_filter_by_creation_time(
     ('-name:user1,user3', ['user2']),
 ])
 def test_filter_by_name(
-        session, verify_unpaged, input, expected_user_names, user_factory):
-    session.add(user_factory(name='user1'))
-    session.add(user_factory(name='user2'))
-    session.add(user_factory(name='user3'))
+        verify_unpaged, input, expected_user_names, user_factory):
+    db.session.add(user_factory(name='user1'))
+    db.session.add(user_factory(name='user2'))
+    db.session.add(user_factory(name='user3'))
     verify_unpaged(input, expected_user_names)
 
 @pytest.mark.parametrize('input,expected_user_names', [
@@ -84,9 +84,9 @@ def test_filter_by_name(
     ('u1,u2', ['u1', 'u2']),
 ])
 def test_anonymous(
-        session, verify_unpaged, input, expected_user_names, user_factory):
-    session.add(user_factory(name='u1'))
-    session.add(user_factory(name='u2'))
+        verify_unpaged, input, expected_user_names, user_factory):
+    db.session.add(user_factory(name='u1'))
+    db.session.add(user_factory(name='u2'))
     verify_unpaged(input, expected_user_names)
 
 @pytest.mark.parametrize('input,expected_user_names', [
@@ -95,14 +95,14 @@ def test_anonymous(
     ('creation-time:2016 u2', []),
 ])
 def test_combining_tokens(
-        session, verify_unpaged, input, expected_user_names, user_factory):
+        verify_unpaged, input, expected_user_names, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
     user1.creation_time = datetime.datetime(2014, 1, 1)
     user2.creation_time = datetime.datetime(2014, 6, 1)
     user3.creation_time = datetime.datetime(2015, 1, 1)
-    session.add_all([user1, user2, user3])
+    db.session.add_all([user1, user2, user3])
     verify_unpaged(input, expected_user_names)
 
 @pytest.mark.parametrize(
@@ -114,10 +114,10 @@ def test_combining_tokens(
         (0, 0, 2, []),
     ])
 def test_paging(
-        session, executor, user_factory, page, page_size,
+        executor, user_factory, page, page_size,
         expected_total_count, expected_user_names):
-    session.add(user_factory(name='u1'))
-    session.add(user_factory(name='u2'))
+    db.session.add(user_factory(name='u1'))
+    db.session.add(user_factory(name='u2'))
     actual_count, actual_users = executor.execute(
         '', page=page, page_size=page_size)
     actual_user_names = [u.name for u in actual_users]
@@ -134,9 +134,9 @@ def test_paging(
     ('-order:name,desc', ['u1', 'u2']),
 ])
 def test_order_by_name(
-        session, verify_unpaged, input, expected_user_names, user_factory):
-    session.add(user_factory(name='u2'))
-    session.add(user_factory(name='u1'))
+        verify_unpaged, input, expected_user_names, user_factory):
+    db.session.add(user_factory(name='u2'))
+    db.session.add(user_factory(name='u1'))
     verify_unpaged(input, expected_user_names)
 
 @pytest.mark.parametrize('input,expected_user_names', [
@@ -150,14 +150,14 @@ def test_order_by_name(
     ('-order:creation-date,desc', ['u1', 'u2', 'u3']),
 ])
 def test_order_by_creation_time(
-        session, verify_unpaged, input, expected_user_names, user_factory):
+        verify_unpaged, input, expected_user_names, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
     user1.creation_time = datetime.datetime(1991, 1, 1)
     user2.creation_time = datetime.datetime(1991, 1, 2)
     user3.creation_time = datetime.datetime(1991, 1, 3)
-    session.add_all([user3, user1, user2])
+    db.session.add_all([user3, user1, user2])
     verify_unpaged(input, expected_user_names)
 
 @pytest.mark.parametrize('input,expected_user_names', [
@@ -168,21 +168,21 @@ def test_order_by_creation_time(
     ('order:login-time', ['u3', 'u2', 'u1']),
 ])
 def test_order_by_last_login_time(
-        session, verify_unpaged, input, expected_user_names, user_factory):
+        verify_unpaged, input, expected_user_names, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
     user1.last_login_time = datetime.datetime(1991, 1, 1)
     user2.last_login_time = datetime.datetime(1991, 1, 2)
     user3.last_login_time = datetime.datetime(1991, 1, 3)
-    session.add_all([user3, user1, user2])
+    db.session.add_all([user3, user1, user2])
     verify_unpaged(input, expected_user_names)
 
-def test_random_order(session, executor, user_factory):
+def test_random_order(executor, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
-    session.add_all([user3, user1, user2])
+    db.session.add_all([user3, user1, user2])
     actual_count, actual_users = executor.execute(
         'order:random', page=1, page_size=100)
     actual_user_names = [u.name for u in actual_users]

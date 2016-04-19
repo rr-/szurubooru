@@ -46,8 +46,8 @@ def fake_datetime():
         freezer.stop()
     return injector
 
-@pytest.yield_fixture
-def session(query_counter, autoload=True):
+@pytest.yield_fixture(autouse=True)
+def session(query_counter):
     import logging
     logging.basicConfig()
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)

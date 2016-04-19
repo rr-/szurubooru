@@ -32,7 +32,7 @@ def export_to_json():
         'tags': [],
         'categories': [],
     }
-    all_tags = db.session() \
+    all_tags = db.session \
         .query(db.Tag) \
         .options(
             sqlalchemy.orm.joinedload('suggestions'),
@@ -61,7 +61,8 @@ def export_to_json():
         handle.write(json.dumps(output, separators=(',', ':')))
 
 def get_tag_by_name(name):
-    return db.session().query(db.Tag) \
+    return db.session \
+        .query(db.Tag) \
         .join(db.TagName) \
         .filter(db.TagName.name.ilike(name)) \
         .first()
@@ -73,7 +74,7 @@ def get_tags_by_names(names):
     expr = sqlalchemy.sql.false()
     for name in names:
         expr = expr | db.TagName.name.ilike(name)
-    return db.session().query(db.Tag).join(db.TagName).filter(expr).all()
+    return db.session.query(db.Tag).join(db.TagName).filter(expr).all()
 
 def get_or_create_tags_by_names(names):
     names = misc.icase_unique(names)
@@ -93,7 +94,7 @@ def get_or_create_tags_by_names(names):
                 category_name=tag_categories.get_default_category().name,
                 suggestions=[],
                 implications=[])
-            db.session().add(new_tag)
+            db.session.add(new_tag)
             new_tags.append(new_tag)
     return related_tags, new_tags
 
@@ -107,8 +108,8 @@ def create_tag(names, category_name, suggestions, implications):
     return tag
 
 def update_category_name(tag, category_name):
-    session = db.session()
-    category = session.query(db.TagCategory) \
+    category = db.session \
+        .query(db.TagCategory) \
         .filter(db.TagCategory.name == category_name) \
         .first()
     if not category:
@@ -131,7 +132,7 @@ def update_names(tag, names):
         expr = expr | db.TagName.name.ilike(name)
     if tag.tag_id:
         expr = expr & (db.TagName.tag_id != tag.tag_id)
-    existing_tags = db.session().query(db.TagName).filter(expr).all()
+    existing_tags = db.session.query(db.TagName).filter(expr).all()
     if len(existing_tags):
         raise TagAlreadyExistsError(
             'One of names is already used by another tag.')
@@ -149,12 +150,12 @@ def update_implications(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot imply itself.')
     related_tags, new_tags = get_or_create_tags_by_names(relations)
-    db.session().flush()
+    db.session.flush()
     tag.implications = related_tags + new_tags
 
 def update_suggestions(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot suggest itself.')
     related_tags, new_tags = get_or_create_tags_by_names(relations)
-    db.session().flush()
+    db.session.flush()
     tag.suggestions = related_tags + new_tags

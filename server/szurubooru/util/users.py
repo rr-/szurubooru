@@ -16,12 +16,14 @@ def get_user_count():
     return db.session.query(db.User).count()
 
 def get_user_by_name(name):
-    return db.session.query(db.User) \
+    return db.session \
+        .query(db.User) \
         .filter(func.lower(db.User.name) == func.lower(name)) \
         .first()
 
 def get_user_by_name_or_email(name_or_email):
-    return db.session.query(db.User) \
+    return db.session \
+        .query(db.User) \
         .filter(
             (func.lower(db.User.name) == func.lower(name_or_email))
             | (func.lower(db.User.email) == func.lower(name_or_email))) \

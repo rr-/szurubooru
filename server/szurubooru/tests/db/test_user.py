@@ -1,7 +1,7 @@
 from datetime import datetime
 from szurubooru import db
 
-def test_saving_user(session):
+def test_saving_user():
     user = db.User()
     user.name = 'name'
     user.password_salt = 'salt'
@@ -10,8 +10,10 @@ def test_saving_user(session):
     user.rank = 'rank'
     user.creation_time = datetime(1997, 1, 1)
     user.avatar_style = db.User.AVATAR_GRAVATAR
-    session.add(user)
-    user = session.query(db.User).one()
+    db.session.add(user)
+    db.session.flush()
+    db.session.refresh(user)
+    assert not db.session.dirty
     assert user.name == 'name'
     assert user.password_salt == 'salt'
     assert user.password_hash == 'hash'

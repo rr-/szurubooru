@@ -4,8 +4,9 @@ import pytest
 from szurubooru import api, config, db, errors
 from szurubooru.util import misc, tags
 
-def get_tag(session, name):
-    return session.query(db.Tag) \
+def get_tag(name):
+    return db.session \
+        .query(db.Tag) \
         .join(db.TagName) \
         .filter(db.TagName.name==name) \
         .first()
@@ -16,24 +17,17 @@ def assert_relations(relations, expected_tag_names):
 
 @pytest.fixture
 def test_ctx(
-        tmpdir,
-        session,
-        config_injector,
-        context_factory,
-        user_factory,
-        tag_factory):
+        tmpdir, config_injector, context_factory, user_factory, tag_factory):
     config_injector({
         'data_dir': str(tmpdir),
         'tag_name_regex': '^[^!]*$',
         'ranks': ['anonymous', 'regular_user'],
         'privileges': {'tags:create': 'regular_user'},
     })
-    session.add_all([
-        db.TagCategory(name) for name in [
-            'meta', 'character', 'copyright']])
-    session.flush()
+    db.session.add_all([
+        db.TagCategory(name) for name in ['meta', 'character', 'copyright']])
+    db.session.flush()
     ret = misc.dotdict()
-    ret.session = session
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.tag_factory = tag_factory
@@ -61,7 +55,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
             'lastEditTime': None,
         }
     }
-    tag = get_tag(test_ctx.session, 'tag1')
+    tag = get_tag('tag1')
     assert [tag_name.name for tag_name in tag.names] == ['tag1', 'tag2']
     assert tag.category.name == 'meta'
     assert tag.last_edit_time is None
@@ -140,15 +134,15 @@ def test_duplicating_names(test_ctx):
             user=test_ctx.user_factory(rank='regular_user')))
     assert result['tag']['names'] == ['tag1']
     assert result['tag']['category'] == 'meta'
-    tag = get_tag(test_ctx.session, 'tag1')
+    tag = get_tag('tag1')
     assert [tag_name.name for tag_name in tag.names] == ['tag1']
 
 def test_trying_to_use_existing_name(test_ctx):
-    test_ctx.session.add_all([
+    db.session.add_all([
         test_ctx.tag_factory(names=['used1'], category_name='meta'),
         test_ctx.tag_factory(names=['used2'], category_name='meta'),
     ])
-    test_ctx.session.commit()
+    db.session.commit()
     with pytest.raises(tags.TagAlreadyExistsError):
         test_ctx.api.post(
             test_ctx.context_factory(
@@ -169,7 +163,7 @@ def test_trying_to_use_existing_name(test_ctx):
                     'implications': [],
                 },
                 user=test_ctx.user_factory(rank='regular_user')))
-    assert get_tag(test_ctx.session, 'unused') is None
+    assert get_tag('unused') is None
 
 @pytest.mark.parametrize('input,expected_suggestions,expected_implications', [
     # new relations
@@ -208,18 +202,18 @@ def test_creating_new_suggestions_and_implications(
             input=input, user=test_ctx.user_factory(rank='regular_user')))
     assert result['tag']['suggestions'] == expected_suggestions
     assert result['tag']['implications'] == expected_implications
-    tag = get_tag(test_ctx.session, 'main')
+    tag = get_tag('main')
     assert_relations(tag.suggestions, expected_suggestions)
     assert_relations(tag.implications, expected_implications)
     for name in ['main'] + expected_suggestions + expected_implications:
-        assert get_tag(test_ctx.session, name) is not None
+        assert get_tag(name) is not None
 
 def test_reusing_suggestions_and_implications(test_ctx):
-    test_ctx.session.add_all([
+    db.session.add_all([
         test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'),
         test_ctx.tag_factory(names=['tag3'], category_name='meta'),
     ])
-    test_ctx.session.commit()
+    db.session.commit()
     result = test_ctx.api.post(
         test_ctx.context_factory(
             input={
@@ -232,7 +226,7 @@ def test_reusing_suggestions_and_implications(test_ctx):
     # NOTE: it should export only the first name
     assert result['tag']['suggestions'] == ['tag1']
     assert result['tag']['implications'] == ['tag1']
-    tag = get_tag(test_ctx.session, 'new')
+    tag = get_tag('new')
     assert_relations(tag.suggestions, ['tag1'])
     assert_relations(tag.implications, ['tag1'])
 
@@ -256,7 +250,7 @@ def test_tag_trying_to_relate_to_itself(test_ctx, input):
             test_ctx.context_factory(
                 input=input,
                 user=test_ctx.user_factory(rank='regular_user')))
-    assert get_tag(test_ctx.session, 'tag') is None
+    assert get_tag('tag') is None
 
 def test_trying_to_create_tag_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
