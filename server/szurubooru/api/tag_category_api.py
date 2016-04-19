@@ -57,11 +57,14 @@ class TagCategoryDetailApi(BaseApi):
         if not category:
             raise tag_categories.TagCategoryNotFoundError(
                 'Tag category %r not found.' % category_name)
+        auth.verify_privilege(ctx.user, 'tag_categories:delete')
+        if len(tag_categories.get_all_category_names()) == 1:
+            raise tag_categories.TagCategoryIsInUseError(
+                'Cannot delete the default category.')
         if category.tag_count > 0:
             raise tag_categories.TagCategoryIsInUseError(
                 'Tag category has some usages and cannot be deleted. ' +
                 'Please remove this category from relevant tags first..')
-        auth.verify_privilege(ctx.user, 'tag_categories:delete')
         ctx.session.delete(category)
         ctx.session.commit()
         tags.export_to_json()

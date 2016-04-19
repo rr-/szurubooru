@@ -54,6 +54,15 @@ def test_trying_to_delete_used(test_ctx, tag_factory):
             'category')
     assert db.session().query(db.TagCategory).count() == 1
 
+def test_trying_to_delete_last(test_ctx, tag_factory):
+    db.session().add(test_ctx.tag_category_factory(name='root'))
+    db.session().commit()
+    with pytest.raises(tag_categories.TagCategoryIsInUseError):
+        result = test_ctx.api.delete(
+            test_ctx.context_factory(
+                user=test_ctx.user_factory(rank='regular_user')),
+            'root')
+
 def test_trying_to_delete_non_existing(test_ctx):
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
         test_ctx.api.delete(
