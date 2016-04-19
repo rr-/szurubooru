@@ -46,14 +46,14 @@ def test_retrieving_single(test_ctx):
         }
     }
 
-def test_retrieving_non_existing(test_ctx):
+def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
                 user=test_ctx.user_factory(rank='regular_user')),
             '-')
 
-def test_retrieving_single_without_privileges(test_ctx):
+def test_trying_to_retrieve_single_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(

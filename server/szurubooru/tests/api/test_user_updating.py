@@ -76,9 +76,34 @@ def test_updating_user(test_ctx):
     assert auth.is_valid_password(user, 'oks') is True
     assert auth.is_valid_password(user, 'invalid') is False
 
+@pytest.mark.parametrize('input,expected_exception', [
+    ({'name': None}, users.InvalidUserNameError),
+    ({'name': ''}, users.InvalidUserNameError),
+    ({'name': '!bad'}, users.InvalidUserNameError),
+    ({'name': 'x' * 51}, users.InvalidUserNameError),
+    ({'password': None}, users.InvalidPasswordError),
+    ({'password': ''}, users.InvalidPasswordError),
+    ({'password': '!bad'}, users.InvalidPasswordError),
+    ({'rank': None}, users.InvalidRankError),
+    ({'rank': ''}, users.InvalidRankError),
+    ({'rank': 'bad'}, users.InvalidRankError),
+    ({'email': 'bad'}, users.InvalidEmailError),
+    ({'email': 'x@' * 65 + '.com'}, users.InvalidEmailError),
+    ({'avatarStyle': None}, users.InvalidAvatarError),
+    ({'avatarStyle': ''}, users.InvalidAvatarError),
+    ({'avatarStyle': 'invalid'}, users.InvalidAvatarError),
+    ({'avatarStyle': 'manual'}, users.InvalidAvatarError), # missing file
+])
+def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
+    user = test_ctx.user_factory(name='u1', rank='admin')
+    test_ctx.session.add(user)
+    with pytest.raises(expected_exception):
+        test_ctx.api.put(
+            test_ctx.context_factory(input=input, user=user), 'u1')
+
 @pytest.mark.parametrize(
     'field', ['name', 'email', 'password', 'rank', 'avatarStyle'])
-def test_missing_optional_field(test_ctx, tmpdir, field):
+def test_omitting_optional_field(test_ctx, tmpdir, field):
     config.config['data_dir'] = str(tmpdir.mkdir('data'))
     config.config['data_url'] = 'http://example.com/data/'
     user = test_ctx.user_factory(name='u1', rank='admin')
@@ -99,16 +124,7 @@ def test_missing_optional_field(test_ctx, tmpdir, field):
         'u1')
     assert result is not None
 
-def test_update_changing_nothing(test_ctx):
-    user = test_ctx.user_factory(name='u1', rank='admin')
-    test_ctx.session.add(user)
-    test_ctx.api.put(test_ctx.context_factory(user=user), 'u1')
-    user = get_user(test_ctx.session, 'u1')
-    assert user.name == 'u1'
-    assert user.email == 'dummy'
-    assert user.rank == 'admin'
-
-def test_updating_non_existing_user(test_ctx):
+def test_trying_to_update_non_existing(test_ctx):
     user = test_ctx.user_factory(name='u1', rank='admin')
     test_ctx.session.add(user)
     with pytest.raises(users.UserNotFoundError):
@@ -121,31 +137,6 @@ def test_removing_email(test_ctx):
         test_ctx.context_factory(input={'email': ''}, user=user), 'u1')
     assert get_user(test_ctx.session, 'u1').email is None
 
-@pytest.mark.parametrize('input,expected_exception', [
-    ({'name': None}, users.InvalidUserNameError),
-    ({'name': ''}, users.InvalidUserNameError),
-    ({'name': '!bad'}, users.InvalidUserNameError),
-    ({'name': 'x' * 51}, users.InvalidUserNameError),
-    ({'password': None}, users.InvalidPasswordError),
-    ({'password': ''}, users.InvalidPasswordError),
-    ({'password': '!bad'}, users.InvalidPasswordError),
-    ({'rank': None}, users.InvalidRankError),
-    ({'rank': ''}, users.InvalidRankError),
-    ({'rank': 'bad'}, users.InvalidRankError),
-    ({'email': 'bad'}, users.InvalidEmailError),
-    ({'email': 'x@' * 65 + '.com'}, users.InvalidEmailError),
-    ({'avatarStyle': None}, users.InvalidAvatarError),
-    ({'avatarStyle': ''}, users.InvalidAvatarError),
-    ({'avatarStyle': 'invalid'}, users.InvalidAvatarError),
-    ({'avatarStyle': 'manual'}, users.InvalidAvatarError), # missing file
-])
-def test_invalid_inputs(test_ctx, input, expected_exception):
-    user = test_ctx.user_factory(name='u1', rank='admin')
-    test_ctx.session.add(user)
-    with pytest.raises(expected_exception):
-        test_ctx.api.put(
-            test_ctx.context_factory(input=input, user=user), 'u1')
-
 @pytest.mark.parametrize('input', [
     {'name': 'whatever'},
     {'email': 'whatever'},
@@ -153,7 +144,7 @@ def test_invalid_inputs(test_ctx, input, expected_exception):
     {'password': 'whatever'},
     {'avatarStyle': 'whatever'},
 ])
-def test_user_trying_to_update_someone_else(test_ctx, input):
+def test_trying_to_update_someone_else(test_ctx, input):
     user1 = test_ctx.user_factory(name='u1', rank='regular_user')
     user2 = test_ctx.user_factory(name='u2', rank='regular_user')
     test_ctx.session.add_all([user1, user2])
@@ -161,7 +152,7 @@ def test_user_trying_to_update_someone_else(test_ctx, input):
         test_ctx.api.put(
             test_ctx.context_factory(input=input, user=user1), user2.name)
 
-def test_user_trying_to_become_someone_else(test_ctx):
+def test_trying_to_become_someone_else(test_ctx):
     user1 = test_ctx.user_factory(name='me', rank='regular_user')
     user2 = test_ctx.user_factory(name='her', rank='regular_user')
     test_ctx.session.add_all([user1, user2])

@@ -36,23 +36,12 @@ def test_retrieving_multiple(test_ctx):
     assert result['total'] == 2
     assert [u['name'] for u in result['users']] == ['u1', 'u2']
 
-def test_retrieving_multiple_without_privileges(test_ctx):
+def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.list_api.get(
             test_ctx.context_factory(
                 input={'query': '', 'page': 1},
                 user=test_ctx.user_factory(rank='anonymous')))
-
-def test_retrieving_multiple_with_privileges(test_ctx):
-    result = test_ctx.list_api.get(
-        test_ctx.context_factory(
-            input={'query': 'asd', 'page': 1},
-            user=test_ctx.user_factory(rank='regular_user')))
-    assert result['query'] == 'asd'
-    assert result['page'] == 1
-    assert result['pageSize'] == 100
-    assert result['total'] == 0
-    assert [u['name'] for u in result['users']] == []
 
 def test_retrieving_single(test_ctx):
     test_ctx.session.add(test_ctx.user_factory(name='u1', rank='regular_user'))
@@ -74,7 +63,7 @@ def test_retrieving_single(test_ctx):
         }
     }
 
-def test_retrieving_non_existing(test_ctx):
+def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(users.UserNotFoundError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
@@ -82,7 +71,7 @@ def test_retrieving_non_existing(test_ctx):
                 user=test_ctx.user_factory(rank='regular_user')),
             '-')
 
-def test_retrieving_single_without_privileges(test_ctx):
+def test_trying_to_retrieve_single_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(

@@ -58,7 +58,7 @@ def test_simple_updating(test_ctx):
     {'color': None},
     {'color': ''},
 ])
-def test_invalid_inputs(test_ctx, input):
+def test_trying_to_pass_invalid_input(test_ctx, input):
     db.session().add(test_ctx.tag_category_factory(name='meta', color='black'))
     db.session().commit()
     with pytest.raises(tag_categories.InvalidTagCategoryNameError):
@@ -69,7 +69,7 @@ def test_invalid_inputs(test_ctx, input):
             'meta')
 
 @pytest.mark.parametrize('field', ['name', 'color'])
-def test_missing_optional_field(test_ctx, tmpdir, field):
+def test_omitting_optional_field(test_ctx, tmpdir, field):
     db.session().add(test_ctx.tag_category_factory(name='name', color='black'))
     db.session().commit()
     input = {
@@ -122,7 +122,7 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
     {'name': 'whatever'},
     {'color': 'whatever'},
 ])
-def test_trying_to_update_tag_without_privileges(test_ctx, input):
+def test_trying_to_update_without_privileges(test_ctx, input):
     db.session().add(test_ctx.tag_category_factory(name='dummy'))
     db.session().commit()
     with pytest.raises(errors.AuthError):

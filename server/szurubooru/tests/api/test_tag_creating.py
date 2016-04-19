@@ -83,7 +83,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
     ({'suggestions': ['good', '!bad']}, tags.InvalidTagNameError),
     ({'implications': ['good', '!bad']}, tags.InvalidTagNameError),
 ])
-def test_invalid_inputs(test_ctx, input, expected_exception):
+def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     real_input={
         'names': ['tag1', 'tag2'],
         'category': 'meta',
@@ -99,7 +99,7 @@ def test_invalid_inputs(test_ctx, input, expected_exception):
                 user=test_ctx.user_factory()))
 
 @pytest.mark.parametrize('field', ['names', 'category'])
-def test_missing_mandatory_field(test_ctx, field):
+def test_trying_to_omit_mandatory_field(test_ctx, field):
     input = {
         'names': ['tag1', 'tag2'],
         'category': 'meta',
@@ -114,7 +114,7 @@ def test_missing_mandatory_field(test_ctx, field):
                 user=test_ctx.user_factory(rank='regular_user')))
 
 @pytest.mark.parametrize('field', ['implications', 'suggestions'])
-def test_missing_optional_field(test_ctx, tmpdir, field):
+def test_omitting_optional_field(test_ctx, tmpdir, field):
     input = {
         'names': ['tag1', 'tag2'],
         'category': 'meta',
@@ -235,29 +235,6 @@ def test_reusing_suggestions_and_implications(test_ctx):
     tag = get_tag(test_ctx.session, 'new')
     assert_relations(tag.suggestions, ['tag1'])
     assert_relations(tag.implications, ['tag1'])
-
-@pytest.mark.parametrize('input', [
-    {
-        'names': ['ok'],
-        'category': 'meta',
-        'suggestions': [],
-        'implications': ['ok2', '!'],
-    },
-    {
-        'names': ['ok'],
-        'category': 'meta',
-        'suggestions': ['ok2', '!'],
-        'implications': [],
-    }
-])
-def test_trying_to_create_tag_with_invalid_relation(test_ctx, input):
-    with pytest.raises(tags.InvalidTagNameError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input=input, user=test_ctx.user_factory(rank='regular_user')))
-    assert get_tag(test_ctx.session, 'ok') is None
-    assert get_tag(test_ctx.session, 'ok2') is None
-    assert get_tag(test_ctx.session, '!') is None
 
 @pytest.mark.parametrize('input', [
     {

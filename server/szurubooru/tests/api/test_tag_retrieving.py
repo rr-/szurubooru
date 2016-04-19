@@ -38,7 +38,7 @@ def test_retrieving_multiple(test_ctx):
     assert result['total'] == 2
     assert [t['names'] for t in result['tags']] == [['t1'], ['t2']]
 
-def test_retrieving_multiple_without_privileges(test_ctx):
+def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.list_api.get(
             test_ctx.context_factory(
@@ -63,7 +63,7 @@ def test_retrieving_single(test_ctx):
         }
     }
 
-def test_retrieving_non_existing(test_ctx):
+def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
@@ -71,7 +71,7 @@ def test_retrieving_non_existing(test_ctx):
                 user=test_ctx.user_factory(rank='regular_user')),
             '-')
 
-def test_retrieving_single_without_privileges(test_ctx):
+def test_trying_to_retrieve_single_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(

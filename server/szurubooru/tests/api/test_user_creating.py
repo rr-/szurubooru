@@ -96,7 +96,7 @@ def test_first_user_does_not_become_admin_if_they_dont_wish_so(test_ctx):
             user=test_ctx.user_factory(rank='anonymous')))
     assert result['user']['rank'] == 'regular_user'
 
-def test_creating_user_that_already_exists(test_ctx):
+def test_trying_to_become_someone_else(test_ctx):
     test_ctx.api.post(
         test_ctx.context_factory(
             input={
@@ -124,39 +124,6 @@ def test_creating_user_that_already_exists(test_ctx):
                 },
                 user=test_ctx.user_factory(rank='regular_user')))
 
-@pytest.mark.parametrize('field', ['name', 'password'])
-def test_missing_mandatory_field(test_ctx, field):
-    input = {
-        'name': 'chewie',
-        'email': 'asd@asd.asd',
-        'password': 'oks',
-    }
-    del input[field]
-    with pytest.raises(errors.ValidationError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input=input,
-                user=test_ctx.user_factory(rank='regular_user')))
-
-@pytest.mark.parametrize('field', ['rank', 'email', 'avatarStyle'])
-def test_missing_optional_field(test_ctx, tmpdir, field):
-    config.config['data_dir'] = str(tmpdir.mkdir('data'))
-    config.config['data_url'] = 'http://example.com/data/'
-    input = {
-        'name': 'chewie',
-        'email': 'asd@asd.asd',
-        'password': 'oks',
-        'rank': 'mod',
-        'avatarStyle': 'manual',
-    }
-    del input[field]
-    result = test_ctx.api.post(
-        test_ctx.context_factory(
-            input=input,
-            files={'avatar': EMPTY_PIXEL},
-            user=test_ctx.user_factory(rank='mod')))
-    assert result is not None
-
 @pytest.mark.parametrize('input,expected_exception', [
     ({'name': None}, users.InvalidUserNameError),
     ({'name': ''}, users.InvalidUserNameError),
@@ -175,7 +142,7 @@ def test_missing_optional_field(test_ctx, tmpdir, field):
     ({'avatarStyle': 'invalid'}, users.InvalidAvatarError),
     ({'avatarStyle': 'manual'}, users.InvalidAvatarError), # missing file
 ])
-def test_invalid_inputs(test_ctx, input, expected_exception):
+def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     real_input={
         'name': 'chewie',
         'email': 'asd@asd.asd',
@@ -188,6 +155,39 @@ def test_invalid_inputs(test_ctx, input, expected_exception):
             test_ctx.context_factory(
                 input=real_input,
                 user=test_ctx.user_factory(name='u1', rank='admin')))
+
+@pytest.mark.parametrize('field', ['name', 'password'])
+def test_trying_to_omit_mandatory_field(test_ctx, field):
+    input = {
+        'name': 'chewie',
+        'email': 'asd@asd.asd',
+        'password': 'oks',
+    }
+    del input[field]
+    with pytest.raises(errors.ValidationError):
+        test_ctx.api.post(
+            test_ctx.context_factory(
+                input=input,
+                user=test_ctx.user_factory(rank='regular_user')))
+
+@pytest.mark.parametrize('field', ['rank', 'email', 'avatarStyle'])
+def test_omitting_optional_field(test_ctx, tmpdir, field):
+    config.config['data_dir'] = str(tmpdir.mkdir('data'))
+    config.config['data_url'] = 'http://example.com/data/'
+    input = {
+        'name': 'chewie',
+        'email': 'asd@asd.asd',
+        'password': 'oks',
+        'rank': 'mod',
+        'avatarStyle': 'manual',
+    }
+    del input[field]
+    result = test_ctx.api.post(
+        test_ctx.context_factory(
+            input=input,
+            files={'avatar': EMPTY_PIXEL},
+            user=test_ctx.user_factory(rank='mod')))
+    assert result is not None
 
 def test_mods_trying_to_become_admin(test_ctx):
     user1 = test_ctx.user_factory(name='u1', rank='mod')

@@ -37,8 +37,9 @@ def test_creating_category(test_ctx):
     {'name': '!bad'},
     {'color': None},
     {'color': ''},
+    {'color': 'a' * 100},
 ])
-def test_invalid_inputs(test_ctx, input):
+def test_trying_to_pass_invalid_input(test_ctx, input):
     real_input = {
         'name': 'okay',
         'color': 'okay',
@@ -52,7 +53,7 @@ def test_invalid_inputs(test_ctx, input):
                 user=test_ctx.user_factory(rank='regular_user')))
 
 @pytest.mark.parametrize('field', ['name', 'color'])
-def test_missing_mandatory_field(test_ctx, field):
+def test_trying_to_omit_mandatory_field(test_ctx, field):
     input = {
         'name': 'meta',
         'color': 'black',
@@ -80,15 +81,7 @@ def test_trying_to_use_existing_name(test_ctx):
                 input={'name': 'META', 'color': 'black'},
                 user=test_ctx.user_factory(rank='regular_user')))
 
-def test_trying_to_create_tag_with_invalid_color(test_ctx):
-    with pytest.raises(tag_categories.InvalidTagCategoryColorError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input={'name': 'meta', 'color': 'a' * 100},
-                user=test_ctx.user_factory(rank='regular_user')))
-    assert db.session.query(db.TagCategory).filter_by(name='meta').count() == 0
-
-def test_trying_to_create_tag_without_privileges(test_ctx):
+def test_trying_to_create_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.api.post(
             test_ctx.context_factory(

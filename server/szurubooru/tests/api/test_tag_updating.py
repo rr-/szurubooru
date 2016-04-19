@@ -91,7 +91,7 @@ def test_simple_updating(test_ctx, fake_datetime):
     ({'suggestions': ['good', '!bad']}, tags.InvalidTagNameError),
     ({'implications': ['good', '!bad']}, tags.InvalidTagNameError),
 ])
-def test_invalid_inputs(test_ctx, input, expected_exception):
+def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     test_ctx.session.add(
         test_ctx.tag_factory(names=['tag1'], category_name='meta'))
     test_ctx.session.commit()
@@ -104,7 +104,7 @@ def test_invalid_inputs(test_ctx, input, expected_exception):
 
 @pytest.mark.parametrize(
     'field', ['names', 'category', 'implications', 'suggestions'])
-def test_missing_optional_field(test_ctx, tmpdir, field):
+def test_omitting_optional_field(test_ctx, tmpdir, field):
     test_ctx.session.add(
         test_ctx.tag_factory(names=['tag'], category_name='meta'))
     test_ctx.session.commit()
@@ -122,7 +122,7 @@ def test_missing_optional_field(test_ctx, tmpdir, field):
         'tag')
     assert result is not None
 
-def test_trying_to_update_non_existing_tag(test_ctx):
+def test_trying_to_update_non_existing(test_ctx):
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.api.put(
             test_ctx.context_factory(
@@ -252,7 +252,7 @@ def test_reusing_suggestions_and_implications(test_ctx):
         'implications': ['tag1'],
     }
 ])
-def test_tag_trying_to_relate_to_itself(test_ctx, input):
+def test_trying_to_relate_tag_to_itself(test_ctx, input):
     test_ctx.session.add(
         test_ctx.tag_factory(names=['tag1'], category_name='meta'))
     test_ctx.session.commit()
@@ -268,7 +268,7 @@ def test_tag_trying_to_relate_to_itself(test_ctx, input):
     {'suggestions': ['whatever']},
     {'implications': ['whatever']},
 ])
-def test_trying_to_update_tag_without_privileges(test_ctx, input):
+def test_trying_to_update_without_privileges(test_ctx, input):
     test_ctx.session.add(
         test_ctx.tag_factory(names=['tag'], category_name='meta'))
     test_ctx.session.commit()

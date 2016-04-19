@@ -13,16 +13,6 @@ def password_reset_api(config_injector):
     })
     return api.PasswordResetApi()
 
-def test_reset_non_existing(password_reset_api, context_factory):
-    with pytest.raises(errors.NotFoundError):
-        password_reset_api.get(context_factory(), 'u1')
-
-def test_reset_without_email(
-        password_reset_api, session, context_factory, user_factory):
-    session.add(user_factory(name='u1', rank='regular_user', email=None))
-    with pytest.raises(errors.ValidationError):
-        password_reset_api.get(context_factory(), 'u1')
-
 def test_reset_sending_email(
         password_reset_api, session, context_factory, user_factory):
     session.add(user_factory(
@@ -39,26 +29,17 @@ def test_reset_sending_email(
             'ink: http://example.com/password-reset/u1:4ac0be176fb36' +
             '4f13ee6b634c43220e2\nOtherwise, please ignore this email.')
 
-def test_confirmation_non_existing(password_reset_api, context_factory):
+def test_trying_to_reset_non_existing(password_reset_api, context_factory):
     with pytest.raises(errors.NotFoundError):
-        password_reset_api.post(context_factory(), 'u1')
+        password_reset_api.get(context_factory(), 'u1')
 
-def test_confirmation_no_token(
-        password_reset_api, context_factory, session, user_factory):
-    session.add(user_factory(
-        name='u1', rank='regular_user', email='user@example.com'))
+def test_trying_to_reset_without_email(
+        password_reset_api, session, context_factory, user_factory):
+    session.add(user_factory(name='u1', rank='regular_user', email=None))
     with pytest.raises(errors.ValidationError):
-        password_reset_api.post(context_factory(input={}), 'u1')
+        password_reset_api.get(context_factory(), 'u1')
 
-def test_confirmation_bad_token(
-        password_reset_api, context_factory, session, user_factory):
-    session.add(user_factory(
-        name='u1', rank='regular_user', email='user@example.com'))
-    with pytest.raises(errors.ValidationError):
-        password_reset_api.post(
-            context_factory(input={'token': 'bad'}), 'u1')
-
-def test_confirmation_good_token(
+def test_confirming_with_good_token(
         password_reset_api, context_factory, session, user_factory):
     user = user_factory(
         name='u1', rank='regular_user', email='user@example.com')
@@ -69,3 +50,22 @@ def test_confirmation_good_token(
     result = password_reset_api.post(context, 'u1')
     assert user.password_hash != old_hash
     assert auth.is_valid_password(user, result['password']) is True
+
+def test_trying_to_confirm_non_existing(password_reset_api, context_factory):
+    with pytest.raises(errors.NotFoundError):
+        password_reset_api.post(context_factory(), 'u1')
+
+def test_trying_to_confirm_without_token(
+        password_reset_api, context_factory, session, user_factory):
+    session.add(user_factory(
+        name='u1', rank='regular_user', email='user@example.com'))
+    with pytest.raises(errors.ValidationError):
+        password_reset_api.post(context_factory(input={}), 'u1')
+
+def test_trying_to_confirm_with_bad_token(
+        password_reset_api, context_factory, session, user_factory):
+    session.add(user_factory(
+        name='u1', rank='regular_user', email='user@example.com'))
+    with pytest.raises(errors.ValidationError):
+        password_reset_api.post(
+            context_factory(input={'token': 'bad'}), 'u1')
