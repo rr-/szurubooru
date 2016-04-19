@@ -1,4 +1,4 @@
-from szurubooru.util import auth, tags, tag_categories
+from szurubooru.util import auth, tags, tag_categories, snapshots
 from szurubooru.api.base_api import BaseApi
 
 def _serialize_category(category):
@@ -22,6 +22,8 @@ class TagCategoryListApi(BaseApi):
         color = ctx.get_param_as_string('color', required=True)
         category = tag_categories.create_category(name, color)
         ctx.session.add(category)
+        ctx.session.flush()
+        snapshots.create(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
         return {'tagCategory': _serialize_category(category)}
@@ -48,6 +50,7 @@ class TagCategoryDetailApi(BaseApi):
             auth.verify_privilege(ctx.user, 'tag_categories:edit:color')
             tag_categories.update_color(
                 category, ctx.get_param_as_string('color'))
+        snapshots.modify(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
         return {'tagCategory': _serialize_category(category)}
@@ -65,6 +68,7 @@ class TagCategoryDetailApi(BaseApi):
             raise tag_categories.TagCategoryIsInUseError(
                 'Tag category has some usages and cannot be deleted. ' +
                 'Please remove this category from relevant tags first..')
+        snapshots.delete(category, ctx.user)
         ctx.session.delete(category)
         ctx.session.commit()
         tags.export_to_json()

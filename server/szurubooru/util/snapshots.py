@@ -13,15 +13,23 @@ def get_tag_snapshot(tag):
         ret['implications'] = sorted(rel.first_name for rel in tag.implications)
     return ret
 
+def get_tag_category_snapshot(category):
+    return {
+        'name': category.name,
+        'color': category.color,
+    }
+
 # pylint: disable=invalid-name
 serializers = {
     'tag': get_tag_snapshot,
+    'tag_category': get_tag_category_snapshot,
 }
 
 def save(operation, entity, auth_user):
     table_name = entity.__table__.name
     primary_key = inspect(entity).identity
     assert table_name in serializers
+    assert primary_key is not None
     assert len(primary_key) == 1
     primary_key = primary_key[0]
     now = datetime.datetime.now()

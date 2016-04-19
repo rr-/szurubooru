@@ -26,6 +26,13 @@ def test_serializing_tag(tag_factory):
         'suggestions': ['sug1_main_name', 'sug2_main_name'],
     }
 
+def test_serializing_tag_category(tag_category_factory):
+    category = tag_category_factory(name='name', color='color')
+    assert snapshots.get_tag_category_snapshot(category) == {
+        'name': 'name',
+        'color': 'color',
+    }
+
 def test_merging_modification_to_creation(tag_factory, user_factory):
     tag = tag_factory(names=['dummy'])
     user = user_factory()
