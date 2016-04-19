@@ -28,11 +28,21 @@ def _check_name_intersection(names1, names2):
     return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
 
 def export_to_json():
-    output = []
-    for tag in db.session().query(db.Tag).all():
+    output = {
+        'tags': [],
+        'categories': [],
+    }
+    all_tags = db.session() \
+        .query(db.Tag) \
+        .options(
+            sqlalchemy.orm.joinedload('suggestions'),
+            sqlalchemy.orm.joinedload('implications')) \
+        .all()
+    for tag in all_tags:
         item = {
             'names': [tag_name.name for tag_name in tag.names],
-            'usages': tag.post_count
+            'usages': tag.post_count,
+            'category': tag.category.name,
         }
         if len(tag.suggestions):
             item['suggestions'] = \
@@ -40,7 +50,12 @@ def export_to_json():
         if len(tag.implications):
             item['implications'] = \
                 [rel.names[0].name for rel in tag.implications]
-        output.append(item)
+        output['tags'].append(item)
+    for category in tag_categories.get_all_categories():
+        output['categories'].append({
+            'name': category.name,
+            'color': category.color,
+        })
     export_path = os.path.join(config.config['data_dir'], 'tags.json')
     with open(export_path, 'w') as handle:
         handle.write(json.dumps(output, separators=(',', ':')))

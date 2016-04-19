@@ -47,18 +47,20 @@ class Tag(Base):
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
 
-    category = relationship('TagCategory')
-    names = relationship('TagName', cascade='all, delete-orphan')
+    category = relationship('TagCategory', lazy='joined')
+    names = relationship('TagName', cascade='all, delete-orphan', lazy='joined')
     suggestions = relationship(
         'Tag',
         secondary='tag_suggestion',
         primaryjoin=tag_id == TagSuggestion.parent_id,
-        secondaryjoin=tag_id == TagSuggestion.child_id)
+        secondaryjoin=tag_id == TagSuggestion.child_id,
+        lazy='joined')
     implications = relationship(
         'Tag',
         secondary='tag_implication',
         primaryjoin=tag_id == TagImplication.parent_id,
-        secondaryjoin=tag_id == TagImplication.child_id)
+        secondaryjoin=tag_id == TagImplication.child_id,
+        lazy='joined')
 
     post_count = column_property(
         select([func.count('Post.post_id')]) \

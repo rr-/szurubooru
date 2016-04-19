@@ -99,7 +99,8 @@ privileges:
     'tags:edit:category':      power_user
     'tags:edit:implications':  power_user
     'tags:edit:suggestions':   power_user
-    'tags:list':               regular_user
+    'tags:list':               regular_user # note: will be available as data_url/tags.json anyway
+    'tags:view':               anonymous
     'tags:masstag':            power_user
     'tags:merge':              mod
     'tags:delete':             mod
@@ -107,7 +108,8 @@ privileges:
     'tag_categories:create':        mod
     'tag_categories:edit:name':     mod
     'tag_categories:edit:color':    mod
-    'tag_categories:list':          anonymous
+    'tag_categories:list':          anonymous # note: will be available as data_url/tags.json anyway
+    'tag_categories:view':          anonymous
     'tag_categories:delete':        mod
 
     'comments:create':         regular_user

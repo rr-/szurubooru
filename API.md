@@ -14,7 +14,7 @@
 2. [API reference](#api-reference)
 
     - Tag categories
-        - [Listing tag categories](#listing-tags-categories)
+        - [Listing tag categories](#listing-tag-categories)
         - [Creating tag category](#creating-tag-category)
         - [Updating tag category](#updating-tag-category)
         - [Getting tag category](#getting-tag-category)
@@ -116,6 +116,12 @@ data.
 - **Description**
 
     Lists all tag categories. Doesn't support paging.
+
+    **Note**: independently, the server exports current tag category list
+    snapshots to the data directory under `tags.json` name. Its purpose is to
+    reduce the trips frontend needs to make when doing autocompletion, and ease
+    caching. The data directory and its URL are controlled with `data_dir` and
+    `data_url` variables in server's configuration.
 
 
 ## Creating tag category
@@ -231,6 +237,7 @@ data.
 
     - the tag category does not exist
     - the tag category is used by some tags
+    - the tag category is the last tag category available
     - privileges are too low
 
 - **Description**
@@ -352,7 +359,7 @@ data.
 - **Errors**
 
     - any name is used by an existing tag (names are case insensitive)
-    - any name, implication or suggestion has invalid name
+    - any name, implication or is invalid
     - category is invalid
     - no name was specified
     - implications or suggestions contain any item from names (e.g. there's a
@@ -411,12 +418,12 @@ data.
 
     Updates an existing tag using specified parameters. Names, suggestions and
     implications must match `tag_name_regex` from server's configuration.
-    Category must be one of `tag_categories` from server's configuration.
-    If specified implied tags or suggested tags do not exist yet, they will
-    be automatically created. Tags created automatically have no implications,
-    no suggestions, one name and their category is set to the first item of
-    `tag_categories` from server's configuration. All fields are optional -
-    update concerns only provided fields.
+    Category must exist and is the same as `name` field within
+    [`<tag-category>` resource](#tag-category). If specified implied tags or
+    suggested tags do not exist yet, they will be automatically created. Tags
+    created automatically have no implications, no suggestions, one name and
+    their category is set to the first tag category found. All fields are
+    optional - update concerns only provided fields.
 
 
 ## Getting tag

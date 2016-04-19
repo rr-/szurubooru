@@ -21,13 +21,17 @@ class SearchExecutor(object):
         entities = filter_query \
             .offset((page - 1) * page_size).limit(page_size).all()
         count_query = filter_query.statement \
-            .with_only_columns([sqlalchemy.func.count()]).order_by(None)
-        count = filter_query.session.execute(count_query).scalar()
+            .with_only_columns([sqlalchemy.func.count()]) \
+            .order_by(None)
+        count = filter_query \
+            .session.execute(count_query) \
+            .scalar()
         return (count, entities)
 
     def _prepare(self, query_text):
         ''' Parse input and return SQLAlchemy query. '''
-        query = self._search_config.create_query()
+        query = self._search_config.create_query() \
+            .options(sqlalchemy.orm.lazyload('*'))
         for token in re.split(r'\s+', (query_text or '').lower()):
             if not token:
                 continue

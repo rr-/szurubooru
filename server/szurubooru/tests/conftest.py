@@ -7,6 +7,32 @@ import sqlalchemy
 from szurubooru import api, config, db
 from szurubooru.util import misc
 
+class QueryCounter(object):
+    def __init__(self):
+        self._statements = []
+
+    def __enter__(self):
+        self._statements = []
+
+    def __exit__(self, *args, **kwargs):
+        self._statements = []
+
+    def create_before_cursor_execute(self):
+        def before_cursor_execute(
+                _conn, _cursor, statement, _parameters, _context, _executemany):
+            self._statements.append(statement)
+        return before_cursor_execute
+
+    @property
+    def statements(self):
+        return self._statements
+
+_query_counter = QueryCounter()
+
+@pytest.fixture
+def query_counter():
+    return _query_counter
+
 def get_unique_name():
     return str(uuid.uuid4())
 
@@ -21,11 +47,15 @@ def fake_datetime():
     return injector
 
 @pytest.yield_fixture
-def session(autoload=True):
+def session(query_counter, autoload=True):
     import logging
     logging.basicConfig()
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
     engine = sqlalchemy.create_engine('sqlite:///:memory:')
+    sqlalchemy.event.listen(
+        engine,
+        'before_cursor_execute',
+        query_counter.create_before_cursor_execute())
     session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
     session = sqlalchemy.orm.scoped_session(session_maker)
     db.Base.query = session.query_property()
