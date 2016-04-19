@@ -21,6 +21,7 @@ class ContextAdapter(object):
     def process_request(self, request, _response):
         request.context.files = {}
         request.context.input = {}
+        request.context.output = None
         # pylint: disable=protected-access
         for key, value in request._params.items():
             request.context.input[key] = value
@@ -53,14 +54,12 @@ class ContextAdapter(object):
             for key, value in json.loads(body).items():
                 request.context.input[key] = value
         except (ValueError, UnicodeDecodeError):
-            raise falcon.HTTPError(
-                falcon.HTTP_401,
+            raise falcon.HTTPBadRequest(
                 'Malformed JSON',
                 'Could not decode the request body. The '
                 'JSON was incorrect or not encoded as UTF-8.')
 
     def process_response(self, request, response, _resource):
-        if not request.context.output:
-            return
-        response.body = json.dumps(
-            request.context.output, default=json_serializer, indent=2)
+        if request.context.output:
+            response.body = json.dumps(
+                request.context.output, default=json_serializer, indent=2)
