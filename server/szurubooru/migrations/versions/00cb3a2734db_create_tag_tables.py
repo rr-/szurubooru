@@ -1,5 +1,5 @@
 '''
-Create tags tables
+Create tag tables
 
 Revision ID: 00cb3a2734db
 Created at: 2016-04-15 23:15:36.255429
