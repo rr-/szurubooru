@@ -14,7 +14,7 @@
 2. [API reference](#api-reference)
 
     - Tag categories
-        - [Listing tag categories](#listing-tags-category)
+        - [Listing tag categories](#listing-tags-categories)
         - [Creating tag category](#creating-tag-category)
         - [Updating tag category](#updating-tag-category)
         - [Getting tag category](#getting-tag-category)
@@ -245,7 +245,8 @@ Not implemented yet.
     are optional. If specified implied tags or suggested tags do not exist yet,
     they will be automatically created. Tags created automatically have no
     implications, no suggestions, one name and their category is set to the
-    first item of `tag_categories` from server's configuration.
+    first tag category found. If there are no tag categories established yet,
+    an error will be thrown.
 
 
 ## Updating tag
@@ -275,10 +276,10 @@ Not implemented yet.
 
 - **Errors**
 
+    - the tag does not exist
     - any name is used by an existing tag (names are case insensitive)
-    - any name, implication or suggestion has invalid name
+    - any name, implication or suggestion name is invalid
     - category is invalid
-    - no name was specified
     - implications or suggestions contain any item from names (e.g. there's a
       shallow cyclic dependency)
     - privileges are too low
@@ -338,7 +339,7 @@ Not implemented yet.
 
 - **Description**
 
-    Deletes existing tag.
+    Deletes existing tag. The tag to be deleted must have no usages.
 
 
 ## Listing users

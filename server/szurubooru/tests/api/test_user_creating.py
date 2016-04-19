@@ -16,8 +16,8 @@ def test_ctx(
         session, config_injector, context_factory, user_factory):
     config_injector({
         'secret': '',
-        'user_name_regex': '.{3,}',
-        'password_regex': '.{3,}',
+        'user_name_regex': '[^!]{3,}',
+        'password_regex': '[^!]{3,}',
         'default_rank': 'regular_user',
         'thumbnails': {'avatar_width': 200, 'avatar_height': 200},
         'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
@@ -150,34 +150,44 @@ def test_missing_optional_field(test_ctx, tmpdir, field):
         'avatarStyle': 'manual',
     }
     del input[field]
-    test_ctx.api.post(
+    result = test_ctx.api.post(
         test_ctx.context_factory(
             input=input,
             files={'avatar': EMPTY_PIXEL},
             user=test_ctx.user_factory(rank='mod')))
+    assert result is not None
 
-@pytest.mark.parametrize('input', [
-    {'name': '.'},
-    {'name': 'x' * 51},
-    {'password': '.'},
-    {'rank': '.'},
-    {'email': '.'},
-    {'email': 'x' * 65},
-    {'avatarStyle': 'manual'},
+@pytest.mark.parametrize('input,expected_exception', [
+    ({'name': None}, users.InvalidUserNameError),
+    ({'name': ''}, users.InvalidUserNameError),
+    ({'name': '!bad'}, users.InvalidUserNameError),
+    ({'name': 'x' * 51}, users.InvalidUserNameError),
+    ({'password': None}, users.InvalidPasswordError),
+    ({'password': ''}, users.InvalidPasswordError),
+    ({'password': '!bad'}, users.InvalidPasswordError),
+    ({'rank': None}, users.InvalidRankError),
+    ({'rank': ''}, users.InvalidRankError),
+    ({'rank': 'bad'}, users.InvalidRankError),
+    ({'email': 'bad'}, users.InvalidEmailError),
+    ({'email': 'x@' * 65 + '.com'}, users.InvalidEmailError),
+    ({'avatarStyle': None}, users.InvalidAvatarError),
+    ({'avatarStyle': ''}, users.InvalidAvatarError),
+    ({'avatarStyle': 'invalid'}, users.InvalidAvatarError),
+    ({'avatarStyle': 'manual'}, users.InvalidAvatarError), # missing file
 ])
-def test_invalid_inputs(test_ctx, input):
-    user = test_ctx.user_factory(name='u1', rank='admin')
-    test_ctx.session.add(user)
-    with pytest.raises(errors.ValidationError):
-        real_input={
-            'name': 'chewie',
-            'email': 'asd@asd.asd',
-            'password': 'oks',
-        }
-        for key, value in input.items():
-            real_input[key] = value
+def test_invalid_inputs(test_ctx, input, expected_exception):
+    real_input={
+        'name': 'chewie',
+        'email': 'asd@asd.asd',
+        'password': 'oks',
+    }
+    for key, value in input.items():
+        real_input[key] = value
+    with pytest.raises(expected_exception):
         test_ctx.api.post(
-            test_ctx.context_factory(input=real_input, user=user))
+            test_ctx.context_factory(
+                input=real_input,
+                user=test_ctx.user_factory(name='u1', rank='admin')))
 
 def test_mods_trying_to_become_admin(test_ctx):
     user1 = test_ctx.user_factory(name='u1', rank='mod')

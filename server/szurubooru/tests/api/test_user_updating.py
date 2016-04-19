@@ -3,6 +3,11 @@ import pytest
 from szurubooru import api, config, db, errors
 from szurubooru.util import auth, misc, users
 
+EMPTY_PIXEL = \
+    b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
+    b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
+    b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
+
 def get_user(session, name):
     return session.query(db.User).filter_by(name=name).first()
 
@@ -11,8 +16,8 @@ def test_ctx(
         session, config_injector, context_factory, user_factory):
     config_injector({
         'secret': '',
-        'user_name_regex': '.{3,}',
-        'password_regex': '.{3,}',
+        'user_name_regex': '^[^!]{3,}$',
+        'password_regex': '^[^!]{3,}$',
         'thumbnails': {'avatar_width': 200, 'avatar_height': 200},
         'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
         'rank_names': {},
@@ -71,6 +76,29 @@ def test_updating_user(test_ctx):
     assert auth.is_valid_password(user, 'oks') is True
     assert auth.is_valid_password(user, 'invalid') is False
 
+@pytest.mark.parametrize(
+    'field', ['name', 'email', 'password', 'rank', 'avatarStyle'])
+def test_missing_optional_field(test_ctx, tmpdir, field):
+    config.config['data_dir'] = str(tmpdir.mkdir('data'))
+    config.config['data_url'] = 'http://example.com/data/'
+    user = test_ctx.user_factory(name='u1', rank='admin')
+    test_ctx.session.add(user)
+    input = {
+        'name': 'chewie',
+        'email': 'asd@asd.asd',
+        'password': 'oks',
+        'rank': 'mod',
+        'avatarStyle': 'gravatar',
+    }
+    del input[field]
+    result = test_ctx.api.put(
+        test_ctx.context_factory(
+            input=input,
+            files={'avatar': EMPTY_PIXEL},
+            user=user),
+        'u1')
+    assert result is not None
+
 def test_update_changing_nothing(test_ctx):
     user = test_ctx.user_factory(name='u1', rank='admin')
     test_ctx.session.add(user)
@@ -93,19 +121,28 @@ def test_removing_email(test_ctx):
         test_ctx.context_factory(input={'email': ''}, user=user), 'u1')
     assert get_user(test_ctx.session, 'u1').email is None
 
-@pytest.mark.parametrize('input', [
-    {'name': '.'},
-    {'name': 'x' * 51},
-    {'password': '.'},
-    {'rank': '.'},
-    {'email': '.'},
-    {'email': 'x' * 65},
-    {'avatarStyle': 'manual'},
+@pytest.mark.parametrize('input,expected_exception', [
+    ({'name': None}, users.InvalidUserNameError),
+    ({'name': ''}, users.InvalidUserNameError),
+    ({'name': '!bad'}, users.InvalidUserNameError),
+    ({'name': 'x' * 51}, users.InvalidUserNameError),
+    ({'password': None}, users.InvalidPasswordError),
+    ({'password': ''}, users.InvalidPasswordError),
+    ({'password': '!bad'}, users.InvalidPasswordError),
+    ({'rank': None}, users.InvalidRankError),
+    ({'rank': ''}, users.InvalidRankError),
+    ({'rank': 'bad'}, users.InvalidRankError),
+    ({'email': 'bad'}, users.InvalidEmailError),
+    ({'email': 'x@' * 65 + '.com'}, users.InvalidEmailError),
+    ({'avatarStyle': None}, users.InvalidAvatarError),
+    ({'avatarStyle': ''}, users.InvalidAvatarError),
+    ({'avatarStyle': 'invalid'}, users.InvalidAvatarError),
+    ({'avatarStyle': 'manual'}, users.InvalidAvatarError), # missing file
 ])
-def test_invalid_inputs(test_ctx, input):
+def test_invalid_inputs(test_ctx, input, expected_exception):
     user = test_ctx.user_factory(name='u1', rank='admin')
     test_ctx.session.add(user)
-    with pytest.raises(errors.ValidationError):
+    with pytest.raises(expected_exception):
         test_ctx.api.put(
             test_ctx.context_factory(input=input, user=user), 'u1')
 
@@ -151,14 +188,10 @@ def test_uploading_avatar(test_ctx, tmpdir):
     config.config['data_url'] = 'http://example.com/data/'
     user = test_ctx.user_factory(name='u1', rank='mod')
     test_ctx.session.add(user)
-    empty_pixel = \
-        b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
-        b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
-        b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
     response = test_ctx.api.put(
         test_ctx.context_factory(
             input={'avatarStyle': 'manual'},
-            files={'avatar': empty_pixel},
+            files={'avatar': EMPTY_PIXEL},
             user=user),
         'u1')
     user = get_user(test_ctx.session, 'u1')

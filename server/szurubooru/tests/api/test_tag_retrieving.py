@@ -20,8 +20,30 @@ def test_ctx(
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.tag_factory = tag_factory
+    ret.list_api = api.TagListApi()
     ret.detail_api = api.TagDetailApi()
     return ret
+
+def test_retrieving_multiple(test_ctx):
+    tag1 = test_ctx.tag_factory(names=['t1'])
+    tag2 = test_ctx.tag_factory(names=['t2'])
+    test_ctx.session.add_all([tag1, tag2])
+    result = test_ctx.list_api.get(
+        test_ctx.context_factory(
+            input={'query': '', 'page': 1},
+            user=test_ctx.user_factory(rank='regular_user')))
+    assert result['query'] == ''
+    assert result['page'] == 1
+    assert result['pageSize'] == 100
+    assert result['total'] == 2
+    assert [t['names'] for t in result['tags']] == [['t1'], ['t2']]
+
+def test_retrieving_multiple_without_privileges(test_ctx):
+    with pytest.raises(errors.AuthError):
+        test_ctx.list_api.get(
+            test_ctx.context_factory(
+                input={'query': '', 'page': 1},
+                user=test_ctx.user_factory(rank='anonymous')))
 
 def test_retrieving_single(test_ctx):
     test_ctx.session.add(test_ctx.tag_factory(names=['tag']))

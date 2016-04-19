@@ -78,6 +78,50 @@ def test_simple_updating(test_ctx, fake_datetime):
     assert tag.implications == []
     assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
+@pytest.mark.parametrize('input,expected_exception', [
+    ({'names': None}, tags.InvalidTagNameError),
+    ({'names': []}, tags.InvalidTagNameError),
+    ({'names': [None]}, tags.InvalidTagNameError),
+    ({'names': ['']}, tags.InvalidTagNameError),
+    ({'names': ['!bad']}, tags.InvalidTagNameError),
+    ({'names': ['x' * 65]}, tags.InvalidTagNameError),
+    ({'category': None}, tags.InvalidTagCategoryError),
+    ({'category': ''}, tags.InvalidTagCategoryError),
+    ({'category': 'invalid'}, tags.InvalidTagCategoryError),
+    ({'suggestions': ['good', '!bad']}, tags.InvalidTagNameError),
+    ({'implications': ['good', '!bad']}, tags.InvalidTagNameError),
+])
+def test_invalid_inputs(test_ctx, input, expected_exception):
+    test_ctx.session.add(
+        test_ctx.tag_factory(names=['tag1'], category_name='meta'))
+    test_ctx.session.commit()
+    with pytest.raises(expected_exception):
+        test_ctx.api.put(
+            test_ctx.context_factory(
+                input=input,
+                user=test_ctx.user_factory(rank='regular_user')),
+            'tag1')
+
+@pytest.mark.parametrize(
+    'field', ['names', 'category', 'implications', 'suggestions'])
+def test_missing_optional_field(test_ctx, tmpdir, field):
+    test_ctx.session.add(
+        test_ctx.tag_factory(names=['tag'], category_name='meta'))
+    test_ctx.session.commit()
+    input = {
+        'names': ['tag1', 'tag2'],
+        'category': 'meta',
+        'suggestions': [],
+        'implications': [],
+    }
+    del input[field]
+    result = test_ctx.api.put(
+        test_ctx.context_factory(
+            input=input,
+            user=test_ctx.user_factory(rank='regular_user')),
+        'tag')
+    assert result is not None
+
 def test_trying_to_update_non_existing_tag(test_ctx):
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.api.put(
@@ -118,22 +162,6 @@ def test_duplicating_names(test_ctx):
     assert tag is not None
     assert [tag_name.name for tag_name in tag.names] == ['tag3']
 
-@pytest.mark.parametrize('input', [
-    {'names': []},
-    {'names': ['!']},
-    {'names': ['x' * 65]},
-])
-def test_trying_to_set_invalid_name(test_ctx, input):
-    test_ctx.session.add(
-        test_ctx.tag_factory(names=['tag1'], category_name='meta'))
-    test_ctx.session.commit()
-    with pytest.raises(tags.InvalidTagNameError):
-        test_ctx.api.put(
-            test_ctx.context_factory(
-                input=input,
-                user=test_ctx.user_factory(rank='regular_user')),
-            'tag1')
-
 @pytest.mark.parametrize('dup_name', ['tag1', 'TAG1', 'tag2', 'TAG2'])
 def test_trying_to_use_existing_name(test_ctx, dup_name):
     test_ctx.session.add_all([
@@ -146,22 +174,6 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
                 input={'names': [dup_name]},
                 user=test_ctx.user_factory(rank='regular_user')),
             'tag3')
-
-def test_trying_to_update_tag_with_invalid_category(test_ctx):
-    test_ctx.session.add(
-        test_ctx.tag_factory(names=['tag1'], category_name='meta'))
-    test_ctx.session.commit()
-    with pytest.raises(tags.InvalidTagCategoryError):
-        test_ctx.api.put(
-            test_ctx.context_factory(
-                input={
-                    'names': ['ok'],
-                    'category': 'invalid',
-                    'suggestions': [],
-                    'implications': [],
-                },
-                user=test_ctx.user_factory(rank='regular_user')),
-            'tag1')
 
 @pytest.mark.parametrize('input,expected_suggestions,expected_implications', [
     # new relations
@@ -227,25 +239,6 @@ def test_reusing_suggestions_and_implications(test_ctx):
     assert_relations(tag.implications, ['tag1'])
 
 @pytest.mark.parametrize('input', [
-    {'names': ['ok'], 'suggestions': ['ok2', '!']},
-    {'names': ['ok'], 'implications': ['ok2', '!']},
-])
-def test_trying_to_update_tag_with_invalid_relation(test_ctx, input):
-    test_ctx.session.add(
-        test_ctx.tag_factory(names=['tag'], category_name='meta'))
-    test_ctx.session.commit()
-    with pytest.raises(tags.InvalidTagNameError):
-        test_ctx.api.put(
-            test_ctx.context_factory(
-                input=input, user=test_ctx.user_factory(rank='regular_user')),
-            'tag')
-    test_ctx.session.rollback()
-    assert get_tag(test_ctx.session, 'tag') is not None
-    assert get_tag(test_ctx.session, '!') is None
-    assert get_tag(test_ctx.session, 'ok') is None
-    assert get_tag(test_ctx.session, 'ok2') is None
-
-@pytest.mark.parametrize('input', [
     {
         'names': ['tag1'],
         'category': 'meta',
@@ -263,7 +256,7 @@ def test_tag_trying_to_relate_to_itself(test_ctx, input):
     test_ctx.session.add(
         test_ctx.tag_factory(names=['tag1'], category_name='meta'))
     test_ctx.session.commit()
-    with pytest.raises(tags.RelationError):
+    with pytest.raises(tags.InvalidTagRelationError):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input=input, user=test_ctx.user_factory(rank='regular_user')),

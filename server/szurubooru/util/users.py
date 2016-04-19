@@ -6,7 +6,7 @@ from szurubooru.util import auth, misc, files, images
 
 class UserNotFoundError(errors.NotFoundError): pass
 class UserAlreadyExistsError(errors.ValidationError): pass
-class InvalidNameError(errors.ValidationError): pass
+class InvalidUserNameError(errors.ValidationError): pass
 class InvalidEmailError(errors.ValidationError): pass
 class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
@@ -41,19 +41,23 @@ def create_user(name, password, email, auth_user):
     return user
 
 def update_name(user, name, auth_user):
+    if not name:
+        raise InvalidUserNameError('Name cannot be empty.')
     if misc.value_exceeds_column_size(name, db.User.name):
-        raise InvalidNameError('User name is too long.')
+        raise InvalidUserNameError('User name is too long.')
     other_user = get_user_by_name(name)
     if other_user and other_user.user_id != auth_user.user_id:
         raise UserAlreadyExistsError('User %r already exists.' % name)
     name = name.strip()
     name_regex = config.config['user_name_regex']
     if not re.match(name_regex, name):
-        raise InvalidNameError(
+        raise InvalidUserNameError(
             'User name %r must satisfy regex %r.' % (name, name_regex))
     user.name = name
 
 def update_password(user, password):
+    if not password:
+        raise InvalidPasswordError('Password cannot be empty.')
     password_regex = config.config['password_regex']
     if not re.match(password_regex, password):
         raise InvalidPasswordError(
@@ -62,7 +66,10 @@ def update_password(user, password):
     user.password_hash = auth.get_password_hash(user.password_salt, password)
 
 def update_email(user, email):
-    email = email.strip() or None
+    if email:
+        email = email.strip()
+    if not email:
+        email = None
     if email and misc.value_exceeds_column_size(email, db.User.email):
         raise InvalidEmailError('Email is too long.')
     if not misc.is_valid_email(email):
@@ -70,6 +77,8 @@ def update_email(user, email):
     user.email = email
 
 def update_rank(user, rank, authenticated_user):
+    if not rank:
+        raise InvalidRankError('Rank cannot be empty.')
     rank = rank.strip()
     available_ranks = config.config['ranks']
     if not rank in available_ranks:

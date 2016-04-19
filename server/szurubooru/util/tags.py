@@ -11,7 +11,7 @@ class TagAlreadyExistsError(errors.ValidationError): pass
 class TagIsInUseError(errors.ValidationError): pass
 class InvalidTagNameError(errors.ValidationError): pass
 class InvalidTagCategoryError(errors.ValidationError): pass
-class RelationError(errors.ValidationError): pass
+class InvalidTagRelationError(errors.ValidationError): pass
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']
@@ -111,7 +111,7 @@ def update_category_name(tag, category_name):
     tag.category = category
 
 def update_names(tag, names):
-    names = misc.icase_unique(names)
+    names = misc.icase_unique([name for name in names if name])
     if not len(names):
         raise InvalidTagNameError('At least one name must be specified.')
     for name in names:
@@ -139,14 +139,14 @@ def update_names(tag, names):
 
 def update_implications(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
-        raise RelationError('Tag cannot imply itself.')
+        raise InvalidTagRelationError('Tag cannot imply itself.')
     related_tags, new_tags = get_or_create_tags_by_names(relations)
     db.session().flush()
     tag.implications = related_tags + new_tags
 
 def update_suggestions(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
-        raise RelationError('Tag cannot suggest itself.')
+        raise InvalidTagRelationError('Tag cannot suggest itself.')
     related_tags, new_tags = get_or_create_tags_by_names(relations)
     db.session().flush()
     tag.suggestions = related_tags + new_tags
