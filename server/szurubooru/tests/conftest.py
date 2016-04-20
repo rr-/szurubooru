@@ -5,7 +5,7 @@ import pytest
 import freezegun
 import sqlalchemy
 from szurubooru import api, config, db
-from szurubooru.util import misc
+from szurubooru.func import misc
 
 class QueryCounter(object):
     def __init__(self):

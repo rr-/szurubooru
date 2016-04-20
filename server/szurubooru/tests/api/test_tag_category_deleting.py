@@ -2,7 +2,7 @@ import pytest
 import os
 from datetime import datetime
 from szurubooru import api, config, db, errors
-from szurubooru.util import misc, tags, tag_categories
+from szurubooru.func import misc, tags, tag_categories
 
 @pytest.fixture
 def test_ctx(

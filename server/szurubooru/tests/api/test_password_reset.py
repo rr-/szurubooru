@@ -2,7 +2,7 @@ from datetime import datetime
 from unittest import mock
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.util import auth, mailer
+from szurubooru.func import auth, mailer
 
 @pytest.fixture
 def password_reset_api(config_injector):

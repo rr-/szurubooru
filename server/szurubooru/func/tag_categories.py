@@ -1,6 +1,6 @@
 import re
 from szurubooru import config, db, errors
-from szurubooru.util import misc
+from szurubooru.func import misc
 
 class TagCategoryNotFoundError(errors.NotFoundError): pass
 class TagCategoryAlreadyExistsError(errors.ValidationError): pass

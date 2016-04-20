@@ -2,7 +2,7 @@ import datetime
 import os
 import json
 from szurubooru import config, db
-from szurubooru.util import tags
+from szurubooru.func import tags
 
 def test_export(
         tmpdir,

@@ -1,6 +1,6 @@
 import pytest
 from szurubooru import errors
-from szurubooru.util import misc
+from szurubooru.func import misc
 from datetime import datetime
 
 dt = datetime

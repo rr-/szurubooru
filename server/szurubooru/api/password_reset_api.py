@@ -1,6 +1,6 @@
 from szurubooru import config, errors
-from szurubooru.util import auth, mailer, users
 from szurubooru.api.base_api import BaseApi
+from szurubooru.func import auth, mailer, users
 
 MAIL_SUBJECT = 'Password reset for {name}'
 MAIL_BODY = \

@@ -1,7 +1,7 @@
 import os
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.util import misc, tag_categories
+from szurubooru.func import misc, tag_categories
 
 @pytest.fixture
 def test_ctx(tmpdir, config_injector, context_factory, user_factory):

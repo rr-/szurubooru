@@ -1,7 +1,7 @@
 import datetime
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.util import auth, misc, users
+from szurubooru.func import auth, misc, users
 
 EMPTY_PIXEL = \
     b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \

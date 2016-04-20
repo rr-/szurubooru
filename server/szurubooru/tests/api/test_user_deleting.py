@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 from szurubooru import api, db, errors
-from szurubooru.util import misc, users
+from szurubooru.func import misc, users
 
 @pytest.fixture
 def test_ctx(config_injector, context_factory, user_factory):

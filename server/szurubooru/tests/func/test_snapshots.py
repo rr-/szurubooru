@@ -1,7 +1,7 @@
 import datetime
 import pytest
 from szurubooru import db
-from szurubooru.util import snapshots
+from szurubooru.func import snapshots
 
 def test_serializing_tag(tag_factory):
     tag = tag_factory(names=['main_name', 'alias'], category_name='dummy')

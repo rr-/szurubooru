@@ -1,6 +1,6 @@
 import sqlalchemy
 import szurubooru.errors
-from szurubooru.util import misc
+from szurubooru.func import misc
 from szurubooru.search import criteria
 
 class BaseSearchConfig(object):

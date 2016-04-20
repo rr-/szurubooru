@@ -1,7 +1,7 @@
 import base64
 import falcon
 from szurubooru import db, errors
-from szurubooru.util import auth, users
+from szurubooru.func import auth, users
 
 class Authenticator(object):
     '''

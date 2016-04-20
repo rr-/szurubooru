@@ -2,7 +2,7 @@ import datetime
 import re
 from sqlalchemy import func
 from szurubooru import config, db, errors
-from szurubooru.util import auth, misc, files, images
+from szurubooru.func import auth, misc, files, images
 
 class UserNotFoundError(errors.NotFoundError): pass
 class UserAlreadyExistsError(errors.ValidationError): pass

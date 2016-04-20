@@ -1,7 +1,7 @@
 import datetime
 from szurubooru import search
-from szurubooru.util import auth, tags, snapshots
 from szurubooru.api.base_api import BaseApi
+from szurubooru.func import auth, tags, snapshots
 
 def _serialize_tag(tag):
     return {

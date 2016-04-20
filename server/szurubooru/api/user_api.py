@@ -1,7 +1,7 @@
 import hashlib
 from szurubooru import config, search
-from szurubooru.util import auth, users
 from szurubooru.api.base_api import BaseApi
+from szurubooru.func import auth, users
 
 def _serialize_user(authenticated_user, user):
     ret = {

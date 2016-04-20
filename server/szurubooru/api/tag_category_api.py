@@ -1,5 +1,5 @@
-from szurubooru.util import auth, tags, tag_categories, snapshots
 from szurubooru.api.base_api import BaseApi
+from szurubooru.func import auth, tags, tag_categories, snapshots
 
 def _serialize_category(category):
     return {

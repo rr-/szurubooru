@@ -4,7 +4,7 @@ import os
 import re
 import sqlalchemy
 from szurubooru import config, db, errors
-from szurubooru.util import misc, tag_categories
+from szurubooru.func import misc, tag_categories
 
 class TagNotFoundError(errors.NotFoundError): pass
 class TagAlreadyExistsError(errors.ValidationError): pass
