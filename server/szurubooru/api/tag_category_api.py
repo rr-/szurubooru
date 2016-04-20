@@ -7,6 +7,12 @@ def _serialize_category(category):
         'color': category.color,
     }
 
+def _serialize_category_with_details(category):
+    return {
+        'tagCategory': _serialize_category(category),
+        'snapshots': snapshots.get_data(category),
+    }
+
 class TagCategoryListApi(BaseApi):
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'tag_categories:list')
@@ -26,7 +32,7 @@ class TagCategoryListApi(BaseApi):
         snapshots.create(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return {'tagCategory': _serialize_category(category)}
+        return _serialize_category_with_details(category)
 
 class TagCategoryDetailApi(BaseApi):
     def get(self, ctx, category_name):
@@ -35,7 +41,7 @@ class TagCategoryDetailApi(BaseApi):
         if not category:
             raise tag_categories.TagCategoryNotFoundError(
                 'Tag category %r not found.' % category_name)
-        return {'tagCategory': _serialize_category(category)}
+        return _serialize_category_with_details(category)
 
     def put(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)
@@ -53,7 +59,7 @@ class TagCategoryDetailApi(BaseApi):
         snapshots.modify(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return {'tagCategory': _serialize_category(category)}
+        return _serialize_category_with_details(category)
 
     def delete(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)

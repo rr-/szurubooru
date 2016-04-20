@@ -5,12 +5,10 @@ from szurubooru import db
 def get_tag_snapshot(tag):
     ret = {
         'names': [tag_name.name for tag_name in tag.names],
-        'category': tag.category.name
+        'category': tag.category.name,
+        'suggestions': sorted(rel.first_name for rel in tag.suggestions),
+        'implications': sorted(rel.first_name for rel in tag.implications),
     }
-    if tag.suggestions:
-        ret['suggestions'] = sorted(rel.first_name for rel in tag.suggestions)
-    if tag.implications:
-        ret['implications'] = sorted(rel.first_name for rel in tag.implications)
     return ret
 
 def get_tag_category_snapshot(category):
@@ -25,13 +23,32 @@ serializers = {
     'tag_category': get_tag_category_snapshot,
 }
 
-def save(operation, entity, auth_user):
+def get_resource_info(entity):
     table_name = entity.__table__.name
     primary_key = inspect(entity).identity
     assert table_name in serializers
     assert primary_key is not None
     assert len(primary_key) == 1
     primary_key = primary_key[0]
+    return (table_name, primary_key)
+
+def get_snapshots(entity):
+    table_name, primary_key = get_resource_info(entity)
+    return db.session \
+        .query(db.Snapshot) \
+        .filter(db.Snapshot.resource_type == table_name) \
+        .filter(db.Snapshot.resource_id == primary_key) \
+        .order_by(db.Snapshot.creation_time.desc()) \
+        .all()
+
+def get_data(entity):
+    ret = []
+    for snapshot in get_snapshots(entity):
+        ret.append({'data': snapshot.data, 'time': snapshot.creation_time})
+    return ret
+
+def save(operation, entity, auth_user):
+    table_name, primary_key = get_resource_info(entity)
     now = datetime.datetime.now()
 
     snapshot = db.Snapshot()
@@ -42,12 +59,7 @@ def save(operation, entity, auth_user):
     snapshot.data = serializers[table_name](entity)
     snapshot.user = auth_user
 
-    earlier_snapshots = db.session \
-        .query(db.Snapshot) \
-        .filter(db.Snapshot.resource_type == table_name) \
-        .filter(db.Snapshot.resource_id == primary_key) \
-        .order_by(db.Snapshot.creation_time.desc()) \
-        .all()
+    earlier_snapshots = get_snapshots(entity)
 
     delta = datetime.timedelta(minutes=10)
     snapshots_left = len(earlier_snapshots)

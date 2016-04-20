@@ -45,16 +45,15 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
                     'implications': [],
                 },
                 user=test_ctx.user_factory(rank='regular_user')))
-    assert result == {
-        'tag': {
-            'names': ['tag1', 'tag2'],
-            'category': 'meta',
-            'suggestions': [],
-            'implications': [],
-            'creationTime': datetime.datetime(1997, 12, 1),
-            'lastEditTime': None,
-        }
+    assert result['tag'] == {
+        'names': ['tag1', 'tag2'],
+        'category': 'meta',
+        'suggestions': [],
+        'implications': [],
+        'creationTime': datetime.datetime(1997, 12, 1),
+        'lastEditTime': None,
     }
+    assert len(result['snapshots']) == 1
     tag = get_tag('tag1')
     assert [tag_name.name for tag_name in tag.names] == ['tag1', 'tag2']
     assert tag.category.name == 'meta'

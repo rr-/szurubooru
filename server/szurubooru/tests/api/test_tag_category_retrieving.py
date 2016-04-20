@@ -43,7 +43,8 @@ def test_retrieving_single(test_ctx):
         'tagCategory': {
             'name': 'cat',
             'color': 'dummy',
-        }
+        },
+        'snapshots': [],
     }
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):

@@ -15,6 +15,12 @@ def _serialize_tag(tag):
         'lastEditTime': tag.last_edit_time,
     }
 
+def _serialize_tag_with_details(tag):
+    return {
+        'tag': _serialize_tag(tag),
+        'snapshots': snapshots.get_data(tag),
+    }
+
 class TagListApi(BaseApi):
     def __init__(self):
         super().__init__()
@@ -51,7 +57,7 @@ class TagListApi(BaseApi):
         snapshots.create(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return {'tag': _serialize_tag(tag)}
+        return _serialize_tag_with_details(tag)
 
 class TagDetailApi(BaseApi):
     def get(self, ctx, tag_name):
@@ -59,7 +65,7 @@ class TagDetailApi(BaseApi):
         tag = tags.get_tag_by_name(tag_name)
         if not tag:
             raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
-        return {'tag': _serialize_tag(tag)}
+        return _serialize_tag_with_details(tag)
 
     def put(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
@@ -86,7 +92,7 @@ class TagDetailApi(BaseApi):
         snapshots.modify(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return {'tag': _serialize_tag(tag)}
+        return _serialize_tag_with_details(tag)
 
     def delete(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)

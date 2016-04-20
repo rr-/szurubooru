@@ -38,12 +38,11 @@ def test_simple_updating(test_ctx):
             },
             user=test_ctx.user_factory(rank='regular_user')),
         'name')
-    assert result == {
-        'tagCategory': {
-            'name': 'changed',
-            'color': 'white',
-        }
+    assert result['tagCategory'] == {
+        'name': 'changed',
+        'color': 'white',
     }
+    assert len(result['snapshots']) == 1
     assert tag_categories.get_category_by_name('name') is None
     category = tag_categories.get_category_by_name('changed')
     assert category is not None

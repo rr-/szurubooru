@@ -142,10 +142,16 @@ data.
 
     ```json5
     {
-        "tagCategory": <tag-category>
+        "tagCategory": <tag-category>,
+        "snapshots": [
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>}
+        ]
     }
     ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category).
+    ...where `<tag-category>` is a [tag category resource](#tag-category), and
+    `snapshots` contain its earlier versions.
 
 - **Errors**
 
@@ -178,10 +184,16 @@ data.
 
     ```json5
     {
-        "tagCategory": <tag-category>
+        "tagCategory": <tag-category>,
+        "snapshots": [
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>}
+        ]
     }
     ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category).
+    ...where `<tag-category>` is a [tag category resource](#tag-category), and
+    `snapshots` contain its earlier versions.
 
 - **Errors**
 
@@ -207,10 +219,16 @@ data.
 
     ```json5
     {
-        "tagCategory": <tag-category>
+        "tagCategory": <tag-category>,
+        "snapshots": [
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-category-snapshot>, "time": <snapshot-time>}
+        ]
     }
     ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category).
+    ...where `<tag-category>` is a [tag category resource](#tag-category), and
+    `snapshots` contain its earlier versions.
 
 - **Errors**
 
@@ -351,10 +369,16 @@ data.
 
     ```json5
     {
-        "tag": <tag>
+        "tag": <tag>,
+        "snapshots": [
+            {"data": <tag-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-snapshot>, "time": <snapshot-time>}
+        ]
     }
     ```
-    ...where `<tag>` is a [tag resource](#tag).
+    ...where `<tag>` is a [tag resource](#tag), and `snapshots` contain its
+    earlier versions.
 
 - **Errors**
 
@@ -399,10 +423,16 @@ data.
 
     ```json5
     {
-        "tag": <tag>
+        "tag": <tag>,
+        "snapshots": [
+            {"data": <tag-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-snapshot>, "time": <snapshot-time>}
+        ]
     }
     ```
-    ...where `<tag>` is a [tag resource](#tag).
+    ...where `<tag>` is a [tag resource](#tag), and `snapshots` contain its
+    earlier versions.
 
 - **Errors**
 
@@ -435,10 +465,16 @@ data.
 
     ```json5
     {
-        "tag": <tag>
+        "tag": <tag>,
+        "snapshots": [
+            {"data": <tag-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-snapshot>, "time": <snapshot-time>}
+        ]
     }
     ```
-    ...where `<tag>` is a [tag resource](#tag).
+    ...where `<tag>` is a [tag resource](#tag), and `snapshots` contain its
+    earlier versions.
 
 - **Errors**
 
@@ -768,7 +804,16 @@ data.
 ```json5
 {
     "name":  "character",
-    "color": "#FF0000",     // used to colorize certain tag types in the web client
+    "color": "#FF0000" // used to colorize certain tag types in the web client
+}
+```
+
+## Tag category snapshot
+
+```json5
+{
+    "name":  "character",
+    "color": "#FF0000"
 }
 ```
 
@@ -777,7 +822,7 @@ data.
 ```json5
 {
     "names":        ["tag1", "tag2", "tag3"],
-    "category":     "plain", // one of values controlled by server's configuration
+    "category":     "plain",
     "implications": ["implied-tag1", "implied-tag2", "implied-tag3"],
     "suggestions":  ["suggested-tag1", "suggested-tag2", "suggested-tag3"],
     "creationTime": "2016-03-28T13:37:01.755461",
@@ -785,6 +830,16 @@ data.
 }
 ```
 
+## Tag snapshot
+
+```json5
+{
+    "names":        ["tag1", "tag2", "tag3"],
+    "category":     "plain",
+    "implications": ["imp1", "imp2", "imp3"],
+    "suggestions":  ["sug1", "sug2", "sug3"]
+}
+```
 
 
 # Search

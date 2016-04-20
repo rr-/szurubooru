@@ -52,16 +52,15 @@ def test_simple_updating(test_ctx, fake_datetime):
                 },
                 user=test_ctx.user_factory(rank='regular_user')),
             'tag1')
-    assert result == {
-        'tag': {
-            'names': ['tag3'],
-            'category': 'character',
-            'suggestions': [],
-            'implications': [],
-            'creationTime': datetime.datetime(1996, 1, 1),
-            'lastEditTime': datetime.datetime(1997, 12, 1),
-        }
+    assert result['tag'] == {
+        'names': ['tag3'],
+        'category': 'character',
+        'suggestions': [],
+        'implications': [],
+        'creationTime': datetime.datetime(1996, 1, 1),
+        'lastEditTime': datetime.datetime(1997, 12, 1),
     }
+    assert len(result['snapshots']) == 1
     assert get_tag('tag1') is None
     assert get_tag('tag2') is None
     tag = get_tag('tag3')
