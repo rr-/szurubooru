@@ -26,6 +26,7 @@
         - [Getting tag](#getting-tag)
         - [Deleting tag](#deleting-tag)
         - [Merging tags](#merging-tags)
+        - [Listing tag siblings](#listing-tag-siblings)
     - Users
         - [Listing users](#listing-users)
         - [Creating user](#creating-user)
@@ -116,7 +117,7 @@ data.
 
 - **Description**
 
-    Lists all tag categories. Doesn't support paging.
+    Lists all tag categories. Doesn't use paging.
 
     **Note**: independently, the server exports current tag category list
     snapshots to the data directory under `tags.json` name. Its purpose is to
@@ -550,6 +551,41 @@ data.
     tag properties such as category, tag relations etc. do not get transferred
     and are discarded. The target tag effectively remains unchanged with the
     exception of the set of posts it's used in.
+
+
+## Listing tag siblings
+- **Request**
+
+    `GET /tag-siblings/<name>`
+
+- **Output**
+
+    ```json5
+    {
+        "siblings": [
+            {
+                "tag": <tag>,
+                "occurrences": 2
+            },
+            {
+                "tag": <tag>,
+                "occurrences": 1
+            }
+        ]
+    }
+    ```
+    ...where `<tag>` is a [tag resource](#tag).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Lists siblings of given tag, e.g. tags that were used in the same posts as
+    the given tag. `occurrences` field signifies how many times a given sibling
+    appears with given tag. Results are sorted by occurrences count and the
+    list is truncated to the first 50 elements. Doesn't use paging.
 
 
 ## Listing users

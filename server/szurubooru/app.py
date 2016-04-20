@@ -53,7 +53,8 @@ def create_app():
     tag_category_detail_api = api.TagCategoryDetailApi()
     tag_list_api = api.TagListApi()
     tag_detail_api = api.TagDetailApi()
-    tag_merging_api = api.TagMergingApi()
+    tag_merge_api = api.TagMergeApi()
+    tag_siblings_api = api.TagSiblingsApi()
     password_reset_api = api.PasswordResetApi()
 
     app.add_error_handler(errors.AuthError, _on_auth_error)
@@ -69,7 +70,8 @@ def create_app():
     app.add_route('/tag-category/{category_name}', tag_category_detail_api)
     app.add_route('/tags/', tag_list_api)
     app.add_route('/tag/{tag_name}', tag_detail_api)
-    app.add_route('/tag-merge/', tag_merging_api)
+    app.add_route('/tag-merge/', tag_merge_api)
+    app.add_route('/tag-siblings/{tag_name}', tag_siblings_api)
     app.add_route('/password-reset/{user_name}', password_reset_api)
 
     return app

@@ -98,6 +98,21 @@ def get_or_create_tags_by_names(names):
             new_tags.append(new_tag)
     return related_tags, new_tags
 
+def get_siblings(tag):
+    tag_alias = sqlalchemy.orm.aliased(db.Tag)
+    pt_alias1 = sqlalchemy.orm.aliased(db.PostTag)
+    pt_alias2 = sqlalchemy.orm.aliased(db.PostTag)
+    result = db.session \
+        .query(tag_alias, sqlalchemy.func.count(tag_alias.tag_id)) \
+        .join(pt_alias1, pt_alias1.tag_id == tag_alias.tag_id) \
+        .join(pt_alias2, pt_alias2.post_id == pt_alias1.post_id) \
+        .filter(pt_alias2.tag_id == tag.tag_id) \
+        .filter(pt_alias1.tag_id != tag.tag_id) \
+        .group_by(tag_alias.tag_id) \
+        .order_by(tag_alias.post_count.desc()) \
+        .limit(50)
+    return result
+
 def merge_tags(source_tag, target_tag):
     db.session.execute(
         sqlalchemy.sql.expression.update(db.PostTag) \

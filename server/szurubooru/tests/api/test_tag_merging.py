@@ -25,7 +25,7 @@ def test_ctx(
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.tag_factory = tag_factory
-    ret.api = api.TagMergingApi()
+    ret.api = api.TagMergeApi()
     return ret
 
 def test_merging_without_usages(test_ctx, fake_datetime):

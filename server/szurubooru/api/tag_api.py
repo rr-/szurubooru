@@ -110,7 +110,7 @@ class TagDetailApi(BaseApi):
         tags.export_to_json()
         return {}
 
-class TagMergingApi(BaseApi):
+class TagMergeApi(BaseApi):
     def post(self, ctx):
         source_tag_name = ctx.get_param_as_string('remove', required=True) or ''
         target_tag_name = ctx.get_param_as_string('merge-to', required=True) or ''
@@ -131,3 +131,18 @@ class TagMergingApi(BaseApi):
         ctx.session.commit()
         tags.export_to_json()
         return _serialize_tag_with_details(target_tag)
+
+class TagSiblingsApi(BaseApi):
+    def get(self, ctx, tag_name):
+        auth.verify_privilege(ctx.user, 'tags:view')
+        tag = tags.get_tag_by_name(tag_name)
+        if not tag:
+            raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
+        result = tags.get_siblings(tag)
+        serialized_siblings = []
+        for sibling, occurrences in result:
+            serialized_siblings.append({
+                'tag': _serialize_tag(sibling),
+                'occurrences': occurrences
+            })
+        return {'siblings': serialized_siblings}
