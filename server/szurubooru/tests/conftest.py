@@ -1,6 +1,6 @@
+import contextlib
 import datetime
 import uuid
-from contextlib import contextmanager
 import pytest
 import freezegun
 import sqlalchemy
@@ -10,35 +10,34 @@ from szurubooru.util import misc
 class QueryCounter(object):
     def __init__(self):
         self._statements = []
-
     def __enter__(self):
         self._statements = []
-
     def __exit__(self, *args, **kwargs):
         self._statements = []
-
     def create_before_cursor_execute(self):
         def before_cursor_execute(
                 _conn, _cursor, statement, _parameters, _context, _executemany):
             self._statements.append(statement)
         return before_cursor_execute
-
     @property
     def statements(self):
         return self._statements
 
 _query_counter = QueryCounter()
+engine = sqlalchemy.create_engine('sqlite:///:memory:')
+db.Base.metadata.create_all(bind=engine)
+sqlalchemy.event.listen(
+    engine,
+    'before_cursor_execute',
+    _query_counter.create_before_cursor_execute())
 
-@pytest.fixture
-def query_counter():
-    return _query_counter
 
 def get_unique_name():
     return str(uuid.uuid4())
 
 @pytest.fixture
 def fake_datetime():
-    @contextmanager
+    @contextlib.contextmanager
     def injector(now):
         freezer = freezegun.freeze_time(now)
         freezer.start()
@@ -46,23 +45,28 @@ def fake_datetime():
         freezer.stop()
     return injector
 
-@pytest.yield_fixture(autouse=True)
-def session(query_counter):
+@pytest.fixture()
+def query_counter():
+    return _query_counter
+
+@pytest.fixture
+def query_logger():
     import logging
     logging.basicConfig()
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
-    engine = sqlalchemy.create_engine('sqlite:///:memory:')
-    sqlalchemy.event.listen(
-        engine,
-        'before_cursor_execute',
-        query_counter.create_before_cursor_execute())
+
+@pytest.yield_fixture(scope='function', autouse=True)
+def session(query_logger):
     session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
     session = sqlalchemy.orm.scoped_session(session_maker)
-    db.Base.query = session.query_property()
-    db.Base.metadata.create_all(bind=engine)
     db.session = session
-    yield session
-    session.remove()
+    try:
+        yield session
+    finally:
+        session.remove()
+        for table in reversed(db.Base.metadata.sorted_tables):
+            session.execute(table.delete())
+        session.commit()
 
 @pytest.fixture
 def context_factory(session):
