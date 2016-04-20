@@ -1,7 +1,7 @@
 import os
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.func import misc, tag_categories
+from szurubooru.func import util, tag_categories
 
 @pytest.fixture
 def test_ctx(tmpdir, config_injector, context_factory, user_factory):
@@ -11,7 +11,7 @@ def test_ctx(tmpdir, config_injector, context_factory, user_factory):
         'ranks': ['anonymous', 'regular_user'],
         'privileges': {'tag_categories:create': 'regular_user'},
     })
-    ret = misc.dotdict()
+    ret = util.dotdict()
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.api = api.TagCategoryListApi()

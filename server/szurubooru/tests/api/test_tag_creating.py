@@ -2,7 +2,7 @@ import datetime
 import os
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.func import misc, tags
+from szurubooru.func import util, tags
 
 def get_tag(name):
     return db.session \
@@ -27,7 +27,7 @@ def test_ctx(
     db.session.add_all([
         db.TagCategory(name) for name in ['meta', 'character', 'copyright']])
     db.session.flush()
-    ret = misc.dotdict()
+    ret = util.dotdict()
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.tag_factory = tag_factory

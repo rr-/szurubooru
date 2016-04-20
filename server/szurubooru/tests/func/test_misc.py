@@ -1,13 +1,13 @@
 import pytest
 from szurubooru import errors
-from szurubooru.func import misc
+from szurubooru.func import util
 from datetime import datetime
 
 dt = datetime
 
 def test_parsing_empty_date_time():
     with pytest.raises(errors.ValidationError):
-        misc.parse_time_range('')
+        util.parse_time_range('')
 
 @pytest.mark.parametrize('input,output', [
     ('today',       (dt(1997, 1, 2, 0, 0, 0), dt(1997, 1, 2, 23, 59, 59))),
@@ -22,7 +22,7 @@ def test_parsing_empty_date_time():
 ])
 def test_parsing_date_time(fake_datetime, input, output):
     with fake_datetime('1997-01-02 03:04:05'):
-        assert misc.parse_time_range(input) == output
+        assert util.parse_time_range(input) == output
 
 @pytest.mark.parametrize('input,output', [
     ([], []),
@@ -33,4 +33,4 @@ def test_parsing_date_time(fake_datetime, input, output):
     (['a', 'A', 'b', 'B'], ['a', 'b']),
 ])
 def test_icase_unique(input, output):
-    assert misc.icase_unique(input) == output
+    assert util.icase_unique(input) == output

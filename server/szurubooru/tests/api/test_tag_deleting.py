@@ -2,7 +2,7 @@ import pytest
 import os
 from datetime import datetime
 from szurubooru import api, config, db, errors
-from szurubooru.func import misc, tags
+from szurubooru.func import util, tags
 
 @pytest.fixture
 def test_ctx(
@@ -14,7 +14,7 @@ def test_ctx(
         },
         'ranks': ['anonymous', 'regular_user'],
     })
-    ret = misc.dotdict()
+    ret = util.dotdict()
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.tag_factory = tag_factory

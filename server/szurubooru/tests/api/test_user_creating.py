@@ -1,7 +1,7 @@
 import datetime
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.func import auth, misc, users
+from szurubooru.func import auth, util, users
 
 EMPTY_PIXEL = \
     b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
@@ -23,7 +23,7 @@ def test_ctx(config_injector, context_factory, user_factory):
         'rank_names': {},
         'privileges': {'users:create': 'anonymous'},
     })
-    ret = misc.dotdict()
+    ret = util.dotdict()
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.api = api.UserListApi()

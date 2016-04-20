@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 from szurubooru import api, db, errors
-from szurubooru.func import misc, users
+from szurubooru.func import util, users
 
 @pytest.fixture
 def test_ctx(config_injector, context_factory, user_factory):
@@ -12,7 +12,7 @@ def test_ctx(config_injector, context_factory, user_factory):
         },
         'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
     })
-    ret = misc.dotdict()
+    ret = util.dotdict()
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.api = api.UserDetailApi()

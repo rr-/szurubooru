@@ -4,7 +4,7 @@ import os
 import re
 import sqlalchemy
 from szurubooru import config, db, errors
-from szurubooru.func import misc, tag_categories
+from szurubooru.func import util, tag_categories
 
 class TagNotFoundError(errors.NotFoundError): pass
 class TagAlreadyExistsError(errors.ValidationError): pass
@@ -68,7 +68,7 @@ def get_tag_by_name(name):
         .first()
 
 def get_tags_by_names(names):
-    names = misc.icase_unique(names)
+    names = util.icase_unique(names)
     if len(names) == 0:
         return []
     expr = sqlalchemy.sql.false()
@@ -77,7 +77,7 @@ def get_tags_by_names(names):
     return db.session.query(db.Tag).join(db.TagName).filter(expr).all()
 
 def get_or_create_tags_by_names(names):
-    names = misc.icase_unique(names)
+    names = util.icase_unique(names)
     for name in names:
         _verify_name_validity(name)
     related_tags = get_tags_by_names(names)
@@ -120,14 +120,14 @@ def update_category_name(tag, category_name):
     tag.category = category
 
 def update_names(tag, names):
-    names = misc.icase_unique([name for name in names if name])
+    names = util.icase_unique([name for name in names if name])
     if not len(names):
         raise InvalidTagNameError('At least one name must be specified.')
     for name in names:
         _verify_name_validity(name)
     expr = sqlalchemy.sql.false()
     for name in names:
-        if misc.value_exceeds_column_size(name, db.TagName.name):
+        if util.value_exceeds_column_size(name, db.TagName.name):
             raise InvalidTagNameError('Name is too long.')
         expr = expr | db.TagName.name.ilike(name)
     if tag.tag_id:

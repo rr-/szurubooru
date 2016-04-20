@@ -2,7 +2,7 @@ import datetime
 import re
 from sqlalchemy import func
 from szurubooru import config, db, errors
-from szurubooru.func import auth, misc, files, images
+from szurubooru.func import auth, util, files, images
 
 class UserNotFoundError(errors.NotFoundError): pass
 class UserAlreadyExistsError(errors.ValidationError): pass
@@ -45,7 +45,7 @@ def create_user(name, password, email, auth_user):
 def update_name(user, name, auth_user):
     if not name:
         raise InvalidUserNameError('Name cannot be empty.')
-    if misc.value_exceeds_column_size(name, db.User.name):
+    if util.value_exceeds_column_size(name, db.User.name):
         raise InvalidUserNameError('User name is too long.')
     other_user = get_user_by_name(name)
     if other_user and other_user.user_id != auth_user.user_id:
@@ -72,9 +72,9 @@ def update_email(user, email):
         email = email.strip()
     if not email:
         email = None
-    if email and misc.value_exceeds_column_size(email, db.User.email):
+    if email and util.value_exceeds_column_size(email, db.User.email):
         raise InvalidEmailError('Email is too long.')
-    if not misc.is_valid_email(email):
+    if not util.is_valid_email(email):
         raise InvalidEmailError('E-mail is invalid.')
     user.email = email
 

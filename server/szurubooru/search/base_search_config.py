@@ -1,6 +1,6 @@
 import sqlalchemy
 import szurubooru.errors
-from szurubooru.func import misc
+from szurubooru.func import util
 from szurubooru.search import criteria
 
 class BaseSearchConfig(object):
@@ -82,24 +82,24 @@ class BaseSearchConfig(object):
         Parse the datetime inside the criterion.
         '''
         if isinstance(criterion, criteria.PlainSearchCriterion):
-            min_date, max_date = misc.parse_time_range(criterion.value)
+            min_date, max_date = util.parse_time_range(criterion.value)
             expr = column.between(min_date, max_date)
         elif isinstance(criterion, criteria.ArraySearchCriterion):
             expr = sqlalchemy.sql.false()
             for value in criterion.values:
-                min_date, max_date = misc.parse_time_range(value)
+                min_date, max_date = util.parse_time_range(value)
                 expr = expr | column.between(min_date, max_date)
         elif isinstance(criterion, criteria.RangedSearchCriterion):
             assert criterion.min_value or criterion.max_value
             if criterion.min_value and criterion.max_value:
-                min_date = misc.parse_time_range(criterion.min_value)[0]
-                max_date = misc.parse_time_range(criterion.max_value)[1]
+                min_date = util.parse_time_range(criterion.min_value)[0]
+                max_date = util.parse_time_range(criterion.max_value)[1]
                 expr = column.between(min_date, max_date)
             elif criterion.min_value:
-                min_date = misc.parse_time_range(criterion.min_value)[0]
+                min_date = util.parse_time_range(criterion.min_value)[0]
                 expr = column >= min_date
             elif criterion.max_value:
-                max_date = misc.parse_time_range(criterion.max_value)[1]
+                max_date = util.parse_time_range(criterion.max_value)[1]
                 expr = column <= max_date
         else:
             assert False

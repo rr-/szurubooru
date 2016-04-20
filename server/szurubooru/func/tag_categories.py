@@ -1,6 +1,6 @@
 import re
 from szurubooru import config, db, errors
-from szurubooru.func import misc
+from szurubooru.func import util
 
 class TagCategoryNotFoundError(errors.NotFoundError): pass
 class TagCategoryAlreadyExistsError(errors.ValidationError): pass
@@ -30,7 +30,7 @@ def update_name(category, name):
     if already_exists:
         raise TagCategoryAlreadyExistsError(
             'A category with this name already exists.')
-    if misc.value_exceeds_column_size(name, db.TagCategory.name):
+    if util.value_exceeds_column_size(name, db.TagCategory.name):
         raise InvalidTagCategoryNameError('Name is too long.')
     _verify_name_validity(name)
     category.name = name
@@ -38,7 +38,7 @@ def update_name(category, name):
 def update_color(category, color):
     if not color:
         raise InvalidTagCategoryNameError('Color cannot be empty.')
-    if misc.value_exceeds_column_size(color, db.TagCategory.color):
+    if util.value_exceeds_column_size(color, db.TagCategory.color):
         raise InvalidTagCategoryColorError('Color is too long.')
     category.color = color
 
