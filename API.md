@@ -25,6 +25,7 @@
         - [Updating tag](#updating-tag)
         - [Getting tag](#getting-tag)
         - [Deleting tag](#deleting-tag)
+        - [Merging tags](#merging-tags)
     - Users
         - [Listing users](#listing-users)
         - [Creating user](#creating-user)
@@ -506,6 +507,49 @@ data.
 - **Description**
 
     Deletes existing tag. The tag to be deleted must have no usages.
+
+
+## Merging tags
+- **Request**
+
+    `POST /tag-merge/`
+
+- **Input**
+
+    ```json5
+    {
+        "remove": "source-tag",
+        "merge-to": "target-tag"
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "tag": <tag>,
+        "snapshots": [
+            {"data": <tag-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-snapshot>, "time": <snapshot-time>},
+            {"data": <tag-snapshot>, "time": <snapshot-time>}
+        ]
+    }
+    ```
+    ...where `<tag>` is the target [tag resource](#tag), and `snapshots`
+    contain its earlier versions.
+
+- **Errors**
+
+    - the source or target tag does not exist
+    - the source tag is the same as the target tag
+    - privileges are too low
+
+- **Description**
+
+    Removes source tag and merges all of its usages to the target tag. Source
+    tag properties such as category, tag relations etc. do not get transferred
+    and are discarded. The target tag effectively remains unchanged with the
+    exception of the set of posts it's used in.
 
 
 ## Listing users

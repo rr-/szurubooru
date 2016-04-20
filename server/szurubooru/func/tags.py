@@ -98,6 +98,13 @@ def get_or_create_tags_by_names(names):
             new_tags.append(new_tag)
     return related_tags, new_tags
 
+def merge_tags(source_tag, target_tag):
+    db.session.execute(
+        sqlalchemy.sql.expression.update(db.PostTag) \
+            .where(db.PostTag.tag_id == source_tag.tag_id) \
+            .values(tag_id=target_tag.tag_id))
+    db.session.delete(source_tag)
+
 def create_tag(names, category_name, suggestions, implications):
     tag = db.Tag()
     tag.creation_time = datetime.datetime.now()

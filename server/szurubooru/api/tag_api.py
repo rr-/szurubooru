@@ -109,3 +109,25 @@ class TagDetailApi(BaseApi):
         ctx.session.commit()
         tags.export_to_json()
         return {}
+
+class TagMergingApi(BaseApi):
+    def post(self, ctx):
+        source_tag_name = ctx.get_param_as_string('remove', required=True) or ''
+        target_tag_name = ctx.get_param_as_string('merge-to', required=True) or ''
+        source_tag = tags.get_tag_by_name(source_tag_name)
+        target_tag = tags.get_tag_by_name(target_tag_name)
+        if not source_tag:
+            raise tags.TagNotFoundError(
+                'Source tag %r not found.' % source_tag_name)
+        if not target_tag:
+            raise tags.TagNotFoundError(
+                'Source tag %r not found.' % target_tag_name)
+        if source_tag.tag_id == target_tag.tag_id:
+            raise tags.InvalidTagRelationError(
+                'Cannot merge tag with itself.')
+        auth.verify_privilege(ctx.user, 'tags:merge')
+        tags.merge_tags(source_tag, target_tag)
+        snapshots.delete(source_tag, ctx.user)
+        ctx.session.commit()
+        tags.export_to_json()
+        return _serialize_tag_with_details(target_tag)
