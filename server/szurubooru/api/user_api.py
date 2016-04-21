@@ -35,18 +35,8 @@ class UserListApi(BaseApi):
 
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'users:list')
-        query = ctx.get_param_as_string('query')
-        page = ctx.get_param_as_int('page', default=1, min=1)
-        page_size = ctx.get_param_as_int(
-            'pageSize', default=100, min=1, max=100)
-        count, user_list = self._search_executor.execute(query, page, page_size)
-        return {
-            'query': query,
-            'page': page,
-            'pageSize': page_size,
-            'total': count,
-            'users': [_serialize_user(ctx.user, user) for user in user_list],
-        }
+        return self._search_executor.execute_and_serialize(
+            ctx, lambda user: _serialize_user(ctx.user, user), 'users')
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'users:create')

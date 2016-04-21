@@ -43,6 +43,16 @@ def get_resource_info(entity):
 
     return (resource_type, resource_id, resource_repr)
 
+def get_previous_snapshot(snapshot):
+    return db.session \
+        .query(db.Snapshot) \
+        .filter(db.Snapshot.resource_type == snapshot.resource_type) \
+        .filter(db.Snapshot.resource_id == snapshot.resource_id) \
+        .filter(db.Snapshot.creation_time < snapshot.creation_time) \
+        .order_by(db.Snapshot.creation_time.desc()) \
+        .limit(1) \
+        .first()
+
 def get_snapshots(entity):
     resource_type, resource_id, _ = get_resource_info(entity)
     return db.session \
@@ -57,7 +67,7 @@ def serialize_snapshot(snapshot, earlier_snapshot):
         'operation': snapshot.operation,
         'type': snapshot.resource_type,
         'id': snapshot.resource_repr,
-        'user': snapshot.user.name,
+        'user': snapshot.user.name if snapshot.user else None,
         'data': snapshot.data,
         'earlier-data': earlier_snapshot.data if earlier_snapshot else None,
         'time': snapshot.creation_time,

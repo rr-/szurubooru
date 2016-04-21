@@ -12,19 +12,19 @@ class BaseSearchConfig(object):
 
     @property
     def anonymous_filter(self):
-        raise NotImplementedError()
+        return None
 
     @property
     def special_filters(self):
-        raise NotImplementedError()
+        return {}
 
     @property
     def named_filters(self):
-        raise NotImplementedError()
+        return {}
 
     @property
     def order_columns(self):
-        raise NotImplementedError()
+        return {}
 
     @staticmethod
     def _apply_num_criterion_to_column(column, criterion):

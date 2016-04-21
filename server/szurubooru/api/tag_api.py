@@ -28,18 +28,8 @@ class TagListApi(BaseApi):
 
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:list')
-        query = ctx.get_param_as_string('query')
-        page = ctx.get_param_as_int('page', default=1, min=1)
-        page_size = ctx.get_param_as_int(
-            'pageSize', default=100, min=1, max=100)
-        count, tag_list = self._search_executor.execute(query, page, page_size)
-        return {
-            'query': query,
-            'page': page,
-            'pageSize': page_size,
-            'total': count,
-            'tags': [_serialize_tag(tag) for tag in tag_list],
-        }
+        return self._search_executor.execute_and_serialize(
+            ctx, _serialize_tag, 'tags')
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:create')

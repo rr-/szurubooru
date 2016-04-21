@@ -63,47 +63,47 @@ password_regex: '^.{5,}$'
 user_name_regex: '^[a-zA-Z0-9_-]{1,32}$'
 
 privileges:
-    'users:create':            anonymous
-    'users:list':              regular_user
-    'users:view':              regular_user
-    'users:edit:any:name':     mod
-    'users:edit:any:pass':     mod
-    'users:edit:any:email':    mod
-    'users:edit:any:avatar':   mod
-    'users:edit:any:rank':     mod
-    'users:edit:self:name':    regular_user
-    'users:edit:self:pass':    regular_user
-    'users:edit:self:email':   regular_user
-    'users:edit:self:avatar':  regular_user
-    'users:edit:self:rank':    mod # one can't promote themselves or anyone to upper rank than their own.
-    'users:delete:any':        admin
-    'users:delete:self':       regular_user
+    'users:create':                 anonymous
+    'users:list':                   regular_user
+    'users:view':                   regular_user
+    'users:edit:any:name':          mod
+    'users:edit:any:pass':          mod
+    'users:edit:any:email':         mod
+    'users:edit:any:avatar':        mod
+    'users:edit:any:rank':          mod
+    'users:edit:self:name':         regular_user
+    'users:edit:self:pass':         regular_user
+    'users:edit:self:email':        regular_user
+    'users:edit:self:avatar':       regular_user
+    'users:edit:self:rank':         mod # one can't promote themselves or anyone to upper rank than their own.
+    'users:delete:any':             admin
+    'users:delete:self':            regular_user
 
-    'posts:create:anonymous':  regular_user
-    'posts:create:identified': regular_user
-    'posts:list':              anonymous
-    'posts:view':              anonymous
-    'posts:edit:content':      power_user
-    'posts:edit:flags':        regular_user
-    'posts:edit:notes':        regular_user
-    'posts:edit:relations':    regular_user
-    'posts:edit:safety':       power_user
-    'posts:edit:source':       regular_user
-    'posts:edit:tags':         regular_user
-    'posts:edit:thumbnail':    power_user
-    'posts:feature':           mod
-    'posts:delete':            mod
+    'posts:create:anonymous':       regular_user
+    'posts:create:identified':      regular_user
+    'posts:list':                   anonymous
+    'posts:view':                   anonymous
+    'posts:edit:content':           power_user
+    'posts:edit:flags':             regular_user
+    'posts:edit:notes':             regular_user
+    'posts:edit:relations':         regular_user
+    'posts:edit:safety':            power_user
+    'posts:edit:source':            regular_user
+    'posts:edit:tags':              regular_user
+    'posts:edit:thumbnail':         power_user
+    'posts:feature':                mod
+    'posts:delete':                 mod
 
-    'tags:create':             regular_user
-    'tags:edit:names':         power_user
-    'tags:edit:category':      power_user
-    'tags:edit:implications':  power_user
-    'tags:edit:suggestions':   power_user
-    'tags:list':               regular_user # note: will be available as data_url/tags.json anyway
-    'tags:view':               anonymous
-    'tags:masstag':            power_user
-    'tags:merge':              mod
-    'tags:delete':             mod
+    'tags:create':                  regular_user
+    'tags:edit:names':              power_user
+    'tags:edit:category':           power_user
+    'tags:edit:implications':       power_user
+    'tags:edit:suggestions':        power_user
+    'tags:list':                    regular_user # note: will be available as data_url/tags.json anyway
+    'tags:view':                    anonymous
+    'tags:masstag':                 power_user
+    'tags:merge':                   mod
+    'tags:delete':                  mod
 
     'tag_categories:create':        mod
     'tag_categories:edit:name':     mod
@@ -112,11 +112,11 @@ privileges:
     'tag_categories:view':          anonymous
     'tag_categories:delete':        mod
 
-    'comments:create':         regular_user
-    'comments:delete:any':     mod
-    'comments:delete:own':     regular_user
-    'comments:edit:any':       mod
-    'comments:edit:own':       regular_user
-    'comments:list':           regular_user
+    'comments:create':              regular_user
+    'comments:delete:any':          mod
+    'comments:delete:own':          regular_user
+    'comments:edit:any':            mod
+    'comments:edit:own':            regular_user
+    'comments:list':                regular_user
 
-    'history:view':            power_user
+    'snapshots:list':               power_user

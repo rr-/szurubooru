@@ -36,6 +36,8 @@
     - Password reset
         - [Password reset - step 1: mail request](#password-reset---step-2-confirmation)
         - [Password reset - step 2: confirmation](#password-reset---step-2-confirmation)
+    - Snapshots
+        - [Listing snapshots](#listing-snapshots)
 
 3. [Resources](#resources)
 
@@ -604,8 +606,6 @@ data.
         "users": [
             <user>,
             <user>,
-            <user>,
-            <user>,
             <user>
         ]
     }
@@ -859,6 +859,61 @@ data.
 
     Generates a new password for given user. Password is sent as plain-text, so
     it is recommended to connect through HTTPS.
+
+
+## Listing snapshots
+- **Request**
+
+    `GET /snapshots/?page=<page>&pageSize=<page-size>&query=<query>`
+
+- **Output**
+
+    ```json5
+    {
+        "query":    <query>, // same as in input
+        "page":     <page>,  // same as in input
+        "pageSize": <page-size>,
+        "total":    <total-count>,
+        "snapshots": [
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
+        ]
+    }
+    ```
+    ...where `<snapshot>` is a [snapshot resource](#snapshot) and `query`
+    contains standard [search query](#search).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Lists recent resource snapshots.
+
+    **Anonymous tokens**
+
+    Not supported.
+
+    **Named tokens**
+
+    | `<value>`         | Description                                   |
+    | ----------------- | --------------------------------------------- |
+    | `type`            | involving given resource type                 |
+    | `id`              | involving given resource id                   |
+    | `date`            | created at given date                         |
+    | `time`            | alias of `date`                               |
+    | `operation`       | `changed`, `created` or `deleted`             |
+    | `user`            | name of the user that created given snapshot  |
+
+    **Order tokens**
+
+    None. The snapshots are always sorted by creation time.
+
+    **Special tokens**
+
+    None.
 
 
 
