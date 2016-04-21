@@ -40,7 +40,9 @@
 3. [Resources](#resources)
 
    - [User](#user)
+   - [Tag category](#tag-category)
    - [Tag](#tag)
+   - [Snapshot](#snapshot)
 
 4. [Search](#search)
 
@@ -146,9 +148,9 @@ data.
     {
         "tagCategory": <tag-category>,
         "snapshots": [
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>}
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
         ]
     }
     ```
@@ -188,9 +190,9 @@ data.
     {
         "tagCategory": <tag-category>,
         "snapshots": [
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>}
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
         ]
     }
     ```
@@ -223,9 +225,9 @@ data.
     {
         "tagCategory": <tag-category>,
         "snapshots": [
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-category-snapshot>, "time": <snapshot-time>}
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
         ]
     }
     ```
@@ -275,17 +277,15 @@ data.
 
     ```json5
     {
-        "query": "haruhi",
+        "query":    <query>, // same as in input
+        "page":     <page>,  // same as in input
+        "pageSize": <page-size>,
+        "total":    <total-count>,
         "tags": [
             <tag>,
             <tag>,
-            <tag>,
-            <tag>,
             <tag>
-        ],
-        "page": 1,
-        "pageSize": 5,
-        "total": 7
+        ]
     }
     ```
     ...where `<tag>` is a [tag resource](#tag) and `query` contains standard
@@ -373,9 +373,9 @@ data.
     {
         "tag": <tag>,
         "snapshots": [
-            {"data": <tag-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-snapshot>, "time": <snapshot-time>}
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
         ]
     }
     ```
@@ -427,9 +427,9 @@ data.
     {
         "tag": <tag>,
         "snapshots": [
-            {"data": <tag-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-snapshot>, "time": <snapshot-time>}
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
         ]
     }
     ```
@@ -469,9 +469,9 @@ data.
     {
         "tag": <tag>,
         "snapshots": [
-            {"data": <tag-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-snapshot>, "time": <snapshot-time>}
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
         ]
     }
     ```
@@ -519,8 +519,8 @@ data.
 
     ```json5
     {
-        "remove": "source-tag",
-        "merge-to": "target-tag"
+        "remove":   <source-tag-name>,
+        "merge-to": <target-tag-name>
     }
     ```
 
@@ -530,9 +530,9 @@ data.
     {
         "tag": <tag>,
         "snapshots": [
-            {"data": <tag-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-snapshot>, "time": <snapshot-time>},
-            {"data": <tag-snapshot>, "time": <snapshot-time>}
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
         ]
     }
     ```
@@ -565,11 +565,11 @@ data.
         "siblings": [
             {
                 "tag": <tag>,
-                "occurrences": 2
+                "occurrences": <occurrence-count>
             },
             {
                 "tag": <tag>,
-                "occurrences": 1
+                "occurrences": <occurrence-count>
             }
         ]
     }
@@ -597,17 +597,17 @@ data.
 
     ```json5
     {
-        "query": "rr-",
+        "query":    <query>, // same as in input
+        "page":     <page>,  // same as in input
+        "pageSize": <page-size>,
+        "total":    <total-count>,
         "users": [
             <user>,
             <user>,
             <user>,
             <user>,
             <user>
-        ],
-        "page": 1,
-        "pageSize": 5,
-        "total": 7
+        ]
     }
     ```
     ...where `<user>` is a [user resource](#user) and `query` contains standard
@@ -865,61 +865,170 @@ data.
 # Resources
 
 ## User
+**Description**
+
+A single user.
+
+**Structure**
 
 ```json5
 {
-    "name":          "rr-",
-    "email":         "rr-@sakuya.pl",    // available only if the request is authenticated by the same user
-    "rank":          "admin",            // controlled by server's configuration
-    "rankName":      "Administrator",    // controlled by server's configuration
-    "lastLoginTime": "2016-04-08T20:20:16.570517",
-    "creationTime":  "2016-03-28T13:37:01.755461",
-    "avatarStyle":   "gravatar",         // "gravatar" or "manual"
-    "avatarUrl":     "http://gravatar.com/(...)"
+    "name":          <name>,
+    "email":         <email>,
+    "rank":          <rank>,
+    "rankName":      <rank-name>,
+    "lastLoginTime": <last-login-time>,
+    "creationTime":  <creation-time>,
+    "avatarStyle":   <avatar-style>,
+    "avatarUrl":     <avatar-url>
 }
 ```
+
+**Field meaning**
+- `<name>`: the user name.
+- `<email>`: the user email. It is available only if the request is
+  authenticated by the same user.
+- `<rank>`: the user rank, which effectively affects their privileges. The
+  available ranks are stored in the server configuration.
+- `<rank-name>`: the text representation of user's rank. Like `<rank>`, the
+  possible values depend on the server configuration.
+- `<last-login-time>`: the last login time, formatted as per RFC 3339.
+- `<creation-time>`: the user registration time, formatted as per RFC 3339.
+- `<avatarStyle>`: how to render the user avatar.
+
+    Possible values:
+
+    - `"gravatar"`: the user uses Gravatar.
+    - `"manual"`: the user has uploaded a picture manually.
+
+- `<avatarUrl>`: the URL to the avatar.
 
 ## Tag category
+**Description**
+
+A single tag category. The primary purpose of tag categories is to distinguish
+certain tag types (such as characters, media type etc.), which improves user
+experience.
+
+**Structure**
 
 ```json5
 {
-    "name":  "character",
-    "color": "#FF0000" // used to colorize certain tag types in the web client
+    "name":  <name>,
+    "color": <color>
 }
 ```
 
-## Tag category snapshot
+**Field meaning**
 
-```json5
-{
-    "name":  "character",
-    "color": "#FF0000"
-}
-```
+- `<name>`: the category name.
+- `<color>`: the category color.
 
 ## Tag
+**Description**
+
+A single tag. Tags are used to let users search for posts.
+
+**Structure**
 
 ```json5
 {
-    "names":        ["tag1", "tag2", "tag3"],
-    "category":     "plain",
-    "implications": ["implied-tag1", "implied-tag2", "implied-tag3"],
-    "suggestions":  ["suggested-tag1", "suggested-tag2", "suggested-tag3"],
-    "creationTime": "2016-03-28T13:37:01.755461",
-    "lastEditTime": "2016-04-08T20:20:16.570517"
+    "names":        <names>,
+    "category":     <category>,
+    "implications": <implications>,
+    "suggestions":  <suggestions>,
+    "creationTime": <creation-time>,
+    "lastEditTime": <last-edit-time>
 }
 ```
 
-## Tag snapshot
+**Field meaning**
+
+- `<names>`: a list of tag names (aliases). Tagging a post with any name will
+  automatically assign the first name from this list.
+- `<category>`: the name of the category the given tag belongs to.
+- `<implications>`: a list of implied tag names. Implied tags are automatically
+  appended by the web client on usage.
+- `<suggestions>`: a list of suggested tag names. Suggested tags are shown to
+  the user by the web client on usage.
+- `<creation-time>`: time the tag was created, formatted as per RFC 3339.
+- `<creation-time>`: time the tag was edited, formatted as per RFC 3339.
+
+## Snapshot
+**Description**
+
+A snapshot is a version of a database resource.
+
+**Structure**
 
 ```json5
 {
-    "names":        ["tag1", "tag2", "tag3"],
-    "category":     "plain",
-    "implications": ["imp1", "imp2", "imp3"],
-    "suggestions":  ["sug1", "sug2", "sug3"]
+    "operation":    <operation>,
+    "type":         <resource-type>
+    "id":           <resource-id>,
+    "user":         <user-name>,
+    "data":         <data>,
+    "earlier-data": <earlier-data>,
+    "time":         <time>
 }
 ```
+
+**Field meaning**
+
+- `<operation>`: what happened to the resource.
+
+    The value can be either of values below:
+
+    - `"created"` - the resource has been created
+    - `"modified"` - the resource has been modified
+    - `"deleted"` - the resource has been deleted
+
+- `<resource-type>` and `<resource-id>`: the resource that was changed.
+
+    The values are correlated as per table below:
+
+    | `<resource-type>` | `<resource-id>`                 |
+    | ----------------- | ------------------------------- |
+    | `"tag"`           | first tag name at given time    |
+    | `"tag_category"`  | tag category name at given time |
+    | `"post"`          | post ID                         |
+
+- `<user-name>`: name of the user who has made the change.
+
+- `<data>`: the snapshot data.
+
+    The value can be either of structures below:
+
+    - Tag category snapshot data (`<resource-type> = "tag"`)
+
+        *Example*
+
+        ```json5
+        {
+            "name":  "character",
+            "color": "#FF0000"
+        }
+        ```
+
+    - Tag snapshot data (`<resource-type> = "tag"`)
+
+        *Example*
+
+        ```json5
+        {
+            "names":        ["tag1", "tag2", "tag3"],
+            "category":     "plain",
+            "implications": ["imp1", "imp2", "imp3"],
+            "suggestions":  ["sug1", "sug2", "sug3"]
+        }
+        ```
+
+- `<earlier-data>`: `<data>` field from the last snapshot of the same resource.
+  This allows the client to create visual diffs for any given snapshot without
+  the need to know any other snapshots for a given resource.
+
+- `<time>`: when the snapshot was created (i.e. when the resource was changed),
+  formatted as per RFC 3339.
 
 
 # Search

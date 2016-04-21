@@ -18,7 +18,7 @@ def _serialize_tag(tag):
 def _serialize_tag_with_details(tag):
     return {
         'tag': _serialize_tag(tag),
-        'snapshots': snapshots.get_data(tag),
+        'snapshots': snapshots.get_serialized_history(tag),
     }
 
 class TagListApi(BaseApi):
@@ -89,6 +89,7 @@ class TagDetailApi(BaseApi):
             tags.update_implications(tag, ctx.get_param_as_list('implications'))
 
         tag.last_edit_time = datetime.datetime.now()
+        ctx.session.flush()
         snapshots.modify(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
@@ -126,8 +127,8 @@ class TagMergeApi(BaseApi):
             raise tags.InvalidTagRelationError(
                 'Cannot merge tag with itself.')
         auth.verify_privilege(ctx.user, 'tags:merge')
-        tags.merge_tags(source_tag, target_tag)
         snapshots.delete(source_tag, ctx.user)
+        tags.merge_tags(source_tag, target_tag)
         ctx.session.commit()
         tags.export_to_json()
         return _serialize_tag_with_details(target_tag)

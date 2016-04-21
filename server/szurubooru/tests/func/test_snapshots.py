@@ -173,33 +173,49 @@ def test_merging_deletion_all_the_way_deletes_all_snapshots(
         snapshots.delete(tag, user)
     assert db.session.query(db.Snapshot).count() == 0
 
-def test_get_data(fake_datetime, tag_factory, user_factory):
+def test_get_serialized_history(fake_datetime, tag_factory, user_factory):
     tag = tag_factory(names=['dummy'])
-    user = user_factory()
+    user = user_factory(name='the-user')
     db.session.add_all([tag, user])
     db.session.flush()
     with fake_datetime('2016-04-19 13:00:00'):
         snapshots.create(tag, user)
     tag.names = [db.TagName('changed')]
+    db.session.flush()
     with fake_datetime('2016-04-19 13:10:01'):
         snapshots.modify(tag, user)
-    assert snapshots.get_data(tag) == [
+    assert snapshots.get_serialized_history(tag) == [
         {
+            'operation': 'modified',
             'time': datetime.datetime(2016, 4, 19, 13, 10, 1),
+            'type': 'tag',
+            'id': 'changed',
+            'user': 'the-user',
             'data': {
                 'names': ['changed'],
                 'category': 'dummy',
                 'suggestions': [],
                 'implications': [],
             },
+            'earlier-data': {
+                'names': ['dummy'],
+                'category': 'dummy',
+                'suggestions': [],
+                'implications': [],
+            },
         },
         {
+            'operation': 'created',
             'time': datetime.datetime(2016, 4, 19, 13, 0, 0),
+            'type': 'tag',
+            'id': 'dummy',
+            'user': 'the-user',
             'data': {
                 'names': ['dummy'],
                 'category': 'dummy',
                 'suggestions': [],
                 'implications': [],
             },
+            'earlier-data': None,
         },
     ]

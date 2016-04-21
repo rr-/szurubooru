@@ -19,44 +19,69 @@ def get_tag_category_snapshot(category):
 
 # pylint: disable=invalid-name
 serializers = {
-    'tag': get_tag_snapshot,
-    'tag_category': get_tag_category_snapshot,
+    'tag': (
+        get_tag_snapshot,
+        lambda tag: tag.first_name),
+    'tag_category': (
+        get_tag_category_snapshot,
+        lambda category: category.name),
 }
 
 def get_resource_info(entity):
-    table_name = entity.__table__.name
+    resource_type = entity.__table__.name
+    assert resource_type in serializers
+
     primary_key = inspect(entity).identity
-    assert table_name in serializers
     assert primary_key is not None
     assert len(primary_key) == 1
-    primary_key = primary_key[0]
-    return (table_name, primary_key)
+
+    resource_repr = serializers[resource_type][1](entity)
+    assert resource_repr
+
+    resource_id = primary_key[0]
+    assert resource_id
+
+    return (resource_type, resource_id, resource_repr)
 
 def get_snapshots(entity):
-    table_name, primary_key = get_resource_info(entity)
+    resource_type, resource_id, _ = get_resource_info(entity)
     return db.session \
         .query(db.Snapshot) \
-        .filter(db.Snapshot.resource_type == table_name) \
-        .filter(db.Snapshot.resource_id == primary_key) \
+        .filter(db.Snapshot.resource_type == resource_type) \
+        .filter(db.Snapshot.resource_id == resource_id) \
         .order_by(db.Snapshot.creation_time.desc()) \
         .all()
 
-def get_data(entity):
+def serialize_snapshot(snapshot, earlier_snapshot):
+    return {
+        'operation': snapshot.operation,
+        'type': snapshot.resource_type,
+        'id': snapshot.resource_repr,
+        'user': snapshot.user.name,
+        'data': snapshot.data,
+        'earlier-data': earlier_snapshot.data if earlier_snapshot else None,
+        'time': snapshot.creation_time,
+    }
+
+def get_serialized_history(entity):
     ret = []
-    for snapshot in get_snapshots(entity):
-        ret.append({'data': snapshot.data, 'time': snapshot.creation_time})
+    earlier_snapshot = None
+    for snapshot in reversed(get_snapshots(entity)):
+        ret.insert(0, serialize_snapshot(snapshot, earlier_snapshot))
+        earlier_snapshot = snapshot
     return ret
 
 def save(operation, entity, auth_user):
-    table_name, primary_key = get_resource_info(entity)
+    resource_type, resource_id, resource_repr = get_resource_info(entity)
     now = datetime.datetime.now()
 
     snapshot = db.Snapshot()
     snapshot.creation_time = now
     snapshot.operation = operation
-    snapshot.resource_type = table_name
-    snapshot.resource_id = primary_key
-    snapshot.data = serializers[table_name](entity)
+    snapshot.resource_type = resource_type
+    snapshot.resource_id = resource_id
+    snapshot.resource_repr = resource_repr
+    snapshot.data = serializers[resource_type][0](entity)
     snapshot.user = auth_user
 
     earlier_snapshots = get_snapshots(entity)

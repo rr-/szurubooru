@@ -10,7 +10,7 @@ def _serialize_category(category):
 def _serialize_category_with_details(category):
     return {
         'tagCategory': _serialize_category(category),
-        'snapshots': snapshots.get_data(category),
+        'snapshots': snapshots.get_serialized_history(category),
     }
 
 class TagCategoryListApi(BaseApi):
@@ -56,6 +56,7 @@ class TagCategoryDetailApi(BaseApi):
             auth.verify_privilege(ctx.user, 'tag_categories:edit:color')
             tag_categories.update_color(
                 category, ctx.get_param_as_string('color'))
+        ctx.session.flush()
         snapshots.modify(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
