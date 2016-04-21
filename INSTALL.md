@@ -83,8 +83,14 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
     user@host:szuru$ vim config.yaml
     ```
 
-    Pay extra attention to API URL, base URL, the `database` section and the
-    `smtp` section.
+    Pay extra attention to these fields:
+
+    - base URL,
+    - API URL,
+    - data directory,
+    - data URL,
+    - the `database` section,
+    - the `smtp` section.
 
 2. Compile the frontend:
 
@@ -107,11 +113,8 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
 4. Run the tests:
 
     ```console
-    (python_modules) user@host:szuru/server$ green
+    (python_modules) user@host:szuru/server$ ./test
     ```
-
-    `green` should have been installed during installation of `szurubooru`'s
-    dependencies.
 
 It is recommended to rebuild the frontend after each change to configuration.
 
