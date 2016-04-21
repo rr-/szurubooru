@@ -5,4 +5,5 @@ from szurubooru.api.user_api import UserListApi, UserDetailApi
 from szurubooru.api.tag_api import TagListApi, TagDetailApi, TagMergeApi, TagSiblingsApi
 from szurubooru.api.tag_category_api import TagCategoryListApi, TagCategoryDetailApi
 from szurubooru.api.snapshot_api import SnapshotListApi
+from szurubooru.api.info_api import InfoApi
 from szurubooru.api.context import Context, Request

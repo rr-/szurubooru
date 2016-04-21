@@ -57,6 +57,7 @@ def create_app():
     tag_siblings_api = api.TagSiblingsApi()
     password_reset_api = api.PasswordResetApi()
     snapshot_list_api = api.SnapshotListApi()
+    info_api = api.InfoApi()
 
     app.add_error_handler(errors.AuthError, _on_auth_error)
     app.add_error_handler(errors.IntegrityError, _on_integrity_error)
@@ -75,5 +76,6 @@ def create_app():
     app.add_route('/tag-siblings/{tag_name}', tag_siblings_api)
     app.add_route('/password-reset/{user_name}', password_reset_api)
     app.add_route('/snapshots/', snapshot_list_api)
+    app.add_route('/info/', info_api)
 
     return app
