@@ -64,8 +64,8 @@ class SearchExecutor(object):
         return query
 
     def _handle_key_value(self, query, key, value, negated):
-        if key == 'order':
-            return self._handle_order(query, value, negated)
+        if key == 'sort':
+            return self._handle_sort(query, value, negated)
         elif key == 'special':
             return self._handle_special(query, value, negated)
         else:
@@ -99,40 +99,46 @@ class SearchExecutor(object):
             'Unknown special token: %r. Available special tokens: %r.' % (
                 value, list(self._search_config.special_filters.keys())))
 
-    def _handle_order(self, query, value, negated):
+    def _handle_sort(self, query, value, negated):
         if value.count(',') == 0:
-            order_str = None
+            dir_str = None
         elif value.count(',') == 1:
-            value, order_str = value.split(',')
+            value, dir_str = value.split(',')
         else:
-            raise errors.SearchError(
-                'Too many commas in order search token.')
+            raise errors.SearchError('Too many commas in sort style token.')
 
-        if value not in self._search_config.order_columns:
+        try:
+            column, default_sort = self._search_config.sort_columns[value]
+        except KeyError:
             raise errors.SearchError(
-                'Unknown search order: %r. Available search orders: %r.' % (
-                    value, list(self._search_config.order_columns.keys())))
+                'Unknown sort style: %r. Available sort styles: %r.' % (
+                    value, list(self._search_config.sort_columns.keys())))
 
-        column, default_order = self._search_config.order_columns[value]
-        if order_str == 'asc':
-            order = self._search_config.ORDER_ASC
-        elif order_str == 'desc':
-            order = self._search_config.ORDER_DESC
-        elif order_str is None:
-            order = default_order
-        else:
-            raise errors.SearchError(
-                'Unknown search direction: %r.' % order_str)
-        if negated:
-            if order == self._search_config.ORDER_ASC:
-                order = self._search_config.ORDER_DESC
-            elif order == self._search_config.ORDER_DESC:
-                order = self._search_config.ORDER_ASC
-        if order == self._search_config.ORDER_ASC:
-            column = column.asc()
-        elif order == self._search_config.ORDER_DESC:
-            column = column.desc()
-        return query.order_by(column)
+        sort_asc = self._search_config.SORT_ASC
+        sort_desc = self._search_config.SORT_DESC
+
+        try:
+            sort_map = {
+                'asc': sort_asc,
+                'desc': sort_desc,
+                '': default_sort,
+                None: default_sort,
+            }
+            sort = sort_map[dir_str]
+        except KeyError:
+            raise errors.SearchError('Unknown search direction: %r.' % dir_str)
+
+        if negated and sort:
+            sort = -sort
+
+        transform_map = {
+            sort_asc: lambda input: input.asc(),
+            sort_desc: lambda input: input.desc(),
+            None: lambda input: input,
+        }
+        print(sort)
+        transform = transform_map[sort]
+        return query.order_by(transform(column))
 
     def _create_criterion(self, value, negated):
         if '..' in value:

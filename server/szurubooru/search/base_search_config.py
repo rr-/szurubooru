@@ -4,8 +4,8 @@ from szurubooru.func import util
 from szurubooru.search import criteria
 
 class BaseSearchConfig(object):
-    ORDER_DESC = 0
-    ORDER_ASC = 1
+    SORT_DESC = -1
+    SORT_ASC = 1
 
     def create_query(self):
         raise NotImplementedError()
@@ -23,7 +23,7 @@ class BaseSearchConfig(object):
         return {}
 
     @property
-    def order_columns(self):
+    def sort_columns(self):
         return {}
 
     @staticmethod

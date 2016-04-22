@@ -14,10 +14,6 @@ class TagSearchConfig(BaseSearchConfig):
         return self._create_str_filter(db.Tag.first_name)
 
     @property
-    def special_filters(self):
-        return {}
-
-    @property
     def named_filters(self):
         return {
             'name': self._create_str_filter(db.Tag.first_name),
@@ -36,20 +32,20 @@ class TagSearchConfig(BaseSearchConfig):
         }
 
     @property
-    def order_columns(self):
+    def sort_columns(self):
         return {
             'random': (func.random(), None),
-            'name': (db.Tag.first_name, self.ORDER_ASC),
-            'category': (db.Tag.category, self.ORDER_ASC),
-            'creation-date': (db.Tag.creation_time, self.ORDER_DESC),
-            'creation-time': (db.Tag.creation_time, self.ORDER_DESC),
-            'last-edit-date': (db.Tag.last_edit_time, self.ORDER_DESC),
-            'last-edit-time': (db.Tag.last_edit_time, self.ORDER_DESC),
-            'edit-date': (db.Tag.last_edit_time, self.ORDER_DESC),
-            'edit-time': (db.Tag.last_edit_time, self.ORDER_DESC),
-            'usages': (db.Tag.post_count, self.ORDER_DESC),
-            'usage-count': (db.Tag.post_count, self.ORDER_DESC),
-            'post-count': (db.Tag.post_count, self.ORDER_DESC),
-            'suggestion-count': (db.Tag.suggestion_count, self.ORDER_DESC),
-            'implication-count': (db.Tag.implication_count, self.ORDER_DESC),
+            'name': (db.Tag.first_name, self.SORT_ASC),
+            'category': (db.Tag.category, self.SORT_ASC),
+            'creation-date': (db.Tag.creation_time, self.SORT_DESC),
+            'creation-time': (db.Tag.creation_time, self.SORT_DESC),
+            'last-edit-date': (db.Tag.last_edit_time, self.SORT_DESC),
+            'last-edit-time': (db.Tag.last_edit_time, self.SORT_DESC),
+            'edit-date': (db.Tag.last_edit_time, self.SORT_DESC),
+            'edit-time': (db.Tag.last_edit_time, self.SORT_DESC),
+            'usages': (db.Tag.post_count, self.SORT_DESC),
+            'usage-count': (db.Tag.post_count, self.SORT_DESC),
+            'post-count': (db.Tag.post_count, self.SORT_DESC),
+            'suggestion-count': (db.Tag.suggestion_count, self.SORT_DESC),
+            'implication-count': (db.Tag.implication_count, self.SORT_DESC),
         }

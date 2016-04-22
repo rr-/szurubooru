@@ -16,10 +16,6 @@ class UserSearchConfig(BaseSearchConfig):
         return self._create_str_filter(db.User.name)
 
     @property
-    def special_filters(self):
-        return {}
-
-    @property
     def named_filters(self):
         return {
             'name': self._create_str_filter(db.User.name),
@@ -32,14 +28,14 @@ class UserSearchConfig(BaseSearchConfig):
         }
 
     @property
-    def order_columns(self):
+    def sort_columns(self):
         return {
-            'random': (None, func.random()),
-            'name': (db.User.name, self.ORDER_ASC),
-            'creation-date': (db.User.creation_time, self.ORDER_DESC),
-            'creation-time': (db.User.creation_time, self.ORDER_DESC),
-            'last-login-date': (db.User.last_login_time, self.ORDER_DESC),
-            'last-login-time': (db.User.last_login_time, self.ORDER_DESC),
-            'login-date': (db.User.last_login_time, self.ORDER_DESC),
-            'login-time': (db.User.last_login_time, self.ORDER_DESC),
+            'random': (func.random(), None),
+            'name': (db.User.name, self.SORT_ASC),
+            'creation-date': (db.User.creation_time, self.SORT_DESC),
+            'creation-time': (db.User.creation_time, self.SORT_DESC),
+            'last-login-date': (db.User.last_login_time, self.SORT_DESC),
+            'last-login-time': (db.User.last_login_time, self.SORT_DESC),
+            'login-date': (db.User.last_login_time, self.SORT_DESC),
+            'login-time': (db.User.last_login_time, self.SORT_DESC),
         }

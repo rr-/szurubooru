@@ -90,24 +90,24 @@ def test_anonymous(verify_unpaged, tag_factory, input, expected_tag_names):
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('', ['t1', 't2']),
-    ('order:name', ['t1', 't2']),
-    ('-order:name', ['t2', 't1']),
-    ('order:name,asc', ['t1', 't2']),
-    ('order:name,desc', ['t2', 't1']),
-    ('-order:name,asc', ['t2', 't1']),
-    ('-order:name,desc', ['t1', 't2']),
+    ('sort:name', ['t1', 't2']),
+    ('-sort:name', ['t2', 't1']),
+    ('sort:name,asc', ['t1', 't2']),
+    ('sort:name,desc', ['t2', 't1']),
+    ('-sort:name,asc', ['t2', 't1']),
+    ('-sort:name,desc', ['t1', 't2']),
 ])
-def test_order_by_name(verify_unpaged, tag_factory, input, expected_tag_names):
+def test_sort_by_name(verify_unpaged, tag_factory, input, expected_tag_names):
     db.session.add(tag_factory(names=['t2']))
     db.session.add(tag_factory(names=['t1']))
     verify_unpaged(input, expected_tag_names)
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['t1', 't2', 't3']),
-    ('order:creation-date', ['t3', 't2', 't1']),
-    ('order:creation-time', ['t3', 't2', 't1']),
+    ('sort:creation-date', ['t3', 't2', 't1']),
+    ('sort:creation-time', ['t3', 't2', 't1']),
 ])
-def test_order_by_creation_time(
+def test_sort_by_creation_time(
         verify_unpaged, tag_factory, input, expected_user_names):
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
@@ -119,9 +119,9 @@ def test_order_by_creation_time(
     verify_unpaged(input, expected_user_names)
 
 @pytest.mark.parametrize('input,expected_tag_names', [
-    ('order:suggestion-count', ['t1', 't2', 'sug1', 'sug2', 'sug3']),
+    ('sort:suggestion-count', ['t1', 't2', 'sug1', 'sug2', 'sug3']),
 ])
-def test_order_by_suggestion_count(
+def test_sort_by_suggestion_count(
         verify_unpaged, tag_factory, input, expected_tag_names):
     sug1 = tag_factory(names=['sug1'])
     sug2 = tag_factory(names=['sug2'])
@@ -136,9 +136,9 @@ def test_order_by_suggestion_count(
     verify_unpaged(input, expected_tag_names)
 
 @pytest.mark.parametrize('input,expected_tag_names', [
-    ('order:implication-count', ['t1', 't2', 'sug1', 'sug2', 'sug3']),
+    ('sort:implication-count', ['t1', 't2', 'sug1', 'sug2', 'sug3']),
 ])
-def test_order_by_implication_count(
+def test_sort_by_implication_count(
         verify_unpaged, tag_factory, input, expected_tag_names):
     sug1 = tag_factory(names=['sug1'])
     sug2 = tag_factory(names=['sug2'])

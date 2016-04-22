@@ -6,10 +6,11 @@ from szurubooru.func import posts
 
 class InfoApi(BaseApi):
     def __init__(self):
+        super().__init__()
         self._cache_time = None
         self._cache_result = None
 
-    def get(self, ctx):
+    def get(self, _ctx):
         return {
             'postCount': posts.get_post_count(),
             'diskUsage': self._get_disk_usage()

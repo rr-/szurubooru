@@ -329,7 +329,7 @@ data.
     | `suggestion-count`  | with given number of suggestions      |
     | `implication-count` | with given number of implications     |
 
-    **Order tokens**
+    **Sort style tokens**
 
     | `<value>`           | Description                  |
     | ------------------- | ---------------------------- |
@@ -637,7 +637,7 @@ data.
     | `login-date`      | alias of `last-login-date`                      |
     | `login-time`      | alias of `last-login-date`                      |
 
-    **Order tokens**
+    **Sort style tokens**
 
     | `<value>`         | Description                |
     | ----------------- | -------------------------- |
@@ -907,7 +907,7 @@ data.
     | `operation`       | `changed`, `created` or `deleted`             |
     | `user`            | name of the user that created given snapshot  |
 
-    **Order tokens**
+    **Sort style tokens**
 
     None. The snapshots are always sorted by creation time.
 
@@ -1095,7 +1095,7 @@ be of following form:
 | ----------------- | ----------------- | ------------------------------------------ |
 | `<value>`         | anonymous tokens  | basic filters                              |
 | `<key>:<value>`   | named tokens      | advanced filters                           |
-| `order:<style>`   | order tokens      | sort results                               |
+| `sort:<style>`    | sort style tokens | sort the results                           |
 | `special:<value>` | special tokens    | filters usually tied to the logged in user |
 
 Most of anonymous and named tokens support ranged and composite values that

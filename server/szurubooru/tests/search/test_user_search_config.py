@@ -126,14 +126,14 @@ def test_paging(
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2']),
-    ('order:name', ['u1', 'u2']),
-    ('-order:name', ['u2', 'u1']),
-    ('order:name,asc', ['u1', 'u2']),
-    ('order:name,desc', ['u2', 'u1']),
-    ('-order:name,asc', ['u2', 'u1']),
-    ('-order:name,desc', ['u1', 'u2']),
+    ('sort:name', ['u1', 'u2']),
+    ('-sort:name', ['u2', 'u1']),
+    ('sort:name,asc', ['u1', 'u2']),
+    ('sort:name,desc', ['u2', 'u1']),
+    ('-sort:name,asc', ['u2', 'u1']),
+    ('-sort:name,desc', ['u1', 'u2']),
 ])
-def test_order_by_name(
+def test_sort_by_name(
         verify_unpaged, input, expected_user_names, user_factory):
     db.session.add(user_factory(name='u2'))
     db.session.add(user_factory(name='u1'))
@@ -141,15 +141,15 @@ def test_order_by_name(
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2', 'u3']),
-    ('order:creation-date', ['u3', 'u2', 'u1']),
-    ('order:creation-time', ['u3', 'u2', 'u1']),
-    ('-order:creation-date', ['u1', 'u2', 'u3']),
-    ('order:creation-date,asc', ['u1', 'u2', 'u3']),
-    ('order:creation-date,desc', ['u3', 'u2', 'u1']),
-    ('-order:creation-date,asc', ['u3', 'u2', 'u1']),
-    ('-order:creation-date,desc', ['u1', 'u2', 'u3']),
+    ('sort:creation-date', ['u3', 'u2', 'u1']),
+    ('sort:creation-time', ['u3', 'u2', 'u1']),
+    ('-sort:creation-date', ['u1', 'u2', 'u3']),
+    ('sort:creation-date,asc', ['u1', 'u2', 'u3']),
+    ('sort:creation-date,desc', ['u3', 'u2', 'u1']),
+    ('-sort:creation-date,asc', ['u3', 'u2', 'u1']),
+    ('-sort:creation-date,desc', ['u1', 'u2', 'u3']),
 ])
-def test_order_by_creation_time(
+def test_sort_by_creation_time(
         verify_unpaged, input, expected_user_names, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
@@ -162,12 +162,12 @@ def test_order_by_creation_time(
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2', 'u3']),
-    ('order:last-login-date', ['u3', 'u2', 'u1']),
-    ('order:last-login-time', ['u3', 'u2', 'u1']),
-    ('order:login-date', ['u3', 'u2', 'u1']),
-    ('order:login-time', ['u3', 'u2', 'u1']),
+    ('sort:last-login-date', ['u3', 'u2', 'u1']),
+    ('sort:last-login-time', ['u3', 'u2', 'u1']),
+    ('sort:login-date', ['u3', 'u2', 'u1']),
+    ('sort:login-time', ['u3', 'u2', 'u1']),
 ])
-def test_order_by_last_login_time(
+def test_sort_by_last_login_time(
         verify_unpaged, input, expected_user_names, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
@@ -178,13 +178,13 @@ def test_order_by_last_login_time(
     db.session.add_all([user3, user1, user2])
     verify_unpaged(input, expected_user_names)
 
-def test_random_order(executor, user_factory):
+def test_random_sort(executor, user_factory):
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
     db.session.add_all([user3, user1, user2])
     actual_count, actual_users = executor.execute(
-        'order:random', page=1, page_size=100)
+        'sort:random', page=1, page_size=100)
     actual_user_names = [u.name for u in actual_users]
     assert actual_count == 3
     assert len(actual_user_names) == 3
@@ -204,10 +204,10 @@ def test_random_order(executor, user_factory):
     ('creation-date:..bad', errors.ValidationError),
     ('creation-date:bad..bad', errors.ValidationError),
     ('name:a..b', errors.SearchError),
-    ('order:', errors.SearchError),
-    ('order:nam', errors.SearchError),
-    ('order:name,as', errors.SearchError),
-    ('order:name,asc,desc', errors.SearchError),
+    ('sort:', errors.SearchError),
+    ('sort:nam', errors.SearchError),
+    ('sort:name,as', errors.SearchError),
+    ('sort:name,asc,desc', errors.SearchError),
     ('bad:x', errors.SearchError),
     ('special:unsupported', errors.SearchError),
 ])
