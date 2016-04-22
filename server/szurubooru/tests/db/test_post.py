@@ -68,7 +68,7 @@ def test_cascade_deletions(post_factory, user_factory, tag_factory):
     post.relations.append(related_post1)
     post.relations.append(related_post2)
     post.scores.append(score)
-    post.favorites.append(favorite)
+    post.favorited_by.append(favorite)
     post.features.append(feature)
     post.notes.append(note)
     db.session.flush()

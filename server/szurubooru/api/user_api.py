@@ -3,7 +3,10 @@ from szurubooru import config, search
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, users
 
-def _serialize_user(authenticated_user, user):
+def serialize_user(user, authenticated_user):
+    if not user:
+        return {}
+
     ret = {
         'name': user.name,
         'rank': user.rank,
@@ -36,7 +39,7 @@ class UserListApi(BaseApi):
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'users:list')
         return self._search_executor.execute_and_serialize(
-            ctx, lambda user: _serialize_user(ctx.user, user), 'users')
+            ctx, lambda user: serialize_user(user, ctx.user), 'users')
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'users:create')
@@ -58,7 +61,7 @@ class UserListApi(BaseApi):
 
         ctx.session.add(user)
         ctx.session.commit()
-        return {'user': _serialize_user(ctx.user, user)}
+        return {'user': serialize_user(user, ctx.user)}
 
 class UserDetailApi(BaseApi):
     def get(self, ctx, user_name):
@@ -66,7 +69,7 @@ class UserDetailApi(BaseApi):
         user = users.get_user_by_name(user_name)
         if not user:
             raise users.UserNotFoundError('User %r not found.' % user_name)
-        return {'user': _serialize_user(ctx.user, user)}
+        return {'user': serialize_user(user, ctx.user)}
 
     def put(self, ctx, user_name):
         user = users.get_user_by_name(user_name)
@@ -102,7 +105,7 @@ class UserDetailApi(BaseApi):
                 ctx.get_file('avatar'))
 
         ctx.session.commit()
-        return {'user': _serialize_user(ctx.user, user)}
+        return {'user': serialize_user(user, ctx.user)}
 
     def delete(self, ctx, user_name):
         user = users.get_user_by_name(user_name)

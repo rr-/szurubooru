@@ -55,6 +55,7 @@ def create_app():
     tag_detail_api = api.TagDetailApi()
     tag_merge_api = api.TagMergeApi()
     tag_siblings_api = api.TagSiblingsApi()
+    post_feature_api = api.PostFeatureApi()
     password_reset_api = api.PasswordResetApi()
     snapshot_list_api = api.SnapshotListApi()
     info_api = api.InfoApi()
@@ -77,5 +78,6 @@ def create_app():
     app.add_route('/password-reset/{user_name}', password_reset_api)
     app.add_route('/snapshots/', snapshot_list_api)
     app.add_route('/info/', info_api)
+    app.add_route('/featured-post/', post_feature_api)
 
     return app

@@ -3,6 +3,65 @@ import pytest
 from szurubooru import db
 from szurubooru.func import snapshots
 
+def test_serializing_post(post_factory, user_factory, tag_factory):
+    user = user_factory(name='dummy-user')
+    tag1 = tag_factory(names=['dummy-tag1'])
+    tag2 = tag_factory(names=['dummy-tag2'])
+    post = post_factory(id=1)
+    related_post1 = post_factory(id=2)
+    related_post2 = post_factory(id=3)
+    db.session.add_all([user, tag1, tag2, post, related_post1, related_post2])
+    db.session.flush()
+
+    score = db.PostScore()
+    score.post = post
+    score.user = user
+    score.time = datetime.datetime(1997, 1, 1)
+    score.score = 1
+    favorite = db.PostFavorite()
+    favorite.post = post
+    favorite.user = user
+    favorite.time = datetime.datetime(1997, 1, 1)
+    feature = db.PostFeature()
+    feature.post = post
+    feature.user = user
+    feature.time = datetime.datetime(1997, 1, 1)
+    note = db.PostNote()
+    note.post = post
+    note.polygon = [(1, 1), (200, 1), (200, 200), (1, 200)]
+    note.text = 'some text'
+    db.session.add_all([score])
+    db.session.flush()
+
+    post.user = user
+    post.checksum = 'deadbeef'
+    post.source = 'example.com'
+    post.tags.append(tag1)
+    post.tags.append(tag2)
+    post.relations.append(related_post1)
+    post.relations.append(related_post2)
+    post.scores.append(score)
+    post.favorited_by.append(favorite)
+    post.features.append(feature)
+    post.notes.append(note)
+
+    assert snapshots.get_post_snapshot(post) == {
+        'checksum': 'deadbeef',
+        'featured': True,
+        'flags': [],
+        'notes': [
+            {
+                'polygon': [(1, 1), (200, 1), (200, 200), (1, 200)],
+                'text': 'some text',
+            }
+        ],
+        'relations': [2, 3],
+        'safety': 'safe',
+        'source': 'example.com',
+        'tags': ['dummy-tag1', 'dummy-tag2'],
+    }
+
+
 def test_serializing_tag(tag_factory):
     tag = tag_factory(names=['main_name', 'alias'], category_name='dummy')
     assert snapshots.get_tag_snapshot(tag) == {

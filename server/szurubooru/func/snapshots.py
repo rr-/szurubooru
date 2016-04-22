@@ -3,13 +3,27 @@ from sqlalchemy.inspection import inspect
 from szurubooru import db
 
 def get_tag_snapshot(tag):
-    ret = {
+    return {
         'names': [tag_name.name for tag_name in tag.names],
         'category': tag.category.name,
         'suggestions': sorted(rel.first_name for rel in tag.suggestions),
         'implications': sorted(rel.first_name for rel in tag.implications),
     }
-    return ret
+
+def get_post_snapshot(post):
+    return {
+        'source': post.source,
+        'safety': post.safety,
+        'checksum': post.checksum,
+        'tags': sorted([tag.first_name for tag in post.tags]),
+        'relations': sorted([rel.post_id for rel in post.relations]),
+        'notes': sorted([{
+            'polygon': note.polygon,
+            'text': note.text,
+        } for note in post.notes]),
+        'flags': post.flags,
+        'featured': post.is_featured,
+    }
 
 def get_tag_category_snapshot(category):
     return {
@@ -25,6 +39,9 @@ serializers = {
     'tag_category': (
         get_tag_category_snapshot,
         lambda category: category.name),
+    'post': (
+        get_post_snapshot,
+        lambda post: post.post_id),
 }
 
 def get_resource_info(entity):

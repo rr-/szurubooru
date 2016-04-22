@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, DateTime, String, Text, PickleType, ForeignKey
-from sqlalchemy.orm import relationship, column_property
+from sqlalchemy.orm import relationship, column_property, object_session
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
 
@@ -87,9 +87,9 @@ class Post(Base):
     checksum = Column('checksum', String(64), nullable=False)
     source = Column('source', String(200))
     file_size = Column('file_size', Integer)
-    image_width = Column('image_width', Integer)
-    image_height = Column('image_height', Integer)
-    flags = Column('flags', Integer, nullable=False, default=0)
+    canvas_width = Column('image_width', Integer)
+    canvas_height = Column('image_height', Integer)
+    flags = Column('flags', PickleType, default=None)
 
     user = relationship('User')
     tags = relationship('Tag', backref='posts', secondary='post_tag')
@@ -102,7 +102,7 @@ class Post(Base):
         'PostFeature', cascade='all, delete-orphan', lazy='joined')
     scores = relationship(
         'PostScore', cascade='all, delete-orphan', lazy='joined')
-    favorites = relationship(
+    favorited_by = relationship(
         'PostFavorite', cascade='all, delete-orphan', lazy='joined')
     notes = relationship(
         'PostNote', cascade='all, delete-orphan', lazy='joined')
@@ -112,8 +112,16 @@ class Post(Base):
         .where(PostTag.post_id == post_id) \
         .correlate_except(PostTag))
 
+    @property
+    def is_featured(self):
+        featured_post = object_session(self) \
+            .query(PostFeature) \
+            .order_by(PostFeature.time.desc()) \
+            .first()
+        return featured_post and featured_post.post_id == self.post_id
+
     # TODO: wire these
-    fav_count = Column('auto_fav_count', Integer, nullable=False, default=0)
+    favorite_count = Column('auto_fav_count', Integer, nullable=False, default=0)
     score = Column('auto_score', Integer, nullable=False, default=0)
     feature_count = Column('auto_feature_count', Integer, nullable=False, default=0)
     comment_count = Column('auto_comment_count', Integer, nullable=False, default=0)

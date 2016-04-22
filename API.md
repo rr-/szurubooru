@@ -27,6 +27,16 @@
         - [Deleting tag](#deleting-tag)
         - [Merging tags](#merging-tags)
         - [Listing tag siblings](#listing-tag-siblings)
+    - Posts
+        - ~~Listing posts~~
+        - ~~Creating post~~
+        - ~~Updating post~~
+        - ~~Getting post~~
+        - ~~Deleting post~~
+        - ~~Scoring posts~~
+        - ~~Adding posts to favorites~~
+        - ~~Removing posts from favorites~~
+        - [Featuring post](#featuring-post)
     - Users
         - [Listing users](#listing-users)
         - [Creating user](#creating-user)
@@ -44,6 +54,7 @@
    - [User](#user)
    - [Tag category](#tag-category)
    - [Tag](#tag)
+   - [Post](#post)
    - [Snapshot](#snapshot)
 
 4. [Search](#search)
@@ -590,6 +601,36 @@ data.
     list is truncated to the first 50 elements. Doesn't use paging.
 
 
+## Featuring post
+- **Request**
+
+    `POST /featured-post`
+
+- **Output**
+
+    ```json5
+    {
+        "post": <post>,
+        "snapshots": [
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
+        ]
+    }
+    ```
+    ...where `<post>` is a [post resource](#post), and `snapshots` contain its
+    earlier versions.
+
+- **Errors**
+
+    - privileges are too low
+    - trying to feature a post that is currently featured
+
+- **Description**
+
+    Features a post on the main page.
+
+
 ## Listing users
 - **Request**
 
@@ -1007,7 +1048,76 @@ A single tag. Tags are used to let users search for posts.
 - `<suggestions>`: a list of suggested tag names. Suggested tags are shown to
   the user by the web client on usage.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
-- `<creation-time>`: time the tag was edited, formatted as per RFC 3339.
+- `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
+
+## Post
+**Description**
+
+One file together with its metadata posted to the site.
+
+**Structure**
+
+```json5
+{
+    "id":              <id>,
+    "safety":          <safety>,
+    "type":            <type>,
+    "checksum":        <checksum>,
+    "source":          <source>,
+    "canvasWidth":     <canvas-width>,
+    "canvasHeight":    <canvas-height>,
+    "flags":           <flags>,
+    "tags":            <tags>,
+    "relations":       <relations>,
+    "creationTime":    <creation-time>,
+    "lastEditTime":    <last-edit-time>,
+    "user":            <user>,
+    "score":           <score>,
+    "favoritedBy":     <favorited-by>,
+    "featureCount":    <feature-count>,
+    "lastFeatureTime": <last-feature-time>,
+}
+```
+
+**Field meaning**
+
+- `<id>`: the post identifier.
+- `<safety>`: whether the post is safe for work.
+
+    Available values:
+
+    - `"safe"`
+    - `"sketchy"`
+    - `"unsafe"`
+
+- `<type>`: the type of the post.
+
+    Available values:
+
+    - `"image"` - plain image.
+    - `"animation"` - animated image (GIF).
+    - `"video"` - WEBM video.
+    - `"flash"` - Flash animation / game.
+    - `"youtube"` - Youtube embed.
+
+- `<checksum>`: the file checksum. Used in snapshots to signify changes of the
+  post content.
+- `<source>`: where the post was grabbed form, supplied by the user.
+- `<canvas-width>` and `<canvas-height>`: the original width and height of the
+  post content.
+- `<flags>`: various flags such as whether the post is looped, represented as
+  array of plain strings.
+- `<tags>`: list of tag names the post is tagged with.
+- `<relations>`: a list of related post IDs. Links to related posts are shown
+  to the user by the web client.
+- `<creation-time>`: time the tag was created, formatted as per RFC 3339.
+- `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
+- `<user>`: who created the post, serialized as [user resource](#user).
+- `<score>`: the score (+1/-1 rating) of the given post.
+- `<favorited-by>`: list of users, serialized as [user resources](#user).
+- `<feature-count>`: how many times has the post been featured.
+- `<last-feature-time>`: the last time the post was featured, formatted as per
+  RFC 3339.
 
 ## Snapshot
 **Description**
@@ -1075,6 +1185,23 @@ A snapshot is a version of a database resource.
             "category":     "plain",
             "implications": ["imp1", "imp2", "imp3"],
             "suggestions":  ["sug1", "sug2", "sug3"]
+        }
+        ```
+
+    - Post snapshot data (`<resource-type> = "post"`)
+
+        *Example*
+
+        ```json5
+        {
+            "source": "http://example.com/",
+            "safety": "safe",
+            "checksum": "deadbeef",
+            "tags": ["tag1", "tag2"],
+            "relations": [1, 2],
+            "notes": [{"polygon": [[1,1],[200,1],[200,200],[1,200]], "text": "..."}],
+            "flags": ["loop"],
+            "featured": false
         }
         ```
 
