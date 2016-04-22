@@ -1,7 +1,49 @@
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, String, Text, PickleType, ForeignKey
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
+
+class PostFeature(Base):
+    __tablename__ = 'post_feature'
+
+    post_feature_id = Column('id', Integer, primary_key=True)
+    post_id = Column('post_id', Integer, ForeignKey('post.id'), nullable=False)
+    user_id = Column('user_id', Integer, ForeignKey('user.id'), nullable=False)
+    time = Column('time', DateTime, nullable=False)
+
+    post = relationship('Post')
+    user = relationship('User')
+
+class PostScore(Base):
+    __tablename__ = 'post_score'
+
+    post_id = Column('post_id', Integer, ForeignKey('post.id'), primary_key=True)
+    user_id = Column('user_id', Integer, ForeignKey('user.id'), primary_key=True)
+    time = Column('time', DateTime, nullable=False)
+    score = Column('score', Integer, nullable=False)
+
+    post = relationship('Post')
+    user = relationship('User')
+
+class PostFavorite(Base):
+    __tablename__ = 'post_favorite'
+
+    post_id = Column('post_id', Integer, ForeignKey('post.id'), primary_key=True)
+    user_id = Column('user_id', Integer, ForeignKey('user.id'), primary_key=True)
+    time = Column('time', DateTime, nullable=False)
+
+    post = relationship('Post')
+    user = relationship('User')
+
+class PostNote(Base):
+    __tablename__ = 'post_note'
+
+    post_note_id = Column('id', Integer, primary_key=True)
+    post_id = Column('post_id', Integer, ForeignKey('post.id'), nullable=False)
+    polygon = Column('polygon', PickleType, nullable=False)
+    text = Column('text', Text, nullable=False)
+
+    post = relationship('Post')
 
 class PostRelation(Base):
     __tablename__ = 'post_relation'
@@ -56,6 +98,14 @@ class Post(Base):
         secondary='post_relation',
         primaryjoin=post_id == PostRelation.parent_id,
         secondaryjoin=post_id == PostRelation.child_id)
+    features = relationship(
+        'PostFeature', cascade='all, delete-orphan', lazy='joined')
+    scores = relationship(
+        'PostScore', cascade='all, delete-orphan', lazy='joined')
+    favorites = relationship(
+        'PostFavorite', cascade='all, delete-orphan', lazy='joined')
+    notes = relationship(
+        'PostNote', cascade='all, delete-orphan', lazy='joined')
 
     tag_count = column_property(
         select([func.count(PostTag.tag_id)]) \
