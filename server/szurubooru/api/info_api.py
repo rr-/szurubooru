@@ -1,6 +1,7 @@
 import datetime
 import os
 from szurubooru import config
+from szurubooru.api.post_api import serialize_post
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import posts
 
@@ -10,10 +11,12 @@ class InfoApi(BaseApi):
         self._cache_time = None
         self._cache_result = None
 
-    def get(self, _ctx):
+    def get(self, ctx):
+        featured_post = posts.get_featured_post()
         return {
             'postCount': posts.get_post_count(),
-            'diskUsage': self._get_disk_usage()
+            'diskUsage': self._get_disk_usage(),
+            'featuredPost': serialize_post(featured_post, ctx.user),
         }
 
     def _get_disk_usage(self):

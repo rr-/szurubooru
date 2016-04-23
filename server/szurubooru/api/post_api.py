@@ -3,6 +3,9 @@ from szurubooru.api.user_api import serialize_user
 from szurubooru.func import auth, posts, snapshots
 
 def serialize_post(post, authenticated_user):
+    if not post:
+        return None
+
     ret = {
         'id': post.post_id,
         'creationTime': post.creation_time,
@@ -55,4 +58,8 @@ class PostFeatureApi(BaseApi):
             snapshots.modify(featured_post, ctx.user)
         snapshots.modify(post, ctx.user)
         ctx.session.commit()
+        return serialize_post_with_details(post, ctx.user)
+
+    def get(self, ctx):
+        post = posts.get_featured_post()
         return serialize_post_with_details(post, ctx.user)

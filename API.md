@@ -36,6 +36,7 @@
         - ~~Scoring posts~~
         - ~~Adding posts to favorites~~
         - ~~Removing posts from favorites~~
+        - [Getting featured post](#getting-featured-post)
         - [Featuring post](#featuring-post)
     - Users
         - [Listing users](#listing-users)
@@ -48,6 +49,8 @@
         - [Password reset - step 2: confirmation](#password-reset---step-2-confirmation)
     - Snapshots
         - [Listing snapshots](#listing-snapshots)
+    - Global info
+        - [Getting global info](#getting-global-info)
 
 3. [Resources](#resources)
 
@@ -601,6 +604,37 @@ data.
     list is truncated to the first 50 elements. Doesn't use paging.
 
 
+## Getting featured post
+- **Request**
+
+    `GET /featured-post`
+
+- **Output**
+
+    ```json5
+    {
+        "post": <post>,
+        "snapshots": [
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
+        ]
+    }
+    ```
+    ...where `<post>` is a [post resource](#post), and `snapshots` contain its
+    earlier versions.
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Retrieves the post that is currently featured on the main page in web
+    client. If no post is featured, `<post>` is null and `snapshots` array is
+    empty.
+
+
 ## Featuring post
 - **Request**
 
@@ -628,7 +662,7 @@ data.
 
 - **Description**
 
-    Features a post on the main page.
+    Features a post on the main page in web client.
 
 
 ## Listing users
@@ -955,6 +989,27 @@ data.
     **Special tokens**
 
     None.
+
+
+## Getting global info
+- **Request**
+
+    `GET /info`
+
+- **Output**
+
+    ```json5
+    {
+        "postCount": <post-count>,
+        "diskUsage": <disk-usage>,  // in bytes
+        "featuredPost": <featured-post>
+    }
+    ```
+
+- **Description**
+
+    Retrieves simple statistics. `<featured-post>` is null if there is no
+    featured post yet.
 
 
 

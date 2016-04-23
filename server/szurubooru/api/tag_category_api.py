@@ -1,15 +1,15 @@
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, tags, tag_categories, snapshots
 
-def _serialize_category(category):
+def serialize_category(category):
     return {
         'name': category.name,
         'color': category.color,
     }
 
-def _serialize_category_with_details(category):
+def serialize_category_with_details(category):
     return {
-        'tagCategory': _serialize_category(category),
+        'tagCategory': serialize_category(category),
         'snapshots': snapshots.get_serialized_history(category),
     }
 
@@ -19,7 +19,7 @@ class TagCategoryListApi(BaseApi):
         categories = tag_categories.get_all_categories()
         return {
             'tagCategories': [
-                _serialize_category(category) for category in categories],
+                serialize_category(category) for category in categories],
         }
 
     def post(self, ctx):
@@ -32,7 +32,7 @@ class TagCategoryListApi(BaseApi):
         snapshots.create(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return _serialize_category_with_details(category)
+        return serialize_category_with_details(category)
 
 class TagCategoryDetailApi(BaseApi):
     def get(self, ctx, category_name):
@@ -41,7 +41,7 @@ class TagCategoryDetailApi(BaseApi):
         if not category:
             raise tag_categories.TagCategoryNotFoundError(
                 'Tag category %r not found.' % category_name)
-        return _serialize_category_with_details(category)
+        return serialize_category_with_details(category)
 
     def put(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)
@@ -60,7 +60,7 @@ class TagCategoryDetailApi(BaseApi):
         snapshots.modify(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return _serialize_category_with_details(category)
+        return serialize_category_with_details(category)
 
     def delete(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)

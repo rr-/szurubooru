@@ -6,7 +6,10 @@ from szurubooru.func import util, posts
 @pytest.fixture
 def test_ctx(context_factory, config_injector, user_factory, post_factory):
     config_injector({
-        'privileges': {'posts:feature': 'regular_user'},
+        'privileges': {
+            'posts:feature': 'regular_user',
+            'posts:view': 'regular_user',
+        },
         'ranks': ['anonymous', 'regular_user'],
     })
     ret = util.dotdict()
@@ -16,10 +19,16 @@ def test_ctx(context_factory, config_injector, user_factory, post_factory):
     ret.api = api.PostFeatureApi()
     return ret
 
+def test_no_featured_post(test_ctx):
+    assert posts.get_featured_post() is None
+    result = test_ctx.api.get(
+        test_ctx.context_factory(
+            user=test_ctx.user_factory(rank='regular_user')))
+    assert result == {'post': None, 'snapshots': []}
+
 def test_featuring(test_ctx):
     db.session.add(test_ctx.post_factory(id=1))
     db.session.commit()
-    assert posts.get_featured_post() is None
     assert not posts.get_post_by_id(1).is_featured
     result = test_ctx.api.post(
         test_ctx.context_factory(
@@ -30,6 +39,11 @@ def test_featuring(test_ctx):
     assert posts.get_post_by_id(1).is_featured
     assert 'post' in result
     assert 'snapshots' in result
+    assert 'id' in result['post']
+    result = test_ctx.api.get(
+        test_ctx.context_factory(
+            user=test_ctx.user_factory(rank='regular_user')))
+    assert 'post' in result
     assert 'id' in result['post']
 
 def test_trying_to_feature_the_same_post_twice(test_ctx):
@@ -80,3 +94,11 @@ def test_trying_to_feature_without_privileges(test_ctx):
             test_ctx.context_factory(
                 input={'id': 1},
                 user=test_ctx.user_factory(rank='anonymous')))
+
+def test_getting_featured_post_without_privileges_to_view(test_ctx):
+    try:
+        test_ctx.api.get(
+            test_ctx.context_factory(
+                user=test_ctx.user_factory(rank='anonymous')))
+    except:
+        pytest.fail()

@@ -91,6 +91,8 @@ def serialize_snapshot(snapshot, earlier_snapshot):
     }
 
 def get_serialized_history(entity):
+    if not entity:
+        return []
     ret = []
     earlier_snapshot = None
     for snapshot in reversed(get_snapshots(entity)):
