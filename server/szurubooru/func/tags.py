@@ -13,6 +13,20 @@ class InvalidTagNameError(errors.ValidationError): pass
 class InvalidTagCategoryError(errors.ValidationError): pass
 class InvalidTagRelationError(errors.ValidationError): pass
 
+def _verify_name_validity(name):
+    name_regex = config.config['tag_name_regex']
+    if not re.match(name_regex, name):
+        raise InvalidTagNameError('Name must satisfy regex %r.' % name_regex)
+
+def _get_plain_names(tag):
+    return [tag_name.name for tag_name in tag.names]
+
+def _lower_list(names):
+    return [name.lower() for name in names]
+
+def _check_name_intersection(names1, names2):
+    return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
+
 def serialize_tag(tag):
     return {
         'names': [tag_name.name for tag_name in tag.names],
@@ -30,32 +44,6 @@ def serialize_tag_with_details(tag):
         'tag': serialize_tag(tag),
         'snapshots': snapshots.get_serialized_history(tag),
     }
-
-def serialize_category(category):
-    return {
-        'name': category.name,
-        'color': category.color,
-    }
-
-def serialize_category_with_details(category):
-    return {
-        'tagCategory': serialize_category(category),
-        'snapshots': snapshots.get_serialized_history(category),
-    }
-
-def _verify_name_validity(name):
-    name_regex = config.config['tag_name_regex']
-    if not re.match(name_regex, name):
-        raise InvalidTagNameError('Name must satisfy regex %r.' % name_regex)
-
-def _get_plain_names(tag):
-    return [tag_name.name for tag_name in tag.names]
-
-def _lower_list(names):
-    return [name.lower() for name in names]
-
-def _check_name_intersection(names1, names2):
-    return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
 
 def export_to_json():
     output = {
@@ -90,12 +78,18 @@ def export_to_json():
     with open(export_path, 'w') as handle:
         handle.write(json.dumps(output, separators=(',', ':')))
 
-def get_tag_by_name(name):
+def try_get_tag_by_name(name):
     return db.session \
         .query(db.Tag) \
         .join(db.TagName) \
         .filter(db.TagName.name.ilike(name)) \
-        .first()
+        .one_or_none()
+
+def get_tag_by_name(name):
+    tag = try_get_tag_by_name(name)
+    if not tag:
+        raise TagNotFoundError('Tag %r not found.' % name)
+    return tag
 
 def get_tags_by_names(names):
     names = util.icase_unique(names)

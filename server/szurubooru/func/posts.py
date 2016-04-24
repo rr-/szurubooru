@@ -49,13 +49,19 @@ def serialize_post_with_details(post, authenticated_user):
 def get_post_count():
     return db.session.query(sqlalchemy.func.count(db.Post.post_id)).one()[0]
 
-def get_post_by_id(post_id):
+def try_get_post_by_id(post_id):
     return db.session \
         .query(db.Post) \
         .filter(db.Post.post_id == post_id) \
         .one_or_none()
 
-def get_featured_post():
+def get_post_by_id(post_id):
+    post = try_get_post_by_id(post_id)
+    if not post:
+        raise PostNotFoundError('Post %r not found.' % post_id)
+    return post
+
+def try_get_featured_post():
     post_feature = db.session \
         .query(db.PostFeature) \
         .order_by(db.PostFeature.time.desc()) \

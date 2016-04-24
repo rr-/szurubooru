@@ -8,9 +8,6 @@ EMPTY_PIXEL = \
     b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
     b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
 
-def get_user(name):
-    return db.session.query(db.User).filter_by(name=name).first()
-
 @pytest.fixture
 def test_ctx(config_injector, context_factory, user_factory):
     config_injector({
@@ -66,7 +63,7 @@ def test_updating_user(test_ctx):
             'rankName': 'Unknown',
         }
     }
-    user = get_user('chewie')
+    user = users.get_user_by_name('chewie')
     assert user.name == 'chewie'
     assert user.email == 'asd@asd.asd'
     assert user.rank == 'mod'
@@ -133,7 +130,7 @@ def test_removing_email(test_ctx):
     db.session.add(user)
     test_ctx.api.put(
         test_ctx.context_factory(input={'email': ''}, user=user), 'u1')
-    assert get_user('u1').email is None
+    assert users.get_user_by_name('u1').email is None
 
 @pytest.mark.parametrize('input', [
     {'name': 'whatever'},
@@ -183,7 +180,7 @@ def test_uploading_avatar(test_ctx, tmpdir):
             files={'avatar': EMPTY_PIXEL},
             user=user),
         'u1')
-    user = get_user('u1')
+    user = users.get_user_by_name('u1')
     assert user.avatar_style == user.AVATAR_MANUAL
     assert response['user']['avatarUrl'] == \
         'http://example.com/data/avatars/u1.jpg'

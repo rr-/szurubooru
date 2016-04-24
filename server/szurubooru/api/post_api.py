@@ -6,9 +6,7 @@ class PostFeatureApi(BaseApi):
         auth.verify_privilege(ctx.user, 'posts:feature')
         post_id = ctx.get_param_as_int('id', required=True)
         post = posts.get_post_by_id(post_id)
-        if not post:
-            raise posts.PostNotFoundError('Post %r not found.' % post_id)
-        featured_post = posts.get_featured_post()
+        featured_post = posts.try_get_featured_post()
         if featured_post and featured_post.post_id == post.post_id:
             raise posts.PostAlreadyFeaturedError(
                 'Post %r is already featured.' % post_id)
@@ -20,5 +18,5 @@ class PostFeatureApi(BaseApi):
         return posts.serialize_post_with_details(post, ctx.user)
 
     def get(self, ctx):
-        post = posts.get_featured_post()
+        post = posts.try_get_featured_post()
         return posts.serialize_post_with_details(post, ctx.user)

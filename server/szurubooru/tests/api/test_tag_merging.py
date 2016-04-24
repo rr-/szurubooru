@@ -4,13 +4,6 @@ import pytest
 from szurubooru import api, config, db, errors
 from szurubooru.func import util, tags
 
-def get_tag(name):
-    return db.session \
-        .query(db.Tag) \
-        .join(db.TagName) \
-        .filter(db.TagName.name==name) \
-        .first()
-
 @pytest.fixture
 def test_ctx(
         tmpdir, config_injector, context_factory, user_factory, tag_factory):
@@ -50,8 +43,8 @@ def test_merging_without_usages(test_ctx, fake_datetime):
         'lastEditTime': None,
     }
     assert 'snapshots' in result
-    assert get_tag('source') is None
-    tag = get_tag('target')
+    assert tags.try_get_tag_by_name('source') is None
+    tag = tags.get_tag_by_name('target')
     assert tag is not None
     assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
@@ -76,8 +69,8 @@ def test_merging_with_usages(test_ctx, fake_datetime, post_factory):
                     'merge-to': 'target',
                 },
                 user=test_ctx.user_factory(rank='regular_user')))
-    assert get_tag('source') is None
-    assert get_tag('target').post_count == 1
+    assert tags.try_get_tag_by_name('source') is None
+    assert tags.get_tag_by_name('target').post_count == 1
 
 @pytest.mark.parametrize('input,expected_exception', [
     ({'remove': None}, tags.TagNotFoundError),

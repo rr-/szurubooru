@@ -8,9 +8,6 @@ EMPTY_PIXEL = \
     b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x01\x00\x2c\x00\x00\x00\x00' \
     b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
 
-def get_user(name):
-    return db.session.query(db.User).filter_by(name=name).first()
-
 @pytest.fixture
 def test_ctx(config_injector, context_factory, user_factory):
     config_injector({
@@ -51,7 +48,7 @@ def test_creating_user(test_ctx, fake_datetime):
             'rankName': 'Unknown',
         }
     }
-    user = get_user('chewie1')
+    user = users.get_user_by_name('chewie1')
     assert user.name == 'chewie1'
     assert user.email == 'asd@asd.asd'
     assert user.rank == 'admin'
@@ -77,8 +74,8 @@ def test_first_user_becomes_admin_others_not(test_ctx):
             user=test_ctx.user_factory(rank='anonymous')))
     assert result1['user']['rank'] == 'admin'
     assert result2['user']['rank'] == 'regular_user'
-    first_user = get_user('chewie1')
-    other_user = get_user('chewie2')
+    first_user = users.get_user_by_name('chewie1')
+    other_user = users.get_user_by_name('chewie2')
     assert first_user.rank == 'admin'
     assert other_user.rank == 'regular_user'
 
@@ -225,7 +222,7 @@ def test_uploading_avatar(test_ctx, tmpdir):
             },
             files={'avatar': EMPTY_PIXEL},
             user=test_ctx.user_factory(rank='mod')))
-    user = get_user('chewie')
+    user = users.get_user_by_name('chewie')
     assert user.avatar_style == user.AVATAR_MANUAL
     assert response['user']['avatarUrl'] == \
         'http://example.com/data/avatars/chewie.jpg'

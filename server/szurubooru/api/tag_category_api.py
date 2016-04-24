@@ -7,7 +7,8 @@ class TagCategoryListApi(BaseApi):
         categories = tag_categories.get_all_categories()
         return {
             'tagCategories': [
-                tags.serialize_category(category) for category in categories],
+                tag_categories.serialize_category(category) \
+                    for category in categories],
         }
 
     def post(self, ctx):
@@ -20,22 +21,16 @@ class TagCategoryListApi(BaseApi):
         snapshots.create(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return tags.serialize_category_with_details(category)
+        return tag_categories.serialize_category_with_details(category)
 
 class TagCategoryDetailApi(BaseApi):
     def get(self, ctx, category_name):
         auth.verify_privilege(ctx.user, 'tag_categories:view')
         category = tag_categories.get_category_by_name(category_name)
-        if not category:
-            raise tag_categories.TagCategoryNotFoundError(
-                'Tag category %r not found.' % category_name)
-        return tags.serialize_category_with_details(category)
+        return tag_categories.serialize_category_with_details(category)
 
     def put(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)
-        if not category:
-            raise tag_categories.TagCategoryNotFoundError(
-                'Tag category %r not found.' % category_name)
         if ctx.has_param('name'):
             auth.verify_privilege(ctx.user, 'tag_categories:edit:name')
             tag_categories.update_name(
@@ -48,13 +43,10 @@ class TagCategoryDetailApi(BaseApi):
         snapshots.modify(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return tags.serialize_category_with_details(category)
+        return tag_categories.serialize_category_with_details(category)
 
     def delete(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)
-        if not category:
-            raise tag_categories.TagCategoryNotFoundError(
-                'Tag category %r not found.' % category_name)
         auth.verify_privilege(ctx.user, 'tag_categories:delete')
         if len(tag_categories.get_all_category_names()) == 1:
             raise tag_categories.TagCategoryIsInUseError(

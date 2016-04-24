@@ -35,31 +35,22 @@ class TagDetailApi(BaseApi):
     def get(self, ctx, tag_name):
         auth.verify_privilege(ctx.user, 'tags:view')
         tag = tags.get_tag_by_name(tag_name)
-        if not tag:
-            raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
         return tags.serialize_tag_with_details(tag)
 
     def put(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
-        if not tag:
-            raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
-
         if ctx.has_param('names'):
             auth.verify_privilege(ctx.user, 'tags:edit:names')
             tags.update_names(tag, ctx.get_param_as_list('names'))
-
         if ctx.has_param('category'):
             auth.verify_privilege(ctx.user, 'tags:edit:category')
             tags.update_category_name(tag, ctx.get_param_as_string('category'))
-
         if ctx.has_param('suggestions'):
             auth.verify_privilege(ctx.user, 'tags:edit:suggestions')
             tags.update_suggestions(tag, ctx.get_param_as_list('suggestions'))
-
         if ctx.has_param('implications'):
             auth.verify_privilege(ctx.user, 'tags:edit:implications')
             tags.update_implications(tag, ctx.get_param_as_list('implications'))
-
         tag.last_edit_time = datetime.datetime.now()
         ctx.session.flush()
         snapshots.modify(tag, ctx.user)
@@ -69,13 +60,10 @@ class TagDetailApi(BaseApi):
 
     def delete(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
-        if not tag:
-            raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
         if tag.post_count > 0:
             raise tags.TagIsInUseError(
                 'Tag has some usages and cannot be deleted. ' +
                 'Please untag relevant posts first.')
-
         auth.verify_privilege(ctx.user, 'tags:delete')
         snapshots.delete(tag, ctx.user)
         ctx.session.delete(tag)
@@ -89,15 +77,8 @@ class TagMergeApi(BaseApi):
         target_tag_name = ctx.get_param_as_string('merge-to', required=True) or ''
         source_tag = tags.get_tag_by_name(source_tag_name)
         target_tag = tags.get_tag_by_name(target_tag_name)
-        if not source_tag:
-            raise tags.TagNotFoundError(
-                'Source tag %r not found.' % source_tag_name)
-        if not target_tag:
-            raise tags.TagNotFoundError(
-                'Source tag %r not found.' % target_tag_name)
         if source_tag.tag_id == target_tag.tag_id:
-            raise tags.InvalidTagRelationError(
-                'Cannot merge tag with itself.')
+            raise tags.InvalidTagRelationError('Cannot merge tag with itself.')
         auth.verify_privilege(ctx.user, 'tags:merge')
         snapshots.delete(source_tag, ctx.user)
         tags.merge_tags(source_tag, target_tag)
@@ -109,8 +90,6 @@ class TagSiblingsApi(BaseApi):
     def get(self, ctx, tag_name):
         auth.verify_privilege(ctx.user, 'tags:view')
         tag = tags.get_tag_by_name(tag_name)
-        if not tag:
-            raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
         result = tags.get_siblings(tag)
         serialized_siblings = []
         for sibling, occurrences in result:

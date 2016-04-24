@@ -50,19 +50,15 @@ class Context(object):
                 raise errors.ValidationError(
                     'Parameter %r is invalid: the value must be an integer.'
                     % name)
-
             if min is not None and val < min:
                 raise errors.ValidationError(
                     'Parameter %r is invalid: the value must be at least %r.'
                     % (name, min))
-
             if max is not None and val > max:
                 raise errors.ValidationError(
                     'Parameter %r is invalid: the value may not exceed %r.'
                     % (name, max))
-
             return val
-
         if not required:
             return default
         raise errors.ValidationError(

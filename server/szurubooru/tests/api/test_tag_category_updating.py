@@ -43,7 +43,7 @@ def test_simple_updating(test_ctx):
         'color': 'white',
     }
     assert len(result['snapshots']) == 1
-    assert tag_categories.get_category_by_name('name') is None
+    assert tag_categories.try_get_category_by_name('name') is None
     category = tag_categories.get_category_by_name('changed')
     assert category is not None
     assert category.name == 'changed'

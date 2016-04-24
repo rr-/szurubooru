@@ -44,19 +44,31 @@ def serialize_user(user, authenticated_user):
 def get_user_count():
     return db.session.query(db.User).count()
 
-def get_user_by_name(name):
+def try_get_user_by_name(name):
     return db.session \
         .query(db.User) \
         .filter(func.lower(db.User.name) == func.lower(name)) \
-        .first()
+        .one_or_none()
 
-def get_user_by_name_or_email(name_or_email):
+def get_user_by_name(name):
+    user = try_get_user_by_name(name)
+    if not user:
+        raise UserNotFoundError('User %r not found.' % name)
+    return user
+
+def try_get_user_by_name_or_email(name_or_email):
     return db.session \
         .query(db.User) \
         .filter(
             (func.lower(db.User.name) == func.lower(name_or_email))
             | (func.lower(db.User.email) == func.lower(name_or_email))) \
-        .first()
+        .one_or_none()
+
+def get_user_by_name_or_email(name_or_email):
+    user = try_get_user_by_name_or_email(name_or_email)
+    if not user:
+        raise UserNotFoundError('User %r not found.' % name_or_email)
+    return user
 
 def create_user(name, password, email, auth_user):
     user = db.User()
@@ -76,7 +88,7 @@ def update_name(user, name, auth_user):
         raise InvalidUserNameError('Name cannot be empty.')
     if util.value_exceeds_column_size(name, db.User.name):
         raise InvalidUserNameError('User name is too long.')
-    other_user = get_user_by_name(name)
+    other_user = try_get_user_by_name(name)
     if other_user and other_user.user_id != auth_user.user_id:
         raise UserAlreadyExistsError('User %r already exists.' % name)
     name = name.strip()

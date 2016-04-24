@@ -1,6 +1,6 @@
 import re
 from szurubooru import config, db, errors
-from szurubooru.func import util
+from szurubooru.func import util, snapshots
 
 class TagCategoryNotFoundError(errors.NotFoundError): pass
 class TagCategoryAlreadyExistsError(errors.ValidationError): pass
@@ -13,6 +13,18 @@ def _verify_name_validity(name):
     if not re.match(name_regex, name):
         raise InvalidTagCategoryNameError(
             'Name must satisfy regex %r.' % name_regex)
+
+def serialize_category(category):
+    return {
+        'name': category.name,
+        'color': category.color,
+    }
+
+def serialize_category_with_details(category):
+    return {
+        'tagCategory': serialize_category(category),
+        'snapshots': snapshots.get_serialized_history(category),
+    }
 
 def create_category(name, color):
     category = db.TagCategory()
@@ -42,11 +54,17 @@ def update_color(category, color):
         raise InvalidTagCategoryColorError('Color is too long.')
     category.color = color
 
-def get_category_by_name(name):
+def try_get_category_by_name(name):
     return db.session \
         .query(db.TagCategory) \
         .filter(db.TagCategory.name.ilike(name)) \
-        .first()
+        .one_or_none()
+
+def get_category_by_name(name):
+    category = try_get_category_by_name(name)
+    if not category:
+        raise TagCategoryNotFoundError('Tag category %r not found.' % name)
+    return category
 
 def get_all_category_names():
     return [row[0] for row in db.session.query(db.TagCategory.name).all()]
@@ -54,9 +72,15 @@ def get_all_category_names():
 def get_all_categories():
     return db.session.query(db.TagCategory).all()
 
-def get_default_category():
+def try_get_default_category():
     return db.session \
         .query(db.TagCategory) \
         .order_by(db.TagCategory.tag_category_id.asc()) \
         .limit(1) \
         .one()
+
+def get_default_category():
+    category = try_get_default_category()
+    if not category:
+        raise TagCategoryNotFoundError('No tag category created yet.')
+    return category
