@@ -14,5 +14,8 @@ from szurubooru.db.post import (
     PostScore,
     PostNote,
     PostFeature)
+from szurubooru.db.comment import (
+    Comment,
+    CommentScore)
 from szurubooru.db.snapshot import Snapshot
 from szurubooru.db.session import session

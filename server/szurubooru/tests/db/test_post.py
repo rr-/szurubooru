@@ -59,7 +59,7 @@ def test_cascade_deletions(post_factory, user_factory, tag_factory):
     note.post = post
     note.polygon = ''
     note.text = ''
-    db.session.add_all([score])
+    db.session.add_all([score, favorite, feature, note])
     db.session.flush()
 
     post.user = user
@@ -74,7 +74,7 @@ def test_cascade_deletions(post_factory, user_factory, tag_factory):
     db.session.flush()
 
     assert not db.session.dirty
-    assert post.user.user_id is not None
+    assert post.user is not None and post.user.user_id is not None
     assert len(post.relations) == 2
     assert db.session.query(db.User).count() == 1
     assert db.session.query(db.Tag).count() == 2

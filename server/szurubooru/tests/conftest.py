@@ -138,3 +138,14 @@ def post_factory():
         post.creation_time = datetime.datetime(1996, 1, 1)
         return post
     return factory
+
+@pytest.fixture
+def comment_factory():
+    def factory(user=None, post=None, text='dummy'):
+        comment = db.Comment()
+        comment.user = user or user_factory()
+        comment.post = post or post_factory()
+        comment.text = text
+        comment.creation_time = datetime.datetime(1996, 1, 1)
+        return comment
+    return factory
