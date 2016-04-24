@@ -1,10 +1,20 @@
 import datetime
+from szurubooru import search
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, comments, posts
 
 class CommentListApi(BaseApi):
+    def __init__(self):
+        super().__init__()
+        self._search_executor = search.SearchExecutor(
+            search.CommentSearchConfig())
+
     def get(self, ctx):
-        raise NotImplementedError()
+        auth.verify_privilege(ctx.user, 'comments:list')
+        return self._search_executor.execute_and_serialize(
+            ctx,
+            lambda comment: comments.serialize_comment(comment, ctx.user),
+            'comments')
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'comments:create')

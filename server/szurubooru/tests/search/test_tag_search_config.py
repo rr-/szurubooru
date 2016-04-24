@@ -102,13 +102,13 @@ def test_sort_by_name(verify_unpaged, tag_factory, input, expected_tag_names):
     db.session.add(tag_factory(names=['t1']))
     verify_unpaged(input, expected_tag_names)
 
-@pytest.mark.parametrize('input,expected_user_names', [
+@pytest.mark.parametrize('input,expected_tag_names', [
     ('', ['t1', 't2', 't3']),
     ('sort:creation-date', ['t3', 't2', 't1']),
     ('sort:creation-time', ['t3', 't2', 't1']),
 ])
 def test_sort_by_creation_time(
-        verify_unpaged, tag_factory, input, expected_user_names):
+        verify_unpaged, tag_factory, input, expected_tag_names):
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     tag3 = tag_factory(names=['t3'])
@@ -116,7 +116,7 @@ def test_sort_by_creation_time(
     tag2.creation_time = datetime.datetime(1991, 1, 2)
     tag3.creation_time = datetime.datetime(1991, 1, 3)
     db.session.add_all([tag3, tag1, tag2])
-    verify_unpaged(input, expected_user_names)
+    verify_unpaged(input, expected_tag_names)
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('sort:suggestion-count', ['t1', 't2', 'sug1', 'sug2', 'sug3']),

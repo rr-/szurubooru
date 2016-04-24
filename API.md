@@ -39,7 +39,7 @@
         - [Getting featured post](#getting-featured-post)
         - [Featuring post](#featuring-post)
     - Comments
-        - ~~Listing comments~~
+        - [Listing comments](#listing-comments)
         - [Creating comment](#creating-comment)
         - [Updating comment](#updating-comment)
         - [Getting comment](#getting-comment)
@@ -671,6 +671,75 @@ data.
 - **Description**
 
     Features a post on the main page in web client.
+
+
+## Listing comments
+- **Request**
+
+    `GET /comments/?page=<page>&pageSize=<page-size>&query=<query>`
+
+- **Output**
+
+    ```json5
+    {
+        "query":    <query>, // same as in input
+        "page":     <page>,  // same as in input
+        "pageSize": <page-size>,
+        "total":    <total-count>,
+        "comments": [
+            <comment>,
+            <comment>,
+            <comment>
+        ]
+    }
+    ```
+    ...where `<comment>` is a [comment resource](#comment) and `query` contains
+    standard [search query](#search).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Searches for comments.
+
+    **Anonymous tokens**
+
+    Same as `text` token.
+
+    **Named tokens**
+
+    | `<value>`        | Description                                    |
+    | ---------------- | ---------------------------------------------- |
+    | `id`             | specific comment ID                            |
+    | `post`           | specific post ID                               |
+    | `user`           | created by given user (accepts wildcards)      |
+    | `text`           | containing given text (accepts wildcards)      |
+    | `creation-date`  | created at given date                          |
+    | `creation-time`  | alias of `creation-date`                       |
+    | `last-edit-date` | whose most recent edit date matches given date |
+    | `last-edit-time` | alias of `last-edit-date`                      |
+    | `edit-date`      | alias of `last-edit-date`                      |
+    | `edit-time`      | alias of `last-edit-date`                      |
+
+    **Sort style tokens**
+
+    | `<value>`        | Description               |
+    | ---------------- | ------------------------- |
+    | `random`         | as random as it can get   |
+    | `user`           | author name, A to Z       |
+    | `post`           | post ID, newest to oldest |
+    | `creation-date`  | newest to oldest          |
+    | `creation-time`  | alias of `creation-date`  |
+    | `last-edit-date` | recently edited first     |
+    | `last-edit-time` | alias of `last-edit-date` |
+    | `edit-date`      | alias of `last-edit-date` |
+    | `edit-time`      | alias of `last-edit-date` |
+
+    **Special tokens**
+
+    None.
 
 
 ## Creating comment

@@ -14,7 +14,7 @@ class SnapshotSearchConfig(BaseSearchConfig):
             'type': self._create_str_filter(db.Snapshot.resource_type),
             'id': self._create_str_filter(db.Snapshot.resource_repr),
             'date': self._create_date_filter(db.Snapshot.creation_time),
-            'time': self._create_str_filter(db.Snapshot.creation_time),
+            'time': self._create_date_filter(db.Snapshot.creation_time),
             'operation': self._create_str_filter(db.Snapshot.operation),
             'user': self._create_str_filter(db.User.name),
         }

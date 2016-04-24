@@ -18,8 +18,30 @@ def test_ctx(context_factory, config_injector, user_factory, comment_factory):
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.comment_factory = comment_factory
+    ret.list_api = api.CommentListApi()
     ret.detail_api = api.CommentDetailApi()
     return ret
+
+def test_retrieving_multiple(test_ctx):
+    comment1 = test_ctx.comment_factory(text='text 1')
+    comment2 = test_ctx.comment_factory(text='text 2')
+    db.session.add_all([comment1, comment2])
+    result = test_ctx.list_api.get(
+        test_ctx.context_factory(
+            input={'query': '', 'page': 1},
+            user=test_ctx.user_factory(rank='regular_user')))
+    assert result['query'] == ''
+    assert result['page'] == 1
+    assert result['pageSize'] == 100
+    assert result['total'] == 2
+    assert [c['text'] for c in result['comments']] == ['text 1', 'text 2']
+
+def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
+    with pytest.raises(errors.AuthError):
+        test_ctx.list_api.get(
+            test_ctx.context_factory(
+                input={'query': '', 'page': 1},
+                user=test_ctx.user_factory(rank='anonymous')))
 
 def test_retrieving_single(test_ctx):
     comment = test_ctx.comment_factory(text='dummy text')
