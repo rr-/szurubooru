@@ -47,21 +47,6 @@ def create_app():
             middleware.Authenticator(),
         ])
 
-    user_list_api = api.UserListApi()
-    user_detail_api = api.UserDetailApi()
-    tag_category_list_api = api.TagCategoryListApi()
-    tag_category_detail_api = api.TagCategoryDetailApi()
-    tag_list_api = api.TagListApi()
-    tag_detail_api = api.TagDetailApi()
-    tag_merge_api = api.TagMergeApi()
-    tag_siblings_api = api.TagSiblingsApi()
-    post_feature_api = api.PostFeatureApi()
-    password_reset_api = api.PasswordResetApi()
-    snapshot_list_api = api.SnapshotListApi()
-    comment_list_api = api.CommentListApi()
-    comment_detail_api = api.CommentDetailApi()
-    info_api = api.InfoApi()
-
     app.add_error_handler(errors.AuthError, _on_auth_error)
     app.add_error_handler(errors.IntegrityError, _on_integrity_error)
     app.add_error_handler(errors.ValidationError, _on_validation_error)
@@ -69,19 +54,25 @@ def create_app():
     app.add_error_handler(errors.NotFoundError, _on_not_found_error)
     app.add_error_handler(errors.ProcessingError, _on_processing_error)
 
-    app.add_route('/users/', user_list_api)
-    app.add_route('/user/{user_name}', user_detail_api)
-    app.add_route('/tag-categories/', tag_category_list_api)
-    app.add_route('/tag-category/{category_name}', tag_category_detail_api)
-    app.add_route('/tags/', tag_list_api)
-    app.add_route('/tag/{tag_name}', tag_detail_api)
-    app.add_route('/tag-merge/', tag_merge_api)
-    app.add_route('/tag-siblings/{tag_name}', tag_siblings_api)
-    app.add_route('/password-reset/{user_name}', password_reset_api)
-    app.add_route('/snapshots/', snapshot_list_api)
-    app.add_route('/info/', info_api)
-    app.add_route('/featured-post/', post_feature_api)
-    app.add_route('/comments/', comment_list_api)
-    app.add_route('/comment/{comment_id}', comment_detail_api)
+    app.add_route('/users/', api.UserListApi())
+    app.add_route('/user/{user_name}', api.UserDetailApi())
+    app.add_route('/password-reset/{user_name}', api.PasswordResetApi())
+
+    app.add_route('/tag-categories/', api.TagCategoryListApi())
+    app.add_route('/tag-category/{category_name}', api.TagCategoryDetailApi())
+    app.add_route('/tags/', api.TagListApi())
+    app.add_route('/tag/{tag_name}', api.TagDetailApi())
+    app.add_route('/tag-merge/', api.TagMergeApi())
+    app.add_route('/tag-siblings/{tag_name}', api.TagSiblingsApi())
+
+    app.add_route('/post/{post_id}/score', api.PostScoreApi())
+
+    app.add_route('/comments/', api.CommentListApi())
+    app.add_route('/comment/{comment_id}', api.CommentDetailApi())
+    app.add_route('/comment/{comment_id}/score', api.CommentScoreApi())
+
+    app.add_route('/info/', api.InfoApi())
+    app.add_route('/featured-post/', api.PostFeatureApi())
+    app.add_route('/snapshots/', api.SnapshotListApi())
 
     return app

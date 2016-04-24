@@ -1,7 +1,7 @@
 import datetime
 from szurubooru import search
 from szurubooru.api.base_api import BaseApi
-from szurubooru.func import auth, comments, posts
+from szurubooru.func import auth, comments, posts, scores
 
 class CommentListApi(BaseApi):
     def __init__(self):
@@ -49,3 +49,19 @@ class CommentDetailApi(BaseApi):
         ctx.session.delete(comment)
         ctx.session.commit()
         return {}
+
+class CommentScoreApi(BaseApi):
+    def put(self, ctx, comment_id):
+        auth.verify_privilege(ctx.user, 'comments:score')
+        score = ctx.get_param_as_int('score', required=True)
+        comment = comments.get_comment_by_id(comment_id)
+        scores.set_score(comment, ctx.user, score)
+        ctx.session.commit()
+        return {'comment': comments.serialize_comment(comment, ctx.user)}
+
+    def delete(self, ctx, comment_id):
+        auth.verify_privilege(ctx.user, 'comments:score')
+        comment = comments.get_comment_by_id(comment_id)
+        scores.delete_score(comment, ctx.user)
+        ctx.session.commit()
+        return {'comment': comments.serialize_comment(comment, ctx.user)}

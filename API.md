@@ -33,7 +33,7 @@
         - ~~Updating post~~
         - ~~Getting post~~
         - ~~Deleting post~~
-        - ~~Rating post~~
+        - [Rating post](#rating-post)
         - ~~Adding post to favorites~~
         - ~~Removing post from favorites~~
         - [Getting featured post](#getting-featured-post)
@@ -44,7 +44,7 @@
         - [Updating comment](#updating-comment)
         - [Getting comment](#getting-comment)
         - [Deleting comment](#deleting-comment)
-        - ~~Rating comment~~
+        - [Rating comment](#rating-comment)
     - Users
         - [Listing users](#listing-users)
         - [Creating user](#creating-user)
@@ -612,6 +612,40 @@ data.
     list is truncated to the first 50 elements. Doesn't use paging.
 
 
+## Rating post
+- **Request**
+
+    `PUT /post/<id>/score`
+
+- **Input**
+
+    ```json5
+    {
+        "score": <score>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "post": <post>
+    }
+    ```
+    ...where `<post>` is a [post resource](#post).
+
+- **Errors**
+
+    - post does not exist
+    - score is invalid
+    - privileges are too low
+
+- **Description**
+
+    Updates score of authenticated user for given post. Valid scores are -1, 0
+    and 1.
+
+
 ## Getting featured post
 - **Request**
 
@@ -852,6 +886,40 @@ data.
 - **Description**
 
     Deletes existing comment.
+
+
+## Rating comment
+- **Request**
+
+    `PUT /comment/<id>/score`
+
+- **Input**
+
+    ```json5
+    {
+        "score": <score>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "comment": <comment>
+    }
+    ```
+    ...where `<comment>` is a [comment resource](#comment).
+
+- **Errors**
+
+    - comment does not exist
+    - score is invalid
+    - privileges are too low
+
+- **Description**
+
+    Updates score of authenticated user for given comment. Valid scores are -1,
+    0 and 1.
 
 
 ## Listing users
@@ -1317,6 +1385,7 @@ One file together with its metadata posted to the site.
     "lastEditTime":    <last-edit-time>,
     "user":            <user>,
     "score":           <score>,
+    "ownScore":        <own-score>,
     "favoritedBy":     <favorited-by>,
     "featureCount":    <feature-count>,
     "lastFeatureTime": <last-feature-time>,
@@ -1357,7 +1426,9 @@ One file together with its metadata posted to the site.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
 - `<user>`: who created the post, serialized as [user resource](#user).
-- `<score>`: the score (+1/-1 rating) of the given post.
+- `<score>`: the collective score (+1/-1 rating) of the given post.
+- `<own-score>`: the score (+1/-1 rating) of the given post by the
+  authenticated user.
 - `<favorited-by>`: list of users, serialized as [user resources](#user).
 - `<feature-count>`: how many times has the post been featured.
 - `<last-feature-time>`: the last time the post was featured, formatted as per
@@ -1377,7 +1448,9 @@ A comment under a post.
     "user":         <author>
     "text":         <text>,
     "creationTime": <creation-time>,
-    "lastEditTime": <last-edit-time>
+    "lastEditTime": <last-edit-time>,
+    "score":        <score>,
+    "ownScore":     <own-score>
 }
 ```
 
@@ -1387,6 +1460,9 @@ A comment under a post.
 - `<author>`: a user resource the post is created by.
 - `<creation-time>`: time the comment was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the comment was edited, formatted as per RFC 3339.
+- `<score>`: the collective score (+1/-1 rating) of the given comment.
+- `<own-score>`: the score (+1/-1 rating) of the given comment by the
+  authenticated user.
 
 
 ## Snapshot

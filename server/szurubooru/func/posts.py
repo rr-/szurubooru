@@ -1,7 +1,7 @@
 import datetime
 import sqlalchemy
 from szurubooru import db, errors
-from szurubooru.func import users, snapshots
+from szurubooru.func import users, snapshots, scores
 
 class PostNotFoundError(errors.NotFoundError): pass
 class PostAlreadyFeaturedError(errors.ValidationError): pass
@@ -36,7 +36,8 @@ def serialize_post(post, authenticated_user):
             for rel in post.favorited_by],
     }
 
-    # TODO: fetch own score if needed
+    if authenticated_user:
+        ret['ownScore'] = scores.get_score(post, authenticated_user)
 
     return ret
 

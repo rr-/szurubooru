@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, DateTime, Text, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, object_session
+from sqlalchemy.sql.expression import func
 from szurubooru.db.base import Base
 
 class CommentScore(Base):
@@ -27,3 +28,10 @@ class Comment(Base):
     post = relationship('Post')
     scores = relationship(
         'CommentScore', cascade='all, delete-orphan', lazy='joined')
+
+    @property
+    def score(self):
+        return object_session(self) \
+            .query(func.sum(CommentScore.score)) \
+            .filter(CommentScore.comment_id == self.comment_id) \
+            .one()[0] or 0

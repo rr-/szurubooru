@@ -1,12 +1,12 @@
 import datetime
 from szurubooru import db, errors
-from szurubooru.func import users, posts
+from szurubooru.func import users, posts, scores
 
 class CommentNotFoundError(errors.NotFoundError): pass
 class EmptyCommentTextError(errors.ValidationError): pass
 
 def serialize_comment(comment, authenticated_user):
-    return {
+    ret = {
         'id': comment.comment_id,
         'user': users.serialize_user(comment.user, authenticated_user),
         'post': posts.serialize_post(comment.post, authenticated_user),
@@ -14,6 +14,9 @@ def serialize_comment(comment, authenticated_user):
         'creationTime': comment.creation_time,
         'lastEditTime': comment.last_edit_time,
     }
+    if authenticated_user:
+        ret['ownScore'] = scores.get_score(comment, authenticated_user)
+    return ret
 
 def try_get_comment_by_id(comment_id):
     return db.session \

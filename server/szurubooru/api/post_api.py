@@ -1,5 +1,5 @@
 from szurubooru.api.base_api import BaseApi
-from szurubooru.func import auth, posts, snapshots
+from szurubooru.func import auth, posts, snapshots, scores
 
 class PostFeatureApi(BaseApi):
     def post(self, ctx):
@@ -20,3 +20,19 @@ class PostFeatureApi(BaseApi):
     def get(self, ctx):
         post = posts.try_get_featured_post()
         return posts.serialize_post_with_details(post, ctx.user)
+
+class PostScoreApi(BaseApi):
+    def put(self, ctx, post_id):
+        auth.verify_privilege(ctx.user, 'posts:score')
+        post = posts.get_post_by_id(post_id)
+        score = ctx.get_param_as_int('score', required=True)
+        scores.set_score(post, ctx.user, score)
+        ctx.session.commit()
+        return {'post': posts.serialize_post(post, ctx.user)}
+
+    def delete(self, ctx, post_id):
+        auth.verify_privilege(ctx.user, 'posts:score')
+        post = posts.get_post_by_id(post_id)
+        scores.delete_score(post, ctx.user)
+        ctx.session.commit()
+        return {'post': posts.serialize_post(post, ctx.user)}

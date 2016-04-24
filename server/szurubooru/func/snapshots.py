@@ -1,6 +1,6 @@
 import datetime
-from sqlalchemy.inspection import inspect
 from szurubooru import db
+from szurubooru.func import util
 
 def get_tag_snapshot(tag):
     return {
@@ -33,32 +33,10 @@ def get_tag_category_snapshot(category):
 
 # pylint: disable=invalid-name
 serializers = {
-    'tag': (
-        get_tag_snapshot,
-        lambda tag: tag.first_name),
-    'tag_category': (
-        get_tag_category_snapshot,
-        lambda category: category.name),
-    'post': (
-        get_post_snapshot,
-        lambda post: post.post_id),
+    'tag': get_tag_snapshot,
+    'tag_category': get_tag_category_snapshot,
+    'post': get_post_snapshot,
 }
-
-def get_resource_info(entity):
-    resource_type = entity.__table__.name
-    assert resource_type in serializers
-
-    primary_key = inspect(entity).identity
-    assert primary_key is not None
-    assert len(primary_key) == 1
-
-    resource_repr = serializers[resource_type][1](entity)
-    assert resource_repr
-
-    resource_id = primary_key[0]
-    assert resource_id
-
-    return (resource_type, resource_id, resource_repr)
 
 def get_previous_snapshot(snapshot):
     return db.session \
@@ -71,7 +49,7 @@ def get_previous_snapshot(snapshot):
         .first()
 
 def get_snapshots(entity):
-    resource_type, resource_id, _ = get_resource_info(entity)
+    resource_type, resource_id, _ = util.get_resource_info(entity)
     return db.session \
         .query(db.Snapshot) \
         .filter(db.Snapshot.resource_type == resource_type) \
@@ -103,7 +81,7 @@ def get_serialized_history(entity):
     return ret
 
 def save(operation, entity, auth_user):
-    resource_type, resource_id, resource_repr = get_resource_info(entity)
+    resource_type, resource_id, resource_repr = util.get_resource_info(entity)
     now = datetime.datetime.now()
 
     snapshot = db.Snapshot()
@@ -112,7 +90,7 @@ def save(operation, entity, auth_user):
     snapshot.resource_type = resource_type
     snapshot.resource_id = resource_id
     snapshot.resource_repr = resource_repr
-    snapshot.data = serializers[resource_type][0](entity)
+    snapshot.data = serializers[resource_type](entity)
     snapshot.user = auth_user
 
     earlier_snapshots = get_snapshots(entity)

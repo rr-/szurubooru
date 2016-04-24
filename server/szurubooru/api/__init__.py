@@ -12,8 +12,11 @@ from szurubooru.api.tag_category_api import (
     TagCategoryDetailApi)
 from szurubooru.api.comment_api import (
     CommentListApi,
-    CommentDetailApi)
-from szurubooru.api.post_api import PostFeatureApi
+    CommentDetailApi,
+    CommentScoreApi)
+from szurubooru.api.post_api import (
+    PostFeatureApi,
+    PostScoreApi)
 from szurubooru.api.snapshot_api import SnapshotListApi
 from szurubooru.api.info_api import InfoApi
 from szurubooru.api.context import Context, Request

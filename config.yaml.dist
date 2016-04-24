@@ -93,6 +93,7 @@ privileges:
     'posts:edit:thumbnail':         power_user
     'posts:feature':                mod
     'posts:delete':                 mod
+    'posts:score':                  regular_user
 
     'tags:create':                  regular_user
     'tags:edit:names':              power_user
@@ -119,5 +120,6 @@ privileges:
     'comments:edit:own':            regular_user
     'comments:list':                regular_user
     'comments:view':                regular_user
+    'comments:score':               regular_user
 
     'snapshots:list':               power_user
