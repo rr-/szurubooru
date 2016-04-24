@@ -15,6 +15,12 @@ def serialize_comment(comment, authenticated_user):
         'lastEditTime': comment.last_edit_time,
     }
 
+def get_comment_by_id(comment_id):
+    return db.session \
+        .query(db.Comment) \
+        .filter(db.Comment.comment_id == comment_id) \
+        .one_or_none()
+
 def create_comment(user, post, text):
     comment = db.Comment()
     comment.user = user

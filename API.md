@@ -41,7 +41,7 @@
     - Comments
         - ~~Listing comments~~
         - [Creating comment](#creating-comment)
-        - ~~Updating comment~~
+        - [Updating comment](#updating-comment)
         - ~~Getting comment~~
         - ~~Deleting comment~~
         - ~~Rating comment~~
@@ -698,13 +698,46 @@ data.
 
 - **Errors**
 
-    - post does not exist
+    - the post does not exist
     - comment text is empty
     - privileges are too low
 
 - **Description**
 
     Creates a new comment under given post.
+
+
+## Updating comment
+- **Request**
+
+    `PUT /comment/<id>`
+
+- **Input**
+
+    ```json5
+    {
+        "text": <new-text>      // mandatory
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "comment": <comment>
+    }
+    ```
+    ...where `<comment>` is a [comment resource](#comment).
+
+- **Errors**
+
+    - the comment does not exist
+    - new comment text is empty
+    - privileges are too low
+
+- **Description**
+
+    Updates an existing comment text.
 
 
 ## Listing users
@@ -1225,7 +1258,7 @@ A comment under a post.
 
 ```json5
 {
-    "id":           <comment-id>,
+    "id":           <id>,
     "post":         <post>,
     "user":         <author>
     "text":         <text>,
