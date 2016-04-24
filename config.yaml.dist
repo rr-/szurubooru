@@ -118,5 +118,6 @@ privileges:
     'comments:edit:any':            mod
     'comments:edit:own':            regular_user
     'comments:list':                regular_user
+    'comments:view':                regular_user
 
     'snapshots:list':               power_user

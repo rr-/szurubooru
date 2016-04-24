@@ -29,7 +29,11 @@ class Context(object):
         if name in self.input:
             param = self.input[name]
             if isinstance(param, list):
-                param = ','.join(param)
+                try:
+                    param = ','.join(param)
+                except:
+                    raise errors.ValidationError(
+                        'Parameter %r is invalid - expected simple string.' % name)
             return param
         if not required:
             return default

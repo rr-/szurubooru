@@ -33,11 +33,18 @@
         - ~~Updating post~~
         - ~~Getting post~~
         - ~~Deleting post~~
-        - ~~Scoring posts~~
-        - ~~Adding posts to favorites~~
-        - ~~Removing posts from favorites~~
+        - ~~Rating post~~
+        - ~~Adding post to favorites~~
+        - ~~Removing post from favorites~~
         - [Getting featured post](#getting-featured-post)
         - [Featuring post](#featuring-post)
+    - Comments
+        - ~~Listing comments~~
+        - [Creating comment](#creating-comment)
+        - ~~Updating comment~~
+        - ~~Getting comment~~
+        - ~~Deleting comment~~
+        - ~~Rating comment~~
     - Users
         - [Listing users](#listing-users)
         - [Creating user](#creating-user)
@@ -58,6 +65,7 @@
    - [Tag category](#tag-category)
    - [Tag](#tag)
    - [Post](#post)
+   - [Comment](#comment)
    - [Snapshot](#snapshot)
 
 4. [Search](#search)
@@ -665,6 +673,40 @@ data.
     Features a post on the main page in web client.
 
 
+## Creating comment
+- **Request**
+
+    `POST /comments/`
+
+- **Input**
+
+    ```json5
+    {
+        "text":     <text>,
+        "postId":   <post-id>
+    }
+    ```
+
+- **Output**
+
+    ```json5
+    {
+        "comment": <comment>
+    }
+    ```
+    ...where `<comment>` is a [comment resource](#comment).
+
+- **Errors**
+
+    - post does not exist
+    - comment text is empty
+    - privileges are too low
+
+- **Description**
+
+    Creates a new comment under given post.
+
+
 ## Listing users
 - **Request**
 
@@ -1173,6 +1215,32 @@ One file together with its metadata posted to the site.
 - `<feature-count>`: how many times has the post been featured.
 - `<last-feature-time>`: the last time the post was featured, formatted as per
   RFC 3339.
+
+## Comment
+**Description**
+
+A comment under a post.
+
+**Structure**
+
+```json5
+{
+    "id":           <comment-id>,
+    "post":         <post>,
+    "user":         <author>
+    "text":         <text>,
+    "creationTime": <creation-time>,
+    "lastEditTime": <last-edit-time>
+}
+```
+
+**Field meaning**
+- `<id>`: the comment identifier.
+- `<post>`: a post resource the post is linked with.
+- `<author>`: a user resource the post is created by.
+- `<creation-time>`: time the comment was created, formatted as per RFC 3339.
+- `<last-edit-time>`: time the comment was edited, formatted as per RFC 3339.
+
 
 ## Snapshot
 **Description**

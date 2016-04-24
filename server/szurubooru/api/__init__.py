@@ -10,6 +10,9 @@ from szurubooru.api.tag_api import (
 from szurubooru.api.tag_category_api import (
     TagCategoryListApi,
     TagCategoryDetailApi)
+from szurubooru.api.comment_api import (
+    CommentListApi,
+    CommentDetailApi)
 from szurubooru.api.post_api import PostFeatureApi
 from szurubooru.api.snapshot_api import SnapshotListApi
 from szurubooru.api.info_api import InfoApi

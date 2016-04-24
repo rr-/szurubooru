@@ -58,6 +58,8 @@ def create_app():
     post_feature_api = api.PostFeatureApi()
     password_reset_api = api.PasswordResetApi()
     snapshot_list_api = api.SnapshotListApi()
+    comment_list_api = api.CommentListApi()
+    comment_detail_api = api.CommentDetailApi()
     info_api = api.InfoApi()
 
     app.add_error_handler(errors.AuthError, _on_auth_error)
@@ -79,5 +81,7 @@ def create_app():
     app.add_route('/snapshots/', snapshot_list_api)
     app.add_route('/info/', info_api)
     app.add_route('/featured-post/', post_feature_api)
+    app.add_route('/comments/', comment_list_api)
+    app.add_route('/comment/{comment_id}', comment_detail_api)
 
     return app

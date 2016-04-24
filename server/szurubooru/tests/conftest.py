@@ -101,7 +101,7 @@ def user_factory():
     return factory
 
 @pytest.fixture
-def tag_category_factory(session):
+def tag_category_factory():
     def factory(name='dummy', color='dummy'):
         category = db.TagCategory()
         category.name = name
@@ -110,11 +110,11 @@ def tag_category_factory(session):
     return factory
 
 @pytest.fixture
-def tag_factory(session):
+def tag_factory():
     def factory(names=None, category=None, category_name='dummy'):
         if not category:
             category = db.TagCategory(category_name)
-            session.add(category)
+            db.session.add(category)
         tag = db.Tag()
         tag.names = [db.TagName(name) for name in (names or [get_unique_name()])]
         tag.category = category
@@ -140,11 +140,17 @@ def post_factory():
     return factory
 
 @pytest.fixture
-def comment_factory():
+def comment_factory(user_factory, post_factory):
     def factory(user=None, post=None, text='dummy'):
+        if not user:
+            user = user_factory()
+            db.session.add(user)
+        if not post:
+            post = post_factory()
+            db.session.add(post)
         comment = db.Comment()
-        comment.user = user or user_factory()
-        comment.post = post or post_factory()
+        comment.user = user
+        comment.post = post
         comment.text = text
         comment.creation_time = datetime.datetime(1996, 1, 1)
         return comment
