@@ -107,7 +107,7 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
                 user=test_ctx.user_factory(rank='regular_user')))
 
 @pytest.mark.parametrize('field', ['implications', 'suggestions'])
-def test_omitting_optional_field(test_ctx, tmpdir, field):
+def test_omitting_optional_field(test_ctx, field):
     input = {
         'names': ['tag1', 'tag2'],
         'category': 'meta',

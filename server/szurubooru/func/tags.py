@@ -4,7 +4,7 @@ import os
 import re
 import sqlalchemy
 from szurubooru import config, db, errors
-from szurubooru.func import util, tag_categories
+from szurubooru.func import util, tag_categories, snapshots
 
 class TagNotFoundError(errors.NotFoundError): pass
 class TagAlreadyExistsError(errors.ValidationError): pass
@@ -12,6 +12,36 @@ class TagIsInUseError(errors.ValidationError): pass
 class InvalidTagNameError(errors.ValidationError): pass
 class InvalidTagCategoryError(errors.ValidationError): pass
 class InvalidTagRelationError(errors.ValidationError): pass
+
+def serialize_tag(tag):
+    return {
+        'names': [tag_name.name for tag_name in tag.names],
+        'category': tag.category.name,
+        'suggestions': [
+            relation.names[0].name for relation in tag.suggestions],
+        'implications': [
+            relation.names[0].name for relation in tag.implications],
+        'creationTime': tag.creation_time,
+        'lastEditTime': tag.last_edit_time,
+    }
+
+def serialize_tag_with_details(tag):
+    return {
+        'tag': serialize_tag(tag),
+        'snapshots': snapshots.get_serialized_history(tag),
+    }
+
+def serialize_category(category):
+    return {
+        'name': category.name,
+        'color': category.color,
+    }
+
+def serialize_category_with_details(category):
+    return {
+        'tagCategory': serialize_category(category),
+        'snapshots': snapshots.get_serialized_history(category),
+    }
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']

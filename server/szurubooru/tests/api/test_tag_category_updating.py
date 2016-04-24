@@ -68,7 +68,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input):
             'meta')
 
 @pytest.mark.parametrize('field', ['name', 'color'])
-def test_omitting_optional_field(test_ctx, tmpdir, field):
+def test_omitting_optional_field(test_ctx, field):
     db.session.add(test_ctx.tag_category_factory(name='name', color='black'))
     db.session.commit()
     input = {

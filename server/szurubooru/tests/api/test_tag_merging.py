@@ -106,7 +106,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
 
 @pytest.mark.parametrize(
     'field', ['remove', 'merge-to'])
-def test_trying_to_omit_mandatory_field(test_ctx, tmpdir, field):
+def test_trying_to_omit_mandatory_field(test_ctx, field):
     db.session.add_all([
         test_ctx.tag_factory(names=['source'], category_name='meta'),
         test_ctx.tag_factory(names=['target'], category_name='meta'),

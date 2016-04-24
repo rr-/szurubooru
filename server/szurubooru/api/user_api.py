@@ -1,35 +1,6 @@
-import hashlib
-from szurubooru import config, search
+from szurubooru import search
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, users
-
-def serialize_user(user, authenticated_user):
-    if not user:
-        return {}
-
-    ret = {
-        'name': user.name,
-        'rank': user.rank,
-        'rankName': config.config['rank_names'].get(user.rank, 'Unknown'),
-        'creationTime': user.creation_time,
-        'lastLoginTime': user.last_login_time,
-        'avatarStyle': user.avatar_style
-    }
-
-    if user.avatar_style == user.AVATAR_GRAVATAR:
-        md5 = hashlib.md5()
-        md5.update((user.email or user.name).lower().encode('utf-8'))
-        digest = md5.hexdigest()
-        ret['avatarUrl'] = 'http://gravatar.com/avatar/%s?d=retro&s=%d' % (
-            digest, config.config['thumbnails']['avatar_width'])
-    else:
-        ret['avatarUrl'] = '%s/avatars/%s.jpg' % (
-            config.config['data_url'].rstrip('/'), user.name.lower())
-
-    if authenticated_user.user_id == user.user_id:
-        ret['email'] = user.email
-
-    return ret
 
 class UserListApi(BaseApi):
     def __init__(self):
@@ -39,7 +10,7 @@ class UserListApi(BaseApi):
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'users:list')
         return self._search_executor.execute_and_serialize(
-            ctx, lambda user: serialize_user(user, ctx.user), 'users')
+            ctx, lambda user: users.serialize_user(user, ctx.user), 'users')
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'users:create')
@@ -61,7 +32,7 @@ class UserListApi(BaseApi):
 
         ctx.session.add(user)
         ctx.session.commit()
-        return {'user': serialize_user(user, ctx.user)}
+        return {'user': users.serialize_user(user, ctx.user)}
 
 class UserDetailApi(BaseApi):
     def get(self, ctx, user_name):
@@ -69,7 +40,7 @@ class UserDetailApi(BaseApi):
         user = users.get_user_by_name(user_name)
         if not user:
             raise users.UserNotFoundError('User %r not found.' % user_name)
-        return {'user': serialize_user(user, ctx.user)}
+        return {'user': users.serialize_user(user, ctx.user)}
 
     def put(self, ctx, user_name):
         user = users.get_user_by_name(user_name)
@@ -105,7 +76,7 @@ class UserDetailApi(BaseApi):
                 ctx.get_file('avatar'))
 
         ctx.session.commit()
-        return {'user': serialize_user(user, ctx.user)}
+        return {'user': users.serialize_user(user, ctx.user)}
 
     def delete(self, ctx, user_name):
         user = users.get_user_by_name(user_name)

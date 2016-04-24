@@ -1,4 +1,5 @@
 import datetime
+import hashlib
 import re
 from sqlalchemy import func
 from szurubooru import config, db, errors
@@ -11,6 +12,34 @@ class InvalidEmailError(errors.ValidationError): pass
 class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
+
+def serialize_user(user, authenticated_user):
+    if not user:
+        return {}
+
+    ret = {
+        'name': user.name,
+        'rank': user.rank,
+        'rankName': config.config['rank_names'].get(user.rank, 'Unknown'),
+        'creationTime': user.creation_time,
+        'lastLoginTime': user.last_login_time,
+        'avatarStyle': user.avatar_style
+    }
+
+    if user.avatar_style == user.AVATAR_GRAVATAR:
+        md5 = hashlib.md5()
+        md5.update((user.email or user.name).lower().encode('utf-8'))
+        digest = md5.hexdigest()
+        ret['avatarUrl'] = 'http://gravatar.com/avatar/%s?d=retro&s=%d' % (
+            digest, config.config['thumbnails']['avatar_width'])
+    else:
+        ret['avatarUrl'] = '%s/avatars/%s.jpg' % (
+            config.config['data_url'].rstrip('/'), user.name.lower())
+
+    if authenticated_user.user_id == user.user_id:
+        ret['email'] = user.email
+
+    return ret
 
 def get_user_count():
     return db.session.query(db.User).count()

@@ -96,7 +96,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
 
 @pytest.mark.parametrize(
     'field', ['names', 'category', 'implications', 'suggestions'])
-def test_omitting_optional_field(test_ctx, tmpdir, field):
+def test_omitting_optional_field(test_ctx, field):
     db.session.add(test_ctx.tag_factory(names=['tag'], category_name='meta'))
     db.session.commit()
     input = {

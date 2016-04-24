@@ -3,24 +3,6 @@ from szurubooru import search
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, tags, snapshots
 
-def serialize_tag(tag):
-    return {
-        'names': [tag_name.name for tag_name in tag.names],
-        'category': tag.category.name,
-        'suggestions': [
-            relation.names[0].name for relation in tag.suggestions],
-        'implications': [
-            relation.names[0].name for relation in tag.implications],
-        'creationTime': tag.creation_time,
-        'lastEditTime': tag.last_edit_time,
-    }
-
-def serialize_tag_with_details(tag):
-    return {
-        'tag': serialize_tag(tag),
-        'snapshots': snapshots.get_serialized_history(tag),
-    }
-
 class TagListApi(BaseApi):
     def __init__(self):
         super().__init__()
@@ -29,7 +11,7 @@ class TagListApi(BaseApi):
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:list')
         return self._search_executor.execute_and_serialize(
-            ctx, serialize_tag, 'tags')
+            ctx, tags.serialize_tag, 'tags')
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:create')
@@ -47,7 +29,7 @@ class TagListApi(BaseApi):
         snapshots.create(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return serialize_tag_with_details(tag)
+        return tags.serialize_tag_with_details(tag)
 
 class TagDetailApi(BaseApi):
     def get(self, ctx, tag_name):
@@ -55,7 +37,7 @@ class TagDetailApi(BaseApi):
         tag = tags.get_tag_by_name(tag_name)
         if not tag:
             raise tags.TagNotFoundError('Tag %r not found.' % tag_name)
-        return serialize_tag_with_details(tag)
+        return tags.serialize_tag_with_details(tag)
 
     def put(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
@@ -83,7 +65,7 @@ class TagDetailApi(BaseApi):
         snapshots.modify(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return serialize_tag_with_details(tag)
+        return tags.serialize_tag_with_details(tag)
 
     def delete(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
@@ -121,7 +103,7 @@ class TagMergeApi(BaseApi):
         tags.merge_tags(source_tag, target_tag)
         ctx.session.commit()
         tags.export_to_json()
-        return serialize_tag_with_details(target_tag)
+        return tags.serialize_tag_with_details(target_tag)
 
 class TagSiblingsApi(BaseApi):
     def get(self, ctx, tag_name):
@@ -133,7 +115,7 @@ class TagSiblingsApi(BaseApi):
         serialized_siblings = []
         for sibling, occurrences in result:
             serialized_siblings.append({
-                'tag': serialize_tag(sibling),
+                'tag': tags.serialize_tag(sibling),
                 'occurrences': occurrences
             })
         return {'siblings': serialized_siblings}

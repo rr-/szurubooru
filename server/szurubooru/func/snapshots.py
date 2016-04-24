@@ -79,7 +79,9 @@ def get_snapshots(entity):
         .order_by(db.Snapshot.creation_time.desc()) \
         .all()
 
-def serialize_snapshot(snapshot, earlier_snapshot):
+def serialize_snapshot(snapshot, earlier_snapshot=()):
+    if earlier_snapshot is ():
+        earlier_snapshot = get_previous_snapshot(snapshot)
     return {
         'operation': snapshot.operation,
         'type': snapshot.resource_type,
