@@ -46,7 +46,6 @@ def test_retrieving_single(test_ctx):
     db.session.add(test_ctx.user_factory(name='u1', rank='regular_user'))
     result = test_ctx.detail_api.get(
         test_ctx.context_factory(
-            input={'query': '', 'page': 1},
             user=test_ctx.user_factory(rank='regular_user')),
         'u1')
     assert result == {
@@ -66,7 +65,6 @@ def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(users.UserNotFoundError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
-                input={'query': '', 'page': 1},
                 user=test_ctx.user_factory(rank='regular_user')),
             '-')
 
@@ -74,6 +72,5 @@ def test_trying_to_retrieve_single_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
-                input={'query': '', 'page': 1},
                 user=test_ctx.user_factory(rank='anonymous')),
             '-')

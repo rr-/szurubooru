@@ -42,7 +42,7 @@
         - ~~Listing comments~~
         - [Creating comment](#creating-comment)
         - [Updating comment](#updating-comment)
-        - ~~Getting comment~~
+        - [Getting comment](#getting-comment)
         - [Deleting comment](#deleting-comment)
         - ~~Rating comment~~
     - Users
@@ -738,6 +738,30 @@ data.
 - **Description**
 
     Updates an existing comment text.
+
+
+## Getting comment
+- **Request**
+
+    `GET /comment/<id>`
+
+- **Output**
+
+    ```json5
+    {
+        "comment": <comment>
+    }
+    ```
+    ...where `<comment>` is a [comment resource](#comment).
+
+- **Errors**
+
+    - the comment does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves information about an existing comment.
 
 
 ## Deleting comment

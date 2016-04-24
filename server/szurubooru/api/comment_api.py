@@ -21,7 +21,12 @@ class CommentListApi(BaseApi):
 
 class CommentDetailApi(BaseApi):
     def get(self, ctx, comment_id):
-        raise NotImplementedError()
+        auth.verify_privilege(ctx.user, 'comments:view')
+        comment = comments.get_comment_by_id(comment_id)
+        if not comment:
+            raise comments.CommentNotFoundError(
+                'Comment %r not found.' % comment_id)
+        return {'comment': comments.serialize_comment(comment, ctx.user)}
 
     def put(self, ctx, comment_id):
         comment = comments.get_comment_by_id(comment_id)
