@@ -43,4 +43,17 @@ class CommentDetailApi(BaseApi):
         return {'comment': comments.serialize_comment(comment, ctx.user)}
 
     def delete(self, ctx, comment_id):
-        raise NotImplementedError()
+        comment = comments.get_comment_by_id(comment_id)
+        if not comment:
+            raise comments.CommentNotFoundError(
+                'Comment %r not found.' % comment_id)
+
+        if ctx.user.user_id == comment.user_id:
+            infix = 'self'
+        else:
+            infix = 'any'
+
+        auth.verify_privilege(ctx.user, 'comments:delete:%s' % infix)
+        ctx.session.delete(comment)
+        ctx.session.commit()
+        return {}

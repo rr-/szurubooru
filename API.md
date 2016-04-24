@@ -43,7 +43,7 @@
         - [Creating comment](#creating-comment)
         - [Updating comment](#updating-comment)
         - ~~Getting comment~~
-        - ~~Deleting comment~~
+        - [Deleting comment](#deleting-comment)
         - ~~Rating comment~~
     - Users
         - [Listing users](#listing-users)
@@ -738,6 +738,27 @@ data.
 - **Description**
 
     Updates an existing comment text.
+
+
+## Deleting comment
+- **Request**
+
+    `DELETE /comment/<id>`
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the comment does not exist
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing comment.
 
 
 ## Listing users
