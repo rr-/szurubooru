@@ -1,6 +1,12 @@
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, posts, snapshots, scores
 
+class PostDetailApi(BaseApi):
+    def get(self, ctx, post_id):
+        auth.verify_privilege(ctx.user, 'posts:view')
+        post = posts.get_post_by_id(post_id)
+        return posts.serialize_post_with_details(post, ctx.user)
+
 class PostFeatureApi(BaseApi):
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'posts:feature')

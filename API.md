@@ -31,7 +31,7 @@
         - ~~Listing posts~~
         - ~~Creating post~~
         - ~~Updating post~~
-        - ~~Getting post~~
+        - [Getting post](#getting-post)
         - ~~Deleting post~~
         - [Rating post](#rating-post)
         - ~~Adding post to favorites~~
@@ -178,7 +178,7 @@ data.
         ]
     }
     ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category), and
+    ...where `<tag-category>` is a [tag category resource](#tag-category) and
     `snapshots` contain its earlier versions.
 
 - **Errors**
@@ -220,7 +220,7 @@ data.
         ]
     }
     ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category), and
+    ...where `<tag-category>` is a [tag category resource](#tag-category) and
     `snapshots` contain its earlier versions.
 
 - **Errors**
@@ -255,7 +255,7 @@ data.
         ]
     }
     ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category), and
+    ...where `<tag-category>` is a [tag category resource](#tag-category) and
     `snapshots` contain its earlier versions.
 
 - **Errors**
@@ -403,7 +403,7 @@ data.
         ]
     }
     ```
-    ...where `<tag>` is a [tag resource](#tag), and `snapshots` contain its
+    ...where `<tag>` is a [tag resource](#tag) and `snapshots` contain its
     earlier versions.
 
 - **Errors**
@@ -457,7 +457,7 @@ data.
         ]
     }
     ```
-    ...where `<tag>` is a [tag resource](#tag), and `snapshots` contain its
+    ...where `<tag>` is a [tag resource](#tag) and `snapshots` contain its
     earlier versions.
 
 - **Errors**
@@ -499,7 +499,7 @@ data.
         ]
     }
     ```
-    ...where `<tag>` is a [tag resource](#tag), and `snapshots` contain its
+    ...where `<tag>` is a [tag resource](#tag) and `snapshots` contain its
     earlier versions.
 
 - **Errors**
@@ -560,7 +560,7 @@ data.
         ]
     }
     ```
-    ...where `<tag>` is the target [tag resource](#tag), and `snapshots`
+    ...where `<tag>` is the target [tag resource](#tag) and `snapshots`
     contain its earlier versions.
 
 - **Errors**
@@ -610,6 +610,41 @@ data.
     the given tag. `occurrences` field signifies how many times a given sibling
     appears with given tag. Results are sorted by occurrences count and the
     list is truncated to the first 50 elements. Doesn't use paging.
+
+
+## Getting post
+- **Request**
+
+    `GET /post/<id>`
+
+- **Output**
+
+    ```json5
+    {
+        "post": <post>,
+        "snapshots": {
+            <snapshot>,
+            <snapshot>,
+            <snapshot>
+        },
+        "comments": {
+            <comment>,
+            <comment>,
+            <comment>
+        }
+    }
+    ```
+    ...where `<post>` is a [post resource](#post), `<comment>` is a [comment
+    resource](#comment) and `snapshots` contain post's earlier versions.
+
+- **Errors**
+
+    - the post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Retrieves information about an existing post.
 
 
 ## Rating post
@@ -663,7 +698,7 @@ data.
         ]
     }
     ```
-    ...where `<post>` is a [post resource](#post), and `snapshots` contain its
+    ...where `<post>` is a [post resource](#post) and `snapshots` contain its
     earlier versions.
 
 - **Errors**
@@ -694,7 +729,7 @@ data.
         ]
     }
     ```
-    ...where `<post>` is a [post resource](#post), and `snapshots` contain its
+    ...where `<post>` is a [post resource](#post) and `snapshots` contain its
     earlier versions.
 
 - **Errors**

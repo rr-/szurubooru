@@ -65,6 +65,7 @@ def create_app():
     app.add_route('/tag-merge/', api.TagMergeApi())
     app.add_route('/tag-siblings/{tag_name}', api.TagSiblingsApi())
 
+    app.add_route('/post/{post_id}', api.PostDetailApi())
     app.add_route('/post/{post_id}/score', api.PostScoreApi())
 
     app.add_route('/comments/', api.CommentListApi())

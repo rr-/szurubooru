@@ -107,6 +107,7 @@ class Post(Base):
     notes = relationship(
         'PostNote', cascade='all, delete-orphan', lazy='joined')
 
+    comments = relationship('Comment')
     tag_count = column_property(
         select([func.count(PostTag.tag_id)]) \
         .where(PostTag.post_id == post_id) \

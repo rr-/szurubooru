@@ -1,7 +1,7 @@
 import datetime
 import sqlalchemy
 from szurubooru import db, errors
-from szurubooru.func import users, snapshots, scores
+from szurubooru.func import users, snapshots, scores, comments
 
 class PostNotFoundError(errors.NotFoundError): pass
 class PostAlreadyFeaturedError(errors.ValidationError): pass
@@ -42,9 +42,15 @@ def serialize_post(post, authenticated_user):
     return ret
 
 def serialize_post_with_details(post, authenticated_user):
+    comment_list = []
+    if post:
+        for comment in post.comments:
+            comment_list.append(
+                comments.serialize_comment(comment, authenticated_user))
     return {
         'post': serialize_post(post, authenticated_user),
         'snapshots': snapshots.get_serialized_history(post),
+        'comments': comment_list,
     }
 
 def get_post_count():

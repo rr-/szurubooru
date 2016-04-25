@@ -24,7 +24,7 @@ def test_no_featured_post(test_ctx):
     result = test_ctx.api.get(
         test_ctx.context_factory(
             user=test_ctx.user_factory(rank='regular_user')))
-    assert result == {'post': None, 'snapshots': []}
+    assert result == {'post': None, 'snapshots': [], 'comments': []}
 
 def test_featuring(test_ctx):
     db.session.add(test_ctx.post_factory(id=1))
