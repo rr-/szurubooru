@@ -32,7 +32,7 @@
         - ~~Creating post~~
         - ~~Updating post~~
         - [Getting post](#getting-post)
-        - ~~Deleting post~~
+        - [Deleting post](#deleting-post)
         - [Rating post](#rating-post)
         - ~~Adding post to favorites~~
         - ~~Removing post from favorites~~
@@ -645,6 +645,27 @@ data.
 - **Description**
 
     Retrieves information about an existing post.
+
+
+## Deleting post
+- **Request**
+
+    `DELETE /post/<id>`
+
+- **Output**
+
+    ```json5
+    {}
+    ```
+
+- **Errors**
+
+    - the post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Deletes existing post. Related posts and tags are kept.
 
 
 ## Rating post
