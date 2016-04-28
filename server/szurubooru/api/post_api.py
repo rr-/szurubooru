@@ -43,11 +43,11 @@ class PostScoreApi(BaseApi):
         score = ctx.get_param_as_int('score', required=True)
         scores.set_score(post, ctx.user, score)
         ctx.session.commit()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post_with_details(post, ctx.user)
 
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:score')
         post = posts.get_post_by_id(post_id)
         scores.delete_score(post, ctx.user)
         ctx.session.commit()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post_with_details(post, ctx.user)

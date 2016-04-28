@@ -41,6 +41,9 @@ def serialize_user(user, authenticated_user):
 
     return ret
 
+def serialize_user_with_details(user, authenticated_user):
+    return {'user': serialize_user(user, authenticated_user)}
+
 def get_user_count():
     return db.session.query(db.User).count()
 

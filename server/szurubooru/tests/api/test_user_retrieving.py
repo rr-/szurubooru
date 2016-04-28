@@ -33,7 +33,7 @@ def test_retrieving_multiple(test_ctx):
     assert result['page'] == 1
     assert result['pageSize'] == 100
     assert result['total'] == 2
-    assert [u['name'] for u in result['users']] == ['u1', 'u2']
+    assert [u['name'] for u in result['results']] == ['u1', 'u2']
 
 def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):

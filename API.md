@@ -62,11 +62,18 @@
 3. [Resources](#resources)
 
    - [User](#user)
+   - [Detailed user](#detailed-user)
    - [Tag category](#tag-category)
+   - [Detailed tag category](#detailed-tag-category)
    - [Tag](#tag)
+   - [Detailed tag](#detailed-tag)
    - [Post](#post)
+   - [Detailed post](#detailed-post)
    - [Comment](#comment)
+   - [Detailed comment](#detailed-comment)
    - [Snapshot](#snapshot)
+   - [Unpaged search result](#unpaged-search-result)
+   - [Paged search result](#paged-search-result)
 
 4. [Search](#search)
 
@@ -126,16 +133,8 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "tagCategories": [
-            <tag-category>,
-            <tag-category>,
-            <tag-category>
-        ]
-    }
-    ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category).
+    An [unpaged search result](#unpaged-search-result), for which `<resource>`
+    is a [tag category resource](#tag-category).
 
 - **Errors**
 
@@ -168,18 +167,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "tagCategory": <tag-category>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category) and
-    `snapshots` contain its earlier versions.
+    A [detailed tag category resource](#detailed-tag-category).
 
 - **Errors**
 
@@ -210,18 +198,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "tagCategory": <tag-category>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category) and
-    `snapshots` contain its earlier versions.
+    A [detailed tag category resource](#detailed-tag-category).
 
 - **Errors**
 
@@ -245,18 +222,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "tagCategory": <tag-category>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<tag-category>` is a [tag category resource](#tag-category) and
-    `snapshots` contain its earlier versions.
+    A [detailed tag category resource](#detailed-tag-category).
 
 - **Errors**
 
@@ -299,21 +265,8 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "query":    <query>, // same as in input
-        "page":     <page>,  // same as in input
-        "pageSize": <page-size>,
-        "total":    <total-count>,
-        "tags": [
-            <tag>,
-            <tag>,
-            <tag>
-        ]
-    }
-    ```
-    ...where `<tag>` is a [tag resource](#tag) and `query` contains standard
-    [search query](#search).
+    A [paged search result resource](#paged-search-result), for which
+    `<resource>` is a [tag resource](#tag).
 
 - **Errors**
 
@@ -393,18 +346,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "tag": <tag>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<tag>` is a [tag resource](#tag) and `snapshots` contain its
-    earlier versions.
+    A [detailed tag resource](#detailed-tag).
 
 - **Errors**
 
@@ -447,18 +389,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "tag": <tag>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<tag>` is a [tag resource](#tag) and `snapshots` contain its
-    earlier versions.
+    A [detailed tag resource](#detailed-tag).
 
 - **Errors**
 
@@ -489,18 +420,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "tag": <tag>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<tag>` is a [tag resource](#tag) and `snapshots` contain its
-    earlier versions.
+    A [detailed tag resource](#detailed-tag).
 
 - **Errors**
 
@@ -550,18 +470,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "tag": <tag>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<tag>` is the target [tag resource](#tag) and `snapshots`
-    contain its earlier versions.
+    A [detailed tag resource](#detailed-tag) containing the merged tag.
 
 - **Errors**
 
@@ -619,23 +528,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "post": <post>,
-        "snapshots": {
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        },
-        "comments": {
-            <comment>,
-            <comment>,
-            <comment>
-        }
-    }
-    ```
-    ...where `<post>` is a [post resource](#post), `<comment>` is a [comment
-    resource](#comment) and `snapshots` contain post's earlier versions.
+    A [detailed post resource](#detailed-post).
 
 - **Errors**
 
@@ -683,12 +576,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "post": <post>
-    }
-    ```
-    ...where `<post>` is a [post resource](#post).
+    A [detailed post resource](#detailed-post).
 
 - **Errors**
 
@@ -709,18 +597,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "post": <post>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<post>` is a [post resource](#post) and `snapshots` contain its
-    earlier versions.
+    A [detailed post resource](#detailed-post).
 
 - **Errors**
 
@@ -740,18 +617,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "post": <post>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<post>` is a [post resource](#post) and `snapshots` contain its
-    earlier versions.
+    A [detailed post resource](#detailed-post).
 
 - **Errors**
 
@@ -770,21 +636,8 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "query":    <query>, // same as in input
-        "page":     <page>,  // same as in input
-        "pageSize": <page-size>,
-        "total":    <total-count>,
-        "comments": [
-            <comment>,
-            <comment>,
-            <comment>
-        ]
-    }
-    ```
-    ...where `<comment>` is a [comment resource](#comment) and `query` contains
-    standard [search query](#search).
+    A [paged search result resource](#paged-search-result), for which
+    `<resource>` is a [comment resource](#comment).
 
 - **Errors**
 
@@ -848,12 +701,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "comment": <comment>
-    }
-    ```
-    ...where `<comment>` is a [comment resource](#comment).
+    A [detailed comment resource](#detailed-comment).
 
 - **Errors**
 
@@ -881,12 +729,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "comment": <comment>
-    }
-    ```
-    ...where `<comment>` is a [comment resource](#comment).
+    A [detailed comment resource](#detailed-comment).
 
 - **Errors**
 
@@ -906,12 +749,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "comment": <comment>
-    }
-    ```
-    ...where `<comment>` is a [comment resource](#comment).
+    A [detailed comment resource](#detailed-comment).
 
 - **Errors**
 
@@ -959,12 +797,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "comment": <comment>
-    }
-    ```
-    ...where `<comment>` is a [comment resource](#comment).
+    A [detailed comment resource](#detailed-comment).
 
 - **Errors**
 
@@ -985,21 +818,8 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "query":    <query>, // same as in input
-        "page":     <page>,  // same as in input
-        "pageSize": <page-size>,
-        "total":    <total-count>,
-        "users": [
-            <user>,
-            <user>,
-            <user>
-        ]
-    }
-    ```
-    ...where `<user>` is a [user resource](#user) and `query` contains standard
-    [search query](#search).
+    A [paged search result resource](#paged-search-result), for which
+    `<resource>` is a [user resource](#user).
 
 - **Errors**
 
@@ -1066,12 +886,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "user": <user>
-    }
-    ```
-    ...where `<user>` is a [user resource](#user).
+    A [detailed user resource](#detailed-user).
 
 - **Errors**
 
@@ -1118,12 +933,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "user": <user>
-    }
-    ```
-    ...where `<user>` is a [user resource](#user).
+    A [detailed user resource](#detailed-user).
 
 - **Errors**
 
@@ -1153,12 +963,7 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "user": <user>
-    }
-    ```
-    ...where `<user>` is a [user resource](#user).
+    A [detailed user resource](#detailed-user).
 
 - **Errors**
 
@@ -1256,21 +1061,8 @@ data.
 
 - **Output**
 
-    ```json5
-    {
-        "query":    <query>, // same as in input
-        "page":     <page>,  // same as in input
-        "pageSize": <page-size>,
-        "total":    <total-count>,
-        "snapshots": [
-            <snapshot>,
-            <snapshot>,
-            <snapshot>
-        ]
-    }
-    ```
-    ...where `<snapshot>` is a [snapshot resource](#snapshot) and `query`
-    contains standard [search query](#search).
+    A [paged search result resource](#paged-search-result), for which
+    `<resource>` is a [snapshot resource](#snapshot).
 
 - **Errors**
 
@@ -1367,6 +1159,23 @@ A single user.
 
 - `<avatarUrl>`: the URL to the avatar.
 
+## Detailed user
+**Description**
+
+A wrapper for a user. In the future, it might offer extra information.
+
+**Structure**
+
+```json5
+{
+    "user": <user>
+}
+```
+
+**Field meaning**
+
+- `<user>`: a [user resource](#user).
+
 ## Tag category
 **Description**
 
@@ -1387,6 +1196,30 @@ experience.
 
 - `<name>`: the category name.
 - `<color>`: the category color.
+
+## Detailed tag category
+**Description**
+
+A tag category with extra information.
+
+**Structure**
+
+```json5
+{
+    "tagCategory": <tag-category>,
+    "snapshots": [
+        <snapshot>,
+        <snapshot>,
+        <snapshot>
+    ]
+}
+```
+
+**Field meaning**
+
+- `<tag-category>`: a [tag category resource](#tag-category)
+- `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag
+  category's earlier versions.
 
 ## Tag
 **Description**
@@ -1418,6 +1251,29 @@ A single tag. Tags are used to let users search for posts.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
 
+## Detailed tag
+**Description**
+
+A tag with extra information.
+
+**Structure**
+
+```json5
+{
+    "tag": <tag>,
+    "snapshots": [
+        <snapshot>,
+        <snapshot>,
+        <snapshot>
+    ]
+}
+```
+
+**Field meaning**
+- `<tag>`: a [tag resource](#tag)
+- `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag's
+  earlier versions.
+
 ## Post
 **Description**
 
@@ -1444,7 +1300,7 @@ One file together with its metadata posted to the site.
     "ownScore":        <own-score>,
     "favoritedBy":     <favorited-by>,
     "featureCount":    <feature-count>,
-    "lastFeatureTime": <last-feature-time>,
+    "lastFeatureTime": <last-feature-time>
 }
 ```
 
@@ -1490,6 +1346,35 @@ One file together with its metadata posted to the site.
 - `<last-feature-time>`: the last time the post was featured, formatted as per
   RFC 3339.
 
+## Detailed post
+**Description**
+
+A post with extra information.
+
+**Structure**
+
+```json5
+{
+    "post": <post>,
+    "snapshots": [
+        <snapshot>,
+        <snapshot>,
+        <snapshot>
+    ],
+    "comments": {
+        <comment>,
+        <comment>,
+        <comment>
+    }
+}
+```
+
+**Field meaning**
+- `<post>`: a [post resource](#post).
+- `<snapshot>`: a [snapshot resource](#snapshot) that contains the post's
+  earlier versions.
+- `<comment>`: a [comment resource](#comment) for given post.
+
 ## Comment
 **Description**
 
@@ -1520,6 +1405,21 @@ A comment under a post.
 - `<own-score>`: the score (+1/-1 rating) of the given comment by the
   authenticated user.
 
+## Detailed comment
+**Description**
+
+A wrapper for a comment. In the future, it might offer extra information.
+
+**Structure**
+
+```json5
+{
+    "comment": <comment>
+}
+```
+
+**Field meaning**
+- `<comment>`: a [comment resource](#comment).
 
 ## Snapshot
 **Description**
@@ -1613,6 +1513,58 @@ A snapshot is a version of a database resource.
 
 - `<time>`: when the snapshot was created (i.e. when the resource was changed),
   formatted as per RFC 3339.
+
+## Unpaged search result
+**Description**
+
+A result of search operation that doesn't involve paging.
+
+**Structure**
+
+```json5
+{
+    "results": [
+        <resource>,
+        <resource>,
+        <resource>
+    ]
+}
+```
+
+**Field meaning**
+- `<resource>`: any resource - which exactly depends on the API call. For
+  details on this field, check the documentation for given API call.
+
+## Paged search result
+**Description**
+
+A result of search operation that involves paging.
+
+**Structure**
+
+```json5
+{
+    "query":    <query>, // same as in input
+    "page":     <page>,  // same as in input
+    "pageSize": <page-size>,
+    "total":    <total-count>,
+    "results": [
+        <resource>,
+        <resource>,
+        <resource>
+    ]
+}
+```
+
+**Field meaning**
+- `<query>`: the query passed in the original request that contains standard
+  [search query](#search).
+- `<page>`: the page number, passed in the original request.
+- `<page-size>`: number of records on one page.
+- `<total-count>`: how many resources were found. To get the page count, divide
+  this number by `<page-size>`.
+- `<resource>`: any resource - which exactly depends on the API call. For
+  details on this field, check the documentation for given API call.
 
 
 # Search

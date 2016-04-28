@@ -10,7 +10,7 @@ class UserListApi(BaseApi):
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'users:list')
         return self._search_executor.execute_and_serialize(
-            ctx, lambda user: users.serialize_user(user, ctx.user), 'users')
+            ctx, lambda user: users.serialize_user(user, ctx.user))
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'users:create')
@@ -27,13 +27,13 @@ class UserListApi(BaseApi):
                 ctx.get_file('avatar'))
         ctx.session.add(user)
         ctx.session.commit()
-        return {'user': users.serialize_user(user, ctx.user)}
+        return users.serialize_user_with_details(user, ctx.user)
 
 class UserDetailApi(BaseApi):
     def get(self, ctx, user_name):
         auth.verify_privilege(ctx.user, 'users:view')
         user = users.get_user_by_name(user_name)
-        return {'user': users.serialize_user(user, ctx.user)}
+        return users.serialize_user_with_details(user, ctx.user)
 
     def put(self, ctx, user_name):
         user = users.get_user_by_name(user_name)
@@ -57,7 +57,7 @@ class UserDetailApi(BaseApi):
                 ctx.get_param_as_string('avatarStyle'),
                 ctx.get_file('avatar'))
         ctx.session.commit()
-        return {'user': users.serialize_user(user, ctx.user)}
+        return users.serialize_user_with_details(user, ctx.user)
 
     def delete(self, ctx, user_name):
         user = users.get_user_by_name(user_name)

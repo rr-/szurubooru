@@ -28,7 +28,7 @@ class SearchExecutor(object):
             .scalar()
         return (count, entities)
 
-    def execute_and_serialize(self, ctx, serializer, key_name):
+    def execute_and_serialize(self, ctx, serializer):
         query = ctx.get_param_as_string('query')
         page = ctx.get_param_as_int('page', default=1, min=1)
         page_size = ctx.get_param_as_int('pageSize', default=100, min=1, max=100)
@@ -38,7 +38,7 @@ class SearchExecutor(object):
             'page': page,
             'pageSize': page_size,
             'total': count,
-            key_name: [serializer(entity) for entity in entities],
+            'results': [serializer(entity) for entity in entities],
         }
 
     def _prepare(self, query_text):

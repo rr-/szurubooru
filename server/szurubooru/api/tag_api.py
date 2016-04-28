@@ -11,7 +11,7 @@ class TagListApi(BaseApi):
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:list')
         return self._search_executor.execute_and_serialize(
-            ctx, tags.serialize_tag, 'tags')
+            ctx, tags.serialize_tag)
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:create')

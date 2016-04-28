@@ -18,6 +18,9 @@ def serialize_comment(comment, authenticated_user):
         ret['ownScore'] = scores.get_score(comment, authenticated_user)
     return ret
 
+def serialize_comment_with_details(comment, authenticated_user):
+    return {'comment': serialize_comment(comment, authenticated_user)}
+
 def try_get_comment_by_id(comment_id):
     return db.session \
         .query(db.Comment) \

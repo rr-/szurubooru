@@ -13,8 +13,7 @@ class CommentListApi(BaseApi):
         auth.verify_privilege(ctx.user, 'comments:list')
         return self._search_executor.execute_and_serialize(
             ctx,
-            lambda comment: comments.serialize_comment(comment, ctx.user),
-            'comments')
+            lambda comment: comments.serialize_comment(comment, ctx.user))
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'comments:create')
@@ -24,13 +23,13 @@ class CommentListApi(BaseApi):
         comment = comments.create_comment(ctx.user, post, text)
         ctx.session.add(comment)
         ctx.session.commit()
-        return {'comment': comments.serialize_comment(comment, ctx.user)}
+        return comments.serialize_comment_with_details(comment, ctx.user)
 
 class CommentDetailApi(BaseApi):
     def get(self, ctx, comment_id):
         auth.verify_privilege(ctx.user, 'comments:view')
         comment = comments.get_comment_by_id(comment_id)
-        return {'comment': comments.serialize_comment(comment, ctx.user)}
+        return comments.serialize_comment_with_details(comment, ctx.user)
 
     def put(self, ctx, comment_id):
         comment = comments.get_comment_by_id(comment_id)
@@ -40,7 +39,7 @@ class CommentDetailApi(BaseApi):
         comment.last_edit_time = datetime.datetime.now()
         comments.update_comment_text(comment, text)
         ctx.session.commit()
-        return {'comment': comments.serialize_comment(comment, ctx.user)}
+        return comments.serialize_comment_with_details(comment, ctx.user)
 
     def delete(self, ctx, comment_id):
         comment = comments.get_comment_by_id(comment_id)
@@ -57,11 +56,11 @@ class CommentScoreApi(BaseApi):
         comment = comments.get_comment_by_id(comment_id)
         scores.set_score(comment, ctx.user, score)
         ctx.session.commit()
-        return {'comment': comments.serialize_comment(comment, ctx.user)}
+        return comments.serialize_comment_with_details(comment, ctx.user)
 
     def delete(self, ctx, comment_id):
         auth.verify_privilege(ctx.user, 'comments:score')
         comment = comments.get_comment_by_id(comment_id)
         scores.delete_score(comment, ctx.user)
         ctx.session.commit()
-        return {'comment': comments.serialize_comment(comment, ctx.user)}
+        return comments.serialize_comment_with_details(comment, ctx.user)

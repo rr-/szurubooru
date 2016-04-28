@@ -31,7 +31,7 @@ def test_retrieving_multiple(test_ctx):
     result = test_ctx.list_api.get(
         test_ctx.context_factory(
             user=test_ctx.user_factory(rank='regular_user')))
-    assert [cat['name'] for cat in result['tagCategories']] == ['c1', 'c2']
+    assert [cat['name'] for cat in result['results']] == ['c1', 'c2']
 
 def test_retrieving_single(test_ctx):
     db.session.add(test_ctx.tag_category_factory(name='cat'))

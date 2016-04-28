@@ -10,4 +10,4 @@ class SnapshotListApi(BaseApi):
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'snapshots:list')
         return self._search_executor.execute_and_serialize(
-            ctx, snapshots.serialize_snapshot, 'snapshots')
+            ctx, snapshots.serialize_snapshot)

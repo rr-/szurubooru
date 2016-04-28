@@ -6,7 +6,7 @@ class TagCategoryListApi(BaseApi):
         auth.verify_privilege(ctx.user, 'tag_categories:list')
         categories = tag_categories.get_all_categories()
         return {
-            'tagCategories': [
+            'results': [
                 tag_categories.serialize_category(category) \
                     for category in categories],
         }
