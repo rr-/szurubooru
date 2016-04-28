@@ -67,6 +67,7 @@ def create_app():
 
     app.add_route('/post/{post_id}', api.PostDetailApi())
     app.add_route('/post/{post_id}/score', api.PostScoreApi())
+    app.add_route('/post/{post_id}/favorite', api.PostFavoriteApi())
 
     app.add_route('/comments/', api.CommentListApi())
     app.add_route('/comment/{comment_id}', api.CommentDetailApi())

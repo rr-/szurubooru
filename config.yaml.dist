@@ -94,6 +94,7 @@ privileges:
     'posts:feature':                mod
     'posts:delete':                 mod
     'posts:score':                  regular_user
+    'posts:favorite':               regular_user
 
     'tags:create':                  regular_user
     'tags:edit:names':              power_user

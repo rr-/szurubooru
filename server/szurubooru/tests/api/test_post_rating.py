@@ -1,4 +1,3 @@
-import datetime
 import pytest
 from szurubooru import api, db, errors
 from szurubooru.func import util, posts, scores

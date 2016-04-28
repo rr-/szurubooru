@@ -32,7 +32,7 @@ def serialize_post(post, authenticated_user):
         'score': post.score,
         'featureCount': post.feature_count,
         'lastFeatureTime': post.last_feature_time,
-        'favoritedBy': [users.serialize_user(rel, authenticated_user) \
+        'favoritedBy': [users.serialize_user(rel.user, authenticated_user) \
             for rel in post.favorited_by],
     }
 

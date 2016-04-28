@@ -1,5 +1,5 @@
 from szurubooru.api.base_api import BaseApi
-from szurubooru.func import auth, tags, posts, snapshots, scores
+from szurubooru.func import auth, tags, posts, snapshots, favorites, scores
 
 class PostDetailApi(BaseApi):
     def get(self, ctx, post_id):
@@ -49,5 +49,20 @@ class PostScoreApi(BaseApi):
         auth.verify_privilege(ctx.user, 'posts:score')
         post = posts.get_post_by_id(post_id)
         scores.delete_score(post, ctx.user)
+        ctx.session.commit()
+        return posts.serialize_post_with_details(post, ctx.user)
+
+class PostFavoriteApi(BaseApi):
+    def post(self, ctx, post_id):
+        auth.verify_privilege(ctx.user, 'posts:favorite')
+        post = posts.get_post_by_id(post_id)
+        favorites.set_favorite(post, ctx.user)
+        ctx.session.commit()
+        return posts.serialize_post_with_details(post, ctx.user)
+
+    def delete(self, ctx, post_id):
+        auth.verify_privilege(ctx.user, 'posts:favorite')
+        post = posts.get_post_by_id(post_id)
+        favorites.unset_favorite(post, ctx.user)
         ctx.session.commit()
         return posts.serialize_post_with_details(post, ctx.user)

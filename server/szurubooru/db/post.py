@@ -128,6 +128,16 @@ class Post(Base):
             .filter(PostScore.post_id == self.post_id) \
             .one()[0] or 0
 
+    favorite_count = column_property(
+        select([func.count(PostFavorite.post_id)]) \
+        .where(PostFavorite.post_id == post_id) \
+        .correlate_except(PostFavorite))
+
+    last_favorite_time = column_property(
+        select([func.max(PostFavorite.time)]) \
+        .where(PostFavorite.post_id == post_id) \
+        .correlate_except(PostFavorite))
+
     feature_count = column_property(
         select([func.count(PostFeature.post_id)]) \
         .where(PostFeature.post_id == post_id) \
@@ -139,11 +149,8 @@ class Post(Base):
         .correlate_except(PostFeature))
 
     # TODO: wire these
-    #favorite_count = Column('auto_fav_count', Integer, nullable=False, default=0)
     #comment_count = Column('auto_comment_count', Integer, nullable=False, default=0)
     #note_count = Column('auto_note_count', Integer, nullable=False, default=0)
-    #last_fav_time = Column(
-    #    'auto_fav_time', Integer, nullable=False, default=0)
     #last_comment_edit_time = Column(
     #    'auto_comment_creation_time', Integer, nullable=False, default=0)
     #last_comment_creation_time = Column(

@@ -34,8 +34,8 @@
         - [Getting post](#getting-post)
         - [Deleting post](#deleting-post)
         - [Rating post](#rating-post)
-        - ~~Adding post to favorites~~
-        - ~~Removing post from favorites~~
+        - [Adding post to favorites](#adding-post-to-favorites)
+        - [Removing post from favorites](#removing-post-from-favorites)
         - [Getting featured post](#getting-featured-post)
         - [Featuring post](#featuring-post)
     - Comments
@@ -588,6 +588,44 @@ data.
 
     Updates score of authenticated user for given post. Valid scores are -1, 0
     and 1.
+
+
+## Adding post to favorites
+- **Request**
+
+    `POST /post/<id>/favorite`
+
+- **Output**
+
+    A [detailed post resource](#detailed-post).
+
+- **Errors**
+
+    - post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Marks the post as favorite for authenticated user.
+
+
+## Removing post from favorites
+- **Request**
+
+    `DELETE /post/<id>/favorite`
+
+- **Output**
+
+    A [detailed post resource](#detailed-post).
+
+- **Errors**
+
+    - post does not exist
+    - privileges are too low
+
+- **Description**
+
+    Unmarks the post as favorite for authenticated user.
 
 
 ## Getting featured post
