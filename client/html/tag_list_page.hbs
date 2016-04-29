@@ -1,0 +1,50 @@
+<div class='tag-list'>
+    {{#if this.results}}
+        <table>
+            <thead>
+                <th class='names'>Tag name(s)</th>
+                <th class='implications'>Implications</th>
+                <th class='suggestions'>Suggestions</th>
+                <th class='usages'>Usages</th>
+            </thead>
+            <tbody>
+                {{#each this.results}}
+                    <tr>
+                        <td class='names'>
+                            <ul>
+                                {{#each this.names}}
+                                    <li><a href='/tag/{{this}}'>{{this}}</a></li>
+                                {{/each}}
+                            </ul>
+                        </td>
+                        <td class='implications'>
+                            {{#if this.implications}}
+                                <ul>
+                                    {{#each this.implications}}
+                                        <li><a href='/tag/{{this}}'>{{this}}</a></li>
+                                    {{/each}}
+                                </ul>
+                            {{else}}
+                                -
+                            {{/if}}
+                        </td>
+                        <td class='suggestions'>
+                            {{#if this.suggestions}}
+                                <ul>
+                                    {{#each this.suggestions}}
+                                        <li><a href='/tag/{{this}}'>{{this}}</a></li>
+                                    {{/each}}
+                                </ul>
+                            {{else}}
+                                -
+                            {{/if}}
+                        </td>
+                        <td class='usages'>
+                            {{this.usages}}
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    {{/if}}
+</div>

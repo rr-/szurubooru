@@ -1,0 +1,27 @@
+@import colors
+
+.tag-list
+    table
+        width: 100%
+        text-align: left
+        .usages
+            text-align: center
+        ul
+            list-style-type: none
+            margin: 0
+            padding: 0
+            display: inline
+            li
+                padding: 0
+                display: inline
+                &:not(:last-child):after
+                    content: ', '
+.tag-list-header
+    text-align: left
+    form
+        width: auto
+    input[name=search-text]
+        max-width: 15em
+    .append
+        font-size: 0.95em
+        color: $inactive-link-color
