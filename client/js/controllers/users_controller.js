@@ -133,6 +133,8 @@ class UsersController {
     }
 
     _edit(user, data) {
+        const isLoggedIn = api.isLoggedIn(user);
+        const infix = isLoggedIn ? 'self' : 'any';
         let files = [];
 
         if (!data.name) {
@@ -141,7 +143,7 @@ class UsersController {
         if (!data.password) {
             delete data.password;
         }
-        if (!data.email) {
+        if (!api.hasPrivilege('users:edit:' + infix + ':email')) {
             delete data.email;
         }
         if (!data.rank) {
@@ -155,7 +157,6 @@ class UsersController {
             files.avatar = data.avatarContent;
         }
 
-        const isLoggedIn = api.isLoggedIn(user);
         return new Promise((resolve, reject) => {
             api.put('/user/' + user.name, data, files)
                 .then(response => {
