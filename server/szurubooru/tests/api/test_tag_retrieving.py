@@ -57,6 +57,7 @@ def test_retrieving_single(test_ctx):
             'lastEditTime': None,
             'suggestions': [],
             'implications': [],
+            'usages': 0,
         },
         'snapshots': [],
     }

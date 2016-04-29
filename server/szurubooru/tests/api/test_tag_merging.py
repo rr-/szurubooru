@@ -41,6 +41,7 @@ def test_merging_without_usages(test_ctx, fake_datetime):
         'implications': [],
         'creationTime': datetime.datetime(1996, 1, 1),
         'lastEditTime': None,
+        'usages': 0,
     }
     assert 'snapshots' in result
     assert tags.try_get_tag_by_name('source') is None

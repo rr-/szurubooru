@@ -53,6 +53,7 @@ def test_simple_updating(test_ctx, fake_datetime):
         'implications': [],
         'creationTime': datetime.datetime(1996, 1, 1),
         'lastEditTime': datetime.datetime(1997, 12, 1),
+        'usages': 0,
     }
     assert len(result['snapshots']) == 1
     assert tags.try_get_tag_by_name('tag1') is None

@@ -46,6 +46,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
         'implications': [],
         'creationTime': datetime.datetime(1997, 12, 1),
         'lastEditTime': None,
+        'usages': 0,
     }
     assert len(result['snapshots']) == 1
     tag = tags.get_tag_by_name('tag1')

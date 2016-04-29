@@ -36,6 +36,7 @@ def serialize_tag(tag):
             relation.names[0].name for relation in tag.implications],
         'creationTime': tag.creation_time,
         'lastEditTime': tag.last_edit_time,
+        'usages': tag.post_count,
     }
 
 def serialize_tag_with_details(tag):

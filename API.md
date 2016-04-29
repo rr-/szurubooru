@@ -1273,7 +1273,8 @@ A single tag. Tags are used to let users search for posts.
     "implications": <implications>,
     "suggestions":  <suggestions>,
     "creationTime": <creation-time>,
-    "lastEditTime": <last-edit-time>
+    "lastEditTime": <last-edit-time>,
+    "usages":       <usage-count>
 }
 ```
 
@@ -1288,6 +1289,7 @@ A single tag. Tags are used to let users search for posts.
   the user by the web client on usage.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
+- `<usage-count>`: the number of posts the tag was used in.
 
 ## Detailed tag
 **Description**
