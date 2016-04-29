@@ -22,6 +22,8 @@ a
     &.icon
         color: $inactive-link-color
         opacity: .5
+    &:focus
+        outline: 2px solid $main-color
 
 a.append
     margin-left: 1em
@@ -82,6 +84,9 @@ nav.text-nav
         li.active a
             background: $active-tab-background-color
             color: $active-tab-text-color
+        :focus
+            background: $focused-tab-background-color
+            outline: 0
 
 #top-nav
     background: $top-nav-color
