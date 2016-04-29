@@ -6,13 +6,14 @@ from szurubooru.func import util, comments
 @pytest.fixture
 def test_ctx(context_factory, config_injector, user_factory, comment_factory):
     config_injector({
+        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
+        'rank_names': {'regular_user': 'Peasant'},
         'privileges': {
             'comments:list': 'regular_user',
             'comments:view': 'regular_user',
+            'users:edit:any:email': 'mod',
         },
         'thumbnails': {'avatar_width': 200},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {'regular_user': 'Peasant'},
     })
     ret = util.dotdict()
     ret.context_factory = context_factory

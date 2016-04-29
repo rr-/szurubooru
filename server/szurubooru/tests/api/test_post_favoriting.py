@@ -6,9 +6,12 @@ from szurubooru.func import util, posts
 @pytest.fixture
 def test_ctx(config_injector, context_factory, user_factory, post_factory):
     config_injector({
-        'ranks': ['anonymous', 'regular_user'],
+        'ranks': ['anonymous', 'regular_user', 'mod'],
         'rank_names': {'anonymous': 'Peasant', 'regular_user': 'Lord'},
-        'privileges': {'posts:favorite': 'regular_user'},
+        'privileges': {
+            'posts:favorite': 'regular_user',
+            'users:edit:any:email': 'mod',
+        },
         'thumbnails': {'avatar_width': 200},
     })
     db.session.flush()

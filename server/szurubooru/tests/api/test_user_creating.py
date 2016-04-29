@@ -46,6 +46,7 @@ def test_creating_user(test_ctx, fake_datetime):
             'name': 'chewie1',
             'rank': 'admin',
             'rankName': 'Unknown',
+            'email': 'asd@asd.asd',
         }
     }
     user = users.get_user_by_name('chewie1')

@@ -1181,7 +1181,8 @@ A single user.
 **Field meaning**
 - `<name>`: the user name.
 - `<email>`: the user email. It is available only if the request is
-  authenticated by the same user.
+  authenticated by the same user, or the authenticated user can change the
+  email.
 - `<rank>`: the user rank, which effectively affects their privileges. The
   available ranks are stored in the server configuration.
 - `<rank-name>`: the text representation of user's rank. Like `<rank>`, the

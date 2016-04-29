@@ -27,7 +27,8 @@ class UserListApi(BaseApi):
                 ctx.get_file('avatar'))
         ctx.session.add(user)
         ctx.session.commit()
-        return users.serialize_user_with_details(user, ctx.user)
+        return users.serialize_user_with_details(
+            user, ctx.user, force_show_email=True)
 
 class UserDetailApi(BaseApi):
     def get(self, ctx, user_name):

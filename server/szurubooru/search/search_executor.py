@@ -136,7 +136,6 @@ class SearchExecutor(object):
             sort_desc: lambda input: input.desc(),
             None: lambda input: input,
         }
-        print(sort)
         transform = transform_map[sort]
         return query.order_by(transform(column))
 

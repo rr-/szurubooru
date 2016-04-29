@@ -11,6 +11,7 @@ def test_ctx(config_injector, context_factory, user_factory, comment_factory):
         'privileges': {
             'comments:edit:self': 'regular_user',
             'comments:edit:any': 'mod',
+            'users:edit:any:email': 'mod',
         },
         'thumbnails': {'avatar_width': 200},
     })

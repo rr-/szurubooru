@@ -36,15 +36,16 @@ def is_valid_password(user, password):
     ]
     return valid_hash in possible_hashes
 
-def verify_privilege(user, privilege_name):
-    ''' Throw an AuthError if the given user doesn't have given privilege. '''
+def has_privilege(user, privilege_name):
     all_ranks = config.config['ranks']
-
     assert privilege_name in config.config['privileges']
     assert user.rank in all_ranks
     minimal_rank = config.config['privileges'][privilege_name]
     good_ranks = all_ranks[all_ranks.index(minimal_rank):]
-    if user.rank not in good_ranks:
+    return user.rank in good_ranks
+
+def verify_privilege(user, privilege_name):
+    if not has_privilege(user, privilege_name):
         raise errors.AuthError('Insufficient privileges to do this.')
 
 def generate_authentication_token(user):

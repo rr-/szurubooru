@@ -13,7 +13,7 @@ class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
 
-def serialize_user(user, authenticated_user):
+def serialize_user(user, authenticated_user, force_show_email=False):
     if not user:
         return {}
 
@@ -23,7 +23,8 @@ def serialize_user(user, authenticated_user):
         'rankName': config.config['rank_names'].get(user.rank, 'Unknown'),
         'creationTime': user.creation_time,
         'lastLoginTime': user.last_login_time,
-        'avatarStyle': user.avatar_style
+        'avatarStyle': user.avatar_style,
+        'email': user.email,
     }
 
     if user.avatar_style == user.AVATAR_GRAVATAR:
@@ -36,13 +37,15 @@ def serialize_user(user, authenticated_user):
         ret['avatarUrl'] = '%s/avatars/%s.jpg' % (
             config.config['data_url'].rstrip('/'), user.name.lower())
 
-    if authenticated_user.user_id == user.user_id:
-        ret['email'] = user.email
+    if authenticated_user.user_id != user.user_id \
+        and not force_show_email \
+        and not auth.has_privilege(authenticated_user, 'users:edit:any:email'):
+        del ret['email']
 
     return ret
 
-def serialize_user_with_details(user, authenticated_user):
-    return {'user': serialize_user(user, authenticated_user)}
+def serialize_user_with_details(user, authenticated_user, **kwargs):
+    return {'user': serialize_user(user, authenticated_user, **kwargs)}
 
 def get_user_count():
     return db.session.query(db.User).count()
