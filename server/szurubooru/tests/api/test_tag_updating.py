@@ -2,7 +2,7 @@ import datetime
 import os
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.func import util, tags
+from szurubooru.func import util, tags, tag_categories
 
 def assert_relations(relations, expected_tag_names):
     actual_names = [rel.names[0].name for rel in relations]
@@ -14,6 +14,7 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'tag_name_regex': '^[^!]*$',
+        'tag_category_name_regex': '^[^!]*$',
         'ranks': ['anonymous', 'regular_user'],
         'privileges': {
             'tags:edit:names': 'regular_user',
@@ -71,9 +72,9 @@ def test_simple_updating(test_ctx, fake_datetime):
     ({'names': ['']}, tags.InvalidTagNameError),
     ({'names': ['!bad']}, tags.InvalidTagNameError),
     ({'names': ['x' * 65]}, tags.InvalidTagNameError),
-    ({'category': None}, tags.InvalidTagCategoryError),
-    ({'category': ''}, tags.InvalidTagCategoryError),
-    ({'category': 'invalid'}, tags.InvalidTagCategoryError),
+    ({'category': None}, tag_categories.InvalidTagCategoryNameError),
+    ({'category': ''}, tag_categories.InvalidTagCategoryNameError),
+    ({'category': '!bad'}, tag_categories.InvalidTagCategoryNameError),
     ({'suggestions': ['good', '!bad']}, tags.InvalidTagNameError),
     ({'implications': ['good', '!bad']}, tags.InvalidTagNameError),
 ])
