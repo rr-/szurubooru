@@ -10,7 +10,6 @@ class TagNotFoundError(errors.NotFoundError): pass
 class TagAlreadyExistsError(errors.ValidationError): pass
 class TagIsInUseError(errors.ValidationError): pass
 class InvalidTagNameError(errors.ValidationError): pass
-class InvalidTagCategoryError(errors.ValidationError): pass
 class InvalidTagRelationError(errors.ValidationError): pass
 
 def _verify_name_validity(name):
@@ -159,10 +158,8 @@ def update_category_name(tag, category_name):
         .filter(db.TagCategory.name == category_name) \
         .first()
     if not category:
-        category_names = tag_categories.get_all_category_names()
-        raise InvalidTagCategoryError(
-            'Category %r is invalid. Valid categories: %r.' % (
-                category_name, category_names))
+        category = tag_categories.create_category(category_name, 'default')
+        db.session.add(category)
     tag.category = category
 
 def update_names(tag, names):

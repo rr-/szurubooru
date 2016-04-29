@@ -2,7 +2,7 @@ import datetime
 import os
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.func import util, tags
+from szurubooru.func import util, tags, tag_categories
 
 def assert_relations(relations, expected_tag_names):
     actual_names = [rel.names[0].name for rel in relations]
@@ -14,6 +14,7 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'tag_name_regex': '^[^!]*$',
+        'tag_category_name_regex': '^[^!]*$',
         'ranks': ['anonymous', 'regular_user'],
         'privileges': {'tags:create': 'regular_user'},
     })
@@ -63,9 +64,9 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
     ({'names': ['']}, tags.InvalidTagNameError),
     ({'names': ['!bad']}, tags.InvalidTagNameError),
     ({'names': ['x' * 65]}, tags.InvalidTagNameError),
-    ({'category': None}, tags.InvalidTagCategoryError),
-    ({'category': ''}, tags.InvalidTagCategoryError),
-    ({'category': 'invalid'}, tags.InvalidTagCategoryError),
+    ({'category': None}, tag_categories.InvalidTagCategoryNameError),
+    ({'category': ''}, tag_categories.InvalidTagCategoryNameError),
+    ({'category': '!bad'}, tag_categories.InvalidTagCategoryNameError),
     ({'suggestions': ['good', '!bad']}, tags.InvalidTagNameError),
     ({'implications': ['good', '!bad']}, tags.InvalidTagNameError),
 ])
@@ -156,6 +157,17 @@ def test_trying_to_use_existing_name(test_ctx):
                 },
                 user=test_ctx.user_factory(rank='regular_user')))
     assert tags.try_get_tag_by_name('unused') is None
+
+def test_creating_new_category(test_ctx):
+    test_ctx.api.post(
+        test_ctx.context_factory(
+            input={
+                'names': ['main'],
+                'category': 'new',
+                'suggestions': [],
+                'implications': [],
+            }, user=test_ctx.user_factory(rank='regular_user')))
+    assert tag_categories.try_get_category_by_name('new') is not None
 
 @pytest.mark.parametrize('input,expected_suggestions,expected_implications', [
     # new relations
