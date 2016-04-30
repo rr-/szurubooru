@@ -51,9 +51,10 @@ def query_counter():
 
 @pytest.fixture
 def query_logger():
-    import logging
-    logging.basicConfig()
-    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+    if pytest.config.option.verbose > 0:
+        import logging
+        logging.basicConfig()
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 @pytest.yield_fixture(scope='function', autouse=True)
 def session(query_logger):
