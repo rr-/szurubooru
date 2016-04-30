@@ -18,7 +18,7 @@ class TagCategoryListApi(BaseApi):
         category = tag_categories.create_category(name, color)
         ctx.session.add(category)
         ctx.session.flush()
-        snapshots.create(category, ctx.user)
+        snapshots.save_entity_creation(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
         return tag_categories.serialize_category_with_details(category)
@@ -33,14 +33,14 @@ class TagCategoryDetailApi(BaseApi):
         category = tag_categories.get_category_by_name(category_name)
         if ctx.has_param('name'):
             auth.verify_privilege(ctx.user, 'tag_categories:edit:name')
-            tag_categories.update_name(
+            tag_categories.update_category_name(
                 category, ctx.get_param_as_string('name'))
         if ctx.has_param('color'):
             auth.verify_privilege(ctx.user, 'tag_categories:edit:color')
-            tag_categories.update_color(
+            tag_categories.update_category_color(
                 category, ctx.get_param_as_string('color'))
         ctx.session.flush()
-        snapshots.modify(category, ctx.user)
+        snapshots.save_entity_modification(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
         return tag_categories.serialize_category_with_details(category)
@@ -55,7 +55,7 @@ class TagCategoryDetailApi(BaseApi):
             raise tag_categories.TagCategoryIsInUseError(
                 'Tag category has some usages and cannot be deleted. ' +
                 'Please remove this category from relevant tags first..')
-        snapshots.delete(category, ctx.user)
+        snapshots.save_entity_deletion(category, ctx.user)
         ctx.session.delete(category)
         ctx.session.commit()
         tags.export_to_json()

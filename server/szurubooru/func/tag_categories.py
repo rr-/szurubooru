@@ -28,11 +28,11 @@ def serialize_category_with_details(category):
 
 def create_category(name, color):
     category = db.TagCategory()
-    update_name(category, name)
-    update_color(category, color)
+    update_category_name(category, name)
+    update_category_color(category, color)
     return category
 
-def update_name(category, name):
+def update_category_name(category, name):
     if not name:
         raise InvalidTagCategoryNameError('Name cannot be empty.')
     expr = db.TagCategory.name.ilike(name)
@@ -47,7 +47,7 @@ def update_name(category, name):
     _verify_name_validity(name)
     category.name = name
 
-def update_color(category, color):
+def update_category_color(category, color):
     if not color:
         raise InvalidTagCategoryNameError('Color cannot be empty.')
     if util.value_exceeds_column_size(color, db.TagCategory.color):

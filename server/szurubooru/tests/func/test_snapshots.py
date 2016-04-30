@@ -99,9 +99,9 @@ def test_merging_modification_to_creation(tag_factory, user_factory):
     user = user_factory()
     db.session.add_all([tag, user])
     db.session.flush()
-    snapshots.create(tag, user)
+    snapshots.save_entity_creation(tag, user)
     tag.names = [db.TagName('changed')]
-    snapshots.modify(tag, user)
+    snapshots.save_entity_modification(tag, user)
     results = db.session.query(db.Snapshot).all()
     assert len(results) == 1
     assert results[0].operation == db.Snapshot.OPERATION_CREATED
@@ -113,13 +113,13 @@ def test_merging_modifications(fake_datetime, tag_factory, user_factory):
     db.session.add_all([tag, user])
     db.session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(tag, user)
+        snapshots.save_entity_creation(tag, user)
     tag.names = [db.TagName('changed')]
     with fake_datetime('14:00:00'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     tag.names = [db.TagName('changed again')]
     with fake_datetime('14:00:01'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     results = db.session.query(db.Snapshot).all()
     assert len(results) == 2
     assert results[0].operation == db.Snapshot.OPERATION_CREATED
@@ -134,9 +134,9 @@ def test_not_adding_snapshot_if_data_doesnt_change(
     db.session.add_all([tag, user])
     db.session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(tag, user)
+        snapshots.save_entity_creation(tag, user)
     with fake_datetime('14:00:00'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     results = db.session.query(db.Snapshot).all()
     assert len(results) == 1
     assert results[0].operation == db.Snapshot.OPERATION_CREATED
@@ -149,10 +149,10 @@ def test_not_merging_due_to_time_difference(
     db.session.add_all([tag, user])
     db.session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(tag, user)
+        snapshots.save_entity_creation(tag, user)
     tag.names = [db.TagName('changed')]
     with fake_datetime('13:10:01'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     assert db.session.query(db.Snapshot).count() == 2
 
 def test_not_merging_operations_by_different_users(
@@ -162,9 +162,9 @@ def test_not_merging_operations_by_different_users(
     db.session.add_all([tag, user1, user2])
     db.session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(tag, user1)
+        snapshots.save_entity_creation(tag, user1)
         tag.names = [db.TagName('changed')]
-        snapshots.modify(tag, user2)
+        snapshots.save_entity_modification(tag, user2)
     assert db.session.query(db.Snapshot).count() == 2
 
 def test_merging_resets_merging_time_window(
@@ -174,19 +174,20 @@ def test_merging_resets_merging_time_window(
     db.session.add_all([tag, user])
     db.session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(tag, user)
+        snapshots.save_entity_creation(tag, user)
     tag.names = [db.TagName('changed')]
     with fake_datetime('13:09:59'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     tag.names = [db.TagName('changed again')]
     with fake_datetime('13:19:59'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     results = db.session.query(db.Snapshot).all()
     assert len(results) == 1
     assert results[0].data['names'] == ['changed again']
 
 @pytest.mark.parametrize(
-    'initial_operation', [snapshots.create, snapshots.modify])
+    'initial_operation',
+    [snapshots.save_entity_creation, snapshots.save_entity_modification])
 def test_merging_deletion_to_modification_or_creation(
         fake_datetime, tag_factory, user_factory, initial_operation):
     tag = tag_factory(names=['dummy'], category_name='dummy')
@@ -197,10 +198,10 @@ def test_merging_deletion_to_modification_or_creation(
         initial_operation(tag, user)
     tag.names = [db.TagName('changed')]
     with fake_datetime('14:00:00'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     tag.names = [db.TagName('changed again')]
     with fake_datetime('14:00:01'):
-        snapshots.delete(tag, user)
+        snapshots.save_entity_deletion(tag, user)
     assert db.session.query(db.Snapshot).count() == 2
     results = db.session \
         .query(db.Snapshot) \
@@ -215,7 +216,8 @@ def test_merging_deletion_to_modification_or_creation(
     }
 
 @pytest.mark.parametrize(
-    'expected_operation', [snapshots.create, snapshots.modify])
+    'expected_operation',
+    [snapshots.save_entity_creation, snapshots.save_entity_modification])
 def test_merging_deletion_all_the_way_deletes_all_snapshots(
         fake_datetime, tag_factory, user_factory, expected_operation):
     tag = tag_factory(names=['dummy'])
@@ -223,13 +225,13 @@ def test_merging_deletion_all_the_way_deletes_all_snapshots(
     db.session.add_all([tag, user])
     db.session.flush()
     with fake_datetime('13:00:00'):
-        snapshots.create(tag, user)
+        snapshots.save_entity_creation(tag, user)
     tag.names = [db.TagName('changed')]
     with fake_datetime('13:00:01'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     tag.names = [db.TagName('changed again')]
     with fake_datetime('13:00:02'):
-        snapshots.delete(tag, user)
+        snapshots.save_entity_deletion(tag, user)
     assert db.session.query(db.Snapshot).count() == 0
 
 def test_get_serialized_history(fake_datetime, tag_factory, user_factory):
@@ -238,11 +240,11 @@ def test_get_serialized_history(fake_datetime, tag_factory, user_factory):
     db.session.add_all([tag, user])
     db.session.flush()
     with fake_datetime('2016-04-19 13:00:00'):
-        snapshots.create(tag, user)
+        snapshots.save_entity_creation(tag, user)
     tag.names = [db.TagName('changed')]
     db.session.flush()
     with fake_datetime('2016-04-19 13:10:01'):
-        snapshots.modify(tag, user)
+        snapshots.save_entity_modification(tag, user)
     assert snapshots.get_serialized_history(tag) == [
         {
             'operation': 'modified',

@@ -122,7 +122,7 @@ def get_or_create_tags_by_names(names):
             new_tags.append(new_tag)
     return related_tags, new_tags
 
-def get_siblings(tag):
+def get_tag_siblings(tag):
     tag_alias = sqlalchemy.orm.aliased(db.Tag)
     pt_alias1 = sqlalchemy.orm.aliased(db.PostTag)
     pt_alias2 = sqlalchemy.orm.aliased(db.PostTag)
@@ -147,13 +147,13 @@ def merge_tags(source_tag, target_tag):
 def create_tag(names, category_name, suggestions, implications):
     tag = db.Tag()
     tag.creation_time = datetime.datetime.now()
-    update_names(tag, names)
-    update_category_name(tag, category_name)
-    update_suggestions(tag, suggestions)
-    update_implications(tag, implications)
+    update_tag_names(tag, names)
+    update_tag_category_name(tag, category_name)
+    update_tag_suggestions(tag, suggestions)
+    update_tag_implications(tag, implications)
     return tag
 
-def update_category_name(tag, category_name):
+def update_tag_category_name(tag, category_name):
     category = db.session \
         .query(db.TagCategory) \
         .filter(db.TagCategory.name == category_name) \
@@ -163,7 +163,7 @@ def update_category_name(tag, category_name):
         db.session.add(category)
     tag.category = category
 
-def update_names(tag, names):
+def update_tag_names(tag, names):
     names = util.icase_unique([name for name in names if name])
     if not len(names):
         raise InvalidTagNameError('At least one name must be specified.')
@@ -190,14 +190,14 @@ def update_names(tag, names):
         if not _check_name_intersection(_get_plain_names(tag), [name]):
             tag.names.append(db.TagName(name))
 
-def update_implications(tag, relations):
+def update_tag_implications(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot imply itself.')
     related_tags, new_tags = get_or_create_tags_by_names(relations)
     db.session.flush()
     tag.implications = related_tags + new_tags
 
-def update_suggestions(tag, relations):
+def update_tag_suggestions(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot suggest itself.')
     related_tags, new_tags = get_or_create_tags_by_names(relations)

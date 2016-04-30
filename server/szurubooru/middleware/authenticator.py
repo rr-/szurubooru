@@ -14,7 +14,7 @@ class Authenticator(object):
         request.context.user = self._get_user(request)
         if request.get_param_as_bool('bump-login') \
                 and request.context.user.user_id:
-            users.bump_login_time(request.context.user)
+            users.bump_user_login_time(request.context.user)
             request.context.session.commit()
 
     def _get_user(self, request):

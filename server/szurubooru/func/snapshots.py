@@ -80,7 +80,7 @@ def get_serialized_history(entity):
         earlier_snapshot = snapshot
     return ret
 
-def save(operation, entity, auth_user):
+def _save(operation, entity, auth_user):
     resource_type, resource_id, resource_repr = util.get_resource_info(entity)
     now = datetime.datetime.now()
 
@@ -113,11 +113,11 @@ def save(operation, entity, auth_user):
     else:
         db.session.add(snapshot)
 
-def create(entity, auth_user):
-    save(db.Snapshot.OPERATION_CREATED, entity, auth_user)
+def save_entity_creation(entity, auth_user):
+    _save(db.Snapshot.OPERATION_CREATED, entity, auth_user)
 
-def modify(entity, auth_user):
-    save(db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
+def save_entity_modification(entity, auth_user):
+    _save(db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
 
-def delete(entity, auth_user):
-    save(db.Snapshot.OPERATION_DELETED, entity, auth_user)
+def save_entity_deletion(entity, auth_user):
+    _save(db.Snapshot.OPERATION_DELETED, entity, auth_user)

@@ -78,9 +78,9 @@ def get_user_by_name_or_email(name_or_email):
 
 def create_user(name, password, email, auth_user):
     user = db.User()
-    update_name(user, name, auth_user)
-    update_password(user, password)
-    update_email(user, email)
+    update_user_name(user, name, auth_user)
+    update_user_password(user, password)
+    update_user_email(user, email)
     if get_user_count() > 0:
         user.rank = config.config['default_rank']
     else:
@@ -89,7 +89,7 @@ def create_user(name, password, email, auth_user):
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
 
-def update_name(user, name, auth_user):
+def update_user_name(user, name, auth_user):
     if not name:
         raise InvalidUserNameError('Name cannot be empty.')
     if util.value_exceeds_column_size(name, db.User.name):
@@ -104,7 +104,7 @@ def update_name(user, name, auth_user):
             'User name %r must satisfy regex %r.' % (name, name_regex))
     user.name = name
 
-def update_password(user, password):
+def update_user_password(user, password):
     if not password:
         raise InvalidPasswordError('Password cannot be empty.')
     password_regex = config.config['password_regex']
@@ -114,7 +114,7 @@ def update_password(user, password):
     user.password_salt = auth.create_password()
     user.password_hash = auth.get_password_hash(user.password_salt, password)
 
-def update_email(user, email):
+def update_user_email(user, email):
     if email:
         email = email.strip()
     if not email:
@@ -125,7 +125,7 @@ def update_email(user, email):
         raise InvalidEmailError('E-mail is invalid.')
     user.email = email
 
-def update_rank(user, rank, authenticated_user):
+def update_user_rank(user, rank, authenticated_user):
     if not rank:
         raise InvalidRankError('Rank cannot be empty.')
     rank = rank.strip()
@@ -138,7 +138,7 @@ def update_rank(user, rank, authenticated_user):
         raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank
 
-def update_avatar(user, avatar_style, avatar_content):
+def update_user_avatar(user, avatar_style, avatar_content):
     if avatar_style == 'gravatar':
         user.avatar_style = user.AVATAR_GRAVATAR
     elif avatar_style == 'manual':
@@ -155,10 +155,10 @@ def update_avatar(user, avatar_style, avatar_content):
             'Avatar style %r is invalid. Valid avatar styles: %r.' % (
                 avatar_style, ['gravatar', 'manual']))
 
-def bump_login_time(user):
+def bump_user_login_time(user):
     user.last_login_time = datetime.datetime.now()
 
-def reset_password(user):
+def reset_user_password(user):
     password = auth.create_password()
     user.password_salt = auth.create_password()
     user.password_hash = auth.get_password_hash(user.password_salt, password)

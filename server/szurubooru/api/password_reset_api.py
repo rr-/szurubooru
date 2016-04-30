@@ -14,7 +14,8 @@ class PasswordResetApi(BaseApi):
         user = users.get_user_by_name_or_email(user_name)
         if not user.email:
             raise errors.ValidationError(
-                'User %r hasn\'t supplied email. Cannot reset password.' % user_name)
+                'User %r hasn\'t supplied email. Cannot reset password.' % (
+                    user_name))
         token = auth.generate_authentication_token(user)
         url = '%s/password-reset/%s:%s' % (
             config.config['base_url'].rstrip('/'), user.name, token)
@@ -32,6 +33,6 @@ class PasswordResetApi(BaseApi):
         token = ctx.get_param_as_string('token', required=True)
         if token != good_token:
             raise errors.ValidationError('Invalid password reset token.')
-        new_password = users.reset_password(user)
+        new_password = users.reset_user_password(user)
         ctx.session.commit()
         return {'password': new_password}

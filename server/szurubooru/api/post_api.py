@@ -10,7 +10,7 @@ class PostDetailApi(BaseApi):
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:delete')
         post = posts.get_post_by_id(post_id)
-        snapshots.delete(post, ctx.user)
+        snapshots.save_entity_deletion(post, ctx.user)
         ctx.session.delete(post)
         ctx.session.commit()
         tags.export_to_json()
@@ -27,8 +27,8 @@ class PostFeatureApi(BaseApi):
                 'Post %r is already featured.' % post_id)
         posts.feature_post(post, ctx.user)
         if featured_post:
-            snapshots.modify(featured_post, ctx.user)
-        snapshots.modify(post, ctx.user)
+            snapshots.save_entity_modification(featured_post, ctx.user)
+        snapshots.save_entity_modification(post, ctx.user)
         ctx.session.commit()
         return posts.serialize_post_with_details(post, ctx.user)
 
