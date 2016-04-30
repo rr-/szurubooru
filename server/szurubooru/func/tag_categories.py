@@ -77,7 +77,7 @@ def try_get_default_category():
         .query(db.TagCategory) \
         .order_by(db.TagCategory.tag_category_id.asc()) \
         .limit(1) \
-        .one()
+        .first()
 
 def get_default_category():
     category = try_get_default_category()

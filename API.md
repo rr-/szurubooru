@@ -29,7 +29,7 @@
         - [Listing tag siblings](#listing-tag-siblings)
     - Posts
         - ~~Listing posts~~
-        - ~~Creating post~~
+        - [Creating post](#creating-post)
         - ~~Updating post~~
         - [Getting post](#getting-post)
         - [Deleting post](#deleting-post)
@@ -69,6 +69,7 @@
    - [Detailed tag](#detailed-tag)
    - [Post](#post)
    - [Detailed post](#detailed-post)
+   - [Note](#note)
    - [Comment](#comment)
    - [Detailed comment](#detailed-comment)
    - [Snapshot](#snapshot)
@@ -125,7 +126,6 @@ Depending on the deployment, the URLs might be relative to some base path such
 as `/api/`. Values denoted with diamond braces (`<like this>`) signify variable
 data.
 
-
 ## Listing tag categories
 - **Request**
 
@@ -149,7 +149,6 @@ data.
     reduce the trips frontend needs to make when doing autocompletion, and ease
     caching. The data directory and its URL are controlled with `data_dir` and
     `data_url` variables in server's configuration.
-
 
 ## Creating tag category
 - **Request**
@@ -180,7 +179,6 @@ data.
 
     Creates a new tag category using specified parameters. Name must match
     `tag_category_name_regex` from server's configuration.
-
 
 ## Updating tag category
 - **Request**
@@ -214,7 +212,6 @@ data.
     match `tag_category_name_regex` from server's configuration. All fields are
     optional - update concerns only provided fields.
 
-
 ## Getting tag category
 - **Request**
 
@@ -232,7 +229,6 @@ data.
 - **Description**
 
     Retrieves information about an existing tag category.
-
 
 ## Deleting tag category
 - **Request**
@@ -256,7 +252,6 @@ data.
 
     Deletes existing tag category. The tag category to be deleted must have no
     usages.
-
 
 ## Listing tags
 - **Request**
@@ -327,7 +322,6 @@ data.
 
     None.
 
-
 ## Creating tag
 - **Request**
 
@@ -370,7 +364,6 @@ data.
     first tag category found. If there are no tag categories established yet,
     an error will be thrown.
 
-
 ## Updating tag
 - **Request**
 
@@ -412,7 +405,6 @@ data.
     their category is set to the first tag category found. All fields are
     optional - update concerns only provided fields.
 
-
 ## Getting tag
 - **Request**
 
@@ -430,7 +422,6 @@ data.
 - **Description**
 
     Retrieves information about an existing tag.
-
 
 ## Deleting tag
 - **Request**
@@ -452,7 +443,6 @@ data.
 - **Description**
 
     Deletes existing tag. The tag to be deleted must have no usages.
-
 
 ## Merging tags
 - **Request**
@@ -484,7 +474,6 @@ data.
     tag properties such as category, tag relations etc. do not get transferred
     and are discarded. The target tag effectively remains unchanged with the
     exception of the set of posts it's used in.
-
 
 ## Listing tag siblings
 - **Request**
@@ -520,6 +509,48 @@ data.
     appears with given tag. Results are sorted by occurrences count and the
     list is truncated to the first 50 elements. Doesn't use paging.
 
+## Creating post
+- **Request**
+
+    `POST /posts/`
+
+- **Input**
+
+    ```json5
+    {
+        "tags":         [<tag1>, <tag2>, <tag3>],
+        "safety":       <safety>,
+        "source":       <source>,                     // optional
+        "relations":    [<post1>, <post2>, <post3>],  // optional
+        "notes":        [<note1>, <note2>, <note3>],  // optional
+        "flags":        [<flag1>, <flag2>]            // optional
+    }
+    ```
+
+- **Files**
+
+    - `content` - the content of the content.
+    - `thumbnail` - the content of custom thumbnail (optional).
+
+- **Output**
+
+    A [detailed post resource](#detailed-post).
+
+- **Errors**
+
+    - tags have invalid names
+    - safety is invalid
+    - relations refer to non-existing posts
+    - privileges are too low
+
+- **Description**
+
+    Creates a new post. If specified tags do not exist yet, they will be
+    automatically created. Tags created automatically have no implications, no
+    suggestions, one name and their category is set to the first tag category
+    found. Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`. `<flag>`
+    currently can be only `"loop"` to enable looping for video posts. Sending
+    empty `thumbnail` will cause the post to use default thumbnail.
 
 ## Getting post
 - **Request**
@@ -538,7 +569,6 @@ data.
 - **Description**
 
     Retrieves information about an existing post.
-
 
 ## Deleting post
 - **Request**
@@ -559,7 +589,6 @@ data.
 - **Description**
 
     Deletes existing post. Related posts and tags are kept.
-
 
 ## Rating post
 - **Request**
@@ -589,7 +618,6 @@ data.
     Updates score of authenticated user for given post. Valid scores are -1, 0
     and 1.
 
-
 ## Adding post to favorites
 - **Request**
 
@@ -608,7 +636,6 @@ data.
 
     Marks the post as favorite for authenticated user.
 
-
 ## Removing post from favorites
 - **Request**
 
@@ -626,7 +653,6 @@ data.
 - **Description**
 
     Unmarks the post as favorite for authenticated user.
-
 
 ## Getting featured post
 - **Request**
@@ -647,7 +673,6 @@ data.
     client. If no post is featured, `<post>` is null and `snapshots` array is
     empty.
 
-
 ## Featuring post
 - **Request**
 
@@ -665,7 +690,6 @@ data.
 - **Description**
 
     Features a post on the main page in web client.
-
 
 ## Listing comments
 - **Request**
@@ -722,7 +746,6 @@ data.
 
     None.
 
-
 ## Creating comment
 - **Request**
 
@@ -751,7 +774,6 @@ data.
 
     Creates a new comment under given post.
 
-
 ## Updating comment
 - **Request**
 
@@ -779,7 +801,6 @@ data.
 
     Updates an existing comment text.
 
-
 ## Getting comment
 - **Request**
 
@@ -797,7 +818,6 @@ data.
 - **Description**
 
     Retrieves information about an existing comment.
-
 
 ## Deleting comment
 - **Request**
@@ -818,7 +838,6 @@ data.
 - **Description**
 
     Deletes existing comment.
-
 
 ## Rating comment
 - **Request**
@@ -847,7 +866,6 @@ data.
 
     Updates score of authenticated user for given comment. Valid scores are -1,
     0 and 1.
-
 
 ## Listing users
 - **Request**
@@ -900,7 +918,6 @@ data.
 
     None.
 
-
 ## Creating user
 - **Request**
 
@@ -947,7 +964,6 @@ data.
     administrator, whereas subsequent users will be given the rank indicated by
     `default_rank` in the server's configuration.
 
-
 ## Updating user
 - **Request**
 
@@ -993,7 +1009,6 @@ data.
     `manual`. `manual` avatar style requires client to pass also `avatar`
     file - see [file uploads](#file-uploads) for details.
 
-
 ## Getting user
 - **Request**
 
@@ -1011,7 +1026,6 @@ data.
 - **Description**
 
     Retrieves information about an existing user.
-
 
 ## Deleting user
 - **Request**
@@ -1032,7 +1046,6 @@ data.
 - **Description**
 
     Deletes existing user.
-
 
 ## Password reset - step 1: mail request
 - **Request**
@@ -1057,7 +1070,6 @@ data.
     proves that the person who requested to reset the password also owns the
     mailbox, which is a strong indication they are the rightful owner of the
     account.
-
 
 ## Password reset - step 2: confirmation
 - **Request**
@@ -1090,7 +1102,6 @@ data.
 
     Generates a new password for given user. Password is sent as plain-text, so
     it is recommended to connect through HTTPS.
-
 
 ## Listing snapshots
 - **Request**
@@ -1132,7 +1143,6 @@ data.
     **Special tokens**
 
     None.
-
 
 ## Getting global info
 - **Request**
@@ -1325,29 +1335,34 @@ One file together with its metadata posted to the site.
 ```json5
 {
     "id":              <id>,
+    "creationTime":    <creation-time>,
+    "lastEditTime":    <last-edit-time>,
     "safety":          <safety>,
+    "source":          <source>,
     "type":            <type>,
     "checksum":        <checksum>,
-    "source":          <source>,
     "canvasWidth":     <canvas-width>,
     "canvasHeight":    <canvas-height>,
+    "contentUrl":      <content-url>,
+    "thumbnailUrl":    <thumbnail-url>,
     "flags":           <flags>,
     "tags":            <tags>,
     "relations":       <relations>,
-    "creationTime":    <creation-time>,
-    "lastEditTime":    <last-edit-time>,
+    "notes":           <notes>,
     "user":            <user>,
     "score":           <score>,
     "ownScore":        <own-score>,
-    "favoritedBy":     <favorited-by>,
     "featureCount":    <feature-count>,
-    "lastFeatureTime": <last-feature-time>
+    "lastFeatureTime": <last-feature-time>,
+    "favoritedBy":     <favorited-by>
 }
 ```
 
 **Field meaning**
 
 - `<id>`: the post identifier.
+- `<creation-time>`: time the tag was created, formatted as per RFC 3339.
+- `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
 - `<safety>`: whether the post is safe for work.
 
     Available values:
@@ -1356,6 +1371,7 @@ One file together with its metadata posted to the site.
     - `"sketchy"`
     - `"unsafe"`
 
+- `<source>`: where the post was grabbed form, supplied by the user.
 - `<type>`: the type of the post.
 
     Available values:
@@ -1368,24 +1384,25 @@ One file together with its metadata posted to the site.
 
 - `<checksum>`: the file checksum. Used in snapshots to signify changes of the
   post content.
-- `<source>`: where the post was grabbed form, supplied by the user.
 - `<canvas-width>` and `<canvas-height>`: the original width and height of the
   post content.
+- `<content-url>`: where the post content is located.
+- `<thumbnail-url>`: where the post thumbnail is located.
 - `<flags>`: various flags such as whether the post is looped, represented as
   array of plain strings.
 - `<tags>`: list of tag names the post is tagged with.
 - `<relations>`: a list of related post IDs. Links to related posts are shown
   to the user by the web client.
-- `<creation-time>`: time the tag was created, formatted as per RFC 3339.
-- `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
+- `<notes>`: a list of post annotations, serialized as list of [note
+  resources](#note).
 - `<user>`: who created the post, serialized as [user resource](#user).
 - `<score>`: the collective score (+1/-1 rating) of the given post.
 - `<own-score>`: the score (+1/-1 rating) of the given post by the
   authenticated user.
-- `<favorited-by>`: list of users, serialized as [user resources](#user).
 - `<feature-count>`: how many times has the post been featured.
 - `<last-feature-time>`: the last time the post was featured, formatted as per
   RFC 3339.
+- `<favorited-by>`: list of users, serialized as [user resources](#user).
 
 ## Detailed post
 **Description**
@@ -1416,6 +1433,27 @@ A post with extra information.
   earlier versions.
 - `<comment>`: a [comment resource](#comment) for given post.
 
+## Note
+**Description**
+
+A text annotation rendered on top of the post.
+
+**Structure**
+
+```json5
+{
+    "polygon": <list-of-points>,
+    "text":    <text>,
+}
+```
+
+**Field meaning**
+- `<list-of-points>`: where to draw the annotation. Each point must have
+  coordinates within 0 to 1. For example, `[[0,0],[0,1],[1,1],[1,0]]` will draw
+  the annotation on the whole post, whereas `[[0,0],[0,0.5],[0.5,0.5],[0.5,0]]`
+  will draw it inside the post's upper left quarter.
+- `<text>`: the annotation text. The client should render is as Markdown.
+
 ## Comment
 **Description**
 
@@ -1439,6 +1477,7 @@ A comment under a post.
 **Field meaning**
 - `<id>`: the comment identifier.
 - `<post>`: a post resource the post is linked with.
+- `<text>`: the comment content. The client should render is as Markdown.
 - `<author>`: a user resource the post is created by.
 - `<creation-time>`: time the comment was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the comment was edited, formatted as per RFC 3339.
@@ -1542,7 +1581,7 @@ A snapshot is a version of a database resource.
             "checksum": "deadbeef",
             "tags": ["tag1", "tag2"],
             "relations": [1, 2],
-            "notes": [{"polygon": [[1,1],[200,1],[200,200],[1,200]], "text": "..."}],
+            "notes": [<note1>, <note2>, <note3>],
             "flags": ["loop"],
             "featured": false
         }

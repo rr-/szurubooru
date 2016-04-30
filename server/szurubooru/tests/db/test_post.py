@@ -13,6 +13,7 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     post.checksum = 'deadbeef'
     post.creation_time = datetime(1997, 1, 1)
     post.last_edit_time = datetime(1998, 1, 1)
+    post.mime_type = 'application/whatever'
     db.session.add_all([user, tag1, tag2, related_post1, related_post2, post])
 
     post.user = user

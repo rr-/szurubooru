@@ -71,26 +71,29 @@ class Post(Base):
     SAFETY_SAFE = 'safe'
     SAFETY_SKETCHY = 'sketchy'
     SAFETY_UNSAFE = 'unsafe'
-    TYPE_IMAGE = 'anim'
-    TYPE_ANIMATION = 'anim'
-    TYPE_FLASH = 'flash'
+    TYPE_IMAGE = 'image'
+    TYPE_ANIMATION = 'animation'
     TYPE_VIDEO = 'video'
-    TYPE_YOUTUBE = 'youtube'
-    FLAG_LOOP_VIDEO = 1
+    TYPE_FLASH = 'flash'
 
+    # basic meta
     post_id = Column('id', Integer, primary_key=True)
     user_id = Column('user_id', Integer, ForeignKey('user.id'))
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
     safety = Column('safety', String(32), nullable=False)
+    source = Column('source', String(200))
+    flags = Column('flags', PickleType, default=None)
+
+    # content description
     type = Column('type', String(32), nullable=False)
     checksum = Column('checksum', String(64), nullable=False)
-    source = Column('source', String(200))
     file_size = Column('file_size', Integer)
     canvas_width = Column('image_width', Integer)
     canvas_height = Column('image_height', Integer)
-    flags = Column('flags', PickleType, default=None)
+    mime_type = Column('mime-type', String(32), nullable=False)
 
+    # foreign tables
     user = relationship('User')
     tags = relationship('Tag', backref='posts', secondary='post_tag')
     relations = relationship(
@@ -106,8 +109,9 @@ class Post(Base):
         'PostFavorite', cascade='all, delete-orphan', lazy='joined')
     notes = relationship(
         'PostNote', cascade='all, delete-orphan', lazy='joined')
-
     comments = relationship('Comment')
+
+    # dynamic columns
     tag_count = column_property(
         select([func.count(PostTag.tag_id)]) \
         .where(PostTag.post_id == post_id) \

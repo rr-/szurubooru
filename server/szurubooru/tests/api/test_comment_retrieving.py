@@ -6,6 +6,7 @@ from szurubooru.func import util, comments
 @pytest.fixture
 def test_ctx(context_factory, config_injector, user_factory, comment_factory):
     config_injector({
+        'data_url': 'http://example.com',
         'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
         'rank_names': {'regular_user': 'Peasant'},
         'privileges': {

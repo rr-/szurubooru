@@ -1,6 +1,29 @@
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, tags, posts, snapshots, favorites, scores
 
+class PostListApi(BaseApi):
+    def post(self, ctx):
+        auth.verify_privilege(ctx.user, 'posts:create')
+        content = ctx.get_file('content', required=True)
+        tag_names = ctx.get_param_as_list('tags', required=True)
+        safety = ctx.get_param_as_string('safety', required=True)
+        source = ctx.get_param_as_string('source', required=False, default=None)
+        relations = ctx.get_param_as_list('relations', required=False) or []
+        notes = ctx.get_param_as_list('notes', required=False) or []
+        flags = ctx.get_param_as_list('flags', required=False) or []
+
+        post = posts.create_post(content, tag_names, ctx.user)
+        posts.update_post_safety(post, safety)
+        posts.update_post_source(post, source)
+        posts.update_post_relations(post, relations)
+        posts.update_post_notes(post, notes)
+        posts.update_post_flags(post, flags)
+        ctx.session.add(post)
+        snapshots.save_entity_creation(post, ctx.user)
+        ctx.session.commit()
+        tags.export_to_json()
+        return posts.serialize_post_with_details(post, ctx.user)
+
 class PostDetailApi(BaseApi):
     def get(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:view')

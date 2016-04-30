@@ -1,5 +1,4 @@
 import datetime
-import hashlib
 import re
 from sqlalchemy import func
 from szurubooru import config, db, errors
@@ -28,11 +27,9 @@ def serialize_user(user, authenticated_user, force_show_email=False):
     }
 
     if user.avatar_style == user.AVATAR_GRAVATAR:
-        md5 = hashlib.md5()
-        md5.update((user.email or user.name).lower().encode('utf-8'))
-        digest = md5.hexdigest()
         ret['avatarUrl'] = 'http://gravatar.com/avatar/%s?d=retro&s=%d' % (
-            digest, config.config['thumbnails']['avatar_width'])
+            util.get_md5((user.email or user.name).lower()),
+            config.config['thumbnails']['avatar_width'])
     else:
         ret['avatarUrl'] = '%s/avatars/%s.jpg' % (
             config.config['data_url'].rstrip('/'), user.name.lower())

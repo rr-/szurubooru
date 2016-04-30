@@ -1,7 +1,18 @@
 import datetime
+import hashlib
 import re
 from sqlalchemy.inspection import inspect
 from szurubooru.errors import ValidationError
+
+def get_md5(source):
+    if not isinstance(source, bytes):
+        source = source.encode('utf-8')
+    md5 = hashlib.md5()
+    md5.update(source)
+    return md5.hexdigest()
+
+def flip(source):
+    return {v: k for k, v in source.items()}
 
 def get_resource_info(entity):
     serializers = {
@@ -96,4 +107,9 @@ def icase_unique(source):
     return target
 
 def value_exceeds_column_size(value, column):
-    return len(value) > column.property.columns[0].type.length
+    if not value:
+        return False
+    max_length = column.property.columns[0].type.length
+    if max_length is None:
+        return False
+    return len(value) > max_length

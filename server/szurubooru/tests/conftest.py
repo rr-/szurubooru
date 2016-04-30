@@ -1,4 +1,5 @@
 import contextlib
+import os
 import datetime
 import uuid
 import pytest
@@ -136,6 +137,7 @@ def post_factory():
         post.type = type
         post.checksum = checksum
         post.flags = []
+        post.mime_type = 'application/octet-stream'
         post.creation_time = datetime.datetime(1996, 1, 1)
         return post
     return factory
@@ -156,3 +158,11 @@ def comment_factory(user_factory, post_factory):
         comment.creation_time = datetime.datetime(1996, 1, 1)
         return comment
     return factory
+
+@pytest.fixture
+def read_asset():
+    def get(path):
+        path = os.path.join(os.path.dirname(__file__), 'assets', path)
+        with open(path, 'rb') as handle:
+            return handle.read()
+    return get

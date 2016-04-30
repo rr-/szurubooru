@@ -6,6 +6,7 @@ from szurubooru.func import util, posts
 @pytest.fixture
 def test_ctx(context_factory, config_injector, user_factory, post_factory):
     config_injector({
+        'data_url': 'http://example.com',
         'privileges': {
             'posts:feature': 'regular_user',
             'posts:view': 'regular_user',

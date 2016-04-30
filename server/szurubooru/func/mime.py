@@ -2,7 +2,7 @@ import re
 
 def get_mime_type(content):
     if not content:
-        return None
+        return 'application/octet-stream'
 
     if content[0:3] in (b'CWS', b'FWS', b'ZWS'):
         return 'application/x-shockwave-flash'
@@ -33,7 +33,7 @@ def get_extension(mime_type):
         'video/mp4': 'mp4',
         'video/webm': 'webm',
     }
-    return extension_map.get(mime_type.strip().lower(), None)
+    return extension_map.get((mime_type or '').strip().lower(), None)
 
 def is_flash(mime_type):
     return mime_type.lower() == 'application/x-shockwave-flash'

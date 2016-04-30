@@ -12,6 +12,9 @@ class TagIsInUseError(errors.ValidationError): pass
 class InvalidTagNameError(errors.ValidationError): pass
 class InvalidTagRelationError(errors.ValidationError): pass
 
+DEFAULT_CATEGORY_NAME = 'Default'
+DEFAULT_CATEGORY_COLOR = 'default'
+
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']
     if not re.match(name_regex, name):
@@ -25,6 +28,13 @@ def _lower_list(names):
 
 def _check_name_intersection(names1, names2):
     return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
+
+def _get_default_category_name():
+    tag_category = tag_categories.try_get_default_category()
+    if tag_category:
+        return tag_category.name
+    else:
+        return DEFAULT_CATEGORY_NAME
 
 def serialize_tag(tag):
     return {
@@ -104,23 +114,24 @@ def get_or_create_tags_by_names(names):
     names = util.icase_unique(names)
     for name in names:
         _verify_name_validity(name)
-    related_tags = get_tags_by_names(names)
+    existing_tags = get_tags_by_names(names)
     new_tags = []
+    tag_category_name = _get_default_category_name()
     for name in names:
         found = False
-        for related_tag in related_tags:
-            if _check_name_intersection(_get_plain_names(related_tag), [name]):
+        for existing_tag in existing_tags:
+            if _check_name_intersection(_get_plain_names(existing_tag), [name]):
                 found = True
                 break
         if not found:
             new_tag = create_tag(
                 names=[name],
-                category_name=tag_categories.get_default_category().name,
+                category_name=tag_category_name,
                 suggestions=[],
                 implications=[])
             db.session.add(new_tag)
             new_tags.append(new_tag)
-    return related_tags, new_tags
+    return existing_tags, new_tags
 
 def get_tag_siblings(tag):
     tag_alias = sqlalchemy.orm.aliased(db.Tag)
@@ -159,7 +170,8 @@ def update_tag_category_name(tag, category_name):
         .filter(db.TagCategory.name == category_name) \
         .first()
     if not category:
-        category = tag_categories.create_category(category_name, 'default')
+        category = tag_categories.create_category(
+            category_name, DEFAULT_CATEGORY_COLOR)
         db.session.add(category)
     tag.category = category
 

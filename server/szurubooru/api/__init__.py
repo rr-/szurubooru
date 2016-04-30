@@ -15,6 +15,7 @@ from szurubooru.api.comment_api import (
     CommentDetailApi,
     CommentScoreApi)
 from szurubooru.api.post_api import (
+    PostListApi,
     PostDetailApi,
     PostFeatureApi,
     PostScoreApi,

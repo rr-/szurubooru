@@ -12,8 +12,16 @@ class Context(object):
     def has_param(self, name):
         return name in self.input
 
-    def get_file(self, name):
-        return self.files.get(name, None)
+    def has_file(self, name):
+        return name in self.files
+
+    def get_file(self, name, required=False):
+        if name in self.files:
+            return self.files[name]
+        if not required:
+            return None
+        raise errors.MissingRequiredFileError(
+            'Required file %r is missing.' % name)
 
     def get_param_as_list(self, name, required=False, default=None):
         if name in self.input:
@@ -23,7 +31,8 @@ class Context(object):
             return param
         if not required:
             return default
-        raise errors.ValidationError('Required paramter %r is missing.' % name)
+        raise errors.MissingRequiredParameterError(
+            'Required paramter %r is missing.' % name)
 
     def get_param_as_string(self, name, required=False, default=None):
         if name in self.input:
@@ -32,12 +41,14 @@ class Context(object):
                 try:
                     param = ','.join(param)
                 except:
-                    raise errors.ValidationError(
-                        'Parameter %r is invalid - expected simple string.' % name)
+                    raise errors.InvalidParameterError(
+                        'Parameter %r is invalid - expected simple string.'
+                        % name)
             return param
         if not required:
             return default
-        raise errors.ValidationError('Required paramter %r is missing.' % name)
+        raise errors.MissingRequiredParameterError(
+            'Required paramter %r is missing.' % name)
 
     # pylint: disable=redefined-builtin,too-many-arguments
     def get_param_as_int(
@@ -47,21 +58,21 @@ class Context(object):
             try:
                 val = int(val)
             except (ValueError, TypeError):
-                raise errors.ValidationError(
+                raise errors.InvalidParameterError(
                     'Parameter %r is invalid: the value must be an integer.'
                     % name)
             if min is not None and val < min:
-                raise errors.ValidationError(
+                raise errors.InvalidParameterError(
                     'Parameter %r is invalid: the value must be at least %r.'
                     % (name, min))
             if max is not None and val > max:
-                raise errors.ValidationError(
+                raise errors.InvalidParameterError(
                     'Parameter %r is invalid: the value may not exceed %r.'
                     % (name, max))
             return val
         if not required:
             return default
-        raise errors.ValidationError(
+        raise errors.MissingRequiredParameterError(
             'Required parameter %r is missing.' % name)
 
 class Request(falcon.Request):

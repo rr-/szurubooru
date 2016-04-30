@@ -1,3 +1,4 @@
+import json
 import subprocess
 from szurubooru import errors
 
@@ -7,6 +8,19 @@ _SCALE_FIT_FMT = \
 class Image(object):
     def __init__(self, content):
         self.content = content
+        self._reload_info()
+
+    @property
+    def width(self):
+        return self.info['streams'][0]['width']
+
+    @property
+    def height(self):
+        return self.info['streams'][0]['height']
+
+    @property
+    def frames(self):
+        return self.info['streams'][0]['nb_read_frames']
 
     def resize_fill(self, width, height):
         self.content = self._execute([
@@ -17,6 +31,7 @@ class Image(object):
             '-vcodec', 'png',
             '-',
         ])
+        self._reload_info()
 
     def to_png(self):
         return self._execute([
@@ -36,9 +51,9 @@ class Image(object):
             '-',
         ])
 
-    def _execute(self, cli):
+    def _execute(self, cli, program='ffmpeg'):
         proc = subprocess.Popen(
-            ['ffmpeg', '-loglevel', '24'] + cli,
+            [program, '-loglevel', '24'] + cli,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.PIPE)
@@ -47,3 +62,15 @@ class Image(object):
             raise errors.ProcessingError(
                 'Error while processing image.\n' + err.decode('utf-8'))
         return out
+
+    def _reload_info(self):
+        self.info = json.loads(self._execute([
+            '-of', 'json',
+            '-select_streams', 'v',
+            '-show_streams',
+            '-count_frames',
+            '-i', '-',
+        ], program='ffprobe').decode('utf-8'))
+        assert 'streams' in self.info
+        if len(self.info['streams']) != 1:
+            raise errors.ProcessingError('Multiple video streams detected.')

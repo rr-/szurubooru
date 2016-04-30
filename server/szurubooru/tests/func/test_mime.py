@@ -6,7 +6,7 @@ from szurubooru.func import mime
     ('mp4.mp4', 'video/mp4'),
     ('webm.webm', 'video/webm'),
     ('flash.swf', 'application/x-shockwave-flash'),
-    ('png-transparent.png', 'image/png'),
+    ('png.png', 'image/png'),
     ('jpeg.jpg', 'image/jpeg'),
     ('gif.gif', 'image/gif'),
 ])
