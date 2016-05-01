@@ -85,6 +85,7 @@ def serialize_post(post, authenticated_user):
         'lastFeatureTime': post.last_feature_time,
         'favoritedBy': [users.serialize_user(rel.user, authenticated_user) \
             for rel in post.favorited_by],
+        'hasCustomThumbnail': files.has(get_post_thumbnail_backup_path(post)),
     }
 
     if authenticated_user:

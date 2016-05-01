@@ -9,6 +9,9 @@ def delete(path):
     if os.path.exists(full_path):
         os.unlink(full_path)
 
+def has(path):
+    return os.path.exists(_get_full_path(path))
+
 def get(path):
     full_path = _get_full_path(path)
     if not os.path.exists(full_path):

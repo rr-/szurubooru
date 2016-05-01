@@ -4,8 +4,10 @@ from szurubooru import api, db, errors
 from szurubooru.func import util, comments, scores
 
 @pytest.fixture
-def test_ctx(config_injector, context_factory, user_factory, comment_factory):
+def test_ctx(
+        tmpdir, config_injector, context_factory, user_factory, comment_factory):
     config_injector({
+        'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
         'ranks': ['anonymous', 'regular_user', 'mod'],
         'rank_names': {'anonymous': 'Peasant', 'regular_user': 'Lord'},

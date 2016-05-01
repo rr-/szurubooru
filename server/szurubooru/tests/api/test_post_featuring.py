@@ -4,8 +4,10 @@ from szurubooru import api, db, errors
 from szurubooru.func import util, posts
 
 @pytest.fixture
-def test_ctx(context_factory, config_injector, user_factory, post_factory):
+def test_ctx(
+        tmpdir, context_factory, config_injector, user_factory, post_factory):
     config_injector({
+        'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
         'privileges': {
             'posts:feature': 'regular_user',

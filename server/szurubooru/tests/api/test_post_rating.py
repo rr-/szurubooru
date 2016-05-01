@@ -3,8 +3,10 @@ from szurubooru import api, db, errors
 from szurubooru.func import util, posts, scores
 
 @pytest.fixture
-def test_ctx(config_injector, context_factory, user_factory, post_factory):
+def test_ctx(
+        tmpdir, config_injector, context_factory, user_factory, post_factory):
     config_injector({
+        'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
         'ranks': ['anonymous', 'regular_user'],
         'rank_names': {'anonymous': 'Peasant', 'regular_user': 'Lord'},

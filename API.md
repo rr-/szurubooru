@@ -1334,27 +1334,28 @@ One file together with its metadata posted to the site.
 
 ```json5
 {
-    "id":              <id>,
-    "creationTime":    <creation-time>,
-    "lastEditTime":    <last-edit-time>,
-    "safety":          <safety>,
-    "source":          <source>,
-    "type":            <type>,
-    "checksum":        <checksum>,
-    "canvasWidth":     <canvas-width>,
-    "canvasHeight":    <canvas-height>,
-    "contentUrl":      <content-url>,
-    "thumbnailUrl":    <thumbnail-url>,
-    "flags":           <flags>,
-    "tags":            <tags>,
-    "relations":       <relations>,
-    "notes":           <notes>,
-    "user":            <user>,
-    "score":           <score>,
-    "ownScore":        <own-score>,
-    "featureCount":    <feature-count>,
-    "lastFeatureTime": <last-feature-time>,
-    "favoritedBy":     <favorited-by>
+    "id":                 <id>,
+    "creationTime":       <creation-time>,
+    "lastEditTime":       <last-edit-time>,
+    "safety":             <safety>,
+    "source":             <source>,
+    "type":               <type>,
+    "checksum":           <checksum>,
+    "canvasWidth":        <canvas-width>,
+    "canvasHeight":       <canvas-height>,
+    "contentUrl":         <content-url>,
+    "thumbnailUrl":       <thumbnail-url>,
+    "flags":              <flags>,
+    "tags":               <tags>,
+    "relations":          <relations>,
+    "notes":              <notes>,
+    "user":               <user>,
+    "score":              <score>,
+    "ownScore":           <own-score>,
+    "featureCount":       <feature-count>,
+    "lastFeatureTime":    <last-feature-time>,
+    "favoritedBy":        <favorited-by>,
+    "hasCustomThumbnail": <has-custom-thumbnail>
 }
 ```
 
@@ -1403,6 +1404,7 @@ One file together with its metadata posted to the site.
 - `<last-feature-time>`: the last time the post was featured, formatted as per
   RFC 3339.
 - `<favorited-by>`: list of users, serialized as [user resources](#user).
+- `<has-custom-thumbnail>`: whether the post uses custom thumbnail.
 
 ## Detailed post
 **Description**
