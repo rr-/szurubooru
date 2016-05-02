@@ -25,6 +25,7 @@ def test_creating_minimal_posts(
         unittest.mock.patch('szurubooru.func.posts.update_post_relations'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_notes'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_flags'), \
+        unittest.mock.patch('szurubooru.func.posts.update_post_thumbnail'), \
         unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
         unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
         unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'):
@@ -40,17 +41,20 @@ def test_creating_minimal_posts(
                 },
                 files={
                     'content': 'post-content',
+                    'thumbnail': 'post-thumbnail',
                 },
                 user=auth_user))
 
         assert result == 'serialized post'
         posts.create_post.assert_called_once_with(
             'post-content', ['tag1', 'tag2'], auth_user)
+        posts.update_post_thumbnail.assert_called_once_with(post, 'post-thumbnail')
         posts.update_post_safety.assert_called_once_with(post, 'safe')
         posts.update_post_source.assert_called_once_with(post, None)
         posts.update_post_relations.assert_called_once_with(post, [])
         posts.update_post_notes.assert_called_once_with(post, [])
         posts.update_post_flags.assert_called_once_with(post, [])
+        posts.update_post_thumbnail.assert_called_once_with(post, 'post-thumbnail')
         posts.serialize_post_with_details.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
@@ -129,5 +133,5 @@ def test_trying_to_create_without_privileges(context_factory, user_factory):
     with pytest.raises(errors.AuthError):
         api.PostListApi().post(
             context_factory(
-                input={'name': 'meta', 'colro': 'black'},
+                input='whatever',
                 user=user_factory(rank='anonymous')))

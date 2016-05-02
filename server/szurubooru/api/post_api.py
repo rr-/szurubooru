@@ -1,3 +1,4 @@
+import datetime
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, tags, posts, snapshots, favorites, scores
 
@@ -18,6 +19,8 @@ class PostListApi(BaseApi):
         posts.update_post_relations(post, relations)
         posts.update_post_notes(post, notes)
         posts.update_post_flags(post, flags)
+        if ctx.has_file('thumbnail'):
+            posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
         ctx.session.add(post)
         snapshots.save_entity_creation(post, ctx.user)
         ctx.session.commit()
@@ -28,6 +31,39 @@ class PostDetailApi(BaseApi):
     def get(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:view')
         post = posts.get_post_by_id(post_id)
+        return posts.serialize_post_with_details(post, ctx.user)
+
+    def put(self, ctx, post_id):
+        post = posts.get_post_by_id(post_id)
+        if ctx.has_file('content'):
+            auth.verify_privilege(ctx.user, 'posts:edit:content')
+            posts.update_post_content(post, ctx.get_file('content'))
+        if ctx.has_param('tags'):
+            auth.verify_privilege(ctx.user, 'posts:edit:tags')
+            posts.update_post_tags(post, ctx.get_param_as_list('tags'))
+        if ctx.has_param('safety'):
+            auth.verify_privilege(ctx.user, 'posts:edit:safety')
+            posts.update_post_safety(post, ctx.get_param_as_string('safety'))
+        if ctx.has_param('source'):
+            auth.verify_privilege(ctx.user, 'posts:edit:source')
+            posts.update_post_source(post, ctx.get_param_as_string('source'))
+        if ctx.has_param('relations'):
+            auth.verify_privilege(ctx.user, 'posts:edit:relations')
+            posts.update_post_relations(post, ctx.get_param_as_list('relations'))
+        if ctx.has_param('notes'):
+            auth.verify_privilege(ctx.user, 'posts:edit:notes')
+            posts.update_post_notes(post, ctx.get_param_as_list('notes'))
+        if ctx.has_param('flags'):
+            auth.verify_privilege(ctx.user, 'posts:edit:flags')
+            posts.update_post_flags(post, ctx.get_param_as_list('flags'))
+        if ctx.has_file('thumbnail'):
+            auth.verify_privilege(ctx.user, 'posts:edit:thumbnail')
+            posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
+        post.last_edit_time = datetime.datetime.now()
+        ctx.session.flush()
+        snapshots.save_entity_modification(post, ctx.user)
+        ctx.session.commit()
+        tags.export_to_json()
         return posts.serialize_post_with_details(post, ctx.user)
 
     def delete(self, ctx, post_id):

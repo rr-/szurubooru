@@ -30,7 +30,7 @@
     - Posts
         - ~~Listing posts~~
         - [Creating post](#creating-post)
-        - ~~Updating post~~
+        - [Updating post](#updating-post)
         - [Getting post](#getting-post)
         - [Deleting post](#deleting-post)
         - [Rating post](#rating-post)
@@ -539,7 +539,7 @@ data.
 - **Errors**
 
     - tags have invalid names
-    - safety is invalid
+    - safety, notes or flags are invalid
     - relations refer to non-existing posts
     - privileges are too low
 
@@ -548,9 +548,57 @@ data.
     Creates a new post. If specified tags do not exist yet, they will be
     automatically created. Tags created automatically have no implications, no
     suggestions, one name and their category is set to the first tag category
-    found. Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`. `<flag>`
-    currently can be only `"loop"` to enable looping for video posts. Sending
-    empty `thumbnail` will cause the post to use default thumbnail.
+    found. Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`. Relations
+    must contain valid post IDs. `<flag>` currently can be only `"loop"` to
+    enable looping for video posts. Sending empty `thumbnail` will cause the
+    post to use default thumbnail. All fields are optional - update concerns
+    only provided fields. For details how to pass `content` and `thumbnail`,
+    see [file uploads](#file-uploads) for details.
+
+## Updating post
+- **Request**
+
+    `PUT /post/<id>`
+
+- **Input**
+
+    ```json5
+    {
+        "tags":         [<tag1>, <tag2>, <tag3>],     // optional
+        "safety":       <safety>,                     // optional
+        "source":       <source>,                     // optional
+        "relations":    [<post1>, <post2>, <post3>],  // optional
+        "notes":        [<note1>, <note2>, <note3>],  // optional
+        "flags":        [<flag1>, <flag2>]            // optional
+    }
+    ```
+
+- **Files**
+
+    - `content` - the content of the content (optional).
+    - `thumbnail` - the content of custom thumbnail (optional).
+
+- **Output**
+
+    A [detailed post resource](#detailed-post).
+
+- **Errors**
+
+    - tags have invalid names
+    - safety, notes or flags are invalid
+    - relations refer to non-existing posts
+    - privileges are too low
+
+- **Description**
+
+    Updates existing post. If specified tags do not exist yet, they will be
+    automatically created. Tags created automatically have no implications, no
+    suggestions, one name and their category is set to the first tag category
+    found. Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`. Relations
+    must contain valid post IDs. `<flag>` currently can be only `"loop"` to
+    enable looping for video posts. Sending empty `thumbnail` will reset the
+    post thumbnail to default. For details how to pass `content` and
+    `thumbnail`, see [file uploads](#file-uploads) for details.
 
 ## Getting post
 - **Request**

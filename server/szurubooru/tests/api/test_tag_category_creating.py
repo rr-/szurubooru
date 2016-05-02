@@ -84,5 +84,5 @@ def test_trying_to_create_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.api.post(
             test_ctx.context_factory(
-                input={'name': 'meta', 'colro': 'black'},
+                input={'name': 'meta', 'color': 'black'},
                 user=test_ctx.user_factory(rank='anonymous')))
