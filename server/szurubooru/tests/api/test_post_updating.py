@@ -3,7 +3,7 @@ import os
 import unittest.mock
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.func import posts, tags, snapshots
+from szurubooru.func import posts, tags, snapshots, net
 
 def test_post_updating(
         config_injector, context_factory, post_factory, user_factory, fake_datetime):
@@ -72,6 +72,59 @@ def test_post_updating(
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_modification.assert_called_once_with(post, auth_user)
         assert post.last_edit_time == datetime.datetime(1997, 1, 1)
+
+def test_uploading_from_url_saves_source(
+        config_injector, context_factory, post_factory, user_factory):
+    config_injector({
+        'ranks': ['anonymous', 'regular_user'],
+        'privileges': {'posts:edit:content': 'regular_user'},
+    })
+    post = post_factory()
+    db.session.add(post)
+    db.session.flush()
+    with unittest.mock.patch('szurubooru.func.net.download'), \
+        unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
+        unittest.mock.patch('szurubooru.func.snapshots.save_entity_modification'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
+        unittest.mock.patch('szurubooru.func.posts.update_post_source'):
+        net.download.return_value = b'content'
+        api.PostDetailApi().put(
+            context_factory(
+                input={'contentUrl': 'example.com'},
+                user=user_factory(rank='regular_user')),
+            post.post_id)
+        net.download.assert_called_once_with('example.com')
+        posts.update_post_content.assert_called_once_with(post, b'content')
+        posts.update_post_source.assert_called_once_with(post, 'example.com')
+
+def test_uploading_from_url_with_source_specified(
+        config_injector, context_factory, post_factory, user_factory):
+    config_injector({
+        'ranks': ['anonymous', 'regular_user'],
+        'privileges': {
+            'posts:edit:content': 'regular_user',
+            'posts:edit:source': 'regular_user',
+        },
+    })
+    post = post_factory()
+    db.session.add(post)
+    db.session.flush()
+    with unittest.mock.patch('szurubooru.func.net.download'), \
+        unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
+        unittest.mock.patch('szurubooru.func.snapshots.save_entity_modification'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
+        unittest.mock.patch('szurubooru.func.posts.update_post_source'):
+        net.download.return_value = b'content'
+        api.PostDetailApi().put(
+            context_factory(
+                input={'contentUrl': 'example.com', 'source': 'example2.com'},
+                user=user_factory(rank='regular_user')),
+            post.post_id)
+        net.download.assert_called_once_with('example.com')
+        posts.update_post_content.assert_called_once_with(post, b'content')
+        posts.update_post_source.assert_called_once_with(post, 'example2.com')
 
 def test_trying_to_update_non_existing(context_factory, user_factory):
     with pytest.raises(posts.PostNotFoundError):

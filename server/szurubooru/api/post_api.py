@@ -9,6 +9,8 @@ class PostListApi(BaseApi):
         tag_names = ctx.get_param_as_list('tags', required=True)
         safety = ctx.get_param_as_string('safety', required=True)
         source = ctx.get_param_as_string('source', required=False, default=None)
+        if ctx.has_param('contentUrl') and not source:
+            source = ctx.get_param_as_string('contentUrl')
         relations = ctx.get_param_as_list('relations', required=False) or []
         notes = ctx.get_param_as_list('notes', required=False) or []
         flags = ctx.get_param_as_list('flags', required=False) or []
@@ -47,6 +49,8 @@ class PostDetailApi(BaseApi):
         if ctx.has_param('source'):
             auth.verify_privilege(ctx.user, 'posts:edit:source')
             posts.update_post_source(post, ctx.get_param_as_string('source'))
+        elif ctx.has_param('contentUrl'):
+            posts.update_post_source(post, ctx.get_param_as_string('contentUrl'))
         if ctx.has_param('relations'):
             auth.verify_privilege(ctx.user, 'posts:edit:relations')
             posts.update_post_relations(post, ctx.get_param_as_list('relations'))

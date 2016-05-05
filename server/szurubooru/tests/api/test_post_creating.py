@@ -3,7 +3,7 @@ import os
 import unittest.mock
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.func import posts, tags, snapshots
+from szurubooru.func import posts, tags, snapshots, net
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
@@ -104,6 +104,71 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
         posts.serialize_post_with_details.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
+
+def test_creating_from_url_saves_source(
+        config_injector, context_factory, post_factory, user_factory):
+    auth_user = user_factory(rank='regular_user')
+    post = post_factory()
+    db.session.add(post)
+    db.session.flush()
+
+    with unittest.mock.patch('szurubooru.func.net.download'), \
+        unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
+        unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.create_post'), \
+        unittest.mock.patch('szurubooru.func.posts.update_post_source'):
+        config_injector({
+            'ranks': ['anonymous', 'regular_user'],
+            'privileges': {'posts:create': 'regular_user'},
+        })
+        net.download.return_value = b'content'
+        posts.create_post.return_value = post
+        api.PostListApi().post(
+            context_factory(
+                input={
+                    'safety': 'safe',
+                    'tags': ['tag1', 'tag2'],
+                    'contentUrl': 'example.com',
+                },
+                user=auth_user))
+        net.download.assert_called_once_with('example.com')
+        posts.create_post.assert_called_once_with(
+            b'content', ['tag1', 'tag2'], auth_user)
+        posts.update_post_source.assert_called_once_with(post, 'example.com')
+
+def test_creating_from_url_with_source_specified(
+        config_injector, context_factory, post_factory, user_factory):
+    auth_user = user_factory(rank='regular_user')
+    post = post_factory()
+    db.session.add(post)
+    db.session.flush()
+
+    with unittest.mock.patch('szurubooru.func.net.download'), \
+        unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
+        unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.create_post'), \
+        unittest.mock.patch('szurubooru.func.posts.update_post_source'):
+        config_injector({
+            'ranks': ['anonymous', 'regular_user'],
+            'privileges': {'posts:create': 'regular_user'},
+        })
+        net.download.return_value = b'content'
+        posts.create_post.return_value = post
+        api.PostListApi().post(
+            context_factory(
+                input={
+                    'safety': 'safe',
+                    'tags': ['tag1', 'tag2'],
+                    'contentUrl': 'example.com',
+                    'source': 'example2.com',
+                },
+                user=auth_user))
+        net.download.assert_called_once_with('example.com')
+        posts.create_post.assert_called_once_with(
+            b'content', ['tag1', 'tag2'], auth_user)
+        posts.update_post_source.assert_called_once_with(post, 'example2.com')
 
 @pytest.mark.parametrize('field', ['tags', 'safety'])
 def test_trying_to_omit_mandatory_field(context_factory, user_factory, field):
