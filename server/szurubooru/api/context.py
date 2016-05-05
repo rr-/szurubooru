@@ -1,5 +1,6 @@
 import falcon
 from szurubooru import errors
+from szurubooru.func import net
 
 class Context(object):
     def __init__(self):
@@ -13,11 +14,13 @@ class Context(object):
         return name in self.input
 
     def has_file(self, name):
-        return name in self.files
+        return name in self.files or name + 'Url' in self.input
 
     def get_file(self, name, required=False):
         if name in self.files:
             return self.files[name]
+        if name + 'Url' in self.input:
+            return net.download(self.input[name + 'Url'])
         if not required:
             return None
         raise errors.MissingRequiredFileError(

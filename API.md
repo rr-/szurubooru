@@ -106,6 +106,13 @@ Requests that upload files must use `multipart/form-data` encoding. JSON
 metadata must then be included as field of name `metadata`, whereas files must
 be included as separate fields with names specific to each request type.
 
+Alternatively, the server can download the files from the Internet on client's
+behalf. In that case, the request doesn't need to be specially encoded in any
+way. The files, however, should be passed as regular fields appended with `Url`
+suffix. For example, to download a file named `content` from
+`http://example.com/file.jpg`, the client should pass
+`{"contentUrl":"http://example.com/file.jpg"}` as part of the message body.
+
 ## Error handling
 
 All errors (except for unhandled fatal server errors) send relevant HTTP status

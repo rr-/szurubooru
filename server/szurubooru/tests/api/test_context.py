@@ -1,5 +1,7 @@
+import unittest.mock
 import pytest
 from szurubooru import api, errors
+from szurubooru.func import net
 
 def test_has_param():
     ctx = api.Context()
@@ -12,6 +14,15 @@ def test_get_file():
     ctx.files = {'key': b'content'}
     assert ctx.get_file('key') == b'content'
     assert ctx.get_file('key2') is None
+
+def test_get_file_from_url():
+    with unittest.mock.patch('szurubooru.func.net.download'):
+        net.download.return_value = b'content'
+        ctx = api.Context()
+        ctx.input = {'keyUrl': 'example.com'}
+        assert ctx.get_file('key') == b'content'
+        assert ctx.get_file('key2') is None
+        net.download.assert_called_once_with('example.com')
 
 def test_getting_list_parameter():
     ctx = api.Context()
