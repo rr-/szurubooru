@@ -1,6 +1,6 @@
 <p><strong>Anonymous tokens</strong></p>
 
-<p>Filter posts tagged with given <code>&lt;value&gt;</code>.</p>
+<p>Same as <code>tag</code> token.</p>
 
 <p><strong>Named tokens</strong></p>
 
@@ -8,7 +8,11 @@
     <tbody>
         <tr>
             <td><code>id</code></td>
-            <td>having specific post ID</td>
+            <td>having given post number</td>
+        </tr>
+        <tr>
+            <td><code>tag</code></td>
+            <td>having given tag</td>
         </tr>
         <tr>
             <td><code>score</code></td>
@@ -19,6 +23,14 @@
             <td>uploaded by given user</td>
         </tr>
         <tr>
+            <td><code>upload</code></td>
+            <td>alias of <code>upload</code></td>
+        </tr>
+        <tr>
+            <td><code>submit</code></td>
+            <td>alias of <code>upload</code></td>
+        </tr>
+        <tr>
             <td><code>comment</code></td>
             <td>commented by given user</td>
         </tr>
@@ -27,16 +39,16 @@
             <td>favorited by given user</td>
         </tr>
         <tr>
-            <td><code>fav-count</code></td>
-            <td>favorited by given number of users</td>
+            <td><code>tag-count</code></td>
+            <td>having given number of tags</td>
         </tr>
         <tr>
             <td><code>comment-count</code></td>
             <td>having given number of comments</td>
         </tr>
         <tr>
-            <td><code>tag-count</code></td>
-            <td>having given number of tags</td>
+            <td><code>fav-count</code></td>
+            <td>favorited by given number of users</td>
         </tr>
         <tr>
             <td><code>note-count</code></td>
@@ -47,8 +59,8 @@
             <td>having been featured given number of times</td>
         </tr>
         <tr>
-            <td><code>date</code></td>
-            <td>posted at given date</td>
+            <td><code>type</code></td>
+            <td>given type of posts. <code>&lt;value&gt;</code> can be either <code>image</code>, <code>animation</code> (or <code>animated</code> or <code>anim</code>), <code>flash</code> (or <code>swf</code>) or <code>video</code> (or <code>webm</code>).</td>
         </tr>
         <tr>
             <td><code>file-size</code></td>
@@ -67,8 +79,72 @@
             <td>having given number of pixels (image width * image height)</td>
         </tr>
         <tr>
-            <td><code>type</code></td>
-            <td>given type of posts (<code>&lt;value&gt;</code> can be either <code>image</code>, <code>flash</code>/<code>swf</code>, <code>youtube</code>/<code>yt</code>, <code>video</code> or <code>animation</code>)</td>
+            <td><code>width</code></td>
+            <td>alias of <code>image-width</code></td>
+        </tr>
+        <tr>
+            <td><code>height</code></td>
+            <td>alias of <code>image-height</code></td>
+        </tr>
+        <tr>
+            <td><code>area</code></td>
+            <td>alias of <code>image-area</code></td>
+        </tr>
+        <tr>
+            <td><code>creation-date</code></td>
+            <td>posted at given date</td>
+        </tr>
+        <tr>
+            <td><code>creation-time</code></td>
+            <td>alias of <code>creation-date</code></td>
+        </tr>
+        <tr>
+            <td><code>date</code></td>
+            <td>alias of <code>creation-date</code></td>
+        </tr>
+        <tr>
+            <td><code>time</code></td>
+            <td>alias of <code>creation-date</code></td>
+        </tr>
+        <tr>
+            <td><code>last-edit-date</code></td>
+            <td>edited at given date</td>
+        </tr>
+        <tr>
+            <td><code>last-edit-time</code></td>
+            <td>alias of <code>last-edit-date</code></td>
+        </tr>
+        <tr>
+            <td><code>edit-date</code></td>
+            <td>alias of <code>last-edit-date</code></td>
+        </tr>
+        <tr>
+            <td><code>edit-time</code></td>
+            <td>alias of <code>last-edit-date</code></td>
+        </tr>
+        <tr>
+            <td><code>comment-date</code></td>
+            <td>commented at given date</td>
+        </tr>
+        <tr>
+            <td><code>comment-time</code></td>
+            <td>alias of <code>comment-date</code></td>
+        </tr>
+        <tr>
+            <td><code>fav-date</code></td>
+            <td>last favorited at given date</td>
+        </tr>
+        <tr>
+            <td><code>fav-time</code></td>
+            <td>alias of <code>fav-date</code></td>
+        </tr>
+        <tr>
+            <td><code>feature-date</code></td>
+            <td>featured at given date</td>
+        </tr>
+        <tr>
+            <td><code>feature-time</code></td>
+            <td>alias of <code>feature-time</code></td>
         </tr>
     </tbody>
 </table>
@@ -83,27 +159,31 @@
         </tr>
         <tr>
             <td><code>id</code></td>
-            <td>highest to lowest post ID</td>
+            <td>highest to lowest post number</td>
         </tr>
         <tr>
             <td><code>score</code></td>
             <td>highest scored</td>
         </tr>
         <tr>
-            <td><code>fav-count</code></td>
-            <td>loved by most</td>
+            <td><code>tag-count</code></td>
+            <td>with most tags</td>
         </tr>
         <tr>
             <td><code>comment-count</code></td>
             <td>most commented first</td>
         </tr>
         <tr>
-            <td><code>tag-count</code></td>
-            <td>with most tags</td>
+            <td><code>fav-count</code></td>
+            <td>loved by most</td>
         </tr>
         <tr>
             <td><code>note-count</code></td>
             <td>with most annotations</td>
+        </tr>
+        <tr>
+            <td><code>feature-count</code></td>
+            <td>most often featured</td>
         </tr>
         <tr>
             <td><code>file-size</code></td>
@@ -122,28 +202,72 @@
             <td>largest images first</td>
         </tr>
         <tr>
+            <td><code>width</code></td>
+            <td>alias of <code>image-width</code></td>
+        </tr>
+        <tr>
+            <td><code>height</code></td>
+            <td>alias of <code>image-height</code></td>
+        </tr>
+        <tr>
+            <td><code>area</code></td>
+            <td>alias of <code>image-area</code></td>
+        </tr>
+        <tr>
             <td><code>creation-date</code></td>
             <td>newest to oldest (pretty much same as <code>id</code>)</td>
         </tr>
         <tr>
-            <td><code>edit-date</code></td>
+            <td><code>creation-time</code></td>
+            <td>alias of <code>creation-date</code></td>
+        </tr>
+        <tr>
+            <td><code>date</code></td>
+            <td>alias of <code>creation-date</code></td>
+        </tr>
+        <tr>
+            <td><code>time</code></td>
+            <td>alias of <code>creation-date</code></td>
+        </tr>
+        <tr>
+            <td><code>last-edit-date</code></td>
             <td>like <code>creation-date</code>, only looks at last edit time</td>
         </tr>
         <tr>
-            <td><code>fav-date</code></td>
-            <td>recently added to favorites by anyone</td>
+            <td><code>last-edit-time</code></td>
+            <td>alias of <code>last-edit-date</code></td>
+        </tr>
+        <tr>
+            <td><code>edit-date</code></td>
+            <td>alias of <code>last-edit-date</code></td>
+        </tr>
+        <tr>
+            <td><code>edit-time</code></td>
+            <td>alias of <code>last-edit-date</code></td>
         </tr>
         <tr>
             <td><code>comment-date</code></td>
             <td>recently commented by anyone</td>
         </tr>
         <tr>
+            <td><code>comment-time</code></td>
+            <td>alias of <code>comment-date</code></td>
+        </tr>
+        <tr>
+            <td><code>fav-date</code></td>
+            <td>recently added to favorites by anyone</td>
+        </tr>
+        <tr>
+            <td><code>fav-time</code></td>
+            <td>alias of <code>fav-date</code></td>
+        </tr>
+        <tr>
             <td><code>feature-date</code></td>
             <td>recently featured</td>
         </tr>
         <tr>
-            <td><code>feature-count</code></td>
-            <td>most often featured</td>
+            <td><code>feature-time</code></td>
+            <td>alias of <code>feature-time</code></td>
         </tr>
     </tbody>
 </table>

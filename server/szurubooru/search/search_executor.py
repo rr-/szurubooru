@@ -10,7 +10,7 @@ class SearchExecutor(object):
     '''
 
     def __init__(self, search_config):
-        self._search_config = search_config
+        self.config = search_config
 
     def execute(self, query_text, page, page_size):
         '''
@@ -43,7 +43,7 @@ class SearchExecutor(object):
 
     def _prepare(self, query_text):
         ''' Parse input and return SQLAlchemy query. '''
-        query = self._search_config.create_query() \
+        query = self.config.create_query() \
             .options(sqlalchemy.orm.lazyload('*'))
         for token in re.split(r'\s+', (query_text or '').lower()):
             if not token:
@@ -60,7 +60,7 @@ class SearchExecutor(object):
                 query = self._handle_anonymous(
                     query, self._create_criterion(token, negated))
 
-        query = self._search_config.finalize_query(query)
+        query = self.config.finalize_query(query)
         return query
 
     def _handle_key_value(self, query, key, value, negated):
@@ -72,10 +72,10 @@ class SearchExecutor(object):
             return self._handle_named(query, key, value, negated)
 
     def _handle_anonymous(self, query, criterion):
-        if not self._search_config.anonymous_filter:
+        if not self.config.anonymous_filter:
             raise errors.SearchError(
                 'Anonymous tokens are not valid in this context.')
-        return self._search_config.anonymous_filter(query, criterion)
+        return self.config.anonymous_filter(query, criterion)
 
     def _handle_named(self, query, key, value, negated):
         if key.endswith('-min'):
@@ -85,19 +85,18 @@ class SearchExecutor(object):
             key = key[:-4]
             value = '..' + value
         criterion = self._create_criterion(value, negated)
-        if key in self._search_config.named_filters:
-            return self._search_config.named_filters[key](query, criterion)
+        if key in self.config.named_filters:
+            return self.config.named_filters[key](query, criterion)
         raise errors.SearchError(
             'Unknown named token: %r. Available named tokens: %r.' % (
-                key, list(self._search_config.named_filters.keys())))
+                key, list(self.config.named_filters.keys())))
 
     def _handle_special(self, query, value, negated):
-        if value in self._search_config.special_filters:
-            return self._search_config.special_filters[value](
-                query, value, negated)
+        if value in self.config.special_filters:
+            return self.config.special_filters[value](query, negated)
         raise errors.SearchError(
             'Unknown special token: %r. Available special tokens: %r.' % (
-                value, list(self._search_config.special_filters.keys())))
+                value, list(self.config.special_filters.keys())))
 
     def _handle_sort(self, query, value, negated):
         if value.count(',') == 0:
@@ -108,14 +107,14 @@ class SearchExecutor(object):
             raise errors.SearchError('Too many commas in sort style token.')
 
         try:
-            column, default_sort = self._search_config.sort_columns[value]
+            column, default_sort = self.config.sort_columns[value]
         except KeyError:
             raise errors.SearchError(
                 'Unknown sort style: %r. Available sort styles: %r.' % (
-                    value, list(self._search_config.sort_columns.keys())))
+                    value, list(self.config.sort_columns.keys())))
 
-        sort_asc = self._search_config.SORT_ASC
-        sort_desc = self._search_config.SORT_DESC
+        sort_asc = self.config.SORT_ASC
+        sort_desc = self.config.SORT_DESC
 
         try:
             sort_map = {

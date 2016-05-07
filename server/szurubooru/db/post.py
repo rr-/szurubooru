@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, DateTime, String, Text, PickleType, Fore
 from sqlalchemy.orm import relationship, column_property, object_session
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
+from szurubooru.db.comment import Comment
 
 class PostFeature(Base):
     __tablename__ = 'post_feature'
@@ -117,6 +118,8 @@ class Post(Base):
         .where(PostTag.post_id == post_id) \
         .correlate_except(PostTag))
 
+    canvas_area = column_property(canvas_width * canvas_height)
+
     @property
     def is_featured(self):
         featured_post = object_session(self) \
@@ -125,12 +128,10 @@ class Post(Base):
             .first()
         return featured_post and featured_post.post_id == self.post_id
 
-    @property
-    def score(self):
-        return object_session(self) \
-            .query(func.sum(PostScore.score)) \
-            .filter(PostScore.post_id == self.post_id) \
-            .one()[0] or 0
+    score = column_property(
+        select([func.coalesce(func.sum(PostScore.score), 0)]) \
+        .where(PostScore.post_id == post_id) \
+        .correlate_except(PostScore))
 
     favorite_count = column_property(
         select([func.count(PostFavorite.post_id)]) \
@@ -152,10 +153,22 @@ class Post(Base):
         .where(PostFeature.post_id == post_id) \
         .correlate_except(PostFeature))
 
-    # TODO: wire these
-    #comment_count = Column('auto_comment_count', Integer, nullable=False, default=0)
-    #note_count = Column('auto_note_count', Integer, nullable=False, default=0)
-    #last_comment_edit_time = Column(
-    #    'auto_comment_creation_time', Integer, nullable=False, default=0)
-    #last_comment_creation_time = Column(
-    #    'auto_comment_edit_time', Integer, nullable=False, default=0)
+    comment_count = column_property(
+        select([func.count(Comment.post_id)]) \
+        .where(Comment.post_id == post_id) \
+        .correlate_except(Comment))
+
+    last_comment_creation_time = column_property(
+        select([func.max(Comment.creation_time)]) \
+        .where(Comment.post_id == post_id) \
+        .correlate_except(Comment))
+
+    last_comment_edit_time = column_property(
+        select([func.max(Comment.last_edit_time)]) \
+        .where(Comment.post_id == post_id) \
+        .correlate_except(Comment))
+
+    note_count = column_property(
+        select([func.count(PostNote.post_id)]) \
+        .where(PostNote.post_id == post_id) \
+        .correlate_except(PostNote))

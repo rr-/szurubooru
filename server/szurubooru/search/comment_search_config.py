@@ -19,6 +19,7 @@ class CommentSearchConfig(BaseSearchConfig):
             'id': self._create_num_filter(db.Comment.comment_id),
             'post': self._create_num_filter(db.Comment.post_id),
             'user': self._create_str_filter(db.User.name),
+            'author': self._create_str_filter(db.User.name),
             'text': self._create_str_filter(db.Comment.text),
             'creation-date': self._create_date_filter(db.Comment.creation_time),
             'creation-time': self._create_date_filter(db.Comment.creation_time),
@@ -33,6 +34,7 @@ class CommentSearchConfig(BaseSearchConfig):
         return {
             'random': (func.random(), None),
             'user': (db.User.name, self.SORT_ASC),
+            'author': (db.User.name, self.SORT_ASC),
             'post': (db.Comment.post_id, self.SORT_DESC),
             'creation-date': (db.Comment.creation_time, self.SORT_DESC),
             'creation-time': (db.Comment.creation_time, self.SORT_DESC),

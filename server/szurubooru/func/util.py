@@ -4,6 +4,15 @@ import re
 from sqlalchemy.inspection import inspect
 from szurubooru.errors import ValidationError
 
+def unalias_dict(input_dict):
+    output_dict = {}
+    for key_list, value in input_dict.items():
+        if isinstance(key_list, str):
+            key_list = [key_list]
+        for key in key_list:
+            output_dict[key] = value
+    return output_dict
+
 def get_md5(source):
     if not isinstance(source, bytes):
         source = source.encode('utf-8')

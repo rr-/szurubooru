@@ -28,7 +28,7 @@
         - [Merging tags](#merging-tags)
         - [Listing tag siblings](#listing-tag-siblings)
     - Posts
-        - ~~Listing posts~~
+        - [Listing posts](#listing-posts)
         - [Creating post](#creating-post)
         - [Updating post](#updating-post)
         - [Getting post](#getting-post)
@@ -290,7 +290,7 @@ data.
 
     **Named tokens**
 
-    | `<value>`           | Description                           |
+    | `<key>`             | Description                           |
     | ------------------- | ------------------------------------- |
     | `name`              | having given name (accepts wildcards) |
     | `category`          | having given category                 |
@@ -515,6 +515,111 @@ data.
     the given tag. `occurrences` field signifies how many times a given sibling
     appears with given tag. Results are sorted by occurrences count and the
     list is truncated to the first 50 elements. Doesn't use paging.
+
+## Listing posts
+- **Request**
+
+    `GET /posts/?page=<page>&pageSize=<page-size>&query=<query>`
+
+- **Output**
+
+    A [paged search result resource](#paged-search-result), for which
+    `<resource>` is a [post resource](#post).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Searches for posts.
+
+    **Anonymous tokens**
+
+    Same as `tag` token.
+
+    **Named tokens**
+
+    | `<key>`          | Description                                                |
+    | ---------------- | ---------------------------------------------------------- |
+    | `id`             | having given post number                                   |
+    | `tag`            | having given tag                                           |
+    | `score`          | having given score                                         |
+    | `uploader`       | uploaded by given user                                     |
+    | `upload`         | alias of upload                                            |
+    | `submit`         | alias of upload                                            |
+    | `comment`        | commented by given user                                    |
+    | `fav`            | favorited by given user                                    |
+    | `tag-count`      | having given number of tags                                |
+    | `comment-count`  | having given number of comments                            |
+    | `fav-count`      | favorited by given number of users                         |
+    | `note-count`     | having given number of annotations                         |
+    | `feature-count`  | having been featured given number of times                 |
+    | `type`           | given type of posts. `<value>` can be either `image`, `animation` (or `animated` or `anim`), `flash` (or `swf`) or `video` (or `webm`). |
+    | `file-size`      | having given file size (in bytes)                          |
+    | `image-width`    | having given image width (where applicable)                |
+    | `image-height`   | having given image height (where applicable)               |
+    | `image-area`     | having given number of pixels (image width * image height) |
+    | `width`          | alias of `image-width`                                     |
+    | `height`         | alias of `image-height`                                    |
+    | `area`           | alias of `image-area`                                      |
+    | `creation-date`  | posted at given date                                       |
+    | `creation-time`  | alias of `creation-date`                                   |
+    | `date`           | alias of `creation-date`                                   |
+    | `time`           | alias of `creation-date`                                   |
+    | `last-edit-date` | edited at given date                                       |
+    | `last-edit-time` | alias of `last-edit-date`                                  |
+    | `edit-date`      | alias of `last-edit-date`                                  |
+    | `edit-time`      | alias of `last-edit-date`                                  |
+    | `comment-date`   | commented at given date                                    |
+    | `comment-time`   | alias of `comment-date`                                    |
+    | `fav-date`       | last favorited at given date                               |
+    | `fav-time`       | alias of `fav-date`                                        |
+    | `feature-date`   | featured at given date                                     |
+    | `feature-time`   | alias of `feature-time`                                    |
+
+    **Sort style tokens**
+
+    | `<value>`        | Description                                      |
+    | ---------------- | ------------------------------------------------ |
+    | `random`         | as random as it can get                          |
+    | `id`             | highest to lowest post number                    |
+    | `score`          | highest scored                                   |
+    | `tag-count`      | with most tags                                   |
+    | `comment-count`  | most commented first                             |
+    | `fav-count`      | loved by most                                    |
+    | `note-count`     | with most annotations                            |
+    | `feature-count`  | most often featured                              |
+    | `file-size`      | largest files first                              |
+    | `image-width`    | widest images first                              |
+    | `image-height`   | tallest images first                             |
+    | `image-area`     | largest images first                             |
+    | `width`          | alias of `image-width`                           |
+    | `height`         | alias of `image-height`                          |
+    | `area`           | alias of `image-area`                            |
+    | `creation-date`  | newest to oldest (pretty much same as id)        |
+    | `creation-time`  | alias of `creation-date`                         |
+    | `date`           | alias of `creation-date`                         |
+    | `time`           | alias of `creation-date`                         |
+    | `last-edit-date` | like creation-date, only looks at last edit time |
+    | `last-edit-time` | alias of `last-edit-date`                        |
+    | `edit-date`      | alias of `last-edit-date`                        |
+    | `edit-time`      | alias of `last-edit-date`                        |
+    | `comment-date`   | recently commented by anyone                     |
+    | `comment-time`   | alias of `comment-date`                          |
+    | `fav-date`       | recently added to favorites by anyone            |
+    | `fav-time`       | alias of `fav-date`                              |
+    | `feature-date`   | recently featured                                |
+    | `feature-time`   | alias of `feature-time`                          |
+
+    **Special tokens**
+
+    | `<value>`    | Description                                                   |
+    | ------------ | ------------------------------------------------------------- |
+    | `liked`      | posts liked by currently logged in user                       |
+    | `disliked`   | posts disliked by currently logged in user                    |
+    | `fav`        | posts added to favorites by currently logged in user          |
+    | `tumbleweed` | posts with score of 0, without comments and without favorites |
 
 ## Creating post
 - **Request**
@@ -770,11 +875,12 @@ data.
 
     **Named tokens**
 
-    | `<value>`        | Description                                    |
+    | `<key>`          | Description                                    |
     | ---------------- | ---------------------------------------------- |
     | `id`             | specific comment ID                            |
     | `post`           | specific post ID                               |
     | `user`           | created by given user (accepts wildcards)      |
+    | `author`         | alias of `user`                                |
     | `text`           | containing given text (accepts wildcards)      |
     | `creation-date`  | created at given date                          |
     | `creation-time`  | alias of `creation-date`                       |
@@ -789,6 +895,7 @@ data.
     | ---------------- | ------------------------- |
     | `random`         | as random as it can get   |
     | `user`           | author name, A to Z       |
+    | `author`         | alias of `user`           |
     | `post`           | post ID, newest to oldest |
     | `creation-date`  | newest to oldest          |
     | `creation-time`  | alias of `creation-date`  |
@@ -946,7 +1053,7 @@ data.
 
     **Named tokens**
 
-    | `<value>`         | Description                                     |
+    | `<key>`           | Description                                     |
     | ----------------- | ----------------------------------------------- |
     | `name`            | having given name (accepts wildcards)           |
     | `creation-date`   | registered at given date                        |
@@ -1182,7 +1289,7 @@ data.
 
     **Named tokens**
 
-    | `<value>`         | Description                                   |
+    | `<key>`           | Description                                   |
     | ----------------- | --------------------------------------------- |
     | `type`            | involving given resource type                 |
     | `id`              | involving given resource id                   |
