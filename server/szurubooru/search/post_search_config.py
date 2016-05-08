@@ -22,7 +22,7 @@ def _type_transformer(value):
             value, available_types))
 
 class PostSearchConfig(BaseSearchConfig):
-    def create_query(self):
+    def create_filter_query(self):
         return db.session.query(db.Post)
 
     def finalize_query(self, query):

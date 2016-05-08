@@ -5,7 +5,7 @@ from szurubooru.search.base_search_config import BaseSearchConfig
 class UserSearchConfig(BaseSearchConfig):
     ''' Executes searches related to the users. '''
 
-    def create_query(self):
+    def create_filter_query(self):
         return db.session.query(db.User)
 
     def finalize_query(self, query):

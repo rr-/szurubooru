@@ -11,8 +11,11 @@ class BaseSearchConfig(object):
     SORT_DESC = -1
     SORT_ASC = 1
 
-    def create_query(self):
+    def create_filter_query(self):
         raise NotImplementedError()
+
+    def create_count_query(self):
+        return self.create_filter_query()
 
     @property
     def anonymous_filter(self):

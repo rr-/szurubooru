@@ -1,9 +1,18 @@
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import func
 from szurubooru import db
 from szurubooru.search.base_search_config import BaseSearchConfig
 
 class TagSearchConfig(BaseSearchConfig):
-    def create_query(self):
+    def create_filter_query(self):
+        return self.create_count_query().options(
+            joinedload(db.Tag.names),
+            joinedload(db.Tag.category),
+            joinedload(db.Tag.suggestions).joinedload(db.Tag.names),
+            joinedload(db.Tag.implications).joinedload(db.Tag.names)
+        )
+
+    def create_count_query(self):
         return db.session.query(db.Tag)
 
     def finalize_query(self, query):

@@ -3,7 +3,7 @@ from szurubooru import db
 from szurubooru.search.base_search_config import BaseSearchConfig
 
 class CommentSearchConfig(BaseSearchConfig):
-    def create_query(self):
+    def create_filter_query(self):
         return db.session.query(db.Comment).join(db.User)
 
     def finalize_query(self, query):

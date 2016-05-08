@@ -1,6 +1,6 @@
 import re
 import sqlalchemy
-from szurubooru import errors
+from szurubooru import db, errors
 from szurubooru.search import criteria
 
 class SearchExecutor(object):
@@ -17,15 +17,22 @@ class SearchExecutor(object):
         Parse input and return tuple containing total record count and filtered
         entities.
         '''
-        filter_query = self._prepare(query_text)
+        filter_query = self.config.create_filter_query()
+        filter_query = filter_query.options(sqlalchemy.orm.lazyload('*'))
+        filter_query = self._prepare(filter_query, query_text)
         entities = filter_query \
-            .offset((page - 1) * page_size).limit(page_size).all()
-        count_query = filter_query.statement \
+            .offset((page - 1) * page_size) \
+            .limit(page_size) \
+            .all()
+
+        count_query = self.config.create_count_query()
+        count_query = count_query.options(sqlalchemy.orm.lazyload('*'))
+        count_query = self._prepare(count_query, query_text)
+        count_statement = count_query \
+            .statement \
             .with_only_columns([sqlalchemy.func.count()]) \
             .order_by(None)
-        count = filter_query.session \
-            .execute(count_query) \
-            .scalar()
+        count = db.session.execute(count_statement).scalar()
         return (count, entities)
 
     def execute_and_serialize(self, ctx, serializer):
@@ -41,10 +48,8 @@ class SearchExecutor(object):
             'results': [serializer(entity) for entity in entities],
         }
 
-    def _prepare(self, query_text):
+    def _prepare(self, query, query_text):
         ''' Parse input and return SQLAlchemy query. '''
-        query = self.config.create_query() \
-            .options(sqlalchemy.orm.lazyload('*'))
         for token in re.split(r'\s+', (query_text or '').lower()):
             if not token:
                 continue

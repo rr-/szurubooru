@@ -2,7 +2,7 @@ from szurubooru import db
 from szurubooru.search.base_search_config import BaseSearchConfig
 
 class SnapshotSearchConfig(BaseSearchConfig):
-    def create_query(self):
+    def create_filter_query(self):
         return db.session.query(db.Snapshot)
 
     def finalize_query(self, query):
