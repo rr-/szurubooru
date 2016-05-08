@@ -79,6 +79,9 @@ class Post(Base):
     TYPE_VIDEO = 'video'
     TYPE_FLASH = 'flash'
 
+    FLAG_LOOP = 'loop'
+    ALL_FLAGS = [FLAG_LOOP]
+
     # basic meta
     post_id = Column('id', Integer, primary_key=True)
     user_id = Column('user_id', Integer, ForeignKey('user.id'))

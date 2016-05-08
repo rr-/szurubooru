@@ -12,6 +12,8 @@ class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
 
+# TODO: RANK_MAP
+
 def serialize_user(user, authenticated_user, force_show_email=False):
     if not user:
         return {}

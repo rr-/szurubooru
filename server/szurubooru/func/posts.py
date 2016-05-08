@@ -30,6 +30,7 @@ TYPE_MAP = {
     db.Post.TYPE_VIDEO: 'video',
     db.Post.TYPE_FLASH: 'flash',
 }
+# TODO: FLAG_MAP
 
 def get_post_content_url(post):
     return '%s/posts/%d.%s' % (
@@ -201,7 +202,13 @@ def update_post_thumbnail(post, content=None, delete=True):
             files.delete(get_post_thumbnail_backup_path(post))
     else:
         files.save(get_post_thumbnail_backup_path(post), content)
+    generate_post_thumbnail(post)
 
+def generate_post_thumbnail(post):
+    if files.has(get_post_thumbnail_backup_path(post)):
+        content = files.get(get_post_thumbnail_backup_path(post))
+    else:
+        content = files.get(get_post_content_path(post))
     try:
         image = images.Image(content)
         image.resize_fill(
@@ -254,11 +261,10 @@ def update_post_notes(post, notes):
             db.PostNote(polygon=note['polygon'], text=note['text']))
 
 def update_post_flags(post, flags):
-    available_flags = ('loop',)
     for flag in flags:
-        if flag not in available_flags:
+        if flag not in db.Post.ALL_FLAGS:
             raise InvalidPostFlagError(
-                'Flag must be one of %r.' % available_flags)
+                'Flag must be one of %r.' % db.Post.ALL_FLAGS)
     post.flags = flags
 
 def feature_post(post, user):
