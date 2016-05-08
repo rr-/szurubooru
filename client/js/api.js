@@ -1,5 +1,6 @@
 'use strict';
 
+const nprogress = require('nprogress');
 const cookies = require('js-cookie');
 const request = require('superagent');
 const config = require('./config.js');
@@ -52,6 +53,7 @@ class Api {
     _process(url, requestFactory, data, files) {
         const fullUrl = this.getFullUrl(url);
         return new Promise((resolve, reject) => {
+            nprogress.start();
             let req = requestFactory(fullUrl);
             if (data) {
                 req.attach('metadata', new Blob([JSON.stringify(data)]));
@@ -66,6 +68,7 @@ class Api {
             }
             req.set('Accept', 'application/json')
                 .end((error, response) => {
+                    nprogress.done();
                     if (error) {
                         reject(response && response.body ? response.body : {
                             'title': 'Networking error',

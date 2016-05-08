@@ -20,6 +20,7 @@
     "js-yaml": "^3.5.5",
     "merge": "^1.2.0",
     "mousetrap": "^1.5.3",
+    "nprogress": "^0.2.0",
     "page": "^1.7.1",
     "stylus": "^0.54.2",
     "superagent": "^1.8.3",
