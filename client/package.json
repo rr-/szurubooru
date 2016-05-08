@@ -11,6 +11,7 @@
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
     "camelcase": "^2.1.1",
+    "camelcase-keys": "*",
     "csso": "^1.8.0",
     "glob": "^7.0.3",
     "handlebars": "^4.0.5",
