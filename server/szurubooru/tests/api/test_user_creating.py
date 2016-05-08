@@ -226,4 +226,4 @@ def test_uploading_avatar(test_ctx, tmpdir):
     user = users.get_user_by_name('chewie')
     assert user.avatar_style == user.AVATAR_MANUAL
     assert response['user']['avatarUrl'] == \
-        'http://example.com/data/avatars/chewie.jpg'
+        'http://example.com/data/avatars/chewie.png'

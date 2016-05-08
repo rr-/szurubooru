@@ -30,7 +30,7 @@ def serialize_user(user, authenticated_user, force_show_email=False):
             util.get_md5((user.email or user.name).lower()),
             config.config['thumbnails']['avatar_width'])
     else:
-        ret['avatarUrl'] = '%s/avatars/%s.jpg' % (
+        ret['avatarUrl'] = '%s/avatars/%s.png' % (
             config.config['data_url'].rstrip('/'), user.name.lower())
 
     if authenticated_user.user_id != user.user_id \
@@ -146,7 +146,7 @@ def update_user_avatar(user, avatar_style, avatar_content):
         image.resize_fill(
             int(config.config['thumbnails']['avatar_width']),
             int(config.config['thumbnails']['avatar_height']))
-        files.save('avatars/' + user.name.lower() + '.jpg', image.to_jpeg())
+        files.save('avatars/' + user.name.lower() + '.png', image.to_png())
     else:
         raise InvalidAvatarError(
             'Avatar style %r is invalid. Valid avatar styles: %r.' % (
