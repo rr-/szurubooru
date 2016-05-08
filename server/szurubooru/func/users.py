@@ -128,6 +128,8 @@ def update_user_rank(user, rank, authenticated_user):
     if not rank in db.User.ALL_RANKS:
         raise InvalidRankError(
             'Rank %r is invalid. Valid ranks: %r' % (rank, db.User.ALL_RANKS))
+    if rank in (db.User.RANK_ANONYMOUS, db.User.RANK_NOBODY):
+        raise InvalidRankError('Rank %r cannot be used.' % (rank))
     if db.User.ALL_RANKS.index(authenticated_user.rank) \
             < db.User.ALL_RANKS.index(rank) and get_user_count() > 0:
         raise errors.AuthError('Trying to set higher rank than your own.')

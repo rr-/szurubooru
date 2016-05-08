@@ -128,6 +128,8 @@ def test_trying_to_become_someone_else(test_ctx):
     ({'rank': None}, users.InvalidRankError),
     ({'rank': ''}, users.InvalidRankError),
     ({'rank': 'bad'}, users.InvalidRankError),
+    ({'rank': 'anonymous'}, users.InvalidRankError),
+    ({'rank': 'nobody'}, users.InvalidRankError),
     ({'email': 'bad'}, users.InvalidEmailError),
     ({'email': 'x@' * 65 + '.com'}, users.InvalidEmailError),
     ({'avatarStyle': None}, users.InvalidAvatarError),
