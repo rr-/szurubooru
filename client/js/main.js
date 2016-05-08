@@ -3,6 +3,12 @@
 require('./util/polyfill.js');
 
 const page = require('page');
+const origPushState = page.Context.prototype.pushState;
+page.Context.prototype.pushState = function() {
+    window.scrollTo(0, 0);
+    origPushState.call(this);
+};
+
 const mousetrap = require('mousetrap');
 page(/.*/, (ctx, next) => {
     mousetrap.reset();
