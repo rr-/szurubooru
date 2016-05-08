@@ -26,15 +26,12 @@ def validate_config(src):
     Check whether config doesn't contain errors that might prove
     lethal at runtime.
     '''
-    all_ranks = src['ranks']
+    from szurubooru.db.user import User
     for privilege, rank in src['privileges'].items():
-        if rank not in all_ranks:
+        if rank not in User.ALL_RANKS:
             raise errors.ConfigError(
                 'Rank %r for privilege %r is missing' % (rank, privilege))
-    for rank in ['anonymous', 'admin', 'nobody']:
-        if rank not in all_ranks:
-            raise errors.ConfigError('Protected rank %r is missing' % rank)
-    if src['default_rank'] not in all_ranks:
+    if src['default_rank'] not in User.ALL_RANKS:
         raise errors.ConfigError(
             'Default rank %r is not on the list of known ranks' % (
                 src['default_rank']))

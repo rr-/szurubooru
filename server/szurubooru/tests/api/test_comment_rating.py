@@ -9,11 +9,9 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
-        'ranks': ['anonymous', 'regular_user', 'mod'],
-        'rank_names': {'anonymous': 'Peasant', 'regular_user': 'Lord'},
         'privileges': {
-            'comments:score': 'regular_user',
-            'users:edit:any:email': 'mod',
+            'comments:score': db.User.RANK_REGULAR,
+            'users:edit:any:email': db.User.RANK_MODERATOR,
         },
         'thumbnails': {'avatar_width': 200},
     })
@@ -26,7 +24,7 @@ def test_ctx(
     return ret
 
 def test_simple_rating(test_ctx, fake_datetime):
-    user = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     comment = test_ctx.comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -42,7 +40,7 @@ def test_simple_rating(test_ctx, fake_datetime):
     assert comment.score == 1
 
 def test_updating_rating(test_ctx, fake_datetime):
-    user = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     comment = test_ctx.comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -59,7 +57,7 @@ def test_updating_rating(test_ctx, fake_datetime):
     assert comment.score == -1
 
 def test_updating_rating_to_zero(test_ctx, fake_datetime):
-    user = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     comment = test_ctx.comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -76,7 +74,7 @@ def test_updating_rating_to_zero(test_ctx, fake_datetime):
     assert comment.score == 0
 
 def test_deleting_rating(test_ctx, fake_datetime):
-    user = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     comment = test_ctx.comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -92,8 +90,8 @@ def test_deleting_rating(test_ctx, fake_datetime):
     assert comment.score == 0
 
 def test_ratings_from_multiple_users(test_ctx, fake_datetime):
-    user1 = test_ctx.user_factory(rank='regular_user')
-    user2 = test_ctx.user_factory(rank='regular_user')
+    user1 = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
+    user2 = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     comment = test_ctx.comment_factory()
     db.session.add_all([user1, user2, comment])
     db.session.commit()
@@ -141,7 +139,7 @@ def test_trying_to_update_non_existing(test_ctx):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={'score': 1},
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             5)
 
 def test_trying_to_rate_without_privileges(test_ctx):

@@ -9,12 +9,10 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
-        'ranks': ['anonymous', 'regular_user', 'mod'],
-        'rank_names': {'anonymous': 'Peasant', 'regular_user': 'Lord', 'mod': 'King'},
         'privileges': {
-            'comments:edit:self': 'regular_user',
-            'comments:edit:any': 'mod',
-            'users:edit:any:email': 'mod',
+            'comments:edit:self': db.User.RANK_REGULAR,
+            'comments:edit:any': db.User.RANK_MODERATOR,
+            'users:edit:any:email': db.User.RANK_MODERATOR,
         },
         'thumbnails': {'avatar_width': 200},
     })
@@ -27,7 +25,7 @@ def test_ctx(
     return ret
 
 def test_simple_updating(test_ctx, fake_datetime):
-    user = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     comment = test_ctx.comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -73,12 +71,12 @@ def test_trying_to_update_non_existing(test_ctx):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={'text': 'new text'},
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             5)
 
 def test_trying_to_update_someones_comment_without_privileges(test_ctx):
-    user = test_ctx.user_factory(rank='regular_user')
-    user2 = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
+    user2 = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     comment = test_ctx.comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -88,8 +86,8 @@ def test_trying_to_update_someones_comment_without_privileges(test_ctx):
             comment.comment_id)
 
 def test_updating_someones_comment_with_privileges(test_ctx):
-    user = test_ctx.user_factory(rank='regular_user')
-    user2 = test_ctx.user_factory(rank='mod')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
+    user2 = test_ctx.user_factory(rank=db.User.RANK_MODERATOR)
     comment = test_ctx.comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()

@@ -15,19 +15,17 @@ def test_ctx(config_injector, context_factory, user_factory):
         'user_name_regex': '^[^!]{3,}$',
         'password_regex': '^[^!]{3,}$',
         'thumbnails': {'avatar_width': 200, 'avatar_height': 200},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {},
         'privileges': {
-            'users:edit:self:name': 'regular_user',
-            'users:edit:self:pass': 'regular_user',
-            'users:edit:self:email': 'regular_user',
-            'users:edit:self:rank': 'mod',
-            'users:edit:self:avatar': 'mod',
-            'users:edit:any:name': 'mod',
-            'users:edit:any:pass': 'mod',
-            'users:edit:any:email': 'mod',
-            'users:edit:any:rank': 'admin',
-            'users:edit:any:avatar': 'admin',
+            'users:edit:self:name': db.User.RANK_REGULAR,
+            'users:edit:self:pass': db.User.RANK_REGULAR,
+            'users:edit:self:email': db.User.RANK_REGULAR,
+            'users:edit:self:rank': db.User.RANK_MODERATOR,
+            'users:edit:self:avatar': db.User.RANK_MODERATOR,
+            'users:edit:any:name': db.User.RANK_MODERATOR,
+            'users:edit:any:pass': db.User.RANK_MODERATOR,
+            'users:edit:any:email': db.User.RANK_MODERATOR,
+            'users:edit:any:rank': db.User.RANK_ADMINISTRATOR,
+            'users:edit:any:avatar': db.User.RANK_ADMINISTRATOR,
         },
     })
     ret = util.dotdict()
@@ -37,7 +35,7 @@ def test_ctx(config_injector, context_factory, user_factory):
     return ret
 
 def test_updating_user(test_ctx):
-    user = test_ctx.user_factory(name='u1', rank='admin')
+    user = test_ctx.user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     result = test_ctx.api.put(
         test_ctx.context_factory(
@@ -45,7 +43,7 @@ def test_updating_user(test_ctx):
                 'name': 'chewie',
                 'email': 'asd@asd.asd',
                 'password': 'oks',
-                'rank': 'mod',
+                'rank': 'moderator',
                 'avatarStyle': 'gravatar',
             },
             user=user),
@@ -59,14 +57,13 @@ def test_updating_user(test_ctx):
             'lastLoginTime': None,
             'email': 'asd@asd.asd',
             'name': 'chewie',
-            'rank': 'mod',
-            'rankName': 'Unknown',
+            'rank': 'moderator',
         }
     }
     user = users.get_user_by_name('chewie')
     assert user.name == 'chewie'
     assert user.email == 'asd@asd.asd'
-    assert user.rank == 'mod'
+    assert user.rank == db.User.RANK_MODERATOR
     assert user.avatar_style == user.AVATAR_GRAVATAR
     assert auth.is_valid_password(user, 'oks') is True
     assert auth.is_valid_password(user, 'invalid') is False
@@ -90,7 +87,7 @@ def test_updating_user(test_ctx):
     ({'avatarStyle': 'manual'}, users.InvalidAvatarError), # missing file
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
-    user = test_ctx.user_factory(name='u1', rank='admin')
+    user = test_ctx.user_factory(name='u1', rank='administrator')
     db.session.add(user)
     with pytest.raises(expected_exception):
         test_ctx.api.put(
@@ -101,13 +98,13 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
 def test_omitting_optional_field(test_ctx, tmpdir, field):
     config.config['data_dir'] = str(tmpdir.mkdir('data'))
     config.config['data_url'] = 'http://example.com/data/'
-    user = test_ctx.user_factory(name='u1', rank='admin')
+    user = test_ctx.user_factory(name='u1', rank='administrator')
     db.session.add(user)
     input = {
         'name': 'chewie',
         'email': 'asd@asd.asd',
         'password': 'oks',
-        'rank': 'mod',
+        'rank': 'moderator',
         'avatarStyle': 'gravatar',
     }
     del input[field]
@@ -120,13 +117,13 @@ def test_omitting_optional_field(test_ctx, tmpdir, field):
     assert result is not None
 
 def test_trying_to_update_non_existing(test_ctx):
-    user = test_ctx.user_factory(name='u1', rank='admin')
+    user = test_ctx.user_factory(name='u1', rank='administrator')
     db.session.add(user)
     with pytest.raises(users.UserNotFoundError):
         test_ctx.api.put(test_ctx.context_factory(user=user), 'u2')
 
 def test_removing_email(test_ctx):
-    user = test_ctx.user_factory(name='u1', rank='admin')
+    user = test_ctx.user_factory(name='u1', rank='administrator')
     db.session.add(user)
     test_ctx.api.put(
         test_ctx.context_factory(input={'email': ''}, user=user), 'u1')
@@ -140,16 +137,16 @@ def test_removing_email(test_ctx):
     {'avatarStyle': 'whatever'},
 ])
 def test_trying_to_update_someone_else(test_ctx, input):
-    user1 = test_ctx.user_factory(name='u1', rank='regular_user')
-    user2 = test_ctx.user_factory(name='u2', rank='regular_user')
+    user1 = test_ctx.user_factory(name='u1', rank=db.User.RANK_REGULAR)
+    user2 = test_ctx.user_factory(name='u2', rank=db.User.RANK_REGULAR)
     db.session.add_all([user1, user2])
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(
             test_ctx.context_factory(input=input, user=user1), user2.name)
 
 def test_trying_to_become_someone_else(test_ctx):
-    user1 = test_ctx.user_factory(name='me', rank='regular_user')
-    user2 = test_ctx.user_factory(name='her', rank='regular_user')
+    user1 = test_ctx.user_factory(name='me', rank=db.User.RANK_REGULAR)
+    user2 = test_ctx.user_factory(name='her', rank=db.User.RANK_REGULAR)
     db.session.add_all([user1, user2])
     with pytest.raises(users.UserAlreadyExistsError):
         test_ctx.api.put(
@@ -160,10 +157,10 @@ def test_trying_to_become_someone_else(test_ctx):
             test_ctx.context_factory(input={'name': 'HER'}, user=user1), 'me')
 
 def test_mods_trying_to_become_admin(test_ctx):
-    user1 = test_ctx.user_factory(name='u1', rank='mod')
-    user2 = test_ctx.user_factory(name='u2', rank='mod')
+    user1 = test_ctx.user_factory(name='u1', rank=db.User.RANK_MODERATOR)
+    user2 = test_ctx.user_factory(name='u2', rank=db.User.RANK_MODERATOR)
     db.session.add_all([user1, user2])
-    context = test_ctx.context_factory(input={'rank': 'admin'}, user=user1)
+    context = test_ctx.context_factory(input={'rank': 'administrator'}, user=user1)
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(context, user1.name)
     with pytest.raises(errors.AuthError):
@@ -172,7 +169,7 @@ def test_mods_trying_to_become_admin(test_ctx):
 def test_uploading_avatar(test_ctx, tmpdir):
     config.config['data_dir'] = str(tmpdir.mkdir('data'))
     config.config['data_url'] = 'http://example.com/data/'
-    user = test_ctx.user_factory(name='u1', rank='mod')
+    user = test_ctx.user_factory(name='u1', rank=db.User.RANK_MODERATOR)
     db.session.add(user)
     response = test_ctx.api.put(
         test_ctx.context_factory(

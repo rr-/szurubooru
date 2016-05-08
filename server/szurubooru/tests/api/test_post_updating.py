@@ -8,19 +8,18 @@ from szurubooru.func import posts, tags, snapshots, net
 def test_post_updating(
         config_injector, context_factory, post_factory, user_factory, fake_datetime):
     config_injector({
-        'ranks': ['anonymous', 'regular_user'],
         'privileges': {
-            'posts:edit:tags': 'regular_user',
-            'posts:edit:content': 'regular_user',
-            'posts:edit:safety': 'regular_user',
-            'posts:edit:source': 'regular_user',
-            'posts:edit:relations': 'regular_user',
-            'posts:edit:notes': 'regular_user',
-            'posts:edit:flags': 'regular_user',
-            'posts:edit:thumbnail': 'regular_user',
+            'posts:edit:tags': db.User.RANK_REGULAR,
+            'posts:edit:content': db.User.RANK_REGULAR,
+            'posts:edit:safety': db.User.RANK_REGULAR,
+            'posts:edit:source': db.User.RANK_REGULAR,
+            'posts:edit:relations': db.User.RANK_REGULAR,
+            'posts:edit:notes': db.User.RANK_REGULAR,
+            'posts:edit:flags': db.User.RANK_REGULAR,
+            'posts:edit:thumbnail': db.User.RANK_REGULAR,
         },
     })
-    auth_user = user_factory(rank='regular_user')
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -76,8 +75,8 @@ def test_post_updating(
 def test_uploading_from_url_saves_source(
         config_injector, context_factory, post_factory, user_factory):
     config_injector({
-        'ranks': ['anonymous', 'regular_user'],
-        'privileges': {'posts:edit:content': 'regular_user'},
+        'ranks': ['anonymous', db.User.RANK_REGULAR],
+        'privileges': {'posts:edit:content': db.User.RANK_REGULAR},
     })
     post = post_factory()
     db.session.add(post)
@@ -92,7 +91,7 @@ def test_uploading_from_url_saves_source(
         api.PostDetailApi().put(
             context_factory(
                 input={'contentUrl': 'example.com'},
-                user=user_factory(rank='regular_user')),
+                user=user_factory(rank=db.User.RANK_REGULAR)),
             post.post_id)
         net.download.assert_called_once_with('example.com')
         posts.update_post_content.assert_called_once_with(post, b'content')
@@ -101,10 +100,10 @@ def test_uploading_from_url_saves_source(
 def test_uploading_from_url_with_source_specified(
         config_injector, context_factory, post_factory, user_factory):
     config_injector({
-        'ranks': ['anonymous', 'regular_user'],
+        'ranks': ['anonymous', db.User.RANK_REGULAR],
         'privileges': {
-            'posts:edit:content': 'regular_user',
-            'posts:edit:source': 'regular_user',
+            'posts:edit:content': db.User.RANK_REGULAR,
+            'posts:edit:source': db.User.RANK_REGULAR,
         },
     })
     post = post_factory()
@@ -120,7 +119,7 @@ def test_uploading_from_url_with_source_specified(
         api.PostDetailApi().put(
             context_factory(
                 input={'contentUrl': 'example.com', 'source': 'example2.com'},
-                user=user_factory(rank='regular_user')),
+                user=user_factory(rank=db.User.RANK_REGULAR)),
             post.post_id)
         net.download.assert_called_once_with('example.com')
         posts.update_post_content.assert_called_once_with(post, b'content')
@@ -131,7 +130,7 @@ def test_trying_to_update_non_existing(context_factory, user_factory):
         api.PostDetailApi().put(
             context_factory(
                 input='whatever',
-                user=user_factory(rank='regular_user')),
+                user=user_factory(rank=db.User.RANK_REGULAR)),
             1)
 
 @pytest.mark.parametrize('privilege,files,input', [
@@ -153,8 +152,8 @@ def test_trying_to_create_without_privileges(
         input,
         privilege):
     config_injector({
-        'ranks': ['anonymous', 'regular_user'],
-        'privileges': {privilege: 'regular_user'},
+        'ranks': ['anonymous', db.User.RANK_REGULAR],
+        'privileges': {privilege: db.User.RANK_REGULAR},
     })
     post = post_factory()
     db.session.add(post)

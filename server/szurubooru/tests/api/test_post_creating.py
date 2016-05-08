@@ -8,13 +8,12 @@ from szurubooru.func import posts, tags, snapshots, net
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector({
-        'ranks': ['anonymous', 'regular_user'],
-        'privileges': {'posts:create': 'regular_user'},
+        'privileges': {'posts:create': db.User.RANK_REGULAR},
     })
 
 def test_creating_minimal_posts(
         context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank='regular_user')
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -60,7 +59,7 @@ def test_creating_minimal_posts(
         snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
 
 def test_creating_full_posts(context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank='regular_user')
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -107,7 +106,7 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
 
 def test_creating_from_url_saves_source(
         config_injector, context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank='regular_user')
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -119,8 +118,8 @@ def test_creating_from_url_saves_source(
         unittest.mock.patch('szurubooru.func.posts.create_post'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_source'):
         config_injector({
-            'ranks': ['anonymous', 'regular_user'],
-            'privileges': {'posts:create': 'regular_user'},
+            'ranks': ['anonymous', db.User.RANK_REGULAR],
+            'privileges': {'posts:create': db.User.RANK_REGULAR},
         })
         net.download.return_value = b'content'
         posts.create_post.return_value = post
@@ -139,7 +138,7 @@ def test_creating_from_url_saves_source(
 
 def test_creating_from_url_with_source_specified(
         config_injector, context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank='regular_user')
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -151,8 +150,8 @@ def test_creating_from_url_with_source_specified(
         unittest.mock.patch('szurubooru.func.posts.create_post'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_source'):
         config_injector({
-            'ranks': ['anonymous', 'regular_user'],
-            'privileges': {'posts:create': 'regular_user'},
+            'ranks': ['anonymous', db.User.RANK_REGULAR],
+            'privileges': {'posts:create': db.User.RANK_REGULAR},
         })
         net.download.return_value = b'content'
         posts.create_post.return_value = post
@@ -182,7 +181,7 @@ def test_trying_to_omit_mandatory_field(context_factory, user_factory, field):
             context_factory(
                 input=input,
                 files={'content': '...'},
-                user=user_factory(rank='regular_user')))
+                user=user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_omit_content(context_factory, user_factory):
     with pytest.raises(errors.MissingRequiredFileError):
@@ -192,7 +191,7 @@ def test_trying_to_omit_content(context_factory, user_factory):
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                 },
-                user=user_factory(rank='regular_user')))
+                user=user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_create_without_privileges(context_factory, user_factory):
     with pytest.raises(errors.AuthError):

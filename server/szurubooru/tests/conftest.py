@@ -90,7 +90,7 @@ def config_injector():
 
 @pytest.fixture
 def user_factory():
-    def factory(name=None, rank='regular_user', email='dummy'):
+    def factory(name=None, rank=db.User.RANK_REGULAR, email='dummy'):
         user = db.User()
         user.name = name or get_unique_name()
         user.password_salt = 'dummy'

@@ -16,7 +16,7 @@ def password_reset_api(config_injector):
 def test_reset_sending_email(
         password_reset_api, context_factory, user_factory):
     db.session.add(user_factory(
-        name='u1', rank='regular_user', email='user@example.com'))
+        name='u1', rank=db.User.RANK_REGULAR, email='user@example.com'))
     for getter in ['u1', 'user@example.com']:
         mailer.send_mail = mock.MagicMock()
         assert password_reset_api.get(context_factory(), getter) == {}
@@ -35,14 +35,14 @@ def test_trying_to_reset_non_existing(password_reset_api, context_factory):
 
 def test_trying_to_reset_without_email(
         password_reset_api, context_factory, user_factory):
-    db.session.add(user_factory(name='u1', rank='regular_user', email=None))
+    db.session.add(user_factory(name='u1', rank=db.User.RANK_REGULAR, email=None))
     with pytest.raises(errors.ValidationError):
         password_reset_api.get(context_factory(), 'u1')
 
 def test_confirming_with_good_token(
         password_reset_api, context_factory, user_factory):
     user = user_factory(
-        name='u1', rank='regular_user', email='user@example.com')
+        name='u1', rank=db.User.RANK_REGULAR, email='user@example.com')
     old_hash = user.password_hash
     db.session.add(user)
     context = context_factory(
@@ -58,14 +58,14 @@ def test_trying_to_confirm_non_existing(password_reset_api, context_factory):
 def test_trying_to_confirm_without_token(
         password_reset_api, context_factory, user_factory):
     db.session.add(user_factory(
-        name='u1', rank='regular_user', email='user@example.com'))
+        name='u1', rank=db.User.RANK_REGULAR, email='user@example.com'))
     with pytest.raises(errors.ValidationError):
         password_reset_api.post(context_factory(input={}), 'u1')
 
 def test_trying_to_confirm_with_bad_token(
         password_reset_api, context_factory, user_factory):
     db.session.add(user_factory(
-        name='u1', rank='regular_user', email='user@example.com'))
+        name='u1', rank=db.User.RANK_REGULAR, email='user@example.com'))
     with pytest.raises(errors.ValidationError):
         password_reset_api.post(
             context_factory(input={'token': 'bad'}), 'u1')

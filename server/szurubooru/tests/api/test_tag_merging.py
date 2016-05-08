@@ -9,9 +9,8 @@ def test_ctx(
         tmpdir, config_injector, context_factory, user_factory, tag_factory):
     config_injector({
         'data_dir': str(tmpdir),
-        'ranks': ['anonymous', 'regular_user'],
         'privileges': {
-            'tags:merge': 'regular_user',
+            'tags:merge': db.User.RANK_REGULAR,
         },
     })
     ret = util.dotdict()
@@ -33,7 +32,7 @@ def test_merging_without_usages(test_ctx, fake_datetime):
                     'remove': 'source',
                     'merge-to': 'target',
                 },
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['tag'] == {
         'names': ['target'],
         'category': 'meta',
@@ -69,7 +68,7 @@ def test_merging_with_usages(test_ctx, fake_datetime, post_factory):
                     'remove': 'source',
                     'merge-to': 'target',
                 },
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert tags.try_get_tag_by_name('source') is None
     assert tags.get_tag_by_name('target').post_count == 1
 
@@ -96,7 +95,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input=real_input,
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize(
     'field', ['remove', 'merge-to'])
@@ -115,7 +114,7 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input=input,
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_merge_non_existing(test_ctx):
     db.session.add(test_ctx.tag_factory(names=['good'], category_name='meta'))
@@ -124,12 +123,12 @@ def test_trying_to_merge_non_existing(test_ctx):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={'remove': 'good', 'merge-to': 'bad'},
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={'remove': 'bad', 'merge-to': 'good'},
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_merge_to_itself(test_ctx):
     db.session.add(test_ctx.tag_factory(names=['good'], category_name='meta'))
@@ -138,7 +137,7 @@ def test_trying_to_merge_to_itself(test_ctx):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={'remove': 'good', 'merge-to': 'good'},
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize('input', [
     {'names': 'whatever'},

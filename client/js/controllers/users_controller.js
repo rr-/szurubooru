@@ -14,6 +14,16 @@ const UserListHeaderView = require('../views/user_list_header_view.js');
 const UserListPageView = require('../views/user_list_page_view.js');
 const EmptyView = require('../views/empty_view.js');
 
+const rankNames = {
+    anonymous: 'Anonymous',
+    restricted: 'Restricted user',
+    regular: 'Regular user',
+    power: 'Power user',
+    moderator: 'Moderator',
+    administrator: 'Administrator',
+    nobody: 'Nobody',
+};
+
 class UsersController {
     constructor() {
         this.registrationView = new RegistrationView();
@@ -86,6 +96,7 @@ class UsersController {
             next();
         } else {
             api.get('/user/' + ctx.params.name).then(response => {
+                response.user.rankName = rankNames[response.user.rank];
                 ctx.state.user = response.user;
                 ctx.save();
                 this.user = response.user;
@@ -209,18 +220,17 @@ class UsersController {
         const isLoggedIn = api.isLoggedIn(user);
         const infix = isLoggedIn ? 'self' : 'any';
 
-        const myRankIdx = api.user ? config.ranks.indexOf(api.user.rank) : 0;
-        const rankNames = Object.values(config.rankNames);
+        const myRankIdx = api.user ? api.allRanks.indexOf(api.user.rank) : 0;
         let ranks = {};
-        for (let rankIdx of misc.range(config.ranks.length)) {
-            const rankIdentifier = config.ranks[rankIdx];
+        for (let rankIdx of misc.range(api.allRanks.length)) {
+            const rankIdentifier = api.allRanks[rankIdx];
             if (rankIdentifier === 'anonymous') {
                 continue;
             }
             if (rankIdx > myRankIdx) {
                 continue;
             }
-            ranks[rankIdentifier] = rankNames[rankIdx];
+            ranks[rankIdentifier] = Object.values(rankNames)[rankIdx];
         }
 
         if (isLoggedIn) {

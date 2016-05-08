@@ -9,11 +9,9 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
-        'ranks': ['anonymous', 'regular_user', 'mod'],
-        'rank_names': {'anonymous': 'Peasant', 'regular_user': 'Lord'},
         'privileges': {
-            'posts:favorite': 'regular_user',
-            'users:edit:any:email': 'mod',
+            'posts:favorite': db.User.RANK_REGULAR,
+            'users:edit:any:email': db.User.RANK_MODERATOR,
         },
         'thumbnails': {'avatar_width': 200},
     })

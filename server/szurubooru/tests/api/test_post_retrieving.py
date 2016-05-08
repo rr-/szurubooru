@@ -10,12 +10,10 @@ def test_ctx(
         'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
         'privileges': {
-            'posts:list': 'regular_user',
-            'posts:view': 'regular_user',
+            'posts:list': db.User.RANK_REGULAR,
+            'posts:view': db.User.RANK_REGULAR,
         },
         'thumbnails': {'avatar_width': 200},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {'regular_user': 'Peasant'},
     })
     ret = util.dotdict()
     ret.context_factory = context_factory
@@ -32,7 +30,7 @@ def test_retrieving_multiple(test_ctx):
     result = test_ctx.list_api.get(
         test_ctx.context_factory(
             input={'query': '', 'page': 1},
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['query'] == ''
     assert result['page'] == 1
     assert result['pageSize'] == 100
@@ -41,7 +39,7 @@ def test_retrieving_multiple(test_ctx):
 
 def test_using_special_tokens(
         test_ctx, config_injector):
-    auth_user = test_ctx.user_factory(rank='regular_user')
+    auth_user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     post1 = test_ctx.post_factory(id=1)
     post2 = test_ctx.post_factory(id=2)
     post1.favorited_by = [db.PostFavorite(
@@ -81,7 +79,7 @@ def test_retrieving_single(test_ctx):
     db.session.add(test_ctx.post_factory(id=1))
     result = test_ctx.detail_api.get(
         test_ctx.context_factory(
-            user=test_ctx.user_factory(rank='regular_user')), 1)
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)), 1)
     assert 'post' in result
     assert 'id' in result['post']
     assert 'snapshots' in result
@@ -91,7 +89,7 @@ def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(posts.PostNotFoundError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             '-')
 
 def test_trying_to_retrieve_single_without_privileges(test_ctx):

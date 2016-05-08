@@ -10,9 +10,8 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'privileges': {
-            'tags:delete': 'regular_user',
+            'tags:delete': db.User.RANK_REGULAR,
         },
-        'ranks': ['anonymous', 'regular_user'],
     })
     ret = util.dotdict()
     ret.context_factory = context_factory
@@ -26,7 +25,7 @@ def test_deleting(test_ctx):
     db.session.commit()
     result = test_ctx.api.delete(
         test_ctx.context_factory(
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag')
     assert result == {}
     assert db.session.query(db.Tag).count() == 0
@@ -41,7 +40,7 @@ def test_trying_to_delete_used(test_ctx, post_factory):
     with pytest.raises(tags.TagIsInUseError):
         test_ctx.api.delete(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag')
     assert db.session.query(db.Tag).count() == 1
 
@@ -49,7 +48,7 @@ def test_trying_to_delete_non_existing(test_ctx):
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.api.delete(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='regular_user')), 'bad')
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)), 'bad')
 
 def test_trying_to_delete_without_privileges(test_ctx):
     db.session.add(test_ctx.tag_factory(names=['tag']))

@@ -17,11 +17,9 @@ def snapshot_factory():
 def test_ctx(context_factory, config_injector, user_factory):
     config_injector({
         'privileges': {
-            'snapshots:list': 'regular_user',
+            'snapshots:list': db.User.RANK_REGULAR,
         },
         'thumbnails': {'avatar_width': 200},
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {'regular_user': 'Peasant'},
     })
     ret = util.dotdict()
     ret.context_factory = context_factory
@@ -36,7 +34,7 @@ def test_retrieving_multiple(test_ctx):
     result = test_ctx.api.get(
         test_ctx.context_factory(
             input={'query': '', 'page': 1},
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['query'] == ''
     assert result['page'] == 1
     assert result['pageSize'] == 100

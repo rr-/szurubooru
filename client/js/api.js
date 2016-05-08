@@ -11,6 +11,15 @@ class Api {
         this.userName = null;
         this.userPassword = null;
         this.cache = {};
+        this.allRanks = [
+            'anonymous',
+            'restricted',
+            'regular',
+            'power',
+            'moderator',
+            'administrator',
+            'nobody',
+        ];
     }
 
     get(url) {
@@ -75,7 +84,7 @@ class Api {
                 continue;
             }
             const rankName = config.privileges[privilege];
-            const rankIndex = config.ranks.indexOf(rankName);
+            const rankIndex = this.allRanks.indexOf(rankName);
             if (minViableRank === null || rankIndex < minViableRank) {
                 minViableRank = rankIndex;
             }
@@ -84,7 +93,7 @@ class Api {
             console.error('Bad privilege name: ' + lookup);
         }
         let myRank = this.user !== null ?
-            config.ranks.indexOf(this.user.rank) :
+            this.allRanks.indexOf(this.user.rank) :
             0;
         return myRank >= minViableRank;
     }

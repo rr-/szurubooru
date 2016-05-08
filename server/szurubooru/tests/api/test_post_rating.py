@@ -8,9 +8,7 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
-        'ranks': ['anonymous', 'regular_user'],
-        'rank_names': {'anonymous': 'Peasant', 'regular_user': 'Lord'},
-        'privileges': {'posts:score': 'regular_user'},
+        'privileges': {'posts:score': db.User.RANK_REGULAR},
         'thumbnails': {'avatar_width': 200},
     })
     db.session.flush()

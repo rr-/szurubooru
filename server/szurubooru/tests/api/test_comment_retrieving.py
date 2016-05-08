@@ -9,12 +9,10 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
-        'ranks': ['anonymous', 'regular_user', 'mod', 'admin'],
-        'rank_names': {'regular_user': 'Peasant'},
         'privileges': {
-            'comments:list': 'regular_user',
-            'comments:view': 'regular_user',
-            'users:edit:any:email': 'mod',
+            'comments:list': db.User.RANK_REGULAR,
+            'comments:view': db.User.RANK_REGULAR,
+            'users:edit:any:email': db.User.RANK_MODERATOR,
         },
         'thumbnails': {'avatar_width': 200},
     })
@@ -33,7 +31,7 @@ def test_retrieving_multiple(test_ctx):
     result = test_ctx.list_api.get(
         test_ctx.context_factory(
             input={'query': '', 'page': 1},
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['query'] == ''
     assert result['page'] == 1
     assert result['pageSize'] == 100
@@ -53,7 +51,7 @@ def test_retrieving_single(test_ctx):
     db.session.flush()
     result = test_ctx.detail_api.get(
         test_ctx.context_factory(
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         comment.comment_id)
     assert 'comment' in result
     assert 'id' in result['comment']
@@ -69,7 +67,7 @@ def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(comments.CommentNotFoundError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             5)
 
 def test_trying_to_retrieve_single_without_privileges(test_ctx):

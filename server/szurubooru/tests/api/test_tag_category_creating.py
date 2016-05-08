@@ -8,8 +8,7 @@ def test_ctx(tmpdir, config_injector, context_factory, user_factory):
     config_injector({
         'data_dir': str(tmpdir),
         'tag_category_name_regex': '^[^!]+$',
-        'ranks': ['anonymous', 'regular_user'],
-        'privileges': {'tag_categories:create': 'regular_user'},
+        'privileges': {'tag_categories:create': db.User.RANK_REGULAR},
     })
     ret = util.dotdict()
     ret.context_factory = context_factory
@@ -21,7 +20,7 @@ def test_creating_category(test_ctx):
     result = test_ctx.api.post(
         test_ctx.context_factory(
             input={'name': 'meta', 'color': 'black'},
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['tagCategory'] == {'name': 'meta', 'color': 'black'}
     assert len(result['snapshots']) == 1
     category = db.session.query(db.TagCategory).one()
@@ -49,7 +48,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input=real_input,
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize('field', ['name', 'color'])
 def test_trying_to_omit_mandatory_field(test_ctx, field):
@@ -62,23 +61,23 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input=input,
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_use_existing_name(test_ctx):
     result = test_ctx.api.post(
         test_ctx.context_factory(
             input={'name': 'meta', 'color': 'black'},
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     with pytest.raises(tag_categories.TagCategoryAlreadyExistsError):
         result = test_ctx.api.post(
             test_ctx.context_factory(
                 input={'name': 'meta', 'color': 'black'},
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     with pytest.raises(tag_categories.TagCategoryAlreadyExistsError):
         result = test_ctx.api.post(
             test_ctx.context_factory(
                 input={'name': 'META', 'color': 'black'},
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_create_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):

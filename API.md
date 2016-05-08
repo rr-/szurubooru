@@ -1122,9 +1122,8 @@ data.
     style can be either `gravatar` or `manual`. `manual` avatar style requires
     client to pass also `avatar` file - see [file uploads](#file-uploads) for
     details. If the rank is empty and the user happens to be the first user
-    ever created, they're granted highest available rank, becoming an
-    administrator, whereas subsequent users will be given the rank indicated by
-    `default_rank` in the server's configuration.
+    ever created, become an administrator, whereas subsequent users will be
+    given the rank indicated by `default_rank` in the server's configuration.
 
 ## Updating user
 - **Request**
@@ -1342,7 +1341,6 @@ A single user.
     "name":          <name>,
     "email":         <email>,
     "rank":          <rank>,
-    "rankName":      <rank-name>,
     "lastLoginTime": <last-login-time>,
     "creationTime":  <creation-time>,
     "avatarStyle":   <avatar-style>,
@@ -1355,10 +1353,16 @@ A single user.
 - `<email>`: the user email. It is available only if the request is
   authenticated by the same user, or the authenticated user can change the
   email.
-- `<rank>`: the user rank, which effectively affects their privileges. The
-  available ranks are stored in the server configuration.
-- `<rank-name>`: the text representation of user's rank. Like `<rank>`, the
-  possible values depend on the server configuration.
+- `<rank>`: the user rank, which effectively affects their privileges.
+
+    Possible values:
+
+    - `"restricted"`: restricted user
+    - `"regular"`: regular user
+    - `"power"`: power user
+    - `"moderator"`: moderator
+    - `"administrator"`: administrator
+
 - `<last-login-time>`: the last login time, formatted as per RFC 3339.
 - `<creation-time>`: the user registration time, formatted as per RFC 3339.
 - `<avatarStyle>`: how to render the user avatar.

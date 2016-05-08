@@ -1,7 +1,6 @@
 import hashlib
 import random
-from szurubooru import config
-from szurubooru import errors
+from szurubooru import config, db, errors
 
 def get_password_hash(salt, password):
     ''' Retrieve new-style password hash. '''
@@ -37,11 +36,10 @@ def is_valid_password(user, password):
     return valid_hash in possible_hashes
 
 def has_privilege(user, privilege_name):
-    all_ranks = config.config['ranks']
     assert privilege_name in config.config['privileges']
-    assert user.rank in all_ranks
+    assert user.rank in db.User.ALL_RANKS
     minimal_rank = config.config['privileges'][privilege_name]
-    good_ranks = all_ranks[all_ranks.index(minimal_rank):]
+    good_ranks = db.User.ALL_RANKS[db.User.ALL_RANKS.index(minimal_rank):]
     return user.rank in good_ranks
 
 def verify_privilege(user, privilege_name):

@@ -15,12 +15,11 @@ def test_ctx(
         'data_dir': str(tmpdir),
         'tag_name_regex': '^[^!]*$',
         'tag_category_name_regex': '^[^!]*$',
-        'ranks': ['anonymous', 'regular_user'],
         'privileges': {
-            'tags:edit:names': 'regular_user',
-            'tags:edit:category': 'regular_user',
-            'tags:edit:suggestions': 'regular_user',
-            'tags:edit:implications': 'regular_user',
+            'tags:edit:names': db.User.RANK_REGULAR,
+            'tags:edit:category': db.User.RANK_REGULAR,
+            'tags:edit:suggestions': db.User.RANK_REGULAR,
+            'tags:edit:implications': db.User.RANK_REGULAR,
         },
     })
     db.session.add_all([
@@ -44,7 +43,7 @@ def test_simple_updating(test_ctx, fake_datetime):
                     'names': ['tag3'],
                     'category': 'character',
                 },
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
     assert result['tag'] == {
         'names': ['tag3'],
@@ -86,7 +85,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input=input,
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
 
 @pytest.mark.parametrize(
@@ -104,7 +103,7 @@ def test_omitting_optional_field(test_ctx, field):
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input=input,
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag')
     assert result is not None
 
@@ -113,7 +112,7 @@ def test_trying_to_update_non_existing(test_ctx):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={'names': ['dummy']},
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
 
 @pytest.mark.parametrize('dup_name', ['tag1', 'TAG1'])
@@ -124,7 +123,7 @@ def test_reusing_own_name(test_ctx, dup_name):
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input={'names': [dup_name, 'tag3']},
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag1')
     assert result['tag']['names'] == ['tag1', 'tag3']
     assert tags.try_get_tag_by_name('tag2') is None
@@ -139,7 +138,7 @@ def test_duplicating_names(test_ctx):
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input={'names': ['tag3', 'TAG3']},
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag1')
     assert result['tag']['names'] == ['tag3']
     assert tags.try_get_tag_by_name('tag1') is None
@@ -158,7 +157,7 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={'names': [dup_name]},
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag3')
 
 @pytest.mark.parametrize('input,expected_suggestions,expected_implications', [
@@ -190,7 +189,7 @@ def test_updating_new_suggestions_and_implications(
     db.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
-            input=input, user=test_ctx.user_factory(rank='regular_user')),
+            input=input, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'main')
     assert result['tag']['suggestions'] == expected_suggestions
     assert result['tag']['implications'] == expected_implications
@@ -215,7 +214,7 @@ def test_reusing_suggestions_and_implications(test_ctx):
                 'suggestions': ['TAG2'],
                 'implications': ['tag1'],
             },
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag4')
     # NOTE: it should export only the first name
     assert result['tag']['suggestions'] == ['tag1']
@@ -244,7 +243,7 @@ def test_trying_to_relate_tag_to_itself(test_ctx, input):
     with pytest.raises(tags.InvalidTagRelationError):
         test_ctx.api.put(
             test_ctx.context_factory(
-                input=input, user=test_ctx.user_factory(rank='regular_user')),
+                input=input, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
 
 @pytest.mark.parametrize('input', [

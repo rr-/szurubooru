@@ -15,8 +15,7 @@ def test_ctx(
         'data_dir': str(tmpdir),
         'tag_name_regex': '^[^!]*$',
         'tag_category_name_regex': '^[^!]*$',
-        'ranks': ['anonymous', 'regular_user'],
-        'privileges': {'tags:create': 'regular_user'},
+        'privileges': {'tags:create': db.User.RANK_REGULAR},
     })
     db.session.add_all([
         db.TagCategory(name) for name in ['meta', 'character', 'copyright']])
@@ -38,7 +37,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
                     'suggestions': [],
                     'implications': [],
                 },
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['tag'] == {
         'names': ['tag1', 'tag2'],
         'category': 'meta',
@@ -99,7 +98,7 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input=input,
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize('field', ['implications', 'suggestions'])
 def test_omitting_optional_field(test_ctx, field):
@@ -113,7 +112,7 @@ def test_omitting_optional_field(test_ctx, field):
     result = test_ctx.api.post(
         test_ctx.context_factory(
             input=input,
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result is not None
 
 def test_duplicating_names(test_ctx):
@@ -125,7 +124,7 @@ def test_duplicating_names(test_ctx):
                 'suggestions': [],
                 'implications': [],
             },
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['tag']['names'] == ['tag1']
     assert result['tag']['category'] == 'meta'
     tag = tags.get_tag_by_name('tag1')
@@ -146,7 +145,7 @@ def test_trying_to_use_existing_name(test_ctx):
                     'suggestions': [],
                     'implications': [],
                 },
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     with pytest.raises(tags.TagAlreadyExistsError):
         test_ctx.api.post(
             test_ctx.context_factory(
@@ -156,7 +155,7 @@ def test_trying_to_use_existing_name(test_ctx):
                     'suggestions': [],
                     'implications': [],
                 },
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert tags.try_get_tag_by_name('unused') is None
 
 def test_creating_new_category(test_ctx):
@@ -167,7 +166,7 @@ def test_creating_new_category(test_ctx):
                 'category': 'new',
                 'suggestions': [],
                 'implications': [],
-            }, user=test_ctx.user_factory(rank='regular_user')))
+            }, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert tag_categories.try_get_category_by_name('new') is not None
 
 @pytest.mark.parametrize('input,expected_suggestions,expected_implications', [
@@ -204,7 +203,7 @@ def test_creating_new_suggestions_and_implications(
         test_ctx, input, expected_suggestions, expected_implications):
     result = test_ctx.api.post(
         test_ctx.context_factory(
-            input=input, user=test_ctx.user_factory(rank='regular_user')))
+            input=input, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['tag']['suggestions'] == expected_suggestions
     assert result['tag']['implications'] == expected_implications
     tag = tags.get_tag_by_name('main')
@@ -227,7 +226,7 @@ def test_reusing_suggestions_and_implications(test_ctx):
                 'suggestions': ['TAG2'],
                 'implications': ['tag1'],
             },
-            user=test_ctx.user_factory(rank='regular_user')))
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     # NOTE: it should export only the first name
     assert result['tag']['suggestions'] == ['tag1']
     assert result['tag']['implications'] == ['tag1']
@@ -254,7 +253,7 @@ def test_tag_trying_to_relate_to_itself(test_ctx, input):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input=input,
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert tags.try_get_tag_by_name('tag') is None
 
 def test_trying_to_create_tag_without_privileges(test_ctx):

@@ -19,7 +19,6 @@ def serialize_user(user, authenticated_user, force_show_email=False):
     ret = {
         'name': user.name,
         'rank': user.rank,
-        'rankName': config.config['rank_names'].get(user.rank, 'Unknown'),
         'creationTime': user.creation_time,
         'lastLoginTime': user.last_login_time,
         'avatarStyle': user.avatar_style,
@@ -81,7 +80,7 @@ def create_user(name, password, email, auth_user):
     if get_user_count() > 0:
         user.rank = config.config['default_rank']
     else:
-        user.rank = 'admin'
+        user.rank = db.User.RANK_ADMINISTRATOR
     user.creation_time = datetime.datetime.now()
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
@@ -126,12 +125,11 @@ def update_user_rank(user, rank, authenticated_user):
     if not rank:
         raise InvalidRankError('Rank cannot be empty.')
     rank = rank.strip()
-    available_ranks = config.config['ranks']
-    if not rank in available_ranks:
+    if not rank in db.User.ALL_RANKS:
         raise InvalidRankError(
-            'Rank %r is invalid. Valid ranks: %r' % (rank, available_ranks))
-    if available_ranks.index(authenticated_user.rank) \
-            < available_ranks.index(rank) and get_user_count() > 0:
+            'Rank %r is invalid. Valid ranks: %r' % (rank, db.User.ALL_RANKS))
+    if db.User.ALL_RANKS.index(authenticated_user.rank) \
+            < db.User.ALL_RANKS.index(rank) and get_user_count() > 0:
         raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank
 

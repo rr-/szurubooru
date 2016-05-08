@@ -13,10 +13,9 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'tag_category_name_regex': '^[^!]*$',
-        'ranks': ['anonymous', 'regular_user'],
         'privileges': {
-            'tag_categories:edit:name': 'regular_user',
-            'tag_categories:edit:color': 'regular_user',
+            'tag_categories:edit:name': db.User.RANK_REGULAR,
+            'tag_categories:edit:color': db.User.RANK_REGULAR,
         },
     })
     ret = util.dotdict()
@@ -36,7 +35,7 @@ def test_simple_updating(test_ctx):
                 'name': 'changed',
                 'color': 'white',
             },
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'name')
     assert result['tagCategory'] == {
         'name': 'changed',
@@ -64,7 +63,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input=input,
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'meta')
 
 @pytest.mark.parametrize('field', ['name', 'color'])
@@ -79,7 +78,7 @@ def test_omitting_optional_field(test_ctx, field):
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input=input,
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'name')
     assert result is not None
 
@@ -88,7 +87,7 @@ def test_trying_to_update_non_existing(test_ctx):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={'name': ['dummy']},
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'bad')
 
 @pytest.mark.parametrize('new_name', ['cat', 'CAT'])
@@ -98,7 +97,7 @@ def test_reusing_own_name(test_ctx, new_name):
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input={'name': new_name},
-            user=test_ctx.user_factory(rank='regular_user')),
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'cat')
     assert result['tagCategory']['name'] == new_name
     category = tag_categories.get_category_by_name('cat')
@@ -114,7 +113,7 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={'name': dup_name},
-                user=test_ctx.user_factory(rank='regular_user')),
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'cat2')
 
 @pytest.mark.parametrize('input', [

@@ -9,9 +9,7 @@ def test_ctx(
     config_injector({
         'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
-        'ranks': ['anonymous', 'regular_user'],
-        'rank_names': {'anonymous': 'Peasant', 'regular_user': 'Lord'},
-        'privileges': {'comments:create': 'regular_user'},
+        'privileges': {'comments:create': db.User.RANK_REGULAR},
         'thumbnails': {'avatar_width': 200},
     })
     ret = util.dotdict()
@@ -23,7 +21,7 @@ def test_ctx(
 
 def test_creating_comment(test_ctx, fake_datetime):
     post = test_ctx.post_factory()
-    user = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     db.session.add_all([post, user])
     db.session.flush()
     with fake_datetime('1997-01-01'):
@@ -52,7 +50,7 @@ def test_creating_comment(test_ctx, fake_datetime):
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input):
     post = test_ctx.post_factory()
-    user = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     db.session.add_all([post, user])
     db.session.flush()
     real_input = {'text': 'input', 'postId': post.post_id}
@@ -73,10 +71,10 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={},
-                user=test_ctx.user_factory(rank='regular_user')))
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_comment_non_existing(test_ctx):
-    user = test_ctx.user_factory(rank='regular_user')
+    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
     db.session.add_all([user])
     db.session.flush()
     with pytest.raises(posts.PostNotFoundError):
