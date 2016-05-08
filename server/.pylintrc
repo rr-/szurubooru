@@ -1,6 +1,7 @@
 [basic]
 function-rgx=^_?[a-z_][a-z0-9_]{2,}$|^test_
 method-rgx=^[a-z_][a-z0-9_]{2,}$|^test_
+good-names=ex,_,logger
 
 [variables]
 dummy-variables-rgx=_|dummy

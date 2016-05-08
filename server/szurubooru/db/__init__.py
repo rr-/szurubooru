@@ -18,4 +18,7 @@ from szurubooru.db.comment import (
     Comment,
     CommentScore)
 from szurubooru.db.snapshot import Snapshot
-from szurubooru.db.session import session
+from szurubooru.db.session import (
+    session,
+    reset_query_count,
+    get_query_count)

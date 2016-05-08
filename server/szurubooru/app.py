@@ -1,7 +1,9 @@
 ''' Exports create_app. '''
 
+import logging
+import coloredlogs
 import falcon
-from szurubooru import api, errors, middleware
+from szurubooru import api, config, errors, middleware
 
 def _on_auth_error(ex, _request, _response, _params):
     raise falcon.HTTPForbidden(
@@ -37,6 +39,11 @@ def create_method_not_allowed(allowed_methods):
 def create_app():
     ''' Create a WSGI compatible App object. '''
     falcon.responders.create_method_not_allowed = create_method_not_allowed
+
+    coloredlogs.install(fmt='[%(asctime)-15s] %(name)s %(message)s')
+    if config.config['debug']:
+        logging.getLogger('szurubooru').setLevel(logging.INFO)
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
     app = falcon.API(
         request_type=api.Request,
