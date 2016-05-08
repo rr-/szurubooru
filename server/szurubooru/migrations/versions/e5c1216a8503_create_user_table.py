@@ -17,14 +17,14 @@ def upgrade():
     op.create_table(
         'user',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('name', sa.String(length=50), nullable=False),
-        sa.Column('password_hash', sa.String(length=64), nullable=False),
-        sa.Column('password_salt', sa.String(length=32), nullable=True),
-        sa.Column('email', sa.String(length=64), nullable=True),
-        sa.Column('rank', sa.String(length=32), nullable=False),
+        sa.Column('name', sa.Unicode(length=50), nullable=False),
+        sa.Column('password_hash', sa.Unicode(length=64), nullable=False),
+        sa.Column('password_salt', sa.Unicode(length=32), nullable=True),
+        sa.Column('email', sa.Unicode(length=64), nullable=True),
+        sa.Column('rank', sa.Unicode(length=32), nullable=False),
         sa.Column('creation_time', sa.DateTime(), nullable=False),
         sa.Column('last_login_time', sa.DateTime()),
-        sa.Column('avatar_style', sa.String(length=32), nullable=False),
+        sa.Column('avatar_style', sa.Unicode(length=32), nullable=False),
         sa.PrimaryKeyConstraint('id'))
     op.create_unique_constraint('uq_user_name', 'user', ['name'])
 

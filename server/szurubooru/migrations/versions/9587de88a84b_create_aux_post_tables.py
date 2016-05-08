@@ -37,8 +37,8 @@ def upgrade():
         'post_note',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('post_id', sa.Integer(), nullable=False),
-        sa.Column('text', sa.PickleType(), nullable=False),
-        sa.Column('polygon', sa.Text(), nullable=False),
+        sa.Column('text', sa.UnicodeText(), nullable=False),
+        sa.Column('polygon', sa.PickleType(), nullable=False),
         sa.ForeignKeyConstraint(['post_id'], ['post.id']),
         sa.PrimaryKeyConstraint('id'))
 

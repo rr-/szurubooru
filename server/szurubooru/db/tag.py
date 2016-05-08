@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, Unicode, ForeignKey
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
@@ -33,7 +33,7 @@ class TagName(Base):
 
     tag_name_id = Column('tag_name_id', Integer, primary_key=True)
     tag_id = Column('tag_id', Integer, ForeignKey('tag.id'), nullable=False)
-    name = Column('name', String(64), nullable=False, unique=True)
+    name = Column('name', Unicode(64), nullable=False, unique=True)
 
     def __init__(self, name):
         self.name = name

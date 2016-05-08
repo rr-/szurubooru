@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, DateTime, String, Text, PickleType, ForeignKey
+from sqlalchemy import (
+    Column, Integer, DateTime, Unicode, UnicodeText, PickleType, ForeignKey)
 from sqlalchemy.orm import relationship, column_property, object_session
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
@@ -42,7 +43,7 @@ class PostNote(Base):
     post_note_id = Column('id', Integer, primary_key=True)
     post_id = Column('post_id', Integer, ForeignKey('post.id'), nullable=False)
     polygon = Column('polygon', PickleType, nullable=False)
-    text = Column('text', Text, nullable=False)
+    text = Column('text', UnicodeText, nullable=False)
 
     post = relationship('Post')
 
@@ -62,9 +63,9 @@ class PostTag(Base):
     post_id = Column('post_id', Integer, ForeignKey('post.id'), primary_key=True)
     tag_id = Column('tag_id', Integer, ForeignKey('tag.id'), primary_key=True)
 
-    def __init__(self, tag_id, post_id):
-        self.tag_id = tag_id
+    def __init__(self, post_id, tag_id):
         self.post_id = post_id
+        self.tag_id = tag_id
 
 class Post(Base):
     __tablename__ = 'post'
@@ -72,6 +73,7 @@ class Post(Base):
     SAFETY_SAFE = 'safe'
     SAFETY_SKETCHY = 'sketchy'
     SAFETY_UNSAFE = 'unsafe'
+
     TYPE_IMAGE = 'image'
     TYPE_ANIMATION = 'animation'
     TYPE_VIDEO = 'video'
@@ -82,17 +84,17 @@ class Post(Base):
     user_id = Column('user_id', Integer, ForeignKey('user.id'))
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
-    safety = Column('safety', String(32), nullable=False)
-    source = Column('source', String(200))
+    safety = Column('safety', Unicode(32), nullable=False)
+    source = Column('source', Unicode(200))
     flags = Column('flags', PickleType, default=None)
 
     # content description
-    type = Column('type', String(32), nullable=False)
-    checksum = Column('checksum', String(64), nullable=False)
+    type = Column('type', Unicode(32), nullable=False)
+    checksum = Column('checksum', Unicode(64), nullable=False)
     file_size = Column('file_size', Integer)
     canvas_width = Column('image_width', Integer)
     canvas_height = Column('image_height', Integer)
-    mime_type = Column('mime-type', String(32), nullable=False)
+    mime_type = Column('mime-type', Unicode(32), nullable=False)
 
     # foreign tables
     user = relationship('User')

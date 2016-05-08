@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, Text, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, UnicodeText, ForeignKey
 from sqlalchemy.orm import relationship, object_session
 from sqlalchemy.sql.expression import func
 from szurubooru.db.base import Base
@@ -22,7 +22,7 @@ class Comment(Base):
     user_id = Column('user_id', Integer, ForeignKey('user.id'))
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
-    text = Column('text', Text, default=None)
+    text = Column('text', UnicodeText, default=None)
 
     user = relationship('User')
     post = relationship('Post')

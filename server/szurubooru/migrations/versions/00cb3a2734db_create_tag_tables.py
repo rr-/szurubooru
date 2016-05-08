@@ -17,8 +17,8 @@ def upgrade():
     op.create_table(
         'tag_category',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('name', sa.String(length=32), nullable=False),
-        sa.Column('color', sa.String(length=32), nullable=False),
+        sa.Column('name', sa.Unicode(length=32), nullable=False),
+        sa.Column('color', sa.Unicode(length=32), nullable=False),
         sa.PrimaryKeyConstraint('id'))
 
     op.create_table(
@@ -34,7 +34,7 @@ def upgrade():
         'tag_name',
         sa.Column('tag_name_id', sa.Integer(), nullable=False),
         sa.Column('tag_id', sa.Integer(), nullable=False),
-        sa.Column('name', sa.String(length=64), nullable=False),
+        sa.Column('name', sa.Unicode(length=64), nullable=False),
         sa.ForeignKeyConstraint(['tag_id'], ['tag.id']),
         sa.PrimaryKeyConstraint('tag_name_id'),
         sa.UniqueConstraint('name'))

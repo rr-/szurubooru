@@ -16,7 +16,7 @@ depends_on = None
 def upgrade():
     op.add_column(
         'snapshot',
-        sa.Column('resource_repr', sa.String(length=64), nullable=False))
+        sa.Column('resource_repr', sa.Unicode(length=64), nullable=False))
 
 def downgrade():
     op.drop_column('snapshot', 'resource_repr')
