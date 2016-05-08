@@ -17,7 +17,7 @@ class UserListApi(BaseApi):
         name = ctx.get_param_as_string('name', required=True)
         password = ctx.get_param_as_string('password', required=True)
         email = ctx.get_param_as_string('email', required=False, default='')
-        user = users.create_user(name, password, email, ctx.user)
+        user = users.create_user(name, password, email)
         if ctx.has_param('rank'):
             users.update_user_rank(
                 user, ctx.get_param_as_string('rank'), ctx.user)
@@ -42,8 +42,7 @@ class UserDetailApi(BaseApi):
         infix = 'self' if ctx.user.user_id == user.user_id else 'any'
         if ctx.has_param('name'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:name' % infix)
-            users.update_user_name(
-                user, ctx.get_param_as_string('name'), ctx.user)
+            users.update_user_name(user, ctx.get_param_as_string('name'))
         if ctx.has_param('password'):
             auth.verify_privilege(ctx.user, 'users:edit:%s:pass' % infix)
             users.update_user_password(

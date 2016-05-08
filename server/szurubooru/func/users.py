@@ -72,9 +72,9 @@ def get_user_by_name_or_email(name_or_email):
         raise UserNotFoundError('User %r not found.' % name_or_email)
     return user
 
-def create_user(name, password, email, auth_user):
+def create_user(name, password, email):
     user = db.User()
-    update_user_name(user, name, auth_user)
+    update_user_name(user, name)
     update_user_password(user, password)
     update_user_email(user, email)
     if get_user_count() > 0:
@@ -85,13 +85,13 @@ def create_user(name, password, email, auth_user):
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
 
-def update_user_name(user, name, auth_user):
+def update_user_name(user, name):
     if not name:
         raise InvalidUserNameError('Name cannot be empty.')
     if util.value_exceeds_column_size(name, db.User.name):
         raise InvalidUserNameError('User name is too long.')
     other_user = try_get_user_by_name(name)
-    if other_user and other_user.user_id != auth_user.user_id:
+    if other_user and other_user.user_id != user.user_id:
         raise UserAlreadyExistsError('User %r already exists.' % name)
     name = name.strip()
     name_regex = config.config['user_name_regex']

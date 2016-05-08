@@ -152,11 +152,31 @@ def test_trying_to_become_someone_else(test_ctx):
     db.session.add_all([user1, user2])
     with pytest.raises(users.UserAlreadyExistsError):
         test_ctx.api.put(
-            test_ctx.context_factory(input={'name': 'her'}, user=user1),
-            'me')
+            test_ctx.context_factory(input={'name': 'her'}, user=user1), 'me')
     with pytest.raises(users.UserAlreadyExistsError):
         test_ctx.api.put(
             test_ctx.context_factory(input={'name': 'HER'}, user=user1), 'me')
+
+def test_trying_to_make_someone_into_someone_else(test_ctx):
+    user1 = test_ctx.user_factory(name='him', rank=db.User.RANK_REGULAR)
+    user2 = test_ctx.user_factory(name='her', rank=db.User.RANK_REGULAR)
+    user3 = test_ctx.user_factory(name='me', rank=db.User.RANK_MODERATOR)
+    db.session.add_all([user1, user2, user3])
+    with pytest.raises(users.UserAlreadyExistsError):
+        test_ctx.api.put(
+            test_ctx.context_factory(input={'name': 'her'}, user=user3), 'him')
+    with pytest.raises(users.UserAlreadyExistsError):
+        test_ctx.api.put(
+            test_ctx.context_factory(input={'name': 'HER'}, user=user3), 'him')
+
+def test_renaming_someone_else(test_ctx):
+    user1 = test_ctx.user_factory(name='him', rank=db.User.RANK_REGULAR)
+    user2 = test_ctx.user_factory(name='me', rank=db.User.RANK_MODERATOR)
+    db.session.add_all([user1, user2])
+    test_ctx.api.put(
+        test_ctx.context_factory(input={'name': 'himself'}, user=user2), 'him')
+    test_ctx.api.put(
+        test_ctx.context_factory(input={'name': 'HIMSELF'}, user=user2), 'himself')
 
 def test_mods_trying_to_become_admin(test_ctx):
     user1 = test_ctx.user_factory(name='u1', rank=db.User.RANK_MODERATOR)
