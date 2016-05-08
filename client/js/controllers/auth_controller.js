@@ -24,6 +24,7 @@ class AuthController {
     }
 
     loginRoute() {
+        api.forget();
         topNavController.activate('login');
         this.loginView.render({
             login: (name, password, doRemember) => {

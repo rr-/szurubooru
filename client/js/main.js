@@ -30,8 +30,13 @@ const api = require('./api.js');
 api.loginFromCookies().then(() => {
     page();
 }).catch(errorMessage => {
-    page('/');
-    events.notify(
-        events.Error,
-        'An error happened while trying to log you in: ' + errorMessage);
+    if (window.location.href.indexOf('login') !== -1) {
+        api.forget();
+        page();
+    } else {
+        page('/');
+        events.notify(
+            events.Error,
+            'An error happened while trying to log you in: ' + errorMessage);
+    }
 });
