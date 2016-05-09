@@ -18,6 +18,7 @@ def serialize_category(category):
     return {
         'name': category.name,
         'color': category.color,
+        'usages': category.tag_count,
     }
 
 def serialize_category_with_details(category):

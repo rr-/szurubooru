@@ -41,6 +41,7 @@ def test_retrieving_single(test_ctx):
         'tagCategory': {
             'name': 'cat',
             'color': 'dummy',
+            'usages': 0,
         },
         'snapshots': [],
     }

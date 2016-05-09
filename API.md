@@ -1403,7 +1403,8 @@ experience.
 ```json5
 {
     "name":  <name>,
-    "color": <color>
+    "color": <color>,
+    "usages": <usages>
 }
 ```
 
@@ -1411,6 +1412,7 @@ experience.
 
 - `<name>`: the category name.
 - `<color>`: the category color.
+- `<usages>`: how many tags is the given category used with.
 
 ## Detailed tag category
 **Description**
