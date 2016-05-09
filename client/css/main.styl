@@ -166,9 +166,20 @@ nav.text-nav
     .page
         position: relative
         p
-            position: absolute
-            right: 0
-            top: 0
-            margin: 0
-            padding: 0.1em 0.5em
-            background: white
+            margin: 0.5em 0.5em 0.5em 0
+            position: relative
+            &:before
+                display: block
+                content: ''
+                position: absolute
+                left: 0
+                top: 50%
+                right: 0
+                height: 3px
+                background: $top-nav-color
+                z-index: 1
+            span
+                position: relative
+                background: white
+                padding: 0 1em
+                z-index: 2

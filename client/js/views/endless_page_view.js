@@ -18,6 +18,7 @@ class EndlessPageView {
         views.listenToMessages(target);
         views.showView(target, source);
         this.active = true;
+        this.working = 0;
 
         let headerRendererCtx = ctx;
         headerRendererCtx.target = pageHeaderHolder;
@@ -25,47 +26,39 @@ class EndlessPageView {
 
         const threshold = window.innerHeight / 3;
 
-        if (ctx.state && ctx.state.html) {
-            this.minPageShown = ctx.state.minPageShown;
-            this.maxPageShown = ctx.state.maxPageShown;
-            this.totalPages = ctx.state.totalPages;
-            this.currentPage = ctx.state.currentPage;
-        } else {
-            this.minPageShown = null;
-            this.maxPageShown = null;
-            this.totalPages = null;
-            this.currentPage = null;
-        }
-        this.fetching = false;
+        this.minPageShown = null;
+        this.maxPageShown = null;
+        this.totalPages = null;
+        this.currentPage = null;
 
         this.updater = () => {
-            let topPage = null;
-            let allPageNodes =
-                pagesHolder.querySelectorAll('.page');
-            for (let pageNode of allPageNodes) {
-                if (pageNode.getBoundingClientRect().bottom >= 0) {
-                    topPage = parseInt(pageNode.getAttribute('data-page'));
-                    break;
-                }
-            }
-            if (topPage !== this.currentPage) {
-                page.replace(
-                    ctx.clientUrl.format({page: topPage}),
-                    {
-                        minPageShown: this.minPageShown,
-                        maxPageShown: this.maxPageShown,
-                        totalPages: this.totalPages,
-                        currentPage: this.currentPage,
-                        html: pagesHolder.innerHTML,
-                        scrollX: window.scrollX,
-                        scrollY: window.scrollY,
-                    },
-                    false,
-                    false);
-                this.currentPage = topPage;
+            if (this.working) {
+                return;
             }
 
-            if (this.fetching || this.totalPages === null) {
+            let topPageNode = null;
+            var element = document.elementFromPoint(window.innerWidth / 2, 1);
+            while (element.parentNode !== null) {
+                if (element.classList.contains('page')) {
+                    topPageNode = element;
+                    break;
+                }
+                element = element.parentNode;
+            }
+            if (!topPageNode) {
+                return;
+            }
+            let topPageNumber = parseInt(topPageNode.getAttribute('data-page'));
+            if (topPageNumber !== this.currentPage) {
+                page.replace(
+                    ctx.clientUrl.format({page: topPageNumber}),
+                    null,
+                    false,
+                    false);
+                this.currentPage = topPageNumber;
+            }
+
+            if (this.totalPages === null) {
                 return;
             }
             let scrollHeight =
@@ -73,41 +66,42 @@ class EndlessPageView {
                 document.documentElement.clientHeight;
 
             if (this.minPageShown > 1 && window.scrollY - threshold < 0) {
-                this.loadPage(pagesHolder, ctx, this.minPageShown - 1, false);
+                this.loadPage(pagesHolder, ctx, this.minPageShown - 1, false)
+                    .then(() => this.updater());
             } else if (this.maxPageShown < this.totalPages &&
                     window.scrollY + threshold > scrollHeight) {
-                this.loadPage(pagesHolder, ctx, this.maxPageShown + 1, true);
+                this.loadPage(pagesHolder, ctx, this.maxPageShown + 1, true)
+                    .then(() => this.updater());
             }
         };
 
-        if (ctx.state && ctx.state.html) {
-            pagesHolder.innerHTML = ctx.state.html;
-            window.scroll(ctx.state.scrollX, ctx.state.scrollY);
-            this.updater();
-        } else {
-            this.loadPage(pagesHolder, ctx, ctx.searchQuery.page, true);
-        }
+        this.loadPage(pagesHolder, ctx, ctx.searchQuery.page, true)
+            .then(pageNode => {
+                if (ctx.searchQuery.page > 1) {
+                    window.scroll(0, pageNode.getBoundingClientRect().top);
+                }
+                this.updater();
+            });
         window.addEventListener('scroll', this.updater, true);
+        window.addEventListener('unload', this.scrollToTop, true);
     }
 
     unrender() {
         this.active = false;
         window.removeEventListener('scroll', this.updater, true);
+        window.removeEventListener('unload', this.scrollToTop, true);
+    }
+
+    scrollToTop() {
+        window.scroll(0, 0);
     }
 
     loadPage(pagesHolder, ctx, pageNumber, append) {
-        this.fetching = true;
-
-        if (pageNumber < this.minPageShown || this.minPageShown === null) {
-            this.minPageShown = pageNumber;
-        }
-        if (pageNumber > this.maxPageShown || this.maxPageShown === null) {
-            this.maxPageShown = pageNumber;
-        }
-
-        ctx.requestPage(pageNumber).then(response => {
+        this.working++;
+        return ctx.requestPage(pageNumber).then(response => {
             if (!this.active) {
-                return;
+                this.working--;
+                return Promise.reject();
             }
             this.totalPages = Math.ceil(response.total / response.pageSize);
             if (response.total) {
@@ -122,6 +116,13 @@ class EndlessPageView {
                     '.page-content-holder');
                 ctx.pageRenderer.render(pageRendererCtx);
 
+                if (pageNumber < this.minPageShown || this.minPageShown === null) {
+                    this.minPageShown = pageNumber;
+                }
+                if (pageNumber > this.maxPageShown || this.maxPageShown === null) {
+                    this.maxPageShown = pageNumber;
+                }
+
                 if (append) {
                     pagesHolder.appendChild(pageNode);
                 } else {
@@ -134,16 +135,18 @@ class EndlessPageView {
                         window.scrollX,
                         window.scrollY + pageNode.offsetHeight);
                 }
+                this.working--;
+                return Promise.resolve(pageNode);
             }
-
-            this.fetching = false;
-            window.setTimeout(() => { this.updater(); }, 10);
-
             if (response.total <= (pageNumber - 1) * response.pageSize) {
                 events.notify(events.Info, 'No data to show');
             }
+            this.working--;
+            return Promise.reject();
         }, response => {
             events.notify(events.Error, response.description);
+            this.working--;
+            return Promise.reject();
         });
     }
 }
