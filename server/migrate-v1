@@ -5,6 +5,7 @@ import datetime
 import argparse
 import json
 import zlib
+import concurrent.futures
 import logging
 import coloredlogs
 import sqlalchemy
@@ -190,31 +191,41 @@ def import_posts(v1_session, v2_session):
     v2_session.commit()
     return unused_post_ids
 
+def _import_post_content_for_post(
+        unused_post_ids, v1_data_dir, v1_session, v2_session, row, post):
+    logger.info('Importing post %d content...', row['id'])
+    if row['id'] in unused_post_ids:
+        logger.warn('Ignoring unimported post %d', row['id'])
+        return
+    assert post
+    source_content_path = os.path.join(
+        v1_data_dir,
+        'public_html',
+        'data',
+        'posts',
+        row['name'])
+    source_thumb_path = os.path.join(
+        v1_data_dir,
+        'public_html',
+        'data',
+        'posts',
+        row['name'] + '-custom-thumb')
+    post_content = read_file(source_content_path)
+    files.save(posts.get_post_content_path(post), post_content)
+    if os.path.exists(source_thumb_path):
+        thumb_content = read_file(source_thumb_path)
+        files.save(posts.get_post_thumbnail_backup_path(post), thumb_content)
+    posts.generate_post_thumbnail(post)
+
 def import_post_content(unused_post_ids, v1_data_dir, v1_session, v2_session):
-    for row in exec(v1_session, 'SELECT * FROM posts'):
-        logger.info('Importing post %d content...', row['id'])
-        if row['id'] in unused_post_ids:
-            logger.warn('Ignoring unimported post %d', row['id'])
-            continue
-        post = posts.get_post_by_id(row['id'])
-        source_content_path = os.path.join(
-            v1_data_dir,
-            'public_html',
-            'data',
-            'posts',
-            row['name'])
-        source_thumb_path = os.path.join(
-            v1_data_dir,
-            'public_html',
-            'data',
-            'posts',
-            row['name'] + '-custom-thumb')
-        post_content = read_file(source_content_path)
-        files.save(posts.get_post_content_path(post), post_content)
-        if os.path.exists(source_thumb_path):
-            thumb_content = read_file(source_thumb_path)
-            files.save(posts.get_post_thumbnail_backup_path(post), thumb_content)
-        posts.generate_post_thumbnail(post)
+    rows = list(exec(v1_session, 'SELECT * FROM posts'))
+    posts = {post.post_id: post for post in v2_session.query(db.Post).all()}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        for row in rows:
+            post = posts.get(row['id'])
+            executor.submit(
+                _import_post_content_for_post,
+                unused_post_ids, v1_data_dir, v1_session, v2_session, row, post)
 
 def import_post_tags(unused_post_ids, v1_session, v2_session):
     logger.info('Importing post tags...')
