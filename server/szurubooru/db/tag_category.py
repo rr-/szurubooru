@@ -17,4 +17,4 @@ class TagCategory(Base):
     tag_count = column_property(
         select([func.count('Tag.tag_id')]) \
         .where(Tag.category_id == tag_category_id) \
-        .correlate(table('TagCategory')))
+        .correlate_except(table('Tag')))
