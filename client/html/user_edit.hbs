@@ -3,29 +3,29 @@
         <div class='left'>
             <div class='input'>
                 <ul>
-                    {{#if this.canEditName}}
+                    <% if (canEditName) { %>
                         <li>
-                            {{textInput text='User name' id='user-name' name='name' value=this.user.name pattern=this.userNamePattern}}
+                            <%= makeTextInput({text: 'User name', id: 'user-name', name: 'name', value: user.name, pattern: userNamePattern}) %>
                         </li>
-                    {{/if}}
+                    <% } %>
 
-                    {{#if this.canEditPassword}}
+                    <% if (canEditPassword) { %>
                         <li>
-                            {{passwordInput text='Password' id='user-password' name='password' placeholder='leave blank if not changing' pattern=this.passwordPattern}}
+                            <%= makePasswordInput({text: 'Password', id: 'user-password', name: 'password', placeholder: 'leave blank if not changing', pattern: passwordPattern}) %>
                         </li>
-                    {{/if}}
+                    <% } %>
 
-                    {{#if this.canEditEmail}}
+                    <% if (canEditEmail) { %>
                         <li>
-                            {{emailInput text='Email' id='user-email' name='email' value=this.user.email}}
+                            <%= makeEmailInput({text: 'Email', id: 'user-email', name: 'email', value: user.email}) %>
                         </li>
-                    {{/if}}
+                    <% } %>
 
-                    {{#if this.canEditRank}}
+                    <% if (canEditRank) { %>
                         <li>
-                            {{select text='Rank' id='user-rank' name='rank' keyValues=this.ranks selectedKey=this.user.rank}}
+                            <%= makeSelect({text: 'Rank', id: 'user-rank', name: 'rank', keyValues: ranks, selectedKey: user.rank}) %>
                         </li>
-                    {{/if}}
+                    <% } %>
                 </ul>
             </div>
             <div class='messages'></div>
@@ -34,18 +34,18 @@
             </div>
         </div>
 
-        {{#if this.canEditAvatar}}
+        <% if (canEditAvatar) { %>
             <div class='right'>
                 <ul>
                     <li>
-                        {{radio text='Gravatar' id='gravatar-radio' name='avatar-style' value='gravatar' selectedValue=this.user.avatarStyle}}
+                        <%= makeRadio({text: 'Gravatar', id: 'gravatar-radio', name: 'avatar-style', value: 'gravatar', selectedValue: user.avatarStyle}) %>
                     </li>
                     <li>
-                        {{radio text='Manual avatar' id='avatar-radio' name='avatar-style' value='manual' selectedValue=this.user.avatarStyle}}
+                        <%= makeRadio({text: 'Manual avatar', id: 'avatar-radio', name: 'avatar-style', value: 'manual', selectedValue: user.avatarStyle}) %>
                         <div id='avatar-content'></div>
                     </li>
                 </ul>
             </div>
-        {{/if}}
+        <% } %>
     </form>
 </div>

@@ -4,22 +4,22 @@
         <div class='input'>
             <ul>
                 <li>
-                    {{textInput text='User name' id='user-name' name='name' required=true pattern=this.userNamePattern}}
+                    <%= makeTextInput({text: 'User name', id: 'user-name', name: 'name', required: true, pattern: userNamePattern}) %>
                 </li>
                 <li>
-                    {{passwordInput text='Password' id='user-password' name='password' required=true pattern=this.passwordPattern}}
+                    <%= makePasswordInput({text: 'Password', id: 'user-password', name: 'password', required: true, pattern: passwordPattern}) %>
                 </li>
                 <li>
-                    {{checkbox text='Remember me' id='remember-user' name='remember-user'}}
+                    <%= makeCheckbox({text: 'Remember me', id: 'remember-user', name: 'remember-user'}) %>
                 </li>
             </ul>
         </div>
         <div class='messages'></div>
         <div class='buttons'>
             <input type='submit' value='Log in'/>
-            {{#if this.canSendMails}}
+            <% if (canSendMails) { %>
                 <a class='append' href='/password-reset'>Forgot the password?</a>
-            {{/if}}
+            <% } %>
         </div>
     </form>
 </div>

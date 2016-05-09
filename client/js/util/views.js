@@ -1,9 +1,114 @@
 'use strict';
 
 require('../util/polyfill.js');
-const handlebars = require('handlebars');
+const underscore = require('underscore');
 const events = require('../events.js');
 const domParser = new DOMParser();
+const misc = require('./misc.js');
+
+function _makeLabel(options, attrs) {
+    if (!options.text) {
+        return '';
+    }
+    if (!attrs) {
+        attrs = {};
+    }
+    attrs.for = options.id;
+    return makeNonVoidElement('label', attrs, options.text);
+}
+
+function makeRelativeTime(time) {
+    return makeNonVoidElement(
+        'time',
+        {datetime: time, title: time},
+        misc.formatRelativeTime(time));
+}
+
+function makeThumbnail(url) {
+    return makeNonVoidElement(
+        'span',
+        {
+            class: 'thumbnail',
+            style: 'background-image: url(\'{0}\')'.format(url)
+        },
+        makeVoidElement('img', {alt: 'thumbnail', src: url}));
+}
+
+function makeRadio(options) {
+    return makeVoidElement(
+            'input',
+            {
+                id: options.id,
+                name: options.name,
+                value: options.value,
+                type: 'radio',
+                checked: options.selectedValue === options.value,
+                required: options.required,
+            }) +
+        _makeLabel(options, {class: 'radio'});
+}
+
+function makeCheckbox(options) {
+    return makeVoidElement(
+            'input',
+            {
+                id: options.id,
+                name: options.name,
+                value: options.value,
+                type: 'checkbox',
+                checked: options.checked !== undefined ?
+                    options.checked : false,
+                required: options.required,
+            }) +
+        _makeLabel(options, {class: 'checkbox'});
+}
+
+function makeSelect(options) {
+    return _makeLabel(options) +
+        makeNonVoidElement(
+            'select',
+            {id: options.id, name: options.name},
+            Object.keys(options.keyValues).map(key => {
+                return makeNonVoidElement(
+                    'option',
+                    {value: key, selected: key === options.selectedKey},
+                    options.keyValues[key]);
+            }).join(''));
+}
+
+function makeInput(options) {
+    return _makeLabel(options)
+        + makeVoidElement(
+            'input', {
+                type: options.inputType,
+                name: options.name,
+                id: options.id,
+                value: options.value || '',
+                required: options.required,
+                pattern: options.pattern,
+                placeholder: options.placeholder,
+            });
+}
+
+function makeTextInput(options) {
+    options.inputType = 'text';
+    return makeInput(options);
+}
+
+function makePasswordInput(options) {
+    options.inputType = 'password';
+    return makeInput(options);
+}
+
+function makeEmailInput(options) {
+    options.inputType = 'email';
+    return makeInput(options);
+}
+
+function makeFlexboxAlign(options) {
+    return Array.from(misc.range(20))
+        .map(() => '<li class="flexbox-dummy"></li>').join('');
+}
 
 function _messageHandler(target, message, className) {
     if (!message) {
@@ -81,9 +186,24 @@ function getTemplate(templatePath) {
         return null;
     }
     const templateText = templates[templatePath].trim();
-    const templateFactory = handlebars.compile(templateText);
-    return (...args) => {
-        return htmlToDom(templateFactory(...args));
+    const templateFactory = underscore.template(templateText);
+    return ctx => {
+        if (!ctx) {
+            ctx = {};
+        }
+        underscore.extend(ctx, {
+            makeRelativeTime: makeRelativeTime,
+            makeThumbnail: makeThumbnail,
+            makeRadio: makeRadio,
+            makeCheckbox: makeCheckbox,
+            makeSelect: makeSelect,
+            makeInput: makeInput,
+            makeTextInput: makeTextInput,
+            makePasswordInput: makePasswordInput,
+            makeEmailInput: makeEmailInput,
+            makeFlexboxAlign: makeFlexboxAlign,
+        });
+        return htmlToDom(templateFactory(ctx));
     };
 }
 

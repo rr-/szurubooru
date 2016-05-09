@@ -10,6 +10,7 @@ class FileDropperControl {
     render(ctx) {
         const target = ctx.target;
         const source = this.template({
+            allowMultiple: ctx.allowMultiple,
             id: 'file-' + Math.random().toString(36).substring(7),
         });
 

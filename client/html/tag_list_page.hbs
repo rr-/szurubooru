@@ -1,5 +1,5 @@
 <div class='tag-list'>
-    {{#if this.results}}
+    <% if (results) { %>
         <table>
             <thead>
                 <th class='names'>Tag name(s)</th>
@@ -8,43 +8,43 @@
                 <th class='usages'>Usages</th>
             </thead>
             <tbody>
-                {{#each this.results}}
+                <% _.each(results, tag => { %>
                     <tr>
                         <td class='names'>
                             <ul>
-                                {{#each this.names}}
-                                    <li><a href='/tag/{{this}}'>{{this}}</a></li>
-                                {{/each}}
+                                <% _.each(tag.names, name => { %>
+                                    <li><a href='/tag/<%= name %>'><%= name %></a></li>
+                                <% }) %>
                             </ul>
                         </td>
                         <td class='implications'>
-                            {{#if this.implications}}
+                            <% if (tag.implications.length) { %>
                                 <ul>
-                                    {{#each this.implications}}
-                                        <li><a href='/tag/{{this}}'>{{this}}</a></li>
-                                    {{/each}}
+                                    <% _.each(tag.implications, name => { %>
+                                        <li><a href='/tag/<%= name %>'><%= name %></a></li>
+                                    <% }) %>
                                 </ul>
-                            {{else}}
+                            <% } else { %>
                                 -
-                            {{/if}}
+                            <% } %>
                         </td>
                         <td class='suggestions'>
-                            {{#if this.suggestions}}
+                            <% if (tag.suggestions.length) { %>
                                 <ul>
-                                    {{#each this.suggestions}}
-                                        <li><a href='/tag/{{this}}'>{{this}}</a></li>
-                                    {{/each}}
+                                    <% _.each(tag.suggestions, name => { %>
+                                        <li><a href='/tag/<%= name %>'><%= name %></a></li>
+                                    <% }) %>
                                 </ul>
-                            {{else}}
+                            <% } else { %>
                                 -
-                            {{/if}}
+                            <% } %>
                         </td>
                         <td class='usages'>
-                            {{this.usages}}
+                            <%= tag.usages %>
                         </td>
                     </tr>
-                {{/each}}
+                <% }) %>
             </tbody>
         </table>
-    {{/if}}
+    <% } %>
 </div>

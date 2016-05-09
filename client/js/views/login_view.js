@@ -10,7 +10,11 @@ class LoginView {
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template({canSendMails: config.canSendMails});
+        const source = this.template({
+            userNamePattern: config.userNameRegex,
+            passwordPattern: config.passwordRegex,
+            canSendMails: config.canSendMails,
+        });
 
         const form = source.querySelector('form');
         const userNameField = source.querySelector('#user-name');

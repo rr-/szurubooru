@@ -1,11 +1,11 @@
 <div class='file-dropper-holder'>
-    <input type='file' name='{{this.name}}' id='{{this.id}}'/>
-    <label class='file-dropper' for='{{this.id}}'>
-        {{#if this.allowMultiple}}
+    <input type='file' id='<%= id %>'/>
+    <label class='file-dropper' for='<%= id %>'>
+        <% if (allowMultiple) { %>
             Drop files here!
-        {{else}}
+        <% } else { %>
             Drop file here!
-        {{/if}}
+        <% } %>
         <br/>
         Or just click on this box.
     </label>

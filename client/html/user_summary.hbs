@@ -1,22 +1,22 @@
 <div id='user-summary'>
-    {{thumbnail this.user.avatarUrl}}
+    <%= makeThumbnail(user.avatarUrl) %>
     <ul class='basic-info'>
-        <li>Registered: {{reltime this.user.creationTime}}</li>
-        <li>Last seen: {{reltime this.user.lastLoginTime}}</li>
-        <li>Rank: {{toLowerCase this.user.rankName}}</li>
+        <li>Registered: <%= makeRelativeTime(user.creationTime) %></li>
+        <li>Last seen: <%= makeRelativeTime(user.lastLoginTime) %></li>
+        <li>Rank: <%= user.rankName.toLowerCase() %></li>
     </ul>
 
     <div>
         <nav class='plain-nav'>
             <p><strong>Quick links</strong></p>
             <ul>
-                <li><a href='/posts/submit:{{this.user.name}}'>Uploads</a></li>
-                <li><a href='/posts/fav:{{this.user.name}}'>Favorites</a></li>
-                <li><a href='/posts/commented:{{this.user.name}}'>Posts commented on</a></li>
+                <li><a href='/posts/submit:<%= user.name %>'>Uploads</a></li>
+                <li><a href='/posts/fav:<%= user.name %>'>Favorites</a></li>
+                <li><a href='/posts/comment:<%= user.name %>'>Posts commented on</a></li>
             </ul>
         </nav>
 
-        {{#if this.isLoggedIn}}
+        <% if (isLoggedIn) { %>
             <nav class='plain-nav'>
                 <p><strong>Only visible to you</strong></p>
                 <ul>
@@ -24,6 +24,6 @@
                     <li><a href='/posts/special:disliked'>Disliked posts</a></li>
                 </ul>
             </nav>
-        {{/if}}
+        <% } %>
     </div>
 </div>

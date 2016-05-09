@@ -1,36 +1,36 @@
 <nav class='text-nav'>
     <ul>
         <li>
-        {{#if this.prevLinkActive}}
-            <a class='prev' href='{{this.prevLink}}'>
-        {{else}}
-            <a class='prev disabled'>
-        {{/if}}
+            <% if (prevLinkActive) { %>
+                <a class='prev' href='<%= prevLink %>'>
+            <% } else { %>
+                <a class='prev disabled'>
+            <% } %>
                 <i class='fa fa-chevron-left'></i>
                 <span>Previous page</span>
             </a>
         </li>
 
-        {{#each this.pages}}
-            {{#if this.ellipsis}}
+        <% _.each(pages, page => { %>
+            <% if (page.ellipsis) { %>
                 <li>&hellip;</li>
-            {{else}}
-                {{#if this.active}}
+            <% } else { %>
+                <% if (page.active) { %>
                     <li class='active'>
-                {{else}}
+                <% } else { %>
                     <li>
-                {{/if}}
-                    <a href='{{this.link}}'>{{this.number}}</a>
+                <% } %>
+                    <a href='<%= page.link %>'><%= page.number %></a>
                 </li>
-            {{/if}}
-        {{/each}}
+            <% } %>
+        <% }) %>
 
         <li>
-        {{#if this.nextLinkActive}}
-            <a class='next' href='{{this.nextLink}}'>
-        {{else}}
-            <a class='next disabled'>
-        {{/if}}
+            <% if (nextLinkActive) { %>
+                <a class='next' href='<%= nextLink %>'>
+            <% } else { %>
+                <a class='next disabled'>
+            <% } %>
                 <i class='fa fa-chevron-right'></i>
                 <span>Next page</span>
             </a>
