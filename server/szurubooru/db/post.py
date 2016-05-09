@@ -9,8 +9,10 @@ class PostFeature(Base):
     __tablename__ = 'post_feature'
 
     post_feature_id = Column('id', Integer, primary_key=True)
-    post_id = Column('post_id', Integer, ForeignKey('post.id'), nullable=False)
-    user_id = Column('user_id', Integer, ForeignKey('user.id'), nullable=False)
+    post_id = Column(
+        'post_id', Integer, ForeignKey('post.id'), nullable=False, index=True)
+    user_id = Column(
+        'user_id', Integer, ForeignKey('user.id'), nullable=False, index=True)
     time = Column('time', DateTime, nullable=False)
 
     post = relationship('Post')
@@ -19,8 +21,10 @@ class PostFeature(Base):
 class PostScore(Base):
     __tablename__ = 'post_score'
 
-    post_id = Column('post_id', Integer, ForeignKey('post.id'), primary_key=True)
-    user_id = Column('user_id', Integer, ForeignKey('user.id'), primary_key=True)
+    post_id = Column(
+        'post_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+    user_id = Column(
+        'user_id', Integer, ForeignKey('user.id'), primary_key=True, index=True)
     time = Column('time', DateTime, nullable=False)
     score = Column('score', Integer, nullable=False)
 
@@ -30,8 +34,10 @@ class PostScore(Base):
 class PostFavorite(Base):
     __tablename__ = 'post_favorite'
 
-    post_id = Column('post_id', Integer, ForeignKey('post.id'), primary_key=True)
-    user_id = Column('user_id', Integer, ForeignKey('user.id'), primary_key=True)
+    post_id = Column(
+        'post_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+    user_id = Column(
+    'user_id', Integer, ForeignKey('user.id'), primary_key=True, index=True)
     time = Column('time', DateTime, nullable=False)
 
     post = relationship('Post')
@@ -41,7 +47,8 @@ class PostNote(Base):
     __tablename__ = 'post_note'
 
     post_note_id = Column('id', Integer, primary_key=True)
-    post_id = Column('post_id', Integer, ForeignKey('post.id'), nullable=False)
+    post_id = Column(
+        'post_id', Integer, ForeignKey('post.id'), nullable=False, index=True)
     polygon = Column('polygon', PickleType, nullable=False)
     text = Column('text', UnicodeText, nullable=False)
 
@@ -50,8 +57,10 @@ class PostNote(Base):
 class PostRelation(Base):
     __tablename__ = 'post_relation'
 
-    parent_id = Column('parent_id', Integer, ForeignKey('post.id'), primary_key=True)
-    child_id = Column('child_id', Integer, ForeignKey('post.id'), primary_key=True)
+    parent_id = Column(
+        'parent_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+    child_id = Column(
+        'child_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
 
     def __init__(self, parent_id, child_id):
         self.parent_id = parent_id
@@ -60,8 +69,10 @@ class PostRelation(Base):
 class PostTag(Base):
     __tablename__ = 'post_tag'
 
-    post_id = Column('post_id', Integer, ForeignKey('post.id'), primary_key=True)
-    tag_id = Column('tag_id', Integer, ForeignKey('tag.id'), primary_key=True)
+    post_id = Column(
+        'post_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+    tag_id = Column(
+        'tag_id', Integer, ForeignKey('tag.id'), primary_key=True, index=True)
 
     def __init__(self, post_id, tag_id):
         self.post_id = post_id
@@ -84,7 +95,7 @@ class Post(Base):
 
     # basic meta
     post_id = Column('id', Integer, primary_key=True)
-    user_id = Column('user_id', Integer, ForeignKey('user.id'))
+    user_id = Column('user_id', Integer, ForeignKey('user.id'), index=True)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
     safety = Column('safety', Unicode(32), nullable=False)

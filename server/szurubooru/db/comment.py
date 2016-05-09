@@ -6,8 +6,10 @@ from szurubooru.db.base import Base
 class CommentScore(Base):
     __tablename__ = 'comment_score'
 
-    comment_id = Column('comment_id', Integer, ForeignKey('comment.id'), primary_key=True)
-    user_id = Column('user_id', Integer, ForeignKey('user.id'), primary_key=True)
+    comment_id = Column(
+        'comment_id', Integer, ForeignKey('comment.id'), primary_key=True)
+    user_id = Column(
+        'user_id', Integer, ForeignKey('user.id'), primary_key=True, index=True)
     time = Column('time', DateTime, nullable=False)
     score = Column('score', Integer, nullable=False)
 
@@ -18,8 +20,10 @@ class Comment(Base):
     __tablename__ = 'comment'
 
     comment_id = Column('id', Integer, primary_key=True)
-    post_id = Column('post_id', Integer, ForeignKey('post.id'), nullable=False)
-    user_id = Column('user_id', Integer, ForeignKey('user.id'))
+    post_id = Column(
+        'post_id', Integer, ForeignKey('post.id'), index=True, nullable=False)
+    user_id = Column(
+        'user_id', Integer, ForeignKey('user.id'), index=True)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
     text = Column('text', UnicodeText, default=None)

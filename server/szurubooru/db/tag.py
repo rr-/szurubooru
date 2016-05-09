@@ -8,9 +8,9 @@ class TagSuggestion(Base):
     __tablename__ = 'tag_suggestion'
 
     parent_id = Column(
-        'parent_id', Integer, ForeignKey('tag.id'), primary_key=True)
+        'parent_id', Integer, ForeignKey('tag.id'), primary_key=True, index=True)
     child_id = Column(
-        'child_id', Integer, ForeignKey('tag.id'), primary_key=True)
+        'child_id', Integer, ForeignKey('tag.id'), primary_key=True, index=True)
 
     def __init__(self, parent_id, child_id):
         self.parent_id = parent_id
@@ -20,9 +20,9 @@ class TagImplication(Base):
     __tablename__ = 'tag_implication'
 
     parent_id = Column(
-        'parent_id', Integer, ForeignKey('tag.id'), primary_key=True)
+        'parent_id', Integer, ForeignKey('tag.id'), primary_key=True, index=True)
     child_id = Column(
-        'child_id', Integer, ForeignKey('tag.id'), primary_key=True)
+        'child_id', Integer, ForeignKey('tag.id'), primary_key=True, index=True)
 
     def __init__(self, parent_id, child_id):
         self.parent_id = parent_id
@@ -32,7 +32,7 @@ class TagName(Base):
     __tablename__ = 'tag_name'
 
     tag_name_id = Column('tag_name_id', Integer, primary_key=True)
-    tag_id = Column('tag_id', Integer, ForeignKey('tag.id'), nullable=False)
+    tag_id = Column('tag_id', Integer, ForeignKey('tag.id'), nullable=False, index=True)
     name = Column('name', Unicode(64), nullable=False, unique=True)
 
     def __init__(self, name):
@@ -43,7 +43,7 @@ class Tag(Base):
 
     tag_id = Column('id', Integer, primary_key=True)
     category_id = Column(
-        'category_id', Integer, ForeignKey('tag_category.id'), nullable=False)
+        'category_id', Integer, ForeignKey('tag_category.id'), nullable=False, index=True)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
 
