@@ -147,11 +147,11 @@ def import_tag_relations(unused_tag_ids, v1_session, v2_session):
             continue
         if row['type'] == 1:
             v2_session.add(
-                db.TagSuggestion(
+                db.TagImplication(
                     parent_id=row['tag1id'], child_id=row['tag2id']))
         else:
             v2_session.add(
-                db.TagImplication(
+                db.TagSuggestion(
                     parent_id=row['tag1id'], child_id=row['tag2id']))
     v2_session.commit()
 
