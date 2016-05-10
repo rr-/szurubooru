@@ -158,4 +158,4 @@ def test_trying_to_merge_without_privileges(test_ctx, input):
                     'remove': 'source',
                     'merge-to': 'target',
                 },
-                user=test_ctx.user_factory(rank='anonymous')))
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))

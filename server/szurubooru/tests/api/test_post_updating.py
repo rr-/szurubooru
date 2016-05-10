@@ -75,7 +75,6 @@ def test_post_updating(
 def test_uploading_from_url_saves_source(
         config_injector, context_factory, post_factory, user_factory):
     config_injector({
-        'ranks': ['anonymous', db.User.RANK_REGULAR],
         'privileges': {'posts:edit:content': db.User.RANK_REGULAR},
     })
     post = post_factory()
@@ -100,7 +99,6 @@ def test_uploading_from_url_saves_source(
 def test_uploading_from_url_with_source_specified(
         config_injector, context_factory, post_factory, user_factory):
     config_injector({
-        'ranks': ['anonymous', db.User.RANK_REGULAR],
         'privileges': {
             'posts:edit:content': db.User.RANK_REGULAR,
             'posts:edit:source': db.User.RANK_REGULAR,
@@ -152,7 +150,6 @@ def test_trying_to_create_without_privileges(
         input,
         privilege):
     config_injector({
-        'ranks': ['anonymous', db.User.RANK_REGULAR],
         'privileges': {privilege: db.User.RANK_REGULAR},
     })
     post = post_factory()
@@ -163,5 +160,5 @@ def test_trying_to_create_without_privileges(
             context_factory(
                 input=input,
                 files=files,
-                user=user_factory(rank='anonymous')),
+                user=user_factory(rank=db.User.RANK_ANONYMOUS)),
             post.post_id)

@@ -89,7 +89,7 @@ def test_updating_user(test_ctx):
     ({'avatarStyle': 'manual'}, users.InvalidAvatarError), # missing file
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
-    user = test_ctx.user_factory(name='u1', rank='administrator')
+    user = test_ctx.user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     with pytest.raises(expected_exception):
         test_ctx.api.put(
@@ -100,7 +100,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
 def test_omitting_optional_field(test_ctx, tmpdir, field):
     config.config['data_dir'] = str(tmpdir.mkdir('data'))
     config.config['data_url'] = 'http://example.com/data/'
-    user = test_ctx.user_factory(name='u1', rank='administrator')
+    user = test_ctx.user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     input = {
         'name': 'chewie',
@@ -119,13 +119,13 @@ def test_omitting_optional_field(test_ctx, tmpdir, field):
     assert result is not None
 
 def test_trying_to_update_non_existing(test_ctx):
-    user = test_ctx.user_factory(name='u1', rank='administrator')
+    user = test_ctx.user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     with pytest.raises(users.UserNotFoundError):
         test_ctx.api.put(test_ctx.context_factory(user=user), 'u2')
 
 def test_removing_email(test_ctx):
-    user = test_ctx.user_factory(name='u1', rank='administrator')
+    user = test_ctx.user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     test_ctx.api.put(
         test_ctx.context_factory(input={'email': ''}, user=user), 'u1')

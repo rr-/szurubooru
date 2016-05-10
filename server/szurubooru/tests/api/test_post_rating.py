@@ -144,5 +144,5 @@ def test_trying_to_rate_without_privileges(test_ctx):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={'score': 1},
-                user=test_ctx.user_factory(rank='anonymous')),
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             post.post_id)

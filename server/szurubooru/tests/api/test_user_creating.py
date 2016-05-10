@@ -61,7 +61,7 @@ def test_first_user_becomes_admin_others_not(test_ctx):
                 'email': 'asd@asd.asd',
                 'password': 'oks',
             },
-            user=test_ctx.user_factory(rank='anonymous')))
+            user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
     result2 = test_ctx.api.post(
         test_ctx.context_factory(
             input={
@@ -69,7 +69,7 @@ def test_first_user_becomes_admin_others_not(test_ctx):
                 'email': 'asd@asd.asd',
                 'password': 'sok',
             },
-            user=test_ctx.user_factory(rank='anonymous')))
+            user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
     assert result1['user']['rank'] == 'administrator'
     assert result2['user']['rank'] == 'regular'
     first_user = users.get_user_by_name('chewie1')
@@ -86,7 +86,7 @@ def test_first_user_does_not_become_admin_if_they_dont_wish_so(test_ctx):
                 'password': 'oks',
                 'rank': 'regular',
             },
-            user=test_ctx.user_factory(rank='anonymous')))
+            user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
     assert result['user']['rank'] == 'regular'
 
 def test_trying_to_become_someone_else(test_ctx):

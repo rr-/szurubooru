@@ -259,5 +259,5 @@ def test_trying_to_update_without_privileges(test_ctx, input):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input=input,
-                user=test_ctx.user_factory(rank='anonymous')),
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             'tag')

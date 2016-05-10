@@ -39,7 +39,7 @@ def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
         test_ctx.list_api.get(
             test_ctx.context_factory(
                 input={'query': '', 'page': 1},
-                user=test_ctx.user_factory(rank='anonymous')))
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
 
 def test_retrieving_single(test_ctx):
     db.session.add(test_ctx.tag_factory(names=['tag']))
@@ -71,5 +71,5 @@ def test_trying_to_retrieve_single_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='anonymous')),
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             '-')

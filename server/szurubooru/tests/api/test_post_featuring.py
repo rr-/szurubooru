@@ -98,12 +98,12 @@ def test_trying_to_feature_without_privileges(test_ctx):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={'id': 1},
-                user=test_ctx.user_factory(rank='anonymous')))
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
 
 def test_getting_featured_post_without_privileges_to_view(test_ctx):
     try:
         test_ctx.api.get(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='anonymous')))
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
     except:
         pytest.fail()

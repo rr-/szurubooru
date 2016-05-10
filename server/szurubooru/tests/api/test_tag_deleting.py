@@ -56,6 +56,6 @@ def test_trying_to_delete_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.api.delete(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='anonymous')),
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             'tag')
     assert db.session.query(db.Tag).count() == 1

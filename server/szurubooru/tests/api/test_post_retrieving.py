@@ -60,20 +60,19 @@ def test_trying_to_use_special_tokens_without_logging_in(
         test_ctx, config_injector):
     config_injector({
         'privileges': {'posts:list': 'anonymous'},
-        'ranks': ['anonymous'],
     })
     with pytest.raises(errors.SearchError):
         test_ctx.list_api.get(
             test_ctx.context_factory(
                 input={'query': 'special:fav', 'page': 1},
-                user=test_ctx.user_factory(rank='anonymous')))
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
 
 def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.list_api.get(
             test_ctx.context_factory(
                 input={'query': '', 'page': 1},
-                user=test_ctx.user_factory(rank='anonymous')))
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
 
 def test_retrieving_single(test_ctx):
     db.session.add(test_ctx.post_factory(id=1))
@@ -96,5 +95,5 @@ def test_trying_to_retrieve_single_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='anonymous')),
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             '-')

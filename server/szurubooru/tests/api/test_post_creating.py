@@ -118,7 +118,6 @@ def test_creating_from_url_saves_source(
         unittest.mock.patch('szurubooru.func.posts.create_post'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_source'):
         config_injector({
-            'ranks': ['anonymous', db.User.RANK_REGULAR],
             'privileges': {'posts:create': db.User.RANK_REGULAR},
         })
         net.download.return_value = b'content'
@@ -150,7 +149,6 @@ def test_creating_from_url_with_source_specified(
         unittest.mock.patch('szurubooru.func.posts.create_post'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_source'):
         config_injector({
-            'ranks': ['anonymous', db.User.RANK_REGULAR],
             'privileges': {'posts:create': db.User.RANK_REGULAR},
         })
         net.download.return_value = b'content'
@@ -198,4 +196,4 @@ def test_trying_to_create_without_privileges(context_factory, user_factory):
         api.PostListApi().post(
             context_factory(
                 input='whatever',
-                user=user_factory(rank='anonymous')))
+                user=user_factory(rank=db.User.RANK_ANONYMOUS)))

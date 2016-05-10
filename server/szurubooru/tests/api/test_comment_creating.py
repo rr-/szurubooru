@@ -87,4 +87,4 @@ def test_trying_to_create_without_privileges(test_ctx):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={},
-                user=test_ctx.user_factory(rank='anonymous')))
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))

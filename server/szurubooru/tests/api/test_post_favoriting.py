@@ -124,5 +124,5 @@ def test_trying_to_rate_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.api.post(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank='anonymous')),
+                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             post.post_id)
