@@ -56,6 +56,7 @@ def test_simple_updating(test_ctx):
     {'name': '!bad'},
     {'color': None},
     {'color': ''},
+    {'color': '; float:left'},
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input):
     db.session.add(test_ctx.tag_category_factory(name='meta', color='black'))
