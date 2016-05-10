@@ -91,7 +91,6 @@ class Post(Base):
     TYPE_FLASH = 'flash'
 
     FLAG_LOOP = 'loop'
-    ALL_FLAGS = [FLAG_LOOP]
 
     # basic meta
     post_id = Column('id', Integer, primary_key=True)

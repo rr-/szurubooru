@@ -30,7 +30,9 @@ TYPE_MAP = {
     db.Post.TYPE_VIDEO: 'video',
     db.Post.TYPE_FLASH: 'flash',
 }
-# TODO: FLAG_MAP
+FLAG_MAP = {
+    db.Post.FLAG_LOOP: 'loop',
+}
 
 def get_post_content_url(post):
     return '%s/posts/%d.%s' % (
@@ -150,7 +152,7 @@ def update_post_safety(post, safety):
     safety = util.flip(SAFETY_MAP).get(safety, None)
     if not safety:
         raise InvalidPostSafetyError(
-            'Safety can be either of %r.', list(SAFETY_MAP.values()))
+            'Safety can be either of %r.' % list(SAFETY_MAP.values()))
     post.safety = safety
 
 def update_post_source(post, source):
@@ -261,11 +263,14 @@ def update_post_notes(post, notes):
             db.PostNote(polygon=note['polygon'], text=note['text']))
 
 def update_post_flags(post, flags):
+    target_flags = []
     for flag in flags:
-        if flag not in db.Post.ALL_FLAGS:
+        flag = util.flip(FLAG_MAP).get(flag, None)
+        if not flag:
             raise InvalidPostFlagError(
-                'Flag must be one of %r.' % db.Post.ALL_FLAGS)
-    post.flags = flags
+                'Flag must be one of %r.' % list(FLAG_MAP.values()))
+        target_flags.append(flag)
+    post.flags = target_flags
 
 def feature_post(post, user):
     post_feature = db.PostFeature()
