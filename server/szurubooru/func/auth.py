@@ -1,6 +1,18 @@
 import hashlib
 import random
+from collections import OrderedDict
 from szurubooru import config, db, errors
+from szurubooru.func import util
+
+RANK_MAP = OrderedDict([
+    (db.User.RANK_ANONYMOUS, 'anonymous'),
+    (db.User.RANK_RESTRICTED, 'restricted'),
+    (db.User.RANK_REGULAR, 'regular'),
+    (db.User.RANK_POWER, 'power'),
+    (db.User.RANK_MODERATOR, 'moderator'),
+    (db.User.RANK_ADMINISTRATOR, 'administrator'),
+    (db.User.RANK_NOBODY, 'nobody'),
+])
 
 def get_password_hash(salt, password):
     ''' Retrieve new-style password hash. '''
@@ -36,10 +48,12 @@ def is_valid_password(user, password):
     return valid_hash in possible_hashes
 
 def has_privilege(user, privilege_name):
+    all_ranks = list(RANK_MAP.keys())
     assert privilege_name in config.config['privileges']
-    assert user.rank in db.User.ALL_RANKS
-    minimal_rank = config.config['privileges'][privilege_name]
-    good_ranks = db.User.ALL_RANKS[db.User.ALL_RANKS.index(minimal_rank):]
+    assert user.rank in all_ranks
+    minimal_rank = util.flip(RANK_MAP)[
+        config.config['privileges'][privilege_name]]
+    good_ranks = all_ranks[all_ranks.index(minimal_rank):]
     return user.rank in good_ranks
 
 def verify_privilege(user, privilege_name):

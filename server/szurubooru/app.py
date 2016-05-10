@@ -42,12 +42,12 @@ def validate_config():
     Check whether config doesn't contain errors that might prove
     lethal at runtime.
     '''
-    from szurubooru.db.user import User
+    from szurubooru.func.auth import RANK_MAP
     for privilege, rank in config.config['privileges'].items():
-        if rank not in User.ALL_RANKS:
+        if rank not in RANK_MAP.values():
             raise errors.ConfigError(
                 'Rank %r for privilege %r is missing' % (rank, privilege))
-    if config.config['default_rank'] not in User.ALL_RANKS:
+    if config.config['default_rank'] not in RANK_MAP.values():
         raise errors.ConfigError(
             'Default rank %r is not on the list of known ranks' % (
                 config.config['default_rank']))

@@ -13,16 +13,7 @@ class User(Base):
     RANK_POWER = 'power'
     RANK_MODERATOR = 'moderator'
     RANK_ADMINISTRATOR = 'administrator'
-    RANK_NOBODY = 'nobody'
-    ALL_RANKS = [
-        RANK_ANONYMOUS,
-        RANK_RESTRICTED,
-        RANK_REGULAR,
-        RANK_POWER,
-        RANK_MODERATOR,
-        RANK_ADMINISTRATOR,
-        RANK_NOBODY, # nobody can have higher privileges than administrator
-    ]
+    RANK_NOBODY = 'nobody' # used for privileges: "nobody can be higher than admin"
 
     user_id = Column('id', Integer, primary_key=True)
     name = Column('name', Unicode(50), nullable=False, unique=True)

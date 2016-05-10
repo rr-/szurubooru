@@ -12,8 +12,6 @@ class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
 
-# TODO: RANK_MAP
-
 def serialize_user(user, authenticated_user, force_show_email=False):
     if not user:
         return {}
@@ -80,7 +78,7 @@ def create_user(name, password, email):
     update_user_password(user, password)
     update_user_email(user, email)
     if get_user_count() > 0:
-        user.rank = config.config['default_rank']
+        user.rank = util.flip(auth.RANK_MAP)[config.config['default_rank']]
     else:
         user.rank = db.User.RANK_ADMINISTRATOR
     user.creation_time = datetime.datetime.now()
@@ -126,14 +124,15 @@ def update_user_email(user, email):
 def update_user_rank(user, rank, authenticated_user):
     if not rank:
         raise InvalidRankError('Rank cannot be empty.')
-    rank = rank.strip()
-    if not rank in db.User.ALL_RANKS:
+    rank = util.flip(auth.RANK_MAP).get(rank.strip(), None)
+    all_ranks = list(auth.RANK_MAP.values())
+    if not rank:
         raise InvalidRankError(
-            'Rank %r is invalid. Valid ranks: %r' % (rank, db.User.ALL_RANKS))
+            'Rank can be either of %r.' % all_ranks)
     if rank in (db.User.RANK_ANONYMOUS, db.User.RANK_NOBODY):
-        raise InvalidRankError('Rank %r cannot be used.' % (rank))
-    if db.User.ALL_RANKS.index(authenticated_user.rank) \
-            < db.User.ALL_RANKS.index(rank) and get_user_count() > 0:
+        raise InvalidRankError('Rank %r cannot be used.' % auth.RANK_MAP[rank])
+    if all_ranks.index(authenticated_user.rank) \
+            < all_ranks.index(rank) and get_user_count() > 0:
         raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank
 
