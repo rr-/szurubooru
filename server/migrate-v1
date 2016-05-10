@@ -127,7 +127,7 @@ def import_tag_categories(v1_session, v2_session):
     for row in exec(v1_session, 'SELECT DISTINCT category FROM tags'):
         logger.info('Importing tag category %s...', row['category'])
         category = db.TagCategory()
-        category.tag_category_id = len(category_to_id_map)
+        category.tag_category_id = len(category_to_id_map) + 1
         category.name = row['category']
         category.color = 'default'
         v2_session.add(category)
