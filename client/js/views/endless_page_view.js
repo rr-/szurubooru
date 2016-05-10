@@ -37,7 +37,7 @@ class EndlessPageView {
             }
 
             let topPageNode = null;
-            var element = document.elementFromPoint(window.innerWidth / 2, 1);
+            let element = document.elementFromPoint(window.innerWidth / 2, 1);
             while (element.parentNode !== null) {
                 if (element.classList.contains('page')) {
                     topPageNode = element;
