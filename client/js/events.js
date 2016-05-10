@@ -28,6 +28,7 @@ module.exports = {
     Info: 3,
     Authentication: 4,
     SettingsChange: 5,
+    TagsChange: 6,
 
     notify: notify,
     listen: listen,

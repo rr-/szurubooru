@@ -27,22 +27,24 @@ controllers.push(require('./controllers/settings_controller.js'));
 
 controllers.push(require('./controllers/home_controller.js'));
 
+const tags = require('./tags.js');
 const events = require('./events.js');
 for (let controller of controllers) {
     controller.registerRoutes();
 }
 
 const api = require('./api.js');
-api.loginFromCookies().then(() => {
-    page();
-}).catch(errorMessage => {
-    if (window.location.href.indexOf('login') !== -1) {
-        api.forget();
+Promise.all([tags.refreshExport(), api.loginFromCookies()])
+    .then(() => {
         page();
-    } else {
-        page('/');
-        events.notify(
-            events.Error,
-            'An error happened while trying to log you in: ' + errorMessage);
-    }
-});
+    }).catch(errorMessage => {
+        if (window.location.href.indexOf('login') !== -1) {
+            api.forget();
+            page();
+        } else {
+            page('/');
+            events.notify(
+                events.Error,
+                'An error happened while trying to log you in: ' + errorMessage);
+        }
+    });

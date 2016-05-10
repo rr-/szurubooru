@@ -38,3 +38,23 @@
     .append
         font-size: 0.95em
         color: $inactive-link-color
+
+.tag-categories
+    td, th
+        padding: .2em
+        &:first-child
+            padding-left: 0
+        &:last-child
+            padding-right: 0
+        &.name
+            width: 12em
+        &.color
+            text-align: center
+            width: 5em
+        &.usages
+            text-align: center
+            width: 5em
+    tfoot
+        display: none
+    .messages, form
+        width: auto

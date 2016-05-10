@@ -2,6 +2,7 @@
 
 require('../util/polyfill.js');
 const underscore = require('underscore');
+const tags = require('../tags.js');
 const events = require('../events.js');
 const domParser = new DOMParser();
 const misc = require('./misc.js');
@@ -105,6 +106,37 @@ function makeEmailInput(options) {
     return makeInput(options);
 }
 
+function makeColorInput(options) {
+    const textInput = makeVoidElement(
+        'input', {
+            type: 'text',
+            value: options.value || '',
+            required: options.required,
+            style: 'color: ' + options.value,
+            disabled: true,
+        });
+    const colorInput = makeVoidElement(
+        'input', {
+            type: 'color',
+            value: options.value || '',
+        });
+    return makeNonVoidElement('label', {class: 'color'}, colorInput + textInput);
+}
+
+function makeTagLink(name) {
+    const tagExport = tags.getExport();
+    let category = null;
+    try {
+        category = tagExport.tags[name].category;
+    } catch (e) {
+        category = 'unknown';
+    }
+    return makeNonVoidElement('a', {
+        'href': '/tag/' + name,
+        'class': 'tag-' + category,
+    }, name);
+}
+
 function makeFlexboxAlign(options) {
     return Array.from(misc.range(20))
         .map(() => '<li class="flexbox-dummy"></li>').join('');
@@ -201,6 +233,8 @@ function getTemplate(templatePath) {
             makeTextInput: makeTextInput,
             makePasswordInput: makePasswordInput,
             makeEmailInput: makeEmailInput,
+            makeColorInput: makeColorInput,
+            makeTagLink: makeTagLink,
             makeFlexboxAlign: makeFlexboxAlign,
         });
         return htmlToDom(templateFactory(ctx));
@@ -210,10 +244,15 @@ function getTemplate(templatePath) {
 function decorateValidator(form) {
     // postpone showing form fields validity until user actually tries
     // to submit it (seeing red/green form w/o doing anything breaks POLA)
-    const submitButton = form.querySelector('.buttons input');
-    submitButton.addEventListener('click', e => {
-        form.classList.add('show-validation');
-    });
+    let submitButton = form.querySelector('.buttons input');
+    if (!submitButton) {
+        submitButton = form.querySelector('input[type=submit]');
+    }
+    if (submitButton) {
+        submitButton.addEventListener('click', e => {
+            form.classList.add('show-validation');
+        });
+    }
     form.addEventListener('submit', e => {
         form.classList.remove('show-validation');
     });
@@ -258,6 +297,14 @@ function scrollToHash() {
         }
     }, 10);
 }
+
+document.addEventListener('input', e => {
+    if (e.target.getAttribute('type').toLowerCase() === 'color') {
+        const textInput = e.target.parentNode.querySelector('input[type=text]');
+        textInput.style.color = e.target.value;
+        textInput.value = e.target.value;
+    }
+});
 
 module.exports = {
     htmlToDom: htmlToDom,

@@ -9,7 +9,10 @@
         </div>
         <div class='buttons'>
             <input type='submit' value='Search'/>
-            <a class='append' href='/help/search/tags'>Syntax help</a>
+            <a class='button append' href='/help/search/tags'>Syntax help</a>
+            <% if (canEditTagCategories) { %>
+                <a class='append' href='/tag-categories'>Tag categories</a>
+            <% } %>
         </div>
     </form>
 </div>

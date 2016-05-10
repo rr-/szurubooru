@@ -13,7 +13,7 @@
                         <td class='names'>
                             <ul>
                                 <% _.each(tag.names, name => { %>
-                                    <li><a href='/tag/<%= name %>'><%= name %></a></li>
+                                    <li><%= makeTagLink(name) %></li>
                                 <% }) %>
                             </ul>
                         </td>
@@ -21,7 +21,7 @@
                             <% if (tag.implications.length) { %>
                                 <ul>
                                     <% _.each(tag.implications, name => { %>
-                                        <li><a href='/tag/<%= name %>'><%= name %></a></li>
+                                        <li><%= makeTagLink(name) %></li>
                                     <% }) %>
                                 </ul>
                             <% } else { %>
@@ -32,7 +32,7 @@
                             <% if (tag.suggestions.length) { %>
                                 <ul>
                                     <% _.each(tag.suggestions, name => { %>
-                                        <li><a href='/tag/<%= name %>'><%= name %></a></li>
+                                        <li><%= makeTagLink(name) %></li>
                                     <% }) %>
                                 </ul>
                             <% } else { %>

@@ -172,6 +172,15 @@ input[type=password]
     &:focus
         border-color: $main-color
 
+label.color
+    position: relative
+    input[type=text]
+        text-align: center
+        pointer-events: none
+    input[type=color]
+        position: absolute
+        opacity: 0
+
 form.show-validation .input
     input:invalid
         outline: none
