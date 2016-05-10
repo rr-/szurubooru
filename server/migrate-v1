@@ -66,6 +66,11 @@ def parse_args():
         metavar='PASSWORD', required=True,
         help='v1.x database password')
 
+    parser.add_argument(
+        '--no-data',
+        action='store_true',
+        help='don\'t migrate post data')
+
     return parser.parse_args()
 
 def exec(session, query):
@@ -376,7 +381,8 @@ def main():
     unused_tag_ids = import_tags(category_to_id_map, v1_session, v2_session)
     import_tag_relations(unused_tag_ids, v1_session, v2_session)
     unused_post_ids = import_posts(v1_session, v2_session)
-    import_post_content(unused_post_ids, v1_data_dir, v1_session, v2_session)
+    if not args.no_data:
+        import_post_content(unused_post_ids, v1_data_dir, v1_session, v2_session)
     import_post_tags(unused_post_ids, v1_session, v2_session)
     import_post_notes(unused_post_ids, v1_session, v2_session)
     import_post_relations(unused_post_ids, v1_session, v2_session)
