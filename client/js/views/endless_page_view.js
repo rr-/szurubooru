@@ -116,10 +116,12 @@ class EndlessPageView {
                     '.page-content-holder');
                 ctx.pageRenderer.render(pageRendererCtx);
 
-                if (pageNumber < this.minPageShown || this.minPageShown === null) {
+                if (pageNumber < this.minPageShown ||
+                        this.minPageShown === null) {
                     this.minPageShown = pageNumber;
                 }
-                if (pageNumber > this.maxPageShown || this.maxPageShown === null) {
+                if (pageNumber > this.maxPageShown ||
+                        this.maxPageShown === null) {
                     this.maxPageShown = pageNumber;
                 }
 

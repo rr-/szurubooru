@@ -45,6 +45,7 @@ Promise.all([tags.refreshExport(), api.loginFromCookies()])
             page('/');
             events.notify(
                 events.Error,
-                'An error happened while trying to log you in: ' + errorMessage);
+                'An error happened while trying to log you in: ' +
+                    errorMessage);
         }
     });

@@ -19,7 +19,7 @@ class HelpView {
                 'users': views.getTemplate('help-search-users'),
                 'tags': views.getTemplate('help-search-tags'),
             }
-        }
+        };
     }
 
     render(ctx) {

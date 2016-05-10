@@ -7,8 +7,7 @@ const events = require('./events.js');
 let _export = null;
 let _stylesheet = null;
 
-function _tagsToDictionary(tags)
-{
+function _tagsToDictionary(tags) {
     let dict = {};
     for (let tag of tags) {
         for (let name of tag.names) {
@@ -18,8 +17,7 @@ function _tagsToDictionary(tags)
     return dict;
 }
 
-function _tagCategoriesToDictionary(categories)
-{
+function _tagCategoriesToDictionary(categories) {
     let dict = {};
     for (let category of categories) {
         dict[category.name] = category;

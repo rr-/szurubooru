@@ -78,8 +78,8 @@ function makeSelect(options) {
 }
 
 function makeInput(options) {
-    return _makeLabel(options)
-        + makeVoidElement(
+    return _makeLabel(options) +
+        makeVoidElement(
             'input', {
                 type: options.inputType,
                 name: options.name,
@@ -120,7 +120,8 @@ function makeColorInput(options) {
             type: 'color',
             value: options.value || '',
         });
-    return makeNonVoidElement('label', {class: 'color'}, colorInput + textInput);
+    return makeNonVoidElement(
+        'label', {class: 'color'}, colorInput + textInput);
 }
 
 function makeTagLink(name) {

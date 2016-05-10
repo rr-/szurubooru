@@ -37,8 +37,8 @@ class TagListHeaderView {
                     }
                 } else {
                     const existingCategory = existingCategories[name];
-                    if (existingCategory.color !== category.color
-                    || existingCategory.name !== category.name) {
+                    if (existingCategory.color !== category.color ||
+                            existingCategory.name !== category.name) {
                         changedCategories.push(category);
                     }
                 }
