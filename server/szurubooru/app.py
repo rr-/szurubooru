@@ -1,5 +1,6 @@
 ''' Exports create_app. '''
 
+import os
 import logging
 import coloredlogs
 import falcon
@@ -36,8 +37,38 @@ def create_method_not_allowed(allowed_methods):
         }
     return method_not_allowed
 
+def validate_config():
+    '''
+    Check whether config doesn't contain errors that might prove
+    lethal at runtime.
+    '''
+    from szurubooru.db.user import User
+    for privilege, rank in config.config['privileges'].items():
+        if rank not in User.ALL_RANKS:
+            raise errors.ConfigError(
+                'Rank %r for privilege %r is missing' % (rank, privilege))
+    if config.config['default_rank'] not in User.ALL_RANKS:
+        raise errors.ConfigError(
+            'Default rank %r is not on the list of known ranks' % (
+                config.config['default_rank']))
+
+    for key in ['base_url', 'api_url', 'data_url', 'data_dir']:
+        if not config.config[key]:
+            raise errors.ConfigError(
+                'Service is not configured: %r is missing' % key)
+
+    if not os.path.isabs(config.config['data_dir']):
+        raise errors.ConfigError(
+            'data_dir must be an absolute path')
+
+    for key in ['schema', 'host', 'port', 'user', 'pass', 'name']:
+        if not config.config['database'][key]:
+            raise errors.ConfigError(
+                'Database is not configured: %r is missing' % key)
+
 def create_app():
     ''' Create a WSGI compatible App object. '''
+    validate_config()
     falcon.responders.create_method_not_allowed = create_method_not_allowed
 
     coloredlogs.install(fmt='[%(asctime)-15s] %(name)s %(message)s')
