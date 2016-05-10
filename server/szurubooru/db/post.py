@@ -37,7 +37,7 @@ class PostFavorite(Base):
     post_id = Column(
         'post_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
     user_id = Column(
-    'user_id', Integer, ForeignKey('user.id'), primary_key=True, index=True)
+        'user_id', Integer, ForeignKey('user.id'), primary_key=True, index=True)
     time = Column('time', DateTime, nullable=False)
 
     post = relationship('Post')

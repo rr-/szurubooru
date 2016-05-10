@@ -1,5 +1,6 @@
 import re
 
+# pylint: disable=too-many-return-statements
 def get_mime_type(content):
     if not content:
         return 'application/octet-stream'
