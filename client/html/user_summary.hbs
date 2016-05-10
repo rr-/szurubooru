@@ -10,9 +10,9 @@
         <nav class='plain-nav'>
             <p><strong>Quick links</strong></p>
             <ul>
-                <li><a href='/posts/submit:<%= user.name %>'>Uploads</a></li>
-                <li><a href='/posts/fav:<%= user.name %>'>Favorites</a></li>
-                <li><a href='/posts/comment:<%= user.name %>'>Posts commented on</a></li>
+                <li><a href='/posts/text=submit:<%= user.name %>'>Uploads</a></li>
+                <li><a href='/posts/text=fav:<%= user.name %>'>Favorites</a></li>
+                <li><a href='/posts/text=comment:<%= user.name %>'>Posts commented on</a></li>
             </ul>
         </nav>
 
@@ -20,8 +20,8 @@
             <nav class='plain-nav'>
                 <p><strong>Only visible to you</strong></p>
                 <ul>
-                    <li><a href='/posts/special:liked'>Liked posts</a></li>
-                    <li><a href='/posts/special:disliked'>Disliked posts</a></li>
+                    <li><a href='/posts/text=special:liked'>Liked posts</a></li>
+                    <li><a href='/posts/text=special:disliked'>Disliked posts</a></li>
                 </ul>
             </nav>
         <% } %>
