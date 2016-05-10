@@ -1,7 +1,6 @@
 import datetime
 import hashlib
 import re
-from sqlalchemy.inspection import inspect
 from szurubooru.errors import ValidationError
 
 def unalias_dict(input_dict):
@@ -22,29 +21,6 @@ def get_md5(source):
 
 def flip(source):
     return {v: k for k, v in source.items()}
-
-def get_resource_info(entity):
-    serializers = {
-        'tag': lambda tag: tag.first_name,
-        'tag_category': lambda category: category.name,
-        'comment': lambda comment: comment.comment_id,
-        'post': lambda post: post.post_id,
-    }
-
-    resource_type = entity.__table__.name
-    assert resource_type in serializers
-
-    primary_key = inspect(entity).identity
-    assert primary_key is not None
-    assert len(primary_key) == 1
-
-    resource_repr = serializers[resource_type](entity)
-    assert resource_repr
-
-    resource_id = primary_key[0]
-    assert resource_id
-
-    return (resource_type, resource_id, resource_repr)
 
 def is_valid_email(email):
     ''' Return whether given email address is valid or empty. '''

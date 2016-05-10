@@ -22,3 +22,4 @@ from szurubooru.db.session import (
     session,
     reset_query_count,
     get_query_count)
+import szurubooru.db.util

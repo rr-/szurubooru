@@ -1,21 +1,14 @@
 import datetime
 from szurubooru import db
-from szurubooru.func import util
 
 def _get_table_info(entity):
-    resource_type, _, _ = util.get_resource_info(entity)
+    resource_type, _, _ = db.util.get_resource_info(entity)
     if resource_type == 'post':
         return db.PostFavorite, lambda table: table.post_id
-    else:
-        assert False
+    assert False
 
 def _get_fav_entity(entity, user):
-    table, get_column = _get_table_info(entity)
-    return db.session \
-        .query(table) \
-        .filter(get_column(table) == get_column(entity)) \
-        .filter(table.user_id == user.user_id) \
-        .one_or_none()
+    return db.util.get_aux_entity(db.session, _get_table_info, entity, user)
 
 def has_favorited(entity, user):
     return _get_fav_entity(entity, user) is not None

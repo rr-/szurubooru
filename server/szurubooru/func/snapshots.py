@@ -1,6 +1,5 @@
 import datetime
 from szurubooru import db
-from szurubooru.func import util
 
 def get_tag_snapshot(tag):
     return {
@@ -49,7 +48,7 @@ def get_previous_snapshot(snapshot):
         .first()
 
 def get_snapshots(entity):
-    resource_type, resource_id, _ = util.get_resource_info(entity)
+    resource_type, resource_id, _ = db.util.get_resource_info(entity)
     return db.session \
         .query(db.Snapshot) \
         .filter(db.Snapshot.resource_type == resource_type) \
@@ -81,7 +80,7 @@ def get_serialized_history(entity):
     return ret
 
 def _save(operation, entity, auth_user):
-    resource_type, resource_id, resource_repr = util.get_resource_info(entity)
+    resource_type, resource_id, resource_repr = db.util.get_resource_info(entity)
     now = datetime.datetime.now()
 
     snapshot = db.Snapshot()

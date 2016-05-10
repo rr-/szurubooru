@@ -1,25 +1,18 @@
 import datetime
 from szurubooru import db, errors
-from szurubooru.func import util
 
 class InvalidScoreError(errors.ValidationError): pass
 
 def _get_table_info(entity):
-    resource_type, _, _ = util.get_resource_info(entity)
+    resource_type, _, _ = db.util.get_resource_info(entity)
     if resource_type == 'post':
         return db.PostScore, lambda table: table.post_id
     elif resource_type == 'comment':
         return db.CommentScore, lambda table: table.comment_id
-    else:
-        assert False
+    assert False
 
 def _get_score_entity(entity, user):
-    table, get_column = _get_table_info(entity)
-    return db.session \
-        .query(table) \
-        .filter(get_column(table) == get_column(entity)) \
-        .filter(table.user_id == user.user_id) \
-        .one_or_none()
+    return db.util.get_aux_entity(db.session, _get_table_info, entity, user)
 
 def delete_score(entity, user):
     score_entity = _get_score_entity(entity, user)
