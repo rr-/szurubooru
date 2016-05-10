@@ -78,6 +78,11 @@ def exec(session, query):
         row = dict(zip(row.keys(), row))
         yield row
 
+def exec_scalar(session, query):
+    rows = list(exec(session, query))
+    first_row = rows[0]
+    return list(first_row.values())[0]
+
 def import_users(v1_data_dir, v1_session, v2_session):
     for row in exec(v1_session, 'SELECT * FROM users'):
         logger.info('Importing user %s...', row['name'])
@@ -113,6 +118,8 @@ def import_users(v1_data_dir, v1_session, v2_session):
                 int(config.config['thumbnails']['avatar_width']),
                 int(config.config['thumbnails']['avatar_height']))
             files.save('avatars/' + user.name.lower() + '.png', image.to_png())
+    counter = exec_scalar(v1_session, 'SELECT MAX(id) FROM users') + 1
+    exec(v2_session, 'ALTER SEQUENCE user_id_seq RESTART WITH %d' % counter)
     v2_session.commit()
 
 def import_tag_categories(v1_session, v2_session):
@@ -125,6 +132,10 @@ def import_tag_categories(v1_session, v2_session):
         category.color = 'default'
         v2_session.add(category)
         category_to_id_map[category.name] = category.tag_category_id
+    exec(
+        v2_session,
+        'ALTER SEQUENCE tag_category_id_seq RESTART WITH %d' % (
+            len(category_to_id_map) + 1,))
     return category_to_id_map
 
 def import_tags(category_to_id_map, v1_session, v2_session):
@@ -142,6 +153,8 @@ def import_tags(category_to_id_map, v1_session, v2_session):
         tag.creation_time = row['creationTime']
         tag.last_edit_time = row['lastEditTime']
         v2_session.add(tag)
+    counter = exec_scalar(v1_session, 'SELECT MAX(id) FROM tags') + 1
+    exec(v2_session, 'ALTER SEQUENCE tag_id_seq RESTART WITH %d' % counter)
     v2_session.commit()
     return unused_tag_ids
 
@@ -193,6 +206,8 @@ def import_posts(v1_session, v2_session):
         if row['flags'] & 1:
             post.flags = [db.Post.FLAG_LOOP]
         v2_session.add(post)
+    counter = exec_scalar(v1_session, 'SELECT MAX(id) FROM posts') + 1
+    exec(v2_session, 'ALTER SEQUENCE post_id_seq RESTART WITH %d' % counter)
     v2_session.commit()
     return unused_post_ids
 
@@ -301,6 +316,8 @@ def import_comments(unused_post_ids, v1_session, v2_session):
         comment.last_edit_time = row['lastEditTime']
         comment.text = row['text']
         v2_session.add(comment)
+    counter = exec_scalar(v1_session, 'SELECT MAX(id) FROM comments') + 1
+    exec(v2_session, 'ALTER SEQUENCE comment_id_seq RESTART WITH %d' % counter)
     v2_session.commit()
 
 def import_scores(v1_session, v2_session):
