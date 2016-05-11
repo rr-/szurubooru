@@ -62,11 +62,11 @@ class BaseSearchConfig(object):
         Decorate SQLAlchemy filter on given column using supplied criterion.
         '''
         if isinstance(criterion, criteria.PlainSearchCriterion):
-            expr = column.like(transformer(criterion.value))
+            expr = column.ilike(transformer(criterion.value))
         elif isinstance(criterion, criteria.ArraySearchCriterion):
             expr = sqlalchemy.sql.false()
             for value in criterion.values:
-                expr = expr | column.like(transformer(value))
+                expr = expr | column.ilike(transformer(value))
         elif isinstance(criterion, criteria.RangedSearchCriterion):
             raise szurubooru.errors.SearchError(
                 'Composite token %r is invalid in this context.' % (criterion,))

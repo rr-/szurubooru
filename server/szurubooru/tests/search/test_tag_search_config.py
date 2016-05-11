@@ -22,6 +22,7 @@ def verify_unpaged(executor):
     ('t1', ['t1']),
     ('t2', ['t2']),
     ('t1,t2', ['t1', 't2']),
+    ('T1,T2', ['t1', 't2']),
 ])
 def test_filter_anonymous(verify_unpaged, tag_factory, input, expected_tag_names):
     db.session.add(tag_factory(names=['t1']))
