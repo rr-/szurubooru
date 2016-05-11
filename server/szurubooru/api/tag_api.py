@@ -69,7 +69,7 @@ class TagDetailApi(BaseApi):
                 'Please untag relevant posts first.')
         auth.verify_privilege(ctx.user, 'tags:delete')
         snapshots.save_entity_deletion(tag, ctx.user)
-        ctx.session.delete(tag)
+        tags.delete(tag)
         ctx.session.commit()
         tags.export_to_json()
         return {}

@@ -148,12 +148,21 @@ def get_tag_siblings(tag):
         .limit(50)
     return result
 
+def delete(source_tag):
+    db.session.execute(
+        sqlalchemy.sql.expression.delete(db.TagSuggestion) \
+            .where(db.TagSuggestion.child_id == source_tag.tag_id))
+    db.session.execute(
+        sqlalchemy.sql.expression.delete(db.TagImplication) \
+            .where(db.TagImplication.child_id == source_tag.tag_id))
+    db.session.delete(source_tag)
+
 def merge_tags(source_tag, target_tag):
     db.session.execute(
         sqlalchemy.sql.expression.update(db.PostTag) \
             .where(db.PostTag.tag_id == source_tag.tag_id) \
             .values(tag_id=target_tag.tag_id))
-    db.session.delete(source_tag)
+    delete(source_tag)
 
 def create_tag(names, category_name, suggestions, implications):
     tag = db.Tag()

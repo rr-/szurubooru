@@ -72,6 +72,30 @@ def test_merging_with_usages(test_ctx, fake_datetime, post_factory):
     assert tags.try_get_tag_by_name('source') is None
     assert tags.get_tag_by_name('target').post_count == 1
 
+def test_merging_when_related(test_ctx, fake_datetime):
+    source_tag = test_ctx.tag_factory(names=['source'], category_name='meta')
+    target_tag = test_ctx.tag_factory(names=['target'], category_name='meta')
+    db.session.add_all([source_tag, target_tag])
+    db.session.flush()
+    referring_tag = test_ctx.tag_factory(names=['parent'])
+    referring_tag.suggestions = [source_tag]
+    referring_tag.implications = [source_tag]
+    db.session.add(referring_tag)
+    db.session.commit()
+    assert tags.try_get_tag_by_name('parent').implications != []
+    assert tags.try_get_tag_by_name('parent').suggestions != []
+    with fake_datetime('1997-12-01'):
+        result = test_ctx.api.post(
+            test_ctx.context_factory(
+                input={
+                    'remove': 'source',
+                    'mergeTo': 'target',
+                },
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
+    assert tags.try_get_tag_by_name('source') is None
+    assert tags.try_get_tag_by_name('parent').implications == []
+    assert tags.try_get_tag_by_name('parent').suggestions == []
+
 @pytest.mark.parametrize('input,expected_exception', [
     ({'remove': None}, tags.TagNotFoundError),
     ({'remove': ''}, tags.TagNotFoundError),
