@@ -60,7 +60,9 @@ function getExport() {
     return _export || {};
 }
 
-events.listen(events.TagsChange, refreshExport);
+events.listen(
+    events.TagsChange,
+    () => { refreshExport(); return true; });
 
 module.exports = {
     getExport: getExport,

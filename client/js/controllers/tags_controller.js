@@ -40,7 +40,7 @@ class TagsController {
         Promise.all(promises).then(
             () => {
                 events.notify(events.TagsChange);
-                events.notify(events.Success, 'Changes saved successfully');
+                events.notify(events.Success, 'Changes saved.');
             },
             response => {
                 events.notify(events.Error, response.description);

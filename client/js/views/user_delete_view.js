@@ -19,10 +19,11 @@ class UserDeleteView {
             e.preventDefault();
             views.clearMessages(target);
             views.disableForm(form);
-            ctx.delete();
+            ctx.delete()
+                .catch(() => { views.enableForm(form); });
         });
 
-        views.listenToMessages(target);
+        views.listenToMessages(source);
         views.showView(target, source);
     }
 }

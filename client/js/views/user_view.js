@@ -38,7 +38,7 @@ class UserView {
         ctx.target = source.querySelector('#user-content-holder');
         view.render(ctx);
 
-        views.listenToMessages(target);
+        views.listenToMessages(source);
         views.showView(target, source);
     }
 }

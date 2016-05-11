@@ -101,7 +101,7 @@ class TagListHeaderView {
             this._saveButtonClickHandler(e, ctx, target);
         });
 
-        views.listenToMessages(target);
+        views.listenToMessages(source);
         views.showView(target, source);
     }
 }

@@ -29,9 +29,15 @@ controllers.push(require('./controllers/home_controller.js'));
 
 const tags = require('./tags.js');
 const events = require('./events.js');
+const views = require('./util/views.js');
 for (let controller of controllers) {
     controller.registerRoutes();
 }
+
+page.exit((ctx, next) => {
+    views.unlistenToMessages();
+    next();
+});
 
 const api = require('./api.js');
 Promise.all([tags.refreshExport(), api.loginFromCookies()])

@@ -195,25 +195,23 @@ class UsersController {
 
     _delete(user) {
         const isLoggedIn = api.isLoggedIn(user);
-        return new Promise((resolve, reject) => {
-            api.delete('/user/' + user.name)
-                .then(response => {
-                    if (isLoggedIn) {
-                        api.forget();
-                        api.logout();
-                    }
-                    resolve();
-                    if (api.hasPrivilege('users:list')) {
-                        page('/users');
-                    } else {
-                        page('/');
-                    }
-                    events.notify(events.Success, 'Account deleted');
-                }, response => {
-                    reject();
-                    events.notify(events.Error, response.description);
-                });
-        });
+        return api.delete('/user/' + user.name)
+            .then(response => {
+                if (isLoggedIn) {
+                    api.forget();
+                    api.logout();
+                }
+                if (api.hasPrivilege('users:list')) {
+                    page('/users');
+                } else {
+                    page('/');
+                }
+                events.notify(events.Success, 'Account deleted.');
+                return Promise.resolve();
+            }, response => {
+                events.notify(events.Error, response.description);
+                return Promise.reject();
+            });
     }
 
     _show(user, section) {

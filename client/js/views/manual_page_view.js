@@ -99,13 +99,13 @@ class ManualPageView {
                 }));
             }
 
-            views.listenToMessages(target);
+            views.listenToMessages(source);
             views.showView(target, source);
             if (response.total <= (currentPage - 1) * response.pageSize) {
                 events.notify(events.Info, 'No data to show');
             }
         }, response => {
-            views.listenToMessages(target);
+            views.listenToMessages(source);
             views.showView(target, source);
             events.notify(events.Error, response.description);
         });

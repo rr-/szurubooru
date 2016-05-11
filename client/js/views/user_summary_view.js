@@ -10,7 +10,7 @@ class UserSummaryView {
     render(ctx) {
         const target = ctx.target;
         const source = this.template(ctx);
-        views.listenToMessages(target);
+        views.listenToMessages(source);
         views.showView(target, source);
     }
 }

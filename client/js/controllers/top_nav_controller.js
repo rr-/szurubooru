@@ -43,7 +43,9 @@ class TopNavController {
             this.topNavView.activate(this.activeItem);
         };
 
-        events.listen(events.Authentication, rerender);
+        events.listen(
+            events.Authentication,
+            () => { rerender(); return true; });
         rerender();
     }
 

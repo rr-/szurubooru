@@ -37,31 +37,31 @@ function makeThumbnail(url) {
 
 function makeRadio(options) {
     return makeVoidElement(
-            'input',
-            {
-                id: options.id,
-                name: options.name,
-                value: options.value,
-                type: 'radio',
-                checked: options.selectedValue === options.value,
-                required: options.required,
-            }) +
-        _makeLabel(options, {class: 'radio'});
+        'input',
+        {
+            id: options.id,
+            name: options.name,
+            value: options.value,
+            type: 'radio',
+            checked: options.selectedValue === options.value,
+            required: options.required,
+        }) +
+    _makeLabel(options, {class: 'radio'});
 }
 
 function makeCheckbox(options) {
     return makeVoidElement(
-            'input',
-            {
-                id: options.id,
-                name: options.name,
-                value: options.value,
-                type: 'checkbox',
-                checked: options.checked !== undefined ?
-                    options.checked : false,
-                required: options.required,
-            }) +
-        _makeLabel(options, {class: 'checkbox'});
+        'input',
+        {
+            id: options.id,
+            name: options.name,
+            value: options.value,
+            type: 'checkbox',
+            checked: options.checked !== undefined ?
+                options.checked : false,
+            required: options.required,
+        }) +
+    _makeLabel(options, {class: 'checkbox'});
 }
 
 function makeSelect(options) {
@@ -143,26 +143,6 @@ function makeFlexboxAlign(options) {
         .map(() => '<li class="flexbox-dummy"></li>').join('');
 }
 
-function _messageHandler(target, message, className) {
-    if (!message) {
-        message = 'Unknown message';
-    }
-    const messagesHolder = target.querySelector('.messages');
-    if (!messagesHolder) {
-        alert(message);
-        return;
-    }
-    /* TODO: animate this */
-    const node = document.createElement('div');
-    node.innerHTML = message.replace(/\n/g, '<br/>');
-    node.classList.add('message');
-    node.classList.add(className);
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('message-wrapper');
-    wrapper.appendChild(node);
-    messagesHolder.appendChild(wrapper);
-}
-
 function _serializeElement(name, attributes) {
     return [name]
         .concat(Object.keys(attributes).map(key => {
@@ -186,16 +166,44 @@ function makeVoidElement(name, attributes) {
     return '<{0}/>'.format(_serializeElement(name, attributes));
 }
 
-function listenToMessages(target) {
+function _messageHandler(target, message, className) {
+    if (!message) {
+        message = 'Unknown message';
+    }
+    const messagesHolder = target.querySelector('.messages');
+    if (!messagesHolder) {
+        return false;
+    }
+    /* TODO: animate this */
+    const node = document.createElement('div');
+    node.innerHTML = message.replace(/\n/g, '<br/>');
+    node.classList.add('message');
+    node.classList.add(className);
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('message-wrapper');
+    wrapper.appendChild(node);
+    messagesHolder.appendChild(wrapper);
+    return true;
+}
+
+function unlistenToMessages() {
     events.unlisten(events.Success);
     events.unlisten(events.Error);
     events.unlisten(events.Info);
-    events.listen(
-        events.Success, msg => { _messageHandler(target, msg, 'success'); });
-    events.listen(
-        events.Error, msg => { _messageHandler(target, msg, 'error'); });
-    events.listen(
-        events.Info, msg => { _messageHandler(target, msg, 'info'); });
+}
+
+function listenToMessages(target) {
+    unlistenToMessages();
+    const listen = (eventType, className) => {
+        events.listen(
+            eventType,
+            msg => {
+                return _messageHandler(target, msg, className);
+            });
+    };
+    listen(events.Success, 'success');
+    listen(events.Error, 'error');
+    listen(events.Info, 'info');
 }
 
 function clearMessages(target) {
@@ -314,6 +322,7 @@ module.exports = {
     enableForm: enableForm,
     disableForm: disableForm,
     listenToMessages: listenToMessages,
+    unlistenToMessages: unlistenToMessages,
     clearMessages: clearMessages,
     decorateValidator: decorateValidator,
     makeVoidElement: makeVoidElement,

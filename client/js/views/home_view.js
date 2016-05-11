@@ -16,7 +16,7 @@ class HomeView {
             buildDate: config.meta.buildDate,
         });
 
-        views.listenToMessages(target);
+        views.listenToMessages(source);
         views.showView(target, source);
     }
 }

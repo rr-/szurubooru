@@ -25,7 +25,7 @@ class SettingsView {
             });
         });
 
-        views.listenToMessages(target);
+        views.listenToMessages(source);
         views.showView(target, source);
     }
 }

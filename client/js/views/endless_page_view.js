@@ -15,7 +15,7 @@ class EndlessPageView {
         const source = this.holderTemplate();
         const pageHeaderHolder = source.querySelector('.page-header-holder');
         const pagesHolder = source.querySelector('.pages-holder');
-        views.listenToMessages(target);
+        views.listenToMessages(source);
         views.showView(target, source);
         this.active = true;
         this.working = 0;

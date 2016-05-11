@@ -10,7 +10,7 @@ class EmptyView {
     render(ctx) {
         const target = document.getElementById('content-holder');
         const source = this.template;
-        views.listenToMessages(target);
+        views.listenToMessages(source);
         views.showView(target, source);
     }
 }

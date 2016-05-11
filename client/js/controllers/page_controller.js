@@ -9,6 +9,7 @@ class PageController {
     constructor() {
         events.listen(events.SettingsChange, () => {
             this.update();
+            return true;
         });
         this.update();
     }
