@@ -48,7 +48,11 @@ class Tag(Base):
     last_edit_time = Column('last_edit_time', DateTime)
 
     category = relationship('TagCategory', lazy='joined')
-    names = relationship('TagName', cascade='all, delete-orphan', lazy='joined')
+    names = relationship(
+        'TagName',
+        cascade='all,delete-orphan',
+        lazy='joined',
+        order_by='TagName.tag_name_id')
     suggestions = relationship(
         'Tag',
         secondary='tag_suggestion',
