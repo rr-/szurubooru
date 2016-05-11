@@ -5,9 +5,9 @@ const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
-class UserListHeaderView {
+class UsersHeaderView {
     constructor() {
-        this.template = views.getTemplate('user-list-header');
+        this.template = views.getTemplate('users-header');
     }
 
     render(ctx) {
@@ -32,4 +32,4 @@ class UserListHeaderView {
     }
 }
 
-module.exports = UserListHeaderView;
+module.exports = UsersHeaderView;

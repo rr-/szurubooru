@@ -2,9 +2,9 @@
 
 const views = require('../util/views.js');
 
-class UserDeletionView {
+class UserDeleteView {
     constructor() {
-        this.template = views.getTemplate('user-deletion');
+        this.template = views.getTemplate('user-delete');
     }
 
     render(ctx) {
@@ -27,4 +27,4 @@ class UserDeletionView {
     }
 }
 
-module.exports = UserDeletionView;
+module.exports = UserDeleteView;

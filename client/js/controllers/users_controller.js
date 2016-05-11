@@ -10,8 +10,8 @@ const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
 const RegistrationView = require('../views/registration_view.js');
 const UserView = require('../views/user_view.js');
-const UserListHeaderView = require('../views/user_list_header_view.js');
-const UserListPageView = require('../views/user_list_page_view.js');
+const UsersHeaderView = require('../views/users_header_view.js');
+const UsersPageView = require('../views/users_page_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 const rankNames = {
@@ -28,8 +28,8 @@ class UsersController {
     constructor() {
         this.registrationView = new RegistrationView();
         this.userView = new UserView();
-        this.userListHeaderView = new UserListHeaderView();
-        this.userListPageView = new UserListPageView();
+        this.usersHeaderView = new UsersHeaderView();
+        this.usersPageView = new UsersPageView();
         this.emptyView = new EmptyView();
     }
 
@@ -75,8 +75,8 @@ class UsersController {
             clientUrl: '/users/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
             searchQuery: ctx.searchQuery,
-            headerRenderer: this.userListHeaderView,
-            pageRenderer: this.userListPageView,
+            headerRenderer: this.usersHeaderView,
+            pageRenderer: this.usersPageView,
         });
     }
 

@@ -2,9 +2,9 @@
 
 const views = require('../util/views.js');
 
-class UserListPageView {
+class TagsPageView {
     constructor() {
-        this.template = views.getTemplate('user-list-page');
+        this.template = views.getTemplate('tags-page');
     }
 
     render(ctx) {
@@ -14,4 +14,4 @@ class UserListPageView {
     }
 }
 
-module.exports = UserListPageView;
+module.exports = TagsPageView;

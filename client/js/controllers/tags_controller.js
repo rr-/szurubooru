@@ -6,14 +6,14 @@ const events = require('../events.js');
 const misc = require('../util/misc.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
-const TagListHeaderView = require('../views/tag_list_header_view.js');
-const TagListPageView = require('../views/tag_list_page_view.js');
+const TagsHeaderView = require('../views/tags_header_view.js');
+const TagsPageView = require('../views/tags_page_view.js');
 const TagCategoriesView = require('../views/tag_categories_view.js');
 
 class TagsController {
     constructor() {
-        this.tagListHeaderView = new TagListHeaderView();
-        this.tagListPageView = new TagListPageView();
+        this.tagsHeaderView = new TagsHeaderView();
+        this.tagsPageView = new TagsPageView();
         this.tagCategoriesView = new TagCategoriesView();
     }
 
@@ -87,8 +87,8 @@ class TagsController {
             clientUrl: '/tags/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
             searchQuery: ctx.searchQuery,
-            headerRenderer: this.tagListHeaderView,
-            pageRenderer: this.tagListPageView,
+            headerRenderer: this.tagsHeaderView,
+            pageRenderer: this.tagsPageView,
             canEditTagCategories: api.hasPrivilege('tagCategories:edit'),
         });
     }

@@ -1,14 +1,14 @@
 'use strict';
 
 const views = require('../util/views.js');
-const UserDeletionView = require('./user_deletion_view.js');
+const UserDeleteView = require('./user_delete_view.js');
 const UserSummaryView = require('./user_summary_view.js');
 const UserEditView = require('./user_edit_view.js');
 
 class UserView {
     constructor() {
         this.template = views.getTemplate('user');
-        this.deletionView = new UserDeletionView();
+        this.deleteView = new UserDeleteView();
         this.summaryView = new UserSummaryView();
         this.editView = new UserEditView();
     }
@@ -31,7 +31,7 @@ class UserView {
         if (ctx.section == 'edit') {
             view = this.editView;
         } else if (ctx.section == 'delete') {
-            view = this.deletionView;
+            view = this.deleteView;
         } else {
             view = this.summaryView;
         }
