@@ -134,5 +134,5 @@ class BaseSearchConfig(object):
             subquery = subquery.options(sqlalchemy.orm.lazyload('*'))
             subquery = filter_func(subquery, criterion)
             subquery = subquery.subquery('t')
-            return query.filter(left_id_column == subquery.c.foreign_id)
+            return query.filter(left_id_column.in_(subquery))
         return func

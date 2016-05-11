@@ -23,12 +23,20 @@ class TagSearchConfig(BaseSearchConfig):
 
     @property
     def anonymous_filter(self):
-        return self._create_str_filter(db.Tag.first_name)
+        return self._create_subquery_filter(
+            db.Tag.tag_id,
+            db.TagName.tag_id,
+            db.TagName.name,
+            self._create_str_filter)
 
     @property
     def named_filters(self):
         return util.unalias_dict({
-            'name': self._create_str_filter(db.Tag.first_name),
+            'name': self._create_subquery_filter(
+                db.Tag.tag_id,
+                db.TagName.tag_id,
+                db.TagName.name,
+                self._create_str_filter),
             'category': self._create_subquery_filter(
                 db.Tag.category_id,
                 db.TagCategory.tag_category_id,

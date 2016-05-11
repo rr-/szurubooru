@@ -47,6 +47,7 @@ def test_filter_anonymous(verify_unpaged, tag_factory, input, expected_tag_names
     ('name:tag1,tag2', ['tag1', 'tag2']),
     ('-name:tag1,tag3', ['tag2', 'tag4']),
     ('name:tag4', ['tag4']),
+    ('name:tag5', ['tag4']),
     ('name:tag4,tag5', ['tag4']),
 ])
 def test_filter_by_name(verify_unpaged, tag_factory, input, expected_tag_names):
