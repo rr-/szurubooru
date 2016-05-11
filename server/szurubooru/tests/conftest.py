@@ -54,6 +54,8 @@ def query_counter():
 def query_logger():
     if pytest.config.option.verbose > 0:
         import logging
+        import coloredlogs
+        coloredlogs.install(fmt='[%(asctime)-15s] %(name)s %(message)s', isatty=True)
         logging.basicConfig()
         logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
