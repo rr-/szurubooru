@@ -172,6 +172,11 @@ input[type=password]
     &:focus
         border-color: $main-color
 
+    &[readonly]
+        border: 2px solid $input-disabled-border-color
+        background: $input-disabled-background-color
+        color: $input-disabled-text-color
+
 label.color
     position: relative
     input[type=text]

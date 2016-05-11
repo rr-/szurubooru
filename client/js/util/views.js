@@ -7,6 +7,12 @@ const events = require('../events.js');
 const domParser = new DOMParser();
 const misc = require('./misc.js');
 
+function _imbueId(options) {
+    if (!options.id) {
+        options.id = 'gen-' + Math.random().toString(36).substring(7);
+    }
+}
+
 function _makeLabel(options, attrs) {
     if (!options.text) {
         return '';
@@ -36,6 +42,7 @@ function makeThumbnail(url) {
 }
 
 function makeRadio(options) {
+    _imbueId(options);
     return makeVoidElement(
         'input',
         {
@@ -50,6 +57,7 @@ function makeRadio(options) {
 }
 
 function makeCheckbox(options) {
+    _imbueId(options);
     return makeVoidElement(
         'input',
         {
@@ -68,7 +76,11 @@ function makeSelect(options) {
     return _makeLabel(options) +
         makeNonVoidElement(
             'select',
-            {id: options.id, name: options.name},
+            {
+                id: options.id,
+                name: options.name,
+                disabled: options.readonly,
+            },
             Object.keys(options.keyValues).map(key => {
                 return makeNonVoidElement(
                     'option',
@@ -88,6 +100,7 @@ function makeInput(options) {
                 required: options.required,
                 pattern: options.pattern,
                 placeholder: options.placeholder,
+                readonly: options.readonly,
             });
 }
 
@@ -128,7 +141,7 @@ function makeTagLink(name) {
     const tagExport = tags.getExport();
     let category = null;
     try {
-        category = tagExport.tags[name].category;
+        category = tagExport.tags.get(name).category;
     } catch (e) {
         category = 'unknown';
     }
