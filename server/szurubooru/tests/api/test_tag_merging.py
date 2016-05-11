@@ -30,7 +30,7 @@ def test_merging_without_usages(test_ctx, fake_datetime):
             test_ctx.context_factory(
                 input={
                     'remove': 'source',
-                    'merge-to': 'target',
+                    'mergeTo': 'target',
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result['tag'] == {
@@ -66,7 +66,7 @@ def test_merging_with_usages(test_ctx, fake_datetime, post_factory):
             test_ctx.context_factory(
                 input={
                     'remove': 'source',
-                    'merge-to': 'target',
+                    'mergeTo': 'target',
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert tags.try_get_tag_by_name('source') is None
@@ -76,9 +76,9 @@ def test_merging_with_usages(test_ctx, fake_datetime, post_factory):
     ({'remove': None}, tags.TagNotFoundError),
     ({'remove': ''}, tags.TagNotFoundError),
     ({'remove': []}, tags.TagNotFoundError),
-    ({'merge-to': None}, tags.TagNotFoundError),
-    ({'merge-to': ''}, tags.TagNotFoundError),
-    ({'merge-to': []}, tags.TagNotFoundError),
+    ({'mergeTo': None}, tags.TagNotFoundError),
+    ({'mergeTo': ''}, tags.TagNotFoundError),
+    ({'mergeTo': []}, tags.TagNotFoundError),
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     source_tag = test_ctx.tag_factory(names=['source'], category_name='meta')
@@ -87,7 +87,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     db.session.commit()
     real_input = {
         'remove': 'source',
-        'merge-to': 'target',
+        'mergeTo': 'target',
     }
     for key, value in input.items():
         real_input[key] = value
@@ -98,7 +98,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize(
-    'field', ['remove', 'merge-to'])
+    'field', ['remove', 'mergeTo'])
 def test_trying_to_omit_mandatory_field(test_ctx, field):
     db.session.add_all([
         test_ctx.tag_factory(names=['source'], category_name='meta'),
@@ -107,7 +107,7 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
     db.session.commit()
     input = {
         'remove': 'source',
-        'merge-to': 'target',
+        'mergeTo': 'target',
     }
     del input[field]
     with pytest.raises(errors.ValidationError):
@@ -122,12 +122,12 @@ def test_trying_to_merge_non_existing(test_ctx):
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.api.post(
             test_ctx.context_factory(
-                input={'remove': 'good', 'merge-to': 'bad'},
+                input={'remove': 'good', 'mergeTo': 'bad'},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.api.post(
             test_ctx.context_factory(
-                input={'remove': 'bad', 'merge-to': 'good'},
+                input={'remove': 'bad', 'mergeTo': 'good'},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_merge_to_itself(test_ctx):
@@ -136,7 +136,7 @@ def test_trying_to_merge_to_itself(test_ctx):
     with pytest.raises(tags.InvalidTagRelationError):
         test_ctx.api.post(
             test_ctx.context_factory(
-                input={'remove': 'good', 'merge-to': 'good'},
+                input={'remove': 'good', 'mergeTo': 'good'},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize('input', [
@@ -156,6 +156,6 @@ def test_trying_to_merge_without_privileges(test_ctx, input):
             test_ctx.context_factory(
                 input={
                     'remove': 'source',
-                    'merge-to': 'target',
+                    'mergeTo': 'target',
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))

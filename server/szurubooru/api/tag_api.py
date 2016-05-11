@@ -77,7 +77,7 @@ class TagDetailApi(BaseApi):
 class TagMergeApi(BaseApi):
     def post(self, ctx):
         source_tag_name = ctx.get_param_as_string('remove', required=True) or ''
-        target_tag_name = ctx.get_param_as_string('merge-to', required=True) or ''
+        target_tag_name = ctx.get_param_as_string('mergeTo', required=True) or ''
         source_tag = tags.get_tag_by_name(source_tag_name)
         target_tag = tags.get_tag_by_name(target_tag_name)
         if source_tag.tag_id == target_tag.tag_id:

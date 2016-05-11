@@ -460,8 +460,8 @@ data.
 
     ```json5
     {
-        "remove":   <source-tag-name>,
-        "merge-to": <target-tag-name>
+        "remove":  <source-tag-name>,
+        "mergeTo": <target-tag-name>
     }
     ```
 
