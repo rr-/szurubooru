@@ -11,6 +11,7 @@ const TagView = require('../views/tag_view.js');
 const TagsHeaderView = require('../views/tags_header_view.js');
 const TagsPageView = require('../views/tags_page_view.js');
 const TagCategoriesView = require('../views/tag_categories_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 class TagsController {
     constructor() {
@@ -18,6 +19,7 @@ class TagsController {
         this.tagsHeaderView = new TagsHeaderView();
         this.tagsPageView = new TagsPageView();
         this.tagCategoriesView = new TagCategoriesView();
+        this.emptyView = new EmptyView();
     }
 
     registerRoutes() {
