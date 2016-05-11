@@ -73,18 +73,18 @@ def parse_args():
 
     return parser.parse_args()
 
-def exec(session, query):
-    for row in session.execute(query):
+def exec_query(session, query):
+    for row in list(session.execute(query)):
         row = dict(zip(row.keys(), row))
         yield row
 
 def exec_scalar(session, query):
-    rows = list(exec(session, query))
+    rows = list(exec_query(session, query))
     first_row = rows[0]
     return list(first_row.values())[0]
 
 def import_users(v1_data_dir, v1_session, v2_session):
-    for row in exec(v1_session, 'SELECT * FROM users'):
+    for row in exec_query(v1_session, 'SELECT * FROM users'):
         logger.info('Importing user %s...', row['name'])
         user = db.User()
         user.user_id = row['id']
@@ -119,12 +119,12 @@ def import_users(v1_data_dir, v1_session, v2_session):
                 int(config.config['thumbnails']['avatar_height']))
             files.save('avatars/' + user.name.lower() + '.png', image.to_png())
     counter = exec_scalar(v1_session, 'SELECT MAX(id) FROM users') + 1
-    exec(v2_session, 'ALTER SEQUENCE user_id_seq RESTART WITH %d' % counter)
+    v2_session.execute('ALTER SEQUENCE user_id_seq RESTART WITH %d' % counter)
     v2_session.commit()
 
 def import_tag_categories(v1_session, v2_session):
     category_to_id_map = {}
-    for row in exec(v1_session, 'SELECT DISTINCT category FROM tags'):
+    for row in exec_query(v1_session, 'SELECT DISTINCT category FROM tags'):
         logger.info('Importing tag category %s...', row['category'])
         category = db.TagCategory()
         category.tag_category_id = len(category_to_id_map) + 1
@@ -132,15 +132,14 @@ def import_tag_categories(v1_session, v2_session):
         category.color = 'default'
         v2_session.add(category)
         category_to_id_map[category.name] = category.tag_category_id
-    exec(
-        v2_session,
+    v2_session.execute(
         'ALTER SEQUENCE tag_category_id_seq RESTART WITH %d' % (
             len(category_to_id_map) + 1,))
     return category_to_id_map
 
 def import_tags(category_to_id_map, v1_session, v2_session):
     unused_tag_ids = []
-    for row in exec(v1_session, 'SELECT * FROM tags'):
+    for row in exec_query(v1_session, 'SELECT * FROM tags'):
         logger.info('Importing tag %s...', row['name'])
         if row['banned']:
             logger.info('Ignored banned tag %s', row['name'])
@@ -154,13 +153,13 @@ def import_tags(category_to_id_map, v1_session, v2_session):
         tag.last_edit_time = row['lastEditTime']
         v2_session.add(tag)
     counter = exec_scalar(v1_session, 'SELECT MAX(id) FROM tags') + 1
-    exec(v2_session, 'ALTER SEQUENCE tag_id_seq RESTART WITH %d' % counter)
+    v2_session.execute('ALTER SEQUENCE tag_id_seq RESTART WITH %d' % counter)
     v2_session.commit()
     return unused_tag_ids
 
 def import_tag_relations(unused_tag_ids, v1_session, v2_session):
     logger.info('Importing tag relations...')
-    for row in exec(v1_session, 'SELECT * FROM tagRelations'):
+    for row in exec_query(v1_session, 'SELECT * FROM tagRelations'):
         if row['tag1id'] in unused_tag_ids or row['tag2id'] in unused_tag_ids:
             continue
         if row['type'] == 1:
@@ -175,7 +174,7 @@ def import_tag_relations(unused_tag_ids, v1_session, v2_session):
 
 def import_posts(v1_session, v2_session):
     unused_post_ids = []
-    for row in exec(v1_session, 'SELECT * FROM posts'):
+    for row in exec_query(v1_session, 'SELECT * FROM posts'):
         logger.info('Importing post %d...', row['id'])
         if row['contentType'] == 4:
             logger.warn('Ignoring youtube post %d', row['id'])
@@ -207,7 +206,7 @@ def import_posts(v1_session, v2_session):
             post.flags = [db.Post.FLAG_LOOP]
         v2_session.add(post)
     counter = exec_scalar(v1_session, 'SELECT MAX(id) FROM posts') + 1
-    exec(v2_session, 'ALTER SEQUENCE post_id_seq RESTART WITH %d' % counter)
+    v2_session.execute('ALTER SEQUENCE post_id_seq RESTART WITH %d' % counter)
     v2_session.commit()
     return unused_post_ids
 
@@ -238,7 +237,7 @@ def _import_post_content_for_post(
     posts.generate_post_thumbnail(post)
 
 def import_post_content(unused_post_ids, v1_data_dir, v1_session, v2_session):
-    rows = list(exec(v1_session, 'SELECT * FROM posts'))
+    rows = list(exec_query(v1_session, 'SELECT * FROM posts'))
     posts = {post.post_id: post for post in v2_session.query(db.Post).all()}
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         for row in rows:
@@ -249,7 +248,7 @@ def import_post_content(unused_post_ids, v1_data_dir, v1_session, v2_session):
 
 def import_post_tags(unused_post_ids, v1_session, v2_session):
     logger.info('Importing post tags...')
-    for row in exec(v1_session, 'SELECT * FROM postTags'):
+    for row in exec_query(v1_session, 'SELECT * FROM postTags'):
         if row['postId'] in unused_post_ids:
             continue
         v2_session.add(db.PostTag(post_id=row['postId'], tag_id=row['tagId']))
@@ -257,7 +256,7 @@ def import_post_tags(unused_post_ids, v1_session, v2_session):
 
 def import_post_notes(unused_post_ids, v1_session, v2_session):
     logger.info('Importing post notes...')
-    for row in exec(v1_session, 'SELECT * FROM postNotes'):
+    for row in exec_query(v1_session, 'SELECT * FROM postNotes'):
         if row['postId'] in unused_post_ids:
             continue
         x, y, w, h = row['x'], row['y'], row['width'], row['height']
@@ -279,7 +278,7 @@ def import_post_notes(unused_post_ids, v1_session, v2_session):
 
 def import_post_relations(unused_post_ids, v1_session, v2_session):
     logger.info('Importing post relations...')
-    for row in exec(v1_session, 'SELECT * FROM postRelations'):
+    for row in exec_query(v1_session, 'SELECT * FROM postRelations'):
         if row['post1id'] in unused_post_ids or row['post2id'] in unused_post_ids:
             continue
         v2_session.add(
@@ -289,7 +288,7 @@ def import_post_relations(unused_post_ids, v1_session, v2_session):
 
 def import_post_favorites(unused_post_ids, v1_session, v2_session):
     logger.info('Importing post favorites...')
-    for row in exec(v1_session, 'SELECT * FROM favorites'):
+    for row in exec_query(v1_session, 'SELECT * FROM favorites'):
         if row['postId'] in unused_post_ids:
             continue
         v2_session.add(
@@ -300,7 +299,7 @@ def import_post_favorites(unused_post_ids, v1_session, v2_session):
     v2_session.commit()
 
 def import_comments(unused_post_ids, v1_session, v2_session):
-    for row in exec(v1_session, 'SELECT * FROM comments'):
+    for row in exec_query(v1_session, 'SELECT * FROM comments'):
         logger.info('Importing comment %d...', row['id'])
         if row['postId'] in unused_post_ids:
             logger.warn('Ignoring comment for unimported post %d', row['postId'])
@@ -317,12 +316,12 @@ def import_comments(unused_post_ids, v1_session, v2_session):
         comment.text = row['text']
         v2_session.add(comment)
     counter = exec_scalar(v1_session, 'SELECT MAX(id) FROM comments') + 1
-    exec(v2_session, 'ALTER SEQUENCE comment_id_seq RESTART WITH %d' % counter)
+    v2_session.execute('ALTER SEQUENCE comment_id_seq RESTART WITH %d' % counter)
     v2_session.commit()
 
 def import_scores(v1_session, v2_session):
     logger.info('Importing scores...')
-    for row in exec(v1_session, 'SELECT * FROM scores'):
+    for row in exec_query(v1_session, 'SELECT * FROM scores'):
         if row['postId']:
             post = posts.try_get_post_by_id(row['postId'])
             if not post:
@@ -345,7 +344,7 @@ def import_scores(v1_session, v2_session):
 
 def import_snapshots(v1_session, v2_session):
     logger.info('Importing snapshots...')
-    for row in exec(v1_session, 'SELECT * FROM snapshots ORDER BY time ASC'):
+    for row in exec_query(v1_session, 'SELECT * FROM snapshots ORDER BY time ASC'):
         snapshot = db.Snapshot()
         snapshot.creation_time = row['time']
         snapshot.user_id = row['userId']
