@@ -4,12 +4,15 @@ const views = require('../util/views.js');
 
 class EmptyView {
     constructor() {
-        this.template = views.htmlToDom('<div class="messages"></div>');
+        this.template = () => {
+            return views.htmlToDom(
+                '<div class="wrapper"><div class="messages"></div></div>');
+        };
     }
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template;
+        const source = this.template();
         views.listenToMessages(source);
         views.showView(target, source);
     }
