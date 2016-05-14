@@ -98,29 +98,56 @@ function bundleCss() {
             css += stylus.render(
                 fs.readFileSync(file, 'utf-8'), {filename: file});
         }
-        fs.writeFileSync('./public/bundle.min.css', minify(css));
+        fs.writeFileSync('./public/app.min.css', minify(css));
         console.info('Bundled CSS');
+    });
+}
+
+function writeJsBundle(b, path, message) {
+    const uglifyjs = require('uglify-js');
+    let outputFile = fs.createWriteStream(path);
+    b.bundle().pipe(outputFile);
+    outputFile.on('finish', function() {
+        if (!config.debug) {
+            const result = uglifyjs.minify(path);
+            fs.writeFileSync(path, result.code);
+        }
+        console.info(message);
     });
 }
 
 function bundleJs(config) {
     const babelify = require('babelify');
     const browserify = require('browserify');
-    const uglifyjs = require('uglify-js');
-    glob('./js/**/*.js', {}, function(er, files) {
-        const outputFile = fs.createWriteStream('./public/bundle.min.js');
-        let b = browserify({debug: config.debug});
-        if (config.transpile) {
-            b = b.transform(babelify);
-        }
-        b.add(files).bundle().pipe(outputFile);
-        outputFile.on('finish', function() {
-            if (!config.debug) {
-                const result = uglifyjs.minify('./public/bundle.min.js');
-                fs.writeFileSync('./public/bundle.min.js', result.code);
+    const external = [
+        'lodash',
+        'superagent',
+        'mousetrap',
+        'js-cookie',
+        'page',
+        'nprogress',
+        'babel-polyfill',
+    ];
+    glob('./js/**/*.js', {}, (er, files) => {
+        {
+            let b = browserify();
+            for (let lib of external) {
+                b.require(lib);
             }
-            console.info('Bundled JS');
-        });
+            writeJsBundle(b, './public/vendor.min.js', 'Bundled vendor JS');
+        }
+
+        {
+            let outputFile = fs.createWriteStream('./public/app.min.js');
+            let b = browserify({debug: config.debug});
+            if (config.transpile) {
+                b = b.transform(babelify);
+            }
+            b.external(external);
+            b.on('dep', dep => { console.log(dep.file); });
+            b.add(files);
+            writeJsBundle(b, './public/app.min.js', 'Bundled app JS');
+        }
     });
 }
 
