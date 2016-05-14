@@ -129,7 +129,7 @@ function bundleJs(config) {
         'babel-polyfill',
     ];
     glob('./js/**/*.js', {}, (er, files) => {
-        {
+        if (!process.argv.includes('--no-vendor-js')) {
             let b = browserify();
             for (let lib of external) {
                 b.require(lib);
@@ -138,7 +138,7 @@ function bundleJs(config) {
                 b, './public/vendor.min.js', 'Bundled vendor JS', true);
         }
 
-        {
+        if (!process.argv.includes('--no-app-js')) {
             let outputFile = fs.createWriteStream('./public/app.min.js');
             let b = browserify({debug: config.debug});
             if (config.transpile) {
@@ -164,7 +164,13 @@ function copyFile(source, target) {
 
 const config = getConfig();
 bundleConfig(config);
-bundleHtml(config);
-bundleCss();
-bundleJs(config);
+if (!process.argv.includes('--no-html')) {
+    bundleHtml(config);
+}
+if (!process.argv.includes('--no-css')) {
+    bundleCss();
+}
+if (!process.argv.includes('--no-js')) {
+    bundleJs(config);
+}
 copyFile('./img/favicon.png', './public/favicon.png');

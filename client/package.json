@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
-    "watch": "watch 'npm run build' html js css img --wait=0 --ignoreDotFiles"
+    "watch": "watch 'npm run build -- --no-vendor-js' html js css img --wait=0 --ignoreDotFiles"
   },
   "dependencies": {
     "babel-polyfill": "^6.7.4",
