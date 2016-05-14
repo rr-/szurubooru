@@ -1,7 +1,7 @@
 'use strict';
 
 require('../util/polyfill.js');
-const underscore = require('underscore');
+const lodash = require('lodash');
 const tags = require('../tags.js');
 const events = require('../events.js');
 const domParser = new DOMParser();
@@ -240,12 +240,12 @@ function getTemplate(templatePath) {
         return null;
     }
     const templateText = templates[templatePath].trim();
-    const templateFactory = underscore.template(templateText);
+    const templateFactory = lodash.template(templateText);
     return ctx => {
         if (!ctx) {
             ctx = {};
         }
-        underscore.extend(ctx, {
+        lodash.extend(ctx, {
             makeRelativeTime: makeRelativeTime,
             makeThumbnail: makeThumbnail,
             makeRadio: makeRadio,
