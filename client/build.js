@@ -103,12 +103,12 @@ function bundleCss() {
     });
 }
 
-function writeJsBundle(b, path, message) {
+function writeJsBundle(b, path, message, compress) {
     const uglifyjs = require('uglify-js');
     let outputFile = fs.createWriteStream(path);
     b.bundle().pipe(outputFile);
     outputFile.on('finish', function() {
-        if (!config.debug) {
+        if (compress) {
             const result = uglifyjs.minify(path);
             fs.writeFileSync(path, result.code);
         }
@@ -134,7 +134,8 @@ function bundleJs(config) {
             for (let lib of external) {
                 b.require(lib);
             }
-            writeJsBundle(b, './public/vendor.min.js', 'Bundled vendor JS');
+            writeJsBundle(
+                b, './public/vendor.min.js', 'Bundled vendor JS', true);
         }
 
         {
@@ -143,10 +144,11 @@ function bundleJs(config) {
             if (config.transpile) {
                 b = b.transform(babelify);
             }
-            b.external(external);
-            b.on('dep', dep => { console.log(dep.file); });
-            b.add(files);
-            writeJsBundle(b, './public/app.min.js', 'Bundled app JS');
+            writeJsBundle(
+                b.external(external).add(files),
+                './public/app.min.js',
+                'Bundled app JS',
+                !config.debug);
         }
     });
 }
