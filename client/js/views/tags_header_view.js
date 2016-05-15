@@ -4,6 +4,7 @@ const page = require('page');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
+const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
 
 class TagsHeaderView {
     constructor() {
@@ -15,6 +16,11 @@ class TagsHeaderView {
         const source = this.template(ctx);
 
         const form = source.querySelector('form');
+        const searchTextInput = form.querySelector('[name=search-text]');
+
+        if (searchTextInput) {
+            new TagAutoCompleteControl(searchTextInput);
+        }
 
         keyboard.bind('q', () => {
             form.querySelector('input').focus();
@@ -22,7 +28,6 @@ class TagsHeaderView {
 
         form.addEventListener('submit', e => {
             e.preventDefault();
-            const searchTextInput = form.querySelector('[name=search-text]');
             const text = searchTextInput.value;
             searchTextInput.blur();
             page('/tags/' + misc.formatSearchQuery({text: text}));

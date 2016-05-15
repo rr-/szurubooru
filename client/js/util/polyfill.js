@@ -65,3 +65,11 @@ if (!String.prototype.format) {
         return str;
     };
 }
+
+Number.prototype.between = function(a, b, inclusive) {
+    const min = Math.min(a, b);
+    const max = Math.max(a, b);
+    return inclusive ?
+        this >= min && this <= max :
+        this > min && this < max;
+};

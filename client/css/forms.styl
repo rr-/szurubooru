@@ -251,3 +251,27 @@ input[type=file]:active+.file-dropper,
 input[type=file]:focus+.file-dropper,
 .file-dropper.active
     border-color: $main-color
+
+
+
+.autocomplete
+    position: absolute
+    z-index: 10
+    background: white
+    border: 2px solid $main-color
+    display: none
+    font-size: 0.95em
+    ul
+        list-style-type: none
+        margin: 0
+        padding: 0
+        li
+            margin: 0
+            a
+                display: block
+                padding: 0.1em 0.5em
+            &.active a, a:hover
+                background: $button-enabled-background-color
+                color: $button-enabled-text-color
+                span
+                    color: $button-enabled-text-color

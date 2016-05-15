@@ -2,6 +2,7 @@
 
 const config = require('../config.js');
 const views = require('../util/views.js');
+const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
 
 function split(str) {
     return str.split(/\s+/).filter(s => s);
@@ -20,16 +21,22 @@ class TagSummaryView {
         const source = this.template(ctx);
 
         const form = source.querySelector('form');
+        const namesField = source.querySelector('.names input');
+        const categoryField = source.querySelector('.category select');
+        const implicationsField =
+            source.querySelector('.implications input');
+        const suggestionsField = source.querySelector('.suggestions input');
+
+        if (implicationsField) {
+            new TagAutoCompleteControl(implicationsField);
+        }
+        if (suggestionsField) {
+            new TagAutoCompleteControl(suggestionsField);
+        }
 
         views.decorateValidator(form);
 
         form.addEventListener('submit', e => {
-            const namesField = source.querySelector('.names input');
-            const categoryField = source.querySelector('.category select');
-            const implicationsField =
-                source.querySelector('.implications input');
-            const suggestionsField = source.querySelector('.suggestions input');
-
             e.preventDefault();
             views.clearMessages(target);
             views.disableForm(form);

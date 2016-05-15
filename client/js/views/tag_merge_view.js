@@ -2,6 +2,7 @@
 
 const config = require('../config.js');
 const views = require('../util/views.js');
+const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
 
 class TagMergeView {
     constructor() {
@@ -15,11 +16,14 @@ class TagMergeView {
         const source = this.template(ctx);
 
         const form = source.querySelector('form');
+        const otherTagField = source.querySelector('.target input');
 
         views.decorateValidator(form);
+        if (otherTagField) {
+            new TagAutoCompleteControl(otherTagField);
+        }
 
         form.addEventListener('submit', e => {
-            const otherTagField = source.querySelector('.target input');
 
             e.preventDefault();
             views.clearMessages(target);
