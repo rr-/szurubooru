@@ -138,10 +138,9 @@ function makeColorInput(options) {
 }
 
 function makeTagLink(name) {
-    const tagExport = tags.getExport();
     let category = null;
     try {
-        category = tagExport.tags.get(name).category;
+        category = tags.getTagByName(name).category;
     } catch (e) {
         category = 'unknown';
     }
@@ -321,7 +320,8 @@ function scrollToHash() {
 }
 
 document.addEventListener('input', e => {
-    if (e.target.getAttribute('type').toLowerCase() === 'color') {
+    const type = e.target.getAttribute('type');
+    if (type && type.toLowerCase() === 'color') {
         const textInput = e.target.parentNode.querySelector('input[type=text]');
         textInput.style.color = e.target.value;
         textInput.value = e.target.value;

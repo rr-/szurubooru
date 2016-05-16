@@ -6,7 +6,7 @@ const AutoCompleteControl = require('./auto_complete_control.js');
 
 class TagAutoCompleteControl extends AutoCompleteControl {
     constructor(input, options) {
-        const allTags = tags.getExport().tags;
+        const allTags = tags.getNameToTagMap();
         const caseSensitive = false;
         const minLengthForPartialSearch = 3;
 
@@ -30,7 +30,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                         caption:
                             '<span class="tag-{0}">{1} ({2})</span>'.format(
                                 kv[1].category,
-                                kv[0],
+                                tags.getOriginalTagName(kv[0]),
                                 kv[1].usages),
                         value: kv[0],
                     };

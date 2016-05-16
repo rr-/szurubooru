@@ -31,14 +31,18 @@ form
 form.tabular
     ul
         display: table
+        table-layout: fixed
         width: 100%
         li
             display: table-row
             label:not(.radio):not(.checkbox):not(.file-dropper)
                 display: table-cell
                 width: 33%
+                text-align: right
+                padding-right: 1em
     .messages, .buttons
         margin-left: 33%
+        padding-left: 1em
 
 form.horizontal
     display: inline-block
@@ -146,6 +150,7 @@ input[type=checkbox]:focus + .checkbox:before
 /*
  * Regular inputs
  */
+div.tag-input,
 select,
 textarea,
 input[type=text],
@@ -176,6 +181,30 @@ input[type=password]
         border: 2px solid $input-disabled-border-color
         background: $input-disabled-background-color
         color: $input-disabled-text-color
+
+div.tag-input
+    min-height: 3.3em
+    vertical-align: top
+    display: inline-block
+    cursor: text
+    word-wrap: break-word
+    a
+        line-height: 110%
+        position: relative
+        z-index: 1
+    span
+        line-height: 110%
+        &.new a
+            background: $new-tag-background-color
+            color: $new-tag-text-color
+        &.duplicate a
+            background: $duplicate-tag-background-color
+            color: $duplicate-tag-text-color
+        &.editable
+            outline: 0
+            padding-right: 0.2em
+            &:last-child
+                padding-left: 0.2em
 
 label.color
     position: relative

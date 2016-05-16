@@ -98,8 +98,8 @@ class TagsController {
     _show(tag, section) {
         topNavController.activate('tags');
         const categories = {};
-        for (let [key, category] of tags.getExport().categories) {
-            categories[key] = category.name;
+        for (let category of tags.getAllCategories()) {
+            categories[category.name] = category.name;
         }
         this.tagView.render({
             tag: tag,

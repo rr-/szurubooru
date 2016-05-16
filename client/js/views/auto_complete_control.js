@@ -28,6 +28,7 @@ class AutoCompleteControl {
     constructor(input, options) {
         this.input = input;
         this.options = lodash.extend({}, {
+            verticalShift: 2,
             source: null,
             maxResults: 15,
             getTextToFind: () => {
@@ -229,7 +230,7 @@ class AutoCompleteControl {
         this.suggestionDiv.style.left = '-9999px';
         this.suggestionDiv.style.top = '-9999px';
         this.show();
-        const borderSize = 2;
+        const verticalShift = this.options.verticalShift;
         const inputRect = this.input.getBoundingClientRect();
         const bodyRect = document.body.getBoundingClientRect();
         const viewPortHeight = bodyRect.bottom - bodyRect.top;
@@ -242,8 +243,8 @@ class AutoCompleteControl {
 
         let x = inputRect.left - bodyRect.left;
         let y = direction == 1 ?
-            inputRect.bottom - bodyRect.top - borderSize :
-            inputRect.top - bodyRect.top - listRect.height + borderSize;
+            inputRect.bottom - bodyRect.top - verticalShift :
+            inputRect.top - bodyRect.top - listRect.height + verticalShift;
 
         // remove offscreen items until whole suggestion list can fit on the
         // screen

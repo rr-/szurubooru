@@ -4,14 +4,47 @@ const request = require('superagent');
 const util = require('./util/misc.js');
 const events = require('./events.js');
 
-let _export = null;
+let _tags = null;
+let _categories = null;
 let _stylesheet = null;
+
+function getTagByName(name) {
+    return _tags.get(name.toLowerCase());
+}
+
+function getCategoryByName(name) {
+    return _categories.get(name.toLowerCase());
+}
+
+function getNameToTagMap() {
+    return _tags;
+}
+
+function getAllTags() {
+    return _tags.values();
+}
+
+function getAllCategories() {
+    return _categories.values();
+}
+
+function getOriginalTagName(name) {
+    const actualTag = getTagByName(name);
+    if (actualTag) {
+        for (let originalName of actualTag.names) {
+            if (originalName.toLowerCase() == name.toLowerCase()) {
+                return originalName;
+            }
+        }
+    }
+    return name;
+}
 
 function _tagsToMap(tags) {
     let map = new Map();
     for (let tag of tags) {
         for (let name of tag.names) {
-            map.set(name, tag);
+            map.set(name.toLowerCase(), tag);
         }
     }
     return map;
@@ -20,7 +53,7 @@ function _tagsToMap(tags) {
 function _tagCategoriesToMap(categories) {
     let map = new Map();
     for (let category of categories) {
-        map.set(category.name, category);
+        map.set(category.name.toLowerCase(), category);
     }
     return map;
 }
@@ -31,7 +64,7 @@ function _refreshStylesheet() {
     }
     _stylesheet = document.createElement('style');
     document.head.appendChild(_stylesheet);
-    for (let category of _export.categories.values()) {
+    for (let category of getAllCategories()) {
         _stylesheet.sheet.insertRule(
             '.tag-{0} { color: {1} }'.format(category.name, category.color),
             _stylesheet.sheet.cssRules.length);
@@ -42,20 +75,16 @@ function refreshExport() {
     return new Promise((resolve, reject) => {
         request.get('/data/tags.json').end((error, response) => {
             if (error) {
-                _export = {tags: {}, categories: {}};
+                _tags = new Map();
+                _categories = new Map();
                 reject(error);
             }
-            _export = response.body;
-            _export.tags = _tagsToMap(_export.tags);
-            _export.categories = _tagCategoriesToMap(_export.categories);
+            _tags = _tagsToMap(response.body.tags);
+            _categories = _tagCategoriesToMap(response.body.categories);
             _refreshStylesheet();
             resolve();
         });
     });
-}
-
-function getExport() {
-    return _export || {};
 }
 
 events.listen(
@@ -63,6 +92,11 @@ events.listen(
     () => { refreshExport(); return true; });
 
 module.exports = {
-    getExport: getExport,
+    getAllCategories: getAllCategories,
+    getAllTags: getAllTags,
+    getTagByName: getTagByName,
+    getCategoryByName: getCategoryByName,
+    getNameToTagMap: getNameToTagMap,
+    getOriginalTagName: getOriginalTagName,
     refreshExport: refreshExport,
 };
