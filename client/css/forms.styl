@@ -188,11 +188,11 @@ label.color
 
 form.show-validation .input
     input:invalid
-        outline: none
+        outline: 0
         border: 2px solid $input-bad-border-color
         background: $input-bad-background-color
     input:valid
-        outline: none
+        outline: 0
         border: 2px solid $input-good-border-color
         background: $input-good-background-color
 
@@ -211,6 +211,7 @@ input[type=submit]
     border: 2px solid $button-enabled-background-color
     background: $button-enabled-background-color
     color: $button-enabled-text-color
+    outline: 0 /* something on Chrome */
 
     &:disabled
         cursor: default
