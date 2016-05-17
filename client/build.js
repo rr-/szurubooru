@@ -63,10 +63,10 @@ function bundleHtml(config) {
         collapseWhitespace: true,
         conservativeCollapse: true,
     };
-    glob('./html/**/*.hbs', {}, (er, files) => {
+    glob('./html/**/*.tpl', {}, (er, files) => {
         let templates = {};
         for (const file of files) {
-            const name = path.basename(file, '.hbs').replace(/_/g, '-');
+            const name = path.basename(file, '.tpl').replace(/_/g, '-');
             templates[name] = minify(
                 fs.readFileSync(file, 'utf-8'), minifyOptions);
         }
