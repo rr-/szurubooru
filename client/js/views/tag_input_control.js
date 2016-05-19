@@ -68,8 +68,6 @@ class TagInputControl {
             return;
         }
 
-        // TODO: add implications
-
         if (this.tags.map(tag => tag.toLowerCase())
                 .includes(text.toLowerCase())) {
             this._getWrapperFromTag(text).classList.add('duplicate');
@@ -93,6 +91,13 @@ class TagInputControl {
         targetWrapperNode.setAttribute('data-tag', text);
         this._editAreaNode.insertBefore(targetWrapperNode, sourceWrapperNode);
         this._editAreaNode.insertBefore(this._createSpace(), sourceWrapperNode);
+
+        const actualTag = tags.getTagByName(text);
+        if (actualTag) {
+            for (let otherTag of (actualTag.implications || [])) {
+                this.addTag(otherTag, sourceNode);
+            }
+        }
     }
 
     deleteTag(tag) {
