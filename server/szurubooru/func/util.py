@@ -1,7 +1,20 @@
+import os
 import datetime
 import hashlib
 import re
+import tempfile
+from contextlib import contextmanager
 from szurubooru.errors import ValidationError
+
+@contextmanager
+def create_temp_file(**kwargs):
+    (handle, path) = tempfile.mkstemp(**kwargs)
+    os.close(handle)
+    try:
+        with open(path, 'r+b') as handle:
+            yield handle
+    finally:
+        os.remove(path)
 
 def unalias_dict(input_dict):
     output_dict = {}

@@ -1,6 +1,7 @@
 import json
 import subprocess
 from szurubooru import errors
+from szurubooru.func import util
 
 _SCALE_FIT_FMT = \
     r'scale=iw*max({width}/iw\,{height}/ih):ih*max({width}/iw\,{height}/ih)'
@@ -24,7 +25,7 @@ class Image(object):
 
     def resize_fill(self, width, height):
         self.content = self._execute([
-            '-i', '-',
+            '-i', '{path}',
             '-f', 'image2',
             '-vf', _SCALE_FIT_FMT.format(width=width, height=height),
             '-vframes', '1',
@@ -35,7 +36,7 @@ class Image(object):
 
     def to_png(self):
         return self._execute([
-            '-i', '-',
+            '-i', '{path}',
             '-f', 'image2',
             '-vframes', '1',
             '-vcodec', 'png',
@@ -44,7 +45,7 @@ class Image(object):
 
     def to_jpeg(self):
         return self._execute([
-            '-i', '-',
+            '-i', '{path}',
             '-f', 'image2',
             '-vframes', '1',
             '-vcodec', 'mjpeg',
@@ -52,16 +53,21 @@ class Image(object):
         ])
 
     def _execute(self, cli, program='ffmpeg'):
-        proc = subprocess.Popen(
-            [program, '-loglevel', '24'] + cli,
-            stdout=subprocess.PIPE,
-            stdin=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        out, err = proc.communicate(input=self.content)
-        if proc.returncode != 0:
-            raise errors.ProcessingError(
-                'Error while processing image.\n' + err.decode('utf-8'))
-        return out
+        with util.create_temp_file() as handle:
+            handle.write(self.content)
+            handle.flush()
+            cli = [program, '-loglevel', '24'] + cli
+            cli = [part.format(path=handle.name) for part in cli]
+            proc = subprocess.Popen(
+                cli,
+                stdout=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+                stderr=subprocess.PIPE)
+            out, err = proc.communicate(input=self.content)
+            if proc.returncode != 0:
+                raise errors.ProcessingError(
+                    'Error while processing image.\n' + err.decode('utf-8'))
+            return out
 
     def _reload_info(self):
         self.info = json.loads(self._execute([
