@@ -185,10 +185,9 @@ class TagsController {
         pageController.run({
             state: ctx.state,
             requestPage: page => {
+                const text = ctx.searchQuery.text;
                 return api.get(
-                    '/tags/?query={text}&page={page}&pageSize=50'.format({
-                        text: ctx.searchQuery.text,
-                        page: page}));
+                    `/tags/?query=${text}&page=${page}&pageSize=50`);
             },
             clientUrl: '/tags/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),

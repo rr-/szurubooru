@@ -36,7 +36,7 @@ function makeThumbnail(url) {
         'span',
         {
             class: 'thumbnail',
-            style: 'background-image: url(\'{0}\')'.format(url)
+            style: `background-image: url(\'${url}\')`,
         },
         makeVoidElement('img', {alt: 'thumbnail', src: url}));
 }
@@ -164,18 +164,17 @@ function _serializeElement(name, attributes) {
                     attributes[key] === undefined) {
                 return '';
             }
-            return '{0}="{1}"'.format(key, attributes[key]);
+            return `${key}="${attributes[key]}"`;
         }))
         .join(' ');
 }
 
 function makeNonVoidElement(name, attributes, content) {
-    return '<{0}>{1}</{2}>'.format(
-        _serializeElement(name, attributes), content, name);
+    return `<${_serializeElement(name, attributes)}>${content}</${name}>`;
 }
 
 function makeVoidElement(name, attributes) {
-    return '<{0}/>'.format(_serializeElement(name, attributes));
+    return `<${_serializeElement(name, attributes)}/>`;
 }
 
 function _messageHandler(target, message, className) {

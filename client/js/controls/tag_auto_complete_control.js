@@ -1,5 +1,6 @@
 'use strict';
 
+const unindent = require('../util/misc.js').unindent;
 const lodash = require('lodash');
 const tags = require('../tags.js');
 const AutoCompleteControl = require('./auto_complete_control.js');
@@ -26,12 +27,14 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                     return kv2[1].usages - kv1[1].usages;
                 })
                 .map(kv => {
+                    const category = kv[1].category;
+                    const origName = tags.getOriginalTagName(kv[0]);
+                    const usages = kv[1].usages;
                     return {
-                        caption:
-                            '<span class="tag-{0}">{1} ({2})</span>'.format(
-                                kv[1].category,
-                                tags.getOriginalTagName(kv[0]),
-                                kv[1].usages),
+                        caption: unindent`
+                            <span class="tag-${category}">
+                                ${origName} (${usages})
+                            </span>`,
                         value: kv[0],
                     };
                 });

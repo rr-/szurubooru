@@ -6,6 +6,10 @@ const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
+function _formatUrl(url, page) {
+    return url.replace('{page}', page);
+}
+
 function _removeConsecutiveDuplicates(a) {
     return a.filter((item, pos, ary) => {
         return !pos || item != ary[pos - 1];
@@ -43,7 +47,7 @@ function _getPages(currentPage, pageNumbers, clientUrl) {
         }
         pages.push({
             number: page,
-            link: clientUrl.format({page: page}),
+            link: _formatUrl(clientUrl, page),
             active: currentPage === page,
         });
         lastPage = page;
@@ -80,19 +84,19 @@ class ManualPageView {
 
             keyboard.bind(['a', 'left'], () => {
                 if (currentPage > 1) {
-                    page.show(ctx.clientUrl.format({page: currentPage - 1}));
+                    page.show(_formatUrl(ctx.clientUrl, currentPage - 1));
                 }
             });
             keyboard.bind(['d', 'right'], () => {
                 if (currentPage < totalPages) {
-                    page.show(ctx.clientUrl.format({page: currentPage + 1}));
+                    page.show(_formatUrl(ctx.clientUrl, currentPage + 1));
                 }
             });
 
             if (response.total) {
                 views.showView(pageNav, this._navTemplate({
-                    prevLink: ctx.clientUrl.format({page: currentPage - 1}),
-                    nextLink: ctx.clientUrl.format({page: currentPage + 1}),
+                    prevLink: _formatUrl(ctx.clientUrl, currentPage - 1),
+                    nextLink: _formatUrl(ctx.clientUrl, currentPage + 1),
                     prevLinkActive: currentPage > 1,
                     nextLinkActive: currentPage < totalPages,
                     pages: pages,

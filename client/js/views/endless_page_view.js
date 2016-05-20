@@ -4,6 +4,10 @@ const page = require('page');
 const events = require('../events.js');
 const views = require('../util/views.js');
 
+function _formatUrl(url, page) {
+    return url.replace('{page}', page);
+}
+
 class EndlessPageView {
     constructor() {
         this._holderTemplate = views.getTemplate('endless-pager');
@@ -51,7 +55,7 @@ class EndlessPageView {
             let topPageNumber = parseInt(topPageNode.getAttribute('data-page'));
             if (topPageNumber !== this.currentPage) {
                 page.replace(
-                    ctx.clientUrl.format({page: topPageNumber}),
+                    _formatUrl(ctx.clientUrl, topPageNumber),
                     null,
                     false,
                     false);

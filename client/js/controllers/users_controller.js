@@ -67,10 +67,9 @@ class UsersController {
         pageController.run({
             state: ctx.state,
             requestPage: page => {
+                const text = ctx.searchQuery.text;
                 return api.get(
-                    '/users/?query={text}&page={page}&pageSize=30'.format({
-                        text: ctx.searchQuery.text,
-                        page: page}));
+                    `/users/?query=${text}&page=${page}&pageSize=30`);
             },
             clientUrl: '/users/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
