@@ -61,7 +61,25 @@ class AutoCompleteControl {
         this.results = [];
         this.activeResult = -1;
 
+        this.mutationObserver = new MutationObserver(
+            mutations => {
+                for (let mutation of mutations) {
+                    for (let node of mutation.removedNodes) {
+                        if (node.contains(input)) {
+                            this.uninstall();
+                            return;
+                        }
+                    }
+                }
+            });
+
         this.install();
+    }
+
+    uninstall() {
+        window.clearTimeout(this.showTimeout);
+        this.mutationObserver.disconnect();
+        document.body.removeChild(this.suggestionDiv);
     }
 
     install() {
@@ -74,6 +92,9 @@ class AutoCompleteControl {
         }
         this.input.setAttribute('data-autocomplete', true);
         this.input.setAttribute('autocomplete', 'off');
+
+        this.mutationObserver.observe(
+            document.body, {childList: true, subtree: true});
 
         this.input.addEventListener(
             'keydown',
@@ -154,9 +175,7 @@ class AutoCompleteControl {
     }
 
     hide() {
-        if (this.showTimeout) {
-            window.clearTimeout(this.showTimeout);
-        }
+        window.clearTimeout(this.showTimeout);
         this.suggestionDiv.style.display = 'none';
         this.isVisible = false;
     }
