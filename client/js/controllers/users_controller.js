@@ -14,15 +14,15 @@ const UsersHeaderView = require('../views/users_header_view.js');
 const UsersPageView = require('../views/users_page_view.js');
 const EmptyView = require('../views/empty_view.js');
 
-const rankNames = {
-    anonymous: 'Anonymous',
-    restricted: 'Restricted user',
-    regular: 'Regular user',
-    power: 'Power user',
-    moderator: 'Moderator',
-    administrator: 'Administrator',
-    nobody: 'Nobody',
-};
+const rankNames = new Map([
+    ['anonymous', 'Anonymous'],
+    ['restricted', 'Restricted user'],
+    ['regular', 'Regular user'],
+    ['power', 'Power user'],
+    ['moderator', 'Moderator'],
+    ['administrator', 'Administrator'],
+    ['nobody', 'Nobody'],
+]);
 
 class UsersController {
     constructor() {
@@ -96,7 +96,7 @@ class UsersController {
             next();
         } else {
             api.get('/user/' + ctx.params.name).then(response => {
-                response.user.rankName = rankNames[response.user.rank];
+                response.user.rankName = rankNames.get(response.user.rank);
                 ctx.state.user = response.user;
                 ctx.save();
                 this._cachedUser = response.user;
@@ -228,7 +228,7 @@ class UsersController {
             if (rankIdx > myRankIdx) {
                 continue;
             }
-            ranks[rankIdentifier] = Object.values(rankNames)[rankIdx];
+            ranks[rankIdentifier] = rankNames.values()[rankIdx];
         }
 
         if (isLoggedIn) {

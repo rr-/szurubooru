@@ -117,7 +117,6 @@ function writeJsBundle(b, path, message, compress) {
 }
 
 function bundleJs(config) {
-    const babelify = require('babelify');
     const browserify = require('browserify');
     const external = [
         'lodash',
@@ -126,13 +125,15 @@ function bundleJs(config) {
         'js-cookie',
         'page',
         'nprogress',
-        'babel-polyfill',
     ];
     glob('./js/**/*.js', {}, (er, files) => {
         if (!process.argv.includes('--no-vendor-js')) {
             let b = browserify();
             for (let lib of external) {
                 b.require(lib);
+            }
+            if (config.transpile) {
+                b.add(require.resolve('babel-polyfill'));
             }
             writeJsBundle(
                 b, './public/vendor.min.js', 'Bundled vendor JS', true);
@@ -142,7 +143,7 @@ function bundleJs(config) {
             let outputFile = fs.createWriteStream('./public/app.min.js');
             let b = browserify({debug: config.debug});
             if (config.transpile) {
-                b = b.transform(babelify);
+                b = b.transform('babelify');
             }
             writeJsBundle(
                 b.external(external).add(files),
