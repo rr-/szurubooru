@@ -4,12 +4,12 @@ const views = require('../util/views.js');
 
 class UserDeleteView {
     constructor() {
-        this.template = views.getTemplate('user-delete');
+        this._template = views.getTemplate('user-delete');
     }
 
     render(ctx) {
         const target = ctx.target;
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
 

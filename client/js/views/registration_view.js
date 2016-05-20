@@ -5,7 +5,7 @@ const views = require('../util/views.js');
 
 class RegistrationView {
     constructor() {
-        this.template = views.getTemplate('user-registration');
+        this._template = views.getTemplate('user-registration');
     }
 
     render(ctx) {
@@ -13,7 +13,7 @@ class RegistrationView {
         ctx.passwordPattern = config.passwordRegex;
 
         const target = document.getElementById('content-holder');
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
         const userNameField = source.querySelector('#user-name');

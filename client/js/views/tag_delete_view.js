@@ -4,12 +4,12 @@ const views = require('../util/views.js');
 
 class TagDeleteView {
     constructor() {
-        this.template = views.getTemplate('tag-delete');
+        this._template = views.getTemplate('tag-delete');
     }
 
     render(ctx) {
         const target = ctx.target;
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
 

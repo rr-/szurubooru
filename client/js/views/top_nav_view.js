@@ -4,13 +4,13 @@ const views = require('../util/views.js');
 
 class TopNavView {
     constructor() {
-        this.template = views.getTemplate('top-nav');
-        this.navHolder = document.getElementById('top-nav-holder');
+        this._template = views.getTemplate('top-nav');
+        this._navHolder = document.getElementById('top-nav-holder');
     }
 
     render(ctx) {
-        const target = this.navHolder;
-        const source = this.template(ctx);
+        const target = this._navHolder;
+        const source = this._template(ctx);
 
         for (let link of source.querySelectorAll('a')) {
             const regex = new RegExp(
@@ -21,7 +21,7 @@ class TopNavView {
                 '<span class="access-key" data-accesskey="$1">$1</span>');
         }
 
-        views.showView(this.navHolder, source);
+        views.showView(this._navHolder, source);
     }
 
     activate(itemName) {

@@ -2,12 +2,11 @@
 
 const config = require('../config.js');
 const views = require('../util/views.js');
-const FileDropperControl = require('./file_dropper_control.js');
+const FileDropperControl = require('../controls/file_dropper_control.js');
 
 class UserEditView {
     constructor() {
-        this.template = views.getTemplate('user-edit');
-        this.fileDropperControl = new FileDropperControl();
+        this._template = views.getTemplate('user-edit');
     }
 
     render(ctx) {
@@ -15,7 +14,7 @@ class UserEditView {
         ctx.passwordPattern = config.passwordRegex + /|^$/.source;
 
         const target = ctx.target;
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
         const avatarContentField = source.querySelector('#avatar-content');
@@ -23,15 +22,18 @@ class UserEditView {
         views.decorateValidator(form);
 
         let avatarContent = null;
-        this.fileDropperControl.render({
-            target: avatarContentField,
-            lock: true,
-            resolve: files => {
-                source.querySelector(
-                    '[name=avatar-style][value=manual]').checked = true;
-                avatarContent = files[0];
-            },
-        });
+        if (avatarContentField) {
+            new FileDropperControl(
+                avatarContentField,
+                {
+                    lock: true,
+                    resolve: files => {
+                        source.querySelector(
+                            '[name=avatar-style][value=manual]').checked = true;
+                        avatarContent = files[0];
+                    },
+                });
+        }
 
         form.addEventListener('submit', e => {
             const rankField = source.querySelector('#user-rank');

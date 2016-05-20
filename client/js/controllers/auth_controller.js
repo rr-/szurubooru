@@ -9,24 +9,24 @@ const PasswordResetView = require('../views/password_reset_view.js');
 
 class AuthController {
     constructor() {
-        this.loginView = new LoginView();
-        this.passwordResetView = new PasswordResetView();
+        this._loginView = new LoginView();
+        this._passwordResetView = new PasswordResetView();
     }
 
     registerRoutes() {
         page(/\/password-reset\/([^:]+):([^:]+)$/,
             (ctx, next) => {
-                this.passwordResetFinishRoute(ctx.params[0], ctx.params[1]);
+                this._passwordResetFinishRoute(ctx.params[0], ctx.params[1]);
             });
-        page('/password-reset', (ctx, next) => { this.passwordResetRoute(); });
-        page('/login', (ctx, next) => { this.loginRoute(); });
-        page('/logout', (ctx, next) => { this.logoutRoute(); });
+        page('/password-reset', (ctx, next) => { this._passwordResetRoute(); });
+        page('/login', (ctx, next) => { this._loginRoute(); });
+        page('/logout', (ctx, next) => { this._logoutRoute(); });
     }
 
-    loginRoute() {
+    _loginRoute() {
         api.forget();
         topNavController.activate('login');
-        this.loginView.render({
+        this._loginView.render({
             login: (name, password, doRemember) => {
                 return new Promise((resolve, reject) => {
                     api.forget();
@@ -43,22 +43,22 @@ class AuthController {
             }});
     }
 
-    logoutRoute() {
+    _logoutRoute() {
         api.forget();
         api.logout();
         page('/');
         events.notify(events.Success, 'Logged out');
     }
 
-    passwordResetRoute() {
+    _passwordResetRoute() {
         topNavController.activate('login');
-        this.passwordResetView.render({
+        this._passwordResetView.render({
             proceed: (...args) => {
                 return this._passwordReset(...args);
             }});
     }
 
-    passwordResetFinishRoute(name, token) {
+    _passwordResetFinishRoute(name, token) {
         api.forget();
         api.logout();
         api.post('/password-reset/' + name, {token: token})

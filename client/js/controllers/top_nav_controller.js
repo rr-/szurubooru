@@ -16,10 +16,10 @@ class NavigationItem {
 
 class TopNavController {
     constructor() {
-        this.topNavView = new TopNavView();
-        this.activeItem = null;
+        this._topNavView = new TopNavView();
+        this._activeItem = null;
 
-        this.items = {
+        this._items = {
             'home':     new NavigationItem('H', 'Home',     '/'),
             'posts':    new NavigationItem('P', 'Posts',    '/posts'),
             'upload':   new NavigationItem('U', 'Upload',   '/upload'),
@@ -36,11 +36,11 @@ class TopNavController {
         };
 
         const rerender = () => {
-            this.updateVisibility();
-            this.topNavView.render({
-                items: this.items,
-                activeItem: this.activeItem});
-            this.topNavView.activate(this.activeItem);
+            this._updateVisibility();
+            this._topNavView.render({
+                items: this._items,
+                activeItem: this._activeItem});
+            this._topNavView.activate(this._activeItem);
         };
 
         events.listen(
@@ -49,41 +49,41 @@ class TopNavController {
         rerender();
     }
 
-    updateVisibility() {
-        this.items.account.url =  '/user/' + api.userName;
-        this.items.account.imageUrl = api.user ? api.user.avatarUrl : null;
+    _updateVisibility() {
+        this._items.account.url =  '/user/' + api.userName;
+        this._items.account.imageUrl = api.user ? api.user.avatarUrl : null;
 
-        const b = Object.keys(this.items);
+        const b = Object.keys(this._items);
         for (let key of b) {
-            this.items[key].available = true;
+            this._items[key].available = true;
         }
         if (!api.hasPrivilege('posts:list')) {
-            this.items.posts.available = false;
+            this._items.posts.available = false;
         }
         if (!api.hasPrivilege('posts:create')) {
-            this.items.upload.available = false;
+            this._items.upload.available = false;
         }
         if (!api.hasPrivilege('comments:list')) {
-            this.items.comments.available = false;
+            this._items.comments.available = false;
         }
         if (!api.hasPrivilege('tags:list')) {
-            this.items.tags.available = false;
+            this._items.tags.available = false;
         }
         if (!api.hasPrivilege('users:list')) {
-            this.items.users.available = false;
+            this._items.users.available = false;
         }
         if (api.isLoggedIn()) {
-            this.items.register.available = false;
-            this.items.login.available = false;
+            this._items.register.available = false;
+            this._items.login.available = false;
         } else {
-            this.items.account.available = false;
-            this.items.logout.available = false;
+            this._items.account.available = false;
+            this._items.logout.available = false;
         }
     }
 
     activate(itemName) {
-        this.activeItem = itemName;
-        this.topNavView.activate(this.activeItem);
+        this._activeItem = itemName;
+        this._topNavView.activate(this._activeItem);
     }
 }
 

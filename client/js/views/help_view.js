@@ -5,14 +5,14 @@ const views = require('../util/views.js');
 
 class HelpView {
     constructor() {
-        this.template = views.getTemplate('help');
-        this.sectionTemplates = {};
+        this._template = views.getTemplate('help');
+        this._sectionTemplates = {};
         const sectionKeys = ['about', 'keyboard', 'search', 'comments', 'tos'];
         for (let section of sectionKeys) {
             const templateName = 'help-' + section;
-            this.sectionTemplates[section] = views.getTemplate(templateName);
+            this._sectionTemplates[section] = views.getTemplate(templateName);
         }
-        this.subsectionTemplates = {
+        this._subsectionTemplates = {
             'search': {
                 'default': views.getTemplate('help-search-general'),
                 'posts': views.getTemplate('help-search-posts'),
@@ -24,23 +24,23 @@ class HelpView {
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template();
+        const source = this._template();
 
         ctx.section = ctx.section || 'about';
-        if (ctx.section in this.sectionTemplates) {
+        if (ctx.section in this._sectionTemplates) {
             views.showView(
                 source.querySelector('.content'),
-                this.sectionTemplates[ctx.section]({
+                this._sectionTemplates[ctx.section]({
                     name: config.name,
                 }));
         }
 
         ctx.subsection = ctx.subsection || 'default';
-        if (ctx.section in this.subsectionTemplates &&
-                ctx.subsection in this.subsectionTemplates[ctx.section]) {
+        if (ctx.section in this._subsectionTemplates &&
+                ctx.subsection in this._subsectionTemplates[ctx.section]) {
             views.showView(
                 source.querySelector('.subcontent'),
-                this.subsectionTemplates[ctx.section][ctx.subsection]({
+                this._subsectionTemplates[ctx.section][ctx.subsection]({
                     name: config.name,
                 }));
         }

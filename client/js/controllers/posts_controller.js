@@ -5,29 +5,29 @@ const topNavController = require('../controllers/top_nav_controller.js');
 
 class PostsController {
     registerRoutes() {
-        page('/upload', (ctx, next) => { this.uploadPostsRoute(); });
-        page('/posts', (ctx, next) => { this.listPostsRoute(); });
+        page('/upload', (ctx, next) => { this._uploadPostsRoute(); });
+        page('/posts', (ctx, next) => { this._listPostsRoute(); });
         page(
             '/post/:id',
-            (ctx, next) => { this.showPostRoute(ctx.params.id); });
+            (ctx, next) => { this._showPostRoute(ctx.params.id); });
         page(
             '/post/:id/edit',
-            (ctx, next) => { this.editPostRoute(ctx.params.id); });
+            (ctx, next) => { this._editPostRoute(ctx.params.id); });
     }
 
-    uploadPostsRoute() {
+    _uploadPostsRoute() {
         topNavController.activate('upload');
     }
 
-    listPostsRoute() {
+    _listPostsRoute() {
         topNavController.activate('posts');
     }
 
-    showPostRoute(id) {
+    _showPostRoute(id) {
         topNavController.activate('posts');
     }
 
-    editPostRoute(id) {
+    _editPostRoute(id) {
         topNavController.activate('posts');
     }
 }

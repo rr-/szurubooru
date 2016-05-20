@@ -7,12 +7,12 @@ const views = require('../util/views.js');
 
 class UsersHeaderView {
     constructor() {
-        this.template = views.getTemplate('users-header');
+        this._template = views.getTemplate('users-header');
     }
 
     render(ctx) {
         const target = ctx.target;
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
 

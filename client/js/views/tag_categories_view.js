@@ -5,7 +5,7 @@ const views = require('../util/views.js');
 
 class TagListHeaderView {
     constructor() {
-        this.template = views.getTemplate('tag-categories');
+        this._template = views.getTemplate('tag-categories');
     }
 
     _saveButtonClickHandler(e, ctx, target) {
@@ -73,7 +73,7 @@ class TagListHeaderView {
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
         const newRowTemplate = source.querySelector('.add-template');

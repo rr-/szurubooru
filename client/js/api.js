@@ -51,7 +51,7 @@ class Api {
     }
 
     _process(url, requestFactory, data, files) {
-        const fullUrl = this.getFullUrl(url);
+        const fullUrl = this._getFullUrl(url);
         return new Promise((resolve, reject) => {
             nprogress.start();
             let req = requestFactory(fullUrl);
@@ -161,7 +161,7 @@ class Api {
         }
     }
 
-    getFullUrl(url) {
+    _getFullUrl(url) {
         return (config.apiUrl + '/' + url).replace(/([^:])\/+/g, '$1/');
     }
 }

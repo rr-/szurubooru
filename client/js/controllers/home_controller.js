@@ -6,20 +6,20 @@ const HomeView = require('../views/home_view.js');
 
 class HomeController {
     constructor() {
-        this.homeView = new HomeView();
+        this._homeView = new HomeView();
     }
 
     registerRoutes() {
-        page('/', (ctx, next) => { this.indexRoute(); });
-        page('*', (ctx, next) => { this.notFoundRoute(); });
+        page('/', (ctx, next) => { this._indexRoute(); });
+        page('*', (ctx, next) => { this._notFoundRoute(); });
     }
 
-    indexRoute() {
+    _indexRoute() {
         topNavController.activate('home');
-        this.homeView.render({});
+        this._homeView.render({});
     }
 
-    notFoundRoute() {
+    _notFoundRoute() {
         topNavController.activate('');
     }
 }

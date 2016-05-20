@@ -4,16 +4,17 @@ const page = require('page');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
-const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
+const TagAutoCompleteControl =
+    require('../controls/tag_auto_complete_control.js');
 
 class TagsHeaderView {
     constructor() {
-        this.template = views.getTemplate('tags-header');
+        this._template = views.getTemplate('tags-header');
     }
 
     render(ctx) {
         const target = ctx.target;
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
         const searchTextInput = form.querySelector('[name=search-text]');

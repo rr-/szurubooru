@@ -4,12 +4,12 @@ const views = require('../util/views.js');
 
 class SettingsView {
     constructor() {
-        this.template = views.getTemplate('settings');
+        this._template = views.getTemplate('settings');
     }
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template({browsingSettings: ctx.getSettings()});
+        const source = this._template({browsingSettings: ctx.getSettings()});
 
         const form = source.querySelector('form');
         views.decorateValidator(form);

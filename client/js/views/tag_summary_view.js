@@ -2,7 +2,7 @@
 
 const config = require('../config.js');
 const views = require('../util/views.js');
-const TagInputControl = require('./tag_input_control.js');
+const TagInputControl = require('../controls/tag_input_control.js');
 
 function split(str) {
     return str.split(/\s+/).filter(s => s);
@@ -10,7 +10,7 @@ function split(str) {
 
 class TagSummaryView {
     constructor() {
-        this.template = views.getTemplate('tag-summary');
+        this._template = views.getTemplate('tag-summary');
     }
 
     render(ctx) {
@@ -18,7 +18,7 @@ class TagSummaryView {
         ctx.tagNamesPattern = '^((' + baseRegex + ')\\s+)*(' + baseRegex + ')$';
 
         const target = ctx.target;
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
         const namesField = source.querySelector('.names input');

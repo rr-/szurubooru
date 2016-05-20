@@ -20,9 +20,12 @@ class TagInputControl {
         this.readOnly = sourceInputNode.readOnly;
 
         this._autoCompleteControls = [];
-
         this._sourceInputNode = sourceInputNode;
 
+        this._install();
+    }
+
+    _install() {
         // set up main edit area
         this._editAreaNode = views.htmlToDom('<div class="tag-input"></div>');
         this._editAreaNode.autocorrect = false;
@@ -43,12 +46,12 @@ class TagInputControl {
         this._editAreaNode.appendChild(this._tailWrapperNode);
 
         // add existing tags
-        this.addMultipleTags(sourceInputNode.value);
+        this.addMultipleTags(this._sourceInputNode.value);
 
         // show
-        sourceInputNode.style.display = 'none';
-        sourceInputNode.parentNode.insertBefore(
-            this._editAreaNode, sourceInputNode.nextSibling);
+        this._sourceInputNode.style.display = 'none';
+        this._sourceInputNode.parentNode.insertBefore(
+            this._editAreaNode, this._sourceInputNode.nextSibling);
     }
 
     addMultipleTags(text, sourceNode) {

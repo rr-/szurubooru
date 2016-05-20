@@ -15,31 +15,31 @@ const EmptyView = require('../views/empty_view.js');
 
 class TagsController {
     constructor() {
-        this.tagView = new TagView();
-        this.tagsHeaderView = new TagsHeaderView();
-        this.tagsPageView = new TagsPageView();
-        this.tagCategoriesView = new TagCategoriesView();
-        this.emptyView = new EmptyView();
+        this._tagView = new TagView();
+        this._tagsHeaderView = new TagsHeaderView();
+        this._tagsPageView = new TagsPageView();
+        this._tagCategoriesView = new TagCategoriesView();
+        this._emptyView = new EmptyView();
     }
 
     registerRoutes() {
-        page('/tag-categories', () => { this.tagCategoriesRoute(); });
+        page('/tag-categories', () => { this._tagCategoriesRoute(); });
         page(
             '/tag/:name',
-            (ctx, next) => { this.loadTagRoute(ctx, next); },
-            (ctx, next) => { this.showTagRoute(ctx, next); });
+            (ctx, next) => { this._loadTagRoute(ctx, next); },
+            (ctx, next) => { this._showTagRoute(ctx, next); });
         page(
             '/tag/:name/merge',
-            (ctx, next) => { this.loadTagRoute(ctx, next); },
-            (ctx, next) => { this.mergeTagRoute(ctx, next); });
+            (ctx, next) => { this._loadTagRoute(ctx, next); },
+            (ctx, next) => { this._mergeTagRoute(ctx, next); });
         page(
             '/tag/:name/delete',
-            (ctx, next) => { this.loadTagRoute(ctx, next); },
-            (ctx, next) => { this.deleteTagRoute(ctx, next); });
+            (ctx, next) => { this._loadTagRoute(ctx, next); },
+            (ctx, next) => { this._deleteTagRoute(ctx, next); });
         page(
             '/tags/:query?',
             (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
-            (ctx, next) => { this.listTagsRoute(ctx, next); });
+            (ctx, next) => { this._listTagsRoute(ctx, next); });
     }
 
     _saveTagCategories(addedCategories, changedCategories, removedCategories) {
@@ -64,34 +64,35 @@ class TagsController {
             });
     }
 
-    loadTagRoute(ctx, next) {
+    _loadTagRoute(ctx, next) {
         if (ctx.state.tag) {
             next();
-        } else if (this.tag && this.tag.names == ctx.params.names) {
-            ctx.state.tag = this.tag;
+        } else if (this._cachedTag &&
+                this._cachedTag.names == ctx.params.names) {
+            ctx.state.tag = this._cachedTag;
             next();
         } else {
             api.get('/tag/' + ctx.params.name).then(response => {
                 ctx.state.tag = response.tag;
                 ctx.save();
-                this.tag = response.tag;
+                this._cachedTag = response.tag;
                 next();
             }, response => {
-                this.emptyView.render();
+                this._emptyView.render();
                 events.notify(events.Error, response.description);
             });
         }
     }
 
-    showTagRoute(ctx, next) {
+    _showTagRoute(ctx, next) {
         this._show(ctx.state.tag, 'summary');
     }
 
-    mergeTagRoute(ctx, next) {
+    _mergeTagRoute(ctx, next) {
         this._show(ctx.state.tag, 'merge');
     }
 
-    deleteTagRoute(ctx, next) {
+    _deleteTagRoute(ctx, next) {
         this._show(ctx.state.tag, 'delete');
     }
 
@@ -101,7 +102,7 @@ class TagsController {
         for (let category of tags.getAllCategories()) {
             categories[category.name] = category.name;
         }
-        this.tagView.render({
+        this._tagView.render({
             tag: tag,
             section: section,
             canEditNames: api.hasPrivilege('tags:edit:names'),
@@ -152,10 +153,10 @@ class TagsController {
         });
     }
 
-    tagCategoriesRoute(ctx, next) {
+    _tagCategoriesRoute(ctx, next) {
         topNavController.activate('tags');
         api.get('/tag-categories/').then(response => {
-            this.tagCategoriesView.render({
+            this._tagCategoriesView.render({
                 tagCategories: response.results,
                 canEditName: api.hasPrivilege('tagCategories:edit:name'),
                 canEditColor: api.hasPrivilege('tagCategories:edit:color'),
@@ -173,12 +174,12 @@ class TagsController {
                 }
             });
         }, response => {
-            this.emptyView.render();
+            this._emptyView.render();
             events.notify(events.Error, response.description);
         });
     }
 
-    listTagsRoute(ctx, next) {
+    _listTagsRoute(ctx, next) {
         topNavController.activate('tags');
 
         pageController.run({
@@ -192,8 +193,8 @@ class TagsController {
             clientUrl: '/tags/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
             searchQuery: ctx.searchQuery,
-            headerRenderer: this.tagsHeaderView,
-            pageRenderer: this.tagsPageView,
+            headerRenderer: this._tagsHeaderView,
+            pageRenderer: this._tagsPageView,
             canEditTagCategories: api.hasPrivilege('tagCategories:edit'),
         });
     }

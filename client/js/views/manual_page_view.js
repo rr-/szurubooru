@@ -6,13 +6,13 @@ const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
-function removeConsecutiveDuplicates(a) {
+function _removeConsecutiveDuplicates(a) {
     return a.filter((item, pos, ary) => {
         return !pos || item != ary[pos - 1];
     });
 }
 
-function getVisiblePageNumbers(currentPage, totalPages) {
+function _getVisiblePageNumbers(currentPage, totalPages) {
     const threshold = 2;
     let pagesVisible = [];
     for (let i = 1; i <= threshold; i++) {
@@ -30,11 +30,11 @@ function getVisiblePageNumbers(currentPage, totalPages) {
         return item >= 1 && item <= totalPages;
     });
     pagesVisible = pagesVisible.sort((a, b) => { return a - b; });
-    pagesVisible = removeConsecutiveDuplicates(pagesVisible);
+    pagesVisible = _removeConsecutiveDuplicates(pagesVisible);
     return pagesVisible;
 }
 
-function getPages(currentPage, pageNumbers, clientUrl) {
+function _getPages(currentPage, pageNumbers, clientUrl) {
     const pages = [];
     let lastPage = 0;
     for (let page of pageNumbers) {
@@ -53,13 +53,13 @@ function getPages(currentPage, pageNumbers, clientUrl) {
 
 class ManualPageView {
     constructor() {
-        this.holderTemplate = views.getTemplate('manual-pager');
-        this.navTemplate = views.getTemplate('manual-pager-nav');
+        this._holderTemplate = views.getTemplate('manual-pager');
+        this._navTemplate = views.getTemplate('manual-pager-nav');
     }
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.holderTemplate();
+        const source = this._holderTemplate();
         const pageContentHolder = source.querySelector('.page-content-holder');
         const pageHeaderHolder = source.querySelector('.page-header-holder');
         const pageNav = source.querySelector('.page-nav');
@@ -75,8 +75,8 @@ class ManualPageView {
             ctx.pageRenderer.render(pageRendererCtx);
 
             const totalPages = Math.ceil(response.total / response.pageSize);
-            const pageNumbers = getVisiblePageNumbers(currentPage, totalPages);
-            const pages = getPages(currentPage, pageNumbers, ctx.clientUrl);
+            const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
+            const pages = _getPages(currentPage, pageNumbers, ctx.clientUrl);
 
             keyboard.bind(['a', 'left'], () => {
                 if (currentPage > 1) {
@@ -90,7 +90,7 @@ class ManualPageView {
             });
 
             if (response.total) {
-                views.showView(pageNav, this.navTemplate({
+                views.showView(pageNav, this._navTemplate({
                     prevLink: ctx.clientUrl.format({page: currentPage - 1}),
                     nextLink: ctx.clientUrl.format({page: currentPage + 1}),
                     prevLinkActive: currentPage > 1,

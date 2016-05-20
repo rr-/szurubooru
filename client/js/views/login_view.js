@@ -5,12 +5,12 @@ const views = require('../util/views.js');
 
 class LoginView {
     constructor() {
-        this.template = views.getTemplate('login');
+        this._template = views.getTemplate('login');
     }
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template({
+        const source = this._template({
             userNamePattern: config.userNameRegex,
             passwordPattern: config.passwordRegex,
             canSendMails: config.canSendMails,

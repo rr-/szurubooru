@@ -7,15 +7,15 @@ const TagDeleteView = require('./tag_delete_view.js');
 
 class TagView {
     constructor() {
-        this.template = views.getTemplate('tag');
-        this.summaryView = new TagSummaryView();
-        this.mergeView = new TagMergeView();
-        this.deleteView = new TagDeleteView();
+        this._template = views.getTemplate('tag');
+        this._summaryView = new TagSummaryView();
+        this._mergeView = new TagMergeView();
+        this._deleteView = new TagDeleteView();
     }
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         ctx.section = ctx.section || 'summary';
 
@@ -29,11 +29,11 @@ class TagView {
 
         let view = null;
         if (ctx.section == 'merge') {
-            view = this.mergeView;
+            view = this._mergeView;
         } else if (ctx.section == 'delete') {
-            view = this.deleteView;
+            view = this._deleteView;
         } else {
-            view = this.summaryView;
+            view = this._summaryView;
         }
         ctx.target = source.querySelector('.tag-content-holder');
         view.render(ctx);

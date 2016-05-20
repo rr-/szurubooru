@@ -7,16 +7,16 @@ const SettingsView = require('../views/settings_view.js');
 
 class SettingsController {
     constructor() {
-        this.settingsView = new SettingsView();
+        this._settingsView = new SettingsView();
     }
 
     registerRoutes() {
-        page('/settings', (ctx, next) => { this.settingsRoute(); });
+        page('/settings', (ctx, next) => { this._settingsRoute(); });
     }
 
-    settingsRoute() {
+    _settingsRoute() {
         topNavController.activate('settings');
-        this.settingsView.render({
+        this._settingsView.render({
             getSettings: () => settings.getSettings(),
             saveSettings: newSettings => settings.saveSettings(newSettings),
         });

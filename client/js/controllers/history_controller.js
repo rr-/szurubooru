@@ -5,10 +5,10 @@ const topNavController = require('../controllers/top_nav_controller.js');
 
 class HistoryController {
     registerRoutes() {
-        page('/history', (ctx, next) => { this.showHistoryRoute(); });
+        page('/history', (ctx, next) => { this._listHistoryRoute(); });
     }
 
-    listHistoryRoute() {
+    _listHistoryRoute() {
         topNavController.activate('');
     }
 }

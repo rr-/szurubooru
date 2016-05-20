@@ -4,12 +4,12 @@ const views = require('../util/views.js');
 
 class PasswordResetView {
     constructor() {
-        this.template = views.getTemplate('password-reset');
+        this._template = views.getTemplate('password-reset');
     }
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template();
+        const source = this._template();
 
         const form = source.querySelector('form');
         const userNameOrEmailField = source.querySelector('#user-name');

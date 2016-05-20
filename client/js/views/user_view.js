@@ -7,15 +7,15 @@ const UserEditView = require('./user_edit_view.js');
 
 class UserView {
     constructor() {
-        this.template = views.getTemplate('user');
-        this.deleteView = new UserDeleteView();
-        this.summaryView = new UserSummaryView();
-        this.editView = new UserEditView();
+        this._template = views.getTemplate('user');
+        this._deleteView = new UserDeleteView();
+        this._summaryView = new UserSummaryView();
+        this._editView = new UserEditView();
     }
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         ctx.section = ctx.section || 'summary';
 
@@ -29,11 +29,11 @@ class UserView {
 
         let view = null;
         if (ctx.section == 'edit') {
-            view = this.editView;
+            view = this._editView;
         } else if (ctx.section == 'delete') {
-            view = this.deleteView;
+            view = this._deleteView;
         } else {
-            view = this.summaryView;
+            view = this._summaryView;
         }
         ctx.target = source.querySelector('#user-content-holder');
         view.render(ctx);

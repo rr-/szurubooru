@@ -2,18 +2,19 @@
 
 const config = require('../config.js');
 const views = require('../util/views.js');
-const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
+const TagAutoCompleteControl =
+    require('../controls/tag_auto_complete_control.js');
 
 class TagMergeView {
     constructor() {
-        this.template = views.getTemplate('tag-merge');
+        this._template = views.getTemplate('tag-merge');
     }
 
     render(ctx) {
         ctx.tagNamePattern = config.tagNameRegex;
 
         const target = ctx.target;
-        const source = this.template(ctx);
+        const source = this._template(ctx);
 
         const form = source.querySelector('form');
         const otherTagField = source.querySelector('.target input');

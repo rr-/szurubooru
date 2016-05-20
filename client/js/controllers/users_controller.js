@@ -26,42 +26,42 @@ const rankNames = {
 
 class UsersController {
     constructor() {
-        this.registrationView = new RegistrationView();
-        this.userView = new UserView();
-        this.usersHeaderView = new UsersHeaderView();
-        this.usersPageView = new UsersPageView();
-        this.emptyView = new EmptyView();
+        this._registrationView = new RegistrationView();
+        this._userView = new UserView();
+        this._usersHeaderView = new UsersHeaderView();
+        this._usersPageView = new UsersPageView();
+        this._emptyView = new EmptyView();
     }
 
     registerRoutes() {
-        page('/register', () => { this.createUserRoute(); });
+        page('/register', () => { this._createUserRoute(); });
         page(
             '/users/:query?',
             (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
-            (ctx, next) => { this.listUsersRoute(ctx, next); });
+            (ctx, next) => { this._listUsersRoute(ctx, next); });
         page(
             '/user/:name',
-            (ctx, next) => { this.loadUserRoute(ctx, next); },
-            (ctx, next) => { this.showUserRoute(ctx, next); });
+            (ctx, next) => { this._loadUserRoute(ctx, next); },
+            (ctx, next) => { this._showUserRoute(ctx, next); });
         page(
             '/user/:name/edit',
-            (ctx, next) => { this.loadUserRoute(ctx, next); },
-            (ctx, next) => { this.editUserRoute(ctx, next); });
+            (ctx, next) => { this._loadUserRoute(ctx, next); },
+            (ctx, next) => { this._editUserRoute(ctx, next); });
         page(
             '/user/:name/delete',
-            (ctx, next) => { this.loadUserRoute(ctx, next); },
-            (ctx, next) => { this.deleteUserRoute(ctx, next); });
+            (ctx, next) => { this._loadUserRoute(ctx, next); },
+            (ctx, next) => { this._deleteUserRoute(ctx, next); });
         page.exit(/\/users\/.*/, (ctx, next) => {
             pageController.stop();
             next();
         });
         page.exit(/\/user\/.*/, (ctx, next) => {
-            this.user = null;
+            this._cachedUser = null;
             next();
         });
     }
 
-    listUsersRoute(ctx, next) {
+    _listUsersRoute(ctx, next) {
         topNavController.activate('users');
 
         pageController.run({
@@ -75,48 +75,48 @@ class UsersController {
             clientUrl: '/users/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
             searchQuery: ctx.searchQuery,
-            headerRenderer: this.usersHeaderView,
-            pageRenderer: this.usersPageView,
+            headerRenderer: this._usersHeaderView,
+            pageRenderer: this._usersPageView,
         });
     }
 
-    createUserRoute() {
+    _createUserRoute() {
         topNavController.activate('register');
-        this.registrationView.render({
+        this._registrationView.render({
             register: (...args) => {
                 return this._register(...args);
             }});
     }
 
-    loadUserRoute(ctx, next) {
+    _loadUserRoute(ctx, next) {
         if (ctx.state.user) {
             next();
-        } else if (this.user && this.user.name == ctx.params.name) {
-            ctx.state.user = this.user;
+        } else if (this._cachedUser && this._cachedUser == ctx.params.name) {
+            ctx.state.user = this._cachedUser;
             next();
         } else {
             api.get('/user/' + ctx.params.name).then(response => {
                 response.user.rankName = rankNames[response.user.rank];
                 ctx.state.user = response.user;
                 ctx.save();
-                this.user = response.user;
+                this._cachedUser = response.user;
                 next();
             }, response => {
-                this.emptyView.render();
+                this._emptyView.render();
                 events.notify(events.Error, response.description);
             });
         }
     }
 
-    showUserRoute(ctx, next) {
+    _showUserRoute(ctx, next) {
         this._show(ctx.state.user, 'summary');
     }
 
-    editUserRoute(ctx, next) {
+    _editUserRoute(ctx, next) {
         this._show(ctx.state.user, 'edit');
     }
 
-    deleteUserRoute(ctx, next) {
+    _deleteUserRoute(ctx, next) {
         this._show(ctx.state.user, 'delete');
     }
 
@@ -171,7 +171,7 @@ class UsersController {
         return new Promise((resolve, reject) => {
             api.put('/user/' + user.name, data, files)
                 .then(response => {
-                    this.user = response.user;
+                    this._cachedUser = response.user;
                     return isLoggedIn ?
                         api.login(
                             data.name || api.userName,
@@ -236,7 +236,7 @@ class UsersController {
         } else {
             topNavController.activate('users');
         }
-        this.userView.render({
+        this._userView.render({
             user: user,
             section: section,
             isLoggedIn: isLoggedIn,

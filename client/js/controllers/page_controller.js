@@ -8,27 +8,27 @@ const ManualPageView = require('../views/manual_page_view.js');
 class PageController {
     constructor() {
         events.listen(events.SettingsChange, () => {
-            this.update();
+            this._update();
             return true;
         });
-        this.update();
+        this._update();
     }
 
-    update() {
+    _update() {
         if (settings.getSettings().endlessScroll) {
-            this.pageView = new EndlessPageView();
+            this._pageView = new EndlessPageView();
         } else {
-            this.pageView = new ManualPageView();
+            this._pageView = new ManualPageView();
         }
     }
 
     run(ctx) {
-        this.pageView.unrender();
-        this.pageView.render(ctx);
+        this._pageView.unrender();
+        this._pageView.render(ctx);
     }
 
     stop() {
-        this.pageView.unrender();
+        this._pageView.unrender();
     }
 }
 
