@@ -219,15 +219,14 @@ class UsersController {
 
         const myRankIdx = api.user ? api.allRanks.indexOf(api.user.rank) : 0;
         let ranks = {};
-        for (let rankIdx of misc.range(api.allRanks.length)) {
-            const rankIdentifier = api.allRanks[rankIdx];
+        for (let [rankIdx, rankIdentifier] of api.allRanks.entries()) {
             if (rankIdentifier === 'anonymous') {
                 continue;
             }
             if (rankIdx > myRankIdx) {
                 continue;
             }
-            ranks[rankIdentifier] = rankNames.values()[rankIdx];
+            ranks[rankIdentifier] = rankNames.get(rankIdentifier);
         }
 
         if (isLoggedIn) {
