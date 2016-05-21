@@ -243,7 +243,7 @@ function getTemplate(templatePath) {
         if (!ctx) {
             ctx = {};
         }
-        lodash.extend(ctx, {
+        Object.assign(ctx, {
             makeRelativeTime: makeRelativeTime,
             makeThumbnail: makeThumbnail,
             makeRadio: makeRadio,

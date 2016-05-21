@@ -1,6 +1,5 @@
 'use strict';
 
-const lodash = require('lodash');
 const views = require('../util/views.js');
 
 const KEY_TAB = 9;
@@ -27,7 +26,8 @@ function _getSelectionStart(input) {
 class AutoCompleteControl {
     constructor(sourceInputNode, options) {
         this._sourceInputNode = sourceInputNode;
-        this._options = lodash.extend({}, {
+        this._options = {};
+        Object.assign(this._options, {
             verticalShift: 2,
             source: null,
             maxResults: 15,
@@ -202,7 +202,9 @@ class AutoCompleteControl {
         this._results =
             this._options.getMatches(textToFind)
             .slice(0, this._options.maxResults);
-        if (!lodash.isEqual(oldResults, this._results)) {
+        const oldResultsHash = JSON.stringify(oldResults);
+        const newResultsHash = JSON.stringify(this._results);
+        if (oldResultsHash !== newResultsHash) {
             this._activeResult = -1;
         }
     }
@@ -216,32 +218,30 @@ class AutoCompleteControl {
         while (this._suggestionList.firstChild) {
             this._suggestionList.removeChild(this._suggestionList.firstChild);
         }
-        lodash.each(
-            this._results,
-            (resultItem, resultIndex) => {
-                const listItem = document.createElement('li');
-                const link = document.createElement('a');
-                link.href = '#';
-                link.innerHTML = resultItem.caption;
-                link.setAttribute('data-key', resultItem.value);
-                link.addEventListener(
-                    'mouseenter',
-                    e => {
-                        e.preventDefault();
-                        this._activeResult = resultIndex;
-                        this._refreshActiveResult();
-                    });
-                link.addEventListener(
-                    'mousedown',
-                    e => {
-                        e.preventDefault();
-                        this._activeResult = resultIndex;
-                        this._options.confirm(this._getActiveSuggestion());
-                        this.hide();
-                    });
-                listItem.appendChild(link);
-                this._suggestionList.appendChild(listItem);
-            });
+        for (let [resultIndex, resultItem] of this._results.entries()) {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = '#';
+            link.innerHTML = resultItem.caption;
+            link.setAttribute('data-key', resultItem.value);
+            link.addEventListener(
+                'mouseenter',
+                e => {
+                    e.preventDefault();
+                    this._activeResult = resultIndex;
+                    this._refreshActiveResult();
+                });
+            link.addEventListener(
+                'mousedown',
+                e => {
+                    e.preventDefault();
+                    this._activeResult = resultIndex;
+                    this._options.confirm(this._getActiveSuggestion());
+                    this.hide();
+                });
+            listItem.appendChild(link);
+            this._suggestionList.appendChild(listItem);
+        }
         this._refreshActiveResult();
 
         // display the suggestions offscreen to get the height
