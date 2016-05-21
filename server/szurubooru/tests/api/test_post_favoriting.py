@@ -23,10 +23,11 @@ def test_ctx(
     ret.api = api.PostFavoriteApi()
     return ret
 
-def test_simple_rating(test_ctx, fake_datetime):
+def test_adding_to_favorites(test_ctx, fake_datetime):
     post = test_ctx.post_factory()
     db.session.add(post)
     db.session.commit()
+    assert post.score == 0
     with fake_datetime('1997-12-01'):
         result = test_ctx.api.post(
             test_ctx.context_factory(user=test_ctx.user_factory()),
@@ -37,21 +38,25 @@ def test_simple_rating(test_ctx, fake_datetime):
     assert db.session.query(db.PostFavorite).count() == 1
     assert post is not None
     assert post.favorite_count == 1
+    assert post.score == 1
 
 def test_removing_from_favorites(test_ctx, fake_datetime):
     user = test_ctx.user_factory()
     post = test_ctx.post_factory()
     db.session.add(post)
     db.session.commit()
+    assert post.score == 0
     with fake_datetime('1997-12-01'):
         result = test_ctx.api.post(
             test_ctx.context_factory(user=user),
             post.post_id)
+    assert post.score == 1
     with fake_datetime('1997-12-02'):
         result = test_ctx.api.delete(
             test_ctx.context_factory(user=user),
             post.post_id)
     post = db.session.query(db.Post).one()
+    assert post.score == 1
     assert db.session.query(db.PostFavorite).count() == 0
     assert post.favorite_count == 0
 

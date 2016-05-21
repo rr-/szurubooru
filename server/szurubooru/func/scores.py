@@ -1,7 +1,8 @@
 import datetime
 from szurubooru import db, errors
 
-class InvalidScoreError(errors.ValidationError): pass
+class InvalidScoreTargetError(errors.ValidationError): pass
+class InvalidScoreValueError(errors.ValidationError): pass
 
 def _get_table_info(entity):
     resource_type, _, _ = db.util.get_resource_info(entity)
@@ -9,7 +10,7 @@ def _get_table_info(entity):
         return db.PostScore, lambda table: table.post_id
     elif resource_type == 'comment':
         return db.CommentScore, lambda table: table.comment_id
-    assert False
+    raise InvalidScoreTargetError()
 
 def _get_score_entity(entity, user):
     return db.util.get_aux_entity(db.session, _get_table_info, entity, user)
@@ -31,7 +32,7 @@ def set_score(entity, user, score):
         delete_score(entity, user)
         return
     if score not in (-1, 1):
-        raise InvalidScoreError(
+        raise InvalidScoreValueError(
             'Score %r is invalid. Valid scores: %r.' % (score, (-1, 1)))
     score_entity = _get_score_entity(entity, user)
     if score_entity:

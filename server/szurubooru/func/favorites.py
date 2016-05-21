@@ -1,11 +1,14 @@
 import datetime
-from szurubooru import db
+from szurubooru import db, errors
+from szurubooru.func import scores
+
+class InvalidFavoriteTargetError(errors.ValidationError): pass
 
 def _get_table_info(entity):
     resource_type, _, _ = db.util.get_resource_info(entity)
     if resource_type == 'post':
         return db.PostFavorite, lambda table: table.post_id
-    assert False
+    raise InvalidFavoriteTargetError()
 
 def _get_fav_entity(entity, user):
     return db.util.get_aux_entity(db.session, _get_table_info, entity, user)
@@ -19,6 +22,10 @@ def unset_favorite(entity, user):
         db.session.delete(fav_entity)
 
 def set_favorite(entity, user):
+    try:
+        scores.set_score(entity, user, 1)
+    except scores.InvalidScoreTargetError:
+        pass
     fav_entity = _get_fav_entity(entity, user)
     if not fav_entity:
         table, get_column = _get_table_info(entity)

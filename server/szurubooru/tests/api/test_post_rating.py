@@ -106,8 +106,8 @@ def test_ratings_from_multiple_users(test_ctx, fake_datetime):
 @pytest.mark.parametrize('input,expected_exception', [
     ({'score': None}, errors.ValidationError),
     ({'score': ''}, errors.ValidationError),
-    ({'score': -2}, scores.InvalidScoreError),
-    ({'score': 2}, scores.InvalidScoreError),
+    ({'score': -2}, scores.InvalidScoreValueError),
+    ({'score': 2}, scores.InvalidScoreValueError),
     ({'score': [1]}, errors.ValidationError),
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
