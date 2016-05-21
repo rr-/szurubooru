@@ -20,6 +20,14 @@ function convertKeysToCamelCase(input) {
     return result;
 }
 
+function readTextFile(path) {
+    return fs.readFileSync(path, 'utf-8');
+}
+
+function writeFile(path, content) {
+    return fs.writeFileSync(path, content);
+}
+
 function getVersion() {
     return execSync('git describe --always --dirty --long --tags').toString();
 }
@@ -30,7 +38,7 @@ function getConfig() {
     const camelcaseKeys = require('camelcase-keys');
 
     function parseConfigFile(path) {
-        let result = yaml.load(fs.readFileSync(path, 'utf-8'));
+        let result = yaml.load(readTextFile(path, 'utf-8'));
         return convertKeysToCamelCase(result);
     }
 
@@ -55,6 +63,10 @@ function getConfig() {
     return config;
 }
 
+function copyFile(source, target) {
+    fs.createReadStream(source).pipe(fs.createWriteStream(target));
+}
+
 function minifyJs(path) {
     return require('uglify-js').minify(path).code;
 }
@@ -74,12 +86,12 @@ function minifyHtml(html) {
 function bundleHtml(config) {
     const underscore = require('underscore');
     const babelify = require('babelify');
-    const baseHtml = fs.readFileSync('./html/index.htm', 'utf-8');
+    const baseHtml = readTextFile('./html/index.htm', 'utf-8');
     const finalHtml = baseHtml
         .replace(
             /(<title>)(.*)(<\/title>)/,
             util.format('$1%s$3', config.name));
-    fs.writeFileSync('./public/index.htm', minifyHtml(finalHtml));
+    writeFile('./public/index.htm', minifyHtml(finalHtml));
 
     glob('./html/**/*.tpl', {}, (er, files) => {
         let compiledTemplateJs = '\'use strict\'\n';
@@ -87,13 +99,13 @@ function bundleHtml(config) {
         compiledTemplateJs += 'let templates = {};';
         for (const file of files) {
             const name = path.basename(file, '.tpl').replace(/_/g, '-');
-            const templateText = minifyHtml(fs.readFileSync(file, 'utf-8'));
+            const templateText = minifyHtml(readTextFile(file, 'utf-8'));
             const functionText = underscore.template(
                 templateText, {variable: 'ctx'}).source;
             compiledTemplateJs += `templates['${name}'] = ${functionText};`;
         }
         compiledTemplateJs += 'module.exports = templates;';
-        fs.writeFileSync('./js/.templates.autogen.js', compiledTemplateJs);
+        writeFile('./js/.templates.autogen.js', compiledTemplateJs);
         console.info('Bundled HTML');
     });
 }
@@ -104,9 +116,10 @@ function bundleCss() {
         let css = '';
         for (const file of files) {
             css += stylus.render(
-                fs.readFileSync(file, 'utf-8'), {filename: file});
+                readTextFile(file), {filename: file});
         }
-        fs.writeFileSync('./public/app.min.css', minifyCss(css));
+        writeFile('./public/css/app.min.css', minifyCss(css));
+
         console.info('Bundled CSS');
     });
 }
@@ -127,7 +140,7 @@ function bundleJs(config) {
         b.bundle().pipe(outputFile);
         outputFile.on('finish', function() {
             if (compress) {
-                fs.writeFileSync(path, minifyJs(path));
+                writeFile(path, minifyJs(path));
             }
             console.info(message);
         });
@@ -143,18 +156,18 @@ function bundleJs(config) {
                 b.add(require.resolve('babel-polyfill'));
             }
             writeJsBundle(
-                b, './public/vendor.min.js', 'Bundled vendor JS', true);
+                b, './public/js/vendor.min.js', 'Bundled vendor JS', true);
         }
 
         if (!process.argv.includes('--no-app-js')) {
-            let outputFile = fs.createWriteStream('./public/app.min.js');
+            let outputFile = fs.createWriteStream('./public/js/app.min.js');
             let b = browserify({debug: config.debug});
             if (config.transpile) {
                 b = b.transform('babelify');
             }
             writeJsBundle(
                 b.external(external).add(files),
-                './public/app.min.js',
+                './public/js/app.min.js',
                 'Bundled app JS',
                 !config.debug);
         }
@@ -162,16 +175,18 @@ function bundleJs(config) {
 }
 
 function bundleConfig(config) {
-    fs.writeFileSync(
+    writeFile(
         './js/.config.autogen.json', JSON.stringify(config));
 }
 
-function copyFile(source, target) {
-    fs.createReadStream(source).pipe(fs.createWriteStream(target));
+function bundleBinaryAssets() {
+    copyFile('./img/favicon.png', './public/img/favicon.png');
+    copyFile('./img/404.png', './public/img/404.png');
 }
 
 const config = getConfig();
 bundleConfig(config);
+bundleBinaryAssets();
 if (!process.argv.includes('--no-html')) {
     bundleHtml(config);
 }
@@ -181,5 +196,3 @@ if (!process.argv.includes('--no-css')) {
 if (!process.argv.includes('--no-js')) {
     bundleJs(config);
 }
-copyFile('./img/favicon.png', './public/favicon.png');
-copyFile('./img/404.png', './public/404.png');
