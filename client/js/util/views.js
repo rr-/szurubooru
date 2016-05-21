@@ -1,7 +1,7 @@
 'use strict';
 
 require('../util/polyfill.js');
-const lodash = require('lodash');
+const templates = require('../templates.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
 const domParser = new DOMParser();
@@ -237,8 +237,7 @@ function getTemplate(templatePath) {
         console.error('Missing template: ' + templatePath);
         return null;
     }
-    const templateText = templates[templatePath].trim();
-    const templateFactory = lodash.template(templateText, {variable: 'ctx'});
+    const templateFactory = templates[templatePath];
     return ctx => {
         if (!ctx) {
             ctx = {};

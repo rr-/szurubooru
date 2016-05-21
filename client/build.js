@@ -55,42 +55,50 @@ function getConfig() {
     return config;
 }
 
-function bundleHtml(config) {
-    const minify = require('html-minifier').minify;
-    const baseHtml = fs.readFileSync('./html/index.htm', 'utf-8');
-    const minifyOptions = {
+function minifyJs(path) {
+    return require('uglify-js').minify(path).code;
+}
+
+function minifyCss(css) {
+    return require('csso').minify(css);
+}
+
+function minifyHtml(html) {
+    return require('html-minifier').minify(html, {
         removeComments: true,
         collapseWhitespace: true,
         conservativeCollapse: true,
-    };
+    }).trim();
+}
+
+function bundleHtml(config) {
+    const lodash = require('lodash');
+    const babelify = require('babelify');
+    const baseHtml = fs.readFileSync('./html/index.htm', 'utf-8');
+    const finalHtml = baseHtml
+        .replace(
+            /(<title>)(.*)(<\/title>)/,
+            util.format('$1%s$3', config.name));
+    fs.writeFileSync('./public/index.htm', minifyHtml(finalHtml));
+
     glob('./html/**/*.tpl', {}, (er, files) => {
-        let templates = {};
+        let compiledTemplateJs = '\'use strict\'\n';
+        compiledTemplateJs += 'let _ = require(\'lodash\');';
+        compiledTemplateJs += 'let templates = {};';
         for (const file of files) {
             const name = path.basename(file, '.tpl').replace(/_/g, '-');
-            templates[name] = minify(
-                fs.readFileSync(file, 'utf-8'), minifyOptions);
+            const templateText = minifyHtml(fs.readFileSync(file, 'utf-8'));
+            const functionText = lodash.template(
+                templateText, {variable: 'ctx'}).source;
+            compiledTemplateJs += `templates['${name}'] = ${functionText};`;
         }
-
-        const templatesHolder = util.format(
-            '<script type=\'text/javascript\'>' +
-            'var templates = %s;' +
-            '</script>',
-            JSON.stringify(templates));
-
-        const finalHtml = baseHtml
-            .replace(/(<\/head>)/, templatesHolder + '$1')
-            .replace(
-                /(<title>)(.*)(<\/title>)/,
-                util.format('$1%s$3', config.name));
-
-        fs.writeFileSync(
-            './public/index.htm', minify(finalHtml, minifyOptions));
+        compiledTemplateJs += 'module.exports = templates;';
+        fs.writeFileSync('./js/.templates.autogen.js', compiledTemplateJs);
         console.info('Bundled HTML');
     });
 }
 
 function bundleCss() {
-    const minify = require('csso').minify;
     const stylus = require('stylus');
     glob('./css/**/*.styl', {}, (er, files) => {
         let css = '';
@@ -98,21 +106,8 @@ function bundleCss() {
             css += stylus.render(
                 fs.readFileSync(file, 'utf-8'), {filename: file});
         }
-        fs.writeFileSync('./public/app.min.css', minify(css));
+        fs.writeFileSync('./public/app.min.css', minifyCss(css));
         console.info('Bundled CSS');
-    });
-}
-
-function writeJsBundle(b, path, message, compress) {
-    const uglifyjs = require('uglify-js');
-    let outputFile = fs.createWriteStream(path);
-    b.bundle().pipe(outputFile);
-    outputFile.on('finish', function() {
-        if (compress) {
-            const result = uglifyjs.minify(path);
-            fs.writeFileSync(path, result.code);
-        }
-        console.info(message);
     });
 }
 
@@ -126,6 +121,18 @@ function bundleJs(config) {
         'page',
         'nprogress',
     ];
+
+    function writeJsBundle(b, path, message, compress) {
+        let outputFile = fs.createWriteStream(path);
+        b.bundle().pipe(outputFile);
+        outputFile.on('finish', function() {
+            if (compress) {
+                fs.writeFileSync(path, minifyJs(path));
+            }
+            console.info(message);
+        });
+    }
+
     glob('./js/**/*.js', {}, (er, files) => {
         if (!process.argv.includes('--no-vendor-js')) {
             let b = browserify();
