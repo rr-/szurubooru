@@ -182,3 +182,4 @@ if (!process.argv.includes('--no-js')) {
     bundleJs(config);
 }
 copyFile('./img/favicon.png', './public/favicon.png');
+copyFile('./img/404.png', './public/404.png');
