@@ -120,6 +120,10 @@ function bundleCss() {
         }
         writeFile('./public/css/app.min.css', minifyCss(css));
 
+        copyFile(
+            './node_modules/font-awesome/css/font-awesome.min.css',
+            './public/css/vendor.min.css');
+
         console.info('Bundled CSS');
     });
 }
@@ -177,6 +181,14 @@ function bundleJs(config) {
 function bundleConfig(config) {
     writeFile(
         './js/.config.autogen.json', JSON.stringify(config));
+    glob('./node_modules/font-awesome/fonts/*.*', {}, (er, files) => {
+        for (let file of files) {
+            if (fs.lstatSync(file).isDirectory()) {
+                continue;
+            }
+            copyFile(file, path.join('./public/fonts/', path.basename(file)));
+        }
+    });
 }
 
 function bundleBinaryAssets() {
