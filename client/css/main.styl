@@ -13,6 +13,12 @@ body
     font-family: 'Droid Sans', sans-serif
     font-size: 12pt
     line-height: 18pt
+    @media (max-width: 800px)
+        font-size: 10pt
+        line-height: 15pt
+    @media (max-width: 1200px)
+        font-size: 11pt
+        line-height: 16.5pt
 
 h1, h2, h3
     font-weight: normal
@@ -40,9 +46,10 @@ form .fa-question-circle-o
     vertical-align: middle
 
 #content-holder
-    margin: 2em
+    padding: 1.5vw
     text-align: center
     >.content-wrapper
+        box-sizing: border-box /* make max-width: 100% on this element include padding */
         text-align: left
         display: inline-block
         margin: 0 auto
@@ -50,7 +57,7 @@ form .fa-question-circle-o
             margin-top: 0
     >.content-wrapper:not(.transparent)
         background: $top-nav-color
-        padding: 2em
+        padding: 2vw
 
 hr
     border: 0

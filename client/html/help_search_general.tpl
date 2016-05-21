@@ -13,17 +13,17 @@ can be of following form:</p>
         <tr>
             <td><code>&lt;value&gt;</code></td>
             <td>anonymous tokens</td>
-            <td>basic filters</td>
+            <td>used for basic filters</td>
         </tr>
         <tr>
             <td><code>&lt;key&gt;:&lt;value&gt;</code></td>
             <td>named tokens</td>
-            <td>advanced filters</td>
+            <td>used for advanced filters</td>
         </tr>
         <tr>
             <td><code>sort:&lt;style&gt;</code></td>
             <td>sort style tokens</td>
-            <td>sort the results</td>
+            <td>used to sort the results</td>
         </tr>
         <tr>
             <td><code>special:&lt;value&gt;</code></td>

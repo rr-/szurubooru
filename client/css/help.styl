@@ -1,7 +1,8 @@
 @import colors
 
 #help
-    width: 40em
+    width: 100%
+    max-width: 45em
     nav
         margin-bottom: 1.5em
     td, th
@@ -16,9 +17,18 @@
         &:first-child
             margin-top: 0
     nav
-        text-align: center
         ul
             margin: 0 auto
             text-align: left
     nav.secondary
         font-size: 0.95em
+
+    @media (max-width: 600px)
+        th, thead
+            display: none
+        table, tr, td, tbody
+            display: block
+        tr
+            margin-bottom: 0.8em
+        pre
+            white-space: pre-wrap

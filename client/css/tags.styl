@@ -31,6 +31,10 @@
                 display: inline
                 &:not(:last-child):after
                     content: ', '
+        @media (max-width: 800px)
+            .implications, .suggestions
+                display: none
+
 .tag-list-header
     text-align: left
     form
@@ -41,22 +45,36 @@
         font-size: 0.95em
         color: $inactive-link-color
 
-.tag-categories
-    td, th
-        padding: .2em
-        &:first-child
-            padding-left: 0
-        &:last-child
-            padding-right: 0
-        &.name
-            width: 12em
-        &.color
-            text-align: center
-            width: 5em
-        &.usages
-            text-align: center
-            width: 5em
-    tfoot
-        display: none
+.content-wrapper.tag
+    width: 100%
+    max-width: 30em
+    form
+        width: 100%
+        label:not(.radio):not(.checkbox):not(.file-dropper)
+            width: 6em
+        .messages, .buttons
+            margin-left: 6em
+
+.content-wrapper.tag-categories
+    width: 100%
+    max-width: 35em
+    table
+        width: 100%
+        td, th
+            padding: .2em
+            &:first-child
+                padding-left: 0
+            &:last-child
+                padding-right: 0
+            &.name
+                width: 35%
+            &.color
+                text-align: center
+                width: 35%
+            &.usages
+                text-align: center
+                width: 10%
+        tfoot
+            display: none
     .messages, form
         width: auto
