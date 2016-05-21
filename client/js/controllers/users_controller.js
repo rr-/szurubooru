@@ -176,7 +176,7 @@ class UsersController {
                             data.name || api.userName,
                             data.password || api.userPassword,
                             false) :
-                        Promise.fulfill();
+                        Promise.resolve();
                 }, response => {
                     return Promise.reject(response.description);
                 }).then(() => {
