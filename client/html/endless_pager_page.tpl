@@ -1,4 +1,4 @@
 <div class='page'>
-    <p><span>Page <%= page %> of <%= totalPages %></span></p>
+    <p><span>Page <%= ctx.page %> of <%= ctx.totalPages %></span></p>
     <div class='page-content-holder'></div>
 </div>

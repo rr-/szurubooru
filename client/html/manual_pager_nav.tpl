@@ -1,8 +1,8 @@
 <nav class='text-nav'>
     <ul>
         <li>
-            <% if (prevLinkActive) { %>
-                <a class='prev' href='<%= prevLink %>'>
+            <% if (ctx.prevLinkActive) { %>
+                <a class='prev' href='<%= ctx.prevLink %>'>
             <% } else { %>
                 <a class='prev disabled'>
             <% } %>
@@ -11,7 +11,7 @@
             </a>
         </li>
 
-        <% _.each(pages, page => { %>
+        <% _.each(ctx.pages, page => { %>
             <% if (page.ellipsis) { %>
                 <li>&hellip;</li>
             <% } else { %>
@@ -26,8 +26,8 @@
         <% }) %>
 
         <li>
-            <% if (nextLinkActive) { %>
-                <a class='next' href='<%= nextLink %>'>
+            <% if (ctx.nextLinkActive) { %>
+                <a class='next' href='<%= ctx.nextLink %>'>
             <% } else { %>
                 <a class='next disabled'>
             <% } %>

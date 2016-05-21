@@ -5,11 +5,11 @@
         <div class='input'>
             <ul>
                 <li>
-                    <%= makeCheckbox({text: 'Endless scroll', id: 'endless-scroll', name: 'endless-scroll', checked: browsingSettings.endlessScroll}) %>
+                    <%= ctx.makeCheckbox({text: 'Endless scroll', id: 'endless-scroll', name: 'endless-scroll', checked: ctx.browsingSettings.endlessScroll}) %>
                     <p class='hint'>Rather than using a paged navigation, smoothly scroll through the content.</p>
                 </li>
                 <li>
-                    <%= makeCheckbox({text: 'Enable keyboard shortcuts', id: 'keyboard-shortcuts', name: 'keyboard-shortcuts', checked: browsingSettings.keyboardShortcuts}) %>
+                    <%= ctx.makeCheckbox({text: 'Enable keyboard shortcuts', id: 'keyboard-shortcuts', name: 'keyboard-shortcuts', checked: ctx.browsingSettings.keyboardShortcuts}) %>
                     <a class='append icon' href='/help/keyboard'><i class='fa fa-question-circle-o'></i></a>
                 </li>
             </ul>

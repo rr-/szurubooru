@@ -238,7 +238,7 @@ function getTemplate(templatePath) {
         return null;
     }
     const templateText = templates[templatePath].trim();
-    const templateFactory = lodash.template(templateText);
+    const templateFactory = lodash.template(templateText, {variable: 'ctx'});
     return ctx => {
         if (!ctx) {
             ctx = {};

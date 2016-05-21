@@ -1,16 +1,16 @@
 <div class='tag-merge'>
     <form class='tabular'>
-        <p>Proceeding will remove <%= tag.names[0] %> and retag its posts with
-        the tag specified below. Aliases and relations of <%= tag.names[0] %>
+        <p>Proceeding will remove <%= ctx.tag.names[0] %> and retag its posts with
+        the tag specified below. Aliases and relations of <%= ctx.tag.names[0] %>
         will be discarded and need to be handled by hand.</p>
         <div class='input'>
             <ul>
                 <li class='target'>
-                    <%= makeTextInput({required: true, text: 'Target tag', pattern: tagNamePattern}) %>
+                    <%= ctx.makeTextInput({required: true, text: 'Target tag', pattern: ctx.tagNamePattern}) %>
                 </li>
                 <li class='confirm'>
                     <label></label>
-                    <%= makeCheckbox({required: true, text: 'I confirm that I want to merge this tag.'}) %>
+                    <%= ctx.makeCheckbox({required: true, text: 'I confirm that I want to merge this tag.'}) %>
                 </li>
             </ul>
         </div>

@@ -3,7 +3,7 @@
         <div class='input'>
             <ul>
                 <li>
-                    <%= makeTextInput({id: 'search-text', name: 'search-text', value: searchQuery.text}) %>
+                    <%= ctx.makeTextInput({id: 'search-text', name: 'search-text', value: ctx.searchQuery.text}) %>
                 </li>
             </ul>
         </div>

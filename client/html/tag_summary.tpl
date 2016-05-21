@@ -3,20 +3,20 @@
         <div class='input'>
             <ul>
                 <li class='names'>
-                    <%= makeTextInput({text: 'Names', value: tag.names.join(' '), required: true, readonly: !canEditNames, pattern: tagNamesPattern}) %>
+                    <%= ctx.makeTextInput({text: 'Names', value: ctx.tag.names.join(' '), required: true, readonly: !ctx.canEditNames, pattern: ctx.tagNamesPattern}) %>
                 </li>
                 <li class='category'>
-                    <%= makeSelect({text: 'Category', keyValues: categories, selectedKey: tag.category, required: true, readonly: !canEditCategory}) %>
+                    <%= ctx.makeSelect({text: 'Category', keyValues: ctx.categories, selectedKey: ctx.tag.category, required: true, readonly: !ctx.canEditCategory}) %>
                 </li>
                 <li class='implications'>
-                    <%= makeTextInput({text: 'Implications', value: tag.implications.join(' '), readonly: !canEditImplications}) %>
+                    <%= ctx.makeTextInput({text: 'Implications', value: ctx.tag.implications.join(' '), readonly: !ctx.canEditImplications}) %>
                 </li>
                 <li class='suggestions'>
-                    <%= makeTextInput({text: 'Suggestions', value: tag.suggestions.join(' '), readonly: !canEditSuggestions}) %>
+                    <%= ctx.makeTextInput({text: 'Suggestions', value: ctx.tag.suggestions.join(' '), readonly: !ctx.canEditSuggestions}) %>
                 </li>
             </ul>
         </div>
-        <% if (canEditNames || canEditCategory || canEditImplications || canEditSuggestions) { %>
+        <% if (ctx.canEditNames || ctx.canEditCategory || ctx.canEditImplications || ctx.canEditSuggestions) { %>
             <div class='messages'></div>
             <div class='buttons'>
                 <input type='submit' class='save' value='Save changes'>
