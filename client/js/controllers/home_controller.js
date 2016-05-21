@@ -13,7 +13,7 @@ class HomeController {
 
     registerRoutes() {
         page('/', (ctx, next) => { this._indexRoute(); });
-        page('*', (ctx, next) => { this._notFoundRoute(); });
+        page('*', (ctx, next) => { this._notFoundRoute(ctx); });
     }
 
     _indexRoute() {
@@ -21,9 +21,9 @@ class HomeController {
         this._homeView.render({});
     }
 
-    _notFoundRoute() {
+    _notFoundRoute(ctx) {
         topNavController.activate('');
-        this._notFoundView.render({});
+        this._notFoundView.render({path: ctx.canonicalPath});
     }
 }
 

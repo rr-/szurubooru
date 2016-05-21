@@ -10,7 +10,7 @@ class NotFoundView {
 
     render(ctx) {
         const target = document.getElementById('content-holder');
-        const source = this._template({});
+        const source = this._template(ctx);
         views.showView(target, source);
     }
 }
