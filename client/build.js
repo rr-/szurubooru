@@ -72,7 +72,7 @@ function minifyHtml(html) {
 }
 
 function bundleHtml(config) {
-    const lodash = require('lodash');
+    const underscore = require('underscore');
     const babelify = require('babelify');
     const baseHtml = fs.readFileSync('./html/index.htm', 'utf-8');
     const finalHtml = baseHtml
@@ -83,12 +83,12 @@ function bundleHtml(config) {
 
     glob('./html/**/*.tpl', {}, (er, files) => {
         let compiledTemplateJs = '\'use strict\'\n';
-        compiledTemplateJs += 'let _ = require(\'lodash\');';
+        compiledTemplateJs += 'let _ = require(\'underscore\');';
         compiledTemplateJs += 'let templates = {};';
         for (const file of files) {
             const name = path.basename(file, '.tpl').replace(/_/g, '-');
             const templateText = minifyHtml(fs.readFileSync(file, 'utf-8'));
-            const functionText = lodash.template(
+            const functionText = underscore.template(
                 templateText, {variable: 'ctx'}).source;
             compiledTemplateJs += `templates['${name}'] = ${functionText};`;
         }
@@ -114,7 +114,7 @@ function bundleCss() {
 function bundleJs(config) {
     const browserify = require('browserify');
     const external = [
-        'lodash',
+        'underscore',
         'superagent',
         'mousetrap',
         'js-cookie',
