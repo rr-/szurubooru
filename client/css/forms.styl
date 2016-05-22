@@ -206,6 +206,28 @@ div.tag-input
             &:last-child
                 padding-left: 0.2em
 
+div.tag-relations
+    font-size: 80%
+    ul
+        display: inline
+        margin: 0
+        padding: 0
+        &.tag-siblings li:first-child:before
+            content: 'Siblings: '
+        &.tag-suggestions li:first-child:before
+            content: 'Suggestions: '
+        &:before, &:after
+            height: 0.25em
+            content: ' '
+            display: block
+        li
+            display: inline
+            margin: 0
+            padding: 0
+            a
+                display: inline-block
+                margin: 0 0 0 1em
+
 label.color
     position: relative
     input[type=text]

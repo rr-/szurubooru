@@ -317,6 +317,38 @@ function scrollToHash() {
     }, 10);
 }
 
+function slideDown(element) {
+    const duration = 500;
+    return new Promise((resolve, reject) => {
+        const height = element.getBoundingClientRect().height;
+        element.style.maxHeight = '0';
+        element.style.overflow = 'hidden';
+        window.setTimeout(() => {
+            element.style.transition = `all ${duration}ms ease`;
+            element.style.maxHeight = `${height}px`;
+        }, 50);
+        window.setTimeout(() => {
+            resolve();
+        }, duration);
+    });
+}
+
+function slideUp(element) {
+    const duration = 500;
+    return new Promise((resolve, reject) => {
+        const height = element.getBoundingClientRect().height;
+        element.style.overflow = 'hidden';
+        element.style.maxHeight = `${height}px`;
+        element.style.transition = `all ${duration}ms ease`;
+        window.setTimeout(() => {
+            element.style.maxHeight = 0;
+        }, 10);
+        window.setTimeout(() => {
+            resolve();
+        }, duration);
+    });
+}
+
 document.addEventListener('input', e => {
     const type = e.target.getAttribute('type');
     if (type && type.toLowerCase() === 'color') {
@@ -339,4 +371,6 @@ module.exports = {
     makeVoidElement: makeVoidElement,
     makeNonVoidElement: makeNonVoidElement,
     scrollToHash: scrollToHash,
+    slideDown: slideDown,
+    slideUp: slideUp,
 };

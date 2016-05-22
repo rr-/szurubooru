@@ -1,5 +1,6 @@
 'use strict';
 
+const api = require('../api.js');
 const tags = require('../tags.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
@@ -19,6 +20,8 @@ class TagInputControl {
         this.tags = [];
         this.readOnly = sourceInputNode.readOnly;
 
+        this._relationsTemplate = views.getTemplate('tag-relations');
+        this._relationsNodes = [];
         this._autoCompleteControls = [];
         this._sourceInputNode = sourceInputNode;
 
@@ -46,7 +49,7 @@ class TagInputControl {
         this._editAreaNode.appendChild(this._tailWrapperNode);
 
         // add existing tags
-        this.addMultipleTags(this._sourceInputNode.value);
+        this.addMultipleTags(this._sourceInputNode.value, false);
 
         // show
         this._sourceInputNode.style.display = 'none';
@@ -54,13 +57,19 @@ class TagInputControl {
             this._editAreaNode, this._sourceInputNode.nextSibling);
     }
 
-    addMultipleTags(text, sourceNode) {
+    addMultipleTags(text, sourceNode, addImplications) {
         for (let tag of text.split(/\s+/).filter(word => word)) {
-            this.addTag(tag, sourceNode);
+            this.addTag(tag, sourceNode, addImplications, false);
         }
     }
 
-    addTag(text, sourceNode) {
+    isTaggedWith(tag) {
+        return this.tags
+            .map(t => t.toLowerCase())
+            .includes(tag.toLowerCase());
+    }
+
+    addTag(text, sourceNode, addImplications, suggestRelations) {
         text = tags.getOriginalTagName(text);
 
         if (!sourceNode) {
@@ -95,11 +104,18 @@ class TagInputControl {
         this._editAreaNode.insertBefore(targetWrapperNode, sourceWrapperNode);
         this._editAreaNode.insertBefore(this._createSpace(), sourceWrapperNode);
 
-        const actualTag = tags.getTagByName(text);
-        if (actualTag) {
+        const actualTag = tags.getTagByName(text) || {};
+
+        // XXX: perhaps we should aggregate suggestions from all implications
+        // for call to the _suggestRelations
+        if (addImplications) {
             for (let otherTag of (actualTag.implications || [])) {
-                this.addTag(otherTag, sourceNode);
+                this.addTag(otherTag, sourceNode, true, false);
             }
+        }
+
+        if (suggestRelations) {
+            this._suggestRelations([], actualTag.suggestions || []);
         }
     }
 
@@ -111,7 +127,7 @@ class TagInputControl {
                 .includes(tag.toLowerCase())) {
             return;
         }
-        this._hideVisualCues();
+        this._hideAutoComplete();
         this.tags = this.tags.filter(t => t.toLowerCase() != tag.toLowerCase());
         this._sourceInputNode.value = this.tags.join(' ');
         for (let wrapperNode of this._getAllWrapperNodes()) {
@@ -263,20 +279,40 @@ class TagInputControl {
 
         if (key == KEY_RETURN || key == KEY_SPACE) {
             e.preventDefault();
-            this.addTag(inputNode.textContent, inputNode);
+            this.addTag(inputNode.textContent, inputNode, true, true);
             inputNode.innerHTML = '';
         }
     }
 
     _evtInputBlur(e) {
         const inputNode = e.target;
-        this.addTag(inputNode.textContent, inputNode);
+        this.addTag(inputNode.textContent, inputNode, true, true);
         inputNode.innerHTML = '';
     }
 
-    _evtLinkClick(e) {
+    _evtTagLinkClick(e) {
         e.preventDefault();
-        // TODO: show suggestions and siblings
+        const wrapperNode = this._getWrapperFromChild(e.target);
+        const tagName = this._getTagFromWrapper(wrapperNode);
+        const actualTag = tags.getTagByName(tagName);
+        if (!actualTag) {
+            return;
+        }
+        api.get('/tag-siblings/' + tagName, {noProgress: true})
+            .then(response => {
+                return Promise.resolve(response.results);
+            }, response => {
+                return Promise.resolve([]);
+            }).then(siblings => {
+                const suggestionNames = actualTag.suggestions || [];
+                const siblingNames = siblings.map(s => s.tag.names[0]);
+                this._suggestRelations(siblingNames, suggestionNames);
+            });
+    }
+
+    _evtRelationSuggestionLinkClick(e) {
+        e.preventDefault();
+        this.addTag(e.target.textContent, null, true, true);
     }
 
     _getWrapperFromChild(startNode) {
@@ -334,6 +370,34 @@ class TagInputControl {
         return null;
     }
 
+    _suggestRelations(siblingNames, suggestionNames) {
+        this._hideRelationSuggestions();
+        siblingNames = siblingNames
+            .filter(tag => !this.isTaggedWith(tag));
+        suggestionNames = suggestionNames
+            .filter(tag => !this.isTaggedWith(tag));
+
+        if (!siblingNames.length && !suggestionNames.length) {
+            return;
+        }
+
+        const node = this._relationsTemplate({
+            siblings: siblingNames,
+            suggestions: suggestionNames,
+        });
+
+        for (let link of node.querySelectorAll('a')) {
+            link.addEventListener(
+                'click', e => this._evtRelationSuggestionLinkClick(e));
+        }
+
+        // TODO: slide down
+        this._editAreaNode.parentNode.insertBefore(
+            node, this._editAreaNode.nextSibling);
+        views.slideDown(node);
+        this._relationsNodes.push(node);
+    }
+
     _createWrapper() {
         return views.htmlToDom('<span class="wrapper"></span>');
     }
@@ -356,7 +420,7 @@ class TagInputControl {
                 confirm: text => {
                     const wrapperNode = this._getWrapperFromChild(inputNode);
                     inputNode.innerHTML = '';
-                    this.addTag(text, inputNode);
+                    this.addTag(text, inputNode, true, true);
                 },
                 verticalShift: -2,
             });
@@ -377,18 +441,29 @@ class TagInputControl {
                     href: '/tag/' + text,
                 },
                 text));
-        link.addEventListener('click', e=> this._evtLinkClick(e));
+        link.addEventListener('click', e=> this._evtTagLinkClick(e));
         return link;
+    }
+
+    _hideRelationSuggestions() {
+        while (this._relationsNodes.length) {
+            const node = this._relationsNodes.pop(0);
+            views.slideUp(node).then(() => node.parentNode.removeChild(node));
+        }
+    }
+
+    _hideAutoComplete() {
+        for (let autoCompleteControl of this._autoCompleteControls) {
+            autoCompleteControl.hide();
+        }
     }
 
     _hideVisualCues() {
         for (let wrapperNode of this._getAllWrapperNodes()) {
             wrapperNode.classList.remove('duplicate');
         }
-        for (let autoCompleteControl of this._autoCompleteControls) {
-            autoCompleteControl.hide();
-        }
-        // TODO: hide suggestions and siblings
+        this._hideAutoComplete();
+        this._hideRelationSuggestions();
     }
 }
 
