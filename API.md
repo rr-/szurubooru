@@ -491,7 +491,7 @@ data.
 
     ```json5
     {
-        "siblings": [
+        "results": [
             {
                 "tag": <tag>,
                 "occurrences": <occurrence-count>

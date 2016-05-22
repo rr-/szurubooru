@@ -5,7 +5,7 @@ from szurubooru.func import util, tags
 
 def assert_results(result, expected_tag_names_and_occurrences):
     actual_tag_names_and_occurences = {}
-    for item in result['siblings']:
+    for item in result['results']:
         tag_name = item['tag']['names'][0]
         occurrences = item['occurrences']
         actual_tag_names_and_occurences[tag_name] = occurrences

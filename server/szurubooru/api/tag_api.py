@@ -100,4 +100,4 @@ class TagSiblingsApi(BaseApi):
                 'tag': tags.serialize_tag(sibling),
                 'occurrences': occurrences
             })
-        return {'siblings': serialized_siblings}
+        return {'results': serialized_siblings}
