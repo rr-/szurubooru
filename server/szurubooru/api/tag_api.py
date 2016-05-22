@@ -1,7 +1,16 @@
 import datetime
-from szurubooru import search
+from szurubooru import db, search
 from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, tags, snapshots
+
+def _create_if_needed(tag_names, user):
+    if not tag_names:
+        return
+    auth.verify_privilege(user, 'tags:create')
+    _existing_tags, new_tags = tags.get_or_create_tags_by_names(tag_names)
+    db.session.flush()
+    for tag in new_tags:
+        snapshots.save_entity_creation(tag, user)
 
 class TagListApi(BaseApi):
     def __init__(self):
@@ -22,6 +31,9 @@ class TagListApi(BaseApi):
             'suggestions', required=False, default=[])
         implications = ctx.get_param_as_list(
             'implications', required=False, default=[])
+
+        _create_if_needed(suggestions, ctx.user)
+        _create_if_needed(implications, ctx.user)
 
         tag = tags.create_tag(names, category, suggestions, implications)
         ctx.session.add(tag)
@@ -48,12 +60,14 @@ class TagDetailApi(BaseApi):
                 tag, ctx.get_param_as_string('category'))
         if ctx.has_param('suggestions'):
             auth.verify_privilege(ctx.user, 'tags:edit:suggestions')
-            tags.update_tag_suggestions(
-                tag, ctx.get_param_as_list('suggestions'))
+            suggestions = ctx.get_param_as_list('suggestions')
+            _create_if_needed(suggestions, ctx.user)
+            tags.update_tag_suggestions(tag, suggestions)
         if ctx.has_param('implications'):
             auth.verify_privilege(ctx.user, 'tags:edit:implications')
-            tags.update_tag_implications(
-                tag, ctx.get_param_as_list('implications'))
+            implications = ctx.get_param_as_list('implications')
+            _create_if_needed(implications, ctx.user)
+            tags.update_tag_implications(tag, implications)
         tag.last_edit_time = datetime.datetime.now()
         ctx.session.flush()
         snapshots.save_entity_modification(tag, ctx.user)

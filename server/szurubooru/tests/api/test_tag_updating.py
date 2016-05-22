@@ -16,6 +16,7 @@ def test_ctx(
         'tag_name_regex': '^[^!]*$',
         'tag_category_name_regex': '^[^!]*$',
         'privileges': {
+            'tags:create': db.User.RANK_REGULAR,
             'tags:edit:names': db.User.RANK_REGULAR,
             'tags:edit:category': db.User.RANK_REGULAR,
             'tags:edit:suggestions': db.User.RANK_REGULAR,

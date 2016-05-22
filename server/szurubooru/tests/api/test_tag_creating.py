@@ -249,11 +249,12 @@ def test_reusing_suggestions_and_implications(test_ctx):
     }
 ])
 def test_tag_trying_to_relate_to_itself(test_ctx, input):
-    with pytest.raises(tags.InvalidTagRelationError):
+    with pytest.raises(tags.TagAlreadyExistsError):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input=input,
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
+    db.session.rollback()
     assert tags.try_get_tag_by_name('tag') is None
 
 def test_trying_to_create_tag_without_privileges(test_ctx):

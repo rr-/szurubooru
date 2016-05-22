@@ -214,13 +214,9 @@ def update_tag_names(tag, names):
 def update_tag_implications(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot imply itself.')
-    related_tags, new_tags = get_or_create_tags_by_names(relations)
-    db.session.flush()
-    tag.implications = related_tags + new_tags
+    tag.implications = get_tags_by_names(relations)
 
 def update_tag_suggestions(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot suggest itself.')
-    related_tags, new_tags = get_or_create_tags_by_names(relations)
-    db.session.flush()
-    tag.suggestions = related_tags + new_tags
+    tag.suggestions = get_tags_by_names(relations)
