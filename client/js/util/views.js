@@ -24,6 +24,10 @@ function _makeLabel(options, attrs) {
     return makeNonVoidElement('label', attrs, options.text);
 }
 
+function makeFileSize(fileSize) {
+    return misc.formatFileSize(fileSize);
+}
+
 function makeRelativeTime(time) {
     return makeNonVoidElement(
         'time',
@@ -244,6 +248,7 @@ function getTemplate(templatePath) {
         }
         Object.assign(ctx, {
             makeRelativeTime: makeRelativeTime,
+            makeFileSize: makeFileSize,
             makeThumbnail: makeThumbnail,
             makeRadio: makeRadio,
             makeCheckbox: makeCheckbox,

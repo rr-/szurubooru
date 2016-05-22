@@ -14,6 +14,8 @@ class HomeView {
             name: config.name,
             version: config.meta.version,
             buildDate: config.meta.buildDate,
+            diskUsage: ctx.diskUsage,
+            postCount: ctx.postCount,
         });
 
         views.listenToMessages(source);

@@ -1,6 +1,8 @@
 'use strict';
 
 const page = require('page');
+const api = require('../api.js');
+const events = require('../events.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const HomeView = require('../views/home_view.js');
 const NotFoundView = require('../views/not_found_view.js');
@@ -18,7 +20,19 @@ class HomeController {
 
     _indexRoute() {
         topNavController.activate('home');
-        this._homeView.render({});
+
+        api.get('/info')
+            .then(response => {
+                this._homeView.render({
+                    diskUsage: response.diskUsage,
+                    postCount: response.postCount,
+                    featuredPost: response.featuredPost,
+                });
+            },
+            response => {
+                this._homeView.render({});
+                events.notify(events.Error, response.description);
+            });
     }
 
     _notFoundRoute(ctx) {

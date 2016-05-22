@@ -11,6 +11,35 @@ function* range(start=0, end=null, step=1) {
     }
 }
 
+function _formatUnits(number, base, suffixes, callback) {
+    if (!number && number !== 0) {
+        return NaN;
+    }
+    number *= 1.0;
+    let suffix = suffixes.shift();
+    while (number >= base && suffixes.length > 0) {
+        suffix = suffixes.shift();
+        number /= base;
+    }
+    if (callback === undefined) {
+        callback = (number, suffix) => {
+            return suffix ? number.toFixed(1) + suffix : number;
+        };
+    }
+    return callback(number, suffix);
+}
+
+function formatFileSize(fileSize) {
+    return _formatUnits(
+        fileSize,
+        1024,
+        ['B', 'K', 'M', 'G'],
+        (number, suffix) => {
+            const decimalPlaces = number < 20 && suffix !== 'B' ? 1 : 0;
+            return number.toFixed(decimalPlaces) + suffix;
+        });
+}
+
 function formatRelativeTime(timeString) {
     if (!timeString) {
         return 'never';
@@ -108,5 +137,6 @@ module.exports = {
     parseSearchQuery: parseSearchQuery,
     parseSearchQueryRoute: parseSearchQueryRoute,
     formatRelativeTime: formatRelativeTime,
+    formatFileSize: formatFileSize,
     unindent: unindent,
 };
