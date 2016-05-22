@@ -11,7 +11,11 @@
             </thead>
             <tbody>
                 <% _.each(ctx.tagCategories, category => { %>
-                    <tr data-category='<%= category.name %>'>
+                    <% if (category.default) { %>
+                        <tr data-category='<%= category.name %>' class='default'>
+                    <% } else { %>
+                        <tr data-category='<%= category.name %>'>
+                    <% } %>
                         <td class='name'>
                             <% if (ctx.canEditName) { %>
                                 <%= ctx.makeTextInput({value: category.name, required: true}) %>
@@ -32,12 +36,17 @@
                             </a>
                         </td>
                         <% if (ctx.canDelete) { %>
-                            <td>
+                            <td class='remove'>
                                 <% if (category.usages) { %>
-                                    <a class='inactive remove' title="Can't delete category in use">Remove</a>
+                                    <a class='inactive' title="Can't delete category in use">Remove</a>
                                 <% } else { %>
-                                    <a href='#' class='remove'>Remove</a>
+                                    <a href='#'>Remove</a>
                                 <% } %>
+                            </td>
+                        <% } %>
+                        <% if (ctx.canSetDefault) { %>
+                            <td class='set-default'>
+                                <a href='#'>Make default</a>
                             </td>
                         <% } %>
                     </tr>
@@ -54,8 +63,11 @@
                     <td class='usages'>
                         0
                     </td>
-                    <td>
-                        <a href='#' class='remove'>Remove</a>
+                    <td class='remove'>
+                        <a href='#'>Remove</a>
+                    </td>
+                    <td class='set-default'>
+                        <a href='#'>Make default</a>
                     </td>
                 </tr>
             </tfoot>

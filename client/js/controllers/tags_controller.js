@@ -42,7 +42,11 @@ class TagsController {
             (ctx, next) => { this._listTagsRoute(ctx, next); });
     }
 
-    _saveTagCategories(addedCategories, changedCategories, removedCategories) {
+    _saveTagCategories(
+            addedCategories,
+            changedCategories,
+            removedCategories,
+            defaultCategory) {
         let promises = [];
         for (let category of addedCategories) {
             promises.push(api.post('/tag-categories/', category));
@@ -54,14 +58,25 @@ class TagsController {
         for (let name of removedCategories) {
             promises.push(api.delete('/tag-category/' + name));
         }
-        Promise.all(promises).then(
-            () => {
-                events.notify(events.TagsChange);
-                events.notify(events.Success, 'Changes saved.');
-            },
-            response => {
-                events.notify(events.Error, response.description);
-            });
+        Promise.all(promises)
+            .then(
+                () => {
+                    if (!defaultCategory) {
+                        return Promise.resolve();
+                    }
+                    return api.put(
+                        '/tag-category/' + defaultCategory + '/default');
+                }, response => {
+                    return Promise.reject(response);
+                })
+            .then(
+                () => {
+                    events.notify(events.TagsChange);
+                    events.notify(events.Success, 'Changes saved.');
+                },
+                response => {
+                    events.notify(events.Error, response.description);
+                });
     }
 
     _loadTagRoute(ctx, next) {
@@ -165,6 +180,7 @@ class TagsController {
                 canEditColor: api.hasPrivilege('tagCategories:edit:color'),
                 canDelete: api.hasPrivilege('tagCategories:delete'),
                 canCreate: api.hasPrivilege('tagCategories:create'),
+                canSetDefault: api.hasPrivilege('tagCategories:setDefault'),
                 saveChanges: (...args) => {
                     return this._saveTagCategories(...args);
                 },

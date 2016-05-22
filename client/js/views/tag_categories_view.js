@@ -8,7 +8,41 @@ class TagListHeaderView {
         this._template = views.getTemplate('tag-categories');
     }
 
-    _saveButtonClickHandler(e, ctx, target) {
+    render(ctx) {
+        const target = document.getElementById('content-holder');
+        const source = this._template(ctx);
+
+        const form = source.querySelector('form');
+        const newRowTemplate = source.querySelector('.add-template');
+        const tableBody = source.querySelector('tbody');
+        const addLink = source.querySelector('a.add');
+        const saveButton = source.querySelector('button.save');
+
+        newRowTemplate.parentNode.removeChild(newRowTemplate);
+        views.decorateValidator(form);
+
+        for (let row of tableBody.querySelectorAll('tr')) {
+            this._addRowHandlers(row);
+        }
+
+        if (addLink) {
+            addLink.addEventListener('click', e => {
+                e.preventDefault();
+                let newRow = newRowTemplate.cloneNode(true);
+                tableBody.appendChild(newRow);
+                this._addRowHandlers(row);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            this._evtSaveButtonClick(e, ctx, target);
+        });
+
+        views.listenToMessages(source);
+        views.showView(target, source);
+    }
+
+    _evtSaveButtonClick(e, ctx, target) {
         e.preventDefault();
 
         views.clearMessages(target);
@@ -20,6 +54,7 @@ class TagListHeaderView {
                 existingCategories[category.name] = category;
             }
 
+            let defaultCategory = null;
             let addedCategories = [];
             let removedCategories = [];
             let changedCategories = [];
@@ -31,6 +66,9 @@ class TagListHeaderView {
                     name: row.querySelector('.name input').value,
                     color: row.querySelector('.color input').value,
                 };
+                if (row.classList.contains('default')) {
+                    defaultCategory = category.name;
+                }
                 if (!name) {
                     if (category.name) {
                         addedCategories.push(category);
@@ -50,11 +88,14 @@ class TagListHeaderView {
                 }
             }
             ctx.saveChanges(
-                addedCategories, changedCategories, removedCategories);
+                addedCategories,
+                changedCategories,
+                removedCategories,
+                defaultCategory);
         });
     }
 
-    _removeButtonClickHandler(e, row, link) {
+    _evtRemoveButtonClick(e, row, link) {
         e.preventDefault();
         if (link.classList.contains('inactive')) {
             return;
@@ -62,47 +103,27 @@ class TagListHeaderView {
         row.parentNode.removeChild(row);
     }
 
-    _addRemoveButtonClickHandler(row) {
-        const link = row.querySelector('a.remove');
-        if (!link) {
-            return;
+    _evtSetDefaultButtonClick(e, row) {
+        e.preventDefault();
+        const oldRowNode = row.parentNode.querySelector('tr.default');
+        if (oldRowNode) {
+            oldRowNode.classList.remove('default');
         }
-        link.addEventListener(
-            'click', e => this._removeButtonClickHandler(e, row, link));
+        row.classList.add('default');
     }
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template(ctx);
-
-        const form = source.querySelector('form');
-        const newRowTemplate = source.querySelector('.add-template');
-        const tableBody = source.querySelector('tbody');
-        const addLink = source.querySelector('a.add');
-        const saveButton = source.querySelector('button.save');
-
-        newRowTemplate.parentNode.removeChild(newRowTemplate);
-        views.decorateValidator(form);
-
-        for (let row of tableBody.querySelectorAll('tr')) {
-            this._addRemoveButtonClickHandler(row);
+    _addRowHandlers(row) {
+        const removeLink = row.querySelector('.remove a');
+        if (removeLink) {
+            removeLink.addEventListener(
+                'click', e => this._evtRemoveButtonClick(e, row, removeLink));
         }
 
-        if (addLink) {
-            addLink.addEventListener('click', e => {
-                e.preventDefault();
-                let newRow = newRowTemplate.cloneNode(true);
-                tableBody.appendChild(newRow);
-                this._addRemoveButtonClickHandler(newRow);
-            });
+        const defaultLink = row.querySelector('.set-default a');
+        if (defaultLink) {
+            defaultLink.addEventListener(
+                'click', e => this._evtSetDefaultButtonClick(e, row));
         }
-
-        form.addEventListener('submit', e => {
-            this._saveButtonClickHandler(e, ctx, target);
-        });
-
-        views.listenToMessages(source);
-        views.showView(target, source);
     }
 }
 
