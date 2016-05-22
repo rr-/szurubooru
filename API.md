@@ -865,6 +865,14 @@ data.
 
     `POST /featured-post`
 
+- **Input**
+
+    ```json5
+    {
+        "id": <post-id>
+    }
+    ```
+
 - **Output**
 
     A [detailed post resource](#detailed-post).
