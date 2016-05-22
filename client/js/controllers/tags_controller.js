@@ -120,6 +120,9 @@ class TagsController {
 
     _saveTag(tag, input) {
         return api.put('/tag/' + tag.names[0], input).then(response => {
+            if (input.names && input.names[0] !== tag.names[0]) {
+                page('/tag/' + input.names[0]);
+            }
             events.notify(events.Success, 'Tag saved.');
             return Promise.resolve();
         }, response => {
