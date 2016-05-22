@@ -89,6 +89,7 @@ def serialize_post(post, authenticated_user):
         'favoritedBy': [users.serialize_user(rel.user, authenticated_user) \
             for rel in post.favorited_by],
         'hasCustomThumbnail': files.has(get_post_thumbnail_backup_path(post)),
+        'mimeType': post.mime_type,
     }
 
     if authenticated_user:

@@ -64,7 +64,8 @@ def test_serialize_note():
 def test_serialize_empty_post():
     assert posts.serialize_post(None, None) is None
 
-def test_serialize_post(post_factory, user_factory, tag_factory):
+def test_serialize_post(post_factory, user_factory, tag_factory, config_injector):
+    config_injector({'data_url': 'http://example.com/'})
     with unittest.mock.patch('szurubooru.func.users.serialize_user'), \
         unittest.mock.patch('szurubooru.func.posts.files.has', return_value=True):
         users.serialize_user.side_effect = lambda user, auth_user: user.name
@@ -142,6 +143,7 @@ def test_serialize_post(post_factory, user_factory, tag_factory):
         'lastFeatureTime': datetime.datetime(1999, 1, 1),
         'favoritedBy': ['fav1'],
         'hasCustomThumbnail': True,
+        'mimeType': 'image/jpeg',
     }
 
 def test_serialize_post_with_details(post_factory, comment_factory, user_factory):

@@ -1440,7 +1440,7 @@ experience.
     "name":  <name>,
     "color": <color>,
     "usages": <usages>
-    "default": <is_default>
+    "default": <is-default>
 }
 ```
 
@@ -1449,7 +1449,7 @@ experience.
 - `<name>`: the category name.
 - `<color>`: the category color.
 - `<usages>`: how many tags is the given category used with.
-- `<is_default>`: whether the tag category is the default one.
+- `<is-default>`: whether the tag category is the default one.
 
 ## Detailed tag category
 **Description**
@@ -1560,7 +1560,8 @@ One file together with its metadata posted to the site.
     "featureCount":       <feature-count>,
     "lastFeatureTime":    <last-feature-time>,
     "favoritedBy":        <favorited-by>,
-    "hasCustomThumbnail": <has-custom-thumbnail>
+    "hasCustomThumbnail": <has-custom-thumbnail>,
+    "mimeType":           <mime-type>
 }
 ```
 
@@ -1610,6 +1611,8 @@ One file together with its metadata posted to the site.
   RFC 3339.
 - `<favorited-by>`: list of users, serialized as [user resources](#user).
 - `<has-custom-thumbnail>`: whether the post uses custom thumbnail.
+- `<mime-type>`: subsidiary to `<type>`, used to tell exact content format;
+  useful for `<video>` tags for instance.
 
 ## Detailed post
 **Description**
