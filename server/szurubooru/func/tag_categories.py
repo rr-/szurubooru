@@ -19,6 +19,7 @@ def serialize_category(category):
         'name': category.name,
         'color': category.color,
         'usages': category.tag_count,
+        'default': category.default,
     }
 
 def serialize_category_with_details(category):
@@ -31,6 +32,8 @@ def create_category(name, color):
     category = db.TagCategory()
     update_category_name(category, name)
     update_category_color(category, color)
+    if not get_all_categories():
+        category.default = True
     return category
 
 def update_category_name(category, name):
@@ -76,14 +79,27 @@ def get_all_categories():
     return db.session.query(db.TagCategory).all()
 
 def try_get_default_category():
-    return db.session \
+    category = db.session \
         .query(db.TagCategory) \
-        .order_by(db.TagCategory.tag_category_id.asc()) \
-        .limit(1) \
+        .filter(db.TagCategory.default) \
         .first()
+    # if for some reason (e.g. as a result of migration) there's no default
+    # category, get the first record available.
+    if not category:
+        category = db.session \
+            .query(db.TagCategory) \
+            .order_by(db.TagCategory.tag_category_id.asc()) \
+            .first()
+    return category
 
 def get_default_category():
     category = try_get_default_category()
     if not category:
         raise TagCategoryNotFoundError('No tag category created yet.')
     return category
+
+def set_default_category(category):
+    old_category = try_get_default_category()
+    if old_category:
+        old_category.default = False
+    category.default = True

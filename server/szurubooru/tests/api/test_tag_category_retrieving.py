@@ -42,6 +42,7 @@ def test_retrieving_single(test_ctx):
             'name': 'cat',
             'color': 'dummy',
             'usages': 0,
+            'default': False,
         },
         'snapshots': [],
     }

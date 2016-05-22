@@ -98,6 +98,7 @@ def create_app():
 
     app.add_route('/tag-categories/', api.TagCategoryListApi())
     app.add_route('/tag-category/{category_name}', api.TagCategoryDetailApi())
+    app.add_route('/tag-category/{category_name}/default', api.DefaultTagCategoryApi())
     app.add_route('/tags/', api.TagListApi())
     app.add_route('/tag/{tag_name}', api.TagDetailApi())
     app.add_route('/tag-merge/', api.TagMergeApi())

@@ -9,7 +9,8 @@ from szurubooru.api.tag_api import (
     TagSiblingsApi)
 from szurubooru.api.tag_category_api import (
     TagCategoryListApi,
-    TagCategoryDetailApi)
+    TagCategoryDetailApi,
+    DefaultTagCategoryApi)
 from szurubooru.api.comment_api import (
     CommentListApi,
     CommentDetailApi,

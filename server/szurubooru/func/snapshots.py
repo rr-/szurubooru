@@ -28,6 +28,7 @@ def get_tag_category_snapshot(category):
     return {
         'name': category.name,
         'color': category.color,
+        'default': True if category.default else False,
     }
 
 # pylint: disable=invalid-name

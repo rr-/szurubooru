@@ -19,6 +19,7 @@
         - [Updating tag category](#updating-tag-category)
         - [Getting tag category](#getting-tag-category)
         - [Deleting tag category](#deleting-tag-category)
+        - [Setting default tag category](#setting-default-tag-category)
     - Tags
         - [Listing tags](#listing-tags)
         - [Creating tag](#creating-tag)
@@ -185,7 +186,8 @@ data.
 - **Description**
 
     Creates a new tag category using specified parameters. Name must match
-    `tag_category_name_regex` from server's configuration.
+    `tag_category_name_regex` from server's configuration. First category
+    created becomes the default category.
 
 ## Updating tag category
 - **Request**
@@ -259,6 +261,31 @@ data.
 
     Deletes existing tag category. The tag category to be deleted must have no
     usages.
+
+## Setting default tag category
+- **Request**
+
+    `PUT /tag-category/<name>/default`
+
+- **Input**
+
+    ```json5
+    {}
+    ```
+
+- **Output**
+
+    A [detailed tag category resource](#detailed-tag-category).
+
+- **Errors**
+
+    - the tag category does not exist
+    - privileges are too low
+
+- **Description**
+
+    Sets given tag category as default. All new tags created manually or
+    automatically will have this category.
 
 ## Listing tags
 - **Request**
@@ -1405,6 +1432,7 @@ experience.
     "name":  <name>,
     "color": <color>,
     "usages": <usages>
+    "default": <is_default>
 }
 ```
 
@@ -1413,6 +1441,7 @@ experience.
 - `<name>`: the category name.
 - `<color>`: the category color.
 - `<usages>`: how many tags is the given category used with.
+- `<is_default>`: whether the tag category is the default one.
 
 ## Detailed tag category
 **Description**
@@ -1723,7 +1752,8 @@ A snapshot is a version of a database resource.
         ```json5
         {
             "name":  "character",
-            "color": "#FF0000"
+            "color": "#FF0000",
+            "default": false
         }
         ```
 

@@ -25,6 +25,7 @@ def test_creating_category(test_ctx):
         'name': 'meta',
         'color': 'black',
         'usages': 0,
+        'default': True,
     }
     assert len(result['snapshots']) == 1
     category = db.session.query(db.TagCategory).one()

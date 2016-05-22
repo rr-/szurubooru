@@ -60,3 +60,13 @@ class TagCategoryDetailApi(BaseApi):
         ctx.session.commit()
         tags.export_to_json()
         return {}
+
+class DefaultTagCategoryApi(BaseApi):
+    def put(self, ctx, category_name):
+        auth.verify_privilege(ctx.user, 'tag_categories:set_default')
+        category = tag_categories.get_category_by_name(category_name)
+        tag_categories.set_default_category(category)
+        snapshots.save_entity_modification(category, ctx.user)
+        ctx.session.commit()
+        tags.export_to_json()
+        return tag_categories.serialize_category_with_details(category)

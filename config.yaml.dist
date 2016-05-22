@@ -98,6 +98,7 @@ privileges:
     'tag_categories:list':          anonymous # note: will be available as data_url/tags.json anyway
     'tag_categories:view':          anonymous
     'tag_categories:delete':        moderator
+    'tag_categories:set_default':   moderator
 
     'comments:create':              regular
     'comments:delete:any':          moderator

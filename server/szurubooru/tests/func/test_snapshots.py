@@ -92,6 +92,13 @@ def test_serializing_tag_category(tag_category_factory):
     assert snapshots.get_tag_category_snapshot(category) == {
         'name': 'name',
         'color': 'color',
+        'default': False,
+    }
+    category.default = True
+    assert snapshots.get_tag_category_snapshot(category) == {
+        'name': 'name',
+        'color': 'color',
+        'default': True,
     }
 
 def test_merging_modification_to_creation(tag_factory, user_factory):
