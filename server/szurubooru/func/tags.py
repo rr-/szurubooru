@@ -138,13 +138,13 @@ def get_tag_siblings(tag):
     pt_alias1 = sqlalchemy.orm.aliased(db.PostTag)
     pt_alias2 = sqlalchemy.orm.aliased(db.PostTag)
     result = db.session \
-        .query(tag_alias, sqlalchemy.func.count(tag_alias.tag_id)) \
+        .query(tag_alias, sqlalchemy.func.count(pt_alias2.post_id)) \
         .join(pt_alias1, pt_alias1.tag_id == tag_alias.tag_id) \
         .join(pt_alias2, pt_alias2.post_id == pt_alias1.post_id) \
         .filter(pt_alias2.tag_id == tag.tag_id) \
         .filter(pt_alias1.tag_id != tag.tag_id) \
         .group_by(tag_alias.tag_id) \
-        .order_by(tag_alias.post_count.desc()) \
+        .order_by(sqlalchemy.func.count(pt_alias2.post_id).desc()) \
         .limit(50)
     return result
 
