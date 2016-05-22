@@ -23,37 +23,41 @@ class Api {
         ];
     }
 
-    get(url) {
+    get(url, options) {
         if (url in this.cache) {
             return new Promise((resolve, reject) => {
                 resolve(this.cache[url]);
             });
         }
-        return this._process(url, request.get).then(response => {
-            this.cache[url] = response;
-            return Promise.resolve(response);
-        });
+        return this._process(url, request.get, {}, {}, options)
+            .then(response => {
+                this.cache[url] = response;
+                return Promise.resolve(response);
+            });
     }
 
-    post(url, data, files) {
+    post(url, data, files, options) {
         this.cache = {};
-        return this._process(url, request.post, data, files);
+        return this._process(url, request.post, data, files, options);
     }
 
-    put(url, data, files) {
+    put(url, data, files, options) {
         this.cache = {};
-        return this._process(url, request.put, data, files);
+        return this._process(url, request.put, data, files, options);
     }
 
-    delete(url) {
+    delete(url, options) {
         this.cache = {};
-        return this._process(url, request.delete);
+        return this._process(url, request.delete, {}, {}, options);
     }
 
-    _process(url, requestFactory, data, files) {
+    _process(url, requestFactory, data, files, options) {
+        options = options || {};
         const fullUrl = this._getFullUrl(url);
         return new Promise((resolve, reject) => {
-            nprogress.start();
+            if (!options.noProgress) {
+                nprogress.start();
+            }
             let req = requestFactory(fullUrl);
             if (data) {
                 req.attach('metadata', new Blob([JSON.stringify(data)]));
