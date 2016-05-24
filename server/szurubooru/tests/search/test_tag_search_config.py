@@ -29,6 +29,10 @@ def test_filter_anonymous(verify_unpaged, tag_factory, input, expected_tag_names
     db.session.add(tag_factory(names=['t2']))
     verify_unpaged(input, expected_tag_names)
 
+def test_filter_anonymous_starting_with_colon(verify_unpaged, tag_factory):
+    db.session.add(tag_factory(names=[':t']))
+    verify_unpaged(':t', [':t'])
+
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('name:tag1', ['tag1']),
     ('name:tag2', ['tag2']),

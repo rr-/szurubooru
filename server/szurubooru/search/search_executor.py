@@ -58,7 +58,7 @@ class SearchExecutor(object):
                 token = token[1:]
                 negated = not negated
 
-            if ':' in token:
+            if ':' in token and token[0] != ':':
                 key, value = token.split(':', 2)
                 query = self._handle_key_value(query, key, value, negated)
             else:
