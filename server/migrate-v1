@@ -19,6 +19,19 @@ def read_file(path):
     with open(path, 'rb') as handle:
         return handle.read()
 
+def translate_note_polygon(row):
+    x, y, w, h = row['x'], row['y'], row['width'], row['height']
+    x /= 100.0
+    y /= 100.0
+    w /= 100.0
+    h /= 100.0
+    return [
+        (x,     y    ),
+        (x + w, y    ),
+        (x + w, y + h),
+        (x,     y + h),
+    ]
+
 def get_v1_session(args):
     dsn = '{schema}://{user}:{password}@{host}:{port}/{name}?charset=utf8'.format(
             schema='mysql+pymysql',
@@ -259,20 +272,10 @@ def import_post_notes(unused_post_ids, v1_session, v2_session):
     for row in exec_query(v1_session, 'SELECT * FROM postNotes'):
         if row['postId'] in unused_post_ids:
             continue
-        x, y, w, h = row['x'], row['y'], row['width'], row['height']
-        x /= 100
-        y /= 100
-        w /= 100
-        h /= 100
         post_note = db.PostNote()
         post_note.post_id = row['postId']
         post_note.text = row['text']
-        post_note.polygon = [
-            (x,     y    ),
-            (x + w, y    ),
-            (x + w, y + w),
-            (x,     y + w),
-        ]
+        post_note.polygon = translate_note_polygon(row)
         v2_session.add(post_note)
     v2_session.commit()
 
