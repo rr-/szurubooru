@@ -20,7 +20,8 @@ def read_file(path):
         return handle.read()
 
 def translate_note_polygon(row):
-    x, y, w, h = row['x'], row['y'], row['width'], row['height']
+    x, y = row['x'], row['y']
+    w, h = row.get('width', row.get('w')), row.get('height', row.get('h'))
     x /= 100.0
     y /= 100.0
     w /= 100.0
@@ -369,6 +370,14 @@ def import_snapshots(v1_session, v2_session):
                 del data['contentChecksum']
             if 'tags' in data and isinstance(data['tags'], dict):
                 data['tags'] = list(data['tags'].values())
+            if 'notes' in data:
+                notes = []
+                for note in data['notes']:
+                    notes.append({
+                        'polygon': translate_note_polygon(note),
+                        'text': note['text'],
+                    })
+                data['notes'] = notes
             snapshot.resource_repr = row['primaryKey']
         elif snapshot.resource_type == 'tag':
             if 'banned' in data:
