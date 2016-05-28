@@ -83,7 +83,7 @@ def exec_scalar(session, query):
     first_row = rows[0]
     return list(first_row.values())[0]
 
-def import_users(v1_data_dir, v1_session, v2_session):
+def import_users(v1_data_dir, v1_session, v2_session, no_data=False):
     for row in exec_query(v1_session, 'SELECT * FROM users'):
         logger.info('Importing user %s...', row['name'])
         user = db.User()
@@ -109,7 +109,7 @@ def import_users(v1_data_dir, v1_session, v2_session):
         }[row['avatarStyle']]
         v2_session.add(user)
 
-        if user.avatar_style == db.User.AVATAR_MANUAL:
+        if user.avatar_style == db.User.AVATAR_MANUAL and not no_data:
             source_avatar_path = os.path.join(
                 v1_data_dir, 'public_html', 'data', 'avatars', str(user.user_id))
             avatar_content = read_file(source_avatar_path)
@@ -392,7 +392,7 @@ def main():
         logger.error('v2.x database is dirty! Aborting.')
         sys.exit(1)
 
-    import_users(v1_data_dir, v1_session, v2_session)
+    import_users(v1_data_dir, v1_session, v2_session, args.no_data)
     category_to_id_map = import_tag_categories(v1_session, v2_session)
     unused_tag_ids = import_tags(category_to_id_map, v1_session, v2_session)
     import_tag_relations(unused_tag_ids, v1_session, v2_session)
