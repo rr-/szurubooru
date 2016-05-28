@@ -19,7 +19,7 @@ def get_post_snapshot(post):
         'notes': sorted([{
             'polygon': note.polygon,
             'text': note.text,
-        } for note in post.notes]),
+        } for note in post.notes], key=lambda x: x['polygon']),
         'flags': post.flags,
         'featured': post.is_featured,
     }

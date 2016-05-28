@@ -57,7 +57,7 @@ def get_post_thumbnail_backup_path(post):
 
 def serialize_note(note):
     return {
-        'polygon': note.path,
+        'polygon': note.polygon,
         'text': note.text,
     }
 
@@ -81,7 +81,9 @@ def serialize_post(post, authenticated_user):
         'flags': post.flags,
         'tags': [tag.first_name for tag in post.tags],
         'relations': [rel.post_id for rel in post.relations],
-        'notes': sorted(serialize_note(note) for note in post.notes),
+        'notes': sorted(
+           [ serialize_note(note) for note in post.notes],
+            key=lambda x: x['polygon']),
         'user': users.serialize_user(post.user, authenticated_user),
         'score': post.score,
         'featureCount': post.feature_count,

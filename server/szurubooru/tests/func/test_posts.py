@@ -54,7 +54,7 @@ def test_get_post_thumbnail_backup_path(input_mime_type):
 
 def test_serialize_note():
     note = db.PostNote()
-    note.path = [[0, 1], [1, 1], [1, 0], [0, 0]]
+    note.polygon = [[0, 1], [1, 1], [1, 0], [0, 0]]
     note.text = '...'
     assert posts.serialize_note(note) == {
         'polygon': [[0, 1], [1, 1], [1, 0], [0, 0]],
