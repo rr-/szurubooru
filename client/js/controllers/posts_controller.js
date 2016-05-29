@@ -1,5 +1,6 @@
 'use strict';
 
+const misc = require('../util/misc.js');
 const page = require('page');
 const topNavController = require('../controllers/top_nav_controller.js');
 const EmptyView = require('../views/empty_view.js');
@@ -7,7 +8,9 @@ const EmptyView = require('../views/empty_view.js');
 class PostsController {
     registerRoutes() {
         page('/upload', (ctx, next) => { this._uploadPostsRoute(); });
-        page('/posts', (ctx, next) => { this._listPostsRoute(); });
+        page('/posts/:query?',
+            (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+            (ctx, next) => { this._listPostsRoute(); });
         page(
             '/post/:id',
             (ctx, next) => { this._showPostRoute(ctx.params.id); });
