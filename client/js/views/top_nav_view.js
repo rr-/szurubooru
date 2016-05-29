@@ -6,17 +6,32 @@ class TopNavView {
     constructor() {
         this._template = views.getTemplate('top-nav');
         this._navHolder = document.getElementById('top-nav-holder');
+        this._lastCtx = null;
     }
 
     render(ctx) {
+        this._lastCtx = ctx;
         const target = this._navHolder;
         const source = this._template(ctx);
-
-
         views.showView(this._navHolder, source);
     }
 
+    show() {
+        this._navHolder.style.visibility = 'initial';
+        this._navHolder.style.position = 'initial';
+    }
+
+    hide() {
+        this._navHolder.style.visibility = 'hidden';
+        this._navHolder.style.position = 'fixed';
+    }
+
     activate(itemName) {
+        if (itemName == 'home') {
+            this.hide();
+        } else {
+            this.show();
+        }
         const allItemsSelector = '#top-nav-holder [data-name]';
         const currentItemSelector =
             '#top-nav-holder [data-name="' + itemName + '"]';
