@@ -126,11 +126,14 @@ def get_post_by_id(post_id):
         raise PostNotFoundError('Post %r not found.' % post_id)
     return post
 
-def try_get_featured_post():
-    post_feature = db.session \
+def try_get_current_post_feature():
+    return db.session \
         .query(db.PostFeature) \
         .order_by(db.PostFeature.time.desc()) \
         .first()
+
+def try_get_featured_post():
+    post_feature = try_get_current_post_feature()
     return post_feature.post if post_feature else None
 
 def create_post(content, tag_names, user):

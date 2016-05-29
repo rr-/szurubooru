@@ -2,7 +2,7 @@ import datetime
 import os
 from szurubooru import config
 from szurubooru.api.base_api import BaseApi
-from szurubooru.func import posts
+from szurubooru.func import posts, users
 
 class InfoApi(BaseApi):
     def __init__(self):
@@ -11,11 +11,15 @@ class InfoApi(BaseApi):
         self._cache_result = None
 
     def get(self, ctx):
-        featured_post = posts.try_get_featured_post()
+        post_feature = posts.try_get_current_post_feature()
         return {
             'postCount': posts.get_post_count(),
             'diskUsage': self._get_disk_usage(),
-            'featuredPost': posts.serialize_post(featured_post, ctx.user),
+            'featuredPost': posts.serialize_post(post_feature.post, ctx.user) \
+                if post_feature else None,
+            'featuringTime': post_feature.time if post_feature else None,
+            'featuringUser': users.serialize_user(post_feature.user, ctx.user) \
+                if post_feature else None,
         }
 
     def _get_disk_usage(self):

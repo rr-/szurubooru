@@ -858,7 +858,9 @@ data.
 
     Retrieves the post that is currently featured on the main page in web
     client. If no post is featured, `<post>` is null and `snapshots` array is
-    empty.
+    empty. Note that this method exists mostly for compatibility with setting
+    featured post - most of times, you'd want to use query global info which
+    contains more information.
 
 ## Featuring post
 - **Request**
@@ -1351,7 +1353,9 @@ data.
     {
         "postCount": <post-count>,
         "diskUsage": <disk-usage>,  // in bytes
-        "featuredPost": <featured-post>
+        "featuredPost": <featured-post>,
+        "featuringTime": <time>,
+        "featuringUser": <user>
     }
     ```
 

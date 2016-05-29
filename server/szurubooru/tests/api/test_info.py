@@ -12,6 +12,8 @@ def test_info_api(
             'postCount': 2,
             'diskUsage': 3,
             'featuredPost': None,
+            'featuringTime': None,
+            'featuringUser': None,
         }
     directory.join('test2.txt').write('abc')
     with fake_datetime('13:59'):
@@ -19,10 +21,14 @@ def test_info_api(
             'postCount': 2,
             'diskUsage': 3, # still 3 - it's cached
             'featuredPost': None,
+            'featuringTime': None,
+            'featuringUser': None,
         }
     with fake_datetime('14:01'):
         assert info_api.get(context_factory()) == {
             'postCount': 2,
             'diskUsage': 6, # cache expired
             'featuredPost': None,
+            'featuringTime': None,
+            'featuringUser': None,
         }
