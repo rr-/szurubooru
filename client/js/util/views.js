@@ -159,6 +159,13 @@ function makeFlexboxAlign(options) {
         .map(() => '<li class="flexbox-dummy"></li>').join('');
 }
 
+function makeAccessKey(html, key) {
+    const regex = new RegExp('(' + key + ')', 'i');
+    html = html.replace(
+        regex, '<span class="access-key" data-accesskey="$1">$1</span>');
+    return html;
+}
+
 function _serializeElement(name, attributes) {
     return [name]
         .concat(Object.keys(attributes).map(key => {
@@ -260,6 +267,7 @@ function getTemplate(templatePath) {
             makeColorInput: makeColorInput,
             makeTagLink: makeTagLink,
             makeFlexboxAlign: makeFlexboxAlign,
+            makeAccessKey: makeAccessKey,
         });
         return htmlToDom(templateFactory(ctx));
     };
