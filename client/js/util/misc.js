@@ -1,5 +1,7 @@
 'use strict';
 
+const marked = require('marked');
+
 function* range(start=0, end=null, step=1) {
     if (end == null) {
         end = start;
@@ -81,6 +83,72 @@ function formatRelativeTime(timeString) {
     return future ? 'in ' + text : text + ' ago';
 }
 
+function formatMarkdown(text) {
+    const renderer = new marked.Renderer();
+
+    const options = {
+        renderer: renderer,
+        breaks: true,
+        sanitize: true,
+        smartypants: true,
+    };
+
+    const sjis = [];
+
+    const preDecorator = text => {
+        text = text.replace(
+            /\[sjis\]((?:[^\[]|\[(?!\/?sjis\]))+)\[\/sjis\]/ig,
+            (match, capture) => {
+                var ret = '%%%SJIS' + sjis.length;
+                sjis.push(capture);
+                return ret;
+            });
+        //prevent ^#... from being treated as headers, due to tag permalinks
+        text = text.replace(/^#/g, '%%%#');
+        //fix \ before ~ being stripped away
+        text = text.replace(/\\~/g, '%%%T');
+        //post, user and tags premalinks
+        text = text.replace(
+            /(^|^\(|(?:[^\]])\(|[\s<>\[\]\)])([+#@][a-zA-Z0-9_-]+)/g,
+            '$1[$2]($2)');
+        text = text.replace(/\]\(@(\d+)\)/g, '](#/post/$1)');
+        text = text.replace(/\]\(\+([a-zA-Z0-9_-]+)\)/g, '](#/user/$1)');
+        text = text.replace(/\]\(#([a-zA-Z0-9_-]+)\)/g, '](#/posts/query=$1)');
+        return text;
+    };
+
+    const postDecorator = text => {
+        //restore fixes
+        text = text.replace(/%%%T/g, '\\~');
+        text = text.replace(/%%%#/g, '#');
+
+        text = text.replace(
+            /%%%SJIS(\d+)/,
+            (match, capture) => {
+                return '<div class="sjis">' + sjis[capture] + '</div>';
+            });
+
+        //search permalinks
+        text = text.replace(
+            /\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]/ig,
+            '<a href="#/posts/query=$1"><code>$1</code></a>');
+        //spoilers
+        text = text.replace(
+            /\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\]))+)\[\/spoiler\]/ig,
+            '<span class="spoiler">$1</span>');
+        //[small]
+        text = text.replace(
+            /\[small\]((?:[^\[]|\[(?!\/?small\]))+)\[\/small\]/ig,
+            '<small>$1</small>');
+        //strike-through
+        text = text.replace(/(^|[^\\])(~~|~)([^~]+)\2/g, '$1<del>$3</del>');
+        text = text.replace(/\\~/g, '~');
+        return text;
+    };
+
+    return postDecorator(marked(preDecorator(text), options));
+}
+
 function formatSearchQuery(dict) {
     let result = [];
     for (let key of Object.keys(dict)) {
@@ -138,5 +206,6 @@ module.exports = {
     parseSearchQueryRoute: parseSearchQueryRoute,
     formatRelativeTime: formatRelativeTime,
     formatFileSize: formatFileSize,
+    formatMarkdown: formatMarkdown,
     unindent: unindent,
 };
