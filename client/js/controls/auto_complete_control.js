@@ -61,18 +61,6 @@ class AutoCompleteControl {
         this._results = [];
         this._activeResult = -1;
 
-        this._mutationObserver = new MutationObserver(
-            mutations => {
-                for (let mutation of mutations) {
-                    for (let node of mutation.removedNodes) {
-                        if (node.contains(this._sourceInputNode)) {
-                            this._uninstall();
-                            return;
-                        }
-                    }
-                }
-            });
-
         this._install();
     }
 
@@ -108,8 +96,6 @@ class AutoCompleteControl {
         this._sourceInputNode.setAttribute('data-autocomplete', true);
         this._sourceInputNode.setAttribute('autocomplete', 'off');
 
-        this._mutationObserver.observe(
-            document.body, {childList: true, subtree: true});
         this._sourceInputNode.addEventListener(
             'keydown', e => this._evtKeyDown(e));
         this._sourceInputNode.addEventListener(
@@ -119,11 +105,13 @@ class AutoCompleteControl {
             '<div class="autocomplete"><ul></ul></div>');
         this._suggestionList = this._suggestionDiv.querySelector('ul');
         document.body.appendChild(this._suggestionDiv);
+
+        views.monitorNodeRemoval(
+            this._sourceInputNode, () => { this._uninstall(); });
     }
 
     _uninstall() {
         window.clearTimeout(this._showTimeout);
-        this._mutationObserver.disconnect();
         document.body.removeChild(this._suggestionDiv);
     }
 

@@ -354,6 +354,23 @@ function slideUp(element) {
     });
 }
 
+function monitorNodeRemoval(monitoredNode, callback) {
+    const mutationObserver = new MutationObserver(
+        mutations => {
+            for (let mutation of mutations) {
+                for (let node of mutation.removedNodes) {
+                    if (node.contains(monitoredNode)) {
+                        mutationObserver.disconnect();
+                        callback();
+                        return;
+                    }
+                }
+            }
+        });
+    mutationObserver.observe(
+        document.body, {childList: true, subtree: true});
+}
+
 document.addEventListener('input', e => {
     const type = e.target.getAttribute('type');
     if (type && type.toLowerCase() === 'color') {
@@ -378,4 +395,5 @@ module.exports = {
     scrollToHash: scrollToHash,
     slideDown: slideDown,
     slideUp: slideUp,
+    monitorNodeRemoval: monitorNodeRemoval,
 };
