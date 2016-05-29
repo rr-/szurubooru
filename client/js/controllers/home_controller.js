@@ -31,6 +31,8 @@ class HomeController {
                     diskUsage: response.diskUsage,
                     postCount: response.postCount,
                     featuredPost: response.featuredPost,
+                    featuringUser: response.featuringUser,
+                    featuringTime: response.featuringTime,
                 });
             },
             response => {

@@ -38,7 +38,13 @@
     <% if (ctx.featuredPost) { %>
         <aside>
             <%= ctx.makePostLink(ctx.featuredPost.id) %>
-            uploaded
+            &bull;
+            Featured
+            <%= ctx.makeRelativeTime(ctx.featuringTime) %>
+            by
+            <%= ctx.makeUserLink(ctx.featuringUser) %>
+            &bull;
+            Posted
             <%= ctx.makeRelativeTime(ctx.featuredPost.creationTime) %>
             by
             <%= ctx.makeUserLink(ctx.featuredPost.user) %>
