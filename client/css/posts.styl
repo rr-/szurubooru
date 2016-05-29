@@ -27,3 +27,27 @@
             bottom: 0
             width: 100%
             height: 100%
+
+        .notes
+            stroke-width: 1px
+            polygon
+                fill: $note-overlay-background-color
+                stroke: $note-overlay-border-color
+
+.note-text
+    position: absolute
+    max-width: 22.5em
+    margin-top: -0.5em
+    display: none
+
+    &>.wrapper
+        background: $note-text-background-color
+        padding: 0.5em
+        border: 1px solid $note-text-border-color
+        color: $note-text-text-color
+        margin-top: 1em
+
+        p:last-of-type
+            margin-bottom: 0
+        p:first-of-type
+            margin-top: 0

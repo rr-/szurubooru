@@ -5,6 +5,8 @@ const config = require('../config.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const PostContentControl = require('../controls/post_content_control.js');
+const PostNotesOverlayControl
+    = require('../controls/post_notes_overlay_control.js');
 const TagAutoCompleteControl =
     require('../controls/tag_auto_complete_control.js');
 
@@ -49,6 +51,10 @@ class HomeView {
                         window.innerHeight * 0.7,
                     ];
                 });
+
+            new PostNotesOverlayControl(
+                postContainerNode.querySelector('.post-overlay'),
+                ctx.featuredPost);
         }
     }
 }
