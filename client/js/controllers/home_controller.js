@@ -24,13 +24,22 @@ class HomeController {
         api.get('/info')
             .then(response => {
                 this._homeView.render({
+                    canListPosts: api.hasPrivilege('posts:list'),
+                    canListComments: api.hasPrivilege('comments:list'),
+                    canListTags: api.hasPrivilege('tags:list'),
+                    canListUsers: api.hasPrivilege('users:list'),
                     diskUsage: response.diskUsage,
                     postCount: response.postCount,
                     featuredPost: response.featuredPost,
                 });
             },
             response => {
-                this._homeView.render({});
+                this._homeView.render({
+                    canListPosts: api.hasPrivilege('posts:list'),
+                    canListComments: api.hasPrivilege('comments:list'),
+                    canListTags: api.hasPrivilege('tags:list'),
+                    canListUsers: api.hasPrivilege('users:list'),
+                });
                 events.notify(events.Error, response.description);
             });
     }

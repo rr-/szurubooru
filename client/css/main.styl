@@ -132,7 +132,6 @@ a .access-key
     .access-key
         text-decoration: underline
     .thumbnail
-        vertical-align: middle
         width: 1.5em
         height: 1.5em
         margin: calc((2.3em - 1.5em) / 2)
@@ -161,15 +160,19 @@ a .access-key
 
 .thumbnail
     /*background-image: attr(data-src url)*/ /* not available yet */
+    vertical-align: middle
     background-repeat: no-repeat
     background-size: cover
     background-position: center
     display: inline-block
-
-.thumbnail img
-    opacity: 0
-    width: 100%
-    height: 100%
+    img
+        opacity: 0
+        width: 100%
+        height: 100%
+span>.thumbnail
+    width: 20px
+    height: 20px
+    margin: 0 0.4em 0 0.4em
 
 .flexbox-dummy
     height: 0 !important

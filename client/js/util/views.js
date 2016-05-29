@@ -141,17 +141,25 @@ function makeColorInput(options) {
         'label', {class: 'color'}, colorInput + textInput);
 }
 
+function makePostLink(id) {
+    return makeNonVoidElement('a', {
+        'href': '/post/' + id,
+    }, '@' + id);
+}
+
 function makeTagLink(name) {
-    let category = null;
-    try {
-        category = tags.getTagByName(name).category;
-    } catch (e) {
-        category = 'unknown';
-    }
+    const tag = tags.getTagByName(name);
+    let category = tag ? tag.category : 'unknown';
     return makeNonVoidElement('a', {
         'href': '/tag/' + name,
         'class': 'tag-' + category,
     }, name);
+}
+
+function makeUserLink(user) {
+    return makeNonVoidElement('span', {class: 'user'},
+        makeThumbnail(user.avatarUrl) +
+        makeNonVoidElement('a', {'href': '/user/' + user.name}, user.name));
 }
 
 function makeFlexboxAlign(options) {
@@ -265,7 +273,9 @@ function getTemplate(templatePath) {
             makePasswordInput: makePasswordInput,
             makeEmailInput: makeEmailInput,
             makeColorInput: makeColorInput,
+            makePostLink: makePostLink,
             makeTagLink: makeTagLink,
+            makeUserLink: makeUserLink,
             makeFlexboxAlign: makeFlexboxAlign,
             makeAccessKey: makeAccessKey,
         });
