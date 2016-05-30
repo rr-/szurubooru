@@ -21,11 +21,13 @@ def delete_score(entity, user):
         db.session.delete(score_entity)
 
 def get_score(entity, user):
-    score_entity = _get_score_entity(entity, user)
-    if score_entity:
-        return score_entity.score
-    else:
-        return 0
+    table, get_column = _get_table_info(entity)
+    row = db.session \
+        .query(table.score) \
+        .filter(get_column(table) == get_column(entity)) \
+        .filter(table.user_id == user.user_id) \
+        .one_or_none()
+    return row[0] if row else 0
 
 def set_score(entity, user, score):
     if not score:

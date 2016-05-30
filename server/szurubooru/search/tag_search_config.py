@@ -1,4 +1,4 @@
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import func
 from szurubooru import db
 from szurubooru.func import util
@@ -9,10 +9,10 @@ class TagSearchConfig(BaseSearchConfig):
         return self.create_count_query() \
             .join(db.TagCategory) \
             .options(
-                joinedload(db.Tag.names),
-                joinedload(db.Tag.category),
-                joinedload(db.Tag.suggestions).joinedload(db.Tag.names),
-                joinedload(db.Tag.implications).joinedload(db.Tag.names)
+                subqueryload(db.Tag.names),
+                subqueryload(db.Tag.category),
+                subqueryload(db.Tag.suggestions).joinedload(db.Tag.names),
+                subqueryload(db.Tag.implications).joinedload(db.Tag.names)
             )
 
     def create_count_query(self):

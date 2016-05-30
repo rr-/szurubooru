@@ -79,7 +79,7 @@ def serialize_post(post, authenticated_user):
         'contentUrl': get_post_content_url(post),
         'thumbnailUrl': get_post_thumbnail_url(post),
         'flags': post.flags,
-        'tags': [tag.first_name for tag in post.tags],
+        'tags': [tag.names[0].name for tag in post.tags],
         'relations': [rel.post_id for rel in post.relations],
         'notes': sorted(
            [ serialize_note(note) for note in post.notes],

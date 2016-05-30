@@ -1,3 +1,4 @@
+from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import func
 from szurubooru import db, errors
 from szurubooru.func import util
@@ -23,6 +24,16 @@ def _type_transformer(value):
 
 class PostSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
+        return self.create_count_query() \
+            .options(
+                subqueryload(db.Post.user),
+                subqueryload(db.Post.relations),
+                subqueryload(db.Post.notes),
+                subqueryload(db.Post.tags).subqueryload(db.Tag.names),
+                subqueryload(db.Post.favorited_by),
+            )
+
+    def create_count_query(self):
         return db.session.query(db.Post)
 
     def finalize_query(self, query):

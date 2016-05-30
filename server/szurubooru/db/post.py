@@ -116,7 +116,7 @@ class Post(Base):
         'Post',
         secondary='post_relation',
         primaryjoin=post_id == PostRelation.parent_id,
-        secondaryjoin=post_id == PostRelation.child_id)
+        secondaryjoin=post_id == PostRelation.child_id, lazy='joined')
     features = relationship(
         'PostFeature', cascade='all, delete-orphan', lazy='joined')
     scores = relationship(

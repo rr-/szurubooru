@@ -56,11 +56,11 @@ def verify_unpaged(executor):
         actual_count, actual_posts = executor.execute(
             input, page=1, page_size=100)
         actual_post_ids = list([p.post_id for p in actual_posts])
-        assert actual_count == len(expected_post_ids)
         if not test_order:
             actual_post_ids = sorted(actual_post_ids)
             expected_post_ids = sorted(expected_post_ids)
         assert actual_post_ids == expected_post_ids
+        assert actual_count == len(expected_post_ids)
     return verify
 
 @pytest.mark.parametrize('input,expected_post_ids', [
