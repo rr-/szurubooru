@@ -67,7 +67,7 @@ def test_post_updating(
         posts.update_post_relations.assert_called_once_with(post, [1, 2])
         posts.update_post_notes.assert_called_once_with(post, ['note1', 'note2'])
         posts.update_post_flags.assert_called_once_with(post, ['flag1', 'flag2'])
-        posts.serialize_post.assert_called_once_with(post, auth_user)
+        posts.serialize_post.assert_called_once_with(post, auth_user, options=None)
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_modification.assert_called_once_with(post, auth_user)
         assert post.last_edit_time == datetime.datetime(1997, 1, 1)

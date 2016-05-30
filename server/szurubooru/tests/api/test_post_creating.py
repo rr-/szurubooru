@@ -54,7 +54,7 @@ def test_creating_minimal_posts(
         posts.update_post_notes.assert_called_once_with(post, [])
         posts.update_post_flags.assert_called_once_with(post, [])
         posts.update_post_thumbnail.assert_called_once_with(post, 'post-thumbnail')
-        posts.serialize_post.assert_called_once_with(post, auth_user)
+        posts.serialize_post.assert_called_once_with(post, auth_user, options=None)
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
 
@@ -100,7 +100,7 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
         posts.update_post_relations.assert_called_once_with(post, [1, 2])
         posts.update_post_notes.assert_called_once_with(post, ['note1', 'note2'])
         posts.update_post_flags.assert_called_once_with(post, ['flag1', 'flag2'])
-        posts.serialize_post.assert_called_once_with(post, auth_user)
+        posts.serialize_post.assert_called_once_with(post, auth_user, options=None)
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
 

@@ -14,7 +14,7 @@ def _verify_name_validity(name):
         raise InvalidTagCategoryNameError(
             'Name must satisfy regex %r.' % name_regex)
 
-def serialize_category(category):
+def serialize_category(category, options=None):
     return util.serialize_entity(
         category,
         {
@@ -23,7 +23,8 @@ def serialize_category(category):
             'usages': lambda: category.tag_count,
             'default': lambda: category.default,
             'snapshots': lambda: snapshots.get_serialized_history(category),
-        })
+        },
+        options)
 
 def create_category(name, color):
     category = db.TagCategory()

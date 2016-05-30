@@ -28,7 +28,7 @@ def _get_email(user, authenticated_user, force_show_email):
         return False
     return user.email
 
-def serialize_user(user, authenticated_user, force_show_email=False):
+def serialize_user(user, authenticated_user, options=None, force_show_email=False):
     return util.serialize_entity(
         user,
         {
@@ -39,7 +39,8 @@ def serialize_user(user, authenticated_user, force_show_email=False):
             'avatarStyle': lambda: user.avatar_style,
             'avatarUrl': lambda: _get_avatar_url(user),
             'email': lambda: _get_email(user, authenticated_user, force_show_email),
-        })
+        },
+        options)
 
 def get_user_count():
     return db.session.query(db.User).count()

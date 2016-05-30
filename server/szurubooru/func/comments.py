@@ -5,7 +5,7 @@ from szurubooru.func import users, scores, util
 class CommentNotFoundError(errors.NotFoundError): pass
 class EmptyCommentTextError(errors.ValidationError): pass
 
-def serialize_comment(comment, authenticated_user):
+def serialize_comment(comment, authenticated_user, options=None):
     return util.serialize_entity(
         comment,
         {
@@ -16,7 +16,8 @@ def serialize_comment(comment, authenticated_user):
             'creationTime': lambda: comment.creation_time,
             'lastEditTime': lambda: comment.last_edit_time,
             'ownScore': lambda: scores.get_score(comment, authenticated_user),
-        })
+        },
+        options)
 
 def try_get_comment_by_id(comment_id):
     return db.session \

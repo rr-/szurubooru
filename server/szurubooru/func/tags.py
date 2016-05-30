@@ -36,7 +36,7 @@ def _get_default_category_name():
     else:
         return DEFAULT_CATEGORY_NAME
 
-def serialize_tag(tag):
+def serialize_tag(tag, options=None):
     return util.serialize_entity(
         tag,
         {
@@ -50,7 +50,8 @@ def serialize_tag(tag):
             'implications': lambda: [
                 relation.names[0].name for relation in tag.implications],
             'snapshots': lambda: snapshots.get_serialized_history(tag),
-        })
+        },
+        options)
 
 def export_to_json():
     output = {

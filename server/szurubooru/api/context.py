@@ -9,6 +9,7 @@ class Context(object):
         self.files = {}
         self.input = {}
         self.output = None
+        self.settings = {}
 
     def has_param(self, name):
         return name in self.input

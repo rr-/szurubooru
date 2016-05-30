@@ -6,12 +6,21 @@ import tempfile
 from contextlib import contextmanager
 from szurubooru.errors import ValidationError
 
-def serialize_entity(entity, field_factories):
+def get_serialization_options(ctx):
+    return ctx.get_param_as_list('_fields', required=False, default=None)
+
+def serialize_entity(entity, field_factories, options):
     if not entity:
         return None
+    if not options:
+        options = field_factories.keys()
     ret = {}
-    for key, factory in field_factories.items():
-        ret[key] = factory()
+    for key in options:
+        try:
+            factory = field_factories[key]
+            ret[key] = factory()
+        except KeyError:
+            pass
     return ret
 
 @contextmanager

@@ -1,7 +1,13 @@
 import datetime
 from szurubooru import search
 from szurubooru.api.base_api import BaseApi
-from szurubooru.func import auth, tags, posts, snapshots, favorites, scores
+from szurubooru.func import auth, tags, posts, snapshots, favorites, scores, util
+
+def _serialize_post(ctx, post):
+    return posts.serialize_post(
+        post,
+        ctx.user,
+        options=util.get_serialization_options(ctx))
 
 class PostListApi(BaseApi):
     def __init__(self):
@@ -12,7 +18,7 @@ class PostListApi(BaseApi):
         auth.verify_privilege(ctx.user, 'posts:list')
         self._search_executor.config.user = ctx.user
         return self._search_executor.execute_and_serialize(
-            ctx, lambda post: posts.serialize_post(post, ctx.user))
+            ctx, lambda post: _serialize_post(ctx, post))
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'posts:create')
@@ -38,13 +44,13 @@ class PostListApi(BaseApi):
         snapshots.save_entity_creation(post, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)
 
 class PostDetailApi(BaseApi):
     def get(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:view')
         post = posts.get_post_by_id(post_id)
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)
 
     def put(self, ctx, post_id):
         post = posts.get_post_by_id(post_id)
@@ -79,7 +85,7 @@ class PostDetailApi(BaseApi):
         snapshots.save_entity_modification(post, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)
 
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:delete')
@@ -104,11 +110,11 @@ class PostFeatureApi(BaseApi):
             snapshots.save_entity_modification(featured_post, ctx.user)
         snapshots.save_entity_modification(post, ctx.user)
         ctx.session.commit()
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)
 
     def get(self, ctx):
         post = posts.try_get_featured_post()
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)
 
 class PostScoreApi(BaseApi):
     def put(self, ctx, post_id):
@@ -117,14 +123,14 @@ class PostScoreApi(BaseApi):
         score = ctx.get_param_as_int('score', required=True)
         scores.set_score(post, ctx.user, score)
         ctx.session.commit()
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)
 
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:score')
         post = posts.get_post_by_id(post_id)
         scores.delete_score(post, ctx.user)
         ctx.session.commit()
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)
 
 class PostFavoriteApi(BaseApi):
     def post(self, ctx, post_id):
@@ -132,11 +138,11 @@ class PostFavoriteApi(BaseApi):
         post = posts.get_post_by_id(post_id)
         favorites.set_favorite(post, ctx.user)
         ctx.session.commit()
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)
 
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:favorite')
         post = posts.get_post_by_id(post_id)
         favorites.unset_favorite(post, ctx.user)
         ctx.session.commit()
-        return posts.serialize_post(post, ctx.user)
+        return _serialize_post(ctx, post)

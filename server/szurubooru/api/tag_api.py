@@ -1,7 +1,11 @@
 import datetime
 from szurubooru import db, search
 from szurubooru.api.base_api import BaseApi
-from szurubooru.func import auth, tags, snapshots
+from szurubooru.func import auth, tags, util, snapshots
+
+def _serialize(ctx, tag):
+    return tags.serialize_tag(
+        tag, options=util.get_serialization_options(ctx))
 
 def _create_if_needed(tag_names, user):
     if not tag_names:
@@ -20,7 +24,7 @@ class TagListApi(BaseApi):
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:list')
         return self._search_executor.execute_and_serialize(
-            ctx, tags.serialize_tag)
+            ctx, lambda tag: _serialize(ctx, tag))
 
     def post(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:create')
@@ -41,13 +45,13 @@ class TagListApi(BaseApi):
         snapshots.save_entity_creation(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return tags.serialize_tag(tag)
+        return _serialize(ctx, tag)
 
 class TagDetailApi(BaseApi):
     def get(self, ctx, tag_name):
         auth.verify_privilege(ctx.user, 'tags:view')
         tag = tags.get_tag_by_name(tag_name)
-        return tags.serialize_tag(tag)
+        return _serialize(ctx, tag)
 
     def put(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
@@ -73,7 +77,7 @@ class TagDetailApi(BaseApi):
         snapshots.save_entity_modification(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return tags.serialize_tag(tag)
+        return _serialize(ctx, tag)
 
     def delete(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
@@ -101,7 +105,7 @@ class TagMergeApi(BaseApi):
         tags.merge_tags(source_tag, target_tag)
         ctx.session.commit()
         tags.export_to_json()
-        return tags.serialize_tag(target_tag)
+        return _serialize(ctx, target_tag)
 
 class TagSiblingsApi(BaseApi):
     def get(self, ctx, tag_name):
@@ -111,7 +115,7 @@ class TagSiblingsApi(BaseApi):
         serialized_siblings = []
         for sibling, occurrences in result:
             serialized_siblings.append({
-                'tag': tags.serialize_tag(sibling),
+                'tag': _serialize(ctx, sibling),
                 'occurrences': occurrences
             })
         return {'results': serialized_siblings}

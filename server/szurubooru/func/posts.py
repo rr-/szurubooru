@@ -61,7 +61,7 @@ def serialize_note(note):
         'text': note.text,
     }
 
-def serialize_post(post, authenticated_user):
+def serialize_post(post, authenticated_user, options=None):
     return util.serialize_entity(
         post,
         {
@@ -98,7 +98,8 @@ def serialize_post(post, authenticated_user):
                 comments.serialize_comment(comment, authenticated_user) \
                     for comment in post.comments],
             'snapshots': lambda: snapshots.get_serialized_history(post),
-        })
+        },
+        options)
 
 def get_post_count():
     return db.session.query(sqlalchemy.func.count(db.Post.post_id)).one()[0]
