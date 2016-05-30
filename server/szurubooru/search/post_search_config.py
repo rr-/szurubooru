@@ -1,4 +1,4 @@
-from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm import subqueryload, lazyload, defer
 from sqlalchemy.sql.expression import func
 from szurubooru import db, errors
 from szurubooru.func import util
@@ -26,11 +26,22 @@ class PostSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
         return self.create_count_query() \
             .options(
-                subqueryload(db.Post.user),
-                subqueryload(db.Post.relations),
-                subqueryload(db.Post.notes),
+                # use config optimized for official client
+                #defer(db.Post.score),
+                #defer(db.Post.favorite_count),
+                #defer(db.Post.comment_count),
+                defer(db.Post.last_favorite_time),
+                defer(db.Post.feature_count),
+                defer(db.Post.last_feature_time),
+                defer(db.Post.last_comment_creation_time),
+                defer(db.Post.last_comment_edit_time),
+                defer(db.Post.note_count),
+                defer(db.Post.tag_count),
                 subqueryload(db.Post.tags).subqueryload(db.Tag.names),
-                subqueryload(db.Post.favorited_by),
+                lazyload(db.Post.user),
+                lazyload(db.Post.relations),
+                lazyload(db.Post.notes),
+                lazyload(db.Post.favorited_by),
             )
 
     def create_count_query(self):
