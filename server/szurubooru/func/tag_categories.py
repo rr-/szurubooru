@@ -15,18 +15,15 @@ def _verify_name_validity(name):
             'Name must satisfy regex %r.' % name_regex)
 
 def serialize_category(category):
-    return {
-        'name': category.name,
-        'color': category.color,
-        'usages': category.tag_count,
-        'default': category.default,
-    }
-
-def serialize_category_with_details(category):
-    return {
-        'tagCategory': serialize_category(category),
-        'snapshots': snapshots.get_serialized_history(category),
-    }
+    return util.serialize_entity(
+        category,
+        {
+            'name': lambda: category.name,
+            'color': lambda: category.color,
+            'usages': lambda: category.tag_count,
+            'default': lambda: category.default,
+            'snapshots': lambda: snapshots.get_serialized_history(category),
+        })
 
 def create_category(name, color):
     category = db.TagCategory()

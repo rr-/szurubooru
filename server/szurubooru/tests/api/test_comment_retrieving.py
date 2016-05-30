@@ -60,8 +60,7 @@ def test_retrieving_single(test_ctx):
     assert 'text' in result['comment']
     assert 'user' in result['comment']
     assert 'name' in result['comment']['user']
-    assert 'post' in result['comment']
-    assert 'id' in result['comment']['post']
+    assert 'postId' in result['comment']
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(comments.CommentNotFoundError):

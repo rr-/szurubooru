@@ -32,9 +32,8 @@ def test_creating_comment(test_ctx, fake_datetime):
     assert result['comment']['text'] == 'input'
     assert 'id' in result['comment']
     assert 'user' in result['comment']
-    assert 'post' in result['comment']
     assert 'name' in result['comment']['user']
-    assert 'id' in result['comment']['post']
+    assert 'postId' in result['comment']
     comment = db.session.query(db.Comment).one()
     assert comment.text == 'input'
     assert comment.creation_time == datetime.datetime(1997, 1, 1)

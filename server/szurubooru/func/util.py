@@ -6,6 +6,14 @@ import tempfile
 from contextlib import contextmanager
 from szurubooru.errors import ValidationError
 
+def serialize_entity(entity, field_factories):
+    if not entity:
+        return None
+    ret = {}
+    for key, factory in field_factories.items():
+        ret[key] = factory()
+    return ret
+
 @contextmanager
 def create_temp_file(**kwargs):
     (handle, path) = tempfile.mkstemp(**kwargs)

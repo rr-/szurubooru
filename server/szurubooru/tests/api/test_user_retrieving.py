@@ -56,6 +56,7 @@ def test_retrieving_single(test_ctx):
             'avatarStyle': 'gravatar',
             'avatarUrl': 'http://gravatar.com/avatar/' +
                 '275876e34cf609db118f3d84b799a790?d=retro&s=200',
+            'email': False,
         }
     }
 

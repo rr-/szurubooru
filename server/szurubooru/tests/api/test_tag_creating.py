@@ -38,6 +38,8 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
                     'implications': [],
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
+    assert len(result['tag']['snapshots']) == 1
+    del result['tag']['snapshots']
     assert result['tag'] == {
         'names': ['tag1', 'tag2'],
         'category': 'meta',
@@ -47,7 +49,6 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
         'lastEditTime': None,
         'usages': 0,
     }
-    assert len(result['snapshots']) == 1
     tag = tags.get_tag_by_name('tag1')
     assert [tag_name.name for tag_name in tag.names] == ['tag1', 'tag2']
     assert tag.category.name == 'meta'

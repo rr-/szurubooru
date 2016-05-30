@@ -33,6 +33,8 @@ def test_merging_without_usages(test_ctx, fake_datetime):
                     'mergeTo': 'target',
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
+    assert 'snapshots' in result['tag']
+    del result['tag']['snapshots']
     assert result['tag'] == {
         'names': ['target'],
         'category': 'meta',
@@ -42,7 +44,6 @@ def test_merging_without_usages(test_ctx, fake_datetime):
         'lastEditTime': None,
         'usages': 0,
     }
-    assert 'snapshots' in result
     assert tags.try_get_tag_by_name('source') is None
     tag = tags.get_tag_by_name('target')
     assert tag is not None

@@ -1391,7 +1391,8 @@ A single user.
 - `<name>`: the user name.
 - `<email>`: the user email. It is available only if the request is
   authenticated by the same user, or the authenticated user can change the
-  email.
+  email. If it's unavailable, the server returns `false`. If the user hasn't
+  specified an email, the server returns `null`.
 - `<rank>`: the user rank, which effectively affects their privileges.
 
     Possible values:
@@ -1444,7 +1445,12 @@ experience.
     "name":  <name>,
     "color": <color>,
     "usages": <usages>
-    "default": <is-default>
+    "default": <is-default>,
+    "snapshots": [
+        <snapshot>,
+        <snapshot>,
+        <snapshot>
+    ]
 }
 ```
 
@@ -1454,6 +1460,8 @@ experience.
 - `<color>`: the category color.
 - `<usages>`: how many tags is the given category used with.
 - `<is-default>`: whether the tag category is the default one.
+- `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag
+  category's earlier versions.
 
 ## Detailed tag category
 **Description**
@@ -1465,19 +1473,12 @@ A tag category with extra information.
 ```json5
 {
     "tagCategory": <tag-category>,
-    "snapshots": [
-        <snapshot>,
-        <snapshot>,
-        <snapshot>
-    ]
 }
 ```
 
 **Field meaning**
 
 - `<tag-category>`: a [tag category resource](#tag-category)
-- `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag
-  category's earlier versions.
 
 ## Tag
 **Description**
@@ -1494,7 +1495,12 @@ A single tag. Tags are used to let users search for posts.
     "suggestions":  <suggestions>,
     "creationTime": <creation-time>,
     "lastEditTime": <last-edit-time>,
-    "usages":       <usage-count>
+    "usages":       <usage-count>,
+    "snapshots": [
+        <snapshot>,
+        <snapshot>,
+        <snapshot>
+    ]
 }
 ```
 
@@ -1510,6 +1516,8 @@ A single tag. Tags are used to let users search for posts.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
 - `<usage-count>`: the number of posts the tag was used in.
+- `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag's
+  earlier versions.
 
 ## Detailed tag
 **Description**
@@ -1521,18 +1529,11 @@ A tag with extra information.
 ```json5
 {
     "tag": <tag>,
-    "snapshots": [
-        <snapshot>,
-        <snapshot>,
-        <snapshot>
-    ]
 }
 ```
 
 **Field meaning**
 - `<tag>`: a [tag resource](#tag)
-- `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag's
-  earlier versions.
 
 ## Post
 **Description**
@@ -1566,6 +1567,16 @@ One file together with its metadata posted to the site.
     "favoritedBy":        <favorited-by>,
     "hasCustomThumbnail": <has-custom-thumbnail>,
     "mimeType":           <mime-type>
+    "snapshots": [
+        <snapshot>,
+        <snapshot>,
+        <snapshot>
+    ],
+    "comments": {
+        <comment>,
+        <comment>,
+        <comment>
+    }
 }
 ```
 
@@ -1617,6 +1628,9 @@ One file together with its metadata posted to the site.
 - `<has-custom-thumbnail>`: whether the post uses custom thumbnail.
 - `<mime-type>`: subsidiary to `<type>`, used to tell exact content format;
   useful for `<video>` tags for instance.
+- `<snapshot>`: a [snapshot resource](#snapshot) that contains the post's
+  earlier versions.
+- `<comment>`: a [comment resource](#comment) for given post.
 
 ## Detailed post
 **Description**
@@ -1628,24 +1642,11 @@ A post with extra information.
 ```json5
 {
     "post": <post>,
-    "snapshots": [
-        <snapshot>,
-        <snapshot>,
-        <snapshot>
-    ],
-    "comments": {
-        <comment>,
-        <comment>,
-        <comment>
-    }
 }
 ```
 
 **Field meaning**
 - `<post>`: a [post resource](#post).
-- `<snapshot>`: a [snapshot resource](#snapshot) that contains the post's
-  earlier versions.
-- `<comment>`: a [comment resource](#comment) for given post.
 
 ## Note
 **Description**
@@ -1678,7 +1679,7 @@ A comment under a post.
 ```json5
 {
     "id":           <id>,
-    "post":         <post>,
+    "postId":       <post-id>,
     "user":         <author>
     "text":         <text>,
     "creationTime": <creation-time>,
@@ -1690,9 +1691,9 @@ A comment under a post.
 
 **Field meaning**
 - `<id>`: the comment identifier.
-- `<post>`: a post resource the post is linked with.
+- `<post-id>`: an id of the post the comment is for.
 - `<text>`: the comment content. The client should render is as Markdown.
-- `<author>`: a user resource the post is created by.
+- `<author>`: a user resource the comment is created by.
 - `<creation-time>`: time the comment was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the comment was edited, formatted as per RFC 3339.
 - `<score>`: the collective score (+1/-1 rating) of the given comment.

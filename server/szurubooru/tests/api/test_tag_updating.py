@@ -46,6 +46,8 @@ def test_simple_updating(test_ctx, fake_datetime):
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
+    assert len(result['tag']['snapshots']) == 1
+    del result['tag']['snapshots']
     assert result['tag'] == {
         'names': ['tag3'],
         'category': 'character',
@@ -55,7 +57,6 @@ def test_simple_updating(test_ctx, fake_datetime):
         'lastEditTime': datetime.datetime(1997, 12, 1),
         'usages': 0,
     }
-    assert len(result['snapshots']) == 1
     assert tags.try_get_tag_by_name('tag1') is None
     assert tags.try_get_tag_by_name('tag2') is None
     tag = tags.get_tag_by_name('tag3')

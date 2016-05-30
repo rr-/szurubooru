@@ -43,8 +43,8 @@ def test_retrieving_single(test_ctx):
             'color': 'dummy',
             'usages': 0,
             'default': False,
+            'snapshots': [],
         },
-        'snapshots': [],
     }
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):

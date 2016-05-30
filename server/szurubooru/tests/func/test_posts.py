@@ -64,11 +64,17 @@ def test_serialize_note():
 def test_serialize_empty_post():
     assert posts.serialize_post(None, None) is None
 
-def test_serialize_post(post_factory, user_factory, tag_factory, config_injector):
+def test_serialize_post(
+        post_factory, user_factory, comment_factory, tag_factory, config_injector):
     config_injector({'data_url': 'http://example.com/'})
-    with unittest.mock.patch('szurubooru.func.users.serialize_user'), \
-        unittest.mock.patch('szurubooru.func.posts.files.has', return_value=True):
+    with unittest.mock.patch('szurubooru.func.comments.serialize_comment'), \
+            unittest.mock.patch('szurubooru.func.users.serialize_user'), \
+            unittest.mock.patch('szurubooru.func.posts.files.has', return_value=True), \
+            unittest.mock.patch('szurubooru.func.snapshots.get_serialized_history'):
         users.serialize_user.side_effect = lambda user, auth_user: user.name
+        comments.serialize_comment.side_effect \
+            = lambda comment, auth_user: comment.user.name
+        snapshots.get_serialized_history.return_value = 'snapshot history'
 
         auth_user = user_factory(name='auth user')
         post = db.Post()
@@ -90,6 +96,11 @@ def test_serialize_post(post_factory, user_factory, tag_factory, config_injector
         post.canvas_height = 300
         post.flags = ['loop']
         db.session.add(post)
+        post.comments = [
+            comment_factory(user=user_factory(name='commenter1')),
+            comment_factory(user=user_factory(name='commenter2')),
+        ]
+
         db.session.flush()
         db.session.add_all([
             db.PostFavorite(
@@ -144,31 +155,6 @@ def test_serialize_post(post_factory, user_factory, tag_factory, config_injector
         'favoritedBy': ['fav1'],
         'hasCustomThumbnail': True,
         'mimeType': 'image/jpeg',
-    }
-
-def test_serialize_post_with_details(post_factory, comment_factory, user_factory):
-    with unittest.mock.patch('szurubooru.func.comments.serialize_comment'), \
-        unittest.mock.patch('szurubooru.func.snapshots.get_serialized_history'), \
-        unittest.mock.patch('szurubooru.func.posts.serialize_post'):
-        comments.serialize_comment.side_effect \
-            = lambda comment, auth_user: comment.user.name
-        posts.serialize_post.side_effect \
-            = lambda post, auth_user: post.post_id
-        snapshots.get_serialized_history.return_value = 'snapshot history'
-
-        auth_user = user_factory(name='auth user')
-        post = post_factory()
-        post.comments = [
-            comment_factory(user=user_factory(name='commenter1')),
-            comment_factory(user=user_factory(name='commenter2')),
-        ]
-        db.session.add(post)
-        db.session.flush()
-
-        result = posts.serialize_post_with_details(post, auth_user)
-
-    assert result == {
-        'post': post.post_id,
         'snapshots': 'snapshot history',
         'comments': ['commenter1', 'commenter2'],
     }

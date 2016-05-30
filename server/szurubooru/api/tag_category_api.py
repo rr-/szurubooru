@@ -21,13 +21,13 @@ class TagCategoryListApi(BaseApi):
         snapshots.save_entity_creation(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return tag_categories.serialize_category_with_details(category)
+        return {'tagCategory': tag_categories.serialize_category(category)}
 
 class TagCategoryDetailApi(BaseApi):
     def get(self, ctx, category_name):
         auth.verify_privilege(ctx.user, 'tag_categories:view')
         category = tag_categories.get_category_by_name(category_name)
-        return tag_categories.serialize_category_with_details(category)
+        return {'tagCategory': tag_categories.serialize_category(category)}
 
     def put(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)
@@ -43,7 +43,7 @@ class TagCategoryDetailApi(BaseApi):
         snapshots.save_entity_modification(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return tag_categories.serialize_category_with_details(category)
+        return {'tagCategory': tag_categories.serialize_category(category)}
 
     def delete(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)
@@ -69,4 +69,4 @@ class DefaultTagCategoryApi(BaseApi):
         snapshots.save_entity_modification(category, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return tag_categories.serialize_category_with_details(category)
+        return {'tagCategory': tag_categories.serialize_category(category)}

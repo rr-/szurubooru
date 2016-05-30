@@ -37,23 +37,20 @@ def _get_default_category_name():
         return DEFAULT_CATEGORY_NAME
 
 def serialize_tag(tag):
-    return {
-        'names': [tag_name.name for tag_name in tag.names],
-        'category': tag.category.name,
-        'suggestions': [
-            relation.names[0].name for relation in tag.suggestions],
-        'implications': [
-            relation.names[0].name for relation in tag.implications],
-        'creationTime': tag.creation_time,
-        'lastEditTime': tag.last_edit_time,
-        'usages': tag.post_count,
-    }
-
-def serialize_tag_with_details(tag):
-    return {
-        'tag': serialize_tag(tag),
-        'snapshots': snapshots.get_serialized_history(tag),
-    }
+    return util.serialize_entity(
+        tag,
+        {
+            'names': lambda: [tag_name.name for tag_name in tag.names],
+            'category': lambda: tag.category.name,
+            'creationTime': lambda: tag.creation_time,
+            'lastEditTime': lambda: tag.last_edit_time,
+            'usages': lambda: tag.post_count,
+            'suggestions': lambda: [
+                relation.names[0].name for relation in tag.suggestions],
+            'implications': lambda: [
+                relation.names[0].name for relation in tag.implications],
+            'snapshots': lambda: snapshots.get_serialized_history(tag),
+        })
 
 def export_to_json():
     output = {

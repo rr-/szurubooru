@@ -12,36 +12,34 @@ class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
 
-def serialize_user(user, authenticated_user, force_show_email=False):
-    if not user:
-        return {}
-
-    ret = {
-        'name': user.name,
-        'rank': user.rank,
-        'creationTime': user.creation_time,
-        'lastLoginTime': user.last_login_time,
-        'avatarStyle': user.avatar_style,
-        'email': user.email,
-    }
-
+def _get_avatar_url(user):
     if user.avatar_style == user.AVATAR_GRAVATAR:
-        ret['avatarUrl'] = 'http://gravatar.com/avatar/%s?d=retro&s=%d' % (
+        return 'http://gravatar.com/avatar/%s?d=retro&s=%d' % (
             util.get_md5((user.email or user.name).lower()),
             config.config['thumbnails']['avatar_width'])
     else:
-        ret['avatarUrl'] = '%s/avatars/%s.png' % (
+        return '%s/avatars/%s.png' % (
             config.config['data_url'].rstrip('/'), user.name.lower())
 
-    if authenticated_user.user_id != user.user_id \
-        and not force_show_email \
-        and not auth.has_privilege(authenticated_user, 'users:edit:any:email'):
-        del ret['email']
+def _get_email(user, authenticated_user, force_show_email):
+    if not force_show_email \
+            and authenticated_user.user_id != user.user_id \
+            and not auth.has_privilege(authenticated_user, 'users:edit:any:email'):
+        return False
+    return user.email
 
-    return ret
-
-def serialize_user_with_details(user, authenticated_user, **kwargs):
-    return {'user': serialize_user(user, authenticated_user, **kwargs)}
+def serialize_user(user, authenticated_user, force_show_email=False):
+    return util.serialize_entity(
+        user,
+        {
+            'name': lambda: user.name,
+            'rank': lambda: user.rank,
+            'creationTime': lambda: user.creation_time,
+            'lastLoginTime': lambda: user.last_login_time,
+            'avatarStyle': lambda: user.avatar_style,
+            'avatarUrl': lambda: _get_avatar_url(user),
+            'email': lambda: _get_email(user, authenticated_user, force_show_email),
+        })
 
 def get_user_count():
     return db.session.query(db.User).count()

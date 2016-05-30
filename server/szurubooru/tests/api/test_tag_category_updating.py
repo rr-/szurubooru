@@ -37,13 +37,14 @@ def test_simple_updating(test_ctx):
             },
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'name')
+    assert len(result['tagCategory']['snapshots']) == 1
+    del result['tagCategory']['snapshots']
     assert result['tagCategory'] == {
         'name': 'changed',
         'color': 'white',
         'usages': 0,
         'default': False,
     }
-    assert len(result['snapshots']) == 1
     assert tag_categories.try_get_category_by_name('name') is None
     category = tag_categories.get_category_by_name('changed')
     assert category is not None

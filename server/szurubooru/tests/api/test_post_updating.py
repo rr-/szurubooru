@@ -33,11 +33,11 @@ def test_post_updating(
         unittest.mock.patch('szurubooru.func.posts.update_post_relations'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_notes'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_flags'), \
-        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
         unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
         unittest.mock.patch('szurubooru.func.snapshots.save_entity_modification'):
 
-        posts.serialize_post_with_details.return_value = 'serialized post'
+        posts.serialize_post.return_value = 'serialized post'
 
         with fake_datetime('1997-01-01'):
             result = api.PostDetailApi().put(
@@ -57,7 +57,7 @@ def test_post_updating(
                     user=auth_user),
                 post.post_id)
 
-        assert result == 'serialized post'
+        assert result == {'post': 'serialized post'}
         posts.create_post.assert_not_called()
         posts.update_post_tags.assert_called_once_with(post, ['tag1', 'tag2'])
         posts.update_post_content.assert_called_once_with(post, 'post-content')
@@ -67,7 +67,7 @@ def test_post_updating(
         posts.update_post_relations.assert_called_once_with(post, [1, 2])
         posts.update_post_notes.assert_called_once_with(post, ['note1', 'note2'])
         posts.update_post_flags.assert_called_once_with(post, ['flag1', 'flag2'])
-        posts.serialize_post_with_details.assert_called_once_with(post, auth_user)
+        posts.serialize_post.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_modification.assert_called_once_with(post, auth_user)
         assert post.last_edit_time == datetime.datetime(1997, 1, 1)
@@ -83,7 +83,7 @@ def test_uploading_from_url_saves_source(
     with unittest.mock.patch('szurubooru.func.net.download'), \
         unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
         unittest.mock.patch('szurubooru.func.snapshots.save_entity_modification'), \
-        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_source'):
         net.download.return_value = b'content'
@@ -110,7 +110,7 @@ def test_uploading_from_url_with_source_specified(
     with unittest.mock.patch('szurubooru.func.net.download'), \
         unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
         unittest.mock.patch('szurubooru.func.snapshots.save_entity_modification'), \
-        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_source'):
         net.download.return_value = b'content'

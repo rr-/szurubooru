@@ -62,54 +62,43 @@ def serialize_note(note):
     }
 
 def serialize_post(post, authenticated_user):
-    if not post:
-        return None
-
-    ret = {
-        'id': post.post_id,
-        'creationTime': post.creation_time,
-        'lastEditTime': post.last_edit_time,
-        'safety': SAFETY_MAP[post.safety],
-        'source': post.source,
-        'type': TYPE_MAP[post.type],
-        'checksum': post.checksum,
-        'fileSize': post.file_size,
-        'canvasWidth': post.canvas_width,
-        'canvasHeight': post.canvas_height,
-        'contentUrl': get_post_content_url(post),
-        'thumbnailUrl': get_post_thumbnail_url(post),
-        'flags': post.flags,
-        'tags': [tag.names[0].name for tag in post.tags],
-        'relations': [rel.post_id for rel in post.relations],
-        'notes': sorted(
-           [ serialize_note(note) for note in post.notes],
-            key=lambda x: x['polygon']),
-        'user': users.serialize_user(post.user, authenticated_user),
-        'score': post.score,
-        'featureCount': post.feature_count,
-        'lastFeatureTime': post.last_feature_time,
-        'favoritedBy': [users.serialize_user(rel.user, authenticated_user) \
-            for rel in post.favorited_by],
-        'hasCustomThumbnail': files.has(get_post_thumbnail_backup_path(post)),
-        'mimeType': post.mime_type,
-    }
-
-    if authenticated_user:
-        ret['ownScore'] = scores.get_score(post, authenticated_user)
-
-    return ret
-
-def serialize_post_with_details(post, authenticated_user):
-    comment_list = []
-    if post:
-        for comment in post.comments:
-            comment_list.append(
-                comments.serialize_comment(comment, authenticated_user))
-    return {
-        'post': serialize_post(post, authenticated_user),
-        'snapshots': snapshots.get_serialized_history(post),
-        'comments': comment_list,
-    }
+    return util.serialize_entity(
+        post,
+        {
+            'id': lambda: post.post_id,
+            'creationTime': lambda: post.creation_time,
+            'lastEditTime': lambda: post.last_edit_time,
+            'safety': lambda: SAFETY_MAP[post.safety],
+            'source': lambda: post.source,
+            'type': lambda: TYPE_MAP[post.type],
+            'mimeType': lambda: post.mime_type,
+            'checksum': lambda: post.checksum,
+            'fileSize': lambda: post.file_size,
+            'canvasWidth': lambda: post.canvas_width,
+            'canvasHeight': lambda: post.canvas_height,
+            'contentUrl': lambda: get_post_content_url(post),
+            'thumbnailUrl': lambda: get_post_thumbnail_url(post),
+            'flags': lambda: post.flags,
+            'tags': lambda: [tag.names[0].name for tag in post.tags],
+            'relations': lambda: [rel.post_id for rel in post.relations],
+            'user': lambda: users.serialize_user(post.user, authenticated_user),
+            'score': lambda: post.score,
+            'ownScore': lambda: scores.get_score(post, authenticated_user),
+            'featureCount': lambda: post.feature_count,
+            'lastFeatureTime': lambda: post.last_feature_time,
+            'favoritedBy': lambda: [
+                users.serialize_user(rel.user, authenticated_user) \
+                    for rel in post.favorited_by],
+            'hasCustomThumbnail':
+                lambda: files.has(get_post_thumbnail_backup_path(post)),
+            'notes': lambda: sorted(
+                [serialize_note(note) for note in post.notes],
+                key=lambda x: x['polygon']),
+            'comments': lambda: [
+                comments.serialize_comment(comment, authenticated_user) \
+                    for comment in post.comments],
+            'snapshots': lambda: snapshots.get_serialized_history(post),
+        })
 
 def get_post_count():
     return db.session.query(sqlalchemy.func.count(db.Post.post_id)).one()[0]

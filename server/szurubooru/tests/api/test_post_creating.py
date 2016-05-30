@@ -25,12 +25,12 @@ def test_creating_minimal_posts(
         unittest.mock.patch('szurubooru.func.posts.update_post_notes'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_flags'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_thumbnail'), \
-        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
         unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
         unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'):
 
         posts.create_post.return_value = post
-        posts.serialize_post_with_details.return_value = 'serialized post'
+        posts.serialize_post.return_value = 'serialized post'
 
         result = api.PostListApi().post(
             context_factory(
@@ -44,7 +44,7 @@ def test_creating_minimal_posts(
                 },
                 user=auth_user))
 
-        assert result == 'serialized post'
+        assert result == {'post': 'serialized post'}
         posts.create_post.assert_called_once_with(
             'post-content', ['tag1', 'tag2'], auth_user)
         posts.update_post_thumbnail.assert_called_once_with(post, 'post-thumbnail')
@@ -54,7 +54,7 @@ def test_creating_minimal_posts(
         posts.update_post_notes.assert_called_once_with(post, [])
         posts.update_post_flags.assert_called_once_with(post, [])
         posts.update_post_thumbnail.assert_called_once_with(post, 'post-thumbnail')
-        posts.serialize_post_with_details.assert_called_once_with(post, auth_user)
+        posts.serialize_post.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
 
@@ -70,12 +70,12 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
         unittest.mock.patch('szurubooru.func.posts.update_post_relations'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_notes'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_flags'), \
-        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
         unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
         unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'):
 
         posts.create_post.return_value = post
-        posts.serialize_post_with_details.return_value = 'serialized post'
+        posts.serialize_post.return_value = 'serialized post'
 
         result = api.PostListApi().post(
             context_factory(
@@ -92,7 +92,7 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
                 },
                 user=auth_user))
 
-        assert result == 'serialized post'
+        assert result == {'post': 'serialized post'}
         posts.create_post.assert_called_once_with(
             'post-content', ['tag1', 'tag2'], auth_user)
         posts.update_post_safety.assert_called_once_with(post, 'safe')
@@ -100,7 +100,7 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
         posts.update_post_relations.assert_called_once_with(post, [1, 2])
         posts.update_post_notes.assert_called_once_with(post, ['note1', 'note2'])
         posts.update_post_flags.assert_called_once_with(post, ['flag1', 'flag2'])
-        posts.serialize_post_with_details.assert_called_once_with(post, auth_user)
+        posts.serialize_post.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
         snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
 
@@ -114,7 +114,7 @@ def test_creating_from_url_saves_source(
     with unittest.mock.patch('szurubooru.func.net.download'), \
         unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
         unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'), \
-        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
         unittest.mock.patch('szurubooru.func.posts.create_post'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_source'):
         config_injector({
@@ -145,7 +145,7 @@ def test_creating_from_url_with_source_specified(
     with unittest.mock.patch('szurubooru.func.net.download'), \
         unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
         unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'), \
-        unittest.mock.patch('szurubooru.func.posts.serialize_post_with_details'), \
+        unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
         unittest.mock.patch('szurubooru.func.posts.create_post'), \
         unittest.mock.patch('szurubooru.func.posts.update_post_source'):
         config_injector({
