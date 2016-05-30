@@ -84,6 +84,10 @@ def serialize_post(post, authenticated_user, options=None):
             'user': lambda: users.serialize_user(post.user, authenticated_user),
             'score': lambda: post.score,
             'ownScore': lambda: scores.get_score(post, authenticated_user),
+            'tagCount': lambda: post.tag_count,
+            'favoriteCount': lambda: post.favorite_count,
+            'commentCount': lambda: post.comment_count,
+            'noteCount': lambda: post.note_count,
             'featureCount': lambda: post.feature_count,
             'lastFeatureTime': lambda: post.last_feature_time,
             'favoritedBy': lambda: [

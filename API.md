@@ -1523,6 +1523,10 @@ One file together with its metadata posted to the site.
     "user":               <user>,
     "score":              <score>,
     "ownScore":           <own-score>,
+    "tagCount":           <tag-count>,
+    "favoriteCount":      <favorite-count>,
+    "commentCount":       <comment-count>,
+    "noteCount":          <note-count>,
     "featureCount":       <feature-count>,
     "lastFeatureTime":    <last-feature-time>,
     "favoritedBy":        <favorited-by>,
@@ -1582,6 +1586,10 @@ One file together with its metadata posted to the site.
 - `<score>`: the collective score (+1/-1 rating) of the given post.
 - `<own-score>`: the score (+1/-1 rating) of the given post by the
   authenticated user.
+- `<tag-count>`: how many tags the post is tagged with
+- `<favorite-count>`: how many users have the post in their favorites
+- `<comment-count>`: how many comments are filed under that post
+- `<note-count>`: how many notes the post has
 - `<feature-count>`: how many times has the post been featured.
 - `<last-feature-time>`: the last time the post was featured, formatted as per
   RFC 3339.

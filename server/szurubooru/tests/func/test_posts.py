@@ -96,13 +96,11 @@ def test_serialize_post(
         post.canvas_height = 300
         post.flags = ['loop']
         db.session.add(post)
-        post.comments = [
-            comment_factory(user=user_factory(name='commenter1')),
-            comment_factory(user=user_factory(name='commenter2')),
-        ]
 
         db.session.flush()
         db.session.add_all([
+            comment_factory(user=user_factory(name='commenter1'), post=post),
+            comment_factory(user=user_factory(name='commenter2'), post=post),
             db.PostFavorite(
                 post=post,
                 user=user_factory(name='fav1'),
@@ -150,6 +148,10 @@ def test_serialize_post(
         'user': 'post author',
         'score': 1,
         'ownScore': -1,
+        'tagCount': 2,
+        'favoriteCount': 1,
+        'commentCount': 2,
+        'noteCount': 0,
         'featureCount': 1,
         'lastFeatureTime': datetime.datetime(1999, 1, 1),
         'favoritedBy': ['fav1'],
