@@ -37,9 +37,9 @@ def test_simple_updating(test_ctx):
             },
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'name')
-    assert len(result['tagCategory']['snapshots']) == 1
-    del result['tagCategory']['snapshots']
-    assert result['tagCategory'] == {
+    assert len(result['snapshots']) == 1
+    del result['snapshots']
+    assert result == {
         'name': 'changed',
         'color': 'white',
         'usages': 0,
@@ -103,7 +103,7 @@ def test_reusing_own_name(test_ctx, new_name):
             input={'name': new_name},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'cat')
-    assert result['tagCategory']['name'] == new_name
+    assert result['name'] == new_name
     category = tag_categories.get_category_by_name('cat')
     assert category.name == new_name
 

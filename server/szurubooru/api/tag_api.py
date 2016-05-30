@@ -41,13 +41,13 @@ class TagListApi(BaseApi):
         snapshots.save_entity_creation(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return {'tag': tags.serialize_tag(tag)}
+        return tags.serialize_tag(tag)
 
 class TagDetailApi(BaseApi):
     def get(self, ctx, tag_name):
         auth.verify_privilege(ctx.user, 'tags:view')
         tag = tags.get_tag_by_name(tag_name)
-        return {'tag': tags.serialize_tag(tag)}
+        return tags.serialize_tag(tag)
 
     def put(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
@@ -73,7 +73,7 @@ class TagDetailApi(BaseApi):
         snapshots.save_entity_modification(tag, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return {'tag': tags.serialize_tag(tag)}
+        return tags.serialize_tag(tag)
 
     def delete(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
@@ -101,7 +101,7 @@ class TagMergeApi(BaseApi):
         tags.merge_tags(source_tag, target_tag)
         ctx.session.commit()
         tags.export_to_json()
-        return {'tag': tags.serialize_tag(target_tag)}
+        return tags.serialize_tag(target_tag)
 
 class TagSiblingsApi(BaseApi):
     def get(self, ctx, tag_name):

@@ -32,8 +32,7 @@ def test_adding_to_favorites(test_ctx, fake_datetime):
         result = test_ctx.api.post(
             test_ctx.context_factory(user=test_ctx.user_factory()),
             post.post_id)
-    assert 'post' in result
-    assert 'id' in result['post']
+    assert 'id' in result
     post = db.session.query(db.Post).one()
     assert db.session.query(db.PostFavorite).count() == 1
     assert post is not None

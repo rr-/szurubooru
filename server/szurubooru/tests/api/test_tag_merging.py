@@ -33,9 +33,9 @@ def test_merging_without_usages(test_ctx, fake_datetime):
                     'mergeTo': 'target',
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert 'snapshots' in result['tag']
-    del result['tag']['snapshots']
-    assert result['tag'] == {
+    assert 'snapshots' in result
+    del result['snapshots']
+    assert result == {
         'names': ['target'],
         'category': 'meta',
         'suggestions': [],

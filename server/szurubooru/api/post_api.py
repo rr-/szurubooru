@@ -38,13 +38,13 @@ class PostListApi(BaseApi):
         snapshots.save_entity_creation(post, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)
 
 class PostDetailApi(BaseApi):
     def get(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:view')
         post = posts.get_post_by_id(post_id)
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)
 
     def put(self, ctx, post_id):
         post = posts.get_post_by_id(post_id)
@@ -79,7 +79,7 @@ class PostDetailApi(BaseApi):
         snapshots.save_entity_modification(post, ctx.user)
         ctx.session.commit()
         tags.export_to_json()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)
 
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:delete')
@@ -104,11 +104,11 @@ class PostFeatureApi(BaseApi):
             snapshots.save_entity_modification(featured_post, ctx.user)
         snapshots.save_entity_modification(post, ctx.user)
         ctx.session.commit()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)
 
     def get(self, ctx):
         post = posts.try_get_featured_post()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)
 
 class PostScoreApi(BaseApi):
     def put(self, ctx, post_id):
@@ -117,14 +117,14 @@ class PostScoreApi(BaseApi):
         score = ctx.get_param_as_int('score', required=True)
         scores.set_score(post, ctx.user, score)
         ctx.session.commit()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)
 
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:score')
         post = posts.get_post_by_id(post_id)
         scores.delete_score(post, ctx.user)
         ctx.session.commit()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)
 
 class PostFavoriteApi(BaseApi):
     def post(self, ctx, post_id):
@@ -132,11 +132,11 @@ class PostFavoriteApi(BaseApi):
         post = posts.get_post_by_id(post_id)
         favorites.set_favorite(post, ctx.user)
         ctx.session.commit()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)
 
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:favorite')
         post = posts.get_post_by_id(post_id)
         favorites.unset_favorite(post, ctx.user)
         ctx.session.commit()
-        return {'post': posts.serialize_post(post, ctx.user)}
+        return posts.serialize_post(post, ctx.user)

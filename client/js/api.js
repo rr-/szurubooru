@@ -134,7 +134,7 @@ class Api {
                         'auth',
                         {'user': userName, 'password': userPassword},
                         options);
-                    this.user = response.user;
+                    this.user = response;
                     resolve();
                     events.notify(events.Authentication);
                 }).catch(response => {

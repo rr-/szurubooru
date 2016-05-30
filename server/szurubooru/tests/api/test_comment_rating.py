@@ -32,8 +32,7 @@ def test_simple_rating(test_ctx, fake_datetime):
         result = test_ctx.api.put(
             test_ctx.context_factory(input={'score': 1}, user=user),
             comment.comment_id)
-    assert 'comment' in result
-    assert 'text' in result['comment']
+    assert 'text' in result
     comment = db.session.query(db.Comment).one()
     assert db.session.query(db.CommentScore).count() == 1
     assert comment is not None

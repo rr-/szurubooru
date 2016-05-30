@@ -21,9 +21,9 @@ def test_creating_category(test_ctx):
         test_ctx.context_factory(
             input={'name': 'meta', 'color': 'black'},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert len(result['tagCategory']['snapshots']) == 1
-    del result['tagCategory']['snapshots']
-    assert result['tagCategory'] == {
+    assert len(result['snapshots']) == 1
+    del result['snapshots']
+    assert result == {
         'name': 'meta',
         'color': 'black',
         'usages': 0,

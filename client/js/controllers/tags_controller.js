@@ -88,9 +88,9 @@ class TagsController {
             next();
         } else {
             api.get('/tag/' + ctx.params.name).then(response => {
-                ctx.state.tag = response.tag;
+                ctx.state.tag = response;
                 ctx.save();
-                this._cachedTag = response.tag;
+                this._cachedTag = response;
                 next();
             }, response => {
                 this._emptyView.render();

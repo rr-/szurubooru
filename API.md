@@ -63,16 +63,11 @@
 3. [Resources](#resources)
 
    - [User](#user)
-   - [Detailed user](#detailed-user)
    - [Tag category](#tag-category)
-   - [Detailed tag category](#detailed-tag-category)
    - [Tag](#tag)
-   - [Detailed tag](#detailed-tag)
    - [Post](#post)
-   - [Detailed post](#detailed-post)
    - [Note](#note)
    - [Comment](#comment)
-   - [Detailed comment](#detailed-comment)
    - [Snapshot](#snapshot)
    - [Unpaged search result](#unpaged-search-result)
    - [Paged search result](#paged-search-result)
@@ -174,7 +169,7 @@ data.
 
 - **Output**
 
-    A [detailed tag category resource](#detailed-tag-category).
+    A [tag category resource](#tag-category).
 
 - **Errors**
 
@@ -205,7 +200,7 @@ data.
 
 - **Output**
 
-    A [detailed tag category resource](#detailed-tag-category).
+    A [tag category resource](#tag-category).
 
 - **Errors**
 
@@ -228,7 +223,7 @@ data.
 
 - **Output**
 
-    A [detailed tag category resource](#detailed-tag-category).
+    A [tag category resource](#tag-category).
 
 - **Errors**
 
@@ -275,7 +270,7 @@ data.
 
 - **Output**
 
-    A [detailed tag category resource](#detailed-tag-category).
+    A [tag category resource](#tag-category).
 
 - **Errors**
 
@@ -374,7 +369,7 @@ data.
 
 - **Output**
 
-    A [detailed tag resource](#detailed-tag).
+    A [tag resource](#tag).
 
 - **Errors**
 
@@ -416,7 +411,7 @@ data.
 
 - **Output**
 
-    A [detailed tag resource](#detailed-tag).
+    A [tag resource](#tag).
 
 - **Errors**
 
@@ -446,7 +441,7 @@ data.
 
 - **Output**
 
-    A [detailed tag resource](#detailed-tag).
+    A [tag resource](#tag).
 
 - **Errors**
 
@@ -494,7 +489,7 @@ data.
 
 - **Output**
 
-    A [detailed tag resource](#detailed-tag) containing the merged tag.
+    A [tag resource](#tag) containing the merged tag.
 
 - **Errors**
 
@@ -673,7 +668,7 @@ data.
 
 - **Output**
 
-    A [detailed post resource](#detailed-post).
+    A [post resource](#post).
 
 - **Errors**
 
@@ -719,7 +714,7 @@ data.
 
 - **Output**
 
-    A [detailed post resource](#detailed-post).
+    A [post resource](#post).
 
 - **Errors**
 
@@ -746,7 +741,7 @@ data.
 
 - **Output**
 
-    A [detailed post resource](#detailed-post).
+    A [post resource](#post).
 
 - **Errors**
 
@@ -792,7 +787,7 @@ data.
 
 - **Output**
 
-    A [detailed post resource](#detailed-post).
+    A [post resource](#post).
 
 - **Errors**
 
@@ -812,7 +807,7 @@ data.
 
 - **Output**
 
-    A [detailed post resource](#detailed-post).
+    A [post resource](#post).
 
 - **Errors**
 
@@ -830,7 +825,7 @@ data.
 
 - **Output**
 
-    A [detailed post resource](#detailed-post).
+    A [post resource](#post).
 
 - **Errors**
 
@@ -848,7 +843,7 @@ data.
 
 - **Output**
 
-    A [detailed post resource](#detailed-post).
+    A [post resource](#post).
 
 - **Errors**
 
@@ -877,7 +872,7 @@ data.
 
 - **Output**
 
-    A [detailed post resource](#detailed-post).
+    A [post resource](#post).
 
 - **Errors**
 
@@ -961,7 +956,7 @@ data.
 
 - **Output**
 
-    A [detailed comment resource](#detailed-comment).
+    A [comment resource](#comment).
 
 - **Errors**
 
@@ -988,7 +983,7 @@ data.
 
 - **Output**
 
-    A [detailed comment resource](#detailed-comment).
+    A [comment resource](#comment).
 
 - **Errors**
 
@@ -1007,7 +1002,7 @@ data.
 
 - **Output**
 
-    A [detailed comment resource](#detailed-comment).
+    A [comment resource](#comment).
 
 - **Errors**
 
@@ -1053,7 +1048,7 @@ data.
 
 - **Output**
 
-    A [detailed comment resource](#detailed-comment).
+    A [comment resource](#comment).
 
 - **Errors**
 
@@ -1140,7 +1135,7 @@ data.
 
 - **Output**
 
-    A [detailed user resource](#detailed-user).
+    A [user resource](#user).
 
 - **Errors**
 
@@ -1185,7 +1180,7 @@ data.
 
 - **Output**
 
-    A [detailed user resource](#detailed-user).
+    A [user resource](#user).
 
 - **Errors**
 
@@ -1214,7 +1209,7 @@ data.
 
 - **Output**
 
-    A [detailed user resource](#detailed-user).
+    A [user resource](#user).
 
 - **Errors**
 
@@ -1414,23 +1409,6 @@ A single user.
 
 - `<avatarUrl>`: the URL to the avatar.
 
-## Detailed user
-**Description**
-
-A wrapper for a user. In the future, it might offer extra information.
-
-**Structure**
-
-```json5
-{
-    "user": <user>
-}
-```
-
-**Field meaning**
-
-- `<user>`: a [user resource](#user).
-
 ## Tag category
 **Description**
 
@@ -1462,23 +1440,6 @@ experience.
 - `<is-default>`: whether the tag category is the default one.
 - `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag
   category's earlier versions.
-
-## Detailed tag category
-**Description**
-
-A tag category with extra information.
-
-**Structure**
-
-```json5
-{
-    "tagCategory": <tag-category>,
-}
-```
-
-**Field meaning**
-
-- `<tag-category>`: a [tag category resource](#tag-category)
 
 ## Tag
 **Description**
@@ -1518,22 +1479,6 @@ A single tag. Tags are used to let users search for posts.
 - `<usage-count>`: the number of posts the tag was used in.
 - `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag's
   earlier versions.
-
-## Detailed tag
-**Description**
-
-A tag with extra information.
-
-**Structure**
-
-```json5
-{
-    "tag": <tag>,
-}
-```
-
-**Field meaning**
-- `<tag>`: a [tag resource](#tag)
 
 ## Post
 **Description**
@@ -1632,22 +1577,6 @@ One file together with its metadata posted to the site.
   earlier versions.
 - `<comment>`: a [comment resource](#comment) for given post.
 
-## Detailed post
-**Description**
-
-A post with extra information.
-
-**Structure**
-
-```json5
-{
-    "post": <post>,
-}
-```
-
-**Field meaning**
-- `<post>`: a [post resource](#post).
-
 ## Note
 **Description**
 
@@ -1699,22 +1628,6 @@ A comment under a post.
 - `<score>`: the collective score (+1/-1 rating) of the given comment.
 - `<own-score>`: the score (+1/-1 rating) of the given comment by the
   authenticated user.
-
-## Detailed comment
-**Description**
-
-A wrapper for a comment. In the future, it might offer extra information.
-
-**Structure**
-
-```json5
-{
-    "comment": <comment>
-}
-```
-
-**Field meaning**
-- `<comment>`: a [comment resource](#comment).
 
 ## Snapshot
 **Description**

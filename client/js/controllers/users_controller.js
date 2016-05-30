@@ -95,10 +95,10 @@ class UsersController {
             next();
         } else {
             api.get('/user/' + ctx.params.name).then(response => {
-                response.user.rankName = rankNames.get(response.user.rank);
-                ctx.state.user = response.user;
+                response.rankName = rankNames.get(response.rank);
+                ctx.state.user = response;
                 ctx.save();
-                this._cachedUser = response.user;
+                this._cachedUser = response;
                 next();
             }, response => {
                 this._emptyView.render();
@@ -170,7 +170,7 @@ class UsersController {
         return new Promise((resolve, reject) => {
             api.put('/user/' + user.name, data, files)
                 .then(response => {
-                    this._cachedUser = response.user;
+                    this._cachedUser = response;
                     return isLoggedIn ?
                         api.login(
                             data.name || api.userName,

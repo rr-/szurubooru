@@ -48,16 +48,14 @@ def test_retrieving_single(test_ctx):
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag')
     assert result == {
-        'tag': {
-            'names': ['tag'],
-            'category': 'dummy',
-            'creationTime': datetime.datetime(1996, 1, 1),
-            'lastEditTime': None,
-            'suggestions': [],
-            'implications': [],
-            'usages': 0,
-            'snapshots': [],
-        },
+        'names': ['tag'],
+        'category': 'dummy',
+        'creationTime': datetime.datetime(1996, 1, 1),
+        'lastEditTime': None,
+        'suggestions': [],
+        'implications': [],
+        'usages': 0,
+        'snapshots': [],
     }
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):

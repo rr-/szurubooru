@@ -38,9 +38,9 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
                     'implications': [],
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert len(result['tag']['snapshots']) == 1
-    del result['tag']['snapshots']
-    assert result['tag'] == {
+    assert len(result['snapshots']) == 1
+    del result['snapshots']
+    assert result == {
         'names': ['tag1', 'tag2'],
         'category': 'meta',
         'suggestions': [],
@@ -126,8 +126,8 @@ def test_duplicating_names(test_ctx):
                 'implications': [],
             },
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert result['tag']['names'] == ['tag1']
-    assert result['tag']['category'] == 'meta'
+    assert result['names'] == ['tag1']
+    assert result['category'] == 'meta'
     tag = tags.get_tag_by_name('tag1')
     assert [tag_name.name for tag_name in tag.names] == ['tag1']
 
@@ -205,8 +205,8 @@ def test_creating_new_suggestions_and_implications(
     result = test_ctx.api.post(
         test_ctx.context_factory(
             input=input, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert result['tag']['suggestions'] == expected_suggestions
-    assert result['tag']['implications'] == expected_implications
+    assert result['suggestions'] == expected_suggestions
+    assert result['implications'] == expected_implications
     tag = tags.get_tag_by_name('main')
     assert_relations(tag.suggestions, expected_suggestions)
     assert_relations(tag.implications, expected_implications)
@@ -229,8 +229,8 @@ def test_reusing_suggestions_and_implications(test_ctx):
             },
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     # NOTE: it should export only the first name
-    assert result['tag']['suggestions'] == ['tag1']
-    assert result['tag']['implications'] == ['tag1']
+    assert result['suggestions'] == ['tag1']
+    assert result['implications'] == ['tag1']
     tag = tags.get_tag_by_name('new')
     assert_relations(tag.suggestions, ['tag1'])
     assert_relations(tag.implications, ['tag1'])

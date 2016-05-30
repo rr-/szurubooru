@@ -48,16 +48,14 @@ def test_retrieving_single(test_ctx):
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'u1')
     assert result == {
-        'user': {
-            'name': 'u1',
-            'rank': db.User.RANK_REGULAR,
-            'creationTime': datetime.datetime(1997, 1, 1),
-            'lastLoginTime': None,
-            'avatarStyle': 'gravatar',
-            'avatarUrl': 'http://gravatar.com/avatar/' +
-                '275876e34cf609db118f3d84b799a790?d=retro&s=200',
-            'email': False,
-        }
+        'name': 'u1',
+        'rank': db.User.RANK_REGULAR,
+        'creationTime': datetime.datetime(1997, 1, 1),
+        'lastLoginTime': None,
+        'avatarStyle': 'gravatar',
+        'avatarUrl': 'http://gravatar.com/avatar/' +
+            '275876e34cf609db118f3d84b799a790?d=retro&s=200',
+        'email': False,
     }
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):

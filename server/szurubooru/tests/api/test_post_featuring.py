@@ -26,7 +26,7 @@ def test_no_featured_post(test_ctx):
     result = test_ctx.api.get(
         test_ctx.context_factory(
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert result == {'post': None}
+    assert result is None
 
 def test_featuring(test_ctx):
     db.session.add(test_ctx.post_factory(id=1))
@@ -39,17 +39,15 @@ def test_featuring(test_ctx):
     assert posts.try_get_featured_post() is not None
     assert posts.try_get_featured_post().post_id == 1
     assert posts.get_post_by_id(1).is_featured
-    assert 'post' in result
-    assert 'id' in result['post']
-    assert 'snapshots' in result['post']
-    assert 'comments' in result['post']
+    assert 'id' in result
+    assert 'snapshots' in result
+    assert 'comments' in result
     result = test_ctx.api.get(
         test_ctx.context_factory(
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert 'post' in result
-    assert 'id' in result['post']
-    assert 'snapshots' in result['post']
-    assert 'comments' in result['post']
+    assert 'id' in result
+    assert 'snapshots' in result
+    assert 'comments' in result
 
 def test_trying_to_feature_the_same_post_twice(test_ctx):
     db.session.add(test_ctx.post_factory(id=1))

@@ -79,10 +79,9 @@ def test_retrieving_single(test_ctx):
     result = test_ctx.detail_api.get(
         test_ctx.context_factory(
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)), 1)
-    assert 'post' in result
-    assert 'id' in result['post']
-    assert 'snapshots' in result['post']
-    assert 'comments' in result['post']
+    assert 'id' in result
+    assert 'snapshots' in result
+    assert 'comments' in result
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(posts.PostNotFoundError):

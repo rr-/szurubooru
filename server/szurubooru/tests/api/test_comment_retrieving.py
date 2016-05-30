@@ -53,14 +53,13 @@ def test_retrieving_single(test_ctx):
         test_ctx.context_factory(
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         comment.comment_id)
-    assert 'comment' in result
-    assert 'id' in result['comment']
-    assert 'lastEditTime' in result['comment']
-    assert 'creationTime' in result['comment']
-    assert 'text' in result['comment']
-    assert 'user' in result['comment']
-    assert 'name' in result['comment']['user']
-    assert 'postId' in result['comment']
+    assert 'id' in result
+    assert 'lastEditTime' in result
+    assert 'creationTime' in result
+    assert 'text' in result
+    assert 'user' in result
+    assert 'name' in result['user']
+    assert 'postId' in result
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(comments.CommentNotFoundError):

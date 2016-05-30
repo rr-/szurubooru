@@ -49,16 +49,14 @@ def test_updating_user(test_ctx):
             user=user),
         'u1')
     assert result == {
-        'user': {
-            'avatarStyle': 'gravatar',
-            'avatarUrl': 'http://gravatar.com/avatar/' +
-                '6f370c8c7109534c3d5c394123a477d7?d=retro&s=200',
-            'creationTime': datetime.datetime(1997, 1, 1),
-            'lastLoginTime': None,
-            'email': 'asd@asd.asd',
-            'name': 'chewie',
-            'rank': 'moderator',
-        }
+        'avatarStyle': 'gravatar',
+        'avatarUrl': 'http://gravatar.com/avatar/' +
+            '6f370c8c7109534c3d5c394123a477d7?d=retro&s=200',
+        'creationTime': datetime.datetime(1997, 1, 1),
+        'lastLoginTime': None,
+        'email': 'asd@asd.asd',
+        'name': 'chewie',
+        'rank': 'moderator',
     }
     user = users.get_user_by_name('chewie')
     assert user.name == 'chewie'
@@ -201,5 +199,5 @@ def test_uploading_avatar(test_ctx, tmpdir):
         'u1')
     user = users.get_user_by_name('u1')
     assert user.avatar_style == user.AVATAR_MANUAL
-    assert response['user']['avatarUrl'] == \
+    assert response['avatarUrl'] == \
         'http://example.com/data/avatars/u1.png'

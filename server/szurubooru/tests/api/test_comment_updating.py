@@ -33,7 +33,7 @@ def test_simple_updating(test_ctx, fake_datetime):
         result = test_ctx.api.put(
             test_ctx.context_factory(input={'text': 'new text'}, user=user),
             comment.comment_id)
-    assert result['comment']['text'] == 'new text'
+    assert result['text'] == 'new text'
     comment = db.session.query(db.Comment).one()
     assert comment is not None
     assert comment.text == 'new text'

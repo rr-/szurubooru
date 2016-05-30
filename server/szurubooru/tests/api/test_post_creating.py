@@ -44,7 +44,7 @@ def test_creating_minimal_posts(
                 },
                 user=auth_user))
 
-        assert result == {'post': 'serialized post'}
+        assert result == 'serialized post'
         posts.create_post.assert_called_once_with(
             'post-content', ['tag1', 'tag2'], auth_user)
         posts.update_post_thumbnail.assert_called_once_with(post, 'post-thumbnail')
@@ -92,7 +92,7 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
                 },
                 user=auth_user))
 
-        assert result == {'post': 'serialized post'}
+        assert result == 'serialized post'
         posts.create_post.assert_called_once_with(
             'post-content', ['tag1', 'tag2'], auth_user)
         posts.update_post_safety.assert_called_once_with(post, 'safe')

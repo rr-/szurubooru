@@ -35,16 +35,14 @@ def test_creating_user(test_ctx, fake_datetime):
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result == {
-        'user': {
-            'avatarStyle': 'gravatar',
-            'avatarUrl': 'http://gravatar.com/avatar/' +
-                '6f370c8c7109534c3d5c394123a477d7?d=retro&s=200',
-            'creationTime': datetime.datetime(1969, 2, 12),
-            'lastLoginTime': None,
-            'name': 'chewie1',
-            'rank': 'administrator',
-            'email': 'asd@asd.asd',
-        }
+        'avatarStyle': 'gravatar',
+        'avatarUrl': 'http://gravatar.com/avatar/' +
+            '6f370c8c7109534c3d5c394123a477d7?d=retro&s=200',
+        'creationTime': datetime.datetime(1969, 2, 12),
+        'lastLoginTime': None,
+        'name': 'chewie1',
+        'rank': 'administrator',
+        'email': 'asd@asd.asd',
     }
     user = users.get_user_by_name('chewie1')
     assert user.name == 'chewie1'
@@ -70,8 +68,8 @@ def test_first_user_becomes_admin_others_not(test_ctx):
                 'password': 'sok',
             },
             user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
-    assert result1['user']['rank'] == 'administrator'
-    assert result2['user']['rank'] == 'regular'
+    assert result1['rank'] == 'administrator'
+    assert result2['rank'] == 'regular'
     first_user = users.get_user_by_name('chewie1')
     other_user = users.get_user_by_name('chewie2')
     assert first_user.rank == db.User.RANK_ADMINISTRATOR
@@ -87,7 +85,7 @@ def test_first_user_does_not_become_admin_if_they_dont_wish_so(test_ctx):
                 'rank': 'regular',
             },
             user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
-    assert result['user']['rank'] == 'regular'
+    assert result['rank'] == 'regular'
 
 def test_trying_to_become_someone_else(test_ctx):
     test_ctx.api.post(
@@ -208,7 +206,7 @@ def test_admin_creating_mod_account(test_ctx):
             'rank': 'moderator',
         }, user=user)
     result = test_ctx.api.post(context)
-    assert result['user']['rank'] == 'moderator'
+    assert result['rank'] == 'moderator'
 
 def test_uploading_avatar(test_ctx, tmpdir):
     config.config['data_dir'] = str(tmpdir.mkdir('data'))
@@ -225,5 +223,4 @@ def test_uploading_avatar(test_ctx, tmpdir):
             user=test_ctx.user_factory(rank=db.User.RANK_MODERATOR)))
     user = users.get_user_by_name('chewie')
     assert user.avatar_style == user.AVATAR_MANUAL
-    assert response['user']['avatarUrl'] == \
-        'http://example.com/data/avatars/chewie.png'
+    assert response['avatarUrl'] == 'http://example.com/data/avatars/chewie.png'

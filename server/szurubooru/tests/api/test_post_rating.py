@@ -28,8 +28,7 @@ def test_simple_rating(test_ctx, fake_datetime):
             test_ctx.context_factory(
                 input={'score': 1}, user=test_ctx.user_factory()),
             post.post_id)
-    assert 'post' in result
-    assert 'id' in result['post']
+    assert 'id' in result
     post = db.session.query(db.Post).one()
     assert db.session.query(db.PostScore).count() == 1
     assert post is not None

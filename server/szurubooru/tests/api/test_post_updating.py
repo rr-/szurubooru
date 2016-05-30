@@ -57,7 +57,7 @@ def test_post_updating(
                     user=auth_user),
                 post.post_id)
 
-        assert result == {'post': 'serialized post'}
+        assert result == 'serialized post'
         posts.create_post.assert_not_called()
         posts.update_post_tags.assert_called_once_with(post, ['tag1', 'tag2'])
         posts.update_post_content.assert_called_once_with(post, 'post-content')

@@ -38,13 +38,11 @@ def test_retrieving_single(test_ctx):
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'cat')
     assert result == {
-        'tagCategory': {
-            'name': 'cat',
-            'color': 'dummy',
-            'usages': 0,
-            'default': False,
-            'snapshots': [],
-        },
+        'name': 'cat',
+        'color': 'dummy',
+        'usages': 0,
+        'default': False,
+        'snapshots': [],
     }
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):

@@ -46,9 +46,9 @@ def test_simple_updating(test_ctx, fake_datetime):
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
-    assert len(result['tag']['snapshots']) == 1
-    del result['tag']['snapshots']
-    assert result['tag'] == {
+    assert len(result['snapshots']) == 1
+    del result['snapshots']
+    assert result == {
         'names': ['tag3'],
         'category': 'character',
         'suggestions': [],
@@ -127,7 +127,7 @@ def test_reusing_own_name(test_ctx, dup_name):
             input={'names': [dup_name, 'tag3']},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag1')
-    assert result['tag']['names'] == ['tag1', 'tag3']
+    assert result['names'] == ['tag1', 'tag3']
     assert tags.try_get_tag_by_name('tag2') is None
     tag1 = tags.get_tag_by_name('tag1')
     tag2 = tags.get_tag_by_name('tag3')
@@ -142,7 +142,7 @@ def test_duplicating_names(test_ctx):
             input={'names': ['tag3', 'TAG3']},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag1')
-    assert result['tag']['names'] == ['tag3']
+    assert result['names'] == ['tag3']
     assert tags.try_get_tag_by_name('tag1') is None
     assert tags.try_get_tag_by_name('tag2') is None
     tag = tags.get_tag_by_name('tag3')
@@ -193,8 +193,8 @@ def test_updating_new_suggestions_and_implications(
         test_ctx.context_factory(
             input=input, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'main')
-    assert result['tag']['suggestions'] == expected_suggestions
-    assert result['tag']['implications'] == expected_implications
+    assert result['suggestions'] == expected_suggestions
+    assert result['implications'] == expected_implications
     tag = tags.get_tag_by_name('main')
     assert_relations(tag.suggestions, expected_suggestions)
     assert_relations(tag.implications, expected_implications)
@@ -219,8 +219,8 @@ def test_reusing_suggestions_and_implications(test_ctx):
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag4')
     # NOTE: it should export only the first name
-    assert result['tag']['suggestions'] == ['tag1']
-    assert result['tag']['implications'] == ['tag1']
+    assert result['suggestions'] == ['tag1']
+    assert result['implications'] == ['tag1']
     tag = tags.get_tag_by_name('new')
     assert_relations(tag.suggestions, ['tag1'])
     assert_relations(tag.implications, ['tag1'])

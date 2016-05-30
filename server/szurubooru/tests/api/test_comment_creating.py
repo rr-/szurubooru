@@ -29,11 +29,11 @@ def test_creating_comment(test_ctx, fake_datetime):
             test_ctx.context_factory(
                 input={'text': 'input', 'postId': post.post_id},
                 user=user))
-    assert result['comment']['text'] == 'input'
-    assert 'id' in result['comment']
-    assert 'user' in result['comment']
-    assert 'name' in result['comment']['user']
-    assert 'postId' in result['comment']
+    assert result['text'] == 'input'
+    assert 'id' in result
+    assert 'user' in result
+    assert 'name' in result['user']
+    assert 'postId' in result
     comment = db.session.query(db.Comment).one()
     assert comment.text == 'input'
     assert comment.creation_time == datetime.datetime(1997, 1, 1)
