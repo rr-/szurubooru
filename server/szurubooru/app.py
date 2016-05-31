@@ -80,6 +80,7 @@ def create_app():
         request_type=api.Request,
         middleware=[
             middleware.RequireJson(),
+            middleware.CachePurger(),
             middleware.ContextAdapter(),
             middleware.DbSession(),
             middleware.Authenticator(),

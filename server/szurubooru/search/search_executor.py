@@ -1,6 +1,7 @@
 import re
 import sqlalchemy
 from szurubooru import db, errors
+from szurubooru.func import cache
 from szurubooru.search import criteria
 
 class SearchExecutor(object):
@@ -13,6 +14,9 @@ class SearchExecutor(object):
         self.config = search_config
 
     def execute(self, query_text, page, page_size):
+        key = (id(self.config), query_text, page, page_size)
+        if cache.has(key):
+            return cache.get(key)
         '''
         Parse input and return tuple containing total record count and filtered
         entities.
@@ -33,7 +37,9 @@ class SearchExecutor(object):
             .with_only_columns([sqlalchemy.func.count()]) \
             .order_by(None)
         count = db.session.execute(count_statement).scalar()
-        return (count, entities)
+        ret = (count, entities)
+        cache.put(key, ret)
+        return ret
 
     def execute_and_serialize(self, ctx, serializer):
         query = ctx.get_param_as_string('query')
