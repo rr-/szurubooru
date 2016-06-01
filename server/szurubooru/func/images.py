@@ -2,6 +2,7 @@ import logging
 import json
 import shlex
 import subprocess
+import math
 from szurubooru import errors
 from szurubooru.func import mime, util
 
@@ -28,17 +29,26 @@ class Image(object):
         return self.info['streams'][0]['nb_read_frames']
 
     def resize_fill(self, width, height):
-        self.content = self._execute([
+        cli = [
             '-i', '{path}',
             '-f', 'image2',
             '-vf', _SCALE_FIT_FMT.format(width=width, height=height),
             '-vframes', '1',
             '-vcodec', 'png',
             '-',
-        ])
+        ]
+        if 'duration' in self.info['format'] \
+                and float(self.info['format']['duration']) > 3 \
+                and self.info['format']['format_name'] != 'swf':
+            cli = [
+                '-ss',
+                '%d' % math.floor(float(self.info['format']['duration']) * 0.3),
+            ] + cli
+        self.content = self._execute(cli)
+        assert self.content
         self._reload_info()
 
-    def to_png(self):
+    def _to_image(self, codec):
         return self._execute([
             '-i', '{path}',
             '-f', 'image2',
@@ -47,14 +57,11 @@ class Image(object):
             '-',
         ])
 
+    def to_png(self):
+        return self._to_image('png')
+
     def to_jpeg(self):
-        return self._execute([
-            '-i', '{path}',
-            '-f', 'image2',
-            '-vframes', '1',
-            '-vcodec', 'mjpeg',
-            '-',
-        ])
+        return self._to_image('mjpeg')
 
     def _execute(self, cli, program='ffmpeg'):
         extension = mime.get_extension(mime.get_mime_type(self.content))
@@ -87,9 +94,10 @@ class Image(object):
             '-i', '{path}',
             '-of', 'json',
             '-select_streams', 'v',
+            '-show_format',
             '-show_streams',
-            '-count_frames',
         ], program='ffprobe').decode('utf-8'))
+        assert 'format' in self.info
         assert 'streams' in self.info
         if len(self.info['streams']) != 1:
             raise errors.ProcessingError('Multiple video streams detected.')
