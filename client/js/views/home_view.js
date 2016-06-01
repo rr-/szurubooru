@@ -29,7 +29,14 @@ class HomeView {
 
         const form = source.querySelector('form');
         if (form) {
-            const searchTextInput = form.querySelector('input');
+            form.querySelector('input[name=all-posts')
+                .addEventListener('click', e => {
+                    e.preventDefault();
+                    page('/posts/');
+                });
+
+            const searchTextInput = form.querySelector(
+                'input[name=search-text]');
             new TagAutoCompleteControl(searchTextInput);
             form.addEventListener('submit', e => {
                 e.preventDefault();

@@ -16,22 +16,7 @@ class TopNavView {
         views.showView(this._navHolder, source);
     }
 
-    show() {
-        this._navHolder.style.visibility = 'initial';
-        this._navHolder.style.position = 'initial';
-    }
-
-    hide() {
-        this._navHolder.style.visibility = 'hidden';
-        this._navHolder.style.position = 'fixed';
-    }
-
     activate(itemName) {
-        if (itemName == 'home') {
-            this.hide();
-        } else {
-            this.show();
-        }
         const allItemsSelector = '#top-nav-holder [data-name]';
         const currentItemSelector =
             '#top-nav-holder [data-name="' + itemName + '"]';

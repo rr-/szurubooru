@@ -2,59 +2,34 @@
     <div class='messages'></div>
     <header>
         <h1><%= ctx.name %></h1>
+        <aside>
+            Serving <%= ctx.postCount %> posts (<%= ctx.makeFileSize(ctx.diskUsage) %>)
+        </aside>
     </header>
-    <nav>
-        <ul>
-            <% if (ctx.canListPosts) { %>
-                <li><a href='/posts'><%= ctx.makeAccessKey('Posts', 'P') %></a></li>
-            <% } %>
-            <% if (ctx.canListComments) { %>
-                <li><a href='/comments'><%= ctx.makeAccessKey('Comments', 'C') %></a></li>
-            <% } %>
-            <% if (ctx.canListTags) { %>
-                <li><a href='/tags'><%= ctx.makeAccessKey('Tags', 'T') %></a></li>
-            <% } %>
-            <% if (ctx.canListUsers) { %>
-                <li><a href='/users'><%= ctx.makeAccessKey('Users', 'U') %></a></li>
-            <% } %>
-            <li><a href='/help'><%= ctx.makeAccessKey('Help', 'E') %></a></li>
-        </ul>
-    </nav>
     <% if (ctx.canListPosts) { %>
         <form class='horizontal'>
             <div class='input'>
-                <ul>
-                    <li>
-                        <%= ctx.makeTextInput({id: 'search-text', name: 'search-text'}) %>
-                    </li>
-                </ul>
+                <%= ctx.makeButton({name: 'all-posts', value: 'Browse all posts'}) %>
+                <span class='separator'>or</span>
+                <%= ctx.makeTextInput({name: 'search-text', placeholder: 'enter some tags'}) %>
             </div>
             <div class='buttons'>
                 <input type='submit' value='Search'/>
             </div>
         </form>
     <% } %>
-    <div class='post-container'></div>
     <% if (ctx.featuredPost) { %>
         <aside>
-            <%= ctx.makePostLink(ctx.featuredPost.id) %>
-            &bull;
-            Featured
-            <%= ctx.makeRelativeTime(ctx.featuringTime) %>
-            by
-            <%= ctx.makeUserLink(ctx.featuringUser) %>
-            &bull;
-            Posted
+            Featured post: <%= ctx.makePostLink(ctx.featuredPost.id) %>,
+            posted
             <%= ctx.makeRelativeTime(ctx.featuredPost.creationTime) %>
             by
             <%= ctx.makeUserLink(ctx.featuredPost.user) %>
         </aside>
     <% } %>
+    <div class='post-container'></div>
     <footer>
-        Serving <%= ctx.postCount %> posts (<%= ctx.makeFileSize(ctx.diskUsage) %>)
-        &bull;
-        Running <a class='version' href='https://github.com/rr-/szurubooru/commits/master'><%= ctx.version %></a>
-        &bull;
-        Built <%= ctx.makeRelativeTime(ctx.buildDate) %>
+        Build <a class='version' href='https://github.com/rr-/szurubooru/commits/master'><%= ctx.version %></a>
+        from <%= ctx.makeRelativeTime(ctx.buildDate) %>
     </footer>
 </div>

@@ -108,6 +108,11 @@ function makeInput(options) {
             });
 }
 
+function makeButton(options) {
+    options.inputType = 'button';
+    return makeInput(options);
+}
+
 function makeTextInput(options) {
     options.inputType = 'text';
     return makeInput(options);
@@ -159,7 +164,8 @@ function makeTagLink(name) {
 function makeUserLink(user) {
     return makeNonVoidElement('span', {class: 'user'},
         makeThumbnail(user.avatarUrl) +
-        makeNonVoidElement('a', {'href': '/user/' + user.name}, user.name));
+        makeNonVoidElement(
+            'a', {'href': '/user/' + user.name}, '+' + user.name));
 }
 
 function makeFlexboxAlign(options) {
@@ -269,6 +275,7 @@ function getTemplate(templatePath) {
             makeCheckbox: makeCheckbox,
             makeSelect: makeSelect,
             makeInput: makeInput,
+            makeButton: makeButton,
             makeTextInput: makeTextInput,
             makePasswordInput: makePasswordInput,
             makeEmailInput: makeEmailInput,
