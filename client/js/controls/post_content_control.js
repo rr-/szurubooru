@@ -1,5 +1,6 @@
 'use strict';
 
+const settings = require('../settings.js');
 const views = require('../util/views.js');
 const optimizedResize = require('../util/optimized_resize.js');
 
@@ -22,23 +23,30 @@ class PostContentControl {
     fitWidth() {
         this._currentFitFunction = this.fitWidth;
         const mul = this._post.canvasHeight / this._post.canvasWidth;
-        this._resize(this._viewportWidth, this._viewportWidth * mul);
+        let width = this._viewportWidth;
+        if (!settings.getSettings().upscaleSmallPosts) {
+            width = Math.min(this._post.canvasWidth, width);
+        }
+        this._resize(width, width * mul);
     }
 
     fitHeight() {
         this._currentFitFunction = this.fitHeight;
         const mul = this._post.canvasWidth / this._post.canvasHeight;
-        this._resize(this._viewportHeight * mul, this._viewportHeight);
+        let height = this._viewportHeight;
+        if (!settings.getSettings().upscaleSmallPosts) {
+            height = Math.min(this._post.canvasHeight, height);
+        }
+        this._resize(height * mul, height);
     }
 
     fitBoth() {
         this._currentFitFunction = this.fitBoth;
         let mul = this._post.canvasHeight / this._post.canvasWidth;
         if (this._viewportWidth * mul < this._viewportHeight) {
-            this._resize(this._viewportWidth, this._viewportWidth * mul);
+            this.fitWidth();
         } else {
-            mul = this._post.canvasWidth / this._post.canvasHeight;
-            this._resize(this._viewportHeight * mul, this._viewportHeight);
+            this.fitHeight();
         }
     }
 

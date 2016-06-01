@@ -18,6 +18,8 @@ class SettingsView {
             e.preventDefault();
             views.clearMessages(source);
             ctx.saveSettings({
+                upscaleSmallPosts:
+                    form.querySelector('#upscale-small-posts').checked,
                 endlessScroll:
                     form.querySelector('#endless-scroll').checked,
                 keyboardShortcuts:

@@ -10,6 +10,7 @@ function saveSettings(browsingSettings) {
 
 function getSettings(settings) {
     const defaultSettings = {
+        upscaleSmallPosts: false,
         endlessScroll: false,
         keyboardShortcuts: true,
     };

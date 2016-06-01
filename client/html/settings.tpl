@@ -5,6 +5,9 @@
         <div class='input'>
             <ul>
                 <li>
+                    <%= ctx.makeCheckbox({text: 'Upscale small posts', id: 'upscale-small-posts', name: 'upscale-small-posts', checked: ctx.browsingSettings.upscaleSmallPosts}) %>
+                </li>
+                <li>
                     <%= ctx.makeCheckbox({text: 'Endless scroll', id: 'endless-scroll', name: 'endless-scroll', checked: ctx.browsingSettings.endlessScroll}) %>
                     <p class='hint'>Rather than using a paged navigation, smoothly scroll through the content.</p>
                 </li>
