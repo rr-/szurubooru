@@ -17,11 +17,13 @@ class PostNotesOverlayControl {
         const polygonRect = e.target.getBBox();
         this._textNode.querySelector('.wrapper').innerHTML
             = misc.formatMarkdown(e.target.getAttribute('data-text'));
-        this._textNode.style.left = (
-            svgRect.left + svgRect.width * polygonRect.x) + 'px';
-        this._textNode.style.top = (
-            svgRect.top + svgRect.height * (
-                polygonRect.y + polygonRect.height)) + 'px';
+        const x = (
+            -bodyRect.left + svgRect.left + svgRect.width * polygonRect.x);
+        const y = (
+            -bodyRect.top + svgRect.top + svgRect.height * (
+                polygonRect.y + polygonRect.height));
+        this._textNode.style.left = x + 'px';
+        this._textNode.style.top = y + 'px';
         this._textNode.style.display = 'block';
     }
 
