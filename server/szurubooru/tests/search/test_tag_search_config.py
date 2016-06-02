@@ -133,6 +133,8 @@ def test_filter_by_edit_time(
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('post-count:2', ['t1']),
     ('post-count:1', ['t2']),
+    ('post-count:1..', ['t1', 't2']),
+    ('post-count:..1', ['t2']),
     ('usage-count:2', ['t1']),
     ('usage-count:1', ['t2']),
     ('usages:2', ['t1']),

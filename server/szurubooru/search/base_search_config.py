@@ -1,6 +1,6 @@
 import sqlalchemy
 import szurubooru.errors
-from szurubooru import db
+from szurubooru import db, errors
 from szurubooru.func import util
 from szurubooru.search import criteria
 
@@ -43,8 +43,15 @@ class BaseSearchConfig(object):
         elif isinstance(criterion, criteria.ArraySearchCriterion):
             expr = column.in_(int(value) for value in criterion.values)
         elif isinstance(criterion, criteria.RangedSearchCriterion):
-            expr = column.between(
-                int(criterion.min_value), int(criterion.max_value))
+            assert criterion.min_value != '' \
+                or criterion.max_value != ''
+            if criterion.min_value != '' and criterion.max_value != '':
+                expr = column.between(
+                    int(criterion.min_value), int(criterion.max_value))
+            elif criterion.min_value != '':
+                expr = column >= int(criterion.min_value)
+            elif criterion.max_value != '':
+                expr = column <= int(criterion.max_value)
         else:
             assert False
         if criterion.negated:
@@ -68,7 +75,7 @@ class BaseSearchConfig(object):
             for value in criterion.values:
                 expr = expr | column.ilike(transformer(value))
         elif isinstance(criterion, criteria.RangedSearchCriterion):
-            raise szurubooru.errors.SearchError(
+            raise errors.SearchError(
                 'Composite token %r is invalid in this context.' % (criterion,))
         else:
             assert False
