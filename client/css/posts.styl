@@ -29,6 +29,7 @@
                 line-height: 100%
                 font-size: 80%
                 color: white
+                outline-offset: -3px
 
                 .type
                     position: absolute
@@ -64,12 +65,14 @@
                 background-position: 50% 30%
                 width: 100%
                 height: 100%
-                margin: 0 0.6em 0 0
+                margin: 0
+                outline-offset: -3px
             &:hover
                 background: $main-color
                 .thumbnail
                     opacity: .9
                     border: 1px solid $main-color
+                a, .thumbnail
                     outline: 2px solid $main-color
 
 .post-list-header
