@@ -48,20 +48,26 @@ class Image(object):
         assert self.content
         self._reload_info()
 
-    def _to_image(self, codec):
+    def to_png(self):
         return self._execute([
             '-i', '{path}',
             '-f', 'image2',
             '-vframes', '1',
-            '-vcodec', codec,
+            '-vcodec', 'png',
             '-',
         ])
 
-    def to_png(self):
-        return self._to_image('png')
-
     def to_jpeg(self):
-        return self._to_image('mjpeg')
+        return self._execute([
+            '-f', 'lavfi',
+            '-i', 'color=white:s=%dx%d' % (self.width, self.height),
+            '-i', '{path}',
+            '-f', 'image2',
+            '-filter_complex', 'overlay',
+            '-vframes', '1',
+            '-vcodec', 'mjpeg',
+            '-',
+        ])
 
     def _execute(self, cli, program='ffmpeg'):
         extension = mime.get_extension(mime.get_mime_type(self.content))
