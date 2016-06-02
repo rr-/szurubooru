@@ -4,7 +4,7 @@ distributions are different, the steps stay roughly the same.
 ### Installing hard dependencies
 
 ```console
-user@host:~$ sudo pacman -S postgres
+user@host:~$ sudo pacman -S postgresql
 user@host:~$ sudo pacman -S python
 user@host:~$ sudo pacman -S python-pip
 user@host:~$ sudo pacman -S ffmpeg
