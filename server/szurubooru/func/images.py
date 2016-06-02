@@ -88,9 +88,6 @@ class Image(object):
                     'Failed to execute ffmpeg command (cli=%r, err=%r)',
                     ' '.join(shlex.quote(arg) for arg in cli),
                     err)
-                with open('/tmp/tmp', 'wb') as handle:
-                    handle.write(self.content)
-
                 raise errors.ProcessingError(
                     'Error while processing image.\n' + err.decode('utf-8'))
             return out
