@@ -15,8 +15,12 @@ class LruCache(object):
 
     def insert_item(self, item):
         if item.key in self.hash:
-            item_index = next(i for i, v in enumerate(self.item_list) if v.key == item.key)
-            self.item_list[:] = self.item_list[:item_index] + self.item_list[item_index+1:]
+            item_index = next(i \
+                for i, v in enumerate(self.item_list) \
+                if v.key == item.key)
+            self.item_list[:] \
+                = self.item_list[:item_index] \
+                + self.item_list[item_index+1:]
             self.item_list.insert(0, item)
         else:
             if len(self.item_list) > self.length:
@@ -32,25 +36,16 @@ class LruCache(object):
         del self.hash[item.key]
         del self.item_list[self.item_list.index(item)]
 
-    def validate_item(self):
-        def _outdated_items():
-            now = datetime.now()
-            for item in self.item_list:
-                time_delta = now - item.timestamp
-                if time_delta.seconds > self.delta:
-                    yield item
-        map(lambda x: self.remove_item(x), _outdated_items())
-
-_cache = LruCache(length=100)
+_CACHE = LruCache(length=100)
 
 def purge():
-    _cache.remove_all()
+    _CACHE.remove_all()
 
 def has(key):
-    return key in _cache.hash
+    return key in _CACHE.hash
 
 def get(key):
-    return _cache.hash[key].value
+    return _CACHE.hash[key].value
 
 def put(key, value):
-    _cache.insert_item(LruCacheItem(key, value))
+    _CACHE.insert_item(LruCacheItem(key, value))

@@ -14,13 +14,13 @@ class SearchExecutor(object):
         self.config = search_config
 
     def execute(self, query_text, page, page_size):
-        key = (id(self.config), query_text, page, page_size)
-        if cache.has(key):
-            return cache.get(key)
         '''
         Parse input and return tuple containing total record count and filtered
         entities.
         '''
+        key = (id(self.config), query_text, page, page_size)
+        if cache.has(key):
+            return cache.get(key)
         filter_query = self.config.create_filter_query()
         filter_query = filter_query.options(sqlalchemy.orm.lazyload('*'))
         filter_query = self._prepare(filter_query, query_text)

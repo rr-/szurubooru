@@ -1,4 +1,3 @@
-import falcon
 from szurubooru.func import cache
 
 class CachePurger(object):

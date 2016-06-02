@@ -1,5 +1,4 @@
 import sqlalchemy
-import szurubooru.errors
 from szurubooru import db, errors
 from szurubooru.func import util
 from szurubooru.search import criteria
@@ -55,7 +54,7 @@ class BaseSearchConfig(object):
                     expr = column <= int(criterion.max_value)
             else:
                 assert False
-        except ValueError as e:
+        except ValueError:
             raise errors.SearchError(
                 'Criterion value %r must be a number.' % (criterion,))
         if criterion.negated:
