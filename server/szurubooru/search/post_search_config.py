@@ -4,6 +4,13 @@ from szurubooru import db, errors
 from szurubooru.func import util
 from szurubooru.search.base_search_config import BaseSearchConfig
 
+def _enum_transformer(available_values, value):
+    try:
+        return available_values[value.lower()]
+    except KeyError:
+        raise errors.SearchError('Invalid value: %r. Possible values: %r.' % (
+            value, list(sorted(available_values.keys()))))
+
 def _type_transformer(value):
     available_values = {
         'image': db.Post.TYPE_IMAGE,
@@ -16,11 +23,7 @@ def _type_transformer(value):
         'flash': db.Post.TYPE_FLASH,
         'swf': db.Post.TYPE_FLASH,
     }
-    try:
-        return available_values[value.lower()]
-    except KeyError:
-        raise errors.SearchError('Invalid value: %r. Available values: %r.' % (
-            value, available_values))
+    return _enum_transformer(available_values, value)
 
 def _safety_transformer(value):
     available_values = {
@@ -29,11 +32,7 @@ def _safety_transformer(value):
         'questionable': db.Post.SAFETY_SKETCHY,
         'unsafe': db.Post.SAFETY_UNSAFE,
     }
-    try:
-        return available_values[value.lower()]
-    except KeyError:
-        raise errors.SearchError('Invalid value: %r. Available values: %r.' % (
-            value, available_values))
+    return _enum_transformer(available_values, value)
 
 class PostSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
