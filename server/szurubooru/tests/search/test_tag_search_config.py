@@ -134,7 +134,9 @@ def test_filter_by_edit_time(
     ('post-count:2', ['t1']),
     ('post-count:1', ['t2']),
     ('post-count:1..', ['t1', 't2']),
+    ('post-count-min:1', ['t1', 't2']),
     ('post-count:..1', ['t2']),
+    ('post-count-max:1', ['t2']),
     ('usage-count:2', ['t1']),
     ('usage-count:1', ['t2']),
     ('usages:2', ['t1']),
@@ -152,6 +154,19 @@ def test_filter_by_post_count(
     post1.tags.append(tag2)
     post2.tags.append(tag1)
     verify_unpaged(input, expected_tag_names)
+
+@pytest.mark.parametrize('input', [
+    'post-count:..',
+    'post-count:asd',
+    'post-count:asd,1',
+    'post-count:1,asd',
+    'post-count:asd..1',
+    'post-count:1..asd',
+])
+def test_filter_by_invalid_input(executor, input):
+    with pytest.raises(errors.SearchError):
+        actual_count, actual_posts = executor.execute(
+            input, page=1, page_size=100)
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('suggestion-count:2', ['t1']),

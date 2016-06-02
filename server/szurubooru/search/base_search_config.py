@@ -38,22 +38,26 @@ class BaseSearchConfig(object):
         '''
         Decorate SQLAlchemy filter on given column using supplied criterion.
         '''
-        if isinstance(criterion, criteria.PlainSearchCriterion):
-            expr = column == int(criterion.value)
-        elif isinstance(criterion, criteria.ArraySearchCriterion):
-            expr = column.in_(int(value) for value in criterion.values)
-        elif isinstance(criterion, criteria.RangedSearchCriterion):
-            assert criterion.min_value != '' \
-                or criterion.max_value != ''
-            if criterion.min_value != '' and criterion.max_value != '':
-                expr = column.between(
-                    int(criterion.min_value), int(criterion.max_value))
-            elif criterion.min_value != '':
-                expr = column >= int(criterion.min_value)
-            elif criterion.max_value != '':
-                expr = column <= int(criterion.max_value)
-        else:
-            assert False
+        try:
+            if isinstance(criterion, criteria.PlainSearchCriterion):
+                expr = column == int(criterion.value)
+            elif isinstance(criterion, criteria.ArraySearchCriterion):
+                expr = column.in_(int(value) for value in criterion.values)
+            elif isinstance(criterion, criteria.RangedSearchCriterion):
+                assert criterion.min_value != '' \
+                    or criterion.max_value != ''
+                if criterion.min_value != '' and criterion.max_value != '':
+                    expr = column.between(
+                        int(criterion.min_value), int(criterion.max_value))
+                elif criterion.min_value != '':
+                    expr = column >= int(criterion.min_value)
+                elif criterion.max_value != '':
+                    expr = column <= int(criterion.max_value)
+            else:
+                assert False
+        except ValueError as e:
+            raise errors.SearchError(
+                'Criterion value %r must be a number.' % (criterion,))
         if criterion.negated:
             expr = ~expr
         return expr
