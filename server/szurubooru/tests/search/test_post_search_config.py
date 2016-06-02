@@ -292,6 +292,22 @@ def test_filter_by_type(verify_unpaged, post_factory, input, expected_post_ids):
     db.session.add_all([post1, post2, post3, post4])
     verify_unpaged(input, expected_post_ids)
 
+@pytest.mark.parametrize('input,expected_post_ids', [
+    ('safety:safe', [1]),
+    ('safety:sketchy', [2]),
+    ('safety:questionable', [2]),
+    ('safety:unsafe', [3]),
+])
+def test_filter_by_safety(verify_unpaged, post_factory, input, expected_post_ids):
+    post1 = post_factory(id=1)
+    post2 = post_factory(id=2)
+    post3 = post_factory(id=3)
+    post1.safety = db.Post.SAFETY_SAFE
+    post2.safety = db.Post.SAFETY_SKETCHY
+    post3.safety = db.Post.SAFETY_UNSAFE
+    db.session.add_all([post1, post2, post3])
+    verify_unpaged(input, expected_post_ids)
+
 def test_filter_by_invalid_type(executor):
     with pytest.raises(errors.SearchError):
         actual_count, actual_posts = executor.execute(

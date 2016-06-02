@@ -5,7 +5,7 @@ from szurubooru.func import util
 from szurubooru.search.base_search_config import BaseSearchConfig
 
 def _type_transformer(value):
-    available_types = {
+    available_values = {
         'image': db.Post.TYPE_IMAGE,
         'animation': db.Post.TYPE_ANIMATION,
         'animated': db.Post.TYPE_ANIMATION,
@@ -17,10 +17,23 @@ def _type_transformer(value):
         'swf': db.Post.TYPE_FLASH,
     }
     try:
-        return available_types[value.lower()]
+        return available_values[value.lower()]
     except KeyError:
-        raise errors.SearchError('Invalid type: %r. Available types: %r.' % (
-            value, available_types))
+        raise errors.SearchError('Invalid value: %r. Available values: %r.' % (
+            value, available_values))
+
+def _safety_transformer(value):
+    available_values = {
+        'safe': db.Post.SAFETY_SAFE,
+        'sketchy': db.Post.SAFETY_SKETCHY,
+        'questionable': db.Post.SAFETY_SKETCHY,
+        'unsafe': db.Post.SAFETY_UNSAFE,
+    }
+    try:
+        return available_values[value.lower()]
+    except KeyError:
+        raise errors.SearchError('Invalid value: %r. Available values: %r.' % (
+            value, available_values))
 
 class PostSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
@@ -111,6 +124,8 @@ class PostSearchConfig(BaseSearchConfig):
                 self._create_date_filter(db.Post.last_favorite_time),
             ('feature-date', 'feature-time'):
                 self._create_date_filter(db.Post.last_feature_time),
+            ('safety', 'rating'):
+                self._create_str_filter(db.Post.safety, _safety_transformer),
         })
 
     @property
