@@ -19,7 +19,8 @@ def _create_if_needed(tag_names, user):
 class TagListApi(BaseApi):
     def __init__(self):
         super().__init__()
-        self._search_executor = search.SearchExecutor(search.TagSearchConfig())
+        self._search_executor = search.Executor(
+            search.configs.TagSearchConfig())
 
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'tags:list')

@@ -2,7 +2,7 @@ from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import func
 from szurubooru import db
 from szurubooru.func import util
-from szurubooru.search.base_search_config import BaseSearchConfig
+from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 class TagSearchConfig(BaseSearchConfig):
     def create_filter_query(self):

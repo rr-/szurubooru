@@ -1,0 +1,5 @@
+from szurubooru.search.configs.user_search_config import UserSearchConfig
+from szurubooru.search.configs.snapshot_search_config import SnapshotSearchConfig
+from szurubooru.search.configs.tag_search_config import TagSearchConfig
+from szurubooru.search.configs.comment_search_config import CommentSearchConfig
+from szurubooru.search.configs.post_search_config import PostSearchConfig

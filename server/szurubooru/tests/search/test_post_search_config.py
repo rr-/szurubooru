@@ -38,7 +38,7 @@ def feature_factory(user_factory):
 
 @pytest.fixture
 def executor(user_factory):
-    return search.SearchExecutor(search.PostSearchConfig())
+    return search.Executor(search.configs.PostSearchConfig())
 
 @pytest.fixture
 def auth_executor(executor, user_factory):

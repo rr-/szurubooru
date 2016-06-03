@@ -12,7 +12,8 @@ def _serialize(ctx, user, **kwargs):
 class UserListApi(BaseApi):
     def __init__(self):
         super().__init__()
-        self._search_executor = search.SearchExecutor(search.UserSearchConfig())
+        self._search_executor = search.Executor(
+            search.configs.UserSearchConfig())
 
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'users:list')

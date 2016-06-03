@@ -12,8 +12,8 @@ def _serialize(ctx, comment, **kwargs):
 class CommentListApi(BaseApi):
     def __init__(self):
         super().__init__()
-        self._search_executor = search.SearchExecutor(
-            search.CommentSearchConfig())
+        self._search_executor = search.Executor(
+            search.configs.CommentSearchConfig())
 
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'comments:list')

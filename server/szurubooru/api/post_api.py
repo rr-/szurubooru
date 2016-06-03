@@ -12,7 +12,8 @@ def _serialize_post(ctx, post):
 class PostListApi(BaseApi):
     def __init__(self):
         super().__init__()
-        self._search_executor = search.SearchExecutor(search.PostSearchConfig())
+        self._search_executor = search.Executor(
+            search.configs.PostSearchConfig())
 
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'posts:list')

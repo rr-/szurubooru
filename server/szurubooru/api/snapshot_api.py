@@ -5,7 +5,8 @@ from szurubooru.func import auth, snapshots
 class SnapshotListApi(BaseApi):
     def __init__(self):
         super().__init__()
-        self._search_executor = search.SearchExecutor(search.SnapshotSearchConfig())
+        self._search_executor = search.Executor(
+            search.configs.SnapshotSearchConfig())
 
     def get(self, ctx):
         auth.verify_privilege(ctx.user, 'snapshots:list')

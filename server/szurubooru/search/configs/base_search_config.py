@@ -2,13 +2,14 @@ import sqlalchemy
 from szurubooru import db, errors
 from szurubooru.func import util
 from szurubooru.search import criteria
+from szurubooru.search import tokens
 
 def wildcard_transformer(value):
     return value.replace('*', '%')
 
 class BaseSearchConfig(object):
-    SORT_DESC = -1
-    SORT_ASC = 1
+    SORT_ASC = tokens.SortToken.SORT_ASC
+    SORT_DESC = tokens.SortToken.SORT_DESC
 
     def create_filter_query(self):
         raise NotImplementedError()
@@ -38,11 +39,11 @@ class BaseSearchConfig(object):
         Decorate SQLAlchemy filter on given column using supplied criterion.
         '''
         try:
-            if isinstance(criterion, criteria.PlainSearchCriterion):
+            if isinstance(criterion, criteria.PlainCriterion):
                 expr = column == int(criterion.value)
-            elif isinstance(criterion, criteria.ArraySearchCriterion):
+            elif isinstance(criterion, criteria.ArrayCriterion):
                 expr = column.in_(int(value) for value in criterion.values)
-            elif isinstance(criterion, criteria.RangedSearchCriterion):
+            elif isinstance(criterion, criteria.RangedCriterion):
                 assert criterion.min_value != '' \
                     or criterion.max_value != ''
                 if criterion.min_value != '' and criterion.max_value != '':
@@ -57,40 +58,45 @@ class BaseSearchConfig(object):
         except ValueError:
             raise errors.SearchError(
                 'Criterion value %r must be a number.' % (criterion,))
-        if criterion.negated:
-            expr = ~expr
         return expr
 
     @staticmethod
     def _create_num_filter(column):
-        return lambda query, criterion: query.filter(
-            BaseSearchConfig._apply_num_criterion_to_column(column, criterion))
+        def wrapper(query, criterion, negated):
+            expr = BaseSearchConfig._apply_num_criterion_to_column(
+                column, criterion)
+            if negated:
+                expr = ~expr
+            return query.filter(expr)
+        return wrapper
 
     @staticmethod
     def _apply_str_criterion_to_column(column, criterion, transformer):
         '''
         Decorate SQLAlchemy filter on given column using supplied criterion.
         '''
-        if isinstance(criterion, criteria.PlainSearchCriterion):
+        if isinstance(criterion, criteria.PlainCriterion):
             expr = column.ilike(transformer(criterion.value))
-        elif isinstance(criterion, criteria.ArraySearchCriterion):
+        elif isinstance(criterion, criteria.ArrayCriterion):
             expr = sqlalchemy.sql.false()
             for value in criterion.values:
                 expr = expr | column.ilike(transformer(value))
-        elif isinstance(criterion, criteria.RangedSearchCriterion):
+        elif isinstance(criterion, criteria.RangedCriterion):
             raise errors.SearchError(
                 'Composite token %r is invalid in this context.' % (criterion,))
         else:
             assert False
-        if criterion.negated:
-            expr = ~expr
         return expr
 
     @staticmethod
     def _create_str_filter(column, transformer=wildcard_transformer):
-        return lambda query, criterion: query.filter(
-            BaseSearchConfig._apply_str_criterion_to_column(
-                column, criterion, transformer))
+        def wrapper(query, criterion, negated):
+            expr = BaseSearchConfig._apply_str_criterion_to_column(
+                column, criterion, transformer)
+            if negated:
+                expr = ~expr
+            return query.filter(expr)
+        return wrapper
 
     @staticmethod
     def _apply_date_criterion_to_column(column, criterion):
@@ -98,15 +104,15 @@ class BaseSearchConfig(object):
         Decorate SQLAlchemy filter on given column using supplied criterion.
         Parse the datetime inside the criterion.
         '''
-        if isinstance(criterion, criteria.PlainSearchCriterion):
+        if isinstance(criterion, criteria.PlainCriterion):
             min_date, max_date = util.parse_time_range(criterion.value)
             expr = column.between(min_date, max_date)
-        elif isinstance(criterion, criteria.ArraySearchCriterion):
+        elif isinstance(criterion, criteria.ArrayCriterion):
             expr = sqlalchemy.sql.false()
             for value in criterion.values:
                 min_date, max_date = util.parse_time_range(value)
                 expr = expr | column.between(min_date, max_date)
-        elif isinstance(criterion, criteria.RangedSearchCriterion):
+        elif isinstance(criterion, criteria.RangedCriterion):
             assert criterion.min_value or criterion.max_value
             if criterion.min_value and criterion.max_value:
                 min_date = util.parse_time_range(criterion.min_value)[0]
@@ -120,14 +126,17 @@ class BaseSearchConfig(object):
                 expr = column <= max_date
         else:
             assert False
-        if criterion.negated:
-            expr = ~expr
         return expr
 
     @staticmethod
     def _create_date_filter(column):
-        return lambda query, criterion: query.filter(
-            BaseSearchConfig._apply_date_criterion_to_column(column, criterion))
+        def wrapper(query, criterion, negated):
+            expr = BaseSearchConfig._apply_date_criterion_to_column(
+                column, criterion)
+            if negated:
+                expr = ~expr
+            return query.filter(expr)
+        return wrapper
 
     @staticmethod
     def _create_subquery_filter(
@@ -137,12 +146,12 @@ class BaseSearchConfig(object):
             filter_factory,
             subquery_decorator=None):
         filter_func = filter_factory(filter_column)
-        def func(query, criterion):
+        def wrapper(query, criterion, negated):
             subquery = db.session.query(right_id_column.label('foreign_id'))
             if subquery_decorator:
                 subquery = subquery_decorator(subquery)
             subquery = subquery.options(sqlalchemy.orm.lazyload('*'))
-            subquery = filter_func(subquery, criterion)
+            subquery = filter_func(subquery, criterion, negated)
             subquery = subquery.subquery('t')
             return query.filter(left_id_column.in_(subquery))
-        return func
+        return wrapper

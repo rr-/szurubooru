@@ -2,14 +2,15 @@ from sqlalchemy.orm import subqueryload, lazyload, defer
 from sqlalchemy.sql.expression import func
 from szurubooru import db, errors
 from szurubooru.func import util
-from szurubooru.search.base_search_config import BaseSearchConfig
+from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 def _enum_transformer(available_values, value):
     try:
         return available_values[value.lower()]
     except KeyError:
-        raise errors.SearchError('Invalid value: %r. Possible values: %r.' % (
-            value, list(sorted(available_values.keys()))))
+        raise errors.SearchError(
+            'Invalid value: %r. Possible values: %r.' % (
+                value, list(sorted(available_values.keys()))))
 
 def _type_transformer(value):
     available_values = {

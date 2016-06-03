@@ -1,6 +1,6 @@
 from sqlalchemy.sql.expression import func
 from szurubooru import db
-from szurubooru.search.base_search_config import BaseSearchConfig
+from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 class UserSearchConfig(BaseSearchConfig):
     ''' Executes searches related to the users. '''

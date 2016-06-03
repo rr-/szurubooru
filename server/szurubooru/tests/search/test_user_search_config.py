@@ -4,8 +4,7 @@ from szurubooru import db, errors, search
 
 @pytest.fixture
 def executor():
-    search_config = search.UserSearchConfig()
-    return search.SearchExecutor(search_config)
+    return search.Executor(search.configs.UserSearchConfig())
 
 @pytest.fixture
 def verify_unpaged(executor):

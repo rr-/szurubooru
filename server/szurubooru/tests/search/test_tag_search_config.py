@@ -4,8 +4,7 @@ from szurubooru import db, errors, search
 
 @pytest.fixture
 def executor():
-    search_config = search.TagSearchConfig()
-    return search.SearchExecutor(search_config)
+    return search.Executor(search.configs.TagSearchConfig())
 
 @pytest.fixture
 def verify_unpaged(executor):
@@ -321,19 +320,4 @@ def test_sort_by_category(
     tag2 = tag_factory(names=['t2'], category=cat2)
     tag3 = tag_factory(names=['t3'], category=cat1)
     db.session.add_all([tag1, tag2, tag3])
-    import sqlalchemy
-    from sqlalchemy.orm import joinedload
-    print('test', [tag.first_name for tag in db.session.query(db.Tag)
-        .join(db.TagCategory).options(
-            joinedload(db.Tag.names),
-            joinedload(db.Tag.category),
-            joinedload(db.Tag.suggestions).joinedload(db.Tag.names),
-            joinedload(db.Tag.implications).joinedload(db.Tag.names)
-        )
-        .options(sqlalchemy.orm.lazyload('*'))
-        .order_by(db.TagCategory.name.asc())
-        .order_by(db.Tag.first_name.asc())
-        .offset(0)
-        .limit(100)
-        .all()])
     verify_unpaged(input, expected_tag_names)
