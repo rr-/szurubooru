@@ -34,6 +34,7 @@ class Executor(object):
         '''
 
         search_query = self.parser.parse(query_text)
+        self.config.on_search_query_parsed(search_query)
 
         key = (id(self.config), hash(search_query), page, page_size)
         if cache.has(key):

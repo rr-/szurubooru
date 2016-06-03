@@ -1,8 +1,7 @@
 import sqlalchemy
 from szurubooru import db, errors
 from szurubooru.func import util
-from szurubooru.search import criteria
-from szurubooru.search import tokens
+from szurubooru.search import criteria, tokens
 
 def wildcard_transformer(value):
     return value.replace('*', '%')
@@ -10,6 +9,9 @@ def wildcard_transformer(value):
 class BaseSearchConfig(object):
     SORT_ASC = tokens.SortToken.SORT_ASC
     SORT_DESC = tokens.SortToken.SORT_DESC
+
+    def on_search_query_parsed(self, search_query):
+        pass
 
     def create_filter_query(self):
         raise NotImplementedError()
@@ -71,7 +73,8 @@ class BaseSearchConfig(object):
         return wrapper
 
     @staticmethod
-    def _apply_str_criterion_to_column(column, criterion, transformer):
+    def _apply_str_criterion_to_column(
+            column, criterion, transformer=wildcard_transformer):
         '''
         Decorate SQLAlchemy filter on given column using supplied criterion.
         '''

@@ -1,7 +1,8 @@
-from sqlalchemy.orm import subqueryload, lazyload, defer
+from sqlalchemy.orm import subqueryload, lazyload, defer, aliased
 from sqlalchemy.sql.expression import func
 from szurubooru import db, errors
 from szurubooru.func import util
+from szurubooru.search import criteria, tokens
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 def _enum_transformer(available_values, value):
@@ -35,7 +36,47 @@ def _safety_transformer(value):
     }
     return _enum_transformer(available_values, value)
 
+def _create_score_filter(score):
+    def wrapper(query, criterion, negated):
+        if not getattr(criterion, 'internal', False):
+            raise errors.SearchError(
+                'Votes cannot be seen publicly. Did you mean %r?' \
+                    % 'special:liked')
+        user_alias = aliased(db.User)
+        score_alias = aliased(db.PostScore)
+        expr = score_alias.score == score
+        expr = expr & BaseSearchConfig._apply_str_criterion_to_column(
+            user_alias.name, criterion)
+        if negated:
+            expr = ~expr
+        ret = query \
+            .join(score_alias, score_alias.post_id == db.Post.post_id) \
+            .join(user_alias, user_alias.user_id == score_alias.user_id) \
+            .filter(expr)
+        return ret
+    return wrapper
+
 class PostSearchConfig(BaseSearchConfig):
+    def on_search_query_parsed(self, search_query):
+        new_special_tokens = []
+        for token in search_query.special_tokens:
+            if token.value in ('fav', 'liked', 'disliked'):
+                assert self.user
+                if self.user.rank == 'anonymous':
+                    raise errors.SearchError('Must be logged in to use this feature.')
+                criterion = criteria.PlainCriterion(
+                    original_text=self.user.name,
+                    value=self.user.name)
+                criterion.internal = True
+                search_query.named_tokens.append(
+                    tokens.NamedToken(
+                        name=token.value,
+                        criterion=criterion,
+                        negated=token.negated))
+            else:
+                new_special_tokens.append(token)
+        search_query.special_tokens = new_special_tokens
+
     def create_filter_query(self):
         return self.create_count_query() \
             .options(
@@ -101,6 +142,8 @@ class PostSearchConfig(BaseSearchConfig):
                 db.User.name,
                 self._create_str_filter,
                 lambda subquery: subquery.join(db.User)),
+            'liked': _create_score_filter(1),
+            'disliked': _create_score_filter(-1),
             'tag-count': self._create_num_filter(db.Post.tag_count),
             'comment-count': self._create_num_filter(db.Post.comment_count),
             'fav-count': self._create_num_filter(db.Post.favorite_count),
@@ -158,49 +201,12 @@ class PostSearchConfig(BaseSearchConfig):
     @property
     def special_filters(self):
         return {
-            'liked': self.own_liked_filter,
-            'disliked': self.own_disliked_filter,
-            'fav': self.own_fav_filter,
+            # handled by parsed
+            'fav': None,
+            'liked': None,
+            'disliked': None,
             'tumbleweed': self.tumbleweed_filter,
         }
-
-    def own_liked_filter(self, query, negated):
-        assert self.user
-        if self.user.rank == 'anonymous':
-            raise errors.SearchError('Must be logged in to use this feature.')
-        expr = db.Post.post_id.in_(
-            db.session \
-                .query(db.PostScore.post_id) \
-                .filter(db.PostScore.user_id == self.user.user_id) \
-                .filter(db.PostScore.score == 1))
-        if negated:
-            expr = ~expr
-        return query.filter(expr)
-
-    def own_disliked_filter(self, query, negated):
-        assert self.user
-        if self.user.rank == 'anonymous':
-            raise errors.SearchError('Must be logged in to use this feature.')
-        expr = db.Post.post_id.in_(
-            db.session \
-                .query(db.PostScore.post_id) \
-                .filter(db.PostScore.user_id == self.user.user_id) \
-                .filter(db.PostScore.score == -1))
-        if negated:
-            expr = ~expr
-        return query.filter(expr)
-
-    def own_fav_filter(self, query, negated):
-        assert self.user
-        if self.user.rank == 'anonymous':
-            raise errors.SearchError('Must be logged in to use this feature.')
-        expr = db.Post.post_id.in_(
-            db.session \
-                .query(db.PostFavorite.post_id) \
-                .filter(db.PostFavorite.user_id == self.user.user_id))
-        if negated:
-            expr = ~expr
-        return query.filter(expr)
 
     def tumbleweed_filter(self, query, negated):
         expr = \

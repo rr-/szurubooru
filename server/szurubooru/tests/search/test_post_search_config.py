@@ -559,6 +559,15 @@ def test_own_disliked(
     verify_unpaged('special:disliked', [1])
     verify_unpaged('-special:disliked', [2, 3])
 
+@pytest.mark.parametrize('input', [
+    'liked:x',
+    'disliked:x',
+])
+def test_someones_score(executor, input):
+    with pytest.raises(errors.SearchError):
+        actual_count, actual_posts = executor.execute(
+            input, page=1, page_size=100)
+
 def test_own_fav(
         auth_executor, post_factory, fav_factory, user_factory, verify_unpaged):
     auth_user = auth_executor()
