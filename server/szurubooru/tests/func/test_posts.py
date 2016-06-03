@@ -68,10 +68,10 @@ def test_serialize_post(
         post_factory, user_factory, comment_factory, tag_factory, config_injector):
     config_injector({'data_url': 'http://example.com/'})
     with unittest.mock.patch('szurubooru.func.comments.serialize_comment'), \
-            unittest.mock.patch('szurubooru.func.users.serialize_user'), \
+            unittest.mock.patch('szurubooru.func.users.serialize_micro_user'), \
             unittest.mock.patch('szurubooru.func.posts.files.has', return_value=True), \
             unittest.mock.patch('szurubooru.func.snapshots.get_serialized_history'):
-        users.serialize_user.side_effect = lambda user, auth_user: user.name
+        users.serialize_micro_user.side_effect = lambda user: user.name
         comments.serialize_comment.side_effect \
             = lambda comment, auth_user: comment.user.name
         snapshots.get_serialized_history.return_value = 'snapshot history'

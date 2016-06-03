@@ -81,7 +81,7 @@ def serialize_post(post, authenticated_user, options=None):
             'flags': lambda: post.flags,
             'tags': lambda: [tag.names[0].name for tag in post.tags],
             'relations': lambda: [rel.post_id for rel in post.relations],
-            'user': lambda: users.serialize_user(post.user, authenticated_user),
+            'user': lambda: users.serialize_micro_user(post.user),
             'score': lambda: post.score,
             'ownScore': lambda: scores.get_score(post, authenticated_user),
             'tagCount': lambda: post.tag_count,
@@ -91,7 +91,7 @@ def serialize_post(post, authenticated_user, options=None):
             'featureCount': lambda: post.feature_count,
             'lastFeatureTime': lambda: post.last_feature_time,
             'favoritedBy': lambda: [
-                users.serialize_user(rel.user, authenticated_user) \
+                users.serialize_micro_user(rel.user) \
                     for rel in post.favorited_by],
             'hasCustomThumbnail':
                 lambda: files.has(get_post_thumbnail_backup_path(post)),

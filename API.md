@@ -64,6 +64,7 @@
 3. [Resources](#resources)
 
    - [User](#user)
+   - [Micro user](#micro-user)
    - [Tag category](#tag-category)
    - [Tag](#tag)
    - [Post](#post)
@@ -1427,6 +1428,11 @@ A single user.
 
 - `<avatarUrl>`: the URL to the avatar.
 
+## Micro user
+**Description**
+
+A [user resource](#user) stripped down to `name` and `avatarUrl` fields.
+
 ## Tag category
 **Description**
 
@@ -1584,7 +1590,7 @@ One file together with its metadata posted to the site.
   to the user by the web client.
 - `<notes>`: a list of post annotations, serialized as list of [note
   resources](#note).
-- `<user>`: who created the post, serialized as [user resource](#user).
+- `<user>`: who created the post, serialized as [micro user resource](#micro-user).
 - `<score>`: the collective score (+1/-1 rating) of the given post.
 - `<own-score>`: the score (+1/-1 rating) of the given post by the
   authenticated user.
@@ -1595,7 +1601,7 @@ One file together with its metadata posted to the site.
 - `<feature-count>`: how many times has the post been featured.
 - `<last-feature-time>`: the last time the post was featured, formatted as per
   RFC 3339.
-- `<favorited-by>`: list of users, serialized as [user resources](#user).
+- `<favorited-by>`: list of users, serialized as [micro user resources](#micro-user).
 - `<has-custom-thumbnail>`: whether the post uses custom thumbnail.
 - `<mime-type>`: subsidiary to `<type>`, used to tell exact content format;
   useful for `<video>` tags for instance.
@@ -1648,7 +1654,7 @@ A comment under a post.
 - `<id>`: the comment identifier.
 - `<post-id>`: an id of the post the comment is for.
 - `<text>`: the comment content. The client should render is as Markdown.
-- `<author>`: a user resource the comment is created by.
+- `<author>`: a [micro user resource](#micro-user) the comment is created by.
 - `<creation-time>`: time the comment was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the comment was edited, formatted as per RFC 3339.
 - `<score>`: the collective score (+1/-1 rating) of the given comment.

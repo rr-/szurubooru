@@ -10,7 +10,7 @@ def serialize_comment(comment, authenticated_user, options=None):
         comment,
         {
             'id': lambda: comment.comment_id,
-            'user': lambda: users.serialize_user(comment.user, authenticated_user),
+            'user': lambda: users.serialize_micro_user(comment.user),
             'postId': lambda: comment.post.post_id,
             'text': lambda: comment.text,
             'creationTime': lambda: comment.creation_time,

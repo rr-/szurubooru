@@ -42,6 +42,12 @@ def serialize_user(user, authenticated_user, options=None, force_show_email=Fals
         },
         options)
 
+def serialize_micro_user(user):
+    return serialize_user(
+        user,
+        authenticated_user=None,
+        options=['name', 'avatarUrl'])
+
 def get_user_count():
     return db.session.query(db.User).count()
 
