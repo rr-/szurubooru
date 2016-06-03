@@ -30,6 +30,14 @@ class PostsHeaderView {
             form.querySelector('input').focus();
         });
 
+        keyboard.bind('p', () => {
+            const firstPostNode
+                = document.body.querySelector('.post-list li:first-child a');
+            if (firstPostNode) {
+                firstPostNode.focus();
+            }
+        });
+
         for (let safetyButton of form.querySelectorAll('.safety')) {
             safetyButton.addEventListener(
                 'click', e => this._evtSafetyButtonClick(e, ctx.clientUrl));
