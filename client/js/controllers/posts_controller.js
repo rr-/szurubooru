@@ -1,8 +1,9 @@
 'use strict';
 
-const misc = require('../util/misc.js');
 const page = require('page');
 const api = require('../api.js');
+const settings = require('../settings.js');
+const misc = require('../util/misc.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
 const PostsHeaderView = require('../views/posts_header_view.js');
@@ -40,10 +41,22 @@ class PostsController {
         pageController.run({
             state: ctx.state,
             requestPage: page => {
-                const text = ctx.searchQuery.text;
+                const browsingSettings = settings.getSettings();
+                let text = ctx.searchQuery.text;
+                let disabledSafety = [];
+                for (let key of Object.keys(browsingSettings.listPosts)) {
+                    if (browsingSettings.listPosts[key] === false) {
+                        disabledSafety.push(key);
+                    }
+                }
+                if (disabledSafety.length) {
+                    text = `-rating:${disabledSafety.join(',')} ${text}`;
+                }
+                text = text.trim();
                 return api.get(
                     `/posts/?query=${text}&page=${page}&pageSize=40&_fields=` +
-                    `id,type,tags,score,favoriteCount,commentCount,thumbnailUrl`);
+                    `id,type,tags,score,favoriteCount,` +
+                    `commentCount,thumbnailUrl`);
             },
             clientUrl: '/posts/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),

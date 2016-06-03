@@ -100,6 +100,7 @@ function makeInput(options) {
                 type: options.inputType,
                 name: options.name,
                 id: options.id,
+                class: options.class,
                 value: options.value || '',
                 required: options.required,
                 pattern: options.pattern,

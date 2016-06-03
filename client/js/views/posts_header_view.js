@@ -1,6 +1,7 @@
 'use strict';
 
 const page = require('page');
+const settings = require('../settings.js');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
@@ -13,6 +14,8 @@ class PostsHeaderView {
     }
 
     render(ctx) {
+        ctx.settings = settings.getSettings();
+
         const target = ctx.target;
         const source = this._template(ctx);
 
@@ -27,14 +30,32 @@ class PostsHeaderView {
             form.querySelector('input').focus();
         });
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            const text = searchTextInput.value;
-            searchTextInput.blur();
-            page('/posts/' + misc.formatSearchQuery({text: text}));
-        });
+        for (let safetyButton of form.querySelectorAll('.safety')) {
+            safetyButton.addEventListener(
+                'click', e => this._evtSafetyButtonClick(e, ctx.clientUrl));
+        }
+        form.addEventListener(
+            'submit', e => this._evtFormSubmit(e, searchTextInput));
 
         views.showView(target, source);
+    }
+
+    _evtSafetyButtonClick(e, url) {
+        e.preventDefault();
+        e.target.classList.toggle('disabled');
+        const safety = e.target.getAttribute('data-safety');
+        let browsingSettings = settings.getSettings();
+        browsingSettings.listPosts[safety]
+            = !browsingSettings.listPosts[safety];
+        settings.saveSettings(browsingSettings, true);
+        page(url.replace(/{page}/, 1));
+    }
+
+    _evtFormSubmit(e, searchTextInput) {
+        e.preventDefault();
+        const text = searchTextInput.value;
+        searchTextInput.blur();
+        page('/posts/' + misc.formatSearchQuery({text: text}));
     }
 }
 

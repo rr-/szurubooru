@@ -86,6 +86,17 @@
         font-size: 0.95em
         color: $inactive-link-color
 
+    .safety
+        border-color: lighten(saturation($main-color, 0%), 20%)
+        &.safety-safe
+            background: #97CF97
+        &.safety-sketchy
+            background: #E7E78D
+        &.safety-unsafe
+            background: #F2B48C
+        &.disabled
+            opacity: .2
+
 .post-container
     text-align: center
     .post-content

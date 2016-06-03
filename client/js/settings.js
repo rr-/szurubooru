@@ -2,14 +2,21 @@
 
 const events = require('./events.js');
 
-function saveSettings(browsingSettings) {
+function saveSettings(browsingSettings, silent) {
     localStorage.setItem('settings', JSON.stringify(browsingSettings));
-    events.notify(events.Success, 'Settings saved');
-    events.notify(events.SettingsChange);
+    if (silent !== true) {
+        events.notify(events.Success, 'Settings saved');
+        events.notify(events.SettingsChange);
+    }
 }
 
 function getSettings(settings) {
     const defaultSettings = {
+        listPosts: {
+            safe: true,
+            sketchy: true,
+            unsafe: false,
+        },
         upscaleSmallPosts: false,
         endlessScroll: false,
         keyboardShortcuts: true,
