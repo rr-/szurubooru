@@ -56,7 +56,15 @@ def test_retrieving_single(test_ctx):
         'avatarUrl': 'http://gravatar.com/avatar/' +
             '275876e34cf609db118f3d84b799a790?d=retro&s=200',
         'email': False,
+        'commentCount': 0,
+        'likedPostCount': False,
+        'dislikedPostCount': False,
+        'favoritePostCount': 0,
+        'uploadedPostCount': 0,
     }
+    assert result['email'] is False
+    assert result['likedPostCount'] is False
+    assert result['dislikedPostCount'] is False
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(users.UserNotFoundError):

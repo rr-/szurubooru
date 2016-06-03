@@ -57,6 +57,11 @@ def test_updating_user(test_ctx):
         'email': 'asd@asd.asd',
         'name': 'chewie',
         'rank': 'moderator',
+        'commentCount': 0,
+        'likedPostCount': 0,
+        'dislikedPostCount': 0,
+        'favoritePostCount': 0,
+        'uploadedPostCount': 0,
     }
     user = users.get_user_by_name('chewie')
     assert user.name == 'chewie'

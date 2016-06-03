@@ -1391,13 +1391,18 @@ A single user.
 
 ```json5
 {
-    "name":          <name>,
-    "email":         <email>,
-    "rank":          <rank>,
-    "lastLoginTime": <last-login-time>,
-    "creationTime":  <creation-time>,
-    "avatarStyle":   <avatar-style>,
-    "avatarUrl":     <avatar-url>
+    "name":              <name>,
+    "email":             <email>,
+    "rank":              <rank>,
+    "lastLoginTime":     <last-login-time>,
+    "creationTime":      <creation-time>,
+    "avatarStyle":       <avatar-style>,
+    "avatarUrl":         <avatar-url>,
+    "commentCount":      <comment-count>,
+    "uploadedPostCount": <uploaded-post-count>,
+    "likedPostCount":    <liked-post-count>,
+    "dislikedPostCount": <disliked-post-count>,
+    "faoritevPostCount": <favorite-post-count>
 }
 ```
 
@@ -1427,6 +1432,15 @@ A single user.
     - `"manual"`: the user has uploaded a picture manually.
 
 - `<avatarUrl>`: the URL to the avatar.
+- `<comment-count>`: number of comments.
+- `<uploaded-post-count>`: number of uploaded posts.
+- `<liked-post-count>`: nubmer of liked posts. It is available only if the
+  request is authenticated by the same user. If it's unavailable, the server
+  returns `false`.
+- `<disliked-post-count>`: number of disliked posts. It is available only if
+  the request is authenticated by the same user. If it's unavailable, the
+  server returns `false`.
+- `<favorite-post-count>`: number of favorited posts.
 
 ## Micro user
 **Description**

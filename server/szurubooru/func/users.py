@@ -28,6 +28,16 @@ def _get_email(user, authenticated_user, force_show_email):
         return False
     return user.email
 
+def _get_liked_post_count(user, authenticated_user):
+    if authenticated_user.user_id != user.user_id:
+        return False
+    return user.liked_post_count
+
+def _get_disliked_post_count(user, authenticated_user):
+    if authenticated_user.user_id != user.user_id:
+        return False
+    return user.disliked_post_count
+
 def serialize_user(user, authenticated_user, options=None, force_show_email=False):
     return util.serialize_entity(
         user,
@@ -38,7 +48,15 @@ def serialize_user(user, authenticated_user, options=None, force_show_email=Fals
             'lastLoginTime': lambda: user.last_login_time,
             'avatarStyle': lambda: user.avatar_style,
             'avatarUrl': lambda: _get_avatar_url(user),
-            'email': lambda: _get_email(user, authenticated_user, force_show_email),
+            'commentCount': lambda: user.comment_count,
+            'uploadedPostCount': lambda: user.post_count,
+            'favoritePostCount': lambda: user.favorite_post_count,
+            'likedPostCount':
+                lambda: _get_liked_post_count(user, authenticated_user),
+            'dislikedPostCount':
+                lambda: _get_disliked_post_count(user, authenticated_user),
+            'email':
+                lambda: _get_email(user, authenticated_user, force_show_email),
         },
         options)
 

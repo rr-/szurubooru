@@ -43,6 +43,11 @@ def test_creating_user(test_ctx, fake_datetime):
         'name': 'chewie1',
         'rank': 'administrator',
         'email': 'asd@asd.asd',
+        'commentCount': 0,
+        'likedPostCount': 0,
+        'dislikedPostCount': 0,
+        'favoritePostCount': 0,
+        'uploadedPostCount': 0,
     }
     user = users.get_user_by_name('chewie1')
     assert user.name == 'chewie1'
