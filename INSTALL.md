@@ -130,10 +130,11 @@ Below are described the methods to integrate the API into a web server:
 
 1. Run API locally with `waitress`, and bind it with a reverse proxy. In this
    approach, the user needs to (from within `virtualenv`) install `waitress`
-   with `pip install waitress` and then start `szurubooru` with
-   `./server/host-waitress` (see `--help` for details). Then the user needs to
-   add a virtual host that delegates the API requests to the local API server,
-   and the browser requests to the `client/public/` directory.
+   with `pip install waitress` and then start `szurubooru` with `./host-waitress`
+   from within the `server/` directory (see `--help` for details). Then the
+   user needs to add a virtual host that delegates the API requests to the
+   local API server, and the browser requests to the `client/public/`
+   directory.
 2. Alternatively, Apache users can use `mod_wsgi`.
 3. Alternatively, users can use other WSGI frontends such as `gunicorn` or
    `uwsgi`, but they'll need to write wrapper scripts themselves.
@@ -173,5 +174,5 @@ data_url: 'http://big.dude/data/'
 data_dir: '/home/rr-/src/maintained/szurubooru/client/public/data'
 ```
 
-Then the backend is started with `./server/host-waitress` from within
-`virtualenv`.
+Then the backend is started with `host-waitress` from within `virtualenv` and
+`./server/` directory.
