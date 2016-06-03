@@ -78,8 +78,10 @@ function refreshExport() {
                 _categories = new Map();
                 reject(error);
             }
-            _tags = _tagsToMap(response.body.tags);
-            _categories = _tagCategoriesToMap(response.body.categories);
+            _tags = _tagsToMap(
+                response.body ? response.body.tags : []);
+            _categories = _tagCategoriesToMap(
+                response.body ? response.body.categories : []);
             _refreshStylesheet();
             resolve();
         });
