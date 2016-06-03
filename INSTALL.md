@@ -48,7 +48,7 @@ user@host:~$ sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
 Getting `szurubooru`:
 
 ```console
-user@host:~$ git clone https://github.com/rr-/szurubooru2 szuru
+user@host:~$ git clone https://github.com/rr-/szurubooru.git szuru
 user@host:~$ cd szuru
 ```
 
@@ -104,7 +104,7 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
     ```console
     user@host:szuru/client$ cd ../server
     user@host:szuru/server$ source python_modules/bin/activate
-    (python_modules) user@host:szuru/server$ alembic update head
+    (python_modules) user@host:szuru/server$ alembic upgrade head
     ```
 
     `alembic` should have been installed during installation of `szurubooru`'s
