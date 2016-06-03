@@ -32,11 +32,12 @@ class Executor(object):
         Parse input and return tuple containing total record count and filtered
         entities.
         '''
-        key = (id(self.config), query_text, page, page_size)
-        if cache.has(key):
-            return cache.get(key)
 
         search_query = self.parser.parse(query_text)
+
+        key = (id(self.config), hash(search_query), page, page_size)
+        if cache.has(key):
+            return cache.get(key)
 
         filter_query = self.config.create_filter_query()
         filter_query = filter_query.options(sqlalchemy.orm.lazyload('*'))

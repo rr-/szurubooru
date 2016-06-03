@@ -64,6 +64,13 @@ class SearchQuery():
         self.special_tokens = []
         self.sort_tokens = []
 
+    def __hash__(self):
+        return hash((
+            tuple(self.anonymous_tokens),
+            tuple(self.named_tokens),
+            tuple(self.special_tokens),
+            tuple(self.sort_tokens)))
+
 class Parser(object):
     def parse(self, query_text):
         query = SearchQuery()
