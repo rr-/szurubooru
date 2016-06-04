@@ -17,51 +17,44 @@
             display: inline-block
             text-align: left
             min-width: 10em
-            width: 15vw
+            width: 12vw
             &:not(.flexbox-dummy)
                 min-height: 7.5em
-                height: 11.25vw
+                height: 9vw
 
             a
                 display: inline-block
                 width: 100%
                 height: 100%
-                line-height: 100%
+                line-height: 80%
                 font-size: 80%
                 color: white
                 outline-offset: -3px
+                box-shadow: 0 0 0 1px rgba(0,0,0,0.2)
+
+                .type, .stats
+                    position: absolute
+                    bottom: 0.5em
+                    padding: 0.33em 0.5em
+                    background: rgba(0,0,0,0.5)
+                    height: 1em
 
                 .type
-                    position: absolute
-                    left: -1px
-                    bottom: -1px
-                    padding: 1em 4em 0.5em 0.5em
-                    background-image: radial-gradient(
-                        ellipse 100% 100% at bottom left,
-                        rgba(0,0,0,0.5),
-                        rgba(0,0,0,0));
+                    float: left
+                    left: 0.5em
                     &[data-type=image]
                         display: none
 
                 .stats
-                    position: absolute
-                    right: -1px
-                    bottom: -1px
+                    float: right
+                    right: 0.5em
                     text-align: right
-                    /*padding: 0.5em
-                    background: rgba(0,0,0,0.5);*/
-                    padding: 1em 0.5em 0.5em 4em
-                    background-image: radial-gradient(
-                        ellipse 100% 100% at bottom right,
-                        rgba(0,0,0,0.5),
-                        rgba(0,0,0,0));
                     i
-                        margin-right: 0.5em
+                        margin-right: 0.25em
                     .icon:not(:first-of-type)
                         margin-left: 1em
 
             .thumbnail
-                border: 1px solid $inactive-link-color
                 background-position: 50% 30%
                 width: 100%
                 height: 100%
@@ -71,9 +64,10 @@
                 background: $main-color
                 .thumbnail
                     opacity: .9
-                    border: 1px solid $main-color
+                a
+                    box-shadow: 0 0 0 1px $main-color
                 a, .thumbnail
-                    outline: 2px solid $main-color
+                    outline: 3px solid $main-color
 
 .post-list-header
     text-align: left
@@ -87,15 +81,21 @@
         color: $inactive-link-color
 
     .safety
-        border-color: lighten(saturation($main-color, 0%), 20%)
         &.safety-safe
-            background: #97CF97
+            background-color: #88D488
+            border-color: @background-color
+            &.disabled
+                background-color: alpha(@background-color, 0.15)
         &.safety-sketchy
-            background: #E7E78D
+            background-color: #F3D75F
+            border-color: @background-color
+            &.disabled
+                background-color: alpha(@background-color, 0.15)
         &.safety-unsafe
-            background: #F2B48C
-        &.disabled
-            opacity: .2
+            background-color: #F3985F
+            border-color: @background-color
+            &.disabled
+                background-color: alpha(@background-color, 0.15)
 
 .post-container
     text-align: center
