@@ -1,4 +1,5 @@
 from szurubooru import db
+from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 class SnapshotSearchConfig(BaseSearchConfig):
@@ -11,10 +12,10 @@ class SnapshotSearchConfig(BaseSearchConfig):
     @property
     def named_filters(self):
         return {
-            'type': self._create_str_filter(db.Snapshot.resource_type),
-            'id': self._create_str_filter(db.Snapshot.resource_repr),
-            'date': self._create_date_filter(db.Snapshot.creation_time),
-            'time': self._create_date_filter(db.Snapshot.creation_time),
-            'operation': self._create_str_filter(db.Snapshot.operation),
-            'user': self._create_str_filter(db.User.name),
+            'type': search_util.create_str_filter(db.Snapshot.resource_type),
+            'id': search_util.create_str_filter(db.Snapshot.resource_repr),
+            'date': search_util.create_date_filter(db.Snapshot.creation_time),
+            'time': search_util.create_date_filter(db.Snapshot.creation_time),
+            'operation': search_util.create_str_filter(db.Snapshot.operation),
+            'user': search_util.create_str_filter(db.User.name),
         }

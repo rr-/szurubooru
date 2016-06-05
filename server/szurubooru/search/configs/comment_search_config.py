@@ -1,5 +1,6 @@
 from sqlalchemy.sql.expression import func
 from szurubooru import db
+from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 class CommentSearchConfig(BaseSearchConfig):
@@ -11,22 +12,22 @@ class CommentSearchConfig(BaseSearchConfig):
 
     @property
     def anonymous_filter(self):
-        return self._create_str_filter(db.Comment.text)
+        return search_util.create_str_filter(db.Comment.text)
 
     @property
     def named_filters(self):
         return {
-            'id': self._create_num_filter(db.Comment.comment_id),
-            'post': self._create_num_filter(db.Comment.post_id),
-            'user': self._create_str_filter(db.User.name),
-            'author': self._create_str_filter(db.User.name),
-            'text': self._create_str_filter(db.Comment.text),
-            'creation-date': self._create_date_filter(db.Comment.creation_time),
-            'creation-time': self._create_date_filter(db.Comment.creation_time),
-            'last-edit-date': self._create_date_filter(db.Comment.last_edit_time),
-            'last-edit-time': self._create_date_filter(db.Comment.last_edit_time),
-            'edit-date': self._create_date_filter(db.Comment.last_edit_time),
-            'edit-time': self._create_date_filter(db.Comment.last_edit_time),
+            'id': search_util.create_num_filter(db.Comment.comment_id),
+            'post': search_util.create_num_filter(db.Comment.post_id),
+            'user': search_util.create_str_filter(db.User.name),
+            'author': search_util.create_str_filter(db.User.name),
+            'text': search_util.create_str_filter(db.Comment.text),
+            'creation-date': search_util.create_date_filter(db.Comment.creation_time),
+            'creation-time': search_util.create_date_filter(db.Comment.creation_time),
+            'last-edit-date': search_util.create_date_filter(db.Comment.last_edit_time),
+            'last-edit-time': search_util.create_date_filter(db.Comment.last_edit_time),
+            'edit-date': search_util.create_date_filter(db.Comment.last_edit_time),
+            'edit-time': search_util.create_date_filter(db.Comment.last_edit_time),
         }
 
     @property

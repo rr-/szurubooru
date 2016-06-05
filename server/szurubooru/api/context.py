@@ -2,8 +2,8 @@ import falcon
 from szurubooru import errors
 from szurubooru.func import net
 
-def _lower_first(input):
-    return input[0].lower() + input[1:]
+def _lower_first(source):
+    return source[0].lower() + source[1:]
 
 def _param_wrapper(func):
     def wrapper(self, name, required=False, default=None, **kwargs):
@@ -11,10 +11,10 @@ def _param_wrapper(func):
             value = self.input[name]
             try:
                 value = func(self, value, **kwargs)
-            except errors.InvalidParameterError as e:
+            except errors.InvalidParameterError as ex:
                 raise errors.InvalidParameterError(
                     'Parameter %r is invalid: %s' % (
-                        name, _lower_first(str(e))))
+                        name, _lower_first(str(ex))))
             return value
         if not required:
             return default

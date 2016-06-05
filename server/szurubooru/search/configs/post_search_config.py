@@ -3,6 +3,7 @@ from sqlalchemy.sql.expression import func
 from szurubooru import db, errors
 from szurubooru.func import util
 from szurubooru.search import criteria, tokens
+from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 def _enum_transformer(available_values, value):
@@ -45,7 +46,7 @@ def _create_score_filter(score):
         user_alias = aliased(db.User)
         score_alias = aliased(db.PostScore)
         expr = score_alias.score == score
-        expr = expr & BaseSearchConfig._apply_str_criterion_to_column(
+        expr = expr & search_util.apply_str_criterion_to_column(
             user_alias.name, criterion)
         if negated:
             expr = ~expr
@@ -106,69 +107,69 @@ class PostSearchConfig(BaseSearchConfig):
 
     @property
     def anonymous_filter(self):
-        return self._create_subquery_filter(
+        return search_util.create_subquery_filter(
             db.Post.post_id,
             db.PostTag.post_id,
             db.TagName.name,
-            self._create_str_filter,
+            search_util.create_str_filter,
             lambda subquery: subquery.join(db.Tag).join(db.TagName))
 
     @property
     def named_filters(self):
         return util.unalias_dict({
-            'id': self._create_num_filter(db.Post.post_id),
-            'tag': self._create_subquery_filter(
+            'id': search_util.create_num_filter(db.Post.post_id),
+            'tag': search_util.create_subquery_filter(
                 db.Post.post_id,
                 db.PostTag.post_id,
                 db.TagName.name,
-                self._create_str_filter,
+                search_util.create_str_filter,
                 lambda subquery: subquery.join(db.Tag).join(db.TagName)),
-            'score': self._create_num_filter(db.Post.score),
+            'score': search_util.create_num_filter(db.Post.score),
             ('uploader', 'upload', 'submit'):
-                self._create_subquery_filter(
+                search_util.create_subquery_filter(
                     db.Post.user_id,
                     db.User.user_id,
                     db.User.name,
-                    self._create_str_filter),
-            'comment': self._create_subquery_filter(
+                    search_util.create_str_filter),
+            'comment': search_util.create_subquery_filter(
                 db.Post.post_id,
                 db.Comment.post_id,
                 db.User.name,
-                self._create_str_filter,
+                search_util.create_str_filter,
                 lambda subquery: subquery.join(db.User)),
-            'fav': self._create_subquery_filter(
+            'fav': search_util.create_subquery_filter(
                 db.Post.post_id,
                 db.PostFavorite.post_id,
                 db.User.name,
-                self._create_str_filter,
+                search_util.create_str_filter,
                 lambda subquery: subquery.join(db.User)),
             'liked': _create_score_filter(1),
             'disliked': _create_score_filter(-1),
-            'tag-count': self._create_num_filter(db.Post.tag_count),
-            'comment-count': self._create_num_filter(db.Post.comment_count),
-            'fav-count': self._create_num_filter(db.Post.favorite_count),
-            'note-count': self._create_num_filter(db.Post.note_count),
-            'feature-count': self._create_num_filter(db.Post.feature_count),
-            'type': self._create_str_filter(db.Post.type, _type_transformer),
-            'file-size': self._create_num_filter(db.Post.file_size),
+            'tag-count': search_util.create_num_filter(db.Post.tag_count),
+            'comment-count': search_util.create_num_filter(db.Post.comment_count),
+            'fav-count': search_util.create_num_filter(db.Post.favorite_count),
+            'note-count': search_util.create_num_filter(db.Post.note_count),
+            'feature-count': search_util.create_num_filter(db.Post.feature_count),
+            'type': search_util.create_str_filter(db.Post.type, _type_transformer),
+            'file-size': search_util.create_num_filter(db.Post.file_size),
             ('image-width', 'width'):
-                self._create_num_filter(db.Post.canvas_width),
+                search_util.create_num_filter(db.Post.canvas_width),
             ('image-height', 'height'):
-                self._create_num_filter(db.Post.canvas_height),
+                search_util.create_num_filter(db.Post.canvas_height),
             ('image-area', 'area'):
-                self._create_num_filter(db.Post.canvas_area),
+                search_util.create_num_filter(db.Post.canvas_area),
             ('creation-date', 'creation-time', 'date', 'time'):
-                self._create_date_filter(db.Post.creation_time),
+                search_util.create_date_filter(db.Post.creation_time),
             ('last-edit-date', 'last-edit-time', 'edit-date', 'edit-time'):
-                self._create_date_filter(db.Post.last_edit_time),
+                search_util.create_date_filter(db.Post.last_edit_time),
             ('comment-date', 'comment-time'):
-                self._create_date_filter(db.Post.last_comment_edit_time),
+                search_util.create_date_filter(db.Post.last_comment_edit_time),
             ('fav-date', 'fav-time'):
-                self._create_date_filter(db.Post.last_favorite_time),
+                search_util.create_date_filter(db.Post.last_favorite_time),
             ('feature-date', 'feature-time'):
-                self._create_date_filter(db.Post.last_feature_time),
+                search_util.create_date_filter(db.Post.last_feature_time),
             ('safety', 'rating'):
-                self._create_str_filter(db.Post.safety, _safety_transformer),
+                search_util.create_str_filter(db.Post.safety, _safety_transformer),
         })
 
     @property

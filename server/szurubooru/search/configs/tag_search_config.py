@@ -2,6 +2,7 @@ from sqlalchemy.orm import subqueryload
 from sqlalchemy.sql.expression import func
 from szurubooru import db
 from szurubooru.func import util
+from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 class TagSearchConfig(BaseSearchConfig):
@@ -23,33 +24,35 @@ class TagSearchConfig(BaseSearchConfig):
 
     @property
     def anonymous_filter(self):
-        return self._create_subquery_filter(
+        return search_util.create_subquery_filter(
             db.Tag.tag_id,
             db.TagName.tag_id,
             db.TagName.name,
-            self._create_str_filter)
+            search_util.create_str_filter)
 
     @property
     def named_filters(self):
         return util.unalias_dict({
-            'name': self._create_subquery_filter(
+            'name': search_util.create_subquery_filter(
                 db.Tag.tag_id,
                 db.TagName.tag_id,
                 db.TagName.name,
-                self._create_str_filter),
-            'category': self._create_subquery_filter(
+                search_util.create_str_filter),
+            'category': search_util.create_subquery_filter(
                 db.Tag.category_id,
                 db.TagCategory.tag_category_id,
                 db.TagCategory.name,
-                self._create_str_filter),
+                search_util.create_str_filter),
             ('creation-date', 'creation-time'):
-                self._create_date_filter(db.Tag.creation_time),
+                search_util.create_date_filter(db.Tag.creation_time),
             ('last-edit-date', 'last-edit-time', 'edit-date', 'edit-time'):
-                self._create_date_filter(db.Tag.last_edit_time),
+                search_util.create_date_filter(db.Tag.last_edit_time),
             ('usage-count', 'post-count', 'usages'):
-                self._create_num_filter(db.Tag.post_count),
-            'suggestion-count': self._create_num_filter(db.Tag.suggestion_count),
-            'implication-count': self._create_num_filter(db.Tag.implication_count),
+                search_util.create_num_filter(db.Tag.post_count),
+            'suggestion-count':
+                search_util.create_num_filter(db.Tag.suggestion_count),
+            'implication-count':
+                search_util.create_num_filter(db.Tag.implication_count),
         })
 
     @property
