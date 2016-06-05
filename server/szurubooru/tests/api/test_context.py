@@ -62,3 +62,40 @@ def test_getting_int_parameter():
     with pytest.raises(errors.ValidationError):
         assert ctx.get_param_as_int('key', max=50) == 50
         ctx.get_param_as_int('key', max=49)
+
+def test_getting_bool_parameter():
+    def test(value):
+        ctx = api.Context()
+        ctx.input = {'key': value}
+        return ctx.get_param_as_bool('key')
+
+    assert test('1') is True
+    assert test('y') is True
+    assert test('yes') is True
+    assert test('yep') is True
+    assert test('yup') is True
+    assert test('yeah') is True
+    assert test('t') is True
+    assert test('true') is True
+    assert test('TRUE') is True
+
+    assert test('0') is False
+    assert test('n') is False
+    assert test('no') is False
+    assert test('nope') is False
+    assert test('f') is False
+    assert test('false') is False
+    assert test('FALSE') is False
+
+    with pytest.raises(errors.ValidationError):
+        test('herp')
+    with pytest.raises(errors.ValidationError):
+        test('2')
+    with pytest.raises(errors.ValidationError):
+        test(['1', '2'])
+
+    ctx = api.Context()
+    assert ctx.get_param_as_bool('non-existing') is None
+    assert ctx.get_param_as_bool('non-existing', default=True) is True
+    with pytest.raises(errors.ValidationError):
+        assert ctx.get_param_as_bool('non-existing', required=True) is None

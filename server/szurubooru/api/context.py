@@ -2,6 +2,26 @@ import falcon
 from szurubooru import errors
 from szurubooru.func import net
 
+def _lower_first(input):
+    return input[0].lower() + input[1:]
+
+def _param_wrapper(func):
+    def wrapper(self, name, required=False, default=None, **kwargs):
+        if name in self.input:
+            value = self.input[name]
+            try:
+                value = func(self, value, **kwargs)
+            except errors.InvalidParameterError as e:
+                raise errors.InvalidParameterError(
+                    'Parameter %r is invalid: %s' % (
+                        name, _lower_first(str(e))))
+            return value
+        if not required:
+            return default
+        raise errors.MissingRequiredParameterError(
+            'Required parameter %r is missing.' % name)
+    return wrapper
+
 class Context(object):
     def __init__(self):
         self.session = None
@@ -27,57 +47,45 @@ class Context(object):
         raise errors.MissingRequiredFileError(
             'Required file %r is missing.' % name)
 
-    def get_param_as_list(self, name, required=False, default=None):
-        if name in self.input:
-            param = self.input[name]
-            if not isinstance(param, list):
-                return [param]
-            return param
-        if not required:
-            return default
-        raise errors.MissingRequiredParameterError(
-            'Required paramter %r is missing.' % name)
+    @_param_wrapper
+    def get_param_as_list(self, value):
+        if not isinstance(value, list):
+            return [value]
+        return value
 
-    def get_param_as_string(self, name, required=False, default=None):
-        if name in self.input:
-            param = self.input[name]
-            if isinstance(param, list):
-                try:
-                    param = ','.join(param)
-                except:
-                    raise errors.InvalidParameterError(
-                        'Parameter %r is invalid - expected simple string.'
-                        % name)
-            return param
-        if not required:
-            return default
-        raise errors.MissingRequiredParameterError(
-            'Required paramter %r is missing.' % name)
-
-    # pylint: disable=redefined-builtin,too-many-arguments
-    def get_param_as_int(
-            self, name, required=False, min=None, max=None, default=None):
-        if name in self.input:
-            val = self.input[name]
+    @_param_wrapper
+    def get_param_as_string(self, value):
+        if isinstance(value, list):
             try:
-                val = int(val)
-            except (ValueError, TypeError):
-                raise errors.InvalidParameterError(
-                    'Parameter %r is invalid: the value must be an integer.'
-                    % name)
-            if min is not None and val < min:
-                raise errors.InvalidParameterError(
-                    'Parameter %r is invalid: the value must be at least %r.'
-                    % (name, min))
-            if max is not None and val > max:
-                raise errors.InvalidParameterError(
-                    'Parameter %r is invalid: the value may not exceed %r.'
-                    % (name, max))
-            return val
-        if not required:
-            return default
-        raise errors.MissingRequiredParameterError(
-            'Required parameter %r is missing.' % name)
+                value = ','.join(value)
+            except:
+                raise errors.InvalidParameterError('Expected simple string.')
+        return value
+
+    # pylint: disable=redefined-builtin
+    @_param_wrapper
+    def get_param_as_int(self, value, min=None, max=None):
+        try:
+            value = int(value)
+        except (ValueError, TypeError):
+            raise errors.InvalidParameterError(
+                'The value must be an integer.')
+        if min is not None and value < min:
+            raise errors.InvalidParameterError(
+                'The value must be at least %r.' % min)
+        if max is not None and value > max:
+            raise errors.InvalidParameterError(
+                'The value may not exceed %r.' % max)
+        return value
+
+    @_param_wrapper
+    def get_param_as_bool(self, value):
+        value = str(value).lower()
+        if value in ['1', 'y', 'yes', 'yeah', 'yep', 'yup', 't', 'true']:
+            return True
+        if value in ['0', 'n', 'no', 'nope', 'f', 'false']:
+            return False
+        raise errors.InvalidParameterError('The value must be a boolean value.')
 
 class Request(falcon.Request):
     context_type = Context

@@ -22,7 +22,11 @@ class PostListApi(BaseApi):
             ctx, lambda post: _serialize_post(ctx, post))
 
     def post(self, ctx):
-        auth.verify_privilege(ctx.user, 'posts:create')
+        anonymous = ctx.get_param_as_bool('anonymous', default=False)
+        if anonymous:
+            auth.verify_privilege(ctx.user, 'posts:create:anonymous')
+        else:
+            auth.verify_privilege(ctx.user, 'posts:create:identified')
         content = ctx.get_file('content', required=True)
         tag_names = ctx.get_param_as_list('tags', required=True)
         safety = ctx.get_param_as_string('safety', required=True)
@@ -33,7 +37,8 @@ class PostListApi(BaseApi):
         notes = ctx.get_param_as_list('notes', required=False) or []
         flags = ctx.get_param_as_list('flags', required=False) or []
 
-        post = posts.create_post(content, tag_names, ctx.user)
+        post = posts.create_post(
+            content, tag_names, None if anonymous else ctx.user)
         posts.update_post_safety(post, safety)
         posts.update_post_source(post, source)
         posts.update_post_relations(post, relations)

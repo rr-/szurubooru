@@ -676,7 +676,8 @@ data.
         "source":       <source>,                     // optional
         "relations":    [<post1>, <post2>, <post3>],  // optional
         "notes":        [<note1>, <note2>, <note3>],  // optional
-        "flags":        [<flag1>, <flag2>]            // optional
+        "flags":        [<flag1>, <flag2>],           // optional
+        "anonymous":    <anonymous>                   // optional
     }
     ```
 
@@ -704,9 +705,12 @@ data.
     found. Safety must be any of `"safe"`, `"sketchy"` or `"unsafe"`. Relations
     must contain valid post IDs. `<flag>` currently can be only `"loop"` to
     enable looping for video posts. Sending empty `thumbnail` will cause the
-    post to use default thumbnail. All fields are optional - update concerns
-    only provided fields. For details how to pass `content` and `thumbnail`,
-    see [file uploads](#file-uploads) for details.
+    post to use default thumbnail. If `anonymous` is set to truthy value, the
+    uploader name won't be recorded (privilege verification still applies; it's
+    possible to disallow anonymous uploads completely from config.) All fields
+    are optional - update concerns only provided fields. For details how to
+    pass `content` and `thumbnail`, see [file uploads](#file-uploads) for
+    details.
 
 ## Updating post
 - **Request**
