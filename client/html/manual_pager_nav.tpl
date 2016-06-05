@@ -1,4 +1,4 @@
-<nav class='text-nav'>
+<nav class='buttons'>
     <ul>
         <li>
             <% if (ctx.prevLinkActive) { %>

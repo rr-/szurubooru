@@ -1,4 +1,4 @@
-<nav id='top-nav' class='text-nav'>
+<nav id='top-nav' class='buttons'>
     <ul><!--
         --><% _.each(ctx.items, (item, key) => { %><!--
             --><% if (item.available) { %><!--

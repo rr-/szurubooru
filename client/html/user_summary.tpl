@@ -7,7 +7,7 @@
     </ul>
 
     <div>
-        <nav class='plain-nav'>
+        <nav>
             <p><strong>Quick links</strong></p>
             <ul>
                 <li><a href='/posts/text=submit:<%= ctx.user.name %>'><%= ctx.user.uploadedPostCount %> uploads</a></li>
@@ -17,7 +17,7 @@
         </nav>
 
         <% if (ctx.isLoggedIn) { %>
-            <nav class='plain-nav'>
+            <nav>
                 <p><strong>Only visible to you</strong></p>
                 <ul>
                     <li><a href='/posts/text=special:liked'><%= ctx.user.likedPostCount %> liked posts</a></li>

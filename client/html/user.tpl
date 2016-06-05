@@ -1,6 +1,6 @@
 <div class='content-wrapper' id='user'>
     <h1><%= ctx.user.name %></h1>
-    <nav class='text-nav'><!--
+    <nav class='buttons'><!--
         --><ul><!--
             --><li data-name='summary'><a href='/user/<%= ctx.user.name %>'>Summary</a></li><!--
             --><% if (ctx.canEditAnything) { %><!--

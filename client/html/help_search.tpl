@@ -1,4 +1,4 @@
-<nav class='text-nav secondary'><!--
+<nav class='buttons secondary'><!--
     --><ul><!--
         --><li data-name='default'><a href='/help/search'>General</a></li><!--
         --><li data-name='posts'><a href='/help/search/posts'>Posts</a></li><!--

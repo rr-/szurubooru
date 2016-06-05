@@ -1,5 +1,5 @@
 <div class='content-wrapper' id='help'>
-    <nav class='text-nav primary'><!--
+    <nav class='buttons primary'><!--
         --><ul><!--
             --><li data-name='about'><a href='/help/about'>About</a></li><!--
             --><li data-name='keyboard'><a href='/help/keyboard'>Keyboard</a></li><!--

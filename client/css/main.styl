@@ -73,71 +73,70 @@ hr
     margin: 1em 0
     padding: 0
 
-nav ul
-    list-style-type: none
-    padding: 0
-    margin: 0
-    display: inline-block
-    li
-        display: inline-block
+nav
+    ul
+        list-style-type: none
         padding: 0
         margin: 0
-        a
-            display: inline-block
-        img
+        display: inline-block
+        li
+            display: block
+            padding: 0
             margin: 0
-            vertical-align: top /* fix ghost margin under the image */
+            a
+                display: inline-block
+            img
+                margin: 0
+                vertical-align: top /* fix ghost margin under the image */
 
-nav.plain-nav ul li
-    display: block
-    a
-        display: inline
+    &.buttons
+        margin: 1em 0
+        line-height: 2.3em
+        vertical-align: middle
+        ul
+            li
+                display: inline-block
+            li a
+                padding: 0 1.2em
+            li:not(.active) a
+                color: $inactive-tab-text-color
+            li:hover:not(.active) a
+                color: $active-tab-text-color
+            li.active a
+                background: $active-tab-background-color
+                color: $active-tab-text-color
+            :focus
+                background: $focused-tab-background-color
+                outline: 0
 
-nav.text-nav
-    margin: 1em 0
-    line-height: 2.3em
-    vertical-align: middle
-    ul
-        li a
-            padding: 0 1.2em
-        li:not(.active) a
-            color: $inactive-tab-text-color
-        li:hover:not(.active) a
-            color: $active-tab-text-color
-        li.active a
-            background: $active-tab-background-color
-            color: $active-tab-text-color
-        :focus
-            background: $focused-tab-background-color
-            outline: 0
+    &#top-nav
+        background: $top-nav-color
+        margin: 0
+        ul
+            display: block
+            text-align: right
+            li
+                display: inline-block
+                float: left
+        ul li[data-name=account],
+        ul li[data-name=register],
+        ul li[data-name=login],
+        ul li[data-name=logout],
+        ul li[data-name=settings],
+        ul li[data-name=help]
+            float: none
+        .access-key
+            text-decoration: underline
+        .thumbnail
+            width: 1.5em
+            height: 1.5em
+            margin: calc((2.3em - 1.5em) / 2)
+            margin-right: 0.6em
+            margin-left: calc(0.6em - 1.2em)
+            float: left
 
 a .access-key
     text-decoration: underline
-
-#top-nav
-    background: $top-nav-color
-    margin: 0
-    ul
-        display: block
-        text-align: right
-        li
-            float: left
-    ul li[data-name=account],
-    ul li[data-name=register],
-    ul li[data-name=login],
-    ul li[data-name=logout],
-    ul li[data-name=settings],
-    ul li[data-name=help]
-        float: none
-    .access-key
-        text-decoration: underline
-    .thumbnail
-        width: 1.5em
-        height: 1.5em
-        margin: calc((2.3em - 1.5em) / 2)
-        margin-right: 0.6em
-        margin-left: calc(0.6em - 1.2em)
-        float: left
 
 .messages
     margin: 0 auto

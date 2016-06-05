@@ -1,6 +1,6 @@
 <div class='content-wrapper tag'>
     <h1><%= ctx.tag.names[0] %></h1>
-    <nav class='text-nav'><!--
+    <nav class='buttons'><!--
         --><ul><!--
             --><li data-name='summary'><a href='/tag/<%= ctx.tag.names[0] %>'>Summary</a></li><!--
             --><% if (ctx.canMerge) { %><!--
