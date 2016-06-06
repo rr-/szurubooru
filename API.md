@@ -1549,6 +1549,7 @@ One file together with its metadata posted to the site.
     "user":               <user>,
     "score":              <score>,
     "ownScore":           <own-score>,
+    "ownFavorite":        <own-favorite>,
     "tagCount":           <tag-count>,
     "favoriteCount":      <favorite-count>,
     "commentCount":       <comment-count>,
@@ -1612,6 +1613,8 @@ One file together with its metadata posted to the site.
 - `<score>`: the collective score (+1/-1 rating) of the given post.
 - `<own-score>`: the score (+1/-1 rating) of the given post by the
   authenticated user.
+- `<own-favorite>`: whether the authenticated user has given post in their
+  favorites.
 - `<tag-count>`: how many tags the post is tagged with
 - `<favorite-count>`: how many users have the post in their favorites
 - `<comment-count>`: how many comments are filed under that post

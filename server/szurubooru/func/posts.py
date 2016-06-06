@@ -93,6 +93,9 @@ def serialize_post(post, authenticated_user, options=None):
             'user': lambda: users.serialize_micro_user(post.user),
             'score': lambda: post.score,
             'ownScore': lambda: scores.get_score(post, authenticated_user),
+            'ownFavorite': lambda: len(
+                [user for user in post.favorited_by \
+                    if user.user_id == authenticated_user.user_id]) > 0,
             'tagCount': lambda: post.tag_count,
             'favoriteCount': lambda: post.favorite_count,
             'commentCount': lambda: post.comment_count,

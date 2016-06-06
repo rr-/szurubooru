@@ -147,6 +147,7 @@ def test_serialize_post(
         'notes': [],
         'user': 'post author',
         'score': 1,
+        'ownFavorite': False,
         'ownScore': -1,
         'tagCount': 2,
         'favoriteCount': 1,
