@@ -2,7 +2,7 @@ import datetime
 import sqlalchemy
 from szurubooru import config, db, errors
 from szurubooru.func import (
-    users, snapshots, scores, comments, tags, util, mime, images, files)
+    users, snapshots, scores, comments, tags, tag_categories, util, mime, images, files)
 
 EMPTY_PIXEL = \
     b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
@@ -62,6 +62,8 @@ def serialize_note(note):
     }
 
 def serialize_post(post, authenticated_user, options=None):
+    default_category = tag_categories.try_get_default_category()
+    default_category_name = default_category.name if default_category else None
     return util.serialize_entity(
         post,
         {
@@ -79,7 +81,14 @@ def serialize_post(post, authenticated_user, options=None):
             'contentUrl': lambda: get_post_content_url(post),
             'thumbnailUrl': lambda: get_post_thumbnail_url(post),
             'flags': lambda: post.flags,
-            'tags': lambda: [tag.names[0].name for tag in post.tags],
+            'tags': lambda: [
+                tag.names[0].name for tag in sorted(
+                    post.tags,
+                    key=lambda tag: (
+                        default_category_name == tag.category.name,
+                        tag.category.name,
+                        tag.names[0].name)
+                )],
             'relations': lambda: [rel.post_id for rel in post.relations],
             'user': lambda: users.serialize_micro_user(post.user),
             'score': lambda: post.score,
