@@ -12,6 +12,7 @@ EMPTY_PIXEL = \
 class PostNotFoundError(errors.NotFoundError): pass
 class PostAlreadyFeaturedError(errors.ValidationError): pass
 class PostAlreadyUploadedError(errors.ValidationError): pass
+class InvalidPostIdError(errors.ValidationError): pass
 class InvalidPostSafetyError(errors.ValidationError): pass
 class InvalidPostSourceError(errors.ValidationError): pass
 class InvalidPostContentError(errors.ValidationError): pass
@@ -121,6 +122,10 @@ def get_post_count():
     return db.session.query(sqlalchemy.func.count(db.Post.post_id)).one()[0]
 
 def try_get_post_by_id(post_id):
+    try:
+        post_id = int(post_id)
+    except ValueError:
+        raise InvalidPostIdError('Invalid post ID: %r.' % post_id)
     return db.session \
         .query(db.Post) \
         .filter(db.Post.post_id == post_id) \

@@ -35,7 +35,7 @@ def test_trying_to_delete_non_existing(test_ctx):
     with pytest.raises(posts.PostNotFoundError):
         test_ctx.api.delete(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)), 'bad')
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)), '999')
 
 def test_trying_to_delete_without_privileges(test_ctx):
     db.session.add(test_ctx.post_factory(id=1))

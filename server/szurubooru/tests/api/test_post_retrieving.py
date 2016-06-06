@@ -83,16 +83,23 @@ def test_retrieving_single(test_ctx):
     assert 'snapshots' in result
     assert 'comments' in result
 
+def test_trying_to_retrieve_invalid_id(test_ctx):
+    with pytest.raises(posts.InvalidPostIdError):
+        test_ctx.detail_api.get(
+            test_ctx.context_factory(
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
+            '-')
+
 def test_trying_to_retrieve_single_non_existing(test_ctx):
     with pytest.raises(posts.PostNotFoundError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-            '-')
+            '999')
 
 def test_trying_to_retrieve_single_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
                 user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
-            '-')
+            '999')
