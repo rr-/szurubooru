@@ -1,5 +1,6 @@
 import datetime
 from szurubooru import db, errors
+from szurubooru.func import favorites
 
 class InvalidScoreTargetError(errors.ValidationError): pass
 class InvalidScoreValueError(errors.ValidationError): pass
@@ -32,6 +33,10 @@ def get_score(entity, user):
 def set_score(entity, user, score):
     if not score:
         delete_score(entity, user)
+        try:
+            favorites.unset_favorite(entity, user)
+        except favorites.InvalidFavoriteTargetError:
+            pass
         return
     if score not in (-1, 1):
         raise InvalidScoreValueError(
@@ -39,6 +44,11 @@ def set_score(entity, user, score):
     score_entity = _get_score_entity(entity, user)
     if score_entity:
         score_entity.score = score
+        if score < 1:
+            try:
+                favorites.unset_favorite(entity, user)
+            except favorites.InvalidFavoriteTargetError:
+                pass
     else:
         table, get_column = _get_table_info(entity)
         score_entity = table()
