@@ -166,7 +166,7 @@ function makeUserLink(user) {
     return makeNonVoidElement('span', {class: 'user'},
         makeThumbnail(user.avatarUrl) +
         makeNonVoidElement(
-            'a', {'href': '/user/' + user.name}, '+' + user.name));
+            'a', {'href': '/user/' + user.name}, user.name));
 }
 
 function makeFlexboxAlign(options) {

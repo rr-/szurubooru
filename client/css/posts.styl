@@ -1,4 +1,98 @@
 @import colors
+$safety-safe = #88D488
+$safety-sketchy = #F3D75F
+$safety-unsafe = #F3985F
+
+.post-view
+    width: 100%
+    display: flex !important
+    flex-direction: row
+    >.sidebar
+        margin-right: 1em
+        width: 20em
+        min-width: 15em
+        line-height: 160%
+
+        a:active
+            border: 0
+            outline: 0
+
+        nav.buttons
+            margin-top: 0
+            display: flex
+            flex-wrap: wrap
+            article
+                flex: 1 0 33%
+                a
+                    display: inline-block
+                    width: 100%
+                    padding: 0.3em 0
+                    text-align: center
+                    vertical-align: middle
+                    transition: background 0.2s linear
+                a:hover
+                    background: lighten($main-color, 90%)
+                i
+                    font-size: 140%
+                text-align: center
+
+        .details
+            i
+                margin-right: 0.6em
+                display: inline-block
+                width: 1em
+                text-align: center
+
+            .safety-safe
+                color: $safety-safe
+            .safety-sketchy
+                color: $safety-sketchy
+            .safety-unsafe
+                color: $safety-unsafe
+
+            .upload-info
+                .thumbnail
+                    width: 1em
+                    height: 1em
+                    margin: -0.1em 0.6em 0 0
+
+            .zoom
+                margin-top: 1em
+                a
+                    display: inline-block
+                .active
+                    text-decoration: underline
+
+            .social
+                margin-top: 1em
+                .score
+                    float: left
+                    margin-right: 3em
+                    .downvote i
+                        text-align: right
+                i
+                    text-align: left
+                    margin: 0
+                .value
+                    text-align: center
+                    display: inline-block
+                    width: 2em
+
+        .tags
+            margin-top: 2em
+            line-height: 130%
+            word-break: break-all
+            h1
+                margin-bottom: 0.5em
+            i
+                padding-right: 0.4em
+            .count
+                color: $inactive-link-color
+                padding-left: 0.7em
+                font-size: 90%
+
+    .post-container .post-content
+        margin: 0
 
 .post-list
     ul
@@ -82,17 +176,17 @@
 
     .safety
         &.safety-safe
-            background-color: #88D488
+            background-color: $safety-safe
             border-color: @background-color
             &.disabled
                 background-color: alpha(@background-color, 0.15)
         &.safety-sketchy
-            background-color: #F3D75F
+            background-color: $safety-sketchy
             border-color: @background-color
             &.disabled
                 background-color: alpha(@background-color, 0.15)
         &.safety-unsafe
-            background-color: #F3985F
+            background-color: $safety-unsafe
             border-color: @background-color
             &.disabled
                 background-color: alpha(@background-color, 0.15)
@@ -116,6 +210,9 @@
             top: 0
             bottom: 0
 
+        .post-overlay
+            pointer-events: none
+
         .post-overlay>*
             position: absolute
             left: 0
@@ -130,6 +227,7 @@
             polygon
                 fill: $note-overlay-background-color
                 stroke: $note-overlay-border-color
+                pointer-events: auto
 
 .note-text
     position: absolute

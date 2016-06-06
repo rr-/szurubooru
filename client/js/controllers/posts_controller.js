@@ -3,17 +3,20 @@
 const page = require('page');
 const api = require('../api.js');
 const settings = require('../settings.js');
+const events = require('../events.js');
 const misc = require('../util/misc.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
 const PostsHeaderView = require('../views/posts_header_view.js');
 const PostsPageView = require('../views/posts_page_view.js');
+const PostView = require('../views/post_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 class PostsController {
     constructor() {
         this._postsHeaderView = new PostsHeaderView();
         this._postsPageView = new PostsPageView();
+        this._postView = new PostView();
     }
 
     registerRoutes() {
@@ -23,10 +26,10 @@ class PostsController {
             (ctx, next) => { this._listPostsRoute(ctx); });
         page(
             '/post/:id',
-            (ctx, next) => { this._showPostRoute(ctx.params.id); });
+            (ctx, next) => { this._showPostRoute(ctx.params.id, false); });
         page(
             '/post/:id/edit',
-            (ctx, next) => { this._editPostRoute(ctx.params.id); });
+            (ctx, next) => { this._showPostRoute(ctx.params.id, true); });
         this._emptyView = new EmptyView();
     }
 
@@ -41,18 +44,7 @@ class PostsController {
         pageController.run({
             state: ctx.state,
             requestPage: page => {
-                const browsingSettings = settings.getSettings();
-                let text = ctx.searchQuery.text;
-                let disabledSafety = [];
-                for (let key of Object.keys(browsingSettings.listPosts)) {
-                    if (browsingSettings.listPosts[key] === false) {
-                        disabledSafety.push(key);
-                    }
-                }
-                if (disabledSafety.length) {
-                    text = `-rating:${disabledSafety.join(',')} ${text}`;
-                }
-                text = text.trim();
+                const text = this._decorateSearchQuery(ctx.searchQuery.text);
                 return api.get(
                     `/posts/?query=${text}&page=${page}&pageSize=40&_fields=` +
                     `id,type,tags,score,favoriteCount,` +
@@ -66,14 +58,38 @@ class PostsController {
         });
     }
 
-    _showPostRoute(id) {
+    _showPostRoute(id, editMode) {
         topNavController.activate('posts');
-        this._emptyView.render();
+        Promise.all([
+                api.get('/post/' + id),
+                api.get(`/post/${id}/around?_fields=id&query=`
+                    + this._decorateSearchQuery('')),
+        ]).then(responses => {
+            const [postResponse, aroundResponse] = responses;
+            this._postView.render({
+                post: postResponse,
+                editMode: editMode,
+                nextPostId: aroundResponse.next ? aroundResponse.next.id : null,
+                prevPostId: aroundResponse.prev ? aroundResponse.prev.id : null,
+            });
+        }, response => {
+            this._emptyView.render();
+            events.notify(events.Error, response.description);
+        });
     }
 
-    _editPostRoute(id) {
-        topNavController.activate('posts');
-        this._emptyView.render();
+    _decorateSearchQuery(text) {
+        const browsingSettings = settings.getSettings();
+        let disabledSafety = [];
+        for (let key of Object.keys(browsingSettings.listPosts)) {
+            if (browsingSettings.listPosts[key] === false) {
+                disabledSafety.push(key);
+            }
+        }
+        if (disabledSafety.length) {
+            text = `-rating:${disabledSafety.join(',')} ${text}`;
+        }
+        return text.trim();
     }
 }
 

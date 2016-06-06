@@ -44,10 +44,23 @@ class PostContentControl {
         this._currentFitFunction = this.fitBoth;
         let mul = this._post.canvasHeight / this._post.canvasWidth;
         if (this._viewportWidth * mul < this._viewportHeight) {
-            this.fitWidth();
+            let width = this._viewportWidth;
+            if (!settings.getSettings().upscaleSmallPosts) {
+                width = Math.min(this._post.canvasWidth, width);
+            }
+            this._resize(width, width * mul);
         } else {
-            this.fitHeight();
+            let height = this._viewportHeight;
+            if (!settings.getSettings().upscaleSmallPosts) {
+                height = Math.min(this._post.canvasHeight, height);
+            }
+            this._resize(height / mul, height);
         }
+    }
+
+    fitOriginal() {
+        this._currentFitFunction = this.fitOriginal;
+        this._resize(this._post.canvasWidth, this._post.canvasHeight);
     }
 
     get _viewportWidth() {

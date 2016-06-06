@@ -12,7 +12,7 @@
 
     <% } else if (ctx.post.type === 'video') { %>
 
-        <% if (ctx.post.flags.includes('loop')) { %>
+        <% if ((ctx.post.flags || []).includes('loop')) { %>
             <video id='video' controls loop='loop'>
         <% } else { %>
             <video id='video' controls>
