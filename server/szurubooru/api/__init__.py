@@ -20,7 +20,8 @@ from szurubooru.api.post_api import (
     PostDetailApi,
     PostFeatureApi,
     PostScoreApi,
-    PostFavoriteApi)
+    PostFavoriteApi,
+    PostsAroundApi)
 from szurubooru.api.snapshot_api import SnapshotListApi
 from szurubooru.api.info_api import InfoApi
 from szurubooru.api.context import Context, Request

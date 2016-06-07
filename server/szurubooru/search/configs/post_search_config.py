@@ -106,6 +106,10 @@ class PostSearchConfig(BaseSearchConfig):
         return query.order_by(db.Post.creation_time.desc())
 
     @property
+    def id_column(self):
+        return db.Post.post_id
+
+    @property
     def anonymous_filter(self):
         return search_util.create_subquery_filter(
             db.Post.post_id,

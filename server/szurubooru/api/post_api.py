@@ -152,3 +152,15 @@ class PostFavoriteApi(BaseApi):
         favorites.unset_favorite(post, ctx.user)
         ctx.session.commit()
         return _serialize_post(ctx, post)
+
+class PostsAroundApi(BaseApi):
+    def __init__(self):
+        super().__init__()
+        self._search_executor = search.Executor(
+            search.configs.PostSearchConfig())
+
+    def get(self, ctx, post_id):
+        auth.verify_privilege(ctx.user, 'posts:list')
+        self._search_executor.config.user = ctx.user
+        return self._search_executor.get_around_and_serialize(
+            ctx, post_id, lambda post: _serialize_post(ctx, post))

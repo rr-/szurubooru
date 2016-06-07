@@ -14,6 +14,10 @@ class BaseSearchConfig(object):
         return self.create_filter_query()
 
     @property
+    def id_column(self):
+        return None
+
+    @property
     def anonymous_filter(self):
         return None
 
