@@ -30,6 +30,13 @@
                         <a href='/tags/text=sort:usages'>Usages</a>
                     <% } %>
                 </th>
+                <th class='edit-time'>
+                    <% if (ctx.query == 'sort:last-edit-time') { %>
+                        <a href='/tags/text=-sort:last-edit-time'>Edit time</a>
+                    <% } else { %>
+                        <a href='/tags/text=sort:last-edit-time'>Edit time</a>
+                    <% } %>
+                </th>
             </thead>
             <tbody>
                 <% _.each(ctx.results, tag => { %>
@@ -65,6 +72,9 @@
                         </td>
                         <td class='usages'>
                             <%= tag.usages %>
+                        </td>
+                        <td class='edit-time'>
+                            <%= ctx.makeRelativeTime(tag.lastEditTime) %>
                         </td>
                     </tr>
                 <% }) %>
