@@ -94,38 +94,27 @@ function makeSelect(options) {
 }
 
 function makeInput(options) {
-    return _makeLabel(options) +
-        makeVoidElement(
-            'input', {
-                type: options.inputType,
-                name: options.name,
-                id: options.id,
-                class: options.class,
-                value: options.value || '',
-                required: options.required,
-                pattern: options.pattern,
-                placeholder: options.placeholder,
-                readonly: options.readonly,
-            });
+    options.value = options.value || '';
+    return _makeLabel(options) + makeVoidElement('input', options);
 }
 
 function makeButton(options) {
-    options.inputType = 'button';
+    options.type = 'button';
     return makeInput(options);
 }
 
 function makeTextInput(options) {
-    options.inputType = 'text';
+    options.type = 'text';
     return makeInput(options);
 }
 
 function makePasswordInput(options) {
-    options.inputType = 'password';
+    options.type = 'password';
     return makeInput(options);
 }
 
 function makeEmailInput(options) {
-    options.inputType = 'email';
+    options.type = 'email';
     return makeInput(options);
 }
 
