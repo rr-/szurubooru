@@ -15,6 +15,7 @@ def serialize_comment(comment, authenticated_user, options=None):
             'text': lambda: comment.text,
             'creationTime': lambda: comment.creation_time,
             'lastEditTime': lambda: comment.last_edit_time,
+            'score': lambda: comment.score,
             'ownScore': lambda: scores.get_score(comment, authenticated_user),
         },
         options)
