@@ -24,6 +24,8 @@ class SettingsView {
                     form.querySelector('#endless-scroll').checked,
                 keyboardShortcuts:
                     form.querySelector('#keyboard-shortcuts').checked,
+                transparencyGrid:
+                    form.querySelector('#transparency-grid').checked,
             });
         });
 

@@ -15,6 +15,9 @@
                     <%= ctx.makeCheckbox({text: 'Enable keyboard shortcuts', id: 'keyboard-shortcuts', name: 'keyboard-shortcuts', checked: ctx.browsingSettings.keyboardShortcuts}) %>
                     <a class='append icon' href='/help/keyboard'><i class='fa fa-question-circle-o'></i></a>
                 </li>
+                <li>
+                    <%= ctx.makeCheckbox({text: 'Enable transparency grid', id: 'transparency-grid', name: 'transparency-grid', checked: ctx.browsingSettings.transparencyGrid}) %>
+                </li>
             </ul>
         </div>
         <div class='messages'></div>

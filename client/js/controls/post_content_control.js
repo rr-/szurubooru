@@ -86,6 +86,9 @@ class PostContentControl {
         const postContentNode = this._template({
             post: this._post,
         });
+        if (settings.getSettings().transparencyGrid) {
+            postContentNode.classList.add('transparency-grid');
+        }
         this._containerNode.appendChild(postContentNode);
         optimizedResize.add(() => this._refreshSize());
         views.monitorNodeRemoval(

@@ -20,6 +20,7 @@ function getSettings(settings) {
         upscaleSmallPosts: false,
         endlessScroll: false,
         keyboardShortcuts: true,
+        transparencyGrid: true,
     };
     let ret = {};
     let userSettings = localStorage.getItem('settings');

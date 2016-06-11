@@ -192,8 +192,11 @@ function bundleConfig(config) {
 }
 
 function bundleBinaryAssets() {
-    copyFile('./img/favicon.png', './public/img/favicon.png');
-    copyFile('./img/404.png', './public/img/404.png');
+    glob('./img/*.png', {}, (er, files) => {
+        for (let file of files) {
+            copyFile(file, path.join('./public/img/', path.basename(file)));
+        }
+    });
 }
 
 const config = getConfig();
