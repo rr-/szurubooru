@@ -97,7 +97,7 @@ class Api {
             }
         }
         if (minViableRank === null) {
-            console.error('Bad privilege name: ' + lookup);
+            throw `Bad privilege name: ${lookup}`;
         }
         let myRank = this.user !== null ?
             this.allRanks.indexOf(this.user.rank) :

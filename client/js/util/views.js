@@ -249,8 +249,7 @@ function htmlToDom(html) {
 
 function getTemplate(templatePath) {
     if (!(templatePath in templates)) {
-        console.error('Missing template: ' + templatePath);
-        return null;
+        throw `Missing template: ${templatePath}`;
     }
     const templateFactory = templates[templatePath];
     return ctx => {
@@ -319,8 +318,8 @@ function showView(target, source) {
         }
     } else if (source instanceof Node) {
         target.appendChild(source);
-    } else {
-        console.error('Invalid view source', source);
+    } else if (source !== null) {
+        throw `Invalid view source: ${source}`;
     }
 }
 
