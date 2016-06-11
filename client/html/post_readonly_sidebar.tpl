@@ -39,30 +39,42 @@
 
     <section class='social'>
         <div class='score'>
-            <a class='upvote' href='#'>
-                <% if (ctx.post.ownScore == 1) { %>
-                    <i class='fa fa-thumbs-up'></i>
-                <% } else { %>
+            <% if (ctx.canScorePosts) { %>
+                <a class='upvote' href='#'>
+                    <% if (ctx.post.ownScore == 1) { %>
+                        <i class='fa fa-thumbs-up'></i>
+                    <% } else { %>
+                        <i class='fa fa-thumbs-o-up'></i>
+                    <% } %>
+                    <span class='hint'></span>
+                </a>
+            <% } else { %>
+                <a class='upvote inactive'>
                     <i class='fa fa-thumbs-o-up'></i>
-                <% } %>
-                <span class='hint'></span>
-            </a>
+                </a>
+            <% } %>
             <span class='value'><%= ctx.post.score %></span>
-            <a class='downvote' href='#'>
-                <% if (ctx.post.ownScore == -1) { %>
-                    <i class='fa fa-thumbs-down'></i>
-                <% } else { %>
-                    <i class='fa fa-thumbs-o-down'></i>
-                <% } %>
-                <span class='hint'></span>
-            </a>
+            <% if (ctx.canScorePosts) { %>
+                <a class='downvote' href='#'>
+                    <% if (ctx.post.ownScore == -1) { %>
+                        <i class='fa fa-thumbs-down'></i>
+                    <% } else { %>
+                        <i class='fa fa-thumbs-o-down'></i>
+                    <% } %>
+                    <span class='hint'></span>
+                </a>
+            <% } %>
         </div>
 
         <div class='fav'>
-            <% if (ctx.post.ownFavorite) { %>
-                <a class='remove-favorite' href='#'><i class='fa fa-heart'></i></a>
+            <% if (ctx.canFavoritePosts) { %>
+                <% if (ctx.post.ownFavorite) { %>
+                    <a class='remove-favorite' href='#'><i class='fa fa-heart'></i></a>
+                <% } else { %>
+                    <a class='add-favorite' href='#'><i class='fa fa-heart-o'></i></a>
+                <% } %>
             <% } else { %>
-                <a class='add-favorite' href='#'><i class='fa fa-heart-o'></i></a>
+                <a class='add-favorite inactive'><i class='fa fa-heart-o'></i></a>
             <% } %>
             <span class='value'><%= ctx.post.favoriteCount %></span>
         </div>
@@ -74,12 +86,20 @@
     <ul><!--
         --><% for (let tag of ctx.post.tags) { %><!--
             --><li><!--
+                --><% if (ctx.canViewTags) { %><!--
                 --><a href='/tag/<%= tag %>' class='tag-<%= ctx.getTagCategory(tag) %>'><!--
                     --><i class='fa fa-tag'></i><!--
-                --></a><!--
-                --><a href='/posts/text=<%= tag %>' class='tag-<%= ctx.getTagCategory(tag) %>'><!--
+                --><% } %><!--
+                --><% if (ctx.canListPosts) { %><!--
+                    --></a><!--
+                --><% } %><!--
+                --><% if (ctx.canListPosts) { %><!--
+                    --><a href='/posts/text=<%= tag %>' class='tag-<%= ctx.getTagCategory(tag) %>'><!--
+                --><% } %><!--
                     --><%= tag %><!--
-                --></a><!--
+                --><% if (ctx.canListPosts) { %><!--
+                    --></a><!--
+                --><% } %><!--
                 --><span class='count'><%= ctx.getTagUsages(tag) %></span><!--
             --></li><!--
         --><% } %><!--

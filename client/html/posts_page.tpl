@@ -3,7 +3,11 @@
         <ul>
             <% for (let post of ctx.results) { %>
                 <li>
-                    <a href='/post/<%= post.id %>' title='@<%= post.id %> (<%= post.type %>)&#10;&#10;Tags: <%= post.tags.map(tag => '#' + tag).join(' ') %>'>
+                    <% if (ctx.canViewPosts) { %>
+                        <a href='/post/<%= post.id %>' title='@<%= post.id %> (<%= post.type %>)&#10;&#10;Tags: <%= post.tags.map(tag => '#' + tag).join(' ') %>'>
+                    <% } else { %>
+                        <a>
+                    <% } %>
                         <%= ctx.makeThumbnail(post.thumbnailUrl) %>
                         <span class='type' data-type='<%= post.type %>'>
                             <%= post.type %>

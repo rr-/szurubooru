@@ -202,18 +202,19 @@ class TagsController {
         topNavController.activate('tags');
 
         pageController.run({
-            state: ctx.state,
+            searchQuery: ctx.searchQuery,
+            clientUrl: '/tags/' + misc.formatSearchQuery({
+                text: ctx.searchQuery.text, page: '{page}'}),
             requestPage: page => {
                 const text = ctx.searchQuery.text;
                 return api.get(
                     `/tags/?query=${text}&page=${page}&pageSize=50`);
             },
-            clientUrl: '/tags/' + misc.formatSearchQuery({
-                text: ctx.searchQuery.text, page: '{page}'}),
-            searchQuery: ctx.searchQuery,
             headerRenderer: this._tagsHeaderView,
             pageRenderer: this._tagsPageView,
-            canEditTagCategories: api.hasPrivilege('tagCategories:edit'),
+            headerContext: {
+                canEditTagCategories: api.hasPrivilege('tagCategories:edit'),
+            },
         });
     }
 }

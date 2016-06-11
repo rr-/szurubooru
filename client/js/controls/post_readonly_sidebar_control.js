@@ -19,6 +19,10 @@ class PostReadonlySidebarControl {
             post: this._post,
             getTagCategory: this._getTagCategory,
             getTagUsages: this._getTagUsages,
+            canListPosts: api.hasPrivilege('posts:list'),
+            canScorePosts: api.hasPrivilege('posts:score'),
+            canFavoritePosts: api.hasPrivilege('posts:favorite'),
+            canViewTags: api.hasPrivilege('tags:view'),
         });
         const upvoteButton = sourceNode.querySelector('.upvote');
         const downvoteButton = sourceNode.querySelector('.downvote')
@@ -29,12 +33,16 @@ class PostReadonlySidebarControl {
         const fitWidthButton = sourceNode.querySelector('.fit-width')
         const fitHeightButton = sourceNode.querySelector('.fit-height');
 
-        upvoteButton.addEventListener(
-            'click', this._eventRequestProxy(
-                () => this._setScore(this._post.ownScore === 1 ? 0 : 1)));
-        downvoteButton.addEventListener(
-            'click', this._eventRequestProxy(
-                () => this._setScore(this._post.ownScore === -1 ? 0 : -1)));
+        if (upvoteButton) {
+            upvoteButton.addEventListener(
+                'click', this._eventRequestProxy(
+                    () => this._setScore(this._post.ownScore === 1 ? 0 : 1)));
+        }
+        if (downvoteButton) {
+            downvoteButton.addEventListener(
+                'click', this._eventRequestProxy(
+                    () => this._setScore(this._post.ownScore === -1 ? 0 : -1)));
+        }
 
         if (addFavButton) {
             addFavButton.addEventListener(

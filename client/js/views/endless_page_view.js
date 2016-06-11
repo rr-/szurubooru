@@ -24,9 +24,8 @@ class EndlessPageView {
         this._active = true;
         this._working = 0;
 
-        let headerRendererCtx = ctx;
-        headerRendererCtx.target = pageHeaderHolder;
-        ctx.headerRenderer.render(headerRendererCtx);
+        ctx.headerContext.target = pageHeaderHolder;
+        ctx.headerRenderer.render(ctx.headerContext);
 
         const threshold = window.innerHeight / 3;
 
@@ -115,10 +114,10 @@ class EndlessPageView {
                 });
                 pageNode.setAttribute('data-page', pageNumber);
 
-                let pageRendererCtx = response;
-                pageRendererCtx.target = pageNode.querySelector(
+                Object.assign(ctx.pageContext, response);
+                ctx.pageContext.target = pageNode.querySelector(
                     '.page-content-holder');
-                ctx.pageRenderer.render(pageRendererCtx);
+                ctx.pageRenderer.render(ctx.pageContext);
 
                 if (pageNumber < this.minPageShown ||
                         this.minPageShown === null) {

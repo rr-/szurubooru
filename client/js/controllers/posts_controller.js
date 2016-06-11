@@ -42,7 +42,9 @@ class PostsController {
         topNavController.activate('posts');
 
         pageController.run({
-            state: ctx.state,
+            searchQuery: ctx.searchQuery,
+            clientUrl: '/posts/' + misc.formatSearchQuery({
+                text: ctx.searchQuery.text, page: '{page}'}),
             requestPage: page => {
                 const text = this._decorateSearchQuery(ctx.searchQuery.text);
                 return api.get(
@@ -50,11 +52,11 @@ class PostsController {
                     `id,type,tags,score,favoriteCount,` +
                     `commentCount,thumbnailUrl`);
             },
-            clientUrl: '/posts/' + misc.formatSearchQuery({
-                text: ctx.searchQuery.text, page: '{page}'}),
-            searchQuery: ctx.searchQuery,
             headerRenderer: this._postsHeaderView,
             pageRenderer: this._postsPageView,
+            pageContext: {
+                canViewPosts: api.hasPrivilege('posts:view'),
+            }
         });
     }
 
@@ -71,6 +73,7 @@ class PostsController {
                 editMode: editMode,
                 nextPostId: aroundResponse.next ? aroundResponse.next.id : null,
                 prevPostId: aroundResponse.prev ? aroundResponse.prev.id : null,
+                canEditPosts: api.hasPrivilege('posts:edit'),
             });
         }, response => {
             this._emptyView.render();

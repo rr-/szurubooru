@@ -69,14 +69,13 @@ class ManualPageView {
         const pageNav = source.querySelector('.page-nav');
         const currentPage = ctx.searchQuery.page;
 
-        let headerRendererCtx = ctx;
-        headerRendererCtx.target = pageHeaderHolder;
-        ctx.headerRenderer.render(headerRendererCtx);
+        ctx.headerContext.target = pageHeaderHolder;
+        ctx.headerRenderer.render(ctx.headerContext);
 
         ctx.requestPage(currentPage).then(response => {
-            let pageRendererCtx = response;
-            pageRendererCtx.target = pageContentHolder;
-            ctx.pageRenderer.render(pageRendererCtx);
+            Object.assign(ctx.pageContext, response);
+            ctx.pageContext.target = pageContentHolder;
+            ctx.pageRenderer.render(ctx.pageContext);
 
             const totalPages = Math.ceil(response.total / response.pageSize);
             const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);

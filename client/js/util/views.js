@@ -1,6 +1,7 @@
 'use strict';
 
 require('../util/polyfill.js');
+const api = require('../api.js');
 const templates = require('../templates.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
@@ -137,25 +138,35 @@ function makeColorInput(options) {
 }
 
 function makePostLink(id) {
-    return makeNonVoidElement('a', {
-        'href': '/post/' + id,
-    }, '@' + id);
+    const text = '@' + id;
+    return api.hasPrivilege('posts:view') ?
+        makeNonVoidElement('a', {'href': '/post/' + id}, text) :
+        text;
 }
 
 function makeTagLink(name) {
     const tag = tags.getTagByName(name);
-    let category = tag ? tag.category : 'unknown';
-    return makeNonVoidElement('a', {
-        'href': '/tag/' + name,
-        'class': 'tag-' + category,
-    }, name);
+    const category = tag ? tag.category : 'unknown';
+    return api.hasPrivilege('tags:view') ?
+        makeNonVoidElement(
+            'a', {
+                'href': '/tag/' + name,
+                'class': 'tag-' + category,
+            }, name) :
+        makeNonVoidElement(
+            'span', {
+                'class': 'tag-' + category,
+            },
+            name);
 }
 
 function makeUserLink(user) {
+    let link = api.hasPrivilege('users:view') ?
+        makeNonVoidElement('a', {'href': '/user/' + user.name}, user.name) :
+        user.name;
     return makeNonVoidElement('span', {class: 'user'},
         makeThumbnail(user.avatarUrl) +
-        makeNonVoidElement(
-            'a', {'href': '/user/' + user.name}, user.name));
+        link);
 }
 
 function makeFlexboxAlign(options) {

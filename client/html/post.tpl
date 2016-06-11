@@ -28,7 +28,11 @@
                         <span class='vim-nav-hint'>Back to view mode</span>
                     </a>
                 <% } else { %>
-                    <a href='/post/<%= ctx.post.id %>/edit'>
+                    <% if (ctx.canEditPosts) { %>
+                        <a href='/post/<%= ctx.post.id %>/edit'>
+                    <% } else { %>
+                        <a class='inactive'>
+                    <% } %>
                         <i class='fa fa-pencil'></i>
                         <span class='vim-nav-hint'>Edit post</span>
                     </a>

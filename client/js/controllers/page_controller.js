@@ -24,6 +24,17 @@ class PageController {
 
     run(ctx) {
         this._pageView.unrender();
+
+        ctx.headerContext = ctx.headerContext || {};
+        Object.assign(ctx.headerContext, {
+            searchQuery: ctx.searchQuery,
+        });
+
+        ctx.pageContext = ctx.pageContext || {};
+        Object.assign(ctx.pageContext, {
+            searchQuery: ctx.searchQuery,
+        });
+
         this._pageView.render(ctx);
     }
 
