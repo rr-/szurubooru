@@ -46,7 +46,8 @@
                     <% } else { %>
                         <i class='fa fa-thumbs-o-up'></i>
                     <% } %>
-                    <span class='hint'></span>
+                    <span class='vim-nav-hint'>upvote</span>
+                    <span class='vim-nav-hint'>like</span>
                 </a>
             <% } else { %>
                 <a class='upvote inactive'>
@@ -61,7 +62,8 @@
                     <% } else { %>
                         <i class='fa fa-thumbs-o-down'></i>
                     <% } %>
-                    <span class='hint'></span>
+                    <span class='vim-nav-hint'>downvote</span>
+                    <span class='vim-nav-hint'>dislike</span>
                 </a>
             <% } %>
         </div>
@@ -69,13 +71,18 @@
         <div class='fav'>
             <% if (ctx.canFavoritePosts) { %>
                 <% if (ctx.post.ownFavorite) { %>
-                    <a class='remove-favorite' href='#'><i class='fa fa-heart'></i></a>
+                    <a class='remove-favorite' href='#'>
+                        <i class='fa fa-heart'></i>
                 <% } else { %>
-                    <a class='add-favorite' href='#'><i class='fa fa-heart-o'></i></a>
+                    <a class='add-favorite' href='#'>
+                        <i class='fa fa-heart-o'></i>
                 <% } %>
             <% } else { %>
-                <a class='add-favorite inactive'><i class='fa fa-heart-o'></i></a>
+                <a class='add-favorite inactive'>
+                    <i class='fa fa-heart-o'></i>
             <% } %>
+                <span class='vim-nav-hint'>add to favorites</span>
+            </a>
             <span class='value'><%= ctx.post.favoriteCount %></span>
         </div>
     </section>
