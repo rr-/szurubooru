@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from szurubooru import errors
 
 def get_serialization_options(ctx):
-    return ctx.get_param_as_list('_fields', required=False, default=None)
+    return ctx.get_param_as_list('fields', required=False, default=None)
 
 def serialize_entity(entity, field_factories, options):
     if not entity:

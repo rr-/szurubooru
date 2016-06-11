@@ -48,7 +48,7 @@ class PostsController {
             requestPage: page => {
                 const text = this._decorateSearchQuery(ctx.searchQuery.text);
                 return api.get(
-                    `/posts/?query=${text}&page=${page}&pageSize=40&_fields=` +
+                    `/posts/?query=${text}&page=${page}&pageSize=40&fields=` +
                     `id,type,tags,score,favoriteCount,` +
                     `commentCount,thumbnailUrl`);
             },
@@ -64,7 +64,7 @@ class PostsController {
         topNavController.activate('posts');
         Promise.all([
                 api.get('/post/' + id),
-                api.get(`/post/${id}/around?_fields=id&query=`
+                api.get(`/post/${id}/around?fields=id&query=`
                     + this._decorateSearchQuery('')),
         ]).then(responses => {
             const [postResponse, aroundResponse] = responses;
