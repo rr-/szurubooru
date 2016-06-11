@@ -7,7 +7,7 @@ from szurubooru.func import util, comments
 def test_ctx(config_injector, context_factory, user_factory, comment_factory):
     config_injector({
         'privileges': {
-            'comments:delete:self': db.User.RANK_REGULAR,
+            'comments:delete:own': db.User.RANK_REGULAR,
             'comments:delete:any': db.User.RANK_MODERATOR,
         },
     })

@@ -10,7 +10,7 @@ def test_ctx(
         'data_dir': str(tmpdir),
         'data_url': 'http://example.com',
         'privileges': {
-            'comments:edit:self': db.User.RANK_REGULAR,
+            'comments:edit:own': db.User.RANK_REGULAR,
             'comments:edit:any': db.User.RANK_MODERATOR,
             'users:edit:any:email': db.User.RANK_MODERATOR,
         },

@@ -39,7 +39,7 @@ class CommentDetailApi(BaseApi):
 
     def put(self, ctx, comment_id):
         comment = comments.get_comment_by_id(comment_id)
-        infix = 'self' if ctx.user.user_id == comment.user_id else 'any'
+        infix = 'own' if ctx.user.user_id == comment.user_id else 'any'
         text = ctx.get_param_as_string('text', required=True)
         auth.verify_privilege(ctx.user, 'comments:edit:%s' % infix)
         comment.last_edit_time = datetime.datetime.now()
@@ -49,7 +49,7 @@ class CommentDetailApi(BaseApi):
 
     def delete(self, ctx, comment_id):
         comment = comments.get_comment_by_id(comment_id)
-        infix = 'self' if ctx.user.user_id == comment.user_id else 'any'
+        infix = 'own' if ctx.user.user_id == comment.user_id else 'any'
         auth.verify_privilege(ctx.user, 'comments:delete:%s' % infix)
         ctx.session.delete(comment)
         ctx.session.commit()
