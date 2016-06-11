@@ -10,6 +10,8 @@ class PostReadonlySidebarControl {
         this._post = post;
         this._postContentControl = postContentControl;
         this._template = views.getTemplate('post-readonly-sidebar');
+        this._scoreTemplate = views.getTemplate('score');
+        this._favTemplate = views.getTemplate('fav');
 
         this.install();
     }
@@ -20,10 +22,25 @@ class PostReadonlySidebarControl {
             getTagCategory: this._getTagCategory,
             getTagUsages: this._getTagUsages,
             canListPosts: api.hasPrivilege('posts:list'),
-            canScorePosts: api.hasPrivilege('posts:score'),
-            canFavoritePosts: api.hasPrivilege('posts:favorite'),
             canViewTags: api.hasPrivilege('tags:view'),
         });
+
+        views.showView(
+            sourceNode.querySelector('.score-container'),
+            this._scoreTemplate({
+                score: this._post.score,
+                ownScore: this._post.ownScore,
+                canScore: api.hasPrivilege('posts:score'),
+            }));
+
+        views.showView(
+            sourceNode.querySelector('.fav-container'),
+            this._favTemplate({
+                favoriteCount: this._post.favoriteCount,
+                ownFavorite: this._post.ownFavorite,
+                canFavorite: api.hasPrivilege('posts:favorite'),
+            }));
+
         const upvoteButton = sourceNode.querySelector('.upvote');
         const downvoteButton = sourceNode.querySelector('.downvote')
         const addFavButton = sourceNode.querySelector('.add-favorite')

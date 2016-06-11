@@ -29,6 +29,10 @@ function makeFileSize(fileSize) {
     return misc.formatFileSize(fileSize);
 }
 
+function makeMarkdown(text) {
+    return misc.formatMarkdown(text);
+}
+
 function makeRelativeTime(time) {
     return makeNonVoidElement(
         'time',
@@ -202,7 +206,7 @@ function makeVoidElement(name, attributes) {
     return `<${_serializeElement(name, attributes)}/>`;
 }
 
-function _messageHandler(target, message, className) {
+function showMessage(target, message, className) {
     if (!message) {
         message = 'Unknown message';
     }
@@ -222,6 +226,18 @@ function _messageHandler(target, message, className) {
     return true;
 }
 
+function showError(target, message) {
+    return showMessage(target, message, 'error');
+}
+
+function showSuccess(target, message) {
+    return showMessage(target, message, 'success');
+}
+
+function showInfo(target, message) {
+    return showMessage(target, message, 'info');
+}
+
 function unlistenToMessages() {
     events.unlisten(events.Success);
     events.unlisten(events.Error);
@@ -234,7 +250,7 @@ function listenToMessages(target) {
         events.listen(
             eventType,
             msg => {
-                return _messageHandler(target, msg, className);
+                return showMessage(target, msg, className);
             });
     };
     listen(events.Success, 'success');
@@ -269,6 +285,7 @@ function getTemplate(templatePath) {
         Object.assign(ctx, {
             makeRelativeTime: makeRelativeTime,
             makeFileSize: makeFileSize,
+            makeMarkdown: makeMarkdown,
             makeThumbnail: makeThumbnail,
             makeRadio: makeRadio,
             makeCheckbox: makeCheckbox,
@@ -420,4 +437,7 @@ module.exports = {
     slideDown: slideDown,
     slideUp: slideUp,
     monitorNodeRemoval: monitorNodeRemoval,
+    showError: showError,
+    showSuccess: showSuccess,
+    showInfo: showInfo,
 };

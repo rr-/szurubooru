@@ -1,6 +1,7 @@
 'use strict';
 
 require('./util/polyfill.js');
+const misc = require('./util/misc.js');
 
 const page = require('page');
 const origPushState = page.Context.prototype.pushState;
@@ -8,6 +9,20 @@ page.Context.prototype.pushState = function() {
     window.scrollTo(0, 0);
     origPushState.call(this);
 };
+
+page.cancel = function(ctx) {
+    prevContext = ctx;
+    ctx.pushState();
+};
+
+page.exit((ctx, next) => {
+    views.unlistenToMessages();
+    if (misc.confirmPageExit()) {
+        next();
+    } else {
+        page.cancel(ctx);
+    }
+});
 
 const mousetrap = require('mousetrap');
 page(/.*/, (ctx, next) => {
@@ -33,11 +48,6 @@ const views = require('./util/views.js');
 for (let controller of controllers) {
     controller.registerRoutes();
 }
-
-page.exit((ctx, next) => {
-    views.unlistenToMessages();
-    next();
-});
 
 const api = require('./api.js');
 Promise.all([tags.refreshExport(), api.loginFromCookies()])

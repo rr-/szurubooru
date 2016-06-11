@@ -38,53 +38,9 @@
     </section>
 
     <section class='social'>
-        <div class='score'>
-            <% if (ctx.canScorePosts) { %>
-                <a class='upvote' href='#'>
-                    <% if (ctx.post.ownScore == 1) { %>
-                        <i class='fa fa-thumbs-up'></i>
-                    <% } else { %>
-                        <i class='fa fa-thumbs-o-up'></i>
-                    <% } %>
-                    <span class='vim-nav-hint'>upvote</span>
-                    <span class='vim-nav-hint'>like</span>
-                </a>
-            <% } else { %>
-                <a class='upvote inactive'>
-                    <i class='fa fa-thumbs-o-up'></i>
-                </a>
-            <% } %>
-            <span class='value'><%= ctx.post.score %></span>
-            <% if (ctx.canScorePosts) { %>
-                <a class='downvote' href='#'>
-                    <% if (ctx.post.ownScore == -1) { %>
-                        <i class='fa fa-thumbs-down'></i>
-                    <% } else { %>
-                        <i class='fa fa-thumbs-o-down'></i>
-                    <% } %>
-                    <span class='vim-nav-hint'>downvote</span>
-                    <span class='vim-nav-hint'>dislike</span>
-                </a>
-            <% } %>
-        </div>
+        <div class='score-container'></div>
 
-        <div class='fav'>
-            <% if (ctx.canFavoritePosts) { %>
-                <% if (ctx.post.ownFavorite) { %>
-                    <a class='remove-favorite' href='#'>
-                        <i class='fa fa-heart'></i>
-                <% } else { %>
-                    <a class='add-favorite' href='#'>
-                        <i class='fa fa-heart-o'></i>
-                <% } %>
-            <% } else { %>
-                <a class='add-favorite inactive'>
-                    <i class='fa fa-heart-o'></i>
-            <% } %>
-                <span class='vim-nav-hint'>add to favorites</span>
-            </a>
-            <span class='value'><%= ctx.post.favoriteCount %></span>
-        </div>
+        <div class='fav-container'></div>
     </section>
 </article>
 

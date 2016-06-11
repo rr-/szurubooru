@@ -199,6 +199,27 @@ function unindent(callSite, ...args) {
     return format(output);
 }
 
+function enableExitConfirmation() {
+    window.onbeforeunload = e => {
+        return 'Are you sure you want to leave? ' +
+            'Data you have entered may not be saved.';
+    };
+}
+
+function disableExitConfirmation() {
+    window.onbeforeunload = null;
+}
+
+function confirmPageExit() {
+    if (!window.onbeforeunload) {
+        return true;
+    }
+    if (window.confirm(window.onbeforeunload())) {
+        disableExitConfirmation();
+        return true;
+    }
+}
+
 module.exports = {
     range: range,
     formatSearchQuery: formatSearchQuery,
@@ -208,4 +229,7 @@ module.exports = {
     formatFileSize: formatFileSize,
     formatMarkdown: formatMarkdown,
     unindent: unindent,
+    enableExitConfirmation: enableExitConfirmation,
+    disableExitConfirmation: disableExitConfirmation,
+    confirmPageExit: confirmPageExit,
 };

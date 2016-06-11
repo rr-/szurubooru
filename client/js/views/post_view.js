@@ -10,6 +10,7 @@ const PostReadonlySidebarControl
     = require('../controls/post_readonly_sidebar_control.js');
 const PostEditSidebarControl
     = require('../controls/post_edit_sidebar_control.js');
+const CommentListControl = require('../controls/comment_list_control.js');
 
 class PostView {
     constructor() {
@@ -62,6 +63,10 @@ class PostView {
                 ctx.post,
                 this._postContentControl);
         }
+
+        new CommentListControl(
+            postViewNode.querySelector('.comments-container'),
+            ctx.post.comments);
 
         keyboard.bind('e', () => {
             if (ctx.editMode) {

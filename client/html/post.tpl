@@ -46,8 +46,6 @@
     <div class='content'>
         <div class='post-container'></div>
 
-        <section class='comments'>
-            <!-- TODO: comments -->
-        </section>
+        <div class='comments-container'></div>
     </div>
 </div>
