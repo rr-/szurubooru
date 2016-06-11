@@ -113,7 +113,9 @@ def serialize_post(post, authenticated_user, options=None):
                 key=lambda x: x['polygon']),
             'comments': lambda: [
                 comments.serialize_comment(comment, authenticated_user) \
-                    for comment in post.comments],
+                    for comment in sorted(
+                        post.comments,
+                        key=lambda comment: comment.creation_time)],
             'snapshots': lambda: snapshots.get_serialized_history(post),
         },
         options)
