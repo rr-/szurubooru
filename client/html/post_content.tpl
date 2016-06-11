@@ -1,7 +1,7 @@
 <div class='post-content post-type-<%= ctx.post.type %>'>
     <% if (['image', 'animation'].includes(ctx.post.type)) { %>
 
-        <img alt='<%= ctx.post.id %>' src='<%= ctx.post.contentUrl %>'/>
+        <img alt='' src='<%= ctx.post.contentUrl %>'/>
 
     <% } else if (ctx.post.type === 'flash') { %>
 
