@@ -4,7 +4,7 @@ import hashlib
 import re
 import tempfile
 from contextlib import contextmanager
-from szurubooru.errors import ValidationError
+from szurubooru import errors
 
 def get_serialization_options(ctx):
     return ctx.get_param_as_list('_fields', required=False, default=None)
@@ -20,7 +20,8 @@ def serialize_entity(entity, field_factories, options):
             factory = field_factories[key]
             ret[key] = factory()
         except KeyError:
-            pass
+            raise errors.ValidationError('Invalid key: %r. Valid keys: %r.' % (
+                key, list(sorted(field_factories.keys()))))
     return ret
 
 @contextmanager
@@ -70,7 +71,7 @@ def parse_time_range(value, timezone=datetime.timezone(datetime.timedelta())):
 
     value = value.lower()
     if not value:
-        raise ValidationError('Empty date format.')
+        raise errors.ValidationError('Empty date format.')
 
     if value == 'today':
         now = datetime.datetime.now(tz=timezone)
@@ -110,7 +111,7 @@ def parse_time_range(value, timezone=datetime.timezone(datetime.timedelta())):
             datetime.datetime(year, month, day),
             datetime.datetime(year, month, day + 1) - one_second)
 
-    raise ValidationError('Invalid date format: %r.' % value)
+    raise errors.ValidationError('Invalid date format: %r.' % value)
 
 def icase_unique(source):
     target = []
