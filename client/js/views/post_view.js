@@ -1,6 +1,8 @@
 'use strict';
 
 const views = require('../util/views.js');
+const keyboard = require('../util/keyboard.js');
+const page = require('page');
 const PostContentControl = require('../controls/post_content_control.js');
 const PostNotesOverlayControl
     = require('../controls/post_notes_overlay_control.js');
@@ -60,8 +62,25 @@ class PostView {
                 ctx.post,
                 this._postContentControl);
         }
-    }
 
+        keyboard.bind('e', () => {
+            if (ctx.editMode) {
+                page.show('/post/' + ctx.post.id);
+            } else {
+                page.show('/post/' + ctx.post.id + '/edit');
+            }
+        });
+        keyboard.bind(['a', 'left'], () => {
+            if (ctx.nextPostId) {
+                page.show('/post/' + ctx.nextPostId);
+            }
+        });
+        keyboard.bind(['d', 'right'], () => {
+            if (ctx.prevPostId) {
+                page.show('/post/' + ctx.prevPostId);
+            }
+        });
+    }
 }
 
 module.exports = PostView;
