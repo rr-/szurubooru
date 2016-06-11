@@ -1,7 +1,7 @@
 <div class='post-list'>
     <% if (ctx.results.length) { %>
         <ul>
-            <% _.each(ctx.results, post => { %>
+            <% for (let post of ctx.results) { %>
                 <li>
                     <a href='/post/<%= post.id %>' title='@<%= post.id %> (<%= post.type %>)&#10;&#10;Tags: <%= post.tags.map(tag => '#' + tag).join(' ') %>'>
                         <%= ctx.makeThumbnail(post.thumbnailUrl) %>
@@ -32,7 +32,7 @@
                         <% } %>
                     </a>
                 </li>
-            <% }) %>
+            <% } %>
             <%= ctx.makeFlexboxAlign() %>
         </ul>
     <% } %>

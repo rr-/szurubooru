@@ -39,21 +39,21 @@
                 </th>
             </thead>
             <tbody>
-                <% _.each(ctx.results, tag => { %>
+                <% for (let tag of ctx.results) { %>
                     <tr>
                         <td class='names'>
                             <ul>
-                                <% _.each(tag.names, name => { %>
+                                <% for (let name of tag.names) { %>
                                     <li><%= ctx.makeTagLink(name) %></li>
-                                <% }) %>
+                                <% } %>
                             </ul>
                         </td>
                         <td class='implications'>
                             <% if (tag.implications.length) { %>
                                 <ul>
-                                    <% _.each(tag.implications, name => { %>
+                                    <% for (let name of tag.implications) { %>
                                         <li><%= ctx.makeTagLink(name) %></li>
-                                    <% }) %>
+                                    <% } %>
                                 </ul>
                             <% } else { %>
                                 -
@@ -62,9 +62,9 @@
                         <td class='suggestions'>
                             <% if (tag.suggestions.length) { %>
                                 <ul>
-                                    <% _.each(tag.suggestions, name => { %>
+                                    <% for (let name of tag.suggestions) { %>
                                         <li><%= ctx.makeTagLink(name) %></li>
-                                    <% }) %>
+                                    <% } %>
                                 </ul>
                             <% } else { %>
                                 -
@@ -77,7 +77,7 @@
                             <%= ctx.makeRelativeTime(tag.lastEditTime) %>
                         </td>
                     </tr>
-                <% }) %>
+                <% } %>
             </tbody>
         </table>
     <% } %>

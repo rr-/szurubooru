@@ -10,7 +10,7 @@
                 </tr>
             </thead>
             <tbody>
-                <% _.each(ctx.tagCategories, category => { %>
+                <% for (let category of ctx.tagCategories) { %>
                     <% if (category.default) { %>
                         <tr data-category='<%= category.name %>' class='default'>
                     <% } else { %>
@@ -50,7 +50,7 @@
                             </td>
                         <% } %>
                     </tr>
-                <% }) %>
+                <% } %>
             </tbody>
             <tfoot>
                 <tr class='add-template'>

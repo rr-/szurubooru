@@ -4,6 +4,25 @@ const api = require('../api.js');
 const events = require('../events.js');
 const TopNavView = require('../views/top_nav_view.js');
 
+function _createNavigationItemMap() {
+    const ret = new Map();
+    ret.set('home',     new NavigationItem('H', 'Home',     '/'));
+    ret.set('posts',    new NavigationItem('P', 'Posts',    '/posts'));
+    ret.set('upload',   new NavigationItem('U', 'Upload',   '/upload'));
+    ret.set('comments', new NavigationItem('C', 'Comments', '/comments'));
+    ret.set('tags',     new NavigationItem('T', 'Tags',     '/tags'));
+    ret.set('users',    new NavigationItem('S', 'Users',    '/users'));
+    ret.set('account',  new NavigationItem('A', 'Account',  '/user/{me}'));
+    ret.set('register', new NavigationItem('R', 'Register', '/register'));
+    ret.set('login',    new NavigationItem('L', 'Log in',   '/login'));
+    ret.set('logout',   new NavigationItem('O', 'Logout',   '/logout'));
+    ret.set('help',     new NavigationItem('E', 'Help',     '/help'));
+    ret.set(
+        'settings',
+        new NavigationItem(null, '<i class=\'fa fa-cog\'></i>', '/settings'));
+    return ret;
+}
+
 class NavigationItem {
     constructor(accessKey, name, url) {
         this.accessKey = accessKey;
@@ -18,22 +37,7 @@ class TopNavController {
     constructor() {
         this._topNavView = new TopNavView();
         this._activeItem = null;
-
-        this._items = {
-            'home':     new NavigationItem('H', 'Home',     '/'),
-            'posts':    new NavigationItem('P', 'Posts',    '/posts'),
-            'upload':   new NavigationItem('U', 'Upload',   '/upload'),
-            'comments': new NavigationItem('C', 'Comments', '/comments'),
-            'tags':     new NavigationItem('T', 'Tags',     '/tags'),
-            'users':    new NavigationItem('S', 'Users',    '/users'),
-            'account':  new NavigationItem('A', 'Account',  '/user/{me}'),
-            'register': new NavigationItem('R', 'Register', '/register'),
-            'login':    new NavigationItem('L', 'Log in',   '/login'),
-            'logout':   new NavigationItem('O', 'Logout',   '/logout'),
-            'help':     new NavigationItem('E', 'Help',     '/help'),
-            'settings': new NavigationItem(
-                null, '<i class=\'fa fa-cog\'></i>', '/settings'),
-        };
+        this._items = _createNavigationItemMap();
 
         const rerender = () => {
             this._updateVisibility();
@@ -50,34 +54,34 @@ class TopNavController {
     }
 
     _updateVisibility() {
-        this._items.account.url =  '/user/' + api.userName;
-        this._items.account.imageUrl = api.user ? api.user.avatarUrl : null;
+        this._items.get('account').url =  '/user/' + api.userName;
+        this._items.get('account').imageUrl = api.user ?
+            api.user.avatarUrl : null;
 
-        const b = Object.keys(this._items);
-        for (let key of b) {
-            this._items[key].available = true;
+        for (let [key, item] of this._items) {
+            item.available = true;
         }
         if (!api.hasPrivilege('posts:list')) {
-            this._items.posts.available = false;
+            this._items.get('posts').available = false;
         }
         if (!api.hasPrivilege('posts:create')) {
-            this._items.upload.available = false;
+            this._items.get('upload').available = false;
         }
         if (!api.hasPrivilege('comments:list')) {
-            this._items.comments.available = false;
+            this._items.get('comments').available = false;
         }
         if (!api.hasPrivilege('tags:list')) {
-            this._items.tags.available = false;
+            this._items.get('tags').available = false;
         }
         if (!api.hasPrivilege('users:list')) {
-            this._items.users.available = false;
+            this._items.get('users').available = false;
         }
         if (api.isLoggedIn()) {
-            this._items.register.available = false;
-            this._items.login.available = false;
+            this._items.get('register').available = false;
+            this._items.get('login').available = false;
         } else {
-            this._items.account.available = false;
-            this._items.logout.available = false;
+            this._items.get('account').available = false;
+            this._items.get('logout').available = false;
         }
     }
 

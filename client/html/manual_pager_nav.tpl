@@ -11,7 +11,7 @@
             </a>
         </li>
 
-        <% _.each(ctx.pages, page => { %>
+        <% for (let page of ctx.pages) { %>
             <% if (page.ellipsis) { %>
                 <li>&hellip;</li>
             <% } else { %>
@@ -23,7 +23,7 @@
                     <a href='<%= page.link %>'><%= page.number %></a>
                 </li>
             <% } %>
-        <% }) %>
+        <% } %>
 
         <li>
             <% if (ctx.nextLinkActive) { %>

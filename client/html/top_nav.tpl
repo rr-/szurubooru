@@ -1,6 +1,6 @@
 <nav id='top-nav' class='buttons'>
     <ul><!--
-        --><% _.each(ctx.items, (item, key) => { %><!--
+        --><% for (let [key, item] of ctx.items) { %><!--
             --><% if (item.available) { %><!--
                 --><li data-name='<%= key %>'><!--
                     --><a href='<%= item.url %>' accesskey='<%= item.accessKey %>'><!--
@@ -9,6 +9,6 @@
                     --></a><!--
                 --></li><!--
             --><% } %><!--
-        --><% }) %><!--
+        --><% } %><!--
     --></ul>
 </nav>

@@ -1,6 +1,6 @@
 <div class='user-list'>
     <ul><!--
-        --><% _.each(ctx.results, user => { %><!--
+        --><% for (let user of ctx.results) { %><!--
             --><li>
                 <div class='wrapper'>
                     <a class='image' href='/user/<%= user.name %>'><%= ctx.makeThumbnail(user.avatarUrl) %></a>
@@ -11,7 +11,7 @@
                     </div>
                 </div>
             </li><!--
-        --><% }) %><!--
+        --><% } %><!--
         --><%= ctx.makeFlexboxAlign() %><!--
     --></ul>
 </div>
