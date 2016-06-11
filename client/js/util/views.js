@@ -161,12 +161,11 @@ function makeTagLink(name) {
 }
 
 function makeUserLink(user) {
-    let link = api.hasPrivilege('users:view') ?
-        makeNonVoidElement('a', {'href': '/user/' + user.name}, user.name) :
-        user.name;
-    return makeNonVoidElement('span', {class: 'user'},
-        makeThumbnail(user.avatarUrl) +
-        link);
+    const text = makeThumbnail(user.avatarUrl) + user.name;
+    const link = api.hasPrivilege('users:view') ?
+        makeNonVoidElement('a', {'href': '/user/' + user.name}, text) :
+        text;
+    return makeNonVoidElement('span', {class: 'user'}, link);
 }
 
 function makeFlexboxAlign(options) {
