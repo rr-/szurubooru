@@ -208,7 +208,8 @@ class TagsController {
             requestPage: page => {
                 const text = ctx.searchQuery.text;
                 return api.get(
-                    `/tags/?query=${text}&page=${page}&pageSize=50`);
+                    `/tags/?query=${text}&page=${page}&pageSize=50&_fields=` +
+                    `names,suggestions,implications,lastEditTime,usages`);
             },
             headerRenderer: this._tagsHeaderView,
             pageRenderer: this._tagsPageView,
