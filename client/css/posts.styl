@@ -157,13 +157,15 @@ $safety-unsafe = #F3985F
                 height: 100%
                 margin: 0
                 outline-offset: -3px
+
             &:hover
                 background: $main-color
                 .thumbnail
                     opacity: .9
-                a
-                    box-shadow: 0 0 0 1px $main-color
-                a, .thumbnail
+
+            &:hover a, a:active, a:focus
+                box-shadow: 0 0 0 1px $main-color
+                .thumbnail
                     outline: 3px solid $main-color
 
 .post-list-header
