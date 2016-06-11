@@ -123,7 +123,7 @@ function formatMarkdown(text) {
         text = text.replace(/%%%#/g, '#');
 
         text = text.replace(
-            /%%%SJIS(\d+)/,
+            /(?:<p>)?%%%SJIS(\d+)(?:<\/p>)?/,
             (match, capture) => {
                 return '<div class="sjis">' + sjis[capture] + '</div>';
             });
