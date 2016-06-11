@@ -137,9 +137,7 @@ class PostReadonlySidebarControl {
             requestPromise()
                 .then(
                     response => { return api.get('/post/' + this._post.id) },
-                    response => {
-                        return Promise.reject(response.description);
-                    })
+                    response => { return Promise.reject(response); })
                 .then(
                     response => {
                         this._post = response;
@@ -147,7 +145,7 @@ class PostReadonlySidebarControl {
                     },
                     response => {
                         reject();
-                        events.notify(events.Error, errorMessage);
+                        window.alert(response.description);
                     });
         });
     }
