@@ -40,8 +40,9 @@ class UserListApi(BaseApi):
 
 class UserDetailApi(BaseApi):
     def get(self, ctx, user_name):
-        auth.verify_privilege(ctx.user, 'users:view')
         user = users.get_user_by_name(user_name)
+        if ctx.user.user_id != user.user_id:
+            auth.verify_privilege(ctx.user, 'users:view')
         return _serialize(ctx, user)
 
     def put(self, ctx, user_name):

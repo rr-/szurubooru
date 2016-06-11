@@ -74,8 +74,9 @@ def test_trying_to_retrieve_single_non_existing(test_ctx):
             '-')
 
 def test_trying_to_retrieve_single_without_privileges(test_ctx):
+    db.session.add(test_ctx.user_factory(name='u1', rank=db.User.RANK_REGULAR))
     with pytest.raises(errors.AuthError):
         test_ctx.detail_api.get(
             test_ctx.context_factory(
                 user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
-            '-')
+            'u1')
