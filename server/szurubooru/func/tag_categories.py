@@ -1,6 +1,6 @@
 import re
 from szurubooru import config, db, errors
-from szurubooru.func import util, snapshots
+from szurubooru.func import util, snapshots, cache
 
 class TagCategoryNotFoundError(errors.NotFoundError): pass
 class TagCategoryAlreadyExistsError(errors.ValidationError): pass
@@ -77,6 +77,9 @@ def get_all_categories():
     return db.session.query(db.TagCategory).all()
 
 def try_get_default_category():
+    key = 'default-tag-category'
+    if cache.has(key):
+        return cache.get(key)
     category = db.session \
         .query(db.TagCategory) \
         .filter(db.TagCategory.default) \
@@ -88,6 +91,7 @@ def try_get_default_category():
             .query(db.TagCategory) \
             .order_by(db.TagCategory.tag_category_id.asc()) \
             .first()
+    cache.put(key, category)
     return category
 
 def get_default_category():
