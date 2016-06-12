@@ -20,6 +20,7 @@ class InfoApi(BaseApi):
             'featuringTime': post_feature.time if post_feature else None,
             'featuringUser': users.serialize_user(post_feature.user, ctx.user) \
                 if post_feature else None,
+            'serverTime': datetime.datetime.now(),
         }
 
     def _get_disk_usage(self):

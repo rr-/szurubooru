@@ -1373,14 +1373,16 @@ data.
         "diskUsage": <disk-usage>,  // in bytes
         "featuredPost": <featured-post>,
         "featuringTime": <time>,
-        "featuringUser": <user>
+        "featuringUser": <user>,
+        "serverTime": <server-time>
     }
     ```
 
 - **Description**
 
     Retrieves simple statistics. `<featured-post>` is null if there is no
-    featured post yet.
+    featured post yet. `<server-time>` is pretty much the same as the `Date`
+    HTTP field, only formatted in a manner consistent with other dates.
 
 
 
