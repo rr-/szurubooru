@@ -15,8 +15,8 @@ class PostNotesOverlayControl {
         const bodyRect = document.body.getBoundingClientRect();
         const svgRect = this._svgNode.getBoundingClientRect();
         const polygonRect = e.target.getBBox();
-        this._textNode.querySelector('.wrapper').innerHTML
-            = misc.formatMarkdown(e.target.getAttribute('data-text'));
+        this._textNode.querySelector('.wrapper').innerHTML =
+            misc.formatMarkdown(e.target.getAttribute('data-text'));
         const x = (
             -bodyRect.left + svgRect.left + svgRect.width * polygonRect.x);
         const y = (
@@ -30,9 +30,9 @@ class PostNotesOverlayControl {
     _evtMouseLeave(e) {
         const newElement = e.relatedTarget;
         if (newElement === this._svgNode ||
-                (!this._svgNode.contains(newElement)
-                    && !this._textNode.contains(newElement)
-                    && newElement !== this._textNode)) {
+                (!this._svgNode.contains(newElement) &&
+                !this._textNode.contains(newElement) &&
+                newElement !== this._textNode)) {
             this._textNode.style.display = 'none';
         }
     }

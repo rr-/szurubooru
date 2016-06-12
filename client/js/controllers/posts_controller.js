@@ -51,7 +51,8 @@ class PostsController {
             requestPage: pageController.createHistoryCacheProxy(
                 ctx,
                 page => {
-                    const text = this._decorateSearchQuery(ctx.searchQuery.text);
+                    const text
+                        = this._decorateSearchQuery(ctx.searchQuery.text);
                     return api.get(
                         `/posts/?query=${text}&page=${page}&pageSize=40` +
                         '&fields=id,type,tags,score,favoriteCount,' +
@@ -69,8 +70,8 @@ class PostsController {
         topNavController.activate('posts');
         Promise.all([
                 api.get('/post/' + id),
-                api.get(`/post/${id}/around?fields=id&query=`
-                    + this._decorateSearchQuery('')),
+                api.get(`/post/${id}/around?fields=id&query=` +
+                    this._decorateSearchQuery('')),
         ]).then(responses => {
             const [postResponse, aroundResponse] = responses;
             this._postView.render({

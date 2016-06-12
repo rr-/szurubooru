@@ -5,12 +5,12 @@ const router = require('../router.js');
 const views = require('../util/views.js');
 const keyboard = require('../util/keyboard.js');
 const PostContentControl = require('../controls/post_content_control.js');
-const PostNotesOverlayControl
-    = require('../controls/post_notes_overlay_control.js');
-const PostReadonlySidebarControl
-    = require('../controls/post_readonly_sidebar_control.js');
-const PostEditSidebarControl
-    = require('../controls/post_edit_sidebar_control.js');
+const PostNotesOverlayControl =
+    require('../controls/post_notes_overlay_control.js');
+const PostReadonlySidebarControl =
+    require('../controls/post_readonly_sidebar_control.js');
+const PostEditSidebarControl =
+    require('../controls/post_edit_sidebar_control.js');
 const CommentListControl = require('../controls/comment_list_control.js');
 const CommentFormControl = require('../controls/comment_form_control.js');
 
@@ -33,20 +33,20 @@ class PostView {
         const postViewNode = document.body.querySelector('.content-wrapper');
 
         const margin = (
-            postViewNode.getBoundingClientRect().top
-            - topNavNode.getBoundingClientRect().height);
+            postViewNode.getBoundingClientRect().top -
+            topNavNode.getBoundingClientRect().height);
 
         this._postContentControl = new PostContentControl(
             postContainerNode,
             ctx.post,
             () => {
                 return [
-                    window.innerWidth
-                        - postContainerNode.getBoundingClientRect().left
-                        - margin,
-                    window.innerHeight
-                        - topNavNode.getBoundingClientRect().height
-                        - margin * 2,
+                    window.innerWidth -
+                        postContainerNode.getBoundingClientRect().left -
+                        margin,
+                    window.innerHeight -
+                        topNavNode.getBoundingClientRect().height -
+                        margin * 2,
                 ];
             });
 

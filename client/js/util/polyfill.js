@@ -14,7 +14,7 @@ NodeList.prototype.querySelector = function(...args) {
         }
     }
     return null;
-}
+};
 
 // non standard
 Node.prototype.prependChild = function(child) {

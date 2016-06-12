@@ -62,8 +62,8 @@ class CommentFormControl {
         this._hostNode.querySelector('.tabs-wrapper').style.minHeight = null;
         misc.disableExitConfirmation();
         views.clearMessages(this._hostNode);
-        this._hostNode.querySelector('.edit.tab textarea').value
-            = this._comment.text;
+        this._hostNode.querySelector('.edit.tab textarea').value =
+            this._comment.text;
     }
 
     get _textareaNode() {
@@ -85,8 +85,8 @@ class CommentFormControl {
 
     _evtPreviewClick(e) {
         e.preventDefault();
-        this._contentNode.innerHTML
-            = misc.formatMarkdown(this._textareaNode.value);
+        this._contentNode.innerHTML =
+            misc.formatMarkdown(this._textareaNode.value);
         this._freezeTabHeights();
         this._selectTab('preview');
     }
@@ -124,8 +124,8 @@ class CommentFormControl {
     }
 
     _growTextArea() {
-        this._textareaNode.style.height
-            = Math.max(
+        this._textareaNode.style.height =
+            Math.max(
                 this._settings.minHeight || 0,
                 this._textareaNode.scrollHeight) + 'px';
     }

@@ -42,12 +42,12 @@ class PostReadonlySidebarControl {
             }));
 
         const upvoteButton = sourceNode.querySelector('.upvote');
-        const downvoteButton = sourceNode.querySelector('.downvote')
-        const addFavButton = sourceNode.querySelector('.add-favorite')
+        const downvoteButton = sourceNode.querySelector('.downvote');
+        const addFavButton = sourceNode.querySelector('.add-favorite');
         const remFavButton = sourceNode.querySelector('.remove-favorite');
-        const fitBothButton = sourceNode.querySelector('.fit-both')
+        const fitBothButton = sourceNode.querySelector('.fit-both');
         const fitOriginalButton = sourceNode.querySelector('.fit-original');
-        const fitWidthButton = sourceNode.querySelector('.fit-width')
+        const fitWidthButton = sourceNode.querySelector('.fit-width');
         const fitHeightButton = sourceNode.querySelector('.fit-height');
 
         if (upvoteButton) {
@@ -105,7 +105,7 @@ class PostReadonlySidebarControl {
             promise().then(() => {
                 this.install();
             });
-        }
+        };
     }
 
     _syncFitButton() {
@@ -153,7 +153,7 @@ class PostReadonlySidebarControl {
         return new Promise((resolve, reject) => {
             requestPromise()
                 .then(
-                    response => { return api.get('/post/' + this._post.id) },
+                    response => { return api.get('/post/' + this._post.id); },
                     response => { return Promise.reject(response); })
                 .then(
                     response => {

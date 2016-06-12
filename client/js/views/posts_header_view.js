@@ -31,8 +31,8 @@ class PostsHeaderView {
         });
 
         keyboard.bind('p', () => {
-            const firstPostNode
-                = document.body.querySelector('.post-list li:first-child a');
+            const firstPostNode =
+                document.body.querySelector('.post-list li:first-child a');
             if (firstPostNode) {
                 firstPostNode.focus();
             }
@@ -53,8 +53,8 @@ class PostsHeaderView {
         e.target.classList.toggle('disabled');
         const safety = e.target.getAttribute('data-safety');
         let browsingSettings = settings.getSettings();
-        browsingSettings.listPosts[safety]
-            = !browsingSettings.listPosts[safety];
+        browsingSettings.listPosts[safety] =
+            !browsingSettings.listPosts[safety];
         settings.saveSettings(browsingSettings, true);
         router.show(url.replace(/{page}/, 1));
     }

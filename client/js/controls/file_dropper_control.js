@@ -38,7 +38,7 @@ class FileDropperControl {
                 files.map(file => file.name).join(', ');
         }
         this._options.resolve(files);
-    };
+    }
 
     _evtFileChange(e) {
         this._resolve(e.target.files);
