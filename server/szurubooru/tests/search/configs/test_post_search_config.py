@@ -420,9 +420,9 @@ def test_filter_by_comment_date(
     comment1 = comment_factory(post=post1)
     comment2 = comment_factory(post=post2)
     comment3 = comment_factory(post=post3)
-    comment1.last_edit_time = datetime.datetime(2014, 1, 1)
-    comment2.last_edit_time = datetime.datetime(2015, 1, 1)
-    comment3.last_edit_time = datetime.datetime(2016, 1, 1)
+    comment1.creation_time = datetime.datetime(2014, 1, 1)
+    comment2.creation_time = datetime.datetime(2015, 1, 1)
+    comment3.creation_time = datetime.datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3, comment1, comment2, comment3])
     verify_unpaged(input, expected_post_ids)
 

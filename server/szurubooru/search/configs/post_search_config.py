@@ -167,7 +167,7 @@ class PostSearchConfig(BaseSearchConfig):
             ('last-edit-date', 'last-edit-time', 'edit-date', 'edit-time'):
                 search_util.create_date_filter(db.Post.last_edit_time),
             ('comment-date', 'comment-time'):
-                search_util.create_date_filter(db.Post.last_comment_edit_time),
+                search_util.create_date_filter(db.Post.last_comment_creation_time),
             ('fav-date', 'fav-time'):
                 search_util.create_date_filter(db.Post.last_favorite_time),
             ('feature-date', 'feature-time'):
@@ -196,7 +196,7 @@ class PostSearchConfig(BaseSearchConfig):
             ('last-edit-date', 'last-edit-time', 'edit-date', 'edit-time'):
                 (db.Post.last_edit_time, self.SORT_DESC),
             ('comment-date', 'comment-time'):
-                (db.Post.last_comment_edit_time, self.SORT_DESC),
+                (db.Post.last_comment_creation_time, self.SORT_DESC),
             ('fav-date', 'fav-time'):
                 (db.Post.last_favorite_time, self.SORT_DESC),
             ('feature-date', 'feature-time'):
