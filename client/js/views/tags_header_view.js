@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
@@ -31,7 +31,7 @@ class TagsHeaderView {
             e.preventDefault();
             const text = searchTextInput.value;
             searchTextInput.blur();
-            page('/tags/' + misc.formatSearchQuery({text: text}));
+            router.show('/tags/' + misc.formatSearchQuery({text: text}));
         });
 
         views.showView(target, source);

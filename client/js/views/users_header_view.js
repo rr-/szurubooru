@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
@@ -25,7 +25,7 @@ class UsersHeaderView {
             const searchTextInput = form.querySelector('[name=search-text]');
             const text = searchTextInput.value;
             searchTextInput.blur();
-            page('/users/' + misc.formatSearchQuery({text: text}));
+            router.show('/users/' + misc.formatSearchQuery({text: text}));
         });
 
         views.showView(target, source);

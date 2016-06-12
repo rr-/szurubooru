@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const HelpView = require('../views/help_view.js');
 
@@ -10,11 +10,13 @@ class HelpController {
     }
 
     registerRoutes() {
-        page('/help', () => { this._showHelpRoute(); });
-        page(
+        router.enter(
+            '/help',
+            (ctx, next) => { this._showHelpRoute(); });
+        router.enter(
             '/help/:section',
             (ctx, next) => { this._showHelpRoute(ctx.params.section); });
-        page(
+        router.enter(
             '/help/:section/:subsection',
             (ctx, next) => {
                 this._showHelpRoute(ctx.params.section, ctx.params.subsection);

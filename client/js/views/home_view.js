@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const config = require('../config.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
@@ -32,7 +32,7 @@ class HomeView {
             form.querySelector('input[name=all-posts')
                 .addEventListener('click', e => {
                     e.preventDefault();
-                    page('/posts/');
+                    router.show('/posts/');
                 });
 
             const searchTextInput = form.querySelector(
@@ -42,7 +42,7 @@ class HomeView {
                 e.preventDefault();
                 const text = searchTextInput.value;
                 searchTextInput.blur();
-                page('/posts/' + misc.formatSearchQuery({text: text}));
+                router.show('/posts/' + misc.formatSearchQuery({text: text}));
             });
         }
 

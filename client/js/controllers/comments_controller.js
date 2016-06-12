@@ -1,7 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
-const page = require('page');
+const router = require('../router.js');
 const misc = require('../util/misc.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
@@ -10,7 +10,7 @@ const EmptyView = require('../views/empty_view.js');
 
 class CommentsController {
     registerRoutes() {
-        page('/comments/:query?',
+        router.enter('/comments/:query?',
             (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
             (ctx, next) => { this._listCommentsRoute(ctx); });
         this._commentsPageView = new CommentsPageView();

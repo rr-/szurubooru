@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const settings = require('../settings.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 const SettingsView = require('../views/settings_view.js');
@@ -11,7 +11,7 @@ class SettingsController {
     }
 
     registerRoutes() {
-        page('/settings', (ctx, next) => { this._settingsRoute(); });
+        router.enter('/settings', (ctx, next) => { this._settingsRoute(); });
     }
 
     _settingsRoute() {

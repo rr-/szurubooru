@@ -1,9 +1,9 @@
 'use strict';
 
 const api = require('../api.js');
+const router = require('../router.js');
 const views = require('../util/views.js');
 const keyboard = require('../util/keyboard.js');
-const page = require('page');
 const PostContentControl = require('../controls/post_content_control.js');
 const PostNotesOverlayControl
     = require('../controls/post_notes_overlay_control.js');
@@ -60,19 +60,19 @@ class PostView {
 
         keyboard.bind('e', () => {
             if (ctx.editMode) {
-                page.show('/post/' + ctx.post.id);
+                router.show('/post/' + ctx.post.id);
             } else {
-                page.show('/post/' + ctx.post.id + '/edit');
+                router.show('/post/' + ctx.post.id + '/edit');
             }
         });
         keyboard.bind(['a', 'left'], () => {
             if (ctx.nextPostId) {
-                page.show('/post/' + ctx.nextPostId);
+                router.show('/post/' + ctx.nextPostId);
             }
         });
         keyboard.bind(['d', 'right'], () => {
             if (ctx.prevPostId) {
-                page.show('/post/' + ctx.prevPostId);
+                router.show('/post/' + ctx.prevPostId);
             }
         });
     }

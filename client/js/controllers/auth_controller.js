@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const api = require('../api.js');
 const events = require('../events.js');
 const topNavController = require('../controllers/top_nav_controller.js');
@@ -14,13 +14,20 @@ class AuthController {
     }
 
     registerRoutes() {
-        page(/\/password-reset\/([^:]+):([^:]+)$/,
+        router.enter(
+            /\/password-reset\/([^:]+):([^:]+)$/,
             (ctx, next) => {
                 this._passwordResetFinishRoute(ctx.params[0], ctx.params[1]);
             });
-        page('/password-reset', (ctx, next) => { this._passwordResetRoute(); });
-        page('/login', (ctx, next) => { this._loginRoute(); });
-        page('/logout', (ctx, next) => { this._logoutRoute(); });
+        router.enter(
+            '/password-reset',
+            (ctx, next) => { this._passwordResetRoute(); });
+        router.enter(
+            '/login',
+            (ctx, next) => { this._loginRoute(); });
+        router.enter(
+            '/logout',
+            (ctx, next) => { this._logoutRoute(); });
     }
 
     _loginRoute() {
@@ -33,7 +40,7 @@ class AuthController {
                     api.login(name, password, doRemember)
                         .then(() => {
                             resolve();
-                            page('/');
+                            router.show('/');
                             events.notify(events.Success, 'Logged in');
                         }, errorMessage => {
                             reject(errorMessage);
@@ -46,7 +53,7 @@ class AuthController {
     _logoutRoute() {
         api.forget();
         api.logout();
-        page('/');
+        router.show('/');
         events.notify(events.Success, 'Logged out');
     }
 
@@ -68,10 +75,10 @@ class AuthController {
             }, response => {
                 return Promise.reject(response.description);
             }).then(() => {
-                page('/');
+                router.show('/');
                 events.notify(events.Success, 'New password: ' + password);
             }, errorMessage => {
-                page('/');
+                router.show('/');
                 events.notify(events.Error, errorMessage);
             });
     }

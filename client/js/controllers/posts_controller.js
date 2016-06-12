@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const api = require('../api.js');
 const settings = require('../settings.js');
 const events = require('../events.js');
@@ -20,14 +20,17 @@ class PostsController {
     }
 
     registerRoutes() {
-        page('/upload', (ctx, next) => { this._uploadPostsRoute(); });
-        page('/posts/:query?',
+        router.enter(
+            '/upload',
+            (ctx, next) => { this._uploadPostsRoute(); });
+        router.enter(
+            '/posts/:query?',
             (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
             (ctx, next) => { this._listPostsRoute(ctx); });
-        page(
+        router.enter(
             '/post/:id',
             (ctx, next) => { this._showPostRoute(ctx.params.id, false); });
-        page(
+        router.enter(
             '/post/:id/edit',
             (ctx, next) => { this._showPostRoute(ctx.params.id, true); });
         this._emptyView = new EmptyView();

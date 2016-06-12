@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const settings = require('../settings.js');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
@@ -56,14 +56,14 @@ class PostsHeaderView {
         browsingSettings.listPosts[safety]
             = !browsingSettings.listPosts[safety];
         settings.saveSettings(browsingSettings, true);
-        page(url.replace(/{page}/, 1));
+        router.show(url.replace(/{page}/, 1));
     }
 
     _evtFormSubmit(e, searchTextInput) {
         e.preventDefault();
         const text = searchTextInput.value;
         searchTextInput.blur();
-        page('/posts/' + misc.formatSearchQuery({text: text}));
+        router.show('/posts/' + misc.formatSearchQuery({text: text}));
     }
 }
 

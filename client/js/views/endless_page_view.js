@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const events = require('../events.js');
 const views = require('../util/views.js');
 
@@ -55,10 +55,9 @@ class EndlessPageView {
             }
             let topPageNumber = parseInt(topPageNode.getAttribute('data-page'));
             if (topPageNumber !== this.currentPage) {
-                page.replace(
+                router.replace(
                     _formatUrl(ctx.clientUrl, topPageNumber),
-                    null,
-                    false,
+                    {},
                     false);
                 this.currentPage = topPageNumber;
             }

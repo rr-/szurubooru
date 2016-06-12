@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const api = require('../api.js');
 const events = require('../events.js');
 const topNavController = require('../controllers/top_nav_controller.js');
@@ -14,8 +14,12 @@ class HomeController {
     }
 
     registerRoutes() {
-        page('/', (ctx, next) => { this._indexRoute(); });
-        page('*', (ctx, next) => { this._notFoundRoute(ctx); });
+        router.enter(
+            '/',
+            (ctx, next) => { this._indexRoute(); });
+        router.enter(
+            '*',
+            (ctx, next) => { this._notFoundRoute(ctx); });
     }
 
     _indexRoute() {

@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const events = require('../events.js');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
@@ -85,12 +85,12 @@ class ManualPageView {
 
             keyboard.bind(['a', 'left'], () => {
                 if (currentPage > 1) {
-                    page.show(_formatUrl(ctx.clientUrl, currentPage - 1));
+                    router.show(_formatUrl(ctx.clientUrl, currentPage - 1));
                 }
             });
             keyboard.bind(['d', 'right'], () => {
                 if (currentPage < totalPages) {
-                    page.show(_formatUrl(ctx.clientUrl, currentPage + 1));
+                    router.show(_formatUrl(ctx.clientUrl, currentPage + 1));
                 }
             });
 

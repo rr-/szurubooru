@@ -1,11 +1,13 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const topNavController = require('../controllers/top_nav_controller.js');
 
 class HistoryController {
     registerRoutes() {
-        page('/history', (ctx, next) => { this._listHistoryRoute(); });
+        router.enter(
+            '/history',
+            (ctx, next) => { this._listHistoryRoute(); });
     }
 
     _listHistoryRoute() {

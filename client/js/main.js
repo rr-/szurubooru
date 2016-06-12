@@ -3,32 +3,37 @@
 require('./util/polyfill.js');
 const misc = require('./util/misc.js');
 
-const page = require('page');
-const origPushState = page.Context.prototype.pushState;
-page.Context.prototype.pushState = function() {
+const router = require('./router.js');
+
+const origPushState = router.Context.prototype.pushState;
+router.Context.prototype.pushState = function() {
     window.scrollTo(0, 0);
     origPushState.call(this);
 };
 
-page.cancel = function(ctx) {
+router.cancel = function(ctx) {
     prevContext = ctx;
     ctx.pushState();
 };
 
-page.exit((ctx, next) => {
-    views.unlistenToMessages();
-    if (misc.confirmPageExit()) {
-        next();
-    } else {
-        page.cancel(ctx);
-    }
-});
+router.exit(
+    /.*/,
+    (ctx, next) => {
+        views.unlistenToMessages();
+        if (misc.confirmPageExit()) {
+            next();
+        } else {
+            router.cancel(ctx);
+        }
+    });
 
 const mousetrap = require('mousetrap');
-page(/.*/, (ctx, next) => {
-    mousetrap.reset();
-    next();
-});
+router.enter(
+    /.*/,
+    (ctx, next) => {
+        mousetrap.reset();
+        next();
+    });
 
 let controllers = [];
 controllers.push(require('./controllers/auth_controller.js'));
@@ -40,6 +45,7 @@ controllers.push(require('./controllers/history_controller.js'));
 controllers.push(require('./controllers/tags_controller.js'));
 controllers.push(require('./controllers/settings_controller.js'));
 
+// home defines 404 routes, need to be registered as last
 controllers.push(require('./controllers/home_controller.js'));
 
 const tags = require('./tags.js');
@@ -52,13 +58,13 @@ for (let controller of controllers) {
 const api = require('./api.js');
 Promise.all([tags.refreshExport(), api.loginFromCookies()])
     .then(() => {
-        page();
+        router.start();
     }).catch(errorMessage => {
         if (window.location.href.indexOf('login') !== -1) {
             api.forget();
-            page();
+            router.start();
         } else {
-            page('/');
+            router.start('/');
             events.notify(
                 events.Error,
                 'An error happened while trying to log you in: ' +

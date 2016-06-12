@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const api = require('../api.js');
 const config = require('../config.js');
 const events = require('../events.js');
@@ -34,28 +34,31 @@ class UsersController {
     }
 
     registerRoutes() {
-        page('/register', () => { this._createUserRoute(); });
-        page(
+        router.enter(
+            '/register',
+            (ctx, next) => { this._createUserRoute(ctx, next); });
+        router.enter(
             '/users/:query?',
             (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
             (ctx, next) => { this._listUsersRoute(ctx, next); });
-        page(
+        router.enter(
             '/user/:name',
             (ctx, next) => { this._loadUserRoute(ctx, next); },
             (ctx, next) => { this._showUserRoute(ctx, next); });
-        page(
+        router.enter(
             '/user/:name/edit',
             (ctx, next) => { this._loadUserRoute(ctx, next); },
             (ctx, next) => { this._editUserRoute(ctx, next); });
-        page(
+        router.enter(
             '/user/:name/delete',
             (ctx, next) => { this._loadUserRoute(ctx, next); },
             (ctx, next) => { this._deleteUserRoute(ctx, next); });
-        page.exit(/\/users\/.*/, (ctx, next) => {
-            pageController.stop();
-            next();
-        });
-        page.exit(/\/user\/.*/, (ctx, next) => {
+        router.exit(
+            /\/users\/.*/, (ctx, next) => {
+                pageController.stop();
+                next();
+            });
+        router.exit(/\/user\/.*/, (ctx, next) => {
             this._cachedUser = null;
             next();
         });
@@ -81,7 +84,7 @@ class UsersController {
         });
     }
 
-    _createUserRoute() {
+    _createUserRoute(ctx, next) {
         topNavController.activate('register');
         this._registrationView.render({
             register: (...args) => {
@@ -135,7 +138,7 @@ class UsersController {
                 return Promise.reject(response.description);
             }).then(() => {
                 resolve();
-                page('/');
+                router.show('/');
                 events.notify(events.Success, 'Welcome aboard!');
             }, errorMessage => {
                 reject();
@@ -184,7 +187,7 @@ class UsersController {
                 }).then(() => {
                     resolve();
                     if (data.name && data.name !== user.name) {
-                        page('/user/' + data.name + '/edit');
+                        router.show('/user/' + data.name + '/edit');
                     }
                     events.notify(events.Success, 'Settings updated.');
                 }, errorMessage => {
@@ -203,9 +206,9 @@ class UsersController {
                     api.logout();
                 }
                 if (api.hasPrivilege('users:list')) {
-                    page('/users');
+                    router.show('/users');
                 } else {
-                    page('/');
+                    router.show('/');
                 }
                 events.notify(events.Success, 'Account deleted.');
                 return Promise.resolve();

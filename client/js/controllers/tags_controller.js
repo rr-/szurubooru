@@ -1,6 +1,6 @@
 'use strict';
 
-const page = require('page');
+const router = require('../router.js');
 const api = require('../api.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
@@ -23,20 +23,22 @@ class TagsController {
     }
 
     registerRoutes() {
-        page('/tag-categories', () => { this._tagCategoriesRoute(); });
-        page(
+        router.enter(
+            '/tag-categories',
+            (ctx, next) => { this._tagCategoriesRoute(ctx, next); });
+        router.enter(
             '/tag/:name',
             (ctx, next) => { this._loadTagRoute(ctx, next); },
             (ctx, next) => { this._showTagRoute(ctx, next); });
-        page(
+        router.enter(
             '/tag/:name/merge',
             (ctx, next) => { this._loadTagRoute(ctx, next); },
             (ctx, next) => { this._mergeTagRoute(ctx, next); });
-        page(
+        router.enter(
             '/tag/:name/delete',
             (ctx, next) => { this._loadTagRoute(ctx, next); },
             (ctx, next) => { this._deleteTagRoute(ctx, next); });
-        page(
+        router.enter(
             '/tags/:query?',
             (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
             (ctx, next) => { this._listTagsRoute(ctx, next); });
@@ -136,7 +138,7 @@ class TagsController {
     _saveTag(tag, input) {
         return api.put('/tag/' + tag.names[0], input).then(response => {
             if (input.names && input.names[0] !== tag.names[0]) {
-                page('/tag/' + input.names[0]);
+                router.show('/tag/' + input.names[0]);
             }
             events.notify(events.Success, 'Tag saved.');
             return Promise.resolve();
@@ -151,7 +153,7 @@ class TagsController {
             '/tag-merge/',
             {remove: tag.names[0], mergeTo: targetTagName}
         ).then(response => {
-            page('/tag/' + targetTagName + '/merge');
+            router.show('/tag/' + targetTagName + '/merge');
             events.notify(events.Success, 'Tag merged.');
             return Promise.resolve();
         }, response => {
@@ -162,7 +164,7 @@ class TagsController {
 
     _deleteTag(tag) {
         return api.delete('/tag/' + tag.names[0]).then(response => {
-            page('/tags/');
+            router.show('/tags/');
             events.notify(events.Success, 'Tag deleted.');
             return Promise.resolve();
         }, response => {
