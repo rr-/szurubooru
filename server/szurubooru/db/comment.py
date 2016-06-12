@@ -35,7 +35,8 @@ class Comment(Base):
 
     @property
     def score(self):
-        return object_session(self) \
+        from szurubooru.db import session
+        return session \
             .query(func.sum(CommentScore.score)) \
             .filter(CommentScore.comment_id == self.comment_id) \
             .one()[0] or 0
