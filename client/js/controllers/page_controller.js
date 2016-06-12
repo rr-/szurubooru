@@ -37,6 +37,22 @@ class PageController {
         this._pageView.render(ctx);
     }
 
+    createHistoryCacheProxy(routerCtx, requestPage) {
+        return page => {
+            if (routerCtx.state.response) {
+                return new Promise((resolve, reject) => {
+                    resolve(routerCtx.state.response);
+                });
+            }
+            const promise = requestPage(page);
+            promise.then(response => {
+                routerCtx.state.response = response;
+                routerCtx.save();
+            });
+            return promise;
+        };
+    }
+
     stop() {
         this._pageView.unrender();
     }

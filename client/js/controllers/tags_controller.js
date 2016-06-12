@@ -207,12 +207,14 @@ class TagsController {
             searchQuery: ctx.searchQuery,
             clientUrl: '/tags/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
-            requestPage: page => {
-                const text = ctx.searchQuery.text;
-                return api.get(
-                    `/tags/?query=${text}&page=${page}&pageSize=50&fields=` +
-                    `names,suggestions,implications,lastEditTime,usages`);
-            },
+            requestPage: pageController.createHistoryCacheProxy(
+                ctx,
+                page => {
+                    const text = ctx.searchQuery.text;
+                    return api.get(
+                        `/tags/?query=${text}&page=${page}&pageSize=50&fields=` +
+                        `names,suggestions,implications,lastEditTime,usages`);
+                }),
             headerRenderer: this._tagsHeaderView,
             pageRenderer: this._tagsPageView,
             headerContext: {

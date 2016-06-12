@@ -71,11 +71,13 @@ class UsersController {
             searchQuery: ctx.searchQuery,
             clientUrl: '/users/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
-            requestPage: page => {
-                const text = ctx.searchQuery.text;
-                return api.get(
-                    `/users/?query=${text}&page=${page}&pageSize=30`);
-            },
+            requestPage: pageController.createHistoryCacheProxy(
+                ctx,
+                page => {
+                    const text = ctx.searchQuery.text;
+                    return api.get(
+                        `/users/?query=${text}&page=${page}&pageSize=30`);
+                }),
             headerRenderer: this._usersHeaderView,
             pageRenderer: this._usersPageView,
             pageContext: {

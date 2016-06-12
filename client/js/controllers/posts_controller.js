@@ -48,13 +48,15 @@ class PostsController {
             searchQuery: ctx.searchQuery,
             clientUrl: '/posts/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
-            requestPage: page => {
-                const text = this._decorateSearchQuery(ctx.searchQuery.text);
-                return api.get(
-                    `/posts/?query=${text}&page=${page}&pageSize=40&fields=` +
-                    `id,type,tags,score,favoriteCount,` +
-                    `commentCount,thumbnailUrl`);
-            },
+            requestPage: pageController.createHistoryCacheProxy(
+                ctx,
+                page => {
+                    const text = this._decorateSearchQuery(ctx.searchQuery.text);
+                    return api.get(
+                        `/posts/?query=${text}&page=${page}&pageSize=40` +
+                        '&fields=id,type,tags,score,favoriteCount,' +
+                        'commentCount,thumbnailUrl');
+                }),
             headerRenderer: this._postsHeaderView,
             pageRenderer: this._postsPageView,
             pageContext: {

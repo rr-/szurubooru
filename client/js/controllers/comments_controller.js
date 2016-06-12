@@ -23,12 +23,14 @@ class CommentsController {
         pageController.run({
             searchQuery: ctx.searchQuery,
             clientUrl: '/comments/' + misc.formatSearchQuery({page: '{page}'}),
-            requestPage: page => {
-                return api.get(
-                    '/posts/?query=sort:comment-date+comment-count-min:1' +
-                    `&page=${page}&pageSize=10&fields=` +
-                    'id,comments,commentCount,thumbnailUrl');
-            },
+            requestPage: pageController.createHistoryCacheProxy(
+                ctx,
+                page => {
+                    return api.get(
+                        '/posts/?query=sort:comment-date+comment-count-min:1' +
+                        `&page=${page}&pageSize=10&fields=` +
+                        'id,comments,commentCount,thumbnailUrl');
+                }),
             pageRenderer: this._commentsPageView,
             pageContext: {
                 canViewPosts: api.hasPrivilege('posts:view'),
