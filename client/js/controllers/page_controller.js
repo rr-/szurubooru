@@ -25,16 +25,15 @@ class PageController {
     run(ctx) {
         this._pageView.unrender();
 
+        const extendedContext = {
+            clientUrl: ctx.clientUrl,
+            searchQuery: ctx.searchQuery,
+        };
+
         ctx.headerContext = ctx.headerContext || {};
-        Object.assign(ctx.headerContext, {
-            searchQuery: ctx.searchQuery,
-        });
-
         ctx.pageContext = ctx.pageContext || {};
-        Object.assign(ctx.pageContext, {
-            searchQuery: ctx.searchQuery,
-        });
-
+        Object.assign(ctx.headerContext, extendedContext);
+        Object.assign(ctx.pageContext, extendedContext);
         this._pageView.render(ctx);
     }
 
