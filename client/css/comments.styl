@@ -5,18 +5,15 @@
     margin: 0 0 2em 0
     padding: 0
 
-.comment
-    margin: 0 0 1em 0
-    padding: 0
-    display: -webkit-flex
-    display: flex
 
+
+.comment-form-container
     &:not(.editing)
         .tabs nav
             display: none
         .tabs .edit.tab
             display: none
-        .content
+        .comment-content
             margin-left: 0.5em
     &.editing
         .tab:not(.active)
@@ -25,16 +22,37 @@
             background: $active-tab-background-color
         .tab
             padding: 1em
-            .content-wrapper
+            .comment-content-wrapper
                 background: $window-color
                 overflow: hidden
-                .content
+                .comment-content
                     margin: 1em
             textarea
                 resize: vertical
                 width: 100%
                 max-height: 80vh
                 box-sizing: padding-box
+
+    form
+        width: auto
+        margin: 0
+
+    nav
+        vertical-align: middle !important
+        margin: 0 0.3em 0.5em 0 !important
+        &.buttons
+            float: left
+        &.actions
+            float: left
+            margin-top: 0.3em !important
+
+
+
+.comment
+    margin: 0 0 1em 0
+    padding: 0
+    display: -webkit-flex
+    display: flex
 
     .avatar
         margin-right: 1em
@@ -80,64 +98,55 @@
                 display: inline-block
                 width: 2em
 
-        form
-            width: auto
-            margin: 0
-
-        nav
-            vertical-align: middle
-            margin: 0 0.8em 0.5em 0
-            &.buttons
-                float: left
-            &.actions
-                float: left
-                margin-top: 0.3em
-
         .messages
             margin: 1em 0
 
-    .content
-        ul
-            list-style-position: inside
-            margin: 1em 0
-            padding: 0
 
-        .sjis
-            font-family: 'MS PGothic', 'ＭＳ Ｐゴシック', 'IPAMonaPGothic', 'Trebuchet MS', Verdana, Futura, Arial, Helvetica, sans-serif
-            background: #fbfbfb
-            color: #111
-            font-size: 12pt
-            line-height: 1
-            margin: 0
-            padding: 4px
-            overflow: auto
-            white-space: pre
-            word-wrap: normal
 
-        p:first-child
-            margin-top: 0
+.comment-content
+    ul
+        list-style-position: inside
+        margin: 1em 0
+        padding: 0
 
-        .spoiler
-            background: #eee
-            color: #eee
-            &:hover
-                color: dimgray
-            &:before
-                content: '['
-                color: #000
-            &:after
-                content: ']'
-                color: #000
+    .sjis
+        font-family: 'MS PGothic', 'ＭＳ Ｐゴシック', 'IPAMonaPGothic', 'Trebuchet MS', Verdana, Futura, Arial, Helvetica, sans-serif
+        background: #fbfbfb
+        color: #111
+        font-size: 12pt
+        line-height: 1
+        margin: 0
+        padding: 4px
+        overflow: auto
+        white-space: pre
+        word-wrap: normal
 
-        blockquote
-            border-left: 3px solid #eee
-            margin-left: 0
-            padding: 0.3em 0.3em 0.3em 0.7em
-            background: #fafafa
-            color: #444
+    p:first-child
+        margin-top: 0
 
-        blockquote :last-child
-            margin-bottom: 0
+    .spoiler
+        background: #eee
+        color: #eee
+        &:hover
+            color: dimgray
+        &:before
+            content: '['
+            color: #000
+        &:after
+            content: ']'
+            color: #000
+
+    blockquote
+        border-left: 3px solid #eee
+        margin-left: 0
+        padding: 0.3em 0.3em 0.3em 0.7em
+        background: #fafafa
+        color: #444
+
+    blockquote :last-child
+        margin-bottom: 0
+
+
 
 .global-comment-list
     text-align: left

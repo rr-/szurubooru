@@ -74,6 +74,8 @@ class PostsController {
                 nextPostId: aroundResponse.next ? aroundResponse.next.id : null,
                 prevPostId: aroundResponse.prev ? aroundResponse.prev.id : null,
                 canEditPosts: api.hasPrivilege('posts:edit'),
+                canListComments: api.hasPrivilege('comments:list'),
+                canCreateComments: api.hasPrivilege('comments:create'),
             });
         }, response => {
             this._emptyView.render();

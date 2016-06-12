@@ -1,15 +1,16 @@
 'use strict';
 
 const api = require('../api.js');
-const misc = require('../util/misc.js');
 const views = require('../util/views.js');
+const CommentFormControl = require('../controls/comment_form_control.js');
 
 class CommentControl {
-    constructor(hostNode, comment) {
+    constructor(hostNode, comment, settings) {
         this._hostNode = hostNode;
         this._comment = comment;
         this._template = views.getTemplate('comment');
         this._scoreTemplate = views.getTemplate('score');
+        this._settings = settings;
 
         this.install();
     }
@@ -36,11 +37,6 @@ class CommentControl {
         const deleteButton = sourceNode.querySelector('.delete');
         const upvoteButton = sourceNode.querySelector('.upvote');
         const downvoteButton = sourceNode.querySelector('.downvote');
-        const previewTabButton = sourceNode.querySelector('.buttons .preview');
-        const editTabButton = sourceNode.querySelector('.buttons .edit');
-        const formNode = sourceNode.querySelector('form');
-        const cancelButton = sourceNode.querySelector('.cancel');
-        const textareaNode = sourceNode.querySelector('form textarea');
 
         if (editButton) {
             editButton.addEventListener(
@@ -64,20 +60,22 @@ class CommentControl {
                     e, () => this._comment.ownScore === -1 ? 0 : -1));
         }
 
-        previewTabButton.addEventListener(
-            'click', e => this._evtPreviewClick(e));
-        editTabButton.addEventListener(
-            'click', e => this._evtEditClick(e));
-
-        formNode.addEventListener('submit', e => this._evtSaveClick(e));
-        cancelButton.addEventListener('click', e => this._evtCancelClick(e));
-
-        for (let event of ['cut', 'paste', 'drop', 'keydown']) {
-            textareaNode.addEventListener(event, e => {
-                window.setTimeout(() => this._growTextArea(), 0);
+        this._formControl = new CommentFormControl(
+            sourceNode.querySelector('.comment-form-container'),
+            this._comment,
+            {
+                onSave: text => {
+                    return api.put('/comment/' + this._comment.id, {
+                        text: text,
+                    }).then(response => {
+                        this._comment = response;
+                        this.install();
+                    }, response => {
+                        this._formControl.showError(response.description);
+                    });
+                },
+                canCancel: true
             });
-        }
-        textareaNode.addEventListener('change', e => { this._growTextArea(); });
 
         views.showView(this._hostNode, sourceNode);
     }
@@ -97,6 +95,11 @@ class CommentControl {
             });
     }
 
+    _evtEditClick(e) {
+        e.preventDefault();
+        this._formControl.enterEditMode();
+    }
+
     _evtDeleteClick(e) {
         e.preventDefault();
         if (!window.confirm('Are you sure you want to delete this comment?')) {
@@ -104,81 +107,13 @@ class CommentControl {
         }
         api.delete('/comment/' + this._comment.id)
             .then(response => {
+                if (this._settings.onDelete) {
+                    this._settings.onDelete(this._comment);
+                }
                 this._hostNode.parentNode.removeChild(this._hostNode);
             }, response => {
                 window.alert(response.description);
             });
-    }
-
-    _evtSaveClick(e) {
-        e.preventDefault();
-        api.put('/comment/' + this._comment.id, {
-            text: this._hostNode.querySelector('.edit.tab textarea').value,
-        }).then(response => {
-            this._comment = response;
-            this.install();
-        }, response => {
-            this._showError(response.description);
-        });
-    }
-
-    _evtPreviewClick(e) {
-        e.preventDefault();
-        this._hostNode.querySelector('.preview.tab .content').innerHTML
-            = misc.formatMarkdown(
-                this._hostNode.querySelector('.edit.tab textarea').value);
-        this._freezeTabHeights();
-        this._selectTab('preview');
-    }
-
-    _evtEditClick(e) {
-        e.preventDefault();
-        this._freezeTabHeights();
-        this._enterEditMode();
-        this._selectTab('edit');
-        this._growTextArea();
-    }
-
-    _evtCancelClick(e) {
-        e.preventDefault();
-        this._exitEditMode();
-        this._hostNode.querySelector('.edit.tab textarea').value
-            = this._comment.text;
-    }
-
-    _enterEditMode() {
-        this._hostNode.querySelector('.comment').classList.add('editing');
-        misc.enableExitConfirmation();
-    }
-
-    _exitEditMode() {
-        this._hostNode.querySelector('.comment').classList.remove('editing');
-        this._hostNode.querySelector('.tabs-wrapper').style.minHeight = null;
-        misc.disableExitConfirmation();
-        views.clearMessages(this._hostNode);
-    }
-
-    _selectTab(tabName) {
-        this._freezeTabHeights();
-        for (let tab of this._hostNode.querySelectorAll('.tab, .buttons li')) {
-            tab.classList.toggle('active', tab.classList.contains(tabName));
-        }
-    }
-
-    _freezeTabHeights() {
-        const tabsNode = this._hostNode.querySelector('.tabs-wrapper');
-        const tabsHeight = tabsNode.getBoundingClientRect().height;
-        tabsNode.style.minHeight = tabsHeight + 'px';
-    }
-
-    _growTextArea() {
-        const previewNode = this._hostNode.querySelector('.content');
-        const textareaNode = this._hostNode.querySelector('textarea');
-        textareaNode.style.height = textareaNode.scrollHeight + 'px';
-    }
-
-    _showError(message) {
-        views.showError(this._hostNode, message);
     }
 };
 

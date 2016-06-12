@@ -1,5 +1,6 @@
 'use strict';
 
+const api = require('../api.js');
 const views = require('../util/views.js');
 const keyboard = require('../util/keyboard.js');
 const page = require('page');
@@ -11,6 +12,7 @@ const PostReadonlySidebarControl
 const PostEditSidebarControl
     = require('../controls/post_edit_sidebar_control.js');
 const CommentListControl = require('../controls/comment_list_control.js');
+const CommentFormControl = require('../controls/comment_form_control.js');
 
 class PostView {
     constructor() {
@@ -52,21 +54,9 @@ class PostView {
             postContainerNode.querySelector('.post-overlay'),
             ctx.post);
 
-        if (ctx.editMode) {
-            new PostEditSidebarControl(
-                postViewNode.querySelector('.sidebar-container'),
-                ctx.post,
-                this._postContentControl);
-        } else {
-            new PostReadonlySidebarControl(
-                postViewNode.querySelector('.sidebar-container'),
-                ctx.post,
-                this._postContentControl);
-        }
-
-        new CommentListControl(
-            postViewNode.querySelector('.comments-container'),
-            ctx.post.comments);
+        this._installSidebar(ctx);
+        this._installCommentForm(ctx);
+        this._installComments(ctx);
 
         keyboard.bind('e', () => {
             if (ctx.editMode) {
@@ -85,6 +75,56 @@ class PostView {
                 page.show('/post/' + ctx.prevPostId);
             }
         });
+    }
+
+    _installSidebar(ctx) {
+        const sidebarContainerNode = document.querySelector(
+            '#content-holder .sidebar-container');
+
+        if (ctx.editMode) {
+            new PostEditSidebarControl(
+                sidebarContainerNode, ctx.post, this._postContentControl);
+        } else {
+            new PostReadonlySidebarControl(
+                sidebarContainerNode, ctx.post, this._postContentControl);
+        }
+    }
+
+    _installCommentForm(ctx) {
+        const commentFormContainer = document.querySelector(
+            '#content-holder .comment-form-container');
+        if (!commentFormContainer) {
+            return;
+        }
+
+        this._formControl = new CommentFormControl(
+            commentFormContainer,
+            null,
+            {
+                onSave: text => {
+                    return api.post('/comments', {
+                        postId: ctx.post.id,
+                        text: text,
+                    }).then(response => {
+                        ctx.post.comments.push(response);
+                        this._formControl.setText('');
+                        this._installComments(ctx);
+                    }, response => {
+                        this._formControl.showError(response.description);
+                    });
+                },
+                canCancel: false,
+                minHeight: 150,
+            });
+        this._formControl.enterEditMode();
+    }
+
+    _installComments(ctx) {
+        const commentsContainerNode = document.querySelector(
+            '#content-holder .comments-container');
+        if (commentsContainerNode) {
+            new CommentListControl(commentsContainerNode, ctx.post.comments);
+        }
     }
 }
 

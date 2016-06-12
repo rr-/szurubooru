@@ -31,7 +31,15 @@ class CommentListControl {
         const commentList = new DocumentFragment();
         for (let comment of this._comments) {
             const commentListItemNode = document.createElement('li');
-            new CommentControl(commentListItemNode, comment);
+            new CommentControl(commentListItemNode, comment, {
+                onDelete: removedComment => {
+                    for (let [index, comment] of this._comments.entries()) {
+                        if (comment.id === removedComment.id) {
+                            this._comments.splice(index, 1);
+                        }
+                    }
+                },
+            });
             commentList.appendChild(commentListItemNode);
         }
         views.showView(this._hostNode.querySelector('ul'), commentList);
