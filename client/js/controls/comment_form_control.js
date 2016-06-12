@@ -62,8 +62,7 @@ class CommentFormControl {
         this._hostNode.querySelector('.tabs-wrapper').style.minHeight = null;
         misc.disableExitConfirmation();
         views.clearMessages(this._hostNode);
-        this._hostNode.querySelector('.edit.tab textarea').value =
-            this._comment.text;
+        this.setText(this._comment.text);
     }
 
     get _textareaNode() {
