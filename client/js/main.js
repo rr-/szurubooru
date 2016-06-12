@@ -11,19 +11,12 @@ router.Context.prototype.pushState = function() {
     origPushState.call(this);
 };
 
-router.cancel = function(ctx) {
-    prevContext = ctx;
-    ctx.pushState();
-};
-
 router.exit(
     /.*/,
     (ctx, next) => {
         views.unlistenToMessages();
         if (misc.confirmPageExit()) {
             next();
-        } else {
-            router.cancel(ctx);
         }
     });
 

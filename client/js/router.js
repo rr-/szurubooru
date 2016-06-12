@@ -3,13 +3,14 @@
 // modified page.js by visionmedia
 // - removed unused crap
 // - refactored to classes
+// - simplified method chains
+// - added ability to call .save() in .exit() without side effects
 
 const pathToRegexp = require('path-to-regexp');
 const clickEvent = document.ontouchstart ? 'touchstart' : 'click';
 let location = window.history.location || window.location;
 
 const base = '';
-let prevContext = null;
 
 function _decodeURLEncodedURIComponent(val) {
     if (typeof val !== 'string') {
@@ -93,7 +94,6 @@ class Router {
     constructor() {
         this._callbacks = [];
         this._exits = [];
-        this._current = '';
     }
 
     enter(path) {
@@ -127,76 +127,59 @@ class Router {
         if (!this._running) {
             return;
         }
-        this._current = '';
         this._running = false;
         document.removeEventListener(clickEvent, this._onClick, false);
         window.removeEventListener('popstate', this._onPopState, false);
     }
 
     show(path, state, push) {
+        const oldPath = this.ctx ? this.ctx.path : ctx.path;
         const ctx = new Context(path, state);
-        this._current = ctx.path;
-        this.dispatch(ctx);
-        if (ctx.handled !== false && push !== false) {
-            ctx.pushState();
-        }
+        this.dispatch(ctx, () => {
+            if (ctx.path !== oldPath && push !== false) {
+                ctx.pushState();
+            }
+        });
         return ctx;
     }
 
     replace(path, state, dispatch) {
         var ctx = new Context(path, state);
-        this._current = ctx.path;
-        ctx.save();
         if (dispatch) {
-            this.dispatch(ctx);
+            this.dispatch(ctx, () => {
+                ctx.save();
+            });
+        } else {
+            ctx.save();
         }
         return ctx;
     }
 
-    dispatch(ctx) {
-        const prev = prevContext;
+    dispatch(ctx, middle) {
+        const swap = (_ctx, next) => {
+            this.ctx = ctx;
+            middle();
+            next();
+        };
+        const callChain = (this.ctx ? this._exits : [])
+            .concat(
+                [swap],
+                this._callbacks,
+                [this._unhandled, (ctx, next) => {}]);
+
         let i = 0;
-        let j = 0;
-
-        prevContext = ctx;
-
-        const nextExit = () => {
-            const fn = this._exits[j++];
-            if (!fn) {
-                return nextEnter();
-            }
-            fn(prev, nextExit);
+        let fn = () => {
+            callChain[i++](this.ctx, fn);
         };
-
-        const nextEnter = () => {
-            const fn = this._callbacks[i++];
-            if (ctx.path !== this._current) {
-                ctx.handled = false;
-                return;
-            }
-            if (!fn) {
-                return this._unhandled(ctx);
-            }
-            fn(ctx, nextEnter);
-        };
-
-        if (prev) {
-            nextExit();
-        } else {
-            nextEnter();
-        }
+        fn();
     }
 
-    _unhandled(ctx) {
-        if (ctx.handled) {
-            return;
-        }
+    _unhandled(ctx, next) {
         let current = location.pathname + location.search;
         if (current === ctx.canonicalPath) {
             return;
         }
         router.stop();
-        ctx.handled = false;
         location.href = ctx.canonicalPath;
     }
 };
