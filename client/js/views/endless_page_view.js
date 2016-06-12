@@ -25,7 +25,9 @@ class EndlessPageView {
         this._working = 0;
 
         ctx.headerContext.target = pageHeaderHolder;
-        ctx.headerRenderer.render(ctx.headerContext);
+        if (ctx.headerRenderer) {
+            ctx.headerRenderer.render(ctx.headerContext);
+        }
 
         const threshold = window.innerHeight / 3;
 

@@ -70,7 +70,9 @@ class ManualPageView {
         const currentPage = ctx.searchQuery.page;
 
         ctx.headerContext.target = pageHeaderHolder;
-        ctx.headerRenderer.render(ctx.headerContext);
+        if (ctx.headerRenderer) {
+            ctx.headerRenderer.render(ctx.headerContext);
+        }
 
         ctx.requestPage(currentPage).then(response => {
             Object.assign(ctx.pageContext, response);
