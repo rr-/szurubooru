@@ -13,7 +13,7 @@ class CommentsPageView {
         const source = this._template(ctx);
 
         for (let post of ctx.results) {
-            post.comments.reverse();
+            post.comments.sort((a, b) => { return b.id - a.id; });
             new CommentListControl(
                 source.querySelector(
                     `.comments-container[data-for="${post.id}"]`),
