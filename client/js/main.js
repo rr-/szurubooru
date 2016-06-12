@@ -5,15 +5,14 @@ const misc = require('./util/misc.js');
 
 const router = require('./router.js');
 
-const origPushState = router.Context.prototype.pushState;
-router.Context.prototype.pushState = function() {
-    window.scrollTo(0, 0);
-    origPushState.call(this);
-};
+history.scrollRestoration = 'manual';
 
 router.exit(
     /.*/,
     (ctx, next) => {
+        ctx.state.scrollX = window.scrollX;
+        ctx.state.scrollY = window.scrollY;
+        ctx.save();
         views.unlistenToMessages();
         if (misc.confirmPageExit()) {
             next();
@@ -26,6 +25,12 @@ router.enter(
     (ctx, next) => {
         mousetrap.reset();
         next();
+        window.requestAnimationFrame(
+            () => {
+                window.scrollTo(
+                    ctx.state.scrollX || 0,
+                    ctx.state.scrollY || 0);
+            });
     });
 
 let controllers = [];
