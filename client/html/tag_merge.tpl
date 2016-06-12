@@ -1,8 +1,8 @@
 <div class='tag-merge'>
     <form class='tabular'>
-        <p>Proceeding will remove <%= ctx.tag.names[0] %> and retag its posts with
-        the tag specified below. Aliases and relations of <%= ctx.tag.names[0] %>
-        will be discarded and need to be handled by hand.</p>
+        <p>Proceeding will remove this tag and retag its posts with the tag
+        specified below. Aliases, suggestions and implications are discarded
+        and need to be handled manually.</p>
         <div class='input'>
             <ul>
                 <li class='target'>
