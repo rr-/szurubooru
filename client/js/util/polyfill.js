@@ -16,6 +16,19 @@ NodeList.prototype.querySelector = function(...args) {
     return null;
 };
 
+NodeList.prototype.querySelectorAll = function(...args) {
+    let result = [];
+    for (let node of this) {
+        if (node.nodeType === 3) {
+            continue;
+        }
+        for (let childNode of node.querySelectorAll(...args)) {
+            result.push(childNode);
+        }
+    }
+    return result;
+};
+
 // non standard
 Node.prototype.prependChild = function(child) {
     if (this.firstChild) {
