@@ -40,8 +40,6 @@ class Authenticator(object):
     def _authenticate(self, username, password):
         ''' Try to authenticate user. Throw AuthError for invalid users. '''
         user = users.get_user_by_name(username)
-        if not user:
-            raise errors.AuthError('No such user.')
         if not auth.is_valid_password(user, password):
             raise errors.AuthError('Invalid password.')
         return user
@@ -50,5 +48,4 @@ class Authenticator(object):
         user = db.User()
         user.name = None
         user.rank = 'anonymous'
-        user.password = None
         return user

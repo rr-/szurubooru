@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, Unicode, DateTime
-from sqlalchemy.orm import column_property
+from sqlalchemy.orm import object_session
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
 from szurubooru.db.post import Post, PostScore, PostFavorite
@@ -30,29 +30,39 @@ class User(Base):
     avatar_style = Column(
         'avatar_style', Unicode(32), nullable=False, default=AVATAR_GRAVATAR)
 
-    post_count = column_property(
-        select([func.coalesce(func.count(1), 0)]) \
-        .where(Post.user_id == user_id) \
-        .correlate_except(Post))
+    @property
+    def post_count(self):
+        return object_session(self) \
+            .query(func.sum(1)) \
+            .filter(Post.user_id == self.user_id) \
+            .one()[0] or 0
 
-    comment_count = column_property(
-        select([func.coalesce(func.count(1), 0)]) \
-        .where(Comment.user_id == user_id) \
-        .correlate_except(Comment))
+    @property
+    def comment_count(self):
+        return object_session(self) \
+            .query(func.sum(1)) \
+            .filter(Comment.user_id == self.user_id) \
+            .one()[0] or 0
 
-    favorite_post_count = column_property(
-        select([func.coalesce(func.count(1), 0)]) \
-        .where(PostFavorite.user_id == user_id) \
-        .correlate_except(PostFavorite))
+    @property
+    def favorite_post_count(self):
+        return object_session(self) \
+            .query(func.sum(1)) \
+            .filter(PostFavorite.user_id == self.user_id) \
+            .one()[0] or 0
 
-    liked_post_count = column_property(
-        select([func.coalesce(func.count(1), 0)]) \
-        .where(PostScore.user_id == user_id) \
-        .where(PostScore.score == 1) \
-        .correlate_except(PostScore))
+    @property
+    def liked_post_count(self):
+        return object_session(self) \
+            .query(func.sum(1)) \
+            .filter(PostScore.user_id == self.user_id) \
+            .filter(PostScore.score == 1) \
+            .one()[0] or 0
 
-    disliked_post_count = column_property(
-        select([func.coalesce(func.count(1), 0)]) \
-        .where(PostScore.user_id == user_id) \
-        .where(PostScore.score == -1) \
-        .correlate_except(PostScore))
+    @property
+    def disliked_post_count(self):
+        return object_session(self) \
+            .query(func.sum(1)) \
+            .filter(PostScore.user_id == self.user_id) \
+            .filter(PostScore.score == -1) \
+            .one()[0] or 0
