@@ -31,7 +31,7 @@ class Executor(object):
         search_query = self.parser.parse(query_text)
         self.config.on_search_query_parsed(search_query)
         filter_query = self.config \
-            .create_filter_query() \
+            .create_around_query() \
             .options(sqlalchemy.orm.lazyload('*'))
         filter_query = self._prepare_db_query(filter_query, search_query, False)
         prev_filter_query = filter_query \

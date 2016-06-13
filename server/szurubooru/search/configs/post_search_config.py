@@ -78,6 +78,9 @@ class PostSearchConfig(BaseSearchConfig):
                 new_special_tokens.append(token)
         search_query.special_tokens = new_special_tokens
 
+    def create_around_query(self):
+        return db.session.query(db.Post.post_id)
+
     def create_filter_query(self):
         return self.create_count_query() \
             .options(
