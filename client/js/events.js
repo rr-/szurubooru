@@ -36,6 +36,19 @@ function notify(messageClass, message) {
     }
 }
 
+class EventTarget {
+    constructor() {
+        this.eventTarget = document.createDocumentFragment();
+        for (let method of [
+            'addEventListener',
+            'dispatchEvent',
+            'removeEventListener'
+        ]) {
+            this[method] = this.eventTarget[method].bind(this.eventTarget);
+        }
+    }
+};
+
 module.exports = {
     Success: 'success',
     Error: 'error',
@@ -47,4 +60,5 @@ module.exports = {
     notify: notify,
     listen: listen,
     unlisten: unlisten,
+    EventTarget: EventTarget,
 };
