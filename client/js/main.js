@@ -35,7 +35,9 @@ router.enter(
 
 let controllers = [];
 controllers.push(require('./controllers/auth_controller.js'));
-controllers.push(require('./controllers/posts_controller.js'));
+controllers.push(require('./controllers/post_list_controller.js'));
+controllers.push(require('./controllers/post_upload_controller.js'));
+controllers.push(require('./controllers/post_controller.js'));
 controllers.push(require('./controllers/users_controller.js'));
 controllers.push(require('./controllers/help_controller.js'));
 controllers.push(require('./controllers/comments_controller.js'));
