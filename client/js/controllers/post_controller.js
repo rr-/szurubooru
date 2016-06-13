@@ -4,6 +4,7 @@ const router = require('../router.js');
 const api = require('../api.js');
 const events = require('../events.js');
 const settings = require('../settings.js');
+const Post = require('../models/post.js');
 const TopNavigation = require('../models/top_navigation.js');
 const PostView = require('../views/post_view.js');
 const EmptyView = require('../views/empty_view.js');
@@ -26,13 +27,13 @@ class PostController {
     _showPostRoute(id, editMode) {
         TopNavigation.activate('posts');
         Promise.all([
-                api.get('/post/' + id),
+                Post.get(id),
                 api.get(`/post/${id}/around?fields=id&query=` +
                     this._decorateSearchQuery('')),
         ]).then(responses => {
-            const [postResponse, aroundResponse] = responses;
+            const [post, aroundResponse] = responses;
             this._postView.render({
-                post: postResponse,
+                post: post,
                 editMode: editMode,
                 nextPostId: aroundResponse.next ? aroundResponse.next.id : null,
                 prevPostId: aroundResponse.prev ? aroundResponse.prev.id : null,

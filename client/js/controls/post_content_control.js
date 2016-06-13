@@ -6,9 +6,6 @@ const optimizedResize = require('../util/optimized_resize.js');
 
 class PostContentControl {
     constructor(containerNode, post, viewportSizeCalculator) {
-        post.canvasWidth = post.canvasWidth || 800;
-        post.canvasHeight = post.canvasHeight || 450;
-
         this._post = post;
         this._viewportSizeCalculator = viewportSizeCalculator;
         this._containerNode = containerNode;
