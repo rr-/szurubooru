@@ -6,8 +6,8 @@ const config = require('../config.js');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
-const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 const RegistrationView = require('../views/registration_view.js');
 const UserView = require('../views/user_view.js');
 const UsersHeaderView = require('../views/users_header_view.js');
@@ -65,7 +65,7 @@ class UsersController {
     }
 
     _listUsersRoute(ctx, next) {
-        topNavController.activate('users');
+        TopNavigation.activate('users');
 
         pageController.run({
             searchQuery: ctx.searchQuery,
@@ -87,7 +87,7 @@ class UsersController {
     }
 
     _createUserRoute(ctx, next) {
-        topNavController.activate('register');
+        TopNavigation.activate('register');
         this._registrationView.render({
             register: (...args) => {
                 return this._register(...args);
@@ -237,9 +237,9 @@ class UsersController {
         }
 
         if (isLoggedIn) {
-            topNavController.activate('account');
+            TopNavigation.activate('account');
         } else {
-            topNavController.activate('users');
+            TopNavigation.activate('users');
         }
         this._userView.render({
             user: user,

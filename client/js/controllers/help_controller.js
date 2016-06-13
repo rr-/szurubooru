@@ -1,7 +1,7 @@
 'use strict';
 
 const router = require('../router.js');
-const topNavController = require('../controllers/top_nav_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 const HelpView = require('../views/help_view.js');
 
 class HelpController {
@@ -24,7 +24,7 @@ class HelpController {
     }
 
     _showHelpRoute(section, subsection) {
-        topNavController.activate('help');
+        TopNavigation.activate('help');
         this._helpView.render({
             section: section,
             subsection: subsection,

@@ -3,7 +3,7 @@
 const router = require('../router.js');
 const api = require('../api.js');
 const events = require('../events.js');
-const topNavController = require('../controllers/top_nav_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 const HomeView = require('../views/home_view.js');
 const NotFoundView = require('../views/not_found_view.js');
 
@@ -23,7 +23,7 @@ class HomeController {
     }
 
     _indexRoute() {
-        topNavController.activate('home');
+        TopNavigation.activate('home');
 
         api.get('/info')
             .then(response => {
@@ -45,7 +45,7 @@ class HomeController {
     }
 
     _notFoundRoute(ctx) {
-        topNavController.activate('');
+        TopNavigation.activate('');
         this._notFoundView.render({path: ctx.canonicalPath});
     }
 }

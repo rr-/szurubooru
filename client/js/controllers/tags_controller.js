@@ -5,8 +5,8 @@ const api = require('../api.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
-const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 const TagView = require('../views/tag_view.js');
 const TagsHeaderView = require('../views/tags_header_view.js');
 const TagsPageView = require('../views/tags_page_view.js');
@@ -114,7 +114,7 @@ class TagsController {
     }
 
     _show(tag, section) {
-        topNavController.activate('tags');
+        TopNavigation.activate('tags');
         const categories = {};
         for (let category of tags.getAllCategories()) {
             categories[category.name] = category.name;
@@ -174,7 +174,7 @@ class TagsController {
     }
 
     _tagCategoriesRoute(ctx, next) {
-        topNavController.activate('tags');
+        TopNavigation.activate('tags');
         api.get('/tag-categories/').then(response => {
             this._tagCategoriesView.render({
                 tagCategories: response.results,
@@ -201,7 +201,7 @@ class TagsController {
     }
 
     _listTagsRoute(ctx, next) {
-        topNavController.activate('tags');
+        TopNavigation.activate('tags');
 
         pageController.run({
             searchQuery: ctx.searchQuery,

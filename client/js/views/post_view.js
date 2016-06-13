@@ -29,12 +29,13 @@ class PostView {
         views.listenToMessages(source);
         views.showView(target, source);
 
-        const topNavNode = document.body.querySelector('#top-nav');
         const postViewNode = document.body.querySelector('.content-wrapper');
+        const topNavigationNode =
+            document.body.querySelector('#top-navigation');
 
         const margin = (
             postViewNode.getBoundingClientRect().top -
-            topNavNode.getBoundingClientRect().height);
+            topNavigationNode.getBoundingClientRect().height);
 
         this._postContentControl = new PostContentControl(
             postContainerNode,
@@ -45,7 +46,7 @@ class PostView {
                         postContainerNode.getBoundingClientRect().left -
                         margin,
                     window.innerHeight -
-                        topNavNode.getBoundingClientRect().height -
+                        topNavigationNode.getBoundingClientRect().height -
                         margin * 2,
                 ];
             });

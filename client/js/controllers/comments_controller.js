@@ -3,8 +3,8 @@
 const api = require('../api.js');
 const router = require('../router.js');
 const misc = require('../util/misc.js');
-const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 const CommentsPageView = require('../views/comments_page_view.js');
 const EmptyView = require('../views/empty_view.js');
 
@@ -18,7 +18,7 @@ class CommentsController {
     }
 
     _listCommentsRoute(ctx) {
-        topNavController.activate('comments');
+        TopNavigation.activate('comments');
 
         pageController.run({
             searchQuery: ctx.searchQuery,

@@ -1,7 +1,7 @@
 'use strict';
 
 const router = require('../router.js');
-const topNavController = require('../controllers/top_nav_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 
 class HistoryController {
     registerRoutes() {
@@ -11,7 +11,7 @@ class HistoryController {
     }
 
     _listHistoryRoute() {
-        topNavController.activate('');
+        TopNavigation.activate('');
     }
 }
 

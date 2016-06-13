@@ -2,7 +2,7 @@
 
 const router = require('../router.js');
 const settings = require('../settings.js');
-const topNavController = require('../controllers/top_nav_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 const SettingsView = require('../views/settings_view.js');
 
 class SettingsController {
@@ -15,7 +15,7 @@ class SettingsController {
     }
 
     _settingsRoute() {
-        topNavController.activate('settings');
+        TopNavigation.activate('settings');
         this._settingsView.render({
             getSettings: () => settings.getSettings(),
             saveSettings: newSettings => settings.saveSettings(newSettings),

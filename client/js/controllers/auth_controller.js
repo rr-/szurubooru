@@ -3,7 +3,7 @@
 const router = require('../router.js');
 const api = require('../api.js');
 const events = require('../events.js');
-const topNavController = require('../controllers/top_nav_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 const LoginView = require('../views/login_view.js');
 const PasswordResetView = require('../views/password_reset_view.js');
 
@@ -32,7 +32,7 @@ class AuthController {
 
     _loginRoute() {
         api.forget();
-        topNavController.activate('login');
+        TopNavigation.activate('login');
         this._loginView.render({
             login: (name, password, doRemember) => {
                 return new Promise((resolve, reject) => {
@@ -58,7 +58,7 @@ class AuthController {
     }
 
     _passwordResetRoute() {
-        topNavController.activate('login');
+        TopNavigation.activate('login');
         this._passwordResetView.render({
             proceed: (...args) => {
                 return this._passwordReset(...args);

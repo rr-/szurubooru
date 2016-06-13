@@ -5,8 +5,8 @@ const api = require('../api.js');
 const settings = require('../settings.js');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
-const topNavController = require('../controllers/top_nav_controller.js');
 const pageController = require('../controllers/page_controller.js');
+const TopNavigation = require('../models/top_navigation.js');
 const PostsHeaderView = require('../views/posts_header_view.js');
 const PostsPageView = require('../views/posts_page_view.js');
 const PostView = require('../views/post_view.js');
@@ -37,12 +37,12 @@ class PostsController {
     }
 
     _uploadPostsRoute() {
-        topNavController.activate('upload');
+        TopNavigation.activate('upload');
         this._emptyView.render();
     }
 
     _listPostsRoute(ctx) {
-        topNavController.activate('posts');
+        TopNavigation.activate('posts');
 
         pageController.run({
             searchQuery: ctx.searchQuery,
@@ -67,7 +67,7 @@ class PostsController {
     }
 
     _showPostRoute(id, editMode) {
-        topNavController.activate('posts');
+        TopNavigation.activate('posts');
         Promise.all([
                 api.get('/post/' + id),
                 api.get(`/post/${id}/around?fields=id&query=` +
