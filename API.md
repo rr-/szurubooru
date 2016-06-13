@@ -593,6 +593,7 @@ data.
     | `comment-count`  | having given number of comments                            |
     | `fav-count`      | favorited by given number of users                         |
     | `note-count`     | having given number of annotations                         |
+    | `relation-count` | having given number of relations                           |
     | `feature-count`  | having been featured given number of times                 |
     | `type`           | given type of posts. `<value>` can be either `image`, `animation` (or `animated` or `anim`), `flash` (or `swf`) or `video` (or `webm`). |
     | `file-size`      | having given file size (in bytes)                          |
@@ -630,6 +631,7 @@ data.
     | `comment-count`  | most commented first                             |
     | `fav-count`      | loved by most                                    |
     | `note-count`     | with most annotations                            |
+    | `relation-count` | with most relations                              |
     | `feature-count`  | most often featured                              |
     | `file-size`      | largest files first                              |
     | `image-width`    | widest images first                              |

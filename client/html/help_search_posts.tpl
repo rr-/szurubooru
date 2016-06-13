@@ -55,6 +55,10 @@
             <td>having given number of annotations</td>
         </tr>
         <tr>
+            <td><code>relation-count</code></td>
+            <td>having given number of relations</td>
+        </tr>
+        <tr>
             <td><code>feature-count</code></td>
             <td>having been featured given number of times</td>
         </tr>
@@ -188,6 +192,10 @@
         <tr>
             <td><code>note-count</code></td>
             <td>with most annotations</td>
+        </tr>
+        <tr>
+            <td><code>relation-count</code></td>
+            <td>with most relations</td>
         </tr>
         <tr>
             <td><code>feature-count</code></td>

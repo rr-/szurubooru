@@ -187,3 +187,8 @@ class Post(Base):
         select([func.count(PostNote.post_id)]) \
         .where(PostNote.post_id == post_id) \
         .correlate_except(PostNote))
+
+    relation_count = column_property(
+        select([func.count(PostRelation.child_id)]) \
+        .where(PostRelation.parent_id == post_id) \
+        .correlate_except(PostRelation))
