@@ -35,7 +35,7 @@ def test_retrieving_multiple(test_ctx):
     assert result['page'] == 1
     assert result['pageSize'] == 100
     assert result['total'] == 2
-    assert [t['id'] for t in result['results']] == [1, 2]
+    assert [t['id'] for t in result['results']] == [2, 1]
 
 def test_using_special_tokens(
         test_ctx, config_injector):

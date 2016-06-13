@@ -106,7 +106,7 @@ class PostSearchConfig(BaseSearchConfig):
         return db.session.query(db.Post)
 
     def finalize_query(self, query):
-        return query.order_by(db.Post.creation_time.desc())
+        return query.order_by(db.Post.post_id.desc())
 
     @property
     def id_column(self):
