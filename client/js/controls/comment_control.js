@@ -25,7 +25,7 @@ class CommentControl {
             canDeleteComment: api.hasPrivilege(`comments:delete:${infix}`),
         });
 
-        views.showView(
+        views.replaceContent(
             sourceNode.querySelector('.score-container'),
             this._scoreTemplate({
                 score: this._comment.score,
@@ -77,7 +77,7 @@ class CommentControl {
                 canCancel: true
             });
 
-        views.showView(this._hostNode, sourceNode);
+        views.replaceContent(this._hostNode, sourceNode);
     }
 
     _evtScoreClick(e, scoreGetter) {

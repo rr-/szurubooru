@@ -4,7 +4,6 @@ require('../util/polyfill.js');
 const api = require('../api.js');
 const templates = require('../templates.js');
 const tags = require('../tags.js');
-const events = require('../events.js');
 const domParser = new DOMParser();
 const misc = require('./misc.js');
 
@@ -238,26 +237,6 @@ function showInfo(target, message) {
     return showMessage(target, message, 'info');
 }
 
-function unlistenToMessages() {
-    events.unlisten(events.Success);
-    events.unlisten(events.Error);
-    events.unlisten(events.Info);
-}
-
-function listenToMessages(target) {
-    unlistenToMessages();
-    const listen = (eventType, className) => {
-        events.listen(
-            eventType,
-            msg => {
-                return showMessage(target, msg, className);
-            });
-    };
-    listen(events.Success, 'success');
-    listen(events.Error, 'error');
-    listen(events.Info, 'info');
-}
-
 function clearMessages(target) {
     const messagesHolder = target.querySelector('.messages');
     /* TODO: animate that */
@@ -335,7 +314,7 @@ function enableForm(form) {
     }
 }
 
-function showView(target, source) {
+function replaceContent(target, source) {
     while (target.lastChild) {
         target.removeChild(target.lastChild);
     }
@@ -424,11 +403,9 @@ document.addEventListener('input', e => {
 module.exports = {
     htmlToDom: htmlToDom,
     getTemplate: getTemplate,
-    showView: showView,
+    replaceContent: replaceContent,
     enableForm: enableForm,
     disableForm: disableForm,
-    listenToMessages: listenToMessages,
-    unlistenToMessages: unlistenToMessages,
     clearMessages: clearMessages,
     decorateValidator: decorateValidator,
     makeVoidElement: makeVoidElement,

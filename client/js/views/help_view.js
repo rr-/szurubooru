@@ -3,67 +3,62 @@
 const config = require('../config.js');
 const views = require('../util/views.js');
 
+const template = views.getTemplate('help');
+const sectionTemplates = {
+    'about': views.getTemplate('help-about'),
+    'keyboard': views.getTemplate('help-keyboard'),
+    'search': views.getTemplate('help-search'),
+    'comments': views.getTemplate('help-comments'),
+    'tos': views.getTemplate('help-tos'),
+};
+const subsectionTemplates = {
+    'search': {
+        'default': views.getTemplate('help-search-general'),
+        'posts': views.getTemplate('help-search-posts'),
+        'users': views.getTemplate('help-search-users'),
+        'tags': views.getTemplate('help-search-tags'),
+    },
+};
+
 class HelpView {
-    constructor() {
-        this._template = views.getTemplate('help');
-        this._sectionTemplates = {};
-        const sectionKeys = ['about', 'keyboard', 'search', 'comments', 'tos'];
-        for (let section of sectionKeys) {
-            const templateName = 'help-' + section;
-            this._sectionTemplates[section] = views.getTemplate(templateName);
-        }
-        this._subsectionTemplates = {
-            'search': {
-                'default': views.getTemplate('help-search-general'),
-                'posts': views.getTemplate('help-search-posts'),
-                'users': views.getTemplate('help-search-users'),
-                'tags': views.getTemplate('help-search-tags'),
-            }
+    constructor(section, subsection) {
+        this._hostNode = document.getElementById('content-holder');
+
+        const sourceNode = template();
+        const ctx = {
+            name: config.name,
         };
-    }
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template();
-
-        ctx.section = ctx.section || 'about';
-        if (ctx.section in this._sectionTemplates) {
-            views.showView(
-                source.querySelector('.content'),
-                this._sectionTemplates[ctx.section]({
-                    name: config.name,
-                }));
+        section = section || 'about';
+        if (section in sectionTemplates) {
+            views.replaceContent(
+                sourceNode.querySelector('.content'),
+                sectionTemplates[section](ctx));
         }
 
-        ctx.subsection = ctx.subsection || 'default';
-        if (ctx.section in this._subsectionTemplates &&
-                ctx.subsection in this._subsectionTemplates[ctx.section]) {
-            views.showView(
-                source.querySelector('.subcontent'),
-                this._subsectionTemplates[ctx.section][ctx.subsection]({
-                    name: config.name,
-                }));
+        subsection = subsection || 'default';
+        if (section in subsectionTemplates &&
+                subsection in subsectionTemplates[section]) {
+            views.replaceContent(
+                sourceNode.querySelector('.subcontent'),
+                subsectionTemplates[section][subsection](ctx));
         }
 
-        for (let item of source.querySelectorAll('.primary [data-name]')) {
-            if (item.getAttribute('data-name') === ctx.section) {
-                item.className = 'active';
-            } else {
-                item.className = '';
-            }
+        for (let itemNode of
+                sourceNode.querySelectorAll('.primary [data-name]')) {
+            itemNode.classList.toggle(
+                'active',
+                itemNode.getAttribute('data-name') === section);
         }
 
-        for (let item of source.querySelectorAll('.secondary [data-name]')) {
-            if (item.getAttribute('data-name') === ctx.subsection) {
-                item.className = 'active';
-            } else {
-                item.className = '';
-            }
+        for (let itemNode of
+                sourceNode.querySelectorAll('.secondary [data-name]')) {
+            itemNode.classList.toggle(
+                'active',
+                itemNode.getAttribute('data-name') === subsection);
         }
 
-        views.listenToMessages(source);
-        views.showView(target, source);
-
+        views.replaceContent(this._hostNode, sourceNode);
         views.scrollToHash();
     }
 }

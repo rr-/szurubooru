@@ -120,7 +120,7 @@ class Router {
         window.addEventListener('popstate', this._onPopState, false);
         document.addEventListener(clickEvent, this._onClick, false);
         const url = location.pathname + location.search + location.hash;
-        this.replace(url, null, true);
+        return this.replace(url, null, true);
     }
 
     stop() {

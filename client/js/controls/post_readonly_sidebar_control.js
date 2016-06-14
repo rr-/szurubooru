@@ -25,7 +25,7 @@ class PostReadonlySidebarControl {
             canViewTags: api.hasPrivilege('tags:view'),
         });
 
-        views.showView(
+        views.replaceContent(
             sourceNode.querySelector('.score-container'),
             this._scoreTemplate({
                 score: this._post.score,
@@ -33,7 +33,7 @@ class PostReadonlySidebarControl {
                 canScore: api.hasPrivilege('posts:score'),
             }));
 
-        views.showView(
+        views.replaceContent(
             sourceNode.querySelector('.fav-container'),
             this._favTemplate({
                 favoriteCount: this._post.favoriteCount,
@@ -85,7 +85,7 @@ class PostReadonlySidebarControl {
             'click', this._eventZoomProxy(
                 () => this._postContentControl.fitHeight()));
 
-        views.showView(this._hostNode, sourceNode);
+        views.replaceContent(this._hostNode, sourceNode);
 
         this._syncFitButton();
     }

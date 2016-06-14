@@ -1,24 +1,23 @@
 'use strict';
 
 const api = require('../api.js');
-const events = require('../events.js');
+const topNavigation = require('../models/top_navigation.js');
 const TopNavigationView = require('../views/top_navigation_view.js');
-const TopNavigation = require('../models/top_navigation.js');
 
 class TopNavigationController {
     constructor() {
         this._topNavigationView = new TopNavigationView();
 
-        TopNavigation.addEventListener(
+        topNavigation.addEventListener(
             'activate', e => this._evtActivate(e));
 
-        events.listen(
-            events.Authentication,
-            () => {
-                this._render();
-                return true;
-            });
+        api.addEventListener('login', e => this._evtAuthChange(e));
+        api.addEventListener('logout', e => this._evtAuthChange(e));
 
+        this._render();
+    }
+
+    _evtAuthChange(e) {
         this._render();
     }
 
@@ -27,44 +26,43 @@ class TopNavigationController {
     }
 
     _updateNavigationFromPrivileges() {
-        TopNavigation.get('account').url = '/user/' + api.userName;
-        TopNavigation.get('account').imageUrl =
+        topNavigation.get('account').url = '/user/' + api.userName;
+        topNavigation.get('account').imageUrl =
             api.user ? api.user.avatarUrl : null;
 
-        TopNavigation.showAll();
+        topNavigation.showAll();
         if (!api.hasPrivilege('posts:list')) {
-            TopNavigation.hide('posts');
+            topNavigation.hide('posts');
         }
         if (!api.hasPrivilege('posts:create')) {
-            TopNavigation.hide('upload');
+            topNavigation.hide('upload');
         }
         if (!api.hasPrivilege('comments:list')) {
-            TopNavigation.hide('comments');
+            topNavigation.hide('comments');
         }
         if (!api.hasPrivilege('tags:list')) {
-            TopNavigation.hide('tags');
+            topNavigation.hide('tags');
         }
         if (!api.hasPrivilege('users:list')) {
-            TopNavigation.hide('users');
+            topNavigation.hide('users');
         }
         if (api.isLoggedIn()) {
-            TopNavigation.hide('register');
-            TopNavigation.hide('login');
+            topNavigation.hide('register');
+            topNavigation.hide('login');
         } else {
-            TopNavigation.hide('account');
-            TopNavigation.hide('logout');
+            topNavigation.hide('account');
+            topNavigation.hide('logout');
         }
     }
 
     _render() {
         this._updateNavigationFromPrivileges();
-        console.log(TopNavigation.getAll());
         this._topNavigationView.render({
-            items: TopNavigation.getAll(),
+            items: topNavigation.getAll(),
         });
         this._topNavigationView.activate(
-            TopNavigation.activeItem ? TopNavigation.activeItem.key : '');
-    };
+            topNavigation.activeItem ? topNavigation.activeItem.key : '');
+    }
 }
 
 module.exports = new TopNavigationController();

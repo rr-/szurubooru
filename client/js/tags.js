@@ -1,7 +1,6 @@
 'use strict';
 
 const request = require('superagent');
-const events = require('./events.js');
 
 let _tags = null;
 let _categories = null;
@@ -87,10 +86,6 @@ function refreshExport() {
         });
     });
 }
-
-events.listen(
-    events.TagsChange,
-    () => { refreshExport(); return true; });
 
 module.exports = {
     getAllCategories: getAllCategories,

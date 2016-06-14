@@ -1,63 +1,102 @@
 'use strict';
 
 const config = require('../config.js');
+const events = require('../events.js');
 const views = require('../util/views.js');
 const FileDropperControl = require('../controls/file_dropper_control.js');
 
-class UserEditView {
-    constructor() {
-        this._template = views.getTemplate('user-edit');
-    }
+const template = views.getTemplate('user-edit');
 
-    render(ctx) {
+class UserEditView extends events.EventTarget {
+    constructor(ctx) {
+        super();
+
         ctx.userNamePattern = config.userNameRegex + /|^$/.source;
         ctx.passwordPattern = config.passwordRegex + /|^$/.source;
 
-        const target = ctx.target;
-        const source = this._template(ctx);
+        this._user = ctx.user;
+        this._hostNode = ctx.hostNode;
+        views.replaceContent(this._hostNode, template(ctx));
+        views.decorateValidator(this._formNode);
 
-        const form = source.querySelector('form');
-        const avatarContentField = source.querySelector('#avatar-content');
-
-        views.decorateValidator(form);
-
-        let avatarContent = null;
-        if (avatarContentField) {
+        this._avatarContent = null;
+        if (this._avatarContentFieldNode) {
             new FileDropperControl(
-                avatarContentField,
+                this._avatarContentFieldNode,
                 {
                     lock: true,
                     resolve: files => {
-                        source.querySelector(
+                        this._hostNode.querySelector(
                             '[name=avatar-style][value=manual]').checked = true;
-                        avatarContent = files[0];
+                        this._avatarContent = files[0];
                     },
                 });
         }
 
-        form.addEventListener('submit', e => {
-            const rankField = source.querySelector('#user-rank');
-            const emailField = source.querySelector('#user-email');
-            const userNameField = source.querySelector('#user-name');
-            const passwordField = source.querySelector('#user-password');
-            const avatarStyleField = source.querySelector(
-                '[name=avatar-style]:checked');
+        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
+    }
 
-            e.preventDefault();
-            views.clearMessages(target);
-            views.disableForm(form);
-            ctx.edit({
-                    name: userNameField.value,
-                    password: passwordField.value,
-                    email: emailField.value,
-                    rank: rankField.value,
-                    avatarStyle: avatarStyleField.value,
-                    avatarContent: avatarContent})
-                .always(() => { views.enableForm(form); });
-        });
+    clearMessages() {
+        views.clearMessages(this._hostNode);
+    }
 
-        views.listenToMessages(source);
-        views.showView(target, source);
+    showSuccess(message) {
+        views.showSuccess(this._hostNode, message);
+    }
+
+    showError(message) {
+        views.showError(this._hostNode, message);
+    }
+
+    enableForm() {
+        views.enableForm(this._formNode);
+    }
+
+    disableForm() {
+        views.disableForm(this._formNode);
+    }
+
+    _evtSubmit(e) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('submit', {
+            detail: {
+                user: this._user,
+                name: this._userNameFieldNode.value,
+                password: this._passwordFieldNode.value,
+                email: this._emailFieldNode.value,
+                rank: this._rankFieldNode.value,
+                avatarStyle: this._avatarStyleFieldNode.value,
+                avatarContent: this._avatarContent,
+            },
+        }));
+    }
+
+    get _formNode() {
+        return this._hostNode.querySelector('form');
+    }
+
+    get _rankFieldNode() {
+        return this._formNode.querySelector('#user-rank');
+    }
+
+    get _emailFieldNode() {
+        return this._formNode.querySelector('#user-email');
+    }
+
+    get _userNameFieldNode() {
+        return this._formNode.querySelector('#user-name');
+    }
+
+    get _passwordFieldNode() {
+        return this._formNode.querySelector('#user-password');
+    }
+
+    get _avatarContentFieldNode() {
+        return this._formNode.querySelector('#avatar-content');
+    }
+
+    get _avatarStyleFieldNode() {
+        return this._formNode.querySelector('[name=avatar-style]:checked');
     }
 }
 

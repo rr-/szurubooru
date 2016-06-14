@@ -5,30 +5,35 @@ const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
+const template = views.getTemplate('users-header');
+
 class UsersHeaderView {
-    constructor() {
-        this._template = views.getTemplate('users-header');
-    }
-
-    render(ctx) {
-        const target = ctx.target;
-        const source = this._template(ctx);
-
-        const form = source.querySelector('form');
+    constructor(ctx) {
+        this._hostNode = ctx.hostNode;
+        views.replaceContent(this._hostNode, template(ctx));
 
         keyboard.bind('q', () => {
-            form.querySelector('input').focus();
+            this._formNode.querySelector('input').focus();
         });
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            const searchTextInput = form.querySelector('[name=search-text]');
-            const text = searchTextInput.value;
-            searchTextInput.blur();
-            router.show('/users/' + misc.formatSearchQuery({text: text}));
-        });
+        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
+    }
 
-        views.showView(target, source);
+    get _formNode() {
+        return this._hostNode.querySelector('form');
+    }
+
+    get _queryInputNode() {
+        return this._formNode.querySelector('[name=search-text]');
+    }
+
+    _evtSubmit(e) {
+        e.preventDefault();
+        this._queryInputNode.blur();
+        router.show(
+            '/users/' + misc.formatSearchQuery({
+                text: this._queryInputNode.value,
+            }));
     }
 }
 

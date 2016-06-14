@@ -2,105 +2,47 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
-const events = require('../events.js');
-const TopNavigation = require('../models/top_navigation.js');
+const topNavigation = require('../models/top_navigation.js');
 const LoginView = require('../views/login_view.js');
-const PasswordResetView = require('../views/password_reset_view.js');
 
-class AuthController {
+class LoginController {
     constructor() {
+        api.forget();
+        topNavigation.activate('login');
+
         this._loginView = new LoginView();
-        this._passwordResetView = new PasswordResetView();
+        this._loginView.addEventListener('submit', e => this._evtLogin(e));
     }
 
-    registerRoutes() {
-        router.enter(
-            /\/password-reset\/([^:]+):([^:]+)$/,
-            (ctx, next) => {
-                this._passwordResetFinishRoute(ctx.params[0], ctx.params[1]);
-            });
-        router.enter(
-            '/password-reset',
-            (ctx, next) => { this._passwordResetRoute(); });
-        router.enter(
-            '/login',
-            (ctx, next) => { this._loginRoute(); });
-        router.enter(
-            '/logout',
-            (ctx, next) => { this._logoutRoute(); });
-    }
-
-    _loginRoute() {
+    _evtLogin(e) {
+        this._loginView.clearMessages();
+        this._loginView.disableForm();
         api.forget();
-        TopNavigation.activate('login');
-        this._loginView.render({
-            login: (name, password, doRemember) => {
-                return new Promise((resolve, reject) => {
-                    api.forget();
-                    api.login(name, password, doRemember)
-                        .then(() => {
-                            resolve();
-                            router.show('/');
-                            events.notify(events.Success, 'Logged in');
-                        }, errorMessage => {
-                            reject(errorMessage);
-                            events.notify(events.Error, errorMessage);
-                        });
-                });
-            }});
-    }
-
-    _logoutRoute() {
-        api.forget();
-        api.logout();
-        router.show('/');
-        events.notify(events.Success, 'Logged out');
-    }
-
-    _passwordResetRoute() {
-        TopNavigation.activate('login');
-        this._passwordResetView.render({
-            proceed: (...args) => {
-                return this._passwordReset(...args);
-            }});
-    }
-
-    _passwordResetFinishRoute(name, token) {
-        api.forget();
-        api.logout();
-        let password = null;
-        api.post('/password-reset/' + name, {token: token})
-            .then(response => {
-                password = response.password;
-                return api.login(name, password, false);
-            }, response => {
-                return Promise.reject(response.description);
-            }).then(() => {
-                router.show('/');
-                events.notify(events.Success, 'New password: ' + password);
+        api.login(e.detail.name, e.detail.password, e.detail.remember)
+            .then(() => {
+                const ctx = router.show('/');
+                ctx.controller.showSuccess('Logged in');
             }, errorMessage => {
-                router.show('/');
-                events.notify(events.Error, errorMessage);
+                this._loginView.showError(errorMessage);
+                this._loginView.enableForm();
             });
-    }
-
-    _passwordReset(nameOrEmail) {
-        api.forget();
-        api.logout();
-        return new Promise((resolve, reject) => {
-            api.get('/password-reset/' + nameOrEmail)
-                .then(() => {
-                    resolve();
-                    events.notify(
-                        events.Success,
-                        'E-mail has been sent. To finish the procedure, ' +
-                        'please click the link it contains.');
-                }, response => {
-                    reject();
-                    events.notify(events.Error, response.description);
-                });
-        });
     }
 }
 
-module.exports = new AuthController();
+class LogoutController {
+    constructor() {
+        api.forget();
+        api.logout();
+        const ctx = router.show('/');
+        ctx.controller.showSuccess('Logged out');
+    }
+}
+
+module.exports = router => {
+    router.enter('/login', (ctx, next) => {
+        ctx.controller = new LoginController();
+    });
+    router.enter('/logout', (ctx, next) => {
+        ctx.controller = new LogoutController();
+    });
+};

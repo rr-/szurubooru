@@ -1,24 +1,17 @@
 'use strict';
 
-const router = require('../router.js');
-const TopNavigation = require('../models/top_navigation.js');
+const topNavigation = require('../models/top_navigation.js');
 const EmptyView = require('../views/empty_view.js');
 
 class PostUploadController {
     constructor() {
+        topNavigation.activate('upload');
         this._emptyView = new EmptyView();
-    }
-
-    registerRoutes() {
-        router.enter(
-            '/upload',
-            (ctx, next) => { this._uploadPostsRoute(); });
-    }
-
-    _uploadPostsRoute() {
-        TopNavigation.activate('upload');
-        this._emptyView.render();
     }
 }
 
-module.exports = new PostUploadController();
+module.exports = router => {
+    router.enter('/upload', (ctx, next) => {
+        ctx.controller = new PostUploadController();
+    });
+};

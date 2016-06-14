@@ -1,36 +1,50 @@
 'use strict';
 
+const events = require('../events.js');
 const views = require('../util/views.js');
 
-class SettingsView {
-    constructor() {
-        this._template = views.getTemplate('settings');
+const template = views.getTemplate('settings');
+
+class SettingsView extends events.EventTarget {
+    constructor(ctx) {
+        super();
+
+        this._hostNode = document.getElementById('content-holder');
+        views.replaceContent(
+            this._hostNode, template({browsingSettings: ctx.settings}));
+        views.decorateValidator(this._formNode);
+
+        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
     }
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template({browsingSettings: ctx.getSettings()});
+    clearMessages() {
+        views.clearMessages(this._hostNode);
+    }
 
-        const form = source.querySelector('form');
-        views.decorateValidator(form);
+    showSuccess(text) {
+        views.showSuccess(this._hostNode, text);
+    }
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            views.clearMessages(source);
-            ctx.saveSettings({
-                upscaleSmallPosts:
-                    form.querySelector('#upscale-small-posts').checked,
-                endlessScroll:
-                    form.querySelector('#endless-scroll').checked,
-                keyboardShortcuts:
-                    form.querySelector('#keyboard-shortcuts').checked,
-                transparencyGrid:
-                    form.querySelector('#transparency-grid').checked,
-            });
-        });
+    _evtSubmit(e) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('change', {
+            detail: {
+                settings: {
+                    upscaleSmallPosts: this._formNode.querySelector(
+                        '#upscale-small-posts').checked,
+                    endlessScroll: this._formNode.querySelector(
+                        '#endless-scroll').checked,
+                    keyboardShortcuts: this._formNode.querySelector(
+                        '#keyboard-shortcuts').checked,
+                    transparencyGrid: this._formNode.querySelector(
+                        '#transparency-grid').checked,
+                },
+            },
+        }));
+    }
 
-        views.listenToMessages(source);
-        views.showView(target, source);
+    get _formNode() {
+        return this._hostNode.querySelector('form');
     }
 }
 

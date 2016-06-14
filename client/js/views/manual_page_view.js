@@ -1,10 +1,12 @@
 'use strict';
 
 const router = require('../router.js');
-const events = require('../events.js');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
+
+const holderTemplate = views.getTemplate('manual-pager');
+const navTemplate = views.getTemplate('manual-pager-nav');
 
 function _formatUrl(url, page) {
     return url.replace('{page}', page);
@@ -56,28 +58,28 @@ function _getPages(currentPage, pageNumbers, clientUrl) {
 }
 
 class ManualPageView {
-    constructor() {
-        this._holderTemplate = views.getTemplate('manual-pager');
-        this._navTemplate = views.getTemplate('manual-pager-nav');
-    }
+    constructor(ctx) {
+        this._hostNode = document.getElementById('content-holder');
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._holderTemplate();
-        const pageContentHolder = source.querySelector('.page-content-holder');
-        const pageHeaderHolder = source.querySelector('.page-header-holder');
-        const pageNav = source.querySelector('.page-nav');
+        const sourceNode = holderTemplate();
+        const pageContentHolderNode
+            = sourceNode.querySelector('.page-content-holder');
+        const pageHeaderHolderNode
+            = sourceNode.querySelector('.page-header-holder');
+        const pageNavNode = sourceNode.querySelector('.page-nav');
         const currentPage = ctx.searchQuery.page;
 
-        ctx.headerContext.target = pageHeaderHolder;
+        ctx.headerContext.hostNode = pageHeaderHolderNode;
         if (ctx.headerRenderer) {
-            ctx.headerRenderer.render(ctx.headerContext);
+            ctx.headerRenderer(ctx.headerContext);
         }
+
+        views.replaceContent(this._hostNode, sourceNode);
 
         ctx.requestPage(currentPage).then(response => {
             Object.assign(ctx.pageContext, response);
-            ctx.pageContext.target = pageContentHolder;
-            ctx.pageRenderer.render(ctx.pageContext);
+            ctx.pageContext.hostNode = pageContentHolderNode;
+            ctx.pageRenderer(ctx.pageContext);
 
             const totalPages = Math.ceil(response.total / response.pageSize);
             const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
@@ -95,28 +97,35 @@ class ManualPageView {
             });
 
             if (response.total) {
-                views.showView(pageNav, this._navTemplate({
-                    prevLink: _formatUrl(ctx.clientUrl, currentPage - 1),
-                    nextLink: _formatUrl(ctx.clientUrl, currentPage + 1),
-                    prevLinkActive: currentPage > 1,
-                    nextLinkActive: currentPage < totalPages,
-                    pages: pages,
-                }));
+                views.replaceContent(
+                    pageNavNode,
+                    navTemplate({
+                        prevLink: _formatUrl(ctx.clientUrl, currentPage - 1),
+                        nextLink: _formatUrl(ctx.clientUrl, currentPage + 1),
+                        prevLinkActive: currentPage > 1,
+                        nextLinkActive: currentPage < totalPages,
+                        pages: pages,
+                    }));
             }
 
-            views.listenToMessages(source);
-            views.showView(target, source);
             if (response.total <= (currentPage - 1) * response.pageSize) {
-                events.notify(events.Info, 'No data to show');
+                this.showInfo('No data to show');
             }
         }, response => {
-            views.listenToMessages(source);
-            views.showView(target, source);
-            events.notify(events.Error, response.description);
+            this.showError(response.description);
         });
     }
 
-    unrender() {
+    showSuccess(message) {
+        views.showSuccess(this._hostNode, message);
+    }
+
+    showError(message) {
+        views.showError(this._hostNode, message);
+    }
+
+    showInfo(message) {
+        views.showInfo(this._hostNode, message);
     }
 }
 

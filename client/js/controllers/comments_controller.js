@@ -1,29 +1,19 @@
 'use strict';
 
 const api = require('../api.js');
-const router = require('../router.js');
 const misc = require('../util/misc.js');
-const pageController = require('../controllers/page_controller.js');
-const TopNavigation = require('../models/top_navigation.js');
+const topNavigation = require('../models/top_navigation.js');
+const PageController = require('../controllers/page_controller.js');
 const CommentsPageView = require('../views/comments_page_view.js');
-const EmptyView = require('../views/empty_view.js');
 
 class CommentsController {
-    registerRoutes() {
-        router.enter('/comments/:query?',
-            (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
-            (ctx, next) => { this._listCommentsRoute(ctx); });
-        this._commentsPageView = new CommentsPageView();
-        this._emptyView = new EmptyView();
-    }
+    constructor(ctx) {
+        topNavigation.activate('comments');
 
-    _listCommentsRoute(ctx) {
-        TopNavigation.activate('comments');
-
-        pageController.run({
+        this._pageController = new PageController({
             searchQuery: ctx.searchQuery,
             clientUrl: '/comments/' + misc.formatSearchQuery({page: '{page}'}),
-            requestPage: pageController.createHistoryCacheProxy(
+            requestPage: PageController.createHistoryCacheProxy(
                 ctx,
                 page => {
                     return api.get(
@@ -31,12 +21,18 @@ class CommentsController {
                         `&page=${page}&pageSize=10&fields=` +
                         'id,comments,commentCount,thumbnailUrl');
                 }),
-            pageRenderer: this._commentsPageView,
-            pageContext: {
-                canViewPosts: api.hasPrivilege('posts:view'),
-            }
+            pageRenderer: pageCtx => {
+                Object.assign(pageCtx, {
+                    canViewPosts: api.hasPrivilege('posts:view'),
+                });
+                return new CommentsPageView(pageCtx);
+            },
         });
     }
-}
+};
 
-module.exports = new CommentsController();
+module.exports = router => {
+    router.enter('/comments/:query?',
+        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+        (ctx, next) => { new CommentsController(ctx); });
+};

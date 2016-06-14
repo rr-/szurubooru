@@ -28,7 +28,7 @@ class FileDropperControl {
         this._fileInputNode.addEventListener(
             'change', e => this._evtFileChange(e));
 
-        views.showView(target, source);
+        views.replaceContent(target, source);
     }
 
     _resolve(files) {

@@ -3,15 +3,14 @@
 const config = require('../config.js');
 const views = require('../util/views.js');
 
-class NotFoundView {
-    constructor() {
-        this._template = views.getTemplate('not-found');
-    }
+const template = views.getTemplate('not-found');
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template(ctx);
-        views.showView(target, source);
+class NotFoundView {
+    constructor(path) {
+        this._hostNode = document.getElementById('content-holder');
+
+        const sourceNode = template({path: path});
+        views.replaceContent(this._hostNode, sourceNode);
     }
 }
 

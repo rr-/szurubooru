@@ -2,9 +2,7 @@
     <div class='messages'></div>
     <header>
         <h1><%= ctx.name %></h1>
-        <aside>
-            Serving <%= ctx.postCount %> posts (<%= ctx.makeFileSize(ctx.diskUsage) %>)
-        </aside>
+        <aside class='stats-container'></aside>
     </header>
     <% if (ctx.canListPosts) { %>
         <form class='horizontal'>

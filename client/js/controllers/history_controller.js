@@ -1,18 +1,15 @@
 'use strict';
 
-const router = require('../router.js');
-const TopNavigation = require('../models/top_navigation.js');
+const topNavigation = require('../models/top_navigation.js');
 
 class HistoryController {
-    registerRoutes() {
-        router.enter(
-            '/history',
-            (ctx, next) => { this._listHistoryRoute(); });
-    }
-
-    _listHistoryRoute() {
-        TopNavigation.activate('');
+    constructor() {
+        topNavigation.activate('');
     }
 }
 
-module.exports = new HistoryController();
+module.exports = router => {
+    router.enter('/history', (ctx, next) => {
+        ctx.controller = new HistoryController();
+    });
+};

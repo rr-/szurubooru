@@ -1,31 +1,54 @@
 'use strict';
 
+const events = require('../events.js');
 const views = require('../util/views.js');
 
-class PasswordResetView {
+const template = views.getTemplate('password-reset');
+
+class PasswordResetView extends events.EventTarget {
     constructor() {
-        this._template = views.getTemplate('password-reset');
+        super();
+        this._hostNode = document.getElementById('content-holder');
+
+        views.replaceContent(this._hostNode, template());
+        views.decorateValidator(this._formNode);
+
+        this._hostNode.addEventListener('submit', e => {
+            e.preventDefault();
+            this.dispatchEvent(new CustomEvent('submit', {
+                detail: {
+                    userNameOrEmail: this._userNameOrEmailFieldNode.value,
+                },
+            }));
+        });
     }
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template();
+    showSuccess(message) {
+        views.showSuccess(this._hostNode, message);
+    }
 
-        const form = source.querySelector('form');
-        const userNameOrEmailField = source.querySelector('#user-name');
+    showError(message) {
+        views.showError(this._hostNode, message);
+    }
 
-        views.decorateValidator(form);
+    clearMessages() {
+        views.clearMessages(this._hostNode);
+    }
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            views.clearMessages(target);
-            views.disableForm(form);
-            ctx.proceed(userNameOrEmailField.value)
-                .catch(() => { views.enableForm(form); });
-        });
+    enableForm() {
+        views.enableForm(this._formNode);
+    }
 
-        views.listenToMessages(source);
-        views.showView(target, source);
+    disableForm() {
+        views.disableForm(this._formNode);
+    }
+
+    get _formNode() {
+        return this._hostNode.querySelector('form');
+    }
+
+    get _userNameOrEmailFieldNode() {
+        return this._formNode.querySelector('#user-name');
     }
 }
 

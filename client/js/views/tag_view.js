@@ -1,25 +1,22 @@
 'use strict';
 
+const events = require('../events.js');
 const views = require('../util/views.js');
 const TagSummaryView = require('./tag_summary_view.js');
 const TagMergeView = require('./tag_merge_view.js');
 const TagDeleteView = require('./tag_delete_view.js');
 
-class TagView {
-    constructor() {
-        this._template = views.getTemplate('tag');
-        this._summaryView = new TagSummaryView();
-        this._mergeView = new TagMergeView();
-        this._deleteView = new TagDeleteView();
-    }
+const template = views.getTemplate('tag');
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template(ctx);
+class TagView extends events.EventTarget {
+    constructor(ctx) {
+        super();
 
+        this._hostNode = document.getElementById('content-holder');
         ctx.section = ctx.section || 'summary';
+        views.replaceContent(this._hostNode, template(ctx));
 
-        for (let item of source.querySelectorAll('[data-name]')) {
+        for (let item of this._hostNode.querySelectorAll('[data-name]')) {
             if (item.getAttribute('data-name') === ctx.section) {
                 item.className = 'active';
             } else {
@@ -27,21 +24,47 @@ class TagView {
             }
         }
 
-        let view = null;
+        ctx.hostNode = this._hostNode.querySelector('.tag-content-holder');
         if (ctx.section == 'merge') {
-            view = this._mergeView;
+            this._view = new TagMergeView(ctx);
+            this._view.addEventListener('submit', e => {
+                this.dispatchEvent(
+                    new CustomEvent('merge', {detail: e.detail}));
+            });
         } else if (ctx.section == 'delete') {
-            view = this._deleteView;
+            this._view = new TagDeleteView(ctx);
+            this._view.addEventListener('submit', e => {
+                this.dispatchEvent(
+                    new CustomEvent('delete', {detail: e.detail}));
+            });
         } else {
-            view = this._summaryView;
+            this._view = new TagSummaryView(ctx);
+            this._view.addEventListener('submit', e => {
+                this.dispatchEvent(
+                    new CustomEvent('change', {detail: e.detail}));
+            });
         }
-        ctx.target = source.querySelector('.tag-content-holder');
-        view.render(ctx);
+    }
 
-        views.listenToMessages(source);
-        views.showView(target, source);
+    clearMessages() {
+        this._view.clearMessages();
+    }
+
+    enableForm() {
+        this._view.enableForm();
+    }
+
+    disableForm() {
+        this._view.disableForm();
+    }
+
+    showSuccess(message) {
+        this._view.showSuccess(message);
+    }
+
+    showError(message) {
+        this._view.showError(message);
     }
 }
 
 module.exports = TagView;
-

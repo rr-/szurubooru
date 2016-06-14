@@ -1,30 +1,54 @@
 'use strict';
 
+const events = require('../events.js');
 const views = require('../util/views.js');
 
-class UserDeleteView {
-    constructor() {
-        this._template = views.getTemplate('user-delete');
+const template = views.getTemplate('user-delete');
+
+class UserDeleteView extends events.EventTarget {
+    constructor(ctx) {
+        super();
+
+        this._user = ctx.user;
+        this._hostNode = ctx.hostNode;
+        views.replaceContent(this._hostNode, template(ctx));
+        views.decorateValidator(this._formNode);
+
+        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
     }
 
-    render(ctx) {
-        const target = ctx.target;
-        const source = this._template(ctx);
+    clearMessages() {
+        views.clearMessages(this._hostNode);
+    }
 
-        const form = source.querySelector('form');
+    showSuccess(message) {
+        views.showSuccess(this._hostNode, message);
+    }
 
-        views.decorateValidator(form);
+    showError(message) {
+        views.showError(this._hostNode, message);
+    }
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            views.clearMessages(target);
-            views.disableForm(form);
-            ctx.delete()
-                .catch(() => { views.enableForm(form); });
-        });
+    enableForm() {
+        views.enableForm(this._formNode);
+    }
 
-        views.listenToMessages(source);
-        views.showView(target, source);
+    disableForm() {
+        views.disableForm(this._formNode);
+    }
+
+    _evtSubmit(e) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('submit', {
+            detail: {
+                user: this._user,
+            },
+        }));
+    }
+
+    get _formNode() {
+        return this._hostNode.querySelector('form');
+
     }
 }
 

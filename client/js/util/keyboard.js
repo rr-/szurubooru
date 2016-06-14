@@ -1,10 +1,10 @@
 'use strict';
 
 const mousetrap = require('mousetrap');
-const settings = require('../settings.js');
+const settings = require('../models/settings.js');
 
 function bind(hotkey, func) {
-    if (settings.getSettings().keyboardShortcuts) {
+    if (settings.get().keyboardShortcuts) {
         mousetrap.bind(hotkey, func);
         return true;
     }

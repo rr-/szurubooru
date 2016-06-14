@@ -2,19 +2,19 @@
 
 const views = require('../util/views.js');
 
+const template = () => {
+    return views.htmlToDom(
+        '<div class="wrapper"><div class="messages"></div></div>');
+};
+
 class EmptyView {
     constructor() {
-        this._template = () => {
-            return views.htmlToDom(
-                '<div class="wrapper"><div class="messages"></div></div>');
-        };
+        this._hostNode = document.getElementById('content-holder');
+        views.replaceContent(this._hostNode, template());
     }
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template();
-        views.listenToMessages(source);
-        views.showView(target, source);
+    showError(message) {
+        views.showError(this._hostNode, message);
     }
 }
 

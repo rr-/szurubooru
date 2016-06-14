@@ -1,26 +1,27 @@
 'use strict';
 
-const router = require('../router.js');
-const settings = require('../settings.js');
-const TopNavigation = require('../models/top_navigation.js');
+const settings = require('../models/settings.js');
+const topNavigation = require('../models/top_navigation.js');
 const SettingsView = require('../views/settings_view.js');
 
 class SettingsController {
     constructor() {
-        this._settingsView = new SettingsView();
-    }
-
-    registerRoutes() {
-        router.enter('/settings', (ctx, next) => { this._settingsRoute(); });
-    }
-
-    _settingsRoute() {
-        TopNavigation.activate('settings');
-        this._settingsView.render({
-            getSettings: () => settings.getSettings(),
-            saveSettings: newSettings => settings.saveSettings(newSettings),
+        topNavigation.activate('settings');
+        this._view = new SettingsView({
+            settings: settings.get(),
         });
+        this._view.addEventListener('change', e => this._evtChange(e));
+    }
+
+    _evtChange(e) {
+        this._view.clearMessages();
+        settings.save(e.detail.settings);
+        this._view.showSuccess('Settings saved.');
     }
 };
 
-module.exports = new SettingsController();
+module.exports = router => {
+    router.enter('/settings', (ctx, next) => {
+        ctx.controller = new SettingsController();
+    });
+};

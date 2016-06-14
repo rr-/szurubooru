@@ -7,34 +7,39 @@ const views = require('../util/views.js');
 const TagAutoCompleteControl =
     require('../controls/tag_auto_complete_control.js');
 
+const template = views.getTemplate('tags-header');
+
 class TagsHeaderView {
-    constructor() {
-        this._template = views.getTemplate('tags-header');
-    }
+    constructor(ctx) {
+        this._hostNode = ctx.hostNode;
+        views.replaceContent(this._hostNode, template(ctx));
 
-    render(ctx) {
-        const target = ctx.target;
-        const source = this._template(ctx);
-
-        const form = source.querySelector('form');
-        const searchTextInput = form.querySelector('[name=search-text]');
-
-        if (searchTextInput) {
-            new TagAutoCompleteControl(searchTextInput);
+        if (this._queryInputNode) {
+            new TagAutoCompleteControl(this._queryInputNode);
         }
 
         keyboard.bind('q', () => {
             form.querySelector('input').focus();
         });
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            const text = searchTextInput.value;
-            searchTextInput.blur();
-            router.show('/tags/' + misc.formatSearchQuery({text: text}));
-        });
+        this._formNode.addEventListener('submit', e => this._evtSubmit(e));
+    }
 
-        views.showView(target, source);
+    get _formNode() {
+        return this._hostNode.querySelector('form');
+    }
+
+    get _queryInputNode() {
+        return this._hostNode.querySelector('[name=search-text]');
+    }
+
+    _evtSubmit(e) {
+        e.preventDefault();
+        this._queryInputNode.blur();
+        router.show(
+            '/tags/' + misc.formatSearchQuery({
+                text: this._queryInputNode.value,
+            }));
     }
 }
 

@@ -1,34 +1,21 @@
 'use strict';
 
 const router = require('../router.js');
-const events = require('../events.js');
 const views = require('../util/views.js');
+
+const holderTemplate = views.getTemplate('endless-pager');
+const pageTemplate = views.getTemplate('endless-pager-page');
 
 function _formatUrl(url, page) {
     return url.replace('{page}', page);
 }
 
 class EndlessPageView {
-    constructor() {
-        this._holderTemplate = views.getTemplate('endless-pager');
-        this._pageTemplate = views.getTemplate('endless-pager-page');
-    }
-
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._holderTemplate();
-        const pageHeaderHolder = source.querySelector('.page-header-holder');
-        this._pagesHolder = source.querySelector('.pages-holder');
-        views.listenToMessages(source);
-        views.showView(target, source);
+    constructor(ctx) {
+        this._hostNode = document.getElementById('content-holder');
         this._active = true;
         this._working = 0;
         this._init = true;
-
-        ctx.headerContext.target = pageHeaderHolder;
-        if (ctx.headerRenderer) {
-            ctx.headerRenderer.render(ctx.headerContext);
-        }
 
         this.threshold = window.innerHeight / 3;
         this.minPageShown = null;
@@ -36,18 +23,19 @@ class EndlessPageView {
         this.totalPages = null;
         this.currentPage = null;
 
+        const sourceNode = holderTemplate();
+        const pageHeaderHolderNode
+            = sourceNode.querySelector('.page-header-holder');
+        this._pagesHolderNode = sourceNode.querySelector('.pages-holder');
+        views.replaceContent(this._hostNode, sourceNode);
+
+        ctx.headerContext.hostNode = pageHeaderHolderNode;
+        if (ctx.headerRenderer) {
+            ctx.headerRenderer(ctx.headerContext);
+        }
+
         this._loadPage(ctx, ctx.searchQuery.page, true);
-        window.addEventListener('unload', this._scrollToTop, true);
         this._probePageLoad(ctx);
-    }
-
-    unrender() {
-        this._active = false;
-        window.removeEventListener('unload', this._scrollToTop, true);
-    }
-
-    _scrollToTop() {
-        window.scroll(0, 0);
     }
 
     _probePageLoad(ctx) {
@@ -115,23 +103,23 @@ class EndlessPageView {
                 this._working--;
             });
         }, response => {
-            events.notify(events.Error, response.description);
+            this.showError(response.description);
             this._working--;
         });
     }
 
     _renderPage(ctx, pageNumber, append, response) {
         if (response.total) {
-            const pageNode = this._pageTemplate({
+            const pageNode = pageTemplate({
                 page: pageNumber,
                 totalPages: this.totalPages,
             });
             pageNode.setAttribute('data-page', pageNumber);
 
             Object.assign(ctx.pageContext, response);
-            ctx.pageContext.target = pageNode.querySelector(
+            ctx.pageContext.hostNode = pageNode.querySelector(
                 '.page-content-holder');
-            ctx.pageRenderer.render(ctx.pageContext);
+            ctx.pageRenderer(ctx.pageContext);
 
             if (pageNumber < this.minPageShown ||
                     this.minPageShown === null) {
@@ -143,21 +131,33 @@ class EndlessPageView {
             }
 
             if (append) {
-                this._pagesHolder.appendChild(pageNode);
-                /*if (this._init && pageNumber !== 1) {
+                this._pagesHolderNode.appendChild(pageNode);
+                if (this._init && pageNumber !== 1) {
                     window.scroll(0, pageNode.getBoundingClientRect().top);
-                }*/
+                }
             } else {
-                this._pagesHolder.prependChild(pageNode);
+                this._pagesHolderNode.prependChild(pageNode);
 
                 window.scroll(
                     window.scrollX,
                     window.scrollY + pageNode.offsetHeight);
             }
         } else if (response.total <= (pageNumber - 1) * response.pageSize) {
-            events.notify(events.Info, 'No data to show');
+            this.showInfo('No data to show');
         }
         this._init = false;
+    }
+
+    showSuccess(message) {
+        views.showSuccess(this._hostNode, message);
+    }
+
+    showError(message) {
+        views.showError(this._hostNode, message);
+    }
+
+    showInfo(message) {
+        views.showInfo(this._hostNode, message);
     }
 }
 

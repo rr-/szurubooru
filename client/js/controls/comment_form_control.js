@@ -47,7 +47,7 @@ class CommentFormControl {
             this._growTextArea();
         });
 
-        views.showView(this._hostNode, sourceNode);
+        views.replaceContent(this._hostNode, sourceNode);
     }
 
     enterEditMode() {

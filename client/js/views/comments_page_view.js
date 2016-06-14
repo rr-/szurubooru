@@ -3,24 +3,25 @@
 const views = require('../util/views.js');
 const CommentListControl = require('../controls/comment_list_control.js');
 
-class CommentsPageView {
-    constructor() {
-        this._template = views.getTemplate('comments-page');
-    }
+const template = views.getTemplate('comments-page');
 
-    render(ctx) {
-        const target = ctx.target;
-        const source = this._template(ctx);
+class CommentsPageView {
+    constructor(ctx) {
+        this._hostNode = ctx.hostNode;
+        this._controls = [];
+
+        const sourceNode = template(ctx);
 
         for (let post of ctx.results) {
             post.comments.sort((a, b) => { return b.id - a.id; });
-            new CommentListControl(
-                source.querySelector(
-                    `.comments-container[data-for="${post.id}"]`),
-                post.comments);
+            this._controls.push(
+                new CommentListControl(
+                    sourceNode.querySelector(
+                        `.comments-container[data-for="${post.id}"]`),
+                    post.comments));
         }
 
-        views.showView(target, source);
+        views.replaceContent(this._hostNode, sourceNode);
     }
 }
 

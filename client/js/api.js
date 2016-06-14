@@ -6,8 +6,9 @@ const request = require('superagent');
 const config = require('./config.js');
 const events = require('./events.js');
 
-class Api {
+class Api extends events.EventTarget {
     constructor() {
+        super();
         this.user = null;
         this.userName = null;
         this.userPassword = null;
@@ -136,11 +137,10 @@ class Api {
                         options);
                     this.user = response;
                     resolve();
-                    events.notify(events.Authentication);
+                    this.dispatchEvent(new CustomEvent('login'));
                 }).catch(response => {
                     reject(response.description);
                     this.logout();
-                    events.notify(events.Authentication);
                 });
         });
     }
@@ -149,7 +149,7 @@ class Api {
         this.user = null;
         this.userName = null;
         this.userPassword = null;
-        events.notify(events.Authentication);
+        this.dispatchEvent(new CustomEvent('logout'));
     }
 
     forget() {

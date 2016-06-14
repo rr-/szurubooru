@@ -1,43 +1,67 @@
 'use strict';
 
 const config = require('../config.js');
+const events = require('../events.js');
 const views = require('../util/views.js');
 
-class LoginView {
-    constructor() {
-        this._template = views.getTemplate('login');
-    }
+const template = views.getTemplate('login');
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template({
+class LoginView extends events.EventTarget {
+    constructor() {
+        super();
+        this._hostNode = document.getElementById('content-holder');
+
+        views.replaceContent(this._hostNode, template({
             userNamePattern: config.userNameRegex,
             passwordPattern: config.passwordRegex,
             canSendMails: config.canSendMails,
-        });
+        }));
 
-        const form = source.querySelector('form');
-        const userNameField = source.querySelector('#user-name');
-        const passwordField = source.querySelector('#user-password');
-        const rememberUserField = source.querySelector('#remember-user');
-
-        views.decorateValidator(form);
-        userNameField.setAttribute('pattern', config.userNameRegex);
-        passwordField.setAttribute('pattern', config.passwordRegex);
-
-        form.addEventListener('submit', e => {
+        views.decorateValidator(this._formNode);
+        this._userNameFieldNode.setAttribute('pattern', config.userNameRegex);
+        this._passwordFieldNode.setAttribute('pattern', config.passwordRegex);
+        this._formNode.addEventListener('submit', e => {
             e.preventDefault();
-            views.clearMessages(target);
-            views.disableForm(form);
-            ctx.login(
-                    userNameField.value,
-                    passwordField.value,
-                    rememberUserField.checked)
-                .always(() => { views.enableForm(form); });
+            this.dispatchEvent(new CustomEvent('submit', {
+                detail: {
+                    name: this._userNameFieldNode.value,
+                    password: this._passwordFieldNode.value,
+                    remember: this._rememberFieldNode.checked,
+                },
+            }));
         });
+    }
 
-        views.listenToMessages(source);
-        views.showView(target, source);
+    get _formNode() {
+        return this._hostNode.querySelector('form');
+    }
+
+    get _userNameFieldNode() {
+        return this._formNode.querySelector('#user-name');
+    }
+
+    get _passwordFieldNode() {
+        return this._formNode.querySelector('#user-password');
+    }
+
+    get _rememberFieldNode() {
+        return this._formNode.querySelector('#remember-user');
+    }
+
+    disableForm() {
+        views.disableForm(this._formNode);
+    }
+
+    enableForm() {
+        views.enableForm(this._formNode);
+    }
+
+    clearMessages() {
+        views.clearMessages(this._hostNode);
+    }
+
+    showError(message) {
+        views.showError(this._hostNode, message);
     }
 }
 

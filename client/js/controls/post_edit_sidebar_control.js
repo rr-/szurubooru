@@ -16,7 +16,7 @@ class PostEditSidebarControl {
         const sourceNode = this._template({
             post: this._post,
         });
-        views.showView(this._hostNode, sourceNode);
+        views.replaceContent(this._hostNode, sourceNode);
     }
 };
 

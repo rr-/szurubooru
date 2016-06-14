@@ -19,7 +19,7 @@ class CommentListControl {
             canListComments: api.hasPrivilege('comments:list'),
         });
 
-        views.showView(this._hostNode, sourceNode);
+        views.replaceContent(this._hostNode, sourceNode);
 
         this._renderComments();
     }
@@ -42,7 +42,7 @@ class CommentListControl {
             });
             commentList.appendChild(commentListItemNode);
         }
-        views.showView(this._hostNode.querySelector('ul'), commentList);
+        views.replaceContent(this._hostNode.querySelector('ul'), commentList);
     }
 };
 

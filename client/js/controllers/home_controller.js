@@ -1,53 +1,49 @@
 'use strict';
 
-const router = require('../router.js');
 const api = require('../api.js');
-const events = require('../events.js');
-const TopNavigation = require('../models/top_navigation.js');
+const config = require('../config.js');
+const topNavigation = require('../models/top_navigation.js');
 const HomeView = require('../views/home_view.js');
-const NotFoundView = require('../views/not_found_view.js');
 
 class HomeController {
     constructor() {
-        this._homeView = new HomeView();
-        this._notFoundView = new NotFoundView();
-    }
+        topNavigation.activate('home');
 
-    registerRoutes() {
-        router.enter(
-            '/',
-            (ctx, next) => { this._indexRoute(); });
-        router.enter(
-            '*',
-            (ctx, next) => { this._notFoundRoute(ctx); });
-    }
-
-    _indexRoute() {
-        TopNavigation.activate('home');
+        this._homeView = new HomeView({
+            name: config.name,
+            version: config.meta.version,
+            buildDate: config.meta.buildDate,
+            canListPosts: api.hasPrivilege('posts:list'),
+        });
 
         api.get('/info')
             .then(response => {
-                this._homeView.render({
-                    canListPosts: api.hasPrivilege('posts:list'),
+                this._homeView.setStats({
                     diskUsage: response.diskUsage,
                     postCount: response.postCount,
+                });
+                this._homeView.setFeaturedPost({
                     featuredPost: response.featuredPost,
                     featuringUser: response.featuringUser,
                     featuringTime: response.featuringTime,
                 });
             },
             response => {
-                this._homeView.render({
-                    canListPosts: api.hasPrivilege('posts:list'),
-                });
-                events.notify(events.Error, response.description);
+                this._homeView.showError(response.description);
             });
     }
 
-    _notFoundRoute(ctx) {
-        TopNavigation.activate('');
-        this._notFoundView.render({path: ctx.canonicalPath});
+    showSuccess(message) {
+        this._homeView.showSuccess(message);
     }
-}
 
-module.exports = new HomeController();
+    showError(message) {
+        this._homeView.showError(message);
+    }
+};
+
+module.exports = router => {
+    router.enter('/', (ctx, next) => {
+        ctx.controller = new HomeController();
+    });
+};

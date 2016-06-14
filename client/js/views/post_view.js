@@ -14,20 +14,16 @@ const PostEditSidebarControl =
 const CommentListControl = require('../controls/comment_list_control.js');
 const CommentFormControl = require('../controls/comment_form_control.js');
 
+const template = views.getTemplate('post');
+
 class PostView {
-    constructor() {
-        this._template = views.getTemplate('post');
-    }
+    constructor(ctx) {
+        this._hostNode = document.getElementById('content-holder');
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template(ctx);
-
-        const postContainerNode = source.querySelector('.post-container');
-        const sidebarNode = source.querySelector('.sidebar');
-
-        views.listenToMessages(source);
-        views.showView(target, source);
+        const sourceNode = template(ctx);
+        const postContainerNode = sourceNode.querySelector('.post-container');
+        const sidebarNode = sourceNode.querySelector('.sidebar');
+        views.replaceContent(this._hostNode, sourceNode);
 
         const postViewNode = document.body.querySelector('.content-wrapper');
         const topNavigationNode =

@@ -1,35 +1,22 @@
 'use strict';
 
-const router = require('../router.js');
 const api = require('../api.js');
-const settings = require('../settings.js');
+const settings = require('../models/settings.js');
 const misc = require('../util/misc.js');
-const pageController = require('../controllers/page_controller.js');
-const TopNavigation = require('../models/top_navigation.js');
+const topNavigation = require('../models/top_navigation.js');
+const PageController = require('../controllers/page_controller.js');
 const PostsHeaderView = require('../views/posts_header_view.js');
 const PostsPageView = require('../views/posts_page_view.js');
 
 class PostListController {
-    constructor() {
-        this._postsHeaderView = new PostsHeaderView();
-        this._postsPageView = new PostsPageView();
-    }
+    constructor(ctx) {
+        topNavigation.activate('posts');
 
-    registerRoutes() {
-        router.enter(
-            '/posts/:query?',
-            (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
-            (ctx, next) => { this._listPostsRoute(ctx); });
-    }
-
-    _listPostsRoute(ctx) {
-        TopNavigation.activate('posts');
-
-        pageController.run({
+        this._pageController = new PageController({
             searchQuery: ctx.searchQuery,
             clientUrl: '/posts/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
-            requestPage: pageController.createHistoryCacheProxy(
+            requestPage: PageController.createHistoryCacheProxy(
                 ctx,
                 page => {
                     const text
@@ -39,16 +26,20 @@ class PostListController {
                         '&fields=id,type,tags,score,favoriteCount,' +
                         'commentCount,thumbnailUrl');
                 }),
-            headerRenderer: this._postsHeaderView,
-            pageRenderer: this._postsPageView,
-            pageContext: {
-                canViewPosts: api.hasPrivilege('posts:view'),
-            }
+            headerRenderer: headerCtx => {
+                return new PostsHeaderView(headerCtx);
+            },
+            pageRenderer: pageCtx => {
+                Object.assign(pageCtx, {
+                    canViewPosts: api.hasPrivilege('posts:view'),
+                });
+                return new PostsPageView(pageCtx);
+            },
         });
     }
 
     _decorateSearchQuery(text) {
-        const browsingSettings = settings.getSettings();
+        const browsingSettings = settings.get();
         let disabledSafety = [];
         for (let key of Object.keys(browsingSettings.listPosts)) {
             if (browsingSettings.listPosts[key] === false) {
@@ -62,4 +53,9 @@ class PostListController {
     }
 }
 
-module.exports = new PostListController();
+module.exports = router => {
+    router.enter(
+        '/posts/:query?',
+        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+        (ctx, next) => { ctx.controller = new PostListController(ctx); });
+};

@@ -42,15 +42,13 @@ class TopNavigation extends events.EventTarget {
     }
 
     activate(key) {
-        const event = new Event('activate');
-        event.key = key;
-        if (key) {
-            event.item = this.get(key);
-        } else {
-            event.item = null;
-        }
         this.activeItem = null;
-        this.dispatchEvent(event);
+        this.dispatchEvent(new CustomEvent('activate', {
+            detail: {
+                key: key,
+                item: key ? this.get(key) : null,
+            },
+        }));
     }
 
     showAll() {

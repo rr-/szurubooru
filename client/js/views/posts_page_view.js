@@ -2,15 +2,11 @@
 
 const views = require('../util/views.js');
 
-class PostsPageView {
-    constructor() {
-        this._template = views.getTemplate('posts-page');
-    }
+const template = views.getTemplate('posts-page');
 
-    render(ctx) {
-        const target = ctx.target;
-        const source = this._template(ctx);
-        views.showView(target, source);
+class PostsPageView {
+    constructor(ctx) {
+        views.replaceContent(ctx.hostNode, template(ctx));
     }
 }
 

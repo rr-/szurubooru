@@ -1,32 +1,28 @@
 'use strict';
 
-const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
-class TagListHeaderView {
-    constructor() {
-        this._template = views.getTemplate('tag-categories');
-    }
+const template = views.getTemplate('tag-categories');
 
-    render(ctx) {
-        const target = document.getElementById('content-holder');
-        const source = this._template(ctx);
+class TagCategoriesView {
+    constructor(ctx) {
+        this._hostNode = document.getElementById('content-holder');
+        const sourceNode = template(ctx);
 
-        const form = source.querySelector('form');
-        const newRowTemplate = source.querySelector('.add-template');
-        const tableBody = source.querySelector('tbody');
-        const addLink = source.querySelector('a.add');
-        const saveButton = source.querySelector('button.save');
+        const formNode = sourceNode.querySelector('form');
+        const newRowTemplate = sourceNode.querySelector('.add-template');
+        const tableBodyNode = sourceNode.querySelector('tbody');
+        const addLinkNode = sourceNode.querySelector('a.add');
 
         newRowTemplate.parentNode.removeChild(newRowTemplate);
-        views.decorateValidator(form);
+        views.decorateValidator(formNode);
 
-        for (let row of tableBody.querySelectorAll('tr')) {
+        for (let row of tableBodyNode.querySelectorAll('tr')) {
             this._addRowHandlers(row);
         }
 
-        if (addLink) {
-            addLink.addEventListener('click', e => {
+        if (addLinkNode) {
+            addLinkNode.addEventListener('click', e => {
                 e.preventDefault();
                 let newRow = newRowTemplate.cloneNode(true);
                 tableBody.appendChild(newRow);
@@ -34,19 +30,26 @@ class TagListHeaderView {
             });
         }
 
-        form.addEventListener('submit', e => {
-            this._evtSaveButtonClick(e, ctx, target);
+        formNode.addEventListener('submit', e => {
+            this._evtSaveButtonClick(e, ctx);
         });
 
-        views.listenToMessages(source);
-        views.showView(target, source);
+        views.replaceContent(this._hostNode, sourceNode);
     }
 
-    _evtSaveButtonClick(e, ctx, target) {
+    showSuccess(message) {
+        views.showSuccess(this._hostNode, message);
+    }
+
+    showError(message) {
+        views.showError(this._hostNode, message);
+    }
+
+    _evtSaveButtonClick(e, ctx) {
         e.preventDefault();
 
-        views.clearMessages(target);
-        const tableBody = target.querySelector('tbody');
+        views.clearMessages(this._hostNode);
+        const tableBodyNode = this._hostNode.querySelector('tbody');
 
         ctx.getCategories().then(categories => {
             let existingCategories = {};
@@ -59,7 +62,7 @@ class TagListHeaderView {
             let removedCategories = [];
             let changedCategories = [];
             let allNames = [];
-            for (let row of tableBody.querySelectorAll('tr')) {
+            for (let row of tableBodyNode.querySelectorAll('tr')) {
                 let name = row.getAttribute('data-category');
                 let category = {
                     originalName: name,
@@ -127,4 +130,4 @@ class TagListHeaderView {
     }
 }
 
-module.exports = TagListHeaderView;
+module.exports = TagCategoriesView;

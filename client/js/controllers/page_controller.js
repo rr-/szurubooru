@@ -1,43 +1,35 @@
 'use strict';
 
-const events = require('../events.js');
-const settings = require('../settings.js');
+const settings = require('../models/settings.js');
 const EndlessPageView = require('../views/endless_page_view.js');
 const ManualPageView = require('../views/manual_page_view.js');
 
 class PageController {
-    constructor() {
-        events.listen(events.SettingsChange, () => {
-            this._update();
-            return true;
-        });
-        this._update();
-    }
-
-    _update() {
-        if (settings.getSettings().endlessScroll) {
-            this._pageView = new EndlessPageView();
-        } else {
-            this._pageView = new ManualPageView();
-        }
-    }
-
-    run(ctx) {
-        this._pageView.unrender();
-
+    constructor(ctx) {
         const extendedContext = {
             clientUrl: ctx.clientUrl,
             searchQuery: ctx.searchQuery,
         };
 
-        ctx.headerContext = ctx.headerContext || {};
-        ctx.pageContext = ctx.pageContext || {};
-        Object.assign(ctx.headerContext, extendedContext);
-        Object.assign(ctx.pageContext, extendedContext);
-        this._pageView.render(ctx);
+        ctx.headerContext = Object.assign({}, extendedContext);
+        ctx.pageContext = Object.assign({}, extendedContext);
+
+        if (settings.get().endlessScroll) {
+            this._view = new EndlessPageView(ctx);
+        } else {
+            this._view = new ManualPageView(ctx);
+        }
     }
 
-    createHistoryCacheProxy(routerCtx, requestPage) {
+    showSuccess(message) {
+        this._view.showSuccess(message);
+    }
+
+    showError(message) {
+        this._view.showError(message);
+    }
+
+    static createHistoryCacheProxy(routerCtx, requestPage) {
         return page => {
             if (routerCtx.state.response) {
                 return new Promise((resolve, reject) => {
@@ -52,10 +44,6 @@ class PageController {
             return promise;
         };
     }
-
-    stop() {
-        this._pageView.unrender();
-    }
 }
 
-module.exports = new PageController();
+module.exports = PageController;

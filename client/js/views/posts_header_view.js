@@ -1,33 +1,27 @@
 'use strict';
 
 const router = require('../router.js');
-const settings = require('../settings.js');
+const settings = require('../models/settings.js');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl =
     require('../controls/tag_auto_complete_control.js');
 
+const template = views.getTemplate('posts-header');
+
 class PostsHeaderView {
-    constructor() {
-        this._template = views.getTemplate('posts-header');
-    }
+    constructor(ctx) {
+        ctx.settings = settings.get();
+        this._hostNode = ctx.hostNode;
+        views.replaceContent(this._hostNode, template(ctx));
 
-    render(ctx) {
-        ctx.settings = settings.getSettings();
-
-        const target = ctx.target;
-        const source = this._template(ctx);
-
-        const form = source.querySelector('form');
-        const searchTextInput = form.querySelector('[name=search-text]');
-
-        if (searchTextInput) {
-            new TagAutoCompleteControl(searchTextInput);
+        if (this._queryInputNode) {
+            new TagAutoCompleteControl(this._queryInputNode);
         }
 
         keyboard.bind('q', () => {
-            form.querySelector('input').focus();
+            this._formNode.querySelector('input').focus();
         });
 
         keyboard.bind('p', () => {
@@ -38,31 +32,37 @@ class PostsHeaderView {
             }
         });
 
-        for (let safetyButton of form.querySelectorAll('.safety')) {
+        for (let safetyButton of this._formNode.querySelectorAll('.safety')) {
             safetyButton.addEventListener(
                 'click', e => this._evtSafetyButtonClick(e, ctx.clientUrl));
         }
-        form.addEventListener(
-            'submit', e => this._evtFormSubmit(e, searchTextInput));
+        this._formNode.addEventListener(
+            'submit', e => this._evtFormSubmit(e, this._queryInputNode));
+    }
 
-        views.showView(target, source);
+    get _formNode() {
+        return this._hostNode.querySelector('form');
+    }
+
+    get _queryInputNode() {
+        return this._formNode.querySelector('[name=search-text]');
     }
 
     _evtSafetyButtonClick(e, url) {
         e.preventDefault();
         e.target.classList.toggle('disabled');
         const safety = e.target.getAttribute('data-safety');
-        let browsingSettings = settings.getSettings();
+        let browsingSettings = settings.get();
         browsingSettings.listPosts[safety] =
             !browsingSettings.listPosts[safety];
-        settings.saveSettings(browsingSettings, true);
+        settings.save(browsingSettings, true);
         router.show(url.replace(/{page}/, 1));
     }
 
-    _evtFormSubmit(e, searchTextInput) {
+    _evtFormSubmit(e, queryInputNode) {
         e.preventDefault();
-        const text = searchTextInput.value;
-        searchTextInput.blur();
+        const text = queryInputNode.value;
+        queryInputNode.blur();
         router.show('/posts/' + misc.formatSearchQuery({text: text}));
     }
 }

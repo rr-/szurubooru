@@ -1,38 +1,23 @@
 'use strict';
 
-const router = require('../router.js');
 const api = require('../api.js');
-const events = require('../events.js');
-const settings = require('../settings.js');
+const settings = require('../models/settings.js');
 const Post = require('../models/post.js');
-const TopNavigation = require('../models/top_navigation.js');
+const topNavigation = require('../models/top_navigation.js');
 const PostView = require('../views/post_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 class PostController {
-    constructor() {
-        this._postView = new PostView();
-        this._emptyView = new EmptyView();
-    }
+    constructor(id, editMode) {
+        topNavigation.activate('posts');
 
-    registerRoutes() {
-        router.enter(
-            '/post/:id',
-            (ctx, next) => { this._showPostRoute(ctx.params.id, false); });
-        router.enter(
-            '/post/:id/edit',
-            (ctx, next) => { this._showPostRoute(ctx.params.id, true); });
-    }
-
-    _showPostRoute(id, editMode) {
-        TopNavigation.activate('posts');
         Promise.all([
                 Post.get(id),
                 api.get(`/post/${id}/around?fields=id&query=` +
                     this._decorateSearchQuery('')),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
-            this._postView.render({
+            this._view = new PostView({
                 post: post,
                 editMode: editMode,
                 nextPostId: aroundResponse.next ? aroundResponse.next.id : null,
@@ -42,13 +27,13 @@ class PostController {
                 canCreateComments: api.hasPrivilege('comments:create'),
             });
         }, response => {
-            this._emptyView.render();
-            events.notify(events.Error, response.description);
+            this._view = new EmptyView();
+            this._view.showError(response.description);
         });
     }
 
     _decorateSearchQuery(text) {
-        const browsingSettings = settings.getSettings();
+        const browsingSettings = settings.get();
         let disabledSafety = [];
         for (let key of Object.keys(browsingSettings.listPosts)) {
             if (browsingSettings.listPosts[key] === false) {
@@ -62,4 +47,11 @@ class PostController {
     }
 }
 
-module.exports = new PostController();
+module.exports = router => {
+    router.enter('/post/:id', (ctx, next) => {
+        ctx.controller = new PostController(ctx.params.id, false);
+    });
+    router.enter('/post/:id/edit', (ctx, next) => {
+        ctx.controller = new PostController(ctx.params.id, true);
+    });
+};
