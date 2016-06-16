@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, Unicode, DateTime
-from sqlalchemy.orm import object_session
-from sqlalchemy.sql.expression import func, select
+from sqlalchemy.sql.expression import func
 from szurubooru.db.base import Base
 from szurubooru.db.post import Post, PostScore, PostFavorite
 from szurubooru.db.comment import Comment
@@ -32,28 +31,32 @@ class User(Base):
 
     @property
     def post_count(self):
-        return object_session(self) \
+        from szurubooru.db import session
+        return session \
             .query(func.sum(1)) \
             .filter(Post.user_id == self.user_id) \
             .one()[0] or 0
 
     @property
     def comment_count(self):
-        return object_session(self) \
+        from szurubooru.db import session
+        return session \
             .query(func.sum(1)) \
             .filter(Comment.user_id == self.user_id) \
             .one()[0] or 0
 
     @property
     def favorite_post_count(self):
-        return object_session(self) \
+        from szurubooru.db import session
+        return session \
             .query(func.sum(1)) \
             .filter(PostFavorite.user_id == self.user_id) \
             .one()[0] or 0
 
     @property
     def liked_post_count(self):
-        return object_session(self) \
+        from szurubooru.db import session
+        return session \
             .query(func.sum(1)) \
             .filter(PostScore.user_id == self.user_id) \
             .filter(PostScore.score == 1) \
@@ -61,7 +64,8 @@ class User(Base):
 
     @property
     def disliked_post_count(self):
-        return object_session(self) \
+        from szurubooru.db import session
+        return session \
             .query(func.sum(1)) \
             .filter(PostScore.user_id == self.user_id) \
             .filter(PostScore.score == -1) \

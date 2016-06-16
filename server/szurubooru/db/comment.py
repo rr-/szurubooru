@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, DateTime, UnicodeText, ForeignKey
-from sqlalchemy.orm import relationship, object_session
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import func
 from szurubooru.db.base import Base
 
