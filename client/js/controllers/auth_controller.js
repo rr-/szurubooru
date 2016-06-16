@@ -68,9 +68,10 @@ class AuthController {
     _passwordResetFinishRoute(name, token) {
         api.forget();
         api.logout();
+        let password = null;
         api.post('/password-reset/' + name, {token: token})
             .then(response => {
-                const password = response.password;
+                password = response.password;
                 return api.login(name, password, false);
             }, response => {
                 return Promise.reject(response.description);
