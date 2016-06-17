@@ -12,6 +12,9 @@ def delete(path):
 def has(path):
     return os.path.exists(_get_full_path(path))
 
+def move(source_path, target_path):
+    return os.rename(_get_full_path(source_path), _get_full_path(target_path))
+
 def get(path):
     full_path = _get_full_path(path)
     if not os.path.exists(full_path):

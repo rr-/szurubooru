@@ -12,6 +12,9 @@ class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
 
+def _get_avatar_path(name):
+    return 'avatars/' + name.lower() + '.png'
+
 def _get_avatar_url(user):
     if user.avatar_style == user.AVATAR_GRAVATAR:
         return 'http://gravatar.com/avatar/%s?d=retro&s=%d' % (
@@ -121,6 +124,8 @@ def update_user_name(user, name):
     if not re.match(name_regex, name):
         raise InvalidUserNameError(
             'User name %r must satisfy regex %r.' % (name, name_regex))
+    if user.name and files.has(_get_avatar_path(user.name)):
+        files.move(_get_avatar_path(user.name), _get_avatar_path(name))
     user.name = name
 
 def update_user_password(user, password):

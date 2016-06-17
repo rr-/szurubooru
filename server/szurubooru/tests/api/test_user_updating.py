@@ -9,7 +9,7 @@ EMPTY_PIXEL = \
     b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
 
 @pytest.fixture
-def test_ctx(config_injector, context_factory, user_factory):
+def test_ctx(tmpdir, config_injector, context_factory, user_factory):
     config_injector({
         'secret': '',
         'user_name_regex': '^[^!]{3,}$',
@@ -27,6 +27,8 @@ def test_ctx(config_injector, context_factory, user_factory):
             'users:edit:any:rank': db.User.RANK_ADMINISTRATOR,
             'users:edit:any:avatar': db.User.RANK_ADMINISTRATOR,
         },
+        'data_dir': str(tmpdir.mkdir('data')),
+        'data_url': 'http://example.com/data/',
     })
     ret = util.dotdict()
     ret.context_factory = context_factory
@@ -100,9 +102,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
 
 @pytest.mark.parametrize(
     'field', ['name', 'email', 'password', 'rank', 'avatarStyle'])
-def test_omitting_optional_field(test_ctx, tmpdir, field):
-    config.config['data_dir'] = str(tmpdir.mkdir('data'))
-    config.config['data_url'] = 'http://example.com/data/'
+def test_omitting_optional_field(test_ctx, field):
     user = test_ctx.user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     input = {
@@ -191,9 +191,7 @@ def test_mods_trying_to_become_admin(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(context, user2.name)
 
-def test_uploading_avatar(test_ctx, tmpdir):
-    config.config['data_dir'] = str(tmpdir.mkdir('data'))
-    config.config['data_url'] = 'http://example.com/data/'
+def test_uploading_avatar(test_ctx):
     user = test_ctx.user_factory(name='u1', rank=db.User.RANK_MODERATOR)
     db.session.add(user)
     response = test_ctx.api.put(

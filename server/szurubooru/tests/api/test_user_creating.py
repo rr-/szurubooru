@@ -9,7 +9,7 @@ EMPTY_PIXEL = \
     b'\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b'
 
 @pytest.fixture
-def test_ctx(config_injector, context_factory, user_factory):
+def test_ctx(tmpdir, config_injector, context_factory, user_factory):
     config_injector({
         'secret': '',
         'user_name_regex': '[^!]{3,}',
@@ -17,6 +17,8 @@ def test_ctx(config_injector, context_factory, user_factory):
         'default_rank': db.User.RANK_REGULAR,
         'thumbnails': {'avatar_width': 200, 'avatar_height': 200},
         'privileges': {'users:create': 'anonymous'},
+        'data_dir': str(tmpdir.mkdir('data')),
+        'data_url': 'http://example.com/data/',
     })
     ret = util.dotdict()
     ret.context_factory = context_factory
@@ -170,9 +172,7 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize('field', ['rank', 'email', 'avatarStyle'])
-def test_omitting_optional_field(test_ctx, tmpdir, field):
-    config.config['data_dir'] = str(tmpdir.mkdir('data'))
-    config.config['data_url'] = 'http://example.com/data/'
+def test_omitting_optional_field(test_ctx, field):
     input = {
         'name': 'chewie',
         'email': 'asd@asd.asd',
@@ -213,9 +213,7 @@ def test_admin_creating_mod_account(test_ctx):
     result = test_ctx.api.post(context)
     assert result['rank'] == 'moderator'
 
-def test_uploading_avatar(test_ctx, tmpdir):
-    config.config['data_dir'] = str(tmpdir.mkdir('data'))
-    config.config['data_url'] = 'http://example.com/data/'
+def test_uploading_avatar(test_ctx):
     response = test_ctx.api.post(
         test_ctx.context_factory(
             input={
