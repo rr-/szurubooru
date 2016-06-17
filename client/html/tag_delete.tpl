@@ -2,7 +2,7 @@
     <form>
         <% if (ctx.tag.usages) { %>
             <p>For extra <s>paranoia</s> safety, only tags that are unused can be deleted.</p>
-            <p>Check <a href='/posts/<%= ctx.tag.names[0] %>'>which posts</a> are tagged with <%= ctx.tag.names[0] %>.</p>
+            <p>Check <a href='/posts/text=<%= ctx.tag.names[0] %>'>which posts</a> are tagged with <%= ctx.tag.names[0] %>.</p>
         <% } else { %>
             <div class='input'>
                 <ul>
