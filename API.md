@@ -413,7 +413,7 @@ data.
 ## Updating tag
 - **Request**
 
-    `PUT /tags/<name>`
+    `PUT /tag/<name>`
 
 - **Input**
 
