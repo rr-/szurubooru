@@ -1,19 +1,20 @@
 'use strict';
 
+const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
-class CommentFormControl {
-    constructor(hostNode, comment, settings) {
+const template = views.getTemplate('comment-form');
+
+class CommentFormControl extends events.EventTarget {
+    constructor(hostNode, comment, canCancel, minHeight) {
+        super();
         this._hostNode = hostNode;
         this._comment = comment || {text: ''};
-        this._template = views.getTemplate('comment-form');
-        this._settings = settings;
-        this.install();
-    }
+        this._canCancel = canCancel;
+        this._minHeight = minHeight || 150;
 
-    install() {
-        const sourceNode = this._template({
+        const sourceNode = template({
             comment: this._comment,
         });
 
@@ -30,7 +31,7 @@ class CommentFormControl {
 
         formNode.addEventListener('submit', e => this._evtSaveClick(e));
 
-        if (this._settings.canCancel) {
+        if (this._canCancel) {
             cancelButton
                 .addEventListener('click', e => this._evtCancelClick(e));
         } else {
@@ -43,7 +44,11 @@ class CommentFormControl {
             });
         }
         textareaNode.addEventListener('change', e => {
-            misc.enableExitConfirmation();
+            this.dispatchEvent(new CustomEvent('change', {
+                detail: {
+                    target: this,
+                },
+            }));
             this._growTextArea();
         });
 
@@ -60,7 +65,6 @@ class CommentFormControl {
     exitEditMode() {
         this._hostNode.classList.remove('editing');
         this._hostNode.querySelector('.tabs-wrapper').style.minHeight = null;
-        misc.disableExitConfirmation();
         views.clearMessages(this._hostNode);
         this.setText(this._comment.text);
     }
@@ -97,11 +101,13 @@ class CommentFormControl {
 
     _evtSaveClick(e) {
         e.preventDefault();
-        if (!this._settings.onSave) {
-            throw 'No save handler';
-        }
-        this._settings.onSave(this._textareaNode.value)
-            .then(() => { misc.disableExitConfirmation(); });
+        this.dispatchEvent(new CustomEvent('submit', {
+            detail: {
+                target: this,
+                comment: this._comment,
+                text: this._textareaNode.value,
+            },
+        }));
     }
 
     _evtCancelClick(e) {
@@ -125,7 +131,7 @@ class CommentFormControl {
     _growTextArea() {
         this._textareaNode.style.height =
             Math.max(
-                this._settings.minHeight || 0,
+                this._minHeight || 0,
                 this._textareaNode.scrollHeight) + 'px';
     }
 };

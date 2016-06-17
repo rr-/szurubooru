@@ -1,93 +1,128 @@
 'use strict';
 
 const api = require('../api.js');
+const events = require('../events.js');
 const tags = require('../tags.js');
 const views = require('../util/views.js');
 
-class PostReadonlySidebarControl {
+const template = views.getTemplate('post-readonly-sidebar');
+const scoreTemplate = views.getTemplate('score');
+const favTemplate = views.getTemplate('fav');
+
+class PostReadonlySidebarControl extends events.EventTarget {
     constructor(hostNode, post, postContentControl) {
+        super();
         this._hostNode = hostNode;
         this._post = post;
         this._postContentControl = postContentControl;
-        this._template = views.getTemplate('post-readonly-sidebar');
-        this._scoreTemplate = views.getTemplate('score');
-        this._favTemplate = views.getTemplate('fav');
 
-        this.install();
-    }
+        post.addEventListener('changeFavorite', e => this._evtChangeFav(e));
+        post.addEventListener('changeScore', e => this._evtChangeScore(e));
 
-    install() {
-        const sourceNode = this._template({
+        views.replaceContent(this._hostNode, template({
             post: this._post,
             getTagCategory: this._getTagCategory,
             getTagUsages: this._getTagUsages,
             canListPosts: api.hasPrivilege('posts:list'),
             canViewTags: api.hasPrivilege('tags:view'),
-        });
+        }));
 
-        views.replaceContent(
-            sourceNode.querySelector('.score-container'),
-            this._scoreTemplate({
-                score: this._post.score,
-                ownScore: this._post.ownScore,
-                canScore: api.hasPrivilege('posts:score'),
-            }));
+        this._installFav();
+        this._installScore();
+        this._installFitButtons();
+        this._syncFitButton();
+    }
 
+    get _scoreContainerNode() {
+        return this._hostNode.querySelector('.score-container');
+    }
+
+    get _favContainerNode() {
+        return this._hostNode.querySelector('.fav-container');
+    }
+
+    get _upvoteButtonNode() {
+        return this._hostNode.querySelector('.upvote');
+    }
+
+    get _downvoteButtonNode() {
+        return this._hostNode.querySelector('.downvote');
+    }
+
+    get _addFavButtonNode() {
+        return this._hostNode.querySelector('.add-favorite');
+    }
+
+    get _remFavButtonNode() {
+        return this._hostNode.querySelector('.remove-favorite');
+    }
+
+    get _fitBothButtonNode() {
+        return this._hostNode.querySelector('.fit-both');
+    }
+
+    get _fitOriginalButtonNode() {
+        return this._hostNode.querySelector('.fit-original');
+    }
+
+    get _fitWidthButtonNode() {
+        return this._hostNode.querySelector('.fit-width');
+    }
+
+    get _fitHeightButtonNode() {
+        return this._hostNode.querySelector('.fit-height');
+    }
+
+    _installFitButtons() {
+        this._fitBothButtonNode.addEventListener(
+            'click', this._eventZoomProxy(
+                () => this._postContentControl.fitBoth()));
+        this._fitOriginalButtonNode.addEventListener(
+            'click', this._eventZoomProxy(
+                () => this._postContentControl.fitOriginal()));
+        this._fitWidthButtonNode.addEventListener(
+            'click', this._eventZoomProxy(
+                () => this._postContentControl.fitWidth()));
+        this._fitHeightButtonNode.addEventListener(
+            'click', this._eventZoomProxy(
+                () => this._postContentControl.fitHeight()));
+    }
+
+    _installFav() {
         views.replaceContent(
-            sourceNode.querySelector('.fav-container'),
-            this._favTemplate({
+            this._favContainerNode,
+            favTemplate({
                 favoriteCount: this._post.favoriteCount,
                 ownFavorite: this._post.ownFavorite,
                 canFavorite: api.hasPrivilege('posts:favorite'),
             }));
 
-        const upvoteButton = sourceNode.querySelector('.upvote');
-        const downvoteButton = sourceNode.querySelector('.downvote');
-        const addFavButton = sourceNode.querySelector('.add-favorite');
-        const remFavButton = sourceNode.querySelector('.remove-favorite');
-        const fitBothButton = sourceNode.querySelector('.fit-both');
-        const fitOriginalButton = sourceNode.querySelector('.fit-original');
-        const fitWidthButton = sourceNode.querySelector('.fit-width');
-        const fitHeightButton = sourceNode.querySelector('.fit-height');
-
-        if (upvoteButton) {
-            upvoteButton.addEventListener(
-                'click', this._eventRequestProxy(
-                    () => this._setScore(this._post.ownScore === 1 ? 0 : 1)));
+        if (this._addFavButtonNode) {
+            this._addFavButtonNode.addEventListener(
+                'click', e => this._evtAddToFavoritesClick(e));
         }
-        if (downvoteButton) {
-            downvoteButton.addEventListener(
-                'click', this._eventRequestProxy(
-                    () => this._setScore(this._post.ownScore === -1 ? 0 : -1)));
+        if (this._remFavButtonNode) {
+            this._remFavButtonNode.addEventListener(
+                'click', e => this._evtRemoveFromFavoritesClick(e));
         }
+    }
 
-        if (addFavButton) {
-            addFavButton.addEventListener(
-                'click', this._eventRequestProxy(
-                    () => this._addToFavorites()));
+    _installScore() {
+        views.replaceContent(
+            this._scoreContainerNode,
+            scoreTemplate({
+                score: this._post.score,
+                ownScore: this._post.ownScore,
+                canScore: api.hasPrivilege('posts:score'),
+            }));
+        if (this._upvoteButtonNode) {
+            this._upvoteButtonNode.addEventListener(
+                'click', e => this._evtScoreClick(e, 1));
         }
-        if (remFavButton) {
-            remFavButton.addEventListener(
-                'click', this._eventRequestProxy(
-                    () => this._removeFromFavorites()));
+        if (this._downvoteButtonNode) {
+            this._downvoteButtonNode.addEventListener(
+                'click', e => this._evtScoreClick(e, -1));
         }
-
-        fitBothButton.addEventListener(
-            'click', this._eventZoomProxy(
-                () => this._postContentControl.fitBoth()));
-        fitOriginalButton.addEventListener(
-            'click', this._eventZoomProxy(
-                () => this._postContentControl.fitOriginal()));
-        fitWidthButton.addEventListener(
-            'click', this._eventZoomProxy(
-                () => this._postContentControl.fitWidth()));
-        fitHeightButton.addEventListener(
-            'click', this._eventZoomProxy(
-                () => this._postContentControl.fitHeight()));
-
-        views.replaceContent(this._hostNode, sourceNode);
-
-        this._syncFitButton();
     }
 
     _eventZoomProxy(func) {
@@ -96,15 +131,6 @@ class PostReadonlySidebarControl {
             e.target.blur();
             func();
             this._syncFitButton();
-        };
-    }
-
-    _eventRequestProxy(promise) {
-        return e => {
-            e.preventDefault();
-            promise().then(() => {
-                this.install();
-            });
         };
     }
 
@@ -134,37 +160,40 @@ class PostReadonlySidebarControl {
         return tag ? tag.category : 'unknown';
     }
 
-    _setScore(score) {
-        return this._requestAndRefresh(
-            () => api.put('/post/' + this._post.id + '/score', {score: score}));
+    _evtAddToFavoritesClick(e) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('favorite', {
+            detail: {
+                post: this._post,
+            },
+        }));
     }
 
-    _addToFavorites() {
-        return this._requestAndRefresh(
-            () => api.post('/post/' + this._post.id + '/favorite'));
+    _evtRemoveFromFavoritesClick(e) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('unfavorite', {
+            detail: {
+                post: this._post,
+            },
+        }));
     }
 
-    _removeFromFavorites() {
-        return this._requestAndRefresh(
-            () => api.delete('/post/' + this._post.id + '/favorite'));
+    _evtScoreClick(e, score) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('score', {
+            detail: {
+                post: this._post,
+                score: this._post.ownScore === score ? 0 : score,
+            },
+        }));
     }
 
-    _requestAndRefresh(requestPromise) {
-        return new Promise((resolve, reject) => {
-            requestPromise()
-                .then(
-                    response => { return api.get('/post/' + this._post.id); },
-                    response => { return Promise.reject(response); })
-                .then(
-                    response => {
-                        this._post = response;
-                        resolve();
-                    },
-                    response => {
-                        reject();
-                        window.alert(response.description);
-                    });
-        });
+    _evtChangeFav(e) {
+        this._installFav();
+    }
+
+    _evtChangeScore(e) {
+        this._installScore();
     }
 };
 

@@ -13,10 +13,22 @@ class EventTarget {
     }
 };
 
+function proxyEvent(source, target, sourceEventType, targetEventType) {
+    if (!targetEventType) {
+        targetEventType = sourceEventType;
+    }
+    source.addEventListener(sourceEventType, e => {
+        target.dispatchEvent(new CustomEvent(targetEventType, {
+            detail: e.detail,
+        }));
+    });
+}
+
 module.exports = {
     Success: 'success',
     Error: 'error',
     Info: 'info',
 
+    proxyEvent: proxyEvent,
     EventTarget: EventTarget,
 };

@@ -1,22 +1,20 @@
 'use strict';
 
+const events = require('../events.js');
 const views = require('../util/views.js');
 
-class PostEditSidebarControl {
+const template = views.getTemplate('post-edit-sidebar');
+
+class PostEditSidebarControl extends events.EventTarget {
     constructor(hostNode, post, postContentControl) {
+        super();
         this._hostNode = hostNode;
         this._post = post;
         this._postContentControl = postContentControl;
-        this._template = views.getTemplate('post-edit-sidebar');
 
-        this.install();
-    }
-
-    install() {
-        const sourceNode = this._template({
+        views.replaceContent(this._hostNode, template({
             post: this._post,
-        });
-        views.replaceContent(this._hostNode, sourceNode);
+        }));
     }
 };
 

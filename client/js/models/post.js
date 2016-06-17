@@ -2,6 +2,7 @@
 
 const api = require('../api.js');
 const events = require('../events.js');
+const CommentList = require('./comment_list.js');
 
 class Post extends events.EventTarget {
     constructor() {
@@ -29,7 +30,22 @@ class Post extends events.EventTarget {
         this._ownFavorite = null;
     }
 
-    // encapsulation - don't let set these casually
+    static fromResponse(response) {
+        const post = new Post();
+        post._updateFromResponse(response);
+        return post;
+    }
+
+    static get(id) {
+        return api.get('/post/' + id)
+            .then(response => {
+                const post = Post.fromResponse(response);
+                return Promise.resolve(post);
+            }, response => {
+                return Promise.reject(response);
+            });
+    }
+
     get id() { return this._id; }
     get type() { return this._type; }
     get mimeType() { return this._mimeType; }
@@ -52,37 +68,97 @@ class Post extends events.EventTarget {
     get ownFavorite() { return this._ownFavorite; }
     get ownScore() { return this._ownScore; }
 
-    static get(id) {
-        return new Promise((resolve, reject) => {
-            api.get('/post/' + id)
-                .then(response => {
-                    const post = new Post();
-                    post._id = response.id;
-                    post._type = response.type;
-                    post._mimeType = response.mimeType;
-                    post._creationTime = response.creationTime;
-                    post._user = response.user;
-                    post._safety = response.safety;
-                    post._contentUrl = response.contentUrl;
-                    post._thumbnailUrl = response.thumbnailUrl;
-                    post._canvasWidth = response.canvasWidth;
-                    post._canvasHeight = response.canvasHeight;
-                    post._fileSize = response.fileSize;
+    setScore(score) {
+        return api.put('/post/' + this._id + '/score', {score: score})
+            .then(response => {
+                const prevFavorite = this._ownFavorite;
+                this._updateFromResponse(response);
+                if (this._ownFavorite !== prevFavorite) {
+                    this.dispatchEvent(new CustomEvent('changeFavorite', {
+                        details: {
+                            post: this,
+                        },
+                    }));
+                }
+                this.dispatchEvent(new CustomEvent('changeScore', {
+                    details: {
+                        post: this,
+                    },
+                }));
+                return Promise.resolve();
+            }, response => {
+                return Promise.reject(response.description);
+            });
+    }
 
-                    post._tags = response.tags;
-                    post._notes = response.notes;
-                    post._comments = response.comments;
-                    post._relations = response.relations;
+    addToFavorites() {
+        return api.post('/post/' + this.id + '/favorite')
+            .then(response => {
+                const prevScore = this._ownScore;
+                this._updateFromResponse(response);
+                if (this._ownScore !== prevScore) {
+                    this.dispatchEvent(new CustomEvent('changeScore', {
+                        details: {
+                            post: this,
+                        },
+                    }));
+                }
+                this.dispatchEvent(new CustomEvent('changeFavorite', {
+                    details: {
+                        post: this,
+                    },
+                }));
+                return Promise.resolve();
+            }, response => {
+                return Promise.reject(response.description);
+            });
+    }
 
-                    post._score = response.score;
-                    post._favoriteCount = response.favoriteCount;
-                    post._ownScore = response.ownScore;
-                    post._ownFavorite = response.ownFavorite;
-                    resolve(post);
-                }, response => {
-                    reject(response);
-                });
-        });
+    removeFromFavorites() {
+        return api.delete('/post/' + this.id + '/favorite')
+            .then(response => {
+                const prevScore = this._ownScore;
+                this._updateFromResponse(response);
+                if (this._ownScore !== prevScore) {
+                    this.dispatchEvent(new CustomEvent('changeScore', {
+                        details: {
+                            post: this,
+                        },
+                    }));
+                }
+                this.dispatchEvent(new CustomEvent('changeFavorite', {
+                    details: {
+                        post: this,
+                    },
+                }));
+                return Promise.resolve();
+            }, response => {
+                return Promise.reject(response.description);
+            });
+    }
+
+    _updateFromResponse(response) {
+        this._id = response.id;
+        this._type = response.type;
+        this._mimeType = response.mimeType;
+        this._creationTime = response.creationTime;
+        this._user = response.user;
+        this._safety = response.safety;
+        this._contentUrl = response.contentUrl;
+        this._thumbnailUrl = response.thumbnailUrl;
+        this._canvasWidth = response.canvasWidth;
+        this._canvasHeight = response.canvasHeight;
+        this._fileSize = response.fileSize;
+
+        this._tags = response.tags;
+        this._notes = response.notes;
+        this._comments = CommentList.fromResponse(response.comments);
+        this._relations = response.relations;
+
+        this._score = response.score;
+        this._favoriteCount = response.favoriteCount;
+        this._ownScore = response.ownScore;
+        this._ownFavorite = response.ownFavorite;
     }
 };
 
