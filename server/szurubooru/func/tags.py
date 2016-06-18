@@ -90,7 +90,7 @@ def try_get_tag_by_name(name):
     return db.session \
         .query(db.Tag) \
         .join(db.TagName) \
-        .filter(db.TagName.name.ilike(name)) \
+        .filter(sqlalchemy.func.lower(db.TagName.name) == name.lower()) \
         .one_or_none()
 
 def get_tag_by_name(name):
@@ -105,7 +105,7 @@ def get_tags_by_names(names):
         return []
     expr = sqlalchemy.sql.false()
     for name in names:
-        expr = expr | db.TagName.name.ilike(name)
+        expr = expr | (sqlalchemy.func.lower(db.TagName.name) == name.lower())
     return db.session.query(db.Tag).join(db.TagName).filter(expr).all()
 
 def get_or_create_tags_by_names(names):
@@ -192,7 +192,7 @@ def update_tag_names(tag, names):
     for name in names:
         if util.value_exceeds_column_size(name, db.TagName.name):
             raise InvalidTagNameError('Name is too long.')
-        expr = expr | db.TagName.name.ilike(name)
+        expr = expr | (sqlalchemy.func.lower(db.TagName.name) == name.lower())
     if tag.tag_id:
         expr = expr & (db.TagName.tag_id != tag.tag_id)
     existing_tags = db.session.query(db.TagName).filter(expr).all()

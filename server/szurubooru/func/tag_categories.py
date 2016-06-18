@@ -1,4 +1,5 @@
 import re
+import sqlalchemy
 from szurubooru import config, db, errors
 from szurubooru.func import util, snapshots, cache
 
@@ -37,7 +38,7 @@ def create_category(name, color):
 def update_category_name(category, name):
     if not name:
         raise InvalidTagCategoryNameError('Name cannot be empty.')
-    expr = db.TagCategory.name.ilike(name)
+    expr = sqlalchemy.func.lower(db.TagCategory.name) == name.lower()
     if category.tag_category_id:
         expr = expr & (db.TagCategory.tag_category_id != category.tag_category_id)
     already_exists = db.session.query(db.TagCategory).filter(expr).count() > 0
@@ -61,7 +62,7 @@ def update_category_color(category, color):
 def try_get_category_by_name(name):
     return db.session \
         .query(db.TagCategory) \
-        .filter(db.TagCategory.name.ilike(name)) \
+        .filter(sqlalchemy.func.lower(db.TagCategory.name) == name.lower()) \
         .one_or_none()
 
 def get_category_by_name(name):
