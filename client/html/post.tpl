@@ -3,7 +3,11 @@
         <nav class='buttons'>
             <article class='next-post'>
                 <% if (ctx.nextPostId) { %>
-                    <a href='/post/<%= ctx.nextPostId %>'>
+                    <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
+                        <a href='/post/<%= ctx.nextPostId %>/text=<%= ctx.searchQuery.text %>'>
+                    <% } else { %>
+                        <a href='/post/<%= ctx.nextPostId %>'>
+                    <% } %>
                 <% } else { %>
                     <a class='inactive'>
                 <% } %>
@@ -13,7 +17,11 @@
             </article>
             <article class='previous-post'>
                 <% if (ctx.prevPostId) { %>
-                    <a href='/post/<%= ctx.prevPostId %>'>
+                    <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
+                        <a href='/post/<%= ctx.prevPostId %>/text=<%= ctx.searchQuery.text %>'>
+                    <% } else { %>
+                        <a href='/post/<%= ctx.prevPostId %>'>
+                    <% } %>
                 <% } else { %>
                     <a class='inactive'>
                 <% } %>
@@ -29,7 +37,11 @@
                     </a>
                 <% } else { %>
                     <% if (ctx.canEditPosts) { %>
-                        <a href='/post/<%= ctx.post.id %>/edit'>
+                        <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
+                            <a href='/post/<%= ctx.post.id %>/edit/text=<%= ctx.searchQuery.text %>'>
+                        <% } else { %>
+                            <a href='/post/<%= ctx.post.id %>/edit'>
+                        <% } %>
                     <% } else { %>
                         <a class='inactive'>
                     <% } %>

@@ -10,13 +10,14 @@ const PostView = require('../views/post_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 class PostController {
-    constructor(id, editMode) {
+    constructor(id, editMode, searchQuery) {
         topNavigation.activate('posts');
 
         Promise.all([
                 Post.get(id),
                 api.get(`/post/${id}/around?fields=id&query=` +
-                    this._decorateSearchQuery('')),
+                    this._decorateSearchQuery(
+                        searchQuery ? searchQuery.text : '')),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
             this._post = post;
@@ -28,6 +29,7 @@ class PostController {
                 canEditPosts: api.hasPrivilege('posts:edit'),
                 canListComments: api.hasPrivilege('comments:list'),
                 canCreateComments: api.hasPrivilege('comments:create'),
+                searchQuery: searchQuery,
             });
             if (this._view.sidebarControl) {
                 this._view.sidebarControl.addEventListener(
@@ -138,10 +140,17 @@ class PostController {
 }
 
 module.exports = router => {
-    router.enter('/post/:id', (ctx, next) => {
-        ctx.controller = new PostController(ctx.params.id, false);
-    });
-    router.enter('/post/:id/edit', (ctx, next) => {
-        ctx.controller = new PostController(ctx.params.id, true);
-    });
+    router.enter('/post/:id/edit/:query?',
+        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+        (ctx, next) => {
+            ctx.controller = new PostController(
+                ctx.params.id, true, ctx.searchQuery);
+        });
+    router.enter(
+        '/post/:id/:query?',
+        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+        (ctx, next) => {
+            ctx.controller = new PostController(
+                ctx.params.id, false, ctx.searchQuery);
+        });
 };
