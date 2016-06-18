@@ -98,8 +98,8 @@ class Validator
                 throw new \DomainException('Tags cannot be empty.');
 
             //: causes problems with complex search (e.g. id:5).
-            if (strpos($tag, ':') > 0)
-                throw new \DomainException('Colon in tag may appear only at the beginning.');
+            if (strpos($tag, ':') !== false && strpos($tag, ':') !== 0 && strpos($tag, ':') !== strlen($tag) - 1)
+                throw new \DomainException('Colon in tag may appear only at the beginning or end.');
 
             $this->validateMaxLength($tag, 64, 'Tag');
 
