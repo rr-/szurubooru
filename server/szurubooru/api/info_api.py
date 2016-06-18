@@ -2,7 +2,7 @@ import datetime
 import os
 from szurubooru import config
 from szurubooru.api.base_api import BaseApi
-from szurubooru.func import posts, users
+from szurubooru.func import posts, users, util
 
 class InfoApi(BaseApi):
     def __init__(self):
@@ -21,6 +21,15 @@ class InfoApi(BaseApi):
             'featuringUser': users.serialize_user(post_feature.user, ctx.user) \
                 if post_feature else None,
             'serverTime': datetime.datetime.now(),
+            'config': {
+                'userNameRegex': config.config['user_name_regex'],
+                'passwordRegex': config.config['password_regex'],
+                'tagNameRegex': config.config['tag_name_regex'],
+                'tagCategoryNameRegex': config.config['tag_category_name_regex'],
+                'defaultUserRank': config.config['default_rank'],
+                'privileges': util.snake_case_to_lower_camel_case_keys(
+                    config.config['privileges']),
+            },
         }
 
     def _get_disk_usage(self):

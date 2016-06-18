@@ -1376,7 +1376,15 @@ data.
         "featuredPost": <featured-post>,
         "featuringTime": <time>,
         "featuringUser": <user>,
-        "serverTime": <server-time>
+        "serverTime": <server-time>,
+        "config": {
+            "userNameRegex": <user-name-regex>,
+            "passwordRegex": <password-regex>,
+            "tagNameRegex": <tag-name-regex>,
+            "tagCategoryNameRegex": <tag-category-name-regex>,
+            "defaultUserRank": <default-rank>,
+            "privileges": <privileges>
+        }
     }
     ```
 
@@ -1384,7 +1392,10 @@ data.
 
     Retrieves simple statistics. `<featured-post>` is null if there is no
     featured post yet. `<server-time>` is pretty much the same as the `Date`
-    HTTP field, only formatted in a manner consistent with other dates.
+    HTTP field, only formatted in a manner consistent with other dates. Values
+    in `config` key are taken directly from the server config, with the
+    exception of privilege array keys being converted to lower camel case to
+    match the API convention.
 
 
 

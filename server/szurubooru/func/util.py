@@ -6,6 +6,16 @@ import tempfile
 from contextlib import contextmanager
 from szurubooru import errors
 
+def snake_case_to_lower_camel_case(text):
+    components = text.split('_')
+    return components[0] + ''.join(word[0].upper() + word[1:] for word in components[1:])
+
+def snake_case_to_lower_camel_case_keys(source):
+    target = {}
+    for key, value in source.items():
+        target[snake_case_to_lower_camel_case(key)] = value
+    return target
+
 def get_serialization_options(ctx):
     return ctx.get_param_as_list('fields', required=False, default=None)
 
