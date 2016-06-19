@@ -22,7 +22,7 @@ class TopNavigationController {
     }
 
     _evtActivate(e) {
-        this._topNavigationView.activate(e.key);
+        this._topNavigationView.activate(e.detail.key);
     }
 
     _updateNavigationFromPrivileges() {
