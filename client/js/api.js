@@ -122,6 +122,7 @@ class Api extends events.EventTarget {
     }
 
     login(userName, userPassword, doRemember) {
+        this.cache = {};
         return new Promise((resolve, reject) => {
             this.userName = userName;
             this.userPassword = userPassword;
@@ -138,7 +139,7 @@ class Api extends events.EventTarget {
                     this.user = response;
                     resolve();
                     this.dispatchEvent(new CustomEvent('login'));
-                }).catch(response => {
+                }, response => {
                     reject(response.description);
                     this.logout();
                 });
