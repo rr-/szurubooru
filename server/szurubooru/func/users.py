@@ -169,13 +169,16 @@ def update_user_avatar(user, avatar_style, avatar_content):
         user.avatar_style = user.AVATAR_GRAVATAR
     elif avatar_style == 'manual':
         user.avatar_style = user.AVATAR_MANUAL
+        avatar_path = 'avatars/' + user.name.lower() + '.png'
         if not avatar_content:
+            if files.has(avatar_path):
+                return
             raise InvalidAvatarError('Avatar content missing.')
         image = images.Image(avatar_content)
         image.resize_fill(
             int(config.config['thumbnails']['avatar_width']),
             int(config.config['thumbnails']['avatar_height']))
-        files.save('avatars/' + user.name.lower() + '.png', image.to_png())
+        files.save(avatar_path, image.to_png())
     else:
         raise InvalidAvatarError(
             'Avatar style %r is invalid. Valid avatar styles: %r.' % (
