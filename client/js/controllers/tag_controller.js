@@ -3,26 +3,18 @@
 const router = require('../router.js');
 const api = require('../api.js');
 const tags = require('../tags.js');
+const Tag = require('../models/tag.js');
 const topNavigation = require('../models/top_navigation.js');
 const TagView = require('../views/tag_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 class TagController {
     constructor(ctx, section) {
-        new Promise((resolve, reject) => {
-            if (ctx.state.tag) {
-                resolve(ctx.state.tag);
-                return;
-            }
-            api.get('/tag/' + ctx.params.name).then(response => {
-                ctx.state.tag = response;
-                ctx.save();
-                resolve(ctx.state.tag);
-            }, response => {
-                reject(response.description);
-            });
-        }).then(tag => {
+        Tag.get(ctx.params.name).then(tag => {
             topNavigation.activate('tags');
+
+            this._name = ctx.params.name;
+            tag.addEventListener('change', e => this._evtSaved(e));
 
             const categories = {};
             for (let category of tags.getAllCategories()) {
@@ -50,19 +42,20 @@ class TagController {
         });
     }
 
+    _evtSaved(e) {
+        if (this._name !== e.detail.tag.names[0]) {
+            router.replace('/tag/' + e.detail.tag.names[0], null, false);
+        }
+    }
+
     _evtChange(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        return api.put('/tag/' + e.detail.tag.names[0], {
-            names: e.detail.names,
-            category: e.detail.category,
-            implications: e.detail.implications,
-            suggestions: e.detail.suggestions,
-        }).then(response => {
-            // TODO: update header links and text
-            if (e.detail.names && e.detail.names[0] !== e.detail.tag.names[0]) {
-                router.replace('/tag/' + e.detail.names[0], null, false);
-            }
+        e.detail.tag.names = e.detail.names;
+        e.detail.tag.category = e.detail.category;
+        e.detail.tag.implications = e.detail.implications;
+        e.detail.tag.suggestions = e.detail.suggestions;
+        e.detail.tag.save().then(() => {
             this._view.showSuccess('Tag saved.');
             this._view.enableForm();
         }, response => {
@@ -74,17 +67,11 @@ class TagController {
     _evtMerge(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        return api.post(
-            '/tag-merge/',
-            {remove: e.detail.tag.names[0], mergeTo: e.detail.targetTagName}
-        ).then(response => {
-            // TODO: update header links and text
-            router.replace(
-                '/tag/' + e.detail.targetTagName + '/merge', null, false);
+        e.detail.tag.merge(e.detail.targetTagName).then(() => {
             this._view.showSuccess('Tag merged.');
             this._view.enableForm();
-        }, response => {
-            this._view.showError(response.description);
+        }, errorMessage => {
+            this._view.showError(errorMessage);
             this._view.enableForm();
         });
     }
@@ -92,13 +79,14 @@ class TagController {
     _evtDelete(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        return api.delete('/tag/' + e.detail.tag.names[0]).then(response => {
-            const ctx = router.show('/tags/');
-            ctx.controller.showSuccess('Tag deleted.');
-        }, response => {
-            this._view.showError(response.description);
-            this._view.enableForm();
-        });
+        e.detail.tag.delete()
+            .then(() => {
+                const ctx = router.show('/tags/');
+                ctx.controller.showSuccess('Tag deleted.');
+            }, errorMessage => {
+                this._view.showError(errorMessage);
+                this._view.enableForm();
+            });
     }
 }
 

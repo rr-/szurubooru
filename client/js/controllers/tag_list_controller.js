@@ -2,10 +2,14 @@
 
 const api = require('../api.js');
 const misc = require('../util/misc.js');
+const TagList = require('../models/tag_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
 const TagsHeaderView = require('../views/tags_header_view.js');
 const TagsPageView = require('../views/tags_page_view.js');
+
+const fields = [
+    'names', 'suggestions', 'implications', 'lastEditTime', 'usages'];
 
 class TagListController {
     constructor(ctx) {
@@ -15,15 +19,9 @@ class TagListController {
             searchQuery: ctx.searchQuery,
             clientUrl: '/tags/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
-            requestPage: PageController.createHistoryCacheProxy(
-                ctx,
-                page => {
-                    const text = ctx.searchQuery.text;
-                    return api.get(
-                        `/tags/?query=${text}&page=${page}&pageSize=50` +
-                        '&fields=names,suggestions,implications,' +
-                        'lastEditTime,usages');
-                }),
+            requestPage: page => {
+                return TagList.search(ctx.searchQuery.text, page, 50, fields);
+            },
             headerRenderer: headerCtx => {
                 Object.assign(headerCtx, {
                     canEditTagCategories:

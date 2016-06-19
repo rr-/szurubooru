@@ -4,38 +4,19 @@ const router = require('../router.js');
 const api = require('../api.js');
 const config = require('../config.js');
 const views = require('../util/views.js');
+const User = require('../models/user.js');
 const topNavigation = require('../models/top_navigation.js');
 const UserView = require('../views/user_view.js');
 const EmptyView = require('../views/empty_view.js');
 
-const rankNames = new Map([
-    ['anonymous', 'Anonymous'],
-    ['restricted', 'Restricted user'],
-    ['regular', 'Regular user'],
-    ['power', 'Power user'],
-    ['moderator', 'Moderator'],
-    ['administrator', 'Administrator'],
-    ['nobody', 'Nobody'],
-]);
-
 class UserController {
     constructor(ctx, section) {
-        new Promise((resolve, reject) => {
-            if (ctx.state.user) {
-                resolve(ctx.state.user);
-                return;
-            }
-            api.get('/user/' + ctx.params.name).then(response => {
-                response.rankName = rankNames.get(response.rank);
-                ctx.state.user = response;
-                ctx.save();
-                resolve(ctx.state.user);
-            }, response => {
-                reject(response.description);
-            });
-        }).then(user => {
+        User.get(ctx.params.name).then(user => {
             const isLoggedIn = api.isLoggedIn(user);
             const infix = isLoggedIn ? 'self' : 'any';
+
+            this._name = ctx.params.name;
+            user.addEventListener('change', e => this._evtSaved(e));
 
             const myRankIndex = api.user ?
                 api.allRanks.indexOf(api.user.rank) :
@@ -48,7 +29,7 @@ class UserController {
                 if (rankIdx > myRankIndex) {
                     continue;
                 }
-                ranks[rankIdentifier] = rankNames.get(rankIdentifier);
+                ranks[rankIdentifier] = api.rankNames.get(rankIdentifier);
             }
 
             if (isLoggedIn) {
@@ -77,64 +58,64 @@ class UserController {
         });
     }
 
+    _evtSaved(e) {
+        if (this._name !== e.detail.user.name) {
+            router.replace(
+                '/user/' + e.detail.user.name + '/edit', null, false);
+        }
+    }
+
     _evtChange(e) {
         this._view.clearMessages();
         this._view.disableForm();
         const isLoggedIn = api.isLoggedIn(e.detail.user);
         const infix = isLoggedIn ? 'self' : 'any';
 
-        const files = [];
-        const data = {};
-        if (e.detail.name) {
-            data.name = e.detail.name;
+        if (e.detail.name !== undefined) {
+            e.detail.user.name = e.detail.name;
         }
-        if (e.detail.password) {
-            data.password = e.detail.password;
+        if (e.detail.email !== undefined) {
+            e.detail.user.email = e.detail.email;
         }
-        if (api.hasPrivilege('users:edit:' + infix + ':email')) {
-            data.email = e.detail.email;
-        }
-        if (e.detail.rank) {
-            data.rank = e.detail.rank;
-        }
-        if (e.detail.avatarStyle &&
-                (e.detail.avatarStyle != e.detail.user.avatarStyle ||
-                e.detail.avatarContent)) {
-            data.avatarStyle = e.detail.avatarStyle;
-        }
-        if (e.detail.avatarContent) {
-            files.avatar = e.detail.avatarContent;
+        if (e.detail.rank !== undefined) {
+            e.detail.user.rank = e.detail.rank;
         }
 
-        api.put('/user/' + e.detail.user.name, data, files)
-            .then(response => {
-                return isLoggedIn ?
-                    api.login(
-                        data.name || api.userName,
-                        data.password || api.userPassword,
-                        false) :
-                    Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
-            }).then(() => {
-                if (data.name && data.name !== e.detail.user.name) {
-                    // TODO: update header links and text
-                    router.replace('/user/' + data.name + '/edit', null, false);
-                }
-                this._view.showSuccess('Settings updated.');
-                this._view.enableForm();
-            }, errorMessage => {
-                this._view.showError(errorMessage);
-                this._view.enableForm();
-            });
+        if (e.detail.password !== undefined) {
+            e.detail.user.password = e.detail.password;
+        }
+
+        if (e.detail.avatarStyle !== undefined) {
+            e.detail.user.avatarStyle = e.detail.avatarStyle;
+            if (e.detail.avatarContent) {
+                e.detail.user.avatarContent = e.detail.avatarContent;
+            }
+        }
+
+        e.detail.user.save().then(() => {
+            return isLoggedIn ?
+                api.login(
+                    e.detail.name || api.userName,
+                    e.detail.password || api.userPassword,
+                    false) :
+                Promise.resolve();
+        }, errorMessage => {
+            return Promise.reject(errorMessage);
+        }).then(() => {
+            this._view.showSuccess('Settings updated.');
+            this._view.enableForm();
+        }, errorMessage => {
+            this._view.showError(errorMessage);
+            this._view.enableForm();
+        });
     }
 
     _evtDelete(e) {
         this._view.clearMessages();
         this._view.disableForm();
         const isLoggedIn = api.isLoggedIn(e.detail.user);
-        api.delete('/user/' + e.detail.user.name)
-            .then(response => {
+        e.detail.user.delete()
+            .then(() => {
                 if (isLoggedIn) {
                     api.forget();
                     api.logout();
@@ -146,7 +127,7 @@ class UserController {
                     const ctx = router.show('/');
                     ctx.controller.showSuccess('Account deleted.');
                 }
-            }, response => {
+            }, errorMessage => {
                 this._view.showError(response.description);
                 this._view.enableForm();
             });

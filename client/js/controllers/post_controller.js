@@ -5,6 +5,7 @@ const misc = require('../util/misc.js');
 const settings = require('../models/settings.js');
 const Comment = require('../models/comment.js');
 const Post = require('../models/post.js');
+const PostList = require('../models/post_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PostView = require('../views/post_view.js');
 const EmptyView = require('../views/empty_view.js');
@@ -15,8 +16,8 @@ class PostController {
 
         Promise.all([
                 Post.get(id),
-                api.get(`/post/${id}/around?fields=id&query=` +
-                    this._decorateSearchQuery(
+                PostList.getAround(
+                    id, this._decorateSearchQuery(
                         searchQuery ? searchQuery.text : '')),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
@@ -53,9 +54,9 @@ class PostController {
                 this._view.commentListControl.addEventListener(
                     'delete', e => this._evtDeleteComment(e));
             }
-        }, response => {
+        }, errorMessage => {
             this._view = new EmptyView();
-            this._view.showError(response.description);
+            this._view.showError(errorMessage);
         });
     }
 

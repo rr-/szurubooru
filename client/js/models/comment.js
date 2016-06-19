@@ -6,16 +6,14 @@ const events = require('../events.js');
 class Comment extends events.EventTarget {
     constructor() {
         super();
-        this.commentList = null;
-
-        this._id = null;
-        this._postId = null;
-        this._text = null;
-        this._user = null;
+        this._id           = null;
+        this._postId       = null;
+        this._text         = null;
+        this._user         = null;
         this._creationTime = null;
         this._lastEditTime = null;
-        this._score = null;
-        this._ownScore = null;
+        this._score        = null;
+        this._ownScore     = null;
     }
 
     static create(postId) {
@@ -30,16 +28,16 @@ class Comment extends events.EventTarget {
         return comment;
     }
 
-    get id() { return this._id; }
-    get postId() { return this._postId; }
-    get text() { return this._text; }
-    get user() { return this._user; }
+    get id()           { return this._id; }
+    get postId()       { return this._postId; }
+    get text()         { return this._text; }
+    get user()         { return this._user; }
     get creationTime() { return this._creationTime; }
     get lastEditTime() { return this._lastEditTime; }
-    get score() { return this._score; }
-    get ownScore() { return this._ownScore; }
+    get score()        { return this._score; }
+    get ownScore()     { return this._ownScore; }
 
-    set text(value) { this._text = value; }
+    set text(value)    { this._text = value; }
 
     save() {
         let promise = null;
@@ -61,7 +59,7 @@ class Comment extends events.EventTarget {
         return promise.then(response => {
             this._updateFromResponse(response);
             this.dispatchEvent(new CustomEvent('change', {
-                details: {
+                detail: {
                     comment: this,
                 },
             }));
@@ -74,11 +72,8 @@ class Comment extends events.EventTarget {
     delete() {
         return api.delete('/comment/' + this._id)
             .then(response => {
-                if (this.commentList) {
-                    this.commentList.remove(this);
-                }
                 this.dispatchEvent(new CustomEvent('delete', {
-                    details: {
+                    detail: {
                         comment: this,
                     },
                 }));
@@ -93,7 +88,7 @@ class Comment extends events.EventTarget {
             .then(response => {
                 this._updateFromResponse(response);
                 this.dispatchEvent(new CustomEvent('changeScore', {
-                    details: {
+                    detail: {
                         comment: this,
                     },
                 }));
@@ -104,14 +99,14 @@ class Comment extends events.EventTarget {
     }
 
     _updateFromResponse(response) {
-        this._id = response.id;
-        this._postId = response.postId;
-        this._text = response.text;
-        this._user = response.user;
+        this._id           = response.id;
+        this._postId       = response.postId;
+        this._text         = response.text;
+        this._user         = response.user;
         this._creationTime = response.creationTime;
         this._lastEditTime = response.lastEditTime;
-        this._score = parseInt(response.score);
-        this._ownScore = parseInt(response.ownScore);
+        this._score        = parseInt(response.score);
+        this._ownScore     = parseInt(response.ownScore);
     }
 }
 

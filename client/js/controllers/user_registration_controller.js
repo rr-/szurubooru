@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
+const User = require('../models/user.js');
 const topNavigation = require('../models/top_navigation.js');
 const RegistrationView = require('../views/registration_view.js');
 
@@ -15,11 +16,11 @@ class UserRegistrationController {
     _evtRegister(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        api.post('/users/', {
-            name: e.detail.name,
-            password: e.detail.password,
-            email: e.detail.email
-        }).then(() => {
+        const user = new User();
+        user.name = e.detail.name;
+        user.email = e.detail.email;
+        user.password = e.detail.password;
+        user.save().then(() => {
             api.forget();
             return api.login(e.detail.name, e.detail.password, false);
         }, response => {

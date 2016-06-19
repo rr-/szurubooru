@@ -60,12 +60,12 @@ class UserEditView extends events.EventTarget {
         e.preventDefault();
         this.dispatchEvent(new CustomEvent('submit', {
             detail: {
-                user: this._user,
-                name: this._userNameFieldNode.value,
-                password: this._passwordFieldNode.value,
-                email: this._emailFieldNode.value,
-                rank: this._rankFieldNode.value,
-                avatarStyle: this._avatarStyleFieldNode.value,
+                user:          this._user,
+                name:          (this._userNameFieldNode || {}).value,
+                email:         (this._emailFieldNode || {}).value,
+                rank:          (this._rankFieldNode || {}).value,
+                avatarStyle:   (this._avatarStyleFieldNode || {}).value,
+                password:      (this._passwordFieldNode || {}).value,
                 avatarContent: this._avatarContent,
             },
         }));

@@ -1,6 +1,6 @@
 <div class='tag-delete'>
     <form>
-        <% if (ctx.tag.usages) { %>
+        <% if (ctx.tag.postCount) { %>
             <p>For extra <s>paranoia</s> safety, only tags that are unused can be deleted.</p>
             <p>Check <a href='/posts/text=<%= ctx.tag.names[0] %>'>which posts</a> are tagged with <%= ctx.tag.names[0] %>.</p>
         <% } else { %>

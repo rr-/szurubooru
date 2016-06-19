@@ -22,6 +22,15 @@ class Api extends events.EventTarget {
             'administrator',
             'nobody',
         ];
+        this.rankNames = new Map([
+            ['anonymous', 'Anonymous'],
+            ['restricted', 'Restricted user'],
+            ['regular', 'Regular user'],
+            ['power', 'Power user'],
+            ['moderator', 'Moderator'],
+            ['administrator', 'Administrator'],
+            ['nobody', 'Nobody'],
+        ]);
     }
 
     get(url, options) {

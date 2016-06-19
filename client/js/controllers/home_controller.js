@@ -2,6 +2,7 @@
 
 const api = require('../api.js');
 const config = require('../config.js');
+const Info = require('../models/info.js');
 const topNavigation = require('../models/top_navigation.js');
 const HomeView = require('../views/home_view.js');
 
@@ -16,20 +17,20 @@ class HomeController {
             canListPosts: api.hasPrivilege('posts:list'),
         });
 
-        api.get('/info')
-            .then(response => {
+        Info.get()
+            .then(info => {
                 this._homeView.setStats({
-                    diskUsage: response.diskUsage,
-                    postCount: response.postCount,
+                    diskUsage: info.diskUsage,
+                    postCount: info.postCount,
                 });
                 this._homeView.setFeaturedPost({
-                    featuredPost: response.featuredPost,
-                    featuringUser: response.featuringUser,
-                    featuringTime: response.featuringTime,
+                    featuredPost: info.featuredPost,
+                    featuringUser: info.featuringUser,
+                    featuringTime: info.featuringTime,
                 });
             },
-            response => {
-                this._homeView.showError(response.description);
+            errorMessage => {
+                this._homeView.showError(errorMessage);
             });
     }
 

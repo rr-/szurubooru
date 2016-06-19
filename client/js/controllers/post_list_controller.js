@@ -3,10 +3,15 @@
 const api = require('../api.js');
 const settings = require('../models/settings.js');
 const misc = require('../util/misc.js');
+const PostList = require('../models/post_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
 const PostsHeaderView = require('../views/posts_header_view.js');
 const PostsPageView = require('../views/posts_page_view.js');
+
+const fields = [
+    'id', 'thumbnailUrl', 'type',
+    'score', 'favoriteCount', 'commentCount', 'tags'];
 
 class PostListController {
     constructor(ctx) {
@@ -16,16 +21,11 @@ class PostListController {
             searchQuery: ctx.searchQuery,
             clientUrl: '/posts/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
-            requestPage: PageController.createHistoryCacheProxy(
-                ctx,
-                page => {
-                    const text
-                        = this._decorateSearchQuery(ctx.searchQuery.text);
-                    return api.get(
-                        `/posts/?query=${text}&page=${page}&pageSize=40` +
-                        '&fields=id,type,tags,score,favoriteCount,' +
-                        'commentCount,thumbnailUrl');
-                }),
+            requestPage: page => {
+                return PostList.search(
+                    this._decorateSearchQuery(ctx.searchQuery.text),
+                    page, 40, fields);
+            },
             headerRenderer: headerCtx => {
                 return new PostsHeaderView(headerCtx);
             },

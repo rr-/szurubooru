@@ -12,10 +12,17 @@ class UserView extends events.EventTarget {
     constructor(ctx) {
         super();
 
-        this._hostNode = document.getElementById('content-holder');
+        this._ctx = ctx;
+        ctx.user.addEventListener('change', e => this._evtChange(e));
         ctx.section = ctx.section || 'summary';
-        views.replaceContent(this._hostNode, template(ctx));
 
+        this._hostNode = document.getElementById('content-holder');
+        this._install();
+    }
+
+    _install() {
+        const ctx = this._ctx;
+        views.replaceContent(this._hostNode, template(ctx));
         for (let item of this._hostNode.querySelectorAll('[data-name]')) {
             if (item.getAttribute('data-name') === ctx.section) {
                 item.className = 'active';
@@ -60,6 +67,11 @@ class UserView extends events.EventTarget {
 
     disableForm() {
         this._view.disableForm();
+    }
+
+    _evtChange(e) {
+        this._ctx.user = e.detail.user;
+        this._install(this._ctx);
     }
 }
 

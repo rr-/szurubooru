@@ -12,16 +12,21 @@ class TagView extends events.EventTarget {
     constructor(ctx) {
         super();
 
-        this._hostNode = document.getElementById('content-holder');
+        this._ctx = ctx;
+        ctx.tag.addEventListener('change', e => this._evtChange(e));
         ctx.section = ctx.section || 'summary';
+
+        this._hostNode = document.getElementById('content-holder');
+        this._install();
+    }
+
+    _install() {
+        const ctx = this._ctx;
         views.replaceContent(this._hostNode, template(ctx));
 
         for (let item of this._hostNode.querySelectorAll('[data-name]')) {
-            if (item.getAttribute('data-name') === ctx.section) {
-                item.className = 'active';
-            } else {
-                item.className = '';
-            }
+            item.classList.toggle(
+                'active', item.getAttribute('data-name') === ctx.section);
         }
 
         ctx.hostNode = this._hostNode.querySelector('.tag-content-holder');
@@ -64,6 +69,11 @@ class TagView extends events.EventTarget {
 
     showError(message) {
         this._view.showError(message);
+    }
+
+    _evtChange(e) {
+        this._ctx.tag = e.detail.tag;
+        this._install(this._ctx);
     }
 }
 

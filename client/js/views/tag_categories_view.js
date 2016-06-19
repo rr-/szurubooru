@@ -1,40 +1,59 @@
 'use strict';
 
+const events = require('../events.js');
 const views = require('../util/views.js');
+const TagCategory = require('../models/tag_category.js');
 
 const template = views.getTemplate('tag-categories');
+const rowTemplate = views.getTemplate('tag-category-row');
 
-class TagCategoriesView {
+class TagCategoriesView extends events.EventTarget {
     constructor(ctx) {
+        super();
+        this._ctx = ctx;
         this._hostNode = document.getElementById('content-holder');
-        const sourceNode = template(ctx);
 
-        const formNode = sourceNode.querySelector('form');
-        const newRowTemplate = sourceNode.querySelector('.add-template');
-        const tableBodyNode = sourceNode.querySelector('tbody');
-        const addLinkNode = sourceNode.querySelector('a.add');
+        views.replaceContent(this._hostNode, template(ctx));
+        views.decorateValidator(this._formNode);
 
-        newRowTemplate.parentNode.removeChild(newRowTemplate);
-        views.decorateValidator(formNode);
-
-        for (let row of tableBodyNode.querySelectorAll('tr')) {
-            this._addRowHandlers(row);
-        }
-
-        if (addLinkNode) {
-            addLinkNode.addEventListener('click', e => {
-                e.preventDefault();
-                let newRow = newRowTemplate.cloneNode(true);
-                tableBody.appendChild(newRow);
-                this._addRowHandlers(row);
-            });
-        }
-
-        formNode.addEventListener('submit', e => {
-            this._evtSaveButtonClick(e, ctx);
+        const categoriesToAdd = Array.from(ctx.tagCategories);
+        categoriesToAdd.sort((a, b) => {
+            if (b.isDefault) {
+                return 1;
+            } else if (a.isDefault) {
+                return -1;
+            }
+            return a.name.localeCompare(b.name);
         });
+        for (let tagCategory of categoriesToAdd) {
+            this._addTagCategoryRowNode(tagCategory);
+        }
 
-        views.replaceContent(this._hostNode, sourceNode);
+        if (this._addLinkNode) {
+            this._addLinkNode.addEventListener(
+                'click', e => this._evtAddButtonClick(e));
+        }
+
+        ctx.tagCategories.addEventListener(
+            'add', e => this._evtTagCategoryAdded(e));
+
+        ctx.tagCategories.addEventListener(
+            'remove', e => this._evtTagCategoryDeleted(e));
+
+        this._formNode.addEventListener(
+            'submit', e => this._evtSaveButtonClick(e, ctx));
+    }
+
+    enableForm() {
+        views.enableForm(this._formNode);
+    }
+
+    disableForm() {
+        views.disableForm(this._formNode);
+    }
+
+    clearMessages() {
+        views.clearMessages(this._hostNode);
     }
 
     showSuccess(message) {
@@ -45,88 +64,100 @@ class TagCategoriesView {
         views.showError(this._hostNode, message);
     }
 
-    _evtSaveButtonClick(e, ctx) {
-        e.preventDefault();
-
-        views.clearMessages(this._hostNode);
-        const tableBodyNode = this._hostNode.querySelector('tbody');
-
-        ctx.getCategories().then(categories => {
-            let existingCategories = {};
-            for (let category of categories) {
-                existingCategories[category.name] = category;
-            }
-
-            let defaultCategory = null;
-            let addedCategories = [];
-            let removedCategories = [];
-            let changedCategories = [];
-            let allNames = [];
-            for (let row of tableBodyNode.querySelectorAll('tr')) {
-                let name = row.getAttribute('data-category');
-                let category = {
-                    originalName: name,
-                    name: row.querySelector('.name input').value,
-                    color: row.querySelector('.color input').value,
-                };
-                if (row.classList.contains('default')) {
-                    defaultCategory = category.name;
-                }
-                if (!name) {
-                    if (category.name) {
-                        addedCategories.push(category);
-                    }
-                } else {
-                    const existingCategory = existingCategories[name];
-                    if (existingCategory.color !== category.color ||
-                            existingCategory.name !== category.name) {
-                        changedCategories.push(category);
-                    }
-                }
-                allNames.push(name);
-            }
-            for (let name of Object.keys(existingCategories)) {
-                if (allNames.indexOf(name) === -1) {
-                    removedCategories.push(name);
-                }
-            }
-            ctx.saveChanges(
-                addedCategories,
-                changedCategories,
-                removedCategories,
-                defaultCategory);
-        });
+    get _formNode() {
+        return this._hostNode.querySelector('form');
     }
 
-    _evtRemoveButtonClick(e, row, link) {
+    get _tableBodyNode() {
+        return this._hostNode.querySelector('tbody');
+    }
+
+    get _addLinkNode() {
+        return this._hostNode.querySelector('a.add');
+    }
+
+    _addTagCategoryRowNode(tagCategory) {
+        const rowNode = rowTemplate(
+            Object.assign(
+                {}, this._ctx, {tagCategory: tagCategory}));
+
+        const nameInput = rowNode.querySelector('.name input');
+        if (nameInput) {
+            nameInput.addEventListener(
+                'change', e => this._evtNameChange(e, rowNode));
+        }
+
+        const colorInput = rowNode.querySelector('.color input');
+        if (colorInput) {
+            colorInput.addEventListener(
+                'change', e => this._evtColorChange(e, rowNode));
+        }
+
+        const removeLinkNode = rowNode.querySelector('.remove a');
+        if (removeLinkNode) {
+            removeLinkNode.addEventListener(
+                'click', e => this._evtDeleteButtonClick(e, rowNode));
+        }
+
+        const defaultLinkNode = rowNode.querySelector('.set-default a');
+        if (defaultLinkNode) {
+            defaultLinkNode.addEventListener(
+                'click', e => this._evtSetDefaultButtonClick(e, rowNode));
+        }
+
+        this._tableBodyNode.appendChild(rowNode);
+
+        rowNode._tagCategory = tagCategory;
+        tagCategory._rowNode = rowNode;
+    }
+
+    _removeTagCategoryRowNode(tagCategory) {
+        const rowNode = tagCategory._rowNode;
+        rowNode.parentNode.removeChild(rowNode);
+    }
+
+    _evtTagCategoryAdded(e) {
+        this._addTagCategoryRowNode(e.detail.tagCategory);
+    }
+
+    _evtTagCategoryDeleted(e) {
+        this._removeTagCategoryRowNode(e.detail.tagCategory);
+    }
+
+    _evtAddButtonClick(e) {
         e.preventDefault();
-        if (link.classList.contains('inactive')) {
+        this._ctx.tagCategories.add(new TagCategory());
+    }
+
+    _evtNameChange(e, rowNode) {
+        rowNode._tagCategory.name = e.target.value;
+    }
+
+    _evtColorChange(e, rowNode) {
+        rowNode._tagCategory.color = e.target.value;
+    }
+
+    _evtDeleteButtonClick(e, rowNode, link) {
+        e.preventDefault();
+        if (e.target.classList.contains('inactive')) {
             return;
         }
-        row.parentNode.removeChild(row);
+        this._ctx.tagCategories.remove(rowNode._tagCategory);
     }
 
-    _evtSetDefaultButtonClick(e, row) {
+    _evtSetDefaultButtonClick(e, rowNode) {
         e.preventDefault();
-        const oldRowNode = row.parentNode.querySelector('tr.default');
+        this._ctx.tagCategories.defaultCategory = rowNode._tagCategory;
+        const oldRowNode = rowNode.parentNode.querySelector('tr.default');
         if (oldRowNode) {
             oldRowNode.classList.remove('default');
         }
-        row.classList.add('default');
+        rowNode.classList.add('default');
     }
 
-    _addRowHandlers(row) {
-        const removeLink = row.querySelector('.remove a');
-        if (removeLink) {
-            removeLink.addEventListener(
-                'click', e => this._evtRemoveButtonClick(e, row, removeLink));
-        }
-
-        const defaultLink = row.querySelector('.set-default a');
-        if (defaultLink) {
-            defaultLink.addEventListener(
-                'click', e => this._evtSetDefaultButtonClick(e, row));
-        }
+    _evtSaveButtonClick(e, ctx) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('submit'));
     }
 }
 

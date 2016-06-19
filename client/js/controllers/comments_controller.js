@@ -7,29 +7,18 @@ const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
 const CommentsPageView = require('../views/comments_page_view.js');
 
+const fields = ['id', 'comments', 'commentCount', 'thumbnailUrl'];
+
 class CommentsController {
     constructor(ctx) {
         topNavigation.activate('comments');
-
-        const proxy = PageController.createHistoryCacheProxy(
-            ctx, page => {
-                const url =
-                    '/posts/?query=sort:comment-date+comment-count-min:1' +
-                    `&page=${page}&pageSize=10&fields=` +
-                    'id,comments,commentCount,thumbnailUrl';
-                return api.get(url);
-            });
 
         this._pageController = new PageController({
             searchQuery: ctx.searchQuery,
             clientUrl: '/comments/' + misc.formatSearchQuery({page: '{page}'}),
             requestPage: page => {
-                return proxy(page).then(response => {
-                    return Promise.resolve(Object.assign(
-                        {},
-                        response,
-                        {results: PostList.fromResponse(response.results)}));
-                });
+                return PostList.search(
+                    'sort:comment-date+comment-count-min:1', page, 10, fields);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {

@@ -2,6 +2,7 @@
 
 const api = require('../api.js');
 const misc = require('../util/misc.js');
+const UserList = require('../models/user_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
 const UsersHeaderView = require('../views/users_header_view.js');
@@ -15,13 +16,9 @@ class UserListController {
             searchQuery: ctx.searchQuery,
             clientUrl: '/users/' + misc.formatSearchQuery({
                 text: ctx.searchQuery.text, page: '{page}'}),
-            requestPage: PageController.createHistoryCacheProxy(
-                ctx,
-                page => {
-                    const text = ctx.searchQuery.text;
-                    return api.get(
-                        `/users/?query=${text}&page=${page}&pageSize=30`);
-                }),
+            requestPage: page => {
+                return UserList.search(ctx.searchQuery.text, page);
+            },
             headerRenderer: headerCtx => {
                 return new UsersHeaderView(headerCtx);
             },
