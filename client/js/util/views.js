@@ -246,10 +246,42 @@ function clearMessages(target) {
 }
 
 function htmlToDom(html) {
-    const parsed = domParser.parseFromString(html, 'text/html').body;
-    return parsed.childNodes.length > 1 ?
-        parsed.childNodes :
-        parsed.firstChild;
+    // code taken from jQuery + Krasimir Tsonev's blog
+    const wrapMap = {
+        _:      [1, '<div>', '</div>'],
+        option: [1, '<select multiple>', '</select>'],
+        legend: [1, '<fieldset>', '</fieldset>'],
+        area:   [1, '<map>', '</map>'],
+        param:  [1, '<object>', '</object>'],
+        thead:  [1, '<table>', '</table>'],
+        tr:     [2, '<table><tbody>', '</tbody></table>'],
+        td:     [3, '<table><tbody><tr>', '</tr></tbody></table>'],
+        col:    [2, '<table><tbody></tbody><colgroup>', '</colgroup></table>'],
+    };
+    wrapMap.optgroup = wrapMap.option;
+    wrapMap.tbody =
+        wrapMap.tfoot =
+        wrapMap.colgroup =
+        wrapMap.caption =
+        wrapMap.thead;
+    wrapMap.th = wrapMap.td;
+
+    let element = document.createElement('div');
+    const match = /<\s*(\w+)[^>]*?>/g.exec(html);
+
+    if (match) {
+        const tag = match[1];
+        const [depthToChild, prefix, suffix] = wrapMap[tag] || wrapMap._;
+        element.innerHTML = prefix + html + suffix;
+        for (let i = 0; i < depthToChild; i++) {
+            element = element.lastChild;
+        }
+    } else {
+        element.innerHTML = html;
+    }
+    return element.childNodes.length > 1 ?
+        element.childNodes :
+        element.firstChild;
 }
 
 function getTemplate(templatePath) {
