@@ -9,6 +9,7 @@ class Tag extends events.EventTarget {
         this._origName     = null;
         this._names        = null;
         this._category     = null;
+        this._description  = null;
         this._suggestions  = null;
         this._implications = null;
         this._postCount    = null;
@@ -18,6 +19,7 @@ class Tag extends events.EventTarget {
 
     get names()             { return this._names; }
     get category()          { return this._category; }
+    get description()       { return this._description; }
     get suggestions()       { return this._suggestions; }
     get implications()      { return this._implications; }
     get postCount()         { return this._postCount; }
@@ -26,6 +28,7 @@ class Tag extends events.EventTarget {
 
     set names(value)        { this._names = value; }
     set category(value)     { this._category = value; }
+    set description(value)  { this._description = value; }
     set implications(value) { this._implications = value; }
     set suggestions(value)  { this._suggestions = value; }
 
@@ -48,6 +51,7 @@ class Tag extends events.EventTarget {
         const detail = {
             names: this.names,
             category: this.category,
+            description: this.description,
             implications: this.implications,
             suggestions: this.suggestions,
         };
@@ -103,6 +107,7 @@ class Tag extends events.EventTarget {
         this._origName     = response.names ? response.names[0] : null;
         this._names        = response.names;
         this._category     = response.category;
+        this._description  = response.description;
         this._implications = response.implications;
         this._suggestions  = response.suggestions;
         this._creationTime = response.creationTime;

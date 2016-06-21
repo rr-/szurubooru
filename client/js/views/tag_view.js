@@ -3,6 +3,7 @@
 const events = require('../events.js');
 const views = require('../util/views.js');
 const TagSummaryView = require('./tag_summary_view.js');
+const TagEditView = require('./tag_edit_view.js');
 const TagMergeView = require('./tag_merge_view.js');
 const TagDeleteView = require('./tag_delete_view.js');
 
@@ -30,13 +31,19 @@ class TagView extends events.EventTarget {
         }
 
         ctx.hostNode = this._hostNode.querySelector('.tag-content-holder');
-        if (ctx.section == 'merge') {
+        if (ctx.section === 'edit') {
+            this._view = new TagEditView(ctx);
+            this._view.addEventListener('submit', e => {
+                this.dispatchEvent(
+                    new CustomEvent('change', {detail: e.detail}));
+            });
+        } else if (ctx.section === 'merge') {
             this._view = new TagMergeView(ctx);
             this._view.addEventListener('submit', e => {
                 this.dispatchEvent(
                     new CustomEvent('merge', {detail: e.detail}));
             });
-        } else if (ctx.section == 'delete') {
+        } else if (ctx.section === 'delete') {
             this._view = new TagDeleteView(ctx);
             this._view.addEventListener('submit', e => {
                 this.dispatchEvent(
@@ -44,10 +51,6 @@ class TagView extends events.EventTarget {
             });
         } else {
             this._view = new TagSummaryView(ctx);
-            this._view.addEventListener('submit', e => {
-                this.dispatchEvent(
-                    new CustomEvent('change', {detail: e.detail}));
-            });
         }
     }
 

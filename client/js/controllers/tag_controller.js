@@ -28,6 +28,7 @@ class TagController {
                 canEditCategory: api.hasPrivilege('tags:edit:category'),
                 canEditImplications: api.hasPrivilege('tags:edit:implications'),
                 canEditSuggestions: api.hasPrivilege('tags:edit:suggestions'),
+                canEditDescription: api.hasPrivilege('tags:edit:description'),
                 canMerge: api.hasPrivilege('tags:delete'),
                 canDelete: api.hasPrivilege('tags:merge'),
                 categories: categories,
@@ -55,6 +56,7 @@ class TagController {
         e.detail.tag.category = e.detail.category;
         e.detail.tag.implications = e.detail.implications;
         e.detail.tag.suggestions = e.detail.suggestions;
+        e.detail.tag.description = e.detail.description;
         e.detail.tag.save().then(() => {
             this._view.showSuccess('Tag saved.');
             this._view.enableForm();
@@ -93,6 +95,9 @@ class TagController {
 module.exports = router => {
     router.enter('/tag/:name', (ctx, next) => {
         ctx.controller = new TagController(ctx, 'summary');
+    });
+    router.enter('/tag/:name/edit', (ctx, next) => {
+        ctx.controller = new TagController(ctx, 'edit');
     });
     router.enter('/tag/:name/merge', (ctx, next) => {
         ctx.controller = new TagController(ctx, 'merge');

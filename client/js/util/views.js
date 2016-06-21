@@ -112,6 +112,12 @@ function makeTextInput(options) {
     return makeInput(options);
 }
 
+function makeTextarea(options) {
+    const value = options.value || '';
+    delete options.value;
+    return _makeLabel(options) + makeNonVoidElement('textarea', options, value);
+}
+
 function makePasswordInput(options) {
     options.type = 'password';
     return makeInput(options);
@@ -303,6 +309,7 @@ function getTemplate(templatePath) {
             makeSelect: makeSelect,
             makeInput: makeInput,
             makeButton: makeButton,
+            makeTextarea: makeTextarea,
             makeTextInput: makeTextInput,
             makePasswordInput: makePasswordInput,
             makeEmailInput: makeEmailInput,

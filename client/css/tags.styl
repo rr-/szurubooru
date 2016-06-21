@@ -67,6 +67,30 @@
     .tag-delete
         .messages, .buttons
             margin-left: 0 !important
+    .tag-edit
+        textarea
+            height: 10em
+    .tag-summary
+        section
+            &.description
+                margin: 1.5em 0 0 0
+            &.details
+                vertical-align: top
+                padding-right: 0.5em
+                ul
+                    margin: 0
+                    padding: 0
+                    list-style-type: none
+                li
+                    display: inline
+                    margin: 0
+                    padding: 0
+                li:not(:last-of-type):after
+                    content: ', '
+                ul:empty:after
+                    content: '(none)'
+                section
+                    margin-bottom: 1em
 
 .content-wrapper.tag-categories
     width: 100%
