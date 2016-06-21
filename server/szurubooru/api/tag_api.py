@@ -32,6 +32,8 @@ class TagListApi(BaseApi):
 
         names = ctx.get_param_as_list('names', required=True)
         category = ctx.get_param_as_string('category', required=True)
+        description = ctx.get_param_as_string(
+            'description', required=False, default=None)
         suggestions = ctx.get_param_as_list(
             'suggestions', required=False, default=[])
         implications = ctx.get_param_as_list(
@@ -41,6 +43,7 @@ class TagListApi(BaseApi):
         _create_if_needed(implications, ctx.user)
 
         tag = tags.create_tag(names, category, suggestions, implications)
+        tags.update_tag_description(tag, description)
         ctx.session.add(tag)
         ctx.session.flush()
         snapshots.save_entity_creation(tag, ctx.user)
@@ -63,6 +66,10 @@ class TagDetailApi(BaseApi):
             auth.verify_privilege(ctx.user, 'tags:edit:category')
             tags.update_tag_category_name(
                 tag, ctx.get_param_as_string('category'))
+        if ctx.has_param('description'):
+            auth.verify_privilege(ctx.user, 'tags:edit:description')
+            tags.update_tag_description(
+                tag, ctx.get_param_as_string('description', default=None))
         if ctx.has_param('suggestions'):
             auth.verify_privilege(ctx.user, 'tags:edit:suggestions')
             suggestions = ctx.get_param_as_list('suggestions')

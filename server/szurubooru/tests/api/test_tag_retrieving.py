@@ -50,6 +50,7 @@ def test_retrieving_single(test_ctx):
     assert result == {
         'names': ['tag'],
         'category': 'dummy',
+        'description': None,
         'creationTime': datetime.datetime(1996, 1, 1),
         'lastEditTime': None,
         'suggestions': [],

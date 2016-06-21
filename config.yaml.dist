@@ -84,6 +84,7 @@ privileges:
     'tags:create':                  regular
     'tags:edit:names':              power
     'tags:edit:category':           power
+    'tags:edit:description':        power
     'tags:edit:implications':       power
     'tags:edit:suggestions':        power
     'tags:list':                    regular # note: will be available as data_url/tags.json anyway

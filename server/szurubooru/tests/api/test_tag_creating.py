@@ -34,6 +34,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
                 input={
                     'names': ['tag1', 'tag2'],
                     'category': 'meta',
+                    'description': 'desc',
                     'suggestions': [],
                     'implications': [],
                 },
@@ -43,6 +44,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
     assert result == {
         'names': ['tag1', 'tag2'],
         'category': 'meta',
+        'description': 'desc',
         'suggestions': [],
         'implications': [],
         'creationTime': datetime.datetime(1997, 12, 1),

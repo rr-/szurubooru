@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, Unicode, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, Unicode, UnicodeText, ForeignKey
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
@@ -46,6 +46,7 @@ class Tag(Base):
         'category_id', Integer, ForeignKey('tag_category.id'), nullable=False, index=True)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
+    description = Column('description', UnicodeText, default=None)
 
     category = relationship('TagCategory', lazy='joined')
     names = relationship(

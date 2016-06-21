@@ -42,6 +42,7 @@ def serialize_tag(tag, options=None):
         {
             'names': lambda: [tag_name.name for tag_name in tag.names],
             'category': lambda: tag.category.name,
+            'description': lambda: tag.description,
             'creationTime': lambda: tag.creation_time,
             'lastEditTime': lambda: tag.last_edit_time,
             'usages': lambda: tag.post_count,
@@ -218,3 +219,6 @@ def update_tag_suggestions(tag, relations):
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot suggest itself.')
     tag.suggestions = get_tags_by_names(relations)
+
+def update_tag_description(tag, description):
+    tag.description = description

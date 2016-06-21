@@ -38,6 +38,7 @@ def test_merging_without_usages(test_ctx, fake_datetime):
     assert result == {
         'names': ['target'],
         'category': 'meta',
+        'description': None,
         'suggestions': [],
         'implications': [],
         'creationTime': datetime.datetime(1996, 1, 1),

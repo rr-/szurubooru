@@ -19,6 +19,7 @@ def test_ctx(
             'tags:create': db.User.RANK_REGULAR,
             'tags:edit:names': db.User.RANK_REGULAR,
             'tags:edit:category': db.User.RANK_REGULAR,
+            'tags:edit:description': db.User.RANK_REGULAR,
             'tags:edit:suggestions': db.User.RANK_REGULAR,
             'tags:edit:implications': db.User.RANK_REGULAR,
         },
@@ -43,6 +44,7 @@ def test_simple_updating(test_ctx, fake_datetime):
                 input={
                     'names': ['tag3'],
                     'category': 'character',
+                    'description': 'desc',
                 },
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
@@ -51,6 +53,7 @@ def test_simple_updating(test_ctx, fake_datetime):
     assert result == {
         'names': ['tag3'],
         'category': 'character',
+        'description': 'desc',
         'suggestions': [],
         'implications': [],
         'creationTime': datetime.datetime(1996, 1, 1),
@@ -91,13 +94,14 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
             'tag1')
 
 @pytest.mark.parametrize(
-    'field', ['names', 'category', 'implications', 'suggestions'])
+    'field', ['names', 'category', 'description', 'implications', 'suggestions'])
 def test_omitting_optional_field(test_ctx, field):
     db.session.add(test_ctx.tag_factory(names=['tag'], category_name='meta'))
     db.session.commit()
     input = {
         'names': ['tag1', 'tag2'],
         'category': 'meta',
+        'description': 'desc',
         'suggestions': [],
         'implications': [],
     }

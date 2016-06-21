@@ -379,6 +379,7 @@ data.
     {
         "names":        [<name1>, <name2>, ...],
         "category":     <category>,
+        "description":  <description>,              // optional
         "implications": [<name1>, <name2>, ...],    // optional
         "suggestions":  [<name1>, <name2>, ...]     // optional
     }
@@ -421,6 +422,7 @@ data.
     {
         "names":        [<name1>, <name2>, ...],    // optional
         "category":     <category>,                 // optional
+        "description":  <description>,              // optional
         "implications": [<name1>, <name2>, ...],    // optional
         "suggestions":  [<name1>, <name2>, ...]     // optional
     }
@@ -1514,6 +1516,7 @@ A single tag. Tags are used to let users search for posts.
     "creationTime": <creation-time>,
     "lastEditTime": <last-edit-time>,
     "usages":       <usage-count>,
+    "description":  <description>,
     "snapshots": [
         <snapshot>,
         <snapshot>,
@@ -1534,6 +1537,8 @@ A single tag. Tags are used to let users search for posts.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
 - `<usage-count>`: the number of posts the tag was used in.
+- `<description>`: the tag description (instructions how to use, history etc.)
+  The client should render is as Markdown.
 - `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag's
   earlier versions.
 
