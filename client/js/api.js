@@ -176,7 +176,8 @@ class Api extends events.EventTarget {
     }
 
     _getFullUrl(url) {
-        return (config.apiUrl + '/' + url).replace(/([^:])\/+/g, '$1/');
+        return (config.apiUrl + '/' + encodeURI(url))
+            .replace(/([^:])\/+/g, '$1/');
     }
 }
 
