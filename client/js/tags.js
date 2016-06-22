@@ -1,5 +1,6 @@
 'use strict';
 
+const misc = require('./util/misc.js');
 const request = require('superagent');
 
 let _tags = null;
@@ -63,8 +64,9 @@ function _refreshStylesheet() {
     _stylesheet = document.createElement('style');
     document.head.appendChild(_stylesheet);
     for (let category of getAllCategories()) {
+        const ruleName = misc.makeCssName(category.name, 'tag');
         _stylesheet.sheet.insertRule(
-            `.tag-${category.name} { color: ${category.color} }`,
+            `.${ruleName} { color: ${category.color} }`,
             _stylesheet.sheet.cssRules.length);
     }
 }

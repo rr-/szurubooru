@@ -220,6 +220,10 @@ function confirmPageExit() {
     }
 }
 
+function makeCssName(text, suffix) {
+    return suffix + '-' + text.replace(/[^a-z0-9]/g, '_');
+}
+
 module.exports = {
     range: range,
     formatSearchQuery: formatSearchQuery,
@@ -232,4 +236,5 @@ module.exports = {
     enableExitConfirmation: enableExitConfirmation,
     disableExitConfirmation: disableExitConfirmation,
     confirmPageExit: confirmPageExit,
+    makeCssName: makeCssName,
 };

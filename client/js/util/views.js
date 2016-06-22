@@ -154,11 +154,11 @@ function makeTagLink(name) {
         makeNonVoidElement(
             'a', {
                 'href': '/tag/' + name,
-                'class': 'tag-' + category,
+                'class': misc.makeCssName(category, 'tag'),
             }, name) :
         makeNonVoidElement(
             'span', {
-                'class': 'tag-' + category,
+                'class': misc.makeCssName(category, 'tag'),
             },
             name);
 }
@@ -312,6 +312,7 @@ function getTemplate(templatePath) {
             makeUserLink: makeUserLink,
             makeFlexboxAlign: makeFlexboxAlign,
             makeAccessKey: makeAccessKey,
+            makeCssName: misc.makeCssName,
         });
         return htmlToDom(templateFactory(ctx));
     };

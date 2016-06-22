@@ -2,6 +2,7 @@
 
 const api = require('../api.js');
 const tags = require('../tags.js');
+const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
 
@@ -437,7 +438,9 @@ class TagInputControl {
             views.makeNonVoidElement(
                 'a',
                 {
-                    class: actualTag ? 'tag-' + actualTag.category : '',
+                    class: actualTag ?
+                        misc.makeCssName(actualTag.category, 'tag') :
+                        '',
                     href: '/tag/' + text,
                 },
                 text));

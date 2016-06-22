@@ -50,14 +50,14 @@
         --><% for (let tag of ctx.post.tags) { %><!--
             --><li><!--
                 --><% if (ctx.canViewTags) { %><!--
-                --><a href='/tag/<%= tag %>' class='tag-<%= ctx.getTagCategory(tag) %>'><!--
+                --><a href='/tag/<%= tag %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
                     --><i class='fa fa-tag'></i><!--
                 --><% } %><!--
                 --><% if (ctx.canListPosts) { %><!--
                     --></a><!--
                 --><% } %><!--
                 --><% if (ctx.canListPosts) { %><!--
-                    --><a href='/posts/text=<%= tag %>' class='tag-<%= ctx.getTagCategory(tag) %>'><!--
+                    --><a href='/posts/text=<%= tag %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
                 --><% } %><!--
                     --><%= tag %><!--
                 --><% if (ctx.canListPosts) { %><!--

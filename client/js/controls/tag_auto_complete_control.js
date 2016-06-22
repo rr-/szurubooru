@@ -1,7 +1,7 @@
 'use strict';
 
-const unindent = require('../util/misc.js').unindent;
 const tags = require('../tags.js');
+const misc = require('../util/misc.js');
 const AutoCompleteControl = require('./auto_complete_control.js');
 
 class TagAutoCompleteControl extends AutoCompleteControl {
@@ -31,9 +31,10 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                     const category = kv[1].category;
                     const origName = tags.getOriginalTagName(kv[0]);
                     const usages = kv[1].usages;
+                    const cssName = misc.makeCssName(category, 'tag');
                     return {
-                        caption: unindent`
-                            <span class="tag-${category}">
+                        caption: misc.unindent`
+                            <span class="${cssName}">
                                 ${origName} (${usages})
                             </span>`,
                         value: kv[0],
