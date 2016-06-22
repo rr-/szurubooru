@@ -351,7 +351,7 @@ function replaceContent(target, source) {
         target.removeChild(target.lastChild);
     }
     if (source instanceof NodeList) {
-        for (let child of source) {
+        for (let child of Array.from(source)) {
             target.appendChild(child);
         }
     } else if (source instanceof Node) {
