@@ -25,7 +25,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
             return Array.from(allTags.entries())
                 .filter(kv => match(transform(kv[0]), text))
                 .sort((kv1, kv2) => {
-                    return kv2[1].postCount - kv1[1].postCount;
+                    return kv2[1].usages - kv1[1].usages;
                 })
                 .map(kv => {
                     const category = kv[1].category;
