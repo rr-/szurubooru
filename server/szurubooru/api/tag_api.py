@@ -10,8 +10,9 @@ def _serialize(ctx, tag):
 def _create_if_needed(tag_names, user):
     if not tag_names:
         return
-    auth.verify_privilege(user, 'tags:create')
     _existing_tags, new_tags = tags.get_or_create_tags_by_names(tag_names)
+    if len(new_tags):
+        auth.verify_privilege(user, 'tags:create')
     db.session.flush()
     for tag in new_tags:
         snapshots.save_entity_creation(tag, user)
