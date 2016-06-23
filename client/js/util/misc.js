@@ -224,6 +224,15 @@ function makeCssName(text, suffix) {
     return suffix + '-' + text.replace(/[^a-z0-9]/g, '_');
 }
 
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
 module.exports = {
     range: range,
     formatSearchQuery: formatSearchQuery,
@@ -236,5 +245,6 @@ module.exports = {
     enableExitConfirmation: enableExitConfirmation,
     disableExitConfirmation: disableExitConfirmation,
     confirmPageExit: confirmPageExit,
+    escapeHtml: escapeHtml,
     makeCssName: makeCssName,
 };

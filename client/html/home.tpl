@@ -1,7 +1,7 @@
 <div class='content-wrapper transparent' id='home'>
     <div class='messages'></div>
     <header>
-        <h1><%= ctx.name %></h1>
+        <h1><%- ctx.name %></h1>
         <aside class='stats-container'></aside>
     </header>
     <% if (ctx.canListPosts) { %>
@@ -27,7 +27,7 @@
     <% } %>
     <div class='post-container'></div>
     <footer>
-        Build <a class='version' href='https://github.com/rr-/szurubooru/commits/master'><%= ctx.version %></a>
+        Build <a class='version' href='https://github.com/rr-/szurubooru/commits/master'><%- ctx.version %></a>
         from <%= ctx.makeRelativeTime(ctx.buildDate) %>
     </footer>
 </div>

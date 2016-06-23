@@ -71,7 +71,7 @@
                             <% } %>
                         </td>
                         <td class='usages'>
-                            <%= tag.postCount %>
+                            <%- tag.postCount %>
                         </td>
                         <td class='edit-time'>
                             <%= ctx.makeRelativeTime(tag.lastEditTime) %>

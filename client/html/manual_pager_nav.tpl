@@ -2,7 +2,7 @@
     <ul>
         <li>
             <% if (ctx.prevLinkActive) { %>
-                <a class='prev' href='<%= ctx.prevLink %>'>
+                <a class='prev' href='<%- ctx.prevLink %>'>
             <% } else { %>
                 <a class='prev disabled'>
             <% } %>
@@ -20,14 +20,14 @@
                 <% } else { %>
                     <li>
                 <% } %>
-                    <a href='<%= page.link %>'><%= page.number %></a>
+                    <a href='<%- page.link %>'><%- page.number %></a>
                 </li>
             <% } %>
         <% } %>
 
         <li>
             <% if (ctx.nextLinkActive) { %>
-                <a class='next' href='<%= ctx.nextLink %>'>
+                <a class='next' href='<%- ctx.nextLink %>'>
             <% } else { %>
                 <a class='next disabled'>
             <% } %>

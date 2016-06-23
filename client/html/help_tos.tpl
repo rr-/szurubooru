@@ -1,4 +1,4 @@
-<p>By accessing <%= ctx.name %> (&ldquo;Site&rdquo;) you agree to the following
+<p>By accessing <%- ctx.name %> (&ldquo;Site&rdquo;) you agree to the following
 Terms of Service. If you do not agree to these terms, then please do not access
 the Site.</p>
 

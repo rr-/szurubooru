@@ -1,6 +1,6 @@
 <div class='file-dropper-holder'>
-    <input type='file' id='<%= ctx.id %>'/>
-    <label class='file-dropper' for='<%= ctx.id %>'>
+    <input type='file' id='<%- ctx.id %>'/>
+    <label class='file-dropper' for='<%- ctx.id %>'>
         <% if (ctx.allowMultiple) { %>
             Drop files here!
         <% } else { %>

@@ -2,7 +2,7 @@
     <section class='details'>
         <section>
             Category:
-            <span class='<%= ctx.makeCssName(ctx.tag.category, 'tag') %>'><%= ctx.tag.category %></span>
+            <span class='<%= ctx.makeCssName(ctx.tag.category, 'tag') %>'><%- ctx.tag.category %></span>
         </section>
 
         <section>

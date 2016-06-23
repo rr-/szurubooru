@@ -13,7 +13,7 @@
         <i class='fa fa-thumbs-o-up'></i>
     </a>
 <% } %>
-<span class='value'><%= ctx.score %></span>
+<span class='value'><%- ctx.score %></span>
 <% if (ctx.canScore) { %>
     <a class='downvote' href='#'>
         <% if (ctx.ownScore == -1) { %>

@@ -10,7 +10,7 @@
             --></div><!--
 
             --><div class='edit tab'><!--
-                --><textarea required minlength=1><%= ctx.comment.text %></textarea><!--
+                --><textarea required minlength=1><%- ctx.comment.text %></textarea><!--
             --></div><!--
         --></div>
 

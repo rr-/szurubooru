@@ -5,35 +5,35 @@
                 <li>
                     <% if (ctx.canViewPosts) { %>
                         <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
-                            <a href='/post/<%= post.id %>/text=<%= ctx.searchQuery.text %>' title='@<%= post.id %> (<%= post.type %>)&#10;&#10;Tags: <%= post.tags.map(tag => '#' + tag).join(' ') %>'>
+                            <a href='/post/<%- post.id %>/text=<%- ctx.searchQuery.text %>' title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag).join(' ') %>'>
                         <% } else { %>
-                            <a href='/post/<%= post.id %>' title='@<%= post.id %> (<%= post.type %>)&#10;&#10;Tags: <%= post.tags.map(tag => '#' + tag).join(' ') %>'>
+                            <a href='/post/<%- post.id %>' title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag).join(' ') %>'>
                         <% } %>
                     <% } else { %>
                         <a>
                     <% } %>
                         <%= ctx.makeThumbnail(post.thumbnailUrl) %>
-                        <span class='type' data-type='<%= post.type %>'>
-                            <%= post.type %>
+                        <span class='type' data-type='<%- post.type %>'>
+                            <%- post.type %>
                         </span>
                         <% if (post.score || post.favoriteCount || post.commentCount) { %>
                             <span class='stats'>
                                 <% if (post.score) { %>
                                     <span class='icon'>
                                         <i class='fa fa-star'></i>
-                                        <%= post.score %>
+                                        <%- post.score %>
                                     </span>
                                 <% } %>
                                 <% if (post.favoriteCount) { %>
                                     <span class='icon'>
                                         <i class='fa fa-heart'></i>
-                                        <%= post.favoriteCount %>
+                                        <%- post.favoriteCount %>
                                     </span>
                                 <% } %>
                                 <% if (post.commentCount) { %>
                                     <span class='icon'>
                                         <i class='fa fa-commenting'></i>
-                                        <%= post.commentCount %>
+                                        <%- post.commentCount %>
                                     </span>
                                 <% } %>
                             </span>

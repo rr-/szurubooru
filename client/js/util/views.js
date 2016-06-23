@@ -198,7 +198,8 @@ function _serializeElement(name, attributes) {
                     attributes[key] === undefined) {
                 return '';
             }
-            return `${key}="${attributes[key]}"`;
+            const attribute = misc.escapeHtml(attributes[key] || '');
+            return `${key}="${attribute}"`;
         }))
         .join(' ');
 }
@@ -446,7 +447,6 @@ module.exports = {
     replaceContent: replaceContent,
     enableForm: enableForm,
     disableForm: disableForm,
-    clearMessages: clearMessages,
     decorateValidator: decorateValidator,
     makeVoidElement: makeVoidElement,
     makeNonVoidElement: makeNonVoidElement,
@@ -454,6 +454,7 @@ module.exports = {
     slideDown: slideDown,
     slideUp: slideUp,
     monitorNodeRemoval: monitorNodeRemoval,
+    clearMessages: clearMessages,
     showError: showError,
     showSuccess: showSuccess,
     showInfo: showInfo,

@@ -1,1 +1,1 @@
-Serving <%= ctx.postCount %> posts (<%= ctx.makeFileSize(ctx.diskUsage) %>)
+Serving <%- ctx.postCount %> posts (<%= ctx.makeFileSize(ctx.diskUsage) %>)

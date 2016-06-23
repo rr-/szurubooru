@@ -28,8 +28,9 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                     return kv2[1].usages - kv1[1].usages;
                 })
                 .map(kv => {
+                    const origName = misc.escapeHtml(
+                        tags.getOriginalTagName(kv[0]));
                     const category = kv[1].category;
-                    const origName = tags.getOriginalTagName(kv[0]);
                     const usages = kv[1].usages;
                     const cssName = misc.makeCssName(category, 'tag');
                     return {

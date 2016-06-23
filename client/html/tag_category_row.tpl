@@ -1,27 +1,27 @@
-<tr data-category='<%= ctx.tagCategory.name %>'
+<tr data-category='<%- ctx.tagCategory.name %>'
     <% if (ctx.tagCategory.isDefault) { %> class='default' <% } %>
 >
     <td class='name'>
         <% if (ctx.canEditName) { %>
             <%= ctx.makeTextInput({value: ctx.tagCategory.name, required: true}) %>
         <% } else { %>
-            <%= ctx.tagCategory.name %>
+            <%- ctx.tagCategory.name %>
         <% } %>
     </td>
     <td class='color'>
         <% if (ctx.canEditColor) { %>
             <%= ctx.makeColorInput({value: ctx.tagCategory.color}) %>
         <% } else { %>
-            <%= ctx.tagCategory.color %>
+            <%- ctx.tagCategory.color %>
         <% } %>
     </td>
     <td class='usages'>
         <% if (ctx.tagCategory.name) { %>
-            <a href='/tags/text=category:<%= ctx.tagCategory.name %>'>
-                <%= ctx.tagCategory.tagCount %>
+            <a href='/tags/text=category:<%- ctx.tagCategory.name %>'>
+                <%- ctx.tagCategory.tagCount %>
             </a>
         <% } else { %>
-            <%= ctx.tagCategory.tagCount %>
+            <%- ctx.tagCategory.tagCount %>
         <% } %>
     </td>
     <% if (ctx.canDelete) { %>

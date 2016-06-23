@@ -12,4 +12,4 @@
 <% } %>
     <span class='vim-nav-hint'>add to favorites</span>
 </a>
-<span class='value'><%= ctx.favoriteCount %></span>
+<span class='value'><%- ctx.favoriteCount %></span>

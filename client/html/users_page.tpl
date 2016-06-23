@@ -4,7 +4,7 @@
             --><li>
                 <div class='wrapper'>
                     <% if (ctx.canViewUsers) { %>
-                        <a class='image' href='/user/<%= user.name %>'>
+                        <a class='image' href='/user/<%- user.name %>'>
                     <% } %>
                         <%= ctx.makeThumbnail(user.avatarUrl) %>
                     <% if (ctx.canViewUsers) { %>
@@ -12,9 +12,9 @@
                     <% } %>
                     <div class='details'>
                         <% if (ctx.canViewUsers) { %>
-                            <a href='/user/<%= user.name %>'>
+                            <a href='/user/<%- user.name %>'>
                         <% } %>
-                            <%= user.name %>
+                            <%- user.name %>
                         <% if (ctx.canViewUsers) { %>
                             </a>
                         <% } %>

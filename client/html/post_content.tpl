@@ -1,13 +1,13 @@
-<div class='post-content post-type-<%= ctx.post.type %>'>
+<div class='post-content post-type-<%- ctx.post.type %>'>
     <% if (['image', 'animation'].includes(ctx.post.type)) { %>
 
-        <img alt='' src='<%= ctx.post.contentUrl %>'/>
+        <img alt='' src='<%- ctx.post.contentUrl %>'/>
 
     <% } else if (ctx.post.type === 'flash') { %>
 
-        <object width='<%= ctx.post.canvasWidth %>' height='<%= ctx.post.canvasHeight %>' data='<%= ctx.post.contentUrl %>'>
+        <object width='<%- ctx.post.canvasWidth %>' height='<%- ctx.post.canvasHeight %>' data='<%- ctx.post.contentUrl %>'>
             <param name='wmode' value='opaque'/>
-            <param name='movie' value='<%= ctx.post.contentUrl %>'/>
+            <param name='movie' value='<%- ctx.post.contentUrl %>'/>
         </object>
 
     <% } else if (ctx.post.type === 'video') { %>
@@ -18,7 +18,7 @@
             <video id='video' controls>
         <% } %>
 
-            <source type='<%= ctx.post.mimeType %>' src='<%= ctx.post.contentUrl %>'/>
+            <source type='<%- ctx.post.mimeType %>' src='<%- ctx.post.contentUrl %>'/>
 
             Your browser doesn't support HTML5 videos.
         </video>
