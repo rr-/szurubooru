@@ -60,8 +60,8 @@ class TagController {
         e.detail.tag.save().then(() => {
             this._view.showSuccess('Tag saved.');
             this._view.enableForm();
-        }, response => {
-            this._view.showError(response.description);
+        }, errorMessage => {
+            this._view.showError(errorMessage);
             this._view.enableForm();
         });
     }

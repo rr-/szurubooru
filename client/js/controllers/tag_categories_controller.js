@@ -22,9 +22,9 @@ class TagCategoriesController {
                 canSetDefault: api.hasPrivilege('tagCategories:setDefault'),
             });
             this._view.addEventListener('submit', e => this._evtSubmit(e));
-        }, response => {
+        }, errorMessage => {
             this._view = new EmptyView();
-            this._view.showError(response.description);
+            this._view.showError(errorMessage);
         });
     }
 

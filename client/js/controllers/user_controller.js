@@ -128,7 +128,7 @@ class UserController {
                     ctx.controller.showSuccess('Account deleted.');
                 }
             }, errorMessage => {
-                this._view.showError(response.description);
+                this._view.showError(errorMessage);
                 this._view.enableForm();
             });
     }

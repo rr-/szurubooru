@@ -23,8 +23,8 @@ class UserRegistrationController {
         user.save().then(() => {
             api.forget();
             return api.login(e.detail.name, e.detail.password, false);
-        }, response => {
-            return Promise.reject(response.description);
+        }, errorMessage => {
+            return Promise.reject(errorMessage);
         }).then(() => {
             const ctx = router.show('/');
             ctx.controller.showSuccess('Welcome aboard!');
