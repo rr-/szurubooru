@@ -37,8 +37,8 @@ limits:
     posts_per_page: 40
     max_comment_length: 5000
 
-tag_name_regex: ^[a-zA-Z0-9_:()][a-zA-Z0-9_()-]*$
-tag_category_name_regex: ^.{1,}$
+tag_name_regex: ^[^%+#/]+$
+tag_category_name_regex: ^[^%+#/]+$
 
 default_rank: regular
 
