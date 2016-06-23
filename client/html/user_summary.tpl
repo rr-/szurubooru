@@ -10,9 +10,9 @@
         <nav>
             <p><strong>Quick links</strong></p>
             <ul>
-                <li><a href='/posts/text=submit:<%- ctx.user.name %>'><%- ctx.user.uploadedPostCount %> uploads</a></li>
-                <li><a href='/posts/text=fav:<%- ctx.user.name %>'><%- ctx.user.favoritePostCount %> favorites</a></li>
-                <li><a href='/posts/text=comment:<%- ctx.user.name %>'><%- ctx.user.commentCount %> comments</a></li>
+                <li><a href='/posts/text=submit:<%- encodeURIComponent(ctx.user.name) %>'><%- ctx.user.uploadedPostCount %> uploads</a></li>
+                <li><a href='/posts/text=fav:<%- encodeURIComponent(ctx.user.name) %>'><%- ctx.user.favoritePostCount %> favorites</a></li>
+                <li><a href='/posts/text=comment:<%- encodeURIComponent(ctx.user.name) %>'><%- ctx.user.commentCount %> comments</a></li>
             </ul>
         </nav>
 

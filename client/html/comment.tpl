@@ -1,7 +1,7 @@
 <div class='comment'>
     <div class='avatar'>
         <% if (ctx.comment.user.name && ctx.canViewUsers) { %>
-            <a href='/user/<%- ctx.comment.user.name %>'>
+            <a href='/user/<%- encodeURIComponent(ctx.comment.user.name) %>'>
         <% } %>
 
         <%= ctx.makeThumbnail(ctx.comment.user.avatarUrl) %>
@@ -15,7 +15,7 @@
         <header><!--
             --><span class='nickname'><!--
                 --><% if (ctx.comment.user.name && ctx.canViewUsers) { %><!--
-                    --><a href='/user/<%- ctx.comment.user.name %>'><!--
+                    --><a href='/user/<%- encodeURIComponent(ctx.comment.user.name) %>'><!--
                 --><% } %><!--
 
                 --><%- ctx.comment.user.name %><!--

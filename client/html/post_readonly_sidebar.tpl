@@ -33,8 +33,8 @@
 
     <section class='search'>
         Search on
-        <a href='http://iqdb.org/?url=<%- ctx.post.contentUrl %>'>IQDB</a> &middot;
-        <a href='https://www.google.com/searchbyimage?&image_url=<%- ctx.post.contentUrl %>'>Google Images</a>
+        <a href='http://iqdb.org/?url=<%- encodeURIComponent(ctx.post.contentUrl) %>'>IQDB</a> &middot;
+        <a href='https://www.google.com/searchbyimage?&image_url=<%- encodeURIComponent(ctx.post.contentUrl) %>'>Google Images</a>
     </section>
 
     <section class='social'>
@@ -50,14 +50,14 @@
         --><% for (let tag of ctx.post.tags) { %><!--
             --><li><!--
                 --><% if (ctx.canViewTags) { %><!--
-                --><a href='/tag/<%- tag %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                --><a href='/tag/<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
                     --><i class='fa fa-tag'></i><!--
                 --><% } %><!--
                 --><% if (ctx.canListPosts) { %><!--
                     --></a><!--
                 --><% } %><!--
                 --><% if (ctx.canListPosts) { %><!--
-                    --><a href='/posts/text=<%- tag %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                    --><a href='/posts/text=<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
                 --><% } %><!--
                     --><%- tag %><!--
                 --><% if (ctx.canListPosts) { %><!--

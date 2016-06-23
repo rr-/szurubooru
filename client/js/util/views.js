@@ -149,7 +149,8 @@ function makeColorInput(options) {
 function makePostLink(id) {
     const text = '@' + id;
     return api.hasPrivilege('posts:view') ?
-        makeNonVoidElement('a', {'href': '/post/' + id}, text) :
+        makeNonVoidElement(
+            'a', {'href': '/post/' + encodeURIComponent(id)}, text) :
         text;
 }
 
@@ -159,7 +160,7 @@ function makeTagLink(name) {
     return api.hasPrivilege('tags:view') ?
         makeNonVoidElement(
             'a', {
-                'href': '/tag/' + name,
+                'href': '/tag/' + encodeURIComponent(name),
                 'class': misc.makeCssName(category, 'tag'),
             }, name) :
         makeNonVoidElement(
@@ -172,7 +173,8 @@ function makeTagLink(name) {
 function makeUserLink(user) {
     const text = makeThumbnail(user.avatarUrl) + user.name;
     const link = api.hasPrivilege('users:view') ?
-        makeNonVoidElement('a', {'href': '/user/' + user.name}, text) :
+        makeNonVoidElement(
+            'a', {'href': '/user/' + encodeURIComponent(user.name)}, text) :
         text;
     return makeNonVoidElement('span', {class: 'user'}, link);
 }

@@ -4,9 +4,9 @@
             <article class='next-post'>
                 <% if (ctx.nextPostId) { %>
                     <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
-                        <a href='/post/<%- ctx.nextPostId %>/text=<%- ctx.searchQuery.text %>'>
+                        <a href='/post/<%- encodeURIComponent(ctx.nextPostId) %>/text=<%- encodeURIComponent(ctx.searchQuery.text) %>'>
                     <% } else { %>
-                        <a href='/post/<%- ctx.nextPostId %>'>
+                        <a href='/post/<%- encodeURIComponent(ctx.nextPostId) %>'>
                     <% } %>
                 <% } else { %>
                     <a class='inactive'>
@@ -18,9 +18,9 @@
             <article class='previous-post'>
                 <% if (ctx.prevPostId) { %>
                     <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
-                        <a href='/post/<%- ctx.prevPostId %>/text=<%- ctx.searchQuery.text %>'>
+                        <a href='/post/<%- encodeURIComponent(ctx.prevPostId) %>/text=<%- encodeURIComponent(ctx.searchQuery.text) %>'>
                     <% } else { %>
-                        <a href='/post/<%- ctx.prevPostId %>'>
+                        <a href='/post/<%- encodeURIComponent(ctx.prevPostId) %>'>
                     <% } %>
                 <% } else { %>
                     <a class='inactive'>
@@ -31,16 +31,16 @@
             </article>
             <article class='edit-post'>
                 <% if (ctx.editMode) { %>
-                    <a href='/post/<%- ctx.post.id %>'>
+                    <a href='/post/<%- encodeURIComponent(ctx.post.id) %>'>
                         <i class='fa fa-eye'></i>
                         <span class='vim-nav-hint'>Back to view mode</span>
                     </a>
                 <% } else { %>
                     <% if (ctx.canEditPosts) { %>
                         <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
-                            <a href='/post/<%- ctx.post.id %>/edit/text=<%- ctx.searchQuery.text %>'>
+                            <a href='/post/<%- encodeURIComponent(ctx.post.id) %>/edit/text=<%- encodeURIComponent(ctx.searchQuery.text) %>'>
                         <% } else { %>
-                            <a href='/post/<%- ctx.post.id %>/edit'>
+                            <a href='/post/<%- encodeURIComponent(ctx.post.id) %>/edit'>
                         <% } %>
                     <% } else { %>
                         <a class='inactive'>

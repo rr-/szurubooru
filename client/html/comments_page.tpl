@@ -4,7 +4,7 @@
             --><li><!--
                 --><div class='post-thumbnail'><!--
                     --><% if (ctx.canViewPosts) { %><!--
-                        --><a href='/post/<%- post.id %>'><!--
+                        --><a href='/post/<%- encodeURIComponent(post.id) %>'><!--
                     --><% } %><!--
                         --><%= ctx.makeThumbnail(post.thumbnailUrl) %><!--
                     --><% if (ctx.canViewPosts) { %><!--
