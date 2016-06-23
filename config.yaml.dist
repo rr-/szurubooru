@@ -3,6 +3,7 @@
 
 name: szurubooru
 debug: 0 # generate source maps for JS debugging?
+show_sql: 0 # show sql in server logs?
 transpile: 1 # generate bigger JS to support older browsers?
 secret: change
 api_url: # where frontend connects to, example: http://api.example.com/

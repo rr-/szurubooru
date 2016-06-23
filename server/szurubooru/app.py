@@ -74,6 +74,7 @@ def create_app():
     coloredlogs.install(fmt='[%(asctime)-15s] %(name)s %(message)s')
     if config.config['debug']:
         logging.getLogger('szurubooru').setLevel(logging.INFO)
+    if config.config['show_sql']:
         logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
     app = falcon.API(
