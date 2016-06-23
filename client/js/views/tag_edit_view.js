@@ -17,11 +17,14 @@ class TagEditView extends events.EventTarget {
 
         this._tag = ctx.tag;
         this._hostNode = ctx.hostNode;
-        const baseRegex = config.tagNameRegex.replace(/[\^\$]/g, '');
-        ctx.tagNamesPattern = '^((' + baseRegex + ')\\s+)*(' + baseRegex + ')$';
         views.replaceContent(this._hostNode, template(ctx));
 
         views.decorateValidator(this._formNode);
+
+        if (this._namesFieldNode) {
+            this._namesFieldNode.addEventListener(
+                'input', e => this._evtNameInput(e));
+        }
 
         if (this._implicationsFieldNode) {
             new TagInputControl(this._implicationsFieldNode);
@@ -51,6 +54,27 @@ class TagEditView extends events.EventTarget {
 
     showError(message) {
         views.showError(this._hostNode, message);
+    }
+
+    _evtNameInput(e) {
+        const regex = new RegExp(config.tagNameRegex);
+        const list = this._namesFieldNode.value.split(/\s+/).filter(t => t);
+
+        if (!list.length) {
+            this._namesFieldNode.setCustomValidity(
+                'Tags must have at least one name.');
+            return;
+        }
+
+        for (let item of list) {
+            if (!regex.test(item)) {
+                this._namesFieldNode.setCustomValidity(
+                    `Tag name "${item}" contains invalid symbols.`);
+                return;
+            }
+        }
+
+        this._namesFieldNode.setCustomValidity('');
     }
 
     _evtSubmit(e) {
