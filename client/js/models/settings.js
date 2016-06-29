@@ -12,6 +12,7 @@ const defaultSettings = {
     endlessScroll: false,
     keyboardShortcuts: true,
     transparencyGrid: true,
+    fitMode: 'fit-both',
 };
 
 class Settings extends events.EventTarget {

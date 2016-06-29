@@ -13,7 +13,12 @@ class PostContentControl {
 
         this._install();
 
-        this._currentFitFunction = this.fitBoth;
+        this._currentFitFunction = {
+            'fit-both': this.fitBoth,
+            'fit-original': this.fitOriginal,
+            'fit-width': this.fitWidth,
+            'fit-height': this.fitHeight,
+        }[settings.get().fitMode] || this.fitBoth;
         this._currentFitFunction();
     }
 

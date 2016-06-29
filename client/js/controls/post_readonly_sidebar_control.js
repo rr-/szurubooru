@@ -131,17 +131,25 @@ class PostReadonlySidebarControl extends events.EventTarget {
             e.target.blur();
             func();
             this._syncFitButton();
+            this.dispatchEvent(new CustomEvent('fitModeChange', {
+                detail: {
+                    mode: this._getFitMode(),
+                },
+            }));
         };
     }
 
+    _getFitMode() {
+        const funcToName = {};
+        funcToName[this._postContentControl.fitBoth] = 'fit-both';
+        funcToName[this._postContentControl.fitOriginal] = 'fit-original';
+        funcToName[this._postContentControl.fitWidth] = 'fit-width';
+        funcToName[this._postContentControl.fitHeight] = 'fit-height';
+        return funcToName[this._postContentControl._currentFitFunction];
+    }
+
     _syncFitButton() {
-        const funcToClassName = {};
-        funcToClassName[this._postContentControl.fitBoth] = 'fit-both';
-        funcToClassName[this._postContentControl.fitOriginal] = 'fit-original';
-        funcToClassName[this._postContentControl.fitWidth] = 'fit-width';
-        funcToClassName[this._postContentControl.fitHeight] = 'fit-height';
-        const className = funcToClassName[
-            this._postContentControl._currentFitFunction];
+        const className = this._getFitMode();
         const oldNode = this._hostNode.querySelector('.zoom a.active');
         const newNode = this._hostNode.querySelector(`.zoom a.${className}`);
         if (oldNode) {

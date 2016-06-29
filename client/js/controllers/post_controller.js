@@ -39,6 +39,8 @@ class PostController {
                     'unfavorite', e => this._evtUnfavoritePost(e));
                 this._view.sidebarControl.addEventListener(
                     'score', e => this._evtScorePost(e));
+                this._view.sidebarControl.addEventListener(
+                    'fitModeChange', e => this._evtFitModeChange(e));
             }
             if (this._view.commentFormControl) {
                 this._view.commentFormControl.addEventListener(
@@ -72,6 +74,12 @@ class PostController {
             text = `-rating:${disabledSafety.join(',')} ${text}`;
         }
         return text.trim();
+    }
+
+    _evtFitModeChange(e) {
+        const browsingSettings = settings.get();
+        browsingSettings.fitMode = e.detail.mode;
+        settings.save(browsingSettings);
     }
 
     _evtCommentChange(e) {
