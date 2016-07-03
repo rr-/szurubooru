@@ -4,7 +4,7 @@ class LruCacheItem(object):
     def __init__(self, key, value):
         self.key = key
         self.value = value
-        self.timestamp = datetime.now()
+        self.timestamp = datetime.utcnow()
 
 class LruCache(object):
     def __init__(self, length, delta=None):

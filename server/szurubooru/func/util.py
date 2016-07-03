@@ -74,7 +74,7 @@ class dotdict(dict): # pylint: disable=invalid-name
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-def parse_time_range(value, timezone=datetime.timezone(datetime.timedelta())):
+def parse_time_range(value):
     ''' Return tuple containing min/max time for given text representation. '''
     one_day = datetime.timedelta(days=1)
     one_second = datetime.timedelta(seconds=1)
@@ -84,14 +84,14 @@ def parse_time_range(value, timezone=datetime.timezone(datetime.timedelta())):
         raise errors.ValidationError('Empty date format.')
 
     if value == 'today':
-        now = datetime.datetime.now(tz=timezone)
+        now = datetime.datetime.utcnow()
         return (
             datetime.datetime(now.year, now.month, now.day, 0, 0, 0),
             datetime.datetime(now.year, now.month, now.day, 0, 0, 0) \
                 + one_day - one_second)
 
     if value == 'yesterday':
-        now = datetime.datetime.now(tz=timezone)
+        now = datetime.datetime.utcnow()
         return (
             datetime.datetime(now.year, now.month, now.day, 0, 0, 0) - one_day,
             datetime.datetime(now.year, now.month, now.day, 0, 0, 0) \

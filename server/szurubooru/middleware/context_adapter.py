@@ -6,7 +6,7 @@ import falcon
 def json_serializer(obj):
     ''' JSON serializer for objects not serializable by default JSON code '''
     if isinstance(obj, datetime.datetime):
-        serial = obj.isoformat()
+        serial = obj.isoformat('T') + 'Z'
         return serial
     raise TypeError('Type not serializable')
 

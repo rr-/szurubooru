@@ -32,5 +32,5 @@ def set_favorite(entity, user):
         fav_entity = table()
         setattr(fav_entity, get_column(table).name, get_column(entity))
         fav_entity.user = user
-        fav_entity.time = datetime.datetime.now()
+        fav_entity.time = datetime.datetime.utcnow()
         db.session.add(fav_entity)

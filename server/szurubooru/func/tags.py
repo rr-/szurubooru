@@ -165,7 +165,7 @@ def merge_tags(source_tag, target_tag):
 
 def create_tag(names, category_name, suggestions, implications):
     tag = db.Tag()
-    tag.creation_time = datetime.datetime.now()
+    tag.creation_time = datetime.datetime.utcnow()
     update_tag_names(tag, names)
     update_tag_category_name(tag, category_name)
     update_tag_suggestions(tag, suggestions)

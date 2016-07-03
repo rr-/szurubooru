@@ -82,7 +82,7 @@ def get_serialized_history(entity):
 
 def _save(operation, entity, auth_user):
     resource_type, resource_id, resource_repr = db.util.get_resource_info(entity)
-    now = datetime.datetime.now()
+    now = datetime.datetime.utcnow()
 
     snapshot = db.Snapshot()
     snapshot.creation_time = now

@@ -43,7 +43,7 @@ def test_using_special_tokens(
     post1 = test_ctx.post_factory(id=1)
     post2 = test_ctx.post_factory(id=2)
     post1.favorited_by = [db.PostFavorite(
-        user=auth_user, time=datetime.datetime.now())]
+        user=auth_user, time=datetime.datetime.utcnow())]
     db.session.add_all([post1, post2, auth_user])
     db.session.flush()
     result = test_ctx.list_api.get(

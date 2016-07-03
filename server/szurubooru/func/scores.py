@@ -55,5 +55,5 @@ def set_score(entity, user, score):
         setattr(score_entity, get_column(table).name, get_column(entity))
         score_entity.score = score
         score_entity.user = user
-        score_entity.time = datetime.datetime.now()
+        score_entity.time = datetime.datetime.utcnow()
         db.session.add(score_entity)

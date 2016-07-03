@@ -153,7 +153,7 @@ def create_post(content, tag_names, user):
     post = db.Post()
     post.safety = db.Post.SAFETY_SAFE
     post.user = user
-    post.creation_time = datetime.datetime.now()
+    post.creation_time = datetime.datetime.utcnow()
     post.flags = []
 
     # we'll need post ID
@@ -293,7 +293,7 @@ def update_post_flags(post, flags):
 
 def feature_post(post, user):
     post_feature = db.PostFeature()
-    post_feature.time = datetime.datetime.now()
+    post_feature.time = datetime.datetime.utcnow()
     post_feature.post = post
     post_feature.user = user
     db.session.add(post_feature)

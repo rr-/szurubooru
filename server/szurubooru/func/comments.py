@@ -37,7 +37,7 @@ def create_comment(user, post, text):
     comment.user = user
     comment.post = post
     update_comment_text(comment, text)
-    comment.creation_time = datetime.datetime.now()
+    comment.creation_time = datetime.datetime.utcnow()
     return comment
 
 def update_comment_text(comment, text):

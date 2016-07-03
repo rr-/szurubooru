@@ -107,7 +107,7 @@ def create_user(name, password, email):
         user.rank = util.flip(auth.RANK_MAP)[config.config['default_rank']]
     else:
         user.rank = db.User.RANK_ADMINISTRATOR
-    user.creation_time = datetime.datetime.now()
+    user.creation_time = datetime.datetime.utcnow()
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
 
@@ -185,7 +185,7 @@ def update_user_avatar(user, avatar_style, avatar_content):
                 avatar_style, ['gravatar', 'manual']))
 
 def bump_user_login_time(user):
-    user.last_login_time = datetime.datetime.now()
+    user.last_login_time = datetime.datetime.utcnow()
 
 def reset_user_password(user):
     password = auth.create_password()

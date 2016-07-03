@@ -20,7 +20,7 @@ class InfoApi(BaseApi):
             'featuringTime': post_feature.time if post_feature else None,
             'featuringUser': users.serialize_user(post_feature.user, ctx.user) \
                 if post_feature else None,
-            'serverTime': datetime.datetime.now(),
+            'serverTime': datetime.datetime.utcnow(),
             'config': {
                 'userNameRegex': config.config['user_name_regex'],
                 'passwordRegex': config.config['password_regex'],
@@ -34,7 +34,7 @@ class InfoApi(BaseApi):
 
     def _get_disk_usage(self):
         threshold = datetime.timedelta(hours=1)
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         if self._cache_time and self._cache_time > now - threshold:
             return self._cache_result
         total_size = 0

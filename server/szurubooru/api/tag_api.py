@@ -81,7 +81,7 @@ class TagDetailApi(BaseApi):
             implications = ctx.get_param_as_list('implications')
             _create_if_needed(implications, ctx.user)
             tags.update_tag_implications(tag, implications)
-        tag.last_edit_time = datetime.datetime.now()
+        tag.last_edit_time = datetime.datetime.utcnow()
         ctx.session.flush()
         snapshots.save_entity_modification(tag, ctx.user)
         ctx.session.commit()

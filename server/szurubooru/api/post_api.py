@@ -86,7 +86,7 @@ class PostDetailApi(BaseApi):
         if ctx.has_file('thumbnail'):
             auth.verify_privilege(ctx.user, 'posts:edit:thumbnail')
             posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
-        post.last_edit_time = datetime.datetime.now()
+        post.last_edit_time = datetime.datetime.utcnow()
         ctx.session.flush()
         snapshots.save_entity_modification(post, ctx.user)
         ctx.session.commit()

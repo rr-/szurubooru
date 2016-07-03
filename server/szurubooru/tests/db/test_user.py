@@ -56,8 +56,8 @@ def test_favorite_count(user_factory, post_factory):
     post1 = post_factory()
     post2 = post_factory()
     db.session.add_all([
-        db.PostFavorite(post=post1, time=datetime.now(), user=user),
-        db.PostFavorite(post=post2, time=datetime.now(), user=user_factory()),
+        db.PostFavorite(post=post1, time=datetime.utcnow(), user=user),
+        db.PostFavorite(post=post2, time=datetime.utcnow(), user=user_factory()),
     ])
     db.session.flush()
     db.session.refresh(user)
@@ -72,8 +72,8 @@ def test_liked_post_count(user_factory, post_factory):
     post1 = post_factory()
     post2 = post_factory()
     db.session.add_all([
-        db.PostScore(post=post1, time=datetime.now(), user=user, score=1),
-        db.PostScore(post=post2, time=datetime.now(), user=user_factory(), score=1),
+        db.PostScore(post=post1, time=datetime.utcnow(), user=user, score=1),
+        db.PostScore(post=post2, time=datetime.utcnow(), user=user_factory(), score=1),
     ])
     db.session.flush()
     db.session.refresh(user)
@@ -89,8 +89,8 @@ def test_disliked_post_count(user_factory, post_factory):
     post1 = post_factory()
     post2 = post_factory()
     db.session.add_all([
-        db.PostScore(post=post1, time=datetime.now(), user=user, score=-1),
-        db.PostScore(post=post2, time=datetime.now(), user=user_factory(), score=1),
+        db.PostScore(post=post1, time=datetime.utcnow(), user=user, score=-1),
+        db.PostScore(post=post2, time=datetime.utcnow(), user=user_factory(), score=1),
     ])
     db.session.flush()
     db.session.refresh(user)

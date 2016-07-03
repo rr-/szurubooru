@@ -42,7 +42,7 @@ class CommentDetailApi(BaseApi):
         infix = 'own' if ctx.user.user_id == comment.user_id else 'any'
         text = ctx.get_param_as_string('text', required=True)
         auth.verify_privilege(ctx.user, 'comments:edit:%s' % infix)
-        comment.last_edit_time = datetime.datetime.now()
+        comment.last_edit_time = datetime.datetime.utcnow()
         comments.update_comment_text(comment, text)
         ctx.session.commit()
         return _serialize(ctx, comment)

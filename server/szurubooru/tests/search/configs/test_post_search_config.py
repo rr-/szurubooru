@@ -6,7 +6,7 @@ from szurubooru import db, errors, search
 def fav_factory(user_factory):
     def factory(post, user=None):
         return db.PostFavorite(
-            post=post, user=user or user_factory(), time=datetime.datetime.now())
+            post=post, user=user or user_factory(), time=datetime.datetime.utcnow())
     return factory
 
 @pytest.fixture
@@ -15,7 +15,7 @@ def score_factory(user_factory):
         return db.PostScore(
             post=post,
             user=user or user_factory(),
-            time=datetime.datetime.now(),
+            time=datetime.datetime.utcnow(),
             score=score)
     return factory
 
@@ -32,8 +32,8 @@ def feature_factory(user_factory):
     def factory(post=None):
         if post:
             return db.PostFeature(
-                time=datetime.datetime.now(), user=user_factory(), post=post)
-        return db.PostFeature(time=datetime.datetime.now(), user=user_factory())
+                time=datetime.datetime.utcnow(), user=user_factory(), post=post)
+        return db.PostFeature(time=datetime.datetime.utcnow(), user=user_factory())
     return factory
 
 @pytest.fixture
@@ -109,7 +109,7 @@ def test_filter_by_score(
         db.session.add(
             db.PostScore(
                 score=post.post_id,
-                time=datetime.datetime.now(),
+                time=datetime.datetime.utcnow(),
                 post=post,
                 user=user_factory()))
     db.session.add_all([post1, post2, post3])
