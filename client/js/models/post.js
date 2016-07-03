@@ -5,9 +5,16 @@ const tags = require('../tags.js');
 const events = require('../events.js');
 const CommentList = require('./comment_list.js');
 
+function _arraysDiffer(source1, source2) {
+    return [...source1].filter(value => !source2.includes(value)).length > 0
+        || [...source2].filter(value => !source1.includes(value)).length > 0;
+}
+
 class Post extends events.EventTarget {
     constructor() {
         super();
+        this._orig          = {};
+
         this._id            = null;
         this._type          = null;
         this._mimeType      = null;
@@ -31,27 +38,31 @@ class Post extends events.EventTarget {
         this._ownFavorite   = null;
     }
 
-    get id()            { return this._id; }
-    get type()          { return this._type; }
-    get mimeType()      { return this._mimeType; }
-    get creationTime()  { return this._creationTime; }
-    get user()          { return this._user; }
-    get safety()        { return this._safety; }
-    get contentUrl()    { return this._contentUrl; }
-    get thumbnailUrl()  { return this._thumbnailUrl; }
-    get canvasWidth()   { return this._canvasWidth || 800; }
-    get canvasHeight()  { return this._canvasHeight || 450; }
-    get fileSize()      { return this._fileSize || 0; }
+    get id()             { return this._id; }
+    get type()           { return this._type; }
+    get mimeType()       { return this._mimeType; }
+    get creationTime()   { return this._creationTime; }
+    get user()           { return this._user; }
+    get safety()         { return this._safety; }
+    get contentUrl()     { return this._contentUrl; }
+    get thumbnailUrl()   { return this._thumbnailUrl; }
+    get canvasWidth()    { return this._canvasWidth || 800; }
+    get canvasHeight()   { return this._canvasHeight || 450; }
+    get fileSize()       { return this._fileSize || 0; }
 
-    get tags()          { return this._tags; }
-    get notes()         { return this._notes; }
-    get comments()      { return this._comments; }
-    get relations()     { return this._relations; }
+    get tags()           { return this._tags; }
+    get notes()          { return this._notes; }
+    get comments()       { return this._comments; }
+    get relations()      { return this._relations; }
 
-    get score()         { return this._score; }
-    get favoriteCount() { return this._favoriteCount; }
-    get ownFavorite()   { return this._ownFavorite; }
-    get ownScore()      { return this._ownScore; }
+    get score()          { return this._score; }
+    get favoriteCount()  { return this._favoriteCount; }
+    get ownFavorite()    { return this._ownFavorite; }
+    get ownScore()       { return this._ownScore; }
+
+    set tags(value)      { this._tags = value; }
+    set safety(value)    { this._safety = value; }
+    set relations(value) { this._relations = value; }
 
     static fromResponse(response) {
         const ret = new Post();
@@ -90,15 +101,22 @@ class Post extends events.EventTarget {
     }
 
     save() {
-        let promise = null;
-        let data = {
-            tags: this._tags,
-        };
-        if (this._id) {
-            promise = api.put('/post/' + this._id, data);
-        } else {
-            promise = api.post('/posts', data);
+        const detail = {};
+
+        // send only changed fields to avoid user privilege violation
+        if (this._safety !== this._orig._safety) {
+            detail.safety = this._safety;
         }
+        if (_arraysDiffer(this._tags, this._orig._tags)) {
+            detail.tags = this._tags;
+        }
+        if (_arraysDiffer(this._relations, this._orig._relations)) {
+            detail.relations = this._relations;
+        }
+
+        let promise = this._id ?
+            api.put('/post/' + this._id, detail) :
+            api.post('/posts', detail);
 
         return promise.then(response => {
             this._updateFromResponse(response);
@@ -180,27 +198,32 @@ class Post extends events.EventTarget {
     }
 
     _updateFromResponse(response) {
-        this._id            = response.id;
-        this._type          = response.type;
-        this._mimeType      = response.mimeType;
-        this._creationTime  = response.creationTime;
-        this._user          = response.user;
-        this._safety        = response.safety;
-        this._contentUrl    = response.contentUrl;
-        this._thumbnailUrl  = response.thumbnailUrl;
-        this._canvasWidth   = response.canvasWidth;
-        this._canvasHeight  = response.canvasHeight;
-        this._fileSize      = response.fileSize;
+        const map = {
+            _id:            response.id,
+            _type:          response.type,
+            _mimeType:      response.mimeType,
+            _creationTime:  response.creationTime,
+            _user:          response.user,
+            _safety:        response.safety,
+            _contentUrl:    response.contentUrl,
+            _thumbnailUrl:  response.thumbnailUrl,
+            _canvasWidth:   response.canvasWidth,
+            _canvasHeight:  response.canvasHeight,
+            _fileSize:      response.fileSize,
 
-        this._tags          = response.tags;
-        this._notes         = response.notes;
-        this._comments      = CommentList.fromResponse(response.comments || []);
-        this._relations     = response.relations;
+            _tags:          response.tags,
+            _notes:         response.notes,
+            _comments:      CommentList.fromResponse(response.comments || []),
+            _relations:     response.relations,
 
-        this._score         = response.score;
-        this._favoriteCount = response.favoriteCount;
-        this._ownScore      = response.ownScore;
-        this._ownFavorite   = response.ownFavorite;
+            _score:         response.score,
+            _favoriteCount: response.favoriteCount,
+            _ownScore:      response.ownScore,
+            _ownFavorite:   response.ownFavorite,
+        };
+
+        Object.assign(this, map);
+        Object.assign(this._orig, map);
     }
 };
 

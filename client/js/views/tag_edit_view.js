@@ -2,14 +2,11 @@
 
 const config = require('../config.js');
 const events = require('../events.js');
+const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const TagInputControl = require('../controls/tag_input_control.js');
 
 const template = views.getTemplate('tag-edit');
-
-function _split(str) {
-    return str.split(/\s+/).filter(s => s);
-}
 
 class TagEditView extends events.EventTarget {
     constructor(ctx) {
@@ -58,7 +55,7 @@ class TagEditView extends events.EventTarget {
 
     _evtNameInput(e) {
         const regex = new RegExp(config.tagNameRegex);
-        const list = this._namesFieldNode.value.split(/\s+/).filter(t => t);
+        const list = misc.splitByWhitespace(this._namesFieldNode.value);
 
         if (!list.length) {
             this._namesFieldNode.setCustomValidity(
@@ -82,10 +79,12 @@ class TagEditView extends events.EventTarget {
         this.dispatchEvent(new CustomEvent('submit', {
             detail: {
                 tag: this._tag,
-                names: _split(this._namesFieldNode.value),
+                names: misc.splitByWhitespace(this._namesFieldNode.value),
                 category: this._categoryFieldNode.value,
-                implications: _split(this._implicationsFieldNode.value),
-                suggestions: _split(this._suggestionsFieldNode.value),
+                implications: misc.splitByWhitespace(
+                    this._implicationsFieldNode.value),
+                suggestions: misc.splitByWhitespace(
+                    this._suggestionsFieldNode.value),
                 description: this._descriptionFieldNode.value,
             },
         }));

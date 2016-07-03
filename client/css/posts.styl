@@ -310,3 +310,37 @@ $safety-unsafe = #F3985F
             color: $inactive-link-color
             padding-left: 0.7em
             font-size: 90%
+
+.post-view .edit-sidebar
+    section
+        margin-bottom: 1em
+
+    .safety
+        display: flex
+        flex-wrap: wrap
+        label:not(.radio)
+            width: 100%
+        .radio
+            flex-grow: 1
+            display: inline-block
+
+    .tags
+        .tag-input
+            min-height: 6.25em
+
+    label
+        margin-bottom: 0.3em
+        display: block
+
+    .buttons
+        display: flex
+        flex-wrap: wrap
+        margin-top: 2em
+        input, button
+            flex-grow: 1
+
+    input[type=submit],
+    input[type=button],
+    button
+        &:focus
+            border: 2px solid $text-color !important

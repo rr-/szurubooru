@@ -3,6 +3,7 @@
 const api = require('../api.js');
 const tags = require('../tags.js');
 const misc = require('../util/misc.js');
+const events = require('../events.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
 
@@ -16,8 +17,17 @@ const KEY_RETURN = 13;
 const KEY_BACKSPACE = 8;
 const KEY_DELETE = 46;
 
-class TagInputControl {
+class TagInputEvent extends Event {
+    constructor(name, tagInput) {
+        super(name);
+        this.tagInput = tagInput;
+        this.tags = tagInput.tags;
+    }
+}
+
+class TagInputControl extends events.EventTarget {
     constructor(sourceInputNode) {
+        super();
         this.tags = [];
         this.readOnly = sourceInputNode.readOnly;
 
@@ -90,6 +100,8 @@ class TagInputControl {
         this._hideVisualCues();
 
         this.tags.push(text);
+        this.dispatchEvent(new TagInputEvent('add', this));
+        this.dispatchEvent(new TagInputEvent('change', this));
         this._sourceInputNode.value = this.tags.join(' ');
 
         const sourceWrapperNode = this._getWrapperFromChild(sourceNode);
@@ -128,6 +140,8 @@ class TagInputControl {
         }
         this._hideAutoComplete();
         this.tags = this.tags.filter(t => t.toLowerCase() != tag.toLowerCase());
+        this.dispatchEvent(new TagInputEvent('remove', this));
+        this.dispatchEvent(new TagInputEvent('change', this));
         this._sourceInputNode.value = this.tags.join(' ');
         for (let wrapperNode of this._getAllWrapperNodes()) {
             if (this._getTagFromWrapper(wrapperNode).toLowerCase() ==

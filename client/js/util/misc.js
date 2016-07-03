@@ -163,6 +163,10 @@ function formatUrlParameters(dict) {
     return result.join(';');
 }
 
+function splitByWhitespace(str) {
+    return str.split(/\s+/).filter(s => s);
+}
+
 function parseUrlParameters(query) {
     let result = {};
     for (let word of (query || '').split(/;/)) {
@@ -254,4 +258,5 @@ module.exports = {
     confirmPageExit: confirmPageExit,
     escapeHtml: escapeHtml,
     makeCssName: makeCssName,
+    splitByWhitespace: splitByWhitespace,
 };

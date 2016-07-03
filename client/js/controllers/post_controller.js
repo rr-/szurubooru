@@ -52,6 +52,10 @@ class PostController {
                     'score', e => this._evtScorePost(e));
                 this._view.sidebarControl.addEventListener(
                     'fitModeChange', e => this._evtFitModeChange(e));
+                this._view.sidebarControl.addEventListener(
+                    'change', e => this._evtPostChange(e));
+                this._view.sidebarControl.addEventListener(
+                    'submit', e => this._evtPostEdit(e));
             }
             if (this._view.commentFormControl) {
                 this._view.commentFormControl.addEventListener(
@@ -91,6 +95,26 @@ class PostController {
         const browsingSettings = settings.get();
         browsingSettings.fitMode = e.detail.mode;
         settings.save(browsingSettings);
+    }
+
+    _evtPostEdit(e) {
+        // TODO: disable form
+        const post = e.detail.post;
+        post.tags = e.detail.tags;
+        post.safety = e.detail.safety;
+        post.relations = e.detail.relations;
+        post.save()
+            .then(() => {
+                misc.disableExitConfirmation();
+                // TODO: enable form
+            }, errorMessage => {
+                window.alert(errorMessage);
+                // TODO: enable form
+            });
+    }
+
+    _evtPostChange(e) {
+        misc.enableExitConfirmation();
     }
 
     _evtCommentChange(e) {

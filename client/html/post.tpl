@@ -24,7 +24,7 @@
             <article class='edit-post'>
                 <% if (ctx.editMode) { %>
                     <a href='/post/<%- encodeURIComponent(ctx.post.id) %>'>
-                        <i class='fa fa-eye'></i>
+                        <i class='fa fa-reply'></i>
                         <span class='vim-nav-hint'>Back to view mode</span>
                     </a>
                 <% } else { %>
