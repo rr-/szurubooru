@@ -97,7 +97,8 @@ class PostSearchConfig(BaseSearchConfig):
                 defer(db.Post.tag_count),
                 subqueryload(db.Post.tags).subqueryload(db.Tag.names),
                 lazyload(db.Post.user),
-                lazyload(db.Post.relations),
+                lazyload(db.Post.relating_to),
+                lazyload(db.Post.related_by),
                 lazyload(db.Post.notes),
                 lazyload(db.Post.favorited_by),
             )

@@ -112,11 +112,16 @@ class Post(Base):
     # foreign tables
     user = relationship('User')
     tags = relationship('Tag', backref='posts', secondary='post_tag')
-    relations = relationship(
+    relating_to = relationship(
         'Post',
         secondary='post_relation',
         primaryjoin=post_id == PostRelation.parent_id,
         secondaryjoin=post_id == PostRelation.child_id, lazy='joined')
+    related_by = relationship(
+        'Post',
+        secondary='post_relation',
+        primaryjoin=post_id == PostRelation.child_id,
+        secondaryjoin=post_id == PostRelation.parent_id, lazy='joined')
     features = relationship(
         'PostFeature', cascade='all, delete-orphan', lazy='joined')
     scores = relationship(
@@ -190,5 +195,7 @@ class Post(Base):
 
     relation_count = column_property(
         select([func.count(PostRelation.child_id)]) \
-        .where(PostRelation.parent_id == post_id) \
+        .where(
+            (PostRelation.parent_id == post_id) \
+            | (PostRelation.child_id == post_id)) \
         .correlate_except(PostRelation))

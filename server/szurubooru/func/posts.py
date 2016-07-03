@@ -264,7 +264,7 @@ def update_post_relations(post, post_ids):
         .all()
     if len(relations) != len(post_ids):
         raise InvalidPostRelationError('One of relations does not exist.')
-    post.relations = relations
+    post.relating_to = relations
 
 def update_post_notes(post, notes):
     post.notes = []
