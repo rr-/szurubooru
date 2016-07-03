@@ -1576,6 +1576,7 @@ One file together with its metadata posted to the site.
     "commentCount":       <comment-count>,
     "noteCount":          <note-count>,
     "featureCount":       <feature-count>,
+    "relationCount":      <relation-count>,
     "lastFeatureTime":    <last-feature-time>,
     "favoritedBy":        <favorited-by>,
     "hasCustomThumbnail": <has-custom-thumbnail>,
@@ -1642,6 +1643,7 @@ One file together with its metadata posted to the site.
 - `<comment-count>`: how many comments are filed under that post
 - `<note-count>`: how many notes the post has
 - `<feature-count>`: how many times has the post been featured.
+- `<relation-count>`: how many posts are related to this post.
 - `<last-feature-time>`: the last time the post was featured, formatted as per
   RFC 3339.
 - `<favorited-by>`: list of users, serialized as [micro user resources](#micro-user).

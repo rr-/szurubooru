@@ -154,6 +154,7 @@ def test_serialize_post(
         'commentCount': 2,
         'noteCount': 0,
         'featureCount': 1,
+        'relationCount': 0,
         'lastFeatureTime': datetime.datetime(1999, 1, 1),
         'favoritedBy': ['fav1'],
         'hasCustomThumbnail': True,

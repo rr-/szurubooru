@@ -109,6 +109,7 @@ def serialize_post(post, authenticated_user, options=None):
             'favoriteCount': lambda: post.favorite_count,
             'commentCount': lambda: post.comment_count,
             'noteCount': lambda: post.note_count,
+            'relationCount': lambda: post.relation_count,
             'featureCount': lambda: post.feature_count,
             'lastFeatureTime': lambda: post.last_feature_time,
             'favoritedBy': lambda: [
