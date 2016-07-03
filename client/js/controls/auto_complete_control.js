@@ -30,6 +30,7 @@ class AutoCompleteControl {
         Object.assign(this._options, {
             verticalShift: 2,
             source: null,
+            addSpace: false,
             maxResults: 15,
             getTextToFind: () => {
                 const value = sourceInputNode.value;
@@ -50,6 +51,9 @@ class AutoCompleteControl {
                     this._results[this._activeResult].value +
                     ' ' +
                     suffix.trimLeft();
+                if (!this._options.addSpace) {
+                    sourceInputNode.value = sourceInputNode.value.trim();
+                }
                 sourceInputNode.focus();
             },
             delete: text => {

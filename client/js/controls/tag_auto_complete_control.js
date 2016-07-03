@@ -10,9 +10,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
         const caseSensitive = false;
         const minLengthForPartialSearch = 3;
 
-        if (!options) {
-            options = {};
-        }
+        options = Object.assign({}, options);
 
         options.getMatches = text => {
             const transform = caseSensitive ?

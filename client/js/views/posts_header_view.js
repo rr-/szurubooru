@@ -17,7 +17,7 @@ class PostsHeaderView {
         views.replaceContent(this._hostNode, template(ctx));
 
         if (this._queryInputNode) {
-            new TagAutoCompleteControl(this._queryInputNode);
+            new TagAutoCompleteControl(this._queryInputNode, {addSpace: true});
         }
 
         keyboard.bind('q', () => {

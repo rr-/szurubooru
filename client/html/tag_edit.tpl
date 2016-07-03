@@ -3,7 +3,7 @@
         <div class='input'>
             <ul>
                 <li class='names'>
-                    <%= ctx.makeTextInput({text: 'Names', value: ctx.tag.names.join(' '), required: true, readonly: !ctx.canEditNames, pattern: ctx.tagNamesPattern}) %>
+                    <%= ctx.makeTextInput({text: 'Names', value: ctx.tag.names.join(' '), required: true, readonly: !ctx.canEditNames}) %>
                 </li>
                 <li class='category'>
                     <%= ctx.makeSelect({text: 'Category', keyValues: ctx.categories, selectedKey: ctx.tag.category, required: true, readonly: !ctx.canEditCategory}) %>
