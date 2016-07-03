@@ -98,6 +98,28 @@ def test_merging_when_related(test_ctx, fake_datetime):
     assert tags.try_get_tag_by_name('parent').implications == []
     assert tags.try_get_tag_by_name('parent').suggestions == []
 
+def test_merging_when_target_exists(test_ctx, fake_datetime, post_factory):
+    source_tag = test_ctx.tag_factory(names=['source'], category_name='meta')
+    target_tag = test_ctx.tag_factory(names=['target'], category_name='meta')
+    db.session.add_all([source_tag, target_tag])
+    db.session.flush()
+    post1 = post_factory()
+    post1.tags = [source_tag, target_tag]
+    db.session.add_all([post1])
+    db.session.commit()
+    assert source_tag.post_count == 1
+    assert target_tag.post_count == 1
+    with fake_datetime('1997-12-01'):
+        result = test_ctx.api.post(
+            test_ctx.context_factory(
+                input={
+                    'remove': 'source',
+                    'mergeTo': 'target',
+                },
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
+    assert tags.try_get_tag_by_name('source') is None
+    assert tags.get_tag_by_name('target').post_count == 1
+
 @pytest.mark.parametrize('input,expected_exception', [
     ({'remove': None}, tags.TagNotFoundError),
     ({'remove': ''}, tags.TagNotFoundError),
