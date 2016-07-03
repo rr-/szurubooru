@@ -85,6 +85,7 @@ def create_app():
             middleware.ContextAdapter(),
             middleware.DbSession(),
             middleware.Authenticator(),
+            middleware.RequestLogger(),
         ])
 
     app.add_error_handler(errors.AuthError, _on_auth_error)

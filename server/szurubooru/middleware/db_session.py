@@ -12,5 +12,3 @@ class DbSession(object):
 
     def process_response(self, _request, _response, _resource):
         db.session.remove()
-        if config.config['debug']:
-            logger.info('Executed %d queries', db.get_query_count())
