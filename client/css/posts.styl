@@ -36,61 +36,6 @@ $safety-unsafe = #F3985F
                     font-size: 140%
                 text-align: center
 
-        .details
-            i
-                margin-right: 0.6em
-                display: inline-block
-                width: 1em
-                text-align: center
-
-            .safety-safe
-                color: $safety-safe
-            .safety-sketchy
-                color: $safety-sketchy
-            .safety-unsafe
-                color: $safety-unsafe
-
-            .upload-info
-                .thumbnail
-                    width: 1em
-                    height: 1em
-                    margin: -0.1em 0.6em 0 0
-
-            .zoom
-                margin-top: 1em
-                a
-                    display: inline-block
-                .active
-                    text-decoration: underline
-
-            .social
-                margin-top: 1em
-                .score-container
-                    float: left
-                    margin-right: 3em
-                    .downvote i
-                        text-align: right
-                i
-                    text-align: left
-                    margin: 0
-                .value
-                    text-align: center
-                    display: inline-block
-                    width: 2em
-
-        .tags
-            margin-top: 2em
-            line-height: 130%
-            word-break: break-all
-            h1
-                margin-bottom: 0.5em
-            i
-                padding-right: 0.4em
-            .count
-                color: $inactive-link-color
-                padding-left: 0.7em
-                font-size: 90%
-
     >.content
         width: 100%
 
@@ -259,3 +204,72 @@ $safety-unsafe = #F3985F
             margin-bottom: 0
         p:first-of-type
             margin-top: 0
+
+.post-view .readonly-sidebar
+    .details
+        i
+            margin-right: 0.6em
+            display: inline-block
+            width: 1em
+            text-align: center
+
+        .safety-safe
+            color: $safety-safe
+        .safety-sketchy
+            color: $safety-sketchy
+        .safety-unsafe
+            color: $safety-unsafe
+
+        .upload-info
+            .thumbnail
+                width: 1em
+                height: 1em
+                margin: -0.1em 0.6em 0 0
+
+        .zoom
+            margin-top: 1em
+            a
+                display: inline-block
+            .active
+                text-decoration: underline
+
+        .social
+            margin-top: 1em
+            .score-container
+                float: left
+                margin-right: 3em
+                .downvote i
+                    text-align: right
+            i
+                text-align: left
+                margin: 0
+            .value
+                text-align: center
+                display: inline-block
+                width: 2em
+
+    .relations
+        margin-top: 2em
+        h1
+            margin-bottom: 0.5em
+        .thumbnail
+            background-position: 50% 30%
+            width: 4em
+            height: 3em
+            margin: 0
+        li
+            margin: 0 0.3em 0.3em 0
+            display: inline-block
+
+    .tags
+        margin-top: 2em
+        line-height: 130%
+        word-break: break-all
+        h1
+            margin-bottom: 0.5em
+        i
+            padding-right: 0.4em
+        .count
+            color: $inactive-link-color
+            padding-left: 0.7em
+            font-size: 90%
