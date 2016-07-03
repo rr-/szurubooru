@@ -90,7 +90,15 @@ def serialize_post(post, authenticated_user, options=None):
                         tag.category.name,
                         tag.names[0].name)
                 )],
-            'relations': lambda: [rel.post_id for rel in post.relations],
+            'relations': lambda: sorted(
+                {
+                    post['id']:
+                        post for post in [
+                            serialize_micro_post(rel) \
+                                for rel in post.related_by + post.relating_to
+                        ]
+                }.values(),
+                key=lambda post: post['id']),
             'user': lambda: users.serialize_micro_user(post.user),
             'score': lambda: post.score,
             'ownScore': lambda: scores.get_score(post, authenticated_user),
@@ -119,6 +127,12 @@ def serialize_post(post, authenticated_user, options=None):
             'snapshots': lambda: snapshots.get_serialized_history(post),
         },
         options)
+
+def serialize_micro_post(post):
+    return serialize_post(
+        post,
+        authenticated_user=None,
+        options=['id', 'thumbnailUrl'])
 
 def get_post_count():
     return db.session.query(sqlalchemy.func.count(db.Post.post_id)).one()[0]

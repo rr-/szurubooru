@@ -68,6 +68,7 @@
    - [Tag category](#tag-category)
    - [Tag](#tag)
    - [Post](#post)
+   - [Micro post](#micro-post)
    - [Note](#note)
    - [Comment](#comment)
    - [Snapshot](#snapshot)
@@ -1625,7 +1626,8 @@ One file together with its metadata posted to the site.
 - `<flags>`: various flags such as whether the post is looped, represented as
   array of plain strings.
 - `<tags>`: list of tag names the post is tagged with.
-- `<relations>`: a list of related post IDs. Links to related posts are shown
+- `<relations>`: a list of related posts, serialized as [micro post
+  resources](#micro-post). Links to related posts are shown
   to the user by the web client.
 - `<notes>`: a list of post annotations, serialized as list of [note
   resources](#note).
@@ -1649,6 +1651,11 @@ One file together with its metadata posted to the site.
 - `<snapshot>`: a [snapshot resource](#snapshot) that contains the post's
   earlier versions.
 - `<comment>`: a [comment resource](#comment) for given post.
+
+## Micro post
+**Description**
+
+A [post resource](#post) stripped down to `name` and `thumbnailUrl` fields.
 
 ## Note
 **Description**
