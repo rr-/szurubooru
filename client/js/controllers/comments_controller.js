@@ -15,7 +15,11 @@ class CommentsController {
 
         this._pageController = new PageController({
             searchQuery: ctx.searchQuery,
-            clientUrl: '/comments/' + misc.formatSearchQuery({page: '{page}'}),
+            getClientUrlForPage: page => {
+                const searchQuery = Object.assign(
+                    {}, ctx.searchQuery, {page: page});
+                return '/comments/' + misc.formatSearchQuery(searchQuery);
+            },
             requestPage: page => {
                 return PostList.search(
                     'sort:comment-date+comment-count-min:1', page, 10, fields);

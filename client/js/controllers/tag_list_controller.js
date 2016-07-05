@@ -17,8 +17,11 @@ class TagListController {
 
         this._pageController = new PageController({
             searchQuery: ctx.searchQuery,
-            clientUrl: '/tags/' + misc.formatSearchQuery({
-                text: ctx.searchQuery.text, page: '{page}'}),
+            getClientUrlForPage: page => {
+                const searchQuery = Object.assign(
+                    {}, ctx.searchQuery, {page: page});
+                return '/tags/' + misc.formatSearchQuery(searchQuery);
+            },
             requestPage: page => {
                 return TagList.search(ctx.searchQuery.text, page, 50, fields);
             },

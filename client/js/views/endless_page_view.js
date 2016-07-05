@@ -6,10 +6,6 @@ const views = require('../util/views.js');
 const holderTemplate = views.getTemplate('endless-pager');
 const pageTemplate = views.getTemplate('endless-pager-page');
 
-function _formatUrl(url, page) {
-    return url.replace('{page}', page);
-}
-
 class EndlessPageView {
     constructor(ctx) {
         this._hostNode = document.getElementById('content-holder');
@@ -68,7 +64,7 @@ class EndlessPageView {
         let topPageNumber = parseInt(topPageNode.getAttribute('data-page'));
         if (topPageNumber !== this.currentPage) {
             router.replace(
-                _formatUrl(ctx.clientUrl, topPageNumber),
+                ctx.getClientUrlForPage(topPageNumber),
                 {},
                 false);
             this.currentPage = topPageNumber;

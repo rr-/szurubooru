@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const tags = require('../tags.js');
 const events = require('../events.js');
 const CommentList = require('./comment_list.js');
 
@@ -65,6 +66,48 @@ class Post extends events.EventTarget {
             }, response => {
                 return Promise.reject(response.description);
             });
+    }
+
+    isTaggedWith(tagName) {
+        return this._tags.map(s => s.toLowerCase()).includes(tagName);
+    }
+
+    addTag(tagName, addImplications) {
+        if (this.isTaggedWith(tagName)) {
+            return;
+        }
+        this._tags.push(tagName);
+        if (addImplications !== false) {
+            for (let otherTag of tags.getAllImplications(tagName)) {
+                this.addTag(otherTag, addImplications);
+            }
+        }
+    }
+
+    removeTag(tagName) {
+        this._tags = this._tags.filter(
+            s => s.toLowerCase() != tagName.toLowerCase());
+    }
+
+    save() {
+        let promise = null;
+        let data = {
+            tags: this._tags,
+        };
+        if (this._id) {
+            promise = api.put('/post/' + this._id, data);
+        } else {
+            promise = api.post('/posts', data);
+        }
+
+        return promise.then(response => {
+            this._updateFromResponse(response);
+            this.dispatchEvent(
+                new CustomEvent('change', {detail: {post: this}}));
+            return Promise.resolve();
+        }, response => {
+            return Promise.reject(response.description);
+        });
     }
 
     setScore(score) {

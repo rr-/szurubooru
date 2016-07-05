@@ -7,7 +7,7 @@ const ManualPageView = require('../views/manual_page_view.js');
 class PageController {
     constructor(ctx) {
         const extendedContext = {
-            clientUrl: ctx.clientUrl,
+            getClientUrlForPage: ctx.getClientUrlForPage,
             searchQuery: ctx.searchQuery,
         };
 

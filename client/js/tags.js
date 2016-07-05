@@ -89,6 +89,17 @@ function refreshExport() {
     });
 }
 
+function getAllImplications(tagName) {
+    const actualTag = getTagByName(tagName) || {};
+    // TODO: recursive
+    return actualTag.implications || [];
+}
+
+function getSuggestions(tagName) {
+    const actualTag = getTagByName(tagName) || {};
+    return actualTag.suggestions || [];
+}
+
 module.exports = {
     getAllCategories: getAllCategories,
     getAllTags: getAllTags,
@@ -97,4 +108,6 @@ module.exports = {
     getNameToTagMap: getNameToTagMap,
     getOriginalTagName: getOriginalTagName,
     refreshExport: refreshExport,
+    getAllImplications: getAllImplications,
+    getSuggestions: getSuggestions,
 };

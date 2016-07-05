@@ -8,10 +8,6 @@ const views = require('../util/views.js');
 const holderTemplate = views.getTemplate('manual-pager');
 const navTemplate = views.getTemplate('manual-pager-nav');
 
-function _formatUrl(url, page) {
-    return url.replace('{page}', page);
-}
-
 function _removeConsecutiveDuplicates(a) {
     return a.filter((item, pos, ary) => {
         return !pos || item != ary[pos - 1];
@@ -40,7 +36,7 @@ function _getVisiblePageNumbers(currentPage, totalPages) {
     return pagesVisible;
 }
 
-function _getPages(currentPage, pageNumbers, clientUrl) {
+function _getPages(currentPage, pageNumbers, ctx) {
     const pages = [];
     let lastPage = 0;
     for (let page of pageNumbers) {
@@ -49,7 +45,7 @@ function _getPages(currentPage, pageNumbers, clientUrl) {
         }
         pages.push({
             number: page,
-            link: _formatUrl(clientUrl, page),
+            link: ctx.getClientUrlForPage(page),
             active: currentPage === page,
         });
         lastPage = page;
@@ -83,16 +79,16 @@ class ManualPageView {
 
             const totalPages = Math.ceil(response.total / response.pageSize);
             const pageNumbers = _getVisiblePageNumbers(currentPage, totalPages);
-            const pages = _getPages(currentPage, pageNumbers, ctx.clientUrl);
+            const pages = _getPages(currentPage, pageNumbers, ctx);
 
             keyboard.bind(['a', 'left'], () => {
                 if (currentPage > 1) {
-                    router.show(_formatUrl(ctx.clientUrl, currentPage - 1));
+                    router.show(ctx.getClientUrlForPage(currentPage - 1));
                 }
             });
             keyboard.bind(['d', 'right'], () => {
                 if (currentPage < totalPages) {
-                    router.show(_formatUrl(ctx.clientUrl, currentPage + 1));
+                    router.show(ctx.getClientUrlForPage(currentPage + 1));
                 }
             });
 
@@ -100,8 +96,8 @@ class ManualPageView {
                 views.replaceContent(
                     pageNavNode,
                     navTemplate({
-                        prevLink: _formatUrl(ctx.clientUrl, currentPage - 1),
-                        nextLink: _formatUrl(ctx.clientUrl, currentPage + 1),
+                        prevLink: ctx.getClientUrlForPage(currentPage - 1),
+                        nextLink: ctx.getClientUrlForPage(currentPage + 1),
                         prevLinkActive: currentPage > 1,
                         nextLinkActive: currentPage < totalPages,
                         pages: pages,

@@ -105,18 +105,16 @@ class TagInputControl {
         this._editAreaNode.insertBefore(targetWrapperNode, sourceWrapperNode);
         this._editAreaNode.insertBefore(this._createSpace(), sourceWrapperNode);
 
-        const actualTag = tags.getTagByName(text) || {};
-
         // XXX: perhaps we should aggregate suggestions from all implications
         // for call to the _suggestRelations
         if (addImplications) {
-            for (let otherTag of (actualTag.implications || [])) {
+            for (let otherTag of tags.getAllImplications(text)) {
                 this.addTag(otherTag, sourceNode, true, false);
             }
         }
 
         if (suggestRelations) {
-            this._suggestRelations([], actualTag.suggestions || []);
+            this._suggestRelations([], tags.getSuggestions(text) || []);
         }
     }
 

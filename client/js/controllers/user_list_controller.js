@@ -14,8 +14,11 @@ class UserListController {
 
         this._pageController = new PageController({
             searchQuery: ctx.searchQuery,
-            clientUrl: '/users/' + misc.formatSearchQuery({
-                text: ctx.searchQuery.text, page: '{page}'}),
+            getClientUrlForPage: page => {
+                const searchQuery = Object.assign(
+                    {}, ctx.searchQuery, {page: page});
+                return '/users/' + misc.formatSearchQuery(searchQuery);
+            },
             requestPage: page => {
                 return UserList.search(ctx.searchQuery.text, page);
             },

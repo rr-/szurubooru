@@ -67,7 +67,7 @@ $safety-unsafe = #F3985F
                 min-height: 7.5em
                 height: 9vw
 
-            a
+            .thumbnail-wrapper
                 display: inline-block
                 width: 100%
                 height: 100%
@@ -99,6 +99,35 @@ $safety-unsafe = #F3985F
                     .icon:not(:first-of-type)
                         margin-left: 1em
 
+            .masstag
+                position: absolute
+                top: 0.5em
+                left: 0.5em
+                display: inline-block
+                padding: 0.5em
+                box-sizing: border-box
+                border: 0
+                cursor: pointer
+                &:after
+                    display: inline-block
+                    width: 1em
+                    height: 1em
+                    text-align: center
+                    line-height: 1em
+                    font-size: 20pt
+                &.tagged
+                    background: rgba(0, 230, 0, 0.7)
+                    &:after
+                        color: white
+                        content: '-'
+                &:not(.tagged)
+                    background: rgba(255, 0, 0, 0.7)
+                    &:after
+                        color: white
+                        content: '+'
+                &[data-disabled]
+                    background: rgba(200, 200, 200, 0.7)
+
             .thumbnail
                 background-position: 50% 30%
                 width: 100%
@@ -122,12 +151,23 @@ $safety-unsafe = #F3985F
     text-align: left
     form
         width: auto
+        *
+            vertical-align: top
     input[name=search-text]
         width: 25em
         max-width: 90vw
+    input[name=masstag]
+        width: 15em
+        margin-left: 1em
     .append
         font-size: 0.95em
         color: $inactive-link-color
+    .masstag
+        &:not(.active)
+            [type=text],
+            .start-tagging,
+            .stop-tagging
+                display: none
 
     .safety
         &.safety-safe
@@ -148,7 +188,7 @@ $safety-unsafe = #F3985F
 
 .post-container
     .post-content.transparency-grid img
-        background: url('/img/transparency_grid.png');
+        background: url('/img/transparency_grid.png')
 
     text-align: center
     .post-content

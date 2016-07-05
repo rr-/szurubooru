@@ -17,25 +17,61 @@ class PostListController {
     constructor(ctx) {
         topNavigation.activate('posts');
 
+        this._ctx = ctx;
         this._pageController = new PageController({
             searchQuery: ctx.searchQuery,
-            clientUrl: '/posts/' + misc.formatSearchQuery({
-                text: ctx.searchQuery.text, page: '{page}'}),
+            getClientUrlForPage: page => {
+                const searchQuery = Object.assign(
+                    {}, ctx.searchQuery, {page: page});
+                return '/posts/' + misc.formatSearchQuery(searchQuery);
+            },
             requestPage: page => {
                 return PostList.search(
                     this._decorateSearchQuery(ctx.searchQuery.text),
                     page, 40, fields);
             },
             headerRenderer: headerCtx => {
+                Object.assign(headerCtx, {
+                    canMassTag: api.hasPrivilege('tags:masstag'),
+                    massTagTags: this._massTagTags,
+                });
                 return new PostsHeaderView(headerCtx);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
                     canViewPosts: api.hasPrivilege('posts:view'),
+                    massTagTags: this._massTagTags,
                 });
-                return new PostsPageView(pageCtx);
+                const view = new PostsPageView(pageCtx);
+                view.addEventListener('tag', e => this._evtTag(e));
+                view.addEventListener('untag', e => this._evtUntag(e));
+                return view;
             },
         });
+    }
+
+    get _massTagTags() {
+        return (this._ctx.searchQuery.tag || '').split(/\s+/).filter(s => s);
+    }
+
+    _evtTag(e) {
+        for (let tag of this._massTagTags) {
+            e.detail.post.addTag(tag);
+        }
+        e.detail.post.save()
+            .catch(errorMessage => {
+                window.alert(errorMessage);
+            });
+    }
+
+    _evtUntag(e) {
+        for (let tag of this._massTagTags) {
+            e.detail.post.removeTag(tag);
+        }
+        e.detail.post.save()
+            .catch(errorMessage => {
+                window.alert(errorMessage);
+            });
     }
 
     _decorateSearchQuery(text) {
