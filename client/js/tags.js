@@ -90,9 +90,20 @@ function refreshExport() {
 }
 
 function getAllImplications(tagName) {
-    const actualTag = getTagByName(tagName) || {};
-    // TODO: recursive
-    return actualTag.implications || [];
+    let implications = [];
+    let check = [tagName];
+    while (check.length) {
+        let tagName = check.pop();
+        const actualTag = getTagByName(tagName) || {};
+        for (let implication of actualTag.implications || []) {
+            if (implications.includes(implication)) {
+                continue;
+            }
+            implications.push(implication);
+            check.push(implication);
+        }
+    }
+    return Array.from(implications);
 }
 
 function getSuggestions(tagName) {
