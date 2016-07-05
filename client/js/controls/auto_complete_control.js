@@ -211,6 +211,7 @@ class AutoCompleteControl {
             this._suggestionList.removeChild(this._suggestionList.firstChild);
         }
         for (let [resultIndex, resultItem] of this._results.entries()) {
+            let resultIndexWorkaround = resultIndex;
             const listItem = document.createElement('li');
             const link = document.createElement('a');
             link.href = '#';
@@ -220,14 +221,14 @@ class AutoCompleteControl {
                 'mouseenter',
                 e => {
                     e.preventDefault();
-                    this._activeResult = resultIndex;
+                    this._activeResult = resultIndexWorkaround;
                     this._refreshActiveResult();
                 });
             link.addEventListener(
                 'mousedown',
                 e => {
                     e.preventDefault();
-                    this._activeResult = resultIndex;
+                    this._activeResult = resultIndexWorkaround;
                     this._options.confirm(this._getActiveSuggestion());
                     this.hide();
                 });
