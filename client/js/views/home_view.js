@@ -11,6 +11,7 @@ const TagAutoCompleteControl =
 
 const template = views.getTemplate('home');
 const statsTemplate = views.getTemplate('home-stats');
+const featuredPostTemplate = views.getTemplate('home-featured-post');
 
 class HomeView {
     constructor(ctx) {
@@ -44,6 +45,8 @@ class HomeView {
     }
 
     setFeaturedPost(postInfo) {
+        views.replaceContent(
+            this._postInfoContainerNode, featuredPostTemplate(postInfo));
         if (this._postContainerNode && postInfo.featuredPost) {
             this._postContentControl = new PostContentControl(
                 this._postContainerNode,
@@ -63,6 +66,10 @@ class HomeView {
 
     get _statsContainerNode() {
         return this._hostNode.querySelector('.stats-container');
+    }
+
+    get _postInfoContainerNode() {
+        return this._hostNode.querySelector('.post-info-container');
     }
 
     get _postContainerNode() {

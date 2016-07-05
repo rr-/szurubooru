@@ -16,16 +16,7 @@
             </div>
         </form>
     <% } %>
-    <% if (ctx.featuredPost) { %>
-        <aside>
-            Featured post: <%= ctx.makePostLink(ctx.featuredPost.id) %>,
-            posted
-            <%= ctx.makeRelativeTime(ctx.featuredPost.creationTime) %>
-            by
-            <%= ctx.makeUserLink(ctx.featuredPost.user) %>
-        </aside>
-    <% } %>
-    <div class='post-container'></div>
+    <div class='post-info-container'></div>
     <footer>
         Build <a class='version' href='https://github.com/rr-/szurubooru/commits/master'><%- ctx.version %></a>
         from <%= ctx.makeRelativeTime(ctx.buildDate) %>
