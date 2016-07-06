@@ -10,20 +10,18 @@ const TagAutoCompleteControl =
     require('../controls/tag_auto_complete_control.js');
 
 const template = views.getTemplate('home');
-const statsTemplate = views.getTemplate('home-stats');
+const footerTemplate = views.getTemplate('home-footer');
 const featuredPostTemplate = views.getTemplate('home-featured-post');
 
 class HomeView {
     constructor(ctx) {
         this._hostNode = document.getElementById('content-holder');
+        this._ctx = ctx;
 
         const sourceNode = template(ctx);
         views.replaceContent(this._hostNode, sourceNode);
 
         if (this._formNode) {
-            this._formNode.querySelector('input[name=all-posts')
-                .addEventListener('click', e => this._evtAllPostsClick(e));
-
             this._tagAutoCompleteControl = new TagAutoCompleteControl(
                 this._searchInputNode);
             this._formNode.addEventListener(
@@ -41,7 +39,9 @@ class HomeView {
     }
 
     setStats(stats) {
-        views.replaceContent(this._statsContainerNode, statsTemplate(stats));
+        views.replaceContent(
+            this._footerContainerNode,
+            footerTemplate(Object.assign({}, stats, this._ctx)));
     }
 
     setFeaturedPost(postInfo) {
@@ -64,8 +64,8 @@ class HomeView {
         }
     }
 
-    get _statsContainerNode() {
-        return this._hostNode.querySelector('.stats-container');
+    get _footerContainerNode() {
+        return this._hostNode.querySelector('.footer-container');
     }
 
     get _postInfoContainerNode() {
@@ -82,11 +82,6 @@ class HomeView {
 
     get _searchInputNode() {
         return this._formNode.querySelector('input[name=search-text]');
-    }
-
-    _evtAllPostsClick(e) {
-        e.preventDefault();
-        router.show('/posts/');
     }
 
     _evtFormSubmit(e) {

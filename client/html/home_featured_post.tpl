@@ -1,3 +1,4 @@
+<div class='post-container'></div>
 <% if (ctx.featuredPost) { %>
     <aside>
         Featured post: <%= ctx.makePostLink(ctx.featuredPost.id) %>,
@@ -7,4 +8,3 @@
         <%= ctx.makeUserLink(ctx.featuredPost.user) %>
     </aside>
 <% } %>
-<div class='post-container'></div>

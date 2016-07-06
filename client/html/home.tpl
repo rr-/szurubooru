@@ -2,23 +2,15 @@
     <div class='messages'></div>
     <header>
         <h1><%- ctx.name %></h1>
-        <aside class='stats-container'></aside>
     </header>
     <% if (ctx.canListPosts) { %>
         <form class='horizontal'>
-            <div class='input'>
-                <%= ctx.makeButton({name: 'all-posts', value: 'Browse all posts'}) %>
-                <span class='separator'>or</span>
-                <%= ctx.makeTextInput({name: 'search-text', placeholder: 'enter some tags'}) %>
-            </div>
-            <div class='buttons'>
-                <input type='submit' value='Search'/>
-            </div>
+            <%= ctx.makeTextInput({name: 'search-text', placeholder: 'enter some tags'}) %>
+            <input type='submit' value='Search'/>
+            <span class=sep>or</span>
+            <a href='/posts'>browse all posts</a>
         </form>
     <% } %>
     <div class='post-info-container'></div>
-    <footer>
-        Build <a class='version' href='https://github.com/rr-/szurubooru/commits/master'><%- ctx.version %></a>
-        from <%= ctx.makeRelativeTime(ctx.buildDate) %>
-    </footer>
+    <footer class='footer-container'></footer>
 </div>
