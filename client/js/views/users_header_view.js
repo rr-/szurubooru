@@ -31,8 +31,8 @@ class UsersHeaderView {
         e.preventDefault();
         this._queryInputNode.blur();
         router.show(
-            '/users/' + misc.formatSearchQuery({
-                text: this._queryInputNode.value,
+            '/users/' + misc.formatUrlParameters({
+                query: this._queryInputNode.value,
             }));
     }
 }

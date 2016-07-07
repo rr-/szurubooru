@@ -13,14 +13,14 @@ class UserListController {
         topNavigation.activate('users');
 
         this._pageController = new PageController({
-            searchQuery: ctx.searchQuery,
+            parameters: ctx.parameters,
             getClientUrlForPage: page => {
-                const searchQuery = Object.assign(
-                    {}, ctx.searchQuery, {page: page});
-                return '/users/' + misc.formatSearchQuery(searchQuery);
+                const parameters = Object.assign(
+                    {}, ctx.parameters, {page: page});
+                return '/users/' + misc.formatUrlParameters(parameters);
             },
             requestPage: page => {
-                return UserList.search(ctx.searchQuery.text, page);
+                return UserList.search(ctx.parameters.query, page);
             },
             headerRenderer: headerCtx => {
                 return new UsersHeaderView(headerCtx);
@@ -41,7 +41,7 @@ class UserListController {
 
 module.exports = router => {
     router.enter(
-        '/users/:query?',
-        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+        '/users/:parameters?',
+        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => { ctx.controller = new UserListController(ctx); });
 };

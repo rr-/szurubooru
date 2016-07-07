@@ -4,11 +4,7 @@
             <% for (let post of ctx.results) { %>
                 <li>
                     <% if (ctx.canViewPosts) { %>
-                        <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
-                            <a class='thumbnail-wrapper' href='/post/<%- encodeURIComponent(post.id) %>/text=<%- encodeURIComponent(ctx.searchQuery.text) %>' title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag).join(' ') %>'>
-                        <% } else { %>
-                            <a class='thumbnail-wrapper' href='/post/<%- encodeURIComponent(post.id) %>' title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag).join(' ') %>'>
-                        <% } %>
+                        <a class='thumbnail-wrapper' href='<%= ctx.getPostUrl(post.id, ctx.parameters) %>' title='@<%- post.id %> (<%- post.type %>)&#10;&#10;Tags: <%- post.tags.map(tag => '#' + tag).join(' ') %>'>
                     <% } else { %>
                         <a class='thumbnail-wrapper'>
                     <% } %>
@@ -39,7 +35,7 @@
                             </span>
                         <% } %>
                     </a>
-                    <% if (ctx.searchQuery && ctx.searchQuery.tag) { %>
+                    <% if (ctx.parameters && ctx.parameters.tag) { %>
                         <a data-post-id='<%= post.id %>' class='masstag'>
                         </a>
                     <% } %>

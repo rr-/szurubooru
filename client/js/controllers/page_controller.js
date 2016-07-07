@@ -8,7 +8,7 @@ class PageController {
     constructor(ctx) {
         const extendedContext = {
             getClientUrlForPage: ctx.getClientUrlForPage,
-            searchQuery: ctx.searchQuery,
+            parameters: ctx.parameters,
         };
 
         ctx.headerContext = Object.assign({}, extendedContext);

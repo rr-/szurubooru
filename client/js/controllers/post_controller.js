@@ -11,14 +11,14 @@ const PostView = require('../views/post_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 class PostController {
-    constructor(id, editMode, searchQuery) {
+    constructor(id, editMode, parameters) {
         topNavigation.activate('posts');
 
         Promise.all([
                 Post.get(id),
                 PostList.getAround(
                     id, this._decorateSearchQuery(
-                        searchQuery ? searchQuery.text : '')),
+                        parameters ? parameters.query : '')),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
             this._post = post;
@@ -30,7 +30,7 @@ class PostController {
                 canEditPosts: api.hasPrivilege('posts:edit'),
                 canListComments: api.hasPrivilege('comments:list'),
                 canCreateComments: api.hasPrivilege('comments:create'),
-                searchQuery: searchQuery,
+                parameters: parameters,
             });
             if (this._view.sidebarControl) {
                 this._view.sidebarControl.addEventListener(
@@ -149,17 +149,17 @@ class PostController {
 }
 
 module.exports = router => {
-    router.enter('/post/:id/edit/:query?',
-        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+    router.enter('/post/:id/edit/:parameters?',
+        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => {
             ctx.controller = new PostController(
-                ctx.params.id, true, ctx.searchQuery);
+                ctx.parameters.id, true, ctx.parameters);
         });
     router.enter(
-        '/post/:id/:query?',
-        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+        '/post/:id/:parameters?',
+        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => {
             ctx.controller = new PostController(
-                ctx.params.id, false, ctx.searchQuery);
+                ctx.parameters.id, false, ctx.parameters);
         });
 };

@@ -15,9 +15,9 @@ module.exports = router => {
         new HelpController();
     });
     router.enter('/help/:section', (ctx, next) => {
-        new HelpController(ctx.params.section);
+        new HelpController(ctx.parameters.section);
     });
     router.enter('/help/:section/:subsection', (ctx, next) => {
-        new HelpController(ctx.params.section, ctx.params.subsection);
+        new HelpController(ctx.parameters.section, ctx.parameters.subsection);
     });
 };

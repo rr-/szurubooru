@@ -53,7 +53,7 @@ class PostsHeaderView {
                 'click', e => this._evtStopTaggingClick(e));
             this._massTagFormNode.addEventListener(
                 'submit', e => this._evtMassTagFormSubmit(e));
-            this._toggleMassTagVisibility(!!ctx.searchQuery.tag);
+            this._toggleMassTagVisibility(!!ctx.parameters.tag);
         }
     }
 
@@ -96,9 +96,9 @@ class PostsHeaderView {
 
     _evtStopTaggingClick(e) {
         e.preventDefault();
-        router.show('/posts/' + misc.formatSearchQuery({
-            text: this._ctx.searchQuery.text,
-            page: this._ctx.searchQuery.page,
+        router.show('/posts/' + misc.formatUrlParameters({
+            query: this._ctx.parameters.query,
+            page: this._ctx.parameters.page,
         }));
     }
 
@@ -117,7 +117,7 @@ class PostsHeaderView {
         e.preventDefault();
         const text = this._queryInputNode.value;
         this._queryInputNode.blur();
-        router.show('/posts/' + misc.formatSearchQuery({text: text}));
+        router.show('/posts/' + misc.formatUrlParameters({query: text}));
     }
 
     _evtMassTagFormSubmit(e) {
@@ -125,10 +125,10 @@ class PostsHeaderView {
         const text = this._queryInputNode.value;
         const tag = this._massTagInputNode.value;
         this._massTagInputNode.blur();
-        router.show('/posts/' + misc.formatSearchQuery({
-            text: text,
+        router.show('/posts/' + misc.formatUrlParameters({
+            query: text,
             tag: tag,
-            page: this._ctx.searchQuery.page,
+            page: this._ctx.parameters.page,
         }));
     }
 }

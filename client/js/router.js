@@ -39,7 +39,7 @@ class Context {
         this.title = document.title;
         this.state = state || {};
         this.state.path = path;
-        this.params = {};
+        this.parameters = {};
     }
 
     pushState() {
@@ -61,14 +61,14 @@ class Route {
 
     middleware(fn) {
         return (ctx, next) => {
-            if (this.match(ctx.path, ctx.params)) {
+            if (this.match(ctx.path, ctx.parameters)) {
                 return fn(ctx, next);
             }
             next();
         };
     }
 
-    match(path, params) {
+    match(path, parameters) {
         const keys = this.keys;
         const qsIndex = path.indexOf('?');
         const pathname = ~qsIndex ? path.slice(0, qsIndex) : path;
@@ -81,8 +81,9 @@ class Route {
         for (let i = 1, len = m.length; i < len; ++i) {
             const key = keys[i - 1];
             const val = _decodeURLEncodedURIComponent(m[i]);
-            if (val !== undefined || !(hasOwnProperty.call(params, key.name))) {
-                params[key.name] = val;
+            if (val !== undefined ||
+                    !(hasOwnProperty.call(parameters, key.name))) {
+                parameters[key.name] = val;
             }
         }
 

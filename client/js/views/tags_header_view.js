@@ -37,8 +37,8 @@ class TagsHeaderView {
         e.preventDefault();
         this._queryInputNode.blur();
         router.show(
-            '/tags/' + misc.formatSearchQuery({
-                text: this._queryInputNode.value,
+            '/tags/' + misc.formatUrlParameters({
+                query: this._queryInputNode.value,
             }));
     }
 }

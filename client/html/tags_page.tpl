@@ -4,37 +4,37 @@
             <thead>
                 <th class='names'>
                     <% if (ctx.query == 'sort:name' || !ctx.query) { %>
-                        <a href='/tags/text=-sort:name'>Tag name(s)</a>
+                        <a href='/tags/query=-sort:name'>Tag name(s)</a>
                     <% } else { %>
-                        <a href='/tags/text=sort:name'>Tag name(s)</a>
+                        <a href='/tags/query=sort:name'>Tag name(s)</a>
                     <% } %>
                 </th>
                 <th class='implications'>
                     <% if (ctx.query == 'sort:implication-count') { %>
-                        <a href='/tags/text=-sort:implication-count'>Implications</a>
+                        <a href='/tags/query=-sort:implication-count'>Implications</a>
                     <% } else { %>
-                        <a href='/tags/text=sort:implication-count'>Implications</a>
+                        <a href='/tags/query=sort:implication-count'>Implications</a>
                     <% } %>
                 </th>
                 <th class='suggestions'>
                     <% if (ctx.query == 'sort:suggestion-count') { %>
-                        <a href='/tags/text=-sort:suggestion-count'>Suggestions</a>
+                        <a href='/tags/query=-sort:suggestion-count'>Suggestions</a>
                     <% } else { %>
-                        <a href='/tags/text=sort:suggestion-count'>Suggestions</a>
+                        <a href='/tags/query=sort:suggestion-count'>Suggestions</a>
                     <% } %>
                 </th>
                 <th class='usages'>
                     <% if (ctx.query == 'sort:usages') { %>
-                        <a href='/tags/text=-sort:usages'>Usages</a>
+                        <a href='/tags/query=-sort:usages'>Usages</a>
                     <% } else { %>
-                        <a href='/tags/text=sort:usages'>Usages</a>
+                        <a href='/tags/query=sort:usages'>Usages</a>
                     <% } %>
                 </th>
                 <th class='edit-time'>
                     <% if (ctx.query == 'sort:last-edit-time') { %>
-                        <a href='/tags/text=-sort:last-edit-time'>Edit time</a>
+                        <a href='/tags/query=-sort:last-edit-time'>Edit time</a>
                     <% } else { %>
-                        <a href='/tags/text=sort:last-edit-time'>Edit time</a>
+                        <a href='/tags/query=sort:last-edit-time'>Edit time</a>
                     <% } %>
                 </th>
             </thead>

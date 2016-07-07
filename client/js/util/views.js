@@ -146,6 +146,22 @@ function makeColorInput(options) {
         'label', {class: 'color'}, colorInput + textInput);
 }
 
+function getPostUrl(id, parameters) {
+    let url = '/post/' + encodeURIComponent(id);
+    if (parameters && parameters.query) {
+        url += '/query=' + encodeURIComponent(parameters.query);
+    }
+    return url;
+}
+
+function getPostEditUrl(id, parameters) {
+    let url = '/post/' + encodeURIComponent(id) + '/edit';
+    if (parameters && parameters.query) {
+        url += '/query=' + encodeURIComponent(parameters.query);
+    }
+    return url;
+}
+
 function makePostLink(id) {
     const text = '@' + id;
     return api.hasPrivilege('posts:view') ?
@@ -303,6 +319,8 @@ function getTemplate(templatePath) {
             ctx = {};
         }
         Object.assign(ctx, {
+            getPostUrl: getPostUrl,
+            getPostEditUrl: getPostEditUrl,
             makeRelativeTime: makeRelativeTime,
             makeFileSize: makeFileSize,
             makeMarkdown: makeMarkdown,

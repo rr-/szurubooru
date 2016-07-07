@@ -63,7 +63,7 @@ class ManualPageView {
         const pageHeaderHolderNode
             = sourceNode.querySelector('.page-header-holder');
         const pageNavNode = sourceNode.querySelector('.page-nav');
-        const currentPage = ctx.searchQuery.page;
+        const currentPage = ctx.parameters.page;
 
         ctx.headerContext.hostNode = pageHeaderHolderNode;
         if (ctx.headerRenderer) {

@@ -30,7 +30,7 @@ class EndlessPageView {
             ctx.headerRenderer(ctx.headerContext);
         }
 
-        this._loadPage(ctx, ctx.searchQuery.page, true);
+        this._loadPage(ctx, ctx.parameters.page, true);
         this._probePageLoad(ctx);
     }
 

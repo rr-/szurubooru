@@ -58,6 +58,6 @@ module.exports = router => {
     });
     router.enter(/\/password-reset\/([^:]+):([^:]+)$/, (ctx, next) => {
         ctx.controller = new PasswordResetFinishController(
-            ctx.params[0], ctx.params[1]);
+            ctx.parameters[0], ctx.parameters[1]);
     });
 };

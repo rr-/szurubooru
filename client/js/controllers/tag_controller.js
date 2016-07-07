@@ -10,10 +10,10 @@ const EmptyView = require('../views/empty_view.js');
 
 class TagController {
     constructor(ctx, section) {
-        Tag.get(ctx.params.name).then(tag => {
+        Tag.get(ctx.parameters.name).then(tag => {
             topNavigation.activate('tags');
 
-            this._name = ctx.params.name;
+            this._name = ctx.parameters.name;
             tag.addEventListener('change', e => this._evtSaved(e));
 
             const categories = {};

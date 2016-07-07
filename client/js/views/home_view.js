@@ -87,8 +87,8 @@ class HomeView {
     _evtFormSubmit(e) {
         e.preventDefault();
         this._searchInputNode.blur();
-        router.show('/posts/' + misc.formatSearchQuery({
-            text: this._searchInputNode.value}));
+        router.show('/posts/' + misc.formatUrlParameters({
+            query: this._searchInputNode.value}));
     }
 }
 

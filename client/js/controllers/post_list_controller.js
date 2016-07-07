@@ -19,15 +19,15 @@ class PostListController {
 
         this._ctx = ctx;
         this._pageController = new PageController({
-            searchQuery: ctx.searchQuery,
+            parameters: ctx.parameters,
             getClientUrlForPage: page => {
-                const searchQuery = Object.assign(
-                    {}, ctx.searchQuery, {page: page});
-                return '/posts/' + misc.formatSearchQuery(searchQuery);
+                const parameters = Object.assign(
+                    {}, ctx.parameters, {page: page});
+                return '/posts/' + misc.formatUrlParameters(parameters);
             },
             requestPage: page => {
                 return PostList.search(
-                    this._decorateSearchQuery(ctx.searchQuery.text),
+                    this._decorateSearchQuery(ctx.parameters.query),
                     page, 40, fields);
             },
             headerRenderer: headerCtx => {
@@ -51,7 +51,7 @@ class PostListController {
     }
 
     get _massTagTags() {
-        return (this._ctx.searchQuery.tag || '').split(/\s+/).filter(s => s);
+        return (this._ctx.parameters.tag || '').split(/\s+/).filter(s => s);
     }
 
     _evtTag(e) {
@@ -91,7 +91,7 @@ class PostListController {
 
 module.exports = router => {
     router.enter(
-        '/posts/:query?',
-        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+        '/posts/:parameters?',
+        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => { ctx.controller = new PostListController(ctx); });
 };

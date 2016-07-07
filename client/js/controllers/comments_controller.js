@@ -14,11 +14,11 @@ class CommentsController {
         topNavigation.activate('comments');
 
         this._pageController = new PageController({
-            searchQuery: ctx.searchQuery,
+            parameters: ctx.parameters,
             getClientUrlForPage: page => {
-                const searchQuery = Object.assign(
-                    {}, ctx.searchQuery, {page: page});
-                return '/comments/' + misc.formatSearchQuery(searchQuery);
+                const parameters = Object.assign(
+                    {}, ctx.parameters, {page: page});
+                return '/comments/' + misc.formatUrlParameters(parameters);
             },
             requestPage: page => {
                 return PostList.search(
@@ -63,7 +63,7 @@ class CommentsController {
 };
 
 module.exports = router => {
-    router.enter('/comments/:query?',
-        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+    router.enter('/comments/:parameters?',
+        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => { new CommentsController(ctx); });
 };

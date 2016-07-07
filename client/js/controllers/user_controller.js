@@ -11,11 +11,11 @@ const EmptyView = require('../views/empty_view.js');
 
 class UserController {
     constructor(ctx, section) {
-        User.get(ctx.params.name).then(user => {
+        User.get(ctx.parameters.name).then(user => {
             const isLoggedIn = api.isLoggedIn(user);
             const infix = isLoggedIn ? 'self' : 'any';
 
-            this._name = ctx.params.name;
+            this._name = ctx.parameters.name;
             user.addEventListener('change', e => this._evtSaved(e));
 
             const myRankIndex = api.user ?

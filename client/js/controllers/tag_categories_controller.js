@@ -2,7 +2,6 @@
 
 const api = require('../api.js');
 const tags = require('../tags.js');
-const misc = require('../util/misc.js');
 const TagCategoryList = require('../models/tag_category_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const TagCategoriesView = require('../views/tag_categories_view.js');

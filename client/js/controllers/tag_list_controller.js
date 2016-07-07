@@ -16,14 +16,14 @@ class TagListController {
         topNavigation.activate('tags');
 
         this._pageController = new PageController({
-            searchQuery: ctx.searchQuery,
+            parameters: ctx.parameters,
             getClientUrlForPage: page => {
-                const searchQuery = Object.assign(
-                    {}, ctx.searchQuery, {page: page});
-                return '/tags/' + misc.formatSearchQuery(searchQuery);
+                const parameters = Object.assign(
+                    {}, ctx.parameters, {page: page});
+                return '/tags/' + misc.formatUrlParameters(parameters);
             },
             requestPage: page => {
-                return TagList.search(ctx.searchQuery.text, page, 50, fields);
+                return TagList.search(ctx.parameters.query, page, 50, fields);
             },
             headerRenderer: headerCtx => {
                 Object.assign(headerCtx, {
@@ -49,7 +49,7 @@ class TagListController {
 
 module.exports = router => {
     router.enter(
-        '/tags/:query?',
-        (ctx, next) => { misc.parseSearchQueryRoute(ctx, next); },
+        '/tags/:parameters?',
+        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => { ctx.controller = new TagListController(ctx); });
 };

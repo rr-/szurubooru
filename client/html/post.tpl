@@ -3,11 +3,7 @@
         <nav class='buttons'>
             <article class='next-post'>
                 <% if (ctx.nextPostId) { %>
-                    <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
-                        <a href='/post/<%- encodeURIComponent(ctx.nextPostId) %>/text=<%- encodeURIComponent(ctx.searchQuery.text) %>'>
-                    <% } else { %>
-                        <a href='/post/<%- encodeURIComponent(ctx.nextPostId) %>'>
-                    <% } %>
+                    <a href='<%= ctx.getPostUrl(ctx.nextPostId, ctx.parameters) %>'>
                 <% } else { %>
                     <a class='inactive'>
                 <% } %>
@@ -17,11 +13,7 @@
             </article>
             <article class='previous-post'>
                 <% if (ctx.prevPostId) { %>
-                    <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
-                        <a href='/post/<%- encodeURIComponent(ctx.prevPostId) %>/text=<%- encodeURIComponent(ctx.searchQuery.text) %>'>
-                    <% } else { %>
-                        <a href='/post/<%- encodeURIComponent(ctx.prevPostId) %>'>
-                    <% } %>
+                    <a href='<%= ctx.getPostUrl(ctx.prevPostId, ctx.parameters) %>'>
                 <% } else { %>
                     <a class='inactive'>
                 <% } %>
@@ -37,11 +29,7 @@
                     </a>
                 <% } else { %>
                     <% if (ctx.canEditPosts) { %>
-                        <% if (ctx.searchQuery && ctx.searchQuery.text) { %>
-                            <a href='/post/<%- encodeURIComponent(ctx.post.id) %>/edit/text=<%- encodeURIComponent(ctx.searchQuery.text) %>'>
-                        <% } else { %>
-                            <a href='/post/<%- encodeURIComponent(ctx.post.id) %>/edit'>
-                        <% } %>
+                        <a href='<%= ctx.getPostEditUrl(ctx.post.id, ctx.parameters) %>'>
                     <% } else { %>
                         <a class='inactive'>
                     <% } %>

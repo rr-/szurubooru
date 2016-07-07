@@ -51,11 +51,7 @@
             <ul><!--
                 --><% for (let post of ctx.post.relations) { %><!--
                     --><li><!--
-                        --><% if (ctx.searchQuery && ctx.searchQuery.text) { %><!--
-                            --><a href='/post/<%- encodeURIComponent(post.id) %>/text=<%- encodeURIComponent(ctx.searchQuery.text) %>'><!--
-                        --><% } else { %><!--
-                            --><a href='/post/<%- encodeURIComponent(post.id) %>'><!--
-                        --><% } %><!--
+                        --><a href='<%= ctx.getPostUrl(post.id, ctx.parameters) %>'><!--
                             --><%= ctx.makeThumbnail(post.thumbnailUrl) %><!--
                         --></a><!--
                     --></li><!--
@@ -77,7 +73,7 @@
                         --></a><!--
                     --><% } %><!--
                     --><% if (ctx.canListPosts) { %><!--
-                        --><a href='/posts/text=<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                        --><a href='/posts/query=<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
                     --><% } %><!--
                         --><%- tag %><!--
                     --><% if (ctx.canListPosts) { %><!--

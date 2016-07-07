@@ -113,7 +113,7 @@ function formatMarkdown(text) {
             '$1[$2]($2)');
         text = text.replace(/\]\(@(\d+)\)/g, '](/post/$1)');
         text = text.replace(/\]\(\+([a-zA-Z0-9_-]+)\)/g, '](/user/$1)');
-        text = text.replace(/\]\(#([a-zA-Z0-9_-]+)\)/g, '](/posts/text=$1)');
+        text = text.replace(/\]\(#([a-zA-Z0-9_-]+)\)/g, '](/posts/query=$1)');
         return text;
     };
 
@@ -131,7 +131,7 @@ function formatMarkdown(text) {
         //search permalinks
         text = text.replace(
             /\[search\]((?:[^\[]|\[(?!\/?search\]))+)\[\/search\]/ig,
-            '<a href="/posts/text=$1"><code>$1</code></a>');
+            '<a href="/posts/query=$1"><code>$1</code></a>');
         //spoilers
         text = text.replace(
             /\[spoiler\]((?:[^\[]|\[(?!\/?spoiler\]))+)\[\/spoiler\]/ig,
@@ -149,10 +149,13 @@ function formatMarkdown(text) {
     return postDecorator(marked(preDecorator(text), options));
 }
 
-function formatSearchQuery(dict) {
+function formatUrlParameters(dict) {
     let result = [];
     for (let key of Object.keys(dict)) {
         const value = dict[key];
+        if (key === 'parameters') {
+            continue;
+        }
         if (value) {
             result.push(`${key}=${value}`);
         }
@@ -160,19 +163,23 @@ function formatSearchQuery(dict) {
     return result.join(';');
 }
 
-function parseSearchQuery(query) {
+function parseUrlParameters(query) {
     let result = {};
     for (let word of (query || '').split(/;/)) {
         const [key, value] = word.split(/=/, 2);
         result[key] = value;
     }
-    result.text = result.text || '';
+    result.query = result.query || '';
     result.page = parseInt(result.page || '1');
     return result;
 }
 
-function parseSearchQueryRoute(ctx, next) {
-    ctx.searchQuery = parseSearchQuery(ctx.params.query || '');
+function parseUrlParametersRoute(ctx, next) {
+    // ctx.parameters = {"user":...,"action":...} from /users/:user/:action
+    // ctx.parameters.parameters = value of :parameters as per /url/:parameters
+    Object.assign(
+        ctx.parameters,
+        parseUrlParameters(ctx.parameters.parameters));
     next();
 }
 
@@ -235,9 +242,9 @@ function escapeHtml(unsafe) {
 
 module.exports = {
     range: range,
-    formatSearchQuery: formatSearchQuery,
-    parseSearchQuery: parseSearchQuery,
-    parseSearchQueryRoute: parseSearchQueryRoute,
+    formatUrlParameters: formatUrlParameters,
+    parseUrlParameters: parseUrlParameters,
+    parseUrlParametersRoute: parseUrlParametersRoute,
     formatRelativeTime: formatRelativeTime,
     formatFileSize: formatFileSize,
     formatMarkdown: formatMarkdown,
