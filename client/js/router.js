@@ -5,6 +5,7 @@
 // - refactored to classes
 // - simplified method chains
 // - added ability to call .save() in .exit() without side effects
+// - page refresh recovers state from history
 
 const pathToRegexp = require('path-to-regexp');
 const clickEvent = document.ontouchstart ? 'touchstart' : 'click';
@@ -121,7 +122,7 @@ class Router {
         window.addEventListener('popstate', this._onPopState, false);
         document.addEventListener(clickEvent, this._onClick, false);
         const url = location.pathname + location.search + location.hash;
-        return this.replace(url, null, true);
+        return this.replace(url, history.state, true);
     }
 
     stop() {

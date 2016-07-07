@@ -1,5 +1,6 @@
 'use strict';
 
+const router = require('../router.js');
 const api = require('../api.js');
 const misc = require('../util/misc.js');
 const settings = require('../models/settings.js');
@@ -11,9 +12,10 @@ const PostView = require('../views/post_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 class PostController {
-    constructor(id, editMode, parameters) {
+    constructor(id, editMode, ctx) {
         topNavigation.activate('posts');
 
+        let parameters = ctx.parameters;
         Promise.all([
                 Post.get(id),
                 PostList.getAround(
@@ -21,6 +23,14 @@ class PostController {
                         parameters ? parameters.query : '')),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
+
+            // remove junk from query, but save it into history so that it can
+            // be still accessed after history navigation / page refresh
+            if (parameters.query) {
+                ctx.state.parameters = parameters;
+                router.replace('/post/' + id, ctx.state, false);
+            }
+
             this._post = post;
             this._view = new PostView({
                 post: post,
@@ -159,7 +169,10 @@ module.exports = router => {
         '/post/:id/:parameters?',
         (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => {
-            ctx.controller = new PostController(
-                ctx.parameters.id, false, ctx.parameters);
+            // restore parameters from history state
+            if (ctx.state.parameters) {
+                Object.assign(ctx.parameters, ctx.state.parameters);
+            }
+            ctx.controller = new PostController(ctx.parameters.id, false, ctx);
         });
 };
