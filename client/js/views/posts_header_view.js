@@ -110,7 +110,7 @@ class PostsHeaderView {
         browsingSettings.listPosts[safety] =
             !browsingSettings.listPosts[safety];
         settings.save(browsingSettings, true);
-        router.show(location.pathname + location.search + location.hash);
+        router.show(router.url);
     }
 
     _evtSearchFormSubmit(e) {

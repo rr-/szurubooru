@@ -6,6 +6,8 @@
 // - simplified method chains
 // - added ability to call .save() in .exit() without side effects
 // - page refresh recovers state from history
+// - rename .save() to .replaceState()
+// - offer .url
 
 const pathToRegexp = require('path-to-regexp');
 const clickEvent = document.ontouchstart ? 'touchstart' : 'click';
@@ -47,7 +49,7 @@ class Context {
         history.pushState(this.state, this.title, this.canonicalPath);
     }
 
-    save() {
+    replaceState() {
         history.replaceState(this.state, this.title, this.canonicalPath);
     }
 };
@@ -149,10 +151,10 @@ class Router {
         var ctx = new Context(path, state);
         if (dispatch) {
             this.dispatch(ctx, () => {
-                ctx.save();
+                ctx.replaceState();
             });
         } else {
-            ctx.save();
+            ctx.replaceState();
         }
         return ctx;
     }
@@ -183,6 +185,10 @@ class Router {
         }
         router.stop();
         location.href = ctx.canonicalPath;
+    }
+
+    get url() {
+        return location.pathname + location.search + location.hash;
     }
 };
 

@@ -12,7 +12,7 @@ router.exit(
     (ctx, next) => {
         ctx.state.scrollX = window.scrollX;
         ctx.state.scrollY = window.scrollY;
-        ctx.save();
+        router.replace(router.url, ctx.state);
         if (misc.confirmPageExit()) {
             next();
         }

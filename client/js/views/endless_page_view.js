@@ -65,7 +65,7 @@ class EndlessPageView {
         if (topPageNumber !== this.currentPage) {
             router.replace(
                 ctx.getClientUrlForPage(topPageNumber),
-                {},
+                ctx.state,
                 false);
             this.currentPage = topPageNumber;
         }
