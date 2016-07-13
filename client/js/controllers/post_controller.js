@@ -14,6 +14,7 @@ const EmptyView = require('../views/empty_view.js');
 class PostController {
     constructor(id, editMode, ctx) {
         topNavigation.activate('posts');
+        topNavigation.setTitle('Post #' + id.toString());
 
         let parameters = ctx.parameters;
         Promise.all([

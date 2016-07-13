@@ -1,5 +1,6 @@
 'use strict';
 
+const config = require('../config.js');
 const events = require('../events.js');
 
 class TopNavigationItem {
@@ -49,6 +50,10 @@ class TopNavigation extends events.EventTarget {
                 item: key ? this.get(key) : null,
             },
         }));
+    }
+
+    setTitle(title) {
+        document.title = config.name + (title ? (' – ' + title) : '');
     }
 
     showAll() {

@@ -10,6 +10,7 @@ const EmptyView = require('../views/empty_view.js');
 class TagCategoriesController {
     constructor() {
         topNavigation.activate('tags');
+        topNavigation.setTitle('Listing tags');
         TagCategoryList.get().then(response => {
             this._tagCategories = response.results;
             this._view = new TagCategoriesView({

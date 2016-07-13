@@ -6,6 +6,7 @@ const NotFoundView = require('../views/not_found_view.js');
 class NotFoundController {
     constructor(path) {
         topNavigation.activate('');
+        topNavigation.setTitle('Not found');
         this._notFoundView = new NotFoundView(path);
     }
 };

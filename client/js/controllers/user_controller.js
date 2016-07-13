@@ -11,6 +11,7 @@ const EmptyView = require('../views/empty_view.js');
 
 class UserController {
     constructor(ctx, section) {
+        topNavigation.setTitle('User ' + ctx.parameters.name);
         User.get(ctx.parameters.name).then(user => {
             const isLoggedIn = api.isLoggedIn(user);
             const infix = isLoggedIn ? 'self' : 'any';

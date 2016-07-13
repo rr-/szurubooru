@@ -12,6 +12,7 @@ class TagController {
     constructor(ctx, section) {
         Tag.get(ctx.parameters.name).then(tag => {
             topNavigation.activate('tags');
+            topNavigation.setTitle('Tag #' + tag);
 
             this._name = ctx.parameters.name;
             tag.addEventListener('change', e => this._evtSaved(e));

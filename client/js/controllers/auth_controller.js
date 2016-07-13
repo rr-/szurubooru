@@ -9,6 +9,7 @@ class LoginController {
     constructor() {
         api.forget();
         topNavigation.activate('login');
+        topNavigation.setTitle('Login');
 
         this._loginView = new LoginView();
         this._loginView.addEventListener('submit', e => this._evtLogin(e));

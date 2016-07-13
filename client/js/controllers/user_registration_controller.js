@@ -9,6 +9,7 @@ const RegistrationView = require('../views/registration_view.js');
 class UserRegistrationController {
     constructor() {
         topNavigation.activate('register');
+        topNavigation.setTitle('Registration');
         this._view = new RegistrationView();
         this._view.addEventListener('submit', e => this._evtRegister(e));
     }

@@ -5,6 +5,7 @@ const topNavigation = require('../models/top_navigation.js');
 class HistoryController {
     constructor() {
         topNavigation.activate('');
+        topNavigation.setTitle('History');
     }
 }
 

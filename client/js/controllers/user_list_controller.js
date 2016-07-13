@@ -11,6 +11,7 @@ const UsersPageView = require('../views/users_page_view.js');
 class UserListController {
     constructor(ctx) {
         topNavigation.activate('users');
+        topNavigation.setTitle('Listing users');
 
         this._pageController = new PageController({
             parameters: ctx.parameters,

@@ -14,6 +14,7 @@ const fields = [
 class TagListController {
     constructor(ctx) {
         topNavigation.activate('tags');
+        topNavigation.setTitle('Listing tags');
 
         this._pageController = new PageController({
             parameters: ctx.parameters,

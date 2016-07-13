@@ -16,6 +16,7 @@ const fields = [
 class PostListController {
     constructor(ctx) {
         topNavigation.activate('posts');
+        topNavigation.setTitle('Listing posts');
 
         this._ctx = ctx;
         this._pageController = new PageController({

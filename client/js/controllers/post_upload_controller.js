@@ -6,6 +6,7 @@ const EmptyView = require('../views/empty_view.js');
 class PostUploadController {
     constructor() {
         topNavigation.activate('upload');
+        topNavigation.setTitle('Upload');
         this._emptyView = new EmptyView();
     }
 }

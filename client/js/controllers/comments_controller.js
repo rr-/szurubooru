@@ -12,6 +12,7 @@ const fields = ['id', 'comments', 'commentCount', 'thumbnailUrl'];
 class CommentsController {
     constructor(ctx) {
         topNavigation.activate('comments');
+        topNavigation.setTitle('Listing comments');
 
         this._pageController = new PageController({
             parameters: ctx.parameters,

@@ -8,6 +8,7 @@ const PasswordResetView = require('../views/password_reset_view.js');
 class PasswordResetController {
     constructor() {
         topNavigation.activate('login');
+        topNavigation.setTitle('Password reminder');
 
         this._passwordResetView = new PasswordResetView();
         this._passwordResetView.addEventListener(
