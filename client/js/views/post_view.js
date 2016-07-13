@@ -23,6 +23,7 @@ class PostView {
         const postContainerNode = sourceNode.querySelector('.post-container');
         const sidebarNode = sourceNode.querySelector('.sidebar');
         views.replaceContent(this._hostNode, sourceNode);
+        views.syncScrollPosition();
 
         const postViewNode = document.body.querySelector('.content-wrapper');
         const topNavigationNode =

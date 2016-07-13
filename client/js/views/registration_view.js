@@ -14,6 +14,7 @@ class RegistrationView extends events.EventTarget {
             userNamePattern: config.userNameRegex,
             passwordPattern: config.passwordRegex,
         }));
+        views.syncScrollPosition();
         views.decorateValidator(this._formNode);
         this._formNode.addEventListener('submit', e => this._evtSubmit(e));
     }

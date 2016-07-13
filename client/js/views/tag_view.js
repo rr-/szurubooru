@@ -52,6 +52,8 @@ class TagView extends events.EventTarget {
         } else {
             this._view = new TagSummaryView(ctx);
         }
+
+        views.syncScrollPosition();
     }
 
     clearMessages() {

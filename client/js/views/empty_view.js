@@ -11,6 +11,7 @@ class EmptyView {
     constructor() {
         this._hostNode = document.getElementById('content-holder');
         views.replaceContent(this._hostNode, template());
+        views.syncScrollPosition();
     }
 
     showError(message) {

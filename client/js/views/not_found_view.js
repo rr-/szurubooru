@@ -11,6 +11,7 @@ class NotFoundView {
 
         const sourceNode = template({path: path});
         views.replaceContent(this._hostNode, sourceNode);
+        views.syncScrollPosition();
     }
 }
 

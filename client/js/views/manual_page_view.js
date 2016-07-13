@@ -107,6 +107,8 @@ class ManualPageView {
             if (response.total <= (currentPage - 1) * response.pageSize) {
                 this.showInfo('No data to show');
             }
+
+            views.syncScrollPosition();
         }, response => {
             this.showError(response.description);
         });

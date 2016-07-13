@@ -59,7 +59,7 @@ class HelpView {
         }
 
         views.replaceContent(this._hostNode, sourceNode);
-        views.scrollToHash();
+        views.syncScrollPosition();
     }
 }
 

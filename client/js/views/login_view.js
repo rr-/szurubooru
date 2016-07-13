@@ -16,6 +16,7 @@ class LoginView extends events.EventTarget {
             passwordPattern: config.passwordRegex,
             canSendMails: config.canSendMails,
         }));
+        views.syncScrollPosition();
 
         views.decorateValidator(this._formNode);
         this._userNameFieldNode.setAttribute('pattern', config.userNameRegex);

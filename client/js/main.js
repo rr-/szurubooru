@@ -24,12 +24,6 @@ router.enter(
     (ctx, next) => {
         mousetrap.reset();
         next();
-        window.requestAnimationFrame(
-            () => {
-                window.scrollTo(
-                    ctx.state.scrollX || 0,
-                    ctx.state.scrollY || 0);
-            });
     });
 
 // register controller routes

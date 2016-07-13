@@ -11,8 +11,9 @@ class PasswordResetView extends events.EventTarget {
         this._hostNode = document.getElementById('content-holder');
 
         views.replaceContent(this._hostNode, template());
-        views.decorateValidator(this._formNode);
+        views.syncScrollPosition();
 
+        views.decorateValidator(this._formNode);
         this._hostNode.addEventListener('submit', e => {
             e.preventDefault();
             this.dispatchEvent(new CustomEvent('submit', {

@@ -11,7 +11,7 @@ class EndlessPageView {
         this._hostNode = document.getElementById('content-holder');
         this._active = true;
         this._working = 0;
-        this._init = true;
+        this._init = false;
 
         this.threshold = window.innerHeight / 3;
         this.minPageShown = null;
@@ -30,7 +30,11 @@ class EndlessPageView {
             ctx.headerRenderer(ctx.headerContext);
         }
 
-        this._loadPage(ctx, ctx.parameters.page, true);
+        this._loadPage(ctx, ctx.parameters.page, true).then(pageNode => {
+            if (ctx.parameters.page !== 1) {
+                pageNode.scrollIntoView();
+            }
+        });
         this._probePageLoad(ctx);
     }
 
@@ -87,26 +91,32 @@ class EndlessPageView {
 
     _loadPage(ctx, pageNumber, append) {
         this._working++;
-        ctx.requestPage(pageNumber).then(response => {
-            if (!this._active) {
+        return new Promise((resolve, reject) => {
+            ctx.requestPage(pageNumber).then(response => {
+                if (!this._active) {
+                    this._working--;
+                    return Promise.reject();
+                }
+                this.totalPages = Math.ceil(response.total / response.pageSize);
+                window.requestAnimationFrame(() => {
+                    let pageNode = this._renderPage(
+                        ctx, pageNumber, append, response);
+                    this._working--;
+                    resolve(pageNode);
+                });
+            }, response => {
+                this.showError(response.description);
                 this._working--;
-                return Promise.reject();
-            }
-            this.totalPages = Math.ceil(response.total / response.pageSize);
-            window.requestAnimationFrame(() => {
-                this._renderPage(
-                    ctx, pageNumber, append, response);
-                this._working--;
+                reject();
             });
-        }, response => {
-            this.showError(response.description);
-            this._working--;
         });
     }
 
     _renderPage(ctx, pageNumber, append, response) {
+        let pageNode = null;
+
         if (response.total) {
-            const pageNode = pageTemplate({
+            pageNode = pageTemplate({
                 page: pageNumber,
                 totalPages: this.totalPages,
             });
@@ -128,7 +138,7 @@ class EndlessPageView {
 
             if (append) {
                 this._pagesHolderNode.appendChild(pageNode);
-                if (this._init && pageNumber !== 1) {
+                if (!this._init && pageNumber !== 1) {
                     window.scroll(0, pageNode.getBoundingClientRect().top);
                 }
             } else {
@@ -141,7 +151,9 @@ class EndlessPageView {
         } else if (response.total <= (pageNumber - 1) * response.pageSize) {
             this.showInfo('No data to show');
         }
-        this._init = false;
+
+        this._init = true;
+        return pageNode;
     }
 
     showSuccess(message) {

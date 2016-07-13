@@ -12,8 +12,9 @@ class SettingsView extends events.EventTarget {
         this._hostNode = document.getElementById('content-holder');
         views.replaceContent(
             this._hostNode, template({browsingSettings: ctx.settings}));
-        views.decorateValidator(this._formNode);
+        views.syncScrollPosition();
 
+        views.decorateValidator(this._formNode);
         this._formNode.addEventListener('submit', e => this._evtSubmit(e));
     }
 

@@ -20,6 +20,7 @@ class HomeView {
 
         const sourceNode = template(ctx);
         views.replaceContent(this._hostNode, sourceNode);
+        views.syncScrollPosition();
 
         if (this._formNode) {
             this._tagAutoCompleteControl = new TagAutoCompleteControl(

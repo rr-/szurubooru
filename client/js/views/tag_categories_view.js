@@ -14,6 +14,7 @@ class TagCategoriesView extends events.EventTarget {
         this._hostNode = document.getElementById('content-holder');
 
         views.replaceContent(this._hostNode, template(ctx));
+        views.syncScrollPosition();
         views.decorateValidator(this._formNode);
 
         const categoriesToAdd = Array.from(ctx.tagCategories);

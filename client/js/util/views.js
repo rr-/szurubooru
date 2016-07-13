@@ -390,17 +390,15 @@ function replaceContent(target, source) {
     }
 }
 
-function scrollToHash() {
-    window.setTimeout(() => {
-        if (!window.location.hash) {
-            return;
-        }
-        const el = document.getElementById(
-            window.location.hash.replace(/#/, ''));
-        if (el) {
-            el.scrollIntoView();
-        }
-    }, 10);
+function syncScrollPosition() {
+    window.requestAnimationFrame(
+        () => {
+            if (history.state.hasOwnProperty('scrollX')) {
+                window.scrollTo(history.state.scrollX, history.state.scrollY);
+            } else {
+                window.scrollTo(0, 0);
+            }
+        });
 }
 
 function slideDown(element) {
@@ -470,7 +468,7 @@ module.exports = {
     decorateValidator: decorateValidator,
     makeVoidElement: makeVoidElement,
     makeNonVoidElement: makeNonVoidElement,
-    scrollToHash: scrollToHash,
+    syncScrollPosition: syncScrollPosition,
     slideDown: slideDown,
     slideUp: slideUp,
     monitorNodeRemoval: monitorNodeRemoval,

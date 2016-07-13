@@ -47,6 +47,8 @@ class UserView extends events.EventTarget {
         } else {
             this._view = new UserSummaryView(ctx);
         }
+
+        views.syncScrollPosition();
     }
 
     clearMessages() {
