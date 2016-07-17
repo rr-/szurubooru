@@ -16,7 +16,7 @@ def get_post_snapshot(post):
         'checksum': post.checksum,
         'tags': sorted([tag.first_name for tag in post.tags]),
         'relations': sorted([
-            rel.post_id for rel in post.relating_to + post.related_by]),
+            rel.post_id for rel in post.relations]),
         'notes': sorted([{
             'polygon': note.polygon,
             'text': note.text,

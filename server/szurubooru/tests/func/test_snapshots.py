@@ -38,8 +38,8 @@ def test_serializing_post(post_factory, user_factory, tag_factory):
     post.source = 'example.com'
     post.tags.append(tag1)
     post.tags.append(tag2)
-    post.relating_to.append(related_post1)
-    post.relating_to.append(related_post2)
+    post.relations.append(related_post1)
+    post.relations.append(related_post2)
     post.scores.append(score)
     post.favorited_by.append(favorite)
     post.features.append(feature)

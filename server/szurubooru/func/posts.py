@@ -94,8 +94,7 @@ def serialize_post(post, authenticated_user, options=None):
                 {
                     post['id']:
                         post for post in [
-                            serialize_micro_post(rel) \
-                                for rel in post.related_by + post.relating_to
+                            serialize_micro_post(rel) for rel in post.relations
                         ]
                 }.values(),
                 key=lambda post: post['id']),
@@ -258,14 +257,24 @@ def update_post_tags(post, tag_names):
     existing_tags, new_tags = tags.get_or_create_tags_by_names(tag_names)
     post.tags = existing_tags + new_tags
 
-def update_post_relations(post, post_ids):
-    relations = db.session \
+def update_post_relations(post, new_post_ids):
+    old_posts = post.relations
+    old_post_ids = [p.post_id for p in old_posts]
+    new_posts = db.session \
         .query(db.Post) \
-        .filter(db.Post.post_id.in_(post_ids)) \
+        .filter(db.Post.post_id.in_(new_post_ids)) \
         .all()
-    if len(relations) != len(post_ids):
+    if len(new_posts) != len(new_post_ids):
         raise InvalidPostRelationError('One of relations does not exist.')
-    post.relating_to = relations
+
+    relations_to_del = [p for p in old_posts if p.post_id not in new_post_ids]
+    relations_to_add = [p for p in new_posts if p.post_id not in old_post_ids]
+    for relation in relations_to_del:
+        post.relations.remove(relation)
+        relation.relations.remove(post)
+    for relation in relations_to_add:
+        post.relations.append(relation)
+        relation.relations.append(post)
 
 def update_post_notes(post, notes):
     post.notes = []

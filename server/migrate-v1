@@ -288,6 +288,9 @@ def import_post_relations(unused_post_ids, v1_session, v2_session):
         v2_session.add(
             db.PostRelation(
                 parent_id=row['post1id'], child_id=row['post2id']))
+        v2_session.add(
+            db.PostRelation(
+                parent_id=row['post2id'], child_id=row['post1id']))
     v2_session.commit()
 
 def import_post_favorites(unused_post_ids, v1_session, v2_session):

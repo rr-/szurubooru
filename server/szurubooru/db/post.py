@@ -112,16 +112,11 @@ class Post(Base):
     # foreign tables
     user = relationship('User')
     tags = relationship('Tag', backref='posts', secondary='post_tag')
-    relating_to = relationship(
+    relations = relationship(
         'Post',
         secondary='post_relation',
         primaryjoin=post_id == PostRelation.parent_id,
         secondaryjoin=post_id == PostRelation.child_id, lazy='joined')
-    related_by = relationship(
-        'Post',
-        secondary='post_relation',
-        primaryjoin=post_id == PostRelation.child_id,
-        secondaryjoin=post_id == PostRelation.parent_id, lazy='joined')
     features = relationship(
         'PostFeature', cascade='all, delete-orphan', lazy='joined')
     scores = relationship(

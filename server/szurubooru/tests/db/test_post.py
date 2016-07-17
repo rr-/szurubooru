@@ -19,8 +19,8 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     post.user = user
     post.tags.append(tag1)
     post.tags.append(tag2)
-    post.relating_to.append(related_post1)
-    post.relating_to.append(related_post2)
+    post.relations.append(related_post1)
+    post.relations.append(related_post2)
     db.session.commit()
 
     db.session.refresh(post)
@@ -33,12 +33,10 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     assert post.checksum == 'deadbeef'
     assert post.creation_time == datetime(1997, 1, 1)
     assert post.last_edit_time == datetime(1998, 1, 1)
-    assert len(post.relating_to) == 2
-    assert len(related_post1.relating_to) == 0
-    assert len(related_post1.relating_to) == 0
-    assert len(post.related_by) == 0
-    assert len(related_post1.related_by) == 1
-    assert len(related_post1.related_by) == 1
+    assert len(post.relations) == 2
+    # relation bidirectionality is realized on business level in func.posts
+    assert len(related_post1.relations) == 0
+    assert len(related_post2.relations) == 0
 
 def test_cascade_deletions(post_factory, user_factory, tag_factory):
     user = user_factory()
@@ -73,8 +71,8 @@ def test_cascade_deletions(post_factory, user_factory, tag_factory):
     post.user = user
     post.tags.append(tag1)
     post.tags.append(tag2)
-    post.relating_to.append(related_post1)
-    post.relating_to.append(related_post2)
+    post.relations.append(related_post1)
+    post.relations.append(related_post2)
     post.scores.append(score)
     post.favorited_by.append(favorite)
     post.features.append(feature)
@@ -83,7 +81,7 @@ def test_cascade_deletions(post_factory, user_factory, tag_factory):
 
     assert not db.session.dirty
     assert post.user is not None and post.user.user_id is not None
-    assert len(post.relating_to) == 2
+    assert len(post.relations) == 2
     assert db.session.query(db.User).count() == 1
     assert db.session.query(db.Tag).count() == 2
     assert db.session.query(db.Post).count() == 3

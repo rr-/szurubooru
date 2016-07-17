@@ -394,11 +394,22 @@ def test_update_post_relations(post_factory):
     relation2 = post_factory()
     db.session.add_all([relation1, relation2])
     db.session.flush()
-    post = db.Post()
+    post = post_factory()
     posts.update_post_relations(post, [relation1.post_id, relation2.post_id])
-    assert len(post.relating_to) == 2
-    assert post.relating_to[0].post_id == relation1.post_id
-    assert post.relating_to[1].post_id == relation2.post_id
+    assert len(post.relations) == 2
+    assert post.relations[0].post_id == relation1.post_id
+    assert post.relations[1].post_id == relation2.post_id
+
+def test_relation_bidirectionality(post_factory):
+    relation1 = post_factory()
+    relation2 = post_factory()
+    db.session.add_all([relation1, relation2])
+    db.session.flush()
+    post = post_factory()
+    posts.update_post_relations(post, [relation1.post_id, relation2.post_id])
+    posts.update_post_relations(relation1, [])
+    assert len(post.relations) == 1
+    assert post.relations[0].post_id == relation2.post_id
 
 def test_update_post_non_existing_relations():
     post = db.Post()
