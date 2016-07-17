@@ -163,8 +163,11 @@ module.exports = router => {
     router.enter('/post/:id/edit/:parameters?',
         (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => {
-            ctx.controller = new PostController(
-                ctx.parameters.id, true, ctx.parameters);
+            // restore parameters from history state
+            if (ctx.state.parameters) {
+                Object.assign(ctx.parameters, ctx.state.parameters);
+            }
+            ctx.controller = new PostController(ctx.parameters.id, true, ctx);
         });
     router.enter(
         '/post/:id/:parameters?',
