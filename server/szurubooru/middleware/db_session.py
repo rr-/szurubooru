@@ -1,5 +1,5 @@
 import logging
-from szurubooru import config, db
+from szurubooru import db
 
 logger = logging.getLogger(__name__)
 
