@@ -6,8 +6,9 @@ const events = require('../events.js');
 const CommentList = require('./comment_list.js');
 
 function _arraysDiffer(source1, source2) {
-    return [...source1].filter(value => !source2.includes(value)).length > 0
-        || [...source2].filter(value => !source1.includes(value)).length > 0;
+    return (
+        [...source1].filter(value => !source2.includes(value)).length > 0 ||
+        [...source2].filter(value => !source1.includes(value)).length > 0);
 }
 
 class Post extends events.EventTarget {
