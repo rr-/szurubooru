@@ -12,24 +12,44 @@ class AbstractList extends events.EventTarget {
         const ret = new this();
         for (let item of response) {
             const addedItem = this._itemClass.fromResponse(item);
-            addedItem.addEventListener('delete', e => {
-                ret.remove(addedItem);
-            });
+            if (addedItem.addEventListener) {
+                addedItem.addEventListener('delete', e => {
+                    ret.remove(addedItem);
+                });
+                addedItem.addEventListener('change', e => {
+                    this.dispatchEvent(new CustomEvent('change', {
+                        detail: e.detail,
+                    }));
+                });
+            }
             ret._list.push(addedItem);
         }
         return ret;
     }
 
     add(item) {
-        item.addEventListener('delete', e => {
-            this.remove(item);
-        });
+        if (item.addEventListener) {
+            item.addEventListener('delete', e => {
+                this.remove(item);
+            });
+            item.addEventListener('change', e => {
+                this.dispatchEvent(new CustomEvent('change', {
+                    detail: e.detail,
+                }));
+            });
+        }
         this._list.push(item);
         const detail = {};
         detail[this.constructor._itemName] = item;
         this.dispatchEvent(new CustomEvent('add', {
             detail: detail,
         }));
+    }
+
+    clear() {
+        for (let item of [...this._list]) {
+            this.remove(item);
+        }
     }
 
     remove(itemToRemove) {
@@ -49,6 +69,10 @@ class AbstractList extends events.EventTarget {
 
     get length() {
         return this._list.length;
+    }
+
+    at(index) {
+        return this._list[index];
     }
 
     [Symbol.iterator]() {

@@ -47,7 +47,7 @@ class PostView {
                 ];
             });
 
-        new PostNotesOverlayControl(
+        this._postNotesOverlayControl = new PostNotesOverlayControl(
             postContainerNode.querySelector('.post-overlay'),
             ctx.post);
 
@@ -80,7 +80,10 @@ class PostView {
 
         if (ctx.editMode) {
             this.sidebarControl = new PostEditSidebarControl(
-                sidebarContainerNode, ctx.post, this._postContentControl);
+                sidebarContainerNode,
+                ctx.post,
+                this._postContentControl,
+                this._postNotesOverlayControl);
         } else {
             this.sidebarControl = new PostReadonlySidebarControl(
                 sidebarContainerNode, ctx.post, this._postContentControl);

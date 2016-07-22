@@ -2,6 +2,14 @@
 
 const marked = require('marked');
 
+function decamelize(str, sep) {
+    sep = sep === undefined ? '-' : sep;
+    return str
+        .replace(/([a-z\d])([A-Z])/g, '$1' + sep + '$2')
+        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + sep + '$2')
+        .toLowerCase();
+}
+
 function* range(start=0, end=null, step=1) {
     if (end == null) {
         end = start;
@@ -245,9 +253,11 @@ function escapeHtml(unsafe) {
 }
 
 function arraysDiffer(source1, source2) {
+    source1 = [...source1];
+    source2 = [...source2];
     return (
-        [...source1].filter(value => !source2.includes(value)).length > 0 ||
-        [...source2].filter(value => !source1.includes(value)).length > 0);
+        source1.filter(value => !source2.includes(value)).length > 0 ||
+        source2.filter(value => !source1.includes(value)).length > 0);
 }
 
 module.exports = {
@@ -266,4 +276,5 @@ module.exports = {
     makeCssName: makeCssName,
     splitByWhitespace: splitByWhitespace,
     arraysDiffer: arraysDiffer,
+    decamelize: decamelize,
 };

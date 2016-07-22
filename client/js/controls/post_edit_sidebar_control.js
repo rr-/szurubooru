@@ -11,12 +11,15 @@ const FileDropperControl = require('../controls/file_dropper_control.js');
 const template = views.getTemplate('post-edit-sidebar');
 
 class PostEditSidebarControl extends events.EventTarget {
-    constructor(hostNode, post, postContentControl) {
+    constructor(hostNode, post, postContentControl, postNotesOverlayControl) {
         super();
         this._hostNode = hostNode;
         this._post = post;
         this._postContentControl = postContentControl;
+        this._postNotesOverlayControl = postNotesOverlayControl;
         this._newPostContent = null;
+
+        this._postNotesOverlayControl.switchToPassiveEdit();
 
         views.replaceContent(this._hostNode, template({
             post: this._post,
@@ -39,6 +42,9 @@ class PostEditSidebarControl extends events.EventTarget {
         new ExpanderControl(
             'Tags',
             this._hostNode.querySelectorAll('.tags'));
+        new ExpanderControl(
+            'Notes',
+            this._hostNode.querySelectorAll('.notes'));
         new ExpanderControl(
             'Content',
             this._hostNode.querySelectorAll('.post-content, .post-thumbnail'));
@@ -84,6 +90,16 @@ class PostEditSidebarControl extends events.EventTarget {
                 this._post.hasCustomThumbnail ? 'block' : 'none';
         }
 
+        if (this._addNoteLinkNode) {
+            this._addNoteLinkNode.addEventListener(
+                'click', e => this._evtAddNoteClick(e));
+        }
+
+        if (this._deleteNoteLinkNode) {
+            this._deleteNoteLinkNode.addEventListener(
+                'click', e => this._evtDeleteNoteClick(e));
+        }
+
         if (this._featureLinkNode) {
             this._featureLinkNode.addEventListener(
                 'click', e => this._evtFeatureClick(e));
@@ -93,6 +109,12 @@ class PostEditSidebarControl extends events.EventTarget {
             this._deleteLinkNode.addEventListener(
                 'click', e => this._evtDeleteClick(e));
         }
+
+        this._postNotesOverlayControl.addEventListener(
+            'blur', e => this._evtNoteBlur(e));
+
+        this._postNotesOverlayControl.addEventListener(
+            'focus', e => this._evtNoteFocus(e));
 
         this._post.addEventListener(
             'changeContent', e => this._evtPostContentChange(e));
@@ -109,6 +131,11 @@ class PostEditSidebarControl extends events.EventTarget {
                         this.dispatchEvent(new CustomEvent('change'));
                     });
             }
+        }
+
+        if (this._noteTextareaNode) {
+            this._noteTextareaNode.addEventListener(
+                'change', e => this._evtNoteTextChangeRequest(e));
         }
     }
 
@@ -144,6 +171,45 @@ class PostEditSidebarControl extends events.EventTarget {
                 },
             }));
         }
+    }
+
+    _evtNoteTextChangeRequest(e) {
+        if (this._editedNote) {
+            this._editedNote.text = this._noteTextareaNode.value;
+        }
+    }
+
+    _evtNoteFocus(e) {
+        this._editedNote = e.detail.note;
+        this._addNoteLinkNode.classList.remove('inactive');
+        this._deleteNoteLinkNode.classList.remove('inactive');
+        this._noteTextareaNode.removeAttribute('disabled');
+        this._noteTextareaNode.value = e.detail.note.text;
+    }
+
+    _evtNoteBlur(e) {
+        this._evtNoteTextChangeRequest(null);
+        this._addNoteLinkNode.classList.remove('inactive');
+        this._deleteNoteLinkNode.classList.add('inactive');
+        this._noteTextareaNode.blur();
+        this._noteTextareaNode.setAttribute('disabled', 'disabled');
+        this._noteTextareaNode.value = '';
+    }
+
+    _evtAddNoteClick(e) {
+        if (e.target.classList.contains('inactive')) {
+            return;
+        }
+        this._addNoteLinkNode.classList.add('inactive');
+        this._postNotesOverlayControl.switchToDrawing();
+    }
+
+    _evtDeleteNoteClick(e) {
+        if (e.target.classList.contains('inactive')) {
+            return;
+        }
+        this._post.notes.remove(this._editedNote);
+        this._postNotesOverlayControl.switchToPassiveEdit();
     }
 
     _evtSubmit(e) {
@@ -224,6 +290,18 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _deleteLinkNode() {
         return this._formNode.querySelector('.management .delete');
+    }
+
+    get _addNoteLinkNode() {
+        return this._formNode.querySelector('.notes .add');
+    }
+
+    get _deleteNoteLinkNode() {
+        return this._formNode.querySelector('.notes .delete');
+    }
+
+    get _noteTextareaNode() {
+        return this._formNode.querySelector('.notes textarea');
     }
 
     enableForm() {

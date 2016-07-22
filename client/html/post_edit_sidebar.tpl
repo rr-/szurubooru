@@ -55,6 +55,14 @@
             </section>
         <% } %>
 
+        <% if (ctx.canEditPostNotes) { %>
+            <section class='notes'>
+                <a class='add'>Add a note</a>
+                <%= ctx.makeTextarea({disabled: true, text: 'Content (supports Markdown)', rows: '8'}) %>
+                <a class='delete inactive'>Delete selected note</a>
+            </section>
+        <% } %>
+
         <% if (ctx.canEditPostContent) { %>
             <section class='post-content'>
                 <label>Content</label>

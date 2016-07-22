@@ -3,6 +3,7 @@
 const api = require('../api.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
+const NoteList = require('./note_list.js');
 const CommentList = require('./comment_list.js');
 const misc = require('../util/misc.js');
 
@@ -98,6 +99,13 @@ class Post extends events.EventTarget {
         }
         if (misc.arraysDiffer(this._relations, this._orig._relations)) {
             detail.relations = this._relations;
+        }
+        if (misc.arraysDiffer(this._notes, this._orig._notes)) {
+            detail.notes = [...this._notes].map(note => ({
+                polygon: [...note.polygon].map(
+                    point => [point.x, point.y]),
+                text: note.text,
+            }));
         }
         if (this._content) {
             files.content = this._content;
@@ -228,7 +236,7 @@ class Post extends events.EventTarget {
     }
 
     _updateFromResponse(response) {
-        const map = {
+        const map = () => ({
             _id:            response.id,
             _type:          response.type,
             _mimeType:      response.mimeType,
@@ -243,7 +251,7 @@ class Post extends events.EventTarget {
 
             _flags:         response.flags || [],
             _tags:          response.tags || [],
-            _notes:         response.notes || [],
+            _notes:         NoteList.fromResponse(response.notes || []),
             _comments:      CommentList.fromResponse(response.comments || []),
             _relations:     response.relations || [],
 
@@ -252,10 +260,10 @@ class Post extends events.EventTarget {
             _ownScore:      response.ownScore,
             _ownFavorite:   response.ownFavorite,
             _hasCustomThumbnail: response.hasCustomThumbnail,
-        };
+        });
 
-        Object.assign(this, map);
-        Object.assign(this._orig, map);
+        Object.assign(this, map());
+        Object.assign(this._orig, map());
     }
 };
 

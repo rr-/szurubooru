@@ -204,9 +204,6 @@ $safety-unsafe = #F3985F
             top: 0
             bottom: 0
 
-        .post-overlay
-            pointer-events: none
-
         .post-overlay>*
             position: absolute
             left: 0
@@ -215,31 +212,6 @@ $safety-unsafe = #F3985F
             bottom: 0
             width: 100%
             height: 100%
-
-        .notes
-            stroke-width: 1px
-            polygon
-                fill: $note-overlay-background-color
-                stroke: $note-overlay-border-color
-                pointer-events: auto
-
-.note-text
-    position: absolute
-    max-width: 22.5em
-    margin-top: -0.5em
-    display: none
-
-    &>.wrapper
-        background: $note-text-background-color
-        padding: 0.5em
-        border: 1px solid $note-text-border-color
-        color: $note-text-text-color
-        margin-top: 1em
-
-        p:last-of-type
-            margin-bottom: 0
-        p:first-of-type
-            margin-top: 0
 
 .post-view .readonly-sidebar
     .details

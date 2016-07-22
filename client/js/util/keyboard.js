@@ -3,6 +3,16 @@
 const mousetrap = require('mousetrap');
 const settings = require('../models/settings.js');
 
+let paused = false;
+const _originalStopCallback = mousetrap.prototype.stopCallback;
+mousetrap.prototype.stopCallback = function(...args) {
+    var self = this;
+    if (paused) {
+        return true;
+    }
+    return _originalStopCallback.call(self, ...args);
+};
+
 function bind(hotkey, func) {
     if (settings.get().keyboardShortcuts) {
         mousetrap.bind(hotkey, func);
@@ -18,4 +28,6 @@ function unbind(hotkey) {
 module.exports = {
     bind: bind,
     unbind: unbind,
+    pause: () => { paused = true; },
+    unpause: () => { paused = false; },
 };

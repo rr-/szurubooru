@@ -1,0 +1,63 @@
+@import colors
+
+.post-overlay
+    &[data-state=ready-to-draw],
+    &[data-state=drawing-rectangle],
+    &[data-state=drawing-polygon]
+        &:after
+            box-sizing: border-box
+            border: 0.3em dashed $active-note-overlay-border-color
+            background: $active-note-overlay-background-color
+            display: block
+            content: ' '
+            pointer-events: none
+            position: absolute
+            width: 100%
+            height: 100%
+            left: 0
+            right: 0
+            top: 0
+            bottom: 0
+
+.notes-overlay
+    g
+        stroke-width: 1px
+
+        polygon
+            fill: $note-background-color
+            stroke: $note-border-color
+            pointer-events: auto
+        ellipse
+            display: none
+
+    g[data-state=editing], g[data-state=drawing]
+        stroke-width: 2px
+
+        polygon
+            fill: $edited-note-background-color
+            stroke: $edited-note-border-color
+        ellipse
+            fill: $edited-note-border-color
+            display: block
+            &.nearby
+                fill: $hovered-note-point-color
+
+.note-text
+    position: absolute
+    max-width: 22.5em
+    display: none
+
+    &:not([data-state=read-only])
+        pointer-events: none
+
+    &>.wrapper
+        background: $note-text-background-color
+        padding: 0.3em 0.6em
+        border: 1px solid $note-text-border-color
+        color: $note-text-text-color
+        box-sizing: border-box
+
+        p:last-of-type
+            margin-bottom: 0
+        p:first-of-type
+            margin-top: 0
