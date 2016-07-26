@@ -6,6 +6,7 @@ const events = require('../events.js');
 class User extends events.EventTarget {
     constructor() {
         super();
+        this._orig = {};
         this._updateFromResponse({});
     }
 
@@ -49,31 +50,31 @@ class User extends events.EventTarget {
 
     save() {
         const files = [];
-        const data = {};
-        if (this.name !== this._origName) {
-            data.name = this.name;
-        }
-        if (this._password) {
-            data.password = this._password;
-        }
+        const detail = {};
+        const transient = this._orig._name;
 
-        if (this.email !== this._origEmail) {
-            data.email = this.email;
+        if (this._name !== this._orig._name) {
+            detail.name = this._name;
         }
-
-        if (this.rank !== this._origRank) {
-            data.rank = this.rank;
+        if (this._email !== this._orig._email) {
+            detail.email = this._email;
         }
-        if (this.avatarStyle !== this._origAvatarStyle) {
-            data.avatarStyle = this.avatarStyle;
+        if (this._rank !== this._orig._rank) {
+            detail.rank = this._rank;
+        }
+        if (this._avatarStyle !== this._orig._avatarStyle) {
+            detail.avatarStyle = this._avatarStyle;
         }
         if (this._avatarContent) {
             files.avatar = this._avatarContent;
         }
+        if (this._password) {
+            detail.password = this._password;
+        }
 
-        let promise = this._origName ?
-            api.put('/user/' + this._origName, data, files) :
-            api.post('/users', data, files);
+        let promise = this._orig._name ?
+            api.put('/user/' + this._orig._name, detail, files) :
+            api.post('/users', detail, files);
 
         return promise
             .then(response => {
@@ -90,7 +91,7 @@ class User extends events.EventTarget {
     }
 
     delete() {
-        return api.delete('/user/' + this._origName)
+        return api.delete('/user/' + this._orig._name)
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -104,23 +105,23 @@ class User extends events.EventTarget {
     }
 
     _updateFromResponse(response) {
-        this._name              = response.name;
-        this._rank              = response.rank;
-        this._email             = response.email;
-        this._avatarStyle       = response.avatarStyle;
-        this._avatarUrl         = response.avatarUrl;
-        this._creationTime      = response.creationTime;
-        this._lastLoginTime     = response.lastLoginTime;
-        this._commentCount      = response.commentCount;
-        this._favoritePostCount = response.favoritePostCount;
-        this._uploadedPostCount = response.uploadedPostCount;
-        this._likedPostCount    = response.likedPostCount;
-        this._dislikedPostCount = response.dislikedPostCount;
+        const map = {
+            _name:              response.name,
+            _rank:              response.rank,
+            _email:             response.email,
+            _avatarStyle:       response.avatarStyle,
+            _avatarUrl:         response.avatarUrl,
+            _creationTime:      response.creationTime,
+            _lastLoginTime:     response.lastLoginTime,
+            _commentCount:      response.commentCount,
+            _favoritePostCount: response.favoritePostCount,
+            _uploadedPostCount: response.uploadedPostCount,
+            _likedPostCount:    response.likedPostCount,
+            _dislikedPostCount: response.dislikedPostCount,
+        };
 
-        this._origName          = this.name;
-        this._origRank          = this.rank;
-        this._origEmail         = this.email;
-        this._origAvatarStyle   = this.avatarStyle;
+        Object.assign(this, map);
+        Object.assign(this._orig, map);
 
         this._password          = null;
         this._avatarContent     = null;
