@@ -79,13 +79,26 @@ class TagEditView extends events.EventTarget {
         this.dispatchEvent(new CustomEvent('submit', {
             detail: {
                 tag: this._tag,
-                names: misc.splitByWhitespace(this._namesFieldNode.value),
-                category: this._categoryFieldNode.value,
-                implications: misc.splitByWhitespace(
-                    this._implicationsFieldNode.value),
-                suggestions: misc.splitByWhitespace(
-                    this._suggestionsFieldNode.value),
-                description: this._descriptionFieldNode.value,
+
+                names: this._namesFieldNode ?
+                    misc.splitByWhitespace(this._namesFieldNode.value) :
+                    undefined,
+
+                category: this._categoryFieldNode ?
+                    this._categoryFieldNode.value :
+                    undefined,
+
+                implications: this._implicationsFieldNode ?
+                    misc.splitByWhitespace(this._implicationsFieldNode.value) :
+                    undefined,
+
+                suggestions: this._suggestionsFieldNode ?
+                    misc.splitByWhitespace(this._suggestionsFieldNode.value) :
+                    undefined,
+
+                description: this._descriptionFieldNode ?
+                    this._descriptionFieldNode.value :
+                    undefined,
             },
         }));
     }

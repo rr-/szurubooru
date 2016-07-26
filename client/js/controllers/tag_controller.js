@@ -25,6 +25,7 @@ class TagController {
             this._view = new TagView({
                 tag: tag,
                 section: section,
+                canEditAnything: api.hasPrivilege('tags:edit'),
                 canEditNames: api.hasPrivilege('tags:edit:names'),
                 canEditCategory: api.hasPrivilege('tags:edit:category'),
                 canEditImplications: api.hasPrivilege('tags:edit:implications'),
@@ -53,11 +54,21 @@ class TagController {
     _evtChange(e) {
         this._view.clearMessages();
         this._view.disableForm();
-        e.detail.tag.names = e.detail.names;
-        e.detail.tag.category = e.detail.category;
-        e.detail.tag.implications = e.detail.implications;
-        e.detail.tag.suggestions = e.detail.suggestions;
-        e.detail.tag.description = e.detail.description;
+        if (e.detail.names !== undefined) {
+            e.detail.tag.names = e.detail.names;
+        }
+        if (e.detail.category !== undefined) {
+            e.detail.tag.category = e.detail.category;
+        }
+        if (e.detail.implications !== undefined) {
+            e.detail.tag.implications = e.detail.implications;
+        }
+        if (e.detail.suggestions !== undefined) {
+            e.detail.tag.suggestions = e.detail.suggestions;
+        }
+        if (e.detail.description !== undefined) {
+            e.detail.tag.description = e.detail.description;
+        }
         e.detail.tag.save().then(() => {
             this._view.showSuccess('Tag saved.');
             this._view.enableForm();

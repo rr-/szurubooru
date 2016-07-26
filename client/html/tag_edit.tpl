@@ -3,23 +3,51 @@
         <div class='input'>
             <ul>
                 <li class='names'>
-                    <%= ctx.makeTextInput({text: 'Names', value: ctx.tag.names.join(' '), required: true, readonly: !ctx.canEditNames}) %>
+                    <% if (ctx.canEditNames) { %>
+                        <%= ctx.makeTextInput({
+                            text: 'Names',
+                            value: ctx.tag.names.join(' '),
+                            required: true,
+                        }) %>
+                    <% } %>
                 </li>
                 <li class='category'>
-                    <%= ctx.makeSelect({text: 'Category', keyValues: ctx.categories, selectedKey: ctx.tag.category, required: true, readonly: !ctx.canEditCategory}) %>
+                    <% if (ctx.canEditCategory) { %>
+                        <%= ctx.makeSelect({
+                            text: 'Category',
+                            keyValues: ctx.categories,
+                            selectedKey: ctx.tag.category,
+                            required: true,
+                        }) %>
+                    <% } %>
                 </li>
                 <li class='implications'>
-                    <%= ctx.makeTextInput({text: 'Implications', value: ctx.tag.implications.join(' '), readonly: !ctx.canEditImplications}) %>
+                    <% if (ctx.canEditImplications) { %>
+                        <%= ctx.makeTextInput({
+                            text: 'Implications',
+                            value: ctx.tag.implications.join(' '),
+                        }) %>
+                    <% } %>
                 </li>
                 <li class='suggestions'>
-                    <%= ctx.makeTextInput({text: 'Suggestions', value: ctx.tag.suggestions.join(' '), readonly: !ctx.canEditSuggestions}) %>
+                    <% if (ctx.canEditSuggestions) { %>
+                        <%= ctx.makeTextInput({
+                            text: 'Suggestions',
+                            value: ctx.tag.suggestions.join(' '),
+                        }) %>
+                    <% } %>
                 </li>
                 <li class='description'>
-                    <%= ctx.makeTextarea({text: 'Description', value: ctx.tag.description, readonly: !ctx.canEditDescription}) %>
+                    <% if (ctx.canEditDescription) { %>
+                        <%= ctx.makeTextarea({
+                            text: 'Description',
+                            value: ctx.tag.description,
+                        }) %>
+                    <% } %>
                 </li>
             </ul>
         </div>
-        <% if (ctx.canEditNames || ctx.canEditCategory || ctx.canEditImplications || ctx.canEditSuggestions) { %>
+        <% if (ctx.canEditAnything) { %>
             <div class='messages'></div>
             <div class='buttons'>
                 <input type='submit' class='save' value='Save changes'>

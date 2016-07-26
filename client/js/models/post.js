@@ -4,12 +4,7 @@ const api = require('../api.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
 const CommentList = require('./comment_list.js');
-
-function _arraysDiffer(source1, source2) {
-    return (
-        [...source1].filter(value => !source2.includes(value)).length > 0 ||
-        [...source2].filter(value => !source1.includes(value)).length > 0);
-}
+const misc = require('../util/misc.js');
 
 class Post extends events.EventTarget {
     constructor() {
@@ -111,13 +106,13 @@ class Post extends events.EventTarget {
         if (this._safety !== this._orig._safety) {
             detail.safety = this._safety;
         }
-        if (_arraysDiffer(this._flags, this._orig._flags)) {
+        if (misc.arraysDiffer(this._flags, this._orig._flags)) {
             detail.flags = this._flags;
         }
-        if (_arraysDiffer(this._tags, this._orig._tags)) {
+        if (misc.arraysDiffer(this._tags, this._orig._tags)) {
             detail.tags = this._tags;
         }
-        if (_arraysDiffer(this._relations, this._orig._relations)) {
+        if (misc.arraysDiffer(this._relations, this._orig._relations)) {
             detail.relations = this._relations;
         }
 

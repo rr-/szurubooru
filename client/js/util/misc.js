@@ -244,6 +244,12 @@ function escapeHtml(unsafe) {
         .replace(/'/g, '&apos;');
 }
 
+function arraysDiffer(source1, source2) {
+    return (
+        [...source1].filter(value => !source2.includes(value)).length > 0 ||
+        [...source2].filter(value => !source1.includes(value)).length > 0);
+}
+
 module.exports = {
     range: range,
     formatUrlParameters: formatUrlParameters,
@@ -259,4 +265,5 @@ module.exports = {
     escapeHtml: escapeHtml,
     makeCssName: makeCssName,
     splitByWhitespace: splitByWhitespace,
+    arraysDiffer: arraysDiffer,
 };

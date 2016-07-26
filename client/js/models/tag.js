@@ -2,16 +2,21 @@
 
 const api = require('../api.js');
 const events = require('../events.js');
+const misc = require('../util/misc.js');
 
 class Tag extends events.EventTarget {
     constructor() {
         super();
+        this._orig         = {};
+
         this._origName     = null;
-        this._names        = null;
         this._category     = null;
         this._description  = null;
-        this._suggestions  = null;
-        this._implications = null;
+
+        this._names        = [];
+        this._suggestions  = [];
+        this._implications = [];
+
         this._postCount    = null;
         this._creationTime = null;
         this._lastEditTime = null;
@@ -48,13 +53,25 @@ class Tag extends events.EventTarget {
     }
 
     save() {
-        const detail = {
-            names: this.names,
-            category: this.category,
-            description: this.description,
-            implications: this.implications,
-            suggestions: this.suggestions,
-        };
+        const detail = {};
+
+        // send only changed fields to avoid user privilege violation
+        if (misc.arraysDiffer(this._names, this._orig._names)) {
+            detail.names = this._names;
+        }
+        if (this._category !== this._orig._category) {
+            detail.category = this._category;
+        }
+        if (this._description !== this._orig._description) {
+            detail.description = this._description;
+        }
+        if (misc.arraysDiffer(this._implications, this._orig._implications)) {
+            detail.implications = this._implications;
+        }
+        if (misc.arraysDiffer(this._suggestions, this._orig._suggestions)) {
+            detail.suggestions = this._suggestions;
+        }
+
         let promise = this._origName ?
             api.put('/tag/' + this._origName, detail) :
             api.post('/tags', detail);
@@ -104,15 +121,20 @@ class Tag extends events.EventTarget {
     }
 
     _updateFromResponse(response) {
-        this._origName     = response.names ? response.names[0] : null;
-        this._names        = response.names;
-        this._category     = response.category;
-        this._description  = response.description;
-        this._implications = response.implications;
-        this._suggestions  = response.suggestions;
-        this._creationTime = response.creationTime;
-        this._lastEditTime = response.lastEditTime;
-        this._postCount    = response.usages;
+        const map = {
+            _origName:     response.names ? response.names[0] : null,
+            _names:        response.names,
+            _category:     response.category,
+            _description:  response.description,
+            _implications: response.implications,
+            _suggestions:  response.suggestions,
+            _creationTime: response.creationTime,
+            _lastEditTime: response.lastEditTime,
+            _postCount:    response.usages,
+        };
+
+        Object.assign(this, map);
+        Object.assign(this._orig, map);
     }
 };
 
