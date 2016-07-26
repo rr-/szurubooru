@@ -23,7 +23,7 @@
             </article>
             <article class='edit-post'>
                 <% if (ctx.editMode) { %>
-                    <a href='/post/<%- encodeURIComponent(ctx.post.id) %>'>
+                    <a href='<%= ctx.getPostUrl(ctx.post.id, ctx.parameters) %>'>
                         <i class='fa fa-reply'></i>
                         <span class='vim-nav-hint'>Back to view mode</span>
                     </a>
