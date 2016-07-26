@@ -51,6 +51,10 @@ class PostEditSidebarControl extends events.EventTarget {
                         .value.toLowerCase() :
                     undefined,
 
+                flags: this._loopVideoInputNode ?
+                    (this._loopVideoInputNode.checked ? ['loop'] : []) :
+                    undefined,
+
                 tags: this._tagInputNode ?
                     misc.splitByWhitespace(this._tagInputNode.value) :
                     undefined,
@@ -76,6 +80,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _tagInputNode() {
         return this._formNode.querySelector('.tags input');
+    }
+
+    get _loopVideoInputNode() {
+        return this._formNode.querySelector('.flags input[name=loop]');
     }
 
     get _relationsInputNode() {

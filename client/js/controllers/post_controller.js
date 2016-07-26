@@ -106,6 +106,9 @@ class PostController {
         if (e.detail.safety !== undefined) {
             post.safety = e.detail.safety;
         }
+        if (e.detail.flags !== undefined) {
+            post.flags = e.detail.flags;
+        }
         if (e.detail.relations !== undefined) {
             post.relations = e.detail.relations;
         }

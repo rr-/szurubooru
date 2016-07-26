@@ -28,6 +28,7 @@ class Post extends events.EventTarget {
         this._canvasHeight  = null;
         this._fileSize      = null;
 
+        this._flags         = [];
         this._tags          = [];
         this._notes         = [];
         this._comments      = [];
@@ -51,6 +52,7 @@ class Post extends events.EventTarget {
     get canvasHeight()   { return this._canvasHeight || 450; }
     get fileSize()       { return this._fileSize || 0; }
 
+    get flags()          { return this._flags; }
     get tags()           { return this._tags; }
     get notes()          { return this._notes; }
     get comments()       { return this._comments; }
@@ -61,6 +63,7 @@ class Post extends events.EventTarget {
     get ownFavorite()    { return this._ownFavorite; }
     get ownScore()       { return this._ownScore; }
 
+    set flags(value)     { this._flags = value; }
     set tags(value)      { this._tags = value; }
     set safety(value)    { this._safety = value; }
     set relations(value) { this._relations = value; }
@@ -107,6 +110,9 @@ class Post extends events.EventTarget {
         // send only changed fields to avoid user privilege violation
         if (this._safety !== this._orig._safety) {
             detail.safety = this._safety;
+        }
+        if (_arraysDiffer(this._flags, this._orig._flags)) {
+            detail.flags = this._flags;
         }
         if (_arraysDiffer(this._tags, this._orig._tags)) {
             detail.tags = this._tags;
@@ -212,6 +218,7 @@ class Post extends events.EventTarget {
             _canvasHeight:  response.canvasHeight,
             _fileSize:      response.fileSize,
 
+            _flags:         response.flags || [],
             _tags:          response.tags || [],
             _notes:         response.notes || [],
             _comments:      CommentList.fromResponse(response.comments || []),

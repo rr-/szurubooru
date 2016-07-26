@@ -50,10 +50,10 @@
                 <section class='flags'>
                     <label>Miscellaneous</label>
 
-                    <!-- TODO: bind state -->
                     <%= ctx.makeCheckbox({
                         text: 'Loop video',
                         name: 'loop',
+                        checked: ctx.post.flags.includes('loop'),
                     }) %>
                 </section>
             <% } %>
