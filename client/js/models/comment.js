@@ -6,14 +6,7 @@ const events = require('../events.js');
 class Comment extends events.EventTarget {
     constructor() {
         super();
-        this._id           = null;
-        this._postId       = null;
-        this._text         = null;
-        this._user         = null;
-        this._creationTime = null;
-        this._lastEditTime = null;
-        this._score        = null;
-        this._ownScore     = null;
+        this._updateFromResponse({});
     }
 
     static create(postId) {

@@ -6,26 +6,7 @@ const events = require('../events.js');
 class User extends events.EventTarget {
     constructor() {
         super();
-        this._name              = null;
-        this._rank              = null;
-        this._email             = null;
-        this._avatarStyle       = null;
-        this._avatarUrl         = null;
-        this._creationTime      = null;
-        this._lastLoginTime     = null;
-        this._commentCount      = null;
-        this._favoritePostCount = null;
-        this._uploadedPostCount = null;
-        this._likedPostCount    = null;
-        this._dislikedPostCount = null;
-
-        this._origName          = null;
-        this._origEmail         = null;
-        this._origRank          = null;
-        this._origAvatarStyle   = null;
-
-        this._password          = null;
-        this._avatarContent     = null;
+        this._updateFromResponse({});
     }
 
     get name()               { return this._name; }

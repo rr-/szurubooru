@@ -9,30 +9,8 @@ const misc = require('../util/misc.js');
 class Post extends events.EventTarget {
     constructor() {
         super();
-        this._orig          = {};
-
-        this._id            = null;
-        this._type          = null;
-        this._mimeType      = null;
-        this._creationTime  = null;
-        this._user          = null;
-        this._safety        = null;
-        this._contentUrl    = null;
-        this._thumbnailUrl  = null;
-        this._canvasWidth   = null;
-        this._canvasHeight  = null;
-        this._fileSize      = null;
-
-        this._flags         = [];
-        this._tags          = [];
-        this._notes         = [];
-        this._comments      = [];
-        this._relations     = [];
-
-        this._score         = null;
-        this._favoriteCount = null;
-        this._ownScore      = null;
-        this._ownFavorite   = null;
+        this._orig = {};
+        this._updateFromResponse({});
     }
 
     get id()             { return this._id; }

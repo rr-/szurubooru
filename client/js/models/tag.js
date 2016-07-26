@@ -7,19 +7,8 @@ const misc = require('../util/misc.js');
 class Tag extends events.EventTarget {
     constructor() {
         super();
-        this._orig         = {};
-
-        this._origName     = null;
-        this._category     = null;
-        this._description  = null;
-
-        this._names        = [];
-        this._suggestions  = [];
-        this._implications = [];
-
-        this._postCount    = null;
-        this._creationTime = null;
-        this._lastEditTime = null;
+        this._orig = {};
+        this._updateFromResponse({});
     }
 
     get names()             { return this._names; }
