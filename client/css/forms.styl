@@ -183,6 +183,14 @@ input[type=password]
         background: $input-disabled-background-color
         color: $input-disabled-text-color
 
+input[readonly],
+input[readonly]+.radio,
+input[readonly]+.checkbox,
+input:disabled+.radio,
+input:disabled+.checkbox,
+input:disabled
+    cursor: not-allowed
+
 div.tag-input
     min-height: 4.75em
     vertical-align: top
