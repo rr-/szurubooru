@@ -8,6 +8,7 @@ def test_export(
         tmpdir,
         query_counter,
         config_injector,
+        post_factory,
         tag_factory,
         tag_category_factory):
     config_injector({
@@ -22,10 +23,12 @@ def test_export(
     imp1 = tag_factory(names=['imp1'], category=cat1)
     imp2 = tag_factory(names=['imp2'], category=cat1)
     tag = tag_factory(names=['alias1', 'alias2'], category=cat2)
-    tag.post_count = 1
     db.session.add_all([tag, sug1, sug2, imp1, imp2, cat1, cat2])
+    post = post_factory()
+    post.tags = [tag]
     db.session.flush()
     db.session.add_all([
+        post,
         db.TagSuggestion(tag.tag_id, sug1.tag_id),
         db.TagSuggestion(tag.tag_id, sug2.tag_id),
         db.TagImplication(tag.tag_id, imp1.tag_id),
@@ -35,7 +38,7 @@ def test_export(
 
     with query_counter:
         tags.export_to_json()
-        assert len(query_counter.statements) == 2
+        assert len(query_counter.statements) == 5
 
     export_path = os.path.join(config.config['data_dir'], 'tags.json')
     assert os.path.exists(export_path)

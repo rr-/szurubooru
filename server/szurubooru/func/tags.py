@@ -55,34 +55,51 @@ def serialize_tag(tag, options=None):
         options)
 
 def export_to_json():
-    output = {
-        'tags': [],
-        'categories': [],
-    }
-    all_tags = db.session \
-        .query(db.Tag) \
-        .options(
-            sqlalchemy.orm.joinedload('suggestions'),
-            sqlalchemy.orm.joinedload('implications')) \
-        .all()
-    for tag in all_tags:
-        item = {
-            'names': [tag_name.name for tag_name in tag.names],
-            'usages': tag.post_count,
-            'category': tag.category.name,
+    tags = {}
+    categories = {}
+
+    for result in db.session.query(
+            db.TagCategory.tag_category_id,
+            db.TagCategory.name,
+            db.TagCategory.color).all():
+        categories[result[0]] = {
+            'name': result[1],
+            'color': result[2],
         }
-        if len(tag.suggestions):
-            item['suggestions'] = \
-                [rel.names[0].name for rel in tag.suggestions]
-        if len(tag.implications):
-            item['implications'] = \
-                [rel.names[0].name for rel in tag.implications]
-        output['tags'].append(item)
-    for category in tag_categories.get_all_categories():
-        output['categories'].append({
-            'name': category.name,
-            'color': category.color,
-        })
+
+    for result in db.session.query(db.TagName.tag_id, db.TagName.name).all():
+        if not result[0] in tags:
+            tags[result[0]] = {'names': []}
+        tags[result[0]]['names'].append(result[1])
+
+    for result in db.session \
+            .query(db.TagSuggestion.parent_id, db.TagName.name) \
+            .join(db.TagName, db.TagName.tag_id == db.TagSuggestion.child_id) \
+            .all():
+        if not 'suggestions' in tags[result[0]]:
+            tags[result[0]]['suggestions'] = []
+        tags[result[0]]['suggestions'].append(result[1])
+
+    for result in db.session \
+            .query(db.TagImplication.parent_id, db.TagName.name) \
+            .join(db.TagName, db.TagName.tag_id == db.TagImplication.child_id) \
+            .all():
+        if not 'implications' in tags[result[0]]:
+            tags[result[0]]['implications'] = []
+        tags[result[0]]['implications'].append(result[1])
+
+    for result in db.session.query(
+            db.Tag.tag_id,
+            db.Tag.category_id,
+            db.Tag.post_count).all():
+        tags[result[0]]['category'] = categories[result[1]]['name']
+        tags[result[0]]['usages'] = result[2]
+
+    output = {
+        'categories': list(categories.values()),
+        'tags': list(tags.values()),
+    }
+
     export_path = os.path.join(config.config['data_dir'], 'tags.json')
     with open(export_path, 'w') as handle:
         handle.write(json.dumps(output, separators=(',', ':')))
