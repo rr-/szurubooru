@@ -212,10 +212,10 @@ class Post extends events.EventTarget {
             _canvasHeight:  response.canvasHeight,
             _fileSize:      response.fileSize,
 
-            _tags:          response.tags,
-            _notes:         response.notes,
+            _tags:          response.tags || [],
+            _notes:         response.notes || [],
             _comments:      CommentList.fromResponse(response.comments || []),
-            _relations:     response.relations,
+            _relations:     response.relations || [],
 
             _score:         response.score,
             _favoriteCount: response.favoriteCount,

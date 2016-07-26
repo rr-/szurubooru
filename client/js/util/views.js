@@ -59,6 +59,7 @@ function makeRadio(options) {
             value: options.value,
             type: 'radio',
             checked: options.selectedValue === options.value,
+            disabled: options.readonly,
             required: options.required,
         }) +
     _makeLabel(options, {class: 'radio'});
@@ -75,6 +76,7 @@ function makeCheckbox(options) {
             type: 'checkbox',
             checked: options.checked !== undefined ?
                 options.checked : false,
+            disabled: options.readonly,
             required: options.required,
         }) +
     _makeLabel(options, {class: 'checkbox'});

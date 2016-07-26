@@ -100,9 +100,15 @@ class PostController {
     _evtPostEdit(e) {
         // TODO: disable form
         const post = e.detail.post;
-        post.tags = e.detail.tags;
-        post.safety = e.detail.safety;
-        post.relations = e.detail.relations;
+        if (e.detail.tags !== undefined) {
+            post.tags = e.detail.tags;
+        }
+        if (e.detail.safety !== undefined) {
+            post.safety = e.detail.safety;
+        }
+        if (e.detail.relations !== undefined) {
+            post.relations = e.detail.relations;
+        }
         post.save()
             .then(() => {
                 misc.disableExitConfirmation();

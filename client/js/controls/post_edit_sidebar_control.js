@@ -34,7 +34,9 @@ class PostEditSidebarControl extends events.EventTarget {
             this._formNode.addEventListener('submit', e => this._evtSubmit(e));
         }
 
-        this._tagControl = new TagInputControl(this._tagInputNode);
+        if (this._tagInputNode) {
+            this._tagControl = new TagInputControl(this._tagInputNode);
+        }
     }
 
     _evtSubmit(e) {
@@ -42,14 +44,20 @@ class PostEditSidebarControl extends events.EventTarget {
         this.dispatchEvent(new CustomEvent('submit', {
             detail: {
                 post: this._post,
-                safety:
+
+                safety: this._safetyButtonNodes.legnth ?
                     Array.from(this._safetyButtonNodes)
                         .filter(node => node.checked)[0]
-                        .value.toLowerCase(),
-                tags:
-                    misc.splitByWhitespace(this._tagInputNode.value),
-                relations:
-                    misc.splitByWhitespace(this._relationsInputNode.value),
+                        .value.toLowerCase() :
+                    undefined,
+
+                tags: this._tagInputNode ?
+                    misc.splitByWhitespace(this._tagInputNode.value) :
+                    undefined,
+
+                relations: this._relationsInputNode ?
+                    misc.splitByWhitespace(this._relationsInputNode.value) :
+                    undefined,
             },
         }));
     }
