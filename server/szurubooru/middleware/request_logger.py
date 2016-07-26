@@ -9,7 +9,8 @@ class RequestLogger(object):
 
     def process_response(self, request, _response, _resource):
         logger.info(
-            '%s (user=%s, queries=%d)',
+            '%s %s (user=%s, queries=%d)',
+            request.method,
             request.url,
             request.context.user.name,
             db.get_query_count())
