@@ -29,7 +29,10 @@ class PostController {
             // be still accessed after history navigation / page refresh
             if (parameters.query) {
                 ctx.state.parameters = parameters;
-                router.replace('/post/' + id, ctx.state, false);
+                const url = editMode ?
+                    '/post/' + id + '/edit' :
+                    '/post/' + id;
+                router.replace(url, ctx.state, false);
             }
 
             this._post = post;
