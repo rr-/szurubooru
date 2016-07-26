@@ -25,15 +25,6 @@
                 </section>
             <% } %>
 
-            <% if (ctx.canEditPostTags) { %>
-                <section class='tags'>
-                    <%= ctx.makeTextInput({
-                        text: 'Tags',
-                        value: ctx.post.tags.join(' '),
-                    }) %>
-                </section>
-            <% } %>
-
             <% if (ctx.canEditPostRelations) { %>
                 <section class='relations'>
                     <%= ctx.makeTextInput({
@@ -42,6 +33,15 @@
                         placeholder: 'space-separated post IDs',
                         pattern: '^[0-9 ]*$',
                         value: ctx.post.relations.map(rel => rel.id).join(' '),
+                    }) %>
+                </section>
+            <% } %>
+
+            <% if (ctx.canEditPostTags) { %>
+                <section class='tags'>
+                    <%= ctx.makeTextInput({
+                        text: 'Tags',
+                        value: ctx.post.tags.join(' '),
                     }) %>
                 </section>
             <% } %>
