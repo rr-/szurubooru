@@ -24,6 +24,7 @@ class Post extends events.EventTarget {
     get canvasWidth()    { return this._canvasWidth || 800; }
     get canvasHeight()   { return this._canvasHeight || 450; }
     get fileSize()       { return this._fileSize || 0; }
+    get content()        { throw 'Invalid operation'; }
 
     get flags()          { return this._flags; }
     get tags()           { return this._tags; }
@@ -40,6 +41,7 @@ class Post extends events.EventTarget {
     set tags(value)      { this._tags = value; }
     set safety(value)    { this._safety = value; }
     set relations(value) { this._relations = value; }
+    set content(value)   { this._content = value; }
 
     static fromResponse(response) {
         const ret = new Post();
@@ -78,6 +80,7 @@ class Post extends events.EventTarget {
     }
 
     save() {
+        const files = [];
         const detail = {};
 
         // send only changed fields to avoid user privilege violation
@@ -93,15 +96,22 @@ class Post extends events.EventTarget {
         if (misc.arraysDiffer(this._relations, this._orig._relations)) {
             detail.relations = this._relations;
         }
+        if (this._content) {
+            files.content = this._content;
+        }
 
         let promise = this._id ?
-            api.put('/post/' + this._id, detail) :
-            api.post('/posts', detail);
+            api.put('/post/' + this._id, detail, files) :
+            api.post('/posts', detail, files);
 
         return promise.then(response => {
             this._updateFromResponse(response);
             this.dispatchEvent(
                 new CustomEvent('change', {detail: {post: this}}));
+            if (this._content) {
+                this.dispatchEvent(
+                    new CustomEvent('changeContent', {detail: {post: this}}));
+            }
             return Promise.resolve();
         }, response => {
             return Promise.reject(response.description);
@@ -175,6 +185,13 @@ class Post extends events.EventTarget {
             }, response => {
                 return Promise.reject(response.description);
             });
+    }
+
+    mutateContentUrl() {
+        this._contentUrl =
+            this._orig._contentUrl +
+            '?bypass-cache=' +
+            Math.round(Math.random()*1000);
     }
 
     _updateFromResponse(response) {

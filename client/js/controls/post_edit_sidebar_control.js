@@ -5,6 +5,7 @@ const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const TagInputControl = require('./tag_input_control.js');
+const FileDropperControl = require('../controls/file_dropper_control.js');
 
 const template = views.getTemplate('post-edit-sidebar');
 
@@ -14,6 +15,7 @@ class PostEditSidebarControl extends events.EventTarget {
         this._hostNode = hostNode;
         this._post = post;
         this._postContentControl = postContentControl;
+        this._newPostContent = null;
 
         views.replaceContent(this._hostNode, template({
             post: this._post,
@@ -37,6 +39,24 @@ class PostEditSidebarControl extends events.EventTarget {
         if (this._tagInputNode) {
             this._tagControl = new TagInputControl(this._tagInputNode);
         }
+
+        if (this._contentInputNode) {
+            this._contentFileDropper = new FileDropperControl(
+                this._contentInputNode,
+                {
+                    lock: true,
+                    resolve: files => {
+                        this._newPostContent = files[0];
+                    },
+                });
+        }
+
+        this._post.addEventListener(
+            'changeContent', e => this._evtPostContentChange(e));
+    }
+
+    _evtPostContentChange(e) {
+        this._contentFileDropper.reset();
     }
 
     _evtSubmit(e) {
@@ -61,6 +81,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
                 relations: this._relationsInputNode ?
                     misc.splitByWhitespace(this._relationsInputNode.value) :
+                    undefined,
+
+                content: this._newPostContent ?
+                    this._newPostContent :
                     undefined,
             },
         }));
@@ -88,6 +112,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _relationsInputNode() {
         return this._formNode.querySelector('.relations input');
+    }
+
+    get _contentInputNode() {
+        return this._formNode.querySelector('.post-content .dropper-container');
     }
 };
 

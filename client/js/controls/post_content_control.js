@@ -11,15 +11,17 @@ class PostContentControl {
         this._containerNode = containerNode;
         this._template = views.getTemplate('post-content');
 
-        this._install();
-
         this._currentFitFunction = {
             'fit-both': this.fitBoth,
             'fit-original': this.fitOriginal,
             'fit-width': this.fitWidth,
             'fit-height': this.fitHeight,
         }[settings.get().fitMode] || this.fitBoth;
-        this._currentFitFunction();
+
+        this._install();
+
+        this._post.addEventListener(
+            'changeContent', e => this._evtPostContentChange(e));
     }
 
     fitWidth() {
@@ -73,11 +75,15 @@ class PostContentControl {
         return this._viewportSizeCalculator()[1];
     }
 
+    _evtPostContentChange(e) {
+        this._post = e.detail.post;
+        this._post.mutateContentUrl();
+        this._reinstall();
+    }
+
     _resize(width, height) {
-        const postContentNode =
-            this._containerNode.querySelector('.post-content');
-        postContentNode.style.width = width + 'px';
-        postContentNode.style.height = height + 'px';
+        this._postContentNode.style.width = width + 'px';
+        this._postContentNode.style.height = height + 'px';
     }
 
     _refreshSize() {
@@ -85,16 +91,24 @@ class PostContentControl {
     }
 
     _install() {
-        const postContentNode = this._template({
-            post: this._post,
-        });
-        if (settings.get().transparencyGrid) {
-            postContentNode.classList.add('transparency-grid');
-        }
-        this._containerNode.appendChild(postContentNode);
+        this._reinstall();
         optimizedResize.add(() => this._refreshSize());
         views.monitorNodeRemoval(
             this._containerNode, () => { this._uninstall(); });
+    }
+
+    _reinstall() {
+        const newNode = this._template({post: this._post});
+        if (settings.get().transparencyGrid) {
+            newNode.classList.add('transparency-grid');
+        }
+        if (this._postContentNode) {
+            this._containerNode.replaceChild(newNode, this._postContentNode);
+        } else {
+            this._containerNode.appendChild(newNode);
+        }
+        this._postContentNode = newNode;
+        this._refreshSize();
     }
 
     _uninstall() {

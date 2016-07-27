@@ -57,6 +57,14 @@
                     }) %>
                 </section>
             <% } %>
+
+            <% if (ctx.canEditPostContent) { %>
+                <section class='post-content'>
+                    <label>Content</label>
+
+                    <div class='dropper-container'></div>
+                </section>
+            <% } %>
         </div>
 
         <div class='messages'></div>

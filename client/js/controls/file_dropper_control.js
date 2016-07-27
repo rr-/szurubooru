@@ -28,7 +28,12 @@ class FileDropperControl {
         this._fileInputNode.addEventListener(
             'change', e => this._evtFileChange(e));
 
+        this._originalHtml = this._dropperNode.innerHTML;
         views.replaceContent(target, source);
+    }
+
+    reset() {
+        this._dropperNode.innerHTML = this._originalHtml;
     }
 
     _resolve(files) {

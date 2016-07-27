@@ -115,6 +115,9 @@ class PostController {
         if (e.detail.relations !== undefined) {
             post.relations = e.detail.relations;
         }
+        if (e.detail.content !== undefined) {
+            post.content = e.detail.content;
+        }
         post.save()
             .then(() => {
                 misc.disableExitConfirmation();
