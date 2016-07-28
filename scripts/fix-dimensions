@@ -1,0 +1,35 @@
+#!/usr/bin/php
+<?php
+require_once(__DIR__
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'src'
+    . DIRECTORY_SEPARATOR . 'Bootstrap.php');
+
+use Szurubooru\Injector;
+use Szurubooru\Dao\PublicFileDao;
+use Szurubooru\Dao\PostDao;
+use Szurubooru\Services\ImageConverter;
+use Szurubooru\Services\ImageManipulation\ImageManipulator;
+
+$publicFileDao = Injector::get(PublicFileDao::class);
+$postDao = Injector::get(PostDao::class);
+$imageConverter = Injector::get(ImageConverter::class);
+$imageManipulator = Injector::get(ImageManipulator::class);
+
+if (!isset($argv[1]))
+{
+    echo "No post ID specified.";
+    return;
+}
+$postId = intval($argv[1]);
+$post = $postDao->findById($postId);
+if (!$post)
+{
+    echo "Post with this ID was not found in the database.";
+    return;
+}
+
+$image = $imageConverter->createImageFromBuffer($post->getContent());
+$post->setImageWidth($imageManipulator->getImageWidth($image));
+$post->setImageHeight($imageManipulator->getImageHeight($image));
+$postDao->save($post);
