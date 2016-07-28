@@ -1,6 +1,9 @@
 <?php
 namespace Szurubooru\Services\ImageManipulation;
 
+\Imagick::setResourceLimit(\Imagick::RESOURCETYPE_MEMORY, 33554432);
+\Imagick::setResourceLimit(\Imagick::RESOURCETYPE_MAP, 33554432);
+
 class ImagickImageManipulator implements IImageManipulator
 {
     public function loadFromBuffer($source)
