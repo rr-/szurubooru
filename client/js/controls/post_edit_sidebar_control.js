@@ -19,13 +19,13 @@ class PostEditSidebarControl extends events.EventTarget {
 
         views.replaceContent(this._hostNode, template({
             post: this._post,
-            canEditPostContent: api.hasPrivilege('posts:edit:content'),
-            canEditPostFlags: api.hasPrivilege('posts:edit:flags'),
-            canEditPostNotes: api.hasPrivilege('posts:edit:notes'),
-            canEditPostRelations: api.hasPrivilege('posts:edit:relations'),
             canEditPostSafety: api.hasPrivilege('posts:edit:safety'),
             canEditPostSource: api.hasPrivilege('posts:edit:source'),
             canEditPostTags: api.hasPrivilege('posts:edit:tags'),
+            canEditPostRelations: api.hasPrivilege('posts:edit:relations'),
+            canEditPostNotes: api.hasPrivilege('posts:edit:notes'),
+            canEditPostFlags: api.hasPrivilege('posts:edit:flags'),
+            canEditPostContent: api.hasPrivilege('posts:edit:content'),
             canEditPostThumbnail: api.hasPrivilege('posts:edit:thumbnail'),
             canCreateAnonymousPosts: api.hasPrivilege('posts:create:anonymous'),
             canDeletePosts: api.hasPrivilege('posts:delete'),
@@ -51,12 +51,30 @@ class PostEditSidebarControl extends events.EventTarget {
                 });
         }
 
+        if (this._thumbnailInputNode) {
+            this._thumbnailFileDropper = new FileDropperControl(
+                this._thumbnailInputNode,
+                {
+                    lock: true,
+                    resolve: files => {
+                        this._newPostThumbnail = files[0];
+                    },
+                });
+        }
+
         this._post.addEventListener(
             'changeContent', e => this._evtPostContentChange(e));
+
+        this._post.addEventListener(
+            'changeThumbnail', e => this._evtPostThumbnailChange(e));
     }
 
     _evtPostContentChange(e) {
         this._contentFileDropper.reset();
+    }
+
+    _evtPostThumbnailChange(e) {
+        this._thumbnailFileDropper.reset();
     }
 
     _evtSubmit(e) {
@@ -85,6 +103,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
                 content: this._newPostContent ?
                     this._newPostContent :
+                    undefined,
+
+                thumbnail: this._newPostThumbnail ?
+                    this._newPostThumbnail :
                     undefined,
             },
         }));
@@ -116,6 +138,11 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _contentInputNode() {
         return this._formNode.querySelector('.post-content .dropper-container');
+    }
+
+    get _thumbnailInputNode() {
+        return this._formNode.querySelector(
+            '.post-thumbnail .dropper-container');
     }
 };
 

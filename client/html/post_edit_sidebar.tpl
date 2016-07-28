@@ -65,6 +65,14 @@
                     <div class='dropper-container'></div>
                 </section>
             <% } %>
+
+            <% if (ctx.canEditPostThumbnail) { %>
+                <section class='post-thumbnail'>
+                    <label>Thumbnail</label>
+
+                    <div class='dropper-container'></div>
+                </section>
+            <% } %>
         </div>
 
         <div class='messages'></div>

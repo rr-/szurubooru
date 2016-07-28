@@ -118,6 +118,9 @@ class PostController {
         if (e.detail.content !== undefined) {
             post.content = e.detail.content;
         }
+        if (e.detail.thumbnail !== undefined) {
+            post.thumbnail = e.detail.thumbnail;
+        }
         post.save()
             .then(() => {
                 misc.disableExitConfirmation();

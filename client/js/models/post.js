@@ -25,6 +25,7 @@ class Post extends events.EventTarget {
     get canvasHeight()   { return this._canvasHeight || 450; }
     get fileSize()       { return this._fileSize || 0; }
     get content()        { throw 'Invalid operation'; }
+    get thumbnail()      { throw 'Invalid operation'; }
 
     get flags()          { return this._flags; }
     get tags()           { return this._tags; }
@@ -42,6 +43,7 @@ class Post extends events.EventTarget {
     set safety(value)    { this._safety = value; }
     set relations(value) { this._relations = value; }
     set content(value)   { this._content = value; }
+    set thumbnail(value) { this._thumbnail = value; }
 
     static fromResponse(response) {
         const ret = new Post();
@@ -99,6 +101,10 @@ class Post extends events.EventTarget {
         if (this._content) {
             files.content = this._content;
         }
+        if (this._thumbnail) {
+            files.thumbnail = this._thumbnail;
+        }
+
 
         let promise = this._id ?
             api.put('/post/' + this._id, detail, files) :
@@ -111,6 +117,10 @@ class Post extends events.EventTarget {
             if (this._content) {
                 this.dispatchEvent(
                     new CustomEvent('changeContent', {detail: {post: this}}));
+            }
+            if (this._thumbnail) {
+                this.dispatchEvent(
+                    new CustomEvent('changeThumbnail', {detail: {post: this}}));
             }
             return Promise.resolve();
         }, response => {
