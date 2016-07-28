@@ -24,6 +24,7 @@ class PostReadonlySidebarControl extends events.EventTarget {
             getTagCategory: this._getTagCategory,
             getTagUsages: this._getTagUsages,
             canListPosts: api.hasPrivilege('posts:list'),
+            canEditPosts: api.hasPrivilege('posts:edit'),
             canViewTags: api.hasPrivilege('tags:view'),
         }));
 

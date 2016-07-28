@@ -62,26 +62,35 @@
 
     <nav class='tags'>
         <h1>Tags (<%- ctx.post.tags.length %>)</h1>
-        <ul><!--
-            --><% for (let tag of ctx.post.tags) { %><!--
-                --><li><!--
-                    --><% if (ctx.canViewTags) { %><!--
-                    --><a href='/tag/<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
-                        --><i class='fa fa-tag'></i><!--
-                    --><% } %><!--
-                    --><% if (ctx.canViewTags) { %><!--
-                        --></a><!--
-                    --><% } %><!--
-                    --><% if (ctx.canListPosts) { %><!--
-                        --><a href='/posts/query=<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
-                    --><% } %><!--
-                        --><%- tag %><!--
-                    --><% if (ctx.canListPosts) { %><!--
-                        --></a><!--
-                    --><% } %><!--
-                    --><span class='count'><%- ctx.getTagUsages(tag) %></span><!--
-                --></li><!--
-            --><% } %><!--
-        --></ul>
+        <% if (ctx.post.tags.length) { %>
+            <ul><!--
+                --><% for (let tag of ctx.post.tags) { %><!--
+                    --><li><!--
+                        --><% if (ctx.canViewTags) { %><!--
+                        --><a href='/tag/<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                            --><i class='fa fa-tag'></i><!--
+                        --><% } %><!--
+                        --><% if (ctx.canViewTags) { %><!--
+                            --></a><!--
+                        --><% } %><!--
+                        --><% if (ctx.canListPosts) { %><!--
+                            --><a href='/posts/query=<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                        --><% } %><!--
+                            --><%- tag %><!--
+                        --><% if (ctx.canListPosts) { %><!--
+                            --></a><!--
+                        --><% } %><!--
+                        --><span class='count'><%- ctx.getTagUsages(tag) %></span><!--
+                    --></li><!--
+                --><% } %><!--
+            --></ul>
+        <% } else { %>
+            <p>
+                No tags yet!
+                <% if (ctx.canEditPosts) { %>
+                    <a href='<%= ctx.getPostEditUrl(ctx.post.id, ctx.parameters) %>'>Add some.</a>
+                <% } %>
+            </p>
+        <% } %>
     </nav>
 </div>
