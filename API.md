@@ -486,7 +486,6 @@ data.
 - **Errors**
 
     - the tag does not exist
-    - the tag is used by some posts
     - privileges are too low
 
 - **Description**

@@ -90,10 +90,6 @@ class TagDetailApi(BaseApi):
 
     def delete(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
-        if tag.post_count > 0:
-            raise tags.TagIsInUseError(
-                'Tag has some usages and cannot be deleted. ' +
-                'Please untag relevant posts first.')
         auth.verify_privilege(ctx.user, 'tags:delete')
         snapshots.save_entity_deletion(tag, ctx.user)
         tags.delete(tag)
