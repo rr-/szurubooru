@@ -49,18 +49,19 @@
     #user-edit
         form
             width: 100%
-            display: flex
-        .left
-            width: 65%
-        .right
-            width: 35%
-            margin-left: 1em
-        .file-dropper-holder
-            position: relative
-        .file-dropper
-            position: absolute
-            left: 0
-            right: 0
+        .avatar
+            #avatar-content
+                float: right
+                width: 65%
+                margin-top: .5em
+            #avatar-radio
+                float: left
+                width: 30%
+            &:after
+                content: ' '
+                display: block
+                height: 1px
+                clear: both
 
     #user-delete form
         width: 100%

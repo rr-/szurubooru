@@ -1,54 +1,54 @@
 <div class='content-wrapper tag-edit'>
-    <form class='tabular'>
-        <div class='input'>
-            <ul>
-                <li class='names'>
-                    <% if (ctx.canEditNames) { %>
-                        <%= ctx.makeTextInput({
-                            text: 'Names',
-                            value: ctx.tag.names.join(' '),
-                            required: true,
-                        }) %>
-                    <% } %>
-                </li>
-                <li class='category'>
-                    <% if (ctx.canEditCategory) { %>
-                        <%= ctx.makeSelect({
-                            text: 'Category',
-                            keyValues: ctx.categories,
-                            selectedKey: ctx.tag.category,
-                            required: true,
-                        }) %>
-                    <% } %>
-                </li>
-                <li class='implications'>
-                    <% if (ctx.canEditImplications) { %>
-                        <%= ctx.makeTextInput({
-                            text: 'Implications',
-                            value: ctx.tag.implications.join(' '),
-                        }) %>
-                    <% } %>
-                </li>
-                <li class='suggestions'>
-                    <% if (ctx.canEditSuggestions) { %>
-                        <%= ctx.makeTextInput({
-                            text: 'Suggestions',
-                            value: ctx.tag.suggestions.join(' '),
-                        }) %>
-                    <% } %>
-                </li>
-                <li class='description'>
-                    <% if (ctx.canEditDescription) { %>
-                        <%= ctx.makeTextarea({
-                            text: 'Description',
-                            value: ctx.tag.description,
-                        }) %>
-                    <% } %>
-                </li>
-            </ul>
-        </div>
+    <form>
+        <ul>
+            <li class='names'>
+                <% if (ctx.canEditNames) { %>
+                    <%= ctx.makeTextInput({
+                        text: 'Names',
+                        value: ctx.tag.names.join(' '),
+                        required: true,
+                    }) %>
+                <% } %>
+            </li>
+            <li class='category'>
+                <% if (ctx.canEditCategory) { %>
+                    <%= ctx.makeSelect({
+                        text: 'Category',
+                        keyValues: ctx.categories,
+                        selectedKey: ctx.tag.category,
+                        required: true,
+                    }) %>
+                <% } %>
+            </li>
+            <li class='implications'>
+                <% if (ctx.canEditImplications) { %>
+                    <%= ctx.makeTextInput({
+                        text: 'Implications',
+                        value: ctx.tag.implications.join(' '),
+                    }) %>
+                <% } %>
+            </li>
+            <li class='suggestions'>
+                <% if (ctx.canEditSuggestions) { %>
+                    <%= ctx.makeTextInput({
+                        text: 'Suggestions',
+                        value: ctx.tag.suggestions.join(' '),
+                    }) %>
+                <% } %>
+            </li>
+            <li class='description'>
+                <% if (ctx.canEditDescription) { %>
+                    <%= ctx.makeTextarea({
+                        text: 'Description',
+                        value: ctx.tag.description,
+                    }) %>
+                <% } %>
+            </li>
+        </ul>
+
         <% if (ctx.canEditAnything) { %>
             <div class='messages'></div>
+
             <div class='buttons'>
                 <input type='submit' class='save' value='Save changes'>
             </div>
