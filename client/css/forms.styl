@@ -134,7 +134,6 @@ input[type=checkbox]:focus + .checkbox:before
 /*
  * Regular inputs
  */
-div.tag-input,
 select,
 textarea,
 input[type=text],
@@ -175,28 +174,26 @@ input:disabled
     cursor: not-allowed
 
 div.tag-input
-    min-height: 4.75em
-    vertical-align: top
-    display: inline-block
-    cursor: text
-    word-wrap: break-word
-    a
-        line-height: 110%
-        position: relative
-        z-index: 1
-    span
-        line-height: 110%
-        &.new a
-            background: $new-tag-background-color
-            color: $new-tag-text-color
-        &.duplicate a
-            background: $duplicate-tag-background-color
-            color: $duplicate-tag-text-color
-        &.editable
-            outline: 0
-            padding-right: 0.2em
-            &:last-child
-                padding-left: 0.2em
+    li.new
+        background: $new-tag-background-color
+        color: $new-tag-text-color
+    li.duplicate
+        background: $duplicate-tag-background-color
+        color: $duplicate-tag-text-color
+    ul
+        margin-top: 0.2em
+
+ul.compact-tags
+    line-height: 130%
+    word-break: break-all
+    li
+        margin: 0
+    i
+        padding-right: 0.4em
+    .count
+        color: $inactive-link-color
+        padding-left: 0.7em
+        font-size: 90%
 
 div.tag-relations
     font-size: 80%
