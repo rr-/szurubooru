@@ -99,7 +99,20 @@ function bundleHtml(config) {
         compiledTemplateJs += 'let templates = {};';
         for (const file of files) {
             const name = path.basename(file, '.tpl').replace(/_/g, '-');
-            const templateText = minifyHtml(readTextFile(file, 'utf-8'));
+            const placeholders = [];
+            let templateText = readTextFile(file, 'utf-8');
+            templateText = templateText.replace(
+                /<%.*?%>/ig,
+                (match) => {
+                    const ret = '%%%TEMPLATE' + placeholders.length;
+                    placeholders.push(match);
+                    return ret;
+                });
+            templateText = minifyHtml(templateText);
+            templateText = templateText.replace(
+                /%%%TEMPLATE(\d+)/g,
+                (match, number) => { return placeholders[number]; });
+
             const functionText = underscore.template(
                 templateText, {variable: 'ctx'}).source;
             compiledTemplateJs += `templates['${name}'] = ${functionText};`;
