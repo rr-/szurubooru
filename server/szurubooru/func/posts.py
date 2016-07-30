@@ -219,6 +219,9 @@ def update_post_content(post, content):
     except errors.ProcessingError:
         post.canvas_width = None
         post.canvas_height = None
+    if post.canvas_width <= 0 or post.canvas_height <= 0:
+        post.canvas_width = None
+        post.canvas_height = None
     files.save(get_post_content_path(post), content)
     update_post_thumbnail(post, content=None, delete=False)
 
