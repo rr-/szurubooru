@@ -3,7 +3,11 @@
         <nav class='buttons'>
             <article class='next-post'>
                 <% if (ctx.nextPostId) { %>
-                    <a href='<%= ctx.getPostUrl(ctx.nextPostId, ctx.parameters) %>'>
+                    <% if (ctx.editMode) { %>
+                        <a href='<%= ctx.getPostEditUrl(ctx.nextPostId, ctx.parameters) %>'>
+                    <% } else { %>
+                        <a href='<%= ctx.getPostUrl(ctx.nextPostId, ctx.parameters) %>'>
+                    <% } %>
                 <% } else { %>
                     <a class='inactive'>
                 <% } %>
@@ -13,7 +17,11 @@
             </article>
             <article class='previous-post'>
                 <% if (ctx.prevPostId) { %>
-                    <a href='<%= ctx.getPostUrl(ctx.prevPostId, ctx.parameters) %>'>
+                    <% if (ctx.editMode) { %>
+                        <a href='<%= ctx.getPostEditUrl(ctx.prevPostId, ctx.parameters) %>'>
+                    <% } else { %>
+                        <a href='<%= ctx.getPostUrl(ctx.prevPostId, ctx.parameters) %>'>
+                    <% } %>
                 <% } else { %>
                     <a class='inactive'>
                 <% } %>
