@@ -14,6 +14,7 @@ const SOURCE_INIT = 'init';
 const SOURCE_IMPLICATION = 'implication';
 const SOURCE_USER_INPUT = 'user-input';
 const SOURCE_SUGGESTION = 'suggestions';
+const SOURCE_CLIPBOARD = 'clipboard';
 
 function _fadeOutListItemNodeStatus(listItemNode) {
     if (listItemNode.classList.length) {
@@ -172,7 +173,7 @@ class TagInputControl extends events.EventTarget {
 
         // XXX: perhaps we should aggregate suggestions from all implications
         // for call to the _suggestRelations
-        if (source !== SOURCE_INIT) {
+        if (source !== SOURCE_INIT && source !== SOURCE_CLIPBOARD) {
             for (let otherTagName of tags.getAllImplications(tagName)) {
                 this.addTag(otherTagName, SOURCE_IMPLICATION);
             }
@@ -246,13 +247,17 @@ class TagInputControl extends events.EventTarget {
             window.alert('Pasted text is too long.');
             return;
         }
-        this._addTagsFromInput(pastedText);
+        this._hideAutoComplete();
+        this.addMultipleTags(pastedText, SOURCE_CLIPBOARD);
+        this._tagInputNode.value = '';
     }
 
     _evtInputKeyDown(e) {
         if (e.which == KEY_RETURN || e.which == KEY_SPACE) {
             e.preventDefault();
-            this._addTagsFromInput(this._tagInputNode.value);
+            this._hideAutoComplete();
+            this.addMultipleTags(this._tagInputNode.value, SOURCE_USER_INPUT);
+            this._tagInputNode.value = '';
         }
     }
 
@@ -264,12 +269,6 @@ class TagInputControl extends events.EventTarget {
             }
         }
         return null;
-    }
-
-    _addTagsFromInput(text) {
-        this._hideAutoComplete();
-        this.addMultipleTags(text, SOURCE_USER_INPUT);
-        this._tagInputNode.value = '';
     }
 
     _createListItemNode(tagName) {
