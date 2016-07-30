@@ -56,6 +56,7 @@ class TagInputControl extends events.EventTarget {
                     this.addTag(text, SOURCE_USER_INPUT);
                 },
                 verticalShift: -2,
+                isTaggedWith: tagName => this.isTaggedWith(tagName),
             });
         this._tagInputNode.addEventListener(
             'keydown', e => this._evtInputKeyDown(e));

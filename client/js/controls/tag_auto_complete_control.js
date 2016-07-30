@@ -10,7 +10,9 @@ class TagAutoCompleteControl extends AutoCompleteControl {
         const caseSensitive = false;
         const minLengthForPartialSearch = 3;
 
-        options = Object.assign({}, options);
+        options = Object.assign({
+            isTaggedWith: tag => false,
+        }, options);
 
         options.getMatches = text => {
             const transform = caseSensitive ?
@@ -30,7 +32,10 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                         tags.getOriginalTagName(kv[0]));
                     const category = kv[1].category;
                     const usages = kv[1].usages;
-                    const cssName = misc.makeCssName(category, 'tag');
+                    let cssName = misc.makeCssName(category, 'tag');
+                    if (options.isTaggedWith(kv[0])) {
+                        cssName += ' disabled';
+                    }
                     return {
                         caption: misc.unindent`
                             <span class="${cssName}">
