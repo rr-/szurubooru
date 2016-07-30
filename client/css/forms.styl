@@ -1,3 +1,4 @@
+@import mixins
 @import colors
 
 form
@@ -252,7 +253,7 @@ div.tag-input
             color: $inactive-link-color
             margin-left: 0.7em
             font-size: 90%
-
+            unselectable()
 
 ul.compact-tags
     line-height: 130%
@@ -265,6 +266,7 @@ ul.compact-tags
         color: $inactive-link-color
         margin-left: 0.7em
         font-size: 90%
+        unselectable()
 
 div.tag-relations
     font-size: 80%

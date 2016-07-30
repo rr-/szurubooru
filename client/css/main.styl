@@ -1,4 +1,5 @@
 @import colors
+@import mixins
 
 /* latin */
 @font-face
@@ -214,3 +215,8 @@ a .access-key
                 background: white
                 padding: 0 1em
                 z-index: 2
+
+/* hack to prevent text from being copied */
+[data-pseudo-content]:before {
+    content: attr(data-pseudo-content)
+}

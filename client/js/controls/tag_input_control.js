@@ -296,7 +296,7 @@ class TagInputControl extends events.EventTarget {
         }
         searchLinkNode.setAttribute(
             'href', '/posts/query=' + encodeURIComponent(tagName));
-        searchLinkNode.textContent = tagName;
+        searchLinkNode.textContent = tagName + ' ';
         searchLinkNode.addEventListener('click', e => {
             e.preventDefault();
             if (actualTag) {
@@ -307,17 +307,15 @@ class TagInputControl extends events.EventTarget {
             }
         });
 
-        const usagesNode = views.htmlToDom(
-            views.makeNonVoidElement(
-                'span',
-                {class: 'append'},
-                actualTag ? actualTag.usages : 0));
+        const usagesNode = document.createElement('span');
+        usagesNode.classList.add('append');
+        usagesNode.setAttribute(
+            'data-pseudo-content', actualTag ? actualTag.usages : 0);
 
-        const removalLinkNode = views.htmlToDom(
-            views.makeNonVoidElement(
-                'a',
-                {href: '#', class: 'append'},
-                '×'));
+        const removalLinkNode = document.createElement('a');
+        removalLinkNode.classList.add('append');
+        removalLinkNode.setAttribute('href', '#');
+        removalLinkNode.setAttribute('data-pseudo-content', '×');
         removalLinkNode.addEventListener('click', e => {
             e.preventDefault();
             this.deleteTag(tagName);
@@ -390,12 +388,12 @@ class TagInputControl extends events.EventTarget {
             const weightNode = document.createElement('span');
             weightNode.classList.add('tag-weight');
             weightNode.classList.add('append');
-            weightNode.textContent = weight;
+            weightNode.setAttribute('data-pseudo-content', weight);
 
             const removeLinkNode = document.createElement('a');
             removeLinkNode.classList.add('remove-tag');
             removeLinkNode.classList.add('append');
-            removeLinkNode.textContent = '×';
+            removeLinkNode.setAttribute('data-pseudo-content', '×');
             removeLinkNode.setAttribute('href', '#');
             removeLinkNode.addEventListener('click', e => {
                 e.preventDefault();

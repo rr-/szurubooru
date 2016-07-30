@@ -76,11 +76,11 @@
                         --><% if (ctx.canListPosts) { %><!--
                             --><a href='/posts/query=<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
                         --><% } %><!--
-                            --><%- tag %><!--
+                            --><%- tag %>&#32;<!--
                         --><% if (ctx.canListPosts) { %><!--
                             --></a><!--
                         --><% } %><!--
-                        --><span class='append'><%- ctx.getTagUsages(tag) %></span><!--
+                        --><span class='append' data-pseudo-content='<%- ctx.getTagUsages(tag) %>'></span><!--
                     --></li><!--
                 --><% } %><!--
             --></ul>
