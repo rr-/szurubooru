@@ -105,7 +105,6 @@ class Post extends events.EventTarget {
             files.thumbnail = this._thumbnail;
         }
 
-
         let promise = this._id ?
             api.put('/post/' + this._id, detail, files) :
             api.post('/posts', detail, files);
@@ -201,7 +200,7 @@ class Post extends events.EventTarget {
         this._contentUrl =
             this._orig._contentUrl +
             '?bypass-cache=' +
-            Math.round(Math.random()*1000);
+            Math.round(Math.random() * 1000);
     }
 
     _updateFromResponse(response) {

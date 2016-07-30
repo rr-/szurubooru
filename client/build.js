@@ -135,7 +135,6 @@ function bundleJs(config) {
         'superagent',
         'mousetrap',
         'js-cookie',
-        'page',
         'nprogress',
     ];
 
