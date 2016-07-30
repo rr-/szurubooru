@@ -38,7 +38,7 @@ def test_creating_user(test_ctx, fake_datetime):
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result == {
         'avatarStyle': 'gravatar',
-        'avatarUrl': 'http://gravatar.com/avatar/' +
+        'avatarUrl': 'https://gravatar.com/avatar/' +
             '6f370c8c7109534c3d5c394123a477d7?d=retro&s=200',
         'creationTime': datetime.datetime(1969, 2, 12),
         'lastLoginTime': None,

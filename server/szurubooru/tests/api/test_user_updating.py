@@ -52,7 +52,7 @@ def test_updating_user(test_ctx):
         'u1')
     assert result == {
         'avatarStyle': 'gravatar',
-        'avatarUrl': 'http://gravatar.com/avatar/' +
+        'avatarUrl': 'https://gravatar.com/avatar/' +
             '6f370c8c7109534c3d5c394123a477d7?d=retro&s=200',
         'creationTime': datetime.datetime(1997, 1, 1),
         'lastLoginTime': None,

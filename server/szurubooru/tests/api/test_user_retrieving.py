@@ -53,7 +53,7 @@ def test_retrieving_single(test_ctx):
         'creationTime': datetime.datetime(1997, 1, 1),
         'lastLoginTime': None,
         'avatarStyle': 'gravatar',
-        'avatarUrl': 'http://gravatar.com/avatar/' +
+        'avatarUrl': 'https://gravatar.com/avatar/' +
             '275876e34cf609db118f3d84b799a790?d=retro&s=200',
         'email': False,
         'commentCount': 0,

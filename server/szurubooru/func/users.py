@@ -17,7 +17,7 @@ def _get_avatar_path(name):
 
 def _get_avatar_url(user):
     if user.avatar_style == user.AVATAR_GRAVATAR:
-        return 'http://gravatar.com/avatar/%s?d=retro&s=%d' % (
+        return 'https://gravatar.com/avatar/%s?d=retro&s=%d' % (
             util.get_md5((user.email or user.name).lower()),
             config.config['thumbnails']['avatar_width'])
     else:
