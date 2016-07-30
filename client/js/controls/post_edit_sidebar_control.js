@@ -144,6 +144,22 @@ class PostEditSidebarControl extends events.EventTarget {
         return this._formNode.querySelector(
             '.post-thumbnail .dropper-container');
     }
+
+    enableForm() {
+        views.enableForm(this._formNode);
+    }
+
+    disableForm() {
+        views.disableForm(this._formNode);
+    }
+
+    showSuccess(message) {
+        views.showSuccess(this._hostNode, message);
+    }
+
+    showError(message) {
+        views.showError(this._hostNode, message);
+    }
 };
 
 module.exports = PostEditSidebarControl;

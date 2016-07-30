@@ -101,7 +101,7 @@ class PostController {
     }
 
     _evtPostEdit(e) {
-        // TODO: disable form
+        this._view.sidebarControl.disableForm();
         const post = e.detail.post;
         if (e.detail.tags !== undefined) {
             post.tags = e.detail.tags;
@@ -123,11 +123,12 @@ class PostController {
         }
         post.save()
             .then(() => {
+                this._view.sidebarControl.showSuccess('Post saved.');
+                this._view.sidebarControl.enableForm();
                 misc.disableExitConfirmation();
-                // TODO: enable form
             }, errorMessage => {
-                window.alert(errorMessage);
-                // TODO: enable form
+                this._view.sidebarControl.showError(errorMessage);
+                this._view.sidebarControl.enableForm();
             });
     }
 
