@@ -80,7 +80,7 @@
                         --><% if (ctx.canListPosts) { %><!--
                             --></a><!--
                         --><% } %><!--
-                        --><span class='count'><%- ctx.getTagUsages(tag) %></span><!--
+                        --><span class='append'><%- ctx.getTagUsages(tag) %></span><!--
                     --></li><!--
                 --><% } %><!--
             --></ul>
