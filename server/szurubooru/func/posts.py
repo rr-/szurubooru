@@ -63,8 +63,6 @@ def serialize_note(note):
     }
 
 def serialize_post(post, authenticated_user, options=None):
-    default_category = tag_categories.try_get_default_category()
-    default_category_name = default_category.name if default_category else None
     return util.serialize_entity(
         post,
         {
@@ -83,13 +81,7 @@ def serialize_post(post, authenticated_user, options=None):
             'thumbnailUrl': lambda: get_post_thumbnail_url(post),
             'flags': lambda: post.flags,
             'tags': lambda: [
-                tag.names[0].name for tag in sorted(
-                    post.tags,
-                    key=lambda tag: (
-                        default_category_name == tag.category.name,
-                        tag.category.name,
-                        tag.names[0].name)
-                )],
+                tag.names[0].name for tag in tags.sort_tags(post.tags)],
             'relations': lambda: sorted(
                 {
                     post['id']:

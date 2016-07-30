@@ -5,8 +5,8 @@ from szurubooru import api, config, db, errors
 from szurubooru.func import util, tags, tag_categories
 
 def assert_relations(relations, expected_tag_names):
-    actual_names = [rel.names[0].name for rel in relations]
-    assert actual_names == expected_tag_names
+    actual_names = sorted([rel.names[0].name for rel in relations])
+    assert actual_names == sorted(expected_tag_names)
 
 @pytest.fixture
 def test_ctx(
@@ -186,7 +186,7 @@ def test_creating_new_category(test_ctx):
         'category': 'meta',
         'suggestions': ['sug', 'shared'],
         'implications': ['shared', 'imp'],
-    }, ['sug', 'shared'], ['shared', 'imp']),
+    }, ['shared', 'sug'], ['imp', 'shared']),
     # duplicate relations
     ({
         'names': ['main'],

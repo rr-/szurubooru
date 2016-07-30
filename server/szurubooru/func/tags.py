@@ -36,6 +36,17 @@ def _get_default_category_name():
     else:
         return DEFAULT_CATEGORY_NAME
 
+def sort_tags(tags):
+    default_category = tag_categories.try_get_default_category()
+    default_category_name = default_category.name if default_category else None
+    return sorted(
+        tags,
+        key=lambda tag: (
+            default_category_name == tag.category.name,
+            tag.category.name,
+            tag.names[0].name)
+    )
+
 def serialize_tag(tag, options=None):
     return util.serialize_entity(
         tag,
@@ -47,9 +58,11 @@ def serialize_tag(tag, options=None):
             'lastEditTime': lambda: tag.last_edit_time,
             'usages': lambda: tag.post_count,
             'suggestions': lambda: [
-                relation.names[0].name for relation in tag.suggestions],
+                relation.names[0].name
+                    for relation in sort_tags(tag.suggestions)],
             'implications': lambda: [
-                relation.names[0].name for relation in tag.implications],
+                relation.names[0].name
+                    for relation in sort_tags(tag.implications)],
             'snapshots': lambda: snapshots.get_serialized_history(tag),
         },
         options)
