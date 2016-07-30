@@ -10,6 +10,10 @@ const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
 const KEY_SPACE = 32;
 const KEY_RETURN = 13;
 
+const SOURCE_INIT = 'init';
+const SOURCE_IMPLICATION = 'implication';
+const SOURCE_USER_INPUT = 'user-input';
+
 class TagInputControl extends events.EventTarget {
     constructor(sourceInputNode) {
         super();
@@ -34,7 +38,7 @@ class TagInputControl extends events.EventTarget {
                 },
                 confirm: text => {
                     this._tagInputNode.value = '';
-                    this.addTag(text, true);
+                    this.addTag(text, SOURCE_USER_INPUT);
                 },
                 verticalShift: -2,
             });
@@ -57,7 +61,7 @@ class TagInputControl extends events.EventTarget {
         this.addEventListener('remove', e => this._evtTagRemoved(e));
 
         // add existing tags
-        this.addMultipleTags(this._sourceInputNode.value, false);
+        this.addMultipleTags(this._sourceInputNode.value, SOURCE_INIT);
     }
 
     isTaggedWith(tagName) {
@@ -66,13 +70,13 @@ class TagInputControl extends events.EventTarget {
             .includes(tagName.toLowerCase());
     }
 
-    addMultipleTags(text, addImplications) {
+    addMultipleTags(text, source) {
         for (let tagName of text.split(/\s+/).filter(word => word).reverse()) {
-            this.addTag(tagName, addImplications);
+            this.addTag(tagName, source);
         }
     }
 
-    addTag(tagName, addImplications) {
+    addTag(tagName, source) {
         tagName = tags.getOriginalTagName(tagName);
 
         if (!tagName) {
@@ -85,15 +89,16 @@ class TagInputControl extends events.EventTarget {
         this.dispatchEvent(new CustomEvent('add', {
             detail: {
                 tagName: tagName,
+                source: source,
             },
         }));
         this.dispatchEvent(new CustomEvent('change'));
 
         // XXX: perhaps we should aggregate suggestions from all implications
         // for call to the _suggestRelations
-        if (addImplications) {
+        if ([SOURCE_USER_INPUT, SOURCE_IMPLICATION].includes(source)) {
             for (let otherTagName of tags.getAllImplications(tagName)) {
-                this.addTag(otherTagName, true, false);
+                this.addTag(otherTagName, SOURCE_IMPLICATION);
             }
         }
     }
@@ -129,6 +134,9 @@ class TagInputControl extends events.EventTarget {
             listItemNode = this._createListItemNode(tagName);
             if (!tags.getTagByName(tagName)) {
                 listItemNode.classList.add('new');
+            }
+            if (e.detail.source === SOURCE_IMPLICATION) {
+                listItemNode.classList.add('implication');
             }
             this._tagListNode.prependChild(listItemNode);
         }
@@ -173,7 +181,7 @@ class TagInputControl extends events.EventTarget {
 
     _addTagsFromInput(text) {
         this._hideAutoComplete();
-        this.addMultipleTags(text, true);
+        this.addMultipleTags(text, SOURCE_USER_INPUT);
         this._tagInputNode.value = '';
         // TODO: suggest relations!
     }
