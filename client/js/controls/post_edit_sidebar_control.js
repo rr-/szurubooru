@@ -67,6 +67,17 @@ class PostEditSidebarControl extends events.EventTarget {
 
         this._post.addEventListener(
             'changeThumbnail', e => this._evtPostThumbnailChange(e));
+
+        if (this._formNode) {
+            const inputNodes = this._formNode.querySelectorAll(
+                'input, textarea');
+            for (let node of inputNodes) {
+                node.addEventListener(
+                    'change', e => {
+                        this.dispatchEvent(new CustomEvent('change'));
+                    });
+            }
+        }
     }
 
     _evtPostContentChange(e) {

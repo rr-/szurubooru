@@ -139,6 +139,7 @@ class TagInputControl extends events.EventTarget {
 
     _evtTagsChanged(e) {
         this._sourceInputNode.value = this.tags.join(' ');
+        this._sourceInputNode.dispatchEvent(new CustomEvent('change'));
     }
 
     _evtTagAdded(e) {
