@@ -14,6 +14,21 @@ const SOURCE_INIT = 'init';
 const SOURCE_IMPLICATION = 'implication';
 const SOURCE_USER_INPUT = 'user-input';
 
+function _fadeOutListItemNodeStatus(listItemNode) {
+    if (listItemNode.classList.length) {
+        if (listItemNode.fadeTimeout) {
+            window.clearTimeout(listItemNode.fadeTimeout);
+        }
+        listItemNode.fadeTimeout = window.setTimeout(() => {
+            while (listItemNode.classList.length) {
+                listItemNode.classList.remove(
+                    listItemNode.classList.item(0));
+            }
+            listItemNode.fadeTimeout = null;
+        }, 2500);
+    }
+}
+
 class TagInputControl extends events.EventTarget {
     constructor(sourceInputNode) {
         super();
@@ -140,6 +155,7 @@ class TagInputControl extends events.EventTarget {
             }
             this._tagListNode.prependChild(listItemNode);
         }
+        _fadeOutListItemNodeStatus(listItemNode);
     }
 
     _evtTagRemoved(e) {

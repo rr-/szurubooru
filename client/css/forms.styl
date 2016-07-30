@@ -174,15 +174,17 @@ input:disabled
     cursor: not-allowed
 
 div.tag-input
-    li.implication
-        background: $implied-tag-background-color
-        color: $implied-tag-text-color
-    li.new
-        background: $new-tag-background-color
-        color: $new-tag-text-color
-    li.duplicate
-        background: $duplicate-tag-background-color
-        color: $duplicate-tag-text-color
+    li
+        transition: background-color 0.5s linear
+        &.implication
+            background: $implied-tag-background-color
+            color: $implied-tag-text-color
+        &.new
+            background: $new-tag-background-color
+            color: $new-tag-text-color
+        &.duplicate
+            background: $duplicate-tag-background-color
+            color: $duplicate-tag-text-color
     ul
         margin-top: 0.2em
 
