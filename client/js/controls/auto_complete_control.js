@@ -214,7 +214,6 @@ class AutoCompleteControl {
             let resultIndexWorkaround = resultIndex;
             const listItem = document.createElement('li');
             const link = document.createElement('a');
-            link.href = '#';
             link.innerHTML = resultItem.caption;
             link.setAttribute('data-key', resultItem.value);
             link.addEventListener(

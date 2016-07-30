@@ -30,8 +30,8 @@ $safety-unsafe = #F3985F
                     text-align: center
                     vertical-align: middle
                     transition: background 0.2s linear
-                a:hover
-                    background: lighten($main-color, 90%)
+                    &:not(.inactive):hover
+                        background: lighten($main-color, 90%)
                 i
                     font-size: 140%
                 text-align: center
@@ -107,7 +107,6 @@ $safety-unsafe = #F3985F
                 padding: 0.5em
                 box-sizing: border-box
                 border: 0
-                cursor: pointer
                 &:after
                     display: inline-block
                     width: 1em

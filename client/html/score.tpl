@@ -1,5 +1,5 @@
 <% if (ctx.canScore) { %>
-    <a class='upvote' href='#'>
+    <a class='upvote'>
         <% if (ctx.ownScore == 1) { %>
             <i class='fa fa-thumbs-up'></i>
         <% } else { %>
@@ -15,7 +15,7 @@
 <% } %>
 <span class='value'><%- ctx.score %></span>
 <% if (ctx.canScore) { %>
-    <a class='downvote' href='#'>
+    <a class='downvote'>
         <% if (ctx.ownScore == -1) { %>
             <i class='fa fa-thumbs-down'></i>
         <% } else { %>

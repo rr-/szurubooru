@@ -113,7 +113,7 @@ class TagInputControl extends events.EventTarget {
         this._suggestionsNode = views.htmlToDom(
             '<div class="tag-suggestions">' +
             '<div class="wrapper">' +
-            '<p>Suggested tags<a class="close" href="#">×</a></p>' +
+            '<p>Suggested tags<a class="close">×</a></p>' +
             '<ul></ul>' +
             '</div>' +
             '</div>');
@@ -316,7 +316,6 @@ class TagInputControl extends events.EventTarget {
 
         const removalLinkNode = document.createElement('a');
         removalLinkNode.classList.add('append');
-        removalLinkNode.setAttribute('href', '#');
         removalLinkNode.setAttribute('data-pseudo-content', '×');
         removalLinkNode.addEventListener('click', e => {
             e.preventDefault();
@@ -375,7 +374,6 @@ class TagInputControl extends events.EventTarget {
             const actualTag = tags.getTagByName(tagName);
             const addLinkNode = document.createElement('a');
             addLinkNode.textContent = tagName;
-            addLinkNode.setAttribute('href', '#');
             addLinkNode.classList.add('add-tag');
             if (actualTag) {
                 addLinkNode.classList.add(
@@ -396,7 +394,6 @@ class TagInputControl extends events.EventTarget {
             removeLinkNode.classList.add('remove-tag');
             removeLinkNode.classList.add('append');
             removeLinkNode.setAttribute('data-pseudo-content', '×');
-            removeLinkNode.setAttribute('href', '#');
             removeLinkNode.addEventListener('click', e => {
                 e.preventDefault();
                 listNode.removeChild(listItemNode);

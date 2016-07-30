@@ -29,13 +29,13 @@
             <% if (ctx.tagCategory.tagCount) { %>
                 <a class='inactive' title="Can't delete category in use">Remove</a>
             <% } else { %>
-                <a href='#'>Remove</a>
+                <a>Remove</a>
             <% } %>
         </td>
     <% } %>
     <% if (ctx.canSetDefault) { %>
         <td class='set-default'>
-            <a href='#'>Make default</a>
+            <a>Make default</a>
         </td>
     <% } %>
 </tr>
