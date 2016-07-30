@@ -8,7 +8,7 @@
     <tbody>
         <tr>
             <td><code>name</code></td>
-            <td>having given name (doesn't accept wildcards yet)</td>
+            <td>having given name (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>creation-date</code></td>
