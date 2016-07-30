@@ -208,7 +208,9 @@ class TagInputControl extends events.EventTarget {
         let listItemNode = this._getListItemNodeFromTagName(tagName);
         const alreadyAdded = !!listItemNode;
         if (alreadyAdded) {
-            listItemNode.classList.add('duplicate');
+            if (e.detail.source !== SOURCE_IMPLICATION) {
+                listItemNode.classList.add('duplicate');
+            }
         } else {
             listItemNode = this._createListItemNode(tagName);
             if (!actualTag) {
