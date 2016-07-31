@@ -37,6 +37,7 @@ class Post extends events.EventTarget {
     get favoriteCount()  { return this._favoriteCount; }
     get ownFavorite()    { return this._ownFavorite; }
     get ownScore()       { return this._ownScore; }
+    get hasCustomThumbnail() { return this._hasCustomThumbnail; }
 
     set flags(value)     { this._flags = value; }
     set tags(value)      { this._tags = value; }
@@ -101,7 +102,7 @@ class Post extends events.EventTarget {
         if (this._content) {
             files.content = this._content;
         }
-        if (this._thumbnail) {
+        if (this._thumbnail !== undefined) {
             files.thumbnail = this._thumbnail;
         }
 
@@ -227,6 +228,7 @@ class Post extends events.EventTarget {
             _favoriteCount: response.favoriteCount,
             _ownScore:      response.ownScore,
             _ownFavorite:   response.ownFavorite,
+            _hasCustomThumbnail: response.hasCustomThumbnail,
         };
 
         Object.assign(this, map);

@@ -74,7 +74,7 @@ class Api extends events.EventTarget {
             }
             if (files) {
                 for (let key of Object.keys(files)) {
-                    req.attach(key, files[key]);
+                    req.attach(key, files[key] || new Blob());
                 }
             }
             if (this.userName && this.userPassword) {

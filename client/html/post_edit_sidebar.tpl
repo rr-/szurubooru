@@ -71,6 +71,8 @@
                     <label>Thumbnail</label>
 
                     <div class='dropper-container'></div>
+
+                    <a>Discard custom thumbnail</a>
                 </section>
             <% } %>
         </div>

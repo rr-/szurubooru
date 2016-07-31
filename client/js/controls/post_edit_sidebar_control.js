@@ -58,8 +58,16 @@ class PostEditSidebarControl extends events.EventTarget {
                     lock: true,
                     resolve: files => {
                         this._newPostThumbnail = files[0];
+                        this._thumbnailRemovalLinkNode.style.display = 'block';
                     },
                 });
+        }
+
+        if (this._thumbnailRemovalLinkNode) {
+            this._thumbnailRemovalLinkNode.addEventListener(
+                'click', e => this._evtRemoveThumbnailClick(e));
+            this._thumbnailRemovalLinkNode.style.display =
+                this._post.hasCustomThumbnail ? 'block' : 'none';
         }
 
         this._post.addEventListener(
@@ -86,6 +94,12 @@ class PostEditSidebarControl extends events.EventTarget {
 
     _evtPostThumbnailChange(e) {
         this._thumbnailFileDropper.reset();
+    }
+
+    _evtRemoveThumbnailClick(e) {
+        this._thumbnailFileDropper.reset();
+        this._newPostThumbnail = null;
+        this._thumbnailRemovalLinkNode.style.display = 'none';
     }
 
     _evtSubmit(e) {
@@ -116,7 +130,7 @@ class PostEditSidebarControl extends events.EventTarget {
                     this._newPostContent :
                     undefined,
 
-                thumbnail: this._newPostThumbnail ?
+                thumbnail: this._newPostThumbnail !== undefined ?
                     this._newPostThumbnail :
                     undefined,
             },
@@ -154,6 +168,10 @@ class PostEditSidebarControl extends events.EventTarget {
     get _thumbnailInputNode() {
         return this._formNode.querySelector(
             '.post-thumbnail .dropper-container');
+    }
+
+    get _thumbnailRemovalLinkNode() {
+        return this._formNode.querySelector('.post-thumbnail a');
     }
 
     enableForm() {
