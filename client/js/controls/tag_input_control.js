@@ -3,6 +3,7 @@
 const api = require('../api.js');
 const tags = require('../tags.js');
 const misc = require('../util/misc.js');
+const settings = require('../models/settings.js');
 const events = require('../events.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl = require('./tag_auto_complete_control.js');
@@ -335,6 +336,10 @@ class TagInputControl extends events.EventTarget {
     }
 
     _loadSuggestions(tag) {
+        const browsingSettings = settings.get();
+        if (!browsingSettings.tagSuggestions) {
+            return;
+        }
         api.get('/tag-siblings/' + tag.names[0], {noProgress: true})
             .then(response => {
                 return Promise.resolve(response.results);

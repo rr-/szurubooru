@@ -13,6 +13,7 @@ const defaultSettings = {
     keyboardShortcuts: true,
     transparencyGrid: true,
     fitMode: 'fit-both',
+    tagSuggestions: true,
 };
 
 class Settings extends events.EventTarget {

@@ -18,6 +18,9 @@
                 <li>
                     <%= ctx.makeCheckbox({text: 'Enable transparency grid', id: 'transparency-grid', name: 'transparency-grid', checked: ctx.browsingSettings.transparencyGrid}) %>
                 </li>
+                <li>
+                    <%= ctx.makeCheckbox({text: 'Show tag suggestions', id: 'tag-suggestions', name: 'tag-suggestions', checked: ctx.browsingSettings.tagSuggestions}) %>
+                </li>
             </ul>
         </div>
         <div class='messages'></div>

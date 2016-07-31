@@ -39,6 +39,8 @@ class SettingsView extends events.EventTarget {
                         '#keyboard-shortcuts').checked,
                     transparencyGrid: this._formNode.querySelector(
                         '#transparency-grid').checked,
+                    tagSuggestions: this._formNode.querySelector(
+                        '#tag-suggestions').checked,
                 },
             },
         }));
