@@ -182,6 +182,10 @@ class PostEditSidebarControl extends events.EventTarget {
         views.disableForm(this._formNode);
     }
 
+    clearMessages() {
+        views.clearMessages(this._hostNode);
+    }
+
     showSuccess(message) {
         views.showSuccess(this._hostNode, message);
     }

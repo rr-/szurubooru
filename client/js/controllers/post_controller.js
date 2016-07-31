@@ -102,6 +102,7 @@ class PostController {
 
     _evtPostEdit(e) {
         this._view.sidebarControl.disableForm();
+        this._view.sidebarControl.clearMessages();
         const post = e.detail.post;
         if (e.detail.tags !== undefined) {
             post.tags = e.detail.tags;
