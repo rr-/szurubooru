@@ -102,6 +102,10 @@ class TagInputControl extends events.EventTarget {
                     this._tagInputNode.value = '';
                     this.addTag(text, SOURCE_USER_INPUT);
                 },
+                delete: text => {
+                    this._tagInputNode.value = '';
+                    this.deleteTag(text);
+                },
                 verticalShift: -2,
                 isTaggedWith: tagName => this.isTaggedWith(tagName),
             });
