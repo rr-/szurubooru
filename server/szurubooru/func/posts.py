@@ -226,7 +226,7 @@ def update_post_content(post, content):
     update_post_thumbnail(post, content=None, delete=False)
 
 def update_post_thumbnail(post, content=None, delete=True):
-    if content is None:
+    if not content:
         content = files.get(get_post_content_path(post))
         if delete:
             files.delete(get_post_thumbnail_backup_path(post))
