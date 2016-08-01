@@ -119,11 +119,22 @@ class TagInputControl extends events.EventTarget {
         this._suggestionsNode = views.htmlToDom(
             '<div class="tag-suggestions">' +
             '<div class="wrapper">' +
-            '<p>Suggested tags<a class="close">×</a></p>' +
+            '<p>' +
+            '<span class="buttons">' +
+            '<a class="opacity"><i class="fa fa-eye"></i></a>' +
+            '<a class="close">×</a>' +
+            '</span>' +
+            'Suggested tags' +
+            '</p>' +
             '<ul></ul>' +
             '</div>' +
             '</div>');
         this._editAreaNode.appendChild(this._suggestionsNode);
+        this._editAreaNode.querySelector('a.opacity').addEventListener(
+            'click', e => {
+                e.preventDefault();
+                this._toggleSuggestionsPopupOpacity();
+            });
         this._editAreaNode.querySelector('a.close').addEventListener(
             'click', e => {
                 e.preventDefault();
@@ -308,6 +319,7 @@ class TagInputControl extends events.EventTarget {
             if (actualTag) {
                 this._suggestions.clear();
                 this._loadSuggestions(actualTag);
+                this._removeSuggestionsPopupOpacity();
             } else {
                 this._closeSuggestionsPopup();
             }
@@ -419,6 +431,14 @@ class TagInputControl extends events.EventTarget {
     _closeSuggestionsPopup() {
         this._suggestions.clear();
         this._suggestionsNode.classList.remove('shown');
+    }
+
+    _removeSuggestionsPopupOpacity() {
+        this._suggestionsNode.classList.remove('translucent');
+    }
+
+    _toggleSuggestionsPopupOpacity() {
+        this._suggestionsNode.classList.toggle('translucent');
     }
 
     _openSuggestionsPopup() {

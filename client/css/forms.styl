@@ -199,9 +199,15 @@ div.tag-input
         &:not(.shown)
             display: none
 
-        .close
+        &.translucent
+            opacity: .5
+
+        .buttons
+            margin: 0
             float: right
-            color: $inactive-link-color
+            a
+                margin-left: 1em
+                color: $inactive-link-color
         .wrapper
             margin-left: 0.5em
             background: $tag-suggestions-background-color
