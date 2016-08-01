@@ -5,6 +5,7 @@ const events = require('../events.js');
 const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 const TagInputControl = require('./tag_input_control.js');
+const ExpanderControl = require('../controls/expander_control.js');
 const FileDropperControl = require('../controls/file_dropper_control.js');
 
 const template = views.getTemplate('post-edit-sidebar');
@@ -31,6 +32,16 @@ class PostEditSidebarControl extends events.EventTarget {
             canDeletePosts: api.hasPrivilege('posts:delete'),
             canFeaturePosts: api.hasPrivilege('posts:feature'),
         }));
+
+        new ExpanderControl(
+            'Basic info',
+            this._hostNode.querySelectorAll('.safety, .relations, .flags'));
+        new ExpanderControl(
+            'Tags',
+            this._hostNode.querySelectorAll('.tags'));
+        new ExpanderControl(
+            'Content',
+            this._hostNode.querySelectorAll('.post-content, .post-thumbnail'));
 
         if (this._formNode) {
             this._formNode.addEventListener('submit', e => this._evtSubmit(e));

@@ -303,8 +303,9 @@ $safety-unsafe = #F3985F
             margin-bottom: 0.5em
 
 .post-view .edit-sidebar
-    section
-        margin-bottom: 1em
+    .expander-content
+        section:not(:last-child)
+            margin-bottom: 1em
 
     .safety
         display: flex

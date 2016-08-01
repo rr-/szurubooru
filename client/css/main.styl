@@ -222,3 +222,23 @@ a .access-key
 [data-pseudo-content]:before {
     content: attr(data-pseudo-content)
 }
+
+.expander
+    &.collapsed
+        margin-bottom: 1em
+        &>*
+            display: none
+        &>header
+            display: block
+    header
+        background: $active-tab-background-color
+        line-height: 2em
+        a
+            padding: 0 0.5em
+            display: block
+            color: $inactive-link-color
+            i
+                float: right
+                line-height: 2em
+    .expander-content
+        padding: 1em 0.5em
