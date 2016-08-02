@@ -170,8 +170,8 @@ def create_post(content, tag_names, user):
     db.session.flush()
 
     update_post_content(post, content)
-    update_post_tags(post, tag_names)
-    return post
+    new_tags = update_post_tags(post, tag_names)
+    return (post, new_tags)
 
 def update_post_safety(post, safety):
     safety = util.flip(SAFETY_MAP).get(safety, None)
@@ -251,6 +251,7 @@ def generate_post_thumbnail(post):
 def update_post_tags(post, tag_names):
     existing_tags, new_tags = tags.get_or_create_tags_by_names(tag_names)
     post.tags = existing_tags + new_tags
+    return new_tags
 
 def update_post_relations(post, new_post_ids):
     old_posts = post.relations

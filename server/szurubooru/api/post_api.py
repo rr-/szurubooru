@@ -37,8 +37,10 @@ class PostListApi(BaseApi):
         notes = ctx.get_param_as_list('notes', required=False) or []
         flags = ctx.get_param_as_list('flags', required=False) or []
 
-        post = posts.create_post(
+        post, new_tags = posts.create_post(
             content, tag_names, None if anonymous else ctx.user)
+        if len(new_tags):
+            auth.verify_privilege(ctx.user, 'tags:create')
         posts.update_post_safety(post, safety)
         posts.update_post_source(post, source)
         posts.update_post_relations(post, relations)
@@ -65,7 +67,9 @@ class PostDetailApi(BaseApi):
             posts.update_post_content(post, ctx.get_file('content'))
         if ctx.has_param('tags'):
             auth.verify_privilege(ctx.user, 'posts:edit:tags')
-            posts.update_post_tags(post, ctx.get_param_as_list('tags'))
+            new_tags = posts.update_post_tags(post, ctx.get_param_as_list('tags'))
+            if len(new_tags):
+                auth.verify_privilege(ctx.user, 'tags:create')
         if ctx.has_param('safety'):
             auth.verify_privilege(ctx.user, 'posts:edit:safety')
             posts.update_post_safety(post, ctx.get_param_as_string('safety'))

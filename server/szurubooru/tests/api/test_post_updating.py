@@ -141,7 +141,7 @@ def test_trying_to_update_non_existing(context_factory, user_factory):
     ('posts:edit:content', {'content': '...'}, {}),
     ('posts:edit:thumbnail', {'thumbnail': '...'}, {}),
 ])
-def test_trying_to_create_without_privileges(
+def test_trying_to_update_field_without_privileges(
         config_injector,
         context_factory,
         post_factory,
@@ -161,4 +161,24 @@ def test_trying_to_create_without_privileges(
                 input=input,
                 files=files,
                 user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+            post.post_id)
+
+def test_trying_to_create_tags_without_privileges(
+        config_injector, context_factory, post_factory, user_factory):
+    config_injector({
+        'privileges': {
+            'posts:edit:tags': db.User.RANK_REGULAR,
+            'tags:create': db.User.RANK_ADMINISTRATOR,
+        },
+    })
+    post = post_factory()
+    db.session.add(post)
+    db.session.flush()
+    with pytest.raises(errors.AuthError), \
+            unittest.mock.patch('szurubooru.func.posts.update_post_tags'):
+        posts.update_post_tags.return_value = ['new-tag']
+        api.PostDetailApi().put(
+            context_factory(
+                input={'tags': ['tag1', 'tag2']},
+                user=user_factory(rank=db.User.RANK_REGULAR)),
             post.post_id)

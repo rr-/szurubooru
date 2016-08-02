@@ -11,6 +11,7 @@ def inject_config(config_injector):
         'privileges': {
             'posts:create:anonymous': db.User.RANK_REGULAR,
             'posts:create:identified': db.User.RANK_REGULAR,
+            'tags:create': db.User.RANK_REGULAR,
         },
     })
 
@@ -31,7 +32,7 @@ def test_creating_minimal_posts(
             unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
             unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
             unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'):
-        posts.create_post.return_value = post
+        posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'
 
         result = api.PostListApi().post(
@@ -75,7 +76,7 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
             unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
             unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
             unittest.mock.patch('szurubooru.func.snapshots.save_entity_creation'):
-        posts.create_post.return_value = post
+        posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'
 
         result = api.PostListApi().post(
@@ -120,7 +121,7 @@ def test_anonymous_uploads(
         config_injector({
             'privileges': {'posts:create:anonymous': db.User.RANK_REGULAR},
         })
-        posts.create_post.return_value = post
+        posts.create_post.return_value = [post, []]
         api.PostListApi().post(
             context_factory(
                 input={
@@ -152,7 +153,7 @@ def test_creating_from_url_saves_source(
             'privileges': {'posts:create:identified': db.User.RANK_REGULAR},
         })
         net.download.return_value = b'content'
-        posts.create_post.return_value = post
+        posts.create_post.return_value = [post, []]
         api.PostListApi().post(
             context_factory(
                 input={
@@ -183,7 +184,7 @@ def test_creating_from_url_with_source_specified(
             'privileges': {'posts:create:identified': db.User.RANK_REGULAR},
         })
         net.download.return_value = b'content'
-        posts.create_post.return_value = post
+        posts.create_post.return_value = [post, []]
         api.PostListApi().post(
             context_factory(
                 input={
@@ -222,9 +223,33 @@ def test_trying_to_omit_content(context_factory, user_factory):
                 },
                 user=user_factory(rank=db.User.RANK_REGULAR)))
 
-def test_trying_to_create_without_privileges(context_factory, user_factory):
+def test_trying_to_create_post_without_privileges(context_factory, user_factory):
     with pytest.raises(errors.AuthError):
         api.PostListApi().post(
             context_factory(
                 input='whatever',
                 user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+
+def test_trying_to_create_tags_without_privileges(
+        config_injector, context_factory, user_factory):
+    config_injector({
+        'privileges': {
+            'posts:create:anonymous': db.User.RANK_REGULAR,
+            'posts:create:identified': db.User.RANK_REGULAR,
+            'tags:create': db.User.RANK_ADMINISTRATOR,
+        },
+    })
+    with pytest.raises(errors.AuthError), \
+            unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
+            unittest.mock.patch('szurubooru.func.posts.update_post_tags'):
+        posts.update_post_tags.return_value = ['new-tag']
+        api.PostListApi().post(
+            context_factory(
+                input={
+                    'safety': 'safe',
+                    'tags': ['tag1', 'tag2'],
+                },
+                files={
+                    'content': posts.EMPTY_PIXEL,
+                },
+                user=user_factory(rank=db.User.RANK_REGULAR)))

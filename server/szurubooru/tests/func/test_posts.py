@@ -190,7 +190,7 @@ def test_create_post(user_factory, fake_datetime):
         unittest.mock.patch('szurubooru.func.posts.update_post_tags'), \
         fake_datetime('1997-01-01'):
         auth_user = user_factory()
-        post = posts.create_post('content', ['tag'], auth_user)
+        post, new_tags = posts.create_post('content', ['tag'], auth_user)
         assert post.creation_time == datetime.datetime(1997, 1, 1)
         assert post.last_edit_time is None
         posts.update_post_tags.assert_called_once_with(post, ['tag'])
