@@ -1,12 +1,12 @@
 <div class='comment'>
     <div class='avatar'>
-        <% if (ctx.comment.user.name && ctx.canViewUsers) { %>
+        <% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %>
             <a href='/user/<%- encodeURIComponent(ctx.comment.user.name) %>'>
         <% } %>
 
-        <%= ctx.makeThumbnail(ctx.comment.user.avatarUrl) %>
+        <%= ctx.makeThumbnail(ctx.comment.user ? ctx.comment.user.avatarUrl : null) %>
 
-        <% if (ctx.comment.user.name && ctx.canViewUsers) { %>
+        <% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %>
             </a>
         <% } %>
     </div>
@@ -14,13 +14,13 @@
     <div class='body'>
         <header><!--
             --><span class='nickname'><!--
-                --><% if (ctx.comment.user.name && ctx.canViewUsers) { %><!--
+                --><% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %><!--
                     --><a href='/user/<%- encodeURIComponent(ctx.comment.user.name) %>'><!--
                 --><% } %><!--
 
-                --><%- ctx.comment.user.name %><!--
+                --><%- ctx.comment.user ? ctx.comment.user.name : 'Deleted user' %><!--
 
-                --><% if (ctx.comment.user.name && ctx.canViewUsers) { %><!--
+                --><% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %><!--
                     --></a><!--
                 --><% } %><!--
             --></span><!--

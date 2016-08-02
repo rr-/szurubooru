@@ -189,8 +189,9 @@ function makeTagLink(name) {
 }
 
 function makeUserLink(user) {
-    const text = makeThumbnail(user.avatarUrl) + user.name;
-    const link = api.hasPrivilege('users:view') ?
+    let text = makeThumbnail(user ? user.avatarUrl : null);
+    text += user && user.name ? user.name : 'Anonymous';
+    const link = user && api.hasPrivilege('users:view') ?
         makeNonVoidElement(
             'a', {'href': '/user/' + encodeURIComponent(user.name)}, text) :
         text;
