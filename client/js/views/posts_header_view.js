@@ -70,23 +70,23 @@ class PostsHeaderView {
     }
 
     get _safetyButtonNodes() {
-        return this._searchFormNode.querySelectorAll('.safety');
+        return this._hostNode.querySelectorAll('form.search .safety');
     }
 
     get _queryInputNode() {
-        return this._searchFormNode.querySelector('[name=search-text]');
+        return this._hostNode.querySelector('form.search [name=search-text]');
     }
 
     get _massTagInputNode() {
-        return this._massTagFormNode.querySelector('[type=text]');
+        return this._hostNode.querySelector('form.masstag [type=text]');
     }
 
     get _openMassTagLinkNode() {
-        return this._massTagFormNode.querySelector('.open-masstag');
+        return this._hostNode.querySelector('form.masstag .open-masstag');
     }
 
     get _stopMassTagLinkNode() {
-        return this._massTagFormNode.querySelector('.stop-tagging');
+        return this._hostNode.querySelector('form.masstag .stop-tagging');
     }
 
     _evtMassTagClick(e) {
