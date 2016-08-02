@@ -1,6 +1,6 @@
 from sqlalchemy import (
     Column, Integer, DateTime, Unicode, UnicodeText, PickleType, ForeignKey)
-from sqlalchemy.orm import relationship, column_property, object_session
+from sqlalchemy.orm import relationship, column_property, object_session, backref
 from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
 from szurubooru.db.comment import Comment
@@ -16,7 +16,9 @@ class PostFeature(Base):
     time = Column('time', DateTime, nullable=False)
 
     post = relationship('Post')
-    user = relationship('User')
+    user = relationship(
+        'User',
+        backref=backref('post_features', cascade='all, delete-orphan'))
 
 class PostScore(Base):
     __tablename__ = 'post_score'
@@ -29,7 +31,9 @@ class PostScore(Base):
     score = Column('score', Integer, nullable=False)
 
     post = relationship('Post')
-    user = relationship('User')
+    user = relationship(
+        'User',
+        backref=backref('post_scores', cascade='all, delete-orphan'))
 
 class PostFavorite(Base):
     __tablename__ = 'post_favorite'
@@ -41,7 +45,9 @@ class PostFavorite(Base):
     time = Column('time', DateTime, nullable=False)
 
     post = relationship('Post')
-    user = relationship('User')
+    user = relationship(
+        'User',
+        backref=backref('post_favorites', cascade='all, delete-orphan'))
 
 class PostNote(Base):
     __tablename__ = 'post_note'

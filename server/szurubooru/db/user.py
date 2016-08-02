@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, Unicode, DateTime
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import func
 from szurubooru.db.base import Base
 from szurubooru.db.post import Post, PostScore, PostFavorite
@@ -28,6 +29,8 @@ class User(Base):
     last_login_time = Column('last_login_time', DateTime)
     avatar_style = Column(
         'avatar_style', Unicode(32), nullable=False, default=AVATAR_GRAVATAR)
+
+    comments = relationship('Comment')
 
     @property
     def post_count(self):

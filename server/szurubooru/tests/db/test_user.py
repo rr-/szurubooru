@@ -96,3 +96,74 @@ def test_disliked_post_count(user_factory, post_factory):
     db.session.refresh(user)
     assert user.liked_post_count == 0
     assert user.disliked_post_count == 1
+
+def test_cascade_deletions(post_factory, user_factory, comment_factory):
+    user = user_factory()
+
+    post = post_factory()
+    post.user = user
+
+    post_score = db.PostScore()
+    post_score.post = post
+    post_score.user = user
+    post_score.time = datetime(1997, 1, 1)
+    post_score.score = 1
+    post.scores.append(post_score)
+
+    post_favorite = db.PostFavorite()
+    post_favorite.post = post
+    post_favorite.user = user
+    post_favorite.time = datetime(1997, 1, 1)
+    post.favorited_by.append(post_favorite)
+
+    post_feature = db.PostFeature()
+    post_feature.post = post
+    post_feature.user = user
+    post_feature.time = datetime(1997, 1, 1)
+    post.features.append(post_feature)
+
+    comment = comment_factory(post=post, user=user)
+    comment_score = db.CommentScore()
+    comment_score.comment = comment
+    comment_score.user = user
+    comment_score.time = datetime(1997, 1, 1)
+    comment_score.score = 1
+    comment.scores.append(comment_score)
+
+    snapshot = db.Snapshot()
+    snapshot.user = user
+    snapshot.creation_time = datetime(1997, 1, 1)
+    snapshot.resource_type = '-'
+    snapshot.resource_id = '-'
+    snapshot.resource_repr = '-'
+    snapshot.operation = '-'
+
+    db.session.add_all([user, post, comment, snapshot])
+    db.session.flush()
+
+    assert not db.session.dirty
+    assert post.user is not None and post.user.user_id is not None
+    assert db.session.query(db.User).count() == 1
+    assert db.session.query(db.Post).count() == 1
+    assert db.session.query(db.PostScore).count() == 1
+    assert db.session.query(db.PostFeature).count() == 1
+    assert db.session.query(db.PostFavorite).count() == 1
+    assert db.session.query(db.Comment).count() == 1
+    assert db.session.query(db.CommentScore).count() == 1
+    assert db.session.query(db.Snapshot).count() == 1
+
+    db.session.delete(user)
+    db.session.commit()
+
+    assert not db.session.dirty
+    assert db.session.query(db.User).count() == 0
+    assert db.session.query(db.Post).count() == 1
+    assert db.session.query(db.Post)[0].user is None
+    assert db.session.query(db.PostScore).count() == 0
+    assert db.session.query(db.PostFeature).count() == 0
+    assert db.session.query(db.PostFavorite).count() == 0
+    assert db.session.query(db.Comment).count() == 1
+    assert db.session.query(db.Comment)[0].user is None
+    assert db.session.query(db.CommentScore).count() == 0
+    assert db.session.query(db.Snapshot).count() == 1
+    assert db.session.query(db.Snapshot)[0].user is None

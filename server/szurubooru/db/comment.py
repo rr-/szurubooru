@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, DateTime, UnicodeText, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.expression import func
 from szurubooru.db.base import Base
 
@@ -14,7 +14,9 @@ class CommentScore(Base):
     score = Column('score', Integer, nullable=False)
 
     comment = relationship('Comment')
-    user = relationship('User')
+    user = relationship(
+        'User',
+        backref=backref('comment_scores', cascade='all, delete-orphan'))
 
 class Comment(Base):
     __tablename__ = 'comment'
