@@ -61,6 +61,8 @@ class PostController {
                     'submit', e => this._evtPostEdit(e));
                 this._view.sidebarControl.addEventListener(
                     'feature', e => this._evtPostFeature(e));
+                this._view.sidebarControl.addEventListener(
+                    'delete', e => this._evtPostDelete(e));
             }
             if (this._view.commentFormControl) {
                 this._view.commentFormControl.addEventListener(
@@ -109,6 +111,20 @@ class PostController {
             .then(() => {
                 this._view.sidebarControl.showSuccess('Post featured.');
                 this._view.sidebarControl.enableForm();
+            }, errorMessage => {
+                this._view.sidebarControl.showError(errorMessage);
+                this._view.sidebarControl.enableForm();
+            });
+    }
+
+    _evtPostDelete(e) {
+        this._view.sidebarControl.disableForm();
+        this._view.sidebarControl.clearMessages();
+        e.detail.post.delete()
+            .then(() => {
+                misc.disableExitConfirmation();
+                const ctx = router.show('/posts');
+                ctx.controller.showSuccess('Post deleted.');
             }, errorMessage => {
                 this._view.sidebarControl.showError(errorMessage);
                 this._view.sidebarControl.enableForm();

@@ -51,6 +51,10 @@ class PostListController {
         });
     }
 
+    showSuccess(message) {
+        this._pageController.showSuccess(message);
+    }
+
     get _massTagTags() {
         return (this._ctx.parameters.tag || '').split(/\s+/).filter(s => s);
     }

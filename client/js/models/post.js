@@ -137,6 +137,20 @@ class Post extends events.EventTarget {
             });
     }
 
+    delete() {
+        return api.delete('/post/' + this._id)
+            .then(response => {
+                this.dispatchEvent(new CustomEvent('delete', {
+                    detail: {
+                        post: this,
+                    },
+                }));
+                return Promise.resolve();
+            }, response => {
+                return Promise.reject(response.description);
+            });
+    }
+
     setScore(score) {
         return api.put('/post/' + this._id + '/score', {score: score})
             .then(response => {

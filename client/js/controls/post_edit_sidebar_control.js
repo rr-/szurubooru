@@ -89,6 +89,11 @@ class PostEditSidebarControl extends events.EventTarget {
                 'click', e => this._evtFeatureClick(e));
         }
 
+        if (this._deleteLinkNode) {
+            this._deleteLinkNode.addEventListener(
+                'click', e => this._evtDeleteClick(e));
+        }
+
         this._post.addEventListener(
             'changeContent', e => this._evtPostContentChange(e));
 
@@ -124,6 +129,16 @@ class PostEditSidebarControl extends events.EventTarget {
     _evtFeatureClick(e) {
         if (confirm('Are you sure you want to feature this post?')) {
             this.dispatchEvent(new CustomEvent('feature', {
+                detail: {
+                    post: this._post,
+                },
+            }));
+        }
+    }
+
+    _evtDeleteClick(e) {
+        if (confirm('Are you sure you want to delete this post?')) {
+            this.dispatchEvent(new CustomEvent('delete', {
                 detail: {
                     post: this._post,
                 },
@@ -205,6 +220,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _featureLinkNode() {
         return this._formNode.querySelector('.management .feature');
+    }
+
+    get _deleteLinkNode() {
+        return this._formNode.querySelector('.management .delete');
     }
 
     enableForm() {

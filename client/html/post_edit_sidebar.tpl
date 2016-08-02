@@ -76,6 +76,9 @@
                     <% if (ctx.canFeaturePosts) { %>
                         <li><a class='feature'>Feature this post on main page</a></li>
                     <% } %>
+                    <% if (ctx.canDeletePosts) { %>
+                        <li><a class='delete'>Delete this post</a></li>
+                    <% } %>
                 </ul>
             </section>
         <% } %>
