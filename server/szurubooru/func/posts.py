@@ -316,3 +316,6 @@ def feature_post(post, user):
     post_feature.post = post
     post_feature.user = user
     db.session.add(post_feature)
+
+def delete(post):
+    db.session.delete(post)

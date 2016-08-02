@@ -97,7 +97,7 @@ class PostDetailApi(BaseApi):
         auth.verify_privilege(ctx.user, 'posts:delete')
         post = posts.get_post_by_id(post_id)
         snapshots.save_entity_deletion(post, ctx.user)
-        ctx.session.delete(post)
+        posts.delete(post)
         ctx.session.commit()
         tags.export_to_json()
         return {}

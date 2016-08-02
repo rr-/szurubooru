@@ -125,7 +125,7 @@ class Post(Base):
         'PostFavorite', cascade='all, delete-orphan', lazy='joined')
     notes = relationship(
         'PostNote', cascade='all, delete-orphan', lazy='joined')
-    comments = relationship('Comment')
+    comments = relationship('Comment', cascade='all, delete-orphan')
 
     # dynamic columns
     tag_count = column_property(
