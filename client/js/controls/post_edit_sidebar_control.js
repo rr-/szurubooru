@@ -42,6 +42,9 @@ class PostEditSidebarControl extends events.EventTarget {
         new ExpanderControl(
             'Content',
             this._hostNode.querySelectorAll('.post-content, .post-thumbnail'));
+        new ExpanderControl(
+            'Management',
+            this._hostNode.querySelectorAll('.management'));
 
         if (this._formNode) {
             this._formNode.addEventListener('submit', e => this._evtSubmit(e));
@@ -81,6 +84,11 @@ class PostEditSidebarControl extends events.EventTarget {
                 this._post.hasCustomThumbnail ? 'block' : 'none';
         }
 
+        if (this._featureLinkNode) {
+            this._featureLinkNode.addEventListener(
+                'click', e => this._evtFeatureClick(e));
+        }
+
         this._post.addEventListener(
             'changeContent', e => this._evtPostContentChange(e));
 
@@ -111,6 +119,16 @@ class PostEditSidebarControl extends events.EventTarget {
         this._thumbnailFileDropper.reset();
         this._newPostThumbnail = null;
         this._thumbnailRemovalLinkNode.style.display = 'none';
+    }
+
+    _evtFeatureClick(e) {
+        if (confirm('Are you sure you want to feature this post?')) {
+            this.dispatchEvent(new CustomEvent('feature', {
+                detail: {
+                    post: this._post,
+                },
+            }));
+        }
     }
 
     _evtSubmit(e) {
@@ -183,6 +201,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _thumbnailRemovalLinkNode() {
         return this._formNode.querySelector('.post-thumbnail a');
+    }
+
+    get _featureLinkNode() {
+        return this._formNode.querySelector('.management .feature');
     }
 
     enableForm() {

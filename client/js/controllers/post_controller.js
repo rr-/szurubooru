@@ -59,6 +59,8 @@ class PostController {
                     'change', e => this._evtPostChange(e));
                 this._view.sidebarControl.addEventListener(
                     'submit', e => this._evtPostEdit(e));
+                this._view.sidebarControl.addEventListener(
+                    'feature', e => this._evtPostFeature(e));
             }
             if (this._view.commentFormControl) {
                 this._view.commentFormControl.addEventListener(
@@ -98,6 +100,19 @@ class PostController {
         const browsingSettings = settings.get();
         browsingSettings.fitMode = e.detail.mode;
         settings.save(browsingSettings);
+    }
+
+    _evtPostFeature(e) {
+        this._view.sidebarControl.disableForm();
+        this._view.sidebarControl.clearMessages();
+        e.detail.post.feature()
+            .then(() => {
+                this._view.sidebarControl.showSuccess('Post featured.');
+                this._view.sidebarControl.enableForm();
+            }, errorMessage => {
+                this._view.sidebarControl.showError(errorMessage);
+                this._view.sidebarControl.enableForm();
+            });
     }
 
     _evtPostEdit(e) {

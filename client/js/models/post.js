@@ -128,6 +128,15 @@ class Post extends events.EventTarget {
         });
     }
 
+    feature() {
+        return api.post('/featured-post', {id: this._id})
+            .then(response => {
+                return Promise.resolve();
+            }, response => {
+                return Promise.reject(response.description);
+            });
+    }
+
     setScore(score) {
         return api.put('/post/' + this._id + '/score', {score: score})
             .then(response => {

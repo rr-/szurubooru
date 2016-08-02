@@ -70,6 +70,16 @@
             </section>
         <% } %>
 
+        <% if (ctx.canFeaturePosts) { %>
+            <section class='management'>
+                <ul>
+                    <% if (ctx.canFeaturePosts) { %>
+                        <li><a class='feature'>Feature this post on main page</a></li>
+                    <% } %>
+                </ul>
+            </section>
+        <% } %>
+
         <div class='messages'></div>
 
         <input type='submit' value='Submit' class='submit'/>
