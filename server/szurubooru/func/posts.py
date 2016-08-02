@@ -2,7 +2,7 @@ import datetime
 import sqlalchemy
 from szurubooru import config, db, errors
 from szurubooru.func import (
-    users, snapshots, scores, comments, tags, tag_categories, util, mime, images, files)
+    users, snapshots, scores, comments, tags, util, mime, images, files)
 
 EMPTY_PIXEL = \
     b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00' \
@@ -223,12 +223,12 @@ def update_post_content(post, content):
         post.canvas_width = None
         post.canvas_height = None
     files.save(get_post_content_path(post), content)
-    update_post_thumbnail(post, content=None, delete=False)
+    update_post_thumbnail(post, content=None, do_delete=False)
 
-def update_post_thumbnail(post, content=None, delete=True):
+def update_post_thumbnail(post, content=None, do_delete=True):
     if not content:
         content = files.get(get_post_content_path(post))
-        if delete:
+        if do_delete:
             files.delete(get_post_thumbnail_backup_path(post))
     else:
         files.save(get_post_thumbnail_backup_path(post), content)

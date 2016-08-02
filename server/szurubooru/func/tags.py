@@ -58,10 +58,10 @@ def serialize_tag(tag, options=None):
             'lastEditTime': lambda: tag.last_edit_time,
             'usages': lambda: tag.post_count,
             'suggestions': lambda: [
-                relation.names[0].name
+                relation.names[0].name \
                     for relation in sort_tags(tag.suggestions)],
             'implications': lambda: [
-                relation.names[0].name
+                relation.names[0].name \
                     for relation in sort_tags(tag.implications)],
             'snapshots': lambda: snapshots.get_serialized_history(tag),
         },
