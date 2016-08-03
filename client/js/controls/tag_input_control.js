@@ -82,7 +82,6 @@ class TagInputControl extends events.EventTarget {
         this.tags = [];
         this._suggestions = new SuggestionList();
 
-        this._relationsTemplate = views.getTemplate('tag-relations');
         this._sourceInputNode = sourceInputNode;
 
         this._install();

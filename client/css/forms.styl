@@ -200,11 +200,26 @@ div.tag-input
         &.translucent
             opacity: .5
 
+        &:before
+            margin-left: 0.5em
+            margin-top: 0.5em
+            position: absolute
+            display: block
+            background: $tag-suggestions-header-color
+            border-left: 1px solid $tag-suggestions-border-color
+            border-bottom: 1px solid $tag-suggestions-border-color
+            width: 0.707107em
+            height: 0.707107em
+            content: ' '
+            transform: rotate(45deg)
+            transform-origin: 0 0%
+
         .buttons
             float: right
             a
                 margin-left: 1em
                 color: $inactive-link-color
+
         .wrapper
             margin-left: 0.5em
             background: $tag-suggestions-background-color
@@ -239,19 +254,7 @@ div.tag-input
                         margin: 0 1em 0 0
             p
                 margin: 0
-        &:before
-            margin-left: 0.5em
-            margin-top: 0.5em
-            position: absolute
-            display: block
-            background: $tag-suggestions-header-color
-            border-left: 1px solid $tag-suggestions-border-color
-            border-bottom: 1px solid $tag-suggestions-border-color
-            width: 0.707107em
-            height: 0.707107em
-            content: ' '
-            transform: rotate(45deg)
-            transform-origin: 0 0%
+
         .append
             color: $inactive-link-color
             margin-left: 0.7em
@@ -270,28 +273,6 @@ ul.compact-tags
         margin-left: 0.7em
         font-size: 90%
         unselectable()
-
-div.tag-relations
-    font-size: 80%
-    ul
-        display: inline
-        margin: 0
-        padding: 0
-        &.tag-siblings li:first-child:before
-            content: 'Siblings: '
-        &.tag-suggestions li:first-child:before
-            content: 'Suggestions: '
-        &:before, &:after
-            height: 0.25em
-            content: ' '
-            display: block
-        li
-            display: inline
-            margin: 0
-            padding: 0
-            a
-                display: inline-block
-                margin: 0 0 0 1em
 
 label.color
     position: relative
