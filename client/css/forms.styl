@@ -263,9 +263,15 @@ div.tag-input
 
 ul.compact-tags
     line-height: 130%
-    word-break: break-all
+    width: 100%
     li
         margin: 0
+        width: 100%
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+        a
+            display: inline
     i
         padding-right: 0.4em
     .append
