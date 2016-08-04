@@ -292,7 +292,10 @@ def update_post_notes(post, notes):
                 pos_y = float(point[1])
                 if not 0 <= pos_x <= 1 or not 0 <= pos_y <= 1:
                     raise InvalidPostNoteError(
-                        'A point in note\'s polygon must be in 0..1 range.')
+                        'All points must fit in the image (0..1 range).')
+            except KeyError:
+                raise InvalidPostNoteError(
+                    'Expected array of length 2.')
             except ValueError:
                 raise InvalidPostNoteError(
                     'A point in note\'s polygon must be numeric.')
