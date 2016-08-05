@@ -648,19 +648,19 @@ class PostNotesOverlayControl extends events.EventTarget {
         this._textNode.querySelector('.wrapper').innerHTML =
             misc.formatMarkdown(note.text);
         this._textNode.style.display = 'block';
-        const polygonRect = note.polygonNode.getBBox();
         const bodyRect = document.body.getBoundingClientRect();
         const noteRect = this._textNode.getBoundingClientRect();
         const svgRect = this.boundingBox;
+        const centroid = _getNoteCentroid(note);
         const x = (
             -bodyRect.left +
             svgRect.left +
-            svgRect.width * (polygonRect.x + polygonRect.width / 2) -
+            svgRect.width * centroid.x -
             noteRect.width / 2);
         const y = (
             -bodyRect.top +
             svgRect.top +
-            svgRect.height * (polygonRect.y + polygonRect.height / 2) -
+            svgRect.height * centroid.y -
             noteRect.height / 2);
         this._textNode.style.left = x + 'px';
         this._textNode.style.top = y + 'px';
