@@ -148,6 +148,11 @@ function makeColorInput(options) {
         'label', {class: 'color'}, colorInput + textInput);
 }
 
+function makeNumericInput(options) {
+    options.type = 'number';
+    return makeInput(options);
+}
+
 function getPostUrl(id, parameters) {
     let url = '/post/' + encodeURIComponent(id);
     if (parameters && parameters.query) {
@@ -344,6 +349,7 @@ function getTemplate(templatePath) {
             makeFlexboxAlign: makeFlexboxAlign,
             makeAccessKey: makeAccessKey,
             makeCssName: misc.makeCssName,
+            makeNumericInput: makeNumericInput,
         });
         return htmlToDom(templateFactory(ctx));
     };

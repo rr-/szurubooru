@@ -29,7 +29,7 @@ class PostListController {
             requestPage: page => {
                 return PostList.search(
                     this._decorateSearchQuery(ctx.parameters.query),
-                    page, 40, fields);
+                    page, settings.get().postsPerPage, fields);
             },
             headerRenderer: headerCtx => {
                 Object.assign(headerCtx, {

@@ -41,6 +41,8 @@ class SettingsView extends events.EventTarget {
                         '#transparency-grid').checked,
                     tagSuggestions: this._formNode.querySelector(
                         '#tag-suggestions').checked,
+                    postsPerPage: this._formNode.querySelector(
+                        '#posts-per-page').value,
                 },
             },
         }));

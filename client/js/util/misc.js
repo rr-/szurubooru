@@ -244,7 +244,7 @@ function makeCssName(text, suffix) {
 }
 
 function escapeHtml(unsafe) {
-    return unsafe
+    return unsafe.toString()
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')

@@ -9,6 +9,9 @@
                     <a class='append icon' href='/help/keyboard'><i class='fa fa-question-circle-o'></i></a>
                 </li>
                 <li>
+                    <%= ctx.makeNumericInput({text: 'Number of posts per page', id: 'posts-per-page', name: 'posts-per-page', checked: ctx.browsingSettings.postCount, min: 10, max: 100, value: ctx.browsingSettings.postsPerPage}) %>
+                </li>
+                <li>
                     <%= ctx.makeCheckbox({text: 'Upscale small posts', id: 'upscale-small-posts', name: 'upscale-small-posts', checked: ctx.browsingSettings.upscaleSmallPosts}) %>
                 </li>
                 <li>

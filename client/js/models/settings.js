@@ -14,6 +14,7 @@ const defaultSettings = {
     transparencyGrid: true,
     fitMode: 'fit-both',
     tagSuggestions: true,
+    postsPerPage: 40,
 };
 
 class Settings extends events.EventTarget {
