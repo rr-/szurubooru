@@ -552,6 +552,7 @@ class PostNotesOverlayControl extends events.EventTarget {
             this._createPolygonNode(note);
         }
         this._hostNode.appendChild(this._svgNode);
+        this._post.addEventListener('change', e => this._evtPostChange(e));
         this._post.notes.addEventListener('remove', e => {
             this._deletePolygonNode(e.detail.note);
         });
@@ -595,6 +596,16 @@ class PostNotesOverlayControl extends events.EventTarget {
 
     get boundingBox() {
         return this._hostNode.getBoundingClientRect();
+    }
+
+    _evtPostChange(e) {
+        while (this._svgNode.childNodes.length) {
+            this._svgNode.removeChild(this._svgNode.firstChild);
+        }
+        this._post = e.detail.post;
+        for (let note of this._post.notes) {
+            this._createPolygonNode(note);
+        }
     }
 
     _evtCanvasKeyDown(e) {
