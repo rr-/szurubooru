@@ -4,7 +4,11 @@
         <div class='input'>
             <ul>
                 <li>
-                    <%= ctx.makeTextInput({text: 'User name or e-mail address', id: 'user-name', name: 'user-name', required: true}) %>
+                    <%= ctx.makeTextInput({
+                        text: 'User name or e-mail address',
+                        name: 'user-name',
+                        required: true,
+                    }) %>
                 </li>
             </ul>
         </div>

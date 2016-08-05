@@ -204,7 +204,7 @@ function makeUserLink(user) {
 }
 
 function makeFlexboxAlign(options) {
-    return Array.from(misc.range(20))
+    return [...misc.range(20)]
         .map(() => '<li class="flexbox-dummy"></li>').join('');
 }
 
@@ -326,31 +326,31 @@ function getTemplate(templatePath) {
         if (!ctx) {
             ctx = {};
         }
-        Object.assign(ctx, {
-            getPostUrl: getPostUrl,
-            getPostEditUrl: getPostEditUrl,
-            makeRelativeTime: makeRelativeTime,
-            makeFileSize: makeFileSize,
-            makeMarkdown: makeMarkdown,
-            makeThumbnail: makeThumbnail,
-            makeRadio: makeRadio,
-            makeCheckbox: makeCheckbox,
-            makeSelect: makeSelect,
-            makeInput: makeInput,
-            makeButton: makeButton,
-            makeTextarea: makeTextarea,
-            makeTextInput: makeTextInput,
-            makePasswordInput: makePasswordInput,
-            makeEmailInput: makeEmailInput,
-            makeColorInput: makeColorInput,
-            makePostLink: makePostLink,
-            makeTagLink: makeTagLink,
-            makeUserLink: makeUserLink,
-            makeFlexboxAlign: makeFlexboxAlign,
-            makeAccessKey: makeAccessKey,
-            makeCssName: misc.makeCssName,
-            makeNumericInput: makeNumericInput,
-        });
+        Object.assign(ctx, misc.arrayToObject([
+            getPostUrl,
+            getPostEditUrl,
+            makeRelativeTime,
+            makeFileSize,
+            makeMarkdown,
+            makeThumbnail,
+            makeRadio,
+            makeCheckbox,
+            makeSelect,
+            makeInput,
+            makeButton,
+            makeTextarea,
+            makeTextInput,
+            makePasswordInput,
+            makeEmailInput,
+            makeColorInput,
+            makePostLink,
+            makeTagLink,
+            makeUserLink,
+            makeFlexboxAlign,
+            makeAccessKey,
+            misc.makeCssName,
+            makeNumericInput,
+        ], func => func.name));
         return htmlToDom(templateFactory(ctx));
     };
 }
@@ -389,7 +389,7 @@ function replaceContent(target, source) {
         target.removeChild(target.lastChild);
     }
     if (source instanceof NodeList) {
-        for (let child of Array.from(source)) {
+        for (let child of [...source]) {
             target.appendChild(child);
         }
     } else if (source instanceof Node) {
@@ -468,21 +468,21 @@ document.addEventListener('input', e => {
     }
 });
 
-module.exports = {
-    htmlToDom: htmlToDom,
-    getTemplate: getTemplate,
-    replaceContent: replaceContent,
-    enableForm: enableForm,
-    disableForm: disableForm,
-    decorateValidator: decorateValidator,
-    makeVoidElement: makeVoidElement,
-    makeNonVoidElement: makeNonVoidElement,
-    syncScrollPosition: syncScrollPosition,
-    slideDown: slideDown,
-    slideUp: slideUp,
-    monitorNodeRemoval: monitorNodeRemoval,
-    clearMessages: clearMessages,
-    showError: showError,
-    showSuccess: showSuccess,
-    showInfo: showInfo,
-};
+module.exports = misc.arrayToObject([
+    htmlToDom,
+    getTemplate,
+    replaceContent,
+    enableForm,
+    disableForm,
+    decorateValidator,
+    makeVoidElement,
+    makeNonVoidElement,
+    syncScrollPosition,
+    slideDown,
+    slideUp,
+    monitorNodeRemoval,
+    clearMessages,
+    showError,
+    showSuccess,
+    showInfo,
+], func => func.name);

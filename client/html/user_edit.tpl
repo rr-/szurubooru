@@ -1,27 +1,46 @@
 <div id='user-edit'>
     <form>
-        <ul>
+        <ul class='input'>
             <% if (ctx.canEditName) { %>
                 <li>
-                    <%= ctx.makeTextInput({text: 'User name', id: 'user-name', name: 'name', value: ctx.user.name, pattern: ctx.userNamePattern}) %>
+                    <%= ctx.makeTextInput({
+                        text: 'User name',
+                        name: 'name',
+                        value: ctx.user.name,
+                        pattern: ctx.userNamePattern,
+                    }) %>
                 </li>
             <% } %>
 
             <% if (ctx.canEditPassword) { %>
                 <li>
-                    <%= ctx.makePasswordInput({text: 'Password', id: 'user-password', name: 'password', placeholder: 'leave blank if not changing', pattern: ctx.passwordPattern}) %>
+                    <%= ctx.makePasswordInput({
+                        text: 'Password',
+                        name: 'password',
+                        placeholder: 'leave blank if not changing',
+                        pattern: ctx.passwordPattern,
+                    }) %>
                 </li>
             <% } %>
 
             <% if (ctx.canEditEmail) { %>
                 <li>
-                    <%= ctx.makeEmailInput({text: 'Email', id: 'user-email', name: 'email', value: ctx.user.email}) %>
+                    <%= ctx.makeEmailInput({
+                        text: 'Email',
+                        name: 'email',
+                        value: ctx.user.email,
+                    }) %>
                 </li>
             <% } %>
 
             <% if (ctx.canEditRank) { %>
                 <li>
-                    <%= ctx.makeSelect({text: 'Rank', id: 'user-rank', name: 'rank', keyValues: ctx.ranks, selectedKey: ctx.user.rank}) %>
+                    <%= ctx.makeSelect({
+                        text: 'Rank',
+                        name: 'rank',
+                        keyValues: ctx.ranks,
+                        selectedKey: ctx.user.rank,
+                    }) %>
                 </li>
             <% } %>
 
@@ -30,8 +49,19 @@
                     <label>Avatar</label>
                     <div id='avatar-content'></div>
                     <div id='avatar-radio'>
-                        <%= ctx.makeRadio({text: 'Gravatar', id: 'gravatar-radio', name: 'avatar-style', value: 'gravatar', selectedValue: ctx.user.avatarStyle}) %>
-                        <%= ctx.makeRadio({text: 'Manual avatar', id: 'avatar-radio', name: 'avatar-style', value: 'manual', selectedValue: ctx.user.avatarStyle}) %>
+                        <%= ctx.makeRadio({
+                            text: 'Gravatar',
+                            name: 'avatar-style',
+                            value: 'gravatar',
+                            selectedValue: ctx.user.avatarStyle,
+                        }) %>
+
+                        <%= ctx.makeRadio({
+                            text: 'Manual avatar',
+                            name: 'avatar-style',
+                            value: 'manual',
+                            selectedValue: ctx.user.avatarStyle,
+                        }) %>
                     </div>
                 </li>
             <% } %>

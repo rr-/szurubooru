@@ -49,7 +49,7 @@ class PasswordResetView extends events.EventTarget {
     }
 
     get _userNameOrEmailFieldNode() {
-        return this._formNode.querySelector('#user-name');
+        return this._formNode.querySelector('[name=user-name]');
     }
 }
 

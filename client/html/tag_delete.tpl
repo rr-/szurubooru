@@ -4,7 +4,11 @@
 
         <ul>
             <li>
-                <%= ctx.makeCheckbox({id: 'confirm-deletion', name: 'confirm-deletion', required: true, text: 'I confirm that I want to delete this tag.'}) %>
+                <%= ctx.makeCheckbox({
+                    name: 'confirm-deletion',
+                    text: 'I confirm that I want to delete this tag.',
+                    required: true,
+                }) %>
             </li>
         </ul>
 

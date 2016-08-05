@@ -4,14 +4,33 @@
         <div class='input'>
             <ul>
                 <li>
-                    <%= ctx.makeTextInput({text: 'User name', id: 'user-name', name: 'user-name', placeholder: 'letters, digits, _, -', required: true, pattern: ctx.userNamePattern}) %>
+                    <%= ctx.makeTextInput({
+                        text: 'User name',
+                        name: 'name',
+                        placeholder: 'letters, digits, _, -',
+                        required: true,
+                        pattern: ctx.userNamePattern,
+                    }) %>
                 </li>
                 <li>
-                    <%= ctx.makePasswordInput({text: 'Password', id: 'user-password', name: 'user-password', placeholder: '5+ characters', required: true, pattern: ctx.passwordPattern}) %>
+                    <%= ctx.makePasswordInput({
+                        text: 'Password',
+                        name: 'password',
+                        placeholder: '5+ characters',
+                        required: true,
+                        pattern: ctx.passwordPattern,
+                    }) %>
                 </li>
                 <li>
-                    <%= ctx.makeEmailInput({text: 'Email', id: 'user-email', name: 'user-email', placeholder: 'optional'}) %>
-                    <p class='hint'>Used for password reminder and to show a <a href='http://gravatar.com/'>Gravatar</a>. Leave blank for random Gravatar.</p>
+                    <%= ctx.makeEmailInput({
+                        text: 'Email',
+                        name: 'email',
+                        placeholder: 'optional',
+                    }) %>
+                    <p class='hint'>
+                        Used for password reminder and to show a <a href='http://gravatar.com/'>Gravatar</a>.
+                        Leave blank for random Gravatar.
+                    </p>
                 </li>
             </ul>
         </div>

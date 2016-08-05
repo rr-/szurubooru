@@ -260,21 +260,35 @@ function arraysDiffer(source1, source2) {
         source2.filter(value => !source1.includes(value)).length > 0);
 }
 
-module.exports = {
-    range: range,
-    formatUrlParameters: formatUrlParameters,
-    parseUrlParameters: parseUrlParameters,
-    parseUrlParametersRoute: parseUrlParametersRoute,
-    formatRelativeTime: formatRelativeTime,
-    formatFileSize: formatFileSize,
-    formatMarkdown: formatMarkdown,
-    unindent: unindent,
-    enableExitConfirmation: enableExitConfirmation,
-    disableExitConfirmation: disableExitConfirmation,
-    confirmPageExit: confirmPageExit,
-    escapeHtml: escapeHtml,
-    makeCssName: makeCssName,
-    splitByWhitespace: splitByWhitespace,
-    arraysDiffer: arraysDiffer,
-    decamelize: decamelize,
-};
+function arrayToObject(array, keySelector, valueSelector) {
+    if (keySelector === undefined) {
+        keySelector = item => item;
+    }
+    if (valueSelector === undefined) {
+        valueSelector = item => item;
+    }
+    return array.reduce((obj, item) => {
+        obj[keySelector(item)] = valueSelector(item);
+        return obj;
+    }, {});
+}
+
+module.exports = arrayToObject([
+    range,
+    formatUrlParameters,
+    parseUrlParameters,
+    parseUrlParametersRoute,
+    formatRelativeTime,
+    formatFileSize,
+    formatMarkdown,
+    unindent,
+    enableExitConfirmation,
+    disableExitConfirmation,
+    confirmPageExit,
+    escapeHtml,
+    makeCssName,
+    splitByWhitespace,
+    arraysDiffer,
+    decamelize,
+    arrayToObject,
+], func => func.name);

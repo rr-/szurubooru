@@ -19,15 +19,15 @@ class LoginView extends events.EventTarget {
         views.syncScrollPosition();
 
         views.decorateValidator(this._formNode);
-        this._userNameFieldNode.setAttribute('pattern', config.userNameRegex);
-        this._passwordFieldNode.setAttribute('pattern', config.passwordRegex);
+        this._userNameInputNode.setAttribute('pattern', config.userNameRegex);
+        this._passwordInputNode.setAttribute('pattern', config.passwordRegex);
         this._formNode.addEventListener('submit', e => {
             e.preventDefault();
             this.dispatchEvent(new CustomEvent('submit', {
                 detail: {
-                    name: this._userNameFieldNode.value,
-                    password: this._passwordFieldNode.value,
-                    remember: this._rememberFieldNode.checked,
+                    name: this._userNameInputNode.value,
+                    password: this._passwordInputNode.value,
+                    remember: this._rememberInputNode.checked,
                 },
             }));
         });
@@ -37,16 +37,16 @@ class LoginView extends events.EventTarget {
         return this._hostNode.querySelector('form');
     }
 
-    get _userNameFieldNode() {
-        return this._formNode.querySelector('#user-name');
+    get _userNameInputNode() {
+        return this._formNode.querySelector('[name=name]');
     }
 
-    get _passwordFieldNode() {
-        return this._formNode.querySelector('#user-password');
+    get _passwordInputNode() {
+        return this._formNode.querySelector('[name=password]');
     }
 
-    get _rememberFieldNode() {
-        return this._formNode.querySelector('#remember-user');
+    get _rememberInputNode() {
+        return this._formNode.querySelector('[name=remember-user]');
     }
 
     disableForm() {

@@ -30,26 +30,22 @@ class SettingsView extends events.EventTarget {
         e.preventDefault();
         this.dispatchEvent(new CustomEvent('change', {
             detail: {
-                settings: {
-                    upscaleSmallPosts: this._formNode.querySelector(
-                        '#upscale-small-posts').checked,
-                    endlessScroll: this._formNode.querySelector(
-                        '#endless-scroll').checked,
-                    keyboardShortcuts: this._formNode.querySelector(
-                        '#keyboard-shortcuts').checked,
-                    transparencyGrid: this._formNode.querySelector(
-                        '#transparency-grid').checked,
-                    tagSuggestions: this._formNode.querySelector(
-                        '#tag-suggestions').checked,
-                    postsPerPage: this._formNode.querySelector(
-                        '#posts-per-page').value,
-                },
+                upscaleSmallPosts: this._find('upscale-small-posts').checked,
+                endlessScroll: this._find('endless-scroll').checked,
+                keyboardShortcuts: this._find('keyboard-shortcuts').checked,
+                transparencyGrid: this._find('transparency-grid').checked,
+                tagSuggestions: this._find('tag-suggestions').checked,
+                postsPerPage: this._find('posts-per-page').value,
             },
         }));
     }
 
     get _formNode() {
         return this._hostNode.querySelector('form');
+    }
+
+    _find(nodeName) {
+        return this._formNode.querySelector('[name=' + nodeName + ']');
     }
 }
 

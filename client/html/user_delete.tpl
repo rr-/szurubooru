@@ -3,7 +3,11 @@
         <div class='input'>
             <ul>
                 <li>
-                    <%= ctx.makeCheckbox({id: 'confirm-deletion', name: 'confirm-deletion', required: true, text: 'I confirm that I want to delete this account.'}) %>
+                    <%= ctx.makeCheckbox({
+                        name: 'confirm-deletion',
+                        text: 'I confirm that I want to delete this account.',
+                        required: true,
+                    }) %>
                 </li>
             </ul>
         </div>

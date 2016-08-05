@@ -20,9 +20,9 @@ class UserEditView extends events.EventTarget {
         views.decorateValidator(this._formNode);
 
         this._avatarContent = null;
-        if (this._avatarContentFieldNode) {
+        if (this._avatarContentInputNode) {
             new FileDropperControl(
-                this._avatarContentFieldNode,
+                this._avatarContentInputNode,
                 {
                     lock: true,
                     resolve: files => {
@@ -62,24 +62,24 @@ class UserEditView extends events.EventTarget {
             detail: {
                 user: this._user,
 
-                name: this._userNameFieldNode ?
-                    this._userNameFieldNode.value :
+                name: this._userNameInputNode ?
+                    this._userNameInputNode.value :
                     undefined,
 
-                email: this._emailFieldNode ?
-                    this._emailFieldNode.value :
+                email: this._emailInputNode ?
+                    this._emailInputNode.value :
                     undefined,
 
-                rank: this._rankFieldNode ?
-                    this._rankFieldNode.value :
+                rank: this._rankInputNode ?
+                    this._rankInputNode.value :
                     undefined,
 
-                avatarStyle: this._avatarStyleFieldNode ?
-                    this._avatarStyleFieldNode.value :
+                avatarStyle: this._avatarStyleInputNode ?
+                    this._avatarStyleInputNode.value :
                     undefined,
 
-                password: this._passwordFieldNode ?
-                    this._passwordFieldNode.value :
+                password: this._passwordInputNode ?
+                    this._passwordInputNode.value :
                     undefined,
 
                 avatarContent: this._avatarContent,
@@ -91,27 +91,27 @@ class UserEditView extends events.EventTarget {
         return this._hostNode.querySelector('form');
     }
 
-    get _rankFieldNode() {
-        return this._formNode.querySelector('#user-rank');
+    get _rankInputNode() {
+        return this._formNode.querySelector('[name=rank]');
     }
 
-    get _emailFieldNode() {
-        return this._formNode.querySelector('#user-email');
+    get _emailInputNode() {
+        return this._formNode.querySelector('[name=email]');
     }
 
-    get _userNameFieldNode() {
-        return this._formNode.querySelector('#user-name');
+    get _userNameInputNode() {
+        return this._formNode.querySelector('[name=name]');
     }
 
-    get _passwordFieldNode() {
-        return this._formNode.querySelector('#user-password');
+    get _passwordInputNode() {
+        return this._formNode.querySelector('[name=password]');
     }
 
-    get _avatarContentFieldNode() {
+    get _avatarContentInputNode() {
         return this._formNode.querySelector('#avatar-content');
     }
 
-    get _avatarStyleFieldNode() {
+    get _avatarStyleInputNode() {
         return this._formNode.querySelector('[name=avatar-style]:checked');
     }
 }

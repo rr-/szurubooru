@@ -51,15 +51,15 @@ class RegistrationView extends events.EventTarget {
     }
 
     get _userNameFieldNode() {
-        return this._formNode.querySelector('#user-name');
+        return this._formNode.querySelector('[name=name]');
     }
 
     get _passwordFieldNode() {
-        return this._formNode.querySelector('#user-password');
+        return this._formNode.querySelector('[name=password]');
     }
 
     get _emailFieldNode() {
-        return this._formNode.querySelector('#user-email');
+        return this._formNode.querySelector('[name=email]');
     }
 }
 
