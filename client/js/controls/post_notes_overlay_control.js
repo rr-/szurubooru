@@ -39,6 +39,18 @@ function _clearEditedNote(hostNode) {
     return node !== null;
 }
 
+function _getNoteSize(note) {
+    const min = new Point(Infinity, Infinity);
+    const max = new Point(-Infinity, -Infinity);
+    for (let point of note.polygon) {
+        min.x = Math.min(min.x, point.x);
+        min.y = Math.min(min.y, point.y);
+        max.x = Math.max(max.x, point.x);
+        max.y = Math.max(max.y, point.y);
+    }
+    return new Point(max.x - min.x, max.y - min.y);
+}
+
 class State {
     constructor(control) {
         this._control = control;
@@ -176,13 +188,18 @@ class SelectedState extends ActiveState {
     }
 
     evtNoteMouseDown(e, hoveredNote) {
+        const mousePoint = this._getPointFromEvent(e);
+        const mouseScreenPoint = this._getScreenPoint(mousePoint);
+        if (e.shiftKey) {
+            this._control._state = new ScalingNoteState(
+                this._control, this._note, mousePoint);
+            return;
+        }
         if (this._note !== hoveredNote) {
             this._control._state =
                 new SelectedState(this._control, hoveredNote);
             return;
         }
-        const mousePoint = this._getPointFromEvent(e);
-        const mouseScreenPoint = this._getScreenPoint(mousePoint);
         this._clickTimeout = window.setTimeout(() => {
             for (let polygonPoint of this._note.polygon) {
                 const distance = _getDistance(
@@ -214,6 +231,11 @@ class SelectedState extends ActiveState {
     evtCanvasMouseDown(e) {
         const mousePoint = this._getPointFromEvent(e);
         const mouseScreenPoint = this._getScreenPoint(mousePoint);
+        if (e.shiftKey) {
+            this._control._state = new ScalingNoteState(
+                this._control, this._note, mousePoint);
+            return;
+        }
         for (let polygonPoint of this._note.polygon) {
             const distance = _getDistance(
                 mouseScreenPoint,
@@ -316,6 +338,48 @@ class MovingNoteState extends ActiveState {
             point.y += mousePoint.y - this._originalPosition.y;
         }
         this._originalPosition = mousePoint;
+    }
+
+    evtCanvasMouseUp(e) {
+        this._control._state = new SelectedState(this._control, this._note);
+    }
+}
+
+class ScalingNoteState extends ActiveState {
+    constructor(control, note, mousePoint) {
+        super(control, note);
+        this._originalPolygon = [...note.polygon].map(
+            point => ({x: point.x, y: point.y}));
+        this._originalMousePoint = mousePoint;
+        this._originalSize = _getNoteSize(note);
+    }
+
+    evtCanvasKeyDown(e) {
+        if (e.which == KEY_ESCAPE) {
+            for (let i of misc.range(this._note.polygon.length)) {
+                this._note.polygon.at(i).x = this._originalPolygon[i].x;
+                this._note.polygon.at(i).y = this._originalPolygon[i].y;
+            }
+            this._control._state = new SelectedState(this._control, this._note);
+        }
+    }
+
+    evtCanvasMouseMove(e) {
+        const mousePoint = this._getPointFromEvent(e);
+        const originalMousePoint = this._originalMousePoint;
+        const originalSize = this._originalSize;
+        for (let i of misc.range(this._note.polygon.length)) {
+            const polygonPoint = this._note.polygon.at(i);
+            const originalPolygonPoint = this._originalPolygon[i];
+            polygonPoint.x =
+                originalMousePoint.x +
+                (originalPolygonPoint.x - originalMousePoint.x) *
+                (1 + (mousePoint.x - originalMousePoint.x) / originalSize.x);
+            polygonPoint.y =
+                originalMousePoint.y +
+                (originalPolygonPoint.y - originalMousePoint.y) *
+                (1 + (mousePoint.y - originalMousePoint.y) / originalSize.y);
+        }
     }
 
     evtCanvasMouseUp(e) {
