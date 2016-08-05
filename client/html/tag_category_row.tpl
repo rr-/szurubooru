@@ -1,6 +1,8 @@
-<tr data-category='<%- ctx.tagCategory.name %>'
-    <% if (ctx.tagCategory.isDefault) { %> class='default' <% } %>
->
+<% if (ctx.tagCategory.isDefault) { %><%
+    %><tr data-category='<%- ctx.tagCategory.name %>' class='default'><%
+%><% } else { %><%
+    %><tr data-category='<%- ctx.tagCategory.name %>'><%
+%><% } %>
     <td class='name'>
         <% if (ctx.canEditName) { %>
             <%= ctx.makeTextInput({value: ctx.tagCategory.name, required: true}) %>
