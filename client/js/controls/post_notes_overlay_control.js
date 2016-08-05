@@ -39,6 +39,26 @@ function _clearEditedNote(hostNode) {
     return node !== null;
 }
 
+function _getNoteCentroid(note) {
+    const vertexCount = note.polygon.length;
+    const centroid = new Point(0, 0);
+    let signedArea = 0.0;
+    for (let i of misc.range(vertexCount)) {
+        const x0 = note.polygon.at(i).x;
+        const y0 = note.polygon.at(i).y;
+        const x1 = note.polygon.at((i + 1) % vertexCount).x;
+        const y1 = note.polygon.at((i + 1) % vertexCount).y;
+        const a = x0 * y1 - x1 * y0;
+        signedArea += a;
+        centroid.x += (x0 + x1) * a;
+        centroid.y += (y0 + y1) * a;
+    }
+    signedArea *= 0.5;
+    centroid.x /= 6 * signedArea;
+    centroid.y /= 6 * signedArea;
+    return centroid;
+}
+
 function _getNoteSize(note) {
     const min = new Point(Infinity, Infinity);
     const max = new Point(-Infinity, -Infinity);
@@ -261,25 +281,17 @@ class SelectedState extends ActiveState {
     }
 
     _scaleEditedNote(x, y) {
-        const min = new Point(Infinity, Infinity);
-        const max = new Point(-Infinity, -Infinity);
+        const origin = _getNoteCentroid(this._note);
+        const originalSize = _getNoteSize(this._note);
+        const targetSize = new Point(
+            originalSize.x + x / this._control.boundingBox.width,
+            originalSize.y + y / this._control.boundingBox.height);
+        const scale = new Point(
+            targetSize.x / originalSize.x,
+            targetSize.y / originalSize.y);
         for (let point of this._note.polygon) {
-            min.x = Math.min(min.x, point.x);
-            min.y = Math.min(min.y, point.y);
-            max.x = Math.max(max.x, point.x);
-            max.y = Math.max(max.y, point.y);
-        }
-        const originalWidth = max.x - min.x;
-        const originalHeight = max.y - min.y;
-        const targetWidth = originalWidth +
-            x / this._control.boundingBox.width;
-        const targetHeight = originalHeight +
-            y / this._control.boundingBox.height;
-        const scaleX = targetWidth / originalWidth;
-        const scaleY = targetHeight / originalHeight;
-        for (let point of this._note.polygon) {
-            point.x = min.x + ((point.x - min.x) * scaleX);
-            point.y = min.y + ((point.y - min.y) * scaleY);
+            point.x = origin.x + ((point.x - origin.x) * scale.x);
+            point.y = origin.y + ((point.y - origin.y) * scale.y);
         }
     }
 }
