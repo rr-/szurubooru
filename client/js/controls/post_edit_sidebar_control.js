@@ -131,6 +131,10 @@ class PostEditSidebarControl extends events.EventTarget {
                         this.dispatchEvent(new CustomEvent('change'));
                     });
             }
+            this._postNotesOverlayControl.addEventListener(
+                'change', e => {
+                    this.dispatchEvent(new CustomEvent('change'));
+                });
         }
 
         if (this._noteTextareaNode) {

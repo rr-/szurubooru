@@ -723,12 +723,15 @@ class PostNotesOverlayControl extends events.EventTarget {
 
         note.polygon.addEventListener('change', e => {
             this._updateEdgeNode(e.detail.point, note);
+            this.dispatchEvent(new CustomEvent('change'));
         });
         note.polygon.addEventListener('remove', e => {
             this._deleteEdgeNode(e.detail.point, note);
+            this.dispatchEvent(new CustomEvent('change'));
         });
         note.polygon.addEventListener('add', e => {
             this._createEdgeNode(e.detail.point, groupNode);
+            this.dispatchEvent(new CustomEvent('change'));
         });
 
         this._svgNode.appendChild(groupNode);
