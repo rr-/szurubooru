@@ -211,8 +211,8 @@ data.
 
     ```json5
     {
-        "name":  <name>,    // optional
-        "color": <color>,   // optional
+        "name":  <name>,  // optional
+        "color": <color>, // optional
     }
     ```
 
@@ -380,9 +380,9 @@ data.
     {
         "names":        [<name1>, <name2>, ...],
         "category":     <category>,
-        "description":  <description>,              // optional
-        "implications": [<name1>, <name2>, ...],    // optional
-        "suggestions":  [<name1>, <name2>, ...]     // optional
+        "description":  <description>,           // optional
+        "implications": [<name1>, <name2>, ...], // optional
+        "suggestions":  [<name1>, <name2>, ...]  // optional
     }
     ```
 
@@ -421,11 +421,12 @@ data.
 
     ```json5
     {
-        "names":        [<name1>, <name2>, ...],    // optional
-        "category":     <category>,                 // optional
-        "description":  <description>,              // optional
-        "implications": [<name1>, <name2>, ...],    // optional
-        "suggestions":  [<name1>, <name2>, ...]     // optional
+        "version":      <version>,
+        "names":        [<name1>, <name2>, ...], // optional
+        "category":     <category>,              // optional
+        "description":  <description>,           // optional
+        "implications": [<name1>, <name2>, ...], // optional
+        "suggestions":  [<name1>, <name2>, ...]  // optional
     }
     ```
 
@@ -675,13 +676,13 @@ data.
 
     ```json5
     {
-        "tags":         [<tag1>, <tag2>, <tag3>],
-        "safety":       <safety>,
-        "source":       <source>,                     // optional
-        "relations":    [<post1>, <post2>, <post3>],  // optional
-        "notes":        [<note1>, <note2>, <note3>],  // optional
-        "flags":        [<flag1>, <flag2>],           // optional
-        "anonymous":    <anonymous>                   // optional
+        "tags":      [<tag1>, <tag2>, <tag3>],
+        "safety":    <safety>,
+        "source":    <source>,                    // optional
+        "relations": [<post1>, <post2>, <post3>], // optional
+        "notes":     [<note1>, <note2>, <note3>], // optional
+        "flags":     [<flag1>, <flag2>],          // optional
+        "anonymous": <anonymous>                  // optional
     }
     ```
 
@@ -725,12 +726,12 @@ data.
 
     ```json5
     {
-        "tags":         [<tag1>, <tag2>, <tag3>],     // optional
-        "safety":       <safety>,                     // optional
-        "source":       <source>,                     // optional
-        "relations":    [<post1>, <post2>, <post3>],  // optional
-        "notes":        [<note1>, <note2>, <note3>],  // optional
-        "flags":        [<flag1>, <flag2>]            // optional
+        "tags":      [<tag1>, <tag2>, <tag3>],    // optional
+        "safety":    <safety>,                    // optional
+        "source":    <source>,                    // optional
+        "relations": [<post1>, <post2>, <post3>], // optional
+        "notes":     [<note1>, <note2>, <note3>], // optional
+        "flags":     [<flag1>, <flag2>]           // optional
     }
     ```
 
@@ -976,8 +977,8 @@ data.
 
     ```json5
     {
-        "text":     <text>,
-        "postId":   <post-id>
+        "text":   <text>,
+        "postId": <post-id>
     }
     ```
 
@@ -1004,7 +1005,7 @@ data.
 
     ```json5
     {
-        "text": <new-text>      // mandatory
+        "text": <new-text> // mandatory
     }
     ```
 
@@ -1148,10 +1149,10 @@ data.
 
     ```json5
     {
-        "name": <user-name>,
-        "password": <user-password>,
-        "email": <email>,               // optional
-        "rank": <rank>,                 // optional
+        "name":        <user-name>,
+        "password":    <user-password>,
+        "email":       <email>,         // optional
+        "rank":        <rank>,          // optional
         "avatarStyle": <avatar-style>   // optional
     }
     ```
@@ -1193,10 +1194,10 @@ data.
 
     ```json5
     {
-        "name": <user-name>,            // optional
-        "password": <user-password>,    // optional
-        "email": <email>,               // optional
-        "rank": <rank>,                 // optional
+        "name":        <user-name>,     // optional
+        "password":    <user-password>, // optional
+        "email":       <email>,         // optional
+        "rank":        <rank>,          // optional
         "avatarStyle": <avatar-style>   // optional
     }
     ```
