@@ -131,7 +131,7 @@ fields the server sends to it in order to improve the query speed. This
 customization is available for top-level fields of most of the
 [resources](#resources). To choose the fields, the client should pass
 `?fields=field1,field2,...` suffix to the query. This works regardless of the
-requesttype (`GET`, `PUT` etc.).
+request type (`GET`, `PUT` etc.).
 
 For example, to list posts while getting only their IDs and tags, the client
 should send a `GET` query like this:
@@ -1423,7 +1423,7 @@ A single user.
     "uploadedPostCount": <uploaded-post-count>,
     "likedPostCount":    <liked-post-count>,
     "dislikedPostCount": <disliked-post-count>,
-    "faoritevPostCount": <favorite-post-count>
+    "favoritePostCount": <favorite-post-count>
 }
 ```
 
