@@ -21,7 +21,8 @@ def test_deleting_oneself(test_ctx):
     user = test_ctx.user_factory(name='u', rank=db.User.RANK_REGULAR)
     db.session.add(user)
     db.session.commit()
-    result = test_ctx.api.delete(test_ctx.context_factory(user=user), 'u')
+    result = test_ctx.api.delete(
+        test_ctx.context_factory(input={'version': 1}, user=user), 'u')
     assert result == {}
     assert db.session.query(db.User).count() == 0
 
@@ -30,7 +31,8 @@ def test_deleting_someone_else(test_ctx):
     user2 = test_ctx.user_factory(name='u2', rank=db.User.RANK_MODERATOR)
     db.session.add_all([user1, user2])
     db.session.commit()
-    test_ctx.api.delete(test_ctx.context_factory(user=user2), 'u1')
+    test_ctx.api.delete(
+        test_ctx.context_factory(input={'version': 1}, user=user2), 'u1')
     assert db.session.query(db.User).count() == 1
 
 def test_trying_to_delete_someone_else_without_privileges(test_ctx):
@@ -39,11 +41,14 @@ def test_trying_to_delete_someone_else_without_privileges(test_ctx):
     db.session.add_all([user1, user2])
     db.session.commit()
     with pytest.raises(errors.AuthError):
-        test_ctx.api.delete(test_ctx.context_factory(user=user2), 'u1')
+        test_ctx.api.delete(
+            test_ctx.context_factory(input={'version': 1}, user=user2), 'u1')
     assert db.session.query(db.User).count() == 2
 
 def test_trying_to_delete_non_existing(test_ctx):
     with pytest.raises(users.UserNotFoundError):
         test_ctx.api.delete(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)), 'bad')
+                input={'version': 1},
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
+            'bad')

@@ -8,6 +8,7 @@ class TagCategory(Base):
     __tablename__ = 'tag_category'
 
     tag_category_id = Column('id', Integer, primary_key=True)
+    version = Column('version', Integer, default=1, nullable=False)
     name = Column('name', Unicode(32), nullable=False)
     color = Column('color', Unicode(32), nullable=False, default='#000000')
     default = Column('default', Boolean, nullable=False, default=False)

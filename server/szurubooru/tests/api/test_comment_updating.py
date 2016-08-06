@@ -31,7 +31,8 @@ def test_simple_updating(test_ctx, fake_datetime):
     db.session.commit()
     with fake_datetime('1997-12-01'):
         result = test_ctx.api.put(
-            test_ctx.context_factory(input={'text': 'new text'}, user=user),
+            test_ctx.context_factory(
+                input={'text': 'new text', 'version': 1}, user=user),
             comment.comment_id)
     assert result['text'] == 'new text'
     comment = db.session.query(db.Comment).one()
@@ -53,7 +54,8 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     db.session.commit()
     with pytest.raises(expected_exception):
         test_ctx.api.put(
-            test_ctx.context_factory(input=input, user=user),
+            test_ctx.context_factory(
+                input={**input, **{'version': 1}}, user=user),
             comment.comment_id)
 
 def test_trying_to_omit_mandatory_field(test_ctx):
@@ -63,7 +65,7 @@ def test_trying_to_omit_mandatory_field(test_ctx):
     db.session.commit()
     with pytest.raises(errors.ValidationError):
         test_ctx.api.put(
-            test_ctx.context_factory(input={}, user=user),
+            test_ctx.context_factory(input={'version': 1}, user=user),
             comment.comment_id)
 
 def test_trying_to_update_non_existing(test_ctx):
@@ -82,7 +84,8 @@ def test_trying_to_update_someones_comment_without_privileges(test_ctx):
     db.session.commit()
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(
-            test_ctx.context_factory(input={'text': 'new text'}, user=user2),
+            test_ctx.context_factory(
+                input={'text': 'new text', 'version': 1}, user=user2),
             comment.comment_id)
 
 def test_updating_someones_comment_with_privileges(test_ctx):
@@ -93,7 +96,8 @@ def test_updating_someones_comment_with_privileges(test_ctx):
     db.session.commit()
     try:
         test_ctx.api.put(
-            test_ctx.context_factory(input={'text': 'new text'}, user=user2),
+            test_ctx.context_factory(
+                input={'text': 'new text', 'version': 1}, user=user2),
             comment.comment_id)
     except:
         pytest.fail()

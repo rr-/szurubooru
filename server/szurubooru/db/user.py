@@ -20,13 +20,14 @@ class User(Base):
     RANK_NOBODY = 'nobody' # used for privileges: "nobody can be higher than admin"
 
     user_id = Column('id', Integer, primary_key=True)
+    creation_time = Column('creation_time', DateTime, nullable=False)
+    last_login_time = Column('last_login_time', DateTime)
+    version = Column('version', Integer, default=1, nullable=False)
     name = Column('name', Unicode(50), nullable=False, unique=True)
     password_hash = Column('password_hash', Unicode(64), nullable=False)
     password_salt = Column('password_salt', Unicode(32))
     email = Column('email', Unicode(64), nullable=True)
     rank = Column('rank', Unicode(32), nullable=False)
-    creation_time = Column('creation_time', DateTime, nullable=False)
-    last_login_time = Column('last_login_time', DateTime)
     avatar_style = Column(
         'avatar_style', Unicode(32), nullable=False, default=AVATAR_GRAVATAR)
 

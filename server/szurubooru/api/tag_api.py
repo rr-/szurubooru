@@ -60,6 +60,7 @@ class TagDetailApi(BaseApi):
 
     def put(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
+        util.verify_version(tag, ctx)
         if ctx.has_param('names'):
             auth.verify_privilege(ctx.user, 'tags:edit:names')
             tags.update_tag_names(tag, ctx.get_param_as_list('names'))
@@ -81,6 +82,7 @@ class TagDetailApi(BaseApi):
             implications = ctx.get_param_as_list('implications')
             _create_if_needed(implications, ctx.user)
             tags.update_tag_implications(tag, implications)
+        util.bump_version(tag)
         tag.last_edit_time = datetime.datetime.utcnow()
         ctx.session.flush()
         snapshots.save_entity_modification(tag, ctx.user)
@@ -90,6 +92,7 @@ class TagDetailApi(BaseApi):
 
     def delete(self, ctx, tag_name):
         tag = tags.get_tag_by_name(tag_name)
+        util.verify_version(tag, ctx)
         auth.verify_privilege(ctx.user, 'tags:delete')
         snapshots.save_entity_deletion(tag, ctx.user)
         tags.delete(tag)
@@ -103,11 +106,14 @@ class TagMergeApi(BaseApi):
         target_tag_name = ctx.get_param_as_string('mergeTo', required=True) or ''
         source_tag = tags.get_tag_by_name(source_tag_name)
         target_tag = tags.get_tag_by_name(target_tag_name)
+        util.verify_version(source_tag, ctx, 'removeVersion')
+        util.verify_version(target_tag, ctx, 'mergeToVersion')
         if source_tag.tag_id == target_tag.tag_id:
             raise tags.InvalidTagRelationError('Cannot merge tag with itself.')
         auth.verify_privilege(ctx.user, 'tags:merge')
         snapshots.save_entity_deletion(source_tag, ctx.user)
         tags.merge_tags(source_tag, target_tag)
+        util.bump_version(target_tag)
         ctx.session.commit()
         tags.export_to_json()
         return _serialize(ctx, target_tag)

@@ -42,6 +42,7 @@ def test_updating_user(test_ctx):
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input={
+                'version': 1,
                 'name': 'chewie',
                 'email': 'asd@asd.asd',
                 'password': 'oks',
@@ -64,6 +65,7 @@ def test_updating_user(test_ctx):
         'dislikedPostCount': 0,
         'favoritePostCount': 0,
         'uploadedPostCount': 0,
+        'version': 2,
     }
     user = users.get_user_by_name('chewie')
     assert user.name == 'chewie'
@@ -98,7 +100,10 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     db.session.add(user)
     with pytest.raises(expected_exception):
         test_ctx.api.put(
-            test_ctx.context_factory(input=input, user=user), 'u1')
+            test_ctx.context_factory(
+                input={**input, **{'version': 1}},
+                user=user),
+            'u1')
 
 @pytest.mark.parametrize(
     'field', ['name', 'email', 'password', 'rank', 'avatarStyle'])
@@ -115,7 +120,7 @@ def test_omitting_optional_field(test_ctx, field):
     del input[field]
     result = test_ctx.api.put(
         test_ctx.context_factory(
-            input=input,
+            input={**input, **{'version': 1}},
             files={'avatar': EMPTY_PIXEL},
             user=user),
         'u1')
@@ -131,7 +136,8 @@ def test_removing_email(test_ctx):
     user = test_ctx.user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     test_ctx.api.put(
-        test_ctx.context_factory(input={'email': ''}, user=user), 'u1')
+        test_ctx.context_factory(
+            input={'email': '', 'version': 1}, user=user), 'u1')
     assert users.get_user_by_name('u1').email is None
 
 @pytest.mark.parametrize('input', [
@@ -147,7 +153,10 @@ def test_trying_to_update_someone_else(test_ctx, input):
     db.session.add_all([user1, user2])
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(
-            test_ctx.context_factory(input=input, user=user1), user2.name)
+            test_ctx.context_factory(
+                input={**input, **{'version': 1}},
+                user=user1),
+            user2.name)
 
 def test_trying_to_become_someone_else(test_ctx):
     user1 = test_ctx.user_factory(name='me', rank=db.User.RANK_REGULAR)
@@ -155,10 +164,14 @@ def test_trying_to_become_someone_else(test_ctx):
     db.session.add_all([user1, user2])
     with pytest.raises(users.UserAlreadyExistsError):
         test_ctx.api.put(
-            test_ctx.context_factory(input={'name': 'her'}, user=user1), 'me')
+            test_ctx.context_factory(
+                input={'name': 'her', 'version': 1}, user=user1),
+            'me')
     with pytest.raises(users.UserAlreadyExistsError):
         test_ctx.api.put(
-            test_ctx.context_factory(input={'name': 'HER'}, user=user1), 'me')
+            test_ctx.context_factory(
+                input={'name': 'HER', 'version': 1}, user=user1),
+            'me')
 
 def test_trying_to_make_someone_into_someone_else(test_ctx):
     user1 = test_ctx.user_factory(name='him', rank=db.User.RANK_REGULAR)
@@ -167,25 +180,35 @@ def test_trying_to_make_someone_into_someone_else(test_ctx):
     db.session.add_all([user1, user2, user3])
     with pytest.raises(users.UserAlreadyExistsError):
         test_ctx.api.put(
-            test_ctx.context_factory(input={'name': 'her'}, user=user3), 'him')
+            test_ctx.context_factory(
+                input={'name': 'her', 'version': 1}, user=user3),
+            'him')
     with pytest.raises(users.UserAlreadyExistsError):
         test_ctx.api.put(
-            test_ctx.context_factory(input={'name': 'HER'}, user=user3), 'him')
+            test_ctx.context_factory(
+                input={'name': 'HER', 'version': 1}, user=user3),
+            'him')
 
 def test_renaming_someone_else(test_ctx):
     user1 = test_ctx.user_factory(name='him', rank=db.User.RANK_REGULAR)
     user2 = test_ctx.user_factory(name='me', rank=db.User.RANK_MODERATOR)
     db.session.add_all([user1, user2])
     test_ctx.api.put(
-        test_ctx.context_factory(input={'name': 'himself'}, user=user2), 'him')
+        test_ctx.context_factory(
+            input={'name': 'himself', 'version': 1}, user=user2),
+        'him')
     test_ctx.api.put(
-        test_ctx.context_factory(input={'name': 'HIMSELF'}, user=user2), 'himself')
+        test_ctx.context_factory(
+            input={'name': 'HIMSELF', 'version': 2}, user=user2),
+        'himself')
 
 def test_mods_trying_to_become_admin(test_ctx):
     user1 = test_ctx.user_factory(name='u1', rank=db.User.RANK_MODERATOR)
     user2 = test_ctx.user_factory(name='u2', rank=db.User.RANK_MODERATOR)
     db.session.add_all([user1, user2])
-    context = test_ctx.context_factory(input={'rank': 'administrator'}, user=user1)
+    context = test_ctx.context_factory(
+        input={'rank': 'administrator', 'version': 1},
+        user=user1)
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(context, user1.name)
     with pytest.raises(errors.AuthError):
@@ -196,7 +219,7 @@ def test_uploading_avatar(test_ctx):
     db.session.add(user)
     response = test_ctx.api.put(
         test_ctx.context_factory(
-            input={'avatarStyle': 'manual'},
+            input={'avatarStyle': 'manual', 'version': 1},
             files={'avatar': EMPTY_PIXEL},
             user=user),
         'u1')

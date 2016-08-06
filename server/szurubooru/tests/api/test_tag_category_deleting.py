@@ -32,6 +32,7 @@ def test_deleting(test_ctx):
     db.session.commit()
     result = test_ctx.api.delete(
         test_ctx.context_factory(
+            input={'version': 1},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'category')
     assert result == {}
@@ -49,6 +50,7 @@ def test_trying_to_delete_used(test_ctx, tag_factory):
     with pytest.raises(tag_categories.TagCategoryIsInUseError):
         test_ctx.api.delete(
             test_ctx.context_factory(
+                input={'version': 1},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'category')
     assert db.session.query(db.TagCategory).count() == 1
@@ -59,6 +61,7 @@ def test_trying_to_delete_last(test_ctx, tag_factory):
     with pytest.raises(tag_categories.TagCategoryIsInUseError):
         result = test_ctx.api.delete(
             test_ctx.context_factory(
+                input={'version': 1},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'root')
 
@@ -66,7 +69,8 @@ def test_trying_to_delete_non_existing(test_ctx):
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
         test_ctx.api.delete(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)), 'bad')
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
+            'bad')
 
 def test_trying_to_delete_without_privileges(test_ctx):
     db.session.add(test_ctx.tag_category_factory(name='category'))
@@ -74,6 +78,7 @@ def test_trying_to_delete_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.api.delete(
             test_ctx.context_factory(
+                input={'version': 1},
                 user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             'category')
     assert db.session.query(db.TagCategory).count() == 1

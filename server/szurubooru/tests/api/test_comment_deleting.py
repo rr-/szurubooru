@@ -24,7 +24,8 @@ def test_deleting_own_comment(test_ctx):
     db.session.add(comment)
     db.session.commit()
     result = test_ctx.api.delete(
-        test_ctx.context_factory(user=user), comment.comment_id)
+        test_ctx.context_factory(input={'version': 1}, user=user),
+        comment.comment_id)
     assert result == {}
     assert db.session.query(db.Comment).count() == 0
 
@@ -35,7 +36,8 @@ def test_deleting_someones_else_comment(test_ctx):
     db.session.add(comment)
     db.session.commit()
     result = test_ctx.api.delete(
-        test_ctx.context_factory(user=user2), comment.comment_id)
+        test_ctx.context_factory(input={'version': 1}, user=user2),
+        comment.comment_id)
     assert db.session.query(db.Comment).count() == 0
 
 def test_trying_to_delete_someones_else_comment_without_privileges(test_ctx):
@@ -46,11 +48,14 @@ def test_trying_to_delete_someones_else_comment_without_privileges(test_ctx):
     db.session.commit()
     with pytest.raises(errors.AuthError):
         test_ctx.api.delete(
-            test_ctx.context_factory(user=user2), comment.comment_id)
+            test_ctx.context_factory(input={'version': 1}, user=user2),
+            comment.comment_id)
     assert db.session.query(db.Comment).count() == 1
 
 def test_trying_to_delete_non_existing(test_ctx):
     with pytest.raises(comments.CommentNotFoundError):
         test_ctx.api.delete(
             test_ctx.context_factory(
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)), 1)
+                input={'version': 1},
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
+            1)

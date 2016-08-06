@@ -29,6 +29,8 @@ def test_merging_without_usages(test_ctx, fake_datetime):
         result = test_ctx.api.post(
             test_ctx.context_factory(
                 input={
+                    'removeVersion': 1,
+                    'mergeToVersion': 1,
                     'remove': 'source',
                     'mergeTo': 'target',
                 },
@@ -44,6 +46,7 @@ def test_merging_without_usages(test_ctx, fake_datetime):
         'creationTime': datetime.datetime(1996, 1, 1),
         'lastEditTime': None,
         'usages': 0,
+        'version': 2,
     }
     assert tags.try_get_tag_by_name('source') is None
     tag = tags.get_tag_by_name('target')
@@ -67,6 +70,8 @@ def test_merging_with_usages(test_ctx, fake_datetime, post_factory):
         result = test_ctx.api.post(
             test_ctx.context_factory(
                 input={
+                    'removeVersion': 1,
+                    'mergeToVersion': 1,
                     'remove': 'source',
                     'mergeTo': 'target',
                 },
@@ -90,6 +95,8 @@ def test_merging_when_related(test_ctx, fake_datetime):
         result = test_ctx.api.post(
             test_ctx.context_factory(
                 input={
+                    'removeVersion': 1,
+                    'mergeToVersion': 1,
                     'remove': 'source',
                     'mergeTo': 'target',
                 },
@@ -113,6 +120,8 @@ def test_merging_when_target_exists(test_ctx, fake_datetime, post_factory):
         result = test_ctx.api.post(
             test_ctx.context_factory(
                 input={
+                    'removeVersion': 1,
+                    'mergeToVersion': 1,
                     'remove': 'source',
                     'mergeTo': 'target',
                 },
@@ -134,6 +143,8 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     db.session.add_all([source_tag, target_tag])
     db.session.commit()
     real_input = {
+        'removeVersion': 1,
+        'mergeToVersion': 1,
         'remove': 'source',
         'mergeTo': 'target',
     }
@@ -146,7 +157,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize(
-    'field', ['remove', 'mergeTo'])
+    'field', ['remove', 'mergeTo', 'removeVersion', 'mergeToVersion'])
 def test_trying_to_omit_mandatory_field(test_ctx, field):
     db.session.add_all([
         test_ctx.tag_factory(names=['source'], category_name='meta'),
@@ -154,6 +165,8 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
     ])
     db.session.commit()
     input = {
+        'removeVersion': 1,
+        'mergeToVersion': 1,
         'remove': 'source',
         'mergeTo': 'target',
     }
@@ -184,7 +197,11 @@ def test_trying_to_merge_to_itself(test_ctx):
     with pytest.raises(tags.InvalidTagRelationError):
         test_ctx.api.post(
             test_ctx.context_factory(
-                input={'remove': 'good', 'mergeTo': 'good'},
+                input={
+                    'removeVersion': 1,
+                    'mergeToVersion': 1,
+                    'remove': 'good',
+                    'mergeTo': 'good'},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize('input', [
@@ -203,6 +220,8 @@ def test_trying_to_merge_without_privileges(test_ctx, input):
         test_ctx.api.post(
             test_ctx.context_factory(
                 input={
+                    'removeVersion': 1,
+                    'mergeToVersion': 1,
                     'remove': 'source',
                     'mergeTo': 'target',
                 },

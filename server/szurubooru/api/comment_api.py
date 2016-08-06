@@ -39,16 +39,19 @@ class CommentDetailApi(BaseApi):
 
     def put(self, ctx, comment_id):
         comment = comments.get_comment_by_id(comment_id)
+        util.verify_version(comment, ctx)
         infix = 'own' if ctx.user.user_id == comment.user_id else 'any'
         text = ctx.get_param_as_string('text', required=True)
         auth.verify_privilege(ctx.user, 'comments:edit:%s' % infix)
-        comment.last_edit_time = datetime.datetime.utcnow()
         comments.update_comment_text(comment, text)
+        util.bump_version(comment)
+        comment.last_edit_time = datetime.datetime.utcnow()
         ctx.session.commit()
         return _serialize(ctx, comment)
 
     def delete(self, ctx, comment_id):
         comment = comments.get_comment_by_id(comment_id)
+        util.verify_version(comment, ctx)
         infix = 'own' if ctx.user.user_id == comment.user_id else 'any'
         auth.verify_privilege(ctx.user, 'comments:delete:%s' % infix)
         ctx.session.delete(comment)

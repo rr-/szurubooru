@@ -101,6 +101,7 @@ class Post(Base):
     # basic meta
     post_id = Column('id', Integer, primary_key=True)
     user_id = Column('user_id', Integer, ForeignKey('user.id'), index=True)
+    version = Column('version', Integer, default=1, nullable=False)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
     safety = Column('safety', Unicode(32), nullable=False)

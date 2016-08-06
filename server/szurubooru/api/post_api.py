@@ -62,6 +62,7 @@ class PostDetailApi(BaseApi):
 
     def put(self, ctx, post_id):
         post = posts.get_post_by_id(post_id)
+        util.verify_version(post, ctx)
         if ctx.has_file('content'):
             auth.verify_privilege(ctx.user, 'posts:edit:content')
             posts.update_post_content(post, ctx.get_file('content'))
@@ -90,6 +91,7 @@ class PostDetailApi(BaseApi):
         if ctx.has_file('thumbnail'):
             auth.verify_privilege(ctx.user, 'posts:edit:thumbnail')
             posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
+        util.bump_version(post)
         post.last_edit_time = datetime.datetime.utcnow()
         ctx.session.flush()
         snapshots.save_entity_modification(post, ctx.user)
@@ -100,6 +102,7 @@ class PostDetailApi(BaseApi):
     def delete(self, ctx, post_id):
         auth.verify_privilege(ctx.user, 'posts:delete')
         post = posts.get_post_by_id(post_id)
+        util.verify_version(post, ctx)
         snapshots.save_entity_deletion(post, ctx.user)
         posts.delete(post)
         ctx.session.commit()

@@ -33,6 +33,7 @@ class TagCategoryDetailApi(BaseApi):
 
     def put(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)
+        util.verify_version(category, ctx)
         if ctx.has_param('name'):
             auth.verify_privilege(ctx.user, 'tag_categories:edit:name')
             tag_categories.update_category_name(
@@ -41,6 +42,7 @@ class TagCategoryDetailApi(BaseApi):
             auth.verify_privilege(ctx.user, 'tag_categories:edit:color')
             tag_categories.update_category_color(
                 category, ctx.get_param_as_string('color'))
+        util.bump_version(category)
         ctx.session.flush()
         snapshots.save_entity_modification(category, ctx.user)
         ctx.session.commit()
@@ -49,6 +51,7 @@ class TagCategoryDetailApi(BaseApi):
 
     def delete(self, ctx, category_name):
         category = tag_categories.get_category_by_name(category_name)
+        util.verify_version(category, ctx)
         auth.verify_privilege(ctx.user, 'tag_categories:delete')
         if len(tag_categories.get_all_category_names()) == 1:
             raise tag_categories.TagCategoryIsInUseError(

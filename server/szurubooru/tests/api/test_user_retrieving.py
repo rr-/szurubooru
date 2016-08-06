@@ -61,6 +61,7 @@ def test_retrieving_single(test_ctx):
         'dislikedPostCount': False,
         'favoritePostCount': 0,
         'uploadedPostCount': 0,
+        'version': 1,
     }
     assert result['email'] is False
     assert result['likedPostCount'] is False

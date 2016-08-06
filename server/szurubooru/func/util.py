@@ -139,3 +139,14 @@ def value_exceeds_column_size(value, column):
     if max_length is None:
         return False
     return len(value) > max_length
+
+def verify_version(entity, context, field_name='version'):
+    actual_version = context.get_param_as_int(field_name, required=True)
+    expected_version = entity.version
+    if actual_version != expected_version:
+        raise errors.InvalidParameterError(
+            'Someone else modified this in the meantime. ' +
+            'Please try again.')
+
+def bump_version(entity):
+    entity.version += 1

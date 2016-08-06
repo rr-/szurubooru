@@ -53,6 +53,7 @@ def serialize_tag(tag, options=None):
         {
             'names': lambda: [tag_name.name for tag_name in tag.names],
             'category': lambda: tag.category.name,
+            'version': lambda: tag.version,
             'description': lambda: tag.description,
             'creationTime': lambda: tag.creation_time,
             'lastEditTime': lambda: tag.last_edit_time,

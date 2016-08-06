@@ -28,6 +28,7 @@ def test_creating_category(test_ctx):
         'color': 'black',
         'usages': 0,
         'default': True,
+        'version': 1,
     }
     category = db.session.query(db.TagCategory).one()
     assert category.name == 'meta'

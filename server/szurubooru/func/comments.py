@@ -12,6 +12,7 @@ def serialize_comment(comment, authenticated_user, options=None):
             'id': lambda: comment.comment_id,
             'user': lambda: users.serialize_micro_user(comment.user),
             'postId': lambda: comment.post.post_id,
+            'version': lambda: comment.version,
             'text': lambda: comment.text,
             'creationTime': lambda: comment.creation_time,
             'lastEditTime': lambda: comment.last_edit_time,

@@ -50,6 +50,7 @@ def test_creating_user(test_ctx, fake_datetime):
         'dislikedPostCount': 0,
         'favoritePostCount': 0,
         'uploadedPostCount': 0,
+        'version': 1,
     }
     user = users.get_user_by_name('chewie1')
     assert user.name == 'chewie1'

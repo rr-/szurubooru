@@ -130,6 +130,7 @@ def test_serialize_post(
 
     assert result == {
         'id': 1,
+        'version': 1,
         'creationTime': datetime.datetime(1997, 1, 1),
         'lastEditTime': datetime.datetime(1998, 1, 1),
         'safety': 'safe',

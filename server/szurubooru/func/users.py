@@ -46,9 +46,10 @@ def serialize_user(user, authenticated_user, options=None, force_show_email=Fals
         user,
         {
             'name': lambda: user.name,
-            'rank': lambda: user.rank,
             'creationTime': lambda: user.creation_time,
             'lastLoginTime': lambda: user.last_login_time,
+            'version': lambda: user.version,
+            'rank': lambda: user.rank,
             'avatarStyle': lambda: user.avatar_style,
             'avatarUrl': lambda: _get_avatar_url(user),
             'commentCount': lambda: user.comment_count,

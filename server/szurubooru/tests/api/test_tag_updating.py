@@ -42,6 +42,7 @@ def test_simple_updating(test_ctx, fake_datetime):
         result = test_ctx.api.put(
             test_ctx.context_factory(
                 input={
+                    'version': 1,
                     'names': ['tag3'],
                     'category': 'character',
                     'description': 'desc',
@@ -59,6 +60,7 @@ def test_simple_updating(test_ctx, fake_datetime):
         'creationTime': datetime.datetime(1996, 1, 1),
         'lastEditTime': datetime.datetime(1997, 12, 1),
         'usages': 0,
+        'version': 2,
     }
     assert tags.try_get_tag_by_name('tag1') is None
     assert tags.try_get_tag_by_name('tag2') is None
@@ -89,7 +91,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     with pytest.raises(expected_exception):
         test_ctx.api.put(
             test_ctx.context_factory(
-                input=input,
+                input={**input, **{'version': 1}},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
 
@@ -108,7 +110,7 @@ def test_omitting_optional_field(test_ctx, field):
     del input[field]
     result = test_ctx.api.put(
         test_ctx.context_factory(
-            input=input,
+            input={**input, **{'version': 1}},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag')
     assert result is not None
@@ -128,7 +130,7 @@ def test_reusing_own_name(test_ctx, dup_name):
     db.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
-            input={'names': [dup_name, 'tag3']},
+            input={'names': [dup_name, 'tag3'], 'version': 1},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag1')
     assert result['names'] == ['tag1', 'tag3']
@@ -143,7 +145,7 @@ def test_duplicating_names(test_ctx):
         test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'))
     result = test_ctx.api.put(
         test_ctx.context_factory(
-            input={'names': ['tag3', 'TAG3']},
+            input={'names': ['tag3', 'TAG3'], 'version': 1},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag1')
     assert result['names'] == ['tag3']
@@ -162,7 +164,7 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
     with pytest.raises(tags.TagAlreadyExistsError):
         test_ctx.api.put(
             test_ctx.context_factory(
-                input={'names': [dup_name]},
+                input={'names': [dup_name], 'version': 1},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag3')
 
@@ -195,7 +197,8 @@ def test_updating_new_suggestions_and_implications(
     db.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
-            input=input, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
+            input={**input, **{'version': 1}},
+            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'main')
     assert result['suggestions'] == expected_suggestions
     assert result['implications'] == expected_implications
@@ -219,6 +222,7 @@ def test_reusing_suggestions_and_implications(test_ctx):
                 'category': 'meta',
                 'suggestions': ['TAG2'],
                 'implications': ['tag1'],
+                'version': 1,
             },
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag4')
@@ -249,7 +253,8 @@ def test_trying_to_relate_tag_to_itself(test_ctx, input):
     with pytest.raises(tags.InvalidTagRelationError):
         test_ctx.api.put(
             test_ctx.context_factory(
-                input=input, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
+                input={**input, **{'version': 1}},
+                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'tag1')
 
 @pytest.mark.parametrize('input', [
@@ -264,6 +269,6 @@ def test_trying_to_update_without_privileges(test_ctx, input):
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(
             test_ctx.context_factory(
-                input=input,
+                input={**input, **{'version': 1}},
                 user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             'tag')

@@ -20,6 +20,7 @@ def serialize_category(category, options=None):
         category,
         {
             'name': lambda: category.name,
+            'version': lambda: category.version,
             'color': lambda: category.color,
             'usages': lambda: category.tag_count,
             'default': lambda: category.default,

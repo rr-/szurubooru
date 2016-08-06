@@ -1,6 +1,6 @@
 from szurubooru import config, errors
 from szurubooru.api.base_api import BaseApi
-from szurubooru.func import auth, mailer, users
+from szurubooru.func import auth, mailer, users, util
 
 MAIL_SUBJECT = 'Password reset for {name}'
 MAIL_BODY = \
@@ -34,5 +34,6 @@ class PasswordResetApi(BaseApi):
         if token != good_token:
             raise errors.ValidationError('Invalid password reset token.')
         new_password = users.reset_user_password(user)
+        util.bump_version(user)
         ctx.session.commit()
         return {'password': new_password}

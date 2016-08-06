@@ -44,6 +44,7 @@ class Tag(Base):
     tag_id = Column('id', Integer, primary_key=True)
     category_id = Column(
         'category_id', Integer, ForeignKey('tag_category.id'), nullable=False, index=True)
+    version = Column('version', Integer, default=1, nullable=False)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)
     description = Column('description', UnicodeText, default=None)

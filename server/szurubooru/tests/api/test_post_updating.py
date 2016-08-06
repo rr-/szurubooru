@@ -43,6 +43,7 @@ def test_post_updating(
             result = api.PostDetailApi().put(
                 context_factory(
                     input={
+                        'version': 1,
                         'safety': 'safe',
                         'tags': ['tag1', 'tag2'],
                         'relations': [1, 2],
@@ -89,7 +90,7 @@ def test_uploading_from_url_saves_source(
         net.download.return_value = b'content'
         api.PostDetailApi().put(
             context_factory(
-                input={'contentUrl': 'example.com'},
+                input={'contentUrl': 'example.com', 'version': 1},
                 user=user_factory(rank=db.User.RANK_REGULAR)),
             post.post_id)
         net.download.assert_called_once_with('example.com')
@@ -116,7 +117,10 @@ def test_uploading_from_url_with_source_specified(
         net.download.return_value = b'content'
         api.PostDetailApi().put(
             context_factory(
-                input={'contentUrl': 'example.com', 'source': 'example2.com'},
+                input={
+                    'contentUrl': 'example.com',
+                    'source': 'example2.com',
+                    'version': 1},
                 user=user_factory(rank=db.User.RANK_REGULAR)),
             post.post_id)
         net.download.assert_called_once_with('example.com')
@@ -158,7 +162,7 @@ def test_trying_to_update_field_without_privileges(
     with pytest.raises(errors.AuthError):
         api.PostDetailApi().put(
             context_factory(
-                input=input,
+                input={**input, **{'version': 1}},
                 files=files,
                 user=user_factory(rank=db.User.RANK_ANONYMOUS)),
             post.post_id)
@@ -179,6 +183,6 @@ def test_trying_to_create_tags_without_privileges(
         posts.update_post_tags.return_value = ['new-tag']
         api.PostDetailApi().put(
             context_factory(
-                input={'tags': ['tag1', 'tag2']},
+                input={'tags': ['tag1', 'tag2'], 'version': 1},
                 user=user_factory(rank=db.User.RANK_REGULAR)),
             post.post_id)

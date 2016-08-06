@@ -25,6 +25,7 @@ def test_deleting(test_ctx):
     db.session.commit()
     result = test_ctx.api.delete(
         test_ctx.context_factory(
+            input={'version': 1},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag')
     assert result == {}
@@ -39,6 +40,7 @@ def test_deleting_used(test_ctx, post_factory):
     db.session.commit()
     test_ctx.api.delete(
         test_ctx.context_factory(
+            input={'version': 1},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag')
     db.session.refresh(post)
@@ -57,6 +59,7 @@ def test_trying_to_delete_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):
         test_ctx.api.delete(
             test_ctx.context_factory(
+                input={'version': 1},
                 user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             'tag')
     assert db.session.query(db.Tag).count() == 1

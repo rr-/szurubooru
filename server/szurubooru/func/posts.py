@@ -67,6 +67,7 @@ def serialize_post(post, authenticated_user, options=None):
         post,
         {
             'id': lambda: post.post_id,
+            'version': lambda: post.version,
             'creationTime': lambda: post.creation_time,
             'lastEditTime': lambda: post.last_edit_time,
             'safety': lambda: SAFETY_MAP[post.safety],

@@ -50,6 +50,7 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
         'creationTime': datetime.datetime(1997, 12, 1),
         'lastEditTime': None,
         'usages': 0,
+        'version': 1,
     }
     tag = tags.get_tag_by_name('tag1')
     assert [tag_name.name for tag_name in tag.names] == ['tag1', 'tag2']

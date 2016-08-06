@@ -11,6 +11,7 @@
    - [File uploads](#file-uploads)
    - [Error handling](#error-handling)
    - [Field selecting](#field-selecting)
+   - [Versioning](#versioning)
 
 2. [API reference](#api-reference)
 
@@ -140,6 +141,29 @@ should send a `GET` query like this:
 GET /posts/?fields=id,tags
 ```
 
+## Versioning
+
+To prevent problems with concurrent resource modification, szurubooru
+implements optimistic locks using resource versions. Each modifiable resource
+has its `version` returned to the client with `GET` requests. At the same time,
+each `PUT` and `DELETE` request sent by the client must present the same
+`version` field to the server with value as it was given in `GET`.
+
+For example, given `GET /post/1`, the server responds like this:
+
+```
+{
+    ...,
+    "version": 2
+}
+```
+
+This means the client must then send `{"version": 2}` back too. If the client
+fails to do so, the server will reject the request notifying about missing
+parameter. If someone has edited the post in the mean time, the server will
+reject the request as well, in which case the client is encouraged to notify
+the user about the situation.
+
 
 # API reference
 
@@ -211,8 +235,9 @@ data.
 
     ```json5
     {
-        "name":  <name>,  // optional
-        "color": <color>, // optional
+        "version": <version>,
+        "name":    <name>,    // optional
+        "color":   <color>,   // optional
     }
     ```
 
@@ -222,6 +247,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the tag category does not exist
     - the name is used by an existing tag category (names are case insensitive)
     - the name is invalid
@@ -231,8 +257,9 @@ data.
 - **Description**
 
     Updates an existing tag category using specified parameters. Name must
-    match `tag_category_name_regex` from server's configuration. All fields are
-    optional - update concerns only provided fields.
+    match `tag_category_name_regex` from server's configuration. All fields
+    except the [`version`](#versioning) are optional - update concerns only
+    provided fields.
 
 ## Getting tag category
 - **Request**
@@ -257,6 +284,14 @@ data.
 
     `DELETE /tag-category/<name>`
 
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
 - **Output**
 
     ```json5
@@ -265,6 +300,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the tag category does not exist
     - the tag category is used by some tags
     - the tag category is the last tag category available
@@ -436,6 +472,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the tag does not exist
     - any name is used by an existing tag (names are case insensitive)
     - any name, implication or suggestion name is invalid
@@ -452,8 +489,9 @@ data.
     [`<tag-category>` resource](#tag-category). If specified implied tags or
     suggested tags do not exist yet, they will be automatically created. Tags
     created automatically have no implications, no suggestions, one name and
-    their category is set to the first tag category found. All fields are
-    optional - update concerns only provided fields.
+    their category is set to the first tag category found. All fields except
+    the [`version`](#versioning) are optional - update concerns only provided
+    fields.
 
 ## Getting tag
 - **Request**
@@ -478,6 +516,14 @@ data.
 
     `DELETE /tag/<name>`
 
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
 - **Output**
 
     ```json5
@@ -486,6 +532,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the tag does not exist
     - privileges are too low
 
@@ -502,8 +549,10 @@ data.
 
     ```json5
     {
-        "remove":  <source-tag-name>,
-        "mergeTo": <target-tag-name>
+        "removeVersion":  <source-tag-version>,
+        "remove":         <source-tag-name>,
+        "mergeToVersion": <target-tag-version>,
+        "mergeTo":        <target-tag-name>
     }
     ```
 
@@ -513,6 +562,7 @@ data.
 
 - **Errors**
 
+    - the version of either tag is outdated
     - the source or target tag does not exist
     - the source tag is the same as the target tag
     - privileges are too low
@@ -713,9 +763,9 @@ data.
     post to use default thumbnail. If `anonymous` is set to truthy value, the
     uploader name won't be recorded (privilege verification still applies; it's
     possible to disallow anonymous uploads completely from config.) All fields
-    are optional - update concerns only provided fields. For details how to
-    pass `content` and `thumbnail`, see [file uploads](#file-uploads) for
-    details.
+    except the [`version`](#versioning) are optional - update concerns only
+    provided fields. For details how to pass `content` and `thumbnail`, see
+    [file uploads](#file-uploads) for details.
 
 ## Updating post
 - **Request**
@@ -726,6 +776,7 @@ data.
 
     ```json5
     {
+        "version":   <version>,
         "tags":      [<tag1>, <tag2>, <tag3>],    // optional
         "safety":    <safety>,                    // optional
         "source":    <source>,                    // optional
@@ -746,6 +797,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - tags have invalid names
     - safety, notes or flags are invalid
     - relations refer to non-existing posts
@@ -760,7 +812,9 @@ data.
     must contain valid post IDs. `<flag>` currently can be only `"loop"` to
     enable looping for video posts. Sending empty `thumbnail` will reset the
     post thumbnail to default. For details how to pass `content` and
-    `thumbnail`, see [file uploads](#file-uploads) for details.
+    `thumbnail`, see [file uploads](#file-uploads) for details. All fields
+    except the [`version`](#versioning) are optional - update concerns only
+    provided fields.
 
 ## Getting post
 - **Request**
@@ -785,6 +839,14 @@ data.
 
     `DELETE /post/<id>`
 
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
 - **Output**
 
     ```json5
@@ -793,6 +855,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the post does not exist
     - privileges are too low
 
@@ -1005,7 +1068,8 @@ data.
 
     ```json5
     {
-        "text": <new-text> // mandatory
+        "version": <version>,
+        "text":    <new-text> // mandatory
     }
     ```
 
@@ -1015,6 +1079,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the comment does not exist
     - new comment text is empty
     - privileges are too low
@@ -1046,6 +1111,14 @@ data.
 
     `DELETE /comment/<id>`
 
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
 - **Output**
 
     ```json5
@@ -1054,6 +1127,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the comment does not exist
     - privileges are too low
 
@@ -1194,6 +1268,7 @@ data.
 
     ```json5
     {
+        "version":     <version>,
         "name":        <user-name>,     // optional
         "password":    <user-password>, // optional
         "email":       <email>,         // optional
@@ -1212,6 +1287,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the user does not exist
     - a user with new name already exists (names are case insensitive)
     - either user name, password, email or rank are invalid
@@ -1228,7 +1304,9 @@ data.
     provided fields. To update last login time, see
     [authentication](#authentication). Avatar style can be either `gravatar` or
     `manual`. `manual` avatar style requires client to pass also `avatar`
-    file - see [file uploads](#file-uploads) for details.
+    file - see [file uploads](#file-uploads) for details. All fields except the
+    [`version`](#versioning) are optional - update concerns only provided
+    fields.
 
 ## Getting user
 - **Request**
@@ -1253,6 +1331,14 @@ data.
 
     `DELETE /user/<name>`
 
+- **Input**
+
+    ```json5
+    {
+        "version": <version>
+    }
+    ```
+
 - **Output**
 
     ```json5
@@ -1261,6 +1347,7 @@ data.
 
 - **Errors**
 
+    - the version is outdated
     - the user does not exist
     - privileges are too low
 
@@ -1413,6 +1500,7 @@ A single user.
 
 ```json5
 {
+    "version":           <version>,
     "name":              <name>,
     "email":             <email>,
     "rank":              <rank>,
@@ -1429,6 +1517,7 @@ A single user.
 ```
 
 **Field meaning**
+- `<version>`: resource version. See [versioning](#versioning).
 - `<name>`: the user name.
 - `<email>`: the user email. It is available only if the request is
   authenticated by the same user, or the authenticated user can change the
@@ -1480,9 +1569,10 @@ experience.
 
 ```json5
 {
-    "name":  <name>,
-    "color": <color>,
-    "usages": <usages>
+    "version": <version>,
+    "name":    <name>,
+    "color":   <color>,
+    "usages":  <usages>
     "default": <is-default>,
     "snapshots": [
         <snapshot>,
@@ -1494,6 +1584,7 @@ experience.
 
 **Field meaning**
 
+- `<version>`: resource version. See [versioning](#versioning).
 - `<name>`: the category name.
 - `<color>`: the category color.
 - `<usages>`: how many tags is the given category used with.
@@ -1510,6 +1601,7 @@ A single tag. Tags are used to let users search for posts.
 
 ```json5
 {
+    "version":      <version>,
     "names":        <names>,
     "category":     <category>,
     "implications": <implications>,
@@ -1528,6 +1620,7 @@ A single tag. Tags are used to let users search for posts.
 
 **Field meaning**
 
+- `<version>`: resource version. See [versioning](#versioning).
 - `<names>`: a list of tag names (aliases). Tagging a post with any name will
   automatically assign the first name from this list.
 - `<category>`: the name of the category the given tag belongs to.
@@ -1552,6 +1645,7 @@ One file together with its metadata posted to the site.
 
 ```json5
 {
+    "version":            <version>,
     "id":                 <id>,
     "creationTime":       <creation-time>,
     "lastEditTime":       <last-edit-time>,
@@ -1596,6 +1690,7 @@ One file together with its metadata posted to the site.
 
 **Field meaning**
 
+- `<version>`: resource version. See [versioning](#versioning).
 - `<id>`: the post identifier.
 - `<creation-time>`: time the tag was created, formatted as per RFC 3339.
 - `<last-edit-time>`: time the tag was edited, formatted as per RFC 3339.
@@ -1689,6 +1784,7 @@ A comment under a post.
 
 ```json5
 {
+    "version":      <version>,
     "id":           <id>,
     "postId":       <post-id>,
     "user":         <author>
@@ -1701,6 +1797,7 @@ A comment under a post.
 ```
 
 **Field meaning**
+- `<version>`: resource version. See [versioning](#versioning).
 - `<id>`: the comment identifier.
 - `<post-id>`: an id of the post the comment is for.
 - `<text>`: the comment content. The client should render is as Markdown.

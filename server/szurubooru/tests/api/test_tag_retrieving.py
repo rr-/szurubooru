@@ -57,6 +57,7 @@ def test_retrieving_single(test_ctx):
         'implications': [],
         'usages': 0,
         'snapshots': [],
+        'version': 1,
     }
 
 def test_trying_to_retrieve_single_non_existing(test_ctx):

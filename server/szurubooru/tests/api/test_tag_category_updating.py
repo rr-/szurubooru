@@ -34,6 +34,7 @@ def test_simple_updating(test_ctx):
             input={
                 'name': 'changed',
                 'color': 'white',
+                'version': 1,
             },
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'name')
@@ -44,6 +45,7 @@ def test_simple_updating(test_ctx):
         'color': 'white',
         'usages': 0,
         'default': False,
+        'version': 2,
     }
     assert tag_categories.try_get_category_by_name('name') is None
     category = tag_categories.get_category_by_name('changed')
@@ -66,7 +68,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input):
     with pytest.raises(tag_categories.InvalidTagCategoryNameError):
         test_ctx.api.put(
             test_ctx.context_factory(
-                input=input,
+                input={**input, **{'version': 1}},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'meta')
 
@@ -81,7 +83,7 @@ def test_omitting_optional_field(test_ctx, field):
     del input[field]
     result = test_ctx.api.put(
         test_ctx.context_factory(
-            input=input,
+            input={**input, **{'version': 1}},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'name')
     assert result is not None
@@ -100,7 +102,7 @@ def test_reusing_own_name(test_ctx, new_name):
     db.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
-            input={'name': new_name},
+            input={'name': new_name, 'version': 1},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'cat')
     assert result['name'] == new_name
@@ -116,7 +118,7 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
     with pytest.raises(tag_categories.TagCategoryAlreadyExistsError):
         test_ctx.api.put(
             test_ctx.context_factory(
-                input={'name': dup_name},
+                input={'name': dup_name, 'version': 1},
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
             'cat2')
 
@@ -130,6 +132,6 @@ def test_trying_to_update_without_privileges(test_ctx, input):
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(
             test_ctx.context_factory(
-                input=input,
+                input={**input, **{'version': 1}},
                 user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
             'dummy')

@@ -25,6 +25,7 @@ def test_deleting(test_ctx):
     db.session.commit()
     result = test_ctx.api.delete(
         test_ctx.context_factory(
+            input={'version': 1},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         1)
     assert result == {}
