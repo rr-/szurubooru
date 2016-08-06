@@ -30,21 +30,22 @@ class TagCategory extends events.EventTarget {
     }
 
     save() {
-        const data = {};
+        const detail = {version: this._version};
+
         if (this.name !== this._origName) {
-            data.name = this.name;
+            detail.name = this.name;
         }
         if (this.color !== this._origColor) {
-            data.color = this.color;
+            detail.color = this.color;
         }
 
-        if (!Object.keys(data).length) {
+        if (!Object.keys(detail).length) {
             return Promise.resolve();
         }
 
         let promise = this._origName ?
-            api.put('/tag-category/' + this._origName, data) :
-            api.post('/tag-categories', data);
+            api.put('/tag-category/' + this._origName, detail) :
+            api.post('/tag-categories', detail);
 
         return promise
             .then(response => {
@@ -61,7 +62,9 @@ class TagCategory extends events.EventTarget {
     }
 
     delete() {
-        return api.delete('/tag-category/' + this._origName)
+        return api.delete(
+                '/tag-category/' + this._origName,
+                {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -75,6 +78,7 @@ class TagCategory extends events.EventTarget {
     }
 
     _updateFromResponse(response) {
+        this._version   = response.version;
         this._name      = response.name;
         this._color     = response.color;
         this._isDefault = response.default;

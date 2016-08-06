@@ -33,21 +33,14 @@ class Comment extends events.EventTarget {
     set text(value)    { this._text = value; }
 
     save() {
-        let promise = null;
-        if (this._id) {
-            promise = api.put(
-                '/comment/' + this._id,
-                {
-                    text: this._text,
-                });
-        } else {
-            promise = api.post(
-                '/comments',
-                {
-                    text: this._text,
-                    postId: this._postId,
-                });
-        }
+        const detail = {
+            version: this._version,
+            text: this._text,
+        };
+        let promise = this._id ?
+            api.put('/comment/' + this._id, detail) :
+            api.post(
+                '/comments', Object.assign({postId: this._postId}, detail));
 
         return promise.then(response => {
             this._updateFromResponse(response);
@@ -63,7 +56,9 @@ class Comment extends events.EventTarget {
     }
 
     delete() {
-        return api.delete('/comment/' + this._id)
+        return api.delete(
+                '/comment/' + this._id,
+                {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -92,6 +87,7 @@ class Comment extends events.EventTarget {
     }
 
     _updateFromResponse(response) {
+        this._version      = response.version;
         this._id           = response.id;
         this._postId       = response.postId;
         this._text         = response.text;

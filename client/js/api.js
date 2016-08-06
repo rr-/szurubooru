@@ -56,9 +56,9 @@ class Api extends events.EventTarget {
         return this._process(url, request.put, data, files, options);
     }
 
-    delete(url, options) {
+    delete(url, data, options) {
         this.cache = {};
-        return this._process(url, request.delete, {}, {}, options);
+        return this._process(url, request.delete, data, {}, options);
     }
 
     _process(url, requestFactory, data, files, options) {

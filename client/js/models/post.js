@@ -85,7 +85,7 @@ class Post extends events.EventTarget {
 
     save() {
         const files = [];
-        const detail = {};
+        const detail = {version: this._version};
 
         // send only changed fields to avoid user privilege violation
         if (this._safety !== this._orig._safety) {
@@ -206,7 +206,9 @@ class Post extends events.EventTarget {
     }
 
     removeFromFavorites() {
-        return api.delete('/post/' + this.id + '/favorite')
+        return api.delete(
+                '/post/' + this.id + '/favorite',
+                {version: this._version})
             .then(response => {
                 const prevScore = this._ownScore;
                 this._updateFromResponse(response);
@@ -237,6 +239,7 @@ class Post extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = () => ({
+            _version:       response.version,
             _id:            response.id,
             _type:          response.type,
             _mimeType:      response.mimeType,

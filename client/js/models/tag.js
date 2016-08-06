@@ -42,7 +42,7 @@ class Tag extends events.EventTarget {
     }
 
     save() {
-        const detail = {};
+        const detail = {version: this._version};
 
         // send only changed fields to avoid user privilege violation
         if (misc.arraysDiffer(this._names, this._orig._names)) {
@@ -79,9 +79,15 @@ class Tag extends events.EventTarget {
     }
 
     merge(targetName) {
-        return api.post('/tag-merge/', {
-                remove: this._origName,
-                mergeTo: targetName,
+        return api.get('/tag/' + targetName).then(response => {
+                return api.post('/tag-merge/', {
+                    removeVersion: this._version,
+                    remove: this._origName,
+                    mergeToVersion: response.version,
+                    mergeTo: targetName,
+                });
+            }, response => {
+                return Promise.reject(response);
             }).then(response => {
                 this._updateFromResponse(response);
                 this.dispatchEvent(new CustomEvent('change', {
@@ -96,7 +102,9 @@ class Tag extends events.EventTarget {
     }
 
     delete() {
-        return api.delete('/tag/' + this._origName)
+        return api.delete(
+                '/tag/' + this._origName,
+                {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -111,6 +119,7 @@ class Tag extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = {
+            _version:      response.version,
             _origName:     response.names ? response.names[0] : null,
             _names:        response.names,
             _category:     response.category,

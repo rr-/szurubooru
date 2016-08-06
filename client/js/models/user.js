@@ -50,7 +50,7 @@ class User extends events.EventTarget {
 
     save() {
         const files = [];
-        const detail = {};
+        const detail = {version: this._version};
         const transient = this._orig._name;
 
         if (this._name !== this._orig._name) {
@@ -91,7 +91,9 @@ class User extends events.EventTarget {
     }
 
     delete() {
-        return api.delete('/user/' + this._orig._name)
+        return api.delete(
+                '/user/' + this._orig._name,
+                {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -106,6 +108,7 @@ class User extends events.EventTarget {
 
     _updateFromResponse(response) {
         const map = {
+            _version:           response.version,
             _name:              response.name,
             _rank:              response.rank,
             _email:             response.email,
