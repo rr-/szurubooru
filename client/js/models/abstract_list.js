@@ -17,7 +17,7 @@ class AbstractList extends events.EventTarget {
                     ret.remove(addedItem);
                 });
                 addedItem.addEventListener('change', e => {
-                    this.dispatchEvent(new CustomEvent('change', {
+                    ret.dispatchEvent(new CustomEvent('change', {
                         detail: e.detail,
                     }));
                 });
