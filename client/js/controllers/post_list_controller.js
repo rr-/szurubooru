@@ -11,7 +11,7 @@ const PostsPageView = require('../views/posts_page_view.js');
 
 const fields = [
     'id', 'thumbnailUrl', 'type',
-    'score', 'favoriteCount', 'commentCount', 'tags'];
+    'score', 'favoriteCount', 'commentCount', 'tags', 'version'];
 
 class PostListController {
     constructor(ctx) {
