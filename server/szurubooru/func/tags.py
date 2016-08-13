@@ -11,9 +11,7 @@ class TagAlreadyExistsError(errors.ValidationError): pass
 class TagIsInUseError(errors.ValidationError): pass
 class InvalidTagNameError(errors.ValidationError): pass
 class InvalidTagRelationError(errors.ValidationError): pass
-
-DEFAULT_CATEGORY_NAME = 'Default'
-DEFAULT_CATEGORY_COLOR = 'default'
+class InvalidTagCategoryError(errors.ValidationError): pass
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']
@@ -28,13 +26,6 @@ def _lower_list(names):
 
 def _check_name_intersection(names1, names2):
     return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
-
-def _get_default_category_name():
-    tag_category = tag_categories.try_get_default_category()
-    if tag_category:
-        return tag_category.name
-    else:
-        return DEFAULT_CATEGORY_NAME
 
 def sort_tags(tags):
     default_category = tag_categories.try_get_default_category()
@@ -146,7 +137,7 @@ def get_or_create_tags_by_names(names):
         _verify_name_validity(name)
     existing_tags = get_tags_by_names(names)
     new_tags = []
-    tag_category_name = _get_default_category_name()
+    tag_category_name = tag_categories.get_default_category().name
     for name in names:
         found = False
         for existing_tag in existing_tags:
@@ -213,15 +204,7 @@ def create_tag(names, category_name, suggestions, implications):
     return tag
 
 def update_tag_category_name(tag, category_name):
-    category = db.session \
-        .query(db.TagCategory) \
-        .filter(db.TagCategory.name == category_name) \
-        .first()
-    if not category:
-        category = tag_categories.create_category(
-            category_name, DEFAULT_CATEGORY_COLOR)
-        db.session.add(category)
-    tag.category = category
+    tag.category = tag_categories.get_category_by_name(category_name)
 
 def update_tag_names(tag, names):
     names = util.icase_unique([name for name in names if name])

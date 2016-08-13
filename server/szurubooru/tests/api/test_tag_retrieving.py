@@ -4,7 +4,12 @@ from szurubooru import api, db, errors
 from szurubooru.func import util, tags
 
 @pytest.fixture
-def test_ctx(context_factory, config_injector, user_factory, tag_factory):
+def test_ctx(
+        context_factory,
+        config_injector,
+        user_factory,
+        tag_factory,
+        tag_category_factory):
     config_injector({
         'privileges': {
             'tags:list': db.User.RANK_REGULAR,
@@ -16,6 +21,7 @@ def test_ctx(context_factory, config_injector, user_factory, tag_factory):
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.tag_factory = tag_factory
+    ret.tag_category_factory = tag_category_factory
     ret.list_api = api.TagListApi()
     ret.detail_api = api.TagDetailApi()
     return ret
@@ -42,14 +48,15 @@ def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
                 user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
 
 def test_retrieving_single(test_ctx):
-    db.session.add(test_ctx.tag_factory(names=['tag']))
+    category = test_ctx.tag_category_factory(name='meta')
+    db.session.add(test_ctx.tag_factory(names=['tag'], category=category))
     result = test_ctx.detail_api.get(
         test_ctx.context_factory(
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag')
     assert result == {
         'names': ['tag'],
-        'category': 'dummy',
+        'category': 'meta',
         'description': None,
         'creationTime': datetime.datetime(1996, 1, 1),
         'lastEditTime': None,

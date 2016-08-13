@@ -2,7 +2,7 @@ import datetime
 import os
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.func import util, tags, tag_categories
+from szurubooru.func import util, tags, tag_categories, cache
 
 def assert_relations(relations, expected_tag_names):
     actual_names = sorted([rel.names[0].name for rel in relations])
@@ -20,6 +20,7 @@ def test_ctx(
     db.session.add_all([
         db.TagCategory(name) for name in ['meta', 'character', 'copyright']])
     db.session.flush()
+    cache.purge()
     ret = util.dotdict()
     ret.context_factory = context_factory
     ret.user_factory = user_factory
@@ -68,9 +69,9 @@ def test_creating_simple_tags(test_ctx, fake_datetime):
     ({'names': ['']}, tags.InvalidTagNameError),
     ({'names': ['!bad']}, tags.InvalidTagNameError),
     ({'names': ['x' * 65]}, tags.InvalidTagNameError),
-    ({'category': None}, tag_categories.InvalidTagCategoryNameError),
-    ({'category': ''}, tag_categories.InvalidTagCategoryNameError),
-    ({'category': '!bad'}, tag_categories.InvalidTagCategoryNameError),
+    ({'category': None}, tag_categories.TagCategoryNotFoundError),
+    ({'category': ''}, tag_categories.TagCategoryNotFoundError),
+    ({'category': '!bad'}, tag_categories.TagCategoryNotFoundError),
     ({'suggestions': ['good', '!bad']}, tags.InvalidTagNameError),
     ({'implications': ['good', '!bad']}, tags.InvalidTagNameError),
 ])
@@ -136,8 +137,8 @@ def test_duplicating_names(test_ctx):
 
 def test_trying_to_use_existing_name(test_ctx):
     db.session.add_all([
-        test_ctx.tag_factory(names=['used1'], category_name='meta'),
-        test_ctx.tag_factory(names=['used2'], category_name='meta'),
+        test_ctx.tag_factory(names=['used1']),
+        test_ctx.tag_factory(names=['used2']),
     ])
     db.session.commit()
     with pytest.raises(tags.TagAlreadyExistsError):
@@ -163,15 +164,15 @@ def test_trying_to_use_existing_name(test_ctx):
     assert tags.try_get_tag_by_name('unused') is None
 
 def test_creating_new_category(test_ctx):
-    test_ctx.api.post(
-        test_ctx.context_factory(
-            input={
-                'names': ['main'],
-                'category': 'new',
-                'suggestions': [],
-                'implications': [],
-            }, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert tag_categories.try_get_category_by_name('new') is not None
+    with pytest.raises(tag_categories.TagCategoryNotFoundError):
+        test_ctx.api.post(
+            test_ctx.context_factory(
+                input={
+                    'names': ['main'],
+                    'category': 'new',
+                    'suggestions': [],
+                    'implications': [],
+                }, user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 @pytest.mark.parametrize('input,expected_suggestions,expected_implications', [
     # new relations
@@ -218,8 +219,8 @@ def test_creating_new_suggestions_and_implications(
 
 def test_reusing_suggestions_and_implications(test_ctx):
     db.session.add_all([
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'),
-        test_ctx.tag_factory(names=['tag3'], category_name='meta'),
+        test_ctx.tag_factory(names=['tag1', 'tag2']),
+        test_ctx.tag_factory(names=['tag3']),
     ])
     db.session.commit()
     result = test_ctx.api.post(

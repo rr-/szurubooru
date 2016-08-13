@@ -32,7 +32,7 @@ class TagListApi(BaseApi):
         auth.verify_privilege(ctx.user, 'tags:create')
 
         names = ctx.get_param_as_list('names', required=True)
-        category = ctx.get_param_as_string('category', required=True)
+        category = ctx.get_param_as_string('category', required=True) or ''
         description = ctx.get_param_as_string(
             'description', required=False, default=None)
         suggestions = ctx.get_param_as_list(
@@ -67,7 +67,7 @@ class TagDetailApi(BaseApi):
         if ctx.has_param('category'):
             auth.verify_privilege(ctx.user, 'tags:edit:category')
             tags.update_tag_category_name(
-                tag, ctx.get_param_as_string('category'))
+                tag, ctx.get_param_as_string('category') or '')
         if ctx.has_param('description'):
             auth.verify_privilege(ctx.user, 'tags:edit:description')
             tags.update_tag_description(

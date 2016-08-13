@@ -106,18 +106,19 @@ def user_factory():
 
 @pytest.fixture
 def tag_category_factory():
-    def factory(name='dummy', color='dummy'):
+    def factory(name=None, color='dummy', default=False):
         category = db.TagCategory()
-        category.name = name
+        category.name = name or get_unique_name()
         category.color = color
+        category.default = default
         return category
     return factory
 
 @pytest.fixture
 def tag_factory():
-    def factory(names=None, category=None, category_name='dummy'):
+    def factory(names=None, category=None):
         if not category:
-            category = db.TagCategory(category_name)
+            category = db.TagCategory(get_unique_name())
             db.session.add(category)
         tag = db.Tag()
         tag.names = [db.TagName(name) for name in (names or [get_unique_name()])]

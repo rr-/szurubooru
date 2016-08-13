@@ -6,7 +6,12 @@ from szurubooru.func import util, tags
 
 @pytest.fixture
 def test_ctx(
-        tmpdir, config_injector, context_factory, user_factory, tag_factory):
+        tmpdir,
+        config_injector,
+        context_factory,
+        user_factory,
+        tag_factory,
+        tag_category_factory):
     config_injector({
         'data_dir': str(tmpdir),
         'privileges': {
@@ -17,12 +22,14 @@ def test_ctx(
     ret.context_factory = context_factory
     ret.user_factory = user_factory
     ret.tag_factory = tag_factory
+    ret.tag_category_factory = tag_category_factory
     ret.api = api.TagMergeApi()
     return ret
 
 def test_merging_without_usages(test_ctx, fake_datetime):
-    source_tag = test_ctx.tag_factory(names=['source'], category_name='meta')
-    target_tag = test_ctx.tag_factory(names=['target'], category_name='meta')
+    category = test_ctx.tag_category_factory(name='meta')
+    source_tag = test_ctx.tag_factory(names=['source'])
+    target_tag = test_ctx.tag_factory(names=['target'], category=category)
     db.session.add_all([source_tag, target_tag])
     db.session.commit()
     with fake_datetime('1997-12-01'):
@@ -54,8 +61,8 @@ def test_merging_without_usages(test_ctx, fake_datetime):
     assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
 def test_merging_with_usages(test_ctx, fake_datetime, post_factory):
-    source_tag = test_ctx.tag_factory(names=['source'], category_name='meta')
-    target_tag = test_ctx.tag_factory(names=['target'], category_name='meta')
+    source_tag = test_ctx.tag_factory(names=['source'])
+    target_tag = test_ctx.tag_factory(names=['target'])
     db.session.add_all([source_tag, target_tag])
     db.session.flush()
     assert source_tag.post_count == 0
@@ -80,8 +87,8 @@ def test_merging_with_usages(test_ctx, fake_datetime, post_factory):
     assert tags.get_tag_by_name('target').post_count == 1
 
 def test_merging_when_related(test_ctx, fake_datetime):
-    source_tag = test_ctx.tag_factory(names=['source'], category_name='meta')
-    target_tag = test_ctx.tag_factory(names=['target'], category_name='meta')
+    source_tag = test_ctx.tag_factory(names=['source'])
+    target_tag = test_ctx.tag_factory(names=['target'])
     db.session.add_all([source_tag, target_tag])
     db.session.flush()
     referring_tag = test_ctx.tag_factory(names=['parent'])
@@ -106,8 +113,8 @@ def test_merging_when_related(test_ctx, fake_datetime):
     assert tags.try_get_tag_by_name('parent').suggestions == []
 
 def test_merging_when_target_exists(test_ctx, fake_datetime, post_factory):
-    source_tag = test_ctx.tag_factory(names=['source'], category_name='meta')
-    target_tag = test_ctx.tag_factory(names=['target'], category_name='meta')
+    source_tag = test_ctx.tag_factory(names=['source'])
+    target_tag = test_ctx.tag_factory(names=['target'])
     db.session.add_all([source_tag, target_tag])
     db.session.flush()
     post1 = post_factory()
@@ -138,8 +145,8 @@ def test_merging_when_target_exists(test_ctx, fake_datetime, post_factory):
     ({'mergeTo': []}, tags.TagNotFoundError),
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
-    source_tag = test_ctx.tag_factory(names=['source'], category_name='meta')
-    target_tag = test_ctx.tag_factory(names=['target'], category_name='meta')
+    source_tag = test_ctx.tag_factory(names=['source'])
+    target_tag = test_ctx.tag_factory(names=['target'])
     db.session.add_all([source_tag, target_tag])
     db.session.commit()
     real_input = {
@@ -160,8 +167,8 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     'field', ['remove', 'mergeTo', 'removeVersion', 'mergeToVersion'])
 def test_trying_to_omit_mandatory_field(test_ctx, field):
     db.session.add_all([
-        test_ctx.tag_factory(names=['source'], category_name='meta'),
-        test_ctx.tag_factory(names=['target'], category_name='meta'),
+        test_ctx.tag_factory(names=['source']),
+        test_ctx.tag_factory(names=['target']),
     ])
     db.session.commit()
     input = {
@@ -178,7 +185,7 @@ def test_trying_to_omit_mandatory_field(test_ctx, field):
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_merge_non_existing(test_ctx):
-    db.session.add(test_ctx.tag_factory(names=['good'], category_name='meta'))
+    db.session.add(test_ctx.tag_factory(names=['good']))
     db.session.commit()
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.api.post(
@@ -192,7 +199,7 @@ def test_trying_to_merge_non_existing(test_ctx):
                 user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_merge_to_itself(test_ctx):
-    db.session.add(test_ctx.tag_factory(names=['good'], category_name='meta'))
+    db.session.add(test_ctx.tag_factory(names=['good']))
     db.session.commit()
     with pytest.raises(tags.InvalidTagRelationError):
         test_ctx.api.post(
@@ -212,8 +219,8 @@ def test_trying_to_merge_to_itself(test_ctx):
 ])
 def test_trying_to_merge_without_privileges(test_ctx, input):
     db.session.add_all([
-        test_ctx.tag_factory(names=['source'], category_name='meta'),
-        test_ctx.tag_factory(names=['target'], category_name='meta'),
+        test_ctx.tag_factory(names=['source']),
+        test_ctx.tag_factory(names=['target']),
     ])
     db.session.commit()
     with pytest.raises(errors.AuthError):

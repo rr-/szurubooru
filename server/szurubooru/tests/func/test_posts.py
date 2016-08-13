@@ -127,6 +127,7 @@ def test_serialize_post(
         db.session.flush()
 
         result = posts.serialize_post(post, auth_user)
+        result['tags'].sort()
 
     assert result == {
         'id': 1,

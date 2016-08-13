@@ -62,8 +62,9 @@ def test_serializing_post(post_factory, user_factory, tag_factory):
     }
 
 
-def test_serializing_tag(tag_factory):
-    tag = tag_factory(names=['main_name', 'alias'], category_name='dummy')
+def test_serializing_tag(tag_factory, tag_category_factory):
+    category = tag_category_factory(name='dummy')
+    tag = tag_factory(names=['main_name', 'alias'], category=category)
     assert snapshots.get_tag_snapshot(tag) == {
         'names': ['main_name', 'alias'],
         'category': 'dummy',
@@ -71,7 +72,7 @@ def test_serializing_tag(tag_factory):
         'implications': [],
     }
 
-    tag = tag_factory(names=['main_name', 'alias'], category_name='dummy')
+    tag = tag_factory(names=['main_name', 'alias'], category=category)
     imp1 = tag_factory(names=['imp1_main_name', 'imp1_alias'])
     imp2 = tag_factory(names=['imp2_main_name', 'imp2_alias'])
     sug1 = tag_factory(names=['sug1_main_name', 'sug1_alias'])
@@ -196,8 +197,13 @@ def test_merging_resets_merging_time_window(
     'initial_operation',
     [snapshots.save_entity_creation, snapshots.save_entity_modification])
 def test_merging_deletion_to_modification_or_creation(
-        fake_datetime, tag_factory, user_factory, initial_operation):
-    tag = tag_factory(names=['dummy'], category_name='dummy')
+        fake_datetime,
+        tag_factory,
+        tag_category_factory,
+        user_factory,
+        initial_operation):
+    category = tag_category_factory(name='dummy')
+    tag = tag_factory(names=['dummy'], category=category)
     user = user_factory()
     db.session.add_all([tag, user])
     db.session.flush()
@@ -241,8 +247,10 @@ def test_merging_deletion_all_the_way_deletes_all_snapshots(
         snapshots.save_entity_deletion(tag, user)
     assert db.session.query(db.Snapshot).count() == 0
 
-def test_get_serialized_history(fake_datetime, tag_factory, user_factory):
-    tag = tag_factory(names=['dummy'])
+def test_get_serialized_history(
+        fake_datetime, tag_factory, tag_category_factory, user_factory):
+    category = tag_category_factory(name='dummy')
+    tag = tag_factory(names=['dummy'], category=category)
     user = user_factory(name='the-user')
     db.session.add_all([tag, user])
     db.session.flush()

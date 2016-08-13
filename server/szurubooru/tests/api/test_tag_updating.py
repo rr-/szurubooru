@@ -2,7 +2,7 @@ import datetime
 import os
 import pytest
 from szurubooru import api, config, db, errors
-from szurubooru.func import util, tags, tag_categories
+from szurubooru.func import util, tags, tag_categories, cache
 
 def assert_relations(relations, expected_tag_names):
     actual_names = sorted([rel.names[0].name for rel in relations])
@@ -26,7 +26,8 @@ def test_ctx(
     })
     db.session.add_all([
         db.TagCategory(name) for name in ['meta', 'character', 'copyright']])
-    db.session.flush()
+    db.session.commit()
+    cache.purge()
     ret = util.dotdict()
     ret.context_factory = context_factory
     ret.user_factory = user_factory
@@ -35,7 +36,7 @@ def test_ctx(
     return ret
 
 def test_simple_updating(test_ctx, fake_datetime):
-    tag = test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta')
+    tag = test_ctx.tag_factory(names=['tag1', 'tag2'])
     db.session.add(tag)
     db.session.commit()
     with fake_datetime('1997-12-01'):
@@ -79,14 +80,14 @@ def test_simple_updating(test_ctx, fake_datetime):
     ({'names': ['']}, tags.InvalidTagNameError),
     ({'names': ['!bad']}, tags.InvalidTagNameError),
     ({'names': ['x' * 65]}, tags.InvalidTagNameError),
-    ({'category': None}, tag_categories.InvalidTagCategoryNameError),
-    ({'category': ''}, tag_categories.InvalidTagCategoryNameError),
-    ({'category': '!bad'}, tag_categories.InvalidTagCategoryNameError),
+    ({'category': None}, tag_categories.TagCategoryNotFoundError),
+    ({'category': ''}, tag_categories.TagCategoryNotFoundError),
+    ({'category': '!bad'}, tag_categories.TagCategoryNotFoundError),
     ({'suggestions': ['good', '!bad']}, tags.InvalidTagNameError),
     ({'implications': ['good', '!bad']}, tags.InvalidTagNameError),
 ])
 def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
-    db.session.add(test_ctx.tag_factory(names=['tag1'], category_name='meta'))
+    db.session.add(test_ctx.tag_factory(names=['tag1']))
     db.session.commit()
     with pytest.raises(expected_exception):
         test_ctx.api.put(
@@ -98,7 +99,7 @@ def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
 @pytest.mark.parametrize(
     'field', ['names', 'category', 'description', 'implications', 'suggestions'])
 def test_omitting_optional_field(test_ctx, field):
-    db.session.add(test_ctx.tag_factory(names=['tag'], category_name='meta'))
+    db.session.add(test_ctx.tag_factory(names=['tag']))
     db.session.commit()
     input = {
         'names': ['tag1', 'tag2'],
@@ -126,7 +127,7 @@ def test_trying_to_update_non_existing(test_ctx):
 @pytest.mark.parametrize('dup_name', ['tag1', 'TAG1'])
 def test_reusing_own_name(test_ctx, dup_name):
     db.session.add(
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'))
+        test_ctx.tag_factory(names=['tag1', 'tag2']))
     db.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
@@ -142,7 +143,7 @@ def test_reusing_own_name(test_ctx, dup_name):
 
 def test_duplicating_names(test_ctx):
     db.session.add(
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'))
+        test_ctx.tag_factory(names=['tag1', 'tag2']))
     result = test_ctx.api.put(
         test_ctx.context_factory(
             input={'names': ['tag3', 'TAG3'], 'version': 1},
@@ -158,8 +159,8 @@ def test_duplicating_names(test_ctx):
 @pytest.mark.parametrize('dup_name', ['tag1', 'TAG1', 'tag2', 'TAG2'])
 def test_trying_to_use_existing_name(test_ctx, dup_name):
     db.session.add_all([
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'),
-        test_ctx.tag_factory(names=['tag3', 'tag4'], category_name='meta')])
+        test_ctx.tag_factory(names=['tag1', 'tag2']),
+        test_ctx.tag_factory(names=['tag3', 'tag4'])])
     db.session.commit()
     with pytest.raises(tags.TagAlreadyExistsError):
         test_ctx.api.put(
@@ -193,7 +194,7 @@ def test_trying_to_use_existing_name(test_ctx, dup_name):
 def test_updating_new_suggestions_and_implications(
         test_ctx, input, expected_suggestions, expected_implications):
     db.session.add(
-        test_ctx.tag_factory(names=['main'], category_name='meta'))
+        test_ctx.tag_factory(names=['main']))
     db.session.commit()
     result = test_ctx.api.put(
         test_ctx.context_factory(
@@ -210,9 +211,9 @@ def test_updating_new_suggestions_and_implications(
 
 def test_reusing_suggestions_and_implications(test_ctx):
     db.session.add_all([
-        test_ctx.tag_factory(names=['tag1', 'tag2'], category_name='meta'),
-        test_ctx.tag_factory(names=['tag3'], category_name='meta'),
-        test_ctx.tag_factory(names=['tag4'], category_name='meta'),
+        test_ctx.tag_factory(names=['tag1', 'tag2']),
+        test_ctx.tag_factory(names=['tag3']),
+        test_ctx.tag_factory(names=['tag4']),
     ])
     db.session.commit()
     result = test_ctx.api.put(
@@ -248,7 +249,7 @@ def test_reusing_suggestions_and_implications(test_ctx):
     }
 ])
 def test_trying_to_relate_tag_to_itself(test_ctx, input):
-    db.session.add(test_ctx.tag_factory(names=['tag1'], category_name='meta'))
+    db.session.add(test_ctx.tag_factory(names=['tag1']))
     db.session.commit()
     with pytest.raises(tags.InvalidTagRelationError):
         test_ctx.api.put(
@@ -264,7 +265,7 @@ def test_trying_to_relate_tag_to_itself(test_ctx, input):
     {'implications': ['whatever']},
 ])
 def test_trying_to_update_without_privileges(test_ctx, input):
-    db.session.add(test_ctx.tag_factory(names=['tag'], category_name='meta'))
+    db.session.add(test_ctx.tag_factory(names=['tag']))
     db.session.commit()
     with pytest.raises(errors.AuthError):
         test_ctx.api.put(
