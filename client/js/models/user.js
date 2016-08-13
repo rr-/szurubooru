@@ -66,6 +66,7 @@ class User extends events.EventTarget {
             detail.avatarStyle = this._avatarStyle;
         }
         if (this._avatarContent) {
+            detail.avatarStyle = this._avatarStyle;
             files.avatar = this._avatarContent;
         }
         if (this._password) {
