@@ -78,6 +78,7 @@ function refreshExport() {
                 _tags = new Map();
                 _categories = new Map();
                 reject(error);
+                return;
             }
             _tags = _tagsToMap(
                 response.body ? response.body.tags : []);

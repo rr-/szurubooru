@@ -54,10 +54,10 @@ for (let controller of controllers) {
 
 const tags = require('./tags.js');
 const api = require('./api.js');
-Promise.all([tags.refreshExport(), api.loginFromCookies()])
-    .then(() => {
+tags.refreshExport(); // we don't care about errors
+api.loginFromCookies().then(() => {
         router.start();
-    }).catch(errorMessage => {
+    }, errorMessage => {
         if (window.location.href.indexOf('login') !== -1) {
             api.forget();
             router.start();
