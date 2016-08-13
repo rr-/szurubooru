@@ -433,14 +433,22 @@ def test_update_post_notes():
     assert post.notes[1].text == 'text2'
 
 @pytest.mark.parametrize('input', [
+    [{'text': '...'}],
+    [{'polygon': None, 'text': '...'}],
+    [{'polygon': 'trash', 'text': '...'}],
+    [{'polygon': ['trash', 'trash', 'trash'], 'text': '...'}],
+    [{'polygon': {2: 'trash', 3: 'trash', 4: 'trash'}, 'text': '...'}],
     [{'polygon': [[0, 0]], 'text': '...'}],
+    [{'polygon': [[0, 0], [0, 0], None], 'text': '...'}],
+    [{'polygon': [[0, 0], [0, 0], 'surprise'], 'text': '...'}],
+    [{'polygon': [[0, 0], [0, 0], {2: 'trash', 3: 'trash'}], 'text': '...'}],
+    [{'polygon': [[0, 0], [0, 0], 5], 'text': '...'}],
     [{'polygon': [[0, 0], [0, 0], [0, 2]], 'text': '...'}],
     [{'polygon': [[0, 0], [0, 0], [0, '...']], 'text': '...'}],
     [{'polygon': [[0, 0], [0, 0], [0, 0, 0]], 'text': '...'}],
     [{'polygon': [[0, 0], [0, 0], [0]], 'text': '...'}],
     [{'polygon': [[0, 0], [0, 0], [0, 1]], 'text': ''}],
     [{'polygon': [[0, 0], [0, 0], [0, 1]], 'text': None}],
-    [{'text': '...'}],
     [{'polygon': [[0, 0], [0, 0], [0, 1]]}],
 ])
 def test_update_post_invalid_notes(input):

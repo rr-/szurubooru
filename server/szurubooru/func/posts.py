@@ -281,10 +281,16 @@ def update_post_notes(post, notes):
                 raise InvalidPostNoteError('Note is missing %r field.' % field)
         if not note['text']:
             raise InvalidPostNoteError('A note\'s text cannot be empty.')
+        if not isinstance(note['polygon'], (list, tuple)):
+            raise InvalidPostNoteError(
+                'A note\'s polygon must be a list of points.')
         if len(note['polygon']) < 3:
             raise InvalidPostNoteError(
                 'A note\'s polygon must have at least 3 points.')
         for point in note['polygon']:
+            if not isinstance(point, (list, tuple)):
+                raise InvalidPostNoteError(
+                    'A note\'s polygon point must be a list of length 2.')
             if len(point) != 2:
                 raise InvalidPostNoteError(
                     'A point in note\'s polygon must have two coordinates.')
@@ -294,16 +300,13 @@ def update_post_notes(post, notes):
                 if not 0 <= pos_x <= 1 or not 0 <= pos_y <= 1:
                     raise InvalidPostNoteError(
                         'All points must fit in the image (0..1 range).')
-            except KeyError:
-                raise InvalidPostNoteError(
-                    'Expected array of length 2.')
             except ValueError:
                 raise InvalidPostNoteError(
                     'A point in note\'s polygon must be numeric.')
         if util.value_exceeds_column_size(note['text'], db.PostNote.text):
             raise InvalidPostNoteError('Note text is too long.')
         post.notes.append(
-            db.PostNote(polygon=note['polygon'], text=note['text']))
+            db.PostNote(polygon=note['polygon'], text=str(note['text'])))
 
 def update_post_flags(post, flags):
     target_flags = []
