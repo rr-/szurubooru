@@ -12,6 +12,7 @@ class TagIsInUseError(errors.ValidationError): pass
 class InvalidTagNameError(errors.ValidationError): pass
 class InvalidTagRelationError(errors.ValidationError): pass
 class InvalidTagCategoryError(errors.ValidationError): pass
+class InvalidTagDescriptionError(errors.ValidationError): pass
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']
@@ -241,4 +242,6 @@ def update_tag_suggestions(tag, relations):
     tag.suggestions = get_tags_by_names(relations)
 
 def update_tag_description(tag, description):
+    if util.value_exceeds_column_size(description, db.Tag.description):
+        raise InvalidTagDescriptionError('Description is too long.')
     tag.description = description
