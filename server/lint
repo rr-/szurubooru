@@ -1,0 +1,3 @@
+#!/bin/sh
+pylint szurubooru
+pycodestyle szurubooru --ignore=E128,E131,W503
