@@ -9,9 +9,25 @@ from szurubooru.func import mime
     ('png.png', 'image/png'),
     ('jpeg.jpg', 'image/jpeg'),
     ('gif.gif', 'image/gif'),
+    ('text.txt', 'application/octet-stream'),
 ])
 def test_get_mime_type(read_asset, input_path, expected_mime_type):
     assert mime.get_mime_type(read_asset(input_path)) == expected_mime_type
+
+def test_get_mime_type_for_empty_file():
+    assert mime.get_mime_type(b'') == 'application/octet-stream'
+
+@pytest.mark.parametrize('mime_type,expected_extension', [
+    ('video/mp4', 'mp4'),
+    ('video/webm', 'webm'),
+    ('application/x-shockwave-flash', 'swf'),
+    ('image/png', 'png'),
+    ('image/jpeg', 'jpg'),
+    ('image/gif', 'gif'),
+    ('application/octet-stream', 'dat'),
+])
+def test_get_extension(mime_type, expected_extension):
+    assert mime.get_extension(mime_type) == expected_extension
 
 @pytest.mark.parametrize('input_mime_type,expected_state', [
     ('application/x-shockwave-flash', True),

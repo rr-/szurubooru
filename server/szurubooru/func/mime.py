@@ -33,6 +33,7 @@ def get_extension(mime_type):
         'image/png': 'png',
         'video/mp4': 'mp4',
         'video/webm': 'webm',
+        'application/octet-stream': 'dat',
     }
     return extension_map.get((mime_type or '').strip().lower(), None)
 
