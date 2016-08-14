@@ -53,9 +53,9 @@ def update_category_name(category, name):
 
 def update_category_color(category, color):
     if not color:
-        raise InvalidTagCategoryNameError('Color cannot be empty.')
+        raise InvalidTagCategoryColorError('Color cannot be empty.')
     if not re.match(r'^#?[0-9a-z]+$', color):
-        raise InvalidTagCategoryNameError('Invalid color.')
+        raise InvalidTagCategoryColorError('Invalid color.')
     if util.value_exceeds_column_size(color, db.TagCategory.color):
         raise InvalidTagCategoryColorError('Color is too long.')
     category.color = color

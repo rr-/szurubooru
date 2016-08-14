@@ -54,18 +54,18 @@ def test_simple_updating(test_ctx):
     assert category.color == 'white'
     assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
-@pytest.mark.parametrize('input', [
-    {'name': None},
-    {'name': ''},
-    {'name': '!bad'},
-    {'color': None},
-    {'color': ''},
-    {'color': '; float:left'},
+@pytest.mark.parametrize('input,expected_exception', [
+    ({'name': None}, tag_categories.InvalidTagCategoryNameError),
+    ({'name': ''}, tag_categories.InvalidTagCategoryNameError),
+    ({'name': '!bad'}, tag_categories.InvalidTagCategoryNameError),
+    ({'color': None}, tag_categories.InvalidTagCategoryColorError),
+    ({'color': ''}, tag_categories.InvalidTagCategoryColorError),
+    ({'color': '; float:left'}, tag_categories.InvalidTagCategoryColorError),
 ])
-def test_trying_to_pass_invalid_input(test_ctx, input):
+def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
     db.session.add(test_ctx.tag_category_factory(name='meta', color='black'))
     db.session.commit()
-    with pytest.raises(tag_categories.InvalidTagCategoryNameError):
+    with pytest.raises(expected_exception):
         test_ctx.api.put(
             test_ctx.context_factory(
                 input={**input, **{'version': 1}},
