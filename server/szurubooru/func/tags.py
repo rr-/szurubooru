@@ -36,7 +36,7 @@ def sort_tags(tags):
     return sorted(
         tags,
         key=lambda tag: (
-            default_category_name == tag.category.name,
+            default_category_name != tag.category.name,
             tag.category.name,
             tag.names[0].name)
     )
