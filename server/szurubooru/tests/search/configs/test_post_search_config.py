@@ -22,8 +22,6 @@ def score_factory(user_factory):
 @pytest.fixture
 def note_factory():
     def factory(post=None):
-        if post:
-            return db.PostNote(polygon='...', text='...', post=post)
         return db.PostNote(polygon='...', text='...')
     return factory
 
