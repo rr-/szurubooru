@@ -238,12 +238,14 @@ def update_tag_names(tag, names):
         if not _check_name_intersection_case_sensitive(_get_plain_names(tag), [name]):
             tag.names.append(db.TagName(name))
 
+# TODO: what to do with relations that do not yet exist?
 def update_tag_implications(tag, relations):
     assert tag
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot imply itself.')
     tag.implications = get_tags_by_names(relations)
 
+# TODO: what to do with relations that do not yet exist?
 def update_tag_suggestions(tag, relations):
     assert tag
     if _check_name_intersection(_get_plain_names(tag), relations):

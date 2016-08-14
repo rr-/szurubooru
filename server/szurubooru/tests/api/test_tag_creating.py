@@ -120,49 +120,6 @@ def test_omitting_optional_field(test_ctx, field):
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
     assert result is not None
 
-def test_duplicating_names(test_ctx):
-    result = test_ctx.api.post(
-        test_ctx.context_factory(
-            input={
-                'names': ['tag1', 'TAG1'],
-                'category': 'meta',
-                'suggestions': [],
-                'implications': [],
-            },
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert result['names'] == ['tag1']
-    assert result['category'] == 'meta'
-    tag = tags.get_tag_by_name('tag1')
-    assert [tag_name.name for tag_name in tag.names] == ['tag1']
-
-def test_trying_to_use_existing_name(test_ctx):
-    db.session.add_all([
-        test_ctx.tag_factory(names=['used1']),
-        test_ctx.tag_factory(names=['used2']),
-    ])
-    db.session.commit()
-    with pytest.raises(tags.TagAlreadyExistsError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input={
-                    'names': ['used1', 'unused'],
-                    'category': 'meta',
-                    'suggestions': [],
-                    'implications': [],
-                },
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    with pytest.raises(tags.TagAlreadyExistsError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input={
-                    'names': ['USED2', 'unused'],
-                    'category': 'meta',
-                    'suggestions': [],
-                    'implications': [],
-                },
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert tags.try_get_tag_by_name('unused') is None
-
 def test_creating_new_category(test_ctx):
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
         test_ctx.api.post(
@@ -216,51 +173,6 @@ def test_creating_new_suggestions_and_implications(
     assert_relations(tag.implications, expected_implications)
     for name in ['main'] + expected_suggestions + expected_implications:
         assert tags.try_get_tag_by_name(name) is not None
-
-def test_reusing_suggestions_and_implications(test_ctx):
-    db.session.add_all([
-        test_ctx.tag_factory(names=['tag1', 'tag2']),
-        test_ctx.tag_factory(names=['tag3']),
-    ])
-    db.session.commit()
-    result = test_ctx.api.post(
-        test_ctx.context_factory(
-            input={
-                'names': ['new'],
-                'category': 'meta',
-                'suggestions': ['TAG2'],
-                'implications': ['tag1'],
-            },
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    # NOTE: it should export only the first name
-    assert result['suggestions'] == ['tag1']
-    assert result['implications'] == ['tag1']
-    tag = tags.get_tag_by_name('new')
-    assert_relations(tag.suggestions, ['tag1'])
-    assert_relations(tag.implications, ['tag1'])
-
-@pytest.mark.parametrize('input', [
-    {
-        'names': ['tag'],
-        'category': 'meta',
-        'suggestions': ['tag'],
-        'implications': [],
-    },
-    {
-        'names': ['tag'],
-        'category': 'meta',
-        'suggestions': [],
-        'implications': ['tag'],
-    }
-])
-def test_tag_trying_to_relate_to_itself(test_ctx, input):
-    with pytest.raises(tags.TagAlreadyExistsError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input=input,
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    db.session.rollback()
-    assert tags.try_get_tag_by_name('tag') is None
 
 def test_trying_to_create_tag_without_privileges(test_ctx):
     with pytest.raises(errors.AuthError):

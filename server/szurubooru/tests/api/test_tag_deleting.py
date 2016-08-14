@@ -32,21 +32,6 @@ def test_deleting(test_ctx):
     assert db.session.query(db.Tag).count() == 0
     assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
 
-def test_deleting_used(test_ctx, post_factory):
-    tag = test_ctx.tag_factory(names=['tag'])
-    post = post_factory()
-    post.tags.append(tag)
-    db.session.add_all([tag, post])
-    db.session.commit()
-    test_ctx.api.delete(
-        test_ctx.context_factory(
-            input={'version': 1},
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-        'tag')
-    db.session.refresh(post)
-    assert db.session.query(db.Tag).count() == 0
-    assert post.tags == []
-
 def test_trying_to_delete_non_existing(test_ctx):
     with pytest.raises(tags.TagNotFoundError):
         test_ctx.api.delete(
