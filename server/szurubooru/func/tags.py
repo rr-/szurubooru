@@ -27,6 +27,9 @@ def _lower_list(names):
 def _check_name_intersection(names1, names2):
     return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
 
+def _check_name_intersection_case_sensitive(names1, names2):
+    return len(set(names1).intersection(names2)) > 0
+
 def sort_tags(tags):
     default_category = tag_categories.try_get_default_category()
     default_category_name = default_category.name if default_category else None
@@ -222,14 +225,11 @@ def update_tag_names(tag, names):
     if len(existing_tags):
         raise TagAlreadyExistsError(
             'One of names is already used by another tag.')
-    tag_names_to_remove = []
-    for tag_name in tag.names:
-        if not _check_name_intersection([tag_name.name], names):
-            tag_names_to_remove.append(tag_name)
-    for tag_name in tag_names_to_remove:
-        tag.names.remove(tag_name)
+    for tag_name in tag.names[:]:
+        if not _check_name_intersection_case_sensitive([tag_name.name], names):
+            tag.names.remove(tag_name)
     for name in names:
-        if not _check_name_intersection(_get_plain_names(tag), [name]):
+        if not _check_name_intersection_case_sensitive(_get_plain_names(tag), [name]):
             tag.names.append(db.TagName(name))
 
 def update_tag_implications(tag, relations):

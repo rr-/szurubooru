@@ -134,12 +134,12 @@ def test_reusing_own_name(test_ctx, dup_name):
             input={'names': [dup_name, 'tag3'], 'version': 1},
             user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
         'tag1')
-    assert result['names'] == ['tag1', 'tag3']
+    assert result['names'] == [dup_name, 'tag3']
     assert tags.try_get_tag_by_name('tag2') is None
     tag1 = tags.get_tag_by_name('tag1')
     tag2 = tags.get_tag_by_name('tag3')
     assert tag1.tag_id == tag2.tag_id
-    assert [name.name for name in tag1.names] == ['tag1', 'tag3']
+    assert [name.name for name in tag1.names] == [dup_name, 'tag3']
 
 def test_duplicating_names(test_ctx):
     db.session.add(
