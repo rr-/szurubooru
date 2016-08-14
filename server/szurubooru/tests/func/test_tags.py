@@ -19,10 +19,10 @@ def _assert_tag_siblings(result, expected_names_and_occurrences):
 
 
 @pytest.mark.parametrize('input,expected_tag_names', [
-    ([('a', 'a', True), ('b', 'b', False), ('c', 'c', False)], list('abc')),
-    ([('c', 'a', True), ('b', 'b', False), ('a', 'c', False)], list('cba')),
-    ([('a', 'c', True), ('b', 'b', False), ('c', 'a', False)], list('acb')),
-    ([('a', 'c', False), ('b', 'b', False), ('c', 'a', True)], list('cba')),
+    ([('a', 'a', True), ('b', 'b', False), ('c', 'c', False)], list('bca')),
+    ([('c', 'a', True), ('b', 'b', False), ('a', 'c', False)], list('bac')),
+    ([('a', 'c', True), ('b', 'b', False), ('c', 'a', False)], list('cba')),
+    ([('a', 'c', False), ('b', 'b', False), ('c', 'a', True)], list('bac')),
 ])
 def test_sort_tags(
         input, expected_tag_names, tag_factory, tag_category_factory):
