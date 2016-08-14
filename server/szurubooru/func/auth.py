@@ -40,6 +40,7 @@ def create_password():
     return ''.join(random.choice(alphabet[l]) for l in list(pattern))
 
 def is_valid_password(user, password):
+    assert user
     salt, valid_hash = user.password_salt, user.password_hash
     possible_hashes = [
         get_password_hash(salt, password),
@@ -48,6 +49,7 @@ def is_valid_password(user, password):
     return valid_hash in possible_hashes
 
 def has_privilege(user, privilege_name):
+    assert user
     all_ranks = list(RANK_MAP.keys())
     assert privilege_name in config.config['privileges']
     assert user.rank in all_ranks
@@ -57,11 +59,13 @@ def has_privilege(user, privilege_name):
     return user.rank in good_ranks
 
 def verify_privilege(user, privilege_name):
+    assert user
     if not has_privilege(user, privilege_name):
         raise errors.AuthError('Insufficient privileges to do this.')
 
 def generate_authentication_token(user):
     ''' Generate nonguessable challenge (e.g. links in password reminder). '''
+    assert user
     digest = hashlib.md5()
     digest.update(config.config['secret'].encode('utf8'))
     digest.update(user.password_salt.encode('utf8'))

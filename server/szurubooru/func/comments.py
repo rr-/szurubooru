@@ -42,6 +42,7 @@ def create_comment(user, post, text):
     return comment
 
 def update_comment_text(comment, text):
+    assert comment
     if not text:
         raise EmptyCommentTextError('Comment text cannot be empty.')
     comment.text = text

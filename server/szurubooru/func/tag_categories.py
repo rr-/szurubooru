@@ -37,6 +37,7 @@ def create_category(name, color):
     return category
 
 def update_category_name(category, name):
+    assert category
     if not name:
         raise InvalidTagCategoryNameError('Name cannot be empty.')
     expr = sqlalchemy.func.lower(db.TagCategory.name) == name.lower()
@@ -52,6 +53,7 @@ def update_category_name(category, name):
     category.name = name
 
 def update_category_color(category, color):
+    assert category
     if not color:
         raise InvalidTagCategoryColorError('Color cannot be empty.')
     if not re.match(r'^#?[0-9a-z]+$', color):
@@ -103,6 +105,7 @@ def get_default_category():
     return category
 
 def set_default_category(category):
+    assert category
     old_category = try_get_default_category()
     if old_category:
         old_category.default = False

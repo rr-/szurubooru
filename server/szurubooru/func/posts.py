@@ -36,27 +36,33 @@ FLAG_MAP = {
 }
 
 def get_post_content_url(post):
+    assert post
     return '%s/posts/%d.%s' % (
         config.config['data_url'].rstrip('/'),
         post.post_id,
         mime.get_extension(post.mime_type) or 'dat')
 
 def get_post_thumbnail_url(post):
+    assert post
     return '%s/generated-thumbnails/%d.jpg' % (
         config.config['data_url'].rstrip('/'),
         post.post_id)
 
 def get_post_content_path(post):
+    assert post
     return 'posts/%d.%s' % (
         post.post_id, mime.get_extension(post.mime_type) or 'dat')
 
 def get_post_thumbnail_path(post):
+    assert post
     return 'generated-thumbnails/%d.jpg' % (post.post_id)
 
 def get_post_thumbnail_backup_path(post):
+    assert post
     return 'posts/custom-thumbnails/%d.dat' % (post.post_id)
 
 def serialize_note(note):
+    assert note
     return {
         'polygon': note.polygon,
         'text': note.text,
@@ -175,6 +181,7 @@ def create_post(content, tag_names, user):
     return (post, new_tags)
 
 def update_post_safety(post, safety):
+    assert post
     safety = util.flip(SAFETY_MAP).get(safety, None)
     if not safety:
         raise InvalidPostSafetyError(
@@ -182,11 +189,13 @@ def update_post_safety(post, safety):
     post.safety = safety
 
 def update_post_source(post, source):
+    assert post
     if util.value_exceeds_column_size(source, db.Post.source):
         raise InvalidPostSourceError('Source is too long.')
     post.source = source
 
 def update_post_content(post, content):
+    assert post
     if not content:
         raise InvalidPostContentError('Post content missing.')
     post.mime_type = mime.get_mime_type(content)
@@ -227,6 +236,7 @@ def update_post_content(post, content):
     update_post_thumbnail(post, content=None, do_delete=False)
 
 def update_post_thumbnail(post, content=None, do_delete=True):
+    assert post
     if not content:
         content = files.get(get_post_content_path(post))
         if do_delete:
@@ -236,6 +246,7 @@ def update_post_thumbnail(post, content=None, do_delete=True):
     generate_post_thumbnail(post)
 
 def generate_post_thumbnail(post):
+    assert post
     if files.has(get_post_thumbnail_backup_path(post)):
         content = files.get(get_post_thumbnail_backup_path(post))
     else:
@@ -250,11 +261,13 @@ def generate_post_thumbnail(post):
         files.save(get_post_thumbnail_path(post), EMPTY_PIXEL)
 
 def update_post_tags(post, tag_names):
+    assert post
     existing_tags, new_tags = tags.get_or_create_tags_by_names(tag_names)
     post.tags = existing_tags + new_tags
     return new_tags
 
 def update_post_relations(post, new_post_ids):
+    assert post
     old_posts = post.relations
     old_post_ids = [p.post_id for p in old_posts]
     new_posts = db.session \
@@ -274,6 +287,7 @@ def update_post_relations(post, new_post_ids):
         relation.relations.append(post)
 
 def update_post_notes(post, notes):
+    assert post
     post.notes = []
     for note in notes:
         for field in ('polygon', 'text'):
@@ -309,6 +323,7 @@ def update_post_notes(post, notes):
             db.PostNote(polygon=note['polygon'], text=str(note['text'])))
 
 def update_post_flags(post, flags):
+    assert post
     target_flags = []
     for flag in flags:
         flag = util.flip(FLAG_MAP).get(flag, None)
@@ -319,6 +334,7 @@ def update_post_flags(post, flags):
     post.flags = target_flags
 
 def feature_post(post, user):
+    assert post
     post_feature = db.PostFeature()
     post_feature.time = datetime.datetime.utcnow()
     post_feature.post = post
@@ -326,4 +342,5 @@ def feature_post(post, user):
     db.session.add(post_feature)
 
 def delete(post):
+    assert post
     db.session.delete(post)

@@ -40,6 +40,7 @@ serializers = {
 }
 
 def get_previous_snapshot(snapshot):
+    assert snapshot
     return db.session \
         .query(db.Snapshot) \
         .filter(db.Snapshot.resource_type == snapshot.resource_type) \
@@ -50,6 +51,7 @@ def get_previous_snapshot(snapshot):
         .first()
 
 def get_snapshots(entity):
+    assert entity
     resource_type, resource_id, _ = db.util.get_resource_info(entity)
     return db.session \
         .query(db.Snapshot) \
@@ -59,6 +61,7 @@ def get_snapshots(entity):
         .all()
 
 def serialize_snapshot(snapshot, earlier_snapshot=()):
+    assert snapshot
     if earlier_snapshot is ():
         earlier_snapshot = get_previous_snapshot(snapshot)
     return {
@@ -82,6 +85,8 @@ def get_serialized_history(entity):
     return ret
 
 def _save(operation, entity, auth_user):
+    assert operation
+    assert entity
     resource_type, resource_id, resource_repr = db.util.get_resource_info(entity)
     now = datetime.datetime.utcnow()
 
@@ -115,10 +120,13 @@ def _save(operation, entity, auth_user):
         db.session.add(snapshot)
 
 def save_entity_creation(entity, auth_user):
+    assert entity
     _save(db.Snapshot.OPERATION_CREATED, entity, auth_user)
 
 def save_entity_modification(entity, auth_user):
+    assert entity
     _save(db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
 
 def save_entity_deletion(entity, auth_user):
+    assert entity
     _save(db.Snapshot.OPERATION_DELETED, entity, auth_user)

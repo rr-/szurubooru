@@ -6,6 +6,7 @@ class InvalidScoreTargetError(errors.ValidationError): pass
 class InvalidScoreValueError(errors.ValidationError): pass
 
 def _get_table_info(entity):
+    assert entity
     resource_type, _, _ = db.util.get_resource_info(entity)
     if resource_type == 'post':
         return db.PostScore, lambda table: table.post_id
@@ -14,14 +15,19 @@ def _get_table_info(entity):
     raise InvalidScoreTargetError()
 
 def _get_score_entity(entity, user):
+    assert user
     return db.util.get_aux_entity(db.session, _get_table_info, entity, user)
 
 def delete_score(entity, user):
+    assert entity
+    assert user
     score_entity = _get_score_entity(entity, user)
     if score_entity:
         db.session.delete(score_entity)
 
 def get_score(entity, user):
+    assert entity
+    assert user
     table, get_column = _get_table_info(entity)
     row = db.session \
         .query(table.score) \
@@ -31,6 +37,8 @@ def get_score(entity, user):
     return row[0] if row else 0
 
 def set_score(entity, user, score):
+    assert entity
+    assert user
     if not score:
         delete_score(entity, user)
         try:

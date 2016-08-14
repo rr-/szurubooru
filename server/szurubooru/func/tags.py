@@ -20,6 +20,7 @@ def _verify_name_validity(name):
         raise InvalidTagNameError('Name must satisfy regex %r.' % name_regex)
 
 def _get_plain_names(tag):
+    assert tag
     return [tag_name.name for tag_name in tag.names]
 
 def _lower_list(names):
@@ -157,6 +158,7 @@ def get_or_create_tags_by_names(names):
     return existing_tags, new_tags
 
 def get_tag_siblings(tag):
+    assert tag
     tag_alias = sqlalchemy.orm.aliased(db.Tag)
     pt_alias1 = sqlalchemy.orm.aliased(db.PostTag)
     pt_alias2 = sqlalchemy.orm.aliased(db.PostTag)
@@ -172,6 +174,7 @@ def get_tag_siblings(tag):
     return result
 
 def delete(source_tag):
+    assert source_tag
     db.session.execute(
         sqlalchemy.sql.expression.delete(db.TagSuggestion) \
             .where(db.TagSuggestion.child_id == source_tag.tag_id))
@@ -181,6 +184,8 @@ def delete(source_tag):
     db.session.delete(source_tag)
 
 def merge_tags(source_tag, target_tag):
+    assert source_tag
+    assert target_tag
     if source_tag.tag_id == target_tag.tag_id:
         raise InvalidTagRelationError('Cannot merge tag with itself.')
     pt1 = db.PostTag
@@ -205,9 +210,11 @@ def create_tag(names, category_name, suggestions, implications):
     return tag
 
 def update_tag_category_name(tag, category_name):
+    assert tag
     tag.category = tag_categories.get_category_by_name(category_name)
 
 def update_tag_names(tag, names):
+    assert tag
     names = util.icase_unique([name for name in names if name])
     if not len(names):
         raise InvalidTagNameError('At least one name must be specified.')
@@ -232,16 +239,19 @@ def update_tag_names(tag, names):
             tag.names.append(db.TagName(name))
 
 def update_tag_implications(tag, relations):
+    assert tag
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot imply itself.')
     tag.implications = get_tags_by_names(relations)
 
 def update_tag_suggestions(tag, relations):
+    assert tag
     if _check_name_intersection(_get_plain_names(tag), relations):
         raise InvalidTagRelationError('Tag cannot suggest itself.')
     tag.suggestions = get_tags_by_names(relations)
 
 def update_tag_description(tag, description):
+    assert tag
     if util.value_exceeds_column_size(description, db.Tag.description):
         raise InvalidTagDescriptionError('Description is too long.')
     tag.description = description
