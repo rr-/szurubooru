@@ -8,7 +8,8 @@ from szurubooru import errors
 
 def snake_case_to_lower_camel_case(text):
     components = text.split('_')
-    return components[0] + ''.join(word[0].upper() + word[1:] for word in components[1:])
+    return components[0].lower() + \
+        ''.join(word[0].upper() + word[1:].lower() for word in components[1:])
 
 def snake_case_to_lower_camel_case_keys(source):
     target = {}
