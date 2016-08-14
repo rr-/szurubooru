@@ -1,5 +1,5 @@
 import datetime
-from szurubooru import search
+from szurubooru import search, db
 from szurubooru.rest import routes
 from szurubooru.func import (
     auth, tags, posts, snapshots, favorites, scores, util, versions)
@@ -44,6 +44,9 @@ def create_post(ctx, _params=None):
         content, tag_names, None if anonymous else ctx.user)
     if len(new_tags):
         auth.verify_privilege(ctx.user, 'tags:create')
+        db.session.flush()
+        for tag in new_tags:
+            snapshots.create(tag, ctx.user)
     posts.update_post_safety(post, safety)
     posts.update_post_source(post, source)
     posts.update_post_relations(post, relations)
@@ -52,7 +55,7 @@ def create_post(ctx, _params=None):
     if ctx.has_file('thumbnail'):
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
     ctx.session.add(post)
-    snapshots.save_entity_creation(post, ctx.user)
+    snapshots.create(post, ctx.user)
     ctx.session.commit()
     tags.export_to_json()
     return _serialize_post(ctx, post)
@@ -78,6 +81,9 @@ def update_post(ctx, params):
         new_tags = posts.update_post_tags(post, ctx.get_param_as_list('tags'))
         if len(new_tags):
             auth.verify_privilege(ctx.user, 'tags:create')
+            db.session.flush()
+            for tag in new_tags:
+                snapshots.create(tag, ctx.user)
     if ctx.has_param('safety'):
         auth.verify_privilege(ctx.user, 'posts:edit:safety')
         posts.update_post_safety(post, ctx.get_param_as_string('safety'))
@@ -100,7 +106,7 @@ def update_post(ctx, params):
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
     post.last_edit_time = datetime.datetime.utcnow()
     ctx.session.flush()
-    snapshots.save_entity_modification(post, ctx.user)
+    snapshots.modify(post, ctx.user)
     ctx.session.commit()
     tags.export_to_json()
     return _serialize_post(ctx, post)
@@ -111,7 +117,7 @@ def delete_post(ctx, params):
     auth.verify_privilege(ctx.user, 'posts:delete')
     post = posts.get_post_by_id(params['post_id'])
     versions.verify_version(post, ctx)
-    snapshots.save_entity_deletion(post, ctx.user)
+    snapshots.delete(post, ctx.user)
     posts.delete(post)
     ctx.session.commit()
     tags.export_to_json()
@@ -134,9 +140,7 @@ def set_featured_post(ctx, _params=None):
         raise posts.PostAlreadyFeaturedError(
             'Post %r is already featured.' % post_id)
     posts.feature_post(post, ctx.user)
-    if featured_post:
-        snapshots.save_entity_modification(featured_post, ctx.user)
-    snapshots.save_entity_modification(post, ctx.user)
+    snapshots.modify(post, ctx.user)
     ctx.session.commit()
     return _serialize_post(ctx, post)
 

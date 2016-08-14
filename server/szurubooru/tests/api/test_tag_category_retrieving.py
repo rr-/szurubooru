@@ -35,7 +35,6 @@ def test_retrieving_single(
         'color': 'dummy',
         'usages': 0,
         'default': False,
-        'snapshots': [],
         'version': 1,
     }
 

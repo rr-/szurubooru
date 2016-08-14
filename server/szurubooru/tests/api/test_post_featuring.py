@@ -1,7 +1,7 @@
 from unittest.mock import patch
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.func import posts
+from szurubooru.func import posts, snapshots
 
 
 @pytest.fixture(autouse=True)
@@ -15,15 +15,15 @@ def inject_config(config_injector):
 
 
 def test_featuring(user_factory, post_factory, context_factory):
-    db.session.add(post_factory(id=1))
-    db.session.commit()
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    post = post_factory(id=1)
+    db.session.add(post)
     assert not posts.get_post_by_id(1).is_featured
-    with patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'), \
+            patch('szurubooru.func.snapshots.modify'):
         posts.serialize_post.return_value = 'serialized post'
         result = api.post_api.set_featured_post(
-            context_factory(
-                params={'id': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+            context_factory(params={'id': 1}, user=auth_user))
         assert result == 'serialized post'
         assert posts.try_get_featured_post() is not None
         assert posts.try_get_featured_post().post_id == 1
@@ -32,6 +32,7 @@ def test_featuring(user_factory, post_factory, context_factory):
             context_factory(
                 user=user_factory(rank=db.User.RANK_REGULAR)))
         assert result == 'serialized post'
+        snapshots.modify.assert_called_once_with(post, auth_user)
 
 
 def test_trying_to_omit_required_parameter(user_factory, context_factory):

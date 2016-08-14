@@ -10,14 +10,17 @@ class Snapshot(Base):
     OPERATION_CREATED = 'created'
     OPERATION_MODIFIED = 'modified'
     OPERATION_DELETED = 'deleted'
+    OPERATION_MERGED = 'merged'
 
     snapshot_id = Column('id', Integer, primary_key=True)
     creation_time = Column('creation_time', DateTime, nullable=False)
+    operation = Column('operation', Unicode(16), nullable=False)
     resource_type = Column(
         'resource_type', Unicode(32), nullable=False, index=True)
-    resource_id = Column('resource_id', Integer, nullable=False, index=True)
-    resource_repr = Column('resource_repr', Unicode(64), nullable=False)
-    operation = Column('operation', Unicode(16), nullable=False)
+    resource_pkey = Column(
+        'resource_pkey', Integer, nullable=False, index=True)
+    resource_name = Column(
+        'resource_name', Unicode(64), nullable=False)
     user_id = Column(
         'user_id',
         Integer,

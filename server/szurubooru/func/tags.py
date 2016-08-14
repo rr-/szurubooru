@@ -4,7 +4,7 @@ import os
 import re
 import sqlalchemy
 from szurubooru import config, db, errors
-from szurubooru.func import util, tag_categories, snapshots
+from szurubooru.func import util, tag_categories
 
 
 class TagNotFoundError(errors.NotFoundError):
@@ -86,7 +86,6 @@ def serialize_tag(tag, options=None):
             'implications': lambda: [
                 relation.names[0].name
                 for relation in sort_tags(tag.implications)],
-            'snapshots': lambda: snapshots.get_serialized_history(tag),
         },
         options)
 

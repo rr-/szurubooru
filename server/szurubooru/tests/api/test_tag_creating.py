@@ -1,7 +1,7 @@
 from unittest.mock import patch
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.func import tags
+from szurubooru.func import tags, snapshots
 
 
 @pytest.fixture(autouse=True)
@@ -10,12 +10,15 @@ def inject_config(config_injector):
 
 
 def test_creating_simple_tags(tag_factory, user_factory, context_factory):
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    tag = tag_factory()
     with patch('szurubooru.func.tags.create_tag'), \
             patch('szurubooru.func.tags.get_or_create_tags_by_names'), \
             patch('szurubooru.func.tags.serialize_tag'), \
+            patch('szurubooru.func.snapshots.create'), \
             patch('szurubooru.func.tags.export_to_json'):
         tags.get_or_create_tags_by_names.return_value = ([], [])
-        tags.create_tag.return_value = tag_factory()
+        tags.create_tag.return_value = tag
         tags.serialize_tag.return_value = 'serialized tag'
         result = api.tag_api.create_tag(
             context_factory(
@@ -26,10 +29,11 @@ def test_creating_simple_tags(tag_factory, user_factory, context_factory):
                     'suggestions': ['sug1', 'sug2'],
                     'implications': ['imp1', 'imp2'],
                 },
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=auth_user))
         assert result == 'serialized tag'
         tags.create_tag.assert_called_once_with(
             ['tag1', 'tag2'], 'meta', ['sug1', 'sug2'], ['imp1', 'imp2'])
+        snapshots.create.assert_called_once_with(tag, auth_user)
         tags.export_to_json.assert_called_once_with()
 
 

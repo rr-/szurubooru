@@ -1,7 +1,7 @@
 import re
 import sqlalchemy
 from szurubooru import config, db, errors
-from szurubooru.func import util, snapshots, cache
+from szurubooru.func import util, cache
 
 
 class TagCategoryNotFoundError(errors.NotFoundError):
@@ -40,7 +40,6 @@ def serialize_category(category, options=None):
             'color': lambda: category.color,
             'usages': lambda: category.tag_count,
             'default': lambda: category.default,
-            'snapshots': lambda: snapshots.get_serialized_history(category),
         },
         options)
 

@@ -1,7 +1,7 @@
 from unittest.mock import patch
 import pytest
 from szurubooru import db
-from szurubooru.func import tag_categories, cache, snapshots
+from szurubooru.func import tag_categories, cache
 
 
 @pytest.fixture(autouse=True)
@@ -14,24 +14,21 @@ def test_serialize_category_when_empty():
 
 
 def test_serialize_category(tag_category_factory, tag_factory):
-    with patch('szurubooru.func.snapshots.get_serialized_history'):
-        snapshots.get_serialized_history.return_value = 'snapshot history'
-        category = tag_category_factory(name='name', color='color')
-        category.category_id = 1
-        category.default = True
-        tag1 = tag_factory(category=category)
-        tag2 = tag_factory(category=category)
-        db.session.add_all([category, tag1, tag2])
-        db.session.flush()
-        result = tag_categories.serialize_category(category)
-        assert result == {
-            'name': 'name',
-            'color': 'color',
-            'default': True,
-            'version': 1,
-            'snapshots': 'snapshot history',
-            'usages': 2,
-        }
+    category = tag_category_factory(name='name', color='color')
+    category.category_id = 1
+    category.default = True
+    tag1 = tag_factory(category=category)
+    tag2 = tag_factory(category=category)
+    db.session.add_all([category, tag1, tag2])
+    db.session.flush()
+    result = tag_categories.serialize_category(category)
+    assert result == {
+        'name': 'name',
+        'color': 'color',
+        'default': True,
+        'version': 1,
+        'usages': 2,
+    }
 
 
 def test_create_category_when_first():

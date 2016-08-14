@@ -1,8 +1,19 @@
-import datetime
+from datetime import datetime
 from szurubooru import db
+from szurubooru.func import diff, users
+
+
+def get_tag_category_snapshot(category):
+    assert category
+    return {
+        'name': category.name,
+        'color': category.color,
+        'default': True if category.default else False,
+    }
 
 
 def get_tag_snapshot(tag):
+    assert tag
     return {
         'names': [tag_name.name for tag_name in tag.names],
         'category': tag.category.name,
@@ -12,132 +23,106 @@ def get_tag_snapshot(tag):
 
 
 def get_post_snapshot(post):
+    assert post
     return {
         'source': post.source,
         'safety': post.safety,
         'checksum': post.checksum,
-        'tags': sorted([tag.first_name for tag in post.tags]),
-        'relations': sorted([
-            rel.post_id for rel in post.relations]),
-        'notes': sorted([{
-            'polygon': note.polygon,
-            'text': note.text,
-        } for note in post.notes], key=lambda x: x['polygon']),
         'flags': post.flags,
         'featured': post.is_featured,
+        'tags': sorted([tag.first_name for tag in post.tags]),
+        'relations': sorted([rel.post_id for rel in post.relations]),
+        'notes': sorted([{
+            'polygon': [[point[0], point[1]] for point in note.polygon],
+            'text': note.text,
+        } for note in post.notes], key=lambda x: x['polygon']),
     }
 
 
-def get_tag_category_snapshot(category):
-    return {
-        'name': category.name,
-        'color': category.color,
-        'default': True if category.default else False,
-    }
+_snapshot_factories = {
+    # lambdas allow mocking target functions in the tests
+    # pylint: disable=unnecessary-lambda
+    'tag_category': lambda entity: get_tag_category_snapshot(entity),
+    'tag': lambda entity: get_tag_snapshot(entity),
+    'post': lambda entity: get_post_snapshot(entity),
+}
 
 
-def get_previous_snapshot(snapshot):
+def serialize_snapshot(snapshot, auth_user):
     assert snapshot
-    return db.session \
-        .query(db.Snapshot) \
-        .filter(db.Snapshot.resource_type == snapshot.resource_type) \
-        .filter(db.Snapshot.resource_id == snapshot.resource_id) \
-        .filter(db.Snapshot.creation_time < snapshot.creation_time) \
-        .order_by(db.Snapshot.creation_time.desc()) \
-        .limit(1) \
-        .first()
-
-
-def get_snapshots(entity):
-    assert entity
-    resource_type, resource_id, _ = db.util.get_resource_info(entity)
-    return db.session \
-        .query(db.Snapshot) \
-        .filter(db.Snapshot.resource_type == resource_type) \
-        .filter(db.Snapshot.resource_id == resource_id) \
-        .order_by(db.Snapshot.creation_time.desc()) \
-        .all()
-
-
-def serialize_snapshot(snapshot, earlier_snapshot=()):
-    assert snapshot
-    if earlier_snapshot is ():
-        earlier_snapshot = get_previous_snapshot(snapshot)
     return {
         'operation': snapshot.operation,
         'type': snapshot.resource_type,
-        'id': snapshot.resource_repr,
-        'user': snapshot.user.name if snapshot.user else None,
+        'id': snapshot.resource_name,
+        'user': users.serialize_micro_user(snapshot.user, auth_user),
         'data': snapshot.data,
-        'earlier-data': earlier_snapshot.data if earlier_snapshot else None,
         'time': snapshot.creation_time,
     }
 
 
-def get_serialized_history(entity):
-    if not entity:
-        return []
-    ret = []
-    earlier_snapshot = None
-    for snapshot in reversed(get_snapshots(entity)):
-        ret.insert(0, serialize_snapshot(snapshot, earlier_snapshot))
-        earlier_snapshot = snapshot
-    return ret
-
-
-def _save(operation, entity, auth_user):
-    assert operation
-    assert entity
-    serializers = {
-        'tag': get_tag_snapshot,
-        'tag_category': get_tag_category_snapshot,
-        'post': get_post_snapshot,
-    }
-
-    resource_type, resource_id, resource_repr = (
+def _create(operation, entity, auth_user):
+    resource_type, resource_pkey, resource_name = (
         db.util.get_resource_info(entity))
-    now = datetime.datetime.utcnow()
 
     snapshot = db.Snapshot()
-    snapshot.creation_time = now
+    snapshot.creation_time = datetime.utcnow()
     snapshot.operation = operation
     snapshot.resource_type = resource_type
-    snapshot.resource_id = resource_id
-    snapshot.resource_repr = resource_repr
-    snapshot.data = serializers[resource_type](entity)
+    snapshot.resource_pkey = resource_pkey
+    snapshot.resource_name = resource_name
     snapshot.user = auth_user
-
-    earlier_snapshots = get_snapshots(entity)
-
-    delta = datetime.timedelta(minutes=10)
-    snapshots_left = len(earlier_snapshots)
-    while earlier_snapshots:
-        last_snapshot = earlier_snapshots.pop(0)
-        is_fresh = now - last_snapshot.creation_time <= delta
-        if snapshot.data != last_snapshot.data:
-            if not is_fresh or last_snapshot.user != auth_user:
-                break
-        db.session.delete(last_snapshot)
-        if snapshot.operation != db.Snapshot.OPERATION_DELETED:
-            snapshot.operation = last_snapshot.operation
-        snapshots_left -= 1
-
-    if not snapshots_left and operation == db.Snapshot.OPERATION_DELETED:
-        pass
-    else:
-        db.session.add(snapshot)
+    return snapshot
 
 
-def save_entity_creation(entity, auth_user):
+def create(entity, auth_user):
     assert entity
-    _save(db.Snapshot.OPERATION_CREATED, entity, auth_user)
+    snapshot = _create(db.Snapshot.OPERATION_CREATED, entity, auth_user)
+    snapshot_factory = _snapshot_factories[snapshot.resource_type]
+    snapshot.data = snapshot_factory(entity)
+    db.session.add(snapshot)
 
 
-def save_entity_modification(entity, auth_user):
+# pylint: disable=protected-access
+def modify(entity, auth_user):
     assert entity
-    _save(db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
+
+    model = next((model
+        for model in db.Base._decl_class_registry.values()
+        if hasattr(model, '__table__')
+            and model.__table__.fullname == entity.__table__.fullname),
+        None)
+    assert model
+
+    snapshot = _create(db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
+    snapshot_factory = _snapshot_factories[snapshot.resource_type]
+
+    detached_session = db.sessionmaker()
+    detached_entity = detached_session.query(model).get(snapshot.resource_pkey)
+    assert detached_entity, 'Entity not found in DB, have you committed it?'
+    detached_snapshot = snapshot_factory(detached_entity)
+    detached_session.close()
+
+    active_snapshot = snapshot_factory(entity)
+
+    snapshot.data = diff.get_dict_diff(detached_snapshot, active_snapshot)
+    if not snapshot.data:
+        return
+    db.session.add(snapshot)
 
 
-def save_entity_deletion(entity, auth_user):
+def delete(entity, auth_user):
     assert entity
-    _save(db.Snapshot.OPERATION_DELETED, entity, auth_user)
+    snapshot = _create(db.Snapshot.OPERATION_DELETED, entity, auth_user)
+    snapshot_factory = _snapshot_factories[snapshot.resource_type]
+    snapshot.data = snapshot_factory(entity)
+    db.session.add(snapshot)
+
+
+def merge(source_entity, target_entity, auth_user):
+    assert source_entity
+    assert target_entity
+    snapshot = _create(db.Snapshot.OPERATION_MERGED, source_entity, auth_user)
+    resource_type, _resource_pkey, resource_name = (
+        db.util.get_resource_info(target_entity))
+    snapshot.data = [resource_type, resource_name]
+    db.session.add(snapshot)

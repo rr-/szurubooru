@@ -1,7 +1,7 @@
 from unittest.mock import patch
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.func import tag_categories, tags
+from szurubooru.func import tag_categories, tags, snapshots
 
 
 def _update_category_name(category, name):
@@ -20,29 +20,27 @@ def inject_config(config_injector):
 
 
 def test_simple_updating(user_factory, tag_category_factory, context_factory):
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
     category = tag_category_factory(name='name', color='black')
     db.session.add(category)
-    db.session.commit()
     with patch('szurubooru.func.tag_categories.serialize_category'), \
             patch('szurubooru.func.tag_categories.update_category_name'), \
             patch('szurubooru.func.tag_categories.update_category_color'), \
+            patch('szurubooru.func.snapshots.modify'), \
             patch('szurubooru.func.tags.export_to_json'):
         tag_categories.update_category_name.side_effect = _update_category_name
         tag_categories.serialize_category.return_value = 'serialized category'
         result = api.tag_category_api.update_tag_category(
             context_factory(
-                params={
-                    'name': 'changed',
-                    'color': 'white',
-                    'version': 1,
-                },
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                params={'name': 'changed', 'color': 'white', 'version': 1},
+                user=auth_user),
             {'category_name': 'name'})
         assert result == 'serialized category'
         tag_categories.update_category_name.assert_called_once_with(
             category, 'changed')
         tag_categories.update_category_color.assert_called_once_with(
             category, 'white')
+        snapshots.modify.assert_called_once_with(category, auth_user)
         tags.export_to_json.assert_called_once_with()
 
 

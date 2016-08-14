@@ -943,10 +943,9 @@ data.
 - **Description**
 
     Retrieves the post that is currently featured on the main page in web
-    client. If no post is featured, `<post>` is null and `snapshots` array is
-    empty. Note that this method exists mostly for compatibility with setting
-    featured post - most of times, you'd want to use query global info which
-    contains more information.
+    client. If no post is featured, `<post>` is null. Note that this method
+    exists mostly for compatibility with setting featured post - most of times,
+    you'd want to use query global info which contains more information.
 
 ## Featuring post
 - **Request**
@@ -1441,7 +1440,7 @@ data.
     | `id`              | involving given resource id                   |
     | `date`            | created at given date                         |
     | `time`            | alias of `date`                               |
-    | `operation`       | `changed`, `created` or `deleted`             |
+    | `operation`       | `modified`, `created`, `deleted` or `merged`  |
     | `user`            | name of the user that created given snapshot  |
 
     **Sort style tokens**
@@ -1573,12 +1572,7 @@ experience.
     "name":    <name>,
     "color":   <color>,
     "usages":  <usages>
-    "default": <is-default>,
-    "snapshots": [
-        <snapshot>,
-        <snapshot>,
-        <snapshot>
-    ]
+    "default": <is-default>
 }
 ```
 
@@ -1589,8 +1583,6 @@ experience.
 - `<color>`: the category color.
 - `<usages>`: how many tags is the given category used with.
 - `<is-default>`: whether the tag category is the default one.
-- `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag
-  category's earlier versions.
 
 ## Tag
 **Description**
@@ -1609,12 +1601,7 @@ A single tag. Tags are used to let users search for posts.
     "creationTime": <creation-time>,
     "lastEditTime": <last-edit-time>,
     "usages":       <usage-count>,
-    "description":  <description>,
-    "snapshots": [
-        <snapshot>,
-        <snapshot>,
-        <snapshot>
-    ]
+    "description":  <description>
 }
 ```
 
@@ -1633,8 +1620,6 @@ A single tag. Tags are used to let users search for posts.
 - `<usage-count>`: the number of posts the tag was used in.
 - `<description>`: the tag description (instructions how to use, history etc.)
   The client should render is as Markdown.
-- `<snapshot>`: a [snapshot resource](#snapshot) that contains the tag's
-  earlier versions.
 
 ## Post
 **Description**
@@ -1675,11 +1660,6 @@ One file together with its metadata posted to the site.
     "favoritedBy":        <favorited-by>,
     "hasCustomThumbnail": <has-custom-thumbnail>,
     "mimeType":           <mime-type>
-    "snapshots": [
-        <snapshot>,
-        <snapshot>,
-        <snapshot>
-    ],
     "comments": {
         <comment>,
         <comment>,
@@ -1745,8 +1725,6 @@ One file together with its metadata posted to the site.
 - `<has-custom-thumbnail>`: whether the post uses custom thumbnail.
 - `<mime-type>`: subsidiary to `<type>`, used to tell exact content format;
   useful for `<video>` tags for instance.
-- `<snapshot>`: a [snapshot resource](#snapshot) that contains the post's
-  earlier versions.
 - `<comment>`: a [comment resource](#comment) for given post.
 
 ## Micro post
@@ -1817,13 +1795,12 @@ A snapshot is a version of a database resource.
 
 ```json5
 {
-    "operation":    <operation>,
-    "type":         <resource-type>
-    "id":           <resource-id>,
-    "user":         <user-name>,
-    "data":         <data>,
-    "earlier-data": <earlier-data>,
-    "time":         <time>
+    "operation": <operation>,
+    "type":      <resource-type>,
+    "id":        <resource-id>,
+    "user":      <issuer>,
+    "data":      <data>,
+    "time":      <time>
 }
 ```
 
@@ -1836,6 +1813,7 @@ A snapshot is a version of a database resource.
     - `"created"` - the resource has been created
     - `"modified"` - the resource has been modified
     - `"deleted"` - the resource has been deleted
+    - `"merged"` - the resource has been merged to another resource
 
 - `<resource-type>` and `<resource-id>`: the resource that was changed.
 
@@ -1847,60 +1825,161 @@ A snapshot is a version of a database resource.
     | `"tag_category"`  | tag category name at given time |
     | `"post"`          | post ID                         |
 
-- `<user-name>`: name of the user who has made the change.
+- `<issuer>`: a [micro user resource](#micro-user) representing the user who
+    has made the change.
 
-- `<data>`: the snapshot data.
-
-    The value can be either of structures below:
-
-    - Tag category snapshot data (`<resource-type> = "tag"`)
-
-        *Example*
-
-        ```json5
-        {
-            "name":  "character",
-            "color": "#FF0000",
-            "default": false
-        }
-        ```
-
-    - Tag snapshot data (`<resource-type> = "tag"`)
-
-        *Example*
-
-        ```json5
-        {
-            "names":        ["tag1", "tag2", "tag3"],
-            "category":     "plain",
-            "implications": ["imp1", "imp2", "imp3"],
-            "suggestions":  ["sug1", "sug2", "sug3"]
-        }
-        ```
-
-    - Post snapshot data (`<resource-type> = "post"`)
-
-        *Example*
-
-        ```json5
-        {
-            "source": "http://example.com/",
-            "safety": "safe",
-            "checksum": "deadbeef",
-            "tags": ["tag1", "tag2"],
-            "relations": [1, 2],
-            "notes": [<note1>, <note2>, <note3>],
-            "flags": ["loop"],
-            "featured": false
-        }
-        ```
-
-- `<earlier-data>`: `<data>` field from the last snapshot of the same resource.
-  This allows the client to create visual diffs for any given snapshot without
-  the need to know any other snapshots for a given resource.
+- `<data>`: the snapshot data, of which content depends on the `<operation>`.
+   More explained later.
 
 - `<time>`: when the snapshot was created (i.e. when the resource was changed),
   formatted as per RFC 3339.
+
+**`<data>` field for creation snapshots**
+
+The value can be either of structures below, depending on
+`<resource-type>`:
+
+- Tag category snapshot data (`<resource-type> = "tag_category"`)
+
+    *Example*
+
+    ```json5
+    {
+        "name":  "character",
+        "color": "#FF0000",
+        "default": false
+    }
+    ```
+
+- Tag snapshot data (`<resource-type> = "tag"`)
+
+    *Example*
+
+    ```json5
+    {
+        "names":        ["tag1", "tag2", "tag3"],
+        "category":     "plain",
+        "implications": ["imp1", "imp2", "imp3"],
+        "suggestions":  ["sug1", "sug2", "sug3"]
+    }
+    ```
+
+- Post snapshot data (`<resource-type> = "post"`)
+
+    *Example*
+
+    ```json5
+    {
+        "source": "http://example.com/",
+        "safety": "safe",
+        "checksum": "deadbeef",
+        "tags": ["tag1", "tag2"],
+        "relations": [1, 2],
+        "notes": [<note1>, <note2>, <note3>],
+        "flags": ["loop"],
+        "featured": false
+    }
+    ```
+
+    `<note>`s are serialized the same way as [note resources](#note).
+
+**`<data>` field for modification snapshots**
+
+The value is a property-wise recursive diff between previous version of the
+resource and its current version. Its structure is a `<dictionary-diff>` of
+dictionaries as created by creation snapshots, which is described below.
+
+`<primitive>`: any primitive (number or a string)
+
+`<anything>`: any dictionary, list or primitive
+
+`<dictionary-diff>`:
+
+```json5
+{
+    "type": "object change",
+    "value":
+    {
+        "property-of-any-type-1":
+        {
+            "type": "deleted property",
+            "value": <anything>
+        },
+        "property-of-any-type-2":
+        {
+            "type": "added property",
+            "value": <anything>
+        },
+        "primitive-property":
+        {
+            "type": "primitive change":
+            "old-value": "<primitive>",
+            "new-value": "<primitive>"
+        },
+        "list-property": <list-diff>,
+        "dictionary-property": <dictionary-diff>
+    }
+}
+```
+
+`<list-diff>`:
+
+```json5
+{
+    "type": "list change",
+    "removed": [<anything>, <anything>],
+    "added": [<anything>, <anything>]
+}
+```
+
+Example - a diff for a post that has changed source and has one note added.
+Note the similarities with the structure of post creation snapshots.
+
+```json5
+{
+    "type": "object change",
+    "value":
+    {
+        "source":
+        {
+            "type": "primitive change",
+            "old-value": None,
+            "new-value": "new source"
+        },
+        "notes":
+        {
+            "type": "list change",
+            "removed": [],
+            "added":
+            [
+                {"polygon": [[0, 0], [0, 1], [1, 1]], "text": "new note"}
+            ]
+        }
+    }
+}
+```
+
+Since the snapshot dictionaries structure is pretty immutable, you probably
+won't see `added property` or `deleted property` around. This observation holds
+true even if the way the snapshots are generated changes - szurubooru stores
+just the diffs rather than original snapshots, so it wouldn't be able to
+generate a diff against an old version.
+
+**`<data>` field for deletion snapshots**
+
+Same as creation snapshot. In emergencies, it can be used to reconstruct
+deleted entities. Please note that this does not constitute as means against
+vandalism (it's still possible to cause chaos by mass editing - this should be
+dealt with by configuring role privileges in the config) or replace database
+backups.
+
+**`<data>` field for merge snapshots**
+
+A tuple containing 2 elements:
+
+- resource type equivalent to `<resource-type>` of the target entity.
+- resource ID euivalen to `<resource-id>` of the target entity.
+
 
 ## Unpaged search result
 **Description**

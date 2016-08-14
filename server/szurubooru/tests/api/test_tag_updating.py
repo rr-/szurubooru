@@ -1,7 +1,7 @@
 from unittest.mock import patch
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.func import tags
+from szurubooru.func import tags, snapshots
 
 
 @pytest.fixture(autouse=True)
@@ -31,6 +31,7 @@ def test_simple_updating(user_factory, tag_factory, context_factory):
             patch('szurubooru.func.tags.update_tag_suggestions'), \
             patch('szurubooru.func.tags.update_tag_implications'), \
             patch('szurubooru.func.tags.serialize_tag'), \
+            patch('szurubooru.func.snapshots.modify'), \
             patch('szurubooru.func.tags.export_to_json'):
         tags.get_or_create_tags_by_names.return_value = ([], [])
         tags.serialize_tag.return_value = 'serialized tag'
@@ -57,6 +58,8 @@ def test_simple_updating(user_factory, tag_factory, context_factory):
             tag, ['imp1', 'imp2'])
         tags.serialize_tag.assert_called_once_with(
             tag, options=None)
+        snapshots.modify.assert_called_once_with(tag, auth_user)
+        tags.export_to_json.assert_called_once_with()
 
 
 @pytest.mark.parametrize(

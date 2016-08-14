@@ -3,8 +3,7 @@ from unittest.mock import patch
 from datetime import datetime
 import pytest
 from szurubooru import db
-from szurubooru.func import (
-    posts, users, comments, snapshots, tags, images, files, util)
+from szurubooru.func import (posts, users, comments, tags, images, files, util)
 
 
 @pytest.mark.parametrize('input_mime_type,expected_url', [
@@ -78,14 +77,12 @@ def test_serialize_post(
     config_injector({'data_url': 'http://example.com/'})
     with patch('szurubooru.func.comments.serialize_comment'), \
             patch('szurubooru.func.users.serialize_micro_user'), \
-            patch('szurubooru.func.posts.files.has'), \
-            patch('szurubooru.func.snapshots.get_serialized_history'):
+            patch('szurubooru.func.posts.files.has'):
         files.has.return_value = True
         users.serialize_micro_user.side_effect \
             = lambda user, auth_user: user.name
         comments.serialize_comment.side_effect \
             = lambda comment, auth_user: comment.user.name
-        snapshots.get_serialized_history.return_value = 'snapshot history'
 
         auth_user = user_factory(name='auth user')
         post = db.Post()
@@ -178,7 +175,6 @@ def test_serialize_post(
             'favoritedBy': ['fav1'],
             'hasCustomThumbnail': True,
             'mimeType': 'image/jpeg',
-            'snapshots': 'snapshot history',
             'comments': ['commenter1', 'commenter2'],
         }
 

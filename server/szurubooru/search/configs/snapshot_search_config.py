@@ -14,7 +14,7 @@ class SnapshotSearchConfig(BaseSearchConfig):
     def named_filters(self):
         return {
             'type': search_util.create_str_filter(db.Snapshot.resource_type),
-            'id': search_util.create_str_filter(db.Snapshot.resource_repr),
+            'id': search_util.create_str_filter(db.Snapshot.resource_name),
             'date': search_util.create_date_filter(db.Snapshot.creation_time),
             'time': search_util.create_date_filter(db.Snapshot.creation_time),
             'operation': search_util.create_str_filter(db.Snapshot.operation),

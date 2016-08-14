@@ -7,8 +7,8 @@ def snapshot_factory():
     snapshot = db.Snapshot()
     snapshot.creation_time = datetime(1999, 1, 1)
     snapshot.resource_type = 'dummy'
-    snapshot.resource_id = 1
-    snapshot.resource_repr = 'dummy'
+    snapshot.resource_pkey = 1
+    snapshot.resource_name = 'dummy'
     snapshot.operation = 'added'
     snapshot.data = '{}'
     return snapshot

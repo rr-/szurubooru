@@ -40,7 +40,7 @@ def test_post_updating(
             patch('szurubooru.func.posts.update_post_flags'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.save_entity_modification'), \
+            patch('szurubooru.func.snapshots.modify'), \
             fake_datetime('1997-01-01'):
         posts.serialize_post.return_value = 'serialized post'
 
@@ -77,9 +77,8 @@ def test_post_updating(
             post, ['flag1', 'flag2'])
         posts.serialize_post.assert_called_once_with(
             post, auth_user, options=None)
+        snapshots.modify.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
-        snapshots.save_entity_modification.assert_called_once_with(
-            post, auth_user)
         assert post.last_edit_time == datetime(1997, 1, 1)
 
 
@@ -90,10 +89,10 @@ def test_uploading_from_url_saves_source(
     db.session.flush()
     with patch('szurubooru.func.net.download'), \
             patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.save_entity_modification'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.update_post_content'), \
-            patch('szurubooru.func.posts.update_post_source'):
+            patch('szurubooru.func.posts.update_post_source'), \
+            patch('szurubooru.func.snapshots.modify'):
         net.download.return_value = b'content'
         api.post_api.update_post(
             context_factory(
@@ -112,10 +111,10 @@ def test_uploading_from_url_with_source_specified(
     db.session.flush()
     with patch('szurubooru.func.net.download'), \
             patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.save_entity_modification'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.update_post_content'), \
-            patch('szurubooru.func.posts.update_post_source'):
+            patch('szurubooru.func.posts.update_post_source'), \
+            patch('szurubooru.func.snapshots.modify'):
         net.download.return_value = b'content'
         api.post_api.update_post(
             context_factory(

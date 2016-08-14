@@ -10,4 +10,4 @@ _search_executor = search.Executor(search.configs.SnapshotSearchConfig())
 def get_snapshots(ctx, _params=None):
     auth.verify_privilege(ctx.user, 'snapshots:list')
     return _search_executor.execute_and_serialize(
-        ctx, snapshots.serialize_snapshot)
+        ctx, lambda snapshot: snapshots.serialize_snapshot(snapshot, ctx.user))

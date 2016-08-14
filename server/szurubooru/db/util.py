@@ -16,13 +16,13 @@ def get_resource_info(entity):
     assert primary_key is not None
     assert len(primary_key) == 1
 
-    resource_repr = serializers[resource_type](entity)
-    assert resource_repr
+    resource_name = serializers[resource_type](entity)
+    assert resource_name
 
-    resource_id = primary_key[0]
-    assert resource_id
+    resource_pkey = primary_key[0]
+    assert resource_pkey
 
-    return (resource_type, resource_id, resource_repr)
+    return (resource_type, resource_pkey, resource_name)
 
 
 def get_aux_entity(session, get_table_info, entity, user):

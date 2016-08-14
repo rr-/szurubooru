@@ -31,7 +31,7 @@ def test_creating_minimal_posts(
             patch('szurubooru.func.posts.update_post_thumbnail'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.save_entity_creation'):
+            patch('szurubooru.func.snapshots.create'):
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'
 
@@ -61,8 +61,8 @@ def test_creating_minimal_posts(
             post, 'post-thumbnail')
         posts.serialize_post.assert_called_once_with(
             post, auth_user, options=None)
+        snapshots.create.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
-        snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
 
 
 def test_creating_full_posts(context_factory, post_factory, user_factory):
@@ -79,7 +79,7 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
             patch('szurubooru.func.posts.update_post_flags'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.save_entity_creation'):
+            patch('szurubooru.func.snapshots.create'):
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'
 
@@ -110,8 +110,8 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
             post, ['flag1', 'flag2'])
         posts.serialize_post.assert_called_once_with(
             post, auth_user, options=None)
+        snapshots.create.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
-        snapshots.save_entity_creation.assert_called_once_with(post, auth_user)
 
 
 def test_anonymous_uploads(
@@ -122,7 +122,6 @@ def test_anonymous_uploads(
     db.session.flush()
 
     with patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.save_entity_creation'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):
@@ -154,7 +153,6 @@ def test_creating_from_url_saves_source(
 
     with patch('szurubooru.func.net.download'), \
             patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.save_entity_creation'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):
@@ -186,7 +184,6 @@ def test_creating_from_url_with_source_specified(
 
     with patch('szurubooru.func.net.download'), \
             patch('szurubooru.func.tags.export_to_json'), \
-            patch('szurubooru.func.snapshots.save_entity_creation'), \
             patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):

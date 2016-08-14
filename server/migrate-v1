@@ -355,50 +355,6 @@ def import_scores(v1_session, v2_session):
         v2_session.add(score)
     v2_session.commit()
 
-def import_snapshots(v1_session, v2_session):
-    logger.info('Importing snapshots...')
-    for row in exec_query(v1_session, 'SELECT * FROM snapshots ORDER BY time ASC'):
-        snapshot = db.Snapshot()
-        snapshot.creation_time = row['time']
-        snapshot.user_id = row['userId']
-        snapshot.operation = {
-            0: db.Snapshot.OPERATION_CREATED,
-            1: db.Snapshot.OPERATION_MODIFIED,
-            2: db.Snapshot.OPERATION_DELETED,
-        }[row['operation']]
-        snapshot.resource_type = {
-            0: 'post',
-            1: 'tag',
-        }[row['type']]
-        snapshot.resource_id = row['primaryKey']
-
-        data = json.loads(zlib.decompress(row['data'], -15).decode('utf-8'))
-        if snapshot.resource_type == 'post':
-            if 'contentChecksum' in data:
-                data['checksum'] = data['contentChecksum']
-                del data['contentChecksum']
-            if 'tags' in data and isinstance(data['tags'], dict):
-                data['tags'] = list(data['tags'].values())
-            if 'notes' in data:
-                notes = []
-                for note in data['notes']:
-                    notes.append({
-                        'polygon': translate_note_polygon(note),
-                        'text': note['text'],
-                    })
-                data['notes'] = notes
-            snapshot.resource_repr = row['primaryKey']
-        elif snapshot.resource_type == 'tag':
-            if 'banned' in data:
-                del data['banned']
-            if 'name' in data:
-                data['names'] = [data['name']]
-                del data['name']
-            snapshot.resource_repr = data['names'][0]
-        snapshot.data = data
-        v2_session.add(snapshot)
-    v2_session.commit()
-
 def main():
     args = parse_args()
 
@@ -426,7 +382,6 @@ def main():
     import_post_favorites(unused_post_ids, v1_session, v2_session)
     import_comments(unused_post_ids, v1_session, v2_session)
     import_scores(v1_session, v2_session)
-    import_snapshots(v1_session, v2_session)
 
 if __name__ == '__main__':
     main()

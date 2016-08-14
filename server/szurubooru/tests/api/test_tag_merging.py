@@ -1,7 +1,7 @@
 from unittest.mock import patch
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.func import tags
+from szurubooru.func import tags, snapshots
 
 
 @pytest.fixture(autouse=True)
@@ -10,6 +10,7 @@ def inject_config(config_injector):
 
 
 def test_merging(user_factory, tag_factory, context_factory, post_factory):
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
     source_tag = tag_factory(names=['source'])
     target_tag = tag_factory(names=['target'])
     db.session.add_all([source_tag, target_tag])
@@ -24,6 +25,7 @@ def test_merging(user_factory, tag_factory, context_factory, post_factory):
     assert target_tag.post_count == 0
     with patch('szurubooru.func.tags.serialize_tag'), \
             patch('szurubooru.func.tags.merge_tags'), \
+            patch('szurubooru.func.snapshots.merge'), \
             patch('szurubooru.func.tags.export_to_json'):
         api.tag_api.merge_tags(
             context_factory(
@@ -33,8 +35,10 @@ def test_merging(user_factory, tag_factory, context_factory, post_factory):
                     'remove': 'source',
                     'mergeTo': 'target',
                 },
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=auth_user))
         tags.merge_tags.called_once_with(source_tag, target_tag)
+        snapshots.merge.assert_called_once_with(
+            source_tag, target_tag, auth_user)
         tags.export_to_json.assert_called_once_with()
 
 

@@ -1,7 +1,7 @@
 from unittest.mock import patch
 import pytest
 from szurubooru import api, db, errors
-from szurubooru.func import posts, tags
+from szurubooru.func import posts, tags, snapshots
 
 
 @pytest.fixture(autouse=True)
@@ -10,16 +10,17 @@ def inject_config(config_injector):
 
 
 def test_deleting(user_factory, post_factory, context_factory):
-    db.session.add(post_factory(id=1))
-    db.session.commit()
-    with patch('szurubooru.func.tags.export_to_json'):
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    post = post_factory(id=1)
+    db.session.add(post)
+    with patch('szurubooru.func.tags.export_to_json'), \
+            patch('szurubooru.func.snapshots.delete'):
         result = api.post_api.delete_post(
-            context_factory(
-                params={'version': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+            context_factory(params={'version': 1}, user=auth_user),
             {'post_id': 1})
         assert result == {}
         assert db.session.query(db.Post).count() == 0
+        snapshots.delete.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
 
 

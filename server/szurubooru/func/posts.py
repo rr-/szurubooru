@@ -2,7 +2,7 @@ import datetime
 import sqlalchemy
 from szurubooru import config, db, errors
 from szurubooru.func import (
-    users, snapshots, scores, comments, tags, util, mime, images, files)
+    users, scores, comments, tags, util, mime, images, files)
 
 
 EMPTY_PIXEL = \
@@ -165,7 +165,6 @@ def serialize_post(post, auth_user, options=None):
                 for comment in sorted(
                     post.comments,
                     key=lambda comment: comment.creation_time)],
-            'snapshots': lambda: snapshots.get_serialized_history(post),
         },
         options)
 

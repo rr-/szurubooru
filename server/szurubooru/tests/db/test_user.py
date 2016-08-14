@@ -145,8 +145,8 @@ def test_cascade_deletions(post_factory, user_factory, comment_factory):
     snapshot.user = user
     snapshot.creation_time = datetime(1997, 1, 1)
     snapshot.resource_type = '-'
-    snapshot.resource_id = 1
-    snapshot.resource_repr = '-'
+    snapshot.resource_pkey = 1
+    snapshot.resource_name = '-'
     snapshot.operation = '-'
 
     db.session.add_all([user, post, comment, snapshot])
