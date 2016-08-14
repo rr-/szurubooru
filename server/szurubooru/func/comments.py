@@ -5,19 +5,19 @@ from szurubooru.func import users, scores, util
 class CommentNotFoundError(errors.NotFoundError): pass
 class EmptyCommentTextError(errors.ValidationError): pass
 
-def serialize_comment(comment, authenticated_user, options=None):
+def serialize_comment(comment, auth_user, options=None):
     return util.serialize_entity(
         comment,
         {
             'id': lambda: comment.comment_id,
-            'user': lambda: users.serialize_micro_user(comment.user),
+            'user': lambda: users.serialize_micro_user(comment.user, auth_user),
             'postId': lambda: comment.post.post_id,
             'version': lambda: comment.version,
             'text': lambda: comment.text,
             'creationTime': lambda: comment.creation_time,
             'lastEditTime': lambda: comment.last_edit_time,
             'score': lambda: comment.score,
-            'ownScore': lambda: scores.get_score(comment, authenticated_user),
+            'ownScore': lambda: scores.get_score(comment, auth_user),
         },
         options)
 

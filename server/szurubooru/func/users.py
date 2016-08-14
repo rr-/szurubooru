@@ -27,30 +27,30 @@ def _get_avatar_url(user):
         return '%s/avatars/%s.png' % (
             config.config['data_url'].rstrip('/'), user.name.lower())
 
-def _get_email(user, authenticated_user, force_show_email):
+def _get_email(user, auth_user, force_show_email):
     assert user
-    assert authenticated_user
+    assert auth_user
     if not force_show_email \
-            and authenticated_user.user_id != user.user_id \
-            and not auth.has_privilege(authenticated_user, 'users:edit:any:email'):
+            and auth_user.user_id != user.user_id \
+            and not auth.has_privilege(auth_user, 'users:edit:any:email'):
         return False
     return user.email
 
-def _get_liked_post_count(user, authenticated_user):
+def _get_liked_post_count(user, auth_user):
     assert user
-    assert authenticated_user
-    if authenticated_user.user_id != user.user_id:
+    assert auth_user
+    if auth_user.user_id != user.user_id:
         return False
     return user.liked_post_count
 
-def _get_disliked_post_count(user, authenticated_user):
+def _get_disliked_post_count(user, auth_user):
     assert user
-    assert authenticated_user
-    if authenticated_user.user_id != user.user_id:
+    assert auth_user
+    if auth_user.user_id != user.user_id:
         return False
     return user.disliked_post_count
 
-def serialize_user(user, authenticated_user, options=None, force_show_email=False):
+def serialize_user(user, auth_user, options=None, force_show_email=False):
     return util.serialize_entity(
         user,
         {
@@ -65,18 +65,18 @@ def serialize_user(user, authenticated_user, options=None, force_show_email=Fals
             'uploadedPostCount': lambda: user.post_count,
             'favoritePostCount': lambda: user.favorite_post_count,
             'likedPostCount':
-                lambda: _get_liked_post_count(user, authenticated_user),
+                lambda: _get_liked_post_count(user, auth_user),
             'dislikedPostCount':
-                lambda: _get_disliked_post_count(user, authenticated_user),
+                lambda: _get_disliked_post_count(user, auth_user),
             'email':
-                lambda: _get_email(user, authenticated_user, force_show_email),
+                lambda: _get_email(user, auth_user, force_show_email),
         },
         options)
 
-def serialize_micro_user(user):
+def serialize_micro_user(user, auth_user):
     return serialize_user(
         user,
-        authenticated_user=None,
+        auth_user=auth_user,
         options=['name', 'avatarUrl'])
 
 def get_user_count():
@@ -162,7 +162,7 @@ def update_user_email(user, email):
         raise InvalidEmailError('E-mail is invalid.')
     user.email = email
 
-def update_user_rank(user, rank, authenticated_user):
+def update_user_rank(user, rank, auth_user):
     assert user
     if not rank:
         raise InvalidRankError('Rank cannot be empty.')
@@ -173,7 +173,7 @@ def update_user_rank(user, rank, authenticated_user):
             'Rank can be either of %r.' % all_ranks)
     if rank in (db.User.RANK_ANONYMOUS, db.User.RANK_NOBODY):
         raise InvalidRankError('Rank %r cannot be used.' % auth.RANK_MAP[rank])
-    if all_ranks.index(authenticated_user.rank) \
+    if all_ranks.index(auth_user.rank) \
             < all_ranks.index(rank) and get_user_count() > 0:
         raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank

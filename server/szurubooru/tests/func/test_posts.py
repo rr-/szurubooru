@@ -71,7 +71,8 @@ def test_serialize_post(
             unittest.mock.patch('szurubooru.func.users.serialize_micro_user'), \
             unittest.mock.patch('szurubooru.func.posts.files.has', return_value=True), \
             unittest.mock.patch('szurubooru.func.snapshots.get_serialized_history'):
-        users.serialize_micro_user.side_effect = lambda user: user.name
+        users.serialize_micro_user.side_effect \
+            = lambda user, auth_user: user.name
         comments.serialize_comment.side_effect \
             = lambda comment, auth_user: comment.user.name
         snapshots.get_serialized_history.return_value = 'snapshot history'

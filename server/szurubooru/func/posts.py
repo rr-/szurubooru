@@ -68,7 +68,7 @@ def serialize_note(note):
         'text': note.text,
     }
 
-def serialize_post(post, authenticated_user, options=None):
+def serialize_post(post, auth_user, options=None):
     return util.serialize_entity(
         post,
         {
@@ -93,16 +93,17 @@ def serialize_post(post, authenticated_user, options=None):
                 {
                     post['id']:
                         post for post in [
-                            serialize_micro_post(rel) for rel in post.relations
+                            serialize_micro_post(rel, auth_user) \
+                                for rel in post.relations
                         ]
                 }.values(),
                 key=lambda post: post['id']),
-            'user': lambda: users.serialize_micro_user(post.user),
+            'user': lambda: users.serialize_micro_user(post.user, auth_user),
             'score': lambda: post.score,
-            'ownScore': lambda: scores.get_score(post, authenticated_user),
+            'ownScore': lambda: scores.get_score(post, auth_user),
             'ownFavorite': lambda: len(
                 [user for user in post.favorited_by \
-                    if user.user_id == authenticated_user.user_id]) > 0,
+                    if user.user_id == auth_user.user_id]) > 0,
             'tagCount': lambda: post.tag_count,
             'favoriteCount': lambda: post.favorite_count,
             'commentCount': lambda: post.comment_count,
@@ -111,7 +112,7 @@ def serialize_post(post, authenticated_user, options=None):
             'featureCount': lambda: post.feature_count,
             'lastFeatureTime': lambda: post.last_feature_time,
             'favoritedBy': lambda: [
-                users.serialize_micro_user(rel.user) \
+                users.serialize_micro_user(rel.user, auth_user) \
                     for rel in post.favorited_by],
             'hasCustomThumbnail':
                 lambda: files.has(get_post_thumbnail_backup_path(post)),
@@ -119,7 +120,7 @@ def serialize_post(post, authenticated_user, options=None):
                 [serialize_note(note) for note in post.notes],
                 key=lambda x: x['polygon']),
             'comments': lambda: [
-                comments.serialize_comment(comment, authenticated_user) \
+                comments.serialize_comment(comment, auth_user) \
                     for comment in sorted(
                         post.comments,
                         key=lambda comment: comment.creation_time)],
@@ -127,10 +128,10 @@ def serialize_post(post, authenticated_user, options=None):
         },
         options)
 
-def serialize_micro_post(post):
+def serialize_micro_post(post, auth_user):
     return serialize_post(
         post,
-        authenticated_user=None,
+        auth_user=auth_user,
         options=['id', 'thumbnailUrl'])
 
 def get_post_count():
