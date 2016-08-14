@@ -2,6 +2,7 @@ import datetime
 from szurubooru import db, errors
 from szurubooru.func import users, scores, util
 
+class InvalidCommentIdError(errors.ValidationError): pass
 class CommentNotFoundError(errors.NotFoundError): pass
 class EmptyCommentTextError(errors.ValidationError): pass
 
@@ -22,6 +23,10 @@ def serialize_comment(comment, auth_user, options=None):
         options)
 
 def try_get_comment_by_id(comment_id):
+    try:
+        comment_id = int(comment_id)
+    except ValueError:
+        raise InvalidCommentIdError('Invalid comment ID: %r.' % comment_id)
     return db.session \
         .query(db.Comment) \
         .filter(db.Comment.comment_id == comment_id) \
