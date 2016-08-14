@@ -110,3 +110,13 @@ def set_default_category(category):
     if old_category:
         old_category.default = False
     category.default = True
+
+def delete_category(category):
+    assert category
+    if len(get_all_category_names()) == 1:
+        raise TagCategoryIsInUseError('Cannot delete the last category.')
+    if (category.tag_count or 0) > 0:
+        raise TagCategoryIsInUseError(
+            'Tag category has some usages and cannot be deleted. ' +
+            'Please remove this category from relevant tags first..')
+    db.session.delete(category)

@@ -53,15 +53,8 @@ class TagCategoryDetailApi(BaseApi):
         category = tag_categories.get_category_by_name(category_name)
         util.verify_version(category, ctx)
         auth.verify_privilege(ctx.user, 'tag_categories:delete')
-        if len(tag_categories.get_all_category_names()) == 1:
-            raise tag_categories.TagCategoryIsInUseError(
-                'Cannot delete the default category.')
-        if category.tag_count > 0:
-            raise tag_categories.TagCategoryIsInUseError(
-                'Tag category has some usages and cannot be deleted. ' +
-                'Please remove this category from relevant tags first..')
+        tag_categories.delete_category(category)
         snapshots.save_entity_deletion(category, ctx.user)
-        ctx.session.delete(category)
         ctx.session.commit()
         tags.export_to_json()
         return {}
