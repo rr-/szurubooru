@@ -12,10 +12,10 @@ class InvalidPasswordError(errors.ValidationError): pass
 class InvalidRankError(errors.ValidationError): pass
 class InvalidAvatarError(errors.ValidationError): pass
 
-def _get_avatar_path(name):
-    return 'avatars/' + name.lower() + '.png'
+def get_avatar_path(user_name):
+    return 'avatars/' + user_name.lower() + '.png'
 
-def _get_avatar_url(user):
+def get_avatar_url(user):
     assert user
     if user.avatar_style == user.AVATAR_GRAVATAR:
         assert user.email or user.name
@@ -27,7 +27,7 @@ def _get_avatar_url(user):
         return '%s/avatars/%s.png' % (
             config.config['data_url'].rstrip('/'), user.name.lower())
 
-def _get_email(user, auth_user, force_show_email):
+def get_email(user, auth_user, force_show_email):
     assert user
     assert auth_user
     if not force_show_email \
@@ -36,14 +36,14 @@ def _get_email(user, auth_user, force_show_email):
         return False
     return user.email
 
-def _get_liked_post_count(user, auth_user):
+def get_liked_post_count(user, auth_user):
     assert user
     assert auth_user
     if auth_user.user_id != user.user_id:
         return False
     return user.liked_post_count
 
-def _get_disliked_post_count(user, auth_user):
+def get_disliked_post_count(user, auth_user):
     assert user
     assert auth_user
     if auth_user.user_id != user.user_id:
@@ -60,16 +60,16 @@ def serialize_user(user, auth_user, options=None, force_show_email=False):
             'version': lambda: user.version,
             'rank': lambda: user.rank,
             'avatarStyle': lambda: user.avatar_style,
-            'avatarUrl': lambda: _get_avatar_url(user),
+            'avatarUrl': lambda: get_avatar_url(user),
             'commentCount': lambda: user.comment_count,
             'uploadedPostCount': lambda: user.post_count,
             'favoritePostCount': lambda: user.favorite_post_count,
             'likedPostCount':
-                lambda: _get_liked_post_count(user, auth_user),
+                lambda: get_liked_post_count(user, auth_user),
             'dislikedPostCount':
-                lambda: _get_disliked_post_count(user, auth_user),
+                lambda: get_disliked_post_count(user, auth_user),
             'email':
-                lambda: _get_email(user, auth_user, force_show_email),
+                lambda: get_email(user, auth_user, force_show_email),
         },
         options)
 
@@ -127,16 +127,16 @@ def update_user_name(user, name):
         raise InvalidUserNameError('Name cannot be empty.')
     if util.value_exceeds_column_size(name, db.User.name):
         raise InvalidUserNameError('User name is too long.')
-    other_user = try_get_user_by_name(name)
-    if other_user and other_user.user_id != user.user_id:
-        raise UserAlreadyExistsError('User %r already exists.' % name)
     name = name.strip()
     name_regex = config.config['user_name_regex']
     if not re.match(name_regex, name):
         raise InvalidUserNameError(
             'User name %r must satisfy regex %r.' % (name, name_regex))
-    if user.name and files.has(_get_avatar_path(user.name)):
-        files.move(_get_avatar_path(user.name), _get_avatar_path(name))
+    other_user = try_get_user_by_name(name)
+    if other_user and other_user.user_id != user.user_id:
+        raise UserAlreadyExistsError('User %r already exists.' % name)
+    if user.name and files.has(get_avatar_path(user.name)):
+        files.move(get_avatar_path(user.name), get_avatar_path(name))
     user.name = name
 
 def update_user_password(user, password):
@@ -178,7 +178,7 @@ def update_user_rank(user, rank, auth_user):
         raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank
 
-def update_user_avatar(user, avatar_style, avatar_content):
+def update_user_avatar(user, avatar_style, avatar_content=None):
     assert user
     if avatar_style == 'gravatar':
         user.avatar_style = user.AVATAR_GRAVATAR
