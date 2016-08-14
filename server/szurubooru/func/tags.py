@@ -136,8 +136,6 @@ def get_tags_by_names(names):
 
 def get_or_create_tags_by_names(names):
     names = util.icase_unique(names)
-    for name in names:
-        _verify_name_validity(name)
     existing_tags = get_tags_by_names(names)
     new_tags = []
     tag_category_name = tag_categories.get_default_category().name
