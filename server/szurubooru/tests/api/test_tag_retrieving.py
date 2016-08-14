@@ -1,82 +1,64 @@
-import datetime
 import pytest
+import unittest.mock
 from szurubooru import api, db, errors
-from szurubooru.func import util, tags
+from szurubooru.func import tags
 
-@pytest.fixture
-def test_ctx(
-        context_factory,
-        config_injector,
-        user_factory,
-        tag_factory,
-        tag_category_factory):
+@pytest.fixture(autouse=True)
+def inject_config(config_injector):
     config_injector({
         'privileges': {
             'tags:list': db.User.RANK_REGULAR,
             'tags:view': db.User.RANK_REGULAR,
         },
-        'thumbnails': {'avatar_width': 200},
     })
-    ret = util.dotdict()
-    ret.context_factory = context_factory
-    ret.user_factory = user_factory
-    ret.tag_factory = tag_factory
-    ret.tag_category_factory = tag_category_factory
-    ret.list_api = api.TagListApi()
-    ret.detail_api = api.TagDetailApi()
-    return ret
 
-def test_retrieving_multiple(test_ctx):
-    tag1 = test_ctx.tag_factory(names=['t1'])
-    tag2 = test_ctx.tag_factory(names=['t2'])
+def test_retrieving_multiple(user_factory, tag_factory, context_factory):
+    tag1 = tag_factory(names=['t1'])
+    tag2 = tag_factory(names=['t2'])
     db.session.add_all([tag1, tag2])
-    result = test_ctx.list_api.get(
-        test_ctx.context_factory(
-            input={'query': '', 'page': 1},
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert result['query'] == ''
-    assert result['page'] == 1
-    assert result['pageSize'] == 100
-    assert result['total'] == 2
-    assert [t['names'] for t in result['results']] == [['t1'], ['t2']]
+    with unittest.mock.patch('szurubooru.func.tags.serialize_tag'):
+        tags.serialize_tag.return_value = 'serialized tag'
+        result = api.tag_api.get_tags(
+            context_factory(
+                params={'query': '', 'page': 1},
+                user=user_factory(rank=db.User.RANK_REGULAR)))
+        assert result == {
+            'query': '',
+            'page': 1,
+            'pageSize': 100,
+            'total': 2,
+            'results': ['serialized tag', 'serialized tag'],
+        }
 
-def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
+def test_trying_to_retrieve_multiple_without_privileges(
+        user_factory, context_factory):
     with pytest.raises(errors.AuthError):
-        test_ctx.list_api.get(
-            test_ctx.context_factory(
-                input={'query': '', 'page': 1},
-                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
+        api.tag_api.get_tags(
+            context_factory(
+                params={'query': '', 'page': 1},
+                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
 
-def test_retrieving_single(test_ctx):
-    category = test_ctx.tag_category_factory(name='meta')
-    db.session.add(test_ctx.tag_factory(names=['tag'], category=category))
-    result = test_ctx.detail_api.get(
-        test_ctx.context_factory(
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-        'tag')
-    assert result == {
-        'names': ['tag'],
-        'category': 'meta',
-        'description': None,
-        'creationTime': datetime.datetime(1996, 1, 1),
-        'lastEditTime': None,
-        'suggestions': [],
-        'implications': [],
-        'usages': 0,
-        'snapshots': [],
-        'version': 1,
-    }
+def test_retrieving_single(user_factory, tag_factory, context_factory):
+    db.session.add(tag_factory(names=['tag']))
+    with unittest.mock.patch('szurubooru.func.tags.serialize_tag'):
+        tags.serialize_tag.return_value = 'serialized tag'
+        result = api.tag_api.get_tag(
+            context_factory(
+                user=user_factory(rank=db.User.RANK_REGULAR)),
+            {'tag_name': 'tag'})
+        assert result == 'serialized tag'
 
-def test_trying_to_retrieve_single_non_existing(test_ctx):
+def test_trying_to_retrieve_single_non_existing(user_factory, context_factory):
     with pytest.raises(tags.TagNotFoundError):
-        test_ctx.detail_api.get(
-            test_ctx.context_factory(
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-            '-')
+        api.tag_api.get_tag(
+            context_factory(
+                user=user_factory(rank=db.User.RANK_REGULAR)),
+            {'tag_name': '-'})
 
-def test_trying_to_retrieve_single_without_privileges(test_ctx):
+def test_trying_to_retrieve_single_without_privileges(
+        user_factory, context_factory):
     with pytest.raises(errors.AuthError):
-        test_ctx.detail_api.get(
-            test_ctx.context_factory(
-                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
-            '-')
+        api.tag_api.get_tag(
+            context_factory(
+                user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+            {'tag_name': '-'})

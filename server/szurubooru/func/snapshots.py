@@ -32,13 +32,6 @@ def get_tag_category_snapshot(category):
         'default': True if category.default else False,
     }
 
-# pylint: disable=invalid-name
-serializers = {
-    'tag': get_tag_snapshot,
-    'tag_category': get_tag_category_snapshot,
-    'post': get_post_snapshot,
-}
-
 def get_previous_snapshot(snapshot):
     assert snapshot
     return db.session \
@@ -87,6 +80,12 @@ def get_serialized_history(entity):
 def _save(operation, entity, auth_user):
     assert operation
     assert entity
+    serializers = {
+        'tag': get_tag_snapshot,
+        'tag_category': get_tag_category_snapshot,
+        'post': get_post_snapshot,
+    }
+
     resource_type, resource_id, resource_repr = db.util.get_resource_info(entity)
     now = datetime.datetime.utcnow()
 

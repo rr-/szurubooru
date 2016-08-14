@@ -1,137 +1,104 @@
-import os
 import pytest
-from szurubooru import api, config, db, errors
-from szurubooru.func import util, tag_categories
+import unittest.mock
+from szurubooru import api, db, errors
+from szurubooru.func import tag_categories, tags
 
-@pytest.fixture
-def test_ctx(
-        tmpdir,
-        config_injector,
-        context_factory,
-        user_factory,
-        tag_category_factory):
+def _update_category_name(category, name):
+    category.name = name
+
+@pytest.fixture(autouse=True)
+def inject_config(config_injector):
     config_injector({
-        'data_dir': str(tmpdir),
-        'tag_category_name_regex': '^[^!]*$',
         'privileges': {
             'tag_categories:edit:name': db.User.RANK_REGULAR,
             'tag_categories:edit:color': db.User.RANK_REGULAR,
+            'tag_categories:set_default': db.User.RANK_REGULAR,
         },
     })
-    ret = util.dotdict()
-    ret.context_factory = context_factory
-    ret.user_factory = user_factory
-    ret.tag_category_factory = tag_category_factory
-    ret.api = api.TagCategoryDetailApi()
-    return ret
 
-def test_simple_updating(test_ctx):
-    category = test_ctx.tag_category_factory(name='name', color='black')
+def test_simple_updating(user_factory, tag_category_factory, context_factory):
+    category = tag_category_factory(name='name', color='black')
     db.session.add(category)
     db.session.commit()
-    result = test_ctx.api.put(
-        test_ctx.context_factory(
-            input={
-                'name': 'changed',
-                'color': 'white',
-                'version': 1,
-            },
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-        'name')
-    assert len(result['snapshots']) == 1
-    del result['snapshots']
-    assert result == {
-        'name': 'changed',
-        'color': 'white',
-        'usages': 0,
-        'default': False,
-        'version': 2,
-    }
-    assert tag_categories.try_get_category_by_name('name') is None
-    category = tag_categories.get_category_by_name('changed')
-    assert category is not None
-    assert category.name == 'changed'
-    assert category.color == 'white'
-    assert os.path.exists(os.path.join(config.config['data_dir'], 'tags.json'))
-
-@pytest.mark.parametrize('input,expected_exception', [
-    ({'name': None}, tag_categories.InvalidTagCategoryNameError),
-    ({'name': ''}, tag_categories.InvalidTagCategoryNameError),
-    ({'name': '!bad'}, tag_categories.InvalidTagCategoryNameError),
-    ({'color': None}, tag_categories.InvalidTagCategoryColorError),
-    ({'color': ''}, tag_categories.InvalidTagCategoryColorError),
-    ({'color': '; float:left'}, tag_categories.InvalidTagCategoryColorError),
-])
-def test_trying_to_pass_invalid_input(test_ctx, input, expected_exception):
-    db.session.add(test_ctx.tag_category_factory(name='meta', color='black'))
-    db.session.commit()
-    with pytest.raises(expected_exception):
-        test_ctx.api.put(
-            test_ctx.context_factory(
-                input={**input, **{'version': 1}},
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-            'meta')
+    with unittest.mock.patch('szurubooru.func.tag_categories.serialize_category'), \
+            unittest.mock.patch('szurubooru.func.tag_categories.update_category_name'), \
+            unittest.mock.patch('szurubooru.func.tag_categories.update_category_color'), \
+            unittest.mock.patch('szurubooru.func.tags.export_to_json'):
+        tag_categories.update_category_name.side_effect = _update_category_name
+        tag_categories.serialize_category.return_value = 'serialized category'
+        result = api.tag_category_api.update_tag_category(
+            context_factory(
+                params={
+                    'name': 'changed',
+                    'color': 'white',
+                    'version': 1,
+                },
+                user=user_factory(rank=db.User.RANK_REGULAR)),
+            {'category_name': 'name'})
+        assert result == 'serialized category'
+        tag_categories.update_category_name.assert_called_once_with(category, 'changed')
+        tag_categories.update_category_color.assert_called_once_with(category, 'white')
+        tags.export_to_json.assert_called_once_with()
 
 @pytest.mark.parametrize('field', ['name', 'color'])
-def test_omitting_optional_field(test_ctx, field):
-    db.session.add(test_ctx.tag_category_factory(name='name', color='black'))
+def test_omitting_optional_field(
+        user_factory, tag_category_factory, context_factory, field):
+    db.session.add(tag_category_factory(name='name', color='black'))
     db.session.commit()
-    input = {
+    params = {
         'name': 'changed',
         'color': 'white',
     }
-    del input[field]
-    result = test_ctx.api.put(
-        test_ctx.context_factory(
-            input={**input, **{'version': 1}},
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-        'name')
-    assert result is not None
+    del params[field]
+    with unittest.mock.patch('szurubooru.func.tag_categories.serialize_category'), \
+            unittest.mock.patch('szurubooru.func.tag_categories.update_category_name'), \
+            unittest.mock.patch('szurubooru.func.tags.export_to_json'):
+        api.tag_category_api.update_tag_category(
+            context_factory(
+                params={**params, **{'version': 1}},
+                user=user_factory(rank=db.User.RANK_REGULAR)),
+            {'category_name': 'name'})
 
-def test_trying_to_update_non_existing(test_ctx):
+def test_trying_to_update_non_existing(user_factory, context_factory):
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
-        test_ctx.api.put(
-            test_ctx.context_factory(
-                input={'name': ['dummy']},
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-            'bad')
+        api.tag_category_api.update_tag_category(
+            context_factory(
+                params={'name': ['dummy']},
+                user=user_factory(rank=db.User.RANK_REGULAR)),
+            {'category_name': 'bad'})
 
-@pytest.mark.parametrize('new_name', ['cat', 'CAT'])
-def test_reusing_own_name(test_ctx, new_name):
-    db.session.add(test_ctx.tag_category_factory(name='cat', color='black'))
-    db.session.commit()
-    result = test_ctx.api.put(
-        test_ctx.context_factory(
-            input={'name': new_name, 'version': 1},
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-        'cat')
-    assert result['name'] == new_name
-    category = tag_categories.get_category_by_name('cat')
-    assert category.name == new_name
-
-@pytest.mark.parametrize('dup_name', ['cat1', 'CAT1'])
-def test_trying_to_use_existing_name(test_ctx, dup_name):
-    db.session.add_all([
-        test_ctx.tag_category_factory(name='cat1', color='black'),
-        test_ctx.tag_category_factory(name='cat2', color='black')])
-    db.session.commit()
-    with pytest.raises(tag_categories.TagCategoryAlreadyExistsError):
-        test_ctx.api.put(
-            test_ctx.context_factory(
-                input={'name': dup_name, 'version': 1},
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-            'cat2')
-
-@pytest.mark.parametrize('input', [
+@pytest.mark.parametrize('params', [
     {'name': 'whatever'},
     {'color': 'whatever'},
 ])
-def test_trying_to_update_without_privileges(test_ctx, input):
-    db.session.add(test_ctx.tag_category_factory(name='dummy'))
+def test_trying_to_update_without_privileges(
+        user_factory, tag_category_factory, context_factory, params):
+    db.session.add(tag_category_factory(name='dummy'))
     db.session.commit()
     with pytest.raises(errors.AuthError):
-        test_ctx.api.put(
-            test_ctx.context_factory(
-                input={**input, **{'version': 1}},
-                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
-            'dummy')
+        api.tag_category_api.update_tag_category(
+            context_factory(
+                params={**params, **{'version': 1}},
+                user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+            {'category_name': 'dummy'})
+
+def test_set_as_default(user_factory, tag_category_factory, context_factory):
+    category = tag_category_factory(name='name', color='black')
+    db.session.add(category)
+    db.session.commit()
+    with unittest.mock.patch('szurubooru.func.tag_categories.serialize_category'), \
+            unittest.mock.patch('szurubooru.func.tag_categories.set_default_category'), \
+            unittest.mock.patch('szurubooru.func.tags.export_to_json'):
+        tag_categories.update_category_name.side_effect = _update_category_name
+        tag_categories.serialize_category.return_value = 'serialized category'
+        result = api.tag_category_api.set_tag_category_as_default(
+            context_factory(
+                params={
+                    'name': 'changed',
+                    'color': 'white',
+                    'version': 1,
+                },
+                user=user_factory(rank=db.User.RANK_REGULAR)),
+            {'category_name': 'name'})
+        assert result == 'serialized category'
+        tag_categories.set_default_category.assert_called_once_with(category)

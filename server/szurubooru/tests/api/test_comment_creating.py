@@ -1,89 +1,78 @@
-import datetime
 import pytest
+import unittest.mock
+from datetime import datetime
 from szurubooru import api, db, errors
-from szurubooru.func import util, posts
+from szurubooru.func import comments, posts
 
-@pytest.fixture
-def test_ctx(
-        tmpdir, config_injector, context_factory, post_factory, user_factory):
-    config_injector({
-        'data_dir': str(tmpdir),
-        'data_url': 'http://example.com',
-        'privileges': {'comments:create': db.User.RANK_REGULAR},
-        'thumbnails': {'avatar_width': 200},
-    })
-    ret = util.dotdict()
-    ret.context_factory = context_factory
-    ret.post_factory = post_factory
-    ret.user_factory = user_factory
-    ret.api = api.CommentListApi()
-    return ret
+@pytest.fixture(autouse=True)
+def inject_config(config_injector):
+    config_injector({'privileges': {'comments:create': db.User.RANK_REGULAR}})
 
-def test_creating_comment(test_ctx, fake_datetime):
-    post = test_ctx.post_factory()
-    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
+def test_creating_comment(
+        user_factory, post_factory, context_factory, fake_datetime):
+    post = post_factory()
+    user = user_factory(rank=db.User.RANK_REGULAR)
     db.session.add_all([post, user])
     db.session.flush()
-    with fake_datetime('1997-01-01'):
-        result = test_ctx.api.post(
-            test_ctx.context_factory(
-                input={'text': 'input', 'postId': post.post_id},
+    with unittest.mock.patch('szurubooru.func.comments.serialize_comment'), \
+            fake_datetime('1997-01-01'):
+        comments.serialize_comment.return_value = 'serialized comment'
+        result = api.comment_api.create_comment(
+            context_factory(
+                params={'text': 'input', 'postId': post.post_id},
                 user=user))
-    assert result['text'] == 'input'
-    assert 'id' in result
-    assert 'user' in result
-    assert 'name' in result['user']
-    assert 'postId' in result
-    comment = db.session.query(db.Comment).one()
-    assert comment.text == 'input'
-    assert comment.creation_time == datetime.datetime(1997, 1, 1)
-    assert comment.last_edit_time is None
-    assert comment.user and comment.user.user_id == user.user_id
-    assert comment.post and comment.post.post_id == post.post_id
+        assert result == 'serialized comment'
+        comment = db.session.query(db.Comment).one()
+        assert comment.text == 'input'
+        assert comment.creation_time == datetime(1997, 1, 1)
+        assert comment.last_edit_time is None
+        assert comment.user and comment.user.user_id == user.user_id
+        assert comment.post and comment.post.post_id == post.post_id
 
-@pytest.mark.parametrize('input', [
+@pytest.mark.parametrize('params', [
     {'text': None},
     {'text': ''},
     {'text': [None]},
     {'text': ['']},
 ])
-def test_trying_to_pass_invalid_input(test_ctx, input):
-    post = test_ctx.post_factory()
-    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
+def test_trying_to_pass_invalid_params(
+        user_factory, post_factory, context_factory, params):
+    post = post_factory()
+    user = user_factory(rank=db.User.RANK_REGULAR)
     db.session.add_all([post, user])
     db.session.flush()
-    real_input = {'text': 'input', 'postId': post.post_id}
-    for key, value in input.items():
-        real_input[key] = value
+    real_params = {'text': 'input', 'postId': post.post_id}
+    for key, value in params.items():
+        real_params[key] = value
     with pytest.raises(errors.ValidationError):
-        test_ctx.api.post(
-            test_ctx.context_factory(input=real_input, user=user))
+        api.comment_api.create_comment(
+            context_factory(params=real_params, user=user))
 
 @pytest.mark.parametrize('field', ['text', 'postId'])
-def test_trying_to_omit_mandatory_field(test_ctx, field):
-    input = {
+def test_trying_to_omit_mandatory_field(user_factory, context_factory, field):
+    params = {
         'text': 'input',
         'postId': 1,
     }
-    del input[field]
+    del params[field]
     with pytest.raises(errors.ValidationError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input={},
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
+        api.comment_api.create_comment(
+            context_factory(
+                params={},
+                user=user_factory(rank=db.User.RANK_REGULAR)))
 
-def test_trying_to_comment_non_existing(test_ctx):
-    user = test_ctx.user_factory(rank=db.User.RANK_REGULAR)
+def test_trying_to_comment_non_existing(user_factory, context_factory):
+    user = user_factory(rank=db.User.RANK_REGULAR)
     db.session.add_all([user])
     db.session.flush()
     with pytest.raises(posts.PostNotFoundError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input={'text': 'bad', 'postId': 5}, user=user))
+        api.comment_api.create_comment(
+            context_factory(
+                params={'text': 'bad', 'postId': 5}, user=user))
 
-def test_trying_to_create_without_privileges(test_ctx):
+def test_trying_to_create_without_privileges(user_factory, context_factory):
     with pytest.raises(errors.AuthError):
-        test_ctx.api.post(
-            test_ctx.context_factory(
-                input={},
-                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
+        api.comment_api.create_comment(
+            context_factory(
+                params={},
+                user=user_factory(rank=db.User.RANK_ANONYMOUS)))

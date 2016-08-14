@@ -10,7 +10,7 @@ import argparse
 import os.path
 import sys
 import waitress
-from szurubooru.app import create_app
+from szurubooru.facade import create_app
 
 def main():
     parser = argparse.ArgumentParser('Starts szurubooru using waitress.')

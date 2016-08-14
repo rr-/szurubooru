@@ -1,6 +1,5 @@
 alembic>=0.8.5
 pyyaml>=3.11
-falcon>=0.3.0
 psycopg2>=2.6.1
 SQLAlchemy>=1.0.12
 pytest>=2.9.1

@@ -1,16 +1,14 @@
 import logging
 from szurubooru import db
+from szurubooru.rest import middleware
 
 logger = logging.getLogger(__name__)
 
-class RequestLogger(object):
-    def process_request(self, request, _response):
-        pass
-
-    def process_response(self, request, _response, _resource):
-        logger.info(
-            '%s %s (user=%s, queries=%d)',
-            request.method,
-            request.url,
-            request.context.user.name,
-            db.get_query_count())
+@middleware.post_hook
+def process_response(ctx):
+    logger.info(
+        '%s %s (user=%s, queries=%d)',
+        ctx.method,
+        ctx.url,
+        ctx.user.name,
+        db.get_query_count())

@@ -1,14 +1,12 @@
 from szurubooru import search
-from szurubooru.api.base_api import BaseApi
 from szurubooru.func import auth, snapshots
+from szurubooru.rest import routes
 
-class SnapshotListApi(BaseApi):
-    def __init__(self):
-        super().__init__()
-        self._search_executor = search.Executor(
-            search.configs.SnapshotSearchConfig())
+_search_executor = search.Executor(
+    search.configs.SnapshotSearchConfig())
 
-    def get(self, ctx):
-        auth.verify_privilege(ctx.user, 'snapshots:list')
-        return self._search_executor.execute_and_serialize(
-            ctx, snapshots.serialize_snapshot)
+@routes.get('/snapshots/?')
+def get_snapshots(ctx, _params=None):
+    auth.verify_privilege(ctx.user, 'snapshots:list')
+    return _search_executor.execute_and_serialize(
+        ctx, snapshots.serialize_snapshot)

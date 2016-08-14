@@ -5,7 +5,7 @@ import uuid
 import pytest
 import freezegun
 import sqlalchemy
-from szurubooru import api, config, db
+from szurubooru import api, config, db, rest
 from szurubooru.func import util
 
 class QueryCounter(object):
@@ -74,12 +74,14 @@ def session(query_logger):
 
 @pytest.fixture
 def context_factory(session):
-    def factory(request=None, input=None, files=None, user=None):
-        ctx = api.Context()
-        ctx.input = input or {}
+    def factory(params=None, files=None, user=None):
+        ctx = rest.Context(
+            method=None,
+            url=None,
+            headers={},
+            params=params or {},
+            files=files or {})
         ctx.session = session
-        ctx.request = request or {}
-        ctx.files = files or {}
         ctx.user = user or db.User()
         return ctx
     return factory

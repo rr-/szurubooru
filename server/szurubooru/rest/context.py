@@ -1,4 +1,3 @@
-import falcon
 from szurubooru import errors
 from szurubooru.func import net
 
@@ -7,8 +6,9 @@ def _lower_first(source):
 
 def _param_wrapper(func):
     def wrapper(self, name, required=False, default=None, **kwargs):
-        if name in self.input:
-            value = self.input[name]
+        # pylint: disable=protected-access
+        if name in self._params:
+            value = self._params[name]
             try:
                 value = func(self, value, **kwargs)
             except errors.InvalidParameterError as ex:
@@ -22,34 +22,46 @@ def _param_wrapper(func):
             'Required parameter %r is missing.' % name)
     return wrapper
 
-class Context(object):
-    def __init__(self):
-        self.session = None
-        self.user = None
-        self.files = {}
-        self.input = {}
-        self.output = None
-        self.settings = {}
+class Context():
+    # pylint: disable=too-many-arguments
+    def __init__(self, method, url, headers=None, params=None, files=None):
+        self.method = method
+        self.url = url
+        self._headers = headers or {}
+        self._params = params or {}
+        self._files = files or {}
 
-    def has_param(self, name):
-        return name in self.input
+        # provided by middleware
+        # self.session = None
+        # self.user = None
+
+    def has_header(self, name):
+        return name in self._headers
+
+    def get_header(self, name):
+        return self._headers.get(name, None)
 
     def has_file(self, name):
-        return name in self.files or name + 'Url' in self.input
+        return name in self._files or name + 'Url' in self._params
 
     def get_file(self, name, required=False):
-        if name in self.files:
-            return self.files[name]
-        if name + 'Url' in self.input:
-            return net.download(self.input[name + 'Url'])
+        if name in self._files:
+            return self._files[name]
+        if name + 'Url' in self._params:
+            return net.download(self._params[name + 'Url'])
         if not required:
             return None
         raise errors.MissingRequiredFileError(
             'Required file %r is missing.' % name)
 
+    def has_param(self, name):
+        return name in self._params
+
     @_param_wrapper
     def get_param_as_list(self, value):
         if not isinstance(value, list):
+            if ',' in value:
+                return value.split(',')
             return [value]
         return value
 
@@ -86,6 +98,3 @@ class Context(object):
         if value in ['0', 'n', 'no', 'nope', 'f', 'false']:
             return False
         raise errors.InvalidParameterError('The value must be a boolean value.')
-
-class Request(falcon.Request):
-    context_type = Context

@@ -1,7 +1,5 @@
-import datetime
-import os
-import unittest.mock
 import pytest
+import unittest.mock
 from szurubooru import api, db, errors
 from szurubooru.func import posts, tags, snapshots, net
 
@@ -35,9 +33,9 @@ def test_creating_minimal_posts(
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'
 
-        result = api.PostListApi().post(
+        result = api.post_api.create_post(
             context_factory(
-                input={
+                params={
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                 },
@@ -79,9 +77,9 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
         posts.create_post.return_value = (post, [])
         posts.serialize_post.return_value = 'serialized post'
 
-        result = api.PostListApi().post(
+        result = api.post_api.create_post(
             context_factory(
-                input={
+                params={
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                     'relations': [1, 2],
@@ -122,9 +120,9 @@ def test_anonymous_uploads(
             'privileges': {'posts:create:anonymous': db.User.RANK_REGULAR},
         })
         posts.create_post.return_value = [post, []]
-        api.PostListApi().post(
+        api.post_api.create_post(
             context_factory(
-                input={
+                params={
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                     'anonymous': 'True',
@@ -154,9 +152,9 @@ def test_creating_from_url_saves_source(
         })
         net.download.return_value = b'content'
         posts.create_post.return_value = [post, []]
-        api.PostListApi().post(
+        api.post_api.create_post(
             context_factory(
-                input={
+                params={
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                     'contentUrl': 'example.com',
@@ -185,9 +183,9 @@ def test_creating_from_url_with_source_specified(
         })
         net.download.return_value = b'content'
         posts.create_post.return_value = [post, []]
-        api.PostListApi().post(
+        api.post_api.create_post(
             context_factory(
-                input={
+                params={
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                     'contentUrl': 'example.com',
@@ -201,23 +199,23 @@ def test_creating_from_url_with_source_specified(
 
 @pytest.mark.parametrize('field', ['tags', 'safety'])
 def test_trying_to_omit_mandatory_field(context_factory, user_factory, field):
-    input = {
+    params = {
         'safety': 'safe',
         'tags': ['tag1', 'tag2'],
     }
-    del input[field]
+    del params[field]
     with pytest.raises(errors.MissingRequiredParameterError):
-        api.PostListApi().post(
+        api.post_api.create_post(
             context_factory(
-                input=input,
+                params=params,
                 files={'content': '...'},
                 user=user_factory(rank=db.User.RANK_REGULAR)))
 
 def test_trying_to_omit_content(context_factory, user_factory):
     with pytest.raises(errors.MissingRequiredFileError):
-        api.PostListApi().post(
+        api.post_api.create_post(
             context_factory(
-                input={
+                params={
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                 },
@@ -225,10 +223,9 @@ def test_trying_to_omit_content(context_factory, user_factory):
 
 def test_trying_to_create_post_without_privileges(context_factory, user_factory):
     with pytest.raises(errors.AuthError):
-        api.PostListApi().post(
-            context_factory(
-                input='whatever',
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+        api.post_api.create_post(context_factory(
+            params='whatever',
+            user=user_factory(rank=db.User.RANK_ANONYMOUS)))
 
 def test_trying_to_create_tags_without_privileges(
         config_injector, context_factory, user_factory):
@@ -243,9 +240,9 @@ def test_trying_to_create_tags_without_privileges(
             unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
             unittest.mock.patch('szurubooru.func.posts.update_post_tags'):
         posts.update_post_tags.return_value = ['new-tag']
-        api.PostListApi().post(
+        api.post_api.create_post(
             context_factory(
-                input={
+                params={
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                 },

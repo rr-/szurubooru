@@ -1,76 +1,65 @@
-import datetime
 import pytest
+import unittest.mock
 from szurubooru import api, db, errors
-from szurubooru.func import util, comments
+from szurubooru.func import comments
 
-@pytest.fixture
-def test_ctx(
-        tmpdir, context_factory, config_injector, user_factory, comment_factory):
+@pytest.fixture(autouse=True)
+def inject_config(config_injector):
     config_injector({
-        'data_dir': str(tmpdir),
-        'data_url': 'http://example.com',
         'privileges': {
             'comments:list': db.User.RANK_REGULAR,
             'comments:view': db.User.RANK_REGULAR,
-            'users:edit:any:email': db.User.RANK_MODERATOR,
         },
-        'thumbnails': {'avatar_width': 200},
     })
-    ret = util.dotdict()
-    ret.context_factory = context_factory
-    ret.user_factory = user_factory
-    ret.comment_factory = comment_factory
-    ret.list_api = api.CommentListApi()
-    ret.detail_api = api.CommentDetailApi()
-    return ret
 
-def test_retrieving_multiple(test_ctx):
-    comment1 = test_ctx.comment_factory(text='text 1')
-    comment2 = test_ctx.comment_factory(text='text 2')
+def test_retrieving_multiple(user_factory, comment_factory, context_factory):
+    comment1 = comment_factory(text='text 1')
+    comment2 = comment_factory(text='text 2')
     db.session.add_all([comment1, comment2])
-    result = test_ctx.list_api.get(
-        test_ctx.context_factory(
-            input={'query': '', 'page': 1},
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)))
-    assert result['query'] == ''
-    assert result['page'] == 1
-    assert result['pageSize'] == 100
-    assert result['total'] == 2
-    assert [c['text'] for c in result['results']] == ['text 1', 'text 2']
+    with unittest.mock.patch('szurubooru.func.comments.serialize_comment'):
+        comments.serialize_comment.return_value = 'serialized comment'
+        result = api.comment_api.get_comments(
+            context_factory(
+                params={'query': '', 'page': 1},
+                user=user_factory(rank=db.User.RANK_REGULAR)))
+        assert result == {
+            'query': '',
+            'page': 1,
+            'pageSize': 100,
+            'total': 2,
+            'results': ['serialized comment', 'serialized comment'],
+        }
 
-def test_trying_to_retrieve_multiple_without_privileges(test_ctx):
+def test_trying_to_retrieve_multiple_without_privileges(
+        user_factory, context_factory):
     with pytest.raises(errors.AuthError):
-        test_ctx.list_api.get(
-            test_ctx.context_factory(
-                input={'query': '', 'page': 1},
-                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)))
+        api.comment_api.get_comments(
+            context_factory(
+                params={'query': '', 'page': 1},
+                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
 
-def test_retrieving_single(test_ctx):
-    comment = test_ctx.comment_factory(text='dummy text')
+def test_retrieving_single(user_factory, comment_factory, context_factory):
+    comment = comment_factory(text='dummy text')
     db.session.add(comment)
     db.session.flush()
-    result = test_ctx.detail_api.get(
-        test_ctx.context_factory(
-            user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-        comment.comment_id)
-    assert 'id' in result
-    assert 'lastEditTime' in result
-    assert 'creationTime' in result
-    assert 'text' in result
-    assert 'user' in result
-    assert 'name' in result['user']
-    assert 'postId' in result
+    with unittest.mock.patch('szurubooru.func.comments.serialize_comment'):
+        comments.serialize_comment.return_value = 'serialized comment'
+        result = api.comment_api.get_comment(
+            context_factory(
+                user=user_factory(rank=db.User.RANK_REGULAR)),
+            {'comment_id': comment.comment_id})
+        assert result == 'serialized comment'
 
-def test_trying_to_retrieve_single_non_existing(test_ctx):
+def test_trying_to_retrieve_single_non_existing(user_factory, context_factory):
     with pytest.raises(comments.CommentNotFoundError):
-        test_ctx.detail_api.get(
-            test_ctx.context_factory(
-                user=test_ctx.user_factory(rank=db.User.RANK_REGULAR)),
-            5)
+        api.comment_api.get_comment(
+            context_factory(
+                user=user_factory(rank=db.User.RANK_REGULAR)),
+            {'comment_id': 5})
 
-def test_trying_to_retrieve_single_without_privileges(test_ctx):
+def test_trying_to_retrieve_single_without_privileges(
+        user_factory, context_factory):
     with pytest.raises(errors.AuthError):
-        test_ctx.detail_api.get(
-            test_ctx.context_factory(
-                user=test_ctx.user_factory(rank=db.User.RANK_ANONYMOUS)),
-            5)
+        api.comment_api.get_comment(
+            context_factory(user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+            {'comment_id': 5})

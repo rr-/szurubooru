@@ -1,6 +1,7 @@
 from szurubooru.func import cache
+from szurubooru.rest import middleware
 
-class CachePurger(object):
-    def process_request(self, request, _response):
-        if request.method != 'GET':
-            cache.purge()
+@middleware.pre_hook
+def process_request(ctx):
+    if ctx.method != 'GET':
+        cache.purge()
