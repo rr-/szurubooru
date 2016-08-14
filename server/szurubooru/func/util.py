@@ -26,12 +26,11 @@ def serialize_entity(entity, field_factories, options):
         options = field_factories.keys()
     ret = {}
     for key in options:
-        try:
-            factory = field_factories[key]
-            ret[key] = factory()
-        except KeyError:
+        if not key in field_factories:
             raise errors.ValidationError('Invalid key: %r. Valid keys: %r.' % (
                 key, list(sorted(field_factories.keys()))))
+        factory = field_factories[key]
+        ret[key] = factory()
     return ret
 
 @contextmanager
