@@ -2,7 +2,9 @@ from szurubooru import search
 from szurubooru.func import auth, users, util
 from szurubooru.rest import routes
 
+
 _search_executor = search.Executor(search.configs.UserSearchConfig())
+
 
 def _serialize(ctx, user, **kwargs):
     return users.serialize_user(
@@ -11,11 +13,13 @@ def _serialize(ctx, user, **kwargs):
         options=util.get_serialization_options(ctx),
         **kwargs)
 
+
 @routes.get('/users/?')
 def get_users(ctx, _params=None):
     auth.verify_privilege(ctx.user, 'users:list')
     return _search_executor.execute_and_serialize(
         ctx, lambda user: _serialize(ctx, user))
+
 
 @routes.post('/users/?')
 def create_user(ctx, _params=None):
@@ -36,12 +40,14 @@ def create_user(ctx, _params=None):
     ctx.session.commit()
     return _serialize(ctx, user, force_show_email=True)
 
+
 @routes.get('/user/(?P<user_name>[^/]+)/?')
 def get_user(ctx, params):
     user = users.get_user_by_name(params['user_name'])
     if ctx.user.user_id != user.user_id:
         auth.verify_privilege(ctx.user, 'users:view')
     return _serialize(ctx, user)
+
 
 @routes.put('/user/(?P<user_name>[^/]+)/?')
 def update_user(ctx, params):
@@ -71,6 +77,7 @@ def update_user(ctx, params):
     util.bump_version(user)
     ctx.session.commit()
     return _serialize(ctx, user)
+
 
 @routes.delete('/user/(?P<user_name>[^/]+)/?')
 def delete_user(ctx, params):

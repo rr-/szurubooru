@@ -1,6 +1,7 @@
 from datetime import datetime
 from szurubooru import db
 
+
 def test_saving_comment(user_factory, post_factory):
     user = user_factory()
     post = post_factory()
@@ -19,6 +20,7 @@ def test_saving_comment(user_factory, post_factory):
     assert comment.text == 'long text' * 1000
     assert comment.creation_time == datetime(1997, 1, 1)
     assert comment.last_edit_time == datetime(1998, 1, 1)
+
 
 def test_cascade_deletions(comment_factory, user_factory, post_factory):
     user = user_factory()

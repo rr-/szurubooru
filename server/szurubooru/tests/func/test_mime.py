@@ -1,6 +1,6 @@
-import os
 import pytest
 from szurubooru.func import mime
+
 
 @pytest.mark.parametrize('input_path,expected_mime_type', [
     ('mp4.mp4', 'video/mp4'),
@@ -14,8 +14,10 @@ from szurubooru.func import mime
 def test_get_mime_type(read_asset, input_path, expected_mime_type):
     assert mime.get_mime_type(read_asset(input_path)) == expected_mime_type
 
+
 def test_get_mime_type_for_empty_file():
     assert mime.get_mime_type(b'') == 'application/octet-stream'
+
 
 @pytest.mark.parametrize('mime_type,expected_extension', [
     ('video/mp4', 'mp4'),
@@ -29,6 +31,7 @@ def test_get_mime_type_for_empty_file():
 def test_get_extension(mime_type, expected_extension):
     assert mime.get_extension(mime_type) == expected_extension
 
+
 @pytest.mark.parametrize('input_mime_type,expected_state', [
     ('application/x-shockwave-flash', True),
     ('APPLICATION/X-SHOCKWAVE-FLASH', True),
@@ -36,6 +39,7 @@ def test_get_extension(mime_type, expected_extension):
 ])
 def test_is_flash(input_mime_type, expected_state):
     assert mime.is_flash(input_mime_type) == expected_state
+
 
 @pytest.mark.parametrize('input_mime_type,expected_state', [
     ('video/webm', True),
@@ -49,6 +53,7 @@ def test_is_flash(input_mime_type, expected_state):
 def test_is_video(input_mime_type, expected_state):
     assert mime.is_video(input_mime_type) == expected_state
 
+
 @pytest.mark.parametrize('input_mime_type,expected_state', [
     ('image/gif', True),
     ('image/png', True),
@@ -61,6 +66,7 @@ def test_is_video(input_mime_type, expected_state):
 ])
 def test_is_image(input_mime_type, expected_state):
     assert mime.is_image(input_mime_type) == expected_state
+
 
 @pytest.mark.parametrize('input_path,expected_state', [
     ('gif.gif', False),

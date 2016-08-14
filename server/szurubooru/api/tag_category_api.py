@@ -1,9 +1,11 @@
 from szurubooru.rest import routes
 from szurubooru.func import auth, tags, tag_categories, util, snapshots
 
+
 def _serialize(ctx, category):
     return tag_categories.serialize_category(
         category, options=util.get_serialization_options(ctx))
+
 
 @routes.get('/tag-categories/?')
 def get_tag_categories(ctx, _params=None):
@@ -12,6 +14,7 @@ def get_tag_categories(ctx, _params=None):
     return {
         'results': [_serialize(ctx, category) for category in categories],
     }
+
 
 @routes.post('/tag-categories/?')
 def create_tag_category(ctx, _params=None):
@@ -26,11 +29,13 @@ def create_tag_category(ctx, _params=None):
     tags.export_to_json()
     return _serialize(ctx, category)
 
+
 @routes.get('/tag-category/(?P<category_name>[^/]+)/?')
 def get_tag_category(ctx, params):
     auth.verify_privilege(ctx.user, 'tag_categories:view')
     category = tag_categories.get_category_by_name(params['category_name'])
     return _serialize(ctx, category)
+
 
 @routes.put('/tag-category/(?P<category_name>[^/]+)/?')
 def update_tag_category(ctx, params):
@@ -51,6 +56,7 @@ def update_tag_category(ctx, params):
     tags.export_to_json()
     return _serialize(ctx, category)
 
+
 @routes.delete('/tag-category/(?P<category_name>[^/]+)/?')
 def delete_tag_category(ctx, params):
     category = tag_categories.get_category_by_name(params['category_name'])
@@ -61,6 +67,7 @@ def delete_tag_category(ctx, params):
     ctx.session.commit()
     tags.export_to_json()
     return {}
+
 
 @routes.put('/tag-category/(?P<category_name>[^/]+)/default/?')
 def set_tag_category_as_default(ctx, params):

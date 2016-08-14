@@ -1,9 +1,11 @@
+from sqlalchemy.sql.expression import func, select
 from sqlalchemy import (
     Column, Integer, DateTime, Unicode, UnicodeText, PickleType, ForeignKey)
-from sqlalchemy.orm import relationship, column_property, object_session, backref
-from sqlalchemy.sql.expression import func, select
+from sqlalchemy.orm import (
+    relationship, column_property, object_session, backref)
 from szurubooru.db.base import Base
 from szurubooru.db.comment import Comment
+
 
 class PostFeature(Base):
     __tablename__ = 'post_feature'
@@ -20,13 +22,22 @@ class PostFeature(Base):
         'User',
         backref=backref('post_features', cascade='all, delete-orphan'))
 
+
 class PostScore(Base):
     __tablename__ = 'post_score'
 
     post_id = Column(
-        'post_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+        'post_id',
+        Integer,
+        ForeignKey('post.id'),
+        primary_key=True,
+        index=True)
     user_id = Column(
-        'user_id', Integer, ForeignKey('user.id'), primary_key=True, index=True)
+        'user_id',
+        Integer,
+        ForeignKey('user.id'),
+        primary_key=True,
+        index=True)
     time = Column('time', DateTime, nullable=False)
     score = Column('score', Integer, nullable=False)
 
@@ -35,19 +46,29 @@ class PostScore(Base):
         'User',
         backref=backref('post_scores', cascade='all, delete-orphan'))
 
+
 class PostFavorite(Base):
     __tablename__ = 'post_favorite'
 
     post_id = Column(
-        'post_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+        'post_id',
+        Integer,
+        ForeignKey('post.id'),
+        primary_key=True,
+        index=True)
     user_id = Column(
-        'user_id', Integer, ForeignKey('user.id'), primary_key=True, index=True)
+        'user_id',
+        Integer,
+        ForeignKey('user.id'),
+        primary_key=True,
+        index=True)
     time = Column('time', DateTime, nullable=False)
 
     post = relationship('Post')
     user = relationship(
         'User',
         backref=backref('post_favorites', cascade='all, delete-orphan'))
+
 
 class PostNote(Base):
     __tablename__ = 'post_note'
@@ -60,29 +81,44 @@ class PostNote(Base):
 
     post = relationship('Post')
 
+
 class PostRelation(Base):
     __tablename__ = 'post_relation'
 
     parent_id = Column(
-        'parent_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+        'parent_id',
+        Integer,
+        ForeignKey('post.id'),
+        primary_key=True,
+        index=True)
     child_id = Column(
-        'child_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+        'child_id',
+        Integer,
+        ForeignKey('post.id'),
+        primary_key=True,
+        index=True)
 
     def __init__(self, parent_id, child_id):
         self.parent_id = parent_id
         self.child_id = child_id
 
+
 class PostTag(Base):
     __tablename__ = 'post_tag'
 
     post_id = Column(
-        'post_id', Integer, ForeignKey('post.id'), primary_key=True, index=True)
+        'post_id',
+        Integer,
+        ForeignKey('post.id'),
+        primary_key=True,
+        index=True)
     tag_id = Column(
         'tag_id', Integer, ForeignKey('tag.id'), primary_key=True, index=True)
 
     def __init__(self, post_id, tag_id):
         self.post_id = post_id
         self.tag_id = tag_id
+
 
 class Post(Base):
     __tablename__ = 'post'
@@ -136,8 +172,8 @@ class Post(Base):
 
     # dynamic columns
     tag_count = column_property(
-        select([func.count(PostTag.tag_id)]) \
-        .where(PostTag.post_id == post_id) \
+        select([func.count(PostTag.tag_id)])
+        .where(PostTag.post_id == post_id)
         .correlate_except(PostTag))
 
     canvas_area = column_property(canvas_width * canvas_height)
@@ -151,53 +187,53 @@ class Post(Base):
         return featured_post and featured_post.post_id == self.post_id
 
     score = column_property(
-        select([func.coalesce(func.sum(PostScore.score), 0)]) \
-        .where(PostScore.post_id == post_id) \
+        select([func.coalesce(func.sum(PostScore.score), 0)])
+        .where(PostScore.post_id == post_id)
         .correlate_except(PostScore))
 
     favorite_count = column_property(
-        select([func.count(PostFavorite.post_id)]) \
-        .where(PostFavorite.post_id == post_id) \
+        select([func.count(PostFavorite.post_id)])
+        .where(PostFavorite.post_id == post_id)
         .correlate_except(PostFavorite))
 
     last_favorite_time = column_property(
-        select([func.max(PostFavorite.time)]) \
-        .where(PostFavorite.post_id == post_id) \
+        select([func.max(PostFavorite.time)])
+        .where(PostFavorite.post_id == post_id)
         .correlate_except(PostFavorite))
 
     feature_count = column_property(
-        select([func.count(PostFeature.post_id)]) \
-        .where(PostFeature.post_id == post_id) \
+        select([func.count(PostFeature.post_id)])
+        .where(PostFeature.post_id == post_id)
         .correlate_except(PostFeature))
 
     last_feature_time = column_property(
-        select([func.max(PostFeature.time)]) \
-        .where(PostFeature.post_id == post_id) \
+        select([func.max(PostFeature.time)])
+        .where(PostFeature.post_id == post_id)
         .correlate_except(PostFeature))
 
     comment_count = column_property(
-        select([func.count(Comment.post_id)]) \
-        .where(Comment.post_id == post_id) \
+        select([func.count(Comment.post_id)])
+        .where(Comment.post_id == post_id)
         .correlate_except(Comment))
 
     last_comment_creation_time = column_property(
-        select([func.max(Comment.creation_time)]) \
-        .where(Comment.post_id == post_id) \
+        select([func.max(Comment.creation_time)])
+        .where(Comment.post_id == post_id)
         .correlate_except(Comment))
 
     last_comment_edit_time = column_property(
-        select([func.max(Comment.last_edit_time)]) \
-        .where(Comment.post_id == post_id) \
+        select([func.max(Comment.last_edit_time)])
+        .where(Comment.post_id == post_id)
         .correlate_except(Comment))
 
     note_count = column_property(
-        select([func.count(PostNote.post_id)]) \
-        .where(PostNote.post_id == post_id) \
+        select([func.count(PostNote.post_id)])
+        .where(PostNote.post_id == post_id)
         .correlate_except(PostNote))
 
     relation_count = column_property(
-        select([func.count(PostRelation.child_id)]) \
+        select([func.count(PostRelation.child_id)])
         .where(
-            (PostRelation.parent_id == post_id) \
-            | (PostRelation.child_id == post_id)) \
+            (PostRelation.parent_id == post_id)
+            | (PostRelation.child_id == post_id))
         .correlate_except(PostRelation))

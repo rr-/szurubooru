@@ -1,6 +1,7 @@
 import datetime
 from szurubooru import db
 
+
 def get_tag_snapshot(tag):
     return {
         'names': [tag_name.name for tag_name in tag.names],
@@ -8,6 +9,7 @@ def get_tag_snapshot(tag):
         'suggestions': sorted(rel.first_name for rel in tag.suggestions),
         'implications': sorted(rel.first_name for rel in tag.implications),
     }
+
 
 def get_post_snapshot(post):
     return {
@@ -25,12 +27,14 @@ def get_post_snapshot(post):
         'featured': post.is_featured,
     }
 
+
 def get_tag_category_snapshot(category):
     return {
         'name': category.name,
         'color': category.color,
         'default': True if category.default else False,
     }
+
 
 def get_previous_snapshot(snapshot):
     assert snapshot
@@ -43,6 +47,7 @@ def get_previous_snapshot(snapshot):
         .limit(1) \
         .first()
 
+
 def get_snapshots(entity):
     assert entity
     resource_type, resource_id, _ = db.util.get_resource_info(entity)
@@ -52,6 +57,7 @@ def get_snapshots(entity):
         .filter(db.Snapshot.resource_id == resource_id) \
         .order_by(db.Snapshot.creation_time.desc()) \
         .all()
+
 
 def serialize_snapshot(snapshot, earlier_snapshot=()):
     assert snapshot
@@ -67,6 +73,7 @@ def serialize_snapshot(snapshot, earlier_snapshot=()):
         'time': snapshot.creation_time,
     }
 
+
 def get_serialized_history(entity):
     if not entity:
         return []
@@ -77,6 +84,7 @@ def get_serialized_history(entity):
         earlier_snapshot = snapshot
     return ret
 
+
 def _save(operation, entity, auth_user):
     assert operation
     assert entity
@@ -86,7 +94,8 @@ def _save(operation, entity, auth_user):
         'post': get_post_snapshot,
     }
 
-    resource_type, resource_id, resource_repr = db.util.get_resource_info(entity)
+    resource_type, resource_id, resource_repr = (
+        db.util.get_resource_info(entity))
     now = datetime.datetime.utcnow()
 
     snapshot = db.Snapshot()
@@ -118,13 +127,16 @@ def _save(operation, entity, auth_user):
     else:
         db.session.add(snapshot)
 
+
 def save_entity_creation(entity, auth_user):
     assert entity
     _save(db.Snapshot.OPERATION_CREATED, entity, auth_user)
 
+
 def save_entity_modification(entity, auth_user):
     assert entity
     _save(db.Snapshot.OPERATION_MODIFIED, entity, auth_user)
+
 
 def save_entity_deletion(entity, auth_user):
     assert entity

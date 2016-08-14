@@ -1,9 +1,11 @@
 import os
-import unittest.mock
-import pytest
+from unittest.mock import patch
 from datetime import datetime
+import pytest
 from szurubooru import db
-from szurubooru.func import posts, users, comments, snapshots, tags, images
+from szurubooru.func import (
+    posts, users, comments, snapshots, tags, images, files, util)
+
 
 @pytest.mark.parametrize('input_mime_type,expected_url', [
     ('image/jpeg', 'http://example.com/posts/1.jpg'),
@@ -17,6 +19,7 @@ def test_get_post_url(input_mime_type, expected_url, config_injector):
     post.mime_type = input_mime_type
     assert posts.get_post_content_url(post) == expected_url
 
+
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_url(input_mime_type, config_injector):
     config_injector({'data_url': 'http://example.com/'})
@@ -25,6 +28,7 @@ def test_get_post_thumbnail_url(input_mime_type, config_injector):
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_url(post) \
         == 'http://example.com/generated-thumbnails/1.jpg'
+
 
 @pytest.mark.parametrize('input_mime_type,expected_path', [
     ('image/jpeg', 'posts/1.jpg'),
@@ -37,12 +41,14 @@ def test_get_post_content_path(input_mime_type, expected_path):
     post.mime_type = input_mime_type
     assert posts.get_post_content_path(post) == expected_path
 
+
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_path(input_mime_type):
     post = db.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_path(post) == 'generated-thumbnails/1.jpg'
+
 
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_backup_path(input_mime_type):
@@ -51,6 +57,7 @@ def test_get_post_thumbnail_backup_path(input_mime_type):
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_backup_path(post) \
         == 'posts/custom-thumbnails/1.dat'
+
 
 def test_serialize_note():
     note = db.PostNote()
@@ -61,16 +68,19 @@ def test_serialize_note():
         'text': '...'
     }
 
+
 def test_serialize_post_when_empty():
     assert posts.serialize_post(None, None) is None
 
+
 def test_serialize_post(
-        post_factory, user_factory, comment_factory, tag_factory, config_injector):
+        user_factory, comment_factory, tag_factory, config_injector):
     config_injector({'data_url': 'http://example.com/'})
-    with unittest.mock.patch('szurubooru.func.comments.serialize_comment'), \
-            unittest.mock.patch('szurubooru.func.users.serialize_micro_user'), \
-            unittest.mock.patch('szurubooru.func.posts.files.has', return_value=True), \
-            unittest.mock.patch('szurubooru.func.snapshots.get_serialized_history'):
+    with patch('szurubooru.func.comments.serialize_comment'), \
+            patch('szurubooru.func.users.serialize_micro_user'), \
+            patch('szurubooru.func.posts.files.has'), \
+            patch('szurubooru.func.snapshots.get_serialized_history'):
+        files.has.return_value = True
         users.serialize_micro_user.side_effect \
             = lambda user, auth_user: user.name
         comments.serialize_comment.side_effect \
@@ -130,45 +140,47 @@ def test_serialize_post(
         result = posts.serialize_post(post, auth_user)
         result['tags'].sort()
 
-    assert result == {
-        'id': 1,
-        'version': 1,
-        'creationTime': datetime(1997, 1, 1),
-        'lastEditTime': datetime(1998, 1, 1),
-        'safety': 'safe',
-        'source': '4gag',
-        'type': 'image',
-        'checksum': 'deadbeef',
-        'fileSize': 100,
-        'canvasWidth': 200,
-        'canvasHeight': 300,
-        'contentUrl': 'http://example.com/posts/1.jpg',
-        'thumbnailUrl': 'http://example.com/generated-thumbnails/1.jpg',
-        'flags': ['loop'],
-        'tags': ['tag1', 'tag3'],
-        'relations': [],
-        'notes': [],
-        'user': 'post author',
-        'score': 1,
-        'ownFavorite': False,
-        'ownScore': -1,
-        'tagCount': 2,
-        'favoriteCount': 1,
-        'commentCount': 2,
-        'noteCount': 0,
-        'featureCount': 1,
-        'relationCount': 0,
-        'lastFeatureTime': datetime(1999, 1, 1),
-        'favoritedBy': ['fav1'],
-        'hasCustomThumbnail': True,
-        'mimeType': 'image/jpeg',
-        'snapshots': 'snapshot history',
-        'comments': ['commenter1', 'commenter2'],
-    }
+        assert result == {
+            'id': 1,
+            'version': 1,
+            'creationTime': datetime(1997, 1, 1),
+            'lastEditTime': datetime(1998, 1, 1),
+            'safety': 'safe',
+            'source': '4gag',
+            'type': 'image',
+            'checksum': 'deadbeef',
+            'fileSize': 100,
+            'canvasWidth': 200,
+            'canvasHeight': 300,
+            'contentUrl': 'http://example.com/posts/1.jpg',
+            'thumbnailUrl': 'http://example.com/generated-thumbnails/1.jpg',
+            'flags': ['loop'],
+            'tags': ['tag1', 'tag3'],
+            'relations': [],
+            'notes': [],
+            'user': 'post author',
+            'score': 1,
+            'ownFavorite': False,
+            'ownScore': -1,
+            'tagCount': 2,
+            'favoriteCount': 1,
+            'commentCount': 2,
+            'noteCount': 0,
+            'featureCount': 1,
+            'relationCount': 0,
+            'lastFeatureTime': datetime(1999, 1, 1),
+            'favoritedBy': ['fav1'],
+            'hasCustomThumbnail': True,
+            'mimeType': 'image/jpeg',
+            'snapshots': 'snapshot history',
+            'comments': ['commenter1', 'commenter2'],
+        }
+
 
 def test_serialize_micro_post(post_factory, user_factory):
-    with unittest.mock.patch('szurubooru.func.posts.get_post_thumbnail_url'):
-        posts.get_post_thumbnail_url.return_value = 'https://example.com/thumb.png'
+    with patch('szurubooru.func.posts.get_post_thumbnail_url'):
+        posts.get_post_thumbnail_url.return_value \
+            = 'https://example.com/thumb.png'
         auth_user = user_factory()
         post = post_factory()
         db.session.add(post)
@@ -178,12 +190,14 @@ def test_serialize_micro_post(post_factory, user_factory):
             'thumbnailUrl': 'https://example.com/thumb.png',
         }
 
+
 def test_get_post_count(post_factory):
     previous_count = posts.get_post_count()
     db.session.add_all([post_factory(), post_factory()])
     new_count = posts.get_post_count()
     assert previous_count == 0
     assert new_count == 2
+
 
 def test_try_get_post_by_id(post_factory):
     post = post_factory()
@@ -193,6 +207,7 @@ def test_try_get_post_by_id(post_factory):
     assert posts.try_get_post_by_id(post.post_id + 1) is None
     with pytest.raises(posts.InvalidPostIdError):
         posts.get_post_by_id('-')
+
 
 def test_get_post_by_id(post_factory):
     post = post_factory()
@@ -204,16 +219,18 @@ def test_get_post_by_id(post_factory):
     with pytest.raises(posts.InvalidPostIdError):
         posts.get_post_by_id('-')
 
+
 def test_create_post(user_factory, fake_datetime):
-    with unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_tags'), \
+    with patch('szurubooru.func.posts.update_post_content'), \
+            patch('szurubooru.func.posts.update_post_tags'), \
             fake_datetime('1997-01-01'):
         auth_user = user_factory()
-        post, new_tags = posts.create_post('content', ['tag'], auth_user)
+        post, _new_tags = posts.create_post('content', ['tag'], auth_user)
         assert post.creation_time == datetime(1997, 1, 1)
         assert post.last_edit_time is None
         posts.update_post_tags.assert_called_once_with(post, ['tag'])
         posts.update_post_content.assert_called_once_with(post, 'content')
+
 
 @pytest.mark.parametrize('input_safety,expected_safety', [
     ('safe', db.Post.SAFETY_SAFE),
@@ -225,31 +242,41 @@ def test_update_post_safety(input_safety, expected_safety):
     posts.update_post_safety(post, input_safety)
     assert post.safety == expected_safety
 
+
 def test_update_post_safety_with_invalid_string():
     post = db.Post()
     with pytest.raises(posts.InvalidPostSafetyError):
         posts.update_post_safety(post, 'bad')
+
 
 def test_update_post_source():
     post = db.Post()
     posts.update_post_source(post, 'x')
     assert post.source == 'x'
 
+
 def test_update_post_source_with_too_long_string():
     post = db.Post()
     with pytest.raises(posts.InvalidPostSourceError):
         posts.update_post_source(post, 'x' * 1000)
 
+
 @pytest.mark.parametrize(
-    'input_file,expected_mime_type,expected_type,output_file_name', [
-    ('png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
-    ('jpeg.jpg', 'image/jpeg', db.Post.TYPE_IMAGE, '1.jpg'),
-    ('gif.gif', 'image/gif', db.Post.TYPE_IMAGE, '1.gif'),
-    ('gif-animated.gif', 'image/gif', db.Post.TYPE_ANIMATION, '1.gif'),
-    ('webm.webm', 'video/webm', db.Post.TYPE_VIDEO, '1.webm'),
-    ('mp4.mp4', 'video/mp4', db.Post.TYPE_VIDEO, '1.mp4'),
-    ('flash.swf', 'application/x-shockwave-flash', db.Post.TYPE_FLASH, '1.swf'),
-])
+    'input_file,expected_mime_type,expected_type,output_file_name',
+    [
+        ('png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
+        ('jpeg.jpg', 'image/jpeg', db.Post.TYPE_IMAGE, '1.jpg'),
+        ('gif.gif', 'image/gif', db.Post.TYPE_IMAGE, '1.gif'),
+        ('gif-animated.gif', 'image/gif', db.Post.TYPE_ANIMATION, '1.gif'),
+        ('webm.webm', 'video/webm', db.Post.TYPE_VIDEO, '1.webm'),
+        ('mp4.mp4', 'video/mp4', db.Post.TYPE_VIDEO, '1.mp4'),
+        (
+            'flash.swf',
+            'application/x-shockwave-flash',
+            db.Post.TYPE_FLASH,
+            '1.swf'
+        ),
+    ])
 def test_update_post_content(
         tmpdir,
         config_injector,
@@ -259,7 +286,8 @@ def test_update_post_content(
         expected_mime_type,
         expected_type,
         output_file_name):
-    with unittest.mock.patch('szurubooru.func.util.get_md5', return_value='crc'):
+    with patch('szurubooru.func.util.get_md5'):
+        util.get_md5.return_value = 'crc'
         config_injector({
             'data_dir': str(tmpdir.mkdir('data')),
             'thumbnails': {
@@ -271,10 +299,11 @@ def test_update_post_content(
         db.session.add(post)
         db.session.flush()
         posts.update_post_content(post, read_asset(input_file))
-    assert post.mime_type == expected_mime_type
-    assert post.type == expected_type
-    assert post.checksum == 'crc'
-    assert os.path.exists(str(tmpdir) + '/data/posts/' + output_file_name)
+        assert post.mime_type == expected_mime_type
+        assert post.type == expected_type
+        assert post.checksum == 'crc'
+        assert os.path.exists(str(tmpdir) + '/data/posts/' + output_file_name)
+
 
 def test_update_post_content_to_existing_content(
         tmpdir, config_injector, post_factory, read_asset):
@@ -292,6 +321,7 @@ def test_update_post_content_to_existing_content(
     posts.update_post_content(post, read_asset('png.png'))
     with pytest.raises(posts.PostAlreadyUploadedError):
         posts.update_post_content(another_post, read_asset('png.png'))
+
 
 def test_update_post_content_with_broken_content(
         tmpdir, config_injector, post_factory, read_asset):
@@ -313,11 +343,13 @@ def test_update_post_content_with_broken_content(
     assert post.canvas_width is None
     assert post.canvas_height is None
 
+
 @pytest.mark.parametrize('input_content', [None, b'not a media file'])
 def test_update_post_content_with_invalid_content(input_content):
     post = db.Post()
     with pytest.raises(posts.InvalidPostContentError):
         posts.update_post_content(post, input_content)
+
 
 def test_update_post_thumbnail_to_new_one(
         tmpdir, config_injector, read_asset, post_factory):
@@ -333,10 +365,13 @@ def test_update_post_thumbnail_to_new_one(
     db.session.flush()
     posts.update_post_content(post, read_asset('png.png'))
     posts.update_post_thumbnail(post, read_asset('jpeg.jpg'))
-    assert os.path.exists(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
-    assert os.path.exists(str(tmpdir) + '/data/generated-thumbnails/1.jpg')
-    with open(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat', 'rb') as handle:
+    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
+    assert os.path.exists(source_path)
+    assert os.path.exists(generated_path)
+    with open(source_path, 'rb') as handle:
         assert handle.read() == read_asset('jpeg.jpg')
+
 
 def test_update_post_thumbnail_to_default(
         tmpdir, config_injector, read_asset, post_factory):
@@ -353,8 +388,10 @@ def test_update_post_thumbnail_to_default(
     posts.update_post_content(post, read_asset('png.png'))
     posts.update_post_thumbnail(post, read_asset('jpeg.jpg'))
     posts.update_post_thumbnail(post, None)
-    assert not os.path.exists(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
     assert os.path.exists(str(tmpdir) + '/data/generated-thumbnails/1.jpg')
+    assert not os.path.exists(
+        str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
+
 
 def test_update_post_thumbnail_with_broken_thumbnail(
         tmpdir, config_injector, read_asset, post_factory):
@@ -370,14 +407,17 @@ def test_update_post_thumbnail_with_broken_thumbnail(
     db.session.flush()
     posts.update_post_content(post, read_asset('png.png'))
     posts.update_post_thumbnail(post, read_asset('png-broken.png'))
-    assert os.path.exists(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
-    assert os.path.exists(str(tmpdir) + '/data/generated-thumbnails/1.jpg')
-    with open(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat', 'rb') as handle:
+    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
+    assert os.path.exists(source_path)
+    assert os.path.exists(generated_path)
+    with open(source_path, 'rb') as handle:
         assert handle.read() == read_asset('png-broken.png')
-    with open(str(tmpdir) + '/data/generated-thumbnails/1.jpg', 'rb') as handle:
+    with open(generated_path, 'rb') as handle:
         image = images.Image(handle.read())
         assert image.width == 1
         assert image.height == 1
+
 
 def test_update_post_content_leaving_custom_thumbnail(
         tmpdir, config_injector, read_asset, post_factory):
@@ -397,9 +437,10 @@ def test_update_post_content_leaving_custom_thumbnail(
     assert os.path.exists(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
     assert os.path.exists(str(tmpdir) + '/data/generated-thumbnails/1.jpg')
 
+
 def test_update_post_tags(tag_factory):
     post = db.Post()
-    with unittest.mock.patch('szurubooru.func.tags.get_or_create_tags_by_names'):
+    with patch('szurubooru.func.tags.get_or_create_tags_by_names'):
         tags.get_or_create_tags_by_names.side_effect \
             = lambda tag_names: \
                 ([tag_factory(names=[name]) for name in tag_names], [])
@@ -407,6 +448,7 @@ def test_update_post_tags(tag_factory):
     assert len(post.tags) == 2
     assert post.tags[0].names[0].name == 'tag1'
     assert post.tags[1].names[0].name == 'tag2'
+
 
 def test_update_post_relations(post_factory):
     relation1 = post_factory()
@@ -419,6 +461,7 @@ def test_update_post_relations(post_factory):
     assert post.relations[0].post_id == relation1.post_id
     assert post.relations[1].post_id == relation2.post_id
 
+
 def test_update_post_relations_bidirectionality(post_factory):
     relation1 = post_factory()
     relation2 = post_factory()
@@ -430,10 +473,12 @@ def test_update_post_relations_bidirectionality(post_factory):
     assert len(post.relations) == 1
     assert post.relations[0].post_id == relation2.post_id
 
+
 def test_update_post_relations_with_nonexisting_posts():
     post = db.Post()
     with pytest.raises(posts.InvalidPostRelationError):
         posts.update_post_relations(post, [100])
+
 
 def test_update_post_notes():
     post = db.Post()
@@ -448,6 +493,7 @@ def test_update_post_notes():
     assert post.notes[0].text == 'text1'
     assert post.notes[1].polygon == [[0, 0], [0, 1], [1, 0], [0, 0]]
     assert post.notes[1].text == 'text2'
+
 
 @pytest.mark.parametrize('input', [
     [{'text': '...'}],
@@ -473,15 +519,18 @@ def test_update_post_notes_with_invalid_content(input):
     with pytest.raises(posts.InvalidPostNoteError):
         posts.update_post_notes(post, input)
 
+
 def test_update_post_flags():
     post = db.Post()
     posts.update_post_flags(post, ['loop'])
     assert post.flags == ['loop']
 
+
 def test_update_post_flags_with_invalid_content():
     post = db.Post()
     with pytest.raises(posts.InvalidPostFlagError):
         posts.update_post_flags(post, ['invalid'])
+
 
 def test_feature_post(post_factory, user_factory):
     post = post_factory()
@@ -491,6 +540,7 @@ def test_feature_post(post_factory, user_factory):
     new_featured_post = posts.try_get_featured_post()
     assert previous_featured_post is None
     assert new_featured_post == post
+
 
 def test_delete(post_factory):
     post = post_factory()

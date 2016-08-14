@@ -13,6 +13,7 @@ down_revision = 'e5c1216a8503'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         'tag_category',
@@ -54,6 +55,7 @@ def upgrade():
         sa.ForeignKeyConstraint(['parent_id'], ['tag.id']),
         sa.ForeignKeyConstraint(['child_id'], ['tag.id']),
         sa.PrimaryKeyConstraint('parent_id', 'child_id'))
+
 
 def downgrade():
     op.drop_table('tag_suggestion')

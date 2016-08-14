@@ -1,10 +1,13 @@
-import datetime
+# pylint: disable=redefined-outer-name
+from datetime import datetime
 import pytest
 from szurubooru import db, errors, search
+
 
 @pytest.fixture
 def executor():
     return search.Executor(search.configs.TagSearchConfig())
+
 
 @pytest.fixture
 def verify_unpaged(executor):
@@ -16,6 +19,7 @@ def verify_unpaged(executor):
         assert actual_tag_names == expected_tag_names
     return verify
 
+
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('', ['t1', 't2']),
     ('t1', ['t1']),
@@ -23,14 +27,17 @@ def verify_unpaged(executor):
     ('t1,t2', ['t1', 't2']),
     ('T1,T2', ['t1', 't2']),
 ])
-def test_filter_anonymous(verify_unpaged, tag_factory, input, expected_tag_names):
+def test_filter_anonymous(
+        verify_unpaged, tag_factory, input, expected_tag_names):
     db.session.add(tag_factory(names=['t1']))
     db.session.add(tag_factory(names=['t2']))
     verify_unpaged(input, expected_tag_names)
 
+
 def test_filter_anonymous_starting_with_colon(verify_unpaged, tag_factory):
     db.session.add(tag_factory(names=[':t']))
     verify_unpaged(':t', [':t'])
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('name:tag1', ['tag1']),
@@ -53,12 +60,14 @@ def test_filter_anonymous_starting_with_colon(verify_unpaged, tag_factory):
     ('name:tag5', ['tag4']),
     ('name:tag4,tag5', ['tag4']),
 ])
-def test_filter_by_name(verify_unpaged, tag_factory, input, expected_tag_names):
+def test_filter_by_name(
+        verify_unpaged, tag_factory, input, expected_tag_names):
     db.session.add(tag_factory(names=['tag1']))
     db.session.add(tag_factory(names=['tag2']))
     db.session.add(tag_factory(names=['tag3']))
     db.session.add(tag_factory(names=['tag4', 'tag5', 'tag6']))
     verify_unpaged(input, expected_tag_names)
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('category:cat1', ['t1', 't2']),
@@ -78,6 +87,7 @@ def test_filter_by_category(
     tag3 = tag_factory(names=['t3'], category=cat2)
     db.session.add_all([tag1, tag2, tag3])
     verify_unpaged(input, expected_tag_names)
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('creation-time:2014', ['t1', 't2']),
@@ -106,11 +116,12 @@ def test_filter_by_creation_time(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     tag3 = tag_factory(names=['t3'])
-    tag1.creation_time = datetime.datetime(2014, 1, 1)
-    tag2.creation_time = datetime.datetime(2014, 6, 1)
-    tag3.creation_time = datetime.datetime(2015, 1, 1)
+    tag1.creation_time = datetime(2014, 1, 1)
+    tag2.creation_time = datetime(2014, 6, 1)
+    tag3.creation_time = datetime(2015, 1, 1)
     db.session.add_all([tag1, tag2, tag3])
     verify_unpaged(input, expected_tag_names)
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('last-edit-date:2014', ['t1', 't3']),
@@ -123,11 +134,12 @@ def test_filter_by_edit_time(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     tag3 = tag_factory(names=['t3'])
-    tag1.last_edit_time = datetime.datetime(2014, 1, 1)
-    tag2.last_edit_time = datetime.datetime(2015, 1, 1)
-    tag3.last_edit_time = datetime.datetime(2014, 1, 1)
+    tag1.last_edit_time = datetime(2014, 1, 1)
+    tag2.last_edit_time = datetime(2015, 1, 1)
+    tag3.last_edit_time = datetime(2014, 1, 1)
     db.session.add_all([tag1, tag2, tag3])
     verify_unpaged(input, expected_tag_names)
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('post-count:2', ['t1']),
@@ -154,6 +166,7 @@ def test_filter_by_post_count(
     post2.tags.append(tag1)
     verify_unpaged(input, expected_tag_names)
 
+
 @pytest.mark.parametrize('input', [
     'post-count:..',
     'post-count:asd',
@@ -164,8 +177,8 @@ def test_filter_by_post_count(
 ])
 def test_filter_by_invalid_input(executor, input):
     with pytest.raises(errors.SearchError):
-        actual_count, actual_posts = executor.execute(
-            input, page=1, page_size=100)
+        executor.execute(input, page=1, page_size=100)
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('suggestion-count:2', ['t1']),
@@ -186,6 +199,7 @@ def test_filter_by_suggestion_count(
     tag2.suggestions.append(sug3)
     verify_unpaged(input, expected_tag_names)
 
+
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('implication-count:2', ['t1']),
     ('implication-count:1', ['t2']),
@@ -205,6 +219,7 @@ def test_filter_by_implication_count(
     tag2.implications.append(sug3)
     verify_unpaged(input, expected_tag_names)
 
+
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('', ['t1', 't2']),
     ('sort:name', ['t1', 't2']),
@@ -219,6 +234,7 @@ def test_sort_by_name(verify_unpaged, tag_factory, input, expected_tag_names):
     db.session.add(tag_factory(names=['t1']))
     verify_unpaged(input, expected_tag_names)
 
+
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('', ['t1', 't2', 't3']),
     ('sort:creation-date', ['t3', 't2', 't1']),
@@ -229,11 +245,12 @@ def test_sort_by_creation_time(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     tag3 = tag_factory(names=['t3'])
-    tag1.creation_time = datetime.datetime(1991, 1, 1)
-    tag2.creation_time = datetime.datetime(1991, 1, 2)
-    tag3.creation_time = datetime.datetime(1991, 1, 3)
+    tag1.creation_time = datetime(1991, 1, 1)
+    tag2.creation_time = datetime(1991, 1, 2)
+    tag3.creation_time = datetime(1991, 1, 3)
     db.session.add_all([tag3, tag1, tag2])
     verify_unpaged(input, expected_tag_names)
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('', ['t1', 't2', 't3']),
@@ -247,11 +264,12 @@ def test_sort_by_last_edit_time(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     tag3 = tag_factory(names=['t3'])
-    tag1.last_edit_time = datetime.datetime(1991, 1, 1)
-    tag2.last_edit_time = datetime.datetime(1991, 1, 2)
-    tag3.last_edit_time = datetime.datetime(1991, 1, 3)
+    tag1.last_edit_time = datetime(1991, 1, 1)
+    tag2.last_edit_time = datetime(1991, 1, 2)
+    tag3.last_edit_time = datetime(1991, 1, 3)
     db.session.add_all([tag3, tag1, tag2])
     verify_unpaged(input, expected_tag_names)
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('sort:post-count', ['t2', 't1']),
@@ -271,6 +289,7 @@ def test_sort_by_post_count(
     post2.tags.append(tag2)
     verify_unpaged(input, expected_tag_names)
 
+
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('sort:suggestion-count', ['t1', 't2', 'sug1', 'sug2', 'sug3']),
 ])
@@ -288,6 +307,7 @@ def test_sort_by_suggestion_count(
     tag2.suggestions.append(sug3)
     verify_unpaged(input, expected_tag_names)
 
+
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('sort:implication-count', ['t1', 't2', 'sug1', 'sug2', 'sug3']),
 ])
@@ -304,6 +324,7 @@ def test_sort_by_implication_count(
     tag1.implications.append(sug2)
     tag2.implications.append(sug3)
     verify_unpaged(input, expected_tag_names)
+
 
 @pytest.mark.parametrize('input,expected_tag_names', [
     ('sort:category', ['t3', 't1', 't2']),

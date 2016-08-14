@@ -2,6 +2,7 @@ import re
 from szurubooru import errors
 from szurubooru.search import criteria, tokens
 
+
 def _create_criterion(original_value, value):
     if '..' in value:
         low, high = value.split('..', 1)
@@ -13,9 +14,11 @@ def _create_criterion(original_value, value):
             original_value, value.split(','))
     return criteria.PlainCriterion(original_value, value)
 
+
 def _parse_anonymous(value, negated):
     criterion = _create_criterion(value, value)
     return tokens.AnonymousToken(criterion, negated)
+
 
 def _parse_named(key, value, negated):
     original_value = value
@@ -28,34 +31,41 @@ def _parse_named(key, value, negated):
     criterion = _create_criterion(original_value, value)
     return tokens.NamedToken(key, criterion, negated)
 
+
 def _parse_special(value, negated):
     return tokens.SpecialToken(value, negated)
 
+
 def _parse_sort(value, negated):
     if value.count(',') == 0:
-        direction_str = None
+        order_str = None
     elif value.count(',') == 1:
-        value, direction_str = value.split(',')
+        value, order_str = value.split(',')
     else:
         raise errors.SearchError('Too many commas in sort style token.')
     try:
-        direction = {
+        order = {
             'asc': tokens.SortToken.SORT_ASC,
             'desc': tokens.SortToken.SORT_DESC,
             '': tokens.SortToken.SORT_DEFAULT,
             None: tokens.SortToken.SORT_DEFAULT,
-        }[direction_str]
+        }[order_str]
     except KeyError:
         raise errors.SearchError(
-            'Unknown search direction: %r.' % direction_str)
+            'Unknown search direction: %r.' % order_str)
     if negated:
-        direction = {
-            tokens.SortToken.SORT_ASC: tokens.SortToken.SORT_DESC,
-            tokens.SortToken.SORT_DESC: tokens.SortToken.SORT_ASC,
-            tokens.SortToken.SORT_DEFAULT: tokens.SortToken.SORT_NEGATED_DEFAULT,
-            tokens.SortToken.SORT_NEGATED_DEFAULT: tokens.SortToken.SORT_DEFAULT,
-        }[direction]
-    return tokens.SortToken(value, direction)
+        order = {
+            tokens.SortToken.SORT_ASC:
+                tokens.SortToken.SORT_DESC,
+            tokens.SortToken.SORT_DESC:
+                tokens.SortToken.SORT_ASC,
+            tokens.SortToken.SORT_DEFAULT:
+                tokens.SortToken.SORT_NEGATED_DEFAULT,
+            tokens.SortToken.SORT_NEGATED_DEFAULT:
+                tokens.SortToken.SORT_DEFAULT,
+        }[order]
+    return tokens.SortToken(value, order)
+
 
 class SearchQuery():
     def __init__(self):
@@ -70,6 +80,7 @@ class SearchQuery():
             tuple(self.named_tokens),
             tuple(self.special_tokens),
             tuple(self.sort_tokens)))
+
 
 class Parser(object):
     def parse(self, query_text):
@@ -93,5 +104,6 @@ class Parser(object):
                     query.named_tokens.append(
                         _parse_named(key, value, negated))
             else:
-                query.anonymous_tokens.append(_parse_anonymous(chunk, negated))
+                query.anonymous_tokens.append(
+                    _parse_anonymous(chunk, negated))
         return query

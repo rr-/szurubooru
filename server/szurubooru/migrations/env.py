@@ -28,6 +28,7 @@ alembic_config.set_main_option(
 
 target_metadata = szurubooru.db.Base.metadata
 
+
 def run_migrations_offline():
     '''
     Run migrations in 'offline' mode.

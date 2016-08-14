@@ -1,6 +1,7 @@
 import os
 import yaml
 
+
 def merge(left, right):
     for key in right:
         if key in left:
@@ -12,6 +13,7 @@ def merge(left, right):
             left[key] = right[key]
     return left
 
+
 def read_config():
     with open('../config.yaml.dist') as handle:
         ret = yaml.load(handle.read())
@@ -20,4 +22,5 @@ def read_config():
                 ret = merge(ret, yaml.load(handle.read()))
         return ret
 
-config = read_config() # pylint: disable=invalid-name
+
+config = read_config()  # pylint: disable=invalid-name

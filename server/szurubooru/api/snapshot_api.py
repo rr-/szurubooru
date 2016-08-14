@@ -2,8 +2,9 @@ from szurubooru import search
 from szurubooru.func import auth, snapshots
 from szurubooru.rest import routes
 
-_search_executor = search.Executor(
-    search.configs.SnapshotSearchConfig())
+
+_search_executor = search.Executor(search.configs.SnapshotSearchConfig())
+
 
 @routes.get('/snapshots/?')
 def get_snapshots(ctx, _params=None):

@@ -1,10 +1,13 @@
-import datetime
+# pylint: disable=redefined-outer-name
+from datetime import datetime
 import pytest
 from szurubooru import db, errors, search
+
 
 @pytest.fixture
 def executor():
     return search.Executor(search.configs.UserSearchConfig())
+
 
 @pytest.fixture
 def verify_unpaged(executor):
@@ -15,6 +18,7 @@ def verify_unpaged(executor):
         assert actual_count == len(expected_user_names)
         assert actual_user_names == expected_user_names
     return verify
+
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('creation-time:2014', ['u1', 'u2']),
@@ -45,11 +49,12 @@ def test_filter_by_creation_time(
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
-    user1.creation_time = datetime.datetime(2014, 1, 1)
-    user2.creation_time = datetime.datetime(2014, 6, 1)
-    user3.creation_time = datetime.datetime(2015, 1, 1)
+    user1.creation_time = datetime(2014, 1, 1)
+    user2.creation_time = datetime(2014, 6, 1)
+    user3.creation_time = datetime(2015, 1, 1)
     db.session.add_all([user1, user2, user3])
     verify_unpaged(input, expected_user_names)
+
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('name:user1', ['user1']),
@@ -76,6 +81,7 @@ def test_filter_by_name(
     db.session.add(user_factory(name='user3'))
     verify_unpaged(input, expected_user_names)
 
+
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2']),
     ('u1', ['u1']),
@@ -88,6 +94,7 @@ def test_anonymous(
     db.session.add(user_factory(name='u2'))
     verify_unpaged(input, expected_user_names)
 
+
 @pytest.mark.parametrize('input,expected_user_names', [
     ('creation-time:2014 u1', ['u1']),
     ('creation-time:2014 u2', ['u2']),
@@ -98,11 +105,12 @@ def test_combining_tokens(
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
-    user1.creation_time = datetime.datetime(2014, 1, 1)
-    user2.creation_time = datetime.datetime(2014, 6, 1)
-    user3.creation_time = datetime.datetime(2015, 1, 1)
+    user1.creation_time = datetime(2014, 1, 1)
+    user2.creation_time = datetime(2014, 6, 1)
+    user3.creation_time = datetime(2015, 1, 1)
     db.session.add_all([user1, user2, user3])
     verify_unpaged(input, expected_user_names)
+
 
 @pytest.mark.parametrize(
     'page,page_size,expected_total_count,expected_user_names', [
@@ -123,6 +131,7 @@ def test_paging(
     assert actual_count == expected_total_count
     assert actual_user_names == expected_user_names
 
+
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2']),
     ('sort:name', ['u1', 'u2']),
@@ -137,6 +146,7 @@ def test_sort_by_name(
     db.session.add(user_factory(name='u2'))
     db.session.add(user_factory(name='u1'))
     verify_unpaged(input, expected_user_names)
+
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2', 'u3']),
@@ -153,11 +163,12 @@ def test_sort_by_creation_time(
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
-    user1.creation_time = datetime.datetime(1991, 1, 1)
-    user2.creation_time = datetime.datetime(1991, 1, 2)
-    user3.creation_time = datetime.datetime(1991, 1, 3)
+    user1.creation_time = datetime(1991, 1, 1)
+    user2.creation_time = datetime(1991, 1, 2)
+    user3.creation_time = datetime(1991, 1, 3)
     db.session.add_all([user3, user1, user2])
     verify_unpaged(input, expected_user_names)
+
 
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2', 'u3']),
@@ -171,11 +182,12 @@ def test_sort_by_last_login_time(
     user1 = user_factory(name='u1')
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
-    user1.last_login_time = datetime.datetime(1991, 1, 1)
-    user2.last_login_time = datetime.datetime(1991, 1, 2)
-    user3.last_login_time = datetime.datetime(1991, 1, 3)
+    user1.last_login_time = datetime(1991, 1, 1)
+    user2.last_login_time = datetime(1991, 1, 2)
+    user3.last_login_time = datetime(1991, 1, 3)
     db.session.add_all([user3, user1, user2])
     verify_unpaged(input, expected_user_names)
+
 
 def test_random_sort(executor, user_factory):
     user1 = user_factory(name='u1')
@@ -190,6 +202,7 @@ def test_random_sort(executor, user_factory):
     assert 'u1' in actual_user_names
     assert 'u2' in actual_user_names
     assert 'u3' in actual_user_names
+
 
 @pytest.mark.parametrize('input,expected_error', [
     ('creation-date:..', errors.SearchError),

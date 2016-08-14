@@ -1,16 +1,18 @@
+from unittest.mock import patch
 import pytest
-import unittest.mock
 from szurubooru import api, db, errors
 from szurubooru.func import tags
+
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector({'privileges': {'tags:view': db.User.RANK_REGULAR}})
 
-def test_get_tag_siblings(user_factory, tag_factory, post_factory, context_factory):
+
+def test_get_tag_siblings(user_factory, tag_factory, context_factory):
     db.session.add(tag_factory(names=['tag']))
-    with unittest.mock.patch('szurubooru.func.tags.serialize_tag'), \
-            unittest.mock.patch('szurubooru.func.tags.get_tag_siblings'):
+    with patch('szurubooru.func.tags.serialize_tag'), \
+            patch('szurubooru.func.tags.get_tag_siblings'):
         tags.serialize_tag.side_effect = \
             lambda tag, *args, **kwargs: \
                 'serialized tag %s' % tag.names[0].name
@@ -34,11 +36,13 @@ def test_get_tag_siblings(user_factory, tag_factory, post_factory, context_facto
             ],
         }
 
+
 def test_trying_to_retrieve_non_existing(user_factory, context_factory):
     with pytest.raises(tags.TagNotFoundError):
         api.tag_api.get_tag_siblings(
             context_factory(user=user_factory(rank=db.User.RANK_REGULAR)),
             {'tag_name': '-'})
+
 
 def test_trying_to_retrieve_without_privileges(user_factory, context_factory):
     with pytest.raises(errors.AuthError):

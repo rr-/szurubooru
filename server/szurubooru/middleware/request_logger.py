@@ -2,7 +2,9 @@ import logging
 from szurubooru import db
 from szurubooru.rest import middleware
 
+
 logger = logging.getLogger(__name__)
+
 
 @middleware.post_hook
 def process_response(ctx):

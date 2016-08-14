@@ -1,8 +1,8 @@
+from unittest.mock import patch
 import pytest
-import unittest.mock
-from datetime import datetime
 from szurubooru import api, db, errors
 from szurubooru.func import users
+
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
@@ -21,19 +21,20 @@ def inject_config(config_injector):
         },
     })
 
+
 def test_updating_user(context_factory, user_factory):
     user = user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     auth_user = user_factory(rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     db.session.flush()
 
-    with unittest.mock.patch('szurubooru.func.users.create_user'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_name'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_password'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_email'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_rank'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_avatar'), \
-            unittest.mock.patch('szurubooru.func.users.serialize_user'):
+    with patch('szurubooru.func.users.create_user'), \
+            patch('szurubooru.func.users.update_user_name'), \
+            patch('szurubooru.func.users.update_user_password'), \
+            patch('szurubooru.func.users.update_user_email'), \
+            patch('szurubooru.func.users.update_user_rank'), \
+            patch('szurubooru.func.users.update_user_avatar'), \
+            patch('szurubooru.func.users.serialize_user'):
         users.serialize_user.return_value = 'serialized user'
 
         result = api.user_api.update_user(
@@ -57,9 +58,13 @@ def test_updating_user(context_factory, user_factory):
         users.update_user_name.assert_called_once_with(user, 'chewie')
         users.update_user_password.assert_called_once_with(user, 'oks')
         users.update_user_email.assert_called_once_with(user, 'asd@asd.asd')
-        users.update_user_rank.assert_called_once_with(user, 'moderator', auth_user)
-        users.update_user_avatar.assert_called_once_with(user, 'manual', b'...')
-        users.serialize_user.assert_called_once_with(user, auth_user, options=None)
+        users.update_user_rank.assert_called_once_with(
+            user, 'moderator', auth_user)
+        users.update_user_avatar.assert_called_once_with(
+            user, 'manual', b'...')
+        users.serialize_user.assert_called_once_with(
+            user, auth_user, options=None)
+
 
 @pytest.mark.parametrize(
     'field', ['name', 'email', 'password', 'rank', 'avatarStyle'])
@@ -74,13 +79,13 @@ def test_omitting_optional_field(user_factory, context_factory, field):
         'avatarStyle': 'gravatar',
     }
     del params[field]
-    with unittest.mock.patch('szurubooru.func.users.create_user'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_name'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_password'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_email'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_rank'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_avatar'), \
-            unittest.mock.patch('szurubooru.func.users.serialize_user'):
+    with patch('szurubooru.func.users.create_user'), \
+            patch('szurubooru.func.users.update_user_name'), \
+            patch('szurubooru.func.users.update_user_password'), \
+            patch('szurubooru.func.users.update_user_email'), \
+            patch('szurubooru.func.users.update_user_rank'), \
+            patch('szurubooru.func.users.update_user_avatar'), \
+            patch('szurubooru.func.users.serialize_user'):
         api.user_api.update_user(
             context_factory(
                 params={**params, **{'version': 1}},
@@ -88,12 +93,14 @@ def test_omitting_optional_field(user_factory, context_factory, field):
                 user=user),
             {'user_name': 'u1'})
 
+
 def test_trying_to_update_non_existing(user_factory, context_factory):
     user = user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
     with pytest.raises(users.UserNotFoundError):
         api.user_api.update_user(
             context_factory(user=user), {'user_name': 'u2'})
+
 
 @pytest.mark.parametrize('params', [
     {'name': 'whatever'},

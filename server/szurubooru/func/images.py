@@ -6,10 +6,13 @@ import math
 from szurubooru import errors
 from szurubooru.func import mime, util
 
+
 logger = logging.getLogger(__name__)
+
 
 _SCALE_FIT_FMT = \
     r'scale=iw*max({width}/iw\,{height}/ih):ih*max({width}/iw\,{height}/ih)'
+
 
 class Image(object):
     def __init__(self, content):
@@ -38,12 +41,13 @@ class Image(object):
             '-',
         ]
         if 'duration' in self.info['format'] \
-                and float(self.info['format']['duration']) > 3 \
                 and self.info['format']['format_name'] != 'swf':
-            cli = [
-                '-ss',
-                '%d' % math.floor(float(self.info['format']['duration']) * 0.3),
-            ] + cli
+            duration = float(self.info['format']['duration'])
+            if duration > 3:
+                cli = [
+                    '-ss',
+                    '%d' % math.floor(duration * 0.3),
+                ] + cli
         self.content = self._execute(cli)
         assert self.content
         self._reload_info()

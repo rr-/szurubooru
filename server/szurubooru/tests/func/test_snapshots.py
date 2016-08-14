@@ -1,7 +1,8 @@
-import datetime
+from datetime import datetime
 import pytest
 from szurubooru import db
 from szurubooru.func import snapshots
+
 
 def test_serializing_post(post_factory, user_factory, tag_factory):
     user = user_factory(name='dummy-user')
@@ -16,16 +17,16 @@ def test_serializing_post(post_factory, user_factory, tag_factory):
     score = db.PostScore()
     score.post = post
     score.user = user
-    score.time = datetime.datetime(1997, 1, 1)
+    score.time = datetime(1997, 1, 1)
     score.score = 1
     favorite = db.PostFavorite()
     favorite.post = post
     favorite.user = user
-    favorite.time = datetime.datetime(1997, 1, 1)
+    favorite.time = datetime(1997, 1, 1)
     feature = db.PostFeature()
     feature.post = post
     feature.user = user
-    feature.time = datetime.datetime(1997, 1, 1)
+    feature.time = datetime(1997, 1, 1)
     note = db.PostNote()
     note.post = post
     note.polygon = [(1, 1), (200, 1), (200, 200), (1, 200)]
@@ -88,6 +89,7 @@ def test_serializing_tag(tag_factory, tag_category_factory):
         'suggestions': ['sug1_main_name', 'sug2_main_name'],
     }
 
+
 def test_serializing_tag_category(tag_category_factory):
     category = tag_category_factory(name='name', color='color')
     assert snapshots.get_tag_category_snapshot(category) == {
@@ -102,6 +104,7 @@ def test_serializing_tag_category(tag_category_factory):
         'default': True,
     }
 
+
 def test_merging_modification_to_creation(tag_factory, user_factory):
     tag = tag_factory(names=['dummy'])
     user = user_factory()
@@ -114,6 +117,7 @@ def test_merging_modification_to_creation(tag_factory, user_factory):
     assert len(results) == 1
     assert results[0].operation == db.Snapshot.OPERATION_CREATED
     assert results[0].data['names'] == ['changed']
+
 
 def test_merging_modifications(fake_datetime, tag_factory, user_factory):
     tag = tag_factory(names=['dummy'])
@@ -135,6 +139,7 @@ def test_merging_modifications(fake_datetime, tag_factory, user_factory):
     assert results[0].data['names'] == ['dummy']
     assert results[1].data['names'] == ['changed again']
 
+
 def test_not_adding_snapshot_if_data_doesnt_change(
         fake_datetime, tag_factory, user_factory):
     tag = tag_factory(names=['dummy'])
@@ -150,6 +155,7 @@ def test_not_adding_snapshot_if_data_doesnt_change(
     assert results[0].operation == db.Snapshot.OPERATION_CREATED
     assert results[0].data['names'] == ['dummy']
 
+
 def test_not_merging_due_to_time_difference(
         fake_datetime, tag_factory, user_factory):
     tag = tag_factory(names=['dummy'])
@@ -163,6 +169,7 @@ def test_not_merging_due_to_time_difference(
         snapshots.save_entity_modification(tag, user)
     assert db.session.query(db.Snapshot).count() == 2
 
+
 def test_not_merging_operations_by_different_users(
         fake_datetime, tag_factory, user_factory):
     tag = tag_factory(names=['dummy'])
@@ -174,6 +181,7 @@ def test_not_merging_operations_by_different_users(
         tag.names = [db.TagName('changed')]
         snapshots.save_entity_modification(tag, user2)
     assert db.session.query(db.Snapshot).count() == 2
+
 
 def test_merging_resets_merging_time_window(
         fake_datetime, tag_factory, user_factory):
@@ -192,6 +200,7 @@ def test_merging_resets_merging_time_window(
     results = db.session.query(db.Snapshot).all()
     assert len(results) == 1
     assert results[0].data['names'] == ['changed again']
+
 
 @pytest.mark.parametrize(
     'initial_operation',
@@ -228,11 +237,9 @@ def test_merging_deletion_to_modification_or_creation(
         'implications': [],
     }
 
-@pytest.mark.parametrize(
-    'expected_operation',
-    [snapshots.save_entity_creation, snapshots.save_entity_modification])
+
 def test_merging_deletion_all_the_way_deletes_all_snapshots(
-        fake_datetime, tag_factory, user_factory, expected_operation):
+        fake_datetime, tag_factory, user_factory):
     tag = tag_factory(names=['dummy'])
     user = user_factory()
     db.session.add_all([tag, user])
@@ -246,6 +253,7 @@ def test_merging_deletion_all_the_way_deletes_all_snapshots(
     with fake_datetime('13:00:02'):
         snapshots.save_entity_deletion(tag, user)
     assert db.session.query(db.Snapshot).count() == 0
+
 
 def test_get_serialized_history(
         fake_datetime, tag_factory, tag_category_factory, user_factory):
@@ -263,7 +271,7 @@ def test_get_serialized_history(
     assert snapshots.get_serialized_history(tag) == [
         {
             'operation': 'modified',
-            'time': datetime.datetime(2016, 4, 19, 13, 10, 1),
+            'time': datetime(2016, 4, 19, 13, 10, 1),
             'type': 'tag',
             'id': 'changed',
             'user': 'the-user',
@@ -282,7 +290,7 @@ def test_get_serialized_history(
         },
         {
             'operation': 'created',
-            'time': datetime.datetime(2016, 4, 19, 13, 0, 0),
+            'time': datetime(2016, 4, 19, 13, 0, 0),
             'type': 'tag',
             'id': 'dummy',
             'user': 'the-user',

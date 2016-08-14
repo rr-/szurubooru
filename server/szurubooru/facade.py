@@ -7,29 +7,36 @@ from szurubooru import config, errors, rest
 # pylint: disable=unused-import
 from szurubooru import api, middleware
 
+
 def _on_auth_error(ex):
     raise rest.errors.HttpForbidden(
         title='Authentication error', description=str(ex))
+
 
 def _on_validation_error(ex):
     raise rest.errors.HttpBadRequest(
         title='Validation error', description=str(ex))
 
+
 def _on_search_error(ex):
     raise rest.errors.HttpBadRequest(
         title='Search error', description=str(ex))
+
 
 def _on_integrity_error(ex):
     raise rest.errors.HttpConflict(
         title='Integrity violation', description=ex.args[0])
 
+
 def _on_not_found_error(ex):
     raise rest.errors.HttpNotFound(
         title='Not found', description=str(ex))
 
+
 def _on_processing_error(ex):
     raise rest.errors.HttpBadRequest(
         title='Processing error', description=str(ex))
+
 
 def validate_config():
     '''
@@ -59,6 +66,7 @@ def validate_config():
         if not config.config['database'][key]:
             raise errors.ConfigError(
                 'Database is not configured: %r is missing' % key)
+
 
 def create_app():
     ''' Create a WSGI compatible App object. '''

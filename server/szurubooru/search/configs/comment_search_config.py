@@ -3,6 +3,7 @@ from szurubooru import db
 from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
+
 class CommentSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
         return db.session.query(db.Comment).join(db.User)
@@ -22,12 +23,18 @@ class CommentSearchConfig(BaseSearchConfig):
             'user': search_util.create_str_filter(db.User.name),
             'author': search_util.create_str_filter(db.User.name),
             'text': search_util.create_str_filter(db.Comment.text),
-            'creation-date': search_util.create_date_filter(db.Comment.creation_time),
-            'creation-time': search_util.create_date_filter(db.Comment.creation_time),
-            'last-edit-date': search_util.create_date_filter(db.Comment.last_edit_time),
-            'last-edit-time': search_util.create_date_filter(db.Comment.last_edit_time),
-            'edit-date': search_util.create_date_filter(db.Comment.last_edit_time),
-            'edit-time': search_util.create_date_filter(db.Comment.last_edit_time),
+            'creation-date':
+                search_util.create_date_filter(db.Comment.creation_time),
+            'creation-time':
+                search_util.create_date_filter(db.Comment.creation_time),
+            'last-edit-date':
+                search_util.create_date_filter(db.Comment.last_edit_time),
+            'last-edit-time':
+                search_util.create_date_filter(db.Comment.last_edit_time),
+            'edit-date':
+                search_util.create_date_filter(db.Comment.last_edit_time),
+            'edit-time':
+                search_util.create_date_filter(db.Comment.last_edit_time),
         }
 
     @property

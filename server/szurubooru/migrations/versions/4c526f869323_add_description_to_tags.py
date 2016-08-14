@@ -13,8 +13,11 @@ down_revision = '055d0e048fb3'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
-    op.add_column('tag', sa.Column('description', sa.UnicodeText(), nullable=True))
+    op.add_column(
+        'tag', sa.Column('description', sa.UnicodeText(), nullable=True))
+
 
 def downgrade():
     op.drop_column('tag', 'description')

@@ -1,6 +1,7 @@
-import pytest
 from datetime import datetime
+import pytest
 from szurubooru import api, db, errors
+
 
 def snapshot_factory():
     snapshot = db.Snapshot()
@@ -12,11 +13,13 @@ def snapshot_factory():
     snapshot.data = '{}'
     return snapshot
 
+
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector({
         'privileges': {'snapshots:list': db.User.RANK_REGULAR},
     })
+
 
 def test_retrieving_multiple(user_factory, context_factory):
     snapshot1 = snapshot_factory()
@@ -31,6 +34,7 @@ def test_retrieving_multiple(user_factory, context_factory):
     assert result['pageSize'] == 100
     assert result['total'] == 2
     assert len(result['results']) == 2
+
 
 def test_trying_to_retrieve_multiple_without_privileges(
         user_factory, context_factory):

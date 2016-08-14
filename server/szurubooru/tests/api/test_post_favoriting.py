@@ -1,12 +1,14 @@
-import pytest
-import unittest.mock
 from datetime import datetime
+from unittest.mock import patch
+import pytest
 from szurubooru import api, db, errors
 from szurubooru.func import posts
+
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector({'privileges': {'posts:favorite': db.User.RANK_REGULAR}})
+
 
 def test_adding_to_favorites(
         user_factory, post_factory, context_factory, fake_datetime):
@@ -14,7 +16,7 @@ def test_adding_to_favorites(
     db.session.add(post)
     db.session.commit()
     assert post.score == 0
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
+    with patch('szurubooru.func.posts.serialize_post'), \
             fake_datetime('1997-12-01'):
         posts.serialize_post.return_value = 'serialized post'
         result = api.post_api.add_post_to_favorites(
@@ -27,6 +29,7 @@ def test_adding_to_favorites(
         assert post.favorite_count == 1
         assert post.score == 1
 
+
 def test_removing_from_favorites(
         user_factory, post_factory, context_factory, fake_datetime):
     user = user_factory()
@@ -34,7 +37,7 @@ def test_removing_from_favorites(
     db.session.add(post)
     db.session.commit()
     assert post.score == 0
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         with fake_datetime('1997-12-01'):
             api.post_api.add_post_to_favorites(
                 context_factory(user=user),
@@ -49,13 +52,14 @@ def test_removing_from_favorites(
         assert db.session.query(db.PostFavorite).count() == 0
         assert post.favorite_count == 0
 
+
 def test_favoriting_twice(
         user_factory, post_factory, context_factory, fake_datetime):
     user = user_factory()
     post = post_factory()
     db.session.add(post)
     db.session.commit()
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         with fake_datetime('1997-12-01'):
             api.post_api.add_post_to_favorites(
                 context_factory(user=user),
@@ -68,13 +72,14 @@ def test_favoriting_twice(
         assert db.session.query(db.PostFavorite).count() == 1
         assert post.favorite_count == 1
 
+
 def test_removing_twice(
         user_factory, post_factory, context_factory, fake_datetime):
     user = user_factory()
     post = post_factory()
     db.session.add(post)
     db.session.commit()
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         with fake_datetime('1997-12-01'):
             api.post_api.add_post_to_favorites(
                 context_factory(user=user),
@@ -91,6 +96,7 @@ def test_removing_twice(
         assert db.session.query(db.PostFavorite).count() == 0
         assert post.favorite_count == 0
 
+
 def test_favorites_from_multiple_users(
         user_factory, post_factory, context_factory, fake_datetime):
     user1 = user_factory()
@@ -98,7 +104,7 @@ def test_favorites_from_multiple_users(
     post = post_factory()
     db.session.add_all([user1, user2, post])
     db.session.commit()
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         with fake_datetime('1997-12-01'):
             api.post_api.add_post_to_favorites(
                 context_factory(user=user1),
@@ -112,11 +118,13 @@ def test_favorites_from_multiple_users(
         assert post.favorite_count == 2
         assert post.last_favorite_time == datetime(1997, 12, 2)
 
+
 def test_trying_to_update_non_existing(user_factory, context_factory):
     with pytest.raises(posts.PostNotFoundError):
         api.post_api.add_post_to_favorites(
             context_factory(user=user_factory()),
             {'post_id': 5})
+
 
 def test_trying_to_rate_without_privileges(
         user_factory, post_factory, context_factory):

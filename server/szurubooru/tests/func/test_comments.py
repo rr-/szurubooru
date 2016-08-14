@@ -1,23 +1,21 @@
-import unittest.mock
-import pytest
+from unittest.mock import patch
 from datetime import datetime
+import pytest
 from szurubooru import db
 from szurubooru.func import comments, users
 
+
 def test_serialize_user(user_factory, comment_factory):
-    with unittest.mock.patch('szurubooru.func.users.get_avatar_url'):
+    with patch('szurubooru.func.users.get_avatar_url'):
         users.get_avatar_url.return_value = 'https://example.com/avatar.png'
         comment = comment_factory(user=user_factory(name='dummy'))
         comment.comment_id = 77
         comment.creation_time = datetime(1997, 1, 1)
         comment.last_edit_time = datetime(1998, 1, 1)
         comment.text = 'text'
-
         db.session.add(comment)
         db.session.flush()
-
         auth_user = user_factory()
-
         assert comments.serialize_comment(comment, auth_user) == {
             'id': comment.comment_id,
             'postId': comment.post.post_id,
@@ -33,6 +31,7 @@ def test_serialize_user(user_factory, comment_factory):
             'version': 1,
         }
 
+
 def test_try_get_comment(comment_factory):
     comment = comment_factory()
     db.session.add(comment)
@@ -40,6 +39,7 @@ def test_try_get_comment(comment_factory):
     assert comments.try_get_comment_by_id(1) is comment
     with pytest.raises(comments.InvalidCommentIdError):
         comments.try_get_comment_by_id('-')
+
 
 def test_get_comment(comment_factory):
     comment = comment_factory()
@@ -50,11 +50,12 @@ def test_get_comment(comment_factory):
     with pytest.raises(comments.InvalidCommentIdError):
         comments.get_comment_by_id('-')
 
+
 def test_create_comment(user_factory, post_factory, fake_datetime):
     user = user_factory()
     post = post_factory()
     db.session.add_all([user, post])
-    with unittest.mock.patch('szurubooru.func.comments.update_comment_text'), \
+    with patch('szurubooru.func.comments.update_comment_text'), \
             fake_datetime('1997-01-01'):
         comment = comments.create_comment(user, post, 'text')
         assert comment.creation_time == datetime(1997, 1, 1)
@@ -62,10 +63,12 @@ def test_create_comment(user_factory, post_factory, fake_datetime):
         assert comment.post == post
         comments.update_comment_text.assert_called_once_with(comment, 'text')
 
+
 def test_update_comment_text_with_emptry_string(comment_factory):
     comment = comment_factory()
     with pytest.raises(comments.EmptyCommentTextError):
         comments.update_comment_text(comment, None)
+
 
 def test_update_comment_text(comment_factory):
     comment = comment_factory()

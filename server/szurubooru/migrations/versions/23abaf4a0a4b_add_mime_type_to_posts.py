@@ -13,8 +13,11 @@ down_revision = 'ed6dd16a30f3'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
-    op.add_column('post', sa.Column('mime-type', sa.Unicode(length=32), nullable=False))
+    op.add_column(
+        'post', sa.Column('mime-type', sa.Unicode(length=32), nullable=False))
+
 
 def downgrade():
     op.drop_column('post', 'mime-type')

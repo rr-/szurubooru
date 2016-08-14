@@ -1,10 +1,13 @@
-import datetime
+# pylint: disable=redefined-outer-name
+from datetime import datetime
 import pytest
-from szurubooru import db, errors, search
+from szurubooru import db, search
+
 
 @pytest.fixture
 def executor():
     return search.Executor(search.configs.CommentSearchConfig())
+
 
 @pytest.fixture
 def verify_unpaged(executor):
@@ -16,6 +19,7 @@ def verify_unpaged(executor):
         assert actual_comment_text == expected_comment_text
     return verify
 
+
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('creation-time:2014', ['t2', 't1']),
     ('creation-date:2014', ['t2', 't1']),
@@ -25,11 +29,12 @@ def test_filter_by_creation_time(
     comment1 = comment_factory(text='t1')
     comment2 = comment_factory(text='t2')
     comment3 = comment_factory(text='t3')
-    comment1.creation_time = datetime.datetime(2014, 1, 1)
-    comment2.creation_time = datetime.datetime(2014, 6, 1)
-    comment3.creation_time = datetime.datetime(2015, 1, 1)
+    comment1.creation_time = datetime(2014, 1, 1)
+    comment2.creation_time = datetime(2014, 6, 1)
+    comment3.creation_time = datetime(2015, 1, 1)
     db.session.add_all([comment1, comment2, comment3])
     verify_unpaged(input, expected_comment_text)
+
 
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('text:t1', ['t1']),
@@ -44,16 +49,22 @@ def test_filter_by_text(
     db.session.add_all([comment1, comment2])
     verify_unpaged(input, expected_comment_text)
 
+
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('user:u1', ['t1']),
     ('user:u2', ['t2']),
     ('user:u1,u2', ['t2', 't1']),
 ])
 def test_filter_by_user(
-        verify_unpaged, comment_factory, user_factory, input, expected_comment_text):
+        verify_unpaged,
+        comment_factory,
+        user_factory,
+        input,
+        expected_comment_text):
     db.session.add(comment_factory(text='t2', user=user_factory(name='u2')))
     db.session.add(comment_factory(text='t1', user=user_factory(name='u1')))
     verify_unpaged(input, expected_comment_text)
+
 
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('post:1', ['t1']),
@@ -61,10 +72,15 @@ def test_filter_by_user(
     ('post:1,2', ['t1', 't2']),
 ])
 def test_filter_by_post(
-        verify_unpaged, comment_factory, post_factory, input, expected_comment_text):
+        verify_unpaged,
+        comment_factory,
+        post_factory,
+        input,
+        expected_comment_text):
     db.session.add(comment_factory(text='t1', post=post_factory(id=1)))
     db.session.add(comment_factory(text='t2', post=post_factory(id=2)))
     verify_unpaged(input, expected_comment_text)
+
 
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('', ['t1', 't2']),
@@ -72,28 +88,40 @@ def test_filter_by_post(
     ('t2', ['t2']),
     ('t1,t2', ['t1', 't2']),
 ])
-def test_anonymous(verify_unpaged, comment_factory, input, expected_comment_text):
+def test_anonymous(
+        verify_unpaged, comment_factory, input, expected_comment_text):
     db.session.add(comment_factory(text='t1'))
     db.session.add(comment_factory(text='t2'))
     verify_unpaged(input, expected_comment_text)
+
 
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('sort:user', ['t1', 't2']),
 ])
 def test_sort_by_user(
-        verify_unpaged, comment_factory, user_factory, input, expected_comment_text):
+        verify_unpaged,
+        comment_factory,
+        user_factory,
+        input,
+        expected_comment_text):
     db.session.add(comment_factory(text='t2', user=user_factory(name='u2')))
     db.session.add(comment_factory(text='t1', user=user_factory(name='u1')))
     verify_unpaged(input, expected_comment_text)
+
 
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('sort:post', ['t2', 't1']),
 ])
 def test_sort_by_post(
-        verify_unpaged, comment_factory, post_factory, input, expected_comment_text):
+        verify_unpaged,
+        comment_factory,
+        post_factory,
+        input,
+        expected_comment_text):
     db.session.add(comment_factory(text='t1', post=post_factory(id=1)))
     db.session.add(comment_factory(text='t2', post=post_factory(id=2)))
     verify_unpaged(input, expected_comment_text)
+
 
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('', ['t3', 't2', 't1']),
@@ -105,11 +133,12 @@ def test_sort_by_creation_time(
     comment1 = comment_factory(text='t1')
     comment2 = comment_factory(text='t2')
     comment3 = comment_factory(text='t3')
-    comment1.creation_time = datetime.datetime(1991, 1, 1)
-    comment2.creation_time = datetime.datetime(1991, 1, 2)
-    comment3.creation_time = datetime.datetime(1991, 1, 3)
+    comment1.creation_time = datetime(1991, 1, 1)
+    comment2.creation_time = datetime(1991, 1, 2)
+    comment3.creation_time = datetime(1991, 1, 3)
     db.session.add_all([comment3, comment1, comment2])
     verify_unpaged(input, expected_comment_text)
+
 
 @pytest.mark.parametrize('input,expected_comment_text', [
     ('sort:last-edit-date', ['t3', 't2', 't1']),
@@ -122,8 +151,8 @@ def test_sort_by_last_edit_time(
     comment1 = comment_factory(text='t1')
     comment2 = comment_factory(text='t2')
     comment3 = comment_factory(text='t3')
-    comment1.last_edit_time = datetime.datetime(1991, 1, 1)
-    comment2.last_edit_time = datetime.datetime(1991, 1, 2)
-    comment3.last_edit_time = datetime.datetime(1991, 1, 3)
+    comment1.last_edit_time = datetime(1991, 1, 1)
+    comment2.last_edit_time = datetime(1991, 1, 2)
+    comment3.last_edit_time = datetime(1991, 1, 3)
     db.session.add_all([comment3, comment1, comment2])
     verify_unpaged(input, expected_comment_text)

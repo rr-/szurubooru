@@ -1,6 +1,7 @@
 from datetime import datetime
 from szurubooru import db
 
+
 def test_saving_post(post_factory, user_factory, tag_factory):
     user = user_factory()
     tag1 = tag_factory()
@@ -38,7 +39,10 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     assert len(related_post1.relations) == 0
     assert len(related_post2.relations) == 0
 
-def test_cascade_deletions(post_factory, user_factory, tag_factory, comment_factory):
+
+# pylint: disable=too-many-statements
+def test_cascade_deletions(
+        post_factory, user_factory, tag_factory, comment_factory):
     user = user_factory()
     tag1 = tag_factory()
     tag2 = tag_factory()
@@ -46,7 +50,8 @@ def test_cascade_deletions(post_factory, user_factory, tag_factory, comment_fact
     related_post2 = post_factory()
     post = post_factory()
     comment = comment_factory(post=post, user=user)
-    db.session.add_all([user, tag1, tag2, post, related_post1, related_post2, comment])
+    db.session.add_all([
+        user, tag1, tag2, post, related_post1, related_post2, comment])
     db.session.flush()
 
     score = db.PostScore()
@@ -108,6 +113,7 @@ def test_cascade_deletions(post_factory, user_factory, tag_factory, comment_fact
     assert db.session.query(db.PostFeature).count() == 0
     assert db.session.query(db.PostFavorite).count() == 0
     assert db.session.query(db.Comment).count() == 0
+
 
 def test_tracking_tag_count(post_factory, tag_factory):
     post = post_factory()

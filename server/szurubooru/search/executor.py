@@ -3,19 +3,22 @@ from szurubooru import db, errors
 from szurubooru.func import cache
 from szurubooru.search import tokens, parser
 
+
 def _format_dict_keys(source):
     return list(sorted(source.keys()))
 
-def _get_direction(direction, default_direction):
-    if direction == tokens.SortToken.SORT_DEFAULT:
-        return default_direction
-    if direction == tokens.SortToken.SORT_NEGATED_DEFAULT:
-        if default_direction == tokens.SortToken.SORT_ASC:
+
+def _get_order(order, default_order):
+    if order == tokens.SortToken.SORT_DEFAULT:
+        return default_order
+    if order == tokens.SortToken.SORT_NEGATED_DEFAULT:
+        if default_order == tokens.SortToken.SORT_ASC:
             return tokens.SortToken.SORT_DESC
-        elif default_direction == tokens.SortToken.SORT_DESC:
+        elif default_order == tokens.SortToken.SORT_DESC:
             return tokens.SortToken.SORT_ASC
         assert False
-    return direction
+    return order
+
 
 class Executor(object):
     '''
@@ -30,20 +33,26 @@ class Executor(object):
     def get_around(self, query_text, entity_id):
         search_query = self.parser.parse(query_text)
         self.config.on_search_query_parsed(search_query)
-        filter_query = self.config \
-            .create_around_query() \
-            .options(sqlalchemy.orm.lazyload('*'))
-        filter_query = self._prepare_db_query(filter_query, search_query, False)
-        prev_filter_query = filter_query \
-            .filter(self.config.id_column < entity_id) \
-            .order_by(None) \
-            .order_by(sqlalchemy.func.abs(self.config.id_column - entity_id).asc()) \
-            .limit(1)
-        next_filter_query = filter_query \
-            .filter(self.config.id_column > entity_id) \
-            .order_by(None) \
-            .order_by(sqlalchemy.func.abs(self.config.id_column - entity_id).asc()) \
-            .limit(1)
+        filter_query = (
+            self.config
+                .create_around_query()
+                .options(sqlalchemy.orm.lazyload('*')))
+        filter_query = self._prepare_db_query(
+            filter_query, search_query, False)
+        prev_filter_query = (
+            filter_query
+                .filter(self.config.id_column < entity_id)
+                .order_by(None)
+                .order_by(sqlalchemy.func.abs(
+                    self.config.id_column - entity_id).asc())
+                .limit(1))
+        next_filter_query = (
+            filter_query
+                .filter(self.config.id_column > entity_id)
+                .order_by(None)
+                .order_by(sqlalchemy.func.abs(
+                    self.config.id_column - entity_id).asc())
+                .limit(1))
         return [
             next_filter_query.one_or_none(),
             prev_filter_query.one_or_none()]
@@ -92,7 +101,8 @@ class Executor(object):
     def execute_and_serialize(self, ctx, serializer):
         query = ctx.get_param_as_string('query')
         page = ctx.get_param_as_int('page', default=1, min=1)
-        page_size = ctx.get_param_as_int('pageSize', default=100, min=1, max=100)
+        page_size = ctx.get_param_as_int(
+            'pageSize', default=100, min=1, max=100)
         count, entities = self.execute(query, page, page_size)
         return {
             'query': query,
@@ -124,7 +134,8 @@ class Executor(object):
         for token in search_query.special_tokens:
             if token.value not in self.config.special_filters:
                 raise errors.SearchError(
-                    'Unknown special token: %r. Available special tokens: %r.' % (
+                    'Unknown special token: %r. '
+                    'Available special tokens: %r.' % (
                         token.value,
                         _format_dict_keys(self.config.special_filters)))
             db_query = self.config.special_filters[token.value](
@@ -134,14 +145,15 @@ class Executor(object):
             for token in search_query.sort_tokens:
                 if token.name not in self.config.sort_columns:
                     raise errors.SearchError(
-                        'Unknown sort token: %r. Available sort tokens: %r.' % (
+                        'Unknown sort token: %r. '
+                        'Available sort tokens: %r.' % (
                             token.name,
                             _format_dict_keys(self.config.sort_columns)))
-                column, default_direction = self.config.sort_columns[token.name]
-                direction = _get_direction(token.direction, default_direction)
-                if direction == token.SORT_ASC:
+                column, default_order = self.config.sort_columns[token.name]
+                order = _get_order(token.order, default_order)
+                if order == token.SORT_ASC:
                     db_query = db_query.order_by(column.asc())
-                elif direction == token.SORT_DESC:
+                elif order == token.SORT_DESC:
                     db_query = db_query.order_by(column.desc())
 
         db_query = self.config.finalize_query(db_query)

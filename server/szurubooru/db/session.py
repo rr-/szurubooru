@@ -1,6 +1,7 @@
 import sqlalchemy
 from szurubooru import config
 
+
 class QueryCounter(object):
     _query_count = 0
 
@@ -16,6 +17,7 @@ class QueryCounter(object):
     def get():
         return QueryCounter._query_count
 
+
 def create_session():
     _engine = sqlalchemy.create_engine(
         '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
@@ -29,6 +31,7 @@ def create_session():
         _engine, 'after_execute', lambda *args: QueryCounter.bump())
     _session_maker = sqlalchemy.orm.sessionmaker(bind=_engine)
     return sqlalchemy.orm.scoped_session(_session_maker)
+
 
 # pylint: disable=invalid-name
 session = create_session()

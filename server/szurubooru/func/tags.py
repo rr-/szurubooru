@@ -6,31 +6,56 @@ import sqlalchemy
 from szurubooru import config, db, errors
 from szurubooru.func import util, tag_categories, snapshots
 
-class TagNotFoundError(errors.NotFoundError): pass
-class TagAlreadyExistsError(errors.ValidationError): pass
-class TagIsInUseError(errors.ValidationError): pass
-class InvalidTagNameError(errors.ValidationError): pass
-class InvalidTagRelationError(errors.ValidationError): pass
-class InvalidTagCategoryError(errors.ValidationError): pass
-class InvalidTagDescriptionError(errors.ValidationError): pass
+
+class TagNotFoundError(errors.NotFoundError):
+    pass
+
+
+class TagAlreadyExistsError(errors.ValidationError):
+    pass
+
+
+class TagIsInUseError(errors.ValidationError):
+    pass
+
+
+class InvalidTagNameError(errors.ValidationError):
+    pass
+
+
+class InvalidTagRelationError(errors.ValidationError):
+    pass
+
+
+class InvalidTagCategoryError(errors.ValidationError):
+    pass
+
+
+class InvalidTagDescriptionError(errors.ValidationError):
+    pass
+
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_name_regex']
     if not re.match(name_regex, name):
         raise InvalidTagNameError('Name must satisfy regex %r.' % name_regex)
 
-def _get_plain_names(tag):
+
+def _get_names(tag):
     assert tag
     return [tag_name.name for tag_name in tag.names]
+
 
 def _lower_list(names):
     return [name.lower() for name in names]
 
-def _check_name_intersection(names1, names2):
-    return len(set(_lower_list(names1)).intersection(_lower_list(names2))) > 0
 
-def _check_name_intersection_case_sensitive(names1, names2):
+def _check_name_intersection(names1, names2, case_sensitive):
+    if not case_sensitive:
+        names1 = _lower_list(names1)
+        names2 = _lower_list(names2)
     return len(set(names1).intersection(names2)) > 0
+
 
 def sort_tags(tags):
     default_category = tag_categories.try_get_default_category()
@@ -42,6 +67,7 @@ def sort_tags(tags):
             tag.category.name,
             tag.names[0].name)
     )
+
 
 def serialize_tag(tag, options=None):
     return util.serialize_entity(
@@ -55,14 +81,15 @@ def serialize_tag(tag, options=None):
             'lastEditTime': lambda: tag.last_edit_time,
             'usages': lambda: tag.post_count,
             'suggestions': lambda: [
-                relation.names[0].name \
-                    for relation in sort_tags(tag.suggestions)],
+                relation.names[0].name
+                for relation in sort_tags(tag.suggestions)],
             'implications': lambda: [
-                relation.names[0].name \
-                    for relation in sort_tags(tag.implications)],
+                relation.names[0].name
+                for relation in sort_tags(tag.implications)],
             'snapshots': lambda: snapshots.get_serialized_history(tag),
         },
         options)
+
 
 def export_to_json():
     tags = {}
@@ -82,19 +109,19 @@ def export_to_json():
             tags[result[0]] = {'names': []}
         tags[result[0]]['names'].append(result[1])
 
-    for result in db.session \
-            .query(db.TagSuggestion.parent_id, db.TagName.name) \
-            .join(db.TagName, db.TagName.tag_id == db.TagSuggestion.child_id) \
-            .all():
-        if not 'suggestions' in tags[result[0]]:
+    for result in (db.session
+            .query(db.TagSuggestion.parent_id, db.TagName.name)
+            .join(db.TagName, db.TagName.tag_id == db.TagSuggestion.child_id)
+            .all()):
+        if 'suggestions' not in tags[result[0]]:
             tags[result[0]]['suggestions'] = []
         tags[result[0]]['suggestions'].append(result[1])
 
-    for result in db.session \
-            .query(db.TagImplication.parent_id, db.TagName.name) \
-            .join(db.TagName, db.TagName.tag_id == db.TagImplication.child_id) \
-            .all():
-        if not 'implications' in tags[result[0]]:
+    for result in (db.session
+            .query(db.TagImplication.parent_id, db.TagName.name)
+            .join(db.TagName, db.TagName.tag_id == db.TagImplication.child_id)
+            .all()):
+        if 'implications' not in tags[result[0]]:
             tags[result[0]]['implications'] = []
         tags[result[0]]['implications'].append(result[1])
 
@@ -114,18 +141,21 @@ def export_to_json():
     with open(export_path, 'w') as handle:
         handle.write(json.dumps(output, separators=(',', ':')))
 
+
 def try_get_tag_by_name(name):
-    return db.session \
-        .query(db.Tag) \
-        .join(db.TagName) \
-        .filter(sqlalchemy.func.lower(db.TagName.name) == name.lower()) \
-        .one_or_none()
+    return (db.session
+        .query(db.Tag)
+        .join(db.TagName)
+        .filter(sqlalchemy.func.lower(db.TagName.name) == name.lower())
+        .one_or_none())
+
 
 def get_tag_by_name(name):
     tag = try_get_tag_by_name(name)
     if not tag:
         raise TagNotFoundError('Tag %r not found.' % name)
     return tag
+
 
 def get_tags_by_names(names):
     names = util.icase_unique(names)
@@ -136,6 +166,7 @@ def get_tags_by_names(names):
         expr = expr | (sqlalchemy.func.lower(db.TagName.name) == name.lower())
     return db.session.query(db.Tag).join(db.TagName).filter(expr).all()
 
+
 def get_or_create_tags_by_names(names):
     names = util.icase_unique(names)
     existing_tags = get_tags_by_names(names)
@@ -144,7 +175,8 @@ def get_or_create_tags_by_names(names):
     for name in names:
         found = False
         for existing_tag in existing_tags:
-            if _check_name_intersection(_get_plain_names(existing_tag), [name]):
+            if _check_name_intersection(
+                    _get_names(existing_tag), [name], False):
                 found = True
                 break
         if not found:
@@ -157,31 +189,34 @@ def get_or_create_tags_by_names(names):
             new_tags.append(new_tag)
     return existing_tags, new_tags
 
+
 def get_tag_siblings(tag):
     assert tag
     tag_alias = sqlalchemy.orm.aliased(db.Tag)
     pt_alias1 = sqlalchemy.orm.aliased(db.PostTag)
     pt_alias2 = sqlalchemy.orm.aliased(db.PostTag)
-    result = db.session \
-        .query(tag_alias, sqlalchemy.func.count(pt_alias2.post_id)) \
-        .join(pt_alias1, pt_alias1.tag_id == tag_alias.tag_id) \
-        .join(pt_alias2, pt_alias2.post_id == pt_alias1.post_id) \
-        .filter(pt_alias2.tag_id == tag.tag_id) \
-        .filter(pt_alias1.tag_id != tag.tag_id) \
-        .group_by(tag_alias.tag_id) \
-        .order_by(sqlalchemy.func.count(pt_alias2.post_id).desc()) \
-        .limit(50)
+    result = (db.session
+        .query(tag_alias, sqlalchemy.func.count(pt_alias2.post_id))
+        .join(pt_alias1, pt_alias1.tag_id == tag_alias.tag_id)
+        .join(pt_alias2, pt_alias2.post_id == pt_alias1.post_id)
+        .filter(pt_alias2.tag_id == tag.tag_id)
+        .filter(pt_alias1.tag_id != tag.tag_id)
+        .group_by(tag_alias.tag_id)
+        .order_by(sqlalchemy.func.count(pt_alias2.post_id).desc())
+        .limit(50))
     return result
+
 
 def delete(source_tag):
     assert source_tag
     db.session.execute(
-        sqlalchemy.sql.expression.delete(db.TagSuggestion) \
+        sqlalchemy.sql.expression.delete(db.TagSuggestion)
             .where(db.TagSuggestion.child_id == source_tag.tag_id))
     db.session.execute(
-        sqlalchemy.sql.expression.delete(db.TagImplication) \
+        sqlalchemy.sql.expression.delete(db.TagImplication)
             .where(db.TagImplication.child_id == source_tag.tag_id))
     db.session.delete(source_tag)
+
 
 def merge_tags(source_tag, target_tag):
     assert source_tag
@@ -191,14 +226,15 @@ def merge_tags(source_tag, target_tag):
     pt1 = db.PostTag
     pt2 = sqlalchemy.orm.util.aliased(db.PostTag)
 
-    update_stmt = sqlalchemy.sql.expression.update(pt1) \
-        .where(db.PostTag.tag_id == source_tag.tag_id) \
-        .where(~sqlalchemy.exists() \
-            .where(pt2.post_id == pt1.post_id) \
-            .where(pt2.tag_id == target_tag.tag_id)) \
-        .values(tag_id=target_tag.tag_id)
+    update_stmt = (sqlalchemy.sql.expression.update(pt1)
+        .where(db.PostTag.tag_id == source_tag.tag_id)
+        .where(~sqlalchemy.exists()
+            .where(pt2.post_id == pt1.post_id)
+            .where(pt2.tag_id == target_tag.tag_id))
+        .values(tag_id=target_tag.tag_id))
     db.session.execute(update_stmt)
     delete(source_tag)
+
 
 def create_tag(names, category_name, suggestions, implications):
     tag = db.Tag()
@@ -209,9 +245,11 @@ def create_tag(names, category_name, suggestions, implications):
     update_tag_implications(tag, implications)
     return tag
 
+
 def update_tag_category_name(tag, category_name):
     assert tag
     tag.category = tag_categories.get_category_by_name(category_name)
+
 
 def update_tag_names(tag, names):
     assert tag
@@ -232,25 +270,28 @@ def update_tag_names(tag, names):
         raise TagAlreadyExistsError(
             'One of names is already used by another tag.')
     for tag_name in tag.names[:]:
-        if not _check_name_intersection_case_sensitive([tag_name.name], names):
+        if not _check_name_intersection([tag_name.name], names, True):
             tag.names.remove(tag_name)
     for name in names:
-        if not _check_name_intersection_case_sensitive(_get_plain_names(tag), [name]):
+        if not _check_name_intersection(_get_names(tag), [name], True):
             tag.names.append(db.TagName(name))
+
 
 # TODO: what to do with relations that do not yet exist?
 def update_tag_implications(tag, relations):
     assert tag
-    if _check_name_intersection(_get_plain_names(tag), relations):
+    if _check_name_intersection(_get_names(tag), relations, False):
         raise InvalidTagRelationError('Tag cannot imply itself.')
     tag.implications = get_tags_by_names(relations)
+
 
 # TODO: what to do with relations that do not yet exist?
 def update_tag_suggestions(tag, relations):
     assert tag
-    if _check_name_intersection(_get_plain_names(tag), relations):
+    if _check_name_intersection(_get_names(tag), relations, False):
         raise InvalidTagRelationError('Tag cannot suggest itself.')
     tag.suggestions = get_tags_by_names(relations)
+
 
 def update_tag_description(tag, description):
     assert tag

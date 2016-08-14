@@ -1,17 +1,21 @@
+# pylint: disable=unexpected-keyword-arg
 import unittest.mock
 import pytest
 from szurubooru import rest, errors
 from szurubooru.func import net
+
 
 def test_has_param():
     ctx = rest.Context(method=None, url=None, params={'key': 'value'})
     assert ctx.has_param('key')
     assert not ctx.has_param('key2')
 
+
 def test_get_file():
     ctx = rest.Context(method=None, url=None, files={'key': b'content'})
     assert ctx.get_file('key') == b'content'
     assert ctx.get_file('key2') is None
+
 
 def test_get_file_from_url():
     with unittest.mock.patch('szurubooru.func.net.download'):
@@ -22,9 +26,10 @@ def test_get_file_from_url():
         assert ctx.get_file('key2') is None
         net.download.assert_called_once_with('example.com')
 
+
 def test_getting_list_parameter():
     ctx = rest.Context(
-        method=None, url=None, params={'key': 'value', 'list': ['1', '2', '3']})
+        method=None, url=None, params={'key': 'value', 'list': list('123')})
     assert ctx.get_param_as_list('key') == ['value']
     assert ctx.get_param_as_list('key2') is None
     assert ctx.get_param_as_list('key2', default=['def']) == ['def']
@@ -32,15 +37,17 @@ def test_getting_list_parameter():
     with pytest.raises(errors.ValidationError):
         ctx.get_param_as_list('key2', required=True)
 
+
 def test_getting_string_parameter():
     ctx = rest.Context(
-        method=None, url=None, params={'key': 'value', 'list': ['1', '2', '3']})
+        method=None, url=None, params={'key': 'value', 'list': list('123')})
     assert ctx.get_param_as_string('key') == 'value'
     assert ctx.get_param_as_string('key2') is None
     assert ctx.get_param_as_string('key2', default='def') == 'def'
-    assert ctx.get_param_as_string('list') == '1,2,3' # falcon issue #749
+    assert ctx.get_param_as_string('list') == '1,2,3'
     with pytest.raises(errors.ValidationError):
         ctx.get_param_as_string('key2', required=True)
+
 
 def test_getting_int_parameter():
     ctx = rest.Context(
@@ -62,6 +69,7 @@ def test_getting_int_parameter():
     with pytest.raises(errors.ValidationError):
         assert ctx.get_param_as_int('key', max=50) == 50
         ctx.get_param_as_int('key', max=49)
+
 
 def test_getting_bool_parameter():
     def test(value):

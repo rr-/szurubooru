@@ -3,7 +3,8 @@ import pytest
 from szurubooru import search
 from szurubooru.func import cache
 
-def test_retrieving_from_cache(user_factory):
+
+def test_retrieving_from_cache():
     config = unittest.mock.MagicMock()
     with unittest.mock.patch('szurubooru.func.cache.has'), \
             unittest.mock.patch('szurubooru.func.cache.get'):
@@ -12,13 +13,16 @@ def test_retrieving_from_cache(user_factory):
         executor.execute('test:whatever', 1, 10)
         assert cache.get.called
 
+
 def test_putting_equivalent_queries_into_cache():
     config = search.configs.PostSearchConfig()
     with unittest.mock.patch('szurubooru.func.cache.has'), \
             unittest.mock.patch('szurubooru.func.cache.put'):
         hashes = []
-        def appender(key, value):
+
+        def appender(key, _value):
             hashes.append(key)
+
         cache.has.side_effect = lambda *args: False
         cache.put.side_effect = appender
         executor = search.Executor(config)
@@ -31,13 +35,16 @@ def test_putting_equivalent_queries_into_cache():
         assert len(hashes) == 6
         assert len(set(hashes)) == 1
 
+
 def test_putting_non_equivalent_queries_into_cache():
     config = search.configs.PostSearchConfig()
     with unittest.mock.patch('szurubooru.func.cache.has'), \
             unittest.mock.patch('szurubooru.func.cache.put'):
         hashes = []
-        def appender(key, value):
+
+        def appender(key, _value):
             hashes.append(key)
+
         cache.has.side_effect = lambda *args: False
         cache.put.side_effect = appender
         executor = search.Executor(config)
@@ -84,6 +91,7 @@ def test_putting_non_equivalent_queries_into_cache():
         assert len(hashes) == len(args)
         assert len(set(hashes)) == len(args)
 
+
 @pytest.mark.parametrize('input', [
     'special:fav',
     'special:liked',
@@ -97,8 +105,10 @@ def test_putting_auth_dependent_queries_into_cache(user_factory, input):
     with unittest.mock.patch('szurubooru.func.cache.has'), \
             unittest.mock.patch('szurubooru.func.cache.put'):
         hashes = []
-        def appender(key, value):
+
+        def appender(key, _value):
             hashes.append(key)
+
         cache.has.side_effect = lambda *args: False
         cache.put.side_effect = appender
         executor = search.Executor(config)

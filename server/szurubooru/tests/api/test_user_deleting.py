@@ -2,6 +2,7 @@ import pytest
 from szurubooru import api, db, errors
 from szurubooru.func import users
 
+
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector({
@@ -10,6 +11,7 @@ def inject_config(config_injector):
             'users:delete:any': db.User.RANK_MODERATOR,
         },
     })
+
 
 def test_deleting_oneself(user_factory, context_factory):
     user = user_factory(name='u', rank=db.User.RANK_REGULAR)
@@ -21,6 +23,7 @@ def test_deleting_oneself(user_factory, context_factory):
     assert result == {}
     assert db.session.query(db.User).count() == 0
 
+
 def test_deleting_someone_else(user_factory, context_factory):
     user1 = user_factory(name='u1', rank=db.User.RANK_REGULAR)
     user2 = user_factory(name='u2', rank=db.User.RANK_MODERATOR)
@@ -30,6 +33,7 @@ def test_deleting_someone_else(user_factory, context_factory):
         context_factory(
             params={'version': 1}, user=user2), {'user_name': 'u1'})
     assert db.session.query(db.User).count() == 1
+
 
 def test_trying_to_delete_someone_else_without_privileges(
         user_factory, context_factory):
@@ -42,6 +46,7 @@ def test_trying_to_delete_someone_else_without_privileges(
             context_factory(
                 params={'version': 1}, user=user2), {'user_name': 'u1'})
     assert db.session.query(db.User).count() == 2
+
 
 def test_trying_to_delete_non_existing(user_factory, context_factory):
     with pytest.raises(users.UserNotFoundError):

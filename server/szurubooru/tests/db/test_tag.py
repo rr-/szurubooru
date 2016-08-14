@@ -1,6 +1,7 @@
 from datetime import datetime
 from szurubooru import db
 
+
 def test_saving_tag(tag_factory):
     sug1 = tag_factory(names=['sug1'])
     sug2 = tag_factory(names=['sug2'])
@@ -30,7 +31,7 @@ def test_saving_tag(tag_factory):
     tag = db.session \
         .query(db.Tag) \
         .join(db.TagName) \
-        .filter(db.TagName.name=='alias1') \
+        .filter(db.TagName.name == 'alias1') \
         .one()
     assert [tag_name.name for tag_name in tag.names] == ['alias1', 'alias2']
     assert tag.category.name == 'category'
@@ -40,6 +41,7 @@ def test_saving_tag(tag_factory):
         == ['sug1', 'sug2']
     assert [relation.names[0].name for relation in tag.implications] \
         == ['imp1', 'imp2']
+
 
 def test_cascade_deletions(tag_factory):
     sug1 = tag_factory(names=['sug1'])
@@ -74,6 +76,7 @@ def test_cascade_deletions(tag_factory):
     assert db.session.query(db.TagName).count() == 4
     assert db.session.query(db.TagImplication).count() == 0
     assert db.session.query(db.TagSuggestion).count() == 0
+
 
 def test_tracking_post_count(post_factory, tag_factory):
     tag = tag_factory()

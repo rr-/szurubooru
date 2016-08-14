@@ -1,6 +1,6 @@
 import re
 
-# pylint: disable=too-many-return-statements
+
 def get_mime_type(content):
     if not content:
         return 'application/octet-stream'
@@ -25,6 +25,7 @@ def get_mime_type(content):
 
     return 'application/octet-stream'
 
+
 def get_extension(mime_type):
     extension_map = {
         'application/x-shockwave-flash': 'swf',
@@ -37,14 +38,18 @@ def get_extension(mime_type):
     }
     return extension_map.get((mime_type or '').strip().lower(), None)
 
+
 def is_flash(mime_type):
     return mime_type.lower() == 'application/x-shockwave-flash'
+
 
 def is_video(mime_type):
     return mime_type.lower() in ('application/ogg', 'video/mp4', 'video/webm')
 
+
 def is_image(mime_type):
     return mime_type.lower() in ('image/jpeg', 'image/png', 'image/gif')
+
 
 def is_animated_gif(content):
     return get_mime_type(content) == 'image/gif' \

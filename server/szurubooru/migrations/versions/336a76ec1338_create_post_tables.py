@@ -13,6 +13,7 @@ down_revision = '00cb3a2734db'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         'post',
@@ -55,6 +56,7 @@ def upgrade():
         sa.ForeignKeyConstraint(['post_id'], ['post.id']),
         sa.ForeignKeyConstraint(['tag_id'], ['tag.id']),
         sa.PrimaryKeyConstraint('post_id', 'tag_id'))
+
 
 def downgrade():
     op.drop_table('post_tag')

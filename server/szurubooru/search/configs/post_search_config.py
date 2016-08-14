@@ -6,6 +6,7 @@ from szurubooru.search import criteria, tokens
 from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
+
 def _enum_transformer(available_values, value):
     try:
         return available_values[value.lower()]
@@ -13,6 +14,7 @@ def _enum_transformer(available_values, value):
         raise errors.SearchError(
             'Invalid value: %r. Possible values: %r.' % (
                 value, list(sorted(available_values.keys()))))
+
 
 def _type_transformer(value):
     available_values = {
@@ -28,6 +30,7 @@ def _type_transformer(value):
     }
     return _enum_transformer(available_values, value)
 
+
 def _safety_transformer(value):
     available_values = {
         'safe': db.Post.SAFETY_SAFE,
@@ -37,11 +40,12 @@ def _safety_transformer(value):
     }
     return _enum_transformer(available_values, value)
 
+
 def _create_score_filter(score):
     def wrapper(query, criterion, negated):
         if not getattr(criterion, 'internal', False):
             raise errors.SearchError(
-                'Votes cannot be seen publicly. Did you mean %r?' \
+                'Votes cannot be seen publicly. Did you mean %r?'
                     % 'special:liked')
         user_alias = aliased(db.User)
         score_alias = aliased(db.PostScore)
@@ -57,6 +61,7 @@ def _create_score_filter(score):
         return ret
     return wrapper
 
+
 class PostSearchConfig(BaseSearchConfig):
     def on_search_query_parsed(self, search_query):
         new_special_tokens = []
@@ -64,7 +69,8 @@ class PostSearchConfig(BaseSearchConfig):
             if token.value in ('fav', 'liked', 'disliked'):
                 assert self.user
                 if self.user.rank == 'anonymous':
-                    raise errors.SearchError('Must be logged in to use this feature.')
+                    raise errors.SearchError(
+                        'Must be logged in to use this feature.')
                 criterion = criteria.PlainCriterion(
                     original_text=self.user.name,
                     value=self.user.name)
@@ -85,9 +91,9 @@ class PostSearchConfig(BaseSearchConfig):
         return self.create_count_query() \
             .options(
                 # use config optimized for official client
-                #defer(db.Post.score),
-                #defer(db.Post.favorite_count),
-                #defer(db.Post.comment_count),
+                # defer(db.Post.score),
+                # defer(db.Post.favorite_count),
+                # defer(db.Post.comment_count),
                 defer(db.Post.last_favorite_time),
                 defer(db.Post.feature_count),
                 defer(db.Post.last_feature_time),
@@ -99,8 +105,7 @@ class PostSearchConfig(BaseSearchConfig):
                 lazyload(db.Post.user),
                 lazyload(db.Post.relations),
                 lazyload(db.Post.notes),
-                lazyload(db.Post.favorited_by),
-            )
+                lazyload(db.Post.favorited_by))
 
     def create_count_query(self):
         return db.session.query(db.Post)
@@ -153,12 +158,18 @@ class PostSearchConfig(BaseSearchConfig):
             'liked': _create_score_filter(1),
             'disliked': _create_score_filter(-1),
             'tag-count': search_util.create_num_filter(db.Post.tag_count),
-            'comment-count': search_util.create_num_filter(db.Post.comment_count),
-            'fav-count': search_util.create_num_filter(db.Post.favorite_count),
+            'comment-count':
+                search_util.create_num_filter(db.Post.comment_count),
+            'fav-count':
+                search_util.create_num_filter(db.Post.favorite_count),
             'note-count': search_util.create_num_filter(db.Post.note_count),
-            'relation-count': search_util.create_num_filter(db.Post.relation_count),
-            'feature-count': search_util.create_num_filter(db.Post.feature_count),
-            'type': search_util.create_str_filter(db.Post.type, _type_transformer),
+            'relation-count':
+                search_util.create_num_filter(db.Post.relation_count),
+            'feature-count':
+                search_util.create_num_filter(db.Post.feature_count),
+            'type':
+                search_util.create_str_filter(
+                    db.Post.type, _type_transformer),
             'file-size': search_util.create_num_filter(db.Post.file_size),
             ('image-width', 'width'):
                 search_util.create_num_filter(db.Post.canvas_width),
@@ -171,13 +182,15 @@ class PostSearchConfig(BaseSearchConfig):
             ('last-edit-date', 'last-edit-time', 'edit-date', 'edit-time'):
                 search_util.create_date_filter(db.Post.last_edit_time),
             ('comment-date', 'comment-time'):
-                search_util.create_date_filter(db.Post.last_comment_creation_time),
+                search_util.create_date_filter(
+                    db.Post.last_comment_creation_time),
             ('fav-date', 'fav-time'):
                 search_util.create_date_filter(db.Post.last_favorite_time),
             ('feature-date', 'feature-time'):
                 search_util.create_date_filter(db.Post.last_feature_time),
             ('safety', 'rating'):
-                search_util.create_str_filter(db.Post.safety, _safety_transformer),
+                search_util.create_str_filter(
+                    db.Post.safety, _safety_transformer),
         })
 
     @property
@@ -193,9 +206,12 @@ class PostSearchConfig(BaseSearchConfig):
             'relation-count': (db.Post.relation_count, self.SORT_DESC),
             'feature-count': (db.Post.feature_count, self.SORT_DESC),
             'file-size': (db.Post.file_size, self.SORT_DESC),
-            ('image-width', 'width'): (db.Post.canvas_width, self.SORT_DESC),
-            ('image-height', 'height'): (db.Post.canvas_height, self.SORT_DESC),
-            ('image-area', 'area'): (db.Post.canvas_area, self.SORT_DESC),
+            ('image-width', 'width'):
+                (db.Post.canvas_width, self.SORT_DESC),
+            ('image-height', 'height'):
+                (db.Post.canvas_height, self.SORT_DESC),
+            ('image-area', 'area'):
+                (db.Post.canvas_area, self.SORT_DESC),
             ('creation-date', 'creation-time', 'date', 'time'):
                 (db.Post.creation_time, self.SORT_DESC),
             ('last-edit-date', 'last-edit-time', 'edit-date', 'edit-time'):

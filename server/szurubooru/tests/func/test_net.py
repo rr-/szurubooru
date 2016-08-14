@@ -1,5 +1,6 @@
 from szurubooru.func import net
 
+
 def test_download():
     url = 'http://info.cern.ch/hypertext/WWW/TheProject.html'
 

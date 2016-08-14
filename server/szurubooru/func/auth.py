@@ -4,6 +4,7 @@ from collections import OrderedDict
 from szurubooru import config, db, errors
 from szurubooru.func import util
 
+
 RANK_MAP = OrderedDict([
     (db.User.RANK_ANONYMOUS, 'anonymous'),
     (db.User.RANK_RESTRICTED, 'restricted'),
@@ -14,6 +15,7 @@ RANK_MAP = OrderedDict([
     (db.User.RANK_NOBODY, 'nobody'),
 ])
 
+
 def get_password_hash(salt, password):
     ''' Retrieve new-style password hash. '''
     digest = hashlib.sha256()
@@ -22,6 +24,7 @@ def get_password_hash(salt, password):
     digest.update(password.encode('utf8'))
     return digest.hexdigest()
 
+
 def get_legacy_password_hash(salt, password):
     ''' Retrieve old-style password hash. '''
     digest = hashlib.sha1()
@@ -29,6 +32,7 @@ def get_legacy_password_hash(salt, password):
     digest.update(salt.encode('utf8'))
     digest.update(password.encode('utf8'))
     return digest.hexdigest()
+
 
 def create_password():
     alphabet = {
@@ -39,6 +43,7 @@ def create_password():
     pattern = 'cvcvnncvcv'
     return ''.join(random.choice(alphabet[l]) for l in list(pattern))
 
+
 def is_valid_password(user, password):
     assert user
     salt, valid_hash = user.password_salt, user.password_hash
@@ -47,6 +52,7 @@ def is_valid_password(user, password):
         get_legacy_password_hash(salt, password)
     ]
     return valid_hash in possible_hashes
+
 
 def has_privilege(user, privilege_name):
     assert user
@@ -58,10 +64,12 @@ def has_privilege(user, privilege_name):
     good_ranks = all_ranks[all_ranks.index(minimal_rank):]
     return user.rank in good_ranks
 
+
 def verify_privilege(user, privilege_name):
     assert user
     if not has_privilege(user, privilege_name):
         raise errors.AuthError('Insufficient privileges to do this.')
+
 
 def generate_authentication_token(user):
     ''' Generate nonguessable challenge (e.g. links in password reminder). '''

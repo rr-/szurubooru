@@ -13,6 +13,7 @@ down_revision = '46cd5229839b'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         'post_favorite',
@@ -51,6 +52,7 @@ def upgrade():
         sa.ForeignKeyConstraint(['post_id'], ['post.id']),
         sa.ForeignKeyConstraint(['user_id'], ['user.id']),
         sa.PrimaryKeyConstraint('post_id', 'user_id'))
+
 
 def downgrade():
     op.drop_table('post_score')

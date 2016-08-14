@@ -1,11 +1,12 @@
-import pytest
-import unittest.mock
 from datetime import datetime
+from unittest.mock import patch
+import pytest
 from szurubooru import api, db, errors
 from szurubooru.func import posts
 
+
 @pytest.fixture(autouse=True)
-def inject_config(tmpdir, config_injector):
+def inject_config(config_injector):
     config_injector({
         'privileges': {
             'posts:list': db.User.RANK_REGULAR,
@@ -13,11 +14,12 @@ def inject_config(tmpdir, config_injector):
         },
     })
 
+
 def test_retrieving_multiple(user_factory, post_factory, context_factory):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     db.session.add_all([post1, post2])
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         posts.serialize_post.return_value = 'serialized post'
         result = api.post_api.get_posts(
             context_factory(
@@ -31,6 +33,7 @@ def test_retrieving_multiple(user_factory, post_factory, context_factory):
             'results': ['serialized post', 'serialized post'],
         }
 
+
 def test_using_special_tokens(user_factory, post_factory, context_factory):
     auth_user = user_factory(rank=db.User.RANK_REGULAR)
     post1 = post_factory(id=1)
@@ -39,7 +42,7 @@ def test_using_special_tokens(user_factory, post_factory, context_factory):
         user=auth_user, time=datetime.utcnow())]
     db.session.add_all([post1, post2, auth_user])
     db.session.flush()
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         posts.serialize_post.side_effect = \
             lambda post, *_args, **_kwargs: \
                 'serialized post %d' % post.post_id
@@ -55,8 +58,9 @@ def test_using_special_tokens(user_factory, post_factory, context_factory):
             'results': ['serialized post 1'],
         }
 
+
 def test_trying_to_use_special_tokens_without_logging_in(
-        user_factory, post_factory, context_factory, config_injector):
+        user_factory, context_factory, config_injector):
     config_injector({
         'privileges': {'posts:list': 'anonymous'},
     })
@@ -66,6 +70,7 @@ def test_trying_to_use_special_tokens_without_logging_in(
                 params={'query': 'special:fav', 'page': 1},
                 user=user_factory(rank=db.User.RANK_ANONYMOUS)))
 
+
 def test_trying_to_retrieve_multiple_without_privileges(
         user_factory, context_factory):
     with pytest.raises(errors.AuthError):
@@ -74,20 +79,23 @@ def test_trying_to_retrieve_multiple_without_privileges(
                 params={'query': '', 'page': 1},
                 user=user_factory(rank=db.User.RANK_ANONYMOUS)))
 
+
 def test_retrieving_single(user_factory, post_factory, context_factory):
     db.session.add(post_factory(id=1))
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         posts.serialize_post.return_value = 'serialized post'
         result = api.post_api.get_post(
             context_factory(user=user_factory(rank=db.User.RANK_REGULAR)),
             {'post_id': 1})
         assert result == 'serialized post'
 
+
 def test_trying_to_retrieve_single_non_existing(user_factory, context_factory):
     with pytest.raises(posts.PostNotFoundError):
         api.post_api.get_post(
             context_factory(user=user_factory(rank=db.User.RANK_REGULAR)),
             {'post_id': 999})
+
 
 def test_trying_to_retrieve_single_without_privileges(
         user_factory, context_factory):

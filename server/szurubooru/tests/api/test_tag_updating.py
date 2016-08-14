@@ -1,7 +1,8 @@
+from unittest.mock import patch
 import pytest
-import unittest.mock
 from szurubooru import api, db, errors
 from szurubooru.func import tags
+
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
@@ -16,20 +17,21 @@ def inject_config(config_injector):
         },
     })
 
-def test_simple_updating(user_factory, tag_factory, context_factory, fake_datetime):
+
+def test_simple_updating(user_factory, tag_factory, context_factory):
     auth_user = user_factory(rank=db.User.RANK_REGULAR)
     tag = tag_factory(names=['tag1', 'tag2'])
     db.session.add(tag)
     db.session.commit()
-    with unittest.mock.patch('szurubooru.func.tags.create_tag'), \
-            unittest.mock.patch('szurubooru.func.tags.get_or_create_tags_by_names'), \
-            unittest.mock.patch('szurubooru.func.tags.update_tag_names'), \
-            unittest.mock.patch('szurubooru.func.tags.update_tag_category_name'), \
-            unittest.mock.patch('szurubooru.func.tags.update_tag_description'), \
-            unittest.mock.patch('szurubooru.func.tags.update_tag_suggestions'), \
-            unittest.mock.patch('szurubooru.func.tags.update_tag_implications'), \
-            unittest.mock.patch('szurubooru.func.tags.serialize_tag'), \
-            unittest.mock.patch('szurubooru.func.tags.export_to_json'):
+    with patch('szurubooru.func.tags.create_tag'), \
+            patch('szurubooru.func.tags.get_or_create_tags_by_names'), \
+            patch('szurubooru.func.tags.update_tag_names'), \
+            patch('szurubooru.func.tags.update_tag_category_name'), \
+            patch('szurubooru.func.tags.update_tag_description'), \
+            patch('szurubooru.func.tags.update_tag_suggestions'), \
+            patch('szurubooru.func.tags.update_tag_implications'), \
+            patch('szurubooru.func.tags.serialize_tag'), \
+            patch('szurubooru.func.tags.export_to_json'):
         tags.get_or_create_tags_by_names.return_value = ([], [])
         tags.serialize_tag.return_value = 'serialized tag'
         result = api.tag_api.update_tag(
@@ -49,12 +51,22 @@ def test_simple_updating(user_factory, tag_factory, context_factory, fake_dateti
         tags.update_tag_names.assert_called_once_with(tag, ['tag3'])
         tags.update_tag_category_name.assert_called_once_with(tag, 'character')
         tags.update_tag_description.assert_called_once_with(tag, 'desc')
-        tags.update_tag_suggestions.assert_called_once_with(tag, ['sug1', 'sug2'])
-        tags.update_tag_implications.assert_called_once_with(tag, ['imp1', 'imp2'])
-        tags.serialize_tag.assert_called_once_with(tag, options=None)
+        tags.update_tag_suggestions.assert_called_once_with(
+            tag, ['sug1', 'sug2'])
+        tags.update_tag_implications.assert_called_once_with(
+            tag, ['imp1', 'imp2'])
+        tags.serialize_tag.assert_called_once_with(
+            tag, options=None)
+
 
 @pytest.mark.parametrize(
-    'field', ['names', 'category', 'description', 'implications', 'suggestions'])
+    'field', [
+        'names',
+        'category',
+        'description',
+        'implications',
+        'suggestions',
+    ])
 def test_omitting_optional_field(
         user_factory, tag_factory, context_factory, field):
     db.session.add(tag_factory(names=['tag']))
@@ -67,16 +79,17 @@ def test_omitting_optional_field(
         'implications': [],
     }
     del params[field]
-    with unittest.mock.patch('szurubooru.func.tags.create_tag'), \
-            unittest.mock.patch('szurubooru.func.tags.update_tag_names'), \
-            unittest.mock.patch('szurubooru.func.tags.update_tag_category_name'), \
-            unittest.mock.patch('szurubooru.func.tags.serialize_tag'), \
-            unittest.mock.patch('szurubooru.func.tags.export_to_json'):
+    with patch('szurubooru.func.tags.create_tag'), \
+            patch('szurubooru.func.tags.update_tag_names'), \
+            patch('szurubooru.func.tags.update_tag_category_name'), \
+            patch('szurubooru.func.tags.serialize_tag'), \
+            patch('szurubooru.func.tags.export_to_json'):
         api.tag_api.update_tag(
             context_factory(
                 params={**params, **{'version': 1}},
                 user=user_factory(rank=db.User.RANK_REGULAR)),
             {'tag_name': 'tag'})
+
 
 def test_trying_to_update_non_existing(user_factory, context_factory):
     with pytest.raises(tags.TagNotFoundError):
@@ -85,6 +98,7 @@ def test_trying_to_update_non_existing(user_factory, context_factory):
                 params={'names': ['dummy']},
                 user=user_factory(rank=db.User.RANK_REGULAR)),
             {'tag_name': 'tag1'})
+
 
 @pytest.mark.parametrize('params', [
     {'names': 'whatever'},
@@ -103,6 +117,7 @@ def test_trying_to_update_without_privileges(
                 user=user_factory(rank=db.User.RANK_ANONYMOUS)),
             {'tag_name': 'tag'})
 
+
 def test_trying_to_create_tags_without_privileges(
         config_injector, context_factory, tag_factory, user_factory):
     tag = tag_factory(names=['tag'])
@@ -113,7 +128,7 @@ def test_trying_to_create_tags_without_privileges(
         'tags:edit:suggestions': db.User.RANK_REGULAR,
         'tags:edit:implications': db.User.RANK_REGULAR,
     }})
-    with unittest.mock.patch('szurubooru.func.tags.get_or_create_tags_by_names'):
+    with patch('szurubooru.func.tags.get_or_create_tags_by_names'):
         tags.get_or_create_tags_by_names.return_value = ([], ['new-tag'])
         with pytest.raises(errors.AuthError):
             api.tag_api.update_tag(

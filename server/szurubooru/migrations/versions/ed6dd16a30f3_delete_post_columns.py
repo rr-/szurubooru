@@ -13,24 +13,36 @@ down_revision = '46df355634dc'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
-    op.drop_column('post', 'auto_comment_edit_time')
-    op.drop_column('post', 'auto_fav_count')
-    op.drop_column('post', 'auto_comment_creation_time')
-    op.drop_column('post', 'auto_feature_count')
-    op.drop_column('post', 'auto_comment_count')
-    op.drop_column('post', 'auto_score')
-    op.drop_column('post', 'auto_fav_time')
-    op.drop_column('post', 'auto_feature_time')
-    op.drop_column('post', 'auto_note_count')
+    for column_name in [
+            'auto_comment_edit_time'
+            'auto_fav_count',
+            'auto_comment_creation_time',
+            'auto_feature_count',
+            'auto_comment_count',
+            'auto_score',
+            'auto_fav_time',
+            'auto_feature_time',
+            'auto_note_count']:
+        op.drop_column('post', column_name)
+
 
 def downgrade():
-    op.add_column('post', sa.Column('auto_note_count', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.add_column('post', sa.Column('auto_feature_time', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.add_column('post', sa.Column('auto_fav_time', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.add_column('post', sa.Column('auto_score', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.add_column('post', sa.Column('auto_comment_count', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.add_column('post', sa.Column('auto_feature_count', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.add_column('post', sa.Column('auto_comment_creation_time', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.add_column('post', sa.Column('auto_fav_count', sa.INTEGER(), autoincrement=False, nullable=False))
-    op.add_column('post', sa.Column('auto_comment_edit_time', sa.INTEGER(), autoincrement=False, nullable=False))
+    for column_name in [
+            'auto_note_count',
+            'auto_feature_time',
+            'auto_fav_time',
+            'auto_score',
+            'auto_comment_count',
+            'auto_feature_count',
+            'auto_comment_creation_time',
+            'auto_fav_count',
+            'auto_comment_edit_time']:
+        op.add_column(
+            'post',
+            sa.Column(
+                column_name,
+                sa.INTEGER(),
+                autoincrement=False,
+                nullable=False))

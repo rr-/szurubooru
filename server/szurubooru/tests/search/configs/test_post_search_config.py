@@ -1,13 +1,18 @@
-import datetime
+# pylint: disable=redefined-outer-name
+from datetime import datetime
 import pytest
 from szurubooru import db, errors, search
+
 
 @pytest.fixture
 def fav_factory(user_factory):
     def factory(post, user=None):
         return db.PostFavorite(
-            post=post, user=user or user_factory(), time=datetime.datetime.utcnow())
+            post=post,
+            user=user or user_factory(),
+            time=datetime.utcnow())
     return factory
+
 
 @pytest.fixture
 def score_factory(user_factory):
@@ -15,28 +20,35 @@ def score_factory(user_factory):
         return db.PostScore(
             post=post,
             user=user or user_factory(),
-            time=datetime.datetime.utcnow(),
+            time=datetime.utcnow(),
             score=score)
     return factory
 
+
 @pytest.fixture
 def note_factory():
-    def factory(post=None):
+    def factory():
         return db.PostNote(polygon='...', text='...')
     return factory
+
 
 @pytest.fixture
 def feature_factory(user_factory):
     def factory(post=None):
         if post:
             return db.PostFeature(
-                time=datetime.datetime.utcnow(), user=user_factory(), post=post)
-        return db.PostFeature(time=datetime.datetime.utcnow(), user=user_factory())
+                time=datetime.utcnow(),
+                user=user_factory(),
+                post=post)
+        return db.PostFeature(
+            time=datetime.utcnow(), user=user_factory())
     return factory
 
+
 @pytest.fixture
-def executor(user_factory):
+def executor():
     return search.Executor(search.configs.PostSearchConfig())
+
 
 @pytest.fixture
 def auth_executor(executor, user_factory):
@@ -47,6 +59,7 @@ def auth_executor(executor, user_factory):
         executor.config.user = auth_user
         return auth_user
     return wrapper
+
 
 @pytest.fixture
 def verify_unpaged(executor):
@@ -61,6 +74,7 @@ def verify_unpaged(executor):
         assert actual_count == len(expected_post_ids)
     return verify
 
+
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('id:1', [1]),
     ('id:3', [3]),
@@ -72,6 +86,7 @@ def test_filter_by_id(verify_unpaged, post_factory, input, expected_post_ids):
     post3 = post_factory(id=3)
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('tag:t1', [1]),
@@ -86,12 +101,13 @@ def test_filter_by_tag(
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     post4 = post_factory(id=4)
-    post1.tags=[tag_factory(names=['t1'])]
-    post2.tags=[tag_factory(names=['t2'])]
-    post3.tags=[tag_factory(names=['t3'])]
-    post4.tags=[tag_factory(names=['t4a', 't4b'])]
+    post1.tags = [tag_factory(names=['t1'])]
+    post2.tags = [tag_factory(names=['t2'])]
+    post3.tags = [tag_factory(names=['t3'])]
+    post4.tags = [tag_factory(names=['t4a', 't4b'])]
     db.session.add_all([post1, post2, post3, post4])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('score:1', [1]),
@@ -107,11 +123,12 @@ def test_filter_by_score(
         db.session.add(
             db.PostScore(
                 score=post.post_id,
-                time=datetime.datetime.utcnow(),
+                time=datetime.utcnow(),
                 post=post,
                 user=user_factory()))
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('uploader:u1', [1]),
@@ -134,6 +151,7 @@ def test_filter_by_uploader(
     post3.user = user_factory(name='u3')
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('comment:u1', [1]),
@@ -158,6 +176,7 @@ def test_filter_by_commenter(
     ])
     verify_unpaged(input, expected_post_ids)
 
+
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('fav:u1', [1]),
     ('fav:u3', [3]),
@@ -180,6 +199,7 @@ def test_filter_by_favorite(
         post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
 
+
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('tag-count:1', [1]),
     ('tag-count:3', [3]),
@@ -190,11 +210,12 @@ def test_filter_by_tag_count(
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
-    post1.tags=[tag_factory()]
-    post2.tags=[tag_factory(), tag_factory()]
-    post3.tags=[tag_factory(), tag_factory(), tag_factory()]
+    post1.tags = [tag_factory()]
+    post2.tags = [tag_factory(), tag_factory()]
+    post3.tags = [tag_factory(), tag_factory(), tag_factory()]
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('comment-count:1', [1]),
@@ -202,7 +223,11 @@ def test_filter_by_tag_count(
     ('comment-count:1,3', [1, 3]),
 ])
 def test_filter_by_comment_count(
-        verify_unpaged, post_factory, comment_factory, input, expected_post_ids):
+        verify_unpaged,
+        post_factory,
+        comment_factory,
+        input,
+        expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
@@ -215,6 +240,7 @@ def test_filter_by_comment_count(
         comment_factory(post=post3),
         post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('fav-count:1', [1]),
@@ -236,6 +262,7 @@ def test_filter_by_favorite_count(
         post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
 
+
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('note-count:1', [1]),
     ('note-count:3', [3]),
@@ -246,11 +273,12 @@ def test_filter_by_note_count(
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
-    post1.notes=[note_factory()]
-    post2.notes=[note_factory(), note_factory()]
-    post3.notes=[note_factory(), note_factory(), note_factory()]
+    post1.notes = [note_factory()]
+    post2.notes = [note_factory(), note_factory()]
+    post3.notes = [note_factory(), note_factory(), note_factory()]
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('feature-count:1', [1]),
@@ -258,15 +286,20 @@ def test_filter_by_note_count(
     ('feature-count:1,3', [1, 3]),
 ])
 def test_filter_by_feature_count(
-        verify_unpaged, post_factory, feature_factory, input, expected_post_ids):
+        verify_unpaged,
+        post_factory,
+        feature_factory,
+        input,
+        expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
-    post1.features=[feature_factory()]
-    post2.features=[feature_factory(), feature_factory()]
-    post3.features=[feature_factory(), feature_factory(), feature_factory()]
+    post1.features = [feature_factory()]
+    post2.features = [feature_factory(), feature_factory()]
+    post3.features = [feature_factory(), feature_factory(), feature_factory()]
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('type:image', [1]),
@@ -278,7 +311,8 @@ def test_filter_by_feature_count(
     ('type:flash', [4]),
     ('type:swf', [4]),
 ])
-def test_filter_by_type(verify_unpaged, post_factory, input, expected_post_ids):
+def test_filter_by_type(
+        verify_unpaged, post_factory, input, expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
@@ -290,13 +324,15 @@ def test_filter_by_type(verify_unpaged, post_factory, input, expected_post_ids):
     db.session.add_all([post1, post2, post3, post4])
     verify_unpaged(input, expected_post_ids)
 
+
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('safety:safe', [1]),
     ('safety:sketchy', [2]),
     ('safety:questionable', [2]),
     ('safety:unsafe', [3]),
 ])
-def test_filter_by_safety(verify_unpaged, post_factory, input, expected_post_ids):
+def test_filter_by_safety(
+        verify_unpaged, post_factory, input, expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
@@ -306,10 +342,11 @@ def test_filter_by_safety(verify_unpaged, post_factory, input, expected_post_ids
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
 
+
 def test_filter_by_invalid_type(executor):
     with pytest.raises(errors.SearchError):
-        actual_count, actual_posts = executor.execute(
-            'type:invalid', page=1, page_size=100)
+        executor.execute('type:invalid', page=1, page_size=100)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('file-size:100', [1]),
@@ -326,6 +363,7 @@ def test_filter_by_file_size(
     post3.file_size = 102
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('image-width:100', [1]),
@@ -352,6 +390,7 @@ def test_filter_by_image_size(
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
 
+
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('creation-date:2014', [1]),
     ('creation-date:2016', [3]),
@@ -371,11 +410,12 @@ def test_filter_by_creation_time(
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
-    post1.creation_time = datetime.datetime(2014, 1, 1)
-    post2.creation_time = datetime.datetime(2015, 1, 1)
-    post3.creation_time = datetime.datetime(2016, 1, 1)
+    post1.creation_time = datetime(2014, 1, 1)
+    post2.creation_time = datetime(2015, 1, 1)
+    post3.creation_time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('last-edit-date:2014', [1]),
@@ -396,11 +436,12 @@ def test_filter_by_last_edit_time(
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
-    post1.last_edit_time = datetime.datetime(2014, 1, 1)
-    post2.last_edit_time = datetime.datetime(2015, 1, 1)
-    post3.last_edit_time = datetime.datetime(2016, 1, 1)
+    post1.last_edit_time = datetime(2014, 1, 1)
+    post2.last_edit_time = datetime(2015, 1, 1)
+    post3.last_edit_time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('comment-date:2014', [1]),
@@ -411,18 +452,23 @@ def test_filter_by_last_edit_time(
     ('comment-time:2014,2016', [1, 3]),
 ])
 def test_filter_by_comment_date(
-        verify_unpaged, post_factory, comment_factory, input, expected_post_ids):
+        verify_unpaged,
+        post_factory,
+        comment_factory,
+        input,
+        expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     comment1 = comment_factory(post=post1)
     comment2 = comment_factory(post=post2)
     comment3 = comment_factory(post=post3)
-    comment1.creation_time = datetime.datetime(2014, 1, 1)
-    comment2.creation_time = datetime.datetime(2015, 1, 1)
-    comment3.creation_time = datetime.datetime(2016, 1, 1)
+    comment1.creation_time = datetime(2014, 1, 1)
+    comment2.creation_time = datetime(2015, 1, 1)
+    comment3.creation_time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3, comment1, comment2, comment3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('fav-date:2014', [1]),
@@ -440,11 +486,12 @@ def test_filter_by_fav_date(
     fav1 = fav_factory(post=post1)
     fav2 = fav_factory(post=post2)
     fav3 = fav_factory(post=post3)
-    fav1.time = datetime.datetime(2014, 1, 1)
-    fav2.time = datetime.datetime(2015, 1, 1)
-    fav3.time = datetime.datetime(2016, 1, 1)
+    fav1.time = datetime(2014, 1, 1)
+    fav2.time = datetime(2015, 1, 1)
+    fav3.time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3, fav1, fav2, fav3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('feature-date:2014', [1]),
@@ -455,18 +502,23 @@ def test_filter_by_fav_date(
     ('feature-time:2014,2016', [1, 3]),
 ])
 def test_filter_by_feature_date(
-        verify_unpaged, post_factory, feature_factory, input, expected_post_ids):
+        verify_unpaged,
+        post_factory,
+        feature_factory,
+        input,
+        expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     feature1 = feature_factory(post=post1)
     feature2 = feature_factory(post=post2)
     feature3 = feature_factory(post=post3)
-    feature1.time = datetime.datetime(2014, 1, 1)
-    feature2.time = datetime.datetime(2015, 1, 1)
-    feature3.time = datetime.datetime(2016, 1, 1)
+    feature1.time = datetime(2014, 1, 1)
+    feature2.time = datetime(2015, 1, 1)
+    feature3.time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3, feature1, feature2, feature3])
     verify_unpaged(input, expected_post_ids)
+
 
 @pytest.mark.parametrize('input', [
     'sort:random',
@@ -506,6 +558,7 @@ def test_sort_tokens(verify_unpaged, post_factory, input):
     db.session.add_all([post1, post2, post3])
     verify_unpaged(input, [1, 2, 3])
 
+
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('', [1, 2, 3, 4]),
     ('t1', [1]),
@@ -520,42 +573,53 @@ def test_anonymous(
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     post4 = post_factory(id=4)
-    post1.tags=[tag_factory(names=['t1'])]
-    post2.tags=[tag_factory(names=['t2'])]
-    post3.tags=[tag_factory(names=['t3'])]
-    post4.tags=[tag_factory(names=['t4a', 't4b'])]
+    post1.tags = [tag_factory(names=['t1'])]
+    post2.tags = [tag_factory(names=['t2'])]
+    post3.tags = [tag_factory(names=['t3'])]
+    post4.tags = [tag_factory(names=['t4a', 't4b'])]
     db.session.add_all([post1, post2, post3, post4])
     verify_unpaged(input, expected_post_ids)
 
+
 def test_own_liked(
-        auth_executor, post_factory, score_factory, user_factory, verify_unpaged):
+        auth_executor,
+        post_factory,
+        score_factory,
+        user_factory,
+        verify_unpaged):
     auth_user = auth_executor()
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     db.session.add_all([
         score_factory(post=post1, user=auth_user, score=1),
-        score_factory(post=post2, user=user_factory(name='unrelated'), score=1),
+        score_factory(post=post2, user=user_factory(name='dummy'), score=1),
         score_factory(post=post3, user=auth_user, score=-1),
         post1, post2, post3,
     ])
     verify_unpaged('special:liked', [1])
     verify_unpaged('-special:liked', [2, 3])
 
+
 def test_own_disliked(
-        auth_executor, post_factory, score_factory, user_factory, verify_unpaged):
+        auth_executor,
+        post_factory,
+        score_factory,
+        user_factory,
+        verify_unpaged):
     auth_user = auth_executor()
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     db.session.add_all([
         score_factory(post=post1, user=auth_user, score=-1),
-        score_factory(post=post2, user=user_factory(name='unrelated'), score=-1),
+        score_factory(post=post2, user=user_factory(name='dummy'), score=-1),
         score_factory(post=post3, user=auth_user, score=1),
         post1, post2, post3,
     ])
     verify_unpaged('special:disliked', [1])
     verify_unpaged('-special:disliked', [2, 3])
+
 
 @pytest.mark.parametrize('input', [
     'liked:x',
@@ -563,11 +627,15 @@ def test_own_disliked(
 ])
 def test_someones_score(executor, input):
     with pytest.raises(errors.SearchError):
-        actual_count, actual_posts = executor.execute(
-            input, page=1, page_size=100)
+        executor.execute(input, page=1, page_size=100)
+
 
 def test_own_fav(
-        auth_executor, post_factory, fav_factory, user_factory, verify_unpaged):
+        auth_executor,
+        post_factory,
+        fav_factory,
+        user_factory,
+        verify_unpaged):
     auth_user = auth_executor()
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
@@ -579,8 +647,8 @@ def test_own_fav(
     verify_unpaged('special:fav', [1])
     verify_unpaged('-special:fav', [2])
 
+
 def test_tumbleweed(
-        executor,
         post_factory,
         fav_factory,
         comment_factory,

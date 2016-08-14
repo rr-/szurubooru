@@ -5,6 +5,7 @@ from szurubooru.func import util
 from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
+
 class TagSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
         return self.create_count_query() \
@@ -13,8 +14,7 @@ class TagSearchConfig(BaseSearchConfig):
                 subqueryload(db.Tag.names),
                 subqueryload(db.Tag.category),
                 subqueryload(db.Tag.suggestions).joinedload(db.Tag.names),
-                subqueryload(db.Tag.implications).joinedload(db.Tag.names)
-            )
+                subqueryload(db.Tag.implications).joinedload(db.Tag.names))
 
     def create_count_query(self):
         return db.session.query(db.Tag)

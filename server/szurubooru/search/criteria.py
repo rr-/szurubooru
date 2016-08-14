@@ -5,6 +5,7 @@ class _BaseCriterion(object):
     def __repr__(self):
         return self.original_text
 
+
 class RangedCriterion(_BaseCriterion):
     def __init__(self, original_text, min_value, max_value):
         super().__init__(original_text)
@@ -14,6 +15,7 @@ class RangedCriterion(_BaseCriterion):
     def __hash__(self):
         return hash(('range', self.min_value, self.max_value))
 
+
 class PlainCriterion(_BaseCriterion):
     def __init__(self, original_text, value):
         super().__init__(original_text)
@@ -21,6 +23,7 @@ class PlainCriterion(_BaseCriterion):
 
     def __hash__(self):
         return hash(self.value)
+
 
 class ArrayCriterion(_BaseCriterion):
     def __init__(self, original_text, values):

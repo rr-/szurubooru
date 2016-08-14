@@ -1,11 +1,12 @@
-import pytest
-import unittest.mock
 from datetime import datetime
+from unittest.mock import patch
+import pytest
 from szurubooru import api, db, errors
 from szurubooru.func import posts, tags, snapshots, net
 
+
 @pytest.fixture(autouse=True)
-def inject_config(tmpdir, config_injector):
+def inject_config(config_injector):
     config_injector({
         'privileges': {
             'posts:edit:tags': db.User.RANK_REGULAR,
@@ -20,6 +21,7 @@ def inject_config(tmpdir, config_injector):
         },
     })
 
+
 def test_post_updating(
         context_factory, post_factory, user_factory, fake_datetime):
     auth_user = user_factory(rank=db.User.RANK_REGULAR)
@@ -27,18 +29,18 @@ def test_post_updating(
     db.session.add(post)
     db.session.flush()
 
-    with unittest.mock.patch('szurubooru.func.posts.create_post'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_tags'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_thumbnail'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_safety'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_source'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_relations'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_notes'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_flags'), \
-            unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
-            unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
-            unittest.mock.patch('szurubooru.func.snapshots.save_entity_modification'), \
+    with patch('szurubooru.func.posts.create_post'), \
+            patch('szurubooru.func.posts.update_post_tags'), \
+            patch('szurubooru.func.posts.update_post_content'), \
+            patch('szurubooru.func.posts.update_post_thumbnail'), \
+            patch('szurubooru.func.posts.update_post_safety'), \
+            patch('szurubooru.func.posts.update_post_source'), \
+            patch('szurubooru.func.posts.update_post_relations'), \
+            patch('szurubooru.func.posts.update_post_notes'), \
+            patch('szurubooru.func.posts.update_post_flags'), \
+            patch('szurubooru.func.posts.serialize_post'), \
+            patch('szurubooru.func.tags.export_to_json'), \
+            patch('szurubooru.func.snapshots.save_entity_modification'), \
             fake_datetime('1997-01-01'):
         posts.serialize_post.return_value = 'serialized post'
 
@@ -64,28 +66,34 @@ def test_post_updating(
         posts.create_post.assert_not_called()
         posts.update_post_tags.assert_called_once_with(post, ['tag1', 'tag2'])
         posts.update_post_content.assert_called_once_with(post, 'post-content')
-        posts.update_post_thumbnail.assert_called_once_with(post, 'post-thumbnail')
+        posts.update_post_thumbnail.assert_called_once_with(
+            post, 'post-thumbnail')
         posts.update_post_safety.assert_called_once_with(post, 'safe')
         posts.update_post_source.assert_called_once_with(post, 'source')
         posts.update_post_relations.assert_called_once_with(post, [1, 2])
-        posts.update_post_notes.assert_called_once_with(post, ['note1', 'note2'])
-        posts.update_post_flags.assert_called_once_with(post, ['flag1', 'flag2'])
-        posts.serialize_post.assert_called_once_with(post, auth_user, options=None)
+        posts.update_post_notes.assert_called_once_with(
+            post, ['note1', 'note2'])
+        posts.update_post_flags.assert_called_once_with(
+            post, ['flag1', 'flag2'])
+        posts.serialize_post.assert_called_once_with(
+            post, auth_user, options=None)
         tags.export_to_json.assert_called_once_with()
-        snapshots.save_entity_modification.assert_called_once_with(post, auth_user)
+        snapshots.save_entity_modification.assert_called_once_with(
+            post, auth_user)
         assert post.last_edit_time == datetime(1997, 1, 1)
+
 
 def test_uploading_from_url_saves_source(
         context_factory, post_factory, user_factory):
     post = post_factory()
     db.session.add(post)
     db.session.flush()
-    with unittest.mock.patch('szurubooru.func.net.download'), \
-            unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
-            unittest.mock.patch('szurubooru.func.snapshots.save_entity_modification'), \
-            unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_source'):
+    with patch('szurubooru.func.net.download'), \
+            patch('szurubooru.func.tags.export_to_json'), \
+            patch('szurubooru.func.snapshots.save_entity_modification'), \
+            patch('szurubooru.func.posts.serialize_post'), \
+            patch('szurubooru.func.posts.update_post_content'), \
+            patch('szurubooru.func.posts.update_post_source'):
         net.download.return_value = b'content'
         api.post_api.update_post(
             context_factory(
@@ -96,17 +104,18 @@ def test_uploading_from_url_saves_source(
         posts.update_post_content.assert_called_once_with(post, b'content')
         posts.update_post_source.assert_called_once_with(post, 'example.com')
 
+
 def test_uploading_from_url_with_source_specified(
         context_factory, post_factory, user_factory):
     post = post_factory()
     db.session.add(post)
     db.session.flush()
-    with unittest.mock.patch('szurubooru.func.net.download'), \
-            unittest.mock.patch('szurubooru.func.tags.export_to_json'), \
-            unittest.mock.patch('szurubooru.func.snapshots.save_entity_modification'), \
-            unittest.mock.patch('szurubooru.func.posts.serialize_post'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_content'), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_source'):
+    with patch('szurubooru.func.net.download'), \
+            patch('szurubooru.func.tags.export_to_json'), \
+            patch('szurubooru.func.snapshots.save_entity_modification'), \
+            patch('szurubooru.func.posts.serialize_post'), \
+            patch('szurubooru.func.posts.update_post_content'), \
+            patch('szurubooru.func.posts.update_post_source'):
         net.download.return_value = b'content'
         api.post_api.update_post(
             context_factory(
@@ -120,6 +129,7 @@ def test_uploading_from_url_with_source_specified(
         posts.update_post_content.assert_called_once_with(post, b'content')
         posts.update_post_source.assert_called_once_with(post, 'example2.com')
 
+
 def test_trying_to_update_non_existing(context_factory, user_factory):
     with pytest.raises(posts.PostNotFoundError):
         api.post_api.update_post(
@@ -128,18 +138,19 @@ def test_trying_to_update_non_existing(context_factory, user_factory):
                 user=user_factory(rank=db.User.RANK_REGULAR)),
             {'post_id': 1})
 
-@pytest.mark.parametrize('privilege,files,params', [
-    ('posts:edit:tags', {}, {'tags': '...'}),
-    ('posts:edit:safety', {}, {'safety': '...'}),
-    ('posts:edit:source', {}, {'source': '...'}),
-    ('posts:edit:relations', {}, {'relations': '...'}),
-    ('posts:edit:notes', {}, {'notes': '...'}),
-    ('posts:edit:flags', {}, {'flags': '...'}),
-    ('posts:edit:content', {'content': '...'}, {}),
-    ('posts:edit:thumbnail', {'thumbnail': '...'}, {}),
+
+@pytest.mark.parametrize('files,params', [
+    ({}, {'tags': '...'}),
+    ({}, {'safety': '...'}),
+    ({}, {'source': '...'}),
+    ({}, {'relations': '...'}),
+    ({}, {'notes': '...'}),
+    ({}, {'flags': '...'}),
+    ({'content': '...'}, {}),
+    ({'thumbnail': '...'}, {}),
 ])
 def test_trying_to_update_field_without_privileges(
-        context_factory, post_factory, user_factory, files, params, privilege):
+        context_factory, post_factory, user_factory, files, params):
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -151,13 +162,14 @@ def test_trying_to_update_field_without_privileges(
                 user=user_factory(rank=db.User.RANK_ANONYMOUS)),
             {'post_id': post.post_id})
 
+
 def test_trying_to_create_tags_without_privileges(
         context_factory, post_factory, user_factory):
     post = post_factory()
     db.session.add(post)
     db.session.flush()
     with pytest.raises(errors.AuthError), \
-            unittest.mock.patch('szurubooru.func.posts.update_post_tags'):
+            patch('szurubooru.func.posts.update_post_tags'):
         posts.update_post_tags.return_value = ['new-tag']
         api.post_api.update_post(
             context_factory(

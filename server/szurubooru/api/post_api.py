@@ -1,9 +1,12 @@
 import datetime
 from szurubooru import search
-from szurubooru.func import auth, tags, posts, snapshots, favorites, scores, util
 from szurubooru.rest import routes
+from szurubooru.func import (
+    auth, tags, posts, snapshots, favorites, scores, util)
+
 
 _search_executor = search.Executor(search.configs.PostSearchConfig())
+
 
 def _serialize_post(ctx, post):
     return posts.serialize_post(
@@ -11,12 +14,14 @@ def _serialize_post(ctx, post):
         ctx.user,
         options=util.get_serialization_options(ctx))
 
+
 @routes.get('/posts/?')
 def get_posts(ctx, _params=None):
     auth.verify_privilege(ctx.user, 'posts:list')
     _search_executor.config.user = ctx.user
     return _search_executor.execute_and_serialize(
         ctx, lambda post: _serialize_post(ctx, post))
+
 
 @routes.post('/posts/?')
 def create_post(ctx, _params=None):
@@ -52,11 +57,13 @@ def create_post(ctx, _params=None):
     tags.export_to_json()
     return _serialize_post(ctx, post)
 
+
 @routes.get('/post/(?P<post_id>[^/]+)/?')
 def get_post(ctx, params):
     auth.verify_privilege(ctx.user, 'posts:view')
     post = posts.get_post_by_id(params['post_id'])
     return _serialize_post(ctx, post)
+
 
 @routes.put('/post/(?P<post_id>[^/]+)/?')
 def update_post(ctx, params):
@@ -98,6 +105,7 @@ def update_post(ctx, params):
     tags.export_to_json()
     return _serialize_post(ctx, post)
 
+
 @routes.delete('/post/(?P<post_id>[^/]+)/?')
 def delete_post(ctx, params):
     auth.verify_privilege(ctx.user, 'posts:delete')
@@ -109,10 +117,12 @@ def delete_post(ctx, params):
     tags.export_to_json()
     return {}
 
+
 @routes.get('/featured-post/?')
 def get_featured_post(ctx, _params=None):
     post = posts.try_get_featured_post()
     return _serialize_post(ctx, post)
+
 
 @routes.post('/featured-post/?')
 def set_featured_post(ctx, _params=None):
@@ -130,6 +140,7 @@ def set_featured_post(ctx, _params=None):
     ctx.session.commit()
     return _serialize_post(ctx, post)
 
+
 @routes.put('/post/(?P<post_id>[^/]+)/score/?')
 def set_post_score(ctx, params):
     auth.verify_privilege(ctx.user, 'posts:score')
@@ -139,6 +150,7 @@ def set_post_score(ctx, params):
     ctx.session.commit()
     return _serialize_post(ctx, post)
 
+
 @routes.delete('/post/(?P<post_id>[^/]+)/score/?')
 def delete_post_score(ctx, params):
     auth.verify_privilege(ctx.user, 'posts:score')
@@ -146,6 +158,7 @@ def delete_post_score(ctx, params):
     scores.delete_score(post, ctx.user)
     ctx.session.commit()
     return _serialize_post(ctx, post)
+
 
 @routes.post('/post/(?P<post_id>[^/]+)/favorite/?')
 def add_post_to_favorites(ctx, params):
@@ -155,6 +168,7 @@ def add_post_to_favorites(ctx, params):
     ctx.session.commit()
     return _serialize_post(ctx, post)
 
+
 @routes.delete('/post/(?P<post_id>[^/]+)/favorite/?')
 def delete_post_from_favorites(ctx, params):
     auth.verify_privilege(ctx.user, 'posts:favorite')
@@ -162,6 +176,7 @@ def delete_post_from_favorites(ctx, params):
     favorites.unset_favorite(post, ctx.user)
     ctx.session.commit()
     return _serialize_post(ctx, post)
+
 
 @routes.get('/post/(?P<post_id>[^/]+)/around/?')
 def get_posts_around(ctx, params):

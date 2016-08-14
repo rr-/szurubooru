@@ -1,5 +1,6 @@
 from szurubooru.search import tokens
 
+
 class BaseSearchConfig(object):
     SORT_ASC = tokens.SortToken.SORT_ASC
     SORT_DESC = tokens.SortToken.SORT_DESC

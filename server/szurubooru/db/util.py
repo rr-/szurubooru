@@ -1,5 +1,6 @@
 from sqlalchemy.inspection import inspect
 
+
 def get_resource_info(entity):
     serializers = {
         'tag': lambda tag: tag.first_name,
@@ -22,6 +23,7 @@ def get_resource_info(entity):
     assert resource_id
 
     return (resource_type, resource_id, resource_repr)
+
 
 def get_aux_entity(session, get_table_info, entity, user):
     table, get_column = get_table_info(entity)

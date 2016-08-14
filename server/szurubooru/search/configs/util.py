@@ -3,8 +3,10 @@ from szurubooru import db, errors
 from szurubooru.func import util
 from szurubooru.search import criteria
 
+
 def wildcard_transformer(value):
     return value.replace('*', '%')
+
 
 def apply_num_criterion_to_column(column, criterion):
     '''
@@ -32,6 +34,7 @@ def apply_num_criterion_to_column(column, criterion):
             'Criterion value %r must be a number.' % (criterion,))
     return expr
 
+
 def create_num_filter(column):
     def wrapper(query, criterion, negated):
         expr = apply_num_criterion_to_column(
@@ -40,6 +43,7 @@ def create_num_filter(column):
             expr = ~expr
         return query.filter(expr)
     return wrapper
+
 
 def apply_str_criterion_to_column(
         column, criterion, transformer=wildcard_transformer):
@@ -59,6 +63,7 @@ def apply_str_criterion_to_column(
         assert False
     return expr
 
+
 def create_str_filter(column, transformer=wildcard_transformer):
     def wrapper(query, criterion, negated):
         expr = apply_str_criterion_to_column(
@@ -67,6 +72,7 @@ def create_str_filter(column, transformer=wildcard_transformer):
             expr = ~expr
         return query.filter(expr)
     return wrapper
+
 
 def apply_date_criterion_to_column(column, criterion):
     '''
@@ -97,6 +103,7 @@ def apply_date_criterion_to_column(column, criterion):
         assert False
     return expr
 
+
 def create_date_filter(column):
     def wrapper(query, criterion, negated):
         expr = apply_date_criterion_to_column(
@@ -106,6 +113,7 @@ def create_date_filter(column):
         return query.filter(expr)
     return wrapper
 
+
 def create_subquery_filter(
         left_id_column,
         right_id_column,
@@ -113,6 +121,7 @@ def create_subquery_filter(
         filter_factory,
         subquery_decorator=None):
     filter_func = filter_factory(filter_column)
+
     def wrapper(query, criterion, negated):
         subquery = db.session.query(right_id_column.label('foreign_id'))
         if subquery_decorator:
@@ -121,4 +130,5 @@ def create_subquery_filter(
         subquery = filter_func(subquery, criterion, negated)
         subquery = subquery.subquery('t')
         return query.filter(left_id_column.in_(subquery))
+
     return wrapper

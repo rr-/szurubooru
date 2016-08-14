@@ -1,7 +1,8 @@
+from unittest.mock import patch
 import pytest
-import unittest.mock
 from szurubooru import api, db, errors
 from szurubooru.func import posts
+
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
@@ -12,14 +13,12 @@ def inject_config(config_injector):
         },
     })
 
-def test_no_featured_post(user_factory, post_factory, context_factory):
-    assert posts.try_get_featured_post() is None
 
 def test_featuring(user_factory, post_factory, context_factory):
     db.session.add(post_factory(id=1))
     db.session.commit()
     assert not posts.get_post_by_id(1).is_featured
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         posts.serialize_post.return_value = 'serialized post'
         result = api.post_api.set_featured_post(
             context_factory(
@@ -34,18 +33,19 @@ def test_featuring(user_factory, post_factory, context_factory):
                 user=user_factory(rank=db.User.RANK_REGULAR)))
         assert result == 'serialized post'
 
-def test_trying_to_omit_required_parameter(
-        user_factory, post_factory, context_factory):
+
+def test_trying_to_omit_required_parameter(user_factory, context_factory):
     with pytest.raises(errors.MissingRequiredParameterError):
         api.post_api.set_featured_post(
             context_factory(
                 user=user_factory(rank=db.User.RANK_REGULAR)))
 
+
 def test_trying_to_feature_the_same_post_twice(
         user_factory, post_factory, context_factory):
     db.session.add(post_factory(id=1))
     db.session.commit()
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         api.post_api.set_featured_post(
             context_factory(
                 params={'id': 1},
@@ -56,6 +56,7 @@ def test_trying_to_feature_the_same_post_twice(
                     params={'id': 1},
                     user=user_factory(rank=db.User.RANK_REGULAR)))
 
+
 def test_featuring_one_post_after_another(
         user_factory, post_factory, context_factory, fake_datetime):
     db.session.add(post_factory(id=1))
@@ -64,14 +65,14 @@ def test_featuring_one_post_after_another(
     assert posts.try_get_featured_post() is None
     assert not posts.get_post_by_id(1).is_featured
     assert not posts.get_post_by_id(2).is_featured
-    with unittest.mock.patch('szurubooru.func.posts.serialize_post'):
+    with patch('szurubooru.func.posts.serialize_post'):
         with fake_datetime('1997'):
-            result = api.post_api.set_featured_post(
+            api.post_api.set_featured_post(
                 context_factory(
                     params={'id': 1},
                     user=user_factory(rank=db.User.RANK_REGULAR)))
         with fake_datetime('1998'):
-            result = api.post_api.set_featured_post(
+            api.post_api.set_featured_post(
                 context_factory(
                     params={'id': 2},
                     user=user_factory(rank=db.User.RANK_REGULAR)))
@@ -80,6 +81,7 @@ def test_featuring_one_post_after_another(
         assert not posts.get_post_by_id(1).is_featured
         assert posts.get_post_by_id(2).is_featured
 
+
 def test_trying_to_feature_non_existing(user_factory, context_factory):
     with pytest.raises(posts.PostNotFoundError):
         api.post_api.set_featured_post(
@@ -87,12 +89,14 @@ def test_trying_to_feature_non_existing(user_factory, context_factory):
                 params={'id': 1},
                 user=user_factory(rank=db.User.RANK_REGULAR)))
 
+
 def test_trying_to_feature_without_privileges(user_factory, context_factory):
     with pytest.raises(errors.AuthError):
         api.post_api.set_featured_post(
             context_factory(
                 params={'id': 1},
                 user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+
 
 def test_getting_featured_post_without_privileges_to_view(
         user_factory, context_factory):

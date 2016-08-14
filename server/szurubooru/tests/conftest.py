@@ -1,3 +1,4 @@
+# pylint: disable=redefined-outer-name
 import contextlib
 import os
 import datetime
@@ -5,36 +6,42 @@ import uuid
 import pytest
 import freezegun
 import sqlalchemy
-from szurubooru import api, config, db, rest
-from szurubooru.func import util
+from szurubooru import config, db, rest
+
 
 class QueryCounter(object):
     def __init__(self):
         self._statements = []
+
     def __enter__(self):
         self._statements = []
+
     def __exit__(self, *args, **kwargs):
         self._statements = []
+
     def create_before_cursor_execute(self):
         def before_cursor_execute(
-                _conn, _cursor, statement, _parameters, _context, _executemany):
+                _conn, _cursor, statement, _params, _context, _executemany):
             self._statements.append(statement)
         return before_cursor_execute
+
     @property
     def statements(self):
         return self._statements
 
+
 _query_counter = QueryCounter()
-engine = sqlalchemy.create_engine('sqlite:///:memory:')
-db.Base.metadata.create_all(bind=engine)
+_engine = sqlalchemy.create_engine('sqlite:///:memory:')
+db.Base.metadata.create_all(bind=_engine)
 sqlalchemy.event.listen(
-    engine,
+    _engine,
     'before_cursor_execute',
     _query_counter.create_before_cursor_execute())
 
 
 def get_unique_name():
     return str(uuid.uuid4())
+
 
 @pytest.fixture
 def fake_datetime():
@@ -46,22 +53,26 @@ def fake_datetime():
         freezer.stop()
     return injector
 
+
 @pytest.fixture()
 def query_counter():
     return _query_counter
+
 
 @pytest.fixture
 def query_logger():
     if pytest.config.option.verbose > 0:
         import logging
         import coloredlogs
-        coloredlogs.install(fmt='[%(asctime)-15s] %(name)s %(message)s', isatty=True)
+        coloredlogs.install(
+            fmt='[%(asctime)-15s] %(name)s %(message)s', isatty=True)
         logging.basicConfig()
         logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
+
 @pytest.yield_fixture(scope='function', autouse=True)
-def session(query_logger):
-    session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
+def session(query_logger):  # pylint: disable=unused-argument
+    session_maker = sqlalchemy.orm.sessionmaker(bind=_engine)
     session = sqlalchemy.orm.scoped_session(session_maker)
     db.session = session
     try:
@@ -71,6 +82,7 @@ def session(query_logger):
         for table in reversed(db.Base.metadata.sorted_tables):
             session.execute(table.delete())
         session.commit()
+
 
 @pytest.fixture
 def context_factory(session):
@@ -86,11 +98,13 @@ def context_factory(session):
         return ctx
     return factory
 
+
 @pytest.fixture
 def config_injector():
     def injector(new_config_content):
         config.config = new_config_content
     return injector
+
 
 @pytest.fixture
 def user_factory():
@@ -106,6 +120,7 @@ def user_factory():
         return user
     return factory
 
+
 @pytest.fixture
 def tag_category_factory():
     def factory(name=None, color='dummy', default=False):
@@ -116,6 +131,7 @@ def tag_category_factory():
         return category
     return factory
 
+
 @pytest.fixture
 def tag_factory():
     def factory(names=None, category=None):
@@ -123,14 +139,17 @@ def tag_factory():
             category = db.TagCategory(get_unique_name())
             db.session.add(category)
         tag = db.Tag()
-        tag.names = [db.TagName(name) for name in (names or [get_unique_name()])]
+        tag.names = [
+            db.TagName(name) for name in names or [get_unique_name()]]
         tag.category = category
         tag.creation_time = datetime.datetime(1996, 1, 1)
         return tag
     return factory
 
+
 @pytest.fixture
 def post_factory():
+    # pylint: disable=invalid-name
     def factory(
             id=None,
             safety=db.Post.SAFETY_SAFE,
@@ -146,6 +165,7 @@ def post_factory():
         post.creation_time = datetime.datetime(1996, 1, 1)
         return post
     return factory
+
 
 @pytest.fixture
 def comment_factory(user_factory, post_factory):
@@ -163,6 +183,7 @@ def comment_factory(user_factory, post_factory):
         comment.creation_time = datetime.datetime(1996, 1, 1)
         return comment
     return factory
+
 
 @pytest.fixture
 def read_asset():

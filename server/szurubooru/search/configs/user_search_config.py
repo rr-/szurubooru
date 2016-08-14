@@ -3,6 +3,7 @@ from szurubooru import db
 from szurubooru.search.configs import util as search_util
 from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
+
 class UserSearchConfig(BaseSearchConfig):
     ''' Executes searches related to the users. '''
 
@@ -20,12 +21,18 @@ class UserSearchConfig(BaseSearchConfig):
     def named_filters(self):
         return {
             'name': search_util.create_str_filter(db.User.name),
-            'creation-date': search_util.create_date_filter(db.User.creation_time),
-            'creation-time': search_util.create_date_filter(db.User.creation_time),
-            'last-login-date': search_util.create_date_filter(db.User.last_login_time),
-            'last-login-time': search_util.create_date_filter(db.User.last_login_time),
-            'login-date': search_util.create_date_filter(db.User.last_login_time),
-            'login-time': search_util.create_date_filter(db.User.last_login_time),
+            'creation-date':
+                search_util.create_date_filter(db.User.creation_time),
+            'creation-time':
+                search_util.create_date_filter(db.User.creation_time),
+            'last-login-date':
+                search_util.create_date_filter(db.User.last_login_time),
+            'last-login-time':
+                search_util.create_date_filter(db.User.last_login_time),
+            'login-date':
+                search_util.create_date_filter(db.User.last_login_time),
+            'login-time':
+                search_util.create_date_filter(db.User.last_login_time),
         }
 
     @property

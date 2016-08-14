@@ -4,16 +4,38 @@ from sqlalchemy import func
 from szurubooru import config, db, errors
 from szurubooru.func import auth, util, files, images
 
-class UserNotFoundError(errors.NotFoundError): pass
-class UserAlreadyExistsError(errors.ValidationError): pass
-class InvalidUserNameError(errors.ValidationError): pass
-class InvalidEmailError(errors.ValidationError): pass
-class InvalidPasswordError(errors.ValidationError): pass
-class InvalidRankError(errors.ValidationError): pass
-class InvalidAvatarError(errors.ValidationError): pass
+
+class UserNotFoundError(errors.NotFoundError):
+    pass
+
+
+class UserAlreadyExistsError(errors.ValidationError):
+    pass
+
+
+class InvalidUserNameError(errors.ValidationError):
+    pass
+
+
+class InvalidEmailError(errors.ValidationError):
+    pass
+
+
+class InvalidPasswordError(errors.ValidationError):
+    pass
+
+
+class InvalidRankError(errors.ValidationError):
+    pass
+
+
+class InvalidAvatarError(errors.ValidationError):
+    pass
+
 
 def get_avatar_path(user_name):
     return 'avatars/' + user_name.lower() + '.png'
+
 
 def get_avatar_url(user):
     assert user
@@ -27,6 +49,7 @@ def get_avatar_url(user):
         return '%s/avatars/%s.png' % (
             config.config['data_url'].rstrip('/'), user.name.lower())
 
+
 def get_email(user, auth_user, force_show_email):
     assert user
     assert auth_user
@@ -36,6 +59,7 @@ def get_email(user, auth_user, force_show_email):
         return False
     return user.email
 
+
 def get_liked_post_count(user, auth_user):
     assert user
     assert auth_user
@@ -43,12 +67,14 @@ def get_liked_post_count(user, auth_user):
         return False
     return user.liked_post_count
 
+
 def get_disliked_post_count(user, auth_user):
     assert user
     assert auth_user
     if auth_user.user_id != user.user_id:
         return False
     return user.disliked_post_count
+
 
 def serialize_user(user, auth_user, options=None, force_show_email=False):
     return util.serialize_entity(
@@ -73,14 +99,17 @@ def serialize_user(user, auth_user, options=None, force_show_email=False):
         },
         options)
 
+
 def serialize_micro_user(user, auth_user):
     return serialize_user(
         user,
         auth_user=auth_user,
         options=['name', 'avatarUrl'])
 
+
 def get_user_count():
     return db.session.query(db.User).count()
+
 
 def try_get_user_by_name(name):
     return db.session \
@@ -88,25 +117,29 @@ def try_get_user_by_name(name):
         .filter(func.lower(db.User.name) == func.lower(name)) \
         .one_or_none()
 
+
 def get_user_by_name(name):
     user = try_get_user_by_name(name)
     if not user:
         raise UserNotFoundError('User %r not found.' % name)
     return user
 
+
 def try_get_user_by_name_or_email(name_or_email):
-    return db.session \
-        .query(db.User) \
+    return (db.session
+        .query(db.User)
         .filter(
-            (func.lower(db.User.name) == func.lower(name_or_email))
-            | (func.lower(db.User.email) == func.lower(name_or_email))) \
-        .one_or_none()
+            (func.lower(db.User.name) == func.lower(name_or_email)) |
+            (func.lower(db.User.email) == func.lower(name_or_email)))
+        .one_or_none())
+
 
 def get_user_by_name_or_email(name_or_email):
     user = try_get_user_by_name_or_email(name_or_email)
     if not user:
         raise UserNotFoundError('User %r not found.' % name_or_email)
     return user
+
 
 def create_user(name, password, email):
     user = db.User()
@@ -120,6 +153,7 @@ def create_user(name, password, email):
     user.creation_time = datetime.datetime.utcnow()
     user.avatar_style = db.User.AVATAR_GRAVATAR
     return user
+
 
 def update_user_name(user, name):
     assert user
@@ -139,6 +173,7 @@ def update_user_name(user, name):
         files.move(get_avatar_path(user.name), get_avatar_path(name))
     user.name = name
 
+
 def update_user_password(user, password):
     assert user
     if not password:
@@ -149,6 +184,7 @@ def update_user_password(user, password):
             'Password must satisfy regex %r.' % password_regex)
     user.password_salt = auth.create_password()
     user.password_hash = auth.get_password_hash(user.password_salt, password)
+
 
 def update_user_email(user, email):
     assert user
@@ -161,6 +197,7 @@ def update_user_email(user, email):
     if not util.is_valid_email(email):
         raise InvalidEmailError('E-mail is invalid.')
     user.email = email
+
 
 def update_user_rank(user, rank, auth_user):
     assert user
@@ -177,6 +214,7 @@ def update_user_rank(user, rank, auth_user):
             < all_ranks.index(rank) and get_user_count() > 0:
         raise errors.AuthError('Trying to set higher rank than your own.')
     user.rank = rank
+
 
 def update_user_avatar(user, avatar_style, avatar_content=None):
     assert user
@@ -199,9 +237,11 @@ def update_user_avatar(user, avatar_style, avatar_content=None):
             'Avatar style %r is invalid. Valid avatar styles: %r.' % (
                 avatar_style, ['gravatar', 'manual']))
 
+
 def bump_user_login_time(user):
     assert user
     user.last_login_time = datetime.datetime.utcnow()
+
 
 def reset_user_password(user):
     assert user

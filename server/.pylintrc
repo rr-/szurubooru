@@ -8,11 +8,26 @@ good-names=ex,_,logger
 dummy-variables-rgx=_|dummy
 
 [format]
-max-line-length=90
+max-line-length=79
 
 [messages control]
-disable=missing-docstring,no-self-use,too-few-public-methods,multiple-statements
 reports=no
+disable=
+    # we're not java
+    missing-docstring,
+
+    # covered better by pycodestyle
+    bad-continuation,
+
+    # we're adults
+    redefined-builtin,
+    duplicate-code,
+    too-many-return-statements,
+    too-many-arguments,
+
+    # plain stupid
+    no-self-use,
+    too-few-public-methods
 
 [typecheck]
 generated-members=add|add_all

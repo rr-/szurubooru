@@ -1,21 +1,23 @@
+from unittest.mock import patch
 import pytest
-import unittest.mock
 from szurubooru import api, db, errors
 from szurubooru.func import users
+
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector({'privileges': {'users:create': 'regular'}})
 
+
 def test_creating_user(user_factory, context_factory, fake_datetime):
     user = user_factory()
-    with unittest.mock.patch('szurubooru.func.users.create_user'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_name'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_password'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_email'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_rank'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_avatar'), \
-            unittest.mock.patch('szurubooru.func.users.serialize_user'), \
+    with patch('szurubooru.func.users.create_user'), \
+            patch('szurubooru.func.users.update_user_name'), \
+            patch('szurubooru.func.users.update_user_password'), \
+            patch('szurubooru.func.users.update_user_email'), \
+            patch('szurubooru.func.users.update_user_rank'), \
+            patch('szurubooru.func.users.update_user_avatar'), \
+            patch('szurubooru.func.users.serialize_user'), \
             fake_datetime('1969-02-12'):
         users.serialize_user.return_value = 'serialized user'
         users.create_user.return_value = user
@@ -31,12 +33,14 @@ def test_creating_user(user_factory, context_factory, fake_datetime):
                 files={'avatar': b'...'},
                 user=user_factory(rank=db.User.RANK_REGULAR)))
         assert result == 'serialized user'
-        users.create_user.assert_called_once_with('chewie1', 'oks', 'asd@asd.asd')
+        users.create_user.assert_called_once_with(
+            'chewie1', 'oks', 'asd@asd.asd')
         assert not users.update_user_name.called
         assert not users.update_user_password.called
         assert not users.update_user_email.called
         users.update_user_rank.called_once_with(user, 'moderator')
         users.update_user_avatar.called_once_with(user, 'manual', b'...')
+
 
 @pytest.mark.parametrize('field', ['name', 'password'])
 def test_trying_to_omit_mandatory_field(user_factory, context_factory, field):
@@ -48,10 +52,12 @@ def test_trying_to_omit_mandatory_field(user_factory, context_factory, field):
     user = user_factory()
     auth_user = user_factory(rank=db.User.RANK_REGULAR)
     del params[field]
-    with unittest.mock.patch('szurubooru.func.users.create_user'), \
+    with patch('szurubooru.func.users.create_user'), \
             pytest.raises(errors.MissingRequiredParameterError):
         users.create_user.return_value = user
-        api.user_api.create_user(context_factory(params=params, user=auth_user))
+        api.user_api.create_user(
+            context_factory(params=params, user=auth_user))
+
 
 @pytest.mark.parametrize('field', ['rank', 'email', 'avatarStyle'])
 def test_omitting_optional_field(user_factory, context_factory, field):
@@ -65,14 +71,16 @@ def test_omitting_optional_field(user_factory, context_factory, field):
     del params[field]
     user = user_factory()
     auth_user = user_factory(rank=db.User.RANK_MODERATOR)
-    with unittest.mock.patch('szurubooru.func.users.create_user'), \
-            unittest.mock.patch('szurubooru.func.users.update_user_avatar'), \
-            unittest.mock.patch('szurubooru.func.users.serialize_user'):
+    with patch('szurubooru.func.users.create_user'), \
+            patch('szurubooru.func.users.update_user_avatar'), \
+            patch('szurubooru.func.users.serialize_user'):
         users.create_user.return_value = user
         api.user_api.create_user(
             context_factory(params=params, user=auth_user))
 
-def test_trying_to_create_user_without_privileges(context_factory, user_factory):
+
+def test_trying_to_create_user_without_privileges(
+        context_factory, user_factory):
     with pytest.raises(errors.AuthError):
         api.user_api.create_user(context_factory(
             params='whatever',

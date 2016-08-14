@@ -13,6 +13,7 @@ down_revision = '84bd402f15f0'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         'comment',
@@ -35,6 +36,7 @@ def upgrade():
         sa.ForeignKeyConstraint(['comment_id'], ['comment.id']),
         sa.ForeignKeyConstraint(['user_id'], ['user.id']),
         sa.PrimaryKeyConstraint('comment_id', 'user_id'))
+
 
 def downgrade():
     op.drop_table('comment_score')

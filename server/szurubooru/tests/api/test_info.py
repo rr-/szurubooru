@@ -1,6 +1,7 @@
 from datetime import datetime
 from szurubooru import api, db
 
+
 def test_info_api(
         tmpdir, config_injector, context_factory, post_factory, fake_datetime):
     directory = tmpdir.mkdir('data')
@@ -45,7 +46,7 @@ def test_info_api(
     with fake_datetime('2016-01-01 13:59'):
         assert api.info_api.get_info(context_factory()) == {
             'postCount': 2,
-            'diskUsage': 3, # still 3 - it's cached
+            'diskUsage': 3,  # still 3 - it's cached
             'featuredPost': None,
             'featuringTime': None,
             'featuringUser': None,
@@ -55,7 +56,7 @@ def test_info_api(
     with fake_datetime('2016-01-01 14:01'):
         assert api.info_api.get_info(context_factory()) == {
             'postCount': 2,
-            'diskUsage': 6, # cache expired
+            'diskUsage': 6,  # cache expired
             'featuredPost': None,
             'featuringTime': None,
             'featuringUser': None,

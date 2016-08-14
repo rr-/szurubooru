@@ -2,11 +2,13 @@ from szurubooru import config, errors
 from szurubooru.func import auth, mailer, users, util
 from szurubooru.rest import routes
 
+
 MAIL_SUBJECT = 'Password reset for {name}'
 MAIL_BODY = \
     'You (or someone else) requested to reset your password on {name}.\n' \
     'If you wish to proceed, click this link: {url}\n' \
     'Otherwise, please ignore this email.'
+
 
 @routes.get('/password-reset/(?P<user_name>[^/]+)/?')
 def start_password_reset(_ctx, params):
@@ -26,6 +28,7 @@ def start_password_reset(_ctx, params):
         MAIL_SUBJECT.format(name=config.config['name']),
         MAIL_BODY.format(name=config.config['name'], url=url))
     return {}
+
 
 @routes.post('/password-reset/(?P<user_name>[^/]+)/?')
 def finish_password_reset(ctx, params):

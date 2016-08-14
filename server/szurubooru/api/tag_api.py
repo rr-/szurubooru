@@ -3,11 +3,14 @@ from szurubooru import db, search
 from szurubooru.func import auth, tags, util, snapshots
 from szurubooru.rest import routes
 
+
 _search_executor = search.Executor(search.configs.TagSearchConfig())
+
 
 def _serialize(ctx, tag):
     return tags.serialize_tag(
         tag, options=util.get_serialization_options(ctx))
+
 
 def _create_if_needed(tag_names, user):
     if not tag_names:
@@ -19,11 +22,13 @@ def _create_if_needed(tag_names, user):
     for tag in new_tags:
         snapshots.save_entity_creation(tag, user)
 
+
 @routes.get('/tags/?')
 def get_tags(ctx, _params=None):
     auth.verify_privilege(ctx.user, 'tags:list')
     return _search_executor.execute_and_serialize(
         ctx, lambda tag: _serialize(ctx, tag))
+
 
 @routes.post('/tags/?')
 def create_tag(ctx, _params=None):
@@ -50,11 +55,13 @@ def create_tag(ctx, _params=None):
     tags.export_to_json()
     return _serialize(ctx, tag)
 
+
 @routes.get('/tag/(?P<tag_name>[^/]+)/?')
 def get_tag(ctx, params):
     auth.verify_privilege(ctx.user, 'tags:view')
     tag = tags.get_tag_by_name(params['tag_name'])
     return _serialize(ctx, tag)
+
 
 @routes.put('/tag/(?P<tag_name>[^/]+)/?')
 def update_tag(ctx, params):
@@ -89,6 +96,7 @@ def update_tag(ctx, params):
     tags.export_to_json()
     return _serialize(ctx, tag)
 
+
 @routes.delete('/tag/(?P<tag_name>[^/]+)/?')
 def delete_tag(ctx, params):
     tag = tags.get_tag_by_name(params['tag_name'])
@@ -99,6 +107,7 @@ def delete_tag(ctx, params):
     ctx.session.commit()
     tags.export_to_json()
     return {}
+
 
 @routes.post('/tag-merge/?')
 def merge_tags(ctx, _params=None):
@@ -115,6 +124,7 @@ def merge_tags(ctx, _params=None):
     ctx.session.commit()
     tags.export_to_json()
     return _serialize(ctx, target_tag)
+
 
 @routes.get('/tag-siblings/(?P<tag_name>[^/]+)/?')
 def get_tag_siblings(ctx, params):

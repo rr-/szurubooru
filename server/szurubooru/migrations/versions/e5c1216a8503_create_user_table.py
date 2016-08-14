@@ -13,6 +13,7 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         'user',
@@ -27,6 +28,7 @@ def upgrade():
         sa.Column('avatar_style', sa.Unicode(length=32), nullable=False),
         sa.PrimaryKeyConstraint('id'))
     op.create_unique_constraint('uq_user_name', 'user', ['name'])
+
 
 def downgrade():
     op.drop_table('user')

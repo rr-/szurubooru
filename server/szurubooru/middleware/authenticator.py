@@ -4,6 +4,7 @@ from szurubooru.func import auth, users
 from szurubooru.rest import middleware
 from szurubooru.rest.errors import HttpBadRequest
 
+
 def _authenticate(username, password):
     ''' Try to authenticate user. Throw AuthError for invalid users. '''
     user = users.get_user_by_name(username)
@@ -11,29 +12,32 @@ def _authenticate(username, password):
         raise errors.AuthError('Invalid password.')
     return user
 
+
 def _create_anonymous_user():
     user = db.User()
     user.name = None
     user.rank = 'anonymous'
     return user
 
+
 def _get_user(ctx):
     if not ctx.has_header('Authorization'):
         return _create_anonymous_user()
 
     try:
-        auth_type, user_and_password = ctx.get_header('Authorization').split(' ', 1)
+        auth_type, credentials = ctx.get_header('Authorization').split(' ', 1)
         if auth_type.lower() != 'basic':
             raise HttpBadRequest(
                 'Only basic HTTP authentication is supported.')
         username, password = base64.decodebytes(
-            user_and_password.encode('ascii')).decode('utf8').split(':')
+            credentials.encode('ascii')).decode('utf8').split(':')
         return _authenticate(username, password)
     except ValueError as err:
         msg = 'Basic authentication header value are not properly formed. ' \
             + 'Supplied header {0}. Got error: {1}'
         raise HttpBadRequest(
             msg.format(ctx.get_header('Authorization'), str(err)))
+
 
 @middleware.pre_hook
 def process_request(ctx):

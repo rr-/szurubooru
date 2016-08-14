@@ -13,6 +13,7 @@ down_revision = '336a76ec1338'
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         'snapshot',
@@ -25,6 +26,7 @@ def upgrade():
         sa.Column('data', sa.PickleType(), nullable=True),
         sa.ForeignKeyConstraint(['user_id'], ['user.id']),
         sa.PrimaryKeyConstraint('id'))
+
 
 def downgrade():
     op.drop_table('snapshot')

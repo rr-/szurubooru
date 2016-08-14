@@ -15,11 +15,16 @@ depends_on = None
 
 tables = ['tag_category', 'tag', 'user', 'post', 'comment']
 
+
 def upgrade():
     for table in tables:
         op.add_column(table, sa.Column('version', sa.Integer(), nullable=True))
-        op.execute(sa.table(table, sa.column('version')).update().values(version=1))
+        op.execute(
+            sa.table(table, sa.column('version'))
+                .update()
+                .values(version=1))
         op.alter_column(table, 'version', nullable=False)
+
 
 def downgrade():
     for table in tables:

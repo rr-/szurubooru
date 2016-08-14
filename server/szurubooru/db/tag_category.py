@@ -4,6 +4,7 @@ from sqlalchemy.sql.expression import func, select
 from szurubooru.db.base import Base
 from szurubooru.db.tag import Tag
 
+
 class TagCategory(Base):
     __tablename__ = 'tag_category'
 
@@ -17,6 +18,6 @@ class TagCategory(Base):
         self.name = name
 
     tag_count = column_property(
-        select([func.count('Tag.tag_id')]) \
-        .where(Tag.category_id == tag_category_id) \
+        select([func.count('Tag.tag_id')])
+        .where(Tag.category_id == tag_category_id)
         .correlate_except(table('Tag')))

@@ -1,8 +1,10 @@
 from szurubooru import errors
 from szurubooru.func import net
 
+
 def _lower_first(source):
     return source[0].lower() + source[1:]
+
 
 def _param_wrapper(func):
     def wrapper(self, name, required=False, default=None, **kwargs):
@@ -22,8 +24,8 @@ def _param_wrapper(func):
             'Required parameter %r is missing.' % name)
     return wrapper
 
+
 class Context():
-    # pylint: disable=too-many-arguments
     def __init__(self, method, url, headers=None, params=None, files=None):
         self.method = method
         self.url = url
@@ -74,7 +76,6 @@ class Context():
                 raise errors.InvalidParameterError('Expected simple string.')
         return value
 
-    # pylint: disable=redefined-builtin
     @_param_wrapper
     def get_param_as_int(self, value, min=None, max=None):
         try:
@@ -97,4 +98,5 @@ class Context():
             return True
         if value in ['0', 'n', 'no', 'nope', 'f', 'false']:
             return False
-        raise errors.InvalidParameterError('The value must be a boolean value.')
+        raise errors.InvalidParameterError(
+            'The value must be a boolean value.')

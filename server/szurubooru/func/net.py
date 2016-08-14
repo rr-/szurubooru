@@ -1,5 +1,6 @@
 import urllib.request
 
+
 def download(url):
     assert url
     request = urllib.request.Request(url)

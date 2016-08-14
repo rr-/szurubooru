@@ -2,8 +2,14 @@ import datetime
 from szurubooru import db, errors
 from szurubooru.func import favorites
 
-class InvalidScoreTargetError(errors.ValidationError): pass
-class InvalidScoreValueError(errors.ValidationError): pass
+
+class InvalidScoreTargetError(errors.ValidationError):
+    pass
+
+
+class InvalidScoreValueError(errors.ValidationError):
+    pass
+
 
 def _get_table_info(entity):
     assert entity
@@ -14,9 +20,11 @@ def _get_table_info(entity):
         return db.CommentScore, lambda table: table.comment_id
     raise InvalidScoreTargetError()
 
+
 def _get_score_entity(entity, user):
     assert user
     return db.util.get_aux_entity(db.session, _get_table_info, entity, user)
+
 
 def delete_score(entity, user):
     assert entity
@@ -24,6 +32,7 @@ def delete_score(entity, user):
     score_entity = _get_score_entity(entity, user)
     if score_entity:
         db.session.delete(score_entity)
+
 
 def get_score(entity, user):
     assert entity
@@ -35,6 +44,7 @@ def get_score(entity, user):
         .filter(table.user_id == user.user_id) \
         .one_or_none()
     return row[0] if row else 0
+
 
 def set_score(entity, user, score):
     assert entity

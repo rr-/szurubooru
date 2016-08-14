@@ -3,17 +3,33 @@ import sqlalchemy
 from szurubooru import config, db, errors
 from szurubooru.func import util, snapshots, cache
 
-class TagCategoryNotFoundError(errors.NotFoundError): pass
-class TagCategoryAlreadyExistsError(errors.ValidationError): pass
-class TagCategoryIsInUseError(errors.ValidationError): pass
-class InvalidTagCategoryNameError(errors.ValidationError): pass
-class InvalidTagCategoryColorError(errors.ValidationError): pass
+
+class TagCategoryNotFoundError(errors.NotFoundError):
+    pass
+
+
+class TagCategoryAlreadyExistsError(errors.ValidationError):
+    pass
+
+
+class TagCategoryIsInUseError(errors.ValidationError):
+    pass
+
+
+class InvalidTagCategoryNameError(errors.ValidationError):
+    pass
+
+
+class InvalidTagCategoryColorError(errors.ValidationError):
+    pass
+
 
 def _verify_name_validity(name):
     name_regex = config.config['tag_category_name_regex']
     if not re.match(name_regex, name):
         raise InvalidTagCategoryNameError(
             'Name must satisfy regex %r.' % name_regex)
+
 
 def serialize_category(category, options=None):
     return util.serialize_entity(
@@ -28,6 +44,7 @@ def serialize_category(category, options=None):
         },
         options)
 
+
 def create_category(name, color):
     category = db.TagCategory()
     update_category_name(category, name)
@@ -36,13 +53,15 @@ def create_category(name, color):
         category.default = True
     return category
 
+
 def update_category_name(category, name):
     assert category
     if not name:
         raise InvalidTagCategoryNameError('Name cannot be empty.')
     expr = sqlalchemy.func.lower(db.TagCategory.name) == name.lower()
     if category.tag_category_id:
-        expr = expr & (db.TagCategory.tag_category_id != category.tag_category_id)
+        expr = expr & (
+            db.TagCategory.tag_category_id != category.tag_category_id)
     already_exists = db.session.query(db.TagCategory).filter(expr).count() > 0
     if already_exists:
         raise TagCategoryAlreadyExistsError(
@@ -51,6 +70,7 @@ def update_category_name(category, name):
         raise InvalidTagCategoryNameError('Name is too long.')
     _verify_name_validity(name)
     category.name = name
+
 
 def update_category_color(category, color):
     assert category
@@ -62,11 +82,13 @@ def update_category_color(category, color):
         raise InvalidTagCategoryColorError('Color is too long.')
     category.color = color
 
+
 def try_get_category_by_name(name):
     return db.session \
         .query(db.TagCategory) \
         .filter(sqlalchemy.func.lower(db.TagCategory.name) == name.lower()) \
         .one_or_none()
+
 
 def get_category_by_name(name):
     category = try_get_category_by_name(name)
@@ -74,11 +96,14 @@ def get_category_by_name(name):
         raise TagCategoryNotFoundError('Tag category %r not found.' % name)
     return category
 
+
 def get_all_category_names():
     return [row[0] for row in db.session.query(db.TagCategory.name).all()]
 
+
 def get_all_categories():
     return db.session.query(db.TagCategory).all()
+
 
 def try_get_default_category():
     key = 'default-tag-category'
@@ -98,11 +123,13 @@ def try_get_default_category():
     cache.put(key, category)
     return category
 
+
 def get_default_category():
     category = try_get_default_category()
     if not category:
         raise TagCategoryNotFoundError('No tag category created yet.')
     return category
+
 
 def set_default_category(category):
     assert category
@@ -110,6 +137,7 @@ def set_default_category(category):
     if old_category:
         old_category.default = False
     category.default = True
+
 
 def delete_category(category):
     assert category
