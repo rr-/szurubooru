@@ -115,3 +115,8 @@ class Tag(Base):
             .where(TagImplication.parent_id == tag_id)
             .as_scalar(),
         deferred=True)
+
+    __mapper_args__ = {
+        'version_id_col': version,
+        'version_id_generator': False,
+    }

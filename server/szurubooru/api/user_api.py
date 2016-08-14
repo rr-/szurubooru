@@ -1,6 +1,6 @@
 from szurubooru import search
-from szurubooru.func import auth, users, util
 from szurubooru.rest import routes
+from szurubooru.func import auth, users, util, versions
 
 
 _search_executor = search.Executor(search.configs.UserSearchConfig())
@@ -52,7 +52,8 @@ def get_user(ctx, params):
 @routes.put('/user/(?P<user_name>[^/]+)/?')
 def update_user(ctx, params):
     user = users.get_user_by_name(params['user_name'])
-    util.verify_version(user, ctx)
+    versions.verify_version(user, ctx)
+    versions.bump_version(user)
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
     if ctx.has_param('name'):
         auth.verify_privilege(ctx.user, 'users:edit:%s:name' % infix)
@@ -74,7 +75,6 @@ def update_user(ctx, params):
             user,
             ctx.get_param_as_string('avatarStyle'),
             ctx.get_file('avatar'))
-    util.bump_version(user)
     ctx.session.commit()
     return _serialize(ctx, user)
 
@@ -82,7 +82,7 @@ def update_user(ctx, params):
 @routes.delete('/user/(?P<user_name>[^/]+)/?')
 def delete_user(ctx, params):
     user = users.get_user_by_name(params['user_name'])
-    util.verify_version(user, ctx)
+    versions.verify_version(user, ctx)
     infix = 'self' if ctx.user.user_id == user.user_id else 'any'
     auth.verify_privilege(ctx.user, 'users:delete:%s' % infix)
     ctx.session.delete(user)

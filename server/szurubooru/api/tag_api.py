@@ -1,7 +1,7 @@
 import datetime
 from szurubooru import db, search
-from szurubooru.func import auth, tags, util, snapshots
 from szurubooru.rest import routes
+from szurubooru.func import auth, tags, snapshots, util, versions
 
 
 _search_executor = search.Executor(search.configs.TagSearchConfig())
@@ -66,7 +66,8 @@ def get_tag(ctx, params):
 @routes.put('/tag/(?P<tag_name>[^/]+)/?')
 def update_tag(ctx, params):
     tag = tags.get_tag_by_name(params['tag_name'])
-    util.verify_version(tag, ctx)
+    versions.verify_version(tag, ctx)
+    versions.bump_version(tag)
     if ctx.has_param('names'):
         auth.verify_privilege(ctx.user, 'tags:edit:names')
         tags.update_tag_names(tag, ctx.get_param_as_list('names'))
@@ -88,7 +89,6 @@ def update_tag(ctx, params):
         implications = ctx.get_param_as_list('implications')
         _create_if_needed(implications, ctx.user)
         tags.update_tag_implications(tag, implications)
-    util.bump_version(tag)
     tag.last_edit_time = datetime.datetime.utcnow()
     ctx.session.flush()
     snapshots.save_entity_modification(tag, ctx.user)
@@ -100,7 +100,7 @@ def update_tag(ctx, params):
 @routes.delete('/tag/(?P<tag_name>[^/]+)/?')
 def delete_tag(ctx, params):
     tag = tags.get_tag_by_name(params['tag_name'])
-    util.verify_version(tag, ctx)
+    versions.verify_version(tag, ctx)
     auth.verify_privilege(ctx.user, 'tags:delete')
     snapshots.save_entity_deletion(tag, ctx.user)
     tags.delete(tag)
@@ -115,12 +115,12 @@ def merge_tags(ctx, _params=None):
     target_tag_name = ctx.get_param_as_string('mergeTo', required=True) or ''
     source_tag = tags.get_tag_by_name(source_tag_name)
     target_tag = tags.get_tag_by_name(target_tag_name)
-    util.verify_version(source_tag, ctx, 'removeVersion')
-    util.verify_version(target_tag, ctx, 'mergeToVersion')
+    versions.verify_version(source_tag, ctx, 'removeVersion')
+    versions.verify_version(target_tag, ctx, 'mergeToVersion')
+    versions.bump_version(target_tag)
     auth.verify_privilege(ctx.user, 'tags:merge')
     tags.merge_tags(source_tag, target_tag)
     snapshots.save_entity_deletion(source_tag, ctx.user)
-    util.bump_version(target_tag)
     ctx.session.commit()
     tags.export_to_json()
     return _serialize(ctx, target_tag)

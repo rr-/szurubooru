@@ -1,5 +1,6 @@
 from szurubooru.rest import routes
-from szurubooru.func import auth, tags, tag_categories, util, snapshots
+from szurubooru.func import (
+    auth, tags, tag_categories, snapshots, util, versions)
 
 
 def _serialize(ctx, category):
@@ -40,7 +41,8 @@ def get_tag_category(ctx, params):
 @routes.put('/tag-category/(?P<category_name>[^/]+)/?')
 def update_tag_category(ctx, params):
     category = tag_categories.get_category_by_name(params['category_name'])
-    util.verify_version(category, ctx)
+    versions.verify_version(category, ctx)
+    versions.bump_version(category)
     if ctx.has_param('name'):
         auth.verify_privilege(ctx.user, 'tag_categories:edit:name')
         tag_categories.update_category_name(
@@ -49,7 +51,6 @@ def update_tag_category(ctx, params):
         auth.verify_privilege(ctx.user, 'tag_categories:edit:color')
         tag_categories.update_category_color(
             category, ctx.get_param_as_string('color'))
-    util.bump_version(category)
     ctx.session.flush()
     snapshots.save_entity_modification(category, ctx.user)
     ctx.session.commit()
@@ -60,7 +61,7 @@ def update_tag_category(ctx, params):
 @routes.delete('/tag-category/(?P<category_name>[^/]+)/?')
 def delete_tag_category(ctx, params):
     category = tag_categories.get_category_by_name(params['category_name'])
-    util.verify_version(category, ctx)
+    versions.verify_version(category, ctx)
     auth.verify_privilege(ctx.user, 'tag_categories:delete')
     tag_categories.delete_category(category)
     snapshots.save_entity_deletion(category, ctx.user)

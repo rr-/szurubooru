@@ -1,8 +1,8 @@
 import datetime
 import os
 from szurubooru import config
-from szurubooru.func import posts, users, util
 from szurubooru.rest import routes
+from szurubooru.func import posts, users, util
 
 
 _cache_time = None

@@ -48,3 +48,8 @@ class Comment(Base):
             .query(func.sum(CommentScore.score)) \
             .filter(CommentScore.comment_id == self.comment_id) \
             .one()[0] or 0
+
+    __mapper_args__ = {
+        'version_id_col': version,
+        'version_id_generator': False,
+    }

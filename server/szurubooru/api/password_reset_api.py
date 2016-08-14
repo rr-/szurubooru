@@ -1,6 +1,6 @@
 from szurubooru import config, errors
-from szurubooru.func import auth, mailer, users, util
 from szurubooru.rest import routes
+from szurubooru.func import auth, mailer, users, versions
 
 
 MAIL_SUBJECT = 'Password reset for {name}'
@@ -40,6 +40,6 @@ def finish_password_reset(ctx, params):
     if token != good_token:
         raise errors.ValidationError('Invalid password reset token.')
     new_password = users.reset_user_password(user)
-    util.bump_version(user)
+    versions.bump_version(user)
     ctx.session.commit()
     return {'password': new_password}

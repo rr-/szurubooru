@@ -237,3 +237,8 @@ class Post(Base):
             (PostRelation.parent_id == post_id)
             | (PostRelation.child_id == post_id))
         .correlate_except(PostRelation))
+
+    __mapper_args__ = {
+        'version_id_col': version,
+        'version_id_generator': False,
+    }

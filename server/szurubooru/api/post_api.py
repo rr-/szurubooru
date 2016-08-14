@@ -2,7 +2,7 @@ import datetime
 from szurubooru import search
 from szurubooru.rest import routes
 from szurubooru.func import (
-    auth, tags, posts, snapshots, favorites, scores, util)
+    auth, tags, posts, snapshots, favorites, scores, util, versions)
 
 
 _search_executor = search.Executor(search.configs.PostSearchConfig())
@@ -68,7 +68,8 @@ def get_post(ctx, params):
 @routes.put('/post/(?P<post_id>[^/]+)/?')
 def update_post(ctx, params):
     post = posts.get_post_by_id(params['post_id'])
-    util.verify_version(post, ctx)
+    versions.verify_version(post, ctx)
+    versions.bump_version(post)
     if ctx.has_file('content'):
         auth.verify_privilege(ctx.user, 'posts:edit:content')
         posts.update_post_content(post, ctx.get_file('content'))
@@ -97,7 +98,6 @@ def update_post(ctx, params):
     if ctx.has_file('thumbnail'):
         auth.verify_privilege(ctx.user, 'posts:edit:thumbnail')
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
-    util.bump_version(post)
     post.last_edit_time = datetime.datetime.utcnow()
     ctx.session.flush()
     snapshots.save_entity_modification(post, ctx.user)
@@ -110,7 +110,7 @@ def update_post(ctx, params):
 def delete_post(ctx, params):
     auth.verify_privilege(ctx.user, 'posts:delete')
     post = posts.get_post_by_id(params['post_id'])
-    util.verify_version(post, ctx)
+    versions.verify_version(post, ctx)
     snapshots.save_entity_deletion(post, ctx.user)
     posts.delete(post)
     ctx.session.commit()

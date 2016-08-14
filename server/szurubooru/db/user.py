@@ -75,3 +75,8 @@ class User(Base):
             .filter(PostScore.user_id == self.user_id)
             .filter(PostScore.score == -1)
             .one()[0] or 0)
+
+    __mapper_args__ = {
+        'version_id_col': version,
+        'version_id_generator': False,
+    }

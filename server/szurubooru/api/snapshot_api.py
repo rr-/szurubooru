@@ -1,6 +1,6 @@
 from szurubooru import search
-from szurubooru.func import auth, snapshots
 from szurubooru.rest import routes
+from szurubooru.func import auth, snapshots
 
 
 _search_executor = search.Executor(search.configs.SnapshotSearchConfig())

@@ -21,3 +21,8 @@ class TagCategory(Base):
         select([func.count('Tag.tag_id')])
         .where(Tag.category_id == tag_category_id)
         .correlate_except(table('Tag')))
+
+    __mapper_args__ = {
+        'version_id_col': version,
+        'version_id_generator': False,
+    }

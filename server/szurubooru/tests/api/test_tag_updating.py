@@ -136,6 +136,7 @@ def test_trying_to_create_tags_without_privileges(
                     params={'suggestions': ['tag1', 'tag2'], 'version': 1},
                     user=user_factory(rank=db.User.RANK_REGULAR)),
                 {'tag_name': 'tag'})
+        db.session.rollback()
         with pytest.raises(errors.AuthError):
             api.tag_api.update_tag(
                 context_factory(

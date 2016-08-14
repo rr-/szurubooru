@@ -3,6 +3,7 @@
 import os
 import logging
 import coloredlogs
+import sqlalchemy.orm.exc
 from szurubooru import config, errors, rest
 # pylint: disable=unused-import
 from szurubooru import api, middleware
@@ -36,6 +37,11 @@ def _on_not_found_error(ex):
 def _on_processing_error(ex):
     raise rest.errors.HttpBadRequest(
         title='Processing error', description=str(ex))
+
+
+def _on_stale_data_error(_ex):
+    raise rest.errors.HttpConflict(
+        'Someone else modified this in the meantime. Please try again.')
 
 
 def validate_config():
@@ -83,5 +89,6 @@ def create_app():
     rest.errors.handle(errors.IntegrityError, _on_integrity_error)
     rest.errors.handle(errors.NotFoundError, _on_not_found_error)
     rest.errors.handle(errors.ProcessingError, _on_processing_error)
+    rest.errors.handle(sqlalchemy.orm.exc.StaleDataError, _on_stale_data_error)
 
     return rest.application

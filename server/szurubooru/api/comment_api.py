@@ -1,7 +1,7 @@
 import datetime
 from szurubooru import search
-from szurubooru.func import auth, comments, posts, scores, util
 from szurubooru.rest import routes
+from szurubooru.func import auth, comments, posts, scores, util, versions
 
 
 _search_executor = search.Executor(search.configs.CommentSearchConfig())
@@ -43,12 +43,12 @@ def get_comment(ctx, params):
 @routes.put('/comment/(?P<comment_id>[^/]+)/?')
 def update_comment(ctx, params):
     comment = comments.get_comment_by_id(params['comment_id'])
-    util.verify_version(comment, ctx)
+    versions.verify_version(comment, ctx)
+    versions.bump_version(comment)
     infix = 'own' if ctx.user.user_id == comment.user_id else 'any'
     text = ctx.get_param_as_string('text', required=True)
     auth.verify_privilege(ctx.user, 'comments:edit:%s' % infix)
     comments.update_comment_text(comment, text)
-    util.bump_version(comment)
     comment.last_edit_time = datetime.datetime.utcnow()
     ctx.session.commit()
     return _serialize(ctx, comment)
@@ -57,7 +57,7 @@ def update_comment(ctx, params):
 @routes.delete('/comment/(?P<comment_id>[^/]+)/?')
 def delete_comment(ctx, params):
     comment = comments.get_comment_by_id(params['comment_id'])
-    util.verify_version(comment, ctx)
+    versions.verify_version(comment, ctx)
     infix = 'own' if ctx.user.user_id == comment.user_id else 'any'
     auth.verify_privilege(ctx.user, 'comments:delete:%s' % infix)
     ctx.session.delete(comment)
