@@ -179,17 +179,16 @@ def delete(source_tag):
     db.session.delete(source_tag)
 
 def merge_tags(source_tag, target_tag):
-    pt1 = sqlalchemy.orm.util.aliased(db.PostTag)
+    if source_tag.tag_id == target_tag.tag_id:
+        raise InvalidTagRelationError('Cannot merge tag with itself.')
+    pt1 = db.PostTag
     pt2 = sqlalchemy.orm.util.aliased(db.PostTag)
-    ids_to_be_tagged = sqlalchemy.sql.expression \
-        .select([pt1.tag_id]) \
-        .where(pt1.tag_id == source_tag.tag_id) \
+
+    update_stmt = sqlalchemy.sql.expression.update(pt1) \
+        .where(db.PostTag.tag_id == source_tag.tag_id) \
         .where(~sqlalchemy.exists() \
             .where(pt2.post_id == pt1.post_id) \
-            .where(pt2.tag_id == target_tag.tag_id))
-
-    update_stmt = sqlalchemy.sql.expression.update(db.PostTag) \
-        .where(db.PostTag.tag_id.in_(ids_to_be_tagged)) \
+            .where(pt2.tag_id == target_tag.tag_id)) \
         .values(tag_id=target_tag.tag_id)
     db.session.execute(update_stmt)
     delete(source_tag)
