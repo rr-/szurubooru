@@ -100,6 +100,7 @@ class Tag(Base):
     first_name = column_property(
         select([TagName.name])
             .where(TagName.tag_id == tag_id)
+            .order_by(TagName.tag_name_id)
             .limit(1)
             .as_scalar(),
         deferred=True)
