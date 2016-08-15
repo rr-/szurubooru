@@ -81,7 +81,7 @@ class Executor(object):
         filter_query = filter_query.options(sqlalchemy.orm.lazyload('*'))
         filter_query = self._prepare_db_query(filter_query, search_query, True)
         entities = filter_query \
-            .offset((page - 1) * page_size) \
+            .offset(max(page - 1, 0) * page_size) \
             .limit(page_size) \
             .all()
 
