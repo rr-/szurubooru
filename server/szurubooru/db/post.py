@@ -31,12 +31,14 @@ class PostScore(Base):
         Integer,
         ForeignKey('post.id'),
         primary_key=True,
+        nullable=False,
         index=True)
     user_id = Column(
         'user_id',
         Integer,
         ForeignKey('user.id'),
         primary_key=True,
+        nullable=False,
         index=True)
     time = Column('time', DateTime, nullable=False)
     score = Column('score', Integer, nullable=False)
@@ -55,12 +57,14 @@ class PostFavorite(Base):
         Integer,
         ForeignKey('post.id'),
         primary_key=True,
+        nullable=False,
         index=True)
     user_id = Column(
         'user_id',
         Integer,
         ForeignKey('user.id'),
         primary_key=True,
+        nullable=False,
         index=True)
     time = Column('time', DateTime, nullable=False)
 
@@ -90,12 +94,14 @@ class PostRelation(Base):
         Integer,
         ForeignKey('post.id'),
         primary_key=True,
+        nullable=False,
         index=True)
     child_id = Column(
         'child_id',
         Integer,
         ForeignKey('post.id'),
         primary_key=True,
+        nullable=False,
         index=True)
 
     def __init__(self, parent_id, child_id):
@@ -111,9 +117,15 @@ class PostTag(Base):
         Integer,
         ForeignKey('post.id'),
         primary_key=True,
+        nullable=False,
         index=True)
     tag_id = Column(
-        'tag_id', Integer, ForeignKey('tag.id'), primary_key=True, index=True)
+        'tag_id',
+        Integer,
+        ForeignKey('tag.id'),
+        primary_key=True,
+        nullable=False,
+        index=True)
 
     def __init__(self, post_id, tag_id):
         self.post_id = post_id

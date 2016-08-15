@@ -8,11 +8,16 @@ class CommentScore(Base):
     __tablename__ = 'comment_score'
 
     comment_id = Column(
-        'comment_id', Integer, ForeignKey('comment.id'), primary_key=True)
+        'comment_id',
+        Integer,
+        ForeignKey('comment.id'),
+        nullable=False,
+        primary_key=True)
     user_id = Column(
         'user_id',
         Integer,
         ForeignKey('user.id'),
+        nullable=False,
         primary_key=True,
         index=True)
     time = Column('time', DateTime, nullable=False)
@@ -29,8 +34,9 @@ class Comment(Base):
 
     comment_id = Column('id', Integer, primary_key=True)
     post_id = Column(
-        'post_id', Integer, ForeignKey('post.id'), index=True, nullable=False)
-    user_id = Column('user_id', Integer, ForeignKey('user.id'), index=True)
+        'post_id', Integer, ForeignKey('post.id'), nullable=False, index=True)
+    user_id = Column(
+        'user_id', Integer, ForeignKey('user.id'), nullable=True, index=True)
     version = Column('version', Integer, default=1, nullable=False)
     creation_time = Column('creation_time', DateTime, nullable=False)
     last_edit_time = Column('last_edit_time', DateTime)

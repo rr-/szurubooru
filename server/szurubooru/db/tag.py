@@ -13,12 +13,16 @@ class TagSuggestion(Base):
         'parent_id',
         Integer,
         ForeignKey('tag.id'),
-        primary_key=True, index=True)
+        nullable=False,
+        primary_key=True,
+        index=True)
     child_id = Column(
         'child_id',
         Integer,
         ForeignKey('tag.id'),
-        primary_key=True, index=True)
+        nullable=False,
+        primary_key=True,
+        index=True)
 
     def __init__(self, parent_id, child_id):
         self.parent_id = parent_id
@@ -32,12 +36,14 @@ class TagImplication(Base):
         'parent_id',
         Integer,
         ForeignKey('tag.id'),
+        nullable=False,
         primary_key=True,
         index=True)
     child_id = Column(
         'child_id',
         Integer,
         ForeignKey('tag.id'),
+        nullable=False,
         primary_key=True,
         index=True)
 
