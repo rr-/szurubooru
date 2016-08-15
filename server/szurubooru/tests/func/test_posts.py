@@ -110,8 +110,14 @@ def test_serialize_post(
 
         db.session.flush()
         db.session.add_all([
-            comment_factory(user=user_factory(name='commenter1'), post=post),
-            comment_factory(user=user_factory(name='commenter2'), post=post),
+            comment_factory(
+                user=user_factory(name='commenter1'),
+                post=post,
+                time=datetime(1999, 1, 1)),
+            comment_factory(
+                user=user_factory(name='commenter2'),
+                post=post,
+                time=datetime(1999, 1, 2)),
             db.PostFavorite(
                 post=post,
                 user=user_factory(name='fav1'),
@@ -458,8 +464,8 @@ def test_update_post_relations(post_factory):
     post = post_factory()
     posts.update_post_relations(post, [relation1.post_id, relation2.post_id])
     assert len(post.relations) == 2
-    assert post.relations[0].post_id == relation1.post_id
-    assert post.relations[1].post_id == relation2.post_id
+    assert sorted(r.post_id for r in post.relations) == [
+        relation1.post_id, relation2.post_id]
 
 
 def test_update_post_relations_bidirectionality(post_factory):

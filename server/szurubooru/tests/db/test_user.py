@@ -145,12 +145,12 @@ def test_cascade_deletions(post_factory, user_factory, comment_factory):
     snapshot.user = user
     snapshot.creation_time = datetime(1997, 1, 1)
     snapshot.resource_type = '-'
-    snapshot.resource_id = '-'
+    snapshot.resource_id = 1
     snapshot.resource_repr = '-'
     snapshot.operation = '-'
 
     db.session.add_all([user, post, comment, snapshot])
-    db.session.flush()
+    db.session.commit()
 
     assert not db.session.dirty
     assert post.user is not None and post.user.user_id is not None

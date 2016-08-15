@@ -35,8 +35,9 @@ def test_serialize_user(user_factory, comment_factory):
 def test_try_get_comment(comment_factory):
     comment = comment_factory()
     db.session.add(comment)
-    assert comments.try_get_comment_by_id(999) is None
-    assert comments.try_get_comment_by_id(1) is comment
+    db.session.flush()
+    assert comments.try_get_comment_by_id(comment.comment_id + 1) is None
+    assert comments.try_get_comment_by_id(comment.comment_id) is comment
     with pytest.raises(comments.InvalidCommentIdError):
         comments.try_get_comment_by_id('-')
 
@@ -44,9 +45,10 @@ def test_try_get_comment(comment_factory):
 def test_get_comment(comment_factory):
     comment = comment_factory()
     db.session.add(comment)
+    db.session.flush()
     with pytest.raises(comments.CommentNotFoundError):
-        comments.get_comment_by_id(999)
-    assert comments.get_comment_by_id(1) is comment
+        comments.get_comment_by_id(comment.comment_id + 1)
+    assert comments.get_comment_by_id(comment.comment_id) is comment
     with pytest.raises(comments.InvalidCommentIdError):
         comments.get_comment_by_id('-')
 

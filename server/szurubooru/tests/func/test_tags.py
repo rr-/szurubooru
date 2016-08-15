@@ -110,7 +110,12 @@ def test_export_to_json(
     export_path = os.path.join(str(tmpdir), 'tags.json')
     assert os.path.exists(export_path)
     with open(export_path, 'r') as handle:
-        assert json.loads(handle.read()) == {
+        actual_json = json.loads(handle.read())
+        assert actual_json['tags']
+        assert actual_json['categories']
+        actual_json['tags'].sort(key=lambda tag: tag['names'][0])
+        actual_json['categories'].sort(key=lambda category: category['name'])
+        assert actual_json == {
             'tags': [
                 {
                     'names': ['alias1', 'alias2'],
@@ -119,14 +124,14 @@ def test_export_to_json(
                     'suggestions': ['sug1', 'sug2'],
                     'implications': ['imp1', 'imp2'],
                 },
-                {'names': ['sug1'], 'usages': 0, 'category': 'cat1'},
-                {'names': ['sug2'], 'usages': 0, 'category': 'cat1'},
                 {'names': ['imp1'], 'usages': 0, 'category': 'cat1'},
                 {'names': ['imp2'], 'usages': 0, 'category': 'cat1'},
+                {'names': ['sug1'], 'usages': 0, 'category': 'cat1'},
+                {'names': ['sug2'], 'usages': 0, 'category': 'cat1'},
             ],
             'categories': [
-                {'name': 'cat2', 'color': 'white'},
                 {'name': 'cat1', 'color': 'black'},
+                {'name': 'cat2', 'color': 'white'},
             ]
         }
 
@@ -164,76 +169,81 @@ def test_get_tag_by_name(name_to_search, expected_to_find, tag_factory):
             tags.get_tag_by_name(name_to_search)
 
 
-@pytest.mark.parametrize('names,expected_ids', [
+@pytest.mark.parametrize('names,expected_indexes', [
     ([], []),
-    (['name1'], [1]),
-    (['NAME1'], [1]),
-    (['alias1'], [1]),
-    (['ALIAS1'], [1]),
-    (['name2'], [2]),
-    (['name1', 'name1'], [1]),
-    (['name1', 'NAME1'], [1]),
-    (['name1', 'alias1'], [1]),
-    (['name1', 'alias2'], [1, 2]),
-    (['NAME1', 'alias2'], [1, 2]),
-    (['name1', 'ALIAS2'], [1, 2]),
-    (['name2', 'alias1'], [1, 2]),
+    (['name1'], [0]),
+    (['NAME1'], [0]),
+    (['alias1'], [0]),
+    (['ALIAS1'], [0]),
+    (['name2'], [1]),
+    (['name1', 'name1'], [0]),
+    (['name1', 'NAME1'], [0]),
+    (['name1', 'alias1'], [0]),
+    (['name1', 'alias2'], [0, 1]),
+    (['NAME1', 'alias2'], [0, 1]),
+    (['name1', 'ALIAS2'], [0, 1]),
+    (['name2', 'alias1'], [0, 1]),
 ])
-def test_get_tag_by_names(names, expected_ids, tag_factory):
-    tag1 = tag_factory(names=['name1', 'ALIAS1'])
-    tag2 = tag_factory(names=['name2', 'ALIAS2'])
-    tag1.tag_id = 1
-    tag2.tag_id = 2
-    db.session.add_all([tag1, tag2])
+def test_get_tag_by_names(names, expected_indexes, tag_factory):
+    input_tags = [
+        tag_factory(names=['name1', 'ALIAS1']),
+        tag_factory(names=['name2', 'ALIAS2']),
+    ]
+    db.session.add_all(input_tags)
+    db.session.flush()
+    expected_ids = [input_tags[i].tag_id for i in expected_indexes]
     actual_ids = [tag.tag_id for tag in tags.get_tags_by_names(names)]
     assert actual_ids == expected_ids
 
 
 @pytest.mark.parametrize(
-    'names,expected_ids,expected_created_names', [
+    'names,expected_indexes,expected_created_names', [
         ([], [], []),
-        (['name1'], [1], []),
-        (['NAME1'], [1], []),
-        (['alias1'], [1], []),
-        (['ALIAS1'], [1], []),
-        (['name2'], [2], []),
-        (['name1', 'name1'], [1], []),
-        (['name1', 'NAME1'], [1], []),
-        (['name1', 'alias1'], [1], []),
-        (['name1', 'alias2'], [1, 2], []),
-        (['NAME1', 'alias2'], [1, 2], []),
-        (['name1', 'ALIAS2'], [1, 2], []),
-        (['name2', 'alias1'], [1, 2], []),
+        (['name1'], [0], []),
+        (['NAME1'], [0], []),
+        (['alias1'], [0], []),
+        (['ALIAS1'], [0], []),
+        (['name2'], [1], []),
+        (['name1', 'name1'], [0], []),
+        (['name1', 'NAME1'], [0], []),
+        (['name1', 'alias1'], [0], []),
+        (['name1', 'alias2'], [0, 1], []),
+        (['NAME1', 'alias2'], [0, 1], []),
+        (['name1', 'ALIAS2'], [0, 1], []),
+        (['name2', 'alias1'], [0, 1], []),
         (['new'], [], ['new']),
-        (['new', 'name1'], [1], ['new']),
-        (['new', 'NAME1'], [1], ['new']),
-        (['new', 'alias1'], [1], ['new']),
-        (['new', 'ALIAS1'], [1], ['new']),
-        (['new', 'name2'], [2], ['new']),
-        (['new', 'name1', 'name1'], [1], ['new']),
-        (['new', 'name1', 'NAME1'], [1], ['new']),
-        (['new', 'name1', 'alias1'], [1], ['new']),
-        (['new', 'name1', 'alias2'], [1, 2], ['new']),
-        (['new', 'NAME1', 'alias2'], [1, 2], ['new']),
-        (['new', 'name1', 'ALIAS2'], [1, 2], ['new']),
-        (['new', 'name2', 'alias1'], [1, 2], ['new']),
+        (['new', 'name1'], [0], ['new']),
+        (['new', 'NAME1'], [0], ['new']),
+        (['new', 'alias1'], [0], ['new']),
+        (['new', 'ALIAS1'], [0], ['new']),
+        (['new', 'name2'], [1], ['new']),
+        (['new', 'name1', 'name1'], [0], ['new']),
+        (['new', 'name1', 'NAME1'], [0], ['new']),
+        (['new', 'name1', 'alias1'], [0], ['new']),
+        (['new', 'name1', 'alias2'], [0, 1], ['new']),
+        (['new', 'NAME1', 'alias2'], [0, 1], ['new']),
+        (['new', 'name1', 'ALIAS2'], [0, 1], ['new']),
+        (['new', 'name2', 'alias1'], [0, 1], ['new']),
         (['new', 'new'], [], ['new']),
         (['new', 'NEW'], [], ['new']),
         (['new', 'new2'], [], ['new', 'new2']),
     ])
 def test_get_or_create_tags_by_names(
         names,
-        expected_ids,
+        expected_indexes,
         expected_created_names,
         tag_factory,
         tag_category_factory,
         config_injector):
     config_injector({'tag_name_regex': '.*'})
     category = tag_category_factory()
-    tag1 = tag_factory(names=['name1', 'ALIAS1'], category=category)
-    tag2 = tag_factory(names=['name2', 'ALIAS2'], category=category)
-    db.session.add_all([tag1, tag2])
+    input_tags = [
+        tag_factory(names=['name1', 'ALIAS1'], category=category),
+        tag_factory(names=['name2', 'ALIAS2'], category=category),
+    ]
+    db.session.add_all(input_tags)
     result = tags.get_or_create_tags_by_names(names)
+    expected_ids = [input_tags[i].tag_id for i in expected_indexes]
     actual_ids = [tag.tag_id for tag in result[0]]
     actual_created_names = [tag.names[0].name for tag in result[1]]
     assert actual_ids == expected_ids

@@ -1,8 +1,9 @@
 # pylint: disable=redefined-outer-name
 import contextlib
 import os
-import datetime
-import uuid
+import random
+import string
+from datetime import datetime
 import pytest
 import freezegun
 import sqlalchemy
@@ -30,8 +31,19 @@ class QueryCounter(object):
         return self._statements
 
 
+if not config.config['test_database']['host']:
+    raise RuntimeError('Test database not configured.')
+
 _query_counter = QueryCounter()
-_engine = sqlalchemy.create_engine('sqlite:///:memory:')
+_engine = sqlalchemy.create_engine(
+    '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
+        schema=config.config['test_database']['schema'],
+        user=config.config['test_database']['user'],
+        password=config.config['test_database']['pass'],
+        host=config.config['test_database']['host'],
+        port=config.config['test_database']['port'],
+        name=config.config['test_database']['name']))
+db.Base.metadata.drop_all(bind=_engine)
 db.Base.metadata.create_all(bind=_engine)
 sqlalchemy.event.listen(
     _engine,
@@ -40,7 +52,8 @@ sqlalchemy.event.listen(
 
 
 def get_unique_name():
-    return str(uuid.uuid4())
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(random.choice(alphabet) for _ in range(8))
 
 
 @pytest.fixture
@@ -72,16 +85,15 @@ def query_logger():
 
 @pytest.yield_fixture(scope='function', autouse=True)
 def session(query_logger):  # pylint: disable=unused-argument
-    session_maker = sqlalchemy.orm.sessionmaker(bind=_engine)
-    session = sqlalchemy.orm.scoped_session(session_maker)
-    db.session = session
+    db.sessionmaker = sqlalchemy.orm.sessionmaker(bind=_engine)
+    db.session = sqlalchemy.orm.scoped_session(db.sessionmaker)
     try:
-        yield session
+        yield db.session
     finally:
-        session.remove()
+        db.session.remove()
         for table in reversed(db.Base.metadata.sorted_tables):
-            session.execute(table.delete())
-        session.commit()
+            db.session.execute(table.delete())
+        db.session.commit()
 
 
 @pytest.fixture
@@ -115,7 +127,7 @@ def user_factory():
         user.password_hash = 'dummy'
         user.email = email
         user.rank = rank
-        user.creation_time = datetime.datetime(1997, 1, 1)
+        user.creation_time = datetime(1997, 1, 1)
         user.avatar_style = db.User.AVATAR_GRAVATAR
         return user
     return factory
@@ -142,7 +154,7 @@ def tag_factory():
         tag.names = [
             db.TagName(name) for name in names or [get_unique_name()]]
         tag.category = category
-        tag.creation_time = datetime.datetime(1996, 1, 1)
+        tag.creation_time = datetime(1996, 1, 1)
         return tag
     return factory
 
@@ -162,14 +174,14 @@ def post_factory():
         post.checksum = checksum
         post.flags = []
         post.mime_type = 'application/octet-stream'
-        post.creation_time = datetime.datetime(1996, 1, 1)
+        post.creation_time = datetime(1996, 1, 1)
         return post
     return factory
 
 
 @pytest.fixture
 def comment_factory(user_factory, post_factory):
-    def factory(user=None, post=None, text='dummy'):
+    def factory(user=None, post=None, text='dummy', time=None):
         if not user:
             user = user_factory()
             db.session.add(user)
@@ -180,7 +192,7 @@ def comment_factory(user_factory, post_factory):
         comment.user = user
         comment.post = post
         comment.text = text
-        comment.creation_time = datetime.datetime(1996, 1, 1)
+        comment.creation_time = time or datetime(1996, 1, 1)
         return comment
     return factory
 

@@ -25,6 +25,15 @@ database:
     pass: # example: dog
     name: # example: szuru
 
+# required for runing the test suite
+test_database:
+    schema: postgres
+    host: # example: localhost
+    port: # example: 5432
+    user: # example: szuru
+    pass: # example: dog
+    name: # example: szuru_test
+
 # used to send password reminders
 smtp:
     host: # example: localhost
