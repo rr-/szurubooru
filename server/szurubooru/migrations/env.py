@@ -16,15 +16,7 @@ alembic_config = alembic.context.config
 logging.config.fileConfig(alembic_config.config_file_name)
 
 szuru_config = szurubooru.config.config
-alembic_config.set_main_option(
-    'sqlalchemy.url',
-    '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
-        schema=szuru_config['database']['schema'],
-        user=szuru_config['database']['user'],
-        password=szuru_config['database']['pass'],
-        host=szuru_config['database']['host'],
-        port=szuru_config['database']['port'],
-        name=szuru_config['database']['name']))
+alembic_config.set_main_option('sqlalchemy.url', szuru_config['database'])
 
 target_metadata = szurubooru.db.Base.metadata
 

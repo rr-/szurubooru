@@ -19,14 +19,7 @@ class QueryCounter(object):
 
 
 def create_session():
-    _engine = sqlalchemy.create_engine(
-        '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
-            schema=config.config['database']['schema'],
-            user=config.config['database']['user'],
-            password=config.config['database']['pass'],
-            host=config.config['database']['host'],
-            port=config.config['database']['port'],
-            name=config.config['database']['name']))
+    _engine = sqlalchemy.create_engine(config.config['database'])
     sqlalchemy.event.listen(
         _engine, 'after_execute', lambda *args: QueryCounter.bump())
     _session_maker = sqlalchemy.orm.sessionmaker(bind=_engine)

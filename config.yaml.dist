@@ -11,28 +11,19 @@ base_url: # used to form links to frontend, example: http://example.com/
 data_url: # used to form links to posts and avatars, example: http://example.com/data/
 data_dir: # absolute path for posts and avatars storage, example: /srv/www/booru/client/public/data/
 
+
+# usage: schema://user:password@host:port/database_name
+# example: postgres://szuru:dog@localhost:5432/szuru_test
+# example (useful for tests): sqlite:///:memory:
+database:
+test_database: 'sqlite:///:memory:' # required for runing the test suite
+
+
 thumbnails:
     avatar_width: 300
     avatar_height: 300
     post_width: 300
     post_height: 300
-
-database:
-    schema: postgres
-    host: # example: localhost
-    port: # example: 5432
-    user: # example: szuru
-    pass: # example: dog
-    name: # example: szuru
-
-# required for runing the test suite
-test_database:
-    schema: postgres
-    host: # example: localhost
-    port: # example: 5432
-    user: # example: szuru
-    pass: # example: dog
-    name: # example: szuru_test
 
 # used to send password reminders
 smtp:

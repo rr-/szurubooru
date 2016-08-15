@@ -68,10 +68,8 @@ def validate_config():
         raise errors.ConfigError(
             'data_dir must be an absolute path')
 
-    for key in ['schema', 'host', 'port', 'user', 'pass', 'name']:
-        if not config.config['database'][key]:
-            raise errors.ConfigError(
-                'Database is not configured: %r is missing' % key)
+    if not config.config['database']:
+        raise errors.ConfigError('Database is not configured')
 
 
 def create_app():

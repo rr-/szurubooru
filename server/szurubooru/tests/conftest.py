@@ -31,18 +31,11 @@ class QueryCounter(object):
         return self._statements
 
 
-if not config.config['test_database']['host']:
+if not config.config['test_database']:
     raise RuntimeError('Test database not configured.')
 
 _query_counter = QueryCounter()
-_engine = sqlalchemy.create_engine(
-    '{schema}://{user}:{password}@{host}:{port}/{name}'.format(
-        schema=config.config['test_database']['schema'],
-        user=config.config['test_database']['user'],
-        password=config.config['test_database']['pass'],
-        host=config.config['test_database']['host'],
-        port=config.config['test_database']['port'],
-        name=config.config['test_database']['name']))
+_engine = sqlalchemy.create_engine(config.config['test_database'])
 db.Base.metadata.drop_all(bind=_engine)
 db.Base.metadata.create_all(bind=_engine)
 sqlalchemy.event.listen(

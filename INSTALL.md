@@ -89,7 +89,7 @@ user@host:szuru/server$ source python_modules/bin/activate # enters the sandbox
     - API URL,
     - data directory,
     - data URL,
-    - the `database` section,
+    - database,
     - the `smtp` section.
 
 2. Compile the frontend:
