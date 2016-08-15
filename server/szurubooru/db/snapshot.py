@@ -18,7 +18,8 @@ class Snapshot(Base):
     resource_id = Column('resource_id', Integer, nullable=False, index=True)
     resource_repr = Column('resource_repr', Unicode(64), nullable=False)
     operation = Column('operation', Unicode(16), nullable=False)
-    user_id = Column('user_id', Integer, ForeignKey('user.id'))
+    user_id = Column(
+        'user_id', Integer, ForeignKey('user.id', ondelete='set null'))
     data = Column('data', PickleType)
 
     user = relationship('User')
