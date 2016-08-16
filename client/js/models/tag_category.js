@@ -44,7 +44,9 @@ class TagCategory extends events.EventTarget {
         }
 
         let promise = this._origName ?
-            api.put('/tag-category/' + this._origName, detail) :
+            api.put(
+                '/tag-category/' + encodeURIComponent(this._origName),
+                detail) :
             api.post('/tag-categories', detail);
 
         return promise
@@ -63,7 +65,7 @@ class TagCategory extends events.EventTarget {
 
     delete() {
         return api.delete(
-                '/tag-category/' + this._origName,
+                '/tag-category/' + encodeURIComponent(this._origName),
                 {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {

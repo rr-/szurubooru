@@ -40,7 +40,7 @@ class User extends events.EventTarget {
     }
 
     static get(name) {
-        return api.get('/user/' + name)
+        return api.get('/user/' + encodeURIComponent(name))
             .then(response => {
                 return Promise.resolve(User.fromResponse(response));
             }, response => {
@@ -74,7 +74,10 @@ class User extends events.EventTarget {
         }
 
         let promise = this._orig._name ?
-            api.put('/user/' + this._orig._name, detail, files) :
+            api.put(
+                '/user/' + encodeURIComponent(this._orig._name),
+                detail,
+                files) :
             api.post('/users', detail, files);
 
         return promise
@@ -93,7 +96,7 @@ class User extends events.EventTarget {
 
     delete() {
         return api.delete(
-                '/user/' + this._orig._name,
+                '/user/' + encodeURIComponent(this._orig._name),
                 {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {

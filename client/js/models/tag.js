@@ -32,8 +32,8 @@ class Tag extends events.EventTarget {
         return ret;
     }
 
-    static get(id) {
-        return api.get('/tag/' + id)
+    static get(name) {
+        return api.get('/tag/' + encodeURIComponent(name))
             .then(response => {
                 return Promise.resolve(Tag.fromResponse(response));
             }, response => {
@@ -62,7 +62,7 @@ class Tag extends events.EventTarget {
         }
 
         let promise = this._origName ?
-            api.put('/tag/' + this._origName, detail) :
+            api.put('/tag/' + encodeURIComponent(this._origName), detail) :
             api.post('/tags', detail);
         return promise
             .then(response => {
@@ -79,7 +79,8 @@ class Tag extends events.EventTarget {
     }
 
     merge(targetName) {
-        return api.get('/tag/' + targetName).then(response => {
+        return api.get('/tag/' + encodeURIComponent(targetName))
+            .then(response => {
                 return api.post('/tag-merge/', {
                     removeVersion: this._version,
                     remove: this._origName,
@@ -103,7 +104,7 @@ class Tag extends events.EventTarget {
 
     delete() {
         return api.delete(
-                '/tag/' + this._origName,
+                '/tag/' + encodeURIComponent(this._origName),
                 {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
