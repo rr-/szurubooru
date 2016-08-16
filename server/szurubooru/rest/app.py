@@ -1,5 +1,5 @@
+import urllib.parse
 import cgi
-import io
 import json
 import re
 from datetime import datetime
@@ -19,19 +19,6 @@ def _dump_json(obj):
     return json.dumps(obj, default=_json_serializer, indent=2)
 
 
-def _read(env):
-    length = int(env.get('CONTENT_LENGTH', 0))
-    output = io.BytesIO()
-    while length > 0:
-        part = env['wsgi.input'].read(min(length, 1024 * 200))
-        if not part:
-            break
-        output.write(part)
-        length -= len(part)
-    output.seek(0)
-    return output
-
-
 def _get_headers(env):
     headers = {}
     for key, value in env.items():
@@ -46,29 +33,18 @@ def _create_context(env):
     path = '/' + env['PATH_INFO'].lstrip('/')
     headers = _get_headers(env)
 
-    # obscure, claims to "avoid a bug in cgi.FieldStorage"
-    env.setdefault('QUERY_STRING', '')
-
     files = {}
-    params = {}
+    params = dict(urllib.parse.parse_qsl(env.get('QUERY_STRING', '')))
 
-    request_stream = _read(env)
-    form = cgi.FieldStorage(fp=request_stream, environ=env)
-
-    if form.list:
+    if 'multipart' in env.get('CONTENT_TYPE', ''):
+        form = cgi.FieldStorage(fp=env['wsgi.input'], environ=env)
+        if not form.list:
+            raise errors.HttpBadRequest('No files attached.')
+        body = form.getvalue('metadata')
         for key in form:
-            if key != 'metadata':
-                if isinstance(form[key], cgi.MiniFieldStorage):
-                    params[key] = form.getvalue(key)
-                else:
-                    # _user_file_name = getattr(form[key], 'filename', None)
-                    files[key] = form.getvalue(key)
-        if 'metadata' in form:
-            body = form.getvalue('metadata')
-        else:
-            body = request_stream.read()
+            files[key] = form.getvalue(key)
     else:
-        body = None
+        body = env['wsgi.input'].read()
 
     if body:
         try:
