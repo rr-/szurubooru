@@ -16,7 +16,7 @@ depends_on = None
 
 def upgrade():
     for column_name in [
-            'auto_comment_edit_time'
+            'auto_comment_edit_time',
             'auto_fav_count',
             'auto_comment_creation_time',
             'auto_feature_count',
