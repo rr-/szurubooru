@@ -87,38 +87,40 @@ def _create_context(env):
 
 def application(env, start_response):
     try:
-        ctx = _create_context(env)
-        if 'application/json' not in ctx.get_header('Accept'):
-            raise errors.HttpNotAcceptable(
-                'This API only supports JSON responses.')
+        try:
+            ctx = _create_context(env)
+            if 'application/json' not in ctx.get_header('Accept'):
+                raise errors.HttpNotAcceptable(
+                    'This API only supports JSON responses.')
 
-        for url, allowed_methods in routes.routes.items():
-            match = re.fullmatch(url, ctx.url)
-            if not match:
-                continue
-            if ctx.method not in allowed_methods:
-                raise errors.HttpMethodNotAllowed(
-                    'Allowed methods: %r' % allowed_methods)
+            for url, allowed_methods in routes.routes.items():
+                match = re.fullmatch(url, ctx.url)
+                if not match:
+                    continue
+                if ctx.method not in allowed_methods:
+                    raise errors.HttpMethodNotAllowed(
+                        'Allowed methods: %r' % allowed_methods)
 
-            for hook in middleware.pre_hooks:
-                hook(ctx)
-            handler = allowed_methods[ctx.method]
-            try:
-                response = handler(ctx, match.groupdict())
-            except Exception as ex:
-                for exception_type, handler in errors.error_handlers.items():
-                    if isinstance(ex, exception_type):
-                        handler(ex)
-                raise
-            finally:
-                for hook in middleware.post_hooks:
+                for hook in middleware.pre_hooks:
                     hook(ctx)
+                handler = allowed_methods[ctx.method]
+                try:
+                    response = handler(ctx, match.groupdict())
+                finally:
+                    for hook in middleware.post_hooks:
+                        hook(ctx)
 
-            start_response('200', [('content-type', 'application/json')])
-            return (_dump_json(response).encode('utf-8'),)
+                start_response('200', [('content-type', 'application/json')])
+                return (_dump_json(response).encode('utf-8'),)
 
-        raise errors.HttpNotFound(
-            'Requested path ' + ctx.url + ' was not found.')
+            raise errors.HttpNotFound(
+                'Requested path ' + ctx.url + ' was not found.')
+
+        except Exception as ex:
+            for exception_type, handler in errors.error_handlers.items():
+                if isinstance(ex, exception_type):
+                    handler(ex)
+            raise
 
     except errors.BaseHttpError as ex:
         start_response(
