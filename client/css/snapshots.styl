@@ -1,0 +1,44 @@
+$snapshot-created-background-color = #E0F5E0
+$snapshot-modified-background-color = #E0F5FF
+$snapshot-deleted-background-color = #FDE5E5
+$snapshot-merged-background-color = #FEC
+
+.snapshot-list
+    text-align: left
+
+    ul
+        margin: 0 auto
+        width: 100%
+        max-width: 35em
+        list-style-type: none
+
+        li
+            .time
+                float: right
+
+            div
+                padding: 0.1em 0.5em
+                .thumbnail
+                    margin-left: 0
+                &:empty
+                    padding: 0
+
+            div.operation-created
+                background: $snapshot-created-background-color
+                &+.details
+                    background: lighten($snapshot-created-background-color, 50%)
+            div.operation-modified
+                background: $snapshot-modified-background-color
+                &+.details
+                    background: lighten($snapshot-modified-background-color, 50%)
+            div.operation-deleted
+                background: $snapshot-deleted-background-color
+                &+.details
+                    background: lighten($snapshot-deleted-background-color, 50%)
+            div.operation-merged
+                background: $snapshot-merged-background-color
+                &+.details
+                    background: lighten($snapshot-merged-background-color, 50%)
+
+            div.details
+                margin-bottom: 2em

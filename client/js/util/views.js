@@ -169,28 +169,36 @@ function getPostEditUrl(id, parameters) {
     return url;
 }
 
-function makePostLink(id) {
-    const text = '@' + id;
+function makePostLink(id, includeHash) {
+    let text = id;
+    if (includeHash) {
+        text = '@' + id;
+    }
     return api.hasPrivilege('posts:view') ?
         makeNonVoidElement(
             'a', {'href': '/post/' + encodeURIComponent(id)}, text) :
         text;
 }
 
-function makeTagLink(name) {
+function makeTagLink(name, includeHash) {
     const tag = tags.getTagByName(name);
     const category = tag ? tag.category : 'unknown';
+    let text = name;
+    if (includeHash === true) {
+        text = '#' + text;
+    }
     return api.hasPrivilege('tags:view') ?
         makeNonVoidElement(
-            'a', {
+            'a',
+            {
                 'href': '/tag/' + encodeURIComponent(name),
                 'class': misc.makeCssName(category, 'tag'),
-            }, name) :
-        makeNonVoidElement(
-            'span', {
-                'class': misc.makeCssName(category, 'tag'),
             },
-            name);
+            text) :
+        makeNonVoidElement(
+            'span',
+            {'class': misc.makeCssName(category, 'tag')},
+            text);
 }
 
 function makeUserLink(user) {
@@ -477,6 +485,8 @@ module.exports = misc.arrayToObject([
     decorateValidator,
     makeVoidElement,
     makeNonVoidElement,
+    makeTagLink,
+    makePostLink,
     syncScrollPosition,
     slideDown,
     slideUp,

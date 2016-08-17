@@ -15,6 +15,7 @@ class HomeController {
             name: config.name,
             version: config.meta.version,
             buildDate: config.meta.buildDate,
+            canListSnapshots: api.hasPrivilege('snapshots:list'),
             canListPosts: api.hasPrivilege('posts:list'),
         });
 
