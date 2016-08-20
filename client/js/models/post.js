@@ -146,7 +146,7 @@ class Post extends events.EventTarget {
     }
 
     delete() {
-        return api.delete('/post/' + this._id)
+        return api.delete('/post/' + this._id, {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -206,9 +206,7 @@ class Post extends events.EventTarget {
     }
 
     removeFromFavorites() {
-        return api.delete(
-                '/post/' + this.id + '/favorite',
-                {version: this._version})
+        return api.delete('/post/' + this.id + '/favorite')
             .then(response => {
                 const prevScore = this._ownScore;
                 this._updateFromResponse(response);
