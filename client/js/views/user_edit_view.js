@@ -21,16 +21,13 @@ class UserEditView extends events.EventTarget {
 
         this._avatarContent = null;
         if (this._avatarContentInputNode) {
-            new FileDropperControl(
-                this._avatarContentInputNode,
-                {
-                    lock: true,
-                    resolve: files => {
-                        this._hostNode.querySelector(
-                            '[name=avatar-style][value=manual]').checked = true;
-                        this._avatarContent = files[0];
-                    },
-                });
+            this._avatarFileDropper = new FileDropperControl(
+                this._avatarContentInputNode, {lock: true});
+            this._avatarFileDropper.addEventListener('fileadd', e => {
+                this._hostNode.querySelector(
+                    '[name=avatar-style][value=manual]').checked = true;
+                this._avatarContent = e.detail.files[0];
+            });
         }
 
         this._formNode.addEventListener('submit', e => this._evtSubmit(e));

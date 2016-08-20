@@ -62,25 +62,19 @@ class PostEditSidebarControl extends events.EventTarget {
 
         if (this._contentInputNode) {
             this._contentFileDropper = new FileDropperControl(
-                this._contentInputNode,
-                {
-                    lock: true,
-                    resolve: files => {
-                        this._newPostContent = files[0];
-                    },
-                });
+                this._contentInputNode, {lock: true});
+            this._contentFileDropper.addEventListener('fileadd', e => {
+                this._newPostContent = e.detail.files[0];
+            });
         }
 
         if (this._thumbnailInputNode) {
             this._thumbnailFileDropper = new FileDropperControl(
-                this._thumbnailInputNode,
-                {
-                    lock: true,
-                    resolve: files => {
-                        this._newPostThumbnail = files[0];
-                        this._thumbnailRemovalLinkNode.style.display = 'block';
-                    },
-                });
+                this._thumbnailInputNode, {lock: true});
+            this._thumbnailFileDropper.addEventListener('fileadd', e => {
+                this._newPostThumbnail = e.detail.files[0];
+                this._thumbnailRemovalLinkNode.style.display = 'block';
+            });
         }
 
         if (this._thumbnailRemovalLinkNode) {

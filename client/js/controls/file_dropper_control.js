@@ -1,12 +1,16 @@
 'use strict';
 
+const events = require('../events.js');
 const views = require('../util/views.js');
 
-class FileDropperControl {
+const template = views.getTemplate('file-dropper');
+
+class FileDropperControl extends events.EventTarget {
     constructor(target, options) {
+        super();
+
         this._options = options;
-        this._template = views.getTemplate('file-dropper');
-        const source = this._template({
+        const source = template({
             allowMultiple: this._options.allowMultiple,
             id: 'file-' + Math.random().toString(36).substring(7),
         });
@@ -34,15 +38,17 @@ class FileDropperControl {
 
     reset() {
         this._dropperNode.innerHTML = this._originalHtml;
+        this.dispatchEvent(new CustomEvent('reset'));
     }
 
-    _resolve(files) {
+    _emitFiles(files) {
         files = Array.from(files);
         if (this._options.lock) {
             this._dropperNode.innerText =
                 files.map(file => file.name).join(', ');
         }
-        this._options.resolve(files);
+        this.dispatchEvent(
+            new CustomEvent('fileadd', {detail: {files: files}}));
     }
 
     _evtFileChange(e) {
@@ -65,6 +71,10 @@ class FileDropperControl {
         e.preventDefault();
     }
 
+    _evtFileChange(e) {
+        this._emitFiles(e.target.files);
+    }
+
     _evtDrop(e) {
         e.preventDefault();
         this._dropperNode.classList.remove('active');
@@ -74,7 +84,7 @@ class FileDropperControl {
         if (!this._options.allowMultiple && e.dataTransfer.files.length > 1) {
             window.alert('Cannot select multiple files.');
         }
-        this._resolve(e.dataTransfer.files);
+        this._emitFiles(e.dataTransfer.files);
     }
 }
 
