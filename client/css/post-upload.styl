@@ -1,0 +1,45 @@
+@import colors
+
+.post-upload
+    form
+        width: 100%
+        max-width: 40em
+        margin: 0 auto
+
+        &.inactive
+            input[type=submit]
+                display: none
+
+    .dropper-container
+        margin: 0 auto
+        .file-dropper
+            font-size: 150%
+            padding: 2em
+
+    input[type=submit]
+        float: left
+
+    .uploadables-container
+        margin: 2em 0
+        text-align: left
+        line-height: 200%
+
+        .uploadable
+            .file
+                overflow: hidden
+                text-align: left
+                text-overflow: ellipsis
+
+            .safety
+                label
+                    margin-right: 1em
+
+            .thumbnail
+                float: left
+                width: 12.5em
+                height: 7em
+                margin: 0 1em 0 0
+
+            .remove
+                float: right
+                color: $inactive-link-color

@@ -14,39 +14,41 @@ class Post extends events.EventTarget {
         this._updateFromResponse({});
     }
 
-    get id()             { return this._id; }
-    get type()           { return this._type; }
-    get mimeType()       { return this._mimeType; }
-    get creationTime()   { return this._creationTime; }
-    get user()           { return this._user; }
-    get safety()         { return this._safety; }
-    get contentUrl()     { return this._contentUrl; }
-    get thumbnailUrl()   { return this._thumbnailUrl; }
-    get canvasWidth()    { return this._canvasWidth || 800; }
-    get canvasHeight()   { return this._canvasHeight || 450; }
-    get fileSize()       { return this._fileSize || 0; }
-    get content()        { throw 'Invalid operation'; }
-    get thumbnail()      { throw 'Invalid operation'; }
+    get id()                 { return this._id; }
+    get type()               { return this._type; }
+    get mimeType()           { return this._mimeType; }
+    get creationTime()       { return this._creationTime; }
+    get user()               { return this._user; }
+    get safety()             { return this._safety; }
+    get contentUrl()         { return this._contentUrl; }
+    get thumbnailUrl()       { return this._thumbnailUrl; }
+    get canvasWidth()        { return this._canvasWidth || 800; }
+    get canvasHeight()       { return this._canvasHeight || 450; }
+    get fileSize()           { return this._fileSize || 0; }
+    get newContent()         { throw 'Invalid operation'; }
+    get newContentUrl()      { throw 'Invalid operation'; }
+    get newThumbnail()       { throw 'Invalid operation'; }
 
-    get flags()          { return this._flags; }
-    get tags()           { return this._tags; }
-    get notes()          { return this._notes; }
-    get comments()       { return this._comments; }
-    get relations()      { return this._relations; }
+    get flags()              { return this._flags; }
+    get tags()               { return this._tags; }
+    get notes()              { return this._notes; }
+    get comments()           { return this._comments; }
+    get relations()          { return this._relations; }
 
-    get score()          { return this._score; }
-    get commentCount()   { return this._commentCount; }
-    get favoriteCount()  { return this._favoriteCount; }
-    get ownFavorite()    { return this._ownFavorite; }
-    get ownScore()       { return this._ownScore; }
+    get score()              { return this._score; }
+    get commentCount()       { return this._commentCount; }
+    get favoriteCount()      { return this._favoriteCount; }
+    get ownFavorite()        { return this._ownFavorite; }
+    get ownScore()           { return this._ownScore; }
     get hasCustomThumbnail() { return this._hasCustomThumbnail; }
 
-    set flags(value)     { this._flags = value; }
-    set tags(value)      { this._tags = value; }
-    set safety(value)    { this._safety = value; }
-    set relations(value) { this._relations = value; }
-    set content(value)   { this._content = value; }
-    set thumbnail(value) { this._thumbnail = value; }
+    set flags(value)         { this._flags = value; }
+    set tags(value)          { this._tags = value; }
+    set safety(value)        { this._safety = value; }
+    set relations(value)     { this._relations = value; }
+    set newContent(value)    { this._newContent = value; }
+    set newContentUrl(value) { this._newContentUrl = value; }
+    set newThumbnail(value)  { this._newThumbnail = value; }
 
     static fromResponse(response) {
         const ret = new Post();
@@ -84,11 +86,14 @@ class Post extends events.EventTarget {
             s => s.toLowerCase() != tagName.toLowerCase());
     }
 
-    save() {
+    save(anonymous) {
         const files = [];
         const detail = {version: this._version};
 
         // send only changed fields to avoid user privilege violation
+        if (anonymous === true) {
+            detail.anonymous = true;
+        }
         if (this._safety !== this._orig._safety) {
             detail.safety = this._safety;
         }
@@ -108,11 +113,13 @@ class Post extends events.EventTarget {
                 text: note.text,
             }));
         }
-        if (this._content) {
-            files.content = this._content;
+        if (this._newContent) {
+            files.content = this._newContent;
+        } else if (this._newContentUrl) {
+            detail.contentUrl = this._newContentUrl;
         }
-        if (this._thumbnail !== undefined) {
-            files.thumbnail = this._thumbnail;
+        if (this._newThumbnail !== undefined) {
+            files.thumbnail = this._newThumbnail;
         }
 
         let promise = this._id ?
@@ -123,11 +130,11 @@ class Post extends events.EventTarget {
             this._updateFromResponse(response);
             this.dispatchEvent(
                 new CustomEvent('change', {detail: {post: this}}));
-            if (this._content) {
+            if (this._newContent || this._newContentUrl) {
                 this.dispatchEvent(
                     new CustomEvent('changeContent', {detail: {post: this}}));
             }
-            if (this._thumbnail) {
+            if (this._newThumbnail) {
                 this.dispatchEvent(
                     new CustomEvent('changeThumbnail', {detail: {post: this}}));
             }
@@ -254,7 +261,8 @@ class Post extends events.EventTarget {
             _flags:         [...response.flags || []],
             _tags:          [...response.tags || []],
             _notes:         NoteList.fromResponse([...response.notes || []]),
-            _comments:      CommentList.fromResponse([...response.comments || []]),
+            _comments:      CommentList.fromResponse(
+                                [...response.comments || []]),
             _relations:     [...response.relations || []],
 
             _score:         response.score,

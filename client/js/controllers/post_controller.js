@@ -148,10 +148,10 @@ class PostController {
             post.relations = e.detail.relations;
         }
         if (e.detail.content !== undefined) {
-            post.content = e.detail.content;
+            post.newContent = e.detail.content;
         }
         if (e.detail.thumbnail !== undefined) {
-            post.thumbnail = e.detail.thumbnail;
+            post.newThumbnail = e.detail.thumbnail;
         }
         post.save()
             .then(() => {

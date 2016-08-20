@@ -487,6 +487,8 @@ module.exports = misc.arrayToObject([
     makeNonVoidElement,
     makeTagLink,
     makePostLink,
+    makeCheckbox,
+    makeRadio,
     syncScrollPosition,
     slideDown,
     slideUp,
