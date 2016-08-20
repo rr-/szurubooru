@@ -14,7 +14,7 @@ class FileDropperControl {
         this._dropperNode = source.querySelector('.file-dropper');
         this._fileInputNode = source.querySelector('input');
         this._fileInputNode.style.display = 'none';
-        this._fileInputNode.multiple = this._options._allowMultiple || false;
+        this._fileInputNode.multiple = this._options.allowMultiple || false;
 
         this._counter = 0;
         this._dropperNode.addEventListener(
