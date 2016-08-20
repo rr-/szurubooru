@@ -342,14 +342,26 @@ input::-moz-focus-inner
 /*
  * File dropper
  */
-.file-dropper
-    background: $window-color
-    border: 3px dashed #eee
-    padding: 0.3em 0.5em
-    line-height: 140%
-    text-align: center
-    cursor: pointer
-    word-wrap: break-word
+.file-dropper-holder
+    display: flex
+    flex-wrap: wrap
+    .file-dropper
+        display: block
+        width: 100%
+        background: $window-color
+        border: 3px dashed #eee
+        padding: 0.3em 0.5em
+        line-height: 140%
+        text-align: center
+        cursor: pointer
+        word-wrap: break-word
+    input
+        margin-top: 0.5em
+        width: auto
+        flex: 1
+    button
+        margin-top: 0.5em
+        width: 8em
 
 input[type=file]:disabled+.file-dropper
     cursor: default
