@@ -263,7 +263,7 @@ def update_post_content(post, content):
         raise InvalidPostContentError(
             'Unhandled file type: %r' % post.mime_type)
 
-    post.checksum = util.get_md5(content)
+    post.checksum = util.get_sha1(content)
     other_post = db.session \
         .query(db.Post) \
         .filter(db.Post.checksum == post.checksum) \

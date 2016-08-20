@@ -73,6 +73,14 @@ def get_md5(source):
     return md5.hexdigest()
 
 
+def get_sha1(source):
+    if not isinstance(source, bytes):
+        source = source.encode('utf-8')
+    sha1 = hashlib.sha1()
+    sha1.update(source)
+    return sha1.hexdigest()
+
+
 def flip(source):
     return {v: k for k, v in source.items()}
 

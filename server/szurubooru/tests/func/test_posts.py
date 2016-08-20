@@ -288,8 +288,8 @@ def test_update_post_content(
         expected_mime_type,
         expected_type,
         output_file_name):
-    with patch('szurubooru.func.util.get_md5'):
-        util.get_md5.return_value = 'crc'
+    with patch('szurubooru.func.util.get_sha1'):
+        util.get_sha1.return_value = 'crc'
         config_injector({
             'data_dir': str(tmpdir.mkdir('data')),
             'thumbnails': {
