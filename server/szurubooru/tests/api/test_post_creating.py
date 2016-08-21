@@ -207,11 +207,10 @@ def test_creating_from_url_with_source_specified(
         posts.update_post_source.assert_called_once_with(post, 'example2.com')
 
 
-@pytest.mark.parametrize('field', ['tags', 'safety'])
+@pytest.mark.parametrize('field', ['safety'])
 def test_trying_to_omit_mandatory_field(context_factory, user_factory, field):
     params = {
         'safety': 'safe',
-        'tags': ['tag1', 'tag2'],
     }
     del params[field]
     with pytest.raises(errors.MissingRequiredParameterError):
@@ -220,6 +219,42 @@ def test_trying_to_omit_mandatory_field(context_factory, user_factory, field):
                 params=params,
                 files={'content': '...'},
                 user=user_factory(rank=db.User.RANK_REGULAR)))
+
+
+@pytest.mark.parametrize(
+    'field', ['tags', 'relations', 'source', 'notes', 'flags'])
+def test_omitting_optional_field(
+        field, context_factory, post_factory, user_factory):
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    post = post_factory()
+    db.session.add(post)
+    db.session.flush()
+    params = {
+        'safety': 'safe',
+        'tags': ['tag1', 'tag2'],
+        'relations': [1, 2],
+        'source': 'source',
+        'notes': ['note1', 'note2'],
+        'flags': ['flag1', 'flag2'],
+    }
+    del params[field]
+    with patch('szurubooru.func.posts.create_post'), \
+            patch('szurubooru.func.posts.update_post_safety'), \
+            patch('szurubooru.func.posts.update_post_source'), \
+            patch('szurubooru.func.posts.update_post_relations'), \
+            patch('szurubooru.func.posts.update_post_notes'), \
+            patch('szurubooru.func.posts.update_post_flags'), \
+            patch('szurubooru.func.posts.serialize_post'), \
+            patch('szurubooru.func.tags.export_to_json'), \
+            patch('szurubooru.func.snapshots.create'):
+        posts.create_post.return_value = (post, [])
+        posts.serialize_post.return_value = 'serialized post'
+        result = api.post_api.create_post(
+            context_factory(
+                params=params,
+                files={'content': 'post-content'},
+                user=auth_user))
+        assert result == 'serialized post'
 
 
 def test_trying_to_omit_content(context_factory, user_factory):

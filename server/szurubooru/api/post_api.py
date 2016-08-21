@@ -31,7 +31,7 @@ def create_post(ctx, _params=None):
     else:
         auth.verify_privilege(ctx.user, 'posts:create:identified')
     content = ctx.get_file('content', required=True)
-    tag_names = ctx.get_param_as_list('tags', required=True)
+    tag_names = ctx.get_param_as_list('tags', required=False, default=[])
     safety = ctx.get_param_as_string('safety', required=True)
     source = ctx.get_param_as_string('source', required=False, default=None)
     if ctx.has_param('contentUrl') and not source:
