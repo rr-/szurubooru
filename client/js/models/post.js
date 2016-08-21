@@ -35,6 +35,7 @@ class Post extends events.EventTarget {
     get relations()      { return this._relations; }
 
     get score()          { return this._score; }
+    get commentCount()   { return this._commentCount; }
     get favoriteCount()  { return this._favoriteCount; }
     get ownFavorite()    { return this._ownFavorite; }
     get ownScore()       { return this._ownScore; }
@@ -257,6 +258,7 @@ class Post extends events.EventTarget {
             _relations:     [...response.relations || []],
 
             _score:         response.score,
+            _commentCount:  response.commentCount,
             _favoriteCount: response.favoriteCount,
             _ownScore:      response.ownScore,
             _ownFavorite:   response.ownFavorite,
