@@ -3,6 +3,10 @@
 const ICON_CLASS_OPENED = 'fa-chevron-down';
 const ICON_CLASS_CLOSED = 'fa-chevron-up';
 
+const views = require('../util/views.js');
+
+const template = views.getTemplate('expander');
+
 class ExpanderControl {
     constructor(title, nodes) {
         this._title = title;
@@ -12,23 +16,11 @@ class ExpanderControl {
             return;
         }
 
-        const expanderNode = document.createElement('section');
-        expanderNode.classList.add('expander');
-
-        const toggleLinkNode = document.createElement('a');
-        const toggleIconNode = document.createElement('i');
-        toggleIconNode.classList.add('fa');
-        toggleLinkNode.textContent = title;
-        toggleLinkNode.appendChild(toggleIconNode);
+        const expanderNode = template({title: title});
+        const toggleLinkNode = expanderNode.querySelector('a');
+        const toggleIconNode = expanderNode.querySelector('i');
+        const expanderContentNode = expanderNode.querySelector('div');
         toggleLinkNode.addEventListener('click', e => this._evtToggleClick(e));
-
-        const headerNode = document.createElement('header');
-        headerNode.appendChild(toggleLinkNode);
-        expanderNode.appendChild(headerNode);
-
-        const expanderContentNode = document.createElement('div');
-        expanderContentNode.classList.add('expander-content');
-        expanderNode.appendChild(expanderContentNode);
 
         nodes[0].parentNode.insertBefore(expanderNode, nodes[0]);
 
