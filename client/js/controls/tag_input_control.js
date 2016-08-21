@@ -17,6 +17,8 @@ const SOURCE_USER_INPUT = 'user-input';
 const SOURCE_SUGGESTION = 'suggestions';
 const SOURCE_CLIPBOARD = 'clipboard';
 
+const template = views.getTemplate('tag-input');
+
 function _fadeOutListItemNodeStatus(listItemNode) {
     if (listItemNode.classList.length) {
         if (listItemNode.fadeTimeout) {
@@ -77,22 +79,19 @@ class SuggestionList {
 }
 
 class TagInputControl extends events.EventTarget {
-    constructor(sourceInputNode) {
+    constructor(hostNode) {
         super();
         this.tags = [];
+        this._hostNode = hostNode;
         this._suggestions = new SuggestionList();
 
-        this._sourceInputNode = sourceInputNode;
+        // dom
+        const editAreaNode = template();
+        this._editAreaNode = editAreaNode;
+        this._tagInputNode = editAreaNode.querySelector('input');
+        this._suggestionsNode = editAreaNode.querySelector('.tag-suggestions');
+        this._tagListNode = editAreaNode.querySelector('ul.compact-tags');
 
-        this._install();
-    }
-
-    _install() {
-        this._editAreaNode = document.createElement('div');
-        this._editAreaNode.classList.add('tag-input');
-
-        this._tagInputNode = views.htmlToDom(
-            '<input type="text" placeholder="type to add…"/>');
         this._autoCompleteControl = new TagAutoCompleteControl(
             this._tagInputNode, {
                 getTextToFind: () => {
@@ -109,51 +108,28 @@ class TagInputControl extends events.EventTarget {
                 verticalShift: -2,
                 isTaggedWith: tagName => this.isTaggedWith(tagName),
             });
+
+        // dom events
         this._tagInputNode.addEventListener(
             'keydown', e => this._evtInputKeyDown(e));
         this._tagInputNode.addEventListener(
             'paste', e => this._evtInputPaste(e));
-        this._editAreaNode.appendChild(this._tagInputNode);
-
-        this._suggestionsNode = views.htmlToDom(
-            '<div class="tag-suggestions">' +
-            '<div class="wrapper">' +
-            '<p>' +
-            '<span class="buttons">' +
-            '<a class="opacity"><i class="fa fa-eye"></i></a>' +
-            '<a class="close">×</a>' +
-            '</span>' +
-            'Suggested tags' +
-            '</p>' +
-            '<ul></ul>' +
-            '</div>' +
-            '</div>');
-        this._editAreaNode.appendChild(this._suggestionsNode);
         this._editAreaNode.querySelector('a.opacity').addEventListener(
-            'click', e => {
-                e.preventDefault();
-                this._toggleSuggestionsPopupOpacity();
-            });
+            'click', e => this._evtToggleSuggestionsPopupOpacityClick(e));
         this._editAreaNode.querySelector('a.close').addEventListener(
-            'click', e => {
-                e.preventDefault();
-                this._closeSuggestionsPopup();
-            });
-
-        this._tagListNode = views.htmlToDom('<ul class="compact-tags"></ul>');
-        this._editAreaNode.appendChild(this._tagListNode);
+            'click', e => this._evtCloseSuggestionsPopupClick(e));
 
         // show
-        this._sourceInputNode.style.display = 'none';
-        this._sourceInputNode.parentNode.insertBefore(
-            this._editAreaNode, this._sourceInputNode.nextSibling);
+        this._hostNode.style.display = 'none';
+        this._hostNode.parentNode.insertBefore(
+            this._editAreaNode, hostNode.nextSibling);
 
         this.addEventListener('change', e => this._evtTagsChanged(e));
         this.addEventListener('add', e => this._evtTagAdded(e));
         this.addEventListener('remove', e => this._evtTagRemoved(e));
 
         // add existing tags
-        this.addMultipleTags(this._sourceInputNode.value, SOURCE_INIT);
+        this.addMultipleTags(this._hostNode.value, SOURCE_INIT);
     }
 
     isTaggedWith(tagName) {
@@ -214,8 +190,8 @@ class TagInputControl extends events.EventTarget {
     }
 
     _evtTagsChanged(e) {
-        this._sourceInputNode.value = this.tags.join(' ');
-        this._sourceInputNode.dispatchEvent(new CustomEvent('change'));
+        this._hostNode.value = this.tags.join(' ');
+        this._hostNode.dispatchEvent(new CustomEvent('change'));
     }
 
     _evtTagAdded(e) {
@@ -265,6 +241,16 @@ class TagInputControl extends events.EventTarget {
         this._hideAutoComplete();
         this.addMultipleTags(pastedText, SOURCE_CLIPBOARD);
         this._tagInputNode.value = '';
+    }
+
+    _evtCloseSuggestionsPopupClick(e) {
+        e.preventDefault();
+        this._closeSuggestionsPopup();
+    }
+
+    _evtToggleSuggestionsPopupOpacityClick(e) {
+        e.preventDefault();
+        this._toggleSuggestionsPopupOpacity();
     }
 
     _evtInputKeyDown(e) {
