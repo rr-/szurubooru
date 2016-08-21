@@ -1,0 +1,110 @@
+@import colors
+
+div.tag-input
+    position: relative
+    ul
+        margin-top: 0.2em
+    li
+        transition: background-color 0.5s linear
+        &.implication
+            background: $implied-tag-background-color
+            color: $implied-tag-text-color
+        &.new
+            background: $new-tag-background-color
+            color: $new-tag-text-color
+        &.duplicate
+            background: $duplicate-tag-background-color
+            color: $duplicate-tag-text-color
+
+    .tag-suggestions
+        position: absolute
+        z-index: 5
+        top: 0
+        left: 100%
+
+        &:not(.shown)
+            display: none
+
+        &.translucent
+            opacity: .5
+
+        &:before
+            margin-left: 0.5em
+            margin-top: 0.5em
+            position: absolute
+            display: block
+            background: $tag-suggestions-header-color
+            border-left: 1px solid $tag-suggestions-border-color
+            border-bottom: 1px solid $tag-suggestions-border-color
+            width: 0.707107em
+            height: 0.707107em
+            content: ' '
+            transform: rotate(45deg)
+            transform-origin: 0 0%
+
+        .buttons
+            float: right
+            a
+                margin-left: 1em
+                color: $inactive-link-color
+
+        .wrapper
+            margin-left: 0.5em
+            background: $tag-suggestions-background-color
+            border: 1px solid $tag-suggestions-border-color
+            width: 15em
+            word-break: break-all
+            p
+                background: $tag-suggestions-header-color
+                padding: 0.2em 1em
+                margin: 0
+            ul
+                margin: 0
+                overflow-y: auto
+                overflow-x: none
+                max-height: 20em
+                padding: 0.5em 1em 0 1em
+                li:last-child
+                    border-bottom: 0.5em solid alpha($tag-suggestions-background-color, 0)
+                li
+                    margin: 0
+                    font-size: 90%
+                    line-height: 1.3
+                    a, span
+                        display: inline-block
+                        vertical-align: bottom
+                    .add-tag
+                        white-space: nowrap
+                        overflow: hidden
+                        max-width: 10em
+                        text-overflow: ellipsis
+                    .tag-weight
+                        margin: 0 1em 0 0
+            p
+                margin: 0
+
+        .append
+            color: $inactive-link-color
+            margin-left: 0.7em
+            font-size: 90%
+            unselectable()
+
+ul.compact-tags
+    line-height: 130%
+    width: 100%
+    li
+        margin: 0
+        width: 100%
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+        a
+            display: inline
+    i
+        padding-right: 0.4em
+    .append
+        color: $inactive-link-color
+        margin-left: 0.7em
+        font-size: 90%
+        unselectable()
+
