@@ -118,6 +118,8 @@ class TagInputControl extends events.EventTarget {
             'click', e => this._evtToggleSuggestionsPopupOpacityClick(e));
         this._editAreaNode.querySelector('a.close').addEventListener(
             'click', e => this._evtCloseSuggestionsPopupClick(e));
+        this._editAreaNode.querySelector('button').addEventListener(
+            'click', e => this._evtAddTagButtonClick(e));
 
         // show
         this._hostNode.style.display = 'none';
@@ -246,6 +248,11 @@ class TagInputControl extends events.EventTarget {
     _evtCloseSuggestionsPopupClick(e) {
         e.preventDefault();
         this._closeSuggestionsPopup();
+    }
+
+    _evtAddTagButtonClick(e) {
+        this.addTag(this._tagInputNode.value, SOURCE_USER_INPUT);
+        this._tagInputNode.value = '';
     }
 
     _evtToggleSuggestionsPopupOpacityClick(e) {

@@ -1,5 +1,8 @@
 <div class='tag-input'>
-    <input type='text' placeholder='type to add…'/>
+    <div class='main-control'>
+        <input type='text' placeholder='type to add…'/>
+        <button>Add</button>
+    </div>
 
     <div class='tag-suggestions'>
         <div class='wrapper'>
