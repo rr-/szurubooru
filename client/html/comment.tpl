@@ -32,13 +32,13 @@
             --><span class='score-container'></span><!--
 
             --><% if (ctx.canEditComment) { %><!--
-                --><a class='edit'><!--
+                --><a href class='edit'><!--
                     --><i class='fa fa-pencil'></i> edit<!--
                 --></a><!--
             --><% } %><!--
 
             --><% if (ctx.canDeleteComment) { %><!--
-                --><a class='delete'><!--
+                --><a href class='delete'><!--
                     --><i class='fa fa-remove'></i> delete<!--
                 --></a><!--
             --><% } %><!--

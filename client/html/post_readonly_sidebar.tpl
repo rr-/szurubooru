@@ -26,10 +26,10 @@
         </section>
 
         <section class='zoom'>
-            <a class='fit-original'>Original zoom</a> &middot;
-            <a class='fit-width'>fit width</a> &middot;
-            <a class='fit-height'>height</a> &middot;
-            <a class='fit-both'>both</a>
+            <a href class='fit-original'>Original zoom</a> &middot;
+            <a href class='fit-width'>fit width</a> &middot;
+            <a href class='fit-height'>height</a> &middot;
+            <a href class='fit-both'>both</a>
         </section>
 
         <section class='search'>

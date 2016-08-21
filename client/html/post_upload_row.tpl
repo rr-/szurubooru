@@ -1,5 +1,5 @@
 <li class='uploadable'>
-    <a class='remove'>
+    <a href class='remove'>
         <i class='fa fa-remove'></i>
     </a>
 

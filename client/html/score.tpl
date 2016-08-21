@@ -1,5 +1,5 @@
 <% if (ctx.canScore) { %>
-    <a class='upvote'>
+    <a href class='upvote'>
         <% if (ctx.ownScore == 1) { %>
             <i class='fa fa-thumbs-up'></i>
         <% } else { %>
@@ -9,13 +9,13 @@
         <span class='vim-nav-hint'>like</span>
     </a>
 <% } else { %>
-    <a class='upvote inactive'>
+    <a href class='upvote inactive'>
         <i class='fa fa-thumbs-o-up'></i>
     </a>
 <% } %>
 <span class='value'><%- ctx.score %></span>
 <% if (ctx.canScore) { %>
-    <a class='downvote'>
+    <a href class='downvote'>
         <% if (ctx.ownScore == -1) { %>
             <i class='fa fa-thumbs-down'></i>
         <% } else { %>

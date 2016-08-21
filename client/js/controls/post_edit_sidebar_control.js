@@ -146,12 +146,14 @@ class PostEditSidebarControl extends events.EventTarget {
     }
 
     _evtRemoveThumbnailClick(e) {
+        e.preventDefault();
         this._thumbnailFileDropper.reset();
         this._newPostThumbnail = null;
         this._thumbnailRemovalLinkNode.style.display = 'none';
     }
 
     _evtFeatureClick(e) {
+        e.preventDefault();
         if (confirm('Are you sure you want to feature this post?')) {
             this.dispatchEvent(new CustomEvent('feature', {
                 detail: {
@@ -162,6 +164,7 @@ class PostEditSidebarControl extends events.EventTarget {
     }
 
     _evtDeleteClick(e) {
+        e.preventDefault();
         if (confirm('Are you sure you want to delete this post?')) {
             this.dispatchEvent(new CustomEvent('delete', {
                 detail: {
@@ -195,6 +198,7 @@ class PostEditSidebarControl extends events.EventTarget {
     }
 
     _evtAddNoteClick(e) {
+        e.preventDefault();
         if (e.target.classList.contains('inactive')) {
             return;
         }
@@ -203,6 +207,7 @@ class PostEditSidebarControl extends events.EventTarget {
     }
 
     _evtDeleteNoteClick(e) {
+        e.preventDefault();
         if (e.target.classList.contains('inactive')) {
             return;
         }

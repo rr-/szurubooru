@@ -16,8 +16,8 @@
 
         <nav class='buttons'>
             <ul>
-                <li class='preview'><a>Preview</a></li>
-                <li class='edit'><a>Edit</a></li>
+                <li class='preview'><a href>Preview</a></li>
+                <li class='edit'><a href>Edit</a></li>
             </ul>
         </nav>
 

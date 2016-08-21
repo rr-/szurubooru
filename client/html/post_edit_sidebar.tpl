@@ -57,9 +57,9 @@
 
         <% if (ctx.canEditPostNotes) { %>
             <section class='notes'>
-                <a class='add'>Add a note</a>
+                <a href class='add'>Add a note</a>
                 <%= ctx.makeTextarea({disabled: true, text: 'Content (supports Markdown)', rows: '8'}) %>
-                <a class='delete inactive'>Delete selected note</a>
+                <a href class='delete inactive'>Delete selected note</a>
             </section>
         <% } %>
 
@@ -74,7 +74,7 @@
             <section class='post-thumbnail'>
                 <label>Thumbnail</label>
                 <div class='dropper-container'></div>
-                <a>Discard custom thumbnail</a>
+                <a href>Discard custom thumbnail</a>
             </section>
         <% } %>
 
@@ -82,10 +82,10 @@
             <section class='management'>
                 <ul>
                     <% if (ctx.canFeaturePosts) { %>
-                        <li><a class='feature'>Feature this post on main page</a></li>
+                        <li><a href class='feature'>Feature this post on main page</a></li>
                     <% } %>
                     <% if (ctx.canDeletePosts) { %>
-                        <li><a class='delete'>Delete this post</a></li>
+                        <li><a href class='delete'>Delete this post</a></li>
                     <% } %>
                 </ul>
             </section>

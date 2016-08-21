@@ -1,6 +1,6 @@
 <section class='expander'>
     <header>
-        <a>
+        <a href>
             <%- ctx.title %>
             <i class='fa fa-chevron-down'></i>
         </a>

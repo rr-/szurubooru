@@ -12,11 +12,11 @@
             <% if (ctx.parameters.tag) { %>
                 <span class='append'>Tagging with:</span>
             <% } else { %>
-                <a class='mousetrap button append open-masstag'>Mass tag</a>
+                <a href class='mousetrap button append open-masstag'>Mass tag</a>
             <% } %>
             <%= ctx.makeTextInput({name: 'masstag', value: ctx.parameters.tag}) %>
             <input class='mousetrap start-tagging' type='submit' value='Start tagging'/>
-            <a class='mousetrap button append stop-tagging'>Stop tagging</a>
+            <a href class='mousetrap button append stop-tagging'>Stop tagging</a>
         </form>
     <% } %>
 </div>

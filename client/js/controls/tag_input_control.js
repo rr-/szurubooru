@@ -251,6 +251,7 @@ class TagInputControl extends events.EventTarget {
     }
 
     _evtAddTagButtonClick(e) {
+        e.preventDefault();
         this.addTag(this._tagInputNode.value, SOURCE_USER_INPUT);
         this._tagInputNode.value = '';
     }
@@ -324,6 +325,7 @@ class TagInputControl extends events.EventTarget {
 
         const removalLinkNode = document.createElement('a');
         removalLinkNode.classList.add('append');
+        removalLinkNode.setAttribute('href', '')
         removalLinkNode.setAttribute('data-pseudo-content', '×');
         removalLinkNode.addEventListener('click', e => {
             e.preventDefault();
@@ -387,6 +389,7 @@ class TagInputControl extends events.EventTarget {
             const addLinkNode = document.createElement('a');
             addLinkNode.textContent = tagName;
             addLinkNode.classList.add('add-tag');
+            addLinkNode.setAttribute('href', '');
             if (actualTag) {
                 addLinkNode.classList.add(
                     misc.makeCssName(actualTag.category, 'tag'));
@@ -405,6 +408,7 @@ class TagInputControl extends events.EventTarget {
             const removeLinkNode = document.createElement('a');
             removeLinkNode.classList.add('remove-tag');
             removeLinkNode.classList.add('append');
+            removeLinkNode.setAttribute('href', '');
             removeLinkNode.setAttribute('data-pseudo-content', '×');
             removeLinkNode.addEventListener('click', e => {
                 e.preventDefault();

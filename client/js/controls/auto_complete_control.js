@@ -215,6 +215,7 @@ class AutoCompleteControl {
             const listItem = document.createElement('li');
             const link = document.createElement('a');
             link.innerHTML = resultItem.caption;
+            link.setAtribute('href', '');
             link.setAttribute('data-key', resultItem.value);
             link.addEventListener(
                 'mouseenter',

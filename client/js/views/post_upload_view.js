@@ -206,6 +206,7 @@ class PostUploadView extends events.EventTarget {
     }
 
     _evtRemoveClick(e, uploadable) {
+        e.preventDefault();
         this.removeUploadable(uploadable);
     }
 

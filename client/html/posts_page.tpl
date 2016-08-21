@@ -36,7 +36,7 @@
                         <% } %>
                     </a>
                     <% if (ctx.parameters && ctx.parameters.tag) { %>
-                        <a data-post-id='<%= post.id %>' class='masstag'>
+                        <a href data-post-id='<%= post.id %>' class='masstag'>
                         </a>
                     <% } %>
                 </li>
