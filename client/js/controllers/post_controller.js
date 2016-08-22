@@ -46,6 +46,7 @@ class PostController {
                 canCreateComments: api.hasPrivilege('comments:create'),
                 parameters: parameters,
             });
+
             if (this._view.sidebarControl) {
                 this._view.sidebarControl.addEventListener(
                     'favorite', e => this._evtFavoritePost(e));
@@ -58,21 +59,23 @@ class PostController {
                 this._view.sidebarControl.addEventListener(
                     'change', e => this._evtPostChange(e));
                 this._view.sidebarControl.addEventListener(
-                    'submit', e => this._evtPostEdit(e));
+                    'submit', e => this._evtUpdatePost(e));
                 this._view.sidebarControl.addEventListener(
-                    'feature', e => this._evtPostFeature(e));
+                    'feature', e => this._evtFeaturePost(e));
                 this._view.sidebarControl.addEventListener(
-                    'delete', e => this._evtPostDelete(e));
+                    'delete', e => this._evtDeletePost(e));
             }
+
             if (this._view.commentFormControl) {
                 this._view.commentFormControl.addEventListener(
                     'change', e => this._evtCommentChange(e));
                 this._view.commentFormControl.addEventListener(
                     'submit', e => this._evtCreateComment(e));
             }
+
             if (this._view.commentListControl) {
                 this._view.commentListControl.addEventListener(
-                    'change', e => this._evtUpdateComment(e));
+                    'submit', e => this._evtUpdateComment(e));
                 this._view.commentListControl.addEventListener(
                     'score', e => this._evtScoreComment(e));
                 this._view.commentListControl.addEventListener(
@@ -104,7 +107,7 @@ class PostController {
         settings.save(browsingSettings);
     }
 
-    _evtPostFeature(e) {
+    _evtFeaturePost(e) {
         this._view.sidebarControl.disableForm();
         this._view.sidebarControl.clearMessages();
         e.detail.post.feature()
@@ -117,7 +120,7 @@ class PostController {
             });
     }
 
-    _evtPostDelete(e) {
+    _evtDeletePost(e) {
         this._view.sidebarControl.disableForm();
         this._view.sidebarControl.clearMessages();
         e.detail.post.delete()
@@ -131,7 +134,7 @@ class PostController {
             });
     }
 
-    _evtPostEdit(e) {
+    _evtUpdatePost(e) {
         this._view.sidebarControl.disableForm();
         this._view.sidebarControl.clearMessages();
         const post = e.detail.post;

@@ -37,8 +37,8 @@ class PostsHeaderView {
             }
         });
 
-        for (let safetyButton of this._safetyButtonNodes) {
-            safetyButton.addEventListener(
+        for (let safetyButtonNode of this._safetyButtonNodes) {
+            safetyButtonNode.addEventListener(
                 'click', e => this._evtSafetyButtonClick(e));
         }
         this._searchFormNode.addEventListener(

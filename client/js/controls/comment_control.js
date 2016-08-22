@@ -39,7 +39,7 @@ class CommentControl extends events.EventTarget {
             this._hostNode.querySelector('.comment-form-container'),
             this._comment,
             true);
-        events.proxyEvent(this._formControl, this, 'submit', 'change');
+        events.proxyEvent(this._formControl, this, 'submit');
 
         this._installScore();
     }

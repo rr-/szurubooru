@@ -36,7 +36,7 @@ class UserView extends events.EventTarget {
             this._view = new UserEditView(ctx);
             this._view.addEventListener('submit', e => {
                 this.dispatchEvent(
-                    new CustomEvent('change', {detail: e.detail}));
+                    new CustomEvent('submit', {detail: e.detail}));
             });
         } else if (ctx.section == 'delete') {
             this._view = new UserDeleteView(ctx);

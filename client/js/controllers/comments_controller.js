@@ -30,7 +30,7 @@ class CommentsController {
                     canViewPosts: api.hasPrivilege('posts:view'),
                 });
                 const view = new CommentsPageView(pageCtx);
-                view.addEventListener('change', e => this._evtChange(e));
+                view.addEventListener('submit', e => this._evtUpdate(e));
                 view.addEventListener('score', e => this._evtScore(e));
                 view.addEventListener('delete', e => this._evtDelete(e));
                 return view;
@@ -38,7 +38,7 @@ class CommentsController {
         });
     }
 
-    _evtChange(e) {
+    _evtUpdate(e) {
         // TODO: disable form
         e.detail.comment.text = e.detail.text;
         e.detail.comment.save()

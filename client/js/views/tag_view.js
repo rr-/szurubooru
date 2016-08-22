@@ -35,7 +35,7 @@ class TagView extends events.EventTarget {
             this._view = new TagEditView(ctx);
             this._view.addEventListener('submit', e => {
                 this.dispatchEvent(
-                    new CustomEvent('change', {detail: e.detail}));
+                    new CustomEvent('submit', {detail: e.detail}));
             });
         } else if (ctx.section === 'merge') {
             this._view = new TagMergeView(ctx);

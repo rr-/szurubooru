@@ -51,7 +51,7 @@ class UserController {
                 canDelete: api.hasPrivilege(`users:delete:${infix}`),
                 ranks: ranks,
             });
-            this._view.addEventListener('change', e => this._evtChange(e));
+            this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
         }, errorMessage => {
             this._view = new EmptyView();
@@ -66,7 +66,7 @@ class UserController {
         }
     }
 
-    _evtChange(e) {
+    _evtUpdate(e) {
         this._view.clearMessages();
         this._view.disableForm();
         const isLoggedIn = api.isLoggedIn(e.detail.user);

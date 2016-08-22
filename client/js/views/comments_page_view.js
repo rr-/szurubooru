@@ -19,7 +19,7 @@ class CommentsPageView extends events.EventTarget {
                     `.comments-container[data-for="${post.id}"]`),
                 post.comments,
                 true);
-            events.proxyEvent(commentListControl, this, 'change');
+            events.proxyEvent(commentListControl, this, 'submit');
             events.proxyEvent(commentListControl, this, 'score');
             events.proxyEvent(commentListControl, this, 'delete');
         }

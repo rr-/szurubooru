@@ -28,7 +28,7 @@ class SettingsView extends events.EventTarget {
 
     _evtSubmit(e) {
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent('change', {
+        this.dispatchEvent(new CustomEvent('submit', {
             detail: {
                 upscaleSmallPosts: this._find('upscale-small-posts').checked,
                 endlessScroll: this._find('endless-scroll').checked,

@@ -11,10 +11,10 @@ class SettingsController {
         this._view = new SettingsView({
             settings: settings.get(),
         });
-        this._view.addEventListener('change', e => this._evtChange(e));
+        this._view.addEventListener('submit', e => this._evtSubmit(e));
     }
 
-    _evtChange(e) {
+    _evtSubmit(e) {
         this._view.clearMessages();
         settings.save(e.detail);
         this._view.showSuccess('Settings saved.');

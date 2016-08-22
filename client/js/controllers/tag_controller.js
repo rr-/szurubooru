@@ -36,7 +36,7 @@ class TagController {
                 categories: categories,
             });
 
-            this._view.addEventListener('change', e => this._evtChange(e));
+            this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('merge', e => this._evtMerge(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
         }, errorMessage => {
@@ -51,7 +51,7 @@ class TagController {
         }
     }
 
-    _evtChange(e) {
+    _evtUpdate(e) {
         this._view.clearMessages();
         this._view.disableForm();
         if (e.detail.names !== undefined) {
