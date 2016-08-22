@@ -46,7 +46,7 @@ def create_post(ctx, _params=None):
         auth.verify_privilege(ctx.user, 'tags:create')
         db.session.flush()
         for tag in new_tags:
-            snapshots.create(tag, ctx.user)
+            snapshots.create(tag, None if anonymous else ctx.user)
     posts.update_post_safety(post, safety)
     posts.update_post_source(post, source)
     posts.update_post_relations(post, relations)
@@ -55,7 +55,7 @@ def create_post(ctx, _params=None):
     if ctx.has_file('thumbnail'):
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))
     ctx.session.add(post)
-    snapshots.create(post, ctx.user)
+    snapshots.create(post, None if anonymous else ctx.user)
     ctx.session.commit()
     tags.export_to_json()
     return _serialize_post(ctx, post)
