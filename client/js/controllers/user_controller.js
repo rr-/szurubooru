@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
+const misc = require('../util/misc.js');
 const config = require('../config.js');
 const views = require('../util/views.js');
 const User = require('../models/user.js');
@@ -51,6 +52,7 @@ class UserController {
                 canDelete: api.hasPrivilege(`users:delete:${infix}`),
                 ranks: ranks,
             });
+            this._view.addEventListener('change', e => this._evtChange(e));
             this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
         }, errorMessage => {
@@ -59,7 +61,12 @@ class UserController {
         });
     }
 
+    _evtChange(e) {
+        misc.enableExitConfirmation();
+    }
+
     _evtSaved(e) {
+        misc.disableExitConfirmation();
         if (this._name !== e.detail.user.name) {
             router.replace(
                 '/user/' + e.detail.user.name + '/edit', null, false);

@@ -48,6 +48,7 @@ class UserView extends events.EventTarget {
             this._view = new UserSummaryView(ctx);
         }
 
+        events.proxyEvent(this._view, this, 'change');
         views.syncScrollPosition();
     }
 

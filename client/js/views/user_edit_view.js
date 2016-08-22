@@ -30,6 +30,13 @@ class UserEditView extends events.EventTarget {
             });
         }
 
+        for (let node of this._formNode.querySelectorAll('input, select')) {
+            node.addEventListener(
+                'change', e => {
+                    this.dispatchEvent(new CustomEvent('change'));
+                });
+        }
+
         this._formNode.addEventListener('submit', e => this._evtSubmit(e));
     }
 
