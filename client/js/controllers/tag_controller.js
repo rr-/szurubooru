@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
+const misc = require('../util/misc.js');
 const tags = require('../tags.js');
 const Tag = require('../models/tag.js');
 const topNavigation = require('../models/top_navigation.js');
@@ -36,6 +37,7 @@ class TagController {
                 categories: categories,
             });
 
+            this._view.addEventListener('change', e => this._evtChange(e));
             this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('merge', e => this._evtMerge(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
@@ -45,7 +47,12 @@ class TagController {
         });
     }
 
+    _evtChange(e) {
+        misc.enableExitConfirmation();
+    }
+
     _evtSaved(e) {
+        misc.disableExitConfirmation();
         if (this._name !== e.detail.tag.names[0]) {
             router.replace('/tag/' + e.detail.tag.names[0], null, false);
         }

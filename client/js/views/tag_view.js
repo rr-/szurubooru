@@ -53,6 +53,7 @@ class TagView extends events.EventTarget {
             this._view = new TagSummaryView(ctx);
         }
 
+        events.proxyEvent(this._view, this, 'change');
         views.syncScrollPosition();
     }
 
