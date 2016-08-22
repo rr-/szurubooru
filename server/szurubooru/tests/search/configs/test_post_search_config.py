@@ -131,12 +131,15 @@ def test_filter_by_score(
 
 
 @pytest.mark.parametrize('input,expected_post_ids', [
+    ('uploader:', [4]),
     ('uploader:u1', [1]),
     ('uploader:u3', [3]),
     ('uploader:u1,u3', [1, 3]),
+    ('upload:', [4]),
     ('upload:u1', [1]),
     ('upload:u3', [3]),
     ('upload:u1,u3', [1, 3]),
+    ('submit:', [4]),
     ('submit:u1', [1]),
     ('submit:u3', [3]),
     ('submit:u1,u3', [1, 3]),
@@ -146,10 +149,11 @@ def test_filter_by_uploader(
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
+    post4 = post_factory(id=4)
     post1.user = user_factory(name='u1')
     post2.user = user_factory(name='u2')
     post3.user = user_factory(name='u3')
-    db.session.add_all([post1, post2, post3])
+    db.session.add_all([post1, post2, post3, post4])
     verify_unpaged(input, expected_post_ids)
 
 

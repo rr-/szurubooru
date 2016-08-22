@@ -62,6 +62,22 @@ def _create_score_filter(score):
     return wrapper
 
 
+def _create_user_filter():
+    def wrapper(query, criterion, negated):
+        if isinstance(criterion, criteria.PlainCriterion) \
+                and not criterion.value:
+            expr = db.Post.user_id == None  # sic
+            if negated:
+                expr = ~expr
+            return query.filter(expr)
+        return search_util.create_subquery_filter(
+            db.Post.user_id,
+            db.User.user_id,
+            db.User.name,
+            search_util.create_str_filter)(query, criterion, negated)
+    return wrapper
+
+
 class PostSearchConfig(BaseSearchConfig):
     def on_search_query_parsed(self, search_query):
         new_special_tokens = []
@@ -138,11 +154,7 @@ class PostSearchConfig(BaseSearchConfig):
                 lambda subquery: subquery.join(db.Tag).join(db.TagName)),
             'score': search_util.create_num_filter(db.Post.score),
             ('uploader', 'upload', 'submit'):
-                search_util.create_subquery_filter(
-                    db.Post.user_id,
-                    db.User.user_id,
-                    db.User.name,
-                    search_util.create_str_filter),
+                _create_user_filter(),
             'comment': search_util.create_subquery_filter(
                 db.Post.post_id,
                 db.Comment.post_id,
