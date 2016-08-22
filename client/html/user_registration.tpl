@@ -1,6 +1,9 @@
 <div class='content-wrapper' id='user-registration'>
     <h1>Registration</h1>
     <form autocomplete='off'>
+        <input class='anticomplete' type='text' name='fakeuser'/>
+        <input class='anticomplete' type='password' name='fakepass'/>
+
         <div class='input'>
             <ul>
                 <li>

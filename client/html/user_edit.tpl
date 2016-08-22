@@ -1,5 +1,8 @@
 <div id='user-edit'>
     <form>
+        <input class='anticomplete' type='text' name='fakeuser'/>
+        <input class='anticomplete' type='password' name='fakepass'/>
+
         <ul class='input'>
             <% if (ctx.canEditName) { %>
                 <li>
