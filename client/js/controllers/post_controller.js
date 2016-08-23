@@ -48,6 +48,8 @@ class PostController {
                 nextPostId: aroundResponse.next ? aroundResponse.next.id : null,
                 prevPostId: aroundResponse.prev ? aroundResponse.prev.id : null,
                 canEditPosts: api.hasPrivilege('posts:edit'),
+                canDeletePosts: api.hasPrivilege('posts:delete'),
+                canFeaturePosts: api.hasPrivilege('posts:feature'),
                 canListComments: api.hasPrivilege('comments:list'),
                 canCreateComments: api.hasPrivilege('comments:create'),
                 parameters: parameters,

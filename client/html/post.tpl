@@ -36,7 +36,7 @@
                         <span class='vim-nav-hint'>Back to view mode</span>
                     </a>
                 <% } else { %>
-                    <% if (ctx.canEditPosts) { %>
+                    <% if (ctx.canEditPosts || ctx.canDeletePosts || ctx.canFeaturePosts) { %>
                         <a href='<%= ctx.getPostEditUrl(ctx.post.id, ctx.parameters) %>'>
                     <% } else { %>
                         <a class='inactive'>
