@@ -30,11 +30,13 @@
         <% } %>
     </div>
 
-    <div class='anonymous'>
-        <%= ctx.makeCheckbox({
-            text: 'Upload anonymously',
-            name: 'anonymous',
-            checked: ctx.uploadable.anonymous,
-        }) %>
-    </div>
+    <% if (ctx.canUploadAnonymously) { %>
+        <div class='anonymous'>
+            <%= ctx.makeCheckbox({
+                text: 'Upload anonymously',
+                name: 'anonymous',
+                checked: ctx.uploadable.anonymous,
+            }) %>
+        </div>
+    <% } %>
 </li>

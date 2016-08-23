@@ -18,7 +18,9 @@ class PostUploadController {
 
         topNavigation.activate('upload');
         topNavigation.setTitle('Upload');
-        this._view = new PostUploadView();
+        this._view = new PostUploadView({
+            canUploadAnonymously: api.hasPrivilege('posts:create:anonymous'),
+        });
         this._view.addEventListener('change', e => this._evtChange(e));
         this._view.addEventListener('submit', e => this._evtSubmit(e));
     }

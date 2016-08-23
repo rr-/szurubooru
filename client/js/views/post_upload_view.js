@@ -108,9 +108,9 @@ class Url extends Uploadable {
 }
 
 class PostUploadView extends events.EventTarget {
-    constructor() {
+    constructor(ctx) {
         super();
-
+        this._ctx = ctx;
         this._hostNode = document.getElementById('content-holder');
         views.replaceContent(this._hostNode, template());
         views.syncScrollPosition();
@@ -227,21 +227,29 @@ class PostUploadView extends events.EventTarget {
     }
 
     _createRowNode(uploadable) {
-        const rowNode = rowTemplate({uploadable: uploadable});
+        const rowNode = rowTemplate(Object.assign(
+            {}, this._ctx, {uploadable: uploadable}));
         this._listNode.appendChild(rowNode);
+
         for (let radioboxNode of rowNode.querySelectorAll('.safety input')) {
             radioboxNode.addEventListener(
                 'change', e => this._evtSafetyRadioboxChange(e, uploadable));
         }
-        rowNode.querySelector('.anonymous input').addEventListener(
-            'change', e => this._evtAnonymityCheckboxChange(e, uploadable));
+
+        const anonymousCheckboxNode = rowNode.querySelector('.anonymous input');
+        if (anonymousCheckboxNode) {
+            anonymousCheckboxNode.addEventListener(
+                'change', e => this._evtAnonymityCheckboxChange(e, uploadable));
+        }
+
         rowNode.querySelector('a.remove').addEventListener(
             'click', e => this._evtRemoveClick(e, uploadable));
         uploadable.rowNode = rowNode;
     }
 
     _updateRowNode(uploadable) {
-        const rowNode = rowTemplate({uploadable: uploadable});
+        const rowNode = rowTemplate(Object.assign(
+            {}, this._ctx, {uploadable: uploadable}));
         views.replaceContent(
             uploadable.rowNode.querySelector('.thumbnail'),
             rowNode.querySelector('.thumbnail').childNodes);
