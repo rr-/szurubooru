@@ -38,8 +38,8 @@ class TagController {
                 canEditImplications: api.hasPrivilege('tags:edit:implications'),
                 canEditSuggestions: api.hasPrivilege('tags:edit:suggestions'),
                 canEditDescription: api.hasPrivilege('tags:edit:description'),
-                canMerge: api.hasPrivilege('tags:delete'),
-                canDelete: api.hasPrivilege('tags:merge'),
+                canMerge: api.hasPrivilege('tags:merge'),
+                canDelete: api.hasPrivilege('tags:delete'),
                 categories: categories,
             });
 
