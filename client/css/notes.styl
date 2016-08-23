@@ -42,6 +42,12 @@
             &.nearby
                 fill: $hovered-note-point-color
 
+    g[data-state=drawing]
+        ellipse:first-of-type
+            fill: $first-note-point-color
+            &.nearby
+                fill: $hovered-first-note-point-color
+
 .note-text
     position: absolute
     max-width: 22.5em
