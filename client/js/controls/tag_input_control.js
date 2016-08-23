@@ -325,7 +325,7 @@ class TagInputControl extends events.EventTarget {
 
         const removalLinkNode = document.createElement('a');
         removalLinkNode.classList.add('append');
-        removalLinkNode.setAttribute('href', '')
+        removalLinkNode.setAttribute('href', '');
         removalLinkNode.setAttribute('data-pseudo-content', '×');
         removalLinkNode.addEventListener('click', e => {
             e.preventDefault();
