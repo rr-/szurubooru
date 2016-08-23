@@ -5,6 +5,7 @@ const views = require('../util/views.js');
 const UserDeleteView = require('./user_delete_view.js');
 const UserSummaryView = require('./user_summary_view.js');
 const UserEditView = require('./user_edit_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 const template = views.getTemplate('user');
 
@@ -33,17 +34,25 @@ class UserView extends events.EventTarget {
 
         ctx.hostNode = this._hostNode.querySelector('#user-content-holder');
         if (ctx.section == 'edit') {
-            this._view = new UserEditView(ctx);
-            this._view.addEventListener('submit', e => {
-                this.dispatchEvent(
-                    new CustomEvent('submit', {detail: e.detail}));
-            });
+            if (!this._ctx.canEditAnything) {
+                this._view = new EmptyView();
+                this._view.showError(
+                    'You don\'t have privileges to edit users.');
+            } else {
+                this._view = new UserEditView(ctx);
+                events.proxyEvent(this._view, this, 'submit');
+            }
+
         } else if (ctx.section == 'delete') {
-            this._view = new UserDeleteView(ctx);
-            this._view.addEventListener('submit', e => {
-                this.dispatchEvent(
-                    new CustomEvent('delete', {detail: e.detail}));
-            });
+            if (!this._ctx.canDelete) {
+                this._view = new EmptyView();
+                this._view.showError(
+                    'You don\'t have privileges to delete users.');
+            } else {
+                this._view = new UserDeleteView(ctx);
+                events.proxyEvent(this._view, this, 'submit', 'delete');
+            }
+
         } else {
             this._view = new UserSummaryView(ctx);
         }
