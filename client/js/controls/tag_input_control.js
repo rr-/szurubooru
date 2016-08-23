@@ -319,12 +319,12 @@ class TagInputControl extends events.EventTarget {
         });
 
         const usagesNode = document.createElement('span');
-        usagesNode.classList.add('append');
+        usagesNode.classList.add('tag-usages');
         usagesNode.setAttribute(
             'data-pseudo-content', actualTag ? actualTag.usages : 0);
 
         const removalLinkNode = document.createElement('a');
-        removalLinkNode.classList.add('append');
+        removalLinkNode.classList.add('remove-tag');
         removalLinkNode.setAttribute('href', '');
         removalLinkNode.setAttribute('data-pseudo-content', '×');
         removalLinkNode.addEventListener('click', e => {
@@ -334,10 +334,10 @@ class TagInputControl extends events.EventTarget {
 
         const listItemNode = document.createElement('li');
         listItemNode.setAttribute('data-tag', tagName);
+        listItemNode.appendChild(removalLinkNode);
         listItemNode.appendChild(tagLinkNode);
         listItemNode.appendChild(searchLinkNode);
         listItemNode.appendChild(usagesNode);
-        listItemNode.appendChild(removalLinkNode);
         return listItemNode;
     }
 
@@ -402,24 +402,22 @@ class TagInputControl extends events.EventTarget {
 
             const weightNode = document.createElement('span');
             weightNode.classList.add('tag-weight');
-            weightNode.classList.add('append');
             weightNode.setAttribute('data-pseudo-content', weight);
 
-            const removeLinkNode = document.createElement('a');
-            removeLinkNode.classList.add('remove-tag');
-            removeLinkNode.classList.add('append');
-            removeLinkNode.setAttribute('href', '');
-            removeLinkNode.setAttribute('data-pseudo-content', '×');
-            removeLinkNode.addEventListener('click', e => {
+            const removalLinkNode = document.createElement('a');
+            removalLinkNode.classList.add('remove-tag');
+            removalLinkNode.setAttribute('href', '');
+            removalLinkNode.setAttribute('data-pseudo-content', '×');
+            removalLinkNode.addEventListener('click', e => {
                 e.preventDefault();
                 listNode.removeChild(listItemNode);
                 this._suggestions.ban(tagName);
             });
 
             const listItemNode = document.createElement('li');
+            listItemNode.appendChild(removalLinkNode);
             listItemNode.appendChild(weightNode);
             listItemNode.appendChild(addLinkNode);
-            listItemNode.appendChild(removeLinkNode);
             listNode.appendChild(listItemNode);
         }
     }
