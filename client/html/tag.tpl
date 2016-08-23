@@ -3,7 +3,7 @@
     <nav class='buttons'><!--
         --><ul><!--
             --><li data-name='summary'><a href='/tag/<%- encodeURIComponent(ctx.tag.names[0]) %>'>Summary</a></li><!--
-            --><% if (ctx.canMerge) { %><!--
+            --><% if (ctx.canEditAnything) { %><!--
                 --><li data-name='edit'><a href='/tag/<%- encodeURIComponent(ctx.tag.names[0]) %>/edit'>Edit</a></li><!--
             --><% } %><!--
             --><% if (ctx.canMerge) { %><!--
