@@ -9,7 +9,7 @@
         <span class='vim-nav-hint'>like</span>
     </a>
 <% } else { %>
-    <a href class='upvote inactive'>
+    <a class='upvote inactive'>
         <i class='fa fa-thumbs-o-up'></i>
     </a>
 <% } %>

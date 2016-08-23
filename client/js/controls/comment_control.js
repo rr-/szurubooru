@@ -90,6 +90,9 @@ class CommentControl extends events.EventTarget {
 
     _evtScoreClick(e, score) {
         e.preventDefault();
+        if (!api.hasPrivilege('comments:score')) {
+            return;
+        }
         this.dispatchEvent(new CustomEvent('score', {
             detail: {
                 comment: this._comment,

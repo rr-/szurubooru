@@ -222,6 +222,9 @@ class PostController {
     }
 
     _evtScorePost(e) {
+        if (!api.hasPrivilege('posts:score')) {
+            return;
+        }
         e.detail.post.setScore(e.detail.score)
             .catch(errorMessage => {
                 window.alert(errorMessage);
@@ -229,6 +232,9 @@ class PostController {
     }
 
     _evtFavoritePost(e) {
+        if (!api.hasPrivilege('posts:favorite')) {
+            return;
+        }
         e.detail.post.addToFavorites()
             .catch(errorMessage => {
                 window.alert(errorMessage);
@@ -236,6 +242,9 @@ class PostController {
     }
 
     _evtUnfavoritePost(e) {
+        if (!api.hasPrivilege('posts:favorite')) {
+            return;
+        }
         e.detail.post.removeFromFavorites()
             .catch(errorMessage => {
                 window.alert(errorMessage);

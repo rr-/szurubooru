@@ -85,7 +85,8 @@
                 margin-left: 2em
                 font-size: 95%
             .edit, .delete, .score-container a, .nickname a
-                color: mix($main-color, $inactive-tab-text-color)
+                &:not(.inactive)
+                    color: mix($main-color, $inactive-tab-text-color)
             .edit, .delete
                 font-size: 80%
 
