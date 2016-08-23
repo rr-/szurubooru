@@ -48,6 +48,7 @@ class PostListController {
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
                     canViewPosts: api.hasPrivilege('posts:view'),
+                    canMassTag: api.hasPrivilege('tags:masstag'),
                     massTagTags: this._massTagTags,
                 });
                 const view = new PostsPageView(pageCtx);

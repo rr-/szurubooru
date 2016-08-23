@@ -35,7 +35,7 @@
                             </span>
                         <% } %>
                     </a>
-                    <% if (ctx.parameters && ctx.parameters.tag) { %>
+                    <% if (ctx.canMassTagg && ctx.parameters && ctx.parameters.tag) { %>
                         <a href data-post-id='<%= post.id %>' class='masstag'>
                         </a>
                     <% } %>
