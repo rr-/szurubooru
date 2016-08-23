@@ -42,10 +42,12 @@ function makeRelativeTime(time) {
 function makeThumbnail(url) {
     return makeNonVoidElement(
         'span',
-        {
-            class: 'thumbnail',
-            style: `background-image: url(\'${url}\')`,
-        },
+        url ?
+            {
+                class: 'thumbnail',
+                style: `background-image: url(\'${url}\')`,
+            } :
+            {class: 'thumbnail empty'},
         makeVoidElement('img', {alt: 'thumbnail', src: url}));
 }
 
