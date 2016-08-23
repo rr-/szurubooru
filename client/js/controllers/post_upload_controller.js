@@ -1,13 +1,21 @@
 'use strict';
 
+const api = require('../api.js');
 const router = require('../router.js');
 const misc = require('../util/misc.js');
 const topNavigation = require('../models/top_navigation.js');
 const Post = require('../models/post.js');
 const PostUploadView = require('../views/post_upload_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 class PostUploadController {
     constructor() {
+        if (!api.hasPrivilege('posts:create')) {
+            this._view = new EmptyView();
+            this._view.showError('You don\'t have privileges to upload posts.');
+            return;
+        }
+
         topNavigation.activate('upload');
         topNavigation.setTitle('Upload');
         this._view = new PostUploadView();

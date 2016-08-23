@@ -5,9 +5,16 @@ const api = require('../api.js');
 const User = require('../models/user.js');
 const topNavigation = require('../models/top_navigation.js');
 const RegistrationView = require('../views/registration_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 class UserRegistrationController {
     constructor() {
+        if (!api.hasPrivilege('users:create')) {
+            this._view = new EmptyView();
+            this._view.showError('Registration is closed.');
+            return;
+        }
+
         topNavigation.activate('register');
         topNavigation.setTitle('Registration');
         this._view = new RegistrationView();

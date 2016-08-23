@@ -8,6 +8,7 @@ const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
 const PostsHeaderView = require('../views/posts_header_view.js');
 const PostsPageView = require('../views/posts_page_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 const fields = [
     'id', 'thumbnailUrl', 'type',
@@ -15,6 +16,12 @@ const fields = [
 
 class PostListController {
     constructor(ctx) {
+        if (!api.hasPrivilege('posts:list')) {
+            this._view = new EmptyView();
+            this._view.showError('You don\'t have privileges to view posts.');
+            return;
+        }
+
         topNavigation.activate('posts');
         topNavigation.setTitle('Listing posts');
 

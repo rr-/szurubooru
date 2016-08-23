@@ -11,6 +11,12 @@ const EmptyView = require('../views/empty_view.js');
 
 class TagController {
     constructor(ctx, section) {
+        if (!api.hasPrivilege('tags:view')) {
+            this._view = new EmptyView();
+            this._view.showError('You don\'t have privileges to view tags.');
+            return;
+        }
+
         Tag.get(ctx.parameters.name).then(tag => {
             topNavigation.activate('tags');
             topNavigation.setTitle('Tag #' + tag.names[0]);

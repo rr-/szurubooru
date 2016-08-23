@@ -9,6 +9,13 @@ const EmptyView = require('../views/empty_view.js');
 
 class TagCategoriesController {
     constructor() {
+        if (!api.hasPrivilege('tagCategories:list')) {
+            this._view = new EmptyView();
+            this._view.showError(
+                'You don\'t have privileges to view tag categories.');
+            return;
+        }
+
         topNavigation.activate('tags');
         topNavigation.setTitle('Listing tags');
         TagCategoryList.get().then(response => {

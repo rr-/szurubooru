@@ -6,11 +6,19 @@ const PostList = require('../models/post_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
 const CommentsPageView = require('../views/comments_page_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 const fields = ['id', 'comments', 'commentCount', 'thumbnailUrl'];
 
 class CommentsController {
     constructor(ctx) {
+        if (!api.hasPrivilege('comments:list')) {
+            this._view = new EmptyView();
+            this._view.showError(
+                'You don\'t have privileges to view comments.');
+            return;
+        }
+
         topNavigation.activate('comments');
         topNavigation.setTitle('Listing comments');
 

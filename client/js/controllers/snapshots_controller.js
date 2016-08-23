@@ -6,9 +6,16 @@ const SnapshotList = require('../models/snapshot_list.js');
 const PageController = require('../controllers/page_controller.js');
 const topNavigation = require('../models/top_navigation.js');
 const SnapshotsPageView = require('../views/snapshots_page_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 class SnapshotsController {
     constructor(ctx) {
+        if (!api.hasPrivilege('snapshots:list')) {
+            this._view = new EmptyView();
+            this._view.showError('You don\'t have privileges to view history.');
+            return;
+        }
+
         topNavigation.activate('');
         topNavigation.setTitle('History');
 

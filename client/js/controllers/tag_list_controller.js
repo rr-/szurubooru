@@ -7,12 +7,19 @@ const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
 const TagsHeaderView = require('../views/tags_header_view.js');
 const TagsPageView = require('../views/tags_page_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 const fields = [
     'names', 'suggestions', 'implications', 'lastEditTime', 'usages'];
 
 class TagListController {
     constructor(ctx) {
+        if (!api.hasPrivilege('tags:list')) {
+            this._view = new EmptyView();
+            this._view.showError('You don\'t have privileges to view tags.');
+            return;
+        }
+
         topNavigation.activate('tags');
         topNavigation.setTitle('Listing tags');
 

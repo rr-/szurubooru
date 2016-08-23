@@ -12,12 +12,20 @@ const EmptyView = require('../views/empty_view.js');
 
 class UserController {
     constructor(ctx, section) {
-        topNavigation.setTitle('User ' + ctx.parameters.name);
-        User.get(ctx.parameters.name).then(user => {
+        const userName = ctx.parameters.name;
+        if (!api.hasPrivilege('users:view') &&
+                !api.isLoggedIn({name: userName})) {
+            this._view = new EmptyView();
+            this._view.showError('You don\'t have privileges to view users.');
+            return;
+        }
+
+        topNavigation.setTitle('User ' + userName);
+        User.get(userName).then(user => {
             const isLoggedIn = api.isLoggedIn(user);
             const infix = isLoggedIn ? 'self' : 'any';
 
-            this._name = ctx.parameters.name;
+            this._name = userName;
             user.addEventListener('change', e => this._evtSaved(e));
 
             const myRankIndex = api.user ?

@@ -7,9 +7,16 @@ const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
 const UsersHeaderView = require('../views/users_header_view.js');
 const UsersPageView = require('../views/users_page_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 class UserListController {
     constructor(ctx) {
+        if (!api.hasPrivilege('users:list')) {
+            this._view = new EmptyView();
+            this._view.showError('You don\'t have privileges to view users.');
+            return;
+        }
+
         topNavigation.activate('users');
         topNavigation.setTitle('Listing users');
 

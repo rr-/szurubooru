@@ -13,6 +13,12 @@ const EmptyView = require('../views/empty_view.js');
 
 class PostController {
     constructor(id, editMode, ctx) {
+        if (!api.hasPrivilege('posts:view')) {
+            this._view = new EmptyView();
+            this._view.showError('You don\'t have privileges to view posts.');
+            return;
+        }
+
         topNavigation.activate('posts');
         topNavigation.setTitle('Post #' + id.toString());
 
