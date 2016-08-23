@@ -37,20 +37,27 @@ class PostEditSidebarControl extends events.EventTarget {
         }));
 
         new ExpanderControl(
+            'post-info',
             'Basic info',
             this._hostNode.querySelectorAll('.safety, .relations, .flags'));
-        new ExpanderControl(
-            'Tags',
+        this._tagsExpander = new ExpanderControl(
+            'post-tags',
+            `Tags (${this._post.tags.length})`,
             this._hostNode.querySelectorAll('.tags'));
-        new ExpanderControl(
+        this._notesExpander = new ExpanderControl(
+            'post-notes',
             'Notes',
             this._hostNode.querySelectorAll('.notes'));
         new ExpanderControl(
+            'post-content',
             'Content',
             this._hostNode.querySelectorAll('.post-content, .post-thumbnail'));
         new ExpanderControl(
+            'post-management',
             'Management',
             this._hostNode.querySelectorAll('.management'));
+
+        this._syncExpanderTitles();
 
         if (this._formNode) {
             this._formNode.addEventListener('submit', e => this._evtSubmit(e));
@@ -121,20 +128,34 @@ class PostEditSidebarControl extends events.EventTarget {
                 'input, textarea');
             for (let node of inputNodes) {
                 node.addEventListener(
-                    'change', e => {
-                        this.dispatchEvent(new CustomEvent('change'));
-                    });
+                    'change',
+                    e => this.dispatchEvent(new CustomEvent('change')));
             }
             this._postNotesOverlayControl.addEventListener(
-                'change', e => {
-                    this.dispatchEvent(new CustomEvent('change'));
-                });
+                'change',
+                e => this.dispatchEvent(new CustomEvent('change')));
         }
+
+        for (let eventType of ['add', 'remove']) {
+            this._post.notes.addEventListener(eventType, e => {
+                this._syncExpanderTitles();
+            });
+        }
+
+        this._tagControl.addEventListener('change', e => {
+            this._post.tags = this._tagControl.tags;
+            this._syncExpanderTitles();
+        });
 
         if (this._noteTextareaNode) {
             this._noteTextareaNode.addEventListener(
                 'change', e => this._evtNoteTextChangeRequest(e));
         }
+    }
+
+    _syncExpanderTitles() {
+        this._notesExpander.title = `Notes (${this._post.notes.length})`;
+        this._tagsExpander.title = `Tags (${this._post.tags.length})`;
     }
 
     _evtPostContentChange(e) {

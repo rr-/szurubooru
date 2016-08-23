@@ -1,7 +1,7 @@
 <section class='expander'>
     <header>
         <a href>
-            <%- ctx.title %>
+            <span><%- ctx.title %></span>
             <i class='fa fa-chevron-down'></i>
         </a>
     </header>

@@ -8,8 +8,8 @@ const views = require('../util/views.js');
 const template = views.getTemplate('expander');
 
 class ExpanderControl {
-    constructor(title, nodes) {
-        this._title = title;
+    constructor(name, title, nodes) {
+        this._name = name;
 
         nodes = Array.from(nodes).filter(n => n);
         if (!nodes.length) {
@@ -33,10 +33,14 @@ class ExpanderControl {
 
         expanderNode.classList.toggle(
             'collapsed',
-            this._allStates[this._title] === undefined ?
+            this._allStates[this._name] === undefined ?
                 false :
-                !this._allStates[this._title]);
+                !this._allStates[this._name]);
         this._syncIcon();
+    }
+
+    set title(newTitle) {
+        this._expanderNode.querySelector('header span').textContent = newTitle;
     }
 
     get _isOpened() {
@@ -53,7 +57,7 @@ class ExpanderControl {
 
     _save() {
         const newStates = Object.assign({}, this._allStates);
-        newStates[this._title] = this._isOpened;
+        newStates[this._name] = this._isOpened;
         localStorage.setItem('expander', JSON.stringify(newStates));
     }
 
