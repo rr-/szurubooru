@@ -11,19 +11,6 @@ div.tag-input
             flex: 1
             margin: 0 0 0 0.5em
 
-    ul
-        margin-top: 0.2em
-    li
-        transition: background-color 0.5s linear
-        &.implication
-            background: $implied-tag-background-color
-            color: $implied-tag-text-color
-        &.new
-            background: $new-tag-background-color
-            color: $new-tag-text-color
-        &.duplicate
-            background: $duplicate-tag-background-color
-            color: $duplicate-tag-text-color
 
     .tag-suggestions
         position: absolute
@@ -99,17 +86,28 @@ div.tag-input
             unselectable()
 
 ul.compact-tags
-    line-height: 200%
     width: 100%
+    margin-top: 0.5em
     li
-        margin: 0 0 -0.8em 0
-        padding: 0 2px
+        margin: 0
         width: 100%
+        line-height: 140%
         white-space: nowrap
         overflow: hidden
         text-overflow: ellipsis
-        a
-            display: inline
+        transition: background-color 0.5s linear
+        a:focus
+            outline: 0
+            box-shadow: inset 0 0 0 2px $main-color
+        &.implication
+            background: $implied-tag-background-color
+            color: $implied-tag-text-color
+        &.new
+            background: $new-tag-background-color
+            color: $new-tag-text-color
+        &.duplicate
+            background: $duplicate-tag-background-color
+            color: $duplicate-tag-text-color
     i
         padding-right: 0.4em
     .append
@@ -117,4 +115,3 @@ ul.compact-tags
         margin-left: 0.7em
         font-size: 90%
         unselectable()
-
