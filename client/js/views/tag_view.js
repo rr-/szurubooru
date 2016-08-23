@@ -6,6 +6,7 @@ const TagSummaryView = require('./tag_summary_view.js');
 const TagEditView = require('./tag_edit_view.js');
 const TagMergeView = require('./tag_merge_view.js');
 const TagDeleteView = require('./tag_delete_view.js');
+const EmptyView = require('../views/empty_view.js');
 
 const template = views.getTemplate('tag');
 
@@ -32,23 +33,35 @@ class TagView extends events.EventTarget {
 
         ctx.hostNode = this._hostNode.querySelector('.tag-content-holder');
         if (ctx.section === 'edit') {
-            this._view = new TagEditView(ctx);
-            this._view.addEventListener('submit', e => {
-                this.dispatchEvent(
-                    new CustomEvent('submit', {detail: e.detail}));
-            });
+            if (!this._ctx.canEditAnything) {
+                this._view = new EmptyView();
+                this._view.showError(
+                    'You don\'t have privileges to edit tags.');
+            } else {
+                this._view = new TagEditView(ctx);
+                events.proxyEvent(this._view, this, 'submit');
+            }
+
         } else if (ctx.section === 'merge') {
-            this._view = new TagMergeView(ctx);
-            this._view.addEventListener('submit', e => {
-                this.dispatchEvent(
-                    new CustomEvent('merge', {detail: e.detail}));
-            });
+            if (!this._ctx.canMerge) {
+                this._view = new EmptyView();
+                this._view.showError(
+                    'You don\'t have privileges to merge tags.');
+            } else {
+                this._view = new TagMergeView(ctx);
+                events.proxyEvent(this._view, this, 'submit', 'merge');
+            }
+
         } else if (ctx.section === 'delete') {
-            this._view = new TagDeleteView(ctx);
-            this._view.addEventListener('submit', e => {
-                this.dispatchEvent(
-                    new CustomEvent('delete', {detail: e.detail}));
-            });
+            if (!this._ctx.canDelete) {
+                this._view = new EmptyView();
+                this._view.showError(
+                    'You don\'t have privileges to delete tags.');
+            } else {
+                this._view = new TagDeleteView(ctx);
+                events.proxyEvent(this._view, this, 'submit', 'delete');
+            }
+
         } else {
             this._view = new TagSummaryView(ctx);
         }

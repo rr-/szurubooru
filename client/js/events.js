@@ -14,6 +14,9 @@ class EventTarget {
 };
 
 function proxyEvent(source, target, sourceEventType, targetEventType) {
+    if (!source.addEventListener) {
+        return;
+    }
     if (!targetEventType) {
         targetEventType = sourceEventType;
     }
