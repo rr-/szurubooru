@@ -18,6 +18,9 @@ class Uploadable extends events.EventTarget {
         globalOrder++;
     }
 
+    destroy() {
+    }
+
     get type() {
         return 'unknown';
     }
@@ -37,13 +40,23 @@ class File extends Uploadable {
         this.file = file;
 
         this._imageUrl = null;
-        let reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.addEventListener('load', e => {
-            this._imageUrl = e.target.result;
-            this.dispatchEvent(
-                new CustomEvent('finish', {detail: {uploadable: this}}));
-        });
+        if (URL && URL.createObjectURL) {
+            this._imageUrl = URL.createObjectURL(file);
+        } else {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.addEventListener('load', e => {
+                this._imageUrl = e.target.result;
+                this.dispatchEvent(
+                    new CustomEvent('finish', {detail: {uploadable: this}}));
+            });
+        }
+    }
+
+    destroy() {
+        if (URL && URL.createObjectURL && URL.revokeObjectURL) {
+            URL.revokeObjectURL(this._imageUrl);
+        }
     }
 
     get type() {
@@ -184,6 +197,7 @@ class PostUploadView extends events.EventTarget {
         if (!this._uploadables.has(uploadable.key)) {
             return;
         }
+        uploadable.destroy();
         uploadable.rowNode.parentNode.removeChild(uploadable.rowNode);
         this._uploadables.delete(uploadable.key);
         this._emit('change');
