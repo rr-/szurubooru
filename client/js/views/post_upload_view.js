@@ -9,6 +9,17 @@ const rowTemplate = views.getTemplate('post-upload-row');
 
 let globalOrder = 0;
 
+function _mimeTypeToPostType(mimeType) {
+    return {
+        'application/x-shockwave-flash': 'flash',
+        'image/gif': 'image',
+        'image/jpeg': 'image',
+        'image/png': 'image',
+        'video/mp4': 'video',
+        'video/webm': 'video',
+    }[mimeType] || 'unknown';
+}
+
 class Uploadable extends events.EventTarget {
     constructor() {
         super();
@@ -21,8 +32,12 @@ class Uploadable extends events.EventTarget {
     destroy() {
     }
 
+    get mimeType() {
+        return 'application/octet-stream';
+    }
+
     get type() {
-        return 'unknown';
+        return _mimeTypeToPostType(this.mimeType);
     }
 
     get key() {
@@ -39,14 +54,14 @@ class File extends Uploadable {
         super();
         this.file = file;
 
-        this._imageUrl = null;
+        this._previewUrl = null;
         if (URL && URL.createObjectURL) {
-            this._imageUrl = URL.createObjectURL(file);
+            this._previewUrl = URL.createObjectURL(file);
         } else {
             let reader = new FileReader();
             reader.readAsDataURL(file);
             reader.addEventListener('load', e => {
-                this._imageUrl = e.target.result;
+                this._previewUrl = e.target.result;
                 this.dispatchEvent(
                     new CustomEvent('finish', {detail: {uploadable: this}}));
             });
@@ -55,23 +70,16 @@ class File extends Uploadable {
 
     destroy() {
         if (URL && URL.createObjectURL && URL.revokeObjectURL) {
-            URL.revokeObjectURL(this._imageUrl);
+            URL.revokeObjectURL(this._previewUrl);
         }
     }
 
-    get type() {
-        return {
-            'application/x-shockwave-flash': 'flash',
-            'image/gif': 'image',
-            'image/jpeg': 'image',
-            'image/png': 'image',
-            'video/mp4': 'video',
-            'video/webm': 'video',
-        }[this.file.type] || 'unknown';
+    get mimeType() {
+        return this.file.type;
     }
 
-    get imageUrl() {
-        return this._imageUrl;
+    get previewUrl() {
+        return this._previewUrl;
     }
 
     get key() {
@@ -90,24 +98,24 @@ class Url extends Uploadable {
         this.dispatchEvent(new CustomEvent('finish'));
     }
 
-    get type() {
-        let extensions = {
-            'swf': 'flash',
-            'jpg': 'image',
-            'png': 'image',
-            'gif': 'image',
-            'mp4': 'video',
-            'webm': 'video',
+    get mimeType() {
+        let mime = {
+            'swf': 'application/x-shockwave-flash',
+            'jpg': 'image/jpeg',
+            'png': 'image/png',
+            'gif': 'image/gif',
+            'mp4': 'video/mp4',
+            'webm': 'video/webm',
         };
-        for (let extension of Object.keys(extensions)) {
+        for (let extension of Object.keys(mime)) {
             if (this.url.toLowerCase().indexOf('.' + extension) !== -1) {
-                return extensions[extension];
+                return mime[extension];
             }
         }
         return 'unknown';
     }
 
-    get imageUrl() {
+    get previewUrl() {
         return this.url;
     }
 

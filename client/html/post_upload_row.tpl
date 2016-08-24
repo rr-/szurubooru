@@ -8,7 +8,15 @@
     <div class='thumbnail'>
         <% if (['image'].includes(ctx.uploadable.type)) { %>
 
-            <%= ctx.makeThumbnail(ctx.uploadable.imageUrl) %>
+            <%= ctx.makeThumbnail(ctx.uploadable.previewUrl) %>
+
+        <% } else if (['video'].includes(ctx.uploadable.type)) { %>
+
+            <div class='thumbnail'>
+                <video id='video' nocontrols muted>
+                    <source type='<%- ctx.uploadable.mimeType %>' src='<%- ctx.uploadable.previewUrl %>'/>
+                </video>
+            </div>
 
         <% } else { %>
 
