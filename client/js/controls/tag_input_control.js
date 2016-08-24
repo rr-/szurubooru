@@ -375,6 +375,7 @@ class TagInputControl extends events.EventTarget {
             return;
         }
         const listNode = this._suggestionsNode.querySelector('ul');
+        listNode.scrollTop = 0;
         while (listNode.firstChild) {
             listNode.removeChild(listNode.firstChild);
         }
