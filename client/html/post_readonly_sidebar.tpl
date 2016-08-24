@@ -80,7 +80,7 @@
                         --><% if (ctx.canListPosts) { %><!--
                             --></a><!--
                         --><% } %><!--
-                        --><span class='append' data-pseudo-content='<%- ctx.getTagUsages(tag) %>'></span><!--
+                        --><span class='tag-usages' data-pseudo-content='<%- ctx.getTagUsages(tag) %>'></span><!--
                     --></li><!--
                 --><% } %><!--
             --></ul>
