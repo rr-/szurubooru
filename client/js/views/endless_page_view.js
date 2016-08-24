@@ -36,6 +36,12 @@ class EndlessPageView {
             }
         });
         this._probePageLoad(ctx);
+
+        views.monitorNodeRemoval(this._pagesHolderNode, () => this._destroy());
+    }
+
+    _destroy() {
+        this._active = false;
     }
 
     _probePageLoad(ctx) {
