@@ -200,6 +200,7 @@ class PostUploadView extends events.EventTarget {
         uploadable.destroy();
         uploadable.rowNode.parentNode.removeChild(uploadable.rowNode);
         this._uploadables.delete(uploadable.key);
+        this._normalizeUploadablesOrder();
         this._emit('change');
         if (!this._uploadables.size) {
             this._formNode.classList.add('inactive');
@@ -224,6 +225,30 @@ class PostUploadView extends events.EventTarget {
         this.removeUploadable(uploadable);
     }
 
+    _evtMoveUpClick(e, uploadable) {
+        e.preventDefault();
+        let sortedUploadables = this._getSortedUploadables();
+        if (uploadable.order > 0) {
+            uploadable.order--;
+            const prevUploadable = sortedUploadables[uploadable.order];
+            prevUploadable.order++;
+            uploadable.rowNode.parentNode.insertBefore(
+                uploadable.rowNode, prevUploadable.rowNode);
+        }
+    }
+
+    _evtMoveDownClick(e, uploadable) {
+        e.preventDefault();
+        let sortedUploadables = this._getSortedUploadables();
+        if (uploadable.order + 1 < sortedUploadables.length) {
+            uploadable.order++;
+            const nextUploadable = sortedUploadables[uploadable.order];
+            nextUploadable.order--;
+            uploadable.rowNode.parentNode.insertBefore(
+                nextUploadable.rowNode, uploadable.rowNode);
+        }
+    }
+
     _evtSafetyRadioboxChange(e, uploadable) {
         uploadable.safety = e.target.value;
     }
@@ -232,12 +257,24 @@ class PostUploadView extends events.EventTarget {
         uploadable.anonymous = e.target.checked;
     }
 
-    _emit(eventType) {
+    _normalizeUploadablesOrder() {
+        let sortedUploadables = this._getSortedUploadables();
+        for (let i = 0; i < sortedUploadables.length; i++) {
+            sortedUploadables[i].order = i;
+        }
+    }
+
+    _getSortedUploadables() {
         let sortedUploadables = [...this._uploadables.values()];
         sortedUploadables.sort((a, b) => a.order - b.order);
+        return sortedUploadables;
+    }
+
+    _emit(eventType) {
         this.dispatchEvent(
             new CustomEvent(
-                eventType, {detail: {uploadables: sortedUploadables}}));
+                eventType,
+                {detail: {uploadables: this._getSortedUploadables()}}));
     }
 
     _createRowNode(uploadable) {
@@ -258,6 +295,10 @@ class PostUploadView extends events.EventTarget {
 
         rowNode.querySelector('a.remove').addEventListener(
             'click', e => this._evtRemoveClick(e, uploadable));
+        rowNode.querySelector('a.move-up').addEventListener(
+            'click', e => this._evtMoveUpClick(e, uploadable));
+        rowNode.querySelector('a.move-down').addEventListener(
+            'click', e => this._evtMoveDownClick(e, uploadable));
         uploadable.rowNode = rowNode;
     }
 

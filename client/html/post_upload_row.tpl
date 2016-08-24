@@ -1,7 +1,9 @@
 <li class='uploadable'>
-    <a href class='remove'>
-        <i class='fa fa-remove'></i>
-    </a>
+    <div class='controls'>
+        <a href class='move-up'><i class='fa fa-chevron-up'></i></a>
+        <a href class='move-down'><i class='fa fa-chevron-down'></i></a>
+        <a href class='remove'><i class='fa fa-remove'></i></a>
+    </div>
 
     <div class='thumbnail'>
         <% if (['image'].includes(ctx.uploadable.type)) { %>
