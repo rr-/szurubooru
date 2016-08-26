@@ -182,6 +182,8 @@ class PostSearchConfig(BaseSearchConfig):
             'type':
                 search_util.create_str_filter(
                     db.Post.type, _type_transformer),
+            'content-checksum': search_util.create_str_filter(
+                db.Post.checksum),
             'file-size': search_util.create_num_filter(db.Post.file_size),
             ('image-width', 'width'):
                 search_util.create_num_filter(db.Post.canvas_width),

@@ -632,46 +632,47 @@ data.
 
     **Named tokens**
 
-    | `<key>`          | Description                                                |
-    | ---------------- | ---------------------------------------------------------- |
-    | `id`             | having given post number                                   |
-    | `tag`            | having given tag                                           |
-    | `score`          | having given score                                         |
-    | `uploader`       | uploaded by given user                                     |
-    | `upload`         | alias of upload                                            |
-    | `submit`         | alias of upload                                            |
-    | `comment`        | commented by given user                                    |
-    | `fav`            | favorited by given user                                    |
-    | `tag-count`      | having given number of tags                                |
-    | `comment-count`  | having given number of comments                            |
-    | `fav-count`      | favorited by given number of users                         |
-    | `note-count`     | having given number of annotations                         |
-    | `relation-count` | having given number of relations                           |
-    | `feature-count`  | having been featured given number of times                 |
-    | `type`           | given type of posts. `<value>` can be either `image`, `animation` (or `animated` or `anim`), `flash` (or `swf`) or `video` (or `webm`). |
-    | `file-size`      | having given file size (in bytes)                          |
-    | `image-width`    | having given image width (where applicable)                |
-    | `image-height`   | having given image height (where applicable)               |
-    | `image-area`     | having given number of pixels (image width * image height) |
-    | `width`          | alias of `image-width`                                     |
-    | `height`         | alias of `image-height`                                    |
-    | `area`           | alias of `image-area`                                      |
-    | `creation-date`  | posted at given date                                       |
-    | `creation-time`  | alias of `creation-date`                                   |
-    | `date`           | alias of `creation-date`                                   |
-    | `time`           | alias of `creation-date`                                   |
-    | `last-edit-date` | edited at given date                                       |
-    | `last-edit-time` | alias of `last-edit-date`                                  |
-    | `edit-date`      | alias of `last-edit-date`                                  |
-    | `edit-time`      | alias of `last-edit-date`                                  |
-    | `comment-date`   | commented at given date                                    |
-    | `comment-time`   | alias of `comment-date`                                    |
-    | `fav-date`       | last favorited at given date                               |
-    | `fav-time`       | alias of `fav-date`                                        |
-    | `feature-date`   | featured at given date                                     |
-    | `feature-time`   | alias of `feature-time`                                    |
-    | `safety`         | having given safety. `<value>` can be either `safe`, `sketchy` (or `questionable`) or `unsafe`. |
-    | `rating`         | alias of `safety`                                          |
+    | `<key>`            | Description                                                |
+    | ------------------ | ---------------------------------------------------------- |
+    | `id`               | having given post number                                   |
+    | `tag`              | having given tag                                           |
+    | `score`            | having given score                                         |
+    | `uploader`         | uploaded by given user                                     |
+    | `upload`           | alias of upload                                            |
+    | `submit`           | alias of upload                                            |
+    | `comment`          | commented by given user                                    |
+    | `fav`              | favorited by given user                                    |
+    | `tag-count`        | having given number of tags                                |
+    | `comment-count`    | having given number of comments                            |
+    | `fav-count`        | favorited by given number of users                         |
+    | `note-count`       | having given number of annotations                         |
+    | `relation-count`   | having given number of relations                           |
+    | `feature-count`    | having been featured given number of times                 |
+    | `type`             | given type of posts. `<value>` can be either `image`, `animation` (or `animated` or `anim`), `flash` (or `swf`) or `video` (or `webm`). |
+    | `content-checksum` | having given SHA1 checksum                                 |
+    | `file-size`        | having given file size (in bytes)                          |
+    | `image-width`      | having given image width (where applicable)                |
+    | `image-height`     | having given image height (where applicable)               |
+    | `image-area`       | having given number of pixels (image width * image height) |
+    | `width`            | alias of `image-width`                                     |
+    | `height`           | alias of `image-height`                                    |
+    | `area`             | alias of `image-area`                                      |
+    | `creation-date`    | posted at given date                                       |
+    | `creation-time`    | alias of `creation-date`                                   |
+    | `date`             | alias of `creation-date`                                   |
+    | `time`             | alias of `creation-date`                                   |
+    | `last-edit-date`   | edited at given date                                       |
+    | `last-edit-time`   | alias of `last-edit-date`                                  |
+    | `edit-date`        | alias of `last-edit-date`                                  |
+    | `edit-time`        | alias of `last-edit-date`                                  |
+    | `comment-date`     | commented at given date                                    |
+    | `comment-time`     | alias of `comment-date`                                    |
+    | `fav-date`         | last favorited at given date                               |
+    | `fav-time`         | alias of `fav-date`                                        |
+    | `feature-date`     | featured at given date                                     |
+    | `feature-time`     | alias of `feature-time`                                    |
+    | `safety`           | having given safety. `<value>` can be either `safe`, `sketchy` (or `questionable`) or `unsafe`. |
+    | `rating`           | alias of `safety`                                          |
 
     **Sort style tokens**
 

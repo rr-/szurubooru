@@ -366,6 +366,24 @@ def test_filter_by_invalid_type(executor):
 
 
 @pytest.mark.parametrize('input,expected_post_ids', [
+    ('content-checksum:checksum1', [1]),
+    ('content-checksum:checksum3', [3]),
+    ('content-checksum:checksum1,checksum3', [1, 3]),
+])
+def test_filter_by_content_checksum(
+        verify_unpaged, post_factory, input, expected_post_ids):
+    post1 = post_factory(id=1)
+    post2 = post_factory(id=2)
+    post3 = post_factory(id=3)
+    post1.checksum = 'checksum1'
+    post2.checksum = 'checksum2'
+    post3.checksum = 'checksum3'
+    db.session.add_all([post1, post2, post3])
+    db.session.flush()
+    verify_unpaged(input, expected_post_ids)
+
+
+@pytest.mark.parametrize('input,expected_post_ids', [
     ('file-size:100', [1]),
     ('file-size:102', [3]),
     ('file-size:100,102', [1, 3]),
