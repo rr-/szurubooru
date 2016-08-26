@@ -63,7 +63,7 @@
     <nav class='tags'>
         <h1>Tags (<%- ctx.post.tags.length %>)</h1>
         <% if (ctx.post.tags.length) { %>
-            <ul class="compact-tags"><!--
+            <ul class='compact-tags'><!--
                 --><% for (let tag of ctx.post.tags) { %><!--
                     --><li><!--
                         --><% if (ctx.canViewTags) { %><!--

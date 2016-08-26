@@ -85,32 +85,35 @@ div.tag-input
             font-size: 90%
             unselectable()
 
-    ul.compact-tags
+ul.compact-tags
+    width: 100%
+    margin-top: 0.5em
+    li
+        margin: 0
         width: 100%
-        margin-top: 0.5em
-        li
-            margin: 0
-            width: 100%
-            line-height: 140%
-            white-space: nowrap
-            overflow: hidden
-            text-overflow: ellipsis
-            transition: background-color 0.5s linear
-            a:focus
-                outline: 0
-                box-shadow: inset 0 0 0 2px $main-color
-            &.implication
-                background: $implied-tag-background-color
-                color: $implied-tag-text-color
-            &.new
-                background: $new-tag-background-color
-                color: $new-tag-text-color
-            &.duplicate
-                background: $duplicate-tag-background-color
-                color: $duplicate-tag-text-color
-        i
-            padding-right: 0.4em
+        line-height: 140%
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+        transition: background-color 0.5s linear
+        a
+            display: inline
+        a:focus
+            outline: 0
+            box-shadow: inset 0 0 0 2px $main-color
+        &.implication
+            background: $implied-tag-background-color
+            color: $implied-tag-text-color
+        &.new
+            background: $new-tag-background-color
+            color: $new-tag-text-color
+        &.duplicate
+            background: $duplicate-tag-background-color
+            color: $duplicate-tag-text-color
+    i
+        padding-right: 0.4em
 
+div.tag-input, ul.compact-tags
     .tag-usages, .tag-weight, .remove-tag
         color: $inactive-link-color
         unselectable()
