@@ -10,7 +10,7 @@ def _format_dict_keys(source):
 
 def _get_order(order, default_order):
     if order == tokens.SortToken.SORT_DEFAULT:
-        return default_order
+        return default_order or tokens.SortToken.SORT_ASC
     if order == tokens.SortToken.SORT_NEGATED_DEFAULT:
         if default_order == tokens.SortToken.SORT_ASC:
             return tokens.SortToken.SORT_DESC
