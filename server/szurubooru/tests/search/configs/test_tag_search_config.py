@@ -31,11 +31,13 @@ def test_filter_anonymous(
         verify_unpaged, tag_factory, input, expected_tag_names):
     db.session.add(tag_factory(names=['t1']))
     db.session.add(tag_factory(names=['t2']))
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
 def test_filter_anonymous_starting_with_colon(verify_unpaged, tag_factory):
     db.session.add(tag_factory(names=[':t']))
+    db.session.flush()
     verify_unpaged(':t', [':t'])
 
 
@@ -66,6 +68,7 @@ def test_filter_by_name(
     db.session.add(tag_factory(names=['tag2']))
     db.session.add(tag_factory(names=['tag3']))
     db.session.add(tag_factory(names=['tag4', 'tag5', 'tag6']))
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -86,6 +89,7 @@ def test_filter_by_category(
     tag2 = tag_factory(names=['t2'], category=cat1)
     tag3 = tag_factory(names=['t3'], category=cat2)
     db.session.add_all([tag1, tag2, tag3])
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -120,6 +124,7 @@ def test_filter_by_creation_time(
     tag2.creation_time = datetime(2014, 6, 1)
     tag3.creation_time = datetime(2015, 1, 1)
     db.session.add_all([tag1, tag2, tag3])
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -138,6 +143,7 @@ def test_filter_by_edit_time(
     tag2.last_edit_time = datetime(2015, 1, 1)
     tag3.last_edit_time = datetime(2014, 1, 1)
     db.session.add_all([tag1, tag2, tag3])
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -160,10 +166,10 @@ def test_filter_by_post_count(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     db.session.add_all([post1, post2, tag1, tag2])
-    db.session.commit()
     post1.tags.append(tag1)
     post1.tags.append(tag2)
     post2.tags.append(tag1)
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -193,10 +199,10 @@ def test_filter_by_suggestion_count(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     db.session.add_all([sug1, sug3, tag2, sug2, tag1])
-    db.session.commit()
     tag1.suggestions.append(sug1)
     tag1.suggestions.append(sug2)
     tag2.suggestions.append(sug3)
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -213,10 +219,10 @@ def test_filter_by_implication_count(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     db.session.add_all([sug1, sug3, tag2, sug2, tag1])
-    db.session.commit()
     tag1.implications.append(sug1)
     tag1.implications.append(sug2)
     tag2.implications.append(sug3)
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -232,6 +238,7 @@ def test_filter_by_implication_count(
 def test_sort_by_name(verify_unpaged, tag_factory, input, expected_tag_names):
     db.session.add(tag_factory(names=['t2']))
     db.session.add(tag_factory(names=['t1']))
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -249,6 +256,7 @@ def test_sort_by_creation_time(
     tag2.creation_time = datetime(1991, 1, 2)
     tag3.creation_time = datetime(1991, 1, 3)
     db.session.add_all([tag3, tag1, tag2])
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -268,6 +276,7 @@ def test_sort_by_last_edit_time(
     tag2.last_edit_time = datetime(1991, 1, 2)
     tag3.last_edit_time = datetime(1991, 1, 3)
     db.session.add_all([tag3, tag1, tag2])
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -283,10 +292,10 @@ def test_sort_by_post_count(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     db.session.add_all([post1, post2, tag1, tag2])
-    db.session.commit()
     post1.tags.append(tag1)
     post1.tags.append(tag2)
     post2.tags.append(tag2)
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -301,10 +310,10 @@ def test_sort_by_suggestion_count(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     db.session.add_all([sug1, sug3, tag2, sug2, tag1])
-    db.session.commit()
     tag1.suggestions.append(sug1)
     tag1.suggestions.append(sug2)
     tag2.suggestions.append(sug3)
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -319,10 +328,10 @@ def test_sort_by_implication_count(
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     db.session.add_all([sug1, sug3, tag2, sug2, tag1])
-    db.session.commit()
     tag1.implications.append(sug1)
     tag1.implications.append(sug2)
     tag2.implications.append(sug3)
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)
 
 
@@ -341,4 +350,5 @@ def test_sort_by_category(
     tag2 = tag_factory(names=['t2'], category=cat2)
     tag3 = tag_factory(names=['t3'], category=cat1)
     db.session.add_all([tag1, tag2, tag3])
+    db.session.flush()
     verify_unpaged(input, expected_tag_names)

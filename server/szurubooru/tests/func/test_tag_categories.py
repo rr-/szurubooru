@@ -44,6 +44,7 @@ def test_create_category_when_first():
 
 def test_create_category_when_subsequent(tag_category_factory):
     db.session.add(tag_category_factory())
+    db.session.flush()
     with patch('szurubooru.func.tag_categories.update_category_name'), \
             patch('szurubooru.func.tag_categories.update_category_color'):
         category = tag_categories.create_category('name', 'color')
@@ -80,6 +81,7 @@ def test_update_category_name_reusing_other_name(
         config_injector, tag_category_factory):
     config_injector({'tag_category_name_regex': '.*'})
     db.session.add(tag_category_factory(name='name'))
+    db.session.flush()
     category = tag_category_factory()
     with pytest.raises(tag_categories.TagCategoryAlreadyExistsError):
         tag_categories.update_category_name(category, 'name')
@@ -127,6 +129,7 @@ def test_update_category_color(attempt, tag_category_factory):
 def test_try_get_category_by_name(tag_category_factory):
     category = tag_category_factory(name='test')
     db.session.add(category)
+    db.session.flush()
     assert tag_categories.try_get_category_by_name('test') == category
     assert tag_categories.try_get_category_by_name('TEST') == category
     assert tag_categories.try_get_category_by_name('-') is None
@@ -135,6 +138,7 @@ def test_try_get_category_by_name(tag_category_factory):
 def test_get_category_by_name(tag_category_factory):
     category = tag_category_factory(name='test')
     db.session.add(category)
+    db.session.flush()
     assert tag_categories.get_category_by_name('test') == category
     assert tag_categories.get_category_by_name('TEST') == category
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
@@ -145,6 +149,7 @@ def test_get_all_category_names(tag_category_factory):
     category1 = tag_category_factory(name='cat1')
     category2 = tag_category_factory(name='cat2')
     db.session.add_all([category1, category2])
+    db.session.flush()
     assert tag_categories.get_all_category_names() == ['cat1', 'cat2']
 
 
@@ -152,6 +157,7 @@ def test_get_all_categories(tag_category_factory):
     category1 = tag_category_factory(name='cat1')
     category2 = tag_category_factory(name='cat2')
     db.session.add_all([category1, category2])
+    db.session.flush()
     assert tag_categories.get_all_categories() == [category1, category2]
 
 
@@ -159,6 +165,7 @@ def test_try_get_default_category_when_no_default(tag_category_factory):
     category1 = tag_category_factory(default=False)
     category2 = tag_category_factory(default=False)
     db.session.add_all([category1, category2])
+    db.session.flush()
     actual_default_category = tag_categories.try_get_default_category()
     assert actual_default_category == category1
     assert actual_default_category != category2
@@ -168,6 +175,7 @@ def test_try_get_default_category_when_default(tag_category_factory):
     category1 = tag_category_factory(default=False)
     category2 = tag_category_factory(default=True)
     db.session.add_all([category1, category2])
+    db.session.flush()
     actual_default_category = tag_categories.try_get_default_category()
     assert actual_default_category == category2
     assert actual_default_category != category1
@@ -177,6 +185,7 @@ def test_try_get_default_category_from_cache(tag_category_factory):
     category1 = tag_category_factory()
     category2 = tag_category_factory()
     db.session.add_all([category1, category2])
+    db.session.flush()
     tag_categories.try_get_default_category()
     db.session.query(db.TagCategory).delete()
     assert tag_categories.try_get_default_category() == category1
@@ -197,6 +206,7 @@ def test_set_default_category_with_previous_default(tag_category_factory):
     category1 = tag_category_factory(default=True)
     category2 = tag_category_factory()
     db.session.add_all([category1, category2])
+    db.session.flush()
     tag_categories.set_default_category(category2)
     assert not category1.default
     assert category2.default
@@ -206,6 +216,7 @@ def test_set_default_category_without_previous_default(tag_category_factory):
     category1 = tag_category_factory()
     category2 = tag_category_factory()
     db.session.add_all([category1, category2])
+    db.session.flush()
     tag_categories.set_default_category(category2)
     assert category2.default
 
@@ -213,6 +224,7 @@ def test_set_default_category_without_previous_default(tag_category_factory):
 def test_delete_category_with_no_other_categories(tag_category_factory):
     category = tag_category_factory()
     db.session.add(category)
+    db.session.flush()
     with pytest.raises(tag_categories.TagCategoryIsInUseError):
         tag_categories.delete_category(category)
 
@@ -221,6 +233,7 @@ def test_delete_category_with_usages(tag_category_factory, tag_factory):
     db.session.add(tag_category_factory())
     category = tag_category_factory()
     db.session.add(tag_factory(category=category))
+    db.session.flush()
     with pytest.raises(tag_categories.TagCategoryIsInUseError):
         tag_categories.delete_category(category)
 
@@ -229,6 +242,7 @@ def test_delete_category(tag_category_factory):
     db.session.add(tag_category_factory())
     category = tag_category_factory(name='target')
     db.session.add(category)
-    db.session.commit()
+    db.session.flush()
     tag_categories.delete_category(category)
+    db.session.flush()
     assert tag_categories.try_get_category_by_name('target') is None

@@ -19,6 +19,7 @@ def test_retrieving_multiple(
         tag_category_factory(name='c1'),
         tag_category_factory(name='c2'),
     ])
+    db.session.flush()
     result = api.tag_category_api.get_tag_categories(
         context_factory(user=user_factory(rank=db.User.RANK_REGULAR)))
     assert [cat['name'] for cat in result['results']] == ['c1', 'c2']
@@ -27,6 +28,7 @@ def test_retrieving_multiple(
 def test_retrieving_single(
         user_factory, tag_category_factory, context_factory):
     db.session.add(tag_category_factory(name='cat'))
+    db.session.flush()
     result = api.tag_category_api.get_tag_category(
         context_factory(user=user_factory(rank=db.User.RANK_REGULAR)),
         {'category_name': 'cat'})

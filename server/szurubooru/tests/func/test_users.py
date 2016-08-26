@@ -172,6 +172,7 @@ def test_get_user_count(count, user_factory):
 def test_try_get_user_by_name(user_factory):
     user = user_factory(name='name', email='email')
     db.session.add(user)
+    db.session.flush()
     assert users.try_get_user_by_name('non-existing') is None
     assert users.try_get_user_by_name('email') is None
     assert users.try_get_user_by_name('name') is user
@@ -181,6 +182,7 @@ def test_try_get_user_by_name(user_factory):
 def test_get_user_by_name(user_factory):
     user = user_factory(name='name', email='email')
     db.session.add(user)
+    db.session.flush()
     with pytest.raises(users.UserNotFoundError):
         assert users.get_user_by_name('non-existing')
     with pytest.raises(users.UserNotFoundError):
@@ -192,6 +194,7 @@ def test_get_user_by_name(user_factory):
 def test_try_get_user_by_name_or_email(user_factory):
     user = user_factory(name='name', email='email')
     db.session.add(user)
+    db.session.flush()
     assert users.try_get_user_by_name_or_email('non-existing') is None
     assert users.try_get_user_by_name_or_email('email') is user
     assert users.try_get_user_by_name_or_email('EMAIL') is user
@@ -202,6 +205,7 @@ def test_try_get_user_by_name_or_email(user_factory):
 def test_get_user_by_name_or_email(user_factory):
     user = user_factory(name='name', email='email')
     db.session.add(user)
+    db.session.flush()
     with pytest.raises(users.UserNotFoundError):
         assert users.get_user_by_name_or_email('non-existing')
     assert users.get_user_by_name_or_email('email') is user
@@ -372,6 +376,7 @@ def test_update_user_rank_with_invalid_string(user_factory):
 
 def test_update_user_rank_with_higher_rank_than_possible(user_factory):
     db.session.add(user_factory())
+    db.session.flush()
     user = user_factory()
     auth_user = user_factory()
     auth_user.rank = db.User.RANK_ANONYMOUS
@@ -383,6 +388,7 @@ def test_update_user_rank_with_higher_rank_than_possible(user_factory):
 
 def test_update_user_rank(user_factory):
     db.session.add(user_factory())
+    db.session.flush()
     user = user_factory()
     auth_user = user_factory()
     auth_user.rank = db.User.RANK_ADMINISTRATOR

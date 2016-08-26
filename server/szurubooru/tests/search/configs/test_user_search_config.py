@@ -53,6 +53,7 @@ def test_filter_by_creation_time(
     user2.creation_time = datetime(2014, 6, 1)
     user3.creation_time = datetime(2015, 1, 1)
     db.session.add_all([user1, user2, user3])
+    db.session.flush()
     verify_unpaged(input, expected_user_names)
 
 
@@ -79,6 +80,7 @@ def test_filter_by_name(
     db.session.add(user_factory(name='user1'))
     db.session.add(user_factory(name='user2'))
     db.session.add(user_factory(name='user3'))
+    db.session.flush()
     verify_unpaged(input, expected_user_names)
 
 
@@ -92,6 +94,7 @@ def test_anonymous(
         verify_unpaged, input, expected_user_names, user_factory):
     db.session.add(user_factory(name='u1'))
     db.session.add(user_factory(name='u2'))
+    db.session.flush()
     verify_unpaged(input, expected_user_names)
 
 
@@ -109,6 +112,7 @@ def test_combining_tokens(
     user2.creation_time = datetime(2014, 6, 1)
     user3.creation_time = datetime(2015, 1, 1)
     db.session.add_all([user1, user2, user3])
+    db.session.flush()
     verify_unpaged(input, expected_user_names)
 
 
@@ -125,6 +129,7 @@ def test_paging(
         expected_total_count, expected_user_names):
     db.session.add(user_factory(name='u1'))
     db.session.add(user_factory(name='u2'))
+    db.session.flush()
     actual_count, actual_users = executor.execute(
         '', page=page, page_size=page_size)
     actual_user_names = [u.name for u in actual_users]
@@ -145,6 +150,7 @@ def test_sort_by_name(
         verify_unpaged, input, expected_user_names, user_factory):
     db.session.add(user_factory(name='u2'))
     db.session.add(user_factory(name='u1'))
+    db.session.flush()
     verify_unpaged(input, expected_user_names)
 
 
@@ -167,6 +173,7 @@ def test_sort_by_creation_time(
     user2.creation_time = datetime(1991, 1, 2)
     user3.creation_time = datetime(1991, 1, 3)
     db.session.add_all([user3, user1, user2])
+    db.session.flush()
     verify_unpaged(input, expected_user_names)
 
 
@@ -186,6 +193,7 @@ def test_sort_by_last_login_time(
     user2.last_login_time = datetime(1991, 1, 2)
     user3.last_login_time = datetime(1991, 1, 3)
     db.session.add_all([user3, user1, user2])
+    db.session.flush()
     verify_unpaged(input, expected_user_names)
 
 
@@ -194,6 +202,7 @@ def test_random_sort(executor, user_factory):
     user2 = user_factory(name='u2')
     user3 = user_factory(name='u3')
     db.session.add_all([user3, user1, user2])
+    db.session.flush()
     actual_count, actual_users = executor.execute(
         'sort:random', page=1, page_size=100)
     actual_user_names = [u.name for u in actual_users]

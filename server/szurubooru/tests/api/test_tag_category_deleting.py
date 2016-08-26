@@ -16,6 +16,7 @@ def test_deleting(user_factory, tag_category_factory, context_factory):
     category = tag_category_factory(name='category')
     db.session.add(tag_category_factory(name='root'))
     db.session.add(category)
+    db.session.flush()
     with patch('szurubooru.func.snapshots.delete'), \
             patch('szurubooru.func.tags.export_to_json'):
         result = api.tag_category_api.delete_tag_category(

@@ -33,6 +33,7 @@ def test_filter_by_creation_time(
     comment2.creation_time = datetime(2014, 6, 1)
     comment3.creation_time = datetime(2015, 1, 1)
     db.session.add_all([comment1, comment2, comment3])
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)
 
 
@@ -47,6 +48,7 @@ def test_filter_by_text(
     comment1 = comment_factory(text='t1')
     comment2 = comment_factory(text='t2')
     db.session.add_all([comment1, comment2])
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)
 
 
@@ -63,6 +65,7 @@ def test_filter_by_user(
         expected_comment_text):
     db.session.add(comment_factory(text='t2', user=user_factory(name='u2')))
     db.session.add(comment_factory(text='t1', user=user_factory(name='u1')))
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)
 
 
@@ -79,6 +82,7 @@ def test_filter_by_post(
         expected_comment_text):
     db.session.add(comment_factory(text='t1', post=post_factory(id=1)))
     db.session.add(comment_factory(text='t2', post=post_factory(id=2)))
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)
 
 
@@ -92,6 +96,7 @@ def test_anonymous(
         verify_unpaged, comment_factory, input, expected_comment_text):
     db.session.add(comment_factory(text='t1'))
     db.session.add(comment_factory(text='t2'))
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)
 
 
@@ -106,6 +111,7 @@ def test_sort_by_user(
         expected_comment_text):
     db.session.add(comment_factory(text='t2', user=user_factory(name='u2')))
     db.session.add(comment_factory(text='t1', user=user_factory(name='u1')))
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)
 
 
@@ -120,6 +126,7 @@ def test_sort_by_post(
         expected_comment_text):
     db.session.add(comment_factory(text='t1', post=post_factory(id=1)))
     db.session.add(comment_factory(text='t2', post=post_factory(id=2)))
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)
 
 
@@ -137,6 +144,7 @@ def test_sort_by_creation_time(
     comment2.creation_time = datetime(1991, 1, 2)
     comment3.creation_time = datetime(1991, 1, 3)
     db.session.add_all([comment3, comment1, comment2])
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)
 
 
@@ -155,4 +163,5 @@ def test_sort_by_last_edit_time(
     comment2.last_edit_time = datetime(1991, 1, 2)
     comment3.last_edit_time = datetime(1991, 1, 3)
     db.session.add_all([comment3, comment1, comment2])
+    db.session.flush()
     verify_unpaged(input, expected_comment_text)

@@ -18,6 +18,7 @@ def test_featuring(user_factory, post_factory, context_factory):
     auth_user = user_factory(rank=db.User.RANK_REGULAR)
     post = post_factory(id=1)
     db.session.add(post)
+    db.session.flush()
     assert not posts.get_post_by_id(1).is_featured
     with patch('szurubooru.func.posts.serialize_post'), \
             patch('szurubooru.func.snapshots.modify'):

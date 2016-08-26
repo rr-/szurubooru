@@ -18,6 +18,7 @@ def test_retrieving_multiple(user_factory, comment_factory, context_factory):
     comment1 = comment_factory(text='text 1')
     comment2 = comment_factory(text='text 2')
     db.session.add_all([comment1, comment2])
+    db.session.flush()
     with patch('szurubooru.func.comments.serialize_comment'):
         comments.serialize_comment.return_value = 'serialized comment'
         result = api.comment_api.get_comments(

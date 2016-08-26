@@ -11,6 +11,7 @@ def inject_config(config_injector):
 
 def test_get_tag_siblings(user_factory, tag_factory, context_factory):
     db.session.add(tag_factory(names=['tag']))
+    db.session.flush()
     with patch('szurubooru.func.tags.serialize_tag'), \
             patch('szurubooru.func.tags.get_tag_siblings'):
         tags.serialize_tag.side_effect = \

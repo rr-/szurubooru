@@ -23,6 +23,7 @@ def test_simple_updating(user_factory, tag_category_factory, context_factory):
     auth_user = user_factory(rank=db.User.RANK_REGULAR)
     category = tag_category_factory(name='name', color='black')
     db.session.add(category)
+    db.session.flush()
     with patch('szurubooru.func.tag_categories.serialize_category'), \
             patch('szurubooru.func.tag_categories.update_category_name'), \
             patch('szurubooru.func.tag_categories.update_category_color'), \

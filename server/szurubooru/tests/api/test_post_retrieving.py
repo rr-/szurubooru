@@ -19,6 +19,7 @@ def test_retrieving_multiple(user_factory, post_factory, context_factory):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     db.session.add_all([post1, post2])
+    db.session.flush()
     with patch('szurubooru.func.posts.serialize_post'):
         posts.serialize_post.return_value = 'serialized post'
         result = api.post_api.get_posts(
@@ -82,6 +83,7 @@ def test_trying_to_retrieve_multiple_without_privileges(
 
 def test_retrieving_single(user_factory, post_factory, context_factory):
     db.session.add(post_factory(id=1))
+    db.session.flush()
     with patch('szurubooru.func.posts.serialize_post'):
         posts.serialize_post.return_value = 'serialized post'
         result = api.post_api.get_post(

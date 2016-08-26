@@ -78,7 +78,8 @@ def query_logger():
 
 @pytest.yield_fixture(scope='function', autouse=True)
 def session(query_logger):  # pylint: disable=unused-argument
-    db.sessionmaker = sqlalchemy.orm.sessionmaker(bind=_engine)
+    db.sessionmaker = sqlalchemy.orm.sessionmaker(
+        bind=_engine, autoflush=False)
     db.session = sqlalchemy.orm.scoped_session(db.sessionmaker)
     try:
         yield db.session

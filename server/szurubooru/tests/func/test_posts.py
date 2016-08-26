@@ -196,6 +196,7 @@ def test_serialize_micro_post(post_factory, user_factory):
 def test_get_post_count(post_factory):
     previous_count = posts.get_post_count()
     db.session.add_all([post_factory(), post_factory()])
+    db.session.flush()
     new_count = posts.get_post_count()
     assert previous_count == 0
     assert new_count == 2
@@ -299,8 +300,8 @@ def test_update_post_content(
         })
         post = post_factory(id=1)
         db.session.add(post)
-        db.session.flush()
         posts.update_post_content(post, read_asset(input_file))
+        db.session.flush()
         assert post.mime_type == expected_mime_type
         assert post.type == expected_type
         assert post.checksum == 'crc'
@@ -321,6 +322,7 @@ def test_update_post_content_to_existing_content(
     db.session.add_all([post, another_post])
     db.session.flush()
     posts.update_post_content(post, read_asset('png.png'))
+    db.session.flush()
     with pytest.raises(posts.PostAlreadyUploadedError):
         posts.update_post_content(another_post, read_asset('png.png'))
 
@@ -538,7 +540,9 @@ def test_feature_post(post_factory, user_factory):
     post = post_factory()
     user = user_factory()
     previous_featured_post = posts.try_get_featured_post()
+    db.session.flush()
     posts.feature_post(post, user)
+    db.session.flush()
     new_featured_post = posts.try_get_featured_post()
     assert previous_featured_post is None
     assert new_featured_post == post
@@ -547,6 +551,8 @@ def test_feature_post(post_factory, user_factory):
 def test_delete(post_factory):
     post = post_factory()
     db.session.add(post)
+    db.session.flush()
     assert posts.get_post_count() == 1
     posts.delete(post)
+    db.session.flush()
     assert posts.get_post_count() == 0

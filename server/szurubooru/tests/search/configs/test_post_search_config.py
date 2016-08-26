@@ -85,6 +85,7 @@ def test_filter_by_id(verify_unpaged, post_factory, input, expected_post_ids):
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -106,6 +107,7 @@ def test_filter_by_tag(
     post3.tags = [tag_factory(names=['t3'])]
     post4.tags = [tag_factory(names=['t4a', 't4b'])]
     db.session.add_all([post1, post2, post3, post4])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -127,6 +129,7 @@ def test_filter_by_score(
                 post=post,
                 user=user_factory()))
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -154,6 +157,7 @@ def test_filter_by_uploader(
     post2.user = user_factory(name='u2')
     post3.user = user_factory(name='u3')
     db.session.add_all([post1, post2, post3, post4])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -178,6 +182,7 @@ def test_filter_by_commenter(
         comment_factory(post=post3, user=user_factory(name='u3')),
         post1, post2, post3,
     ])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -201,6 +206,7 @@ def test_filter_by_favorite(
         fav_factory(post=post2, user=user_factory(name='u2')),
         fav_factory(post=post3, user=user_factory(name='u3')),
         post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -218,6 +224,7 @@ def test_filter_by_tag_count(
     post2.tags = [tag_factory(), tag_factory()]
     post3.tags = [tag_factory(), tag_factory(), tag_factory()]
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -243,6 +250,7 @@ def test_filter_by_comment_count(
         comment_factory(post=post3),
         comment_factory(post=post3),
         post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -264,6 +272,7 @@ def test_filter_by_favorite_count(
         fav_factory(post=post3),
         fav_factory(post=post3),
         post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -281,6 +290,7 @@ def test_filter_by_note_count(
     post2.notes = [note_factory(), note_factory()]
     post3.notes = [note_factory(), note_factory(), note_factory()]
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -302,6 +312,7 @@ def test_filter_by_feature_count(
     post2.features = [feature_factory(), feature_factory()]
     post3.features = [feature_factory(), feature_factory(), feature_factory()]
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -326,6 +337,7 @@ def test_filter_by_type(
     post3.type = db.Post.TYPE_VIDEO
     post4.type = db.Post.TYPE_FLASH
     db.session.add_all([post1, post2, post3, post4])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -344,6 +356,7 @@ def test_filter_by_safety(
     post2.safety = db.Post.SAFETY_SKETCHY
     post3.safety = db.Post.SAFETY_UNSAFE
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -366,6 +379,7 @@ def test_filter_by_file_size(
     post2.file_size = 101
     post3.file_size = 102
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -392,6 +406,7 @@ def test_filter_by_image_size(
     post2.canvas_height = 201
     post3.canvas_height = 202
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -418,6 +433,7 @@ def test_filter_by_creation_time(
     post2.creation_time = datetime(2015, 1, 1)
     post3.creation_time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -444,6 +460,7 @@ def test_filter_by_last_edit_time(
     post2.last_edit_time = datetime(2015, 1, 1)
     post3.last_edit_time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -471,6 +488,7 @@ def test_filter_by_comment_date(
     comment2.creation_time = datetime(2015, 1, 1)
     comment3.creation_time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3, comment1, comment2, comment3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -494,6 +512,7 @@ def test_filter_by_fav_date(
     fav2.time = datetime(2015, 1, 1)
     fav3.time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3, fav1, fav2, fav3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -521,6 +540,7 @@ def test_filter_by_feature_date(
     feature2.time = datetime(2015, 1, 1)
     feature3.time = datetime(2016, 1, 1)
     db.session.add_all([post1, post2, post3, feature1, feature2, feature3])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -560,6 +580,7 @@ def test_sort_tokens(verify_unpaged, post_factory, input):
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     db.session.add_all([post1, post2, post3])
+    db.session.flush()
     verify_unpaged(input, [1, 2, 3])
 
 
@@ -582,6 +603,7 @@ def test_anonymous(
     post3.tags = [tag_factory(names=['t3'])]
     post4.tags = [tag_factory(names=['t4a', 't4b'])]
     db.session.add_all([post1, post2, post3, post4])
+    db.session.flush()
     verify_unpaged(input, expected_post_ids)
 
 
@@ -601,6 +623,7 @@ def test_own_liked(
         score_factory(post=post3, user=auth_user, score=-1),
         post1, post2, post3,
     ])
+    db.session.flush()
     verify_unpaged('special:liked', [1])
     verify_unpaged('-special:liked', [2, 3])
 
@@ -621,6 +644,7 @@ def test_own_disliked(
         score_factory(post=post3, user=auth_user, score=1),
         post1, post2, post3,
     ])
+    db.session.flush()
     verify_unpaged('special:disliked', [1])
     verify_unpaged('-special:disliked', [2, 3])
 
@@ -648,6 +672,7 @@ def test_own_fav(
         fav_factory(post=post2, user=user_factory(name='unrelated')),
         post1, post2,
     ])
+    db.session.flush()
     verify_unpaged('special:fav', [1])
     verify_unpaged('-special:fav', [2])
 
@@ -668,5 +693,6 @@ def test_tumbleweed(
         fav_factory(post=post3),
         post1, post2, post3, post4,
     ])
+    db.session.flush()
     verify_unpaged('special:tumbleweed', [4])
     verify_unpaged('-special:tumbleweed', [1, 2, 3])

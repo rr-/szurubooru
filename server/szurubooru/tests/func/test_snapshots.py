@@ -131,6 +131,7 @@ def test_create(tag_factory, user_factory):
     with patch('szurubooru.func.snapshots.get_tag_snapshot'):
         snapshots.get_tag_snapshot.return_value = 'mocked'
         snapshots.create(tag, user_factory())
+    db.session.flush()
     results = db.session.query(db.Snapshot).all()
     assert len(results) == 1
     assert results[0].operation == db.Snapshot.OPERATION_CREATED
@@ -151,6 +152,7 @@ def test_modify_saves_non_empty_diffs(post_factory, user_factory):
     post.notes = [db.PostNote(polygon=[(0, 0), (0, 1), (1, 1)], text='new')]
     db.session.flush()
     snapshots.modify(post, user)
+    db.session.flush()
     results = db.session.query(db.Snapshot).all()
     assert len(results) == 1
     assert results[0].data == {
@@ -178,6 +180,7 @@ def test_modify_doesnt_save_empty_diffs(tag_factory, user_factory):
     db.session.add_all([tag, user])
     db.session.commit()
     snapshots.modify(tag, user)
+    db.session.flush()
     assert db.session.query(db.Snapshot).count() == 0
 
 
@@ -188,6 +191,7 @@ def test_delete(tag_factory, user_factory):
     with patch('szurubooru.func.snapshots.get_tag_snapshot'):
         snapshots.get_tag_snapshot.return_value = 'mocked'
         snapshots.delete(tag, user_factory())
+    db.session.flush()
     results = db.session.query(db.Snapshot).all()
     assert len(results) == 1
     assert results[0].operation == db.Snapshot.OPERATION_DELETED
@@ -200,6 +204,7 @@ def test_merge(tag_factory, user_factory):
     db.session.add_all([source_tag, target_tag])
     db.session.flush()
     snapshots.merge(source_tag, target_tag, user_factory())
+    db.session.flush()
     result = db.session.query(db.Snapshot).one()
     assert result.operation == db.Snapshot.OPERATION_MERGED
     assert result.data == ['tag', 'target']

@@ -35,6 +35,7 @@ def test_sort_tags(
                 category=tag_category_factory(
                     name=category_name, default=category_is_default)))
     db.session.add_all(db_tags)
+    db.session.flush()
     actual_tag_names = [tag.names[0].name for tag in tags.sort_tags(db_tags)]
     assert actual_tag_names == expected_tag_names
 
@@ -143,6 +144,7 @@ def test_export_to_json(
 def test_try_get_tag_by_name(name_to_search, expected_to_find, tag_factory):
     tag = tag_factory(names=['name', 'ALIAS'])
     db.session.add(tag)
+    db.session.flush()
     if expected_to_find:
         assert tags.try_get_tag_by_name(name_to_search) == tag
     else:
@@ -159,6 +161,7 @@ def test_try_get_tag_by_name(name_to_search, expected_to_find, tag_factory):
 def test_get_tag_by_name(name_to_search, expected_to_find, tag_factory):
     tag = tag_factory(names=['name', 'ALIAS'])
     db.session.add(tag)
+    db.session.flush()
     if expected_to_find:
         assert tags.get_tag_by_name(name_to_search) == tag
     else:
@@ -239,6 +242,7 @@ def test_get_or_create_tags_by_names(
         tag_factory(names=['name2', 'ALIAS2'], category=category),
     ]
     db.session.add_all(input_tags)
+    db.session.flush()
     result = tags.get_or_create_tags_by_names(names)
     expected_ids = [input_tags[i].tag_id for i in expected_indexes]
     actual_ids = [tag.tag_id for tag in result[0]]
@@ -302,6 +306,7 @@ def test_delete(tag_factory):
     db.session.flush()
     assert db.session.query(db.Tag).count() == 3
     tags.delete(tag)
+    db.session.flush()
     assert db.session.query(db.Tag).count() == 2
 
 
@@ -309,9 +314,9 @@ def test_merge_tags_without_usages(tag_factory):
     source_tag = tag_factory(names=['source'])
     target_tag = tag_factory(names=['target'])
     db.session.add_all([source_tag, target_tag])
-    db.session.commit()
+    db.session.flush()
     tags.merge_tags(source_tag, target_tag)
-    db.session.commit()
+    db.session.flush()
     assert tags.try_get_tag_by_name('source') is None
     tag = tags.get_tag_by_name('target')
     assert tag is not None
@@ -335,7 +340,7 @@ def test_merge_tags_with_usages(tag_factory, post_factory):
 def test_merge_tags_with_itself(tag_factory):
     source_tag = tag_factory(names=['source'])
     db.session.add(source_tag)
-    db.session.commit()
+    db.session.flush()
     with pytest.raises(tags.InvalidTagRelationError):
         tags.merge_tags(source_tag, source_tag)
 
@@ -348,9 +353,9 @@ def test_merge_tags_with_its_child_relation(tag_factory, post_factory):
     post = post_factory()
     post.tags = [source_tag, target_tag]
     db.session.add_all([source_tag, post])
-    db.session.commit()
+    db.session.flush()
     tags.merge_tags(source_tag, target_tag)
-    db.session.commit()
+    db.session.flush()
     assert tags.try_get_tag_by_name('source') is None
     assert tags.get_tag_by_name('target').post_count == 1
 
@@ -363,9 +368,9 @@ def test_merge_tags_with_its_parent_relation(tag_factory, post_factory):
     post = post_factory()
     post.tags = [source_tag, target_tag]
     db.session.add_all([source_tag, target_tag, post])
-    db.session.commit()
+    db.session.flush()
     tags.merge_tags(source_tag, target_tag)
-    db.session.commit()
+    db.session.flush()
     assert tags.try_get_tag_by_name('source') is None
     assert tags.get_tag_by_name('target').post_count == 1
 
@@ -377,7 +382,7 @@ def test_merge_tags_clears_relations(tag_factory):
     referring_tag.suggestions = [source_tag]
     referring_tag.implications = [source_tag]
     db.session.add_all([source_tag, target_tag, referring_tag])
-    db.session.commit()
+    db.session.flush()
     assert tags.try_get_tag_by_name('parent').implications != []
     assert tags.try_get_tag_by_name('parent').suggestions != []
     tags.merge_tags(source_tag, target_tag)
@@ -393,11 +398,11 @@ def test_merge_tags_when_target_exists(tag_factory, post_factory):
     post = post_factory()
     post.tags = [source_tag, target_tag]
     db.session.add_all([source_tag, target_tag, post])
-    db.session.commit()
+    db.session.flush()
     assert source_tag.post_count == 1
     assert target_tag.post_count == 1
     tags.merge_tags(source_tag, target_tag)
-    db.session.commit()
+    db.session.flush()
     assert tags.try_get_tag_by_name('source') is None
     assert tags.get_tag_by_name('target').post_count == 1
 
@@ -460,6 +465,7 @@ def test_update_tag_names_trying_to_use_taken_name(
     db.session.add(existing_tag)
     tag = tag_factory()
     db.session.add(tag)
+    db.session.flush()
     with pytest.raises(tags.TagAlreadyExistsError):
         tags.update_tag_names(tag, ['a'])
     with pytest.raises(tags.TagAlreadyExistsError):

@@ -18,6 +18,7 @@ def test_retrieving_multiple(user_factory, tag_factory, context_factory):
     tag1 = tag_factory(names=['t1'])
     tag2 = tag_factory(names=['t2'])
     db.session.add_all([tag1, tag2])
+    db.session.flush()
     with patch('szurubooru.func.tags.serialize_tag'):
         tags.serialize_tag.return_value = 'serialized tag'
         result = api.tag_api.get_tags(
@@ -44,6 +45,7 @@ def test_trying_to_retrieve_multiple_without_privileges(
 
 def test_retrieving_single(user_factory, tag_factory, context_factory):
     db.session.add(tag_factory(names=['tag']))
+    db.session.flush()
     with patch('szurubooru.func.tags.serialize_tag'):
         tags.serialize_tag.return_value = 'serialized tag'
         result = api.tag_api.get_tag(

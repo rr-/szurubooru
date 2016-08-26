@@ -71,6 +71,7 @@ def test_updating_user(context_factory, user_factory):
 def test_omitting_optional_field(user_factory, context_factory, field):
     user = user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
+    db.session.flush()
     params = {
         'name': 'chewie',
         'email': 'asd@asd.asd',
@@ -97,6 +98,7 @@ def test_omitting_optional_field(user_factory, context_factory, field):
 def test_trying_to_update_non_existing(user_factory, context_factory):
     user = user_factory(name='u1', rank=db.User.RANK_ADMINISTRATOR)
     db.session.add(user)
+    db.session.flush()
     with pytest.raises(users.UserNotFoundError):
         api.user_api.update_user(
             context_factory(user=user), {'user_name': 'u2'})
@@ -114,6 +116,7 @@ def test_trying_to_update_field_without_privileges(
     user1 = user_factory(name='u1', rank=db.User.RANK_REGULAR)
     user2 = user_factory(name='u2', rank=db.User.RANK_REGULAR)
     db.session.add_all([user1, user2])
+    db.session.flush()
     with pytest.raises(errors.AuthError):
         api.user_api.update_user(
             context_factory(

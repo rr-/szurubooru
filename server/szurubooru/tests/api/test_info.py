@@ -19,6 +19,7 @@ def test_info_api(
         },
     })
     db.session.add_all([post_factory(), post_factory()])
+    db.session.flush()
 
     expected_config_key = {
         'userNameRegex': '1',

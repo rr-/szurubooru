@@ -25,6 +25,7 @@ def test_retrieving_multiple(user_factory, context_factory):
     snapshot1 = snapshot_factory()
     snapshot2 = snapshot_factory()
     db.session.add_all([snapshot1, snapshot2])
+    db.session.flush()
     result = api.snapshot_api.get_snapshots(
         context_factory(
             params={'query': '', 'page': 1},

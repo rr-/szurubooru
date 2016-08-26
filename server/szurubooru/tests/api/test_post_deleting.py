@@ -13,6 +13,7 @@ def test_deleting(user_factory, post_factory, context_factory):
     auth_user = user_factory(rank=db.User.RANK_REGULAR)
     post = post_factory(id=1)
     db.session.add(post)
+    db.session.flush()
     with patch('szurubooru.func.tags.export_to_json'), \
             patch('szurubooru.func.snapshots.delete'):
         result = api.post_api.delete_post(
