@@ -104,7 +104,7 @@ class PostSearchConfig(BaseSearchConfig):
         return db.session.query(db.Post.post_id)
 
     def create_filter_query(self):
-        return self.create_count_query() \
+        return db.session.query(db.Post) \
             .options(
                 # use config optimized for official client
                 # defer(db.Post.score),

@@ -5,10 +5,14 @@ from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 
 class UserSearchConfig(BaseSearchConfig):
-    ''' Executes searches related to the users. '''
-
     def create_filter_query(self):
         return db.session.query(db.User)
+
+    def create_count_query(self):
+        return db.session.query(db.User)
+
+    def create_around_query(self):
+        raise NotImplementedError()
 
     def finalize_query(self, query):
         return query.order_by(db.User.name.asc())

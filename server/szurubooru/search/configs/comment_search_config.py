@@ -8,6 +8,12 @@ class CommentSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
         return db.session.query(db.Comment).join(db.User)
 
+    def create_count_query(self):
+        return self.create_filter_query()
+
+    def create_around_query(self):
+        raise NotImplementedError()
+
     def finalize_query(self, query):
         return query.order_by(db.Comment.creation_time.desc())
 

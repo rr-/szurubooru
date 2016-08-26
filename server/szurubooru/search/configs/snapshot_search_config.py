@@ -7,6 +7,12 @@ class SnapshotSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
         return db.session.query(db.Snapshot)
 
+    def create_count_query(self):
+        return db.session.query(db.Snapshot)
+
+    def create_around_query(self):
+        raise NotImplementedError()
+
     def finalize_query(self, query):
         return query.order_by(db.Snapshot.creation_time.desc())
 

@@ -8,7 +8,7 @@ from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 class TagSearchConfig(BaseSearchConfig):
     def create_filter_query(self):
-        return self.create_count_query() \
+        return db.session.query(db.Tag) \
             .join(db.TagCategory) \
             .options(
                 subqueryload(db.Tag.names),
@@ -18,6 +18,9 @@ class TagSearchConfig(BaseSearchConfig):
 
     def create_count_query(self):
         return db.session.query(db.Tag)
+
+    def create_around_query(self):
+        raise NotImplementedError()
 
     def finalize_query(self, query):
         return query.order_by(db.Tag.first_name.asc())

@@ -11,11 +11,11 @@ class BaseSearchConfig(object):
     def create_filter_query(self):
         raise NotImplementedError()
 
-    def create_around_query(self):
-        return self.create_filter_query()
-
     def create_count_query(self):
-        return self.create_filter_query()
+        raise NotImplementedError()
+
+    def create_around_query(self):
+        raise NotImplementedError()
 
     @property
     def id_column(self):
