@@ -265,26 +265,35 @@ def test_update_post_source_with_too_long_string():
 
 
 @pytest.mark.parametrize(
-    'input_file,expected_mime_type,expected_type,output_file_name',
+    'is_existing,input_file,expected_mime_type,expected_type,output_file_name',
     [
-        ('png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
-        ('jpeg.jpg', 'image/jpeg', db.Post.TYPE_IMAGE, '1.jpg'),
-        ('gif.gif', 'image/gif', db.Post.TYPE_IMAGE, '1.gif'),
-        ('gif-animated.gif', 'image/gif', db.Post.TYPE_ANIMATION, '1.gif'),
-        ('webm.webm', 'video/webm', db.Post.TYPE_VIDEO, '1.webm'),
-        ('mp4.mp4', 'video/mp4', db.Post.TYPE_VIDEO, '1.mp4'),
+        (True, 'png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
+        (False, 'png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
+        (False, 'jpeg.jpg', 'image/jpeg', db.Post.TYPE_IMAGE, '1.jpg'),
+        (False, 'gif.gif', 'image/gif', db.Post.TYPE_IMAGE, '1.gif'),
         (
+            False,
+            'gif-animated.gif',
+            'image/gif',
+            db.Post.TYPE_ANIMATION,
+            '1.gif',
+        ),
+        (False, 'webm.webm', 'video/webm', db.Post.TYPE_VIDEO, '1.webm'),
+        (False, 'mp4.mp4', 'video/mp4', db.Post.TYPE_VIDEO, '1.mp4'),
+        (
+            False,
             'flash.swf',
             'application/x-shockwave-flash',
             db.Post.TYPE_FLASH,
             '1.swf'
         ),
     ])
-def test_update_post_content(
+def test_update_post_content_for_new_post(
         tmpdir,
         config_injector,
         post_factory,
         read_asset,
+        is_existing,
         input_file,
         expected_mime_type,
         expected_type,
@@ -298,14 +307,22 @@ def test_update_post_content(
                 'post_height': 300,
             },
         })
-        post = post_factory(id=1)
+        output_file_path = str(tmpdir) + '/data/posts/' + output_file_name
+        post = post_factory()
         db.session.add(post)
+        if is_existing:
+            db.session.flush()
+            assert post.post_id
+        else:
+            assert not post.post_id
+        assert not os.path.exists(output_file_path)
         posts.update_post_content(post, read_asset(input_file))
+        assert not os.path.exists(output_file_path)
         db.session.flush()
         assert post.mime_type == expected_mime_type
         assert post.type == expected_type
         assert post.checksum == 'crc'
-        assert os.path.exists(str(tmpdir) + '/data/posts/' + output_file_name)
+        assert os.path.exists(output_file_path)
 
 
 def test_update_post_content_to_existing_content(
@@ -320,7 +337,6 @@ def test_update_post_content_to_existing_content(
     post = post_factory()
     another_post = post_factory()
     db.session.add_all([post, another_post])
-    db.session.flush()
     posts.update_post_content(post, read_asset('png.png'))
     db.session.flush()
     with pytest.raises(posts.PostAlreadyUploadedError):
@@ -342,8 +358,8 @@ def test_update_post_content_with_broken_content(
     post = post_factory()
     another_post = post_factory()
     db.session.add_all([post, another_post])
-    db.session.flush()
     posts.update_post_content(post, read_asset('png-broken.png'))
+    db.session.flush()
     assert post.canvas_width is None
     assert post.canvas_height is None
 
@@ -355,8 +371,9 @@ def test_update_post_content_with_invalid_content(input_content):
         posts.update_post_content(post, input_content)
 
 
+@pytest.mark.parametrize('is_existing', (True, False))
 def test_update_post_thumbnail_to_new_one(
-        tmpdir, config_injector, read_asset, post_factory):
+        tmpdir, config_injector, read_asset, post_factory, is_existing):
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
         'thumbnails': {
@@ -364,21 +381,31 @@ def test_update_post_thumbnail_to_new_one(
             'post_height': 300,
         },
     })
-    post = post_factory(id=1)
+    post = post_factory()
     db.session.add(post)
-    db.session.flush()
+    if is_existing:
+        db.session.flush()
+        assert post.post_id
+    else:
+        assert not post.post_id
+    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
+    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert not os.path.exists(generated_path)
+    assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
     posts.update_post_thumbnail(post, read_asset('jpeg.jpg'))
-    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
-    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
-    assert os.path.exists(source_path)
+    assert not os.path.exists(generated_path)
+    assert not os.path.exists(source_path)
+    db.session.flush()
     assert os.path.exists(generated_path)
+    assert os.path.exists(source_path)
     with open(source_path, 'rb') as handle:
         assert handle.read() == read_asset('jpeg.jpg')
 
 
+@pytest.mark.parametrize('is_existing', (True, False))
 def test_update_post_thumbnail_to_default(
-        tmpdir, config_injector, read_asset, post_factory):
+        tmpdir, config_injector, read_asset, post_factory, is_existing):
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
         'thumbnails': {
@@ -386,19 +413,30 @@ def test_update_post_thumbnail_to_default(
             'post_height': 300,
         },
     })
-    post = post_factory(id=1)
+    post = post_factory()
     db.session.add(post)
-    db.session.flush()
+    if is_existing:
+        db.session.flush()
+        assert post.post_id
+    else:
+        assert not post.post_id
+    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
+    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert not os.path.exists(generated_path)
+    assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
     posts.update_post_thumbnail(post, read_asset('jpeg.jpg'))
     posts.update_post_thumbnail(post, None)
-    assert os.path.exists(str(tmpdir) + '/data/generated-thumbnails/1.jpg')
-    assert not os.path.exists(
-        str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
+    assert not os.path.exists(generated_path)
+    assert not os.path.exists(source_path)
+    db.session.flush()
+    assert os.path.exists(generated_path)
+    assert not os.path.exists(source_path)
 
 
+@pytest.mark.parametrize('is_existing', (True, False))
 def test_update_post_thumbnail_with_broken_thumbnail(
-        tmpdir, config_injector, read_asset, post_factory):
+        tmpdir, config_injector, read_asset, post_factory, is_existing):
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
         'thumbnails': {
@@ -406,15 +444,24 @@ def test_update_post_thumbnail_with_broken_thumbnail(
             'post_height': 300,
         },
     })
-    post = post_factory(id=1)
+    post = post_factory()
     db.session.add(post)
-    db.session.flush()
+    if is_existing:
+        db.session.flush()
+        assert post.post_id
+    else:
+        assert not post.post_id
+    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
+    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
+    assert not os.path.exists(generated_path)
+    assert not os.path.exists(source_path)
     posts.update_post_content(post, read_asset('png.png'))
     posts.update_post_thumbnail(post, read_asset('png-broken.png'))
-    source_path = str(tmpdir) + '/data/posts/custom-thumbnails/1.dat'
-    generated_path = str(tmpdir) + '/data/generated-thumbnails/1.jpg'
-    assert os.path.exists(source_path)
+    assert not os.path.exists(generated_path)
+    assert not os.path.exists(source_path)
+    db.session.flush()
     assert os.path.exists(generated_path)
+    assert os.path.exists(source_path)
     with open(source_path, 'rb') as handle:
         assert handle.read() == read_asset('png-broken.png')
     with open(generated_path, 'rb') as handle:
@@ -434,10 +481,10 @@ def test_update_post_content_leaving_custom_thumbnail(
     })
     post = post_factory(id=1)
     db.session.add(post)
-    db.session.flush()
     posts.update_post_content(post, read_asset('png.png'))
     posts.update_post_thumbnail(post, read_asset('jpeg.jpg'))
     posts.update_post_content(post, read_asset('png.png'))
+    db.session.flush()
     assert os.path.exists(str(tmpdir) + '/data/posts/custom-thumbnails/1.dat')
     assert os.path.exists(str(tmpdir) + '/data/generated-thumbnails/1.jpg')
 

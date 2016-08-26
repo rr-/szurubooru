@@ -257,6 +257,55 @@ def test_omitting_optional_field(
         assert result == 'serialized post'
 
 
+def test_errors_not_spending_ids(
+        config_injector, tmpdir, context_factory, read_asset, user_factory):
+    config_injector({
+        'data_dir': str(tmpdir.mkdir('data')),
+        'thumbnails': {
+            'post_width': 300,
+            'post_height': 300,
+        },
+        'privileges': {
+            'posts:create:identified': db.User.RANK_REGULAR,
+        },
+    })
+    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+
+    # successful request
+    with patch('szurubooru.func.posts.serialize_post'), \
+            patch('szurubooru.func.posts.update_post_tags'):
+        posts.serialize_post.side_effect = lambda post, *_, **__: post.post_id
+        post1_id = api.post_api.create_post(
+            context_factory(
+                params={'safety': 'safe', 'tags': []},
+                files={'content': read_asset('png.png')},
+                user=auth_user))
+    db.session.commit()
+
+    # erroreous request (duplicate post)
+    with pytest.raises(posts.PostAlreadyUploadedError):
+        api.post_api.create_post(
+            context_factory(
+                params={'safety': 'safe', 'tags': []},
+                files={'content': read_asset('png.png')},
+                user=auth_user))
+    db.session.rollback()
+
+    # successful request
+    with patch('szurubooru.func.posts.serialize_post'), \
+            patch('szurubooru.func.posts.update_post_tags'):
+        posts.serialize_post.side_effect = lambda post, *_, **__: post.post_id
+        post2_id = api.post_api.create_post(
+            context_factory(
+                params={'safety': 'safe', 'tags': []},
+                files={'content': read_asset('jpeg.jpg')},
+                user=auth_user))
+
+    assert post1_id > 0
+    assert post2_id > 0
+    assert post2_id == post1_id + 1
+
+
 def test_trying_to_omit_content(context_factory, user_factory):
     with pytest.raises(errors.MissingRequiredFileError):
         api.post_api.create_post(

@@ -86,6 +86,7 @@ def get_post_thumbnail_url(post):
 
 def get_post_content_path(post):
     assert post
+    assert post.post_id
     return 'posts/%d.%s' % (
         post.post_id, mime.get_extension(post.mime_type) or 'dat')
 
@@ -217,12 +218,10 @@ def create_post(content, tag_names, user):
     post.creation_time = datetime.datetime.utcnow()
     post.flags = []
 
-    # we'll need post ID
     post.type = ''
     post.checksum = ''
     post.mime_type = ''
     db.session.add(post)
-    db.session.flush()
 
     update_post_content(post, content)
     new_tags = update_post_tags(post, tag_names)
@@ -243,6 +242,38 @@ def update_post_source(post, source):
     if util.value_exceeds_column_size(source, db.Post.source):
         raise InvalidPostSourceError('Source is too long.')
     post.source = source
+
+
+@sqlalchemy.events.event.listens_for(db.Post, 'after_insert')
+def _after_post_insert(_mapper, _connection, post):
+    _sync_post_content(post)
+
+
+@sqlalchemy.events.event.listens_for(db.Post, 'after_update')
+def _after_post_update(_mapper, _connection, post):
+    _sync_post_content(post)
+
+
+def _sync_post_content(post):
+    regenerate_thumb = False
+
+    if hasattr(post, '__content'):
+        files.save(get_post_content_path(post), getattr(post, '__content'))
+        delattr(post, '__content')
+        regenerate_thumb = True
+
+    if hasattr(post, '__thumbnail'):
+        if getattr(post, '__thumbnail'):
+            files.save(
+                get_post_thumbnail_backup_path(post),
+                getattr(post, '__thumbnail'))
+        else:
+            files.delete(get_post_thumbnail_backup_path(post))
+        delattr(post, '__thumbnail')
+        regenerate_thumb = True
+
+    if regenerate_thumb:
+        generate_post_thumbnail(post)
 
 
 def update_post_content(post, content):
@@ -269,7 +300,9 @@ def update_post_content(post, content):
         .filter(db.Post.checksum == post.checksum) \
         .filter(db.Post.post_id != post.post_id) \
         .one_or_none()
-    if other_post:
+    if other_post \
+            and other_post.post_id \
+            and other_post.post_id != post.post_id:
         raise PostAlreadyUploadedError(
             'Post already uploaded (%d)' % other_post.post_id)
 
@@ -284,19 +317,12 @@ def update_post_content(post, content):
     if post.canvas_width <= 0 or post.canvas_height <= 0:
         post.canvas_width = None
         post.canvas_height = None
-    files.save(get_post_content_path(post), content)
-    update_post_thumbnail(post, content=None, do_delete=False)
+    setattr(post, '__content', content)
 
 
-def update_post_thumbnail(post, content=None, do_delete=True):
+def update_post_thumbnail(post, content=None):
     assert post
-    if not content:
-        content = files.get(get_post_content_path(post))
-        if do_delete:
-            files.delete(get_post_thumbnail_backup_path(post))
-    else:
-        files.save(get_post_thumbnail_backup_path(post), content)
-    generate_post_thumbnail(post)
+    setattr(post, '__thumbnail', content)
 
 
 def generate_post_thumbnail(post):
