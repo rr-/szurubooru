@@ -1,4 +1,4 @@
-from sqlalchemy.orm import subqueryload
+from sqlalchemy.orm import subqueryload, lazyload
 from sqlalchemy.sql.expression import func
 from szurubooru import db
 from szurubooru.func import util
@@ -7,16 +7,17 @@ from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 
 class TagSearchConfig(BaseSearchConfig):
-    def create_filter_query(self):
+    def create_filter_query(self, _disable_eager_loads):
+        strategy = lazyload if _disable_eager_loads else subqueryload
         return db.session.query(db.Tag) \
             .join(db.TagCategory) \
             .options(
-                subqueryload(db.Tag.names),
-                subqueryload(db.Tag.category),
-                subqueryload(db.Tag.suggestions).joinedload(db.Tag.names),
-                subqueryload(db.Tag.implications).joinedload(db.Tag.names))
+                strategy(db.Tag.names),
+                strategy(db.Tag.category),
+                strategy(db.Tag.suggestions).joinedload(db.Tag.names),
+                strategy(db.Tag.implications).joinedload(db.Tag.names))
 
-    def create_count_query(self):
+    def create_count_query(self, _disable_eager_loads):
         return db.session.query(db.Tag)
 
     def create_around_query(self):

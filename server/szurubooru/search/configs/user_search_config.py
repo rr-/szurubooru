@@ -5,10 +5,10 @@ from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 
 class UserSearchConfig(BaseSearchConfig):
-    def create_filter_query(self):
+    def create_filter_query(self, _disable_eager_loads):
         return db.session.query(db.User)
 
-    def create_count_query(self):
+    def create_count_query(self, _disable_eager_loads):
         return db.session.query(db.User)
 
     def create_around_query(self):

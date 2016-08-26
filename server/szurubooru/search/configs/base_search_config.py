@@ -8,10 +8,10 @@ class BaseSearchConfig(object):
     def on_search_query_parsed(self, search_query):
         pass
 
-    def create_filter_query(self):
+    def create_filter_query(self, _disable_eager_loads):
         raise NotImplementedError()
 
-    def create_count_query(self):
+    def create_count_query(self, disable_eager_loads):
         raise NotImplementedError()
 
     def create_around_query(self):

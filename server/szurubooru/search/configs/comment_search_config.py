@@ -5,11 +5,11 @@ from szurubooru.search.configs.base_search_config import BaseSearchConfig
 
 
 class CommentSearchConfig(BaseSearchConfig):
-    def create_filter_query(self):
+    def create_filter_query(self, _disable_eager_loads):
         return db.session.query(db.Comment).join(db.User)
 
-    def create_count_query(self):
-        return self.create_filter_query()
+    def create_count_query(self, disable_eager_loads):
+        return self.create_filter_query(disable_eager_loads)
 
     def create_around_query(self):
         raise NotImplementedError()

@@ -73,11 +73,16 @@ class Executor(object):
         search_query = self.parser.parse(query_text)
         self.config.on_search_query_parsed(search_query)
 
+        disable_eager_loads = False
+        for token in search_query.sort_tokens:
+            if token.name == 'random':
+                disable_eager_loads = True
+
         key = (id(self.config), hash(search_query), page, page_size)
         if cache.has(key):
             return cache.get(key)
 
-        filter_query = self.config.create_filter_query()
+        filter_query = self.config.create_filter_query(disable_eager_loads)
         filter_query = filter_query.options(sqlalchemy.orm.lazyload('*'))
         filter_query = self._prepare_db_query(filter_query, search_query, True)
         entities = filter_query \
@@ -85,7 +90,7 @@ class Executor(object):
             .limit(page_size) \
             .all()
 
-        count_query = self.config.create_count_query()
+        count_query = self.config.create_count_query(disable_eager_loads)
         count_query = count_query.options(sqlalchemy.orm.lazyload('*'))
         count_query = self._prepare_db_query(count_query, search_query, False)
         count_statement = count_query \

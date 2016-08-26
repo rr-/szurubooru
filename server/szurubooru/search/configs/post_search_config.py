@@ -103,9 +103,11 @@ class PostSearchConfig(BaseSearchConfig):
     def create_around_query(self):
         return db.session.query(db.Post.post_id)
 
-    def create_filter_query(self):
+    def create_filter_query(self, disable_eager_loads):
+        strategy = lazyload if disable_eager_loads else subqueryload
         return db.session.query(db.Post) \
             .options(
+                lazyload('*'),
                 # use config optimized for official client
                 # defer(db.Post.score),
                 # defer(db.Post.favorite_count),
@@ -117,16 +119,12 @@ class PostSearchConfig(BaseSearchConfig):
                 defer(db.Post.last_comment_edit_time),
                 defer(db.Post.note_count),
                 defer(db.Post.tag_count),
-                subqueryload(db.Post.tags).subqueryload(db.Tag.names),
-                subqueryload(db.Post.tags).defer(db.Tag.post_count),
-                subqueryload(db.Post.tags).lazyload(db.Tag.implications),
-                subqueryload(db.Post.tags).lazyload(db.Tag.suggestions),
-                lazyload(db.Post.user),
-                lazyload(db.Post.relations),
-                lazyload(db.Post.notes),
-                lazyload(db.Post.favorited_by))
+                strategy(db.Post.tags).subqueryload(db.Tag.names),
+                strategy(db.Post.tags).defer(db.Tag.post_count),
+                strategy(db.Post.tags).lazyload(db.Tag.implications),
+                strategy(db.Post.tags).lazyload(db.Tag.suggestions))
 
-    def create_count_query(self):
+    def create_count_query(self, _disable_eager_loads):
         return db.session.query(db.Post)
 
     def finalize_query(self, query):
