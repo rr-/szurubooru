@@ -16,7 +16,7 @@
                             <span class='stats'>
                                 <% if (post.score) { %>
                                     <span class='icon'>
-                                        <i class='fa fa-star'></i>
+                                        <i class='fa fa-thumbs-up'></i>
                                         <%- post.score %>
                                     </span>
                                 <% } %>
