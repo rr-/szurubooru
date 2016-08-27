@@ -181,16 +181,32 @@ def test_try_get_default_category_when_default(tag_category_factory):
     assert actual_default_category != category1
 
 
-def test_try_get_default_category_from_cache(tag_category_factory):
+def test_get_default_category_name(tag_category_factory):
+    category1 = tag_category_factory()
+    category2 = tag_category_factory(default=True)
+    db.session.add_all([category1, category2])
+    db.session.flush()
+    assert tag_categories.get_default_category_name() == category2.name
+    category2.default = False
+    db.session.flush()
+    cache.purge()
+    assert tag_categories.get_default_category_name() == category1.name
+    db.session.query(db.TagCategory).delete()
+    cache.purge()
+    assert tag_categories.get_default_category_name() is None
+
+
+def test_get_default_category_name_caching(tag_category_factory):
     category1 = tag_category_factory()
     category2 = tag_category_factory()
     db.session.add_all([category1, category2])
     db.session.flush()
-    tag_categories.try_get_default_category()
-    db.session.query(db.TagCategory).delete()
-    assert tag_categories.try_get_default_category() == category1
+    tag_categories.get_default_category_name()
+    db.session.delete(category1)
+    db.session.flush()
+    assert tag_categories.get_default_category_name() == category1.name
     cache.purge()
-    assert tag_categories.try_get_default_category() is None
+    assert tag_categories.get_default_category_name() == category2.name
 
 
 def test_get_default_category():

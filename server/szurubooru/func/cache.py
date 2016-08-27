@@ -55,5 +55,10 @@ def get(key):
     return _CACHE.hash[key].value
 
 
+def remove(key):
+    if has(key):
+        del _CACHE.hash[key]
+
+
 def put(key, value):
     _CACHE.insert_item(LruCacheItem(key, value))

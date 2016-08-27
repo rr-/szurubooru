@@ -4,6 +4,9 @@ from szurubooru import config, db, errors
 from szurubooru.func import util, cache
 
 
+DEFAULT_CATEGORY_NAME_CACHE_KEY = 'default-tag-category'
+
+
 class TagCategoryNotFoundError(errors.NotFoundError):
     pass
 
@@ -69,6 +72,7 @@ def update_category_name(category, name):
         raise InvalidTagCategoryNameError('Name is too long.')
     _verify_name_validity(name)
     category.name = name
+    cache.remove(DEFAULT_CATEGORY_NAME_CACHE_KEY)
 
 
 def update_category_color(category, color):
@@ -82,15 +86,17 @@ def update_category_color(category, color):
     category.color = color
 
 
-def try_get_category_by_name(name):
-    return db.session \
+def try_get_category_by_name(name, lock=False):
+    query = db.session \
         .query(db.TagCategory) \
-        .filter(sqlalchemy.func.lower(db.TagCategory.name) == name.lower()) \
-        .one_or_none()
+        .filter(sqlalchemy.func.lower(db.TagCategory.name) == name.lower())
+    if lock:
+        query = query.with_lockmode('update')
+    return query.one_or_none()
 
 
-def get_category_by_name(name):
-    category = try_get_category_by_name(name)
+def get_category_by_name(name, lock=False):
+    category = try_get_category_by_name(name, lock)
     if not category:
         raise TagCategoryNotFoundError('Tag category %r not found.' % name)
     return category
@@ -104,38 +110,50 @@ def get_all_categories():
     return db.session.query(db.TagCategory).all()
 
 
-def try_get_default_category():
-    key = 'default-tag-category'
-    if cache.has(key):
-        return cache.get(key)
-    category = db.session \
+def try_get_default_category(lock=False):
+    query = db.session \
         .query(db.TagCategory) \
-        .filter(db.TagCategory.default) \
-        .first()
+        .filter(db.TagCategory.default)
+    if lock:
+        query = query.with_lockmode('update')
+    category = query.first()
     # if for some reason (e.g. as a result of migration) there's no default
     # category, get the first record available.
     if not category:
-        category = db.session \
+        query = db.session \
             .query(db.TagCategory) \
-            .order_by(db.TagCategory.tag_category_id.asc()) \
-            .first()
-    cache.put(key, category)
+            .order_by(db.TagCategory.tag_category_id.asc())
+        if lock:
+            query = query.with_lockmode('update')
+        category = query.first()
     return category
 
 
-def get_default_category():
-    category = try_get_default_category()
+def get_default_category(lock=False):
+    category = try_get_default_category(lock)
     if not category:
         raise TagCategoryNotFoundError('No tag category created yet.')
     return category
 
 
+def get_default_category_name():
+    if cache.has(DEFAULT_CATEGORY_NAME_CACHE_KEY):
+        return cache.get(DEFAULT_CATEGORY_NAME_CACHE_KEY)
+    default_category = try_get_default_category()
+    default_category_name = default_category.name if default_category else None
+    cache.put(DEFAULT_CATEGORY_NAME_CACHE_KEY, default_category_name)
+    return default_category_name
+
+
 def set_default_category(category):
     assert category
-    old_category = try_get_default_category()
+    old_category = try_get_default_category(lock=True)
     if old_category:
+        db.session.refresh(old_category)
         old_category.default = False
+    db.session.refresh(category)
     category.default = True
+    cache.remove(DEFAULT_CATEGORY_NAME_CACHE_KEY)
 
 
 def delete_category(category):

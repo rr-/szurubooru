@@ -40,7 +40,8 @@ def get_tag_category(ctx, params):
 
 @routes.put('/tag-category/(?P<category_name>[^/]+)/?')
 def update_tag_category(ctx, params):
-    category = tag_categories.get_category_by_name(params['category_name'])
+    category = tag_categories.get_category_by_name(
+        params['category_name'], lock=True)
     versions.verify_version(category, ctx)
     versions.bump_version(category)
     if ctx.has_param('name'):
@@ -60,7 +61,8 @@ def update_tag_category(ctx, params):
 
 @routes.delete('/tag-category/(?P<category_name>[^/]+)/?')
 def delete_tag_category(ctx, params):
-    category = tag_categories.get_category_by_name(params['category_name'])
+    category = tag_categories.get_category_by_name(
+        params['category_name'], lock=True)
     versions.verify_version(category, ctx)
     auth.verify_privilege(ctx.user, 'tag_categories:delete')
     tag_categories.delete_category(category)
@@ -73,8 +75,10 @@ def delete_tag_category(ctx, params):
 @routes.put('/tag-category/(?P<category_name>[^/]+)/default/?')
 def set_tag_category_as_default(ctx, params):
     auth.verify_privilege(ctx.user, 'tag_categories:set_default')
-    category = tag_categories.get_category_by_name(params['category_name'])
+    category = tag_categories.get_category_by_name(
+        params['category_name'], lock=True)
     tag_categories.set_default_category(category)
+    ctx.session.flush()
     snapshots.modify(category, ctx.user)
     ctx.session.commit()
     tags.export_to_json()

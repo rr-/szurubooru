@@ -58,8 +58,7 @@ def _check_name_intersection(names1, names2, case_sensitive):
 
 
 def sort_tags(tags):
-    default_category = tag_categories.try_get_default_category()
-    default_category_name = default_category.name if default_category else None
+    default_category_name = tag_categories.get_default_category_name()
     return sorted(
         tags,
         key=lambda tag: (
@@ -170,7 +169,7 @@ def get_or_create_tags_by_names(names):
     names = util.icase_unique(names)
     existing_tags = get_tags_by_names(names)
     new_tags = []
-    tag_category_name = tag_categories.get_default_category().name
+    tag_category_name = tag_categories.get_default_category_name()
     for name in names:
         found = False
         for existing_tag in existing_tags:
