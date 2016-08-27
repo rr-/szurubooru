@@ -13,13 +13,12 @@
             display: none
         .tabs-wrapper
             background: $active-tab-background-color
-        .tab
             padding: 0.3em
-            .comment-content-wrapper
-                background: $window-color
-                overflow: hidden
-                .comment-content
-                    margin: 1em
+        .tab-wrapper[data-tab='preview']
+            background: $window-color
+        .tab.preview
+            padding: 1em
+        .tab.edit
             textarea
                 resize: vertical
                 width: 100%

@@ -1,18 +1,18 @@
 <div class='tabs'>
     <form>
-        <div class='tabs-wrapper'><!--
-            --><div class='preview tab'><!--
-                --><div class='comment-content-wrapper'><!--
-                    --><div class='comment-content'><!--
-                        --><%= ctx.makeMarkdown(ctx.comment.text) %><!--
-                    --></div><!--
-                --></div><!--
-            --></div><!--
+        <div class='tabs-wrapper'><%
+            %><div class='tab-wrapper'><%
+                %><div class='preview tab'><%
+                    %><div class='comment-content'><%
+                        %><%= ctx.makeMarkdown(ctx.comment.text) %><%
+                    %></div><%
+                %></div><%
 
-            --><div class='edit tab'><!--
-                --><textarea required minlength=1><%- ctx.comment.text %></textarea><!--
-            --></div><!--
-        --></div>
+                %><div class='edit tab'><%
+                    %><textarea required minlength=1><%- ctx.comment.text %></textarea><%
+                %></div><%
+            %></div><%
+        %></div>
 
         <nav class='buttons'>
             <ul>

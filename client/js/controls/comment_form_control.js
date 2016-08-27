@@ -64,7 +64,7 @@ class CommentFormControl extends events.EventTarget {
 
     exitEditMode() {
         this._hostNode.classList.remove('editing');
-        this._hostNode.querySelector('.tabs-wrapper').style.minHeight = null;
+        this._hostNode.querySelector('.tab-wrapper').style.minHeight = null;
         views.clearMessages(this._hostNode);
         this.setText(this._comment.text);
     }
@@ -117,13 +117,15 @@ class CommentFormControl extends events.EventTarget {
 
     _selectTab(tabName) {
         this._freezeTabHeights();
+        const tabWrapperNode = this._hostNode.querySelector('.tab-wrapper');
+        tabWrapperNode.setAttribute('data-tab', tabName);
         for (let tab of this._hostNode.querySelectorAll('.tab, .buttons li')) {
             tab.classList.toggle('active', tab.classList.contains(tabName));
         }
     }
 
     _freezeTabHeights() {
-        const tabsNode = this._hostNode.querySelector('.tabs-wrapper');
+        const tabsNode = this._hostNode.querySelector('.tab-wrapper');
         const tabsHeight = tabsNode.getBoundingClientRect().height;
         tabsNode.style.minHeight = tabsHeight + 'px';
     }
