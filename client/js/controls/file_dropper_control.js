@@ -65,7 +65,7 @@ class FileDropperControl extends events.EventTarget {
             if (!url) {
                 return;
             }
-            if (!url.match(/^https:?\/\/[^.]+\..+$/)) {
+            if (!url.match(/^https?:\/\/[^.]+\..+$/)) {
                 window.alert(`"${url}" does not look like a valid URL.`);
                 return;
             }
