@@ -5,10 +5,10 @@ const views = require('../util/views.js');
 const optimizedResize = require('../util/optimized_resize.js');
 
 class PostContentControl {
-    constructor(containerNode, post, viewportSizeCalculator) {
+    constructor(hostNode, post, viewportSizeCalculator) {
         this._post = post;
         this._viewportSizeCalculator = viewportSizeCalculator;
-        this._containerNode = containerNode;
+        this._hostNode = hostNode;
         this._template = views.getTemplate('post-content');
 
         this._currentFitFunction = {
@@ -22,6 +22,10 @@ class PostContentControl {
 
         this._post.addEventListener(
             'changeContent', e => this._evtPostContentChange(e));
+    }
+
+    disableOverlay() {
+        this._hostNode.querySelector('.post-overlay').style.display = 'none';
     }
 
     fitWidth() {
@@ -94,7 +98,7 @@ class PostContentControl {
         this._reinstall();
         optimizedResize.add(() => this._refreshSize());
         views.monitorNodeRemoval(
-            this._containerNode, () => { this._uninstall(); });
+            this._hostNode, () => { this._uninstall(); });
     }
 
     _reinstall() {
@@ -103,9 +107,9 @@ class PostContentControl {
             newNode.classList.add('transparency-grid');
         }
         if (this._postContentNode) {
-            this._containerNode.replaceChild(newNode, this._postContentNode);
+            this._hostNode.replaceChild(newNode, this._postContentNode);
         } else {
-            this._containerNode.appendChild(newNode);
+            this._hostNode.appendChild(newNode);
         }
         this._postContentNode = newNode;
         this._refreshSize();

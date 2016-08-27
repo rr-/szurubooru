@@ -51,6 +51,10 @@ class PostView {
             postContainerNode.querySelector('.post-overlay'),
             ctx.post);
 
+        if (ctx.post.type === 'video') {
+            this._postContentControl.disableOverlay();
+        }
+
         this._installSidebar(ctx);
         this._installCommentForm();
         this._installComments(ctx.post.comments);
