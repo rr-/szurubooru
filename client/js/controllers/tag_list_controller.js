@@ -10,7 +10,7 @@ const TagsPageView = require('../views/tags_page_view.js');
 const EmptyView = require('../views/empty_view.js');
 
 const fields = [
-    'names', 'suggestions', 'implications', 'lastEditTime', 'usages'];
+    'names', 'suggestions', 'implications', 'creationTime', 'usages'];
 
 class TagListController {
     constructor(ctx) {

@@ -30,11 +30,11 @@
                         <a href='/tags/query=sort:usages'>Usages</a>
                     <% } %>
                 </th>
-                <th class='edit-time'>
-                    <% if (ctx.query == 'sort:last-edit-time') { %>
-                        <a href='/tags/query=-sort:last-edit-time'>Edit time</a>
+                <th class='creation-time'>
+                    <% if (ctx.query == 'sort:creation-time') { %>
+                        <a href='/tags/query=-sort:creation-time'>Created on</a>
                     <% } else { %>
-                        <a href='/tags/query=sort:last-edit-time'>Edit time</a>
+                        <a href='/tags/query=sort:creation-time'>Created on</a>
                     <% } %>
                 </th>
             </thead>
@@ -73,8 +73,8 @@
                         <td class='usages'>
                             <%- tag.postCount %>
                         </td>
-                        <td class='edit-time'>
-                            <%= ctx.makeRelativeTime(tag.lastEditTime) %>
+                        <td class='creation-time'>
+                            <%= ctx.makeRelativeTime(tag.creationTime) %>
                         </td>
                     </tr>
                 <% } %>
