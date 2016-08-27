@@ -1,4 +1,4 @@
-from sqlalchemy.orm import subqueryload, lazyload
+from sqlalchemy.orm import subqueryload, lazyload, defer
 from sqlalchemy.sql.expression import func
 from szurubooru import db
 from szurubooru.func import util
@@ -12,8 +12,11 @@ class TagSearchConfig(BaseSearchConfig):
         return db.session.query(db.Tag) \
             .join(db.TagCategory) \
             .options(
+                defer(db.Tag.first_name),
+                defer(db.Tag.suggestion_count),
+                defer(db.Tag.implication_count),
+                defer(db.Tag.post_count),
                 strategy(db.Tag.names),
-                strategy(db.Tag.category),
                 strategy(db.Tag.suggestions).joinedload(db.Tag.names),
                 strategy(db.Tag.implications).joinedload(db.Tag.names))
 
