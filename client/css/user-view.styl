@@ -1,0 +1,43 @@
+#user
+    width: 100%
+    max-width: 35em
+    nav.text-nav
+        margin-bottom: 1.5em
+
+    #user-summary
+        .thumbnail
+            width: 6em
+            height: 6em
+            margin: 0 1.5em 1.5em 0
+            float: left
+        .basic-info
+            list-style-type: none
+            margin: 0
+        div
+            clear: both
+        nav
+            float: left
+            width: 45%
+            margin-right: 1em
+
+    #user-edit
+        form, .messages
+            width: 100%
+        .avatar
+            #avatar-content
+                float: right
+                width: 65%
+                margin-top: .5em
+            #avatar-radio
+                float: left
+                width: 30%
+            &:after
+                content: ' '
+                display: block
+                height: 1px
+                clear: both
+
+    #user-delete form
+        width: 100%
+
+

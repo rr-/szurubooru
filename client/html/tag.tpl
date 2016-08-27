@@ -1,4 +1,4 @@
-<div class='content-wrapper tag'>
+<div class='content-wrapper' id='tag'>
     <h1><%- ctx.tag.names[0] %></h1>
     <nav class='buttons'><!--
         --><ul><!--

@@ -1,0 +1,24 @@
+.global-comment-list
+    text-align: left
+
+    &>ul
+        list-style-type: none
+        margin: 1em 0
+        padding: 0
+
+        &>li
+            display: flex
+            margin-bottom: 2em
+
+            .post-thumbnail
+                float: left
+                vertical-align: top
+                margin-right: 1em
+                .thumbnail
+                    width: 12em
+                    height: 8em
+                a
+                    display: inline-block
+
+            .comments-container
+                width: 100%

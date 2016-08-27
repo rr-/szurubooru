@@ -1,0 +1,23 @@
+@import colors
+
+.content-wrapper.tag-categories
+    width: 100%
+    max-width: 40em
+    table
+        border-spacing: 0
+        width: 100%
+        tr.default td
+            background: $default-tag-category-background-color
+        td, th
+            padding: .4em
+            &.color
+                text-align: center
+            &.usages
+                text-align: center
+            &.remove, &.set-default
+                white-space: pre
+        tfoot
+            display: none
+    .messages, form
+        width: auto
+

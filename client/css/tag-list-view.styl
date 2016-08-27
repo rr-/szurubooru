@@ -1,0 +1,52 @@
+@import colors
+
+.tag-list
+    table
+        width: 100%
+        border-spacing: 0
+        text-align: left
+        line-height: 1.3em
+        tr:hover td
+            background: $top-navigation-color
+        th, td
+            padding: 0.1em 0.5em
+        th
+            background: $top-navigation-color
+        .names
+            width: 28%
+        .implications
+            width: 28%
+        .suggestions
+            width: 28%
+        .usages
+            text-align: center
+            width: 8%
+        .edit-time
+            text-align: center
+            width: 8%
+            white-space: pre
+        ul
+            list-style-type: none
+            margin: 0
+            padding: 0
+            display: inline
+            li
+                padding: 0
+                display: inline
+                &:not(:last-child):after
+                    content: ', '
+        @media (max-width: 800px)
+            .implications, .suggestions
+                display: none
+
+.tag-list-header
+    label
+        display: none
+    text-align: left
+    form
+        width: auto
+    input[name=search-text]
+        max-width: 15em
+    .append
+        font-size: 0.95em
+        color: $inactive-link-color

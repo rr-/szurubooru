@@ -1,12 +1,5 @@
 @import colors
 
-.comments>ul
-    list-style-type: none
-    margin: 0 0 2em 0
-    padding: 0
-
-
-
 .comment-form-container
     &:not(.editing)
         .tabs nav
@@ -107,7 +100,6 @@
             margin: 1em 0
 
 
-
 .comment-content
     ul
         list-style-position: inside
@@ -150,30 +142,3 @@
 
     blockquote :last-child
         margin-bottom: 0
-
-
-
-.global-comment-list
-    text-align: left
-
-    &>ul
-        list-style-type: none
-        margin: 1em 0
-        padding: 0
-
-        &>li
-            display: flex
-            margin-bottom: 2em
-
-            .post-thumbnail
-                float: left
-                vertical-align: top
-                margin-right: 1em
-                .thumbnail
-                    width: 12em
-                    height: 8em
-                a
-                    display: inline-block
-
-            .comments-container
-                width: 100%

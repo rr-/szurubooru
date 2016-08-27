@@ -1,0 +1,24 @@
+@import colors
+
+.expander
+    &.collapsed
+        margin-bottom: 1em
+        &>*
+            display: none
+        &>header
+            display: block
+    header
+        background: $active-tab-background-color
+        line-height: 2em
+        a
+            padding: 0 0.5em
+            display: block
+            color: mix($text-color, $inactive-link-color)
+            font-size: 120%
+            i
+                font-size: 12pt
+                color: $inactive-link-color
+                float: right
+                line-height: 2em
+    .expander-content
+        padding: 0.5em 0.5em 2em 0.5em

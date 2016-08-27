@@ -1,0 +1,34 @@
+@import colors
+
+.pager
+    nav
+        .disabled
+            opacity: .5
+        .prev span,
+        .next span
+            opacity: 0
+            position: absolute
+            display: block
+            width: 0
+            height: 0
+
+    .page
+        position: relative
+        .page-header
+            margin: 0.5em 0.5em 0.5em 0
+            position: relative
+            &:before
+                display: block
+                content: ''
+                position: absolute
+                left: 0
+                top: 50%
+                right: 0
+                height: 3px
+                background: $top-navigation-color
+                z-index: 1
+            span
+                position: relative
+                background: white
+                padding: 0 1em
+                z-index: 2

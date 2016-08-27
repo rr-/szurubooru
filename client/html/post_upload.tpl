@@ -1,4 +1,4 @@
-<div class='post-upload'>
+<div id='post-upload'>
     <form>
         <div class='dropper-container'></div>
 

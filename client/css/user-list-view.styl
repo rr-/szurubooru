@@ -1,0 +1,39 @@
+@import colors
+
+.user-list
+    ul
+        list-style-type: none
+        padding: 0
+        display: flex
+        align-content: flex-end
+        flex-wrap: wrap
+        margin: 0 -0.5em
+        li
+            flex-grow: 1
+            width: 20em
+            margin: 0 0.5em 1em 0.5em
+            padding: 0.75em
+            vertical-align: top
+            background: $top-navigation-color
+            text-align: left
+    .wrapper
+        display: flex
+    .details
+        font-size: 90%
+        line-height: 130%
+    .thumbnail
+        width: 3em
+        height: 3em
+        margin: 0.25em 0.6em 0 0
+
+.user-list-header
+    label
+        display: none
+    text-align: left
+    form
+        width: auto
+    input[name=search-text]
+        max-width: 15em
+    .append
+        font-size: 0.95em
+        color: $inactive-link-color
