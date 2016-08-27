@@ -7,11 +7,14 @@ class Info {
     static get() {
         return api.get('/info')
             .then(response => {
-                if (response.featuredPost) {
-                    response.featuredPost =
-                        Post.fromResponse(response.featuredPost);
-                }
-                return Promise.resolve(response);
+                return Promise.resolve(Object.assign(
+                    {},
+                    response,
+                    {
+                        featuredPost: response.featuredPost ?
+                            Post.fromResponse(response.featuredPost) :
+                            undefined
+                    }));
             }, response => {
                 return Promise.reject(response.errorMessage);
             });

@@ -12,8 +12,10 @@ class TagList extends AbstractList {
             `&pageSize=${pageSize}` +
             `&fields=${fields.join(',')}`;
         return api.get(url).then(response => {
-            response.results = TagList.fromResponse(response.results);
-            return Promise.resolve(response);
+            return Promise.resolve(Object.assign(
+                {},
+                response,
+                {results: TagList.fromResponse(response.results)}));
         });
     }
 }
