@@ -40,7 +40,11 @@ class ExpanderControl {
     }
 
     set title(newTitle) {
-        this._expanderNode.querySelector('header span').textContent = newTitle;
+        if (this._expanderNode) {
+            this._expanderNode
+                .querySelector('header span')
+                .textContent = newTitle;
+        }
     }
 
     get _isOpened() {
