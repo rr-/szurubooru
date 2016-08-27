@@ -12,37 +12,45 @@
     </div>
 
     <div class='body'>
-        <header><!--
-            --><span class='nickname'><!--
-                --><% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %><!--
-                    --><a href='/user/<%- encodeURIComponent(ctx.comment.user.name) %>'><!--
-                --><% } %><!--
+        <header><%
+            %><span class='nickname'><%
+                %><% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %><%
+                    %><a href='/user/<%- encodeURIComponent(ctx.comment.user.name) %>'><%
+                %><% } %><%
 
-                --><%- ctx.comment.user ? ctx.comment.user.name : 'Deleted user' %><!--
+                %><%- ctx.comment.user ? ctx.comment.user.name : 'Deleted user' %><%
 
-                --><% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %><!--
-                    --></a><!--
-                --><% } %><!--
-            --></span><!--
+                %><% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %><%
+                    %></a><%
+                %><% } %><%
+            %></span><%
 
-            --><span class='date'><!--
-                --><%= ctx.makeRelativeTime(ctx.comment.creationTime) %><!--
-            --></span><!--
+            %><wbr><%
 
-            --><span class='score-container'></span><!--
+            %><span class='date'><%
+                %><%= ctx.makeRelativeTime(ctx.comment.creationTime) %><%
+            %></span><%
 
-            --><% if (ctx.canEditComment) { %><!--
-                --><a href class='edit'><!--
-                    --><i class='fa fa-pencil'></i> edit<!--
-                --></a><!--
-            --><% } %><!--
+            %><wbr><%
 
-            --><% if (ctx.canDeleteComment) { %><!--
-                --><a href class='delete'><!--
-                    --><i class='fa fa-remove'></i> delete<!--
-                --></a><!--
-            --><% } %><!--
-        --></header>
+            %><span class='score-container'></span><%
+
+            %><wbr><%
+
+            %><% if (ctx.canEditComment) { %><%
+                %><a href class='edit'><%
+                    %><i class='fa fa-pencil'></i> edit<%
+                %></a><%
+            %><% } %><%
+
+            %><wbr><%
+
+            %><% if (ctx.canDeleteComment) { %><%
+                %><a href class='delete'><%
+                    %><i class='fa fa-remove'></i> delete<%
+                %></a><%
+            %><% } %><%
+        %></header>
 
         <div class='comment-form-container'></div>
     </div>

@@ -1,5 +1,6 @@
 #home
     text-align: center !important
+    max-width: 100%
 
     header
         margin-bottom: 1em
@@ -21,6 +22,9 @@
             width: auto
         .sep
             margin: 0 0.75em
+        @media (max-width: 500px)
+            .sep, a
+                display: none
 
     .post-container
         margin-bottom: 2em
@@ -35,11 +39,22 @@
     aside
         margin-bottom: 0.3em
         font-size: 90%
+        white-space: nowrap
 
     footer
-        line-height: 100%
+        line-height: 150%
         font-size: 80%
-        .sep
-            margin: 0 0.25em
+        ul
+            padding: 0
+            text-align: center
+            li
+                display: inline
+                white-space: nowrap
+            .sep
+                word-spacing: 1.1em
+                background-repeat: no-repeat
+                background-position: 50% 50%
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><circle cx='6' cy='6' r='2' fill='%23000000'/></svg>")
+
     .thumbnail
         margin-right: 0.4em

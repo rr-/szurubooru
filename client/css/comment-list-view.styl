@@ -6,19 +6,31 @@
         margin: 1em 0
         padding: 0
 
-        &>li
-            display: flex
-            margin-bottom: 2em
+        @media (max-width: 700px)
+            &>li
+                margin-bottom: 5em
+                padding: 1vw
+            .post-thumbnail
+                margin-bottom: 1em
+                .thumbnail
+                    width: 50vw
+                    height: 33vw
 
+        @media (min-width: 700px)
+            &>li
+                display: flex
+                margin-bottom: 2em
             .post-thumbnail
                 float: left
-                vertical-align: top
-                margin-right: 1em
                 .thumbnail
                     width: 12em
                     height: 8em
-                a
-                    display: inline-block
 
-            .comments-container
-                width: 100%
+        .post-thumbnail
+            vertical-align: top
+            margin-right: 1em
+            a
+                display: inline-block
+
+        .comments-container
+            width: 100%

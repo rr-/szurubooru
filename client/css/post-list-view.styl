@@ -99,19 +99,25 @@
                     outline: 3px solid $main-color
 
 .post-list-header
+    white-space: nowrap
+    text-align: left
+
     label
         display: none
-    text-align: left
     form
         width: auto
+        margin-bottom: 0.75em
         *
             vertical-align: top
+    input
+        margin-bottom: 0.25em
+        margin-right: 0.25em
     input[name=search-text]
         width: 25em
-        max-width: 90vw
     input[name=masstag]
-        width: 15em
-        margin-left: 1em
+        width: 12em
+    .masstag-hint
+        margin-right: 1em
     .append
         font-size: 0.95em
         color: $inactive-link-color
@@ -123,6 +129,7 @@
                 display: none
 
     .safety
+        margin-right: 0.25em
         &.safety-safe
             background-color: $safety-safe
             border-color: @background-color

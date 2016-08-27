@@ -29,7 +29,9 @@ function writeFile(path, content) {
 }
 
 function getVersion() {
-    return execSync('git describe --always --dirty --long --tags').toString();
+    return execSync('git describe --always --dirty --long --tags')
+        .toString()
+        .trim();
 }
 
 function getConfig() {

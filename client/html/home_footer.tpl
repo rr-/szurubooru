@@ -1,10 +1,7 @@
-<%- ctx.postCount %> posts
-<span class=sep>&bull;</span>
-<%= ctx.makeFileSize(ctx.diskUsage) %>
-<span class=sep>&bull;</span>
-Build <a class='version' href='https://github.com/rr-/szurubooru/commits/master'><%- ctx.version %></a>
-from <%= ctx.makeRelativeTime(ctx.buildDate) %>
-<% if (ctx.canListSnapshots) { %>
-    <span class=sep>&bull;</span>
-    <a href='/history'>History</a>
-<% } %>
+<ul>
+    <li><%- ctx.postCount %> posts</li><span class='sep'>
+    </span><li><%= ctx.makeFileSize(ctx.diskUsage) %></li><span class='sep'>
+    </span><li>Build <a class='version' href='https://github.com/rr-/szurubooru/commits/master'><%- ctx.version %></a> from <%= ctx.makeRelativeTime(ctx.buildDate) %></li><span class='sep'>
+    </span><% if (ctx.canListSnapshots) { %><li><a href='/history'>History</a></li><span class='sep'>
+    </span><% } %>
+</ul>

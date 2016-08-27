@@ -26,7 +26,7 @@ class PostsHeaderView {
         }
 
         keyboard.bind('q', () => {
-            this._searchFormNode.querySelector('input').focus();
+            this._formNode.querySelector('input:first-of-type').focus();
         });
 
         keyboard.bind('p', () => {
@@ -41,52 +41,49 @@ class PostsHeaderView {
             safetyButtonNode.addEventListener(
                 'click', e => this._evtSafetyButtonClick(e));
         }
-        this._searchFormNode.addEventListener(
-            'submit', e => this._evtSearchFormSubmit(e));
+        this._formNode.addEventListener(
+            'submit', e => this._evtFormSubmit(e));
 
-        if (this._massTagFormNode) {
+        if (this._massTagInputNode) {
             if (this._openMassTagLinkNode) {
                 this._openMassTagLinkNode.addEventListener(
                     'click', e => this._evtMassTagClick(e));
             }
             this._stopMassTagLinkNode.addEventListener(
                 'click', e => this._evtStopTaggingClick(e));
-            this._massTagFormNode.addEventListener(
-                'submit', e => this._evtMassTagFormSubmit(e));
+            // this._massTagFormNode.addEventListener(
+            //     'submit', e => this._evtMassTagFormSubmit(e));
             this._toggleMassTagVisibility(!!ctx.parameters.tag);
         }
     }
 
     _toggleMassTagVisibility(state) {
-        this._massTagFormNode.classList.toggle('active', state);
+        this._formNode.querySelector('.masstag')
+            .classList.toggle('active', state);
     }
 
-    get _searchFormNode() {
-        return this._hostNode.querySelector('form.search');
-    }
-
-    get _massTagFormNode() {
-        return this._hostNode.querySelector('form.masstag');
+    get _formNode() {
+        return this._hostNode.querySelector('form');
     }
 
     get _safetyButtonNodes() {
-        return this._hostNode.querySelectorAll('form.search .safety');
+        return this._hostNode.querySelectorAll('form .safety');
     }
 
     get _queryInputNode() {
-        return this._hostNode.querySelector('form.search [name=search-text]');
+        return this._hostNode.querySelector('form [name=search-text]');
     }
 
     get _massTagInputNode() {
-        return this._hostNode.querySelector('form.masstag [type=text]');
+        return this._hostNode.querySelector('form [name=masstag]');
     }
 
     get _openMassTagLinkNode() {
-        return this._hostNode.querySelector('form.masstag .open-masstag');
+        return this._hostNode.querySelector('form .open-masstag');
     }
 
     get _stopMassTagLinkNode() {
-        return this._hostNode.querySelector('form.masstag .stop-tagging');
+        return this._hostNode.querySelector('form .stop-tagging');
     }
 
     _evtMassTagClick(e) {
@@ -113,23 +110,17 @@ class PostsHeaderView {
         router.show(router.url);
     }
 
-    _evtSearchFormSubmit(e) {
+    _evtFormSubmit(e) {
         e.preventDefault();
-        const text = this._queryInputNode.value;
-        this._queryInputNode.blur();
-        router.show('/posts/' + misc.formatUrlParameters({query: text}));
-    }
-
-    _evtMassTagFormSubmit(e) {
-        e.preventDefault();
-        const text = this._queryInputNode.value;
-        const tag = this._massTagInputNode.value;
-        this._massTagInputNode.blur();
-        router.show('/posts/' + misc.formatUrlParameters({
-            query: text,
-            tag: tag,
+        let params = {
+            query: this._queryInputNode.value,
             page: this._ctx.parameters.page,
-        }));
+        };
+        if (this._massTagInputNode) {
+            params.tag = this._massTagInputNode.value;
+            this._massTagInputNode.blur();
+        }
+        router.show('/posts/' + misc.formatUrlParameters(params));
     }
 }
 

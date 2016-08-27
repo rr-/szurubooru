@@ -37,12 +37,12 @@
 
     nav
         vertical-align: middle !important
-        margin: 0 0.3em 0.5em 0 !important
         &.buttons
+            margin: 0 0.3em 0.5em 0 !important
             float: left
         &.actions
             float: left
-            margin-top: 0.3em !important
+            margin: 0.3em 0 0.5em 0 !important
 
 
 .comment
@@ -64,17 +64,18 @@
             display: inline-block
 
     .body
-        width: 100%
-
+        flex-grow: 1
         header
+            white-space: nowrap
             line-height: 16pt
             vertical-align: middle
             margin-bottom: 0.5em
             background: $top-navigation-color
             padding: 0.2em 0.5em
 
+            .nickname, .date, .score-container, .edit
+                margin-right: 2em
             .date, .score-container, .edit, .delete
-                margin-left: 2em
                 font-size: 95%
             .edit, .delete, .score-container a, .nickname a
                 &:not(.inactive)
