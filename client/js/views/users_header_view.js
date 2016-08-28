@@ -31,6 +31,7 @@ class UsersHeaderView extends events.EventTarget {
         e.preventDefault();
         this.dispatchEvent(new CustomEvent('navigate', {detail: {parameters: {
             query: this._queryInputNode.value,
+            page: 1,
         }}}));
     }
 }

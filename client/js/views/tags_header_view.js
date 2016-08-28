@@ -38,6 +38,7 @@ class TagsHeaderView extends events.EventTarget {
         this._queryInputNode.blur();
         this.dispatchEvent(new CustomEvent('navigate', {detail: {parameters: {
             query: this._queryInputNode.value,
+            page: 1,
         }}}));
     }
 }

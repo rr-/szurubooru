@@ -115,10 +115,9 @@ class PostsHeaderView extends events.EventTarget {
         if (this._masstagAutoCompleteControl) {
             this._masstagAutoCompleteControl.hide();
         }
-        let parameters = {
-            query: this._queryInputNode.value,
-            page: this._ctx.parameters.page,
-        };
+        let parameters = {query: this._queryInputNode.value};
+        parameters.page = parameters.query === this._ctx.parameters.query ?
+            this._ctx.parameters.page : 1;
         if (this._massTagInputNode) {
             parameters.tag = this._massTagInputNode.value;
             this._massTagInputNode.blur();
