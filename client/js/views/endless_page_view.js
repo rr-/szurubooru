@@ -9,26 +9,21 @@ const pageTemplate = views.getTemplate('endless-pager-page');
 class EndlessPageView {
     constructor(ctx) {
         this._hostNode = document.getElementById('content-holder');
+        views.replaceContent(this._hostNode, holderTemplate());
+    }
+
+    run(ctx) {
         this._active = true;
         this._working = 0;
         this._init = false;
+
+        views.emptyContent(this._pagesHolderNode);
 
         this.threshold = window.innerHeight / 3;
         this.minPageShown = null;
         this.maxPageShown = null;
         this.totalPages = null;
         this.currentPage = null;
-
-        const sourceNode = holderTemplate();
-        const pageHeaderHolderNode
-            = sourceNode.querySelector('.page-header-holder');
-        this._pagesHolderNode = sourceNode.querySelector('.pages-holder');
-        views.replaceContent(this._hostNode, sourceNode);
-
-        ctx.headerContext.hostNode = pageHeaderHolderNode;
-        if (ctx.headerRenderer) {
-            ctx.headerRenderer(ctx.headerContext);
-        }
 
         this._loadPage(ctx, ctx.parameters.page, true).then(pageNode => {
             if (ctx.parameters.page !== 1) {
@@ -38,6 +33,14 @@ class EndlessPageView {
         this._probePageLoad(ctx);
 
         views.monitorNodeRemoval(this._pagesHolderNode, () => this._destroy());
+    }
+
+    get pageHeaderHolderNode() {
+        return this._hostNode.querySelector('.page-header-holder');
+    }
+
+    get _pagesHolderNode() {
+        return this._hostNode.querySelector('.pages-holder');
     }
 
     _destroy() {

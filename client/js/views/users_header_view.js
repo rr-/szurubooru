@@ -1,20 +1,20 @@
 'use strict';
 
-const router = require('../router.js');
-const keyboard = require('../util/keyboard.js');
+const events = require('../events.js');
 const misc = require('../util/misc.js');
+const search = require('../util/search.js');
 const views = require('../util/views.js');
 
 const template = views.getTemplate('users-header');
 
-class UsersHeaderView {
+class UsersHeaderView extends events.EventTarget {
     constructor(ctx) {
+        super();
+
         this._hostNode = ctx.hostNode;
         views.replaceContent(this._hostNode, template(ctx));
 
-        keyboard.bind('q', () => {
-            this._formNode.querySelector('input').focus();
-        });
+        search.searchInputNodeFocusHelper(this._queryInputNode);
 
         this._formNode.addEventListener('submit', e => this._evtSubmit(e));
     }
@@ -29,11 +29,9 @@ class UsersHeaderView {
 
     _evtSubmit(e) {
         e.preventDefault();
-        this._queryInputNode.blur();
-        router.show(
-            '/users/' + misc.formatUrlParameters({
-                query: this._queryInputNode.value,
-            }));
+        this.dispatchEvent(new CustomEvent('navigate', {detail: {parameters: {
+            query: this._queryInputNode.value,
+        }}}));
     }
 }
 

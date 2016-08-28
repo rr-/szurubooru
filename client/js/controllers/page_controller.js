@@ -6,19 +6,25 @@ const ManualPageView = require('../views/manual_page_view.js');
 
 class PageController {
     constructor(ctx) {
+        if (settings.get().endlessScroll) {
+            this._view = new EndlessPageView();
+        } else {
+            this._view = new ManualPageView();
+        }
+    }
+
+    get view() {
+        return this._view;
+    }
+
+    run(ctx) {
         const extendedContext = {
             getClientUrlForPage: ctx.getClientUrlForPage,
             parameters: ctx.parameters,
         };
 
-        ctx.headerContext = Object.assign({}, extendedContext);
         ctx.pageContext = Object.assign({}, extendedContext);
-
-        if (settings.get().endlessScroll) {
-            this._view = new EndlessPageView(ctx);
-        } else {
-            this._view = new ManualPageView(ctx);
-        }
+        this._view.run(ctx);
     }
 
     showSuccess(message) {

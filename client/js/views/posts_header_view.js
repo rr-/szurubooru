@@ -1,41 +1,34 @@
 'use strict';
 
-const router = require('../router.js');
+const events = require('../events.js');
 const settings = require('../models/settings.js');
 const keyboard = require('../util/keyboard.js');
 const misc = require('../util/misc.js');
+const search = require('../util/search.js');
 const views = require('../util/views.js');
 const TagAutoCompleteControl =
     require('../controls/tag_auto_complete_control.js');
 
 const template = views.getTemplate('posts-header');
 
-class PostsHeaderView {
+class PostsHeaderView extends events.EventTarget {
     constructor(ctx) {
+        super();
+
         ctx.settings = settings.get();
         this._ctx = ctx;
         this._hostNode = ctx.hostNode;
         views.replaceContent(this._hostNode, template(ctx));
 
-        if (this._queryInputNode) {
-            new TagAutoCompleteControl(this._queryInputNode, {addSpace: true});
-        }
+        this._queryAutoCompleteControl = new TagAutoCompleteControl(
+            this._queryInputNode, {addSpace: true});
         if (this._massTagInputNode) {
-            new TagAutoCompleteControl(
+            this._masstagAutoCompleteControl = new TagAutoCompleteControl(
                 this._massTagInputNode, {addSpace: false});
         }
 
-        keyboard.bind('q', () => {
-            this._formNode.querySelector('input:first-of-type').focus();
-        });
-
-        keyboard.bind('p', () => {
-            const firstPostNode =
-                document.body.querySelector('.post-list li:first-child a');
-            if (firstPostNode) {
-                firstPostNode.focus();
-            }
-        });
+        keyboard.bind('p', () => this._focusFirstPostNode());
+        search.searchInputNodeFocusHelper(this._queryInputNode);
 
         for (let safetyButtonNode of this._safetyButtonNodes) {
             safetyButtonNode.addEventListener(
@@ -51,8 +44,6 @@ class PostsHeaderView {
             }
             this._stopMassTagLinkNode.addEventListener(
                 'click', e => this._evtStopTaggingClick(e));
-            // this._massTagFormNode.addEventListener(
-            //     'submit', e => this._evtMassTagFormSubmit(e));
             this._toggleMassTagVisibility(!!ctx.parameters.tag);
         }
     }
@@ -93,10 +84,11 @@ class PostsHeaderView {
 
     _evtStopTaggingClick(e) {
         e.preventDefault();
-        router.show('/posts/' + misc.formatUrlParameters({
+        this._toggleMassTagVisibility(false);
+        this.dispatchEvent(new CustomEvent('navigate', {detail: {parameters: {
             query: this._ctx.parameters.query,
             page: this._ctx.parameters.page,
-        }));
+        }}}));
     }
 
     _evtSafetyButtonClick(e, url) {
@@ -107,20 +99,35 @@ class PostsHeaderView {
         browsingSettings.listPosts[safety] =
             !browsingSettings.listPosts[safety];
         settings.save(browsingSettings, true);
-        router.show(router.url);
+        this.dispatchEvent(
+            new CustomEvent(
+                'navigate', {detail: {parameters: this._ctx.parameters}}));
     }
 
     _evtFormSubmit(e) {
         e.preventDefault();
-        let params = {
+        this._queryAutoCompleteControl.hide();
+        if (this._masstagAutoCompleteControl) {
+            this._masstagAutoCompleteControl.hide();
+        }
+        let parameters = {
             query: this._queryInputNode.value,
             page: this._ctx.parameters.page,
         };
         if (this._massTagInputNode) {
-            params.tag = this._massTagInputNode.value;
+            parameters.tag = this._massTagInputNode.value;
             this._massTagInputNode.blur();
         }
-        router.show('/posts/' + misc.formatUrlParameters(params));
+        this.dispatchEvent(
+            new CustomEvent('navigate', {detail: {parameters: parameters}}));
+    }
+
+    _focusFirstPostNode() {
+        const firstPostNode =
+            document.body.querySelector('.post-list li:first-child a');
+        if (firstPostNode) {
+            firstPostNode.focus();
+        }
     }
 }
 

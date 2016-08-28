@@ -23,27 +23,18 @@ class TagListController {
         topNavigation.activate('tags');
         topNavigation.setTitle('Listing tags');
 
-        this._pageController = new PageController({
+        this._ctx = ctx;
+        this._pageController = new PageController();
+
+        this._headerView = new TagsHeaderView({
+            hostNode: this._pageController.view.pageHeaderHolderNode,
             parameters: ctx.parameters,
-            getClientUrlForPage: page => {
-                const parameters = Object.assign(
-                    {}, ctx.parameters, {page: page});
-                return '/tags/' + misc.formatUrlParameters(parameters);
-            },
-            requestPage: page => {
-                return TagList.search(ctx.parameters.query, page, 50, fields);
-            },
-            headerRenderer: headerCtx => {
-                Object.assign(headerCtx, {
-                    canEditTagCategories:
-                        api.hasPrivilege('tagCategories:edit'),
-                });
-                return new TagsHeaderView(headerCtx);
-            },
-            pageRenderer: pageCtx => {
-                return new TagsPageView(pageCtx);
-            },
+            canEditTagCategories: api.hasPrivilege('tagCategories:edit'),
         });
+        this._headerView.addEventListener(
+            'navigate', e => this._evtNavigate(e));
+
+        this._syncPageController();
     }
 
     showSuccess(message) {
@@ -52,6 +43,33 @@ class TagListController {
 
     showError(message) {
         this._pageController.showError(message);
+    }
+
+    _evtNavigate(e) {
+        history.pushState(
+            null,
+            window.title,
+            '/tags/' + misc.formatUrlParameters(e.detail.parameters));
+        Object.assign(this._ctx.parameters, e.detail.parameters);
+        this._syncPageController();
+    }
+
+    _syncPageController() {
+        this._pageController.run({
+            parameters: this._ctx.parameters,
+            getClientUrlForPage: page => {
+                const parameters = Object.assign(
+                    {}, this._ctx.parameters, {page: page});
+                return '/tags/' + misc.formatUrlParameters(parameters);
+            },
+            requestPage: page => {
+                return TagList.search(
+                    this._ctx.parameters.query, page, 50, fields);
+            },
+            pageRenderer: pageCtx => {
+                return new TagsPageView(pageCtx);
+            },
+        });
     }
 }
 

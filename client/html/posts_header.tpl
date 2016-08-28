@@ -12,11 +12,8 @@
         %><% if (ctx.canMassTag) { %><%
             %><wbr/><%
             %><span class='masstag'><%
-                %><% if (ctx.parameters.tag) { %><%
-                    %><span class='append masstag-hint'>Tagging with:</span><%
-                %><% } else { %><%
-                    %><a href class='mousetrap button append open-masstag'>Mass tag</a><%
-                %><% } %><%
+                %><span class='append masstag-hint'>Tagging with:</span><%
+                %><a href class='mousetrap button append open-masstag'>Mass tag</a><%
                 %><wbr/><%
                 %><%= ctx.makeTextInput({name: 'masstag', value: ctx.parameters.tag}) %><%
                 %><input class='mousetrap start-tagging' type='submit' value='Start tagging'/><%

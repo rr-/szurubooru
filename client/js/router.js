@@ -137,8 +137,8 @@ class Router {
     }
 
     show(path, state, push) {
-        const oldPath = this.ctx ? this.ctx.path : ctx.path;
         const ctx = new Context(path, state);
+        const oldPath = this.ctx ? this.ctx.path : ctx.path;
         this.dispatch(ctx, () => {
             if (ctx.path !== oldPath && push !== false) {
                 ctx.pushState();

@@ -26,37 +26,18 @@ class PostListController {
         topNavigation.setTitle('Listing posts');
 
         this._ctx = ctx;
-        this._pageController = new PageController({
+        this._pageController = new PageController();
+
+        this._headerView = new PostsHeaderView({
+            hostNode: this._pageController.view.pageHeaderHolderNode,
             parameters: ctx.parameters,
-            getClientUrlForPage: page => {
-                const parameters = Object.assign(
-                    {}, ctx.parameters, {page: page});
-                return '/posts/' + misc.formatUrlParameters(parameters);
-            },
-            requestPage: page => {
-                return PostList.search(
-                    this._decorateSearchQuery(ctx.parameters.query),
-                    page, settings.get().postsPerPage, fields);
-            },
-            headerRenderer: headerCtx => {
-                Object.assign(headerCtx, {
-                    canMassTag: api.hasPrivilege('tags:masstag'),
-                    massTagTags: this._massTagTags,
-                });
-                return new PostsHeaderView(headerCtx);
-            },
-            pageRenderer: pageCtx => {
-                Object.assign(pageCtx, {
-                    canViewPosts: api.hasPrivilege('posts:view'),
-                    canMassTag: api.hasPrivilege('tags:masstag'),
-                    massTagTags: this._massTagTags,
-                });
-                const view = new PostsPageView(pageCtx);
-                view.addEventListener('tag', e => this._evtTag(e));
-                view.addEventListener('untag', e => this._evtUntag(e));
-                return view;
-            },
+            canMassTag: api.hasPrivilege('tags:masstag'),
+            massTagTags: this._massTagTags,
         });
+        this._headerView.addEventListener(
+            'navigate', e => this._evtNavigate(e));
+
+        this._syncPageController();
     }
 
     showSuccess(message) {
@@ -65,6 +46,15 @@ class PostListController {
 
     get _massTagTags() {
         return (this._ctx.parameters.tag || '').split(/\s+/).filter(s => s);
+    }
+
+    _evtNavigate(e) {
+        history.pushState(
+            null,
+            window.title,
+            '/posts/' + misc.formatUrlParameters(e.detail.parameters));
+        Object.assign(this._ctx.parameters, e.detail.parameters);
+        this._syncPageController();
     }
 
     _evtTag(e) {
@@ -99,6 +89,32 @@ class PostListController {
             text = `-rating:${disabledSafety.join(',')} ${text}`;
         }
         return text.trim();
+    }
+
+    _syncPageController() {
+        this._pageController.run({
+            parameters: this._ctx.parameters,
+            getClientUrlForPage: page => {
+                return '/posts/' + misc.formatUrlParameters(
+                    Object.assign({}, this._ctx.parameters, {page: page}));
+            },
+            requestPage: page => {
+                return PostList.search(
+                    this._decorateSearchQuery(this._ctx.parameters.query),
+                    page, settings.get().postsPerPage, fields);
+            },
+            pageRenderer: pageCtx => {
+                Object.assign(pageCtx, {
+                    canViewPosts: api.hasPrivilege('posts:view'),
+                    canMassTag: api.hasPrivilege('tags:masstag'),
+                    massTagTags: this._massTagTags,
+                });
+                const view = new PostsPageView(pageCtx);
+                view.addEventListener('tag', e => this._evtTag(e));
+                view.addEventListener('untag', e => this._evtUntag(e));
+                return view;
+            },
+        });
     }
 }
 

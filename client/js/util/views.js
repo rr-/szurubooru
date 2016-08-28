@@ -248,6 +248,25 @@ function makeVoidElement(name, attributes) {
     return `<${_serializeElement(name, attributes)}/>`;
 }
 
+function emptyContent(target) {
+    while (target.lastChild) {
+        target.removeChild(target.lastChild);
+    }
+}
+
+function replaceContent(target, source) {
+    emptyContent(target);
+    if (source instanceof NodeList) {
+        for (let child of [...source]) {
+            target.appendChild(child);
+        }
+    } else if (source instanceof Node) {
+        target.appendChild(source);
+    } else if (source !== null) {
+        throw `Invalid view source: ${source}`;
+    }
+}
+
 function showMessage(target, message, className) {
     if (!message) {
         message = 'Unknown message';
@@ -283,9 +302,7 @@ function showInfo(target, message) {
 function clearMessages(target) {
     const messagesHolder = target.querySelector('.messages');
     /* TODO: animate that */
-    while (messagesHolder.lastChild) {
-        messagesHolder.removeChild(messagesHolder.lastChild);
-    }
+    emptyContent(messagesHolder);
 }
 
 function htmlToDom(html) {
@@ -394,25 +411,10 @@ function enableForm(form) {
     }
 }
 
-function replaceContent(target, source) {
-    while (target.lastChild) {
-        target.removeChild(target.lastChild);
-    }
-    if (source instanceof NodeList) {
-        for (let child of [...source]) {
-            target.appendChild(child);
-        }
-    } else if (source instanceof Node) {
-        target.appendChild(source);
-    } else if (source !== null) {
-        throw `Invalid view source: ${source}`;
-    }
-}
-
 function syncScrollPosition() {
     window.requestAnimationFrame(
         () => {
-            if (history.state.hasOwnProperty('scrollX')) {
+            if (history.state && history.state.hasOwnProperty('scrollX')) {
                 window.scrollTo(history.state.scrollX, history.state.scrollY);
             } else {
                 window.scrollTo(0, 0);
@@ -488,6 +490,7 @@ document.addEventListener('click', e => {
 module.exports = misc.arrayToObject([
     htmlToDom,
     getTemplate,
+    emptyContent,
     replaceContent,
     enableForm,
     disableForm,

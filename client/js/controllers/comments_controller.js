@@ -22,7 +22,8 @@ class CommentsController {
         topNavigation.activate('comments');
         topNavigation.setTitle('Listing comments');
 
-        this._pageController = new PageController({
+        this._pageController = new PageController();
+        this._pageController.run({
             parameters: ctx.parameters,
             getClientUrlForPage: page => {
                 const parameters = Object.assign(

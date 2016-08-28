@@ -20,18 +20,42 @@ class UserListController {
         topNavigation.activate('users');
         topNavigation.setTitle('Listing users');
 
-        this._pageController = new PageController({
+        this._ctx = ctx;
+        this._pageController = new PageController();
+
+        this._headerView = new UsersHeaderView({
+            hostNode: this._pageController.view.pageHeaderHolderNode,
             parameters: ctx.parameters,
+        });
+        this._headerView.addEventListener(
+            'navigate', e => this._evtNavigate(e));
+
+        this._syncPageController();
+    }
+
+    showSuccess(message) {
+        this._pageController.showSuccess(message);
+    }
+
+    _evtNavigate(e) {
+        history.pushState(
+            null,
+            window.title,
+            '/users/' + misc.formatUrlParameters(e.detail.parameters));
+        Object.assign(this._ctx.parameters, e.detail.parameters);
+        this._syncPageController();
+    }
+
+    _syncPageController() {
+        this._pageController.run({
+            parameters: this._ctx.parameters,
             getClientUrlForPage: page => {
                 const parameters = Object.assign(
-                    {}, ctx.parameters, {page: page});
+                    {}, this._ctx.parameters, {page: page});
                 return '/users/' + misc.formatUrlParameters(parameters);
             },
             requestPage: page => {
-                return UserList.search(ctx.parameters.query, page);
-            },
-            headerRenderer: headerCtx => {
-                return new UsersHeaderView(headerCtx);
+                return UserList.search(this._ctx.parameters.query, page);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {
@@ -40,10 +64,6 @@ class UserListController {
                 return new UsersPageView(pageCtx);
             },
         });
-    }
-
-    showSuccess(message) {
-        this._pageController.showSuccess(message);
     }
 }
 

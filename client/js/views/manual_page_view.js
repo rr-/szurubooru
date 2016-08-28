@@ -56,25 +56,17 @@ function _getPages(currentPage, pageNumbers, ctx) {
 class ManualPageView {
     constructor(ctx) {
         this._hostNode = document.getElementById('content-holder');
+        views.replaceContent(this._hostNode, holderTemplate());
+    }
 
-        const sourceNode = holderTemplate();
-        const pageContentHolderNode
-            = sourceNode.querySelector('.page-content-holder');
-        const pageHeaderHolderNode
-            = sourceNode.querySelector('.page-header-holder');
-        const pageNavNode = sourceNode.querySelector('.page-nav');
+    run(ctx) {
         const currentPage = ctx.parameters.page;
-
-        ctx.headerContext.hostNode = pageHeaderHolderNode;
-        if (ctx.headerRenderer) {
-            ctx.headerRenderer(ctx.headerContext);
-        }
-
-        views.replaceContent(this._hostNode, sourceNode);
+        this.clearMessages();
+        views.emptyContent(this._pageNavNode);
 
         ctx.requestPage(currentPage).then(response => {
             Object.assign(ctx.pageContext, response);
-            ctx.pageContext.hostNode = pageContentHolderNode;
+            ctx.pageContext.hostNode = this._pageContentHolderNode;
             ctx.pageRenderer(ctx.pageContext);
 
             const totalPages = Math.ceil(response.total / response.pageSize);
@@ -94,7 +86,7 @@ class ManualPageView {
 
             if (response.total) {
                 views.replaceContent(
-                    pageNavNode,
+                    this._pageNavNode,
                     navTemplate({
                         prevLink: ctx.getClientUrlForPage(currentPage - 1),
                         nextLink: ctx.getClientUrlForPage(currentPage + 1),
@@ -112,6 +104,22 @@ class ManualPageView {
         }, response => {
             this.showError(response.description);
         });
+    }
+
+    get pageHeaderHolderNode() {
+        return this._hostNode.querySelector('.page-header-holder');
+    }
+
+    get _pageContentHolderNode() {
+        return this._hostNode.querySelector('.page-content-holder');
+    }
+
+    get _pageNavNode() {
+        return this._hostNode.querySelector('.page-nav');
+    }
+
+    clearMessages() {
+        views.clearMessages(this._hostNode);
     }
 
     showSuccess(message) {

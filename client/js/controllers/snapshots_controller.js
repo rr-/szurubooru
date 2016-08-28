@@ -19,7 +19,8 @@ class SnapshotsController {
         topNavigation.activate('');
         topNavigation.setTitle('History');
 
-        this._pageController = new PageController({
+        this._pageController = new PageController();
+        this._pageController.run({
             parameters: ctx.parameters,
             getClientUrlForPage: page => {
                 const parameters = Object.assign(
