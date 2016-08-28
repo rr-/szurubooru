@@ -609,6 +609,10 @@ class PostNotesOverlayControl extends events.EventTarget {
     }
 
     _evtCanvasKeyDown(e) {
+        const illegalNodeNames = ['textarea', 'input', 'select'];
+        if (illegalNodeNames.includes(e.target.nodeName.toLowerCase())) {
+            return;
+        }
         this._state.evtCanvasKeyDown(e);
     }
 
