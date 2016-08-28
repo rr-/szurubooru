@@ -26,7 +26,7 @@ class UserController {
             const infix = isLoggedIn ? 'self' : 'any';
 
             this._name = userName;
-            user.addEventListener('change', e => this._evtSaved(e));
+            user.addEventListener('change', e => this._evtSaved(e, section));
 
             const myRankIndex = api.user ?
                 api.allRanks.indexOf(api.user.rank) :
@@ -73,11 +73,11 @@ class UserController {
         misc.enableExitConfirmation();
     }
 
-    _evtSaved(e) {
+    _evtSaved(e, section) {
         misc.disableExitConfirmation();
         if (this._name !== e.detail.user.name) {
             router.replace(
-                '/user/' + e.detail.user.name + '/edit', null, false);
+                '/user/' + e.detail.user.name + '/' + section, null, false);
         }
     }
 

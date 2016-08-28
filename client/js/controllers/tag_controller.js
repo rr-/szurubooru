@@ -22,7 +22,7 @@ class TagController {
             topNavigation.setTitle('Tag #' + tag.names[0]);
 
             this._name = ctx.parameters.name;
-            tag.addEventListener('change', e => this._evtSaved(e));
+            tag.addEventListener('change', e => this._evtSaved(e, section));
 
             const categories = {};
             for (let category of tags.getAllCategories()) {
@@ -57,10 +57,11 @@ class TagController {
         misc.enableExitConfirmation();
     }
 
-    _evtSaved(e) {
+    _evtSaved(e, section) {
         misc.disableExitConfirmation();
         if (this._name !== e.detail.tag.names[0]) {
-            router.replace('/tag/' + e.detail.tag.names[0], null, false);
+            router.replace(
+                '/tag/' + e.detail.tag.names[0] + '/' + section, null, false);
         }
     }
 
@@ -97,6 +98,8 @@ class TagController {
         e.detail.tag.merge(e.detail.targetTagName).then(() => {
             this._view.showSuccess('Tag merged.');
             this._view.enableForm();
+            router.replace(
+                '/tag/' + e.detail.targetTagName + '/merge', null, false);
         }, errorMessage => {
             this._view.showError(errorMessage);
             this._view.enableForm();
