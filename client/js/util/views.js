@@ -481,7 +481,6 @@ document.addEventListener('input', e => {
 // prevent opening buttons in new tabs
 document.addEventListener('click', e => {
     if (e.target.getAttribute('href') === '' && e.which === 2) {
-        console.log('prevented');
         e.preventDefault();
     }
 });
