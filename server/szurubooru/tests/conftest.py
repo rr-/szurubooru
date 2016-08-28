@@ -145,8 +145,9 @@ def tag_factory():
             category = db.TagCategory(get_unique_name())
             db.session.add(category)
         tag = db.Tag()
-        tag.names = [
-            db.TagName(name) for name in names or [get_unique_name()]]
+        tag.names = []
+        for i, name in enumerate(names or [get_unique_name()]):
+            tag.names.append(db.TagName(name, i))
         tag.category = category
         tag.creation_time = datetime(1996, 1, 1)
         return tag

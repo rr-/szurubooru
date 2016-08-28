@@ -59,9 +59,11 @@ class TagName(Base):
     tag_id = Column(
         'tag_id', Integer, ForeignKey('tag.id'), nullable=False, index=True)
     name = Column('name', Unicode(64), nullable=False, unique=True)
+    order = Column('ord', Integer, nullable=False, index=True)
 
-    def __init__(self, name):
+    def __init__(self, name, order):
         self.name = name
+        self.order = order
 
 
 class Tag(Base):
@@ -84,7 +86,7 @@ class Tag(Base):
         'TagName',
         cascade='all,delete-orphan',
         lazy='joined',
-        order_by='TagName.tag_name_id')
+        order_by='TagName.order')
     suggestions = relationship(
         'Tag',
         secondary='tag_suggestion',
@@ -106,7 +108,7 @@ class Tag(Base):
     first_name = column_property(
         select([TagName.name])
             .where(TagName.tag_id == tag_id)
-            .order_by(TagName.tag_name_id)
+            .order_by(TagName.order)
             .limit(1)
             .as_scalar(),
         deferred=True)

@@ -36,6 +36,8 @@ class InvalidTagDescriptionError(errors.ValidationError):
 
 
 def _verify_name_validity(name):
+    if util.value_exceeds_column_size(name, db.TagName.name):
+        raise InvalidTagNameError('Name is too long.')
     name_regex = config.config['tag_name_regex']
     if not re.match(name_regex, name):
         raise InvalidTagNameError('Name must satisfy regex %r.' % name_regex)
@@ -250,16 +252,17 @@ def update_tag_category_name(tag, category_name):
 
 
 def update_tag_names(tag, names):
+    # sanitize
     assert tag
     names = util.icase_unique([name for name in names if name])
     if not len(names):
         raise InvalidTagNameError('At least one name must be specified.')
     for name in names:
         _verify_name_validity(name)
+
+    # check for existing tags
     expr = sqlalchemy.sql.false()
     for name in names:
-        if util.value_exceeds_column_size(name, db.TagName.name):
-            raise InvalidTagNameError('Name is too long.')
         expr = expr | (sqlalchemy.func.lower(db.TagName.name) == name.lower())
     if tag.tag_id:
         expr = expr & (db.TagName.tag_id != tag.tag_id)
@@ -267,12 +270,21 @@ def update_tag_names(tag, names):
     if len(existing_tags):
         raise TagAlreadyExistsError(
             'One of names is already used by another tag.')
+
+    # remove unwanted items
     for tag_name in tag.names[:]:
         if not _check_name_intersection([tag_name.name], names, True):
             tag.names.remove(tag_name)
+    # add wanted items
     for name in names:
         if not _check_name_intersection(_get_names(tag), [name], True):
-            tag.names.append(db.TagName(name))
+            tag.names.append(db.TagName(name, None))
+
+    # set alias order to match the request
+    for i, name in enumerate(names):
+        for tag_name in tag.names:
+            if tag_name.name.lower() == name.lower():
+                tag_name.order = i
 
 
 # TODO: what to do with relations that do not yet exist?

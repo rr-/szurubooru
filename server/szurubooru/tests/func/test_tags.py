@@ -483,6 +483,18 @@ def test_update_tag_names_reusing_own_name(config_injector, tag_factory):
         db.session.rollback()
 
 
+def test_update_tag_names_changing_primary_name(config_injector, tag_factory):
+    config_injector({'tag_name_regex': '^[a-zA-Z]*$'})
+    tag = tag_factory(names=['a', 'b'])
+    db.session.add(tag)
+    db.session.flush()
+    tags.update_tag_names(tag, ['b', 'a'])
+    db.session.flush()
+    db.session.refresh(tag)
+    assert [tag_name.name for tag_name in tag.names] == ['b', 'a']
+    db.session.rollback()
+
+
 @pytest.mark.parametrize('attempt', ['name', 'NAME', 'alias', 'ALIAS'])
 def test_update_tag_suggestions_with_itself(attempt, tag_factory):
     tag = tag_factory(names=['name', 'ALIAS'])

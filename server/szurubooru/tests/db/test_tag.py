@@ -8,7 +8,7 @@ def test_saving_tag(tag_factory):
     imp1 = tag_factory(names=['imp1'])
     imp2 = tag_factory(names=['imp2'])
     tag = db.Tag()
-    tag.names = [db.TagName('alias1'), db.TagName('alias2')]
+    tag.names = [db.TagName('alias1', 0), db.TagName('alias2', 1)]
     tag.suggestions = []
     tag.implications = []
     tag.category = db.TagCategory('category')
@@ -49,7 +49,7 @@ def test_cascade_deletions(tag_factory):
     imp1 = tag_factory(names=['imp1'])
     imp2 = tag_factory(names=['imp2'])
     tag = db.Tag()
-    tag.names = [db.TagName('alias1'), db.TagName('alias2')]
+    tag.names = [db.TagName('alias1', 0), db.TagName('alias2', 1)]
     tag.suggestions = []
     tag.implications = []
     tag.category = db.TagCategory('category')
