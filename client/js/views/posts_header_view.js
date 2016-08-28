@@ -101,7 +101,12 @@ class PostsHeaderView extends events.EventTarget {
         settings.save(browsingSettings, true);
         this.dispatchEvent(
             new CustomEvent(
-                'navigate', {detail: {parameters: this._ctx.parameters}}));
+                'navigate', {
+                    detail: {
+                        parameters:
+                            Object.assign({}, this._ctx.parameters, {page: 1}),
+                    },
+                }));
     }
 
     _evtFormSubmit(e) {
