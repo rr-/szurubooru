@@ -252,9 +252,20 @@ function escapeHtml(unsafe) {
         .replace(/'/g, '&apos;');
 }
 
-function arraysDiffer(source1, source2) {
+function arraysDiffer(source1, source2, orderImportant) {
     source1 = [...source1];
     source2 = [...source2];
+    if (orderImportant === true) {
+        if (source1.length !== source2.length) {
+            return true;
+        }
+        for (let i = 0; i < source1.length; i++) {
+            if (source1[i] !== source2[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
     return (
         source1.filter(value => !source2.includes(value)).length > 0 ||
         source2.filter(value => !source1.includes(value)).length > 0);

@@ -45,7 +45,7 @@ class Tag extends events.EventTarget {
         const detail = {version: this._version};
 
         // send only changed fields to avoid user privilege violation
-        if (misc.arraysDiffer(this._names, this._orig._names)) {
+        if (misc.arraysDiffer(this._names, this._orig._names, true)) {
             detail.names = this._names;
         }
         if (this._category !== this._orig._category) {
