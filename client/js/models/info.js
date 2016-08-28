@@ -16,7 +16,7 @@ class Info {
                             undefined
                     }));
             }, response => {
-                return Promise.reject(response.errorMessage);
+                return Promise.reject(response.description);
             });
     }
 }
