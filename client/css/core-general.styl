@@ -147,22 +147,24 @@ a .access-key
 
 .messages
     margin: 0 auto
-    width: 100%
-    max-width: 30em
+    text-align: left
     .message
+        box-sizing: border-box
+        width: 100%
+        max-width: 40em
         margin: 0 0 1em 0
         display: inline-block
         text-align: left
         padding: 0.5em 1em
-    .message.info
-        border: 1px solid $message-info-border-color
-        background: $message-info-background-color
-    .message.error
-        border: 1px solid $message-error-border-color
-        background: $message-error-background-color
-    .message.success
-        border: 1px solid $message-success-border-color
-        background: $message-success-background-color
+        &.info
+            border: 1px solid $message-info-border-color
+            background: $message-info-background-color
+        &.error
+            border: 1px solid $message-error-border-color
+            background: $message-error-background-color
+        &.success
+            border: 1px solid $message-success-border-color
+            background: $message-success-background-color
 
 .thumbnail
     /*background-image: attr(data-src url)*/ /* not available yet */
