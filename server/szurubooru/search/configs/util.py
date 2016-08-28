@@ -127,8 +127,11 @@ def create_subquery_filter(
         if subquery_decorator:
             subquery = subquery_decorator(subquery)
         subquery = subquery.options(sqlalchemy.orm.lazyload('*'))
-        subquery = filter_func(subquery, criterion, negated)
+        subquery = filter_func(subquery, criterion, False)
         subquery = subquery.subquery('t')
-        return query.filter(left_id_column.in_(subquery))
+        expression = left_id_column.in_(subquery)
+        if negated:
+            expression = ~expression
+        return query.filter(expression)
 
     return wrapper
