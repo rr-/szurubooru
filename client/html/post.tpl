@@ -12,7 +12,7 @@
                     <a class='inactive'>
                 <% } %>
                     <i class='fa fa-chevron-left'></i>
-                    <span class='vim-nav-hint'>Next post</span>
+                    <span class='vim-nav-hint'>&lt; Next post</span>
                 </a>
             </article>
             <article class='previous-post'>
@@ -26,7 +26,7 @@
                     <a class='inactive'>
                 <% } %>
                     <i class='fa fa-chevron-right'></i>
-                    <span class='vim-nav-hint'>Previous post</span>
+                    <span class='vim-nav-hint'>Previous post &gt;</span>
                 </a>
             </article>
             <article class='edit-post'>
