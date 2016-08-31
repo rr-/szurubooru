@@ -51,7 +51,7 @@ class PostView {
             postContainerNode.querySelector('.post-overlay'),
             ctx.post);
 
-        if (ctx.post.type === 'video') {
+        if (ctx.post.type === 'video' || ctx.post.type === 'flash') {
             this._postContentControl.disableOverlay();
         }
 
