@@ -78,16 +78,16 @@ def test_cascade_deletions(
     post.tags.append(tag1)
     post.tags.append(tag2)
     post.relations.append(related_post1)
-    post.relations.append(related_post2)
+    related_post2.relations.append(post)
     post.scores.append(score)
     post.favorited_by.append(favorite)
     post.features.append(feature)
     post.notes.append(note)
-    db.session.flush()
+    db.session.commit()
 
     assert not db.session.dirty
     assert post.user is not None and post.user.user_id is not None
-    assert len(post.relations) == 2
+    assert len(post.relations) == 1
     assert db.session.query(db.User).count() == 1
     assert db.session.query(db.Tag).count() == 2
     assert db.session.query(db.Post).count() == 3
