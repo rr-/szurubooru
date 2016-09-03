@@ -69,7 +69,7 @@ class UserListController {
 
 module.exports = router => {
     router.enter(
-        '/users/:parameters?',
+        '/users/:parameters(.*)?',
         (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => { ctx.controller = new UserListController(ctx); });
 };

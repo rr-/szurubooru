@@ -75,7 +75,7 @@ class Route {
         const keys = this.keys;
         const qsIndex = path.indexOf('?');
         const pathname = ~qsIndex ? path.slice(0, qsIndex) : path;
-        const m = this.regexp.exec(decodeURIComponent(pathname));
+        const m = this.regexp.exec(pathname);
 
         if (!m) {
             return false;

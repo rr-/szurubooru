@@ -6,7 +6,9 @@ const User = require('./user.js');
 
 class UserList extends AbstractList {
     static search(text, page) {
-        const url = `/users/?query=${text}&page=${page}&pageSize=30`;
+        const url =
+            `/users/?query=${encodeURIComponent(text)}` +
+            `&page=${page}&pageSize=30`;
         return api.get(url).then(response => {
             return Promise.resolve(Object.assign(
                 {},

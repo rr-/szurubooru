@@ -7,7 +7,7 @@ const Tag = require('./tag.js');
 class TagList extends AbstractList {
     static search(text, page, pageSize, fields) {
         const url =
-            `/tags/?query=${text}` +
+            `/tags/?query=${encodeURIComponent(text)}` +
             `&page=${page}` +
             `&pageSize=${pageSize}` +
             `&fields=${fields.join(',')}`;

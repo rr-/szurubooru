@@ -63,12 +63,15 @@ class Api extends events.EventTarget {
 
     _process(url, requestFactory, data, files, options) {
         options = options || {};
-        const fullUrl = this._getFullUrl(url);
+        const [fullUrl, query] = this._getFullUrl(url);
         return new Promise((resolve, reject) => {
             if (!options.noProgress) {
                 nprogress.start();
             }
             let req = requestFactory(fullUrl);
+            if (query) {
+                req.query(query);
+            }
             if (data) {
                 req.attach('metadata', new Blob([JSON.stringify(data)]));
             }
@@ -176,8 +179,12 @@ class Api extends events.EventTarget {
     }
 
     _getFullUrl(url) {
-        return (config.apiUrl + '/' + encodeURI(url))
-            .replace(/([^:])\/+/g, '$1/');
+        const fullUrl =
+            (config.apiUrl + '/' + url).replace(/([^:])\/+/g, '$1/');
+        const matches = fullUrl.match(/^([^?]*)\??(.*)$/);
+        const baseUrl = matches[1];
+        const request = matches[2];
+        return [baseUrl, request];
     }
 }
 

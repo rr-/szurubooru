@@ -255,7 +255,7 @@ class PostController {
 }
 
 module.exports = router => {
-    router.enter('/post/:id/edit/:parameters?',
+    router.enter('/post/:id/edit/:parameters(.*)?',
         (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => {
             // restore parameters from history state
@@ -265,7 +265,7 @@ module.exports = router => {
             ctx.controller = new PostController(ctx.parameters.id, true, ctx);
         });
     router.enter(
-        '/post/:id/:parameters?',
+        '/post/:id/:parameters(.*)?',
         (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => {
             // restore parameters from history state

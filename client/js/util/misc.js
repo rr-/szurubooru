@@ -165,7 +165,7 @@ function formatUrlParameters(dict) {
             continue;
         }
         if (value) {
-            result.push(`${key}=${value}`);
+            result.push(`${key}=${encodeURIComponent(value)}`);
         }
     }
     return result.join(';');

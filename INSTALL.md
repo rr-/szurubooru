@@ -151,6 +151,7 @@ the one in the `config.yaml`, so that client knows how to access the backend!
 server {
     listen 80;
     server_name great.dude;
+    merge_slashes off;  # to support post tags such as ///
 
     location ~ ^/api$ {
         return 302 /api/;

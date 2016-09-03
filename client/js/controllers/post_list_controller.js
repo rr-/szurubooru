@@ -120,7 +120,7 @@ class PostListController {
 
 module.exports = router => {
     router.enter(
-        '/posts/:parameters?',
+        '/posts/:parameters(.*)?',
         (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => { ctx.controller = new PostListController(ctx); });
 };

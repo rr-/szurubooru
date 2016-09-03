@@ -121,16 +121,16 @@ class TagController {
 }
 
 module.exports = router => {
-    router.enter('/tag/:name', (ctx, next) => {
-        ctx.controller = new TagController(ctx, 'summary');
-    });
-    router.enter('/tag/:name/edit', (ctx, next) => {
+    router.enter('/tag/:name(.+?)/edit', (ctx, next) => {
         ctx.controller = new TagController(ctx, 'edit');
     });
-    router.enter('/tag/:name/merge', (ctx, next) => {
+    router.enter('/tag/:name(.+?)/merge', (ctx, next) => {
         ctx.controller = new TagController(ctx, 'merge');
     });
-    router.enter('/tag/:name/delete', (ctx, next) => {
+    router.enter('/tag/:name(.+?)/delete', (ctx, next) => {
         ctx.controller = new TagController(ctx, 'delete');
+    });
+    router.enter('/tag/:name(.+)', (ctx, next) => {
+        ctx.controller = new TagController(ctx, 'summary');
     });
 };

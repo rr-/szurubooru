@@ -7,7 +7,7 @@ const Snapshot = require('./snapshot.js');
 class SnapshotList extends AbstractList {
     static search(text, page, pageSize) {
         const url =
-            `/snapshots/?query=${text}` +
+            `/snapshots/?query=${encodeURIComponent(text)}` +
             `&page=${page}` +
             `&pageSize=${pageSize}`;
         return api.get(url).then(response => {

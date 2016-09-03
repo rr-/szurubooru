@@ -32,7 +32,7 @@ class CommentsController {
             },
             requestPage: page => {
                 return PostList.search(
-                    'sort:comment-date+comment-count-min:1', page, 10, fields);
+                    'sort:comment-date comment-count-min:1', page, 10, fields);
             },
             pageRenderer: pageCtx => {
                 Object.assign(pageCtx, {

@@ -75,7 +75,7 @@ class TagListController {
 
 module.exports = router => {
     router.enter(
-        '/tags/:parameters?',
+        '/tags/:parameters(.*)?',
         (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
         (ctx, next) => { ctx.controller = new TagListController(ctx); });
 };

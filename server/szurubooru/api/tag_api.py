@@ -56,14 +56,14 @@ def create_tag(ctx, _params=None):
     return _serialize(ctx, tag)
 
 
-@routes.get('/tag/(?P<tag_name>[^/]+)/?')
+@routes.get('/tag/(?P<tag_name>.+)')
 def get_tag(ctx, params):
     auth.verify_privilege(ctx.user, 'tags:view')
     tag = tags.get_tag_by_name(params['tag_name'])
     return _serialize(ctx, tag)
 
 
-@routes.put('/tag/(?P<tag_name>[^/]+)/?')
+@routes.put('/tag/(?P<tag_name>.+)')
 def update_tag(ctx, params):
     tag = tags.get_tag_by_name(params['tag_name'])
     versions.verify_version(tag, ctx)
@@ -97,7 +97,7 @@ def update_tag(ctx, params):
     return _serialize(ctx, tag)
 
 
-@routes.delete('/tag/(?P<tag_name>[^/]+)/?')
+@routes.delete('/tag/(?P<tag_name>.+)')
 def delete_tag(ctx, params):
     tag = tags.get_tag_by_name(params['tag_name'])
     versions.verify_version(tag, ctx)
@@ -126,7 +126,7 @@ def merge_tags(ctx, _params=None):
     return _serialize(ctx, target_tag)
 
 
-@routes.get('/tag-siblings/(?P<tag_name>[^/]+)/?')
+@routes.get('/tag-siblings/(?P<tag_name>.+)')
 def get_tag_siblings(ctx, params):
     auth.verify_privilege(ctx.user, 'tags:view')
     tag = tags.get_tag_by_name(params['tag_name'])
