@@ -37,7 +37,7 @@ limits:
     posts_per_page: 40
     max_comment_length: 5000
 
-tag_name_regex: ^[^\s%+#/]+$
+tag_name_regex: ^\S+$
 tag_category_name_regex: ^[^\s%+#/]+$
 
 default_rank: regular
