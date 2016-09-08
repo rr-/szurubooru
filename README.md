@@ -1,19 +1,48 @@
-This repository is under the process of being rewritten. Stay tuned! You can
-check the current progress on client
-[here](https://github.com/rr-/szurubooru/issues/84) and server
-[here](https://github.com/rr-/szurubooru/issues/83).
+# szurubooru
 
-The reasons behind this rewrite include:
+Szurubooru is an image board engine inspired by services such as Danbooru,
+Gelbooru and Moebooru dedicated for small and medium communities. Its name [has
+its roots in Polish language and has onomatopeic meaning of scraping or
+scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 
-- Improving user experience: better upload form, larger thumbnails, making top
-  navigation stay out of user way. Maybe other goodies!
-- Finally having good, well-documented REST API.
-- Simplifying user registration.
-- Replacing PHP with Python 3.5.
-- Replacing prior JS mess with proper MVC.
-- Replacing MySQL (MariaDB) with Postgres.
-- Replacing `composer`, `npm`, `mod_rewrite` (=Apache), `imagick`, `ffmpeg` or
-  `gnash` and `pdo_mysql` with just `pip`, `npm` and `ffmpeg`.
-- Replacing `grunt` with `npm` scripts.
-- Making hosting more flexible: offer simple self hosted application that can
-  be combined with any reverse proxy.
+## Features
+
+- Post content: images (JPG, PNG, GIF, animated GIF), videos (MP4, WEBM), Flash animations
+- Post comments
+- Post notes / annotations, including arbitrary polygons
+- Rich JSON REST API ([see documentation](https://github.com/rr-/szurubooru/blob/master/API.md))
+- Rich search system
+- Rich privilege system
+- Autocomplete in search and while editing tags
+- Tag categories
+- Tag suggestions
+- Tag implications (adding a tag automatically adds another)
+- Tag aliases
+- Duplicate detection
+- Post rating and favoriting; comment rating
+- Polished UI
+- Browser configurable endless paging
+- Browser configurable backdrop grid for transparent images
+
+## Requirements
+
+- Python
+- Postgres
+- FFmpeg
+- node.js
+
+[See installation instructions.](https://github.com/rr-/szurubooru/blob/master/INSTALL.md)
+
+## Screenshots
+
+Post list:
+
+![20160908_180032_fsk](https://cloud.githubusercontent.com/assets/1045476/18356730/3f1123d6-75ee-11e6-85dd-88a7615243a0.png)
+
+Post view:
+
+![20160908_180429_lmp](https://cloud.githubusercontent.com/assets/1045476/18356731/3f1566ee-75ee-11e6-9594-e86ca7347b0f.png)
+
+## License
+
+[GPLv3](https://github.com/rr-/szurubooru/blob/master/LICENSE.md).
