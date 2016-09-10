@@ -44,23 +44,23 @@ def test_info_api(
             'config': expected_config_key,
         }
     directory.join('test2.txt').write('abc')
-    with fake_datetime('2016-01-01 13:59'):
+    with fake_datetime('2016-01-03 12:59'):
         assert api.info_api.get_info(context_factory()) == {
             'postCount': 2,
             'diskUsage': 3,  # still 3 - it's cached
             'featuredPost': None,
             'featuringTime': None,
             'featuringUser': None,
-            'serverTime': datetime(2016, 1, 1, 13, 59),
+            'serverTime': datetime(2016, 1, 3, 12, 59),
             'config': expected_config_key,
         }
-    with fake_datetime('2016-01-01 14:01'):
+    with fake_datetime('2016-01-03 13:01'):
         assert api.info_api.get_info(context_factory()) == {
             'postCount': 2,
             'diskUsage': 6,  # cache expired
             'featuredPost': None,
             'featuringTime': None,
             'featuringUser': None,
-            'serverTime': datetime(2016, 1, 1, 14, 1),
+            'serverTime': datetime(2016, 1, 3, 13, 1),
             'config': expected_config_key,
         }
