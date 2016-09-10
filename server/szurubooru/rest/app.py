@@ -107,6 +107,7 @@ def application(env, start_response):
             'title': ex.title,
             'description': ex.description,
         }
-        for key, value in ex.extra_fields.items():
-            blob[key] = value
+        if ex.extra_fields is not None:
+            for key, value in ex.extra_fields.items():
+                blob[key] = value
         return (_dump_json(blob).encode('utf-8'),)
