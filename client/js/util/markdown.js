@@ -132,6 +132,34 @@ function formatMarkdown(text) {
     return text;
 }
 
+function formatInlineMarkdown(text) {
+    const renderer = new marked.Renderer();
+    const options = {
+        renderer: renderer,
+        breaks: true,
+        sanitize: true,
+        smartypants: true,
+    };
+    let wrappers = [
+        new TildeWrapper(),
+        new EntityPermalinkWrapper(),
+        new SearchPermalinkWrapper(),
+        new SpoilersWrapper(),
+        new SmallWrapper(),
+        new StrikeThroughWrapper(),
+    ];
+    for (let wrapper of wrappers) {
+        text = wrapper.preprocess(text);
+    }
+    text = marked.inlineLexer(text, [], options);
+    wrappers.reverse();
+    for (let wrapper of wrappers) {
+        text = wrapper.postprocess(text);
+    }
+    return text;
+}
+
 module.exports = {
     formatMarkdown: formatMarkdown,
+    formatInlineMarkdown: formatInlineMarkdown,
 };

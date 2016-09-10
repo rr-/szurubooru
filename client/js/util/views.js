@@ -288,15 +288,15 @@ function showMessage(target, message, className) {
 }
 
 function showError(target, message) {
-    return showMessage(target, message, 'error');
+    return showMessage(target, misc.formatInlineMarkdown(message), 'error');
 }
 
 function showSuccess(target, message) {
-    return showMessage(target, message, 'success');
+    return showMessage(target, misc.formatInlineMarkdown(message), 'success');
 }
 
 function showInfo(target, message) {
-    return showMessage(target, message, 'info');
+    return showMessage(target, misc.formatInlineMarkdown(message), 'info');
 }
 
 function clearMessages(target) {

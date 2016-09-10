@@ -95,6 +95,10 @@ function formatMarkdown(text) {
     return markdown.formatMarkdown(text);
 }
 
+function formatInlineMarkdown(text) {
+    return markdown.formatInlineMarkdown(text);
+}
+
 function formatUrlParameters(dict) {
     let result = [];
     for (let key of Object.keys(dict)) {
@@ -230,6 +234,7 @@ module.exports = arrayToObject([
     formatRelativeTime,
     formatFileSize,
     formatMarkdown,
+    formatInlineMarkdown,
     unindent,
     enableExitConfirmation,
     disableExitConfirmation,
