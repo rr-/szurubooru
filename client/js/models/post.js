@@ -140,6 +140,10 @@ class Post extends events.EventTarget {
             }
             return Promise.resolve();
         }, response => {
+            if (response.name === 'PostAlreadyUploadedError') {
+                return Promise.reject(
+                    `Post already uploaded (@${response.otherPostId})`);
+            }
             return Promise.reject(response.description);
         });
     }
