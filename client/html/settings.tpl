@@ -32,7 +32,7 @@
 
             <li>
                 <%= ctx.makeCheckbox({
-                    text: 'Endless scroll',
+                    text: 'Enable endless scroll',
                     name: 'endless-scroll',
                     checked: ctx.browsingSettings.endlessScroll,
                 }) %>
