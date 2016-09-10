@@ -2,10 +2,10 @@
     <form>
         <div class='dropper-container'></div>
 
-        <ul class='uploadables-container'></ul>
+        <input type='submit' value='Upload all' class='submit'/>
 
         <div class='messages'></div>
 
-        <input type='submit' value='Upload all' class='submit'/>
+        <ul class='uploadables-container'></ul>
     </form>
 </div>

@@ -1,5 +1,9 @@
 <div class='edit-sidebar'>
     <form autocomplete='off'>
+        <input type='submit' value='Save' class='submit'/>
+
+        <div class='messages'></div>
+
         <% if (ctx.canEditPostSafety) { %>
             <section class='safety'>
                 <label>Safety</label>
@@ -90,9 +94,5 @@
                 </ul>
             </section>
         <% } %>
-
-        <div class='messages'></div>
-
-        <input type='submit' value='Save' class='submit'/>
     </form>
 </div>
