@@ -1,28 +1,34 @@
-class ConfigError(RuntimeError):
+class BaseError(RuntimeError):
+    def __init__(self, message='Unknown error', extra_fields=None):
+        super().__init__(message)
+        self.extra_fields = extra_fields
+
+
+class ConfigError(BaseError):
     pass
 
 
-class AuthError(RuntimeError):
+class AuthError(BaseError):
     pass
 
 
-class IntegrityError(RuntimeError):
+class IntegrityError(BaseError):
     pass
 
 
-class ValidationError(RuntimeError):
+class ValidationError(BaseError):
     pass
 
 
-class SearchError(RuntimeError):
+class SearchError(BaseError):
     pass
 
 
-class NotFoundError(RuntimeError):
+class NotFoundError(BaseError):
     pass
 
 
-class ProcessingError(RuntimeError):
+class ProcessingError(BaseError):
     pass
 
 

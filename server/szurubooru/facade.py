@@ -9,34 +9,35 @@ from szurubooru import config, errors, rest
 from szurubooru import api, middleware
 
 
+def _map_error(ex, target_class, title):
+    return target_class(
+        title=title,
+        description=str(ex),
+        extra_fields=getattr(ex, 'extra_fields', {}))
+
+
 def _on_auth_error(ex):
-    raise rest.errors.HttpForbidden(
-        title='Authentication error', description=str(ex))
+    raise _map_error(ex, rest.errors.HttpForbidden, 'Authentication error')
 
 
 def _on_validation_error(ex):
-    raise rest.errors.HttpBadRequest(
-        title='Validation error', description=str(ex))
+    raise _map_error(ex, rest.errors.HttpBadRequest, 'Validation error')
 
 
 def _on_search_error(ex):
-    raise rest.errors.HttpBadRequest(
-        title='Search error', description=str(ex))
+    raise _map_error(ex, rest.errors.HttpBadRequest, 'Search error')
 
 
 def _on_integrity_error(ex):
-    raise rest.errors.HttpConflict(
-        title='Integrity violation', description=ex.args[0])
+    raise _map_error(ex, rest.errors.HttpConflict, 'Integrity violation')
 
 
 def _on_not_found_error(ex):
-    raise rest.errors.HttpNotFound(
-        title='Not found', description=str(ex))
+    raise _map_error(ex, rest.errors.HttpNotFound, 'Not found')
 
 
 def _on_processing_error(ex):
-    raise rest.errors.HttpBadRequest(
-        title='Processing error', description=str(ex))
+    raise _map_error(ex, rest.errors.HttpBadRequest, 'Processing error')
 
 
 def _on_stale_data_error(_ex):

@@ -5,10 +5,11 @@ class BaseHttpError(RuntimeError):
     code = None
     reason = None
 
-    def __init__(self, description, title=None):
+    def __init__(self, description, title=None, extra_fields=None):
         super().__init__()
         self.description = description
         self.title = title or self.reason
+        self.extra_fields = extra_fields
 
 
 class HttpBadRequest(BaseHttpError):

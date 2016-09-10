@@ -102,7 +102,10 @@ def application(env, start_response):
         start_response(
             '%d %s' % (ex.code, ex.reason),
             [('content-type', 'application/json')])
-        return (_dump_json({
+        blob = {
             'title': ex.title,
             'description': ex.description,
-        }).encode('utf-8'),)
+        }
+        for key, value in ex.extra_fields.items():
+            blob[key] = value
+        return (_dump_json(blob).encode('utf-8'),)
