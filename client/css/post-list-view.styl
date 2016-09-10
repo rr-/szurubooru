@@ -88,15 +88,18 @@
                 height: 100%
                 outline-offset: -3px
 
+            .thumbnail-wrapper.no-tags
+                .thumbnail
+                    outline: 4px solid $post-thumbnail-no-tags-border-color
+
             &:hover
-                background: $main-color
+                background: $post-thumbnail-border-color
                 .thumbnail
                     opacity: .9
 
             &:hover a, a:active, a:focus
-                box-shadow: 0 0 0 1px $main-color
                 .thumbnail
-                    outline: 3px solid $main-color
+                    outline: 4px solid $main-color !important
 
 .post-list-header
     white-space: nowrap
