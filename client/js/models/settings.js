@@ -19,6 +19,7 @@ const defaultSettings = {
 
 class Settings extends events.EventTarget {
     save(newSettings, silent) {
+        newSettings = Object.assign(this.get(), newSettings);
         localStorage.setItem('settings', JSON.stringify(newSettings));
         if (silent !== true) {
             this.dispatchEvent(new CustomEvent('change', {
@@ -30,8 +31,7 @@ class Settings extends events.EventTarget {
     }
 
     get() {
-        let ret = {};
-        Object.assign(ret, defaultSettings);
+        let ret = Object.assign({}, defaultSettings);
         try {
             Object.assign(ret, JSON.parse(localStorage.getItem('settings')));
         } catch (e) {
