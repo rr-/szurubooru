@@ -20,7 +20,13 @@ class PostAlreadyFeaturedError(errors.ValidationError):
 
 
 class PostAlreadyUploadedError(errors.ValidationError):
-    pass
+    def __init__(self, other_post):
+        super().__init__(
+            'Post already uploaded (%d)' % other_post.post_id,
+            {
+                'otherPostUrl': get_post_content_url(other_post),
+                'otherPostId': other_post.post_id,
+            })
 
 
 class InvalidPostIdError(errors.ValidationError):
@@ -303,8 +309,7 @@ def update_post_content(post, content):
     if other_post \
             and other_post.post_id \
             and other_post.post_id != post.post_id:
-        raise PostAlreadyUploadedError(
-            'Post already uploaded (%d)' % other_post.post_id)
+        raise PostAlreadyUploadedError(other_post)
 
     post.file_size = len(content)
     try:

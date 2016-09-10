@@ -261,6 +261,7 @@ def test_errors_not_spending_ids(
         config_injector, tmpdir, context_factory, read_asset, user_factory):
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
+        'data_url': 'example.com',
         'thumbnails': {
             'post_width': 300,
             'post_height': 300,

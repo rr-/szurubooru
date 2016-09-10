@@ -329,6 +329,7 @@ def test_update_post_content_to_existing_content(
         tmpdir, config_injector, post_factory, read_asset):
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
+        'data_url': 'example.com',
         'thumbnails': {
             'post_width': 300,
             'post_height': 300,
