@@ -93,6 +93,6 @@
 
         <div class='messages'></div>
 
-        <input type='submit' value='Submit' class='submit'/>
+        <input type='submit' value='Save' class='submit'/>
     </form>
 </div>
