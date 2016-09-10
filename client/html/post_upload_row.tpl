@@ -5,17 +5,21 @@
         <a href class='remove'><i class='fa fa-remove'></i></a>
     </div>
 
-    <div class='thumbnail'>
+    <div class='thumbnail-wrapper'>
         <% if (['image'].includes(ctx.uploadable.type)) { %>
 
-            <%= ctx.makeThumbnail(ctx.uploadable.previewUrl) %>
+            <a href='<%= ctx.uploadable.previewUrl %>'>
+                <%= ctx.makeThumbnail(ctx.uploadable.previewUrl) %>
+            </a>
 
         <% } else if (['video'].includes(ctx.uploadable.type)) { %>
 
             <div class='thumbnail'>
-                <video id='video' nocontrols muted>
-                    <source type='<%- ctx.uploadable.mimeType %>' src='<%- ctx.uploadable.previewUrl %>'/>
-                </video>
+                <a href='<%= ctx.uploadable.previewUrl %>'>
+                    <video id='video' nocontrols muted>
+                        <source type='<%- ctx.uploadable.mimeType %>' src='<%- ctx.uploadable.previewUrl %>'/>
+                    </video>
+                </a>
             </div>
 
         <% } else { %>
