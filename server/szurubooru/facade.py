@@ -11,6 +11,7 @@ from szurubooru import api, middleware
 
 def _map_error(ex, target_class, title):
     return target_class(
+        name=type(ex).__name__,
         title=title,
         description=str(ex),
         extra_fields=getattr(ex, 'extra_fields', {}))
@@ -42,7 +43,11 @@ def _on_processing_error(ex):
 
 def _on_stale_data_error(_ex):
     raise rest.errors.HttpConflict(
-        'Someone else modified this in the meantime. Please try again.')
+        name='IntegrityError',
+        title='Integrity violation',
+        description=(
+            'Someone else modified this in the meantime. '
+            'Please try again.'))
 
 
 def validate_config():

@@ -120,10 +120,57 @@ code together with JSON of following structure:
 
 ```json5
 {
+    "name": "Name of the error, e.g. 'PostNotFoundError'",
     "title": "Generic title of error message, e.g. 'Not found'",
     "description": "Detailed description of what went wrong, e.g. 'User `rr-` not found."
 }
 ```
+
+List of possible error names:
+
+- `MissingRequiredFileError`
+- `MissingRequiredParameterError`
+- `InvalidParameterError` (when trying to pass text when integer is expected etc.)
+- `IntegrityError` (race conditions when editing the same resource)
+- `SearchError`
+- `AuthError`
+- `PostNotFoundError`
+- `PostAlreadyFeaturedError`
+- `PostAlreadyUploadedError`
+- `InvalidPostIdError`
+- `InvalidPostSafetyError`
+- `InvalidPostSourceError`
+- `InvalidPostContentError`
+- `InvalidPostRelationError`
+- `InvalidPostNoteError`
+- `InvalidPostFlagError`
+- `InvalidFavoriteTargetError`
+- `InvalidCommentIdError`
+- `CommentNotFoundError`
+- `EmptyCommentTextError`
+- `InvalidScoreTargetError`
+- `InvalidScoreValueError`
+- `TagCategoryNotFoundError`
+- `TagCategoryAlreadyExistsError`
+- `TagCategoryIsInUseError`
+- `InvalidTagCategoryNameError`
+- `InvalidTagCategoryColorError`
+- `TagNotFoundError`
+- `TagAlreadyExistsError`
+- `TagIsInUseError`
+- `InvalidTagNameError`
+- `InvalidTagRelationError`
+- `InvalidTagCategoryError`
+- `InvalidTagDescriptionError`
+- `UserNotFoundError`
+- `UserAlreadyExistsError`
+- `InvalidUserNameError`
+- `InvalidEmailError`
+- `InvalidPasswordError`
+- `InvalidRankError`
+- `InvalidAvatarError`
+- `ValidationError` (catch all for odd validation errors)
+
 
 ## Field selecting
 

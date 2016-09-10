@@ -5,10 +5,15 @@ class BaseHttpError(RuntimeError):
     code = None
     reason = None
 
-    def __init__(self, description, title=None, extra_fields=None):
+    def __init__(self, name, description, title=None, extra_fields=None):
         super().__init__()
+        # error name for programmers
+        self.name = name
+        # error description for humans
         self.description = description
+        # short title for humans
         self.title = title or self.reason
+        # additional fields for programmers
         self.extra_fields = extra_fields
 
 

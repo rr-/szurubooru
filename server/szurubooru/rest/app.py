@@ -103,6 +103,7 @@ def application(env, start_response):
             '%d %s' % (ex.code, ex.reason),
             [('content-type', 'application/json')])
         blob = {
+            'name': ex.name,
             'title': ex.title,
             'description': ex.description,
         }
