@@ -17,6 +17,7 @@ class EndlessPageView {
         this._working = 0;
         this._init = false;
 
+        this.clearMessages();
         views.emptyContent(this._pagesHolderNode);
 
         this.threshold = window.innerHeight / 3;
@@ -163,6 +164,10 @@ class EndlessPageView {
 
         this._init = true;
         return pageNode;
+    }
+
+    clearMessages() {
+        views.clearMessages(this._hostNode);
     }
 
     showSuccess(message) {
