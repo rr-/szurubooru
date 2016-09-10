@@ -7,10 +7,23 @@ const NoteList = require('./note_list.js');
 const CommentList = require('./comment_list.js');
 const misc = require('../util/misc.js');
 
+function _syncObservableCollection(target, plainList) {
+    target.clear();
+    for (let item of (plainList || [])) {
+        target.add(target.constructor._itemClass.fromResponse(item));
+    }
+}
+
 class Post extends events.EventTarget {
     constructor() {
         super();
         this._orig = {};
+
+        for (let obj of [this, this._orig]) {
+            obj._notes = new NoteList();
+            obj._comments = new CommentList();
+        }
+
         this._updateFromResponse({});
     }
 
@@ -264,9 +277,6 @@ class Post extends events.EventTarget {
 
             _flags:         [...response.flags || []],
             _tags:          [...response.tags || []],
-            _notes:         NoteList.fromResponse([...response.notes || []]),
-            _comments:      CommentList.fromResponse(
-                                [...response.comments || []]),
             _relations:     [...response.relations || []],
 
             _score:         response.score,
@@ -276,6 +286,11 @@ class Post extends events.EventTarget {
             _ownFavorite:   response.ownFavorite,
             _hasCustomThumbnail: response.hasCustomThumbnail,
         });
+
+        for (let obj of [this, this._orig]) {
+            _syncObservableCollection(obj._notes, response.notes);
+            _syncObservableCollection(obj._comments, response.comments);
+        }
 
         Object.assign(this, map());
         Object.assign(this._orig, map());
