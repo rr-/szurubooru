@@ -88,6 +88,7 @@ class PostsHeaderView extends events.EventTarget {
         this.dispatchEvent(new CustomEvent('navigate', {detail: {parameters: {
             query: this._ctx.parameters.query,
             page: this._ctx.parameters.page,
+            tag: null,
         }}}));
     }
 
@@ -103,8 +104,8 @@ class PostsHeaderView extends events.EventTarget {
             new CustomEvent(
                 'navigate', {
                     detail: {
-                        parameters:
-                            Object.assign({}, this._ctx.parameters, {page: 1}),
+                        parameters: Object.assign(
+                            {}, this._ctx.parameters, {tag: null, page: 1}),
                     },
                 }));
     }
@@ -121,6 +122,8 @@ class PostsHeaderView extends events.EventTarget {
         if (this._massTagInputNode) {
             parameters.tag = this._massTagInputNode.value;
             this._massTagInputNode.blur();
+        } else {
+            parameters.tag = null;
         }
         this.dispatchEvent(
             new CustomEvent('navigate', {detail: {parameters: parameters}}));
