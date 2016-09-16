@@ -6,7 +6,6 @@ const AutoCompleteControl = require('./auto_complete_control.js');
 
 class TagAutoCompleteControl extends AutoCompleteControl {
     constructor(input, options) {
-        const allTags = tags.getNameToTagMap();
         const caseSensitive = false;
         const minLengthForPartialSearch = 3;
 
@@ -22,7 +21,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                 (a, b) => a.startsWith(b) :
                 (a, b) => a.includes(b);
             text = transform(text);
-            return Array.from(allTags.entries())
+            return Array.from(tags.getNameToTagMap().entries())
                 .filter(kv => match(transform(kv[0]), text))
                 .sort((kv1, kv2) => {
                     return kv2[1].usages - kv1[1].usages;

@@ -3,8 +3,8 @@
 const misc = require('./util/misc.js');
 const request = require('superagent');
 
-let _tags = null;
-let _categories = null;
+let _tags = new Map();
+let _categories = new Map();
 let _stylesheet = null;
 
 function getTagByName(name) {
