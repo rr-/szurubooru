@@ -84,6 +84,7 @@ class PostsHeaderView extends events.EventTarget {
 
     _evtStopTaggingClick(e) {
         e.preventDefault();
+        this._massTagInputNode.value = '';
         this._toggleMassTagVisibility(false);
         this.dispatchEvent(new CustomEvent('navigate', {detail: {parameters: {
             query: this._ctx.parameters.query,
