@@ -135,6 +135,8 @@ class TagInputControl extends events.EventTarget {
     }
 
     isTaggedWith(tagName) {
+        let actualTag = null;
+        [tagName, actualTag] = this._transformTagName(tagName);
         return this.tags
             .map(t => t.toLowerCase())
             .includes(tagName.toLowerCase());
@@ -153,6 +155,8 @@ class TagInputControl extends events.EventTarget {
             return;
         }
 
+        let actualTag = null;
+        [tagName, actualTag] = this._transformTagName(tagName);
         if (!this.isTaggedWith(tagName)) {
             this.tags.push(tagName);
         }
@@ -177,6 +181,8 @@ class TagInputControl extends events.EventTarget {
         if (!tagName) {
             return;
         }
+        let actualTag = null;
+        [tagName, actualTag] = this._transformTagName(tagName);
         if (!this.isTaggedWith(tagName)) {
             return;
         }
@@ -270,7 +276,17 @@ class TagInputControl extends events.EventTarget {
         }
     }
 
+    _transformTagName(tagName) {
+        const actualTag = tags.getTagByName(tagName);
+        if (actualTag) {
+            tagName = actualTag.names[0];
+        }
+        return [tagName, actualTag];
+    }
+
     _getListItemNodeFromTagName(tagName) {
+        let actualTag = null;
+        [tagName, actualTag] = this._transformTagName(tagName);
         for (let listItemNode of this._tagListNode.querySelectorAll('li')) {
             if (listItemNode.getAttribute('data-tag').toLowerCase() ===
                     tagName.toLowerCase()) {
@@ -281,13 +297,11 @@ class TagInputControl extends events.EventTarget {
     }
 
     _createListItemNode(tagName) {
-        const actualTag = tags.getTagByName(tagName);
+        let actualTag = null;
+        [tagName, actualTag] = this._transformTagName(tagName);
         const className = actualTag ?
             misc.makeCssName(actualTag.category, 'tag') :
             null;
-        if (actualTag) {
-            tagName = actualTag.names[0];
-        }
 
         const tagLinkNode = document.createElement('a');
         if (className) {
