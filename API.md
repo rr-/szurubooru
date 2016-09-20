@@ -811,8 +811,7 @@ data.
     post to use default thumbnail. If `anonymous` is set to truthy value, the
     uploader name won't be recorded (privilege verification still applies; it's
     possible to disallow anonymous uploads completely from config.) For details
-    how to pass `content` and `thumbnail`, see [file uploads](#file-uploads)
-    for details.
+    how to pass `content` and `thumbnail`, see [file uploads](#file-uploads).
 
 ## Updating post
 - **Request**
@@ -859,9 +858,9 @@ data.
     must contain valid post IDs. `<flag>` currently can be only `"loop"` to
     enable looping for video posts. Sending empty `thumbnail` will reset the
     post thumbnail to default. For details how to pass `content` and
-    `thumbnail`, see [file uploads](#file-uploads) for details. All fields
-    except the [`version`](#versioning) are optional - update concerns only
-    provided fields.
+    `thumbnail`, see [file uploads](#file-uploads). All fields except the
+    [`version`](#versioning) are optional - update concerns only provided
+    fields.
 
 ## Getting post
 - **Request**
