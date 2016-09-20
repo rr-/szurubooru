@@ -810,10 +810,9 @@ data.
     enable looping for video posts. Sending empty `thumbnail` will cause the
     post to use default thumbnail. If `anonymous` is set to truthy value, the
     uploader name won't be recorded (privilege verification still applies; it's
-    possible to disallow anonymous uploads completely from config.) All fields
-    except the [`version`](#versioning) are optional - update concerns only
-    provided fields. For details how to pass `content` and `thumbnail`, see
-    [file uploads](#file-uploads) for details.
+    possible to disallow anonymous uploads completely from config.) For details
+    how to pass `content` and `thumbnail`, see [file uploads](#file-uploads)
+    for details.
 
 ## Updating post
 - **Request**
