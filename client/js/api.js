@@ -84,7 +84,10 @@ class Api extends events.EventTarget {
                 if (this.userName && this.userPassword) {
                     req.auth(
                         this.userName,
-                        this.userPassword);
+                        encodeURIComponent(this.userPassword)
+                            .replace(/%([0-9A-F]{2})/g, (match, p1) => {
+                                return String.fromCharCode('0x' + p1);
+                            }));
                 }
             } catch (e) {
                 reject({
