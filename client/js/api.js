@@ -80,16 +80,24 @@ class Api extends events.EventTarget {
                     req.attach(key, files[key] || new Blob());
                 }
             }
-            if (this.userName && this.userPassword) {
-                req.auth(this.userName, this.userPassword);
+            try {
+                if (this.userName && this.userPassword) {
+                    req.auth(
+                        this.userName,
+                        this.userPassword);
+                }
+            } catch (e) {
+                reject({
+                    title: 'Authentication error',
+                    description: 'Malformed credentials'});
             }
             req.set('Accept', 'application/json')
                 .end((error, response) => {
                     nprogress.done();
                     if (error) {
                         reject(response && response.body ? response.body : {
-                            'title': 'Networking error',
-                            'description': error.message});
+                            title: 'Networking error',
+                            description: error.message});
                     } else {
                         resolve(response.body);
                     }
@@ -152,7 +160,7 @@ class Api extends events.EventTarget {
                     resolve();
                     this.dispatchEvent(new CustomEvent('login'));
                 }, response => {
-                    reject(response.description);
+                    reject(response.description || response || 'Unknown error');
                     this.logout();
                 });
         });
