@@ -36,6 +36,7 @@ def _get_user(ctx):
         msg = 'Basic authentication header value are not properly formed. ' \
             + 'Supplied header {0}. Got error: {1}'
         raise HttpBadRequest(
+            'ValidationError',
             msg.format(ctx.get_header('Authorization'), str(err)))
 
 
