@@ -169,6 +169,7 @@ List of possible error names:
 - `InvalidPasswordError`
 - `InvalidRankError`
 - `InvalidAvatarError`
+- `ProcessingError` (failed to generate thumbnail or download remote file)
 - `ValidationError` (catch all for odd validation errors)
 
 
