@@ -39,7 +39,8 @@ def _create_context(env):
     if 'multipart' in env.get('CONTENT_TYPE', ''):
         form = cgi.FieldStorage(fp=env['wsgi.input'], environ=env)
         if not form.list:
-            raise errors.HttpBadRequest('No files attached.')
+            raise errors.HttpBadRequest(
+                'ValidationError', 'No files attached.')
         body = form.getvalue('metadata')
         for key in form:
             files[key] = form.getvalue(key)
@@ -55,6 +56,7 @@ def _create_context(env):
                 params[key] = value
         except (ValueError, UnicodeDecodeError):
             raise errors.HttpBadRequest(
+                'ValidationError',
                 'Could not decode the request body. The JSON '
                 'was incorrect or was not encoded as UTF-8.')
 
@@ -67,6 +69,7 @@ def application(env, start_response):
             ctx = _create_context(env)
             if 'application/json' not in ctx.get_header('Accept'):
                 raise errors.HttpNotAcceptable(
+                    'ValidationError',
                     'This API only supports JSON responses.')
 
             for url, allowed_methods in routes.routes.items():
@@ -75,6 +78,7 @@ def application(env, start_response):
                     continue
                 if ctx.method not in allowed_methods:
                     raise errors.HttpMethodNotAllowed(
+                        'ValidationError',
                         'Allowed methods: %r' % allowed_methods)
 
                 for hook in middleware.pre_hooks:
@@ -90,6 +94,7 @@ def application(env, start_response):
                 return (_dump_json(response).encode('utf-8'),)
 
             raise errors.HttpNotFound(
+                'ValidationError',
                 'Requested path ' + ctx.url + ' was not found.')
 
         except Exception as ex:

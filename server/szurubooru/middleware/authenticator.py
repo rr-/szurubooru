@@ -28,6 +28,7 @@ def _get_user(ctx):
         auth_type, credentials = ctx.get_header('Authorization').split(' ', 1)
         if auth_type.lower() != 'basic':
             raise HttpBadRequest(
+                'ValidationError',
                 'Only basic HTTP authentication is supported.')
         username, password = base64.decodebytes(
             credentials.encode('ascii')).decode('utf8').split(':')
