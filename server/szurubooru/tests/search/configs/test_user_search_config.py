@@ -101,6 +101,7 @@ def test_filter_by_name_that_looks_like_range(
     db.session.flush()
     verify_unpaged(input, expected_user_names)
 
+
 @pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2']),
     ('u1', ['u1']),

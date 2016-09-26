@@ -9,5 +9,5 @@ def download(url):
     try:
         with urllib.request.urlopen(request) as handle:
             return handle.read()
-    except Exception as e:
-        raise errors.ProcessingError('Error downloading %s (%s)' % (url, e))
+    except Exception as ex:
+        raise errors.ProcessingError('Error downloading %s (%s)' % (url, ex))
