@@ -5,7 +5,10 @@ from szurubooru.search import criteria
 
 
 def wildcard_transformer(value):
-    return value.replace('*', '%')
+    return (value
+        .replace('%', r'\%')
+        .replace('_', r'\_')
+        .replace('*', '%'))
 
 
 def apply_num_criterion_to_column(column, criterion):
