@@ -60,8 +60,7 @@ def apply_str_criterion_to_column(
         for value in criterion.values:
             expr = expr | column.ilike(transformer(value))
     elif isinstance(criterion, criteria.RangedCriterion):
-        raise errors.SearchError(
-            'Composite token %r is invalid in this context.' % (criterion,))
+        expr = column.ilike(transformer(criterion.original_text))
     else:
         assert False
     return expr
