@@ -53,6 +53,7 @@ class TopNavigation extends events.EventTarget {
     }
 
     setTitle(title) {
+        document.oldTitle = null;
         document.title = config.name + (title ? (' – ' + title) : '');
     }
 

@@ -288,6 +288,8 @@ function showMessage(target, message, className) {
 }
 
 function showError(target, message) {
+    document.oldTitle = document.title;
+    document.title = `! ${document.title}`;
     return showMessage(target, misc.formatInlineMarkdown(message), 'error');
 }
 
@@ -300,6 +302,10 @@ function showInfo(target, message) {
 }
 
 function clearMessages(target) {
+    if (document.oldTitle) {
+        document.title = document.oldTitle;
+        document.oldTitle = null;
+    }
     const messagesHolder = target.querySelector('.messages');
     /* TODO: animate that */
     emptyContent(messagesHolder);
