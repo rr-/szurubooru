@@ -92,8 +92,9 @@ class Parser(object):
             while chunk[0] == '-':
                 chunk = chunk[1:]
                 negated = not negated
-            if ':' in chunk and chunk[0] != ':':
-                key, value = chunk.split(':', 2)
+            match = re.match('([a-z_-]+):(.*)', chunk)
+            if match:
+                key, value = list(match.groups())
                 if key == 'sort':
                     query.sort_tokens.append(
                         _parse_sort(value, negated))
