@@ -4,14 +4,14 @@ from szurubooru.search import criteria, tokens
 
 
 def _create_criterion(original_value, value):
+    if ',' in value:
+        return criteria.ArrayCriterion(
+            original_value, value.split(','))
     if '..' in value:
         low, high = value.split('..', 1)
         if not low and not high:
             raise errors.SearchError('Empty ranged value')
         return criteria.RangedCriterion(original_value, low, high)
-    if ',' in value:
-        return criteria.ArrayCriterion(
-            original_value, value.split(','))
     return criteria.PlainCriterion(original_value, value)
 
 

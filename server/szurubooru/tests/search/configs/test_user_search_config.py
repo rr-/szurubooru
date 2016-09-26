@@ -85,6 +85,23 @@ def test_filter_by_name(
 
 
 @pytest.mark.parametrize('input,expected_user_names', [
+    ('name:u1', ['u1']),
+    ('name:u2..', ['u2..']),
+    ('name:u2*', ['u2..']),
+    ('name:*..*', ['u2..', 'u3..x']),
+    ('name:u3..x', ['u3..x']),
+    ('name:*..x', ['u3..x']),
+    ('name:u1,u3..x', ['u1', 'u3..x']),
+])
+def test_filter_by_name_that_looks_like_range(
+        verify_unpaged, input, expected_user_names, user_factory):
+    db.session.add(user_factory(name='u1'))
+    db.session.add(user_factory(name='u2..'))
+    db.session.add(user_factory(name='u3..x'))
+    db.session.flush()
+    verify_unpaged(input, expected_user_names)
+
+@pytest.mark.parametrize('input,expected_user_names', [
     ('', ['u1', 'u2']),
     ('u1', ['u1']),
     ('u2', ['u2']),
@@ -224,7 +241,6 @@ def test_random_sort(executor, user_factory):
     ('creation-date:bad..', errors.ValidationError),
     ('creation-date:..bad', errors.ValidationError),
     ('creation-date:bad..bad', errors.ValidationError),
-    ('name:a..b', errors.SearchError),
     ('sort:', errors.SearchError),
     ('sort:nam', errors.SearchError),
     ('sort:name,as', errors.SearchError),
