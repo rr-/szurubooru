@@ -199,10 +199,11 @@ class SelectedState extends ActiveState {
             e.stopPropagation();
             e.stopImmediatePropagation();
             e.preventDefault();
+            const args = offsetMap[e.which];
             if (e.shiftKey) {
-                this._scaleEditedNote(...offsetMap[e.which]);
+                this._scaleEditedNote(...args);
             } else {
-                this._moveEditedNote(...offsetMap[e.which]);
+                this._moveEditedNote(...args);
             }
         }
     }

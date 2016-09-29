@@ -366,8 +366,8 @@ class TagInputControl extends events.EventTarget {
             }, response => {
                 return Promise.resolve([]);
             }).then(siblings => {
-                let maxSiblingOccurrences = Math.max(
-                    1, ...siblings.map(s => s.occurrences));
+                const args = siblings.map(s => s.occurrences);
+                let maxSiblingOccurrences = Math.max(1, ...args);
                 for (let sibling of siblings) {
                     this._suggestions.set(
                         sibling.tag.names[0],
