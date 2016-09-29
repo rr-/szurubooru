@@ -133,9 +133,12 @@ class PostUploadView extends events.EventTarget {
         super();
         this._ctx = ctx;
         this._hostNode = document.getElementById('content-holder');
-        this._enabled = true;
+
         views.replaceContent(this._hostNode, template());
         views.syncScrollPosition();
+
+        this._enabled = true;
+        this._cancelButtonNode.disabled = true;
 
         this._uploadables = new Map();
         this._contentFileDropper = new FileDropperControl(
@@ -150,18 +153,22 @@ class PostUploadView extends events.EventTarget {
         this._contentFileDropper.addEventListener(
             'urladd', e => this._evtUrlsAdded(e));
 
+        this._cancelButtonNode.addEventListener(
+            'click', e => this._evtCancelButtonClick(e));
         this._formNode.addEventListener('submit', e => this._evtFormSubmit(e));
         this._formNode.classList.add('inactive');
     }
 
     enableForm() {
-        this._enabled = true;
         views.enableForm(this._formNode);
+        this._cancelButtonNode.disabled = true;
+        this._enabled = true;
     }
 
     disableForm() {
-        this._enabled = false;
         views.disableForm(this._formNode);
+        this._cancelButtonNode.disabled = false;
+        this._enabled = false;
     }
 
     clearMessages() {
@@ -224,6 +231,11 @@ class PostUploadView extends events.EventTarget {
 
     _evtUrlsAdded(e) {
         this.addUploadables(e.detail.urls.map(url => new Url(url)));
+    }
+
+    _evtCancelButtonClick(e) {
+        e.preventDefault();
+        this._emit('cancel');
     }
 
     _evtFormSubmit(e) {
@@ -340,6 +352,10 @@ class PostUploadView extends events.EventTarget {
 
     get _submitButtonNode() {
         return this._hostNode.querySelector('form [type=submit]');
+    }
+
+    get _cancelButtonNode() {
+        return this._hostNode.querySelector('form .cancel');
     }
 
     get _contentInputNode() {

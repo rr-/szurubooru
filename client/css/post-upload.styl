@@ -1,5 +1,7 @@
 @import colors
 
+$cancel-button-color = tomato
+
 #post-upload
     form
         width: 100%
@@ -19,6 +21,17 @@
 
     input[type=submit]
         margin-top: 1em
+        &[disabled]
+            display: none
+
+    .cancel
+        margin-top: 1em
+        background: $cancel-button-color
+        border-color: $cancel-button-color
+        &[disabled]
+            display: none
+        &:focus
+            border: 2px solid $text-color
 
     .messages
         margin-top: 1em

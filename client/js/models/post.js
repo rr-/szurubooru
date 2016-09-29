@@ -135,11 +135,11 @@ class Post extends events.EventTarget {
             files.thumbnail = this._newThumbnail;
         }
 
-        let promise = this._id ?
+        let apiPromise = this._id ?
             api.put('/post/' + this._id, detail, files) :
             api.post('/posts', detail, files);
 
-        return promise.then(response => {
+        let returnedPromise = apiPromise.then(response => {
             this._updateFromResponse(response);
             this.dispatchEvent(
                 new CustomEvent('change', {detail: {post: this}}));
@@ -159,6 +159,12 @@ class Post extends events.EventTarget {
             }
             return Promise.reject(response.description);
         });
+
+        returnedPromise.abort = () => {
+            apiPromise.abort();
+        };
+
+        return returnedPromise;
     }
 
     feature() {

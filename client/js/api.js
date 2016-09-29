@@ -64,11 +64,13 @@ class Api extends events.EventTarget {
     _process(url, requestFactory, data, files, options) {
         options = options || {};
         const [fullUrl, query] = this._getFullUrl(url);
-        return new Promise((resolve, reject) => {
-            if (!options.noProgress) {
-                nprogress.start();
-            }
+
+        let abortFunction = null;
+
+        let promise = new Promise((resolve, reject) => {
             let req = requestFactory(fullUrl);
+
+            req.set('Accept', 'application/json');
             if (query) {
                 req.query(query);
             }
@@ -94,18 +96,35 @@ class Api extends events.EventTarget {
                     title: 'Authentication error',
                     description: 'Malformed credentials'});
             }
-            req.set('Accept', 'application/json')
-                .end((error, response) => {
-                    nprogress.done();
-                    if (error) {
-                        reject(response && response.body ? response.body : {
-                            title: 'Networking error',
-                            description: error.message});
-                    } else {
-                        resolve(response.body);
-                    }
-                });
+
+            if (!options.noProgress) {
+                nprogress.start();
+            }
+
+            abortFunction = () => {
+                req.abort();  // does *NOT* call the callback passed in .end()
+                nprogress.done();
+                reject({
+                    title: 'Cancelled',
+                    description:
+                        'The request was aborted due to user cancel.'});
+            };
+
+            req.end((error, response) => {
+                nprogress.done();
+                if (error) {
+                    reject(response && response.body ? response.body : {
+                        title: 'Networking error',
+                        description: error.message});
+                } else {
+                    resolve(response.body);
+                }
+            });
         });
+
+        promise.abort = () => abortFunction();
+
+        return promise;
     }
 
     hasPrivilege(lookup) {

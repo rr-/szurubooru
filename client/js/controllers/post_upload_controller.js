@@ -10,6 +10,8 @@ const EmptyView = require('../views/empty_view.js');
 
 class PostUploadController {
     constructor() {
+        this._lastPromise = null;
+
         if (!api.hasPrivilege('posts:create')) {
             this._view = new EmptyView();
             this._view.showError('You don\'t have privileges to upload posts.');
@@ -23,6 +25,7 @@ class PostUploadController {
         });
         this._view.addEventListener('change', e => this._evtChange(e));
         this._view.addEventListener('submit', e => this._evtSubmit(e));
+        this._view.addEventListener('cancel', e => this._evtCancel(e));
     }
 
     _evtChange(e) {
@@ -32,6 +35,12 @@ class PostUploadController {
             misc.disableExitConfirmation();
         }
         this._view.clearMessages();
+    }
+
+    _evtCancel(e) {
+        if (this._lastPromise) {
+            this._lastPromise.abort();
+        }
     }
 
     _evtSubmit(e) {
@@ -48,7 +57,9 @@ class PostUploadController {
                     } else {
                         post.newContent = uploadable.file;
                     }
-                    return post.save(uploadable.anonymous)
+                    let modelPromise = post.save(uploadable.anonymous);
+                    this._lastPromise = modelPromise;
+                    return modelPromise
                         .then(() => {
                             this._view.removeUploadable(uploadable);
                             return Promise.resolve();
