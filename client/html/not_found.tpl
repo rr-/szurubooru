@@ -1,5 +1,5 @@
 <div class='not-found'>
-    <img src='/img/404.png' alt='404 Not found'/>
+    <h1>Not found</h1>
     <p><%- ctx.path %> is not a valid URL.</p>
     <p><a href='/'>Back to main page</a></p>
 </div>
