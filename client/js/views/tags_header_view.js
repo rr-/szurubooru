@@ -17,7 +17,8 @@ class TagsHeaderView extends events.EventTarget {
         views.replaceContent(this._hostNode, template(ctx));
 
         if (this._queryInputNode) {
-            new TagAutoCompleteControl(this._queryInputNode);
+            new TagAutoCompleteControl(
+                this._queryInputNode, {transform: misc.escapeSearchTerm});
         }
 
         search.searchInputNodeFocusHelper(this._queryInputNode);

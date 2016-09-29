@@ -28,6 +28,7 @@ class AutoCompleteControl {
         this._sourceInputNode = sourceInputNode;
         this._options = {};
         Object.assign(this._options, {
+            transform: null,
             verticalShift: 2,
             source: null,
             addSpace: false,
@@ -37,27 +38,8 @@ class AutoCompleteControl {
                 const start = _getSelectionStart(sourceInputNode);
                 return value.substring(0, start).replace(/.*\s+/, '');
             },
-            confirm: text => {
-                const start = _getSelectionStart(sourceInputNode);
-                let prefix = '';
-                let suffix = sourceInputNode.value.substring(start);
-                let middle = sourceInputNode.value.substring(0, start);
-                const index = middle.lastIndexOf(' ');
-                if (index !== -1) {
-                    prefix = sourceInputNode.value.substring(0, index + 1);
-                    middle = sourceInputNode.value.substring(index + 1);
-                }
-                sourceInputNode.value = prefix +
-                    this._results[this._activeResult].value +
-                    ' ' +
-                    suffix.trimLeft();
-                if (!this._options.addSpace) {
-                    sourceInputNode.value = sourceInputNode.value.trim();
-                }
-                sourceInputNode.focus();
-            },
-            delete: text => {
-            },
+            confirm: null,
+            delete: null,
             getMatches: null,
         }, options);
 
@@ -72,6 +54,43 @@ class AutoCompleteControl {
         window.clearTimeout(this._showTimeout);
         this._suggestionDiv.style.display = 'none';
         this._isVisible = false;
+    }
+
+    defaultConfirmStrategy(text) {
+        const start = _getSelectionStart(this._sourceInputNode);
+        let prefix = '';
+        let suffix = this._sourceInputNode.value.substring(start);
+        let middle = this._sourceInputNode.value.substring(0, start);
+        const index = middle.lastIndexOf(' ');
+        if (index !== -1) {
+            prefix = this._sourceInputNode.value.substring(0, index + 1);
+            middle = this._sourceInputNode.value.substring(index + 1);
+        }
+        this._sourceInputNode.value = prefix + text + ' ' + suffix.trimLeft();
+        if (!this._options.addSpace) {
+            this._sourceInputNode.value = this._sourceInputNode.value.trim();
+        }
+        this._sourceInputNode.focus();
+    }
+
+    _delete(text) {
+        if (this._options.transform) {
+            text = this._options.transform(text);
+        }
+        if (this._options.delete) {
+            this._options.delete(text);
+        }
+    }
+
+    _confirm(text) {
+        if (this._options.transform) {
+            text = this._options.transform(text);
+        }
+        if (this._options.confirm) {
+            this._options.confirm(text);
+        } else {
+            this.defaultConfirmStrategy(text);
+        }
     }
 
     _show() {
@@ -136,12 +155,12 @@ class AutoCompleteControl {
                 func = () => { this._selectNext(); };
             } else if (key === KEY_RETURN && this._activeResult >= 0) {
                 func = () => {
-                    this._options.confirm(this._getActiveSuggestion());
+                    this._confirm(this._getActiveSuggestion());
                     this.hide();
                 };
             } else if (key === KEY_DELETE && this._activeResult >= 0) {
                 func = () => {
-                    this._options.delete(this._getActiveSuggestion());
+                    this._delete(this._getActiveSuggestion());
                     this.hide();
                 };
             }
@@ -229,7 +248,7 @@ class AutoCompleteControl {
                 e => {
                     e.preventDefault();
                     this._activeResult = resultIndexWorkaround;
-                    this._options.confirm(this._getActiveSuggestion());
+                    this._confirm(this._getActiveSuggestion());
                     this.hide();
                 });
             listItem.appendChild(link);

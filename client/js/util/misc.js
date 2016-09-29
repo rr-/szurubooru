@@ -213,6 +213,10 @@ function arraysDiffer(source1, source2, orderImportant) {
         source2.filter(value => !source1.includes(value)).length > 0);
 }
 
+function escapeSearchTerm(text) {
+    return text.replace(/([a-z_-]):/g, '$1\\:');
+}
+
 module.exports = {
     range:                   range,
     formatUrlParameters:     formatUrlParameters,
@@ -231,4 +235,5 @@ module.exports = {
     splitByWhitespace:       splitByWhitespace,
     arraysDiffer:            arraysDiffer,
     decamelize:              decamelize,
+    escapeSearchTerm:        escapeSearchTerm,
 };

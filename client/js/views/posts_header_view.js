@@ -21,7 +21,8 @@ class PostsHeaderView extends events.EventTarget {
         views.replaceContent(this._hostNode, template(ctx));
 
         this._queryAutoCompleteControl = new TagAutoCompleteControl(
-            this._queryInputNode, {addSpace: true});
+            this._queryInputNode,
+            {addSpace: true, transform: misc.escapeSearchTerm});
         if (this._massTagInputNode) {
             this._masstagAutoCompleteControl = new TagAutoCompleteControl(
                 this._massTagInputNode, {addSpace: false});
