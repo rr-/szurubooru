@@ -52,5 +52,6 @@ def is_image(mime_type):
 
 
 def is_animated_gif(content):
+    pattern = b'\x21\xF9\x04[\x00-\xFF]{4}\x00[\x2C\x21]'
     return get_mime_type(content) == 'image/gif' \
-        and len(re.findall(b'\x21\xF9\x04.{4}\x00[\x2C\x21]', content)) > 1
+        and len(re.findall(pattern, content)) > 1
