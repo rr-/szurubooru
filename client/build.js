@@ -70,7 +70,7 @@ function copyFile(source, target) {
 }
 
 function minifyJs(path) {
-    return require('uglify-js').minify(path).code;
+    return require('uglify-js').minify(path, {compress: {unused: false}}).code;
 }
 
 function minifyCss(css) {
