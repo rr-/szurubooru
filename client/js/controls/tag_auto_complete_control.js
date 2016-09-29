@@ -6,7 +6,6 @@ const AutoCompleteControl = require('./auto_complete_control.js');
 
 class TagAutoCompleteControl extends AutoCompleteControl {
     constructor(input, options) {
-        const caseSensitive = false;
         const minLengthForPartialSearch = 3;
 
         options = Object.assign({
@@ -14,9 +13,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
         }, options);
 
         options.getMatches = text => {
-            const transform = caseSensitive ?
-                x => x :
-                x => x.toLowerCase();
+            const transform = x => x.toLowerCase();
             const match = text.length < minLengthForPartialSearch ?
                 (a, b) => a.startsWith(b) :
                 (a, b) => a.includes(b);
@@ -40,7 +37,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                             <span class="${cssName}">
                                 ${origName} (${usages})
                             </span>`,
-                        value: kv[0],
+                        value: origName,
                     };
                 });
         };
