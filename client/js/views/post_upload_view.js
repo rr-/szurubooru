@@ -133,6 +133,7 @@ class PostUploadView extends events.EventTarget {
         super();
         this._ctx = ctx;
         this._hostNode = document.getElementById('content-holder');
+        this._enabled = true;
         views.replaceContent(this._hostNode, template());
         views.syncScrollPosition();
 
@@ -154,10 +155,12 @@ class PostUploadView extends events.EventTarget {
     }
 
     enableForm() {
+        this._enabled = true;
         views.enableForm(this._formNode);
     }
 
     disableForm() {
+        this._enabled = false;
         views.disableForm(this._formNode);
     }
 
@@ -230,11 +233,17 @@ class PostUploadView extends events.EventTarget {
 
     _evtRemoveClick(e, uploadable) {
         e.preventDefault();
+        if (!this._enabled) {
+            return;
+        }
         this.removeUploadable(uploadable);
     }
 
     _evtMoveUpClick(e, uploadable) {
         e.preventDefault();
+        if (!this._enabled) {
+            return;
+        }
         let sortedUploadables = this._getSortedUploadables();
         if (uploadable.order > 0) {
             uploadable.order--;
@@ -247,6 +256,9 @@ class PostUploadView extends events.EventTarget {
 
     _evtMoveDownClick(e, uploadable) {
         e.preventDefault();
+        if (!this._enabled) {
+            return;
+        }
         let sortedUploadables = this._getSortedUploadables();
         if (uploadable.order + 1 < sortedUploadables.length) {
             uploadable.order++;
