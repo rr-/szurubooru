@@ -9,9 +9,12 @@ $cancel-button-color = tomato
         margin: 0 auto
         text-align: left
 
-        &.inactive
-            input[type=submit]
-                display: none
+        &.inactive input[type=submit],
+        &.inactive .skip-duplicates
+        &.uploading input[type=submit],
+        &.uploading .skip-duplicates,
+        &:not(.uploading) .cancel
+            display: none
 
     .dropper-container
         margin: 0 auto
@@ -21,17 +24,16 @@ $cancel-button-color = tomato
 
     input[type=submit]
         margin-top: 1em
-        &[disabled]
-            display: none
 
     .cancel
         margin-top: 1em
         background: $cancel-button-color
         border-color: $cancel-button-color
-        &[disabled]
-            display: none
         &:focus
             border: 2px solid $text-color
+
+    .skip-duplicates
+        margin-left: 1em
 
     .messages
         margin-top: 1em

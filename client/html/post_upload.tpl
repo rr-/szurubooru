@@ -2,8 +2,19 @@
     <form>
         <div class='dropper-container'></div>
 
-        <input type='submit' value='Upload all' class='submit'/>
-        <input type='button' value='Cancel' class='cancel'/>
+        <div class='control-strip'>
+            <input type='submit' value='Upload all' class='submit'/>
+
+            <span class='skip-duplicates'>
+                <%= ctx.makeCheckbox({
+                    text: 'Skip duplicates',
+                    name: 'skip-duplicates',
+                    checked: false,
+                }) %>
+            </span>
+
+            <input type='button' value='Cancel' class='cancel'/>
+        </div>
 
         <div class='messages'></div>
 

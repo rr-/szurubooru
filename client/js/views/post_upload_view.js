@@ -137,7 +137,6 @@ class PostUploadView extends events.EventTarget {
         views.replaceContent(this._hostNode, template());
         views.syncScrollPosition();
 
-        this._enabled = true;
         this._cancelButtonNode.disabled = true;
 
         this._uploadables = new Map();
@@ -162,13 +161,13 @@ class PostUploadView extends events.EventTarget {
     enableForm() {
         views.enableForm(this._formNode);
         this._cancelButtonNode.disabled = true;
-        this._enabled = true;
+        this._formNode.classList.remove('uploading');
     }
 
     disableForm() {
         views.disableForm(this._formNode);
         this._cancelButtonNode.disabled = false;
-        this._enabled = false;
+        this._formNode.classList.add('uploading');
     }
 
     clearMessages() {
@@ -245,7 +244,7 @@ class PostUploadView extends events.EventTarget {
 
     _evtRemoveClick(e, uploadable) {
         e.preventDefault();
-        if (!this._enabled) {
+        if (this._uploading) {
             return;
         }
         this.removeUploadable(uploadable);
@@ -253,7 +252,7 @@ class PostUploadView extends events.EventTarget {
 
     _evtMoveUpClick(e, uploadable) {
         e.preventDefault();
-        if (!this._enabled) {
+        if (this._uploading) {
             return;
         }
         let sortedUploadables = this._getSortedUploadables();
@@ -268,7 +267,7 @@ class PostUploadView extends events.EventTarget {
 
     _evtMoveDownClick(e, uploadable) {
         e.preventDefault();
-        if (!this._enabled) {
+        if (this._uploading) {
             return;
         }
         let sortedUploadables = this._getSortedUploadables();
@@ -306,7 +305,10 @@ class PostUploadView extends events.EventTarget {
         this.dispatchEvent(
             new CustomEvent(
                 eventType,
-                {detail: {uploadables: this._getSortedUploadables()}}));
+                {detail: {
+                    uploadables: this._getSortedUploadables(),
+                    skipDuplicates: this._skipDuplicatesCheckboxNode.checked,
+                }}));
     }
 
     _createRowNode(uploadable) {
@@ -342,12 +344,20 @@ class PostUploadView extends events.EventTarget {
             rowNode.querySelector('.thumbnail').childNodes);
     }
 
+    get _uploading() {
+        return this._formNode.classList.contains('uploading');
+    }
+
     get _listNode() {
         return this._hostNode.querySelector('.uploadables-container');
     }
 
     get _formNode() {
         return this._hostNode.querySelector('form');
+    }
+
+    get _skipDuplicatesCheckboxNode() {
+        return this._hostNode.querySelector('form [name=skip-duplicates]');
     }
 
     get _submitButtonNode() {

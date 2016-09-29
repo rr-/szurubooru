@@ -48,25 +48,36 @@ class PostUploadController {
         this._view.clearMessages();
 
         e.detail.uploadables.reduce((promise, uploadable) => {
-            return promise.then(
-                () => {
-                    let post = new Post();
-                    post.safety = uploadable.safety;
-                    if (uploadable.url) {
-                        post.newContentUrl = uploadable.url;
-                    } else {
-                        post.newContent = uploadable.file;
-                    }
-                    let modelPromise = post.save(uploadable.anonymous);
-                    this._lastPromise = modelPromise;
-                    return modelPromise
-                        .then(() => {
-                            this._view.removeUploadable(uploadable);
+            return promise.then(() => {
+                let post = new Post();
+                post.safety = uploadable.safety;
+                if (uploadable.url) {
+                    post.newContentUrl = uploadable.url;
+                } else {
+                    post.newContent = uploadable.file;
+                }
+
+                let modelPromise = post.save(uploadable.anonymous);
+                this._lastPromise = modelPromise;
+
+                return modelPromise
+                    .then(() => {
+                        this._view.removeUploadable(uploadable);
+                        return Promise.resolve();
+                    }).catch(errorMessage => {
+                        // XXX:
+                        // lame, API eats error codes so we need to match
+                        // messages instead
+                        if (e.detail.skipDuplicates &&
+                                errorMessage.match(/already uploaded/)) {
                             return Promise.resolve();
-                        });
-                });
-        }, Promise.resolve()).then(
-            () => {
+                        }
+                        return Promise.reject(errorMessage);
+                    });
+            });
+        }, Promise.resolve())
+
+            .then(() => {
                 misc.disableExitConfirmation();
                 const ctx = router.show('/posts');
                 ctx.controller.showSuccess('Posts uploaded.');
