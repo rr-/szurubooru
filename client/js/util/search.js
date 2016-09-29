@@ -12,6 +12,6 @@ function searchInputNodeFocusHelper(inputNode) {
     });
 }
 
-module.exports = misc.arrayToObject([
-    searchInputNodeFocusHelper,
-], func => func.name);
+module.exports = {
+    searchInputNodeFocusHelper: searchInputNodeFocusHelper,
+};

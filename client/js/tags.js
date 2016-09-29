@@ -112,14 +112,14 @@ function getSuggestions(tagName) {
     return actualTag.suggestions || [];
 }
 
-module.exports = misc.arrayToObject([
-    getAllCategories,
-    getAllTags,
-    getTagByName,
-    getCategoryByName,
-    getNameToTagMap,
-    getOriginalTagName,
-    refreshExport,
-    getAllImplications,
-    getSuggestions,
-], func => func.name);
+module.exports = {
+    getAllCategories:   getAllCategories,
+    getAllTags:         getAllTags,
+    getTagByName:       getTagByName,
+    getCategoryByName:  getCategoryByName,
+    getNameToTagMap:    getNameToTagMap,
+    getOriginalTagName: getOriginalTagName,
+    refreshExport:      refreshExport,
+    getAllImplications: getAllImplications,
+    getSuggestions:     getSuggestions,
+};
