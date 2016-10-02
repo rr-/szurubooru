@@ -24,8 +24,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                     return kv2[1].usages - kv1[1].usages;
                 })
                 .map(kv => {
-                    const origName = misc.escapeHtml(
-                        tags.getOriginalTagName(kv[0]));
+                    const origName = tags.getOriginalTagName(kv[0]);
                     const category = kv[1].category;
                     const usages = kv[1].usages;
                     let cssName = misc.makeCssName(category, 'tag');
@@ -35,7 +34,7 @@ class TagAutoCompleteControl extends AutoCompleteControl {
                     return {
                         caption: misc.unindent`
                             <span class="${cssName}">
-                                ${origName} (${usages})
+                                ${misc.escapeHtml(origName)} (${usages})
                             </span>`,
                         value: origName,
                     };
