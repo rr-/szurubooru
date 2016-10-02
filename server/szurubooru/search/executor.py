@@ -41,27 +41,27 @@ class Executor(object):
             filter_query, search_query, False)
         prev_filter_query = (
             filter_query
-                .filter(self.config.id_column < entity_id)
+                .filter(self.config.id_column > entity_id)
                 .order_by(None)
                 .order_by(sqlalchemy.func.abs(
                     self.config.id_column - entity_id).asc())
                 .limit(1))
         next_filter_query = (
             filter_query
-                .filter(self.config.id_column > entity_id)
+                .filter(self.config.id_column < entity_id)
                 .order_by(None)
                 .order_by(sqlalchemy.func.abs(
                     self.config.id_column - entity_id).asc())
                 .limit(1))
         return [
-            next_filter_query.one_or_none(),
-            prev_filter_query.one_or_none()]
+            prev_filter_query.one_or_none(),
+            next_filter_query.one_or_none()]
 
     def get_around_and_serialize(self, ctx, entity_id, serializer):
         entities = self.get_around(ctx.get_param_as_string('query'), entity_id)
         return {
-            'next': serializer(entities[0]),
-            'prev': serializer(entities[1]),
+            'prev': serializer(entities[0]),
+            'next': serializer(entities[1]),
         }
 
     def execute(self, query_text, page, page_size):

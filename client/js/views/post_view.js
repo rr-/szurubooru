@@ -67,13 +67,13 @@ class PostView {
             }
         });
         keyboard.bind(['a', 'left'], () => {
-            if (ctx.nextPostId) {
-                router.show('/post/' + ctx.nextPostId);
+            if (ctx.prevPostId) {
+                router.show('/post/' + ctx.prevPostId);
             }
         });
         keyboard.bind(['d', 'right'], () => {
-            if (ctx.prevPostId) {
-                router.show('/post/' + ctx.prevPostId);
+            if (ctx.nextPostId) {
+                router.show('/post/' + ctx.nextPostId);
             }
         });
     }

@@ -1,20 +1,6 @@
 <div class='content-wrapper transparent post-view'>
     <aside class='sidebar'>
         <nav class='buttons'>
-            <article class='next-post'>
-                <% if (ctx.nextPostId) { %>
-                    <% if (ctx.editMode) { %>
-                        <a href='<%= ctx.getPostEditUrl(ctx.nextPostId, ctx.parameters) %>'>
-                    <% } else { %>
-                        <a href='<%= ctx.getPostUrl(ctx.nextPostId, ctx.parameters) %>'>
-                    <% } %>
-                <% } else { %>
-                    <a class='inactive'>
-                <% } %>
-                    <i class='fa fa-chevron-left'></i>
-                    <span class='vim-nav-hint'>&lt; Next post</span>
-                </a>
-            </article>
             <article class='previous-post'>
                 <% if (ctx.prevPostId) { %>
                     <% if (ctx.editMode) { %>
@@ -25,8 +11,22 @@
                 <% } else { %>
                     <a class='inactive'>
                 <% } %>
+                    <i class='fa fa-chevron-left'></i>
+                    <span class='vim-nav-hint'>&lt; Previous post</span>
+                </a>
+            </article>
+            <article class='next-post'>
+                <% if (ctx.nextPostId) { %>
+                    <% if (ctx.editMode) { %>
+                        <a href='<%= ctx.getPostEditUrl(ctx.nextPostId, ctx.parameters) %>'>
+                    <% } else { %>
+                        <a href='<%= ctx.getPostUrl(ctx.nextPostId, ctx.parameters) %>'>
+                    <% } %>
+                <% } else { %>
+                    <a class='inactive'>
+                <% } %>
                     <i class='fa fa-chevron-right'></i>
-                    <span class='vim-nav-hint'>Previous post &gt;</span>
+                    <span class='vim-nav-hint'>Next post &gt;</span>
                 </a>
             </article>
             <article class='edit-post'>
