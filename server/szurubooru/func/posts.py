@@ -355,8 +355,13 @@ def update_post_tags(post, tag_names):
 
 def update_post_relations(post, new_post_ids):
     assert post
+    try:
+        new_post_ids = [int(id) for id in new_post_ids]
+    except ValueError:
+        raise InvalidPostRelationError(
+            'A relation must be numeric post ID.')
     old_posts = post.relations
-    old_post_ids = [p.post_id for p in old_posts]
+    old_post_ids = [int(p.post_id) for p in old_posts]
     new_posts = db.session \
         .query(db.Post) \
         .filter(db.Post.post_id.in_(new_post_ids)) \

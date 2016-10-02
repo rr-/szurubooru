@@ -521,6 +521,7 @@ def test_update_post_relations_bidirectionality(post_factory):
     db.session.flush()
     post = post_factory()
     posts.update_post_relations(post, [relation1.post_id, relation2.post_id])
+    db.session.flush()
     posts.update_post_relations(relation1, [])
     assert len(post.relations) == 1
     assert post.relations[0].post_id == relation2.post_id
