@@ -178,8 +178,10 @@ function makePostLink(id, includeHash) {
     }
     return api.hasPrivilege('posts:view') ?
         makeNonVoidElement(
-            'a', {'href': '/post/' + encodeURIComponent(id)}, text) :
-        text;
+            'a',
+            {'href': '/post/' + encodeURIComponent(id)},
+            misc.escapeHtml(text)) :
+        misc.escapeHtml(text);
 }
 
 function makeTagLink(name, includeHash) {
@@ -196,19 +198,21 @@ function makeTagLink(name, includeHash) {
                 'href': '/tag/' + encodeURIComponent(name),
                 'class': misc.makeCssName(category, 'tag'),
             },
-            text) :
+            misc.escapeHtml(text)) :
         makeNonVoidElement(
             'span',
             {'class': misc.makeCssName(category, 'tag')},
-            text);
+            misc.escapeHtml(text));
 }
 
 function makeUserLink(user) {
     let text = makeThumbnail(user ? user.avatarUrl : null);
-    text += user && user.name ? user.name : 'Anonymous';
+    text += user && user.name ? misc.escapeHtml(user.name) : 'Anonymous';
     const link = user && api.hasPrivilege('users:view') ?
         makeNonVoidElement(
-            'a', {'href': '/user/' + encodeURIComponent(user.name)}, text) :
+            'a',
+            {'href': '/user/' + encodeURIComponent(user.name)},
+            text) :
         text;
     return makeNonVoidElement('span', {class: 'user'}, link);
 }
