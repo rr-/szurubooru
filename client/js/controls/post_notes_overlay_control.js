@@ -441,7 +441,7 @@ class DrawingRectangleState extends ActiveState {
         const width = (x2 - x1) * this._control.boundingBox.width;
         const height = (y2 - y1) * this._control.boundingBox.height;
         if (width < 20 && height < 20) {
-            this._control._deletePolygonNode(this._note);
+            this._control._deleteDomNode(this._note);
             this._control._state = new ReadyToDrawState(this._control);
         } else {
             this._control._post.notes.add(this._note);
@@ -524,7 +524,7 @@ class DrawingPolygonState extends ActiveState {
     }
 
     _cancel() {
-        this._control._deletePolygonNode(this._note);
+        this._control._deleteDomNode(this._note);
         this._control._state = new ReadyToDrawState(this._control);
     }
 
@@ -555,7 +555,7 @@ class PostNotesOverlayControl extends events.EventTarget {
         this._hostNode.appendChild(this._svgNode);
         this._post.addEventListener('change', e => this._evtPostChange(e));
         this._post.notes.addEventListener('remove', e => {
-            this._deletePolygonNode(e.detail.note);
+            this._deleteDomNode(e.detail.note);
         });
 
         const keyHandler = e => this._evtCanvasKeyDown(e);
@@ -714,8 +714,8 @@ class PostNotesOverlayControl extends events.EventTarget {
         point.edgeNode.setAttribute('cy', point.y);
     }
 
-    _deletePolygonNode(note) {
-        note.polygonNode.parentNode.removeChild(note.polygonNode);
+    _deleteDomNode(note) {
+        note.groupNode.parentNode.removeChild(note.groupNode);
     }
 
     _createPolygonNode(note) {
