@@ -193,6 +193,30 @@ def comment_factory(user_factory, post_factory):
 
 
 @pytest.fixture
+def post_score_factory(user_factory, post_factory):
+    def factory(post=None, user=None, score=1):
+        if user is None:
+            user = user_factory()
+        if post is None:
+            post = post_factory()
+        return db.PostScore(
+            post=post, user=user, score=score, time=datetime(1999, 1, 1))
+    return factory
+
+
+@pytest.fixture
+def post_favorite_factory(user_factory, post_factory):
+    def factory(post=None, user=None):
+        if user is None:
+            user = user_factory()
+        if post is None:
+            post = post_factory()
+        return db.PostFavorite(
+            post=post, user=user, time=datetime(1999, 1, 1))
+    return factory
+
+
+@pytest.fixture
 def read_asset():
     def get(path):
         path = os.path.join(os.path.dirname(__file__), 'assets', path)

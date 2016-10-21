@@ -80,6 +80,7 @@ privileges:
     'posts:feature':                moderator
     'posts:delete':                 moderator
     'posts:score':                  regular
+    'posts:merge':                  moderator
     'posts:favorite':               regular
 
     'tags:create':                  regular

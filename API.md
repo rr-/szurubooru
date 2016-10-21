@@ -36,6 +36,7 @@
         - [Updating post](#updating-post)
         - [Getting post](#getting-post)
         - [Deleting post](#deleting-post)
+        - [Merging posts](#merging-posts)
         - [Rating post](#rating-post)
         - [Adding post to favorites](#adding-post-to-favorites)
         - [Removing post from favorites](#removing-post-from-favorites)
@@ -909,6 +910,40 @@ data.
 - **Description**
 
     Deletes existing post. Related posts and tags are kept.
+
+## Merging posts
+- **Request**
+
+    `POST /post-merge/`
+
+- **Input**
+
+    ```json5
+    {
+        "removeVersion":  <source-post-version>,
+        "remove":         <source-post-id>,
+        "mergeToVersion": <target-post-version>,
+        "mergeTo":        <target-post-id>
+    }
+    ```
+
+- **Output**
+
+    A [post resource](#post) containing the merged post.
+
+- **Errors**
+
+    - the version of either post is outdated
+    - the source or target post does not exist
+    - the source post is the same as the target post
+    - privileges are too low
+
+- **Description**
+
+    Removes source post and merges all of its tags, relations, scores,
+    favorites and comments to the target post. Source post properties such as
+    its content, safety, source, whether to loop the video and other scalar
+    values do not get transferred and are discarded.
 
 ## Rating post
 - **Request**

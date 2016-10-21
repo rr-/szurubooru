@@ -605,3 +605,222 @@ def test_delete(post_factory):
     posts.delete(post)
     db.session.flush()
     assert posts.get_post_count() == 0
+
+
+def test_merge_posts_deletes_source_post(post_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    db.session.add_all([source_post, target_post])
+    db.session.flush()
+    posts.merge_posts(source_post, target_post)
+    db.session.flush()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    post = posts.get_post_by_id(target_post.post_id)
+    assert post is not None
+
+
+def test_merge_posts_with_itself(post_factory):
+    source_post = post_factory()
+    db.session.add(source_post)
+    db.session.flush()
+    with pytest.raises(posts.InvalidPostRelationError):
+        posts.merge_posts(source_post, source_post)
+
+
+def test_merge_posts_moves_tags(post_factory, tag_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    tag = tag_factory()
+    tag.posts = [source_post]
+    db.session.add_all([source_post, target_post, tag])
+    db.session.commit()
+    assert source_post.tag_count == 1
+    assert target_post.tag_count == 0
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).tag_count == 1
+
+
+def test_merge_posts_doesnt_duplicate_tags(post_factory, tag_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    tag = tag_factory()
+    tag.posts = [source_post, target_post]
+    db.session.add_all([source_post, target_post, tag])
+    db.session.commit()
+    assert source_post.tag_count == 1
+    assert target_post.tag_count == 1
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).tag_count == 1
+
+
+def test_merge_posts_moves_comments(post_factory, comment_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    comment = comment_factory(post=source_post)
+    db.session.add_all([source_post, target_post, comment])
+    db.session.commit()
+    assert source_post.comment_count == 1
+    assert target_post.comment_count == 0
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).comment_count == 1
+
+
+def test_merge_posts_moves_scores(post_factory, post_score_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    score = post_score_factory(post=source_post, score=1)
+    db.session.add_all([source_post, target_post, score])
+    db.session.commit()
+    assert source_post.score == 1
+    assert target_post.score == 0
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).score == 1
+
+
+def test_merge_posts_doesnt_duplicate_scores(
+        post_factory, user_factory, post_score_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    user = user_factory()
+    score1 = post_score_factory(post=source_post, score=1, user=user)
+    score2 = post_score_factory(post=target_post, score=1, user=user)
+    db.session.add_all([source_post, target_post, score1, score2])
+    db.session.commit()
+    assert source_post.score == 1
+    assert target_post.score == 1
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).score == 1
+
+
+def test_merge_posts_moves_favorites(post_factory, post_favorite_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    favorite = post_favorite_factory(post=source_post)
+    db.session.add_all([source_post, target_post, favorite])
+    db.session.commit()
+    assert source_post.favorite_count == 1
+    assert target_post.favorite_count == 0
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).favorite_count == 1
+
+
+def test_merge_posts_doesnt_duplicate_favorites(
+        post_factory, user_factory, post_favorite_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    user = user_factory()
+    favorite1 = post_favorite_factory(post=source_post, user=user)
+    favorite2 = post_favorite_factory(post=target_post, user=user)
+    db.session.add_all([source_post, target_post, favorite1, favorite2])
+    db.session.commit()
+    assert source_post.favorite_count == 1
+    assert target_post.favorite_count == 1
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).favorite_count == 1
+
+
+def test_merge_posts_moves_child_relations(post_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    related_post = post_factory()
+    source_post.relations = [related_post]
+    db.session.add_all([source_post, target_post, related_post])
+    db.session.commit()
+    assert source_post.relation_count == 1
+    assert target_post.relation_count == 0
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).relation_count == 1
+
+
+def test_merge_posts_doesnt_duplicate_child_relations(post_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    related_post = post_factory()
+    source_post.relations = [related_post]
+    target_post.relations = [related_post]
+    db.session.add_all([source_post, target_post, related_post])
+    db.session.commit()
+    assert source_post.relation_count == 1
+    assert target_post.relation_count == 1
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).relation_count == 1
+
+
+def test_merge_posts_moves_parent_relations(post_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    related_post = post_factory()
+    related_post.relations = [source_post]
+    db.session.add_all([source_post, target_post, related_post])
+    db.session.commit()
+    assert source_post.relation_count == 1
+    assert target_post.relation_count == 0
+    assert related_post.relation_count == 1
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).relation_count == 1
+    assert posts.get_post_by_id(related_post.post_id).relation_count == 1
+
+
+def test_merge_posts_doesnt_duplicate_parent_relations(post_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    related_post = post_factory()
+    related_post.relations = [source_post, target_post]
+    db.session.add_all([source_post, target_post, related_post])
+    db.session.commit()
+    assert source_post.relation_count == 1
+    assert target_post.relation_count == 1
+    assert related_post.relation_count == 2
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).relation_count == 1
+    assert posts.get_post_by_id(related_post.post_id).relation_count == 1
+
+
+def test_merge_posts_doesnt_create_relation_loop_for_children(post_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    source_post.relations = [target_post]
+    db.session.add_all([source_post, target_post])
+    db.session.commit()
+    assert source_post.relation_count == 1
+    assert target_post.relation_count == 1
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).relation_count == 0
+
+
+def test_merge_posts_doesnt_create_relation_loop_for_parents(post_factory):
+    source_post = post_factory()
+    target_post = post_factory()
+    target_post.relations = [source_post]
+    db.session.add_all([source_post, target_post])
+    db.session.commit()
+    assert source_post.relation_count == 1
+    assert target_post.relation_count == 1
+    posts.merge_posts(source_post, target_post)
+    db.session.commit()
+    assert posts.try_get_post_by_id(source_post.post_id) is None
+    assert posts.get_post_by_id(target_post.post_id).relation_count == 0

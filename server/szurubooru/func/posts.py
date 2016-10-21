@@ -440,3 +440,78 @@ def feature_post(post, user):
 def delete(post):
     assert post
     db.session.delete(post)
+
+
+def merge_posts(source_post, target_post):
+    assert source_post
+    assert target_post
+    if source_post.post_id == target_post.post_id:
+        raise InvalidPostRelationError('Cannot merge post with itself.')
+
+    def merge_tables(table, anti_dup_func, source_post_id, target_post_id):
+        table1 = table
+        table2 = sqlalchemy.orm.util.aliased(table)
+        update_stmt = (sqlalchemy.sql.expression.update(table1)
+            .where(table1.post_id == source_post_id))
+
+        if anti_dup_func is not None:
+            update_stmt = (update_stmt
+                .where(~sqlalchemy.exists()
+                    .where(anti_dup_func(table1, table2))
+                    .where(table2.post_id == target_post_id)))
+
+        update_stmt = (update_stmt.values(post_id=target_post_id))
+        db.session.execute(update_stmt)
+
+    def merge_tags(source_post_id, target_post_id):
+        merge_tables(
+            db.PostTag,
+            lambda alias1, alias2: alias1.tag_id == alias2.tag_id,
+            source_post_id,
+            target_post_id)
+
+    def merge_scores(source_post_id, target_post_id):
+        merge_tables(
+            db.PostScore,
+            lambda alias1, alias2: alias1.user_id == alias2.user_id,
+            source_post_id,
+            target_post_id)
+
+    def merge_favorites(source_post_id, target_post_id):
+        merge_tables(
+            db.PostFavorite,
+            lambda alias1, alias2: alias1.user_id == alias2.user_id,
+            source_post_id,
+            target_post_id)
+
+    def merge_comments(source_post_id, target_post_id):
+        merge_tables(db.Comment, None, source_post_id, target_post_id)
+
+    def merge_relations(source_post_id, target_post_id):
+        table1 = db.PostRelation
+        table2 = sqlalchemy.orm.util.aliased(db.PostRelation)
+        update_stmt = (sqlalchemy.sql.expression.update(table1)
+            .where(table1.parent_id == source_post_id)
+            .where(table1.child_id != target_post_id)
+            .where(~sqlalchemy.exists()
+                .where(table2.child_id == table1.child_id)
+                .where(table2.parent_id == target_post_id))
+            .values(parent_id=target_post_id))
+        db.session.execute(update_stmt)
+
+        update_stmt = (sqlalchemy.sql.expression.update(table1)
+            .where(table1.child_id == source_post_id)
+            .where(table1.parent_id != target_post_id)
+            .where(~sqlalchemy.exists()
+                .where(table2.parent_id == table1.parent_id)
+                .where(table2.child_id == target_post_id))
+            .values(child_id=target_post_id))
+        db.session.execute(update_stmt)
+
+    merge_tags(source_post.post_id, target_post.post_id)
+    merge_comments(source_post.post_id, target_post.post_id)
+    merge_scores(source_post.post_id, target_post.post_id)
+    merge_favorites(source_post.post_id, target_post.post_id)
+    merge_relations(source_post.post_id, target_post.post_id)
+
+    delete(source_post)
