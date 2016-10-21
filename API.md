@@ -923,7 +923,8 @@ data.
         "removeVersion":  <source-post-version>,
         "remove":         <source-post-id>,
         "mergeToVersion": <target-post-version>,
-        "mergeTo":        <target-post-id>
+        "mergeTo":        <target-post-id>,
+        "replaceContent": <true-or-false>
     }
     ```
 
@@ -941,9 +942,11 @@ data.
 - **Description**
 
     Removes source post and merges all of its tags, relations, scores,
-    favorites and comments to the target post. Source post properties such as
-    its content, safety, source, whether to loop the video and other scalar
-    values do not get transferred and are discarded.
+    favorites and comments to the target post. If `replaceContent` is set to
+    true, content of the target post is replaced using the content of the
+    source post; otherwise it remains unchanged. Source post properties such as
+    its safety, source, whether to loop the video and other scalar values do
+    not get transferred and are discarded.
 
 ## Rating post
 - **Request**

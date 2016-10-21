@@ -442,7 +442,7 @@ def delete(post):
     db.session.delete(post)
 
 
-def merge_posts(source_post, target_post):
+def merge_posts(source_post, target_post, replace_content):
     assert source_post
     assert target_post
     if source_post.post_id == target_post.post_id:
@@ -515,3 +515,9 @@ def merge_posts(source_post, target_post):
     merge_relations(source_post.post_id, target_post.post_id)
 
     delete(source_post)
+
+    db.session.flush()
+
+    if replace_content:
+        content = files.get(get_post_content_path(source_post))
+        update_post_content(target_post, content)

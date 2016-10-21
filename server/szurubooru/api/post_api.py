@@ -128,13 +128,14 @@ def delete_post(ctx, params):
 def merge_posts(ctx, _params=None):
     source_post_id = ctx.get_param_as_string('remove', required=True) or ''
     target_post_id = ctx.get_param_as_string('mergeTo', required=True) or ''
+    replace_content = ctx.get_param_as_bool('replaceContent')
     source_post = posts.get_post_by_id(source_post_id)
     target_post = posts.get_post_by_id(target_post_id)
     versions.verify_version(source_post, ctx, 'removeVersion')
     versions.verify_version(target_post, ctx, 'mergeToVersion')
     versions.bump_version(target_post)
     auth.verify_privilege(ctx.user, 'posts:merge')
-    posts.merge_posts(source_post, target_post)
+    posts.merge_posts(source_post, target_post, replace_content)
     snapshots.merge(source_post, target_post, ctx.user)
     ctx.session.commit()
     return _serialize_post(ctx, target_post)
