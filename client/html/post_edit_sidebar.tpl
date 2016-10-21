@@ -84,7 +84,7 @@
             </section>
         <% } %>
 
-        <% if (ctx.canFeaturePosts) { %>
+        <% if (ctx.canFeaturePosts || ctx.canDeletePosts) { %>
             <section class='management'>
                 <ul>
                     <% if (ctx.canFeaturePosts) { %>
