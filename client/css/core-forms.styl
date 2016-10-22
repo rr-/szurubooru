@@ -65,10 +65,9 @@ input[type=radio], input[type=checkbox]
 .radio:before, .checkbox:before
     transition: border-color 0.1s linear
     position: absolute
-    top: 50%
     left: 0
+    top: 0.15em
     display: block
-    margin-top: -10px
     width: 16px
     height: 16px
     background: $input-enabled-background-color
@@ -79,10 +78,10 @@ input[type=radio], input[type=checkbox]
     background: $main-color
     transition: opacity 0.1s linear
     position: absolute
-    top: 50%
     left: 5px
+    top: 0.15em
+    margin-top: 5px
     display: block
-    margin-top: -5px
     width: 10px
     height: 10px
     border-radius: 50%
@@ -92,10 +91,10 @@ input[type=radio], input[type=checkbox]
 .checkbox:after
     transition: opacity 0.1s linear
     position: absolute
-    top: 50%
+    top: 0.15em
     left: 6px
     display: block
-    margin-top: -7px
+    margin-top: 3px
     width: 5px
     height: 9px
     border-right: 3px solid $main-color

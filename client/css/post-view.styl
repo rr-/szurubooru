@@ -120,11 +120,12 @@
             margin-bottom: 1em
 
     .safety
-        display: flex
-        flex-wrap: wrap
-        label:not(.radio)
+        &>label
             width: 100%
-        .radio
+        .radio-wrapper
+            display: flex
+            flex-wrap: wrap
+        .radio-wrapper label
             flex-grow: 1
             display: inline-block
 

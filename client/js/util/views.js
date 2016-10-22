@@ -53,35 +53,41 @@ function makeThumbnail(url) {
 
 function makeRadio(options) {
     _imbueId(options);
-    return makeVoidElement(
-        'input',
-        {
-            id: options.id,
-            name: options.name,
-            value: options.value,
-            type: 'radio',
-            checked: options.selectedValue === options.value,
-            disabled: options.readonly,
-            required: options.required,
-        }) +
-    _makeLabel(options, {class: 'radio'});
+    return makeNonVoidElement(
+        'label',
+        {for: options.id},
+        makeVoidElement(
+            'input',
+            {
+                id: options.id,
+                name: options.name,
+                value: options.value,
+                type: 'radio',
+                checked: options.selectedValue === options.value,
+                disabled: options.readonly,
+                required: options.required,
+            }) +
+        makeNonVoidElement('span', {class: 'radio'}, options.text));
 }
 
 function makeCheckbox(options) {
     _imbueId(options);
-    return makeVoidElement(
-        'input',
-        {
-            id: options.id,
-            name: options.name,
-            value: options.value,
-            type: 'checkbox',
-            checked: options.checked !== undefined ?
-                options.checked : false,
-            disabled: options.readonly,
-            required: options.required,
-        }) +
-    _makeLabel(options, {class: 'checkbox'});
+    return makeNonVoidElement(
+        'label',
+        {for: options.id},
+        makeVoidElement(
+            'input',
+            {
+                id: options.id,
+                name: options.name,
+                value: options.value,
+                type: 'checkbox',
+                checked: options.checked !== undefined ?
+                    options.checked : false,
+                disabled: options.readonly,
+                required: options.required,
+            }) +
+        makeNonVoidElement('span', {class: 'checkbox'}, options.text));
 }
 
 function makeSelect(options) {
