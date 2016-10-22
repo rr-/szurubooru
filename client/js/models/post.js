@@ -190,6 +190,31 @@ class Post extends events.EventTarget {
             });
     }
 
+    merge(targetId, useOldContent) {
+        return api.get('/post/' + encodeURIComponent(targetId))
+            .then(response => {
+                return api.post('/post-merge/', {
+                    removeVersion: this._version,
+                    remove: this._id,
+                    mergeToVersion: response.version,
+                    mergeTo: targetId,
+                    replaceContent: useOldContent,
+                });
+            }, response => {
+                return Promise.reject(response);
+            }).then(response => {
+                this._updateFromResponse(response);
+                this.dispatchEvent(new CustomEvent('change', {
+                    detail: {
+                        post: this,
+                    },
+                }));
+                return Promise.resolve();
+            }, response => {
+                return Promise.reject(response.description);
+            });
+    }
+
     setScore(score) {
         return api.put('/post/' + this._id + '/score', {score: score})
             .then(response => {

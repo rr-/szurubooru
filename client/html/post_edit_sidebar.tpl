@@ -84,11 +84,14 @@
             </section>
         <% } %>
 
-        <% if (ctx.canFeaturePosts || ctx.canDeletePosts) { %>
+        <% if (ctx.canFeaturePosts || ctx.canDeletePosts || ctx.canMergePosts) { %>
             <section class='management'>
                 <ul>
                     <% if (ctx.canFeaturePosts) { %>
                         <li><a href class='feature'>Feature this post on main page</a></li>
+                    <% } %>
+                    <% if (ctx.canMergePosts) { %>
+                        <li><a href class='merge'>Merge this post with another</a></li>
                     <% } %>
                     <% if (ctx.canDeletePosts) { %>
                         <li><a href class='delete'>Delete this post</a></li>

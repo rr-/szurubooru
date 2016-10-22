@@ -13,9 +13,9 @@ const PostEditSidebarControl =
 const CommentListControl = require('../controls/comment_list_control.js');
 const CommentFormControl = require('../controls/comment_form_control.js');
 
-const template = views.getTemplate('post');
+const template = views.getTemplate('post-main');
 
-class PostView {
+class PostMainView {
     constructor(ctx) {
         this._hostNode = document.getElementById('content-holder');
 
@@ -118,4 +118,4 @@ class PostView {
     }
 }
 
-module.exports = PostView;
+module.exports = PostMainView;

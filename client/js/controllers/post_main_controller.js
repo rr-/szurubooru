@@ -7,26 +7,19 @@ const settings = require('../models/settings.js');
 const Comment = require('../models/comment.js');
 const Post = require('../models/post.js');
 const PostList = require('../models/post_list.js');
-const topNavigation = require('../models/top_navigation.js');
-const PostView = require('../views/post_view.js');
+const PostMainView = require('../views/post_main_view.js');
+const BasePostController = require('./base_post_controller.js');
 const EmptyView = require('../views/empty_view.js');
 
-class PostController {
-    constructor(id, editMode, ctx) {
-        if (!api.hasPrivilege('posts:view')) {
-            this._view = new EmptyView();
-            this._view.showError('You don\'t have privileges to view posts.');
-            return;
-        }
-
-        topNavigation.activate('posts');
-        topNavigation.setTitle('Post #' + id.toString());
+class PostMainController extends BasePostController {
+    constructor(ctx, editMode) {
+        super(ctx);
 
         let parameters = ctx.parameters;
         Promise.all([
-                Post.get(id),
+                Post.get(ctx.parameters.id),
                 PostList.getAround(
-                    id, this._decorateSearchQuery(
+                    ctx.parameters.id, this._decorateSearchQuery(
                         parameters ? parameters.query : '')),
         ]).then(responses => {
             const [post, aroundResponse] = responses;
@@ -36,13 +29,13 @@ class PostController {
             if (parameters.query) {
                 ctx.state.parameters = parameters;
                 const url = editMode ?
-                    '/post/' + id + '/edit' :
-                    '/post/' + id;
+                    '/post/' + ctx.parameters.id + '/edit' :
+                    '/post/' + ctx.parameters.id;
                 router.replace(url, ctx.state, false);
             }
 
             this._post = post;
-            this._view = new PostView({
+            this._view = new PostMainView({
                 post: post,
                 editMode: editMode,
                 prevPostId: aroundResponse.prev ? aroundResponse.prev.id : null,
@@ -72,6 +65,8 @@ class PostController {
                     'feature', e => this._evtFeaturePost(e));
                 this._view.sidebarControl.addEventListener(
                     'delete', e => this._evtDeletePost(e));
+                this._view.sidebarControl.addEventListener(
+                    'merge', e => this._evtMergePost(e));
             }
 
             if (this._view.commentFormControl) {
@@ -126,6 +121,10 @@ class PostController {
                 this._view.sidebarControl.showError(errorMessage);
                 this._view.sidebarControl.enableForm();
             });
+    }
+
+    _evtMergePost(e) {
+        router.show('/post/' + e.detail.post.id + '/merge');
     }
 
     _evtDeletePost(e) {
@@ -262,7 +261,7 @@ module.exports = router => {
             if (ctx.state.parameters) {
                 Object.assign(ctx.parameters, ctx.state.parameters);
             }
-            ctx.controller = new PostController(ctx.parameters.id, true, ctx);
+            ctx.controller = new PostMainController(ctx, true);
         });
     router.enter(
         '/post/:id/:parameters(.*)?',
@@ -272,6 +271,6 @@ module.exports = router => {
             if (ctx.state.parameters) {
                 Object.assign(ctx.parameters, ctx.state.parameters);
             }
-            ctx.controller = new PostController(ctx.parameters.id, false, ctx);
+            ctx.controller = new PostMainController(ctx, false);
         });
 };

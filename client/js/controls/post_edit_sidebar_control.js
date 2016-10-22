@@ -36,6 +36,7 @@ class PostEditSidebarControl extends events.EventTarget {
             canCreateAnonymousPosts: api.hasPrivilege('posts:create:anonymous'),
             canDeletePosts: api.hasPrivilege('posts:delete'),
             canFeaturePosts: api.hasPrivilege('posts:feature'),
+            canMergePosts: api.hasPrivilege('posts:merge'),
         }));
 
         new ExpanderControl(
@@ -106,6 +107,11 @@ class PostEditSidebarControl extends events.EventTarget {
         if (this._featureLinkNode) {
             this._featureLinkNode.addEventListener(
                 'click', e => this._evtFeatureClick(e));
+        }
+
+        if (this._mergeLinkNode) {
+            this._mergeLinkNode.addEventListener(
+                'click', e => this._evtMergeClick(e));
         }
 
         if (this._deleteLinkNode) {
@@ -184,6 +190,15 @@ class PostEditSidebarControl extends events.EventTarget {
                 },
             }));
         }
+    }
+
+    _evtMergeClick(e) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('merge', {
+            detail: {
+                post: this._post,
+            },
+        }));
     }
 
     _evtDeleteClick(e) {
@@ -312,6 +327,10 @@ class PostEditSidebarControl extends events.EventTarget {
 
     get _featureLinkNode() {
         return this._formNode.querySelector('.management .feature');
+    }
+
+    get _mergeLinkNode() {
+        return this._formNode.querySelector('.management .merge');
     }
 
     get _deleteLinkNode() {
