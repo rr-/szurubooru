@@ -449,18 +449,18 @@ def merge_posts(source_post, target_post, replace_content):
         raise InvalidPostRelationError('Cannot merge post with itself.')
 
     def merge_tables(table, anti_dup_func, source_post_id, target_post_id):
-        table1 = table
-        table2 = sqlalchemy.orm.util.aliased(table)
-        update_stmt = (sqlalchemy.sql.expression.update(table1)
-            .where(table1.post_id == source_post_id))
+        alias1 = table
+        alias2 = sqlalchemy.orm.util.aliased(table)
+        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+            .where(alias1.post_id == source_post_id))
 
         if anti_dup_func is not None:
             update_stmt = (update_stmt
                 .where(~sqlalchemy.exists()
-                    .where(anti_dup_func(table1, table2))
-                    .where(table2.post_id == target_post_id)))
+                    .where(anti_dup_func(alias1, alias2))
+                    .where(alias2.post_id == target_post_id)))
 
-        update_stmt = (update_stmt.values(post_id=target_post_id))
+        update_stmt = update_stmt.values(post_id=target_post_id)
         db.session.execute(update_stmt)
 
     def merge_tags(source_post_id, target_post_id):
@@ -488,23 +488,23 @@ def merge_posts(source_post, target_post, replace_content):
         merge_tables(db.Comment, None, source_post_id, target_post_id)
 
     def merge_relations(source_post_id, target_post_id):
-        table1 = db.PostRelation
-        table2 = sqlalchemy.orm.util.aliased(db.PostRelation)
-        update_stmt = (sqlalchemy.sql.expression.update(table1)
-            .where(table1.parent_id == source_post_id)
-            .where(table1.child_id != target_post_id)
+        alias1 = db.PostRelation
+        alias2 = sqlalchemy.orm.util.aliased(db.PostRelation)
+        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+            .where(alias1.parent_id == source_post_id)
+            .where(alias1.child_id != target_post_id)
             .where(~sqlalchemy.exists()
-                .where(table2.child_id == table1.child_id)
-                .where(table2.parent_id == target_post_id))
+                .where(alias2.child_id == alias1.child_id)
+                .where(alias2.parent_id == target_post_id))
             .values(parent_id=target_post_id))
         db.session.execute(update_stmt)
 
-        update_stmt = (sqlalchemy.sql.expression.update(table1)
-            .where(table1.child_id == source_post_id)
-            .where(table1.parent_id != target_post_id)
+        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+            .where(alias1.child_id == source_post_id)
+            .where(alias1.parent_id != target_post_id)
             .where(~sqlalchemy.exists()
-                .where(table2.parent_id == table1.parent_id)
-                .where(table2.child_id == target_post_id))
+                .where(alias2.parent_id == alias1.parent_id)
+                .where(alias2.child_id == target_post_id))
             .values(child_id=target_post_id))
         db.session.execute(update_stmt)
 

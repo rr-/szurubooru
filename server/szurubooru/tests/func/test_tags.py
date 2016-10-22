@@ -310,7 +310,7 @@ def test_delete(tag_factory):
     assert db.session.query(db.Tag).count() == 2
 
 
-def test_merge_tags_without_usages(tag_factory):
+def test_merge_tags_deletes_source_tag(tag_factory):
     source_tag = tag_factory(names=['source'])
     target_tag = tag_factory(names=['target'])
     db.session.add_all([source_tag, target_tag])
@@ -322,7 +322,15 @@ def test_merge_tags_without_usages(tag_factory):
     assert tag is not None
 
 
-def test_merge_tags_with_usages(tag_factory, post_factory):
+def test_merge_tags_with_itself(tag_factory):
+    source_tag = tag_factory(names=['source'])
+    db.session.add(source_tag)
+    db.session.flush()
+    with pytest.raises(tags.InvalidTagRelationError):
+        tags.merge_tags(source_tag, source_tag)
+
+
+def test_merge_tags_moves_usages(tag_factory, post_factory):
     source_tag = tag_factory(names=['source'])
     target_tag = tag_factory(names=['target'])
     post = post_factory()
@@ -337,62 +345,7 @@ def test_merge_tags_with_usages(tag_factory, post_factory):
     assert tags.get_tag_by_name('target').post_count == 1
 
 
-def test_merge_tags_with_itself(tag_factory):
-    source_tag = tag_factory(names=['source'])
-    db.session.add(source_tag)
-    db.session.flush()
-    with pytest.raises(tags.InvalidTagRelationError):
-        tags.merge_tags(source_tag, source_tag)
-
-
-def test_merge_tags_with_its_child_relation(tag_factory, post_factory):
-    source_tag = tag_factory(names=['source'])
-    target_tag = tag_factory(names=['target'])
-    source_tag.suggestions = [target_tag]
-    source_tag.implications = [target_tag]
-    post = post_factory()
-    post.tags = [source_tag, target_tag]
-    db.session.add_all([source_tag, post])
-    db.session.flush()
-    tags.merge_tags(source_tag, target_tag)
-    db.session.flush()
-    assert tags.try_get_tag_by_name('source') is None
-    assert tags.get_tag_by_name('target').post_count == 1
-
-
-def test_merge_tags_with_its_parent_relation(tag_factory, post_factory):
-    source_tag = tag_factory(names=['source'])
-    target_tag = tag_factory(names=['target'])
-    target_tag.suggestions = [source_tag]
-    target_tag.implications = [source_tag]
-    post = post_factory()
-    post.tags = [source_tag, target_tag]
-    db.session.add_all([source_tag, target_tag, post])
-    db.session.flush()
-    tags.merge_tags(source_tag, target_tag)
-    db.session.flush()
-    assert tags.try_get_tag_by_name('source') is None
-    assert tags.get_tag_by_name('target').post_count == 1
-
-
-def test_merge_tags_clears_relations(tag_factory):
-    source_tag = tag_factory(names=['source'])
-    target_tag = tag_factory(names=['target'])
-    referring_tag = tag_factory(names=['parent'])
-    referring_tag.suggestions = [source_tag]
-    referring_tag.implications = [source_tag]
-    db.session.add_all([source_tag, target_tag, referring_tag])
-    db.session.flush()
-    assert tags.try_get_tag_by_name('parent').implications != []
-    assert tags.try_get_tag_by_name('parent').suggestions != []
-    tags.merge_tags(source_tag, target_tag)
-    db.session.commit()
-    assert tags.try_get_tag_by_name('source') is None
-    assert tags.try_get_tag_by_name('parent').implications == []
-    assert tags.try_get_tag_by_name('parent').suggestions == []
-
-
-def test_merge_tags_when_target_exists(tag_factory, post_factory):
+def test_merge_tags_doesnt_duplicate_usages(tag_factory, post_factory):
     source_tag = tag_factory(names=['source'])
     target_tag = tag_factory(names=['target'])
     post = post_factory()
@@ -405,6 +358,103 @@ def test_merge_tags_when_target_exists(tag_factory, post_factory):
     db.session.flush()
     assert tags.try_get_tag_by_name('source') is None
     assert tags.get_tag_by_name('target').post_count == 1
+
+
+def test_merge_tags_moves_child_relations(tag_factory):
+    source_tag = tag_factory(names=['source'])
+    target_tag = tag_factory(names=['target'])
+    related_tag = tag_factory()
+    source_tag.suggestions = [related_tag]
+    source_tag.implications = [related_tag]
+    db.session.add_all([source_tag, target_tag, related_tag])
+    db.session.commit()
+    assert source_tag.suggestion_count == 1
+    assert source_tag.implication_count == 1
+    assert target_tag.suggestion_count == 0
+    assert target_tag.implication_count == 0
+    tags.merge_tags(source_tag, target_tag)
+    db.session.commit()
+    assert tags.try_get_tag_by_name('source') is None
+    assert tags.get_tag_by_name('target').suggestion_count == 1
+    assert tags.get_tag_by_name('target').implication_count == 1
+
+
+def test_merge_tags_doesnt_duplicate_child_relations(tag_factory):
+    source_tag = tag_factory(names=['source'])
+    target_tag = tag_factory(names=['target'])
+    related_tag = tag_factory()
+    source_tag.suggestions = [related_tag]
+    source_tag.implications = [related_tag]
+    target_tag.suggestions = [related_tag]
+    target_tag.implications = [related_tag]
+    db.session.add_all([source_tag, target_tag, related_tag])
+    db.session.commit()
+    assert source_tag.suggestion_count == 1
+    assert source_tag.implication_count == 1
+    assert target_tag.suggestion_count == 1
+    assert target_tag.implication_count == 1
+    tags.merge_tags(source_tag, target_tag)
+    db.session.commit()
+    assert tags.try_get_tag_by_name('source') is None
+    assert tags.get_tag_by_name('target').suggestion_count == 1
+    assert tags.get_tag_by_name('target').implication_count == 1
+
+
+def test_merge_tags_moves_parent_relations(tag_factory):
+    source_tag = tag_factory(names=['source'])
+    target_tag = tag_factory(names=['target'])
+    related_tag = tag_factory(names=['related'])
+    related_tag.suggestions = [related_tag]
+    related_tag.implications = [related_tag]
+    db.session.add_all([source_tag, target_tag, related_tag])
+    db.session.commit()
+    assert source_tag.suggestion_count == 0
+    assert source_tag.implication_count == 0
+    assert target_tag.suggestion_count == 0
+    assert target_tag.implication_count == 0
+    tags.merge_tags(source_tag, target_tag)
+    db.session.commit()
+    assert tags.try_get_tag_by_name('source') is None
+    assert tags.get_tag_by_name('related').suggestion_count == 1
+    assert tags.get_tag_by_name('related').suggestion_count == 1
+    assert tags.get_tag_by_name('target').suggestion_count == 0
+    assert tags.get_tag_by_name('target').implication_count == 0
+
+
+def test_merge_tags_doesnt_create_relation_loop_for_children(tag_factory):
+    source_tag = tag_factory(names=['source'])
+    target_tag = tag_factory(names=['target'])
+    source_tag.suggestions = [target_tag]
+    source_tag.implications = [target_tag]
+    db.session.add_all([source_tag, target_tag])
+    db.session.commit()
+    assert source_tag.suggestion_count == 1
+    assert source_tag.implication_count == 1
+    assert target_tag.suggestion_count == 0
+    assert target_tag.implication_count == 0
+    tags.merge_tags(source_tag, target_tag)
+    db.session.commit()
+    assert tags.try_get_tag_by_name('source') is None
+    assert tags.get_tag_by_name('target').suggestion_count == 0
+    assert tags.get_tag_by_name('target').implication_count == 0
+
+
+def test_merge_tags_doesnt_create_relation_loop_for_parents(tag_factory):
+    source_tag = tag_factory(names=['source'])
+    target_tag = tag_factory(names=['target'])
+    target_tag.suggestions = [source_tag]
+    target_tag.implications = [source_tag]
+    db.session.add_all([source_tag, target_tag])
+    db.session.commit()
+    assert source_tag.suggestion_count == 0
+    assert source_tag.implication_count == 0
+    assert target_tag.suggestion_count == 1
+    assert target_tag.implication_count == 1
+    tags.merge_tags(source_tag, target_tag)
+    db.session.commit()
+    assert tags.try_get_tag_by_name('source') is None
+    assert tags.get_tag_by_name('target').suggestion_count == 0
+    assert tags.get_tag_by_name('target').implication_count == 0
 
 
 def test_create_tag(fake_datetime):

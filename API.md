@@ -618,10 +618,9 @@ data.
 
 - **Description**
 
-    Removes source tag and merges all of its usages to the target tag. Source
-    tag properties such as category, tag relations etc. do not get transferred
-    and are discarded. The target tag effectively remains unchanged with the
-    exception of the set of posts it's used in.
+    Removes source tag and merges all of its usages, suggestions and
+    implications to the target tag. Other tag properties such as category and
+    aliases do not get transferred and are discarded.
 
 ## Listing tag siblings
 - **Request**
