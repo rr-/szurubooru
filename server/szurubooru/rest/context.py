@@ -25,7 +25,7 @@ def _param_wrapper(func):
     return wrapper
 
 
-class Context():
+class Context:
     def __init__(self, method, url, headers=None, params=None, files=None):
         self.method = method
         self.url = url

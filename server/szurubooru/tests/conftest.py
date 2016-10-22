@@ -10,7 +10,7 @@ import sqlalchemy
 from szurubooru import config, db, rest
 
 
-class QueryCounter(object):
+class QueryCounter:
     def __init__(self):
         self._statements = []
 

@@ -14,7 +14,7 @@ _SCALE_FIT_FMT = \
     r'scale=iw*max({width}/iw\,{height}/ih):ih*max({width}/iw\,{height}/ih)'
 
 
-class Image(object):
+class Image:
     def __init__(self, content):
         self.content = content
         self._reload_info()

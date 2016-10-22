@@ -20,7 +20,7 @@ def _get_order(order, default_order):
     return order
 
 
-class Executor(object):
+class Executor:
     '''
     Class for search parsing and execution. Handles plaintext parsing and
     delegates sqlalchemy filter decoration to SearchConfig instances.

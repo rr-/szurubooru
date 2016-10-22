@@ -1,14 +1,14 @@
 from datetime import datetime
 
 
-class LruCacheItem(object):
+class LruCacheItem:
     def __init__(self, key, value):
         self.key = key
         self.value = value
         self.timestamp = datetime.utcnow()
 
 
-class LruCache(object):
+class LruCache:
     def __init__(self, length, delta=None):
         self.length = length
         self.delta = delta

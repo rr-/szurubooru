@@ -1,4 +1,4 @@
-class _BaseCriterion(object):
+class _BaseCriterion:
     def __init__(self, original_text):
         self.original_text = original_text
 

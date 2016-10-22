@@ -67,7 +67,7 @@ def _parse_sort(value, negated):
     return tokens.SortToken(value, order)
 
 
-class SearchQuery():
+class SearchQuery:
     def __init__(self):
         self.anonymous_tokens = []
         self.named_tokens = []
@@ -82,7 +82,7 @@ class SearchQuery():
             tuple(self.sort_tokens)))
 
 
-class Parser(object):
+class Parser:
     def parse(self, query_text):
         query = SearchQuery()
         for chunk in re.split(r'\s+', (query_text or '').lower()):

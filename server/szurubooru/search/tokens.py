@@ -1,4 +1,4 @@
-class AnonymousToken(object):
+class AnonymousToken:
     def __init__(self, criterion, negated):
         self.criterion = criterion
         self.negated = negated
@@ -16,7 +16,7 @@ class NamedToken(AnonymousToken):
         return hash((self.name, self.criterion, self.negated))
 
 
-class SortToken(object):
+class SortToken:
     SORT_DESC = 'desc'
     SORT_ASC = 'asc'
     SORT_DEFAULT = 'default'
@@ -30,7 +30,7 @@ class SortToken(object):
         return hash((self.name, self.order))
 
 
-class SpecialToken(object):
+class SpecialToken:
     def __init__(self, value, negated):
         self.value = value
         self.negated = negated
