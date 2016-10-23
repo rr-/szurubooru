@@ -259,7 +259,7 @@ class PostEditSidebarControl extends events.EventTarget {
             detail: {
                 post: this._post,
 
-                safety: this._safetyButtonNodes.legnth ?
+                safety: this._safetyButtonNodes.length ?
                     Array.from(this._safetyButtonNodes)
                         .filter(node => node.checked)[0]
                         .value.toLowerCase() :
