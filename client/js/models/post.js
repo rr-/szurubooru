@@ -79,7 +79,9 @@ class Post extends events.EventTarget {
     }
 
     isTaggedWith(tagName) {
-        return this._tags.map(s => s.toLowerCase()).includes(tagName);
+        return this._tags
+            .map(s => s.toLowerCase())
+            .includes(tagName.toLowerCase());
     }
 
     addTag(tagName, addImplications) {
