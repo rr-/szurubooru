@@ -1,6 +1,5 @@
 import datetime
 from szurubooru import db, errors
-from szurubooru.func import favorites
 
 
 class InvalidScoreTargetError(errors.ValidationError):
@@ -47,6 +46,7 @@ def get_score(entity, user):
 
 
 def set_score(entity, user, score):
+    from szurubooru.func import favorites
     assert entity
     assert user
     if not score:

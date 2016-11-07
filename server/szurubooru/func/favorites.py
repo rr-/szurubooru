@@ -1,6 +1,5 @@
 import datetime
 from szurubooru import db, errors
-from szurubooru.func import scores
 
 
 class InvalidFavoriteTargetError(errors.ValidationError):
@@ -36,6 +35,7 @@ def unset_favorite(entity, user):
 
 
 def set_favorite(entity, user):
+    from szurubooru.func import scores
     assert entity
     assert user
     try:
