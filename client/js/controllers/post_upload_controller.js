@@ -51,6 +51,7 @@ class PostUploadController {
             return promise.then(() => {
                 let post = new Post();
                 post.safety = uploadable.safety;
+                post.flags = uploadable.flags;
                 if (uploadable.url) {
                     post.newContentUrl = uploadable.url;
                 } else {

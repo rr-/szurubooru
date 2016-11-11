@@ -20,10 +20,17 @@ function _mimeTypeToPostType(mimeType) {
     }[mimeType] || 'unknown';
 }
 
+function _listen(rootNode, selector, eventType, handler) {
+    for (let node of rootNode.querySelectorAll(selector)) {
+        node.addEventListener(eventType, e => handler(e));
+    }
+}
+
 class Uploadable extends events.EventTarget {
     constructor() {
         super();
         this.safety = 'safe';
+        this.flags = ['loop'];
         this.anonymous = false;
         this.order = globalOrder;
         globalOrder++;
@@ -288,6 +295,13 @@ class PostUploadView extends events.EventTarget {
         uploadable.anonymous = e.target.checked;
     }
 
+    _evtLoopVideoCheckboxChange(e, uploadable) {
+        uploadable.flags = uploadable.flags.filter(f => f !== 'loop');
+        if (e.target.checked) {
+            uploadable.flags.push('loop');
+        }
+    }
+
     _normalizeUploadablesOrder() {
         let sortedUploadables = this._getSortedUploadables();
         for (let i = 0; i < sortedUploadables.length; i++) {
@@ -316,23 +330,19 @@ class PostUploadView extends events.EventTarget {
             {}, this._ctx, {uploadable: uploadable}));
         this._listNode.appendChild(rowNode);
 
-        for (let radioboxNode of rowNode.querySelectorAll('.safety input')) {
-            radioboxNode.addEventListener(
-                'change', e => this._evtSafetyRadioboxChange(e, uploadable));
-        }
+        _listen(rowNode, '.safety input', 'change',
+            e => this._evtSafetyRadioboxChange(e, uploadable));
+        _listen(rowNode, '.anonymous input', 'change',
+            e => this._evtAnonymityCheckboxChange(e, uploadable));
+        _listen(rowNode, '.loop-video input', 'change',
+            e => this._evtLoopVideoCheckboxChange(e, uploadable));
 
-        const anonymousCheckboxNode = rowNode.querySelector('.anonymous input');
-        if (anonymousCheckboxNode) {
-            anonymousCheckboxNode.addEventListener(
-                'change', e => this._evtAnonymityCheckboxChange(e, uploadable));
-        }
-
-        rowNode.querySelector('a.remove').addEventListener(
-            'click', e => this._evtRemoveClick(e, uploadable));
-        rowNode.querySelector('a.move-up').addEventListener(
-            'click', e => this._evtMoveUpClick(e, uploadable));
-        rowNode.querySelector('a.move-down').addEventListener(
-            'click', e => this._evtMoveDownClick(e, uploadable));
+        _listen(rowNode, 'a.remove', 'click',
+            e => this._evtRemoveClick(e, uploadable));
+        _listen(rowNode, 'a.move-up', 'click',
+            e => this._evtMoveUpClick(e, uploadable));
+        _listen(rowNode, 'a.move-down', 'click',
+            e => this._evtMoveDownClick(e, uploadable));
         uploadable.rowNode = rowNode;
     }
 

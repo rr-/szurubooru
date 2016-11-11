@@ -44,13 +44,25 @@
         <% } %>
     </div>
 
-    <% if (ctx.canUploadAnonymously) { %>
-        <div class='anonymous'>
-            <%= ctx.makeCheckbox({
-                text: 'Upload anonymously',
-                name: 'anonymous',
-                checked: ctx.uploadable.anonymous,
-            }) %>
-        </div>
-    <% } %>
+    <div class='options'>
+        <% if (ctx.canUploadAnonymously) { %>
+            <div class='anonymous'>
+                <%= ctx.makeCheckbox({
+                    text: 'Upload anonymously',
+                    name: 'anonymous',
+                    checked: ctx.uploadable.anonymous,
+                }) %>
+            </div>
+        <% } %>
+
+        <% if (['video'].includes(ctx.uploadable.type)) { %>
+            <div class='loop-video'>
+                <%= ctx.makeCheckbox({
+                    text: 'Loop video',
+                    name: 'loop-video',
+                    checked: true,
+                }) %>
+            </div>
+        <% } %>
+    </div>
 </li>
