@@ -21,7 +21,7 @@ function _makeLabel(options, attrs) {
         attrs = {};
     }
     attrs.for = options.id;
-    return makeNonVoidElement('label', attrs, options.text);
+    return makeElement('label', attrs, options.text);
 }
 
 function makeFileSize(fileSize) {
@@ -33,30 +33,25 @@ function makeMarkdown(text) {
 }
 
 function makeRelativeTime(time) {
-    return makeNonVoidElement(
-        'time',
-        {datetime: time, title: time},
-        misc.formatRelativeTime(time));
+    return makeElement(
+        'time', {datetime: time, title: time}, misc.formatRelativeTime(time));
 }
 
 function makeThumbnail(url) {
-    return makeNonVoidElement(
+    return makeElement(
         'span',
         url ?
-            {
-                class: 'thumbnail',
-                style: `background-image: url(\'${url}\')`,
-            } :
+            {class: 'thumbnail', style: `background-image: url(\'${url}\')`} :
             {class: 'thumbnail empty'},
-        makeVoidElement('img', {alt: 'thumbnail', src: url}));
+        makeElement('img', {alt: 'thumbnail', src: url}));
 }
 
 function makeRadio(options) {
     _imbueId(options);
-    return makeNonVoidElement(
+    return makeElement(
         'label',
         {for: options.id},
-        makeVoidElement(
+        makeElement(
             'input',
             {
                 id: options.id,
@@ -66,16 +61,16 @@ function makeRadio(options) {
                 checked: options.selectedValue === options.value,
                 disabled: options.readonly,
                 required: options.required,
-            }) +
-        makeNonVoidElement('span', {class: 'radio'}, options.text));
+            }),
+        makeElement('span', {class: 'radio'}, options.text));
 }
 
 function makeCheckbox(options) {
     _imbueId(options);
-    return makeNonVoidElement(
+    return makeElement(
         'label',
         {for: options.id},
-        makeVoidElement(
+        makeElement(
             'input',
             {
                 id: options.id,
@@ -86,30 +81,29 @@ function makeCheckbox(options) {
                     options.checked : false,
                 disabled: options.readonly,
                 required: options.required,
-            }) +
-        makeNonVoidElement('span', {class: 'checkbox'}, options.text));
+            }),
+        makeElement('span', {class: 'checkbox'}, options.text));
 }
 
 function makeSelect(options) {
     return _makeLabel(options) +
-        makeNonVoidElement(
+        makeElement(
             'select',
             {
                 id: options.id,
                 name: options.name,
                 disabled: options.readonly,
             },
-            Object.keys(options.keyValues).map(key => {
-                return makeNonVoidElement(
+            ...Object.keys(options.keyValues).map(key =>
+                makeElement(
                     'option',
                     {value: key, selected: key === options.selectedKey},
-                    options.keyValues[key]);
-            }).join(''));
+                    options.keyValues[key])));
 }
 
 function makeInput(options) {
     options.value = options.value || '';
-    return _makeLabel(options) + makeVoidElement('input', options);
+    return _makeLabel(options) + makeElement('input', options);
 }
 
 function makeButton(options) {
@@ -125,7 +119,7 @@ function makeTextInput(options) {
 function makeTextarea(options) {
     const value = options.value || '';
     delete options.value;
-    return _makeLabel(options) + makeNonVoidElement('textarea', options, value);
+    return _makeLabel(options) + makeElement('textarea', options, value);
 }
 
 function makePasswordInput(options) {
@@ -139,7 +133,7 @@ function makeEmailInput(options) {
 }
 
 function makeColorInput(options) {
-    const textInput = makeVoidElement(
+    const textInput = makeElement(
         'input', {
             type: 'text',
             value: options.value || '',
@@ -147,13 +141,9 @@ function makeColorInput(options) {
             style: 'color: ' + options.value,
             disabled: true,
         });
-    const colorInput = makeVoidElement(
-        'input', {
-            type: 'color',
-            value: options.value || '',
-        });
-    return makeNonVoidElement(
-        'label', {class: 'color'}, colorInput + textInput);
+    const colorInput = makeElement(
+        'input', {type: 'color', value: options.value || ''});
+    return makeElement('label', {class: 'color'}, colorInput, textInput);
 }
 
 function makeNumericInput(options) {
@@ -183,7 +173,7 @@ function makePostLink(id, includeHash) {
         text = '@' + id;
     }
     return api.hasPrivilege('posts:view') ?
-        makeNonVoidElement(
+        makeElement(
             'a',
             {'href': '/post/' + encodeURIComponent(id)},
             misc.escapeHtml(text)) :
@@ -198,14 +188,14 @@ function makeTagLink(name, includeHash) {
         text = '#' + text;
     }
     return api.hasPrivilege('tags:view') ?
-        makeNonVoidElement(
+        makeElement(
             'a',
             {
                 'href': '/tag/' + encodeURIComponent(name),
                 'class': misc.makeCssName(category, 'tag'),
             },
             misc.escapeHtml(text)) :
-        makeNonVoidElement(
+        makeElement(
             'span',
             {'class': misc.makeCssName(category, 'tag')},
             misc.escapeHtml(text));
@@ -215,12 +205,10 @@ function makeUserLink(user) {
     let text = makeThumbnail(user ? user.avatarUrl : null);
     text += user && user.name ? misc.escapeHtml(user.name) : 'Anonymous';
     const link = user && api.hasPrivilege('users:view') ?
-        makeNonVoidElement(
-            'a',
-            {'href': '/user/' + encodeURIComponent(user.name)},
-            text) :
+        makeElement(
+            'a', {'href': '/user/' + encodeURIComponent(user.name)}, text) :
         text;
-    return makeNonVoidElement('span', {class: 'user'}, link);
+    return makeElement('span', {class: 'user'}, link);
 }
 
 function makeFlexboxAlign(options) {
@@ -250,12 +238,10 @@ function _serializeElement(name, attributes) {
         .join(' ');
 }
 
-function makeNonVoidElement(name, attributes, content) {
-    return `<${_serializeElement(name, attributes)}>${content}</${name}>`;
-}
-
-function makeVoidElement(name, attributes) {
-    return `<${_serializeElement(name, attributes)}/>`;
+function makeElement(name, attrs, ...content) {
+    return content.length !== undefined ?
+        `<${_serializeElement(name, attrs)}>${content.join('')}</${name}>` :
+        `<${_serializeElement(name, attrs)}/>`;
 }
 
 function emptyContent(target) {
@@ -511,8 +497,6 @@ module.exports = {
     enableForm:         enableForm,
     disableForm:        disableForm,
     decorateValidator:  decorateValidator,
-    makeVoidElement:    makeVoidElement,
-    makeNonVoidElement: makeNonVoidElement,
     makeTagLink:        makeTagLink,
     makePostLink:       makePostLink,
     makeCheckbox:       makeCheckbox,
