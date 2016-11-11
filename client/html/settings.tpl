@@ -56,6 +56,14 @@
                 }) %>
                 <p class='hint'>Shows a popup with suggested tags in edit forms.</p>
             </li>
+
+            <li>
+                <%= ctx.makeCheckbox({
+                    text: 'Automatically play video posts',
+                    name: 'autoplay-videos',
+                    checked: ctx.browsingSettings.autoplayVideos,
+                }) %>
+            </li>
         </ul>
 
         <div class='messages'></div>

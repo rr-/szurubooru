@@ -12,16 +12,18 @@
 
     <% } else if (ctx.post.type === 'video') { %>
 
-        <% if ((ctx.post.flags || []).includes('loop')) { %>
-            <video id='video' controls loop='loop'>
-        <% } else { %>
-            <video id='video' controls>
-        <% } %>
-
-            <source type='<%- ctx.post.mimeType %>' src='<%- ctx.post.contentUrl %>'/>
-
-            Your browser doesn't support HTML5 videos.
-        </video>
+        <%= ctx.makeElement(
+            'video', {
+                controls: true,
+                loop: (ctx.post.flags || []).includes('loop'),
+                autoplay: ctx.autoplay,
+            },
+            ctx.makeElement('source', {
+                type: ctx.post.mimeType,
+                src: ctx.post.contentUrl,
+            }),
+            'Your browser doesn\'t support HTML5 videos.')
+        %>
 
     <% } else { console.log(new Error('Unknown post type')); } %>
 

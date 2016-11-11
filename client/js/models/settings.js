@@ -14,6 +14,7 @@ const defaultSettings = {
     transparencyGrid: true,
     fitMode: 'fit-both',
     tagSuggestions: true,
+    autoplayVideos: false,
     postsPerPage: 42,
 };
 

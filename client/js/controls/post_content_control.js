@@ -102,7 +102,10 @@ class PostContentControl {
     }
 
     _reinstall() {
-        const newNode = this._template({post: this._post});
+        const newNode = this._template({
+            post: this._post,
+            autoplay: settings.get().autoplayVideos,
+        });
         if (settings.get().transparencyGrid) {
             newNode.classList.add('transparency-grid');
         }

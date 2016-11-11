@@ -35,6 +35,7 @@ class SettingsView extends events.EventTarget {
                 keyboardShortcuts: this._find('keyboard-shortcuts').checked,
                 transparencyGrid: this._find('transparency-grid').checked,
                 tagSuggestions: this._find('tag-suggestions').checked,
+                autoplayVideos: this._find('autoplay-videos').checked,
                 postsPerPage: this._find('posts-per-page').value,
             },
         }));

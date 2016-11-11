@@ -377,6 +377,7 @@ function getTemplate(templatePath) {
             makeUserLink:      makeUserLink,
             makeFlexboxAlign:  makeFlexboxAlign,
             makeAccessKey:     makeAccessKey,
+            makeElement:       makeElement,
             makeCssName:       misc.makeCssName,
             makeNumericInput:  makeNumericInput,
         });
