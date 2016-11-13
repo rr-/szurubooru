@@ -557,6 +557,9 @@ class PostNotesOverlayControl extends events.EventTarget {
         this._post.notes.addEventListener('remove', e => {
             this._deleteDomNode(e.detail.note);
         });
+        this._post.notes.addEventListener('add', e => {
+            this._createPolygonNode(e.detail.note);
+        });
 
         const keyHandler = e => this._evtCanvasKeyDown(e);
         document.addEventListener('keydown', keyHandler);
