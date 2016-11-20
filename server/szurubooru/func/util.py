@@ -32,7 +32,7 @@ def get_serialization_options(ctx):
 def serialize_entity(entity, field_factories, options):
     if not entity:
         return None
-    if not options:
+    if not options or len(options) == 0:
         options = field_factories.keys()
     ret = {}
     for key in options:
