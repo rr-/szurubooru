@@ -440,8 +440,8 @@ class DrawingRectangleState extends ActiveState {
         const y2 = this._note.polygon.at(2).y;
         const width = (x2 - x1) * this._control.boundingBox.width;
         const height = (y2 - y1) * this._control.boundingBox.height;
+        this._control._deleteDomNode(this._note);
         if (width < 20 && height < 20) {
-            this._control._deleteDomNode(this._note);
             this._control._state = new ReadyToDrawState(this._control);
         } else {
             this._control._post.notes.add(this._note);
@@ -533,6 +533,7 @@ class DrawingPolygonState extends ActiveState {
         if (this._note.polygon.length <= 2) {
             this._cancel();
         } else {
+            this._control._deleteDomNode(this._note);
             this._control._post.notes.add(this._note);
             this._control._state = new SelectedState(this._control, this._note);
         }
