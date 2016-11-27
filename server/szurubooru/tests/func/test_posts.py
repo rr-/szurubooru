@@ -3,7 +3,8 @@ from unittest.mock import patch
 from datetime import datetime
 import pytest
 from szurubooru import db
-from szurubooru.func import (posts, users, comments, tags, images, files, util)
+from szurubooru.func import (
+    posts, users, comments, tags, images, files, util, image_hash)
 
 
 @pytest.mark.parametrize('input_mime_type,expected_url', [
@@ -316,13 +317,20 @@ def test_update_post_content_for_new_post(
         else:
             assert not post.post_id
         assert not os.path.exists(output_file_path)
-        posts.update_post_content(post, read_asset(input_file))
+        content = read_asset(input_file)
+        posts.update_post_content(post, content)
         assert not os.path.exists(output_file_path)
         db.session.flush()
         assert post.mime_type == expected_mime_type
         assert post.type == expected_type
         assert post.checksum == 'crc'
         assert os.path.exists(output_file_path)
+        if post.type in (db.Post.TYPE_IMAGE, db.Post.TYPE_ANIMATION):
+            image_hash.delete_image.assert_called_once_with(post.post_id)
+            image_hash.add_image.assert_called_once_with(post.post_id, content)
+        else:
+            image_hash.delete_image.assert_not_called()
+            image_hash.add_image.assert_not_called()
 
 
 def test_update_post_content_to_existing_content(

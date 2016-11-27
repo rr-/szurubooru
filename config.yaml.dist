@@ -32,6 +32,11 @@ smtp:
     user: # example: bot
     pass: # example: groovy123
 
+# used for reverse image search
+elasticsearch:
+    host: localhost
+    port: 9200
+
 limits:
     users_per_page: 20
     posts_per_page: 40

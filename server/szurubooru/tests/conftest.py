@@ -3,6 +3,7 @@ import contextlib
 import os
 import random
 import string
+from unittest.mock import patch
 from datetime import datetime
 import pytest
 import freezegun
@@ -152,6 +153,13 @@ def tag_factory():
         tag.creation_time = datetime(1996, 1, 1)
         return tag
     return factory
+
+
+@pytest.yield_fixture(autouse=True)
+def skip_post_hashing():
+    with patch('szurubooru.func.image_hash.add_image'), \
+            patch('szurubooru.func.image_hash.delete_image'):
+        yield
 
 
 @pytest.fixture

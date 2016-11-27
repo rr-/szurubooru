@@ -5,6 +5,7 @@ import logging
 import coloredlogs
 import sqlalchemy.orm.exc
 from szurubooru import config, errors, rest
+from szurubooru.func import posts
 # pylint: disable=unused-import
 from szurubooru import api, middleware
 
@@ -86,6 +87,8 @@ def create_app():
         logging.getLogger('szurubooru').setLevel(logging.INFO)
     if config.config['show_sql']:
         logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
+    posts.populate_reverse_search()
 
     rest.errors.handle(errors.AuthError, _on_auth_error)
     rest.errors.handle(errors.ValidationError, _on_validation_error)

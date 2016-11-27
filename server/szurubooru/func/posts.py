@@ -2,7 +2,7 @@ import datetime
 import sqlalchemy
 from szurubooru import config, db, errors
 from szurubooru.func import (
-    users, scores, comments, tags, util, mime, images, files)
+    users, scores, comments, tags, util, mime, images, files, image_hash)
 
 
 EMPTY_PIXEL = \
@@ -260,13 +260,22 @@ def _after_post_update(_mapper, _connection, post):
     _sync_post_content(post)
 
 
+@sqlalchemy.events.event.listens_for(db.Post, 'before_delete')
+def _before_post_delete(_mapper, _connection, post):
+    image_hash.delete_image(post.post_id)
+
+
 def _sync_post_content(post):
     regenerate_thumb = False
 
     if hasattr(post, '__content'):
-        files.save(get_post_content_path(post), getattr(post, '__content'))
+        content = getattr(post, '__content')
+        files.save(get_post_content_path(post), content)
         delattr(post, '__content')
         regenerate_thumb = True
+        if post.type in (db.Post.TYPE_IMAGE, db.Post.TYPE_ANIMATION):
+            image_hash.delete_image(post.post_id)
+            image_hash.add_image(post.post_id, content)
 
     if hasattr(post, '__thumbnail'):
         if getattr(post, '__thumbnail'):
@@ -521,3 +530,35 @@ def merge_posts(source_post, target_post, replace_content):
     if replace_content:
         content = files.get(get_post_content_path(source_post))
         update_post_content(target_post, content)
+
+
+def search_by_image(image_content):
+    for result in image_hash.search_by_image(image_content):
+        yield {
+            'score': result['score'],
+            'dist': result['dist'],
+            'post': get_post_by_id(result['path'])
+        }
+
+
+def populate_reverse_search():
+    excluded_post_ids = image_hash.get_all_paths()
+
+    post_ids_to_hash = (db.session
+        .query(db.Post.post_id)
+        .filter(
+            (db.Post.type == db.Post.TYPE_IMAGE) |
+            (db.Post.type == db.Post.TYPE_ANIMATION))
+        .filter(~db.Post.post_id.in_(excluded_post_ids))
+        .order_by(db.Post.post_id.asc())
+        .all())
+
+    for post_ids_chunk in util.chunks(post_ids_to_hash, 100):
+        posts_chunk = (db.session
+            .query(db.Post)
+            .filter(db.Post.post_id.in_(post_ids_chunk))
+            .all())
+        for post in posts_chunk:
+            content_path = get_post_content_path(post)
+            if files.has(content_path):
+                image_hash.add_image(post.post_id, files.get(content_path))

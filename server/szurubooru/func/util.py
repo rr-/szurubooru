@@ -162,3 +162,8 @@ def value_exceeds_column_size(value, column):
     if max_length is None:
         return False
     return len(value) > max_length
+
+
+def chunks(source_list, part_size):
+    for i in range(0, len(source_list), part_size):
+        yield source_list[i:i + part_size]

@@ -9,6 +9,7 @@ user@host:~$ sudo pacman -S python
 user@host:~$ sudo pacman -S python-pip
 user@host:~$ sudo pacman -S ffmpeg
 user@host:~$ sudo pacman -S npm
+user@host:~$ sudo pacman -S elasticsearch
 user@host:~$ sudo pip install virtualenv
 user@host:~$ python --version
 Python 3.5.1
@@ -42,6 +43,13 @@ user@host:~$ sudo -i -u postgres psql -c "ALTER USER szuru PASSWORD 'dog';"
 ```
 
 
+
+### Setting up elasticsearch
+
+```console
+user@host:~$ sudo systemctl start elasticsearch
+user@host:~$ sudo systemctl enable elasticsearch
+```
 
 ### Preparing environment
 
