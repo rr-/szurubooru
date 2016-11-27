@@ -60,7 +60,7 @@
                 <%= ctx.makeCheckbox({
                     text: 'Loop video',
                     name: 'loop-video',
-                    checked: true,
+                    checked: ctx.uploadable.flags.includes('loop'),
                 }) %>
             </div>
         <% } %>
