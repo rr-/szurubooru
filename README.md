@@ -26,7 +26,7 @@ scrubbing](http://sjp.pwn.pl/sjp/;2527372). It is pronounced as *shoorubooru*.
 
 ## Requirements
 
-- Python
+- Python 3.5
 - Postgres
 - FFmpeg
 - node.js
