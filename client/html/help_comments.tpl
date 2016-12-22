@@ -28,3 +28,11 @@
         </tr>
     </tbody>
 </table>
+
+<p>You can also specify the size of embedded images like this:</p>
+
+<ul>
+<li><code>![alt](href =WIDTHx "title")</code></li>
+<li><code>![alt](href =xHEIGHT "title")</code></li>
+<li><code>![alt](href =WIDTHxHEIGHT "title")</code></li>
+</ul>

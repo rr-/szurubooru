@@ -115,8 +115,37 @@ class StrikeThroughWrapper extends BaseMarkdownWrapper {
     }
 }
 
-function formatMarkdown(text) {
+function createRenderer() {
+    function sanitize(str) {
+        return str.replace(/&<"/g, function (m) {
+            if (m === '&') {
+                return '&amp;';
+            }
+            if (m === '<') {
+                return '&lt;';
+            }
+            return '&quot;';
+        });
+    }
+
     const renderer = new marked.Renderer();
+    renderer.image = (href, title, alt) => {
+        let [_, url, width, height] =
+            /^(.+?)(?:\s=\s*(\d*)\s*x\s*(\d*)\s*)?$/.exec(href);
+        let res = '<img src="' + sanitize(url) + '" alt="' + sanitize(alt);
+        if (width) {
+            res += '" width="' + width;
+        }
+        if (height) {
+            res += '" height="' + height;
+        }
+        return res + '">';
+    }
+    return renderer;
+}
+
+function formatMarkdown(text) {
+    const renderer = createRenderer();
     const options = {
         renderer: renderer,
         breaks: true,
@@ -145,7 +174,7 @@ function formatMarkdown(text) {
 }
 
 function formatInlineMarkdown(text) {
-    const renderer = new marked.Renderer();
+    const renderer = createRenderer();
     const options = {
         renderer: renderer,
         breaks: true,
