@@ -1,6 +1,6 @@
 <div class='post-merge'>
     <form>
-        <ul>
+        <ul class='input'>
             <li class='post-mirror'>
                 <div class='left-post-container'></div>
                 <div class='right-post-container'></div>

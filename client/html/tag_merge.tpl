@@ -1,6 +1,6 @@
 <div class='tag-merge'>
     <form>
-        <ul>
+        <ul class='input'>
             <li class='target'>
                 <%= ctx.makeTextInput({required: true, text: 'Target tag', pattern: ctx.tagNamePattern}) %>
             </li>

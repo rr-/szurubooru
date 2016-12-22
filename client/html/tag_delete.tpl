@@ -2,7 +2,7 @@
     <form>
         <p>This tag has <a href='/posts/query=<%- encodeURIComponent(ctx.tag.names[0]) %>'><%- ctx.tag.postCount %> usage(s)</a>.</p>
 
-        <ul>
+        <ul class='input'>
             <li>
                 <%= ctx.makeCheckbox({
                     name: 'confirm-deletion',

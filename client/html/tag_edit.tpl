@@ -1,6 +1,6 @@
 <div class='content-wrapper tag-edit'>
     <form>
-        <ul>
+        <ul class='input'>
             <li class='names'>
                 <% if (ctx.canEditNames) { %>
                     <%= ctx.makeTextInput({

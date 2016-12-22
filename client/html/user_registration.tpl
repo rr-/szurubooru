@@ -4,44 +4,44 @@
         <input class='anticomplete' type='text' name='fakeuser'/>
         <input class='anticomplete' type='password' name='fakepass'/>
 
-        <div class='input'>
-            <ul>
-                <li>
-                    <%= ctx.makeTextInput({
-                        text: 'User name',
-                        name: 'name',
-                        placeholder: 'letters, digits, _, -',
-                        required: true,
-                        pattern: ctx.userNamePattern,
-                    }) %>
-                </li>
-                <li>
-                    <%= ctx.makePasswordInput({
-                        text: 'Password',
-                        name: 'password',
-                        placeholder: '5+ characters',
-                        required: true,
-                        pattern: ctx.passwordPattern,
-                    }) %>
-                </li>
-                <li>
-                    <%= ctx.makeEmailInput({
-                        text: 'Email',
-                        name: 'email',
-                        placeholder: 'optional',
-                    }) %>
-                    <p class='hint'>
-                        Used for password reminder and to show a <a href='http://gravatar.com/'>Gravatar</a>.
-                        Leave blank for random Gravatar.
-                    </p>
-                </li>
-            </ul>
-        </div>
+        <ul class='input'>
+            <li>
+                <%= ctx.makeTextInput({
+                    text: 'User name',
+                    name: 'name',
+                    placeholder: 'letters, digits, _, -',
+                    required: true,
+                    pattern: ctx.userNamePattern,
+                }) %>
+            </li>
+            <li>
+                <%= ctx.makePasswordInput({
+                    text: 'Password',
+                    name: 'password',
+                    placeholder: '5+ characters',
+                    required: true,
+                    pattern: ctx.passwordPattern,
+                }) %>
+            </li>
+            <li>
+                <%= ctx.makeEmailInput({
+                    text: 'Email',
+                    name: 'email',
+                    placeholder: 'optional',
+                }) %>
+                <p class='hint'>
+                    Used for password reminder and to show a <a href='http://gravatar.com/'>Gravatar</a>.
+                    Leave blank for random Gravatar.
+                </p>
+            </li>
+        </ul>
+
         <div class='messages'></div>
         <div class='buttons'>
             <input type='submit' value='Create an account'/>
         </div>
     </form>
+
     <div class='info'>
         <p>Registered users can:</p>
         <ul>
