@@ -69,10 +69,10 @@ class PostMainController extends BasePostController {
                     'merge', e => this._evtMergePost(e));
             }
 
-            if (this._view.commentFormControl) {
-                this._view.commentFormControl.addEventListener(
+            if (this._view.commentControl) {
+                this._view.commentControl.addEventListener(
                     'change', e => this._evtCommentChange(e));
-                this._view.commentFormControl.addEventListener(
+                this._view.commentControl.addEventListener(
                     'submit', e => this._evtCreateComment(e));
             }
 
@@ -183,18 +183,18 @@ class PostMainController extends BasePostController {
     }
 
     _evtCreateComment(e) {
-        // TODO: disable form
+        this._view.commentControl.disableForm();
         const comment = Comment.create(this._post.id);
         comment.text = e.detail.text;
         comment.save()
             .then(() => {
                 this._post.comments.add(comment);
-                this._view.commentFormControl.setText('');
-                // TODO: enable form
+                this._view.commentControl.exitEditMode();
+                this._view.commentControl.enableForm();
                 misc.disableExitConfirmation();
             }, errorMessage => {
-                this._view.commentFormControl.showError(errorMessage);
-                // TODO: enable form
+                this._view.commentControl.showError(errorMessage);
+                this._view.commentControl.enableForm();
             });
     }
 

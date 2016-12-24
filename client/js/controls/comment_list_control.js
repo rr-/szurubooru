@@ -34,7 +34,7 @@ class CommentListControl extends events.EventTarget {
     _installCommentNode(comment) {
         const commentListItemNode = document.createElement('li');
         const commentControl = new CommentControl(
-            commentListItemNode, comment);
+            commentListItemNode, comment, false);
         events.proxyEvent(commentControl, this, 'submit');
         events.proxyEvent(commentControl, this, 'score');
         events.proxyEvent(commentControl, this, 'delete');

@@ -23,7 +23,7 @@ class Comment extends events.EventTarget {
 
     get id()           { return this._id; }
     get postId()       { return this._postId; }
-    get text()         { return this._text; }
+    get text()         { return this._text || ''; }
     get user()         { return this._user; }
     get creationTime() { return this._creationTime; }
     get lastEditTime() { return this._lastEditTime; }

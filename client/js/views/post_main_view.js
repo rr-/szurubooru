@@ -10,8 +10,8 @@ const PostReadonlySidebarControl =
     require('../controls/post_readonly_sidebar_control.js');
 const PostEditSidebarControl =
     require('../controls/post_edit_sidebar_control.js');
+const CommentControl = require('../controls/comment_control.js');
 const CommentListControl = require('../controls/comment_list_control.js');
-const CommentFormControl = require('../controls/comment_form_control.js');
 
 const template = views.getTemplate('post-main');
 
@@ -101,9 +101,8 @@ class PostMainView {
             return;
         }
 
-        this.commentFormControl = new CommentFormControl(
-            commentFormContainer, null, false, 150);
-        this.commentFormControl.enterEditMode();
+        this.commentControl = new CommentControl(
+            commentFormContainer, null, true);
     }
 
     _installComments(comments) {

@@ -4,7 +4,6 @@ const router = require('../router.js');
 const api = require('../api.js');
 const misc = require('../util/misc.js');
 const settings = require('../models/settings.js');
-const Comment = require('../models/comment.js');
 const Post = require('../models/post.js');
 const PostList = require('../models/post_list.js');
 const PostDetailView = require('../views/post_detail_view.js');

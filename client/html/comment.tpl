@@ -1,57 +1,85 @@
-<div class='comment'>
+<div class='comment-container'>
     <div class='avatar'>
-        <% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %>
-            <a href='/user/<%- encodeURIComponent(ctx.comment.user.name) %>'>
+        <% if (ctx.user && ctx.user.name && ctx.canViewUsers) { %>
+            <a href='/user/<%- encodeURIComponent(ctx.user.name) %>'>
         <% } %>
 
-        <%= ctx.makeThumbnail(ctx.comment.user ? ctx.comment.user.avatarUrl : null) %>
+        <%= ctx.makeThumbnail(ctx.user ? ctx.user.avatarUrl : null) %>
 
-        <% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %>
+        <% if (ctx.user && ctx.user.name && ctx.canViewUsers) { %>
             </a>
         <% } %>
     </div>
 
-    <div class='body'>
-        <header><%
-            %><span class='nickname'><%
-                %><% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %><%
-                    %><a href='/user/<%- encodeURIComponent(ctx.comment.user.name) %>'><%
-                %><% } %><%
+    <div class='comment'>
+        <header>
+            <nav class='edit tabs'>
+                <ul>
+                    <li class='edit'><a href>Write</a></li>
+                    <li class='preview'><a href>Preview</a></li>
+                </ul>
+            </nav>
 
-                %><%- ctx.comment.user ? ctx.comment.user.name : 'Deleted user' %><%
+            <nav class='readonly'><%
+                %><strong><span class='nickname'><%
+                    %><% if (ctx.user && ctx.user.name && ctx.canViewUsers) { %><%
+                        %><a href='/user/<%- encodeURIComponent(ctx.user.name) %>'><%
+                    %><% } %><%
 
-                %><% if (ctx.comment.user && ctx.comment.user.name && ctx.canViewUsers) { %><%
+                    %><%- ctx.user ? ctx.user.name : 'Deleted user' %><%
+
+                    %><% if (ctx.user && ctx.user.name && ctx.canViewUsers) { %><%
+                        %></a><%
+                    %><% } %><%
+                %></span></strong>
+
+                <span class='date'><%
+                    %>commented <%= ctx.makeRelativeTime(ctx.comment ? ctx.comment.creationTime : null) %><%
+                %></span><%
+
+                %><wbr><%
+
+                %><span class='score-container'></span><%
+
+                %><wbr><%
+
+                %><% if (ctx.canEditComment) { %><%
+                    %><a href class='edit'><%
+                        %><i class='fa fa-pencil'></i> edit<%
                     %></a><%
                 %><% } %><%
-            %></span><%
 
-            %><wbr><%
+                %><wbr><%
 
-            %><span class='date'><%
-                %><%= ctx.makeRelativeTime(ctx.comment.creationTime) %><%
-            %></span><%
-
-            %><wbr><%
-
-            %><span class='score-container'></span><%
-
-            %><wbr><%
-
-            %><% if (ctx.canEditComment) { %><%
-                %><a href class='edit'><%
-                    %><i class='fa fa-pencil'></i> edit<%
-                %></a><%
-            %><% } %><%
-
-            %><wbr><%
-
-            %><% if (ctx.canDeleteComment) { %><%
-                %><a href class='delete'><%
-                    %><i class='fa fa-remove'></i> delete<%
-                %></a><%
-            %><% } %><%
+                %><% if (ctx.canDeleteComment) { %><%
+                    %><a href class='delete'><%
+                        %><i class='fa fa-remove'></i> delete<%
+                    %></a><%
+                %><% } %><%
+            %></nav><%
         %></header>
 
-        <div class='comment-form-container'></div>
+        <form class='body'>
+            <div class='keep-height'>
+                <div class='tab preview'>
+                    <div class='comment-content'>
+                        <%= ctx.makeMarkdown(ctx.comment ? ctx.comment.text : '') %>
+                    </div>
+                </div>
+
+                <div class='tab edit'>
+                    <textarea required minlength=1><%- ctx.comment ? ctx.comment.text : '' %></textarea>
+                </div>
+            </div>
+
+            <nav class='edit'>
+                <div class='messages'></div>
+
+                <input type='submit' class='save-changes' value='Save'/>
+                <% if (!ctx.onlyEditing) { %>
+                    <input type='button' class='cancel-editing discourage' value='Cancel'/>
+                <% } %>
+            </div>
+        </form>
     </div>
 </div>

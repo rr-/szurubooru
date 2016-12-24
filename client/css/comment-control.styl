@@ -1,51 +1,8 @@
 @import colors
+$comment-header-background-color = $top-navigation-color
+$comment-border-color = #DDD
 
-.comment-form-container
-    &:not(.editing)
-        .tabs nav
-            display: none
-        .tabs .edit.tab
-            display: none
-        .comment-content
-            margin-left: 0.5em
-    &.editing
-        .tab:not(.active)
-            display: none
-        .tabs-wrapper
-            background: $active-tab-background-color
-            padding: 0.3em
-        .tab-wrapper[data-tab='preview']
-            background: $window-color
-        .tab.preview
-            padding: 1em
-        .tab.edit
-            textarea
-                resize: vertical
-                width: 100%
-                max-height: 80vh
-                box-sizing: padding-box
-                vertical-align: top /* ghost margin on chrome */
-
-    form
-        width: auto
-        margin: 0
-        &:after
-            display: block
-            height: 1px
-            content: ' '
-            clear: both
-
-    nav
-        vertical-align: middle !important
-        &.buttons
-            margin: 0 0.3em 0.5em 0 !important
-            float: left
-        &.actions
-            float: left
-            margin: 0.3em 0 0.5em 0 !important
-
-
-.comment
+.comment-container
     margin: 0 0 1em 0
     padding: 0
     display: -webkit-flex
@@ -63,25 +20,67 @@
         a
             display: inline-block
 
-    .body
+    nav:not(.active), .tab:not(.active)
+        display: none
+
+    .comment
+        border: 1px solid $comment-border-color
         flex-grow: 1
+
         header
             white-space: nowrap
-            line-height: 16pt
+            font-size: 95%
             vertical-align: middle
-            margin-bottom: 0.5em
-            background: $top-navigation-color
-            padding: 0.2em 0.5em
+            position: relative
+            background: $comment-header-background-color
+            border-bottom: 1px solid $comment-border-color
 
-            .nickname, .date, .score-container, .edit
+            nav.edit
+                padding: 0.33em 1em 0 1em
+                ul
+                    list-style-type: none
+                    margin: 0
+                    padding: 0
+                    li
+                        display: inline-block
+                        margin: 0 0 -1px 0
+                        a
+                            padding: 0.25em 1em
+                        &.active
+                            background: $window-color
+                            border: 1px solid $comment-border-color
+                            border-bottom: none
+
+            nav.readonly
+                padding: 0.33em 1em
+
+            &:before
+                position: absolute
+                display: block
+                content: ' '
+                width: 0
+                height: 0
+                left: -1.5em
+                top: calc(50% - 0.75em)
+                border: 0.75em solid transparent
+                border-right: 0.75em solid darken($comment-border-color, 10%)
+
+            &:after
+                position: absolute
+                display: block
+                content: ' '
+                width: 0
+                height: 0
+                left: calc(-1.5em + 1px)
+                top: calc(50% - 0.75em)
+                border: 0.75em solid transparent
+                border-right: 0.75em solid $comment-header-background-color
+
+            .date, .score-container, .edit
                 margin-right: 2em
-            .date, .score-container, .edit, .delete
-                font-size: 95%
             .edit, .delete, .score-container a, .nickname a
                 &:not(.inactive)
                     color: mix($main-color, $inactive-tab-text-color)
-            .edit, .delete
-                font-size: 80%
 
             i
                 margin-right: 0.3em
@@ -95,6 +94,19 @@
                 text-align: center
                 display: inline-block
                 width: 2em
+
+        .body
+            width: auto
+            margin: 1em
+
+            .keep-height
+                position: relative
+                textarea
+                    position: absolute
+                    width: 100%
+                    height: 100%
+                .tab.edit
+                    min-height: 150px
 
         .messages
             margin: 1em 0
@@ -118,9 +130,6 @@
         white-space: pre
         word-wrap: normal
 
-    p:first-child
-        margin-top: 0
-
     .spoiler
         background: #eee
         color: #eee
@@ -140,5 +149,5 @@
         background: #fafafa
         color: #444
 
-    blockquote :last-child
-        margin-bottom: 0
+        :last-child
+            margin-bottom: 0
