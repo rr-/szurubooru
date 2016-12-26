@@ -1074,6 +1074,7 @@ data.
 
 - **Errors**
 
+    - input file is not an image
     - privileges are too low
 
 - **Description**

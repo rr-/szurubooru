@@ -1,7 +1,7 @@
 import elasticsearch
 import elasticsearch_dsl
 from image_match.elasticsearch_driver import SignatureES
-from szurubooru import config
+from szurubooru import config, errors
 
 
 # pylint: disable=invalid-name
@@ -31,14 +31,19 @@ def delete_image(path):
 
 
 def search_by_image(image_content):
-    for result in session.search_image(
-            path=image_content,  # sic
-            bytestream=True):
-        yield {
-            'score': result['score'],
-            'dist': result['dist'],
-            'path': result['path'],
-        }
+    try:
+        for result in session.search_image(
+                path=image_content,  # sic
+                bytestream=True):
+            yield {
+                'score': result['score'],
+                'dist': result['dist'],
+                'path': result['path'],
+            }
+    except elasticsearch.exceptions.ElasticsearchException as ex:
+        raise
+    except Exception as ex:
+        raise errors.SearchError('Error searching (invalid input?)')
 
 
 def purge():
