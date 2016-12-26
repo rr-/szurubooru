@@ -42,6 +42,7 @@
         - [Removing post from favorites](#removing-post-from-favorites)
         - [Getting featured post](#getting-featured-post)
         - [Featuring post](#featuring-post)
+        - [Reverse image search](#reverse-image-search)
     - Comments
         - [Listing comments](#listing-comments)
         - [Creating comment](#creating-comment)
@@ -76,6 +77,7 @@
    - [Snapshot](#snapshot)
    - [Unpaged search result](#unpaged-search-result)
    - [Paged search result](#paged-search-result)
+   - [Image search result](#image-search-result)
 
 4. [Search](#search)
 
@@ -1056,6 +1058,28 @@ data.
 - **Description**
 
     Features a post on the main page in web client.
+
+## Reverse image search
+- **Request**
+
+    `POST /posts/reverse-search`
+
+- **Files**
+
+    - `content` - the image to search for.
+
+- **Output**
+
+    A list of [image search results](#image-search-result).
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Retrieves posts that look like the input image. Works only on images and
+    animations, i.e. does not work for videos and Flash movies.
 
 ## Listing comments
 - **Request**
@@ -2117,6 +2141,34 @@ A result of search operation that involves paging.
 - `<resource>`: any resource - which exactly depends on the API call. For
   details on this field, check the documentation for given API call.
 
+
+## Image search result
+**Description**
+
+A result of reverse image search operation.
+
+**Structure**
+
+```json5
+{
+    "results": [
+        {
+            "dist": <distance>,
+            "post": <post>
+        },
+        {
+            "dist": <distance>,
+            "post": <post>
+        },
+        ...
+    ]
+}
+```
+
+**Field meaning**
+- `<dist>`: distance from the original image (0..1). The lower this value is, the more similar the
+post is.
+- `<post>`: a [post resource](#post).
 
 # Search
 

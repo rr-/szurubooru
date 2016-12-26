@@ -73,6 +73,7 @@ privileges:
     'posts:create:anonymous':       regular
     'posts:create:identified':      regular
     'posts:list':                   anonymous
+    'posts:reverse_search':         regular
     'posts:view':                   anonymous
     'posts:edit:content':           power
     'posts:edit:flags':             regular

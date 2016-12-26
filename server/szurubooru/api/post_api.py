@@ -205,3 +205,18 @@ def get_posts_around(ctx, params):
     _search_executor.config.user = ctx.user
     return _search_executor.get_around_and_serialize(
         ctx, params['post_id'], lambda post: _serialize_post(ctx, post))
+
+
+@routes.post('/posts/reverse-search/?')
+def get_posts_by_image(ctx, _params=None):
+    auth.verify_privilege(ctx.user, 'posts:reverse_search')
+    content = ctx.get_file('content', required=True)
+    return {
+        'results': [
+            {
+                'dist': item['dist'],
+                'post': _serialize_post(ctx, item['post']),
+            }
+            for item in posts.search_by_image(content)
+        ],
+    }
