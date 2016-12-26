@@ -789,7 +789,7 @@ data.
 
 - **Files**
 
-    - `content` - the content of the content.
+    - `content` - the content of the post.
     - `thumbnail` - the content of custom thumbnail (optional).
 
 - **Output**
@@ -837,7 +837,7 @@ data.
 
 - **Files**
 
-    - `content` - the content of the content (optional).
+    - `content` - the content of the post (optional).
     - `thumbnail` - the content of custom thumbnail (optional).
 
 - **Output**
