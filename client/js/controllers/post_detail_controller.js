@@ -18,14 +18,7 @@ class PostDetailController extends BasePostController {
             this._id = ctx.parameters.id;
             post.addEventListener('change', e => this._evtSaved(e, section));
 
-            this._view = new PostDetailView({
-                post: post,
-                section: section,
-                canMerge: api.hasPrivilege('posts:merge'),
-            });
-
-            this._view.addEventListener('select', e => this._evtSelect(e));
-            this._view.addEventListener('merge', e => this._evtMerge(e));
+            this._installView(post, section);
         }, errorMessage => {
             this._view = new EmptyView();
             this._view.showError(errorMessage);
@@ -34,6 +27,17 @@ class PostDetailController extends BasePostController {
 
     showSuccess(message) {
         this._view.showSuccess(message);
+    }
+
+    _installView(post, section) {
+        this._view = new PostDetailView({
+            post: post,
+            section: section,
+            canMerge: api.hasPrivilege('posts:merge'),
+        });
+
+        this._view.addEventListener('select', e => this._evtSelect(e));
+        this._view.addEventListener('merge', e => this._evtMerge(e));
     }
 
     _evtSelect(e) {
@@ -61,11 +65,7 @@ class PostDetailController extends BasePostController {
         this._view.disableForm();
         e.detail.post.merge(e.detail.targetPost.id, e.detail.useOldContent)
             .then(() => {
-                this._view = new PostDetailView({
-                    post: e.detail.targetPost,
-                    section: 'merge',
-                    canMerge: api.hasPrivilege('posts:merge'),
-                });
+                this._installView(e.detail.post, 'merge');
                 this._view.showSuccess('Post merged.');
                 router.replace(
                     '/post/' + e.detail.targetPost.id + '/merge', null, false);
