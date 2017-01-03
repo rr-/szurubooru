@@ -377,6 +377,8 @@ def update_post_relations(post, new_post_ids):
         .all()
     if len(new_posts) != len(new_post_ids):
         raise InvalidPostRelationError('One of relations does not exist.')
+    if post.post_id in new_post_ids:
+        raise InvalidPostRelationError('Post cannot relate to itself.')
 
     relations_to_del = [p for p in old_posts if p.post_id not in new_post_ids]
     relations_to_add = [p for p in new_posts if p.post_id not in old_post_ids]

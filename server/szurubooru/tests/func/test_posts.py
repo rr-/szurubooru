@@ -541,6 +541,14 @@ def test_update_post_relations_with_nonexisting_posts():
         posts.update_post_relations(post, [100])
 
 
+def test_update_post_relations_with_itself(post_factory):
+    post = post_factory()
+    db.session.add(post)
+    db.session.flush()
+    with pytest.raises(posts.InvalidPostRelationError):
+        posts.update_post_relations(post, [post.post_id])
+
+
 def test_update_post_notes():
     post = db.Post()
     posts.update_post_notes(
