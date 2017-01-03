@@ -65,37 +65,36 @@ def _create_context(env):
 
 def application(env, start_response):
     try:
-        try:
-            ctx = _create_context(env)
-            if 'application/json' not in ctx.get_header('Accept'):
-                raise errors.HttpNotAcceptable(
-                    'ValidationError',
-                    'This API only supports JSON responses.')
+        ctx = _create_context(env)
+        if 'application/json' not in ctx.get_header('Accept'):
+            raise errors.HttpNotAcceptable(
+                'ValidationError',
+                'This API only supports JSON responses.')
 
-            for url, allowed_methods in routes.routes.items():
-                match = re.fullmatch(url, ctx.url)
-                if not match:
-                    continue
+        for url, allowed_methods in routes.routes.items():
+            match = re.fullmatch(url, ctx.url)
+            if match:
                 if ctx.method not in allowed_methods:
                     raise errors.HttpMethodNotAllowed(
                         'ValidationError',
                         'Allowed methods: %r' % allowed_methods)
-
-                for hook in middleware.pre_hooks:
-                    hook(ctx)
                 handler = allowed_methods[ctx.method]
-                try:
-                    response = handler(ctx, match.groupdict())
-                finally:
-                    for hook in middleware.post_hooks:
-                        hook(ctx)
-
-                start_response('200', [('content-type', 'application/json')])
-                return (_dump_json(response).encode('utf-8'),)
-
+                break
+        else:
             raise errors.HttpNotFound(
                 'ValidationError',
                 'Requested path ' + ctx.url + ' was not found.')
+
+        try:
+            for hook in middleware.pre_hooks:
+                hook(ctx)
+            try:
+                response = handler(ctx, match.groupdict())
+            finally:
+                for hook in middleware.post_hooks:
+                    hook(ctx)
+            start_response('200', [('content-type', 'application/json')])
+            return (_dump_json(response).encode('utf-8'),)
 
         except Exception as ex:
             for exception_type, handler in errors.error_handlers.items():
