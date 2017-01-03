@@ -4,14 +4,11 @@ $comment-border-color = #DDD
 
 .comment-container
     margin: 0 0 1em 0
-    padding: 0
-    display: -webkit-flex
-    display: flex
+    padding: 0 0 0 60px
 
     .avatar
-        margin-right: 1em
-        -webkit-flex-shrink: 0
-        flex-shrink: 0
+        float: left
+        margin-left: -60px
         vertical-align: top
 
         .thumbnail
@@ -25,7 +22,6 @@ $comment-border-color = #DDD
 
     .comment
         border: 1px solid $comment-border-color
-        flex-grow: 1
 
         header
             white-space: nowrap
