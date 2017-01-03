@@ -53,25 +53,28 @@ class PostMergeView extends events.EventTarget {
     }
 
     _refreshLeftSide() {
-        views.replaceContent(
-            this._leftSideNode,
-            sideTemplate(Object.assign({}, this._ctx, {
-                post: this._leftPost,
-                name: 'left',
-                editable: false})));
+        this._refreshSide(this._leftPost, this._leftSideNode, 'left', false);
     }
 
     _refreshRightSide() {
-        views.replaceContent(
-            this._rightSideNode,
-            sideTemplate(Object.assign({}, this._ctx, {
-                post: this._rightPost,
-                name: 'right',
-                editable: true})));
+        this._refreshSide(this._rightPost, this._rightSideNode, 'right', true);
+    }
 
-        if (this._targetPostFieldNode) {
-            this._targetPostFieldNode.addEventListener(
-                'keydown', e => this._evtTargetPostFieldKeyDown(e));
+    _refreshSide(post, sideNode, sideName, isEditable) {
+        views.replaceContent(
+            sideNode,
+            sideTemplate(Object.assign({}, this._ctx, {
+                post: post,
+                name: sideName,
+                editable: isEditable})));
+
+        let postIdNode = sideNode.querySelector('input[type=text]');
+        let searchButtonNode = sideNode.querySelector('input[type=button]');
+        if (isEditable) {
+            postIdNode.addEventListener(
+                'keydown', e => this._evtPostSearchFieldKeyDown(e));
+            searchButtonNode.addEventListener(
+                'click', e => this._evtPostSearchButtonClick(e, postIdNode));
         }
     }
 
@@ -94,7 +97,7 @@ class PostMergeView extends events.EventTarget {
         }));
     }
 
-    _evtTargetPostFieldKeyDown(e) {
+    _evtPostSearchFieldKeyDown(e) {
         const key = e.which;
         if (key !== KEY_RETURN) {
             return;
@@ -103,7 +106,17 @@ class PostMergeView extends events.EventTarget {
         e.preventDefault();
         this.dispatchEvent(new CustomEvent('select', {
             detail: {
-                postId: this._targetPostFieldNode.value,
+                postId: e.target.value,
+            },
+        }));
+    }
+
+    _evtPostSearchButtonClick(e, textNode) {
+        e.target.blur();
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent('select', {
+            detail: {
+                postId: textNode.value,
             },
         }));
     }
@@ -118,11 +131,6 @@ class PostMergeView extends events.EventTarget {
 
     get _rightSideNode() {
         return this._hostNode.querySelector('.right-post-container');
-    }
-
-    get _targetPostFieldNode() {
-        return this._formNode.querySelector(
-            '.post-mirror input:not([readonly])[type=text]');
     }
 }
 

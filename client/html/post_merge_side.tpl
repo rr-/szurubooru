@@ -1,8 +1,12 @@
-<% if (ctx.editable) { %>
-    <p>Post # <input type='text' pattern='^[0-9]+$' value='<%- ctx.post ? ctx.post.id : '' %>'/></p>
-<% } else { %>
-    <p>Post # <input type='text' pattern='^[0-9]+$' value='<%- ctx.post ? ctx.post.id : '' %>' readonly/></p>
-<% } %>
+<header>
+    <label for='merge-id-<%- ctx.name %>'>Post #</label>
+    <% if (ctx.editable) { %>
+        <input type='text' id='merge-id-<%-ctx.name %>' pattern='^[0-9]+$' value='<%- ctx.post ? ctx.post.id : '' %>'/>
+        <input type='button' value='Search'/>
+    <% } else { %>
+        <input type='text' id='merge-id-<%-ctx.name %>' pattern='^[0-9]+$' value='<%- ctx.post ? ctx.post.id : '' %>' readonly/>
+    <% } %>
+</header>
 
 <% if (ctx.post) { %>
     <div class='post-thumbnail'>
