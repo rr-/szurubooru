@@ -41,20 +41,20 @@
 
                 %><span class='score-container'></span><%
 
-                %><wbr><%
+                %><% if (ctx.canEditComment || ctx.canDeleteComment) { %><%
+                    %><span class='action-container'><%
+                        %><% if (ctx.canEditComment) { %><%
+                            %><a href class='edit'><%
+                                %><i class='fa fa-pencil'></i>&nbsp;edit<%
+                            %></a><%
+                        %><% } %><%
 
-                %><% if (ctx.canEditComment) { %><%
-                    %><a href class='edit'><%
-                        %><i class='fa fa-pencil'></i> edit<%
-                    %></a><%
-                %><% } %><%
-
-                %><wbr><%
-
-                %><% if (ctx.canDeleteComment) { %><%
-                    %><a href class='delete'><%
-                        %><i class='fa fa-remove'></i> delete<%
-                    %></a><%
+                        %><% if (ctx.canDeleteComment) { %><%
+                            %><a href class='delete'><%
+                                %><i class='fa fa-remove'></i>&nbsp;delete<%
+                            %></a><%
+                        %><% } %><%
+                    %></span><%
                 %><% } %><%
             %></nav><%
         %></header>
