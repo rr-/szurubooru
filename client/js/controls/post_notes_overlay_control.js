@@ -547,6 +547,7 @@ class PostNotesOverlayControl extends events.EventTarget {
         this._hostNode = hostNode;
 
         this._svgNode = document.createElementNS(svgNS, 'svg');
+        this._svgNode.classList.add('resize-listener');
         this._svgNode.classList.add('notes-overlay');
         this._svgNode.setAttribute('preserveAspectRatio', 'none');
         this._svgNode.setAttribute('viewBox', '0 0 1 1');

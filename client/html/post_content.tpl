@@ -1,11 +1,11 @@
 <div class='post-content post-type-<%- ctx.post.type %>'>
     <% if (['image', 'animation'].includes(ctx.post.type)) { %>
 
-        <img alt='' src='<%- ctx.post.contentUrl %>'/>
+        <img class='resize-listener' alt='' src='<%- ctx.post.contentUrl %>'/>
 
     <% } else if (ctx.post.type === 'flash') { %>
 
-        <object width='<%- ctx.post.canvasWidth %>' height='<%- ctx.post.canvasHeight %>' data='<%- ctx.post.contentUrl %>'>
+        <object class='resize-listener' width='<%- ctx.post.canvasWidth %>' height='<%- ctx.post.canvasHeight %>' data='<%- ctx.post.contentUrl %>'>
             <param name='wmode' value='opaque'/>
             <param name='movie' value='<%- ctx.post.contentUrl %>'/>
         </object>
@@ -14,6 +14,7 @@
 
         <%= ctx.makeElement(
             'video', {
+                class: 'resize-listener',
                 controls: true,
                 loop: (ctx.post.flags || []).includes('loop'),
                 autoplay: ctx.autoplay,
@@ -27,6 +28,6 @@
 
     <% } else { console.log(new Error('Unknown post type')); } %>
 
-    <div class='post-overlay'>
+    <div class='post-overlay resize-listener'>
     </div>
 </div>

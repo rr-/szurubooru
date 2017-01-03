@@ -86,8 +86,12 @@ class PostContentControl {
     }
 
     _resize(width, height) {
-        this._postContentNode.style.width = width + 'px';
-        this._postContentNode.style.height = height + 'px';
+        const resizeListenerNodes = [this._postContentNode].concat(
+            ...this._postContentNode.querySelectorAll('.resize-listener'));
+        for (let node of resizeListenerNodes) {
+            node.style.width = width + 'px';
+            node.style.height = height + 'px';
+        }
     }
 
     _refreshSize() {
