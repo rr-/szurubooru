@@ -3,6 +3,7 @@ import cgi
 import json
 import re
 from datetime import datetime
+from szurubooru import db
 from szurubooru.func import util
 from szurubooru.rest import errors, middleware, routes, context
 
@@ -86,13 +87,18 @@ def application(env, start_response):
                 'Requested path ' + ctx.url + ' was not found.')
 
         try:
-            for hook in middleware.pre_hooks:
-                hook(ctx)
+            ctx.session = db.session()
             try:
-                response = handler(ctx, match.groupdict())
-            finally:
-                for hook in middleware.post_hooks:
+                for hook in middleware.pre_hooks:
                     hook(ctx)
+                try:
+                    response = handler(ctx, match.groupdict())
+                finally:
+                    for hook in middleware.post_hooks:
+                        hook(ctx)
+            finally:
+                db.session.remove()
+
             start_response('200', [('content-type', 'application/json')])
             return (_dump_json(response).encode('utf-8'),)
 
