@@ -40,9 +40,9 @@ def search_by_image(image_content):
                 'dist': result['dist'],
                 'path': result['path'],
             }
-    except elasticsearch.exceptions.ElasticsearchException as ex:
+    except elasticsearch.exceptions.ElasticsearchException:
         raise
-    except Exception as ex:
+    except Exception:
         raise errors.SearchError('Error searching (invalid input?)')
 
 

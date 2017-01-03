@@ -61,6 +61,7 @@ def run_migrations_online():
         with alembic.context.begin_transaction():
             alembic.context.run_migrations()
 
+
 if alembic.context.is_offline_mode():
     run_migrations_offline()
 else:

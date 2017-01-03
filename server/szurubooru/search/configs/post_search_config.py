@@ -66,7 +66,8 @@ def _create_user_filter():
     def wrapper(query, criterion, negated):
         if isinstance(criterion, criteria.PlainCriterion) \
                 and not criterion.value:
-            expr = db.Post.user_id == None  # sic
+            # pylint: disable=singleton-comparison
+            expr = db.Post.user_id == None
             if negated:
                 expr = ~expr
             return query.filter(expr)
