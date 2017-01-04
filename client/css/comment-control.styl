@@ -52,6 +52,9 @@ $comment-border-color = #DDD
                 padding: 0 1em
                 line-height: 2.25em
 
+                .date, .score-container, .edit
+                    margin-right: 2em
+
             .score-container, .link-container
                 display: inline-block
 
@@ -77,8 +80,6 @@ $comment-border-color = #DDD
                 border: 0.75em solid transparent
                 border-right: 0.75em solid $comment-header-background-color
 
-            .date, .score-container, .edit
-                margin-right: 2em
             .edit, .delete, .score-container a, .nickname a
                 &:not(.inactive)
                     color: mix($main-color, $inactive-tab-text-color)
