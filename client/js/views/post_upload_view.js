@@ -20,12 +20,6 @@ function _mimeTypeToPostType(mimeType) {
     }[mimeType] || 'unknown';
 }
 
-function _listen(rootNode, selector, eventType, handler) {
-    for (let node of rootNode.querySelectorAll(selector)) {
-        node.addEventListener(eventType, e => handler(e));
-    }
-}
-
 class Uploadable extends events.EventTarget {
     constructor() {
         super();
@@ -193,8 +187,16 @@ class PostUploadView extends events.EventTarget {
         views.showSuccess(this._hostNode, message);
     }
 
-    showError(message) {
-        views.showError(this._hostNode, message);
+    showError(message, uploadable) {
+        this._showMessage(views.showError, message, uploadable);
+    }
+
+    showInfo(message, uploadable) {
+        this._showMessage(views.showInfo, message, uploadable);
+    }
+
+    _showMessage(functor, message, uploadable) {
+        functor(uploadable ? uploadable.rowNode : this._hostNode, message);
     }
 
     addUploadables(uploadables) {
@@ -207,9 +209,9 @@ class PostUploadView extends events.EventTarget {
             }
             this._uploadables.set(uploadable.key, uploadable);
             this._emit('change');
-            this._createRowNode(uploadable);
+            this._renderRowNode(uploadable);
             uploadable.addEventListener(
-                'finish', e => this._updateRowNode(e.detail.uploadable));
+                'finish', e => this._updateThumbnailNode(e.detail.uploadable));
         }
         if (duplicatesFound) {
             let message = null;
@@ -236,6 +238,7 @@ class PostUploadView extends events.EventTarget {
         this._emit('change');
         if (!this._uploadables.size) {
             this._formNode.classList.add('inactive');
+            this._submitButtonNode.value = 'Upload all';
         }
     }
 
@@ -254,7 +257,22 @@ class PostUploadView extends events.EventTarget {
 
     _evtFormSubmit(e) {
         e.preventDefault();
+        for (let uploadable of this._uploadables.values()) {
+            this._updateUploadableFromDom(uploadable);
+        }
+        this._submitButtonNode.value = 'Resume upload';
         this._emit('submit');
+    }
+
+    _updateUploadableFromDom(uploadable) {
+        const rowNode = uploadable.rowNode;
+        uploadable.safety =
+            rowNode.querySelector('.safety input:checked').value;
+        uploadable.anonymous =
+            rowNode.querySelector('.anonymous input').checked;
+        if (rowNode.querySelector('.loop-video input:checked')) {
+            uploadable.flags.push('loop');
+        }
     }
 
     _evtRemoveClick(e, uploadable) {
@@ -265,48 +283,23 @@ class PostUploadView extends events.EventTarget {
         this.removeUploadable(uploadable);
     }
 
-    _evtMoveUpClick(e, uploadable) {
+    _evtMoveClick(e, uploadable, delta) {
         e.preventDefault();
         if (this._uploading) {
             return;
         }
         let sortedUploadables = this._getSortedUploadables();
-        if (uploadable.order > 0) {
-            uploadable.order--;
-            const prevUploadable = sortedUploadables[uploadable.order];
-            prevUploadable.order++;
-            uploadable.rowNode.parentNode.insertBefore(
-                uploadable.rowNode, prevUploadable.rowNode);
-        }
-    }
-
-    _evtMoveDownClick(e, uploadable) {
-        e.preventDefault();
-        if (this._uploading) {
-            return;
-        }
-        let sortedUploadables = this._getSortedUploadables();
-        if (uploadable.order + 1 < sortedUploadables.length) {
-            uploadable.order++;
-            const nextUploadable = sortedUploadables[uploadable.order];
-            nextUploadable.order--;
-            uploadable.rowNode.parentNode.insertBefore(
-                nextUploadable.rowNode, uploadable.rowNode);
-        }
-    }
-
-    _evtSafetyRadioboxChange(e, uploadable) {
-        uploadable.safety = e.target.value;
-    }
-
-    _evtAnonymityCheckboxChange(e, uploadable) {
-        uploadable.anonymous = e.target.checked;
-    }
-
-    _evtLoopVideoCheckboxChange(e, uploadable) {
-        uploadable.flags = uploadable.flags.filter(f => f !== 'loop');
-        if (e.target.checked) {
-            uploadable.flags.push('loop');
+        if ((uploadable.order + delta).between(-1, sortedUploadables.length)) {
+            uploadable.order += delta;
+            const otherUploadable = sortedUploadables[uploadable.order];
+            otherUploadable.order -= delta;
+            if (delta === 1) {
+                uploadable.rowNode.parentNode.insertBefore(
+                    otherUploadable.rowNode, uploadable.rowNode);
+            } else {
+                uploadable.rowNode.parentNode.insertBefore(
+                    uploadable.rowNode, otherUploadable.rowNode);
+            }
         }
     }
 
@@ -333,28 +326,27 @@ class PostUploadView extends events.EventTarget {
                 }}));
     }
 
-    _createRowNode(uploadable) {
+    _renderRowNode(uploadable) {
         const rowNode = rowTemplate(Object.assign(
             {}, this._ctx, {uploadable: uploadable}));
-        this._listNode.appendChild(rowNode);
+        if (uploadable.rowNode) {
+            uploadable.rowNode.parentNode.replaceChild(
+                rowNode, uploadable.rowNode);
+        } else {
+            this._listNode.appendChild(rowNode);
+        }
 
-        _listen(rowNode, '.safety input', 'change',
-            e => this._evtSafetyRadioboxChange(e, uploadable));
-        _listen(rowNode, '.anonymous input', 'change',
-            e => this._evtAnonymityCheckboxChange(e, uploadable));
-        _listen(rowNode, '.loop-video input', 'change',
-            e => this._evtLoopVideoCheckboxChange(e, uploadable));
-
-        _listen(rowNode, 'a.remove', 'click',
-            e => this._evtRemoveClick(e, uploadable));
-        _listen(rowNode, 'a.move-up', 'click',
-            e => this._evtMoveUpClick(e, uploadable));
-        _listen(rowNode, 'a.move-down', 'click',
-            e => this._evtMoveDownClick(e, uploadable));
         uploadable.rowNode = rowNode;
+
+        rowNode.querySelector('a.remove').addEventListener('click',
+            e => this._evtRemoveClick(e, uploadable));
+        rowNode.querySelector('a.move-up').addEventListener('click',
+            e => this._evtMoveClick(e, uploadable, -1));
+        rowNode.querySelector('a.move-down').addEventListener('click',
+            e => this._evtMoveClick(e, uploadable, 1));
     }
 
-    _updateRowNode(uploadable) {
+    _updateThumbnailNode(uploadable) {
         const rowNode = rowTemplate(Object.assign(
             {}, this._ctx, {uploadable: uploadable}));
         views.replaceContent(

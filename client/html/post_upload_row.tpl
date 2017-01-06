@@ -1,10 +1,4 @@
-<li class='uploadable'>
-    <div class='controls'>
-        <a href class='move-up'><i class='fa fa-chevron-up'></i></a>
-        <a href class='move-down'><i class='fa fa-chevron-down'></i></a>
-        <a href class='remove'><i class='fa fa-remove'></i></a>
-    </div>
-
+<li class='uploadable-container'>
     <div class='thumbnail-wrapper'>
         <% if (['image'].includes(ctx.uploadable.type)) { %>
 
@@ -29,40 +23,58 @@
         <% } %>
     </div>
 
-    <div class='file'>
-        <strong><%= ctx.uploadable.name %></strong>
-    </div>
+    <div class='uploadable'>
+        <header>
+            <nav>
+                <ul>
+                    <li><a href class='move-up'><i class='fa fa-chevron-up'></i></a></li>
+                    <li><a href class='move-down'><i class='fa fa-chevron-down'></i></a></li>
+                </ul>
+            </nav>
+            <nav>
+                <ul>
+                    <li><a href class='remove'><i class='fa fa-remove'></i></a></li>
+                </ul>
+            </nav>
 
-    <div class='safety'>
-        <% for (let safety of ['safe', 'sketchy', 'unsafe']) { %>
-            <%= ctx.makeRadio({
-                name: 'safety-' + ctx.uploadable.key,
-                value: safety,
-                text: safety[0].toUpperCase() + safety.substr(1),
-                selectedValue: ctx.uploadable.safety,
-            }) %>
-        <% } %>
-    </div>
+            <span class='filename'><%= ctx.uploadable.name %></span>
+        </header>
 
-    <div class='options'>
-        <% if (ctx.canUploadAnonymously) { %>
-            <div class='anonymous'>
-                <%= ctx.makeCheckbox({
-                    text: 'Upload anonymously',
-                    name: 'anonymous',
-                    checked: ctx.uploadable.anonymous,
-                }) %>
+        <div class='body'>
+            <div class='safety'>
+                <% for (let safety of ['safe', 'sketchy', 'unsafe']) { %>
+                    <%= ctx.makeRadio({
+                        name: 'safety-' + ctx.uploadable.key,
+                        value: safety,
+                        text: safety[0].toUpperCase() + safety.substr(1),
+                        selectedValue: ctx.uploadable.safety,
+                    }) %>
+                <% } %>
             </div>
-        <% } %>
 
-        <% if (['video'].includes(ctx.uploadable.type)) { %>
-            <div class='loop-video'>
-                <%= ctx.makeCheckbox({
-                    text: 'Loop video',
-                    name: 'loop-video',
-                    checked: ctx.uploadable.flags.includes('loop'),
-                }) %>
+            <div class='options'>
+                <% if (ctx.canUploadAnonymously) { %>
+                    <div class='anonymous'>
+                        <%= ctx.makeCheckbox({
+                            text: 'Upload anonymously',
+                            name: 'anonymous',
+                            checked: ctx.uploadable.anonymous,
+                        }) %>
+                    </div>
+                <% } %>
+
+                <% if (['video'].includes(ctx.uploadable.type)) { %>
+                    <div class='loop-video'>
+                        <%= ctx.makeCheckbox({
+                            text: 'Loop video',
+                            name: 'loop-video',
+                            checked: ctx.uploadable.flags.includes('loop'),
+                        }) %>
+                    </div>
+                <% } %>
             </div>
-        <% } %>
+
+            <div class='messages'></div>
+        </div>
     </div>
 </li>

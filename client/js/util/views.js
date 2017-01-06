@@ -267,25 +267,26 @@ function showMessage(target, message, className) {
     if (!message) {
         message = 'Unknown message';
     }
-    const messagesHolder = target.querySelector('.messages');
-    if (!messagesHolder) {
+    const messagesHolderNode = target.querySelector('.messages');
+    if (!messagesHolderNode) {
         return false;
     }
-    /* TODO: animate this */
-    const node = document.createElement('div');
-    node.innerHTML = message.replace(/\n/g, '<br/>');
-    node.classList.add('message');
-    node.classList.add(className);
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('message-wrapper');
-    wrapper.appendChild(node);
-    messagesHolder.appendChild(wrapper);
+    const textNode = document.createElement('div');
+    textNode.innerHTML = message.replace(/\n/g, '<br/>');
+    textNode.classList.add('message');
+    textNode.classList.add(className);
+    const wrapperNode = document.createElement('div');
+    wrapperNode.classList.add('message-wrapper');
+    wrapperNode.appendChild(textNode);
+    messagesHolderNode.appendChild(wrapperNode);
     return true;
 }
 
 function showError(target, message) {
-    document.oldTitle = document.title;
-    document.title = `! ${document.title}`;
+    if (!document.title.startsWith('!')) {
+        document.oldTitle = document.title;
+        document.title = `! ${document.title}`;
+    }
     return showMessage(target, misc.formatInlineMarkdown(message), 'error');
 }
 
@@ -302,9 +303,9 @@ function clearMessages(target) {
         document.title = document.oldTitle;
         document.oldTitle = null;
     }
-    const messagesHolder = target.querySelector('.messages');
-    /* TODO: animate that */
-    emptyContent(messagesHolder);
+    for (let messagesHolderNode of target.querySelectorAll('.messages')) {
+        emptyContent(messagesHolderNode);
+    }
 }
 
 function htmlToDom(html) {
