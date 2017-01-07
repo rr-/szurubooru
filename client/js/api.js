@@ -6,6 +6,8 @@ const request = require('superagent');
 const config = require('./config.js');
 const events = require('./events.js');
 
+// TODO: fix abort misery
+
 class Api extends events.EventTarget {
     constructor() {
         super();
@@ -39,7 +41,7 @@ class Api extends events.EventTarget {
                 resolve(this.cache[url]);
             });
         }
-        return this._process(url, request.get, {}, {}, options)
+        return this._wrappedRequest(url, request.get, {}, {}, options)
             .then(response => {
                 this.cache[url] = response;
                 return Promise.resolve(response);
@@ -48,89 +50,17 @@ class Api extends events.EventTarget {
 
     post(url, data, files, options) {
         this.cache = {};
-        return this._process(url, request.post, data, files, options);
+        return this._wrappedRequest(url, request.post, data, files, options);
     }
 
     put(url, data, files, options) {
         this.cache = {};
-        return this._process(url, request.put, data, files, options);
+        return this._wrappedRequest(url, request.put, data, files, options);
     }
 
     delete(url, data, options) {
         this.cache = {};
-        return this._process(url, request.delete, data, {}, options);
-    }
-
-    _process(url, requestFactory, data, files, options) {
-        options = options || {};
-        data = Object.assign({}, data);
-        const [fullUrl, query] = this._getFullUrl(url);
-
-        let abortFunction = null;
-
-        let promise = new Promise((resolve, reject) => {
-            let req = requestFactory(fullUrl);
-
-            req.set('Accept', 'application/json');
-            if (query) {
-                req.query(query);
-            }
-            if (files) {
-                for (let key of Object.keys(files)) {
-                    const value = files[key];
-                    if (value.constructor === String) {
-                        data[key + 'Url'] = value;
-                    } else {
-                        req.attach(key, value || new Blob());
-                    }
-                }
-            }
-            if (data) {
-                req.attach('metadata', new Blob([JSON.stringify(data)]));
-            }
-            try {
-                if (this.userName && this.userPassword) {
-                    req.auth(
-                        this.userName,
-                        encodeURIComponent(this.userPassword)
-                            .replace(/%([0-9A-F]{2})/g, (match, p1) => {
-                                return String.fromCharCode('0x' + p1);
-                            }));
-                }
-            } catch (e) {
-                reject({
-                    title: 'Authentication error',
-                    description: 'Malformed credentials'});
-            }
-
-            if (!options.noProgress) {
-                nprogress.start();
-            }
-
-            abortFunction = () => {
-                req.abort();  // does *NOT* call the callback passed in .end()
-                nprogress.done();
-                reject({
-                    title: 'Cancelled',
-                    description:
-                        'The request was aborted due to user cancel.'});
-            };
-
-            req.end((error, response) => {
-                nprogress.done();
-                if (error) {
-                    reject(response && response.body ? response.body : {
-                        title: 'Networking error',
-                        description: error.message});
-                } else {
-                    resolve(response.body);
-                }
-            });
-        });
-
-        promise.abort = () => abortFunction();
-
-        return promise;
+        return this._wrappedRequest(url, request.delete, data, {}, options);
     }
 
     hasPrivilege(lookup) {
@@ -221,6 +151,141 @@ class Api extends events.EventTarget {
         const baseUrl = matches[1];
         const request = matches[2];
         return [baseUrl, request];
+    }
+
+    _wrappedRequest(url, requestFactory, data, files, options) {
+        // transform the request: upload each file, then make the request use
+        // its tokens.
+        data = Object.assign({}, data);
+        let promise = Promise.resolve();
+        let abortFunction = () => {};
+        if (files) {
+            for (let key of Object.keys(files)) {
+                let file = files[key];
+                if (file.token) {
+                    data[key + 'Token'] = file.token;
+                } else {
+                    promise = promise
+                        .then(() => {
+                            let returnedPromise = this._upload(file);
+                            abortFunction = () => { returnedPromise.abort(); };
+                            return returnedPromise;
+                        })
+                        .then(token => {
+                            abortFunction = () => {};
+                            file.token = token;
+                            data[key + 'Token'] = token;
+                            return Promise.resolve();
+                        });
+                }
+            }
+        }
+        promise = promise.then(() => {
+            return this._rawRequest(url, requestFactory, data, {}, options);
+        }, errorMessage => {
+            // TODO: check if the error is because of expired uploads
+            return Promise.reject(errorMessage);
+        });
+        promise.abort = () => abortFunction();
+        return promise;
+    }
+
+    _upload(file, options) {
+        let abortFunction = () => {};
+        let returnedPromise = new Promise((resolve, reject) => {
+            let apiPromise = this._rawRequest(
+                    '/uploads', request.post, {}, {content: file}, options);
+            abortFunction = () => apiPromise.abort();
+            return apiPromise.then(
+                response => {
+                    resolve(response.token);
+                    abortFunction = () => {};
+                },
+                errorMessage => reject(errorMessage));
+        });
+        returnedPromise.abort = () => abortFunction();
+        return returnedPromise;
+    }
+
+    _rawRequest(url, requestFactory, data, files, options) {
+        options = options || {};
+        data = Object.assign({}, data);
+        const [fullUrl, query] = this._getFullUrl(url);
+
+        let abortFunction = null;
+
+        let promise = new Promise((resolve, reject) => {
+            let req = requestFactory(fullUrl);
+
+            req.set('Accept', 'application/json');
+
+            if (query) {
+                req.query(query);
+            }
+
+            if (files) {
+                for (let key of Object.keys(files)) {
+                    const value = files[key];
+                    if (value.constructor === String) {
+                        data[key + 'Url'] = value;
+                    } else {
+                        req.attach(key, value || new Blob());
+                    }
+                }
+            }
+
+            if (data) {
+                if (files && Object.keys(files).length) {
+                    req.attach('metadata', new Blob([JSON.stringify(data)]));
+                } else {
+                    req.set('Content-Type', 'application/json');
+                    req.send(data);
+                }
+            }
+
+            try {
+                if (this.userName && this.userPassword) {
+                    req.auth(
+                        this.userName,
+                        encodeURIComponent(this.userPassword)
+                            .replace(/%([0-9A-F]{2})/g, (match, p1) => {
+                                return String.fromCharCode('0x' + p1);
+                            }));
+                }
+            } catch (e) {
+                reject({
+                    title: 'Authentication error',
+                    description: 'Malformed credentials'});
+            }
+
+            if (!options.noProgress) {
+                nprogress.start();
+            }
+
+            abortFunction = () => {
+                req.abort();  // does *NOT* call the callback passed in .end()
+                nprogress.done();
+                reject({
+                    title: 'Cancelled',
+                    description:
+                        'The request was aborted due to user cancel.'});
+            };
+
+            req.end((error, response) => {
+                nprogress.done();
+                if (error) {
+                    reject(response && response.body ? response.body : {
+                        title: 'Networking error',
+                        description: error.message});
+                } else {
+                    resolve(response.body);
+                }
+            });
+        });
+
+        promise.abort = () => abortFunction();
+
+        return promise;
     }
 }
 
