@@ -36,6 +36,10 @@ class MissingRequiredFileError(ValidationError):
     pass
 
 
+class MissingOrExpiredRequiredFileError(MissingRequiredFileError):
+    pass
+
+
 class MissingRequiredParameterError(ValidationError):
     pass
 

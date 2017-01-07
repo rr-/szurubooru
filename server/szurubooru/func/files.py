@@ -16,6 +16,12 @@ def has(path):
     return os.path.exists(_get_full_path(path))
 
 
+def scan(path):
+    if has(path):
+        return os.scandir(_get_full_path(path))
+    return []
+
+
 def move(source_path, target_path):
     return os.rename(_get_full_path(source_path), _get_full_path(target_path))
 

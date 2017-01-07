@@ -1,11 +1,13 @@
 ''' Exports create_app. '''
 
 import os
+import time
 import logging
+import threading
 import coloredlogs
 import sqlalchemy.orm.exc
 from szurubooru import config, errors, rest
-from szurubooru.func import posts
+from szurubooru.func import posts, file_uploads
 # pylint: disable=unused-import
 from szurubooru import api, middleware
 
@@ -79,6 +81,15 @@ def validate_config():
         raise errors.ConfigError('Database is not configured')
 
 
+def purge_old_uploads():
+    while True:
+        try:
+            file_uploads.purge_old_uploads()
+        except Exception as ex:
+            logging.exception(ex)
+        time.sleep(60 * 5)
+
+
 def create_app():
     ''' Create a WSGI compatible App object. '''
     validate_config()
@@ -88,6 +99,9 @@ def create_app():
     if config.config['show_sql']:
         logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
+    purge_thread = threading.Thread(target=purge_old_uploads)
+    purge_thread.daemon = True
+    purge_thread.start()
     posts.populate_reverse_search()
 
     rest.errors.handle(errors.AuthError, _on_auth_error)

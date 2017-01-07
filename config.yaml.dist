@@ -119,3 +119,5 @@ privileges:
     'comments:score':               regular
 
     'snapshots:list':               power
+
+    'uploads:create':               regular

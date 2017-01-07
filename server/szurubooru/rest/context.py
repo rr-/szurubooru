@@ -1,5 +1,5 @@
 from szurubooru import errors
-from szurubooru.func import net
+from szurubooru.func import net, file_uploads
 
 
 def _lower_first(source):
@@ -43,18 +43,26 @@ class Context:
     def get_header(self, name):
         return self._headers.get(name, None)
 
-    def has_file(self, name):
-        return name in self._files or name + 'Url' in self._params
+    def has_file(self, name, allow_tokens=True):
+        return (name in self._files
+            or name + 'Url' in self._params
+            or (allow_tokens and name + 'Token' in self._params))
 
-    def get_file(self, name, required=False):
+    def get_file(self, name, required=False, allow_tokens=True):
+        ret = None
         if name in self._files:
-            return self._files[name]
-        if name + 'Url' in self._params:
-            return net.download(self._params[name + 'Url'])
-        if not required:
-            return None
-        raise errors.MissingRequiredFileError(
-            'Required file %r is missing.' % name)
+            ret = self._files[name]
+        elif name + 'Url' in self._params:
+            ret = net.download(self._params[name + 'Url'])
+        elif allow_tokens and name + 'Token' in self._params:
+            ret = file_uploads.get(self._params[name + 'Token'])
+            if required and not ret:
+                raise errors.MissingOrExpiredRequiredFileError(
+                    'Required file %r is missing or has expired.' % name)
+        if required and not ret:
+            raise errors.MissingRequiredFileError(
+                'Required file %r is missing.' % name)
+        return ret
 
     def has_param(self, name):
         return name in self._params

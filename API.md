@@ -63,6 +63,8 @@
         - [Listing snapshots](#listing-snapshots)
     - Global info
         - [Getting global info](#getting-global-info)
+    - File uploads
+        - [Uploading temporary file](#uploading-temporary-file)
 
 3. [Resources](#resources)
 
@@ -105,16 +107,28 @@ application/json`. An exception to this rule are requests that upload files.
 
 ## File uploads
 
-Requests that upload files must use `multipart/form-data` encoding. JSON
-metadata must then be included as field of name `metadata`, whereas files must
-be included as separate fields with names specific to each request type.
+Requests that upload files must use `multipart/form-data` encoding. Any request
+that bundles user files, must send the request data (which is JSON) as an
+additional file with the special name of `metadata` (whereas the actual files
+must have names specific to the API that is being used.)
 
 Alternatively, the server can download the files from the Internet on client's
 behalf. In that case, the request doesn't need to be specially encoded in any
-way. The files, however, should be passed as regular fields appended with `Url`
-suffix. For example, to download a file named `content` from
-`http://example.com/file.jpg`, the client should pass
-`{"contentUrl":"http://example.com/file.jpg"}` as part of the message body.
+way. The files, however, should be passed as regular fields appended with a
+`Url` suffix. For example, to use `http://example.com/file.jpg` in an API that
+accepts a file named `content`, the client should pass
+`{"contentUrl":"http://example.com/file.jpg"}` as a part of the JSON message
+body.
+
+Finally, in some cases the user might want to reuse one file between the
+requests to save the bandwidth (for example, reverse search + consecutive
+upload). In this case one should use [temporary file
+uploads](#uploading-temporary-file), and pass the tokens returned by the API as
+regular fields appended with a `Token` suffix. For example, to use previously
+uploaded data, which was given token `deadbeef`, in an API that accepts a file
+named `content`, the client should pass `{"contentToken":"deadbeef"}` as part
+of the JSON message body. If the file with the particular token doesn't exist
+or it has expired, the server will show an error.
 
 ## Error handling
 
@@ -1592,6 +1606,35 @@ data.
     in `config` key are taken directly from the server config, with the
     exception of privilege array keys being converted to lower camel case to
     match the API convention.
+
+## Uploading temporary file
+
+- **Request**
+
+    `POST /uploads`
+
+- **Files**
+
+    - `content` - the content of the file to upload. Note that in this
+      particular API, one can't use token-based uploads.
+
+- **Output**
+
+    ```json5
+    {
+        "token": <token>
+    }
+    ```
+
+- **Errors**
+
+    - privileges are too low
+
+- **Description**
+
+    Puts a file in temporary storage and assigns it a token that can be used in
+    other requests. The files uploaded that way are deleted after a short while
+    so clients shouldn't use it as a free upload service.
 
 
 
