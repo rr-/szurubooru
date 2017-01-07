@@ -63,6 +63,7 @@ class Api extends events.EventTarget {
 
     _process(url, requestFactory, data, files, options) {
         options = options || {};
+        data = Object.assign({}, data);
         const [fullUrl, query] = this._getFullUrl(url);
 
         let abortFunction = null;
@@ -74,13 +75,18 @@ class Api extends events.EventTarget {
             if (query) {
                 req.query(query);
             }
-            if (data) {
-                req.attach('metadata', new Blob([JSON.stringify(data)]));
-            }
             if (files) {
                 for (let key of Object.keys(files)) {
-                    req.attach(key, files[key] || new Blob());
+                    const value = files[key];
+                    if (value.constructor === String) {
+                        data[key + 'Url'] = value;
+                    } else {
+                        req.attach(key, value || new Blob());
+                    }
                 }
+            }
+            if (data) {
+                req.attach('metadata', new Blob([JSON.stringify(data)]));
             }
             try {
                 if (this.userName && this.userPassword) {

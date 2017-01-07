@@ -85,9 +85,8 @@ class PostUploadController {
         let reverseSearchPromise = Promise.resolve();
         if (!uploadable.lookalikesConfirmed &&
                 ['image'].includes(uploadable.type)) {
-            reverseSearchPromise = uploadable.url ?
-                Post.reverseSearchFromUrl(uploadable.url) :
-                Post.reverseSearchFromFile(uploadable.file);
+            reverseSearchPromise =
+                Post.reverseSearch(uploadable.url || uploadable.file);
         }
         this._lastCancellablePromise = reverseSearchPromise;
 
@@ -140,11 +139,7 @@ class PostUploadController {
         post.flags = uploadable.flags;
         post.tags = uploadable.tags;
         post.relations = uploadable.relations;
-        if (uploadable.url) {
-            post.newContentUrl = uploadable.url;
-        } else {
-            post.newContent = uploadable.file;
-        }
+        post.newContent = uploadable.url || uploadable.file;
         return post;
     }
 }

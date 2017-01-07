@@ -39,7 +39,6 @@ class Post extends events.EventTarget {
     get canvasHeight()       { return this._canvasHeight || 450; }
     get fileSize()           { return this._fileSize || 0; }
     get newContent()         { throw 'Invalid operation'; }
-    get newContentUrl()      { throw 'Invalid operation'; }
     get newThumbnail()       { throw 'Invalid operation'; }
 
     get flags()              { return this._flags; }
@@ -60,7 +59,6 @@ class Post extends events.EventTarget {
     set safety(value)        { this._safety = value; }
     set relations(value)     { this._relations = value; }
     set newContent(value)    { this._newContent = value; }
-    set newContentUrl(value) { this._newContentUrl = value; }
     set newThumbnail(value)  { this._newThumbnail = value; }
 
     static fromResponse(response) {
@@ -69,16 +67,9 @@ class Post extends events.EventTarget {
         return ret;
     }
 
-    static reverseSearchFromFile(content) {
-        return Post._reverseSearch({content: content});
-    }
-
-    static reverseSearchFromUrl(imageUrl) {
-        return Post._reverseSearch({contentUrl: imageUrl});
-    }
-
-    static _reverseSearch(request) {
-        let apiPromise = api.post('/posts/reverse-search', {}, request);
+    static reverseSearch(content) {
+        let apiPromise = api.post(
+            '/posts/reverse-search', {}, {content: content});
         let returnedPromise = apiPromise
             .then(response => {
                 if (response.exactPost) {
@@ -132,7 +123,7 @@ class Post extends events.EventTarget {
     }
 
     save(anonymous) {
-        const files = [];
+        const files = {};
         const detail = {version: this._version};
 
         // send only changed fields to avoid user privilege violation
@@ -160,8 +151,6 @@ class Post extends events.EventTarget {
         }
         if (this._newContent) {
             files.content = this._newContent;
-        } else if (this._newContentUrl) {
-            detail.contentUrl = this._newContentUrl;
         }
         if (this._newThumbnail !== undefined) {
             files.thumbnail = this._newThumbnail;
@@ -175,7 +164,7 @@ class Post extends events.EventTarget {
             this._updateFromResponse(response);
             this.dispatchEvent(
                 new CustomEvent('change', {detail: {post: this}}));
-            if (this._newContent || this._newContentUrl) {
+            if (this._newContent) {
                 this.dispatchEvent(
                     new CustomEvent('changeContent', {detail: {post: this}}));
             }
