@@ -57,6 +57,12 @@ class InvalidPostFlagError(errors.ValidationError):
     pass
 
 
+class PostLookalike(image_hash.Lookalike):
+    def __init__(self, score, distance, post):
+        super().__init__(score, distance, post.post_id)
+        self.post = post
+
+
 SAFETY_MAP = {
     db.Post.SAFETY_SAFE: 'safe',
     db.Post.SAFETY_SKETCHY: 'sketchy',
@@ -534,13 +540,20 @@ def merge_posts(source_post, target_post, replace_content):
         update_post_content(target_post, content)
 
 
+def search_by_image_exact(image_content):
+    checksum = util.get_sha1(image_content)
+    return db.session \
+        .query(db.Post) \
+        .filter(db.Post.checksum == checksum) \
+        .one_or_none()
+
+
 def search_by_image(image_content):
     for result in image_hash.search_by_image(image_content):
-        yield {
-            'score': result['score'],
-            'dist': result['dist'],
-            'post': get_post_by_id(result['path'])
-        }
+        yield PostLookalike(
+            score=result.score,
+            distance=result.distance,
+            post=get_post_by_id(result.path))
 
 
 def populate_reverse_search():

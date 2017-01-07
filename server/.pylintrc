@@ -15,6 +15,7 @@ reports=no
 disable=
     # we're not java
     missing-docstring,
+    broad-except,
 
     # covered better by pycodestyle
     bad-continuation,

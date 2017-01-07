@@ -1,7 +1,7 @@
 import elasticsearch
 import elasticsearch_dsl
 from image_match.elasticsearch_driver import SignatureES
-from szurubooru import config, errors
+from szurubooru import config
 
 
 # pylint: disable=invalid-name
@@ -10,6 +10,13 @@ es = elasticsearch.Elasticsearch([{
     'port': config.config['elasticsearch']['port'],
 }])
 session = SignatureES(es, index='szurubooru')
+
+
+class Lookalike:
+    def __init__(self, score, distance, path):
+        self.score = score
+        self.distance = distance
+        self.path = path
 
 
 def add_image(path, image_content):
@@ -35,15 +42,14 @@ def search_by_image(image_content):
         for result in session.search_image(
                 path=image_content,  # sic
                 bytestream=True):
-            yield {
-                'score': result['score'],
-                'dist': result['dist'],
-                'path': result['path'],
-            }
+            yield Lookalike(
+                score=result['score'],
+                distance=result['dist'],
+                path=result['path'])
     except elasticsearch.exceptions.ElasticsearchException:
         raise
     except Exception:
-        raise errors.SearchError('Error searching (invalid input?)')
+        yield from []
 
 
 def purge():

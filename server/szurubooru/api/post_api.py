@@ -212,11 +212,14 @@ def get_posts_by_image(ctx, _params=None):
     auth.verify_privilege(ctx.user, 'posts:reverse_search')
     content = ctx.get_file('content', required=True)
     return {
-        'results': [
-            {
-                'dist': item['dist'],
-                'post': _serialize_post(ctx, item['post']),
-            }
-            for item in posts.search_by_image(content)
-        ],
+        'exactPost':
+            _serialize_post(ctx, posts.search_by_image_exact(content)),
+        'similarPosts':
+            [
+                {
+                    'distance': lookalike.distance,
+                    'post': _serialize_post(ctx, lookalike.post),
+                }
+                for lookalike in posts.search_by_image(content)
+            ],
     }

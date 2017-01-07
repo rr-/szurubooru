@@ -1070,17 +1070,15 @@ data.
 
 - **Output**
 
-    A list of [image search results](#image-search-result).
+    An [image search result](#image-search-result).
 
 - **Errors**
 
-    - input file is not an image
     - privileges are too low
 
 - **Description**
 
-    Retrieves posts that look like the input image. Works only on images and
-    animations, i.e. does not work for videos and Flash movies.
+    Retrieves posts that look like the input image.
 
 ## Listing comments
 - **Request**
@@ -2152,14 +2150,15 @@ A result of reverse image search operation.
 
 ```json5
 {
-    "results": [
+    "exactPost": <exact-post>,
+    "similarPosts": [
         {
-            "dist": <distance>,
-            "post": <post>
+            "distance": <distance>,
+            "post": <similar-post>
         },
         {
-            "dist": <distance>,
-            "post": <post>
+            "distance": <distance>,
+            "post": <similar-post>
         },
         ...
     ]
@@ -2167,9 +2166,14 @@ A result of reverse image search operation.
 ```
 
 **Field meaning**
-- `<dist>`: distance from the original image (0..1). The lower this value is, the more similar the
-post is.
-- `<post>`: a [post resource](#post).
+-  `exact-post`: a [post resource](#post) that is exact byte-to-byte duplicate
+   of the input file. May be `null`.
+- `<similar-post>`: a [post resource](#post) that isn't exact duplicate, but
+   visually resembles the input file. Works only on images and animations, i.e.
+   does not work for videos and Flash movies. For non-images and corrupted
+   images, this list is empty.
+- `<distance>`: distance from the original image (0..1). The lower this value
+   is, the more similar the post is.
 
 # Search
 
