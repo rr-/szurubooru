@@ -213,13 +213,6 @@ function bundleBinaryAssets() {
     });
 }
 
-process.on('uncaughtException', (error) => {
-    const stack = error.stack;
-    delete error.stack;
-    console.log(error);
-    console.log(stack);
-});
-
 const config = getConfig();
 bundleConfig(config);
 bundleBinaryAssets();
