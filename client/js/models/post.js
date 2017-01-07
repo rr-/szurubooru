@@ -69,6 +69,36 @@ class Post extends events.EventTarget {
         return ret;
     }
 
+    static reverseSearchFromFile(content) {
+        return Post._reverseSearch({content: content});
+    }
+
+    static reverseSearchFromUrl(imageUrl) {
+        return Post._reverseSearch({contentUrl: imageUrl});
+    }
+
+    static _reverseSearch(request) {
+        let apiPromise = api.post('/posts/reverse-search', {}, request);
+        let returnedPromise = apiPromise
+            .then(response => {
+                if (response.exactPost) {
+                    response.exactPost = Post.fromResponse(response.exactPost);
+                }
+                for (let item of response.similarPosts) {
+                    item.post = Post.fromResponse(item.post);
+                }
+                return Promise.resolve(response);
+            }, response => {
+                return Promise.reject(response.description);
+            });
+
+        returnedPromise.abort = () => {
+            apiPromise.abort();
+        };
+
+        return returnedPromise;
+    }
+
     static get(id) {
         return api.get('/post/' + id)
             .then(response => {

@@ -54,22 +54,27 @@ class PostUploadController {
 
         e.detail.uploadables.reduce(
             (promise, uploadable) =>
-                promise.then(() =>
-                    this._uploadSinglePost(
-                        uploadable, e.detail.skipDuplicates)),
+                promise.then(() => this._uploadSinglePost(
+                    uploadable, e.detail.skipDuplicates)),
             Promise.resolve())
                 .then(() => {
                     this._view.clearMessages();
                     misc.disableExitConfirmation();
                     const ctx = router.show('/posts');
                     ctx.controller.showSuccess('Posts uploaded.');
-                }, errorContext => {
-                    if (errorContext.constructor === Array) {
-                        const [errorMessage, uploadable] = errorContext;
-                        this._view.showError(genericErrorMessage);
-                        this._view.showError(errorMessage, uploadable);
+                }, ([errorMessage, uploadable, similarPostResults]) => {
+                    if (uploadable) {
+                        if (similarPostResults) {
+                            uploadable.lookalikes = similarPostResults;
+                            this._view.updateUploadable(uploadable);
+                            this._view.showInfo(genericErrorMessage);
+                            this._view.showInfo(errorMessage, uploadable);
+                        } else {
+                            this._view.showError(genericErrorMessage);
+                            this._view.showError(errorMessage, uploadable);
+                        }
                     } else {
-                        this._view.showError(errorContext);
+                        this._view.showError(errorMessage);
                     }
                     this._view.enableForm();
                     return Promise.reject();
@@ -77,32 +82,70 @@ class PostUploadController {
     }
 
     _uploadSinglePost(uploadable, skipDuplicates) {
+        let reverseSearchPromise = Promise.resolve();
+        if (!uploadable.lookalikesConfirmed &&
+                ['image'].includes(uploadable.type)) {
+            reverseSearchPromise = uploadable.url ?
+                Post.reverseSearchFromUrl(uploadable.url) :
+                Post.reverseSearchFromFile(uploadable.file);
+        }
+        this._lastCancellablePromise = reverseSearchPromise;
+
+        return reverseSearchPromise.then(searchResult => {
+            if (searchResult) {
+                // notify about exact duplicate
+                if (searchResult.exactPost && !skipDuplicates) {
+                    return Promise.reject([
+                        `Post already uploaded (@${searchResult.exactPost.id})`,
+                        uploadable,
+                        null]);
+                }
+
+                // notify about similar posts
+                if (!searchResult.exactPost
+                        && searchResult.similarPosts.length) {
+                    return Promise.reject([
+                        `Found ${searchResult.similarPosts.length} similar ` +
+                        'posts.\nYou can resume or discard this upload.',
+                        uploadable,
+                        searchResult.similarPosts]);
+                }
+            }
+
+            // no duplicates, proceed with saving
+            let post = this._uploadableToPost(uploadable);
+            let apiSavePromise = post.save(uploadable.anonymous);
+            let returnedSavePromise = apiSavePromise
+                .then(() => {
+                    this._view.removeUploadable(uploadable);
+                    return Promise.resolve();
+                }, errorMessage => {
+                    return Promise.reject([errorMessage, uploadable, null]);
+                });
+
+            returnedSavePromise.abort = () => {
+                apiSavePromise.abort();
+            };
+
+            this._lastCancellablePromise = returnedSavePromise;
+            return returnedSavePromise;
+        }, errorMessage => {
+            return Promise.reject([errorMessage, uploadable, null]);
+        });
+    }
+
+    _uploadableToPost(uploadable) {
         let post = new Post();
         post.safety = uploadable.safety;
         post.flags = uploadable.flags;
-
+        post.tags = uploadable.tags;
+        post.relations = uploadable.relations;
         if (uploadable.url) {
             post.newContentUrl = uploadable.url;
         } else {
             post.newContent = uploadable.file;
         }
-
-        let savePromise = post.save(uploadable.anonymous)
-            .then(() => {
-                this._view.removeUploadable(uploadable);
-                return Promise.resolve();
-            }, errorMessage => {
-                // XXX:
-                // lame, API eats error codes so we need to match
-                // messages instead
-                if (skipDuplicates &&
-                        errorMessage.match(/already uploaded/)) {
-                    return Promise.resolve();
-                }
-                return Promise.reject([errorMessage, uploadable, null]);
-            });
-        this._lastCancellablePromise = savePromise;
-        return savePromise;
+        return post;
     }
 }
 

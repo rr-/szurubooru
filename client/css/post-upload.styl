@@ -49,7 +49,7 @@ $cancel-button-color = tomato
             margin: 0 0 1.2em 0
             padding-left: 13em
 
-            .thumbnail-wrapper
+            &>.thumbnail-wrapper
                 float: left
                 width: 12em
                 height: 8em
@@ -114,6 +114,34 @@ $cancel-button-color = tomato
                         margin-top: 1em
                         .message:last-child
                             margin-bottom: 0
+
+                    .lookalikes
+                        list-style-type: none
+                        margin: 0
+                        padding: 0
+
+                        li
+                            clear: both
+                            margin: 1em 0 0 0
+                            padding-left: 7em
+                            font-size: 90%
+
+                            .thumbnail-wrapper
+                                float: left
+                                width: 6em
+                                height: 4em
+                                margin: 0 0 0 -7em
+                                .thumbnail
+                                    width: 100%
+                                    height: 100%
+
+                        .description
+                            margin-right: 0.5em
+                            display: inline-block
+                        .controls
+                            float: right
+                            display: inline-block
+
 
             &:first-child .move-up
                 color: $inactive-link-color

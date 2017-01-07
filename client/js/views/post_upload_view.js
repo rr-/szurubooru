@@ -23,8 +23,12 @@ function _mimeTypeToPostType(mimeType) {
 class Uploadable extends events.EventTarget {
     constructor() {
         super();
+        this.lookalikes = [];
+        this.lookalikesConfirmed = false;
         this.safety = 'safe';
         this.flags = [];
+        this.tags = [];
+        this.relations = [];
         this.anonymous = false;
         this.order = globalOrder;
         globalOrder++;
@@ -242,6 +246,11 @@ class PostUploadView extends events.EventTarget {
         }
     }
 
+    updateUploadable(uploadable) {
+        uploadable.lookalikesConfirmed = true;
+        this._renderRowNode(uploadable);
+    }
+
     _evtFilesAdded(e) {
         this.addUploadables(e.detail.files.map(file => new File(file)));
     }
@@ -272,6 +281,18 @@ class PostUploadView extends events.EventTarget {
             rowNode.querySelector('.anonymous input').checked;
         if (rowNode.querySelector('.loop-video input:checked')) {
             uploadable.flags.push('loop');
+        }
+        uploadable.tags = [];
+        uploadable.relations = [];
+        for (let [i, lookalike] of uploadable.lookalikes.entries()) {
+            let lookalikeNode = rowNode.querySelector(
+                `.lookalikes li:nth-child(${i + 1})`);
+            if (lookalikeNode.querySelector('[name=copy-tags]').checked) {
+                uploadable.tags = uploadable.tags.concat(lookalike.post.tags);
+            }
+            if (lookalikeNode.querySelector('[name=add-relation]').checked) {
+                uploadable.relations.push(lookalike.post.id);
+            }
         }
     }
 

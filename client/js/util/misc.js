@@ -217,6 +217,19 @@ function escapeSearchTerm(text) {
     return text.replace(/([a-z_-]):/g, '$1\\:');
 }
 
+function dataURItoBlob(dataURI) {
+    const chunks = dataURI.split(',');
+    const byteString = chunks[0].indexOf('base64') >= 0 ?
+        window.atob(chunks[1]) :
+        unescape(chunks[1]);
+    const mimeString = chunks[0].split(':')[1].split(';')[0];
+    const data = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        data[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([data], {type: mimeString});
+}
+
 module.exports = {
     range:                   range,
     formatUrlParameters:     formatUrlParameters,
@@ -236,4 +249,5 @@ module.exports = {
     arraysDiffer:            arraysDiffer,
     decamelize:              decamelize,
     escapeSearchTerm:        escapeSearchTerm,
+    dataURItoBlob:           dataURItoBlob,
 };

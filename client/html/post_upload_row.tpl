@@ -75,6 +75,29 @@
             </div>
 
             <div class='messages'></div>
+
+            <% if (ctx.uploadable.lookalikes.length) { %>
+                <ul class='lookalikes'>
+                    <% for (let lookalike of ctx.uploadable.lookalikes) { %>
+                        <li>
+                            <a class='thumbnail-wrapper' title='@<%- lookalike.post.id %>'
+                                href='<%= ctx.canViewPosts ? ctx.getPostUrl(lookalike.post.id) : "" %>'>
+                                <%= ctx.makeThumbnail(lookalike.post.thumbnailUrl) %>
+                            </a>
+                            <div class='description'>
+                                Similar post: <%= ctx.makePostLink(lookalike.post.id, true) %>
+                                <br/>
+                                <%- Math.round((1-lookalike.distance) * 100) %>% match
+                            </div>
+                            <div class='controls'>
+                                <%= ctx.makeCheckbox({text: 'Copy tags', name: 'copy-tags'}) %>
+                                <br/>
+                                <%= ctx.makeCheckbox({text: 'Add relation', name: 'add-relation'}) %>
+                            </div>
+                        </li>
+                    <% } %>
+                </ul>
+            <% } %>
         </div>
     </div>
 </li>
