@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
-    "watch": "watch 'npm run build -- --no-vendor-js' html js css img --wait=1 --interval=0.5 --ignoreDotFiles"
+    "watch": "c1=\"\";while :;do c2=$(find html js css img -type f -and -not -iname '*autogen*'|sort|xargs cat|md5sum);[[ $c1 != $c2 ]]&&npm run build -- --no-vendor-js;c1=$c2;sleep 1;done"
   },
   "dependencies": {
     "babel-polyfill": "^6.7.4",
@@ -27,8 +27,5 @@
     "superagent": "^1.8.3",
     "uglify-js": "git://github.com/mishoo/UglifyJS2.git#harmony",
     "underscore": "^1.8.3"
-  },
-  "devDependencies": {
-    "watch": "latest"
   }
 }
