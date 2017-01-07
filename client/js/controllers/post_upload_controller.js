@@ -115,19 +115,13 @@ class PostUploadController {
 
             // no duplicates, proceed with saving
             let post = this._uploadableToPost(uploadable);
-            let apiSavePromise = post.save(uploadable.anonymous);
-            let returnedSavePromise = apiSavePromise
+            let savePromise = post.save(uploadable.anonymous)
                 .then(() => {
                     this._view.removeUploadable(uploadable);
                     return Promise.resolve();
                 });
-
-            returnedSavePromise.abort = () => {
-                apiSavePromise.abort();
-            };
-
-            this._lastCancellablePromise = returnedSavePromise;
-            return returnedSavePromise;
+            this._lastCancellablePromise = savePromise;
+            return savePromise;
         });
     }
 

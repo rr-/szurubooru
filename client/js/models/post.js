@@ -80,11 +80,7 @@ class Post extends events.EventTarget {
                 }
                 return Promise.resolve(response);
             });
-
-        returnedPromise.abort = () => {
-            apiPromise.abort();
-        };
-
+        returnedPromise.abort = () => apiPromise.abort();
         return returnedPromise;
     }
 
@@ -156,7 +152,7 @@ class Post extends events.EventTarget {
             api.put('/post/' + this._id, detail, files) :
             api.post('/posts', detail, files);
 
-        let returnedPromise = apiPromise.then(response => {
+        return apiPromise.then(response => {
             this._updateFromResponse(response);
             this.dispatchEvent(
                 new CustomEvent('change', {detail: {post: this}}));
@@ -177,12 +173,6 @@ class Post extends events.EventTarget {
             }
             return Promise.reject(error);
         });
-
-        returnedPromise.abort = () => {
-            apiPromise.abort();
-        };
-
-        return returnedPromise;
     }
 
     feature() {

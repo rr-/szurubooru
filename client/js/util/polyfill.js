@@ -56,3 +56,6 @@ Number.prototype.between = function(a, b, inclusive) {
         this >= min && this <= max :
         this > min && this < max;
 };
+
+// non standard
+Promise.prototype.abort = () => {};

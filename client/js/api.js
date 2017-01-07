@@ -6,8 +6,6 @@ const request = require('superagent');
 const config = require('./config.js');
 const events = require('./events.js');
 
-// TODO: fix abort misery
-
 class Api extends events.EventTarget {
     constructor() {
         super();
@@ -149,8 +147,8 @@ class Api extends events.EventTarget {
         // transform the request: upload each file, then make the request use
         // its tokens.
         data = Object.assign({}, data);
-        let promise = Promise.resolve();
         let abortFunction = () => {};
+        let promise = Promise.resolve();
         if (files) {
             for (let key of Object.keys(files)) {
                 let file = files[key];
@@ -159,9 +157,9 @@ class Api extends events.EventTarget {
                 } else {
                     promise = promise
                         .then(() => {
-                            let returnedPromise = this._upload(file);
-                            abortFunction = () => { returnedPromise.abort(); };
-                            return returnedPromise;
+                            let uploadPromise = this._upload(file);
+                            abortFunction = () => uploadPromise.abort();
+                            return uploadPromise;
                         })
                         .then(token => {
                             abortFunction = () => {};
@@ -172,12 +170,17 @@ class Api extends events.EventTarget {
                 }
             }
         }
-        promise = promise.then(() => {
-            return this._rawRequest(url, requestFactory, data, {}, options);
-        }, error => {
-            // TODO: check if the error is because of expired uploads
-            return Promise.reject(error);
-        });
+        promise = promise.then(
+            () => {
+                let requestPromise = this._rawRequest(
+                    url, requestFactory, data, {}, options);
+                abortFunction = () => requestPromise.abort();
+                return requestPromise;
+            },
+            error => {
+                // TODO: check if the error is because of expired uploads
+                return Promise.reject(error);
+            });
         promise.abort = () => abortFunction();
         return promise;
     }
@@ -185,15 +188,14 @@ class Api extends events.EventTarget {
     _upload(file, options) {
         let abortFunction = () => {};
         let returnedPromise = new Promise((resolve, reject) => {
-            let apiPromise = this._rawRequest(
-                    '/uploads', request.post, {}, {content: file}, options);
-            abortFunction = () => apiPromise.abort();
-            return apiPromise.then(
+            let uploadPromise = this._rawRequest(
+                '/uploads', request.post, {}, {content: file}, options);
+            abortFunction = () => uploadPromise.abort();
+            return uploadPromise.then(
                 response => {
-                    resolve(response.token);
                     abortFunction = () => {};
-                },
-                reject);
+                    return resolve(response.token);
+                }, reject);
         });
         returnedPromise.abort = () => abortFunction();
         return returnedPromise;
@@ -204,9 +206,8 @@ class Api extends events.EventTarget {
         data = Object.assign({}, data);
         const [fullUrl, query] = this._getFullUrl(url);
 
-        let abortFunction = null;
-
-        let promise = new Promise((resolve, reject) => {
+        let abortFunction = () => {};
+        let returnedPromise = new Promise((resolve, reject) => {
             let req = requestFactory(fullUrl);
 
             req.set('Accept', 'application/json');
@@ -262,6 +263,7 @@ class Api extends events.EventTarget {
 
             req.end((error, response) => {
                 nprogress.done();
+                abortFunction = () => {};
                 if (error) {
                     if (response && response.body) {
                         error = new Error(
@@ -274,10 +276,8 @@ class Api extends events.EventTarget {
                 }
             });
         });
-
-        promise.abort = () => abortFunction();
-
-        return promise;
+        returnedPromise.abort = () => abortFunction();
+        return returnedPromise;
     }
 }
 
