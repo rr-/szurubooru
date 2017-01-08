@@ -197,6 +197,7 @@ class PostUploadView extends events.EventTarget {
 
     showInfo(message, uploadable) {
         this._showMessage(views.showInfo, message, uploadable);
+        views.appendExclamationMark();
     }
 
     _showMessage(functor, message, uploadable) {

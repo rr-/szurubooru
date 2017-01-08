@@ -282,11 +282,15 @@ function showMessage(target, message, className) {
     return true;
 }
 
-function showError(target, message) {
+function appendExclamationMark() {
     if (!document.title.startsWith('!')) {
         document.oldTitle = document.title;
         document.title = `! ${document.title}`;
     }
+}
+
+function showError(target, message) {
+    appendExclamationMark();
     return showMessage(target, misc.formatInlineMarkdown(message), 'error');
 }
 
@@ -492,23 +496,24 @@ document.addEventListener('click', e => {
 });
 
 module.exports = {
-    htmlToDom:          htmlToDom,
-    getTemplate:        getTemplate,
-    emptyContent:       emptyContent,
-    replaceContent:     replaceContent,
-    enableForm:         enableForm,
-    disableForm:        disableForm,
-    decorateValidator:  decorateValidator,
-    makeTagLink:        makeTagLink,
-    makePostLink:       makePostLink,
-    makeCheckbox:       makeCheckbox,
-    makeRadio:          makeRadio,
-    syncScrollPosition: syncScrollPosition,
-    slideDown:          slideDown,
-    slideUp:            slideUp,
-    monitorNodeRemoval: monitorNodeRemoval,
-    clearMessages:      clearMessages,
-    showError:          showError,
-    showSuccess:        showSuccess,
-    showInfo:           showInfo,
+    htmlToDom:             htmlToDom,
+    getTemplate:           getTemplate,
+    emptyContent:          emptyContent,
+    replaceContent:        replaceContent,
+    enableForm:            enableForm,
+    disableForm:           disableForm,
+    decorateValidator:     decorateValidator,
+    makeTagLink:           makeTagLink,
+    makePostLink:          makePostLink,
+    makeCheckbox:          makeCheckbox,
+    makeRadio:             makeRadio,
+    syncScrollPosition:    syncScrollPosition,
+    slideDown:             slideDown,
+    slideUp:               slideUp,
+    monitorNodeRemoval:    monitorNodeRemoval,
+    clearMessages:         clearMessages,
+    appendExclamationMark: appendExclamationMark,
+    showError:             showError,
+    showSuccess:           showSuccess,
+    showInfo:              showInfo,
 };
