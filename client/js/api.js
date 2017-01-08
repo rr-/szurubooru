@@ -176,9 +176,17 @@ class Api extends events.EventTarget {
                     url, requestFactory, data, {}, options);
                 abortFunction = () => requestPromise.abort();
                 return requestPromise;
-            },
-            error => {
-                // TODO: check if the error is because of expired uploads
+            })
+            .catch(error => {
+                if (error.response.name ===
+                        'MissingOrExpiredRequiredFileError') {
+                    for (let key of Object.keys(files)) {
+                        files[key].token = null;
+                    }
+                    error.message =
+                        'The uploaded file has expired; ' +
+                        'please resend the form to reupload.';
+                }
                 return Promise.reject(error);
             });
         promise.abort = () => abortFunction();
