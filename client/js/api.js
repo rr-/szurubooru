@@ -178,7 +178,7 @@ class Api extends events.EventTarget {
                 return requestPromise;
             })
             .catch(error => {
-                if (error.response.name ===
+                if (error.response && error.response.name ===
                         'MissingOrExpiredRequiredFileError') {
                     for (let key of Object.keys(files)) {
                         files[key].token = null;
