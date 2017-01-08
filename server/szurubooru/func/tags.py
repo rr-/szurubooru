@@ -104,7 +104,10 @@ def export_to_json():
             'color': result[2],
         }
 
-    for result in db.session.query(db.TagName.tag_id, db.TagName.name).all():
+    for result in (db.session
+            .query(db.TagName.tag_id, db.TagName.name)
+            .order_by(db.TagName.order)
+            .all()):
         if not result[0] in tags:
             tags[result[0]] = {'names': []}
         tags[result[0]]['names'].append(result[1])
