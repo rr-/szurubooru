@@ -6,6 +6,8 @@ const config = require('./config.js');
 const events = require('./events.js');
 const progress = require('./util/progress.js');
 
+let fileTokens = {};
+
 class Api extends events.EventTarget {
     constructor() {
         super();
@@ -143,6 +145,13 @@ class Api extends events.EventTarget {
         return [baseUrl, request];
     }
 
+    _getFileId(file) {
+        if (file.constructor === String) {
+            return file;
+        }
+        return file.name + file.size;
+    }
+
     _wrappedRequest(url, requestFactory, data, files, options) {
         // transform the request: upload each file, then make the request use
         // its tokens.
@@ -151,9 +160,10 @@ class Api extends events.EventTarget {
         let promise = Promise.resolve();
         if (files) {
             for (let key of Object.keys(files)) {
-                let file = files[key];
-                if (file.token) {
-                    data[key + 'Token'] = file.token;
+                const file = files[key];
+                const fileId = this._getFileId(file);
+                if (fileTokens[fileId]) {
+                    data[key + 'Token'] = fileTokens[fileId];
                 } else {
                     promise = promise
                         .then(() => {
@@ -163,7 +173,7 @@ class Api extends events.EventTarget {
                         })
                         .then(token => {
                             abortFunction = () => {};
-                            file.token = token;
+                            fileTokens[fileId] = token;
                             data[key + 'Token'] = token;
                             return Promise.resolve();
                         });
@@ -181,7 +191,9 @@ class Api extends events.EventTarget {
                 if (error.response && error.response.name ===
                         'MissingOrExpiredRequiredFileError') {
                     for (let key of Object.keys(files)) {
-                        files[key].token = null;
+                        const file = files[key];
+                        const fileId = this._getFileId(file);
+                        fileTokens[fileId] = null;
                     }
                     error.message =
                         'The uploaded file has expired; ' +
