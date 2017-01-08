@@ -3,6 +3,7 @@
 const api = require('../api.js');
 const router = require('../router.js');
 const misc = require('../util/misc.js');
+const progress = require('../util/progress.js');
 const topNavigation = require('../models/top_navigation.js');
 const Post = require('../models/post.js');
 const PostUploadView = require('../views/post_upload_view.js');
@@ -83,6 +84,7 @@ class PostUploadController {
     }
 
     _uploadSinglePost(uploadable, skipDuplicates) {
+        progress.start();
         let reverseSearchPromise = Promise.resolve();
         if (!uploadable.lookalikesConfirmed) {
             reverseSearchPromise =
@@ -121,8 +123,12 @@ class PostUploadController {
                 });
             this._lastCancellablePromise = savePromise;
             return savePromise;
-        }).catch(error => {
+        }).then(result => {
+            progress.done();
+            return Promise.resolve(result);
+        }, error => {
             error.uploadable = uploadable;
+            progress.done();
             return Promise.reject(error);
         });
     }

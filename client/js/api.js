@@ -1,10 +1,10 @@
 'use strict';
 
-const nprogress = require('nprogress');
 const cookies = require('js-cookie');
 const request = require('superagent');
 const config = require('./config.js');
 const events = require('./events.js');
+const progress = require('./util/progress.js');
 
 class Api extends events.EventTarget {
     constructor() {
@@ -259,18 +259,18 @@ class Api extends events.EventTarget {
             }
 
             if (!options.noProgress) {
-                nprogress.start();
+                progress.start();
             }
 
             abortFunction = () => {
                 req.abort();  // does *NOT* call the callback passed in .end()
-                nprogress.done();
+                progress.done();
                 reject(
                     new Error('The request was aborted due to user cancel.'));
             };
 
             req.end((error, response) => {
-                nprogress.done();
+                progress.done();
                 abortFunction = () => {};
                 if (error) {
                     if (response && response.body) {
