@@ -5,8 +5,6 @@ const misc = require('./util/misc.js');
 const views = require('./util/views.js');
 const router = require('./router.js');
 
-Promise.prototype.abort = () => {};
-
 history.scrollRestoration = 'manual';
 
 router.exit(
