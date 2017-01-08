@@ -84,8 +84,7 @@ class PostUploadController {
 
     _uploadSinglePost(uploadable, skipDuplicates) {
         let reverseSearchPromise = Promise.resolve();
-        if (!uploadable.lookalikesConfirmed &&
-                ['image'].includes(uploadable.type)) {
+        if (!uploadable.lookalikesConfirmed) {
             reverseSearchPromise =
                 Post.reverseSearch(uploadable.url || uploadable.file);
         }
@@ -122,6 +121,9 @@ class PostUploadController {
                 });
             this._lastCancellablePromise = savePromise;
             return savePromise;
+        }).catch(error => {
+            error.uploadable = uploadable;
+            return Promise.reject(error);
         });
     }
 
