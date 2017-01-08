@@ -58,8 +58,6 @@ class TagCategory extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -74,8 +72,6 @@ class TagCategory extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 

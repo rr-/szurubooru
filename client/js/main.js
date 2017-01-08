@@ -58,7 +58,7 @@ const api = require('./api.js');
 tags.refreshExport(); // we don't care about errors
 api.loginFromCookies().then(() => {
         router.start();
-    }, errorMessage => {
+    }, error => {
         if (window.location.href.indexOf('login') !== -1) {
             api.forget();
             router.start();
@@ -66,6 +66,6 @@ api.loginFromCookies().then(() => {
             const ctx = router.start('/');
             ctx.controller.showError(
                 'An error happened while trying to log you in: ' +
-                    errorMessage);
+                    error.message);
         }
     });

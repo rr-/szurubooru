@@ -62,22 +62,23 @@ class PostUploadController {
                     misc.disableExitConfirmation();
                     const ctx = router.show('/posts');
                     ctx.controller.showSuccess('Posts uploaded.');
-                }, ([errorMessage, uploadable, similarPostResults]) => {
-                    if (uploadable) {
-                        if (similarPostResults) {
-                            uploadable.lookalikes = similarPostResults;
-                            this._view.updateUploadable(uploadable);
+                }, error => {
+                    if (error.uploadable) {
+                        if (error.similarPosts) {
+                            error.uploadable.lookalikes = error.similarPosts;
+                            this._view.updateUploadable(error.uploadable);
                             this._view.showInfo(genericErrorMessage);
-                            this._view.showInfo(errorMessage, uploadable);
+                            this._view.showInfo(
+                                error.message, error.uploadable);
                         } else {
                             this._view.showError(genericErrorMessage);
-                            this._view.showError(errorMessage, uploadable);
+                            this._view.showError(
+                                error.message, error.uploadable);
                         }
                     } else {
-                        this._view.showError(errorMessage);
+                        this._view.showError(error.message);
                     }
                     this._view.enableForm();
-                    return Promise.reject();
                 });
     }
 
@@ -94,20 +95,21 @@ class PostUploadController {
             if (searchResult) {
                 // notify about exact duplicate
                 if (searchResult.exactPost && !skipDuplicates) {
-                    return Promise.reject([
-                        `Post already uploaded (@${searchResult.exactPost.id})`,
-                        uploadable,
-                        null]);
+                    let error = new Error('Post already uploaded ' +
+                        `(@${searchResult.exactPost.id})`);
+                    error.uploadable = uploadable;
+                    return Promise.reject(error);
                 }
 
                 // notify about similar posts
-                if (!searchResult.exactPost
-                        && searchResult.similarPosts.length) {
-                    return Promise.reject([
+                if (!searchResult.exactPost &&
+                        searchResult.similarPosts.length) {
+                    let error = new Error(
                         `Found ${searchResult.similarPosts.length} similar ` +
-                        'posts.\nYou can resume or discard this upload.',
-                        uploadable,
-                        searchResult.similarPosts]);
+                        'posts.\nYou can resume or discard this upload.');
+                    error.uploadable = uploadable;
+                    error.similarPosts = searchResult.similarPosts;
+                    return Promise.reject(error);
                 }
             }
 
@@ -118,8 +120,6 @@ class PostUploadController {
                 .then(() => {
                     this._view.removeUploadable(uploadable);
                     return Promise.resolve();
-                }, errorMessage => {
-                    return Promise.reject([errorMessage, uploadable, null]);
                 });
 
             returnedSavePromise.abort = () => {
@@ -128,8 +128,6 @@ class PostUploadController {
 
             this._lastCancellablePromise = returnedSavePromise;
             return returnedSavePromise;
-        }, errorMessage => {
-            return Promise.reject([errorMessage, uploadable, null]);
         });
     }
 

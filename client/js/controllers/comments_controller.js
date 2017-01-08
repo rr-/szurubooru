@@ -51,24 +51,20 @@ class CommentsController {
         // TODO: disable form
         e.detail.comment.text = e.detail.text;
         e.detail.comment.save()
-            .catch(errorMessage => {
-                e.detail.target.showError(errorMessage);
+            .catch(error => {
+                e.detail.target.showError(error.message);
                 // TODO: enable form
             });
     }
 
     _evtScore(e) {
         e.detail.comment.setScore(e.detail.score)
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+            .catch(error => window.alert(error.message));
     }
 
     _evtDelete(e) {
         e.detail.comment.delete()
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+            .catch(error => window.alert(error.message));
     }
 };
 

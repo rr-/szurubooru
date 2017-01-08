@@ -31,13 +31,11 @@ class UserRegistrationController {
         user.save().then(() => {
             api.forget();
             return api.login(e.detail.name, e.detail.password, false);
-        }, errorMessage => {
-            return Promise.reject(errorMessage);
         }).then(() => {
             const ctx = router.show('/');
             ctx.controller.showSuccess('Welcome aboard!');
-        }, errorMessage => {
-            this._view.showError(errorMessage);
+        }, error => {
+            this._view.showError(error.message);
             this._view.enableForm();
         });
     }

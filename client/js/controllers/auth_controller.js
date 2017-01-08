@@ -23,8 +23,8 @@ class LoginController {
             .then(() => {
                 const ctx = router.show('/');
                 ctx.controller.showSuccess('Logged in');
-            }, errorMessage => {
-                this._loginView.showError(errorMessage);
+            }, error => {
+                this._loginView.showError(error.message);
                 this._loginView.enableForm();
             });
     }

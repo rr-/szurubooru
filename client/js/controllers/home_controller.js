@@ -31,9 +31,7 @@ class HomeController {
                     featuringTime: info.featuringTime,
                 });
             },
-            errorMessage => {
-                this._homeView.showError(errorMessage);
-            });
+            error => this._homeView.showError(error.message));
     }
 
     showSuccess(message) {

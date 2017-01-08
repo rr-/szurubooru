@@ -17,11 +17,10 @@ class PostDetailController extends BasePostController {
         Post.get(ctx.parameters.id).then(post => {
             this._id = ctx.parameters.id;
             post.addEventListener('change', e => this._evtSaved(e, section));
-
             this._installView(post, section);
-        }, errorMessage => {
+        }, error => {
             this._view = new EmptyView();
-            this._view.showError(errorMessage);
+            this._view.showError(error.message);
         });
     }
 
@@ -46,8 +45,8 @@ class PostDetailController extends BasePostController {
         Post.get(e.detail.postId).then(post => {
             this._view.selectPost(post);
             this._view.enableForm();
-        }, errorMessage => {
-            this._view.showError(errorMessage);
+        }, error => {
+            this._view.showError(error.message);
             this._view.enableForm();
         });
     }
@@ -69,8 +68,8 @@ class PostDetailController extends BasePostController {
                 this._view.showSuccess('Post merged.');
                 router.replace(
                     '/post/' + e.detail.targetPost.id + '/merge', null, false);
-            }, errorMessage => {
-                this._view.showError(errorMessage);
+            }, error => {
+                this._view.showError(error.message);
                 this._view.enableForm();
             });
     }

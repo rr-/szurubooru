@@ -79,8 +79,6 @@ class Post extends events.EventTarget {
                     item.post = Post.fromResponse(item.post);
                 }
                 return Promise.resolve(response);
-            }, response => {
-                return Promise.reject(response.description);
             });
 
         returnedPromise.abort = () => {
@@ -94,8 +92,6 @@ class Post extends events.EventTarget {
         return api.get('/post/' + id)
             .then(response => {
                 return Promise.resolve(Post.fromResponse(response));
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -173,12 +169,13 @@ class Post extends events.EventTarget {
                     new CustomEvent('changeThumbnail', {detail: {post: this}}));
             }
             return Promise.resolve();
-        }, response => {
-            if (response.name === 'PostAlreadyUploadedError') {
-                return Promise.reject(
-                    `Post already uploaded (@${response.otherPostId})`);
+        }, error => {
+            if (error.response &&
+                    error.response.name === 'PostAlreadyUploadedError') {
+                error.message =
+                    `Post already uploaded (@${error.response.otherPostId})`;
             }
-            return Promise.reject(response.description);
+            return Promise.reject(error);
         });
 
         returnedPromise.abort = () => {
@@ -192,8 +189,6 @@ class Post extends events.EventTarget {
         return api.post('/featured-post', {id: this._id})
             .then(response => {
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -206,8 +201,6 @@ class Post extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -221,8 +214,6 @@ class Post extends events.EventTarget {
                     mergeTo: targetId,
                     replaceContent: useOldContent,
                 });
-            }, response => {
-                return Promise.reject(response);
             }).then(response => {
                 this._updateFromResponse(response);
                 this.dispatchEvent(new CustomEvent('change', {
@@ -231,8 +222,6 @@ class Post extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -254,8 +243,6 @@ class Post extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -277,8 +264,6 @@ class Post extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -300,8 +285,6 @@ class Post extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 

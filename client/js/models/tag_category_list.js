@@ -61,9 +61,6 @@ class TagCategoryList extends AbstractList {
             .then(response => {
                 this._deletedCategories = [];
                 return Promise.resolve();
-            }, errorMessage => {
-                return Promise.reject(
-                    errorMessage.description || errorMessage);
             });
     }
 

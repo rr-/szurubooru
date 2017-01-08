@@ -84,9 +84,9 @@ class PostMainController extends BasePostController {
                 this._view.commentListControl.addEventListener(
                     'delete', e => this._evtDeleteComment(e));
             }
-        }, errorMessage => {
+        }, error => {
             this._view = new EmptyView();
-            this._view.showError(errorMessage);
+            this._view.showError(error.message);
         });
     }
 
@@ -117,8 +117,8 @@ class PostMainController extends BasePostController {
             .then(() => {
                 this._view.sidebarControl.showSuccess('Post featured.');
                 this._view.sidebarControl.enableForm();
-            }, errorMessage => {
-                this._view.sidebarControl.showError(errorMessage);
+            }, error => {
+                this._view.sidebarControl.showError(error.message);
                 this._view.sidebarControl.enableForm();
             });
     }
@@ -135,8 +135,8 @@ class PostMainController extends BasePostController {
                 misc.disableExitConfirmation();
                 const ctx = router.show('/posts');
                 ctx.controller.showSuccess('Post deleted.');
-            }, errorMessage => {
-                this._view.sidebarControl.showError(errorMessage);
+            }, error => {
+                this._view.sidebarControl.showError(error.message);
                 this._view.sidebarControl.enableForm();
             });
     }
@@ -168,8 +168,8 @@ class PostMainController extends BasePostController {
                 this._view.sidebarControl.showSuccess('Post saved.');
                 this._view.sidebarControl.enableForm();
                 misc.disableExitConfirmation();
-            }, errorMessage => {
-                this._view.sidebarControl.showError(errorMessage);
+            }, error => {
+                this._view.sidebarControl.showError(error.message);
                 this._view.sidebarControl.enableForm();
             });
     }
@@ -192,8 +192,8 @@ class PostMainController extends BasePostController {
                 this._view.commentControl.exitEditMode();
                 this._view.commentControl.enableForm();
                 misc.disableExitConfirmation();
-            }, errorMessage => {
-                this._view.commentControl.showError(errorMessage);
+            }, error => {
+                this._view.commentControl.showError(error.message);
                 this._view.commentControl.enableForm();
             });
     }
@@ -202,24 +202,20 @@ class PostMainController extends BasePostController {
         // TODO: disable form
         e.detail.comment.text = e.detail.text;
         e.detail.comment.save()
-            .catch(errorMessage => {
-                e.detail.target.showError(errorMessage);
+            .catch(error => {
+                e.detail.target.showError(error.message);
                 // TODO: enable form
             });
     }
 
     _evtScoreComment(e) {
         e.detail.comment.setScore(e.detail.score)
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+            .catch(error => window.alert(error.message));
     }
 
     _evtDeleteComment(e) {
         e.detail.comment.delete()
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+            .catch(error => window.alert(error.message));
     }
 
     _evtScorePost(e) {
@@ -227,9 +223,7 @@ class PostMainController extends BasePostController {
             return;
         }
         e.detail.post.setScore(e.detail.score)
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+            .catch(error => window.alert(error.message));
     }
 
     _evtFavoritePost(e) {
@@ -237,9 +231,7 @@ class PostMainController extends BasePostController {
             return;
         }
         e.detail.post.addToFavorites()
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+            .catch(error => window.alert(error.message));
     }
 
     _evtUnfavoritePost(e) {
@@ -247,9 +239,7 @@ class PostMainController extends BasePostController {
             return;
         }
         e.detail.post.removeFromFavorites()
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+            .catch(error => window.alert(error.message));
     }
 }
 

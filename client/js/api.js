@@ -85,18 +85,10 @@ class Api extends events.EventTarget {
     }
 
     loginFromCookies() {
-        return new Promise((resolve, reject) => {
-            const auth = cookies.getJSON('auth');
-            if (auth && auth.user && auth.password) {
-                this.login(auth.user, auth.password, true)
-                    .then(resolve)
-                    .catch(errorMessage => {
-                        reject(errorMessage);
-                    });
-            } else {
-                resolve();
-            }
-        });
+        const auth = cookies.getJSON('auth');
+        return auth && auth.user && auth.password ?
+            this.login(auth.user, auth.password, true) :
+            Promise.resolve();
     }
 
     login(userName, userPassword, doRemember) {
@@ -117,8 +109,8 @@ class Api extends events.EventTarget {
                     this.user = response;
                     resolve();
                     this.dispatchEvent(new CustomEvent('login'));
-                }, response => {
-                    reject(response.description || response || 'Unknown error');
+                }, error => {
+                    reject(error);
                     this.logout();
                 });
         });
@@ -182,9 +174,9 @@ class Api extends events.EventTarget {
         }
         promise = promise.then(() => {
             return this._rawRequest(url, requestFactory, data, {}, options);
-        }, errorMessage => {
+        }, error => {
             // TODO: check if the error is because of expired uploads
-            return Promise.reject(errorMessage);
+            return Promise.reject(error);
         });
         promise.abort = () => abortFunction();
         return promise;
@@ -201,7 +193,7 @@ class Api extends events.EventTarget {
                     resolve(response.token);
                     abortFunction = () => {};
                 },
-                errorMessage => reject(errorMessage));
+                reject);
         });
         returnedPromise.abort = () => abortFunction();
         return returnedPromise;
@@ -253,9 +245,8 @@ class Api extends events.EventTarget {
                             }));
                 }
             } catch (e) {
-                reject({
-                    title: 'Authentication error',
-                    description: 'Malformed credentials'});
+                reject(
+                    new Error('Authentication error (malformed credentials)'));
             }
 
             if (!options.noProgress) {
@@ -265,18 +256,19 @@ class Api extends events.EventTarget {
             abortFunction = () => {
                 req.abort();  // does *NOT* call the callback passed in .end()
                 nprogress.done();
-                reject({
-                    title: 'Cancelled',
-                    description:
-                        'The request was aborted due to user cancel.'});
+                reject(
+                    new Error('The request was aborted due to user cancel.'));
             };
 
             req.end((error, response) => {
                 nprogress.done();
                 if (error) {
-                    reject(response && response.body ? response.body : {
-                        title: 'Networking error',
-                        description: error.message});
+                    if (response && response.body) {
+                        error = new Error(
+                            response.body.description || 'Unknown error');
+                        error.response = response.body;
+                    }
+                    reject(error);
                 } else {
                     resolve(response.body);
                 }

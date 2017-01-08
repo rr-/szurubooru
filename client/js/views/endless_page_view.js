@@ -114,8 +114,8 @@ class EndlessPageView {
                     this._working--;
                     resolve(pageNode);
                 });
-            }, response => {
-                this.showError(response.description);
+            }, error => {
+                this.showError(error.message);
                 this._working--;
                 reject();
             });

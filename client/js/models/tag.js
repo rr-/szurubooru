@@ -36,8 +36,6 @@ class Tag extends events.EventTarget {
         return api.get('/tag/' + encodeURIComponent(name))
             .then(response => {
                 return Promise.resolve(Tag.fromResponse(response));
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -73,8 +71,6 @@ class Tag extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -87,8 +83,6 @@ class Tag extends events.EventTarget {
                     mergeToVersion: response.version,
                     mergeTo: targetName,
                 });
-            }, response => {
-                return Promise.reject(response);
             }).then(response => {
                 this._updateFromResponse(response);
                 this.dispatchEvent(new CustomEvent('change', {
@@ -97,8 +91,6 @@ class Tag extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -113,8 +105,6 @@ class Tag extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 

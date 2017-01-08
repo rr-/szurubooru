@@ -63,9 +63,9 @@ class UserController {
             this._view.addEventListener('change', e => this._evtChange(e));
             this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
-        }, errorMessage => {
+        }, error => {
             this._view = new EmptyView();
-            this._view.showError(errorMessage);
+            this._view.showError(error.message);
         });
     }
 
@@ -115,13 +115,11 @@ class UserController {
                     e.detail.password || api.userPassword,
                     false) :
                 Promise.resolve();
-        }, errorMessage => {
-            return Promise.reject(errorMessage);
         }).then(() => {
             this._view.showSuccess('Settings updated.');
             this._view.enableForm();
-        }, errorMessage => {
-            this._view.showError(errorMessage);
+        }, error => {
+            this._view.showError(error.message);
             this._view.enableForm();
         });
     }
@@ -143,8 +141,8 @@ class UserController {
                     const ctx = router.show('/');
                     ctx.controller.showSuccess('Account deleted.');
                 }
-            }, errorMessage => {
-                this._view.showError(errorMessage);
+            }, error => {
+                this._view.showError(error.message);
                 this._view.enableForm();
             });
     }

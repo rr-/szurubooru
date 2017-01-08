@@ -61,20 +61,14 @@ class PostListController {
         for (let tag of this._massTagTags) {
             e.detail.post.addTag(tag);
         }
-        e.detail.post.save()
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+        e.detail.post.save().catch(error => window.alert(error.message));
     }
 
     _evtUntag(e) {
         for (let tag of this._massTagTags) {
             e.detail.post.removeTag(tag);
         }
-        e.detail.post.save()
-            .catch(errorMessage => {
-                window.alert(errorMessage);
-            });
+        e.detail.post.save().catch(error => window.alert(error.message));
     }
 
     _decorateSearchQuery(text) {

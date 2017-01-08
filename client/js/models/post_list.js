@@ -9,12 +9,7 @@ class PostList extends AbstractList {
         const url =
             `/post/${id}/around?fields=id` +
             `&query=${encodeURIComponent(searchQuery)}`;
-        return api.get(url)
-            .then(response => {
-                return Promise.resolve(response);
-            }).catch(response => {
-                return Promise.reject(response.description);
-            });
+        return api.get(url);
     }
 
     static search(text, page, pageSize, fields) {

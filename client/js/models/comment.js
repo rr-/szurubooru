@@ -50,8 +50,6 @@ class Comment extends events.EventTarget {
                 },
             }));
             return Promise.resolve();
-        }, response => {
-            return Promise.reject(response.description);
         });
     }
 
@@ -66,8 +64,6 @@ class Comment extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -81,8 +77,6 @@ class Comment extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 

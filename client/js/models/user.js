@@ -43,8 +43,6 @@ class User extends events.EventTarget {
         return api.get('/user/' + encodeURIComponent(name))
             .then(response => {
                 return Promise.resolve(User.fromResponse(response));
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -89,8 +87,6 @@ class User extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 
@@ -105,8 +101,6 @@ class User extends events.EventTarget {
                     },
                 }));
                 return Promise.resolve();
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 

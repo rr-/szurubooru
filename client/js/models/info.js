@@ -15,8 +15,6 @@ class Info {
                             Post.fromResponse(response.featuredPost) :
                             undefined
                     }));
-            }, response => {
-                return Promise.reject(response.description);
             });
     }
 }

@@ -29,9 +29,9 @@ class TagCategoriesController {
                 canSetDefault: api.hasPrivilege('tagCategories:setDefault'),
             });
             this._view.addEventListener('submit', e => this._evtSubmit(e));
-        }, errorMessage => {
+        }, error => {
             this._view = new EmptyView();
-            this._view.showError(errorMessage);
+            this._view.showError(error.message);
         });
     }
 
@@ -43,9 +43,9 @@ class TagCategoriesController {
                 tags.refreshExport();
                 this._view.enableForm();
                 this._view.showSuccess('Changes saved.');
-            }, errorMessage => {
+            }, error => {
                 this._view.enableForm();
-                this._view.showError(errorMessage);
+                this._view.showError(error.message);
             });
     }
 }

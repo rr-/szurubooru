@@ -47,9 +47,9 @@ class TagController {
             this._view.addEventListener('submit', e => this._evtUpdate(e));
             this._view.addEventListener('merge', e => this._evtMerge(e));
             this._view.addEventListener('delete', e => this._evtDelete(e));
-        }, errorMessage => {
+        }, error => {
             this._view = new EmptyView();
-            this._view.showError(errorMessage);
+            this._view.showError(error.message);
         });
     }
 
@@ -86,8 +86,8 @@ class TagController {
         e.detail.tag.save().then(() => {
             this._view.showSuccess('Tag saved.');
             this._view.enableForm();
-        }, errorMessage => {
-            this._view.showError(errorMessage);
+        }, error => {
+            this._view.showError(error.message);
             this._view.enableForm();
         });
     }
@@ -100,8 +100,8 @@ class TagController {
             this._view.enableForm();
             router.replace(
                 '/tag/' + e.detail.targetTagName + '/merge', null, false);
-        }, errorMessage => {
-            this._view.showError(errorMessage);
+        }, error => {
+            this._view.showError(error.message);
             this._view.enableForm();
         });
     }
@@ -113,8 +113,8 @@ class TagController {
             .then(() => {
                 const ctx = router.show('/tags/');
                 ctx.controller.showSuccess('Tag deleted.');
-            }, errorMessage => {
-                this._view.showError(errorMessage);
+            }, error => {
+                this._view.showError(error.message);
                 this._view.enableForm();
             });
     }

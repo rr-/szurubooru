@@ -25,8 +25,8 @@ class PasswordResetController {
                 this._passwordResetView.showSuccess(
                     'E-mail has been sent. To finish the procedure, ' +
                     'please click the link it contains.');
-            }, response => {
-                this._passwordResetView.showError(response.description);
+            }, error => {
+                this._passwordResetView.showError(error.message);
                 this._passwordResetView.enableForm();
             });
     }
@@ -41,14 +41,12 @@ class PasswordResetFinishController {
             .then(response => {
                 password = response.password;
                 return api.login(name, password, false);
-            }, response => {
-                return Promise.reject(response.description);
             }).then(() => {
                 const ctx = router.show('/');
                 ctx.controller.showSuccess('New password: ' + password);
-            }, errorMessage => {
+            }, error => {
                 const ctx = router.show('/');
-                ctx.controller.showError(errorMessage);
+                ctx.controller.showError(error.message);
             });
     }
 }
