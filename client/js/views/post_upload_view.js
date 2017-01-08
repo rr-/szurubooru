@@ -7,8 +7,6 @@ const FileDropperControl = require('../controls/file_dropper_control.js');
 const template = views.getTemplate('post-upload');
 const rowTemplate = views.getTemplate('post-upload-row');
 
-let globalOrder = 0;
-
 function _mimeTypeToPostType(mimeType) {
     return {
         'application/x-shockwave-flash': 'flash',
@@ -30,8 +28,6 @@ class Uploadable extends events.EventTarget {
         this.tags = [];
         this.relations = [];
         this.anonymous = false;
-        this.order = globalOrder;
-        globalOrder++;
     }
 
     destroy() {
@@ -152,7 +148,11 @@ class PostUploadView extends events.EventTarget {
 
         this._cancelButtonNode.disabled = true;
 
-        this._uploadables = new Map();
+        this._uploadables = [];
+        this._uploadables.find = u => {
+            return this._uploadables.findIndex(u2 => u.key === u2.key);
+        };
+
         this._contentFileDropper = new FileDropperControl(
             this._contentInputNode,
             {
@@ -208,11 +208,11 @@ class PostUploadView extends events.EventTarget {
         this._formNode.classList.remove('inactive');
         let duplicatesFound = 0;
         for (let uploadable of uploadables) {
-            if (this._uploadables.has(uploadable.key)) {
+            if (this._uploadables.find(uploadable) !== -1) {
                 duplicatesFound++;
                 continue;
             }
-            this._uploadables.set(uploadable.key, uploadable);
+            this._uploadables.push(uploadable);
             this._emit('change');
             this._renderRowNode(uploadable);
             uploadable.addEventListener(
@@ -233,15 +233,14 @@ class PostUploadView extends events.EventTarget {
     }
 
     removeUploadable(uploadable) {
-        if (!this._uploadables.has(uploadable.key)) {
+        if (this._uploadables.find(uploadable) === -1) {
             return;
         }
         uploadable.destroy();
         uploadable.rowNode.parentNode.removeChild(uploadable.rowNode);
-        this._uploadables.delete(uploadable.key);
-        this._normalizeUploadablesOrder();
+        this._uploadables.splice(this._uploadables.find(uploadable), 1);
         this._emit('change');
-        if (!this._uploadables.size) {
+        if (!this._uploadables.length) {
             this._formNode.classList.add('inactive');
             this._submitButtonNode.value = 'Upload all';
         }
@@ -267,7 +266,7 @@ class PostUploadView extends events.EventTarget {
 
     _evtFormSubmit(e) {
         e.preventDefault();
-        for (let uploadable of this._uploadables.values()) {
+        for (let uploadable of this._uploadables) {
             this._updateUploadableFromDom(uploadable);
         }
         this._submitButtonNode.value = 'Resume upload';
@@ -310,32 +309,20 @@ class PostUploadView extends events.EventTarget {
         if (this._uploading) {
             return;
         }
-        let sortedUploadables = this._getSortedUploadables();
-        if ((uploadable.order + delta).between(-1, sortedUploadables.length)) {
-            uploadable.order += delta;
-            const otherUploadable = sortedUploadables[uploadable.order];
-            otherUploadable.order -= delta;
+        let index = this._uploadables.find(uploadable);
+        if ((index + delta).between(-1, this._uploadables.length)) {
+            let uploadable1 = this._uploadables[index];
+            let uploadable2 = this._uploadables[index + delta];
+            this._uploadables[index] = uploadable2;
+            this._uploadables[index + delta] = uploadable1;
             if (delta === 1) {
-                uploadable.rowNode.parentNode.insertBefore(
-                    otherUploadable.rowNode, uploadable.rowNode);
+                this._listNode.insertBefore(
+                    uploadable2.rowNode, uploadable1.rowNode);
             } else {
-                uploadable.rowNode.parentNode.insertBefore(
-                    uploadable.rowNode, otherUploadable.rowNode);
+                this._listNode.insertBefore(
+                    uploadable1.rowNode, uploadable2.rowNode);
             }
         }
-    }
-
-    _normalizeUploadablesOrder() {
-        let sortedUploadables = this._getSortedUploadables();
-        for (let i = 0; i < sortedUploadables.length; i++) {
-            sortedUploadables[i].order = i;
-        }
-    }
-
-    _getSortedUploadables() {
-        let sortedUploadables = [...this._uploadables.values()];
-        sortedUploadables.sort((a, b) => a.order - b.order);
-        return sortedUploadables;
     }
 
     _emit(eventType) {
@@ -343,7 +330,7 @@ class PostUploadView extends events.EventTarget {
             new CustomEvent(
                 eventType,
                 {detail: {
-                    uploadables: this._getSortedUploadables(),
+                    uploadables: this._uploadables,
                     skipDuplicates: this._skipDuplicatesCheckboxNode.checked,
                 }}));
     }
