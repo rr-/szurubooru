@@ -117,7 +117,7 @@ class StrikeThroughWrapper extends BaseMarkdownWrapper {
 
 function createRenderer() {
     function sanitize(str) {
-        return str.replace(/&<"/g, function (m) {
+        return str.replace(/&<"/g, m => {
             if (m === '&') {
                 return '&amp;';
             }
@@ -140,7 +140,7 @@ function createRenderer() {
             res += '" height="' + height;
         }
         return res + '">';
-    }
+    };
     return renderer;
 }
 
