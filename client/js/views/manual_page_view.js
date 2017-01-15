@@ -102,7 +102,7 @@ class ManualPageView {
 
             views.syncScrollPosition();
         }, response => {
-            this.showError(response.description);
+            this.showError(response.message);
         });
     }
 
