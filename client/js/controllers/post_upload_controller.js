@@ -95,16 +95,20 @@ class PostUploadController {
         return reverseSearchPromise.then(searchResult => {
             if (searchResult) {
                 // notify about exact duplicate
-                if (searchResult.exactPost && !skipDuplicates) {
-                    let error = new Error('Post already uploaded ' +
-                        `(@${searchResult.exactPost.id})`);
-                    error.uploadable = uploadable;
-                    return Promise.reject(error);
+                if (searchResult.exactPost) {
+                    if (skipDuplicates) {
+                        this._view.removeUploadable(uploadable);
+                        return Promise.resolve();
+                    } else {
+                        let error = new Error('Post already uploaded ' +
+                            `(@${searchResult.exactPost.id})`);
+                        error.uploadable = uploadable;
+                        return Promise.reject(error);
+                    }
                 }
 
                 // notify about similar posts
-                if (!searchResult.exactPost &&
-                        searchResult.similarPosts.length) {
+                if (searchResult.similarPosts.length) {
                     let error = new Error(
                         `Found ${searchResult.similarPosts.length} similar ` +
                         'posts.\nYou can resume or discard this upload.');
