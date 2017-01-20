@@ -134,26 +134,25 @@ It is recommended to rebuild the frontend after each change to configuration.
 tries not to impose any networking configurations on the user, so it is the
 user's responsibility to wire these to their web server.
 
-Below are described the methods to integrate the API into a web server:
+The static files are located in the `client/public/data` directory and are
+meant to be exposed directly to the end users.
 
-1. Run API locally with `waitress`, and bind it with a reverse proxy. In this
-   approach, the user needs to (from within `virtualenv`) install `waitress`
-   with `pip install waitress` and then start `szurubooru` with `./host-waitress`
-   from within the `server/` directory (see `--help` for details). Then the
-   user needs to add a virtual host that delegates the API requests to the
-   local API server, and the browser requests to the `client/public/`
-   directory.
-2. Alternatively, Apache users can use `mod_wsgi`.
-3. Alternatively, users can use other WSGI frontends such as `gunicorn` or
-   `uwsgi`, but they'll need to write wrapper scripts themselves.
+The API should be exposed using WSGI server such as `waitress`, `gunicorn` or
+similar. Other configurations might be possible but I didn't pursue them.
 
 Note that the API URL in the virtual host configuration needs to be the same as
 the one in the `config.yaml`, so that client knows how to access the backend!
 
 #### Example
 
-**nginx configuration** - wiring API `http://great.dude/api/` to
-`localhost:6666` to avoid fiddling with CORS:
+In this example:
+
+- The booru is accessed from `http://great.dude/`
+- The API is accessed from `http://great.dude/api`
+- The API server listens locally on port 6666, and is proxied by nginx
+- The static files are served from `/srv/www/booru/client/public/data`
+
+**nginx configuration**:
 
 ```nginx
 server {
@@ -169,7 +168,7 @@ server {
         }
     }
     location / {
-        root /home/rr-/src/maintained/szurubooru/client/public;
+        root /srv/www/booru/client/public;
         try_files $uri /index.htm;
     }
 }
@@ -181,8 +180,21 @@ server {
 api_url: 'http://big.dude/api/'
 base_url: 'http://big.dude/'
 data_url: 'http://big.dude/data/'
-data_dir: '/home/rr-/src/maintained/szurubooru/client/public/data'
+data_dir: '/srv/www/booru/client/public/data'
 ```
 
-Then the backend is started with `host-waitress` from within `virtualenv` and
-`./server/` directory.
+To run the server using `waitress`:
+
+```console
+user@host:szuru/server$ source python_modules/bin/activate
+(python_modules) user@host:szuru/server$ pip install waitress
+(python_modules) user@host:szuru/server$ waitress-serve --port 6666 szurubooru.facade:app
+```
+
+or `gunicorn`:
+
+```console
+user@host:szuru/server$ source python_modules/bin/activate
+(python_modules) user@host:szuru/server$ pip install gunicorn
+(python_modules) user@host:szuru/server$ gunicorn szurubooru.facade:app -b 127.0.0.1:6666
+```
