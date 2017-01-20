@@ -3,6 +3,7 @@
 const api = require('../api.js');
 const tags = require('../tags.js');
 const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const settings = require('../models/settings.js');
 const events = require('../events.js');
 const views = require('../util/views.js');
@@ -308,7 +309,7 @@ class TagInputControl extends events.EventTarget {
             tagLinkNode.classList.add(className);
         }
         tagLinkNode.setAttribute(
-            'href',  '/tag/' + encodeURIComponent(tagName));
+            'href', uri.formatClientLink('tag', tagName));
         const tagIconNode = document.createElement('i');
         tagIconNode.classList.add('fa');
         tagIconNode.classList.add('fa-tag');
@@ -319,7 +320,7 @@ class TagInputControl extends events.EventTarget {
             searchLinkNode.classList.add(className);
         }
         searchLinkNode.setAttribute(
-            'href', '/posts/query=' + encodeURIComponent(tagName));
+            'href', uri.formatClientLink('posts', {query: tagName}));
         searchLinkNode.textContent = tagName + ' ';
         searchLinkNode.addEventListener('click', e => {
             e.preventDefault();
@@ -360,7 +361,9 @@ class TagInputControl extends events.EventTarget {
         if (!browsingSettings.tagSuggestions) {
             return;
         }
-        api.get('/tag-siblings/' + tag.names[0], {noProgress: true})
+        api.get(
+                uri.formatApiLink('tag-siblings', tag.names[0]),
+                {noProgress: true})
             .then(response => {
                 return Promise.resolve(response.results);
             }, response => {

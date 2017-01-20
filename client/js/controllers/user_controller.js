@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const misc = require('../util/misc.js');
 const config = require('../config.js');
 const views = require('../util/views.js');
@@ -77,7 +78,8 @@ class UserController {
         misc.disableExitConfirmation();
         if (this._name !== e.detail.user.name) {
             router.replace(
-                '/user/' + e.detail.user.name + '/' + section, null, false);
+                uri.formatClientLink('user', e.detail.user.name, section),
+                null, false);
         }
     }
 
@@ -135,10 +137,10 @@ class UserController {
                     api.logout();
                 }
                 if (api.hasPrivilege('users:list')) {
-                    const ctx = router.show('/users');
+                    const ctx = router.show(uri.formatClientLink('users'));
                     ctx.controller.showSuccess('Account deleted.');
                 } else {
-                    const ctx = router.show('/');
+                    const ctx = router.show(uri.formatClientLink());
                     ctx.controller.showSuccess('Account deleted.');
                 }
             }, error => {
@@ -149,13 +151,13 @@ class UserController {
 }
 
 module.exports = router => {
-    router.enter('/user/:name', (ctx, next) => {
+    router.enter(['user', ':name'], (ctx, next) => {
         ctx.controller = new UserController(ctx, 'summary');
     });
-    router.enter('/user/:name/edit', (ctx, next) => {
+    router.enter(['user', ':name', 'edit'], (ctx, next) => {
         ctx.controller = new UserController(ctx, 'edit');
     });
-    router.enter('/user/:name/delete', (ctx, next) => {
+    router.enter(['user', ':name', 'delete'], (ctx, next) => {
         ctx.controller = new UserController(ctx, 'delete');
     });
 };

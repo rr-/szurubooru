@@ -1,7 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
-const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const PostList = require('../models/post_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
@@ -28,7 +28,7 @@ class CommentsController {
             getClientUrlForPage: page => {
                 const parameters = Object.assign(
                     {}, ctx.parameters, {page: page});
-                return '/comments/' + misc.formatUrlParameters(parameters);
+                return uri.formatClientLink('comments', parameters);
             },
             requestPage: page => {
                 return PostList.search(
@@ -69,7 +69,6 @@ class CommentsController {
 };
 
 module.exports = router => {
-    router.enter('/comments/:parameters?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+    router.enter(['comments'],
         (ctx, next) => { new CommentsController(ctx); });
 };

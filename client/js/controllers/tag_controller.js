@@ -3,6 +3,7 @@
 const router = require('../router.js');
 const api = require('../api.js');
 const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const tags = require('../tags.js');
 const Tag = require('../models/tag.js');
 const topNavigation = require('../models/top_navigation.js');
@@ -61,7 +62,8 @@ class TagController {
         misc.disableExitConfirmation();
         if (this._name !== e.detail.tag.names[0]) {
             router.replace(
-                '/tag/' + e.detail.tag.names[0] + '/' + section, null, false);
+                uri.formatClientLink('tag', e.detail.tag.names[0], section),
+                null, false);
         }
     }
 
@@ -99,7 +101,8 @@ class TagController {
             this._view.showSuccess('Tag merged.');
             this._view.enableForm();
             router.replace(
-                '/tag/' + e.detail.targetTagName + '/merge', null, false);
+                uri.formatClientLink('tag', e.detail.targetTagName, 'merge'),
+                null, false);
         }, error => {
             this._view.showError(error.message);
             this._view.enableForm();
@@ -111,7 +114,7 @@ class TagController {
         this._view.disableForm();
         e.detail.tag.delete()
             .then(() => {
-                const ctx = router.show('/tags/');
+                const ctx = router.show(uri.formatClientLink('tags'));
                 ctx.controller.showSuccess('Tag deleted.');
             }, error => {
                 this._view.showError(error.message);
@@ -121,16 +124,16 @@ class TagController {
 }
 
 module.exports = router => {
-    router.enter('/tag/:name(.+?)/edit', (ctx, next) => {
+    router.enter(['tag', ':name', 'edit'], (ctx, next) => {
         ctx.controller = new TagController(ctx, 'edit');
     });
-    router.enter('/tag/:name(.+?)/merge', (ctx, next) => {
+    router.enter(['tag', ':name', 'merge'], (ctx, next) => {
         ctx.controller = new TagController(ctx, 'merge');
     });
-    router.enter('/tag/:name(.+?)/delete', (ctx, next) => {
+    router.enter(['tag', ':name', 'delete'], (ctx, next) => {
         ctx.controller = new TagController(ctx, 'delete');
     });
-    router.enter('/tag/:name(.+)', (ctx, next) => {
+    router.enter(['tag', ':name'], (ctx, next) => {
         ctx.controller = new TagController(ctx, 'summary');
     });
 };

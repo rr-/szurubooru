@@ -8,7 +8,7 @@ const router = require('./router.js');
 history.scrollRestoration = 'manual';
 
 router.exit(
-    /.*/,
+    null,
     (ctx, next) => {
         ctx.state.scrollX = window.scrollX;
         ctx.state.scrollY = window.scrollY;
@@ -20,7 +20,7 @@ router.exit(
 
 const mousetrap = require('mousetrap');
 router.enter(
-    /.*/,
+    null,
     (ctx, next) => {
         mousetrap.reset();
         next();

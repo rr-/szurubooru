@@ -44,7 +44,7 @@ class HomeController {
 };
 
 module.exports = router => {
-    router.enter('/', (ctx, next) => {
+    router.enter([], (ctx, next) => {
         ctx.controller = new HomeController();
     });
 };

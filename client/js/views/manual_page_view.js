@@ -2,7 +2,6 @@
 
 const router = require('../router.js');
 const keyboard = require('../util/keyboard.js');
-const misc = require('../util/misc.js');
 const views = require('../util/views.js');
 
 const holderTemplate = views.getTemplate('manual-pager');

@@ -51,6 +51,6 @@
             <li><i class='fa fa-star-half-o'></i> vote up/down on posts and comments</li>
         </ul>
         <hr/>
-        <p>By creating an account, you are agreeing to the <a href='/help/tos'>Terms of Service</a>.</p>
+        <p>By creating an account, you are agreeing to the <a href='<%- ctx.formatClientLink('help', 'tos') %>'>Terms of Service</a>.</p>
     </div>
 </div>

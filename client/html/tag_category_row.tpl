@@ -19,7 +19,7 @@
     </td>
     <td class='usages'>
         <% if (ctx.tagCategory.name) { %>
-            <a href='/tags/query=category:<%- encodeURIComponent(ctx.tagCategory.name) %>'>
+            <a href='<%- ctx.formatClientLink('tags', {query: 'category:' + ctx.tagCategory.name}) %>'>
                 <%- ctx.tagCategory.tagCount %>
             </a>
         <% } else { %>

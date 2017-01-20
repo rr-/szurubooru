@@ -1,6 +1,7 @@
 'use strict';
 
 const markdown = require('./markdown.js');
+const uri = require('./uri.js');
 
 function decamelize(str, sep) {
     sep = sep === undefined ? '-' : sep;
@@ -99,42 +100,8 @@ function formatInlineMarkdown(text) {
     return markdown.formatInlineMarkdown(text);
 }
 
-function formatUrlParameters(dict) {
-    let result = [];
-    for (let key of Object.keys(dict)) {
-        const value = dict[key];
-        if (key === 'parameters') {
-            continue;
-        }
-        if (value) {
-            result.push(`${key}=${encodeURIComponent(value)}`);
-        }
-    }
-    return result.join(';');
-}
-
 function splitByWhitespace(str) {
     return str.split(/\s+/).filter(s => s);
-}
-
-function parseUrlParameters(query) {
-    let result = {};
-    for (let word of (query || '').split(/;/)) {
-        const [key, value] = word.split(/=/, 2);
-        result[key] = value;
-    }
-    result.query = result.query || '';
-    result.page = parseInt(result.page || '1');
-    return result;
-}
-
-function parseUrlParametersRoute(ctx, next) {
-    // ctx.parameters = {"user":...,"action":...} from /users/:user/:action
-    // ctx.parameters.parameters = value of :parameters as per /url/:parameters
-    Object.assign(
-        ctx.parameters,
-        parseUrlParameters(ctx.parameters.parameters));
-    next();
 }
 
 function unindent(callSite, ...args) {
@@ -232,9 +199,6 @@ function dataURItoBlob(dataURI) {
 
 module.exports = {
     range:                   range,
-    formatUrlParameters:     formatUrlParameters,
-    parseUrlParameters:      parseUrlParameters,
-    parseUrlParametersRoute: parseUrlParametersRoute,
     formatRelativeTime:      formatRelativeTime,
     formatFileSize:          formatFileSize,
     formatMarkdown:          formatMarkdown,

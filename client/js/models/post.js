@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const tags = require('../tags.js');
 const events = require('../events.js');
 const NoteList = require('./note_list.js');
@@ -69,7 +70,9 @@ class Post extends events.EventTarget {
 
     static reverseSearch(content) {
         let apiPromise = api.post(
-            '/posts/reverse-search', {}, {content: content});
+            uri.formatApiLink('posts', 'reverse-search'),
+            {},
+            {content: content});
         let returnedPromise = apiPromise
             .then(response => {
                 if (response.exactPost) {
@@ -85,7 +88,7 @@ class Post extends events.EventTarget {
     }
 
     static get(id) {
-        return api.get('/post/' + id)
+        return api.get(uri.formatApiLink('post', id))
             .then(response => {
                 return Promise.resolve(Post.fromResponse(response));
             });
@@ -149,8 +152,8 @@ class Post extends events.EventTarget {
         }
 
         let apiPromise = this._id ?
-            api.put('/post/' + this._id, detail, files) :
-            api.post('/posts', detail, files);
+            api.put(uri.formatApiLink('post', this.id), detail, files) :
+            api.post(uri.formatApiLink('posts'), detail, files);
 
         return apiPromise.then(response => {
             this._updateFromResponse(response);
@@ -176,14 +179,18 @@ class Post extends events.EventTarget {
     }
 
     feature() {
-        return api.post('/featured-post', {id: this._id})
+        return api.post(
+                uri.formatApiLink('featured-post'),
+                {id: this._id})
             .then(response => {
                 return Promise.resolve();
             });
     }
 
     delete() {
-        return api.delete('/post/' + this._id, {version: this._version})
+        return api.delete(
+                uri.formatApiLink('post', this.id),
+                {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {
                     detail: {
@@ -195,9 +202,9 @@ class Post extends events.EventTarget {
     }
 
     merge(targetId, useOldContent) {
-        return api.get('/post/' + encodeURIComponent(targetId))
+        return api.get(uri.formatApiLink('post', targetId))
             .then(response => {
-                return api.post('/post-merge/', {
+                return api.post(uri.formatApiLink('post-merge'), {
                     removeVersion: this._version,
                     remove: this._id,
                     mergeToVersion: response.version,
@@ -216,7 +223,9 @@ class Post extends events.EventTarget {
     }
 
     setScore(score) {
-        return api.put('/post/' + this._id + '/score', {score: score})
+        return api.put(
+                uri.formatApiLink('post', this.id, 'score'),
+                {score: score})
             .then(response => {
                 const prevFavorite = this._ownFavorite;
                 this._updateFromResponse(response);
@@ -237,7 +246,7 @@ class Post extends events.EventTarget {
     }
 
     addToFavorites() {
-        return api.post('/post/' + this.id + '/favorite')
+        return api.post(uri.formatApiLink('post', this.id, 'favorite'))
             .then(response => {
                 const prevScore = this._ownScore;
                 this._updateFromResponse(response);
@@ -258,7 +267,7 @@ class Post extends events.EventTarget {
     }
 
     removeFromFavorites() {
-        return api.delete('/post/' + this.id + '/favorite')
+        return api.delete(uri.formatApiLink('post', this.id, 'favorite'))
             .then(response => {
                 const prevScore = this._ownScore;
                 this._updateFromResponse(response);

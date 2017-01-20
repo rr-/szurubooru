@@ -22,7 +22,6 @@
     "merge": "^1.2.0",
     "mousetrap": "^1.5.3",
     "nprogress": "^0.2.0",
-    "path-to-regexp": "^1.5.1",
     "stylus": "^0.54.2",
     "superagent": "^1.8.3",
     "uglify-js": "git://github.com/mishoo/UglifyJS2.git#harmony",

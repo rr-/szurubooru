@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const User = require('../models/user.js');
 const topNavigation = require('../models/top_navigation.js');
 const RegistrationView = require('../views/registration_view.js');
@@ -32,7 +33,7 @@ class UserRegistrationController {
             api.forget();
             return api.login(e.detail.name, e.detail.password, false);
         }).then(() => {
-            const ctx = router.show('/');
+            const ctx = router.show(uri.formatClientLink());
             ctx.controller.showSuccess('Welcome aboard!');
         }, error => {
             this._view.showError(error.message);
@@ -42,7 +43,7 @@ class UserRegistrationController {
 }
 
 module.exports = router => {
-    router.enter('/register', (ctx, next) => {
+    router.enter(['register'], (ctx, next) => {
         new UserRegistrationController();
     });
 };

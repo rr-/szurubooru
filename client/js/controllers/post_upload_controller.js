@@ -2,6 +2,7 @@
 
 const api = require('../api.js');
 const router = require('../router.js');
+const uri = require('../util/uri.js');
 const misc = require('../util/misc.js');
 const progress = require('../util/progress.js');
 const topNavigation = require('../models/top_navigation.js');
@@ -61,7 +62,7 @@ class PostUploadController {
                 .then(() => {
                     this._view.clearMessages();
                     misc.disableExitConfirmation();
-                    const ctx = router.show('/posts');
+                    const ctx = router.show(uri.formatClientLink('posts'));
                     ctx.controller.showSuccess('Posts uploaded.');
                 }, error => {
                     if (error.uploadable) {
@@ -149,7 +150,7 @@ class PostUploadController {
 }
 
 module.exports = router => {
-    router.enter('/upload', (ctx, next) => {
+    router.enter(['upload'], (ctx, next) => {
         ctx.controller = new PostUploadController();
     });
 };

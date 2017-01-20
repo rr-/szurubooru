@@ -2,7 +2,7 @@
 
 const api = require('../api.js');
 const settings = require('../models/settings.js');
-const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const PostList = require('../models/post_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
@@ -52,7 +52,7 @@ class PostListController {
         history.pushState(
             null,
             window.title,
-            '/posts/' + misc.formatUrlParameters(e.detail.parameters));
+            uri.formatClientLink('posts', e.detail.parameters));
         Object.assign(this._ctx.parameters, e.detail.parameters);
         this._syncPageController();
     }
@@ -89,7 +89,7 @@ class PostListController {
         this._pageController.run({
             parameters: this._ctx.parameters,
             getClientUrlForPage: page => {
-                return '/posts/' + misc.formatUrlParameters(
+                return uri.formatClientLink('posts',
                     Object.assign({}, this._ctx.parameters, {page: page}));
             },
             requestPage: page => {
@@ -114,7 +114,6 @@ class PostListController {
 
 module.exports = router => {
     router.enter(
-        '/posts/:parameters(.*)?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+        ['posts'],
         (ctx, next) => { ctx.controller = new PostListController(ctx); });
 };

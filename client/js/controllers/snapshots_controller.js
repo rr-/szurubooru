@@ -1,7 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
-const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const SnapshotList = require('../models/snapshot_list.js');
 const PageController = require('../controllers/page_controller.js');
 const topNavigation = require('../models/top_navigation.js');
@@ -25,7 +25,7 @@ class SnapshotsController {
             getClientUrlForPage: page => {
                 const parameters = Object.assign(
                     {}, ctx.parameters, {page: page});
-                return '/history/' + misc.formatUrlParameters(parameters);
+                return uri.formatClientLink('history', parameters);
             },
             requestPage: page => {
                 return SnapshotList.search('', page, 25);
@@ -43,7 +43,6 @@ class SnapshotsController {
 }
 
 module.exports = router => {
-    router.enter('/history/:parameters?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+    router.enter(['history'],
         (ctx, next) => { ctx.controller = new SnapshotsController(ctx); });
 };

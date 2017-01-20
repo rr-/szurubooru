@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const events = require('../events.js');
 const misc = require('../util/misc.js');
 
@@ -33,7 +34,7 @@ class Tag extends events.EventTarget {
     }
 
     static get(name) {
-        return api.get('/tag/' + encodeURIComponent(name))
+        return api.get(uri.formatApiLink('tag', name))
             .then(response => {
                 return Promise.resolve(Tag.fromResponse(response));
             });
@@ -60,8 +61,8 @@ class Tag extends events.EventTarget {
         }
 
         let promise = this._origName ?
-            api.put('/tag/' + encodeURIComponent(this._origName), detail) :
-            api.post('/tags', detail);
+            api.put(uri.formatApiLink('tag', this._origName), detail) :
+            api.post(uri.formatApiLink('tags'), detail);
         return promise
             .then(response => {
                 this._updateFromResponse(response);
@@ -75,9 +76,9 @@ class Tag extends events.EventTarget {
     }
 
     merge(targetName) {
-        return api.get('/tag/' + encodeURIComponent(targetName))
+        return api.get(uri.formatApiLink('tag', targetName))
             .then(response => {
-                return api.post('/tag-merge/', {
+                return api.post(uri.formatApiLink('tag-merge'), {
                     removeVersion: this._version,
                     remove: this._origName,
                     mergeToVersion: response.version,
@@ -96,7 +97,7 @@ class Tag extends events.EventTarget {
 
     delete() {
         return api.delete(
-                '/tag/' + encodeURIComponent(this._origName),
+                uri.formatApiLink('tag', this._origName),
                 {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {

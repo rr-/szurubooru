@@ -1,7 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
-const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const TagList = require('../models/tag_list.js');
 const topNavigation = require('../models/top_navigation.js');
 const PageController = require('../controllers/page_controller.js');
@@ -49,7 +49,7 @@ class TagListController {
         history.pushState(
             null,
             window.title,
-            '/tags/' + misc.formatUrlParameters(e.detail.parameters));
+            uri.formatClientLink('tags', e.detail.parameters));
         Object.assign(this._ctx.parameters, e.detail.parameters);
         this._syncPageController();
     }
@@ -60,7 +60,7 @@ class TagListController {
             getClientUrlForPage: page => {
                 const parameters = Object.assign(
                     {}, this._ctx.parameters, {page: page});
-                return '/tags/' + misc.formatUrlParameters(parameters);
+                return uri.formatClientLink('tags', parameters);
             },
             requestPage: page => {
                 return TagList.search(
@@ -75,7 +75,6 @@ class TagListController {
 
 module.exports = router => {
     router.enter(
-        '/tags/:parameters(.*)?',
-        (ctx, next) => { misc.parseUrlParametersRoute(ctx, next); },
+        ['tags'],
         (ctx, next) => { ctx.controller = new TagListController(ctx); });
 };

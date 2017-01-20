@@ -1,6 +1,7 @@
 'use strict';
 
 // modified page.js by visionmedia
+// - changed regexes to components
 // - removed unused crap
 // - refactored to classes
 // - simplified method chains
@@ -9,18 +10,11 @@
 // - rename .save() to .replaceState()
 // - offer .url
 
-const pathToRegexp = require('path-to-regexp');
 const clickEvent = document.ontouchstart ? 'touchstart' : 'click';
+const uri = require('./util/uri.js');
 let location = window.history.location || window.location;
 
 const base = '';
-
-function _decodeURLEncodedURIComponent(val) {
-    if (typeof val !== 'string') {
-        return val;
-    }
-    return decodeURIComponent(val.replace(/\+/g, ' '));
-}
 
 function _isSameOrigin(href) {
     let origin = location.protocol + '//' + location.hostname;
@@ -55,11 +49,28 @@ class Context {
 };
 
 class Route {
-    constructor(path, options) {
-        options = options || {};
-        this.path = (path === '*') ? '(.*)' : path;
+    constructor(path) {
         this.method = 'GET';
-        this.regexp = pathToRegexp(this.path, this.keys = [], options);
+        this.path = path;
+
+        this.parameterNames = [];
+        if (this.path === null) {
+            this.regex = /.*/;
+        } else {
+            let parts = [];
+            for (let component of this.path) {
+                if (component[0] === ':') {
+                    parts.push('([^/]+)');
+                    this.parameterNames.push(component.substr(1));
+                } else { // assert [a-z]+
+                    parts.push(component);
+                }
+            }
+            let regexString = '^/' + parts.join('/');
+            regexString += '(?:/*|/((?:(?:[a-z]+=[^/]+);)*(?:[a-z]+=[^/]+)))$';
+            this.parameterNames.push('variable');
+            this.regex = new RegExp(regexString);
+        }
     }
 
     middleware(fn) {
@@ -72,23 +83,38 @@ class Route {
     }
 
     match(path, parameters) {
-        const keys = this.keys;
         const qsIndex = path.indexOf('?');
         const pathname = ~qsIndex ? path.slice(0, qsIndex) : path;
-        const m = this.regexp.exec(pathname);
+        const match = this.regex.exec(pathname);
 
-        if (!m) {
+        if (!match) {
             return false;
         }
 
-        for (let i = 1, len = m.length; i < len; ++i) {
-            const key = keys[i - 1];
-            const val = _decodeURLEncodedURIComponent(m[i]);
-            if (val !== undefined ||
-                    !(hasOwnProperty.call(parameters, key.name))) {
-                parameters[key.name] = val;
+        try {
+            for (let i = 1; i < match.length; i++) {
+                const name = this.parameterNames[i - 1];
+                const value = match[i];
+                if (value === undefined) {
+                    continue;
+                }
+
+                if (name === 'variable') {
+                    for (let word of (value || '').split(/;/)) {
+                        const [key, subvalue] = word.split(/=/, 2);
+                        parameters[key] = uri.unescapeParam(subvalue);
+                    }
+                } else {
+                    parameters[name] = uri.unescapeParam(value);
+                }
             }
+        } catch (e) {
+            return false;
         }
+
+        // XXX: it is very unfitting place for this
+        parameters.query = parameters.query || '';
+        parameters.page = parseInt(parameters.page || '1');
 
         return true;
     }

@@ -1,6 +1,7 @@
 'use strict';
 
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const events = require('../events.js');
 
 class TagCategory extends events.EventTarget {
@@ -45,9 +46,9 @@ class TagCategory extends events.EventTarget {
 
         let promise = this._origName ?
             api.put(
-                '/tag-category/' + encodeURIComponent(this._origName),
+                uri.formatApiLink('tag-category', this._origName),
                 detail) :
-            api.post('/tag-categories', detail);
+            api.post(uri.formatApiLink('tag-categories'), detail);
 
         return promise
             .then(response => {
@@ -63,7 +64,7 @@ class TagCategory extends events.EventTarget {
 
     delete() {
         return api.delete(
-                '/tag-category/' + encodeURIComponent(this._origName),
+                uri.formatApiLink('tag-category', this._origName),
                 {version: this._version})
             .then(response => {
                 this.dispatchEvent(new CustomEvent('delete', {

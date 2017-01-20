@@ -1,7 +1,7 @@
 'use strict';
 
 const router = require('../router.js');
-const misc = require('../util/misc.js');
+const uri = require('../util/uri.js');
 const views = require('../util/views.js');
 const PostContentControl = require('../controls/post_content_control.js');
 const PostNotesOverlayControl
@@ -88,7 +88,7 @@ class HomeView {
     _evtFormSubmit(e) {
         e.preventDefault();
         this._searchInputNode.blur();
-        router.show('/posts/' + misc.formatUrlParameters({
+        router.show(uri.formatClientLink('posts', {
             query: this._searchInputNode.value}));
     }
 }

@@ -67,14 +67,14 @@
                 --><% for (let tag of ctx.post.tags) { %><!--
                     --><li><!--
                         --><% if (ctx.canViewTags) { %><!--
-                        --><a href='/tag/<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                        --><a href='<%- ctx.formatClientLink('tag', tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
                             --><i class='fa fa-tag'></i><!--
                         --><% } %><!--
                         --><% if (ctx.canViewTags) { %><!--
                             --></a><!--
                         --><% } %><!--
                         --><% if (ctx.canListPosts) { %><!--
-                            --><a href='/posts/query=<%- encodeURIComponent(tag) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
+                            --><a href='<%- ctx.formatClientLink('posts', {query: tag}) %>' class='<%= ctx.makeCssName(ctx.getTagCategory(tag), 'tag') %>'><!--
                         --><% } %><!--
                             --><%- tag %>&#32;<!--
                         --><% if (ctx.canListPosts) { %><!--

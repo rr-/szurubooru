@@ -1,7 +1,7 @@
 <div class='comment-container'>
     <div class='avatar'>
         <% if (ctx.user && ctx.user.name && ctx.canViewUsers) { %>
-            <a href='/user/<%- encodeURIComponent(ctx.user.name) %>'>
+            <a href='<%- ctx.formatClientLink('user', ctx.user.name) %>'>
         <% } %>
 
         <%= ctx.makeThumbnail(ctx.user ? ctx.user.avatarUrl : null) %>
@@ -23,7 +23,7 @@
             <nav class='readonly'><%
                 %><strong><span class='nickname'><%
                     %><% if (ctx.user && ctx.user.name && ctx.canViewUsers) { %><%
-                        %><a href='/user/<%- encodeURIComponent(ctx.user.name) %>'><%
+                        %><a href='<%- ctx.formatClientLink('user', ctx.user.name) %>'><%
                     %><% } %><%
 
                     %><%- ctx.user ? ctx.user.name : 'Deleted user' %><%

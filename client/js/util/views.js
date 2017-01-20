@@ -6,6 +6,7 @@ const templates = require('../templates.js');
 const tags = require('../tags.js');
 const domParser = new DOMParser();
 const misc = require('./misc.js');
+const uri = require('./uri.js');
 
 function _imbueId(options) {
     if (!options.id) {
@@ -152,19 +153,15 @@ function makeNumericInput(options) {
 }
 
 function getPostUrl(id, parameters) {
-    let url = '/post/' + encodeURIComponent(id);
-    if (parameters && parameters.query) {
-        url += '/query=' + encodeURIComponent(parameters.query);
-    }
-    return url;
+    return uri.formatClientLink(
+        'post', id,
+        parameters ? {query: parameters.query} : {});
 }
 
 function getPostEditUrl(id, parameters) {
-    let url = '/post/' + encodeURIComponent(id) + '/edit';
-    if (parameters && parameters.query) {
-        url += '/query=' + encodeURIComponent(parameters.query);
-    }
-    return url;
+    return uri.formatClientLink(
+        'post', id, 'edit',
+        parameters ? {query: parameters.query} : {});
 }
 
 function makePostLink(id, includeHash) {
@@ -175,7 +172,7 @@ function makePostLink(id, includeHash) {
     return api.hasPrivilege('posts:view') ?
         makeElement(
             'a',
-            {'href': '/post/' + encodeURIComponent(id)},
+            {href: uri.formatClientLink('post', id)},
             misc.escapeHtml(text)) :
         misc.escapeHtml(text);
 }
@@ -191,13 +188,13 @@ function makeTagLink(name, includeHash) {
         makeElement(
             'a',
             {
-                'href': '/tag/' + encodeURIComponent(name),
-                'class': misc.makeCssName(category, 'tag'),
+                href: uri.formatClientLink('tag', name),
+                class: misc.makeCssName(category, 'tag'),
             },
             misc.escapeHtml(text)) :
         makeElement(
             'span',
-            {'class': misc.makeCssName(category, 'tag')},
+            {class: misc.makeCssName(category, 'tag')},
             misc.escapeHtml(text));
 }
 
@@ -206,7 +203,7 @@ function makeUserLink(user) {
     text += user && user.name ? misc.escapeHtml(user.name) : 'Anonymous';
     const link = user && api.hasPrivilege('users:view') ?
         makeElement(
-            'a', {'href': '/user/' + encodeURIComponent(user.name)}, text) :
+            'a', {href: uri.formatClientLink('user', user.name)}, text) :
         text;
     return makeElement('span', {class: 'user'}, link);
 }
@@ -385,6 +382,7 @@ function getTemplate(templatePath) {
             makeElement:       makeElement,
             makeCssName:       misc.makeCssName,
             makeNumericInput:  makeNumericInput,
+            formatClientLink:  uri.formatClientLink
         });
         return htmlToDom(templateFactory(ctx));
     };

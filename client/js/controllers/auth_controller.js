@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const api = require('../api.js');
+const uri = require('../util/uri.js');
 const topNavigation = require('../models/top_navigation.js');
 const LoginView = require('../views/login_view.js');
 
@@ -21,7 +22,7 @@ class LoginController {
         api.forget();
         api.login(e.detail.name, e.detail.password, e.detail.remember)
             .then(() => {
-                const ctx = router.show('/');
+                const ctx = router.show(uri.formatClientLink());
                 ctx.controller.showSuccess('Logged in');
             }, error => {
                 this._loginView.showError(error.message);
@@ -34,16 +35,16 @@ class LogoutController {
     constructor() {
         api.forget();
         api.logout();
-        const ctx = router.show('/');
+        const ctx = router.show(uri.formatClientLink());
         ctx.controller.showSuccess('Logged out');
     }
 }
 
 module.exports = router => {
-    router.enter('/login', (ctx, next) => {
+    router.enter(['login'], (ctx, next) => {
         ctx.controller = new LoginController();
     });
-    router.enter('/logout', (ctx, next) => {
+    router.enter(['logout'], (ctx, next) => {
         ctx.controller = new LogoutController();
     });
 };

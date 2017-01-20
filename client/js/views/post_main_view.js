@@ -2,6 +2,7 @@
 
 const router = require('../router.js');
 const views = require('../util/views.js');
+const uri = require('../util/uri.js');
 const keyboard = require('../util/keyboard.js');
 const PostContentControl = require('../controls/post_content_control.js');
 const PostNotesOverlayControl =
@@ -61,19 +62,19 @@ class PostMainView {
 
         keyboard.bind('e', () => {
             if (ctx.editMode) {
-                router.show('/post/' + ctx.post.id);
+                router.show(uri.formatClientLink('post', ctx.post.id));
             } else {
-                router.show('/post/' + ctx.post.id + '/edit');
+                router.show(uri.formatClientLink('post', ctx.post.id, 'edit'));
             }
         });
         keyboard.bind(['a', 'left'], () => {
             if (ctx.prevPostId) {
-                router.show('/post/' + ctx.prevPostId);
+                router.show(uri.formatClientLink('post', ctx.prevPostId));
             }
         });
         keyboard.bind(['d', 'right'], () => {
             if (ctx.nextPostId) {
-                router.show('/post/' + ctx.nextPostId);
+                router.show(uri.formatClientLink('post', ctx.nextPostId));
             }
         });
     }

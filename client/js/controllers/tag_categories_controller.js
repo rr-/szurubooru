@@ -51,7 +51,7 @@ class TagCategoriesController {
 }
 
 module.exports = router => {
-    router.enter('/tag-categories', (ctx, next) => {
+    router.enter(['tag-categories'], (ctx, next) => {
         ctx.controller = new TagCategoriesController(ctx, next);
     });
 };

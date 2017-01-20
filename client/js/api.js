@@ -5,6 +5,7 @@ const request = require('superagent');
 const config = require('./config.js');
 const events = require('./events.js');
 const progress = require('./util/progress.js');
+const uri = require('./util/uri.js');
 
 let fileTokens = {};
 
