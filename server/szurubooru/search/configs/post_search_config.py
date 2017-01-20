@@ -102,7 +102,7 @@ class PostSearchConfig(BaseSearchConfig):
         search_query.special_tokens = new_special_tokens
 
     def create_around_query(self):
-        return db.session.query(db.Post.post_id)
+        return db.session.query(db.Post).options(lazyload('*'))
 
     def create_filter_query(self, disable_eager_loads):
         strategy = lazyload if disable_eager_loads else subqueryload
