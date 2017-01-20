@@ -113,3 +113,6 @@ def create_app():
     rest.errors.handle(sqlalchemy.orm.exc.StaleDataError, _on_stale_data_error)
 
     return rest.application
+
+
+app = create_app()

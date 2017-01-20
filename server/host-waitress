@@ -10,7 +10,7 @@ import argparse
 import os.path
 import sys
 import waitress
-from szurubooru.facade import create_app
+from szurubooru.facade import app
 
 def main():
     parser = argparse.ArgumentParser('Starts szurubooru using waitress.')
@@ -19,7 +19,6 @@ def main():
     parser.add_argument('--host', help='IP to listen on', default='0.0.0.0')
     args = parser.parse_args()
 
-    app = create_app()
     waitress.serve(app, host=args.host, port=args.port)
 
 if __name__ == '__main__':
