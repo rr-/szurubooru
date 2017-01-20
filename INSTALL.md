@@ -159,13 +159,14 @@ the one in the `config.yaml`, so that client knows how to access the backend!
 server {
     listen 80;
     server_name great.dude;
-    merge_slashes off;  # to support post tags such as ///
 
     location ~ ^/api$ {
         return 302 /api/;
     }
     location ~ ^/api/(.*)$ {
-        proxy_pass http://127.0.0.1:6666/$1$is_args$args;
+        if ($request_uri ~* "/api/(.*)") { # preserve PATH_INFO as-is
+            proxy_pass http://127.0.0.1:6666/$1;
+        }
     }
     location / {
         root /home/rr-/src/maintained/szurubooru/client/public;

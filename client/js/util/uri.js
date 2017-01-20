@@ -24,11 +24,11 @@ function formatApiLink(...values) {
 }
 
 function escapeParam(text) {
-    return encodeURIComponent(text).replace(/%/g, '$');
+    return encodeURIComponent(text);
 }
 
 function unescapeParam(text) {
-    return decodeURIComponent(text.replace(/\$/g, '%'));
+    return decodeURIComponent(text);
 }
 
 function formatClientLink(...values) {

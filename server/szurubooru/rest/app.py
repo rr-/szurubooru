@@ -31,7 +31,7 @@ def _get_headers(env):
 
 def _create_context(env):
     method = env['REQUEST_METHOD']
-    path = urllib.parse.unquote('/' + env['PATH_INFO'].lstrip('/'))
+    path = '/' + env['PATH_INFO'].lstrip('/')
     headers = _get_headers(env)
 
     files = {}
