@@ -334,7 +334,8 @@ def update_post_content(post, content):
     except errors.ProcessingError:
         post.canvas_width = None
         post.canvas_height = None
-    if post.canvas_width <= 0 or post.canvas_height <= 0:
+    if (post.canvas_width is not None and post.canvas_width <= 0) \
+            or (post.canvas_height is not None and post.canvas_height <= 0):
         post.canvas_width = None
         post.canvas_height = None
     setattr(post, '__content', content)
