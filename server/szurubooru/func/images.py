@@ -36,6 +36,7 @@ class Image:
             '-i', '{path}',
             '-f', 'image2',
             '-vf', _SCALE_FIT_FMT.format(width=width, height=height),
+            '-map', '0:v:0',
             '-vframes', '1',
             '-vcodec', 'png',
             '-',
@@ -56,6 +57,7 @@ class Image:
         return self._execute([
             '-i', '{path}',
             '-f', 'image2',
+            '-map', '0:v:0',
             '-vframes', '1',
             '-vcodec', 'png',
             '-',
@@ -68,6 +70,7 @@ class Image:
             '-i', '{path}',
             '-f', 'image2',
             '-filter_complex', 'overlay',
+            '-map', '0:v:0',
             '-vframes', '1',
             '-vcodec', 'mjpeg',
             '-',
@@ -106,5 +109,6 @@ class Image:
         ], program='ffprobe').decode('utf-8'))
         assert 'format' in self.info
         assert 'streams' in self.info
-        if len(self.info['streams']) != 1:
-            raise errors.ProcessingError('Multiple video streams detected.')
+        if len(self.info['streams']) < 1:
+            logger.warning('The video contains no video streams.')
+            raise errors.ProcessingError('The video contains no video streams.')
