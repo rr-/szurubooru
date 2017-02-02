@@ -44,6 +44,13 @@ def _on_processing_error(ex):
     raise _map_error(ex, rest.errors.HttpBadRequest, 'Processing error')
 
 
+def _on_third_party_error(ex):
+    raise _map_error(
+        ex,
+        rest.errors.HttpInternalServerError,
+        'Server configuration error')
+
+
 def _on_stale_data_error(_ex):
     raise rest.errors.HttpConflict(
         name='IntegrityError',
@@ -110,6 +117,7 @@ def create_app():
     rest.errors.handle(errors.IntegrityError, _on_integrity_error)
     rest.errors.handle(errors.NotFoundError, _on_not_found_error)
     rest.errors.handle(errors.ProcessingError, _on_processing_error)
+    rest.errors.handle(errors.ThirdPartyError, _on_third_party_error)
     rest.errors.handle(sqlalchemy.orm.exc.StaleDataError, _on_stale_data_error)
 
     return rest.application

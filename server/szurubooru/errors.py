@@ -46,3 +46,7 @@ class MissingRequiredParameterError(ValidationError):
 
 class InvalidParameterError(ValidationError):
     pass
+
+
+class ThirdPartyError(BaseError):
+    pass

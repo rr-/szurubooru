@@ -1,5 +1,5 @@
 import datetime
-from szurubooru import search, db
+from szurubooru import search, db, errors
 from szurubooru.rest import routes
 from szurubooru.func import (
     auth, tags, posts, snapshots, favorites, scores, util, versions)
@@ -211,6 +211,12 @@ def get_posts_around(ctx, params):
 def get_posts_by_image(ctx, _params=None):
     auth.verify_privilege(ctx.user, 'posts:reverse_search')
     content = ctx.get_file('content', required=True)
+
+    try:
+        lookalikes = posts.search_by_image(content)
+    except (errors.ThirdPartyError, errors.ProcessingError):
+        lookalikes = []
+
     return {
         'exactPost':
             _serialize_post(ctx, posts.search_by_image_exact(content)),
@@ -220,6 +226,6 @@ def get_posts_by_image(ctx, _params=None):
                     'distance': lookalike.distance,
                     'post': _serialize_post(ctx, lookalike.post),
                 }
-                for lookalike in posts.search_by_image(content)
+                for lookalike in lookalikes
             ],
     }

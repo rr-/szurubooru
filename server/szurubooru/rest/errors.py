@@ -47,5 +47,10 @@ class HttpMethodNotAllowed(BaseHttpError):
     reason = 'Method Not Allowed'
 
 
+class HttpInternalServerError(BaseHttpError):
+    code = 500
+    reason = 'Internal Server Error'
+
+
 def handle(exception_type, handler):
     error_handlers[exception_type] = handler
