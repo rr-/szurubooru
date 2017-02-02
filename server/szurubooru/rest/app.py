@@ -93,6 +93,9 @@ def application(env, start_response):
                     hook(ctx)
                 try:
                     response = handler(ctx, match.groupdict())
+                except:
+                    ctx.session.rollback()
+                    raise
                 finally:
                     for hook in middleware.post_hooks:
                         hook(ctx)
