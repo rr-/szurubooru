@@ -139,8 +139,8 @@ def get_default_category(lock=False):
 def get_default_category_name():
     if cache.has(DEFAULT_CATEGORY_NAME_CACHE_KEY):
         return cache.get(DEFAULT_CATEGORY_NAME_CACHE_KEY)
-    default_category = try_get_default_category()
-    default_category_name = default_category.name if default_category else None
+    default_category = get_default_category()
+    default_category_name = default_category.name
     cache.put(DEFAULT_CATEGORY_NAME_CACHE_KEY, default_category_name)
     return default_category_name
 

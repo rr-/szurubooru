@@ -193,7 +193,8 @@ def test_get_default_category_name(tag_category_factory):
     assert tag_categories.get_default_category_name() == category1.name
     db.session.query(db.TagCategory).delete()
     cache.purge()
-    assert tag_categories.get_default_category_name() is None
+    with pytest.raises(tag_categories.TagCategoryNotFoundError):
+        tag_categories.get_default_category_name()
 
 
 def test_get_default_category_name_caching(tag_category_factory):
