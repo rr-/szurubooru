@@ -1,12 +1,10 @@
-''' Exports create_app. '''
-
 import os
 import time
 import logging
 import threading
 import coloredlogs
 import sqlalchemy.orm.exc
-from szurubooru import config, errors, rest
+from szurubooru import config, db, errors, rest
 from szurubooru.func import posts, file_uploads
 # pylint: disable=unused-import
 from szurubooru import api, middleware
@@ -113,6 +111,7 @@ def create_app():
 
     try:
         posts.populate_reverse_search()
+        db.session.commit()
     except errors.ThirdPartyError:
         pass
 
