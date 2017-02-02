@@ -553,11 +553,13 @@ def search_by_image_exact(image_content):
 
 
 def search_by_image(image_content):
+    ret = []
     for result in image_hash.search_by_image(image_content):
-        yield PostLookalike(
+        ret.append(PostLookalike(
             score=result.score,
             distance=result.distance,
-            post=get_post_by_id(result.path))
+            post=get_post_by_id(result.path)))
+    return ret
 
 
 def populate_reverse_search():
