@@ -110,7 +110,11 @@ def create_app():
     purge_thread = threading.Thread(target=purge_old_uploads)
     purge_thread.daemon = True
     purge_thread.start()
-    posts.populate_reverse_search()
+
+    try:
+        posts.populate_reverse_search()
+    except errors.ThirdPartyError:
+        pass
 
     rest.errors.handle(errors.AuthError, _on_auth_error)
     rest.errors.handle(errors.ValidationError, _on_validation_error)
