@@ -378,10 +378,13 @@ def update_post_relations(post, new_post_ids):
             'A relation must be numeric post ID.')
     old_posts = post.relations
     old_post_ids = [int(p.post_id) for p in old_posts]
-    new_posts = db.session \
-        .query(db.Post) \
-        .filter(db.Post.post_id.in_(new_post_ids)) \
-        .all()
+    if new_post_ids:
+        new_posts = db.session \
+            .query(db.Post) \
+            .filter(db.Post.post_id.in_(new_post_ids)) \
+            .all()
+    else:
+        new_posts = []
     if len(new_posts) != len(new_post_ids):
         raise InvalidPostRelationError('One of relations does not exist.')
     if post.post_id in new_post_ids:
