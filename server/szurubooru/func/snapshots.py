@@ -86,10 +86,13 @@ def create(entity, auth_user):
 def modify(entity, auth_user):
     assert entity
 
-    model = next((model
-        for model in db.Base._decl_class_registry.values()
-        if hasattr(model, '__table__')
-            and model.__table__.fullname == entity.__table__.fullname),
+    model = next(
+        (
+            model
+            for model in db.Base._decl_class_registry.values()
+            if hasattr(model, '__table__')
+            and model.__table__.fullname == entity.__table__.fullname
+        ),
         None)
     assert model
 

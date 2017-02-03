@@ -5,7 +5,8 @@ from szurubooru.search import criteria
 
 
 def wildcard_transformer(value):
-    return (value
+    return (
+        value
         .replace('\\', '\\\\')
         .replace('%', '\\%')
         .replace('_', '\\_')

@@ -44,10 +44,9 @@ def get_avatar_url(user):
         return 'https://gravatar.com/avatar/%s?d=retro&s=%d' % (
             util.get_md5((user.email or user.name).lower()),
             config.config['thumbnails']['avatar_width'])
-    else:
-        assert user.name
-        return '%s/avatars/%s.png' % (
-            config.config['data_url'].rstrip('/'), user.name.lower())
+    assert user.name
+    return '%s/avatars/%s.png' % (
+        config.config['data_url'].rstrip('/'), user.name.lower())
 
 
 def get_email(user, auth_user, force_show_email):
@@ -126,7 +125,8 @@ def get_user_by_name(name):
 
 
 def try_get_user_by_name_or_email(name_or_email):
-    return (db.session
+    return (
+        db.session
         .query(db.User)
         .filter(
             (func.lower(db.User.name) == func.lower(name_or_email)) |

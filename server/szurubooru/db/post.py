@@ -252,8 +252,8 @@ class Post(Base):
     relation_count = column_property(
         select([func.count(PostRelation.child_id)])
         .where(
-            (PostRelation.parent_id == post_id)
-            | (PostRelation.child_id == post_id))
+            (PostRelation.parent_id == post_id) |
+            (PostRelation.child_id == post_id))
         .correlate_except(PostRelation))
 
     __mapper_args__ = {

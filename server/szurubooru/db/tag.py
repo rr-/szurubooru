@@ -106,23 +106,29 @@ class Tag(Base):
         .correlate_except(PostTag))
 
     first_name = column_property(
-        select([TagName.name])
+        (
+            select([TagName.name])
             .where(TagName.tag_id == tag_id)
             .order_by(TagName.order)
             .limit(1)
-            .as_scalar(),
+            .as_scalar()
+        ),
         deferred=True)
 
     suggestion_count = column_property(
-        select([func.count(TagSuggestion.child_id)])
+        (
+            select([func.count(TagSuggestion.child_id)])
             .where(TagSuggestion.parent_id == tag_id)
-            .as_scalar(),
+            .as_scalar()
+        ),
         deferred=True)
 
     implication_count = column_property(
-        select([func.count(TagImplication.child_id)])
+        (
+            select([func.count(TagImplication.child_id)])
             .where(TagImplication.parent_id == tag_id)
-            .as_scalar(),
+            .as_scalar()
+        ),
         deferred=True)
 
     __mapper_args__ = {

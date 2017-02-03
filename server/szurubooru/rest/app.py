@@ -93,7 +93,7 @@ def application(env, start_response):
                     hook(ctx)
                 try:
                     response = handler(ctx, match.groupdict())
-                except:
+                except Exception:
                     ctx.session.rollback()
                     raise
                 finally:

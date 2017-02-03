@@ -127,4 +127,4 @@ def create_app():
     return rest.application
 
 
-app = create_app()
+app = create_app()  # pylint: disable=invalid-name

@@ -37,7 +37,8 @@ class User(Base):
     @property
     def post_count(self):
         from szurubooru.db import session
-        return (session
+        return (
+            session
             .query(func.sum(1))
             .filter(Post.user_id == self.user_id)
             .one()[0] or 0)
@@ -45,7 +46,8 @@ class User(Base):
     @property
     def comment_count(self):
         from szurubooru.db import session
-        return (session
+        return (
+            session
             .query(func.sum(1))
             .filter(Comment.user_id == self.user_id)
             .one()[0] or 0)
@@ -53,7 +55,8 @@ class User(Base):
     @property
     def favorite_post_count(self):
         from szurubooru.db import session
-        return (session
+        return (
+            session
             .query(func.sum(1))
             .filter(PostFavorite.user_id == self.user_id)
             .one()[0] or 0)
@@ -61,7 +64,8 @@ class User(Base):
     @property
     def liked_post_count(self):
         from szurubooru.db import session
-        return (session
+        return (
+            session
             .query(func.sum(1))
             .filter(PostScore.user_id == self.user_id)
             .filter(PostScore.score == 1)
@@ -70,7 +74,8 @@ class User(Base):
     @property
     def disliked_post_count(self):
         from szurubooru.db import session
-        return (session
+        return (
+            session
             .query(func.sum(1))
             .filter(PostScore.user_id == self.user_id)
             .filter(PostScore.score == -1)

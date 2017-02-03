@@ -33,11 +33,11 @@ def get_info(ctx, _params=None):
         'diskUsage': _get_disk_usage(),
         'featuredPost':
             posts.serialize_post(post_feature.post, ctx.user)
-                if post_feature else None,
+            if post_feature else None,
         'featuringTime': post_feature.time if post_feature else None,
         'featuringUser':
             users.serialize_user(post_feature.user, ctx.user)
-                if post_feature else None,
+            if post_feature else None,
         'serverTime': datetime.datetime.utcnow(),
         'config': {
             'userNameRegex': config.config['user_name_regex'],

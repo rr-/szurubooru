@@ -474,12 +474,15 @@ def merge_posts(source_post, target_post, replace_content):
     def merge_tables(table, anti_dup_func, source_post_id, target_post_id):
         alias1 = table
         alias2 = sqlalchemy.orm.util.aliased(table)
-        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+        update_stmt = (
+            sqlalchemy.sql.expression.update(alias1)
             .where(alias1.post_id == source_post_id))
 
         if anti_dup_func is not None:
-            update_stmt = (update_stmt
-                .where(~sqlalchemy.exists()
+            update_stmt = (
+                update_stmt
+                .where(
+                    ~sqlalchemy.exists()
                     .where(anti_dup_func(alias1, alias2))
                     .where(alias2.post_id == target_post_id)))
 
@@ -513,19 +516,23 @@ def merge_posts(source_post, target_post, replace_content):
     def merge_relations(source_post_id, target_post_id):
         alias1 = db.PostRelation
         alias2 = sqlalchemy.orm.util.aliased(db.PostRelation)
-        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+        update_stmt = (
+            sqlalchemy.sql.expression.update(alias1)
             .where(alias1.parent_id == source_post_id)
             .where(alias1.child_id != target_post_id)
-            .where(~sqlalchemy.exists()
+            .where(
+                ~sqlalchemy.exists()
                 .where(alias2.child_id == alias1.child_id)
                 .where(alias2.parent_id == target_post_id))
             .values(parent_id=target_post_id))
         db.session.execute(update_stmt)
 
-        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+        update_stmt = (
+            sqlalchemy.sql.expression.update(alias1)
             .where(alias1.child_id == source_post_id)
             .where(alias1.parent_id != target_post_id)
-            .where(~sqlalchemy.exists()
+            .where(
+                ~sqlalchemy.exists()
                 .where(alias2.parent_id == alias1.parent_id)
                 .where(alias2.child_id == target_post_id))
             .values(child_id=target_post_id))
@@ -567,7 +574,8 @@ def search_by_image(image_content):
 def populate_reverse_search():
     excluded_post_ids = image_hash.get_all_paths()
 
-    post_ids_to_hash = (db.session
+    post_ids_to_hash = (
+        db.session
         .query(db.Post.post_id)
         .filter(
             (db.Post.type == db.Post.TYPE_IMAGE) |
@@ -577,7 +585,8 @@ def populate_reverse_search():
         .all())
 
     for post_ids_chunk in util.chunks(post_ids_to_hash, 100):
-        posts_chunk = (db.session
+        posts_chunk = (
+            db.session
             .query(db.Post)
             .filter(db.Post.post_id.in_(post_ids_chunk))
             .all())

@@ -41,18 +41,18 @@ class Executor:
             filter_query, search_query, False)
         prev_filter_query = (
             filter_query
-                .filter(self.config.id_column > entity_id)
-                .order_by(None)
-                .order_by(sqlalchemy.func.abs(
-                    self.config.id_column - entity_id).asc())
-                .limit(1))
+            .filter(self.config.id_column > entity_id)
+            .order_by(None)
+            .order_by(sqlalchemy.func.abs(
+                self.config.id_column - entity_id).asc())
+            .limit(1))
         next_filter_query = (
             filter_query
-                .filter(self.config.id_column < entity_id)
-                .order_by(None)
-                .order_by(sqlalchemy.func.abs(
-                    self.config.id_column - entity_id).asc())
-                .limit(1))
+            .filter(self.config.id_column < entity_id)
+            .order_by(None)
+            .order_by(sqlalchemy.func.abs(
+                self.config.id_column - entity_id).asc())
+            .limit(1))
         return [
             prev_filter_query.one_or_none(),
             next_filter_query.one_or_none()]

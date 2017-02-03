@@ -67,21 +67,21 @@ def _normalize_and_threshold(diff_array, identical_tolerance, n_levels):
     if np.all(mask):
         return None
     positive_cutoffs = np.percentile(
-        diff_array[diff_array > 0.], np.linspace(0, 100, n_levels+1))
+        diff_array[diff_array > 0.], np.linspace(0, 100, n_levels + 1))
     negative_cutoffs = np.percentile(
-        diff_array[diff_array < 0.], np.linspace(100, 0, n_levels+1))
+        diff_array[diff_array < 0.], np.linspace(100, 0, n_levels + 1))
     for level, interval in enumerate(
-            positive_cutoffs[i:i+2]
+            positive_cutoffs[i:i + 2]
             for i in range(positive_cutoffs.shape[0] - 1)):
         diff_array[
             (diff_array >= interval[0]) & (diff_array <= interval[1])] = \
-                level + 1
+            level + 1
     for level, interval in enumerate(
-            negative_cutoffs[i:i+2]
+            negative_cutoffs[i:i + 2]
             for i in range(negative_cutoffs.shape[0] - 1)):
         diff_array[
             (diff_array <= interval[0]) & (diff_array >= interval[1])] = \
-                -(level + 1)
+            -(level + 1)
     return None
 
 
@@ -110,14 +110,22 @@ def _compute_mean_level(image, x_coords, y_coords, p):
 
 def _compute_differentials(grey_level_matrix):
     flipped = np.fliplr(grey_level_matrix)
-    right_neighbors = -np.concatenate((
-        np.diff(grey_level_matrix),
-        np.zeros(grey_level_matrix.shape[0])
-            .reshape((grey_level_matrix.shape[0], 1))), axis=1)
-    down_neighbors = -np.concatenate((
-        np.diff(grey_level_matrix, axis=0),
-        np.zeros(grey_level_matrix.shape[1])
-            .reshape((1, grey_level_matrix.shape[1]))))
+    right_neighbors = -np.concatenate(
+        (
+            np.diff(grey_level_matrix),
+            (
+                np.zeros(grey_level_matrix.shape[0])
+                .reshape((grey_level_matrix.shape[0], 1))
+            )
+        ), axis=1)
+    down_neighbors = -np.concatenate(
+        (
+            np.diff(grey_level_matrix, axis=0),
+            (
+                np.zeros(grey_level_matrix.shape[1])
+                .reshape((1, grey_level_matrix.shape[1]))
+            )
+        ))
     left_neighbors = -np.concatenate(
         (right_neighbors[:, -1:], right_neighbors[:, :-1]), axis=1)
     up_neighbors = -np.concatenate((down_neighbors[-1:], down_neighbors[:-1]))
@@ -146,15 +154,18 @@ def _compute_differentials(grey_level_matrix):
 
 def _generate_signature(path_or_image):
     im_array = _preprocess_image(path_or_image)
-    image_limits = _crop_image(im_array,
+    image_limits = _crop_image(
+        im_array,
         lower_percentile=LOWER_PERCENTILE,
         upper_percentile=UPPER_PERCENTILE)
     x_coords, y_coords = _compute_grid_points(
         im_array, n=N, window=image_limits)
     avg_grey = _compute_mean_level(im_array, x_coords, y_coords, p=P)
     diff_matrix = _compute_differentials(avg_grey)
-    _normalize_and_threshold(diff_matrix,
-        identical_tolerance=IDENTICAL_TOLERANCE, n_levels=N_LEVELS)
+    _normalize_and_threshold(
+        diff_matrix,
+        identical_tolerance=IDENTICAL_TOLERANCE,
+        n_levels=N_LEVELS)
     return np.ravel(diff_matrix).astype('int8')
 
 
@@ -166,7 +177,7 @@ def _get_words(array, k, n):
     words = np.zeros((n, k)).astype('int8')
     for i, pos in enumerate(word_positions):
         if pos + k <= array.shape[0]:
-            words[i] = array[pos:pos+k]
+            words[i] = array[pos:pos + k]
         else:
             temp = array[pos:].copy()
             temp.resize(k)

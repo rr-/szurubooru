@@ -111,4 +111,5 @@ class Image:
         assert 'streams' in self.info
         if len(self.info['streams']) < 1:
             logger.warning('The video contains no video streams.')
-            raise errors.ProcessingError('The video contains no video streams.')
+            raise errors.ProcessingError(
+                'The video contains no video streams.')

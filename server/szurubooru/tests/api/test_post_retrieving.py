@@ -44,9 +44,8 @@ def test_using_special_tokens(user_factory, post_factory, context_factory):
     db.session.add_all([post1, post2, auth_user])
     db.session.flush()
     with patch('szurubooru.func.posts.serialize_post'):
-        posts.serialize_post.side_effect = \
-            lambda post, *_args, **_kwargs: \
-                'serialized post %d' % post.post_id
+        posts.serialize_post.side_effect = lambda post, *_args, **_kwargs: \
+            'serialized post %d' % post.post_id
         result = api.post_api.get_posts(
             context_factory(
                 params={'query': 'special:fav', 'page': 1},

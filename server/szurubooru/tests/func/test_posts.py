@@ -494,9 +494,8 @@ def test_update_post_content_leaving_custom_thumbnail(
 def test_update_post_tags(tag_factory):
     post = db.Post()
     with patch('szurubooru.func.tags.get_or_create_tags_by_names'):
-        tags.get_or_create_tags_by_names.side_effect \
-            = lambda tag_names: \
-                ([tag_factory(names=[name]) for name in tag_names], [])
+        tags.get_or_create_tags_by_names.side_effect = lambda tag_names: \
+            ([tag_factory(names=[name]) for name in tag_names], [])
         posts.update_post_tags(post, ['tag1', 'tag2'])
     assert len(post.tags) == 2
     assert post.tags[0].names[0].name == 'tag1'

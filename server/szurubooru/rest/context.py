@@ -44,9 +44,10 @@ class Context:
         return self._headers.get(name, None)
 
     def has_file(self, name, allow_tokens=True):
-        return (name in self._files
-            or name + 'Url' in self._params
-            or (allow_tokens and name + 'Token' in self._params))
+        return (
+            name in self._files or
+            name + 'Url' in self._params or
+            (allow_tokens and name + 'Token' in self._params))
 
     def get_file(self, name, required=False, allow_tokens=True):
         ret = None
@@ -80,7 +81,7 @@ class Context:
         if isinstance(value, list):
             try:
                 value = ','.join(value)
-            except:
+            except TypeError:
                 raise errors.InvalidParameterError('Expected simple string.')
         return value
 

@@ -21,22 +21,22 @@ def test_get_avatar_path(user_name):
         'user',
         None,
         db.User.AVATAR_GRAVATAR,
-        'https://gravatar.com/avatar/' +
-            'ee11cbb19052e40b07aac0ca060c23ee?d=retro&s=100',
+        ('https://gravatar.com/avatar/' +
+            'ee11cbb19052e40b07aac0ca060c23ee?d=retro&s=100'),
     ),
     (
         None,
         'user@example.com',
         db.User.AVATAR_GRAVATAR,
-        'https://gravatar.com/avatar/' +
-            'b58996c504c5638798eb6b511e6f49af?d=retro&s=100',
+        ('https://gravatar.com/avatar/' +
+            'b58996c504c5638798eb6b511e6f49af?d=retro&s=100'),
     ),
     (
         'user',
         'user@example.com',
         db.User.AVATAR_GRAVATAR,
-        'https://gravatar.com/avatar/' +
-            'b58996c504c5638798eb6b511e6f49af?d=retro&s=100',
+        ('https://gravatar.com/avatar/' +
+            'b58996c504c5638798eb6b511e6f49af?d=retro&s=100'),
     ),
     (
         'user',

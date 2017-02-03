@@ -102,6 +102,7 @@ def parse_time_range(value):
     ''' Return tuple containing min/max time for given text representation. '''
     one_day = timedelta(days=1)
     one_second = timedelta(seconds=1)
+    almost_one_day = one_day - one_second
 
     value = value.lower()
     if not value:
@@ -111,8 +112,8 @@ def parse_time_range(value):
         now = datetime.utcnow()
         return (
             datetime(now.year, now.month, now.day, 0, 0, 0),
-            datetime(now.year, now.month, now.day, 0, 0, 0)
-                + one_day - one_second)
+            datetime(now.year, now.month, now.day, 0, 0, 0) + almost_one_day
+        )
 
     if value == 'yesterday':
         now = datetime.utcnow()

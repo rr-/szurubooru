@@ -104,7 +104,8 @@ def export_to_json():
             'color': result[2],
         }
 
-    for result in (db.session
+    for result in (
+            db.session
             .query(db.TagName.tag_id, db.TagName.name)
             .order_by(db.TagName.order)
             .all()):
@@ -112,7 +113,8 @@ def export_to_json():
             tags[result[0]] = {'names': []}
         tags[result[0]]['names'].append(result[1])
 
-    for result in (db.session
+    for result in (
+            db.session
             .query(db.TagSuggestion.parent_id, db.TagName.name)
             .join(db.TagName, db.TagName.tag_id == db.TagSuggestion.child_id)
             .all()):
@@ -120,7 +122,8 @@ def export_to_json():
             tags[result[0]]['suggestions'] = []
         tags[result[0]]['suggestions'].append(result[1])
 
-    for result in (db.session
+    for result in (
+            db.session
             .query(db.TagImplication.parent_id, db.TagName.name)
             .join(db.TagName, db.TagName.tag_id == db.TagImplication.child_id)
             .all()):
@@ -146,7 +149,8 @@ def export_to_json():
 
 
 def try_get_tag_by_name(name):
-    return (db.session
+    return (
+        db.session
         .query(db.Tag)
         .join(db.TagName)
         .filter(sqlalchemy.func.lower(db.TagName.name) == name.lower())
@@ -198,7 +202,8 @@ def get_tag_siblings(tag):
     tag_alias = sqlalchemy.orm.aliased(db.Tag)
     pt_alias1 = sqlalchemy.orm.aliased(db.PostTag)
     pt_alias2 = sqlalchemy.orm.aliased(db.PostTag)
-    result = (db.session
+    result = (
+        db.session
         .query(tag_alias, sqlalchemy.func.count(pt_alias2.post_id))
         .join(pt_alias1, pt_alias1.tag_id == tag_alias.tag_id)
         .join(pt_alias2, pt_alias2.post_id == pt_alias1.post_id)
@@ -214,10 +219,10 @@ def delete(source_tag):
     assert source_tag
     db.session.execute(
         sqlalchemy.sql.expression.delete(db.TagSuggestion)
-            .where(db.TagSuggestion.child_id == source_tag.tag_id))
+        .where(db.TagSuggestion.child_id == source_tag.tag_id))
     db.session.execute(
         sqlalchemy.sql.expression.delete(db.TagImplication)
-            .where(db.TagImplication.child_id == source_tag.tag_id))
+        .where(db.TagImplication.child_id == source_tag.tag_id))
     db.session.delete(source_tag)
 
 
@@ -230,10 +235,13 @@ def merge_tags(source_tag, target_tag):
     def merge_posts(source_tag_id, target_tag_id):
         alias1 = db.PostTag
         alias2 = sqlalchemy.orm.util.aliased(db.PostTag)
-        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+        update_stmt = (
+            sqlalchemy.sql.expression.update(alias1)
             .where(alias1.tag_id == source_tag_id))
-        update_stmt = (update_stmt
-            .where(~sqlalchemy.exists()
+        update_stmt = (
+            update_stmt
+            .where(
+                ~sqlalchemy.exists()
                 .where(alias1.post_id == alias2.post_id)
                 .where(alias2.tag_id == target_tag_id)))
         update_stmt = update_stmt.values(tag_id=target_tag_id)
@@ -242,19 +250,23 @@ def merge_tags(source_tag, target_tag):
     def merge_relations(table, source_tag_id, target_tag_id):
         alias1 = table
         alias2 = sqlalchemy.orm.util.aliased(table)
-        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+        update_stmt = (
+            sqlalchemy.sql.expression.update(alias1)
             .where(alias1.parent_id == source_tag_id)
             .where(alias1.child_id != target_tag_id)
-            .where(~sqlalchemy.exists()
+            .where(
+                ~sqlalchemy.exists()
                 .where(alias2.child_id == alias1.child_id)
                 .where(alias2.parent_id == target_tag_id))
             .values(parent_id=target_tag_id))
         db.session.execute(update_stmt)
 
-        update_stmt = (sqlalchemy.sql.expression.update(alias1)
+        update_stmt = (
+            sqlalchemy.sql.expression.update(alias1)
             .where(alias1.child_id == source_tag_id)
             .where(alias1.parent_id != target_tag_id)
-            .where(~sqlalchemy.exists()
+            .where(
+                ~sqlalchemy.exists()
                 .where(alias2.parent_id == alias1.parent_id)
                 .where(alias2.child_id == target_tag_id))
             .values(child_id=target_tag_id))

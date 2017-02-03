@@ -46,7 +46,7 @@ def _create_score_filter(score):
         if not getattr(criterion, 'internal', False):
             raise errors.SearchError(
                 'Votes cannot be seen publicly. Did you mean %r?'
-                    % 'special:liked')
+                % 'special:liked')
         user_alias = aliased(db.User)
         score_alias = aliased(db.PostScore)
         expr = score_alias.score == score
