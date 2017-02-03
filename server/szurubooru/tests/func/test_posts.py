@@ -290,15 +290,8 @@ def test_update_post_source_with_too_long_string():
         ),
     ])
 def test_update_post_content_for_new_post(
-        tmpdir,
-        config_injector,
-        post_factory,
-        read_asset,
-        is_existing,
-        input_file,
-        expected_mime_type,
-        expected_type,
-        output_file_name):
+        tmpdir, config_injector, post_factory, read_asset, is_existing,
+        input_file, expected_mime_type, expected_type, output_file_name):
     with patch('szurubooru.func.util.get_sha1'):
         util.get_sha1.return_value = 'crc'
         config_injector({

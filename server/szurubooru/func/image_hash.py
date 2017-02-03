@@ -12,7 +12,10 @@ es = elasticsearch.Elasticsearch([{
     'host': config.config['elasticsearch']['host'],
     'port': config.config['elasticsearch']['port'],
 }])
-session = SignatureES(es, index='szurubooru')
+
+
+def _get_session():
+    return SignatureES(es, index=config.config['elasticsearch']['index'])
 
 
 def _safe_blanket(default_param_factory):
@@ -48,6 +51,7 @@ class Lookalike:
 def add_image(path, image_content):
     if not path or not image_content:
         return
+    session = _get_session()
     session.add_image(path=path, img=image_content, bytestream=True)
 
 
@@ -55,6 +59,7 @@ def add_image(path, image_content):
 def delete_image(path):
     if not path:
         return
+    session = _get_session()
     es.delete_by_query(
         index=session.index,
         doc_type=session.doc_type,
@@ -64,6 +69,7 @@ def delete_image(path):
 @_safe_blanket(lambda: [])
 def search_by_image(image_content):
     ret = []
+    session = _get_session()
     for result in session.search_image(
             path=image_content,  # sic
             bytestream=True):
@@ -76,6 +82,7 @@ def search_by_image(image_content):
 
 @_safe_blanket(lambda: None)
 def purge():
+    session = _get_session()
     es.delete_by_query(
         index=session.index,
         doc_type=session.doc_type,
@@ -84,6 +91,7 @@ def purge():
 
 @_safe_blanket(lambda: set())
 def get_all_paths():
+    session = _get_session()
     search = (
         elasticsearch_dsl.Search(
             using=es, index=session.index, doc_type=session.doc_type)

@@ -36,6 +36,7 @@ smtp:
 elasticsearch:
     host: localhost
     port: 9200
+    index: szurubooru
 
 limits:
     users_per_page: 20

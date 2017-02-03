@@ -258,7 +258,8 @@ def test_omitting_optional_field(
 
 
 def test_errors_not_spending_ids(
-        config_injector, tmpdir, context_factory, read_asset, user_factory):
+        config_injector, tmpdir, context_factory, read_asset, user_factory,
+        skip_post_hashing):
     config_injector({
         'data_dir': str(tmpdir.mkdir('data')),
         'data_url': 'example.com',

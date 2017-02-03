@@ -1,0 +1,24 @@
+from time import sleep
+from szurubooru.func import image_hash
+
+
+def test_hashing(read_asset, config_injector):
+    config_injector({'elasticsearch': {'index': 'szurubooru_test'}})
+    image_hash.purge()
+    image_hash.add_image('test', read_asset('jpeg.jpg'))
+
+    sleep(0.1)
+
+    paths = image_hash.get_all_paths()
+    results_exact = image_hash.search_by_image(read_asset('jpeg.jpg'))
+    results_similar = image_hash.search_by_image(read_asset('jpeg-similar.jpg'))
+
+    assert len(paths) == 1
+    assert len(results_exact) == 1
+    assert len(results_similar) == 1
+    assert results_exact[0].path == 'test'
+    assert results_exact[0].score == 63
+    assert results_exact[0].distance == 0
+    assert results_similar[0].path == 'test'
+    assert results_similar[0].score == 26
+    assert abs(results_similar[0].distance - 0.189390583) < 1e-8
