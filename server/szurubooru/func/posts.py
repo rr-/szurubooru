@@ -268,7 +268,8 @@ def _after_post_update(_mapper, _connection, post):
 
 @sqlalchemy.events.event.listens_for(db.Post, 'before_delete')
 def _before_post_delete(_mapper, _connection, post):
-    image_hash.delete_image(post.post_id)
+    if post.post_id:
+        image_hash.delete_image(post.post_id)
 
 
 def _sync_post_content(post):
@@ -279,7 +280,8 @@ def _sync_post_content(post):
         files.save(get_post_content_path(post), content)
         delattr(post, '__content')
         regenerate_thumb = True
-        if post.type in (db.Post.TYPE_IMAGE, db.Post.TYPE_ANIMATION):
+        if post.post_id and post.type in (
+                db.Post.TYPE_IMAGE, db.Post.TYPE_ANIMATION):
             image_hash.delete_image(post.post_id)
             image_hash.add_image(post.post_id, content)
 

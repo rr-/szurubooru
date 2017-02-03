@@ -1,4 +1,3 @@
-from time import sleep
 from szurubooru.func import image_hash
 
 
@@ -7,11 +6,10 @@ def test_hashing(read_asset, config_injector):
     image_hash.purge()
     image_hash.add_image('test', read_asset('jpeg.jpg'))
 
-    sleep(0.1)
-
     paths = image_hash.get_all_paths()
     results_exact = image_hash.search_by_image(read_asset('jpeg.jpg'))
-    results_similar = image_hash.search_by_image(read_asset('jpeg-similar.jpg'))
+    results_similar = image_hash.search_by_image(
+        read_asset('jpeg-similar.jpg'))
 
     assert len(paths) == 1
     assert len(results_exact) == 1
