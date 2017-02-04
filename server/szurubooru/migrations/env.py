@@ -2,7 +2,7 @@ import os
 import sys
 
 import alembic
-import sqlalchemy
+import sqlalchemy as sa
 import logging.config
 
 # make szurubooru module importable
@@ -48,7 +48,7 @@ def run_migrations_online():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     '''
-    connectable = sqlalchemy.engine_from_config(
+    connectable = sa.engine_from_config(
         alembic_config.get_section(alembic_config.config_ini_section),
         prefix='sqlalchemy.',
         poolclass=sqlalchemy.pool.NullPool)

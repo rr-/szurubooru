@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import tag_categories, tags, snapshots
 
 
@@ -11,13 +11,13 @@ def _update_category_name(category, name):
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector({
-        'privileges': {'tag_categories:create': db.User.RANK_REGULAR},
+        'privileges': {'tag_categories:create': model.User.RANK_REGULAR},
     })
 
 
 def test_creating_category(
         tag_category_factory, user_factory, context_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     category = tag_category_factory(name='meta')
     db.session.add(category)
 
@@ -49,7 +49,7 @@ def test_trying_to_omit_mandatory_field(user_factory, context_factory, field):
         api.tag_category_api.create_tag_category(
             context_factory(
                 params=params,
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_trying_to_create_without_privileges(user_factory, context_factory):
@@ -57,4 +57,4 @@ def test_trying_to_create_without_privileges(user_factory, context_factory):
         api.tag_category_api.create_tag_category(
             context_factory(
                 params={'name': 'meta', 'color': 'black'},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)))

@@ -1,17 +1,18 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import comments
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'privileges': {'comments:score': db.User.RANK_REGULAR}})
+    config_injector(
+        {'privileges': {'comments:score': model.User.RANK_REGULAR}})
 
 
 def test_simple_rating(
         user_factory, comment_factory, context_factory, fake_datetime):
-    user = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
     comment = comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -22,14 +23,14 @@ def test_simple_rating(
             context_factory(params={'score': 1}, user=user),
             {'comment_id': comment.comment_id})
         assert result == 'serialized comment'
-        assert db.session.query(db.CommentScore).count() == 1
+        assert db.session.query(model.CommentScore).count() == 1
         assert comment is not None
         assert comment.score == 1
 
 
 def test_updating_rating(
         user_factory, comment_factory, context_factory, fake_datetime):
-    user = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
     comment = comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -42,14 +43,14 @@ def test_updating_rating(
             api.comment_api.set_comment_score(
                 context_factory(params={'score': -1}, user=user),
                 {'comment_id': comment.comment_id})
-        comment = db.session.query(db.Comment).one()
-        assert db.session.query(db.CommentScore).count() == 1
+        comment = db.session.query(model.Comment).one()
+        assert db.session.query(model.CommentScore).count() == 1
         assert comment.score == -1
 
 
 def test_updating_rating_to_zero(
         user_factory, comment_factory, context_factory, fake_datetime):
-    user = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
     comment = comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -62,14 +63,14 @@ def test_updating_rating_to_zero(
             api.comment_api.set_comment_score(
                 context_factory(params={'score': 0}, user=user),
                 {'comment_id': comment.comment_id})
-        comment = db.session.query(db.Comment).one()
-        assert db.session.query(db.CommentScore).count() == 0
+        comment = db.session.query(model.Comment).one()
+        assert db.session.query(model.CommentScore).count() == 0
         assert comment.score == 0
 
 
 def test_deleting_rating(
         user_factory, comment_factory, context_factory, fake_datetime):
-    user = user_factory(rank=db.User.RANK_REGULAR)
+    user = user_factory(rank=model.User.RANK_REGULAR)
     comment = comment_factory(user=user)
     db.session.add(comment)
     db.session.commit()
@@ -82,15 +83,15 @@ def test_deleting_rating(
             api.comment_api.delete_comment_score(
                 context_factory(user=user),
                 {'comment_id': comment.comment_id})
-        comment = db.session.query(db.Comment).one()
-        assert db.session.query(db.CommentScore).count() == 0
+        comment = db.session.query(model.Comment).one()
+        assert db.session.query(model.CommentScore).count() == 0
         assert comment.score == 0
 
 
 def test_ratings_from_multiple_users(
         user_factory, comment_factory, context_factory, fake_datetime):
-    user1 = user_factory(rank=db.User.RANK_REGULAR)
-    user2 = user_factory(rank=db.User.RANK_REGULAR)
+    user1 = user_factory(rank=model.User.RANK_REGULAR)
+    user2 = user_factory(rank=model.User.RANK_REGULAR)
     comment = comment_factory()
     db.session.add_all([user1, user2, comment])
     db.session.commit()
@@ -103,8 +104,8 @@ def test_ratings_from_multiple_users(
             api.comment_api.set_comment_score(
                 context_factory(params={'score': -1}, user=user2),
                 {'comment_id': comment.comment_id})
-        comment = db.session.query(db.Comment).one()
-        assert db.session.query(db.CommentScore).count() == 2
+        comment = db.session.query(model.Comment).one()
+        assert db.session.query(model.CommentScore).count() == 2
         assert comment.score == 0
 
 
@@ -125,7 +126,7 @@ def test_trying_to_update_non_existing(user_factory, context_factory):
         api.comment_api.set_comment_score(
             context_factory(
                 params={'score': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'comment_id': 5})
 
 
@@ -138,5 +139,5 @@ def test_trying_to_rate_without_privileges(
         api.comment_api.set_comment_score(
             context_factory(
                 params={'score': 1},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {'comment_id': comment.comment_id})

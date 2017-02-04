@@ -1,16 +1,16 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import posts, tags, snapshots
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'privileges': {'posts:delete': db.User.RANK_REGULAR}})
+    config_injector({'privileges': {'posts:delete': model.User.RANK_REGULAR}})
 
 
 def test_deleting(user_factory, post_factory, context_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory(id=1)
     db.session.add(post)
     db.session.flush()
@@ -20,7 +20,7 @@ def test_deleting(user_factory, post_factory, context_factory):
             context_factory(params={'version': 1}, user=auth_user),
             {'post_id': 1})
         assert result == {}
-        assert db.session.query(db.Post).count() == 0
+        assert db.session.query(model.Post).count() == 0
         snapshots.delete.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
 
@@ -28,7 +28,7 @@ def test_deleting(user_factory, post_factory, context_factory):
 def test_trying_to_delete_non_existing(user_factory, context_factory):
     with pytest.raises(posts.PostNotFoundError):
         api.post_api.delete_post(
-            context_factory(user=user_factory(rank=db.User.RANK_REGULAR)),
+            context_factory(user=user_factory(rank=model.User.RANK_REGULAR)),
             {'post_id': 999})
 
 
@@ -38,6 +38,6 @@ def test_trying_to_delete_without_privileges(
     db.session.commit()
     with pytest.raises(errors.AuthError):
         api.post_api.delete_post(
-            context_factory(user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+            context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {'post_id': 1})
-    assert db.session.query(db.Post).count() == 1
+    assert db.session.query(model.Post).count() == 1

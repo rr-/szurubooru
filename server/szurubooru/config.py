@@ -1,8 +1,9 @@
+from typing import Dict
 import os
 import yaml
 
 
-def merge(left, right):
+def merge(left: Dict, right: Dict) -> Dict:
     for key in right:
         if key in left:
             if isinstance(left[key], dict) and isinstance(right[key], dict):
@@ -14,7 +15,7 @@ def merge(left, right):
     return left
 
 
-def read_config():
+def read_config() -> Dict:
     with open('../config.yaml.dist') as handle:
         ret = yaml.load(handle.read())
         if os.path.exists('../config.yaml'):

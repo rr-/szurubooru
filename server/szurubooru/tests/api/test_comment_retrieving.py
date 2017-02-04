@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import comments
 
 
@@ -8,8 +8,8 @@ from szurubooru.func import comments
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'comments:list': db.User.RANK_REGULAR,
-            'comments:view': db.User.RANK_REGULAR,
+            'comments:list': model.User.RANK_REGULAR,
+            'comments:view': model.User.RANK_REGULAR,
         },
     })
 
@@ -24,7 +24,7 @@ def test_retrieving_multiple(user_factory, comment_factory, context_factory):
         result = api.comment_api.get_comments(
             context_factory(
                 params={'query': '', 'page': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
         assert result == {
             'query': '',
             'page': 1,
@@ -40,7 +40,7 @@ def test_trying_to_retrieve_multiple_without_privileges(
         api.comment_api.get_comments(
             context_factory(
                 params={'query': '', 'page': 1},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)))
 
 
 def test_retrieving_single(user_factory, comment_factory, context_factory):
@@ -51,7 +51,7 @@ def test_retrieving_single(user_factory, comment_factory, context_factory):
         comments.serialize_comment.return_value = 'serialized comment'
         result = api.comment_api.get_comment(
             context_factory(
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'comment_id': comment.comment_id})
         assert result == 'serialized comment'
 
@@ -60,7 +60,7 @@ def test_trying_to_retrieve_single_non_existing(user_factory, context_factory):
     with pytest.raises(comments.CommentNotFoundError):
         api.comment_api.get_comment(
             context_factory(
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'comment_id': 5})
 
 
@@ -68,5 +68,5 @@ def test_trying_to_retrieve_single_without_privileges(
         user_factory, context_factory):
     with pytest.raises(errors.AuthError):
         api.comment_api.get_comment(
-            context_factory(user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+            context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {'comment_id': 5})

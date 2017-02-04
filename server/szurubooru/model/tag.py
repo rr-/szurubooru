@@ -2,8 +2,8 @@ from sqlalchemy import (
     Column, Integer, DateTime, Unicode, UnicodeText, ForeignKey)
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql.expression import func, select
-from szurubooru.db.base import Base
-from szurubooru.db.post import PostTag
+from szurubooru.model.base import Base
+from szurubooru.model.post import PostTag
 
 
 class TagSuggestion(Base):
@@ -24,7 +24,7 @@ class TagSuggestion(Base):
         primary_key=True,
         index=True)
 
-    def __init__(self, parent_id, child_id):
+    def __init__(self, parent_id: int, child_id: int) -> None:
         self.parent_id = parent_id
         self.child_id = child_id
 
@@ -47,7 +47,7 @@ class TagImplication(Base):
         primary_key=True,
         index=True)
 
-    def __init__(self, parent_id, child_id):
+    def __init__(self, parent_id: int, child_id: int) -> None:
         self.parent_id = parent_id
         self.child_id = child_id
 
@@ -61,7 +61,7 @@ class TagName(Base):
     name = Column('name', Unicode(64), nullable=False, unique=True)
     order = Column('ord', Integer, nullable=False, index=True)
 
-    def __init__(self, name, order):
+    def __init__(self, name: str, order: int) -> None:
         self.name = name
         self.order = order
 

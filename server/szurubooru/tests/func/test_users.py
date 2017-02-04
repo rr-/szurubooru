@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from datetime import datetime
 import pytest
-from szurubooru import db, errors
+from szurubooru import db, model, errors
 from szurubooru.func import auth, users, files, util
 
 
@@ -20,28 +20,28 @@ def test_get_avatar_path(user_name):
     (
         'user',
         None,
-        db.User.AVATAR_GRAVATAR,
+        model.User.AVATAR_GRAVATAR,
         ('https://gravatar.com/avatar/' +
             'ee11cbb19052e40b07aac0ca060c23ee?d=retro&s=100'),
     ),
     (
         None,
         'user@example.com',
-        db.User.AVATAR_GRAVATAR,
+        model.User.AVATAR_GRAVATAR,
         ('https://gravatar.com/avatar/' +
             'b58996c504c5638798eb6b511e6f49af?d=retro&s=100'),
     ),
     (
         'user',
         'user@example.com',
-        db.User.AVATAR_GRAVATAR,
+        model.User.AVATAR_GRAVATAR,
         ('https://gravatar.com/avatar/' +
             'b58996c504c5638798eb6b511e6f49af?d=retro&s=100'),
     ),
     (
         'user',
         None,
-        db.User.AVATAR_MANUAL,
+        model.User.AVATAR_MANUAL,
         'http://example.com/avatars/user.png',
     ),
 ])
@@ -51,7 +51,7 @@ def test_get_avatar_url(
         'data_url': 'http://example.com/',
         'thumbnails': {'avatar_width': 100},
     })
-    user = db.User()
+    user = model.User()
     user.name = user_name
     user.email = user_email
     user.avatar_style = avatar_style
@@ -100,7 +100,7 @@ def test_get_liked_post_count(
     user = user_factory()
     post = post_factory()
     auth_user = user if same_user else user_factory()
-    score = db.PostScore(
+    score = model.PostScore(
         post=post, user=user, score=score, time=datetime.now())
     db.session.add_all([post, user, score])
     db.session.flush()
@@ -127,8 +127,8 @@ def test_serialize_user(user_factory):
         user = user_factory(name='dummy user')
         user.creation_time = datetime(1997, 1, 1)
         user.last_edit_time = datetime(1998, 1, 1)
-        user.avatar_style = db.User.AVATAR_MANUAL
-        user.rank = db.User.RANK_ADMINISTRATOR
+        user.avatar_style = model.User.AVATAR_MANUAL
+        user.rank = model.User.RANK_ADMINISTRATOR
         db.session.add(user)
         db.session.flush()
         assert users.serialize_user(user, auth_user) == {
@@ -222,7 +222,7 @@ def test_create_user_for_first_user(fake_datetime):
         user = users.create_user('name', 'password', 'email')
         assert user.creation_time == datetime(1997, 1, 1)
         assert user.last_login_time is None
-        assert user.rank == db.User.RANK_ADMINISTRATOR
+        assert user.rank == model.User.RANK_ADMINISTRATOR
         users.update_user_name.assert_called_once_with(user, 'name')
         users.update_user_password.assert_called_once_with(user, 'password')
         users.update_user_email.assert_called_once_with(user, 'email')
@@ -236,7 +236,7 @@ def test_create_user_for_subsequent_users(user_factory, config_injector):
             patch('szurubooru.func.users.update_user_email'), \
             patch('szurubooru.func.users.update_user_password'):
         user = users.create_user('name', 'password', 'email')
-        assert user.rank == db.User.RANK_REGULAR
+        assert user.rank == model.User.RANK_REGULAR
 
 
 def test_update_user_name_with_empty_string(user_factory):
@@ -379,7 +379,7 @@ def test_update_user_rank_with_higher_rank_than_possible(user_factory):
     db.session.flush()
     user = user_factory()
     auth_user = user_factory()
-    auth_user.rank = db.User.RANK_ANONYMOUS
+    auth_user.rank = model.User.RANK_ANONYMOUS
     with pytest.raises(errors.AuthError):
         users.update_user_rank(user, 'regular', auth_user)
     with pytest.raises(errors.AuthError):
@@ -391,11 +391,11 @@ def test_update_user_rank(user_factory):
     db.session.flush()
     user = user_factory()
     auth_user = user_factory()
-    auth_user.rank = db.User.RANK_ADMINISTRATOR
+    auth_user.rank = model.User.RANK_ADMINISTRATOR
     users.update_user_rank(user, 'regular', auth_user)
     users.update_user_rank(auth_user, 'regular', auth_user)
-    assert user.rank == db.User.RANK_REGULAR
-    assert auth_user.rank == db.User.RANK_REGULAR
+    assert user.rank == model.User.RANK_REGULAR
+    assert auth_user.rank == model.User.RANK_REGULAR
 
 
 def test_update_user_avatar_with_invalid_style(user_factory):
@@ -407,7 +407,7 @@ def test_update_user_avatar_with_invalid_style(user_factory):
 def test_update_user_avatar_to_gravatar(user_factory):
     user = user_factory()
     users.update_user_avatar(user, 'gravatar')
-    assert user.avatar_style == db.User.AVATAR_GRAVATAR
+    assert user.avatar_style == model.User.AVATAR_GRAVATAR
 
 
 def test_update_user_avatar_to_empty_manual(user_factory):
@@ -431,7 +431,7 @@ def test_update_user_avatar_to_new_manual(user_factory, config_injector):
     user = user_factory()
     with patch('szurubooru.func.files.save'):
         users.update_user_avatar(user, 'manual', EMPTY_PIXEL)
-        assert user.avatar_style == db.User.AVATAR_MANUAL
+        assert user.avatar_style == model.User.AVATAR_MANUAL
         assert files.save.called
 
 

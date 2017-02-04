@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import posts, snapshots
 
 
@@ -8,14 +8,14 @@ from szurubooru.func import posts, snapshots
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'posts:feature': db.User.RANK_REGULAR,
-            'posts:view': db.User.RANK_REGULAR,
+            'posts:feature': model.User.RANK_REGULAR,
+            'posts:view': model.User.RANK_REGULAR,
         },
     })
 
 
 def test_featuring(user_factory, post_factory, context_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory(id=1)
     db.session.add(post)
     db.session.flush()
@@ -31,7 +31,7 @@ def test_featuring(user_factory, post_factory, context_factory):
         assert posts.get_post_by_id(1).is_featured
         result = api.post_api.get_featured_post(
             context_factory(
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
         assert result == 'serialized post'
         snapshots.modify.assert_called_once_with(post, auth_user)
 
@@ -40,7 +40,7 @@ def test_trying_to_omit_required_parameter(user_factory, context_factory):
     with pytest.raises(errors.MissingRequiredParameterError):
         api.post_api.set_featured_post(
             context_factory(
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_trying_to_feature_the_same_post_twice(
@@ -51,12 +51,12 @@ def test_trying_to_feature_the_same_post_twice(
         api.post_api.set_featured_post(
             context_factory(
                 params={'id': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
         with pytest.raises(posts.PostAlreadyFeaturedError):
             api.post_api.set_featured_post(
                 context_factory(
                     params={'id': 1},
-                    user=user_factory(rank=db.User.RANK_REGULAR)))
+                    user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_featuring_one_post_after_another(
@@ -72,12 +72,12 @@ def test_featuring_one_post_after_another(
             api.post_api.set_featured_post(
                 context_factory(
                     params={'id': 1},
-                    user=user_factory(rank=db.User.RANK_REGULAR)))
+                    user=user_factory(rank=model.User.RANK_REGULAR)))
         with fake_datetime('1998'):
             api.post_api.set_featured_post(
                 context_factory(
                     params={'id': 2},
-                    user=user_factory(rank=db.User.RANK_REGULAR)))
+                    user=user_factory(rank=model.User.RANK_REGULAR)))
         assert posts.try_get_featured_post() is not None
         assert posts.try_get_featured_post().post_id == 2
         assert not posts.get_post_by_id(1).is_featured
@@ -89,7 +89,7 @@ def test_trying_to_feature_non_existing(user_factory, context_factory):
         api.post_api.set_featured_post(
             context_factory(
                 params={'id': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_trying_to_feature_without_privileges(user_factory, context_factory):
@@ -97,10 +97,10 @@ def test_trying_to_feature_without_privileges(user_factory, context_factory):
         api.post_api.set_featured_post(
             context_factory(
                 params={'id': 1},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)))
 
 
 def test_getting_featured_post_without_privileges_to_view(
         user_factory, context_factory):
     api.post_api.get_featured_post(
-        context_factory(user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+        context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)))

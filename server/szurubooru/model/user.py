@@ -1,9 +1,7 @@
-from sqlalchemy import Column, Integer, Unicode, DateTime
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import func
-from szurubooru.db.base import Base
-from szurubooru.db.post import Post, PostScore, PostFavorite
-from szurubooru.db.comment import Comment
+import sqlalchemy as sa
+from szurubooru.model.base import Base
+from szurubooru.model.post import Post, PostScore, PostFavorite
+from szurubooru.model.comment import Comment
 
 
 class User(Base):
@@ -20,63 +18,64 @@ class User(Base):
     RANK_ADMINISTRATOR = 'administrator'
     RANK_NOBODY = 'nobody'  # unattainable, used for privileges
 
-    user_id = Column('id', Integer, primary_key=True)
-    creation_time = Column('creation_time', DateTime, nullable=False)
-    last_login_time = Column('last_login_time', DateTime)
-    version = Column('version', Integer, default=1, nullable=False)
-    name = Column('name', Unicode(50), nullable=False, unique=True)
-    password_hash = Column('password_hash', Unicode(64), nullable=False)
-    password_salt = Column('password_salt', Unicode(32))
-    email = Column('email', Unicode(64), nullable=True)
-    rank = Column('rank', Unicode(32), nullable=False)
-    avatar_style = Column(
-        'avatar_style', Unicode(32), nullable=False, default=AVATAR_GRAVATAR)
+    user_id = sa.Column('id', sa.Integer, primary_key=True)
+    creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
+    last_login_time = sa.Column('last_login_time', sa.DateTime)
+    version = sa.Column('version', sa.Integer, default=1, nullable=False)
+    name = sa.Column('name', sa.Unicode(50), nullable=False, unique=True)
+    password_hash = sa.Column('password_hash', sa.Unicode(64), nullable=False)
+    password_salt = sa.Column('password_salt', sa.Unicode(32))
+    email = sa.Column('email', sa.Unicode(64), nullable=True)
+    rank = sa.Column('rank', sa.Unicode(32), nullable=False)
+    avatar_style = sa.Column(
+        'avatar_style', sa.Unicode(32), nullable=False,
+        default=AVATAR_GRAVATAR)
 
-    comments = relationship('Comment')
+    comments = sa.orm.relationship('Comment')
 
     @property
-    def post_count(self):
+    def post_count(self) -> int:
         from szurubooru.db import session
         return (
             session
-            .query(func.sum(1))
+            .query(sa.sql.expression.func.sum(1))
             .filter(Post.user_id == self.user_id)
             .one()[0] or 0)
 
     @property
-    def comment_count(self):
+    def comment_count(self) -> int:
         from szurubooru.db import session
         return (
             session
-            .query(func.sum(1))
+            .query(sa.sql.expression.func.sum(1))
             .filter(Comment.user_id == self.user_id)
             .one()[0] or 0)
 
     @property
-    def favorite_post_count(self):
+    def favorite_post_count(self) -> int:
         from szurubooru.db import session
         return (
             session
-            .query(func.sum(1))
+            .query(sa.sql.expression.func.sum(1))
             .filter(PostFavorite.user_id == self.user_id)
             .one()[0] or 0)
 
     @property
-    def liked_post_count(self):
+    def liked_post_count(self) -> int:
         from szurubooru.db import session
         return (
             session
-            .query(func.sum(1))
+            .query(sa.sql.expression.func.sum(1))
             .filter(PostScore.user_id == self.user_id)
             .filter(PostScore.score == 1)
             .one()[0] or 0)
 
     @property
-    def disliked_post_count(self):
+    def disliked_post_count(self) -> int:
         from szurubooru.db import session
         return (
             session
-            .query(func.sum(1))
+            .query(sa.sql.expression.func.sum(1))
             .filter(PostScore.user_id == self.user_id)
             .filter(PostScore.score == -1)
             .one()[0] or 0)

@@ -2,7 +2,13 @@ from szurubooru.func import image_hash
 
 
 def test_hashing(read_asset, config_injector):
-    config_injector({'elasticsearch': {'index': 'szurubooru_test'}})
+    config_injector({
+        'elasticsearch': {
+            'host': 'localhost',
+            'port': 9200,
+            'index': 'szurubooru_test',
+        },
+    })
     image_hash.purge()
     image_hash.add_image('test', read_asset('jpeg.jpg'))
 

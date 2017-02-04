@@ -1,13 +1,13 @@
 # pylint: disable=redefined-outer-name
 from datetime import datetime
 import pytest
-from szurubooru import db, errors, search
+from szurubooru import db, model, errors, search
 
 
 @pytest.fixture
 def fav_factory(user_factory):
     def factory(post, user=None):
-        return db.PostFavorite(
+        return model.PostFavorite(
             post=post,
             user=user or user_factory(),
             time=datetime.utcnow())
@@ -17,7 +17,7 @@ def fav_factory(user_factory):
 @pytest.fixture
 def score_factory(user_factory):
     def factory(post, user=None, score=1):
-        return db.PostScore(
+        return model.PostScore(
             post=post,
             user=user or user_factory(),
             time=datetime.utcnow(),
@@ -28,7 +28,7 @@ def score_factory(user_factory):
 @pytest.fixture
 def note_factory():
     def factory():
-        return db.PostNote(polygon='...', text='...')
+        return model.PostNote(polygon='...', text='...')
     return factory
 
 
@@ -36,11 +36,11 @@ def note_factory():
 def feature_factory(user_factory):
     def factory(post=None):
         if post:
-            return db.PostFeature(
+            return model.PostFeature(
                 time=datetime.utcnow(),
                 user=user_factory(),
                 post=post)
-        return db.PostFeature(
+        return model.PostFeature(
             time=datetime.utcnow(), user=user_factory())
     return factory
 
@@ -123,7 +123,7 @@ def test_filter_by_score(
     post3 = post_factory(id=3)
     for post in [post1, post2, post3]:
         db.session.add(
-            db.PostScore(
+            model.PostScore(
                 score=post.post_id,
                 time=datetime.utcnow(),
                 post=post,
@@ -332,10 +332,10 @@ def test_filter_by_type(
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     post4 = post_factory(id=4)
-    post1.type = db.Post.TYPE_IMAGE
-    post2.type = db.Post.TYPE_ANIMATION
-    post3.type = db.Post.TYPE_VIDEO
-    post4.type = db.Post.TYPE_FLASH
+    post1.type = model.Post.TYPE_IMAGE
+    post2.type = model.Post.TYPE_ANIMATION
+    post3.type = model.Post.TYPE_VIDEO
+    post4.type = model.Post.TYPE_FLASH
     db.session.add_all([post1, post2, post3, post4])
     db.session.flush()
     verify_unpaged(input, expected_post_ids)
@@ -352,9 +352,9 @@ def test_filter_by_safety(
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
-    post1.safety = db.Post.SAFETY_SAFE
-    post2.safety = db.Post.SAFETY_SKETCHY
-    post3.safety = db.Post.SAFETY_UNSAFE
+    post1.safety = model.Post.SAFETY_SAFE
+    post2.safety = model.Post.SAFETY_SKETCHY
+    post3.safety = model.Post.SAFETY_UNSAFE
     db.session.add_all([post1, post2, post3])
     db.session.flush()
     verify_unpaged(input, expected_post_ids)

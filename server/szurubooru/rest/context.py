@@ -1,111 +1,158 @@
-from szurubooru import errors
+from typing import Any, Union, List, Dict, Optional, cast
+from szurubooru import model, errors
 from szurubooru.func import net, file_uploads
 
 
-def _lower_first(source):
-    return source[0].lower() + source[1:]
-
-
-def _param_wrapper(func):
-    def wrapper(self, name, required=False, default=None, **kwargs):
-        # pylint: disable=protected-access
-        if name in self._params:
-            value = self._params[name]
-            try:
-                value = func(self, value, **kwargs)
-            except errors.InvalidParameterError as ex:
-                raise errors.InvalidParameterError(
-                    'Parameter %r is invalid: %s' % (
-                        name, _lower_first(str(ex))))
-            return value
-        if not required:
-            return default
-        raise errors.MissingRequiredParameterError(
-            'Required parameter %r is missing.' % name)
-    return wrapper
+MISSING = object()
+Request = Dict[str, Any]
+Response = Optional[Dict[str, Any]]
 
 
 class Context:
-    def __init__(self, method, url, headers=None, params=None, files=None):
+    def __init__(
+            self,
+            method: str,
+            url: str,
+            headers: Dict[str, str]=None,
+            params: Request=None,
+            files: Dict[str, bytes]=None) -> None:
         self.method = method
         self.url = url
         self._headers = headers or {}
         self._params = params or {}
         self._files = files or {}
 
-        # provided by middleware
-        # self.session = None
-        # self.user = None
+        self.user = model.User()
+        self.user.name = None
+        self.user.rank = 'anonymous'
 
-    def has_header(self, name):
+        self.session = None  # type: Any
+
+    def has_header(self, name: str) -> bool:
         return name in self._headers
 
-    def get_header(self, name):
-        return self._headers.get(name, None)
+    def get_header(self, name: str) -> str:
+        return self._headers.get(name, '')
 
-    def has_file(self, name, allow_tokens=True):
+    def has_file(self, name: str, allow_tokens: bool=True) -> bool:
         return (
             name in self._files or
             name + 'Url' in self._params or
             (allow_tokens and name + 'Token' in self._params))
 
-    def get_file(self, name, required=False, allow_tokens=True):
-        ret = None
-        if name in self._files:
-            ret = self._files[name]
-        elif name + 'Url' in self._params:
-            ret = net.download(self._params[name + 'Url'])
-        elif allow_tokens and name + 'Token' in self._params:
+    def get_file(
+            self,
+            name: str,
+            default: Union[object, bytes]=MISSING,
+            allow_tokens: bool=True) -> bytes:
+        if name in self._files and self._files[name]:
+            return self._files[name]
+
+        if name + 'Url' in self._params:
+            return net.download(self._params[name + 'Url'])
+
+        if allow_tokens and name + 'Token' in self._params:
             ret = file_uploads.get(self._params[name + 'Token'])
-            if required and not ret:
+            if ret:
+                return ret
+            elif default is not MISSING:
                 raise errors.MissingOrExpiredRequiredFileError(
                     'Required file %r is missing or has expired.' % name)
-        if required and not ret:
-            raise errors.MissingRequiredFileError(
-                'Required file %r is missing.' % name)
-        return ret
 
-    def has_param(self, name):
+        if default is not MISSING:
+            return cast(bytes, default)
+        raise errors.MissingRequiredFileError(
+            'Required file %r is missing.' % name)
+
+    def has_param(self, name: str) -> bool:
         return name in self._params
 
-    @_param_wrapper
-    def get_param_as_list(self, value):
-        if not isinstance(value, list):
+    def get_param_as_list(
+            self,
+            name: str,
+            default: Union[object, List[Any]]=MISSING) -> List[Any]:
+        if name not in self._params:
+            if default is not MISSING:
+                return cast(List[Any], default)
+            raise errors.MissingRequiredParameterError(
+                'Required parameter %r is missing.' % name)
+        value = self._params[name]
+        if type(value) is str:
             if ',' in value:
                 return value.split(',')
             return [value]
-        return value
+        if type(value) is list:
+            return value
+        raise errors.InvalidParameterError(
+            'Parameter %r must be a list.' % name)
 
-    @_param_wrapper
-    def get_param_as_string(self, value):
-        if isinstance(value, list):
-            try:
-                value = ','.join(value)
-            except TypeError:
-                raise errors.InvalidParameterError('Expected simple string.')
-        return value
+    def get_param_as_string(
+            self,
+            name: str,
+            default: Union[object, str]=MISSING) -> str:
+        if name not in self._params:
+            if default is not MISSING:
+                return cast(str, default)
+            raise errors.MissingRequiredParameterError(
+                'Required parameter %r is missing.' % name)
+        value = self._params[name]
+        try:
+            if value is None:
+                return ''
+            if type(value) is list:
+                return ','.join(value)
+            if type(value) is int or type(value) is float:
+                return str(value)
+            if type(value) is str:
+                return value
+        except TypeError:
+            pass
+        raise errors.InvalidParameterError(
+            'Parameter %r must be a string value.' % name)
 
-    @_param_wrapper
-    def get_param_as_int(self, value, min=None, max=None):
+    def get_param_as_int(
+            self,
+            name: str,
+            default: Union[object, int]=MISSING,
+            min: Optional[int]=None,
+            max: Optional[int]=None) -> int:
+        if name not in self._params:
+            if default is not MISSING:
+                return cast(int, default)
+            raise errors.MissingRequiredParameterError(
+                'Required parameter %r is missing.' % name)
+        value = self._params[name]
         try:
             value = int(value)
+            if min is not None and value < min:
+                raise errors.InvalidParameterError(
+                    'Parameter %r must be at least %r.' % (name, min))
+            if max is not None and value > max:
+                raise errors.InvalidParameterError(
+                    'Parameter %r may not exceed %r.' % (name, max))
+            return value
         except (ValueError, TypeError):
-            raise errors.InvalidParameterError(
-                'The value must be an integer.')
-        if min is not None and value < min:
-            raise errors.InvalidParameterError(
-                'The value must be at least %r.' % min)
-        if max is not None and value > max:
-            raise errors.InvalidParameterError(
-                'The value may not exceed %r.' % max)
-        return value
+            pass
+        raise errors.InvalidParameterError(
+            'Parameter %r must be an integer value.' % name)
 
-    @_param_wrapper
-    def get_param_as_bool(self, value):
-        value = str(value).lower()
+    def get_param_as_bool(
+            self,
+            name: str,
+            default: Union[object, bool]=MISSING) -> bool:
+        if name not in self._params:
+            if default is not MISSING:
+                return cast(bool, default)
+            raise errors.MissingRequiredParameterError(
+                'Required parameter %r is missing.' % name)
+        value = self._params[name]
+        try:
+            value = str(value).lower()
+        except TypeError:
+            pass
         if value in ['1', 'y', 'yes', 'yeah', 'yep', 'yup', 't', 'true']:
             return True
         if value in ['0', 'n', 'no', 'nope', 'f', 'false']:
             return False
         raise errors.InvalidParameterError(
-            'The value must be a boolean value.')
+            'Parameter %r must be a boolean value.' % name)

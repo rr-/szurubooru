@@ -1,16 +1,16 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import tags, snapshots
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'privileges': {'tags:merge': db.User.RANK_REGULAR}})
+    config_injector({'privileges': {'tags:merge': model.User.RANK_REGULAR}})
 
 
 def test_merging(user_factory, tag_factory, context_factory, post_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     source_tag = tag_factory(names=['source'])
     target_tag = tag_factory(names=['target'])
     db.session.add_all([source_tag, target_tag])
@@ -62,7 +62,7 @@ def test_trying_to_omit_mandatory_field(
         api.tag_api.merge_tags(
             context_factory(
                 params=params,
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_trying_to_merge_non_existing(
@@ -73,12 +73,12 @@ def test_trying_to_merge_non_existing(
         api.tag_api.merge_tags(
             context_factory(
                 params={'remove': 'good', 'mergeTo': 'bad'},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
     with pytest.raises(tags.TagNotFoundError):
         api.tag_api.merge_tags(
             context_factory(
                 params={'remove': 'bad', 'mergeTo': 'good'},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_trying_to_merge_without_privileges(
@@ -97,4 +97,4 @@ def test_trying_to_merge_without_privileges(
                     'remove': 'source',
                     'mergeTo': 'target',
                 },
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)))

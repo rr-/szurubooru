@@ -1,8 +1,9 @@
+from typing import Optional
 from sqlalchemy import Column, Integer, Unicode, Boolean, table
 from sqlalchemy.orm import column_property
 from sqlalchemy.sql.expression import func, select
-from szurubooru.db.base import Base
-from szurubooru.db.tag import Tag
+from szurubooru.model.base import Base
+from szurubooru.model.tag import Tag
 
 
 class TagCategory(Base):
@@ -14,7 +15,7 @@ class TagCategory(Base):
     color = Column('color', Unicode(32), nullable=False, default='#000000')
     default = Column('default', Boolean, nullable=False, default=False)
 
-    def __init__(self, name=None):
+    def __init__(self, name: Optional[str]=None) -> None:
         self.name = name
 
     tag_count = column_property(

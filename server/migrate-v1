@@ -8,7 +8,7 @@ import zlib
 import concurrent.futures
 import logging
 import coloredlogs
-import sqlalchemy
+import sqlalchemy as sa
 from szurubooru import config, db
 from szurubooru.func import files, images, posts, comments
 
@@ -42,8 +42,8 @@ def get_v1_session(args):
             port=args.port,
             name=args.name)
     logger.info('Connecting to %r...', dsn)
-    engine = sqlalchemy.create_engine(dsn)
-    session_maker = sqlalchemy.orm.sessionmaker(bind=engine)
+    engine = sa.create_engine(dsn)
+    session_maker = sa.orm.sessionmaker(bind=engine)
     return session_maker()
 
 def parse_args():

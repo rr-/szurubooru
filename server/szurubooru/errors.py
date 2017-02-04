@@ -1,5 +1,11 @@
+from typing import Dict
+
+
 class BaseError(RuntimeError):
-    def __init__(self, message='Unknown error', extra_fields=None):
+    def __init__(
+            self,
+            message: str='Unknown error',
+            extra_fields: Dict[str, str]=None) -> None:
         super().__init__(message)
         self.extra_fields = extra_fields
 

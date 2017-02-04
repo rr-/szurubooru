@@ -1,5 +1,5 @@
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import tag_categories
 
 
@@ -7,8 +7,8 @@ from szurubooru.func import tag_categories
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'tag_categories:list': db.User.RANK_REGULAR,
-            'tag_categories:view': db.User.RANK_REGULAR,
+            'tag_categories:list': model.User.RANK_REGULAR,
+            'tag_categories:view': model.User.RANK_REGULAR,
         },
     })
 
@@ -21,7 +21,7 @@ def test_retrieving_multiple(
     ])
     db.session.flush()
     result = api.tag_category_api.get_tag_categories(
-        context_factory(user=user_factory(rank=db.User.RANK_REGULAR)))
+        context_factory(user=user_factory(rank=model.User.RANK_REGULAR)))
     assert [cat['name'] for cat in result['results']] == ['c1', 'c2']
 
 
@@ -30,7 +30,7 @@ def test_retrieving_single(
     db.session.add(tag_category_factory(name='cat'))
     db.session.flush()
     result = api.tag_category_api.get_tag_category(
-        context_factory(user=user_factory(rank=db.User.RANK_REGULAR)),
+        context_factory(user=user_factory(rank=model.User.RANK_REGULAR)),
         {'category_name': 'cat'})
     assert result == {
         'name': 'cat',
@@ -44,7 +44,7 @@ def test_retrieving_single(
 def test_trying_to_retrieve_single_non_existing(user_factory, context_factory):
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
         api.tag_category_api.get_tag_category(
-            context_factory(user=user_factory(rank=db.User.RANK_REGULAR)),
+            context_factory(user=user_factory(rank=model.User.RANK_REGULAR)),
             {'category_name': '-'})
 
 
@@ -52,5 +52,5 @@ def test_trying_to_retrieve_single_without_privileges(
         user_factory, context_factory):
     with pytest.raises(errors.AuthError):
         api.tag_category_api.get_tag_category(
-            context_factory(user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+            context_factory(user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {'category_name': '-'})

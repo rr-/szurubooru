@@ -3,7 +3,7 @@ import json
 from unittest.mock import patch
 from datetime import datetime
 import pytest
-from szurubooru import db
+from szurubooru import db, model
 from szurubooru.func import tags, tag_categories, cache
 
 
@@ -304,10 +304,10 @@ def test_delete(tag_factory):
     tag.implications = [tag_factory(names=['imp'])]
     db.session.add(tag)
     db.session.flush()
-    assert db.session.query(db.Tag).count() == 3
+    assert db.session.query(model.Tag).count() == 3
     tags.delete(tag)
     db.session.flush()
-    assert db.session.query(db.Tag).count() == 2
+    assert db.session.query(model.Tag).count() == 2
 
 
 def test_merge_tags_deletes_source_tag(tag_factory):

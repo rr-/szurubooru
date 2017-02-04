@@ -1,10 +1,10 @@
 from datetime import datetime
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 
 
 def snapshot_factory():
-    snapshot = db.Snapshot()
+    snapshot = model.Snapshot()
     snapshot.creation_time = datetime(1999, 1, 1)
     snapshot.resource_type = 'dummy'
     snapshot.resource_pkey = 1
@@ -17,7 +17,7 @@ def snapshot_factory():
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
     config_injector({
-        'privileges': {'snapshots:list': db.User.RANK_REGULAR},
+        'privileges': {'snapshots:list': model.User.RANK_REGULAR},
     })
 
 
@@ -29,7 +29,7 @@ def test_retrieving_multiple(user_factory, context_factory):
     result = api.snapshot_api.get_snapshots(
         context_factory(
             params={'query': '', 'page': 1},
-            user=user_factory(rank=db.User.RANK_REGULAR)))
+            user=user_factory(rank=model.User.RANK_REGULAR)))
     assert result['query'] == ''
     assert result['page'] == 1
     assert result['pageSize'] == 100
@@ -43,4 +43,4 @@ def test_trying_to_retrieve_multiple_without_privileges(
         api.snapshot_api.get_snapshots(
             context_factory(
                 params={'query': '', 'page': 1},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)))

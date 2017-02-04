@@ -1,19 +1,20 @@
-import datetime
 import os
-from szurubooru import config
-from szurubooru.rest import routes
+from typing import Optional, Dict
+from datetime import datetime, timedelta
+from szurubooru import config, rest
 from szurubooru.func import posts, users, util
 
 
-_cache_time = None
-_cache_result = None
+_cache_time = None  # type: Optional[datetime]
+_cache_result = None  # type: Optional[int]
 
 
-def _get_disk_usage():
+def _get_disk_usage() -> int:
     global _cache_time, _cache_result  # pylint: disable=global-statement
-    threshold = datetime.timedelta(hours=48)
-    now = datetime.datetime.utcnow()
+    threshold = timedelta(hours=48)
+    now = datetime.utcnow()
     if _cache_time and _cache_time > now - threshold:
+        assert _cache_result
         return _cache_result
     total_size = 0
     for dir_path, _, file_names in os.walk(config.config['data_dir']):
@@ -25,8 +26,9 @@ def _get_disk_usage():
     return total_size
 
 
-@routes.get('/info/?')
-def get_info(ctx, _params=None):
+@rest.routes.get('/info/?')
+def get_info(
+        ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
     post_feature = posts.try_get_current_post_feature()
     return {
         'postCount': posts.get_post_count(),
@@ -38,7 +40,7 @@ def get_info(ctx, _params=None):
         'featuringUser':
             users.serialize_user(post_feature.user, ctx.user)
             if post_feature else None,
-        'serverTime': datetime.datetime.utcnow(),
+        'serverTime': datetime.utcnow(),
         'config': {
             'userNameRegex': config.config['user_name_regex'],
             'passwordRegex': config.config['password_regex'],

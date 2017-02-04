@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import users
 
 
@@ -31,7 +31,7 @@ def test_creating_user(user_factory, context_factory, fake_datetime):
                     'avatarStyle': 'manual',
                 },
                 files={'avatar': b'...'},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
         assert result == 'serialized user'
         users.create_user.assert_called_once_with(
             'chewie1', 'oks', 'asd@asd.asd')
@@ -50,7 +50,7 @@ def test_trying_to_omit_mandatory_field(user_factory, context_factory, field):
         'password': 'oks',
     }
     user = user_factory()
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     del params[field]
     with patch('szurubooru.func.users.create_user'), \
             pytest.raises(errors.MissingRequiredParameterError):
@@ -70,7 +70,7 @@ def test_omitting_optional_field(user_factory, context_factory, field):
     }
     del params[field]
     user = user_factory()
-    auth_user = user_factory(rank=db.User.RANK_MODERATOR)
+    auth_user = user_factory(rank=model.User.RANK_MODERATOR)
     with patch('szurubooru.func.users.create_user'), \
             patch('szurubooru.func.users.update_user_avatar'), \
             patch('szurubooru.func.users.serialize_user'):
@@ -84,4 +84,4 @@ def test_trying_to_create_user_without_privileges(
     with pytest.raises(errors.AuthError):
         api.user_api.create_user(context_factory(
             params='whatever',
-            user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+            user=user_factory(rank=model.User.RANK_ANONYMOUS)))

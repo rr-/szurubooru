@@ -1,5 +1,5 @@
 from datetime import datetime
-from szurubooru import db
+from szurubooru import db, model
 
 
 def test_saving_post(post_factory, user_factory, tag_factory):
@@ -8,7 +8,7 @@ def test_saving_post(post_factory, user_factory, tag_factory):
     tag2 = tag_factory()
     related_post1 = post_factory()
     related_post2 = post_factory()
-    post = db.Post()
+    post = model.Post()
     post.safety = 'safety'
     post.type = 'type'
     post.checksum = 'deadbeef'
@@ -54,20 +54,20 @@ def test_cascade_deletions(
         user, tag1, tag2, post, related_post1, related_post2, comment])
     db.session.flush()
 
-    score = db.PostScore()
+    score = model.PostScore()
     score.post = post
     score.user = user
     score.time = datetime(1997, 1, 1)
     score.score = 1
-    favorite = db.PostFavorite()
+    favorite = model.PostFavorite()
     favorite.post = post
     favorite.user = user
     favorite.time = datetime(1997, 1, 1)
-    feature = db.PostFeature()
+    feature = model.PostFeature()
     feature.post = post
     feature.user = user
     feature.time = datetime(1997, 1, 1)
-    note = db.PostNote()
+    note = model.PostNote()
     note.post = post
     note.polygon = ''
     note.text = ''
@@ -88,31 +88,31 @@ def test_cascade_deletions(
     assert not db.session.dirty
     assert post.user is not None and post.user.user_id is not None
     assert len(post.relations) == 1
-    assert db.session.query(db.User).count() == 1
-    assert db.session.query(db.Tag).count() == 2
-    assert db.session.query(db.Post).count() == 3
-    assert db.session.query(db.PostTag).count() == 2
-    assert db.session.query(db.PostRelation).count() == 2
-    assert db.session.query(db.PostScore).count() == 1
-    assert db.session.query(db.PostNote).count() == 1
-    assert db.session.query(db.PostFeature).count() == 1
-    assert db.session.query(db.PostFavorite).count() == 1
-    assert db.session.query(db.Comment).count() == 1
+    assert db.session.query(model.User).count() == 1
+    assert db.session.query(model.Tag).count() == 2
+    assert db.session.query(model.Post).count() == 3
+    assert db.session.query(model.PostTag).count() == 2
+    assert db.session.query(model.PostRelation).count() == 2
+    assert db.session.query(model.PostScore).count() == 1
+    assert db.session.query(model.PostNote).count() == 1
+    assert db.session.query(model.PostFeature).count() == 1
+    assert db.session.query(model.PostFavorite).count() == 1
+    assert db.session.query(model.Comment).count() == 1
 
     db.session.delete(post)
     db.session.commit()
 
     assert not db.session.dirty
-    assert db.session.query(db.User).count() == 1
-    assert db.session.query(db.Tag).count() == 2
-    assert db.session.query(db.Post).count() == 2
-    assert db.session.query(db.PostTag).count() == 0
-    assert db.session.query(db.PostRelation).count() == 0
-    assert db.session.query(db.PostScore).count() == 0
-    assert db.session.query(db.PostNote).count() == 0
-    assert db.session.query(db.PostFeature).count() == 0
-    assert db.session.query(db.PostFavorite).count() == 0
-    assert db.session.query(db.Comment).count() == 0
+    assert db.session.query(model.User).count() == 1
+    assert db.session.query(model.Tag).count() == 2
+    assert db.session.query(model.Post).count() == 2
+    assert db.session.query(model.PostTag).count() == 0
+    assert db.session.query(model.PostRelation).count() == 0
+    assert db.session.query(model.PostScore).count() == 0
+    assert db.session.query(model.PostNote).count() == 0
+    assert db.session.query(model.PostFeature).count() == 0
+    assert db.session.query(model.PostFavorite).count() == 0
+    assert db.session.query(model.Comment).count() == 0
 
 
 def test_tracking_tag_count(post_factory, tag_factory):

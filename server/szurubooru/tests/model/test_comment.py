@@ -1,11 +1,11 @@
 from datetime import datetime
-from szurubooru import db
+from szurubooru import db, model
 
 
 def test_saving_comment(user_factory, post_factory):
     user = user_factory()
     post = post_factory()
-    comment = db.Comment()
+    comment = model.Comment()
     comment.text = 'long text' * 1000
     comment.user = user
     comment.post = post
@@ -29,7 +29,7 @@ def test_cascade_deletions(comment_factory, user_factory, post_factory):
     db.session.add_all([user, comment])
     db.session.flush()
 
-    score = db.CommentScore()
+    score = model.CommentScore()
     score.comment = comment
     score.user = user
     score.time = datetime(1997, 1, 1)
@@ -39,14 +39,14 @@ def test_cascade_deletions(comment_factory, user_factory, post_factory):
 
     assert not db.session.dirty
     assert comment.user is not None and comment.user.user_id is not None
-    assert db.session.query(db.User).count() == 1
-    assert db.session.query(db.Comment).count() == 1
-    assert db.session.query(db.CommentScore).count() == 1
+    assert db.session.query(model.User).count() == 1
+    assert db.session.query(model.Comment).count() == 1
+    assert db.session.query(model.CommentScore).count() == 1
 
     db.session.delete(comment)
     db.session.commit()
 
     assert not db.session.dirty
-    assert db.session.query(db.User).count() == 1
-    assert db.session.query(db.Comment).count() == 0
-    assert db.session.query(db.CommentScore).count() == 0
+    assert db.session.query(model.User).count() == 1
+    assert db.session.query(model.Comment).count() == 0
+    assert db.session.query(model.CommentScore).count() == 0

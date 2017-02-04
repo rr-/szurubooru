@@ -2,7 +2,7 @@ import urllib.request
 from szurubooru import errors
 
 
-def download(url):
+def download(url: str) -> bytes:
     assert url
     request = urllib.request.Request(url)
     request.add_header('Referer', url)

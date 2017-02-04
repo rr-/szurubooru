@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import db
+from szurubooru import db, model
 from szurubooru.func import tag_categories, cache
 
 
@@ -191,7 +191,7 @@ def test_get_default_category_name(tag_category_factory):
     db.session.flush()
     cache.purge()
     assert tag_categories.get_default_category_name() == category1.name
-    db.session.query(db.TagCategory).delete()
+    db.session.query(model.TagCategory).delete()
     cache.purge()
     with pytest.raises(tag_categories.TagCategoryNotFoundError):
         tag_categories.get_default_category_name()

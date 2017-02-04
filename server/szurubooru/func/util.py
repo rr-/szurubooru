@@ -2,52 +2,39 @@ import os
 import hashlib
 import re
 import tempfile
+from typing import (
+    Any, Optional, Union, Tuple, List, Dict, Generator, Callable, TypeVar)
 from datetime import datetime, timedelta
 from contextlib import contextmanager
 from szurubooru import errors
 
 
-def snake_case_to_lower_camel_case(text):
+T = TypeVar('T')
+
+
+def snake_case_to_lower_camel_case(text: str) -> str:
     components = text.split('_')
     return components[0].lower() + \
         ''.join(word[0].upper() + word[1:].lower() for word in components[1:])
 
 
-def snake_case_to_upper_train_case(text):
+def snake_case_to_upper_train_case(text: str) -> str:
     return '-'.join(
         word[0].upper() + word[1:].lower() for word in text.split('_'))
 
 
-def snake_case_to_lower_camel_case_keys(source):
+def snake_case_to_lower_camel_case_keys(
+        source: Dict[str, Any]) -> Dict[str, Any]:
     target = {}
     for key, value in source.items():
         target[snake_case_to_lower_camel_case(key)] = value
     return target
 
 
-def get_serialization_options(ctx):
-    return ctx.get_param_as_list('fields', required=False, default=None)
-
-
-def serialize_entity(entity, field_factories, options):
-    if not entity:
-        return None
-    if not options or len(options) == 0:
-        options = field_factories.keys()
-    ret = {}
-    for key in options:
-        if key not in field_factories:
-            raise errors.ValidationError('Invalid key: %r. Valid keys: %r.' % (
-                key, list(sorted(field_factories.keys()))))
-        factory = field_factories[key]
-        ret[key] = factory()
-    return ret
-
-
 @contextmanager
-def create_temp_file(**kwargs):
-    (handle, path) = tempfile.mkstemp(**kwargs)
-    os.close(handle)
+def create_temp_file(**kwargs: Any) -> Generator:
+    (descriptor, path) = tempfile.mkstemp(**kwargs)
+    os.close(descriptor)
     try:
         with open(path, 'r+b') as handle:
             yield handle
@@ -55,17 +42,15 @@ def create_temp_file(**kwargs):
         os.remove(path)
 
 
-def unalias_dict(input_dict):
-    output_dict = {}
-    for key_list, value in input_dict.items():
-        if isinstance(key_list, str):
-            key_list = [key_list]
-        for key in key_list:
-            output_dict[key] = value
+def unalias_dict(source: List[Tuple[List[str], T]]) -> Dict[str, T]:
+    output_dict = {}  # type: Dict[str, T]
+    for aliases, value in source:
+        for alias in aliases:
+            output_dict[alias] = value
     return output_dict
 
 
-def get_md5(source):
+def get_md5(source: Union[str, bytes]) -> str:
     if not isinstance(source, bytes):
         source = source.encode('utf-8')
     md5 = hashlib.md5()
@@ -73,7 +58,7 @@ def get_md5(source):
     return md5.hexdigest()
 
 
-def get_sha1(source):
+def get_sha1(source: Union[str, bytes]) -> str:
     if not isinstance(source, bytes):
         source = source.encode('utf-8')
     sha1 = hashlib.sha1()
@@ -81,24 +66,25 @@ def get_sha1(source):
     return sha1.hexdigest()
 
 
-def flip(source):
+def flip(source: Dict[Any, Any]) -> Dict[Any, Any]:
     return {v: k for k, v in source.items()}
 
 
-def is_valid_email(email):
+def is_valid_email(email: Optional[str]) -> bool:
     ''' Return whether given email address is valid or empty. '''
-    return not email or re.match(r'^[^@]*@[^@]*\.[^@]*$', email)
+    return not email or re.match(r'^[^@]*@[^@]*\.[^@]*$', email) is not None
 
 
 class dotdict(dict):  # pylint: disable=invalid-name
     ''' dot.notation access to dictionary attributes. '''
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Any:
         return self.get(attr)
+
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
 
-def parse_time_range(value):
+def parse_time_range(value: str) -> Tuple[datetime, datetime]:
     ''' Return tuple containing min/max time for given text representation. '''
     one_day = timedelta(days=1)
     one_second = timedelta(seconds=1)
@@ -146,9 +132,9 @@ def parse_time_range(value):
     raise errors.ValidationError('Invalid date format: %r.' % value)
 
 
-def icase_unique(source):
-    target = []
-    target_low = []
+def icase_unique(source: List[str]) -> List[str]:
+    target = []  # type: List[str]
+    target_low = []  # type: List[str]
     for source_item in source:
         if source_item.lower() not in target_low:
             target.append(source_item)
@@ -156,7 +142,7 @@ def icase_unique(source):
     return target
 
 
-def value_exceeds_column_size(value, column):
+def value_exceeds_column_size(value: Optional[str], column: Any) -> bool:
     if not value:
         return False
     max_length = column.property.columns[0].type.length
@@ -165,6 +151,6 @@ def value_exceeds_column_size(value, column):
     return len(value) > max_length
 
 
-def chunks(source_list, part_size):
+def chunks(source_list: List[Any], part_size: int) -> Generator:
     for i in range(0, len(source_list), part_size):
         yield source_list[i:i + part_size]

@@ -4,4 +4,5 @@ import sys
 pytest.main([
     '--cov-report=term-missing',
     '--cov=szurubooru',
+    '--tb=short',
     ] + (sys.argv[1:] or ['szurubooru']))

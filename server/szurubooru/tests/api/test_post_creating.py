@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import posts, tags, snapshots, net
 
 
@@ -8,16 +8,16 @@ from szurubooru.func import posts, tags, snapshots, net
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'posts:create:anonymous': db.User.RANK_REGULAR,
-            'posts:create:identified': db.User.RANK_REGULAR,
-            'tags:create': db.User.RANK_REGULAR,
+            'posts:create:anonymous': model.User.RANK_REGULAR,
+            'posts:create:identified': model.User.RANK_REGULAR,
+            'tags:create': model.User.RANK_REGULAR,
         },
     })
 
 
 def test_creating_minimal_posts(
         context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -53,20 +53,20 @@ def test_creating_minimal_posts(
         posts.update_post_thumbnail.assert_called_once_with(
             post, 'post-thumbnail')
         posts.update_post_safety.assert_called_once_with(post, 'safe')
-        posts.update_post_source.assert_called_once_with(post, None)
+        posts.update_post_source.assert_called_once_with(post, '')
         posts.update_post_relations.assert_called_once_with(post, [])
         posts.update_post_notes.assert_called_once_with(post, [])
         posts.update_post_flags.assert_called_once_with(post, [])
         posts.update_post_thumbnail.assert_called_once_with(
             post, 'post-thumbnail')
         posts.serialize_post.assert_called_once_with(
-            post, auth_user, options=None)
+            post, auth_user, options=[])
         snapshots.create.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
 
 
 def test_creating_full_posts(context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -109,14 +109,14 @@ def test_creating_full_posts(context_factory, post_factory, user_factory):
         posts.update_post_flags.assert_called_once_with(
             post, ['flag1', 'flag2'])
         posts.serialize_post.assert_called_once_with(
-            post, auth_user, options=None)
+            post, auth_user, options=[])
         snapshots.create.assert_called_once_with(post, auth_user)
         tags.export_to_json.assert_called_once_with()
 
 
 def test_anonymous_uploads(
         config_injector, context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -126,7 +126,7 @@ def test_anonymous_uploads(
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):
         config_injector({
-            'privileges': {'posts:create:anonymous': db.User.RANK_REGULAR},
+            'privileges': {'posts:create:anonymous': model.User.RANK_REGULAR},
         })
         posts.create_post.return_value = [post, []]
         api.post_api.create_post(
@@ -146,7 +146,7 @@ def test_anonymous_uploads(
 
 def test_creating_from_url_saves_source(
         config_injector, context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -157,7 +157,7 @@ def test_creating_from_url_saves_source(
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):
         config_injector({
-            'privileges': {'posts:create:identified': db.User.RANK_REGULAR},
+            'privileges': {'posts:create:identified': model.User.RANK_REGULAR},
         })
         net.download.return_value = b'content'
         posts.create_post.return_value = [post, []]
@@ -177,7 +177,7 @@ def test_creating_from_url_saves_source(
 
 def test_creating_from_url_with_source_specified(
         config_injector, context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -188,7 +188,7 @@ def test_creating_from_url_with_source_specified(
             patch('szurubooru.func.posts.create_post'), \
             patch('szurubooru.func.posts.update_post_source'):
         config_injector({
-            'privileges': {'posts:create:identified': db.User.RANK_REGULAR},
+            'privileges': {'posts:create:identified': model.User.RANK_REGULAR},
         })
         net.download.return_value = b'content'
         posts.create_post.return_value = [post, []]
@@ -218,14 +218,14 @@ def test_trying_to_omit_mandatory_field(context_factory, user_factory, field):
             context_factory(
                 params=params,
                 files={'content': '...'},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 @pytest.mark.parametrize(
     'field', ['tags', 'relations', 'source', 'notes', 'flags'])
 def test_omitting_optional_field(
         field, context_factory, post_factory, user_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     post = post_factory()
     db.session.add(post)
     db.session.flush()
@@ -268,10 +268,10 @@ def test_errors_not_spending_ids(
             'post_height': 300,
         },
         'privileges': {
-            'posts:create:identified': db.User.RANK_REGULAR,
+            'posts:create:identified': model.User.RANK_REGULAR,
         },
     })
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
 
     # successful request
     with patch('szurubooru.func.posts.serialize_post'), \
@@ -316,7 +316,7 @@ def test_trying_to_omit_content(context_factory, user_factory):
                     'safety': 'safe',
                     'tags': ['tag1', 'tag2'],
                 },
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
 
 
 def test_trying_to_create_post_without_privileges(
@@ -324,16 +324,16 @@ def test_trying_to_create_post_without_privileges(
     with pytest.raises(errors.AuthError):
         api.post_api.create_post(context_factory(
             params='whatever',
-            user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+            user=user_factory(rank=model.User.RANK_ANONYMOUS)))
 
 
 def test_trying_to_create_tags_without_privileges(
         config_injector, context_factory, user_factory):
     config_injector({
         'privileges': {
-            'posts:create:anonymous': db.User.RANK_REGULAR,
-            'posts:create:identified': db.User.RANK_REGULAR,
-            'tags:create': db.User.RANK_ADMINISTRATOR,
+            'posts:create:anonymous': model.User.RANK_REGULAR,
+            'posts:create:identified': model.User.RANK_REGULAR,
+            'tags:create': model.User.RANK_ADMINISTRATOR,
         },
     })
     with pytest.raises(errors.AuthError), \
@@ -349,4 +349,4 @@ def test_trying_to_create_tags_without_privileges(
                 files={
                     'content': posts.EMPTY_PIXEL,
                 },
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))

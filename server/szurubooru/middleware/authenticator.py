@@ -1,11 +1,11 @@
 import base64
-from szurubooru import db, errors
+from typing import Optional
+from szurubooru import db, model, errors, rest
 from szurubooru.func import auth, users
-from szurubooru.rest import middleware
 from szurubooru.rest.errors import HttpBadRequest
 
 
-def _authenticate(username, password):
+def _authenticate(username: str, password: str) -> model.User:
     ''' Try to authenticate user. Throw AuthError for invalid users. '''
     user = users.get_user_by_name(username)
     if not auth.is_valid_password(user, password):
@@ -13,16 +13,9 @@ def _authenticate(username, password):
     return user
 
 
-def _create_anonymous_user():
-    user = db.User()
-    user.name = None
-    user.rank = 'anonymous'
-    return user
-
-
-def _get_user(ctx):
+def _get_user(ctx: rest.Context) -> Optional[model.User]:
     if not ctx.has_header('Authorization'):
-        return _create_anonymous_user()
+        return None
 
     try:
         auth_type, credentials = ctx.get_header('Authorization').split(' ', 1)
@@ -41,10 +34,12 @@ def _get_user(ctx):
             msg.format(ctx.get_header('Authorization'), str(err)))
 
 
-@middleware.pre_hook
-def process_request(ctx):
+@rest.middleware.pre_hook
+def process_request(ctx: rest.Context) -> None:
     ''' Bind the user to request. Update last login time if needed. '''
-    ctx.user = _get_user(ctx)
-    if ctx.get_param_as_bool('bump-login') and ctx.user.user_id:
+    auth_user = _get_user(ctx)
+    if auth_user:
+        ctx.user = auth_user
+    if ctx.get_param_as_bool('bump-login', default=False) and ctx.user.user_id:
         users.bump_user_login_time(ctx.user)
         ctx.session.commit()

@@ -1,7 +1,8 @@
 from sqlalchemy import Column, Integer, DateTime, UnicodeText, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.expression import func
-from szurubooru.db.base import Base
+from szurubooru.db import get_session
+from szurubooru.model.base import Base
 
 
 class CommentScore(Base):
@@ -48,12 +49,12 @@ class Comment(Base):
         'CommentScore', cascade='all, delete-orphan', lazy='joined')
 
     @property
-    def score(self):
-        from szurubooru.db import session
-        return session \
-            .query(func.sum(CommentScore.score)) \
-            .filter(CommentScore.comment_id == self.comment_id) \
-            .one()[0] or 0
+    def score(self) -> int:
+        return (
+            get_session()
+            .query(func.sum(CommentScore.score))
+            .filter(CommentScore.comment_id == self.comment_id)
+            .one()[0] or 0)
 
     __mapper_args__ = {
         'version_id_col': version,

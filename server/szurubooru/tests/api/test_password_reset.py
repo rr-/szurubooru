@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import auth, mailer
 
 
@@ -15,7 +15,7 @@ def inject_config(config_injector):
 
 def test_reset_sending_email(context_factory, user_factory):
     db.session.add(user_factory(
-        name='u1', rank=db.User.RANK_REGULAR, email='user@example.com'))
+        name='u1', rank=model.User.RANK_REGULAR, email='user@example.com'))
     db.session.flush()
     for initiating_user in ['u1', 'user@example.com']:
         with patch('szurubooru.func.mailer.send_mail'):
@@ -39,7 +39,7 @@ def test_trying_to_reset_non_existing(context_factory):
 
 def test_trying_to_reset_without_email(context_factory, user_factory):
     db.session.add(
-        user_factory(name='u1', rank=db.User.RANK_REGULAR, email=None))
+        user_factory(name='u1', rank=model.User.RANK_REGULAR, email=None))
     db.session.flush()
     with pytest.raises(errors.ValidationError):
         api.password_reset_api.start_password_reset(
@@ -48,7 +48,7 @@ def test_trying_to_reset_without_email(context_factory, user_factory):
 
 def test_confirming_with_good_token(context_factory, user_factory):
     user = user_factory(
-        name='u1', rank=db.User.RANK_REGULAR, email='user@example.com')
+        name='u1', rank=model.User.RANK_REGULAR, email='user@example.com')
     old_hash = user.password_hash
     db.session.add(user)
     db.session.flush()
@@ -68,7 +68,7 @@ def test_trying_to_confirm_non_existing(context_factory):
 
 def test_trying_to_confirm_without_token(context_factory, user_factory):
     db.session.add(user_factory(
-        name='u1', rank=db.User.RANK_REGULAR, email='user@example.com'))
+        name='u1', rank=model.User.RANK_REGULAR, email='user@example.com'))
     db.session.flush()
     with pytest.raises(errors.ValidationError):
         api.password_reset_api.finish_password_reset(
@@ -77,7 +77,7 @@ def test_trying_to_confirm_without_token(context_factory, user_factory):
 
 def test_trying_to_confirm_with_bad_token(context_factory, user_factory):
     db.session.add(user_factory(
-        name='u1', rank=db.User.RANK_REGULAR, email='user@example.com'))
+        name='u1', rank=model.User.RANK_REGULAR, email='user@example.com'))
     db.session.flush()
     with pytest.raises(errors.ValidationError):
         api.password_reset_api.finish_password_reset(

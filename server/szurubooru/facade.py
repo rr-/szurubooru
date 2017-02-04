@@ -2,7 +2,10 @@ import os
 import time
 import logging
 import threading
+from typing import Callable, Any, Type
+
 import coloredlogs
+import sqlalchemy as sa
 import sqlalchemy.orm.exc
 from szurubooru import config, db, errors, rest
 from szurubooru.func import posts, file_uploads
@@ -10,7 +13,10 @@ from szurubooru.func import posts, file_uploads
 from szurubooru import api, middleware
 
 
-def _map_error(ex, target_class, title):
+def _map_error(
+        ex: Exception,
+        target_class: Type[rest.errors.BaseHttpError],
+        title: str) -> rest.errors.BaseHttpError:
     return target_class(
         name=type(ex).__name__,
         title=title,
@@ -18,38 +24,38 @@ def _map_error(ex, target_class, title):
         extra_fields=getattr(ex, 'extra_fields', {}))
 
 
-def _on_auth_error(ex):
+def _on_auth_error(ex: Exception) -> None:
     raise _map_error(ex, rest.errors.HttpForbidden, 'Authentication error')
 
 
-def _on_validation_error(ex):
+def _on_validation_error(ex: Exception) -> None:
     raise _map_error(ex, rest.errors.HttpBadRequest, 'Validation error')
 
 
-def _on_search_error(ex):
+def _on_search_error(ex: Exception) -> None:
     raise _map_error(ex, rest.errors.HttpBadRequest, 'Search error')
 
 
-def _on_integrity_error(ex):
+def _on_integrity_error(ex: Exception) -> None:
     raise _map_error(ex, rest.errors.HttpConflict, 'Integrity violation')
 
 
-def _on_not_found_error(ex):
+def _on_not_found_error(ex: Exception) -> None:
     raise _map_error(ex, rest.errors.HttpNotFound, 'Not found')
 
 
-def _on_processing_error(ex):
+def _on_processing_error(ex: Exception) -> None:
     raise _map_error(ex, rest.errors.HttpBadRequest, 'Processing error')
 
 
-def _on_third_party_error(ex):
+def _on_third_party_error(ex: Exception) -> None:
     raise _map_error(
         ex,
         rest.errors.HttpInternalServerError,
         'Server configuration error')
 
 
-def _on_stale_data_error(_ex):
+def _on_stale_data_error(_ex: Exception) -> None:
     raise rest.errors.HttpConflict(
         name='IntegrityError',
         title='Integrity violation',
@@ -58,7 +64,7 @@ def _on_stale_data_error(_ex):
             'Please try again.'))
 
 
-def validate_config():
+def validate_config() -> None:
     '''
     Check whether config doesn't contain errors that might prove
     lethal at runtime.
@@ -86,7 +92,7 @@ def validate_config():
         raise errors.ConfigError('Database is not configured')
 
 
-def purge_old_uploads():
+def purge_old_uploads() -> None:
     while True:
         try:
             file_uploads.purge_old_uploads()
@@ -95,7 +101,7 @@ def purge_old_uploads():
         time.sleep(60 * 5)
 
 
-def create_app():
+def create_app() -> Callable[[Any, Any], Any]:
     ''' Create a WSGI compatible App object. '''
     validate_config()
     coloredlogs.install(fmt='[%(asctime)-15s] %(name)s %(message)s')
@@ -122,7 +128,7 @@ def create_app():
     rest.errors.handle(errors.NotFoundError, _on_not_found_error)
     rest.errors.handle(errors.ProcessingError, _on_processing_error)
     rest.errors.handle(errors.ThirdPartyError, _on_third_party_error)
-    rest.errors.handle(sqlalchemy.orm.exc.StaleDataError, _on_stale_data_error)
+    rest.errors.handle(sa.orm.exc.StaleDataError, _on_stale_data_error)
 
     return rest.application
 

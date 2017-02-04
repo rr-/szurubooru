@@ -1,12 +1,12 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import posts
 
 
 @pytest.fixture(autouse=True)
 def inject_config(config_injector):
-    config_injector({'privileges': {'posts:score': db.User.RANK_REGULAR}})
+    config_injector({'privileges': {'posts:score': model.User.RANK_REGULAR}})
 
 
 def test_simple_rating(
@@ -22,8 +22,8 @@ def test_simple_rating(
                 params={'score': 1}, user=user_factory()),
             {'post_id': post.post_id})
         assert result == 'serialized post'
-        post = db.session.query(db.Post).one()
-        assert db.session.query(db.PostScore).count() == 1
+        post = db.session.query(model.Post).one()
+        assert db.session.query(model.PostScore).count() == 1
         assert post is not None
         assert post.score == 1
 
@@ -43,8 +43,8 @@ def test_updating_rating(
             api.post_api.set_post_score(
                 context_factory(params={'score': -1}, user=user),
                 {'post_id': post.post_id})
-        post = db.session.query(db.Post).one()
-        assert db.session.query(db.PostScore).count() == 1
+        post = db.session.query(model.Post).one()
+        assert db.session.query(model.PostScore).count() == 1
         assert post.score == -1
 
 
@@ -63,8 +63,8 @@ def test_updating_rating_to_zero(
             api.post_api.set_post_score(
                 context_factory(params={'score': 0}, user=user),
                 {'post_id': post.post_id})
-        post = db.session.query(db.Post).one()
-        assert db.session.query(db.PostScore).count() == 0
+        post = db.session.query(model.Post).one()
+        assert db.session.query(model.PostScore).count() == 0
         assert post.score == 0
 
 
@@ -83,8 +83,8 @@ def test_deleting_rating(
             api.post_api.delete_post_score(
                 context_factory(user=user),
                 {'post_id': post.post_id})
-        post = db.session.query(db.Post).one()
-        assert db.session.query(db.PostScore).count() == 0
+        post = db.session.query(model.Post).one()
+        assert db.session.query(model.PostScore).count() == 0
         assert post.score == 0
 
 
@@ -104,8 +104,8 @@ def test_ratings_from_multiple_users(
             api.post_api.set_post_score(
                 context_factory(params={'score': -1}, user=user2),
                 {'post_id': post.post_id})
-        post = db.session.query(db.Post).one()
-        assert db.session.query(db.PostScore).count() == 2
+        post = db.session.query(model.Post).one()
+        assert db.session.query(model.PostScore).count() == 2
         assert post.score == 0
 
 
@@ -136,5 +136,5 @@ def test_trying_to_rate_without_privileges(
         api.post_api.set_post_score(
             context_factory(
                 params={'score': 1},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {'post_id': post.post_id})

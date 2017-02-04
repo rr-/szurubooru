@@ -1,5 +1,5 @@
 from datetime import datetime
-from szurubooru import db
+from szurubooru import db, model
 
 
 def test_saving_tag(tag_factory):
@@ -7,11 +7,11 @@ def test_saving_tag(tag_factory):
     sug2 = tag_factory(names=['sug2'])
     imp1 = tag_factory(names=['imp1'])
     imp2 = tag_factory(names=['imp2'])
-    tag = db.Tag()
-    tag.names = [db.TagName('alias1', 0), db.TagName('alias2', 1)]
+    tag = model.Tag()
+    tag.names = [model.TagName('alias1', 0), model.TagName('alias2', 1)]
     tag.suggestions = []
     tag.implications = []
-    tag.category = db.TagCategory('category')
+    tag.category = model.TagCategory('category')
     tag.creation_time = datetime(1997, 1, 1)
     tag.last_edit_time = datetime(1998, 1, 1)
     db.session.add_all([tag, sug1, sug2, imp1, imp2])
@@ -29,9 +29,9 @@ def test_saving_tag(tag_factory):
     db.session.commit()
 
     tag = db.session \
-        .query(db.Tag) \
-        .join(db.TagName) \
-        .filter(db.TagName.name == 'alias1') \
+        .query(model.Tag) \
+        .join(model.TagName) \
+        .filter(model.TagName.name == 'alias1') \
         .one()
     assert [tag_name.name for tag_name in tag.names] == ['alias1', 'alias2']
     assert tag.category.name == 'category'
@@ -48,11 +48,11 @@ def test_cascade_deletions(tag_factory):
     sug2 = tag_factory(names=['sug2'])
     imp1 = tag_factory(names=['imp1'])
     imp2 = tag_factory(names=['imp2'])
-    tag = db.Tag()
-    tag.names = [db.TagName('alias1', 0), db.TagName('alias2', 1)]
+    tag = model.Tag()
+    tag.names = [model.TagName('alias1', 0), model.TagName('alias2', 1)]
     tag.suggestions = []
     tag.implications = []
-    tag.category = db.TagCategory('category')
+    tag.category = model.TagCategory('category')
     tag.creation_time = datetime(1997, 1, 1)
     tag.last_edit_time = datetime(1998, 1, 1)
     tag.post_count = 1
@@ -72,10 +72,10 @@ def test_cascade_deletions(tag_factory):
 
     db.session.delete(tag)
     db.session.commit()
-    assert db.session.query(db.Tag).count() == 4
-    assert db.session.query(db.TagName).count() == 4
-    assert db.session.query(db.TagImplication).count() == 0
-    assert db.session.query(db.TagSuggestion).count() == 0
+    assert db.session.query(model.Tag).count() == 4
+    assert db.session.query(model.TagName).count() == 4
+    assert db.session.query(model.TagImplication).count() == 0
+    assert db.session.query(model.TagSuggestion).count() == 0
 
 
 def test_tracking_post_count(post_factory, tag_factory):

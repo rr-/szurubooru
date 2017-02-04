@@ -1,5 +1,6 @@
 import datetime
-from szurubooru import db, errors
+from typing import Any, Tuple, Callable
+from szurubooru import db, model, errors
 
 
 class InvalidScoreTargetError(errors.ValidationError):
@@ -10,22 +11,23 @@ class InvalidScoreValueError(errors.ValidationError):
     pass
 
 
-def _get_table_info(entity):
+def _get_table_info(
+        entity: model.Base) -> Tuple[model.Base, Callable[[model.Base], Any]]:
     assert entity
-    resource_type, _, _ = db.util.get_resource_info(entity)
+    resource_type, _, _ = model.util.get_resource_info(entity)
     if resource_type == 'post':
-        return db.PostScore, lambda table: table.post_id
+        return model.PostScore, lambda table: table.post_id
     elif resource_type == 'comment':
-        return db.CommentScore, lambda table: table.comment_id
+        return model.CommentScore, lambda table: table.comment_id
     raise InvalidScoreTargetError()
 
 
-def _get_score_entity(entity, user):
+def _get_score_entity(entity: model.Base, user: model.User) -> model.Base:
     assert user
-    return db.util.get_aux_entity(db.session, _get_table_info, entity, user)
+    return model.util.get_aux_entity(db.session, _get_table_info, entity, user)
 
 
-def delete_score(entity, user):
+def delete_score(entity: model.Base, user: model.User) -> None:
     assert entity
     assert user
     score_entity = _get_score_entity(entity, user)
@@ -33,7 +35,7 @@ def delete_score(entity, user):
         db.session.delete(score_entity)
 
 
-def get_score(entity, user):
+def get_score(entity: model.Base, user: model.User) -> int:
     assert entity
     assert user
     table, get_column = _get_table_info(entity)
@@ -45,7 +47,7 @@ def get_score(entity, user):
     return row[0] if row else 0
 
 
-def set_score(entity, user, score):
+def set_score(entity: model.Base, user: model.User, score: int) -> None:
     from szurubooru.func import favorites
     assert entity
     assert user

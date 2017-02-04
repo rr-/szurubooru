@@ -7,8 +7,8 @@ from unittest.mock import patch
 from datetime import datetime
 import pytest
 import freezegun
-import sqlalchemy
-from szurubooru import config, db, rest
+import sqlalchemy as sa
+from szurubooru import config, db, model, rest
 
 
 class QueryCounter:
@@ -36,10 +36,10 @@ if not config.config['test_database']:
     raise RuntimeError('Test database not configured.')
 
 _query_counter = QueryCounter()
-_engine = sqlalchemy.create_engine(config.config['test_database'])
-db.Base.metadata.drop_all(bind=_engine)
-db.Base.metadata.create_all(bind=_engine)
-sqlalchemy.event.listen(
+_engine = sa.create_engine(config.config['test_database'])
+model.Base.metadata.drop_all(bind=_engine)
+model.Base.metadata.create_all(bind=_engine)
+sa.event.listen(
     _engine,
     'before_cursor_execute',
     _query_counter.create_before_cursor_execute())
@@ -79,14 +79,14 @@ def query_logger():
 
 @pytest.yield_fixture(scope='function', autouse=True)
 def session(query_logger):  # pylint: disable=unused-argument
-    db.sessionmaker = sqlalchemy.orm.sessionmaker(
+    db.sessionmaker = sa.orm.sessionmaker(
         bind=_engine, autoflush=False)
-    db.session = sqlalchemy.orm.scoped_session(db.sessionmaker)
+    db.session = sa.orm.scoped_session(db.sessionmaker)
     try:
         yield db.session
     finally:
         db.session.remove()
-        for table in reversed(db.Base.metadata.sorted_tables):
+        for table in reversed(model.Base.metadata.sorted_tables):
             db.session.execute(table.delete())
         db.session.commit()
 
@@ -101,7 +101,7 @@ def context_factory(session):
             params=params or {},
             files=files or {})
         ctx.session = session
-        ctx.user = user or db.User()
+        ctx.user = user or model.User()
         return ctx
     return factory
 
@@ -115,15 +115,15 @@ def config_injector():
 
 @pytest.fixture
 def user_factory():
-    def factory(name=None, rank=db.User.RANK_REGULAR, email='dummy'):
-        user = db.User()
+    def factory(name=None, rank=model.User.RANK_REGULAR, email='dummy'):
+        user = model.User()
         user.name = name or get_unique_name()
         user.password_salt = 'dummy'
         user.password_hash = 'dummy'
         user.email = email
         user.rank = rank
         user.creation_time = datetime(1997, 1, 1)
-        user.avatar_style = db.User.AVATAR_GRAVATAR
+        user.avatar_style = model.User.AVATAR_GRAVATAR
         return user
     return factory
 
@@ -131,7 +131,7 @@ def user_factory():
 @pytest.fixture
 def tag_category_factory():
     def factory(name=None, color='dummy', default=False):
-        category = db.TagCategory()
+        category = model.TagCategory()
         category.name = name or get_unique_name()
         category.color = color
         category.default = default
@@ -143,12 +143,12 @@ def tag_category_factory():
 def tag_factory():
     def factory(names=None, category=None):
         if not category:
-            category = db.TagCategory(get_unique_name())
+            category = model.TagCategory(get_unique_name())
             db.session.add(category)
-        tag = db.Tag()
+        tag = model.Tag()
         tag.names = []
         for i, name in enumerate(names or [get_unique_name()]):
-            tag.names.append(db.TagName(name, i))
+            tag.names.append(model.TagName(name, i))
         tag.category = category
         tag.creation_time = datetime(1996, 1, 1)
         return tag
@@ -167,10 +167,10 @@ def post_factory(skip_post_hashing):
     # pylint: disable=invalid-name
     def factory(
             id=None,
-            safety=db.Post.SAFETY_SAFE,
-            type=db.Post.TYPE_IMAGE,
+            safety=model.Post.SAFETY_SAFE,
+            type=model.Post.TYPE_IMAGE,
             checksum='...'):
-        post = db.Post()
+        post = model.Post()
         post.post_id = id
         post.safety = safety
         post.type = type
@@ -191,7 +191,7 @@ def comment_factory(user_factory, post_factory):
         if not post:
             post = post_factory()
             db.session.add(post)
-        comment = db.Comment()
+        comment = model.Comment()
         comment.user = user
         comment.post = post
         comment.text = text
@@ -207,7 +207,7 @@ def post_score_factory(user_factory, post_factory):
             user = user_factory()
         if post is None:
             post = post_factory()
-        return db.PostScore(
+        return model.PostScore(
             post=post, user=user, score=score, time=datetime(1999, 1, 1))
     return factory
 
@@ -219,7 +219,7 @@ def post_favorite_factory(user_factory, post_factory):
             user = user_factory()
         if post is None:
             post = post_factory()
-        return db.PostFavorite(
+        return model.PostFavorite(
             post=post, user=user, time=datetime(1999, 1, 1))
     return factory
 

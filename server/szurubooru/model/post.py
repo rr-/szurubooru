@@ -3,8 +3,8 @@ from sqlalchemy import (
     Column, Integer, DateTime, Unicode, UnicodeText, PickleType, ForeignKey)
 from sqlalchemy.orm import (
     relationship, column_property, object_session, backref)
-from szurubooru.db.base import Base
-from szurubooru.db.comment import Comment
+from szurubooru.model.base import Base
+from szurubooru.model.comment import Comment
 
 
 class PostFeature(Base):
@@ -17,10 +17,9 @@ class PostFeature(Base):
         'user_id', Integer, ForeignKey('user.id'), nullable=False, index=True)
     time = Column('time', DateTime, nullable=False)
 
-    post = relationship('Post')
+    post = relationship('Post')  # type: Post
     user = relationship(
-        'User',
-        backref=backref('post_features', cascade='all, delete-orphan'))
+        'User', backref=backref('post_features', cascade='all, delete-orphan'))
 
 
 class PostScore(Base):
@@ -104,7 +103,7 @@ class PostRelation(Base):
         nullable=False,
         index=True)
 
-    def __init__(self, parent_id, child_id):
+    def __init__(self, parent_id: int, child_id: int) -> None:
         self.parent_id = parent_id
         self.child_id = child_id
 
@@ -127,7 +126,7 @@ class PostTag(Base):
         nullable=False,
         index=True)
 
-    def __init__(self, post_id, tag_id):
+    def __init__(self, post_id: int, tag_id: int) -> None:
         self.post_id = post_id
         self.tag_id = tag_id
 
@@ -197,7 +196,7 @@ class Post(Base):
     canvas_area = column_property(canvas_width * canvas_height)
 
     @property
-    def is_featured(self):
+    def is_featured(self) -> bool:
         featured_post = object_session(self) \
             .query(PostFeature) \
             .order_by(PostFeature.time.desc()) \

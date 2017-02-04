@@ -1,7 +1,7 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Column, Integer, DateTime, Unicode, PickleType, ForeignKey)
-from szurubooru.db.base import Base
+from szurubooru.model.base import Base
 
 
 class Snapshot(Base):

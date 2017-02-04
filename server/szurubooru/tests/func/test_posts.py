@@ -2,7 +2,7 @@ import os
 from unittest.mock import patch
 from datetime import datetime
 import pytest
-from szurubooru import db
+from szurubooru import db, model
 from szurubooru.func import (
     posts, users, comments, tags, images, files, util, image_hash)
 
@@ -14,7 +14,7 @@ from szurubooru.func import (
 ])
 def test_get_post_url(input_mime_type, expected_url, config_injector):
     config_injector({'data_url': 'http://example.com/'})
-    post = db.Post()
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_content_url(post) == expected_url
@@ -23,7 +23,7 @@ def test_get_post_url(input_mime_type, expected_url, config_injector):
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_url(input_mime_type, config_injector):
     config_injector({'data_url': 'http://example.com/'})
-    post = db.Post()
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_url(post) \
@@ -36,7 +36,7 @@ def test_get_post_thumbnail_url(input_mime_type, config_injector):
     ('totally/unknown', 'posts/1.dat'),
 ])
 def test_get_post_content_path(input_mime_type, expected_path):
-    post = db.Post()
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_content_path(post) == expected_path
@@ -44,7 +44,7 @@ def test_get_post_content_path(input_mime_type, expected_path):
 
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_path(input_mime_type):
-    post = db.Post()
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_path(post) == 'generated-thumbnails/1.jpg'
@@ -52,7 +52,7 @@ def test_get_post_thumbnail_path(input_mime_type):
 
 @pytest.mark.parametrize('input_mime_type', ['image/jpeg', 'image/gif'])
 def test_get_post_thumbnail_backup_path(input_mime_type):
-    post = db.Post()
+    post = model.Post()
     post.post_id = 1
     post.mime_type = input_mime_type
     assert posts.get_post_thumbnail_backup_path(post) \
@@ -60,7 +60,7 @@ def test_get_post_thumbnail_backup_path(input_mime_type):
 
 
 def test_serialize_note():
-    note = db.PostNote()
+    note = model.PostNote()
     note.polygon = [[0, 1], [1, 1], [1, 0], [0, 0]]
     note.text = '...'
     assert posts.serialize_note(note) == {
@@ -86,7 +86,7 @@ def test_serialize_post(
             = lambda comment, auth_user: comment.user.name
 
         auth_user = user_factory(name='auth user')
-        post = db.Post()
+        post = model.Post()
         post.post_id = 1
         post.creation_time = datetime(1997, 1, 1)
         post.last_edit_time = datetime(1998, 1, 1)
@@ -94,9 +94,9 @@ def test_serialize_post(
             tag_factory(names=['tag1', 'tag2']),
             tag_factory(names=['tag3'])
         ]
-        post.safety = db.Post.SAFETY_SAFE
+        post.safety = model.Post.SAFETY_SAFE
         post.source = '4gag'
-        post.type = db.Post.TYPE_IMAGE
+        post.type = model.Post.TYPE_IMAGE
         post.checksum = 'deadbeef'
         post.mime_type = 'image/jpeg'
         post.file_size = 100
@@ -116,25 +116,25 @@ def test_serialize_post(
                 user=user_factory(name='commenter2'),
                 post=post,
                 time=datetime(1999, 1, 2)),
-            db.PostFavorite(
+            model.PostFavorite(
                 post=post,
                 user=user_factory(name='fav1'),
                 time=datetime(1800, 1, 1)),
-            db.PostFeature(
+            model.PostFeature(
                 post=post,
                 user=user_factory(),
                 time=datetime(1999, 1, 1)),
-            db.PostScore(
+            model.PostScore(
                 post=post,
                 user=auth_user,
                 score=-1,
                 time=datetime(1800, 1, 1)),
-            db.PostScore(
+            model.PostScore(
                 post=post,
                 user=user_factory(),
                 score=1,
                 time=datetime(1800, 1, 1)),
-            db.PostScore(
+            model.PostScore(
                 post=post,
                 user=user_factory(),
                 score=1,
@@ -209,8 +209,6 @@ def test_try_get_post_by_id(post_factory):
     db.session.flush()
     assert posts.try_get_post_by_id(post.post_id) == post
     assert posts.try_get_post_by_id(post.post_id + 1) is None
-    with pytest.raises(posts.InvalidPostIdError):
-        posts.get_post_by_id('-')
 
 
 def test_get_post_by_id(post_factory):
@@ -220,8 +218,6 @@ def test_get_post_by_id(post_factory):
     assert posts.get_post_by_id(post.post_id) == post
     with pytest.raises(posts.PostNotFoundError):
         posts.get_post_by_id(post.post_id + 1)
-    with pytest.raises(posts.InvalidPostIdError):
-        posts.get_post_by_id('-')
 
 
 def test_create_post(user_factory, fake_datetime):
@@ -237,30 +233,30 @@ def test_create_post(user_factory, fake_datetime):
 
 
 @pytest.mark.parametrize('input_safety,expected_safety', [
-    ('safe', db.Post.SAFETY_SAFE),
-    ('sketchy', db.Post.SAFETY_SKETCHY),
-    ('unsafe', db.Post.SAFETY_UNSAFE),
+    ('safe', model.Post.SAFETY_SAFE),
+    ('sketchy', model.Post.SAFETY_SKETCHY),
+    ('unsafe', model.Post.SAFETY_UNSAFE),
 ])
 def test_update_post_safety(input_safety, expected_safety):
-    post = db.Post()
+    post = model.Post()
     posts.update_post_safety(post, input_safety)
     assert post.safety == expected_safety
 
 
 def test_update_post_safety_with_invalid_string():
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostSafetyError):
         posts.update_post_safety(post, 'bad')
 
 
 def test_update_post_source():
-    post = db.Post()
+    post = model.Post()
     posts.update_post_source(post, 'x')
     assert post.source == 'x'
 
 
 def test_update_post_source_with_too_long_string():
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostSourceError):
         posts.update_post_source(post, 'x' * 1000)
 
@@ -268,24 +264,24 @@ def test_update_post_source_with_too_long_string():
 @pytest.mark.parametrize(
     'is_existing,input_file,expected_mime_type,expected_type,output_file_name',
     [
-        (True, 'png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
-        (False, 'png.png', 'image/png', db.Post.TYPE_IMAGE, '1.png'),
-        (False, 'jpeg.jpg', 'image/jpeg', db.Post.TYPE_IMAGE, '1.jpg'),
-        (False, 'gif.gif', 'image/gif', db.Post.TYPE_IMAGE, '1.gif'),
+        (True, 'png.png', 'image/png', model.Post.TYPE_IMAGE, '1.png'),
+        (False, 'png.png', 'image/png', model.Post.TYPE_IMAGE, '1.png'),
+        (False, 'jpeg.jpg', 'image/jpeg', model.Post.TYPE_IMAGE, '1.jpg'),
+        (False, 'gif.gif', 'image/gif', model.Post.TYPE_IMAGE, '1.gif'),
         (
             False,
             'gif-animated.gif',
             'image/gif',
-            db.Post.TYPE_ANIMATION,
+            model.Post.TYPE_ANIMATION,
             '1.gif',
         ),
-        (False, 'webm.webm', 'video/webm', db.Post.TYPE_VIDEO, '1.webm'),
-        (False, 'mp4.mp4', 'video/mp4', db.Post.TYPE_VIDEO, '1.mp4'),
+        (False, 'webm.webm', 'video/webm', model.Post.TYPE_VIDEO, '1.webm'),
+        (False, 'mp4.mp4', 'video/mp4', model.Post.TYPE_VIDEO, '1.mp4'),
         (
             False,
             'flash.swf',
             'application/x-shockwave-flash',
-            db.Post.TYPE_FLASH,
+            model.Post.TYPE_FLASH,
             '1.swf'
         ),
     ])
@@ -318,7 +314,7 @@ def test_update_post_content_for_new_post(
         assert post.type == expected_type
         assert post.checksum == 'crc'
         assert os.path.exists(output_file_path)
-        if post.type in (db.Post.TYPE_IMAGE, db.Post.TYPE_ANIMATION):
+        if post.type in (model.Post.TYPE_IMAGE, model.Post.TYPE_ANIMATION):
             image_hash.delete_image.assert_called_once_with(post.post_id)
             image_hash.add_image.assert_called_once_with(post.post_id, content)
         else:
@@ -368,7 +364,7 @@ def test_update_post_content_with_broken_content(
 
 @pytest.mark.parametrize('input_content', [None, b'not a media file'])
 def test_update_post_content_with_invalid_content(input_content):
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostContentError):
         posts.update_post_content(post, input_content)
 
@@ -492,7 +488,7 @@ def test_update_post_content_leaving_custom_thumbnail(
 
 
 def test_update_post_tags(tag_factory):
-    post = db.Post()
+    post = model.Post()
     with patch('szurubooru.func.tags.get_or_create_tags_by_names'):
         tags.get_or_create_tags_by_names.side_effect = lambda tag_names: \
             ([tag_factory(names=[name]) for name in tag_names], [])
@@ -528,7 +524,7 @@ def test_update_post_relations_bidirectionality(post_factory):
 
 
 def test_update_post_relations_with_nonexisting_posts():
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostRelationError):
         posts.update_post_relations(post, [100])
 
@@ -542,7 +538,7 @@ def test_update_post_relations_with_itself(post_factory):
 
 
 def test_update_post_notes():
-    post = db.Post()
+    post = model.Post()
     posts.update_post_notes(
         post,
         [
@@ -576,19 +572,19 @@ def test_update_post_notes():
     [{'polygon': [[0, 0], [0, 0], [0, 1]]}],
 ])
 def test_update_post_notes_with_invalid_content(input):
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostNoteError):
         posts.update_post_notes(post, input)
 
 
 def test_update_post_flags():
-    post = db.Post()
+    post = model.Post()
     posts.update_post_flags(post, ['loop'])
     assert post.flags == ['loop']
 
 
 def test_update_post_flags_with_invalid_content():
-    post = db.Post()
+    post = model.Post()
     with pytest.raises(posts.InvalidPostFlagError):
         posts.update_post_flags(post, ['invalid'])
 

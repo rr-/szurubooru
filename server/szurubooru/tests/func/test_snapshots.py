@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from datetime import datetime
 import pytest
-from szurubooru import db
+from szurubooru import db, model
 from szurubooru.func import snapshots, users
 
 
@@ -56,20 +56,20 @@ def test_get_post_snapshot(post_factory, user_factory, tag_factory):
     db.session.add_all([user, tag1, tag2, post, related_post1, related_post2])
     db.session.flush()
 
-    score = db.PostScore()
+    score = model.PostScore()
     score.post = post
     score.user = user
     score.time = datetime(1997, 1, 1)
     score.score = 1
-    favorite = db.PostFavorite()
+    favorite = model.PostFavorite()
     favorite.post = post
     favorite.user = user
     favorite.time = datetime(1997, 1, 1)
-    feature = db.PostFeature()
+    feature = model.PostFeature()
     feature.post = post
     feature.user = user
     feature.time = datetime(1997, 1, 1)
-    note = db.PostNote()
+    note = model.PostNote()
     note.post = post
     note.polygon = [(1, 1), (200, 1), (200, 200), (1, 200)]
     note.text = 'some text'
@@ -105,7 +105,7 @@ def test_get_post_snapshot(post_factory, user_factory, tag_factory):
 
 def test_serialize_snapshot(user_factory):
     auth_user = user_factory()
-    snapshot = db.Snapshot()
+    snapshot = model.Snapshot()
     snapshot.operation = snapshot.OPERATION_CREATED
     snapshot.resource_type = 'type'
     snapshot.resource_name = 'id'
@@ -132,9 +132,9 @@ def test_create(tag_factory, user_factory):
         snapshots.get_tag_snapshot.return_value = 'mocked'
         snapshots.create(tag, user_factory())
     db.session.flush()
-    results = db.session.query(db.Snapshot).all()
+    results = db.session.query(model.Snapshot).all()
     assert len(results) == 1
-    assert results[0].operation == db.Snapshot.OPERATION_CREATED
+    assert results[0].operation == model.Snapshot.OPERATION_CREATED
     assert results[0].data == 'mocked'
 
 
@@ -144,16 +144,16 @@ def test_modify_saves_non_empty_diffs(post_factory, user_factory):
             'SQLite doesn\'t support transaction isolation, '
             'which is required to retrieve original entity')
     post = post_factory()
-    post.notes = [db.PostNote(polygon=[(0, 0), (0, 1), (1, 1)], text='old')]
+    post.notes = [model.PostNote(polygon=[(0, 0), (0, 1), (1, 1)], text='old')]
     user = user_factory()
     db.session.add_all([post, user])
     db.session.commit()
     post.source = 'new source'
-    post.notes = [db.PostNote(polygon=[(0, 0), (0, 1), (1, 1)], text='new')]
+    post.notes = [model.PostNote(polygon=[(0, 0), (0, 1), (1, 1)], text='new')]
     db.session.flush()
     snapshots.modify(post, user)
     db.session.flush()
-    results = db.session.query(db.Snapshot).all()
+    results = db.session.query(model.Snapshot).all()
     assert len(results) == 1
     assert results[0].data == {
         'type': 'object change',
@@ -181,7 +181,7 @@ def test_modify_doesnt_save_empty_diffs(tag_factory, user_factory):
     db.session.commit()
     snapshots.modify(tag, user)
     db.session.flush()
-    assert db.session.query(db.Snapshot).count() == 0
+    assert db.session.query(model.Snapshot).count() == 0
 
 
 def test_delete(tag_factory, user_factory):
@@ -192,9 +192,9 @@ def test_delete(tag_factory, user_factory):
         snapshots.get_tag_snapshot.return_value = 'mocked'
         snapshots.delete(tag, user_factory())
     db.session.flush()
-    results = db.session.query(db.Snapshot).all()
+    results = db.session.query(model.Snapshot).all()
     assert len(results) == 1
-    assert results[0].operation == db.Snapshot.OPERATION_DELETED
+    assert results[0].operation == model.Snapshot.OPERATION_DELETED
     assert results[0].data == 'mocked'
 
 
@@ -205,6 +205,6 @@ def test_merge(tag_factory, user_factory):
     db.session.flush()
     snapshots.merge(source_tag, target_tag, user_factory())
     db.session.flush()
-    result = db.session.query(db.Snapshot).one()
-    assert result.operation == db.Snapshot.OPERATION_MERGED
+    result = db.session.query(model.Snapshot).one()
+    assert result.operation == model.Snapshot.OPERATION_MERGED
     assert result.data == ['tag', 'target']

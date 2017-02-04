@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import tag_categories, tags, snapshots
 
 
@@ -12,15 +12,15 @@ def _update_category_name(category, name):
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'tag_categories:edit:name': db.User.RANK_REGULAR,
-            'tag_categories:edit:color': db.User.RANK_REGULAR,
-            'tag_categories:set_default': db.User.RANK_REGULAR,
+            'tag_categories:edit:name': model.User.RANK_REGULAR,
+            'tag_categories:edit:color': model.User.RANK_REGULAR,
+            'tag_categories:set_default': model.User.RANK_REGULAR,
         },
     })
 
 
 def test_simple_updating(user_factory, tag_category_factory, context_factory):
-    auth_user = user_factory(rank=db.User.RANK_REGULAR)
+    auth_user = user_factory(rank=model.User.RANK_REGULAR)
     category = tag_category_factory(name='name', color='black')
     db.session.add(category)
     db.session.flush()
@@ -61,7 +61,7 @@ def test_omitting_optional_field(
         api.tag_category_api.update_tag_category(
             context_factory(
                 params={**params, **{'version': 1}},
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'category_name': 'name'})
 
 
@@ -70,7 +70,7 @@ def test_trying_to_update_non_existing(user_factory, context_factory):
         api.tag_category_api.update_tag_category(
             context_factory(
                 params={'name': ['dummy']},
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'category_name': 'bad'})
 
 
@@ -86,7 +86,7 @@ def test_trying_to_update_without_privileges(
         api.tag_category_api.update_tag_category(
             context_factory(
                 params={**params, **{'version': 1}},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {'category_name': 'dummy'})
 
 
@@ -106,7 +106,7 @@ def test_set_as_default(user_factory, tag_category_factory, context_factory):
                     'color': 'white',
                     'version': 1,
                 },
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'category_name': 'name'})
         assert result == 'serialized category'
         tag_categories.set_default_category.assert_called_once_with(category)

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pytest
-from szurubooru import api, db, errors
+from szurubooru import api, db, model, errors
 from szurubooru.func import tags
 
 
@@ -8,8 +8,8 @@ from szurubooru.func import tags
 def inject_config(config_injector):
     config_injector({
         'privileges': {
-            'tags:list': db.User.RANK_REGULAR,
-            'tags:view': db.User.RANK_REGULAR,
+            'tags:list': model.User.RANK_REGULAR,
+            'tags:view': model.User.RANK_REGULAR,
         },
     })
 
@@ -24,7 +24,7 @@ def test_retrieving_multiple(user_factory, tag_factory, context_factory):
         result = api.tag_api.get_tags(
             context_factory(
                 params={'query': '', 'page': 1},
-                user=user_factory(rank=db.User.RANK_REGULAR)))
+                user=user_factory(rank=model.User.RANK_REGULAR)))
         assert result == {
             'query': '',
             'page': 1,
@@ -40,7 +40,7 @@ def test_trying_to_retrieve_multiple_without_privileges(
         api.tag_api.get_tags(
             context_factory(
                 params={'query': '', 'page': 1},
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)))
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)))
 
 
 def test_retrieving_single(user_factory, tag_factory, context_factory):
@@ -50,7 +50,7 @@ def test_retrieving_single(user_factory, tag_factory, context_factory):
         tags.serialize_tag.return_value = 'serialized tag'
         result = api.tag_api.get_tag(
             context_factory(
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'tag_name': 'tag'})
         assert result == 'serialized tag'
 
@@ -59,7 +59,7 @@ def test_trying_to_retrieve_single_non_existing(user_factory, context_factory):
     with pytest.raises(tags.TagNotFoundError):
         api.tag_api.get_tag(
             context_factory(
-                user=user_factory(rank=db.User.RANK_REGULAR)),
+                user=user_factory(rank=model.User.RANK_REGULAR)),
             {'tag_name': '-'})
 
 
@@ -68,5 +68,5 @@ def test_trying_to_retrieve_single_without_privileges(
     with pytest.raises(errors.AuthError):
         api.tag_api.get_tag(
             context_factory(
-                user=user_factory(rank=db.User.RANK_ANONYMOUS)),
+                user=user_factory(rank=model.User.RANK_ANONYMOUS)),
             {'tag_name': '-'})

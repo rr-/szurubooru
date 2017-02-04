@@ -1,3 +1,4 @@
+from typing import List
 import logging
 import json
 import shlex
@@ -15,23 +16,23 @@ _SCALE_FIT_FMT = \
 
 
 class Image:
-    def __init__(self, content):
+    def __init__(self, content: bytes) -> None:
         self.content = content
         self._reload_info()
 
     @property
-    def width(self):
+    def width(self) -> int:
         return self.info['streams'][0]['width']
 
     @property
-    def height(self):
+    def height(self) -> int:
         return self.info['streams'][0]['height']
 
     @property
-    def frames(self):
+    def frames(self) -> int:
         return self.info['streams'][0]['nb_read_frames']
 
-    def resize_fill(self, width, height):
+    def resize_fill(self, width: int, height: int) -> None:
         cli = [
             '-i', '{path}',
             '-f', 'image2',
@@ -53,7 +54,7 @@ class Image:
         assert self.content
         self._reload_info()
 
-    def to_png(self):
+    def to_png(self) -> bytes:
         return self._execute([
             '-i', '{path}',
             '-f', 'image2',
@@ -63,7 +64,7 @@ class Image:
             '-',
         ])
 
-    def to_jpeg(self):
+    def to_jpeg(self) -> bytes:
         return self._execute([
             '-f', 'lavfi',
             '-i', 'color=white:s=%dx%d' % (self.width, self.height),
@@ -76,7 +77,7 @@ class Image:
             '-',
         ])
 
-    def _execute(self, cli, program='ffmpeg'):
+    def _execute(self, cli: List[str], program: str='ffmpeg') -> bytes:
         extension = mime.get_extension(mime.get_mime_type(self.content))
         assert extension
         with util.create_temp_file(suffix='.' + extension) as handle:
@@ -99,7 +100,7 @@ class Image:
                     'Error while processing image.\n' + err.decode('utf-8'))
             return out
 
-    def _reload_info(self):
+    def _reload_info(self) -> None:
         self.info = json.loads(self._execute([
             '-i', '{path}',
             '-of', 'json',
