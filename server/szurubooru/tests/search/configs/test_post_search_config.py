@@ -431,23 +431,27 @@ def test_filter_by_file_size(
     ('image-area:90000', [3]),
     ('image-area:20000,90000', [1, 2, 3]),
     ('image-ar:1', [3]),
-    ('image-ar:..0.9', [1]),
+    ('image-ar:..0.9', [1, 4]),
     ('image-ar:1.1..', [2]),
     ('image-ar:1/1..1/1', [3]),
     ('image-ar:1:1..1:1', [3]),
+    ('image-ar:0.62..0.63', [4]),
 ])
 def test_filter_by_image_size(
         verify_unpaged, post_factory, input, expected_post_ids):
     post1 = post_factory(id=1)
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
+    post4 = post_factory(id=4)
     post1.canvas_width = 100
     post1.canvas_height = 200
     post2.canvas_width = 200
     post2.canvas_height = 100
     post3.canvas_width = 300
     post3.canvas_height = 300
-    db.session.add_all([post1, post2, post3])
+    post4.canvas_width = 480
+    post4.canvas_height = 767
+    db.session.add_all([post1, post2, post3, post4])
     db.session.flush()
     verify_unpaged(input, expected_post_ids)
 

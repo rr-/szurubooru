@@ -205,7 +205,9 @@ class Post(Base):
         .correlate_except(PostTag))
 
     canvas_area = sa.orm.column_property(canvas_width * canvas_height)
-    canvas_aspect_ratio = sa.orm.column_property(canvas_width / canvas_height)
+    canvas_aspect_ratio = sa.orm.column_property(
+        sa.sql.expression.func.cast(canvas_width, sa.Float) /
+        sa.sql.expression.func.cast(canvas_height, sa.Float))
 
     @property
     def is_featured(self) -> bool:
