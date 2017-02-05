@@ -274,7 +274,8 @@ class PostEditSidebarControl extends events.EventTarget {
                     undefined,
 
                 relations: this._relationsInputNode ?
-                    misc.splitByWhitespace(this._relationsInputNode.value) :
+                    misc.splitByWhitespace(this._relationsInputNode.value)
+                        .map(x => parseInt(x)) :
                     undefined,
 
                 content: this._newPostContent ?
