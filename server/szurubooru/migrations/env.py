@@ -9,7 +9,7 @@ import logging.config
 dir_to_self = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_to_self, *[os.pardir] * 2))
 
-import szurubooru.db.base
+import szurubooru.model.base
 import szurubooru.config
 
 alembic_config = alembic.context.config
@@ -18,7 +18,7 @@ logging.config.fileConfig(alembic_config.config_file_name)
 szuru_config = szurubooru.config.config
 alembic_config.set_main_option('sqlalchemy.url', szuru_config['database'])
 
-target_metadata = szurubooru.db.Base.metadata
+target_metadata = szurubooru.model.Base.metadata
 
 
 def run_migrations_offline():
@@ -51,7 +51,7 @@ def run_migrations_online():
     connectable = sa.engine_from_config(
         alembic_config.get_section(alembic_config.config_ini_section),
         prefix='sqlalchemy.',
-        poolclass=sqlalchemy.pool.NullPool)
+        poolclass=sa.pool.NullPool)
 
     with connectable.connect() as connection:
         alembic.context.configure(
