@@ -17,7 +17,7 @@ def has(path: str) -> bool:
     return os.path.exists(_get_full_path(path))
 
 
-def scan(path: str) -> List[os.DirEntry]:
+def scan(path: str) -> List[Any]:
     if has(path):
         return list(os.scandir(_get_full_path(path)))
     return []
