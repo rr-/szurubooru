@@ -1,7 +1,4 @@
-from sqlalchemy import (
-    Column, Integer, DateTime, Unicode, UnicodeText, ForeignKey)
-from sqlalchemy.orm import relationship, column_property
-from sqlalchemy.sql.expression import func, select
+import sqlalchemy as sa
 from szurubooru.model.base import Base
 from szurubooru.model.post import PostTag
 
@@ -9,17 +6,17 @@ from szurubooru.model.post import PostTag
 class TagSuggestion(Base):
     __tablename__ = 'tag_suggestion'
 
-    parent_id = Column(
+    parent_id = sa.Column(
         'parent_id',
-        Integer,
-        ForeignKey('tag.id'),
+        sa.Integer,
+        sa.ForeignKey('tag.id'),
         nullable=False,
         primary_key=True,
         index=True)
-    child_id = Column(
+    child_id = sa.Column(
         'child_id',
-        Integer,
-        ForeignKey('tag.id'),
+        sa.Integer,
+        sa.ForeignKey('tag.id'),
         nullable=False,
         primary_key=True,
         index=True)
@@ -32,17 +29,17 @@ class TagSuggestion(Base):
 class TagImplication(Base):
     __tablename__ = 'tag_implication'
 
-    parent_id = Column(
+    parent_id = sa.Column(
         'parent_id',
-        Integer,
-        ForeignKey('tag.id'),
+        sa.Integer,
+        sa.ForeignKey('tag.id'),
         nullable=False,
         primary_key=True,
         index=True)
-    child_id = Column(
+    child_id = sa.Column(
         'child_id',
-        Integer,
-        ForeignKey('tag.id'),
+        sa.Integer,
+        sa.ForeignKey('tag.id'),
         nullable=False,
         primary_key=True,
         index=True)
@@ -55,11 +52,15 @@ class TagImplication(Base):
 class TagName(Base):
     __tablename__ = 'tag_name'
 
-    tag_name_id = Column('tag_name_id', Integer, primary_key=True)
-    tag_id = Column(
-        'tag_id', Integer, ForeignKey('tag.id'), nullable=False, index=True)
-    name = Column('name', Unicode(64), nullable=False, unique=True)
-    order = Column('ord', Integer, nullable=False, index=True)
+    tag_name_id = sa.Column('tag_name_id', sa.Integer, primary_key=True)
+    tag_id = sa.Column(
+        'tag_id',
+        sa.Integer,
+        sa.ForeignKey('tag.id'),
+        nullable=False,
+        index=True)
+    name = sa.Column('name', sa.Unicode(64), nullable=False, unique=True)
+    order = sa.Column('ord', sa.Integer, nullable=False, index=True)
 
     def __init__(self, name: str, order: int) -> None:
         self.name = name
@@ -69,45 +70,46 @@ class TagName(Base):
 class Tag(Base):
     __tablename__ = 'tag'
 
-    tag_id = Column('id', Integer, primary_key=True)
-    category_id = Column(
+    tag_id = sa.Column('id', sa.Integer, primary_key=True)
+    category_id = sa.Column(
         'category_id',
-        Integer,
-        ForeignKey('tag_category.id'),
+        sa.Integer,
+        sa.ForeignKey('tag_category.id'),
         nullable=False,
         index=True)
-    version = Column('version', Integer, default=1, nullable=False)
-    creation_time = Column('creation_time', DateTime, nullable=False)
-    last_edit_time = Column('last_edit_time', DateTime)
-    description = Column('description', UnicodeText, default=None)
+    version = sa.Column('version', sa.Integer, default=1, nullable=False)
+    creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
+    last_edit_time = sa.Column('last_edit_time', sa.DateTime)
+    description = sa.Column('description', sa.UnicodeText, default=None)
 
-    category = relationship('TagCategory', lazy='joined')
-    names = relationship(
+    category = sa.orm.relationship('TagCategory', lazy='joined')
+    names = sa.orm.relationship(
         'TagName',
         cascade='all,delete-orphan',
         lazy='joined',
         order_by='TagName.order')
-    suggestions = relationship(
+    suggestions = sa.orm.relationship(
         'Tag',
         secondary='tag_suggestion',
         primaryjoin=tag_id == TagSuggestion.parent_id,
         secondaryjoin=tag_id == TagSuggestion.child_id,
         lazy='joined')
-    implications = relationship(
+    implications = sa.orm.relationship(
         'Tag',
         secondary='tag_implication',
         primaryjoin=tag_id == TagImplication.parent_id,
         secondaryjoin=tag_id == TagImplication.child_id,
         lazy='joined')
 
-    post_count = column_property(
-        select([func.count(PostTag.post_id)])
+    post_count = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.count(PostTag.post_id)])
         .where(PostTag.tag_id == tag_id)
         .correlate_except(PostTag))
 
-    first_name = column_property(
+    first_name = sa.orm.column_property(
         (
-            select([TagName.name])
+            sa.sql.expression.select([TagName.name])
             .where(TagName.tag_id == tag_id)
             .order_by(TagName.order)
             .limit(1)
@@ -115,17 +117,19 @@ class Tag(Base):
         ),
         deferred=True)
 
-    suggestion_count = column_property(
+    suggestion_count = sa.orm.column_property(
         (
-            select([func.count(TagSuggestion.child_id)])
+            sa.sql.expression.select(
+                [sa.sql.expression.func.count(TagSuggestion.child_id)])
             .where(TagSuggestion.parent_id == tag_id)
             .as_scalar()
         ),
         deferred=True)
 
-    implication_count = column_property(
+    implication_count = sa.orm.column_property(
         (
-            select([func.count(TagImplication.child_id)])
+            sa.sql.expression.select(
+                [sa.sql.expression.func.count(TagImplication.child_id)])
             .where(TagImplication.parent_id == tag_id)
             .as_scalar()
         ),

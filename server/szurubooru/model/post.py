@@ -1,8 +1,4 @@
-from sqlalchemy.sql.expression import func, select
-from sqlalchemy import (
-    Column, Integer, DateTime, Unicode, UnicodeText, PickleType, ForeignKey)
-from sqlalchemy.orm import (
-    relationship, column_property, object_session, backref)
+import sqlalchemy as sa
 from szurubooru.model.base import Base
 from szurubooru.model.comment import Comment
 
@@ -10,95 +6,109 @@ from szurubooru.model.comment import Comment
 class PostFeature(Base):
     __tablename__ = 'post_feature'
 
-    post_feature_id = Column('id', Integer, primary_key=True)
-    post_id = Column(
-        'post_id', Integer, ForeignKey('post.id'), nullable=False, index=True)
-    user_id = Column(
-        'user_id', Integer, ForeignKey('user.id'), nullable=False, index=True)
-    time = Column('time', DateTime, nullable=False)
+    post_feature_id = sa.Column('id', sa.Integer, primary_key=True)
+    post_id = sa.Column(
+        'post_id',
+        sa.Integer,
+        sa.ForeignKey('post.id'),
+        nullable=False,
+        index=True)
+    user_id = sa.Column(
+        'user_id',
+        sa.Integer,
+        sa.ForeignKey('user.id'),
+        nullable=False,
+        index=True)
+    time = sa.Column('time', sa.DateTime, nullable=False)
 
-    post = relationship('Post')  # type: Post
-    user = relationship(
-        'User', backref=backref('post_features', cascade='all, delete-orphan'))
+    post = sa.orm.relationship('Post')  # type: Post
+    user = sa.orm.relationship(
+        'User',
+        backref=sa.orm.backref(
+            'post_features', cascade='all, delete-orphan'))
 
 
 class PostScore(Base):
     __tablename__ = 'post_score'
 
-    post_id = Column(
+    post_id = sa.Column(
         'post_id',
-        Integer,
-        ForeignKey('post.id'),
+        sa.Integer,
+        sa.ForeignKey('post.id'),
         primary_key=True,
         nullable=False,
         index=True)
-    user_id = Column(
+    user_id = sa.Column(
         'user_id',
-        Integer,
-        ForeignKey('user.id'),
+        sa.Integer,
+        sa.ForeignKey('user.id'),
         primary_key=True,
         nullable=False,
         index=True)
-    time = Column('time', DateTime, nullable=False)
-    score = Column('score', Integer, nullable=False)
+    time = sa.Column('time', sa.DateTime, nullable=False)
+    score = sa.Column('score', sa.Integer, nullable=False)
 
-    post = relationship('Post')
-    user = relationship(
+    post = sa.orm.relationship('Post')
+    user = sa.orm.relationship(
         'User',
-        backref=backref('post_scores', cascade='all, delete-orphan'))
+        backref=sa.orm.backref('post_scores', cascade='all, delete-orphan'))
 
 
 class PostFavorite(Base):
     __tablename__ = 'post_favorite'
 
-    post_id = Column(
+    post_id = sa.Column(
         'post_id',
-        Integer,
-        ForeignKey('post.id'),
+        sa.Integer,
+        sa.ForeignKey('post.id'),
         primary_key=True,
         nullable=False,
         index=True)
-    user_id = Column(
+    user_id = sa.Column(
         'user_id',
-        Integer,
-        ForeignKey('user.id'),
+        sa.Integer,
+        sa.ForeignKey('user.id'),
         primary_key=True,
         nullable=False,
         index=True)
-    time = Column('time', DateTime, nullable=False)
+    time = sa.Column('time', sa.DateTime, nullable=False)
 
-    post = relationship('Post')
-    user = relationship(
+    post = sa.orm.relationship('Post')
+    user = sa.orm.relationship(
         'User',
-        backref=backref('post_favorites', cascade='all, delete-orphan'))
+        backref=sa.orm.backref('post_favorites', cascade='all, delete-orphan'))
 
 
 class PostNote(Base):
     __tablename__ = 'post_note'
 
-    post_note_id = Column('id', Integer, primary_key=True)
-    post_id = Column(
-        'post_id', Integer, ForeignKey('post.id'), nullable=False, index=True)
-    polygon = Column('polygon', PickleType, nullable=False)
-    text = Column('text', UnicodeText, nullable=False)
+    post_note_id = sa.Column('id', sa.Integer, primary_key=True)
+    post_id = sa.Column(
+        'post_id',
+        sa.Integer,
+        sa.ForeignKey('post.id'),
+        nullable=False,
+        index=True)
+    polygon = sa.Column('polygon', sa.PickleType, nullable=False)
+    text = sa.Column('text', sa.UnicodeText, nullable=False)
 
-    post = relationship('Post')
+    post = sa.orm.relationship('Post')
 
 
 class PostRelation(Base):
     __tablename__ = 'post_relation'
 
-    parent_id = Column(
+    parent_id = sa.Column(
         'parent_id',
-        Integer,
-        ForeignKey('post.id'),
+        sa.Integer,
+        sa.ForeignKey('post.id'),
         primary_key=True,
         nullable=False,
         index=True)
-    child_id = Column(
+    child_id = sa.Column(
         'child_id',
-        Integer,
-        ForeignKey('post.id'),
+        sa.Integer,
+        sa.ForeignKey('post.id'),
         primary_key=True,
         nullable=False,
         index=True)
@@ -111,17 +121,17 @@ class PostRelation(Base):
 class PostTag(Base):
     __tablename__ = 'post_tag'
 
-    post_id = Column(
+    post_id = sa.Column(
         'post_id',
-        Integer,
-        ForeignKey('post.id'),
+        sa.Integer,
+        sa.ForeignKey('post.id'),
         primary_key=True,
         nullable=False,
         index=True)
-    tag_id = Column(
+    tag_id = sa.Column(
         'tag_id',
-        Integer,
-        ForeignKey('tag.id'),
+        sa.Integer,
+        sa.ForeignKey('tag.id'),
         primary_key=True,
         nullable=False,
         index=True)
@@ -146,111 +156,123 @@ class Post(Base):
     FLAG_LOOP = 'loop'
 
     # basic meta
-    post_id = Column('id', Integer, primary_key=True)
-    user_id = Column(
+    post_id = sa.Column('id', sa.Integer, primary_key=True)
+    user_id = sa.Column(
         'user_id',
-        Integer,
-        ForeignKey('user.id', ondelete='SET NULL'),
+        sa.Integer,
+        sa.ForeignKey('user.id', ondelete='SET NULL'),
         nullable=True,
         index=True)
-    version = Column('version', Integer, default=1, nullable=False)
-    creation_time = Column('creation_time', DateTime, nullable=False)
-    last_edit_time = Column('last_edit_time', DateTime)
-    safety = Column('safety', Unicode(32), nullable=False)
-    source = Column('source', Unicode(200))
-    flags = Column('flags', PickleType, default=None)
+    version = sa.Column('version', sa.Integer, default=1, nullable=False)
+    creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
+    last_edit_time = sa.Column('last_edit_time', sa.DateTime)
+    safety = sa.Column('safety', sa.Unicode(32), nullable=False)
+    source = sa.Column('source', sa.Unicode(200))
+    flags = sa.Column('flags', sa.PickleType, default=None)
 
     # content description
-    type = Column('type', Unicode(32), nullable=False)
-    checksum = Column('checksum', Unicode(64), nullable=False)
-    file_size = Column('file_size', Integer)
-    canvas_width = Column('image_width', Integer)
-    canvas_height = Column('image_height', Integer)
-    mime_type = Column('mime-type', Unicode(32), nullable=False)
+    type = sa.Column('type', sa.Unicode(32), nullable=False)
+    checksum = sa.Column('checksum', sa.Unicode(64), nullable=False)
+    file_size = sa.Column('file_size', sa.Integer)
+    canvas_width = sa.Column('image_width', sa.Integer)
+    canvas_height = sa.Column('image_height', sa.Integer)
+    mime_type = sa.Column('mime-type', sa.Unicode(32), nullable=False)
 
     # foreign tables
-    user = relationship('User')
-    tags = relationship('Tag', backref='posts', secondary='post_tag')
-    relations = relationship(
+    user = sa.orm.relationship('User')
+    tags = sa.orm.relationship('Tag', backref='posts', secondary='post_tag')
+    relations = sa.orm.relationship(
         'Post',
         secondary='post_relation',
         primaryjoin=post_id == PostRelation.parent_id,
         secondaryjoin=post_id == PostRelation.child_id, lazy='joined',
         backref='related_by')
-    features = relationship(
+    features = sa.orm.relationship(
         'PostFeature', cascade='all, delete-orphan', lazy='joined')
-    scores = relationship(
+    scores = sa.orm.relationship(
         'PostScore', cascade='all, delete-orphan', lazy='joined')
-    favorited_by = relationship(
+    favorited_by = sa.orm.relationship(
         'PostFavorite', cascade='all, delete-orphan', lazy='joined')
-    notes = relationship(
+    notes = sa.orm.relationship(
         'PostNote', cascade='all, delete-orphan', lazy='joined')
-    comments = relationship('Comment', cascade='all, delete-orphan')
+    comments = sa.orm.relationship('Comment', cascade='all, delete-orphan')
 
     # dynamic columns
-    tag_count = column_property(
-        select([func.count(PostTag.tag_id)])
+    tag_count = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.count(PostTag.tag_id)])
         .where(PostTag.post_id == post_id)
         .correlate_except(PostTag))
 
-    canvas_area = column_property(canvas_width * canvas_height)
-    canvas_aspect_ratio = column_property(canvas_width / canvas_height)
+    canvas_area = sa.orm.column_property(canvas_width * canvas_height)
+    canvas_aspect_ratio = sa.orm.column_property(canvas_width / canvas_height)
 
     @property
     def is_featured(self) -> bool:
-        featured_post = object_session(self) \
+        featured_post = sa.orm.object_session(self) \
             .query(PostFeature) \
             .order_by(PostFeature.time.desc()) \
             .first()
         return featured_post and featured_post.post_id == self.post_id
 
-    score = column_property(
-        select([func.coalesce(func.sum(PostScore.score), 0)])
+    score = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.coalesce(
+                sa.sql.expression.func.sum(PostScore.score), 0)])
         .where(PostScore.post_id == post_id)
         .correlate_except(PostScore))
 
-    favorite_count = column_property(
-        select([func.count(PostFavorite.post_id)])
+    favorite_count = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.count(PostFavorite.post_id)])
         .where(PostFavorite.post_id == post_id)
         .correlate_except(PostFavorite))
 
-    last_favorite_time = column_property(
-        select([func.max(PostFavorite.time)])
+    last_favorite_time = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.max(PostFavorite.time)])
         .where(PostFavorite.post_id == post_id)
         .correlate_except(PostFavorite))
 
-    feature_count = column_property(
-        select([func.count(PostFeature.post_id)])
+    feature_count = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.count(PostFeature.post_id)])
         .where(PostFeature.post_id == post_id)
         .correlate_except(PostFeature))
 
-    last_feature_time = column_property(
-        select([func.max(PostFeature.time)])
+    last_feature_time = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.max(PostFeature.time)])
         .where(PostFeature.post_id == post_id)
         .correlate_except(PostFeature))
 
-    comment_count = column_property(
-        select([func.count(Comment.post_id)])
+    comment_count = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.count(Comment.post_id)])
         .where(Comment.post_id == post_id)
         .correlate_except(Comment))
 
-    last_comment_creation_time = column_property(
-        select([func.max(Comment.creation_time)])
+    last_comment_creation_time = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.max(Comment.creation_time)])
         .where(Comment.post_id == post_id)
         .correlate_except(Comment))
 
-    last_comment_edit_time = column_property(
-        select([func.max(Comment.last_edit_time)])
+    last_comment_edit_time = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.max(Comment.last_edit_time)])
         .where(Comment.post_id == post_id)
         .correlate_except(Comment))
 
-    note_count = column_property(
-        select([func.count(PostNote.post_id)])
+    note_count = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.count(PostNote.post_id)])
         .where(PostNote.post_id == post_id)
         .correlate_except(PostNote))
 
-    relation_count = column_property(
-        select([func.count(PostRelation.child_id)])
+    relation_count = sa.orm.column_property(
+        sa.sql.expression.select(
+            [sa.sql.expression.func.count(PostRelation.child_id)])
         .where(
             (PostRelation.parent_id == post_id) |
             (PostRelation.child_id == post_id))

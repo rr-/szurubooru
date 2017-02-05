@@ -1,6 +1,4 @@
-from sqlalchemy.orm import relationship
-from sqlalchemy import (
-    Column, Integer, DateTime, Unicode, PickleType, ForeignKey)
+import sqlalchemy as sa
 from szurubooru.model.base import Base
 
 
@@ -12,20 +10,20 @@ class Snapshot(Base):
     OPERATION_DELETED = 'deleted'
     OPERATION_MERGED = 'merged'
 
-    snapshot_id = Column('id', Integer, primary_key=True)
-    creation_time = Column('creation_time', DateTime, nullable=False)
-    operation = Column('operation', Unicode(16), nullable=False)
-    resource_type = Column(
-        'resource_type', Unicode(32), nullable=False, index=True)
-    resource_pkey = Column(
-        'resource_pkey', Integer, nullable=False, index=True)
-    resource_name = Column(
-        'resource_name', Unicode(64), nullable=False)
-    user_id = Column(
+    snapshot_id = sa.Column('id', sa.Integer, primary_key=True)
+    creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
+    operation = sa.Column('operation', sa.Unicode(16), nullable=False)
+    resource_type = sa.Column(
+        'resource_type', sa.Unicode(32), nullable=False, index=True)
+    resource_pkey = sa.Column(
+        'resource_pkey', sa.Integer, nullable=False, index=True)
+    resource_name = sa.Column(
+        'resource_name', sa.Unicode(64), nullable=False)
+    user_id = sa.Column(
         'user_id',
-        Integer,
-        ForeignKey('user.id', ondelete='set null'),
+        sa.Integer,
+        sa.ForeignKey('user.id', ondelete='set null'),
         nullable=True)
-    data = Column('data', PickleType)
+    data = sa.Column('data', sa.PickleType)
 
-    user = relationship('User')
+    user = sa.orm.relationship('User')

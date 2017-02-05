@@ -1,6 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, UnicodeText, ForeignKey
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy.sql.expression import func
+import sqlalchemy as sa
 from szurubooru.db import get_session
 from szurubooru.model.base import Base
 
@@ -8,51 +6,59 @@ from szurubooru.model.base import Base
 class CommentScore(Base):
     __tablename__ = 'comment_score'
 
-    comment_id = Column(
+    comment_id = sa.Column(
         'comment_id',
-        Integer,
-        ForeignKey('comment.id'),
+        sa.Integer,
+        sa.ForeignKey('comment.id'),
         nullable=False,
         primary_key=True)
-    user_id = Column(
+    user_id = sa.Column(
         'user_id',
-        Integer,
-        ForeignKey('user.id'),
+        sa.Integer,
+        sa.ForeignKey('user.id'),
         nullable=False,
         primary_key=True,
         index=True)
-    time = Column('time', DateTime, nullable=False)
-    score = Column('score', Integer, nullable=False)
+    time = sa.Column('time', sa.DateTime, nullable=False)
+    score = sa.Column('score', sa.Integer, nullable=False)
 
-    comment = relationship('Comment')
-    user = relationship(
+    comment = sa.orm.relationship('Comment')
+    user = sa.orm.relationship(
         'User',
-        backref=backref('comment_scores', cascade='all, delete-orphan'))
+        backref=sa.orm.backref('comment_scores', cascade='all, delete-orphan'))
 
 
 class Comment(Base):
     __tablename__ = 'comment'
 
-    comment_id = Column('id', Integer, primary_key=True)
-    post_id = Column(
-        'post_id', Integer, ForeignKey('post.id'), nullable=False, index=True)
-    user_id = Column(
-        'user_id', Integer, ForeignKey('user.id'), nullable=True, index=True)
-    version = Column('version', Integer, default=1, nullable=False)
-    creation_time = Column('creation_time', DateTime, nullable=False)
-    last_edit_time = Column('last_edit_time', DateTime)
-    text = Column('text', UnicodeText, default=None)
+    comment_id = sa.Column('id', sa.Integer, primary_key=True)
+    post_id = sa.Column(
+        'post_id',
+        sa.Integer,
+        sa.ForeignKey('post.id'),
+        nullable=False,
+        index=True)
+    user_id = sa.Column(
+        'user_id',
+        sa.Integer,
+        sa.ForeignKey('user.id'),
+        nullable=True,
+        index=True)
+    version = sa.Column('version', sa.Integer, default=1, nullable=False)
+    creation_time = sa.Column('creation_time', sa.DateTime, nullable=False)
+    last_edit_time = sa.Column('last_edit_time', sa.DateTime)
+    text = sa.Column('text', sa.UnicodeText, default=None)
 
-    user = relationship('User')
-    post = relationship('Post')
-    scores = relationship(
+    user = sa.orm.relationship('User')
+    post = sa.orm.relationship('Post')
+    scores = sa.orm.relationship(
         'CommentScore', cascade='all, delete-orphan', lazy='joined')
 
     @property
     def score(self) -> int:
         return (
             get_session()
-            .query(func.sum(CommentScore.score))
+            .query(sa.sql.expression.func.sum(CommentScore.score))
             .filter(CommentScore.comment_id == self.comment_id)
             .one()[0] or 0)
 
