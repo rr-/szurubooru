@@ -47,14 +47,14 @@ def create_post(
     else:
         auth.verify_privilege(ctx.user, 'posts:create:identified')
     content = ctx.get_file('content')
-    tag_names = ctx.get_param_as_list('tags', default=[])
+    tag_names = ctx.get_param_as_string_list('tags', default=[])
     safety = ctx.get_param_as_string('safety')
     source = ctx.get_param_as_string('source', default='')
     if ctx.has_param('contentUrl') and not source:
         source = ctx.get_param_as_string('contentUrl', default='')
-    relations = ctx.get_param_as_list('relations', default=[])
+    relations = ctx.get_param_as_int_list('relations', default=[])
     notes = ctx.get_param_as_list('notes', default=[])
-    flags = ctx.get_param_as_list('flags', default=[])
+    flags = ctx.get_param_as_string_list('flags', default=[])
 
     post, new_tags = posts.create_post(
         content, tag_names, None if anonymous else ctx.user)
@@ -94,7 +94,8 @@ def update_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
         posts.update_post_content(post, ctx.get_file('content'))
     if ctx.has_param('tags'):
         auth.verify_privilege(ctx.user, 'posts:edit:tags')
-        new_tags = posts.update_post_tags(post, ctx.get_param_as_list('tags'))
+        new_tags = posts.update_post_tags(
+            post, ctx.get_param_as_string_list('tags'))
         if len(new_tags):
             auth.verify_privilege(ctx.user, 'tags:create')
             db.session.flush()
@@ -110,13 +111,14 @@ def update_post(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
         posts.update_post_source(post, ctx.get_param_as_string('contentUrl'))
     if ctx.has_param('relations'):
         auth.verify_privilege(ctx.user, 'posts:edit:relations')
-        posts.update_post_relations(post, ctx.get_param_as_list('relations'))
+        posts.update_post_relations(
+            post, ctx.get_param_as_int_list('relations'))
     if ctx.has_param('notes'):
         auth.verify_privilege(ctx.user, 'posts:edit:notes')
         posts.update_post_notes(post, ctx.get_param_as_list('notes'))
     if ctx.has_param('flags'):
         auth.verify_privilege(ctx.user, 'posts:edit:flags')
-        posts.update_post_flags(post, ctx.get_param_as_list('flags'))
+        posts.update_post_flags(post, ctx.get_param_as_string_list('flags'))
     if ctx.has_file('thumbnail'):
         auth.verify_privilege(ctx.user, 'posts:edit:thumbnail')
         posts.update_post_thumbnail(post, ctx.get_file('thumbnail'))

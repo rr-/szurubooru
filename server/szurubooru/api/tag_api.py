@@ -38,11 +38,11 @@ def get_tags(ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
 def create_tag(ctx: rest.Context, _params: Dict[str, str]={}) -> rest.Response:
     auth.verify_privilege(ctx.user, 'tags:create')
 
-    names = ctx.get_param_as_list('names')
+    names = ctx.get_param_as_string_list('names')
     category = ctx.get_param_as_string('category')
     description = ctx.get_param_as_string('description', default='')
-    suggestions = ctx.get_param_as_list('suggestions', default=[])
-    implications = ctx.get_param_as_list('implications', default=[])
+    suggestions = ctx.get_param_as_string_list('suggestions', default=[])
+    implications = ctx.get_param_as_string_list('implications', default=[])
 
     _create_if_needed(suggestions, ctx.user)
     _create_if_needed(implications, ctx.user)
@@ -71,7 +71,7 @@ def update_tag(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
     versions.bump_version(tag)
     if ctx.has_param('names'):
         auth.verify_privilege(ctx.user, 'tags:edit:names')
-        tags.update_tag_names(tag, ctx.get_param_as_list('names'))
+        tags.update_tag_names(tag, ctx.get_param_as_string_list('names'))
     if ctx.has_param('category'):
         auth.verify_privilege(ctx.user, 'tags:edit:category')
         tags.update_tag_category_name(
@@ -82,12 +82,12 @@ def update_tag(ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
             tag, ctx.get_param_as_string('description'))
     if ctx.has_param('suggestions'):
         auth.verify_privilege(ctx.user, 'tags:edit:suggestions')
-        suggestions = ctx.get_param_as_list('suggestions')
+        suggestions = ctx.get_param_as_string_list('suggestions')
         _create_if_needed(suggestions, ctx.user)
         tags.update_tag_suggestions(tag, suggestions)
     if ctx.has_param('implications'):
         auth.verify_privilege(ctx.user, 'tags:edit:implications')
-        implications = ctx.get_param_as_list('implications')
+        implications = ctx.get_param_as_string_list('implications')
         _create_if_needed(implications, ctx.user)
         tags.update_tag_implications(tag, implications)
     tag.last_edit_time = datetime.utcnow()

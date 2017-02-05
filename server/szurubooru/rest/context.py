@@ -86,6 +86,28 @@ class Context:
         raise errors.InvalidParameterError(
             'Parameter %r must be a list.' % name)
 
+    def get_param_as_int_list(
+            self,
+            name: str,
+            default: Union[object, List[int]]=MISSING) -> List[int]:
+        ret = self.get_param_as_list(name, default)
+        for item in ret:
+            if type(item) is not int:
+                raise errors.InvalidParameterError(
+                    'Parameter %r must be a list of integer values.' % name)
+        return ret
+
+    def get_param_as_string_list(
+            self,
+            name: str,
+            default: Union[object, List[str]]=MISSING) -> List[str]:
+        ret = self.get_param_as_list(name, default)
+        for item in ret:
+            if type(item) is not str:
+                raise errors.InvalidParameterError(
+                    'Parameter %r must be a list of string values.' % name)
+        return ret
+
     def get_param_as_string(
             self,
             name: str,
