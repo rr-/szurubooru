@@ -431,21 +431,21 @@ data.
 
     **Named tokens**
 
-    | `<key>`             | Description                           |
-    | ------------------- | ------------------------------------- |
-    | `name`              | having given name (accepts wildcards) |
-    | `category`          | having given category                 |
-    | `creation-date`     | created at given date                 |
-    | `creation-time`     | alias of `creation-date`              |
-    | `last-edit-date`    | edited at given date                  |
-    | `last-edit-time`    | alias of `last-edit-date`             |
-    | `edit-date`         | alias of `last-edit-date`             |
-    | `edit-time`         | alias of `last-edit-date`             |
-    | `usages`            | used in given number of posts         |
-    | `usage-count`       | alias of `usages`                     |
-    | `post-count`        | alias of `usages`                     |
-    | `suggestion-count`  | with given number of suggestions      |
-    | `implication-count` | with given number of implications     |
+    | `<key>`             | Description                               |
+    | ------------------- | ----------------------------------------- |
+    | `name`              | having given name (accepts wildcards)     |
+    | `category`          | having given category (accepts wildcards) |
+    | `creation-date`     | created at given date                     |
+    | `creation-time`     | alias of `creation-date`                  |
+    | `last-edit-date`    | edited at given date                      |
+    | `last-edit-time`    | alias of `last-edit-date`                 |
+    | `edit-date`         | alias of `last-edit-date`                 |
+    | `edit-time`         | alias of `last-edit-date`                 |
+    | `usages`            | used in given number of posts             |
+    | `usage-count`       | alias of `usages`                         |
+    | `post-count`        | alias of `usages`                         |
+    | `suggestion-count`  | with given number of suggestions          |
+    | `implication-count` | with given number of implications         |
 
     **Sort style tokens**
 
@@ -699,13 +699,13 @@ data.
     | `<key>`            | Description                                                |
     | ------------------ | ---------------------------------------------------------- |
     | `id`               | having given post number                                   |
-    | `tag`              | having given tag                                           |
+    | `tag`              | having given tag (accepts wildcards)                       |
     | `score`            | having given score                                         |
-    | `uploader`         | uploaded by given user                                     |
+    | `uploader`         | uploaded by given user (accepts wildcards)                 |
     | `upload`           | alias of upload                                            |
     | `submit`           | alias of upload                                            |
-    | `comment`          | commented by given user                                    |
-    | `fav`              | favorited by given user                                    |
+    | `comment`          | commented by given user (accepts wildcards)                |
+    | `fav`              | favorited by given user (accepts wildcards)                |
     | `tag-count`        | having given number of tags                                |
     | `comment-count`    | having given number of comments                            |
     | `fav-count`        | favorited by given number of users                         |
@@ -1555,14 +1555,14 @@ data.
 
     **Named tokens**
 
-    | `<key>`           | Description                                   |
-    | ----------------- | --------------------------------------------- |
-    | `type`            | involving given resource type                 |
-    | `id`              | involving given resource id                   |
-    | `date`            | created at given date                         |
-    | `time`            | alias of `date`                               |
-    | `operation`       | `modified`, `created`, `deleted` or `merged`  |
-    | `user`            | name of the user that created given snapshot  |
+    | `<key>`           | Description                                                      |
+    | ----------------- | ---------------------------------------------------------------- |
+    | `type`            | involving given resource type                                    |
+    | `id`              | involving given resource id                                      |
+    | `date`            | created at given date                                            |
+    | `time`            | alias of `date`                                                  |
+    | `operation`       | `modified`, `created`, `deleted` or `merged`                     |
+    | `user`            | name of the user that created given snapshot (accepts wildcards) |
 
     **Sort style tokens**
 

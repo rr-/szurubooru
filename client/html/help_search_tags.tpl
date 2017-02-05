@@ -12,7 +12,7 @@
         </tr>
         <tr>
             <td><code>category</code></td>
-            <td>having given category</td>
+            <td>having given category (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>creation-date</code></td>

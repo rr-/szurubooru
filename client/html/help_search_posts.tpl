@@ -12,7 +12,7 @@
         </tr>
         <tr>
             <td><code>tag</code></td>
-            <td>having given tag</td>
+            <td>having given tag (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>score</code></td>
@@ -20,7 +20,7 @@
         </tr>
         <tr>
             <td><code>uploader</code></td>
-            <td>uploaded by given user</td>
+            <td>uploaded by given use (accepts wildcards)r</td>
         </tr>
         <tr>
             <td><code>upload</code></td>
@@ -32,11 +32,11 @@
         </tr>
         <tr>
             <td><code>comment</code></td>
-            <td>commented by given user</td>
+            <td>commented by given user (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>fav</code></td>
-            <td>favorited by given user</td>
+            <td>favorited by given user (accepts wildcards)</td>
         </tr>
         <tr>
             <td><code>tag-count</code></td>
