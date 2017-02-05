@@ -69,25 +69,35 @@ def _create_score_filter(score: int) -> Filter:
     return wrapper
 
 
-def _create_user_filter() -> Filter:
-    def wrapper(
-            query: SaQuery,
-            criterion: Optional[criteria.BaseCriterion],
-            negated: bool) -> SaQuery:
-        assert criterion
-        if isinstance(criterion, criteria.PlainCriterion) \
-                and not criterion.value:
-            # pylint: disable=singleton-comparison
-            expr = model.Post.user_id == None
-            if negated:
-                expr = ~expr
-            return query.filter(expr)
-        return search_util.create_subquery_filter(
-            model.Post.user_id,
-            model.User.user_id,
-            model.User.name,
-            search_util.create_str_filter)(query, criterion, negated)
-    return wrapper
+def _user_filter(
+        query: SaQuery,
+        criterion: Optional[criteria.BaseCriterion],
+        negated: bool) -> SaQuery:
+    assert criterion
+    if isinstance(criterion, criteria.PlainCriterion) \
+            and not criterion.value:
+        # pylint: disable=singleton-comparison
+        expr = model.Post.user_id == None
+        if negated:
+            expr = ~expr
+        return query.filter(expr)
+    return search_util.create_subquery_filter(
+        model.Post.user_id,
+        model.User.user_id,
+        model.User.name,
+        search_util.create_str_filter)(query, criterion, negated)
+
+
+def _note_filter(
+        query: SaQuery,
+        criterion: Optional[criteria.BaseCriterion],
+        negated: bool) -> SaQuery:
+    assert criterion
+    return search_util.create_subquery_filter(
+        model.Post.post_id,
+        model.PostNote.post_id,
+        model.PostNote.text,
+        search_util.create_str_filter)(query, criterion, negated)
 
 
 class PostSearchConfig(BaseSearchConfig):
@@ -187,7 +197,7 @@ class PostSearchConfig(BaseSearchConfig):
 
             (
                 ['uploader', 'upload', 'submit'],
-                _create_user_filter()
+                _user_filter
             ),
 
             (
@@ -310,6 +320,11 @@ class PostSearchConfig(BaseSearchConfig):
                 ['safety', 'rating'],
                 search_util.create_str_filter(
                     model.Post.safety, _safety_transformer)
+            ),
+
+            (
+                ['note-text'],
+                _note_filter
             ),
         ])
 

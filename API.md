@@ -710,6 +710,7 @@ data.
     | `comment-count`    | having given number of comments                            |
     | `fav-count`        | favorited by given number of users                         |
     | `note-count`       | having given number of annotations                         |
+    | `note-text`        | having given note text (accepts wildcards)                 |
     | `relation-count`   | having given number of relations                           |
     | `feature-count`    | having been featured given number of times                 |
     | `type`             | given type of posts. `<value>` can be either `image`, `animation` (or `animated` or `anim`), `flash` (or `swf`) or `video` (or `webm`). |

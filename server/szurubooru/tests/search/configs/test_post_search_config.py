@@ -27,8 +27,8 @@ def score_factory(user_factory):
 
 @pytest.fixture
 def note_factory():
-    def factory():
-        return model.PostNote(polygon='...', text='...')
+    def factory(text='...'):
+        return model.PostNote(polygon='...', text=text)
     return factory
 
 
@@ -289,6 +289,25 @@ def test_filter_by_note_count(
     post1.notes = [note_factory()]
     post2.notes = [note_factory(), note_factory()]
     post3.notes = [note_factory(), note_factory(), note_factory()]
+    db.session.add_all([post1, post2, post3])
+    db.session.flush()
+    verify_unpaged(input, expected_post_ids)
+
+
+@pytest.mark.parametrize('input,expected_post_ids', [
+    ('note-text:*', [1, 2, 3]),
+    ('note-text:text2', [2]),
+    ('note-text:text3*', [3]),
+    ('note-text:text3a,text2', [2, 3]),
+])
+def test_filter_by_note_count(
+        verify_unpaged, post_factory, note_factory, input, expected_post_ids):
+    post1 = post_factory(id=1)
+    post2 = post_factory(id=2)
+    post3 = post_factory(id=3)
+    post1.notes = [note_factory(text='text1')]
+    post2.notes = [note_factory(text='text2'), note_factory(text='text2')]
+    post3.notes = [note_factory(text='text3a'), note_factory(text='text3b')]
     db.session.add_all([post1, post2, post3])
     db.session.flush()
     verify_unpaged(input, expected_post_ids)

@@ -55,6 +55,10 @@
             <td>having given number of annotations</td>
         </tr>
         <tr>
+            <td><code>note-text</code></td>
+            <td>having given note text (accepts wildcards)</td>
+        </tr>
+        <tr>
             <td><code>relation-count</code></td>
             <td>having given number of relations</td>
         </tr>
