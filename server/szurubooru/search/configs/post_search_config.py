@@ -291,6 +291,13 @@ class PostSearchConfig(BaseSearchConfig):
             ),
 
             (
+                ['image-aspect-ratio', 'image-ar', 'aspect-ratio', 'ar'],
+                search_util.create_num_filter(
+                    model.Post.canvas_aspect_ratio,
+                    transformer=search_util.float_transformer)
+            ),
+
+            (
                 ['creation-date', 'creation-time', 'date', 'time'],
                 search_util.create_date_filter(model.Post.creation_time)
             ),

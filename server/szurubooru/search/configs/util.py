@@ -1,10 +1,13 @@
-from typing import Any, Optional, Callable
+from typing import Any, Optional, Union, Callable
 import sqlalchemy as sa
 from szurubooru import db, errors
 from szurubooru.func import util
 from szurubooru.search import criteria
 from szurubooru.search.typing import SaColumn, SaQuery
 from szurubooru.search.configs.base_search_config import Filter
+
+
+Number = Union[int, float]
 
 
 def wildcard_transformer(value: str) -> str:
@@ -16,22 +19,37 @@ def wildcard_transformer(value: str) -> str:
         .replace('*', '%'))
 
 
+def integer_transformer(value: str) -> int:
+    return int(value)
+
+
+def float_transformer(value: str) -> float:
+    for sep in list('/:'):
+        if sep in value:
+            a, b = value.split(sep, 1)
+            return float(a) / float(b)
+    return float(value)
+
+
 def apply_num_criterion_to_column(
-        column: Any, criterion: criteria.BaseCriterion) -> Any:
+        column: Any,
+        criterion: criteria.BaseCriterion,
+        transformer: Callable[[str], Number]=integer_transformer) -> SaQuery:
     try:
         if isinstance(criterion, criteria.PlainCriterion):
-            expr = column == int(criterion.value)
+            expr = column == transformer(criterion.value)
         elif isinstance(criterion, criteria.ArrayCriterion):
-            expr = column.in_(int(value) for value in criterion.values)
+            expr = column.in_(transformer(value) for value in criterion.values)
         elif isinstance(criterion, criteria.RangedCriterion):
             assert criterion.min_value or criterion.max_value
             if criterion.min_value and criterion.max_value:
                 expr = column.between(
-                    int(criterion.min_value), int(criterion.max_value))
+                    transformer(criterion.min_value),
+                    transformer(criterion.max_value))
             elif criterion.min_value:
-                expr = column >= int(criterion.min_value)
+                expr = column >= transformer(criterion.min_value)
             elif criterion.max_value:
-                expr = column <= int(criterion.max_value)
+                expr = column <= transformer(criterion.max_value)
         else:
             assert False
     except ValueError:
@@ -40,13 +58,15 @@ def apply_num_criterion_to_column(
     return expr
 
 
-def create_num_filter(column: Any) -> Filter:
+def create_num_filter(
+        column: Any,
+        transformer: Callable[[str], Number]=integer_transformer) -> SaQuery:
     def wrapper(
             query: SaQuery,
             criterion: Optional[criteria.BaseCriterion],
             negated: bool) -> SaQuery:
         assert criterion
-        expr = apply_num_criterion_to_column(column, criterion)
+        expr = apply_num_criterion_to_column(column, criterion, transformer)
         if negated:
             expr = ~expr
         return query.filter(expr)

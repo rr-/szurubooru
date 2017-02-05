@@ -422,14 +422,19 @@ def test_filter_by_file_size(
 
 @pytest.mark.parametrize('input,expected_post_ids', [
     ('image-width:100', [1]),
-    ('image-width:102', [3]),
-    ('image-width:100,102', [1, 3]),
+    ('image-width:200', [2]),
+    ('image-width:100,300', [1, 3]),
     ('image-height:200', [1]),
-    ('image-height:202', [3]),
-    ('image-height:200,202', [1, 3]),
-    ('image-area:20000', [1]),
-    ('image-area:20604', [3]),
-    ('image-area:20000,20604', [1, 3]),
+    ('image-height:100', [2]),
+    ('image-height:200,300', [1, 3]),
+    ('image-area:20000', [1, 2]),
+    ('image-area:90000', [3]),
+    ('image-area:20000,90000', [1, 2, 3]),
+    ('image-ar:1', [3]),
+    ('image-ar:..0.9', [1]),
+    ('image-ar:1.1..', [2]),
+    ('image-ar:1/1..1/1', [3]),
+    ('image-ar:1:1..1:1', [3]),
 ])
 def test_filter_by_image_size(
         verify_unpaged, post_factory, input, expected_post_ids):
@@ -437,14 +442,19 @@ def test_filter_by_image_size(
     post2 = post_factory(id=2)
     post3 = post_factory(id=3)
     post1.canvas_width = 100
-    post2.canvas_width = 101
-    post3.canvas_width = 102
     post1.canvas_height = 200
-    post2.canvas_height = 201
-    post3.canvas_height = 202
+    post2.canvas_width = 200
+    post2.canvas_height = 100
+    post3.canvas_width = 300
+    post3.canvas_height = 300
     db.session.add_all([post1, post2, post3])
     db.session.flush()
     verify_unpaged(input, expected_post_ids)
+
+
+def test_filter_by_invalid_aspect_ratio(executor):
+    with pytest.raises(errors.SearchError):
+        executor.execute('image-ar:1:1:1', page=1, page_size=100)
 
 
 @pytest.mark.parametrize('input,expected_post_ids', [

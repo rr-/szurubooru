@@ -91,6 +91,14 @@
             <td>having given number of pixels (image width * image height)</td>
         </tr>
         <tr>
+            <td><code>image-aspect-ratio</code></td>
+            <td>having given aspect ratio (image width / image height)</td>
+        </tr>
+        <tr>
+            <td><code>image-ar</code></td>
+            <td>alias of <code>image-aspect-ratio</code></td>
+        </tr>
+        <tr>
             <td><code>width</code></td>
             <td>alias of <code>image-width</code></td>
         </tr>
@@ -101,6 +109,14 @@
         <tr>
             <td><code>area</code></td>
             <td>alias of <code>image-area</code></td>
+        </tr>
+        <tr>
+            <td><code>aspect-ratio</code></td>
+            <td>alias of <code>image-aspect-ratio</code></td>
+        </tr>
+        <tr>
+            <td><code>ar</code></td>
+            <td>alias of <code>image-aspect-ratio</code></td>
         </tr>
         <tr>
             <td><code>creation-date</code></td>
