@@ -10,3 +10,4 @@ pycodestyle>=2.0.0
 scipy>=0.18.1
 elasticsearch>=5.0.0
 elasticsearch-dsl>=5.0.0
+skimage>=0.12
