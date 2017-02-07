@@ -170,13 +170,25 @@ input:disabled
     cursor: not-allowed
 
 label.color
+    white-space: nowrap
     position: relative
+    display: flex
     input[type=text]
+        margin-right: 0.25em
+        width: auto
+    .preview
+        display: inline-block
         text-align: center
-        pointer-events: none
-    input[type=color]
-        position: absolute
-        opacity: 0
+        padding: 0 0.5em
+        border: 2px solid black
+        &:after
+            content: 'A'
+    .background-preview
+        border-right: 0
+        color: transparent
+    .text-preview
+        border-left: 0
+
 
 form.show-validation .input
     input:invalid

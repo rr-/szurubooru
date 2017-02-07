@@ -139,12 +139,29 @@ function makeColorInput(options) {
             type: 'text',
             value: options.value || '',
             required: options.required,
-            style: 'color: ' + options.value,
-            disabled: true,
+            class: 'color',
         });
-    const colorInput = makeElement(
-        'input', {type: 'color', value: options.value || ''});
-    return makeElement('label', {class: 'color'}, colorInput, textInput);
+    const backgroundPreviewNode = makeElement(
+        'div',
+        {
+            class: 'preview background-preview',
+            style:
+                `border-color: ${options.value};
+                background-color: ${options.value}`,
+        });
+    const textPreviewNode = makeElement(
+        'div',
+        {
+            class: 'preview text-preview',
+            style:
+                `border-color: ${options.value};
+                color: ${options.value}`,
+        });
+    return makeElement(
+        'label', {class: 'color'},
+        textInput,
+        backgroundPreviewNode,
+        textPreviewNode);
 }
 
 function makeNumericInput(options) {
@@ -478,11 +495,13 @@ function monitorNodeRemoval(monitoredNode, callback) {
 }
 
 document.addEventListener('input', e => {
-    const type = e.target.getAttribute('type');
-    if (type && type.toLowerCase() === 'color') {
-        const textInput = e.target.parentNode.querySelector('input[type=text]');
-        textInput.style.color = e.target.value;
-        textInput.value = e.target.value;
+    if (e.target.classList.contains('color')) {
+        let bkNode = e.target.parentNode.querySelector('.background-preview');
+        let textNode = e.target.parentNode.querySelector('.text-preview');
+        bkNode.style.backgroundColor = e.target.value;
+        bkNode.style.borderColor = e.target.value;
+        textNode.style.color = e.target.value;
+        textNode.style.borderColor = e.target.value;
     }
 });
 
