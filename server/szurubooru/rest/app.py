@@ -33,6 +33,7 @@ def _get_headers(env: Dict[str, Any]) -> Dict[str, str]:
 def _create_context(env: Dict[str, Any]) -> context.Context:
     method = env['REQUEST_METHOD']
     path = '/' + env['PATH_INFO'].lstrip('/')
+    path = path.encode('latin-1').decode('utf-8')  # PEP-3333
     headers = _get_headers(env)
 
     files = {}
