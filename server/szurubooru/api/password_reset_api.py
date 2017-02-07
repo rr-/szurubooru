@@ -1,6 +1,7 @@
 from typing import Dict
 from szurubooru import config, errors, rest
 from szurubooru.func import auth, mailer, users, versions
+from hashlib import md5
 
 
 MAIL_SUBJECT = 'Password reset for {name}'
@@ -30,6 +31,10 @@ def start_password_reset(
     return {}
 
 
+def _hash(token: str) -> str:
+    return md5(token.encode('utf-8')).hexdigest()
+
+
 @rest.routes.post('/password-reset/(?P<user_name>[^/]+)/?')
 def finish_password_reset(
         ctx: rest.Context, params: Dict[str, str]) -> rest.Response:
@@ -37,7 +42,7 @@ def finish_password_reset(
     user = users.get_user_by_name_or_email(user_name)
     good_token = auth.generate_authentication_token(user)
     token = ctx.get_param_as_string('token')
-    if token != good_token:
+    if _hash(token) != _hash(good_token):
         raise errors.ValidationError('Invalid password reset token.')
     new_password = users.reset_user_password(user)
     versions.bump_version(user)
